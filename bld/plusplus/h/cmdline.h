@@ -92,7 +92,7 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
     void );
 
 MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
-    bool many_tokes )           // - TRUE ==> scan multiple tokens
+    bool many_tokes )           // - true ==> scan multiple tokens
 ;
 void PreDefineStringMacro(      // PREDEFINE A MACRO
     const char *str );          // - name to define

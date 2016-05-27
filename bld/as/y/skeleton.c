@@ -103,7 +103,7 @@ char *body[] =
     "#define YYABORT goto yyabort",
     "#define YYACCEPT goto yyaccept",
     "#define YYERROR goto yyerrlab",
-    "int",
+    "bool",
     "yyparse()",
     "{",
     "    register int yym, yyn, yystate;",
@@ -299,9 +299,9 @@ char *trailer[] =
     "yyoverflow:",
     "    yyerror(\"yacc stack overflow\");",
     "yyabort:",
-    "    return (1);",
+    "    return(true);",
     "yyaccept:",
-    "    return (0);",
+    "    return(false);",
     "}",
     0
 };

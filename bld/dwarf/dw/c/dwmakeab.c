@@ -615,8 +615,7 @@ typedef struct {
 extra_info abbrevExtra[AB_MAX];
 
 
-void emitEnum(
-    FILE *                      fp )
+static void emitEnum( FILE *fp )
 {
     uint                        u;
 
@@ -633,8 +632,7 @@ uint_8 tempEncoding[MAX_LEB128 * MAX_CODES];
 
 #define ANCHOR_NONE ((size_t)-1)
 
-size_t addToEncoding(
-    size_t                      this_size )
+static size_t addToEncoding( size_t this_size )
 {
     size_t                      anchor;
     size_t                      dest;
@@ -684,8 +682,7 @@ size_t addToEncoding(
 }
 
 
-void emitEncodings(
-    FILE *                      fp )
+static void emitEncodings( FILE *fp )
 {
 /*
     The plan is to take the above table and compress it into a smaller
@@ -726,8 +723,7 @@ void emitEncodings(
 }
 
 
-uint CountBits(
-    uint_32                     value )
+static uint CountBits( uint_32 value )
 {
     uint                        number;
 
@@ -798,7 +794,7 @@ uint CountBits(
     DJG
 */
 
-uint_32 emitInfo( FILE *fp )
+static uint_32 emitInfo( FILE *fp )
 {
     uint_32                     total;
     uint                        u;

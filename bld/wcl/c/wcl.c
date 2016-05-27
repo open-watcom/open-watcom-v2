@@ -42,6 +42,7 @@
 #else
 #include <direct.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "swchar.h"
@@ -141,7 +142,7 @@ static  char    Conventions;                /* 'r' for -3r or 's' for -3s       
 #ifndef __UNIX__
 static  char    alt_switch_char;            /* alternate switch character           */
 #endif
-static  int     via_environment = FALSE;
+static  int     via_environment = false;
 
 /*
  *  Static function prototypes
@@ -577,7 +578,7 @@ static int Parse( const char *cmd )
                     if( strnicmp( Word + 1, "cl=", 3 ) == 0 ) {
                         strcat( CC_Opts, " -bt=" );
                         strcat( CC_Opts, Word + 4 );
-                        Flags.link_for_sys = TRUE;
+                        Flags.link_for_sys = true;
                         MemFree( SystemName );
                         SystemName = MemStrDup( Word + 4 );
                         wcc_option = 0;
@@ -612,7 +613,7 @@ static int Parse( const char *cmd )
                         end = file_end;
                         break;
                     case 'm':           /* name of map file */
-                        Flags.map_wanted = TRUE;
+                        Flags.map_wanted = true;
                         if( Word[2] == '=' || Word[2] == '#' ) {
                             end = file_end;
                             NormalizeFName( Word, MAX_CMD, Word + 3 );
@@ -654,14 +655,14 @@ static int Parse( const char *cmd )
                     switch( (p[1] << 8) | tolower( p[0] ) ) {
                     case 'p':
                         Flags.link_for_dos = 0;
-                        Flags.link_for_os2 = TRUE;
+                        Flags.link_for_os2 = true;
                         break;
                     case 'r':
-                        Flags.link_for_dos = TRUE;
+                        Flags.link_for_dos = true;
                         Flags.link_for_os2 = 0;
                         break;
                     default:
-                        Flags.link_for_sys = TRUE;
+                        Flags.link_for_sys = true;
                         if( *p == '=' || *p == '#' )
                             ++p;
                         MemFree( SystemName );
@@ -679,7 +680,7 @@ static int Parse( const char *cmd )
                             if( handle_environment_variable( env ) ) {
                                 return( 1 );          // Recursive call failed
                             }
-                            via_environment = TRUE;
+                            via_environment = true;
                             cmd = end;
                             continue;
                         }
@@ -698,7 +699,7 @@ static int Parse( const char *cmd )
                             if( strnicmp( buffer, "file ", 5 ) == 0 ) {
                                 /* look for names separated by ','s */
                                 AddNameObj( buffer + 5 );
-                                Flags.do_link = TRUE;
+                                Flags.do_link = true;
                             } else {
                                 AddDirective( buffer );
                             }
@@ -761,11 +762,11 @@ static int Parse( const char *cmd )
                 case 'c':           /* compile only */
                     p = Word + 1;
                     if( len == 2 && tolower( *p ) == 'c' ) {
-                        Flags.force_c = TRUE;
+                        Flags.force_c = true;
                     } else if( stricmp( p, "c++" ) == 0 ) {
-                        Flags.force_c_plus = TRUE;
+                        Flags.force_c_plus = true;
                     } else {
-                        Flags.no_link = TRUE;
+                        Flags.no_link = true;
                     }
                     /* fall through */
                 case 'y':
@@ -776,28 +777,28 @@ static int Parse( const char *cmd )
                     /* if tiny model specified then change to small for compilers */
                     if( len == 2 && ( Word[1] == 't' || Word[1] == 'T' ) ) {
                         Word[1] = 's';
-                        Flags.tiny_model = TRUE;
+                        Flags.tiny_model = true;
                     }
                     break;
 #endif
                 case 'p':
-                    Flags.no_link = TRUE;
+                    Flags.no_link = true;
                     break;      /* this is a preprocessor option */
                 case 'q':
-                    Flags.be_quiet = TRUE;
+                    Flags.be_quiet = true;
                     break;
                 case 'z':
                     if( len == 2 ) {
                         switch( tolower( Word[1] ) ) {
                         case 's':
-                            Flags.no_link = TRUE;
+                            Flags.no_link = true;
                             break;
                         case 'q':
-                            Flags.be_quiet = TRUE;
+                            Flags.be_quiet = true;
                             break;
 #ifdef WCLI86
                         case 'w':
-                            Flags.windows = TRUE;
+                            Flags.windows = true;
                             break;
 #endif
                         }
@@ -1049,7 +1050,7 @@ static  int  CompLink( void )
             rc = 0;
             BuildLinkFile( fp );
             fclose( fp );
-            if( ( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
+            if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
                 rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
                     char fname[_MAX_PATH];

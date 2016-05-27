@@ -184,7 +184,7 @@ void CTypeInit( void )
         CTypeCounts[base_type] = 0;
 #if 0
         if ( base_type == TYPE_FCOMPLEX || base_type == TYPE_DCOMPLEX || base_type == TYPE_LDCOMPLEX ) {
-            BaseTypes[base_type] = ComplexDecl( TYPE_STRUCT, FALSE );
+            BaseTypes[base_type] = ComplexDecl( TYPE_STRUCT, false );
             BaseTypes[base_type]->decl_type = base_type;
         } else {
 #endif
@@ -380,12 +380,12 @@ static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
         data_type = TYPE_BOOL;
     } else if( bmask == 0 ) {
         data_type = TYPE_INT;
-        *plain_int = TRUE;
+        *plain_int = true;
     } else {
         data_type = Valid_Types[bmask];
         if( data_type == TYPE_PLAIN_INT ) {
             data_type = TYPE_INT;
-            *plain_int = TRUE;
+            *plain_int = true;
         }
     }
     if( data_type == TYPE_UNDEFINED ) {
@@ -394,7 +394,7 @@ static TYPEPTR GetScalarType( bool *plain_int, int bmask, type_modifiers flags )
     }
     typ = GetType( data_type );
     if( flags & FLAG_SEGMENT )
-        typ = DupType( typ, TF2_TYPE_SEGMENT, FALSE );
+        typ = DupType( typ, TF2_TYPE_SEGMENT, false );
 
     return( typ );
 }
@@ -423,15 +423,15 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
     stg_classes         specified_stg_class;
     auto SYM_ENTRY      sym;
 
-    *plain_int = FALSE;
+    *plain_int = false;
     info->mod = FLAG_NONE;
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
-    info->naked = FALSE;
+    info->naked = false;
     info->segid = SEG_UNKNOWN;
     bmask = 0;
     flags = FLAG_NONE;
-    packed = FALSE;
+    packed = false;
     typ = NULL;
     specified_stg_class = SC_NONE;
     for(;;) {
@@ -483,7 +483,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
         case T__PACKED:
             if( packed )
                 CErr1( ERR_REPEATED_MODIFIER );
-            packed = TRUE;
+            packed = true;
             break;
         case T_EXTERN:
            stg_class = SC_EXTERN;
@@ -504,13 +504,13 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
             typ = StructDecl( TYPE_STRUCT, packed );
-            packed = FALSE;
+            packed = false;
             continue;
         case T_UNION:
             if( typ != NULL )
                 CErr1( ERR_INV_TYPE );
             typ = StructDecl( TYPE_UNION, packed );
-            packed = FALSE;
+            packed = false;
             continue;
         case T_ENUM:
             if( typ != NULL )
@@ -579,7 +579,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             if( info->naked ) {
                                 CErr1( ERR_INVALID_DECLSPEC );
                             } else {
-                                info->naked = TRUE;
+                                info->naked = true;
                             }
                         } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
                             modifier = FLAG_NORETURN;
@@ -662,7 +662,7 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                 if( info->naked ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
-                    info->naked = TRUE;
+                    info->naked = true;
                 }
             }
             AdvanceToken();
@@ -1217,7 +1217,7 @@ static void GetComplexFieldTypeSpecifier( decl_info *info, DATA_TYPE data_type )
     info->mod = FLAG_NONE;
     info->decl_mod = FLAG_NONE;
     info->decl = DECLSPEC_NONE;
-    info->naked = FALSE;
+    info->naked = false;
     info->segid = SEG_UNKNOWN;
     info->typ = GetType( data_type );
 }
@@ -1609,7 +1609,7 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
 }
 
 /* Return an integer type of specified size, or NULL in case of failure. 
- * The type will be signed if 'sign' is TRUE. The type will have exactly
+ * The type will be signed if 'sign' is true. The type will have exactly
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).
  */

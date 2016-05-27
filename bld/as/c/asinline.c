@@ -60,9 +60,9 @@ extern void AsmFini( void ) {
     SymFini();
 }
 
-extern void AsmFiniRelocs( void ) {
-//*********************************
-
+extern void AsmFiniRelocs( void )
+//*******************************
+{
     asmreloc    *reloc;
     asmreloc    *reloc_next;
 
@@ -74,17 +74,13 @@ extern void AsmFiniRelocs( void ) {
     AsmRelocs = NULL;
 }
 
-extern int AsmLine( const char *in_str )
-//**************************************
+bool AsmLine( const char *in_str )
+//********************************
 {
-    int ret;
+    bool    ret;
 
     AsmInStr = in_str;
-    if( !yyparse() ) {
-        ret = FALSE;
-    } else {
-        ret = TRUE;
-    }
+    ret = yyparse();
     AsLexerFini();
     return( ret );
 }

@@ -48,7 +48,7 @@ static unsigned inst_table[HASH_TABLE_SIZE] = { 0 };
 static unsigned *index_table;
 static unsigned *pos_table;
 
-int len_compare( const void *pv1, const void *pv2 )
+static int len_compare( const void *pv1, const void *pv2 )
 {
     size_t          len1;
     size_t          len2;
@@ -64,7 +64,7 @@ int len_compare( const void *pv1, const void *pv2 )
     return( memcmp( p1->word, p2->word, len1 + 1 ) );
 }
 
-void make_inst_hash_tables( unsigned int count, sword *Words )
+static void make_inst_hash_tables( unsigned int count, sword *Words )
 /*******************************************************************/
 {
     char            *name;

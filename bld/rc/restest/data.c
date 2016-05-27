@@ -114,7 +114,7 @@ BOOL CALLBACK DataDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam )
     return( TRUE );
 }
 
-void DisplayData( BOOL rcdata )
+void DisplayData( bool rcdata )
 {
     FARPROC     fp;
     HRSRC       rchdl;

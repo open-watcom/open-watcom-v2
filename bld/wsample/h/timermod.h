@@ -30,16 +30,15 @@
 ****************************************************************************/
 
 
-#ifdef DEFVARS
-    #define extern
+#ifndef global_timer_data
+    #define global_timer_data extern
 #endif
-extern unsigned                 TimerMult;
-extern unsigned                 TimerMod;
-extern unsigned                 TimerRestoreValue;
 
-#ifdef DEFVARS
-    #undef extern
-#endif
+global_timer_data unsigned      TimerMult;
+global_timer_data unsigned      TimerMod;
+global_timer_data unsigned      TimerRestoreValue;
+
+#undef global_timer_data
 
 #define DIVISOR                 (65536/TimerMult)
 #define MN_MULT                 1

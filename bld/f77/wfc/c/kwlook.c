@@ -43,13 +43,11 @@ extern  char            *IOKeywords[];
 STMT    RecStmtKW( void ) {
 //=============================
 
-    return( KwLookUp( StmtKeywords, PR_KW_MAX, CITNode->opnd,
-                      CITNode->opnd_size, FALSE ) );
+    return( KwLookUp( StmtKeywords, PR_KW_MAX, CITNode->opnd, CITNode->opnd_size, false ) );
 }
 
 IOKW    RecIOKW( void ) {
 //=======================
 
-    return( KwLookUp( IOKeywords, IO_KW_MAX, CITNode->opnd,
-                      CITNode->opnd_size, TRUE ) );
+    return( KwLookUp( IOKeywords, IO_KW_MAX, CITNode->opnd, CITNode->opnd_size, true ) );
 }

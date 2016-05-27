@@ -46,10 +46,10 @@
 #include "cgmagic.h"
 #include "fcodes.h"
 #include "gflow.h"
+#include "fmtcnvt.h"
 
 
 extern  bool            RecNumber(void);
-extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 
 //  NOTE : These modules will check for errors and give any error
 //         messages relating to statement numbers.
@@ -84,8 +84,7 @@ intstar4        GetStmtNo( void ) {
     intstar4    num;
 
     if( RecNumber() ) {
-        if( ( FmtS2I( CITNode->opnd, CITNode->opnd_size, FALSE, &num, FALSE, NULL )
-                == INT_OK ) && ( num <= 99999 ) ) {
+        if( ( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &num, false, NULL ) == INT_OK ) && ( num <= 99999 ) ) {
             if( num == 0 ) {
                 Error( ST_NUM_ZERO );
             }
@@ -364,8 +363,8 @@ void    InitStNumbers( void ) {
 
 // Intitialize statement number processing.
 
-    StNumbers.wild_goto  = FALSE;
-    StNumbers.var_format = FALSE;
-    StNumbers.in_remote  = FALSE;
+    StNumbers.wild_goto  = false;
+    StNumbers.var_format = false;
+    StNumbers.in_remote  = false;
     StNumbers.branches   = NextLabel();
 }

@@ -234,7 +234,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
     cg_type     p_type;
     bool        data_reference;
 
-    data_reference = TRUE;
+    data_reference = true;
     if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
             addr = CGFEName( sym, F772CGType( sym ) );
@@ -243,7 +243,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             if( sym->u.ns.flags & SY_SUB_PARM ) {
                 addr = CGUnary( O_POINTS, addr, TY_CODE_PTR );
             }
-            data_reference = FALSE;
+            data_reference = false;
         }
     } else if( sym->u.ns.flags & SY_PS_ENTRY ) {
         // it's the shadow symbol for function return value

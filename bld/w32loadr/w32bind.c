@@ -42,8 +42,6 @@ typedef unsigned short  WORD;
 typedef unsigned long   DWORD;
 #include "loader.h"
 
-#define FALSE   0
-#define TRUE    1
 #define BUFSIZE 4096
 #define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
 

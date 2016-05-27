@@ -206,7 +206,7 @@ void    FCEpilogue( void ) {
         }
     }
     BEFlushSeg( CurrCodeSegId );
-    FreeLocalBacks( TRUE );
+    FreeLocalBacks( true );
     FreeGlobalBacks();
 }
 
@@ -221,10 +221,10 @@ bool    ChkForAltRets( entry_pt *ep ) {
     args = ep->parms;
     for(;;) {
         if( args == NULL ) break;
-        if( args->flags & ARG_STMTNO ) return( TRUE );
+        if( args->flags & ARG_STMTNO ) return( true );
         args = args->link;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -237,10 +237,10 @@ bool    EntryWithAltRets( void ) {
 
     ep = Entries;
     while( ep != NULL ) {
-        if( ChkForAltRets( ep ) ) return( TRUE );
+        if( ChkForAltRets( ep ) ) return( true );
         ep = ep->link;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -297,7 +297,7 @@ static  void    DefineEntries( void ) {
     ep_count = 0;
     ep = Entries;
     while( ep != NULL ) {
-        FreeLocalBacks( FALSE );
+        FreeLocalBacks( false );
         sp_type = SPType( ep->id );
         CGProcDecl( ep->id, sp_type );
         if( CGOpts & CGOPT_DB_LOCALS ) {
@@ -346,10 +346,10 @@ static  void    DefineEntries( void ) {
 static  bool    NeedShadowArg( pass_by *arg_aux ) {
 //=================================================
 
-    if( Options & OPT_DESCRIPTOR ) return( FALSE );
-    if( arg_aux == NULL ) return( TRUE );
-    if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) return( FALSE );
-    return( TRUE );
+    if( Options & OPT_DESCRIPTOR ) return( false );
+    if( arg_aux == NULL ) return( true );
+    if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) return( false );
+    return( true );
 }
 
 
@@ -466,8 +466,10 @@ static  cg_type ArgPtrType( cg_name arg ) {
     cg_type     typ;
 
     typ = CGType( arg );
-    if( typ >= TY_USER_DEFINED ) return( TY_POINTER );
-    if( BETypeLength( typ ) < BETypeLength( TY_POINTER ) ) return( TY_POINTER );
+    if( typ >= TY_USER_DEFINED )
+        return( TY_POINTER );
+    if( BETypeLength( typ ) < BETypeLength( TY_POINTER ) )
+        return( TY_POINTER );
     return( typ );
 }
 
@@ -567,40 +569,40 @@ void    FCCall( void ) {
         arg_proc_far16 = ( (arg_code & PC_PROC_FAR16) != 0 );
         arg_code &= ~PC_PROC_FAR16;
 #endif
-        chk_foreign = TRUE;
+        chk_foreign = true;
         if( arg_code == PC_PROCEDURE || arg_code == PC_FN_OR_SUB ) {
             arg = XPop();
             cg_typ = TY_CODE_PTR;
 #if _CPU == 386 || _CPU == 8086
             if( (aux->cclass & FAR16_CALL) && arg_proc_far16 ) {
-                chk_foreign = FALSE;
+                chk_foreign = false;
             } else if( arg_aux != NULL ) {
                 if( arg_aux->info & ARG_FAR ) {
                     cg_typ = TY_LONG_CODE_PTR;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_CODE_PTR );
-                    chk_foreign = FALSE;
+                    chk_foreign = false;
                 }
             }
 #endif
         } else if( arg_type == PT_CHAR ) {
             // character data (including character arrays)
             if( Options & OPT_DESCRIPTOR ) {
-                pass_scb = TRUE;
-                pass_len = FALSE;
+                pass_scb = true;
+                pass_len = false;
             } else {
-                pass_scb = FALSE;
-                pass_len = TRUE;
+                pass_scb = false;
+                pass_len = true;
             }
             if( arg_aux != NULL ) {
                 if( arg_aux->info & (PASS_BY_VALUE | PASS_BY_DATA) ) {
-                    pass_scb = FALSE;
-                    pass_len = FALSE;
+                    pass_scb = false;
+                    pass_len = false;
                 } else if( arg_aux->info & PASS_BY_DESCRIPTOR ) {
-                    pass_scb = TRUE;
-                    pass_len = FALSE;
+                    pass_scb = true;
+                    pass_len = false;
                 } else if( arg_aux->info & PASS_BY_NODESCRIPTOR ) {
-                    pass_scb = FALSE;
-                    pass_len = TRUE;
+                    pass_scb = false;
+                    pass_len = true;
                 }
             }
             arg = XPop();
@@ -630,11 +632,11 @@ void    FCCall( void ) {
                 if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
                     cg_typ = TY_LONG_POINTER;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
-                    chk_foreign = FALSE;
+                    chk_foreign = false;
                 }
             }
         } else if( (arg_aux != NULL) && (arg_aux->info & PASS_BY_VALUE) ) {
-            chk_foreign = FALSE;
+            chk_foreign = false;
             if( arg_type == PT_CPLX_8 ) {
                 XPopCmplx( &z, TY_COMPLEX );
                 CGAddParm( call, z.realpart, TY_SINGLE );
@@ -703,7 +705,7 @@ void    FCCall( void ) {
                 if( (arg_aux->info & PASS_BY_REFERENCE) && (arg_aux->info & ARG_FAR) ) {
                     cg_typ = TY_LONG_POINTER;
                     arg = CGUnary( O_CONVERT, arg, TY_LONG_POINTER );
-                    chk_foreign = FALSE;
+                    chk_foreign = false;
                 }
             }
         }
@@ -767,7 +769,7 @@ cg_name VarAltSCB( sym_id sym ) {
 //===============================
 
 // This function is called for character variables that are dummy arguments
-// and SCBRequired() is TRUE.
+// and SCBRequired() is true.
 
     /*
     for dummy arguments, the SCB is always allocated on the stack

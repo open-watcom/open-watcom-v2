@@ -35,6 +35,8 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
+#include "redefby.h"
+
 
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            SuffixIns(instruction*,instruction*);
@@ -42,7 +44,6 @@ extern  void            PrefixIns(instruction*,instruction*);
 extern  void            PrefixInsRenum(instruction*,instruction*,bool);
 extern  void            Renumber(void);
 extern  int             NumOperands(instruction*);
-extern  bool            IsVolatile(name*);
 
 
 static  void            GlobalConflictsFirst( void )
@@ -65,9 +66,9 @@ static  void            GlobalConflictsFirst( void )
     list_owner = &list;
     for( ;; ) {
         conf = *conf_owner;
-        if( conf == NULL ) break;
-        if( !( conf->state & CONFLICT_ON_HOLD ) &&
-             ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
+        if( conf == NULL )
+            break;
+        if( _Isnt( conf, CST_CONFLICT_ON_HOLD ) && ( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
             *conf_owner = conf->next_conflict;
             *list_owner = conf;
             list_owner = &conf->next_conflict;
@@ -100,26 +101,25 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
 
     flow = blk->dataflow;
     for( conf = first_global; conf != NULL; conf = conf->next_conflict ) {
-        if( conf->state & CONFLICT_ON_HOLD ) break;
-        if( !( conf->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) break;
+        if( _Is( conf, CST_CONFLICT_ON_HOLD ) )
+            break;
+        if( (conf->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
+            break;
         if( _GBitOverlap( conf->id.out_of_block, flow->out ) ) {
             last_ins = blk->ins.hd.prev;
             if( conf->ins_range.last != NULL ) {
                 _INS_NOT_BLOCK( conf->ins_range.last );
                 _INS_NOT_BLOCK( last_ins );
             }
-            if( conf->ins_range.last == NULL
-             || conf->ins_range.last->id <= last_ins->id ) {
+            if( conf->ins_range.last == NULL || conf->ins_range.last->id <= last_ins->id ) {
                 if( last_ins->head.opcode != OP_NOP ) {
                     new_ins = MakeNop();
                     havelive = HaveLiveInfo;
-                    HaveLiveInfo = FALSE;
+                    HaveLiveInfo = false;
                     SuffixIns( last_ins, new_ins );
                     new_ins->head.live.regs = blk->ins.hd.live.regs;
-                    new_ins->head.live.within_block
-                        = blk->ins.hd.live.within_block;
-                    new_ins->head.live.out_of_block
-                        = blk->ins.hd.live.out_of_block;
+                    new_ins->head.live.within_block = blk->ins.hd.live.within_block;
+                    new_ins->head.live.out_of_block = blk->ins.hd.live.out_of_block;
                     HaveLiveInfo = havelive;
                     last_ins = new_ins;
                 }
@@ -136,18 +136,15 @@ static  void    ExtendConflicts( block *blk, conflict_node *first_global )
                 _INS_NOT_BLOCK( conf->ins_range.first );
                 _INS_NOT_BLOCK( first_ins );
             }
-            if( conf->ins_range.first == NULL
-             || conf->ins_range.first->id >= first_ins->id ) {
+            if( conf->ins_range.first == NULL || conf->ins_range.first->id >= first_ins->id ) {
                 if( first_ins->head.opcode != OP_NOP ) {
                     new_ins = MakeNop();
                     havelive = HaveLiveInfo;
-                    HaveLiveInfo = FALSE;
+                    HaveLiveInfo = false;
                     PrefixIns( first_ins, new_ins );
                     new_ins->head.live.regs = blk->ins.hd.live.regs;
-                    new_ins->head.live.within_block
-                        = first_ins->head.live.within_block;
-                    new_ins->head.live.out_of_block
-                        = first_ins->head.live.out_of_block;
+                    new_ins->head.live.within_block = first_ins->head.live.within_block;
+                    new_ins->head.live.out_of_block = first_ins->head.live.out_of_block;
                     HaveLiveInfo = havelive;
                     first_ins = new_ins;
                 }
@@ -168,11 +165,12 @@ static  void    AssignBit( conflict_node *conf, block *blk )
     local_bit_set     bit;
 
     if( _LBitEmpty( blk->available_bit ) ) {
-        conf->state |= CONFLICT_ON_HOLD;
-    } else if( ( conf->state & CONFLICT_ON_HOLD ) == EMPTY ) {
+        _SetTrue( conf, CST_CONFLICT_ON_HOLD );
+    } else if( _Isnt( conf, CST_CONFLICT_ON_HOLD ) ) {
         _LBitFirst( bit );
         for(;;) {
-            if( _LBitOverlap( blk->available_bit, bit ) ) break;
+            if( _LBitOverlap( blk->available_bit, bit ) )
+                break;
             _LBitNext( &bit );
         }
         _LBitAssign( conf->id.within_block, bit );
@@ -323,16 +321,16 @@ static  void    FlowConflicts( instruction *first,
                  * copied from there, may be it's wiser to use this function as is.
                  * But SideEffect() has too many checks - not sure we need'em all.
                  */
-                result_forced_alive = FALSE;
+                result_forced_alive = false;
 
                 for( i = ins->num_operands; i-- > 0; ) {
                     if( IsVolatile( ins->operands[i] ) ) {
-                        result_forced_alive = TRUE;
+                        result_forced_alive = true;
                         break;
                     }
                 }
                 if( ( ins->ins_flags & INS_CC_USED ) && ins->head.opcode != OP_MOV ) {
-                    result_forced_alive = TRUE;
+                    result_forced_alive = true;
                 }
 
                 if( result_forced_alive ) {
@@ -355,10 +353,10 @@ extern  void    MakeLiveInfo( void )
     GlobalConflictsFirst();
     first_global = ConfList; // assumes conflicts get added at start of list
     havelive = HaveLiveInfo;
-    HaveLiveInfo = FALSE;
+    HaveLiveInfo = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->ins.hd.prev->head.opcode != OP_NOP ) {
-            PrefixInsRenum( (instruction *)&blk->ins, MakeNop(), FALSE );
+            PrefixInsRenum( (instruction *)&blk->ins, MakeNop(), false );
         }
     }
     HaveLiveInfo = havelive;

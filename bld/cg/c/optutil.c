@@ -178,7 +178,7 @@ extern  void    UnLinkInstr( ins_entry *old ) {
 /********************************************/
 
   optbegin
-    InsDelete = TRUE;
+    InsDelete = true;
     DeleteQueue( old );
     old->ins.prev = PendingDeletes;
     PendingDeletes = old;

@@ -53,12 +53,6 @@
 #define  MAX_SRCH_STRINGS       2048
 
 typedef int wbool;
-#ifndef TRUE
-    #define TRUE 1
-#endif
-#ifndef FALSE
-    #define FALSE 0
-#endif
 
 #if defined(__UNIX__)
     #define READABLE   (S_IRUSR|S_IRGRP|S_IROTH)

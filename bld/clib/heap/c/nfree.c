@@ -46,7 +46,7 @@ _WCRTLINK void free( void *stg )
 
 #endif
 
-struct miniheapblkp _WCNEAR     *__MiniHeapFreeRover;
+miniheapblkp _WCNEAR     *__MiniHeapFreeRover;
 
 /* By setting __ALLOC_DEBUG it is possible to spot memory allocation errors in RDOS target */
 

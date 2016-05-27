@@ -146,8 +146,8 @@ static void cgEmitData(         // EMIT AN INSTRUCTION TO DATA FILE
     emit_file = *emitDataCGFILE;
     if( flags.init_data_beg ) {
         cgWriteIC( emit_file, &ins_init_beg );
-        flags.init_data_beg = FALSE;
-        flags.init_data_end = TRUE;
+        flags.init_data_beg = false;
+        flags.init_data_end = true;
     }
     cgWriteIC( emit_file, instruction );
 }
@@ -160,8 +160,8 @@ static void cgEmitIns(          // EMIT AN INSTRUCTION TO CODE FILE
     if( gen->emit_init_beg ) {
         ins_init_beg.value.pvalue = gen->init_sym;
         cgWriteIC( codeCGFILE, &ins_init_beg );
-        gen->emit_init_beg = FALSE;
-        gen->emit_init_end = TRUE;
+        gen->emit_init_beg = false;
+        gen->emit_init_end = true;
     }
     cgWriteIC( codeCGFILE, instruction );
 }
@@ -178,8 +178,8 @@ void CgFrontStatInit(           // START OF STATIC-INIT TEST IN FUNCTION
         cgWriteIC( codeCGFILE, &ins_init_done );
         ins_init_test.value.pvalue = gen->init_sym;
         cgWriteIC( codeCGFILE, &ins_init_test );
-        flags.init_data_beg = FALSE;
-        flags.init_data_end = TRUE;
+        flags.init_data_beg = false;
+        flags.init_data_end = true;
     }
 }
 
@@ -477,7 +477,7 @@ void *CgFrontSwitchFile(        // SWITCH VIRTUAL FUNCTION FILES
 }
 
 
-unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
+CGLABEL CgFrontLabelCs(         // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
     void )
 {
     CGFILE_GEN *gen;            // - generation data
@@ -495,7 +495,7 @@ unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
 }
 
 
-unsigned CgFrontLabelGoto(      // GET NEXT AVAILABLE LABEL # (GOTO)
+CGLABEL CgFrontLabelGoto(       // GET NEXT AVAILABLE LABEL # (GOTO)
     void )
 {
     CGFILE_GEN *gen;            // - generation data
@@ -512,13 +512,13 @@ static void label_reference(    // EMIT NEAR LABEL REFERENCE
     CGLABEL label,              // - label
     CGINTEROP opcode )          // - opcode
 {
-    CgFrontCodeInt( opcode, label - 1 );
+    CgFrontCodeUint( opcode, label - 1 );
 }
 
 
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
     CGINTEROP opcode,           // - opcode to determine type of label ref.
-    unsigned condition,         // - condition for goto
+    cg_op condition,            // - condition for goto
     CGLABEL label )             // - label number
 {
     label_reference( label, opcode );
@@ -536,7 +536,7 @@ void CgFrontLabfreeCs(          // FREE CS LABELS
     gen->cs_label -= count;
     count += gen->cs_allocated;
     gen->cs_allocated = 0;
-    dump_label( printf( "LabfreeCs -- %d\n", count ) );
+    dump_label( printf( "LabfreeCs -- %u\n", count ) );
     cgEmitCodeUint( gen, IC_LABFREE_CS, count );
 }
 
@@ -545,7 +545,7 @@ void CgFrontLabdefCs(           // DEFINE A CS LABEL
     CGLABEL label )             // - label number
 {
     label_reference( label, IC_LABDEF_CS );
-    dump_label( printf( "LabdefCs -- %d\n", label ) );
+    dump_label( printf( "LabdefCs -- %u\n", label ) );
 }
 
 
@@ -553,7 +553,7 @@ void CgFrontLabdefGoto(         // DEFINE A GOTO LABEL
     CGLABEL label )             // - label number
 {
     label_reference( label, IC_LABDEF_GOTO );
-    dump_label( printf( "LabdefGoto -- %d\n", label ) );
+    dump_label( printf( "LabdefGoto -- %u\n", label ) );
 }
 
 
@@ -608,11 +608,11 @@ void CgFrontFuncClose(          // CLOSE A FUNCTION (AND ITS FILE)
             codeCGFILE->opt_retn = opt_sym;
             switch( ObjModelFunctionReturn( func->sym_type ) ) {
               case OMR_CLASS_REF :
-                codeCGFILE->u.s.opt_retn_ref = TRUE;
+                codeCGFILE->u.s.opt_retn_ref = true;
                 break;
               case OMR_CLASS_VAL :
               case OMR_SCALAR :
-                codeCGFILE->u.s.opt_retn_val = TRUE;
+                codeCGFILE->u.s.opt_retn_val = true;
                 break;
             }
         }
@@ -750,21 +750,21 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
     SYMBOL dtor,                // - dtor, when function is ctor
     DTORING_KIND kind )         // - kind of dtoring
 {
-    bool keep_scope;            // - TRUE ==> keep the current scope
+    bool keep_scope;            // - true ==> keep the current scope
 
-    keep_scope = FALSE;
+    keep_scope = false;
     if( dtor != NULL ) {
         switch( kind ) {
           case DTORING_SCOPE :
             CgFrontCodePtr( IC_SCOPE_CALL_BDTOR, dtor );
-            keep_scope = TRUE;
+            keep_scope = true;
             break;
           case DTORING_TEMP :
             CgFrontCodePtr( IC_SCOPE_CALL_TDTOR, dtor );
             break;
           case DTORING_COMPONENT :
             CgFrontCodePtr( IC_SCOPE_CALL_CDTOR, dtor );
-            keep_scope = TRUE;
+            keep_scope = true;
             break;
           DbgDefault( "CgFrontScopeCall -- bad DTORING_KIND" );
         }
@@ -784,22 +784,22 @@ void CgFrontScopeCall(          // GENERATE IC_SCOPE_CALL, IF REQ'D
 void CgFrontCtorTest(           // INDICATE FUNCTION MIGHT HAVE CTOR-TEST
     void )
 {
-    codeCGFILE->u.s.ctor_test = TRUE;
+    codeCGFILE->u.s.ctor_test = true;
 }
 
 
 bool CgFrontRetnOptVar(         // START BRACKETTING FOR VAR. (RETURN OPT>)
     SYMBOL var )                // - the symbol
 {
-    bool retn;                  // - return: TRUE ==> bracketting started
+    bool retb;                  // - return: true ==> bracketting started
 
     if( FnRetnOptimizable( var ) ) {
         CgFrontCodePtr( IC_RETNOPT_VAR, var );
-        retn = TRUE;
+        retb = true;
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -819,14 +819,14 @@ void DgInitBegin(               // START INITIALIZATION OF SYMBOL
 
     ins_init_beg.value.pvalue = sym;
     gen = getGenData();
-    flags.init_data_beg = TRUE;
-    flags.init_data_end = FALSE;
+    flags.init_data_beg = true;
+    flags.init_data_end = false;
     gen->init_sym = sym;
     if( sym->id == SC_STATIC && ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
         emitDataCGFILE = &codeCGFILE;
     } else {
-        gen->emit_init_beg = TRUE;
-        gen->emit_init_end = FALSE;
+        gen->emit_init_beg = true;
+        gen->emit_init_end = false;
     }
 }
 
@@ -840,13 +840,13 @@ void DgInitDone(                // COMPLETE INITIALIZATION OF SYMBOL
     if( gen->emit_init_end ) {
         cgEmit( gen, &ins_init_done );
     }
-    gen->emit_init_beg = FALSE;
-    gen->emit_init_end = FALSE;
+    gen->emit_init_beg = false;
+    gen->emit_init_end = false;
     if( flags.init_data_end ) {
         cgEmitData( &ins_init_done );
     }
-    flags.init_data_beg = FALSE;
-    flags.init_data_end = FALSE;
+    flags.init_data_beg = false;
+    flags.init_data_end = false;
     emitDataCGFILE = &dataCGFILE;
 }
 
@@ -870,8 +870,8 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
     codeCGFILE = NULL;
     dataCGFILE = CgioCreateFile( NULL );
     emitDataCGFILE = &dataCGFILE;
-    flags.init_data_beg = FALSE;
-    flags.init_data_end = FALSE;
+    flags.init_data_beg = false;
+    flags.init_data_end = false;
 }
 
 

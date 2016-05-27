@@ -62,7 +62,7 @@ OutlineElement::OutlineElement()
             , _child( NULL )
             , _state( ESLeaf )
             , _symbol( NULL )
-            , _lastSib( FALSE )
+            , _lastSib( false )
             , _name( NULL )
 //------------------------------
 // create a sentinel node
@@ -73,7 +73,7 @@ OutlineElement::OutlineElement( int level, TreeNode * node, OutlineElement * nex
             : _sibling( next )
             , _child( NULL )
             , _symbol( node->makeSymbol() )
-            , _lastSib( FALSE )
+            , _lastSib( false )
             , _level( (uint) level )
             , _name( NULL )
 //---------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ OutlineElement::OutlineElement( int level, TreeNode * node, OutlineElement * nex
     }
 
     if( lastChild ) {
-        lastChild->_lastSib = TRUE;
+        lastChild->_lastSib = true;
         lastChild->_sibling = next;
     }
 
@@ -338,7 +338,7 @@ bool Outline::paint()
         dev.drawText( WPoint( 0, 0 ), emptyText() );
         dev.close();
 
-        return TRUE;
+        return true;
     }
 }
 
@@ -516,7 +516,7 @@ void Outline::setMenus( MenuManager * mgr )
         mgr->registerForMenu( this, OutlineMenus[ i ] );
     }
 
-    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
 
     GlobalViewTree::setMenus( mgr );
 
@@ -591,32 +591,32 @@ void Outline::treeViewEvent( TreeViewEvent event )
         selectRoots();
         break;
     case ExpandOne:
-        elm->expand( FALSE );
+        elm->expand( false );
         resetCache();
         reset();    // paranoia
         break;
     case ExpandBranch:
-        elm->expand( TRUE );
+        elm->expand( true );
         resetCache();
         reset();    // paranoia
         break;
     case ExpandAll:
         for( elm = _sentinel->next(); elm != NULL; elm = elm->visibleSib() ) {
-            elm->expand( TRUE );
+            elm->expand( true );
         }
         resetCache();
         reset();    // paranoia
         break;
     case CollapseBranch:
         if( elm->state() == OutlineElement::ESExpanded ) {
-            elm->collapse( FALSE );
+            elm->collapse( false );
             resetCache();
             reset();    // paranoia
         }
         break;
     case CollapseAll:
         for( elm = _sentinel->next(); elm != NULL; elm = elm->visibleSib() ) {
-            elm->collapse( TRUE );
+            elm->collapse( true );
         }
         resetCache();
         reset();    // paranoia
@@ -699,12 +699,12 @@ void Outline::findNext()
     if( !elm ) {
         errMessage( "Not Found" );      // FIXME -- not an error, don't use errMessage
         _findStack->clear();
-        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
     } else {
         // expand all the parent nodes of this one (they are stored
         // in the find stack), but don't expand this node itself
         for( i = _findStack->entries() - 1; i > 0; i -= 1 ) {
-            (*_findStack)[ i - 1 ]->expand( FALSE );
+            (*_findStack)[ i - 1 ]->expand( false );
         }
         for( i = 0; i < count(); i += 1 ) {
             if( elm == element( i ) ) {
@@ -714,7 +714,7 @@ void Outline::findNext()
         resetCache();
         reset();
         scrollToSelected();
-        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), TRUE );
+        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), true );
     }
 }
 

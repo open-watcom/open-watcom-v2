@@ -302,12 +302,12 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
     block       *blk;
 
     // check out this awesome heuristic...
-    *complete = FALSE;
-    *clean = FALSE;
+    *complete = false;
+    *clean = false;
     unroll_count = Head->unroll_count;
     if( unroll_count == 0 ) {
         if( _IsntModel( LOOP_UNROLLING ) ) return( 0 );
-        if( OptForSize != 0 ) return( FALSE );
+        if( OptForSize != 0 ) return( false );
         num_ins = 0;
         for( blk = loop_tail; blk != NULL; blk = blk->u.loop ) {
             if( blk->class & SELECT ) return( 0 );
@@ -321,7 +321,7 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
             }
             if( unroll_count >= ( Head->iterations - 1 ) ) {
                 unroll_count = Head->iterations - 1;
-                *complete = TRUE;
+                *complete = true;
             }
         } else {
             // don't bother
@@ -342,7 +342,7 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
     type_length offset;
 
     op = *pop;
-    if( op == NULL ) return( FALSE );
+    if( op == NULL ) return( false );
     switch( op->n.class ) {
     case N_INDEXED:
         if( op->i.index == orig ) {
@@ -350,7 +350,7 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
                                op->i.constant,
                                op->n.name_class, op->n.size,
                                op->i.scale, op->i.index_flags );
-            return( TRUE );
+            return( true );
         } else if( op->i.base == orig ) {
             *pop = ScaleIndex( op->i.index, new, op->i.constant,
                                op->n.name_class, op->n.size,
@@ -362,16 +362,16 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
         if( op == orig ) {
             offset = (*pop)->v.offset - op->v.offset;
             *pop = TempOffset( new, offset, (*pop)->n.name_class );
-            return( TRUE );
+            return( true );
         }
         break;
     default:
         if( op == orig ) {
             *pop = new;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
@@ -470,7 +470,7 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     Unroll the given loop (this is the tail block, and loop is connected
     through blk->u.loop to the head, in which blk->u.loop == NULL) reps
     times (there will be reps + 1 copies of the loop body) and replace induction
-    vars with new temps if replace_vars == TRUE
+    vars with new temps if replace_vars == true
     All of the copies made will be connected through blk->u.loop, and a
     pointer to the tail of the new super-loop will be returned.
 */
@@ -534,8 +534,8 @@ static  bool    TractableCond( loop_condition *cond )
 /****************************************************
     To be a nice conditional exit (one we can munge) we need a comparison
     between an induction variable and a loop-invariant expression. If these
-    conditions are present, we fill in the fields and return TRUE. If we
-    return FALSE, the values of cond are guaranteed to be irrelevant junk.
+    conditions are present, we fill in the fields and return true. If we
+    return false, the values of cond are guaranteed to be irrelevant junk.
 */
 {
     bool        ok;
@@ -550,8 +550,8 @@ static  bool    TractableCond( loop_condition *cond )
 
     ins = cond->compare_ins;
     blk = cond->compare_block;
-    ok = FALSE;
-//    exit_true = FALSE;
+    ok = false;
+//    exit_true = false;
     MarkInvariants();
     if( !InvariantOp( ins->operands[ 1 ] ) ) {
         n = ins->operands[ 0 ];
@@ -564,17 +564,17 @@ static  bool    TractableCond( loop_condition *cond )
         if( tmp != NULL ) {
             cond->induction = tmp;
             cond->invariant = ins->operands[ 1 ];
-            ok = TRUE;
+            ok = true;
         }
     }
     UnMarkInvariants();
-    if( !ok ) return( FALSE );
-    if( _IsV( cond->induction, IV_DEAD ) ) return( FALSE );
+    if( !ok ) return( false );
+    if( _IsV( cond->induction, IV_DEAD ) ) return( false );
     if( ( blk->edge[ 0 ].destination.u.blk->class & IN_LOOP ) != EMPTY ) {
         cond->exit_edge = blk->edge[ 1 ].destination.u.blk;
         cond->loop_edge = blk->edge[ 0 ].destination.u.blk;
         if( _TrueIndex( ins ) == 1 ) {
-            // want loop to continue executing if condition TRUE
+            // want loop to continue executing if condition true
             FlipCond( ins );
             _SetBlockIndex( ins, 0, 1 );
         }
@@ -582,7 +582,7 @@ static  bool    TractableCond( loop_condition *cond )
         cond->exit_edge = blk->edge[ 0 ].destination.u.blk;
         cond->loop_edge = blk->edge[ 1 ].destination.u.blk;
         if( _TrueIndex( ins ) == 0 ) {
-            // want loop to continue executing if condition TRUE
+            // want loop to continue executing if condition true
             FlipCond( ins );
             _SetBlockIndex( ins, 1, 0 );
         }
@@ -600,17 +600,17 @@ static  bool    TractableCond( loop_condition *cond )
     case OP_CMP_GREATER:
     case OP_CMP_GREATER_EQUAL:
         cond->opcode = opcode;
-        if( plus >= 0 ) ok = FALSE;
+        if( plus >= 0 ) ok = false;
         break;
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
         cond->opcode = opcode;
-        if( plus <= 0 ) ok = FALSE;
+        if( plus <= 0 ) ok = false;
         break;
     case OP_CMP_EQUAL:
     case OP_BIT_TEST_TRUE:
     case OP_BIT_TEST_FALSE:
-        ok = FALSE;
+        ok = false;
         break;
     default:
         Zoiks( ZOIKS_113 );
@@ -717,7 +717,7 @@ extern  bool    CanHoist( block *head )
 
     /* can't handle crap which isn't either a jump block or a conditional going to our head */
     for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( ( edge->source->class & ( JUMP | CONDITIONAL ) ) == EMPTY ) return( FALSE );
+        if( ( edge->source->class & ( JUMP | CONDITIONAL ) ) == EMPTY ) return( false );
     }
 
     for( curr = head; curr != NULL; ) {
@@ -726,7 +726,7 @@ extern  bool    CanHoist( block *head )
         curr = curr->edge[ 0 ].destination.u.blk;
         if( curr == head ) break;
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  void    HoistCondition( block *head )
@@ -737,7 +737,7 @@ extern  void    HoistCondition( block *head )
     prehead, while also appending a copy of the instruction to the
     loop butts. Note that this could violate the limit on instructions
     per block, but I'm not checking at the moment. You may only call
-    this routine if the above function returned TRUE.
+    this routine if the above function returned true.
 */
 {
     block_edge  *edge;
@@ -776,7 +776,7 @@ extern  void    HoistCondition( block **head, block *prehead )
     other than the exit condition. To do this, we hoist each instruction from
     the head and make a copy appended to both the prehead and butt (my quaint
     notation for the block which jumps to the head and is not the prehead). We
-    return TRUE if we were able to hoist the condition to the top, FALSE otherwise.
+    return true if we were able to hoist the condition to the top, false otherwise.
 */
 {
     block       *butt;
@@ -790,17 +790,17 @@ extern  void    HoistCondition( block **head, block *prehead )
     for( butt_edge = (*head)->input_edges; butt_edge != NULL; butt_edge = butt_edge->next_source ) {
         if( butt_edge->source != prehead ) break;
     }
-    if( butt_edge == NULL ) return( FALSE );
+    if( butt_edge == NULL ) return( false );
     butt = MakeNonConditional( butt_edge->source, butt_edge );
     butt_ins = butt->ins.hd.prev;
     prehead_ins = prehead->ins.hd.prev;
     blk = *head;
     // it should be either a simple jump or our (1 and only) cond. exit
     if( ( blk->class & JUMP ) == EMPTY &&
-        ( blk->class & CONDITIONAL ) == EMPTY ) return( FALSE );
+        ( blk->class & CONDITIONAL ) == EMPTY ) return( false );
     // the new head should have an input from prehead and one from the butt
     // any more and we have to bail out
-    if( blk->inputs > 2 ) return( FALSE );
+    if( blk->inputs > 2 ) return( false );
     // transfer all instructions to prehead/butt
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
@@ -812,7 +812,7 @@ extern  void    HoistCondition( block **head, block *prehead )
         SuffixIns( prehead_ins, ins );
         prehead_ins = ins;
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -933,7 +933,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     SuffixPreHeader( add );
 
     // add a piece of code to check and make sure n and ( n - reps ) have the same sign
-    if( cond->complete == FALSE && Signed[ comp_type ] != comp_type ) {
+    if( cond->complete == false && Signed[ comp_type ] != comp_type ) {
         new = MakeBlock( AskForNewLabel(), 2 );
         new->class = CONDITIONAL;
         new->loop_head = PreHead->loop_head;
@@ -1017,15 +1017,15 @@ extern  bool    Hoisted( block *head, instruction *compare )
 #if 0
     if( CanHoist( head ) ) {
         HoistCondition( head );
-        return( TRUE );
+        return( true );
     }
 #else
     if( head->class & CONDITIONAL ) {
         if( _OpIsCondition( head->ins.hd.next->head.opcode ) &&
-                compare == head->ins.hd.next ) return( TRUE );
+                compare == head->ins.hd.next ) return( true );
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    UnRoll()
@@ -1039,9 +1039,9 @@ extern  bool    UnRoll()
     bool                one_cond;
     loop_abstract       cleanup_copy;
 
-    if( Head->class & DONT_UNROLL ) return( FALSE );
+    if( Head->class & DONT_UNROLL ) return( false );
     unroll_count = UnrollCount( Loop, &cond.clean, &cond.complete );
-    if( unroll_count <= 0 ) return( FALSE );
+    if( unroll_count <= 0 ) return( false );
     AnalyseLoop( NULL, &one_cond, &cond.compare_ins, &cond.compare_block );
     if( one_cond &&
         Hoisted( Head, cond.compare_ins ) &&
@@ -1052,7 +1052,7 @@ extern  bool    UnRoll()
         cleanup_copy.head->class |= LOOP_HEADER | DONT_UNROLL;
         MarkLoopHeader( cleanup_copy.tail, cleanup_copy.head );
         Head->class |= IGNORE;
-        last = DoUnroll( Loop, unroll_count, FALSE );
+        last = DoUnroll( Loop, unroll_count, false );
         Head->class &= ~IGNORE;
         MarkLoopHeader( last, Head );
         MakeWorldGoAround( last, &cleanup_copy, &cond, unroll_count );
@@ -1061,11 +1061,11 @@ extern  bool    UnRoll()
         UnMarkHeaderEdges( last );
         // MoveDownLoop( cond_blk );
     } else if( Head->unroll_count > 0 ) {
-        last = DoUnroll( Loop, Head->unroll_count, FALSE );
+        last = DoUnroll( Loop, Head->unroll_count, false );
         MarkLoopHeader( last, Head );
     }
     Head->class |= DONT_UNROLL;
     FixBlockIds();
     ClearCopyPtrs( Loop );
-    return( TRUE );
+    return( true );
 }

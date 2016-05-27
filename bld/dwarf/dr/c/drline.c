@@ -38,9 +38,9 @@
 
 
 typedef struct { /* stmt program read info */
-    dr_handle   start;
-    dr_handle   curr;
-    dr_handle   finish;
+    drmem_hdl   start;
+    drmem_hdl   curr;
+    drmem_hdl   finish;
     unsigned_16 seg;
     signed_8    line_base;
     unsigned_8  line_range;
@@ -68,9 +68,9 @@ static void InitState( line_info *info )
     info->state.line = 1;
     info->state.col = 0;
     info->state.is_stmt = info->rdr.def_is_stmt;
-    info->state.basic_blk = FALSE;
-    info->state.end_seq = FALSE;
-    info->state.addr_set = TRUE;  // address starts at 0
+    info->state.basic_blk = false;
+    info->state.end_seq = false;
+    info->state.addr_set = true;  // address starts at 0
 }
 
 static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
@@ -79,8 +79,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 // Run the statement program
 // On each row append (as blathered about in DWARF spec) call the wlk
 {
-    dr_handle       curr;
-    dr_handle       finish;
+    drmem_hdl       curr;
+    drmem_hdl       finish;
     int             value;
     unsigned        length;
     int             min_ins_len;
@@ -92,8 +92,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     dw_lns          value_lns;
     dw_lne          value_lne;
     char            *name_buf;
-    int             name_buf_len;
-    int             curr_len;
+    size_t          name_buf_len;
+    size_t          curr_len;
 
     name_buf = NULL;
     name_buf_len = 0;
@@ -104,7 +104,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
     line_base = info->rdr.line_base;
     line_range = info->rdr.line_range;
     opcode_base = info->rdr.opcode_base;
-    cont = TRUE;
+    cont = true;
     while( cont && curr < finish ) {    // now go through the statement program
         value_lns = DWRVMReadByte( curr );
         curr++;
@@ -113,9 +113,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
             value_lne = DWRVMReadByte( curr );
             curr++;
             --length;
+            if( DWRCurrNode->wat_producer_ver == VER_V1 || DWRCurrNode->wat_producer_ver == VER_V2 ) {
+                if( value_lne == DW_LNE_WATCOM_set_segment_OLD ) {
+                    value_lne = DW_LNE_WATCOM_set_segment;
+                }
+            }
             switch( value_lne ) {
             case DW_LNE_end_sequence:
-                info->state.end_seq = TRUE;
+                info->state.end_seq = true;
                 /* append a row */
                 if( cue != NULL ) {
                     cont = cue( cue_data, &info->state );
@@ -127,10 +132,14 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 break;
             case DW_LNE_set_address:
                 info->state.offset = DWRReadInt( curr, length );
-                info->state.addr_set = TRUE;
+                info->state.addr_set = true;
                 curr += length;
                 break;
-            case DW_LNE_WATCOM_set_segment_OLD:
+            case DW_LNE_set_discriminator:
+                // it is used by Watcom and OW until OW1.9 for DW_LNE_WATCOM_set_segment
+                // it is in colission with Dwarf specification V4 and above
+                // following code must handle this for backward compatibility
+                break;
             case DW_LNE_WATCOM_set_segment:
                 info->state.seg = (uint_16)DWRReadInt( curr, length );
                 curr += length;
@@ -174,8 +183,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                         break;
                     }
                 }
-                info->state.addr_set = FALSE;
-                info->state.basic_blk = FALSE;
+                info->state.addr_set = false;
+                info->state.basic_blk = false;
                 break;
             case DW_LNS_advance_pc:
                 info->state.offset += DWRVMReadULEB128( &curr ) * min_ins_len;
@@ -193,7 +202,7 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                 info->state.is_stmt = !info->state.is_stmt;
                 break;
             case DW_LNS_set_basic_block:
-                info->state.basic_blk = TRUE;
+                info->state.basic_blk = true;
                 break;
             case DW_LNS_const_add_pc:
                 value = 255 - opcode_base;
@@ -219,8 +228,8 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
                     break;
                 }
             }
-            info->state.addr_set = FALSE;
-            info->state.basic_blk = FALSE;
+            info->state.addr_set = false;
+            info->state.basic_blk = false;
         }
     }
     info->rdr.curr = curr;
@@ -229,12 +238,12 @@ static bool WlkStateProg( line_info *info, DRCUEWLK cue, void *cue_data,
 }
 
 
-static dr_handle InitProgInfo( prog_rdr *rdr, dr_handle start, uint_16 seg )
+static drmem_hdl InitProgInfo( prog_rdr *rdr, drmem_hdl start, uint_16 seg )
 /**************************************************************************/
 // Init statement program info
 {
     unsigned        len;
-    dr_handle       pos;
+    drmem_hdl       pos;
     unsigned        index;
 
     rdr->seg = seg;
@@ -262,22 +271,22 @@ static void FiniProgInfo( prog_rdr *rdr )
     DWRFREE( rdr->op_lens );
 }
 
-extern dr_handle  DRGetStmtList( dr_handle ccu )
+extern drmem_hdl  DRGetStmtList( drmem_hdl ccu )
 /**********************************************/
 // Return the start of the statement list or 0 if no lines
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &ccu ) + 1;
     if( DWRScanForAttrib( &abbrev, &ccu, DW_AT_stmt_list ) ) {
         ccu = DWRCurrNode->sections[DR_DEBUG_LINE].base + DWRReadConstant( abbrev, ccu );
     } else {
-        ccu = DR_HANDLE_NUL;
+        ccu = DRMEM_HDL_NULL;
     }
     return( ccu );
 }
 
-bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
+bool DRWalkLines( drmem_hdl stmt, uint_16 seg, DRCUEWLK wlk, void *d )
 /********************************************************************/
 // Run the statement program
 {
@@ -290,7 +299,7 @@ bool DRWalkLines( dr_handle stmt, uint_16 seg, DRCUEWLK wlk, void *d )
     return( ret );
 }
 
-bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
+bool DRWalkLFiles( drmem_hdl stmt, DRLFILEWLK file, void *file_data,
                                         DRLDIRWLK dir, void *dir_data )
 /*********************************************************************/
 // Run the statement program
@@ -301,13 +310,13 @@ bool DRWalkLFiles( dr_handle stmt, DRLFILEWLK file, void *file_data,
     dr_line_file    df;
     bool            cont;
     char            *name_buf;
-    int             name_buf_len;
-    int             curr_len;
+    size_t          name_buf_len;
+    size_t          curr_len;
 
     name_buf = NULL;
     name_buf_len = 0;
     stmt = InitProgInfo( &info.rdr, stmt, 0 );
-    cont = TRUE;
+    cont = true;
     while( cont && stmt < info.rdr.start ) {    // get directory table
         value = DWRVMReadByte( stmt );
         if( value == 0 ) {

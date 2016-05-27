@@ -24,13 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Real-mode interrupts manipulation functions.
 *
 ****************************************************************************/
 
-#ifdef SHORT_OFF
-typedef unsigned short off;
-#else
-typedef unsigned long off;
-#endif
+
+extern void     InstallDOSIntercepts( void );
+extern void     RemoveDOSIntercepts( void );
+extern int      AddInterrupt( unsigned num );

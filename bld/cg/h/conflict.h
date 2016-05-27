@@ -36,33 +36,33 @@
 typedef unsigned_32             save_def;
 
 typedef enum {
-        CONF_IS_NEXT            = 0x0001,
-        SAVINGS_JUST_CALCULATED = 0x0002,
-        CONFLICT_ON_HOLD        = 0x0004,
-        SAVINGS_CALCULATED      = 0x0008,
+    CST_CONF_IS_NEXT            = 0x0001,
+    CST_SAVINGS_JUST_CALCULATED = 0x0002,
+    CST_CONFLICT_ON_HOLD        = 0x0004,
+    CST_SAVINGS_CALCULATED      = 0x0008,
 
-        CANNOT_SPLIT            = 0x0010,
-        CHANGES_OTHERS          = 0x0020,
-        NEEDS_INDEX             = 0x0040,
-        NEEDS_INDEX_SPLIT       = 0x0080,
+    CST_CANNOT_SPLIT            = 0x0010,
+    CST_CHANGES_OTHERS          = 0x0020,
+    CST_NEEDS_INDEX             = 0x0040,
+    CST_NEEDS_INDEX_SPLIT       = 0x0080,
 
-        INDEX_SPLIT             = 0x0100,
-        NEEDS_SEGMENT           = 0x0200,
-        NEEDS_SEGMENT_SPLIT     = 0x0400,
-        SEGMENT_SPLIT           = 0x0800,
+    CST_INDEX_SPLIT             = 0x0100,
+    CST_NEEDS_SEGMENT           = 0x0200,
+    CST_NEEDS_SEGMENT_SPLIT     = 0x0400,
+    CST_SEGMENT_SPLIT           = 0x0800,
 
-        WAS_SEGMENT             = 0x1000,
-        OK_ACROSS_CALLS         = 0x2000,
-        CONF_VISITED            = 0x4000
-#define NEVER_TOO_GREEDY          0x8000
+    CST_WAS_SEGMENT             = 0x1000,
+    CST_OK_ACROSS_CALLS         = 0x2000,
+    CST_CONF_VISITED            = 0x4000,
+    CST_NEVER_TOO_GREEDY        = 0x8000
 } conflict_state;
 
-#define PERMANENT_FLAGS (NEEDS_INDEX+INDEX_SPLIT+CONFLICT_ON_HOLD\
-                        +NEVER_TOO_GREEDY+OK_ACROSS_CALLS\
-                        +NEEDS_SEGMENT+SEGMENT_SPLIT)
+#define CST_PERMANENT_FLAGS (CST_NEEDS_INDEX+CST_INDEX_SPLIT+CST_CONFLICT_ON_HOLD\
+                            +CST_NEVER_TOO_GREEDY+CST_OK_ACROSS_CALLS\
+                            +CST_NEEDS_SEGMENT+CST_SEGMENT_SPLIT)
 
-#define VALID_SEGMENT   (NEEDS_SEGMENT+NEEDS_SEGMENT_SPLIT+\
-                        SEGMENT_SPLIT+WAS_SEGMENT)
+#define CST_VALID_SEGMENT   (CST_NEEDS_SEGMENT+CST_NEEDS_SEGMENT_SPLIT+\
+                            CST_SEGMENT_SPLIT+CST_WAS_SEGMENT)
 
 typedef struct reg_tree {
         struct reg_tree         *lo;
@@ -110,8 +110,8 @@ typedef struct conflict_node {  /*  target independent */
         possible_for_alias      *possible_for_alias_list;
 } conflict_node;
 
-#define _SetTrue( node, bit )   node->state |= bit;
-#define _SetFalse( node, bit )  node->state &= ~(bit);
+#define _SetTrue( node, bit )   node->state |= (bit)
+#define _SetFalse( node, bit )  node->state &= ~(bit)
 
-#define _Is( node, bit )        ( ( node->state & (bit) ) != 0 )
-#define _Isnt( node, bit )      ( ( node->state & (bit) ) == 0 )
+#define _Is( node, bit )        ((node->state & (bit)) != 0)
+#define _Isnt( node, bit )      ((node->state & (bit)) == 0)

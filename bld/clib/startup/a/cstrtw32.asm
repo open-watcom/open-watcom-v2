@@ -168,7 +168,6 @@ _curbrk     dd 0          ; top of usable memory
 _cbyte      dd 0          ; used by getch, getche
 _osmajor    db 4          ; major DOS version number
 _osminor    db 0          ; minor DOS version number
-_Extender   db 0          ; 10 => 386 windows
 __init_387_emulator db 0  ; to prevent emulator from coming in with
                           ;       -fpi
 
@@ -195,7 +194,6 @@ __FPE_handler dd __null_FPE_rtn ; FPE handler
         public  "C",_cbyte
         public  "C",_osmajor
         public  "C",_osminor
-        public  "C",_Extender
         public  __no87
         public  "C",__FPE_handler
         public  __init_387_emulator

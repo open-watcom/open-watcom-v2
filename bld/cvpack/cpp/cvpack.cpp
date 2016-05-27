@@ -323,12 +323,13 @@ void CVpack::CreatePackExe()
 
     SymbolDistributor symDis(_aRetriever, globalSym, staticSym);
     for ( uint module = 1; ; module++ ) {
-        if( _aRetriever.IsAtSubsection( sstSegMap ) ) break;
+        if( _aRetriever.IsAtSubsection( sstSegMap ) )
+            break;
         gottype = globalType.LoadTypes(_aRetriever,module);
-        gotsrcmod = FALSE;
+        gotsrcmod = false;
         if ( _aRetriever.ReadSubsection(buffer,length,sstSrcModule,module) ) {
             moduleSeg = ( * (unsigned_16 *) (buffer + WORD) );
-            gotsrcmod = TRUE;
+            gotsrcmod = true;
             buffer2 = new char [length];
             memcpy( buffer2, buffer, length );
         }
@@ -379,12 +380,12 @@ int main(int argc, char* argv[])
     char tmpFile[L_tmpnam];
     bool quiet;
 
-    quiet = FALSE;
+    quiet = false;
     set_new_handler(outOfMemory);
     try {
         if( argc != 2 ) {
             if( argc == 3 && stricmp( argv[1], "/nologo" ) == 0 ) {
-                quiet = TRUE;
+                quiet = true;
                 argv[1] = argv[2];
             } else {
                 cerr << CVpackUsage;

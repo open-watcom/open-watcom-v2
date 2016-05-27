@@ -33,6 +33,6 @@
 #ifndef W2MRES_INCLUDED
 #define W2MRES_INCLUDED
 
-int ConvertWResToMRes( WResFileID infile, WResFileID outfile );
+bool ConvertWResToMRes( WResFileID infile, WResFileID outfile );
 
 #endif

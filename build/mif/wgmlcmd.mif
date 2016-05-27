@@ -50,8 +50,8 @@ use_dosemu = dosbox
 # only DOSBOX use upper cased file name
 wgml_ucase=1
 !else
-WGMLCMD = dosemu -dumb $(dosemu_wgml_batch)
-GENDEVCMD = dosemu -dumb $(dosemu_gendev_batch)
+WGMLCMD = dosemu -dumb -quiet $(dosemu_wgml_batch)
+GENDEVCMD = dosemu -dumb -quiet $(dosemu_gendev_batch)
 use_dosemu = dosemu
 !endif
 

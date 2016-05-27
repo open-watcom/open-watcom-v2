@@ -22,27 +22,20 @@
 
 :include pshpackl.sp
 
-:include timet.sp
+:include time_t.sp
 
 :include wchar_t.sp
 
 :include maxpath.sp
 
-/* Symbolic constants for the access() function */
-
-#define R_OK    4       /*  Test for read permission    */
-#define W_OK    2       /*  Test for write permission   */
-#define X_OK    1       /*  Test for execute permission */
-#define F_OK    0       /*  Test for existence of file  */
+:include access.sp
 
 #define ACCESS_WR       0x0002
 #define ACCESS_RD       0x0004
 
 /* Symbolic constants for the lseek() function */
 
-#define SEEK_SET    0           /* Seek relative to the start of file   */
-#define SEEK_CUR    1           /* Seek relative to current position    */
-#define SEEK_END    2           /* Seek relative to the end of the file */
+:include seekpos.sp
 
 /* Symbolic constants for stream I/O */
 

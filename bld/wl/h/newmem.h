@@ -32,10 +32,16 @@
 
 extern segment Find16MSeg( segment );
 
-#define SUB_ADDR( l, r ) ((((offset)(l).seg-(offset)(r).seg) << FmtData.SegShift) + ((l).off-(r).off))
+#define SUB_REAL_ADDR( l, r ) ((((offset)(l).seg-(offset)(r).seg) << FmtData.SegShift) + ((l).off-(r).off))
 
 #define SUB_16M_ADDR( l, r ) (((offset)Find16MSeg((l).seg)-(offset)Find16MSeg((r).seg))*16+((l).off-(r).off))
 
 #define LESS_THAN_ADDR( l, r ) (MK_REAL_ADDR((l).seg,(l).off) < MK_REAL_ADDR((r).seg,(r).off))
 
 #define MK_REAL_ADDR( seg, off )  ( ((offset)(seg) << FmtData.SegShift) + (off) )
+
+#define SEG_GROUP_DELTA(x)  SUB_REAL_ADDR( (x)->seg_addr, (x)->group->grp_addr )
+
+#define GROUP_SECTION_DELTA(x) SUB_REAL_ADDR( (x)->grp_addr, (x)->section->sect_addr )
+
+#define GROUP_FILE_LOC(x) ( SUB_REAL_ADDR( (x)->grp_addr, (x)->section->sect_addr ) + (x)->section->u.file_loc )

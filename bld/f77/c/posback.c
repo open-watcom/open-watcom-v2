@@ -68,25 +68,32 @@ void    FBackspace( b_file *io, int rec_size )
     IOOk( io );
     if( io->attrs & REC_VARIABLE ) {
         for(;;) {
-            if( SysSeek( io, -(long)sizeof( u32 ), SEEK_CUR ) < 0 ) return;
+            if( SysSeek( io, -(long)sizeof( u32 ), SEEK_CUR ) < 0 )
+                return;
             if( SysRead( io, (char *)&u32, sizeof( u32 ) ) == READ_ERROR )
                 return;
             if( u32 & 0x80000000 ) {
                 u32 &= 0x7fffffff;
-                start_of_logical_record = FALSE;
+                start_of_logical_record = false;
             } else {
-                start_of_logical_record = TRUE;
+                start_of_logical_record = true;
             }
             SysSeek( io, -(long)( u32 + 2 * sizeof( u32 ) ), SEEK_CUR );
-            if( start_of_logical_record ) break;
+            if( start_of_logical_record ) {
+                break;
+            }
         }
     } else if( io->attrs & REC_TEXT ) {
         // skip first record separator
-        if( GetPrevChar( io ) == NO_CHAR ) return;
+        if( GetPrevChar( io ) == NO_CHAR )
+            return;
         for(;;) {
             ch = GetPrevChar( io );
-            if( ch == NO_CHAR ) return;
-            if( ch == LF ) break;
+            if( ch == NO_CHAR )
+                return;
+            if( ch == LF ) {
+                break;
+            }
         }
         // give back record separator
         SysSeek( io, +1, SEEK_CUR );

@@ -962,7 +962,7 @@ PCH_struct scope {
         if( exact type of class is known )then
             class_addr = addr + 'exact_delta'
         else
-            if( 'non_virtual' is FALSE )then
+            if( 'non_virtual' is false )then
                 vbptr_addr = addr + 'vb_offset'
                 vb_delta = (*vb_ptr_addr)['vb_index']
                 addr = vbptr_addr + vb_delta
@@ -1090,7 +1090,7 @@ struct class_vftable {
     unsigned            ambiguities : 1;/* has potentially ambiguous entries */
     unsigned            corrupted : 1;  /* definitely has bad entries */
     int                 : 0;
-    THUNK_ACTION        data[1];        /* terminated if last_entry is TRUE */
+    THUNK_ACTION        data[1];        /* terminated if last_entry is true */
 };
 
 /*
@@ -1153,9 +1153,9 @@ struct member_ptr_cast {                /* I - input, O - output, * - private */
     SYMBOL              mapping;        /* O: unsigned array to map indices */
     unsigned            safe : 1;       /* I: casting from 'base' to 'derived' */
     unsigned            init_conv : 1;  /* I: convert from found base to final base */
-    unsigned            delta_reqd : 1; /* O: TRUE if delta adjustment is req'd */
-    unsigned            mapping_reqd : 1;/*O: TRUE is index mapping req'd */
-    unsigned            test_reqd : 1;  /* O: TRUE if index == 0 test is req'd */
+    unsigned            delta_reqd : 1; /* O: true if delta adjustment is req'd */
+    unsigned            mapping_reqd : 1;/*O: true is index mapping req'd */
+    unsigned            test_reqd : 1;  /* O: true if index == 0 test is req'd */
     unsigned            single_mapping:1;/*O: only one index value needs mapping */
 };
 

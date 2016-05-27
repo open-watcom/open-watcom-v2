@@ -418,15 +418,15 @@ static void IncLoadObjFiles( void )
     PrepareModList();
     SetStartAddr();
     MarkDefaultSyms();
-    IncIterateMods( Root->mods, MarkRelocs, FALSE );
-    IncIterateMods( LibModules, MarkRelocs, FALSE );
-    IncIterateMods( Root->mods, FixModAltDefs, FALSE );
-    IncIterateMods( LibModules, FixModAltDefs, FALSE );
-    IncIterateMods( Root->mods, KillSyms, TRUE );
-    IncIterateMods( LibModules, KillSyms, TRUE );
+    IncIterateMods( Root->mods, MarkRelocs, false );
+    IncIterateMods( LibModules, MarkRelocs, false );
+    IncIterateMods( Root->mods, FixModAltDefs, false );
+    IncIterateMods( LibModules, FixModAltDefs, false );
+    IncIterateMods( Root->mods, KillSyms, true );
+    IncIterateMods( LibModules, KillSyms, true );
     PurgeSymbols();
-    IncIterateMods( Root->mods, FreeModSegments, TRUE );
-    IncIterateMods( LibModules, FreeModSegments, TRUE );
+    IncIterateMods( Root->mods, FreeModSegments, true );
+    IncIterateMods( LibModules, FreeModSegments, true );
     ProcessMods();
     DoIncGroupDefs();
     DoIncLibDefs();
@@ -475,12 +475,12 @@ static void DoPass1( mod_entry *next, file_list *list )
     bool                ignoreobj;
 
     loc = 0;
-    lastmod = FALSE;
+    lastmod = false;
     if( CacheOpen( list ) ) {
-        reclength = CheckLibraryType( list, &loc, FALSE );
+        reclength = CheckLibraryType( list, &loc, false );
         for( ;; ) { /*  there may be more than 1 object module in a file */
             member = NULL;
-            ignoreobj = FALSE;
+            ignoreobj = false;
             if( EndOfLib( list, loc ) )
                 break;
             membname = IdentifyObject( list, &loc, &size );
@@ -488,9 +488,9 @@ static void DoPass1( mod_entry *next, file_list *list )
                 if( (list->status & STAT_HAS_MEMBER) && list->u.member != NULL ) {
                     member = FindMember( list, membname );
                     if( member == NULL ) {
-                        ignoreobj = TRUE;
+                        ignoreobj = true;
                     } else if( list->u.member == NULL ) {
-                        lastmod = TRUE;
+                        lastmod = true;
                     }
                 }
             }
@@ -614,7 +614,7 @@ static bool EndOfLib( file_list *list, unsigned long loc )
         id = CacheRead( list, loc, sizeof( unsigned_8 ) );
         return( *id == LIB_TRAILER_REC );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -667,7 +667,7 @@ static bool ResolveVFExtdefs( void )
     bool        resolved;
     symbol      *sym;
 
-    resolved = FALSE;
+    resolved = false;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         if( IS_SYM_VF_REF(sym) ) {
             resolved |= CheckVFList( sym );

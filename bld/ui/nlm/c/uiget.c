@@ -38,7 +38,7 @@
 #include "uinlm.h"
 
 // be very careful about setting this true
-static bool EnterForever = FALSE;
+static bool EnterForever = false;
 
 void UIAPI uiflush( void )
 /************************/
@@ -57,7 +57,7 @@ void UIAPI uiforceinfloop( void )
 /********************************/
 /* This is a dangerous function. This may be called from any thread. */
 {
-    EnterForever = TRUE;
+    EnterForever = true;
     uiwakethread();
     while( kbdisblocked() ) {
         ThreadSwitch();

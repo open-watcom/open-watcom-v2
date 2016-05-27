@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#ifndef TYPES_INCLUDED
-#define TYPES_INCLUDED
+#include "ovldbg.h"
 
-#include <stddef.h>
+/*
+    located in INTRC.ASM
+*/
 
-#define TRUE    1
-#define FALSE   0
+extern ovl_dbg_hook_func    ovl_handler;
 
-#endif

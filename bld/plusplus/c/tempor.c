@@ -93,14 +93,14 @@ static SYMBOL makeTemporary(    // ALLOCATE A TEMPORARY
 SYMBOL TemporaryAllocNoStorage( // ALLOCATE TEMPORARY WITHOUT STORAGE
     TYPE type )                 // - type of temporary
 {
-    return makeTemporary( type, FALSE );
+    return makeTemporary( type, false );
 }
 
 
 SYMBOL TemporaryAlloc(          // ALLOCATE TEMPORARY IN FUNCTION
     TYPE type )                 // - type of temporary
 {
-    return makeTemporary( type, TRUE );
+    return makeTemporary( type, true );
 }
 
 

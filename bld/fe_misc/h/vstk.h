@@ -68,17 +68,17 @@ struct vstk_blk {               // VSTK_BLK -- block of stack items
 
 void *VstkBase(                 // GET BASE ELEMENT
     VSTK_CTL *stack,            // - stack to be based
-    int base )                  // - the base index
+    unsigned base )             // - the base index
 ;
 void VstkClose(                 // CLOSE THE VIRTUAL STACK
     VSTK_CTL *stack )           // - stack to be closed
 ;
-int VstkDimension(              // GET DIMENSION OF VIRTUAL STACK
+unsigned VstkDimension(         // GET DIMENSION OF VIRTUAL STACK
     VSTK_CTL const *stack )     // - stack
 ;
 void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
     VSTK_CTL *stack,            // - stack to be indexed
-    int index )                 // - the index
+    unsigned index )            // - the index
 ;
 void *VstkNext(                 // GET NEXT ITEM IN STACK
     VSTK_CTL const *stack,      // - stack being walked
@@ -100,7 +100,7 @@ void *VstkTop(                  // POINT AT TOP OF STACK
 ;
 void VstkTruncate(              // TRUNCATE A VSTK
     VSTK_CTL *stack,            // - stack to be truncated
-    int base )                  // - the truncation index
+    unsigned base )             // - the truncation index
 ;
 
 // MACROS

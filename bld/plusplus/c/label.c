@@ -81,7 +81,7 @@ typedef struct                  // COND_BLK -- conditional block
 {   CGFILE_INS ins_true;        // - zapped to IC_SET_TRUE
     CGFILE_INS ins_false;       // - zapped to IC_SET_FALSE
     SYMBOL sym_dtored;          // - last DTOR'ed symbol at start of block
-    unsigned has_false :1;      // - TRUE ==> has false part (?:)
+    unsigned has_false :1;      // - true ==> has false part (?:)
 } COND_BLK;
 
 static VSTK_CTL stack_cond;     // stack of conditionals
@@ -89,8 +89,8 @@ static SYMBOL expr_dtor_bound;  // last symbol requiring DTOR in block
 static unsigned expr_dtor_depth;// depth of conditional DTORing
 
 static struct {
-    unsigned    has_setjmp : 1; // TRUE ==> setjmp in expression
-    unsigned    has_newctor: 1; // TRUE ==> has a new-ctor
+    unsigned    has_setjmp : 1; // true ==> setjmp in expression
+    unsigned    has_newctor: 1; // true ==> has a new-ctor
 } labelFlags;
 
 
@@ -161,11 +161,11 @@ static BLK_INIT *labelFindBlk(  // FIND INITIALIZATION BLOCK FOR SCOPE
             curr->first_init = NULL;
             curr->sym = NULL;
             curr->sym_dtored = NULL;
-            curr->open_zap = FALSE;
-            curr->dead_zap = FALSE;
-            curr->try_blk = FALSE;
-            curr->catch_blk = FALSE;
-            curr->free = FALSE;
+            curr->open_zap = false;
+            curr->dead_zap = false;
+            curr->try_blk = false;
+            curr->catch_blk = false;
+            curr->free = false;
             curr->locn.src_file = NULL;
             curr->try_id = NULL;
             curr->switch_posn.scope = NULL;
@@ -252,9 +252,10 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
     BLK_INIT *blk,              // - current initialization block
     SYMBOL sym )                // - symbol
 {
-    bool retn;                  // - TRUE ==> requires DTOR
+    bool retb;                  // - true ==> requires DTOR
     SYMBOL dtor;                // - DTOR for symbol
 
+    retb = false;
     if( SymRequiresDtoring( sym ) ) {
         if( TypeTruncByMemModel( sym->sym_type ) ) {
             CErr1( ERR_DTOR_OBJ_MEM_MODEL );
@@ -264,17 +265,13 @@ static bool labelMarkDtorSym(   // MARK A SYMBOL FOR DTORing
             dtor->flag |= SF_ADDR_TAKEN;
             if( ! SymIsModuleDtorable( sym ) ) {
                 blk->sym_dtored = sym;
-                blk->scope->u.s.dtor_reqd = TRUE;
+                blk->scope->u.s.dtor_reqd = true;
                 ScopeKeep( blk->scope );
             }
-            retn = TRUE;
-        } else {
-            retn = FALSE;
+            retb = true;
         }
-    } else {
-        retn = FALSE;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -284,7 +281,7 @@ void LabelDeclInited(           // SIGNAL NEXT INITIALIZATION IN BLOCK
     BLK_INIT *blk;              // - current initialization block
 
     if( SymRequiresDtoring( sym ) && ! SymRequiresCtoring( sym ) ) {
-        GetCurrScope()->u.s.dtor_naked = TRUE;
+        GetCurrScope()->u.s.dtor_naked = true;
     }
     blk = labelFindBlk( SymScope( sym ) );
     if( SymIsInitialized( sym ) ) {
@@ -384,12 +381,12 @@ static bool popsTryCatch(       // CHECK IF JUMP POPS A TRY/CATCH BLOCK
     BLK_INIT* src,              // - source block
     BLK_INIT* tgt )             // - target block
 {
-    bool popped;                // - TRUE ==> catch was popped
+    bool popped;                // - true ==> catch was popped
 
-    popped = FALSE;
+    popped = false;
     for( ; tgt != src; src = src->containing ) {
         if( src->try_blk || src->catch_blk ) {
-            popped = TRUE;
+            popped = true;
             break;
         }
     }
@@ -401,12 +398,12 @@ static bool popsCatch(          // CHECK IF JUMP POPS A CATCH BLOCK
     BLK_INIT* src,              // - source block
     BLK_INIT* tgt )             // - target block
 {
-    bool popped;                // - TRUE ==> catch was popped
+    bool popped;                // - true ==> catch was popped
 
-    popped = FALSE;
+    popped = false;
     for( ; tgt != src; src = src->containing ) {
         if( src->catch_blk ) {
-            popped = TRUE;
+            popped = true;
             break;
         }
     }
@@ -423,7 +420,7 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
     BLK_INIT *blk;              // - BLK_INIT's for label definition
     BLK_INIT *blk_com;          // - BLK_INIT's for common scope
     BLK_INIT *blk_src;          // - BLK_INIT for source of jump
-    bool retn;                  // - TRUE ==> success
+    bool retb;                  // - true ==> success
     unsigned src_var_no;        // - source: variable no.
     unsigned tgt_var_no;        // - target: variable no.
     SYMBOL tgt_sym;             // - target: init. symbol
@@ -439,11 +436,11 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
                 if( blk == blk_com ) {
                     if( src_var_no < tgt_var_no ) {
                         bypassError( blk->sym );
-                        retn = FALSE;
+                        retb = false;
                     } else {
                         *cblk = blk_com;
                         *cvar = tgt_sym;
-                        retn = TRUE;
+                        retb = true;
                     }
                     break;
                 }
@@ -454,23 +451,23 @@ static bool labelCheckJump(     // CHECK JUMP DOES NOT BY-PASS INITIALIZATION
         if( blk->try_blk ) {
             CErr1( ERR_JUMP_INTO_TRY );
             InfMsgPtr( INF_PREVIOUS_TRY, &blk->locn );
-            retn = FALSE;
+            retb = false;
             break;
         } else if( blk->catch_blk ) {
             CErr1( ERR_JUMP_INTO_CATCH );
             InfMsgPtr( INF_PREVIOUS_CATCH, &blk->locn );
-            retn = FALSE;
+            retb = false;
             break;
         }
         if( tgt_var_no != 0 ) {
             bypassError( blk->first_init );
-            retn = FALSE;
+            retb = false;
             break;
         }
         tgt_sym = blk->sym_containing;
         tgt_var_no = blk->var_no_containing;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -487,12 +484,12 @@ void LabelDefine(               // DEFINE A LABEL
     bool ok;                    // - label is ok
     LAB_REF *ref;               // - forward reference to label
     SYMBOL entry_sym;           // - DTORable symbol at label
-    bool set_label_state;       // - TRUE ==> set state at label
+    bool set_label_state;       // - true ==> set state at label
 
     labelCurrPosn( &curr );
     ok = labelCheckJump( &def->posn, &curr, &com, &sym );
     if( ok ) {
-        set_label_state = FALSE;
+        set_label_state = false;
         tgt = labelFindBlk( curr.scope );
         entry_sym = scopeDcledSymbol( curr.scope );
         RingIterBeg( def->forward, ref ) {
@@ -508,11 +505,11 @@ void LabelDefine(               // DEFINE A LABEL
             }
             if( com == tgt ) {
                 if( ref->posn.sym != label_dtor ) {
-                    set_label_state = TRUE;
+                    set_label_state = true;
                 }
             } else {
                 if( blkDtorSymbol( com ) != label_dtor ) {
-                    set_label_state = TRUE;
+                    set_label_state = true;
                 }
             }
         } RingIterEnd( ref );
@@ -594,7 +591,7 @@ void LabelSwitch(               // CHECK A CASE/DEFAULT LABEL
 
 void LabelSwitchLabel(          // PROCESSING FOR A BLOCK OF SWITCH LABELS
     SCOPE defn,                 // - scope for switch
-    bool deadcode )             // - TRUE==> state is dead-code
+    bool deadcode )             // - true==> state is dead-code
 {
     deadcode = deadcode;
     checkSwitchState( defn );
@@ -688,16 +685,16 @@ void LabelFiniFunc(             // COMPLETION OF LABELS (FUNCTION)
 // Assumption: IC_BLOCK_OPEN never occurs at offset 0 in block 0
 //
 void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
-    bool dead_code )            // - TRUE ==> in dead-code state
+    bool dead_code )            // - true ==> in dead-code state
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
 
     blk = labelFindBlk( GetCurrScope() );
     if( dead_code ) {
-        blk->dead_zap = TRUE;
+        blk->dead_zap = true;
         CgFrontCode( IC_BLOCK_DEAD );
     } else {
-        blk->open_zap = TRUE;
+        blk->open_zap = true;
         CgFrontCode( IC_BLOCK_OPEN );
     }
     blk->open_ins = CgFrontLastIns();
@@ -705,22 +702,22 @@ void LabelBlockOpen(            // EMIT OPENING OF CURRENT SCOPE
 
 
 void LabelBlockClose(           // CLOSE CURRENT BLOCK SCOPE
-    bool dead_code )            // - TRUE ==> in dead-code state
+    bool dead_code )            // - true ==> in dead-code state
 {
     BLK_INIT *blk;              // - BLK_INIT for scope
     BLK_INIT *enclosing;        // - BLK_INIT for enclosing scope
     bool  blk_end;              // - emit IC_BLOCK_END
 
-    blk_end = FALSE;
+    blk_end = false;
     blk = labelFindBlk( GetCurrScope() );
     enclosing = blk->containing;
     if( GetCurrScope()->u.s.keep || blk->catch_blk ) {
         if( blk->open_zap ) {
             CgFrontZapPtr( blk->open_ins, IC_BLOCK_OPEN, GetCurrScope() );
-            blk_end = TRUE;
+            blk_end = true;
         } else if( blk->dead_zap ) {
             CgFrontZapPtr( blk->open_ins, IC_BLOCK_DEAD, GetCurrScope() );
-            blk_end = TRUE;
+            blk_end = true;
         }
         if( ! dead_code ) {
             CgFrontCodePtr( IC_BLOCK_CLOSE, GetCurrScope() );
@@ -765,8 +762,8 @@ void LabelBlkTry(               // INDICATE TRY BLOCK
     BLK_INIT *blk;              // - BLK_INIT for scope
 
     blk = labelFindBlk( GetCurrScope() );
-    blk->try_blk = TRUE;
-    GetCurrScope()->u.s.try_catch = TRUE;
+    blk->try_blk = true;
+    GetCurrScope()->u.s.try_catch = true;
     blk->locn = *posn;
     ScopeKeep( GetCurrScope() );
     CgFrontCodePtr( IC_SET_TRY_STATE, try_var );
@@ -787,9 +784,9 @@ void LabelBlkCatch(             // INDICATE CATCH BLOCK
     BLK_INIT *blk;              // - BLK_INIT for scope
 
     blk = labelFindBlk( GetCurrScope() );
-    blk->catch_blk = TRUE;
+    blk->catch_blk = true;
     blk->try_id = try_id;
-    GetCurrScope()->u.s.try_catch = TRUE;
+    GetCurrScope()->u.s.try_catch = true;
     blk->locn = *posn;
     ScopeKeep( GetCurrScope() );
     CgFrontCode( IC_SET_CATCH_STATE );
@@ -803,8 +800,8 @@ void LabelExprBegin(            // START OF REGION FOR TEMPORARIES
 {
     expr_dtor_bound = currDcledSymbol();
     expr_dtor_depth = 0;
-    labelFlags.has_setjmp = FALSE;
-    labelFlags.has_newctor = FALSE;
+    labelFlags.has_setjmp = false;
+    labelFlags.has_newctor = false;
     CgFrontCode( IC_NO_OP );    // zapped to IC_EXPR_TEMP, when dtorable temps
     ins_temp = CgFrontLastIns();
 }
@@ -834,7 +831,7 @@ void LabelExprEnd(              // END OF REGION FOR TEMPORARIES (AFTER CGDONE)
 void LabelExprSetjmp(           // MARK SETJMP REFERENCE
     void )
 {
-    labelFlags.has_setjmp = TRUE;
+    labelFlags.has_setjmp = true;
     ScopeMarkVisibleAutosInMem();
 }
 
@@ -842,7 +839,7 @@ void LabelExprSetjmp(           // MARK SETJMP REFERENCE
 void LabelExprNewCtor(          // MARK NEW-CTOR REFERENCE
     void )
 {
-    labelFlags.has_newctor = TRUE;
+    labelFlags.has_newctor = true;
     FunctionRegistrationFlag();
 }
 
@@ -860,7 +857,7 @@ void LabelTempDtored(           // ENSURE DTOR OF TEMP IS OK
 }
 
 
-void LabelCondTrue(             // START TRUE PART OF CONDITIONAL BLOCK
+void LabelCondTrue(             // START true PART OF CONDITIONAL BLOCK
     void )
 {
     COND_BLK* cb;               // - conditional block
@@ -869,11 +866,11 @@ void LabelCondTrue(             // START TRUE PART OF CONDITIONAL BLOCK
     CgFrontCodeUint( IC_COND_TRUE, 0 );
     cb->ins_true = CgFrontLastIns();
     cb->sym_dtored = currDtorSymbol();
-    cb->has_false = FALSE;
+    cb->has_false = false;
 }
 
 
-void LabelCondFalse(            // START FALSE PART OF CONDITIONAL BLOCK
+void LabelCondFalse(            // START false PART OF CONDITIONAL BLOCK
     void )
 {
     COND_BLK* cb;               // - conditional block
@@ -881,7 +878,7 @@ void LabelCondFalse(            // START FALSE PART OF CONDITIONAL BLOCK
     cb = VstkTop( &stack_cond );
     CgFrontCodeUint( IC_COND_FALSE, 0 );
     cb->ins_false = CgFrontLastIns();
-    cb->has_false = TRUE;
+    cb->has_false = true;
 }
 
 void LabelCondEnd(              // END OF CONDITIONAL BLOCK
@@ -974,7 +971,7 @@ static void markFreeBLK_INIT( void *p )
 {
     BLK_INIT *b = p;
 
-    b->free = TRUE;
+    b->free = true;
 }
 
 static void saveBLK_INIT( void *e, carve_walk_base *d )

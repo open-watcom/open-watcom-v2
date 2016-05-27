@@ -110,11 +110,11 @@ bool RemoteConnect( void )
                 another server with the same name.  But we have no way of
                 indicating this.
             */
-            return( FALSE );
+            return( false );
         }
         pipeHdl = TINY_INFO( rc );
     }
-    return( TRUE );
+    return( true );
 }
 
 

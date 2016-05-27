@@ -83,7 +83,7 @@ bool StabGenerate(              // GENERATE A STATE TABLE
     SE* state_table;            // - the state table
     segment_id old_seg;         // - old segment
 
-    if( sctl->rw == NULL ) return FALSE;
+    if( sctl->rw == NULL ) return false;
     defn = sctl->defn;
     old_seg = DgSetSegSym( defn->ro );
     CgBackGenLabelInternal( defn->ro );
@@ -159,5 +159,5 @@ bool StabGenerate(              // GENERATE A STATE TABLE
 #endif
     BESetSeg( old_seg );
     StabDefnFreeStateTable( defn );
-    return TRUE;
+    return true;
 }

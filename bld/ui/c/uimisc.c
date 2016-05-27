@@ -90,7 +90,7 @@ static void window_pos( ORD *start, ORD *size, int slack, int pos )
 void uiposition( SAREA *a, ORD h, ORD w, int rpos, int cpos, bool overmenus )
 /***************************************************************************/
 {
-    uisetscreenarea( a, overmenus, TRUE );
+    uisetscreenarea( a, overmenus, true );
     if( h > 0 ) {
         window_pos( &a->row, &a->height, a->height - h, rpos );
     }

@@ -250,7 +250,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
     PTREE defarg_info;          // PTREE containing the expr and scope
 
     if( expr == NULL || expr->op == PT_ERROR ) {
-        return TRUE;
+        return true;
     }
     arg_locn = expr;
     init_node = expr->u.subtree[0];
@@ -275,7 +275,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             if( NULL == defarg_info
              || defarg_info->u.type.next->op == PT_ERROR ) {
                 PTreeErrorNode( expr );
-                return FALSE;
+                return false;
             }
             defarg_temps = defarg_info->u.type.scope;
             if( defarg_temps != NULL && defarg_temps->ordered != NULL ) {
@@ -328,7 +328,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
             init_node->type = func->sym_type;
         }
     }
-    return TRUE;
+    return true;
 }
 
 static void analyseDefaultExpr( // ANALYSE A DEFAULT ARGUMENT EXPRESSION

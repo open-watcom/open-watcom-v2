@@ -65,6 +65,34 @@
 #include "dlgcmd.h"
 #include "dbgwintr.h"
 
+/*************************************************/
+/* TODO! review all these prototypes declaration if they are local(static) or external */
+
+bool DlgNewWithSym( const char *title, char *buff, int buff_len );
+bool DlgUpTheStack( void );
+bool DlgAreYouNuts( unsigned long mult );
+bool DlgBackInTime( bool warn );
+bool DlgIncompleteUndo( void );
+bool DlgBreak( address addr );
+void ProcAccel( void );
+void ProcDisplay( void );
+void ProcFont( void );
+void ProcHelp( void );
+#ifndef NDEBUG
+void ProcInternal( void );
+#endif
+void ProcPaint( void );
+void ProcView( void );
+void ProcConfigFile( void );
+void ConfigDisp( void );
+void ConfigFont( void );
+void ConfigPaint( void );
+int TabIntervalGet( void );
+void TabIntervalSet( int new );
+void VarSaveWndToScope( void *wnd );
+void VarRestoreWndFromScope( void *wnd );
+void PopErrBox( const char *buff );
+/*************************************************/
 
 extern void             *WndAsmInspect( address addr );
 
@@ -74,10 +102,6 @@ extern stack_entry      *ExprSP;
 
 unsigned                NumLines;
 unsigned                NumColumns;
-
-void WndMemInit( void )
-{
-}
 
 unsigned DUIConfigScreen( void )
 {
@@ -219,7 +243,7 @@ enum {
 
 bool RequestDone;
 
-VOID APIENTRY ControlFunc( ULONG parm )
+static void APIENTRY ControlFunc( ULONG parm )
 {
     ULONG   ulCount;
 
@@ -245,7 +269,7 @@ VOID APIENTRY ControlFunc( ULONG parm )
     return; // thread over!
 }
 
-void RunRequest( int req )
+static void RunRequest( int req )
 {
     ULONG   ulCount;
 

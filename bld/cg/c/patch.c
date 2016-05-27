@@ -49,11 +49,11 @@ patch *BGNewPatch( void )
     patch   *p;
 
     p = CGAlloc( sizeof( patch ) );
-    p->in_tree = FALSE;
-    p->patched = FALSE;
+    p->in_tree = false;
+    p->patched = false;
 #ifndef NDEBUG
     p->useinfo.hdltype = NO_HANDLE;
-    p->useinfo.used = FALSE;
+    p->useinfo.used = false;
 #endif
     return( p );
 }
@@ -64,7 +64,7 @@ extern  an      TNPatch( tn node ) {
     type_class_def      tipe;
 
     p = (patch *)node->u.handle;
-    p->in_tree = FALSE;
+    p->in_tree = false;
     tipe = TypeClass( node->tipe );
     addr = AddrName( AllocTemp( tipe ), node->tipe );
     p->u.ins = MakeMove( NULL, addr->u.n.name, tipe );
@@ -74,8 +74,8 @@ extern  an      TNPatch( tn node ) {
 }
 
 extern  cg_name BGPatchNode( patch *hdl, type_def *tipe ) {
-    hdl->patched = TRUE;
-    hdl->in_tree = TRUE;
+    hdl->patched = true;
+    hdl->in_tree = true;
     hdl->u.node = TGPatch( hdl, tipe );
     return( hdl->u.node );
 }

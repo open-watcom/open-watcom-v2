@@ -218,7 +218,7 @@ insert( Obj_T * obj, bool & needsSplit, Key_T & key,
 //--------------------------------------------------------
 // insert an element by finding the appropriate child (which may
 // be another SearchNode, Bucket, or Leaf), and calling insert for them.
-// If they split, they will set splitOccured to TRUE, and key and newNode
+// If they split, they will set splitOccured to true, and key and newNode
 // will be set to the parent and right subtree respectively.  If we
 // need to split while processing a child's split, set our caller's
 // needsSplit, key, and newNode appropriately.
@@ -232,14 +232,14 @@ insert( Obj_T * obj, bool & needsSplit, Key_T & key,
                                     ((const Key_T &)(*obj)).getString() );
     #endif
 
-    needsSplit = FALSE;
+    needsSplit = false;
     idx = privSearch( (const Key_T&)(*obj), 0, _degree - 1 );
     res = _nodes[ idx ]._child->insert( obj, splitOccurred, key, newNode );
 
     if( splitOccurred ) {    // our child split while inserting
         if( _degree == 2 * _keyOrder + 1 ) {    // we need to split
             split( key, newNode );
-            needsSplit = TRUE;
+            needsSplit = true;
             return res;
         } else {                                // we can insert without split
             privInsert( key, newNode );
@@ -540,10 +540,10 @@ insert( Obj_T * obj, bool & needsSplit, Key_T & key,
 // in 'key' and 'newNode' respectively
 {
     if( _degree == 2 * _objOrder + 1 ) {
-        needsSplit = TRUE;              // we split
+        needsSplit = true;              // we split
         return split( key, obj, newNode );
     } else {
-        needsSplit = FALSE;             // we did not split
+        needsSplit = false;             // we did not split
         return privInsert( obj );
     }
 }

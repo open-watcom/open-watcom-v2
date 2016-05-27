@@ -31,4 +31,3 @@
 
 
 typedef void __interrupt __far  (*intrptr)( void );
-#define _CHAIN_TO( x ) (*x)()

@@ -40,12 +40,12 @@
 
 int TBreak() {
 /*************/
-    return( FALSE );
+    return( false );
 }
 
 void CauseTBreak() {
 /******************/
-    /* cause TBreak to return TRUE */
+    /* cause TBreak to return true */
 }
 
 void    InitBlip() {
@@ -59,7 +59,7 @@ void    FiniBlip() {
 bool    WantZoiks2() {
 /********************/
 
-    return( FALSE );
+    return( false );
 }
 
 void    URBlip() {

@@ -127,17 +127,17 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
         vptr->col = editline->col + editline->index - editline->scroll;
         echoline( vptr, editline );
 //      uirefresh();                    not needed for QNX or DOS ??? jimg
-        editline->update = FALSE;
+        editline->update = false;
     }
     if( ev > EV_NO_EVENT ) {
-        if( uiinlist( ev ) == FALSE ) {
+        if( uiinlist( ev ) == false ) {
             growing = uiinlist( EV_BUFFER_FULL );
             scrollable = growing || ( editline->length > editline->fldlen );
             buffer.content = editline->buffer;
             buffer.length = editline->length;
             buffer.index = editline->index;
             buffer.insert = ( vptr->cursor == C_INSERT );
-            buffer.dirty = FALSE;
+            buffer.dirty = false;
             buffer.auto_clear = editline->auto_clear;
             ev = uieditevent( ev, &buffer );
             editline->auto_clear = buffer.auto_clear;
@@ -198,18 +198,18 @@ bool UIAPI uiveditinit( VSCREEN *vptr, VEDITLINE *editline, char *buffer,
     editline->fldlen = len;
     editline->scroll = 0;
     editline->attr = UIData->attrs[ ATTR_CURR_EDIT ];
-    editline->update = TRUE;
-    editline->auto_clear = FALSE;
+    editline->update = true;
+    editline->auto_clear = false;
     editline->buffer = buffer;
     editline->length = bufflen;
-    editline->marking = FALSE;
-    return( TRUE );
+    editline->marking = false;
+    return( true );
 }
 
 bool UIAPI uiveditfini( VSCREEN *vptr, VEDITLINE *editline )
 /***********************************************************/
 {
     vptr=vptr;editline=editline;
-    return( TRUE );
+    return( true );
 }
 

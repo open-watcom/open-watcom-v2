@@ -10,6 +10,9 @@ splice = *wsplice -i.. $($(system)_options) ../common.sp $[@ $^@
 psplice = *wsplice -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
 csplice = *wsplice -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
 
+splice_i386 = *wsplice -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
+splice_mips = *wsplice -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
+
 # order of directories is important for DOS
 # multi level tree must be created from top to bottom
 # DOS can create only simple sub-directory in existing directory
@@ -59,16 +62,16 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
         $(splice)
 
 {linux/arch/i386}.mh{arch/i386}.h:
-        $(splice)
+        $(splice_i386)
 
 {linux/arch/i386/sys}.mh{arch/i386/sys}.h:
-        $(splice)
+        $(splice_i386)
 
 {linux/arch/mips}.mh{arch/mips}.h:
-        $(splice)
+        $(splice_mips)
 
 {linux/arch/mips/sys}.mh{arch/mips/sys}.h:
-        $(splice)
+        $(splice_mips)
 
 .mh.cnv:
         $(splice)

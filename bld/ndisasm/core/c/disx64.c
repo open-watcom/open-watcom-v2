@@ -2857,12 +2857,12 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     if( name == NULL ) name = temp_buff;
     p = name;
     if( ins->flags.u.x64 & DIF_X64_LOCK ) {
-        p += DisGetString( DisInstructionTable[DI_X64_lock_pr].name, p, FALSE );
+        p += DisGetString( DisInstructionTable[DI_X64_lock_pr].name, p, false );
         if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
     if( ins->flags.u.x64 & DIF_X64_REPNE ) {
-        p += DisGetString( DisInstructionTable[DI_X64_repne_pr].name, p, FALSE );
+        p += DisGetString( DisInstructionTable[DI_X64_repne_pr].name, p, false );
         if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
@@ -2870,16 +2870,16 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         switch( ins->type ) {
         case DI_X64_cmps:
         case DI_X64_scas:
-            p += DisGetString( DisInstructionTable[DI_X64_repe_pr].name, p, FALSE );
+            p += DisGetString( DisInstructionTable[DI_X64_repe_pr].name, p, false );
             break;
         default:
-            p += DisGetString( DisInstructionTable[DI_X64_rep_pr].name, p, FALSE );
+            p += DisGetString( DisInstructionTable[DI_X64_rep_pr].name, p, false );
             break;
         }
         if( flags & DFF_UNIX ) *p++ = ';';
         *p++ = ' ';
     }
-    len = DisGetString( DisInstructionTable[ins->type].name, p, FALSE );
+    len = DisGetString( DisInstructionTable[ins->type].name, p, false );
     if( flags & DFF_UNIX ) {
         if( ins->num_ops >= 2 ) {
             op = ins->num_ops - 1;
@@ -3048,20 +3048,22 @@ static char *DisOpMasmFormat( void *d, dis_dec_ins *ins, dis_format_flags flags,
     return( p );
 }
 
-static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num )
+static bool NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num )
 {
     unsigned    i;
 
     op_num = op_num;
 
-    if( flags & DFF_UNIX ) return( FALSE );
-    if( flags & DFF_ASM ) return( TRUE );
+    if( flags & DFF_UNIX )
+        return( false );
+    if( flags & DFF_ASM )
+        return( true );
 /*    switch( ins->type ) {
     case DI_X64_movsx:
     case DI_X64_movzx:
     case DI_X64_outs:*/
         /* these always need sizing */
-/*        return( TRUE );
+/*        return( true );
     default:
         break;
     }*/
@@ -3069,14 +3071,14 @@ static int NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_num
         switch( ins->op[i].type & DO_MASK ) {
         case DO_REG:
             if( ( ins->op[i].base <= DR_X64_gs ) ) {
-                return( TRUE );
+                return( true );
             } else {
                 /* if you've got a reg, you know the size */
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 #define PTR_SUFFIX " ptr "
@@ -3101,7 +3103,7 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     switch( ins->op[op_num].type & DO_MASK ) {
     case DO_MEMORY_ABS:
         if( NeedSizing( ins, flags, op_num ) ) {
-            len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, FALSE );
+            len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, false );
             if( len != 0 ) {
                 p += len;
                 memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );
@@ -3147,7 +3149,7 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     case DO_MEMORY_REL:
         //ins->op[op_num].value += 1;
         if( NeedSizing( ins, flags, op_num ) ) {
-            len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, FALSE );
+            len = DisGetString( DisRefTypeTable[ins->op[op_num].ref_type], p, false );
             if( len != 0 ) {
                 p += len;
                 memcpy( p, PTR_SUFFIX, sizeof( PTR_SUFFIX ) - 1 );

@@ -59,7 +59,7 @@ NAME CppIndexMappingName(       // CREATE NAME OF VIRTUAL BASE INDEX MAPPING
     SCOPE from,                 // - from scope
     SCOPE to )                  // - to scope
 ;
-bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 ;

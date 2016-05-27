@@ -90,7 +90,7 @@ void ResetSys( void )
 bool Terminate( void )
 {
     ResetSys();
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -146,7 +146,7 @@ void SendABreak( void )
 
 bool TestForBreak( void )
 {
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -154,7 +154,8 @@ int Divisor[] = { 1, 2, 3, 6, 12, 24, 48, 96, 0 };
 
 bool Baud( int index )
 {
-    if( index == currentBaudRateIndex ) return( TRUE );
+    if( index == currentBaudRateIndex )
+        return( true );
 
     if( hSerial )
         RdosCloseCom( hSerial );
@@ -168,7 +169,7 @@ bool Baud( int index )
 
     currentBaudRateIndex = index;
 
-    return( TRUE );
+    return( true );
 }
 
 char *ParsePortSpec( const char **spec )
@@ -196,7 +197,7 @@ void DonePort( void )
 
 bool CheckPendingError( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 

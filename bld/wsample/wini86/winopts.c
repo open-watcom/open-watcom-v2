@@ -42,7 +42,7 @@
 static FARPROC  oldClassProc;
 static HWND     mainWindow;
 static HWND     editChild;
-static BOOL     canContinue = FALSE;
+static bool     canContinue = false;
 static char     *dataPtr;
 static char     startClass[] = "WSampleStart";
 static char     fileFilter[] = \
@@ -86,8 +86,7 @@ static BOOL getFile( char *fname )
 /*
  * About2 - processes messages for the about dialog.
  */
-BOOL __export FAR PASCAL About2( HWND hwnd, UINT msg,
-                                WPARAM wparam, LPARAM lparam )
+static BOOL FAR PASCAL About2( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 
@@ -109,8 +108,7 @@ BOOL __export FAR PASCAL About2( HWND hwnd, UINT msg,
 /*
  * StartUpDriver - the main message handling loop
  */
-long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
-                                WPARAM wparam, LPARAM lparam )
+static long FAR PASCAL StartUpDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     FARPROC     farproc;
     HWND        tmpw;
@@ -151,7 +149,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
             if( len > _MAX_PATH )
                 len = _MAX_PATH;
             GetWindowText( editChild, dataPtr, len );
-            canContinue = TRUE;
+            canContinue = true;
             tmpw = GetParent( editChild );
             SetWindowLong( editChild, GWL_WNDPROC, (LONG) oldClassProc );
             /* fall through, like exit was picked */
@@ -165,7 +163,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
         break;
 
     default:
-        return( DefWindowProc(hwnd,message,wparam,lparam) );
+        return( DefWindowProc( hwnd, message, wparam, lparam ) );
 
     } /* switch */
     return( 0L );
@@ -175,8 +173,7 @@ long __export FAR PASCAL StartUpDriver( HWND hwnd, UINT message,
 /*
  * SubClassProc - handles sub-classing of edit control
  */
-long __export FAR PASCAL SubClassProc( HWND hwnd, UINT message,
-                                WPARAM wparam, LPARAM lparam )
+static long FAR PASCAL SubClassProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
 
     switch( message ) {
@@ -187,15 +184,14 @@ long __export FAR PASCAL SubClassProc( HWND hwnd, UINT message,
         }
         break;
     }
-    return( CallWindowProc( (WNDPROC)oldClassProc, hwnd, message, wparam,
-            lparam ) );
+    return( CallWindowProc( (WNDPROC)oldClassProc, hwnd, message, wparam, lparam ) );
 
 } /* SubClassProc */
 
 /*
  * GetFileName - create a window, and get file info
  */
-BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
+bool GetFileName( HINSTANCE inst, int shcmd, char *fname )
 {
     BOOL        rc;
     HWND        mh,win;
@@ -220,12 +216,12 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
     wc.lpszClassName = startClass;
     rc = RegisterClass( &wc );
     if( !rc ) {
-        return( FALSE );
+        return( false );
     }
 
     accel = LoadAccelerators( inst, "ApplAccl" );
     if( accel == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     x = GetSystemMetrics( SM_CXSCREEN );
@@ -246,7 +242,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
         );
 
     if( !mh ) {
-        return( FALSE );
+        return( false );
     }
     ShowWindow( mh, shcmd );
     UpdateWindow( mh );
@@ -295,7 +291,7 @@ BOOL GetFileName( HINSTANCE inst, int shcmd, char *fname )
 
 
     if( win == NULL ) {
-        return( FALSE );
+        return( false );
     }
     editChild = win;
 

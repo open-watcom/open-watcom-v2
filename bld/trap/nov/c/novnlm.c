@@ -217,10 +217,10 @@ _DBG_IPX(("Listening for connection\r\n"));
         Listening = 1;
     } else if( !InUse( ConnECB ) && Completed( ConnECB ) ) {
 _DBG_IPX(("Found a connection\r\n"));
-        return( TRUE );
+        return( true );
     }
     NothingToDo();
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )
@@ -362,18 +362,20 @@ static int FindPartner( void )
 
     if( ReadPropertyValue( (char *)SAPStruct.ASServerIDpacket.serverName,
                            DBG_SERVER_TYPE, "NET_ADDRESS",
-                           1, (BYTE *)&property_value ) != 0 ) return( 0 );
+                           1, (BYTE *)&property_value ) != 0 )
+        return( false );
     AssignArray( ServHead.destination, property_value );
     if( CIPXGetLocalTarget( ServHead.destination.network,
                             ServECB.immediateAddress, &transport_time ) != 0 ) {
 _DBG_IPX(( "FindPartner -- nobody home\r\n" ));
-        return( FALSE );
+        return( false );
     }
     RespECB.fragmentDescriptor[1].address = &PartnerSPXSocket;
     CIPXListen( &RespECB );
     CIPXSendPacket( &ServECB );
     while( InUse( ServECB ) ) NothingToDo();
-    if( !Completed( ServECB ) ) return( FALSE );
+    if( !Completed( ServECB ) )
+        return( false );
     NothingToDo();
     Tick = 0;
     for( ;; ) {
@@ -382,10 +384,12 @@ _DBG_IPX(( "FindPartner -- %s answered\r\n", Completed( RespECB ) ? "someone" : 
             return( Completed( RespECB ) );
         }
         NothingToDo();
-        if( Tick > MAX_PARTNER_WAIT ) break;
+        if( Tick > MAX_PARTNER_WAIT ) {
+            break;
+        }
     }
     CIPXCancelECB( &RespECB );
-    return( FALSE );
+    return( false );
 }
 
 const char *RemoteLink( const char *parms, bool server )

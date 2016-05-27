@@ -324,9 +324,9 @@ static char *find_file( const char *filename, const char *libpaths[] )
             if( len == 0 )  Zoinks();
             p = libpaths[count] + len - 1;
             if( *p == '\\' ) {
-                hasbackslash = TRUE;
+                hasbackslash = true;
             } else {
-                hasbackslash = FALSE;
+                hasbackslash = false;
             }
 
             /*** See if the file exists here ***/
@@ -387,11 +387,10 @@ static int handle_lib_file( const char *filename, const char *libpaths[] )
 static int wlib_output( const char *text )
 /****************************************/
 {
-    bool                badness = FALSE;
+    bool                badness = false;
 
-    if( ( strncmp( text, "Error!", 6 ) == 0 )  ||
-        ( strncmp( text, "Warning!", 8 ) == 0 ) ) {
-        badness = TRUE;
+    if( ( strncmp( text, "Error!", 6 ) == 0 ) || ( strncmp( text, "Warning!", 8 ) == 0 ) ) {
+        badness = true;
     }
 
     if( !badness ) {
@@ -518,7 +517,7 @@ static int matching_callback( const void *name_, void *info_ )
     const char          *name = name_;
     MatchingInfo        *info = info_;
     char                matchstr[MAX_SYMBOL_LEN+1];
-    bool                addit = FALSE;
+    bool                addit = false;
     const char *        p;
     ListElem *          newelem;
     ListElem *          nextelem;
@@ -530,19 +529,19 @@ static int matching_callback( const void *name_, void *info_ )
     switch( info->findmode ) {
         case MATCH_MODE_EXACT:
             if( !strcmp( name, info->basename ) ) {
-                addit = TRUE;
+                addit = true;
             }
             break;
         case MATCH_MODE_UNDERBAR_SYMBOL:
             sprintf( matchstr, "_%s", info->basename );
             if( !strcmp( name, matchstr ) ) {
-                addit = TRUE;
+                addit = true;
             }
             break;
         case MATCH_MODE_SYMBOL_UNDERBAR:
             sprintf( matchstr, "%s_", info->basename );
             if( !strcmp( name, matchstr ) ) {
-                addit = TRUE;
+                addit = true;
             }
             break;
         case MATCH_MODE_UNDERBAR_SYMBOL_AT_NUMBER:
@@ -553,7 +552,7 @@ static int matching_callback( const void *name_, void *info_ )
                     p++;
                 }
                 if( *p == '\0' ) {
-                    addit = TRUE;
+                    addit = true;
                 }
             }
             break;

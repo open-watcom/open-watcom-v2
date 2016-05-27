@@ -45,7 +45,7 @@ extern  bool    GetEnvVar( const char *what, char *buff, int len ) {
 
     len = len;
     envvar = FEGetEnv( what );
-    if( envvar == NULL ) return( FALSE );
+    if( envvar == NULL ) return( false );
     CopyStr( envvar, buff );
-    return( TRUE );
+    return( true );
 }

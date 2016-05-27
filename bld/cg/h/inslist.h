@@ -157,5 +157,8 @@ typedef struct instruction {
 
 #define _INS_NOT_BLOCK( ins )        if ( (ins)->head.opcode == OP_BLOCK ) Zoiks( ZOIKS_142 )
 
-typedef unsigned char   bool_maybe;
-#define MAYBE           ((bool_maybe)2)
+typedef enum {
+    MB_FALSE    = false,
+    MB_TRUE     = true,
+    MB_MAYBE    = 2
+} bool_maybe;

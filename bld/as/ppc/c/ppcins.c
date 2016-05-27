@@ -31,7 +31,7 @@
 
 #include "as.h"
 
-static bool insErrFlag = FALSE;    // to tell whether we had problems or not
+static bool insErrFlag = false;    // to tell whether we had problems or not
 
 #define OE      IF_SETS_OVERFLOW
 #define RC      IF_SETS_CC
@@ -484,7 +484,7 @@ static void bitSetCover( uint_32 subset, void (*func)( ins_flags set, ins_table 
 }
 
 #ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+  #ifdef AS_DEBUG_DUMP
 static char *itStrings[] = {
     #define PICK( a, b, c, d, e, f, g ) #a,
     #include "ppcfmt.inc"
@@ -498,8 +498,11 @@ extern void DumpITString( ins_template template ) {
 extern void DumpInsFlags( ins_flags flags ) {
 //*******************************************
 
-    if( flags & IF_SETS_OVERFLOW ) printf( "OVERFLOW " );
-    if( flags & IF_SETS_CC ) printf( "SETS_CC " );
+    if( flags & IF_SETS_OVERFLOW )
+        printf( "OVERFLOW " );
+    if( flags & IF_SETS_CC ) {
+        printf( "SETS_CC " );
+    }
 }
 
 extern void DumpInsTableEntry( ins_table *table_entry ) {
@@ -522,9 +525,9 @@ extern void DumpInsTableEntry( ins_table *table_entry ) {
     printf( "\n" );
 }
 
-extern void DumpInsTables() {
-//***************************
-
+extern void DumpInsTables( void )
+//*******************************
+{
     ins_table   *curr;
     int         i, n;
 
@@ -534,12 +537,12 @@ extern void DumpInsTables() {
         DumpInsTableEntry( curr );
     }
 }
-#endif
+  #endif
 #endif
 
-extern void InsInit() {
-//*********************
-
+extern void InsInit( void )
+//*************************
+{
     ins_table   *curr;
     int         i, n;
 
@@ -550,9 +553,11 @@ extern void InsInit() {
         bitSetCover( curr->optional, addInstructionSymbol, curr );
     }
 #ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
-    if( _IsOption( DUMP_INS_TABLE ) ) DumpInsTables();
-    #endif
+  #ifdef _STANDALONE_
+    if( _IsOption( DUMP_INS_TABLE ) ) {
+        DumpInsTables();
+    }
+  #endif
 #endif
 }
 
@@ -576,12 +581,13 @@ extern void InsAddOperand( instruction *ins, ins_operand *op ) {
     if( ins->num_operands == MAX_OPERANDS ) {
         if( !insErrFlag ) {
             Error( MAX_NUMOP_EXCEEDED );
-            insErrFlag = TRUE;
+            insErrFlag = true;
         }
         MemFree( op );
         return;
     }
-    if( insErrFlag) insErrFlag = FALSE;
+    if( insErrFlag )
+        insErrFlag = false;
     ins->operands[ ins->num_operands++ ] = op;
 }
 
@@ -592,18 +598,18 @@ extern void InsEmit( instruction *ins ) {
 // to the current OWL section.
 
 #ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
+  #ifdef _STANDALONE_
     if( _IsOption( DUMP_INSTRUCTIONS ) ) {
         DumpIns( ins );
     }
-    #endif
+  #endif
 #endif
-    if( insErrFlag == FALSE && PPCValidate( ins ) ) {
-        #ifdef _STANDALONE_
+    if( !insErrFlag && PPCValidate( ins ) ) {
+#ifdef _STANDALONE_
         PPCEmit( CurrentSection, ins );
-        #else
+#else
         PPCEmit( ins );
-        #endif
+#endif
     }
 }
 
@@ -620,7 +626,7 @@ extern void InsDestroy( instruction *ins ) {
     MemFree( ins );
 }
 
-extern void InsFini() {
+extern void InsFini( void ) {
 //*********************
 
     ins_table   *curr;
@@ -645,7 +651,7 @@ extern void InsFini() {
 }
 
 #ifdef _STANDALONE_
-#ifdef AS_DEBUG_DUMP
+  #ifdef AS_DEBUG_DUMP
 extern void DumpIns( instruction *ins ) {
 //***************************************
 
@@ -658,5 +664,5 @@ extern void DumpIns( instruction *ins ) {
     }
     printf( "\n" );
 }
-#endif
+  #endif
 #endif

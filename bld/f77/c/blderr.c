@@ -100,19 +100,22 @@ void    Substitute( char *msg, char *buffer, va_list args ) {
     msg_arg     ordered_args[MAX_SUBSTITUTABLE_ARGS];
     bool        same_buff;
 
-    same_buff = ( msg == buffer ) ? TRUE : FALSE;
+    same_buff = ( msg == buffer );
     OrderArgs( msg, ordered_args, args );
     arg_count = 0;
     for(;;) {
         for(;;) {
             chr = *msg;
-            if( chr == '%' ) break;
-            if( chr == NULLCHAR ) break;
+            if( chr == '%' )
+                break;
+            if( chr == NULLCHAR )
+                break;
             *buffer = chr;
             ++buffer;
             ++msg;
         }
-        if( chr == NULLCHAR ) break;
+        if( chr == NULLCHAR )
+            break;
         ++arg_count;
         ++msg;                  // skip over '%'
         chr = *msg;

@@ -147,22 +147,22 @@ static bool CanPack( seg_leader *one, seg_leader *two )
 {
     if( one->info & SEG_CODE ) {
         if( two->combine == COMBINE_INVALID ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         if( one->align != two->align ) {
-            return( FALSE );
+            return( false );
         }
     }
     if( (one->info & (USE_32 | SEG_CODE)) != (two->info & (USE_32 | SEG_CODE)) )
-        return( FALSE );
+        return( false );
     if( one->segflags != two->segflags || (two->segflags & SEG_FIXED) )
-        return( FALSE );
+        return( false );
     if( one->class != two->class && (two->class->flags & CLASS_FIXED) )
-        return( FALSE );
+        return( false );
     if( one->group != two->group )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 static void AutoGroupSect( section *sec )
@@ -174,7 +174,7 @@ static void AutoGroupSect( section *sec )
     offset          new_size;
     offset          align_size;
     unsigned        num_segs;
-    bool            lastseg = FALSE;    // TRUE iff this should be last seg in group.
+    bool            lastseg = false;    // true iff this should be last seg in group.
     offset          limit = 0;
 
     CurrentSeg = NULL;
@@ -203,14 +203,14 @@ static void AutoGroupSect( section *sec )
                 } else {
                     size = seg->size;
                 }
-                lastseg = FALSE;
+                lastseg = false;
                 limit = SetSegType( seg );
             } else {
                 size = new_size;
                 ++num_segs;
             }
             if( seg->info & LAST_SEGMENT ) {
-                lastseg = TRUE;
+                lastseg = true;
             }
         }
     }
@@ -240,7 +240,7 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
                 group->segflags &= ~SEG_READ_ONLY;
             }
             if( seg->class->flags & CLASS_COPY ) {  // If class is copied, mark group accordingly
-                group->isdup = TRUE;
+                group->isdup = true;
             }
             if( seg->group == NULL ) {              // if its not in a group add it to this one
                 seg->group = group;
@@ -261,9 +261,9 @@ static void InitGroup( group_entry *group )
     group->size = 0;
     group->segflags = DEFAULT_GRP_FLAGS;
     group->u.miscflags = 0;
-    group->isfree = FALSE;
-    group->isautogrp = FALSE;
-    group->isdup = FALSE;
+    group->isfree = false;
+    group->isautogrp = false;
+    group->isdup = false;
     group->g.grp_relocs = NULL;
 }
 

@@ -31,10 +31,10 @@
 
 
 typedef struct {
-    dr_handle   dbg_cu;
-    dr_handle   dbg_handle;
-    int         len;
-    char       *name;
+    drmem_hdl   dbg_cu;
+    drmem_hdl   dbg_handle;
+    size_t      len;
+    char        *name;
     bool        is_start;
 } dr_pubname_data;
 

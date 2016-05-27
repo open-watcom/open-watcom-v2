@@ -390,7 +390,7 @@ exp:
 #endif
 #endif
 
-const char *RemoteLinkX( const char *parms, bool server )
+const char *RemoteLink( const char *parms, bool server )
 {
 #ifdef SERVER
     unsigned long       link;
@@ -451,6 +451,8 @@ const char *RemoteLinkX( const char *parms, bool server )
     *link_ptr = (void __far *)MK_LINEAR( &link );
     // parms has following format
     // "trap parameters string"+"\0"+"command line string"+"\0"
+    _DBG_Write( "Parms: " );
+    _DBG_NoTabWriteln( parms );
     while( *parms == ' ' )
         ++parms;
     if( *parms == '`' ) {
@@ -530,7 +532,7 @@ const char *RemoteLinkX( const char *parms, bool server )
     return( NULL );
 }
 
-void RemoteUnLinkX( void )
+void RemoteUnLink( void )
 {
 #ifdef SERVER
     CallRealMode( RMProcAddr );
@@ -547,7 +549,7 @@ void RemoteUnLinkX( void )
 
 bool RemoteConnect( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void RemoteDisco( void )

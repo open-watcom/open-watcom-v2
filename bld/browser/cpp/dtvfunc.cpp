@@ -41,7 +41,7 @@
 #include "viewmgr.h"
 
 DTViewFunction::DTViewFunction( const Symbol * sym )
-                : DTViewSymbol( sym, TRUE )
+                : DTViewSymbol( sym, true )
 //--------------------------------------------------
 {
     _locals = new WVList;

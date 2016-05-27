@@ -113,9 +113,9 @@ static bool ensureTypeCorrect( ins_operand *op, op_type type, uint_8 opIdx ) {
 
     if( op->type != type ) {
         Error( IMPROPER_OPERAND, opIdx );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx ) {
@@ -123,9 +123,9 @@ static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx ) {
 
     if( ( op->flags & ( RELOC | UNNAMED_RELOC ) ) ) {
         Error( RELOC_NOT_ALLOWED, opIdx );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void doEncode2( uint_32 *buffer, ins_opcode p, uint r1, uint r2, uint imm, ins_flags flags ) {
@@ -216,7 +216,7 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
         break;
     default:
         //Error( "internal - unexpected default type" );
-        assert( FALSE );
+        assert( false );
         ret = OWL_RELOC_ABSOLUTE;
     }
     return( ret );
@@ -378,7 +378,9 @@ static void ITBranchCond( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 3 );
     for( ctr = 0; ctr < 3; ++ctr ) {
         op[ctr] = ins->operands[ctr];
-        if( ( ctr < 2 ) && !ensureOpAbsolute( op[ctr], ctr ) ) return;
+        if( ( ctr < 2 ) && !ensureOpAbsolute( op[ctr], ctr ) ) {
+            return;
+        }
     }
     flags = ( ins->format->flags & table->optional ) | table->required;
     doEncodeBoBiBd( buffer, table->primary, op[0]->constant, op[1]->constant,
@@ -397,7 +399,9 @@ static void ITBranchSpec( ins_table *table, instruction *ins, uint_32 *buffer, a
 //    flags = ( ins->format->flags & table->optional ) | table->required;
     for( ctr = 0; ctr < 2; ++ctr ) {
         op[ctr] = ins->operands[ctr];
-        if( !ensureOpAbsolute( op[ctr], ctr ) ) return;
+        if( !ensureOpAbsolute( op[ctr], ctr ) ) {
+            return;
+        }
     }
     doEncodeBoBiOp2( buffer, table->primary, table->secondary,
         op[0]->constant, op[1]->constant,
@@ -418,7 +422,9 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
     opcount = ins->num_operands;
     verify = ( opcount == 3 ) ?  verify3 : verify4;
     for( ctr = 0; ctr < opcount; ctr++ ) {
-        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) return;
+        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
+            return;
+        }
     }
     if( opcount == 4 ) {
         crfIdx = RegIndex( op[0]->reg );
@@ -431,13 +437,14 @@ static void ITCmp( ins_table *table, instruction *ins, uint_32 *buffer, asm_relo
     if( ( L_bit & 1 ) != L_bit ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
-    if( !ensureOpAbsolute( op[ctr], ctr ) ) return;
-    opRa = op[++ctr];
-    opRb = op[++ctr];
-    doEncode3( buffer, table->primary, table->secondary,
-        ( crfIdx << 2 ) | L_bit,
-        RegIndex( opRa->reg ), RegIndex( opRb->reg ),
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( op[ctr], ctr ) ) {
+        opRa = op[++ctr];
+        opRb = op[++ctr];
+        doEncode3( buffer, table->primary, table->secondary,
+            ( crfIdx << 2 ) | L_bit,
+            RegIndex( opRa->reg ), RegIndex( opRb->reg ),
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -454,7 +461,9 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
     opcount = ins->num_operands;
     verify = ( opcount == 3 ) ?  verify3 : verify4;
     for( ctr = 0; ctr < opcount; ctr++ ) {
-        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) return;
+        if( !ensureTypeCorrect( op[ctr] = ins->operands[ctr], verify[ctr], ctr ) ) {
+            return;
+        }
     }
     if( opcount == 4 ) {
         crfIdx = RegIndex( op[0]->reg );
@@ -467,13 +476,14 @@ static void ITCmpImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm
     if( ( L_bit & 1 ) != L_bit ) {
         Error( OP_OUT_OF_RANGE, ctr );
     }
-    if( !ensureOpAbsolute( op[ctr], ctr ) ) return;
-    opRa = op[++ctr];
-    opSimm = op[++ctr];
-    doEncode2( buffer, table->primary, ( crfIdx << 2 ) | L_bit,
-        RegIndex( opRa->reg ), opSimm->constant,
-        ( ins->format->flags & table->optional ) | table->required );
-    doReloc( reloc, opSimm, OWL_RELOC_HALF_LO, 0 );
+    if( ensureOpAbsolute( op[ctr], ctr ) ) {
+        opRa = op[++ctr];
+        opSimm = op[++ctr];
+        doEncode2( buffer, table->primary, ( crfIdx << 2 ) | L_bit,
+            RegIndex( opRa->reg ), opSimm->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+        doReloc( reloc, opSimm, OWL_RELOC_HALF_LO, 0 );
+    }
 }
 
 static void ITCondBit( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -524,12 +534,13 @@ static bool SPRValidate( int_32 spr ) {
 //*************************************
 
     int n, ctr;
-    bool status = FALSE;
+    bool status = false;
 
-    if( ( spr & 0x3ff ) != spr ) return( FALSE );
+    if( (spr & 0x3ff) != spr )
+        return( false );
     n = sizeof( SPRChkList ) / sizeof( SPRChkList[0] );
     for( ctr = 0; !status && ctr < n; ++ctr ) {
-        status = ( spr == SPRChkList[ ctr ] ) ? TRUE : FALSE;
+        status = ( spr == SPRChkList[ ctr ] );
     }
     return( status );
 }
@@ -544,10 +555,11 @@ static void ITMfspr( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( !SPRValidate( const_op->constant ) ) {
         Error( BAD_REG_ENCODING, 1, "SPR" );
     }
-    if( !ensureOpAbsolute( const_op, 1 ) ) return;
-    doEncodeSPR( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[0]->reg ), const_op->constant,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( const_op, 1 ) ) {
+        doEncodeSPR( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[0]->reg ), const_op->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITMfsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -560,10 +572,11 @@ static void ITMfsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant > 0xf ) {
         Error( OP_OUT_OF_RANGE, 1 );
     }
-    if( !ensureOpAbsolute( const_op, 1 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[0]->reg ), const_op->constant, 0,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( const_op, 1 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[0]->reg ), const_op->constant, 0,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITMfsrin( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -586,11 +599,12 @@ static void ITMftb( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant != 0x188 && const_op->constant != 0x1a8 ) {
         Error( BAD_REG_ENCODING, 1, "TBR" );
     }
-    if( !ensureOpAbsolute( const_op, 1 ) ) return;
-    flags = ( ins->format->flags & table->optional ) | table->required;
-    *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
+    if( ensureOpAbsolute( const_op, 1 ) ) {
+        flags = ( ins->format->flags & table->optional ) | table->required;
+        *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _D( RegIndex( ins->operands[0]->reg ) ) |
               _TBR( const_op->constant ) | _OE( flags ) | _RC( flags );
+    }
 }
 
 static void ITMtcrf( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -604,11 +618,12 @@ static void ITMtcrf( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( const_op->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( !ensureOpAbsolute( const_op, 0 ) ) return;
-    flags = ( ins->format->flags & table->optional ) | table->required;
-    *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
+    if( ensureOpAbsolute( const_op, 0 ) ) {
+        flags = ( ins->format->flags & table->optional ) | table->required;
+        *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _S( RegIndex( ins->operands[1]->reg ) ) |
               _CRM( const_op->constant ) | _OE( flags ) | _RC( flags );
+    }
 }
 
 static void ITMtfsb( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -628,11 +643,12 @@ static void ITMtfsf( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
     if( opFM->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( !ensureOpAbsolute( opFM, 0 ) ) return;
-    flags = ( ins->format->flags & table->optional ) | table->required;
-    *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
+    if( ensureOpAbsolute( opFM, 0 ) ) {
+        flags = ( ins->format->flags & table->optional ) | table->required;
+        *buffer = _Opcode( table->primary ) | _Opcode2( table->secondary ) |
               _FM( opFM->constant ) | _B( RegIndex( ins->operands[1]->reg ) ) |
               _OE( flags ) | _RC( flags );
+    }
 }
 
 static void ITMtfsfImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -645,10 +661,11 @@ static void ITMtfsfImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
     if( const_op->constant > 0xff ) {
         Error( OP_OUT_OF_RANGE, 1 );
     }
-    if( !ensureOpAbsolute( const_op, 1 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[0]->reg ) << 2, 0, const_op->constant << 1,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( const_op, 1 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[0]->reg ) << 2, 0, const_op->constant << 1,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITMtspr( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -662,10 +679,11 @@ static void ITMtspr( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
         Error( BAD_REG_ENCODING, 0, "SPR" );
         return;
     }
-    if( !ensureOpAbsolute( const_op, 0 ) ) return;
-    doEncodeSPR( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[1]->reg ), const_op->constant,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( const_op, 0 ) ) {
+        doEncodeSPR( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[1]->reg ), const_op->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITMtsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -678,10 +696,11 @@ static void ITMtsr( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     if( const_op->constant > 0xf ) {
         Error( OP_OUT_OF_RANGE, 0 );
     }
-    if( !ensureOpAbsolute( const_op, 1 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[1]->reg ), const_op->constant, 0,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( const_op, 1 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[1]->reg ), const_op->constant, 0,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITDc( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -759,11 +778,12 @@ static void ITLswi( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( !ensureOpAbsolute( op, 2 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[1]->reg ),
-        op->constant,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( op, 2 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[1]->reg ),
+            op->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITShift( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -773,11 +793,12 @@ static void ITShift( ins_table *table, instruction *ins, uint_32 *buffer, asm_re
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( !ensureOpAbsolute( op, 2 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[0]->reg ),
-        op->constant,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( op, 2 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[0]->reg ),
+            op->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITShiftImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -789,7 +810,9 @@ static void ITShiftImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 5 );
     for( ctr = 0; ctr < 3; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) return;
+        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+            return;
+        }
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), const_op[0]->constant,
@@ -806,7 +829,9 @@ static void ITShiftIndex( ins_table *table, instruction *ins, uint_32 *buffer, a
     assert( ins->num_operands == 5 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 3];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 3 ) ) return;
+        if( !ensureOpAbsolute( const_op[ctr], ctr + 3 ) ) {
+            return;
+        }
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), RegIndex( ins->operands[2]->reg ),
@@ -830,10 +855,11 @@ static void ITTrap( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
 
     assert( ins->num_operands == 3 );
     op = ins->operands[0];
-    if( !ensureOpAbsolute( op, 0 ) ) return;
-    doEncode3( buffer, table->primary, table->secondary,
-        op->constant, RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[2]->reg ),
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( op, 0 ) ) {
+        doEncode3( buffer, table->primary, table->secondary,
+            op->constant, RegIndex( ins->operands[1]->reg ), RegIndex( ins->operands[2]->reg ),
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITTrapImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -843,12 +869,13 @@ static void ITTrapImmed( ins_table *table, instruction *ins, uint_32 *buffer, as
 
     assert( ins->num_operands == 3 );
     op0 = ins->operands[0];
-    if( !ensureOpAbsolute( op0, 0 ) ) return;
-    op2 = ins->operands[2];
-    doEncode2( buffer, table->primary, op0->constant,
-        RegIndex( ins->operands[1]->reg ), op2->constant,
-        ( ins->format->flags & table->optional ) | table->required );
-    doReloc( reloc, op2, OWL_RELOC_HALF_LO, 0 );
+    if( ensureOpAbsolute( op0, 0 ) ) {
+        op2 = ins->operands[2];
+        doEncode2( buffer, table->primary, op0->constant,
+            RegIndex( ins->operands[1]->reg ), op2->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+        doReloc( reloc, op2, OWL_RELOC_HALF_LO, 0 );
+    }
 }
 
 static void ITSMLoadImmed( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -894,10 +921,11 @@ static void ITSMSubImmed( ins_table *table, instruction *ins, uint_32 *buffer, a
 
     assert( ins->num_operands == 3 );
     op = ins->operands[2];
-    if( !ensureOpAbsolute( op, 0 ) ) return;
-    doEncode2( buffer, table->primary, RegIndex( ins->operands[0]->reg ),
-        RegIndex( ins->operands[1]->reg ), -op->constant,
-        ( ins->format->flags & table->optional ) | table->required );
+    if( ensureOpAbsolute( op, 0 ) ) {
+        doEncode2( buffer, table->primary, RegIndex( ins->operands[0]->reg ),
+            RegIndex( ins->operands[1]->reg ), -op->constant,
+            ( ins->format->flags & table->optional ) | table->required );
+    }
 }
 
 static void ITSMCmpwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -909,18 +937,23 @@ static void ITSMCmpwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 2 || ins->num_operands == 3 );
     op0 = ins->operands[0];
     if( ins->num_operands == 3 ) {
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) ) return;
+        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+            return;
         crfIdx = RegIndex( op0->reg );
         opRa = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 1 ) ) return;
+        if( !ensureTypeCorrect( opRa, OP_GPR, 1 ) )
+            return;
         opSimm = ins->operands[2];
         assert( opSimm->type == OP_IMMED );
     } else { // 2 operands
         crfIdx = 0;
         opRa = op0;
         opSimm = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) ) return;
-        if( !ensureTypeCorrect( opSimm, OP_IMMED, 1 ) ) return;
+        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) )
+            return;
+        if( !ensureTypeCorrect( opSimm, OP_IMMED, 1 ) ) {
+            return;
+        }
     }
     doEncode2( buffer, table->primary, crfIdx << 2,
         RegIndex( opRa->reg ), opSimm->constant,
@@ -937,7 +970,8 @@ static void ITSMCmpw( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
     assert( ins->num_operands == 2 || ins->num_operands == 3 );
     op0 = ins->operands[0];
     if( ins->num_operands == 3 ) {
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) ) return;
+        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+            return;
         crfIdx = RegIndex( op0->reg );
         opRa = ins->operands[1];
         opRb = ins->operands[2];
@@ -947,7 +981,8 @@ static void ITSMCmpw( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
         crfIdx = 0;
         opRa = op0;
         opRb = ins->operands[1];
-        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) ) return;
+        if( !ensureTypeCorrect( opRa, OP_GPR, 0 ) )
+            return;
         assert( opRb->type == OP_GPR );
     }
     doEncode3( buffer, table->primary, table->secondary, crfIdx << 2,
@@ -964,7 +999,9 @@ static void ITSMExtlwi( ins_table *table, instruction *ins, uint_32 *buffer, asm
     assert( ins->num_operands == 4 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) return;
+        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+            return;
+        }
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), const_op[1]->constant, 0,
@@ -983,7 +1020,8 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
 
     assert( ins->num_operands == 3 );
     const_op = ins->operands[2];
-    if( !ensureOpAbsolute( const_op, 2 ) ) return;
+    if( !ensureOpAbsolute( const_op, 2 ) )
+        return;
     n = const_op->constant;
     switch( table->special ) {
     case SRWI:
@@ -993,7 +1031,7 @@ static void ITSMSrwi( ins_table *table, instruction *ins, uint_32 *buffer, asm_r
         sh = 0; mb = 0; me = 31 - n;
         break;
     default:
-        assert( FALSE );
+        assert( false );
     }
     doEncode5( buffer, table->primary, RegIndex( ins->operands[1]->reg ),
         RegIndex( ins->operands[0]->reg ), sh, mb, me,
@@ -1020,7 +1058,9 @@ static void ITSMInslw( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 4 );
     for( ctr = 0; ctr < 2; ++ctr ) {
         const_op[ctr] = ins->operands[ctr + 2];
-        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) return;
+        if( !ensureOpAbsolute( const_op[ctr], ctr + 2 ) ) {
+            return;
+        }
     }
     n = const_op[0]->constant;
     b = const_op[1]->constant;
@@ -1086,7 +1126,8 @@ static void ITSMMovSprNCover( bool isMoveTo, ins_table *table, instruction *ins,
         idx1 = 0;
     }
     op = ins->operands[idx0];
-    if( !ensureOpAbsolute( op, idx0 ) ) return;
+    if( !ensureOpAbsolute( op, idx0 ) )
+        return;
     if( ( op->constant & 3 ) != op->constant ) {
         Error( OP_OUT_OF_RANGE, idx0 );
         return;
@@ -1101,7 +1142,7 @@ static void ITSMMovSprNCover( bool isMoveTo, ins_table *table, instruction *ins,
         spr += (op->constant << 1);
         break;
     default:
-        assert( FALSE );
+        assert( false );
     }
     doEncodeSPR( buffer, table->primary, table->secondary,
         RegIndex( ins->operands[idx1]->reg ), spr,
@@ -1111,13 +1152,13 @@ static void ITSMMovSprNCover( bool isMoveTo, ins_table *table, instruction *ins,
 static void ITSMMtsprN( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //***********************************************************************************************
 
-    ITSMMovSprNCover( TRUE, table, ins, buffer, reloc );
+    ITSMMovSprNCover( true, table, ins, buffer, reloc );
 }
 
 static void ITSMMfsprN( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
 //***********************************************************************************************
 
-    ITSMMovSprNCover( FALSE, table, ins, buffer, reloc );
+    ITSMMovSprNCover( false, table, ins, buffer, reloc );
 }
 
 static void ITSMBCIcc( ins_table *table, instruction *ins, uint_32 *buffer, asm_reloc *reloc ) {
@@ -1131,13 +1172,15 @@ static void ITSMBCIcc( ins_table *table, instruction *ins, uint_32 *buffer, asm_
     assert( ins->num_operands == 1 || ins->num_operands == 2 );
     op0 = ins->operands[0];
     if( ins->num_operands == 1 ) {
-        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) ) return;
+        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) )
+            return;
         opBd = op0;
         startBI = 0;
     } else { // ins->num_operands == 2
         opBd = ins->operands[1];
         assert( opBd->type == OP_IMMED );
-        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) ) return;
+        if( !ensureTypeCorrect( op0, OP_CRF, 0 ) )
+            return;
         startBI = RegCrfToBI( op0->reg );
     }
     special = table->special;
@@ -1164,25 +1207,28 @@ static void ITSMBC( ins_table *table, instruction *ins, uint_32 *buffer, asm_rel
     op0 = ins->operands[0];
     switch( ins->num_operands ) {
     case 1: // case i
-        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) ) return;
+        if( !ensureTypeCorrect( op0, OP_IMMED, 0 ) )
+            return;
         valueBI = 0;
         opBd = op0;
         break;
     case 2: // cases ii, iii, iv
         opBd = ins->operands[1];
-        if( !ensureTypeCorrect( opBd, OP_IMMED, 1 ) ) return;
+        if( !ensureTypeCorrect( opBd, OP_IMMED, 1 ) )
+            return;
         switch( op0->type ) {
         case OP_CRF:
             valueBI = RegCrfToBI( op0->reg );
             break;
         case OP_IMMED:
-            if( !ensureOpAbsolute( op0, 0 ) ) return;
+            if( !ensureOpAbsolute( op0, 0 ) )
+                return;
             // fall through
         case OP_BI:
             valueBI = op0->constant;
             break;
         default:
-            assert( FALSE ); // validate should've taken care of the rest
+            assert( false ); // validate should've taken care of the rest
         }
     }
     flags = ( ins->format->flags & table->optional ) | table->required;
@@ -1239,13 +1285,14 @@ static void ITSMBSpec( ins_table *table, instruction *ins, uint_32 *buffer, asm_
             valueBI = RegCrfToBI( op0->reg );
             break;
         case OP_IMMED:
-            if( !ensureOpAbsolute( op0, 0 ) ) return;
+            if( !ensureOpAbsolute( op0, 0 ) )
+                return;
             // fall through
         case OP_BI:
             valueBI = op0->constant;
             break;
         default:
-            assert( FALSE ); // validate should've taken care of the rest
+            assert( false ); // validate should've taken care of the rest
         }
     }
     doEncodeBoBiOp2( buffer, table->primary, table->secondary,
@@ -1288,17 +1335,17 @@ bool PPCValidate( instruction *ins ) {
         op = ins->operands[ i ];
         if( ( op->type & fmt->ops[ i ] ) != op->type ) {
             opError( ins, op->type, fmt->ops[ i ], i );
-            return( FALSE );
+            return( false );
         }
     }
     if( i < MAX_OPERANDS ) {
         if( ( fmt->ops[ i ] & OP_NOTHING ) != OP_NOTHING ) {
             Error( NOT_ENOUGH_INSOP );
-            return( FALSE );
+            return( false );
         }
     }   // NOTE: It might not catch all improper operand conbinations
         // because we're using flags here
-    return( TRUE );
+    return( true );
 }
 
 #ifdef _STANDALONE_
@@ -1315,7 +1362,7 @@ void PPCEmit( instruction *ins ) {
     ins_table       *table;
     uint_32         result;
     asm_reloc       reloc = { OWL_RELOC_ABSOLUTE, { 0 }, 0, 0 };
-    #ifdef _STANDALONE_
+#ifdef _STANDALONE_
     uint_8          oldAlignment;
 
     if( OWLTellSectionType( hdl ) & OWL_SEC_ATTR_BSS ) {
@@ -1326,23 +1373,23 @@ void PPCEmit( instruction *ins ) {
     if( oldAlignment < 2 ) { // Instructions should at least be dword aligned
         CurrAlignment = 2;
     }
-    #endif
+#endif
     table = ins->format->table_entry;
     PPCFormatTable[ table->template ].func( table, ins, &result, &reloc );
     if( reloc.valid ) {
-        #ifdef _STANDALONE_
+#ifdef _STANDALONE_
         if( reloc.is_unnamed ) {
-            ObjEmitReloc( hdl, &reloc.target.label_num, reloc.type, TRUE, FALSE );
+            ObjEmitReloc( hdl, &reloc.target.label_num, reloc.type, true, false );
         } else {
-            ObjEmitReloc( hdl, SymName( reloc.target.sym ), reloc.type, TRUE, TRUE );
+            ObjEmitReloc( hdl, SymName( reloc.target.sym ), reloc.type, true, true );
         }
-        #else
+#else
         if( reloc.is_unnamed ) {
-            ObjEmitReloc( &reloc.target.label_num, reloc.type, TRUE, FALSE );
+            ObjEmitReloc( &reloc.target.label_num, reloc.type, true, false );
         } else {
-            ObjEmitReloc( SymName( reloc.target.sym ), reloc.type, TRUE, TRUE );
+            ObjEmitReloc( SymName( reloc.target.sym ), reloc.type, true, true );
         }
-        #endif
+#endif
 #ifdef MYDEBUG
         switch( reloc.type ) {
         case OWL_RELOC_WORD:
@@ -1367,18 +1414,18 @@ void PPCEmit( instruction *ins ) {
         printf( " reloc emitted for the next instruction.\n" );
 #endif
     }
-    #ifdef _STANDALONE_
-    ObjEmitData( hdl, (char *)&result, sizeof( result ), TRUE );
+#ifdef _STANDALONE_
+    ObjEmitData( hdl, (char *)&result, sizeof( result ), true );
     CurrAlignment = oldAlignment;
-    #else
-    ObjEmitData( (char *)&result, sizeof( result ), TRUE );
-    #endif
+#else
+    ObjEmitData( (char *)&result, sizeof( result ), true );
+#endif
 
 #ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
+  #ifdef _STANDALONE_
     if( _IsOption( DUMP_INSTRUCTIONS ) ) {
         printf( " [%#010x]\n", result );
     }
-    #endif
+  #endif
 #endif
 }

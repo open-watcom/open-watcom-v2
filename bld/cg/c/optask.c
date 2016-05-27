@@ -62,7 +62,7 @@ static  label_handle DoAskForLabel( cg_sym_handle sym )
 #endif
 #ifndef NDEBUG
     new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = FALSE;
+    new->useinfo.used = false;
 #endif
     optreturn( new );
 }

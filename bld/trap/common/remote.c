@@ -140,7 +140,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
 
     remote=remote;
     _DBG_EnterFunc( "TrapInit" );
-    ver.remote = TRUE;
+    ver.remote = true;
     fix_minor = 0;
     if( *parms == '!' ) {
         ++parms;
@@ -148,7 +148,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
             fix_minor = 1;
         }
     }
-    err = RemoteLink( parms, FALSE );
+    err = RemoteLink( parms, false );
     if( err != NULL ) {
         strcpy( error, err );
     } else {

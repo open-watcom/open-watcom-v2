@@ -132,15 +132,21 @@ void TestDateTimeOperations( void )
         newtime.second = 0;
         _dos_getdate( &newdate );
         _dos_gettime( &newtime );
+        _dos_setdate( &ddate );
+        _dos_settime( &dtime );
         if( ( newdate.year != 1999 ) || ( newdate.month != 12 ) ||
             ( newdate.day != 31 ) || ( newtime.hour != 19 ) ||
             ( newtime.minute != 19 ) ) {
             printf( "FAIL: getting/setting date/time functions.\n" );
             printf( "Note: date/time info might have been corrupted.\n" );
+            if( verbose ) {
+                printf( "The date (MM-DD-YYYY) is: %.2d-%.2d-%.4d (incorrect)\n",
+                    newdate.month, newdate.day, newdate.year );
+                printf( "The time (HH:MM:SS) is: %.2d:%.2d:%.2d (incorrect)\n",
+                    newtime.hour, newtime.minute, newtime.second );
+            }
             PROG_ABORT( __LINE__ );
         }
-        _dos_setdate( &ddate );
-        _dos_settime( &dtime );
     }
 }
 

@@ -38,7 +38,7 @@ typedef struct {
     void            *data;
 } enum_cb_info;
 
-static bool ReadEnumerator( dr_handle abbrev, dr_handle mod, void *inf )
+static bool ReadEnumerator( drmem_hdl abbrev, drmem_hdl mod, void *inf )
 /**********************************************************************/
 {
     unsigned_32         val;
@@ -57,11 +57,11 @@ static bool ReadEnumerator( dr_handle abbrev, dr_handle mod, void *inf )
     return( info->callback( name, val, info->data ) );
 }
 
-extern void DRLoadEnum( dr_handle entry, void * data, enumCallback callback )
+extern void DRLoadEnum( drmem_hdl entry, void * data, enumCallback callback )
 /***************************************************************************/
 {
     enum_cb_info    info;
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dw_tagnum       tag;
 
     if( DWRReadTagEnd( &entry, &abbrev, &tag ) ) {

@@ -217,7 +217,7 @@ static int parse_o( OPT_STRING **p )
         FatalError( "Whitespace required after /o" );
         return( 0 );
     }
-    retcode = do_string_parse( p, "o", TRUE );
+    retcode = do_string_parse( p, "o", true );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
@@ -240,7 +240,7 @@ static int parse_out( OPT_STRING **p )
         FatalError( "/OUT requires an argument" );
         return( 0 );
     }
-    retcode = do_string_parse( p, "OUT", TRUE );
+    retcode = do_string_parse( p, "OUT", true );
     if( retcode ) {
         newstr = PathConvert( (*p)->data, '"' );
         OPT_CLEAN_STRING( p );
@@ -258,7 +258,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 

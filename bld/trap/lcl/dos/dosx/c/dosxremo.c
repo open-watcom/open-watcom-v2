@@ -312,7 +312,7 @@ trap_retval ReqProg_load( void )
     strcpy( endparm, buffer );          // add command line
     // result is as follow
     // "trap parameters string"+"\0"+"command line string"+"\0"
-    err = RemoteLinkX( LinkParms, FALSE );
+    err = RemoteLink( LinkParms, false );
     if( err != NULL ) {
         _DBG_Writeln( "Can't RemoteLink" );
         TinyWrite( TINY_ERR, err, strlen( err ) );
@@ -379,14 +379,14 @@ trap_retval ReqProg_load( void )
             _DBG_Writeln( "GetPacket" );
             GetPacket();
             //RemovePacket( &erracc, msg_len );
-            RemoteUnLinkX();
+            RemoteUnLink();
 
-            TaskLoaded = FALSE;
+            TaskLoaded = false;
         }
     }
     if( ret->err == 0 ) {
         _DBG_Writeln( "loadret->error_code == 0" );
-        TaskLoaded = TRUE;
+        TaskLoaded = true;
     }
     SaveVectors( LoadVectors );
     SaveVectors( CurrVectors );
@@ -405,8 +405,8 @@ trap_retval ReqProg_kill( void )
         return( sizeof( *ret ) );
     }
     len = DoAccess();
-    RemoteUnLinkX();
-    TaskLoaded = FALSE;
+    RemoteUnLink();
+    TaskLoaded = false;
     RestoreVectors( OrigVectors );
     return( len );
 }
@@ -461,7 +461,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     trap_version    ver;
 
     remote = remote;
-    ver.remote = FALSE;
+    ver.remote = false;
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
     if( !remote && DPMIVersion() == 90 && !DOSEMUCheck() ) {
@@ -473,7 +473,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *error, bool remote )
     LoadError = NULL;
     error[0] = '\0';
     strcpy( LinkParms, parms );      // save trap parameters
-    TaskLoaded = FALSE;
+    TaskLoaded = false;
     _DBG_ExitFunc( "TrapInit()" );
     return( ver );
 }

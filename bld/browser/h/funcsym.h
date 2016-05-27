@@ -41,7 +41,7 @@ class Module;
 class FunctionSym : public Symbol
 {
 public:
-                        FunctionSym( dr_handle drhdl, dr_handle drhdl_prt,
+                        FunctionSym( drmem_hdl drhdl, drmem_hdl drhdl_prt,
                                     Module * m, char * name )
                                 : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual             ~FunctionSym() {}
@@ -55,8 +55,8 @@ public:
             void        callers( WVList & );
 
 private:
-    static  bool        memberHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
-    static  bool        callHook( dr_handle, dr_ref_info *, char *, void * );
+    static  bool        memberHook( dr_sym_type, drmem_hdl, char *, drmem_hdl, void * );
+    static  bool        callHook( drmem_hdl, dr_ref_info *, char *, void * );
 
     static MemoryPool   _pool;
 };

@@ -54,7 +54,7 @@ void UIAPI uioffcursor( void )
 {
     if( UIData->cursor_on ) {
         HideInputCursor();
-        UIData->cursor_on = FALSE;
+        UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
 }
@@ -85,7 +85,7 @@ void UIAPI uioncursor( void )
 
     DisplayInputCursor();
 
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 static void newcursor( void )
@@ -122,7 +122,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
         *type = C_NORMAL;
     }
 
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
         *type = C_OFF;
     }
 
@@ -165,7 +165,7 @@ static void savecursor( void )
 
 // NYI -- should I be setting UIData->cursor_on ??? How???
 
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
          OldCursorType = C_OFF;
     }
 
@@ -180,7 +180,7 @@ static void swapcursor( void )
     _swap( UIData->cursor_col,  OldCursorCol  );
     _swap( UIData->cursor_row,  OldCursorRow  );
     _swap( UIData->cursor_attr, OldCursorAttr );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 void UIAPI uiswapcursor( void )

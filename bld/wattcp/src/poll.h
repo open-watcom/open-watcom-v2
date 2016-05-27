@@ -20,6 +20,8 @@
          int revents;    /* out param: what events occured */
        };
 
+  extern int poll (struct pollfd *p, int num, int timeout);
+
 #endif /* HAVE_SYS_POLL_H */
 
 #endif /* __POLL_H */

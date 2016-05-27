@@ -153,7 +153,7 @@ static void DumpInfo( debug_info *dinfo, void *data, unsigned len )
 
 static bool FindMatch( byte len, void *buff, unsigned *offset )
 /*************************************************************/
-// returns FALSE if not found
+// returns false if not found
 {
     snamelist   *node;
 
@@ -161,12 +161,12 @@ static bool FindMatch( byte len, void *buff, unsigned *offset )
     for( node = DBISourceLang; node != NULL; node = node->next ) {
         if( node->len == len ) {
             if( memicmp( buff, node->name, len ) == 0 ) {
-                return( TRUE );
+                return( true );
             }
         }
         *offset += node->len + 1;     // +1 for NULLCHAR
     }
-    return( FALSE );
+    return( false );
 }
 
 void ODBIP1Source( byte major, byte minor, char *name, int len )
@@ -355,7 +355,7 @@ static bool AllocASeg( void *leader, void *group )
 /************************************************/
 {
     ((seg_leader *)leader)->group = group;
-    return( FALSE );
+    return( false );
 }
 
 static void AllocDBIClasses( class_entry *class )
@@ -503,7 +503,7 @@ static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
         seghdr.off = seg->seg_addr.off;
         seghdr.seg = seg->seg_addr.seg;
     } else {
-        seghdr.off = seg->group->grp_addr.off + SUB_ADDR( seg->seg_addr, seg->group->grp_addr );
+        seghdr.off = seg->group->grp_addr.off + SEG_GROUP_DELTA( seg );
         seghdr.seg = seg->group->grp_addr.seg;
     }
     seghdr.num = seg->num;
@@ -614,7 +614,7 @@ static bool CheckFirst( void *_seg, void *_firstseg )
             && ( seg->addrinfo == (*firstseg)->addrinfo ) ) {
         *firstseg = seg;
     }
-    return( FALSE );
+    return( false );
 }
 
 void ODBIGenLines( lineinfo *info )
@@ -657,7 +657,7 @@ void ODBIGenLines( lineinfo *info )
     adjust = seg->a.delta - firstseg->a.delta;
     pair = (ln_off_pair *)info->data;
     prevoff = 0;
-    needsort = FALSE;
+    needsort = false;
     if( info->size & LINE_IS_32BIT ) {
         item_size = sizeof( ln_off_386 );
         CmpLn = CmpLn386;
@@ -670,13 +670,13 @@ void ODBIGenLines( lineinfo *info )
         if( info->size & LINE_IS_32BIT ) {
             pair->_386.off += adjust;
             if( prevoff > pair->_386.off ) {
-                needsort = TRUE;
+                needsort = true;
             }
             prevoff = pair->_386.off;
         } else {
             _TargU16toHost( pair->_286.off, temp );
             if( prevoff > temp ) {
-                needsort = TRUE;
+                needsort = true;
             }
             prevoff = temp;
         }

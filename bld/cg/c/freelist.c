@@ -81,11 +81,11 @@ extern  bool    FrlFreeAll( pointer **head, size_t size ) {
     pointer     *next;
 
     if( *head == NULL )
-        return( FALSE );
+        return( false );
     for( ; *head != NULL; *head = next ) {
         next = **head;
         CGFree( *head );
         FrlSize -= size;
     }
-    return( TRUE );
+    return( true );
 }

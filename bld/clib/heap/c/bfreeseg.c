@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Free memory block
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -33,21 +33,21 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <malloc.h>
-#include <i86.h>
 #include "heap.h"
 #include "heapacc.h"
 
-#if defined(__OS2_286__)
+
+#if defined(__OS2__)
     #if defined(__BIG_DATA__)
         #define MODIFIES ds es
     #else
         #define MODIFIES es
     #endif
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
     #define MODIFIES es
 #endif
 
-#if defined(__WINDOWS_286__) || defined(__OS2_286__)
+#if defined(__WINDOWS__) || defined(__OS2__)
     #pragma aux _bfreeseg modify [MODIFIES]
 #endif
 
@@ -65,7 +65,7 @@ _WCRTLINK int _bfreeseg( __segment seg )
     seg = heap->nextseg;
     /* unlink from heap list */
     prev_seg = heap->prevseg;
-    if( seg != 0 ) {
+    if( seg != _NULLSEG ) {
         next_heap = MK_FP( seg, 0 );
         next_heap->prevseg = prev_seg;
     }

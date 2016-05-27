@@ -55,10 +55,10 @@ static bool HasSegRegs( reg_tree *tree )
     regs = tree->regs;
     if( regs != NULL ) {
         for( ; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
-            if( HW_COvlap( *regs, HW_SEGS ) ) return( TRUE );
+            if( HW_COvlap( *regs, HW_SEGS ) ) return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -154,7 +154,7 @@ static  reg_tree        *NewTree( void )
     tree->lo = NULL;
     tree->hi = NULL;
     tree->regs = NULL;
-    tree->has_name = FALSE;
+    tree->has_name = false;
     tree->idx = RL_NUMBER_OF_SETS;
     tree->temp = NULL;
     return( tree );
@@ -222,7 +222,7 @@ static  reg_tree        *BuildTree( name *alias, name *master,
     tree->size = size;
     if( alias != NULL ) {
         tree->temp = alias;
-        tree->has_name = TRUE;
+        tree->has_name = true;
         alias->t.temp_flags |= VISITED;
         temp = alias->t.alias;
         while( temp != alias ) {
@@ -251,32 +251,32 @@ static  reg_tree        *BuildTree( name *alias, name *master,
     }
     midpoint = offset + losize;
     if( losize != 0 ) {
-        have_lo = FALSE;
-        have_hi = FALSE;
+        have_lo = false;
+        have_hi = false;
         temp = master->t.alias;
         while( temp != master ) {
-            if( have_lo == FALSE
+            if( have_lo == false
              && temp->v.offset == offset && temp->n.size == losize ) {
                 tree->lo = BuildTree( temp, master, offset, losize, conf );
-                have_lo = TRUE;
-            } else if( have_hi == FALSE
+                have_lo = true;
+            } else if( have_hi == false
                  && temp->v.offset == midpoint && temp->n.size == hisize ) {
                 tree->hi = BuildTree( temp, master, midpoint, hisize, conf );
-                have_hi = TRUE;
+                have_hi = true;
             }
             temp = temp->t.alias;
         }
-        if( have_lo == FALSE ) {
+        if( have_lo == false ) {
             tree->lo = BuildTree( NULL, master, offset, losize, conf );
         }
-        if( have_hi == FALSE ) {
+        if( have_hi == false ) {
             tree->hi = BuildTree( NULL, master, midpoint, hisize, conf );
         }
         if( tree->hi->has_name ) {
-            tree->has_name = TRUE;
+            tree->has_name = true;
         }
         if( tree->lo->has_name ) {
-            tree->has_name = TRUE;
+            tree->has_name = true;
         }
     }
     return( tree );
@@ -301,7 +301,7 @@ static  void    TrimTree( reg_tree *tree )
 /****************************************/
 {
     if( tree->lo != NULL ) {
-        if( tree->lo->has_name == FALSE ) {
+        if( tree->lo->has_name == false ) {
             BurnRegTree( tree->lo );
             tree->lo = NULL;
         } else {
@@ -309,7 +309,7 @@ static  void    TrimTree( reg_tree *tree )
         }
     }
     if( tree->hi != NULL ) {
-        if( tree->hi->has_name == FALSE ) {
+        if( tree->hi->has_name == false ) {
             BurnRegTree( tree->hi );
             tree->hi = NULL;
         } else {
@@ -380,7 +380,7 @@ static  bool    PartIntersect( reg_tree *part,
     hw_reg_set  curr;
     hw_reg_set  tmp;
 
-    change = FALSE;
+    change = false;
     if( whole->idx != RL_NUMBER_OF_SETS ) {
         if( part->idx == RL_NUMBER_OF_SETS ) {
 
@@ -411,11 +411,11 @@ static  bool    PartIntersect( reg_tree *part,
                     }
                     if( j == 0 ) {
                         HW_CAsgn( *src, HW_EMPTY );
-                        change = TRUE;
+                        change = true;
                     }
                 } else {
                     HW_CAsgn( *src, HW_EMPTY );
-                    change = TRUE;
+                    change = true;
                 }
             }
             ++src;
@@ -437,7 +437,7 @@ static  bool    PartIntersect( reg_tree *part,
                 }
                 if( j == 0 ) {
                     HW_CAsgn( *src, HW_EMPTY );
-                    change = TRUE;
+                    change = true;
                 }
             }
             ++src;
@@ -453,7 +453,7 @@ static  bool    Intersect( reg_tree *tree )
 {
     bool        change;
 
-    change = FALSE;
+    change = false;
     if( tree->hi != NULL ) {
         change |= PartIntersect( tree->hi, tree, &HighOffsetReg );
         change |= Intersect( tree->hi );

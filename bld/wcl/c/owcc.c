@@ -468,7 +468,7 @@ static  int  ConsultSpecsFile( const char *target )
     FILE    *specs;
     char    *line;
     char    *start_line;
-    int     in_target = FALSE;
+    bool    in_target = false;
     char    *p;
     int     rc = 0;
 
@@ -484,9 +484,9 @@ static  int  ConsultSpecsFile( const char *target )
             *p = '\0';
         }
         if( stricmp( line, start_line ) == 0 ) {
-            in_target = TRUE;
+            in_target = true;
         } else if( stricmp( line, SYSTEM_END ) == 0 ) {
-            in_target = FALSE;
+            in_target = false;
         } else if( in_target ) {
             for( p = line; isspace( *(unsigned char *)p ); p++ )
                 ; /* do nothing else */
@@ -583,7 +583,7 @@ static unsigned ParseEnvVar( const char *env, char **argv, char *buf )
     bufend = buf;
     argc = 0;
     for( ; *env != '\0'; ) {
-        got_quote = FALSE;
+        got_quote = false;
         while( isspace( *env ) && *env != '\0' )
             env++;
         start = env;
@@ -624,7 +624,7 @@ typedef struct stack {
     char            **argv;
 } stack;
 
-static int find_mapping( char c )
+static bool find_mapping( char c )
 /*******************************/
 {
     int     i;
@@ -641,20 +641,20 @@ static int find_mapping( char c )
                 /* non-existant argument can't match other cases */
                 continue;
             addcclongopt( m->WatcomName, NULL );
-            return( TRUE );
+            return( true );
         }
         tail = strchr( m->LongName, ':' );
         if( tail != NULL ) {
             if( strncmp( OptArg, m->LongName + 1, tail - m->LongName - 1 ) == 0 ) {
                 addcclongopt( m->WatcomName, OptArg + ( tail - m->LongName - 1 ) );
-                return( TRUE );
+                return( true );
             }
         } else if( strcmp( OptArg, m->LongName + 1 ) == 0 ) {
             addcclongopt( m->WatcomName, NULL );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int  ParseArgs( int argc, char **argv )
@@ -741,7 +741,7 @@ static  int  ParseArgs( int argc, char **argv )
                 wcc_option = 0;
                 break;
             case 'm':           /* name of map file */
-                Flags.map_wanted = TRUE;
+                Flags.map_wanted = true;
                 if( Word[1] == '=' || Word[1] == '#' ) {
                     MemFree( Map_Name );
                     Map_Name = strfdup( Word + 2 );
@@ -758,7 +758,7 @@ static  int  ParseArgs( int argc, char **argv )
                 Obj_Name = strfdup( p );
                 break;
             case 'r':           /* name of error report file */
-                Flags.want_errfile = TRUE;
+                Flags.want_errfile = true;
                 break;
             }
             /* avoid passing on unknown options */
@@ -774,16 +774,16 @@ static  int  ParseArgs( int argc, char **argv )
 
         /* compiler options that affect the linker */
         case 'c':           /* compile only */
-            Flags.no_link = TRUE;
+            Flags.no_link = true;
             wcc_option = 0;
             break;
         case 'x':           /* change source language */
             if( strcmp( Word, "c" ) == 0 ) {
-                Flags.force_c = TRUE;
+                Flags.force_c = true;
             } else if( strcmp( Word, "c++" ) == 0 ) {
-                Flags.force_c_plus = TRUE;
+                Flags.force_c_plus = true;
             } else {
-                Flags.no_link = TRUE;
+                Flags.no_link = true;
             }
             wcc_option = 0;
             break;
@@ -791,7 +791,7 @@ static  int  ParseArgs( int argc, char **argv )
             if( ( strncmp( "cmodel=", Word, 7 ) == 0 ) && ( Word[8] == '\0' ) ) {
                 if( Word[7] == 't' ) {      /* tiny model */
                     Word[0] = 's';          /* change to small */
-                    Flags.tiny_model = TRUE;
+                    Flags.tiny_model = true;
                 } else {
                     Word[0] = Word[7];
                 }
@@ -863,13 +863,13 @@ static  int  ParseArgs( int argc, char **argv )
         case 'z':
             switch( tolower( Word[0] ) ) {
             case 's':
-                Flags.no_link = TRUE;
+                Flags.no_link = true;
                 break;
             case 'q':
-                Flags.be_quiet = TRUE;
+                Flags.be_quiet = true;
                 break;
             case 'w':
-                Flags.windows = TRUE;
+                Flags.windows = true;
             }
             break;
         case 'E':
@@ -927,8 +927,8 @@ static  int  ParseArgs( int argc, char **argv )
             }
             break;
         case 'S':
-            Flags.do_disas = TRUE;
-            Flags.no_link = TRUE;
+            Flags.do_disas = true;
+            Flags.no_link = true;
             if( DebugFlag == DBG_NONE ) {
                 c = 'd';
                 if( Word[0] == '\0' )
@@ -964,7 +964,7 @@ static  int  ParseArgs( int argc, char **argv )
             xlate_fname( Word );
             break;
         case 'b':
-            Flags.link_for_sys = TRUE;
+            Flags.link_for_sys = true;
             MemFree( SystemName );
             SystemName = MemStrDup( Word );
             /* if Word found in specs.owc, add options from there: */
@@ -1066,7 +1066,7 @@ static  int  ParseArgs( int argc, char **argv )
     }
 
     if( preprocess_only ) {
-        Flags.no_link = TRUE;
+        Flags.no_link = true;
         if( O_Name == NULL ) {
             MemFree( Obj_Name );           /* preprocess to stdout by default */
             Obj_Name = NULL;
@@ -1453,7 +1453,7 @@ static  int  CompLink( void )
             rc = 0;
             BuildLinkFile( fp );
             fclose( fp );
-            if( ( Obj_List != NULL || Flags.do_link ) && Flags.no_link == FALSE ) {
+            if( ( Obj_List != NULL || Flags.do_link ) && !Flags.no_link ) {
                 rc = tool_exec( TYPE_LINK, "@" TEMPFILE, NULL );
                 if( rc == 0 && Flags.do_cvpack ) {
                     char fname[_MAX_PATH];

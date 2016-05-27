@@ -47,9 +47,9 @@
 static SYMBOL DefaultCtorFind(         // GET SYMBOL FOR DEFAULT CTOR
     TYPE type,                  // - class type
     TOKEN_LOCN* err_locn,       // - error location
-    bool optional )             // - TRUE ==> is optional
+    bool optional )             // - true ==> is optional
 {
-    unsigned retn;              // - return from attempt to find
+    CNV_RETN retn;              // - return from attempt to find
     SYMBOL ctor;                // - constructor
 
     retn = ClassDefaultCtorFind( type, &ctor, err_locn );
@@ -88,7 +88,7 @@ static TYPE_SIG *type_sigs;     // - TYPE_SIGs so far
 typedef struct                  // ACCINFO -- access information
 {   TYPE type;                  // - class type
     TOKEN_LOCN *err_locn;       // - error location
-    bool *err_occurred;         // - TRUE ==> error occurred
+    bool *err_occurred;         // - true ==> error occurred
     SCOPE access_scope;         // - scope for access
     SCOPE class_scope;          // - scope for class
     TYPE_SIG_ACCESS acc;        // - access type (type signature)
@@ -103,7 +103,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
     SYMBOL sym;                 // - symbol for routine
     TYPE type;                  // - class type
     TOKEN_LOCN *err_locn;       // - error location
-    bool fill_out;              // - TRUE ==> fill out the entry
+    bool fill_out;              // - true ==> fill out the entry
 
     sym = *a_sym;
     if( acc_var & info->acc ) {
@@ -114,7 +114,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
             SetCurrScope (info->access_scope);
         }
     } else {
-        fill_out = TRUE;
+        fill_out = true;
         SetCurrScope(info->class_scope);
     }
     if( ( GetCurrScope() != info->class_scope ) || ( sym == NULL ) ) {
@@ -136,7 +136,7 @@ static void typeSigAccessVar(   // ACCESS A DTOR, DEFAULT-CTOR, COPY-CTOR
         }
         if( sym == NULL ) {
             if( ! fill_out ) {
-                *info->err_occurred = TRUE;
+                *info->err_occurred = true;
             }
         } else {
             sym = ClassFunMakeAddressable( sym );
@@ -217,10 +217,10 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
     unsigned size;              // - size of R/O data
     NAME typesig_name;          // - name of type signature
     TYPE typesig_type;          // - type of type signature
-    bool err_this_time;         // - TRUE ==> we have error
+    bool err_this_time;         // - true ==> we have error
     TYPE_SIG_ACCESS acc_ind;    // - indirect access
 
-    err_this_time = FALSE;
+    err_this_time = false;
     type = TypeCanonicalThr( type );
     sig = NULL;
     RingIterBeg( type_sigs, srch ) {
@@ -240,9 +240,9 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
         sig->dtor = NULL;
         sig->sym = NULL;
         sig->base = NULL;
-        sig->cgref = FALSE;
-        sig->cggen = FALSE;
-        sig->free = FALSE;
+        sig->cgref = false;
+        sig->cggen = false;
+        sig->free = false;
         thr = ThrowCategory( type );
         if( acc & TSA_INDIRECT ) {
             acc_ind = acc | TSA_INDIRECT_ACCESS;
@@ -303,12 +303,12 @@ TYPE_SIG *TypeSigFind(          // FIND TYPE SIGNATURE
         sig->sym = sym;
     }
     if( err_this_time ) {
-        *error_occurred = TRUE;
+        *error_occurred = true;
     } else {
         if( NULL != sig->sym ) {
             SegmentMarkUsed( sig->sym->segid );
         }
-        *error_occurred = FALSE;
+        *error_occurred = false;
         typeSigAccess( acc, sig, err_locn, error_occurred );
     }
     return sig;
@@ -401,7 +401,7 @@ static void markFreeTypeSig( void *p )
 {
     TYPE_SIG *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void saveTypeSig( void *e, carve_walk_base *d )

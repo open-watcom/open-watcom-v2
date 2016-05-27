@@ -370,8 +370,8 @@ void    FCAdvFillHi( void ) {
 
     sym_id              arr;
     act_dim_list        *dim_ptr;
-    int                 lo_size;
-    int                 hi_size;
+    uint                lo_size;
+    uint                hi_size;
     int                 hi_offset;
     int                 ss;
     cg_name             num_elts;
@@ -423,8 +423,8 @@ void    FCAdvFillHiLo1( void ) {
     cg_name             hi;
     cg_name             adv;
     unsigned            ss;
-    int                 lo_size;
-    int                 hi_size;
+    uint                lo_size;
+    uint                hi_size;
     int                 lo_offset;
     int                 hi_offset;
     call_handle         call;

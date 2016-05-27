@@ -183,7 +183,7 @@ static void NotePrint( char *str ) {
 /*
  * logSysInfo - record basic system info
  */
-static void logSysInfo( ExceptDlgInfo *faultinfo )
+static void logSysInfo( bool wasfault )
 {
     char        *str;
     time_t      tod;
@@ -194,7 +194,7 @@ static void logSysInfo( ExceptDlgInfo *faultinfo )
 
     tod = time( NULL );
     str = ctime( &tod );
-    if( faultinfo != NULL ) {
+    if( wasfault ) {
         logPrintf( STR_FAULT_FOUND_ON_X, AppName, str );
     } else {
         logPrintf( STR_LOG_TAKEN_ON_X, AppName, str );
@@ -703,20 +703,23 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
  */
 void MakeLog( ExceptDlgInfo *faultinfo )
 {
+    bool    wasfault;
+
+    wasfault = ( faultinfo != NULL );
     RefreshCostlyInfo();
     if( startLogFile() ) {
         char    err_buf[ _MAX_PATH + 100 ];
+
         RCsprintf( err_buf, STR_CANT_OPEN_LOG, LogData.logname );
-        MessageBox( NULL, err_buf, AppName, MB_OK | MB_ICONEXCLAMATION
-                                            | MB_SETFOREGROUND );
+        MessageBox( NULL, err_buf, AppName, MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND );
         return;
     }
-    logSysInfo( faultinfo );
+    logSysInfo( wasfault );
     notesAdded = FALSE;
     if( LogData.query_notes ) {
         AnotateLog( MainHwnd, Instance, NotePrint );
     }
-    if( faultinfo != NULL ) {
+    if( wasfault ) {
         logFaultInfo( faultinfo );
     }
     if( LogData.log_process ) {

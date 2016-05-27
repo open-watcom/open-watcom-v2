@@ -87,7 +87,7 @@
 /*                    true on error (conversion error occurred)            */
 /***************************************************************************/
 
-const bool internal_to_su( su *in_su, bool tag, const char *base )
+static const bool internal_to_su( su *in_su, bool tag, const char *base )
 {
     bool        cvterr  = true;
     bool        is_cp   = false;
@@ -397,7 +397,7 @@ size_t  len_to_trail_space( const char *p , size_t len )
     return( len );
 }
 
-
+#if 0
 char    *skip_to_quote( char * p, char quote )
 {
     while( *p && quote != *p ) {
@@ -405,7 +405,7 @@ char    *skip_to_quote( char * p, char quote )
     }
     return( p + 1 );
 }
-
+#endif
 
 
 /***************************************************************************/

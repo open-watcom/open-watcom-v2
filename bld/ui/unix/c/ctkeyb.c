@@ -467,10 +467,10 @@ int init_trie( void )
     int         i;
 
     if( !TrieInit() )
-        return( FALSE );
+        return( false );
 
     if( !init_interminfo() )
-        return( FALSE );
+        return( false );
 
     str = getenv( "TERM" );
     /* attempt to adjust backspace with the terminfo definition */
@@ -487,15 +487,15 @@ int init_trie( void )
         buff[0] = InStandard[i].ch;
         if( !TrieAdd( InStandard[i].ev, buff ) ) {
             TrieFini();
-            return( FALSE );
+            return( false );
         }
     }
 
     for( i = 0; i < NUM_IN_TERM_INFO_MAPPINGS; ++i ) {
         if( !TrieAdd( InTerminfo[i].ev, InTerminfo[i].str ) ) {
             TrieFini();
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }

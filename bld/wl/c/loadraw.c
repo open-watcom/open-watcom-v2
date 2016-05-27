@@ -46,34 +46,44 @@
 #include "loadfile.h"
 
 
+typedef offset  hex_offset;
+
+typedef segment hex_segment;
+
+typedef struct hex_addr {
+    hex_offset      off;
+    hex_segment     seg;
+} hex_addr;
+
 static bool WriteBinSegGroup( group_entry *group )
 /*********************************************/
 /* write the data for group to the loadfile */
-/* returns TRUE if the file should be repositioned */
+/* returns true if the file should be repositioned */
 {
-    unsigned long       loc;
+    unsigned long       file_loc;
     section             *sect;
     bool                repos;
     outfilelist         *finfo;
 
-    repos = FALSE;
-    if( group->size != 0 || group->leaders->class->flags & CLASS_COPY ) {
+    repos = false;
+    if( group->size != 0 || (group->leaders->class->flags & CLASS_COPY) ) {
         sect = group->section;
         CurrSect = sect;
         finfo = sect->outfile;
-        loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-        if ( (long)loc >= 0) {  // Offset may make this go negative for NOEMIT classes or segments
-            if( loc > finfo->file_loc ) {
-                PadLoad( loc - finfo->file_loc );
-            } else if( loc != finfo->file_loc ) {
-                SeekLoad( loc );
-                repos = TRUE;
+        file_loc = GROUP_FILE_LOC( group );
+        // Offset may make this go negative for NOEMIT classes or segments
+        if( (long)file_loc >= 0 ) {
+            if( file_loc > finfo->file_loc ) {
+                PadLoad( file_loc - finfo->file_loc );
+            } else if( file_loc != finfo->file_loc ) {
+                SeekLoad( file_loc );
+                repos = true;
             }
             DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                &group->grp_addr, sect->ovl_num, loc, finfo->fname ));
-            loc += WriteDOSGroupLoad( group, repos );
-            if( loc > finfo->file_loc ) {
-                finfo->file_loc = loc;
+                &group->grp_addr, sect->ovl_num, file_loc, finfo->fname ));
+            file_loc += WriteDOSGroupLoad( group, repos );
+            if( file_loc > finfo->file_loc ) {
+                finfo->file_loc = file_loc;
             }
         }
     }
@@ -104,8 +114,7 @@ void BinOutput( void )
                 size = CalcGroupSize( group );
             }
             if( size ) {
-                diff = (FmtData.base + group->grp_addr.off + group->linear
-                       - FmtData.output_offset) - PosLoad();
+                diff = ( FmtData.base + group->grp_addr.off + group->linear - FmtData.output_offset ) - PosLoad();
                 if( diff < 0 ) {
                     LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
                 } else if( diff > 0 ) {
@@ -120,7 +129,7 @@ void BinOutput( void )
         Root->sect_addr = Groups->grp_addr;
         fnode = Root->outfile;
         fnode->file_loc = 0;
-        Root->u.file_loc = (Root->sect_addr.seg << FmtData.SegShift) + Root->sect_addr.off - FmtData.output_offset;
+        Root->u.file_loc = ( Root->sect_addr.seg << FmtData.SegShift ) + Root->sect_addr.off - FmtData.output_offset;
         /* write groups */
         for( group = Groups; group != NULL; group = group->next_group ) {
             repos = WriteBinSegGroup( group );
@@ -149,48 +158,49 @@ void BinOutput( void )
 // need the extra range.
 
 #define HEXLEN 16   // number of bytes of data in a full record
-static unsigned_32      nextAddr;
-static unsigned_16      seg;
-static bool             linear;
-static char             lineBuf[HEXLEN];
-static unsigned_32      bufOfs;
+static hex_addr     next_addr;
+static bool         linear;
+static char         lineBuf[HEXLEN];
+static size_t       buf_offset;
 
 static void WriteHexLine( void )
 /******************************/
 {
 
-    char            str_buf[2 * HEXLEN + 15];
+    char             str_buf[2 * HEXLEN + 15];
     unsigned_16      checksum;
     unsigned_16      i;
     unsigned_16      seg_shift = FmtData.output_hshift ? FmtData.HexSegShift : FmtData.SegShift;
-    unsigned_16      offset;
+    unsigned_16      curr_offs;
 
-    if( nextAddr + bufOfs >= (0x10000L << seg_shift) && !linear ) {
-        linear = 1;
-        seg = 0;
+    if( ( next_addr.off + buf_offset >= ( 0x10000L << seg_shift ) ) && !linear ) {
+        next_addr.seg = 0;
+        linear = true;
     }
 
     if( !linear ) {
-        if( nextAddr - (seg << seg_shift) + bufOfs > 0x10000L ) { // See if we need to output a segment record
-            seg = (unsigned int)(nextAddr >> seg_shift);
-            sprintf( str_buf, ":02000002%04x%02x\r\n", seg, (-(4 + (seg >> 8) + seg & 0xFF)) & 0xFF );
+        if( next_addr.off - ( next_addr.seg << seg_shift ) + buf_offset > 0x10000L ) { // See if we need to output a segment record
+            next_addr.seg = (hex_segment)( next_addr.off >> seg_shift );
+            checksum = 4 + (( next_addr.seg >> 8 ) & 0xFF) + (next_addr.seg & 0xFF);
+            sprintf( str_buf, ":02000002%04x%02x\r\n", next_addr.seg, (-checksum) & 0xFF );
             WriteLoad( str_buf, 17 );
         }
-        offset = (unsigned int)(nextAddr - (seg << seg_shift));
+        curr_offs = (unsigned_16)( next_addr.off - ( next_addr.seg << seg_shift ) );
     } else {
-        if( nextAddr - (seg << 16) + bufOfs > 0x10000L ) {  // See if we need to output
-            seg = (unsigned int)(nextAddr >> 16);           //   an extended linear record
-            sprintf( str_buf, ":02000004%04x%02x\r\n", seg, (-(6 + (seg >> 8) + seg & 0xFF)) & 0xFF );
+        if( next_addr.off - ( next_addr.seg << 16 ) + buf_offset > 0x10000L ) { // See if we need to output
+            next_addr.seg = (hex_segment)( next_addr.off >> 16 );               //   an extended linear record
+            checksum = 6 + (( next_addr.seg >> 8 ) & 0xFF) + (next_addr.seg & 0xFF);
+            sprintf( str_buf, ":02000004%04x%02x\r\n", next_addr.seg, (-checksum) & 0xFF );
             WriteLoad( str_buf, 17);
         }
-        offset = (unsigned int)(nextAddr - (seg << 16));
+        curr_offs = (unsigned_16)( next_addr.off - ( next_addr.seg << 16 ) );
     }
 
-    sprintf( str_buf, ":%02x%04x00", bufOfs, offset );      // Intel Hex header
-    checksum = bufOfs + (offset >> 8) + (offset & 0xFF);    // Start checksum using above elements
+    sprintf( str_buf, ":%02x%04x00", buf_offset, curr_offs );                   // Intel Hex header
+    checksum = buf_offset + (( curr_offs >> 8 ) & 0xFF) + (curr_offs & 0xFF);   // Start checksum using above elements
 
     i = 0;
-    for( ; bufOfs > 0; --bufOfs ) { // Do data bytes, leaving BufOfs 0 at end
+    for( ; buf_offset > 0; --buf_offset ) { // Do data bytes, leaving buf_offset 0 at end
         sprintf( str_buf + 9 + 2 * i, "%02x", lineBuf[i] );
         checksum += lineBuf[i++];
     }
@@ -198,88 +208,91 @@ static void WriteHexLine( void )
     WriteLoad( str_buf, 13 + 2 * i );
 }
 
-static bool WriteHexData( void *_sdata, void *_addr )
+static bool WriteHexData( void *_sdata, void *_offs )
 /***************************************************/
 {
-    segdata         *sdata = _sdata;
-    unsigned_32      pieceAddr = *(unsigned long *)_addr + sdata->a.delta;
-    unsigned_16      len = sdata->length;
-    unsigned_16      offset;
-    unsigned_16      piece;
+    segdata          *sdata = _sdata;
+    hex_offset       offs = *(hex_offset *)_offs + sdata->a.delta;
+    offset           len = sdata->length;
+    offset           src_offs;
+    offset           piece;
 
     if( !sdata->isuninit && !sdata->isdead && len > 0 ) {
-        if( pieceAddr != nextAddr + bufOfs ) { // Must start new record if address not contiguous
-            if( pieceAddr < nextAddr + bufOfs ) {
-                LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", (targ_addr*)_addr);
+        if( offs != next_addr.off + buf_offset ) {  // Must start new record if address not contiguous
+            if( offs < next_addr.off + buf_offset ) {
+                targ_addr   addr;
+
+                addr.off = offs;
+                addr.seg = 0;
+                LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &addr );
             }
-            if( bufOfs ) {              // If partial record in buffer, flush
+            if( buf_offset > 0 ) {          // If partial record in buffer, flush
                 WriteHexLine();
             }
-            nextAddr = pieceAddr;
+            next_addr.off = offs;
         }
-        offset = 0;
-        for( ; len > 0; len -= piece ) {// Now lob out records
-            piece = HEXLEN - bufOfs;    // Handle partially filled buffer
-            if( piece > len ) {         // Handle not enough to fill buffer
+        src_offs = 0;
+        for( ; len > 0; len -= piece ) {    // Now lob out records
+            piece = HEXLEN - buf_offset;    // Handle partially filled buffer
+            if( piece > len ) {             // Handle not enough to fill buffer
                 piece = len;
             }
-            ReadInfo( sdata->u1.vm_ptr + offset, lineBuf + bufOfs, piece );
-            bufOfs += piece;
-            if( bufOfs == HEXLEN ) {
-                WriteHexLine();         // Only write full buffers
-                nextAddr += HEXLEN;     // NextAddr reflects start of line
-            }                           // Partial records will be written later
-            offset += piece;            //   if address is not contiguous
+            ReadInfo( sdata->u1.vm_ptr + src_offs, lineBuf + buf_offset, piece );
+            buf_offset += piece;
+            if( buf_offset == HEXLEN ) {
+                WriteHexLine();             // Only write full buffers
+                next_addr.off += HEXLEN;    // next_addr.off reflects start of line
+            }                               // Partial records will be written later
+            src_offs += piece;              //   if address is not contiguous
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static bool DoHexLeader( void *seg, void *addr )
-/**********************************************/
+static bool DoHexLeader( void *seg, void *_grp_offs )
+/***************************************************/
 {
     if ( !(((seg_leader *)seg)->class->flags & CLASS_NOEMIT ||
            ((seg_leader *)seg)->segflags & SEG_NOEMIT) ) {
-        unsigned long   segaddr = *(unsigned long *)addr + GetLeaderDelta( seg );
+        hex_offset   offs = *(hex_offset *)_grp_offs + SEG_GROUP_DELTA( (seg_leader *)seg );
 
-        RingLookup( ((seg_leader *)seg)->pieces, WriteHexData, &segaddr );
+        RingLookup( ((seg_leader *)seg)->pieces, WriteHexData, &offs );
     }
-    return( FALSE );
+    return( false );
 }
 
-static bool DoHexDupLeader( void *seg, void *addr )
-/************************************************/
+static bool DoHexDupLeader( void *seg, void *_grp_offs )
+/******************************************************/
 {
-    unsigned_32  segaddr = *(unsigned long *)addr + GetLeaderDelta( seg );
+    hex_offset offs = *(hex_offset *)_grp_offs + SEG_GROUP_DELTA( (seg_leader *)seg );
 
-    RingLookup( ((seg_leader *)seg)->pieces, WriteHexData, &segaddr );
-    return( FALSE );
+    RingLookup( ((seg_leader *)seg)->pieces, WriteHexData, &offs );
+    return( false );
 }
 
 static void WriteStart( void )
-/*********************/
+/****************************/
 {
-    char    str_buf[22];
+    char        str_buf[22];
+    unsigned_16 checksum;
 
     if( StartInfo.addr.off > 0xffff ) {
-        sprintf( str_buf, ":04000005%08lx%02x\r\n", (unsigned long)StartInfo.addr.off,
-                (-(9 + (StartInfo.addr.off >> 24) + ((StartInfo.addr.off >> 16) & 0xFF) +
-                ((StartInfo.addr.off >> 8) & 0xFF) + (StartInfo.addr.off & 0xFF) )) & 0xFF );
+        checksum = 9 + ((StartInfo.addr.off >> 24) & 0xFF) + ((StartInfo.addr.off >> 16) & 0xFF) + ((StartInfo.addr.off >> 8) & 0xFF) + (StartInfo.addr.off & 0xFF);
+        sprintf( str_buf, ":04000005%08lx%02x\r\n", (unsigned long)StartInfo.addr.off, (-checksum) & 0xFF );
     } else {
-        sprintf( str_buf, ":04000003%04x%04x%02x\r\n", (unsigned)StartInfo.addr.seg, (unsigned)StartInfo.addr.off,
-                (-(7 + (StartInfo.addr.seg >> 8) + (StartInfo.addr.seg & 0xFF) +
-                (StartInfo.addr.off >> 8) + (StartInfo.addr.off & 0xFF) )) & 0xFF );
+        checksum = 7 + ((StartInfo.addr.seg >> 8) & 0xFF) + (StartInfo.addr.seg & 0xFF) + ((StartInfo.addr.off >> 8) & 0xFF) + (StartInfo.addr.off & 0xFF);
+        sprintf( str_buf, ":04000003%04x%04x%02x\r\n", (unsigned)StartInfo.addr.seg, (unsigned)StartInfo.addr.off, (-checksum) & 0xFF );
     }
     WriteLoad( str_buf, 21 );
 }
 
 typedef struct  {
-    unsigned_32 addr;
-    group_entry *lastgrp;  // used only for copy classes
+    hex_offset      offs;
+    group_entry     *lastgrp;  // used only for copy classes
 } grpwriteinfo;
 
 static bool WriteHexCopyGroups( void *_seg, void *_info )
-/************************************************/
+/*******************************************************/
 {
     // This is called by the outer level iteration looking for classes
     //  that have more than one group in them
@@ -289,15 +302,15 @@ static bool WriteHexCopyGroups( void *_seg, void *_info )
     if( info->lastgrp != seg->group ) {   // Only interate new groups
         info->lastgrp = seg->group;
         // Check each initialized segment in group
-        Ring2Lookup( seg->group->leaders, DoHexDupLeader, &info->addr);
-        info->addr += seg->group->totalsize;
+        Ring2Lookup( seg->group->leaders, DoHexDupLeader, &info->offs );
+        info->offs += seg->group->totalsize;
     }
-    return( FALSE );
+    return( false );
 }
 
 
 void HexOutput( void )
-/***************************/
+/********************/
 {
     outfilelist         *fnode;
     group_entry         *group;
@@ -309,11 +322,12 @@ void HexOutput( void )
     unsigned_32         size;
     class_entry         *class;
     grpwriteinfo        info;
+//    unsigned long     file_loc;
 
-    nextAddr = 0L;  // Start at absolute linear address 0
-    linear   = 0;   //       in segmented mode
-    seg      = 0;
-    bufOfs   = 0;
+    next_addr.off = 0;      // Start at absolute linear address 0
+    next_addr.seg = 0;
+    linear        = false;  //       in segmented mode
+    buf_offset    = 0;
 
     if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_OS2_FLAT | MK_ELF) ) {
         CurrSect = Root;    // needed for WriteInfo.
@@ -331,18 +345,18 @@ void HexOutput( void )
             }
             size = CalcGroupSize( wrkgrp );
             if( size != 0 ) {
-                info.addr = (group->grp_addr.off + group->linear - FmtData.output_offset);
+                info.offs = (group->grp_addr.off + group->linear - FmtData.output_offset);
                 sect = wrkgrp->section;
                 CurrSect = sect;
 #ifdef _INT_DEBUG
                 finfo = sect->outfile;
-#endif
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
+                    &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+#endif
                 if( group->leaders->class->flags & CLASS_COPY ) {
-                    Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.addr );
+                    Ring2Lookup( wrkgrp->leaders, DoHexDupLeader, &info.offs );
                 } else {
-                    Ring2Lookup( wrkgrp->leaders, DoHexLeader, &info.addr );
+                    Ring2Lookup( wrkgrp->leaders, DoHexLeader, &info.offs );
                 }
             }
         }
@@ -359,34 +373,34 @@ void HexOutput( void )
             if( class->flags & CLASS_COPY ) {
                 sect = group->section;
                 CurrSect = sect;
+                info.offs = GROUP_SECTION_DELTA( group );
 #ifdef _INT_DEBUG
                 finfo = sect->outfile;
-#endif
-                info.addr = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
                 DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                    &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
+                    &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+#endif
                 info.lastgrp = NULL;
                 RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info);
             } else {
                 if( group->size != 0 ) {
                     sect = group->section;
                     CurrSect = sect;
+                    info.offs = GROUP_SECTION_DELTA( group );
 #ifdef _INT_DEBUG
                     finfo = sect->outfile;
-#endif
-                    info.addr = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
                     DEBUG((DBG_LOADDOS, "group %a section %d to %l in %s",
-                        &group->grp_addr, sect->ovl_num, info.addr, finfo->fname ));
-                    Ring2Lookup( group->leaders, DoHexLeader, &info.addr );
-               }
+                        &group->grp_addr, sect->ovl_num, info.offs, finfo->fname ));
+#endif
+                    Ring2Lookup( group->leaders, DoHexLeader, &info.offs );
+                }
             }
         }
     }
-    if( bufOfs ) {              // If partial record in buffer, flush
+    if( buf_offset > 0 ) {          // If partial record in buffer, flush
         WriteHexLine();
     }
     if( FmtData.output_start ) {
-       WriteStart();
+        WriteStart();
     }
     WriteLoad( ":00000001ff\r\n", 13 );
     DBIWrite();
@@ -396,17 +410,19 @@ static unsigned long WriteGroupLoadHex( group_entry *group )
 {
     grpwriteinfo    info;
     class_entry     *class;
+    unsigned long   file_loc;
 
     class = group->leaders->class;
-    info.addr = PosLoad();
+    file_loc = PosLoad();
+    info.offs = GROUP_SECTION_DELTA( group );
     // If group is a copy group, substitute source group(s) here
     if( class->flags & CLASS_COPY  ) {
         info.lastgrp = NULL; // so it will use the first group
         RingLookup( class->DupClass->segs->group->leaders, WriteHexCopyGroups, &info );
     } else {
-        Ring2Lookup( group->leaders, DoHexLeader, &(info.addr) );
+        Ring2Lookup( group->leaders, DoHexLeader, &info.offs );
     }
-    return( PosLoad() - info.addr );
+    return( PosLoad() - file_loc );
 }
 
 extern void FiniRawLoadFile( void )
@@ -414,7 +430,7 @@ extern void FiniRawLoadFile( void )
 {
     group_entry     *group;
     outfilelist     *fnode;
-    unsigned long   loc;
+    unsigned long   file_loc;
     section         *sect;
     outfilelist     *finfo;
 
@@ -426,25 +442,28 @@ extern void FiniRawLoadFile( void )
     Root->u.file_loc = 0;
     Root->sect_addr = Groups->grp_addr;
     if( FmtData.raw_hex_output ) {
-        nextAddr = 0;   // Start at absolute linear address 0
-        linear   = 1;   // Linear mode
-        seg      = 0;
-        bufOfs   = 0;
+        next_addr.off = 0;      // Start at absolute linear address 0
+        next_addr.seg = 0;
+        linear        = true;   // Linear mode
+        buf_offset    = 0;
     }
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->size ) {
             sect = group->section;
             CurrSect = sect;
             finfo = sect->outfile;
-            loc = SUB_ADDR( group->grp_addr, sect->sect_addr ) + sect->u.file_loc;
-            if( FmtData.raw_hex_output )
-                loc += WriteGroupLoadHex( group );
-            else
-                loc += WriteGroupLoad( group );
-            if( loc > finfo->file_loc )
-                finfo->file_loc = loc;
+            file_loc = GROUP_FILE_LOC( group );
+            if( FmtData.raw_hex_output ) {
+                file_loc += WriteGroupLoadHex( group );
+            } else {
+                file_loc += WriteGroupLoad( group );
+            }
+            if( file_loc > finfo->file_loc ) {
+                finfo->file_loc = file_loc;
+            }
         }
     }
-    if( SymFileName != NULL )
+    if( SymFileName != NULL ) {
         DBIWrite();
+    }
 }

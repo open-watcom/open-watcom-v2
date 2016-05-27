@@ -133,7 +133,7 @@ static  tn  NewTreeNode( void )
     new->flags = TF_USED;
 #ifndef NDEBUG
     new->useinfo.hdltype = NO_HANDLE;
-    new->useinfo.used = FALSE;
+    new->useinfo.used = false;
 #endif
     return( new );
 }
@@ -183,7 +183,7 @@ extern  tn  TGBitMask( tn left, byte start, byte len, type_def *tipe )
     new->u2.b.start = start;
 #endif
     new->u2.b.len = len;
-    new->u2.b.is_signed = FALSE;
+    new->u2.b.is_signed = false;
     new->kids = left->kids + 1;
     new->class = TN_BIT_LVALUE;
     return( new );
@@ -334,7 +334,7 @@ static bool RHSLongPointer( tn rite )
         switch( rite->u.addr->class ) {
         case CL_ADDR_GLOBAL:
         case CL_ADDR_TEMP:
-            return( TRUE );
+            return( true );
         default:
             break;
         }
@@ -343,11 +343,11 @@ static bool RHSLongPointer( tn rite )
         case TY_LONG_POINTER:
         case TY_HUGE_POINTER:
         case TY_LONG_CODE_PTR:
-            return( TRUE );
+            return( true );
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -360,12 +360,12 @@ extern  tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
     tn      new;
     bool    can_demote;
 
-    can_demote = TRUE;
+    can_demote = true;
 #if _TARGET & _TARG_AXP
     // FIXME: bad assumption being covered here
     if( tipe->length < 4 ) {
         tipe = TypeAddress( TY_INTEGER );
-        can_demote = FALSE;
+        can_demote = false;
     }
 #endif
     if( ( left->tipe == rite->tipe ) && ( left->tipe != TypeBoolean )
@@ -512,7 +512,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
     case O_DIV:
     case O_MOD:
         otipe = tipe;
-        tipe = ResultType( left, rite, tipe, BinMat, FALSE );
+        tipe = ResultType( left, rite, tipe, BinMat, false );
         if( otipe == TypeNone ) { /* do integer divide to make C happy.*/
             if( tipe->refno == TY_UINT_1 || tipe->refno == TY_INT_1 ) {
                 tipe = TypeInteger;
@@ -553,7 +553,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
                 rite = TGConvert( rite, TypeNearInteger );
             }
         } else {
-            tipe = ResultType( left, rite, tipe, BinMat, FALSE );
+            tipe = ResultType( left, rite, tipe, BinMat, false );
             if( tipe->attr & TYPE_POINTER ) {
                 if( !( left->tipe->attr & TYPE_POINTER ) ) {
                     temp = rite;
@@ -603,7 +603,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         }
         break;
     case O_MINUS:
-        tipe = ResultType( left, rite, tipe, SubMat, FALSE );
+        tipe = ResultType( left, rite, tipe, SubMat, false );
         /* pointer subtraction yields a different result type than ops!*/
         if( tipe->refno == TypeHugeInteger->refno
             && left->tipe->refno == TY_HUGE_POINTER
@@ -635,7 +635,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         left = TGConvert( left, tipe );
         break;
     case O_TIMES:
-        tipe = ResultType( left, rite, tipe, BinMat, FALSE );
+        tipe = ResultType( left, rite, tipe, BinMat, false );
 #if _TARGET & _TARG_IAPX86
         if( tipe->refno == TY_INT_4 &&
             left->tipe->length <= 2 && rite->tipe->length <= 2 ) {
@@ -666,22 +666,22 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
     case O_AND:
     case O_OR:
     case O_XOR:
-        tipe = ResultType( left, rite, tipe, BinMat, TRUE );
+        tipe = ResultType( left, rite, tipe, BinMat, true );
         left = TGConvert( left, tipe );
         rite = TGConvert( rite, tipe );
         break;
     case O_POW:
     case O_ATAN2:
     case O_FMOD:
-        tipe = ResultType( left, rite, tipe, BinMat, FALSE );
+        tipe = ResultType( left, rite, tipe, BinMat, false );
         left = TGConvert( left, tipe );
         rite = TGConvert( rite, tipe );
         break;
     case O_COMMA:
-        tipe = ResultType( left, rite, tipe, BinMat, TRUE );
+        tipe = ResultType( left, rite, tipe, BinMat, true );
         break;
     case O_SIDE_EFFECT:
-        tipe = ResultType( rite, left, tipe, BinMat, TRUE );
+        tipe = ResultType( rite, left, tipe, BinMat, true );
         break;
     default:
         _Zoiks( ZOIKS_054 );
@@ -744,7 +744,7 @@ extern  tn  TGBinary( cg_op op, tn left, tn rite, type_def *tipe )
 
     l = left;
     r = rite;
-    tipe = BinResult( op, &l, &r, tipe, TRUE );
+    tipe = BinResult( op, &l, &r, tipe, true );
     result = BinFold( op, l, r, tipe );
     if( result == NULL ) {
         result = TGNode( TN_BINARY, op, l, r, tipe );
@@ -782,7 +782,7 @@ extern  tn  TGUnary( cg_op op, tn left, type_def *tipe )
             new = left;
             new->class = TN_BIT_RVALUE;
             if( tipe->attr & TYPE_SIGNED ) {
-                new->u2.b.is_signed = TRUE;
+                new->u2.b.is_signed = true;
             }
         }
         break;
@@ -966,23 +966,23 @@ extern  tn  TGLVAssign( tn dst, tn src, type_def *tipe )
 
 extern  bool    TGCanDuplicate( tn node )
 /****************************************
-    return TRUE if node safe to duplicate? (Has no side effects)
+    return true if node safe to duplicate? (Has no side effects)
 */
 {
     switch( node->class ) {
     case TN_LEAF:
     case TN_CONS:
-        return( TRUE );
+        return( true );
     case TN_UNARY:
     case TN_BIT_LVALUE:
     case TN_BIT_RVALUE:
         return( TGCanDuplicate( node->u.left ) );
     case TN_BINARY:
-        if( !TGCanDuplicate( node->u.left ) ) return( FALSE );
-        if( !TGCanDuplicate( node->u2.t.rite ) ) return( FALSE );
-        return( TRUE );
+        if( !TGCanDuplicate( node->u.left ) ) return( false );
+        if( !TGCanDuplicate( node->u2.t.rite ) ) return( false );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -1119,7 +1119,7 @@ extern  tn  DoTGPreGets( cg_op op, tn left, tn rite, type_def *tipe,
     l = leftp;
     r = rite;
     /* ok to use defaults here since we're assining the result to left*/
-    optipe = BinResult( op, &l, &r, TypeNone, FALSE );
+    optipe = BinResult( op, &l, &r, TypeNone, false );
     rite = r;
     leftp = l;
     if( dupleft == NULL ) {
@@ -1338,7 +1338,7 @@ static  an  NotAddrGen( tn node )
     bool    was_address;
     an      retv;
 
-    was_address = SetAddress( FALSE );
+    was_address = SetAddress( false );
     retv = TreeGen( node );
     SetAddress( was_address );
     return( retv );
@@ -1362,17 +1362,17 @@ extern  void    TGControl( cg_op op, tn node, label_handle lbl )
 {
     switch( op ) {
     case O_IF_TRUE:
-        if( FoldIfTrue( node, lbl ) == FALSE ) {
-            Control( op, node, lbl, TRUE );
+        if( FoldIfTrue( node, lbl ) == false ) {
+            Control( op, node, lbl, true );
         }
         break;
     case O_IF_FALSE:
-        if( FoldIfFalse( node, lbl ) == FALSE ) {
-            Control( op, node, lbl, TRUE );
+        if( FoldIfFalse( node, lbl ) == false ) {
+            Control( op, node, lbl, true );
         }
         break;
     default:
-        BGGenCtrl( op, NULL, lbl, TRUE );
+        BGGenCtrl( op, NULL, lbl, true );
         break;
     }
 }
@@ -1546,7 +1546,7 @@ static  an  AddrGen( tn node )
     tn_flags    flags;
     type_length alignment;
 
-    was_address = SetAddress( TRUE );
+    was_address = SetAddress( true );
     base = TNFindBase( node );
     flags = node->flags;
     alignment = node->u2.t.alignment;
@@ -1661,24 +1661,24 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
 #ifdef JUST_USE_SHIFTS
     if( !node->u2.b.is_signed && node->u2.b.start == 0 ) {
         if( !already_masked ) {
-            retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, TRUE );
+            retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         }
     } else {
-        retv = BGBinary( O_LSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len - node->u2.b.start ), tipeu, TRUE );
-        retv = BGBinary( O_RSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len ), node->u2.b.is_signed ? tipes : tipeu, TRUE );
+        retv = BGBinary( O_LSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len - node->u2.b.start ), tipeu, true );
+        retv = BGBinary( O_RSHIFT, retv, Int( 8*tipeu->length - node->u2.b.len ), node->u2.b.is_signed ? tipes : tipeu, true );
     }
 #else
     if( node->u2.b.is_signed ) {
-        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), tipeu, TRUE );
+        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), tipeu, true );
         U64ShiftR( &mask, node->u2.b.start, &mask );
-        retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, TRUE );
+        retv = BGBinary( O_AND, retv, Int64( mask ), tipeu, true );
         U64ShiftR( &mask, 1, &mask );
         U64Not( &mask, &mask );
         if( mask.u._32[I64LO32] == 0xffffffff ) { /* a one-bit signed bit field */
                         unsigned_64 one;
                         I32ToI64( 1, &one );
             retv = BGUnary( O_COMPLEMENT, retv, tipeu );
-            retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, TRUE );
+            retv = BGBinary( O_PLUS, retv, Int64( one ), tipes, true );
         } else if( mask.u._32[I64LO32] == 0xfffff80 ) { /* an eight-bit signed bit field */
             switch( tipeu->length ) {
             case 1:
@@ -1720,14 +1720,14 @@ static  an  TNBitShift( an retv, tn node, bool already_masked )
             }
             retv = BGConvert( retv, tipes );
         } else {
-            retv = BGBinary( O_XOR, retv, Int64( mask ), tipeu, TRUE );
-            retv = BGBinary( O_MINUS, retv, Int64( mask ), tipes, TRUE );
+            retv = BGBinary( O_XOR, retv, Int64( mask ), tipeu, true );
+            retv = BGBinary( O_MINUS, retv, Int64( mask ), tipes, true );
         }
     } else {
-        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), node->tipe, TRUE );
+        retv = BGBinary( O_RSHIFT, retv, Int( node->u2.b.start ), node->tipe, true );
         if( !already_masked && ( node->tipe->length * 8 - node->u2.b.start - node->u2.b.len != 0 )) {
             U64ShiftR( &mask, node->u2.b.start, &mask );
-            retv = BGBinary( O_AND, retv, Int64( mask ), node->tipe, TRUE );
+            retv = BGBinary( O_AND, retv, Int64( mask ), node->tipe, true );
         }
     }
 #endif
@@ -1742,7 +1742,7 @@ static  an  TNBitRVal( an retv, tn node )
 */
 {
     retv = BGUnary( O_POINTS, retv, node->tipe );
-    retv = TNBitShift( retv, node, FALSE );
+    retv = TNBitShift( retv, node, false );
     return( retv );
 }
 
@@ -1798,7 +1798,7 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
         after_value = BGBinary( node->u2.t.op,
                 BGConvert( BGDuplicate( before_value ), tipe ),
                 BGConvert( rite, tipe ),
-                tipe, TRUE );
+                tipe, true );
     } else {
         after_value = rite;
     }
@@ -1822,9 +1822,9 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
         }
         BGDone( retv );
     } else {
-        retv = BGBinary( O_AND, AddrCopy( after_value ), Int64( shiftmask ), node->tipe, TRUE );
+        retv = BGBinary( O_AND, AddrCopy( after_value ), Int64( shiftmask ), node->tipe, true );
         DoAnd64( left, mask, node );
-        retv = BGBinary( O_LSHIFT, retv, Int( shift ), node->tipe, TRUE );
+        retv = BGBinary( O_LSHIFT, retv, Int( shift ), node->tipe, true );
         retv = BGOpGets( O_OR, left, retv, node->tipe, node->tipe );
         BGDone( retv );
     }
@@ -1833,7 +1833,7 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
         retv = before_value;
     } else {
         BGDone( before_value );
-        retv = BGBinary( O_AND, after_value, Int64( shiftmask ), node->tipe, TRUE );
+        retv = BGBinary( O_AND, after_value, Int64( shiftmask ), node->tipe, true );
     }
     return( retv );
 }
@@ -1850,7 +1850,7 @@ an  TNPostGets( tn node )
     an      leftp;
 
     if( node->u.left->class == TN_BIT_LVALUE ) {
-        retv = TNBitOpGets( node, node->tipe, TRUE );
+        retv = TNBitOpGets( node, node->tipe, true );
     } else {
         left = AddrGen( node->u.left );
         rite = NotAddrGen( node->u2.t.rite );
@@ -1873,7 +1873,7 @@ an  TNPreGets( tn node )
     an      rite;
 
     if( node->u.left->class == TN_BIT_LVALUE ) {
-        retv = TNBitOpGets( node, node->optipe, FALSE );
+        retv = TNBitOpGets( node, node->optipe, false );
     } else {
         retv = NULL;
         left = AddrGen( node->u.left );
@@ -1918,14 +1918,14 @@ static  an  TNBitAssign( tn node )
         left = AddrGen( lhs->u.left );
         rite = AddrGen( rhs->u.left );
         rite = BGUnary( O_POINTS, rite, node->tipe );
-        retv = BGBinary( O_AND, rite, Int( mask ), node->tipe, TRUE );
+        retv = BGBinary( O_AND, rite, Int( mask ), node->tipe, true );
         BGDone( BGOpGets( O_AND, AddrCopy(left), Int( ~mask ), node->tipe, node->tipe ) );
         BGDone( BGOpGets( O_OR, left, AddrCopy( retv ), node->tipe, node->tipe ) );
-        retv = TNBitShift( retv, lhs, TRUE );
+        retv = TNBitShift( retv, lhs, true );
         FreeTreeNode( rhs );
         FreeTreeNode( lhs );
     } else {
-        retv = TNBitOpGets( node, node->tipe, FALSE );
+        retv = TNBitOpGets( node, node->tipe, false );
     }
     return( retv );
 }
@@ -2038,7 +2038,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
         BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
         seg = AddrName( SegName( rite->u.n.name ), short_type );
         BGDone( rite );
-        seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, TRUE );
+        seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, true );
         BGDone( BGAssign( seg_dest, seg, short_type ) );
     } else {
         switch( rite->tipe->refno ) {
@@ -2050,7 +2050,7 @@ static an   MakeBased( an left, an rite, type_def *tipe )
             break;
         default:
             BGDone( BGAssign( AddrCopy( temp ), left, near_type ) );
-            seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, TRUE );
+            seg_dest = BGBinary( O_PLUS, AddrCopy(temp), Int(near_type->length), TypePtr, true );
             BGDone( BGAssign( seg_dest, rite, short_type ) );
             break;
         }
@@ -2103,12 +2103,12 @@ an  TNBinary( tn node )
     } else /* Note missing brace */
 #endif
     if( node->flags & TF_DEMOTED ) {
-        was_address = SetAddress( FALSE ); /* force it to be generated! */
-        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, FALSE );
+        was_address = SetAddress( false ); /* force it to be generated! */
+        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, false );
         AddrDemote( retv );
         SetAddress( was_address );
     } else {
-        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, TRUE );
+        retv = BGBinary( node->u2.t.op, left, rite, node->tipe, true );
     }
     retv->flags |= FL_STACKABLE;
     return( retv );
@@ -2150,7 +2150,7 @@ static  an  TNQuestion( tn node )
 
     false_lbl = AskForNewLabel();
     around_lbl = AskForNewLabel();
-    Control( O_IF_FALSE, node->u.left, false_lbl, FALSE );
+    Control( O_IF_FALSE, node->u.left, false_lbl, false );
     temp_var = BGNewTemp( node->tipe );
     temp_var->v.usage |= USE_IN_ANOTHER_BLOCK;
     temp = MakeTempAddr( temp_var );
@@ -2185,9 +2185,9 @@ static  bool    FunctionModifiesSP( tn call_node )
     sym = (cg_sym_handle)addr->u2.t.rite;
     pregs = FindAuxInfoSym( sym, SAVE_REGS );
     if( !HW_Ovlap( *pregs, StackReg() ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    ModifiesSP( tn node )
@@ -2208,23 +2208,23 @@ static  bool    ModifiesSP( tn node )
         break;
     case TN_CALL:
         // need to check if routine modifies SP
-        if( FunctionModifiesSP( node ) ) return( TRUE );
+        if( FunctionModifiesSP( node ) ) return( true );
         // or if any of it's parm nodes modifies SP
-        if( node->u2.t.rite != NULL && ModifiesSP( node->u2.t.rite ) ) return( TRUE );
+        if( node->u2.t.rite != NULL && ModifiesSP( node->u2.t.rite ) ) return( true );
         break;
     case TN_UNARY:
-        if( node->u2.t.op == O_STACK_ALLOC ) return( TRUE );
+        if( node->u2.t.op == O_STACK_ALLOC ) return( true );
     /* fall through */
     default:
         if( node->u2.t.rite != NULL ) {
-            if( ModifiesSP( node->u2.t.rite ) ) return( TRUE );
+            if( ModifiesSP( node->u2.t.rite ) ) return( true );
         }
         if( node->flags & TF_HAS_LEFT ) {
             assert( node->u.left != NULL );
-            if( ModifiesSP( node->u.left ) ) return( TRUE );
+            if( ModifiesSP( node->u.left ) ) return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void    MakeSPSafe( tn scan )
@@ -2440,7 +2440,7 @@ extern  void    TInit( void )
     Initialize for tree processing
 */
 {
-    SetAddress( FALSE );
+    SetAddress( false );
     SubMat[CP + XX * CP] = TypeClass( TypeLongInteger );
     SubMat[PT + XX * PT] = TypeClass( TypeHugeInteger );
     InitFrl( &TreeFrl );
@@ -2505,7 +2505,7 @@ static  an DoTreeGen( tn node )
         retv = TNFlow( node );
         break;
     case TN_CALL:
-        retv = TNCall( node, FALSE );
+        retv = TNCall( node, false );
         break;
     case TN_FLOW_OUT:
         retv = Arithmetic( NotAddrGen( node->u.left ), node->tipe );

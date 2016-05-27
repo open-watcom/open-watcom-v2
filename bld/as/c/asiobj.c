@@ -301,11 +301,12 @@ extern void ObjSetLocation( owl_offset offset ) {
 extern bool ObjEmitMetaReloc( owl_reloc_type type, bool align ) {
 //***************************************************************
 // Emit a reloc to the beginning of code.
-// Must be a relative reloc. If not, FALSE is returned.
+// Must be a relative reloc. If not, false is returned.
 
-    if( !IS_RELOC_RELATIVE( type ) ) return( FALSE );
-    ObjEmitReloc( ASMCODESTART, type, align, TRUE );
-    return( TRUE );
+    if( !IS_RELOC_RELATIVE( type ) )
+        return( false );
+    ObjEmitReloc( ASMCODESTART, type, align, true );
+    return( true );
 }
 
 extern void ObjEmitRelocAddend( owl_reloc_type type, uint_32 addend ) {
@@ -327,11 +328,11 @@ static bool findLabel( label_list labels, char *label_name ) {
     curr_label = labels;
     while( curr_label ) {
         if( strcmp( SymName( curr_label->sym ), label_name ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
         curr_label = curr_label->next;
     }
-    return( FALSE );
+    return( false );
 }
 
 extern bool ObjLabelDefined( sym_handle sym ) {
@@ -341,16 +342,18 @@ extern bool ObjLabelDefined( sym_handle sym ) {
     char                *sym_name;
 
     // Check if it's been emitted by us
-    if( sym && SymLocationKnown( sym ) ) return( TRUE );
+    if( sym && SymLocationKnown( sym ) )
+        return( true );
     // See if it's defined outside
     sym_name = SymName( sym );
     state = AsmQueryState( AsmQuerySymbol( sym_name ) );
     if( state != SYM_UNDEFINED ) {
-        return( TRUE );
+        return( true );
     }
     // Still need to check the labelList
-    if( findLabel( labelList, sym_name ) ) return( TRUE );
-    return( FALSE );
+    if( findLabel( labelList, sym_name ) )
+        return( true );
+    return( false );
 }
 
 static void doStackNumericLabel( uint_32 label_num ) {
@@ -472,7 +475,7 @@ extern void ObjDirectEmitReloc( owl_offset offset, void *target, owl_reloc_type 
 extern void ObjEmitReloc( void *target, owl_reloc_type type, bool align, bool named_sym ) {
 //*****************************************************************************************
 // Should be called before emitting the data that has the reloc.
-// (named_sym == TRUE) iff the target is a named label
+// (named_sym == true) iff the target is a named label
 
     owl_offset          offset;
 
@@ -530,7 +533,7 @@ extern void ObjRelocsFini( void ) {
     sym_handle  sym;
     int_32      numlabel_ref;
 
-    reloc = SymGetReloc( TRUE, &sym );
+    reloc = SymGetReloc( true, &sym );
     while( reloc != NULL ) {
         if( reloc->named ) {
             Error( UNMATCHED_HIGH_RELOC, SymName( sym ) );
@@ -538,23 +541,23 @@ extern void ObjRelocsFini( void ) {
             Error( UNMATCHED_HIGH_RELOC, "<numeric reference>" );
         }
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( TRUE, &sym );
+        reloc = SymGetReloc( true, &sym );
     }
-    reloc = SymGetReloc( FALSE, &sym );
+    reloc = SymGetReloc( false, &sym );
     while( reloc != NULL ) {
         if( reloc->named ) {
             doEmitReloc( reloc->location.offset,
-                SymName( sym ), OWL_RELOC_HALF_LO, TRUE );
+                SymName( sym ), OWL_RELOC_HALF_LO, true );
         } else {
             numlabel_ref = AsNumLabelGetNum( SymName( sym ) );
             doEmitReloc( reloc->location.offset,
-                &numlabel_ref, OWL_RELOC_HALF_LO, FALSE );
+                &numlabel_ref, OWL_RELOC_HALF_LO, false );
         }
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( FALSE, &sym );
+        reloc = SymGetReloc( false, &sym );
     }
 #ifdef AS_DEBUG_DUMP
-    (void)SymRelocIsClean( TRUE );
+    (void)SymRelocIsClean( true );
 #endif
     AsNumLabelFini();       // resolve all numeric label relocs
     resolveRelativeRelocs();

@@ -68,6 +68,7 @@
 *************************************************************************@H*/
 
 #include <stdio.h>
+#include "bool.h"
 
 #include "compress.h" /* contains the rest of the include file declarations */
 
@@ -108,7 +109,7 @@ char *ptr;
     }
     else
     if(strcmp(cp, "zcat") == 0) {
-        keep = TRUE;
+        keep = true;
         zcat_flg = do_decomp = 1;
     }
     return (cp);
@@ -137,11 +138,11 @@ char *ptr;
 #ifndef BSD4_2
     if (strlen(name_index(ptr)) > 12 ) {
         fprintf(stderr,"%s: filename too long to add .Z\n",name_index(ptr));
-        return FALSE;
+        return( false );
     }
 #endif
     strcat(ptr,".Z");
-    return TRUE;
+    return( true );
 }
 void unmake_z_name(ptr)
 char *ptr;

@@ -43,9 +43,9 @@ mad_status DisasmInit()
     bool        swap_bytes;
 
 #ifdef __BIG_ENDIAN__
-    swap_bytes = FALSE;
+    swap_bytes = false;
 #else
-    swap_bytes = TRUE;
+    swap_bytes = true;
 #endif
     if( DisInit( DISCPU_ppc, &DH, swap_bytes ) != DR_OK ) {
         return( MS_ERR | MS_FAIL );

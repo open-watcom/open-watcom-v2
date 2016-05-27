@@ -372,7 +372,7 @@ static int ParseVariable( const char *var, char **argv, char *buf )
     return( argc );
 }
 
-int indirEnvOrFile( char *name, char ***args )
+static int indirEnvOrFile( char *name, char ***args )
 {
     /*
      * Pass nofilenames and analysis of getenv(name) into argc and argv

@@ -44,7 +44,7 @@
 #pragma off (check_stack)
 
 static unsigned         OtherStackLow;
-static bool             Init = FALSE;   // have we initialized it to ASTACKLOW
+static bool             Init = false;   // have we initialized it to ASTACKLOW
 
 
 // Do not switch stacks unless we have to.
@@ -60,7 +60,7 @@ static void     SwitchThreadStackLow( void ) {
 
         if( !Init ) {
             OtherStackLow = (unsigned)(__ASTACKPTR - __ASTACKSIZ);
-            Init = TRUE;
+            Init = false;
         }
         tdata = __GetThreadPtr();
         if( tdata ) {

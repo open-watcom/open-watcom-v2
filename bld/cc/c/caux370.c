@@ -62,7 +62,7 @@ void ParseAuxFile()
     prevfile = SrcFile;
     prevchar = CurrChar;
     SrcFile = NULL;
-    if( OpenSrcFile( AuxName, 0 ) == FALSE ){
+    if( OpenSrcFile( AuxName, 0 ) == false ){
         SrcFile = prevfile; /* reset source */
         CurrChar = prevchar;
         ErrFName = SrcFile->src_name;

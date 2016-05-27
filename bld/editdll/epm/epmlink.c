@@ -38,6 +38,10 @@
 #define INCL_WININPUT
 #include <os2.h>
 #include "wedit.h"
+#include "libmain.h"
+
+
+MRESULT EXPENTRY clientProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 );
 
 typedef struct errstr {
     ULONG       errorline;
@@ -496,20 +500,19 @@ int EDITAPI EDITDisconnect( void )
 }
 
 
-ULONG _System LibMain( ULONG hModule, ULONG ulReason )
-/****************************************************/
+unsigned _System LibMain( unsigned hModule, unsigned ulReason )
+/*************************************************************/
 {
     if( ulReason ) {
         // Terminating
         FreeSessions();
         CurrSession = NULL;
-    }
-    else {
+    } else {
         // Initializing
         InitSessions();
         CurrSession = NULL;
         AllocatedBlocks = 0;
         StartingSessionInProgress = FALSE;
-        }
+    }
     return( 1 );
 }

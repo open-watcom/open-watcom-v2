@@ -168,19 +168,19 @@ typedef enum
 static bool okSoFar             // TEST IF STILL OK
     ( CONVCTL* ctl )            // - conversion control
 {
-    bool retn;                  // - return: TRUE ==> is ok so far
-    PTREE expr;                 // - current expression
+    bool    retb;               // - return: true ==> is ok so far
+    PTREE   expr;               // - current expression
 
     expr = ctl->expr;
-    retn = FALSE;
+    retb = false;
     if( PT_ERROR != expr->op ) {
         if( PT_ERROR == expr->u.subtree[1]->op ) {
             PTreeErrorNode( expr );
         } else {
-            retn = TRUE;
+            retb = true;
         }
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -214,14 +214,14 @@ static PTREE stripOffCast       // STRIP CAST NODES
 static PTREE stripOffCastOk     // STRIP CAST NODES, WHEN OK
     ( CONVCTL* ctl )            // - conversion control
 {
-    return stripOffCast( ctl, TRUE );
+    return stripOffCast( ctl, true );
 }
 
 
 static PTREE stripOffCastOrig   // STRIP CAST NODES, WHEN ORIGINAL TO BE LEFT
     ( CONVCTL* ctl )            // - conversion control
 {
-    return stripOffCast( ctl, FALSE );
+    return stripOffCast( ctl, false );
 }
 
 
@@ -253,7 +253,7 @@ static bool getClassRvalue      // GET RVALUE FOR CLASS EXPRESSION
 
 static bool getLvalue           // GET LVALUE FOR EXPRESSION
     ( CONVCTL* ctl              // - conversion control
-    , bool force_to_temp )      // - TRUE ==> force it into a temp
+    , bool force_to_temp )      // - true ==> force it into a temp
 {
     PTREE expr = ctl->expr->u.subtree[1];
 
@@ -292,7 +292,7 @@ static CAST_RESULT diagNonConstRefBinding // DIAGNOSE BINDING TO NON-CONST REF
     if( ctl->diag_bind_ncref ) {
         result = CAST_TESTED_OK;
     } else {
-        ctl->diag_bind_ncref = TRUE;
+        ctl->diag_bind_ncref = true;
         if( SymIsThunk( ScopeFunctionInProgress() ) ) {
             result = CAST_TESTED_OK;
         } else if( ConvCtlWarning( ctl, ANSI_TEMP_USED_TO_INIT_NONCONST_REF ) ) {
@@ -313,7 +313,7 @@ static CAST_RESULT diagExtConversion // DIAGNOSE EXTENDED CONVERSION
     if( ctl->diag_ext_conv ) {
         result = CAST_TESTED_OK;
     } else {
-        ctl->diag_ext_conv = TRUE;
+        ctl->diag_ext_conv = true;
         if( ConvCtlWarning( ctl, ANSI_EXTENDED_CONVERSION_UDC ) ) {
             result = DIAG_ALREADY;
         } else {
@@ -370,7 +370,7 @@ static CAST_RESULT findConvRtn   // LOCATE UDC FOR CONVERSION
 {
     CAST_RESULT result;         // - cast result
     FNOV_COARSE_RANK rank;      // - UDC RANKING
-    bool is_ctor;               // - TRUE ==> ctor udc, FALSE ==> udcf udc
+    bool is_ctor;               // - true ==> ctor udc, false ==> udcf udc
     FNOV_LIST* fnov_list;       // - matches list
 
     result = 0;
@@ -559,23 +559,23 @@ static bool warnTruncTypes      // WARN IF TRUNCATION
     , TYPE src                  // - source type
     , TYPE tgt )                // - target type
 {
-    bool retn;                  // - return: TRUE ==> no truncation error
+    bool retb;                  // - return: true ==> no truncation error
     MSG_NUM msg_no;             // - message #
 
     if( src == tgt ) {
-        retn = TRUE;
+        retb = true;
     } else {
-        CNV_RETN trunc;
+        CNV_RETN retn;
         if( ctl->clscls_implicit ) {
-            trunc = NodeCheckPtrTrunc( src, tgt );
+            retn = NodeCheckPtrTrunc( src, tgt );
             msg_no = WARN_POINTER_TRUNCATION;
         } else {
-            trunc = NodeCheckPtrCastTrunc( src, tgt );
+            retn = NodeCheckPtrCastTrunc( src, tgt );
             msg_no = WARN_POINTER_TRUNCATION_CAST;
         }
-        retn = ( trunc == CNV_OK ) || !ConvCtlWarning( ctl, msg_no );
+        retb = ( retn == CNV_OK ) || !ConvCtlWarning( ctl, msg_no );
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -608,7 +608,8 @@ static PTREE doReintMPtrToMPtr  // DO A RE-INTERPRET MEMB-PTR CONVERSION
     ( CONVCTL* ctl )            // - conversion control
 {
 #ifndef NDEBUG
-    unsigned retn;
+    CNV_RETN retn;
+
     retn = MembPtrReint( &ctl->expr->u.subtree[1], ctl->tgt.orig );
     DbgVerify( CNV_OK == retn, "ReintCast -- should work" );
     DbgVerify( ctl->expr->u.subtree[1]->cgop != CO_MEMPTR_CONST, "ReintCast -- mp const" );
@@ -628,7 +629,7 @@ static PTREE doCgConversion     // DO A CONVERSION ACCOMPLISHED BY CODEGEN
     TYPE result = NodeType( ctl->expr->u.subtree[1] );
 
     if( result != ctl->tgt.unmod && ! TypesIdentical( TypedefModifierRemoveOnly( result ), ctl->tgt.unmod ) ) {
-        ctl->keep_cast = TRUE;
+        ctl->keep_cast = true;
     }
     ctl->expr->cgop = CO_CONVERT;
     markUserCast( ctl );
@@ -642,8 +643,7 @@ static CAST_RESULT staticCvClClOk // TEST IF CONST CASTED AWAY ON STATIC CONV
 {
     CAST_RESULT retn;           // - return: cast result
 
-    if( ctl->clscls_cv
-     && ! ctl->diag_bind_ncref ) {
+    if( ctl->clscls_cv && ! ctl->diag_bind_ncref ) {
         type_flag src = ctl->src.ptedflags & TF1_CV_MASK;
         type_flag tgt = ctl->tgt.ptedflags & TF1_CV_MASK;
         type_flag both = src & tgt;
@@ -652,7 +652,7 @@ static CAST_RESULT staticCvClClOk // TEST IF CONST CASTED AWAY ON STATIC CONV
         } else {
             if( ctl->clscls_explicit ) {
                 ctl->mismatch = src & ~ both;
-                ctl->cv_mismatch = TRUE;
+                ctl->cv_mismatch = true;
                 retn = DIAG_CAST_AWAY_CONST;
             } else {
                 retn = diagNonConstRefBinding( ctl );
@@ -709,7 +709,7 @@ static PTREE castLvToRvBase     // CAST LV-DERIVED --> RV-BASE
 static PTREE castRvToLvBase     // CAST RV-DERIVED --> LV-BASE
     ( CONVCTL* ctl )            // - conversion control
 {
-    if( getLvalue( ctl, TRUE )
+    if( getLvalue( ctl, true )
      && castToBase( ctl ) ) {
         doCgConversion( ctl );
     }
@@ -720,7 +720,7 @@ static PTREE castRvToLvBase     // CAST RV-DERIVED --> LV-BASE
 static PTREE castRvToRvBase     // CAST RV-DERIVED --> LV-BASE
     ( CONVCTL* ctl )            // - conversion control
 {
-    if( getLvalue( ctl, TRUE )
+    if( getLvalue( ctl, true )
      && castToBase( ctl )
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
@@ -734,10 +734,10 @@ static bool castCtor            // APPLY CTOR
 {
     PTREE inp_node;             // - input node
     PTREE node;                 // - node under construction
-    bool retn;                  // - return: TRUE ==> conversion worked
+    bool retb;                  // - return: true ==> conversion worked
 
-    retn = FALSE;
-    if( ctl->src.reference || getLvalue( ctl, FALSE ) ) {
+    retb = false;
+    if( ctl->src.reference || getLvalue( ctl, false ) ) {
         inp_node = NodeArg( ctl->expr->u.subtree[1] );
         ctl->expr->u.subtree[1] = inp_node;
         NodeConvertCallArgList( ctl->expr
@@ -753,13 +753,13 @@ static bool castCtor            // APPLY CTOR
             if( NULL == temp ) {
                 if( ctl->tgt.reference ) {
                     CAST_RESULT result = reqdConstRef( ctl );
-                    if( result != CAST_TESTED_OK ) return FALSE;
+                    if( result != CAST_TESTED_OK ) return false;
                 }
                 temp = NodeTemporary( ctl->tgt.class_type );
                 ctl->destination = temp;
-                ctl->dtor_destination = TRUE;
+                ctl->dtor_destination = true;
             }
-            ctl->used_destination = TRUE;
+            ctl->used_destination = true;
             opt = AnalyseCallOpts( ctl->tgt.class_type
                                  , inp_node->u.subtree[1]
                                  , &dtor_node
@@ -785,12 +785,12 @@ static bool castCtor            // APPLY CTOR
                                               , temp
                                               , CallArgumentExactCtor
                                                     ( ctl->tgt.class_type
-                                                    , TRUE )
+                                                    , true )
                                               , NULL );
                     }
                 }
                 if( PT_ERROR != node->op ) {
-                    if( ctl->req == CNV_FUNC_RET ) {
+                    if( ctl->reqd_cnv == CNV_FUNC_RET ) {
                         node = PtdScopeCall( node, ctl->conv_fun );
                     } else {
                         node = PtdCtoredExprType( node
@@ -812,10 +812,10 @@ static bool castCtor            // APPLY CTOR
                                    , opt );
             }
             ctl->expr->u.subtree[1] = node;
-            retn = okSoFar( ctl );
+            retb = okSoFar( ctl );
         }
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -844,7 +844,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
     ( CONVCTL* ctl )            // - conversion control
 {
     if( ctl->src.reference
-     || getLvalue( ctl, FALSE ) ) {
+     || getLvalue( ctl, false ) ) {
         CALL_DIAG call_diag;
         ctl->expr->u.subtree[1] = UdcCall( ctl->expr->u.subtree[1]
                                          , ctl->conv_type
@@ -890,7 +890,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
                 SCOPE curr = GetCurrScope();
                 DbgVerify( ctl->clscls_copy_init || ctl->diag_ext_conv
                          , "not copy init" );
-                ctl->used_destination = TRUE;
+                ctl->used_destination = true;
                 ctl->expr->u.subtree[1] =
                     ClassDefaultCopyTemp( ctl->destination
                                         , ctl->expr->u.subtree[1]
@@ -961,7 +961,7 @@ static PTREE castLvToRvDerived  // CAST LV-BASE --> RV_DERIVED
 static PTREE castRvToLvDerived  // CAST RV-BASE --> LV_DERIVED
     ( CONVCTL* ctl )            // - conversion control
 {
-    if( getLvalue( ctl, TRUE )
+    if( getLvalue( ctl, true )
      && castToDerived( ctl ) ) {
         doCgConversion( ctl );
     }
@@ -972,7 +972,7 @@ static PTREE castRvToLvDerived  // CAST RV-BASE --> LV_DERIVED
 static PTREE castRvToRvDerived  // CAST RV-BASE --> RV_DERIVED
     ( CONVCTL* ctl )            // - conversion control
 {
-    if( getLvalue( ctl, TRUE )
+    if( getLvalue( ctl, true )
      && castToDerived( ctl )
      && getClassRvalue( ctl ) ) {
         doCgConversion( ctl );
@@ -1284,17 +1284,17 @@ static PTREE diagnoseCast       // DIAGNOSE CASTING ERROR
 static bool ptrToIntTruncs      // TEST IF TRUNCATION ON PTR --> INT
     ( CONVCTL* ctl )            // - conversion control
 {
-    bool retn;
+    bool retb;
 
-    retn = FALSE;
+    retb = false;
     if( CNV_OK != NodeCheckPtrCastTrunc( ctl->tgt.unmod, ctl->src.orig )
      && ( CompFlags.extensions_enabled
        || CgMemorySize( GetBasicType( TYP_SINT ) ) >
           CgMemorySize( ctl->src.unmod ) ) ) {
-        ctl->size_ptr_to_int = TRUE;
-        retn = TRUE;
+        ctl->size_ptr_to_int = true;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -1409,7 +1409,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                                          , ctl->tgt.pc_ptr
                                          , ctl->src.pc_ptr
                                          , ctl->expr
-                                         , ctl->req );
+                                         , ctl->reqd_cnv );
             result = DIAG_CAST_ILLEGAL;
             switch( retn ) {
               DbgDefault( "analysePtrToPtr -- funny pc validation" );
@@ -1444,7 +1444,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
             if( tgt_type != node->type ) {
                 node = CastImplicit( node
                                    , tgt_type
-                                   , ctl->req
+                                   , ctl->reqd_cnv
                                    , ctl->diag_cast );
                 if( PT_ERROR == node->op ) {
                     result = CAST_ERR_NODE;
@@ -1458,7 +1458,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                 }
             }
         } else {
-            ctl->cv_mismatch = FALSE;
+            ctl->cv_mismatch = false;
             result = DIAG_NOT_CONST_REF;
         }
     } else if( ctl->from_void && ( ctl->clscls_explicit || ctl->clscls_static ) ) {
@@ -1516,7 +1516,7 @@ static CAST_RESULT analyseImplicitPtrToPtr // IMPLICIT ANALYSIS: PTR --> PTR
                     result = DIAG_REF_ADDS_VOLATILE;
                 }
             }
-            ctl->cv_mismatch = FALSE;
+            ctl->cv_mismatch = false;
         }
         break;
     }
@@ -1635,7 +1635,7 @@ static PTREE doCastResult           // DO CAST RESULT
       case CAST_IMPLICIT_MEMBPTR :
         retn = MembPtrConvert( &ctl->expr->u.subtree[1]
                              , ctl->tgt.orig
-                             , ctl->req );
+                             , ctl->reqd_cnv );
         expr = checkMptrConversion( ctl, retn );
         break;
       case CAST_ARITH_TO_PTR :
@@ -1922,16 +1922,16 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
         }
         expr = ctl->expr;
     } else {
-        bool fold_it = FALSE;
-        bool has_convert = FALSE;
+        bool fold_it = false;
+        bool has_convert = false;
         if( ctl->clscls_implicit && !ctl->keep_cast ) {
             expr = stripOffCastOk( ctl );
         } else {
             expr = ctl->expr;
             if( NodeIsBinaryOp( expr, CO_CONVERT ) ) {
                 expr->flags |= expr->u.subtree[1]->flags & ~( PTF_NEVER_PROPPED );
-                fold_it = TRUE;
-                has_convert = TRUE;
+                fold_it = true;
+                has_convert = true;
                 expr = expr->u.subtree[1];
             }
         }
@@ -1963,13 +1963,13 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
             if( PT_ERROR != expr->op && !ctl->tgt.reference ) {
                 expr = NodeRvalue( expr );
             }
-            fold_it = FALSE;
+            fold_it = false;
         }
         if( has_convert ) {
             ctl->expr->u.subtree[1] = expr;
             if( okSoFar( ctl ) && RKD_MEMBPTR == ctl->tgt.kind ) {
                 stripOffCastOk( ctl );
-                fold_it = FALSE;
+                fold_it = false;
             }
             expr = ctl->expr;
         }
@@ -1977,7 +1977,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
             if( fold_it ) {
                 expr = Fold( expr );
             }
-            if( NodeIsUnaryOp( expr, CO_MEMPTR_CONST ) && CNV_FUNC_ARG == _CNV_TYPE( ctl->req ) ) {
+            if( NodeIsUnaryOp( expr, CO_MEMPTR_CONST ) && CNV_FUNC_ARG == _CNV_TYPE( ctl->reqd_cnv ) ) {
                 expr = MembPtrFuncArg( expr );
             }
         }
@@ -1993,7 +1993,7 @@ static void allocClassDestination//ALLOCATE DESTINATION WHEN CLASS
         if( ctl->tgt.class_operand
          && ! ctl->tgt.reference ) {
             ctl->destination = NodeTemporary( ctl->tgt.orig );
-            ctl->dtor_destination = TRUE;
+            ctl->dtor_destination = true;
         }
     }
 }
@@ -2235,9 +2235,9 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
     uint_8 jump;                // - jump value from table
 
     ConvCtlInitCast( &ctl, expr, &diagStatic );
-    ctl.clscls_copy_init = FALSE;
-    ctl.clscls_static = TRUE;
-    ctl.clscls_cv = TRUE;
+    ctl.clscls_copy_init = false;
+    ctl.clscls_static = true;
+    ctl.clscls_cv = true;
     result = CAST_ERR_NODE;
     switch( ctl.rough ) {
       case CRUFF_CL_TO_CL :
@@ -2503,10 +2503,10 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
 
     ConvCtlInitCast( &ctl, expr, &diagExplicit );
     CErr2p( WARN_C_STYLE_CAST, ctl.tgt.orig );
-    ctl.clscls_explicit = TRUE;
-    ctl.clscls_derived = TRUE;
-    ctl.clscls_refundef = TRUE;
-    ctl.clscls_copy_init = FALSE;
+    ctl.clscls_explicit = true;
+    ctl.clscls_derived = true;
+    ctl.clscls_refundef = true;
+    ctl.clscls_copy_init = false;
     ctl.diag_cast = &diagExplicit;
     allocClassDestination( &ctl );
     result = CAST_ERR_NODE;
@@ -2671,7 +2671,7 @@ PTREE AddCastNode               // ADD A CAST NODE
                     | PTF_PTR_NONZERO  )
     PTF_FLAG flags;             // - flags for cast node
     flags = expr->flags & PTF_CONVERT;
-    type = BindTemplateClass( type, &expr->locn, TRUE );
+    type = BindTemplateClass( type, &expr->locn, true );
     expr = NodeBinary( CO_CONVERT, PTreeType( type ), expr );
     expr = NodeSetType( expr, type, flags );
     expr = PTreeCopySrcLocation( expr, expr->u.subtree[1] );
@@ -2689,23 +2689,23 @@ int infinite_ctr;
 static void setupCastImplicit   // SETUP FOR AN IMPLICIT CAST
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis       // - diagnosis
     , PTREE destination         // - NULL or supplied destination
     , CONVCTL* ctl )            // - conversion control
 {
     DbgVerify( ++infinite_ctr <= INFINITY, "Infinite Implicit Conversion LOOP" );
     expr = AddCastNode( expr, type );
-    ConvCtlInit( ctl, expr, reqd, diagnosis );
+    ConvCtlInit( ctl, expr, reqd_cnv, diagnosis );
     ctl->destination = destination;
-    switch( reqd ) {
+    switch( reqd_cnv ) {
       case CNV_FUNC_CD_THIS :
-        ctl->clscls_implicit = TRUE;
+        ctl->clscls_implicit = true;
         break;
       case CNV_FUNC_THIS :
       case CNV_INIT :
-        ctl->clscls_cv = TRUE;
-        ctl->clscls_implicit = TRUE;
+        ctl->clscls_cv = true;
+        ctl->clscls_implicit = true;
         break;
       case CNV_INIT_COPY :
       case CNV_FUNC_ARG :
@@ -2713,21 +2713,18 @@ static void setupCastImplicit   // SETUP FOR AN IMPLICIT CAST
       case CNV_FUNC_DARG :
       case CNV_EXPR :
       case CNV_ASSIGN :
-        ctl->clscls_copy_init = TRUE;
-        ctl->clscls_cv = TRUE;
-        ctl->clscls_implicit = TRUE;
+        ctl->clscls_copy_init = true;
+        ctl->clscls_cv = true;
+        ctl->clscls_implicit = true;
         break;
       DbgDefault( "Surprising CNV_... code" );
     }
     if( NULL == ctl->destination ) {
-        if( CNV_EXPR == reqd
-         || CNV_FUNC_ARG == reqd ) {
-            if( ctl->tgt.reference
-             || ! ctl->tgt.class_type ) {
+        if( CNV_EXPR == reqd_cnv || CNV_FUNC_ARG == reqd_cnv ) {
+            if( ctl->tgt.reference || ! ctl->tgt.class_type ) {
                 allocClassDestination( ctl );
             }
-        } else if( CNV_ASSIGN == reqd
-                || CNV_FUNC_DARG == reqd ) {
+        } else if( CNV_ASSIGN == reqd_cnv || CNV_FUNC_DARG == reqd_cnv ) {
             allocClassDestination( ctl );
         }
     }
@@ -2741,7 +2738,7 @@ static void setupCastImplicit   // SETUP FOR AN IMPLICIT CAST
 static PTREE doCastImplicit     // DO AN IMPLICIT CAST
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis       // - diagnosis
     , PTREE destination )       // - NULL or supplied destination
 {
@@ -2749,7 +2746,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
     CAST_RESULT result;         // - cast result
     uint_8 jump;                // - jump code
 
-    setupCastImplicit( expr, type, reqd, diagnosis, destination, &ctl );
+    setupCastImplicit( expr, type, reqd_cnv, diagnosis, destination, &ctl );
     result = CAST_ERR_NODE;
     switch( ctl.rough ) {
       case CRUFF_CL_TO_CL :
@@ -2847,21 +2844,21 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
 PTREE CastImplicit              // IMPLICIT CAST
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
-    return doCastImplicit( expr, type, reqd, diagnosis, NULL );
+    return doCastImplicit( expr, type, reqd_cnv, diagnosis, NULL );
 }
 
 
 PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
     PTREE right = PTreeCopySrcLocation( expr->u.subtree[1], expr );
-    right = doCastImplicit( right, type, reqd, diagnosis, NULL );
+    right = doCastImplicit( right, type, reqd_cnv, diagnosis, NULL );
     expr->u.subtree[1] = right;
     if( PT_ERROR == right->op ) {
         PTreeErrorNode( expr );
@@ -2944,7 +2941,7 @@ static void ConvCtlInitCommon   // INITIALIZE CONVCTL FOR COMMON-TYPE'ING
     , PTREE expr                // - expression
     , CNV_DIAG* diag )          // - diagnosis
 {
-    ctl->req = CNV_EXPR;
+    ctl->reqd_cnv = CNV_EXPR;
     ctl->expr = expr;
     ctl->diag_good = &diagImpossible;
     if( diag == NULL ) {
@@ -2954,7 +2951,7 @@ static void ConvCtlInitCommon   // INITIALIZE CONVCTL FOR COMMON-TYPE'ING
     ctl->conv_fun = NULL;
     ctl->conv_type = NULL;
     ctl->destination = NULL;
-    #define CONVCTL_FLAG( flag ) ctl->flag = FALSE;
+    #define CONVCTL_FLAG( flag ) ctl->flag = false;
     CONVCTL_FLAGS
     #undef CONVCTL_FLAG
     ctl->ctd = 0;
@@ -3003,7 +3000,7 @@ static PTREE commonCastEx       // EXPLICIT CAST FOR COMMON
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     ( PTREE expr                // - the expression
     , CNV_DIAG *diagnosis       // - diagnosis
-    , bool check_cv )           // - TRUE ==> check CV QUALIFICATION
+    , bool check_cv )           // - true ==> check CV QUALIFICATION
 {
     TYPE final_type;            // - final type
     CONVCTL ctl;                // - controller
@@ -3165,7 +3162,7 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
     ( PTREE* a_expr             // - addr[ expression ]
     , CNV_DIAG* diagnosis )     // - diagnosis
 {
-    bool retn;                  // - return: TRUE ==> converted or diagnosed
+    bool retb;                  // - return: true ==> converted or diagnosed
     PTREE expr;                 // - expression
     CAST_RESULT result_left;    // - result of cast to left
     CAST_RESULT result_right;   // - result of cast to right
@@ -3181,7 +3178,7 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
                              , NodeType( expr->u.subtree[1] )
                              , diagnosis
                              , &ctl_right );
-    retn = TRUE;
+    retb = true;
     if( result_right == CAST_ERR_NODE || result_left == CAST_ERR_NODE ) {
         stripOffCastOrig( &ctl_left );
         stripOffCastOrig( &ctl_right );
@@ -3212,11 +3209,11 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
         } else {
             stripOffCastOrig( &ctl_left );
             stripOffCastOrig( &ctl_right );
-            retn = FALSE;
+            retb = false;
         }
     }
     *a_expr = expr;
     DbgVerify( --infinite_ctr >= 0, "Bad Implicit Conversion Unwind" );
-    return retn;
+    return( retb );
 
 }

@@ -37,6 +37,7 @@
 #include <time.h>
 #include <dos.h>
 #include <direct.h>
+#include "bool.h"
 #include "watcom.h"
 #include "cp.h"
 #include "getopt.h"
@@ -99,51 +100,51 @@ int main( int argc, char *argv[] )
     while( (ch = GetOpt( &argc, argv, "Xsaifpnrt:T:d:D:", usageMsg )) != -1 ) {
         switch( ch ) {
         case 'X':
-            rxflag = TRUE;
+            rxflag = true;
             break;
         case 'm':
             break;
         case 'r':
-            rflag=TRUE;
+            rflag = true;
             break;
         case 'n':
-            npflag=FALSE;
+            npflag=false;
             break;
         case 'p':
-            pattrflag=TRUE;
+            pattrflag = true;
             break;
         case 'f':
-            fflag=TRUE;
+            fflag = true;
             break;
         case 'i':
-            iflag=TRUE;
+            iflag=true;
             break;
         case 'a':
-            aflag=TRUE;
+            aflag=true;
             break;
         case 's':
-            sflag=TRUE;
+            sflag=true;
             break;
         case 't':
         case 'T':
-            todflag = TRUE;
+            todflag = true;
             if( ch =='T' ) {
-                Tflag1=TRUE;
+                Tflag1=true;
                 t_d = &before_t_d;
             } else {
-                tflag2=TRUE;
+                tflag2=true;
                 t_d = &after_t_d;
             }
             parseTD( OptArg,':',&t_d->hr,&t_d->min, &t_d->sec );
             break;
         case 'd':
         case 'D':
-            todflag = TRUE;
+            todflag = true;
             if( ch =='D' ) {
-                Dflag1=TRUE;
+                Dflag1=true;
                 t_d = &before_t_d;
             } else {
-                dflag2=TRUE;
+                dflag2=true;
                 t_d = &after_t_d;
             }
             parseTD( OptArg,'-',&t_d->yy,&t_d->mm, &t_d->dd );

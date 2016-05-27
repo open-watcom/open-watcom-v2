@@ -69,7 +69,7 @@ extern bool InitParsing( void )
     getcmd( CmdFile->buffer );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
-    return( TRUE );
+    return( true );
 }
 
 extern void FreeParserMem( void )
@@ -217,7 +217,7 @@ static void ProcessDefFile( void )
     }
     HaveDefFile = 1;
     cmd = Commands[ DEF_SLOT ];
-    StartNewFile( FileName( cmd->command, strlen( cmd->command ), E_DEF,FALSE));
+    StartNewFile( FileName( cmd->command, strlen( cmd->command ), E_DEF, false ));
     ParseDefFile();
 }
 
@@ -238,7 +238,7 @@ extern void DirectiveError( void )
 
 extern bool MakeToken( sep_type separator, bool include_fn )
 /**********************************************************/
-// include_fn == TRUE if '.' and ':' are allowed to be part of the token
+// include_fn == true if '.' and ':' are allowed to be part of the token
 // (include filename).
 {
     int     quit;
@@ -253,35 +253,35 @@ extern bool MakeToken( sep_type separator, bool include_fn )
     CmdFile->token = CmdFile->current;
     if( hmm == '\0' || hmm == '\n' ) {
         CmdFile->len = 0;
-        return( FALSE );
+        return( false );
     }
     matchchar = '\0';
     CmdFile->len = 1;                 // for error reporting.
     switch( separator ){
     case SEP_QUOTE:
         if( hmm != '\'' && hmm != '"' ) {
-            return( FALSE );
+            return( false );
         }
         matchchar = hmm;
         break;
     case SEP_AT:
         if( hmm != '@' ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case SEP_COLON:
         if( hmm != ':' ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case SEP_EQUALS:
         if( hmm != '=' ) {
-            return( FALSE );
+            return( false );
         }
         break;
     case SEP_PERIOD:
         if( hmm != '.' ) {
-            return( FALSE );
+            return( false );
         }
         break;
     default:
@@ -292,12 +292,12 @@ extern bool MakeToken( sep_type separator, bool include_fn )
     hmm = *CmdFile->current;
     if( hmm == '\0' || hmm == '\n' || hmm == ';' ) {
         CmdFile->len = 0;
-        return( FALSE );
+        return( false );
     }
     len = 0;
-    quit = FALSE;
+    quit = false;
     forcematch = (separator == SEP_QUOTE );
-    hitmatch = FALSE;
+    hitmatch = false;
     while( !quit ) {
         len++;
         CmdFile->current++;
@@ -307,8 +307,8 @@ extern bool MakeToken( sep_type separator, bool include_fn )
         case '"':
             if( separator == SEP_QUOTE && hmm == matchchar ) {
                 CmdFile->current++;    // don't include end quote in next token.
-                hitmatch = TRUE;
-                quit = TRUE;
+                hitmatch = true;
+                quit = true;
             }
             break;
         case ')':       // Right paren separates only in overlay, left never
@@ -323,27 +323,27 @@ extern bool MakeToken( sep_type separator, bool include_fn )
         case ' ':
         case '\t':
             if( !forcematch ) {
-                quit = TRUE;
+                quit = true;
             }
             break;
         case '.':
         case ':':
             if( !forcematch && !include_fn ) {
-                quit = TRUE;
+                quit = true;
             }
             break;
         case '\0':
         case '\r':
         case '\n':
-            quit = TRUE;
+            quit = true;
             break;
         }
     }
     CmdFile->len = len;
     if( forcematch && !hitmatch ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 extern char * ToString( void )
@@ -389,7 +389,7 @@ static int ReadNextChar( prompt_slot prompt )
             if( is_new_line ) {
                 if( prompt != OPTION_SLOT && !no_prompt )
                     ; //OutPutPrompt( prompt );
-                is_new_line = FALSE;
+                is_new_line = false;
             }
             if( prompt != OPTION_SLOT && !no_prompt ) {
                 if( c == '\r' )
@@ -399,7 +399,7 @@ static int ReadNextChar( prompt_slot prompt )
             if( c == ';' )
                 ;//@TODO: output newline?
             else if( c == '\n' )
-                is_new_line = TRUE;
+                is_new_line = true;
             else if( c == '\t' )
                 c = ' ';    /* Tabs to spaces. */
 
@@ -412,8 +412,8 @@ static int ReadNextChar( prompt_slot prompt )
     if( more_cmdline ) {
         for( ;; ) {
             if( *CmdFile->current == '\0' ) {
-                more_cmdline = FALSE;
-                is_new_line  = TRUE;
+                more_cmdline = false;
+                is_new_line  = true;
                 return( '\n' );
             }
             c = *CmdFile->current++;
@@ -426,7 +426,7 @@ static int ReadNextChar( prompt_slot prompt )
         if( is_new_line ) {
             if( prompt != OPTION_SLOT && ((!is_redir && !no_prompt) || (!is_term && no_prompt)) )
                 GetNewLine( prompt );
-            is_new_line = FALSE;
+            is_new_line = false;
         }
         c = *CmdFile->current++;
         if( c == '\0' /*EOF*/ )
@@ -434,7 +434,7 @@ static int ReadNextChar( prompt_slot prompt )
         else if( c == '\t' )
             c = ' ';    /* Tabs to spaces. */
         if( c == '\n' )
-            is_new_line = TRUE;
+            is_new_line = true;
         if( c == '\n' || c >= ' ' )
             return( c );
     }
@@ -455,7 +455,7 @@ static int GetNextInputChar( prompt_slot prompt )
             for( oi = 0; oi < sizeof( fname ) - 1; ) {
                 c = ReadNextChar( prompt );
                 if( c == '"' )
-                    is_quoting ^= TRUE;
+                    is_quoting ^= true;
                 /* Quit loop if not a valid filename character. */
                 if( (!is_quoting && (c == ',' || c == '+' || c == ';' || c == ' ')) ||
                     c == '/' || c < ' ' )
@@ -479,30 +479,30 @@ static int GetNextInputChar( prompt_slot prompt )
 static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
 /*********************************************************************/
 {
-    bool        first = TRUE;
+    bool        first = true;
     unsigned    oi;
     int         c;
     unsigned    idx1, idx2;
 
-    first = TRUE;
+    first = true;
     last_sep = sep_chr;
     if( is_inp_done ) {
         line[0] = '\0';
-        is_term = TRUE;
+        is_term = true;
         return( 0 );
     }
     c = 0;
     for( ;; ) {
-        is_quoting = FALSE;
+        is_quoting = false;
         /* Read a line from input stream. */
         for( oi = 0; oi < buf_len - 1; ) {
             c = GetNextInputChar( prompt );
             if( c == '"' )
-                is_quoting ^= TRUE;
+                is_quoting ^= true;
             if( c == '\n' || (!is_quoting && (c == ',' || c == ';')) ) {
                 /* Done with this line. */
                 if( c == ';' )  /* Semicolon terminates input. */
-                    more_cmdline = FALSE;
+                    more_cmdline = false;
                 break;
             }
             if( oi != 0 || c != ' ' ) { /* Ignore leading spaces. */
@@ -551,7 +551,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
             break;
 
         /* Another run through the loop. */
-        first = FALSE;
+        first = false;
         last_sep = ',';
     }
     is_inp_done = (c == ';');
@@ -625,8 +625,8 @@ static void DoOneObject( char *obj )
 /**********************************/
 // process a single object file
 {
-    bool    l_paren = FALSE;
-    bool    r_paren = FALSE;
+    bool    l_paren = false;
+    bool    r_paren = false;
     char    *end;
 
 
@@ -637,11 +637,11 @@ static void DoOneObject( char *obj )
 
     /* First remove surrounding parentheses, if present. */
     if( *obj == '(' ) {
-        l_paren = TRUE;
+        l_paren = true;
         ++obj;
     }
     if( *end == ')' ) {
-        r_paren = TRUE;
+        r_paren = true;
         *end-- = '\0';
     }
     /* Only then process options. */
@@ -652,7 +652,7 @@ static void DoOneObject( char *obj )
     if( *end == ')' ) {
         if( r_paren )
             Error( "nested right parentheses" );
-        r_paren = TRUE;
+        r_paren = true;
         *end-- = '\0';
     }
     /* Conditionally open an overlay. */
@@ -664,15 +664,15 @@ static void DoOneObject( char *obj )
 
         sect = MemAlloc( 8 );
         memcpy( sect, "section", 8 );
-        AddCommand( sect , OVERLAY_SLOT, TRUE );
+        AddCommand( sect , OVERLAY_SLOT, true );
         ++OverlayLevel;
     }
     /* If anything is left, add it to the list of object files. */
     if( *obj ) {
         char    *name;
 
-        name = FileName( obj, strlen( obj ), OBJECT_SLOT, FALSE );
-        AddCommand( name, OverlayLevel ? OVERLAY_SLOT : OBJECT_SLOT, FALSE );
+        name = FileName( obj, strlen( obj ), OBJECT_SLOT, false );
+        AddCommand( name, OverlayLevel ? OVERLAY_SLOT : OBJECT_SLOT, false );
     }
     /* Conditionally close the current overlay. */
     if( r_paren ) {
@@ -692,8 +692,8 @@ static void DoOneLib( char *lib )
     if( *lib ) {
         char    *name;
 
-        name = FileName( lib, strlen( lib ), LIBRARY_SLOT, FALSE );
-        AddCommand( name, LIBRARY_SLOT, FALSE );
+        name = FileName( lib, strlen( lib ), LIBRARY_SLOT, false );
+        AddCommand( name, LIBRARY_SLOT, false );
     }
 }
 
@@ -706,8 +706,8 @@ static void GetNextInput( char *buf, size_t len, prompt_slot prompt )
         if( *buf ) {
             char    *name;
 
-            name = FileName( buf, strlen( buf ), prompt, FALSE );
-            AddCommand( name, prompt, FALSE );
+            name = FileName( buf, strlen( buf ), prompt, false );
+            AddCommand( name, prompt, false );
         }
     }
 }
@@ -728,9 +728,9 @@ extern void ParseMicrosoft( void )
     mask_spc_chr = 0x1f;    /* Replace spaces with another character. */
     more_cmdline = !!*CmdFile->current;
     first = more_cmdline;
-    is_new_line = TRUE;
+    is_new_line = true;
     do {
-        more_objs = FALSE;  /* No more unless we discover otherwise. */
+        more_objs = false;  /* No more unless we discover otherwise. */
         if( first )
             len = GetLine( cmd, sizeof( cmd ), OPTION_SLOT );
         else
@@ -740,11 +740,11 @@ extern void ParseMicrosoft( void )
             break;
         end = LastStringChar( cmd );
         if( *end == mask_spc_chr ) {
-            more_objs = TRUE;
+            more_objs = true;
             *end = '\0';
         }
         TokenizeLine( cmd, mask_spc_chr, DoOneObject );
-        first = FALSE;
+        first = false;
     } while( more_objs );
 
     /* Check for possible error conditions. */
@@ -762,12 +762,12 @@ extern void ParseMicrosoft( void )
     if( !is_term ) {
         do {
             GetLine( cmd, sizeof( cmd ), LIBRARY_SLOT );
-            more_libs = FALSE;
+            more_libs = false;
             if( is_term || *cmd == '\0' )
                 break;
             end = LastStringChar( cmd );
             if( *end == mask_spc_chr ) {
-                more_libs = TRUE;
+                more_libs = true;
                 *end = '\0';
             }
             TokenizeLine( cmd, mask_spc_chr, DoOneLib );

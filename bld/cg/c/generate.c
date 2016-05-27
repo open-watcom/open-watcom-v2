@@ -51,6 +51,7 @@
 #include "ocentry.h"
 #include "optmain.h"
 #include "object.h"
+#include "regalloc.h"
 #include "feprotos.h"
 
 
@@ -75,9 +76,7 @@ extern  bool            BlkTooBig( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
-extern  void            NullConflicts( var_usage );
 extern  void            FreeAConflict( conflict_node * );
-extern  conflict_node   *InMemory( conflict_node * );
 extern  void            FreeProc( void );
 extern  void            GenProlog( void );
 extern  void            GenObject( void );
@@ -101,7 +100,6 @@ extern  int             ExpandOps( bool );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  bool            RegAlloc( bool );
 extern  void            LoopRegInvariant( void );
 extern  void            Score( void );
 extern  void            MergeIndex( void );
@@ -137,7 +135,6 @@ extern  void            AddCacheRegs( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 extern  void            PropNullInfo( void );
-extern  void            ReConstFold( void );
 
 static  bool            abortCG;
 
@@ -150,8 +147,8 @@ extern  void    InitCG( void )
     CurrBlock = NULL;
     BlockList = NULL;
     HeadBlock = NULL;
-    BlockByBlock = FALSE;
-    abortCG = FALSE;
+    BlockByBlock = false;
+    abortCG = false;
     InitFP();/* must be before InitRegTbl */
     InitRegTbl();
     ScoreInit();
@@ -171,7 +168,7 @@ extern  void    InitCG( void )
 extern  void    AbortCG( void )
 /*****************************/
 {
-    abortCG = TRUE;
+    abortCG = true;
 }
 
 
@@ -215,28 +212,28 @@ static  void            PreOptimize( void )
         BlockTrim();
         AddANop();
         if( _IsModel( LOOP_OPTIMIZATION ) ) {
-            change = FALSE;
-            if( TransLoops( FALSE ) ) {
-                change = TRUE;
+            change = false;
+            if( TransLoops( false ) ) {
+                change = true;
             }
             if( LoopInvariant() ) {
-                change = TRUE;
+                change = true;
             }
             if( change ) {
-                CommonSex(TRUE);
+                CommonSex(true);
                 InsDead();
                 CommonInvariant();
             }
             if( IndVars() ) {
-                CommonSex(FALSE);
+                CommonSex(false);
                 InsDead();
-                change = TRUE;
+                change = true;
             }
             BlockTrim();
-            if( TransLoops( TRUE ) ) {
+            if( TransLoops( true ) ) {
                 BlockTrim();
-                CommonSex( FALSE );
-                change = TRUE;
+                CommonSex( false );
+                change = true;
             }
             if( change ) {
                 ReConstFold();
@@ -272,7 +269,7 @@ static  void            PostOptimize( void )
         // Run peephole optimizer again. Important: It is critical that the
         // new instructions can be directly generated because RegAlloc is
         // done by now. PeepOpt() is responsible for verifying that.
-        if( PeepOpt( HeadBlock, NextBlock, NULL, TRUE ) ) {
+        if( PeepOpt( HeadBlock, NextBlock, NULL, true ) ) {
             LiveInfoUpdate();
         }
         // this is important as BuildIndex cannot handle instructions with no operands
@@ -322,13 +319,13 @@ static  void            PostOptimize( void )
         DeadInstructions();   // cleanup junk after Conditions()
         // Run scheduler last, when all instructions are stable
         if( _IsModel( INS_SCHEDULING ) ) {
-            HaveLiveInfo = FALSE;
+            HaveLiveInfo = false;
             Schedule(); /* NOTE: Schedule messes up live information */
             LiveInfoUpdate();
-            HaveLiveInfo = TRUE;
+            HaveLiveInfo = true;
         }
         // run this again in case Scheduler messed around with indices
-        if( PeepOpt( HeadBlock, NextBlock, NULL, TRUE ) ) {
+        if( PeepOpt( HeadBlock, NextBlock, NULL, true ) ) {
             LiveInfoUpdate();
         }
     }
@@ -424,12 +421,12 @@ static  void    BlockToCode( bool partly_done )
     HeadBlock->u.partition = NULL;
 
     ForceTempsMemory();
-    if( partly_done == FALSE ) {
+    if( partly_done == false ) {
         FixMemRefs();
-        HaveLiveInfo = FALSE;
+        HaveLiveInfo = false;
         if( _IsntModel( NO_OPTIMIZATION | FORTRAN_ALIASING ) ) {
             FindReferences();
-            CommonSex(FALSE);
+            CommonSex(false);
             PushPostOps();
         }
         FindReferences();
@@ -440,14 +437,14 @@ static  void    BlockToCode( bool partly_done )
             MakeConflicts();
         }
         MakeLiveInfo();
-        HaveLiveInfo = TRUE;
+        HaveLiveInfo = true;
         AxeDeadCode();
         FixIndex();
         FixSegments();
         FPRegAlloc();
-        RegAlloc( TRUE );
+        RegAlloc( true );
         FreeConflicts();
-        HaveLiveInfo = FALSE;
+        HaveLiveInfo = false;
     } else {
         conflist = NULL;
         owner = &ConfList;
@@ -464,7 +461,7 @@ static  void    BlockToCode( bool partly_done )
         }
         curr = ConfList;
         ConfList = conflist;
-        RegAlloc( TRUE );
+        RegAlloc( true );
         FreeConflicts();
         ConfList = curr;
     }
@@ -518,14 +515,14 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( BlockByBlock == FALSE && _IsntModel( NO_OPTIMIZATION ) ) {
+    if( BlockByBlock == false && _IsntModel( NO_OPTIMIZATION ) ) {
         ProcMessage( MSG_REGALLOC_DIED );
     }
-    if( partly_done == FALSE ) {
+    if( partly_done == false ) {
         Renumber();
     }
     curr = CurrBlock;
-    BlockByBlock = TRUE;
+    BlockByBlock = true;
     classes = EMPTY;
     for( blk = HeadBlock; blk != NULL; blk = next ) {
         next = blk->next_block;
@@ -598,7 +595,7 @@ static  void    ForceConflictsMemory( void )
 
     ParmPropagate();
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        _SetFalse( conf, ( NEEDS_INDEX_SPLIT | NEEDS_SEGMENT_SPLIT ) );
+        _SetFalse( conf, CST_NEEDS_INDEX_SPLIT | CST_NEEDS_SEGMENT_SPLIT );
     }
     for( conf = ConfList; conf != NULL; conf = next ) {
         next = conf->next_conflict;
@@ -641,21 +638,21 @@ static  void            GenPartialRoutine( bool routine_done )
 {
     while( routine_done || _MemLow ) {
         if( CreateBreak() ) {
-            BlockByBlock = TRUE;
+            BlockByBlock = true;
             BlockTrim();
             FindReferences();
             PreOptimize();
             FixBreak();
             SortBlocks();
             /* so the front gets told we're panicking */
-            BlockByBlock = FALSE;
-            FlushBlocks( FALSE );
+            BlockByBlock = false;
+            FlushBlocks( false );
             RemoveBreak();
             if( HeadBlock == NULL ) {
                 FreeExtraSyms( NULL );
             }
         } else {
-            FlushBlocks( FALSE );
+            FlushBlocks( false );
             FreeExtraSyms( NULL );
             break;
         }
@@ -682,17 +679,17 @@ extern  void    Generate( bool routine_done )
  */
 {
     if( BGInInline() ) return;
-    HaveLiveInfo = FALSE;
-    HaveDominatorInfo = FALSE;
+    HaveLiveInfo = false;
+    HaveDominatorInfo = false;
     #if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
         /* if we want to go fast, generate statement at a time */
         if( _IsModel( NO_OPTIMIZATION ) ) {
             if( !BlockByBlock ) {
                 InitStackMap();
-                BlockByBlock = TRUE;
+                BlockByBlock = true;
             }
             LNBlip( SrcLine );
-            FlushBlocks( FALSE );
+            FlushBlocks( false );
             FreeExtraSyms( LastTemp );
             if( _MemLow ) {
                 BlowAwayFreeLists();
@@ -720,7 +717,7 @@ extern  void    Generate( bool routine_done )
     }
 
     /* check to see that no basic block gets too unwieldy */
-    if( routine_done == FALSE ) {
+    if( routine_done == false ) {
         BlkTooBig();
         return;
     }
@@ -740,7 +737,7 @@ extern  void    Generate( bool routine_done )
     PropNullInfo();
     MemtoBaseTemp();
     if( _MemCritical ) {
-        Panic( FALSE );
+        Panic( false );
         return;
     }
     MakeConflicts();
@@ -749,7 +746,7 @@ extern  void    Generate( bool routine_done )
     }
     AddCacheRegs();
     MakeLiveInfo();
-    HaveLiveInfo = TRUE;
+    HaveLiveInfo = true;
     AxeDeadCode();
     /* AxeDeadCode() may have emptied some blocks. Run BlockTrim() to get rid
      * of useless conditionals, then redo conflicts etc. if any blocks died.
@@ -764,9 +761,9 @@ extern  void    Generate( bool routine_done )
     FixIndex();
     FixSegments();
     FPRegAlloc();
-    if( RegAlloc( FALSE ) == FALSE ) {
-        Panic( TRUE );
-        HaveLiveInfo = FALSE;
+    if( RegAlloc( false ) == false ) {
+        Panic( true );
+        HaveLiveInfo = false;
         return;
     }
     FPParms();
@@ -778,7 +775,7 @@ extern  void    Generate( bool routine_done )
     FreeConflicts();
     SortBlocks();
     if( CalcDominatorInfo() ) {
-        HaveDominatorInfo = TRUE;
+        HaveDominatorInfo = true;
     }
     GenProlog();
     UnFixEdges();
@@ -788,7 +785,7 @@ extern  void    Generate( bool routine_done )
         GenEpilog();
     }
     FreeProc();
-    HaveLiveInfo = FALSE;
+    HaveLiveInfo = false;
 #if _TARGET & _TARG_INTEL
     if( _IsModel( NEW_P5_PROFILING ) ) {
         FlushQueue();

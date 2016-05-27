@@ -269,9 +269,9 @@ static bool PopOperator( TOKEN *token, loc_info *loc )
             *loc = stack_entry->loc;
         }
         CarveFree( carve_pptoken_stack, stack_entry );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool TopOperator( TOKEN *token, int *prec )
@@ -287,9 +287,9 @@ static bool TopOperator( TOKEN *token, int *prec )
             *prec = stack_entry->prec;
         }
         StackPush( &HeadOperator, stack_entry );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void PushOperand( ppvalue p, loc_info *loc )
@@ -324,16 +324,16 @@ static bool PopOperand( ppvalue *p, loc_info *loc )
             *loc = stack_entry->loc;
         }
         CarveFree( carve_ppoperand_stack, stack_entry );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CheckToken( TOKEN prev_token )
 {
     if( IS_OPERAND( prev_token ) && IS_OPERAND( CurToken ) ) {
         CErr1( ERR_CONSECUTIVE_OPERANDS ); //  can't have 2 operands in a row
-        return( TRUE );
+        return( true );
     }
     if( ( CurToken == T_PLUS ) || ( CurToken == T_MINUS ) ) {
         if( ( prev_token != T_RIGHT_PAREN )
@@ -345,7 +345,7 @@ static bool CheckToken( TOKEN prev_token )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -379,7 +379,7 @@ static bool COperand( void )
     TOKEN_LOCN left_loc;
     bool done;
 
-    done = FALSE;
+    done = false;
     switch( CurToken ) {
       case T_ID:
         SrcFileGetTokenLocn( &loc.locn ); // need this to store result
@@ -400,7 +400,7 @@ static bool COperand( void )
                 if( CurToken != T_RIGHT_PAREN ) {
                     SetErrLoc( &left_loc );
                     CErr1( ERR_UNMATCHED_LEFT_PAREN );
-                    done = TRUE;
+                    done = true;
                 }
             } else {
                 PPControl = old_ppctl;
@@ -429,7 +429,7 @@ static bool COperand( void )
           case TYP_DOUBLE:
           case TYP_LONG_DOUBLE:
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
-            done = TRUE;
+            done = true;
             I32ToI64( SafeAtof( Buffer ), &(p.u.sval) );
             // LMW add long double support if available
             p.no_sign = 0;
@@ -486,7 +486,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
     PushOperator( T_START, &loc, Prec[T_START] ); // problem because T_START is not a ppvalue
     Pos++;
     CheckToken( T_START ); // check for initial unary + or -
-    done = FALSE;
+    done = false;
     while( !done ) {
         if( IS_OPERAND( CurToken ) ) {
             done = COperand(); // get operand and read next token
@@ -508,7 +508,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
                 }
             } else {
                 unexpectedCurToken();
-                done = TRUE;
+                done = true;
             }
         }
     }
@@ -540,7 +540,7 @@ static bool CRightParen( void ) // reduce extra )
         SetErrLoc( &right_info.locn );
         CErr1( ERR_UNMATCHED_RIGHT_PAREN );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CLeftParen( void )  // reduce (expr)
@@ -554,7 +554,7 @@ static bool CLeftParen( void )  // reduce (expr)
     if( CurToken != T_RIGHT_PAREN ) { // expect ) as current token
         SetErrLoc( &left_info.locn );
         CErr1( ERR_UNMATCHED_LEFT_PAREN );
-        return( TRUE );
+        return( true );
     }
     if( PopOperand( &e1, &e1_info ) ) {
         if( ( e1_info.pos < Pos ) && ( e1_info.pos > left_info.pos ) ) {
@@ -564,7 +564,7 @@ static bool CLeftParen( void )  // reduce (expr)
     }
     SetErrLoc( &left_info.locn );
     CErr1( ERR_EMPTY_PAREN );
-    return( TRUE );
+    return( true );
 }
 
 static bool CConditional( void )    // reduce an a?b:c expression
@@ -585,7 +585,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
         if( ( op2 != T_QUESTION && op2 != T_START ) || CurToken == T_NULL ) {
             SetErrLoc( &op2_info.locn );
             CErr1( ERR_CONDITIONAL_MISSING_COLON );
-            return( TRUE );
+            return( true );
         } else {
             PushOperator( op2, &op2_info, Prec[op2] );
             PushCurToken( Prec[ CurToken] );
@@ -598,7 +598,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
         if( ( op1 != T_COLON && op1 != T_START ) || ( CurToken == T_NULL ) ) {
             SetErrLoc( &op1_info.locn );
             CErr1( ERR_CONDITIONAL_MISSING_QUESTION );
-            return( TRUE );
+            return( true );
         }
     }
     if( op2 != T_COLON || op1 != T_QUESTION ) {
@@ -619,7 +619,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
                 }
                 e1.no_sign = e2.no_sign | e3.no_sign;
                 PushOperand( e1, &e1_info );
-                return( FALSE );
+                return( false );
             } else {
                 SetErrLoc( &op1_info.locn ); // missing a in a?b:c
                 CErr1( ERR_CONDITIONAL_MISSING_FIRST_OPERAND );
@@ -632,7 +632,7 @@ static bool CConditional( void )    // reduce an a?b:c expression
         SetErrLoc( &op2_info.locn ); // missing c in a?b:c
         CErr1( ERR_CONDITIONAL_MISSING_THIRD_OPERAND );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool Binary(     // pop binary operand and two operands, error check
@@ -645,7 +645,7 @@ static bool Binary(     // pop binary operand and two operands, error check
     PopOperator( token, loc );
     if( PopOperand( e2, &e2_info ) && ( e2_info.pos > loc->pos ) ) {
         if( PopOperand( e1, &e1_info ) && ( e1_info.pos < loc->pos ) ) {
-            return( TRUE );
+            return( true );
         } else {
             SetErrLoc( &loc->locn );
             CErr2p( ERR_BINARY_MISSING_LEFT_OPERAND, Tokens[*token] );
@@ -654,7 +654,7 @@ static bool Binary(     // pop binary operand and two operands, error check
         SetErrLoc( &loc->locn );
         CErr2p( ERR_BINARY_MISSING_RIGHT_OPERAND, Tokens[*token] );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CLogicalOr( void )  // reduce a || b
@@ -677,9 +677,9 @@ static bool CLogicalOr( void )  // reduce a || b
         }
         e1.no_sign = 0;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CLogicalAnd( void ) // reduce a && b
@@ -701,9 +701,9 @@ static bool CLogicalAnd( void ) // reduce a && b
         // else e1 is already zero
         e1.no_sign = 0;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool COr( void )     // reduce a|b
@@ -717,9 +717,9 @@ static bool COr( void )     // reduce a|b
         U64OrEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CXOr( void )    // reduce a^b
@@ -733,9 +733,9 @@ static bool CXOr( void )    // reduce a^b
         U64XOrEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CAnd( void )    // reduce a&b
@@ -749,9 +749,9 @@ static bool CAnd( void )    // reduce a&b
         U64AndEq( e1, e2 );
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CEquality( void )   // reduce a == b or a != b
@@ -771,9 +771,9 @@ static bool CEquality( void )   // reduce a == b or a != b
         I32ToI64( val, &e1.u.sval );
         e1.no_sign = 0;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
@@ -822,9 +822,9 @@ static bool CRelational( void ) // reduce a<b, a>b, a<=b, or a>=b
         }
         e1.no_sign = 0;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CShift( void )  // reduce a<<b or a>>b
@@ -865,9 +865,9 @@ static bool CShift( void )  // reduce a<<b or a>>b
           DbgDefault( "Default in CShift\n" );
         }
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CAdditive( void )   // reduce a+b or a-b
@@ -890,9 +890,9 @@ static bool CAdditive( void )   // reduce a+b or a-b
           DbgDefault( "Default in CAdditive\n" );
         }
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -934,9 +934,9 @@ static bool CMultiplicative( void ) // reduce a/b or a*b
         }
         e1.no_sign |= e2.no_sign;
         PushOperand( e1, &loc );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool CUnary( void )      // reduce +a or -a or !a or ~a
@@ -974,9 +974,9 @@ static bool CUnary( void )      // reduce +a or -a or !a or ~a
     } else {
         SetErrLoc( &operator_info.locn );
         CErr2p( ERR_UNARY_OPERATOR_MISSING_OPERAND, Tokens[top] );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CStart( void )
@@ -987,5 +987,5 @@ static bool CStart( void )
     if( CurToken != T_NULL ) {
         unexpectedCurToken();
     }
-    return( TRUE );
+    return( true );
 }

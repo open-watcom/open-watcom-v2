@@ -198,8 +198,8 @@ void MergeInfoSection::readDIE( MergeFile * file, MergeOffset startOff,
     MergeOffset     child;              // offset of first child
     MergeOffset     sibling;
 
-    bool            ext = TRUE;         // external or static?
-    bool            defn = TRUE;        // is a definition?
+    bool            ext = true;         // external or static?
+    bool            defn = true;        // is a definition?
     const char *    name = NULL;
     int             i;
     DIELen_T        length;

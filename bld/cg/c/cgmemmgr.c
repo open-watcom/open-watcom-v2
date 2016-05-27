@@ -230,13 +230,13 @@ static  void    CalcMemSize( void )
 
     Initialized = 2;
     size_requested = 0;
-    size_queried = FALSE;
-    max_size_queried = FALSE;
+    size_queried = false;
+    max_size_queried = false;
     if( GetEnvVar( "WCGMEMORY", buff, 9 ) ) {
         if( buff[0] == '?' && buff[1] == '\0' ) {
-            max_size_queried = TRUE;
+            max_size_queried = true;
         } else if( buff[0] == '#' && buff[1] == '\0' ) {
-            size_queried = TRUE;
+            size_queried = true;
         } else {
             size_requested = myatoi( buff ) * _1K;
         }

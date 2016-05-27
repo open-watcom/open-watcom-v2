@@ -1,15 +1,10 @@
 .func readdir _wreaddir
 .synop begin
 #include <&dirhdr>
-.if '&machsys' eq 'QNX' .do begin
 struct dirent *readdir( DIR *dirp );
-.do end
-.el .do begin
-struct dirent *readdir( struct dirent *dirp );
-.do end
 .ixfunc2 '&Direct' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-struct _wdirent *_wreaddir( _wdirent *dirp );
+struct _wdirent *_wreaddir( WDIR *dirp );
 .ixfunc2 '&Direct' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end

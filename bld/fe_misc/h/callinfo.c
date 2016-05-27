@@ -360,23 +360,23 @@ int IsAuxParmsBuiltIn( hw_reg_set *parms )
 /***************************************/
 {
     if( parms == DefaultParms ) {
-        return( TRUE );
+        return( true );
 #if _INTEL_CPU
     } else if( parms == StackParms ) {
-        return( TRUE );
+        return( true );
     } else if( parms == FastcallParms ) {
-        return( TRUE );
+        return( true );
 #if _CPU == 386
     } else if( parms == OptlinkParms ) {
-        return( TRUE );
+        return( true );
     } else if( parms == metaWareParms ) {
-        return( TRUE );
+        return( true );
 #endif
 #endif
     } else if( parms == NULL ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -411,30 +411,30 @@ int IsAuxInfoBuiltIn( aux_info *inf )
 /***********************************/
 {
     if( inf == &DefaultInfo )
-        return( TRUE );
+        return( true );
     if( inf == &WatcallInfo )
-        return( TRUE );
+        return( true );
     if( inf == &CdeclInfo )
-        return( TRUE );
+        return( true );
     if( inf == &PascalInfo )
-        return( TRUE );
+        return( true );
     if( inf == &FortranInfo )
-        return( TRUE );
+        return( true );
     if( inf == &SyscallInfo )
-        return( TRUE );
+        return( true );
     if( inf == &StdcallInfo )
-        return( TRUE );
+        return( true );
     if( inf == &FastcallInfo )
-        return( TRUE );
+        return( true );
     if( inf == &OptlinkInfo )
-        return( TRUE );
+        return( true );
 #if _CPU == 386
     if( inf == &Far16PascalInfo )
-        return( TRUE );
+        return( true );
     if( inf == &Far16CdeclInfo )
-        return( TRUE );
+        return( true );
 #endif
-    return( FALSE );
+    return( false );
 }
 
 /* Variables need name mangling different from functions in many cases

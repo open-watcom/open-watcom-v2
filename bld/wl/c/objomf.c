@@ -132,7 +132,7 @@ static void CheckUninit( void *_seg, void *dummy )
 
     dummy = dummy;
     if( !(seg->info & SEG_LXDATA_SEEN) ) {
-        seg->entry->isuninit = TRUE;
+        seg->entry->isuninit = true;
         if( seg->entry->u1.vm_ptr ) {
             ReleaseInfo( seg->entry->u1.vm_ptr );
             seg->entry->u1.vm_ptr = 0;
@@ -165,7 +165,7 @@ static void Pass1Cmd( byte cmd )
 {
     bool isstatic;
 
-    isstatic = FALSE;
+    isstatic = false;
     switch( cmd ) {
     case CMD_THEADR:
         ProcTHEADR();
@@ -186,23 +186,23 @@ static void Pass1Cmd( byte cmd )
     case CMD_STATIC_PUBD32:
         ObjFormat |= FMT_MS_386;
     case CMD_STATIC_PUBDEF:
-        ProcPubdef( TRUE );
+        ProcPubdef( true );
         break;
     case CMD_PUBD32:
         ObjFormat |= FMT_MS_386;
     case CMD_PUBDEF:
-        ProcPubdef( FALSE );
+        ProcPubdef( false );
         break;
     case CMD_STATIC_EXTDEF:
     case CMD_STATIC_EXTD32:
-        isstatic = TRUE;
+        isstatic = true;
     case CMD_EXTDEF:
         CurrMod->modinfo |= MOD_NEED_PASS_2;
-        UseSymbols( isstatic, FALSE );
+        UseSymbols( isstatic, false );
         break;
     case CMD_CEXTDF:
         CurrMod->modinfo |= MOD_NEED_PASS_2;
-        UseSymbols( FALSE, TRUE );
+        UseSymbols( false, true );
         break;
     case CMD_GRPDEF:
         DefineGroup();
@@ -219,7 +219,7 @@ static void Pass1Cmd( byte cmd )
         ProcLinsym();
         break;
     case CMD_STATIC_COMDEF:
-        isstatic = TRUE;
+        isstatic = true;
     case CMD_COMDEF:
         CurrMod->modinfo |= MOD_NEED_PASS_2;
         ProcComdef( isstatic );
@@ -233,12 +233,12 @@ static void Pass1Cmd( byte cmd )
     case CMD_LEDA32:
         ObjFormat |= FMT_MS_386;
     case CMD_LEDATA:
-        ProcLxdata( FALSE );
+        ProcLxdata( false );
         break;
     case CMD_LIDA32:
         ObjFormat |= FMT_MS_386;
     case CMD_LIDATA:
-        ProcLxdata( TRUE );
+        ProcLxdata( true );
         break;
     case CMD_FIXU32:
         ObjFormat |= FMT_MS_386;
@@ -370,10 +370,10 @@ static void LinkDirective( void )
         DBIP1Source( ObjBuff, EOObjRec );
         break;
     case LDIR_VF_PURE_DEF:
-        ProcVFTableRecord( TRUE );
+        ProcVFTableRecord( true );
         break;
     case LDIR_VF_TABLE_DEF:
-        ProcVFTableRecord( FALSE );
+        ProcVFTableRecord( false );
         break;
     case LDIR_VF_REFERENCE:
         ProcVFReference();
@@ -386,8 +386,8 @@ static void LinkDirective( void )
         break;
     case LDIR_OPT_FAR_CALLS:
         seg = (segnode *)FindNode( SegNodes, GetIdx() );
-        seg->entry->canfarcall = TRUE;
-        seg->entry->iscode = TRUE;
+        seg->entry->canfarcall = true;
+        seg->entry->iscode = true;
         break;
     case LDIR_FLAT_ADDRS:
         CurrMod->modinfo |= MOD_FLATTEN_DBI;
@@ -500,7 +500,7 @@ static void Comment( void )
             break;
         case MOMF_PROT_LIB:
             if( FmtData.type & MK_WINDOWS ) {
-                FmtData.u.os2.is_private_dll = TRUE;
+                FmtData.u.os2.is_private_dll = true;
             }
             break;
         }
@@ -521,10 +521,10 @@ static void Comment( void )
         LinkDirective();
         break;
     case CMT_WKEXT:
-        DoLazyExtdef( TRUE );
+        DoLazyExtdef( true );
         break;
     case CMT_LZEXT:
-        DoLazyExtdef( FALSE );
+        DoLazyExtdef( false );
         break;
     case CMT_EASY_OMF:
         if( memcmp( ObjBuff, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
@@ -664,13 +664,13 @@ static void ProcSegDef( void )
     }
     sdata->align = OMFAlignTab[acbp >> 5];
     if( ObjFormat & FMT_EASY_OMF ) {   // set USE_32 flag.
-        sdata->is32bit = TRUE;
+        sdata->is32bit = true;
     } else if( acbp & 1 ) {
-        sdata->is32bit = TRUE;
+        sdata->is32bit = true;
     }
     switch( acbp >> 5 ) {
     case ALIGN_ABS:
-        sdata->isabs = TRUE;
+        sdata->isabs = true;
         _TargU16toHost( _GetU16UN( ObjBuff ), sdata->frame );
         ObjBuff += sizeof( unsigned_16 ) + 1;
         break;
@@ -704,7 +704,7 @@ static void ProcSegDef( void )
         SkipIdx();                          // skip overlay name index
         if( ObjBuff < EOObjRec ) {          // the optional attribute field present
             if( !(*ObjBuff & 0x4) ) {       // if USE32 bit not set;
-                sdata->is32bit = FALSE;
+                sdata->is32bit = false;
             }
         }
     }
@@ -814,7 +814,7 @@ static void DoLazyExtdef( bool isweak )
     while( ObjBuff < EOObjRec ) {
         ext = (extnode *) FindNode( ExtNodes, GetIdx() );
         sym = ext->entry;
-        ext->isweak = TRUE;
+        ext->isweak = true;
         idx = GetIdx();
         ext = (extnode *) FindNode( ExtNodes, idx );
         DefineLazyExtdef( sym, ext->entry, isweak );
@@ -860,7 +860,7 @@ static void ProcVFTableRecord( bool ispure )
         return;
     ext = (extnode *) FindNode( ExtNodes, GetIdx() );
     sym = ext->entry;
-    ext->isweak = TRUE;
+    ext->isweak = true;
     ext = (extnode *) FindNode( ExtNodes, GetIdx() );
     rtns.getstart = GetVFListStart;
     rtns.setstart = SetVFListStart;
@@ -895,10 +895,10 @@ static void ProcVFReference( void )
             if( sym == NULL ) {
                 sym = MakeWeakExtdef( lname->name, NULL );
             }
-            DefineVFReference( sym, ext->entry, TRUE );
+            DefineVFReference( sym, ext->entry, true );
         } else {                /* it's a seg idx */
             seg = (segnode *)FindNode( SegNodes, GetIdx() );
-            DefineVFReference( seg, ext->entry, FALSE );
+            DefineVFReference( seg, ext->entry, false );
         }
     }
     if( !(ext->entry->info & SYM_DEFINED) ) {
@@ -935,7 +935,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
         }
         newnode = AllocNode( ExtNodes );
         newnode->entry = sym;
-        newnode->isweak = FALSE;
+        newnode->isweak = false;
         DefineReference( sym );
         SkipIdx();/*  skip type index */
     }

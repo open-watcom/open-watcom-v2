@@ -88,12 +88,12 @@ void    FiniBlip( void ) { }
 
 void    InitBlip( void )
 {
-    BlipsOn = FALSE;
+    BlipsOn = false;
 }
 
 bool    WantZoiks2( void )
 {
-    return( FALSE );
+    return( false );
 }
 
 static  void    CheckEvents( void )

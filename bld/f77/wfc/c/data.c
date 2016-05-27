@@ -82,7 +82,7 @@ void    CpData(void) {
 
     // so that we can issue ST_DATA_TOO_EARLY later
     SgmtSw |= SG_SEEN_DATA;
-    error = FALSE;
+    error = false;
     data_sets = 0;
     CITNode->opr = OPR_COM; // prevent call to FinishImpDo first time
     end_data = GDataProlog();
@@ -92,10 +92,13 @@ void    CpData(void) {
         ++data_sets;
         if( RecNOpn() ) {
             AdvanceITPtr();
-            if( RecTrmOpr() ) break;
+            if( RecTrmOpr() )
+                break;
             ReqComma();
         }
-        if( RecTrmOpr() || error ) break;
+        if( RecTrmOpr() || error ) {
+            break;
+        }
     }
     if( !error ) {
         DumpDataSets( data_sets, ITHead );
@@ -160,7 +163,7 @@ static  void    DoData( void ) {
     save_stmtproc = StmtProc;
     StmtProc = PR_READ; // so I/O processing works correctly
     IOData = 0;         // ...
-    AError = FALSE;
+    AError = false;
     VarList();
     if( !AError ) {
         GEndVarSet();
@@ -189,7 +192,9 @@ static  OPR    FindSlash( itnode **itptr_ptr ) {
             level--;
         }
         AdvanceITPtr();
-        if( ( (RecDiv() || RecCat()) && (level == 0) ) || RecTrmOpr() ) break;
+        if( ( (RecDiv() || RecCat()) && (level == 0) ) || RecTrmOpr() ) {
+            break;
+        }
     }
     *itptr_ptr = CITNode;
     opr = CITNode->opr;
@@ -212,7 +217,8 @@ static  void    VarList( void ) {
     do_level = 0;
     last_opr = FindSlash( &last_node );
     while( CITNode != last_node ) {
-        if( AError ) break;
+        if( AError )
+            break;
         if( RecTrmOpr() && ( CITNode != ITHead ) ) {
             --do_level;
             FinishImpDo();
@@ -236,7 +242,7 @@ static  void    VarList( void ) {
             }
         } else {
             AdvanceITPtr();
-            AError = TRUE;
+            AError = true;
             break;
         }
     }
@@ -264,24 +270,29 @@ static  bool    HexConst(void) {
     hex_data = CITNode->opnd;
     hex_len = CITNode->opnd_size;
     if( CITNode->opn.ds != DSOPN_HEX ) {
-        if( !RecName() ) return( FALSE );
-        if( *hex_data != 'Z' ) return( FALSE );
+        if( !RecName() )
+            return( false );
+        if( *hex_data != 'Z' )
+            return( false );
         sym = SymFind( hex_data, hex_len );
         if( sym != NULL ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) return( FALSE );
+            if( ( sym->u.ns.flags & SY_CLASS ) == SY_PARAMETER ) {
+                return( false );
+            }
         }
         ++hex_data;
     }
     --hex_len;
     hex_len = MkHexConst( hex_data, CITNode->opnd, hex_len );
-    if( hex_len == 0 ) return( FALSE );
+    if( hex_len == 0 )
+        return( false );
     CITNode->opnd_size = hex_len;
     CITNode->opn.ds = DSOPN_LIT;
     GetConst();
     AddConst( CITNode );
     CITNode->typ = FT_HEX;
     Extension( DA_HEX_CONST );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -308,9 +319,12 @@ static  void    ConList( void ) {
             AddConst( CITNode );
         }
         AdvanceITPtr();
-        if( CITNode == last_node ) break;
+        if( CITNode == last_node )
+            break;
         ReqComma();
-        if( AError ) break;
+        if( AError ) {
+            break;
+        }
     }
     CITNode->opr = opr;
     ReqDiv();
@@ -330,7 +344,9 @@ static  void    DumpDataSets( int num, itnode *node ) {
     while( --num >= 0 ) {
         for(;;) {
             AdvanceITPtr();
-            if( RecDiv() ) break;
+            if( RecDiv() ) {
+                break;
+            }
         }
         for(;;) {
             if( RecNextOpr( OPR_MUL ) ) {
@@ -344,7 +360,9 @@ static  void    DumpDataSets( int num, itnode *node ) {
             }
             GDataItem( rpt );
             AdvanceITPtr();
-            if( RecDiv() ) break;
+            if( RecDiv() ) {
+                break;
+            }
         }
         GEndDSet();
     }
@@ -402,7 +420,8 @@ int  MkHexConst( char *hex_data, char *dst, int hex_len ) {
     uint        len;
 
     len = HSToB( hex_data, hex_len, dst );
-    if( len != (hex_len+1)/2 ) return( 0 );
+    if( len != (hex_len+1)/2 )
+        return( 0 );
     return( len );
 }
 

@@ -64,10 +64,10 @@ public:
     virtual ~TreeRefNode();
 
     virtual int         getLevel( void ) const;
-    virtual dr_handle   getHandle( void ) const { return _ref->getHandle(); }
+    virtual drmem_hdl   getHandle( void ) const { return _ref->getHandle(); }
     virtual char *      name() { return _ref->name(); }
     virtual bool        isRelated( TreeNode * rel ) { return _ref->isRelated( rel ); }
-    virtual bool        isReference( void ) const { return TRUE; }
+    virtual bool        isReference( void ) const { return true; }
     virtual void        deleteTree( void ) { _ref->deleteTree(); }
     virtual Symbol *    makeSymbol( void ) { return _ref->makeSymbol(); }
 

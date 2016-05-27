@@ -40,8 +40,8 @@
 #include "dwarf.h"
 #include "testcli.h"
 
-dw_handle       FundamentalTypes[ DW_FT_MAX ];
-dw_handle       ConstantFundamentalTypes[ DW_FT_MAX ];
+dw_handle       FundamentalTypes[DW_FT_MAX];
+dw_handle       ConstantFundamentalTypes[DW_FT_MAX];
 
 dw_handle       ConstCharStar;
 dw_handle       EnumColours;
@@ -77,7 +77,7 @@ void TestTypedef( void )
 
     /* typedef signed char uint_8; */
     DWDeclPos( Client, 10, 1 );
-    DWTypedef( Client, FundamentalTypes[ DW_FT_SIGNED_CHAR ], "uint_8", 0, 0 );
+    DWTypedef( Client, FundamentalTypes[DW_FT_SIGNED_CHAR], "uint_8", 0, 0 );
 
     /* typedef const char *name_ptr; */
     DWDeclPos( Client, 11, 1 );
@@ -122,8 +122,7 @@ void TestString( void )
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_fbreg, -4 );
     string_length = DWLocFini( Client, id );
-    string_hdl = DWString( Client, string_length, sizeof( uint_32 ),
-        NULL, 0, 0 );
+    string_hdl = DWString( Client, string_length, sizeof( uint_32 ), NULL, 0, 0 );
     DWLocTrash( Client, string_length );
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_fbreg, -8 );
@@ -143,15 +142,15 @@ void TestArray( void )
     dw_loc_handle       buf2_loc;
     dw_loc_id           id;
 
-    /* char buf[ 80 ]; */
+    /* char buf[80]; */
     DWDeclPos( Client, 55, 79 );
     array_hdl = DWBeginArray( Client, 1 );
-    dim_info.index_type = FundamentalTypes[ DW_FT_UNSIGNED ];
+    dim_info.index_type = FundamentalTypes[DW_FT_UNSIGNED];
     dim_info.lo_data = 0;
     dim_info.hi_data = 79;
     DWArrayDimension( Client, &dim_info );
     DWEndArray( Client );
-    SymHandles[ 3 ] = 0x1234bul;
+    SymHandles[3] = 0x1234bul;
     id = DWLocInit( Client );
     DWLocStatic( Client, id, 3 );
     buf_loc = DWLocFini( Client, id );
@@ -162,7 +161,7 @@ void TestArray( void )
     /* INTEGER*4 A(1:N) */
     DWDeclPos( Client, 55, 81 );
     array_hdl = DWBeginArray( Client, 1 );
-    dim_info.index_type = FundamentalTypes[ DW_FT_SIGNED ];
+    dim_info.index_type = FundamentalTypes[DW_FT_SIGNED];
     dim_info.lo_data = 1;
     id = DWLocInit( Client );   /* assume N is at -4[ebp] */
     DWLocOp( Client, id, DW_LOC_fbreg, -4 );
@@ -212,14 +211,12 @@ void TestStruct1( void )
     DWBeginStruct( Client, struct_div_t, 8, "div_t", 0, 0 );
     id = DWLocInit( Client );
     field_loc = DWLocFini( Client, id );
-    DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ],
-        field_loc, "quot", 0 );
+    DWAddField( Client, FundamentalTypes[DW_FT_SIGNED], field_loc, "quot", 0 );
     DWLocTrash( Client, field_loc );
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     field_loc = DWLocFini( Client, id );
-    DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ],
-        field_loc, "rem", 0 );
+    DWAddField( Client, FundamentalTypes[DW_FT_SIGNED], field_loc, "rem", 0 );
     DWLocTrash( Client, field_loc );
     DWEndStruct( Client );
 
@@ -243,13 +240,12 @@ void TestStruct1( void )
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     field_loc = DWLocFini( Client, id );
-    DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ],
-        field_loc, "type", 0 );
+    DWAddField( Client, FundamentalTypes[DW_FT_SIGNED], field_loc, "type", 0 );
     DWLocTrash( Client, field_loc );
     union_hdl = DWStruct( Client, DW_ST_UNION );
     DWBeginStruct( Client, union_hdl, 4, "wombat", 0, 0 );
-    DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ], NULL, "a", 0 );
-    DWAddField( Client, FundamentalTypes[ DW_FT_FLOAT ], NULL, "b", 0 );
+    DWAddField( Client, FundamentalTypes[DW_FT_SIGNED], NULL, "a", 0 );
+    DWAddField( Client, FundamentalTypes[DW_FT_FLOAT], NULL, "b", 0 );
     DWEndStruct( Client );
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_plus_uconst, 8 );
@@ -272,16 +268,12 @@ void TestStruct2( void )
             unsigned short      year    : 7;
         };
     */
-    DWBeginStruct( Client, DWStruct( Client, DW_ST_STRUCT ), 2,
-        "date", 0, 0 );
+    DWBeginStruct( Client, DWStruct( Client, DW_ST_STRUCT ), 2, "date", 0, 0 );
     id = DWLocInit( Client );
     field_loc = DWLocFini( Client, id );
-    DWAddBitField( Client, FundamentalTypes[ DW_FT_UNSIGNED ],
-        field_loc, 0, 11, 5, "day", 0 );
-    DWAddBitField( Client, FundamentalTypes[ DW_FT_UNSIGNED ],
-        field_loc, 0, 7, 4, "month", 0 );
-    DWAddBitField( Client, FundamentalTypes[ DW_FT_UNSIGNED ],
-        field_loc, 0, 0, 7, "year", 0 );
+    DWAddBitField( Client, FundamentalTypes[DW_FT_UNSIGNED], field_loc, 0, 11, 5, "day", 0 );
+    DWAddBitField( Client, FundamentalTypes[DW_FT_UNSIGNED], field_loc, 0, 7, 4, "month", 0 );
+    DWAddBitField( Client, FundamentalTypes[DW_FT_UNSIGNED], field_loc, 0, 0, 7, "year", 0 );
     DWLocTrash( Client, field_loc );
     DWEndStruct( Client );
 }
@@ -300,28 +292,24 @@ void TestStruct3( void )
     DWBeginStruct( Client, class_1, 4, "bugs", 0, 0 );
     DWAddFriend( Client, class_2 );
     /* static int a; */
-    DWAddField( Client, FundamentalTypes[ DW_FT_SIGNED ], NULL, "a",
-        DW_FLAG_PRIVATE );  // was DW_FLAG_STATIC ??
+    DWAddField( Client, FundamentalTypes[DW_FT_SIGNED], NULL, "a", DW_FLAG_PRIVATE );  // was DW_FLAG_STATIC ??
 
     /* private float b; */
     field_hdl = DWLocFini( Client, DWLocInit( Client ) );
-    DWAddField( Client, FundamentalTypes[ DW_FT_FLOAT ], field_hdl, "b",
-        DW_FLAG_PRIVATE );
+    DWAddField( Client, FundamentalTypes[DW_FT_FLOAT], field_hdl, "b", DW_FLAG_PRIVATE );
     DWLocTrash( Client, field_hdl );
     DWEndStruct( Client );
 
     id = DWLocInit( Client );
-    SymHandles[ 5 ] = 0x666ul;
+    SymHandles[5] = 0x666ul;
     DWLocStatic( Client, id, 5 );
     field_hdl = DWLocFini( Client, id );
-    DWVariable( Client, FundamentalTypes[ DW_FT_SIGNED ], field_hdl,
-        class_1, NULL, "a", 0, 0 );
+    DWVariable( Client, FundamentalTypes[DW_FT_SIGNED], field_hdl, class_1, NULL, "a", 0, 0 );
     DWLocTrash( Client, field_hdl );
 
     DWBeginStruct( Client, class_2, 4, "beetles", 0, 0 );
     field_hdl = DWLocFini( Client, DWLocInit( Client ) );
-    DWAddField( Client, FundamentalTypes[ DW_FT_FLOAT ], field_hdl, "b",
-        DW_FLAG_PRIVATE );
+    DWAddField( Client, FundamentalTypes[DW_FT_FLOAT], field_hdl, "b", DW_FLAG_PRIVATE );
     DWLocTrash( Client, field_hdl );
     DWEndStruct( Client );
 
@@ -338,10 +326,8 @@ void TestSubroutineType( void )
 {
     dw_handle                   sub_type;
 
-    sub_type = DWBeginSubroutineType( Client,
-        FundamentalTypes[ DW_FT_SIGNED ], NULL, 0, DW_FLAG_PROTOTYPED );
-    DWFormalParameter( Client, FundamentalTypes[ DW_FT_UNSIGNED_CHAR ], NULL,
-        NULL, "a", DW_DEFAULT_NONE );
+    sub_type = DWBeginSubroutineType( Client, FundamentalTypes[DW_FT_SIGNED], NULL, 0, DW_FLAG_PROTOTYPED );
+    DWFormalParameter( Client, FundamentalTypes[DW_FT_UNSIGNED_CHAR], NULL, NULL, "a", DW_DEFAULT_NONE );
     DWEllipsis( Client );
     DWEndSubroutineType( Client );
 }
@@ -369,8 +355,7 @@ void TestCommonBlock( void )
     id = DWLocInit( Client );
     DWLocOp( Client, id, DW_LOC_plus_uconst, 4 );
     loc = DWLocFini( Client, id );
-    DWVariable( Client, FundamentalTypes[ DW_FT_UNSIGNED_CHAR ], loc, NULL,
-        NULL, "UNCLE", 0, 0 );
+    DWVariable( Client, FundamentalTypes[DW_FT_UNSIGNED_CHAR], loc, NULL, NULL, "UNCLE", 0, 0 );
     DWLocTrash( Client, loc );
     DWEndCommonBlock( Client );
 
@@ -417,7 +402,7 @@ void TestLine( void )
 
 void TestAranges( void )
 {
-    RelocValues[ DW_W_ARANGE_ADDR ] = 0x5555;
+    RelocValues[DW_W_ARANGE_ADDR] = 0x5555;
     DWAddress( Client, 511 );
 }
 
@@ -435,15 +420,13 @@ void Test( void )
 
     /* create all the fundamental types */
     for( i = DW_FT_MIN; i < DW_FT_MAX; ++i ) {
-        FundamentalTypes[ i ] = DWFundamental( Client, itoa(i,buf,10), i, 2 );
+        FundamentalTypes[i] = DWFundamental( Client, itoa(i,buf,10), i, 2 );
     }
     /* and let's get some constant versions of them */
     for( i = DW_FT_MIN; i < DW_FT_MAX; ++i ) {
-        ConstantFundamentalTypes[ i ] =
-            DWModifier( Client, FundamentalTypes[ i ], DW_MOD_CONSTANT );
+        ConstantFundamentalTypes[i] = DWModifier( Client, FundamentalTypes[i], DW_MOD_CONSTANT );
     }
-    ConstCharStar = DWPointer( Client,
-        ConstantFundamentalTypes[ DW_FT_SIGNED_CHAR ], 0 );
+    ConstCharStar = DWPointer( Client, ConstantFundamentalTypes[DW_FT_SIGNED_CHAR], 0 );
 
     TestMacInfo();
 

@@ -154,7 +154,7 @@ extern  void    WndPieceDirty( a_window *wnd, wnd_row row, int piece )
 }
 
 
-bool            WndDoingRefresh = { FALSE };
+bool            WndDoingRefresh = false;
 
 extern  bool    WndStopRefresh( bool stop )
 {
@@ -284,7 +284,7 @@ extern  void    WndFreshAll()
 
     if( WndDoingRefresh )
         return;
-    WndDoingRefresh = TRUE;
+    WndDoingRefresh = true;
     for( wnd = WndNext( NULL ); wnd != NULL; wnd = WndNext( wnd ) ) {
         if( wnd->info->chkflags != NULL && wnd->info->chkflags( wnd->info->flags ) ) {
             WndRefresh( wnd );
@@ -293,5 +293,5 @@ extern  void    WndFreshAll()
     WndStartFreshAll();
     WndPaintDirt( NULL );
     WndEndFreshAll();
-    WndDoingRefresh = FALSE;
+    WndDoingRefresh = false;
 }

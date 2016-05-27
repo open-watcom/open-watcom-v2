@@ -44,25 +44,25 @@ static int CompareHeaders( WResFileID handle1, WResFileID handle2 )
     WResHeader      header2;
 
     error = WResReadHeaderRecord( &header1, handle1 );
-    if (error) {
+    if( error ) {
         return( -1 );
     }
     error = WResReadHeaderRecord( &header2, handle2 );
-    if (error) {
+    if( error ) {
         return( -1 );
     }
 
     retcode = 0;
 
-    if (header1.NumResources != header2.NumResources) {
-        if (!(CmdLineParms.Quiet || CmdLineParms.NoCounts)) {
+    if( header1.NumResources != header2.NumResources ) {
+        if( !(CmdLineParms.Quiet || CmdLineParms.NoCounts) ) {
             puts( "The number of resources differ." );
         }
         retcode = 1;
     }
 
-    if (header1.NumTypes != header2.NumTypes) {
-        if (!(CmdLineParms.Quiet || CmdLineParms.NoCounts)) {
+    if( header1.NumTypes != header2.NumTypes) {
+        if( !(CmdLineParms.Quiet || CmdLineParms.NoCounts) ) {
             puts( "The number of types differ." );
         }
         retcode = 1;
@@ -76,36 +76,36 @@ int CompareContents( WResFileID handle1, WResFileID handle2 )
 {
     int             retcode;        /* -1: error  0: same  1: different */
     int             oldretcode;
-    int             dup_discarded;
+    bool            dup_discarded;
     int             error;
     WResDir         dir1;
     WResDir         dir2;
 
     retcode = CompareHeaders( handle1, handle2 );
-    if ((retcode == -1) || (retcode == 1 && !CmdLineParms.CheckAll)) {
+    if( (retcode == -1) || (retcode == 1 && !CmdLineParms.CheckAll) ) {
         return( retcode );
     }
 
     oldretcode = retcode;
 
     dir1 = WResInitDir();
-    if (dir1 == NULL) {
+    if( dir1 == NULL ) {
         return( -1 );
     }
     dir2 = WResInitDir();
-    if (dir2 == NULL) {
+    if( dir2 == NULL ) {
         WResFreeDir( dir1 );
         return( -1 );
     }
 
     error = WResReadDir( handle1, dir1, &dup_discarded );
-    if (error || dup_discarded) {
+    if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
     error = WResReadDir( handle2, dir2, &dup_discarded );
-    if (error || dup_discarded) {
+    if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
@@ -116,9 +116,9 @@ int CompareContents( WResFileID handle1, WResFileID handle2 )
     WResFreeDir( dir1 );
     WResFreeDir( dir2 );
 
-    if (retcode == -1) {
+    if( retcode == -1 ) {
         return( -1 );
-    } else if (retcode == 1 || oldretcode == 1) {
+    } else if( retcode == 1 || oldretcode == 1 ) {
         return( 1 );
     } else {
         return( 0 );

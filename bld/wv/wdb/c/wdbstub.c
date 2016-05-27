@@ -104,6 +104,107 @@ Done:
 #include "dlgcmd.h"
 #include "dbgwintr.h"
 
+/**************************************************/
+/* TODO! review all these prototypes declaration if they are local(static) or external */
+
+void ShowDebuggerPrompt( void );
+void ShowDebuggerError( const char *error_str );
+void ShowDebuggerMsg( const char *msg_str );
+char *StrLTrim( char *s );
+char *StrRTrim( char *s );
+char *MyStrTrim( char *s );
+const char *MyStrTrimLen( const char *start, unsigned *len );
+char *GetCmdPartByChar( const char *cmd, const char *delimit );
+char *GetCmdPart( const char *cmd );
+char *GetParamPartByChar( const char *cmd, const char *delimit );
+char *GetParamPart( const char *cmd );
+char *GetFirstQuotedPart( const char *cmd );
+char *GetSecondQuotedPart( const char *cmd );
+bool IsCmdEqualCmd( const char *cmd, const char *e_cmd, const char *e_short_cmd );
+bool IsCmdEqualCmd2( const char *cmd, const char *e_cmd );
+address SetBreakPointInFile( char *filename,int line_num );
+void ShowModuleList( void );
+void DisplayDebuggerVarValue( var_info *pVarInfoList );
+bool InspectDebuggerVar( const char *item );
+void ShowSourceDirectories( void );
+void AddSourcePathsToDebugger( const char *srcpath );
+void RemoveSourcePathsFromDebugger( void );
+void DumpSource( void );
+void PerformDebuggerTrace( int _trace_type );
+void PerformDebuggerFinish( void );
+bool DeleteBps( char *params );
+bool DisableBps( char *params );
+bool EnableBps( char *params );
+bool IsDbgProgramLoaded( void );
+bool IsCmdQuit( const char *cmd );
+bool IsCmdPrint( const char *cmd );
+bool ProcessCmdPrint( const char *param );
+bool IsCmdRun( const char *cmd );
+bool ProcessCmdRun( const char *param );
+bool IsCmdContinue( const char *cmd );
+bool ProcessCmdContinue( const char *param );
+bool IsCmdLoad( const char *cmd );
+bool ProcessCmdLoad( const char *param );
+bool IsCmdRestart( const char *cmd );
+bool ProcessCmdRestart( const char *param );
+bool IsCmdBreakpoint( const char *cmd );
+bool ProcessCmdBreakpoint( const char *param );
+bool IsCmdDisable( const char *cmd );
+bool ProcessCmdDisable( const char *param );
+bool IsCmdEnable( const char *cmd );
+bool ProcessCmdEnable( const char *param );
+bool IsCmdDelete( const char *cmd );
+bool ProcessCmdDelete( const char *param );
+bool IsCmdInfo( const char *cmd );
+bool ProcessCmdInfo( const char *param );
+bool IsCmdNext( const char *cmd );
+bool ProcessCmdNext( const char *param );
+bool IsCmdStep( const char *cmd );
+bool ProcessCmdStep( const char *param );
+bool IsCmdFinish( const char *cmd );
+bool ProcessCmdFinish( const char *param );
+bool IsCmdBacktrace( const char *cmd );
+bool ProcessCmdBacktrace( const char *param );
+bool IsCmdModule( const char *cmd );
+bool ProcessCmdModule( const char *param );
+bool IsCmdAttach( const char *cmd );
+bool ProcessCmdAttach( const char *param );
+bool IsCmdKill( const char *cmd );
+bool ProcessCmdKill( const char *param );
+bool IsCmdDirectory( const char *cmd );
+bool ProcessCmdDirectory( const char *param );
+bool IsCmdShow( const char *cmd );
+bool ProcessCmdShow( const char *param );
+bool IsCmdHelp( const char *cmd );
+bool ProcessCmdHelp( char *param );
+bool IsCmdTest( const char *cmd );
+bool ProcessCmdTest( const char *param );
+bool ProcessDebuggerCmd( char *cmd );
+bool DlgNewWithSym( const char *title, char *buff, int buff_len );
+bool DlgUpTheStack( void );
+bool DlgAreYouNuts( unsigned long mult );
+bool DlgBackInTime( bool warn );
+bool DlgIncompleteUndo( void );
+bool DlgBreak( address addr );
+void ProcAccel( void );
+void ProcDisplay( void );
+void ProcFont( void );
+void ProcHelp( void );
+#ifndef NDEBUG
+void ProcInternal( void );
+#endif
+void ProcPaint( void );
+void ProcView( void );
+void ProcConfigFile( void );
+void ConfigDisp( void );
+void ConfigFont( void );
+void ConfigPaint( void );
+int TabIntervalGet( void );
+void TabIntervalSet( int new );
+void VarSaveWndToScope( void *wnd );
+void VarRestoreWndFromScope( void *wnd );
+/**************************************************/
+
 
 enum {
     REQ_NONE,
@@ -1355,10 +1456,6 @@ bool ProcessDebuggerCmd( char *cmd )
     return( true );
 }
 
-void WndMemInit( void )
-{
-}
-
 unsigned DUIConfigScreen( void )
 {
     return( 0 );
@@ -1375,7 +1472,7 @@ HANDLE          Requestdonesem;
 
 bool RequestDone;
 
-DWORD WINAPI ControlFunc( LPVOID parm )
+static DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     do {
@@ -1398,9 +1495,10 @@ DWORD WINAPI ControlFunc( LPVOID parm )
     return( 0 ); // thread over!
 }
 
-void RunRequest( int req )
+static void RunRequest( int req )
 {
-    if( _IsOn( SW_TASK_RUNNING ) ) return;
+    if( _IsOn( SW_TASK_RUNNING ) )
+        return;
     WaitForSingleObject( Requestdonesem, INFINITE ); // wait for last request to finish
     Req = req;
     _SwitchOn( SW_TASK_RUNNING );

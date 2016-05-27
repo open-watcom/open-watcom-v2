@@ -32,7 +32,7 @@
 #include "drpriv.h"
 #include "drutils.h"
 
-static bool   DWRGetConstAT( dr_handle abbrev, dr_handle info,
+static bool   DWRGetConstAT( drmem_hdl abbrev, drmem_hdl info,
                                                dw_atnum at,
                                                unsigned_32  *where )
 /******************************************************************/
@@ -43,7 +43,7 @@ static bool   DWRGetConstAT( dr_handle abbrev, dr_handle info,
     dw_formnum  form;
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     for( ;; ) {
         attrib = DWRVMReadULEB128( &abbrev );
         if( attrib == at )
@@ -55,11 +55,11 @@ static bool   DWRGetConstAT( dr_handle abbrev, dr_handle info,
     }
     if( attrib != 0 ) {
         *where = DWRReadConstant( abbrev, info );
-        ret = TRUE;
+        ret = true;
     }
     return( ret );
 }
-static int DWRGetAT( dr_handle abbrev, dr_handle  info,
+static int DWRGetAT( drmem_hdl abbrev, drmem_hdl  info,
                      dr_val32  *vals, const dw_atnum *at )
 /********************************************************/
 /* look for a specific attribute in the list of attributes */
@@ -114,10 +114,10 @@ static const dw_atnum SubATList[] = {
 };
 
 
-extern void DRGetSubrangeInfo( dr_handle sub, dr_subinfo *info )
+extern void DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
 /**************************************************************/
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dr_val32        vals[3];
 
     abbrev = DWRSkipTag( &sub ) + 1;
@@ -134,10 +134,10 @@ static const dw_atnum BitATList[] = {
     0,
 };
 
-extern int DRGetBitFieldInfo( dr_handle mem, dr_bitfield *info )
+extern int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
 /**************************************************************/
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dr_val32        vals[3];
     int             count;
 
@@ -150,13 +150,13 @@ extern int DRGetBitFieldInfo( dr_handle mem, dr_bitfield *info )
 }
 
 
-extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
+extern bool DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
 /*************************************************************/
 // Assume entry is pointing at start of a type
 {
-    dr_handle       curr_ab;
-    dr_handle       abbrev;
-    dr_handle       curr_ent;
+    drmem_hdl       curr_ab;
+    drmem_hdl       abbrev;
+    drmem_hdl       curr_ent;
     dw_tagnum       tag;
     uint_32         value;
     dr_typek        kind;
@@ -166,12 +166,12 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
 
     kind = 0;
     for( ;; ) {
-        if( entry == DR_HANDLE_VOID ) {
+        if( entry == DRMEM_HDL_VOID ) {
             info->kind = DR_TYPEK_VOID;
             info->mclass = DR_MOD_BASE;
             info->size = 0;
-            info->modifier.sign = FALSE;
-            return( TRUE );
+            info->modifier.sign = false;
+            return( true );
         }
         tag = DWRReadTag( &entry, &abbrev );
         abbrev++;   /* skip child flag */
@@ -264,11 +264,11 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
             switch( value ) {
             case DW_ATE_address:
                 info->kind = DR_TYPEK_ADDRESS;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_boolean:
                 info->kind = DR_TYPEK_BOOL;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_complex_float:
                 info->kind = DR_TYPEK_COMPLEX;
@@ -278,25 +278,25 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
                 break;
             case DW_ATE_signed:
                 info->kind = DR_TYPEK_INTEGER;
-                info->modifier.sign = TRUE;
+                info->modifier.sign = true;
                 break;
             case DW_ATE_signed_char:
                 info->kind  = DR_TYPEK_CHAR;
-                info->modifier.sign = TRUE;
+                info->modifier.sign = true;
                 break;
             case DW_ATE_unsigned:
                 info->kind = DR_TYPEK_INTEGER;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             case DW_ATE_unsigned_char:
                 info->kind  = DR_TYPEK_CHAR;
-                info->modifier.sign = FALSE;
+                info->modifier.sign = false;
                 break;
             default:
                 goto error;
             }
         } else {
-            info->modifier.sign = FALSE;
+            info->modifier.sign = false;
         }
         break;
     case DR_MOD_ADDR:
@@ -333,15 +333,15 @@ extern bool DRGetTypeInfo( dr_handle entry, dr_typeinfo *info )
         }
         break;
     }
-    return( TRUE );
+    return( true );
 error:
-    return( FALSE );
+    return( false );
 }
 
-extern dr_ptr DRGetAddrClass( dr_handle entry )
+extern dr_ptr DRGetAddrClass( drmem_hdl entry )
 /*********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     dr_ptr      ret;
     dw_addr     value;
 
@@ -377,24 +377,24 @@ extern dr_ptr DRGetAddrClass( dr_handle entry )
     return( ret );
 }
 
-extern dr_handle DRGetTypeAT( dr_handle entry )
+extern drmem_hdl DRGetTypeAT( drmem_hdl entry )
 /*********************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   type;
+    drmem_hdl   abbrev;
+    drmem_hdl   type;
 
     abbrev = DWRSkipTag( &entry ) + 1;
-    type = DR_HANDLE_NUL;
+    type = DRMEM_HDL_NULL;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_type ) ) {
         type = DWRReadReference( abbrev, entry );
     }
     return( type );
 }
 
-extern dr_array_stat DRGetArrayInfo( dr_handle entry, dr_array_info *info )
+extern dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
 /*************************************************************************/
 {
-    dr_handle       abbrev;
+    drmem_hdl       abbrev;
     dr_array_stat   stat;
     uint_32         value;
     dw_children     haschild;
@@ -423,17 +423,17 @@ extern dr_array_stat DRGetArrayInfo( dr_handle entry, dr_array_info *info )
         DWRSkipAttribs( abbrev, &entry );
         info->child = entry;
     } else {
-        info->child = DR_HANDLE_NUL;
+        info->child = DRMEM_HDL_NULL;
     }
     return( stat );
 }
 
-extern dr_handle DRSkipTypeChain( dr_handle tref )
+extern drmem_hdl DRSkipTypeChain( drmem_hdl tref )
 /************************************************/
 // skip modifiers and typedefs
 {
-    dr_handle       abbrev;
-    dr_handle       entry;
+    drmem_hdl       abbrev;
+    drmem_hdl       entry;
     dw_tagnum       tag;
 
     for( ;; ) {
@@ -453,7 +453,7 @@ extern dr_handle DRSkipTypeChain( dr_handle tref )
             entry = DWRReadReference( abbrev, entry );
             tref = entry;
         } else {
-            tref = DR_HANDLE_NUL;
+            tref = DRMEM_HDL_NULL;
             break;
         }
     } end_loop:;
@@ -464,7 +464,7 @@ static const dw_tagnum MemTag[DR_WLKBLK_STRUCT] = {
     DW_TAG_member, DW_TAG_inheritance, DW_TAG_variable, DW_TAG_subprogram, 0
 };
 
-bool DRWalkStruct( dr_handle mod, const DRWLKBLK *wlks, void *d )
+bool DRWalkStruct( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
 /***************************************************************/
 // wlks[0] == member func, wlks[1] inherit func, wlks[2] default
 {
@@ -475,7 +475,7 @@ static const dw_tagnum ArrayTag[DR_WLKBLK_ARRSIB] = {
     DW_TAG_subrange_type, DW_TAG_enumerator, 0
 };
 
-bool DRWalkArraySibs( dr_handle mod, const DRWLKBLK *wlks, void *d )
+bool DRWalkArraySibs( drmem_hdl mod, const DRWLKBLK *wlks, void *d )
 /******************************************************************/
 // wlks[0] == subrange [1] = enumerator , 0 = Null
 {
@@ -486,7 +486,7 @@ static const dw_tagnum EnumTag[DR_WLKBLK_ENUMS] = {
     DW_TAG_enumerator, 0
 };
 
-bool DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
+bool DRWalkEnum( drmem_hdl mod,  DRWLKBLK wlk, void *d )
 /******************************************************/
 // wlks[0] == Enum  func, [1] Null
 {
@@ -497,10 +497,10 @@ bool DRWalkEnum( dr_handle mod,  DRWLKBLK wlk, void *d )
     return( DWRWalkChildren( mod, EnumTag, wlks, d ) );
 }
 
-bool DRConstValAT( dr_handle var, uint_32 *ret )
+bool DRConstValAT( drmem_hdl var, uint_32 *ret )
 /**********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     dw_formnum  form;
     uint_32     val;
     dwr_formcl  formcl;
@@ -524,7 +524,7 @@ bool DRConstValAT( dr_handle var, uint_32 *ret )
         }
     }
 not_found:
-    return( FALSE );
+    return( false );
 found:
-    return( TRUE );
+    return( true );
 }

@@ -100,14 +100,14 @@ using std::wcstoull;
 :include wchar_t.sp
 
 :endsegment
-:include sizet.sp
+:include size_t.sp
 
 :segment !CNAME
 :include saferpro.sp
 
-:include errnot.sp
+:include errno_t.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
 typedef void (*constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
 
@@ -463,7 +463,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 #define _MAX_FNAME      48      /*  maximum length of a file name       */
 #define _MAX_EXT        48      /*  maximum length of a file extension  */
 :elsesegment DOS
-#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__)
+#if defined(__NT__) || defined(__OS2__) || defined(__WATCOM_LFN__) && defined(__DOS__) || defined(__OSI__)
 #define _MAX_DRIVE   3  /* maximum length of drive component */
 #define _MAX_DIR    256 /* maximum length of path component */
 #define _MAX_FNAME  256 /* maximum length of file name component */
@@ -657,23 +657,7 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 :include alloca.sp
 
 :endsegment
-:segment QNX
-#if defined(__386__)
-:endsegment
-:segment QNX | LINUX
-_WCRTLINK extern int          brk( void *endds );
-_WCRTLINK extern void _WCNEAR *sbrk( int incr );
-:endsegment
-:segment QNX
-#else
-:endsegment
-:segment DOS | QNX
-_WCRTLINK extern void _WCNEAR *__brk( unsigned __new_brk_value );
-_WCRTLINK extern void _WCNEAR *sbrk( int __increment );
-:endsegment
-:segment QNX
-#endif
-:endsegment
+:include brk.sp
 
 typedef void (*onexit_t)( void );
 _WCRTLINK extern onexit_t     onexit( onexit_t __func );

@@ -69,13 +69,13 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     char                trpfile[256];
     const char          *ptr;
     char                *dst;
-    char                have_ext;
+    bool                have_ext;
     char                chr;
     trap_init_func      *init_func;
 
     if( parms == NULL || *parms == '\0' )
         parms = "std";
-    have_ext = FALSE;
+    have_ext = false;
     dst = trpfile;
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         chr = *ptr;
@@ -83,14 +83,14 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         case ':':
         case '/':
         case '\\':
-            have_ext = 0;
+            have_ext = false;
             break;
         case '.':
 #ifdef USE_FILENAME_VERSION
             *dst++ = ( USE_FILENAME_VERSION / 10 ) + '0';
             *dst++ = ( USE_FILENAME_VERSION % 10 ) + '0';
 #endif
-            have_ext = 1;
+            have_ext = true;
             break;
         }
         *dst++ = chr;

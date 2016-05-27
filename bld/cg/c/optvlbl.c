@@ -37,22 +37,22 @@ extern  bool    ValidLbl( label_handle lbl )
 /******************************************/
 {
     lbl=lbl;
-    return( TRUE );
+    return( true );
 #if 0
     label_handle    chk;
     static label_handle last = 0;
 
     chk = Handles;
-    if( last != NULL && last == lbl ) return( TRUE );
+    if( last != NULL && last == lbl ) return( true );
     for(;;) {
         if( chk == NULL ) break;
         if( chk == lbl ) {
             last = lbl;
-            return( TRUE );
+            return( true );
         }
         chk = chk->lbl.link;
     }
     _Zoiks( ZOIKS_042 );
-    return( FALSE );
+    return( false );
 #endif
 }

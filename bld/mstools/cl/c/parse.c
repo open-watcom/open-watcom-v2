@@ -116,7 +116,7 @@ void CmdStringParse( OPT_STORAGE *cmdOpts, int *itemsParsed )
         } else if( ch == '"' ) {                /* quoted option or file name */
             ch = GetCharContext();
             if( ch == '-' ) {
-                Quoted = TRUE;
+                Quoted = true;
                 if( OPT_PROCESS( cmdOpts ) ) {
                     cmd_line_error();
                 }
@@ -329,7 +329,7 @@ static int parse_link( OPT_STRING **p )
 /*************************************/
 {
     char *              str;
-    bool                gotOne = FALSE;
+    bool                gotOne = false;
 
     if( !CmdScanRecogChar( ' ' )  &&  !CmdScanRecogChar( '\t' ) ) {
         FatalError( "Whitespace required after /link" );
@@ -347,7 +347,7 @@ static int parse_link( OPT_STRING **p )
             }
         }
         add_string( p, str );
-        gotOne = TRUE;
+        gotOne = true;
     }
     return( 1 );
 }
@@ -410,10 +410,10 @@ bool OPT_GET_FILE( OPT_STRING **p )
     filename = CmdScanFileName();
     if( filename != NULL ) {
         add_string( p, filename );
-        return( TRUE );
+        return( true );
     } else {
         OPT_CLEAN_STRING( p );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -595,7 +595,7 @@ static void handle_arch_i86( OPT_STORAGE *cmdOpts, int x )
             Warning( "Overriding /G%c with /G%c", oldCpu, newCpu );
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->arch_i86;
 }
@@ -627,7 +627,7 @@ static void handle_debug_info( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     Warning( "Using Dwarf debugging information" );
     prevValue = cmdOpts->debug_info;
@@ -651,7 +651,7 @@ static void handle_F( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->F_value );
         cmdOpts->F_value = p;
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
 }
 
@@ -673,7 +673,7 @@ static void handle_Fe( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->Fe_value );
         cmdOpts->Fe_value = p;
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
 }
 
@@ -695,7 +695,7 @@ static void handle_Fp( OPT_STORAGE *cmdOpts, int x )
         FreeMem( cmdOpts->Fp_value );
         cmdOpts->Fp_value = p;
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
 }
 
@@ -718,7 +718,7 @@ static void handle_FR( OPT_STORAGE *cmdOpts, int x )
         cmdOpts->FR_value = p;
     } else {
         Warning( "Browsing information will be output to .mbr file(s)" );
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
 }
 
@@ -731,7 +731,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 
@@ -751,7 +751,7 @@ static void handle_inlining_level( OPT_STORAGE *cmdOpts, int x )
                      cmdOpts->Ob_value );
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->Ob_value;
 }
@@ -794,7 +794,7 @@ static void handle_opt_level( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->opt_level;
 }
@@ -821,7 +821,7 @@ static void handle_opt_size_time( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->opt_size_time;
 }
@@ -854,7 +854,7 @@ static void handle_stack_probes( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->stack_probes;
 }
@@ -904,7 +904,7 @@ static void handle_threads_linking( OPT_STORAGE *cmdOpts, int x )
             Warning( "Overriding /M%c with /M%c", oldType, newType );
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
     prevValue = cmdOpts->threads_linking;
 }
@@ -941,7 +941,7 @@ static void handle_warn_level( OPT_STORAGE *cmdOpts, int x )
             }
         }
     } else {
-        hasBeenCalled = TRUE;
+        hasBeenCalled = true;
     }
 
     prevType = cmdOpts->warn_level;
@@ -1013,7 +1013,7 @@ static int handle_on_off_option( bool *hasBeenCalled, char *optName, int isOn )
         }
     } else {
         /*** Handle /option- for the first time ***/
-        *hasBeenCalled = TRUE;
+        *hasBeenCalled = true;
         if( ch == '-' ) {
             rc = 0;
         } else {
@@ -1175,7 +1175,7 @@ bool OPT_GET_FILE_OPT( OPT_STRING **p )
     } else {
         OPT_CLEAN_STRING( p );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1193,7 +1193,7 @@ bool OPT_GET_PATH( OPT_STRING **p )
     } else {
         OPT_CLEAN_STRING( p );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1207,9 +1207,9 @@ bool OPT_GET_NUMBER( unsigned *p )
 
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -1228,12 +1228,12 @@ bool OPT_GET_NUMBER_DEFAULT( unsigned *p, unsigned value )
     if( isdigit( ch ) ) {
         if( CmdScanNumber( &value ) ) {
             *p = value;
-            return( TRUE );
+            return( true );
         } else {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1246,15 +1246,22 @@ bool OPT_END( void )
     char ch;
 
     ch = GetCharContext();
-    if( ch == '\0' )  return( TRUE );
+    if( ch == '\0' )
+        return( true );
     UngetCharContext();
-    if( isspace( ch ) ) return( TRUE );
-    if( ch == '/' ) return( TRUE );
-    if( ch == '-' ) return( TRUE );
-    if( ch == '@' ) return( TRUE );
-    if( ch == '"' ) return( TRUE );
-    if( ch == '\'' ) return( TRUE );
-    return( FALSE );
+    if( isspace( ch ) )
+        return( true );
+    if( ch == '/' )
+        return( true );
+    if( ch == '-' )
+        return( true );
+    if( ch == '@' )
+        return( true );
+    if( ch == '"' )
+        return( true );
+    if( ch == '\'' )
+        return( true );
+    return( false );
 }
 
 /* Include after all static functions were declared */

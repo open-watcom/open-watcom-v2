@@ -113,7 +113,7 @@ f_handle QOpenR( char *name )
 {
     int h;
 
-    h = DoOpen( name, FALSE, MODE_READ_ONLY );
+    h = DoOpen( name, false, MODE_READ_ONLY );
     if( h > 0 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( -h ) );
@@ -125,7 +125,7 @@ f_handle QOpenRW( char *name )
 {
     int h;
 
-    h = DoOpen( name, TRUE, _A_NORMAL );
+    h = DoOpen( name, true, _A_NORMAL );
     if( h > 0 )
         return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( -h ) );
@@ -274,10 +274,10 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
     bool    eof;
     char    ch;
 
-    eof = FALSE;
+    eof = false;
     while( --size > 0 ) {
         if( QRead( file, &ch, 1, name ) == 0 ) {
-            eof = TRUE;
+            eof = true;
             break;
         } else if( ch != '\r' ) {
             *dest++ = ch;
@@ -292,9 +292,9 @@ bool QIsDevice( f_handle file )
 /*****************************/
 {
     if ( DosIoctlGetDeviceInfo ( file ) & 0x80 )
-        return( TRUE );
+        return( true );
     else
-        return( FALSE );  // don't write the prompt if input not from stdin
+        return( false );  // don't write the prompt if input not from stdin
 }
 
 f_handle ExeCreate( char *name )
@@ -302,7 +302,7 @@ f_handle ExeCreate( char *name )
 {
     int h;
 
-    h = DoOpen( name, TRUE, _A_NORMAL );
+    h = DoOpen( name, true, _A_NORMAL );
     LastResult = h & 0x7fffffff;
     if( h > 0 )
         return( h );
@@ -314,7 +314,7 @@ static f_handle NSOpen( char *name, unsigned mode )
 {
     int h;
 
-    h = DoOpen( name, FALSE, mode );
+    h = DoOpen( name, false, mode );
     LastResult = h & 0x7fffffff;
     if( h > 0 )
         return( h );
@@ -343,7 +343,7 @@ f_handle TempFileOpen( char *name )
 bool QSysHelp( char **cmd_ptr )
 {
     cmd_ptr = cmd_ptr;
-    return( FALSE );
+    return( false );
 }
 
 bool QModTime( char *name, time_t *time )

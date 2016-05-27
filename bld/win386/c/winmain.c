@@ -31,22 +31,22 @@
 
 #include <stddef.h>
 #include <windows.h>
+#include "bool.h"
 #include "winext.h"
 #include "wininit.h"
+
 
 extern DWORD ReturnCode;
 
 extern void PASCAL InvokeWin32( void );
 
-int PASCAL WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline,
-                    int cmdshow )
+int PASCAL WinMain( HINSTANCE thishandle, HINSTANCE prevhandle, LPSTR cmdline, int cmdshow )
 {
-    if( !Init32BitTask( thishandle, prevhandle, cmdline, cmdshow ) ) {
-        return( FALSE );
-    }
+    if( !Init32BitTask( thishandle, prevhandle, cmdline, cmdshow ) )
+        return( 0 );
 
     InvokeWin32();
     Fini( 0 );
-    return( (int) ReturnCode );
+    return( (int)ReturnCode );
 
 } /* WinMain */

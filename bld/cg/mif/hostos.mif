@@ -5,7 +5,7 @@ os2_objs = &
     onexit.obj &
     pmstubs.obj &
     doblips.obj &
-    memmgr.obj &
+    cgmemmgr.obj &
     stack.obj
 
 osi_objs = &
@@ -13,7 +13,7 @@ osi_objs = &
     memlimit.obj &
     envvar.obj &
     cgosi.obj &
-    memmgr.obj &
+    cgmemmgr.obj &
     stack.obj
 
 nt_objs = &
@@ -23,13 +23,13 @@ nt_objs = &
     onexit.obj &
     pmstubs.obj &
     ntblips.obj &
-    memmgr.obj &
+    cgmemmgr.obj &
     stack.obj
 
 dos_objs = &
     objio.obj &
     memlimit.obj &
-    memmgr.obj &
+    cgmemmgr.obj &
     doblips.obj &
     blip.obj &
     getenv.obj &
@@ -44,7 +44,7 @@ unix_objs = &
     onexit.obj &
     qtimer.obj &
     qblip.obj &
-    memmgr.obj &
+    cgmemmgr.obj &
     doblips.obj &
     stack.obj
 

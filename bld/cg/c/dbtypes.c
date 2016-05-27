@@ -395,7 +395,7 @@ extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_m
     ar->list = NULL;
     ar->base = base;
     ar->is_col_major = is_col_major;
-    ar->is_variable = FALSE;
+    ar->is_variable = false;
 #ifndef NDEBUG
     EchoAPI( " -> %i\n", ar );
 #endif
@@ -452,7 +452,7 @@ extern  void _CGAPI DBDimVar( dbg_array ar, back_handle dims, int off,
     dim->lo_bound_tipe = lo_bound_tipe;
     dim->num_elts_tipe = num_elts_tipe;
     AddDim( ar, (dim_any *)dim );
-    ar->is_variable = TRUE;
+    ar->is_variable = true;
 }
 
 extern  dbg_type _CGAPI DBEndArray( dbg_array ar )
@@ -671,9 +671,9 @@ dbg_struct _CGAPI DBBegNameStruct( cchar_ptr nm, cg_type tipe, bool is_struct )
     st->list_tail = &st->list;
     st->size = TypeAddress( tipe )->length;
     st->is_struct = is_struct;   /* v.s. union */
-    st->is_class = FALSE;
+    st->is_class = false;
     st->is_nested = Nested;
-    st->is_cnested = FALSE;
+    st->is_cnested = false;
     if( _IsModel(DBG_DF) ){
         DFBegStruct( st );
     } else if( _IsModel( DBG_CV ) ) {
@@ -840,7 +840,7 @@ extern  void _CGAPI DBAddNestedType( dbg_struct st, cchar_ptr nm, dbg_type base 
     field->entry.field_type = FIELD_NESTED;
     field->base = base;
     AddField( st, (field_any *) field );
-    st->is_cnested = TRUE;
+    st->is_cnested = true;
 }
 
 
@@ -944,7 +944,7 @@ extern  dbg_enum _CGAPI DBBegEnum( cg_type tipe )
     en->list = NULL;
     en->tipe = tipe;
     en->is_nested = Nested;
-    en->is_c  = TRUE;
+    en->is_c  = true;
 #ifndef NDEBUG
     EchoAPI( " -> %i\n", en );
 #endif

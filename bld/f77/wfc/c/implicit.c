@@ -50,12 +50,10 @@
 #include "declare.h"
 #include "proctbl.h"
 #include "implicit.h"
+#include "fmtcnvt.h"
 
 #include <string.h>
 #include <limits.h>
-
-
-extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
 
 
 static  bool    ReqChar( void ) {
@@ -64,25 +62,25 @@ static  bool    ReqChar( void ) {
 // Recognize one character operand.
 
     if( RecName() && (CITNode->opnd_size == 1) &&
-        !CharSetInfo.is_foreign( *CITNode->opnd ) ) return( TRUE );
+        !CharSetInfo.is_foreign( *CITNode->opnd ) ) return( true );
     Error( IM_ILLEGAL_RANGE );
-    return( FALSE );
+    return( false );
 }
 
 
 static  bool            StarStar( TYPE typ ) {
 //============================================
 
-    if( typ != FT_CHAR ) return( FALSE );
-    if( RecNOpn() == FALSE ) return( FALSE );
-    if( RecNextOpr( OPR_LBR ) == FALSE ) return( FALSE );
+    if( typ != FT_CHAR ) return( false );
+    if( !RecNOpn() ) return( false );
+    if( !RecNextOpr( OPR_LBR ) ) return( false );
     AdvanceITPtr();
-    if( RecNOpn() == FALSE ) return( FALSE );
-    if( RecNextOpr( OPR_MUL ) == FALSE ) return( FALSE );
+    if( !RecNOpn() ) return( false );
+    if( !RecNextOpr( OPR_MUL ) ) return( false );
     AdvanceITPtr();
-    if( RecNOpn() == FALSE ) return( FALSE );
-    if( RecNextOpr( OPR_RBR ) == FALSE ) return( FALSE );
-    return( TRUE );
+    if( !RecNOpn() ) return( false );
+    if( !RecNextOpr( OPR_RBR ) ) return( false );
+    return( true );
 }
 
 
@@ -100,35 +98,35 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
         CITNode = start; // get the caret in proper place
         TypeErr( TY_NOT_DBL_PREC, typ );
         CITNode = temp;
-        return( FALSE );
+        return( false );
     }
     if( typ == FT_LOGICAL ) {
-        if( size == sizeof( logstar1 ) ) return( TRUE );
-        if( size == sizeof( logstar4 ) ) return( TRUE );
+        if( size == sizeof( logstar1 ) ) return( true );
+        if( size == sizeof( logstar4 ) ) return( true );
     } else if( typ == FT_INTEGER ) {
-        if( size == sizeof( intstar1 ) ) return( TRUE );
-        if( size == sizeof( intstar2 ) ) return( TRUE );
-        if( size == sizeof( intstar4 ) ) return( TRUE );
+        if( size == sizeof( intstar1 ) ) return( true );
+        if( size == sizeof( intstar2 ) ) return( true );
+        if( size == sizeof( intstar4 ) ) return( true );
     } else if( typ == FT_REAL ) {
-        if( size == sizeof( single ) ) return( TRUE );
-        if( size == sizeof( double ) ) return( TRUE );
-        if( size == sizeof( extended ) ) return( TRUE );
+        if( size == sizeof( single ) ) return( true );
+        if( size == sizeof( double ) ) return( true );
+        if( size == sizeof( extended ) ) return( true );
     } else if( typ == FT_COMPLEX ) {
-        if( size == sizeof( scomplex ) ) return( TRUE );
-        if( size == sizeof( dcomplex ) ) return( TRUE );
-        if( size == sizeof( xcomplex ) ) return( TRUE );
+        if( size == sizeof( scomplex ) ) return( true );
+        if( size == sizeof( dcomplex ) ) return( true );
+        if( size == sizeof( xcomplex ) ) return( true );
     } else if( typ == FT_CHAR ) {
 #if _CPU == 8086
-        if( (size > 0) && (size <= USHRT_MAX) ) return( TRUE );
+        if( (size > 0) && (size <= USHRT_MAX) ) return( true );
 #else
-        if( size > 0 ) return( TRUE );
+        if( size > 0 ) return( true );
 #endif
     }
     temp = CITNode;
     CITNode = start; // get the caret in proper place
     Error( TY_ILL_TYP_SIZE, size, TypeKW( typ ) );
     CITNode = temp;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -140,9 +138,9 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
     itnode      *save_itptr;
     bool        len_spec;
     itnode      *temp;
-    intstar4    size;
+    intstar4    ivalue;
 
-    len_spec = FALSE;
+    len_spec = false;
     if( RecMul() ) {
         save_itptr = CITNode;
         if( StarStar( typ ) ) {
@@ -157,33 +155,32 @@ bool    LenSpec( TYPE typ, uint *size_ptr ) {
                 Extension( IM_CHAR_STAR_STAR );
                 CITNode = temp;
             }
-            len_spec = TRUE;
+            len_spec = true;
         } else {
             CITNode = save_itptr;
             if( RecNOpn() && RecNextOpr( OPR_LBR ) ) {
                 AdvanceITPtr();
                 CIntExpr();
-                size = ITIntValue( CITNode );
+                ivalue = ITIntValue( CITNode );
                 AdvanceITPtr();
                 ReqCloseParen();
                 if( RecNOpn() ) {
                     AdvanceITPtr();
                 }
-                len_spec = (AError == FALSE);
+                len_spec = !AError;
             } else if( RecNumber() ) {
-                FmtS2I( CITNode->opnd, CITNode->opnd_size, FALSE, &size, FALSE,
-                        NULL );
+                FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &ivalue, false, NULL );
                 AdvanceITPtr();
-                len_spec = TRUE;
+                len_spec = true;
             } else {
                 Error( SX_EXPECT_INT );
                 AdvanceITPtr();
-                len_spec = FALSE;
+                len_spec = false;
             }
             if( len_spec ) {
-                len_spec = CheckSize( typ, size, save_itptr );
+                len_spec = CheckSize( typ, ivalue, save_itptr );
                 if( len_spec ) {
-                    *size_ptr = size;
+                    *size_ptr = (uint)ivalue;
                 }
             }
         }

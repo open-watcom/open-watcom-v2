@@ -41,15 +41,14 @@
 #include "data.h"
 #include "x87.h"
 #include "stack.h"
+#include "redefby.h"
 
 
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  bool_maybe      ReDefinedBy(instruction *, name *);
 extern  instruction_id  Renumber(void);
 extern  hw_reg_set      StackReg(void);
 extern  int             CountIns(block*);
-extern  bool            VisibleToCall(instruction *,name *, bool);
 extern  bool            IsSegReg(hw_reg_set);
 extern  bool            DoesSomething(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
@@ -174,7 +173,7 @@ static void InitDag( void )
         dag->height = 0;
         dag->anc_count = 0;
         dag->deps = NULL;
-        dag->visited = FALSE;
+        dag->visited = false;
         dag->stallable = InsStallable( ins );
         dag->prev = head;
         head = dag;
@@ -197,19 +196,25 @@ static bool StackOp( instruction *ins )
     case OP_CALL_INDIRECT:
     case OP_PUSH:
     case OP_POP:
-        return( TRUE );
+        return( true );
     }
     sp = StackReg();
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
-        if( op->n.class == N_INDEXED ) op = op->i.index;
-        if(op->n.class == N_REGISTER && HW_Ovlap(sp,op->r.reg)) return( TRUE );
+        if( op->n.class == N_INDEXED )
+            op = op->i.index;
+        if(op->n.class == N_REGISTER && HW_Ovlap(sp,op->r.reg)) {
+            return( true );
+        }
     }
     op = ins->result;
-    if( op == NULL ) return( FALSE );
-    if( op->n.class == N_INDEXED ) op = op->i.index;
-    if( op->n.class == N_REGISTER && HW_Ovlap(sp,op->r.reg) ) return( TRUE );
-    return( FALSE );
+    if( op == NULL )
+        return( false );
+    if( op->n.class == N_INDEXED )
+        op = op->i.index;
+    if( op->n.class == N_REGISTER && HW_Ovlap(sp,op->r.reg) )
+        return( true );
+    return( false );
 }
 
 
@@ -221,7 +226,13 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
     instruction *ins;
 
     redefd = ReDefinedBy( ins_i, op );
-    if( redefd != MAYBE || !ins_linked ) return( redefd );
+    if( redefd == MB_FALSE )
+        return( false );
+    if( redefd == MB_TRUE )
+        return( true );
+    // redef == MB_MAYBE
+    if( !ins_linked )
+        return( true );
     _INS_NOT_BLOCK( ins_i );
     _INS_NOT_BLOCK( ins_j );
     if( ins_i->id > ins_j->id ) {
@@ -230,11 +241,11 @@ static  bool    ReallyDefinedBy( instruction *ins_i, instruction *ins_j,
         ins_j = ins;
     }
     for( ; ins_i != ins_j; ins_i = ins_i->head.next ) {
-        if( ReDefinedBy( ins_i, op->i.index ) ) {
-            return( TRUE );
+        if( _IsReDefinedBy( ins_i, op->i.index ) ) {
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool OkToSlide( instruction *ins, name *op )
@@ -247,17 +258,22 @@ static bool OkToSlide( instruction *ins, name *op )
 #endif
 
     ins = ins;
-    if( op->i.base != NULL ) return( TRUE );
-    if( op->i.constant != 0 ) return( TRUE );
-    if( OptForSize >= 50 ) return( FALSE );
+    if( op->i.base != NULL )
+        return( true );
+    if( op->i.constant != 0 )
+        return( true );
+    if( OptForSize >= 50 )
+        return( false );
 #if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
     /* bad news to add a displacement on an instruction that also
        has a constant operand (takes an extra clock) */
     for( i = ins->num_operands; i-- > 0; ) {
-        if( ins->operands[i]->n.class == N_CONSTANT ) return( FALSE );
+        if( ins->operands[i]->n.class == N_CONSTANT ) {
+            return( false );
+        }
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 static bool HiddenDependancy( instruction *ins, name *op )
@@ -270,17 +286,22 @@ static bool HiddenDependancy( instruction *ins, name *op )
     int         i;
     hw_reg_set  full;
 
-    if( FPStackIns( ins ) ) return( FALSE );
-    if( op->n.class != N_REGISTER ) return( FALSE );
+    if( FPStackIns( ins ) )
+        return( false );
+    if( op->n.class != N_REGISTER )
+        return( false );
     full = FullReg( op->r.reg );
     op = ins->result;
     for( i = 0; i < ins->num_operands; i++ ) {
-        if( op == NULL ) continue;
-        if( op->n.class != N_REGISTER ) continue;
-        if( HW_Ovlap( full, op->r.reg ) ) return( TRUE );
+        if( op == NULL )
+            continue;
+        if( op->n.class != N_REGISTER )
+            continue;
+        if( HW_Ovlap( full, op->r.reg ) )
+            return( true );
         op = ins->operands[i];
     }
-    return( FALSE );
+    return( false );
 }
 
 static dep_type CheckOneOp( instruction *ins_i, instruction *ins_j,
@@ -296,13 +317,16 @@ static dep_type CheckOneOp( instruction *ins_i, instruction *ins_j,
             && OkToSlide( ins_j, op ) ) {
             return(DEP_NONE);
         }
-        if( ReDefinedBy( ins_i, op->i.index ) ) {
+        if( _IsReDefinedBy( ins_i, op->i.index ) ) {
             return( DEP_INDEX );
         }
     }
     if( ReallyDefinedBy( ins_i, ins_j, op, ins_linked ) ) {
-        if( !FPStackReg( op ) ) return( DEP_OP );
-        if( ins_i->sequence == ins_j->sequence ) return( DEP_OP );
+        if( !FPStackReg( op ) )
+            return( DEP_OP );
+        if( ins_i->sequence == ins_j->sequence ) {
+            return( DEP_OP );
+        }
     }
     if( HiddenDependancy( ins_i, op ) ) {
         return( DEP_OP );
@@ -324,28 +348,35 @@ static dep_type DataDependant( instruction *ins_i,
     ret = DEP_NONE;
     for( k = ins_j->num_operands; k-- > 0; ) {
         /* first operand of OP_LA can't be dependant unless N_INDEXED */
-        if( k == 0
-            && ins_j->head.opcode == OP_LA
-            && ins_j->operands[0]->n.class != N_INDEXED ) continue;
+        if( k == 0 && ins_j->head.opcode == OP_LA && ins_j->operands[0]->n.class != N_INDEXED )
+            continue;
         ret = CheckOneOp( ins_i, ins_j, ins_j->operands[k], ins_linked );
-        if( ret != DEP_NONE ) return( ret );
+        if( ret != DEP_NONE ) {
+            return( ret );
+        }
     }
     if( ins_j->result != NULL ) {
         ret = CheckOneOp( ins_i, ins_j, ins_j->result, ins_linked );
-        if( ret != DEP_NONE ) return( ret );
+        if( ret != DEP_NONE ) {
+            return( ret );
+        }
     }
     if( _IsModel( FORTRAN_ALIASING ) && _OpIsCall( ins_j->head.opcode ) ) {
-        if( !ins_linked ) return( DEP_OP );
+        if( !ins_linked )
+            return( DEP_OP );
         /*
             All NOP's following a call instruction with a result indicate
             variables which might have been modified by the call (for FORTRAN).
             Therefore, they must be made dependant on the call.
         */
         for( ins_j = ins_j->head.next; ins_j->head.opcode != OP_BLOCK; ins_j = ins_j->head.next ) {
-            if( _OpIsCall( ins_j->head.opcode ) ) break;
+            if( _OpIsCall( ins_j->head.opcode ) )
+                break;
             if( ins_j->head.opcode == OP_NOP && ins_j->result != NULL ) {
                 ret = DataDependant( ins_i, ins_j, ins_linked );
-                if( ret != DEP_NONE ) break;
+                if( ret != DEP_NONE ) {
+                    break;
+                }
             }
         }
     }
@@ -371,16 +402,20 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
     int         i;
 
     op = imp->result;
-    if( op == NULL ) return( FALSE );
-    if( op->n.class != N_REGISTER ) return( FALSE );
-    if( !IsSegReg( op->r.reg ) ) return( FALSE );
-    if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
+    if( op == NULL )
+        return( false );
+    if( op->n.class != N_REGISTER )
+        return( false );
+    if( !IsSegReg( op->r.reg ) )
+        return( false );
+    if( _OpIsCall( ins->head.opcode ) )
+        return( true );
     for( i = ins->num_operands; i-- > 0; ) {
         op = ins->operands[i];
         switch( op->n.class ) {
         case N_MEMORY:
         case N_INDEXED:
-            return( TRUE );
+            return( true );
         }
     }
     op = ins->result;
@@ -388,40 +423,54 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
         switch( op->n.class ) {
         case N_MEMORY:
         case N_INDEXED:
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
 extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
 /*********************************************************************/
 {
-    if( ins_j->head.opcode == OP_NOP
-        && ins_j->result == NULL
-        && !DoesSomething( ins_j ) ) return( TRUE );
-    if( _OpIsJump( ins_i->head.opcode ) ) return( TRUE );
+    if( ins_j->head.opcode == OP_NOP && ins_j->result == NULL && !DoesSomething( ins_j ) )
+        return( true );
+    if( _OpIsJump( ins_i->head.opcode ) )
+        return( true );
     if( _OpIsCall( ins_i->head.opcode ) ) {
         if( !( ins_i->flags.call_flags & CALL_READS_NO_MEMORY )
-         && ins_j->result != NULL
-         && VisibleToCall( ins_i, ins_j->result, FALSE ) ) return( TRUE );
-         if( FPStackIns( ins_j ) ) return( TRUE );
+          && ins_j->result != NULL
+          && _IsVisibleToCall( ins_i, ins_j->result, false ) )
+            return( true );
+        if( FPStackIns( ins_j ) ) {
+            return( true );
+        }
     }
-    if( StackOp( ins_i ) && StackOp( ins_j ) ) return( TRUE );
+    if( StackOp( ins_i ) && StackOp( ins_j ) )
+        return( true );
     if( FPStackIns( ins_i ) ) {
         if( FPStackIns( ins_j ) ) {
-            if( ins_i->sequence == ins_j->sequence ) return( TRUE );
-            if( FPInsIntroduced( ins_j ) ) return( TRUE );
-            if( FPInsIntroduced( ins_i ) ) return( TRUE );
+            if( ins_i->sequence == ins_j->sequence )
+                return( true );
+            if( FPInsIntroduced( ins_j ) )
+                return( true );
+            if( FPInsIntroduced( ins_i ) ) {
+                return( true );
+            }
         }
-        if( _OpIsCall( ins_j->head.opcode ) ) return( TRUE );
+        if( _OpIsCall( ins_j->head.opcode ) ) {
+            return( true );
+        }
     }
-    if( DataDependant( ins_i, ins_j, TRUE ) != DEP_NONE ) return( TRUE );
-    if( DataDependant( ins_j, ins_i, TRUE ) != DEP_NONE ) return( TRUE );
-    if( ImplicitDependancy( ins_i, ins_j ) ) return( TRUE );
-    if( ImplicitDependancy( ins_j, ins_i ) ) return( TRUE );
-    return( FALSE );
+    if( DataDependant( ins_i, ins_j, true ) != DEP_NONE )
+        return( true );
+    if( DataDependant( ins_j, ins_i, true ) != DEP_NONE )
+        return( true );
+    if( ImplicitDependancy( ins_i, ins_j ) )
+        return( true );
+    if( ImplicitDependancy( ins_j, ins_i ) )
+        return( true );
+    return( false );
 }
 
 
@@ -435,9 +484,11 @@ static  bool    MultiIns( instruction *ins )
     case OP_SUB:
     case OP_MUL:
     case OP_NEGATE:    /* used in 4-byte negate sequences on i86 */
-        if( ins->ins_flags & INS_CC_USED ) return( TRUE );
+        if( ins->ins_flags & INS_CC_USED )
+            return( true );
+        break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    InsUsesCC( instruction *ins )
@@ -449,7 +500,7 @@ static  bool    InsUsesCC( instruction *ins )
     case OP_EXT_ADD:
     case OP_EXT_SUB:
     case OP_EXT_MUL:
-        return( TRUE );
+        return( true );
     }
     if( _OpIsCondition( ins->head.opcode ) ) {
         if( ins->u.gen_table->generate == G_NO ) {
@@ -458,10 +509,10 @@ static  bool    InsUsesCC( instruction *ins )
                 is not going to generate a comparision operation, and is
                 depending on a previous instruction to set the flags.
             */
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void BuildLink( data_dag *i, data_dag *j )
@@ -491,8 +542,8 @@ static void BuildDag( void )
 
     for( dag_i = DataDag; dag_i != NULL; dag_i = dag_i->prev ) {
         used_cc = (dag_i->ins->ins_flags & INS_CC_USED) != 0;
-        link_all = FALSE;
-        link_multi = FALSE;
+        link_all = false;
+        link_multi = false;
         switch( dag_i->ins->head.opcode ) {
         case OP_EXT_ADD:
         case OP_EXT_SUB:
@@ -501,7 +552,7 @@ static void BuildDag( void )
                 ADC's can't get scheduled before the instruction that's setting
                 the carry bit for them.
             */
-            link_multi = TRUE;
+            link_multi = true;
             break;
         case OP_STORE_UNALIGNED:
         case OP_LOAD_UNALIGNED:
@@ -513,7 +564,7 @@ static void BuildDag( void )
             /*
                 Do not want any instructions moving across a NOP boundry.
             */
-            link_all = TRUE;
+            link_all = true;
         }
         for( dag_j = dag_i->prev; dag_j != NULL; dag_j = dag_j->prev ) {
             if( link_all ) {
@@ -521,7 +572,7 @@ static void BuildDag( void )
             } else if( InsOrderDependant( dag_i->ins, dag_j->ins ) ) {
                 BuildLink( dag_i, dag_j );
             } else if( link_multi && MultiIns( dag_j->ins ) ) {
-                link_multi = FALSE;
+                link_multi = false;
                 BuildLink( dag_i, dag_j );
             } else if( used_cc &&
                     (dag_j->ins->u.gen_table->op_type&MASK_CC)!=PRESERVE ) {
@@ -568,7 +619,7 @@ static void *AnnointADag( data_dag *dag )
     dep_list_entry  *dep;
 
     max_cycle_count = 0;
-    dag->visited = TRUE;
+    dag->visited = true;
     for( dep = dag->deps; dep != NULL; dep = dep->next ) {
         pred = dep->dep;
         pred->anc_count++;
@@ -617,11 +668,15 @@ extern int StallCost( instruction *ins, instruction *top )
         NOP's always get a stall cost of -1 so that they are scheduled
         as soon as they become ready.
     */
-    if( ins->head.opcode == OP_NOP ) return( -1 );
+    if( ins->head.opcode == OP_NOP )
+        return( -1 );
     /* or instructions whose condition code results are used */
-    if( ins->ins_flags & INS_CC_USED ) return( -1 );
-    if( top == NULL ) return( 0 );
-    if( FPFreeIns( ins ) ) return( -1 );
+    if( ins->ins_flags & INS_CC_USED )
+        return( -1 );
+    if( top == NULL )
+        return( 0 );
+    if( FPFreeIns( ins ) )
+        return( -1 );
     last = top;
     while( FPFreeIns( top ) )
         top = top->head.next;
@@ -632,10 +687,11 @@ extern int StallCost( instruction *ins, instruction *top )
     ins_stack = StackOp( ins );
     curr = top;
     for( ;; ) {
-        if( unit_stall == 0 && opnd_stall == 0 ) return( 0 );
+        if( unit_stall == 0 && opnd_stall == 0 )
+            return( 0 );
         if( opnd_stall > 0 ) {
             --opnd_stall;
-            switch( DataDependant( ins, curr, FALSE ) ) {
+            switch( DataDependant( ins, curr, false ) ) {
             case DEP_OP:
                 return( opnd_stall * 2 );
             case DEP_INDEX:
@@ -643,7 +699,9 @@ extern int StallCost( instruction *ins, instruction *top )
                 return( opnd_stall * 2 + 1 );
             }
             /* two stack ops will stall on the implicit use of SP */
-            if( ins_stack && StackOp( curr ) ) return( opnd_stall*2 + 1 );
+            if( ins_stack && StackOp( curr ) ) {
+                return( opnd_stall * 2 + 1 );
+            }
         }
         if( unit_stall > 0 ) {
             --unit_stall;
@@ -653,11 +711,15 @@ extern int StallCost( instruction *ins, instruction *top )
                 /* turn off one of the fu bits */
                 fu_overlap &= fu_overlap - 1;
                 avail_fu &= fu_overlap;
-                if( avail_fu == 0 ) return( unit_stall * 2 );
+                if( avail_fu == 0 ) {
+                    return( unit_stall * 2 );
+                }
             }
         }
         curr = curr->head.next;
-        if( curr == last ) return( 0 );
+        if( curr == last ) {
+            return( 0 );
+        }
     }
 }
 
@@ -670,14 +732,20 @@ static int ScaleAdjust( name *op, hw_reg_set reg )
 {
     hw_reg_set  idx_reg;
 
-    if( op->n.class != N_INDEXED ) return( -1 );
+    if( op->n.class != N_INDEXED )
+        return( -1 );
     idx_reg = op->i.index->r.reg;
-    if( !HW_Ovlap( idx_reg, reg ) ) return( -1 );
+    if( !HW_Ovlap( idx_reg, reg ) )
+        return( -1 );
     if( op->i.index_flags & X_HIGH_BASE ) {
-        if( HW_Ovlap( HighReg( idx_reg ), reg ) ) return( 0 );
+        if( HW_Ovlap( HighReg( idx_reg ), reg ) ) {
+            return( 0 );
+        }
     }
     if( op->i.index_flags & X_LOW_BASE ) {
-        if( HW_Ovlap( LowReg( idx_reg ), reg ) ) return( 0 );
+        if( HW_Ovlap( LowReg( idx_reg ), reg ) ) {
+            return( 0 );
+        }
     }
     return( op->i.scale );
 }
@@ -705,8 +773,10 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     int         scale;
 
     bias = adj->operands[1]->c.int_value;
-    if( adj->head.opcode == OP_SUB ) bias = -bias;
-    if( forward ) bias = -bias;
+    if( adj->head.opcode == OP_SUB )
+        bias = -bias;
+    if( forward )
+        bias = -bias;
     _INS_NOT_BLOCK( adj );
     reg = adj->result->r.reg;
     chk = adj;
@@ -716,13 +786,20 @@ static void FixIndexAdjust( instruction *adj, bool forward )
         } else {
             chk = chk->head.prev;
         }
-        if( chk == adj ) break;
-        if( chk->head.opcode == OP_BLOCK ) break;
-        if( !(chk->ins_flags & INS_INDEX_ADJUST) && ReDefinedBy( chk, adj->result ) ) break;
+        if( chk == adj )
+            break;
+        if( chk->head.opcode == OP_BLOCK )
+            break;
+        if( !(chk->ins_flags & INS_INDEX_ADJUST) && _IsReDefinedBy( chk, adj->result ) )
+            break;
         if( forward ) {
-            if( chk->id > adj->id ) continue;
+            if( chk->id > adj->id ) {
+                continue;
+            }
         } else {
-            if( chk->id < adj->id ) continue;
+            if( chk->id < adj->id ) {
+                continue;
+            }
         }
         for( i = chk->num_operands; i-- > 0; ) {
             op = chk->operands[i];
@@ -792,7 +869,7 @@ static void ScheduleIns( void )
     /* get initial 'ready' list */
     ready = NULL;
     for( curr = DataDag; curr != NULL; curr = curr->prev ) {
-        curr->visited = FALSE;
+        curr->visited = false;
         if( curr->anc_count == 0 ) {
             curr->ready = ready;
             ready = curr;
@@ -809,7 +886,8 @@ static void ScheduleIns( void )
         best = NULL;
         fp_stack_just_squeeks_by = NULL;
         for( curr = ready; curr != NULL; curr = curr->ready ) {
-            if( curr->visited ) continue;
+            if( curr->visited )
+                continue;
             stk_over = FPStkOver( curr->ins, stk_depth );
             if( stk_over == 0 ) {
                 fp_stack_just_squeeks_by = curr;
@@ -826,7 +904,7 @@ static void ScheduleIns( void )
                     MARK_BEST;
                 } else if( curr->height == best->height ) {
                     if( (curr->ins->ins_flags & INS_INDEX_ADJUST)
-                        && DataDependant( curr->ins, best->ins, FALSE ) ) {
+                        && DataDependant( curr->ins, best->ins, false ) ) {
                         /*
                            drop in a INDEX_ADJUST as soon as it doesn't
                            hurt, otherwise we end up putting it too close
@@ -878,15 +956,17 @@ static void ScheduleIns( void )
             last_seq = top->sequence;
         }
         if( top->ins_flags & INS_INDEX_ADJUST ) {
-            FixIndexAdjust( top, TRUE );
+            FixIndexAdjust( top, true );
         }
         FPCalcStk( best->ins, &stk_depth );
-        best->scheduled = TRUE;
+        best->scheduled = true;
         /* really delete any virtually deleted dags */
-        best->visited = TRUE;
+        best->visited = true;
         for( ;; ) {
-            if( ready == NULL ) break;
-            if( !ready->visited ) break;
+            if( ready == NULL )
+                break;
+            if( !ready->visited )
+                break;
             ready = ready->ready;
         }
         /* find out who becomes ready now that this instruction is scheduled */
@@ -911,7 +991,7 @@ static void ScheduleIns( void )
     */
     for( top = SBlock->ins.hd.prev; top->head.opcode != OP_BLOCK; top = top->head.prev ) {
         if( top->ins_flags & INS_INDEX_ADJUST ) {
-            FixIndexAdjust( top, FALSE );
+            FixIndexAdjust( top, false );
         }
     }
 }
@@ -976,14 +1056,14 @@ void    Schedule( void )
     mem_out_action      old_memout;
     bool                first_time;
 
-    first_time = TRUE;
+    first_time = true;
     InitFrl( &DepFrl );
     old_memout = SetMemOut( MO_SUICIDE );
     for( SBlock = HeadBlock; SBlock != NULL; SBlock = SBlock->next_block ) {
         if( Spawn( &SchedBlock ) != 0 ) {
             if( first_time ) {
                 ProcMessage( MSG_SCHEDULER_DIED );
-                first_time = FALSE;
+                first_time = false;
             }
             FreeDataDag();
         }

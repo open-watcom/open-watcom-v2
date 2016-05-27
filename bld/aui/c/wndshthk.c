@@ -35,5 +35,5 @@
 bool    WndShutDownHook()
 {
     // resize any window hook
-    return( TRUE ); //-- return false for no shut down
+    return( true ); //-- return false for no shut down
 }

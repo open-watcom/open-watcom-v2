@@ -125,7 +125,7 @@ bool    Permission( IOKW kw ) {
 
     bool        perm;
 
-    perm = FALSE;
+    perm = false;
     if( kw == 0 ) {
         OpndErr( IL_CTRL_LIST );
     } else if( Already( kw ) ) {

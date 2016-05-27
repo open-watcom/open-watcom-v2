@@ -6,7 +6,7 @@
 # Expects POSIX or OW tools.
 
 if [ -z "$OWROOT" ]; then
-    source ./setvars.sh
+    . ./setvars.sh
 fi
 
 OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
@@ -57,12 +57,12 @@ else
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
     cd $OWSRCDIR
-    builder boot
+    builder $OWBUILDEROPTS boot
     RC=$?
     if [ $RC -ne 0 ]; then
         echo "builder bootstrap build error"
     else
-        builder build
+        builder $OWBUILDEROPTS build
         RC=$?
         if [ $RC -ne 0 ]; then
             echo "builder bootstrap build error"

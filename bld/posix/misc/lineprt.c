@@ -42,12 +42,12 @@
 #include <string.h>
 #include <malloc.h>
 #include "lineprt.h"
+#include "bool.h"
 
-#define TRUE 1
-#define FALSE 0
+
 extern void Die( char *str );
 
-static int      _dropped = TRUE;
+static bool     _dropped = true;
 static size_t   _lastlinelen = 0;
 //                           12345678 1 2345678 2 2345678 3 2345678 4 2345678 5 2345678 6 23456
 static char     _spaces[] = "                                                                  ";
@@ -72,7 +72,7 @@ void PrintALine( const char *str, ... )
     printf( "%c%s%s", '\r', bob, _spaces );
     _spaces[i] = ' ';
     _lastlinelen = len;
-    _dropped = FALSE;
+    _dropped = false;
 }
 
 /* PrintALineThenDrop - printf text on the current line, then drop */
@@ -94,7 +94,7 @@ void PrintALineThenDrop( const char *str, ... )
     printf( "%c%s%s\n", '\r', bob, _spaces );
     _spaces[i] = ' ';
     _lastlinelen = 0;
-    _dropped = TRUE;
+    _dropped = true;
 }
 
 /* DropPrintALine - printf text on the next line */
@@ -110,13 +110,13 @@ void DropPrintALine( const char *str, ... )
     if( !_dropped )
         printf( "\n" );
     printf( "%s", bob );
-    _dropped = FALSE;
+    _dropped = false;
 }
 
 /* DropALineDammit - drop down one line, for sure */
 void DropALineDammit( void )
 {
-    _dropped = TRUE;
+    _dropped = true;
     _lastlinelen = 0;
     printf( "\n" );
 }

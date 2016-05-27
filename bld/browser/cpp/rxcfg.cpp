@@ -60,7 +60,7 @@ RegExpCfg::RegExpCfg( WWindow * parent, const RXOptions & def,
 void RegExpCfg::initialize()
 //--------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -193,7 +193,7 @@ void RegExpCfg::enableAllButton( WWindow * )
     int i;
 
     for( i = 0; i < NUMCHECKBOXES; i += 1 ) {
-        _chbxArray[ i ]->setCheck( TRUE );
+        _chbxArray[ i ]->setCheck( true );
     }
 }
 
@@ -203,7 +203,7 @@ void RegExpCfg::clearAllButton( WWindow * )
     int i;
 
     for( i = 0; i < NUMCHECKBOXES; i += 1 ) {
-        _chbxArray[ i ]->setCheck( FALSE );
+        _chbxArray[ i ]->setCheck( false );
     }
 }
 
@@ -219,7 +219,7 @@ bool RegExpCfg::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_REGULAR_EXPRESSIONS );
     }
-    return( TRUE );
+    return( true );
 }
 
 void RegExpCfg::setValues( const RXOptions & opt )
@@ -231,48 +231,48 @@ void RegExpCfg::setValues( const RXOptions & opt )
     _contains->setCheck( !opt._anchored );
 
     for( i = 0; i < NUMCHECKBOXES; i += 1 ) {
-        _chbxArray[ i ]->setCheck( TRUE );
+        _chbxArray[ i ]->setCheck( true );
     }
 
     for( i = strlen( opt._magicString ); i > 0; i -= 1 ) {
         switch( opt._magicString[ i - 1 ] ) {
         case '^':
-            _chbx._anchorChar->setCheck( FALSE );
+            _chbx._anchorChar->setCheck( false );
             break;
         case '$':
-            _chbx._eolChar->setCheck( FALSE );
+            _chbx._eolChar->setCheck( false );
             break;
         case '[':
         case ']':
-            _chbx._charGroupChar->setCheck( FALSE );
+            _chbx._charGroupChar->setCheck( false );
             break;
         case '(':
         case ')':
-            _chbx._exprGroupChar->setCheck( FALSE );
+            _chbx._exprGroupChar->setCheck( false );
             break;
         case '~':
-            _chbx._ignoreCaseChar->setCheck( FALSE );
+            _chbx._ignoreCaseChar->setCheck( false );
             break;
         case '@':
-            _chbx._respectCaseChar->setCheck( FALSE );
+            _chbx._respectCaseChar->setCheck( false );
             break;
         case '\\':
-            _chbx._escapeChar->setCheck( FALSE );
+            _chbx._escapeChar->setCheck( false );
             break;
         case '.':
-            _chbx._dotChar->setCheck( FALSE );
+            _chbx._dotChar->setCheck( false );
             break;
         case '|':
-            _chbx._alternateChar->setCheck( FALSE );
+            _chbx._alternateChar->setCheck( false );
             break;
         case '?':
-            _chbx._questionChar->setCheck( FALSE );
+            _chbx._questionChar->setCheck( false );
             break;
         case '+':
-            _chbx._plusChar->setCheck( FALSE );
+            _chbx._plusChar->setCheck( false );
             break;
         case '*':
-            _chbx._starChar->setCheck( FALSE );
+            _chbx._starChar->setCheck( false );
             break;
         default:
             NODEFAULT;

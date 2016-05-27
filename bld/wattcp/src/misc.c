@@ -82,7 +82,7 @@ char *dummy_fatal_rte = (char*)&FATAL_HANDLER;
 #pragma option -N-
 #endif
 
-#if !defined(BIG_ENDIAN_MACHINE)
+#if !defined(BIG_ENDIAN_MACHINE) && !defined(USE_BIGENDIAN) && !defined( __GNUC__ ) && !defined( __WATCOMC__ )
 
 #define swap16(p)  ( *p = (*p << 8) | (*p >> 8))
 #define swap32(p)  ( swap16 (&((unsigned short*)p)[0]), \
@@ -189,7 +189,7 @@ void init_misc (void)
 #if (DOSX) && !defined(__DJGPP__)
   setup_dos_xfer_buf();
 #endif
- 
+
   srand (peekw(0,0x46C)); /* initialize rand using BIOS clock */
   init_timers();
 }
@@ -253,7 +253,7 @@ const char *dword_str (DWORD val)
   return (buf);
 }
 #endif /* USE_DEBUG && NOT_USED */
- 
+
 
 #if (DOSX)
 #if defined(__DJGPP__)
@@ -350,7 +350,7 @@ BOOL valid_addr (DWORD addr, int len)
  * ffs() isn't needed yet, but should be used in select_s()
  */
 #if defined(USE_BSD_FUNC)
-#if (DOSX == 0) || defined(OLD_WATCOMC)
+#if !defined(__BORLAND386__) && ((DOSX == 0) || defined(OLD_WATCOMC))
 /*
  * Copyright (C) 1991, 1992 Free Software Foundation, Inc.
  * Contributed by Torbjorn Granlund (tege@sics.se).

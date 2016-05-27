@@ -123,10 +123,10 @@ extended  __lgamma( extended arg, const extended __FAR *my_inf ) {
     extended      a;
     extended      b;
 
-    mflag = FALSE;
+    mflag = false;
     t = arg;
     if( t < 0.0 ) { // argument is negative
-        mflag = TRUE;
+        mflag = true;
         t = -t;
         r = QINT( t );
         sign = 1.0;

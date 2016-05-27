@@ -103,7 +103,7 @@ bool LoadObj( segdata *seg )
 
     leader = seg->u.leader;
     if( ( leader == NULL ) || DBISkip( leader ) )
-        return( FALSE );
+        return( false );
     CurrRec.seg = seg;
     if( leader->group == NULL ) {
         CurrRec.addr = leader->seg_addr;
@@ -112,8 +112,8 @@ bool LoadObj( segdata *seg )
 #endif
     } else {
         CurrRec.addr = leader->group->grp_addr;
-        CurrRec.addr.off += SUB_ADDR( leader->seg_addr, leader->group->grp_addr );
+        CurrRec.addr.off += SEG_GROUP_DELTA( leader );
     }
     CurrRec.addr.off += seg->a.delta;
-    return( TRUE );
+    return( true );
 }

@@ -269,39 +269,39 @@ void ClassInitState( type_flag class_variant, CLASS_INIT extra, TYPE class_mod_l
     data->max_align = 0;
     data->pack_amount = packing;
     data->tflag = class_variant;
-    data->bitfield = FALSE;
-    data->defined = FALSE;
-    data->local_class = FALSE;
-    data->nested_class = FALSE;
-    data->own_vfptr = FALSE;
-    data->nameless_OK = FALSE;
-    data->generic = FALSE;
-    data->specific_defn = FALSE;
-    data->is_explicit = TRUE;
-    data->is_union = FALSE;
-    data->zero_array_defd = FALSE;
-    data->member_mod_adjust = FALSE;
-    data->class_idiom = FALSE;
-    data->class_template = FALSE;
-    data->a_public = FALSE;
-    data->a_protected = FALSE;
-    data->a_private = FALSE;
-    data->a_const = FALSE;
-    data->a_reference = FALSE;
-    data->has_const_copy = FALSE;
-    data->has_nonconst_copy = FALSE;
-    data->has_const_opeq = FALSE;
-    data->has_nonconst_opeq = FALSE;
-    data->has_explicit_opeq = FALSE;
-    data->in_defn = FALSE;
+    data->bitfield = false;
+    data->defined = false;
+    data->local_class = false;
+    data->nested_class = false;
+    data->own_vfptr = false;
+    data->nameless_OK = false;
+    data->generic = false;
+    data->specific_defn = false;
+    data->is_explicit = true;
+    data->is_union = false;
+    data->zero_array_defd = false;
+    data->member_mod_adjust = false;
+    data->class_idiom = false;
+    data->class_template = false;
+    data->a_public = false;
+    data->a_protected = false;
+    data->a_private = false;
+    data->a_const = false;
+    data->a_reference = false;
+    data->has_const_copy = false;
+    data->has_nonconst_copy = false;
+    data->has_const_opeq = false;
+    data->has_nonconst_opeq = false;
+    data->has_explicit_opeq = false;
+    data->in_defn = false;
     class_mod_type = NULL;
     if( class_mod_list != NULL ) {
         class_mod_type = ProcessClassModifiers( class_mod_list, &(data->mod_flags), &(data->fn_flags), &(data->fn_pragma) );
-        data->member_mod_adjust = TRUE;
+        data->member_mod_adjust = true;
     }
     data->class_mod_type = class_mod_type;
     if( extra & CLINIT_TEMPLATE_DECL ) {
-        data->class_template = TRUE;
+        data->class_template = true;
     }
     prev_data = data->next;
     if( prev_data != NULL ) {
@@ -347,10 +347,10 @@ void ClassInitState( type_flag class_variant, CLASS_INIT extra, TYPE class_mod_l
     }
     switch( ScopeId( GetCurrScope() ) ) {
     case SCOPE_BLOCK:
-        data->local_class = TRUE;
+        data->local_class = true;
         break;
     case SCOPE_CLASS:
-        data->nested_class = TRUE;
+        data->nested_class = true;
         break;
     case SCOPE_TEMPLATE_INST:
         data->tflag |= TF1_INSTANTIATION;
@@ -359,7 +359,7 @@ void ClassInitState( type_flag class_variant, CLASS_INIT extra, TYPE class_mod_l
     if( class_variant & (TF1_STRUCT|TF1_UNION) ) {
         data->perm = SF_NULL;
         if( class_variant & TF1_UNION ) {
-            data->is_union = TRUE;
+            data->is_union = true;
         }
     } else {
         data->perm = SF_PRIVATE;
@@ -403,9 +403,9 @@ static bool verifyNoChangePerm( CLASS_DATA *data, symbol_flag perm, NAME name )
         } else {
             CErr2p( ERR_ACCESS_DECL_INCREASE, name );
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool handleAccessDeclaration( PTREE id_tree )
@@ -429,11 +429,11 @@ static bool handleAccessDeclaration( PTREE id_tree )
     bool error_diagnosed;
     auto TOKEN_LOCN name_locn;
 
-    error_diagnosed = FALSE;
+    error_diagnosed = false;
     data = classDataStack;
     if( data->perm & SF_PRIVATE ) {
         CErr1( ERR_ACCESS_DECL_IN_PRIVATE );
-        error_diagnosed = TRUE;
+        error_diagnosed = true;
     }
     if( id_tree->op != PT_BINARY || id_tree->cgop != CO_COLON_COLON ) {
         /* error occurred in the C part of C::id (ignore this declaration) */
@@ -459,7 +459,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
     curr_scope = data->scope;
     if( ! ScopeDirectBase( curr_scope, type ) ) {
         typeError( ERR_NOT_A_DIRECT_BASE_CLASS, type );
-        return( TRUE );
+        return( true );
     }
     scope = type->u.c.scope;
     if( udc_return_type != NULL ) {
@@ -469,14 +469,14 @@ static bool handleAccessDeclaration( PTREE id_tree )
     }
     if( result == NULL ) {
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     if( result->scope != scope && result->access_decl != scope ) {
         /* we have to find a meaning for this case if we allow it */
         /* (save any code that requires this to work for analysis) AFS */
         ScopeFreeResult( result );
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     sym_name = result->sym_name;
     sym = sym_name->name_syms;
@@ -498,7 +498,7 @@ static bool handleAccessDeclaration( PTREE id_tree )
             if(( perm ^ curr_perm ) != SF_NULL ) {
                 if( ! error_diagnosed ) {
                     CErr2p( ERR_ACCESS_DECL_ALL_SAME, name );
-                    error_diagnosed = TRUE;
+                    error_diagnosed = true;
                 }
             }
         }
@@ -515,13 +515,13 @@ static bool handleAccessDeclaration( PTREE id_tree )
         return( error_diagnosed );
     }
     if( verifyNoChangePerm( data, perm, name ) ) {
-        return( TRUE );
+        return( true );
     }
     access_sym = SymCreateAtLocn( type, SC_ACCESS, SF_NULL, name, GetCurrScope(), &name_locn );
     if( access_sym != NULL ) {
         access_sym->u.udc_type = udc_return_type;
     }
-    return( FALSE );
+    return( false );
 }
 
 void ClassAccessDeclaration( PTREE id_tree, TOKEN_LOCN *locn )
@@ -549,11 +549,11 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     symbol_flag perm;
     bool error_diagnosed;
 
-    error_diagnosed = FALSE;
+    error_diagnosed = false;
     data = classDataStack;
     if( data->perm & SF_PRIVATE ) {
         CErr1( ERR_ACCESS_DECL_IN_PRIVATE );
-        error_diagnosed = TRUE;
+        error_diagnosed = true;
     }
     type = dspec->partial;
     scope = dspec->scope;
@@ -568,30 +568,30 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     base_type = ScopeClass( scope );
     if( base_type == NULL ) {
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     if( ! ScopeDirectBase( curr_scope, base_type ) ) {
         typeError( ERR_NOT_A_DIRECT_BASE_CLASS, base_type );
-        return( TRUE );
+        return( true );
     }
     result = ScopeFindScopedMember( curr_scope, scope, name );
     if( result == NULL ) {
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     if( result->scope != scope && result->access_decl != scope ) {
         /* we have to find a meaning for this case if we allow it */
         /* (save any code that requires this to work for analysis) AFS */
         ScopeFreeResult( result );
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     sym_name = result->sym_name;
     sym = sym_name->name_type;
     if( sym == NULL ) {
         ScopeFreeResult( result );
         CErr2p( ERR_NOT_A_MEMBER_NAME, name );
-        return( TRUE );
+        return( true );
     }
     if( ! error_diagnosed ) {
         error_diagnosed = ScopeAmbiguousSymbol( result, sym );
@@ -602,10 +602,10 @@ static bool handleAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
     }
     perm = sym->flag & ( SF_PROTECTED | SF_PRIVATE );
     if( verifyNoChangePerm( data, perm, name ) ) {
-        return( TRUE );
+        return( true );
     }
     SymCreateAtLocn( type, SC_TYPEDEF, SF_NULL, name, GetCurrScope(), locn );
-    return( FALSE );
+    return( false );
 }
 
 void ClassAccessTypeDeclaration( DECL_SPEC *dspec, TOKEN_LOCN *locn )
@@ -656,14 +656,14 @@ static TYPE createClassType( NAME name, type_flag flag )
     if( name != NULL ) {
         info->name = name;
     } else {
-        info->unnamed = TRUE;
+        info->unnamed = true;
     }
-    info->const_copy = TRUE;
-    info->const_assign = TRUE;
-    info->ctor_user_code = TRUE;
-    info->copy_user_code = TRUE;
-    info->dtor_user_code = TRUE;
-    info->assign_user_code = TRUE;
+    info->const_copy = true;
+    info->const_assign = true;
+    info->ctor_user_code = true;
+    info->copy_user_code = true;
+    info->dtor_user_code = true;
+    info->assign_user_code = true;
     return( class_type );
 }
 
@@ -673,8 +673,8 @@ static void classOpen( CLASS_DATA *data, CLASSINFO *info )
         /* we can stash inline defns here because ClassEnd will execute */
         data->inline_data = data;
     }
-    data->in_defn = TRUE;
-    info->opened = TRUE;
+    data->in_defn = true;
+    info->opened = true;
     info->class_mod = data->class_mod_type;
 }
 
@@ -750,7 +750,7 @@ static void setClassType( CLASS_DATA *data, TYPE type, CLASS_DECL declaration )
             data->mod_flags = info->mod_flags;
         }
 
-        data->member_mod_adjust = TRUE;
+        data->member_mod_adjust = true;
     }
 
     if( declaration == CLASS_DEFINITION ) {
@@ -845,7 +845,7 @@ static CLNAME_STATE processClassTemplate( CLASS_DATA *data, SCOPE scope,
 {
     CLNAME_STATE ret;
 
-    data->nameless_OK = TRUE;
+    data->nameless_OK = true;
     if( declaration == CLASS_DECLARATION ) {
         TemplateClassDeclaration( id, scope, data->name );
         ret = CLNAME_NULL;
@@ -919,15 +919,15 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
         return( CLNAME_NULL );
     }
 
-    something_went_wrong = FALSE;
-    scoped_id = FALSE;
+    something_went_wrong = false;
+    scoped_id = false;
     scope = GetCurrScope();
 
     sym_name = NULL;
     if( id->op == PT_ID ) {
         name = id->u.id.name;
     } else if( id->op == PT_ERROR ) {
-        something_went_wrong = TRUE;
+        something_went_wrong = true;
         name = NameDummy();
     } else {
         sym_name = id->sym_name;
@@ -936,20 +936,20 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
         if( ClassTypeName( sym_name ) ) {
             PTREE right = id->u.subtree[1];
 
-            scoped_id = TRUE;
+            scoped_id = true;
             name = right->u.id.name;
 
             scope = sym_name->containing;
         } else {
             CErr2p( ERR_QUALIFIED_NAME_NOT_CLASS, id );
-            something_went_wrong = TRUE;
+            something_went_wrong = true;
             name = NameDummy();
         }
     }
 
     data->name = name;
     if( declaration == CLASS_GENERIC ) {
-        data->generic = TRUE;
+        data->generic = true;
         newClassType( data, declaration );
         newClassSym( data, declaration, id );
         PTreeFreeSubtrees( id );
@@ -957,7 +957,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
     }
     if( declaration != CLASS_REFERENCE ) {
         if( declaration == CLASS_DECLARATION ) {
-            data->class_idiom = TRUE;
+            data->class_idiom = true;
         }
         if( data->class_template ) {
             return( processClassTemplate( data, scope, declaration, id ) );
@@ -1022,7 +1022,7 @@ CLNAME_STATE ClassName( PTREE id, CLASS_DECL declaration )
                     }
                     setClassType( data, type, declaration );
                     if( declaration == CLASS_DECLARATION ) {
-                        data->nameless_OK = TRUE;
+                        data->nameless_OK = true;
                     }
                 }
             } else {
@@ -1060,7 +1060,7 @@ void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, tc_directive 
     case CLASS_DEFINITION:
         if( ScopeType( GetCurrScope(), SCOPE_FILE ) ) {
             /* old template specialization syntax */
-            data->specific_defn = TRUE;
+            data->specific_defn = true;
             data->tflag |= TF1_SPECIFIC | TF1_INSTANTIATION;
             TemplateSpecificDefnStart( id, type );
         } else if ( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST ) ) {
@@ -1090,7 +1090,7 @@ void ClassSpecificInstantiation( PTREE id, CLASS_DECL declaration, tc_directive 
             ClassName( id, declaration );
             break;
         }
-        data->nameless_OK = TRUE;
+        data->nameless_OK = true;
         /* fall through */
     case CLASS_REFERENCE:
         data = classDataStack;
@@ -1202,7 +1202,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
                 parm->defarg_expr = defarg_expr;
                 if( defarg_expr == NULL ) {
                     // we had some parsing problem in the defarg expr
-                    parm->has_defarg = FALSE;
+                    parm->has_defarg = false;
                 }
                 RewriteClose( last_rewrite );
                 RewriteFree( defarg_rewrite );
@@ -1217,7 +1217,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     for(;;) {
         curr = RingPop( &(data->inlines) );
         if( curr == NULL ) break;
-        ClassProcessFunction( curr, TRUE );
+        ClassProcessFunction( curr, true );
         FreeDeclInfo( curr );
     }
     SrcFileResetTokenLocn( &locn );
@@ -1236,7 +1236,7 @@ static void checkClassStatus( CLASS_DATA *data )
     }
     info = data->info;
     if( ! info->has_ctor ) {
-        if( ! IsCgTypeAggregate( data->type, FALSE ) ) {
+        if( ! IsCgTypeAggregate( data->type, false ) ) {
             if( data->a_const ) {
                 CErr1( ERR_CONST_MEMBER_MEANS_CTOR );
             }
@@ -1316,8 +1316,8 @@ SYMBOL ClassAddDefaultCtor( SCOPE scope )
     fn_type = addClassFnMods( scope, fn_type );
     sym = insertDefaultFunc( scope, fn_type, CppConstructorName() );
     info = class_type->u.c.info;
-    info->ctor_defined = TRUE;
-    info->ctor_user_code = FALSE;
+    info->ctor_defined = true;
+    info->ctor_user_code = false;
     return( sym );
 }
 
@@ -1339,8 +1339,8 @@ SYMBOL ClassAddDefaultDtor( SCOPE scope )
     sym = insertDefaultFunc( scope, fn_type, CppDestructorName() );
     class_type = ScopeClass( scope );
     info = class_type->u.c.info;
-    info->dtor_defined = TRUE;
-    info->dtor_user_code = FALSE;
+    info->dtor_defined = true;
+    info->dtor_user_code = false;
     return( sym );
 }
 
@@ -1415,8 +1415,8 @@ SYMBOL ClassAddDefaultCopy( SCOPE scope )
     }
     fn_type = buildCopyAssign( scope, fn_flags, arg_type, class_type );
     sym = insertDefaultFunc( scope, fn_type, name );
-    info->copy_defined = TRUE;
-    info->copy_user_code = FALSE;
+    info->copy_defined = true;
+    info->copy_user_code = false;
     return( sym );
 }
 
@@ -1438,7 +1438,7 @@ SYMBOL ClassAddDefaultAssign( SCOPE scope )
     info = class_type->u.c.info;
     if( syms != NULL ) {
         if( findMember( syms, class_type, ClassIsDefaultAssign ) != NULL ) {
-            info->has_def_opeq = TRUE;
+            info->has_def_opeq = true;
             return( NULL );
         }
     }
@@ -1452,8 +1452,8 @@ SYMBOL ClassAddDefaultAssign( SCOPE scope )
     }
     fn_type = buildCopyAssign( scope, fn_flags, arg_type, class_type );
     sym = insertDefaultFunc( scope, fn_type, name );
-    info->assign_defined = TRUE;
-    info->assign_user_code = FALSE;
+    info->assign_defined = true;
+    info->assign_user_code = false;
     return( sym );
 }
 
@@ -1465,12 +1465,12 @@ static bool addDefaultCtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     if( info->needs_ctor || data->member_mod_adjust ) {
         if( !info->has_ctor ) {
             ClassAddDefaultCtor( scope );
-            return( TRUE );
+            return( true );
         }
     } else {
-        info->ctor_user_code = FALSE;
+        info->ctor_user_code = false;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool addDefaultCopy( CLASS_DATA *data, SCOPE scope, TYPE class_type )
@@ -1480,12 +1480,12 @@ static bool addDefaultCopy( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     info = class_type->u.c.info;
     if( info->needs_ctor || data->member_mod_adjust ) {
         if( ClassAddDefaultCopy( scope ) != NULL ) {
-            return( TRUE );
+            return( true );
         }
     } else {
-        info->copy_user_code = FALSE;
+        info->copy_user_code = false;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool addDefaultDtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
@@ -1496,12 +1496,12 @@ static bool addDefaultDtor( CLASS_DATA *data, SCOPE scope, TYPE class_type )
     if( info->needs_dtor || data->member_mod_adjust ) {
         if( !info->has_dtor ) {
             ClassAddDefaultDtor( scope );
-            return( TRUE );
+            return( true );
         }
     } else {
-        info->dtor_user_code = FALSE;
+        info->dtor_user_code = false;
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool addDefaultOpEq( CLASS_DATA *data, SCOPE scope, TYPE class_type )
@@ -1513,13 +1513,13 @@ static bool addDefaultOpEq( CLASS_DATA *data, SCOPE scope, TYPE class_type )
         /* make sure the class doesn't contain a const member or ref member */
         if( ! info->const_ref ) {
             if( ClassAddDefaultAssign( scope ) != NULL ) {
-                return( TRUE );
+                return( true );
             }
         }
     } else {
-        info->assign_user_code = FALSE;
+        info->assign_user_code = false;
     }
-    return( FALSE );
+    return( false );
 }
 
 static void setAbstractStatus( CLASS_DATA *data, CLASSINFO *info )
@@ -1528,19 +1528,19 @@ static void setAbstractStatus( CLASS_DATA *data, CLASSINFO *info )
     TYPE base_type;
     CLASSINFO *base_info;
 
-    info->abstract_OK = TRUE;
+    info->abstract_OK = true;
     RingIterBeg( data->bases, base ) {
         base_type = StructType( base->type );
         base_info = base_type->u.c.info;
         if( base_info->abstract_OK ) {
             if( base_info->abstract ) {
                 /* at least one known abstract base */
-                info->abstract_OK = FALSE;
+                info->abstract_OK = false;
                 break;
             }
         } else {
             /* at least one possible abstract base */
-            info->abstract_OK = FALSE;
+            info->abstract_OK = false;
             break;
         }
     } RingIterEnd( base )
@@ -1560,7 +1560,7 @@ static void setRefPassing(      // SET passed_ref IN CLASSINFO
     if( ! info->passed_ref ) {
         if( info->needs_dtor
          || TypeHasSpecialFields( cltype ) ) {
-            info->passed_ref = TRUE;
+            info->passed_ref = true;
         }
     }
 }
@@ -1623,7 +1623,7 @@ static void createVFPtrField( CLASS_DATA *data, bool do_creation )
     CLASSINFO *info;
 
     if( do_creation ) {
-        vfptr_type = MakeVFTableFieldType( TRUE );
+        vfptr_type = MakeVFTableFieldType( true );
         data->vf_offset = addTypeField( data, vfptr_type );
 #ifndef NDEBUG
     } else if( data->own_vfptr ) {
@@ -1631,8 +1631,8 @@ static void createVFPtrField( CLASS_DATA *data, bool do_creation )
 #endif
     }
     info = data->info;
-    info->has_vfptr = TRUE;
-    data->own_vfptr = TRUE;
+    info->has_vfptr = true;
+    data->own_vfptr = true;
 }
 
 DECL_SPEC *ClassEnd( void )
@@ -1651,7 +1651,7 @@ DECL_SPEC *ClassEnd( void )
     bool gen_defaults;
 
     data = classDataStack;
-    data->is_explicit = FALSE;
+    data->is_explicit = false;
     ClassPermission( SF_NULL );
     type = data->type;
     scope = data->scope;
@@ -1659,29 +1659,29 @@ DECL_SPEC *ClassEnd( void )
     if( data->a_const || data->a_reference ) {
         /* must be set before we add compiler generated default member fns */
         /* because we can't generate a default op= unless this is set */
-        info->const_ref = TRUE;
+        info->const_ref = true;
     }
     /*  has_const_copy  has_nonconst_copy       const_copy
         has_const_opeq  has_nonconst_opeq       const_assign
-            FALSE           FALSE                 inherit
-            TRUE            FALSE                 set TRUE
-            FALSE           TRUE                  set FALSE
-            TRUE            TRUE                  set TRUE
+            false           false                 inherit
+            true            false                 set true
+            false           true                  set false
+            true            true                  set true
     */
     if( data->has_const_copy ) {
-        info->const_copy = TRUE;
-        info->passed_ref = TRUE;
+        info->const_copy = true;
+        info->passed_ref = true;
     } else {
         if( data->has_nonconst_copy ) {
-            info->const_copy = FALSE;
-            info->passed_ref = TRUE;
+            info->const_copy = false;
+            info->passed_ref = true;
         }
     }
     if( data->has_const_opeq ) {
-        info->const_assign = TRUE;
+        info->const_assign = true;
     } else {
         if( data->has_nonconst_opeq ) {
-            info->const_assign = FALSE;
+            info->const_assign = false;
         }
     }
     if( info->unnamed ) {
@@ -1689,15 +1689,15 @@ DECL_SPEC *ClassEnd( void )
             CErr1( WARN_UNNAMED_CLASS_HAS_SPECIAL_MEMBER );
         }
     }
-    gen_defaults = FALSE;
+    gen_defaults = false;
     gen_defaults |= addDefaultCtor( data, scope, type );
     gen_defaults |= addDefaultCopy( data, scope, type );
     gen_defaults |= addDefaultDtor( data, scope, type );
     gen_defaults |= addDefaultOpEq( data, scope, type );
     if( data->own_vfptr ) {
-        createVFPtrField( data, TRUE );
+        createVFPtrField( data, true );
     }
-    data->defined = TRUE;
+    data->defined = true;
     info = data->info;
     vb_offset = data->vb_offset;
     vbptr_base = data->base_vbptr;
@@ -1715,11 +1715,11 @@ DECL_SPEC *ClassEnd( void )
     info->last_vbase = data->vb_index;
     if( info->has_ctor || info->has_dtor ) {
         if( info->has_vfn ) {
-            info->has_vcdtor = TRUE;
+            info->has_vcdtor = true;
         }
     }
     if( info->has_vfptr || info->has_vbptr ) {
-        info->has_comp_info = TRUE;
+        info->has_comp_info = true;
     }
     if( ! info->abstract_OK ) {
         setAbstractStatus( data, info );
@@ -1741,15 +1741,15 @@ DECL_SPEC *ClassEnd( void )
     if( data->offset == 0 ) {
         /* an empty class must have a non-zero size */
         addField( data, TARGET_CHAR, TARGET_CHAR );
-        info->empty = TRUE;
+        info->empty = true;
     }
     doAlignment( data, data->max_align );
     info->size = data->offset;
     info->vsize = info->size - size_of_vbases;
     info->max_align = data->max_align;
-    info->defined = TRUE;
-    data->in_defn = FALSE;
-    data->member_mod_adjust = FALSE;
+    info->defined = true;
+    data->in_defn = false;
+    data->member_mod_adjust = false;
     info->class_mod = data->class_mod_type;
     checkClassStatus( data );
     warnAboutHiding( data );
@@ -1760,7 +1760,7 @@ DECL_SPEC *ClassEnd( void )
     }
     type = CheckDupType( data->type );
     if( CErrOccurred( &(data->errors) ) ) {
-        info->corrupted = TRUE;
+        info->corrupted = true;
     } else {
         setRefPassing( type, info );
     }
@@ -1791,7 +1791,7 @@ static unsigned nextBitfield( CLASS_DATA *data, TYPE typ, unsigned width )
         unit_width = CgMemorySize( typ ) * TARGET_BITS_CHAR;
         data->bit_available = unit_width;
         data->bit_unit_width = unit_width;
-        data->bitfield = TRUE;
+        data->bitfield = true;
     }
     bit_offset = data->bit_offset;
     data->bit_offset += width;
@@ -1805,7 +1805,7 @@ static void abandonBitfield( TYPE typ )
 
     data = classDataStack;
     if( data->bitfield || typ == NULL ) {
-        data->bitfield = FALSE;
+        data->bitfield = false;
         return;
     }
     doAlignment( data, CgMemorySize( typ ) );
@@ -1816,56 +1816,56 @@ static void propagateKnowledge( CLASSINFO *from, CLASSINFO *to, prop_type what )
     if(( what & PROP_STATIC ) == 0 ) {
         /* non-static data member or a base class */
         if( from->corrupted ) {
-            to->corrupted = TRUE;
+            to->corrupted = true;
         }
         if( from->needs_ctor ) {
-            to->needs_ctor = TRUE;
+            to->needs_ctor = true;
         }
         if( from->needs_dtor ) {
-            to->needs_dtor = TRUE;
+            to->needs_dtor = true;
         }
         if( from->needs_assign ) {
-            to->needs_assign = TRUE;
+            to->needs_assign = true;
         }
         #if 0
         if( from->const_ref ) {
-            to->const_ref = TRUE;
+            to->const_ref = true;
         }
         #endif
         if( !from->const_copy ) {
-            to->const_copy = FALSE;
+            to->const_copy = false;
         }
         if( !from->const_assign ) {
-            to->const_assign = FALSE;
+            to->const_assign = false;
         }
         if( from->passed_ref ) {
-            to->passed_ref = TRUE;
+            to->passed_ref = true;
         }
         if( from->has_comp_info ) {
-            to->has_comp_info = TRUE;
+            to->has_comp_info = true;
         }
         if( from->has_mutable ) {
-            to->has_mutable = TRUE;
+            to->has_mutable = true;
         }
     }
     if( what & PROP_BASE ) {
         if( from->has_data ) {
-            to->has_data = TRUE;
+            to->has_data = true;
         }
         if( from->has_vcdtor ) {
-            to->has_vcdtor = TRUE;
+            to->has_vcdtor = true;
         }
         if( from->has_vfn ) {
-            to->has_vfn = TRUE;
+            to->has_vfn = true;
         }
         if( from->has_udc ) {
-            to->has_udc = TRUE;
+            to->has_udc = true;
         }
         if( from->needs_vdtor ) {
-            to->needs_vdtor = TRUE;
+            to->needs_vdtor = true;
         }
         if( from->lattice ) {
-            to->lattice = TRUE;
+            to->lattice = true;
         }
     }
 }
@@ -1887,13 +1887,13 @@ static bool isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
 
     *arg_info = CC_NULL;
     if( ! TypeHasNumArgs( sym->sym_type, 1 ) ) {
-        return( FALSE );
+        return( false );
     }
     args = SymFuncArgList( sym );
     arg_type = args->type_list[0];
     test_type = ClassTypeForType( arg_type );
     if( test_type == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( test_type == class_type ) {
         test_type = TypeReference( arg_type );
@@ -1906,9 +1906,9 @@ static bool isDefaultCopy( SYMBOL sym, TYPE class_type, unsigned *arg_info )
         if( flags & TF1_CONST ) {
             *arg_info |= CC_CONST;
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool isDefaultAssign( SYMBOL sym, TYPE class_type, unsigned *arg_info )
@@ -1942,35 +1942,35 @@ bool GeneratedDefaultFunction(  // IS SYMBOL A DEFAULT CTOR,COPY, OR DTOR?
     class_type = SymClass( sym );
     if( class_type == NULL ) {
         /* not a member function */
-        return( FALSE );
+        return( false );
     }
     info = class_type->u.c.info;
     name = sym->name->name;
     if( name == CppConstructorName() ) {
         if( info->ctor_defined ) {
             if( ClassIsDefaultCtor( sym, class_type ) ) {
-                return( TRUE );
+                return( true );
             }
         }
         if( info->copy_defined ) {
             if( ClassIsDefaultCopy( sym, class_type ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     } else if( name == CppDestructorName() ) {
         if( info->dtor_defined ) {
             /* cannot overload a destructor */
-            return( TRUE );
+            return( true );
         }
     } else if( name == CppOperatorName( CO_EQUAL ) ) {
         if( info->assign_defined ) {
             if( ClassIsDefaultAssign( sym, class_type ) ) {
-                info->has_def_opeq = TRUE;
-                return( TRUE );
+                info->has_def_opeq = true;
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void checkAllBasesForVDtor( CLASSINFO *info )
@@ -1985,13 +1985,13 @@ static void checkAllBasesForVDtor( CLASSINFO *info )
         base_info = base_type->u.c.info;
         if( base_info->needs_dtor && ! base_info->needs_vdtor ) {
             /* base class needs a dtor but it isn't virtual! */
-            ok_to_diagnose = FALSE;
+            ok_to_diagnose = false;
             if( ScopeHasVirtualFunctions( base_type->u.c.scope ) ) {
                 /* base has virtual functions -> always warn */
-                ok_to_diagnose = TRUE;
+                ok_to_diagnose = true;
             } else if(( curr->flag & IN_ACCESS_SPECIFIED ) != IN_PRIVATE ) {
                 /* base is not private -> always warn */
-                ok_to_diagnose = TRUE;
+                ok_to_diagnose = true;
             }
             if( ok_to_diagnose ) {
                 CErr2p( WARN_BASE_CLASS_HAS_NO_VDTOR, base_type );
@@ -2009,7 +2009,7 @@ static bool hasNonRefArg( SYMBOL sym, TYPE class_type )
 
     args = SymFuncArgList( sym );
     if( args->num_args == 0 ) {
-        return( FALSE );
+        return( false );
     }
     for( arg_index = 0; arg_index < args->num_args; ++arg_index ) {
         arg_type = args->type_list[ arg_index ];
@@ -2018,12 +2018,12 @@ static bool hasNonRefArg( SYMBOL sym, TYPE class_type )
             if( test_type == class_type ) {
                 test_type = TypeReference( arg_type );
                 if( test_type == NULL ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void verifyCtor( CLASS_DATA *data, SYMBOL sym )
@@ -2042,26 +2042,26 @@ static void verifyCtor( CLASS_DATA *data, SYMBOL sym )
     info = data->info;
     if( isDefaultCopy( sym, class_type, &arg_info ) ) {
         if(( arg_info & CC_CONST ) == 0 ) {
-            data->has_nonconst_copy = TRUE;
+            data->has_nonconst_copy = true;
         } else {
-            data->has_const_copy = TRUE;
+            data->has_const_copy = true;
         }
         if(( arg_info & CC_REF ) == 0 ) {
             CErr1( ERR_CTOR_BAD_ARG_LIST );
-            info->corrupted = TRUE;
+            info->corrupted = true;
         } else {
             if( sym->id == SC_DEFAULT ) {
                 base_sym = SymDefaultBase( sym );
                 if( hasNonRefArg( base_sym, class_type ) ) {
                     CErr1( ERR_CTOR_BAD_ARG_LIST );
-                    info->corrupted = TRUE;
+                    info->corrupted = true;
                 }
             }
         }
     } else {
         if( data->is_explicit ) {
             if( ClassIsDefaultCtor( sym, class_type ) ) {
-                info->has_def_ctor = TRUE;
+                info->has_def_ctor = true;
             }
         }
     }
@@ -2095,13 +2095,13 @@ static bool checkForCallingConventionChange( SYMBOL sym, SYMBOL above )
     AUX_INFO *prag2 = TypeHasPragma( fn_type2 );
 
     if( prag1 == prag2 ) {
-        return( FALSE );
+        return( false );
     }
     if( PragmasTypeEquivalent( prag1, prag2 ) ) {
-        return( FALSE );
+        return( false );
     }
     CErr2p( ERR_OVERRIDE_CHANGES_CONVENTION, above );
-    return( TRUE );
+    return( true );
 }
 
 static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
@@ -2130,7 +2130,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
         sym->sym_type = type;
     }
     info = data->info;
-    info->has_fn = TRUE;
+    info->has_fn = true;
     if( sym->id == SC_DEFAULT ) {
         /* most checks can be performed on the base symbol */
         if( name == CppConstructorName() ) {
@@ -2143,18 +2143,18 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
     if( is_virtual ) {
         if( SymIsStatic( sym ) ) {
             CErr1( ERR_NO_STATIC_VIRTUAL );
-            is_virtual = FALSE;
+            is_virtual = false;
         }
         if( data->is_union ) {
             CErr1( ERR_UNION_NO_VIRTUAL_FUNCTIONS );
-            is_virtual = FALSE;
+            is_virtual = false;
         }
     }
     /* p. 306 ARM "can be virtual" column: exclude ctors, new, and delete */
     if( name == CppConstructorName() ) {
         if( data->is_explicit ) {
-            info->has_ctor = TRUE;
-            info->needs_ctor = TRUE;
+            info->has_ctor = true;
+            info->needs_ctor = true;
         }
         verifyCtor( data, sym );
         return;
@@ -2187,7 +2187,7 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
                     /* if we need to apply a return thunk we need our own vftable */
                     if( ! data->own_vfptr ) {
                         /* all the previous indices (including this one) are OK */
-                        createVFPtrField( data, FALSE );
+                        createVFPtrField( data, false );
                     }
                     if( SymIsEllipsisFunc( search_sym[0] ) ) {
                         CErr2p( ERR_CANT_GENERATE_RETURN_THUNK, above );
@@ -2204,40 +2204,40 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
                 type = MakeVirtualFunction( type );
             }
             sym->sym_type = type;
-            is_virtual = TRUE;
+            is_virtual = true;
         }
     } else {
         if( is_pure ) {
             if( ! is_virtual ) {
                 CErr1( ERR_PURE_VIRTUAL_FUNCTIONS_ONLY );
-                is_virtual = TRUE;
+                is_virtual = true;
             }
         }
     }
     if( is_pure ) {
-        info->has_pure = TRUE;
-        info->abstract = TRUE;
-        info->abstract_OK = TRUE;
+        info->has_pure = true;
+        info->abstract = true;
+        info->abstract_OK = true;
     }
     if( is_virtual ) {
         if( vf_index == 0 ) {
             if( data->vf_index == 0 ) {
                 /* first virtual function! */
-                createVFPtrField( data, FALSE );
+                createVFPtrField( data, false );
             }
             vf_index = ++(data->vf_index);
         }
         sym->u.member_vf_index = vf_index;
-        info->needs_ctor = TRUE;
-        info->has_vfn = TRUE;
+        info->needs_ctor = true;
+        info->has_vfn = true;
     }
     if( name == CppDestructorName() ) {
         if( data->is_explicit ) {
-            info->has_dtor = TRUE;
-            info->needs_dtor = TRUE;
+            info->has_dtor = true;
+            info->needs_dtor = true;
         }
         if( is_virtual ) {
-            info->needs_vdtor = TRUE;
+            info->needs_vdtor = true;
             checkAllBasesForVDtor( info );
         }
         if( is_pure ) {
@@ -2245,20 +2245,20 @@ static void handleFunctionMember( CLASS_DATA *data, SYMBOL sym, NAME name )
         }
     } else if( name == CppOperatorName( CO_EQUAL ) ) {
         if( data->is_explicit ) {
-            data->has_explicit_opeq = TRUE;
+            data->has_explicit_opeq = true;
         }
         if( isDefaultAssign( sym, data->type, &arg_info ) ) {
             if( data->is_explicit ) {
-                info->needs_assign = TRUE;
+                info->needs_assign = true;
             }
             if(( arg_info & CC_CONST ) == 0 ) {
-                data->has_nonconst_opeq = TRUE;
+                data->has_nonconst_opeq = true;
             } else {
-                data->has_const_opeq = TRUE;
+                data->has_const_opeq = true;
             }
         }
     } else if( name == CppConversionName() ) {
-        info->has_udc = TRUE;
+        info->has_udc = true;
     }
 }
 
@@ -2310,7 +2310,7 @@ static void setHasData( CLASS_DATA *data )
         CErr1( ERR_ZERO_ARRAY_MUST_BE_LAST );
     }
     info = data->info;
-    info->has_data = TRUE;
+    info->has_data = true;
 }
 
 static void checkConstMutable( CLASS_DATA *data, CLASSINFO *info, type_flag mod_flags )
@@ -2320,10 +2320,10 @@ static void checkConstMutable( CLASS_DATA *data, CLASSINFO *info, type_flag mod_
             if( mod_flags & TF1_MUTABLE ) {
                 CErr1( ERR_MUTABLE_CANT_BE_CONST );
             }
-            data->a_const = TRUE;
+            data->a_const = true;
         }
         if( mod_flags & TF1_MUTABLE ) {
-            info->has_mutable = TRUE;
+            info->has_mutable = true;
         }
     }
 }
@@ -2363,23 +2363,23 @@ void ClassMember( SCOPE scope, SYMBOL sym )
     sym->flag |= data->perm;
     switch( data->perm ) {
     case SF_PRIVATE:
-        data->a_private = TRUE;
+        data->a_private = true;
         break;
     case SF_PROTECTED:
         if( data->is_union ) {
             CErr1( WARN_UNION_PROTECTED_MEMBER );
         }
-        data->a_protected = TRUE;
+        data->a_protected = true;
         break;
     default:
-        data->a_public = TRUE;
+        data->a_public = true;
     }
     name = sym->name->name;
     class_type = ScopeClass( scope );
     info = class_type->u.c.info;
     scope_name = info->name;
-    flags.static_member = FALSE;
-    flags.zero_sized_array = FALSE;
+    flags.static_member = false;
+    flags.zero_sized_array = false;
     switch( sym->id ) {
     case SC_TYPEDEF:
     case SC_CLASS_TEMPLATE:
@@ -2389,7 +2389,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
         return;
     case SC_STATIC:
     case SC_STATIC_FUNCTION_TEMPLATE:
-        flags.static_member = TRUE;
+        flags.static_member = true;
         if( data->is_union ) {
             if( ! SymIsFunction( sym ) ) {
                 CErr1( ERR_UNION_NO_STATIC_MEMBERS );
@@ -2434,7 +2434,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
             break;
         case TYP_POINTER:
             if(( typ->flag & TF1_REFERENCE ) != 0 && ! flags.static_member ) {
-                data->a_reference = TRUE;
+                data->a_reference = true;
             }
             break;
         case TYP_ARRAY:
@@ -2448,8 +2448,8 @@ void ClassMember( SCOPE scope, SYMBOL sym )
                     }
                     sym->sym_type = DupArrayTypeForArrayFlag( sym_type, 1,
                                                               TF1_ZERO_SIZE );
-                    info->zero_array = TRUE;
-                    flags.zero_sized_array = TRUE;
+                    info->zero_array = true;
+                    flags.zero_sized_array = true;
                 }
             }
             base_type = ArrayModifiedBaseType( typ );
@@ -2483,7 +2483,7 @@ void ClassMember( SCOPE scope, SYMBOL sym )
             }
             setHasData( data );
             if( flags.zero_sized_array ) {
-                data->zero_array_defd = TRUE;
+                data->zero_array_defd = true;
                 sym->u.member_offset = addZeroSizedField( data, typ );
             } else {
                 sym->u.member_offset = addTypeField( data, typ );
@@ -2627,13 +2627,13 @@ BASE_CLASS *ClassBaseSpecifier( inherit_flag flags, DECL_SPEC *dspec )
     BASE_CLASS *base;
     CLASS_DATA *data;
 
-    base_type = BindTemplateClass( dspec->partial, NULL, FALSE );
+    base_type = BindTemplateClass( dspec->partial, NULL, false );
     PTypeRelease( dspec );
-    error_detected = FALSE;
+    error_detected = false;
     base_type = StructType( base_type );
     if( classDataStack->is_union ) {
         CErr1( ERR_UNION_CANNOT_HAVE_BASE );
-        error_detected = TRUE;
+        error_detected = true;
     }
     if( base_type != NULL ) {
         if( ! TypeDefined( base_type ) ) {
@@ -2642,15 +2642,15 @@ BASE_CLASS *ClassBaseSpecifier( inherit_flag flags, DECL_SPEC *dspec )
             } else {
                 CErr2p( ERR_CANNOT_INHERIT_UNDEFINED, base_type );
             }
-            error_detected = TRUE;
+            error_detected = true;
         }
         if( base_type->u.c.info->zero_array ) {
             CErr1( ERR_CANNOT_INHERIT_CLASS_WITH_ZERO_ARRAY );
-            error_detected = TRUE;
+            error_detected = true;
         }
         if( base_type->flag & TF1_UNION ) {
             CErr1( ERR_UNION_CANNOT_BE_BASE );
-            error_detected = TRUE;
+            error_detected = true;
         }
         if(( flags & IN_ACCESS_SPECIFIED ) == 0 ) {
             /* no access specified for base class */
@@ -2706,7 +2706,7 @@ static BASE_CLASS *grabVBases( BASE_CLASS **ring, BASE_CLASS *base )
         /* no virtual bases to promote up */
         return( insert );
     }
-    reuse_indices = FALSE;
+    reuse_indices = false;
     data = classDataStack;
     if( _IsDirectNonVirtualBase( base ) ) {
         /* we are grabbing virtual bases from a non-virtual base */
@@ -2715,7 +2715,7 @@ static BASE_CLASS *grabVBases( BASE_CLASS **ring, BASE_CLASS *base )
             data->vb_index = info->last_vbase;
             data->vb_offset = info->vb_offset;
             data->base_vbptr = base;
-            reuse_indices = TRUE;
+            reuse_indices = true;
         }
     }
     RingIterBeg( info->bases, curr ) {
@@ -2819,14 +2819,14 @@ static void processBase( CLASS_DATA *data, BASE_CLASS *base )
     }
     if( _IsVirtualBase( base ) ) {
         if( base->flag & IN_LATTICE ) {
-            info->lattice = TRUE;
+            info->lattice = true;
         }
-        info->needs_ctor = TRUE;
+        info->needs_ctor = true;
         if( base->vb_index == 0 ) {
             if( data->vb_index == 0 ) {
-                vbptr_type = MakeVBTableFieldType( TRUE );
+                vbptr_type = MakeVBTableFieldType( true );
                 data->vb_offset = addTypeField( data, vbptr_type );
-                info->has_vbptr = TRUE;
+                info->has_vbptr = true;
             }
             base->vb_index = ++(data->vb_index);
         }
@@ -2842,7 +2842,7 @@ static void processBase( CLASS_DATA *data, BASE_CLASS *base )
         } else {
             data->vf_offset = base_info->vf_offset;
             base->flag |= IN_USING_VF_INDICES;
-            info->has_vfptr = TRUE;
+            info->has_vfptr = true;
         }
     }
     propagateKnowledge( base_info, info, PROP_BASE );
@@ -2874,7 +2874,7 @@ static void inheritBaseMods( CLASS_DATA *data, BASE_CLASS *bases )
     } RingIterEnd( curr )
     if( base_class_mod != NULL ) {
         base_class_mod = AbsorbBaseClassModifiers( base_class_mod, &(data->mod_flags), &(data->fn_flags), &(data->fn_pragma) );
-        data->member_mod_adjust = TRUE;
+        data->member_mod_adjust = true;
         data->class_mod_type = base_class_mod;
     }
 }
@@ -2940,23 +2940,23 @@ DECL_SPEC *ClassRefDef( void )
     data = classDataStack;
     dspec = PTypeActualType( data->type );
     if( data->defined ) {
-        dspec->type_defined = TRUE;
+        dspec->type_defined = true;
     } else {
-        dspec->type_elaborated = TRUE;
+        dspec->type_elaborated = true;
     }
     if( data->nameless_OK ) {
-        dspec->nameless_allowed = TRUE;
+        dspec->nameless_allowed = true;
     }
     if( data->class_idiom ) {
-        dspec->class_idiom = TRUE;
+        dspec->class_idiom = true;
     }
     sym = data->sym;
     if( sym != NULL ) {
         if( data->generic ) {
-            dspec->generic = TRUE;
+            dspec->generic = true;
         }
         dspec->typedef_defined = sym;
-        dspec->type_declared = TRUE;
+        dspec->type_declared = true;
     }
     dspec->name = data->name;
     return( dspec );
@@ -2969,11 +2969,11 @@ bool ClassOKToRewrite( void )
 
     data = classDataStack;
     if( data == NULL ) {
-        return( FALSE );
+        return( false );
     }
     data = data->inline_data;
     if( data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
 #ifndef NDEBUG
@@ -2982,8 +2982,8 @@ bool ClassOKToRewrite( void )
     }
 #endif
 
-    return( TRUE );
-    // to disable: return( FALSE );
+    return( true );
+    // to disable: return( false );
 }
 
 void ClassStoreDefArg( DECL_INFO *dinfo )
@@ -3130,15 +3130,15 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
     SYMBOL place_holder;
     NAME name;
 
-    promote_to_class = FALSE;
+    promote_to_class = false;
     if( ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
-        promote_to_class = TRUE;
+        promote_to_class = true;
     }
     scope = class_type->u.c.scope;
-    problems = FALSE;
+    problems = false;
     if( ScopeFriends( scope ) != NULL ) {
         CErr1( ERR_UNION_CANT_HAVE_FRIENDS );
-        problems = TRUE;
+        problems = true;
     }
     stop = ScopeOrderedStart( scope );
     curr = NULL;
@@ -3147,19 +3147,19 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
         if( curr == NULL ) break;
         if( curr->flag & SF_PRIVATE ) {
             CErr2p( ERR_UNION_PRIVATE_MEMBER, curr );
-            problems = TRUE;
+            problems = true;
         }
         if( SymIsFunction( curr ) ) {
             CErr2p( ERR_UNION_FUNCTION_MEMBER, curr );
-            problems = TRUE;
+            problems = true;
         } else if( SymIsTypedef( curr ) ) {
             if( ! SymIsEnumAnonymousTypedef( curr ) ) {
                 CErr2p( ERR_UNION_TYPEDEF_MEMBER, curr );
             }
-            problems = TRUE;
+            problems = true;
         } else if( SymIsEnumeration( curr ) ) {
             CErr2p( ERR_UNION_ENUMERATION_MEMBER, curr );
-            problems = TRUE;
+            problems = true;
         }
         if( ! problems ) {
             curr->flag |= SF_ANONYMOUS;
@@ -3174,7 +3174,7 @@ static void promoteMembers( TYPE class_type, SYMBOL owner )
         }
     }
     if( problems ) {
-        class_type->u.c.info->corrupted = TRUE;
+        class_type->u.c.info->corrupted = true;
         return;
     }
     /* weird start/next loop is necessary because 'curr' SYMBOL is modified */
@@ -3209,21 +3209,21 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
 
     class_type = StructType( dspec->partial );
     if( class_type == NULL ) {
-        return( FALSE );
+        return( false );
     }
     info = class_type->u.c.info;
     if( info->name != NULL ) {
-        return( FALSE );
+        return( false );
     }
     if(( class_type->flag & TF1_UNION ) == 0 ) {
         /* anonymous struct */
         if( ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
             CErr1( ERR_UNNAMED_CLASS_USELESS );
-            return( FALSE );
+            return( false );
         }
     }
-    info->anonymous = TRUE;
-    emit_init = FALSE;
+    info->anonymous = true;
+    emit_init = false;
     stg_class = dspec->stg_class;
     sym = SymMakeDummy( class_type, &name );
     SymbolLocnDefine( NULL, sym );
@@ -3232,7 +3232,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
             CErr1( ERR_GLOBAL_ANONYMOUS_UNION_MUST_BE_STATIC );
         }
         sym->id = SC_STATIC;
-        emit_init = TRUE;
+        emit_init = true;
     } else {
         /*
             It is not clear whether static anonymous unions should be
@@ -3246,7 +3246,7 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
                 CErr1( ERR_FUNCTION_ANONYMOUS_UNION );
             } else if( stg_class & STG_STATIC ) {
                 sym->id = SC_STATIC;
-                emit_init = TRUE;
+                emit_init = true;
             }
         } else if( dspec->stg_class != STG_NULL ) {
             CErr1( ERR_NONGLOBAL_ANONYMOUS_UNION_CANT_BE_ANYTHING );
@@ -3263,26 +3263,26 @@ bool ClassAnonymousUnion( DECL_SPEC *dspec )
         DgSymbol( sym );
     }
     promoteMembers( class_type, sym );
-    return( TRUE );
+    return( true );
 }
 
 static bool duplicateMemInit( PTREE curr, PTREE test )
 {
     if( curr->op != test->op ) {
-        return( FALSE );
+        return( false );
     }
     if( curr->op == PT_ID ) {
         if( curr->u.id.name == test->u.id.name ) {
             CErr2p( ERR_DUPLICATE_MEMBER_INIT, test->u.id.name );
-            return( TRUE );
+            return( true );
         }
     } else {
         if( TypesIdentical( curr->type, test->type ) ) {
             CErr2p( ERR_DUPLICATE_BASE_INIT, test->type );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool verifyBaseClassInit( PTREE base, SCOPE scope )
@@ -3294,14 +3294,14 @@ static bool verifyBaseClassInit( PTREE base, SCOPE scope )
     class_scope = ScopeNearestNonTemplate( scope );
     if( class_type != NULL ) {
         if( ScopeDirectBase( class_scope, class_type ) ) {
-            return( FALSE );
+            return( false );
         }
         if( ScopeIndirectVBase( class_scope, class_type ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     CErr2p( ERR_NOT_DIRECT_BASE_INIT, base->type );
-    return( TRUE );
+    return( true );
 }
 
 static bool verifyMemberInit( PTREE id, SCOPE scope )
@@ -3314,23 +3314,23 @@ static bool verifyMemberInit( PTREE id, SCOPE scope )
     result = ScopeContainsMember( ScopeNearestNonTemplate( scope ), name );
     if( result == NULL ) {
         CErr2p( ERR_NOT_MEMBER_MEMBER_INIT, name );
-        return( TRUE );
+        return( true );
     }
     sym = result->sym_name->name_syms;
     ScopeFreeResult( result );
     if( sym == NULL ) {
         CErr2p( ERR_NOT_MEMBER_MEMBER_INIT, name );
-        return( TRUE );
+        return( true );
     }
     if( SymIsFunction( sym ) ) {
         CErr2p( ERR_FN_MEMBER_MEMBER_INIT, name );
-        return( TRUE );
+        return( true );
     }
     if( SymIsStaticMember( sym ) ) {
         CErr2p( ERR_STATIC_MEMBER_MEMBER_INIT, name );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool symInitialized( PTREE mem_init, SYMBOL sym )
@@ -3344,11 +3344,11 @@ static bool symInitialized( PTREE mem_init, SYMBOL sym )
         test = curr->u.subtree[1]->u.subtree[0];
         if( test->op == PT_ID ) {
             if( test->u.id.name == name ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
@@ -3359,7 +3359,7 @@ static bool verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
     type_flag flags;
     bool error_detected;
 
-    error_detected = FALSE;
+    error_detected = false;
     stop = ScopeOrderedStart( scope );
     for( curr = NULL; (curr = ScopeOrderedNext( stop, curr )) != NULL; ) {
         if( ! SymIsData( curr ) || SymIsStaticMember( curr ) )
@@ -3369,14 +3369,14 @@ static bool verifyAllConstRefsInit( SCOPE scope, PTREE mem_init )
             if( ! symInitialized( mem_init, curr ) ) {
                 if( ConstNeedsExplicitInitializer( curr->sym_type ) ) {
                     CErr2p( ERR_MEMBER_WILL_NOT_BE_INIT, curr );
-                    error_detected = TRUE;
+                    error_detected = true;
                 }
             }
         } else if( type->id == TYP_POINTER ) {
             if( type->flag & TF1_REFERENCE ) {
                 if( ! symInitialized( mem_init, curr ) ) {
                     CErr2p( ERR_MEMBER_WILL_NOT_BE_INIT, curr );
-                    error_detected = TRUE;
+                    error_detected = true;
                 }
             }
         }
@@ -3396,30 +3396,30 @@ static PTREE verifyMemInit( PTREE mem_init )
 
     sym = ScopeFunctionInProgress();
     scope = SymScope( sym );
-    error_detected = FALSE;
+    error_detected = false;
     for( curr = mem_init; curr != NULL; curr = curr->u.subtree[0] ) {
         member = curr->u.subtree[1]->u.subtree[0];
         /* check for duplicates */
         for( test = mem_init; test != curr; test = test->u.subtree[0] ) {
             test_member = test->u.subtree[1]->u.subtree[0];
             if( duplicateMemInit( member, test_member ) ) {
-                error_detected = TRUE;
+                error_detected = true;
                 break;
             }
         }
-        member->type = BindTemplateClass( member->type, &member->locn, TRUE );
+        member->type = BindTemplateClass( member->type, &member->locn, true );
         if( member->op == PT_ID ) {
             if( verifyMemberInit( member, scope ) ) {
-                error_detected = TRUE;
+                error_detected = true;
             }
         } else {
             if( verifyBaseClassInit( member, scope ) ) {
-                error_detected = TRUE;
+                error_detected = true;
             }
         }
     }
     if( verifyAllConstRefsInit( scope, mem_init ) ) {
-        error_detected = TRUE;
+        error_detected = true;
     }
     if( error_detected ) {
         PTreeFreeSubtrees( mem_init );
@@ -3471,7 +3471,7 @@ void ClassPop( CLASS_DATA *data )
 {
     if( data->in_defn ) {
         // we are popping before we are done
-        data->info->corrupted = TRUE;
+        data->info->corrupted = true;
         RingCarveFree( carveVF_HIDE, &(data->vf_hide_list) );
     }
     classDataStack = data->next;
@@ -3498,7 +3498,7 @@ void ClassCtorNullBody( SYMBOL ctor )
         return;
     }
     if( insideClassDefinition() ) {
-        info->ctor_user_code = FALSE;
+        info->ctor_user_code = false;
     } else {
         /* out-of-line definition */
         if(( GenSwitches & DBG_LOCALS ) == 0 ) {
@@ -3523,7 +3523,7 @@ void ClassDtorNullBody( SYMBOL dtor )
         return;
     }
     if( insideClassDefinition() ) {
-        info->dtor_user_code = FALSE;
+        info->dtor_user_code = false;
     } else {
         /* out-of-line definition */
         if(( GenSwitches & DBG_LOCALS ) == 0 ) {
@@ -3581,14 +3581,14 @@ bool ClassNeedsAssign( TYPE class_type, bool exact )
 
     info = class_type->u.c.info;
     if( info->needs_assign ) {
-        return( TRUE );
+        return( true );
     }
     /* if we don't know the exact type of the source _and_ destination,
        we have to be careful */
     if( !exact && TypeHasSpecialFields( class_type ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool genDefaultCtor( TYPE class_type )
@@ -3604,10 +3604,10 @@ static bool genDefaultCtor( TYPE class_type )
     sym = findMember( syms, class_type, ClassIsDefaultCtor );
     if( sym->flag & SF_REFERENCED ) {
         GenerateDefaultCtor( sym );
-        return( TRUE );
+        return( true );
     }
     sym->flag &= ~ SF_INITIALIZED;
-    return( FALSE );
+    return( false );
 }
 
 static bool genDefaultCopy( TYPE class_type )
@@ -3623,10 +3623,10 @@ static bool genDefaultCopy( TYPE class_type )
     sym = findMember( syms, class_type, ClassIsDefaultCopy );
     if( sym->flag & SF_REFERENCED ) {
         GenerateDefaultCopy( sym );
-        return( TRUE );
+        return( true );
     }
     sym->flag &= ~ SF_INITIALIZED;
-    return( FALSE );
+    return( false );
 }
 
 static bool genDefaultDtor( TYPE class_type )
@@ -3643,10 +3643,10 @@ static bool genDefaultDtor( TYPE class_type )
     sym = syms;
     if( sym->flag & SF_REFERENCED ) {
         GenerateDefaultDtor( sym );
-        return( TRUE );
+        return( true );
     }
     sym->flag &= ~ SF_INITIALIZED;
-    return( FALSE );
+    return( false );
 }
 
 static bool genDefaultAssign( TYPE class_type )
@@ -3662,10 +3662,10 @@ static bool genDefaultAssign( TYPE class_type )
     sym = findMember( syms, class_type, ClassIsDefaultAssign );
     if( sym->flag & SF_REFERENCED ) {
         GenerateDefaultAssign( sym );
-        return( TRUE );
+        return( true );
     }
     sym->flag &= ~ SF_INITIALIZED;
-    return( FALSE );
+    return( false );
 }
 
 bool ClassDefineRefdDefaults( void )
@@ -3678,33 +3678,33 @@ bool ClassDefineRefdDefaults( void )
     CLASSINFO *info;
 
     head = PTypeListOfTypes( TYP_CLASS );
-    something_defined = FALSE;
+    something_defined = false;
     save_scope = GetCurrScope();
     RingIterBeg( head, curr ) {
         info = curr->u.c.info;
         if( ! info->corrupted ) {
             if( info->ctor_defined && ! info->ctor_gen ) {
                 if( genDefaultCtor( curr ) ) {
-                    info->ctor_gen = TRUE;
-                    something_defined = TRUE;
+                    info->ctor_gen = true;
+                    something_defined = true;
                 }
             }
             if( info->copy_defined && ! info->copy_gen ) {
                 if( genDefaultCopy( curr ) ) {
-                    info->copy_gen = TRUE;
-                    something_defined = TRUE;
+                    info->copy_gen = true;
+                    something_defined = true;
                 }
             }
             if( info->dtor_defined && ! info->dtor_gen ) {
                 if( genDefaultDtor( curr ) ) {
-                    info->dtor_gen = TRUE;
-                    something_defined = TRUE;
+                    info->dtor_gen = true;
+                    something_defined = true;
                 }
             }
             if( info->assign_defined && ! info->assign_gen ) {
                 if( genDefaultAssign( curr ) ) {
-                    info->assign_gen = TRUE;
-                    something_defined = TRUE;
+                    info->assign_gen = true;
+                    something_defined = true;
                 }
             }
         }
@@ -3721,9 +3721,9 @@ bool ClassCorrupted(            // TEST IF CLASS (FOR TYPE) IS CORRUPTED
 {
     type = StructType( type );
     if( type == NULL || type->u.c.info->corrupted ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void markFreeBaseClass( void *p )

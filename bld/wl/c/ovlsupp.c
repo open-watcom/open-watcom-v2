@@ -200,12 +200,12 @@ static void AllocSections( section *first_sect )
             if( min_size < 64 ) {
                 min_size = 64;      // reserve 1 K for the stack
             }
-            area_specified = TRUE;
+            area_specified = true;
             if( AreaSize == 0xFFFF ) {   // default is twice the memory size
                 AreaSize = ovl_size * 2;
-                area_specified = FALSE;
+                area_specified = false;
             } else if( AreaSize == 0 ) {
-                area_specified = FALSE;
+                area_specified = false;
             }
             if( AreaSize < min_size ) {
                 AreaSize = min_size;
@@ -334,9 +334,9 @@ static bool IsAncestor( int elder, section *ceorl )
 {
     for( ; ; ) {
         if( ceorl->ovl_num == elder )
-            return( TRUE );
+            return( true );
         if( ceorl->parent == NULL )
-            return( FALSE );
+            return( false );
         ceorl = ceorl->parent;
     }
 }
@@ -487,7 +487,7 @@ void GetVecAddr( int vecnum, targ_addr *addr )
 
 bool CheckOvlClass( char *clname, bool *isovlclass )
 /*********************************************************/
-/* check if among overlay classes, and return TRUE if it is code. */
+/* check if among overlay classes, and return true if it is code. */
 {
     list_of_names       *cnamelist;
     bool                retval;
@@ -500,14 +500,14 @@ bool CheckOvlClass( char *clname, bool *isovlclass )
     } else {
         do {
             if( stricmp( clname, cnamelist->name ) == 0 ) {
-                *isovlclass = TRUE;
+                *isovlclass = true;
                 return( retval );
             }
             cnamelist = cnamelist->next_name;
         } while( cnamelist != NULL );
     }
-    *isovlclass = FALSE;
-    return( FALSE );
+    *isovlclass = false;
+    return( false );
 }
 
 section *CheckOvlSect( char *clname )
@@ -542,12 +542,12 @@ void EmitOvlVectors( void )
     addr.off = OvltabAddr.off + offsetof( ovltab_prolog, delta );
     WriteReloc( OvlGroup, addr.off, &addr, sizeof( dos_addr ) );
 
-    isshort = FALSE;
+    isshort = false;
     if( FmtData.u.dos.dynamic ) {
         loader_name = _DynamicOvlldr;
     } else if( FmtData.u.dos.ovl_short ) {
         loader_name = _ShortOvlldr;
-        isshort = TRUE;
+        isshort = true;
     } else {
         loader_name = _LongOvlldr;
     }
@@ -684,7 +684,7 @@ void OvlPass1( void )
     OvlVecEnd = DefISymbol( _OvlVecEndName );
 
     OvlSeg = InitLeader( "" );
-    OvlSeg->class = FindClass( Root, OvlMgrClass, FALSE, TRUE );
+    OvlSeg->class = FindClass( Root, OvlMgrClass, false, true );
     OvlSeg->combine = COMBINE_INVALID;
     OvlSegData = AllocSegData();
     OvlSegData->u.leader = OvlSeg;

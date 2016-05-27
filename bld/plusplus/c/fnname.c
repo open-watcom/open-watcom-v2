@@ -164,16 +164,16 @@ static bool nameHasPrefix(      // TEST IF NAME HAS A PREFIX
     const NAME name,            // - name to be tested
     const char *prefix )        // - prefix
 {
-    bool retn = TRUE;           // - TRUE ==> has prefix
+    bool retb = true;           // - true ==> has prefix
     const char *sname = NameStr( name );
 
     for( ; *prefix != '\0'; ++sname, ++prefix ) {
         if( *prefix != *sname ) {
-            retn = FALSE;
+            retb = false;
             break;
         }
     }
-    return( retn );
+    return( retb );
 }
 
 static void appendChar(         // APPEND A CHARACTER
@@ -760,7 +760,7 @@ static char *cppDataName(       // GET C++ DATA NAME
     return( formatGlobalName( sym ) );
 }
 
-bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
+bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (false IF NOT FOUND)
     NAME name,                  // - name to find
     CGOP *oper )                // - index found
 {
@@ -788,16 +788,16 @@ bool CppLookupOperatorName(     // FIND OPERATOR FOR NAME (FALSE IF NOT FOUND)
     #if 0   // should be useless
             if( index == MAX_OP_NAMES ) {
                 // found the sentinel
-                return( FALSE );
+                return( false );
             }
     #endif
             DbgAssert( i == index );
 #endif
             *oper = index;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 NAME CppOperatorName(       // GET FUNCTION NAME FOR AN OPERATOR
@@ -840,10 +840,10 @@ bool IsCppSpecialName(          // TEST IF NAME IS SPECIAL NAME
     for( index = 0; index < MAX_SPECIAL_NAMES; index++ ) {
         if( specialNames[index] == name ) {
             *idx = index;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void setPrefix(          // SET A PREFIX FOR NAME
@@ -1134,20 +1134,20 @@ bool IsCppNameInterestingDebug( // CHECK FOR INTERNAL NAMES
     name = sym->name->name;
     if( IsInternalName( name ) ) {
         // internal symbol names
-        return( FALSE );
+        return( false );
     }
     if( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 ) {
         if( name == specialNames[ SPECIAL_RETURN_VALUE ] ) {
             // special case for ".return"
-            return( TRUE );
+            return( true );
         }
         if( NameStr( name )[1] == NAME_OPERATOR_PREFIX2 ) {
             // operator function names
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 

@@ -179,7 +179,7 @@ void    FCCharNMove( void ) {
     cg_name     dst;
     cg_name     dst2;
     call_handle call;
-    bool        equal = FALSE;
+    bool        equal = false;
 
     src_len = GetInt();
     dst_len = GetInt();
@@ -187,7 +187,7 @@ void    FCCharNMove( void ) {
         call = InitInlineCall( INLINE_STRBLAST_NE );
     } else {
         src_len = dst_len;
-        equal = TRUE;
+        equal = true;
         call = InitInlineCall( INLINE_STRBLAST_EQ );
     }
     dst = XPop();

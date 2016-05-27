@@ -43,35 +43,35 @@
 extern bool ProcMemory16M( void )
 /*******************************/
 {
-    return( ProcOne( Strategies, SEP_NO, FALSE ) );
+    return( ProcOne( Strategies, SEP_NO, false ) );
 }
 
 extern bool ProcTryExtended( void )
 /*********************************/
 {
     FmtData.u.d16m.strategy = MPreferExt;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcTryLow( void )
 /****************************/
 {
     FmtData.u.d16m.strategy = MPreferLow;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcForceExtended( void )
 /***********************************/
 {
     FmtData.u.d16m.strategy = MForceExt;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcForceLow( void )
 /******************************/
 {
     FmtData.u.d16m.strategy = MForceLow;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcTransparent( void )
@@ -79,9 +79,9 @@ extern bool ProcTransparent( void )
 {
     if( FmtData.u.d16m.flags & TRANS_SPECD ) {
         LnkMsg( LOC+LINE+WRN+MSG_OPTION_MULTIPLY_DEFD, "s", "transparent" );
-        return( TRUE );
+        return( true );
     } else {
-        return( ProcOne( TransTypes, SEP_NO, FALSE ) );
+        return( ProcOne( TransTypes, SEP_NO, false ) );
     }
 }
 
@@ -89,7 +89,7 @@ extern bool ProcTStack( void )
 /****************************/
 {
     FmtData.u.d16m.flags |= TRANS_STACK;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcTData( void )
@@ -100,49 +100,49 @@ extern bool ProcTData( void )
     }
     FmtData.u.d16m.flags |= TRANS_DATA;
     LinkState |= MAKE_RELOCS;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcKeyboard( void )
 /******************************/
 {
     FmtData.u.d16m.options |= OPT_KEYBOARD;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcOverload( void )
 /******************************/
 {
     FmtData.u.d16m.options |= OPT_OVERLOAD;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcInt10( void )
 /***************************/
 {
     FmtData.u.d16m.options |= OPT_INT10;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcInit00( void )
 /****************************/
 {
     FmtData.u.d16m.options |= OPT_INIT00;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcInitFF( void )
 /****************************/
 {
     FmtData.u.d16m.options |= OPT_INITFF;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRotate( void )
 /****************************/
 {
     FmtData.u.d16m.options |= OPT_ROTATE;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcSelectors( void )
@@ -150,7 +150,7 @@ extern bool ProcSelectors( void )
 // force selectors to be assigned at load time.
 {
     FmtData.u.d16m.options |= OPT_AUTO;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcAuto( void )
@@ -162,7 +162,7 @@ extern bool ProcAuto( void )
     }
     FmtData.u.d16m.options |= OPT_AUTO;
     LinkState |= MAKE_RELOCS;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcBuffer( void )
@@ -171,13 +171,13 @@ extern bool ProcBuffer( void )
     unsigned_32 value;
 
     if( !GetLong( &value ) )
-        return( FALSE );
+        return( false );
     if( value < 1024 || value > 32768 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "buffer" );
     } else {
         FmtData.u.d16m.buffer = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcGDTSize( void )
@@ -186,7 +186,7 @@ extern bool ProcGDTSize( void )
     unsigned_32 value;
 
     if( !GetLong( &value ) )
-        return( FALSE );
+        return( false );
     if( (value % 8) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "gdtsize" );
         value &= -8;
@@ -196,7 +196,7 @@ extern bool ProcGDTSize( void )
     } else {
         FmtData.u.d16m.gdtsize = --value;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcRelocs( void )
@@ -206,7 +206,7 @@ extern bool ProcRelocs( void )
         LnkMsg( LOC+LINE+WRN+MSG_BOTH_RELOC_OPTIONS, NULL );
     }
     LinkState |= MAKE_RELOCS;
-    return( TRUE );
+    return( true );
 }
 
 extern bool Proc16MNoRelocs( void )
@@ -217,7 +217,7 @@ extern bool Proc16MNoRelocs( void )
     } else {
         FmtData.u.d16m.flags |= FORCE_NO_RELOCS;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcSelStart( void )
@@ -226,7 +226,7 @@ extern bool ProcSelStart( void )
     unsigned_32 value;
 
     if( !GetLong( &value ) )
-        return( FALSE );
+        return( false );
     if( (value % 8) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_NOT_MULTIPLE_OF_8, "s", "selstart" );
         value &= -8;
@@ -236,7 +236,7 @@ extern bool ProcSelStart( void )
     } else {
         FmtData.u.d16m.selstart = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcExtended( void )
@@ -245,14 +245,14 @@ extern bool ProcExtended( void )
     unsigned_32 value;
 
     if( !GetLong( &value ) )
-        return( FALSE );
+        return( false );
     value >>= 10;      // value should be in K.
     if( value > 65535 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "extended" );
     } else {
         FmtData.u.d16m.extended = value;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcDataSize( void )
@@ -261,14 +261,14 @@ extern bool ProcDataSize( void )
     unsigned_32 value;
 
     if( !GetLong( &value ) )
-        return( FALSE );
+        return( false );
     if( value > 65536 ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "datasize" );
     } else {
         FmtData.u.d16m.datasize = (value + 15) >> 4;
         FmtData.u.d16m.flags |= DATASIZE_SPECD;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern void SetD16MFmt( void )
@@ -296,5 +296,5 @@ extern void FreeD16MFmt( void )
 extern bool Proc16M( void )
 /*************************/
 {
-    return( TRUE );
+    return( true );
 }

@@ -137,7 +137,7 @@ static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 {
 //    Elf32_Phdr  phdr;
 //    size_t      i;
-    int     result = FALSE;
+    int     result = false;
 
     lseek( fd, 0, SEEK_SET );
     if( read( fd, e_hdr, sizeof( *e_hdr ) ) >= sizeof( *e_hdr ) &&
@@ -145,10 +145,10 @@ static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
         e_hdr->e_ident[EI_CLASS] == ELFCLASS32) {
 #ifdef __BIG_ENDIAN__
         if( e_hdr->e_ident[EI_DATA] == ELFDATA2LSB )
-            core_info.swap_bytes = TRUE;
+            core_info.swap_bytes = true;
 #else
         if( e_hdr->e_ident[EI_DATA] == ELFDATA2MSB )
-            core_info.swap_bytes = TRUE;
+            core_info.swap_bytes = true;
 #endif
         if( core_info.swap_bytes ) {
             SWAP_16( e_hdr->e_type );
@@ -166,7 +166,7 @@ static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
             SWAP_16( e_hdr->e_shstrndx );
         }
         if( e_hdr->e_phoff != 0 && e_hdr->e_phentsize >= sizeof( Elf32_Phdr ) ) {
-            result = TRUE;
+            result = true;
         }
     }
     return( result );
@@ -177,22 +177,22 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
 {
     Elf32_Phdr      *e_phdr;
     int             i;
-    int             result = FALSE;
+    int             result = false;
 
     *pp_hdr = malloc( sizeof( *e_phdr ) * e_hdr->e_phnum );
     if( *pp_hdr != NULL ) {
-        int         error = FALSE;
+        int         error = false;
 
         e_phdr = *pp_hdr;
         if( lseek( fd, e_hdr->e_phoff, SEEK_SET ) == e_hdr->e_phoff ) {
             for( i = 0; i < e_hdr->e_phnum; i++ ) {
                 if( read( fd, e_phdr, sizeof( *e_phdr ) ) < sizeof( *e_phdr ) ) {
-                    error = TRUE;
+                    error = true;
                     break;
                 }
                 /* Skip any extra bytes that might be present */
                 if( lseek( fd, e_hdr->e_phentsize - sizeof( *e_phdr ), SEEK_CUR ) < 0 ) {
-                    error = TRUE;
+                    error = true;
                     break;
                 }
                 if( core_info.swap_bytes ) {
@@ -208,8 +208,9 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
                 e_phdr++;
             }
         }
-        if( !error )
-            result = TRUE;
+        if( !error ) {
+            result = true;
+        }
     }
     return( result );
 }
@@ -429,7 +430,7 @@ static int load_core_header( const char *core_name )
     int         fd;
     int         result;
 
-    result = FALSE;
+    result = false;
     if( core_info.e_hdr == NULL ) {
         core_info.e_hdr = malloc( sizeof( *core_info.e_hdr ) );
         if( core_info.e_hdr == NULL )
@@ -444,7 +445,7 @@ static int load_core_header( const char *core_name )
         close( fd );
     } else {
         if( elf_read_phdr( fd, core_info.e_hdr, &core_info.e_phdr ) ) {
-            result = TRUE;
+            result = true;
         }
     }
     return( result );
@@ -456,8 +457,8 @@ trap_retval ReqProg_load( void )
     prog_load_ret       *ret;
     char                *argv;
 
-    core_info.dbg32 = FALSE;
-    core_info.mapping_shared = FALSE;
+    core_info.dbg32 = false;
+    core_info.mapping_shared = false;
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     argv = GetInPtr( sizeof( *acc ) );
@@ -474,7 +475,7 @@ trap_retval ReqProg_load( void )
     ret->task_id = 123; //core_info.hdr.psdata.pid;
     ret->err = core_info.err_no;
     if( core_info.err_no == 0 ) {
-        core_info.loaded = TRUE;
+        core_info.loaded = true;
     } else {
         close( core_info.fd );
         core_info.fd = NO_FILE;
@@ -487,11 +488,11 @@ trap_retval ReqProg_kill( void )
     prog_kill_ret       *ret;
 
     if( core_info.loaded ) {
-        core_info.loaded = FALSE;
+        core_info.loaded = false;
         close( core_info.fd );
         core_info.fd = NO_FILE;
     }
-    core_info.mapping_shared = FALSE;
+    core_info.mapping_shared = false;
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -584,9 +585,9 @@ trap_retval ReqFile_string_to_fullpath( void )
     fullname[0] = '\0';
     len = 0;
     if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( FALSE, name, fullname );
+        len = FindFilePath( false, name, fullname );
     } else if( core_info.mapping_shared ) {
-        len = FindFilePath( TRUE, name, fullname );
+        len = FindFilePath( true, name, fullname );
     } else {
         save_handle = core_info.fd;
         if( load_core_header( name ) ) {
@@ -730,7 +731,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         switch( *parms ) {
         case 'I':
         case 'i':
-            core_info.ignore_timestamp = TRUE;
+            core_info.ignore_timestamp = true;
             break;
         }
         ++parms;
@@ -738,7 +739,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     return( ver );
 }
 

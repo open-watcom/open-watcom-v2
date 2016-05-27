@@ -150,7 +150,7 @@ const char *RecNumberToName( byte code )
     case LIB_HEADER_REC:
         /* this is the oddball in the MS386 format */
         if( IsMS386 )
-            IsMS386 = FALSE;
+            IsMS386 = false;
         if( code & 1 ) {
             return( "LIBTAIL" );
         } else {
@@ -768,8 +768,8 @@ void ProcFile( FILE *fp, bool is_intel )
     int         i;
     int         first;
 
-    IsPharLap = FALSE;
-    IsMS386 = FALSE;
+    IsPharLap = false;
+    IsMS386 = false;
     IsIntel = is_intel;
     RecNum = 0;
     page_len = 0;
@@ -797,12 +797,12 @@ void ProcFile( FILE *fp, bool is_intel )
         cksum += checkSumBuff();
         IsMS386 = hdr[ 0 ] & 1;
         if( IsMS386 ) {
-            IsIntel = FALSE;
+            IsIntel = false;
         }
-        no_disp = ( rec_count == 0 ) ? FALSE : TRUE;
+        no_disp = ( rec_count != 0 );
         for( i = 0; i < rec_count; i++ ) {
             if( rec_type[ i ] == ( hdr[ 0 ] & ~1 )) {
-                no_disp = FALSE;
+                no_disp = false;
                 break;
             }
         }

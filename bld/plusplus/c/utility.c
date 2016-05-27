@@ -268,10 +268,10 @@ bool strpref(                   // IS STRING A PREFIX OF A STRING
 {
     while( *prefix ) {
         if( *prefix != *str ) {
-            return( FALSE );
+            return( false );
         }
         ++prefix;
         ++str;
     }
-    return( TRUE );
+    return( true );
 }

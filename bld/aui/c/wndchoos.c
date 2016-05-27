@@ -73,10 +73,10 @@ extern  void    WndDoneChoose( a_window *wnd )
 extern  bool    WndKeyEscape( a_window *wnd )
 {
     if( wnd->keypiece == WND_NO_PIECE )
-        return( FALSE );
+        return( false );
     WndNoSelect( wnd );
     wnd->keyindex = 0;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -154,12 +154,12 @@ static  bool    DoWndKeyChoose( a_window *wnd, unsigned key )
             wnd->sel_end = wnd->current;
             wnd->sel_start.col = 0;
             wnd->sel_end.col = wnd->keyindex - 1;
-            return( TRUE );
+            return( true );
         }
     }
     WndScroll( wnd, -scrolled );
     wnd->current = saved_curr;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -180,9 +180,9 @@ extern  bool    WndKeyRubOut( a_window *wnd )
     char                sofar[MAX_KEY_SIZE + 1];
 
     if( wnd->keypiece == WND_NO_PIECE )
-        return( FALSE );
+        return( false );
     if( wnd->keyindex == 0 )
-        return( FALSE );
+        return( false );
     WndGetLine( wnd, wnd->current.row, wnd->keypiece, &line );
     strcpy( sofar, line.text );
     newindex = wnd->keyindex - 1;
@@ -191,5 +191,5 @@ extern  bool    WndKeyRubOut( a_window *wnd )
         DoWndKeyChoose( wnd, sofar[i] );
     }
     sofar[i] = '\0';
-    return( TRUE );
+    return( true );
 }

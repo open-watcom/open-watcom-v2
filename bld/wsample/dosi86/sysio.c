@@ -32,7 +32,9 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <dos.h>
+#include "sample.h"
 #include "tinyio.h"
+#include "smpstuff.h"
 #include "sysio.h"
 
 

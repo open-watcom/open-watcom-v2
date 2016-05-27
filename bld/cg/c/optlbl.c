@@ -65,7 +65,7 @@ extern  void    DelLblDef( ins_entry *instr ) {
     lbl = _Label( instr );
     if( lbl == NULL ) optreturnvoid;
     if( lbl->refs != NULL ) optreturnvoid;
-    if( _TstStatus( lbl, DYINGLABEL ) == FALSE ) optreturnvoid;
+    if( _TstStatus( lbl, DYINGLABEL ) == false ) optreturnvoid;
     if( _TstStatus( lbl, REDIRECTION ) ) optreturnvoid;
     ScrapCodeLabel( lbl );
   optend
@@ -136,10 +136,10 @@ extern  bool    UniqueLabel( label_handle lbl ) {
   optbegin
     for( ; lbl != NULL; lbl = lbl->alias ) {
         if( _TstStatus( lbl, UNIQUE ) ) {
-            optreturn( TRUE );
+            optreturn( true );
         }
     }
-    optreturn( FALSE );
+    optreturn( false );
 }
 
 
@@ -213,7 +213,7 @@ static  void    KillDeadLabels( ins_entry *instr ) {
         if( curr == NULL ) break;
         _ValidLbl( curr );
         if( curr->refs == NULL
-         && _TstStatus( curr, REDIRECTION | KEEPLABEL ) == FALSE
+         && _TstStatus( curr, REDIRECTION | KEEPLABEL ) == false
          && _TstStatus( curr, DYINGLABEL ) ) {
             *owner = curr->alias;
             if( curr->redirect != NULL ) {
@@ -267,7 +267,7 @@ extern  void    TryScrapLabel( label_handle old ) {
     if( old->ins != NULL ) {
         KillDeadLabels( old->ins );
     } else if( _TstStatus( old, DYINGLABEL )
-         && _TstStatus( old, REDIRECTION | KEEPLABEL ) == FALSE ) {
+         && _TstStatus( old, REDIRECTION | KEEPLABEL ) == false ) {
         ScrapCodeLabel( old );
     }
   optend

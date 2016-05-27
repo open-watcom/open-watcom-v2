@@ -95,10 +95,10 @@ static bool MsgDisabled( int msgnum )
 {
     if( MsgFlags != NULL ) {
         if( MsgFlags[msgnum >> 3]  &  (1 << (msgnum & 7)) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 // fill cmsg_info struct

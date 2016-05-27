@@ -44,9 +44,9 @@ extern  hw_reg_set      *RegSets[];
 static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
 /*********************************************************************/
 
-    if( !HW_Subset( *name, test ) ) return( FALSE );
+    if( !HW_Subset( *name, test ) ) return( false );
     HW_TurnOff( *name, test );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -56,12 +56,12 @@ extern  void    DumpRegName( hw_reg_set regname ) {
     bool        first;
     hw_reg_set  name;
 
-    first = TRUE;
+    first = true;
     name = regname;
     if( !HW_COvlap( name, HW_UNUSED ) ) {
         while( !HW_CEqual( name, HW_EMPTY ) ) {
             if( first ) {
-                first = FALSE;
+                first = false;
             } else {
                 DumpChar( ':' );
             }
@@ -386,40 +386,40 @@ extern  void    DumpAConf( conflict_node *conf ) {
     DumpLiteral( " vs " );
     DumpInt( conf->available );
     DumpNL();
-    if( _Is( conf, SAVINGS_CALCULATED ) ) {
+    if( _Is( conf, CST_SAVINGS_CALCULATED ) ) {
         DumpLiteral( "    Savings " );
         DumpLong( conf->savings );
         DumpNL();
     }
-    if( _Is( conf, CONFLICT_ON_HOLD ) ) {
+    if( _Is( conf, CST_CONFLICT_ON_HOLD ) ) {
         DumpLiteral( "    On hold" );
         DumpNL();
     }
-    if( _Is( conf, CHANGES_OTHERS ) ) {
+    if( _Is( conf, CST_CHANGES_OTHERS ) ) {
         DumpLiteral( "    Changes Others" );
         DumpNL();
     }
-    if( _Is( conf, NEEDS_SEGMENT ) ) {
+    if( _Is( conf, CST_NEEDS_SEGMENT ) ) {
         DumpLiteral( "    Needs segment" );
         DumpNL();
     }
-    if( _Is( conf, NEEDS_SEGMENT_SPLIT ) ) {
+    if( _Is( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
         DumpLiteral( "    Needs segment split" );
         DumpNL();
     }
-    if( _Is( conf, SEGMENT_SPLIT ) ) {
+    if( _Is( conf, CST_SEGMENT_SPLIT ) ) {
         DumpLiteral( "    Is segment split" );
         DumpNL();
     }
-    if( _Is( conf, NEEDS_INDEX ) ) {
+    if( _Is( conf, CST_NEEDS_INDEX ) ) {
         DumpLiteral( "    Needs index" );
         DumpNL();
     }
-    if( _Is( conf, NEEDS_INDEX_SPLIT ) ) {
+    if( _Is( conf, CST_NEEDS_INDEX_SPLIT ) ) {
         DumpLiteral( "    Needs index split" );
         DumpNL();
     }
-    if( _Is( conf, INDEX_SPLIT ) ) {
+    if( _Is( conf, CST_INDEX_SPLIT ) ) {
         DumpLiteral( "    Is index split" );
         DumpNL();
     }

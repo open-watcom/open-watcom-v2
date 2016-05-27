@@ -42,7 +42,7 @@ template <class Key_T, class Obj_T> class BTreeNodeBase;
 template <class Key_T, class Obj_T>
 class SearchEntry {
 public:
-    bool operator==( const SearchEntry& ) const { return FALSE; }
+    bool operator==( const SearchEntry& ) const { return false; }
 
     BTreeNodeBase<Key_T,Obj_T> *    nextNode();
     Obj_T *                         nextObj();

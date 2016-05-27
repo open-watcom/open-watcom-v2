@@ -30,6 +30,7 @@
 
 
 #include <stdarg.h>
+#include "bool.h"
 
 #define MAIN_CLASS      "ResTestClass"
 #define MENU_CLASS      "MenuWindowClass"
@@ -48,7 +49,7 @@ void DisplayStringTable( void );
 void DisplayMenu( void );
 BOOL RegisterMenuClass( void );
 void DisplayDialog( void );
-void DisplayData( BOOL rcdata );
+void DisplayData( bool rcdata );
 void DisplayCursor( HWND hwnd );
 void DisplayAccel( void );
 void DisplayBitmap( void );

@@ -148,12 +148,12 @@ static void *ORLRead( void *_list, size_t len )
 
 bool IsORL( file_list *list, unsigned long loc )
 /**********************************************/
-// return TRUE if this is can be handled by ORL
+// return true if this is can be handled by ORL
 {
     orl_file_format     type;
     bool                isOK;
 
-    isOK = TRUE;
+    isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
     type = ORLFileIdentify( ORLHandle, list );
     if( type == ORL_ELF ) {
@@ -161,7 +161,7 @@ bool IsORL( file_list *list, unsigned long loc )
     } else if( type == ORL_COFF ) {
         ObjFormat |= FMT_COFF;
     } else {
-        isOK = FALSE;
+        isOK = false;
     }
     ClearCachedData( list );
     return( isOK );
@@ -264,13 +264,13 @@ static bool CheckFlags( orl_file_handle filehdl )
     }
     if( ORLFileGetType( filehdl ) != ORL_FILE_TYPE_OBJECT ) {
         BadObject();
-        return( FALSE );
+        return( false );
     }
     flags = ORLFileGetFlags( filehdl );
 #if 0
     if( flags & ORL_FILE_FLAG_BIG_ENDIAN ) {    // MS lies about this.
         LnkMsg( ERR+LOC+MSG_NO_BIG_ENDIAN, NULL );
-        return( FALSE );
+        return( false );
     }
 #endif
     if( flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
@@ -280,7 +280,7 @@ static bool CheckFlags( orl_file_handle filehdl )
     } else {
         Set32BitMode();
     }
-    return( TRUE );
+    return( true );
 }
 
 static orl_return NullFunc( orl_sec_handle dummy )
@@ -368,7 +368,7 @@ static void AllocSeg( void *_snode, void *dummy )
             return;
         }
     }
-    isdbi = FALSE;
+    isdbi = false;
     if( memicmp( CoffDebugPrefix, sdata->u.name,
                  sizeof(CoffDebugPrefix) - 1 ) == 0 ) {
         if( CurrMod->modinfo & MOD_IMPORT_LIB ) {
@@ -377,7 +377,7 @@ static void AllocSeg( void *_snode, void *dummy )
             FreeSegData( sdata );
             return;
         }
-        isdbi = TRUE;
+        isdbi = true;
         if( stricmp(CoffDebugSymName, sdata->u.name ) == 0 ) {
             clname = _MSLocalClass;
         } else if( stricmp(CoffDebugTypeName, sdata->u.name ) == 0 ) {
@@ -395,10 +395,10 @@ static void AllocSeg( void *_snode, void *dummy )
     } else {
         clname = DataClassName;
         if( memcmp( sname, CoffPDataSegName, sizeof(CoffPDataSegName) ) == 0 ) {
-            sdata->ispdata = TRUE;
+            sdata->ispdata = true;
         } else if( memcmp(sname, CoffReldataSegName,
                                    sizeof(CoffReldataSegName) ) == 0 ) {
-            sdata->isreldata = TRUE;
+            sdata->isreldata = true;
         }
     }
     AllocateSegment( snode, clname );
@@ -475,8 +475,8 @@ static orl_return DeclareSegment( orl_sec_handle sec )
             ORLSecGetContents( sec, (void *) &contents );
             ImpOrdinal = *contents;
         }
-        sdata->isdead = TRUE;
-        sdata->isidata = TRUE;
+        sdata->isdead = true;
+        sdata->isidata = true;
     }
     sdata->combine = COMBINE_ADD;
     if( flags & ORL_SEC_FLAG_NO_PADDING ) {
@@ -484,13 +484,13 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     } else {
         sdata->align = ORLSecGetAlignment( sec );
     }
-    sdata->is32bit = TRUE;
+    sdata->is32bit = true;
     sdata->length = ORLSecGetSize( sec );
     sdata->u.name = name;
     if( flags & ORL_SEC_FLAG_EXEC ) {
-        sdata->iscode = TRUE;
+        sdata->iscode = true;
     } else if( flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
-        sdata->isuninit = TRUE;
+        sdata->isuninit = true;
 #ifdef _DEVELOPMENT
     } else {
         unsigned namelen;
@@ -504,7 +504,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     numlines = ORLSecGetNumLines( sec );
     if( numlines > 0 ) {
         numlines *= sizeof(orl_linnum);
-        DBIAddLines( sdata, ORLSecGetLines( sec ), numlines, TRUE );
+        DBIAddLines( sdata, ORLSecGetLines( sec ), numlines, true );
     }
     return( ORL_OKAY );
 }
@@ -565,7 +565,7 @@ static void DefineComdatSym( segnode *seg, symbol *sym, orl_symbol_value value )
     segdata     *sdata;
 
     sdata = seg->entry;
-    sdata->hascdatsym = TRUE;
+    sdata->hascdatsym = true;
     select = sdata->select;
     if( select == 0 ) {
         sym_type = SYM_CDAT_SEL_ANY;
@@ -633,13 +633,13 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
             value = ORLSymbolGetValue( symhdl );
-            sym = MakeCommunalSym( sym, value.u._32[I64LO32], FALSE, TRUE );
+            sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
-            isweak = FALSE;
+            isweak = false;
             switch( binding ) {
             case ORL_SYM_BINDING_WEAK:
-                isweak = TRUE;
+                isweak = true;
             case ORL_SYM_BINDING_ALIAS:
             case ORL_SYM_BINDING_LAZY:
                 assocsymhdl = ORLSymbolGetAssociated( symhdl );
@@ -650,14 +650,14 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
                 } else {
                     assocsym = SymOp( ST_CREATE | ST_REFERENCE, name, namelen );
                     DefineLazyExtdef( sym, assocsym, isweak );
-                    newnode->isweak = TRUE;
+                    newnode->isweak = true;
                 }
             }
         } else {
-            newnode->isdefd = TRUE;
+            newnode->isdefd = true;
             value = ORLSymbolGetValue( symhdl );
             if( type & ORL_SYM_TYPE_COMMON && type & ORL_SYM_TYPE_OBJECT && sechdl == NULL) {
-                sym = MakeCommunalSym( sym, value.u._32[I64LO32], FALSE, TRUE );
+                sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, value );
             } else {
@@ -692,12 +692,12 @@ static orl_return DoReloc( orl_reloc *reloc )
     bool        skip;
     bool        istoc;
 
-    skip = FALSE;
-    istoc = FALSE;
+    skip = false;
+    istoc = false;
     type = 0;
     switch( reloc->type ) {
     case ORL_RELOC_TYPE_PAIR:
-        skip = TRUE;
+        skip = true;
         break;
     case ORL_RELOC_TYPE_ABSOLUTE:
         type = FIX_OFFSET_32 | FIX_ABS;
@@ -713,7 +713,7 @@ static orl_return DoReloc( orl_reloc *reloc )
     case ORL_RELOC_TYPE_TOCREL_16:  // relative ref to 16-bit offset from TOC base.
     case ORL_RELOC_TYPE_GOT_16:     // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOC | FIX_OFFSET_16;
-        istoc = TRUE;
+        istoc = true;
         break;
     case ORL_RELOC_TYPE_TOCVREL_14:  // relative ref to 14-bit offset from TOC base.
         type = FIX_SHIFT;        // NOTE fall through
@@ -724,7 +724,7 @@ static orl_return DoReloc( orl_reloc *reloc )
         type = FIX_IFGLUE | FIX_OFFSET_32;
         break;
     case ORL_RELOC_TYPE_IMGLUE:
-        skip = TRUE;                 // NYI: do we need this?
+        skip = true;                 // NYI: do we need this?
         break;
     case ORL_RELOC_TYPE_JUMP:
         type = FIX_OFFSET_32 | FIX_REL;
@@ -762,7 +762,7 @@ static orl_return DoReloc( orl_reloc *reloc )
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_HA:
         SavedReloc = *reloc;
-        skip = TRUE;
+        skip = true;
         break;
     case ORL_RELOC_TYPE_HALF_LO:
         if( SavedReloc.type == ORL_RELOC_TYPE_NONE ) {    // we recursed
@@ -800,7 +800,7 @@ static orl_return DoReloc( orl_reloc *reloc )
                         AddSdataOffToToc( symseg->entry, addend );
                     }
                 } else {
-                    skip = TRUE;
+                    skip = true;
                 }
             } else {
                 target.u.sym = ext->entry;
@@ -833,7 +833,7 @@ static void HandleImportSymbol( char *name )
     intname.name = name;
     intname.len = strlen(name);
     if( ImpModName == NULL ) {
-        ImpModName = FileName( CurrMod->name,strlen(CurrMod->name),E_DLL,FALSE);
+        ImpModName = FileName( CurrMod->name,strlen(CurrMod->name),E_DLL,false);
     }
     modname.name = ImpModName;
     modname.len = strlen(ImpModName);

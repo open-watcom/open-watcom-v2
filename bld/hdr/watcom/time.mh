@@ -73,20 +73,20 @@ using std::time;
 :include wchar_t.sp
 
 :endsegment
-:include sizet.sp
+:include size_t.sp
 
 :include null.sp
 
-:include timet.sp
+:include time_t.sp
 
-:include clockt.sp
+:include clock_t.sp
 
 :segment !CNAME
 :include saferpro.sp
 
-:include errnot.sp
+:include errno_t.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
 :include saferepi.sp
 
@@ -104,15 +104,8 @@ using std::time;
 
 #define CLK_TCK          1000
 
-#ifndef _TIMER_T_DEFINED_
-#define _TIMER_T_DEFINED_
-typedef int timer_t;                /* timer type */
-#endif
-
-#ifndef _CLOCKID_T_DEFINED_
-#define _CLOCKID_T_DEFINED_
-typedef int clockid_t;              /* clockid type */
-#endif
+:include timer_t.sp
+:include clockidt.sp
 
 /* 1003.4/D12 Clocks and Timers */
 #ifndef __POSIX_TIMERS

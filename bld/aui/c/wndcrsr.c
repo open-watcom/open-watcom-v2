@@ -34,9 +34,9 @@
 
 extern  bool    WndAtTop( a_window *wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return( FALSE );
-    if( wnd->current.row > wnd->title_size ) return( FALSE );
-    return( TRUE );
+    if( !WndHasCurrent( wnd ) ) return( false );
+    if( wnd->current.row > wnd->title_size ) return( false );
+    return( true );
 }
 
 
@@ -48,11 +48,11 @@ static  bool    WndFindCloseTab( a_window *wnd, int row )
     while( piece >= 0 ) {
         if( WndPieceIsTab( wnd, row, piece ) ) {
             wnd->current.piece = piece;
-            return( TRUE );
+            return( true );
         }
         --piece;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -83,9 +83,9 @@ static  void    WndMoveUp( a_window *wnd )
 
 static  bool    WndAtBottom( a_window *wnd )
 {
-    if( !WndHasCurrent( wnd ) ) return( FALSE );
-    if( wnd->current.row < wnd->rows-1 ) return( FALSE );
-    return( TRUE );
+    if( !WndHasCurrent( wnd ) ) return( false );
+    if( wnd->current.row < wnd->rows-1 ) return( false );
+    return( true );
 }
 
 
@@ -185,11 +185,11 @@ bool WndTabLeft( a_window *wnd, bool wrap )
         WndDirtyScreenPiece( wnd, &curr );
         WndCurrVisible( wnd );
         WndDirtyCurr( wnd );
-        return( TRUE );
+        return( true );
     } else {
         WndSetHScroll( wnd, 0 );
         WndEvent( wnd, GUI_SCROLL_LEFT, NULL );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -200,12 +200,12 @@ static bool WndCursorLeftCheck( a_window *wnd )
 
     if( _Isnt( wnd, WSW_CHAR_CURSOR )||
         !WndHasCurrent( wnd ) || wnd->current.col == 0 ) {
-        if( !WndTabLeft( wnd, FALSE ) ) return( FALSE );
+        if( !WndTabLeft( wnd, false ) ) return( false );
         wnd->current.col = WND_MAX_COL;
         WndSetCurrCol( wnd );
         WndCurrVisible( wnd );
         WndDirtyCurrChar( wnd );
-        return( TRUE );
+        return( true );
     } else {
         WndGetLine( wnd, wnd->current.row, wnd->current.piece, &line );
         WndDirtyCurrChar( wnd );
@@ -230,12 +230,12 @@ bool WndTabRight( a_window *wnd, bool wrap )
     curr = wnd->current;
     if( !WndNextCurrent( wnd, wrap ) ) {
         WndEvent( wnd, GUI_SCROLL_RIGHT, NULL );
-        return( FALSE );
+        return( false );
     }
     WndDirtyScreenPiece( wnd, &curr );
     WndCurrVisible( wnd );
     WndDirtyCurr( wnd );
-    return( TRUE );
+    return( true );
 }
 
 static bool WndCursorRightCheck( a_window *wnd )
@@ -249,7 +249,7 @@ static bool WndCursorRightCheck( a_window *wnd )
         !WndHasCurrent( wnd ) ||
         !got ||
         wnd->current.col + 1 >= line.length ) {
-        return( WndTabRight( wnd, FALSE ) );
+        return( WndTabRight( wnd, false ) );
     } else {
         WndDirtyCurrChar( wnd );
         col = wnd->current.col;

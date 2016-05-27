@@ -112,7 +112,7 @@ static char *PutDec( char *ptr, unsigned num )
 void StartMapBuffering( void )
 /***********************************/
 {
-    Buffering = TRUE;
+    Buffering = true;
     BufferSize = 0;
 }
 
@@ -123,7 +123,7 @@ void StopMapBuffering( void )
     if( BufferSize != 0 ) {
         QWrite( MapFile, TokBuff, BufferSize, MapFName );
     }
-    Buffering = FALSE;
+    Buffering = false;
     BufferSize = 0;
 }
 
@@ -136,8 +136,8 @@ void MapInit( void )
     struct tm           *localt;
     char                *msg;
 
-    Absolute_Seg = FALSE;
-    Buffering = FALSE;  // buffering on/off.
+    Absolute_Seg = false;
+    Buffering = false;  // buffering on/off.
     if( (MapFlags & MAP_FLAG) == 0 )
         return;
     MapFile = QOpenRW( MapFName );
@@ -244,7 +244,7 @@ static void WriteNonAbsSeg( void *_seg )
         WriteFormat( 69, "%h", seg->size );
         WriteMapNL( 1 );
     } else {
-        Absolute_Seg = TRUE;
+        Absolute_Seg = true;
     }
 }
 
@@ -532,15 +532,15 @@ void WriteMapLines( void )
     virt_mem                    input_vm;
     virt_mem_size               length;
     uint_8                      *p;
-    uint                        opcode_base;
+    int                         opcode_base;
     uint                        *opcode_lengths;
     uint                        u;
     uint_8                      *name;
     uint_32                     op_len;
     uint_32                     tmp;
-    uint                        line_range;
-    int                         line_base;
     int_32                      itmp;
+    int                         line_range;
+    int                         line_base;
     int                         default_is_stmt;
     line_state_info             state;
     uint                        min_instr;
@@ -629,7 +629,7 @@ void WriteMapLines( void )
                 case DW_LNE_end_sequence:
                     state.end_sequence = 1;
                     init_state( &state, default_is_stmt );
-                    p+= op_len;
+                    p += op_len;
                     break;
                 case DW_LNE_set_address:
                     if( op_len == 4 ) {
@@ -699,7 +699,8 @@ void WriteMapLines( void )
                     state.basic_block = 1;
                     break;
                 case DW_LNS_const_add_pc:
-                    state.address += ( ( 255 - opcode_base ) / line_range ) * min_instr;
+                    value = 255 - opcode_base;
+                    state.address += ( value / line_range ) * min_instr;
                     break;
                 case DW_LNS_fixed_advance_pc:
                     tmp = GET_U16( p );

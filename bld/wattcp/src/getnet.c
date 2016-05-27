@@ -58,7 +58,7 @@ void ReadNetworksFile (const char *fname)
   while (1)
   {
     struct _netent *n, *n2 = (struct _netent*) getnetent();
-   
+
     if (!n2 || (n = malloc(sizeof(*n))) == NULL)
        break;
 
@@ -90,7 +90,7 @@ void ReadNetworksFile (const char *fname)
 /*
  * Return name of networks file
  */
-const char *GetNetFile (void)
+const char *GetNetworksFile (void)
 {
   return (networkFname);
 }
@@ -208,7 +208,7 @@ struct netent *getnetbyaddr (long net, int type)
   for (n = network0; n; n = n->next)
       if ((DWORD)net == n->n_net && type == n->n_addrtype)
          return (struct netent*) n;
-  return (NULL); 
+  return (NULL);
 }
 
 /*

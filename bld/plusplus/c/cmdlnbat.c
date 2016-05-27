@@ -43,7 +43,7 @@ static char batch_buffer[ 1024 ];   // - buffer
 static int batch_file;              // - # for batch file
 static unsigned batch_bytes;        // - # bytes left in buffer
 static char* batch_cursor;          // - cursor thru batch_buffer
-static bool real_eof;               // - TRUE ==> a real EOF detected
+static bool real_eof;               // - true ==> a real EOF detected
 
 
 static void cmdLnBatchClose(    // CLOSE BATCH FILE
@@ -52,7 +52,7 @@ static void cmdLnBatchClose(    // CLOSE BATCH FILE
     if( batch_file != -1 ) {
         close( batch_file );
         batch_file = -1;
-        CompFlags.batch_file_eof = TRUE;
+        CompFlags.batch_file_eof = true;
     }
 }
 
@@ -63,10 +63,10 @@ static int cmdLnBatchReadBuffer(// READ A BUFFER
     int retn = read( batch_file, batch_buffer, sizeof( batch_buffer ) );
     if( retn == -1 ) {
         BadCmdLine( ERR_FC_READ );
-        real_eof = FALSE;
+        real_eof = false;
         cmdLnBatchClose();
     } else if( retn == 0 ) {
-        real_eof = TRUE;
+        real_eof = true;
         cmdLnBatchClose();
     } else {
         batch_cursor = batch_buffer;
@@ -132,12 +132,12 @@ void CmdLnBatchOpen(            // OPEN CMD-LN BATCH FILE
 {
     int retn = open( fname, O_RDONLY | O_BINARY );
     if( retn == -1 ) {
-        CompFlags.batch_file_eof = TRUE;
+        CompFlags.batch_file_eof = true;
         BadCmdLine( ERR_FC_OPEN );
     } else {
         batch_file = retn;
         batch_bytes = 0;
-        CompFlags.batch_file_eof = FALSE;
+        CompFlags.batch_file_eof = false;
         CompInfo.fc_file_line = 0;
         cmdLnBatchFlushCrap();
         if( real_eof ) {

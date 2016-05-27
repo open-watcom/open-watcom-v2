@@ -88,13 +88,13 @@ static void DbgDumpBlkPosn(     // DUMP A BLK_POSN
 void DumpBlkPosns(              // DUMP ALL BLK_POSN'S
     void )
 {
-    BLK_POSN* curr;             // - current position
+    BLK_POSN    *curr;          // - current position
 
     curr = VstkTop( &stack_blk_posn );
     if( NULL == curr ) {
         printf( "No BLK_POSN entries active\n" );
     } else {
-        for( ; curr != NULL; curr = VstkNext( &stack_blk_posn, curr ) ) {
+        VstkIterBeg( &stack_blk_posn, curr ) {
             DbgDumpBlkPosn( curr, "\n*" );
         }
     }
@@ -180,21 +180,17 @@ SE* BlkPosnEnclosing(           // GET CURRENT POSITION OF ENCLOSING BLOCK
 SE* BlkPosnScope(               // GET BLOCK POSITION FOR A SCOPE
     SCOPE scope )               // - scope in question
 {
-    SE* posn;                   // - state entry for position
-    BLK_POSN* bpos;             // - current position
+    BLK_POSN    *bpos;          // - current position
 
-    if( NULL == scope ) {
-        posn = NULL;
-    } else {
-        for( bpos = VstkTop( &stack_blk_posn )
-           ;
-           ; bpos = VstkNext( &stack_blk_posn, bpos ) ) {
-            DbgVerify( bpos != NULL, "BlkPosnScope -- no scope stacked" );
-            if( scope == bpos->scope ) break;
+    if( scope != NULL ) {
+        VstkIterBeg( &stack_blk_posn, bpos ) {
+            if( scope == bpos->scope ) {
+                return( bpos->posn );
+            }
         }
-        posn = bpos->posn;
+        DbgVerify( bpos != NULL, "BlkPosnScope -- no scope stacked" );
     }
-    return posn;
+    return( NULL );
 }
 
 
@@ -281,17 +277,17 @@ SE* BlkPosnTempEnd(             // GET ENDING POS'N FOR TEMP DTOR'ING
 bool BlkPosnUseStab(            // TEST IF REALLY USING STATE TABLE IN SCOPE
     void )
 {
-    bool retn;                  // - TRUE ==> gen state table code
+    bool retb;                  // - true ==> gen state table code
     BLK_POSN* bpos;             // - current position
 
     bpos = VstkTop( &stack_blk_posn );
     DbgVerify( bpos != NULL, "BlkPosnStabGen -- no block" );
     if( NULL == bpos->scope ) {
-        retn = FALSE;
+        retb = false;
     } else {
-        retn = bpos->scope->u.s.cg_stab;
+        retb = bpos->scope->u.s.cg_stab;
     }
-    return retn;
+    return( retb );
 }
 
 

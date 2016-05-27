@@ -41,11 +41,11 @@
 #include "dmpcont.h"
 #include "wresdefn.h"
 
-extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
+bool DumpContents( WResTypeInfo *type, WResResInfo *res,
                     WResLangInfo *lang, WResFileID handle, uint_16 os )
 /*********************************************************************/
 {
-    int     error;
+    bool    error;
 
     res = res;
     fprintf( stdout, "\tOffset: 0x%08lx  Length: 0x%08lx\n",
@@ -53,21 +53,21 @@ extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
 
     if (type->TypeName.IsName) {
         /* it is not one of the predefined types */
-        error = FALSE;
+        error = false;
     } else {
         switch (type->TypeName.ID.Num) {
         case RT_MENU:
             if( os == WRES_OS_WIN16 ) {
                 error = DumpMenu( lang->Offset, lang->Length, handle );
             } else {
-                error = FALSE;
+                error = false;
             }
             break;
         case RT_DIALOG:
             if( os == WRES_OS_WIN16 ) {
                 error = DumpDialog( lang->Offset, lang->Length, handle );
             } else {
-                error = FALSE;
+                error = false;
             }
             break;
         case RT_GROUP_ICON:
@@ -80,11 +80,11 @@ extern int DumpContents( WResTypeInfo *type, WResResInfo *res,
             if( os == WRES_OS_WIN16 ) {
                 error = DumpString( lang->Offset, lang->Length, handle );
             } else {
-                error = FALSE;
+                error = false;
             }
             break;
         default:
-            error = FALSE;
+            error = false;
             break;
         }
     }

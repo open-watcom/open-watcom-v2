@@ -125,7 +125,7 @@ void PragmaInit( void )
 #if _CPU == 8086
     AsmInit( 0, cpu, fpu, GET_FPU_EMU( ProcRevision ) );
 #else
-    AsmInit( 1, cpu, fpu, FALSE );
+    AsmInit( 1, cpu, fpu, false );
 #endif
 }
 
@@ -220,7 +220,7 @@ static bool GetAliasInfo( void )
         return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )     // error
-        return( FALSE );
+        return( false );
     LookAhead();
     if( LAToken == T_RIGHT_PAREN ) {        // #pragma aux (alias) symbol .....
         PragCurrAlias( SavedId );
@@ -233,7 +233,7 @@ static bool GetAliasInfo( void )
         AdvanceToken();
         NextToken();
         if( !IS_ID_OR_KEYWORD( CurToken ) ) // error
-            return( FALSE );
+            return( false );
         isfar16 = PragRecog( "far16" );
         if( IS_ID_OR_KEYWORD( CurToken ) ) {
             PragCurrAlias( Buffer );
@@ -245,10 +245,10 @@ static bool GetAliasInfo( void )
             AuxInfo.flags |= AUX_FLAG_FAR16;
         CopyAuxInfo();
         PragEnding();
-        return( FALSE ); /* process no more! */
+        return( false ); /* process no more! */
     } else {                                // error
         AdvanceToken();
-        return( FALSE ); // shut up the compiler
+        return( false ); // shut up the compiler
     }
 }
 
@@ -419,8 +419,8 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 #endif
 
     sym_handle = SYM_NULL;
-    uses_auto = FALSE;
-    perform_fixups = FALSE;
+    uses_auto = false;
+    perform_fixups = false;
     head = FixupHead;
     if( head != NULL ) {
         FixupHead = NULL;
@@ -448,7 +448,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     sym_handle = SymLook( CalcHash( name, strlen( name ) ), name );
                     if( sym_handle == SYM_NULL ) {
                         CErr2p( ERR_UNDECLARED_SYM, name );
-                        return( FALSE );
+                        return( false );
                     }
                     SymGet( &sym, sym_handle );
                     sym.flags |= SYM_REFERENCED | SYM_ADDR_TAKEN;
@@ -457,7 +457,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     case SC_AUTO:
                         sym.flags |= SYM_USED_IN_PRAGMA;
                         CurFuncNode->op.u2.func.flags &= ~FUNC_OK_TO_INLINE;
-                        uses_auto = TRUE;
+                        uses_auto = true;
                         break;
                     }
                     SymReplace( &sym, sym_handle );
@@ -585,12 +585,12 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
             }
             if( dst > &temp[MAXIMUM_BYTESEQ] ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                return( FALSE );
+                return( false );
             }
         }
         buff = temp;
         len = (byte_seq_len)( dst - temp );
-        perform_fixups = TRUE;
+        perform_fixups = true;
     }
     seq = (byte_seq *)CMemAlloc( offsetof( byte_seq, data ) + len );
     seq->relocs = perform_fixups;
@@ -634,7 +634,7 @@ void AsmSysLine( const char *buff )
 #if _CPU == 8086
     AsmLine( buff, GET_FPU_EMU( ProcRevision ) );
 #else
-    AsmLine( buff, FALSE );
+    AsmLine( buff, false );
 #endif
 }
 
@@ -648,23 +648,23 @@ static bool GetByteSeq( byte_seq **code )
     bool                uses_auto;
     bool                too_many_bytes;
 #if _CPU == 8086
-    bool                use_fpu_emu = FALSE;
+    bool                use_fpu_emu = false;
 #endif
 
     AsmSysInit( buff );
     PPCTL_ENABLE_MACROS();
     NextToken();
-    too_many_bytes = FALSE;
-    uses_auto = FALSE;
+    too_many_bytes = false;
+    uses_auto = false;
     offset = 0;
     name = NULL;
     for( ;; ) {
         if( CurToken == T_STRING ) {
 #if _CPU == 8086
             AsmLine( Buffer, use_fpu_emu );
-            use_fpu_emu = FALSE;
+            use_fpu_emu = false;
 #else
-            AsmLine( Buffer, FALSE );
+            AsmLine( Buffer, false );
 #endif
             NextToken();
             if( CurToken == T_COMMA ) {
@@ -674,14 +674,14 @@ static bool GetByteSeq( byte_seq **code )
 #if _CPU == 8086
             if( use_fpu_emu ) {
                 AddAFix( AsmCodeAddress, NULL, FIX_SEG, 0 );
-                use_fpu_emu = FALSE;
+                use_fpu_emu = false;
             }
 #endif
             AsmCodeBuffer[AsmCodeAddress++] = (unsigned char)Constant;
             NextToken();
         } else {
 #if _CPU == 8086
-            use_fpu_emu = FALSE;
+            use_fpu_emu = false;
 #endif
             fixword = FixupKeyword();
             if( fixword == FIXWORD_NONE )
@@ -689,7 +689,7 @@ static bool GetByteSeq( byte_seq **code )
             if( fixword == FIXWORD_FLOAT ) {
 #if _CPU == 8086
                 if( GET_FPU_EMU( ProcRevision ) ) {
-                    use_fpu_emu = TRUE;
+                    use_fpu_emu = true;
                 }
 #endif
             } else { /* seg or offset */
@@ -741,14 +741,14 @@ static bool GetByteSeq( byte_seq **code )
         if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
             if( !too_many_bytes ) {
                 CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                too_many_bytes = TRUE;
+                too_many_bytes = true;
             }
             AsmCodeAddress = 0;          // reset index to we don't overrun buffer
         }
     }
     PPCTL_DISABLE_MACROS();
     if( too_many_bytes ) {
-        uses_auto = FALSE;
+        uses_auto = false;
     } else {
         uses_auto = InsertFixups( buff, AsmCodeAddress, code );
     }
@@ -774,7 +774,7 @@ hw_reg_set PragRegName( const char *str, size_t len )
             }
         }
         // search register or alias name
-        index = PragRegIndex( Registers, str, len, TRUE );
+        index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }

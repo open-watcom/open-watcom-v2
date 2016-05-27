@@ -101,11 +101,11 @@ static dw_loc_handle    dummyLoc;
 static SRCFILE          currentFile;
 
 static void virtTblTypes( void ) {
-    pvf_FieldType = MakeVFTableFieldType( TRUE );
+    pvf_FieldType = MakeVFTableFieldType( true );
     vf_FieldType = PointerTypeEquivalent( pvf_FieldType )->of;
     vf_FieldTypeSize = CgTypeSize( vf_FieldType );
 
-    pvb_FieldType = MakeVBTableFieldType( TRUE );
+    pvb_FieldType = MakeVBTableFieldType( true );
     vb_FieldType = PointerTypeEquivalent( pvb_FieldType )->of;
     vb_FieldTypeSize = CgTypeSize( vb_FieldType );
 }
@@ -413,11 +413,11 @@ static bool dwarfClassInfoFriend( TYPE type, bool addfriend )
     FRIEND      *friend;
     bool        check_friends;
 
-    check_friends = FALSE;
+    check_friends = false;
     if( !InDebug ) {    /* TODO: if debug need handle */
         RingIterBeg( ScopeFriends( type->u.c.scope ), friend ) {
             if( FriendIsSymbol( friend ) ) {
-                check_friends = TRUE;
+                check_friends = true;
                 if( addfriend ) {
                     dh = dwarfSymbol( FriendGetSymbol( friend ), DC_DEFAULT );
                     if( dh ) {
@@ -519,7 +519,7 @@ static bool dwarfClassInfo( TYPE type )
     } RingIterEnd( base )
 
     // forward reference all the friends
-    check_friends = dwarfClassInfoFriend( type, TRUE );
+    check_friends = dwarfClassInfoFriend( type, true );
 
     // hidden data members
     if( info->has_vbptr ) {
@@ -713,13 +713,13 @@ static dw_handle dwarfClass( TYPE type, DC_CONTROL control )
                        name,
                        0,
                        (defined ? 0 : DW_FLAG_DECLARATION ) );
-        check_friends = FALSE;
+        check_friends = false;
         if( defined ) {
             check_friends = dwarfClassInfo( type );
         }
         DWEndStruct( Client );
         if( check_friends ) {
-            dwarfClassInfoFriend( type, FALSE );
+            dwarfClassInfoFriend( type, false );
         }
     }
     return( dh );
@@ -863,14 +863,14 @@ static bool dwarfRefSymLoc( dw_loc_id locid, SYMBOL sym ) {
 /** make a loc for sym return true if segmented**/
     bool ret;
 
-    ret = FALSE;
+    ret = false;
     if( SymIsAutomatic( sym ) ) {
         DFDwarfLocal( Client, locid, sym );
     } else {
 #if _INTEL_CPU
         if( !IsFlat() ) {  /* should check Client */
             DWLocSegment( Client, locid, (dw_sym_handle)sym );
-            ret = TRUE;
+            ret = true;
         }
 #endif
         DWLocStatic( Client, locid, (dw_sym_handle)sym );
@@ -1257,10 +1257,10 @@ static bool dwarfValidateSymbol( SYMBOL sym )
 
     if( !SymIsAnonymous( sym ) ) {
         if( IsCppSpecialName( sym->name->name, &junk ) ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void dwarf_block_open( SYMBOL sym )
@@ -1702,7 +1702,7 @@ static void doDwarfForwardFollowupClass( TYPE type, void *ignore )
         }
 #endif
         dwarfClass( type, DC_DEFINE );
-        *keep_going = TRUE;
+        *keep_going = true;
     }
 }
 
@@ -1712,7 +1712,7 @@ static void doDwarfForwardFollowupTypedef( TYPE type, void *ignore )
     bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
         dwarfTypedef( type, DC_DEFINE );
-        *keep_going = TRUE;
+        *keep_going = true;
     }
 }
 
@@ -1722,22 +1722,22 @@ static void doDwarfForwardFollowupEnum( TYPE type, void *ignore )
     bool *keep_going = ignore;
     if( (type->dbgflag & TF2_DWARF) == TF2_DWARF_FWD ) {
         dwarfEnum( type, DC_DEFINE );
-        *keep_going = TRUE;
+        *keep_going = true;
     }
 }
 
 static bool dwarfForwardFollowup( void )
 /**************************************/
 {
-    bool did_something = FALSE;
+    bool did_something = false;
 
     for(;;) {
-        bool keep_going = FALSE;
+        bool keep_going = false;
         TypeTraverse( TYP_CLASS, &doDwarfForwardFollowupClass, &keep_going );
         TypeTraverse( TYP_TYPEDEF, &doDwarfForwardFollowupTypedef, &keep_going );
         TypeTraverse( TYP_ENUM, &doDwarfForwardFollowupEnum, &keep_going );
         if( ! keep_going ) break;
-        did_something = TRUE;
+        did_something = true;
     }
     return( did_something );
 }
@@ -1792,7 +1792,7 @@ extern void DwarfBrowseEmit( void )
 /*********************************/
 {
     if( !CompFlags.emit_browser_info ) return;
-    initDwarf( FALSE, DSI_ONLY_SYMS );
+    initDwarf( false, DSI_ONLY_SYMS );
     Client = DwarfInit();
     dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
     dwarfEmitFundamentalType();
@@ -1807,7 +1807,7 @@ extern void DwarfDebugInit( void )
 {
     assert( sizeof( vf_FieldType->dbg.handle ) == sizeof( dbg_type ) );
     if( GenSwitches & DBG_TYPES ) {
-        initDwarf( TRUE, DSI_NULL );
+        initDwarf( true, DSI_NULL );
         Client = DFClient();
         dummyLoc = DWLocFini( Client, DWLocInit( Client ) );
         // quick wedge to test
@@ -1871,13 +1871,13 @@ static int dwarfTempScope(  SCOPE scope ) {
         }
         curr = ScopeOrderedNext( stop, curr );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool ADirtyNameSpace( SYMBOL curr )
 {
     bool ret;
-    ret = FALSE;
+    ret = false;
     if( SymIsNameSpace( curr ) ) {
         ret = curr->u.ns->scope->u.s.dirty;
     }
@@ -1961,13 +1961,13 @@ static int dwarfUsedTempScope( SCOPE scope ) {
                 if( ! _typeHasPCHDwarfHandle( type ) ) {
                     dwarfSymbol( curr, DC_DEFINE );
                     DbgAssert( ! _typeHasForwardDwarfHandle( type ) );
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
         curr = ScopeOrderedNext( stop, curr );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1994,15 +1994,15 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
     bool   change;
     bool   has_changed;
 
-    has_changed = FALSE;
+    has_changed = false;
     for(;;) {
-        change = FALSE;
+        change = false;
         stop = ScopeOrderedStart( scope );
         curr = ScopeOrderedNext( stop, NULL );
         while( curr != NULL ) {
             if(  SymIsClassTemplateModel( curr ) ) {
                 if( !WalkTemplateInst( curr, &dwarfUsedTempScope ) ) {
-                    change = TRUE;
+                    change = true;
                 }
 #if 0
             } else if( SymIsTypedef( curr ) ) {
@@ -2017,7 +2017,7 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
                             dwarfType( type, DC_DEFINE );
                             dwarfSymbol( curr, DC_DEFINE );
 //                            DbgAssert( ! _typeHasForwardDwarfHandle( type ) );
-                            change = TRUE;
+                            change = true;
                         }
                     }
                 }
@@ -2025,13 +2025,13 @@ static bool dwarfUsedTypeSymbol( SCOPE scope )
 #endif
             } else if( ADirtyNameSpace( curr ) ) {
                 if( dwarfUsedNameSpace(  curr ) ) {
-                    change = TRUE;
+                    change = true;
                 }
             }
             curr = ScopeOrderedNext( stop, curr );
         }
         if( !change )break;
-        has_changed = TRUE;
+        has_changed = true;
     }
     return( has_changed );
 }
@@ -2096,19 +2096,19 @@ static bool typedef_is_of_basic_types( TYPE type )
     for(;;) {
         type = TypedefModifierRemove( type );
         if( type == NULL ) break;
-        if( type->id == TYP_CLASS ) return( FALSE );
-        if( type->id == TYP_MEMBER_POINTER ) return( FALSE );
+        if( type->id == TYP_CLASS ) return( false );
+        if( type->id == TYP_MEMBER_POINTER ) return( false );
         if( type->id == TYP_FUNCTION ) {
             alist = TypeArgList( type );
             for( i = 0 ; i < alist->num_args ; i++ ) {
                 if( !typedef_is_of_basic_types( alist->type_list[i] ) ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
         type = type->of;
     }
-    return( TRUE );
+    return( true );
 }
 
 static void doDwarfDebugNamedType( TYPE type, void *data )
@@ -2154,7 +2154,7 @@ static void dwarfDebugTemplateParm( TYPE p )
 
             sc = p->u.t.scope;
             if( sc->id == SCOPE_TEMPLATE_PARM ) {
-                DBLocalType( (cg_sym_handle)p->u.t.sym, TRUE );
+                DBLocalType( (cg_sym_handle)p->u.t.sym, true );
             }
         }
         p = p->of;
@@ -2166,7 +2166,7 @@ extern void DwarfDebugGenSymbol( SYMBOL sym, bool scoped )
 {
     if( scoped ) {  /* if scoped need to feed thu codegen */
         dwarfDebugTemplateParm( sym->sym_type );
-        DBLocalSym( (cg_sym_handle)dwarfDebugSymAlias( sym ), TRUE );
+        DBLocalSym( (cg_sym_handle)dwarfDebugSymAlias( sym ), true );
     } else {    /* can handle static by ourselves */
         dwarfDebugStatic( sym );
     }

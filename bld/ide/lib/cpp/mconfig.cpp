@@ -128,6 +128,8 @@ MConfig::MConfig( WFileName& filename, bool debug, HostType host, const char *in
         _hostType = HOST_DOS;
 #elif defined( __LINUX__ )
         _hostType = HOST_LINUX;
+#elif defined( __UNIX__ )
+        _hostType = HOST_UNIX;
 #endif
     } else {
         _hostType = host;

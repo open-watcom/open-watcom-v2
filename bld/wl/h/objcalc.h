@@ -46,7 +46,6 @@ extern void     MAlign( byte );
 extern void     StartMemMap( void );
 extern void     ChkLocated( targ_addr *segadr, bool fixed);
 extern void     NewSegment( seg_leader * );
-extern offset   GetLeaderDelta( seg_leader * );
 
 /* in objcalc.c */
 

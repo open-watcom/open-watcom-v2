@@ -94,7 +94,7 @@ static void init(               // MODULE INITIALIZATION
     INITFINI* def )             // - definition
 {
     def = def;
-    CompFlags.low_on_memory_printed = FALSE;
+    CompFlags.low_on_memory_printed = false;
 }
 
 INITDEFN( cg_info, init, InitFiniStub )
@@ -176,7 +176,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( ! CompFlags.low_on_memory_printed ) {
-                CompFlags.low_on_memory_printed = TRUE;
+                CompFlags.low_on_memory_printed = true;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
             }
         }
@@ -201,7 +201,7 @@ const char *FEModuleName(       // RETURN MODULE NAME
 }
 
 
-int FETrue(                     // RETURN TRUE
+int FETrue(                     // RETURN true
     void )
 {
     return( 1 );
@@ -220,7 +220,7 @@ int FECodeBytes(                // STUB EXCEPT FOR JAVA
     int len )
 {
     buffer = buffer; len = len;
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -741,29 +741,29 @@ static bool makeFileScopeStaticNear( SYMBOL sym )
     //   - multiple code segments are not used
     //   - function will not end up as FE_COMMON
     if( sym->id != SC_STATIC ) {
-        return( FALSE );
+        return( false );
     }
     if( ScopeId( SymScope( sym ) ) != SCOPE_FILE ) {
-        return( FALSE );
+        return( false );
     }
     if( (sym->flag & SF_ADDR_TAKEN) != 0 ) {
         // function may be called as a FAR function through a pointer
-        return( FALSE );
+        return( false );
     }
     if( (GenSwitches & (DBG_TYPES | DBG_LOCALS)) != 0 ) {
         // function's debugging info will be FAR
-        return( FALSE );
+        return( false );
     }
     if( CompFlags.zm_switch_used ) {
         // caller may not be in the same segment
-        return( FALSE );
+        return( false );
     }
     if( SymIsComdatFun( sym ) ) {
         // another module may not satisfy previous conditions so depending
         // on what copy the linker uses, one of the calls will not match
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -1151,8 +1151,8 @@ static void addDefaultImports( void )
 }
 
 #ifndef NDEBUG
-    #define DbgNotSym() isSym = FALSE;
-    #define DbgNotRetn() isRetn = FALSE;
+    #define DbgNotSym() isSym = false;
+    #define DbgNotRetn() isRetn = false;
 #else
     #define DbgNotSym()
     #define DbgNotRetn()
@@ -1170,8 +1170,8 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     static EXTRF res_info;      // - external-symbol resolution information
     SYMBOL sym = _sym;
 #ifndef NDEBUG
-    bool isSym = TRUE;          // DEBUGGING: TRUE ==> "sym" is SYMBOL
-    bool isRetn = TRUE;         // DEBUGGING: TRUE ==> "retn" is SYMBOL
+    bool isSym = true;          // DEBUGGING: true ==> "sym" is SYMBOL
+    bool isRetn = true;         // DEBUGGING: true ==> "retn" is SYMBOL
 #endif
 
     if( buf != NULL ) CMemFreePtr( &buf );
@@ -1552,7 +1552,7 @@ bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
     SYMBOL func )               // - function symbol
 {
-    return( func->flag & TF1_NORETURN );
+    return( (func->flag & TF1_NORETURN) != 0 );
 }
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL

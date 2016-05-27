@@ -38,6 +38,7 @@
 #include "data.h"
 #include "x87.h"
 #include "namelist.h"
+#include "redefby.h"
 
 
 extern  name            *Parm8087[];
@@ -48,7 +49,6 @@ extern  int             Max87Stk;
 extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
 extern  void            BGDone(an);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  type_class_def  TypeClass(type_def*);
@@ -62,7 +62,6 @@ extern  void            ToPopBin(instruction*);
 extern  void            NoMemBin(instruction*);
 extern  name*           ST(int);
 extern int              NumOperands(instruction*);
-extern  bool            IsVolatile(name*);
 extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DelSeg(instruction*);
@@ -143,20 +142,20 @@ static  bool    CanPushImmed( pn parm, int *num_parms ) {
                 ins = addr->u.i.ins;
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _OpIsCall( next->head.opcode ) )
-                        return( FALSE );
+                        return( false );
                     if( _OpIsIFunc( next->head.opcode ) ) {
                         if( FPStkReq( next ) != 0 ) {
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
                 if( _BLOCK( next ) != CurrBlock ) {
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -241,10 +240,10 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
         if( FPIsStack( ins->operands[i] ) ) {
             parm->ins = PushDelayed( ins, addr, state );
             // CGFree( parm );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -263,10 +262,10 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
     for(;;) {
         for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( ReDefinedBy( next, ins->operands[i] ) ) {
+                if( _IsReDefinedBy( next, ins->operands[i] ) ) {
                     parm->ins = PushDelayed( ins, parm->name, state );
                     // CGFree( parm );
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -278,7 +277,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
             next = _BLOCK( next )->next_block->ins.hd.next;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void    UseInOther( name *op )
@@ -417,54 +416,54 @@ static  bool    FSinCos( instruction *ins1 ) {
     instruction *ins3;
     instruction *ins4;
 
-    if( !_IsTargetModel( I_MATH_INLINE ) ) {
-        return( FALSE );
+    if( _IsntTargetModel( I_MATH_INLINE ) ) {
+        return( false );
     }
     ins2 = ins1->head.next;
     ins3 = ins2->head.next;
     ins4 = ins3->head.next;
     if( G( ins1 ) == G_MFLD ) {
         if( ins2->head.opcode != OP_SIN && ins2->head.opcode != OP_COS ) {
-            return( FALSE );
+            return( false );
         }
         if( G( ins3 ) != G_MFLD ) {
-            return( FALSE );
+            return( false );
         }
         if( ins1->operands[ 0 ] != ins3->operands[ 0 ] ) {
-            return( FALSE );
+            return( false );
         }
         if( ins4->head.opcode != _OTHER( ins2->head.opcode ) ) {
-            return( FALSE );
+            return( false );
         }
     } else if( G( ins1 ) == G_RFLD ) {
         if( ins2->head.opcode != OP_SIN && ins2->head.opcode != OP_COS ) {
-            return( FALSE );
+            return( false );
         }
         if( G( ins3 ) != G_RFLD ) {
-            return( FALSE );
+            return( false );
         }
         if( FPRegNum( ins1->operands[ 0 ] ) !=
             FPRegNum( ins3->operands[ 0 ] ) - 1 ) {
-                return( FALSE );
+                return( false );
             }
         if( ins4->head.opcode != _OTHER( ins2->head.opcode ) ) {
-            return( FALSE );
+            return( false );
         }
     } else if( ins1->head.opcode == OP_SIN ) {
         if( G( ins2 ) != G_RFLD ) {
-            return( FALSE );
+            return( false );
         }
         if( FPRegNum( ins2->operands[ 0 ] ) != 1 ) {
-            return( FALSE );
+            return( false );
         }
         if( ins3->head.opcode != _OTHER( ins1->head.opcode ) ) {
-            return( FALSE );
+            return( false );
         }
         ins4 = ins3;
         ins3 = ins2;
         ins2 = ins1;
     } else {
-        return( FALSE );
+        return( false );
     }
     ins2->u.gen_table = FSINCOS;
     if( ins2->head.opcode != OP_SIN ) {
@@ -472,7 +471,7 @@ static  bool    FSinCos( instruction *ins1 ) {
     }
     FreeIns( ins3 );
     FreeIns( ins4 );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -498,12 +497,12 @@ static  bool    RedundantStore( instruction *ins ) {
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( next->result == ins->result ) {
             if( G( next ) == G_MFSTNP || G( next ) == G_MFST ) {
-                return( TRUE );
+                return( true );
             }
         }
-        if( InsOrderDependant( ins, next ) ) return( FALSE );
+        if( InsOrderDependant( ins, next ) ) return( false );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -612,7 +611,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 ret = next;
                 NoPop( next );
             }
-            *again = TRUE;
+            *again = true;
         } else if( G( next ) == G_RFST ) {
 
             /* FLD ST, FSTP ST(i) ===> FST ST(i-1) */
@@ -625,7 +624,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 ret = next;
                 NoPop( next );
             }
-            *again = TRUE;
+            *again = true;
         } else if( G( next ) == G_RNFBINP || G( next ) == G_RRFBINP ) {
 
             /* FLD ST, FopP ST(i),ST ==> Fop ST(i-1),ST */
@@ -637,10 +636,10 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 FreeIns( ins );
                 ret = next;
             }
-            *again = TRUE;
+            *again = true;
         } else if( G( next ) == G_FXCH && FPRegNum( next->result ) == 1 ) {
             FreeIns( next );
-            *again = TRUE;
+            *again = true;
             ret = ins;
         }
     } else if( G( ins ) == G_RFLD || G( ins ) == G_MFLD ) {
@@ -661,7 +660,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 }
                 FreeIns( ins );
                 NoPopBin( next );
-                *again = TRUE;
+                *again = true;
                 ret = next;
             }
         } else if( G( next ) == G_RFLD || G( next ) == G_MFLD ) {
@@ -672,7 +671,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 ins->operands[0] == next->operands[0] ) {
                 next->operands[0] = ST( 0 );
                 ToRFld( next );
-                *again = TRUE;
+                *again = true;
                 ret = next;
             } else {
 
@@ -695,7 +694,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                     } else {
                         ret = ins;
                     }
-                    *again = TRUE;
+                    *again = true;
                 }
             }
         } else if( G( ins ) == G_MFLD ) {
@@ -711,7 +710,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                     next->operands[ 0 ] = ST( 0 );
                     DelSeg( next );
                     NoMemBin( next );
-                    *again = TRUE;
+                    *again = true;
                     ret = ins;
                 }
             }
@@ -731,7 +730,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                 ret = ins;
                 NoPop( ins );
             }
-            *again = TRUE;
+            *again = true;
         } else if( G( next ) == G_RFLD
              && FPRegNum( next->operands[0] ) + 1 == FPRegNum( ins->result ) ) {
 
@@ -739,7 +738,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
             FreeIns( next );
             NoPop( ins );
-            *again = TRUE;
+            *again = true;
             ret = ins;
         }
     } else if( G( ins ) == G_FXCH ) {
@@ -750,7 +749,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
             if( FPRegNum( ins->result ) == FPRegNum( next->result ) ) {
                 FreeIns( next );
                 next = BackUpAndFree( ins, ins, NULL );
-                *again = TRUE;
+                *again = true;
                 ret = next;
             }
         } else {
@@ -761,7 +760,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                     /* FXCH ST(i), FopP ST(i),ST -> FopRP ST(i),ST */
                     FreeIns( ins );
                     ReverseFPGen( next );
-                    *again = TRUE;
+                    *again = true;
                     ret = next;
                 }
             }
@@ -773,17 +772,17 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
             next->operands[0] = ST( 0 );
             ToRFld( next );
-            *again = TRUE;
+            *again = true;
             ret = ins;
         } else if( RedundantStore( ins ) ) {
             ret = BackUpAndFree( ins, ins, NULL );
-            *again = TRUE;
+            *again = true;
         }
     } else if( G( ins ) == G_RNFBIN || G( ins ) == G_RRFBIN ) {
         if( G( next ) == G_RFST && next->result == ins->operands[0] ) {
             ToPopBin( ins );
             FreeIns( next );
-            *again = TRUE;
+            *again = true;
             ret = ins;
         }
     }
@@ -835,7 +834,7 @@ extern  void    Opt8087( void ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins->sequence = ++i;
         }
-        again = FALSE;
+        again = false;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
             if( _GenIs8087( ins->u.gen_table->generate ) ) {
@@ -862,12 +861,16 @@ extern  void    FixP5Divs( void ) {
     block       *blk;
     instruction *ins;
 
-    if( !_IsTargetModel( P5_DIVIDE_CHECK ) ) return;
-    if( !_FPULevel( FPU_87 ) ) return;
+    if( _IsntTargetModel( P5_DIVIDE_CHECK ) )
+        return;
+    if( !_FPULevel( FPU_87 ) )
+        return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode != OP_DIV ) continue;
-            if( !_IsFloating( ins->type_class ) ) continue;
+            if( ins->head.opcode != OP_DIV )
+                continue;
+            if( !_IsFloating( ins->type_class ) )
+                continue;
             ins->head.opcode = OP_P5DIV;
         }
     }

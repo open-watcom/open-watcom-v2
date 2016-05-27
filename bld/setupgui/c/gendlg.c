@@ -204,7 +204,7 @@ dlg_state DoDialogWithParent( void *parent, const char *name )
                 done = true;
             }
         }
-        if( can == false && done == true ) {
+        if( !can && done ) {
             return_state = DLG_DONE;
         }
     }

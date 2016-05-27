@@ -61,8 +61,8 @@ static  void    WrnIssued( void ) {
 static  void    ErrIssued( void ) {
 // An error message has just been issued.
     if( ( ProgSw & PS_SYMTAB_PROCESS ) == 0 ) {
-        CpError = TRUE;
-        AError = TRUE;
+        CpError = true;
+        AError = true;
     }
     NumErrors++;
     ProgSw |= PS_ERROR;
@@ -79,7 +79,7 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     char        buff[MAX_SYMLEN+1];
 
     ChkErrFile();
-    save_list = SetLst( TRUE );
+    save_list = SetLst( true );
     was_listed = WasStmtListed();
     caret = CarrotType( error );
     column = 0;

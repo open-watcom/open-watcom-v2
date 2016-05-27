@@ -45,7 +45,7 @@ int UIAPI uicharlen( int ch )
 int UIAPI uiisdbcs( void )
 /*************************/
 {
-    return( FALSE );
+    return( false );
 }
 
 #else

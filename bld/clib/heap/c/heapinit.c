@@ -38,27 +38,27 @@
 
 void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
 {
-        mheapptr p1;
-        tag *last_tag;
+    mheapptr p1;
+    tag *last_tag;
 
-        p1 = start;
-        amount -= sizeof( struct miniheapblkp ) + TAG_SIZE;
-        __nheapbeg = p1;
-        p1->len  = amount + sizeof( struct miniheapblkp );
-        p1->prev = NULL;
-        p1->next = NULL;
-        p1->rover = &p1->freehead;
-        p1->freehead.prev = &p1->freehead;
-        p1->freehead.next = &p1->freehead;
-        p1->numalloc = 0;
-        p1->numfree = 0;
-        ++p1;
-        /* fix up end of heap links */
-        last_tag = (tag *) ( (PTR)p1 + amount );
-        last_tag[0] = END_TAG;
-        /* build a block for _nfree() */
-        ((frlptr)p1)->len = amount | 1;
-        ++__nheapbeg->numalloc;                             /* 28-dec-90 */
-        __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-        _nfree( (PTR)p1 + TAG_SIZE );
+    p1 = start;
+    amount -= sizeof( miniheapblkp ) + TAG_SIZE;
+    __nheapbeg = p1;
+    p1->len  = amount + sizeof( miniheapblkp );
+    p1->prev = NULL;
+    p1->next = NULL;
+    p1->rover = &p1->freehead;
+    p1->freehead.prev = &p1->freehead;
+    p1->freehead.next = &p1->freehead;
+    p1->numalloc = 0;
+    p1->numfree = 0;
+    ++p1;
+    /* fix up end of heap links */
+    last_tag = (tag *) ( (PTR)p1 + amount );
+    last_tag[0] = END_TAG;
+    /* build a block for _nfree() */
+    ((frlptr)p1)->len = amount | 1;
+    ++__nheapbeg->numalloc;
+    __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
+    _nfree( (PTR)p1 + TAG_SIZE );
 }

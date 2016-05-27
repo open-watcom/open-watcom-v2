@@ -225,7 +225,7 @@ extern void WndClose( a_window *wnd )
     bool        old;
 
     old = WndDoingRefresh; // doing refresh during destroy message mucks PM up
-    WndDoingRefresh = TRUE;
+    WndDoingRefresh = true;
     GUIDestroyWnd( wnd->gui );
     WndDoingRefresh = old;
 }
@@ -233,7 +233,7 @@ extern void WndClose( a_window *wnd )
 void WndSetMainMenuText( gui_menu_struct *menu )
 {
     if( WndMain != NULL ) {
-        GUISetMenuText( WndMain->gui, menu->id, menu->label, FALSE );
+        GUISetMenuText( WndMain->gui, menu->id, menu->label, false );
     }
 }
 

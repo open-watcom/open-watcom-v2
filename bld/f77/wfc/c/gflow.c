@@ -104,7 +104,7 @@ void    GBranch( int label ) {
 void    GBrFalse( int label ) {
 //=============================
 
-// Generate a branch on FALSE.
+// Generate a branch on false.
 
     EmitOp( FC_JMP_FALSE );
     GenType( CITNode );

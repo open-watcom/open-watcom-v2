@@ -35,14 +35,14 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "sampwin.h"
-#include "intdata.h"
+
 
 /*
  * FaultHandler - C handler for a fault
  */
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
-    BOOL        fault32;
+    bool        fault32;
     DWORD       offset;
     WORD        seg;
     WORD        value;
@@ -50,13 +50,12 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     seg_offset  where;
     char        buff[256];
 
+    fault32 = false;
     if( WDebug386 ) {
-        fault32 = GetDebugInterruptData( &IntData );
+        fault32 = (bool)GetDebugInterruptData( &IntData );
         if( fault32 ) {
             ff.intnumber = IntData.InterruptNumber;
         }
-    } else {
-        fault32 = FALSE;
     }
     if( ff.intnumber != INT_3 && ff.intnumber != INT_1 ) {
         if( fault32 ) {
@@ -65,8 +64,8 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
         return( CHAIN );
     }
 
-    ff.ESP = (WORD) ff.ESP;
-    ff.EBP = (WORD) ff.EBP;
+    ff.ESP = (WORD)ff.ESP;
+    ff.EBP = (WORD)ff.EBP;
 
     if( !fault32 ) {
         ff.IP--;
@@ -92,19 +91,21 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
             if( Is32BitSel( IntData.CS ) ) {
                 offset = IntData.EAX;
             } else {
-                offset = (DWORD) ((WORD) IntData.EAX );
+                offset = (DWORD)(WORD)IntData.EAX;
             }
-            seg = (WORD) IntData.EDX;
+            seg = (WORD)IntData.EDX;
 
             /*
              * copy the mark data
              */
             len = 0;
-            while( 1 ) {
+            for( ;; ) {
                 ReadMem( seg, offset, &value, sizeof( value ) );
-                buff[ len ] = (char) value;
-                if( len == sizeof( buff ) ) buff[ len ] = '\0';
-                if( buff[ len ] == '\0' ) break;
+                buff[len] = (char)value;
+                if( len == sizeof( buff ) )
+                    buff[len] = '\0';
+                if( buff[len] == '\0' )
+                    break;
                 len++;
                 offset++;
             }

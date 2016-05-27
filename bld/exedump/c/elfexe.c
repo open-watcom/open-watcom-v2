@@ -749,7 +749,7 @@ bool Dmp_elf_header( unsigned long start )
     Puthex( Elf_head.e_ident[EI_ABIVERSION], 2 );
     Wdputslc( "H\n" );
     if( Elf_head.e_ident[EI_DATA] != NATIVE_ENDIAN ) {
-        Byte_swap = TRUE;
+        Byte_swap = true;
 
         /* Byte swap ELF header */
         SWAP_16( Elf_head.e_type );

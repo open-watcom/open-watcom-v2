@@ -86,7 +86,7 @@ CLASSINFO *GetWithinOffsetOfVFPtr( TYPE class_type, PTREE *pexpr )
         result = ScopeResultFromBase( class_type, vfptr_base );
         class_type = vfptr_base->type;
         info = class_type->u.c.info;
-        NodeConvertToBasePtr( pexpr, class_type, result, TRUE );
+        NodeConvertToBasePtr( pexpr, class_type, result, true );
         // type of expr is always 'X' so we need lvalue to keep it a pointer
         (*pexpr)->flags |= PTF_LVALUE;
         ScopeFreeResult( result );

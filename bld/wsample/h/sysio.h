@@ -33,3 +33,7 @@ extern int              SysCreate( char *name );
 extern unsigned         SysWrite( int handle, void FAR_PTR *buff, unsigned len );
 extern unsigned long    SysSeek( int handle, unsigned long loc );
 extern int              SysClose( int handle );
+#ifdef __WINDOWS__
+extern int              SysOpen( char *name );
+#endif
+

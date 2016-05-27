@@ -58,15 +58,20 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
         bounds++;
         hi = *bounds;
         bounds++;
-        if( ss < lo ) return( FALSE );
-        if( ss > hi ) return( FALSE );
+        if( ss < lo )
+            return( false );
+        if( ss > hi )
+            return( false );
         offset += ( ss - lo ) * multiplier;
-        if( offset < 0 ) return( FALSE );
-        if( offset > dims->num_elts ) return( FALSE );
+        if( offset < 0 )
+            return( false );
+        if( offset > dims->num_elts )
+            return( false );
         dims_no--;
-        if( dims_no == 0 ) break;
+        if( dims_no == 0 )
+            break;
         multiplier *= ( hi - lo + 1 );
     }
     *res = offset;
-    return( TRUE );
+    return( true );
 }

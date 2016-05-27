@@ -165,8 +165,8 @@ static void ResetCmdFile( void )
     FmtData.objalign = NO_BASE_SPEC;
     FmtData.type = MK_ALL;
     FmtData.def_seg_flags = SEG_LEVEL_3;
-    FmtData.output_raw = FALSE;
-    FmtData.output_hex = FALSE;
+    FmtData.output_raw = false;
+    FmtData.output_hex = false;
     FmtData.Hshift = 12;   // May want different value for some 32 bit segmented modes
     FmtData.FillChar = 0;  // Default fillchar for segment alignment
     SetSegMask();
@@ -277,14 +277,14 @@ void DoCmdFile( char *fname )
     namelen = strlen( Name );
     if( MapFlags & MAP_FLAG ) {
         if( MapFName == NULL ) {
-            MapFName = FileName( Name, namelen, E_MAP, TRUE );
+            MapFName = FileName( Name, namelen, E_MAP, true );
         }
     } else {
         MapFlags = 0;   // if main isn't set, don't set anything.
     }
     if( SymFileName == NULL && ( (CmdFlags & CF_SEPARATE_SYM) ||
                    (LinkFlags & OLD_DBI_FLAG) && (FmtData.type & MK_COM) ) ) {
-        SymFileName = FileName( Name, namelen, E_SYM, TRUE );
+        SymFileName = FileName( Name, namelen, E_SYM, true );
     }
     if( FmtData.make_implib && FmtData.implibname == NULL ) {
         if( FmtData.make_impfile ) {
@@ -292,7 +292,7 @@ void DoCmdFile( char *fname )
         } else {
             extension = E_LIBRARY;
         }
-        FmtData.implibname = FileName( Name, namelen, extension, TRUE );
+        FmtData.implibname = FileName( Name, namelen, extension, true );
     }
     CheckTraces();
     BurnUtils();
@@ -359,9 +359,9 @@ static void Help( void )
 {
     EatWhite();
     if( *Token.next == '?' ) {
-        Crash( FALSE );
-    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, FALSE ) ) {
-        Crash( TRUE );
+        Crash( false );
+    } else if( *Token.next == '\0' || !ProcOne( FormatHelp, SEP_NO, false ) ) {
+        Crash( true );
     } else {
         Ignite();
         Suicide();
@@ -371,8 +371,8 @@ static void Help( void )
 static void DoCmdParse( void )
 /****************************/
 {
-    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == FALSE ) {
-        if( ProcOne( Directives, SEP_NO, TRUE ) == FALSE ) {
+    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
+        if( ProcOne( Directives, SEP_NO, true ) == false ) {
             Syntax();
         }
         RestoreParser();
@@ -390,7 +390,7 @@ static void WriteGenHelp( void )
 /******************************/
 {
     WLPrtBanner();
-    WriteHelp( MSG_GENERAL_HELP_0, MSG_GENERAL_HELP_51, FALSE );
+    WriteHelp( MSG_GENERAL_HELP_0, MSG_GENERAL_HELP_51, false );
 }
 
 static void DisplayOptions( void )
@@ -398,9 +398,9 @@ static void DisplayOptions( void )
 {
     bool    isout;
 
-    isout = FALSE;
+    isout = false;
     if( CmdFlags & CF_TO_STDOUT ) {
-        isout = TRUE;
+        isout = true;
     }
     WriteGenHelp();
 #if defined( _QNXLOAD ) && defined( __QNX__ )
@@ -447,7 +447,7 @@ static bool ProcDosHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_DOS_HELP_0, MSG_DOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 #ifdef _OS2
@@ -456,7 +456,7 @@ static bool ProcOS2Help( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_OS2_HELP_0, MSG_OS2_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 
 static bool ProcWindowsHelp( void )
@@ -465,7 +465,7 @@ static bool ProcWindowsHelp( void )
     WriteGenHelp();
     WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31,
                                                 CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 
 static bool ProcWinVxdHelp( void )
@@ -474,7 +474,7 @@ static bool ProcWinVxdHelp( void )
     WriteGenHelp();
     WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31,
                                                 CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 
 static bool ProcNTHelp( void )
@@ -482,7 +482,7 @@ static bool ProcNTHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_NT_HELP_0, MSG_NT_HELP_31, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 #ifdef _PHARLAP
@@ -491,7 +491,7 @@ static bool ProcPharHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_PHAR_HELP_0, MSG_PHAR_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 #ifdef _NOVELL
@@ -501,7 +501,7 @@ static bool ProcNovellHelp( void )
     WriteGenHelp();
     WriteHelp( MSG_NOVELL_HELP_0, MSG_NOVELL_HELP_31,
                                                 CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 #ifdef _DOS16M
@@ -510,7 +510,7 @@ static bool Proc16MHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_DOS16_HELP_0, MSG_DOS16_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 #ifdef _QNXLOAD
@@ -519,7 +519,7 @@ static bool ProcQNXHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_QNX_HELP_0, MSG_QNX_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -529,7 +529,7 @@ static bool ProcELFHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_ELF_HELP_0, MSG_ELF_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -539,7 +539,7 @@ static bool ProcZdosHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_ZDOS_HELP_0, MSG_ZDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -549,7 +549,7 @@ static bool ProcRdosHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_RDOS_HELP_0, MSG_RDOS_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -559,7 +559,7 @@ static bool ProcRawHelp( void )
 {
     WriteGenHelp();
     WriteHelp( MSG_RAW_HELP_0, MSG_RAW_HELP_15, CmdFlags & CF_TO_STDOUT );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -758,10 +758,10 @@ bool HintFormat( exe_format hint )
     exe_format                  possible;
 
     if( !(hint & FmtData.type) )
-        return( FALSE );
+        return( false );
     FmtData.type &= hint;
     if( LinkState & FMT_DECIDED )
-        return( TRUE );
+        return( true );
 
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
         if( (~possible & FmtData.type) == 0 ) {
@@ -776,13 +776,13 @@ bool HintFormat( exe_format hint )
             InitFmt( SetOS2Fmt );
         }
 #endif
-        return( TRUE );
+        return( true );
     }
     InitFmt( check->set_func );
     LinkState |= FMT_DECIDED;
     if( LinkState & SEARCHING_LIBRARIES )
         AddFmtLibPaths();
-    return( TRUE );
+    return( true );
 }
 
 void DecideFormat( void )
@@ -833,7 +833,7 @@ void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
 
     if( CmdFlags & CF_NO_DEF_LIBS )
         return;
-    ptr = FileName( ptr, len, E_LIBRARY, FALSE );
+    ptr = FileName( ptr, len, E_LIBRARY, false );
     result = AddObjLib( ptr, priority );
     CheckLibTrace( result );
     DEBUG(( DBG_BASE, "library: %s", ptr ));
@@ -879,7 +879,7 @@ void AddLibPathsToEnd( char *path_list )
 /**************************************/
 {
     if( path_list != NULL && *path_list != '\0' ) {
-        AddLibPaths( path_list, strlen( path_list ), FALSE );
+        AddLibPaths( path_list, strlen( path_list ), false );
     }
 }
 
@@ -910,8 +910,8 @@ void ExecSystem( char *name )
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
         sys->name = NULL;
-        while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == FALSE ) {
-            if( ProcOne( SysDirectives, SEP_NO, FALSE ) == FALSE ) {
+        while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
+            if( ProcOne( SysDirectives, SEP_NO, false ) == false ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;
@@ -947,14 +947,14 @@ void PruneSystemList( void )
 /*********************************/
 /* delete all system blocks except for the "286" and "386" records */
 {
-    CleanSystemList( TRUE );
+    CleanSystemList( true );
 }
 
 void BurnSystemList( void )
 /********************************/
 /* delete everything in the system list */
 {
-    CleanSystemList( FALSE );
+    CleanSystemList( false );
 }
 
 bool ProcImport( void )
@@ -964,14 +964,14 @@ bool ProcImport( void )
     if( HintFormat( MK_OS2 | MK_PE ) ) {
         return( ProcOS2Import() );
     } else if( HintFormat( MK_WIN_VXD ) ) {
-        return( FALSE );
+        return( false );
     } else if( HintFormat( MK_ELF ) ) {
         return( ProcELFImport() );
     } else {
         return( ProcNovImport() );
     }
 #else
-    return( FALSE );
+    return( false );
 #endif
 }
 
@@ -1016,7 +1016,7 @@ bool ProcNoRelocs( void )
         return( ProcELFNoRelocs() );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -1034,7 +1034,7 @@ bool ProcSegment( void )
         return( ProcQNXSegment() );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -1048,7 +1048,7 @@ bool ProcAlignment( void )
         return( ProcELFAlignment() );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 bool ProcHeapSize( void )
@@ -1069,7 +1069,7 @@ bool ProcHeapSize( void )
         return( ProcQNXHeapSize() );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 #if defined(_PHARLAP) || defined(_QNXLOAD) || defined(_OS2) || defined(_RAW)
@@ -1077,13 +1077,13 @@ bool ProcOffset( void )
 /****************************/
 {
     if( !GetLong( &FmtData.base ) )
-        return( FALSE );
+        return( false );
     if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) ) {
         ChkBase( 64 * 1024 );
     } else if( !(FmtData.type & (MK_OS2_FLAT|MK_PE)) ) {
         ChkBase( 4 * 1024 );
     }
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -1096,16 +1096,16 @@ bool ProcXDbg( void )
 
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         if( Token.len > 6 ) {
-            return( FALSE );
+            return( false );
         } else {
             memcpy( value, Token.this, Token.len );
             value[Token.len] = '\0';
             Debug = strtoul( value, NULL, 0 );
             DEBUG(( DBG_BASE, "debugging info type = %x", Debug ));
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -1113,6 +1113,6 @@ bool ProcIntDbg( void )
 /****************************/
 {
     LinkState |= INTERNAL_DEBUG;
-    return( TRUE );
+    return( true );
 }
 #endif

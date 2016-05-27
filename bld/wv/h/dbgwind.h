@@ -45,6 +45,7 @@ typedef enum {
     WND_ATTR_STANDOUT,
     WND_ATTR_HOTSPOT,
     WND_ATTR_STANDOUT_TABSTOP,
+    WND_NUM_ATTRS
 } wnd_attr_wv;
 
 #define WND_PLAIN               WND_ATTR_PLAIN

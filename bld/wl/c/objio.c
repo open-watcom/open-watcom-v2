@@ -122,10 +122,10 @@ bool CleanCachedHandles( void )
         }
     }
     if( list == NULL ) 
-        return( FALSE );
+        return( false );
     QClose( list->handle, list->name );
     list->handle = NIL_FHANDLE;
-    return( TRUE );
+    return( true );
 }
 
 char *MakePath( char *fullname, char **path_list )
@@ -165,9 +165,9 @@ bool MakeFileNameFromList( char **path_list, char *name, char *fullname )
 {
     if( *path_list != NULL && **path_list != '\0' ) {
         strcpy( MakePath( fullname, path_list ), name );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 #define LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
@@ -203,7 +203,7 @@ bool DoObjOpen( infilelist *file )
 
     name = file->name;
     if( file->handle != NIL_FHANDLE )
-        return( TRUE );
+        return( true );
     file->currpos = 0;
     if( HAS_PATH( name ) ) {   // has path defined
         file->path_list = NULL;
@@ -236,14 +236,14 @@ bool DoObjOpen( infilelist *file )
             file->modtime = QFModTime( fp );
         }
         file->handle = fp;
-        return( TRUE );
+        return( true );
     } else if( !(file->flags & INSTAT_NO_WARNING) ) {
         err = ( file->flags & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
         PrintIOError( err, "12", name );
         file->prefix = NULL;
         file->handle = NIL_FHANDLE;
     }
-    return( FALSE );
+    return( false );
 }
 
 unsigned_16 CalcAlign( unsigned_32 pos, unsigned_16 align )

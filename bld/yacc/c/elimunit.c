@@ -430,7 +430,7 @@ static int shiftToSingleReduce( a_state *state, a_shift_action *saction )
         made_change = 1;
         ++changeOccurred;
     }
-    saction->units_checked = TRUE;
+    saction->units_checked = true;
     return( made_change );
 }
 

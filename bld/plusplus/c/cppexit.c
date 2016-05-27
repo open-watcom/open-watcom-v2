@@ -38,7 +38,7 @@
 
 #define MAX_EXITS 2
 
-static bool exiting;                            // TRUE ==> in exit phase
+static bool exiting;                            // true ==> in exit phase
 static void (*exit_list[MAX_EXITS])( void );    // exit list
 static unsigned exit_count;                     // # in list
 
@@ -47,7 +47,7 @@ void CppExitInit(               // INITIALIZE CPP EXIT
     void )
 {
     exit_count = 0;
-    exiting = FALSE;
+    exiting = false;
 }
 
 
@@ -55,7 +55,7 @@ void CppExitFini(               // COMPLETE CPP EXITING
     void )
 {
     if( ! exiting ) {
-        exiting = TRUE;
+        exiting = true;
         for( ; exit_count > 0; ) {
             -- exit_count;
             (*exit_list[exit_count])();

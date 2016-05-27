@@ -52,8 +52,8 @@ extern bool ProcZdos( void )
 {
     FmtData.base = 0x1000;                      // assume user application
     LinkState |= MAKE_RELOCS | FMT_DECIDED;     // make relocations;
-    ProcOne( ZdosOptions, SEP_NO, FALSE );
-    return( TRUE );
+    ProcOne( ZdosOptions, SEP_NO, false );
+    return( true );
 }
 
 extern bool ProcZdosSYS( void )
@@ -61,7 +61,7 @@ extern bool ProcZdosSYS( void )
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_SYS;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcZdosHWD( void )
@@ -69,7 +69,7 @@ extern bool ProcZdosHWD( void )
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_HWD;
-    return( TRUE );
+    return( true );
 }
 
 extern bool ProcZdosFSD( void )
@@ -77,5 +77,5 @@ extern bool ProcZdosFSD( void )
 {
     FmtData.base = 0;                           // it's a driver, so reset base
     Extension = E_FSD;
-    return( TRUE );
+    return( true );
 }

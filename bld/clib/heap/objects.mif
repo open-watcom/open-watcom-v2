@@ -1,5 +1,6 @@
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu rdk
 #==========================================================================================================
+!inject _expand.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject allocseg.obj d16                                    o16     q16     w16
 !inject ambsptr.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject amblksiz.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
@@ -59,11 +60,12 @@
 !inject qallflgs.obj                                                q16 q32
 !inject rdfree.obj                                                                                      rdk
 !inject rdmalloc.obj                                                                                    rdk
-!inject sbrk.obj     d16                                    o16     q16 q32 w16
-!inject sbrk386.obj      d32                                    o32             w32 osi
+!inject sbrk.obj     d16 d32                                                w16 w32 osi
 !inject sbrklnx.obj                                                                     l32 lpc lmp
-!inject sbrkwnt.obj                      nt nta ntp
+!inject sbrkos2.obj                                         o16 o32
+!inject sbrkqnx.obj                                                 q16 q32
 !inject sbrkrdu.obj                                                                                 rdu
+!inject sbrkwnt.obj                      nt nta ntp
 !inject wafptr.obj                                                          w16 w32
 !inject wallflgs.obj                                                        w16 w32
 !inject wrafptr.obj                                                         w16 w32
@@ -78,7 +80,7 @@ mem_opts = -ol+t $($(processor)_ac_opts)
 
 grownear_opts = -I"$(win386_dir)/h"
 nheapmin_opts = -I"$(win386_dir)/h"
-sbrk386_opts = -I"$(win386_dir)/h"
+sbrk_opts     = -I"$(win386_dir)/h"
 
 # WORKAROUND! The heap code contains a very suspect far pointer truncation,
 # but the code can't be modified without fully understanding it

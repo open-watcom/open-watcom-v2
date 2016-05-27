@@ -408,7 +408,7 @@ extern  void GenRET( void )
     oc.oc_ret.hdr.reclen = sizeof( oc_ret );
     oc.oc_ret.hdr.objlen = 4;
     oc.oc_ret.ref = NULL;
-    oc.oc_ret.pops = FALSE;            /* not used */
+    oc.oc_ret.pops = false;            /* not used */
     InputOC( &oc );
 }
 
@@ -727,9 +727,9 @@ static  bool    encodeThreadDataRef( instruction *ins )
 //    label_handle        tls_index;
 
     op = ins->operands[0];
-    if( op->n.class != N_MEMORY ) return( FALSE );
-    if( op->m.memory_type != CG_FE ) return( FALSE );
-    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( FALSE );
+    if( op->n.class != N_MEMORY ) return( false );
+    if( op->m.memory_type != CG_FE ) return( false );
+    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( false );
 
     /*
      * Put out a sequence that looks like:
@@ -761,7 +761,7 @@ static  bool    encodeThreadDataRef( instruction *ins )
 #else
     assert( 0 );
 #endif
-    return( TRUE );
+    return( true );
 }
 
 
@@ -996,16 +996,16 @@ static  void Encode( instruction *ins )
         GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value );
         break;
     case G_LOAD_UA:
-        doLoadStoreUnaligned( ins, TRUE );
+        doLoadStoreUnaligned( ins, true );
         break;
     case G_LOAD:
-        doLoadStore( ins, TRUE );
+        doLoadStore( ins, true );
         break;
     case G_STORE_UA:
-        doLoadStoreUnaligned( ins, FALSE );
+        doLoadStoreUnaligned( ins, false );
         break;
     case G_STORE:
-        doLoadStore( ins, FALSE );
+        doLoadStore( ins, false );
         break;
     case G_CVTTQ:
         _Zoiks( ZOIKS_028 );

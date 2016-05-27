@@ -45,6 +45,7 @@
 #include "fileio.h"
 #include "dbgall.h"
 #include "loadfile.h"
+#include "newmem.h"
 
 static offset           AmountWritten;
 static bool             InVerifySegment;
@@ -139,7 +140,7 @@ static void SetVerifyInfo( void (*wrfn)(char *, virt_mem, unsigned long),
     }
     if( newstart + length >= VERIFY_END ) {
         length = VERIFY_END - newstart;
-        InVerifySegment = FALSE;
+        InVerifySegment = false;
     }
     targ = (char *)(&RWEndRec.verify);
     if( AmountWritten > VERIFY_OFFSET ) {
@@ -171,7 +172,7 @@ static bool WriteSegData( void *_sdata, void *_start )
         }
         WriteQNXInfo( CopyLoad, sdata->u1.vm_ptr, sdata->length );
     }
-    return FALSE;
+    return false;
 }
 
 static void DoGroupLeader( void *_seg )
@@ -180,7 +181,7 @@ static void DoGroupLeader( void *_seg )
     offset      start;
     seg_leader *seg = _seg;
 
-    start = GetLeaderDelta( seg );
+    start = SEG_GROUP_DELTA( seg );
     RingLookup( seg->pieces, WriteSegData, &start );
 }
 
@@ -239,15 +240,15 @@ static void WriteQNXData( unsigned_32 * segments )
     lmf_record      record;
     bool            first;
 
-    first = TRUE;
-    InVerifySegment = FALSE;
+    first = true;
+    InVerifySegment = false;
     /* write all read/write segment data */
     RWEndRec.signature = 0;
     for( grp = Groups; grp != NULL; grp = grp->next_group ){
         if( grp->u.qnxflags == QNX_READ_WRITE && grp->totalsize != 0 ) {
             if( first && grp->size >= VERIFY_END ) {
-                InVerifySegment = TRUE;
-                first = FALSE;
+                InVerifySegment = true;
+                first = false;
             }
             WriteQNXGroup( grp, segments );
         }
@@ -289,15 +290,15 @@ static bool CheckQNXGrpFlag( void *_seg, void *_grp )
     if( sflags < 0x10 ) {
         if( !(sflags & 1) ) {     // if can read/write or exec/read
             grp->u.qnxflags &= ~1;       // can for all segments.
-            return TRUE;                // no need to check others
+            return true;                // no need to check others
         }
     } else {
 // make segments read/write or exec/read unless every segment is specifically
 // set otherwise.
         grp->u.qnxflags &= ~1;
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 static void SetQNXGroupFlags( void )

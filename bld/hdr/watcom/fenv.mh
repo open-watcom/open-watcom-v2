@@ -20,7 +20,17 @@
 :include pshpackl.sp
 
 /* type for holding FPU environment */
-#if defined(__386__)
+#if defined(_M_I86)
+typedef struct {
+    unsigned short control_word;
+    unsigned short status_word;
+    unsigned short tag_word;
+    unsigned short ins_ptr_offset;
+    unsigned short ins_ptr_seg;
+    unsigned short op_ptr_offset;
+    unsigned short op_ptr_seg;
+} fenv_t;
+#else
 typedef struct {
     unsigned short control_word;
     unsigned short pad0;
@@ -34,16 +44,6 @@ typedef struct {
     unsigned int   op_ptr_offset;
     unsigned short op_ptr_seg;
     unsigned short pad3;
-} fenv_t;
-#else
-typedef struct {
-    unsigned short control_word;
-    unsigned short status_word;
-    unsigned short tag_word;
-    unsigned short ins_ptr_offset;
-    unsigned short ins_ptr_seg;
-    unsigned short op_ptr_offset;
-    unsigned short op_ptr_seg;
 } fenv_t;
 #endif
 

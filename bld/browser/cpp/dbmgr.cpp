@@ -84,7 +84,7 @@ void DatabaseManager::setMenus( MenuManager * mgr )
         _menuManager->registerForMenu( this, DBManagerMenus[ i ] );
     }
 
-    _menuManager->enableMenu( MIMenuID( MMFile, FMModules ), FALSE );
+    _menuManager->enableMenu( MIMenuID( MMFile, FMModules ), false );
 }
 
 void DatabaseManager::unSetMenus( MenuManager * )
@@ -154,7 +154,7 @@ void DatabaseManager::newDatabase()
     }
 
 
-    editModule( fname, TRUE );
+    editModule( fname, true );
 }
 
 void DatabaseManager::openDatabase()
@@ -303,6 +303,6 @@ void DatabaseManager::databaseChanged()
 
     _menuManager->enableMenu( MIMenuID( MMFile, FMModules ),
                               module() != NULL );
-    WBRWinBase::viewManager()->enableMenus( TRUE );
+    WBRWinBase::viewManager()->enableMenus( true );
     browseTop->postTitle();
 }

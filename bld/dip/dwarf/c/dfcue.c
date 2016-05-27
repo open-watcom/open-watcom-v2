@@ -76,9 +76,9 @@ extern bool FiniImpCueInfo( imp_image_handle *ii )
     list = ii->cue_map;
     if( list->im != IMH_NOMOD ) {
         ResetCueInfo( list );
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -108,7 +108,7 @@ static bool ACueFile( void *_info, dr_line_file *curr )
     bool            cont;
     int             i;
 
-    cont = TRUE;
+    cont = true;
     if( info->index == curr->index ) {
         if( curr->name != NULL ) {
             if( curr->dir != 0) {
@@ -136,7 +136,7 @@ static bool ACueFile( void *_info, dr_line_file *curr )
         } else {
             info->ret = NULL;
         }
-        cont = FALSE;
+        cont = false;
     }
     return( cont );
 }
@@ -154,7 +154,7 @@ static bool ACueDir( void *_info, dr_line_dir *curr )
         strcpy( info->dirs[info->num_dirs].name, curr->name );
         info->num_dirs++;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -163,13 +163,13 @@ static bool IsRelPathname( const char *name )
 {
     /* Detect UNIX or DOS style relative pathnames */
     if( (name[0] == '/') || (name[0] == '\\') ) {
-        return( FALSE );
+        return( false );
     }
     if( isalpha( name[0] ) && (name[1] == ':') 
       && ((name[2] == '/') || (name[2] == '\\')) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -180,8 +180,8 @@ size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     char            *name;
     file_walk_name  wlk;
     size_t          len;
-    dr_handle       stmts;
-    dr_handle       cu_tag;
+    drmem_hdl       stmts;
+    drmem_hdl       cu_tag;
     int             i;
     mod_info        *modinfo;
 
@@ -189,7 +189,7 @@ size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
     modinfo = IMH2MODI( ii, ic->im );
     stmts = modinfo->stmts;
     cu_tag = modinfo->cu_tag;
-    if( stmts == DR_HANDLE_NUL || cu_tag == DR_HANDLE_NUL ) {
+    if( stmts == DRMEM_HDL_NULL || cu_tag == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( 0 );
     }
@@ -236,13 +236,13 @@ static bool TheFirstCue( void *_wlk, dr_line_data *curr )
 
     if( wlk->fno == curr->file ) {
         wlk->first = *curr;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
-static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
+static bool FirstCue( drmem_hdl stmts, uint_16 fno, imp_cue_handle *ic )
 /**********************************************************************/
 {
     bool            cont;
@@ -250,7 +250,7 @@ static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
 
     wlk.fno = fno;
     cont = DRWalkLines( stmts, SEG_CODE, TheFirstCue, &wlk );
-    if( cont == FALSE ) {
+    if( cont == false ) {
         ic->fno = wlk.first.file;
         ic->line = wlk.first.line;
 //      ic->col = wlk.first.col;
@@ -264,7 +264,7 @@ static bool FirstCue( dr_handle stmts, uint_16 fno, imp_cue_handle *ic )
 
 
 typedef struct {
-    dr_handle           stmts;
+    drmem_hdl           stmts;
     imp_image_handle    *ii;
     imp_mod_handle      im;
     IMP_CUE_WKR         *wk;
@@ -293,9 +293,9 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
     fc->wr = fc->wk( fc->ii, ic, fc->d );
     DRSetDebug( saved );
     if( fc->wr == WR_CONTINUE ) {
-        cont = TRUE;
+        cont = true;
     } else {
-        cont = FALSE;
+        cont = false;
     }
     return( cont  );
 }
@@ -307,11 +307,11 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
 /*************************************************************************/
 {
     file_walk_cue   wlk;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     stmts = IMH2MODI( ii, im )->stmts;
-    if( stmts == DR_HANDLE_NUL ) {
+    if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( WR_CONTINUE );
     }
@@ -354,11 +354,11 @@ static bool ACueAddr( void *_info, dr_line_data *curr )
         info->curr_seg = InitSegCue( info->list, curr->seg, curr->offset );
     }
     AddCue( info->curr_seg, curr );
-    return( TRUE );
+    return( true );
 }
 
 
-static void LoadCueMap( dr_handle stmts, address *addr, cue_list *list )
+static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
 /**********************************************************************/
 {
     la_walk_info    wlk;
@@ -390,7 +390,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 /*****************************************************************/
 {
-    dr_handle       stmts;
+    drmem_hdl       stmts;
     dfline_search   start_state;
     dfline_find     find;
     dip_status      ret;
@@ -400,7 +400,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     stmts = IMH2MODI( ii, src->im )->stmts;
-    if( stmts == DR_HANDLE_NUL ) {
+    if( stmts == DRMEM_HDL_NULL ) {
         DCStatus( DS_FAIL );
         return( DS_ERR|DS_FAIL  );
     }
@@ -498,7 +498,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     search_result   ret;
     cue_list        *cue_map;
     cue_item        cue;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
 
     if( im == IMH_NOMOD ) {
         DCStatus( DS_FAIL );
@@ -506,7 +506,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     }
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     stmts = IMH2MODI( ii, im )->stmts;
-    if( stmts == DR_HANDLE_NUL ) {
+    if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
     map_addr = addr;
@@ -561,7 +561,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     search_result   ret;
     dfline_find     find;
     dfline_search   what;
-    dr_handle       stmts;
+    drmem_hdl       stmts;
     cue_list        *cue_map;
     address         map_addr;
     cue_item        cue;
@@ -572,7 +572,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     }
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     stmts = IMH2MODI( ii, im )->stmts;
-    if( stmts == DR_HANDLE_NUL ) {
+    if( stmts == DRMEM_HDL_NULL ) {
         return( SR_NONE );
     }
     cue_map= ii->cue_map;

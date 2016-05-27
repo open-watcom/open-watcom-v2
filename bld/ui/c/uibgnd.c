@@ -45,15 +45,15 @@ bool uibackground( char *fname )
 
     if( fname == NULL ) {
         uiremovebackground();
-        return( TRUE );
+        return( true );
     }
     bgndbuff = uibackgroundbuffer();
     if( bgndbuff == NULL ) {
-        return( FALSE );
+        return( false );
     }
     f = fopen( fname, "rb" );
     if( f == NULL ) {
-        return( FALSE );
+        return( false );
     }
     i = 0;
     row = 0;
@@ -76,5 +76,5 @@ bool uibackground( char *fname )
         }
     }
     fclose( f );
-    return( TRUE );
+    return( true );
 }

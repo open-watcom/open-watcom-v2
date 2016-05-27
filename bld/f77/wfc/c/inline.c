@@ -380,7 +380,7 @@ static inline_rtn  __FAR *InlineTab = NormalInlineTab;
 
 #define MAX_IN_INDEX    (sizeof( NormalInlineTab ) / sizeof( inline_rtn ))
 
-static bool     CreatedPragmas = FALSE;
+static bool     CreatedPragmas = false;
 
 #endif
 
@@ -416,7 +416,7 @@ void    InitInlinePragmas( void ) {
         for( index = 0; index < MAX_IN_INDEX; index++ ) {
             DoPragma( InlineTab[ index ].pragma );
         }
-        CreatedPragmas = TRUE;
+        CreatedPragmas = true;
     }
     for( index = 0; index < MAX_IN_INDEX; index++ ) {
         InlineTab[ index ].sym_ptr = NULL;

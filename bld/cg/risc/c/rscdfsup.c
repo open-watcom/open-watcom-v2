@@ -101,5 +101,5 @@ extern void DFAbbrevRef( void ){
 
 extern void DFAbbrevDef( void ){
 /******************************/
-//  OutBckExport( ABBREV_NAME, TRUE );
+//  OutBckExport( ABBREV_NAME, true );
 }

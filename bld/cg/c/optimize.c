@@ -36,6 +36,8 @@
 #include "data.h"
 #include "x87.h"
 #include "makeins.h"
+#include "redefby.h"
+#include "regalloc.h"
 
 
 extern  bool            PropagateMoves(void);
@@ -43,11 +45,9 @@ extern  instruction_id  Renumber(void);
 extern  bool            SideEffect(instruction*);
 extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
 extern  void            FreeConflicts(void);
-extern  void            NullConflicts(var_usage);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            FreeJunk(block*);
 
 typedef enum {
@@ -70,7 +70,7 @@ static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 
 
 #define _IsIns( ins, attr )        ( OpAttrs[ins->head.opcode] & attr )
-#define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == FALSE )
+#define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == false )
 
 
 static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
@@ -82,14 +82,20 @@ static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
     int         i;
 
     for( i = of->num_operands; i-- > 0; ) {
-        if( of->operands[i]->n.class == N_REGISTER ) return( TRUE );
-        if( ReDefinedBy( ins, of->operands[i] ) ) return( TRUE );
+        if( of->operands[i]->n.class == N_REGISTER )
+            return( true );
+        if( _IsReDefinedBy( ins, of->operands[i] ) ) {
+            return( true );
+        }
     }
     if( of->result != NULL ) {
-        if( of->result->n.class == N_REGISTER ) return( TRUE );
-        if( ReDefinedBy( ins, of->result ) ) return( TRUE );
+        if( of->result->n.class == N_REGISTER )
+            return( true );
+        if( _IsReDefinedBy( ins, of->result ) ) {
+            return( true );
+        }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -98,9 +104,9 @@ static  bool    CanReorder( instruction *try, instruction *after ) {
     return try if "try" could be moved past instruction "after"
 */
 
-    if( ReDefinesOps( try, after ) ) return( FALSE );
-    if( ReDefinesOps( after, try ) ) return( FALSE );
-    return( TRUE );
+    if( ReDefinesOps( try, after ) ) return( false );
+    if( ReDefinesOps( after, try ) ) return( false );
+    return( true );
 }
 
 
@@ -119,7 +125,7 @@ static  instruction     *CanMoveAfter( instruction *ins ) {
     if( _IsFloating( ins->base_type_class ) ) return( NULL );
     for( next = ins->head.next; next != NULL; next = next->head.next ) {
         if( _IsntIns( next, SWAPABLE ) ) break;
-        if( CanReorder( ins, next ) == FALSE ) break;
+        if( CanReorder( ins, next ) == false ) break;
     }
     if( next == ins->head.next ) return( NULL );
     return( next );
@@ -160,26 +166,26 @@ static  void    PushInsForward( block *blk ) {
 
 extern  bool    SameThing( name *x, name *y )
 /********************************************
-    returns TRUE if "x" and "y" are the same thing. IE: N_MEMORY
+    returns true if "x" and "y" are the same thing. IE: N_MEMORY
     names which are associated with the same front end symbol or
     N_TEMP names which are aliases of each other. Two temporaries
     which are "stackable" are considered to be the same thing
     since they may (probably will) both end up on the 8087 stack.
 */
 {
-    if( x == y ) return( TRUE );
-    if( x == NULL || y == NULL ) return( FALSE );
-    if( FPIsStack( x ) && FPIsStack( y ) ) return( TRUE );
+    if( x == y ) return( true );
+    if( x == NULL || y == NULL ) return( false );
+    if( FPIsStack( x ) && FPIsStack( y ) ) return( true );
     if( x->n.class == N_MEMORY
      && y->n.class == N_MEMORY
-     && x->v.symbol == y->v.symbol ) return( TRUE );
+     && x->v.symbol == y->v.symbol ) return( true );
     if( x->n.class == N_TEMP && y->n.class == N_TEMP ) {
-        if( x->t.v.id != y->t.v.id ) return( FALSE );
+        if( x->t.v.id != y->t.v.id ) return( false );
         if( !( x->t.temp_flags & ALIAS )
-         && !( y->t.temp_flags & ALIAS ) ) return( FALSE );
-        return( TRUE );
+         && !( y->t.temp_flags & ALIAS ) ) return( false );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -202,7 +208,7 @@ extern  void    DeadTemps( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
-            if( SideEffect( ins ) == FALSE
+            if( SideEffect( ins ) == false
              && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
              && ins->result->n.class == N_TEMP
@@ -216,7 +222,7 @@ extern  void    DeadTemps( void )
 
 static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
 /*****************************************************************************
-    returns TRUE if an instruction is assigning to a name which is not
+    returns true if an instruction is assigning to a name which is not
     live immediately following instruction "ins".
 */
 {
@@ -224,23 +230,23 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
     name                *op;
 
     op = ins->result;
-    if( op == NULL ) return( FALSE );
-//  if( op->n.class != N_TEMP ) return( FALSE );
-    if( op->v.usage & USE_ADDRESS ) return( FALSE );
-    if( SideEffect( ins ) ) return( FALSE );
+    if( op == NULL ) return( false );
+//  if( op->n.class != N_TEMP ) return( false );
+    if( op->v.usage & USE_ADDRESS ) return( false );
+    if( SideEffect( ins ) ) return( false );
     conf = FindConflictNode( op, blk, ins );
-    if( conf == NULL ) return( FALSE );
+    if( conf == NULL ) return( false );
     if( _LBitEmpty( conf->id.within_block )
      && _GBitEmpty( conf->id.out_of_block ) ) {
-         return( FALSE );
+         return( false );
      }
     if( _LBitOverlap( conf->id.within_block, next->head.live.within_block ) ) {
-        return( FALSE );
+        return( false );
     }
     if( _GBitOverlap( conf->id.out_of_block, next->head.live.out_of_block ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -265,13 +271,13 @@ extern  void    AxeDeadCode( void )
 
     for(;;) {
         kill = NULL;
-        change = FALSE;
+        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
             for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
                 next = ins->head.next;
                 if( IsDeadIns( blk, ins, next ) ) {
                     ins->result = NULL;
-                    change = TRUE;
+                    change = true;
                     if( _IsntIns( ins, SIDE_EFFECT ) ) {
                        /*
                         * 2005-05-18 RomanT
@@ -286,7 +292,7 @@ extern  void    AxeDeadCode( void )
                 }
             }
         }
-        if( change == FALSE ) break;
+        if( change == false ) break;
         FreeConflicts();
         /* Now it's safe to free instructions without problems with edges */
         while ( kill ) {

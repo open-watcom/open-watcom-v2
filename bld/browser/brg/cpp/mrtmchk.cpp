@@ -38,7 +38,7 @@
 #include "wcvector.h"
 
 struct MergeComponent {
-                        MergeComponent() : _time( 0 ), _enabled(FALSE) {}
+                        MergeComponent() : _time( 0 ), _enabled(false) {}
                         MergeComponent( const MergeComponent & o ) {
                             *this = o;
                         }
@@ -68,24 +68,24 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
     WCValSListIter<String>                      disbIt( dis );
     WCValHashDict<String,MergeComponent>        dict( HashString );
     CompFileList                                components;
-    ElfFile                                     database( inf.name(), TRUE );
+    ElfFile                                     database( inf.name(), true );
     int                                         i;
     String                                      key;
     int                                         found;
     MergeComponent                              compFile;
 
     if( !inf.exists() ) {
-        return FALSE;
+        return false;
     }
 
     while( ++ enabIt ) {
         FileInfo finf( enabIt.current() );
-        dict[ enabIt.current() ] = MergeComponent( finf, TRUE );
+        dict[ enabIt.current() ] = MergeComponent( finf, true );
     }
 
     while( ++ disbIt ) {
         FileInfo finf( disbIt.current() );
-        dict[ disbIt.current() ] = MergeComponent( finf, TRUE );
+        dict[ disbIt.current() ] = MergeComponent( finf, true );
     }
 
     database.initSections();
@@ -97,7 +97,7 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
                 Log.printf( "\ndifferent number of .mbr's than req'ed\n\n" );
             #endif
         dict.clear();
-        return FALSE;
+        return false;
     }
 
     for( i = 0; i < components->entries(); i += 1 ) {
@@ -111,7 +111,7 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
                             file->name );
             #endif
             dict.clear();
-            return FALSE;
+            return false;
         }
 
         if( (file->enabled && !compFile._enabled) ||
@@ -123,7 +123,7 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
                             compFile._enabled ? "enabled" : "disabled" );
             #endif
             dict.clear();
-            return FALSE;
+            return false;
         }
 
         if( file->time != compFile._time ) {
@@ -134,10 +134,10 @@ bool CheckUpToDate( FileInfo & inf, WCValSList<String> & en,
                 Log.printf( "%s\n\n", ctime( &compFile._time ) );
             #endif
             dict.clear();
-            return FALSE;
+            return false;
         }
     }
 
     dict.clear();
-    return TRUE;
+    return true;
 }

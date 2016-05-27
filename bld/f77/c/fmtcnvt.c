@@ -39,51 +39,118 @@
 #include <stdio.h>
 #include <errno.h>
 #include <float.h>
+#include "fmtcnvt.h"
 
-/* Forward declarations */
-static  void    AddDig( canon_form *canon, char ch );
-static  int     Digits( canon_form *canon, char *field, char *stop,
-                        int decimals, bool blanks, byte flag );
 
-int     FmtS2I( char *str, int len, bool blanks, intstar4 *value, bool stop_ok,
-                int *width ) {
+static void AddDig( canon_form *canon, char ch )
+// Add a significant digit to mantissa.
+{
+    int         col;
+
+    col = canon->col;
+    canon->col++;
+    if( col <= CONVERSION_DIGITS ) {
+        _CanonDigits( canon )[col] = ch;
+    }
+}
+
+static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bool blanks, byte flag )
+// Collect digits to the left or right of the decimal point. Take blanks
+// into consideration. Set "canon->exp" accordingly.
+{
+    int         count;
+    char        ch;
+
+    count = 0;
+    for( ;; ) {
+        for( ;; ) {
+            if( field == stop )
+                break;
+            ch = *field;
+            if( ch != ' ' )
+                break;
+            if( blanks ) {
+                ch = '0';
+            } else {
+                if( flag == LEFT_DIGITS ) {
+                    canon->blanks++;
+                }
+                ++field;
+                ++count;
+            }
+            if( ch == '0' ) {
+                break;
+            }
+        }
+        if( field == stop )
+            break;
+        if( isdigit( ch ) == 0 )
+            break;
+        if( canon->col == 0 ) {
+            if( ch == '0' ) {
+                if( canon->flags & DECIMAL ) {
+                    canon->exp--;
+                }
+            } else {
+                if( !(canon->flags & DECIMAL) ) {
+                     canon->exp = stop - field - decimals;
+                }
+                AddDig( canon, ch );
+            }
+        } else {
+            AddDig( canon, ch );
+        }
+        count++;
+        field++;
+    }
+    if( count > 0 ) {
+        canon->flags |= flag;
+    }
+    return( count );
+}
+
+int     FmtS2I( char *str, uint len, bool blanks, intstar4 *value, bool stop_ok, uint *width )
 // Convert a FORTRAN I format string to an integer.
+{
     char        ch;
     bool        sign;
     char        *strend;
     bool        minus;
     int         status;
-    int         wid;
+    uint        wid;
     intstar4    result;
     intstar4    tmp;
 
     status = INT_OK;
     strend = str + len;
-    for(;;) {
-        if( *str != ' ' ) break;
+    while( *str == ' ' ) {
         str++;
-        if( str == strend ) break;
+        if( str == strend ) {
+            break;
+        }
     }
-    minus = FALSE;
-    sign = FALSE;
+    minus = false;
+    sign = false;
     if( str != strend ) {
         ch = *str;
         if( (ch == '+') || (ch == '-') ) {
             if( ch == '-' ) {
-                minus = TRUE;
+                minus = true;
             }
             str++;
-            sign = TRUE;
+            sign = true;
         }
     }
     result = 0;
     for( ; str != strend; str++ ) {
         ch = *str;
         if( ch == ' ' ) {
-            if( !blanks ) continue;
+            if( !blanks )
+                continue;
             ch = '0';
         }
-        if( isdigit( ch ) == 0 ) break;
+        if( isdigit( ch ) == 0 )
+            break;
         tmp = 10;
         if( MulIOFlo( &result, &tmp ) ) {
             status = INT_OVERFLOW;
@@ -95,7 +162,7 @@ int     FmtS2I( char *str, int len, bool blanks, intstar4 *value, bool stop_ok,
         if( AddIOFlo( &result, &tmp ) ) {
             status = INT_OVERFLOW;
         }
-        sign = FALSE;
+        sign = false;
     }
     if( sign ) {
         str = NULL;
@@ -116,9 +183,9 @@ int     FmtS2I( char *str, int len, bool blanks, intstar4 *value, bool stop_ok,
     return( status );
 }
 
-int     FmtS2F( char *field, int width, int decimals, bool blanks,
+int FmtS2F( char *field, uint width, int decimals, bool blanks,
                 int scale, int prec, extended *result, bool stop_ok,
-                int *new_width, bool extend_flt ) {
+                uint *new_width, bool extend_flt ) {
 // Format a string to floating point representation.
 
     char        *stop;
@@ -130,7 +197,7 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
     // initialize the canonical form of the number to be collected
 
     canon.exp = 0;
-    canon.neg = FALSE;
+    canon.neg = false;
     canon.col = 0;
     canon.flags = 0;
     canon.blanks = 0;
@@ -138,10 +205,11 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
     // scan over blanks
 
     stop = field + width;
-    for(;;) {
-        if( *field != ' ' ) break;
+    while( *field == ' ' ) {
         field++;
-        if( field == stop ) break;
+        if( field == stop ) {
+            break;
+        }
     }
     start = field;
 
@@ -154,7 +222,7 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
             field++;
             start++;
             if( ch != '+' ) {
-                canon.neg = TRUE;
+                canon.neg = true;
             }
         }
     }
@@ -181,8 +249,7 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
 
     if( field != stop ) {
         ch = tolower( *field );
-        if( (ch == 'e') || (ch == 'd') || (ch == 'q') || (ch == '+') ||
-                                                        (ch == '-') ) {
+        if( (ch == 'e') || (ch == 'd') || (ch == 'q') || (ch == '+') || (ch == '-') ) {
             if( ( ch == 'e' ) && extend_flt ) {
                 canon.flags |= DOUBLE;
             } else if( ch == 'd' ) {
@@ -202,9 +269,7 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
                 field++;
             }
             canon.flags |= EXPONENT;
-            if( (stop == field) ||
-                (FmtS2I( field, stop - field, blanks, &exp, FALSE, NULL )
-                                                                != INT_OK) ) {
+            if( (stop == field) || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
                 canon.flags |= BAD_EXPONENT;
             }
             canon.exp += exp;
@@ -217,13 +282,15 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
     if( canon.flags & EXPONENT ) {
         canon.exp += scale;
     }
-    if( new_width ) {
+    if( new_width != NULL ) {
         *new_width = width - ( stop - field );
     }
-    if( !stop_ok && ( field != stop ) ) return( FLT_INVALID );
-    if( canon.flags & BAD_EXPONENT ) return( FLT_INVALID );
-    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) &&
-        !(canon.flags & (LEFT_DIGITS|RIGHT_DIGITS)) ) return( FLT_INVALID );
+    if( !stop_ok && ( field != stop ) )
+        return( FLT_INVALID );
+    if( canon.flags & BAD_EXPONENT )
+        return( FLT_INVALID );
+    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) && !(canon.flags & (LEFT_DIGITS|RIGHT_DIGITS)) )
+        return( FLT_INVALID );
     canon.exp -= scale; // adjust for kP specifier
     if( !(canon.flags & DECIMAL) ) { // if no '.' found
         // adjust for BN specifier
@@ -241,13 +308,15 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
     sprintf( _CanonExponent( &canon ), "E%d", canon.exp );
     errno = 0;
     *result = strtod( _CanonNumber( &canon ), NULL );
-    if( errno != 0 ) return( FLT_RANGE_EXCEEDED );
+    if( errno != 0 )
+        return( FLT_RANGE_EXCEEDED );
     if( prec == PRECISION_SINGLE ) {
         if( !(canon.flags & DOUBLE) && !( canon.flags & LONGDOUBLE ) ) {
 
             single      volatile sresult;
 
-            if( *result > FLT_MAX ) return( FLT_RANGE_EXCEEDED );
+            if( *result > FLT_MAX )
+                return( FLT_RANGE_EXCEEDED );
 
             sresult = *result;
             *result = sresult;
@@ -257,71 +326,12 @@ int     FmtS2F( char *field, int width, int decimals, bool blanks,
 
             double      volatile sresult;
 
-            if( *result > DBL_MAX ) return( FLT_RANGE_EXCEEDED );
+            if( *result > DBL_MAX )
+                return( FLT_RANGE_EXCEEDED );
 
             sresult = *result;
             *result = sresult;
         }
     }
     return( FLT_OK );
-}
-
-static  int     Digits( canon_form *canon, char *field, char *stop,
-                        int decimals, bool blanks, byte flag ) {
-// Collect digits to the left or right of the decimal point. Take blanks
-// into consideration. Set "canon->exp" accordingly.
-    int         count;
-    char        ch;
-
-    count = 0;
-    for(;;) {
-        for(;;) {
-            if( field == stop ) break;
-            ch = *field;
-            if( ch != ' ' ) break;
-            if( blanks ) {
-                ch = '0';
-            } else {
-                if( flag == LEFT_DIGITS ) {
-                    canon->blanks++;
-                }
-                ++field;
-                ++count;
-            }
-            if( ch == '0' ) break;
-        }
-        if( field == stop ) break;
-        if( isdigit( ch ) == 0 ) break;
-        if( canon->col == 0 ) {
-            if( ch == '0' ) {
-                if( canon->flags & DECIMAL ) {
-                    canon->exp--;
-                }
-            } else {
-                if( !(canon->flags & DECIMAL) ) {
-                     canon->exp = stop - field - decimals;
-                }
-                AddDig( canon, ch );
-            }
-        } else {
-            AddDig( canon, ch );
-        }
-        count++;
-        field++;
-    }
-    if( count > 0 ) {
-        canon->flags |= flag;
-    }
-    return( count );
-}
-
-static  void    AddDig( canon_form *canon, char ch ) {
-// Add a significant digit to mantissa.
-    int         col;
-
-    col = canon->col;
-    canon->col++;
-    if( col <= CONVERSION_DIGITS ) {
-        _CanonDigits( canon )[col] = ch;
-    }
 }

@@ -43,8 +43,8 @@ public:
     virtual             ~BTreeBase();
 
             uint        entries() const { return _entries; };   // num elements
-    virtual bool        unlock( Obj_T * ){ return FALSE; }
-    virtual bool        lock( Obj_T * ){ return FALSE; }
+    virtual bool        unlock( Obj_T * ){ return false; }
+    virtual bool        lock( Obj_T * ){ return false; }
             bool        operator== ( const BTreeBase& other ) const {
                             return &other == this;
                         }

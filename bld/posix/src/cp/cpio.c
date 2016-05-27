@@ -46,6 +46,7 @@
 #define  INCL_DOSMISC
 #include <os2.h>
 #endif
+#include "bool.h"
 #include "cp.h"
 
 #include "clibext.h"
@@ -75,7 +76,7 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
 #else
     int                 handle;
 #endif
-    int                 okay=TRUE;
+    int                 okay=true;
     timedate            td;
     unsigned            t = 0;
     unsigned            d = 0;
@@ -106,14 +107,14 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
             if( tflag2 ) {
                 if( td.hr <= after_t_d.hr ) {
                     if( td.hr < after_t_d.hr ) {
-                        return( FALSE );
+                        return( false );
                     }
                     if( td.min <= after_t_d.min ) {
                         if( td.min < after_t_d.min ) {
-                            return( FALSE );
+                            return( false );
                         }
                         if( td.sec < after_t_d.sec ) {
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
@@ -121,14 +122,14 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
             if( Tflag1 ) {
                 if( td.hr >= before_t_d.hr ) {
                     if( td.hr > before_t_d.hr ) {
-                        return( FALSE );
+                        return( false );
                     }
                     if( td.min >= before_t_d.min ) {
                         if( td.min > before_t_d.min ) {
-                            return( FALSE );
+                            return( false );
                         }
                         if( td.sec > before_t_d.sec ) {
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
@@ -136,14 +137,14 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
             if( dflag2 ) {
                 if( td.yy <= after_t_d.yy ) {
                     if( td.yy < after_t_d.yy ) {
-                        return( FALSE );
+                        return( false );
                     }
                     if( td.mm <= after_t_d.mm ) {
                         if( td.mm < after_t_d.mm ) {
-                            return( FALSE );
+                            return( false );
                         }
                         if( td.dd < after_t_d.dd ) {
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
@@ -151,14 +152,14 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
             if( Dflag1 ) {
                 if( td.yy >= before_t_d.yy ) {
                     if( td.yy > before_t_d.yy ) {
-                        return( FALSE );
+                        return( false );
                     }
                     if( td.mm >= before_t_d.mm ) {
                         if( td.mm > before_t_d.mm ) {
-                            return( FALSE );
+                            return( false );
                         }
                         if( td.dd > before_t_d.dd ) {
-                            return( FALSE );
+                            return( false );
                         }
                     }
                 }
@@ -242,8 +243,8 @@ int GrabFile( char *src, struct stat *stat_s, char *dest, unsigned srcattr )
      */
     while( cb->bytes_pending ) {
         if( !readABuffer() ) {
-            freeCB( cb, TRUE );
-            okay = FALSE;
+            freeCB( cb, true );
+            okay = false;
             break;
         }
     }
@@ -265,7 +266,7 @@ static int readABuffer( void )
     char        __FAR *buff;
     unsigned    buffsize;
     mem_block   *mb;
-    int         flushed = FALSE;
+    int         flushed = false;
     unsigned    bytes;
 
     /*
@@ -288,7 +289,7 @@ static int readABuffer( void )
         if( !sflag ) {
             PrintALine( "continuing read of %s (%ld more bytes)", CBTail->inname, CBTail->bytes_pending );
         }
-        flushed = TRUE;
+        flushed = true;
     }
 
     /*
@@ -304,7 +305,7 @@ static int readABuffer( void )
      * allocate memory block
      */
     mb = NearAlloc( sizeof( mem_block ) );
-    mb->in_memory = TRUE;
+    mb->in_memory = true;
     mb->where.buffer = buff;
     mb->next = NULL;
     mb->buffsize = buffsize;
@@ -315,7 +316,7 @@ static int readABuffer( void )
         CBTail->curr = mb;
     }
 
-    return( TRUE );
+    return( true );
 
 } /* readABuffer */
 #endif

@@ -48,7 +48,7 @@ bool DetailView::aboutToClose()
 //-----------------------------
 {
     viewManager()->viewDying( this );
-    return TRUE;
+    return true;
 }
 
 bool DetailView::focusChange( bool gettingFocus )
@@ -59,7 +59,7 @@ bool DetailView::focusChange( bool gettingFocus )
     } else {
         viewManager()->eventOccured( VELosingFocus, this );
     }
-    return FALSE;
+    return false;
 }
 
 static DetailView * DetailView::createView( const Symbol * sym, ViewType vt )

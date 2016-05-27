@@ -118,17 +118,17 @@ bool RemoteConnect( void )
 #ifdef SERVER
     rc = LookForConv( &_id );
     if( rc == 1 ) {
-        return( TRUE );
+        return( true );
     } else if( rc == 0 ) {
         TimeSlice();
     }
-    return( FALSE );
+    return( false );
 #else
-    static bool _first = TRUE;
+    static bool _first = true;
 
     if( _first ) {
 
-        _first = FALSE;
+        _first = false;
         rc = StartConv( _id );
         if( rc != 0 ) {
         }
@@ -139,7 +139,7 @@ bool RemoteConnect( void )
             TimeSlice();
         } else if( rc < 0 ) {
         } else {
-            return( TRUE );
+            return( true );
         }
     }
 #endif

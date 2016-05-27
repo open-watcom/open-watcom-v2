@@ -76,7 +76,7 @@ void BrinfIncludeSource         // INCLUDE A SOURCE
     , TOKEN_LOCN * locn )       // - place
 ;
 void BrinfInit                  // START OF PROCESSING FOR BROWSE INFO
-    ( bool )                    // - TRUE ==> primary initialization
+    ( bool )                    // - true ==> primary initialization
 ;
 void BrinfMacroRelease          // RELEASE BROWSE MACRO-ING WHEN NO BROWSING
     ( void )

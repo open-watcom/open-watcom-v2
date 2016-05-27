@@ -633,17 +633,17 @@ static bool Synch( void )
     case WATCOM_VAL:
     case FMR_VAL:
         if( Ctl2Lo() ) {
-            return( TRUE );
+            return( true );
         }
         break;
     case LAPLINK_VAL:
-        if( LL_Ctl1Lo() ) return( TRUE );
+        if( LL_Ctl1Lo() ) return( true );
         break;
     case DUTCHMAN_VAL:
-        if( FD_Ctl1Lo() ) return( TRUE );
+        if( FD_Ctl1Lo() ) return( true );
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -672,7 +672,7 @@ static bool CountTwidle( void )
             type == FMR_VAL ||
             type == LAPLINK_VAL ||
             type == DUTCHMAN_VAL ) {
-            TwidleOn = TRUE;
+            TwidleOn = true;
             if( type != CableType ) {
                 TwidleCount = 0;
                 CableType = type;
@@ -681,13 +681,13 @@ static bool CountTwidle( void )
     } else {
         if( type != CableType )  {
             TwidleCount++;
-            TwidleOn = FALSE;
+            TwidleOn = false;
             if( TwidleCount == TWIDLE_NUM ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -707,11 +707,11 @@ static bool Twidle( bool check ) {
         while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle() ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 if( Synch() ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -720,16 +720,16 @@ static bool Twidle( bool check ) {
         while( time > Ticks() ) {
             if( check ) {
                 if( CountTwidle() ) {
-                    return( TRUE );
+                    return( true );
                 }
             } else {
                 if( Synch() ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -749,21 +749,21 @@ static bool LineTest( void )
         if( time == RELINQUISH ) time++;
         if( time == KEEP ) time++;
         ret = DataPut( send, time );
-        if( ret == TIMEOUT ) return( FALSE );
+        if( ret == TIMEOUT ) return( false );
         time = Ticks() + LINE_TEST_WAIT;
         if( time == RELINQUISH ) time++;
         if( time == KEEP ) time++;
         ret = DataGet( time );
-        if( ret == TIMEOUT ) return( FALSE );
+        if( ret == TIMEOUT ) return( false );
         if( ret != send ) {
-            return( FALSE );
+            return( false );
         }
     }
     time = Ticks() + LINE_TEST_WAIT;
     if( time == RELINQUISH ) time++;
     if( time == KEEP ) time++;
     ret = DataPut( DONE_LINE_TEST, time );
-    if( ret == TIMEOUT ) return( FALSE );
+    if( ret == TIMEOUT ) return( false );
 #else
     dbgrtn( "\r\n-LineTest-" );
     send = 0;
@@ -772,16 +772,16 @@ static bool LineTest( void )
         if( time == RELINQUISH ) time++;
         if( time == KEEP ) time++;
         send = DataGet( time );
-        if( send == TIMEOUT ) return( FALSE );
+        if( send == TIMEOUT ) return( false );
         if( send == DONE_LINE_TEST ) break;
         time = Ticks() + LINE_TEST_WAIT;
         if( time == RELINQUISH ) time++;
         if( time == KEEP ) time++;
         send = DataPut( send, time );
-        if( send == TIMEOUT ) return( FALSE );
+        if( send == TIMEOUT ) return( false );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 bool RemoteConnect( void )
@@ -793,12 +793,12 @@ bool RemoteConnect( void )
 
     dbgrtn( "\r\n-RemoteConnect-" );
     if( !CountTwidle() )
-        return( FALSE );
-    got_twidles = Twidle( FALSE );
+        return( false );
+    got_twidles = Twidle( false );
 #else
     dbgrtn( "\r\n-RemoteConnect-" );
-    if( !Twidle( TRUE ) )
-        return( FALSE );
+    if( !Twidle( true ) )
+        return( false );
 #endif
 
     switch( CableType ) {
@@ -823,15 +823,15 @@ bool RemoteConnect( void )
             if( Synch() ) {
                 break;
             } else if( time < Ticks() ) {
-                return( FALSE );
+                return( false );
             }
         }
 #ifdef SERVER
     }
 #endif
     if( !LineTest() )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 void RemoteDisco( void )
@@ -845,7 +845,7 @@ void RemoteDisco( void )
     XX_RaiseCtl1();
     TwidleCount = 0;
     CableType = NULL_VAL;
-    TwidleOn = FALSE;
+    TwidleOn = false;
 
 }
 
@@ -906,7 +906,7 @@ const char *RemoteLink( const char *parms, bool server )
     }
     WriteData( TWIDLE_OFF );            /* initialize the control ports */
     XX_RaiseCtl1();
-    TwidleOn = FALSE;
+    TwidleOn = false;
     return( NULL );
 }
 

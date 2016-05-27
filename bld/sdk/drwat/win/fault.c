@@ -150,30 +150,29 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     char        *fault_str;
     DWORD       faultid;
 
+    WasFault32 = false;
     if( WDebug386 ) {
         if( IsDebuggerExecuting() ) {
             return( CHAIN );
         }
-        WasFault = GetDebugInterruptData( &IntData );
-        if( WasFault ) {
+        WasFault32 = (bool)GetDebugInterruptData( &IntData );
+        if( WasFault32 ) {
             ff.intnumber = IntData.InterruptNumber;
             if( ff.intnumber == WGOD_ASYNCH_STOP_INT ) {
                 DoneWithInterrupt( &IntData );
                 return( RESTART_APP );
             }
         }
-    } else {
-        WasFault = FALSE;
     }
 
     if( (!DumpAny.dump_pending && (ff.intnumber == INT_3) ) ||
         (ff.intnumber == INT_1) ) {
-        if( WasFault ) {
+        if( WasFault32 ) {
             if( ff.intnumber == INT_3 ) {
                 IntData.EIP++;
             }
             DoneWithInterrupt( &IntData );
-            WasFault = FALSE;
+            WasFault32 = false;
         }
         return( CHAIN );
     }
@@ -182,20 +181,20 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
      * only one fault at a time
      */
     if( FaultHandlerEntered ) {
-        if( WasFault ) {
-            WasFault = FALSE;
+        if( WasFault32 ) {
+            WasFault32 = false;
             DoneWithInterrupt( NULL );
         }
         return( CHAIN );
     }
-    FaultHandlerEntered = TRUE;
+    FaultHandlerEntered = true;
     ff.ESP = (WORD) ff.ESP;
     ff.EBP = (WORD) ff.EBP;
 
     /*
      * save state
      */
-    if( !WasFault ) {
+    if( !WasFault32 ) {
         SaveState( &IntData, &ff );
     }
     DeadTask = GetCurrentTask();
@@ -225,26 +224,26 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     }
 
     if( rc == RESTART_APP ) {
-        if( !WasFault ) {
+        if( !WasFault32 ) {
             RestoreState( &IntData, &ff );
         } else {
-            WasFault = FALSE;
+            WasFault32 = false;
             DoneWithInterrupt( &IntData );
         }
         if( doLog ) {
-            MakeLog( TRUE );
+            MakeLog( true );
         }
     } else {
         if( doLog ) {
-            MakeLog( TRUE );
+            MakeLog( true );
         }
     }
     SymFileClose();
-    if( WasFault ) {
-        WasFault = FALSE;
+    if( WasFault32 ) {
+        WasFault32 = false;
         DoneWithInterrupt( NULL );
     }
-    FaultHandlerEntered = FALSE;
+    FaultHandlerEntered = false;
 
     return( rc );
 

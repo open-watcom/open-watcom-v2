@@ -202,7 +202,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     char *extf;
 
     path = WholeFName;
-    use_defaults = TRUE;
+    use_defaults = true;
     switch( typ ) {
     case OFT_DEF:
 #ifdef OPT_BR
@@ -212,7 +212,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
     case OFT_DEP:
         if( DependFileName != NULL ) {
             path = DependFileName;
-            use_defaults = FALSE;
+            use_defaults = false;
         }
         break;
     case OFT_ERR:
@@ -220,7 +220,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
             return( NULL );
         outFileChecked |= 1 << typ; // don't create a file. it's just a name.
         path = ErrorFileName;
-        use_defaults = FALSE;
+        use_defaults = false;
         break;
     case OFT_SRCDEP:
         outFileChecked |= 1 << typ;
@@ -232,7 +232,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         outFileChecked |= 1 << typ; // don't create a file. it's just a name.
         if( TargetFileName != NULL ) {
             path = TargetFileName;
-            use_defaults = FALSE;
+            use_defaults = false;
             break;
         }
         // fall down
@@ -242,7 +242,7 @@ char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
         if( ObjectFileName != NULL ) {
             path = ObjectFileName;
             if( typ != OFT_MBR ) {
-                use_defaults = FALSE;
+                use_defaults = false;
             }
         }
         break;
@@ -321,11 +321,11 @@ static void freeBuffer(         // FREE A BUFFER
 bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
     FILE **file_ptr )           // - addr( file pointer )
 {
-    bool retn;                  // - return: TRUE ==> was open
+    bool retb;                  // - return: true ==> was open
     BUF_ALLOC* ba;              // - current allocated buffer
 
     if( *file_ptr == NULL ) {
-        retn = FALSE;
+        retb = false;
     } else {
         RingIterBegSafe( buffers, ba ) {
             if( *file_ptr == ba->buffer ) {
@@ -335,9 +335,9 @@ bool IoSuppCloseFile(           // CLOSE FILE IF OPENED
         } RingIterEndSafe( ba );
         SrcFileFClose( *file_ptr );
         *file_ptr = NULL;
-        retn = TRUE;
+        retb = true;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -384,24 +384,24 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 
     if( SrcFileProcessOnce( name ) ) {
         SrcFileOpen( NULL, name, 0 );
-        return( TRUE );
+        return( true );
     }
     ftime = SysFileTime( name );
     fp = SrcFileFOpen( name, SFO_SOURCE_FILE );
     if( fp == NULL ) {
-        return( FALSE );
+        return( false );
     }
 #ifdef OPT_BR
-    might_browse = FALSE;
+    might_browse = false;
 #endif
     if( CompFlags.watch_for_pcheader ) {
-        CompFlags.watch_for_pcheader = FALSE;
+        CompFlags.watch_for_pcheader = false;
         pch_OK = PCHeaderAbsorb( name );
         if( pch_OK != PCHA_OK ) {
             SrcFileSetCreatePCHeader();
             SrcFileOpen( fp, name, ftime );
 #ifdef OPT_BR
-            might_browse = TRUE;
+            might_browse = true;
 #endif
         } else {
             SrcFileOpen( NULL, name, 0 );
@@ -413,7 +413,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
             SetSrcFilePrimary();
         }
 #ifdef OPT_BR
-        might_browse = TRUE;
+        might_browse = true;
 #endif
     }
 #ifdef OPT_BR
@@ -425,7 +425,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
         break;
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 
@@ -485,7 +485,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     struct path_descr *fd,      // - file descriptor
     enum file_type typ )        // - type of file being opened
 {
-    bool retn = FALSE;          // - return: TRUE ==> opened
+    bool retb = false;          // - return: true ==> opened
     struct path_descr pd;       // - path descriptor
     char dir[_MAX_PATH*2];      // - new path
     char *pp;                   // - pointer into path
@@ -499,7 +499,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
         pp = stpcpy( dir, fd->drv );
         pp = stpcpy( pp, path );
     } else {
-        return( retn );
+        return( retb );
     }
     if( pp > dir ) {
         if( !IS_PATH_SEP( pp[-1] ) ) {
@@ -510,13 +510,13 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     splitFileName( dir, &pd );
     ext = openSrcExts( exts, &pd, typ );
     if( ext != NULL ) {
-        retn = TRUE;
+        retb = true;
         if( ( typ == FT_SRC ) && ( ext != fd->ext ) ) {
             _makepath( dir, fd->drv, fd->dir, fd->fnm, ext );
             WholeFName = FNameAdd( dir );
         }
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -526,7 +526,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
 {
     const char  **paths;        // - optional paths to prepend
     const char  **exts;         // - optional extensions to append
-    bool retn;                  // - return: TRUE ==> opened
+    bool retb;                  // - return: true ==> opened
     const char  *path;          // - next path
     char bufpth[_MAX_PATH];     // - buffer for next path
     SRCFILE curr;               // - current included file
@@ -535,7 +535,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     LINE_NO dummy;              // - dummy line number holder
     char prevpth[_MAX_PATH];    // - buffer for previous path
 
-    retn = FALSE;
+    retb = false;
     paths = NULL;
     switch( typ ) {
     case FT_SRC:
@@ -544,16 +544,16 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             if( ErrCount != 0 ) {
                 // command line errors may result in "." as the input name
                 // so the user thinks that the compiler is hung!
-                return( FALSE );
+                return( false );
             }
             WholeFName = FNameAdd( "stdin" );
             stdin_srcfile = SrcFileOpen( stdin, WholeFName, 0 );
             SrcFileNotAFile( stdin_srcfile );
-            retn = TRUE;
+            retb = true;
             break;
         }
-        retn = openSrcPath( "", exts, fd, typ );
-        if( retn )
+        retb = openSrcPath( "", exts, fd, typ );
+        if( retb )
             break;
         if( !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathSrc;
@@ -564,7 +564,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         exts = extsHdr;
         // have to look for absolute paths
         if( fd->drv[0] != '\0' || IS_DIR_SEP( fd->dir[0] ) ) {
-            retn = openSrcPath( "", exts, fd, typ );
+            retb = openSrcPath( "", exts, fd, typ );
             break;
         }
         if( typ == FT_HEADER && !IS_DIR_SEP( fd->dir[0] ) ) {
@@ -572,15 +572,15 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                 curr = SrcFileCurrent();
                 splitFileName( SrcFileName( curr ), &idescr );
                 _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
-                retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
-                if( retn ) {
+                retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                if( retb ) {
                     break;
                 }
             } else {
                 if( !CompFlags.ignore_current_dir ) {
                     // check for current directory
-                    retn = openSrcPath( "", exts, fd, typ );
-                    if( retn ) {
+                    retb = openSrcPath( "", exts, fd, typ );
+                    if( retb ) {
                         break;
                     }
                 }
@@ -593,15 +593,15 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        retn = openSrcPath( bufpth, exts, fd, FT_HEADER );
-                        if( retn ) {
+                        retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                        if( retb ) {
                             break;
                         }
                     }
                     curr = SrcFileIncluded( curr, &dummy );
                     strcpy( prevpth, bufpth );
                 }
-                if( retn ) {
+                if( retb ) {
                     break;
                 }
             }
@@ -611,12 +611,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             HFileListNext( bufpth );
             if( *bufpth == '\0' )
                 break;
-            retn = openSrcPath( bufpth, exts, fd, typ );
-            if( retn ) {
+            retb = openSrcPath( bufpth, exts, fd, typ );
+            if( retb ) {
                 break;
             }
         }
-        if( retn ) {
+        if( retb ) {
             break;
         }
         if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
@@ -625,8 +625,8 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         break;
     case FT_CMD:
         exts = extsCmd;
-        retn = openSrcPath( "", exts, fd, typ );
-        if( retn )
+        retb = openSrcPath( "", exts, fd, typ );
+        if( retb )
             break;
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathCmd;
@@ -635,13 +635,13 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     }
     if( paths != NULL ) {
         for( ; (path = *paths) != NULL; ++paths ) {
-            retn = openSrcPath( path, exts, fd, typ );
-            if( retn ) {
+            retb = openSrcPath( path, exts, fd, typ );
+            if( retb ) {
                 break;
             }
         }
     }
-    if( retn ) {
+    if( retb ) {
         switch( typ ) {
         case FT_CMD:
             SrcFileCommand();
@@ -651,7 +651,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             break;
         }
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -677,17 +677,17 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
 #endif
     splitFileName( file_name, &fd );
     if( doIoSuppOpenSrc( &fd, typ ) )
-        return TRUE;
+        return true;
 #if !defined( __DOS__ )
     if( !CompFlags.check_truncated_fnames )
-        return FALSE;
+        return false;
     if( strlen( fd.fnm ) <= 8 )
-        return FALSE;
+        return false;
     fd.fnm[8] = '\0';
     if( doIoSuppOpenSrc( &fd, typ ) )
-        return TRUE;
+        return true;
 #endif
-    return FALSE;
+    return false;
 }
 
 static void tempFname( char *fname )
@@ -870,15 +870,15 @@ static bool pathExists(         // TEST IF A PATH EXISTS
     const char *path )          // - path to be tested
 {
     DIR *dir;                   // - control for directory
-    bool retn;                  // - return: TRUE ==> directory exists
+    bool retb;                  // - return: true ==> directory exists
 
-    retn = FALSE;
+    retb = false;
     dir = opendir( path );
     if( dir != NULL ) {
         closedir( dir );
-        retn = TRUE;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 static void setPaths(           // SET PATHS (IF THEY EXIST)
@@ -892,7 +892,8 @@ static void setPaths(           // SET PATHS (IF THEY EXIST)
     test = vect;
     for( ;; ) {
         path = *test;
-        if( path == NULL ) break;
+        if( path == NULL )
+            break;
         if( pathExists( path ) ) {
             *dest++ = path;
         }

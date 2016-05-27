@@ -235,25 +235,25 @@ static int              Line_buf_size;
 #define BUF_GROW        150
 
 /* Processing globals */
-static bool             Exclude_on=FALSE;
+static bool             Exclude_on = false;
 static char             Delim[3] = " \t";
-static bool             Do_index=FALSE;
-static bool             Do_blist=FALSE;
-static bool             Do_keywords=FALSE;
-static bool             Browse_sort=FALSE;
-static bool             Do_def=FALSE;
-static bool             Do_hdef=FALSE;
-static bool             Do_ctx_ids = FALSE;
-static bool             Do_contents=FALSE;
-static bool             Index_gml_fmt=TRUE;
+static bool             Do_index = false;
+static bool             Do_blist = false;
+static bool             Do_keywords = false;
+static bool             Browse_sort = false;
+static bool             Do_def = false;
+static bool             Do_hdef = false;
+static bool             Do_ctx_ids = false;
+static bool             Do_contents = false;
+static bool             Index_gml_fmt = true;
 static int              Brace_count = 0;
-static bool             Brace_check = FALSE;
-static bool             Do_topic_keyword=TRUE;
-static int              Title_case=TITLE_CASE_UPPER;
-static bool             Dump_popup_t = FALSE;
-static bool             Dump_popup_k = FALSE;
-static bool             Dump_popup_i = FALSE;
-static bool             Dump_popup_b = FALSE;
+static bool             Brace_check = false;
+static bool             Do_topic_keyword = true;
+static int              Title_case = TITLE_CASE_UPPER;
+static bool             Dump_popup_t = false;
+static bool             Dump_popup_k = false;
+static bool             Dump_popup_i = false;
+static bool             Dump_popup_b = false;
 enum {
     OUT_RTF,
     OUT_IPF,
@@ -278,7 +278,7 @@ static char *Error_list[]={
 
 #define HELP_PREFIX     "HLP_"
 
-static char *Chk_buf=NULL;
+static char *Chk_buf = NULL;
 
 static char Output_file_ext[10];
 
@@ -288,14 +288,14 @@ char Footer_File[100];
 
 char *Options_file = NULL;
 
-char Fonttype_roman[]="roman";
-char Fonttype_symbol[]="symbol";
-char Fonttype_helv[]="helv";
-char Fonttype_courier[]="courier";
+char Fonttype_roman[] = "roman";
+char Fonttype_symbol[] = "symbol";
+char Fonttype_helv[] = "helv";
+char Fonttype_courier[] = "courier";
 
-static ctx_def **Ctx_list_end=NULL;
+static ctx_def **Ctx_list_end = NULL;
 
-static keyword_def *Keyword_list=NULL;
+static keyword_def *Keyword_list = NULL;
 static int Keyword_id = 1;
 
 static void print_help( void )
@@ -343,7 +343,7 @@ void error_line(
 ) {
     Line_num = line_num;
 
-    error( err, TRUE );
+    error( err, true );
 }
 
 
@@ -375,7 +375,7 @@ void warning_line(
 ) {
     Line_num = line_num;
 
-    warning( err, TRUE );
+    warning( err, true );
 }
 
 void *check_alloc(
@@ -388,7 +388,7 @@ void *check_alloc(
     p = malloc( size );
 
     if( p == NULL && size != 0) {
-        error( ERR_NO_MEMORY, FALSE );
+        error( ERR_NO_MEMORY, false );
     }
 
     return( p );
@@ -403,7 +403,7 @@ void *check_realloc(
     ptr = realloc( ptr, size );
 
     if( ptr == NULL && size != 0 ) {
-        error( ERR_NO_MEMORY, FALSE );
+        error( ERR_NO_MEMORY, false );
     }
 
     return( ptr );
@@ -488,63 +488,63 @@ static int process_args(
             switch( i ) {
 
             case ARG_DPT:
-                Dump_popup_t = TRUE;
+                Dump_popup_t = true;
                 break;
 
             case ARG_DPI:
-                Dump_popup_i = TRUE;
+                Dump_popup_i = true;
                 break;
 
             case ARG_DPK:
-                Dump_popup_k = TRUE;
+                Dump_popup_k = true;
                 break;
 
             case ARG_DPB:
-                Dump_popup_b = TRUE;
+                Dump_popup_b = true;
                 break;
 
             case ARG_UP:
-                Do_up = TRUE;
+                Do_up = true;
                 break;
 
             case ARG_KB:
-                Do_kw_button = TRUE;
+                Do_kw_button = true;
                 break;
 
             case ARG_I:
-                Do_index = TRUE;
+                Do_index = true;
                 break;
 
             case ARG_KW:
-                Do_keywords = TRUE;
+                Do_keywords = true;
                 break;
 
             case ARG_B:
-                Do_blist = TRUE;
+                Do_blist = true;
                 break;
 
             case ARG_S:
-                Browse_sort = TRUE;
+                Browse_sort = true;
                 break;
 
             case ARG_K:
-                Keep_titles = TRUE;
+                Keep_titles = true;
                 break;
 
             case ARG_EX:
-                Exclude_special = TRUE;
+                Exclude_special = true;
                 break;
 
             case ARG_H:
-                Do_def = TRUE;
+                Do_def = true;
                 break;
 
             case ARG_HH:
-                Do_hdef = TRUE;
+                Do_hdef = true;
                 break;
 
             case ARG_HN:
-                Do_ctx_ids = TRUE;
+                Do_ctx_ids = true;
                 break;
 
             case ARG_XL:
@@ -571,7 +571,7 @@ static int process_args(
                 break;
 
             case ARG_IW:
-                Index_gml_fmt = FALSE;
+                Index_gml_fmt = false;
                 break;
 
             case ARG_RTF:
@@ -595,27 +595,27 @@ static int process_args(
                 break;
 
             case ARG_BL:
-                Break_link = TRUE;
+                Break_link = true;
                 break;
 
             case ARG_T:
-                Do_contents = TRUE;
+                Do_contents = true;
                 break;
 
             case ARG_E:
-                Remove_empty = TRUE;
+                Remove_empty = true;
                 break;
 
             case ARG_RF:
-                Real_ipf_font = TRUE;
+                Real_ipf_font = true;
                 break;
 
             case ARG_LK:
-                Keep_link_topics = TRUE;
+                Keep_link_topics = true;
                 break;
 
             case ARG_KT:
-                Do_topic_keyword=FALSE;
+                Do_topic_keyword=false;
                 break;
 
             case ARG_RM:
@@ -623,7 +623,7 @@ static int process_args(
                 if( start_arg < argc ) {
                     Right_Margin = atoi( argv[ start_arg ] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -632,7 +632,7 @@ static int process_args(
                 if( start_arg < argc ) {
                     Text_Indent = atoi( argv[ start_arg ] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -642,7 +642,7 @@ static int process_args(
                     strncpy( Header_File, argv[ start_arg ], 100 );
                     Header_File[99] = '\0';
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -652,7 +652,7 @@ static int process_args(
                     strncpy( Header_File, argv[ start_arg ], 100 );
                     Header_File[99] = '\0';
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -662,15 +662,15 @@ static int process_args(
                 break;
 
             case ARG_BR:
-                Do_browse = TRUE;
+                Do_browse = true;
                 break;
 
             case ARG_TC:
-                Do_tc_button = TRUE;
+                Do_tc_button = true;
                 break;
 
             case ARG_IX:
-                Do_idx_button = TRUE;
+                Do_idx_button = true;
                 break;
 
             case ARG_TL:
@@ -679,7 +679,7 @@ static int process_args(
                     _new( Ipf_title, strlen( argv[start_arg] ) + 1 );
                     strcpy( Ipf_title, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -693,7 +693,7 @@ static int process_args(
                     _new( IB_def_topic, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_def_topic, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -703,7 +703,7 @@ static int process_args(
                     _new( IB_help_desc, strlen( argv[start_arg] ) + 1 );
                     strcpy( IB_help_desc, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -713,7 +713,7 @@ static int process_args(
                     _new( Options_file, strlen( argv[start_arg] ) + 1 );
                     strcpy( Options_file, argv[start_arg] );
                 } else {
-                    error( ERR_BAD_ARGS, FALSE );
+                    error( ERR_BAD_ARGS, false );
                 }
                 break;
 
@@ -741,36 +741,36 @@ static int valid_args(
     int                 i;
     char                *x;
 
-    Tab_xmp = FALSE;
+    Tab_xmp = false;
 
     Start_inc_ul = 0;
     Start_inc_ol = 0;
     Start_inc_sl = 0;
     Start_inc_dl = 0;
-    Browse_sort = FALSE;
-    Do_index = FALSE;
-    Do_contents = FALSE;
-    Keep_titles = FALSE;
-    Exclude_special = FALSE;
-    Do_def = FALSE;
-    Do_hdef = FALSE;
-    Do_ctx_ids = FALSE;
-    Do_blist = FALSE;
-    Do_up = FALSE;
-    Do_kw_button = FALSE;
-    Index_gml_fmt=TRUE;
+    Browse_sort = false;
+    Do_index = false;
+    Do_contents = false;
+    Keep_titles = false;
+    Exclude_special = false;
+    Do_def = false;
+    Do_hdef = false;
+    Do_ctx_ids = false;
+    Do_blist = false;
+    Do_up = false;
+    Do_kw_button = false;
+    Index_gml_fmt=true;
     Brace_count = 0;
     Output_type = OUT_RTF;
-    Break_link = FALSE;
-    Do_contents = FALSE;
-    Remove_empty = FALSE;
-    Real_ipf_font = FALSE;
-    Keep_link_topics = FALSE;
-    Do_topic_keyword = TRUE;
-    Dump_popup_t = FALSE;
-    Dump_popup_i = FALSE;
-    Dump_popup_b = FALSE;
-    Dump_popup_k = FALSE;
+    Break_link = false;
+    Do_contents = false;
+    Remove_empty = false;
+    Real_ipf_font = false;
+    Keep_link_topics = false;
+    Do_topic_keyword = true;
+    Dump_popup_t = false;
+    Dump_popup_i = false;
+    Dump_popup_b = false;
+    Dump_popup_k = false;
 
     Right_Margin = 76;
     Header_File[0] = '\0';
@@ -778,9 +778,9 @@ static int valid_args(
     Text_Indent = 4;
     Hyper_Brace_L = IB_HLINK_L_CHAR;
     Hyper_Brace_R = IB_HLINK_R_CHAR;
-    Do_browse = FALSE;
-    Do_tc_button = FALSE;
-    Do_idx_button = FALSE;
+    Do_browse = false;
+    Do_tc_button = false;
+    Do_idx_button = false;
     Title_case = TITLE_CASE_UPPER;
 
     start_arg = process_args( argc, argv );
@@ -863,7 +863,7 @@ bool read_line( void )
     int                 len;
     bool                eat_blank;
 
-    eat_blank = FALSE;
+    eat_blank = false;
     for( ;; ) {
         ++Line_num;
         for( buf = Line_buf, len = 0;; ++buf ) {
@@ -875,7 +875,7 @@ bool read_line( void )
             ch = fgetc( In_file );
 #endif
             if( ch == EOF ) {
-                return( FALSE );
+                return( false );
             }
             ++len;
             if( len > Line_buf_size ) {
@@ -892,7 +892,7 @@ bool read_line( void )
 
             if( *buf == '\n' ) {
                 if( eat_blank ) {
-                    eat_blank = FALSE;
+                    eat_blank = false;
                     if( *skip_blank( Line_buf ) == '\n' ) {
                         /* the 'exclude off, but eat blank line after' character
                            is used to do 'dummy' figures (to get the the
@@ -905,20 +905,20 @@ bool read_line( void )
                 }
                 ch = *(unsigned char *)Line_buf;
                 if( ch == CH_EXCLUDE_OFF ) {
-                    Exclude_on = FALSE;
+                    Exclude_on = false;
                     break;
                 } else if( ch == CH_EXCLUDE_OFF_BLANK ) {
-                    Exclude_on = FALSE;
-                    eat_blank = TRUE;
+                    Exclude_on = false;
+                    eat_blank = true;
                     break;
                 } else if( ch == CH_EXCLUDE_ON ) {
-                    Exclude_on = TRUE;
+                    Exclude_on = true;
                     break;
                 } else if( Exclude_on ) {
                     break;
                 } else {
                     *buf = '\0';
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -1046,11 +1046,11 @@ bool find_keyword(
 
     for( keylist = ctx->keylist; keylist != NULL; keylist = keylist->next ) {
         if( stricmp( keylist->key->keyword, keyword ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 keyword_def *find_keyword_all(
@@ -1102,10 +1102,10 @@ void add_ctx_keyword(
     if( !find_keyword( ctx, keyword ) ) {
         key = find_keyword_all( keyword );
         if( key != NULL ) {
-            key->duplicate = TRUE;
+            key->duplicate = true;
         } else {
             _new( key, 1 );
-            key->duplicate = FALSE;
+            key->duplicate = false;
             key->defined_ctx = ctx;
             _new( key->keyword, strlen( keyword ) + 1 );
             strcpy( key->keyword, keyword );
@@ -1390,8 +1390,8 @@ static ctx_def *init_ctx(
     ctx->browse = NULL;
     ctx->title = NULL;
     ctx->ctx_id = -1;
-    ctx->empty = TRUE;
-    ctx->req_by_link = FALSE;
+    ctx->empty = true;
+    ctx->req_by_link = false;
     _new( ctx->ctx_name, strlen( ctx_name ) + 1 );
     strcpy( ctx->ctx_name, ctx_name );
 
@@ -1431,7 +1431,7 @@ static ctx_def *define_ctx( void )
     if( ctx != NULL && ctx->title != NULL ) {
         if(( head_level != 0 ) && ( ctx->head_level != 0 )) {
             printf( "topic already exists: %s\n", ctx_name );
-            warning( ERR_CTX_EXISTS, TRUE );
+            warning( ERR_CTX_EXISTS, true );
         }
         for( i = 0; i < strlen( ctx_name ); ++i ) {
             o_ch = ctx_name[i];
@@ -1451,7 +1451,7 @@ static ctx_def *define_ctx( void )
 
     title = strtok( NULL, Delim );
     if( title == NULL ) {
-        error( ERR_NO_TITLE, TRUE );
+        error( ERR_NO_TITLE, true );
     }
 
     browse_name = strtok( NULL, Delim );
@@ -1479,7 +1479,7 @@ static ctx_def *define_ctx( void )
 static bool read_ctx_def( void )
 /******************************/
 {
-    return( read_topic_text( define_ctx(), TRUE, 0 ) );
+    return( read_topic_text( define_ctx(), true, 0 ) );
 }
 
 static bool read_ctx_topic( void )
@@ -1502,9 +1502,9 @@ static bool read_ctx_topic( void )
 
     order_str = strtok( NULL, Delim );
     if( order_str == NULL ) {
-        return( read_topic_text( ctx, TRUE, 0 ) );
+        return( read_topic_text( ctx, true, 0 ) );
     } else {
-        return( read_topic_text( ctx, FALSE, atoi( order_str ) ) );
+        return( read_topic_text( ctx, false, atoi( order_str ) ) );
     }
 }
 
@@ -1530,10 +1530,10 @@ static bool read_topic( void )
         /* DROP INTO DEFAULT CASE */
 
     default:
-        error( ERR_NO_TOPIC, TRUE );    // does not return
+        error( ERR_NO_TOPIC, true );    // does not return
     }
 
-    return( FALSE );
+    return( false );
 }
 
 static void read_whp_file( void )
@@ -1602,7 +1602,7 @@ bool is_special_topic(
     bool                        res;
 
     if( ctx == NULL ) {
-        res = FALSE;
+        res = false;
     } else {
         res = ( stricmp( ctx->ctx_name, "table_of_contents" ) == 0 ||
                 stricmp( ctx->ctx_name, "index_of_topics" ) == 0 ||
@@ -1630,7 +1630,7 @@ static void output_idx_file( void )
         whp_fprintf( Idx_file, "%s:\n\n",
                                 Gen_titles[GEN_TITLE_INDEX][Title_case] );
     }
-    new_topic = FALSE;
+    new_topic = false;
     for( ctx = Ctx_list; ctx != NULL; ctx = ctx->next ) {
         if( ctx->empty || ( Dump_popup_i && ctx->title_fmt == TITLE_FMT_NOLINE ) ) {
             continue;
@@ -1646,7 +1646,7 @@ static void output_idx_file( void )
                 ch = toupper( *sort_title );
                 whp_fprintf( Idx_file, "%s%c- %c -\n",
                                     pfx, CH_DLIST_TERM, ch );
-                new_topic = TRUE;
+                new_topic = true;
             } else {
                 ch = toupper( *sort_title );
                 whp_fprintf( Idx_file, "- %c -\n", ch );
@@ -1656,7 +1656,7 @@ static void output_idx_file( void )
             whp_fprintf( Idx_file, ":pb." );
             if( new_topic ) {
                 whp_fprintf( Idx_file, "%c", CH_DLIST_DESC );
-                new_topic = FALSE;
+                new_topic = false;
             }
             whp_fprintf( Idx_file, "%c%s%c%s%c\n",
                 CH_HLINK, ctx->ctx_name, CH_HLINK, ctx->title, CH_HLINK );
@@ -1694,7 +1694,7 @@ static int ctx_cmp(
     return( stricmp( (*ctx1)->title, (*ctx2)->title ) );
 }
 
-// removes empty contexts from a given keyword_def if Remove_empty == TRUE
+// removes empty contexts from a given keyword_def if Remove_empty == true
 static void compress_kw( keyword_def *kw )
 /****************************************/
 {
@@ -1752,7 +1752,7 @@ static void output_kw_file( void )
         qsort( kw, kw_num, sizeof(keyword_def *), kw_cmp );
 
         for( i = 0; i < kw_num; i++ ) {
-            title = FALSE;
+            title = false;
 
             // remove empty contexts if we need to
             compress_kw( kw[i] );
@@ -1795,7 +1795,7 @@ static void output_kw_file( void )
                                         CH_FONTSTYLE_END,
 
                                         CH_SLIST_START );
-                            title = TRUE;
+                            title = true;
                         }
                         whp_fprintf( KW_file, ":pb.%c%c%s%c%s%c\n",
                                 CH_LIST_ITEM,
@@ -2028,19 +2028,19 @@ static void check_links( void )
     link_def            *link;
     bool                err;
 
-    err = FALSE;
+    err = false;
     for( link = Link_list; link != NULL; link = link->next ) {
         ctx = find_ctx( link->link_name );
         if( ctx == NULL ) {
             printf( "undefined link: %s\n", link->link_name );
             warning_line( ERR_UNDEF_LINK, link->line_num );
-            err= TRUE;
+            err = true;
         } else if( ctx->empty && Remove_empty ) {
             if( !Keep_link_topics ) {
                 warning_line( ERR_EMPTY_LINK, link->line_num );
-                err = TRUE;
+                err = true;
             } else {
-                ctx->req_by_link = TRUE;
+                ctx->req_by_link = true;
             }
         }
     }
@@ -2219,9 +2219,9 @@ int main(
 
     switch( Output_type ) {
     case OUT_RTF:
-        Brace_check = TRUE;
+        Brace_check = true;
         rtf_output_file();
-        Brace_check = FALSE;
+        Brace_check = false;
         if( Brace_count != 0 ) {
             if( Brace_count < 0 ) {
                 printf( "Too many braces ('}'). Off by %d\n", -Brace_count );

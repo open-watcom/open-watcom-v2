@@ -74,7 +74,7 @@ static char *VerifyDot( char *filename )
 {
     char *              newfilename;
     char *              tempfilename;
-    bool                quotes_found = FALSE;
+    bool                quotes_found = false;
 
     if (strchr(filename,'.')==NULL) {
         /*** Strip quotes from filename ***/
@@ -82,7 +82,7 @@ static char *VerifyDot( char *filename )
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
             tempfilename[ strlen(tempfilename)-1 ] = '\0';      /* smite trailing " */
-            quotes_found = TRUE;
+            quotes_found = true;
         } else {
             tempfilename = newfilename;
         }
@@ -121,15 +121,17 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     OPT_STRING *        buf;
     OPT_STRING *        curElem;
     size_t              len;
-    bool                add_quote = FALSE;
+    bool                add_quote = false;
 
     len = strlen(str);
     if( quote != '\0' ) {
         do {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            if( str[0] == '"'  && str[len - 1] == '"'  )
+                break;
+            if( str[0] == '\'' && str[len - 1] == '\'' )
+                break;
             len += 2;
-            add_quote = TRUE;
+            add_quote = true;
         } while( 0 );
     }
     /*** Make a new list item ***/
@@ -137,7 +139,7 @@ static void add_string( OPT_STRING **p, char *str, char quote )
     if( add_quote ) {
         buf->data[0] = quote;
         strcpy( &(buf->data[1]), str );
-        buf->data[len-1] = quote;
+        buf->data[len - 1] = quote;
         buf->data[len] = '\0';
     } else {
         strcpy( buf->data, str );
@@ -198,7 +200,7 @@ static void handle_nowwarn( OPT_STORAGE *cmdOpts, int x )
 {
     x = x;
     cmdOpts = cmdOpts;
-    DisableWarnings( TRUE );
+    DisableWarnings( true );
 }
 
 
@@ -256,7 +258,7 @@ static int do_string_parse( OPT_STRING **p, char *optName, bool onlyOne,
 static int parse_D( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "D", FALSE, '\0' ) );
+    return( do_string_parse( p, "D", false, '\0' ) );
 }
 
 
@@ -315,7 +317,7 @@ static int parse_I( OPT_STRING **p )
 static int parse_U( OPT_STRING **p )
 /******************************************/
 {
-    return( do_string_parse( p, "U", FALSE, '\0' ) );
+    return( do_string_parse( p, "U", false, '\0' ) );
 }
 
 
@@ -409,9 +411,9 @@ bool OPT_GET_NUMBER( unsigned *p )
     CmdScanWhitespace();
     if( CmdScanNumber( &value ) ) {
         *p = value;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

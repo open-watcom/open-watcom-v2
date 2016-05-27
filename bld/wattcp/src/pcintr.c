@@ -19,6 +19,7 @@
 #include "strings.h"
 #include "language.h"
 #include "misc.h"
+#include "pcintr.h"
 #include "pctcp.h"
 #include "wdpmi.h"
 

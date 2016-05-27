@@ -136,9 +136,9 @@ static bool matches( Go *g1, State *s1, Go *g2, State *s2 )
         if( b1 == e1 )
             return( b2 == e2 );
         if( b2 == e2 )
-            return( FALSE );
+            return( false );
         if( lb1 != lb2 || b1->ub != b2->ub )
-            return( FALSE );
+            return( false );
         ++b1; ++b2;
     }
 }
@@ -281,13 +281,13 @@ static void Action_emit( Action *a, FILE *o )
         break;
     case ACCEPTACT:
         {
-            bool    first = TRUE;
+            bool    first = true;
 
             for( i = 0; i < a->u.Accept.nRules; ++i ) {
                 if( a->u.Accept.saves[i] != ~0u ) {
                     if( first ) {
-                        first = FALSE;
-                        bUsedYYAccept = TRUE;
+                        first = false;
+                        bUsedYYAccept = true;
                         fputs( "\tYYCURSOR = YYMARKER;\n\tswitch(yyaccept){\n", o );
                         oline += 2;
                     }
@@ -728,11 +728,11 @@ void DFA_emit( DFA *d, FILE *o )
 
     // split ``base'' states into two parts
     for(s = d->head; s != NULL; s = s->next ) {
-        s->isBase = FALSE;
+        s->isBase = false;
         if( s->link != NULL ) {
             for( i = 0; i < s->go.nSpans; ++i ) {
                 if( s->go.span[i].to == s ) {
-                    s->isBase = TRUE;
+                    s->isBase = true;
                     DFA_split( d, s );
                     if( bFlag )
                         BitMap_find_go( &s->next->go, s );

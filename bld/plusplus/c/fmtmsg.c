@@ -52,7 +52,7 @@ static bool formatClassForSym( SYMBOL sym, VBUF *buf )
 /****************************************************/
 {
     CLASSINFO *info;            // - class information for symbol
-    bool retn = FALSE;          // - return: TRUE ==> is class member
+    bool retb = false;          // - return: true ==> is class member
     NAME name;                  // - class name
 
     info = SymClassInfo( sym );
@@ -60,10 +60,10 @@ static bool formatClassForSym( SYMBOL sym, VBUF *buf )
         name = info->name;
         if( name != NULL ) {
             VbufConcStr( buf, NameStr( name ) );
-            retn = TRUE;
+            retb = true;
         }
     }
-    return retn;
+    return( retb );
 }
 
 SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )

@@ -48,7 +48,7 @@ static void PrintBanner( void )
     }
 }
 
-void Usage( const char *name )
+static void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;

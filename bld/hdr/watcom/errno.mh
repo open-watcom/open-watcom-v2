@@ -21,7 +21,7 @@
 :segment !CNAME
 :include saferpro.sp
 
-:include errnot.sp
+:include errno_t.sp
 
 :include saferepi.sp
 

@@ -196,11 +196,11 @@ entry_export * AllocExport( char *name, unsigned len )
     unsigned        chop;
 
     exp = CarveAlloc( CarveExportInfo );
-    exp->isexported = TRUE;
-    exp->isprivate = FALSE;
-    exp->ismovable = FALSE;
-    exp->isresident = FALSE;
-    exp->isfree = FALSE;
+    exp->isexported = true;
+    exp->isprivate = false;
+    exp->ismovable = false;
+    exp->isresident = false;
+    exp->isfree = false;
     if( name == NULL ) {
         exp->name = NULL;
     } else {
@@ -230,7 +230,7 @@ void MSExportKeyword( length_name *expname, length_name *intname, unsigned flags
     entry_export *  exp;
 
     exp = AllocExport( expname->name, expname->len );
-    exp->isanonymous = FALSE;
+    exp->isanonymous = false;
     exp->iopl_words = flags & EXPDEF_IOPLMASK;
     exp->isresident = (flags & EXPDEF_RESIDENT) != 0;
     if( intname->len != 0 ) {
@@ -244,7 +244,7 @@ void MSExportKeyword( length_name *expname, length_name *intname, unsigned flags
     if( flags & EXPDEF_ORDINAL ) {
         exp->ordinal = ordinal;
     } else {
-        exp->isresident = TRUE; // no ordinal specd == isresident
+        exp->isresident = true; // no ordinal specd == isresident
     }
     AddToExportList( exp );
 }
@@ -255,7 +255,7 @@ dll_sym_info * AllocDLLInfo( void )
     dll_sym_info * dll;
 
     dll = CarveAlloc( CarveDLLInfo );
-    dll->isfree = FALSE;
+    dll->isfree = false;
     return dll;
 }
 
@@ -308,10 +308,10 @@ void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, o
             SET_SYM_TYPE( dll->iatsym, SYM_IMPORTED );
             dll->iatsym->p.import = NULL;
         }
-        dll->m.modnum = AddNameTable( modname->name, modname->len, TRUE, &FmtData.u.os2.mod_ref_list );
+        dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2.mod_ref_list );
         dll->isordinal = ordinal != NOT_IMP_BY_ORDINAL;
         if( !dll->isordinal ) {
-            dll->u.entry = AddNameTable( extname->name, extname->len, FALSE, &FmtData.u.os2.imp_tab_list );
+            dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2.imp_tab_list );
         } else {
             dll->u.ordinal = ordinal;
         }
@@ -521,8 +521,8 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     }
     exp = AllocExport( NULL, 0 );
     exp->sym = NULL;
-    exp->isexported = FALSE;
-    exp->isanonymous = FALSE;
+    exp->isexported = false;
+    exp->isanonymous = false;
     exp->ordinal = max_ord + 1;
     exp->ismovable = (grp->segflags & SEG_MOVABLE) != 0;
     exp->next = NULL;

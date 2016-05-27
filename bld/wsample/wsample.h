@@ -40,7 +40,7 @@
                          modify exact nomemory [];
   #endif
   extern void __mark( void __far *, unsigned short, void __near * );
-  #define _MARK_( x )   __mark( x, 0, (void __near *) 0 )
+  #define _MARK_( x )   __mark( x, 0, (void __near *)0 )
 #else
   #define _MARK_( x )
 #endif

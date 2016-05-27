@@ -92,11 +92,11 @@ extern bool RXEvent( gui_window * gui, gui_event event, void * param )
             GUICloseDialog( gui );
             break;
         }
-        return( TRUE );
+        return( true );
     default :
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -125,7 +125,7 @@ extern void DlgSetHistory( gui_window *gui, void *history, char *cmd,
     GUISetFocus( gui, edit );
     if( !WndPrevFromHistory( history, cmd ) ) return;
     GUISetText( gui, edit, cmd );
-    GUISelectAll( gui, edit, TRUE );
+    GUISelectAll( gui, edit, true );
     GUIClearList( gui, list );
     while( WndPrevFromHistory( history, cmd ) ) {
         /* nothing */
@@ -156,7 +156,7 @@ static void MoveCursor( gui_window *gui, int edit, int list, int direction )
     cmd = GUIGetText( gui, list );
     GUISetText( gui, edit, cmd );
     GUIMemFree( cmd );
-    GUISelectAll( gui, edit, TRUE );
+    GUISelectAll( gui, edit, true );
 }
 
 
@@ -169,12 +169,12 @@ extern bool DlgHistoryKey( gui_window *gui, void *param, int edit, int list )
     switch( key ) {
     case GUI_KEY_UP:
         MoveCursor( gui, edit, list, -1 );
-        return( TRUE );
+        return( true );
     case GUI_KEY_DOWN:
         MoveCursor( gui, edit, list, 1 );
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -222,7 +222,7 @@ extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
         switch( id ) {
         case CTL_SRCH_LIST:
             DlgClickHistory( gui, CTL_SRCH_EDIT, CTL_SRCH_LIST );
-            if( event == GUI_CONTROL_CLICKED ) return( TRUE );
+            if( event == GUI_CONTROL_CLICKED ) return( true );
             /* fall through */
         case CTL_SRCH_NEXT:
             dlg->direction = 1;
@@ -244,11 +244,11 @@ extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
         default :
             break;
         }
-        return( TRUE );
+        return( true );
     default :
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -278,7 +278,7 @@ static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
 
 int DlgSearch( a_window *wnd, void *history )
 {
-    return( DoDlgSearch( wnd, history, TRUE ) );
+    return( DoDlgSearch( wnd, history, true ) );
 }
 
 
@@ -286,7 +286,7 @@ bool DlgSearchAll( char **expr, void *history )
 {
     int         direction;
 
-    direction = DoDlgSearch( WndMain, history, FALSE );
+    direction = DoDlgSearch( WndMain, history, false );
     *expr = WndSrchItem( WndMain );
     return( direction != 0 );
 }

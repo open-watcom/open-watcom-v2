@@ -56,7 +56,7 @@
 
 static  RINGNAMECTL undef_names =       // #UNDEF NAMES LIST
 {   NULL                                // - ring
-, TRUE                                  // - case sensitive
+, true                                  // - case sensitive
 };
 
 
@@ -96,7 +96,7 @@ static MEPTR defineStringMacro( // DEFINE A MACRO NAME
     char const *save = CmdScanAddr();
 
     CmdScanInit( name );
-    mptr = DefineCmdLineMacro( FALSE );
+    mptr = DefineCmdLineMacro( false );
     CmdScanInit( save );
     return( mptr );
 }
@@ -104,7 +104,7 @@ static MEPTR defineStringMacro( // DEFINE A MACRO NAME
 
 MEPTR DefineCmdLineMacro(       // DEFINE A MACRO FROM THE COMMAND LINE
                                 // (assumes position is one char after "-D")
-    bool many_tokes )           // - TRUE ==> scan multiple tokens
+    bool many_tokes )           // - true ==> scan multiple tokens
 {
     MEPTR mptr;
     int (*old_scanner)( void );
@@ -326,7 +326,7 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     FreePrags = NULL;
     CgBackSetInlineDepth( DEFAULT_INLINE_DEPTH );
     CgBackSetOeSize( 0 );
-    CgBackSetInlineRecursion( FALSE );
+    CgBackSetInlineRecursion( false );
 }
 
 unsigned VerifyPackAmount( unsigned pack )

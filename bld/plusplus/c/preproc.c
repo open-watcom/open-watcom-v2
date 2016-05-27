@@ -390,10 +390,10 @@ bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
         break;
     }
     if( ( CurToken == token ) || ( CurToken == alt_token ) ) {
-        return( TRUE );
+        return( true );
     }
     CErr( ERR_EXPECTING_BUT_FOUND, Tokens[token], TokenString() );
-    return( FALSE );
+    return( false );
 }
 
 void MustRecog(                 // REQUIRE A SPECIFIC TOKEN AND SCAN NEXT

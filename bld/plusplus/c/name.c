@@ -325,14 +325,14 @@ pch_status PCHInitNames( bool writing )
         }
     }
 #endif
-    nameFlags.no_creates_allowed = TRUE;
+    nameFlags.no_creates_allowed = true;
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniNames( bool writing )
 {
     writing = writing;
-    nameFlags.no_creates_allowed = FALSE;
+    nameFlags.no_creates_allowed = false;
     CMemFreePtr( &nameTranslateTable );
     return( PCHCB_OK );
 }

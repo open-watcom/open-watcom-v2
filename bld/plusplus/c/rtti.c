@@ -67,11 +67,11 @@ static RTTI_CLASS *newClass( TYPE class_type )
     new_class->class_type = class_type;
     new_class->sym = NULL;
     new_class->offset = 0;
-    new_class->done = FALSE;
-    new_class->gen = FALSE;
-    new_class->cg_gen = FALSE;
-    new_class->free = FALSE;
-    new_class->too_big = FALSE;
+    new_class->done = false;
+    new_class->gen = false;
+    new_class->cg_gen = false;
+    new_class->free = false;
+    new_class->too_big = false;
     return( new_class );
 }
 
@@ -95,7 +95,7 @@ static RTTI_TYPEID *newTypeid( TYPE type )
     RingPush( &rttiTypeids, new_typeid );
     new_typeid->type = type;
     new_typeid->sym = MakeTypeidSym( type );
-    new_typeid->free = FALSE;
+    new_typeid->free = false;
     return( new_typeid );
 }
 
@@ -118,7 +118,7 @@ static RTTI_VFPTR *newVfptr( RTTI_CLASS *class_entry, CLASS_TABLE *location )
     new_vfptr = CarveAlloc( carveRTTI_VFPTR );
     RingAppend( &(class_entry->vfptrs), new_vfptr );
     new_vfptr->control = RA_NULL;
-    new_vfptr->free = FALSE;
+    new_vfptr->free = false;
     if( location->delta != location->exact_delta ) {
         /* vfptr is in a virtual base */
         if( location->ctor_disp ) {
@@ -174,7 +174,7 @@ void RttiDone( SCOPE host )
     // class_entry can be NULL if there is a bug in name mangling
     // not creating unique enough names (rtti08.c)
     if( class_entry != NULL ) {
-        class_entry->done = TRUE;
+        class_entry->done = true;
     }
 }
 
@@ -195,7 +195,7 @@ static target_size_t rttiInfoSize( RTTI_CLASS *class_entry )
     if( size > 0x010000 ) {
         CErr( ERR_TOO_MUCH_FOR_RTTI, class_type, nbases );
         size = 1;
-        class_entry->too_big = TRUE;
+        class_entry->too_big = true;
     }
 #endif
     return( size );
@@ -215,7 +215,7 @@ void RttiRef( SYMBOL sym )
     RingIterBeg( rttiClasses, curr ) {
         if( curr->sym == sym ) {
             if( ! curr->gen ) {
-                curr->gen = TRUE;
+                curr->gen = true;
                 DbgAssert( sym->segid == SEG_NULL );
                 table_type = TypedefModifierRemove( sym->sym_type );
                 DbgAssert( table_type->id == TYP_ARRAY );
@@ -395,21 +395,21 @@ static void markFreeClass( void *p )
 {
     RTTI_CLASS *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void markFreeVfptr( void *p )
 {
     RTTI_VFPTR *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void markFreeTypeid( void *p )
 {
     RTTI_TYPEID *s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void saveClass( void *e, carve_walk_base *d )

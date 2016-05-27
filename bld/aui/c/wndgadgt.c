@@ -45,11 +45,11 @@ extern void WndSetGadgetLine( a_window *wnd, wnd_line_piece *line, wnd_gadget_ty
     if( WndSwitchOn( wnd, WSW_ALTERNATE_BIT ) ) type += WndGadgetSecondary;
     text[0] = type+1;
     line->text = text;
-    line->bitmap = TRUE;
+    line->bitmap = true;
     line->length = length;
-    line->hot = TRUE;
+    line->hot = true;
     line->attr = WndGadgetAttr;
-    line->tabstop = FALSE;
+    line->tabstop = false;
 }
 
 extern void WndGadgetInit( void )

@@ -147,9 +147,9 @@ using std::wscanf;
 :endsegment
 :include pshpackl.sp
 
-:include sizet.sp
+:include size_t.sp
 
-:include ssizet.sp
+:include ssize_t.sp
 
 :include null.sp
 
@@ -323,9 +323,7 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 
 #define EOF         (-1)                /*  End of File/Error return code   */
 
-#define SEEK_SET    0                   /*  Seek relative to start of file  */
-#define SEEK_CUR    1                   /*  Seek relative to current positn */
-#define SEEK_END    2                   /*  Seek relative to end of file    */
+:include seekpos.sp
 
 #define _NOT_ORIENTED   0               /* stream not yet oriented */
 #define _BYTE_ORIENTED  1               /* byte-oriented stream */
@@ -592,9 +590,9 @@ _WCRTLINK extern int      putws( const wchar_t * );
 :segment !CNAME
 :include saferpro.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
-:include errnot.sp
+:include errno_t.sp
 
 _WCRTLINK extern char     *gets_s( char *__s, rsize_t __n );
 _WCRTLINK extern int      fprintf_s( FILE * __restrict __stream, const char * __restrict __format, ... );

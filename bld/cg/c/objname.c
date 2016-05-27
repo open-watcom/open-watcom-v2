@@ -292,12 +292,12 @@ extern bool SymIsExported( cg_sym_handle sym ) {
 
     bool        exported;
 
-    exported = FALSE;
+    exported = false;
     if( sym != NULL ) {
         if( FEAttr( sym ) & FE_DLLEXPORT ) {
-            exported = TRUE;
+            exported = true;
         } else if( *(call_class*)FindAuxInfoSym( sym, CALL_CLASS ) & DLL_EXPORT ) {
-            exported = TRUE;
+            exported = true;
         }
     }
     return( exported );

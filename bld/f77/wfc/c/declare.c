@@ -76,17 +76,17 @@ bool    IsFunctionDefn( void ) {
 
 // Check to see if type declaration is a function definition.
 
-    if( !RecName() ) return( FALSE );
-    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) ) return( FALSE );
+    if( !RecName() ) return( false );
+    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) ) return( false );
     // allow INTEGER FUNCTION(10)
-    if( CITNode->opnd_size == 8 ) return( FALSE );
+    if( CITNode->opnd_size == 8 ) return( false );
     // allow "INTEGER FUNCTIONA"
-    if( RecNextOpr( OPR_TRM ) ) return( FALSE );
+    if( RecNextOpr( OPR_TRM ) ) return( false );
     // We now have INTEGER[*lenspec] FUNCTION name ...
     // allow INTEGER FUNCTIONA,
-    if( StmtSw & SS_COMMA_FOUND ) return( FALSE );
+    if( StmtSw & SS_COMMA_FOUND ) return( false );
     RemKeyword( CITNode, 8 );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -216,8 +216,9 @@ static  void    TypeDecl( TYPE typ ) {
     itnode      *var_node;
     bool        len_spec;
     sym_id      sym;
-    uint        size = ~0U;
+    uint        size;
 
+    size = SIZE_UNDEF;
     default_size = StorageSize( typ );
     if( RecNOpn() ) {
         AdvanceITPtr();
@@ -235,7 +236,7 @@ static  void    TypeDecl( TYPE typ ) {
             }
         }
         for(;;) {
-            size = ~0;
+            size = SIZE_UNDEF;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
@@ -429,11 +430,11 @@ void    ArrayDecl( sym_id sym ) {
     subs_ptr = &dim_list.subs_1_lo;
     num_elts = 1;
     num_subs = 0;
-    assumed = FALSE;
-    var_dim = FALSE;
+    assumed = false;
+    var_dim = false;
     for(;;) {
         num_subs++;
-        pvd_ok = FALSE;
+        pvd_ok = false;
         hi_bound = 0;
         lo_bound = 1;
         assumed = RecNOpn() && RecNextOpr( OPR_MUL );
@@ -458,7 +459,7 @@ void    ArrayDecl( sym_id sym ) {
                     _SetLoConstBound( dim_list.dim_flags, num_subs );
                 } else if( const_lo == SSB_NOT_CONSTANT ) {
                     GSLoBound( num_subs, sym );
-                    var_dim = TRUE;
+                    var_dim = true;
                 }
                 AdvanceITPtr();
                 assumed = RecNOpn() && RecNextOpr( OPR_MUL );
@@ -494,7 +495,7 @@ void    ArrayDecl( sym_id sym ) {
                                 hi_bound = lo_bound - 1;
                             }
                             GSHiBound( num_subs, sym );
-                            var_dim = TRUE;
+                            var_dim = true;
                         }
                     }
                 }
@@ -502,7 +503,7 @@ void    ArrayDecl( sym_id sym ) {
                 _SetLoConstBound( dim_list.dim_flags, num_subs );
                 if( const_lo == SSB_NOT_CONSTANT ) {
                     GSHiBound( num_subs, sym );
-                    var_dim = TRUE;
+                    var_dim = true;
                 } else if( const_lo == SSB_CONSTANT ) {
                     pvd_ok = ( lo_bound == 1 );
                     hi_bound = lo_bound;

@@ -86,28 +86,33 @@ int DefineMacro( const char *defineStr )
     char *              value;
     size_t              len;
     const char *        str;
-    bool                freeStrFlag = FALSE;
+    bool                freeStrFlag = false;
 
     /*** Validate the string ***/
     str = validate_define_str( defineStr );
     if( str != NULL ) {
-        freeStrFlag = TRUE;
+        freeStrFlag = true;
     } else {
         str = defineStr;
     }
 
     /*** Extract the macro name from str ***/
-    for( p=str,len=0; *p!='\0'; p++,len++ ) {
-        if( *p == '=' )  break;
+    for( p = str, len = 0; *p != '\0'; p++, len++ ) {
+        if( *p == '=' ) {
+            break;
+        }
     }
-    if( len == 0 )  return( 0 );
+    if( len == 0 )
+        return( 0 );
     name = AllocMem( len + 1 );
     memcpy( name, str, len );
     name[len] = '\0';
-    if( *p != '\0' )  p++;
+    if( *p != '\0' )
+        p++;
 
     /*** Extract the macro value from str ***/
-    while( isspace( *p ) )  p++;
+    while( isspace( *p ) )
+        p++;
     if( *p != '\0' ) {
         value = AllocMem( strlen( p ) + 1 );
         strcpy( value, p );
@@ -309,7 +314,7 @@ static char *validate_define_str( const char *str )
 /*************************************************/
 {
     char *              buf;
-    bool                madeChange = FALSE;
+    bool                madeChange = false;
     int                 count;
 
     /*** Make a new buffer ***/
@@ -322,7 +327,7 @@ static char *validate_define_str( const char *str )
             buf[count] = str[count+1];
         }
         buf[count-1] = '\0';
-        madeChange = TRUE;
+        madeChange = true;
     }
 
     if( madeChange ) {

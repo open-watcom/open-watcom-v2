@@ -87,27 +87,27 @@ static byte UCondTable[] = {
 /***************************
     the 8086 code for an unsigned jmp
 */
-        5,              /* OP_BIT_TEST_TRUE*/
-        4,              /* OP_BIT_TEST_FALSE*/
-        4,              /* OP_CMP_EQUAL*/
-        5,              /* OP_CMP_NOT_EQUAL*/
-        7,              /* OP_CMP_GREATER*/
-        6,              /* OP_CMP_LESS_EQUAL*/
-        2,              /* OP_CMP_LESS*/
-        3 };            /* OP_CMP_GREATER_EQUAL*/
+        5,              /* OP_BIT_TEST_TRUE */
+        4,              /* OP_BIT_TEST_FALSE */
+        4,              /* OP_CMP_EQUAL */
+        5,              /* OP_CMP_NOT_EQUAL */
+        7,              /* OP_CMP_GREATER */
+        6,              /* OP_CMP_LESS_EQUAL */
+        2,              /* OP_CMP_LESS */
+        3 };            /* OP_CMP_GREATER_EQUAL */
 
 static byte SCondTable[] = {
 /***************************
     the 8086 code for a signed jmp
 */
-        5,              /* OP_BIT_TEST_TRUE*/
-        4,              /* OP_BIT_TEST_FALSE*/
-        4,              /* OP_CMP_EQUAL*/
-        5,              /* OP_CMP_NOT_EQUAL*/
-        15,             /* OP_CMP_GREATER*/
-        14,             /* OP_CMP_LESS_EQUAL*/
-        12,             /* OP_CMP_LESS*/
-        13 };           /* OP_CMP_GREATER_EQUAL*/
+        5,              /* OP_BIT_TEST_TRUE */
+        4,              /* OP_BIT_TEST_FALSE */
+        4,              /* OP_CMP_EQUAL */
+        5,              /* OP_CMP_NOT_EQUAL */
+        15,             /* OP_CMP_GREATER */
+        14,             /* OP_CMP_LESS_EQUAL */
+        12,             /* OP_CMP_LESS */
+        13 };           /* OP_CMP_GREATER_EQUAL */
 
 static byte RevCond[] = {
 /************************
@@ -259,7 +259,7 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
     fe_attr     attr = 0;
     name        *temp;
 
-    first = FALSE;
+    first = false;
     endp = p + len;
     while( p < endp ) {
         _Code;
@@ -318,20 +318,20 @@ static  void    CodeSequence( const byte *p, byte_seq_len len )
                         // ensure previous instructions be emited and
                         // start new FPU instruction
                         startp = p - INSSIZE;
-                        first = TRUE;
+                        first = true;
                         continue;
                     }
                     p += 2;
                     if( _IsEmulation() ) {
                         FPPatchType = type;
-                        Used87 = TRUE;
+                        Used87 = true;
                     }
                     break;
                 }
             }
             if( first ) {
                 LayOpbyte( *p );
-                first = FALSE;
+                first = false;
             } else {
                 AddByte( *p );
             }
@@ -545,7 +545,7 @@ void    GenLabelReturn( void ) {
     generate a return from CALL_LABEL instruction (near return)
 */
 
-    GenReturn( 0, FALSE, FALSE );
+    GenReturn( 0, false, false );
 }
 
 void    GenReturn( int pop, bool is_long, bool iret ) {
@@ -630,7 +630,7 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
         LayOpbyte( M_PUSH );
         LayRegAC( Low32Reg( regs ) );
         _Emit;
-        GenReturn( 0, TRUE, FALSE );
+        GenReturn( 0, true, false );
     } else {
         ReFormat( OC_JMPI );
         LayOpword( M_CJINEAR );

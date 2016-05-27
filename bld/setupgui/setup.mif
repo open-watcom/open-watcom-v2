@@ -28,7 +28,7 @@ objs = &
     setupinf.obj    &
     guistat.obj     &
     dlggen.obj      &
-    guiutil.obj     &
+    guiutils.obj    &
     guicolor.obj    &
     guictrl.obj     &
     genvbl.obj      &

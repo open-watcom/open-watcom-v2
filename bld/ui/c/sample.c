@@ -165,8 +165,8 @@ static VEDITLINE inputline = {
     Buffer,      /* pointer to buffer */
     0,           /* index of cursor in buffer */
     0x70,        /* attribute used to echo buffer */
-    FALSE,       /* bool: user changed buffer contents */
-    TRUE,        /* bool: application altered buffer */
+    false,       /* bool: user changed buffer contents */
+    true,        /* bool: application altered buffer */
 };
 
 static EVENT             evlist[] = {
@@ -237,7 +237,7 @@ static void open( void )
         /* blank out the buffer */
         inputline.index = 0;
         inputline.scroll = 0;
-        inputline.update = TRUE;
+        inputline.update = true;
         for( ; ; ) {
             ev = uiveditline( &opwin, &inputline );
             if( ev != EV_NO_EVENT ) {

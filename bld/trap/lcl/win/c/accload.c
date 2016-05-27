@@ -42,7 +42,7 @@
 #include "getcsip.h"
 #include "getsaddr.h"
 #include "winerr.h"
-#include "int32std.h"
+#include "di386cli.h"
 #include "dosextx.h"
 #include "dosfile.h"
 
@@ -346,14 +346,14 @@ trap_retval ReqProg_kill( void )
     ExitSoftMode();
     if( WDebug386 ) {
         if( WasInt32 ) {
-            WasInt32 = FALSE;
+            WasInt32 = false;
             DoneWithInterrupt( NULL );
         }
     }
     DebugeeTask = NULL;
     ModuleTop = 0;
     CurrentModule = 1;
-    FaultHandlerEntered = FALSE;
+    FaultHandlerEntered = false;
     PendingTrap = FALSE;
     SaveStdIn = NIL_HANDLE;
     SaveStdOut = NIL_HANDLE;

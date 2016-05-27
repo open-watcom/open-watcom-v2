@@ -48,7 +48,7 @@ struct initfini {                   // INITFINI -- register init/fini
 
 struct exit_point {                 // EXIT_POINT -- registration point
     EXIT_POINT  *previous;          // - previous exit point
-    unsigned    subsequent : 1;     // - TRUE ==> not first time
+    unsigned    subsequent : 1;     // - true ==> not first time
     INITFINI    *registered[1];     // - registrations
 };
 

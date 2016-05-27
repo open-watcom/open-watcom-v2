@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 2016 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,46 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  LibMain and _LibMain function declarations.
+* Description:  Implementation of termios tcflow for Linux
+*
+* Author: J. Armstrong
 *
 ****************************************************************************/
 
+#include "variety.h"
+#include "linuxsys.h"
+#include <sys/ioctl.h>
+#include <termios.h>
 
-#if defined( __OS2__ )
+_WCRTLINK int tcflow( int fd, int action )
+{
+syscall_res res;
 
-extern unsigned _LibMain( unsigned hmod, unsigned termination );
-#pragma aux _LibMain "_*" parm caller []
-extern unsigned APIENTRY LibMain( unsigned hmod, unsigned termination );
-
-#elif defined( __NT__ )
-
-extern int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
-extern int APIENTRY LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
-
-#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
-
-extern int _LibMain( int hdll, int reason, void *reserved );
-#pragma aux _LibMain "_*" value [eax] parm [ebx] [edx] [eax]
-extern int __stdcall LibMain( int hdll, int reason, void *reserved );
-
-#elif defined( __WINDOWS__ )
-
-#if defined(__WINDOWS_386__)
-    #define _EXPORT_ENTRY
-    extern int _WCFAR __pascal WEP( int );
-#elif defined(__WINDOWS_286__)
-    #define _EXPORT_ENTRY __export
-    extern int __export _WCFAR __pascal WEP( int );
-    extern int __export _WCI86FAR __pascal _WEP( int );
-    extern void __clib_WEP( void );
-#else
-    #error platform not supported
-#endif
-
-#elif defined( __DOS__ )
-
-extern unsigned _LibMain( int termination );
-/* So that assembly caller doesn't depend on stack/register convention. */
-#pragma aux _LibMain "_*" parm caller []
-
-#endif
+    res = sys_call3( SYS_ioctl, (u_long)fd, (u_long)TCXONC, (u_long)action);
+    __syscall_return( int, res );
+}

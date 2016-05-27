@@ -103,10 +103,10 @@ static  bool    LblName( label_handle lbl ) {
 /*****************************************/
 
 
-    if( ValidLbl( lbl ) == FALSE ) return( FALSE );
+    if( ValidLbl( lbl ) == false ) return( false );
     DumpChar( 'L' );
     DumpPtr( lbl );
-    if( lbl->lbl.sym == NULL ) return( TRUE );
+    if( lbl->lbl.sym == NULL ) return( true );
     DumpChar( '(' );
     if( AskIfRTLabel( lbl ) ) {
         DumpXString( AskRTName( (rt_class)(pointer_int)lbl->lbl.sym ) );
@@ -118,7 +118,7 @@ static  bool    LblName( label_handle lbl ) {
         DumpXString( FEName( lbl->lbl.sym ) );
     }
     DumpChar( ')' );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -299,7 +299,7 @@ static  void    DoLabel( oc_handle *instr ) {
     DumpByte( instr->hdr.objlen + 1 );
     DumpLiteral( "> " );
     for(;;) {
-        if( LblName( lbl ) == FALSE ) break;
+        if( LblName( lbl ) == false ) break;
         lbl = lbl->alias;
         if( lbl == NULL ) break;
         DumpChar( ' ' );
@@ -326,7 +326,7 @@ extern  void    DumpLbl( label_handle lbl ) {
 
     ins_entry   *ref;
 
-    if( _ValidLbl( lbl ) == FALSE ) return;
+    if( _ValidLbl( lbl ) == false ) return;
     if( lbl->lbl.sym != NULL ) {
         DumpChar( '(' );
         DumpXString( FEName( lbl->lbl.sym ) );

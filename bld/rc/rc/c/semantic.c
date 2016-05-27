@@ -37,6 +37,7 @@
 #include "tmpctl.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "wres.h"
 
 
 /* used in the work around for MS format RES files */

@@ -229,17 +229,17 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
     TYPE type,                  // - C++ type
     bool string )               // - array of string not aggregate
 {
-    bool retn = FALSE;          // - TRUE if aggregate
+    bool retb = false;          // - true if aggregate
     CLASSINFO *info;            // - info part of class type
 
     type = TypedefModifierRemove( type );
     switch( type->id ) {
       case TYP_ARRAY :
         if( string && TypeIsCharString( type ) ) break;
-        retn = TRUE;
+        retb = true;
         break;
       case TYP_BITFIELD :
-        retn = TRUE;
+        retb = true;
         break;
       case TYP_CLASS :
         info = type->u.c.info;
@@ -250,10 +250,10 @@ bool IsCgTypeAggregate(         // CAN TYPE CAN BE INITIALIZED AS AGGREGATE?
         if( info->last_vbase != 0 ) break;
         if( info->has_data == 0 ) break;
         if( info->has_ctor != 0 ) break;
-        retn = TRUE;
+        retb = true;
         break;
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -277,7 +277,7 @@ target_size_t CgCodePtrSize(    // SIZE OF DEFAULT CODE POINTER
 
 static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
     TYPE type,                  // - type
-    bool ref_as_ptr )           // - TRUE ==> treat reference as pointer
+    bool ref_as_ptr )           // - true ==> treat reference as pointer
 {
     type_flag mod_flags;        // - modifier flags
     target_size_t size;         // - size of type
@@ -326,7 +326,7 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
         break;
       case TYP_POINTER :
         if( ( ! ref_as_ptr ) && ( type->flag & TF1_REFERENCE ) ) {
-            size = cgSize( type->of, FALSE );
+            size = cgSize( type->of, false );
         } else {
             type = TypeModFlags( type->of, &mod_flags );
             if( type->id == TYP_FUNCTION ) {
@@ -337,7 +337,7 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
         }
         break;
       case TYP_BITFIELD :
-        size = cgSize( type->of, TRUE );
+        size = cgSize( type->of, true );
         break;
       case TYP_ARRAY :
         size = type->u.a.array_size;
@@ -345,7 +345,7 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
             DbgAssert( type->u.a.array_size == 1 );
             size = 0;
         } else {
-            size *= cgSize( type->of, FALSE );
+            size *= cgSize( type->of, false );
         }
         break;
       case TYP_CLASS :
@@ -372,14 +372,14 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
 target_size_t CgTypeSize(       // COMPUTE SIZE OF A TYPE IN USE
     TYPE type )                 // - type
 {
-    return cgSize( type, FALSE );
+    return cgSize( type, false );
 }
 
 
 target_size_t CgMemorySize(     // COMPUTE SIZE OF A TYPE IN MEMORY
     TYPE type )                 // - type
 {
-    return cgSize( type, TRUE );
+    return cgSize( type, true );
 }
 
 
@@ -499,11 +499,11 @@ static target_size_t cgTypeTruncSize( // GET SIZE FOR TRUNCATION
 }
 
 
-unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
+CNV_RETN CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 {
-    unsigned retn;              // - CNV_OK or CNV_OK_TRUNC
+    CNV_RETN retn;              // - CNV_OK or CNV_OK_TRUNC
     type_flag src_flags;        // - flags for pointed source type
     type_flag tgt_flags;        // - flags for pointed target type
     TYPE umod;                  // - unmodified type for item

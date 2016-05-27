@@ -34,6 +34,7 @@
 #include "pcbsd.h"
 #include "pcbuf.h"
 #include "syslog2.h"
+#include "_syslog.h"
 
 #if defined(USE_BSD_FUNC)
 
@@ -55,7 +56,7 @@ extern int errno_s;
  *    print message on log file; output is intended for syslogd(8).
  */
 void syslog (int pri, const char *fmt, ...)
-{ 
+{
   va_list args;
   va_start (args, fmt);
   vsyslog (pri, fmt, args);
@@ -63,7 +64,7 @@ void syslog (int pri, const char *fmt, ...)
 }
 
 void vsyslog (int pri, const char *fmt, va_list ap)
-{ 
+{
   char  *p;
   char   tbuffer [2048];
   int    left = sizeof(tbuffer);
@@ -176,7 +177,7 @@ static const char *getlogname (void)
 #endif
 
   if (name)
-  {   
+  {
     char *exe = strrchr (name, '.');  /* ".exe" or ".exp" */
     if (exe)
     {
@@ -223,7 +224,7 @@ static void openloghost (void)
       return;
     }
   }
-  
+
   if (!udp_open ((udp_Socket*)logSock, 0, logHost, syslog_port, NULL))
   {
     errno = errno_s = EHOSTUNREACH;  /* "No route to host" (ARP failed) */

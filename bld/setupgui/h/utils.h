@@ -65,3 +65,7 @@ extern void             ReadVariablesFile( const char * name );
 extern void             ConcatDirSep( char *dir );
 extern void             RemoveDirSep( char *dir );
 extern void             SetupError( const char * );
+extern void             DoSpawn( when_time when );
+extern void             ResetDriveInfo( void );
+extern void             ResetDiskInfo( void );
+extern void             DeleteObsoleteFiles( void );

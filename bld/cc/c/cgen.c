@@ -771,9 +771,9 @@ static bool IsStruct( TYPEPTR typ )
       || typ->decl_type == TYPE_DCOMPLEX
       || typ->decl_type == TYPE_LDCOMPLEX
       || typ->decl_type == TYPE_UNION ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void EmitNodes( TREEPTR tree )
@@ -1247,7 +1247,7 @@ bool IsInLineFunc( SYM_HANDLE sym_handle )
     TREEPTR     tree;
     TREEPTR     right;
 
-    ret = FALSE;
+    ret = false;
     if( InLineDepth < MAX_INLINE_DEPTH ) {
         tree = FindFuncStmtTree(sym_handle);
         if( tree != NULL ) {
@@ -1554,11 +1554,11 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
             DBBegBlock();
         }
     }
-    parms_reversed = FALSE;
+    parms_reversed = false;
     if( CurFunc->u.func.parms != SYM_NULL ) {
         if( GetCallClass( CurFuncHandle ) & REVERSE_PARMS ) {
             ParmReverse( CurFunc->u.func.parms );
-            parms_reversed = TRUE;
+            parms_reversed = true;
         } else {
             SYMPTR      sym;
 
@@ -1624,16 +1624,16 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
 
     for( ; sym_handle != SYM_NULL; sym_handle = sym.handle ) {
         SymGet( &sym, sym_handle );
-        emit_debug_info = FALSE;
-        emit_extra_info = FALSE;
+        emit_debug_info = false;
+        emit_extra_info = false;
         if( (GenSwitches & NO_OPTIMIZATION) )
-            emit_debug_info = TRUE;
+            emit_debug_info = true;
         if( sym.attribs.stg_class == SC_STATIC ) {
-            emit_debug_info = FALSE;
+            emit_debug_info = false;
             if( (sym.flags & SYM_EMITTED) == 0 ) {
                 if( sym.sym_type->decl_type != TYPE_VOID ) {
                     EmitSym( &sym, sym_handle );
-                    emit_debug_info = TRUE;
+                    emit_debug_info = true;
                     SymGet( &sym, sym_handle );
                     sym.flags |= SYM_EMITTED;
                     SymReplace( &sym, sym_handle );
@@ -1642,7 +1642,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
         } else if( sym.attribs.stg_class != SC_EXTERN &&
                    sym.attribs.stg_class != SC_TYPEDEF ) {
             if( sym.flags & SYM_ADDR_TAKEN ) {
-                emit_extra_info = TRUE;
+                emit_extra_info = true;
             }
             typ = sym.sym_type;
             SKIP_TYPEDEFS( typ );
@@ -1653,7 +1653,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
             case TYPE_FCOMPLEX:
             case TYPE_DCOMPLEX:
             case TYPE_LDCOMPLEX:
-                emit_extra_info = TRUE;
+                emit_extra_info = true;
                 break;
             default:
                 break;
@@ -1668,7 +1668,7 @@ static void CDoAutoDecl( SYM_HANDLE sym_handle )
         }
 #if _CPU != 370
         if( ! CompFlags.debug_info_some )
-            emit_extra_info = FALSE;
+            emit_extra_info = false;
 #endif
         if( emit_debug_info || emit_extra_info ) {
             if( Saved_CurFunc == SYM_NULL ) {  /* if we are not inlining */

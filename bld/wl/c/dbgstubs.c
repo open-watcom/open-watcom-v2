@@ -98,14 +98,14 @@ bool DBISkip( seg_leader *seg )
 /*************************************/
 {
     seg = seg;
-    return FALSE;
+    return false;
 }
 
 bool DBINoReloc( seg_leader *seg )
 /****************************************/
 {
     seg = seg;
-    return FALSE;
+    return false;
 }
 
 void DBIP1ModuleFinished( mod_entry *obj )

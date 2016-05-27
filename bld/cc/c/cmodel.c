@@ -183,7 +183,7 @@ void PreDefine_Macro( const char *str )
                 }
             }
         }
-        Def_Macro_Tokens( str, TRUE, MFLAG_CAN_BE_REDEFINED );
+        Def_Macro_Tokens( str, true, MFLAG_CAN_BE_REDEFINED );
     }
 }
 

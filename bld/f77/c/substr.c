@@ -38,10 +38,10 @@ bool    DoSubstring( intstar4 first, intstar4 last, int len )
 // NAMELIST-directed i/o at run-time.
 {
     if( first <= 0 )
-        return( FALSE );
+        return( false );
     if( last > len )
-        return( FALSE );
+        return( false );
     if( first > last )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }

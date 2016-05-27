@@ -152,7 +152,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             }
             break;
         case MENU_LOG_CURRENT_STATE:
-            MakeLog( FALSE );
+            MakeLog( false );
             break;
         case MENU_ERASE_LOG_FILE:
             EraseLog();
@@ -183,7 +183,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         case MENU_RESET_FAULT_BIT:
-            FaultHandlerEntered = FALSE;
+            FaultHandlerEntered = false;
             break;
         case MENU_HELP_CONTENTS:
             WWinHelp( hwnd, DR_HELP_FILE, HELP_CONTENTS, 0 );
@@ -205,7 +205,7 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             return( 0L );
         }
         if( wparam == MENU_LOG_CURRENT_STATE ) {
-            MakeLog( FALSE );
+            MakeLog( false );
         } else if( wparam == MENU_CLEAR_ALERT ) {
             ClearAlert();
         } else if( !HandleDialogs( wparam ) ) {

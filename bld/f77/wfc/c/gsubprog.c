@@ -187,7 +187,7 @@ int     GParms( itnode *sp ) {
     sp = sp;
     num_stmts = 0;
     for(;;) {
-        if( RecNOpn() == FALSE ) {  // consider f()
+        if( !RecNOpn() ) {  // consider f()
             if( CITNode->opn.us == USOPN_STN ) {
                 num_stmts++;
             }

@@ -82,10 +82,10 @@ void Expecting( const char *a_token )
 bool ExpectingToken( TOKEN token )
 {
     if( CurToken == token ) {
-        return( TRUE );
+        return( true );
     }
     CErr3p( ERR_EXPECTING_BUT_FOUND, Tokens[token], NameOfCurToken() );
-    return( FALSE );
+    return( false );
 }
 
 void ExpectingAfter( TOKEN token, TOKEN after_token )
@@ -107,10 +107,10 @@ void ExpectIdentifier( void )
 bool ExpectingConstant( void )
 {
     if( CurToken == T_CONSTANT ) {
-        return( TRUE );
+        return( true );
     }
     CErr2p( ERR_EXPECTING_CONSTANT_BUT_FOUND, NameOfCurToken() );
-    return( FALSE );
+    return( false );
 }
 
 void ExpectString( void )

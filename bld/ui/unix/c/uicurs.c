@@ -45,7 +45,7 @@ void UIAPI uioffcursor( void )
 {
     UIData->cursor_type = C_OFF;
     if( UIData->cursor_on ) {
-        UIData->cursor_on = FALSE;
+        UIData->cursor_on = false;
         _physupdate( NULL );
     }
 }
@@ -55,7 +55,7 @@ void UIAPI uioncursor( void )
 /****************************/
 {
     if( !UIData->cursor_on ) {
-        UIData->cursor_on = TRUE;
+        UIData->cursor_on = true;
         _physupdate( NULL );
     }
 }
@@ -66,7 +66,7 @@ static void savecursor( void )
 {
     int dummy;
     _uigetcursor( &OldCursorRow, &OldCursorCol, &OldCursorType, &dummy );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -87,7 +87,7 @@ static void swapcursor( void )
     _swap( UIData->cursor_type, OldCursorType );
     _swap( UIData->cursor_col, OldCursorCol );
     _swap( UIData->cursor_row, OldCursorRow );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 

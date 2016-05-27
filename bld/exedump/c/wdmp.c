@@ -57,7 +57,7 @@ static void dmp_exe( void )
     Data_count = 0;
     Sizeleft = 0;
     Num_buff = -1;
-    Byte_swap = FALSE;
+    Byte_swap = false;
     if( Options_dmp & EXE_INFO ) {
         dos_dmp = Dmp_dos_head();
         if( dos_dmp == 2 ) {
@@ -163,9 +163,9 @@ static int find_file( char * file_path )
     /* check if the given file name exists */
     access_rc = access( file_path, R_OK );
     if( access_rc == 0 ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

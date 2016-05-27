@@ -35,8 +35,9 @@
 #include "stack.h"
 #include "data.h"
 #include "namelist.h"
+#include "regalloc.h"
 
-extern  void            NullConflicts( var_usage );
+
 extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );
@@ -88,20 +89,20 @@ extern  bool    RepOp( name **pop, name *of, name *with )
     bool        change;
 
     op = *pop;
-    change = FALSE;
+    change = false;
     if( op == of ) {
         *pop = with;
-        change = TRUE;
+        change = true;
     } else if( op->n.class == N_INDEXED ) {
         base = op->i.base;
         if( HasTrueBase( op ) && base == of ) {
             base = with;
-            change = TRUE;
+            change = true;
         }
         index = op->i.index;
         if( index == of ) {
             index = with;
-            change = TRUE;
+            change = true;
         }
         if( change ) {
             *pop = ScaleIndex( index, base, op->i.constant,
@@ -154,9 +155,9 @@ static  bool    Split1Var( conflict_node *conf )
         MarkInstance( unlabeled );
     }
     op = conf->name;
-    change = FALSE;
+    change = false;
     while( Instance > 1 ) {
-        change = TRUE;
+        change = true;
         ReplaceInstances( op, SAllocTemp( op->n.name_class, op->n.size ) );
         --Instance;
     }
@@ -224,16 +225,23 @@ extern  void    SplitVars( void )
     for( ;; ) {
         for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
             op = conf->name;
-            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) ) continue;
-            if( op->n.class != N_TEMP ) continue;
-            if( conf->state & CONF_VISITED ) continue;
-            conf->state &= ~CONFLICT_ON_HOLD;
-            if( _GBitEmpty( conf->id.out_of_block ) ) continue;
-            if( op->t.alias == op ) Split1Var( conf );
+            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) )
+                continue;
+            if( op->n.class != N_TEMP )
+                continue;
+            if( _Is( conf, CST_CONF_VISITED ) )
+                continue;
+            _SetFalse( conf, CST_CONFLICT_ON_HOLD );
+            if( _GBitEmpty( conf->id.out_of_block ) )
+                continue;
+            if( op->t.alias == op )
+                Split1Var( conf );
             _GBitInit( conf->id.out_of_block, EMPTY );
-            conf->state |= CONFLICT_ON_HOLD | CONF_VISITED;
+            _SetTrue( conf, CST_CONFLICT_ON_HOLD | CST_CONF_VISITED );
         }
-        if( !MoreConflicts() ) break;
+        if( !MoreConflicts() ) {
+            break;
+        }
     }
     CleanUp();
     FreeConflicts();

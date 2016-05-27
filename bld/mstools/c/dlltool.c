@@ -59,12 +59,9 @@
  */
 typedef char                    WBool;          /* really a C++ 'bool' */
 typedef unsigned IDEAPI  (*GetVerFn)( void );
-typedef WBool IDEAPI     (*InitDllFn)( IDECBHdl hdl, IDECallBacks *cb,
-                                              IDEDllHdl *info );
-typedef WBool IDEAPI     (*InitInfoFn)( IDEDllHdl hdl,
-                                               IDEInitInfo *info );
-typedef WBool IDEAPI     (*RunSelfFn)( IDEDllHdl hdl, const char *opts,
-                                              WBool *fatalerr );
+typedef WBool IDEAPI     (*InitDllFn)( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl );
+typedef WBool IDEAPI     (*InitInfoFn)( IDEDllHdl hdl, IDEInitInfo *info );
+typedef WBool IDEAPI     (*RunSelfFn)( IDEDllHdl hdl, const char *opts, WBool *fatalerr );
 typedef void IDEAPI      (*FiniDllFn)( IDEDllHdl hdl );
 typedef void IDEAPI      (*StopRunFn)( void );
 
@@ -87,24 +84,24 @@ typedef struct {
  * If a callback function isn't given to InitDllTool, the appropriate one
  * of these do-nothing functions will be used.
  */
-static IDEBool __stdcall print_message( IDECBHdl hdl, const char *text )
+static IDEBool __stdcall print_message( IDECBHdl idehdl, const char *text )
 {
-    hdl = hdl; text = text;
+    idehdl = idehdl; text = text;
     return( 1 );
 }
-static IDEBool __stdcall print_message_crlf( IDECBHdl hdl, const char *text )
+static IDEBool __stdcall print_message_crlf( IDECBHdl idehdl, const char *text )
 {
-    hdl = hdl; text = text;
+    idehdl = idehdl; text = text;
     return( 1 );
 }
-static IDEBool __stdcall print_with_info2( IDECBHdl hdl, IDEMsgInfo2 *info )
+static IDEBool __stdcall print_with_info2( IDECBHdl idehdl, IDEMsgInfo2 *info )
 {
-    hdl = hdl; info = info;
+    idehdl = idehdl; info = info;
     return( 1 );
 }
-static IDEBool __stdcall print_with_info( IDECBHdl hdl, IDEMsgInfo *info )
+static IDEBool __stdcall print_with_info( IDECBHdl idehdl, IDEMsgInfo *info )
 {
-    hdl = hdl; info = info;
+    idehdl = idehdl; info = info;
     return( 1 );
 }
 
@@ -197,8 +194,7 @@ void *InitDllTool( int whichtool, const DllToolCallbacks *callbacks )
     }
 
     /*** Tell the DLL to initialize itself ***/
-    if( tool->initdll( (IDECBHdl)callbacks->cookie, dllcallbacks,
-                       &tool->dllHdl ) ) {
+    if( tool->initdll( (IDECBHdl)callbacks->cookie, dllcallbacks, &tool->dllHdl ) ) {
         FreeLibrary( tool->dllhandle );
         return( NULL );
     }
@@ -220,7 +216,7 @@ void *InitDllTool( int whichtool, const DllToolCallbacks *callbacks )
 void FiniDllTool( void *_tool )
 /*****************************/
 {
-    DllTool *           tool = (DllTool*)_tool;
+    DllTool *tool = (DllTool*)_tool;
 
     tool->finidll( tool->dllHdl );
     FreeLibrary( tool->dllhandle );

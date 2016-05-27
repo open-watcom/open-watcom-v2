@@ -202,15 +202,15 @@ extern  void    TellFreeAllLabels( void )
     bool        unfreed;
 
   optbegin
-    unfreed = FALSE;
+    unfreed = false;
     while( Handles != NULL ) {
 #ifndef PRODUCTION
         if( _TstStatus( Handles, CODELABEL )
          && Handles->lbl.sym == NULL
-         && _TstStatus( Handles, REDIRECTION ) == FALSE
-         && unfreed == FALSE ) {
+         && _TstStatus( Handles, REDIRECTION ) == false
+         && unfreed == false ) {
             _Zoiks( ZOIKS_001 );
-            unfreed = TRUE;
+            unfreed = true;
         }
 #endif
         ReallyScrapLabel( Handles );

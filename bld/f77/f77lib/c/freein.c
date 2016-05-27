@@ -40,6 +40,7 @@
 #include "chrutils.h"
 #include "rtspawn.h"
 #include "ioerr.h"
+#include "fmtcnvt.h"
 
 #include <ctype.h>
 
@@ -60,11 +61,10 @@ void    Blanks( void );
 void    CheckEor( void );
 
 
-static  char    *GetDelim( char *start, char *buff_end ) {
-//========================================================
-
-    for(;;) {
-        if( start >= buff_end ) break;
+static const char *GetDelim( const char *start, const char *buff_end )
+//====================================================================
+{
+    for( ; start < buff_end; ++start ) {
         switch( *start ) {
         case ' ':
         case '\t':
@@ -73,15 +73,14 @@ static  char    *GetDelim( char *start, char *buff_end ) {
         case ')':
             return( start );
         }
-        start++;
     }
     return( start );
 }
 
 
-signed_32       GetNum( void ) {
-//=========================
-
+signed_32   GetNum( void )
+//========================
+{
     ftnfile     *fcb;
     char        ch;
     signed_32   value;
@@ -89,17 +88,18 @@ signed_32       GetNum( void ) {
 
     fcb = IOCB->fileinfo;
     ch = fcb->buffer[ fcb->col ];
-    minus = FALSE;
+    minus = false;
     if( ch == '+' ) {
         fcb->col++;
     } else if( ch == '-' ) {
-        minus = TRUE;
+        minus = true;
         fcb->col++;
     }
     value = 0;
     for(;;) {
         ch = fcb->buffer[ fcb->col ];
-        if( isdigit( ch ) == 0 ) break;
+        if( isdigit( ch ) == 0 )
+            break;
         value = value*10 + ( ch - '0' );
         fcb->col++;
     }
@@ -331,14 +331,15 @@ static  void    InLog( void ) {
     fcb = IOCB->fileinfo;
     chptr = &fcb->buffer[ fcb->col ];
     if( toupper( *chptr ) == 'T' ) {
-        value = _LogValue( TRUE );
+        value = _LogValue( true );
     } else {
-        value = _LogValue( FALSE );
+        value = _LogValue( false );
     }
     for(;;) {
         chptr++;
         fcb->col++;
-        if( fcb->col == fcb->len ) break;
+        if( fcb->col == fcb->len )
+            break;
         switch( *chptr ) {
         case ' ':
         case '\t':
@@ -489,13 +490,13 @@ static  void    GetInt( intstar4 *result ) {
 
     ftnfile     *fcb;
     char        *start;
-    int         len;
+    uint        len;
     int         status;
 
     fcb = IOCB->fileinfo;
-    start = &fcb->buffer[ fcb->col ];
-    len  = GetDelim( start, &fcb->buffer[ fcb->len ] ) - start;
-    status = FmtS2I( start, len, FALSE, result, FALSE, NULL );
+    start = fcb->buffer + fcb->col;
+    len = GetDelim( start, fcb->buffer + fcb->len ) - start;
+    status = FmtS2I( start, len, false, result, false, NULL );
     if( status == INT_OK ) {
         fcb->col += len;
     } else if( status == INT_INVALID ) {
@@ -511,13 +512,13 @@ static  void    GetFloat( extended *result, int prec ) {
 
     ftnfile     *fcb;
     char        *start;
-    int         len;
+    uint        len;
     int         status;
 
     fcb = IOCB->fileinfo;
-    start = &fcb->buffer[ fcb->col ];
-    len  = GetDelim( start, &fcb->buffer[ fcb->len ] ) - start;
-    status = FmtS2F( start, len, 0, FALSE, 0, prec, result, FALSE, NULL, FALSE );
+    start = fcb->buffer + fcb->col;
+    len = GetDelim( start, fcb->buffer + fcb->len ) - start;
+    status = FmtS2F( start, len, 0, false, 0, prec, result, false, NULL, false );
     if( status == FLT_OK ) {
         fcb->col += len;
     } else {

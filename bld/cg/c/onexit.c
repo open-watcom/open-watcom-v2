@@ -43,14 +43,14 @@
 
 
 static  bool volatile   BrkFlag;
-static  bool            OnExitFlag = TRUE;
+static  bool            OnExitFlag = true;
 
 
 static void SigIntFunc( int sig_num )
 /****************************/
 {
     sig_num = sig_num;
-    BrkFlag = TRUE;
+    BrkFlag = true;
 }
 
 
@@ -75,7 +75,7 @@ static void InitOnExit( void )
         GrabTimer();
         atexit( BrkFini );
         atexit( ReleTimer );
-        OnExitFlag = FALSE;
+        OnExitFlag = false;
     }
 }
 
@@ -95,7 +95,7 @@ bool TBreak( void )
 void CauseTBreak( void )
 /**********************/
 {
-    BrkFlag = TRUE;
+    BrkFlag = true;
 }
 
 

@@ -147,14 +147,14 @@ void IdentifyAssassin( CauseOfDeath cause )
 
 static bool matchesAll( char * name )
 //-----------------------------------
-// return TRUE if we guess that the user meant "match all occurances" of a name
+// return true if we guess that the user meant "match all occurances" of a name
 // NOTE: this is mainly a kludge which tries to read the user's mind.
 {
     char * nameend;
 
-    if( name == NULL || *name == '\0' ) return TRUE;
+    if( name == NULL || *name == '\0' ) return true;
     while( isspace( *name ) ) name++;
-    if( name == '\0' ) return TRUE;
+    if( name == '\0' ) return true;
     nameend = name + strlen(name) - 1;
     while( isspace( *nameend ) ) {
         *nameend = '\0';
@@ -175,7 +175,7 @@ void * WBRRegComp( const char * cname )
 
     optMgr = WBRWinBase::optManager();
     CaseIgnore = optMgr->getIgnoreCase();
-    MagicFlag =  FALSE;
+    MagicFlag =  false;
     MagicString = (optMgr->getUseRX()) ? (char *) optMgr->getMagicString()
                                        : "^$[]()~@\\.|?+*";
 

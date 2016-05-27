@@ -58,13 +58,13 @@ bool MemberFilterDlg::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_MEMBER_FILTERS );
     }
-    return( TRUE );
+    return( true );
 }
 
 void MemberFilterDlg::initialize()
 //--------------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -125,7 +125,7 @@ void MemberFilterDlg::initialize()
 void MemberFilterDlg::setValues( const MemberFilter & filt )
 //----------------------------------------------------------
 {
-    _bttnRay[ filt._inheritLevel ]->setCheck( TRUE );
+    _bttnRay[ filt._inheritLevel ]->setCheck( true );
 
     _public->setCheck( (filt._accessLevel & MemberFilter::AccPublic) != 0 );
     _protected->setCheck( (filt._accessLevel & MemberFilter::AccProtected) != 0 );

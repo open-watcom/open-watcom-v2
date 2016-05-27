@@ -72,16 +72,16 @@ extern bool FoldIntoIndex( instruction * ins ) {
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
         cons = ins->operands[ 1 ];
-        if( cons->n.class != N_CONSTANT ) return( FALSE );
-        if( cons->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( cons->c.int_value > 3 ) return( FALSE );
+        if( cons->n.class != N_CONSTANT ) return( false );
+        if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
+        if( cons->c.int_value > 3 ) return( false );
 /*
         found SHL R1,n => R1
 */
     } else if( ins->head.opcode == OP_ADD ) {
         cons = ins->operands[ 1 ];
-        if( cons->n.class != N_REGISTER ) return( FALSE );
-        if( cons->n.size != WORD_SIZE ) return( FALSE );
+        if( cons->n.class != N_REGISTER ) return( false );
+        if( cons->n.size != WORD_SIZE ) return( false );
         base_reg = cons->r.reg;
 /*
         found ADD R1,R2 => R1
@@ -94,11 +94,11 @@ extern bool FoldIntoIndex( instruction * ins ) {
             HW_CAsgn( base_reg, HW_EMPTY );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
     other_reg = ins->operands[ 0 ]->r.reg;
     sib_head = NULL;
-    dies = FALSE;
+    dies = false;
     next = ins;
     do {
         curr_sib = NULL;
@@ -189,7 +189,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
         }
         FreeIns( ins );
     } else {
-        dies = FALSE;
+        dies = false;
     }
     while( sib_head != NULL ) {
         curr_sib = sib_head;

@@ -61,15 +61,15 @@ static BOOL WINAPI consoleHandler( DWORD type )
 {
 
     type = type;
-    BrkPending = TRUE;
-    return( TRUE );
+    BrkPending = true;
+    return( true );
 
 } /* consoleHandler */
 
 
 bool UIAPI uiset80col( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 bool intern initbios( void )
@@ -87,7 +87,7 @@ bool intern initbios( void )
                 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL );
     SetConsoleMode( OutputHandle, 0 );
     SetConsoleActiveScreenBuffer( OutputHandle );
-    SetConsoleCtrlHandler( consoleHandler, TRUE );
+    SetConsoleCtrlHandler( consoleHandler, true );
 
     if( UIData == NULL ) {
         UIData = &ui_data;
@@ -124,7 +124,7 @@ void intern finibios( void )
     SetConsoleActiveScreenBuffer( oldOutputHandle );
     uifinicursor();
     finikeyboard();
-    SetConsoleCtrlHandler( consoleHandler, FALSE );
+    SetConsoleCtrlHandler( consoleHandler, false );
 }
 
 void intern physupdate( SAREA *area )

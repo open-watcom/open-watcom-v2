@@ -36,7 +36,9 @@
 #include "wdebug.h"
 #include "segmem.h"
 #include "mythelp.h"
-#include "di386.h"
+#include "di386cli.h"
+#include "intdata.h"
+
 
 #define MAX_SAMPLES     10000
 #define TIMER_ID        666
@@ -59,58 +61,29 @@ typedef struct {
     WORD        seg;
 } samp_save;
 
-typedef struct {
-    bool                TaskStarted;
-    bool                TaskEnded;
-    long                SampOffset;
-    int                 SampleHandle;
-    WORD                SampleIndex;
-    WORD                SampleCount;
-    WORD                LastSampleIndex;
-    DWORD               CurrTick;
-    WORD                FarWriteProblem;
-    info_struct         Info;
-    bool                LostData;
-    char                SampName[256];
-    bool                ShopClosed;
-} shared_data;
-
 /*
  * globals
  */
-extern volatile WORD            __near WaitForFirst;
-extern volatile WORD            __near IsSecondOK;
-extern HWND                     __near MainWindowHandle;
-extern HWND                     __near OutputWindow;
-extern HANDLE                   InstanceHandle,PrevInstance;
-extern samp_save                __far * __near SampSave;
-extern shared_data              __far * __near SharedMemory;
-extern WORD                     SleepTime;
-extern DWORD                    TotalTime;
-extern HANDLE                   SampledProg;
-extern BOOL                     WDebug386;
-extern interrupt_struct         __near IntData;
-extern seg_offset               CommonAddr;
-extern HANDLE                   WaitForInt3;
-extern HANDLE                   WaitForInt1;
+extern volatile WORD        __near WaitForFirst;
+extern volatile WORD        __near IsSecondOK;
+extern HWND                 __near MainWindowHandle;
+extern HWND                 __near OutputWindow;
+extern HANDLE               InstanceHandle,PrevInstance;
+extern samp_save __far      * __near SampSave;
+extern WORD                 SleepTime;
+extern DWORD                TotalTime;
+extern HANDLE               SampledProg;
+extern interrupt_struct     __near IntData;
+extern seg_offset           CommonAddr;
+extern HANDLE               WaitForInt3;
+extern HANDLE               WaitForInt1;
 
 /* somewhere in the common part of the sampler */
-extern int sample_main( char __far * );
-extern void REPORT_TYPE report( void );
-extern void             SaveSamples( void );
-extern int              SampWrite( void FAR_PTR *, unsigned );
-extern void             WriteCodeLoad( seg_offset, char *, samp_block_kinds );
-extern void             WriteAddrMap( seg, seg, off );
-extern void             WriteMark( char FAR_PTR *str, seg_offset where );
-extern unsigned         GetNumber(unsigned,unsigned,char**,unsigned);
-extern void             AllocSamples( unsigned );
-extern void             SetTimerRate( char ** );
-extern void             fatal(void);
-extern int              MessageLoop( void );
-extern void             RecordCGraph( void );
+extern int                  sample_main( char __far * );
+extern int                  MessageLoop( void );
 
-extern void Usage( void );
-extern void FAR_PTR * alloc( int );
+extern void                 Usage( void );
+extern void FAR_PTR         *alloc( int );
 
 /* getidata.c */
 int GetIData( HINSTANCE inst, void __near *data, unsigned int size );
@@ -135,6 +108,9 @@ void MyOutput(char*, ...);
 char *ResName( char * );
 
 /* winopts.c */
-BOOL GetFileName( HINSTANCE, int, char * );
+extern bool GetFileName( HINSTANCE, int, char * );
+
+/* fault.c */
+extern WORD __cdecl FAR FaultHandler( fault_frame ff );
 
 #endif

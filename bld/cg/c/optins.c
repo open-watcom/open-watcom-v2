@@ -66,12 +66,12 @@ static  bool    LineLabel( ins_entry *label )
 {
 #if _TARGET & _TARG_RISC
     if( _LblLine( label ) != 0 ) {
-        return( TRUE );
+        return( true );
     }
 #else
     label = label;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 
@@ -93,7 +93,7 @@ static  bool    CompressLabels( ins_entry *label )
             break;
         AliasLabels( other_label, label );
         if( _Class( label ) == OC_DEAD ) {
-            optreturn( FALSE );
+            optreturn( false );
         }
     }
     for( ;; ) {
@@ -106,10 +106,10 @@ static  bool    CompressLabels( ins_entry *label )
             break;
         AliasLabels( other_label, label );
         if( _Class( label ) == OC_DEAD ) {
-            optreturn( FALSE );
+            optreturn( false );
         }
     }
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 
@@ -120,22 +120,22 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
     oc_class    cl;
 
     if( jmp == NULL )
-        return( FALSE );
+        return( false );
     cl = _Class( jmp );
     if( (cl != OC_JCOND) && (cl != OC_JMP) )
-        return( FALSE );
+        return( false );
     if( _Label( jmp ) == _Label( *instr ) ) {
         /* jump next*/
         *instr = DelInstr( jmp );
-        return( TRUE );
+        return( true );
     }
     if( cl != OC_JMP )
-        return( FALSE );
+        return( false );
     c_jmp = PrevIns( jmp );
     if( c_jmp == NULL )
-        return( FALSE );
+        return( false );
     if( _Class( c_jmp ) != OC_JCOND )
-        return( FALSE );
+        return( false );
 #if( OPTIONS & SEGMENTED )
     if( _Label( c_jmp ) == _Label( *instr ) && ( _Attr( jmp ) & ATTR_FAR ) == 0 ) {
 #else
@@ -148,13 +148,13 @@ static  bool    UnTangle1( ins_entry *jmp, ins_entry **instr )
         ChgLblRef( c_jmp, _Label( jmp ) );
         _ClassInfo( jmp ) = cl;
         *instr = DelInstr( jmp );
-        return( TRUE );
+        return( true );
     } else if( _Label( c_jmp ) == _Label( jmp ) ) {
         /* conditional jump followed by a jump to the same label*/
         DelInstr( c_jmp );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -165,33 +165,33 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
     ins_entry   *ins;
 
     if( _IsModel( NO_OPTIMIZATION ) )
-        return( FALSE );
+        return( false );
     if( jmp == NULL )
-        return( FALSE );
+        return( false );
     cl = _Class( jmp );
     if( cl == OC_RET ) {
         /* label followed by a return*/
         return( RetAftrLbl( jmp ) );
     }
     if( cl != OC_JMP )
-        return( FALSE );
+        return( false );
 #if( OPTIONS & SEGMENTED )
     if( _Attr( jmp ) & ATTR_FAR )
-        return( FALSE );
+        return( false );
 #endif
     if( _Label( *instr )->ins == NULL )
-        return( FALSE );
+        return( false );
     if( _Label( jmp )->redirect == _Label( *instr ) )
-        return( FALSE );
+        return( false );
     if( _Label( jmp ) == _Label( *instr ) )
-        return( FALSE );
+        return( false );
     /* jump to jump*/
     *instr = Redirect( *instr, jmp );
     if( *instr == NULL )
-        return( FALSE );
+        return( false );
     cl = PrevClass( *instr );
     if( !_TransferClass( cl ) )
-        return( TRUE );
+        return( true );
     /* dead code*/
     ins = *instr;
     for(;;) {
@@ -206,7 +206,7 @@ static  bool    UnTangle2( ins_entry *jmp, ins_entry **instr )
         }
     }
     *instr = ins;
-    return( TRUE );
+    return( true );
 }
 
 extern  ins_entry       *Untangle( ins_entry *instr )
@@ -223,7 +223,7 @@ extern  ins_entry       *Untangle( ins_entry *instr )
             break;
         if( !CompressLabels( instr ) )
             break;
-        change = FALSE;
+        change = false;
         jmp = PrevIns( instr );
         change |= UnTangle1( jmp, &instr );
         if( instr == NULL )
@@ -287,7 +287,7 @@ extern  void    OptPush( void )
   optbegin
     ins = LastIns;
     for( ;; ) {
-        InsDelete = FALSE;
+        InsDelete = false;
         switch( _Class( ins ) ) {
         case OC_INFO:
             MultiLineNums( ins );
@@ -348,7 +348,7 @@ extern  void    OptPull( void )
 
   optbegin
     for( ;; ) {
-        InsDelete = FALSE;
+        InsDelete = false;
         ins_class = _Class( FirstIns );
         switch( ins_class ) {
         case OC_LABEL:

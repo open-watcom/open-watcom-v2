@@ -886,8 +886,8 @@ static  opcode_entry    TestOrCmp1[] = {
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  R,    U ),                V_CONSTTEMP,    RG_BYTE,      R_TEMP2CONST,   FU_NO ),
 _OE( _Side(  U,    R ),                V_CONSTTEMP,    RG_BYTE,      R_TEMP2CONST,   FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPTRUE), RG_,          R_CMPTRUE,      FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPFALSE),RG_,          R_CMPFALSE,     FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPtrue), RG_,          R_CMPtrue,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPfalse),RG_,          R_CMPfalse,     FU_NO ),
 
 /* instructions we can generate*/
 
@@ -923,8 +923,8 @@ _OE( _Side(  R|M|U,C ),                NVI(V_OP2LOW_B_ZERO),RG_TWOBYTE,R_CYPHIGH
 _OE( _Side(  R|M|U,C ),                NVI(V_OP2HIGH_B_ZERO),RG_TWOBYTE,R_CYPLOW,    FU_NO ),
 _OE( _Side(  R,    U ),                V_CONSTTEMP,    RG_WORD,      R_TEMP2CONST,   FU_NO ),
 _OE( _Side(  U,    R ),                V_CONSTTEMP,    RG_WORD,      R_TEMP2CONST,   FU_NO ),
-_OE( _Side(  ANY,  C ),                V_CMPTRUE,      RG_,          R_CMPTRUE,      FU_NO ),
-_OE( _Side(  ANY,  C ),                V_CMPFALSE,     RG_,          R_CMPFALSE,     FU_NO ),
+_OE( _Side(  ANY,  C ),                V_CMPtrue,      RG_,          R_CMPtrue,      FU_NO ),
+_OE( _Side(  ANY,  C ),                V_CMPfalse,     RG_,          R_CMPfalse,     FU_NO ),
 
 /* instructions we can generate*/
 
@@ -959,8 +959,8 @@ _OE( _Side(  M,    C ),                NVI(V_OP2LOW_W_ZERO),RG_,     R_CYPHIGH, 
 _OE( _Side(  R|M|U,C ),                NVI(V_OP2HIGH_W_ZERO_REG),RG_DBL,R_CYPLOW,    FU_NO ),
 _OE( _Side(  R,    U ),                V_CONSTTEMP,    RG_DBL,       R_TEMP2CONST,   FU_NO ),
 _OE( _Side(  U,    R ),                V_CONSTTEMP,    RG_DBL,       R_TEMP2CONST,   FU_NO ),
-_OE( _Side(  ANY,  C ),                V_CMPTRUE,      RG_,          R_CMPTRUE,      FU_NO ),
-_OE( _Side(  ANY,  C ),                V_CMPFALSE,     RG_,          R_CMPFALSE,     FU_NO ),
+_OE( _Side(  ANY,  C ),                V_CMPtrue,      RG_,          R_CMPtrue,      FU_NO ),
+_OE( _Side(  ANY,  C ),                V_CMPfalse,     RG_,          R_CMPfalse,     FU_NO ),
 
 /* instructions we can generate*/
 
@@ -1000,8 +1000,8 @@ static  opcode_entry    Cmp2[] = {
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  R,    U ),                V_CONSTTEMP,    RG_WORD,      R_TEMP2CONST,   FU_NO ),
 _OE( _Side(  U,    R ),                V_CONSTTEMP,    RG_WORD,      R_TEMP2CONST,   FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPTRUE), RG_,          R_CMPTRUE,      FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPFALSE),RG_,          R_CMPFALSE,     FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPtrue), RG_,          R_CMPtrue,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPfalse),RG_,          R_CMPfalse,     FU_NO ),
 
 /* instructions we can generate*/
 
@@ -1037,8 +1037,8 @@ static  opcode_entry    Cmp4[] = {
 /*           op1   op2                 verify          reg           gen             fu  */
 _OE( _Side(  R,    U ),                V_CONSTTEMP,    RG_DBL,       R_TEMP2CONST,   FU_NO ),
 _OE( _Side(  U,    R ),                V_CONSTTEMP,    RG_DBL,       R_TEMP2CONST,   FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPTRUE), RG_,          R_CMPTRUE,      FU_NO ),
-_OE( _Side(  ANY,  ANY ),              NVI(V_CMPFALSE),RG_,          R_CMPFALSE,     FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPtrue), RG_,          R_CMPtrue,      FU_NO ),
+_OE( _Side(  ANY,  ANY ),              NVI(V_CMPfalse),RG_,          R_CMPfalse,     FU_NO ),
 
 /* instructions we can generate*/
 
@@ -1068,8 +1068,8 @@ static  opcode_entry    Cmp8[] = {
 /********************************/
 /*           op1   op2                 verify          reg           gen             fu  */
 // 2006-06-04 RomanT: Unsplit operands will stuck in conditions
-//_OE( _Side(  ANY,  C ),                V_CMPTRUE,      RG_,          R_CMPTRUE,      FU_NO ),
-//_OE( _Side(  ANY,  C ),                V_CMPFALSE,     RG_,          R_CMPFALSE,     FU_NO ),
+//_OE( _Side(  ANY,  C ),                V_CMPtrue,      RG_,          R_CMPtrue,      FU_NO ),
+//_OE( _Side(  ANY,  C ),                V_CMPfalse,     RG_,          R_CMPfalse,     FU_NO ),
 // [Todo:] Adapt V_U_TEST and R_U_TEST for 32-bit
 //_OE( _Side(  ANY,  C ),                V_U_TEST,       RG_8,         R_U_TEST,       FU_NO ),
 _OE( _Side(  C,    R|M|U ),            V_NO,           RG_8,         R_SWAPCMP,      FU_NO ),

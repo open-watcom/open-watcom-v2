@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 2016 Open Watcom contributors. 
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,12 +25,41 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of termios tcsetattr for Linux
+*
+* Author: J. Armstrong
 *
 ****************************************************************************/
 
+#include "variety.h"
+#include "linuxsys.h"
+#include "rterrno.h"
+#include <sys/ioctl.h>
+#include <termios.h>
 
-typedef void __interrupt __far (*intrptr)(void);
-extern void chain_intr(void);
-#define _CHAIN_TO( x )  (*x)()
+_WCRTLINK int tcsetattr( int fd, int actions, const struct termios *t )
+{
+int cmd;
+
+    if(t == NULL) {
+        _RWD_errno = EINVAL;
+        return( -1 );
+    }
+    
+    switch(actions) {
+        case TCSANOW:
+            cmd = TCSETS;
+            break;
+        case TCSADRAIN:
+            cmd = TCSETSW;
+            break;
+        case TCSAFLUSH:
+            cmd = TCSETSF;
+            break;
+        default:
+            _RWD_errno = EINVAL;
+            return( -1 );
+    }
+
+    return( ioctl(fd, cmd, t) );
+}

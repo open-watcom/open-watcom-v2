@@ -75,14 +75,14 @@ tmp_handle      AllocTmp( cg_type typ ) {
     for( tmp = TmpList; tmp != NULL; tmp = tmp->link ) {
         if( tmp->avail &&
             ( BETypeLength( typ ) <= BETypeLength( tmp->typ ) ) ) {
-            tmp->avail = FALSE;
+            tmp->avail = false;
             return( tmp );
         }
     }
     tmp = FMemAlloc( sizeof( tmp_tracker ) );
     tmp->tmp = CGTemp( typ );
     tmp->typ = typ;
-    tmp->avail = FALSE;
+    tmp->avail = false;
     tmp->link = TmpList;
     TmpList = tmp;
     return( tmp );
@@ -97,7 +97,7 @@ void    FreeTmps( void ) {
     tmp_handle  tmp;
 
     for( tmp = TmpList; tmp != NULL; tmp = tmp->link ) {
-        tmp->avail = TRUE;
+        tmp->avail = true;
     }
 }
 

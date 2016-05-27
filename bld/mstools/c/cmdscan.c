@@ -38,7 +38,7 @@
 #include "cmdscan.h"
 
 
-bool Quoted = FALSE;
+bool Quoted = false;
 
 /*
  * Append a character to a dynamically allocated string, increasing the
@@ -87,10 +87,10 @@ bool CmdScanRecogChar( int ch )
 /*****************************/
 {
     if( GetCharContext() == (char)ch ) {
-        return( TRUE );
+        return( true );
     } else {
         UngetCharContext();
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -103,10 +103,10 @@ bool CmdScanRecogLowerChar( int ch )
 /**********************************/
 {
     if( tolower( (unsigned char)GetCharContext() ) == tolower( ch ) ) {
-        return( TRUE );
+        return( true );
     } else {
         UngetCharContext();
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -122,7 +122,7 @@ char *CmdScanString( void )
 {
     char                ch;
     bool                inQuote = Quoted;   /* true if inside a quoted string */
-    bool                backslash = FALSE;  /* true if last char was a '\\' */
+    bool                backslash = false;  /* true if last char was a '\\' */
     long                start;              /* context offset of string start */
     char *              buf = DupStrMem( "" );
     size_t              bufsize = 0;
@@ -147,15 +147,15 @@ char *CmdScanString( void )
         if( !inQuote && isspace( ch ) )  break;
         if( ch == '"' ) {
             if( backslash ) {
-                backslash = FALSE;      /* handle \" within a string */
+                backslash = false;      /* handle \" within a string */
             } else if( inQuote ) {
                 if( Quoted ) {
-                    Quoted = FALSE;
+                    Quoted = false;
                     return( buf );
                 }
-                inQuote = FALSE;        /* end of a quoted portion */
+                inQuote = false;        /* end of a quoted portion */
             } else {
-                inQuote = TRUE;         /* start of a quoted portion */
+                inQuote = true;         /* start of a quoted portion */
             }
             buf = got_char( buf, &bufsize, offset, ch );
             offset++;
@@ -163,18 +163,18 @@ char *CmdScanString( void )
             if( backslash ) {
                 buf = got_char( buf, &bufsize, offset, ch );
                 offset++;
-                backslash = FALSE;      /* second '\\' of a pair */
+                backslash = false;      /* second '\\' of a pair */
                 if( GetCharContext() == '"' )
                     buf = got_char( buf, &bufsize, offset++, '\\' );
                 UngetCharContext();
             } else {
-                backslash = TRUE;       /* first '\\' of a pair */
+                backslash = true;       /* first '\\' of a pair */
             }
         } else {
             if( backslash ) {
                 buf = got_char( buf, &bufsize, offset, '\\' );
                 offset++;
-                backslash = FALSE;
+                backslash = false;
             }
             buf = got_char( buf, &bufsize, offset, ch );
             offset++;
@@ -242,7 +242,7 @@ bool CmdScanNumber( unsigned *num )
 /*********************************/
 {
     char                digit;
-    bool                numberScanned = FALSE;
+    bool                numberScanned = false;
     unsigned            value = 0;
     unsigned            base = 10;
 
@@ -274,11 +274,11 @@ bool CmdScanNumber( unsigned *num )
         if( isdigit( digit ) ) {
             value *= base;
             value += digit - '0';
-            numberScanned = TRUE;
+            numberScanned = true;
         } else if( base == 16 && isxdigit( digit ) ) {
             value *= base;
             value += tolower( (unsigned char)digit ) - 'a' + 10;
-            numberScanned = TRUE;
+            numberScanned = true;
         } else {
             UngetCharContext();
             break;

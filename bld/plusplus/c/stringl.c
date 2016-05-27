@@ -86,7 +86,7 @@ static void stringInit(         // INITIALIZATION
     uniqueStrings = NULL;
     trashedStrings = NULL;
     stringCount = 0;
-    stringUnique( FALSE );
+    stringUnique( false );
 }
 
 INITDEFN( strings, stringInit, InitFiniStub )
@@ -96,9 +96,9 @@ static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
     literal->next = NULL;
     literal->cg_handle = NULL;
     literal->segid = SEG_NULL;
-    literal->concat = FALSE;
-    literal->multi_line = FALSE;
-    literal->wide_string = FALSE;
+    literal->concat = false;
+    literal->multi_line = false;
+    literal->wide_string = false;
     return( literal );
 }
 
@@ -143,9 +143,9 @@ static unsigned compressLiteral( char *tgt, char *s, unsigned len )
 
 #define store_chr(tgt,chr)  if(tgt) *tgt++ = (chr)
 
-    flags.wide_string = FALSE;
+    flags.wide_string = false;
     if( CurToken == T_LSTRING ) {
-        flags.wide_string = TRUE;
+        flags.wide_string = true;
     }
     new_len = 0;
     for( ; len > 0; ) {
@@ -239,7 +239,7 @@ static STRING_CONSTANT makeLiteral( char *s, unsigned len )
     literal = findLiteral( new_len );
     literal->len = compressLiteral( literal->string, s, len + 1 );
     if( CurToken == T_LSTRING ) {
-        literal->wide_string = TRUE;
+        literal->wide_string = true;
     }
     return( literal );
 }
@@ -284,7 +284,7 @@ STRING_CONSTANT StringCreate( char *s, unsigned len )
 void StringConcatDifferentLines( STRING_CONSTANT v )
 /**************************************************/
 {
-    v->multi_line = TRUE;
+    v->multi_line = true;
 }
 
 STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
@@ -299,15 +299,15 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
         return v1;
     }
     literal = findLiteral( v1->len + v2->len );
-    literal->concat = TRUE;
+    literal->concat = true;
     memcpy( literal->string, v1->string, v1->len );
     len = v1->len;
     if( v1->wide_string ) {
         --len;
-        literal->wide_string = TRUE;
+        literal->wide_string = true;
     }
     if( v1->multi_line ) {
-        literal->multi_line = TRUE;
+        literal->multi_line = true;
     }
     literal->len = len + v2->len;
     memcpy( &(literal->string[ len ]), v2->string, v2->len + 1 );
@@ -321,7 +321,7 @@ bool StringSame( STRING_CONSTANT v1, STRING_CONSTANT v2 )
 /*******************************************************/
 {
     if( v1->len != v2->len ) {
-        return( FALSE );
+        return( false );
     }
     return( memcmp( v1->string, v2->string, v1->len + 1 ) == 0 );
 }

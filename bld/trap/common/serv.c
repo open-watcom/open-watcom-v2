@@ -78,7 +78,7 @@ static void Initialize( void )
 
     getcmd( cmdline );
     ParseCommandLine( cmdline, trapparms, servparms, &OneShot );
-    err = RemoteLink( servparms, TRUE );
+    err = RemoteLink( servparms, true );
 
 #undef servparms
 

@@ -97,7 +97,7 @@ operator++ ()
         _stack = new WCValOrderedVector< SearchEntry<Key_T,Obj_T> >( 200, 100 );
         next = _tree->getRoot();
 
-        if( next == NULL ) return FALSE;    //<----- early return for empty tree
+        if( next == NULL ) return false;    //<----- early return for empty tree
 
         do {
             entry._entry = -1;
@@ -121,7 +121,7 @@ operator++ ()
 
         if( _currObj != NULL ) {
             _tree->lock( _currObj );
-            return TRUE;                // <------- next object found
+            return true;                // <------- next object found
         }
 
         do {
@@ -131,7 +131,7 @@ operator++ ()
                 _stack->clear();        // redundant, but what the hey
                 delete _stack;
                 _stack = NULL;
-                return FALSE;           // <------- end of objects
+                return false;           // <------- end of objects
             }
             next = (*_stack)[ _stack->entries() - 1 ].nextNode();
         } while( next == NULL );
@@ -162,7 +162,7 @@ operator++ ()
 
         next = _tree->getRoot();
 
-        if( next == NULL ) return FALSE;    //<----- early return for empty tree
+        if( next == NULL ) return false;    //<----- early return for empty tree
 
         do {
             entry._entry = -1;
@@ -181,7 +181,7 @@ operator++ ()
 
         if( _currObj != NULL ) {
             _stack->push( entry );
-            return TRUE;
+            return true;
         }
 
         do {
@@ -190,7 +190,7 @@ operator++ ()
                 _stack->clear();
                 delete _stack;
                 _stack = NULL;
-                return FALSE;
+                return false;
             }
 
             entry = _stack->pop();
@@ -211,6 +211,6 @@ operator++ ()
     } while( next == NULL );
 
     _tree->lock( _currObj );
-    return TRUE;
+    return true;
 }
 #endif

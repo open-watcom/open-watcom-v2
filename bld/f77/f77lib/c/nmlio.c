@@ -79,9 +79,9 @@ static bool     ScanChar( char chr ) {
 
     if( *Scanner() == chr ) {
         IOCB->fileinfo->col++;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -132,10 +132,10 @@ static bool     ScanSNum( signed_32 PGM *num ) {
     if( isdigit( *ptr ) ) {
         *num = GetNum();
         Blanks();
-        return( TRUE );
+        return( true );
     } else {
         Blanks();
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -160,7 +160,8 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
     num_ss = _GetNMLSubScrs( info );
     ss_ptr = ss;
     for(;;) {
-        if( !ScanSNum( ss_ptr ) ) return( FALSE );
+        if( !ScanSNum( ss_ptr ) )
+            return( false );
         ++ss_ptr;
         lo = *(intstar4 PGM *)adv_ss_ptr;
         adv_ss_ptr += sizeof( intstar4 );
@@ -171,13 +172,18 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
         ++dim_ptr;
         adv_ss_ptr += sizeof( uint );
         --num_ss;
-        if( num_ss == 0 ) break;
-        if( !ScanChar( ',' ) ) break;
+        if( num_ss == 0 )
+            break;
+        if( !ScanChar( ',' ) ) {
+            break;
+        }
     }
-    if( !ScanChar( ')' ) ) return( FALSE );
-    if( !DoSubscript( &dim_list, ss, &offset ) ) return( FALSE );
+    if( !ScanChar( ')' ) )
+        return( false );
+    if( !DoSubscript( &dim_list, ss, &offset ) )
+        return( false );
     NmlInAddr = (char HPGM *)NmlInAddr + offset * size;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -192,17 +198,24 @@ static  bool    SubStr( string *scb ) {
     ss1 = 1;
     ss2 = scb->len;
     if( !ScanChar( ':' ) ) {
-        if( !ScanSNum( &ss1 ) ) return( FALSE );
-        if( !ScanChar( ':' ) ) return( FALSE );
+        if( !ScanSNum( &ss1 ) )
+            return( false );
+        if( !ScanChar( ':' ) ) {
+            return( false );
+        }
     }
     if( !ScanChar( ')' ) ) {
-        if( !ScanSNum( &ss2 ) ) return( FALSE );
-        if( !ScanChar( ')' ) ) return( FALSE );
+        if( !ScanSNum( &ss2 ) )
+            return( false );
+        if( !ScanChar( ')' ) ) {
+            return( false );
+        }
     }
-    if( !DoSubstring( ss1, ss2, scb->len ) ) return( FALSE );
+    if( !DoSubstring( ss1, ss2, scb->len ) )
+        return( false );
     scb->len = ss2 - ss1 + 1;
     scb->strptr = scb->strptr + ss1 - 1;
-    return( TRUE );
+    return( true );
 }
 
 

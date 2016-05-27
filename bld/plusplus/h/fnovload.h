@@ -233,8 +233,8 @@ FNOV_COARSE_RANK UdcLocate(     // SELECT A DIRECT OR COPY INITIALIZTION
     TYPE src,                   // - source class type
     TYPE tgt,                   // - target class type
     PTREE *src_ptree,           // - source PTREE node
-    bool *isctor,               // - set to TRUE if ctor selected
-                                //   FALSE if UDCF selected
+    bool *isctor,               // - set to true if ctor selected
+                                //   false if UDCF selected
     FNOV_LIST **match,          // - will point to selected UDC if
                                 //   non-ambig match
     FNOV_DIAG *fnov_diag        // - ambig and reject lists
@@ -246,8 +246,8 @@ FNOV_COARSE_RANK UdcLocateRef(  // SELECT A DIRECT OR COPY INITIALIZTION
     TYPE src,                   // - source class type
     TYPE tgt,                   // - target class type
     PTREE *src_ptree,           // - source PTREE node
-    bool *isctor,               // - set to TRUE if ctor selected
-                                //   FALSE if UDCF selected
+    bool *isctor,               // - set to true if ctor selected
+                                //   false if UDCF selected
     FNOV_LIST **match,          // - will point to selected UDC if
                                 //   non-ambig match
     FNOV_DIAG *fnov_diag        // - ambig and reject lists
@@ -331,7 +331,7 @@ FNOV_COARSE_RANK RankandResolveUDCsDiag( // RANK CTOR an UDCF LISTS
     FNOV_LIST **udcfList,       // - list of udcfs from class src
     TYPE src,                   // - src class of UDC
     TYPE tgt,                   // - tgt class of UDC
-    bool *isctor,               // - TRUE if ctor in match list
+    bool *isctor,               // - true if ctor in match list
     FNOV_LIST **pmatch,         // - will point to selected UDC if
                                 //   non-ambig match
     FNOV_UDC_CONTROL control,   // - control copy or direct init

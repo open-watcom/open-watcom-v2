@@ -45,7 +45,7 @@ static char MergeFile::_buffer[ MERGEFILESTRBUF ];
 
 MergeFile::MergeFile( const char * filename )
 //-------------------------------------
-    : ElfFile( filename, TRUE )
+    : ElfFile( filename, true )
 {
 }
 

@@ -49,13 +49,13 @@ static void PrintIconDirEntry( IconDirEntry * entry, int entrynum )
             entry->IconID );
 }
 
-extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
-/***************************************************************************/
+bool DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
+/*********************************************************************/
 {
     IconCurDirHeader    head;
     IconDirEntry        entry;
     long                prevpos;
-    int                 error;
+    bool                error;
     int                 currentry;
 
     length = length;
@@ -64,9 +64,9 @@ extern int DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
     error = ResReadIconCurDirHeader( &(head), handle );
     PrintIconCurDirHeader( &head );
 
-    for (currentry = 0; !error && currentry < head.ResCount; currentry++ ) {
+    for( currentry = 0; !error && currentry < head.ResCount; currentry++ ) {
         error = ResReadIconDirEntry( &entry, handle );
-        if (!error) {
+        if( !error ) {
             PrintIconDirEntry( &entry, currentry + 1 );
         }
     }

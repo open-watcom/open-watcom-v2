@@ -33,8 +33,8 @@
 /*
  * free_ttype.c -- allocation functions for TERMTYPE
  *
- *	_nc_free_termtype()
- *	use_extended_names()
+ *      _nc_free_termtype()
+ *      use_extended_names()
  *
  */
 
@@ -60,7 +60,7 @@ _nc_free_termtype(TERMTYPE * ptr)
 }
 
 #if NCURSES_XNAMES
-NCURSES_EXPORT_VAR(bool) _nc_user_definable = TRUE;
+NCURSES_EXPORT_VAR(bool) _nc_user_definable = true;
 
 NCURSES_EXPORT(int)
 use_extended_names(bool flag)

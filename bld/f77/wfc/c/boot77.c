@@ -120,7 +120,7 @@ static  bool    ProcCmd( char *buffer ) {
     char        *opt_array[MAX_OPTIONS+1];
 
     RetCode = _BADCMDLINE;
-    if( ParseCmdLine( &SrcName, &CmdPtr, opt_array, buffer ) != FALSE ) {
+    if( ParseCmdLine( &SrcName, &CmdPtr, opt_array, buffer ) ) {
         RetCode = ProcName();
         if( RetCode == _SUCCESSFUL ) {
             ProcOpts( opt_array );
@@ -134,7 +134,7 @@ void    Compile( char *buffer ) {
 //===============================
 
     InitCompile();
-    if( ProcCmd( buffer ) != FALSE ) {
+    if( ProcCmd( buffer ) ) {
         // initialize permanent i/o buffers after memory has been
         // initialized
         InitMemIO();

@@ -49,14 +49,14 @@
 #include "viewmgr.h"
 #include "browse.h"
 
-Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
+Symbol::Symbol( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * n )
         :_drhandle(drhdl)
         ,_parent(drhdl_prt)
         ,_module(m)
         ,_description(NULL)
         ,_name(n)       // n should be dynamic memory which symbol can free
         ,_decname(NULL)
-        ,_anonymous(FALSE)
+        ,_anonymous(false)
 //--------------------------------------------------------------
 {
     _defined = DRIsSymDefined( drhdl );
@@ -64,7 +64,7 @@ Symbol::Symbol( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * n )
     if( _name == NULL || _name[ 0 ] == '\0' ) {
         WBRFree( _name );
         _name = NULL;
-        _anonymous = TRUE;
+        _anonymous = true;
     }
 }
 
@@ -117,7 +117,7 @@ const char * Symbol::scopedName( bool fullScoping )
         WString scoped;
 
         _description = &desc;
-        DRDecoratedNameList( this, _drhandle, fullScoping ? _parent : DR_HANDLE_NUL, descCallBack );
+        DRDecoratedNameList( this, _drhandle, fullScoping ? _parent : DRMEM_HDL_NULL, descCallBack );
         _description = NULL;
 
         for( i = 0; i < desc.count(); i += 1 ) {
@@ -153,13 +153,13 @@ bool Symbol::defSourceFile( char *buff )
     char        *p;
 
     p = DRGetFileName( _drhandle );
-    if( p == NULL ) return( FALSE );
+    if( p == NULL ) return( false );
     strcpy( buff, p );
     return browseTop->makeFileName( buff );
 }
 
-static Symbol * Symbol::defineSymbol( dr_sym_type type, dr_handle drhdl,
-                                      dr_handle drhdl_prt, Module * module,
+static Symbol * Symbol::defineSymbol( dr_sym_type type, drmem_hdl drhdl,
+                                      drmem_hdl drhdl_prt, Module * module,
                                       char * name )
 //-----------------------------------------------------------------------
 {
@@ -315,7 +315,7 @@ WVList & Symbol::description( WVList & parts )
 }
 
 static void Symbol::descCallBack ( void * obj, char * name,
-                                   int u_def, dr_handle drhdl,
+                                   int u_def, drmem_hdl drhdl,
                                    dr_sym_type sym_type )
 //------------------------------------------------------------
 {
@@ -325,7 +325,7 @@ static void Symbol::descCallBack ( void * obj, char * name,
 }
 
 void Symbol::addDesc( char * name, int u_def,
-                      dr_handle drhdl, dr_sym_type st )
+                      drmem_hdl drhdl, dr_sym_type st )
 //-----------------------------------------------------
 // mySym is the symbol being described
 {
@@ -337,7 +337,7 @@ void Symbol::addDesc( char * name, int u_def,
         delete [] name;
     } else {
         if( u_def ) {
-            sym = Symbol::defineSymbol(st, drhdl, DR_HANDLE_NUL, _module, name );
+            sym = Symbol::defineSymbol(st, drhdl, DRMEM_HDL_NULL, _module, name );
             desc = new Description( sym );
         } else {
             desc = new Description( name );

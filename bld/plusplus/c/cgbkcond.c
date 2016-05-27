@@ -98,7 +98,7 @@ static SE* callBackCurrent(     // SET UP CURRENT POSITION
 }
 
 
-static void callBackTrue(       // CALL-BACK: start of TRUE block
+static void callBackTrue(       // CALL-BACK: start of true block
     void* data )                // - COND_STK entry
 {
     COND_STK* info = data;      // - COND_STK entry
@@ -107,11 +107,11 @@ static void callBackTrue(       // CALL-BACK: start of TRUE block
     posn = callBackCurrent( info );
     info->posn_true = posn;
     info->posn_false = posn;
-    _Dump( info, "CallBack(TRUE)" );
+    _Dump( info, "CallBack(true)" );
 }
 
 
-static void callBackFalse(      // CALL-BACK: start of FALSE block
+static void callBackFalse(      // CALL-BACK: start of false block
     void* data )                // - COND_STK entry
 {
     COND_STK* info = data;      // - COND_STK entry
@@ -120,7 +120,7 @@ static void callBackFalse(      // CALL-BACK: start of FALSE block
     posn = info->posn_last;
     info->posn_false = callBackCurrent( info );
     FstabSetSvSe( posn );
-    _Dump( info, "CallBack(FALSE)" );
+    _Dump( info, "CallBack(false)" );
 }
 
 
@@ -250,7 +250,7 @@ void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
 
 static cg_name condSet(         // SET/RESET FLAG
     unsigned index,             // - index of flag
-    bool set_flag,              // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag,              // - true ==> set the flag; false ==> clear
     FN_CTL* fctl )              // - function information
 {
     cg_name op_flg;             // - expression for flag setting
@@ -272,7 +272,7 @@ static cg_name condSet(         // SET/RESET FLAG
 
 void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
     FN_CTL* fctl,               // - function control
-    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - true ==> set the flag; false ==> clear
 {
     COND_STK* stk;              // - conditional entry
     cg_name op_flg;             // - expression for flag setting
@@ -302,7 +302,7 @@ void CondInfoSetFlag(           // SET FLAG FOR CONDITIONAL DTOR BLOCK
 
 void CondInfoSetCtorTest(       // SET/RESET FLAG FOR CTOR-TEST
     FN_CTL* fctl,               // - function control
-    bool set_flag )             // - TRUE ==> set the flag; FALSE ==> clear
+    bool set_flag )             // - true ==> set the flag; false ==> clear
 {
     CGDone( condSet( FnCtlCondFlagCtor( fctl ), set_flag, fctl ) );
 }
@@ -321,7 +321,7 @@ void CondInfoDirectFlags(       // SET FOR DIRECT-FLAGS PROCESSING
 
 static void condInfoCallBack(   // SET A CALL-BACK
     void (*rtn)( void* ),       // - call-back routine
-    bool on_left )              // - TRUE ==> call-back on left
+    bool on_left )              // - true ==> call-back on left
 {
     cg_name expr;               // - top expression
     cg_type type;               // - top type
@@ -341,21 +341,21 @@ static void condInfoCallBack(   // SET A CALL-BACK
 void CondInfoTrue(              // SET UP CALL-BACK FOR IC_COND_TRUE
     void )
 {
-    condInfoCallBack( &callBackTrue, TRUE );
+    condInfoCallBack( &callBackTrue, true );
 }
 
 
 void CondInfoFalse(             // SET UP CALL-BACK FOR IC_COND_FALSE
     void )
 {
-    condInfoCallBack( &callBackFalse, TRUE );
+    condInfoCallBack( &callBackFalse, true );
 }
 
 
 void CondInfoEnd(               // SET UP CALL-BACK FOR IC_COND_END
     void )
 {
-    condInfoCallBack( &callBackEnd, FALSE );
+    condInfoCallBack( &callBackEnd, false );
 }
 
 
@@ -363,16 +363,16 @@ void CondInfoNewCtorBeg(        // CTOR OF NEW'ED OBJECT: START
     FN_CTL* fctl )              // - function information
 {
     CondInfoPush( fctl );
-    CondInfoSetFlag( fctl, TRUE );
-    condInfoCallBack( &callBackNewCtorBeg, TRUE );
+    CondInfoSetFlag( fctl, true );
+    condInfoCallBack( &callBackNewCtorBeg, true );
 }
 
 
 void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
     FN_CTL* fctl )              // - function information
 {
-    CondInfoSetFlag( fctl, FALSE );
-    condInfoCallBack( &callBackNewCtorEnd, FALSE );
+    CondInfoSetFlag( fctl, false );
+    condInfoCallBack( &callBackNewCtorEnd, false );
     CondInfoPop();
 }
 

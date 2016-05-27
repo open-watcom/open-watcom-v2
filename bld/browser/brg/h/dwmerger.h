@@ -48,7 +48,7 @@ public:
                                      WCValSList<String> & disabled );
                     ~DwarfFileMerger();
 
-    void            doMerge( bool quiet = FALSE );
+    void            doMerge( bool quiet = false );
     bool            upToDate() const { return _upToDate; }
 
 private:

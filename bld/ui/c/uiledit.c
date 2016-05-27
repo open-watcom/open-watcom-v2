@@ -61,15 +61,15 @@ static bool extend( unsigned n )
 
     buf = uirealloc( UIEdit->edit_buffer, n );
     if( buf == NULL ) {
-        return( FALSE );
+        return( false );
     } else {
         UIEdit->edit_buffer = buf;
     }
     *( UIEdit->edit_buffer + Eline.length ) = '\0';
     Eline.buffer = UIEdit->edit_buffer;
     Eline.length = n;                       /* so blanks will get padded on */
-    Eline.update = TRUE;
-    return( TRUE );
+    Eline.update = true;
+    return( true );
 }
 
 static unsigned trim( char *s )
@@ -90,13 +90,13 @@ void uieditmarking( bool set, unsigned anchor )
 {
     Eline.mark_attr = UIData->attrs[ ATTR_MARK_NORMAL ];
     if( set ) {
-        if( Eline.marking == FALSE ) {
-            Eline.marking = TRUE;
-            Eline.update  = TRUE;
+        if( Eline.marking == false ) {
+            Eline.marking = true;
+            Eline.update  = true;
             Eline.mark_anchor = anchor;
         }
     } else {
-        Eline.marking = FALSE;
+        Eline.marking = false;
     }
 }
 
@@ -200,7 +200,7 @@ EVENT uiledit( EVENT ev )
     }
     before = Eline.index;
     ev = uiveditevent( UIEdit->edit_screen, &Eline, ev );
-    if( ev != EV_NO_EVENT ) Eline.update = TRUE; // causes lots of flashing!
+    if( ev != EV_NO_EVENT ) Eline.update = true; // causes lots of flashing!
     if( UIEdit->edit_maxlen == 0 ) {
         uipoplist();
     }
@@ -221,11 +221,11 @@ EVENT uiledit( EVENT ev )
             if( Eline.index != i ) {
                 if( UIEdit->edit_maxlen > 0 ) {
                     if( i < UIEdit->edit_maxlen ) {
-                        Eline.update = TRUE;
+                        Eline.update = true;
                         Eline.index = i;
                     }
                 } else {
-                    Eline.update = TRUE;
+                    Eline.update = true;
                     Eline.index = i;
                 }
             }
@@ -244,11 +244,11 @@ void uieditinsert( char *str, unsigned n )
     unsigned    before;
 
     if( UIEdit == NULL || n == 0 ) return;
-    Eline.update = TRUE;
-    Eline.dirty = TRUE;
+    Eline.update = true;
+    Eline.dirty = true;
     if( Eline.auto_clear && Eline.index == 0 ) {
         Eline.length = 0;
-        Eline.auto_clear = FALSE;
+        Eline.auto_clear = false;
     }
     before = Eline.length;
     if( extend( Eline.length + n ) ) {
@@ -280,7 +280,7 @@ bool uieditisdirty( void )
         uiedittrim( UIEdit->edit_buffer );
         return( UIEdit->edit_eline.dirty );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -292,15 +292,15 @@ bool uieditautoclear( void )
 void uieditcursor( unsigned i )
 {
     UIEdit->edit_eline.index = i;
-    UIEdit->edit_eline.update = TRUE;
+    UIEdit->edit_eline.update = true;
 }
 
 void uieditdirty( void )
 {
-    UIEdit->edit_eline.dirty = TRUE;
+    UIEdit->edit_eline.dirty = true;
 }
 
 void uieditclean( void )
 {
-    UIEdit->edit_eline.dirty = FALSE;
+    UIEdit->edit_eline.dirty = false;
 }

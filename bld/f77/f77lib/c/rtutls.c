@@ -73,7 +73,7 @@ bool    FindFtnFile( void ) {
     ffile = SearchFtnFile( IOCB->unitid );
     if( ffile != NULL ) {
         IOCB->fileinfo = ffile;
-        return( TRUE );
+        return( true );
     }
     unit = IOCB->unitid;
     IOCB->fileinfo = NULL;
@@ -82,7 +82,7 @@ bool    FindFtnFile( void ) {
         F_Connect();
         ExtractInfo( handle, IOCB->fileinfo );
         ChkFileName();
-        return( TRUE );
+        return( true );
     } else if( ((unit == STANDARD_INPUT) || (unit == PRE_STANDARD_INPUT)) &&
                (IOCB->iostmt == IO_READ) ) {
         IOCB->fileinfo = SearchFtnFile( STANDARD_INPUT );
@@ -91,7 +91,7 @@ bool    FindFtnFile( void ) {
             // in case unit=PRE_STANDARD_INPUT
             IOCB->fileinfo->unitid = unit;
         }
-        return( TRUE );
+        return( true );
     } else if( ((unit == STANDARD_OUTPUT) || (unit == PRE_STANDARD_OUTPUT)) &&
                (IOCB->iostmt == IO_WRITE) ) {
         IOCB->fileinfo = SearchFtnFile( STANDARD_OUTPUT );
@@ -100,9 +100,9 @@ bool    FindFtnFile( void ) {
             // in case unit=PRE_STANDARD_OUTPUT
             IOCB->fileinfo->unitid = unit;
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -253,7 +253,8 @@ void    ChkIOOperation( ftnfile *fcb ) {
 bool    GetIOErr( ftnfile *fcb ) {
 //================================
 
-    if( fcb->internal != NULL ) return( FALSE );
+    if( fcb->internal != NULL )
+        return( false );
     return( Errf( fcb ) );
 }
 

@@ -56,7 +56,7 @@ int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well
 bool UIAPI uiset80col( void )
 /***************************/
 {
-    return( TRUE );
+    return( true );
 }
 
 bool intern initmonitor( void )

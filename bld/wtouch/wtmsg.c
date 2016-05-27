@@ -91,9 +91,9 @@ int MsgGet( int resourceid, char *buffer )
 {
     if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) != 0 ) {
         buffer[0] = '\0';
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static char *strApp( char *dest, const char *src )

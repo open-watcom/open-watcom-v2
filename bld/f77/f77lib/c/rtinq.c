@@ -126,15 +126,16 @@ bool    FindFName( void ) {
     fname = IOCB->fileinfo->filename;
     fcb = Files;
     for(;;) {
-        if( fcb == NULL ) return( FALSE );
-        if( ( IOCB->fileinfo != fcb ) &&
-            SameFile( fname, fcb->filename ) ) break;
+        if( fcb == NULL )
+            return( false );
+        if( ( IOCB->fileinfo != fcb ) && SameFile( fname, fcb->filename ) )
+            break;
         fcb = fcb->link;
     }
     // file already connected
     DiscoFile( IOCB->fileinfo );
     IOCB->fileinfo = fcb;
-    return( TRUE );
+    return( true );
 }
 
 

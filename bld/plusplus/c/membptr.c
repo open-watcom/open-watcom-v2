@@ -81,7 +81,7 @@ static bool nodeIsMembPtrCon(   // TEST IF NODE CAN BE MEMBER-PTR CONST
     PTREE node )                // - node to be tested
 {
     if( node->op == PT_SYMBOL && (node->flags & PTF_COLON_QUALED) ) {
-        return TRUE;
+        return true;
     } else {
         return CompFlags.extensions_enabled;    // KLUGE for MFC
     }
@@ -97,11 +97,11 @@ static TYPE membPtrObject(      // GET OBJECT TYPE FOR MEMBER PTR
 
 static CNV_RETN validateOkObjs( // VALIDATE TARGET ONLY ADDS QUALIFICATION
     PTREE expr,                 // - expression for errors
-    bool check_qual,            // - TRUE ==> check CV qualification
+    bool check_qual,            // - true ==> check CV qualification
     TYPE o1,                    // - source object type
     TYPE o2 )                   // - target object type
 {
-    CNV_RETN retn;              // - return: TRUE ==> objects are same
+    CNV_RETN retn;              // - return: true ==> objects are same
     type_flag f1;               // - flags: object[1]
     type_flag f2;               // - flags: object[2]
     type_flag f3;               // - flags: object[1]
@@ -137,7 +137,7 @@ static CNV_RETN validateOkObjs( // VALIDATE TARGET ONLY ADDS QUALIFICATION
 
 static CNV_RETN validateMpObjs( // VALIDATE BOTH MEMPTR'S ARE TO SAME TYPE
     PTREE expr,                 // - expression for error
-    bool check_qual,            // - TRUE ==> check CV qualification
+    bool check_qual,            // - true ==> check CV qualification
     TYPE mp1,                   // - source type
     TYPE mp2 )                  // - target type
 {
@@ -163,7 +163,7 @@ static CNV_RETN validateAddrOfObj( // VALIDATE &class::item OBJECT
         /* wait until overload to check types */
         retn = CNV_OK;
     } else {
-        retn = validateOkObjs( expr, TRUE, ad_obj, mp_obj );
+        retn = validateOkObjs( expr, true, ad_obj, mp_obj );
     }
     return retn;
 }
@@ -563,24 +563,24 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
     MEMBER_PTR_CAST *inf,       // - operands information
     PTREE expr )                // - expression for errors
 {
-    bool retn;                  // - TRUE ==> analysis ok
+    bool retb;                  // - true ==> analysis ok
     CNV_RETN cnv;               // - CNV_...: conversion result
     SCOPE scope;                // - used to switch scopes
     bool check_safety;          // - check if safe req'd
     msg_status_t status;        // - status for warning
 
-    check_safety = FALSE;
+    check_safety = false;
     switch( TypeCommonDerivation( ScopeClass( inf->derived )
                                 , ScopeClass( inf->base ) ) ) {
       case CTD_NO :
         cnv = CNV_IMPOSSIBLE;
         break;
       case CTD_RIGHT :
-        check_safety = TRUE;
+        check_safety = true;
         cnv = CNV_OK;
         break;
       case CTD_RIGHT_VIRTUAL :
-        check_safety = TRUE;
+        check_safety = true;
         // drops thru
       case CTD_LEFT_VIRTUAL :
         status = PTreeWarnExpr( expr, ANSI_MPTR_ACROSS_VIRTUAL );
@@ -595,19 +595,19 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
         cnv = CNV_OK;
         break;
       case CTD_RIGHT_AMBIGUOUS :
-        check_safety = TRUE;
+        check_safety = true;
         // drops thru
       case CTD_LEFT_AMBIGUOUS :
         cnv = CNV_AMBIGUOUS;
         break;
       case CTD_RIGHT_PRIVATE :
-        check_safety = TRUE;
+        check_safety = true;
         // drops thru
       case CTD_LEFT_PRIVATE :
         cnv = CNV_PRIVATE;
         break;
       case CTD_RIGHT_PROTECTED :
-        check_safety = TRUE;
+        check_safety = true;
         // drops thru
       case CTD_LEFT_PROTECTED :
         cnv = CNV_PROTECTED;
@@ -623,7 +623,7 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
         }
     } else {
         if( cnv != CNV_IMPOSSIBLE ) {
-            inf->safe = TRUE;
+            inf->safe = true;
         }
     }
     if( CNV_OK == ConversionDiagnose( cnv, expr, &diagMembPtrOps ) ) {
@@ -633,11 +633,11 @@ static bool analyseMembPtr(     // ANALYSE MEMBER-PTR OPERANDS
             DumpMemberPtrInfo( inf );
         }
 #endif
-        retn = TRUE;
+        retb = true;
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -654,7 +654,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
     PTREE item,                 // - source item
     TYPE type_mp,               // - unmodified member-ptr type
     MEMBER_PTR_CAST *castinfo,  // - information for casting
-    CNV_REQD conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_...
     SYMBOL base_item;           // - item required
@@ -674,7 +674,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             item->u.symcg.symbol = ActualNonOverloadedFunc( base_item, item->u.symcg.result );
             retn = CNV_OK;
         } else {
-            switch( conversion ) {
+            switch( reqd_cnv ) {
 //            case CNV_CAST :
               case CNV_EXPR :
                 retn = CNV_ERR;
@@ -688,7 +688,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             base_item = item->u.symcg.symbol;
             if( ScopeCheckSymbol( item->u.symcg.result, base_item )
              || CNV_ERR == validateOkObjs( item
-                                         , TRUE
+                                         , true
                                          , base_item->sym_type
                                          , membPtrObject( type_mp ) )
               ) {
@@ -721,19 +721,19 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
     MEMBER_PTR_CAST *castinfo ) // - information for casting
 {
     PTREE item;                 // - item being pointed at
-    CNV_REQD convert;           // - type of conversion
+    CNV_REQD reqd_cnv;          // - type of conversion
 
     item = PTreeOpLeft( src );
     if( nodeIsMembPtrCon( item ) ) {
         if( castinfo->safe ) {
-            convert = CNV_ASSIGN;
+            reqd_cnv = CNV_ASSIGN;
         } else {
-            convert = CNV_CAST;
+            reqd_cnv = CNV_CAST;
         }
         if( CNV_OK != ConversionDiagnose( analyseAddrOfNode( item
                                                            , type_mp
                                                            , castinfo
-                                                           , convert )
+                                                           , reqd_cnv )
                                         , src
                                         , &diagMembFunCnv ) ) {
             PTreeErrorNode( src );
@@ -748,8 +748,8 @@ static PTREE analyseAddrOf(     // ANALYSE (& item)
 static PTREE memPtrAddrOfCon(   // MAKE MEMPTR EXPRN FROM &class::item
     PTREE expr,                 // - expression to be converted
     TYPE type_mp,               // - type of member ptr result
-    bool safe,                  // - TRUE ==> only safe assignment allowed
-    bool init )                 // - TRUE ==> an initialization
+    bool safe,                  // - true ==> only safe assignment allowed
+    bool init )                 // - true ==> an initialization
 {
     MEMBER_PTR_CAST castinfo;   // - information for casting
     PTREE mp_node;              // - member-ptr node
@@ -769,8 +769,8 @@ static PTREE memPtrAddrOfCon(   // MAKE MEMPTR EXPRN FROM &class::item
 static PTREE convertMembPtrExpr(// CONVERT A MEMBER POINTER EXPRESSION
     PTREE expr,                 // - expression (CO_MEMPTR)
     TYPE type,                  // - expression type
-    bool safe,                  // - TRUE ==> safe cast only
-    bool init )                 // - TRUE ==> initialization expression
+    bool safe,                  // - true ==> safe cast only
+    bool init )                 // - true ==> initialization expression
 {
     MEMBER_PTR_CAST inf;        // - cast information
 
@@ -797,7 +797,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
     if( NodeIsUnaryOp( node, CO_ADDR_OF ) ) {
         mbrptr = MemberPtrType( node->type );
         if( NULL != mbrptr ) {
-            return TRUE;
+            return true;
         } else {
             retn = NodeAddrOfFun( node, &fn );
             if( (retn != ADDR_FN_NONE )  &&
@@ -809,7 +809,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1192,7 +1192,7 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
         expr->type = MakeMemberPointerTo( SymClass(sym ), sym->sym_type );
       } // drops thru
       case MP_ADDR_OF :
-        expr = memPtrAddrOfCon( expr, expr->type, FALSE, FALSE );
+        expr = memPtrAddrOfCon( expr, expr->type, false, false );
         DbgVerify( expr->op != PT_ERROR, "should work" );
         // drops thru
       case MP_EXPR :
@@ -1211,29 +1211,29 @@ CNV_RETN MembPtrReint(          // REINTERPRET A MEMBER POINTER
 CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     PTREE *a_expr,              // - addr[ conversion expression, not class ]
     TYPE tgt_type,              // - target type (member-pointer)
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 {
     CNV_RETN retn;              // - return: CNV_...
     PTREE expr;                 // - conversion expression
-    bool safe;                  // - TRUE ==> only safe conversion allowed
-    bool init;                  // - TRUE ==> an initialization or assignment
+    bool safe;                  // - true ==> only safe conversion allowed
+    bool init;                  // - true ==> an initialization or assignment
     unsigned classification;    // - operand classification
 
-    switch( conversion ) {
+    switch( reqd_cnv ) {
       case CNV_INIT :
       case CNV_FUNC_ARG :
       case CNV_FUNC_RET :
       case CNV_ASSIGN :
-        safe = TRUE;
-        init = TRUE;
+        safe = true;
+        init = true;
         break;
       case CNV_CAST :
-        safe = FALSE;
-        init = FALSE;
+        safe = false;
+        init = false;
         break;
       default :
-        safe = TRUE;
-        init = FALSE;
+        safe = true;
+        init = false;
         break;
     }
     classification = classifyMpExpr( a_expr );
@@ -1274,11 +1274,11 @@ CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
         retn = CNV_OK;
         break;
       case MP_EXPR :
-        init = FALSE;
+        init = false;
       case MP_CONST :
         if( (! safe )
-//        || conversion == CNV_CAST
-          || CNV_OK == validateMpObjs( expr, TRUE, expr->type, tgt_type ) ) {
+//        || reqd_cnv == CNV_CAST
+          || CNV_OK == validateMpObjs( expr, true, expr->type, tgt_type ) ) {
             expr = convertMembPtrExpr( expr, tgt_type, safe, init );
             *a_expr = expr;
             if( expr->op == PT_ERROR ) {
@@ -1300,14 +1300,14 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
 {
     PTREE left;                 // - left operand
     PTREE right;                // - right operand
-    bool retn;                  // - TRUE ==> can convert
-    CNV_RETN cnv_retn;          // - return from validation
+    bool retb;                  // - true ==> can convert
+    CNV_RETN retn;              // - return from validation
 
     left = PTreeOpLeft( expr );
     right = PTreeOpRight( expr );
     if( ( left->op == PT_ERROR ) || ( right->op == PT_ERROR ) ) {
         PTreeErrorNode( expr );
-        retn = FALSE;
+        retb = false;
     } else {
         TYPE host_left;         // - host class to left
         TYPE host_right;        // - host class to right
@@ -1316,19 +1316,19 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
         switch( TypeCommonDerivation( host_left, host_right ) ) {
           case CTD_LEFT :
             if( host_left == host_right ) {
-                cnv_retn = validateMpObjs( expr
-                                         , FALSE
+                retn = validateMpObjs( expr
+                                         , false
                                          , right->type
                                          , left->type );
-                if( cnv_retn == CNV_OK ) break;
-                if( cnv_retn == CNV_ERR ) break;
+                if( retn == CNV_OK ) break;
+                if( retn == CNV_ERR ) break;
                 // will drop thru to test left --> right
             } else {
           case CTD_LEFT_VIRTUAL :
           case CTD_LEFT_PRIVATE :
           case CTD_LEFT_PROTECTED :
-                cnv_retn = validateMpObjs( expr
-                                         , TRUE
+                retn = validateMpObjs( expr
+                                         , true
                                          , right->type
                                          , left->type );
                 break;
@@ -1338,20 +1338,20 @@ static bool validateComparisonTypes( // VERIFY CONVERSION IS POSSIBLE
           case CTD_RIGHT_VIRTUAL :
           case CTD_RIGHT_PRIVATE :
           case CTD_RIGHT_PROTECTED :
-            cnv_retn = validateMpObjs( expr, TRUE, left->type, right->type );
+            retn = validateMpObjs( expr, true, left->type, right->type );
             break;
           default :
             PTreeErrorExpr( expr, ERR_MEMB_PTR_CMP_NOT_DERIVED );
-            cnv_retn = CNV_ERR;
+            retn = CNV_ERR;
             break;
         }
-        if( CNV_OK == cnv_retn ) {
-            retn = TRUE;
+        if( CNV_OK == retn ) {
+            retb = true;
         } else {
-            retn = FALSE;
+            retb = false;
         }
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -1361,8 +1361,8 @@ static PTREE compareConst(      // BUILD COMPARISON CONSTANT
     PTREE con;                  // - constant
     MEMBER_PTR_CAST castinfo;   // - information for casting
 
-    castinfo.safe = TRUE;
-    castinfo.init_conv = TRUE;
+    castinfo.safe = true;
+    castinfo.init_conv = true;
     con = *r_con;
     con = analyseAddrOf( con, con->type, &castinfo );
     if( con->op != PT_ERROR ) {
@@ -1375,7 +1375,7 @@ static PTREE compareConst(      // BUILD COMPARISON CONSTANT
 
 static PTREE replaceCompare(    // REPLACE COMPARISON WITH A CONSTANT
     PTREE expr,                 // - expression to be replaced
-    bool val )                  // - TRUE ==> operands are the same
+    bool val )                  // - true ==> operands are the same
 {
     PTREE con;                  // - constant node
 
@@ -1491,7 +1491,7 @@ PTREE MembPtrCommonType(        // IMPLICIT CONVERSION TO COMMON TYPE
           case CTD_LEFT :
             if( host_left != host_right
              || CNV_OK == validateMpObjs( expr
-                                        , FALSE
+                                        , false
                                         , orig_right
                                         , orig_left ) ) {
           case CTD_LEFT_VIRTUAL :
@@ -1551,11 +1551,11 @@ PTREE MembPtrCompare(           // COMPARISON OF MEMBER POINTERS
     switch( MP_OPS( classifyCompare( r_left  )
                   , classifyCompare( r_right ) ) ) {
       case MP_OPS( MP_ZERO, MP_ZERO ) :
-        expr = replaceCompare( expr, TRUE );
+        expr = replaceCompare( expr, true );
         break;
       case MP_OPS( MP_ZERO, MP_CONST ) :
       case MP_OPS( MP_CONST, MP_ZERO ) :
-        expr = replaceCompare( expr, FALSE );
+        expr = replaceCompare( expr, false );
         break;
       case MP_OPS( MP_EXPR, MP_ZERO ) :
       case MP_OPS( MP_ZERO, MP_EXPR ) :

@@ -22,20 +22,22 @@
 :endsegment
 :include cpluspro.sp
 
-:include timet.sp
-
-:include sizet.sp
-
-:include ssizet.sp
-
-:include exactint.sp
-
 :segment LINUX
 :include incdir.sp
 
 /* Define POSIX 1003.1 types */
 #include _ARCH_INCLUDE(sys/types.h)
 
+:endsegment
+:include time_t.sp
+
+:include size_t.sp
+
+:include ssize_t.sp
+
+:include exactint.sp
+
+:segment LINUX
 typedef unsigned char   u_char;
 typedef unsigned short  u_short;
 typedef unsigned int    u_int;
@@ -52,35 +54,20 @@ typedef quad_t          loff_t;
 /* Define POSIX 1003.1 types */
 
 typedef long            dev_t;  /* Combination of node and device   */
-#ifndef _GID_T_DEFINED_
-#define _GID_T_DEFINED_
- typedef int            gid_t;  /* Used for group IDs               */
- typedef short          mgid_t; /* Used for group in messages       */
-#endif
 typedef long            ino_t;  /* Used for file serial numbers     */
 typedef short unsigned  mode_t; /* Used for some file attributes    */
 typedef short unsigned  nlink_t;/* Used for link counts             */
-typedef long            off_t;  /* Used for file sizes, offsets     */
-typedef int             pid_t;  /* Used for process IDs & group IDs */
-typedef short           mpid_t; /* Used for process & group IDs in messages */
-#ifndef _UID_T_DEFINED_
-#define _UID_T_DEFINED_
- typedef int            uid_t;  /* Used for user IDs                */
- typedef short          muid_t; /* used in messages                 */
-#endif
+:include off_t.sp
+:include pid_t.sp
+:include uid_t.sp
+:include gid_t.sp
 
 :include ext.sp
 
 typedef short unsigned  msg_t;  /* Used for message passing         */
 typedef long            nid_t;  /* Used for network IDs             */
-#ifndef _TIMER_T_DEFINED_
-#define _TIMER_T_DEFINED_
- typedef void *         timer_t;/* Used for timer IDs               */
-#endif
-#ifndef _CLOCKID_T_DEFINED_
-#define _CLOCKID_T_DEFINED_
- typedef int            clockid_t;/* Used for clock IDs             */
-#endif
+:include timer_t.sp
+:include clockidt.sp
 
 :include extepi.sp
 
@@ -112,15 +99,11 @@ typedef char _WCI86FAR *caddr_t;
 
 typedef unsigned char   u_int8_t;
 typedef unsigned short  u_int16_t;
-:segment DOS | QNX
 #if defined _M_I86
 typedef unsigned long   u_int32_t;
 #else
-:endsegment
 typedef unsigned int    u_int32_t;
-:segment DOS | QNX
 #endif
-:endsegment
 
 typedef char _WCFAR *   faddr_t;
 typedef unsigned long   paddr_t;
@@ -142,13 +125,13 @@ typedef unsigned short  sel_t;
 :elsesegment DOS
 typedef unsigned int    ino_t;  /* i-node # type */
 typedef int             dev_t;  /* device code (drive #) */
-typedef long            off_t;  /* file offset value */
+:include off_t.sp
 typedef int             mode_t; /* file mode (attributes) */
 :: The following are not cast in stone - they aren't really used
 :: in any structures or function prototypes
-typedef int             pid_t;  /* process identifier */
-typedef unsigned long   uid_t;  /* user identifier */
-typedef unsigned long   gid_t;  /* group identifier */
+:include pid_t.sp
+:include uid_t.sp
+:include gid_t.sp
 typedef long long       id_t;   /* pid_t, uid_t or gid_t */
 
 #define major(device)           ((int)(((device) >> 8) & 0xFF))

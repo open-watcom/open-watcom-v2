@@ -41,6 +41,7 @@
 #include "ocentry.h"
 #include "encode.h"
 #include "edge.h"
+#include "redefby.h"
 #include "feprotos.h"
 
 extern  void            FreeBlock( void );
@@ -52,7 +53,6 @@ extern  void            InitStackDepth(block*);
 extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
 
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
@@ -89,7 +89,7 @@ extern  void    GenObject( void )
     attr = FEAttr( AskForLblSym( CurrProc->label ) );
     for( blk = HeadBlock; blk != NULL; blk = next_blk ) {
         if( blk->label != CurrProc->label && blk->label != NULL ) {
-            last_line = DumpLineNum( blk->ins.hd.line_num, last_line, TRUE );
+            last_line = DumpLineNum( blk->ins.hd.line_num, last_line, true );
             if( ( blk->class & ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
                 align = DepthAlign( DEEP_LOOP_ALIGN );
             } else {
@@ -108,9 +108,9 @@ extern  void    GenObject( void )
               &&( (ins->flags.nop_flags & NOP_SOURCE_QUEUE )
                 ||(ins->flags.nop_flags == NOP_DBGINFO))) // an end block
             {
-                last_line = DumpLineNum(ins->head.line_num, last_line, TRUE);
+                last_line = DumpLineNum(ins->head.line_num, last_line, true);
             } else {
-                last_line = DumpLineNum(ins->head.line_num, last_line, FALSE);
+                last_line = DumpLineNum(ins->head.line_num, last_line, false);
             }
             if( attr & FE_NAKED ) {
                 // don't want to generate anything except calls to pragma's for
@@ -164,7 +164,7 @@ extern  void    GenObject( void )
                 }
             }
         }
-        if( BlocksUnTrimmed == FALSE
+        if( BlocksUnTrimmed == false
           && blk->label != CurrProc->label && blk->label != NULL ) {
             TellCondemnedLabel( blk->label );
         }
@@ -192,7 +192,7 @@ static  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
     bool        change;
 
     for( change = ( HeadBlock->next_block != NULL ); change; ) {
-        change = FALSE;
+        change = false;
         for( blk = HeadBlock->next_block; (next = blk->next_block) != NULL; blk = next ) {
             if( bigger( blk, next ) ) {
                 blk->prev_block->next_block = next;
@@ -209,7 +209,7 @@ static  void    BlocksSortedBy( bool (*bigger)( block *, block * ) )
                 if( BlockList == next ) {
                     BlockList = blk;
                 }
-                change = TRUE;
+                change = true;
             }
         }
     }
@@ -398,9 +398,9 @@ static  bool    BlockContainsCall( block *blk ) {
     instruction         *ins;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
+        if( _OpIsCall( ins->head.opcode ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  void    PushTargets( void *stack, block *blk ) {
@@ -456,7 +456,7 @@ static  flood_decision PDFloodFunc( block *blk, flood_info *info ) {
 
     if( blk == info->dominator ) return( ABORT );
     if( ( blk->class & RETURN ) != EMPTY ) {
-        info->post_dominates = FALSE;
+        info->post_dominates = false;
         return( STOP );
     }
     return( CONTINUE );
@@ -464,15 +464,15 @@ static  flood_decision PDFloodFunc( block *blk, flood_info *info ) {
 
 static  bool    PostDominates( block *dominator, block *blk ) {
 /**************************************************************
-    Return TRUE if dominator post-dominates blk.
+    Return true if dominator post-dominates blk.
     To determine this, we just flood down aborting whenever we hit
     previously encountered blocks or the dominator. If we hit a
-    RETURN block, we return FALSE.
+    RETURN block, we return false.
 */
 
     flood_info          info;
 
-    info.post_dominates = TRUE;
+    info.post_dominates = true;
     info.dominator = dominator;
     FloodDown( blk, PDFloodFunc, (void *)&info );
     return( info.post_dominates );
@@ -484,10 +484,10 @@ static  bool    CallApplies( block *src, block *dst ) {
     src = dst;
     if( BlockContainsCall( dst ) ) {
         if( !PostDominates( dst, src ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int     CallHeuristic( block *blk, instruction *cond ) {
@@ -511,13 +511,13 @@ static  int     CallHeuristic( block *blk, instruction *cond ) {
 static  bool    LoopApplies( block *blk ) {
 /*****************************************/
 
-    if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( TRUE );
+    if( ( blk->class & LOOP_HEADER ) != EMPTY ) return( true );
     if( ( blk->class & JUMP ) != EMPTY ) {
         if( ( blk->edge[ 0 ].destination.u.blk->class & LOOP_HEADER ) != EMPTY ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int     LoopHeuristic( block *blk, instruction *cond ) {
@@ -550,12 +550,12 @@ static  bool    GuardApplies( block *blk, block *dst, name *reg ) {
             if( ins->operands[i] == reg ) {
                 return( !PostDominates( dst, blk ) );
             }
-            if( ReDefinedBy( ins, reg ) ) {
-                return( FALSE );
+            if( _IsReDefinedBy( ins, reg ) ) {
+                return( false );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int     TryGuard( block *blk, instruction *cond, name *reg ) {
@@ -602,17 +602,17 @@ static  bool    StoreApplies( block *blk, block *next ) {
 
     instruction *ins;
 
-    if( PostDominates( next, blk ) ) return( FALSE );
+    if( PostDominates( next, blk ) ) return( false );
     for( ins = next->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->result == NULL ) continue;
         switch( ins->result->n.class ) {
         case N_MEMORY:
         case N_INDEXED:
         // case N_TEMP:
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int     StoreHeuristic( block *blk, instruction *cond ) {
@@ -636,13 +636,13 @@ static  int     StoreHeuristic( block *blk, instruction *cond ) {
 static  bool    ReturnApplies( block *blk ) {
 /*******************************************/
 
-    if( ( blk->class & RETURN ) != EMPTY ) return( TRUE );
+    if( ( blk->class & RETURN ) != EMPTY ) return( true );
     if( ( blk->class & JUMP ) != EMPTY ) {
         if( ( blk->edge[ 0 ].destination.u.blk->class & RETURN ) != EMPTY ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  int     ReturnHeuristic( block *blk, instruction *cond ) {

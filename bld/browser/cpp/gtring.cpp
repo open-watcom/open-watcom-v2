@@ -51,11 +51,11 @@ MemoryPool TreeRing::_pool( sizeof( TreeRing ), "TreeRing", POOLSIZE );
 
 TreeRing::TreeRing( TreeWindow * parent, TreePtr * ptr )
             : TreeNode( parent )
-            , _sorted( FALSE )
-            , _cut( FALSE )
-            , _hasLineTop( FALSE )
-            , _hasLineBottom( FALSE )
-            , _hasLineConnector( FALSE )
+            , _sorted( false )
+            , _cut( false )
+            , _hasLineTop( false )
+            , _hasLineBottom( false )
+            , _hasLineConnector( false )
             , _level( 0 )
 //------------------------------------------------------
 {
@@ -141,19 +141,19 @@ void TreeRing::unWrap( void )
 bool TreeRing::addPtr( TreePtr * ptr )
 //------------------------------------
 {
-    bool found = FALSE;
+    bool found = false;
     TreeNode * parnt = ptr->getTo();
     TreeNode * child = ptr->getFrom();
 
-    _sorted = FALSE;
+    _sorted = false;
 
     if( isParent( parnt ) ) {
         if( canJoin( parnt, child ) ) {
             ptr->setTo( this );
             _children.add( ptr );
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
     if( isChild( child ) ) {
@@ -165,13 +165,13 @@ bool TreeRing::addPtr( TreePtr * ptr )
 
             _level = maxInt( _level, parnt->getLevel() );
 
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 void TreeRing::paint( OutputDevice *dev, TreeRect * r )
@@ -275,7 +275,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
     TreeCoord tmpx, tmpy;
     TreeCoord xOff = _parent->getXOff();
     TreeCoord yOff = _parent->getYOff();
-    bool      cSet = FALSE;
+    bool      cSet = false;
     int       i;
 
     setChildWard();
@@ -291,7 +291,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
             if( !cSet ) {
                 cfx = clx = tmpx;
                 cfy = cly = tmpy;
-                cSet = TRUE;
+                cSet = true;
             } else {
                 cfx = minCoord( cfx, tmpx );
                 cfy = minCoord( cfy, tmpy );
@@ -309,7 +309,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
         return;
     }
 
-    cSet = FALSE;
+    cSet = false;
     for( i = 0; i < _parents.count(); i += 1 ) {
         if( _parents[i]->getTo()->getEnable() > Hidden ) {
             _parents[i]->getTo()->getToCoord( _parents[i], tmpx, tmpy );
@@ -317,7 +317,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
             if( !cSet ) {
                 pfx = plx = tmpx;
                 pfy = ply = tmpy;
-                cSet = TRUE;
+                cSet = true;
             } else {
                 pfx = minCoord( pfx, tmpx );
                 pfy = minCoord( pfy, tmpy );
@@ -338,9 +338,9 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
     mx = minInt(cfx,pfx) + (maxInt(clx,plx) - minInt(cfx,pfx)) / 2;
     my = minInt(cfy,pfy) + (maxInt(cly,ply) - minInt(cfy,pfy)) / 2;
 
-    _hasLineBottom = FALSE;
-    _hasLineTop = FALSE;
-    _hasLineConnector = FALSE;
+    _hasLineBottom = false;
+    _hasLineTop = false;
+    _hasLineConnector = false;
     if( vert ) {
         /*
          * If there's more then one enabled child, we need a horizontal
@@ -354,14 +354,14 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                              _bounding.y() + _bounding.h() + 1,
                              TreeLine::RingBottom );
             breaker->addLine( &_lineBottom );
-            _hasLineBottom = TRUE;
+            _hasLineBottom = true;
         } else {
             // numEnabled == 1, so cfx == clx
             _lineConnector.set( cfx, _bounding.y(), cfx,
                                _bounding.y() + _bounding.h() + 2,
                                TreeLine::RingConnector );
             breaker->addLine( &_lineConnector );
-            _hasLineConnector = TRUE;
+            _hasLineConnector = true;
         }
 
         /*
@@ -376,14 +376,14 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                           _bounding.y(),
                           TreeLine::RingTop );
             breaker->addLine( &_lineTop );
-            _hasLineTop = TRUE;
+            _hasLineTop = true;
         } else {
             if( _hasLineBottom ) {          // child hasn't already drawn
                 _lineConnector.set( pfx, _bounding.y(), pfx,
                                     _bounding.y() + _bounding.h() + 1,
                                     TreeLine::RingConnector );
             breaker->addLine( &_lineConnector );
-            _hasLineConnector = TRUE;
+            _hasLineConnector = true;
             }
         }
 
@@ -392,7 +392,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                                 _bounding.y() + _bounding.h() + 1,
                                 TreeLine::RingConnector );
             breaker->addLine( &_lineConnector );
-            _hasLineConnector = TRUE;
+            _hasLineConnector = true;
         }
     } else {
         if( getNumEnabled( ChildList ) > 1 ) {
@@ -400,13 +400,13 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                              _bounding.x() + _bounding.w() + 1, maxInt( my, cly ),
                              TreeLine::TreeLine::RingBottom );
             breaker->addLine( &_lineBottom );
-            _hasLineBottom = TRUE;
+            _hasLineBottom = true;
         } else {
             _lineConnector.set( _bounding.x(), cfy,
                                 _bounding.x() + _bounding.w() + 2, cfy,
                                 TreeLine::RingConnector );
             breaker->addLine( &_lineConnector );
-            _hasLineConnector = TRUE;
+            _hasLineConnector = true;
         }
 
         if( getNumEnabled( ParentList ) > 1 || cly < pfy || cfy > ply ) {
@@ -414,14 +414,14 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                                 _bounding.x(), maxInt( maxInt( my, ply ), cfy ) + 1,
                                 TreeLine::RingTop );
             breaker->addLine( &_lineTop );
-            _hasLineTop = TRUE;
+            _hasLineTop = true;
         } else {
             if( _hasLineBottom ) {
                 _lineConnector.set( _bounding.x(), pfy,
                                     _bounding.x() + _bounding.w() + 1, pfy,
                                     TreeLine::RingConnector );
                 breaker->addLine( &_lineConnector );
-                _hasLineConnector = TRUE;
+                _hasLineConnector = true;
             }
         }
 
@@ -430,7 +430,7 @@ void TreeRing::addEdges( TreeEdgeBreaker * breaker )
                                 _bounding.x() + _bounding.w() + 1, my,
                                 TreeLine::RingConnector );
             breaker->addLine( &_lineConnector );
-            _hasLineConnector = TRUE;
+            _hasLineConnector = true;
         }
     }
 
@@ -453,7 +453,7 @@ void TreeRing::joinRings( TreeRingList & list )
     do {
         int     i;
 
-        joinMore = FALSE;
+        joinMore = false;
 
         /*
          * Go through the list of rings, trying to join pairs of rings
@@ -465,7 +465,7 @@ void TreeRing::joinRings( TreeRingList & list )
                 for( int j = list.count(); j > 0; j -= 1 ) {
                     if( list[ j - 1 ] != NULL && j != i ) {
                         if( tryRing->sameRing( list[ j - 1 ] ) ) {
-                            joinMore = TRUE;
+                            joinMore = true;
 
                             tryRing->joinTo( list[ j - 1 ] );
                             delete list[ j - 1 ];
@@ -525,29 +525,29 @@ bool TreeRing::sameRing( TreeRing * other )
 //
 {
     int i;
-    bool allMatch = TRUE;
+    bool allMatch = true;
 
     if( _parents.count() == other->_parents.count() ) {
         for( i = _parents.count(); i > 0 && allMatch; i -= 1 ) {
             if( !other->isParent( _parents[ i - 1 ]->getTo() ) ) {
-                allMatch = FALSE;
+                allMatch = false;
             }
         }
-        if( allMatch ) return TRUE;
+        if( allMatch ) return true;
     }
 
     if( _children.count() == other->_children.count() ) {
-        allMatch = TRUE;
+        allMatch = true;
 
         for( i = _children.count(); i > 0 && allMatch; i -= 1 ) {
             if( !other->isChild( _children[ i - 1 ]->getFrom() ) ) {
-                allMatch = FALSE;
+                allMatch = false;
             }
         }
-        if( allMatch ) return TRUE;
+        if( allMatch ) return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 bool TreeRing::canJoin( TreeNode * parnt, TreeNode * child )
@@ -556,9 +556,9 @@ bool TreeRing::canJoin( TreeNode * parnt, TreeNode * child )
 // using this ring
 //
 // Returns :
-//  TRUE if there is a common parent between the child and the ring AND
+//  true if there is a common parent between the child and the ring AND
 //          there is a common child between the parent and the ring
-//  FALSE if there are no common parents OR no common children
+//  false if there are no common parents OR no common children
 //
 {
     int  i;
@@ -568,27 +568,27 @@ bool TreeRing::canJoin( TreeNode * parnt, TreeNode * child )
      * Check if any of the child's parents are in this ring's parent list
      */
     for( i = _parents.count(); i > 0; i -= 1 ) {
-        found = FALSE;
+        found = false;
         for( int j = child->getCount( ParentList ); j > 0 && !found; j -= 1 ) {
             if( child->getNode( ParentList, j - 1 ) == _parents[ i - 1 ]->getTo() ) {
-                found = TRUE;
+                found = true;
             }
         }
-        if( !found ) return FALSE;      // no common parents
+        if( !found ) return false;      // no common parents
     }
 
 
     for( i = _children.count(); i > 0; i -= 1 ) {
-        found = FALSE;
+        found = false;
         for( int j = parnt->getCount( ChildList ); j > 0 && !found; j -= 1 ) {
             if( parnt->getNode( ChildList, j - 1 ) == _children[ i - 1 ]->getFrom() ) {
-                found = TRUE;
+                found = true;
             }
         }
-        if( !found ) return FALSE;      // no common children
+        if( !found ) return false;      // no common children
     }
 
-    return TRUE;
+    return true;
 }
 
 bool TreeRing::isRelated( TreeNode * node )
@@ -602,10 +602,10 @@ bool TreeRing::isParent( TreeNode * node )
 {
     for( int i = _parents.count(); i > 0; i -= 1 ) {
         if( _parents[ i - 1 ]->getTo() == node ) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
 }
 
 bool TreeRing::isChild( TreeNode * node )
@@ -613,11 +613,11 @@ bool TreeRing::isChild( TreeNode * node )
 {
     for( int i = _children.count(); i > 0; i -= 1 ) {
         if( _children[ i - 1 ]->getFrom() == node ) {
-            return TRUE;
+            return true;
         }
     }
 
-    return FALSE;
+    return false;
 }
 
 static int CompareChildren( const TreePtr ** lhs, const TreePtr ** rhs )
@@ -643,7 +643,7 @@ void TreeRing::sortPrtKids( void )
 {
     _parents.sort( (TComp) CompareParents );
     _children.sort( (TComp) CompareChildren );
-    _sorted = TRUE;
+    _sorted = true;
 }
 
 void TreeRing::getToCoord( TreePtr * ptr, TreeCoord& x, TreeCoord& y )
@@ -693,7 +693,7 @@ void TreeRing::getMinCoord( TreeCoord & x, TreeCoord & y )
 
             child->getMinCoord( tryX, tryY );
             if( !set ) {
-                set = TRUE;
+                set = true;
 
                 x = tryX;
                 y = tryY;
@@ -709,7 +709,7 @@ void TreeRing::getMinSibCoord( TreeCoord & x, TreeCoord & y )
 //-----------------------------------------------------------
 {
     TreeRect  r;
-    bool     set = FALSE;
+    bool     set = false;
 
     if( !_sorted ) {
         sortPrtKids();
@@ -724,7 +724,7 @@ void TreeRing::getMinSibCoord( TreeCoord & x, TreeCoord & y )
 
             child->getMinSibCoord( tryX, tryY );
             if( !set ) {
-                set = TRUE;
+                set = true;
 
                 x = tryX;
                 y = tryY;
@@ -740,7 +740,7 @@ void TreeRing::getMaxCoord( TreeCoord & x, TreeCoord & y )
 //--------------------------------------------------------
 {
     TreeRect r;
-    bool     set = FALSE;
+    bool     set = false;
 
     if( !_sorted ) {
         sortPrtKids();
@@ -755,7 +755,7 @@ void TreeRing::getMaxCoord( TreeCoord & x, TreeCoord & y )
 
             child->getMaxCoord( tryX, tryY );
             if( !set ) {
-                set = TRUE;
+                set = true;
 
                 x = tryX;
                 y = tryY;
@@ -903,7 +903,7 @@ TreeCoord TreeRing::getSibContrib( TreeNode * child, bool & sepInc )
             ret += prNode->getSibWidth() / divisor;
 
             if( !sepInc ) {
-                sepInc = TRUE;
+                sepInc = true;
             } else {
                 ret += sibSep / divisor;
             }
@@ -928,13 +928,13 @@ bool TreeRing::childrenEnabled( void )
     int i;
     bool rc;
 
-    rc = TRUE;
+    rc = true;
     for( i = 0; i < _children.count(); i += 1 ) {
         TreeNode * pNode;
 
         pNode = _children[ i ]->getFrom();
         if( !pNode->getEnable() ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
     }
@@ -948,13 +948,13 @@ bool TreeRing::parentsEnabled( void )
     int i;
     bool rc;
 
-    rc = TRUE;
+    rc = true;
     for( i = 0; i < _parents.count(); i += 1 ) {
         TreeNode * pNode;
 
         pNode = _parents[ i ]->getTo();
         if( !pNode->getEnable() ) {
-            rc = FALSE;
+            rc = false;
             break;
         }
     }

@@ -408,11 +408,11 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 break;
             case DESC_INDEX:
                 StartType( "DESC_INDEX ARRAY", ++curr_index);
-                desc_array( ptr, FALSE );
+                desc_array( ptr, false );
                 break;
             case DESC_INDEX_386:
                 StartType( "DESC_INDEX ARRAY", ++curr_index);
-                desc_array( ptr, TRUE );
+                desc_array( ptr, true );
                 break;
             case BYTE_RANGE:
                 StartType( "BYTE_RANGE", ++curr_index);
@@ -509,35 +509,35 @@ void Dmp_type( int cnt, unsigned_32 *offs )
                 break;
             case FIELD_BYTE:
                 Wdputslc( "FIELD_BYTE\n" );
-                bit_field_struct( buff, 1, FALSE );
+                bit_field_struct( buff, 1, false );
                 break;
             case FIELD_WORD:
                 Wdputslc( "FIELD_WORD\n" );
-                bit_field_struct( buff, 2, FALSE );
+                bit_field_struct( buff, 2, false );
                 break;
             case FIELD_LONG:
                 Wdputslc( "FIELD_LONG\n" );
-                bit_field_struct( buff, 4, FALSE );
+                bit_field_struct( buff, 4, false );
                 break;
             case BIT_BYTE:
                 Wdputslc( "BIT_BYTE\n" );
-                bit_field_struct( buff, 1, TRUE );
+                bit_field_struct( buff, 1, true );
                 break;
             case BIT_WORD:
                 Wdputslc( "BIT_WORD\n" );
-                bit_field_struct( buff, 2, TRUE );
+                bit_field_struct( buff, 2, true );
                 break;
             case BIT_LONG:
                 Wdputslc( "BIT_LONG\n" );
-                bit_field_struct( buff, 4, TRUE );
+                bit_field_struct( buff, 4, true );
                 break;
             case FIELD_CLASS:
                 Wdputslc( "FIELD_CLASS\n" );
-                bit_field_class( buff, FALSE );
+                bit_field_class( buff, false );
                 break;
             case BIT_CLASS:
                 Wdputslc( "BIT_CLASS\n" );
-                bit_field_class( buff, TRUE );
+                bit_field_class( buff, true );
                 break;
             case INHERIT_CLASS:
                 Wdputslc( "INHERIT_CLASS\n" );

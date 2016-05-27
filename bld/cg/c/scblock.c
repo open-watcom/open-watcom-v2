@@ -67,17 +67,17 @@ static bool StupidMove( score *sc, instruction *ins )
     score_info  info;
     int         dst_index;
 
-    if( ins->head.opcode != OP_MOV ) return( FALSE );
-    if( ins->result->n.class != N_REGISTER ) return( FALSE );
+    if( ins->head.opcode != OP_MOV ) return( false );
+    if( ins->result->n.class != N_REGISTER ) return( false );
     dst_index = ins->result->r.reg_index;
     if( ins->operands[0]->n.class == N_REGISTER ) {
         if( !RegsEqual( sc, ins->operands[0]->r.reg_index, dst_index )  ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         ScoreInfo( &info, ins->operands[0] );
         if( !ScoreEqual( sc, dst_index, &info ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     /*
@@ -87,7 +87,7 @@ static bool StupidMove( score *sc, instruction *ins )
         register already has. Kill the sucker.
     */
     DoNothing( ins );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -95,7 +95,7 @@ static  bool    RemDeadCode( block *blk )
 /****************************************
     This removes any instructions in "blk" which assign to a register which
     dies immediately following that instruction and has no side effects.
-    Returns TRUE if any instructions were killed, in which case the
+    Returns true if any instructions were killed, in which case the
     live information must be updated.
 */
 {
@@ -104,20 +104,20 @@ static  bool    RemDeadCode( block *blk )
     instruction *ins;
     instruction *next;
 
-    change = FALSE;
+    change = false;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
         result = ins->result;
         /* if result is a register and it dies after this instruction*/
         if( !_OpIsCall( ins->head.opcode )
-         && UnChangeable( ins ) == FALSE
-         && SideEffect( ins ) == FALSE
+         && UnChangeable( ins ) == false
+         && SideEffect( ins ) == false
          && result != NULL
-         && ScConvert( ins ) == FALSE
+         && ScConvert( ins ) == false
          && result->n.class == N_REGISTER
          && !HW_Ovlap( ins->head.next->head.live.regs, result->r.reg ) ) {
             FreeIns( ins );
-            change = TRUE;
+            change = true;
         }
     }
     return( change );
@@ -140,18 +140,18 @@ extern  bool    DoScore( block *blk )
     instruction *ins;
     hw_reg_set  tmp;
 
-    change = FALSE;
+    change = false;
     for( ;; ) {
         SCBlip();
         while( RemDeadCode( blk ) ) {
             UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
-            change = TRUE;
+            change = true;
         }
-        if( RegThrash( blk ) == FALSE ) break;
-        change = TRUE;
+        if( RegThrash( blk ) == false ) break;
+        change = true;
     }
     scoreboard = blk->cc;
-    had_condition = FALSE;
+    had_condition = false;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         ScoreSegments( scoreboard );
         /* May all intel designers rot in hell forever and ever, amen*/
@@ -159,10 +159,10 @@ extern  bool    DoScore( block *blk )
             if( had_condition ) {
                 blk->class |= MULTIPLE_EXITS;
             }
-            had_condition = TRUE;
+            had_condition = true;
         }
         if( ScoreZero( scoreboard, &ins ) ) {
-            change = TRUE;
+            change = true;
             UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
         }
         if( ins->head.opcode == OP_BLOCK ) break;
@@ -186,20 +186,20 @@ extern  bool    DoScore( block *blk )
                 }
             } else {
                 if( FindRegOpnd( scoreboard, ins ) ) {
-                    change = TRUE;
+                    change = true;
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                 }
-                if( ins->head.opcode == OP_MOV && had_condition == FALSE ) {
+                if( ins->head.opcode == OP_MOV && had_condition == false ) {
                     if( ScoreMove( scoreboard, ins ) ) {
-                        change = TRUE;
+                        change = true;
                         UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                     }
                     if( next->head.prev == ins ) {
                         RegKill( scoreboard, ins->zap->reg );
                     }
-                } else if( ins->head.opcode == OP_LA && had_condition == FALSE ) {
+                } else if( ins->head.opcode == OP_LA && had_condition == false ) {
                     if( ScoreLA( scoreboard, ins ) ) {
-                        change = TRUE;
+                        change = true;
                         UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                     }
                     if( next->head.prev == ins ) {
@@ -208,7 +208,7 @@ extern  bool    DoScore( block *blk )
                 } else if( dst == NULL ) {
                     RegKill( scoreboard, ins->zap->reg );
                 } else if( StupidMove( scoreboard, ins ) ) {
-                    change = TRUE;
+                    change = true;
                 } else {
                     if( dst->n.class == N_REGISTER ) {
                         tmp = ins->zap->reg;
@@ -219,7 +219,7 @@ extern  bool    DoScore( block *blk )
                         ScoreKillInfo( scoreboard, dst, &info, HW_EMPTY );
                         RegKill( scoreboard, ins->zap->reg );
                     }
-                    if( had_condition == FALSE ) {
+                    if( had_condition == false ) {
                         ScZeroCheck( scoreboard, ins );
                     }
                 }

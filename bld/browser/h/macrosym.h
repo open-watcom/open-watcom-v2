@@ -40,7 +40,7 @@ class Module;
 class MacroSym : public Symbol
 {
 public:
-                        MacroSym( dr_handle drhdl, dr_handle drhdl_prt,
+                        MacroSym( drmem_hdl drhdl, drmem_hdl drhdl_prt,
                                   Module *m, char * name )
                             : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual             ~MacroSym() {}

@@ -40,7 +40,7 @@
 #define fs_push_saves   HW_NotD( HW_EMPTY )
 
 static const struct STRUCT_byte_seq( 15 ) fs_push = {
-    15, FALSE,
+    15, false,
     {
         0x64,0xff,0x35,0x00,0x00,0x00,0x00,     // push fs:0
         0x8f,0x00,                              // pop [eax]
@@ -54,7 +54,7 @@ static const struct STRUCT_byte_seq( 15 ) fs_push = {
 #define fs_pop_saves    HW_NotD( HW_EAX )
 
 static const struct STRUCT_byte_seq( 6 ) fs_pop = {
-    6, FALSE,
+    6, false,
     { 0x64,0xa3,0x00,0x00,0x00,0x00 }           // mov fs:0,eax
 };
 

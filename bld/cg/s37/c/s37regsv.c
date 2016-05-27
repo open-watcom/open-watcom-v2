@@ -113,7 +113,7 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
 
     class = conf->name->n.name_class;
 
-    if( _Is( conf, NEVER_TOO_GREEDY ) ) return( TRUE );
+    if( _Is( conf, NEVER_TOO_GREEDY ) ) return( true );
     tmp = MustSaveRegs();
     if( BlockByBlock || HW_Ovlap( reg, GivenRegisters )
     || !HW_Ovlap( reg, tmp ) ) {

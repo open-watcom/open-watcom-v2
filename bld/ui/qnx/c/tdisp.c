@@ -217,7 +217,7 @@ static void putp( char *s )
 {
     int         c;
     int         pad;
-    int         mand = FALSE;
+    int         mand = false;
     int         i;
     char        *bbuf;
 
@@ -246,7 +246,7 @@ static void putp( char *s )
                     }
                 // Pay attention to the mandatory flag
                 } else if( c == '/' ) {
-                    mand = TRUE;
+                    mand = true;
                 }
                 // Note that I'm completely ignoring the * flag( proportional
                 // to number of lines padding ). I'm just assuming 1 line
@@ -258,7 +258,7 @@ static void putp( char *s )
             if( c == '>' ) {
                 // output padding only if required
                 if( !xon_xoff || mand ) {
-                    mand = FALSE;
+                    mand = false;
                     for( i = 0; i < pad; i++ ) {
                         __putchar( pad_char[0] );
                     }
@@ -656,7 +656,7 @@ static int TI_PUT_FILE( char *fnam )
         // open file
         fil = ti_fopen( fnam );
         if( fil == NULL )
-            return( FALSE );
+            return( false );
 
         // output file to terminal
         while( (c = fgetc( fil )) != EOF ) {
@@ -665,7 +665,7 @@ static int TI_PUT_FILE( char *fnam )
         fclose( fil );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 #define TI_PATH_NAME    "/usr/lib/terminfo/?/"
@@ -681,7 +681,7 @@ static int TI_EXEC_PROG( char *pnam )
         // get full path name of program
         ppath = alloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
-            return( FALSE );
+            return( false );
         }
         strcpy( ppath, TI_PATH_NAME );
         strcat( ppath, pnam );
@@ -714,10 +714,10 @@ static int TI_EXEC_PROG( char *pnam )
 
         // if program failed...
         if( ret == -1 ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static MONITOR  ui_data = {
@@ -912,12 +912,12 @@ static int td_init( void )
         UIData = &ui_data;
     }
     if( !td_initconsole() )
-        return( FALSE );
+        return( false );
 
     if( !initmonitor() )
-        return( FALSE );
+        return( false );
     if( !setupscrnbuff( 0, 0 ) )
-        return( FALSE );
+        return( false );
 
     uiinitcursor();
     initkeyboard();
@@ -927,7 +927,7 @@ static int td_init( void )
     UIData->tick_delay      = 500;
     UIData->f10menus        = true;
     td_refresh( 1 );
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -942,16 +942,16 @@ static int td_init( void )
     }
 
     if( !td_initconsole() )
-        return( FALSE );
+        return( false );
 
     if( !initmonitor() )
-        return( FALSE );
+        return( false );
 
     if( TCAP_MONOCHROME ) {
         UIData->colour = M_TERMINFO_MONO;
     }
 
-    UIData->no_blowup = TRUE;
+    UIData->no_blowup = true;
 
     tmp = getenv( "TIOPTIMIZE" );
     if( tmp != NULL )
@@ -971,11 +971,11 @@ static int td_init( void )
 
     // Set up screen buffer
     if( !setupscrnbuff( rows, cols ) )
-        return( FALSE );
+        return( false );
 
     uiinitcursor();
     if( !initkeyboard() )
-        return( FALSE );
+        return( false );
 
     UIData->mouse_acc_delay = 277;
     UIData->mouse_rpt_delay = 100;
@@ -987,7 +987,7 @@ static int td_init( void )
     ti_find_cutoff();
 
     ti_refresh( 1 );
-    return( TRUE );
+    return( true );
 }
 
 

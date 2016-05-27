@@ -72,12 +72,12 @@ bool ObjWalkSymList( obj_file *ofile, sym_file *sfile )
     if( ofile->orl != NULL ) {
         sym_sec_hnd = ORLFileGetSymbolTable( ofile->orl );
         if( sym_sec_hnd == NULL )
-            return( FALSE );
+            return( false );
         if( ORLSymbolSecScan( sym_sec_hnd, &CheckSymbol ) != ORL_OKAY ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         OMFWalkSymList( ofile, sfile );
     }
-    return( TRUE );
+    return( true );
 }

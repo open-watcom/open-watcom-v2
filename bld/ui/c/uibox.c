@@ -83,7 +83,7 @@ void intern blowup( BUFFER *bptr, SAREA area, unsigned char *box, ATTR attr )
         grow.col = (ORD)max( area.col, grow.col - inccol );
         grow.height = (ORD)min( area.height, grow.height + 2*incrow );
         grow.width = (ORD)min( area.width, grow.width + 2*inccol );
-        drawbox( bptr, grow, box, attr, TRUE );
+        drawbox( bptr, grow, box, attr, true );
         if( ( grow.height == area.height ) &&
             ( grow.width == area.width ) ) {
             break;
@@ -101,7 +101,7 @@ void uidrawbox( VSCREEN *vs, SAREA *area, ATTR attr, const char *title )
         return;
     }
 
-    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, FALSE );
+    drawbox( &(vs->window.type.buffer), *area, SBOX_CHARS(), attr, false );
 
     if( title == NULL ) {
         return;

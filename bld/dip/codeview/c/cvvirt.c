@@ -122,7 +122,7 @@ static int InitPageDir( imp_image_handle *ii, unsigned dir_idx )
     return( 1 );
 }
 
-void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
+void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
 {
     unsigned            dir_idx;
     unsigned            pg_idx;
@@ -145,7 +145,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
     len += start % VM_PAGE_SIZE;
     pg_start = start & ~(virt_mem)(VM_PAGE_SIZE - 1);
     pg = ii->virt[dir_idx][pg_idx];
-    if( pg == NULL || (unsigned)( pg->block->len - pg->offset ) < len ) {
+    if( pg == NULL || ( pg->block->len - pg->offset ) < len ) {
         /* unloaded previously loaded block */
         if( pg != NULL ) {
             tmp_idx = dir_idx;
@@ -214,7 +214,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, unsigned len )
             return( NULL );
         }
         /* last block might be a short read */
-        if( DCRead( ii->sym_file, pg->block->data, len ) == DCREAD_ERROR ) {
+        if( DCRead( ii->sym_file, pg->block->data, len ) == DIG_READ_ERROR ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }

@@ -85,9 +85,9 @@ static bool AccConnect( void )
     }
     if( data[0] != '\0' ) {
         ServError( data );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -96,7 +96,7 @@ static void AccLoadProg( void )
     char            *data;
 
     data = GetInPtr( sizeof( prog_load_req ) );
-    AccTrap( TRUE );
+    AccTrap( true );
 }
 
 bool Session( void )
@@ -120,30 +120,32 @@ bool Session( void )
         TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
-            want_return = FALSE;
+            want_return = false;
         } else {
-            want_return = TRUE;
+            want_return = true;
         }
         switch( req ) {
         case REQ_CONNECT:
-            if( !AccConnect() ) return( TRUE );
+            if( !AccConnect() )
+                return( true );
             break;
         case REQ_DISCONNECT:
-            AccTrap( FALSE );
-            return( TRUE );
+            AccTrap( false );
+            return( true );
         case REQ_SUSPEND:
-            AccTrap( FALSE );
+            AccTrap( false );
             RemoteDisco();
             for(;;) {
                 while( !RemoteConnect() )
                     ;
-                if( !Session() ) break;
+                if( !Session() )
+                    break;
                 RemoteDisco();
             }
             break;
         case REQ_RESUME:
-            AccTrap( FALSE );
-            return( FALSE );
+            AccTrap( false );
+            return( false );
         case REQ_PROG_LOAD:
             AccLoadProg();
             break;

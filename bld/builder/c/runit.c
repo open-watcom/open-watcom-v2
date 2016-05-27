@@ -71,15 +71,15 @@ typedef struct dd {
   char          name[1];
 } iolist;
 
-static int      rflag = FALSE;
-static int      fflag = FALSE;
-static int      sflag = TRUE;
+static int      rflag = false;
+static int      fflag = false;
+static int      sflag = true;
 
 static int RecursiveRM( const char *dir );
 
 static void LogDir( char *dir )
 {
-    Log( FALSE, "%s", LogDirEquals( dir ) );
+    Log( false, "%s", LogDirEquals( dir ) );
 }
 
 static int ProcSet( char *cmd )
@@ -208,7 +208,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
     directory = opendir( srcdir );
     if( directory == NULL ) {
         if( !cond_copy ) {
-            Log( FALSE, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
+            Log( false, "Can not open source directory '%s': %s\n", srcdir, strerror( errno ) );
         }
     } else {
         owner = &head;
@@ -327,7 +327,7 @@ static int mkdir_nested( char *path )
             rc = mkdir( pathname );
 #endif
             if( rc != 0 ) {
-                Log( FALSE, "Can not create directory '%s': %s\n", pathname, strerror( errno ) );
+                Log( false, "Can not create directory '%s': %s\n", pathname, strerror( errno ) );
                 return( -1 );
             }
         } else {
@@ -337,7 +337,7 @@ static int mkdir_nested( char *path )
 #else
             if( (attr & _A_SUBDIR) == 0 ) {
 #endif
-                Log( FALSE, "Can not create directory '%s': file with the same name already exists\n", pathname );
+                Log( false, "Can not create directory '%s': file with the same name already exists\n", pathname );
                 return( -1 );
             }
         }
@@ -362,7 +362,7 @@ static int ProcOneCopy( char *src, char *dst, bool cond_copy )
         if( cond_copy ) {
             return( 0 );    // Quietly ignore missing source
         } else {
-            Log( FALSE, "Can not open '%s' for reading: %s\n", src, strerror( errno ) );
+            Log( false, "Can not open '%s' for reading: %s\n", src, strerror( errno ) );
             return( 1 );
         }
     }
@@ -389,31 +389,31 @@ static int ProcOneCopy( char *src, char *dst, bool cond_copy )
             dp = fopen( dst, "wb" );
         }
         if( !dp ) {
-            Log( FALSE, "Can not open '%s' for writing: %s\n", dst, strerror( errno ) );
+            Log( false, "Can not open '%s' for writing: %s\n", dst, strerror( errno ) );
             fclose( sp );
             return( 1 );
         }
     }
-    Log( FALSE, "Copying '%s' to '%s'...\n", src, dst );
+    Log( false, "Copying '%s' to '%s'...\n", src, dst );
     for( ;; ) {
         len = fread( buff, 1, sizeof( buff ), sp );
         if( len == 0 )
             break;
         if( ferror( sp ) ) {
-            Log( FALSE, "Error reading '%s': %s\n", src, strerror( errno ) );
+            Log( false, "Error reading '%s': %s\n", src, strerror( errno ) );
             fclose( sp );
             fclose( dp );
             return( 1 );
         }
         out = fwrite( buff, 1, len, dp );
         if( ferror( dp ) ) {
-            Log( FALSE, "Error writing '%s': %s\n", dst, strerror( errno ) );
+            Log( false, "Error writing '%s': %s\n", dst, strerror( errno ) );
             fclose( sp );
             fclose( dp );
             return( 1 );
         }
         if( out != len ) {
-            Log( FALSE, "Error writing '%s': Disk full\n", dst );
+            Log( false, "Error writing '%s': Disk full\n", dst );
             fclose( sp );
             fclose( dp );
             return( 1 );
@@ -449,14 +449,14 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy )
     if( dst == NULL ) {
         dst = strchr( src, '\t' );
         if( dst == NULL ) {
-            Log( FALSE, "Missing destination parameter\n" );
+            Log( false, "Missing destination parameter\n" );
             return( 1 );
         }
     }
     *dst = '\0';
     dst = SkipBlanks( dst + 1 );
     if( *dst == '\0' ) {
-        Log( FALSE, "Missing destination parameter\n" );
+        Log( false, "Missing destination parameter\n" );
         return( 1 );
     }
     res = BuildList( src, dst, test_abit, cond_copy, &list );
@@ -491,7 +491,7 @@ static int ProcMkdir( char *cmd )
 
 void PMakeOutput( char *str )
 {
-    Log( FALSE, "%s\n", str );
+    Log( false, "%s\n", str );
 }
 
 static int DoPMake( pmake_data *data )
@@ -504,10 +504,10 @@ static int DoPMake( pmake_data *data )
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
         res = SysChdir( curr->dir_name );
         if( res != 0 ) {
-            if( data->ignore_err == FALSE ) {
+            if( data->ignore_err == false ) {
                 return( res );
             }
-            Log( FALSE, "non-zero return: %d\n", res );
+            Log( false, "non-zero return: %d\n", res );
             rc = res;
             continue;
         }
@@ -517,10 +517,10 @@ static int DoPMake( pmake_data *data )
         PMakeCommand( data, cmd );
         res = SysRunCommand( cmd );
         if( res != 0 ) {
-            if( data->ignore_err == FALSE ) {
+            if( !data->ignore_err ) {
                 return( res );
             }
-            Log( FALSE, "non-zero return: %d\n", res );
+            Log( false, "non-zero return: %d\n", res );
             rc = res;
         }
     }
@@ -585,10 +585,10 @@ static int remove_item( const char *name, bool dir )
     }
     if( rc != 0 ) {
         rc = errno;
-        Log( FALSE, err_msg, name );
+        Log( false, err_msg, name );
         return( rc );
     } else if( !sflag ) {
-        Log( FALSE, inf_msg, name );
+        Log( false, inf_msg, name );
     }
     return( 0 );
 }
@@ -642,7 +642,7 @@ static int DoRM( const char *f )
 #endif
     d = opendir( fpath );
     if( d == NULL ) {
-        Log( FALSE, "File (%s) not found.\n", f );
+        Log( false, "File (%s) not found.\n", f );
         return( ENOENT );
     }
 
@@ -682,7 +682,7 @@ static int DoRM( const char *f )
                 dtail = tmp;
                 memcpy( tmp->name, fpath, len );
             } else {
-                Log( FALSE, "%s is a directory, use -r\n", fpath );
+                Log( false, "%s is a directory, use -r\n", fpath );
                 retval = EACCES;
             }
 #ifdef __UNIX__
@@ -690,10 +690,10 @@ static int DoRM( const char *f )
 #else
         } else if( (nd->d_attr & _A_RDONLY) && !fflag ) {
 #endif
-            Log( FALSE, "%s is read-only, use -f\n", fpath );
+            Log( false, "%s is read-only, use -f\n", fpath );
             retval = EACCES;
         } else {
-            rc = remove_item( fpath, FALSE );
+            rc = remove_item( fpath, false );
             if( rc != 0 ) {
                 retval = rc;
             }
@@ -724,7 +724,7 @@ static int RecursiveRM( const char *dir )
     strcat( fname, "/" MASK_ALL_ITEMS );
     rc = DoRM( fname );
     /* purge the directory */
-    rc2 = remove_item( dir, TRUE );
+    rc2 = remove_item( dir, true );
     if( rc == 0 )
         rc = rc2;
     return( rc );
@@ -766,14 +766,14 @@ static int ProcRm( char *cmd )
         while( isalpha( *cmd ) ) {
             switch( *cmd++ ) {
             case 'f':
-                fflag = TRUE;
+                fflag = true;
                 break;
             case 'R':
             case 'r':
-                rflag = TRUE;
+                rflag = true;
                 break;
             case 'v':
-                sflag = FALSE;
+                sflag = false;
                 break;
             default:
                 return( 1 );
@@ -847,13 +847,13 @@ int RunIt( char *cmd, bool ignore_errors )
         Log( Quiet, "%s\n", SkipBlanks( cmd + sizeof( "ERROR" ) ) );
         res = 1;
     } else if( BUILTIN( "COPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "COPY" ) ), FALSE, FALSE );
+        res = ProcCopy( SkipBlanks( cmd + sizeof( "COPY" ) ), false, false );
     } else if( BUILTIN( "ACOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACOPY" ) ), TRUE, FALSE );
+        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACOPY" ) ), true, false );
     } else if( BUILTIN( "CCOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "CCOPY" ) ), FALSE, TRUE );
+        res = ProcCopy( SkipBlanks( cmd + sizeof( "CCOPY" ) ), false, true );
     } else if( BUILTIN( "ACCOPY" ) ) {
-        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACCOPY" ) ), TRUE, TRUE );
+        res = ProcCopy( SkipBlanks( cmd + sizeof( "ACCOPY" ) ), true, true );
     } else if( BUILTIN( "MKDIR" ) ) {
         res = ProcMkdir( SkipBlanks( cmd + sizeof( "MKDIR" ) ) );
     } else if( BUILTIN( "PMAKE" ) ) {

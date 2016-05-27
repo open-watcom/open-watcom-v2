@@ -228,8 +228,8 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
         hdr.sig[0] = 0;
         do {
             char        buf[1024 + sizeof( hdr )];
-            unsigned    to_read;
-            char       *ptr;
+            size_t      to_read;
+            char        *ptr;
 
             /* read block */
             to_read = 1024 + overlap;
@@ -390,8 +390,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
                     if( left <= 0) {
                         break;
                     }
-                    if ( DCRead( ii->sym_file, &buf.dbg_dir, sizeof( buf.dbg_dir ) )
-                      != sizeof( buf.dbg_dir ) ) {
+                    if ( DCRead( ii->sym_file, &buf.dbg_dir, sizeof( buf.dbg_dir ) ) != sizeof( buf.dbg_dir ) ) {
                         break;
                     }
                 }
@@ -444,8 +443,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *ii, unsigned long nh_off )
             }
 
             for( i = 0; i < ii->seg_count; i++ ) {
-                if( DCRead( ii->sym_file, &buf.obj, sizeof( buf.obj ) )
-                 != sizeof( buf.obj )) {
+                if( DCRead( ii->sym_file, &buf.obj, sizeof( buf.obj ) ) != sizeof( buf.obj )) {
                     return( DS_ERR | DS_FREAD_FAILED );
                 }
                 ii->segments[i].is_executable = !!( buf.obj.flags & OBJ_EXECUTABLE );
@@ -548,8 +546,8 @@ static dip_status TryFindTrailer( imp_image_handle *ii )
     hll_trailer         sig;
     unsigned long       pos;
 
-    pos = DCSeek( ii->sym_file, DCSEEK_POSBACK( sizeof( sig ) ), DIG_END );
-    if( pos == DCSEEK_ERROR ) {
+    pos = DCSeek( ii->sym_file, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
+    if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
     if( DCRead( ii->sym_file, &sig, sizeof( sig ) ) != sizeof( sig ) ) {

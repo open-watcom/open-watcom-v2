@@ -770,7 +770,7 @@ extern  reg_set_index   IndexIntersect( reg_set_index curr,
 extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
                             bool is_temp_index )
 /****************************************************************
-    return TRUE if "reg" can be used as an index of type "class"
+    return true if "reg" can be used as an index of type "class"
 */
 {
     hw_reg_set  *list;
@@ -829,7 +829,7 @@ extern  type_class_def  RegClass( hw_reg_set regs )
 
 extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 /***************************************************************
-    return TRUE if "reg" is ok to be used as in index reg.
+    return true if "reg" is ok to be used as in index reg.
     "is_temp_index" means we'll also need to incorporate the
     AR/BP register into the index, since we're indexing an auto
 */
@@ -853,7 +853,7 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 
 extern  bool    IsSegReg( hw_reg_set regs )
 /******************************************
-    return TRUE if "regs" is a segment register
+    return true if "regs" is a segment register
 */
 {
     hw_reg_set  tmp;
@@ -1070,7 +1070,7 @@ extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
 
 extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 /******************************************************************
-    return TRUE if "regs" has type "class" (eg I4, U4, etc)
+    return true if "regs" has type "class" (eg I4, U4, etc)
 */
 {
     hw_reg_set  *list;
@@ -1120,10 +1120,10 @@ extern  hw_reg_set      FixedRegs( void )
 extern  bool    IsStackReg( name *sp )
 /************************************/
 {
-    if( sp == NULL ) return( FALSE );
-    if( sp->n.class != N_REGISTER ) return( FALSE );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( FALSE );
-    return( TRUE );
+    if( sp == NULL ) return( false );
+    if( sp->n.class != N_REGISTER ) return( false );
+    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( false );
+    return( true );
 }
 
 

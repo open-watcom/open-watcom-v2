@@ -30,9 +30,37 @@
 ****************************************************************************/
 
 
-typedef BOOL        FAR PASCAL IsDebuggerExecuting_func( void );
-typedef void        FAR PASCAL DoneWithInterrupt_func( LPVOID );
-typedef int         FAR PASCAL GetDebugInterruptData_func( LPVOID );
-typedef void        FAR PASCAL ResetDebugInterrupts32_func( void );
-typedef int         FAR PASCAL SetDebugInterrupts32_func( void );
-typedef void        FAR PASCAL DebuggerIsExecuting_func( int );
+/*
+    located in INTRC.ASM
+*/
+
+extern void __interrupt (* FAR_PTR old_int13)();
+extern void __interrupt (* FAR_PTR old_int21)();
+extern void __interrupt (* FAR_PTR old_int28)();
+
+extern void __interrupt (* FAR_PTR old_intx0)();
+extern void __interrupt (* FAR_PTR old_intx1)();
+extern void __interrupt (* FAR_PTR old_intx2)();
+extern void __interrupt (* FAR_PTR old_intx3)();
+extern void __interrupt (* FAR_PTR old_intx4)();
+extern void __interrupt (* FAR_PTR old_intx5)();
+extern void __interrupt (* FAR_PTR old_intx6)();
+extern void __interrupt (* FAR_PTR old_intx7)();
+
+extern seg_offset       __far SysCallerAddr;
+extern unsigned char    __far SysCaught;
+extern unsigned char    __far SysNoDOS;
+
+extern void __interrupt int28_handler( union INTPACK r );
+extern void __interrupt int21_handler( union INTPACK r );
+extern void __interrupt int13_handler( union INTPACK r );
+extern void __interrupt int03_handler( union INTPACK r );
+
+extern void __interrupt intx0_handler( union INTPACK r );
+extern void __interrupt intx1_handler( union INTPACK r );
+extern void __interrupt intx2_handler( union INTPACK r );
+extern void __interrupt intx3_handler( union INTPACK r );
+extern void __interrupt intx4_handler( union INTPACK r );
+extern void __interrupt intx5_handler( union INTPACK r );
+extern void __interrupt intx6_handler( union INTPACK r );
+extern void __interrupt intx7_handler( union INTPACK r );

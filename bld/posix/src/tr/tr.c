@@ -230,12 +230,12 @@ void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) {
 
     size_t      i;
 
-    memset( set, FALSE, MAX_STR );
+    memset( set, false, MAX_STR );
     for( i = 0; i < len; ++i ) {
         if( no_dups && set[str[i]] ) {
             Die( "no duplicates allowed in string1" );
         }
-        set[str[i]] = TRUE;
+        set[str[i]] = true;
     }
 }
 
@@ -262,13 +262,13 @@ void main( int argc, char **argv ) {
     }
     if( argc > 1 ) {
         string1_len = expandString( argv[1], string1 );
-        makeSet( string1_len, string1, deleteSet, TRUE );
+        makeSet( string1_len, string1, deleteSet, true );
     } else {
         string1_len = 0;
     }
     if( argc > 2 ) {
         string2_len = expandString( argv[2], string2 );
-        makeSet( string2_len, string2, squeezeSet, FALSE );
+        makeSet( string2_len, string2, squeezeSet, false );
     } else {
         string2_len = 0;
     }

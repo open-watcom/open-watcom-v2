@@ -147,7 +147,7 @@ static void IncLevel( bool value )
 
 static void CSkipIf( void )
 {
-    IncLevel( FALSE );
+    IncLevel( false );
 }
 
 static void CUnknown( void )
@@ -175,7 +175,7 @@ static void CInclude( void )
     NextToken();
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
-        OpenSrcFile( Buffer, FALSE );
+        OpenSrcFile( Buffer, false );
     } else if( CurToken == T_LT ) {
         if( flags.in_macro ) {
             PPCTL_ENABLE_MACROS();
@@ -184,7 +184,7 @@ static void CInclude( void )
         for( ;; ) {
             NextToken();
             if( CurToken == T_GT ) {
-                OpenSrcFile( buf, TRUE );
+                OpenSrcFile( buf, true );
                 break;
             }
             strncat( buf, Buffer, sizeof( buf ) - 2 );
@@ -247,7 +247,7 @@ static unsigned addParmName( MAC_PARM **h, bool add_name )
 static unsigned findParmName( MAC_PARM **h )
 {
     if( *h != NULL ) {
-        return( addParmName( h, FALSE ) );
+        return( addParmName( h, false ) );
     }
     return( 0 );
 }
@@ -273,9 +273,9 @@ static bool skipEqualOrSharpOK( void )
         break;
     default :
         BadCmdLine( ERR_INVALID_OPTION );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -308,7 +308,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     prev_non_ws_token = T_NULL;
     if( CurToken != T_NULL ) {
         do {
-            CurToken = ScanToken( FALSE );
+            CurToken = ScanToken( false );
         } while( CurToken == T_WHITE_SPACE );
         if( defn & MSCAN_EQUALS ) {
             if( CurToken == T_NULL ) {
@@ -393,7 +393,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
             prev_non_ws_token = CurToken;
         }
         prev_token = CurToken;
-        CurToken = ScanToken( FALSE );
+        CurToken = ScanToken( false );
         if( (defn & MSCAN_MANY) == 0 ) break;
     }
     if( prev_token == T_WHITE_SPACE ) {
@@ -413,7 +413,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     BrinfDeclMacro( mptr );
     if( (defn & MSCAN_MANY) == 0 ) {
         while( CurToken == T_WHITE_SPACE ) {
-            CurToken = ScanToken( FALSE );
+            CurToken = ScanToken( false );
         }
         if( CurToken != T_NULL ) {
             BadCmdLine( ERR_INVALID_OPTION );
@@ -462,7 +462,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
             if( CurToken != T_DOT_DOT_DOT && !ExpectingToken( T_ID ) ) {
                 return( NULL );
             }
-            if( addParmName( &parm_names, TRUE ) != 0 ) {
+            if( addParmName( &parm_names, true ) != 0 ) {
                 CErr2p( ERR_DUPLICATE_MACRO_PARM, Buffer );
             } else {
                 ++parm_cnt;
@@ -523,7 +523,7 @@ static void CIfDef( void )
     SrcFileGuardPpIf();
     NextToken();
     if( !ExpectingToken( T_ID ) ) {
-        IncLevel( FALSE );
+        IncLevel( false );
         return;
     }
     ppIfId( MacroDependsDefined() );
@@ -535,7 +535,7 @@ static void CIfNDef( void )
     SrcFileGuardPpIf();
     NextToken();
     if( !ExpectingToken( T_ID ) ) {
-        IncLevel( FALSE );
+        IncLevel( false );
         return;
     }
     SrcFileGuardPpIfndef( Buffer, TokenLen );
@@ -754,7 +754,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
             CErr1( ERR_BREAK_KEY_HIT );
             CSuicide();
         }
-        lines_skipped = FALSE;
+        lines_skipped = false;
         old_ppctl = PPControl;
         for(;;) {
             if( CompFlags.cpp_output )
@@ -797,7 +797,7 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
             if( CurrChar == LCHR_EOF )
                 break;
             if( CurrChar == '\n' ) {
-                lines_skipped = TRUE;
+                lines_skipped = true;
             }
         }
         if( CompFlags.cpp_output ) {
@@ -853,8 +853,12 @@ unsigned IfDepthInSrcFile(      // COMPUTE #IF DEPTH IN CURRENT SOURCE FILE
     struct cpp_info *pp;        // - current pre-processor stack entry
     SRCFILE curr_src;           // - current SRCFILE
 
-    for( curr_src = SrcFileCurrent(), depth = 0, pp = VstkTop( &vstkPp )
-       ; ( pp != NULL ) && ( pp->locn.src_file == curr_src )
-       ; ++depth, pp = VstkNext( &vstkPp, pp ) );
-    return depth;
+    curr_src = SrcFileCurrent();
+    depth = 0;
+    VstkIterBeg( &vstkPp, pp ) {
+        if( pp->locn.src_file != curr_src )
+            break;
+        ++depth;
+    }
+    return( depth );
 }

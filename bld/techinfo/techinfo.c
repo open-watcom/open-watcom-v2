@@ -58,14 +58,13 @@
 #else
 #include <io.h>
 #endif
+#include "monint.h"
+
 
 extern int PType( void );
 extern int PBus( void );
 extern int PPrefix( void );
 extern int NDPType( void );
-#ifdef __DOS__
-extern int monint( int print );
-#endif
 
 #define BANNER "Watcom's Techinfo Utility, Version 1.4"
 
@@ -250,8 +249,8 @@ char WATCOMPATH[256];
 int  LineCount = 0;
 FILE *TechOutFile;
 
-void Usage( void )
-/****************/
+static void Usage( void )
+/***********************/
 {
     printf( BANNER "\n" );
 #if defined( __OS2__ )
@@ -288,8 +287,8 @@ void techoutput( char *format, ... )
     }
 }
 
-void do_company_header( void )
-/****************************/
+static void do_company_header( void )
+/***********************************/
 {
     time_t              time_of_day;
 
@@ -300,8 +299,8 @@ void do_company_header( void )
     techoutput( "\n" );
 }
 
-void print_env_var( const char * env_var )
-/****************************************/
+static void print_env_var( const char * env_var )
+/***********************************************/
 {
     char        *path;
 
@@ -314,7 +313,7 @@ void print_env_var( const char * env_var )
 
 static char CurrLevel[ sizeof( LEVEL )  ];
 
-void GetLevel( char *name )
+static void GetLevel( char *name )
 {
     int         io;
     char        buffer[ sizeof( LEVEL ) ];
@@ -329,7 +328,7 @@ void GetLevel( char *name )
     close( io );
 }
 
-void patch_tool( char *tool, char **dirs )
+static void patch_tool( char *tool, char **dirs )
 {
     char            toolbuff[159];
     int             i;
@@ -360,7 +359,7 @@ void patch_tool( char *tool, char **dirs )
 }
 
 
-void get_compiler_patch( void )
+static void get_compiler_patch( void )
 /*****************************/
 {
 /***************************************************************************/
@@ -387,7 +386,7 @@ void get_compiler_patch( void )
     }
 }
 
-void get_wsql_patch( void )
+static void get_wsql_patch( void )
 /*************************/
 {
 /***************************************************************************/
@@ -417,7 +416,7 @@ void get_wsql_patch( void )
     }
 }
 
-void get_mem_info( void )
+static void get_mem_info( void )
 /***********************/
 {
 #ifdef __OS2__
@@ -445,7 +444,7 @@ void get_mem_info( void )
 #endif
 }
 
-void dump_files( char drive_name )
+static void dump_files( char drive_name )
 /********************************/
 {
     char               filename[17];
@@ -481,7 +480,7 @@ void dump_files( char drive_name )
 }
 
 
-void get_config_files( void )
+static void get_config_files( void )
 /***************************/
 {
     int                 drive_name;
@@ -520,7 +519,7 @@ void get_config_files( void )
 }
 
 #ifndef __OS2__
-int NDPEquip( void )
+static int NDPEquip( void )
 {
     union REGS          regs;
 
@@ -529,7 +528,7 @@ int NDPEquip( void )
 }
 #endif
 
-void machine_type( int print )
+static void machine_type( int print )
 /****************************/
 {
     int manuf, plevel, buswidth, ndptype, ndp;
@@ -579,7 +578,7 @@ void machine_type( int print )
 }
 
 #ifndef __OS2__
-void check_dos_comm( void )
+static void check_dos_comm( void )
 /*************************/
 {
     /*   Check for the share and append utilities    */

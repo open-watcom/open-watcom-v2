@@ -142,7 +142,7 @@ static  bool    Scan4ListOprs( void ) {
     level = 0;
     cit = CITNode;
     for(;;) {
-        if( cit == SPtr1 ) return( FALSE );
+        if( cit == SPtr1 ) return( false );
         if( cit->opr == OPR_LBR ) {
             ++level;
         } else if( cit->opr == OPR_RBR ) {
@@ -155,7 +155,7 @@ static  bool    Scan4ListOprs( void ) {
         }
         cit = cit->link;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -165,25 +165,25 @@ static  bool            ReadKWList( void ) {
     OPR         opr;
 
     if( Scan4ListOprs() )
-        return( TRUE );
+        return( true );
     if( SPtr1->opn.ds != DSOPN_PHI )
-        return( TRUE ); // have ( ciolist ) name
+        return( true ); // have ( ciolist ) name
     opr = SPtr1->link->opr;
     if( opr == OPR_COM )
-        return( FALSE ); // have ( fmt ),
+        return( false ); // have ( fmt ),
     if( opr == OPR_LBR )
-        return( TRUE ); // we have ( ciolist ) (a(i) i==1,10)
+        return( true ); // we have ( ciolist ) (a(i) i==1,10)
     if( opr != OPR_TRM )
-        return( FALSE );
+        return( false );
     if( RecNOpn() )
-        return( FALSE );
+        return( false );
     if( CITNode->opn.ds == DSOPN_LIT )
-        return( FALSE );
+        return( false );
     if( CITNode->opn.ds > DSOPN_LIT )
-        return( TRUE );
+        return( true );
     if( LkSym()->u.ns.u1.s.typ == FT_CHAR )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 
@@ -194,7 +194,7 @@ void    CpRead( void ) {
 
     itnode      *cit;
 
-    Remember.read = TRUE;
+    Remember.read = true;
     InitIO();
     cit = CITNode;
     AdvanceITPtr();
@@ -208,7 +208,7 @@ void    CpRead( void ) {
             ReqComma();
         }
     }
-    if( Remember.end_equals == FALSE ) {
+    if( !Remember.end_equals ) {
         GNullEofStmt();
     }
     IOList();
@@ -291,7 +291,7 @@ static  void    DoKWList( void ) {
 
     KeywordList();
     if( ReqCloseParen() ) {
-        if( RecNOpn() == FALSE ) {
+        if( !RecNOpn() ) {
             Error( SX_EOS_EXPECTED );
         }
         AdvanceITPtr();

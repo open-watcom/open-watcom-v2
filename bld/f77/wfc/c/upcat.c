@@ -261,14 +261,14 @@ static  itnode  *findMatch( bool *ok_to_axe, bool *all_const_opns ) {
 
     num = 1;
     cit = BkLink;
-    *ok_to_axe = TRUE;
+    *ok_to_axe = true;
     if( all_const_opns != NULL ) {
-        *all_const_opns = TRUE;
+        *all_const_opns = true;
     }
     for(;;) {
         if( all_const_opns != NULL ) {
             if( (cit->opn.ds != DSOPN_PHI) && (cit->opn.us != USOPN_CON) ) {
-                *all_const_opns = FALSE;
+                *all_const_opns = false;
             }
         }
         if( ( cit->opr == OPR_LBR ) || ( cit->opr == OPR_FBR ) ) {
@@ -285,7 +285,7 @@ static  itnode  *findMatch( bool *ok_to_axe, bool *all_const_opns ) {
             //      l = ( name .eq. 'abc'//'def' )
             // and:
             //      a(5)(2:3)//'def'
-            *ok_to_axe = FALSE;
+            *ok_to_axe = false;
         }
         if( num == 0 ) break;
         cit = cit->link;

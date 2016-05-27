@@ -137,12 +137,14 @@ size_t GetSystemDir( char *buff, size_t buff_len )
  * InitScreen
  */
 
-static VOID PumpMessageQueue( VOID )
+static void APIENTRY PumpMessageQueue( ULONG parm )
 {
     char        class_name[80];
     QMSG        qmsg;
     ERRORID     err;
     ULONG       ulCount;
+
+    parm=parm;
 
     for( ;; ) {
         DosWaitEventSem( PumpMessageSem, SEM_INDEFINITE_WAIT );
@@ -170,7 +172,7 @@ void InitScreen( void )
     RestoreMainScreen( "WDPM" );
     DosCreateEventSem( NULL, &PumpMessageDoneSem, 0, false );
     DosCreateEventSem( NULL, &PumpMessageSem, 0, false );
-    DosCreateThread( &tid, (PFNTHREAD)PumpMessageQueue, 0, 0, STACK_SIZE );
+    DosCreateThread( &tid, PumpMessageQueue, 0, 0, STACK_SIZE );
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, tid );
 }
 

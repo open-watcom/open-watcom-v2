@@ -118,9 +118,9 @@ static bool CheckLxdataSeen( void *_seg, void *dummy )
     dummy = dummy;
     if( seg->info & SEG_LXDATA_SEEN ) {
         seg->class->flags |= CLASS_LXDATA_SEEN;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void CheckClassUninitialized( class_entry *currcl )
@@ -212,7 +212,7 @@ static bool SetGroupInitSize( void *_sdata, void *_delta )
     if( !sdata->isuninit && ( sdata->length > 0 ) && !sdata->isdead ) {
         sdata->u.leader->group->size = *delta + sdata->a.delta + sdata->length;
     }
-    return( FALSE );
+    return( false );
 }
 
 static void CalcInitSize( seg_leader *seg )
@@ -221,7 +221,7 @@ static void CalcInitSize( seg_leader *seg )
     offset      delta;
 
     if( seg->group != NULL ) {
-        delta = GetLeaderDelta( seg );
+        delta = SEG_GROUP_DELTA( seg );
         RingLookup( seg->pieces, SetGroupInitSize, &delta );
     }
 }
@@ -313,7 +313,7 @@ static void FindUninitDataStart( void )
     class_entry         *class;
     bool                setnext;
 
-    setnext = TRUE;
+    setnext = true;
     FmtData.dgroupsplitseg = NULL;
     FmtData.bsspad = 0;
     if( !(LinkState & DOSSEG_FLAG) )
@@ -321,10 +321,10 @@ static void FindUninitDataStart( void )
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
         if( !(class->flags & CLASS_DEBUG_INFO) ) {
             if( class->flags & CLASS_LXDATA_SEEN ) {
-                setnext = TRUE;
+                setnext = true;
             } else if( setnext ) {
                 FmtData.dgroupsplitseg = RingFirst( class->segs );
-                setnext = FALSE;
+                setnext = false;
             }
         }
     }
@@ -349,7 +349,7 @@ static bool FindEndAddr( void *_seg, void *_info )
         info->currgrp->grp_addr = seg->seg_addr;
         info->grp_addr = seg_addr;
         info->end_addr = seg_addr + seg->size;
-        info->first_time = FALSE;
+        info->first_time = false;
     } else {
         if( info->grp_addr > seg_addr ) {
             info->currgrp->grp_addr = seg->seg_addr;
@@ -359,7 +359,7 @@ static bool FindEndAddr( void *_seg, void *_info )
             info->end_addr = seg_addr + seg->size;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool FindInitEndAddr( void *_seg, void *_info )
@@ -380,7 +380,7 @@ static bool FindInitEndAddr( void *_seg, void *_info )
         if( info->first_time ) { // First time, use seg_addr values
             info->grp_addr = seg_addr;
             info->end_addr = seg_addr + seg->size;
-            info->first_time = FALSE;
+            info->first_time = false;
         } else {  // If more segs found, use lowest start address and highest end address;
             if( info->grp_addr > seg_addr ) {
                 info->grp_addr = seg_addr;
@@ -390,7 +390,7 @@ static bool FindInitEndAddr( void *_seg, void *_info )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool FindCopyGroups( void *_seg, void *_info )
@@ -406,7 +406,7 @@ static bool FindCopyGroups( void *_seg, void *_info )
         // Check each initialized segment in group
         Ring2Lookup( seg->group->leaders, FindInitEndAddr, info);
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -440,7 +440,7 @@ static void CalcGrpAddr( group_entry *currgrp )
 
     for( ; currgrp != NULL; currgrp = currgrp->next_group ) {
         info.currgrp = currgrp;
-        info.first_time = TRUE;
+        info.first_time = true;
         seg = currgrp->leaders;
         class = seg->class;
         if( class->flags & CLASS_COPY ) {
@@ -461,7 +461,7 @@ static void CalcGrpAddr( group_entry *currgrp )
             while( (class = class->next_class) != NULL ) {
                 if( class->flags & CLASS_FIXED ) {
                     save = class->BaseAddr;     // If class is fixed, can stop
-                    ChkLocated( &save, TRUE );  //   after making sure address
+                    ChkLocated( &save, true );  //   after making sure address
                     break;                      //   isn't already past here
                 }
                 if( !(class->flags & CLASS_DEBUG_INFO) ) { // skip Debug classes, they've already been done
@@ -517,12 +517,6 @@ void AllocClasses( section *sect )
     }
 }
 
-
-offset GetLeaderDelta( seg_leader *leader )
-/************************************************/
-{
-    return( SUB_ADDR( leader->seg_addr, leader->group->grp_addr ) );
-}
 
 void ConvertToFrame( targ_addr *addr, segment frame, bool check_16bit )
 /*********************************************************************/
@@ -706,11 +700,11 @@ static bool DefPubSym( void *_pub, void *_info )
     offset      temp;
 
     if( pub->info & (SYM_DEAD | SYM_IS_ALTDEF) )
-        return( FALSE );
+        return( false );
     if( IS_SYM_ALIAS( pub ) )
-        return( FALSE );
+        return( false );
     if( IS_SYM_IMPORTED( pub ) )
-        return( FALSE );
+        return( false );
     seg = pub->p.seg;
     if( seg != NULL ) {
         leader = seg->u.leader;
@@ -722,7 +716,7 @@ static bool DefPubSym( void *_pub, void *_info )
         } else {
             temp = pub->addr.off;
             temp += seg->a.delta;
-            temp += SUB_ADDR( leader->seg_addr, leader->group->grp_addr );
+            temp += SEG_GROUP_DELTA( leader );
             frame = leader->group->grp_addr.seg;
             off = temp + leader->group->grp_addr.off;
             XDefSymAddr( pub, off, frame );
@@ -732,7 +726,7 @@ static bool DefPubSym( void *_pub, void *_info )
     if( (MapFlags & MAP_FLAG) && !SkipSymbol( pub ) ) {
         if( info->first && !(MapFlags & MAP_GLOBAL) ) {
             WritePubModHead();
-            info->first = FALSE;
+            info->first = false;
         }
         if( MapFlags & MAP_SORT ) {
             if( MapFlags & MAP_GLOBAL ) {
@@ -746,7 +740,7 @@ static bool DefPubSym( void *_pub, void *_info )
             XReportSymAddr( pub );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void DoPubs( section *sect )
@@ -767,7 +761,7 @@ void DoPubs( section *sect )
                         Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
     }
     info.num = 0;
-    info.first = TRUE;
+    info.first = true;
     info.sect = sect;
     Ring2Lookup( CurrMod->publist, DefPubSym, &info );
     if( info.num > 0 ) {
@@ -905,7 +899,7 @@ static bool SetClassFlag( void *seg, void *flags )
 /************************************************/
 {
     ((seg_leader *)seg)->segflags = *(unsigned_16 *)flags;
-    return( FALSE );
+    return( false );
 }
 
 static void FillClassFlags( char *name, unsigned_16 flags )
@@ -1246,34 +1240,34 @@ static void SortSegments( void )
 
 
     for( currcl = Root->classlist; currcl != NULL; currcl = currcl->next_class ){
-        foundgroup = FALSE;
+        foundgroup = false;
         newlist = NULL;
         for( curr = RingPop( &currcl->segs ); curr != NULL; curr = RingPop( &currcl->segs ) ) {
             dollarpos = strchr( curr->segname, '$' );
             if( dollarpos != NULL ) {
                 currlen = dollarpos - curr->segname;
-                foundgroup = TRUE;
+                foundgroup = true;
             } else {
                 currlen = strlen( curr->segname );
             }
-            added = FALSE;
+            added = false;
             if( foundgroup ) {
                 prev = NULL;
-                foundmatch = FALSE;
+                foundmatch = false;
                 for( comp = RingStep( newlist, NULL ); comp != NULL; comp = RingStep( newlist, comp ) ) {
                     complen = strcspn( comp->segname, "$" );
                     if( ( complen == currlen )
                         && ( memcmp( comp->segname, curr->segname, complen ) == 0 ) ) {
-                        foundmatch = TRUE;
+                        foundmatch = true;
                         if( strcmp( comp->segname + complen,
                                     curr->segname + currlen ) > 0 ) {
                             InsertPrevRing( &newlist, curr, prev );
-                            added = TRUE;
+                            added = true;
                             break;
                         }
                     } else if( foundmatch ) {
                         InsertPrevRing( &newlist, curr, prev );
-                        added = TRUE;
+                        added = true;
                         break;
                     }
                     prev = comp;

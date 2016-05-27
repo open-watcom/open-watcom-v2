@@ -91,33 +91,33 @@ void WEditDLL::LoadDll( const char *dllname, WString *errmsg ) {
 }
 
 int WEditDLL::EDITConnect( void ) {
-    if( _connect == NULL ) return( TRUE );
+    if( _connect == NULL ) return( true );
     return( _connect() );
 }
 
 int WEditDLL::EDITFile( editstring filename , editstring helpfile ) {
-    if( _file == NULL ) return( TRUE );
+    if( _file == NULL ) return( true );
     return( _file( filename, helpfile ) );
 }
 
 int WEditDLL::EDITLocate( long row, int col, int len ) {
-    if( _locate == NULL ) return( TRUE );
+    if( _locate == NULL ) return( true );
     return( _locate( row, col, len ) );
 }
 
 int WEditDLL::EDITLocateError( long row, int col, int len, int idres,
                                editstring errmsg )
 {
-    if( _locateError == NULL ) return( TRUE );
+    if( _locateError == NULL ) return( true );
     return( _locateError( row, col, len, idres, errmsg ) );
 }
 
 int WEditDLL::EDITShowWindow( show_method cmdshow ) {
-    if( _showWindow == NULL ) return( TRUE );
+    if( _showWindow == NULL ) return( true );
     return( _showWindow( cmdshow ) );
 }
 
 int WEditDLL::EDITDisconnect( void ) {
-    if( _disconnect == NULL ) return( TRUE );
+    if( _disconnect == NULL ) return( true );
     return( _disconnect() );
 }

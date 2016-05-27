@@ -167,7 +167,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
 ;
 int OpenSrcFile(                // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    bool is_lib )               // - TRUE ==> is <file>
+    bool is_lib )               // - true ==> is <file>
 ;
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )
@@ -248,7 +248,7 @@ bool ExpectingToken(            // ISSUE EXPECTING ERROR FOR A TOKEN
     TOKEN token )               // - required token
 ;
 void GetMacroToken(             // GET NEXT TOKEN
-    bool doing_macro_expansion )// - TRUE ==> doing an expansion
+    bool doing_macro_expansion )// - true ==> doing an expansion
 ;
 int GetNextChar(                // GET NEXT CHARACTER FROM A SOURCE FILE
     void )
@@ -327,7 +327,7 @@ bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT
     void )
 ;
 TOKEN ScanToken(                // SCAN NEXT TOKEN
-    bool doing_macro_expansion )// - TRUE ==> expanding
+    bool doing_macro_expansion )// - true ==> expanding
 ;
 void SkipAhead(                 // SKIP AHEAD TO SIGNIFICANT LOCATION
     void )

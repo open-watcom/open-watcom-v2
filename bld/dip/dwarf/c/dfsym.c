@@ -168,11 +168,11 @@ dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
     }
     ret = DS_OK;
     it->im = is->im;
-    if( it->type != DR_HANDLE_NUL ) {
+    if( it->type != DRMEM_HDL_NULL ) {
         it->state = DF_NOT;
     } else {
         it->state = DF_SET;         // default the type
-        it->sub_array = FALSE;
+        it->sub_array = false;
         it->typeinfo.kind = DR_TYPEK_DATA;
         it->typeinfo.size = 0;
         it->typeinfo.mclass = DR_MOD_NONE;
@@ -189,11 +189,11 @@ struct mod_wlk {
     seg_list            *addr_sym;
     imp_mod_handle      im;
     address             a;
-    dr_handle           sym;
+    drmem_hdl           sym;
     search_result       ret;
 };
 
-static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
+static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
 /******************************************************************/
 {
 //TODO: no segments, better TAG_label
@@ -205,7 +205,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
     bool            is_segment;
 
     cont = cont;
-//    ret = TRUE;
+//    ret = true;
     is_segment = IMH2MODI( d->ii, d->im )->is_segment;
     if( DRGetLowPc( sym, &offset) ) {
         if( !is_segment ) {
@@ -226,7 +226,7 @@ static bool AMod( dr_handle sym, void *_d, dr_search_context *cont )
     info.sym = sym;
     info.map_seg = seg;
     AddAddrSym( d->addr_sym, &info );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -246,7 +246,7 @@ seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
         d.ii = ii;
         d.im = im;
         d.ret = SR_NONE;
-        DRWalkModFunc( modinfo->cu_tag, FALSE, AMod, &d );   /* load cache */
+        DRWalkModFunc( modinfo->cu_tag, false, AMod, &d );   /* load cache */
         SortAddrSym( addr_sym );
     }
     return( addr_sym );
@@ -254,9 +254,9 @@ seg_list *DFLoadAddrSym( imp_image_handle *ii, imp_mod_handle im )
 
 
 typedef struct {
-    dr_handle   inh;    /* member class handle */
+    drmem_hdl   inh;    /* member class handle */
     char        *name;  /* member name         */
-    dr_handle   match;  /* handle that matches */
+    drmem_hdl   match;  /* handle that matches */
 } mem_func_wlk;
 
 static bool AMemFuncSym( void *_df, addrsym_info *info )
@@ -265,18 +265,18 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
     mem_func_wlk    *df = _df;
     bool            cont;
     char            buff[256];
-//    unsigned        len;
-    dr_handle       contain;
+//    size_t          len;
+    drmem_hdl       contain;
 
-    cont = TRUE;
+    cont = true;
     contain  = DRGetContaining( info->sym );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
         if( contain == df->inh ) {
 //            len =  DRGetNameBuff( info->sym, buff, sizeof( buff ) );
             DRGetNameBuff( info->sym, buff, sizeof( buff ) );
             if( strcmp( buff, df->name ) == 0 ) {
-                cont = FALSE;
+                cont = false;
                 df->match = info->sym;
             }
         }
@@ -285,9 +285,9 @@ static bool AMemFuncSym( void *_df, addrsym_info *info )
 }
 
 
-static dr_handle MemFuncLookUp( imp_image_handle *ii,
-                                dr_handle sym,
-                                dr_handle inh,
+static drmem_hdl MemFuncLookUp( imp_image_handle *ii,
+                                drmem_hdl sym,
+                                drmem_hdl inh,
                                 imp_mod_handle im )
 /***************************************************/
 {
@@ -325,7 +325,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
     dip_status       ret;
     address          base; /* base segment & offset */
     addr_seg         seg;
-    dr_handle        sym;
+    drmem_hdl        sym;
     bool             is_segment;
 
     ret = DS_FAIL;
@@ -355,7 +355,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
                 DCStatus( ret );
                 return( ret );
             }
-            if( is->f.minfo.inh != DR_HANDLE_NUL ) {
+            if( is->f.minfo.inh != DRMEM_HDL_NULL ) {
                 DFBaseAdjust( ii, is->f.minfo.root,
                       DRGetTypeAT( is->f.minfo.inh ),lc, &ll->e[0].u.addr );
             }
@@ -371,14 +371,14 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
             break;
         }
         case SYM_MEMF:
-            if( is->f.minfo.inh == DR_HANDLE_NUL ) {
+            if( is->f.minfo.inh == DRMEM_HDL_NULL ) {
                 sym = is->f.minfo.root;
             } else {
                 sym = DRGetTypeAT( is->f.minfo.inh );   /* get inherited type */
             }
             sym = DRSkipTypeChain( sym );   /* PCH typedef link */
             sym = MemFuncLookUp( ii, is->sym, sym, is->im );
-            if( sym == DR_HANDLE_NUL ) {
+            if( sym == DRMEM_HDL_NULL ) {
                 base = NilAddr; /* for now say it's NULL */
                 LocationCreate( ll, LT_ADDR, &base );
                 ret = DS_OK;
@@ -567,22 +567,24 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
 }
 
 
-static bool ARet( dr_handle var, int index, void *_var_ptr )
+#define SYMBOL_dot_return	".return"
+
+static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 /**********************************************************/
 {
-    dr_handle   *var_ptr = _var_ptr;
-    char        name[sizeof( ".return" )];
+    drmem_hdl   *var_ptr = _var_ptr;
+    char        name[sizeof( SYMBOL_dot_return )];
     bool        cont;
-    unsigned    len;
+    size_t      len;
 
     index = index;
-    cont = TRUE;
+    cont = true;
     if( DRIsArtificial( var ) ) {
-        len = DRGetNameBuff( var, name, sizeof( ".return" ) );
-        if( len == sizeof( ".return" ) ) {
-            if( strcmp( name, ".return" ) == 0 ) {
+        len = DRGetNameBuff( var, name, sizeof( name ) );
+        if( len == sizeof( name ) ) {
+            if( strcmp( name, SYMBOL_dot_return ) == 0 ) {
                 *var_ptr = var;
-                cont = FALSE;
+                cont = false;
             }
         }
     }
@@ -590,15 +592,15 @@ static bool ARet( dr_handle var, int index, void *_var_ptr )
 }
 
 
-extern dr_handle GetRet( imp_image_handle *ii, dr_handle proc )
+extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Find handle of Watcom return symbol. */
-    dr_handle ret = DR_HANDLE_NUL;
+    drmem_hdl ret = DRMEM_HDL_NULL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_var, ARet, (void *)&ret ) ) {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
@@ -617,20 +619,20 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
      * of the n'th parameter.
      */
 //TODO: brian only wants regs for now
-    dr_handle       parm;
+    drmem_hdl       parm;
     dip_status      ret;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     ret = DS_FAIL;
     if( n > 0 ) {
         parm = GetParmN( ii, is->sym, n );
-        if( parm != DR_HANDLE_NUL ) {
+        if( parm != DRMEM_HDL_NULL ) {
             ret = EvalParmLocation( ii, lc, parm, ll );
         }
     } else if( n == 0 ) {
         //TODO: get ret location
         parm = GetRet( ii, is->sym );
-        if( parm != DR_HANDLE_NUL ) {
+        if( parm != DRMEM_HDL_NULL ) {
             ret = EvalRetLocation( ii, lc, parm, ll );
         }
     }
@@ -638,37 +640,38 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 
+#define SYMBOL_this	"this"
 
-static bool AThis( dr_handle var, int index, void *_var_ptr )
+static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 /***********************************************************/
 {
-    dr_handle   *var_ptr = _var_ptr;
-    char        name[sizeof( "this" )];
+    drmem_hdl   *var_ptr = _var_ptr;
+    char        name[sizeof( SYMBOL_this )];
     bool        ret;
-    unsigned    len;
+    size_t      len;
 
     index = index;
-    ret = TRUE;
-    len =  DRGetNameBuff( var, name, sizeof( "this" ) );
-    if( len == sizeof( "this" ) ) {
-        if( strcmp( name, "this" ) == 0 ) {
+    ret = true;
+    len =  DRGetNameBuff( var, name, sizeof( name ) );
+    if( len == sizeof( name ) ) {
+        if( strcmp( name, SYMBOL_this ) == 0 ) {
             *var_ptr = var;
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
 }
 
 
-static dr_handle GetThis( imp_image_handle *ii, dr_handle proc )
+static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 /**************************************************************/
 {
     /* Return handle of the this parmeter. */
-    dr_handle   ret = DR_HANDLE_NUL;
+    drmem_hdl   ret = DRMEM_HDL_NULL;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( DRWalkBlock( proc, DR_SRCH_parm, AThis, (void *)&ret ) ) {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
@@ -684,16 +687,16 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
      * pointer that the routine is expecting (near/far, 16/32). If the
      * routine is a static member, set ti->kind to TK_NONE.
      */
-    dr_handle   dr_this;
-    dr_handle   dr_type;
+    drmem_hdl   dr_this;
+    drmem_hdl   dr_type;
     dr_typeinfo typeinfo;
     dip_status  ret;
 
     dr_this = GetThis( ii, is->sym );
-    if( dr_this != DR_HANDLE_NUL ) {
+    if( dr_this != DRMEM_HDL_NULL ) {
         DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
         dr_type =  DRGetTypeAT( dr_this );
-        if( dr_type != DR_HANDLE_NUL ) {
+        if( dr_type != DRMEM_HDL_NULL ) {
             DRGetTypeInfo( dr_type, &typeinfo );
             MapImpTypeInfo( &typeinfo, ti );
             dr_type = DRSkipTypeChain( dr_type );
@@ -721,8 +724,8 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
      * for a C++ member function. Return DS_FAIL if it's a static member
      * function.
      */
-    dr_handle       dr_this;
-    dr_handle       dr_type;
+    drmem_hdl       dr_this;
+    drmem_hdl       dr_type;
     dr_typeinfo     typeinfo;
     addr_seg        seg;
     address         base;   /* base segment & offset */
@@ -736,7 +739,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     } obj_ptr;
 
     dr_this = GetThis( ii, is->sym );
-    if( dr_this != DR_HANDLE_NUL ) {
+    if( dr_this != DRMEM_HDL_NULL ) {
         if( !IMH2MODI( ii, is->im )->is_segment ) {
             seg = SEG_DATA; // if flat hoke segment
         } else {
@@ -745,7 +748,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
         ret = EvalLocation( ii, lc, dr_this, seg, &tmp );
         if( ret == DS_OK ) {
             dr_type =  DRGetTypeAT( dr_this );
-            if( dr_type != DR_HANDLE_NUL ) {
+            if( dr_type != DRMEM_HDL_NULL ) {
                 DRGetTypeInfo( dr_type, &typeinfo );
                 LocationCreate( ll, LT_INTERNAL, &obj_ptr );
                 ret = DCAssignLocation( ll, &tmp, typeinfo.size );
@@ -836,7 +839,7 @@ search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
 /* Walk inner and outer blocks   */
 /*********************************/
 
-static bool InBlk( dr_handle blk, int depth, void *_ctl )
+static bool InBlk( drmem_hdl blk, int depth, void *_ctl )
 /*******************************************************/
 {
     scope_ctl       *ctl = _ctl;
@@ -854,7 +857,7 @@ static bool InBlk( dr_handle blk, int depth, void *_ctl )
         ctl->root = new;
     }
     ctl->edge = new;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -864,12 +867,12 @@ static bool IsInScope( scope_ctl  *ctl, address addr )
     bool            ret;
     scope_node      *root;
 
-    ret = FALSE;
+    ret = false;
     root = ctl->root;
     if( root != NULL ) {
         if( ctl->base.mach.segment == addr.mach.segment ) {
             if( root->start <= addr.mach.offset && addr.mach.offset < root->end ) {
-                ret = TRUE;
+                ret = true;
            }
         }
     }
@@ -952,12 +955,12 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
      * Make sure that the case where 'in' and 'out' point to the same
      * address is handled.
      */
-    dr_handle           what;
+    drmem_hdl           what;
     search_result       ret;
     address             addr;
     scope_ctl           *ctl;
     scope_node          *node;
-    dr_handle           cu_tag;
+    drmem_hdl           cu_tag;
 
     ret = SR_NONE;
     addr =  in->start;
@@ -1004,17 +1007,17 @@ static search_result   DFScopeOuter( imp_image_handle *ii,
 }
 
 
-static dr_handle GetContainingClass( dr_handle curr )
+static drmem_hdl GetContainingClass( drmem_hdl curr )
 /***************************************************/
 {
     dr_tag_type     sc;
 
     curr = DRGetContaining( curr );
-    if( curr != DR_HANDLE_NUL ) {
+    if( curr != DRMEM_HDL_NULL ) {
         curr = DRSkipTypeChain( curr ); /* PCH typedef link */
         sc = DRGetTagType( curr );
         if( sc != DR_TAG_CLASS ) {
-            curr = DR_HANDLE_NUL;
+            curr = DRMEM_HDL_NULL;
         }
     }
     return( curr );
@@ -1026,9 +1029,9 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
 /********************************************************************/
 {
     search_result   ret;
-    dr_handle       curr;
+    drmem_hdl       curr;
     dr_tag_type     sc;
-    dr_handle       cu_tag;
+    drmem_hdl       cu_tag;
 
     DRSetDebug( ii->dwarf->handle );    /* must do at each interface */
     cu_tag = IMH2MODI( ii, im )->cu_tag;
@@ -1041,7 +1044,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
         break;
     case DR_TAG_FUNCTION:
         curr = GetContainingClass( curr );
-        if( curr != DR_HANDLE_NUL ) {
+        if( curr != DRMEM_HDL_NULL ) {
             *out = *in;
             out->unique = curr - cu_tag;    /* make relatine */
             ret = SR_EXACT;
@@ -1064,7 +1067,7 @@ typedef struct {
     imp_mod_handle      im;
     imp_image_handle    *ii;
     void                *d;
-    dr_handle           containing;
+    drmem_hdl           containing;
     dr_srch             what;
     bool                cont;   //continue to next scope
     enum {
@@ -1123,7 +1126,7 @@ static dr_srch Dip2DwarfSrch( symbol_type dip )
 }
 
 
-static bool ASym( dr_handle var, int index, void *_df )
+static bool ASym( drmem_hdl var, int index, void *_df )
 /*****************************************************/
 {
     blk_wlk_wlk     *df = _df;
@@ -1140,25 +1143,25 @@ static bool ASym( dr_handle var, int index, void *_df )
     saved = DRGetDebug();
     df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
     DRSetDebug( saved );
-    cont = TRUE;
+    cont = true;
     if( df->wr != WR_CONTINUE ) {
-        cont = FALSE;
+        cont = false;
     }
     df->com.cont = cont;
     return( cont );
 }
 
 
-static bool ASymCont( dr_handle var, int index, void *_df )
+static bool ASymCont( drmem_hdl var, int index, void *_df )
 /*********************************************************/
 {
     blk_wlk_wlk     *df = _df;
-    dr_handle       contain;
+    drmem_hdl       contain;
     bool            cont;
 
-    cont = TRUE;
+    cont = true;
     contain = DRGetContaining( var );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
     }
     if( df->com.containing == contain ) {
@@ -1168,7 +1171,7 @@ static bool ASymCont( dr_handle var, int index, void *_df )
 }
 
 
-static bool AModSym( dr_handle var, int index, void *_df )
+static bool AModSym( drmem_hdl var, int index, void *_df )
 /********************************************************/
 {
     blk_wlk_wlk     *df = _df;
@@ -1181,7 +1184,7 @@ static bool AModSym( dr_handle var, int index, void *_df )
     sc = DRGetTagType( var );
     if( sc == DR_TAG_NAMESPACE ) {
         DRWalkBlock( var, df->com.what, AModSym, (void *)df );
-        cont = TRUE;
+        cont = true;
     } else {
         is = df->is;
         is->sclass = SYM_VAR;
@@ -1191,22 +1194,22 @@ static bool AModSym( dr_handle var, int index, void *_df )
         saved = DRGetDebug();
         df->wr = df->wk( df->com.ii, SWI_SYMBOL, is, df->com.d );
         DRSetDebug( saved );
-        cont = TRUE;
+        cont = true;
     }
     if( df->wr != WR_CONTINUE ) {
-        cont = FALSE;
+        cont = false;
     }
     df->com.cont = cont;
     return( cont );
 }
 
 
-static bool ASymLookup( dr_handle var, int index, void *_df )
+static bool ASymLookup( drmem_hdl var, int index, void *_df )
 /***********************************************************/
 {
     blk_wlk_lookup  *df = _df;
     imp_sym_handle  *is;
-    unsigned        len;
+    size_t          len;
 
     index = index;
     len = DRGetNameBuff( var, df->buff, df->len );
@@ -1225,23 +1228,23 @@ static bool ASymLookup( dr_handle var, int index, void *_df )
             is->sym = var;
             is->state = DF_NOT;
             df->sr = SR_EXACT;
-            df->com.cont = FALSE;
+            df->com.cont = false;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
-static bool ASymContLookup( dr_handle var, int index, void *_df )
+static bool ASymContLookup( drmem_hdl var, int index, void *_df )
 /***************************************************************/
 {
     blk_wlk_lookup  *df = _df;
-    dr_handle       contain;
+    drmem_hdl       contain;
     bool            cont;
 
-    cont = TRUE;
+    cont = true;
     contain = DRGetContaining( var );
-    if( contain != DR_HANDLE_NUL ) {
+    if( contain != DRMEM_HDL_NULL ) {
         contain = DRSkipTypeChain( contain );   /* PCH typedef link */
     }
     if( df->com.containing == contain ) {
@@ -1251,7 +1254,7 @@ static bool ASymContLookup( dr_handle var, int index, void *_df )
 }
 
 
-static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, dr_handle blk )
+static bool WalkOneBlock( blk_wlk *df, DRWLKBLK fn, drmem_hdl blk )
 /*****************************************************************/
 {
     DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
@@ -1284,16 +1287,16 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
      */
     imp_image_handle    *ii;
     scope_block         scope;
-    dr_handle           cu_tag;
-    dr_handle           dbg_pch;
+    drmem_hdl           cu_tag;
+    drmem_hdl           dbg_pch;
     dr_tag_type         sc;
     imp_mod_handle      im;
-    dr_handle           curr;
+    drmem_hdl           curr;
     bool                cont;
     mod_info            *modinfo;
 
     ii = df->com.ii;
-    cont = TRUE;
+    cont = true;
     if( DFAddrMod( ii, *addr, &im ) != SR_NONE ) {
         modinfo = IMH2MODI( ii, im );
         if( DFAddrScope( ii, im, *addr, &scope ) != SR_NONE ) {
@@ -1305,7 +1308,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                 if( !cont )
                     break;
                 if( DFScopeOuter( ii, im, &scope, &scope ) == SR_NONE ) {
-                    cont = TRUE;
+                    cont = true;
                     break;
                 }
             }
@@ -1315,7 +1318,7 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                     imp_type_handle     it;
 
                     curr = GetContainingClass( curr );
-                    if( curr != DR_HANDLE_NUL ) {
+                    if( curr != DRMEM_HDL_NULL ) {
                         it.state = DF_NOT;
                         it.type = curr;
                         it.im = im;
@@ -1323,13 +1326,13 @@ static bool WalkScopedSymList( blk_wlk *df, DRWLKBLK fn, address *addr )
                             df->wlk.wr = WalkTypeSymList( ii, &it,
                                  df->wlk.wk, df->wlk.is, df->com.d );
                             if( df->wlk.wr != WR_CONTINUE ) {
-                                cont = FALSE;
+                                cont = false;
                             }
                         } else {
                             df->lookup.sr = SearchMbr( ii, &it,
                                           df->lookup.li, df->com.d );
                             if( df->lookup.sr == SR_EXACT ) {
-                                cont = FALSE;
+                                cont = false;
                             }
                         }
                     }
@@ -1353,13 +1356,13 @@ static bool WalkBlockSymList( blk_wlk  *df, DRWLKBLK fn, scope_block *scope )
 /***************************************************************************/
 {
     imp_image_handle    *ii;
-    dr_handle           cu_tag;
+    drmem_hdl           cu_tag;
     imp_mod_handle      im;
-    dr_handle           blk;
+    drmem_hdl           blk;
     dr_tag_type         sc;
     bool                cont;
 
-    cont = TRUE;
+    cont = true;
     ii = df->com.ii;
     if( DFAddrMod( ii, scope->start, &im ) != SR_NONE ) {
         DRSetDebug( df->com.ii->dwarf->handle );    /* must do at each call into DWARF */
@@ -1428,8 +1431,8 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
     df.com.ii = ii;
     df.com.d = d;
     df.com.what = DR_SRCH_func_var;
-    df.com.containing = DR_HANDLE_NUL;
-    df.com.cont = TRUE;
+    df.com.containing = DRMEM_HDL_NULL;
+    df.com.cont = true;
     df.com.kind = WLK_WLK;
     df.wlk.wk = wk;
     df.wlk.is = is;
@@ -1523,10 +1526,10 @@ typedef struct {
     void                *d;
     int                 (*compare)(char const *, char const *);
     const char          *name;
-    dr_handle           sym;
+    drmem_hdl           sym;
 } hash_look_data;
 
-static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
+static bool AHashItem( void *_find, drmem_hdl dr_sym, const char *name )
 /**********************************************************************/
 {
     hash_look_data  *find = _find;
@@ -1540,7 +1543,7 @@ static bool AHashItem( void *_find, dr_handle dr_sym, const char *name )
         is->sym = dr_sym;
         is->state = DF_NOT;
     }
-    return( TRUE );
+    return( true );
 }
 
 typedef struct {
@@ -1624,7 +1627,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     sr = SR_NONE;
     data.ii  = ii;
     data.compare = li->case_sensitive ? &strcmp : &stricmp;
-    data.sym = DR_HANDLE_NUL;
+    data.sym = DRMEM_HDL_NULL;
     len = QualifiedName( li, buff, sizeof( buff ) );
     if( len <= sizeof( buff ) ) {
         data.name = buff;
@@ -1640,7 +1643,7 @@ static search_result HashSearchGbl( imp_image_handle *ii,
     wlk.d = &data;
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     FindHashWalk( ii->name_map, &wlk );
-    if( data.sym != DR_HANDLE_NUL ) {
+    if( data.sym != DRMEM_HDL_NULL ) {
         sr = SR_EXACT;
     }
     if( data.name != buff ) {
@@ -1686,8 +1689,8 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     df.com.ii = ii;
     df.com.d = d;
     df.com.what = Dip2DwarfSrch( li->type );
-    df.com.containing = DR_HANDLE_NUL;
-    df.com.cont = TRUE;
+    df.com.containing = DRMEM_HDL_NULL;
+    df.com.cont = true;
     df.com.kind = WLK_LOOKUP;
     df.lookup.comp = li->case_sensitive ? memcmp : memicmp;
     df.lookup.li = li;
@@ -1704,7 +1707,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
         if( li->scope.len == 0 ) {
             cont = WalkScopedSymList( &df, ASymLookup, (address *)source );
         } else {
-            cont = TRUE;
+            cont = true;
         }
         sr = df.lookup.sr;
         if( cont ) {

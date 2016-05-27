@@ -126,8 +126,8 @@ LFGlobalTypeRecord::LFGlobalTypeRecord( const type_index ti,
           _targetAdr( NULL )
 /**********************************************************/
 {
-    _flags.isInLoop =  FALSE;
-    _flags.isStopPoint = FALSE;
+    _flags.isInLoop =  false;
+    _flags.isStopPoint = false;
 }
 
 LFGlobalTypeRecord::LFGlobalTypeRecord( LFLocalTypeRecord* typeRecord )
@@ -135,15 +135,15 @@ LFGlobalTypeRecord::LFGlobalTypeRecord( LFLocalTypeRecord* typeRecord )
           _targetAdr( NULL )
 /*********************************************************************/
 {
-    _flags.isInLoop =  FALSE;
-    _flags.isStopPoint = FALSE;
+    _flags.isInLoop =  false;
+    _flags.isStopPoint = false;
 }
 
 bool LFGlobalTypeRecord::IsEquivalent(LFLocalTypeRecord& target)
 /**************************************************************/
 {
     if ( Length() != target.Length() ) {
-        return FALSE;
+        return false;
     }
     //
     // If this node has been visited before, check if the target addresses
@@ -160,9 +160,9 @@ bool LFGlobalTypeRecord::IsEquivalent(LFLocalTypeRecord& target)
             //
             // make an assumption that the loop node is equivalent.
             //
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
     MarkNode(&target);
     //
@@ -191,7 +191,7 @@ bool LFGlobalTypeRecord::IsEquivalent(LFLocalTypeRecord& target)
             if ( IsStopPoint() ) {
                 _recorder.Clear();
                 UnMarkNode();
-                return TRUE;
+                return true;
             }
             //
             // if not a stop point, then record its index in case some node
@@ -200,10 +200,10 @@ bool LFGlobalTypeRecord::IsEquivalent(LFLocalTypeRecord& target)
             //
             _recorder.Record(target.TypeIndex());
             UnMarkNode();
-            return TRUE;
+            return true;
         }
         UnMarkNode();
-        return TRUE;
+        return true;
     }
     //
     // If in loop and the type record prove to be not equivalent, then
@@ -214,7 +214,7 @@ bool LFGlobalTypeRecord::IsEquivalent(LFLocalTypeRecord& target)
         _recorder.RewindAndUndo();
     }
     UnMarkNode();
-    return FALSE;
+    return false;
 }
 
 void Recorder::RewindAndUndo()
@@ -233,7 +233,7 @@ void MyNodeStack::MarkLoop( LFGlobalTypeRecord* endAdr )
         if ( iter.current() == endAdr ) {
             break;
         }
-        iter.current() -> MarkLoop(FALSE);
+        iter.current() -> MarkLoop( false );
     }
-    iter.current() -> MarkLoop(TRUE);
+    iter.current() -> MarkLoop( true );
 }

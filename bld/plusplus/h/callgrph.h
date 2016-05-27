@@ -89,14 +89,14 @@ struct callgraph                // CALLGRAPH INFORMATION
     unsigned incr_refs;         // - amount to increment refs
     unsigned incr_addrs;        // - amount to increment addrs
     unsigned depth;             // - current call depth
-    unsigned pruned     :1;     // - TRUE ==> has been pruned
-    unsigned assumed_longjump:1;// - TRUE ==> incomplete SF_LONGJUMP info
-    unsigned does_longjump  :1; // - TRUE ==> does a longjump
-    unsigned scope_call_opt :1; // - TRUE ==> scope-call optimization enabled
-    unsigned push_unresolved :1;// - TRUE ==> push unresolved function
-    unsigned stmt_scope      :1;// - TRUE == statement scope open
+    unsigned pruned     :1;     // - true ==> has been pruned
+    unsigned assumed_longjump:1;// - true ==> incomplete SF_LONGJUMP info
+    unsigned does_longjump  :1; // - true ==> does a longjump
+    unsigned scope_call_opt :1; // - true ==> scope-call optimization enabled
+    unsigned push_unresolved :1;// - true ==> push unresolved function
+    unsigned stmt_scope      :1;// - true == statement scope open
 #ifndef NDEBUG
-    unsigned doing_rescan    :1;// - TRUE ==> (debug only) rescanning
+    unsigned doing_rescan    :1;// - true ==> (debug only) rescanning
 #endif
     CALLNODE* curr_node;        // - current node being processed
     VSTK_CTL scopes;            // - used to stack scopes in routine
@@ -121,15 +121,15 @@ struct callnode                 // CALLNODE -- node in call graph
     UNR_USAGE* unresolved;      // - unresolved usages of function
     SCOPE_STATE stmt_state;     // - state for "statement" scope
     DT_METHOD dtor_method;      // - specified dtor method for function
-    uint_8 state_table      :1; // - TRUE ==> state table for function
-    uint_8 calls_done       :1; // - TRUE ==> fn has been scanned for calls
-    uint_8 is_vft           :1; // - TRUE ==> represents VFT
-    uint_8 inline_fun       :1; // - TRUE ==> is inline function
-    uint_8 inlineable       :1; // - TRUE ==> able to be inlined
-    uint_8 inlineable_oe    :1; // - TRUE ==> able to be -oe inlined
-    uint_8 rescan           :1; // - TRUE ==> has to be re-scanned
-    uint_8 stab_gen         :1; // - TRUE ==> need to generate state table
-    uint_8 flowed_recurse   :1; // - TRUE ==> flowed a recursive call
+    uint_8 state_table      :1; // - true ==> state table for function
+    uint_8 calls_done       :1; // - true ==> fn has been scanned for calls
+    uint_8 is_vft           :1; // - true ==> represents VFT
+    uint_8 inline_fun       :1; // - true ==> is inline function
+    uint_8 inlineable       :1; // - true ==> able to be inlined
+    uint_8 inlineable_oe    :1; // - true ==> able to be -oe inlined
+    uint_8 rescan           :1; // - true ==> has to be re-scanned
+    uint_8 stab_gen         :1; // - true ==> need to generate state table
+    uint_8 flowed_recurse   :1; // - true ==> flowed a recursive call
     PAD_UNSIGNED
 };
 

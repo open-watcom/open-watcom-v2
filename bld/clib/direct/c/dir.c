@@ -177,7 +177,7 @@ _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
 }
 
 
-_WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
+_WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
 {
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED )
         return( NULL );

@@ -194,7 +194,7 @@ bool VarHasValue( vhandle var_handle )
 /************************************/
 {
     if( var_handle == NO_VAR )
-        return( FALSE );
+        return( false );
     return( GlobalVarList[var_handle].has_value );
 }
 

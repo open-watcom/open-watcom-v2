@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "initfini.h"
 #include "rtinit.h"
+#include "getds.h"
 
 #define PNEAR ((__type_rtp)0)
 #define PFAR  ((__type_rtp)1)
@@ -83,11 +84,11 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
     #define __GETDS()
     #define save_ds()
     #define restore_ds()
-#if defined(__FLAT__)
+  #if defined(__FLAT__)
     #define save_es()
     #define restore_es()
     #define setup_es()
-#else
+  #else
     extern void save_es( void );
     #pragma aux save_es = modify exact [es];
     extern void restore_es( void );
@@ -97,12 +98,10 @@ typedef void (_WCI86NEAR * _WCI86NEAR npfn)(void);
                 "push ds" \
                 "pop es" \
                 modify exact [es];
-#endif
+  #endif
 #elif defined( _M_I86 )
     extern void save_dx( void );
     #pragma aux save_dx = modify exact [dx];
-    extern void _WCI86NEAR __GETDS( void );
-    #pragma aux __GETDS "__GETDS";
     extern void save_ds( void );
     #pragma aux save_ds = "push ds" modify exact [sp];
     extern void restore_ds( void );

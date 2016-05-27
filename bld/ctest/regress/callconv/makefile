@@ -90,9 +90,9 @@ $(callconv_all_objs) : source/obj.c
     $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=$^@
     @%make set_old_path
     %append $(%RUN_FILE) **** $^@ pubdef ****
-    objxdef $^@ | sort >>$(%RUN_FILE)
+    objxdef $^@ >>$(%RUN_FILE)
     %append $(%RUN_FILE) **** $^@ extdef ****
-    objxref $^@ | sort >>$(%RUN_FILE)
+    objxref $^@ >>$(%RUN_FILE)
 
 clean : .procedure
     @%make common_clean

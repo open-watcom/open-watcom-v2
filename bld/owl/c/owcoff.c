@@ -101,15 +101,15 @@ static unsigned numAuxSymbols( owl_symbol_handle sym) {
     return( num_aux_syms );
 }
 
-static int symComdat( owl_symbol_handle sym ) {
+static bool symComdat( owl_symbol_handle sym ) {
 //*********************************************
 
     if( sym->section != NULL ) {
         if( sym->section->comdat_sym == sym ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static owl_symbol_index symRelocRefIndex( owl_symbol_handle sym ) {

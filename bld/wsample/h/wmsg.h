@@ -135,13 +135,15 @@
 
 #define MSG_LANG_SPACING        1000
 
-#define MSG_USE_E_BASE  (MSG_USAGE_LN_1 + RLE_ENGLISH*MSG_LANG_SPACING)
-#define MSG_USE_J_BASE  (MSG_USAGE_LN_1 + RLE_JAPANESE*MSG_LANG_SPACING)
+#define MSG_USE_E_BASE  (MSG_USAGE_LN_1 + RLE_ENGLISH * MSG_LANG_SPACING)
+#define MSG_USE_J_BASE  (MSG_USAGE_LN_1 + RLE_JAPANESE * MSG_LANG_SPACING)
 
-extern char FAR_PTR     *MsgArray[ERR_LAST_MESSAGE-ERR_FIRST_MESSAGE+1];
+extern char FAR_PTR     *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
-#ifndef __WINDOWS__
-int MsgInit( void );
+#ifdef __WINDOWS__
+extern int      MsgInit( HANDLE inst );
+#else
+extern int      MsgInit( void );
 #endif
-void MsgFini( void );
-void MsgPrintfUsage( int first_ln, int last_ln );
+extern void     MsgFini( void );
+extern void     MsgPrintfUsage( int first_ln, int last_ln );

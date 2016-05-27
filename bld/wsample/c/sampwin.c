@@ -60,31 +60,31 @@ unsigned short win386sig2[] = { 0xBEEF,0xDEAD };
  */
 void FlushSamples( WORD limit )
 {
-    WORD        i,si;
-    DWORD       count,ctick;
+    WORD        i, si;
+    DWORD       count, ctick;
 
     si = GetSampleCount();
     if( si > limit ) {
         StopSampler( &count );
-        if( SharedMemory->SampleIndex == 0 ) {
+        if( SampleIndex == 0 ) {
             GetSample0Tick( &ctick );
             Samples->pref.tick = ctick;
         }
-        for( i=0;i< (WORD) count;i++ ) {
-            Samples->d.sample.sample[ SharedMemory->SampleIndex ].offset = SampSave[i].offset;
-            Samples->d.sample.sample[ SharedMemory->SampleIndex ].segment = SampSave[i].seg;
-            SharedMemory->SampleIndex++;
+        for( i = 0; i < (WORD)count; i++ ) {
+            Samples->d.sample.sample[SampleIndex].offset = SampSave[i].offset;
+            Samples->d.sample.sample[SampleIndex].segment = SampSave[i].seg;
+            SampleIndex++;
         }
         SaveSamples();
-        MyOutput( MsgArray[MSG_SAMPLE_5-ERR_FIRST_MESSAGE] );
+        MyOutput( MsgArray[MSG_SAMPLE_5 - ERR_FIRST_MESSAGE] );
         StartSampler();
     }
 
 } /* FlushSamples */
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void GetCommArea( void )
@@ -97,8 +97,7 @@ void GetCommArea( void )
         Comm.push_no = 0;
         Comm.in_hook = 1;               /* don't record sample */
     } else {
-        ReadMem( CommonAddr.segment, CommonAddr.offset, &Comm,
-                        sizeof( Comm ) );
+        ReadMem( CommonAddr.segment, CommonAddr.offset, &Comm, sizeof( Comm ) );
     }
 }
 
@@ -108,7 +107,7 @@ void ResetCommArea( void )
         Comm.pop_no = 0;
         Comm.push_no = 0;
         ReadMem( FP_SEG( &Comm.pop_no ), FP_OFF( &Comm.pop_no ),
-                        MK_FP( CommonAddr.segment, CommonAddr.offset+9 ),
+                        MK_FP( CommonAddr.segment, CommonAddr.offset + 9 ),
                         4 );
     }
 }
@@ -156,7 +155,7 @@ unsigned long TimerRate( void )
 
 unsigned SafeMargin( void )
 {
-    return( Ceiling-20 );
+    return( Ceiling - 20 );
 }
 void StopProg( void )
 {
@@ -185,7 +184,7 @@ void CloseShop( void )
  */
 static void internalError( char * str )
 {
-    MyOutput( MsgArray[MSG_SAMPLE_6-ERR_FIRST_MESSAGE], str );
+    MyOutput( MsgArray[MSG_SAMPLE_6 - ERR_FIRST_MESSAGE], str );
     fatal();
 
 } /* InternalError */
@@ -217,26 +216,27 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     timer = GetTimerTick();
     if( timer > SleepTime ) {
         timer = SleepTime/2;
-        if( timer == 0 ) timer = 1;
+        if( timer == 0 )
+            timer = 1;
         SetTimerTick( timer );
     }
-    MyOutput( MsgArray[MSG_SAMPLE_7-ERR_FIRST_MESSAGE], SleepTime );
+    MyOutput( MsgArray[MSG_SAMPLE_7 - ERR_FIRST_MESSAGE], SleepTime );
 
     /*
      * add existing modules
      */
-    MyOutput( MsgArray[MSG_SAMPLE_8-ERR_FIRST_MESSAGE] );
+    MyOutput( MsgArray[MSG_SAMPLE_8 - ERR_FIRST_MESSAGE] );
     mod_count = 0;
     me.dwSize = sizeof( MODULEENTRY );
     if( !ModuleFirst( &me ) ) {
-        internalError( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
     }
     do {
         HandleLibLoad( SAMP_CODE_LOAD, me.hModule );
         me.dwSize = sizeof( MODULEENTRY );
         mod_count++;
     } while( ModuleNext( &me ) );
-    MyOutput( MsgArray[MSG_SAMPLE_9-ERR_FIRST_MESSAGE], mod_count );
+    MyOutput( MsgArray[MSG_SAMPLE_9 - ERR_FIRST_MESSAGE], mod_count );
 
     /*
      * register as interrupt and notify handler
@@ -244,16 +244,16 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     fault_fn = MakeProcInstance( (FARPROC)IntHandler, InstanceHandle );
     notify_fn = MakeProcInstance( (FARPROC)NotifyHandler, InstanceHandle );
     if( !InterruptRegister( NULL, fault_fn ) ) {
-        internalError( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
     }
     if( !NotifyRegister( NULL, (LPFNNOTIFYCALLBACK)notify_fn, NF_NORMAL | NF_TASKSWITCH ) ) {
         InterruptUnRegister( NULL );
-        internalError( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
     }
     Start386Debug();
     if( WDebug386 ) {
         DebuggerIsExecuting( 1 );
-        MyOutput( MsgArray[MSG_SAMPLE_10-ERR_FIRST_MESSAGE] );
+        MyOutput( MsgArray[MSG_SAMPLE_10 - ERR_FIRST_MESSAGE] );
     }
 
     rc = InitSampler( SampSave, MAX_SAMPLES, SleepTime );
@@ -262,7 +262,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         NotifyUnRegister( NULL );
         DebuggerIsExecuting( -1 );
         Done386Debug();
-        internalError( MsgArray[MSG_SAMPLE_4-ERR_FIRST_MESSAGE] );
+        internalError( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
     }
     WaitForFirst = FALSE;
     MessageLoop();
@@ -277,7 +277,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     pdata.lpCmdShow = (void __far *)&cdata;
     pdata.dwReserved = 0;
 
-    SampledProg = LoadModule( prog, (LPVOID) &pdata );
+    SampledProg = LoadModule( prog, (LPVOID)&pdata );
     while( !SharedMemory->TaskEnded ) {
         MessageLoop();
     }
@@ -285,8 +285,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     Done386Debug();
     InterruptUnRegister( NULL );
     NotifyUnRegister( NULL );
-    MyOutput( MsgArray[MSG_SAMPLE_11-ERR_FIRST_MESSAGE],
-            TotalTime/1000, (WORD) (TotalTime-(1000*(TotalTime/1000) )) );
+    MyOutput( MsgArray[MSG_SAMPLE_11 - ERR_FIRST_MESSAGE],
+            TotalTime/1000, (WORD)( TotalTime - ( 1000 * ( TotalTime / 1000 ) ) ) );
     FlushSamples( 0 );
     report();
 
@@ -303,7 +303,7 @@ void SysParseOptions( char c, char **cmd )
     char buff[2];
 
     if( c != 'r' ) {
-        MyOutput( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        MyOutput( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         MyOutput( buff );
@@ -318,6 +318,6 @@ DWORD WinGetCurrTick( void )
     DWORD       ctick;
 
     GetCurrTick( &ctick );
-    SharedMemory->CurrTick = ctick;
+    CurrTick = ctick;
     return( ctick );
 }

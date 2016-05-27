@@ -31,7 +31,7 @@
 
 #include "as.h"
 
-static bool insErrFlag = FALSE;    // to tell whether we had problems or not
+static bool insErrFlag = false;    // to tell whether we had problems or not
 
 #define INS( a, b, c, d, e, f ) { a, b, c, d, e, NULL, f }
 
@@ -507,12 +507,13 @@ extern void InsAddOperand( instruction *ins, ins_operand *op )
     if( ins->num_operands == MAX_OPERANDS ) {
         if( !insErrFlag ) {
             Error( MAX_NUMOP_EXCEEDED );
-            insErrFlag = TRUE;
+            insErrFlag = true;
         }
         MemFree( op );
         return;
     }
-    if( insErrFlag) insErrFlag = FALSE;
+    if( insErrFlag)
+        insErrFlag = false;
     ins->operands[ins->num_operands++] = op;
 }
 
@@ -529,7 +530,7 @@ extern void InsEmit( instruction *ins )
     }
     #endif
 #endif
-    if( insErrFlag == FALSE && MIPSValidate( ins ) ) {
+    if( !insErrFlag && MIPSValidate( ins ) ) {
 #ifdef _STANDALONE_
         MIPSEmit( CurrentSection, ins );
 #else

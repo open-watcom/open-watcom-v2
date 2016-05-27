@@ -35,6 +35,7 @@
 #include "rtexcept.h"
 
 
+extern "C"
 RT_TYPE_SIG CPPLIB( ts_refed )( // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
     RT_TYPE_SIG sig )           // - the signature
 {
@@ -48,6 +49,7 @@ RT_TYPE_SIG CPPLIB( ts_refed )( // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
 }
 
 
+extern "C"
 RT_TYPE_SIG CPPLIB( ts_pnted )( // POINT PAST POINTER TYPE-SIG
     RT_TYPE_SIG sig )           // - the signature
 {
@@ -59,6 +61,7 @@ RT_TYPE_SIG CPPLIB( ts_pnted )( // POINT PAST POINTER TYPE-SIG
 }
 
 
+extern "C"
 rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
     RT_TYPE_SIG tgt,            // - target type signature
     RT_TYPE_SIG src,            // - source type signature

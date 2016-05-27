@@ -150,7 +150,7 @@ static WORD pkt_interrupt = 0;
   static int lock_code_and_data   (void);
   static int unlock_code_and_data (void);
 #endif
-        
+
 static int  release_handles (BOOL quiet);
 static WORD find_vector (int first, int num);
 static int  setup_pkt_inf (void);
@@ -306,7 +306,7 @@ static int pkt_set_access (void)
    */
   regs.r_ds = RP_SEG (rm_base);
   regs.r_si = PKT_TMP();
-  regs.r_es = RP_SEG (rm_base);          
+  regs.r_es = RP_SEG (rm_base);
   regs.r_di = 0;                         /* RMCB aligned at para address */
   memcpy (&regs2, &regs, sizeof(regs2)); /* make copy for ARP type */
   regs2.r_si += tlen;
@@ -445,7 +445,7 @@ static int pkt_drvr_info (void)
 
   /* Lets find out about the driver
    */
-  regs.r_ax = PD_DRIVER_INFO;  
+  regs.r_ax = PD_DRIVER_INFO;
 
   /* Handle old versions, assume a class and just keep trying
    * This method will fail for Token-Ring
@@ -453,7 +453,7 @@ static int pkt_drvr_info (void)
   if (!PKT_API(&regs))
   {
     int class;
-  
+
     for (class = 0; class < 2; class++)   /* test for SLIP/Ether */
     {
       static WORD ip_type = IP_TYPE;
@@ -926,7 +926,7 @@ int pkt_release (void)
  *  HACK: For real-mode targets this routine is called via the
  *        `pkt_enque_ptr' function pointer. This was the only way
  *        I could avoid a fixup error for small-model programs.
- */                      
+ */
 
 #if (DOSX)
 static void pkt_enqueue (unsigned rxBuf, WORD rxLen, WORD handle)
@@ -985,7 +985,7 @@ static void _cdecl _far pkt_enqueue (BYTE _far *rxBuf, WORD rxLen, WORD handle)
   }
   else
     q->num_drop++;
-}  
+}
 
 
 /*
@@ -1005,7 +1005,7 @@ static void _cdecl _far pkt_enqueue (BYTE _far *rxBuf, WORD rxLen, WORD handle)
  */
 #if (DOSX & PHARLAP)
   static void pkt_receiver_pm (SWI_REGS *r)
-  { 
+  {
     if ((BYTE)r->eax == 0)         /* AL == 0; rx-buffer request */
     {
       if (!_pkt_inf || (WORD)r->ecx > ETH_MAX) /* !!should be for current driver */
@@ -1102,13 +1102,15 @@ static void _cdecl _far pkt_enqueue (BYTE _far *rxBuf, WORD rxLen, WORD handle)
   }
 #endif
 
-void _pkt_end (void) {}
+#if (DOSX & PHARLAP) || (DOSX & DJGPP)
+static void _pkt_end (void) {}
+#endif
 
 #endif  /* !(DOSX & DOS4GW) */
 
 /* Restore default stack checking and tracing
  */
-#if defined(__HIGHC__)   
+#if defined(__HIGHC__)
 #pragma pop(check_stack)
 #pragma pop(call_trace)
 #pragma pop(prolog_trace)
@@ -1596,7 +1598,7 @@ BOOL pkt_eth_init (eth_address *eth)
   {
     __dpmi_meminfo mem;
     DWORD base = 0;
- 
+
     __dpmi_get_segment_base_address (_my_ds(), &base);
 
     mem.address = base + (DWORD)&pkt_enqueue;
@@ -1662,13 +1664,13 @@ BOOL pkt_eth_init (eth_address *eth)
 #elif (DOSX & DOS4GW) /* pkt_receiver4_rm() isn't a r->pmode callback,
                        * but what the heck...
                        */
-  static int setup_rmode_callback (void) 
+  static int setup_rmode_callback (void)
   {
     int length;
 
     /* test for asmpkt4.asm/pcpkt.h mismatch
      */
-    if (asmpkt_size_chk != sizeof(*_pkt_inf)) 
+    if (asmpkt_size_chk != sizeof(*_pkt_inf))
     {
 #ifdef USE_DEBUG
       fprintf (stderr,
@@ -1697,7 +1699,7 @@ BOOL pkt_eth_init (eth_address *eth)
     return (0);
   }
 
-  static int lock_code_and_data (void)  
+  static int lock_code_and_data (void)
   {
     return (0);
   }
@@ -1796,7 +1798,7 @@ static int pkt_api_entry (IREGS *reg, unsigned line)
 #if (DOSX)
  /* Use 32-bit API; accessing card via pmode driver (to-do!!)
   */
-  if (_pkt32_drvr) 
+  if (_pkt32_drvr)
   {
     reg->r_flags = 0;
     if (!(*_pkt32_drvr)(reg))   /* call the pmode interface */

@@ -110,14 +110,14 @@ using std::wcsxfrm;
 :endsegment
 :include wint_t.sp
 
-:include sizet.sp
+:include size_t.sp
 
 :segment !CNAME
 :include saferpro.sp
 
-:include errnot.sp
+:include errno_t.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
 :include saferepi.sp
 

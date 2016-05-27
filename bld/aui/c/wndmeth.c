@@ -59,7 +59,7 @@ a_window *WndNoOpen( void )
 bool NoGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;row=row;piece=piece;line=line;
-    return( FALSE );
+    return( false );
 }
 
 void NoModify( a_window *wnd, int row, int piece )
@@ -119,9 +119,9 @@ bool NoEventProc( a_window * wnd, gui_event event, void *parm )
     case GUI_RESIZE:
     case GUI_MOVE:
     case GUI_DESTROY:
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -221,10 +221,10 @@ static bool FindCacheLine( a_window *wnd, int row,
             CacheLine[i].piece == piece ) {
                 *line = CacheLine[i].line;
                 line->text = CacheLine[i].text;
-                return( TRUE );
+                return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -248,27 +248,27 @@ bool WndGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 
     virtual_row = WndVirtualRow( wnd, row );
     if( _Is( wnd, WSW_CACHE_LINES ) ) {
-        if( FindCacheLine( wnd, virtual_row, piece, line ) ) return( TRUE );
+        if( FindCacheLine( wnd, virtual_row, piece, line ) ) return( true );
     }
     line->attr = WndPlainAttr;
     line->indent = 0;
-    line->static_text = FALSE;
-    line->tabstop = TRUE;
-    line->hot = FALSE;
+    line->static_text = false;
+    line->tabstop = true;
+    line->hot = false;
     line->extent = WND_NO_EXTEND;
-    line->master_tabstop = FALSE;
-    line->underline = FALSE;
-    line->draw_bar = FALSE;
-    line->vertical_line = FALSE;
-    line->draw_hook = FALSE;
-    line->draw_line_hook = FALSE;
-    line->bitmap = FALSE;
-    line->use_piece0_attr = FALSE;
-    line->use_prev_attr = FALSE;
-    line->use_key = TRUE;
+    line->master_tabstop = false;
+    line->underline = false;
+    line->draw_bar = false;
+    line->vertical_line = false;
+    line->draw_hook = false;
+    line->draw_line_hook = false;
+    line->bitmap = false;
+    line->use_piece0_attr = false;
+    line->use_prev_attr = false;
+    line->use_key = true;
     line->text = "";
     line->hint = "";
-    if( virtual_row < -wnd->title_size ) return( FALSE );
+    if( virtual_row < -wnd->title_size ) return( false );
     if( row == wnd->u.button_down.row && piece == wnd->u.button_down.piece ) {
         _Set( wnd, WSW_ALTERNATE_BIT );
     }

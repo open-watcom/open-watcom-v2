@@ -64,6 +64,15 @@
 
 #define BUFF_SIZE   2048
 
+typedef struct lli {
+    addr_off    offset;
+    addr_off    dbg_dyn_sect;
+    addr_off    code_size;
+    char        newly_unloaded : 1;
+    char        newly_loaded : 1;
+    char        filename[257]; // TODO: This should really be dynamic!
+} lib_load_info;
+
 #ifndef __WATCOMC__
 extern char             **environ;
 #endif
@@ -80,7 +89,7 @@ static pid_t            SamplePid = 0;  // pid to attach to
 static pid_t            Pid;
 static bool             Attached;
 static pid_t            OrigPGrp;
-static int              HaveRdebug;     // flag indicating valid r_debug
+static bool             HaveRdebug;     // flag indicating valid r_debug
 static struct r_debug   Rdebug;         // copy of child's r_debug (if present)
 static struct r_debug   *DbgRdebug;     // address of r_debug in child's space
 static Elf32_Dyn        *DbgDyn;        // VA of child's dynamic section (if present)
@@ -89,15 +98,6 @@ static unsigned short   FlatSeg = 1;    // hardcoded value, no real segments
 static opcode_type      saved_opcode;
 
 static seg_offset       CommonAddr;
-
-typedef struct lli {
-    addr_off    offset;
-    addr_off    dbg_dyn_sect;
-    addr_off    code_size;
-    char        newly_unloaded : 1;
-    char        newly_loaded : 1;
-    char        filename[257]; // TODO: This should really be dynamic!
-} lib_load_info;
 
 static lib_load_info    *ModuleInfo;
 static int              ModuleTop;
@@ -116,8 +116,9 @@ static lib_load_info *FindLib( addr_off dynsection )
     unsigned    i;
 
     for( i = 0; i < ModuleTop; ++i ) {
-        if( ModuleInfo[i].dbg_dyn_sect == dynsection )
+        if( ModuleInfo[i].dbg_dyn_sect == dynsection ) {
             return( ModuleInfo + i );
+        }
     }
     return( NULL );
 }
@@ -188,8 +189,9 @@ static void DoAddLib( pid_t pid, struct link_map *lmap )
     dbg_printf( "Added library, ofs/dyn = %p/%p'%s'\n", lmap->l_addr, (addr_off)lmap->l_ld, lli->filename );
 
     // no name, not interested
-    if( lli->filename[0] != '\0' )
+    if( lli->filename[0] != '\0' ) {
         CodeLoad( lli->filename, lmap->l_addr, SAMP_CODE_LOAD );
+    }
 }
 
 
@@ -271,7 +273,7 @@ unsigned NextThread( unsigned tid )
 }
 
 
-void SetPid( char **cmd )
+static void SetPid( char **cmd )
 {
     SamplePid = GetNumber( 1, INT_MAX, cmd, 10 );
 }
@@ -301,9 +303,9 @@ unsigned SafeMargin( void )
 }
 
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 
@@ -331,7 +333,7 @@ static void GrowArrays( unsigned tid )
     MaxThread = max;
 }
 
-void RecordSample( unsigned offset, unsigned tid )
+static void RecordSample( unsigned offset, unsigned tid )
 {
     samp_block  *old_samples;
     unsigned    old_sample_index;
@@ -450,7 +452,7 @@ static void InternalError( char *str )
 #if defined( MD_x86 )
 
 /* Handle profiler marks (hardcoded breakpoints with a string) */
-static int ProcessMark( pid_t pid, user_regs_struct *regs )
+static bool ProcessMark( pid_t pid, user_regs_struct *regs )
 {
     if( (regs->edx & 0xffff) != 0 ) {   /* this is a mark */
         char            buff[BUFF_SIZE];
@@ -470,10 +472,10 @@ static int ProcessMark( pid_t pid, user_regs_struct *regs )
         where.segment = FlatSeg;
         where.offset = regs->eip;
         WriteMark( buff, where );
-        return( TRUE );
+        return( true );
     } else {
         dbg_printf( "hardcoded breakpoint was not a mark!\n" );
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -483,7 +485,7 @@ static int ProcessMark( pid_t pid, user_regs_struct *regs )
  * (which we set ourselves) as well as profiler marks (embedded in the
  * profiled application's code).
  */
-static int ProcessBreakpoint( pid_t pid, u_long ip )
+static bool ProcessBreakpoint( pid_t pid, u_long ip )
 {
     static int  ld_state = RT_CONSISTENT;   // This ought to be per-pid
     int         ptrace_sig = 0;
@@ -547,15 +549,14 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
             perror( "waitpid()" );
         if( WriteMem( pid, &brk_opcode, Rdebug.r_brk, sizeof( brk_opcode ) ) != sizeof( brk_opcode ) )
             dbg_printf( "WriteMem() #2 failed with errno %d for pid %d, %d bytes (at %p)!\n", errno, pid, sizeof( brk_opcode ), Rdebug.r_brk );
-        return( TRUE ); // indicate this was our breakpoint
+        return( true ); // indicate this was our breakpoint
     } else {
         dbg_printf( "Not an ld breakpoint, assuming mark\n" );
 #if defined( MD_x86 )
-        if( ProcessMark( pid, &regs ) )
-            return( TRUE );
+        return( ProcessMark( pid, &regs ) );
 #endif
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -566,7 +567,7 @@ static int ProcessBreakpoint( pid_t pid, u_long ip )
  */
 static void alarm_handler( int signo )
 {
-    TimerTicked = TRUE;
+    TimerTicked = true;
 }
 
 
@@ -605,14 +606,14 @@ static void InstSigHandler( int msec_period )
 static void SampleLoop( pid_t pid )
 {
     static int          ptrace_sig = 0;
-    static int          do_cont = TRUE;
+    static bool         do_cont = true;
     int                 status;
     user_regs_struct    regs;
-    bool                sample_continue = TRUE;
+    bool                sample_continue = true;
     int                 ret;
     opcode_type         brk_opcode = BRKPOINT;
 
-    TimerTicked = FALSE;
+    TimerTicked = false;
     InstSigHandler( SleepTime );
 
     do {
@@ -622,18 +623,18 @@ static void SampleLoop( pid_t pid )
         if( (ret < 0) && (errno == EINTR) ) {
             /* did we get woken up by SIGALRM? */
             if( TimerTicked ) {
-                TimerTicked = FALSE;
+                TimerTicked = false;
                 /* interrupt child process - next waitpid() will see this */
                 kill( pid, SIGSTOP );
             } else {
                 dbg_printf( "who the hell interrupted waitpid()?\n" );
             }
-            do_cont = FALSE;
+            do_cont = false;
             continue;
         }
         if( ret < 0 )
             perror( "waitpid()" );
-        do_cont = TRUE;
+        do_cont = true;
 
         /* record current execution point */
 #if defined( MD_x86 )
@@ -650,7 +651,7 @@ static void SampleLoop( pid_t pid )
                 if( Get_ld_info( pid, DbgDyn, &Rdebug, &DbgRdebug ) ) {
 
                     AddLibrary( pid, Rdebug.r_map );
-                    HaveRdebug = TRUE;
+                    HaveRdebug = true;
 
                     /* Set a breakpoint in dynamic linker. That way we can be
                      * informed on dynamic library load/unload events.
@@ -661,23 +662,23 @@ static void SampleLoop( pid_t pid )
                 }
             }
 
-            sample_continue = FALSE;
+            sample_continue = false;
             switch( (ptrace_sig = WSTOPSIG( status )) ) {
             case SIGSEGV:
                 dbg_printf( "SIGSEGV at %p\n", regs.eip );
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             case SIGILL:
                 dbg_printf( "SIGILL at %p\n", regs.eip );
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             case SIGABRT:
                 dbg_printf( "SIGABRT at %p\n", regs.eip );
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             case SIGINT:
                 dbg_printf( "SIGINT at %p\n", regs.eip );
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             case SIGTRAP:
                 dbg_printf( "SIGTRAP at %p\n", regs.eip );
@@ -685,29 +686,29 @@ static void SampleLoop( pid_t pid )
                     // don't pass on SIGTRAP if we expected this breakpoint
                     ptrace_sig = 0;
                 }
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             case SIGSTOP:
                 /* presumably we were behind this SIGSTOP */
                 RecordSample( regs.eip, 1 );
                 ptrace_sig = 0;
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             default:
                 /* all other signals get passed down to the child and we let
                  * the child handle them (or not handle and die)
                  */
-                sample_continue = TRUE;
+                sample_continue = true;
                 break;
             }
         } else if( WIFEXITED( status ) ) {
             dbg_printf( "WIFEXITED pid %d\n", pid );
             report();
-            sample_continue = FALSE;
+            sample_continue = false;
         } else if( WIFSIGNALED( status ) ) {
             dbg_printf( "WIFSIGNALED pid %d\n", pid );
             report();
-            sample_continue = FALSE;
+            sample_continue = false;
         }
     } while( sample_continue );
 }
@@ -736,10 +737,10 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 
     MaxThread = 0;
     GrowArrays( 1 );
-    HaveRdebug = FALSE;
+    HaveRdebug = false;
     DbgDyn = NULL;
     OrigPGrp = getpgrp();
-    Attached = TRUE;
+    Attached = true;
     pid = Pid = SamplePid;
 
     /* allow attaching to existing process by pid */
@@ -748,7 +749,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         size_t      len;
         const char  **argv;
 
-        Attached = FALSE;
+        Attached = false;
 
         /* massage 'full_args' into argv format */
         len = strlen( full_args );
@@ -797,11 +798,13 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         if( !WIFSTOPPED( status ) )
             goto fail;
         if( Attached ) {
-            if( WSTOPSIG( status ) != SIGSTOP )
+            if( WSTOPSIG( status ) != SIGSTOP ) {
                 goto fail;
+            }
         } else {
-            if( WSTOPSIG( status ) != SIGTRAP )
+            if( WSTOPSIG( status ) != SIGTRAP ) {
                 goto fail;
+            }
         }
 
         DbgDyn = GetDebuggeeDynSection( exe_name );
@@ -809,8 +812,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     }
     if( errno != 0 ) {
         pid = 0;
-    }
-    else {
+    } else {
         /* record information about main executable and initialize shared
          * library tracking
          */
@@ -825,7 +827,7 @@ fail:
     if( pid != 0 && pid != -1 ) {
         if( Attached ) {
             ptrace( PTRACE_DETACH, pid, NULL, NULL );
-            Attached = FALSE;
+            Attached = false;
         } else {
             ptrace( PTRACE_KILL, pid, NULL, NULL );
             waitpid( pid, &status, 0 );

@@ -18,6 +18,8 @@
 
 :include lnxkpack.sp
 
+:include pid_t.sp
+
 typedef unsigned char   cc_t;
 typedef unsigned int    speed_t;
 typedef unsigned int    tcflag_t;
@@ -91,7 +93,7 @@ struct termios {
 /*
  * Pre-Defined Baud rates used by cfgetospeed(), c_cflag etc.
  */
-#define  B0             0000000         /* hang up */
+#define  B0         0000000         /* hang up */
 #define  B50        0000001
 #define  B75        0000002
 #define  B110       0000003
@@ -181,6 +183,7 @@ _WCRTLINK extern int     tcsendbreak( int __fd, int __duration );
 _WCRTLINK extern int     tcdrain( int __fd );
 _WCRTLINK extern int     tcflush( int __fd, int __queue_selector );
 _WCRTLINK extern int     tcflow( int __fd, int __action );
+_WCRTLINK extern pid_t   tcgetsid( int __fildes );
 
 :include poppack.sp
 

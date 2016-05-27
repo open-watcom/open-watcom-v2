@@ -144,9 +144,9 @@ bool Directory::GetDirInfo( dir_info&    di,
         di.offset = _cvDirEntry[_currentSub].lfo;
         di.length = _cvDirEntry[_currentSub].cb;
         _currentSub++;
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool Directory::IsAtSubsection( const sst subsection )
@@ -352,11 +352,11 @@ bool Retriever::ReadSubsection( char*&       buffer,
     }
     dir_info di;
     if ( !_aDirectory.GetDirInfo(di,subsection,mod) ) {
-        return FALSE;
+        return false;
     }
     length = di.length;
     if ( length == 0 ) {
-        return FALSE;
+        return false;
     }
 /*
     cerr << "Will read subsection ";
@@ -374,9 +374,9 @@ bool Retriever::ReadSubsection( char*&       buffer,
             delete [] _heapBuffer;
                 _heapBuffer=NULL;
             }
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
 //    }
 /*
     // if the request read is not in current page, readin the request
@@ -384,14 +384,14 @@ bool Retriever::ReadSubsection( char*&       buffer,
     if ( ! IsInCurrentPage(di.offset) ) {
         ++_missRate;
         buffer = Read(di);
-        return ( buffer ? TRUE : FALSE );
+        return ( buffer ? true : false );
     }
     if ( IsCrossPage(di) ) {
         buffer = Read(di);
-        return ( buffer ? TRUE : FALSE );
+        return ( buffer ? true : false );
     }
     buffer = _inputBuffer + LocalPageOff(di.offset);
-    return TRUE;
+    return true;
 */
 }
 

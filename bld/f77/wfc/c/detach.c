@@ -58,9 +58,9 @@ static  bool    CheckColon(void) {
 
     if( RecNextOpr( OPR_COL ) ) {
         CITNode->opr = OPR_COL;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

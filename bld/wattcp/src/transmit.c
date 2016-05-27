@@ -8,6 +8,7 @@
  */
 
 #include "socket.h"
+#include "transmit.h"
 
 #if defined(USE_BSD_FUNC)
 
@@ -315,7 +316,7 @@ static __inline int check_non_block_tx (Socket *socket, int *len)
 
   /* Still no room, but cannot split up datagrams (only in ip-fragments)
    */
-  if (socket->so_type == SOCK_DGRAM) 
+  if (socket->so_type == SOCK_DGRAM)
      return (-1);
 
   /* stream: Tx room below (or equal) low-water mark is failure.

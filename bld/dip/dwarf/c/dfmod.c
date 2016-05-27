@@ -49,22 +49,22 @@ static void GetModName( const char *path, char *buff )
 {
     const char  *start;
     const char  *end;
-    int         ext_found;
+    bool        ext_found;
 
     start = end = path;
-    ext_found = FALSE;
+    ext_found = false;
     while( *path != '\0' ) {
         if( IS_PATH_CHAR( *path ) ) {
             start = path + 1;
         } else if( *path == EXT_CHAR ) {
-            ext_found = TRUE;
+            ext_found = true;
             end = path;
         } else if( *path == '(' ) {
             start = path + 1;
             while( *path != ')' )
                 ++path;
             end = path;
-            ext_found = TRUE;
+            ext_found = true;
             goto do_copy;
         }
         ++path;
@@ -79,7 +79,7 @@ do_copy:
     *buff = '\0';
 }
 
-static bool ModFill( void *_mod, dr_handle mod_handle )
+static bool ModFill( void *_mod, drmem_hdl mod_handle )
 /*****************************************************/
 // fill in mod_handle for dip to dwarf mod map
 // pick up general info about mod while here for later calls
@@ -88,7 +88,7 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
     char        fname[MAX_PATH];
     char        *name;
     char        *path;
-    dr_handle   cu_tag;
+    drmem_hdl   cu_tag;
     dr_model    model;
     mod_info    *modinfo;
 
@@ -134,25 +134,25 @@ static bool ModFill( void *_mod, dr_handle mod_handle )
         switch( model ) {
         case DR_MODEL_NONE:
         case DR_MODEL_FLAT:
-            modinfo->is_segment = FALSE;
+            modinfo->is_segment = false;
             break;
         default:
-            modinfo->is_segment = TRUE;
+            modinfo->is_segment = true;
             break;
         }
     } else {
-        modinfo->is_segment = FALSE;
+        modinfo->is_segment = false;
     }
     modinfo->model = model;
     modinfo->lang = DRGetLanguageAT( cu_tag );
     modinfo->dbg_pch = DRDebugPCHDef( cu_tag );
-    modinfo->has_pubnames = FALSE;
-    return( TRUE );
+    modinfo->has_pubnames = false;
+    return( true );
 }
 
 dip_status     InitModMap( imp_image_handle *ii )
 /***********************************************/
-// Make the imp_mod_handle  to  dr_handle map
+// Make the imp_mod_handle  to  drmem_hdl map
 {
     mod_list    list;
     dip_status  ret;
@@ -186,12 +186,12 @@ bool    ClearMods( imp_image_handle *ii )
     bool        ret;
     mod_info    *modinfo;
 
-    ret = FALSE;
+    ret = false;
     modinfo = ii->mod_map;
     for( i = 0; i < ii->mod_count; ++i ) {
         if( modinfo->addr_sym->head != NULL ) {
             FiniAddrSym( modinfo->addr_sym );
-            ret = TRUE;
+            ret = true;
         }
         ++modinfo;
     }
@@ -200,7 +200,7 @@ bool    ClearMods( imp_image_handle *ii )
 
 void    FiniModMap( imp_image_handle *ii )
 /****************************************/
-// Make the imp_mod_handle to dr_handle map
+// Make the imp_mod_handle to drmem_hdl map
 {
     im_idx      i;
     mod_info    *modinfo;
@@ -219,7 +219,7 @@ void    FiniModMap( imp_image_handle *ii )
     ii->mod_count = 0;
 }
 
-imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
+imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, drmem_hdl mod_handle )
 /**********************************************************************/
 // Look up mod_handle in mod_map
 {
@@ -236,7 +236,7 @@ imp_mod_handle   Dwarf2Mod( imp_image_handle *ii, dr_handle mod_handle )
     return( IMH_NOMOD );
 }
 
-imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
+imp_mod_handle   DwarfMod( imp_image_handle *ii, drmem_hdl dr_sym )
 /*****************************************************************/
 // find the imp_mod_handle where a dwarf dbginfo comes from
 {
@@ -257,7 +257,7 @@ imp_mod_handle   DwarfMod( imp_image_handle *ii, dr_handle dr_sym )
     return( IMX2IMH( i ) );
 }
 
-imp_mod_handle   CuTag2Mod( imp_image_handle *ii, dr_handle cu_tag )
+imp_mod_handle   CuTag2Mod( imp_image_handle *ii, drmem_hdl cu_tag )
 /******************************************************************/
 // Look up cu_tag in mod_map
 {
@@ -429,7 +429,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
     bool                ret;
     imp_image_handle    *ii;
 
-    ret = TRUE;
+    ret = true;
     if( curr->is_stmt ) {
         off_info *off;
 
@@ -440,7 +440,7 @@ static bool AModAddr( void *_info, dr_line_data *curr )
         DCMapAddr( &info->ret->mach, ii->dcmap );
         off = FindMapAddr( ii->addr_map, info->ret );
         if( off->im == info->im ) {
-            ret = FALSE;
+            ret = false;
         }
     }
     return( ret );
@@ -452,12 +452,12 @@ static bool ALineCue( void *_info, dr_line_data *curr )
     l_walk_info *info = _info;
     bool        ret;
 
-    ret = TRUE;
+    ret = true;
     if( curr->is_stmt ) {
         *info->ret = NilAddr;
         info->ret->mach.offset = curr->offset;
         info->ret->mach.segment = curr->seg;
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
@@ -466,9 +466,9 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
 {
     l_walk_info walk;
     address     a;
-    dr_handle   stmts;
+    drmem_hdl   stmts;
 
-    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DR_HANDLE_NUL ) {
+    if( im != IMH_NOMOD && (stmts = IMH2MODI( ii, im )->stmts) != DRMEM_HDL_NULL ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
         walk.ii = ii;
         walk.im = im;
@@ -490,7 +490,7 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
         by 'hk', DS_FAIL if it does not.
     */
     dip_status  ret;
-    dr_handle   stmts;
+    drmem_hdl   stmts;
     mod_info    *modinfo;
 
     ret = DS_FAIL;
@@ -503,13 +503,13 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
     case HK_IMAGE:
         break;
     case HK_TYPE:
-        if( modinfo->stmts != DR_HANDLE_NUL ) {
+        if( modinfo->stmts != DRMEM_HDL_NULL ) {
             ret = DS_OK;
         }
         break;
     case HK_CUE:
         stmts = modinfo->stmts;
-        if( stmts != DR_HANDLE_NUL ) {  // need to get rid of stmts for file with no cues
+        if( stmts != DRMEM_HDL_NULL ) {  // need to get rid of stmts for file with no cues
             l_walk_info walk;
             address     a;
 
@@ -615,13 +615,13 @@ size_t NameCopy( char *buff, const char *from, size_t buff_size, size_t len )
     return( new_len );
 }
 
-void  SetModPubNames( imp_image_handle *ii, dr_handle mod_handle )
+void  SetModPubNames( imp_image_handle *ii, drmem_hdl mod_handle )
 /****************************************************************/
 {
     imp_mod_handle im;
 
     im = Dwarf2Mod( ii, mod_handle );
     if( im != IMH_NOMOD ) {
-        IMH2MODI( ii, im )->has_pubnames = TRUE;
+        IMH2MODI( ii, im )->has_pubnames = true;
     }
 }

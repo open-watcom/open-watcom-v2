@@ -189,9 +189,9 @@ static void preprocessor_opts( struct XlatStatus *status,
                                OPT_STORAGE *cmdOpts, CmdLine *compCmdLine )
 /*************************************************************************/
 {
-    bool                preserveComments = FALSE;
-    bool                includeLines = TRUE;    /* use #line directives */
-    bool                preprocess = FALSE;
+    bool                preserveComments = false;
+    bool                includeLines = true;    /* use #line directives */
+    bool                preprocess = false;
     OPT_STRING *        optStr;
     char *              newpath;
 
@@ -213,7 +213,7 @@ static void preprocessor_opts( struct XlatStatus *status,
         if( !cmdOpts->E && !cmdOpts->P && !cmdOpts->EP ) {
             Warning( "/C requires /E, /P, or /EP -- option ignored" );
         } else {
-            preserveComments = TRUE;
+            preserveComments = true;
         }
     }
 
@@ -223,7 +223,7 @@ static void preprocessor_opts( struct XlatStatus *status,
         status->disable_Fa = 1;
         status->disable_Fm = 1;
         status->disable_Fo = 1;
-        preprocess = TRUE;
+        preprocess = true;
     }
 
     if( cmdOpts->P ) {
@@ -232,7 +232,7 @@ static void preprocessor_opts( struct XlatStatus *status,
         status->disable_Fa = 1;
         status->disable_Fm = 1;
         status->disable_Fo = 1;
-        preprocess = TRUE;
+        preprocess = true;
         status->preprocessToFile = 1;
     }
 
@@ -242,8 +242,8 @@ static void preprocessor_opts( struct XlatStatus *status,
         status->disable_Fa = 1;
         status->disable_Fm = 1;
         status->disable_Fo = 1;
-        preprocess = TRUE;
-        includeLines = FALSE;
+        preprocess = true;
+        includeLines = false;
     }
 
     if( preprocess ) {

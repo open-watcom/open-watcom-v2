@@ -87,7 +87,7 @@ void CgCdArgDefine(             // DEFINE CDOPT VALUE
 
 static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
     call_handle handle,         // - handle for call
-    bool direct )               // - TRUE ==> direct call
+    bool direct )               // - true ==> direct call
 {
     cdtor_entry* curr;          // - current entry
     cdtor_entry* prev;          // - previous entry
@@ -110,12 +110,12 @@ static void processCdtor(       // PROCESS A CDTOR ENTRY IF POSSIBLE
 void CgCdArgUsed(               // USE A CALL-HANDLE DIRECTLY
     call_handle handle )        // - handle for call
 {
-    processCdtor( handle, TRUE );
+    processCdtor( handle, true );
 }
 
 
 void CgCdArgRemove(             // REMOVE CDTOR ENTRY FOR A CALL-HANDLE
     call_handle handle )        // - handle for call
 {
-    processCdtor( handle, FALSE );
+    processCdtor( handle, false );
 }

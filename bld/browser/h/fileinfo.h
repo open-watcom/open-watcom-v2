@@ -54,9 +54,9 @@ public:
             bool    getTime( WTime & t ) {
                         if( _status == 0 ) {
                             t.set( _statBuf.st_mtime );
-                            return TRUE;
+                            return true;
                         } else {
-                            return FALSE;
+                            return false;
                         }
                     }
             bool    getStatus() { return( _status == 0 ); }

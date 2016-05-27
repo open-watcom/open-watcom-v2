@@ -12,7 +12,7 @@ sys_windowed = 1
 # Create the Windows 3.x std.dll
 #
 
-srv     = lcl
+srv   = lcl
 which = TRAP
 
 extra_objs = &
@@ -24,7 +24,6 @@ extra_objs = &
         dbgrmsg.obj &
         dbgeemsg.obj &
         dbghook.obj &
-        wgod.obj &
         accmem.obj &
         accload.obj &
         accregs.obj &

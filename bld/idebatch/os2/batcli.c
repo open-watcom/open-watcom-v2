@@ -35,6 +35,8 @@
 #include <fcntl.h>
 #include <dos.h>
 #include "batpipe.h"
+#include "batcher.h"
+
 
 int     pipeHdl = -1;
 
@@ -42,7 +44,8 @@ const char *BatchLink( const char *name )
 {
     char        pipeName[ PREFIX_LEN + MAX_NAME ] = PREFIX;
 
-    if( name == NULL ) name = DEFAULT_NAME;
+    if( name == NULL )
+        name = DEFAULT_NAME;
     strcpy( pipeName + PREFIX_LEN, name );
     if( _dos_open( pipeName, O_RDWR, &pipeHdl ) != 0 ) {
         return( "can not connect to batcher spawn server" );

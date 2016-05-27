@@ -149,9 +149,7 @@ static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
 {
     char**daughter;             // - daughter class
 
-    for( daughter = VstkTop( &di->stack ); ; ) {
-        daughter = VstkNext( &di->stack, daughter );
-        if( daughter == NULL ) break;
+    VstkIterBeg( &di->stack, daughter ) {
         di = bufferInit( di );
         di = bufferStr( di, "base of: " );
         di = bufferStr( di, *daughter );
@@ -320,7 +318,7 @@ void DumpObjectModelClass(      // DUMP OBJECT MODEL: CLASS
     DUMP_INFO di;               // - dump information
 
     if( ! type->u.c.info->corrupted ) {
-        CompFlags.log_note_msgs = TRUE;
+        CompFlags.log_note_msgs = true;
         di.original = type;
         di.offset = 0;
         VbufInit( &di.buffer );
@@ -328,7 +326,7 @@ void DumpObjectModelClass(      // DUMP OBJECT MODEL: CLASS
         dumpStruct( type, &di, "Object Model for:", DS_NULL );
         VbufFree( &di.buffer );
         VstkClose( &di.stack );
-        CompFlags.log_note_msgs = FALSE;
+        CompFlags.log_note_msgs = false;
     }
 }
 
@@ -342,11 +340,11 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
     char buf[16];               // - buffer
     int numb;                   // - a numeric value
     const char *name = NULL;    // - name to be printed
-    bool sign;                  // - TRUE ==> signed enum
+    bool sign;                  // - true ==> signed enum
     unsigned mask;              // - used to mask to true size
     unsigned val;               // - value as unsigned
 
-    CompFlags.log_note_msgs = TRUE;
+    CompFlags.log_note_msgs = true;
     base = TypedefModifierRemoveOnly( type );
     sym = base->u.t.sym;
     VbufInit( &buffer );
@@ -360,43 +358,43 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
       case TYP_CHAR :
       case TYP_UCHAR :
         name = "unsigned char";
-        sign = FALSE;
+        sign = false;
         break;
       case TYP_SCHAR :
         name = "signed char";
-        sign = TRUE;
+        sign = true;
         break;
       case TYP_SSHORT :
         name = "signed short";
-        sign = TRUE;
+        sign = true;
         break;
       case TYP_USHORT :
         name = "unsigned short";
-        sign = FALSE;
+        sign = false;
         break;
       case TYP_SINT :
         name = "signed int";
-        sign = TRUE;
+        sign = true;
         break;
       case TYP_UINT :
         name = "unsigned int";
-        sign = FALSE;
+        sign = false;
         break;
       case TYP_SLONG :
         name = "signed long";
-        sign = TRUE;
+        sign = true;
         break;
       case TYP_ULONG :
         name = "unsigned long";
-        sign = FALSE;
+        sign = false;
         break;
       case TYP_SLONG64 :
         name = "__int64";
-        sign = TRUE;
+        sign = true;
         break;
       case TYP_ULONG64 :
         name = "unsigned __int64";
-        sign = FALSE;
+        sign = false;
         break;
       DbgDefault( "DumpObjectModelEnum -- bad underlying type" );
     }
@@ -432,5 +430,5 @@ void DumpObjectModelEnum(       // DUMP OBJECT MODEL: ENUM
         vbufWrite( &buffer );
     }
     VbufFree( &buffer );
-    CompFlags.log_note_msgs = FALSE;
+    CompFlags.log_note_msgs = false;
 }

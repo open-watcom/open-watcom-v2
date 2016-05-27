@@ -69,7 +69,7 @@ NewEditDLL::NewEditDLL( WWindow * parent,
 void NewEditDLL::initialize()
 //--------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();
@@ -123,15 +123,15 @@ void NewEditDLL::initialize()
     _dllEdit->setFocus();
 
     if( _isDLL ) {
-        _dllButton->setCheck( TRUE );
+        _dllButton->setCheck( true );
         _editorParms->setText( "" );
-        _editorParms->enable( FALSE );
-        _parmBoxText->enable( FALSE );
+        _editorParms->enable( false );
+        _parmBoxText->enable( false );
     } else {
-        _exeButton->setCheck( TRUE );
+        _exeButton->setCheck( true );
         _editorParms->setText( _parms );
-        _editorParms->enable( TRUE );
-        _parmBoxText->enable( TRUE );
+        _editorParms->enable( true );
+        _parmBoxText->enable( true );
     }
 
     show();
@@ -149,9 +149,9 @@ void NewEditDLL::okButton( WWindow * )
     _dllEdit->getText( _newDLLName );
     _editorParms->getText( _parms );
     if( _exeButton->checked() ) {
-        _isDLL = FALSE;
+        _isDLL = false;
     } else {
-        _isDLL = TRUE;
+        _isDLL = true;
     }
 
     quit( 1 );
@@ -183,15 +183,15 @@ void NewEditDLL::defaultButton( WWindow * )
 {
     _dllEdit->setText( _default );
     if( _defaultIsDLL ) {
-        _dllButton->setCheck( TRUE );
+        _dllButton->setCheck( true );
         _editorParms->setText( "" );
-        _editorParms->enable( FALSE );
-        _parmBoxText->enable( FALSE );
+        _editorParms->enable( false );
+        _parmBoxText->enable( false );
     } else {
-        _exeButton->setCheck( TRUE );
+        _exeButton->setCheck( true );
         _editorParms->setText( _defaultParms );
-        _editorParms->enable( TRUE );
-        _parmBoxText->enable( TRUE );
+        _editorParms->enable( true );
+        _parmBoxText->enable( true );
     }
 }
 
@@ -206,16 +206,16 @@ void NewEditDLL::dllButton( WWindow * )
 //--------------------------------------
 {
     _editorParms->setText( "" );
-    _editorParms->enable( FALSE );
-    _parmBoxText->enable( FALSE );
+    _editorParms->enable( false );
+    _parmBoxText->enable( false );
 }
 
 void NewEditDLL::exeButton( WWindow * )
 //--------------------------------------
 {
     _editorParms->setText( _parms );
-    _editorParms->enable( TRUE );
-    _parmBoxText->enable( TRUE );
+    _editorParms->enable( true );
+    _parmBoxText->enable( true );
 }
 
 
@@ -226,7 +226,7 @@ bool NewEditDLL::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_FILE_FILTER );
     }
-    return( TRUE );
+    return( true );
 }
 
 // Complain about defining trivial destructor inside class

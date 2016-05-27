@@ -31,6 +31,9 @@
 
 #include "itdefn.h"
 
+
+#define SIZE_UNDEF  ((uint)-1)
+
 extern uint         TypeSize( TYPE typ );
 extern uint         StorageSize( TYPE typ );
 extern intstar4     ITIntValue( itnode *it );

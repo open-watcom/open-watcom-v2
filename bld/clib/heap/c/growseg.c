@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Extend segment size
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -42,8 +42,7 @@
 #elif defined(__QNX__)
     #include <sys/types.h>
     #include <sys/seginfo.h>
-    #include <i86.h>
-#elif defined(__WINDOWS__) && defined( _M_I86 )
+#elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
 #else
@@ -53,7 +52,7 @@
 #if defined(__OS2__)
     #include "tinyos2.h"
 #elif defined(__QNX__)
-#elif defined(__WINDOWS__) && defined( _M_I86 )
+#elif defined(__WINDOWS__)
 #else
     #include "tinyio.h"
 #endif
@@ -93,7 +92,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
 #if defined(__QNX__)
         if( n > PARAS_IN_64K )
             return( 0 );
-#elif defined(__OS2__) || defined(__WINDOWS_286__)
+#elif defined(__OS2__) || defined(__WINDOWS__)
         if( n > PARAS_IN_64K ) {
             if( _RWD_osmode != DOS_MODE ) {
                 /* protected-mode */
@@ -112,7 +111,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
 #elif defined(__QNX__)
         if( qnx_segment_realloc( seg, ((long)n) << 4 ) == -1 )
             return( 0 );
-#elif defined(__WINDOWS_286__)
+#elif defined(__WINDOWS__)
         if( old_heap_paras < ( PARAS_IN_64K - 2 ) && n == PARAS_IN_64K ) {
             n = PARAS_IN_64K - 2;
         } else if( n > ( PARAS_IN_64K - 2 ) ) {
@@ -149,7 +148,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
             p->freehead.prev = FP_OFF( pnew );
             p->numfree++;
             pfree = pnew;
-            }
+        }
         pfree->len = p->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
         if( pfree->len > p->largest_blk )
             p->largest_blk = pfree->len;

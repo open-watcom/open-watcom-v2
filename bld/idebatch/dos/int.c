@@ -53,15 +53,18 @@ char            GetRealNamePrefix[sizeof( GET_REAL_NAME ) + _MAX_PATH + 3] = GET
 char            TmpBuff[_MAX_PATH];
 
 
-void __interrupt __far BreakHandler() {
+static void __interrupt __far BreakHandler( void )
+{
 }
 
-static void installBreakHandler( void ) {
+static void installBreakHandler( void )
+{
     OldInt1B = _dos_getvect( 0x1B );
     _dos_setvect( 0x1B, BreakHandler );
 }
 
-static void removeBreakHandler( void ) {
+static void removeBreakHandler( void )
+{
     _dos_setvect( 0x1B, OldInt1B );
 }
 
@@ -79,11 +82,11 @@ static void endClog( void )
 int main( void )
 {
     char        buff[512];
-    char        names[2*_MAX_PATH+2];
+    char        names[2 * _MAX_PATH + 2];
     char        *ptr;
     char        *nptr;
     long        rc;
-    int         i,len;
+    int         i, len;
 
     cputs( "WATCOM DOS Driver\r\n" );
     cputs( "-----------------\r\n" );
@@ -92,7 +95,7 @@ int main( void )
         exit( 1 );
     }
     installBreakHandler();
-    while( 1 ) {
+    for( ;; ) {
 #ifdef DEBUG
         if( kbhit() ) {
             if( getch() == 'q' ) {
@@ -107,7 +110,7 @@ int main( void )
         TimeSlice();
     }
     cputs( "DOS Driver started\r\n" );
-    while( 1 ) {
+    for( ;; ) {
         rc = VxDGet( buff, sizeof( buff ) );
         if( rc < 0 ) {
             ltoa( rc, buff, 10 );
@@ -116,14 +119,14 @@ int main( void )
             cputs( "encountered, aborting!\r\n" );
             break;
         }
-        if( !stricmp( buff,TERMINATE_CLIENT_STR ) ) {
+        if( stricmp( buff, TERMINATE_CLIENT_STR ) == 0 ) {
             break;
         }
-        if( !stricmp( buff, NEW_OPEN_LIST ) ) {
+        if( stricmp( buff, NEW_OPEN_LIST ) == 0 ) {
             /*
              * free old list of names
              */
-            for( i=0;i<NameCount;i++ ) {
+            for( i = 0; i < NameCount; i++ ) {
                 free( NameList[i] );
             }
             free( NameList );
@@ -135,9 +138,9 @@ int main( void )
             /*
              * get list of names
              */
-            while( 1 ) {
+            for( ;; ) {
                 rc = VxDGet( buff, sizeof( buff ) );
-                if( !stricmp( buff, END_OPEN_LIST ) ) {
+                if( stricmp( buff, END_OPEN_LIST ) == 0 ) {
                     break;
                 }
                 ptr = buff;
@@ -145,23 +148,23 @@ int main( void )
                 while( !isspace( *ptr ) ) {
                     *nptr++ = tolower( *ptr++ );
                 }
-                *nptr++ = 0;
+                *nptr++ = '\0';
                 while( isspace( *ptr ) ) {
                     ptr++;
                 }
-                while( 1 ) {
+                for( ;; ) {
                     *nptr++ = tolower( *ptr );
-                    if( *ptr == 0 ) {
+                    if( *ptr == '\0' ) {
                         break;
                     }
                     ptr++;
                 }
                 len = nptr - names;
-                NameList = realloc( NameList, (NameCount+1)*sizeof(char *) );
+                NameList = realloc( NameList, ( NameCount + 1 ) * sizeof( char * ) );
                 if( NameList != NULL ) {
-                    NameList[ NameCount ] = malloc( len );
-                    if( NameList[ NameCount ] != NULL ) {
-                        memcpy( NameList[ NameCount ], names, len );
+                    NameList[NameCount] = malloc( len );
+                    if( NameList[NameCount] != NULL ) {
+                        memcpy( NameList[NameCount], names, len );
                     }
                     NameCount++;
                 }

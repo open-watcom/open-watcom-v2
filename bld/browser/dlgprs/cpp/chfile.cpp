@@ -81,8 +81,8 @@ CheckedFile::CheckedFile( const char * fileName )
                 , _openPermission( 0 )
                 , _handle( -1 )
                 , _currOffset( -1 )
-                , _isOpen( FALSE )
-                , _logOpen( FALSE )
+                , _isOpen( false )
+                , _logOpen( false )
 //---------------------------------------------------------------------------
 {
     size_t len;
@@ -172,8 +172,8 @@ void CheckedFile::open( int access, int permission )
             throw( oops );
         }
 
-        _isOpen = TRUE;
-        _logOpen = TRUE;
+        _isOpen = true;
+        _logOpen = true;
         _currOffset = 0;
         if( !( _openAccess & O_WRONLY ) ) {
             addOpenFile( this );
@@ -207,7 +207,7 @@ void CheckedFile::close()
 
     privClose();
 
-    _logOpen = FALSE;
+    _logOpen = false;
     _currOffset = -1;
     _handle = -1;
 }
@@ -234,7 +234,7 @@ void CheckedFile::privClose()
         }
     }
 
-    _isOpen = FALSE;
+    _isOpen = false;
 }
 
 

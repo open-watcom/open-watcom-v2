@@ -81,7 +81,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line )
     if( state->attr & ROUTINE_IS_SETJMP ) {
         call_ins->flags.call_flags |= CALL_IS_SETJMP;
     }
-    if( use_return == FALSE ) {
+    if( use_return == false ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 
@@ -172,7 +172,7 @@ extern  void    InitTargProc( void )
 /**********************************/
 {
     CurrProc->targ.debug = NULL;
-    CurrProc->targ.base_is_fp = FALSE;
+    CurrProc->targ.base_is_fp = false;
 }
 
 

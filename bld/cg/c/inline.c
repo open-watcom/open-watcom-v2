@@ -103,14 +103,14 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
     inline_stack    *junk;
     an              retv;
 
-    if( HaveCurrBlock == FALSE ) {
-        EnLink( AskForNewLabel(), TRUE );
-        HaveCurrBlock = TRUE;
+    if( HaveCurrBlock == false ) {
+        EnLink( AskForNewLabel(), true );
+        HaveCurrBlock = true;
     }
     lbl = AskForNewLabel();
     GenBlock( JUMP, 1 );
-    AddTarget( lbl, FALSE );
-    EnLink( lbl, TRUE );
+    AddTarget( lbl, false );
+    EnLink( lbl, true );
     InlineStack->tipe = tipe;
     FEGenProc( InlineStack->proc_sym, handle );
     retv = InlineStack->addr;
@@ -124,9 +124,9 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
 static bool NotEquiv( type_def *a, type_def *b )
 /**********************************************/
 {
-    if( TypeClass( a ) != TypeClass( b ) ) return( TRUE );
-    if( a->length != b->length ) return( TRUE );
-    return( FALSE );
+    if( TypeClass( a ) != TypeClass( b ) ) return( true );
+    if( a->length != b->length ) return( true );
+    return( false );
 }
 
 

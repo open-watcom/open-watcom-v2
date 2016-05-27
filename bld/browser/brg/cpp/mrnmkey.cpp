@@ -34,7 +34,7 @@
 
 MergeNameKey::MergeNameKey()
                 : _tag( 0 )
-                , _extern( FALSE )
+                , _extern( false )
                 , _name( NULL )
                 , _unique( 0 )
 //--------------------------------

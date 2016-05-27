@@ -30,17 +30,12 @@
 ****************************************************************************/
 
 
-#include "int32typ.h"
+#define _IsReDefinedBy(a,b)     (ReDefinedBy(a,b) != MB_FALSE)
+#define _IsntReDefinedBy(a,b)   (ReDefinedBy(a,b) == MB_FALSE)
+#define _IsVisibleToCall(a,b,c) (VisibleToCall(a,b,c) != MB_FALSE)
 
-#ifndef global
-#define global extern
-#endif
-
-global IsDebuggerExecuting_func    *IsDebuggerExecuting;
-global DoneWithInterrupt_func      *DoneWithInterrupt;
-global GetDebugInterruptData_func  *GetDebugInterruptData;
-global ResetDebugInterrupts32_func *ResetDebugInterrupts32;
-global SetDebugInterrupts32_func   *SetDebugInterrupts32;
-global DebuggerIsExecuting_func    *DebuggerIsExecuting;
-
-#undef global
+extern bool         TempsOverlap( name *name1, name *name2 );
+extern bool         NameIsConstant( name *op );
+extern bool_maybe   VisibleToCall( instruction *ins, name *op, bool modifies );
+extern bool_maybe   ReDefinedBy( instruction *ins, name *op );
+extern bool         IsVolatile( name *op );

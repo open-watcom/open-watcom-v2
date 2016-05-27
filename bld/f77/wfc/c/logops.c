@@ -46,10 +46,10 @@ void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
     bool        flip;
 
     op -= OPTR_FIRST_LOGOP;
-    flip = FALSE;
+    flip = false;
     if( ( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) &&
         ( ( CITNode->link->opn.us & USOPN_WHERE ) != USOPN_SAFE ) ) {
-        flip = TRUE;
+        flip = true;
     }
     PushOpn( CITNode->link );
     if( typ1 == FT_NO_TYPE ) {  // unary

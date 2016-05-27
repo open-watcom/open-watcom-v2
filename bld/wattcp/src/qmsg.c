@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <dos.h>
 #include "wattcp.h"
+#include "qmsg.h"
 
 /*
  * Disable stack-checking here cause these functions are handy

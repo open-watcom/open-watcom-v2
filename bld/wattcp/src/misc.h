@@ -22,6 +22,7 @@ extern int __bss_count, cpu_type;
 extern char hex_chars[];
 extern char hex_CHARS[];
 
+extern int  ffs       (int mask);
 extern void init_misc (void);
 extern int  Random    (unsigned a, unsigned b);
 extern void RandomWait(unsigned a, unsigned b);

@@ -54,8 +54,8 @@ const int sibSep = 10;
 TreeWindow::TreeWindow( char * title, WStyle stl )
                 : WBRWindow( title, stl )
                 , GlobalViewTree( menuManager() )
-                , _rootsLoaded( FALSE )
-                , _empty( FALSE )
+                , _rootsLoaded( false )
+                , _empty( false )
                 , _xOffset( 0 )
                 , _yOffset( 0 )
                 , _currNode( NULL )
@@ -65,7 +65,7 @@ TreeWindow::TreeWindow( char * title, WStyle stl )
                 , _vScrollFactor( 0 )
 //----------------------------------------------------------
 {
-    GUIWantPartialRows( handle(), TRUE );
+    GUIWantPartialRows( handle(), true );
 
     setIcon( GBTree );
 
@@ -98,21 +98,21 @@ bool TreeWindow::reallyClose()
 {
     viewManager()->viewDying( this );
 
-    return TRUE;
+    return true;
 }
 
 bool TreeWindow::gettingFocus( WWindow * )
 //----------------------------------------
 {
     viewManager()->eventOccured( VEGettingFocus, this );
-    return FALSE;
+    return false;
 }
 
 bool TreeWindow::losingFocus( WWindow * )
 //---------------------------------------
 {
     viewManager()->eventOccured( VELosingFocus, this );
-    return FALSE;
+    return false;
 }
 
 void TreeWindow::resized( WOrdinal w, WOrdinal h )
@@ -177,7 +177,7 @@ void TreeWindow::setMenus( MenuManager * mgr )
         mgr->registerForMenu( this, TreeMenus[ i ] );
     }
 
-    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
 
     GlobalViewTree::setMenus( mgr );
 
@@ -279,7 +279,7 @@ void TreeWindow::treeViewEvent( TreeViewEvent tve )
         break;
     case ExpandBranch:
         if( _currNode ) {
-            _currNode->enableKids( TRUE );
+            _currNode->enableKids( true );
             arrangeAll();
         }
         break;
@@ -289,7 +289,7 @@ void TreeWindow::treeViewEvent( TreeViewEvent tve )
         break;
     case CollapseBranch:
         if( _currNode ) {
-            _currNode->enableKids( FALSE );
+            _currNode->enableKids( false );
             // enableKids affects node itself so enable the current node
 //          _currNode->setEnable( TreeNode::Visible );
 
@@ -305,7 +305,7 @@ void TreeWindow::treeViewEvent( TreeViewEvent tve )
         }
         break;
     case CollapseAll:
-        enableAll( FALSE );
+        enableAll( false );
 
         scrollTo( 0, 0 );
         arrangeAll();
@@ -437,7 +437,7 @@ void TreeWindow::showParents()
 // DEAD
 {
     if( _currNode ) {
-        _currNode->enableParents( TRUE );
+        _currNode->enableParents( true );
         arrangeAll();
     }
 }
@@ -451,7 +451,7 @@ void TreeWindow::hideParents()
 // DEAD
 {
     if( _currNode ) {
-        _currNode->enableParents( FALSE );
+        _currNode->enableParents( false );
         _currNode->setEnable( TreeNode::Visible );
         if( _autoArrange ) {
             arrangeAll();
@@ -586,7 +586,7 @@ void TreeWindow::changeDirection()
     dev.close();
 
     if( ppRoot != NULL ) {
-        setCurrentPosition( *ppRoot, &oldPos, &oldRootPos, TRUE );
+        setCurrentPosition( *ppRoot, &oldPos, &oldRootPos, true );
     } else {
         scrollTo( 0, 0 );
     }
@@ -674,7 +674,7 @@ void TreeWindow::arrangeAllSelectRoots()
     resetScrollRange();
 
     if( ppRoot != NULL ) {
-        setCurrentPosition( *ppRoot, &oldPos, &oldRootPos, FALSE );
+        setCurrentPosition( *ppRoot, &oldPos, &oldRootPos, false );
     } else {
         scrollTo( 0, 0 );
     }
@@ -693,7 +693,7 @@ void TreeWindow::setCurrentPosition( TreeRoot * pRoot, TreeRect *oldPos,
 // pRoot -- pointer of root to scroll to
 // oldPos -- old position before arranging tree
 // oldRootPos -- old bounding rectangle of root to scroll to
-// changeDirection -- TRUE if direction of trees has changed horiz.<->vert.
+// changeDirection -- true if direction of trees has changed horiz.<->vert.
 {
     TreeCoord nx;
     TreeCoord ny;
@@ -741,7 +741,7 @@ bool TreeWindow::keyDown( WKeyCode code, WKeyState st )
 {
     if( code == WKeyEnter ) {
         showDetail();
-        return( TRUE );
+        return( true );
     } else {
         return key( code, st );
     }
@@ -753,13 +753,13 @@ bool TreeWindow::paint()
     ScreenDev   dev;
     WRect       rect;
     int         i;
-    bool        setRange = FALSE;       // should scroll range be set?
+    bool        setRange = false;       // should scroll range be set?
 
     dev.open( this );
 
     if( !_rootsLoaded ) {
         BusyNotice busy( "Loading..." );
-        _rootsLoaded = TRUE;
+        _rootsLoaded = true;
         fillRoots();
 
         _empty = (_roots.count() == 0 );
@@ -777,13 +777,13 @@ bool TreeWindow::paint()
             }
         }
 
-        setRange = TRUE;
+        setRange = true;
     }
 
-    _empty = TRUE;
+    _empty = true;
     for( i = 0; i < _roots.count(); i += 1 ) {
         if( _roots[ i ]->enabled() ) {
-            _empty = FALSE;
+            _empty = false;
             break;
         }
     }
@@ -806,7 +806,7 @@ bool TreeWindow::paint()
         resetScrollRange();
     }
 
-    return FALSE;
+    return false;
 }
 
 #if 0
@@ -845,25 +845,25 @@ bool TreeWindow::fixOffsets()
     TreeCoord maxY;
     bool changed;
 
-    changed = FALSE;
+    changed = false;
 
     maxX = _world.w() / _hScrollFactor /* getMaxXOff() */;
     maxY = _world.h() / _vScrollFactor /* getMaxYOff() */;
 
     if( _xOffset > maxX ) {
         _xOffset = maxX;
-        changed = TRUE;
+        changed = true;
     } else if( _xOffset < 0 ) {
         _xOffset = 0;
-        changed = TRUE;
+        changed = true;
     }
 
     if( _yOffset > maxY ) {
         _yOffset = maxY;
-        changed = TRUE;
+        changed = true;
     } else if( _yOffset < 0 ) {
         _yOffset = 0;
-        changed = TRUE;
+        changed = true;
     }
     return changed;
 }
@@ -970,12 +970,12 @@ bool TreeWindow::scrollNotify( WScrollNotification sn, int diff )
         xDiff = diff * _hScrollFactor;
         break;
     default:
-        return FALSE;
+        return false;
     }
 
     scrollTo( getXOff() + xDiff, getYOff() + yDiff );
 
-    return TRUE;
+    return true;
 }
 
 TreeCoord TreeWindow::getXOff() const
@@ -1171,9 +1171,9 @@ bool TreeWindow::leftBttnDbl( int x, int y, WMouseKeyFlags )
         } else {
             showDetail();
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool TreeWindow::rightBttnDn( int x, int y, WMouseKeyFlags )
@@ -1186,7 +1186,7 @@ bool TreeWindow::rightBttnDn( int x, int y, WMouseKeyFlags )
         selChange();
     }
 
-    return FALSE;
+    return false;
 }
 
 void TreeWindow::giveFocusToNode( TreeNode * pNode )
@@ -1233,7 +1233,7 @@ void TreeWindow::findNext()
     ASSERTION( _findRoot >= 0 );
     TreeNode * node;
     int        i = _findNode + 1;
-    bool       found = FALSE;
+    bool       found = false;
     WRect      rect;
     BusyNotice busy( "Searching..." );
 
@@ -1242,7 +1242,7 @@ void TreeWindow::findNext()
         for( ; i < root->node()->getCount( TreeNode::FlatList ); ++i ) {
             if( matches( _findRoot, i, _findFilter ) ) {
                 _findNode = i;
-                found = TRUE;
+                found = true;
                 break;
             }
         }
@@ -1262,19 +1262,19 @@ void TreeWindow::findNext()
         }
         _findRoot = -1;
         _findNode = -1;
-        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
 
     } else {
 
         node = _roots[_findRoot]->node()->getNode( TreeNode::FlatList, _findNode );
 
-        node->enableParents( TRUE );
+        node->enableParents( true );
         arrangeAll();
         giveFocusToNode( node );
         getClientRect( rect );
         scrollToNode( node, rect );
 
-        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), TRUE );
+        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), true );
     }
 }
 
@@ -1303,7 +1303,7 @@ void TreeWindow::reLoad()
     _findRoot = -1;
     _findNode = -1;
 
-    _rootsLoaded = FALSE;
+    _rootsLoaded = false;
     _xOffset = 0;
     _yOffset = 0;
     invalidate();               // causes a paint, re-loads using _loadFilter

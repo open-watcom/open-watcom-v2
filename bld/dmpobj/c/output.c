@@ -41,7 +41,7 @@
 #define OUT_BUFF_SIZE   1024
 #define OUT_BUFF_WRITE  512     /* write outBuff when this full */
 
-int     no_disp = FALSE;
+bool    no_disp = false;
 
 static  char            outBuff[ OUT_BUFF_SIZE ];
 static  char            *outBuffPtr;
@@ -335,7 +335,8 @@ void OutputData( unsigned_32 offset, unsigned_32 len )
     i = 0;
     j = ascbuf;
     for(;;) {
-        if( len == 0 ) break;
+        if( len == 0 )
+            break;
         if( i > 0xf ) {
             *j = 0;
             Output( " <%s>" CRLF INDENT "%8", ascbuf, offset );

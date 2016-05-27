@@ -35,10 +35,6 @@
 #include <stddef.h>
 #include "vstk.h"
 
-#ifndef TRUE
-#   define TRUE  1
-#   define FALSE 0
-#endif
 
 static VSTK_BLK *freeVstkBlk(   // FREE A VSTK_BLK
     VSTK_CTL *stack )           // - control for stack
@@ -62,23 +58,23 @@ static unsigned vstkDataSize(   // COMPUTE SIZE OF DATA AREA IN BLOCK
 }
 
 
-static int vstkInBlk(           // TEST IF ENTRY IS WITHIN A BLOCK
+static bool vstkInBlk(          // TEST IF ENTRY IS WITHIN A BLOCK
     VSTK_BLK const *blk,        // - the block
     void *curr,                 // - current entry
     unsigned block_size )       // - size of a block
 {
-    int retn;                   // - TRUE ==> is within the block
+    bool    retb;               // - true ==> is within the block
 
     if( curr == NULL ) {
-        retn = FALSE;
+        retb = false;
     } else if( curr < (void *)&blk->data[0] ) {
-        retn = FALSE;
+        retb = false;
     } else if( curr >= (void *)&blk->data[ block_size ] ) {
-        retn = FALSE;
+        retb = false;
     } else {
-        retn = TRUE;
+        retb = true;
     }
-    return retn ;
+    return( retb );
 }
 
 static void *vstkPushBlk(       // PUSH THE BLOCK
@@ -104,9 +100,10 @@ static void *vstkPushBlk(       // PUSH THE BLOCK
 #ifndef NDEBUG
 static void _VstkIntegrity( VSTK_CTL const *stack )
 {
-    if( stack->current == NULL ) return;
-    if( !vstkInBlk( stack->top, stack->current, vstkDataSize( stack ) ) ) {
-        _FatalAbort( "vstk: curr is not in top blk" );
+    if( stack->current != NULL ) {
+        if( !vstkInBlk( stack->top, stack->current, vstkDataSize( stack ) ) ) {
+            _FatalAbort( "vstk: curr is not in top blk" );
+        }
     }
 }
 static void _VstkPushZapPop( VSTK_CTL *stack )
@@ -239,61 +236,57 @@ void VstkClose(                 // CLOSE THE VIRTUAL STACK
 
 void *VstkIndex(                // INDEX INTO A VIRTUAL STACK
     VSTK_CTL *stack,            // - stack to be indexed
-    int index )                 // - the index
+    unsigned index )            // - the index
 {
     unsigned reqd;              // - required number of blocks
     unsigned blks;              // - number of blocks
     VSTK_BLK *blk;              // - current block
     unsigned per;               // - # elements per block
     void *retn;                 // - item indexed
-    int blk_pushed;             // - TRUE ==> a block was added
-    int on_top;                 // - TRUE ==> retn in top block
+    bool blk_pushed;            // - true ==> a block was added
+    bool on_top;                // - true ==> retn in top block
 
     _VstkIntegrity( stack );
-    if( index < 0 ) {
-        retn = NULL;
-    } else {
-        blks = 0;
-        for( blk = stack->top; blk != NULL; ++blks, blk = blk->last );
-        per = stack->per_block;
-        reqd = index / per + 1;
-        blk_pushed = FALSE;
-        for( ; blks < reqd; ++blks ) {
-            blk_pushed = TRUE;
-            vstkPushBlk( stack );
-        }
-        index = blks * per - index;
-        for( blk = stack->top, on_top = TRUE;
-             index > per;
-             index -= per, blk = blk->last, on_top = FALSE );
-        retn = &blk->data[ ( index - 1 ) * stack->size ];
-        if( ( blk_pushed )
-          ||( stack->current == NULL )
-          ||( on_top && ( retn < stack->current ) ) ) {
-            stack->current = retn;
-        }
-        _VstkIntegrity( stack );
+    blks = 0;
+    for( blk = stack->top; blk != NULL; blk = blk->last )
+        ++blks;
+    per = stack->per_block;
+    reqd = index / per + 1;
+    blk_pushed = false;
+    for( ; blks < reqd; ++blks ) {
+        blk_pushed = true;
+        vstkPushBlk( stack );
     }
+    on_top = true;
+    blk = stack->top;
+    for( index = blks * per - index; index > per; index -= per ) {
+        on_top = false;
+        blk = blk->last;
+    }
+    retn = &blk->data[( index - 1 ) * stack->size];
+    if( blk_pushed || ( stack->current == NULL ) || ( on_top && ( retn < stack->current ) ) ) {
+        stack->current = retn;
+    }
+    _VstkIntegrity( stack );
     return( retn );
 }
 
 
-int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
+unsigned VstkDimension(         // GET UPPER DIMENSION OF VIRTUAL STACK
     VSTK_CTL const *stack )     // - stack
 {
     VSTK_BLK *blk;              // - current block
-    int dimension;              // - dimension
-    int per_block;              // - # entries per block
+    unsigned dimension;         // - dimension
+    unsigned per_block;         // - # entries per block
 
     _VstkIntegrity( stack );
     blk = stack->top;
-    if( blk == NULL ) {
-        dimension = 0;
-    } else {
-        dimension = - ( (char*)stack->current - blk->data ) / stack->size;
+    dimension = 0;
+    if( blk != NULL ) {
+        dimension -= ( (char*)stack->current - blk->data ) / stack->size;
         per_block = stack->per_block;
 #ifndef NDEBUG
-        if( dimension > per_block ) {
+        if( dimension + per_block > per_block ) {
             _FatalAbort( "vstk: dimension > per_block" );
         }
 #endif
@@ -302,7 +295,7 @@ int VstkDimension(              // GET UPPER DIMENSION OF VIRTUAL STACK
         }
         _VstkIntegrity( stack );
     }
-    return( dimension - 1 );
+    return( dimension );
 }
 
 
@@ -315,17 +308,9 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
 
     _VstkIntegrity( stack );
     blk_size = vstkDataSize( stack );
-    for( blk = stack->top; ; blk = blk->last ) {
-        if( blk == NULL ) {
-            blk = stack->top;
-            if( blk == NULL ) {
-                cur = NULL;
-            } else {
-                cur = &blk->data;
-            }
-            break;
-        }
+    for( blk = stack->top; blk != NULL; blk = blk->last ) {
         if( vstkInBlk( blk, cur, blk_size ) ) {
+            // current item is found
             cur = (char *)cur + stack->size;
             if( cur >= (void *)&blk->data[blk_size] ) {
                 blk = blk->last;
@@ -335,24 +320,28 @@ void *VstkNext(                 // GET NEXT ITEM IN STACK
                     cur = blk->data;
                 }
             }
-            break;
+            return( cur );
         }
     }
-    return( cur );
+    // current item is not found
+    if( stack->top == NULL )
+        return( NULL );
+    return( stack->top->data );
 }
 
 
 void *VstkBase(                 // GET BASE ELEMENT
     VSTK_CTL *stack,            // - stack to be based
-    int base )                  // - the base index
+    unsigned base )             // - the base index
 {
     void *cur;                  // - current element
 
-    --base;
-    if( base >= VstkDimension( stack ) ) {
+    if( base == 0 ) {
+        cur = NULL;
+    } else if( base >= VstkDimension( stack ) ) {
         cur = VstkTop( stack );
     } else {
-        cur = VstkIndex( stack, base );
+        cur = VstkIndex( stack, base - 1 );
     }
     return( cur );
 }
@@ -360,7 +349,7 @@ void *VstkBase(                 // GET BASE ELEMENT
 
 void VstkTruncate(              // TRUNCATE A VSTK
     VSTK_CTL *stack,            // - stack to be truncated
-    int base )                  // - the truncation index
+    unsigned base )             // - the truncation index
 {
     void *curr;                 // - current item
     VSTK_BLK *last;             // - last allocated block
@@ -373,10 +362,9 @@ void VstkTruncate(              // TRUNCATE A VSTK
         curr = VstkIndex( stack, base - 1 );
     }
     blk_size = vstkDataSize( stack );
-    for(;;) {
-        last = stack->top;
-        if( last == NULL ) break;
-        if( vstkInBlk( last, curr, blk_size ) ) break;
+    while( (last = stack->top) != NULL ) {
+        if( vstkInBlk( last, curr, blk_size ) )
+            break;
         freeVstkBlk( stack );
     }
     stack->current = curr;

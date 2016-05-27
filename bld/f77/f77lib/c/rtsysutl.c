@@ -152,7 +152,7 @@ static  void    SysIOInfo( ftnfile *fcb ) {
 
     struct stat         info;
     char                *sys_name;
-    bool                exist = TRUE;
+    bool                exist = true;
 
     if( fcb->bufflen == 0 ) {
         fcb->bufflen = SYS_DFLT_RECSIZE;
@@ -195,7 +195,7 @@ static  void    SysIOInfo( ftnfile *fcb ) {
                 IOErr( IO_FILE_PROBLEM );
                 return;
             }
-            exist = FALSE;
+            exist = false;
         } else if( S_ISCHR( info.st_mode ) ) {
             fcb->device |= INFO_DEV;
             // devices always exist
@@ -369,7 +369,7 @@ void    CloseDeleteFile( ftnfile *fcb ) {
 
 // Close and delete 'ftnfile'.
 
-    int win_con = FALSE;
+    bool win_con = false;
 
 #if defined( __IS_WINDOWED__ )
     if( fcb->fileptr ) {
@@ -378,8 +378,10 @@ void    CloseDeleteFile( ftnfile *fcb ) {
     }
 #endif
     CloseFile( fcb );
-    if( win_con ) return;
-    if( Scrtched( fcb ) ) return;
+    if( win_con )
+        return;
+    if( Scrtched( fcb ) )
+        return;
     IOErr( IO_FILE_PROBLEM );
 }
 
@@ -446,7 +448,8 @@ bool    NoEOF( ftnfile *fcb ) {
 
 // Determine if file has an EOF (SERIAL, TERMINAL).
 
-    if( fcb->fileptr == NULL ) return( FALSE );
+    if( fcb->fileptr == NULL )
+        return( false );
     return( IsDevice( fcb ) );
 }
 

@@ -3097,7 +3097,7 @@ extern bool SimCheckProfCondition( int parm )
  * =======================================================================
  */
 
-static append_mode SimGetConfigStringsFrom( struct config_info *array, int i, 
+static append_mode SimGetConfigStringsFrom( struct config_info *array, int i,
                            const char **new_var, char *buff, size_t buff_len )
 /****************************************************************************/
 {
@@ -3806,7 +3806,7 @@ static int DoPatchFile( const char *src, char *dst, unsigned_32 flag )
 /********************************************************************/
 {
     // TODO: Perform some useful function here
-     
+
     return( DoPatch( src, 0, 0, 0, dst ) );
 }
 

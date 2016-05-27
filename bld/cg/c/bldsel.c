@@ -82,7 +82,7 @@ sel_handle  BGSelInit( void )
     s_node->list = NULL;
 #ifndef NDEBUG
     s_node->useinfo.hdltype = NO_HANDLE;
-    s_node->useinfo.used = FALSE;
+    s_node->useinfo.used = false;
 #endif
     return( s_node );
 }
@@ -259,7 +259,7 @@ static  an      GenScanTable( an node, sel_handle s_node, type_def *tipe )
     value_type = SelType( s_node->upper - s_node->lower );
     real_type = tipe->refno;
     if( real_type != value_type ) {
-        node = BGBinary( O_MINUS, node, BGInteger( s_node->lower, tipe ), tipe, TRUE );
+        node = BGBinary( O_MINUS, node, BGInteger( s_node->lower, tipe ), tipe, true );
         if( s_node->other_wise != NULL ) {
             lt = BGCompare( O_LE, BGDuplicate(node), BGInteger( s_node->upper - s_node->lower, tipe ),
                             NULL, UnSignedIntTipe( tipe ) );
@@ -279,7 +279,7 @@ static  an      GenSelTable( an node, sel_handle s_node, type_def *tipe )
 
     if( s_node->lower != 0 ) {
         node = BGBinary( O_MINUS, node,
-                          BGInteger( s_node->lower, tipe ), tipe , TRUE );
+                          BGInteger( s_node->lower, tipe ), tipe , true );
     }
     /* generate if's to check if index in table*/
     if( s_node->other_wise != NULL ) {
@@ -392,14 +392,14 @@ static  void    DoBinarySearch( an node, select_list *list, type_def *tipe,
     }
     if( mid < hi ) {
         DoBinarySearch( node, list, tipe, mid+1, hi, other,
-                        mid_list->high+1, hibound, TRUE, have_hibound );
+                        mid_list->high+1, hibound, true, have_hibound );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
     BGControl( O_LABEL, NULL, lt );
     if( lo < mid ) {
         DoBinarySearch( node, list, tipe, lo, mid-1, other,
-                        lobound, mid_list->low-1, have_lobound, TRUE );
+                        lobound, mid_list->low-1, have_lobound, true );
     } else if( other != NULL ) {
         BGControl( O_GOTO, NULL, other );
     }
@@ -417,7 +417,7 @@ static  an      GenIfStmts( an node, sel_handle s_node, type_def *tipe )
         ++nodes;
     }
     DoBinarySearch( node, s_node->list, tipe, 0, nodes-1, s_node->other_wise,
-                    0, 0, FALSE, FALSE );
+                    0, 0, false, false );
     return( node );
 }
 
@@ -461,15 +461,15 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
     i = 0;
     for( ;; ) {
         if( table->cases[ i ] != other ) {
-            AddTarget( table->cases[ i ], FALSE );
+            AddTarget( table->cases[ i ], false );
         }
         if( ++i == table->size ) break;
     }
     if( other != NULL ) {
-        AddTarget( other, FALSE );
+        AddTarget( other, false );
     }
-    Generate( FALSE );
-    EnLink( AskForNewLabel(), TRUE );
+    Generate( false );
+    EnLink( AskForNewLabel(), true );
 }
 
 
@@ -495,15 +495,15 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     i = 0;
     for(;;) {
         if( table->cases[ i ] != other ) {
-            AddTarget( table->cases[ i ], FALSE );
+            AddTarget( table->cases[ i ], false );
         }
         if( ++i == table->size ) break;
     }
     if( other != NULL ) {
-        AddTarget( other, FALSE );
+        AddTarget( other, false );
     }
-    Generate( FALSE );
-    EnLink( AskForNewLabel(), TRUE );
+    Generate( false );
+    EnLink( AskForNewLabel(), true );
 }
 
 
@@ -543,7 +543,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
     node = Arithmetic( node, TypeInteger );
     if( s_node->num_cases != 0 ) {
         best = 0x7FFFFFFF;
-        SortNodeList( node, s_node, TRUE ); /* sort signed */
+        SortNodeList( node, s_node, true ); /* sort signed */
         if( allowed & CG_SWITCH_SCAN ) {
             cost = ScanCost( s_node );
             if( cost <= best ) {
@@ -565,7 +565,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
                 kind = S_IF;
             }
         }
-        SortNodeList( node, s_node, FALSE ); /* sort unsigned */
+        SortNodeList( node, s_node, false ); /* sort unsigned */
         if( allowed & CG_SWITCH_SCAN ) {
             cost = ScanCost( s_node );
             if( cost <= best ) {
@@ -591,7 +591,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
         case S_SCAN:
         case S_JUMP:
         case S_IF:
-            SortNodeList( node, s_node, TRUE ); /* sort signed */
+            SortNodeList( node, s_node, true ); /* sort signed */
             break;
         }
         node = BGConvert( node, SortTipe );
@@ -604,7 +604,7 @@ void    BGSelect( sel_handle s_node, an node, cg_switch_type allowed )
          * once to index into the scan table. This would be bad if it
          * changed in between.
          */
-        node = BGBinary(O_PLUS, node, BGInteger( 0, SortTipe ), SortTipe, TRUE );
+        node = BGBinary(O_PLUS, node, BGInteger( 0, SortTipe ), SortTipe, true );
 
         MergeListEntries( s_node );
         switch( kind ) {

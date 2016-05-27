@@ -24,22 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Win386 debugging interface.
+* Description:  hook functions prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef _DI386_H_INCLUDED
-#define _DI386_H_INCLUDED
-
-extern void     (FAR PASCAL *DoneWithInterrupt)( LPVOID );
-extern int      (FAR PASCAL *GetDebugInterruptData)( LPVOID );
-extern void     (FAR PASCAL *ResetDebugInterrupts32)( void );
-extern int      (FAR PASCAL *SetDebugInterrupts32)( void );
-extern int      (FAR PASCAL *IsDebuggerExecuting)( void );
-extern int      (FAR PASCAL *DebuggerIsExecuting)( int );
-
-void Start386Debug( void );
-void Done386Debug( void );
-
-#endif /* _DI386_H_INCLUDED */
+#ifdef __NETWARE__
+extern intrptr  HookBreak( intrptr new_int03 );
+#endif
+extern intrptr  HookTimer( intrptr new_int08 );

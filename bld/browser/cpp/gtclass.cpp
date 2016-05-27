@@ -102,15 +102,15 @@ PaintInfo * TreeClassPtr::getPaintInfo( void )
 
 TreeClassNode::TreeClassNode( TreeWindow * prt, Symbol * sym )
             : TreeNode( prt )
-            , ClassLattice( sym, TRUE )
+            , ClassLattice( sym, true )
 //------------------------------------------------------------
 {
 };
 
-TreeClassNode::TreeClassNode( TreeWindow * prt, dr_handle drhdl, Module * mod,
+TreeClassNode::TreeClassNode( TreeWindow * prt, drmem_hdl drhdl, Module * mod,
                               char * nm, ClassList * l, dr_access acc,
                               dr_virtuality v, int lvl )
-                : ClassLattice( drhdl, mod, nm, l, acc, v, TRUE, lvl )
+                : ClassLattice( drhdl, mod, nm, l, acc, v, true, lvl )
                 , TreeNode( prt )
 //--------------------------------------------------------------------------
 {
@@ -153,7 +153,7 @@ bool TreeClassNode::isRelated( TreeNode * node )
     return ret;
 }
 
-ClassLattice *  TreeClassNode::newLattice(  dr_handle drhdl, Module *mod,
+ClassLattice *  TreeClassNode::newLattice(  drmem_hdl drhdl, Module *mod,
                                             char *nm, ClassList *l,
                                             dr_access acc, dr_virtuality v,
                                             int lvl )
@@ -174,12 +174,12 @@ bool TreeClassNode::doParents( WVList& world, TreeClassList & roots,
                                TreeClassList& joinTo )
 //-------------------------------------------------------------------
 {
-    bool joinable = FALSE;
+    bool joinable = false;
     loadBases();
 
     for( int i = _bases.count(); i > 0; i -= 1 ) {
         TreeClassNode * baseNode = (TreeClassNode*)_bases[ i - 1 ]->_class;
-        bool            thisNodeJoinable = FALSE;
+        bool            thisNodeJoinable = false;
         int             j;
 
         // remove a base from the world -- should be done for all bases
@@ -197,8 +197,8 @@ bool TreeClassNode::doParents( WVList& world, TreeClassList & roots,
                 rootNode->isRelated( (TreeClassNode *) baseNode ) &&
                 !rootNode->isRelated( this ) ) {
 
-                joinable = TRUE;
-                thisNodeJoinable = TRUE;
+                joinable = true;
+                thisNodeJoinable = true;
                 joinTo.add( rootNode );
                 break;
             }
@@ -395,7 +395,7 @@ bool TreeClassWindow::contextHelp( bool is_active_window )
     if( is_active_window ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_INHERITANCE_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 const char * TreeClassWindow::emptyText()
@@ -415,7 +415,7 @@ void TreeClassWindow::fillRoots( void )
     TreeClassNode * rootNode;
     TreeClassList   roots;
     WVList          bases;
-    bool            quit = FALSE;
+    bool            quit = false;
 
     _loadFilter->setSymType( KSTClasses );
     dbManager()->module()->findSymbols( &world, _loadFilter );

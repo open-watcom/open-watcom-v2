@@ -24,37 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Win386 debugging interface.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <dos.h>
-#include <string.h>
-#include "stdwin.h"
-#include "wdebug.h"
+#ifndef _DI386CLI_H_INCLUDED
+#define _DI386CLI_H_INCLUDED
 
-/*
- * StartWDebug386 - see if wgod is here
- */
-void StartWDebug386( void )
-{
-    if( CheckWin386Debug() != WGOD_VERSION ) return;
-    WDebug386 = TRUE;
-    UseHotKey( 1 );
+#include "di386typ.h"
 
-} /* StartWDebug386 */
+#ifndef global_di386
+#define global_di386 extern
+#endif
 
-/*
- * KillWDebug386 - done with wgod
- */
-void KillWDebug386( void )
-{
-    if( WDebug386 ) {
-        WDebug386 = FALSE;
-        UseHotKey( 0 );
-    }
+global_di386 IsDebuggerExecuting_func    *IsDebuggerExecuting;
+global_di386 DoneWithInterrupt_func      *DoneWithInterrupt;
+global_di386 GetDebugInterruptData_func  *GetDebugInterruptData;
+global_di386 ResetDebugInterrupts32_func *ResetDebugInterrupts32;
+global_di386 SetDebugInterrupts32_func   *SetDebugInterrupts32;
+global_di386 DebuggerIsExecuting_func    *DebuggerIsExecuting;
 
-} /* KillWDebug386 */
+#undef global_di386
+
+extern bool     WDebug386;
+
+extern bool     Start386Debug( void );
+extern void     Done386Debug( void );
+
+#endif /* _DI386CLI_H_INCLUDED */

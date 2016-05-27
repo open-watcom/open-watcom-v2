@@ -235,16 +235,17 @@ _WCRTLINK extern int    _wsystem( const wchar_t *__cmd );
 _WCRTLINK extern int    getpid( void );
 _WCRTLINK extern int    _getpid( void );
 _WCRTLINK extern int    wait( int *__status );
+
 :elsesegment QNX | LINUX
 _WCRTLINK extern pid_t  getpid( void );
 _WCRTLINK extern pid_t  _getpid( void );
 _WCRTLINK extern pid_t  wait( int *__status );
-:endsegment
 
+:endsegment
 :segment LINUX
 _WCRTLINK extern pid_t  gettid( void );
-:endsegment
 
+:endsegment
 :segment QNX | LINUX
 ::
 :: End of extension section

@@ -233,14 +233,14 @@ static  bool    SimpleScript( itnode *op ) {
 //==========================================
 
     if( ( op->opn.us & USOPN_WHERE ) != 0 )
-        return( FALSE );
+        return( false );
     switch( op->opn.us & USOPN_WHAT ) {
     case USOPN_NNL:
     case USOPN_CON:
     case USOPN_NONE:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -591,8 +591,8 @@ static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
     if( CITNode->link->opr == OPR_EQU ) {
         ResultType = typ1;
         *res_size = CITNode->size;
-        if( ( ASType & AST_ASF ) || CkAssignOk() ) return( TRUE );
-        return( FALSE );
+        if( ( ASType & AST_ASF ) || CkAssignOk() ) return( true );
+        return( false );
     } else {
         if( ( ( typ1 == FT_DOUBLE ) && ( typ2 == FT_COMPLEX ) ) ||
             ( ( typ2 == FT_DOUBLE ) && ( typ1 == FT_COMPLEX ) ) ) {
@@ -619,7 +619,7 @@ static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
             } else
                 *res_size = TypeSize( typ1 );
         }
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -992,19 +992,19 @@ static  bool    IFAsOperator( void ) {
 //====================================
 
     if( CITNode->opr != OPR_FBR )
-        return( FALSE );
+        return( false );
     if( ( BkLink->flags & SY_CLASS ) != SY_SUBPROGRAM )
-        return( FALSE );
+        return( false );
     if( !(BkLink->flags & SY_INTRINSIC) )
-        return( FALSE );
+        return( false );
     switch( BkLink->sym_ptr->u.ns.si.fi.index ) {
     case IF_ISIZEOF:
     case IF_ALLOCATED:
     case IF_VOLATILE:
     case IF_CHAR:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 

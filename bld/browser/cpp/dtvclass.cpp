@@ -61,7 +61,7 @@ ClassMember::ClassMember( Symbol * sym, const char * text )
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text )
+ClassMember::ClassMember( Symbol * sym, drmem_hdl drhdl_prt, const char * text )
             : _symbol( sym )
             , _text( text )
             , _parent( drhdl_prt )
@@ -70,7 +70,7 @@ ClassMember::ClassMember( Symbol * sym, dr_handle drhdl_prt, const char * text )
     _access = DRGetAccess( _symbol->getHandle() );
 }
 
-ClassMember::ClassMember( dr_handle drhdl_prt, dr_access access, const char * text )
+ClassMember::ClassMember( drmem_hdl drhdl_prt, dr_access access, const char * text )
             : _symbol( NULL )
             , _text( text )
             , _access( access )
@@ -89,23 +89,23 @@ bool ClassMember::operator< ( const ClassMember & o ) const
 //---------------------------------------------------------
 {
     if( _parent < o._parent ) {
-        return TRUE;
+        return true;
     } else {
         if( _parent == o._parent ) {
 
             if( _access < o._access ) {
-                return TRUE;
+                return true;
             } else {
                 if( _access == o._access ) {
 
                     if( (_symbol == NULL) && (o._symbol != NULL) ) {
-                        return TRUE;
+                        return true;
                     }
                 }
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 //----------------------------- DTViewClass ----------------------
@@ -113,7 +113,7 @@ bool ClassMember::operator< ( const ClassMember & o ) const
 
 
 DTViewClass::DTViewClass( const Symbol * sym )
-                : DTViewSymbol( sym, TRUE )
+                : DTViewSymbol( sym, true )
                 , _filter( optManager()->getMemberFilter() )
 //--------------------------------------------------------------
 {
@@ -154,21 +154,21 @@ void DTViewClass::load()
 
     for( i = 0; i < friends.count(); i += 1 ) {
         s = (Symbol *) friends[ i ];
-        str.printf( "    friend %s;", s->scopedName( FALSE ) );
+        str.printf( "    friend %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 
     for( i = 0; i < dataMembers.count(); i += 1 ) {
         s = (Symbol *) dataMembers[ i ];
 
-        str.printf( "    %s;", s->scopedName( FALSE ) );
+        str.printf( "    %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 
     for( i = 0; i < methods.count(); i += 1 ) {
         s = (Symbol *) methods[ i ];
 
-        str.printf( "    %s;", s->scopedName( FALSE ) );
+        str.printf( "    %s;", s->scopedName( false ) );
         _members->insert( new ClassMember( s, str.gets() ) );
     }
 
@@ -266,7 +266,7 @@ void DTViewClass::addDescriptions()
     int             i;
     ClassMember *   mem;
     dr_access       prevAccess = (dr_access)0;
-    dr_handle       prevParent = _symbol->getHandle();
+    drmem_hdl       prevParent = _symbol->getHandle();
     char *          tmpName;
     WCPtrOrderedVector<ClassMember> desc;
 
@@ -275,7 +275,7 @@ void DTViewClass::addDescriptions()
         if( mem->_parent != prevParent ) {
             prevAccess = (dr_access)0;
             prevParent = mem->_parent;
-            if( mem->_parent != DR_HANDLE_NUL ) {
+            if( mem->_parent != DRMEM_HDL_NULL ) {
                 tmpName = DRGetName( mem->_parent );
             } else {
                 tmpName = NULL;

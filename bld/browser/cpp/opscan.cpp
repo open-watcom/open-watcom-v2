@@ -53,10 +53,10 @@ const char * SearchEnvVar = "Path";
 
 Scanner::Scanner( char * cmdLine, int len )
             : _scanStream( new ScanStreamMem( cmdLine, len ))
-            , _stutter( FALSE )
+            , _stutter( false )
             , _lastToken( -1 )
             , _lookFor( LF_Directive )
-            , _recovering( FALSE )
+            , _recovering( false )
 {
     ActiveScanners.add( this );
     CurrentScanner += 1;
@@ -64,10 +64,10 @@ Scanner::Scanner( char * cmdLine, int len )
 
 Scanner::Scanner( const char * fileName )
             : _scanStream( new ScanStreamFile( fileName ))
-            , _stutter( FALSE )
+            , _stutter( false )
             , _lastToken( -1 )
             , _lookFor( LF_Directive )
-            , _recovering( FALSE )
+            , _recovering( false )
 {
     ActiveScanners.add( this );
     CurrentScanner += 1;
@@ -87,12 +87,12 @@ int Scanner::getToken( YYSTYPE & lval )
     int         c;
     int         count;
     int         fnd;
-    bool        flush = FALSE;
-    bool        inquoted = FALSE;
-    bool        escaped = FALSE;
+    bool        flush = false;
+    bool        inquoted = false;
+    bool        escaped = false;
 
     if( _stutter ) {
-        _stutter = FALSE;
+        _stutter = false;
         return _lastToken;
     }
 
@@ -110,7 +110,7 @@ int Scanner::getToken( YYSTYPE & lval )
         }
     }
     if( c == '"' ) {
-        inquoted = TRUE;
+        inquoted = true;
         c = _scanStream->get();         // skip the quote
     }
     for( count = 0; ; count += 1 ) {
@@ -121,7 +121,7 @@ int Scanner::getToken( YYSTYPE & lval )
                 _scanStream->unget( c );
                 c = '\\';
             } else {
-                escaped = TRUE;
+                escaped = true;
             }
         }
 
@@ -139,26 +139,26 @@ int Scanner::getToken( YYSTYPE & lval )
                     return 0;       // done
                 }
             } else {
-                flush = TRUE;
+                flush = true;
             }
         } else if( inquoted && !escaped ) {
             if( c == '"' ) {
                 c = _scanStream->get();         // skip the quote
-                flush = TRUE;
+                flush = true;
             }
         } else if( isspace( c ) || strchr( StartComments, c ) ) {
-            flush = TRUE;
+            flush = true;
         } else if( strchr( Special, c ) && !escaped ) {
             if( count == 0 ) {
                 _lastToken = c;
                 return c;
             } else {
-                flush = TRUE;
+                flush = true;
             }
         }
 
         if( count >= BufSize - 1 ) {
-            flush = TRUE;
+            flush = true;
         }
 
         if( flush ) {
@@ -173,7 +173,7 @@ int Scanner::getToken( YYSTYPE & lval )
                     return fnd;
                 } else {
                     if( _recovering ) {
-                        flush = FALSE;
+                        flush = false;
                         count = -1;
                     } else {
                         WString msg;
@@ -191,8 +191,8 @@ int Scanner::getToken( YYSTYPE & lval )
                             return 0;
                         }
 
-                        _recovering = TRUE;
-                        flush = FALSE;
+                        _recovering = true;
+                        flush = false;
                         count = -1;
                     }
                 }
@@ -209,7 +209,7 @@ int Scanner::getToken( YYSTYPE & lval )
         } else {
             _buffer[ count ] = (char) c;
         }
-        escaped = FALSE;
+        escaped = false;
         c = _scanStream->get();
     }
 }
@@ -220,7 +220,7 @@ void Scanner::recoverTo( LookForType lf )
     YYSTYPE val;
 
     _lookFor = lf;
-    _recovering = TRUE;
+    _recovering = true;
 
     if( _stutter &&
         _lastToken > 0 &&
@@ -232,14 +232,14 @@ void Scanner::recoverTo( LookForType lf )
         if( tok > 0 && ! (tok == T_String && lf != LF_String ) ) break;
     }
 
-    _recovering = FALSE;
+    _recovering = false;
     stutterOn();
 }
 
 void Scanner::stutterOn( void )
 /*****************************/
 {
-    _stutter = TRUE;
+    _stutter = true;
 }
 
 void Scanner::setLookFor( LookForType lf )
@@ -271,10 +271,10 @@ static bool Scanner::NewFileScanner( char * fname )
 
     if( scn->_scanStream->error() ) {
         delete scn;
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void Scanner::scanInit( void )
@@ -303,9 +303,9 @@ bool Scanner::error( const char * err )
     WBRFree( name );
 
     if( ret == MsgRetCancel ) {
-        return TRUE;
+        return true;
     } else {
-        return FALSE;
+        return false;
     }
 }
 

@@ -127,9 +127,9 @@ static  void    DumpLbl( label_handle *what ) {
 static  void    DumpAnBool( an node ) {
 /*************************************/
 
-    DumpLiteral( "TRUE " );
+    DumpLiteral( "true " );
     DumpLbl( node->u.b.t );
-    DumpLiteral( " FALSE " );
+    DumpLiteral( " false " );
     DumpLbl( node->u.b.f );
     DumpLiteral( " ENTRY L" );
     DumpPtr( node->u.b.e );

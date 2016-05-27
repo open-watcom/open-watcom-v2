@@ -180,10 +180,10 @@ static bool SetLastUse( name *op, name *temp, stack_temp *new, instruction *ins 
         if( DeAlias( op ) == temp ) {
             _INS_NOT_BLOCK ( ins );
             new->last = ins->id;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -260,14 +260,14 @@ static  bool    In( name *op, name *name )
 /****************************************/
 {
     if( op->n.class == N_INDEXED ) {
-        if( In( op->i.index, name ) ) return( TRUE );
+        if( In( op->i.index, name ) ) return( true );
         if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
             return( In( op->i.base, name ) );
         }
     } else if( op->n.class == N_TEMP ) {
-        if( DeAlias( op ) == name ) return( TRUE );
+        if( DeAlias( op ) == name ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -275,9 +275,9 @@ static  bool    UsedByLA( instruction *ins, name *temp )
 /******************************************************/
 {
     if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
-        if( ins->operands[ 0 ] == temp ) return( TRUE );
+        if( ins->operands[ 0 ] == temp ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -290,14 +290,14 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     int         i;
 
     if( name->v.block_usage == USED_NEVER ) {
-        *any_references = FALSE;
+        *any_references = false;
         return( NULL );
     }
     if( name->v.block_usage == USED_TWICE ) {
-        *any_references = TRUE;
+        *any_references = true;
         return( NULL );
     }
-    *any_references = TRUE;
+    *any_references = true;
     onlyins = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -316,7 +316,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
         }
     }
     if( onlyins == NULL ) {
-        *any_references = FALSE;
+        *any_references = false;
     }
     return( onlyins );
 }

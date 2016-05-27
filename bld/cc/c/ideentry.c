@@ -47,14 +47,16 @@
 #include "clibext.h"
 
 
-static   IDECBHdl      Hdl;          // - handle for this instantiation
-static   IDECallBacks* Cbs;          // - call backs into IDE
+#define IDEFN(x)        (*IdeCbs->x)
+
+static   IDECBHdl       IdeHdl;      // - handle for this instantiation
+static   IDECallBacks   *IdeCbs;       // - call backs into IDE
 //static   IDEInitInfo   Info;
 
 extern void ConsMsg( char const  *line ) {
 // C compiler call back to do a  console print to stdout
 
-    (*Cbs->PrintMessage)( Hdl, line );
+    IDEFN( PrintMessage )( IdeHdl, line );
     // we are ignoring return for now
 }
 
@@ -94,7 +96,7 @@ extern void ConsErrMsg( cmsg_info  *cinfo ) {
     if( cinfo->line != 0 ) {
         IdeMsgSetSrcLine( &info, cinfo->line );
     }
-     (*Cbs->PrintWithInfo)( Hdl, &info );
+    IDEFN( PrintWithInfo )( IdeHdl, &info );
     // we are ignoring return for now
 }
 
@@ -102,44 +104,49 @@ extern void ConsErrMsgVerbatim( char const  *line ) {
 // C compiler call back to a console print to stderr
 
     IDEMsgInfo info;
+
     IdeMsgInit( &info, IDEMSGSEV_ERROR, line );
-    (*Cbs->PrintWithInfo)( Hdl, &info );
+    IDEFN( PrintWithInfo )( IdeHdl, &info );
     // we are ignoring return for now
 }
 
 extern void BannerMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
-     IDEMsgInfo info;
-      IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
-     (*Cbs->PrintWithInfo)( Hdl, &info );
+    IDEMsgInfo info;
+
+    IdeMsgInit( &info, IDEMSGSEV_BANNER, line );
+    IDEFN( PrintWithInfo )( IdeHdl, &info );
     // we are ignoring return for now
 }
 
 extern void DebugMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
-     IDEMsgInfo info;
-      IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
-     (*Cbs->PrintWithInfo)( Hdl, &info );
+    IDEMsgInfo info;
+
+    IdeMsgInit( &info, IDEMSGSEV_DEBUG, line );
+    IDEFN( PrintWithInfo )( IdeHdl, &info );
     // we are ignoring return for now
 }
 
 extern void NoteMsg( char const  *line ) {
 // C compiler call back to print a banner type msg
 
-     IDEMsgInfo info;
-      IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
-     (*Cbs->PrintWithInfo)( Hdl, &info );
+    IDEMsgInfo info;
+
+    IdeMsgInit( &info, IDEMSGSEV_NOTE_MSG, line );
+    IDEFN( PrintWithInfo )( IdeHdl, &info );
     // we are ignoring return for now
 }
 
 extern const char *FEGetEnv( char const *name ) {
 // get enviorment variable
     const char *ret;
+
     ret = NULL;
     if( !GlobalCompFlags.ignore_environment ) {
-        if((*Cbs->GetInfo)( Hdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {
+        if( IDEFN( GetInfo )( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&ret ) ) {
             ret = NULL;
         }
     }
@@ -167,21 +174,21 @@ static long HeapFreeHi;
 #endif
 
 IDEBool IDEAPI IDEInitDLL
-    ( IDECBHdl      hdl             // - handle for this instantiation
-    , IDECallBacks* cbs             // - call backs into IDE
-    , IDEDllHdl*    info ) {         // - uninitialized info
+    ( IDECBHdl      idehdl          // - handle for this instantiation
+    , IDECallBacks  *idecbs         // - call backs into IDE
+    , IDEDllHdl     *dllhdl ) {     // - uninitialized info
 //***********************
 // DLL INITIALIZATION
 //***********************
-    Hdl = hdl;
-    Cbs = cbs;
-    *info = NULL;
+    IdeHdl = idehdl;
+    IdeCbs = idecbs;
+    *dllhdl = NULL;
 #if HEAP_CHK == 1
     HeapUsedHi = 0;
     HeapFreeHi = 0;
 #endif
-    FrontEndInit( TRUE );
-    return FALSE;
+    FrontEndInit( true );
+    return false;
 }
 
 void IDEAPI IDEFreeHeap( void ) {
@@ -270,10 +277,10 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
             p = argv + count;
         }
         infile[0] = '\0';
-        (*Cbs->GetInfo)( Hdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
+        IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
         *p++ = infile;
         outfile[0] = '\0';
-        if( !(*Cbs->GetInfo)( Hdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
+        if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
             outfile[0] = '-';
             outfile[1] = 'f';
             outfile[2] = 'o';
@@ -288,10 +295,10 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
 }
 
 
-IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
+IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
-    , IDEBool* fatal_error ) {   // - addr[fatality indication]
+    , IDEBool* fatal_error ) {  // - addr[fatality indication]
     
     //****************************
     // Do a compile of a file
@@ -304,10 +311,10 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 
     hdl = hdl;
     TBreak();   // clear any pending IDEStopRunning's
-    *fatal_error = FALSE;
+    *fatal_error = false;
     FatalEnv = &env;
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
-        *fatal_error = TRUE;
+        *fatal_error = true;
     } else {
         argv[0] = (char *)opts;
         argv[1] = NULL;
@@ -324,11 +331,11 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
 }
 
 #ifdef __UNIX__
-IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
-    ( IDEDllHdl hdl,            // - handle for this instantiation
-    int argc,                   // - # of arguments
-    char **args,                // - argument vector
-    IDEBool* fatal_error )      // - addr[fatality indication]
+IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
+    ( IDEDllHdl hdl,                // - handle for this instantiation
+    int argc,                       // - # of arguments
+    char **args,                    // - argument vector
+    IDEBool* fatal_error )          // - addr[fatality indication]
 {
     //****************************
     // Do a compile of a file
@@ -340,10 +347,10 @@ IDEBool IDEAPI IDERunYourSelfArgv // COMPILE A PROGRAM
     int                 ret;
 
     TBreak();   // clear any pending IDEStopRunning's
-    *fatal_error = FALSE;
+    *fatal_error = false;
     FatalEnv = &env;
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
-        *fatal_error = TRUE;
+        *fatal_error = true;
     } else {
         argv = getFrontEndArgv( args, argc, infile, outfile );
         ret = FrontEnd( argv );
@@ -372,7 +379,7 @@ IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
 {
     hdl = hdl;
     msg = msg;
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -382,29 +389,29 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 
 //    DbgVerify( hdl == CompInfo.dll_handle, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
-        return( TRUE );
+        return( true );
     }
     if( info->ignore_env ) {
-        GlobalCompFlags.ignore_environment = TRUE;
-        GlobalCompFlags.ignore_current_dir = TRUE;
+        GlobalCompFlags.ignore_environment = true;
+        GlobalCompFlags.ignore_current_dir = true;
     }
     if( info->ver >= 2 ) {
         if( info->cmd_line_has_files ) {
-            GlobalCompFlags.ide_cmd_line_has_files = TRUE;
+            GlobalCompFlags.ide_cmd_line_has_files = true;
         }
         if( info->ver >= 3 ) {
             if( info->console_output ) {
-                GlobalCompFlags.ide_console_output = TRUE;
+                GlobalCompFlags.ide_console_output = true;
             }
             if( info->ver >= 4 ) {
                 if( info->progress_messages ) {
-                    GlobalCompFlags.progress_messages = TRUE;
+                    GlobalCompFlags.progress_messages = true;
                 }
             }
         }
     }
 #if defined( wcc_dll )
-//    GlobalCompFlags.dll_active = TRUE;
+//    GlobalCompFlags.dll_active = true;
 #endif
-    return( FALSE );
+    return( false );
 }

@@ -223,7 +223,7 @@ static void srcFileFini(        // COMPLETE SOURCE FILING
     if( srcFile != NULL ) {
         if( activeSrc() != NULL ) {
             while( NULL != srcFile ) {
-                SrcFileClose( TRUE );
+                SrcFileClose( true );
             }
         } else {
             set_srcFile( NULL );
@@ -316,25 +316,25 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->parent = srcFile;
     new_src->unique = NULL;
     new_src->pch_child = NULL;
-    new_src->primary = FALSE;
-    new_src->lib_inc = FALSE;
-    new_src->alias = FALSE;
-    new_src->cmdline = FALSE;
-    new_src->read_only = FALSE;
+    new_src->primary = false;
+    new_src->lib_inc = false;
+    new_src->alias = false;
+    new_src->cmdline = false;
+    new_src->read_only = false;
     if( fp == NULL && name == NULL ) {
-        new_src->cmdline = TRUE;
-        new_src->read_only = TRUE;
+        new_src->cmdline = true;
+        new_src->read_only = true;
     }
-    new_src->cmdlneol = FALSE;
-    new_src->cmdlneof = FALSE;
-    new_src->uncached = FALSE;
-    new_src->free = FALSE;
-    new_src->pch_create = FALSE;
-    new_src->pch_kludge = FALSE;
-    new_src->assume_file = TRUE;
-    new_src->found_eof = FALSE;
-    new_src->once_only = FALSE;
-    new_src->ignore_swend = FALSE;
+    new_src->cmdlneol = false;
+    new_src->cmdlneof = false;
+    new_src->uncached = false;
+    new_src->free = false;
+    new_src->pch_create = false;
+    new_src->pch_kludge = false;
+    new_src->assume_file = true;
+    new_src->found_eof = false;
+    new_src->once_only = false;
+    new_src->ignore_swend = false;
     new_src->index = totalSrcFiles++;
     new_src->active = NULL;
     new_src->ifndef_name = NULL;
@@ -348,7 +348,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     } else {
         if( srcFile->pch_create ) {
             srcFile->pch_child = new_src;
-            new_src->pch_kludge = TRUE;
+            new_src->pch_kludge = true;
         }
         old_act = activeSrc();
         if( CurrChar == '\n' && old_act->line > 0 ) {
@@ -397,14 +397,14 @@ static void setReOpenedGuardState( unsigned guard_state )
 void SrcFileSetCreatePCHeader(  // MARK SRCFILE TO CREATE PCHDR WHEN #include FINISHES
     void )
 {
-    srcFile->pch_create = TRUE;
+    srcFile->pch_create = true;
 }
 
 void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
     SRCFILE sf )                // - the device source file
 {
     if( sf != NULL ) {
-        sf->assume_file = FALSE;
+        sf->assume_file = false;
     }
 }
 
@@ -470,7 +470,7 @@ void SrcFileAlias(              // SET UP ALIAS FOR SOURCE FILE
         alias->name = name;
         alias->parent = srcFile->parent;
         alias->sister = srcFile->sister;
-        alias->alias = TRUE;
+        alias->alias = true;
         srcFile->sister = alias;
     }
     set_srcFile( alias );
@@ -491,20 +491,20 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     SRCFILE old_src;            // - SRCFILE being closed
     OPEN_FILE *act;             // - open-file information
     LINE_NO lines_read;         // - number of lines read from file
-    bool retn;                  // - return: TRUE ==> not EOF
-    bool browsed;               // - TRUE ==> file was browsed
+    bool retb;                  // - return: true ==> not EOF
+    bool browsed;               // - true ==> file was browsed
 
     if( CompFlags.scanning_c_comment ) {
         SrcFileCurrentLocation();
         CErr1( ERR_INCOMPLETE_COMMENT );
     }
     old_src = srcFile;
-    browsed = FALSE;
+    browsed = false;
     act = old_src->active;
     if( NULL != act->fp ) {
         SrcFileFClose( act->fp );
         act->fp = NULL;
-        browsed = TRUE;
+        browsed = true;
     }
     {
         SRCFILE actual;
@@ -529,17 +529,17 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
     if( old_src->cmdline ) {
         popSrcFile( old_src, act );
         CurrChar = LCHR_EOF;
-        retn = FALSE;
+        retb = false;
     } else {
         lines_read = act->line - 1;
         if( old_src->parent == NULL ) {
             if( shutdown ) {
                 popSrcFile( old_src, act );
-                browsed = FALSE;
+                browsed = false;
             }
             SrcLineCount += lines_read;
             CurrChar = LCHR_EOF;
-            retn = FALSE;
+            retb = false;
         } else {
             popSrcFile( old_src, act );
             act = activeSrc();
@@ -555,7 +555,7 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
                 }
                 EmitLineNL( old_src->parent_locn, srcFile->name );
             }
-            retn = TRUE;
+            retb = true;
         }
     }
     if( browsed ) {
@@ -565,11 +565,11 @@ bool SrcFileClose(              // CLOSE A SOURCE FILE
         // turn off before pchdr is created!
         tmp_src = srcFile->pch_child;
         srcFile->pch_child = NULL;
-        srcFile->pch_create = FALSE;
+        srcFile->pch_create = false;
         SrcFileCurrentLocation();
         PCHeaderCreate( tmp_src->name );
     }
-    return( retn );
+    return( retb );
 }
 
 
@@ -645,7 +645,7 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 
 
 static bool readBuffer(         // READ NEXT BUFFER
-    bool close_top_file )       // - TRUE ==> close top file
+    bool close_top_file )       // - true ==> close top file
 {
     OPEN_FILE *act;             // - open file
     SRCFILE src_file;           // - unaliased source file
@@ -657,7 +657,7 @@ static bool readBuffer(         // READ NEXT BUFFER
         _FIND_ACTUAL( src_file );
         if( src_file->uncached ) {
             act->fp = SrcFileFOpen( src_file->name, SFO_SOURCE_FILE );
-            src_file->uncached = FALSE;
+            src_file->uncached = false;
             if( act->fp == NULL ) {
                 CErr( ERR_IO_ERR, src_file->name, strerror( errno ) );
             } else {
@@ -666,11 +666,11 @@ static bool readBuffer(         // READ NEXT BUFFER
         }
         if( act->fp != NULL ) {
             if( close_top_file ) {
-                close_top_file = FALSE;
+                close_top_file = false;
             } else {
                 act->nextc = &act->buff[0];
                 if( src_file->found_eof ) {
-                    src_file->found_eof = FALSE;
+                    src_file->found_eof = false;
                     amt_read = 0;
                     DbgAssert( !( SysRead( fileno( act->fp )
                                         , act->nextc
@@ -683,23 +683,23 @@ static bool readBuffer(         // READ NEXT BUFFER
                 if( amt_read > 0 ) {
                     if( amt_read < PRODUCTION_BUFFER_SIZE ) {
                         if( src_file->assume_file ) {
-                            src_file->found_eof = TRUE;
+                            src_file->found_eof = true;
                         }
                     }
                     // mark end of buffer
                     act->lastc = &act->buff[ amt_read ];
                     *(act->lastc) = '\0';
                     /* CurrChar not set; must read buffer */
-                    return( FALSE );
+                    return( false );
                 }
                 if( amt_read == 0 ) {
                     // we're at the end of the file
                     if( src_file->pch_kludge ) {
                         // only do this once
-                        src_file->pch_kludge = FALSE;
+                        src_file->pch_kludge = false;
                         if( src_file->assume_file ) {
                             // make sure next time we return EOF
-                            src_file->found_eof = TRUE;
+                            src_file->found_eof = true;
                         }
                         // these three ';'s form the end of the pre-compiled
                         // header file so that the parser will be in a good
@@ -718,39 +718,39 @@ static bool readBuffer(         // READ NEXT BUFFER
                         if( CurrChar != '\n' ) {
                             // terminate the last line (if necessary)
                             CurrChar = '\n';
-                            return( TRUE );
+                            return( true );
                         }
                         /* CurrChar not set; must read buffer */
-                        return( FALSE );
+                        return( false );
                     }
                     if( CurrChar != '\n' ) {
                         // file didn't end with a new-line
                         if( src_file->assume_file ) {
                             // make sure next time we return EOF
-                            src_file->found_eof = TRUE;
+                            src_file->found_eof = true;
                         }
                         act->buff[0] = '\0';
                         act->lastc = &act->buff[0];
                         CurrChar = '\n';
-                        return( TRUE );
+                        return( true );
                     }
                 } else if( amt_read == -1 ) {
                     CErr( ERR_IO_ERR, src_file->name, strerror( errno ) );
                 }
             }
         }
-        if( ! SrcFileClose( FALSE ) ) {
+        if( ! SrcFileClose( false ) ) {
             /* CurrChar set to LCHR_EOF */
-            return( TRUE );
+            return( true );
         }
         act = activeSrc();
         if( act->nextc < act->lastc ) {
             /* CurrChar set to ->lastc */
-            return( TRUE );
+            return( true );
         }
         if( act->nextc == act->lastc ) {
             /* CurrChar not set; must read buffer ('\0' will be the char) */
-            return( FALSE );
+            return( false );
         }
     }
 }
@@ -904,7 +904,7 @@ static int tryTrigraphStart( void )
 
 static int tryBackSlashNewLine( OPEN_FILE *act )
 {
-    bool skipped_ws = FALSE;
+    bool skipped_ws = false;
     int nc;
 
     // CurrChar is '\\' and act->column is up to date
@@ -915,16 +915,16 @@ static int tryBackSlashNewLine( OPEN_FILE *act )
     if( CompFlags.extensions_enabled ) {
         while( nc == ' ' ) {
             ++numBlanks1;
-            skipped_ws = TRUE;
+            skipped_ws = true;
             nc = getTestCharFromFile( &act );
         }
         while( nc == '\t' ) {
-            skipped_ws = TRUE;
+            skipped_ws = true;
             ++numTABs;
             nc = getTestCharFromFile( &act );
         }
         while( nc == ' ' ) {
-            skipped_ws = TRUE;
+            skipped_ws = true;
             ++numBlanks2;
             nc = getTestCharFromFile( &act );
         }
@@ -1401,7 +1401,7 @@ bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
 void SrcFileLibrary(            // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
     void )
 {
-    srcFile->lib_inc = TRUE;
+    srcFile->lib_inc = true;
 }
 
 
@@ -1427,7 +1427,7 @@ SRCFILE SrcFileEnclosingPrimary(// FIND ENCLOSING PRIMARY SOURCE FILE
 void SetSrcFilePrimary(         // MARK CURRENT SOURCE FILE AS THE PRIMARY FILE
     void )
 {
-    srcFile->primary = TRUE;
+    srcFile->primary = true;
     DbgAssert( primarySrcFile == NULL );
     primarySrcFile = srcFile;
 }
@@ -1443,8 +1443,8 @@ SRCFILE SrcFileGetPrimary(      // GET PRIMARY SOURCE FILE
 void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
     void )
 {
-    srcFile->cmdline   = TRUE;
-    srcFile->read_only = TRUE;  // To exclude file from dependency list
+    srcFile->cmdline   = true;
+    srcFile->read_only = true;  // To exclude file from dependency list
 }
 
 
@@ -1490,12 +1490,12 @@ bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
     TOKEN_LOCN *l2 )            // - location two
 {
     if( ! SrcFileSame( l1->src_file, l2->src_file ) ) {
-        return( FALSE );
+        return( false );
     }
     if( l1->line != l2->line ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1537,16 +1537,16 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
     SRCFILE curr )              // - current source file
 {
     DIR_LIST* srch;             // - search R/O entry
-    bool read_only;             // - TRUE ==> file is in read-only directory
+    bool read_only;             // - true ==> file is in read-only directory
     char const *file_name;      // - file name of current entry
 
     for( ; curr != NULL; curr = curr->unique ) {
         if( curr->read_only ) continue;
-        read_only = FALSE;
+        read_only = false;
         file_name = SrcFileFullName( curr );
         RingIterBeg( roDirs, srch ) {
             if( 0 == strnicmp( srch->name, file_name, strlen( srch->name ) ) ) {
-                read_only = TRUE;
+                read_only = true;
                 break;
             }
         } RingIterEnd( srch );
@@ -1602,7 +1602,7 @@ void SrcFileReadOnlyFile(       // SPECIFY FILE AS READ-ONLY
         srcfile = srcFileGetUnique( file );
     }
     if( NULL != srcfile ) {
-        srcfile->read_only = TRUE;
+        srcfile->read_only = true;
     }
 }
 
@@ -1700,14 +1700,14 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
 {
     if( getGuardState() == GUARD_IF ) {
         if( !value ) {
-            if( !readBuffer( TRUE ) ) {
+            if( !readBuffer( true ) ) {
                 GetNextChar();
             }
-            return( TRUE );
+            return( true );
         }
         setGuardState( GUARD_INCLUDE );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1719,15 +1719,15 @@ bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
     old = srcFileGetUnique( name );
     if( old != NULL ) {
         if( old->once_only ) {
-            return( TRUE );
+            return( true );
         }
         if( old->guard_state == GUARD_IFNDEF ) {
             if( MacroExists( old->ifndef_name, old->ifndef_len ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1754,7 +1754,7 @@ void SrcFileCmdLnDummyClose(    // CLOSE DUMMY FILE FOR COMMAND LINE
     SRCFILE cmd_file;           // - command file
 
     cmd_file = srcFile;
-    SrcFileClose( FALSE );
+    SrcFileClose( false );
 //  CarveFree( carveSrcFile, cmd_file );
 }
 
@@ -1762,7 +1762,7 @@ void SrcFileCmdLnDummyClose(    // CLOSE DUMMY FILE FOR COMMAND LINE
 int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
     void )
 {
-    int return_eol;             // - TRUE => return end of line
+    int return_eol;             // - true => return end of line
     int next_char;              // - next character
     SRCFILE sf;                 // - source file for command line
 
@@ -1771,7 +1771,7 @@ int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
         next_char = LCHR_EOF;
     } else if( sf->cmdlneol ) {
         next_char = '\n';
-        sf->cmdlneof = TRUE;
+        sf->cmdlneof = true;
     } else {
         if( sf->ignore_swend ) {
             return_eol = CmdScanBufferEnd();
@@ -1779,7 +1779,7 @@ int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
             return_eol = CmdScanSwEnd();
         }
         if( return_eol ) {
-            sf->cmdlneol = TRUE;
+            sf->cmdlneol = true;
             next_char = '\r';
         } else {
             next_char = CmdScanChar();
@@ -1852,18 +1852,18 @@ static bool srcFileCacheClose( bool close_all_ok )
         last = curr;
     }
     if( last == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( multiple_cached == NULL && !close_all_ok ) {
-        return( FALSE );
+        return( false );
     }
     _FIND_ACTUAL( last );
-    last->uncached = TRUE;
+    last->uncached = true;
     uncache = last->active;
     uncache->pos = SysTell( fileno( uncache->fp ) );
     SrcFileFClose( uncache->fp );
     uncache->fp = NULL;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1878,10 +1878,10 @@ static bool recursiveIncludeDetected( char *name )
         }
         if( strcmp( name, curr->name ) == 0 ) {
             CErr2p( ERR_RECURSIVE_FILE_INCLUDE, name );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1917,7 +1917,7 @@ static void markFreeSrcFile( void *p )
 {
     SRCFILE s = p;
 
-    s->free = TRUE;
+    s->free = true;
 }
 
 static void saveSrcFile( void *e, carve_walk_base *d )
@@ -2122,7 +2122,7 @@ void SrcFileOnceOnly(           // CURRENT SRCFILE CAN BE SKIPPED IF #INCLUDE AG
 
     srcfile = srcFile;
     if( srcfile != NULL ) {
-        srcfile->once_only = TRUE;
+        srcfile->once_only = true;
     }
 }
 
@@ -2134,9 +2134,9 @@ void SrcFileSetSwEnd(           // SET CURRENT SRCFILE IGNORE CMDLINE SW END STA
     srcfile = srcFile;
     if( srcfile != NULL && srcfile->cmdline ) {
         if( val ) {
-            srcfile->ignore_swend = TRUE;
+            srcfile->ignore_swend = true;
         } else {
-            srcfile->ignore_swend = FALSE;
+            srcfile->ignore_swend = false;
         }
     }
 }

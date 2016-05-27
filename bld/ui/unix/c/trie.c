@@ -85,10 +85,10 @@ int TrieInit( void )
 
     KeyTrie.child = uimalloc( TRIE_TOP * sizeof( eNode ) );
     if( KeyTrie.child == NULL )
-        return( FALSE );
+        return( false );
     KeyTrie.alc_child = TRIE_TOP;
     KeyTrie.num_child = 0;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -160,7 +160,7 @@ int TrieAdd( EVENT event, const char *str )
     int         depth = 1;
 
     if( str == NULL || *str == '\0' )
-        return( TRUE );
+        return( true );
 
     for( ;; ) {
         i = child_search( *str, trie );
@@ -178,7 +178,7 @@ int TrieAdd( EVENT event, const char *str )
                 trie->child = uirealloc( trie->child, trie->alc_child * sizeof( eNode ) );
                 if( trie->child == NULL ) {
                     trie->alc_child = 0;
-                    return( FALSE );
+                    return( false );
                 }
             }
 
@@ -200,14 +200,14 @@ int TrieAdd( EVENT event, const char *str )
         if( *str == '\0' ) {
             // at the end of the string, so insert the event
             trie->child[i].ev = event;
-            return( TRUE );
+            return( true );
         }
 
         if( trie->child[i].trie == NULL ) {
             // our "matching sub-trie" does not yet exist...
             trie->child[i].trie = uimalloc( sizeof( eTrie ) );
             if( trie->child[i].trie == NULL ) {
-                return( FALSE );
+                return( false );
             }
             trie->child[i].trie->child = NULL;
             trie->child[i].trie->num_child = 0;

@@ -41,7 +41,7 @@
 static const struct {
     abbrev_code                 bit;
     char                        data[2];
-}                               bitEncodings[] = {
+} bitEncodings[] = {
     { AB_DECLARATION,           { DW_AT_declaration,    DW_FORM_flag } },
     { AB_ACCESSIBILITY,         { DW_AT_accessibility,  DW_FORM_data1 } },
     { AB_OPACCESS,              { DW_AT_accessibility,  DW_FORM_data1 } },
@@ -69,8 +69,7 @@ static const uint_8 zeros[] = { 0, 0 };
     what was shown in the example in dwmakeab.c.  This is simply
     for performance reasons.
 */
-static uint mapFromWToX(
-    abbrev_code                 abbrev )
+static uint mapFromWToX( abbrev_code abbrev )
 {
     uint                        result;
     abbrev_code                 mask;
@@ -79,21 +78,17 @@ static uint mapFromWToX(
     /* first we map W(u) onto K(dim(W(u))) */
     result = 0;
     index = ( abbrev & AB_ENUM_MASK ) - 1;
-    mask = abbrevInfo[ index ].valid_mask & ~AB_ALWAYS;
-    while( mask ) {
+    for( mask = abbrevInfo[index].valid_mask & ~AB_ALWAYS; mask; mask >>= 1 ) {
         if( mask & 1 ) {
             result = result * 2 + ( abbrev & 1 );
         }
-        mask >>= 1;
         abbrev >>= 1;
     }
     /* finally we map onto X */
-    return( result + abbrevInfo[ index ].bit_index );
+    return( result + abbrevInfo[index].bit_index );
 }
 
-unsigned MarkAbbrevAsUsed(
-    dw_client                   cli,
-    abbrev_code                 *abbrev )
+unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
 {
     static const uint_8         sibling_attr[] = {
         DW_AT_sibling,          DW_FORM_ref4
@@ -101,12 +96,12 @@ unsigned MarkAbbrevAsUsed(
     uint                        index;
     uint                        code;
     uint_8                      bit;
-    uint_8                      buf[ 2 * MAX_LEB128 ];
+    uint_8                      buf[2 * MAX_LEB128];
     uint_8                      *end;
     const struct abbrev_info    *data;
     int                         i;
 
-    data = &abbrevInfo[ ( *abbrev & AB_ENUM_MASK ) - 1 ];
+    data = &abbrevInfo[( *abbrev & AB_ENUM_MASK ) - 1];
 
     /* check for AT_decl_* */
     *abbrev |= CheckDecl( cli, data->valid_mask );
@@ -116,11 +111,13 @@ unsigned MarkAbbrevAsUsed(
     bit = 1 << ( code & 0x7 );
     index = code / 8;
     code++;             // make sure we don't get a zero code.
-    if( cli->debug_abbrev.emitted[ index ] & bit ) return( code );
+    if( cli->debug_abbrev.emitted[index] & bit )
+        return( code );
     /* has not been emitted */
-    cli->debug_abbrev.emitted[ index ] |= bit;
+    cli->debug_abbrev.emitted[index] |= bit;
     /* if pre compiled abbrevs don't gen */
-    if( cli->compiler_options & DW_CM_ABBREV_PRE ) return( code );
+    if( cli->compiler_options & DW_CM_ABBREV_PRE )
+        return( code );
     /* emit the abbrev number, and tag */
     end = ULEB128( buf, code );
     end = ULEB128( end, data->tag );
@@ -151,8 +148,8 @@ unsigned MarkAbbrevAsUsed(
 
     /* now emit the extra attributes */
     for( i = 0; i < sizeof(bitEncodings) / sizeof(bitEncodings[0]); ++i ) {
-        if( *abbrev & bitEncodings[ i ].bit ) {
-            CLIWrite( DW_DEBUG_ABBREV, bitEncodings[ i ].data, 2 );
+        if( *abbrev & bitEncodings[i].bit ) {
+            CLIWrite( DW_DEBUG_ABBREV, bitEncodings[i].data, 2 );
         }
     }
 
@@ -182,8 +179,7 @@ unsigned MarkAbbrevAsUsed(
 
     /* and finally the base information */
     if( data->data_len ) {
-        CLIWrite( DW_DEBUG_ABBREV, &encodings[ data->data_offset ],
-            data->data_len );
+        CLIWrite( DW_DEBUG_ABBREV, &encodings[data->data_offset], data->data_len );
     }
 
     /* and the zero terminators */
@@ -192,20 +188,18 @@ unsigned MarkAbbrevAsUsed(
 }
 
 
-void InitDebugAbbrev(
-    dw_client                   cli )
+void InitDebugAbbrev( dw_client cli )
 {
     memset( cli->debug_abbrev.emitted, 0, sizeof( cli->debug_abbrev.emitted ) );
 }
 
 
-void FiniDebugAbbrev(
-    dw_client                   cli )
+void FiniDebugAbbrev( dw_client cli )
 {
     CLIWrite( DW_DEBUG_ABBREV, zeros, 1 );
 }
 
-extern void  GenAllAbbrev( dw_client  cli )
+void  GenAllAbbrev( dw_client  cli )
 {
     abbrev_code                 abbrev;
     uint_32                     mask;
@@ -215,21 +209,19 @@ extern void  GenAllAbbrev( dw_client  cli )
     uint_32                     mask_bit;
 
     /* generate all abbrev codes */
-    index = 0;
-    while( index < (AB_MAX - 1) ) {
+    for( index = 0; index < (AB_MAX - 1); ++index ) {
         if( (index+1) == (AB_MAX - 1) ) {
             count = AB_LAST_CODE - abbrevInfo[index].bit_index;
         } else {
             count = abbrevInfo[index+1].bit_index-abbrevInfo[index].bit_index;
         }
-        mask = abbrevInfo[ index ].valid_mask & ~AB_ALWAYS;
+        mask = abbrevInfo[index].valid_mask & ~AB_ALWAYS;
         for( mask_count = 0;  mask_count < count; ++mask_count ) {
             uint which_mask_bits;
 
             abbrev = 0;
             mask_bit = 0x80000000;
-            which_mask_bits = mask_count;
-            while( which_mask_bits ) {
+            for( which_mask_bits = mask_count; which_mask_bits; which_mask_bits >>=1 ) {
                 while( (mask & mask_bit ) == 0 ) {  /* tab to next bit flag */
                     mask_bit >>= 1;
                 }
@@ -237,11 +229,9 @@ extern void  GenAllAbbrev( dw_client  cli )
                     abbrev |= mask_bit;
                 }
                 mask_bit >>= 1;
-                which_mask_bits >>=1;
             }
             abbrev |= (index+1);
             MarkAbbrevAsUsed( cli, &abbrev );
         }
-        ++index;
     }
 }

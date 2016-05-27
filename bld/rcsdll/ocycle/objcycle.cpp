@@ -77,9 +77,11 @@ int objectCycleSystem::init( userData *d )
     dll = LoadLibrary( "OCHOOK.DLL" );
 
 #ifdef __WINDOWS__
-    if( dll == NULL ) return( FALSE );
+    if( dll == NULL )
+        return( false );
 #else
-    if( (UINT)dll < 32 ) return( FALSE );
+    if( (UINT)dll < 32 )
+        return( false );
 #endif
     ci_fp = (OCCHECKIN)GetProcAddress( dll, ENTRY_OCCHECKIN );
     co_fp = (OCCHECKOUT)GetProcAddress( dll, ENTRY_OCCHECKOUT );
@@ -89,38 +91,45 @@ int objectCycleSystem::init( userData *d )
 
     dllId = (long)dll;
 
-    if( in_fp == NULL ) return( FALSE );
+    if( in_fp == NULL )
+        return( false );
     in_fp( dllId, (HWND)d->window );
-    return( TRUE );
+    return( true );
 };
 
 int objectCycleSystem::fini()
 {
-    if( cl_fp != NULL ) cl_fp();
+    if( cl_fp != NULL )
+        cl_fp();
     FreeLibrary( (HINSTANCE)dllId );
-    return( TRUE );
+    return( true );
 };
 
 int objectCycleSystem::checkout( userData *d, rcsstring name,
                             rcsstring pj, rcsstring tgt )
 {
     pj = pj; tgt = tgt;
-    if( d == NULL ) return( FALSE );
-    if( co_fp == NULL ) return( FALSE );
+    if( d == NULL )
+        return( false );
+    if( co_fp == NULL )
+        return( false );
     return( (*co_fp)( name, NULL ) );
 }
 int objectCycleSystem::checkin( userData *d, rcsstring name,
                             rcsstring pj, rcsstring tgt )
 {
     pj = pj; tgt = tgt;
-    if( d == NULL ) return( FALSE );
-    if( ci_fp == NULL ) return( FALSE );
+    if( d == NULL )
+        return( false );
+    if( ci_fp == NULL )
+        return( false );
     return( (*ci_fp)( name, NULL ) );
 }
 
 int objectCycleSystem::runShell()
 {
-    if( rs_fp == NULL ) return( FALSE );
+    if( rs_fp == NULL )
+        return( false );
     return( (*rs_fp)() );
 };
 

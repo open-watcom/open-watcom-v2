@@ -97,22 +97,22 @@ bool ConstNeedsExplicitInitializer( TYPE type )
     type = StructType( type );
     if( type == NULL ) {
         /* const non-class types need explicit initializers */
-        return( TRUE );
+        return( true );
     }
     info = type->u.c.info;
     if( info->needs_ctor ) {
         /* if class doesn't have a default ctor, it needs an explicit init */
         if( ClassDefaultCtorFind( type, &dummy, NULL ) != CNV_OK ) {
-            return( TRUE );
+            return( true );
         }
     } else {
         /* doesn't need a constructor */
         if( info->has_data ) {
             /* has some fields */
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool diagnoseAbstractDefn( SYMBOL sym, TYPE type )
@@ -120,7 +120,7 @@ static bool diagnoseAbstractDefn( SYMBOL sym, TYPE type )
     type = ArrayBaseType( type );
     CErr( ERR_CANNOT_DEFINE_ABSTRACT_VARIABLE, sym, type );
     ScopeNotePureFunctions( type );
-    return( FALSE );
+    return( false );
 }
 
 bool DeclNoInit( DECL_INFO *dinfo )
@@ -133,10 +133,10 @@ bool DeclNoInit( DECL_INFO *dinfo )
 
     sym = dinfo->sym;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( SymIsTypedef( sym ) || SymIsFunction( sym ) || sym->id == SC_EXTERN ) {
-        return( FALSE );
+        return( false );
     }
     type = sym->sym_type;
     if( SymIsStaticMember( sym ) ) {
@@ -144,16 +144,16 @@ bool DeclNoInit( DECL_INFO *dinfo )
             if( TypeAbstract( type ) ) {
                 return( diagnoseAbstractDefn( sym, type ) );
             }
-            return( FALSE );
+            return( false );
         }
         /* "int C::a;" instead of "static int a;" in "class C" */
-        CompFlags.external_defn_found = TRUE;
+        CompFlags.external_defn_found = true;
         if( SymIsInitialized( sym ) ) {
             if( (sym->flag & SF_IN_CLASS_INIT) == 0 ) {
                 if( ! TemplateMemberCanBeIgnored() ) {
                     CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
                 }
-                return( FALSE );
+                return( false );
             } else {
                 /* reset in-class initialization flag to get the
                  * symbol exported */
@@ -162,7 +162,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
         }
         if( ! TypeDefined( type ) ) {
             CErr2p( ERR_CANNOT_DEFINE_VARIABLE, sym );
-            return( FALSE );
+            return( false );
         }
         if( TypeAbstract( type ) ) {
             return( diagnoseAbstractDefn( sym, type ) );
@@ -170,7 +170,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
     } else {
         if( ! TypeDefined( type ) ) {
             CErr2p( ERR_CANNOT_DEFINE_VARIABLE, sym );
-            return( FALSE );
+            return( false );
         }
         if( TypeAbstract( type ) ) {
             return( diagnoseAbstractDefn( sym, type ) );
@@ -178,35 +178,35 @@ bool DeclNoInit( DECL_INFO *dinfo )
         scope = SymScope( sym );
         if( ScopeType( scope, SCOPE_TEMPLATE_INST ) ) {
             if( TemplateVerifyDecl( sym ) ) {
-                return( FALSE );
+                return( false );
             }
         }
         if( sym->id != SC_STATIC && ScopeType( scope, SCOPE_FILE ) ) {
-            CompFlags.external_defn_found = TRUE;
+            CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
                 CompFlags.extern_C_defn_found = 1;
             }
         }
         if( ! ScopeType( scope, SCOPE_FILE ) && ! ScopeType( scope, SCOPE_BLOCK ) ){
-            return( FALSE );
+            return( false );
         }
         if( SymIsInitialized( sym ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     type = baseTypeInfo( type, &info );
     switch( info ) {
     case IS_REF:
         CErr1( ERR_REFERENCE_MUST_BE_INITIALIZED );
-        return( FALSE );
+        return( false );
     case IS_CONST:
         if( ConstNeedsExplicitInitializer( type )
           && ! SymIsInitialized( sym ) ) {
             CErr1( ERR_CONST_MUST_BE_INITIALIZED );
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool DeclWithInit( DECL_INFO *dinfo )
@@ -218,36 +218,36 @@ bool DeclWithInit( DECL_INFO *dinfo )
 
     sym = dinfo->sym;
     if( sym == NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( SymIsTypedef( sym ) ) {
         CErr1( ERR_CANNOT_INIT_TYPEDEF );
-        return( FALSE );
+        return( false );
     }
     if( SymIsFunction( sym ) ) {
         CErr1( ERR_CANNOT_INIT_FUNCTION );
-        return( FALSE );
+        return( false );
     }
     if( SymIsInitialized( sym ) ) {
         if( SymIsStaticMember( sym ) && TemplateMemberCanBeIgnored() ) {
-            return( FALSE );
+            return( false );
         }
         CErr2p( ERR_CANNOT_INIT_AGAIN, sym );
-        return( FALSE );
+        return( false );
     }
     if( sym->id == SC_PUBLIC ) {
         CErr2p( ERR_SYM_ALREADY_DEFINED, sym );
-        return( FALSE );
+        return( false );
     }
     scope = SymScope( sym );
     if( ScopeEquivalent( scope, SCOPE_FILE ) ) {
         if( ScopeType( GetCurrScope(), SCOPE_TEMPLATE_INST ) ) {
             if( TemplateVerifyDecl( sym ) ) {
-                return( FALSE );
+                return( false );
             }
         }
         if( sym->id != SC_STATIC ) {
-            CompFlags.external_defn_found = TRUE;
+            CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
                 CompFlags.extern_C_defn_found = 1;
             }
@@ -257,14 +257,14 @@ bool DeclWithInit( DECL_INFO *dinfo )
         }
     } else if( SymIsStaticMember( sym ) && ! ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
         /* "int C::a;" instead of "static int a;" in "class C" */
-        CompFlags.external_defn_found = TRUE;
+        CompFlags.external_defn_found = true;
     }
     type = sym->sym_type;
     if( TypeDefined( type ) ) {
         if( TypeAbstract( type ) ) {
             return( diagnoseAbstractDefn( sym, type ) );
         }
-        return( TRUE );
+        return( true );
     }
     /* must only be unknown array size with defined base type */
     type = TypedefModifierRemove( type );
@@ -274,12 +274,12 @@ bool DeclWithInit( DECL_INFO *dinfo )
                 if( TypeAbstract( type->of ) ) {
                     return( diagnoseAbstractDefn( sym, type ) );
                 }
-                return( TRUE );
+                return( true );
             }
         }
     }
     CErr2p( ERR_CANNOT_DEFINE_VARIABLE, sym );
-    return( FALSE );
+    return( false );
 }
 
 static void handleInlineFunction( SYMBOL sym )
@@ -353,7 +353,7 @@ static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
         case SC_NULL:
         case SC_STATIC:
             *control |= DC_REDEFINED;
-            return( TRUE );
+            return( true );
         }
     }
     scope = SymScope( prev );
@@ -368,7 +368,7 @@ static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
                 /* fall through */
             case SC_EXTERN:
                 prev->id = curr->id;
-                return( TRUE );
+                return( true );
             }
             break;
         case SC_PUBLIC:
@@ -377,18 +377,18 @@ static bool commonCheck( SYMBOL prev, SYMBOL curr, decl_check *control )
                 *control |= DC_REDEFINED;
                 /* fall through */
             case SC_EXTERN:
-                return( TRUE );
+                return( true );
             }
             break;
         case SC_STATIC:
             if( curr->id == SC_EXTERN ) {
                 // p.98 ARM (7.1.1)
-                return( TRUE );
+                return( true );
             }
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static fn_stg_class_status checkFnStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control )
@@ -478,7 +478,7 @@ static bool checkVarStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control 
 {
     /* check storage class specifiers for two identical variables */
     if( commonCheck( prev, curr, control ) ) {
-        return( TRUE );
+        return( true );
     }
     *control |= DC_REDEFINED;
     switch( curr->id ) {
@@ -495,7 +495,7 @@ static bool checkVarStorageClass( SYMBOL prev, SYMBOL curr, decl_check *control 
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static SYMBOL combineVariables( SYMBOL prev, SYMBOL curr, prev_sym_adjust control, type_flag new_flags )
@@ -531,25 +531,25 @@ static bool memModelModifiersOK( type_flag prev_flags, type_flag curr_flags,
     curr_flags &= TF1_MEM_MODEL;
     if( curr_flags == prev_flags ) {
         // identical is OK
-        return( TRUE );
+        return( true );
     }
     switch( prev_flags ) {
     case TF1_FAR:
         if( curr_flags == TF1_BASED_STRING ) {
             // use new modifiers
             *adjust |= PSA_USE_CURR_MODS;
-            return( TRUE );
+            return( true );
         }
         break;
     case TF1_BASED_STRING:
         if( curr_flags == TF1_FAR ) {
             // keep old modifiers
-            return( TRUE );
+            return( true );
         }
         break;
     }
     // memory model modifiers are different
-    return( FALSE );
+    return( false );
 }
 
 static type_flag cannotChangeFlags( type_flag prev, type_flag curr,
@@ -625,13 +625,13 @@ static bool combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, t
 
     *adjust = PSA_NULL;
     *new_flags = TF1_NULL;
-    ret = TRUE;
-    flag.file_scope = FALSE;
+    ret = true;
+    flag.file_scope = false;
     if( ScopeType( SymScope( curr ), SCOPE_FILE ) ) {
-        flag.file_scope = TRUE;
+        flag.file_scope = true;
         if( LinkageSpecified() && ! LinkageIsCurr( prev ) ) {
             CErr2p( ERR_CONFLICTING_LINKAGE_SPEC, prev );
-            ret = FALSE;
+            ret = false;
         }
     }
     prev_type = prev->sym_type;
@@ -643,20 +643,20 @@ static bool combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, t
     curr_unmod = TypeModFlagsBaseEC( curr_type, &curr_flags, &curr_base );
     if(( prev_flags ^ curr_flags ) & ~TF1_MOD_IGNORE ) {
         if( memModelModifiersOK( prev_flags, curr_flags, adjust ) ) {
-            if( cannotChangeFlags( prev_flags, curr_flags, TRUE ) != TF1_NULL ) {
+            if( cannotChangeFlags( prev_flags, curr_flags, true ) != TF1_NULL ) {
                 prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev, curr );
-                ret = FALSE;
+                ret = false;
             }
         } else {
             prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev, curr );
-            ret = FALSE;
+            ret = false;
         }
     }
     if( ret && ( prev_flags & TF1_BASED ) != 0 ) {
         if((( prev_flags ^ curr_flags ) & TF1_BASED ) == 0 ) {
             if( ! TypeBasesEqual( prev_flags, prev_base, curr_base ) ) {
                 prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev, curr );
-                ret = FALSE;
+                ret = false;
             }
         }
     }
@@ -695,7 +695,7 @@ static bool combinableSyms( SYMBOL prev, SYMBOL curr, prev_sym_adjust *adjust, t
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
@@ -727,12 +727,12 @@ static SYMBOL combineFunctions( SYMBOL prev_fn, SYMBOL curr_fn )
     /* check modifiers */
     unmod_prev_type = TypeModFlagsBaseEC( prev_type, &prev_flags, &prev_base );
     unmod_curr_type = TypeModFlagsBaseEC( curr_type, &curr_flags, &curr_base );
-    flag.check_bases = TRUE;
+    flag.check_bases = true;
     if(( prev_flags ^ curr_flags ) & ~TF1_MOD_IGNORE ) {
-        if( cannotChangeFlags( prev_flags, curr_flags, FALSE ) != TF1_NULL ) {
+        if( cannotChangeFlags( prev_flags, curr_flags, false ) != TF1_NULL ) {
             prevCurrErr( ERR_CONFLICTING_MODIFIERS, prev_fn, curr_fn );
             curr_flags = prev_flags;
-            flag.check_bases = FALSE;
+            flag.check_bases = false;
         }
     }
     if( flag.check_bases && ( prev_flags & TF1_BASED ) != 0 ) {
@@ -858,13 +858,13 @@ static bool userWantsTypeSymOverload( SYMBOL typedef_sym, SYMBOL non_typedef_sym
     non_typedef_file = non_typedef_sym->locn->tl.src_file;
     if( SrcFileSame( typedef_file, non_typedef_file ) ) {
         // same source file? user probably intends for this to work
-        return( TRUE );
+        return( true );
     }
     if( IsSrcFileLibrary( typedef_file ) && IsSrcFileLibrary( non_typedef_file ) ) {
         // both system header files? vendor probably intends for this to work
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
@@ -1073,7 +1073,7 @@ DECL_INFO *DeclFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
 
     if( dspec != NULL ) {
         CheckFunctionDSpec( dspec );
-        dinfo->has_dspec = TRUE;
+        dinfo->has_dspec = true;
     }
     sym = dinfo->sym;
     if( ! SymIsFunction( sym ) ) {
@@ -1082,7 +1082,7 @@ DECL_INFO *DeclFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
         return( dinfo );
     }
-    dinfo->fn_defn = TRUE;
+    dinfo->fn_defn = true;
     dinfo = InsertDeclInfo( GetCurrScope(), dinfo );
     /* must refetch 'sym' */
     sym = dinfo->sym;

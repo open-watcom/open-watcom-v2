@@ -32,7 +32,7 @@
 
 #include "bdiff.h"
 
-void Usage( const char *name )
+static void Usage( const char *name )
 {
     printf( "Usage: %s <executable> <patch_file>\n", name );
     printf( "       Set the executable's patch level to that indicated\n" );

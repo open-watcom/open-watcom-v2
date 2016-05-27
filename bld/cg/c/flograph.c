@@ -74,7 +74,7 @@ static  void    NoBlocksToSelf( void )
         for( edge = blk->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
             if( edge->source == blk ) {
-                new_blk = NewBlock( AskForNewLabel(), TRUE );
+                new_blk = NewBlock( AskForNewLabel(), true );
                 /* set up new block to look like it was generated after blk*/
                 new_blk->class = JUMP;
                 new_blk->gen_id = blk->gen_id;
@@ -164,12 +164,12 @@ static  bool    DepthFirstSearch( void )
 
     BlockList = NULL;
     MarkVisited( HeadBlock );
-    reducible = TRUE;
+    reducible = true;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( ( blk->class & BLOCK_VISITED ) == 0 ) {
             blk->prev_block = BlockList;
             BlockList = blk;
-            reducible = FALSE;
+            reducible = false;
         }
         blk->class &= ~BLOCK_VISITED;
     }
@@ -263,7 +263,7 @@ static  bool    FindIntervals( void )
             if( curr->parent == NULL ) {
                 prev_int = NULL;
                 edge = blk->input_edges;
-                add = FALSE;
+                add = false;
                 for( ;; ) {
                     test = IntervalNo( edge->source, level - 1 );
                                                 /* guess - internal edge*/
@@ -271,7 +271,7 @@ static  bool    FindIntervals( void )
                                                 /* guess - lower level head*/
                         test = test->parent;
                         if( test == NULL ) {
-                            add = TRUE;
+                            add = true;
                             break;
                         }
                                                 /* guess - no other predecessor*/
@@ -280,7 +280,7 @@ static  bool    FindIntervals( void )
                         } else {
                                                 /* guess - different predecessor*/
                             if( test != prev_int ) {
-                                add = TRUE;
+                                add = true;
                                 break;
                             }
                         }
@@ -288,7 +288,7 @@ static  bool    FindIntervals( void )
                     edge = edge->next_source;
                     if( edge == NULL ) break;
                 }
-                if( add == FALSE ) {
+                if( add == false ) {
                     curr->parent = prev_int;
                     prev_int->last_block = curr->last_block;
                     for( test = prev_int->sub_int; test->next_sub_int != NULL; ) {
@@ -418,7 +418,7 @@ static  void    NestingDepth( void )
             }
         }
         for( ;; ) {
-            change = FALSE;
+            change = false;
             for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
                 if( blk->next_block == NULL ) {
                     for( i = blk->targets; i-- > 0; ) {
@@ -432,14 +432,14 @@ static  void    NestingDepth( void )
                                     blk->loop_head = target;
                                 }
                                 target->class |= LOOP_HEADER;
-                                change = TRUE;
+                                change = true;
                                 break;
                             }
                         }
                     }
                 }
             }
-            if( change == FALSE ) break;
+            if( change == false ) break;
         }
     }
 
@@ -473,10 +473,10 @@ static  bool    FlowDone( block *curr, void *parm )
 /*************************************************/
 {
     if( curr == (block *)parm ) {
-        functionDegenerate = TRUE;
-        return( FALSE );
+        functionDegenerate = true;
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static  bool    Degenerate( void )
@@ -489,13 +489,13 @@ static  bool    Degenerate( void )
         if( ( blk->class & LOOP_HEADER ) == EMPTY ) continue;
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
             if( ( edge->source->class & SELECT ) != EMPTY ) {
-                functionDegenerate = FALSE;
+                functionDegenerate = false;
                 FloodForward( edge->source, FlowDone, blk );
-                if( functionDegenerate ) return( TRUE );
+                if( functionDegenerate ) return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  void    MakeFlowGraph( void )

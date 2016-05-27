@@ -491,6 +491,7 @@ void    o_frame( FILE * f, lay_att curr, bool * tm )
 /***************************************************************************/
 /*  integer routines                                                       */
 /***************************************************************************/
+#if 0
 bool    i_int32( char * p, lay_att curr, int32_t * tm )
 {
     curr = curr;
@@ -505,6 +506,7 @@ void    o_int32( FILE * f, lay_att curr, int32_t * tm )
     fprintf( f, "        %s = %ld\n", att_names[curr], (long)*tm );
     return;
 }
+#endif
 
 bool    i_int8( char * p, lay_att curr, int8_t * tm )
 {

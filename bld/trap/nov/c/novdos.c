@@ -338,7 +338,7 @@ bool RemoteConnect( void )
     } else if( ConnECB.inUseFlag == 0 ) {
         if( ConnECB.completionCode == 0 ) {
             Connection = ConnECB.SPXConnectionID;
-            return( TRUE );
+            return( true );
         }
     }
     _IPXRelinquishControl();
@@ -346,13 +346,13 @@ bool RemoteConnect( void )
     _INITECB( SendECB, SendHead, 1, SPX );
     if( _SPXEstablishConnection( 0, 0, &Connection, &SendECB ) == 0 ) {
         if( WaitTimeout( &SendECB, MAX_CONNECT_WAIT, 0 ) ) {
-            return( TRUE );
+            return( true );
         } else {
             _SPXAbortConnection( Connection );
         }
     }
 #endif
-    return( FALSE );
+    return( false );
 }
 
 void RemoteDisco( void )

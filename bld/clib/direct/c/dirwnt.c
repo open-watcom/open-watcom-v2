@@ -161,8 +161,8 @@ _WCRTLINK DIR_TYPE *__F_NAME(opendir,_wopendir)( const CHAR_TYPE *dirname )
     return( __F_NAME(__opendir,__wopendir)( dirname ) );
 }
 
-_WCRTLINK DIR_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
-/***************************************************************/
+_WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
+/******************************************************************/
 {
     WIN32_FIND_DATA     ffd;
     DWORD               err;

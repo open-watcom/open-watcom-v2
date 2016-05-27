@@ -62,8 +62,8 @@ extern char *_Copyright;
 
 jmp_buf     jmpbuf_RCFatalError;
 
-static IDECBHdl         cbHandle;
-static IDECallBacks     *ideCb;
+static IDECBHdl         IdeHdl;
+static IDECallBacks     *IdeCbs;
 static IDEInitInfo      *initInfo;
 
 static IDEMsgSeverity SeverityMap[] = {
@@ -136,7 +136,7 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
         if( *end == '\n' ) {
             *end = '\0';
             setPrintInfo( &msginfo, info, start );
-            ideCb->PrintWithInfo( cbHandle, &msginfo );
+            IdeCbs->PrintWithInfo( IdeHdl, &msginfo );
             start = end + 1;
         } else if( *end == '\0' ) {
             len = strlen( start );
@@ -154,8 +154,8 @@ const char *RcGetEnv( const char *name )
 {
     const char  *val;
 
-    if( ideCb != NULL && !initInfo->ignore_env ) {
-        if( !ideCb->GetInfo( cbHandle, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
+    if( IdeCbs != NULL && !initInfo->ignore_env ) {
+        if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&val ) ) {
             return( val );
         }
     }
@@ -246,12 +246,12 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 }
             }
             if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
-                if( !ideCb->GetInfo( cbHandle, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
+                if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
                     infile[0] = '\"';
                     strcat( infile, "\"" );
                     argv[argc++] = infile;
                 }
-                if( !ideCb->GetInfo( cbHandle, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
+                if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
                     if( pass1 ) {
                         strcpy( outfile, "-fo=\"" );
                     } else {
@@ -292,12 +292,12 @@ unsigned IDEAPI IDEGetVersion( void ) {
     return( IDE_CUR_DLL_VER );
 }
 
-IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
-/**************************************************************************/
+IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
+/***************************************************************************/
 {
-    cbHandle = hdl;
-    ideCb = cb;
-    *info = 0;
+    IdeHdl = cbhdl;
+    IdeCbs = cb;
+    *hdl = 0;
     initInfo = NULL;
     // init wrc
     IgnoreINCLUDE = false;

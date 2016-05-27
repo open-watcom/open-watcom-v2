@@ -40,6 +40,7 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "namelist.h"
+#include "regalloc.h"
 
 
 extern    hw_reg_set      *RegSets[];
@@ -58,7 +59,6 @@ extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  conflict_node   *InMemory( conflict_node * );
 extern  int             NumOperands( instruction * );
 extern  void            AddIns( instruction * );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
@@ -84,7 +84,7 @@ rtn_info RTInfo[] = {
 static  call_class     rt_cclass = 0;
 
 static  struct STRUCT_byte_seq( 6 ) Scn1 = {
-     6, FALSE,
+     6, false,
     {0xF2,              /*      repne           */
      0xAE,              /*      scasb           */
      0xD1, 0xE1,        /*      shl     cx,1    */
@@ -92,13 +92,13 @@ static  struct STRUCT_byte_seq( 6 ) Scn1 = {
 };
 
 static  struct STRUCT_byte_seq( 2 ) Scn2 = {
-     2, FALSE,
+     2, false,
     {0xF2,              /*      repne           */
      0xAF}              /*      scasw           */
 };
 
 static  struct STRUCT_byte_seq( 18 ) Scn4 = {
-     18, FALSE,
+     18, false,
     {0x83, 0xC7, 0x02,  /* L1:  add     d1,2    */
      0x49,              /* L2:  dec     cx      */
      0x74, 0x08,        /*      je      L3      */
@@ -185,7 +185,7 @@ extern  bool    RTLeaveOp2( instruction *ins )
 {
     switch( ins->type_class ) {
     case FD:
-        if( _FPULevel( FPU_87 ) ) return( FALSE );
+        if( _FPULevel( FPU_87 ) ) return( false );
         break;
 /* -- This is not true now - I8 math and parameters are kept in registers -- [RomanT]
     case I8:
@@ -193,10 +193,10 @@ extern  bool    RTLeaveOp2( instruction *ins )
         break;
 */
     default:
-        return( FALSE );
+        return( false );
     }
-    if( NumOperands( ins ) != 2 ) return( FALSE );
-    return( TRUE );
+    if( NumOperands( ins ) != 2 ) return( false );
+    return( true );
 }
 
 
@@ -263,7 +263,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
     info = &RTInfo[RoutineNum];
     regs = FirstReg( info->left );
     all_regs = regs;
-    tmp = ReturnReg( WD, FALSE );
+    tmp = ReturnReg( WD, false );
     HW_TurnOn( all_regs, tmp );
     left_ins = MakeMove( ins->operands[0], AllocRegName( regs ), info->operand_class );
     ins->operands[0] = left_ins->result;

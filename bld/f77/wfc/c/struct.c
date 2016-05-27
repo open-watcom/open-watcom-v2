@@ -140,7 +140,7 @@ void    CpRecord( void ) {
     CSExtn();
     sd = StructName();
     if( IsFunctionDefn() ) {
-        Function( FT_STRUCTURE, 0, TRUE );
+        Function( FT_STRUCTURE, 0, true );
         SubProgId->u.ns.xt.sym_record = sd;
     } else {
         MustBeTypeDecl();

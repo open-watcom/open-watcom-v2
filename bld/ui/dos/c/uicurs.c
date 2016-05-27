@@ -58,7 +58,7 @@ void UIDBG _uioffcursor( void )
         r.h.ch = BIOS_CURSOR_OFF;
         r.h.cl = 0;
         int86( BIOS_VIDEO, &r, &r );
-        UIData->cursor_on = FALSE;
+        UIData->cursor_on = false;
     }
     UIData->cursor_type = C_OFF;
 }
@@ -103,7 +103,7 @@ void UIDBG _uioncursor( void )
         r.h.ah = 9;
         int86( BIOS_VIDEO, &r, &r );
     }
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 static void savecursor( void )
@@ -125,7 +125,7 @@ static void savecursor( void )
         OldCursorType = C_NORMAL;
     }
     UIData->cursor_on = ( ( r.h.ch & BIOS_CURSOR_OFF ) == 0 );
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
         OldCursorType = C_OFF;
     }
     /* read character and attribute */
@@ -153,7 +153,7 @@ static void swapcursor( void )
     _swap( UIData->cursor_col, OldCursorCol );
     _swap( UIData->cursor_row, OldCursorRow );
     _swap( UIData->cursor_attr, OldCursorAttr );
-    UIData->cursor_on = TRUE;
+    UIData->cursor_on = true;
 }
 
 
@@ -175,7 +175,7 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
     } else {
         *type = C_NORMAL;
     }
-    if( UIData->cursor_on == FALSE ) {
+    if( UIData->cursor_on == false ) {
         *type = C_OFF;
     }
     /* read character and attribute */

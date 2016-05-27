@@ -58,26 +58,26 @@ static bool cgSegIdConst( SYMBOL sym, type_flag flags, SEGID_CONTROL control )
 {
     if( (flags & TF1_CONST) == 0 ) {
         // symbol is not declared const
-        return( FALSE );
+        return( false );
     }
     if( control & SI_NEEDS_CODE ) {
         // symbol is initialized via code in a module ctor
-        return( FALSE );
+        return( false );
     }
     if( TypeRequiresRWMemory( sym->sym_type ) ) {
-        return( FALSE );
+        return( false );
     }
     #if 0
     if( SymRequiresCtoring( sym ) ) {
         // symbol needs to be modified before being made "const"
-        return( FALSE );
+        return( false );
     }
     if( SymRequiresDtoring( sym ) ) {
         // symbol is "const" but needs to be modified to be destructed
-        return( FALSE );
+        return( false );
     }
     #endif
-    return( TRUE );
+    return( true );
 }
 
 static fe_seg_id cgSegIdBased( SYMBOL sym, type_flag flags )
@@ -226,16 +226,16 @@ static fe_seg_id cgSegIdVariable( SYMBOL sym, type_flag flags, SEGID_CONTROL con
     } else if( flags & TF1_FAR ) {
         id = cgSegIdFarVariable( sym, flags, size, control );
     } else {
-        bool assume_near = TRUE;
+        bool assume_near = true;
         if( IsBigData() ) {
             if( flags & TF1_DEFAULT_FAR ) {
-                assume_near = FALSE;
+                assume_near = false;
             } else if( size == 0 || size > DataThreshold ) {
-                assume_near = FALSE;
+                assume_near = false;
             } else if( CompFlags.zc_switch_used ) {
                 if( cgSegIdConst( sym, flags, control ) ) {
                     // symbol may have been placed in code segment
-                    assume_near = FALSE;
+                    assume_near = false;
                 }
             }
         }

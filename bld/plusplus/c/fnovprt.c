@@ -151,11 +151,11 @@ static void printRank( int num_args, FNOV_RANK *rank, PRINT_RANK_FORMAT fmt )
         if( rank->userdef ) {
             printControl( rank->control );
             printf( "\tUsrDef Input: " );
-            printScalar( &rank->u.ud.in, TRUE );
+            printScalar( &rank->u.ud.in, true );
             printf( "\tUsrDef Output: " );
-            printScalar( &rank->u.ud.out, TRUE );
+            printScalar( &rank->u.ud.out, true );
         } else {
-            printScalar( &rank->u.no_ud, FALSE );
+            printScalar( &rank->u.no_ud, false );
             printControl( rank->control );
         }
         rank++;

@@ -135,10 +135,10 @@ static bool ClipToRect( long & x1, long & y1, long & x2, long & y2,
         CalcOut( *p2, top, left, bottom, right );
 
         if( p1->code == CL_Inside && p2->code == CL_Inside ) {
-            return TRUE;                                // trivial acceptance
+            return true;                                // trivial acceptance
         }
         if( (p1->code & p2->code) != 0 ) {
-            return FALSE;                               // trivial rejection
+            return false;                               // trivial rejection
         }
 
         if( p1->code == 0 ) {   // p1 inside -- swap so p1 outside

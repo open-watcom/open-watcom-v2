@@ -106,22 +106,22 @@ void ResetPermData( void )
     CarveModEntry = CarveCreate( sizeof(mod_entry), MOD_CARVE_SIZE );
     CarveSegData = CarveCreate( sizeof(segdata), SDATA_CARVE_SIZE );
     CarveSymbol = CarveCreate( sizeof(symbol), SYM_CARVE_SIZE );
-    InitStringTable( &PermStrings, TRUE );
-    InitStringTable( &PrefixStrings, TRUE );
-    InitStringTable( &StoredRelocs, FALSE );
+    InitStringTable( &PermStrings, true );
+    InitStringTable( &PrefixStrings, true );
+    InitStringTable( &StoredRelocs, false );
 }
 
 
 static void MarkDLLInfo( void *dll )
 /**********************************/
 {
-    ((dll_sym_info *)dll)->isfree = TRUE;
+    ((dll_sym_info *)dll)->isfree = true;
 }
 
 static void MarkExportInfo( void *exp )
 /*************************************/
 {
-    ((entry_export *)exp)->isfree = TRUE;
+    ((entry_export *)exp)->isfree = true;
 }
 
 static void MarkModEntry( void *mod )
@@ -133,7 +133,7 @@ static void MarkModEntry( void *mod )
 static void MarkSegData( void *sdata )
 /************************************/
 {
-    ((segdata *)sdata)->isfree = TRUE;
+    ((segdata *)sdata)->isfree = true;
 }
 
 static void MarkSymbol( void *sym )
@@ -159,7 +159,7 @@ static bool WriteLeaderName( void *_leader, void *info )
 
     U32WritePermFile( info, (unsigned_32)(pointer_int)leader->class->name );
     U32WritePermFile( info, (unsigned_32)(pointer_int)leader->segname );
-    return( FALSE );
+    return( false );
 }
 
 static unsigned WriteGroups( perm_write_info *info )
@@ -345,7 +345,7 @@ static bool PrepLeaders( void *_leader, void *info )
     seg_leader *leader = _leader;
 
     leader->segname = GetString( info, leader->segname );
-    return( FALSE );
+    return( false );
 }
 
 static void PrepClasses( perm_write_info *info )
@@ -362,19 +362,19 @@ static void PrepClasses( perm_write_info *info )
 static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
 /*********************************************************************************/
 {
-    DoWritePermFile( info, (void *)data, len, TRUE );
+    DoWritePermFile( info, (void *)data, len, true );
 }
 
 static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
 /*********************************************************************/
 {
-    DoWritePermFile( info, (char *)&data, sizeof( data ), FALSE );
+    DoWritePermFile( info, (char *)&data, sizeof( data ), false );
 }
 
 static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
 /*****************************************************************************/
 {
-    DoWritePermFile( info, data, len, FALSE );
+    DoWritePermFile( info, data, len, false );
 }
 
 static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
@@ -542,7 +542,7 @@ void WritePermData( void )
 
     if( !(LinkFlags & INC_LINK_FLAG) || LinkState & LINK_ERROR )
         return;
-    InitStringTable( &info.strtab, FALSE );
+    InitStringTable( &info.strtab, false );
     AddCharStringTable( &info.strtab, '\0' );   // make 0 idx not valid
     info.incfhdl = QOpenRW( IncFileName );
     hdr.flags = 0;
@@ -558,8 +558,8 @@ void WritePermData( void )
     BufWritePermFile( &info, &hdr, sizeof(inc_file_header) ); // reserve space
     PrepClasses( &info );
     hdr.numgroups = WriteGroups( &info );
-    hdr.numuserlibs = WriteLibList( &info, TRUE );
-    hdr.numdeflibs = WriteLibList( &info, FALSE );
+    hdr.numuserlibs = WriteLibList( &info, true );
+    hdr.numdeflibs = WriteLibList( &info, false );
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         PrepNameTable( FmtData.u.os2.mod_ref_list, &info );
         PrepNameTable( FmtData.u.os2.imp_tab_list, &info );
@@ -843,7 +843,7 @@ static void ReadStartInfo( inc_file_header *hdr )
 /***********************************************/
 {
     if( hdr->startmodidx != 0 ) {
-        StartInfo.from_inc = TRUE;
+        StartInfo.from_inc = true;
         StartInfo.mod = CarveMapIndex( CarveModEntry, (void *)(pointer_int)hdr->startmodidx);
         if( hdr->flags & INC_FLAG_START_SEG ) {
             StartInfo.type = START_IS_SDATA;

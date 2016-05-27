@@ -102,8 +102,8 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, 
     char        c;
 
     result = result; max_result = max_result;
-    has_ext = FALSE;
-    has_path = FALSE;
+    has_ext = false;
+    has_path = false;
     src = name;
     dst = trpfile;
     while( name_len-- > 0 ) {
@@ -111,14 +111,14 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, 
         *dst++ = c;
         switch( c ) {
         case '.':
-            has_ext = TRUE;
+            has_ext = true;
             break;
         case '/':
         case '\\':
-            has_ext = FALSE;
+            has_ext = false;
                 /* fall through */
         case ':':
-            has_path = TRUE;
+            has_path = true;
             break;
         }
     }

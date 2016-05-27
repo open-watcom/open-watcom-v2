@@ -71,7 +71,7 @@ public:
 class FFiltEntry
 {
 public:
-                        FFiltEntry() : _enabled( FALSE ) {}
+                        FFiltEntry() : _enabled( false ) {}
                         FFiltEntry( const char * nm, bool en )
                             : _enabled( en ), _name( nm ) {}
                         FFiltEntry( const FFiltEntry & o )
@@ -100,7 +100,7 @@ public:
             void        loadFiles();
 
             bool        enabled( const char * file );
-            bool        matches( dr_handle drhdl );
+            bool        matches( drmem_hdl drhdl );
 
             void        includeAll();
             void        excludeAll();

@@ -8,6 +8,7 @@
  */
 
 #include "socket.h"
+#include "stream.h"
 
 #if defined(USE_BSD_FUNC)
 
@@ -25,7 +26,7 @@ int sock_fgets (char *buf, int max, FILE *stream)
 
   /* !!to-do: this should read a single line only (use sock_gets?)
    */
-  return read_s (s, buf, max);  
+  return read_s (s, buf, max);
 }
 
 int sock_fputs (char *text, FILE *stream)

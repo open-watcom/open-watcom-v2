@@ -91,11 +91,11 @@ static void mustRecog( TOKEN token )
 void FunctionBodyDeadCode(      // MARK DEAD-CODE IN CURRENT FUNCTION
     void )
 {
-    currFunction->dead_code = TRUE;
-    currFunction->dead_diagnosed = FALSE;
+    currFunction->dead_code = true;
+    currFunction->dead_diagnosed = false;
 }
 
-static void doJUMP( int op, unsigned condition, CGLABEL destination )
+static void doJUMP( CGINTEROP op, cg_op condition, CGLABEL destination )
 {
     CgFrontGotoNear( op, condition, destination );
     if( condition == O_GOTO ) {
@@ -106,7 +106,7 @@ static void doJUMP( int op, unsigned condition, CGLABEL destination )
 static void dumpCSLabel( CGLABEL lbl )
 {
     CgFrontLabdefCs( lbl );
-    currFunction->dead_code = FALSE;
+    currFunction->dead_code = false;
 }
 
 static void dumpBlkLabel(       // DUMP A BLOCK LABEL
@@ -137,7 +137,7 @@ static LAB_REF *refBlkLabel(    // REFERENCE A BLOCK LABEL
 
 static void jumpBlkLabel(       // JUMP TO BLOCK LABEL
     BLK_LABEL *lab,             // - the label
-    unsigned condition )        // - type of jump
+    cg_op condition )           // - type of jump
 {
     LabelRefFree( refBlkLabel( lab ) );
     doJUMP( IC_LABEL_CS, condition, lab->id );
@@ -165,7 +165,7 @@ static void ensureLiveCode(     // ENSURE WE DON'T HAVE DEAD CODE (PARSE)
 {
     if( currFunction->dead_code && ! currFunction->dead_diagnosed ) {
         CErr1( WARN_DEAD_CODE );
-        currFunction->dead_diagnosed = TRUE;
+        currFunction->dead_diagnosed = true;
     }
 }
 
@@ -174,7 +174,7 @@ static void ensureLiveExpr(     // ENSURE WE DON'T HAVE DEAD CODE (EXPR)
 {
     if( currFunction->dead_code && ! currFunction->dead_diagnosed ) {
         PTreeWarnExpr( expr, WARN_DEAD_CODE );
-        currFunction->dead_diagnosed = TRUE;
+        currFunction->dead_diagnosed = true;
     }
 }
 
@@ -212,7 +212,7 @@ static EXPR_ANAL exprAnalyse(
 }
 
 static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
-    bool is_zero,               // - TRUE ==> zero constant
+    bool is_zero,               // - true ==> zero constant
     bool parsed_int_const,      // - user coded an int constant
     PTREE expr )                // - expression
 {
@@ -220,7 +220,7 @@ static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
 
     ctl = currFunction->control;
     if( is_zero ) {
-        ctl->expr_false = TRUE;
+        ctl->expr_false = true;
         switch( ctl->id ) {
           case CS_IF :
             PTreeWarnExpr( expr, WARN_IF_ALWAYS_FALSE );
@@ -241,7 +241,7 @@ static void warnBoolConstVal(   // WARN: FOR A CONSTANT VALUE
             break;
         }
     } else {
-        ctl->expr_true = TRUE;
+        ctl->expr_true = true;
         switch( ctl->id ) {
           case CS_WHILE :
           case CS_DO :
@@ -273,7 +273,7 @@ static void warnBoolConst(      // WARN, WHEN SPECIFIC BOOLEAN CONSTANT
                         , parsed_int_const
                         , expr );
     } else if( expr->flags & PTF_PTR_NONZERO ) {
-        warnBoolConstVal( FALSE, parsed_int_const, expr );
+        warnBoolConstVal( false, parsed_int_const, expr );
     }
 }
 
@@ -331,7 +331,8 @@ static void declExprStmt( bool for_stmts_decl )
 {
     PTREE expr_tree;
 
-    if( CurToken == T_EOF ) return;
+    if( CurToken == T_EOF )
+        return;
     expr_tree = ParseExprDecl();
     if( expr_tree != NULL ) {
         emitStmtExpr( expr_tree );
@@ -365,8 +366,8 @@ static CSTACK *beginControl( cs_block_type id )
         new_block->u.b.block = currFunction->block_count;
         break;
     }
-    new_block->expr_true = FALSE;
-    new_block->expr_false = FALSE;
+    new_block->expr_true = false;
+    new_block->expr_false = false;
     return( new_block );
 }
 
@@ -439,14 +440,14 @@ static FNLABEL *findLabel( NAME name )
     new_label = RingCarveAlloc( carveFNLABEL, &currFunction->labels );
     new_label->name = name;
     new_label->block = currFunction->block_count;
-    new_label->defined = FALSE;
-    new_label->dangerous = FALSE;
+    new_label->defined = false;
+    new_label->dangerous = false;
     new_label->destination.id = CgFrontLabelGoto();
     new_label->destination.defn = LabelAllocLabDef();
     if( PragToggle.unreferenced ) {
-        new_label->referenced = FALSE;
+        new_label->referenced = false;
     } else {
-        new_label->referenced = TRUE;
+        new_label->referenced = true;
     }
     return( new_label );
 }
@@ -468,11 +469,11 @@ static void parseLabels( void )
             CErr2p( ERR_LABEL_ALREADY_DEFINED, label->name );
             InfMsgPtr( INF_PREVIOUS_LABEL, &label->destination.defn->locn );
         } else {
-            label->defined = TRUE;
+            label->defined = true;
             CgFrontLabdefGoto( label->destination.id );
             LabelDefine( label->destination.defn );
         }
-        currFunction->dead_code = FALSE;
+        currFunction->dead_code = false;
         nextYYToken();
         nextYYToken();
     }
@@ -511,7 +512,7 @@ static void parseIfStmt( void )
         }
     } else {
         jumpBlkLabel( &if_block->u.i.else_part, O_GOTO );
-        currFunction->dead_code = FALSE;
+        currFunction->dead_code = false;
     }
 }
 
@@ -573,7 +574,7 @@ static void parseWhileStmt( void )
         }
     } else {
         jumpBlkLabel( &loop->outside, O_GOTO );
-        currFunction->dead_code = FALSE;
+        currFunction->dead_code = false;
     }
 }
 
@@ -596,7 +597,7 @@ static void parseForStmt( void )
         mustRecog( T_SEMI_COLON );
     } else {
         ensureLiveCode();
-        declExprStmt( TRUE );
+        declExprStmt( true );
     }
     if( CurToken == T_SEMI_COLON ) {
         test_type = EXPR_ANAL_NONE;
@@ -654,9 +655,9 @@ static PTREE analyseSwitchExpr( // ANALYSE SWITCH EXPRESSION
         switch_block = currFunction->control;
         switch_block->u.s.type = expr->type;
         if( UnsignedIntType( expr->type ) ) {
-            switch_block->u.s.is_signed = FALSE;
+            switch_block->u.s.is_signed = false;
         } else {
-            switch_block->u.s.is_signed = TRUE;
+            switch_block->u.s.is_signed = true;
         }
     }
     return( expr );
@@ -677,7 +678,7 @@ static void parseSwitchStmt( void )
     switch_block->u.s.imm_block = NULL;
     switch_block->u.s.default_dropped = 0;
     switch_block->u.s.defn_scope = GetCurrScope();
-    switch_block->u.s.is_signed = TRUE;
+    switch_block->u.s.is_signed = true;
     switch_block->u.s.default_locn.src_file = NULL;
     SrcFileGetTokenLocn( &switch_block->u.s.switch_locn );
     parseBracketExpr( &analyseSwitchExpr );
@@ -686,9 +687,9 @@ static void parseSwitchStmt( void )
     FunctionBodyDeadCode();
     openScope();
     if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
-        switch_block->u.s.block_after = TRUE;
+        switch_block->u.s.block_after = true;
     } else {
-        switch_block->u.s.block_after = FALSE;
+        switch_block->u.s.block_after = false;
     }
 }
 
@@ -711,10 +712,10 @@ static bool is_dup_case(        // DIAGNOSE A DUPLICATE CASE
             }
             CErr2p( err_code, buff );
             InfMsgPtr( INF_PREVIOUS_CASE, &curr->defined );
-            return( TRUE );
+            return( true );
         }
     } RingIterEnd( curr )
-    return( FALSE );
+    return( false );
 }
 
 static SWCASE *makeCaseEntry(   // MAKE CASE/DEFAULT ENTRY
@@ -796,7 +797,7 @@ static void parseCaseStmt( void )
         case_entry = makeCaseEntry( &srcposn, my_switch );
     }
     if( case_entry == NULL ) {
-        currFunction->dead_code = FALSE;
+        currFunction->dead_code = false;
         return;
     }
     if( my_switch->u.s.cases == NULL ) {
@@ -807,7 +808,7 @@ static void parseCaseStmt( void )
                      , currFunction->dead_code
                      , &srcposn
                      , case_entry->value );
-    currFunction->dead_code = FALSE;
+    currFunction->dead_code = false;
     RingAppend( &(my_switch->u.s.cases), case_entry );
     if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
         CErr1( ERR_STMT_REQUIRED_AFTER_CASE );
@@ -818,11 +819,11 @@ static void genDefaultStmt(     // GENERATE A DEFAULT STATEMENT
     CSTACK *my_switch,          // - control block for switch
     TOKEN_LOCN *posn )          // - source position
 {
-    my_switch->u.s.default_dropped = TRUE;
+    my_switch->u.s.default_dropped = true;
     CgFrontSwitchDefault( my_switch->u.s.defn_scope
                         , currFunction->dead_code
                         , posn );
-    currFunction->dead_code = FALSE;
+    currFunction->dead_code = false;
 }
 
 static void parseDefaultStmt( void )
@@ -842,7 +843,7 @@ static void parseDefaultStmt( void )
     mustRecog( T_COLON );
     if( ( my_switch == NULL )
       ||( my_switch->u.s.default_dropped ) ) {
-        currFunction->dead_code = FALSE;
+        currFunction->dead_code = false;
         return;
     }
     LabelSwitch( my_switch->u.s.defn_scope );
@@ -924,13 +925,13 @@ static void parseReturnStmt( SYMBOL func )
     ensureLiveCode();
     nextYYToken();
     return_sym = SymFunctionReturn();
-    expecting_return = TRUE;
-    optimizing_return = FALSE;
+    expecting_return = true;
+    optimizing_return = false;
     if( return_sym == NULL
      || currFunction->is_ctor
      || currFunction->is_dtor ) {
-        expecting_return = FALSE;
-        currFunction->retn_opt = FALSE;
+        expecting_return = false;
+        currFunction->retn_opt = false;
     }
     return_operand = NULL;
     if( CurToken == T_SEMI_COLON ) {
@@ -938,7 +939,7 @@ static void parseReturnStmt( SYMBOL func )
             CErr1( ERR_MISSING_RETURN_VALUE );
         }
     } else {
-        currFunction->ret_reqd = TRUE;
+        currFunction->ret_reqd = true;
         expr = safeParseExpr( T_SEMI_COLON );
         if( expr != NULL ) {
             if( expecting_return ) {
@@ -947,7 +948,7 @@ static void parseReturnStmt( SYMBOL func )
                 } else {
                     if( currFunction->retn_opt ) {
                         // start bracketting
-                        optimizing_return = TRUE;
+                        optimizing_return = true;
                     }
                     emitCodeExpr( AnalyseReturnExpr( func, expr ) );
                     return_operand = return_sym;
@@ -986,7 +987,7 @@ bool FnRetnOpt(                 // TEST IF RETURN OPTIMIZATION ACTIVE
 void FnRetnOptOff(              // TURN OFF RETURN OPTIMIZATION
     void )
 {
-    currFunction->retn_opt = FALSE;
+    currFunction->retn_opt = false;
 }
 
 void FnRetnOptSetSym(           // SET SYMBOL FOR RETURN OPTIMIZATION
@@ -1005,7 +1006,7 @@ SYMBOL FnRetnOptSym(            // GET SYMBOL FOR RETURN OPTIMIZATION
 bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
     SYMBOL sym )                // - candidate symbol
 {
-    bool retn;                  // - return: FALSE ==> symbol never optimized
+    bool retb;                  // - return: false ==> symbol never optimized
 
     if( currFunction->retn_opt
      && SymIsAutomatic( sym )
@@ -1014,11 +1015,11 @@ bool FnRetnOptimizable(         // TEST IF SYMBOL COULD BE OPTIMIZED AWAY
      && ! SymIsArgument( sym ) ) {
         SYMBOL func = ScopeFunctionInProgress();
         TYPE retn_type = FunctionDeclarationType( func->sym_type ) -> of;
-        retn = TypesIdentical( retn_type, sym->sym_type );
+        retb = TypesIdentical( retn_type, sym->sym_type );
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -1039,7 +1040,7 @@ static void parseGotoStmt( void )
         } else {
             LabelGotoFwd( lab_ref );
         }
-        label->referenced = TRUE;
+        label->referenced = true;
         doJUMP( IC_LABEL_GOTO, O_GOTO, label->destination.id );
     }
     if( CurToken != T_SEMI_COLON ) {
@@ -1075,7 +1076,7 @@ static void parseTryBlock(      // PARSE TRY
     ExceptionsCheck();
     ScopeMarkVisibleAutosInMem();
     try_block = beginControl( CS_TRY );
-    try_block->u.t.catch_err = FALSE;
+    try_block->u.t.catch_err = false;
     try_block->u.t.catches = NULL;
     try_block->u.t.catch_no = 0;
     try_block->u.t.defn_scope = GetCurrScope();
@@ -1088,7 +1089,7 @@ static void parseTryBlock(      // PARSE TRY
     LabelSwitchBeg();
     LabelSwitch( try_block->u.t.defn_scope );
     CgFrontSwitchDefault( try_block->u.t.defn_scope
-                        , FALSE
+                        , false
                         , &try_block->u.t.try_locn );
     nextYYToken();
     mustRecog( T_LEFT_BRACE );
@@ -1186,28 +1187,28 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     TYPE old_test;              // - test type: old
     bool errors;                // - indicates errors during typesig lookup
     TYPE_SIG_ACCESS access;     // - type of type-sig access
-    bool retn;                  // - TRUE ==> no errors
+    bool retb;                  // - true ==> no errors
     #define CATT_REF_PTR_CLS (CATT_CLS | CATT_PTR | CATT_REF)
 
     SetErrLoc( cat_locn );
     type = getCatchTypeAttrs( type, &new_test, &new_attrs );
     if( new_attrs & CATT_PCPTR ) {
         CErr1( ERR_CANNOT_USE_PCPTR );
-        try_block->u.t.catch_err = TRUE;
-        return FALSE;
+        try_block->u.t.catch_err = true;
+        return false;
     }
     if( new_attrs & CATT_FAR ) {
         CErr1( ERR_USE_FAR );
-        try_block->u.t.catch_err = TRUE;
-        return FALSE;
+        try_block->u.t.catch_err = true;
+        return false;
     }
     if( (new_attrs & CATT_REF_PTR_CLS) == CATT_CLS ) {
         if( ! TypeDefedNonAbstract( type
                                   , NULL
                                   , ERR_CATCH_ABSTRACT
                                   , ERR_CATCH_UNDEFED ) ) {
-            try_block->u.t.catch_err = TRUE;
-            return FALSE;
+            try_block->u.t.catch_err = true;
+            return false;
         }
         if( TypeRequiresDtoring( type ) ) {
             access = TSA_COPY_CTOR | TSA_DTOR;
@@ -1217,18 +1218,18 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     } else {
         access = 0;
     }
-    retn = TRUE;
+    retb = true;
     TypeSigFind( access, type, NULL, &errors );
     if( errors ) {
-        try_block->u.t.catch_err = TRUE;
-        retn = FALSE;
+        try_block->u.t.catch_err = true;
+        retb = false;
     }
     new_attrs &= ~CATT_REF;
     RingIterBeg( try_block->u.t.catches, test ) {
         if( test->type == NULL ) {
             catchMsg( ERR_CATCH_FOLLOWS_ELLIPSIS, test );
-            try_block->u.t.catch_err = TRUE;
-            retn = FALSE;
+            try_block->u.t.catch_err = true;
+            retb = false;
             break;
         }
         getCatchTypeAttrs( test->type, &old_test, &old_attrs );
@@ -1253,7 +1254,7 @@ static bool makeFNCATCH(        // MAKE CATCH ENTRY
     catch_entry->defined = *cat_locn;
     CgFrontCodePtr( IC_CATCH_VAR, try_block->next->try_var );
     CgFrontCodePtr( IC_CATCH, type );
-    return retn;
+    return( retb );
 
     #undef CATT_REF_PTR_CLS
 }
@@ -1328,7 +1329,7 @@ static void parseCatchHandler(  // PARSE CATCH STATEMENT
         }
     }
     mustRecog( T_RIGHT_PAREN );
-    currFunction->dead_code = FALSE;
+    currFunction->dead_code = false;
     SrcPosnEmitCurrent();
     SrcFileGetTokenLocn( &blk );
     mustRecog( T_LEFT_BRACE );
@@ -1346,7 +1347,7 @@ static void parseCatchHandler(  // PARSE CATCH STATEMENT
         LabelSwitch( try_block->u.t.defn_scope );
         SrcFileGetTokenLocn( &posn );
         CgFrontSwitchCase( try_block->u.t.defn_scope
-                         , FALSE
+                         , false
                          , &posn
                          , try_block->u.t.catch_no );
         LabelBlkCatch( &blk, try_block );
@@ -1381,7 +1382,7 @@ static void parseAsmStmt( TYPE fn_type )
 
 
 static bool endOfStmt(          // PROCESS END-OF-STATEMENT
-    bool recog )                // - TRUE ==> need to recognize token
+    bool recog )                // - true ==> need to recognize token
 {
     CSTACK *top_block;
     CSTACK *next;
@@ -1429,7 +1430,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
         case CS_IF:
             if( recog ) {
                 nextYYToken();
-                recog = FALSE;
+                recog = false;
             }
             if( CurToken == T_ELSE ) {
                 parseElseStmt();
@@ -1459,7 +1460,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                 dumpOutsideLabel( top_block );
             }
             if( ! dead_code ) {
-                currFunction->dead_code = FALSE;
+                currFunction->dead_code = false;
             }
             closeScope();
             CgFrontLabfreeCs( 1 );
@@ -1480,7 +1481,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
         case CS_DO:
             if( recog ) {
                 nextYYToken();
-                recog = FALSE;
+                recog = false;
             }
             mustRecog( T_WHILE );
             if( top_block->u.l.continue_loop.defn != NULL ) {
@@ -1499,7 +1500,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                 }
             } else {
                 doJUMP( IC_LABEL_CS, O_GOTO, top_block->u.l.top_loop );
-                currFunction->dead_code = FALSE;
+                currFunction->dead_code = false;
             }
             mustRecog( T_SEMI_COLON );
             dumpOutsideLabel( top_block );
@@ -1537,7 +1538,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
         case CS_TRY:
             if( recog ) {
                 nextYYToken();
-                recog = FALSE;
+                recog = false;
             }
             if( CurToken == T_CATCH ) return recog;
             if( ! top_block->u.t.catch_err ) {
@@ -1548,7 +1549,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
         case CS_CATCH:
             if( recog ) {
                 nextYYToken();
-                recog = FALSE;
+                recog = false;
             }
             if( CurToken == T_CATCH ) return recog;
             completeTry( top_block );
@@ -1598,7 +1599,7 @@ static void insertFunctionReturn( SYMBOL func )
 static void exceptSpec(         // GENERATE AN EXCEPTION SPECIFICATION
     TYPE except )               // - type of spec
 {
-    bool err_occurred;          // - TRUE ==> error during type-sig
+    bool err_occurred;          // - true ==> error during type-sig
 
     TypeSigFind( 0, except, NULL, &err_occurred );
 #ifndef NDEBUG
@@ -1616,16 +1617,16 @@ static void setExceptionSpecs(  // SET EXCEPTION SPEC.S FOR FUNCTION
 {
     TYPE *excepts;              // - vector of exception specifications
     TYPE except;                // - current exception specification
-    bool no_excepts_allowed;    // - TRUE ==> no exceptions allowed
+    bool no_excepts_allowed;    // - true ==> no exceptions allowed
 
     excepts = SymFuncArgList( func )->except_spec;
     if( excepts != NULL ) {
         ExceptionsCheck();
-        no_excepts_allowed = TRUE;
+        no_excepts_allowed = true;
         for( ; ; ) {
             except = *excepts++;
             if( NULL == except ) break;
-            no_excepts_allowed = FALSE;
+            no_excepts_allowed = false;
             exceptSpec( except );
         }
         if( no_excepts_allowed ) {
@@ -1656,28 +1657,28 @@ static void initFunctionData(   // INITIALIZE FUNCTION DATA (BEFORE FNSTARTUP)
     f->init_var.mask = 1;
     f->access_errs = NULL;
     f->retn_opt_sym = NULL;
-    f->dead_code = FALSE;
-    f->dead_diagnosed = FALSE;
-    f->always_dead_code = FALSE;
-    f->is_ctor = FALSE;
-    f->is_dtor = FALSE;
-    f->is_assign = FALSE;
-    f->is_defarg = FALSE;
-    f->ret_reqd = FALSE;
-    f->has_mem_init = FALSE;
-    f->has_state_tab = FALSE;
-    f->can_throw = FALSE;
-    f->does_throw = FALSE;
-    f->ctor_test = FALSE;
-    f->floating_ss = FALSE;
-    f->retn_opt = TRUE;
+    f->dead_code = false;
+    f->dead_diagnosed = false;
+    f->always_dead_code = false;
+    f->is_ctor = false;
+    f->is_dtor = false;
+    f->is_assign = false;
+    f->is_defarg = false;
+    f->ret_reqd = false;
+    f->has_mem_init = false;
+    f->has_state_tab = false;
+    f->can_throw = false;
+    f->does_throw = false;
+    f->ctor_test = false;
+    f->floating_ss = false;
+    f->retn_opt = true;
     fn_name = func->name->name;
     if( fn_name == CppConstructorName() ) {
-        f->is_ctor = TRUE;
+        f->is_ctor = true;
     } else if( fn_name == CppDestructorName() ) {
-        f->is_dtor = TRUE;
+        f->is_dtor = true;
     } else if( fn_name == CppOperatorName( CO_EQUAL ) ) {
-        f->is_assign = TRUE;
+        f->is_assign = true;
     }
 }
 
@@ -1826,7 +1827,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
         if( fn_type->flag & TF1_INTERRUPT ) {
             if( ! CompFlags.mfi_switch_used ) {
                 TargetSwitches |= FLOATING_SS;
-                f->floating_ss = TRUE;
+                f->floating_ss = true;
             }
         }
     }
@@ -1834,7 +1835,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     mem_init = dinfo->mem_init;
     dinfo->mem_init = NULL;
     if( mem_init != NULL && f->is_ctor ) {
-        f->has_mem_init = TRUE;
+        f->has_mem_init = true;
     }
     beginControl( CS_FUNCTION );
     while( CurToken == T_SEMI_COLON ) {
@@ -1983,7 +1984,7 @@ static TYPE handleDefnChecks( SYMBOL func )
 
     DbgAssert( FunctionDeclarationType( func->sym_type ) != NULL );
     fn_type = TypeGetActualFlags( func->sym_type, &flags );
-    fn_type->of = BindTemplateClass( fn_type->of, &func->locn->tl, FALSE );
+    fn_type->of = BindTemplateClass( fn_type->of, &func->locn->tl, false );
     if( ! TypeDefined( fn_type->of ) ) {
         SetErrLoc( &func->locn->tl );
         CErr2p( ERR_CLASS_NOT_DEFINED, TypeClassInfo( fn_type->of )->name );
@@ -2017,14 +2018,14 @@ static void handleDefnChangesToSym( SYMBOL func )
                 stg_class = SC_STATIC;
             } else {
                 stg_class = SC_PUBLIC;
-                CompFlags.external_defn_found = TRUE;
+                CompFlags.external_defn_found = true;
             }
             func->id = stg_class;
             break;
         }
     } else if( ScopeType( scope, SCOPE_CLASS ) ) {
         if( ! SymIsInline( func ) ) {
-            CompFlags.external_defn_found = TRUE;
+            CompFlags.external_defn_found = true;
         }
     }
 }
@@ -2040,16 +2041,16 @@ static bool noPendingForwardGotos( FUNCTION_DATA *fdata )
         case CS_FUNCTION:
             break;
         default:
-            return( FALSE );
+            return( false );
         }
     }
     RingIterBeg( fdata->labels, curr_lbl ) {
         if( ! curr_lbl->defined ) {
             /* goto LABEL; found but LABEL: has not been seen yet */
-            return( FALSE );
+            return( false );
         }
     } RingIterEnd( curr_lbl )
-    return( TRUE );
+    return( true );
 }
 
 void FunctionBody( DECL_INFO *dinfo )
@@ -2118,7 +2119,7 @@ void FunctionBody( DECL_INFO *dinfo )
     // after initFunctionBody so .DEF files can have names in their prototypes
     MainProcSetup( func );
     for(;;) {
-        recog_token = FALSE;
+        recog_token = false;
         set_output( func );
         parseLabels();
         switch( CurToken ) {
@@ -2186,7 +2187,7 @@ void FunctionBody( DECL_INFO *dinfo )
             startBlock();
             if( ( fn_data.control->next->id == CS_SWITCH )
               &&( fn_data.control->next->u.s.block_after ) ) {
-                fn_data.control->u.b.block_switch = TRUE;
+                fn_data.control->u.b.block_switch = true;
             }
             nextYYToken();
             continue;
@@ -2196,19 +2197,19 @@ void FunctionBody( DECL_INFO *dinfo )
                 CErr1( ERR_MISPLACED_RIGHT_BRACE );
             }
             if( fn_data.depth > fn_data.outer_depth ) {
-                recog_token = TRUE;
+                recog_token = true;
             }
             set_output( func );
             break;
         case T_SEMI_COLON:
             if( fn_data.control->id != CS_BLOCK ) {
-                recog_token = TRUE;
+                recog_token = true;
                 break;
             }
             nextYYToken();
             continue;
         default:
-            declExprStmt( FALSE );
+            declExprStmt( false );
             if( fn_data.control->id != CS_BLOCK ) break;
             continue;
         }
@@ -2218,7 +2219,7 @@ void FunctionBody( DECL_INFO *dinfo )
         }
         if( fn_data.dead_code ) {
             if( noPendingForwardGotos( &fn_data ) ) {
-                fn_data.always_dead_code = TRUE;
+                fn_data.always_dead_code = true;
             }
         }
         if( fn_data.depth == 0 ) break;
@@ -2300,7 +2301,7 @@ bool DefargBeingCompiled(       // TEST IF DEFARG-FUNCTION BEING COMPILED
 void FunctionHasRegistration(   // RECORD THAT FUNCTION NEEDS STATE TABLE
     void )
 {
-    currFunction->has_state_tab = TRUE;
+    currFunction->has_state_tab = true;
 }
 
 
@@ -2331,7 +2332,7 @@ ACCESS_ERR** FunctionBodyAccessErrors( // POINT AT HDR OF ACCESS ERRORS
 PTREE FunctionCouldThrow(       // INDICATE FUNCTION COULD THROW / HAS LONGJUMP
     PTREE expr )                // - expression
 {
-    currFunction->does_throw = TRUE;
+    currFunction->does_throw = true;
     return PtdThrow( expr );
 }
 
@@ -2339,7 +2340,7 @@ PTREE FunctionCouldThrow(       // INDICATE FUNCTION COULD THROW / HAS LONGJUMP
 void FunctionMightThrow(        // INDICATE THAT FUNCTION MIGHT THROW
     void )
 {
-    currFunction->can_throw = TRUE;
+    currFunction->can_throw = true;
 }
 
 
@@ -2353,7 +2354,7 @@ PTREE FunctionCalled(           // RECORD A FUNCTION CALL
     if( called_flag & SF_LONGJUMP ) {
         expr = FunctionCouldThrow( expr );
     } else if( (called_flag & SF_NO_LONGJUMP) == 0 ) {
-        currFunction->can_throw = TRUE;
+        currFunction->can_throw = true;
     }
     return expr;
 }
@@ -2363,7 +2364,7 @@ void FunctionHasCtorTest(       // INDICATE THAT FUNCTION MIGHT HAVE CTOR-TEST
     void )
 {
     if( ! currFunction->ctor_test ) {
-        currFunction->ctor_test = TRUE;
+        currFunction->ctor_test = true;
         FunctionRegistrationFlag();
     }
 }
@@ -2390,14 +2391,14 @@ void FunctionBodyDefargStartup(
     FUNCTION_DATA *f )  // - function data
 {
     initFunctionData(func, f);
-    f->is_defarg = TRUE;
+    f->is_defarg = true;
 }
 
 void FunctionBodyDefargShutdown(
     FUNCTION_DATA *f )          // - data
 {
     f = f;
-    DbgAssert( f->is_defarg == TRUE );
+    DbgAssert( f->is_defarg == true );
     currFunction = currFunction->next;
 }
 

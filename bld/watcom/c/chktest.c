@@ -43,14 +43,14 @@ char err[1] = { '\0' };
 
 FILE *ofp;
 
-void fatal( char *msg )
+static void fatal( char *msg )
 {
     fprintf( stderr, "error on line %u\n", line );
     fprintf( stderr, "%s\n", msg );
     exit( 1 );
 }
 
-void tprintf( char const *f, ... ) {
+static void tprintf( char const *f, ... ) {
     va_list args;
 
     if( !ofp ) {
@@ -68,7 +68,7 @@ void tprintf( char const *f, ... ) {
     va_end( args );
 }
 
-char *SkipSequenceOf( char *p, char c ) {
+static char *SkipSequenceOf( char *p, char c ) {
     char *s = p;
     while( *p ) {
         if( *p != c ) break;
@@ -78,7 +78,7 @@ char *SkipSequenceOf( char *p, char c ) {
     return( p );
 }
 
-char *SkipTime( char *p ) {
+static char *SkipTime( char *p ) {
     char *s;
     s = p;
     while( *p ) {
@@ -111,7 +111,7 @@ char *SkipTime( char *p ) {
     return( p );
 }
 
-char *SkipTestDir( char *p, char *t ) {
+static char *SkipTestDir( char *p, char *t ) {
     char *s = p;
 
     while( *p ) {
@@ -124,7 +124,7 @@ char *SkipTestDir( char *p, char *t ) {
     return( p );
 }
 
-char *SkipStr( char *p, char *s ) {
+static char *SkipStr( char *p, char *s ) {
     while( *p ) {
         if( *s == '\0' ) break;
         if( *p != *s ) return( err );
@@ -134,7 +134,7 @@ char *SkipStr( char *p, char *s ) {
     return( p );
 }
 
-int IsCdsayLine( char *t ) {
+static int IsCdsayLine( char *t ) {
     char *p;
 
     p = SkipSequenceOf( buff, '=' );
@@ -153,7 +153,7 @@ int IsCdsayLine( char *t ) {
     return( *p == '\0' && p != err );
 }
 
-int IsPassLine( char *t ) {
+static int IsPassLine( char *t ) {
     char *p;
 
     p = SkipStr( buff, "PASS" );
@@ -164,7 +164,7 @@ int IsPassLine( char *t ) {
     return( *p == '\0' && p != err );
 }
 
-int IsTestLine( char *t ) {
+static int IsTestLine( char *t ) {
     char *p;
 
     p = SkipStr( buff, "TEST" );
@@ -175,7 +175,7 @@ int IsTestLine( char *t ) {
     return( *p == '\0' && p != err );
 }
 
-void *my_fgets( FILE *fp ) {
+static void *my_fgets( FILE *fp ) {
     char *p;
 
     if( feof( fp ) || fgets( buff, sizeof(buff), fp ) == NULL )

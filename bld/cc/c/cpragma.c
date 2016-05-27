@@ -141,7 +141,7 @@ bool SetToggleFlag( char const *name, int const value )
     size_t  len;
 
     len = strlen( name ) + 1;
-    ret = FALSE;
+    ret = false;
     for( i = 0; (pnt = ToggleNames[i].name) != NULL; ++i ) {
         if( memcmp( pnt, name, len ) == 0 ) {
             if( value == 0 ) {
@@ -149,7 +149,7 @@ bool SetToggleFlag( char const *name, int const value )
             } else {
                 Toggles |= ToggleNames[i].flag;
             }
-            ret = TRUE;
+            ret = true;
             break;
         }
     }
@@ -195,7 +195,7 @@ bool PragRecog( const char *what )
     if( IS_ID_OR_KEYWORD( CurToken ) ) {
         return( PragIdRecog( what ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void PragFlag( int value )
@@ -877,10 +877,10 @@ static void PragEnum( void )    // #pragma enum PARSING
 {
     if( PragRecog( "int" ) ) {
         PushEnum();
-        CompFlags.make_enums_an_int = TRUE;
+        CompFlags.make_enums_an_int = true;
     } else if( PragRecog( "minimum" ) ) {
         PushEnum();
-        CompFlags.make_enums_an_int = FALSE;
+        CompFlags.make_enums_an_int = false;
     } else if( PragRecog( "original" ) ) {
         PushEnum();
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
@@ -1060,7 +1060,7 @@ static void PragIncludeAlias( void )
             NextToken();
             MustRecog( T_COMMA );
             if( CurToken == T_STRING ) {
-                SrcFileIncludeAlias( alias_name, Buffer, FALSE );
+                SrcFileIncludeAlias( alias_name, Buffer, false );
                 NextToken();
             }
             CMemFree( alias_name );
@@ -1086,7 +1086,7 @@ static void PragIncludeAlias( void )
                     }
                     strncat( r_buf, Buffer, sizeof( r_buf ) - 2 );
                 }
-                SrcFileIncludeAlias( a_buf, r_buf, TRUE );
+                SrcFileIncludeAlias( a_buf, r_buf, true );
             }
         }
         PPCTL_DISABLE_MACROS();
@@ -1270,7 +1270,7 @@ static void PragAlias( void )
 void CPragma( void )
 /******************/
 {
-    bool    check_end = TRUE;
+    bool    check_end = true;
 
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
@@ -1335,10 +1335,10 @@ void CPragma( void )
         } else if( PragIdRecog( "alias" ) ) {
             PragAlias();
         } else {
-            check_end = FALSE;
+            check_end = false;
         }
     } else {
-        check_end = FALSE;
+        check_end = false;
     }
     if( check_end )
         EndOfPragma();

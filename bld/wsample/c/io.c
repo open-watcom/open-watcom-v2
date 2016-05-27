@@ -59,7 +59,7 @@ int SampWrite( void FAR_PTR *buff, unsigned len )
     } else {
         SysSeek( SampleHandle, SampOffset );
         SysWrite( SampleHandle, "", 0 );                /* truncate the file */
-        FarWriteProblem = 1;
+        FarWriteProblem = true;
         return( -1 );
     }
 }
@@ -82,6 +82,7 @@ void Output( char FAR_PTR *str )
 {
     char FAR_PTR *p = str;
     int len = 0;
-    while( *p++ ) ++len;
+    while( *p++ )
+        ++len;
     SysWrite( 2, str, len );
 }

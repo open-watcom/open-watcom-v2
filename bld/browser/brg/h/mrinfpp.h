@@ -40,7 +40,7 @@ class MergeInfoSection;
 
 struct InfoPPReqNode {
     InfoPPReqNode() : inOff( 0 ), outOff( 0 ), sibOff( 0 ) {}
-    bool operator== ( const InfoPPReqNode & ) const { return FALSE; }
+    bool operator== ( const InfoPPReqNode & ) const { return false; }
     uint_32 inOff;
     uint_32 outOff;
     uint_32 sibOff;

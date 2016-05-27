@@ -234,7 +234,7 @@ static  bool    IsDoubleByteBlank( char *ptr ) {
 // Determine if character is a double-byte blank character.
 
     ptr = ptr;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -242,7 +242,7 @@ static  bool    IsDoubleByteChar( char ch ) {
 // Determine if character is a double-byte character.
 
     ch = ch;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -258,7 +258,7 @@ static  bool    IsForeign( char ch ) {
 // Determine if character is a foreign character (i.e. non-ASCII).
 
     ch = ch;
-    return( FALSE );
+    return( false );
 }
 
 

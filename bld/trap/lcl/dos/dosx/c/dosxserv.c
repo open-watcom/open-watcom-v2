@@ -94,15 +94,15 @@ bool Session( void )
         TRP_REQUEST( In ) &= ~0x80;
         if( req & 0x80 ) {
             req &= ~0x80;
-            want_return = FALSE;
+            want_return = false;
         } else {
-            want_return = TRUE;
+            want_return = true;
         }
         switch( req ) {
         case REQ_PROG_KILL:
             _DBG(("REQ_KILL_PROG\n"));
-            AccTrap( TRUE );
-            return( TRUE );
+            AccTrap( true );
+            return( true );
         default:
             _DBG(("AccTrap\n"));
             AccTrap( want_return );
@@ -118,7 +118,7 @@ static void Initialize( void )
     const char  *err;
 
     _DBG(("About to remote link in initialize.\n" ));
-    err = RemoteLinkX( "", TRUE );
+    err = RemoteLink( "", true );
     _DBG(( "Back from PM remote link\n" ));
     if( err != NULL ) {
         _DBG(( "ERROR! '%s'\n", err ));
@@ -133,9 +133,9 @@ static void Initialize( void )
 #endif
     }
     _DBG(( "No Remote link error. About to TrapInit." ));
-    TrapVer = TrapInit( "", RWBuff, FALSE );
+    TrapVer = TrapInit( "", RWBuff, false );
     if( RWBuff[0] != '\0' ) {
-// NO, NO, NO!  RemoteUnLinkX();
+// NO, NO, NO!  RemoteUnLink();
         StartupErr( RWBuff );
     }
     _DBG(( "No TrapInit error. Initialize complete" ));
@@ -170,7 +170,7 @@ int main( void )
     _DBG(("Calling RemoteDisco\n"));
     RemoteDisco();
     _DBG(("Calling RemoteUnLink\n"));
-    RemoteUnLinkX();
+    RemoteUnLink();
     _DBG(("After calling RemoteUnLink\n"));
 #ifdef ACAD
     LetACADDie();

@@ -41,7 +41,7 @@
 
 #define _OWLIndexToELFIndex( x )        ( (x) + FIRST_USER_SECTION )
 
-static int useRela;                     // Use .rela or .rel
+static bool useRela;                    // Use .rela or .rel
 
 static unsigned numSections( owl_file_handle file ) {
 //***************************************************
@@ -444,10 +444,10 @@ static void prepareRelocSections( owl_file_handle file ) {
     switch( file->info->cpu ) {
     case OWL_CPU_INTEL:
     case OWL_CPU_MIPS:    // MIPS SysV ABI supplement says so
-        useRela = FALSE;
+        useRela = false;
         break;
     default:
-        useRela = TRUE; // This seems to be the common case
+        useRela = true; // This seems to be the common case
         break;
     }
     for( curr = file->sections; curr != NULL; curr = curr->next ) {

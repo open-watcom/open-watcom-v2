@@ -513,7 +513,7 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
     /* check the LineCue function */
     if( Opts.do_cue_tests ) {
         search_rc = LineCue( mod, file_id, 0, 0, cue2 );
-        CompareCues( cue, cue2, SR_EXACT, search_rc, TRUE, FALSE, TRUE, FALSE,
+        CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, true, false,
                      "LineCue(,,0,)" );
     }
 
@@ -546,19 +546,19 @@ static walk_result File2Callback( cue_handle *cue, void *ignored )
 
             /* line searches */
             search_rc = LineCue( mod, file_id, line, 0, cue2 );
-            CompareCues( cue, cue2, SR_EXACT, search_rc, TRUE, FALSE, FALSE, FALSE,
+            CompareCues( cue, cue2, SR_EXACT, search_rc, true, false, false, false,
                          "LineCue(,,n,)" );
             if( line > prev_line + 1 && prev_line >= 0 ) {
                 search_rc = LineCue( mod, file_id, line - 1, 0, cue2 );
                 CompareCues( prev_cue, cue2,
                              prev_line == line - 1 ? SR_EXACT : SR_CLOSEST,
-                             search_rc, TRUE, FALSE, FALSE, FALSE,
+                             search_rc, true, false, false, false,
                              "LineCue(,,n-1,)" );
             }
 
             /* address searches */
             search_rc = AddrCue( mod, addr, cue2 );
-            CompareCues( cue, cue2, SR_EXACT, search_rc, FALSE, FALSE, TRUE, FALSE,
+            CompareCues( cue, cue2, SR_EXACT, search_rc, false, false, true, false,
                          "AddrCue(,,n,)" );
         }
 
@@ -887,7 +887,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
  */
 static bool InitDIP( char **dips )
 {
-    bool    rc = FALSE;
+    bool    rc = false;
 
     if( !(DIPInit() & DS_ERR) ) {
         char        *ptr;

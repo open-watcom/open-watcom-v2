@@ -40,8 +40,8 @@
 #include "clibext.h"
 
 
-static bool SelStart =  FALSE;    // user has moused over a valid choice
-static bool Dclick =    FALSE;    // TRUE between DCLICK and MOUSE_RELEASE
+static bool SelStart =  false;    // user has moused over a valid choice
+static bool Dclick =    false;    // true between DCLICK and MOUSE_RELEASE
 
 enum    { R_UP, R_DOWN, R_UNS, R_SEL };
 
@@ -50,19 +50,19 @@ bool uigetlistelement( const void *data_handle, unsigned item, char *buff, unsig
     const char **p;
 
     if( data_handle == NULL ) {
-        return( FALSE );
+        return( false );
     }
     p = (const char **)data_handle;
     if( p[item] != NULL && p[0] != NULL ) {
         if( buff_len > 0 ) {
             strncpy( buff, p[item], buff_len );
         }
-        return( TRUE );
+        return( true );
     } else {
         if( buff_len > 0 ) {
             *buff = '\0';
         }
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -140,10 +140,10 @@ static bool checkitem( a_list *list, char typed, int index )
                 list->box->line = list->box->row;
                 setstartline( list );
             }
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 void uiupdatelistbox( a_list *list )
@@ -202,7 +202,7 @@ static int getlistsize( const void *data_handle, UIPICKGETTEXT *get )
 {
     int     item;
 
-    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != FALSE; item++ )
+    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != false; item++ )
         ;
     return( item );
 }
@@ -343,7 +343,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
     if( Dclick ) {
         switch( ev ) {
         case EV_MOUSE_PRESS :
-            Dclick = FALSE; /* must have gotten dlick without release */
+            Dclick = false; /* must have gotten dlick without release */
             /* fall through */
         case EV_SCROLL_LINE_UP :
         case EV_SCROLL_LINE_DOWN :
@@ -353,16 +353,16 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
         case EV_PAGE_DOWN :
         case EV_CURSOR_UP :
         case EV_CURSOR_DOWN :
-            SelStart = FALSE;
+            SelStart = false;
             break;
         case EV_MOUSE_RELEASE :
-            Dclick = FALSE;
+            Dclick = false;
             /* fall through */
         default :
             return( ev );
         }
     }
-    close = FALSE;
+    close = false;
     box = list->box;
     old_line = box->line;
     old_row = box->row;
@@ -381,7 +381,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
     newevent = EV_NO_EVENT;
     switch( ev ) {
         case EV_MOUSE_DCLICK:
-            Dclick = TRUE;
+            Dclick = true;
         case EV_MOUSE_PRESS:
         case EV_MOUSE_RELEASE:
         case EV_MOUSE_REPEAT:
@@ -392,7 +392,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
                 mpos = getmouseregion( list, &row, &col );
                 newevent = ev;
                 if( mpos == R_SEL ) {
-                    SelStart = TRUE;
+                    SelStart = true;
                     box->row  = (ORD) row - box->area.row;
                     box->row += box->line;
                 }
@@ -402,8 +402,8 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
                         newevent = EV_LIST_BOX_CHANGED;
                     }
                     if( SelStart ) {
-                        close = TRUE;
-                        SelStart = FALSE;
+                        close = true;
+                        SelStart = false;
                     }
                 } else if( ev == EV_MOUSE_PRESS || ev == EV_MOUSE_DCLICK ) {
                     if( mpos == R_SEL ) {
@@ -411,7 +411,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
                             newevent = EV_LIST_BOX_DCLICK;
                         }
                     } else {
-                        close = TRUE;
+                        close = true;
                     }
                 } else if( mpos == R_UP  &&  box->line > 0  &&  SelStart ) {
                     box->line--;
@@ -509,7 +509,7 @@ EVENT uilistbox( EVENT ev, a_list *list, bool permanent )
             box->line = box->gadget.pos;
             break;
         case EV_ALT_CURSOR_UP :
-            close = TRUE;
+            close = true;
             break;
         default :
             if( isalpha( ev ) ) {

@@ -138,12 +138,12 @@ static void IncLevel( bool value )
     cpp->src_loc = TokenLoc;
     cpp->flist = SrcFile->src_flist;
     cpp->cpp_type = PRE_IF;
-    cpp->processing = FALSE;
+    cpp->processing = false;
     CppStack = cpp;
     if( NestLevel == SkipLevel ) {
         if( value ) {
             ++SkipLevel;
-            cpp->processing = TRUE;
+            cpp->processing = true;
         }
     }
     ++NestLevel;
@@ -190,7 +190,7 @@ TOKEN ChkControl( void )
 
     if( !CompFlags.doing_macro_expansion ) {
         if( CompFlags.cpp_output ) {
-            PrintWhiteSpace = FALSE;
+            PrintWhiteSpace = false;
         }
     }
     while( CurrChar == '\n' ) {
@@ -198,7 +198,7 @@ TOKEN ChkControl( void )
             CErr1( ERR_BREAK_KEY_HIT );
             CSuicide();
         }
-        lines_skipped = FALSE;
+        lines_skipped = false;
         old_ppctl = CompFlags.pre_processing;
         for( ; CurrChar != EOF_CHAR; ) {
             if( CompFlags.cpp_output ) {
@@ -226,7 +226,7 @@ TOKEN ChkControl( void )
             if( NestLevel == SkipLevel )
                 break;
             if( CurrChar == '\n' ) {
-                lines_skipped = TRUE;
+                lines_skipped = true;
             }
         }
         if( CompFlags.cpp_output ) {
@@ -251,7 +251,7 @@ static void CSkip( void )
 
 static void CSkipIf( void )
 {
-    IncLevel( FALSE );
+    IncLevel( false );
 }
 
 
@@ -270,7 +270,7 @@ void CInclude( void )
 
     if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
         if( CompFlags.ok_to_use_precompiled_hdr ) {
-            CompFlags.use_precompiled_header = TRUE;
+            CompFlags.use_precompiled_header = true;
         }
     }
     if( CompFlags.use_precompiled_header ) {
@@ -282,7 +282,7 @@ void CInclude( void )
     PPNextToken();
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
-        OpenSrcFile( Buffer, FALSE );
+        OpenSrcFile( Buffer, false );
 #if _CPU == 370
         if( !CompFlags.use_precompiled_header ) {
             SrcFile->colum = Column;    /* do trunc and col on  */
@@ -297,7 +297,7 @@ void CInclude( void )
         for( ;; ) {
             PPNextToken();
             if( CurToken == T_GT ) {
-                OpenSrcFile( buf, TRUE );
+                OpenSrcFile( buf, true );
                 break;
             }
             strncat( buf, Buffer, sizeof( buf ) - 2 );
@@ -315,7 +315,7 @@ void CInclude( void )
     if( CurToken != T_EOF ) {
         PPNextToken();
     }
-    CompFlags.use_precompiled_header = FALSE;
+    CompFlags.use_precompiled_header = false;
 }
 
 
@@ -546,15 +546,15 @@ static void CIfDef( void )
     PPNextToken();
     if( CurToken != T_ID ) {
         ExpectIdentifier();
-        IncLevel( FALSE );
+        IncLevel( false );
         return;
     }
     mentry = MacroLookup( Buffer );
     if( mentry != NULL ) {
         mentry->macro_flags |= MFLAG_REFERENCED;
-        IncLevel( TRUE );
+        IncLevel( true );
     } else {
-        IncLevel( FALSE );
+        IncLevel( false );
     }
     PPNextToken();
     ChkEOL();
@@ -567,15 +567,15 @@ static void CIfNDef( void )
 
     PPNextToken();
     if( !ExpectingToken( T_ID ) ) {
-        IncLevel( FALSE );
+        IncLevel( false );
         return;
     }
     mentry = MacroLookup( Buffer );
     if( mentry != NULL ) {
         mentry->macro_flags |= MFLAG_REFERENCED;
-        IncLevel( FALSE );
+        IncLevel( false );
     } else {
-        IncLevel( TRUE );
+        IncLevel( true );
     }
     PPNextToken();
     ChkEOL();
@@ -627,7 +627,7 @@ static void CElif( void )
     } else {
         if( NestLevel == SkipLevel ) {
             --SkipLevel;                /* start skipping else part */
-            CppStack->processing = FALSE;
+            CppStack->processing = false;
             CppStack->cpp_type = PRE_ELIF;
         } else if( NestLevel == SkipLevel + 1 ) {
             /* only evaluate the expression when required */
@@ -636,7 +636,7 @@ static void CElif( void )
                 ChkEOL();
                 if( value ) {
                     SkipLevel = NestLevel; /* start including else part */
-                    CppStack->processing = TRUE;
+                    CppStack->processing = true;
                     CppStack->cpp_type = PRE_ELIF;
                 }
             }
@@ -653,12 +653,12 @@ static void CElse( void )
     } else {
         if( NestLevel == SkipLevel ) {
             --SkipLevel;                /* start skipping else part */
-            CppStack->processing = FALSE;
+            CppStack->processing = false;
         } else if( NestLevel == SkipLevel + 1 ) {
             /* cpp_type will be PRE_ELIF if an elif was true */
             if( CppStack->cpp_type == PRE_IF ) {
                 SkipLevel = NestLevel;  /* start including else part */
-                CppStack->processing = TRUE;
+                CppStack->processing = true;
             }
         }
         CppStack->cpp_type = PRE_ELSE;
@@ -698,7 +698,7 @@ bool MacroDel( const char *name )
     size_t      len;
     bool        ret;
 
-    ret = FALSE;
+    ret = false;
     if( CMPLIT( name, "defined" ) == 0 ) {
         CErr2p( ERR_CANT_UNDEF_THESE_NAMES, name  );
         return( ret );
@@ -726,7 +726,7 @@ bool MacroDel( const char *name )
                     UndefMacroList = mentry;
                 }
             }
-            ret = TRUE;
+            ret = true;
         }
     }
     return( ret );
@@ -774,7 +774,7 @@ static void CLine( void )
                     if( CompFlags.cpp_ignore_line == 0 ) {
                         // RemoveEscapes( Buffer );
                         flist = AddFlist( Buffer );
-                        flist->rwflag = FALSE;  // not a real file so no autodep
+                        flist->rwflag = false;  // not a real file so no autodep
                         SrcFile->src_name = flist->name;
                         SrcFile->src_loc.fno = flist->index;
                         if( CompFlags.cpp_output ) {
@@ -806,7 +806,7 @@ static void CError( void )
     Buffer[len] = '\0';
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
-    CompFlags.cpp_output = FALSE;
+    CompFlags.cpp_output = false;
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
     CompFlags.cpp_output = save;
 }

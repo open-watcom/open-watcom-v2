@@ -44,18 +44,18 @@
 
 dw_client       Client;
 
-struct section_data Sections[ DW_DEBUG_MAX ];
+struct section_data Sections[DW_DEBUG_MAX];
 
-uint_32         RelocValues[ DW_W_MAX ];
-uint_32         SymHandles[ 20 ];
+uint_32         RelocValues[DW_W_MAX];
+uint_32         SymHandles[20];
 
 
-void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
+void CLIWrite( dw_sectnum sect, const void *block, size_t size )
 {
-    memcpy( &Sections[ sect ].data[ Sections[ sect ].cur_offset ], block, size );
-    Sections[ sect ].cur_offset += size;
-    if( Sections[ sect ].max_offset < Sections[ sect ].cur_offset ) {
-        Sections[ sect ].max_offset = Sections[ sect ].cur_offset;
+    memcpy( &Sections[sect].data[Sections[sect].cur_offset], block, size );
+    Sections[sect].cur_offset += size;
+    if( Sections[sect].max_offset < Sections[sect].cur_offset ) {
+        Sections[sect].max_offset = Sections[sect].cur_offset;
     }
 }
 
@@ -74,19 +74,19 @@ void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
     case DW_W_LABEL:
     case DW_W_DEFAULT_FUNCTION:
     case DW_W_ARANGE_ADDR:
-        CLIWrite( sect, &RelocValues[ reloc_type ], sizeof( uint_32 ) );
+        CLIWrite( sect, &RelocValues[reloc_type], sizeof( uint_32 ) );
         CLIWrite( sect, zeros, sizeof( zeros ) );
         break;
     case DW_W_UNIT_SIZE:
-        CLIWrite( sect, &RelocValues[ reloc_type ], sizeof( uint_32 ) );
+        CLIWrite( sect, &RelocValues[reloc_type], sizeof( uint_32 ) );
         break;
     case DW_W_SECTION_POS:
         section = va_arg( args, uint );
-        CLIWrite( sect, &Sections[ section ].cur_offset, sizeof( uint_32 ) );
+        CLIWrite( sect, &Sections[section].cur_offset, sizeof( uint_32 ) );
         break;
     case DW_W_STATIC:
         sym = va_arg( args, dw_sym_handle );
-        CLIWrite( sect, &SymHandles[ (uint_32)sym ], sizeof( uint_32 ) );
+        CLIWrite( sect, &SymHandles[(uint_32)sym], sizeof( uint_32 ) );
         CLIWrite( sect, zeros, sizeof( zeros ) );
         break;
     case DW_W_SEGMENT:
@@ -104,20 +104,20 @@ void CLISeek( dw_sectnum sect, long offs, uint type ) {
 
     switch( type ) {
     case DW_SEEK_CUR:
-        Sections[ sect ].cur_offset += offs;
+        Sections[sect].cur_offset += offs;
         break;
     case DW_SEEK_SET:
-        Sections[ sect ].cur_offset = offs;
+        Sections[sect].cur_offset = offs;
         break;
     case DW_SEEK_END:
-        Sections[ sect ].cur_offset = Sections[ sect ].max_offset - offs;
+        Sections[sect].cur_offset = Sections[sect].max_offset - offs;
         break;
     }
 }
 
 long CLITell( dw_sectnum sect ) {
 
-    return( Sections[ sect ].cur_offset );
+    return( Sections[sect].cur_offset );
 }
 
 
@@ -161,9 +161,9 @@ void main( void ) {
     if( setjmp( info.exception_handler ) == 0 ) {
         info.funcs = cli_funcs;
 
-        RelocValues[ DW_W_LOW_PC ] = 0x135;
-        RelocValues[ DW_W_HIGH_PC ] = 0x34561ul;
-        RelocValues[ DW_W_UNIT_SIZE ] = 0x34561ul - 0x135;
+        RelocValues[DW_W_LOW_PC] = 0x135;
+        RelocValues[DW_W_HIGH_PC] = 0x34561ul;
+        RelocValues[DW_W_UNIT_SIZE] = 0x34561ul - 0x135;
         Client = DWInit( &info );
         if( Client == NULL ) {
             fputs( "error in DWInit()\n", stderr );

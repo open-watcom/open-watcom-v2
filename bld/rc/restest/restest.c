@@ -44,7 +44,7 @@ HACCEL          Accel;
  * FirstInstInit - register classes and do other initializiation that
  *                 is only done by the first instance of the spy
  */
-static BOOL FirstInstInit( void )
+static bool FirstInstInit( void )
 {
     WNDCLASS    wc;
 
@@ -59,17 +59,19 @@ static BOOL FirstInstInit( void )
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = "RESTEST_MENU";
     wc.lpszClassName = MAIN_CLASS;
-    if( !RegisterClass( &wc ) ) return( FALSE );
-    if( !RegisterMenuClass() ) return( FALSE );
-    if( !RegisterBitmapClass() ) return( FALSE );
-
-    return( TRUE );
+    if( !RegisterClass( &wc ) )
+        return( false );
+    if( !RegisterMenuClass() )
+        return( false );
+    if( !RegisterBitmapClass() )
+        return( false );
+    return( true );
 }
 
 /*
  * EveryInstInit - do initialization required by every instance of the spy
  */
-static BOOL EveryInstInit( int cmdshow ) {
+static bool EveryInstInit( int cmdshow ) {
 
     MainHwnd = CreateWindow(
         MAIN_CLASS,             /* Window class name */
@@ -83,10 +85,11 @@ static BOOL EveryInstInit( int cmdshow ) {
         NULL,                   /* Window menu handle */
         Instance,               /* Program instance handle */
         NULL );                 /* Create parameters */
-    if( MainHwnd == NULL ) return( FALSE );
+    if( MainHwnd == NULL )
+        return( false );
     ShowWindow( MainHwnd, cmdshow );
     UpdateWindow( MainHwnd );
-    return( TRUE );
+    return( true );
 }
 
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
@@ -96,13 +99,19 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     cmdline = cmdline;
     Instance = currinst;
     if( previnst == NULL ) {
-        if( !FirstInstInit() ) return( 0 );
+        if( !FirstInstInit() ) {
+            return( 0 );
+        }
     }
-    if( !EveryInstInit( cmdshow ) ) return( 0 );
+    if( !EveryInstInit( cmdshow ) ) {
+        return( 0 );
+    }
 
     while( GetMessage( &msg, NULL, 0, 0 ) ) {
         if( AccelHwnd != NULL ) {
-            if( TranslateAccelerator( AccelHwnd, Accel, &msg ) ) continue;
+            if( TranslateAccelerator( AccelHwnd, Accel, &msg ) ) {
+                continue;
+            }
         }
         TranslateMessage(&msg);
         DispatchMessage(&msg);

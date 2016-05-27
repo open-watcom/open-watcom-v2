@@ -191,7 +191,7 @@ static bool MSSkip( void )
 
 bool DBISkip( seg_leader *seg )
 /*************************************/
-// returns TRUE we should skip processing this segment because we are
+// returns true we should skip processing this segment because we are
 // ignoring debugging information
 {
     switch( seg->dbgtype ) {
@@ -200,7 +200,7 @@ bool DBISkip( seg_leader *seg )
     case MS_LOCAL:
         return( !( CurrMod->modinfo & DBI_LOCAL ) || MSSkip() );
     case NOT_DEBUGGING_INFO:
-        return( FALSE );
+        return( false );
     default:
         return( !( CurrMod->modinfo & DBI_TYPE ) || !( LinkFlags & DWARF_DBI_FLAG ) );
     }
@@ -456,7 +456,7 @@ static bool DoLineWalk( void *info, void *cbfn )
     if( !((lineinfo *)info)->seg->isdead ) {
         ((void(*)(lineinfo *))cbfn)( (lineinfo *)info );
     }
-    return( FALSE );
+    return( false );
 }
 
 void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
@@ -560,7 +560,7 @@ void DBIWrite( void )
     }
     save = NULL;
     if( SymFileName != NULL ) {
-        InitBuffFile( &symfile, SymFileName, FALSE );
+        InitBuffFile( &symfile, SymFileName, false );
         OpenBuffFile( &symfile );
         save = Root->outfile;
         Root->outfile = &symfile;

@@ -33,10 +33,9 @@
 #include "variety.h"
 #include <stddef.h>
 #include <malloc.h>
-#include <i86.h>
-
 #include "heap.h"
 #include "heapacc.h"
+
 
 farfrlptr __fheapchk_current;
 
@@ -48,16 +47,13 @@ static int checkFreeList( unsigned long *free_size )
     unsigned long   total_size;
 
     total_size = 0;
-    for( seg = __fheap; seg != _NULLSEG; ) {
+    for( seg = __fheap; seg != _NULLSEG; seg = p->nextseg ) {
         p = MK_FP( seg, 0 );
         __fheapchk_current = curr = MK_FP( seg, p->freehead.next );
-        for( ;; ) {
-            if( FP_OFF( curr ) == offsetof( heapblk, freehead ) )
-                break;
+        while( FP_OFF( curr ) != offsetof( heapblk, freehead ) ) {
             total_size += curr->len;
             __fheapchk_current = curr = MK_FP( seg, curr->next );
         }
-        seg = p->nextseg;
     }
     *free_size = total_size;
     return( _HEAPOK );

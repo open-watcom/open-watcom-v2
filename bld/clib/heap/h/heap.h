@@ -29,21 +29,17 @@
 ****************************************************************************/
 
 
-#if defined(_M_IX86)
-    #include <i86.h>
+#ifdef _M_IX86
+#include <i86.h>
+#include "extender.h"
 #endif
 
-#if !defined(__DOS_EXT__)
-#if defined(__386__) &&                 \
-   !defined(__WINDOWS_386__) &&         \
-   !defined(__WINDOWS__) &&             \
-   !defined(__OS2__) &&                 \
-   !defined(__NT__) &&                  \
-   !defined(__OSI__) &&                 \
-   !defined(__UNIX__) &&                \
-   !defined(__RDOS__)
-#define __DOS_EXT__
-#endif
+#ifdef _M_I86
+#define SEG_BPTR(s)     __based(s) *
+#define VOID_BPTR       __based(void) *
+#else
+#define SEG_BPTR(s)     _WCNEAR *
+#define VOID_BPTR       _WCNEAR *
 #endif
 
 typedef unsigned int    tag;
@@ -64,8 +60,18 @@ typedef freelist        _WCFAR *farfrlptr;
 
 typedef struct heapblk {
     tag                 heaplen;        /* size of heap (0 = 64K) */
-    unsigned int        prevseg;        /* segment selector for previous heap */
-    unsigned int        nextseg;        /* segment selector for next heap */
+#if defined( _M_I86 )
+    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           nextseg;        /* segment selector for next heap */
+#elif defined( _M_IX86 )
+    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           dummy1;         /* not used, match miniheapblkp size */
+    __segment           nextseg;        /* segment selector for next heap */
+    __segment           dummy2;         /* not used, match miniheapblkp size */
+#else
+    unsigned int        dummy1;         /* not used, match miniheapblkp size */
+    unsigned int        dummy2;         /* not used, match miniheapblkp size */
+#endif
     unsigned int        rover;          /* roving pointer into free list */
     unsigned int        b4rover;        /* largest block before rover */
     unsigned int        largest_blk;    /* largest block in the heap  */
@@ -73,7 +79,7 @@ typedef struct heapblk {
     unsigned int        numfree;        /* number of free blocks in the heap */
     freelist            freehead;       /* listhead of free blocks in heap */
 #if defined(__WARP__)
-    unsigned int        spare;          /* match miniheapblkp size */
+    unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblk;
 
@@ -88,8 +94,18 @@ typedef freelistp       _WCNEAR *frlptr;
 
 typedef struct heapblkp {
     tag                 heaplen;
-    unsigned int        prevseg;
-    unsigned int        nextseg;
+#if defined( _M_I86 )
+    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           nextseg;        /* segment selector for next heap */
+#elif defined( _M_IX86 )
+    __segment           prevseg;        /* segment selector for previous heap */
+    __segment           dummy1;         /* not used, match miniheapblkp size */
+    __segment           nextseg;        /* segment selector for next heap */
+    __segment           dummy2;         /* not used, match miniheapblkp size */
+#else
+    unsigned int        dummy1;         /* not used, match miniheapblkp size */
+    unsigned int        dummy2;         /* not used, match miniheapblkp size */
+#endif
     frlptr              rover;
     unsigned int        b4rover;
     unsigned int        largest_blk;
@@ -97,7 +113,7 @@ typedef struct heapblkp {
     unsigned int        numfree;
     frl                 freehead;
 #if defined(__WARP__)
-    unsigned int        spare;          /* match miniheapblkp size */
+    unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblkp;
 
@@ -168,9 +184,11 @@ extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 extern int              __HeapManager_expand( __segment seg, unsigned offset,
                             size_t req_size, size_t *growth_size );
 
+#if defined(_M_I86)
 extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+#endif
 
-_WCRTLINK extern void   _WCNEAR *__brk( unsigned );
+extern void             _WCNEAR *__brk( unsigned );
 
 #if defined(_M_IX86)
  #define _DGroup()      FP_SEG((&__nheapbeg))
@@ -180,27 +198,23 @@ _WCRTLINK extern void   _WCNEAR *__brk( unsigned );
 // __IsCtsNHeap() is used to determine whether the operating system provides
 // a continuous near heap block. __ExpandDGroup should slice for more near
 // heap under those operating systems with __IsCtsNHeap() == 1.
-#if defined(__WARP__) ||        \
-    defined(__NT__) ||          \
-    defined(__WINDOWS_386__) || \
-    defined(__WINDOWS_286__) || \
-    defined(__RDOS__)
- #define __IsCtsNHeap() 0
+#if defined(__WARP__) || defined(__NT__) || defined(__WINDOWS__) || defined(__RDOS__)
+ #define __IsCtsNHeap() (0)
 #elif defined(__DOS_EXT__)
- #define __IsCtsNHeap() ((_IsRationalZeroBase() || _IsCodeBuilder()) ? 0 : 1)
+ #define __IsCtsNHeap() (!(_IsRationalZeroBase() || _IsCodeBuilder()))
 #else
- #define __IsCtsNHeap() 1
+ #define __IsCtsNHeap() (1)
 #endif
 
-extern  unsigned        __MemAllocator( unsigned __sz, unsigned __seg, unsigned __off );
-extern  void            __MemFree( unsigned __ptr, unsigned __seg, unsigned __off );
+extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned __off );
+extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
 #if defined(_M_IX86)
- #if defined(__386__)
-  #pragma aux __MemAllocator "*" parm [eax] [edx] [ebx];
-  #pragma aux __MemFree      "*" parm [eax] [edx] [ebx];
- #else
+ #if defined(_M_I86)
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
+ #else
+  #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx];
+  #pragma aux __MemFree      "*" parm [eax] [dx] [ebx];
  #endif
 #endif
 

@@ -111,58 +111,58 @@ static bool W4GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *li
 
     wnd=wnd;
     if( row == -2 ) {
-        if( piece != 0 ) return( FALSE );
+        if( piece != 0 ) return( false );
         line->text = "Title line 1";
-        line->tabstop = FALSE;
-        line->static_text = TRUE;
+        line->tabstop = false;
+        line->static_text = true;
     } else if( row == -1 ) {
-        if( piece != 0 ) return( FALSE );
-        line->tabstop = FALSE;
-        line->static_text = TRUE;
+        if( piece != 0 ) return( false );
+        line->tabstop = false;
+        line->static_text = true;
         #if 0
             line->text = UiMapChar;
         #else
             line->text = "";
-            line->underline = TRUE;
+            line->underline = true;
             line->extent = WndWidth( wnd );
             line->indent = 0;
         #endif
     } else if( row >= SIZE ) {
-        return( FALSE );
+        return( false );
     } else {
         switch( piece ) {
         case 0:
-            line->tabstop = TRUE;
+            line->tabstop = true;
             itoa( row, buff, 10 );
             line->text = buff;
             line->extent = WND_MAX_EXTEND;
-            return( TRUE );
+            return( true );
         case 1:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             line->text = "";
             line->extent = WND_MAX_EXTEND;
             line->indent = 1000;
-            return( TRUE );
+            return( true );
         case 2:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             line->text = Stuff[ row ];
             line->extent = WND_MAX_EXTEND;
             line->indent = 2000;
-            return( TRUE );
+            return( true );
         case 3:
-            line->tabstop = FALSE;
-            line->use_prev_attr = TRUE;
+            line->tabstop = false;
+            line->use_prev_attr = true;
             line->text = "";
             line->extent = WND_MAX_EXTEND;
             line->indent = 3000;
-            return( TRUE );
+            return( true );
         default:
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 

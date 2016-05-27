@@ -88,7 +88,7 @@ EVENT UIAPI uieventsource( bool update )
         }
     }
     ReturnIdle = 1;
-    UIData->no_refresh = FALSE;
+    UIData->no_refresh = false;
 done:
     return( uieventsourcehook(ev) );
 }

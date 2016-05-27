@@ -43,7 +43,7 @@
 /*
  * DeleteFolder - delete all files in a folder
  */
-void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
+static void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
 {
     char            szFilter[MAX_PATH];
     char            szFilePath[MAX_PATH];
@@ -91,7 +91,7 @@ void DeleteFolder( HWND hDlg, LPCSTR pszFolder, LPCSTR pszUninstallFile )
 /*
  * ProgressDlgProc - dialog procedure for the progress dialog
  */
-INT_PTR CALLBACK ProgressDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+static INT_PTR CALLBACK ProgressDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     return( FALSE );
 
@@ -128,7 +128,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     strcpy( szInstallPath, szExePath );
     pch = strrchr( szInstallPath, '\\' );
     *pch = '\0';
-    
+
     /*
      * Look for the check file to ensure that the uninstaller is being actually run from
      * an Open Watcom installation directory.
@@ -205,7 +205,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
      * Take away the progress dialog.
      */
     EndDialog( hDlg, 0 );
-    
+
     /*
      * Inform the user that the uninstallation has been completed.
      */

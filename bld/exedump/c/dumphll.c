@@ -502,7 +502,7 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
 {
     cv3_module_16       mod;
     cv3_seginfo_16      seg;
-    bool                first = TRUE;
+    bool                first = true;
 
     Wlseek( base + offset );
     Wdputs( "==== sstModules at offset " );
@@ -520,7 +520,7 @@ static void dump_cv_sstModules( unsigned_32 base, unsigned_32 offset )
             }
             Wread( &seg, sizeof( seg ) );
             Dump_header( &seg, cv_seg_msg );
-            first = FALSE;
+            first = false;
         }
     }
     Wdputslc( "\n" );
@@ -535,7 +535,7 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
 {
     hll_module          mod;
     hll_seginfo         seg;
-    bool                first = TRUE;
+    bool                first = true;
 
     Wlseek( base + offset );
     Wdputs( "==== sstModules at offset " );
@@ -554,7 +554,7 @@ static void dump_hll_sstModules( unsigned_32 base, unsigned_32 offset )
             }
             Wread( &seg, sizeof( seg ) );
             Dump_header( &seg, hll_seg_msg );
-            first = FALSE;
+            first = false;
         }
     }
     Wdputslc( "\n" );

@@ -804,7 +804,7 @@ static bool CheckDBISeg( void *seg, void *num )
     if( ((seg_leader *)seg)->size != 0 ) {
         (*(int *)num)++;
     }
-    return( FALSE );
+    return( false );
 }
 
 int DwarfCountDebugSections( void )
@@ -892,7 +892,7 @@ void DwarfWrite( void )
     savepos = PosLoad() + shdr_size;
     SeekLoad( savepos );
     memset( sect_header, 0, sizeof( Elf32_Shdr ) );   // first fill in the null section
-    InitStringTable( &strtab, FALSE );
+    InitStringTable( &strtab, false );
     AddCharStringTable( &strtab, '\0' );
     virt_off = sizeof( Elf32_Ehdr ) + shdr_size;
     virt_off = WriteELFSections( savepos, virt_off, sect_header+1, &strtab );

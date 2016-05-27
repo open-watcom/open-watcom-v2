@@ -81,8 +81,8 @@ static back_handle Pc_Low;
 static back_handle Comp_High;
 static back_handle ARange;
 
-static void CLIWrite( dw_sectnum sect, const void *block, dw_size_t size )
-/************************************************************************/
+static void CLIWrite( dw_sectnum sect, const void *block, size_t size )
+/*********************************************************************/
 {
     sect_info           *curr;
     segment_id          old;
@@ -311,7 +311,7 @@ extern  void    DFInitDbgInfo( void )
 /* called after ObjInit */
 {
     CurrFNo = 0;
-    CcuDef = FALSE;
+    CcuDef = false;
     Client = NULL;
 }
 #define MAX_LANG 4
@@ -400,9 +400,10 @@ extern  void    DFSymRange( cg_sym_handle sym, offset size ){
     // this may cause debug information to be missing... call it
     // a FIXME
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
-    ARange = FEBack( sym );
-    DWAddress( Client, size );
+    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    	ARange = FEBack( sym );
+    	DWAddress( Client, size );
+    }
 }
 
 extern  void    DFSegRange( void ){
@@ -412,17 +413,18 @@ extern  void    DFSegRange( void ){
     offset      off;
     offset      size;
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
-    size = AskMaxSize();
-    if( size > 0 ){
-        bck = MakeLabel();
-        off = AskLocation();
-        SetLocation( 0 );
-        DataLabel( bck->lbl );
-        SetLocation( off );
-        ARange = bck;
-        DWAddress( Client, size );
-        BEFreeBack( bck );
+    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+        size = AskMaxSize();
+        if( size > 0 ) {
+            bck = MakeLabel();
+            off = AskLocation();
+            SetLocation( 0 );
+            DataLabel( bck->lbl );
+            SetLocation( off );
+            ARange = bck;
+            DWAddress( Client, size );
+            BEFreeBack( bck );
+        }
     }
 }
 
@@ -435,7 +437,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     segment_id      old;
     type_def        *tipe_addr;
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+    if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
     }
     if( CcuDef ) {
@@ -458,11 +460,11 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             // only one code segment or not, hence these attributes are always
             // disabled. The low/high pc attribs should probably be handled by
             // the linker.
-            cu.flags = FALSE;
+            cu.flags = false;
             cu.segment_size = 0;
         } else {
             bck = NULL;
-            cu.flags = FALSE;
+            cu.flags = false;
             Pc_Low = NULL;
             Pc_High = NULL;
             cu.segment_size = 2;
@@ -472,7 +474,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         OutLabel( bck->lbl );
         Pc_Low = bck;
         Pc_High = MakeLabel();
-        cu.flags = TRUE;
+        cu.flags = true;
         cu.segment_size = 0;
 #endif
         SetOP( old );
@@ -501,7 +503,7 @@ extern  void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             BEFreeBack( bck );
         }
     } else {
-        CcuDef = TRUE;
+        CcuDef = true;
     }
 }
 
@@ -535,7 +537,7 @@ extern  void    DFObjInitDbgInfo( void ) {
     cg_sym_handle   debug_pch;
     fe_attr         attr;
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) ){
+    if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ){
         return;
     }
     info.compiler_options = DW_CM_DEBUGGER;
@@ -622,14 +624,14 @@ extern  void    DFObjLineInitDbgInfo( void ) {
         cu.inc_list_len = 0;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
-            cu.flags = TRUE;
+            cu.flags = true;
             cu.segment_size = 0;
         }else{
-            cu.flags = FALSE;
+            cu.flags = false;
             cu.segment_size = 2;
         }
 #else
-        cu.flags = TRUE;
+        cu.flags = true;
         cu.segment_size = 0;
 #endif
         tipe_addr = TypeAddress( TY_NEAR_POINTER );
@@ -685,24 +687,25 @@ extern  void    DFObjFiniDbgInfo( offset codesize ) {
     offset          here;
     back_handle     bck;
 
-    if( !_IsModel( DBG_LOCALS | DBG_TYPES ) )return;
-    bck = Comp_High;
-    if( bck != NULL ){
-        old = SetOP( AskCodeSeg() );
-        OutLabel( bck->lbl );
+    if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
+        bck = Comp_High;
+        if( bck != NULL ){
+            old = SetOP( AskCodeSeg() );
+            OutLabel( bck->lbl );
+            SetOP( old );
+            BEFreeBack( bck );
+            Comp_High = NULL;
+        }
+        DWEndCompileUnit( Client );
+        DWFini( Client );
+        old = SetOP( UnitSize->segment );
+        here = AskLocation();
+        SetLocation( UnitSize->offset );
+        DataLong( codesize );
+        SetLocation( here );
         SetOP( old );
-        BEFreeBack( bck );
-        Comp_High = NULL;
+        FiniSegBck();
     }
-    DWEndCompileUnit( Client );
-    DWFini( Client );
-    old = SetOP( UnitSize->segment );
-    here = AskLocation();
-    SetLocation( UnitSize->offset );
-    DataLong( codesize );
-    SetLocation( here );
-    SetOP( old );
-    FiniSegBck();
 }
 
 extern  void    DFObjLineFiniDbgInfo( void )
@@ -724,7 +727,7 @@ extern void     DFLineNum( cue_state *state, offset lc ){
         OutLabel( bck->lbl );
         DWLineAddr( Client, (dw_sym_handle)bck, lc );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-        if( !_IsTargetModel( FLAT_MODEL ) ) {
+        if( _IsntTargetModel( FLAT_MODEL ) ) {
             DWLineSeg( Client, (dw_sym_handle)bck );
         }
 #endif

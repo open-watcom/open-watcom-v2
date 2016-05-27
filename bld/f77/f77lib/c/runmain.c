@@ -44,14 +44,14 @@
 #include "rtutls.h"
 
 
-static  bool    __IsUnit6CC = { FALSE };
-static  bool    __AllowCommaSeparator = { FALSE };
+static  bool    __IsUnit6CC = false;
+static  bool    __AllowCommaSeparator = false;
 
 
 void    __InitUnit6CC( void ) {
 //=======================
 
-    __IsUnit6CC = TRUE;
+    __IsUnit6CC = true;
 }
 
 bool    __DevicesCC( void ) {
@@ -63,7 +63,7 @@ bool    __DevicesCC( void ) {
 void    __InitAllowCommaSeparator( void ) {
 //===================================
 
-    __AllowCommaSeparator = TRUE;
+    __AllowCommaSeparator = true;
 }
 
 bool    __AllowCommaSep( void ) {

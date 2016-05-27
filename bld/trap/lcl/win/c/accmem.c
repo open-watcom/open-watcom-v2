@@ -34,6 +34,8 @@
 #include <dos.h>
 #include "stdwin.h"
 #include "wdebug.h"
+#include "di386cli.h"
+
 
 void PushAll( void );
 void PopAll( void );

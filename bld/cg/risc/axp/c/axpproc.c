@@ -304,9 +304,9 @@ static  void    emitSavedRegsProlog( stack_record *saved_regs )
 
     index_reg = addressableRegion( saved_regs, &offset );
     offset += saved_regs->size;
-    saveRegSet( index_reg, CurrProc->targ.gpr_mask, offset, FALSE );
+    saveRegSet( index_reg, CurrProc->targ.gpr_mask, offset, false );
     offset -= CountBits( CurrProc->targ.gpr_mask ) * REG_SIZE;
-    saveRegSet( index_reg, CurrProc->targ.fpr_mask, offset, TRUE );
+    saveRegSet( index_reg, CurrProc->targ.fpr_mask, offset, true );
 }
 
 
@@ -317,9 +317,9 @@ static  void    emitSavedRegsEpilog( stack_record *saved_regs )
     uint_32             index_reg;
 
     index_reg = addressableRegion( saved_regs, &offset );
-    loadRegSet( index_reg, CurrProc->targ.fpr_mask, offset, TRUE );
+    loadRegSet( index_reg, CurrProc->targ.fpr_mask, offset, true );
     offset += CountBits( CurrProc->targ.fpr_mask ) * REG_SIZE;
-    loadRegSet( index_reg, CurrProc->targ.gpr_mask, offset, FALSE );
+    loadRegSet( index_reg, CurrProc->targ.gpr_mask, offset, false );
 }
 
 
@@ -349,9 +349,9 @@ static  void    emitVarargsProlog( stack_record *varargs )
     if( varargs->size != 0 ) {
         index_reg = addressableRegion( varargs, &offset );
         offset += varargs->size;
-        saveRegSet( index_reg, 0x3f << 16, offset, FALSE );
+        saveRegSet( index_reg, 0x3f << 16, offset, false );
         offset -= 6 * REG_SIZE;
-        saveRegSet( index_reg, 0x3f << 16, offset, TRUE );
+        saveRegSet( index_reg, 0x3f << 16, offset, true );
     }
 }
 
@@ -384,7 +384,7 @@ static  void    emitFrameSaveProlog( stack_record *fs )
 
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        saveReg( index_reg, AXP_FRAME_REG, offset, FALSE );
+        saveReg( index_reg, AXP_FRAME_REG, offset, false );
     }
 }
 
@@ -400,7 +400,7 @@ static  void    emitFrameSaveEpilog( stack_record *fs )
     // varargs epilog above must be empty
     if( fs->size != 0 ) {
         index_reg = addressableRegion( fs, &offset );
-        loadReg( index_reg, AXP_FRAME_REG, offset, FALSE );
+        loadReg( index_reg, AXP_FRAME_REG, offset, false );
     }
 }
 

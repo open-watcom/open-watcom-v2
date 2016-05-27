@@ -692,7 +692,7 @@ extern  bool    NameFrlFree() {
     bool        freed;
     int         class;
 
-    freed = FALSE;
+    freed = false;
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
         freed |= FrlFreeAll( &FrlHead[class], Size[class] );
     }

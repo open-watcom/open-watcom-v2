@@ -73,7 +73,7 @@ bool DTVSymbolRefs::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_SYMBOL_REFERENCES );
     }
-    return( TRUE );
+    return( true );
 }
 
 int DTVSymbolRefs::count()
@@ -122,7 +122,7 @@ void DTVSymbolRefs::event( ViewEvent ve, View * view )
             int             i;
             int             maxRows = getRows() + _topIndex;
             DetailView *    dtv = (DetailView *) view;
-            dr_handle       drhdl = dtv->symHandle();
+            drmem_hdl       drhdl = dtv->symHandle();
 
             if( _users.count() < maxRows ) {
                 maxRows = _users.count();

@@ -161,7 +161,7 @@ static REWRITE_TOKENS *tokenAlloc( void )
     rt = CarveAlloc( carveREWRITE_TOKENS );
     rt->next = NULL;
     rt->count = 0;
-    rt->free = FALSE;
+    rt->free = false;
     return( rt );
 }
 
@@ -339,9 +339,9 @@ static REWRITE *newREWRITE( TOKEN end_token, TOKEN_LOCN *locn )
     r->srcfiles_refd = NULL;
     r->stream = rt->stream;
     r->last_token = end_token;
-    r->busy = FALSE;
-    r->free = FALSE;
-    r->alternate = FALSE;
+    r->busy = false;
+    r->free = false;
+    r->alternate = false;
     locn->src_file = SrcFileCurrent();
     putSrcFile( r, locn );
     return( r );
@@ -357,9 +357,9 @@ static REWRITE *dupREWRITE( REWRITE *old_r )
     r->srcfiles_refd = old_r->srcfiles_refd;
     r->stream = old_r->stream;
     r->last_token = old_r->last_token;
-    r->busy = FALSE;
-    r->alternate = TRUE;
-    r->free = FALSE;
+    r->busy = false;
+    r->alternate = true;
+    r->free = false;
     return( r );
 }
 
@@ -448,13 +448,13 @@ REWRITE *RewritePackageFunction( PTREE multi )
     TOKEN_LOCN locn;
     TOKEN_LOCN *plocn;
 
-    skip_first = FALSE;
+    skip_first = false;
     r = ParseGetRecordingInProgress( &plocn );
     if( r == NULL ) {
         plocn = &locn;
         r = newREWRITE( T_RIGHT_BRACE, &locn );
     } else {
-        skip_first = TRUE;
+        skip_first = true;
     }
     captureMulti( r, multi, plocn );
     old_ppctl = PPControl;
@@ -499,7 +499,7 @@ REWRITE *RewritePackageFunction( PTREE multi )
         if( ! skip_first ) {
             saveToken( r, plocn );
         }
-        skip_first = FALSE;
+        skip_first = false;
         if( depth == 0 )
             break;
         NextToken();
@@ -835,7 +835,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
 
     SrcFileGetTokenLocn( &start_locn );
     brace_depth = 0;
-    first_time = TRUE;
+    first_time = true;
     for(;;) {
         if( CurToken == T_EOF ) {
             templateError( r, &start_locn );
@@ -845,7 +845,7 @@ REWRITE *RewritePackageClassTemplate( REWRITE *r, TOKEN_LOCN *locn )
             /* already been saved by YYDRIVER */
             saveToken( r, locn );
         }
-        first_time = FALSE;
+        first_time = false;
         switch( CurToken ) {
         case T_RIGHT_BRACE:
         case T_ALT_RIGHT_BRACE:
@@ -882,7 +882,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
 
     SrcFileGetTokenLocn( &start_locn );
     brace_depth = 0;
-    first_time = TRUE;
+    first_time = true;
     for(;;) {
         if( CurToken == T_EOF ) {
             templateError( r, &start_locn );
@@ -892,7 +892,7 @@ REWRITE *RewritePackageClassTemplateMember( REWRITE *r, TOKEN_LOCN *locn )
             /* already been saved by YYDRIVER */
             saveToken( r, locn );
         }
-        first_time = FALSE;
+        first_time = false;
         switch( CurToken ) {
         case T_RIGHT_BRACE:
         case T_ALT_RIGHT_BRACE:
@@ -973,7 +973,7 @@ REWRITE *RewriteRewind( REWRITE *r )
         r = dupREWRITE( r );
     }
     currRewrite = r;
-    r->busy = TRUE;
+    r->busy = true;
     r->curr = r->list;
     r->stream = r->curr->stream;
     RewriteToken();
@@ -1178,7 +1178,7 @@ static void markFreeRewrite( void *p )
 {
     REWRITE *b = p;
 
-    b->free = TRUE;
+    b->free = true;
 }
 
 static void saveRewrite( void *e, carve_walk_base *d )
@@ -1213,7 +1213,7 @@ static void markFreeRewriteTokens( void *p )
 {
     REWRITE_TOKENS *b = p;
 
-    b->free = TRUE;
+    b->free = true;
 }
 
 static void saveRewriteTokens( void *e, carve_walk_base *d )

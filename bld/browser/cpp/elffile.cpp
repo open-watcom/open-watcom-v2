@@ -93,14 +93,14 @@ static void ComponentFile::freeComponent( ComponentFile * comp )
 }
 
 ElfFile::ElfFile()
-    : _initialized( FALSE )
+    : _initialized( false )
     , _file( NULL )
     , _sectNameOff( 0 )
 {
 }
 
 ElfFile::ElfFile( const char * fName, bool buffered )
-    : _initialized( FALSE )
+    : _initialized( false )
     , _sectNameOff( 0 )
 {
     if( buffered ) {
@@ -137,7 +137,7 @@ bool ElfFile::initSections()
 //--------------------------
 {
     Elf32_Shdr      sectHdr;
-    bool            ok = FALSE;
+    bool            ok = false;
     char *          buffer;
 
     _file->open( CheckedFile::ReadBinary, CheckedFile::UserReadWrite );
@@ -173,9 +173,9 @@ bool ElfFile::initSections()
     }
 
     delete [] buffer;
-    _initialized = TRUE;
+    _initialized = true;
 
-    return TRUE;
+    return true;
 }
 
 void ElfFile::endRead()
@@ -183,7 +183,7 @@ void ElfFile::endRead()
 {
     if( _initialized ) {
         _file->close();
-        _initialized = FALSE;
+        _initialized = false;
     }
 }
 
@@ -198,16 +198,16 @@ bool ElfFile::addSection( const char * name, void * h )
             _drSections[ i - 1 ] = hdr->sh_offset;
             _drSizes[ i - 1 ] = hdr->sh_size;
 
-            return TRUE;
+            return true;
         }
     }
 
     if( !strcmp( name, _componentSectName ) ) {
         readComponentSect( hdr->sh_offset, hdr->sh_size );
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void ElfFile::writeStringSect()
@@ -262,14 +262,14 @@ void ElfFile::addComponentFile( const char * fileName, bool enable )
 //------------------------------------------------------------------
 {
     ComponentFile * comp;
-    bool            found = FALSE;
+    bool            found = false;
     FileInfo        finf( fileName );
 
     // NYI -- use the WCVector find!
     for( int i = 0; i < _components->entries(); i += 1 ) {
         if( strcmp( (*_components)[i]->name, fileName ) == 0 ) {
             comp = (*_components)[ i ];
-            found = TRUE;
+            found = true;
         }
     }
 

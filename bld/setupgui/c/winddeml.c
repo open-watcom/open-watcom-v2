@@ -113,7 +113,7 @@ static bool UseDDE( bool uninstall )
     hwnd_pm = FindWindow( progman, NULL );
     if( hwnd_pm != NULL ) {
         ShowWindow( hwnd_pm, SW_RESTORE );
-        EnableWindow( hwnd_pm, FALSE );
+        EnableWindow( hwnd_pm, false );
     }
 
     if( uninstall ) {
@@ -259,7 +259,7 @@ cleanup:
 // Directory names cannot have forward slashes in them, and probably other
 // characters. This is a problem for "C/C++". Not all platforms are restricted
 // like this, so just munge the file name here.
-void munge_fname( char *buff )
+static void munge_fname( char *buff )
 {
     char    *s;
     char    buff2[_MAX_PATH];

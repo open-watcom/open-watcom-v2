@@ -411,7 +411,7 @@ unsigned long ImportProcTable( unsigned long *count )
 unsigned long ImportModTable( unsigned long *count )
 /*********************************************************/
 {
-    return( WriteTabList( FmtData.u.os2.mod_ref_list, count, FALSE ) );
+    return( WriteTabList( FmtData.u.os2.mod_ref_list, count, false ) );
 }
 
 static unsigned long ImportNameTable( void )
@@ -718,7 +718,7 @@ void ChkOS2Exports( void )
                     exp->addr.off += (group->linear - group->grp_addr.off);
                 }
                 if( group->segflags & SEG_MOVABLE ) {
-                    exp->ismovable = TRUE;
+                    exp->ismovable = true;
                 }
             }
         }
@@ -760,7 +760,7 @@ static WResDir InitNEResources(int *resHandle, ResTable *outRes)
         /* the 2 uint_16 are the resource shift count and the type 0 record */
         outRes->Dir.Head = NULL;
         outRes->Dir.Tail = NULL;
-        StringBlockBuild( &outRes->Str, inRes, FALSE );
+        StringBlockBuild( &outRes->Str, inRes, false );
     } else {
         inRes = NULL;
     }
@@ -866,7 +866,7 @@ void FiniOS2LoadFile( void )
     }
     exe_head.resident_off = temp;
     SeekLoad( stub_len+temp );
-    temp += ResNonResNameTable( TRUE );  // TRUE - do resident table.
+    temp += ResNonResNameTable( true );  // true - do resident table.
     exe_head.module_off = temp;
     exe_head.modrefs = ModRefTable();
     temp += exe_head.modrefs * sizeof( unsigned_16 );
@@ -878,7 +878,7 @@ void FiniOS2LoadFile( void )
     temp += size;
     temp += stub_len;
     exe_head.nonres_off = temp;
-    exe_head.nonres_size = ResNonResNameTable( FALSE );  // FALSE = do non-res.
+    exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
     temp += exe_head.nonres_size;
     /*
      * if no segment shift specified, figure out the best one, assuming that

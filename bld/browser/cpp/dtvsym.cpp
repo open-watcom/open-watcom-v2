@@ -100,7 +100,7 @@ bool DTViewSymbol::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_DETAIL_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 void DTViewSymbol::initialize()
@@ -238,9 +238,9 @@ bool DTViewSymbol::leftBttnUp( int x, int y, WMouseKeyFlags )
             }
             invalidateRect( _descPaint->partRect( _descPaint->current() ) );
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool DTViewSymbol::leftBttnDbl( int x, int y, WMouseKeyFlags )
@@ -255,29 +255,29 @@ bool DTViewSymbol::leftBttnDbl( int x, int y, WMouseKeyFlags )
             invalidateRect( _descPaint->partRect( _descPaint->current() ) );
         }
         _descPaint->enterHit();
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool DTViewSymbol::keyDown( WKeyCode kc, WKeyState )
 //--------------------------------------------------
 {
-    bool        redraw = FALSE;
+    bool        redraw = false;
     int         prev = _descPaint->current();
 
     switch( kc ) {
     case WKeyTab:
-        redraw = _descPaint->tabHit( FALSE );
+        redraw = _descPaint->tabHit( false );
         break;
     case WKeyShiftTab:
-        redraw = _descPaint->tabHit( TRUE );
+        redraw = _descPaint->tabHit( true );
         break;
     case WKeyCtrlEnter:
         _descPaint->enterHit();
         break;
     default:
-        return FALSE;
+        return false;
     }
 
     if( redraw ) {
@@ -286,7 +286,7 @@ bool DTViewSymbol::keyDown( WKeyCode kc, WKeyState )
         }
         invalidateRect( _descPaint->partRect( _descPaint->current() ) );
     }
-    return TRUE;
+    return true;
 }
 
 static DTViewSymbol * DTViewSymbol::createView( const Symbol * sym )

@@ -101,7 +101,7 @@ static void ScopeCtlFini( dr_scope_ctl *ctl )
     }
 }
 
-static bool AContainer( dr_handle enclose, int index, void *_df )
+static bool AContainer( drmem_hdl enclose, int index, void *_df )
 //***************************************************************
 // Add entry to list stop when found search entry
 //***************************************************************
@@ -116,14 +116,14 @@ static bool AContainer( dr_handle enclose, int index, void *_df )
     df->head = new;
     new->handle = enclose;
     if( enclose == df->target ) {
-        cont = FALSE;
+        cont = false;
     } else {
-        cont = TRUE;
+        cont = true;
     }
     return( cont );
 }
 
-extern void DRGetScopeList( dr_scope_trail *container, dr_handle of )
+extern void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
 //*********************************************************************
 // Walk in to of starting at ccu
 //*********************************************************************

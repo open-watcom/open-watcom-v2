@@ -45,7 +45,7 @@ using std::ptrdiff_t;
 :include cpluspro.sp
 
 :endsegment
-:include sizet.sp
+:include size_t.sp
 
 :segment !CNAME
 :include wchar_t.sp
@@ -53,12 +53,12 @@ using std::ptrdiff_t;
 :endsegment
 :include null.sp
 
-:include ptrdiff.sp
+:include ptrdifft.sp
 
 :segment !CNAME
 :include saferpro.sp
 
-:include rsizet.sp
+:include rsize_t.sp
 
 :include saferepi.sp
 
@@ -95,8 +95,6 @@ using std::ptrdiff_t;
 :include cplusepi.sp
 :elsesegment
 #endif /* __cplusplus not defined */
-
-:include intptr.sp
 :endsegment
 
 #endif

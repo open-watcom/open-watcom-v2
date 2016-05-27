@@ -51,10 +51,10 @@ static bool             ProcModuleTypeN( int n );
 static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 {
     if( NULL == pToken )
-        return( FALSE );
+        return( false );
     if( ( pToken[0] == '(' ) && ( pToken[ nLen - 1 ] == ')' ) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 /*
@@ -69,7 +69,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     unsigned    nLen;
 
     if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
-        return( FALSE );
+        return( false );
 
     *name = *prefix = NULL;
     *namelen = *prefixlen = 0;
@@ -87,7 +87,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     if( 0 == nLen ) {
         *name = tokenThis;
         *namelen = tokenLen;
-        return( TRUE );
+        return( true );
     }
 
     /*
@@ -99,7 +99,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     if( IS_NUMBER( &findAt[ 1 ] ) ) {
         *name = tokenThis;
         *namelen = tokenLen;
-        return( TRUE );
+        return( true );
     }
 
     *prefix = tokenThis;
@@ -108,7 +108,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     *name = &findAt[ 1 ];
     *namelen = nLen - 1;
 
-    return( TRUE );
+    return( true );
 }
 
 /*
@@ -123,16 +123,16 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
     char *parse;
 
     if( (NULL == (parse = Token.next)) || ('\0' == *parse) )
-        return( FALSE );
+        return( false );
 
     while( ('\0' != *parse) && (IS_WHITESPACE(parse)) )
         parse++;
 
     if( '\0' == *parse )
-        return( FALSE );
+        return( false );
 
     if( ',' == *parse )
-        return( FALSE );
+        return( false );
 
     /*
     //  skip cr-lf
@@ -160,12 +160,12 @@ static bool DoWeNeedToSkipASeparator( bool CheckDirectives )
             }
 
             if( MatchOne( Directives, SEP_NO, parse, len ) ) {
-                return( FALSE );
+                return( false );
             }
         }
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool ProcNovImport( void )
@@ -204,10 +204,10 @@ static bool GetNovImport( void )
     */
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
-        if( FALSE == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( FALSE );
+        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
+            return( false );
 
-        Token.skipToNext = DoWeNeedToSkipASeparator( FALSE );
+        Token.skipToNext = DoWeNeedToSkipASeparator( false );
 
 #ifndef NDEBUG
         printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
@@ -217,12 +217,12 @@ static bool GetNovImport( void )
     }
 
     if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
-        return( FALSE );
+        return( false );
     }
 
     sym = SymOpNWPfx( ST_DEFINE_SYM, name, namelen, prefix, prefixlen );
     if( sym == NULL || sym->p.import != NULL ) {
-        return( TRUE );
+        return( true );
     }
 
 #ifndef NDEBUG
@@ -233,9 +233,9 @@ static bool GetNovImport( void )
     sym->info |= SYM_DCE_REF;   // make sure we don't try to get rid of these.
     SetNovImportSymbol( sym );
 
-    Token.skipToNext = DoWeNeedToSkipASeparator( TRUE );
+    Token.skipToNext = DoWeNeedToSkipASeparator( true );
 
-    return( TRUE );
+    return( true );
 }
 
 void SetNovImportSymbol( symbol *sym )
@@ -262,33 +262,33 @@ static bool GetNovExport( void )
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
 
-        if( FALSE == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( FALSE );
+        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
+            return( false );
 
-        Token.skipToNext = DoWeNeedToSkipASeparator( FALSE );
+        Token.skipToNext = DoWeNeedToSkipASeparator( false );
         return( result );
     }
 
     if( !NetWareSplitSymbol( Token.this, Token.len, &name, &namelen, &prefix, &prefixlen ) ) {
-        return( FALSE );
+        return( false );
     }
 
     sym = SymOpNWPfx( ST_CREATE | ST_REFERENCE, name, namelen, prefix, prefixlen );
 
     sym->info |= SYM_DCE_REF | SYM_EXPORTED;
 
-    AddNameTable( name, namelen, TRUE, &FmtData.u.nov.exp.export );
+    AddNameTable( name, namelen, true, &FmtData.u.nov.exp.export );
 
-    Token.skipToNext = DoWeNeedToSkipASeparator( TRUE );
+    Token.skipToNext = DoWeNeedToSkipASeparator( true );
 
-    return( TRUE );
+    return( true );
 }
 
 bool ProcScreenName( void )
 /********************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        return( FALSE );
+        return( false );
     }
     if( Token.len > MAX_SCREEN_NAME_LENGTH ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "screenname" );
@@ -298,31 +298,31 @@ bool ProcScreenName( void )
         }
         FmtData.u.nov.screenname = tostring();
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcCheck( void )
 /***************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.checkfn = tostring();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcMultiLoad( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_MULTIPLE;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcAutoUnload( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_AUTOUNLOAD;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -330,21 +330,21 @@ bool ProcReentrant( void )
 /*******************************/
 {
     FmtData.u.nov.exeflags |= NOV_REENTRANT;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcSynch( void )
 /***************************/
 {
     FmtData.u.nov.exeflags |= NOV_SYNCHRONIZE;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcPseudoPreemption( void )
 /**************************************/
 {
     FmtData.u.nov.exeflags |= NOV_PSEUDOPREEMPTION;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNLMFlags( void )
@@ -352,82 +352,82 @@ bool ProcNLMFlags( void )
 {
     unsigned_32 value;
 
-    if( !GetLong( &value ) ) return FALSE;
+    if( !GetLong( &value ) ) return false;
     FmtData.u.nov.exeflags |= value;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcCustom( void )
 /****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.customdata = tostring();         // no default extension.
-    return( TRUE );
+    return( true );
 }
 
 bool ProcMessages( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.messages = tostring();           // no default extension.
-    return( TRUE );
+    return( true );
 }
 
 bool ProcHelp( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.help = tostring();       // no default extension.
-    return( TRUE );
+    return( true );
 }
 
 bool ProcXDCData( void )
 /*****************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.rpcdata = tostring();    // no default extension.
-    return( TRUE );
+    return( true );
 }
 
 bool ProcSharelib( void )
 /******************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        return( FALSE );
+        return( false );
     }
-    FmtData.u.nov.sharednlm = FileName( Token.this, Token.len, E_NLM, FALSE );
-    return( TRUE );
+    FmtData.u.nov.sharednlm = FileName( Token.this, Token.len, E_NLM, false );
+    return( true );
 }
 
 bool ProcExit( void )
 /**************************/
 {
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
-        return( FALSE );
+        return( false );
     }
     FmtData.u.nov.exitfn = tostring();
-    return( TRUE );
+    return( true );
 }
 
 bool ProcThreadName( void )
 /*******************************/
 {
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
-        return( FALSE );
+        return( false );
     } else if( Token.len > MAX_THREAD_NAME_LENGTH ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_TOO_LARGE, "s", "threadname" );
     } else {
         FmtData.u.nov.threadname = tostring();
     }
-    return( TRUE );
+    return( true );
 }
 
 #define COPYRIGHT_START     "Copyright 1991"
@@ -467,13 +467,13 @@ bool ProcCopyright( void )
             FmtData.u.nov.copyright = tostring();
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNovell( void )
 /****************************/
 {
-    if( !ProcOne( NovModels, SEP_NO, FALSE ) ) {  // get file type
+    if( !ProcOne( NovModels, SEP_NO, false ) ) {  // get file type
         int     nType = 0;
 
         if((nType = atoi(Token.this)) > 0)
@@ -486,14 +486,14 @@ bool ProcNovell( void )
     }
     if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT )  ) {    // get description
         FmtData.u.nov.description = NULL;
-        return( TRUE );
+        return( true );
     }
     if( Token.len > MAX_DESCRIPTION_LENGTH ) {
         LnkMsg( LOC+LINE+ERR+MSG_VALUE_TOO_LARGE, "s", "description" );
     } else {
         FmtData.u.nov.description = tostring();
     }
-    return( TRUE );
+    return( true );
 }
 
 void SetNovFmt( void )
@@ -529,7 +529,7 @@ bool ProcNLM( void )
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 0;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcLAN( void )
@@ -537,7 +537,7 @@ bool ProcLAN( void )
 {
     Extension = E_LAN;
     FmtData.u.nov.moduletype = 1;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcDSK( void )
@@ -545,7 +545,7 @@ bool ProcDSK( void )
 {
     Extension = E_DSK;
     FmtData.u.nov.moduletype = 2;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNAM( void )
@@ -553,7 +553,7 @@ bool ProcNAM( void )
 {
     Extension = E_NAM;
     FmtData.u.nov.moduletype = 3;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType4( void )
@@ -561,7 +561,7 @@ bool     ProcModuleType4( void )
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 4;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType5( void )
@@ -569,7 +569,7 @@ bool     ProcModuleType5( void )
 {
     Extension = E_NOV_MSL;
     FmtData.u.nov.moduletype = 5;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType6( void )
@@ -577,7 +577,7 @@ bool     ProcModuleType6( void )
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 6;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType7( void )
@@ -585,7 +585,7 @@ bool     ProcModuleType7( void )
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = 7;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType8( void )
@@ -593,7 +593,7 @@ bool     ProcModuleType8( void )
 {
     Extension = E_NOV_HAM;
     FmtData.u.nov.moduletype = 8;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType9( void )
@@ -601,7 +601,7 @@ bool     ProcModuleType9( void )
 {
     Extension = E_NOV_CDM;
     FmtData.u.nov.moduletype = 9;
-    return( TRUE );
+    return( true );
 }
 
 #if 0
@@ -612,7 +612,7 @@ bool     ProcModuleType10( void )
 {
     Extension = ;
     FmtData.u.nov.moduletype = 10;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType11( void )
@@ -620,7 +620,7 @@ bool     ProcModuleType11( void )
 {
     Extension = ;
     FmtData.u.nov.moduletype = 11;
-    return( TRUE );
+    return( true );
 }
 
 bool     ProcModuleType12( void )
@@ -628,7 +628,7 @@ bool     ProcModuleType12( void )
 {
     Extension = ;
     FmtData.u.nov.moduletype = 12;
-    return( TRUE );
+    return( true );
 }
 #endif
 
@@ -637,15 +637,15 @@ static bool     ProcModuleTypeN( int n )
 {
     Extension = E_NLM;
     FmtData.u.nov.moduletype = n;
-    return( TRUE );
+    return( true );
 }
 
 
 static bool GetNovModule( void )
 /******************************/
 {
-    AddNameTable( Token.this, Token.len, FALSE, &FmtData.u.nov.exp.module );
-    return( TRUE );
+    AddNameTable( Token.this, Token.len, false, &FmtData.u.nov.exp.module );
+    return( true );
 }
 
 bool ProcModule( void )
@@ -658,31 +658,31 @@ bool ProcOSDomain( void )
 /******************************/
 {
     FmtData.u.nov.exeflags |= NOV_OS_DOMAIN;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNovDBIExports( void )
 /***********************************/
 {
     FmtData.u.nov.flags |= DO_NOV_EXPORTS;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNovDBIReferenced( void )
 /**************************************/
 {
     FmtData.u.nov.flags |= DO_NOV_REF_ONLY;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNovDBI( void )
 /****************************/
 {
     LinkFlags |= NOVELL_DBI_FLAG;
-    if( ProcOne( NovDBIOptions, SEP_NO, FALSE ) ) {
-        while( ProcOne( NovDBIOptions, SEP_COMMA, FALSE ) ); /*null loop*/
+    if( ProcOne( NovDBIOptions, SEP_NO, false ) ) {
+        while( ProcOne( NovDBIOptions, SEP_COMMA, false ) ); /*null loop*/
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcExportsDBI( void )
@@ -690,7 +690,7 @@ bool ProcExportsDBI( void )
 {
     DBIFlag |= DBI_ONLY_EXPORTS;
     FmtData.u.nov.flags |= DO_WATCOM_EXPORTS;
-    return( TRUE );
+    return( true );
 }
 
 void CmdNovFini( void )

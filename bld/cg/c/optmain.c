@@ -133,14 +133,14 @@ static  bool    LDone( any_oc *oc )
 
   optbegin
     if( oc->oc_header.class != OC_LDONE )
-        optreturn( FALSE );
+        optreturn( false );
     lbl = oc->oc_handle.handle;
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == FALSE )
-        optreturn( FALSE );
+    if( _TstStatus( lbl, CODELABEL ) == false )
+        optreturn( false );
     _SetStatus( lbl, DYINGLABEL );
     TryScrapLabel( lbl );
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 void    InputOC( any_oc *oc )
@@ -148,7 +148,7 @@ void    InputOC( any_oc *oc )
 {
   optbegin
     PSBlip();
-    if( LDone( oc ) == FALSE ) {
+    if( LDone( oc ) == false ) {
         if( (oc->oc_header.class & GET_BASE) != OC_INFO
          && (oc->oc_header.class & GET_BASE) != OC_LABEL
          && _TransferClass( PrevClass( NULL ) ) )

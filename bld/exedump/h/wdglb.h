@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include "bool.h"
 #include "watcom.h"
 #include "exedos.h"
 #include "exeos2.h"
@@ -50,15 +51,12 @@
 #define NUMLINE                 24
 #define LINE_LEN                78
 #define SLEN                    30
-#define TRUE                    1
-#define FALSE                   0
 #define STDOUT                  1
 #define BSIZE                   512
 #define MAX_SECTION_DATA        4096
 #define SELECTOR_FIX            0x02
 #define table( x )              { x, #x }
 #define MAX_BUFF                0xff00
-#define bool                    char
 
 #define FIX_DMP         0x0001  /* dump the fixups         */
 #define RESRC_DMP       0x0002  /* dump the resources      */

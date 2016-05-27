@@ -295,7 +295,7 @@ bool FreeObjCache( void )
     lname_cache         *tmp;
 
     if( NameCache == NULL )
-        return( FALSE );
+        return( false );
     FlushNames();
     while( NameCache != NULL ) {
         tmp = NameCache->next;
@@ -303,7 +303,7 @@ bool FreeObjCache( void )
         NameCache = tmp;
     }
     NameCacheDumped = NULL;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -383,7 +383,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
 #ifdef _OMF_32
     if( _IsntTargetModel( EZ_OMF ) ) {
         if( _IsTargetModel( USE_32 ) ) {
-            if( use_16 == FALSE ) {
+            if( use_16 == false ) {
                 attr |= SEG_USE_32;
             }
         }
@@ -399,7 +399,7 @@ static  void    SegmentClass( index_rec *rec )
 
     class_name = FEAuxInfo( (pointer)(pointer_int)rec->seg, CLASS_NAME );
     if( class_name != NULL ) {
-        rec->cidx = GetNameIdx( class_name, "", TRUE );
+        rec->cidx = GetNameIdx( class_name, "", true );
     }
 }
 
@@ -539,7 +539,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     obj->index = rec->sidx;
     obj->start = rec->location;
     obj->patches = NULL;
-    obj->gen_static_exports = FALSE;
+    obj->gen_static_exports = false;
     obj->pending_line_number = 0;
     FillArray( &obj->data, sizeof( byte ), MODEST_OBJ, INCREMENT_OBJ );
     FillArray( &obj->fixes, sizeof( byte ), NOMINAL_FIX, INCREMENT_FIX );
@@ -549,7 +549,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
         obj->exports = NULL;
     }
     obj->lines = NULL;
-    obj->line_info = FALSE;
+    obj->line_info = false;
     OutByte( rec->attr, &obj->data );
 #ifdef _OMF_32
     OutOffset( 0, &obj->data );         /* segment size (for now) */
@@ -650,17 +650,17 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
         rec = AllocNewSegRec();
     }
     if( seg->attr & PRIVATE ) {
-        rec->private = TRUE;
+        rec->private = true;
     } else {
-        rec->private = FALSE;
+        rec->private = false;
     }
     rec->location = 0;
     rec->big = 0;
     rec->rom = 0;
-    rec->need_base_set = TRUE;
-    rec->data_in_code = FALSE;
-    rec->start_data_in_code = FALSE;
-    rec->data_ptr_in_code = FALSE;
+    rec->need_base_set = true;
+    rec->data_in_code = false;
+    rec->start_data_in_code = false;
+    rec->data_ptr_in_code = false;
     rec->prefix_comdat_state = PCS_OFF;
     rec->max_written = 0;
     rec->max_size = 0;
@@ -675,17 +675,17 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
     rec->seg = seg->id;
     rec->attr = SegmentAttr( seg->align, seg->attr, use_16 );
     if( seg->attr & EXEC ) {
-        rec->exec = TRUE;
-        rec->rom = TRUE;   /* code is alway ROM */
+        rec->exec = true;
+        rec->rom = true;   /* code is alway ROM */
         rec->cidx = _NIDX_CODE;
         if( seg->attr & GIVEN_NAME ) {
-            rec->nidx = GetNameIdx( seg->str, "", TRUE );
+            rec->nidx = GetNameIdx( seg->str, "", true );
         } else if( CodeGroupGIdx != 0 ) {
-            rec->nidx = GetNameIdx( CodeGroup, seg->str, TRUE );
+            rec->nidx = GetNameIdx( CodeGroup, seg->str, true );
         } else if( _IsTargetModel( BIG_CODE ) ) {
-            rec->nidx = GetNameIdx( FEModuleName(), seg->str, TRUE );
+            rec->nidx = GetNameIdx( FEModuleName(), seg->str, true );
         } else {
-            rec->nidx = GetNameIdx( seg->str, "", TRUE );
+            rec->nidx = GetNameIdx( seg->str, "", true );
         }
         if( CodeGroupGIdx != 0 ) {
             rec->base = CodeGroupGIdx;
@@ -695,19 +695,19 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
             rec->btype = BASE_SEG;
         }
     } else {
-        rec->exec = FALSE;
+        rec->exec = false;
         if( seg->attr & ROM )
-            rec->rom = TRUE;
+            rec->rom = true;
         if( seg->attr & PRIVATE ) {
-            rec->nidx = GetNameIdx( seg->str, "", TRUE );
+            rec->nidx = GetNameIdx( seg->str, "", true );
             if( seg->attr & ROM ) {
                 if( PrivateIndexRO == 0 ) {
-                    PrivateIndexRO = GetNameIdx( "FAR_CONST", "", TRUE );
+                    PrivateIndexRO = GetNameIdx( "FAR_CONST", "", true );
                 }
                 rec->cidx = PrivateIndexRO;
             } else {
                 if( PrivateIndexRW == 0 ) {
-                    PrivateIndexRW = GetNameIdx( "FAR_DATA", "", TRUE );
+                    PrivateIndexRW = GetNameIdx( "FAR_DATA", "", true );
                 }
                 rec->cidx = PrivateIndexRW;
             }
@@ -738,7 +738,7 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
             } else {
                 rec->cidx = _NIDX_DATA;
             }
-            rec->nidx = GetNameIdx( DataGroup, seg->str, TRUE );
+            rec->nidx = GetNameIdx( DataGroup, seg->str, true );
         }
     }
     SegmentClass( rec );
@@ -902,17 +902,17 @@ extern segment_id DbgSegDef( const char *seg_name, const char *seg_class, int se
 
     rec = AllocNewSegRec();
     rec->sidx = ++SegmentIndex;
-    rec->cidx = GetNameIdx( seg_class, "", TRUE );
-    rec->nidx = GetNameIdx( seg_name, "", TRUE );
+    rec->cidx = GetNameIdx( seg_class, "", true );
+    rec->nidx = GetNameIdx( seg_name, "", true );
     rec->location = 0;
     rec->big = 0;
-    rec->need_base_set = TRUE;
-    rec->data_ptr_in_code = FALSE;
-    rec->data_in_code = FALSE;
-    rec->start_data_in_code = FALSE;
-    rec->private = TRUE;
-    rec->exec = FALSE;
-    rec->rom = FALSE;
+    rec->need_base_set = true;
+    rec->data_ptr_in_code = false;
+    rec->data_in_code = false;
+    rec->start_data_in_code = false;
+    rec->private = true;
+    rec->exec = false;
+    rec->rom = false;
     rec->prefix_comdat_state = PCS_OFF;
     rec->max_written = 0;
     rec->max_size = 0;
@@ -928,7 +928,7 @@ extern segment_id DbgSegDef( const char *seg_name, const char *seg_class, int se
     rec->comdat_prefix_import = NOT_IMPORTED;
     rec->base = rec->sidx;
     rec->btype = BASE_SEG;
-    DoASegDef( rec, TRUE );
+    DoASegDef( rec, true );
     return( rec->seg );
 }
 
@@ -940,15 +940,15 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     char        *dgroup;
     omf_idx     dgroup_idx;
 
-    GetNameIdx( "", "", TRUE );     // _NIDX_NULL
-    GetNameIdx( "CODE", "", TRUE ); // _NIDX_CODE
-    GetNameIdx( "DATA", "", TRUE ); // _NIDX_DATA
-    GetNameIdx( "BSS", "", TRUE );  // _NIDX_BSS
-    GetNameIdx( "TLS", "", TRUE );  // _NIDX_TLS
+    GetNameIdx( "", "", true );     // _NIDX_NULL
+    GetNameIdx( "CODE", "", true ); // _NIDX_CODE
+    GetNameIdx( "DATA", "", true ); // _NIDX_DATA
+    GetNameIdx( "BSS", "", true );  // _NIDX_BSS
+    GetNameIdx( "TLS", "", true );  // _NIDX_TLS
 
 #ifdef _OMF_32
     if( _IsTargetModel( FLAT_MODEL ) && _IsntTargetModel( EZ_OMF ) ) {
-        FlatNIndex = GetNameIdx( "FLAT", "", TRUE );
+        FlatNIndex = GetNameIdx( "FLAT", "", true );
     }
 #endif
     SegmentIndex = 0;
@@ -958,26 +958,26 @@ static  void    DoSegGrpNames( array_control *dgroup_def, array_control *tgroup_
     if( CodeGroup[0] == NULLCHAR ) {
         CodeGroupGIdx = 0;
     } else {
-        CodeGroupNIdx = GetNameIdx( CodeGroup, "", TRUE );
+        CodeGroupNIdx = GetNameIdx( CodeGroup, "", true );
         CodeGroupGIdx = ++GroupIndex;
     }
     dgroup = FEAuxInfo( NULL, DATA_GROUP );
     if( dgroup == NULL ) {
-        NoDGroup = TRUE;
+        NoDGroup = true;
     } else {
         CopyStr( dgroup, DataGroup );
     }
     if( DataGroup[0] != NULLCHAR ) {
         TargetModel |= FLOATING_SS;
-        dgroup_idx = GetNameIdx( DataGroup, "_GROUP", TRUE );
+        dgroup_idx = GetNameIdx( DataGroup, "_GROUP", true );
     } else {
-        dgroup_idx = GetNameIdx( "DGROUP", "", TRUE );
+        dgroup_idx = GetNameIdx( "DGROUP", "", true );
     }
     OutIdx( dgroup_idx, dgroup_def );
     SegInfo = InitArray( sizeof( index_rec ), MODEST_INFO, INCREMENT_INFO );
     for( seg = SegDefs; seg != NULL; seg = next ) {
         next = seg->next;
-        DoSegment( seg, dgroup_def, tgroup_def, FALSE );
+        DoSegment( seg, dgroup_def, tgroup_def, false );
     }
     SegDefs = NULL;
     if( _IsModel( DBG_DF ) ) {
@@ -1112,7 +1112,7 @@ extern  void    ObjInit( void )
     KillArray( names );
     ImportHdl = IMPORT_BASE;
     Imports = NULL;
-    GenStaticImports = FALSE;
+    GenStaticImports = false;
     AbsPatches = NULL;
     if( _IsModel( DBG_DF ) ) {
         if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
@@ -1178,10 +1178,10 @@ extern  bool    UseImportForm( fe_attr attr )
 /*******************************************/
 {
     if( attr & (FE_GLOBAL|FE_IMPORT) )
-        return( TRUE );
+        return( true );
     if( attr & FE_INTERNAL )
-        return( FALSE );
-    return( TRUE );
+        return( false );
+    return( true );
 }
 
 
@@ -1192,13 +1192,13 @@ extern  bool    AskSegNear( segment_id id )
     index_rec   *rec;
 
     if( id < 0 )
-        return( FALSE );
+        return( false );
     rec = AskSegIndex( id );
     if( rec->btype != BASE_GRP )
-        return( FALSE );
+        return( false );
     if( rec->base > CodeGroupGIdx )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 
@@ -1208,7 +1208,7 @@ extern  bool    AskSegBlank( segment_id id )
     index_rec *rec;
 
     if( id < 0 )
-        return( TRUE );
+        return( true );
     rec = AskSegIndex( id );
     return( rec->cidx == _NIDX_BSS );
 }
@@ -1220,7 +1220,7 @@ extern  bool    AskSegPrivate( segment_id id )
     index_rec   *rec;
 
     if( id < 0 )
-        return( TRUE );
+        return( true );
     rec = AskSegIndex( id );
     return( rec->private || rec->exec );
 }
@@ -1232,7 +1232,7 @@ extern  bool    AskSegROM( segment_id id )
     index_rec   *rec;
 
     if( id < 0 )
-        return( FALSE );
+        return( false );
     rec = AskSegIndex( id );
     return( rec->rom != 0 );
 }
@@ -1272,7 +1272,7 @@ extern  segment_id  AskCode16Seg( void )
 {
     if( Code16Seg == 0 ) {
         Code16Seg = --BackSegIdx;
-        DefSegment( Code16Seg, EXEC | GIVEN_NAME, "_TEXT16", 16, TRUE );
+        DefSegment( Code16Seg, EXEC | GIVEN_NAME, "_TEXT16", 16, true );
     }
     return( Code16Seg );
 }
@@ -1371,7 +1371,7 @@ static void     EjectLEData( void )
             PutObjOMFRec( PickOMF( CMD_FIXUPP ), obj->fixes.array, obj->fixes.used );
             obj->fixes.used = 0;
         }
-        CurrSeg->data_ptr_in_code = FALSE;
+        CurrSeg->data_ptr_in_code = false;
         obj->data.used = 0;
         obj->patches = NULL;
     }
@@ -1381,7 +1381,7 @@ static void     EjectLEData( void )
 static void GetSymLName( const char *name, void *nidx )
 /*****************************************************/
 {
-    *(omf_idx *)nidx = GetNameIdx( name, "", TRUE );
+    *(omf_idx *)nidx = GetNameIdx( name, "", true );
 }
 
 static omf_idx NeedComdatNidx( import_type kind )
@@ -1427,7 +1427,7 @@ extern  void    OutSelect( bool starts )
         }
         selIdx = 0;
     }
-    CurrSeg->start_data_in_code = FALSE;
+    CurrSeg->start_data_in_code = false;
 }
 
 static  void    OutLEDataStart( bool iterated )
@@ -1477,7 +1477,7 @@ static  void    OutLEDataStart( bool iterated )
         rec->data_prefix_size = obj->data.used;
     }
     if( rec->start_data_in_code ) {
-        OutSelect( TRUE );
+        OutSelect( true );
     }
 }
 
@@ -1504,7 +1504,7 @@ static  void    CheckLEDataSize( unsigned max_size, bool need_init )
         }
     }
     if( need_init ) {
-        OutLEDataStart( FALSE );
+        OutLEDataStart( false );
     }
 }
 
@@ -1526,16 +1526,16 @@ extern  void    SetUpObj( bool is_data )
          return;
     }
     /* so that a call will always fit */
-    CheckLEDataSize( 4 * sizeof( offset ), FALSE );
+    CheckLEDataSize( 4 * sizeof( offset ), false );
     if( CurrSeg->exec ) {
         old_data = ( CurrSeg->data_in_code != 0 );
         CurrSeg->data_in_code = is_data;
         if( is_data != old_data ) {
             if( is_data ) {
-                CurrSeg->start_data_in_code = TRUE;
+                CurrSeg->start_data_in_code = true;
             } else {
-                OutSelect( FALSE );
-                SetUpObj( FALSE );
+                OutSelect( false );
+                SetUpObj( false );
             }
         }
     }
@@ -1644,7 +1644,7 @@ static  void    FlushLineNum( object *obj )
         PutObjOMFRec( PickOMF( cmd ), obj->lines->array, obj->lines->used );
         obj->lines->used = 0;
         obj->lines_generated = 1;
-        obj->line_info = FALSE;
+        obj->line_info = false;
     }
 }
 
@@ -1654,7 +1654,7 @@ static  void    FlushObject( void )
 {
     object      *obj;
 
-    SetUpObj( FALSE );
+    SetUpObj( false );
     GenComdef();
     CurrSeg->total_comdat_size += CurrSeg->comdat_size;
     EjectLEData();
@@ -1790,7 +1790,7 @@ static void FlushSelect( void )
 /*****************************/
 {
     if( selIdx != 0 ) {
-        OutSelect( FALSE );
+        OutSelect( false );
     }
 }
 
@@ -1813,7 +1813,7 @@ static  void    NormalData( void )
     CurrSeg->comdat_size = 0;
     CurrSeg->comdat_label = NULL;
     CurrSeg->comdat_symbol = NULL;
-    CurrSeg->need_base_set = TRUE;
+    CurrSeg->need_base_set = true;
     CurrSeg->prefix_comdat_state = PCS_OFF;
     KillLblRedirects();
 }
@@ -2066,12 +2066,12 @@ static  void    OutExport( cg_sym_handle sym )
     if( obj->gen_static_exports ) {
         if( attr & FE_GLOBAL ) {
             EjectExports();
-            obj->gen_static_exports = FALSE;
+            obj->gen_static_exports = false;
         }
     } else {
         if( !(attr & FE_GLOBAL) ) {
             EjectExports();
-            obj->gen_static_exports = TRUE;
+            obj->gen_static_exports = true;
         }
     }
     if( obj->exports->used == 0 ) {
@@ -2190,7 +2190,7 @@ static  void    ComdatData( label_handle lbl, cg_sym_handle sym )
         CurrSeg->comdat_prefix_import = GenImportComdat();
         TellCommonLabel( lbl, CurrSeg->comdat_prefix_import );
     }
-    CurrSeg->need_base_set = TRUE;
+    CurrSeg->need_base_set = true;
     CurrSeg->prefix_comdat_state = PCS_OFF;
     KillLblRedirects();
 }
@@ -2204,7 +2204,7 @@ static void     OutVirtFuncRef( cg_sym_handle virt )
     if( virt == NULL ) {
         extdef = NOT_IMPORTED;
     } else {
-        extdef = GenImport( virt, FALSE );
+        extdef = GenImport( virt, false );
     }
     EjectLEData();
     obj = CurrSeg->obj;
@@ -2229,7 +2229,7 @@ extern  void    OutDLLExport( uint words, cg_sym_handle sym )
     object      *obj;
 
     words = words;
-    SetUpObj( FALSE );
+    SetUpObj( false );
     EjectLEData();
     obj = CurrSeg->obj;
     obj->data.used = 0;
@@ -2433,7 +2433,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
 
     b = rel ? LOCAT_REL : LOCAT_ABS;
     if( F_CLASS( class ) == F_PTR && CurrSeg->data_in_code ) {
-        CurrSeg->data_ptr_in_code = TRUE;
+        CurrSeg->data_ptr_in_code = true;
     }
     obj = CurrSeg->obj;
     need = obj->fixes.used + sizeof( fixup );
@@ -2452,7 +2452,7 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
            done as imports relative to the comdat symbol.
         */
         if( rec->exec && rec->comdat_symbol != NULL ) {
-            idx = GenImport( rec->comdat_symbol, FALSE );
+            idx = GenImport( rec->comdat_symbol, false );
             base = BASE_IMP;
         }
     }
@@ -2571,7 +2571,7 @@ extern  void    OutFPPatch( fp_patches i )
         }
         if( GenStaticImports ) {
             EjectImports();
-            GenStaticImports = FALSE;
+            GenStaticImports = false;
         }
         OutName( FPPatchName[i], Imports );
         OutIdx( 0, Imports );                   /* type index*/
@@ -2581,11 +2581,11 @@ extern  void    OutFPPatch( fp_patches i )
             OutIdx( 0, Imports );               /* type index*/
         }
     }
-    CheckLEDataSize( 2 * sizeof( offset ), TRUE );
-    DoFix( idx, FALSE, BASE_IMP, F_OFFSET, 0 );
+    CheckLEDataSize( 2 * sizeof( offset ), true );
+    DoFix( idx, false, BASE_IMP, F_OFFSET, 0 );
     if( FPPatchAltName[i] != NULL ) {
         IncLocation( sizeof( byte ) );
-        DoFix( idx + 1, FALSE, BASE_IMP, F_OFFSET, 0 );
+        DoFix( idx + 1, false, BASE_IMP, F_OFFSET, 0 );
         DecLocation( sizeof( byte ) );
     }
 }
@@ -2598,7 +2598,7 @@ extern  void    OutPatch( label_handle lbl, patch_attr attr )
     object      *obj;
 
      /* careful, might be patching offset of seg:off*/
-    CheckLEDataSize( 3 * sizeof( offset ), TRUE );
+    CheckLEDataSize( 3 * sizeof( offset ), true );
     pat = CGAlloc( sizeof( temp_patch ));
     obj = CurrSeg->obj;
     pat->link = obj->patches;
@@ -2625,7 +2625,7 @@ extern  abspatch        *NewAbsPatch( void )
 static  void    InitLineInfo( object *obj )
 /*****************************************/
 {
-    obj->line_info = FALSE;
+    obj->line_info = false;
     if( CurrSeg->comdat_label != NULL ) {
         OutByte( obj->lines_generated, obj->lines );
         OutIdx( NeedComdatNidx( NORMAL ), obj->lines );
@@ -2671,7 +2671,7 @@ static  void    AddLineInfo( cg_linenum line, object *obj, offset lc )
         FlushLineNum( obj );
         InitLineInfo( obj );
     }
-    obj->line_info = TRUE;
+    obj->line_info = true;
     OutShort( line, obj->lines );
     OutOffset( lc, obj->lines );
 }
@@ -2688,7 +2688,7 @@ static  void    SetPendingLine( void )
     if( line == 0 )
         return;
     obj->pending_line_number = 0;
-    obj->pending_label_line = FALSE;
+    obj->pending_label_line = false;
     if( obj->lines == NULL ) {
         obj->lines = InitArray( sizeof( byte ), MODEST_LINE, INCREMENT_LINE );
     }
@@ -2724,7 +2724,7 @@ extern  void    OutDataByte( byte value )
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( byte ), TRUE );
+    CheckLEDataSize( sizeof( byte ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( byte ) );
@@ -2747,7 +2747,7 @@ extern  void    OutDataShort( unsigned_16 value )
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( unsigned_16 ), TRUE );
+    CheckLEDataSize( sizeof( unsigned_16 ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( unsigned_16 ) );
@@ -2771,7 +2771,7 @@ extern  void    OutDataLong( unsigned_32 value )
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( unsigned_32 ), TRUE );
+    CheckLEDataSize( sizeof( unsigned_32 ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     IncLocation( sizeof( unsigned_32 ) );
@@ -2793,7 +2793,7 @@ extern  void    OutAbsPatch( abspatch *patch, patch_attr attr )
     object      *obj;
     long_offset value;
 
-    CheckLEDataSize( 2 * sizeof( offset ), TRUE );
+    CheckLEDataSize( 2 * sizeof( offset ), true );
     if( patch->flags & AP_HAVE_VALUE ) {
         value = patch->value;
         FreeAbsPatch( patch );
@@ -2827,7 +2827,7 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
 
     def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
     if( def_resolve != NULL && def_resolve != sym ) {
-        def_idx = GenImport( def_resolve, FALSE );
+        def_idx = GenImport( def_resolve, false );
         EjectImports();
         cmt = InitArray( sizeof( byte ), MODEST_HDR, INCREMENT_HDR );
         type = (import_type)(pointer_int)FEAuxInfo( sym, IMPORT_TYPE );
@@ -2879,9 +2879,9 @@ extern  void    OutReloc( segment_id seg, fix_class class, bool rel )
 
     rec = AskSegIndex( seg );
     if( F_CLASS( class ) == F_BIG_OFFSET ) {
-        CheckLEDataSize( 3 * sizeof( long_offset ), TRUE );
+        CheckLEDataSize( 3 * sizeof( long_offset ), true );
     } else {
-        CheckLEDataSize( 3 * sizeof( offset ), TRUE );
+        CheckLEDataSize( 3 * sizeof( offset ), true );
     }
     DoFix( rec->base, rel, rec->btype, class, rec->sidx );
 }
@@ -2890,7 +2890,7 @@ extern  void    OutReloc( segment_id seg, fix_class class, bool rel )
 extern void OutSpecialCommon( import_handle imp_idx, fix_class class, bool rel )
 /******************************************************************************/
 {
-    CheckLEDataSize( 3 * sizeof( offset ), TRUE );
+    CheckLEDataSize( 3 * sizeof( offset ), true );
     DoFix( imp_idx, rel, BASE_IMP, class, 0 );
 }
 
@@ -2925,7 +2925,7 @@ extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
         if( Imports == NULL ) {
             Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
         }
-        CheckImportSwitch( FALSE );
+        CheckImportSwitch( false );
         TellRTHandle( rtindex, idx );
         OutName( AskRTName( rtindex ), Imports );
         OutIdx( 0, Imports );           /* type index*/
@@ -2960,12 +2960,12 @@ extern  void    OutBckExport( const char *name, bool is_export )
     if( obj->gen_static_exports ) {
         if( is_export ) {
             EjectExports();
-            obj->gen_static_exports = FALSE;
+            obj->gen_static_exports = false;
         }
     } else {
         if( !is_export  ) {
             EjectExports();
-            obj->gen_static_exports = TRUE;
+            obj->gen_static_exports = true;
         }
     }
     if( obj->exports->used == 0 ) {
@@ -2996,12 +2996,12 @@ extern  void    OutBckImport( const char *name, back_handle bck, fix_class class
         if( Imports == NULL ) {
             Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
         }
-        CheckImportSwitch( FALSE );
+        CheckImportSwitch( false );
         bck->imp = idx;
         OutName( name, Imports );
         OutIdx( 0, Imports );               /* type index*/
     }
-    OutSpecialCommon( idx, class, FALSE );
+    OutSpecialCommon( idx, class, false );
 }
 
 
@@ -3068,7 +3068,7 @@ extern  void    OutDBytes( unsigned len, const byte *src )
     object      *obj;
 
     SetPendingLine();
-    CheckLEDataSize( sizeof( byte ), TRUE );
+    CheckLEDataSize( sizeof( byte ), true );
     obj = CurrSeg->obj;
     i = CurrSeg->location - obj->start + CurrSeg->data_prefix_size;
     max = (BUFFSIZE - TOLERANCE) - i;
@@ -3093,7 +3093,7 @@ extern  void    OutDBytes( unsigned len, const byte *src )
         if( len == 0 )
             break;
         EjectLEData();
-        OutLEDataStart( FALSE );
+        OutLEDataStart( false );
         i = CurrSeg->data_prefix_size;
         max = (BUFFSIZE - TOLERANCE);
     }
@@ -3113,7 +3113,7 @@ extern  void    OutIBytes( byte pat, offset len )
         }
     } else {
         EjectLEData();
-        OutLEDataStart( TRUE );
+        OutLEDataStart( true );
         obj = CurrSeg->obj;
 #ifdef _OMF_32
         if( _IsntTargetModel( EZ_OMF ) ) {
@@ -3152,7 +3152,7 @@ extern  bool    NeedBaseSet( void )
     bool        need;
 
     need = ( CurrSeg->need_base_set != 0 );
-    CurrSeg->need_base_set = FALSE;
+    CurrSeg->need_base_set = false;
     return( need );
 }
 
@@ -3198,7 +3198,7 @@ extern  void    TellObjNewLabel( cg_sym_handle lbl )
         }
     } else if( CurrSeg->comdat_symbol != NULL ) {
         DoEmptyQueue();
-        SetUpObj( FALSE );
+        SetUpObj( false );
         if( _IsModel( DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
@@ -3228,7 +3228,7 @@ extern  void    TellObjNewProc( cg_sym_handle proc )
         }
         CodeSeg = proc_id;
         SetOP( CodeSeg );
-        CurrSeg->need_base_set = TRUE;
+        CurrSeg->need_base_set = true;
         if( !CurrSeg->exec ) {
             Zoiks( ZOIKS_088 );
         }
@@ -3244,7 +3244,7 @@ extern  void    TellObjNewProc( cg_sym_handle proc )
         CurrSeg->prefix_comdat_state = PCS_NEED;
     } else if( CurrSeg->comdat_symbol != NULL ) {
         DoEmptyQueue();
-        SetUpObj( FALSE );
+        SetUpObj( false );
         if( _IsModel( DBG_DF ) ) {
             if( CurrSeg->comdat_symbol != NULL ) {
                 DFSymRange( CurrSeg->comdat_symbol, (offset)CurrSeg->comdat_size );
@@ -3274,12 +3274,12 @@ static  bool            InlineFunction( cg_sym_handle sym )
 {
     if( FEAttr( sym ) & FE_PROC ) {
         if( FindAuxInfoSym( sym, CALL_BYTES ) != NULL )
-            return( TRUE );
+            return( true );
         if( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  segment_id      AskSegID( pointer hdl, cg_class class )
@@ -3312,11 +3312,11 @@ extern  bool            AskNameCode( pointer hdl, cg_class class )
     case CG_TBL:
     case CG_VTB:
     case CG_CLB:
-        return( TRUE );
+        return( true );
     default:
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    AskNameROM( pointer hdl, cg_class class )

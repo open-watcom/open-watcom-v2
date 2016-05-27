@@ -147,7 +147,7 @@ bool SymbolDistributor::Distribute( const uint   module,
     unsigned_32 length;
     char*       dataPtr;
     if ( ! _retriever.ReadSubsection(dataPtr,length,sstSymbols,module) ) {
-        return FALSE;
+        return false;
     }
     char*       end = &dataPtr[length];
     if ( * (unsigned_32 *) dataPtr != CV4_HEADER ) {
@@ -159,6 +159,6 @@ bool SymbolDistributor::Distribute( const uint   module,
         Build(dataPtr, module, alignSym);
         dataPtr += * ( unsigned_16 * ) dataPtr + WORD;
     }
-    return TRUE;
+    return true;
 }
 

@@ -362,13 +362,13 @@ static bool doFnbodyRewrite( void )
 {
     switch( ScopeId( GetCurrScope() ) ) {
     case SCOPE_CLASS:
-        return( TRUE );
+        return( true );
     case SCOPE_TEMPLATE_DECL:
         return( GetCurrScope()->ordered != NULL );
     case SCOPE_TEMPLATE_INST:
         return( GetCurrScope()->owner.inst != NULL );
     }
-    return( FALSE );
+    return( false );
 }
 
 static PTREE setLocation( PTREE tree, TOKEN_LOCN *spot )
@@ -541,10 +541,10 @@ static void nextYYLexToken( PARSE_STACK *state )
             }
             state->look_ahead_index = 0;
         }
-        state->use_saved_tokens = FALSE;
+        state->use_saved_tokens = false;
     }
     if( state->special_gt_gt ) {
-        state->special_gt_gt = FALSE;
+        state->special_gt_gt = false;
         CurToken = T_GT;
         SrcFileGetTokenLocn( &yylocation );
         return;
@@ -635,7 +635,7 @@ static SCOPE checkColonColon( PTREE id, SCOPE scope, SCOPE not_nested,
         ScopeFreeResult( result );
     }
     id_type = scope_type;
-    class_type = BindTemplateClass( StructType( scope_type ), NULL, FALSE );
+    class_type = BindTemplateClass( StructType( scope_type ), NULL, false );
     if( class_type != NULL ) {
         // member pointers do not need the class to be defined
         if( StructOpened( class_type ) == NULL && CurToken != T_TIMES ) {
@@ -665,7 +665,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     bool undefined_scope;
     bool special_template;
 
-    undefined_scope = FALSE;
+    undefined_scope = false;
     scope = GetCurrScope();
     if( start != NULL ) {
         scope = GetFileScope();
@@ -678,7 +678,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
             } else {
                 member_lookup = NULL;
                 lexical_lookup = scope;
-                undefined_scope = TRUE;
+                undefined_scope = true;
                 if( special_typename ) {
                     scope = NULL;
                 }
@@ -704,15 +704,15 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
         nextRecordedToken( state );
         nextRecordedToken( state );
         if( CurToken == T_TEMPLATE ) {
-            special_template = TRUE;
+            special_template = true;
             nextRecordedToken( state );
         } else {
-            special_template = FALSE;
+            special_template = false;
         }
         if( ! undefined_scope ) {
             scope = checkColonColon( id, member_lookup, lexical_lookup, special_typename );
             if( scope == NULL ) {
-                undefined_scope = TRUE;
+                undefined_scope = true;
             }
         }
         name = id->u.id.name;
@@ -788,7 +788,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
     bool        undefined_scope;
     bool        special_template;
 
-    template_type = BindTemplateClass( state->class_colon, NULL, FALSE );
+    template_type = BindTemplateClass( state->class_colon, NULL, false );
     name = SimpleTypeName( template_type );
     template_class_type = StructType( template_type );
     scope_tree = PTreeId( name );
@@ -797,16 +797,16 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
         scope_tree->u.id.scope = template_class_type->u.c.scope;
         undefined_scope = ( (template_class_type->flag & TF1_UNBOUND) != 0 );
     } else {
-        undefined_scope = TRUE;
+        undefined_scope = true;
     }
     curr = makeBinary( CO_COLON_COLON, NULL, scope_tree );
     nextRecordedToken( state );
     for(;;) {
         if( CurToken == T_TEMPLATE ) {
-            special_template = TRUE;
+            special_template = true;
             nextRecordedToken( state );
         } else {
-            special_template = FALSE;
+            special_template = false;
         }
         switch( CurToken ) {
         case T_ID:
@@ -931,7 +931,7 @@ static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
             if( angle_state->paren_depth == 0 ) {
                 VstkPop( &(state->angle_stack) );
                 token = Y_GT_SPECIAL;
-                state->special_gt_gt = TRUE;
+                state->special_gt_gt = true;
             }
         } else if( token == Y_LEFT_BRACE ) {
             angle_state->paren_depth++;
@@ -971,8 +971,8 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         unsigned special_typename : 1;
     } flags;
 
-    state->favour_reduce = FALSE;
-    state->favour_shift = FALSE;
+    state->favour_reduce = false;
+    state->favour_shift = false;
     if( state->use_saved_tokens ) {
         saved_token = VstkIndex( &(state->look_ahead_storage), state->look_ahead_index );
         yylval = saved_token->yylval;
@@ -980,11 +980,11 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         token = saved_token->yytok;
         switch( token ) {
         case LA_SHIFT_TOKEN:
-            state->favour_shift = TRUE;
+            state->favour_shift = true;
             token = YYAMBIGT0;
             break;
         case LA_REDUCE_TOKEN:
-            state->favour_reduce = TRUE;
+            state->favour_reduce = true;
             token = YYAMBIGT0;
             break;
         case Y_TYPE_NAME:
@@ -1000,17 +1000,17 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         currToken = token;
         return( currToken );
     }
-    flags.no_super_token = FALSE;
-    flags.special_colon_colon = FALSE;
+    flags.no_super_token = false;
+    flags.special_colon_colon = false;
     flags.special_typename = state->special_typename;
-    state->special_typename = FALSE;
+    state->special_typename = false;
     if( state->no_super_tokens ) {
-        state->no_super_tokens = FALSE;
-        flags.no_super_token = TRUE;
+        state->no_super_tokens = false;
+        flags.no_super_token = true;
     }
     if( state->special_colon_colon ) {
-        state->special_colon_colon = FALSE;
-        flags.special_colon_colon = TRUE;
+        state->special_colon_colon = false;
+        flags.special_colon_colon = true;
     }
     token = currToken;
     if( token != Y_IMPOSSIBLE ) {
@@ -1153,9 +1153,9 @@ static bool tokenMakesPTREE( YYTOKENTYPE token )
     case Y_TEMPLATE_SCOPED_OPERATOR:
     case Y_TEMPLATE_SCOPED_TILDE:
     case Y_TEMPLATE_SCOPED_TIMES:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void ParseFlush( void )
@@ -1379,50 +1379,50 @@ static void commonInit( PARSE_STACK *stack )
     stack->scope_member = NULL;
     VstkOpen( &(stack->angle_stack), sizeof(angle_bracket_stack), 16 );
     stack->expect = NULL;
-    stack->no_super_tokens = FALSE;
-    stack->use_saved_tokens = FALSE;
-    stack->favour_reduce = FALSE;
-    stack->favour_shift = FALSE;
-    stack->look_ahead_stack = FALSE;
-    stack->look_ahead_active = FALSE;
-    stack->template_decl = FALSE;
-    stack->special_colon_colon = FALSE;
-    stack->special_gt_gt = FALSE;
-    stack->special_typename = FALSE;
-    stack->template_extern = FALSE;
-    stack->template_instantiate = FALSE;
+    stack->no_super_tokens = false;
+    stack->use_saved_tokens = false;
+    stack->favour_reduce = false;
+    stack->favour_shift = false;
+    stack->look_ahead_stack = false;
+    stack->look_ahead_active = false;
+    stack->template_decl = false;
+    stack->special_colon_colon = false;
+    stack->special_gt_gt = false;
+    stack->special_typename = false;
+    stack->template_extern = false;
+    stack->template_instantiate = false;
 }
 
 static void restartInit( PARSE_STACK *stack )
 {
-    stack->template_decl = FALSE;
+    stack->template_decl = false;
     DbgAssert( stack->qualifications == NULL );
     DbgAssert( stack->look_ahead_count == 0 );
     DbgAssert( stack->look_ahead_index == 0 );
     DbgAssert( stack->template_record_tokens == NULL );
     DbgAssert( VstkTop( &(stack->angle_stack) ) == NULL );
     DbgAssert( stack->expect == NULL );
-    DbgAssert( stack->no_super_tokens == FALSE );
-    DbgAssert( stack->use_saved_tokens == FALSE );
-    DbgAssert( stack->favour_reduce == FALSE );
-    DbgAssert( stack->favour_shift == FALSE );
-    DbgAssert( stack->look_ahead_stack == FALSE );
-    DbgAssert( stack->look_ahead_active == FALSE );
-    DbgAssert( stack->template_decl == FALSE );
-    DbgAssert( stack->special_colon_colon == FALSE );
-    DbgAssert( stack->special_gt_gt == FALSE );
-    DbgAssert( stack->special_typename == FALSE);
-    DbgAssert( stack->template_extern == FALSE);
-    DbgAssert( stack->template_instantiate == FALSE);
+    DbgAssert( stack->no_super_tokens == false );
+    DbgAssert( stack->use_saved_tokens == false );
+    DbgAssert( stack->favour_reduce == false );
+    DbgAssert( stack->favour_shift == false );
+    DbgAssert( stack->look_ahead_stack == false );
+    DbgAssert( stack->look_ahead_active == false );
+    DbgAssert( stack->template_decl == false );
+    DbgAssert( stack->special_colon_colon == false );
+    DbgAssert( stack->special_gt_gt == false );
+    DbgAssert( stack->special_typename == false);
+    DbgAssert( stack->template_extern == false);
+    DbgAssert( stack->template_instantiate == false);
 }
 
 static void newLookAheadStack( PARSE_STACK *stack, PARSE_STACK *prev_stack )
 {
-    initParseStacks( stack, TRUE );
+    initParseStacks( stack, true );
     /* initialize */
     commonInit( stack );
     /* grab top two states from previous stack */
-    stack->look_ahead_stack = TRUE;
+    stack->look_ahead_stack = true;
     stack->ssp[0] = prev_stack->ssp[-1];
     stack->ssp++;
     stack->ssp[0] = prev_stack->ssp[0];
@@ -1430,7 +1430,7 @@ static void newLookAheadStack( PARSE_STACK *stack, PARSE_STACK *prev_stack )
 
 static void newExprStack( PARSE_STACK *stack, YYTOKENTYPE tok )
 {
-    initParseStacks( stack, FALSE );
+    initParseStacks( stack, false );
     /* initialize */
     commonInit( stack );
     /* go to correct state */
@@ -1439,7 +1439,7 @@ static void newExprStack( PARSE_STACK *stack, YYTOKENTYPE tok )
 
 static void newExceptionStack( PARSE_STACK *stack )
 {
-    initParseStacks( stack, FALSE );
+    initParseStacks( stack, false );
     /* initialize */
     commonInit( stack );
     /* go to correct state */
@@ -1448,7 +1448,7 @@ static void newExceptionStack( PARSE_STACK *stack )
 
 static void newClassInstStack( PARSE_STACK *stack )
 {
-    initParseStacks( stack, FALSE );
+    initParseStacks( stack, false );
     /* initialize */
     commonInit( stack );
     /* go to correct state */
@@ -1457,7 +1457,7 @@ static void newClassInstStack( PARSE_STACK *stack )
 
 static void newDeclStack( PARSE_STACK *stack )
 {
-    initParseStacks( stack, FALSE );
+    initParseStacks( stack, false );
     /* initialize */
     commonInit( stack );
 }
@@ -1602,15 +1602,15 @@ static void syncToRestart( PARSE_STACK *state )
 
 static void setNoSuperTokens( PARSE_STACK *state )
 {
-    state->no_super_tokens = TRUE;
+    state->no_super_tokens = true;
 }
 
 static void setWatchColonColon( PARSE_STACK *state, PTREE tree, TYPE type )
 {
     state->class_colon = type;
-    state->special_colon_colon = TRUE;
+    state->special_colon_colon = true;
     if( tree->flags & PTF_TYPENAME ) {
-        state->special_typename = TRUE;
+        state->special_typename = true;
         tree->flags &= ~PTF_TYPENAME;
     }
 }
@@ -1667,25 +1667,8 @@ void *ParseCurrQualification( void )
     return( elt );
 }
 
-static YYACTIONTYPE GOTOYYAction( PARSE_STACK *state, YYACTIONTYPE rule )
-{
-    YYACTIONTYPE *ssp;
-    YYTOKENTYPE lhs;
-    YYACTIONTYPE top_state;
-    YYACTIONTYPE raw_action;
-
-    ssp = state->ssp;
-    top_state = ssp[0];
-    lhs = yyplhstab[rule];
-    raw_action = yyaction[lhs + yygotobase[top_state]];
-    return( raw_action );
-}
-#if 0
-// doAction contains variables called 'yyaction' so this can't be used
-// plus it slowed down the compiler at one point in time
 #define GOTOYYAction( state, rule ) \
-        ( yyaction[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
-#endif
+        ( yyactiontab[yyplhstab[(rule)] + yygotobase[(state)->ssp[0]]] )
 
 static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE *pa )
 {
@@ -1703,7 +1686,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
     mask = 1 << ( t & 0x07 );
     for(;;) {
         if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
-            raw_action = yyaction[t + yyactionbase[top_state]];
+            raw_action = yyactiontab[t + yyactionbasetab[top_state]];
             if( (raw_action & RAW_REDUCTION) == 0 ) {
                 /* we have a shift */
                 *pa = raw_action;
@@ -1723,7 +1706,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         }
         /* we have a unit reduction */
         lhs = yyplhstab[rule];
-        top_state = yyaction[lhs + yygotobase[ssp[-1]]];
+        top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
         if( PragDbgToggle.dump_parse ) { 
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
@@ -1761,7 +1744,7 @@ static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENT
 
 static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
 {
-    YYACTIONTYPE yy_action;
+    YYACTIONTYPE yyaction;
 
 #ifndef NDEBUG
     if( PragDbgToggle.dump_parse ) {
@@ -1772,9 +1755,9 @@ static la_action lookAheadReduce( PARSE_STACK *state, YYACTIONTYPE new_rule )
     if( state->ssp < state->sstack ) {
         return( LA_UNDERFLOW );
     }
-    yy_action = GOTOYYAction( state, new_rule );
+    yyaction = GOTOYYAction( state, new_rule );
     state->ssp++;
-    *(state->ssp) = yy_action;
+    *(state->ssp) = yyaction;
     return( LA_NULL );
 }
 
@@ -1863,7 +1846,7 @@ static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
 
 static void lookAheadUseSavedTokens( PARSE_STACK *state, unsigned index )
 {
-    state->use_saved_tokens = TRUE;
+    state->use_saved_tokens = true;
     state->look_ahead_index = index;
     currToken = Y_IMPOSSIBLE;
 }
@@ -1921,7 +1904,7 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     };
 
     if( state == host ) {
-        state->look_ahead_active = TRUE;
+        state->look_ahead_active = true;
     }
     newLookAheadStack( &look_ahead_expr_state, state );
     newLookAheadStack( &look_ahead_decl_state, state );
@@ -2005,7 +1988,7 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     }
     if( state == host ) {
         lookAheadUseSavedTokens( host, 0 );
-        state->look_ahead_active = FALSE;
+        state->look_ahead_active = false;
     }
     return( yyaction );
 }
@@ -2186,7 +2169,7 @@ static void makeStable( TOKEN end_token )
     }
 
     PTreeFreeSubtrees( getMultiToken() );
-    token_absorbed = FALSE;     /* infinite loop protection */
+    token_absorbed = false;     /* infinite loop protection */
     depth = 0;
     while( CurToken != T_EOF ) {
         if( ( CurToken == T_LEFT_BRACE ) || ( CurToken == T_ALT_LEFT_BRACE ) ) {
@@ -2225,7 +2208,7 @@ static void makeStable( TOKEN end_token )
         } else if( ( CurToken == T_RIGHT_BRACE ) || ( CurToken == T_ALT_RIGHT_BRACE ) ) {
             --depth;
         }
-        token_absorbed = TRUE;
+        token_absorbed = true;
         nextToken( &yylocation );
     }
 }
@@ -2626,7 +2609,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
             PTypeRelease( new_type );
             new_type = NULL;
         } else {
-            new_type = PTypeDone( new_type, TRUE );
+            new_type = PTypeDone( new_type, true );
         }
     }
     return( new_type );

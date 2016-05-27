@@ -143,7 +143,7 @@ void GlobalViewTree::menuSelected( const MIMenuID & id )
 bool GlobalViewTree::key( WKeyCode key, WKeyState state )
 //-------------------------------------------------------
 {
-    bool ret = TRUE;
+    bool ret = true;
 
     switch( key ) {
     case WKeyCtrlKPAsterisk:
@@ -153,7 +153,7 @@ bool GlobalViewTree::key( WKeyCode key, WKeyState state )
         if( state & WKeyStateShift ) {
             treeViewEvent( ExpandAll );
         } else {
-            ret = FALSE;
+            ret = false;
         }
         break;
     case WKeyAsterisk:
@@ -177,7 +177,7 @@ bool GlobalViewTree::key( WKeyCode key, WKeyState state )
         treeViewEvent( CollapseBranch );
         break;
     default:
-        ret = FALSE;
+        ret = false;
     }
     selChange();
 

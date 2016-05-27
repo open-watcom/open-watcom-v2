@@ -80,7 +80,7 @@ extern  void    FEPtr( sym_handle sym, type_def *tipe, offset plus ) {
     if( FEAttr( sym ) & FE_IMPORT  ){
         HWExtern( hwlabel );
     }
-    HWSymAddr( hwlabel, plus, FALSE );
+    HWSymAddr( hwlabel, plus, false );
 }
 
 
@@ -95,7 +95,7 @@ extern  void    BackPtr( bck_info *bck, seg_id seg,
         /* can't handle yet */
     }
     hwlabel = AskForHWLabel( bck->lbl );
-    HWSymAddr( hwlabel, plus, FALSE );
+    HWSymAddr( hwlabel, plus, false );
 }
 
 extern  void    DataLabel( label_handle lbl ) {

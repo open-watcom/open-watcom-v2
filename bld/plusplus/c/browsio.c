@@ -241,16 +241,16 @@ static int createBrowseFile(FILE* browseFile,       /* target file */
 }
 //---------------------------------------------------------------------------
 
-static void dw_write( dw_sectnum section, const void *block, dw_size_t len )
-/**************************************************************************/
+static void dw_write( dw_sectnum section, const void *block, size_t len )
+/***********************************************************************/
 {
 #ifdef __DD__
     //int i;
-    printf( "\nDW_WRITE(%d:%d): offset: %d len: %d ",
+    printf( "\nDW_WRITE(%d:%d): offset: %d len: %u ",
         section,
         dw_sections[section].length,
         dw_sections[section].offset,
-        len );
+        (unsigned)len );
     //for( i = 0 ; i < len; i++ ) {
     //    printf( "%02x ", (int)((char *)block)[i] );
     //}

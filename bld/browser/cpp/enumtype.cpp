@@ -47,7 +47,7 @@ struct searchData {
     WVList *    list;
 };
 
-EnumType::EnumType( dr_handle drhdl, dr_handle drhdl_prt, Module * m, char * name )
+EnumType::EnumType( drmem_hdl drhdl, drmem_hdl drhdl_prt, Module * m, char * name )
             : Symbol( drhdl, drhdl_prt, m, name )
 //---------------------------------------------------------------------
 {
@@ -85,7 +85,7 @@ static bool EnumType::loadHook( char * name, unsigned_32 val, void * data )
     elem = new EnumElement( name, info->me->_byteSize, val );
     info->list->add( elem );
 
-    return TRUE;
+    return true;
 }
 
 //------------------------ EnumElement -------------------------------------

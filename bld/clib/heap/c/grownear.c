@@ -49,13 +49,10 @@
 #endif
 #include "heapacc.h"
 #include "heap.h"
-#if defined(__DOS_EXT__)
-  #include "extender.h"
+#if defined(__DOS_EXT__) || defined(__CALL21__)
   #include "tinyio.h"
 #endif
-#if defined(__CALL21__)
-  #include "tinyio.h"
-#endif
+
 
 #if defined(__WARP__)
 #define BLKSIZE_ALIGN_MASK      0xFFFF  // 64kB
@@ -162,7 +159,7 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             }
             dpmi->dos_seg_value = 0;
             mhp = (mheapptr)( dpmi + 1 );
-            mhp->len = size - sizeof(struct dpmi_hdr) - TAG_SIZE;
+            mhp->len = size - sizeof( dpmi_hdr ) - TAG_SIZE;
             flp = __LinkUpNewMHeap( mhp );
             mhp->numalloc = 1;
 
@@ -216,7 +213,7 @@ static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
         /* insert before 'p2' (list is non-empty) */
         p2->prev = p1;
     }
-    amount = p1->len - sizeof( struct miniheapblkp );
+    amount = p1->len - sizeof( miniheapblkp );
     /* Fill out the new miniheap descriptor */
     p1->freehead.len = 0;
     p1->freehead.prev = &p1->freehead;
@@ -233,11 +230,7 @@ static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
     return( (frlptr)p1 );
 }
 
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
     frlptr      p1;
@@ -249,7 +242,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
     p1 = __nheapbeg->freehead.prev; /* point to last free block */
     brk_value = (unsigned)((PTR)p1 + p1->len + TAG_SIZE );
   #if defined(__DOS_EXT__)
-    if( _IsPharLap() && !__X32VM)
+    if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
@@ -259,7 +252,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 }
 #endif
 
-#if !defined(__CALL21__) && defined(__DOS_EXT__)
+#if defined(__DOS_EXT__) && !defined(__CALL21__)
 static void *RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
@@ -292,7 +285,7 @@ static void *RationalAlloc( size_t size )
             dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
             dpmi->dos_seg_value = DOS_block;
             mhp = (mheapptr)( dpmi + 1 );
-            mhp->len = size - sizeof( struct dpmi_hdr );
+            mhp->len = size - sizeof( dpmi_hdr );
             return( (void *)mhp );
         }
     }
@@ -309,11 +302,7 @@ static int __AdjustAmount( unsigned *amount )
 {
     unsigned old_amount = *amount;
     unsigned amt;
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
     unsigned last_free_amt;
 #endif
 
@@ -322,13 +311,9 @@ static int __AdjustAmount( unsigned *amount )
     if( amt < old_amount ) {
         return( 0 );
     }
-#if ! ( defined(__WINDOWS_286__) || \
-        defined(__WINDOWS_386__) || \
-        defined(__WARP__)        || \
-        defined(__NT__)             \
-    )
+#if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
   #if defined(__DOS_EXT__)
-    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    if( !__IsCtsNHeap() ) {
         // Allocating extra to identify the dpmi block
         amt += sizeof( dpmi_hdr );
     } else {
@@ -368,12 +353,8 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = _amblksiz & ~1u;
     }
-#if defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__DOS_EXT__)     || \
-    defined(__RDOS__)
+#if defined(__WINDOWS_386__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
     /* make sure amount is a multiple of 4k/64k */
     *amount = amt;
     amt += BLKSIZE_ALIGN_MASK;
@@ -385,13 +366,8 @@ static int __AdjustAmount( unsigned *amount )
     return( *amount != 0 );
 }
 
-#if defined(__WINDOWS_286__) || \
-    defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__DOS_EXT__)     || \
-    defined(__RDOS__)
+#if defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
 static int __CreateNewNHeap( unsigned amount )
 {
     mheapptr        p1;
@@ -453,7 +429,7 @@ static int __CreateNewNHeap( unsigned amount )
         amount -= 2 * TAG_SIZE; // 11-jun-95, subtract extra tag
     }
   #elif defined(__DOS_EXT__)
-    // if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+    // if( !__IsCtsNHeap() ) {
     {
         tag         *tmp_tag;
 
@@ -509,12 +485,8 @@ static int __CreateNewNHeap( unsigned amount )
 
 int __ExpandDGROUP( unsigned amount )
 {
-#if defined(__WINDOWS_286__) || \
-    defined(__WINDOWS_386__) || \
-    defined(__WARP__)        || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__RDOS__)
+#if defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) \
+  || defined(__CALL21__) || defined(__RDOS__)
     // first try to free any available storage
     _nheapshrink();
     return( __CreateNewNHeap( amount ) );
@@ -527,7 +499,7 @@ int __ExpandDGROUP( unsigned amount )
     void        _WCNEAR *brk_ret;
 
   #if defined(__DOS_EXT__)
-    if( ( _IsRationalZeroBase() || _IsCodeBuilder() ) ) {
+    if( !__IsCtsNHeap() ) {
         return( __CreateNewNHeap( amount ) );   // Won't slice either
     }
     // Rational non-zero based system should go through.
@@ -539,7 +511,7 @@ int __ExpandDGROUP( unsigned amount )
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
   #if defined(__DOS_EXT__)
-    if( _IsPharLap() && !__X32VM ) {
+    if( _IsPharLap() && !_IsFlashTek() ) {
         _curbrk = SegmentLimit();
     }
   #endif

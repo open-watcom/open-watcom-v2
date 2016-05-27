@@ -4,9 +4,8 @@
 !inject chdiros2.obj                                        o16 o32
 !inject chdirwnt.obj                     nt nta ntp
 !inject chdrive.obj  d16 d32             nt nta ntp         o16 o32         w16 w32
-!inject dir.obj      d16 d32                                                w16 w32
+!inject dir.obj      d16 d32                                                w16 w32 osi
 !inject diros2.obj                                          o16 o32
-!inject dirosi.obj                                                                  osi
 !inject dirwnt.obj                       nt nta ntp
 !inject dirrd.obj                                                                                   rdu rdk
 !inject diskfree.obj d16 d32             nt nta ntp         o16 o32         w16 w32

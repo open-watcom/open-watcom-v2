@@ -57,13 +57,13 @@ bool NewDBRFile::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_NEW_DATABASE_FILE );
     }
-    return( TRUE );
+    return( true );
 }
 
 void NewDBRFile::initialize()
 //--------------------------
 {
-    setSystemFont( FALSE );
+    setSystemFont( false );
     rescale();
     move( frame().r );
     centre();

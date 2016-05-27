@@ -35,7 +35,7 @@
 #include "drscope.h"
 
 
-static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
+static dr_language GetLanguage( drmem_hdl abbrev, drmem_hdl mod )
 /***************************************************************/
 {
     dr_language result;
@@ -61,18 +61,18 @@ static dr_language GetLanguage( dr_handle abbrev, dr_handle mod )
     return( result );
 }
 
-static bool CheckLanguage( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *data )
+static bool CheckLanguage( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void *data )
 /****************************************************************************************/
 {
     x = x;
     *(dr_language *)data = GetLanguage( abbrev, mod );
-    return( FALSE );        // do not continue processing
+    return( false );        // do not continue processing
 }
 
-dr_language DRGetLanguageAT( dr_handle entry )
+dr_language DRGetLanguageAT( drmem_hdl entry )
 /********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     dr_language result;
 
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -80,10 +80,10 @@ dr_language DRGetLanguageAT( dr_handle entry )
     return( result );
 }
 
-dr_model DRGetMemModelAT( dr_handle entry )
+dr_model DRGetMemModelAT( drmem_hdl entry )
 /*****************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     dr_model    retval;
 
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -95,10 +95,10 @@ dr_model DRGetMemModelAT( dr_handle entry )
     return( retval );
 }
 
-char *DRGetProducer( dr_handle entry )
+char *DRGetProducer( drmem_hdl entry )
 /************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     char       *name;
 
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -114,17 +114,17 @@ dr_language DRGetLanguage( void )
 /*******************************/
 {
     dr_language result;
-    dr_handle   start;
+    drmem_hdl   start;
 
     start = DWRCurrNode->sections[DR_DEBUG_INFO].base;
     DWRGetCompileUnitHdr( start, CheckLanguage, &result );
     return( result );
 }
 
-static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, dw_atnum attrib )
-/**********************************************************************************************/
+static size_t GetNameBuffAttr( drmem_hdl entry, char *buff, size_t length, dw_atnum attrib )
+/******************************************************************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     dw_formnum  form;
 
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -134,15 +134,16 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
         case DW_FORM_string:
             length = DWRVMGetStrBuff( entry, buff, length );
             break;
-        case DW_FORM_strp: {
-            unsigned_32 offset;
-            dr_handle   dbgsec_str;
-
-            offset = ReadConst( DW_FORM_data4, entry );
-            dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
-            length = DWRVMGetStrBuff( dbgsec_str, buff, length );
-            break;
+        case DW_FORM_strp:
+            {
+                unsigned_32 offset;
+                drmem_hdl   dbgsec_str;
+    
+                offset = ReadConst( DW_FORM_data4, entry );
+                dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
+                length = DWRVMGetStrBuff( dbgsec_str, buff, length );
             }
+            break;
         default:
             DWREXCEPT( DREXCEP_BAD_DBG_INFO );
             length = 0;
@@ -153,38 +154,38 @@ static unsigned GetNameBuffAttr( dr_handle entry, char *buff, unsigned length, d
     return( length );
 }
 
-unsigned DRGetCompDirBuff( dr_handle entry, char *buff, unsigned length )
-/***********************************************************************/
+size_t DRGetCompDirBuff( drmem_hdl entry, char *buff, size_t length )
+/*******************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_comp_dir ) );
 }
 
-char * DRGetName( dr_handle entry )
-/*********************************/
+char *DRGetName( drmem_hdl entry )
+/********************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     return( DWRGetName( abbrev, entry ) );
 }
 
-unsigned DRGetNameBuff( dr_handle entry, char *buff, unsigned length )
-/********************************************************************/
+size_t DRGetNameBuff( drmem_hdl entry, char *buff, size_t length )
+/****************************************************************/
 {
     return( GetNameBuffAttr( entry, buff, length, DW_AT_name ) );
 }
 
-unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
-/***********************************************************************/
+size_t DRGetScopedNameBuff( drmem_hdl entry, char *buff, size_t max )
+/*******************************************************************/
 {
-    dr_handle       of;
+    drmem_hdl       of;
     dr_scope_trail  container;
     dr_scope_entry  *curr;
-    unsigned        total;
-    unsigned        length;
+    size_t          total;
+    size_t          length;
 
     of = DRGetContaining( entry );
-    if( of == DR_HANDLE_NUL ) {
+    if( of == DRMEM_HDL_NULL ) {
         of = entry;
     }
     DRGetScopeList( &container, of );
@@ -214,7 +215,8 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
                 goto done_loop;
             }
             curr = next;
-        }done_loop:;
+        }
+done_loop:
         curr = outside;
     }
     total = 0;
@@ -225,12 +227,12 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
             --length;
         }
         total += length;
-        if( length+2 < max ) {
+        if( length + 2 < max ) {
             buff  += length;
             max   -= length;
             buff[0] = ':';
             buff[1] = ':';
-            buff+= 2;
+            buff += 2;
         } else {
             max = 0;
         }
@@ -243,12 +245,12 @@ unsigned DRGetScopedNameBuff( dr_handle entry, char *buff, unsigned max )
     return( total );
 }
 
-long DRGetColumn( dr_handle entry )
+long DRGetColumn( drmem_hdl entry )
 /*********************************/
 // NYI: this is not going to work for macros.
 {
     long        retval;
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     retval = -1;        // signifies no column available
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -258,12 +260,12 @@ long DRGetColumn( dr_handle entry )
     return( retval );
 }
 
-long DRGetLine( dr_handle entry )
+long DRGetLine( drmem_hdl entry )
 /**************************************/
 // NYI: this is not going to work for macros.
 {
     long        retval;
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     retval = -1;        // signifies no column available
     abbrev = DWRSkipTag( &entry ) + 1;
@@ -273,10 +275,10 @@ long DRGetLine( dr_handle entry )
     return( retval );
 }
 
-extern char *DRGetFileName( dr_handle entry )
+extern char *DRGetFileName( drmem_hdl entry )
 /*******************************************/
 {
-    dr_handle           abbrev;
+    drmem_hdl           abbrev;
     char *              name;
     dr_fileidx          fileidx;
 
@@ -312,7 +314,7 @@ void DRGetFileNameList( DRFNAMECB callback, void *data )
     } while( compunit != NULL );
 }
 
-char *DRIndexFileName( dr_handle mod, dr_fileidx fileidx  )
+char *DRIndexFileName( drmem_hdl mod, dr_fileidx fileidx  )
 /********************************************************/
 {
     compunit_info       *compunit;
@@ -325,10 +327,10 @@ char *DRIndexFileName( dr_handle mod, dr_fileidx fileidx  )
     return( name );
 }
 
-dr_access DRGetAccess( dr_handle entry )
+dr_access DRGetAccess( drmem_hdl entry )
 /**************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_accessibility ) ) {
@@ -337,40 +339,40 @@ dr_access DRGetAccess( dr_handle entry )
     return( DR_ACCESS_PUBLIC );
 }
 
-bool DRIsStatic( dr_handle entry )
+bool DRIsStatic( drmem_hdl entry )
 /********************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_external ) ) {
         return( DWRReadFlag( abbrev, entry ) == 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
-bool DRIsArtificial( dr_handle entry )
+bool DRIsArtificial( drmem_hdl entry )
 /************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_artificial ) ) {
         return( DWRReadFlag( abbrev, entry ) != 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
-bool DRIsSymDefined( dr_handle entry )
+bool DRIsSymDefined( drmem_hdl entry )
 /************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     return( !DWRScanForAttrib( &abbrev, &entry, DW_AT_declaration ) );
 }
 
-bool DRIsMemberStatic( dr_handle entry )
+bool DRIsMemberStatic( drmem_hdl entry )
 /**************************************/
 {
     dw_tagnum       tag;
@@ -379,7 +381,7 @@ bool DRIsMemberStatic( dr_handle entry )
     return( tag == DW_TAG_variable );
 }
 
-bool DRIsFunc( dr_handle entry )
+bool DRIsFunc( drmem_hdl entry )
 /******************************/
 {
     dw_tagnum       tag;
@@ -388,7 +390,7 @@ bool DRIsFunc( dr_handle entry )
     return( tag == DW_TAG_subprogram );
 }
 
-bool DRIsParm( dr_handle entry )
+bool DRIsParm( drmem_hdl entry )
 /******************************/
 {
     dw_tagnum       tag;
@@ -397,10 +399,10 @@ bool DRIsParm( dr_handle entry )
     return( tag == DW_TAG_formal_parameter );
 }
 
-dr_virtuality DRGetVirtuality( dr_handle entry )
+dr_virtuality DRGetVirtuality( drmem_hdl entry )
 /**********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_virtuality ) ) {
@@ -409,10 +411,10 @@ dr_virtuality DRGetVirtuality( dr_handle entry )
     return( DR_VIRTUALITY_NONE );
 }
 
-unsigned DRGetByteSize( dr_handle entry )
+unsigned DRGetByteSize( drmem_hdl entry )
 /***************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_byte_size ) ) {
@@ -421,10 +423,10 @@ unsigned DRGetByteSize( dr_handle entry )
     return( 0 );
 }
 
-bool DRGetLowPc( dr_handle entry, uint_32 *num )
+bool DRGetLowPc( drmem_hdl entry, uint_32 *num )
 /**********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     uint_32     offset;
     bool        ret;
 
@@ -432,17 +434,17 @@ bool DRGetLowPc( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_low_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
 
-bool DRGetHighPc( dr_handle entry, uint_32 *num )
+bool DRGetHighPc( drmem_hdl entry, uint_32 *num )
 /***********************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     uint_32     offset;
     bool        ret;
 
@@ -450,33 +452,33 @@ bool DRGetHighPc( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_high_pc ) ) {
         offset = DWRReadAddr( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
 
-dr_handle DRGetContaining( dr_handle entry )
+drmem_hdl DRGetContaining( drmem_hdl entry )
 /******************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   ret;
+    drmem_hdl   abbrev;
+    drmem_hdl   ret;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_containing_type ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
 
-dr_handle DRWalkParent( dr_search_context * context )
+drmem_hdl DRWalkParent( dr_search_context * context )
 /**********************************************************/
 // get past relative
 {
-    dr_handle   prev;
+    drmem_hdl   prev;
     stack_op    op;
 
     op = DWRContextOP( &context->stack, 0 );
@@ -491,7 +493,7 @@ dr_handle DRWalkParent( dr_search_context * context )
         prev = context->functionhdl;
         break;
     default:
-        prev = DR_HANDLE_NUL;
+        prev = DRMEM_HDL_NULL;
         break;
     }
     return( prev );
@@ -502,7 +504,7 @@ struct wlk_wlk {
     void        *d;
 };
 
-static bool CheckAFunc( dr_handle abbrev, dr_handle mod, mod_scan_info *x, void *_d )
+static bool CheckAFunc( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void *_d )
 /***********************************************************************************/
 {
     struct  wlk_wlk     *d = _d;
@@ -521,7 +523,7 @@ static const dw_tagnum EntryTags[] = {
     DW_TAG_subprogram, DW_TAG_label, DW_TAG_variable, 0
 };
 
-bool DRWalkModFunc( dr_handle mod, bool blocks, DRWLKMODF wlk, void *d )
+bool DRWalkModFunc( drmem_hdl mod, bool blocks, DRWLKMODF wlk, void *d )
 /**********************************************************************/
 {
     bool            ret;
@@ -560,7 +562,7 @@ static const dw_tagnum TypeTags[] = { // any type
     DW_TAG_typedef,
 };
 
-bool DRWalkModTypes( dr_handle mod, DRWLKMODF wlk, void *d )
+bool DRWalkModTypes( drmem_hdl mod, DRWLKMODF wlk, void *d )
 /**********************************************************/
 {
     struct wlk_wlk  dat;
@@ -570,7 +572,7 @@ bool DRWalkModTypes( dr_handle mod, DRWLKMODF wlk, void *d )
     return( DWRWalkCompileUnit( mod, CheckAFunc, TypeTags, DR_DEPTH_FUNCTIONS | DR_DEPTH_CLASSES, &dat ) );
 }
 
-bool DRWalkScope( dr_handle mod, DRWLKBLK wlk, void *d )
+bool DRWalkScope( drmem_hdl mod, DRWLKBLK wlk, void *d )
 /******************************************************/
 {
     return( DWRWalkScope( mod, &BlockTags[1], wlk, d ) );
@@ -609,7 +611,7 @@ static const dw_tagnum * const SrchTags[DR_SRCH_LAST] = {
 };
 
 #define MAX_TAG_WLK   8   //check max size of tag search array
-bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
+bool DRWalkBlock( drmem_hdl mod, dr_srch what, DRWLKBLK wlk, void *d )
 /********************************************************************/
 {
     const dw_tagnum     *tags;
@@ -626,10 +628,10 @@ bool DRWalkBlock( dr_handle mod, dr_srch what, DRWLKBLK wlk, void *d )
     return( DWRWalkChildren( mod, tags, wlks, d ) );
 }
 
-bool DRStartScopeAT( dr_handle entry, uint_32 *num )
+bool DRStartScopeAT( drmem_hdl entry, uint_32 *num )
 /**************************************************/
 {
-    dr_handle   abbrev;
+    drmem_hdl   abbrev;
     uint_32     offset;
     bool        ret;
 
@@ -637,37 +639,37 @@ bool DRStartScopeAT( dr_handle entry, uint_32 *num )
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_start_scope ) ) {
         offset =  DWRReadConstant( abbrev, entry );
         *num = offset;
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     return( ret );
 }
 
-unsigned DRGetAddrSize( dr_handle mod )
+unsigned DRGetAddrSize( drmem_hdl mod )
 /*************************************/
 // returns the size of the address for the compile unit
 {
     return( DWRVMReadByte( mod + 10 ) );
 }
 
-dr_handle DRDebugPCHDef( dr_handle entry )
+drmem_hdl DRDebugPCHDef( drmem_hdl entry )
 /****************************************/
 {
-    dr_handle   abbrev;
-    dr_handle   ret;
+    drmem_hdl   abbrev;
+    drmem_hdl   ret;
 
     abbrev = DWRSkipTag( &entry ) + 1;
     if( DWRScanForAttrib( &abbrev, &entry, DW_AT_base_types ) ) {
         ret = DWRReadReference( abbrev, entry );
     } else {
-        ret = DR_HANDLE_NUL;
+        ret = DRMEM_HDL_NULL;
     }
     return( ret );
 }
 
- dr_tag_type DRGetTagType( dr_handle entry )
-/************************************************/
+dr_tag_type DRGetTagType( drmem_hdl entry )
+/*****************************************/
 {
     dr_tag_type tagtype;
     dw_tagnum   tag;

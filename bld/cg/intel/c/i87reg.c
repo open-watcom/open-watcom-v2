@@ -37,22 +37,22 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "redefby.h"
+#include "regalloc.h"
+
 
 extern  hw_reg_set      FPRegs[];
 extern  name            *FPStatWord;
 extern  int             Max87Stk;
 
 extern  void            SuffixIns(instruction*,instruction*);
-extern  conflict_node   *InMemory(conflict_node*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  bool            AssignARegister(conflict_node*,hw_reg_set);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
-extern  bool_maybe      ReDefinedBy(instruction*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
 
 /* forward declarations */
@@ -171,13 +171,13 @@ static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
 
     ins = conf->ins_range.first;
     last = conf->ins_range.last;
-    if( ins == last ) return( TRUE );
+    if( ins == last ) return( true );
     for( ins = ins->head.next; ins != last; ins = ins->head.next ) {
         if( FPStkReq( ins ) + stk_level + NumOperands( ins ) >= Max87Stk ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -198,20 +198,20 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
     bool                need_live_update;
 
     op = ins->result;
-    if( op == NULL ) return( FALSE );
+    if( op == NULL ) return( false );
     if( op->n.class == N_REGISTER ) {
         if( HW_COvlap( op->r.reg, HW_FLTS ) ) ++*stk_level;
-        return( FALSE );
+        return( false );
     }
-    if( op->n.class != N_TEMP ) return( FALSE );
-    if( ( op->t.temp_flags & CAN_STACK ) == 0 ) return( FALSE );
-    if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) ) return( FALSE );
-    if( !_IsFloating( op->n.name_class ) ) return( FALSE );
-    if( *stk_level < 0 ) return( FALSE );
-    if( *stk_level >= (Max87Stk-1) ) return( FALSE );
+    if( op->n.class != N_TEMP ) return( false );
+    if( ( op->t.temp_flags & CAN_STACK ) == 0 ) return( false );
+    if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) ) return( false );
+    if( !_IsFloating( op->n.name_class ) ) return( false );
+    if( *stk_level < 0 ) return( false );
+    if( *stk_level >= (Max87Stk-1) ) return( false );
     conf = FindConflictNode( op, blk, ins );
-    if( conf == NULL ) return( FALSE );
-    if( MathOpsBlowStack( conf, *stk_level ) ) return( FALSE );
+    if( conf == NULL ) return( false );
+    if( MathOpsBlowStack( conf, *stk_level ) ) return( false );
     ++*stk_level;
     need_live_update = AssignARegister( conf, FPRegs[ *stk_level ] );
     return( need_live_update );
@@ -251,7 +251,7 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
 
 static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 /******************************************************************
-    Returns TRUE if a call ignores a return value in ST(0)
+    Returns true if a call ignores a return value in ST(0)
 */
 
 
@@ -286,7 +286,7 @@ static  void    FPAlloc( void ) {
     HW_CTurnOn( CurrProc->state.unalterable, HW_FLTS );
     FPStatWord = NULL;
     stk_level = 0;
-    need_live_update = FALSE;
+    need_live_update = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ins = blk->ins.hd.next;
         if( ins->head.opcode == OP_BLOCK ) continue;
@@ -315,7 +315,7 @@ static  void    FPAlloc( void ) {
             }
             /* check the result ... if it's top of stack, bump up stack level*/
             if( AssignFPResult( blk, ins, &stk_level ) ) {
-                need_live_update = TRUE;
+                need_live_update = true;
             }
             ins->sequence = sequence;
             ins->stk_exit = stk_level;
@@ -523,16 +523,16 @@ extern  int     Count87Regs( hw_reg_set regs ) {
 extern  bool    FPStackIns( instruction *ins ) {
 /**********************************************/
 
-    if( !_FPULevel( FPU_87 ) ) return( FALSE );
-    if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
-    if( _Is87Ins( ins ) ) return( TRUE );
-    return( FALSE );
+    if( !_FPULevel( FPU_87 ) ) return( false );
+    if( _OpIsCall( ins->head.opcode ) ) return( true );
+    if( _Is87Ins( ins ) ) return( true );
+    return( false );
 }
 
 
 extern  bool    FPSideEffect( instruction *ins ) {
 /*************************************************
-    Return TRUE if instruction "ins" is an instruction that has a side
+    Return true if instruction "ins" is an instruction that has a side
     effect, namely pushes or pops the 8087 stack.
 
 */
@@ -540,30 +540,30 @@ extern  bool    FPSideEffect( instruction *ins ) {
     int         i;
     bool        has_fp_reg;
 
-    if( !_FPULevel( FPU_87 ) ) return( FALSE );
+    if( !_FPULevel( FPU_87 ) ) return( false );
     /* calls require a clean stack */
-    if( _OpIsCall( ins->head.opcode ) ) return( TRUE );
-    if( !_Is87Ins( ins ) ) return( FALSE );
-    has_fp_reg = FALSE;
+    if( _OpIsCall( ins->head.opcode ) ) return( true );
+    if( !_Is87Ins( ins ) ) return( false );
+    has_fp_reg = false;
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i]->n.class == N_REGISTER ) {
             if( HW_COvlap( ins->operands[i]->r.reg, HW_FLTS ) ) {
-                has_fp_reg = TRUE;
+                has_fp_reg = true;
             }
         }
     }
     if( ins->result != NULL ) {
         if( ins->result->n.class == N_REGISTER ) {
             if( HW_COvlap( ins->result->r.reg, HW_FLTS ) ) {
-                has_fp_reg = TRUE;
+                has_fp_reg = true;
             }
         }
     }
     if( has_fp_reg ) {
-        if( ins->ins_flags & INS_PARAMETER ) return( TRUE );
-        if( ins->stk_entry != ins->stk_exit ) return( TRUE );
+        if( ins->ins_flags & INS_PARAMETER ) return( true );
+        if( ins->stk_entry != ins->stk_exit ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -576,20 +576,20 @@ static  bool    CanStack( name *name ) {
     instruction         *last;
     conflict_node       *conf;
 
-    if( ( name->v.usage & USE_IN_ANOTHER_BLOCK ) ) return( FALSE );
+    if( ( name->v.usage & USE_IN_ANOTHER_BLOCK ) ) return( false );
     for( conf = name->v.conflict; conf != NULL; conf = conf->next_for_name ) {
-        if( conf->start_block == NULL ) return( FALSE );
+        if( conf->start_block == NULL ) return( false );
         first = conf->ins_range.first;
         last = conf->ins_range.last;
-        if( first == NULL ) return( FALSE );
-        if( last == NULL ) return( FALSE );
-        if( first == last ) return( FALSE );
+        if( first == NULL ) return( false );
+        if( last == NULL ) return( false );
+        if( first == last ) return( false );
         for( first = first->head.next; first != last; first = first->head.next ) {
-            if( first->head.opcode == OP_CALL ) return( FALSE );
-            if( first->head.opcode == OP_CALL_INDIRECT ) return( FALSE );
+            if( first->head.opcode == OP_CALL ) return( false );
+            if( first->head.opcode == OP_CALL_INDIRECT ) return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -690,21 +690,21 @@ extern  void    FPSetStack( name *name ) {
 
 extern  bool    FPIsStack( name *name ) {
 /****************************************
-    return TRUE if "name" is a stackable temp.
+    return true if "name" is a stackable temp.
 */
 
-    if( name->n.class != N_TEMP ) return( FALSE );
-    if( ( name->t.temp_flags & CAN_STACK ) == EMPTY ) return( FALSE );
-    return( TRUE );
+    if( name->n.class != N_TEMP ) return( false );
+    if( ( name->t.temp_flags & CAN_STACK ) == EMPTY ) return( false );
+    return( true );
 }
 
 
 extern  bool    FPStackOp( name *name ) {
 /****************************************
-    return TRUE if "name" is a stackable temp.
+    return true if "name" is a stackable temp.
 */
 
-    if( !_FPULevel( FPU_87 ) ) return( FALSE );
+    if( !_FPULevel( FPU_87 ) ) return( false );
     return( FPIsStack( name ) );
 }
 
@@ -724,19 +724,19 @@ extern  void    FPNotStack( name *name ) {
 
 extern  bool    FPIsConvert( instruction *ins ) {
 /************************************************
-    return TRUE if "ins" is a converstion that could be handled by the 8087.
+    return true if "ins" is a converstion that could be handled by the 8087.
 */
 
     type_class_def      op_class;
     type_class_def      res_class;
 
-    if( !_FPULevel( FPU_87 ) ) return( FALSE );
-    if( ins->operands[ 0 ]->n.class == N_CONSTANT ) return( FALSE );
+    if( !_FPULevel( FPU_87 ) ) return( false );
+    if( ins->operands[ 0 ]->n.class == N_CONSTANT ) return( false );
     op_class = ins->operands[ 0 ]->n.name_class;
     res_class = ins->result->n.name_class;
-    if( op_class == res_class ) return( FALSE );
-    if( _Is87Ins( ins ) ) return( TRUE );
-    return( FALSE );
+    if( op_class == res_class ) return( false );
+    if( _Is87Ins( ins ) ) return( true );
+    return( false );
 }
 
 static  void    FSinCos( void ) {
@@ -764,11 +764,14 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     name        *temp;
 
     for( next = ins->head.next; ; next = next->head.next ) {
-        if( next->head.opcode == OP_BLOCK ) return;
-        if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return;
+        if( next->head.opcode == OP_BLOCK )
+            return;
+        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+            return;
         if( next->head.opcode == next_op ) {
-            if( next->operands[ 0 ] == ins->operands[ 0 ] &&
-                next->type_class == ins->type_class ) break;
+            if( next->operands[ 0 ] == ins->operands[ 0 ] && next->type_class == ins->type_class ) {
+                break;
+            }
         }
     }
     temp = AllocTemp( ins->type_class );

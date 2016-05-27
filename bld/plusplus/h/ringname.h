@@ -45,7 +45,7 @@ typedef struct ringname     RINGNAME;
 
 struct ringnamectl {            // RINGNAMECTL
     RINGNAME *ring;             // - ring of elements
-    unsigned case_sensitive : 1;// - TRUE ==> case sensitive names
+    unsigned case_sensitive : 1;// - true ==> case sensitive names
 };
 
 struct ringname {               // RINGNAME entry

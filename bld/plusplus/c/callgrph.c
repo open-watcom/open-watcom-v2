@@ -45,7 +45,7 @@ static void cgrfInit(           // INITIALIZATION FOR CALL GRAPHING INFO.
 {
     ctl->carve_nodes = CarveCreate( sizeof( CALLNODE ), 64 );
     ctl->carve_edges = CarveCreate( sizeof( CALLEDGE ), 64 );
-    ctl->pruned = FALSE;
+    ctl->pruned = false;
 }
 
 
@@ -98,16 +98,16 @@ static DIRGRAPH_NODE *cgrfInitNode( // INIT A NODE
     node->depth = 0;
     node->opcodes = 0;
     node->addrs = 0;
-    node->state_table = FALSE;
-    node->calls_done = FALSE;
+    node->state_table = false;
+    node->calls_done = false;
     node->cond_flags = 0;
-    node->is_vft = FALSE;
-    node->inline_fun = FALSE;
-    node->inlineable = FALSE;
-    node->inlineable_oe = FALSE;
-    node->flowed_recurse = FALSE;
-    node->rescan = FALSE;
-    node->stab_gen = FALSE;
+    node->is_vft = false;
+    node->inline_fun = false;
+    node->inlineable = false;
+    node->inlineable_oe = false;
+    node->flowed_recurse = false;
+    node->rescan = false;
+    node->stab_gen = false;
     node->cgfile = NULL;
     node->unresolved = NULL;
     node->stmt_state = STS_NONE;
@@ -255,7 +255,7 @@ void CgrfPruneFunction(         // PRUNE FUNCTION (AND CALLS) FROM GRAPH
     CALLNODE *node )            // - node for function
 {
     if( node->refs == 0 && node->addrs == 0 ) {
-        ctl->pruned = TRUE;
+        ctl->pruned = true;
         DgrfPruneNode( &ctl->base, &node->base );
     }
 }
@@ -303,7 +303,7 @@ static bool cgrfDumpCall(       // DUMP CALL GRAPH EDGE
           , edge->addrs
           , DbgSymNameFull( edge->base.target->object, &vbuf ) );
     VbufFree( &vbuf );
-    return FALSE;
+    return false;
 }
 
 
@@ -339,7 +339,7 @@ static bool cgrfDumpNode(       // DUMP CALL GRAPH NODE
           , func->flag );
     CgrfWalkCalls( ctl, node, &cgrfDumpCall );
     VbufFree( &vbuf );
-    return FALSE;
+    return false;
 }
 
 

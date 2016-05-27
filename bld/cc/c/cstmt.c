@@ -276,16 +276,16 @@ static bool JumpFalse( TREEPTR expr, LABEL_INDEX label )
 {
     bool        jump_generated;
 
-    jump_generated = FALSE;
+    jump_generated = false;
     if( expr->op.opr == OPR_PUSHINT ) {
         if( ! expr->op.u2.long_value ) {
             Jump( label );
-            jump_generated = TRUE;
+            jump_generated = true;
         }
         FreeExprNode( expr );
     } else {
         JumpCond( expr, label, OPR_JUMPFALSE, OPR_JUMPTRUE );
-        jump_generated = TRUE;
+        jump_generated = true;
     }
     return( jump_generated );
 }
@@ -346,9 +346,9 @@ static bool GrabLabels( void )
         if( CurToken == T_RIGHT_BRACE ) {
             CErr1( ERR_STMT_REQUIRED_AFTER_LABEL );
         }
-        return( TRUE );                    // indicate label found
+        return( true );                    // indicate label found
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -386,7 +386,7 @@ static void ReturnStmt( SYM_HANDLE func_result_handle, struct return_info *info 
         tree->op.u2.sym_handle = func_result_handle;
         AddStmt( tree );
         with = RETURN_WITH_EXPR;
-        info->with_expr = TRUE;
+        info->with_expr = true;
     } else {
         with = RETURN_WITH_NO_EXPR;
     }
@@ -478,7 +478,7 @@ static void StartNewBlock( void )
     block->break_label = 0;
     block->prev_block = BlockStack;
     block->prev_loop = LoopStack;
-    block->gen_endblock = FALSE;
+    block->gen_endblock = false;
     BlockStack = block;
 }
 
@@ -500,7 +500,7 @@ static void LeftBrace( void )
     tree = LeafNode( OPR_NEWBLOCK );
     AddStmt( tree );
     BlockStack->sym_list = SYM_NULL;
-    BlockStack->gen_endblock = TRUE;
+    BlockStack->gen_endblock = true;
     DeclList( &BlockStack->sym_list );
     tree->op.u2.sym_handle = BlockStack->sym_list;
 }
@@ -675,7 +675,7 @@ static void NewLoop( void )
 
 static void ForStmt( void )
 {
-    bool    parsed_semi_colon = FALSE;
+    bool    parsed_semi_colon = false;
 
     NextToken();
     MustRecog( T_LEFT_PAREN );
@@ -688,11 +688,11 @@ static void ForStmt( void )
 
             tree = LeafNode( OPR_NEWBLOCK );
             AddStmt( tree );
-            BlockStack->gen_endblock = TRUE;
+            BlockStack->gen_endblock = true;
             if( !LoopDecl( &BlockStack->sym_list ) ) {
                 ChkStmtExpr();      // no declarator, try init_expr
             } else {
-                parsed_semi_colon = TRUE;   // LoopDecl ate it up
+                parsed_semi_colon = true;   // LoopDecl ate it up
             }
             tree->op.u2.sym_handle = BlockStack->sym_list;
         } else {
@@ -783,10 +783,10 @@ static void AddCaseLabel( unsigned value )
          */
         if( prev_ce && LastStmt->op.opr == OPR_STMT && LastStmt->right->op.opr == OPR_CASE ) {
             new_ce->label = SwitchStack->last_case_label;
-            new_ce->gen_label = FALSE;
+            new_ce->gen_label = false;
         } else {
             new_ce->label = NextLabel();
-            new_ce->gen_label = TRUE;
+            new_ce->gen_label = true;
         }
         SwitchStack->number_of_cases++;
         if( converted_value < SwitchStack->low_value ) {
@@ -919,7 +919,7 @@ static bool EndTry( void )
         tree = ExprNode( func, OPR_CALL, expr );
         tree->u.expr_type = GetType( TYPE_VOID );
         AddStmt( tree );
-        return( TRUE );
+        return( true );
     } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
         CompFlags.in_finally_block = 1;
         NextToken();
@@ -929,9 +929,9 @@ static bool EndTry( void )
         tree->op.u2.st.u.try_sym_handle = DummyTrySymbol();
         tree->op.u2.st.parent_scope = parent_scope;
         AddStmt( tree );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 #endif
 
@@ -1120,7 +1120,7 @@ static bool IsDeclarator( TOKEN token )
     if( TokenClass[token] == TC_STG_CLASS
       || TokenClass[token] == TC_QUALIFIER
       || TokenClass[token] == TC_DECLSPEC ) {
-        return( TRUE );
+        return( true );
     }
 
     /* If token is one of the following, it's a declaration */
@@ -1141,7 +1141,7 @@ static bool IsDeclarator( TOKEN token )
     case T_STRUCT:
     case T_UNION:
     case T_ENUM:
-        return( TRUE );
+        return( true );
     default:
         break;
     }
@@ -1154,10 +1154,10 @@ static bool IsDeclarator( TOKEN token )
             sym_handle = SymLookTypedef( SavedHash, SavedId, &sym );
         }
         if( sym_handle != SYM_NULL && sym.attribs.stg_class == SC_TYPEDEF ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -1176,7 +1176,7 @@ static void FixupC99MainReturn( SYM_HANDLE func_result_handle, struct return_inf
         tree->u.expr_type = main_type;
         tree->op.u2.sym_handle = func_result_handle;
         AddStmt( tree );
-        info->with_expr = TRUE;
+        info->with_expr = true;
     }
 }
 
@@ -1200,12 +1200,12 @@ void Statement( void )
 #endif
     ++FuncCount;
     return_info.with = RETURN_WITH_NONE; /* indicate no return statements */
-    return_info.with_expr = FALSE;
+    return_info.with_expr = false;
     CompFlags.label_dropped = 0;
     CompFlags.addr_of_auto_taken = 0;
     end_of_func_label = 0;
-    return_at_outer_level = FALSE;
-    declaration_allowed = FALSE;
+    return_at_outer_level = false;
+    declaration_allowed = false;
     DeadCode = 0;
     LoopDepth = 0;
     LabelIndex = 0;
@@ -1228,14 +1228,14 @@ void Statement( void )
     sym.flags |= SYM_FUNC_RETURN_VAR;
     SymReplace( &sym, func_result_handle );
     for( ;; ) {
-        CompFlags.pending_dead_code = FALSE;
+        CompFlags.pending_dead_code = false;
         if( GrabLabels() == 0 && declaration_allowed && IsDeclarator( CurToken ) ) {
             GetLocalVarDecls();
         }
         if( CompFlags.c99_extensions ) {
-            declaration_allowed = TRUE;
+            declaration_allowed = true;
         }
-        skip_to_next_token = FALSE;
+        skip_to_next_token = false;
         switch( CurToken ) {
         case T_IF:
             StartNewBlock();
@@ -1252,7 +1252,7 @@ void Statement( void )
                 InitErrLoc();
                 break;
             }
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_WHILE:
             NewLoop();
@@ -1266,7 +1266,7 @@ void Statement( void )
                     CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
                 }
             }
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_DO:
             NewLoop();
@@ -1275,25 +1275,25 @@ void Statement( void )
                 CErr1( ERR_STMT_REQUIRED_AFTER_DO );
                 break;
             }
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_FOR:
             ForStmt();
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_SWITCH:
             SwitchStmt();
             DeadCode = 1;
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_CASE:
             DeadCode = 0;
             CaseStmt();
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_DEFAULT:
             DefaultStmt();
-            declaration_allowed = FALSE;
+            declaration_allowed = false;
             continue;
         case T_BREAK:
             BreakStmt();
@@ -1319,7 +1319,7 @@ void Statement( void )
         case T_RETURN:
             ReturnStmt( func_result_handle, &return_info );
             if( BlockStack->prev_block == NULL ) {
-                return_at_outer_level = TRUE;
+                return_at_outer_level = true;
             }
             MustRecog( T_SEMI_COLON );
             if( SymLevel != 1 || CurToken != T_RIGHT_BRACE
@@ -1341,7 +1341,7 @@ void Statement( void )
             NextToken();
             if( BlockStack->block_type != T_LEFT_BRACE ) {
                 if( CurToken == T_ELSE ) {
-                    declaration_allowed = FALSE;
+                    declaration_allowed = false;
                 }
                 break;
             }
@@ -1354,7 +1354,7 @@ void Statement( void )
                 CErr1( ERR_MISPLACED_RIGHT_BRACE );
             }
             if( BlockStack->prev_block == NULL ) {
-                skip_to_next_token = TRUE;
+                skip_to_next_token = true;
             } else {
                 NextToken();
             }
@@ -1409,7 +1409,7 @@ void Statement( void )
     if( CompFlags.c99_extensions && !CMPLIT( CurFunc->name, "main" ) ) {
         if( !return_at_outer_level ) {
             FixupC99MainReturn( func_result_handle, &return_info );
-            return_at_outer_level = TRUE;
+            return_at_outer_level = true;
         }
     }
     if( !return_info.with_expr ) {   /* no return values present */

@@ -417,9 +417,9 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
     fnode = Root->outfile;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->grp_addr.seg == CODE_SEGMENT ) {
-            iscode = TRUE;
+            iscode = true;
         } else {
-            iscode = FALSE;
+            iscode = false;
         }
         if( iscode == docode ) {  // logical XNOR would be better, but...
             repos = WriteDOSGroup( group );
@@ -444,7 +444,7 @@ static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
     Root->u.file_loc = file_pos;
     Root->sect_addr.off = Groups->grp_addr.off;
     Root->sect_addr.seg = CODE_SEGMENT;
-    codesize = WriteNovImage( file_pos, TRUE );       // TRUE = do code.
+    codesize = WriteNovImage( file_pos, true );       // true = do code.
     header->codeImageSize = codesize;
     file_pos += codesize;
     header->dataImageOffset = file_pos;
@@ -452,7 +452,7 @@ static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
     Root->u.file_loc = file_pos;
     Root->sect_addr.off = Groups->grp_addr.off;
     Root->sect_addr.seg = DATA_SEGMENT;
-    header->dataImageSize = WriteNovImage( file_pos, FALSE );  // do data.
+    header->dataImageSize = WriteNovImage( file_pos, false );  // do data.
     return( codesize + header->dataImageSize );
 }
 

@@ -70,7 +70,7 @@ extern  void    RetAftrCall( ins_entry *ret_instr ) {
     if( ( (call_attr & ATTR_FAR) ^ (ret_attr & ATTR_FAR) ) != 0 )
         optreturnvoid;
 #endif
-    InsDelete = TRUE;
+    InsDelete = true;
     _ChgClass( call_instr, OC_JMP );
     /* NB! this code assumes that we aren't making the instruction longer */
     if( _ObjLen( call_instr ) == OptInsSize( OC_CALL, OC_DEST_CHEAP ) ) {
@@ -109,19 +109,19 @@ extern  bool    RetAftrLbl( ins_entry *ret ) {
     bool            change;
 
   optbegin
-    change = FALSE;
+    change = false;
     if( PrevClass( ret ) == OC_LABEL ) {
         lbl = _Label( PrevIns( ret ) );
         for( ref = lbl->refs; ref != NULL; ref = next ) {
             next = _LblRef( ref );
             if( _Class( ref ) == OC_JMP ) {
                 JmpToRet( ref, ret );
-                change = TRUE;
+                change = true;
             } else if( _Class( ref ) == OC_CALL ) {
                 if( (_Attr( ret ) & ATTR_POP) == 0 ) {
                     _Savings( OPT_CALLTORET, _ObjLen( ref ) );
                     DelInstr( ref );
-                    change = TRUE;
+                    change = true;
                 }
             }
         }

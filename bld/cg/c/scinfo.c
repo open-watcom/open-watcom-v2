@@ -44,17 +44,17 @@ static  pointer HighAddrConst; /*ditto*/
 static  bool    ScoreSame( score_info *x, score_info *y ) {
 /*********************************************************/
 
-    if( x->class != y->class ) return( FALSE );
-    if( x->base != y->base ) return( FALSE );
-    if( x->index_reg != y->index_reg ) return( FALSE );
+    if( x->class != y->class ) return( false );
+    if( x->base != y->base ) return( false );
+    if( x->index_reg != y->index_reg ) return( false );
     if( x->class == N_TEMP
-     && x->symbol.t->v.id == y->symbol.t->v.id ) return( TRUE );
-    if( x->class == N_VOLATILE ) return( FALSE );
-    if( x->class == N_INITIAL ) return( FALSE );
+     && x->symbol.t->v.id == y->symbol.t->v.id ) return( true );
+    if( x->class == N_VOLATILE ) return( false );
+    if( x->class == N_INITIAL ) return( false );
     if( x->class == N_INDEXED
-     && x->scale != y->scale ) return( FALSE );
-    if( x->symbol.p == y->symbol.p ) return( TRUE );
-    return( FALSE );
+     && x->scale != y->scale ) return( false );
+    if( x->symbol.p == y->symbol.p ) return( true );
+    return( false );
 }
 
 
@@ -73,14 +73,14 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         switch( y->class ) {
         case N_MEMORY:
             if( _IsModel( RELAX_ALIAS ) )
-            return( FALSE );
+            return( false );
             /* fall through */
         case N_INDEXED:
-            return( TRUE );
+            return( true );
         case N_TEMP:
             if( y->symbol.v->usage & USE_ADDRESS )
-            return( TRUE );
-            return( FALSE );
+            return( true );
+            return( false );
         }
     }
     /* get the 'bound' index into x if there is one*/
@@ -94,20 +94,20 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         case N_TEMP:
             if( x->base->n.class == N_TEMP ) {
                 if( y->symbol.t->v.id == x->base->t.v.id )
-            return( TRUE );
+            return( true );
             }
             break;
         case N_MEMORY:
             if( x->base->n.class == N_MEMORY ) {
                 if( y->symbol.p == x->base->v.symbol )
-            return( TRUE );
+            return( true );
             }
             break;
         case N_INDEXED:
             if( y->base == NULL )
-            return( TRUE );
+            return( true );
             if( y->base->n.class != x->base->n.class )
-            return( FALSE );
+            return( false );
             switch( x->base->n.class ) {
             case N_TEMP:
                 return( y->base->t.v.id == x->base->t.v.id );
@@ -117,7 +117,7 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
             break;
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    ScoreLookup( score *p, score_info *info ) {
@@ -125,17 +125,17 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
 
     score_list  *curr;
 
-    if( info->class == N_VOLATILE ) return( FALSE );
+    if( info->class == N_VOLATILE ) return( false );
     curr = *p->list;
     for(;;) {
         if( curr == NULL )
         break;
-        if( ScoreSame( &curr->info, info ) != FALSE
+        if( ScoreSame( &curr->info, info ) != false
          && curr->info.offset == info->offset )
-        return( TRUE );
+        return( true );
         curr = curr->next;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -143,7 +143,7 @@ extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
 /*******************************************************************/
 
     if( ScoreLookup( &p[ index ], info ) )
-        return( TRUE );
+        return( true );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         bool        is_equal;
@@ -151,20 +151,20 @@ extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
 
         entry = ScoreList[  index  ];
         if( entry->high == NO_INDEX || entry->low == NO_INDEX )
-        return( FALSE );
+        return( false );
             /*  See if low parts & high parts of register pair contain*/
             /*  the right information*/
         if( info->class == N_CONSTANT )
-        return( FALSE );
-        if( ScoreLookup( &p[  entry->low  ], info ) == FALSE )
-        return( FALSE );
+        return( false );
+        if( ScoreLookup( &p[  entry->low  ], info ) == false )
+        return( false );
         half_size = entry->size / 2;
         info->offset += half_size;
         is_equal = ScoreLookup( &p[  entry->high  ], info );
         info->offset -= half_size;
         return( is_equal );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -186,7 +186,7 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     for(;;) {
        if( --j < 0 )
            return;
-       if( ( j != i ) && ( ScoreEqual( p, j, info ) != FALSE ) )
+       if( ( j != i ) && ( ScoreEqual( p, j, info ) != false ) )
            break;
     }
     RegAdd( p, i, j );
@@ -205,19 +205,19 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
             curr = first;
             for(;;) {
                 info->index_reg = ScoreList[ curr->index ]->reg_name->r.reg_index;
-                if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+                if( ScoreLookup( &p[ i ], info ) == false ) {
                     ScoreInsert( p, i, info );
                 }
                 curr = curr->next_reg;
                 if( curr == first ) break;
             }
         } else {
-            if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+            if( ScoreLookup( &p[ i ], info ) == false ) {
                 ScoreInsert( p, i, info );
             }
         }
     } else {
-        if( ScoreLookup( &p[ i ], info ) == FALSE ) {
+        if( ScoreLookup( &p[ i ], info ) == false ) {
             ScoreInsert( p, i, info );
         }
     }
@@ -337,9 +337,9 @@ extern  bool    ScoreLAInfo( score_info *info, name *op ) {
         info->offset = 0;
         info->index_reg = NO_INDEX;
         info->base = NULL;
-        return( TRUE );
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -373,7 +373,7 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
                 /*       curr            |-----|*/
 
 /* impossible!       if( info->base == op ) break;*/
-                if( ScoreStomp( info, &curr->info ) == FALSE ) {
+                if( ScoreStomp( info, &curr->info ) == false ) {
                     if( ScoreSame( info, &curr->info )
                      && last_offset > curr->info.offset
                      && info->offset < curr->info.offset+entry->size ) {

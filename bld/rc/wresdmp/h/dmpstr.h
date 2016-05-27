@@ -35,6 +35,6 @@
 
 #define DMP_STR_BUF_LEN         256
 
-extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle );
+extern bool DumpString( uint_32 offset, uint_32 length, WResFileID handle );
 
 #endif

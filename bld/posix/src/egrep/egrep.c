@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "wio.h"
 #include "regexp.h"
 #include "getopt.h"
@@ -398,7 +399,7 @@ static void handle_options( int *pargc, char **argv, int *prematch )
                 break;
             case 'i':
                 Flags |= M_SEARCH_IGNORE;
-                CaseIgnore = TRUE;
+                CaseIgnore = true;
                 changeTransTable( );
                 break;
             case 'l':
@@ -433,7 +434,7 @@ int main( int argc, char **argv )
     IObuffer = malloc( IObsize );
     if( IObuffer == NULL )
         errorExit( "insufficient memory for file buffer" );
-    CaseIgnore  = FALSE;        // case sensitive match by default
+    CaseIgnore  = false;        // case sensitive match by default
     argv = ExpandEnv( &argc, argv );
     handle_options( &argc, argv, &rematch );
 

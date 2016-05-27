@@ -24,136 +24,210 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Implementation of sbrk() for DOS, OSI and Windows.
 *
 ****************************************************************************/
 
 
-#include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stdlib.h>
-#if defined(__OS2__)
-    #define INCL_DOSMEMMGR
-#elif defined(__QNX__)
-    #include <sys/types.h>
-    #include <sys/seginfo.h>
-    #include <unistd.h>
-    #if defined(__386__)
-        extern int _brk(void *);
-    #endif
+#if defined(__WINDOWS_386__)
+    #include "windpmi.h"
 #elif defined(__WINDOWS__)
     #include <windows.h>
+#else
+    #include <dos.h>
+    #include "tinyio.h"
 #endif
 #include "rtstack.h"
 #include "rterrno.h"
 #include "rtdata.h"
-#include "heapacc.h"
 #include "heap.h"
-#include "thread.h"
 
 
-#if !defined(__OS2__) && !defined(__QNX__)
+#if defined( __DOS__ ) && !defined( __CALL21__ )
+
+#ifdef _M_I86
 
 extern  unsigned short SS_Reg( void );
-#pragma aux SS_Reg              = \
-        0x8c 0xd0               /* mov ax,ss */ \
-        parm caller \
-        value                   [ax];
+#pragma aux SS_Reg =    \
+        "mov ax,ss"     \
+    parm caller value [ax];
 
 extern  int SetBlock( unsigned short, size_t );
-#pragma aux SetBlock            = \
-        0xb4 0x4a               /* mov ah,04ah */ \
-        0xcd 0x21               /* int 021h */ \
-        0x1b 0xc0               /* sbb ax,ax */ \
-        parm caller             [es] [bx] \
-        value                   [ax];
+#pragma aux SetBlock =      \
+        "mov    ah,04ah"    \
+        "int    021h"       \
+        "sbb    ax,ax"      \
+    parm caller [es] [bx] value [ax];
+
+#else
+
+extern  unsigned short  GetDS( void );
+#pragma aux GetDS =     \
+        "mov    ax,ds"  \
+    value [ax];
+
+extern  int SetBlock( unsigned short selector, int size );
+#pragma aux SetBlock =      \
+        "push   es"         \
+        "mov    es,ax"      \
+        "mov    ah,04ah"    \
+        "int    021h"       \
+        "rcl    eax,1"      \
+        "ror    eax,1"      \
+        "pop    es"         \
+    parm caller [ax] [ebx]  \
+    modify [ebx] value [eax];
+
+extern  int SegInfo( unsigned short selector );
+#pragma aux SegInfo =           \
+        "mov    ah,0edH"        \
+        "int    021h"           \
+        "shl    eax,31"         \
+        "and    edi,0000FFFFh"  \
+        "or     edi,eax"        \
+    parm caller [ebx] value [edi] \
+    modify exact [eax ecx edx esi ebx edi];
+
+extern  int SegmentLimit( void );
+#pragma aux SegmentLimit =  \
+        "xor    eax,eax"    \
+        "mov    ax,ds"      \
+        "lsl    eax,ax"     \
+        "inc    eax"        \
+    value [eax] modify exact [eax];
 
 #endif
 
-#if (defined(__QNX__) && defined(__386__))
-_WCRTLINK void _WCNEAR *sbrk( int increment ) {
-    return( __brk( _curbrk + increment ) );
+#endif
+
+#if defined(__WINDOWS_386__)
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
+    increment = ( increment + 0x0fff ) & ~0x0fff;
+    return( (void _WCNEAR *)DPMIAlloc( increment ) );
 }
 
-_WCRTLINK int brk( void *endds ) {
-    return( __brk( (unsigned) endds ) == (void *)-1 ? -1 : 0 );
+#elif defined(__WINDOWS__)
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
+    HANDLE h;
+
+    if( increment > 0 ) {
+        h = LocalAlloc( LMEM_FIXED, increment );
+        if( h == NULL ) {
+            _RWD_errno = ENOMEM;
+            h = (HANDLE)-1;
+        }
+    } else {
+        _RWD_errno = EINVAL;
+        h = (HANDLE)-1;
+    }
+    return( (void _WCNEAR *)h );
 }
+
+#elif defined(__OSI__)
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
+    increment = ( increment + 0x0fff ) & ~0x0fff;
+    return( (void _WCNEAR *)TinyMemAlloc( increment ) );
+}
+
 #else
-_WCRTLINK void _WCNEAR *sbrk( int increment ) {
-    #if defined(__WINDOWS_286__)
-        HANDLE h;
+
+void _WCNEAR *__brk( unsigned brk_value )
+{
+    unsigned    old_brk_value;
+    unsigned    seg_size;
+#ifdef _M_I86
+    __segment   segment;
+#endif
+
+    if( brk_value < _STACKTOP ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
+    }
+#ifdef _M_I86
+    seg_size = ( brk_value + 0x0f ) >> 4;
+    if( seg_size == 0 ) {
+        seg_size = 0x1000;
+    }
+    /* try setting the block of memory */
+    segment = _DGroup();
+    if( _RWD_osmode == DOS_MODE ) {
+        seg_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
+        segment = _RWD_psp;
+    }
+    if( SetBlock( segment, seg_size ) != 0 ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
+    }
+#else
+    if( _IsOS386() ) {
+        int parent;
+
+        seg_size = ( brk_value + 15U ) / 16U;
+        if( seg_size == 0 )
+            seg_size = 0x0FFFFFFF;
+        parent = SegInfo( GetDS() );
+        if( parent < 0 ) {
+            if( SetBlock( parent & 0xffff, seg_size ) < 0 ) {
+                _RWD_errno = ENOMEM;
+                return( (void _WCNEAR *)-1 );
+            }
+        }
+    } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
+        seg_size = ( brk_value + 4095U ) / 4096U;
+        if( seg_size == 0 )
+            seg_size = 0x000FFFFF;
+        if( _IsRationalNonZeroBase() ) {
+            // convert from 4k pages to paragraphs
+            seg_size = seg_size * 256U;
+        }
+    }
+    if( SetBlock( GetDS(), seg_size ) < 0 ) {
+        _RWD_errno = ENOMEM;
+        return( (void _WCNEAR *)-1 );
+    }
+#endif
+
+    old_brk_value = _curbrk;        /* return old value of _curbrk */
+    _curbrk = brk_value;            /* set new break value */
+
+    return( (void _WCNEAR *)old_brk_value );
+}
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
+#ifdef __386__
+    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+        void _WCNEAR *p;
 
         if( increment > 0 ) {
-            h = LocalAlloc( LMEM_FIXED, increment );
-            if( h == NULL ) {
+            increment = ( increment + 0x0fff ) & ~0x0fff;
+            if( _IsRational() ) {
+                p = TinyDPMIAlloc( increment );
+            } else {
+                p = TinyCBAlloc( increment );
+            }
+            if( p == NULL ) {
                 _RWD_errno = ENOMEM;
-                h = (HANDLE)(-1);
+                p = (void _WCNEAR *)-1;
             }
         } else {
             _RWD_errno = EINVAL;
-            h = (HANDLE)(-1);
+            p = (void _WCNEAR *)-1;
         }
-        return( (void _WCNEAR *) h );
-    #else
-        return( __brk( _curbrk + increment ) );
-    #endif
-}
-#endif
-
-#if ! defined(__WINDOWS_286__)
-
-_WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
-    {
-        unsigned old_brk_value;
-        unsigned seg_size;
-        unsigned segment;
-
-        if( brk_value < _STACKTOP ) {
-            _RWD_errno = ENOMEM;
-            return( (void _WCNEAR *) -1 );
-        }
-        seg_size = ( brk_value + 0x0f ) >> 4;
-        if( seg_size == 0 ) {
-            seg_size = 0x1000;
-        }
-        /* try setting the block of memory */
-        _AccessNHeap();
-        segment = _DGroup();
-#if defined(__OS2__)
-        if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
-#elif defined(__QNX__) && defined(__386__)
-        if( _brk((void *)(seg_size << 4)) == -1 ) {
-#elif defined(__QNX__)
-        if( qnx_segment_realloc( segment,((unsigned long)seg_size) << 4) == -1){
-#else
-        if( _RWD_osmode == DOS_MODE ) {                     /* 24-apr-91 */
-            seg_size += SS_Reg() - _RWD_psp;/* add in code size (in paragraphs) */
-            segment = _RWD_psp;
-        }
-        if( SetBlock( segment, seg_size ) != 0 ) {
-#endif
-            _RWD_errno = ENOMEM;
-            _ReleaseNHeap();
-            return( (void _WCNEAR *) -1 );
-        }
-
-        old_brk_value = _curbrk;        /* return old value of _curbrk */
-        _curbrk = brk_value;            /* set new break value */
-
-        _ReleaseNHeap();
-        return( (void _WCNEAR *) old_brk_value );
+        return( p );
+    } else if( _IsPharLap() ) {
+        _curbrk = SegmentLimit();
     }
-
-#if defined(__QNX__)
-/*
- * This is used by the QNX/386 shared memory functions to tell the
- * memory manager that the break value has changed. That way things don't
- * get screwed up next time we grow the data segment.
- */
-void __setcbrk( unsigned offset )
-{
-    _curbrk = offset;
-}
 #endif
+    return( __brk( _curbrk + increment ) );
+}
+
 #endif

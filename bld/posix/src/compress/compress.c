@@ -130,6 +130,7 @@
 *************************************************************************@R*/
 
 #include <stdio.h>
+#include "bool.h"
 
 #define MAIN        /* header has defining instances of globals */
 #include "compress.h" /* contains the rest of the include file declarations */
@@ -180,11 +181,11 @@ register int argc; char **argv;
                 switch (**argv) {
 #if !defined(NDEBUG)
                     case 'D':
-                        debug = TRUE;
-                        keep_error = TRUE;
+                        debug = true;
+                        keep_error = true;
                         break;
                     case 'V':
-                        verbose = TRUE;
+                        verbose = true;
                         version();
                         break;
 #else
@@ -196,16 +197,16 @@ register int argc; char **argv;
                         quiet = !quiet;
                         break;
                     case 'd':
-                        do_decomp = TRUE;
+                        do_decomp = true;
                         break;
                     case 'f':
-                        force = overwrite = TRUE;
+                        force = overwrite = true;
                         break;
                     case 'n':
-                        nomagic = TRUE;
+                        nomagic = true;
                         break;
                     case 'C':
-                        block_compress = FALSE;
+                        block_compress = false;
                         break;
                     case 'b': case 'B':
                         if (!ARGVAL()) {
@@ -246,10 +247,10 @@ register int argc; char **argv;
                             strcat(outpath,separator);
                         goto nextarg;
                     case 'c':
-                        keep = zcat_flg = TRUE;
+                        keep = zcat_flg = true;
                         break;
                     case 'K':
-                        keep_error = TRUE;
+                        keep_error = true;
                         break;
                     case 'k':
                         keep = !keep;
@@ -259,7 +260,7 @@ register int argc; char **argv;
                         exit(NORMAL);
                         break;
                     case 'q':
-                        quiet = TRUE;
+                        quiet = true;
                         break;
                     default:
                         fprintf(stderr, "%s : Unknown flag: '%c'\n",prog_name, **argv);
@@ -290,7 +291,7 @@ nextarg:        continue;                          /* process nextarg */
     if (*filelist) {         /* Check if there are files specified */
                              /* *fileptr must continue to specify  */
                              /* command line in/out file name      */
-        is_list = TRUE;
+        is_list = true;
         for (fileptr = filelist; *fileptr; fileptr++) {
             exit_stat = 0;
             endchar[0] = '\0';
@@ -378,7 +379,7 @@ nextarg:        continue;                          /* process nextarg */
 #ifndef NOSIGNAL
                     if (foreground()) {
 #else
-                    if (TRUE) {
+                    {
 #endif
                         fprintf(stderr, "\ndo you wish to overwrite %s (y or n)? ",
                         ofname);

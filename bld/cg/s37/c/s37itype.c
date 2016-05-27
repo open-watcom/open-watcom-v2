@@ -42,11 +42,11 @@ static  bool    IsRXGenType( gentype generate ) {
 
     switch( generate ) {
     #define _ENC_GHW_RX( x ) \
-    case G##x: return( TRUE );
+    case G##x: return( true );
     #include "ghw.h"
     #undef _ENC_GHW_RX
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    IsRRGenType( gentype generate ) {
@@ -54,11 +54,11 @@ static  bool    IsRRGenType( gentype generate ) {
 
     switch( generate ) {
     #define _ENC_GHW_RR( x ) \
-    case G##x: return( TRUE );
+    case G##x: return( true );
     #include "ghw.h"
     #undef _ENC_GHW_RR
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    IsRSGenType( gentype generate ) {
@@ -66,11 +66,11 @@ static  bool    IsRSGenType( gentype generate ) {
 
     switch( generate ) {
     #define _ENC_GHW_RS( x ) \
-    case G##x: return( TRUE );
+    case G##x: return( true );
     #include "ghw.h"
     #undef _ENC_GHW_RS
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -103,10 +103,10 @@ extern bool     ExpensiveIns( instruction *ins )
     case G_LTZ:
     case G_LTEZ:
     case G_LTDZ:
-        return( FALSE );
+        return( false );
     default:
-        if( IsRSInstruction( ins ) ) return( FALSE );
-        if( IsRRInstruction( ins ) ) return( FALSE );
-        return( TRUE );
+        if( IsRSInstruction( ins ) ) return( false );
+        if( IsRRInstruction( ins ) ) return( false );
+        return( true );
     }
 }

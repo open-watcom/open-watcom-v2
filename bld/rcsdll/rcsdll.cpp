@@ -125,7 +125,8 @@ rcsdata RCSAPI RCSInit( unsigned long window, char *cfg_dir )
 void RCSAPI RCSFini( rcsdata data )
 {
     userData *d = (userData*)data;
-    if( d==NULL ) return;
+    if( d == NULL )
+        return;
     if( d->getSystem() != NULL ) {
         d->getSystem()->fini();
     }
@@ -135,31 +136,37 @@ void RCSAPI RCSFini( rcsdata data )
 int RCSAPI RCSCheckout( rcsdata data, rcsstring name, rcsstring pj, rcsstring tgt )
 {
     userData *d = (userData*)data;
-    if( d==NULL || d->getSystem() == NULL ) return( 0 );
+    if( d == NULL || d->getSystem() == NULL )
+        return( 0 );
     return( d->getSystem()->checkout( d, name, pj, tgt ) );
 }
+
 int RCSAPI RCSCheckin( rcsdata data, rcsstring name, rcsstring pj, rcsstring tgt )
 {
     userData *d = (userData*)data;
-    if( d==NULL || d->getSystem() == NULL ) return( 0 );
+    if( d == NULL || d->getSystem() == NULL )
+        return( 0 );
     return( d->getSystem()->checkin( d, name, pj, tgt ) );
 }
 int RCSAPI RCSHasShell( rcsdata data )
 {
     userData *d = (userData*)data;
-    if( d==NULL || d->getSystem() == NULL ) return( 0 );
+    if( d == NULL || d->getSystem() == NULL )
+        return( 0 );
     return( d->getSystem()->hasShell() );
 }
 int RCSAPI RCSRunShell( rcsdata data )
 {
     userData *d = (userData*)data;
-    if( d==NULL || d->getSystem() == NULL ) return( 0 );
+    if( d == NULL || d->getSystem() == NULL )
+        return( 0 );
     return( d->getSystem()->runShell() );
 }
 void RCSAPI RCSSetPause( rcsdata data, int p )
 {
     userData *d = (userData*)data;
-    if( d==NULL || d->getSystem() == NULL ) return;
+    if( d == NULL || d->getSystem() == NULL )
+        return;
     d->setPause( p );
 }
 
@@ -170,11 +177,14 @@ int RCSAPI RCSGetVersion() { return( RCS_DLL_VER ); }
 int RCSAPI RCSSetSystem( rcsdata data, int rcs_type )
 {
     userData *d = (userData*)data;
-    if( d==NULL ) return( 0 );
-    if( !d->setSystem( rcs_type ) ) return( FALSE );
-    if( rcs_type > MAX_RCS_TYPE ) return( FALSE );
+    if( d == NULL )
+        return( false );
+    if( !d->setSystem( rcs_type ) )
+        return( false );
+    if( rcs_type > MAX_RCS_TYPE )
+        return( false );
     MyWriteProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, rcs_type_strings[rcs_type] );
-    return( TRUE );
+    return( true );
 
 }
 
@@ -184,9 +194,10 @@ int RCSAPI RCSQuerySystem( rcsdata data )
     int i;
 
     userData *d = (userData*)data;
-    if( d==NULL ) return( 0 );
+    if( d == NULL )
+        return( 0 );
     MyGetProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
-    for( i=1; i <= MAX_RCS_TYPE; i++ ) {
+    for( i = 1; i <= MAX_RCS_TYPE; i++ ) {
         if( strnicmp( buffer, rcs_type_strings[i], strlen( rcs_type_strings[i] ) ) == 0 ) {
             return( i );
         }
@@ -197,14 +208,16 @@ int RCSAPI RCSQuerySystem( rcsdata data )
 int RCSAPI RCSRegisterBatchCallback( rcsdata data, BatchCallback *fp, void *cookie )
 {
     userData *d = (userData*)data;
-    if( d==NULL ) return( 0 );
+    if( d == NULL )
+        return( 0 );
     return( d->regBatcher( fp, cookie ) );
 }
 
 int RCSAPI RCSRegisterMessageBoxCallback( rcsdata data, MessageBoxCallback *fp, void *cookie )
 {
     userData *d = (userData*)data;
-    if( d==NULL ) return( 0 );
+    if( d == NULL )
+        return( 0 );
     return( d->regMessager( fp, cookie ) );
 }
 
@@ -261,22 +274,25 @@ int userData::setSystem( int rcs_type )
     }
     currentSystem = rcs_systems[rcs_type];
     if( currentSystem != NULL ) {
-        if( !currentSystem->init( this ) ) return( FALSE );
+        if( !currentSystem->init( this ) ) {
+            return( false );
+        }
     }
-    return( TRUE );
+    return( true );
 }
 
 int rcsSystem::checkout( userData *d, rcsstring name, rcsstring pj, rcsstring tgt )
 {
     char Buffer[BUFLEN];
-    if( d == NULL ) return( 0 );
+    if( d == NULL )
+        return( false );
     if( d->batcher ) {
         sprintf( Buffer, "%s %s %s %s %s",
             checkout_name, pause_strings[d->getPause()], name,
                 pj != NULL ? pj : "", tgt != NULL ? tgt : "" );
         d->batcher( Buffer, d->batch_cookie );
     }
-    return( 1 );
+    return( true );
 }
 
 int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt )
@@ -290,11 +306,13 @@ int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt
     FILE *fp;
 
     *MsgBuf = '\0';
-    if( d == NULL ) return( 0 );
+    if( d == NULL )
+        return( false );
     if( d->msgBox ) {
         sprintf( Buffer, "Checkin %s", name );
-        if( !d->msgBox( "Enter Message", Buffer, MsgBuf, BUFLEN, d->msg_cookie ) ) return( TRUE );
-
+        if( !d->msgBox( "Enter Message", Buffer, MsgBuf, BUFLEN, d->msg_cookie ) ) {
+            return( true );
+        }
     }
     _splitpath( name, drive, dir, NULL, NULL );
     _makepath( path, drive, dir, "temp", "___" );
@@ -304,7 +322,8 @@ int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt
             break;
         }
     }
-    if( i >= 10 ) return( FALSE );
+    if( i >= 10 )
+        return( false );
 
     fp = fopen( path, "w" );
     fputs( MsgBuf, fp );
@@ -317,5 +336,5 @@ int rcsSystem::checkin( userData *d, rcsstring name, rcsstring pj, rcsstring tgt
         d->batcher( Buffer, d->batch_cookie );
     }
     remove( path );
-    return( 1 );
+    return( true );
 }

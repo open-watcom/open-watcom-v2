@@ -104,7 +104,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, RESULT_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->result]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
+                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
                 if( HW_Equal( *possible, regs ) ) break;
             }
         }
@@ -121,7 +121,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP1_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->left]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
+                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
                 if( HW_Equal( *possible, regs ) ) break;
             }
         }
@@ -138,7 +138,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP2_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->right]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( FALSE );
+                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
                 if( HW_Equal( *possible, regs ) ) break;
             }
         }
@@ -157,7 +157,7 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
             MarkPossible( ins, ins->operands[1], right_index );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -169,7 +169,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
     int                 num_operands;
 
     num_operands = NumOperands( ins );
-    *has_index = FALSE;
+    *has_index = false;
     ops = NONE;
     name = ins->result;
     if( name != NULL && num_operands != 0 ) {
@@ -188,7 +188,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
             ops |= R_R;
             break;
         case N_INDEXED:
-            *has_index = TRUE;
+            *has_index = true;
             ops |= M_R;
             break;
         case N_MEMORY:
@@ -214,7 +214,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
             ops |= R_1;
             break;
         case N_INDEXED:
-            *has_index = TRUE;
+            *has_index = true;
             ops |= M_1;
             break;
         case N_MEMORY:
@@ -240,7 +240,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
             ops |= R_2;
             break;
         case N_INDEXED:
-            *has_index = TRUE;
+            *has_index = true;
             ops |= M_2;
             break;
         case N_MEMORY:
@@ -258,7 +258,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
         if( num_operands > 2 ) {
             name = ins->operands[2];
             if( name->n.class == N_INDEXED ) {
-                *has_index = TRUE;
+                *has_index = true;
             }
             if( ins->head.opcode == OP_CALL_INDIRECT ) {
                 switch( name->n.class ) {
@@ -299,7 +299,7 @@ extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
         }
         ins->u.gen_table = try;
         if( try->reg_set != RG_ ) {
-            if( VerifyRegs( ins, ops ) == FALSE ) continue;
+            if( VerifyRegs( ins, ops ) == false ) continue;
         }
         if( ins->head.opcode == OP_CALL_INDIRECT ) {
             MarkPossible(ins, ins->operands[CALL_OP_ADDR], CallIPossible(ins));
@@ -364,7 +364,7 @@ extern  int     ExpandOps( bool keep_on_truckin )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         EXBlip();
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ) {
-            if( keep_on_truckin == FALSE && _MemLow ) {
+            if( keep_on_truckin == false && _MemLow ) {
                 return( -1 );
             }
             ins = ExpandIns( ins );

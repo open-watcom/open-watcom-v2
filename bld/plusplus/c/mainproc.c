@@ -56,14 +56,14 @@ void MainProcSetup(             // SETUP FOR MAIN PROC
         }
         switch( SpecialFunction( sym ) ) {
           case SPFN_wMAIN :
-            CompFlags.has_wide_char_main = TRUE;
+            CompFlags.has_wide_char_main = true;
             /* fall through */
           case SPFN_MAIN :
-            CompFlags.has_main = TRUE;
+            CompFlags.has_main = true;
             fn_type = FunctionDeclarationType( sym->sym_type );
             args = TypeArgList( fn_type );
             if( args->num_args != 0 ) {
-                CompFlags.main_has_parms = TRUE;
+                CompFlags.main_has_parms = true;
             }
             if( fn_type->u.f.pragma != NULL ) {
                 // quietly remove stray __cdecl/__stdcall modifiers
@@ -73,26 +73,26 @@ void MainProcSetup(             // SETUP FOR MAIN PROC
             LinkageSet( sym, "C" );
             break;
           case SPFN_wWINMAIN :
-            CompFlags.has_wide_char_main = TRUE;
+            CompFlags.has_wide_char_main = true;
             /* fall through */
           case SPFN_WINMAIN :
-            CompFlags.has_winmain = TRUE;
+            CompFlags.has_winmain = true;
             DeclVerifyNoOtherCLinkage( sym, sym );
             LinkageSet( sym, "C" );
             break;
           case SPFN_wLIBMAIN :
-            CompFlags.has_wide_char_main = TRUE;
+            CompFlags.has_wide_char_main = true;
             /* fall through */
           case SPFN_LIBMAIN :
-            CompFlags.has_libmain = TRUE;
+            CompFlags.has_libmain = true;
             DeclVerifyNoOtherCLinkage( sym, sym );
             LinkageSet( sym, "C" );
             break;
           case SPFN_wDLLMAIN :
-            CompFlags.has_wide_char_main = TRUE;
+            CompFlags.has_wide_char_main = true;
             /* fall through */
           case SPFN_DLLMAIN :
-            CompFlags.has_dllmain = TRUE;
+            CompFlags.has_dllmain = true;
             DeclVerifyNoOtherCLinkage( sym, sym );
             LinkageSet( sym, "C" );
             break;

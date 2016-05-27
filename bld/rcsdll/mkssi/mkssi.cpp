@@ -57,14 +57,16 @@ int mksSISystem::init( userData * )
     dll = LoadLibrary( "WSIHOOK.DLL" );
 
 #ifdef __WINDOWS__
-    if( (UINT)dll < 32 ) return( FALSE );
+    if( (UINT)dll < 32 )
+        return( false );
     ci_fp = (WSICHECKIN)GetProcAddress( dll, "WSICHECKIN" );
     co_fp = (WSICHECKOUT)GetProcAddress( dll, "WSICHECKOUT" );
     rs_fp = (WSILAUNCH)GetProcAddress( dll, "WSILAUNCH" );
     in_fp = (WSIINIT)GetProcAddress( dll, "WSIINIT" );
     cl_fp = (WSICLEANUP)GetProcAddress( dll, "WSICLEANUP" );
 #else
-    if( dll == NULL ) return( FALSE );
+    if( dll == NULL )
+        return( false );
     ci_fp = (WSICHECKIN)GetProcAddress( dll, "wsiCheckIn" );
     co_fp = (WSICHECKOUT)GetProcAddress( dll, "wsiCheckOut" );
     rs_fp = (WSILAUNCH)GetProcAddress( dll, "wsiLaunch" );
@@ -73,40 +75,46 @@ int mksSISystem::init( userData * )
 #endif
     dllId = (long)dll;
 
-    if( in_fp == NULL ) return( FALSE );
+    if( in_fp == NULL )
+        return( false );
     in_fp();
-    return( TRUE );
+    return( true );
 };
 
 int mksSISystem::fini()
 {
     if( cl_fp != NULL ) cl_fp();
     FreeLibrary( (HINSTANCE)dllId );
-    return( TRUE );
+    return( true );
 };
 
 int mksSISystem::checkout( userData *d, rcsstring name,
                             rcsstring pj, rcsstring tgt )
 {
     pj = pj; tgt = tgt;
-    if( d == NULL ) return( FALSE );
-    if( co_fp == NULL ) return( FALSE );
+    if( d == NULL )
+        return( false );
+    if( co_fp == NULL )
+        return( false );
     return( (*co_fp)( (HWND)d->window, 1, &name ) );
 }
 int mksSISystem::checkin( userData *d, rcsstring name,
                             rcsstring pj, rcsstring tgt )
 {
     pj = pj; tgt = tgt;
-    if( d == NULL ) return( FALSE );
-    if( ci_fp == NULL ) return( FALSE );
+    if( d == NULL )
+        return( false );
+    if( ci_fp == NULL )
+        return( false );
     return( (*ci_fp)( (HWND)d->window, 1, &name ) );
 }
 
 int mksSISystem::runShell()
 {
-    if( rs_fp == NULL ) return( FALSE );
+    if( rs_fp == NULL )
+        return( false );
     return( (*rs_fp)( NULL ) );
-};
+}
 
 #ifdef __WATCOMC__
 // Complain about defining trivial constructor inside class

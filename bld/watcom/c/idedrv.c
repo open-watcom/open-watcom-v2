@@ -34,6 +34,7 @@
 #include <string.h>
 #include <signal.h>
 #include "wio.h"
+#include "bool.h"
 #include "idedll.h"
 #include "idedrv.h"
 #include "walloca.h"
@@ -100,16 +101,9 @@
 
     #ifdef DLLS_IMPLEMENTED
         typedef unsigned IDEAPI (*GetVerFn)( void );
-        typedef IDEBool IDEAPI (*InitDllFn)( IDECBHdl hdl
-                                                  , IDECallBacks *cb
-                                                  , IDEDllHdl *info );
-        typedef IDEBool IDEAPI (*RunSelfFn)( IDEDllHdl hdl
-                                                  , const char *opts
-                                                  , IDEBool *fatalerr );
-        typedef IDEBool IDEAPI (*RunSelfFnArgv)( IDEDllHdl hdl
-                                                  , int
-                                                  , char **argv
-                                                  , IDEBool *fatalerr );
+        typedef IDEBool IDEAPI (*InitDllFn)( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl );
+        typedef IDEBool IDEAPI (*RunSelfFn)( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr );
+        typedef IDEBool IDEAPI (*RunSelfFnArgv)( IDEDllHdl hdl, int, char **argv, IDEBool *fatalerr );
         typedef void IDEAPI (*FiniDllFn)( IDEDllHdl hdl );
         typedef void IDEAPI (*StopRunFn)( void );
         typedef IDEBool IDEAPI (*PassInitInfo)( IDEDllHdl hdl, IDEInitInfo *info );
@@ -257,7 +251,7 @@ static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 #else
     msg = msg;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 #ifndef NDEBUG
@@ -275,7 +269,7 @@ static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *msg )
     hdl = hdl;
     fputs( msg, errout );
     fputc( '\n', errout );
-    return( FALSE );
+    return( false );
 }
 
 static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
@@ -304,7 +298,7 @@ static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
     fputs( prt_buffer, fp );
     fputc( '\n', fp );
     fflush( fp );
-    return( FALSE );
+    return( false );
 }
 
 static IDEBool IDEAPI printWithCrLf( IDECBHdl hdl, const char *message )
@@ -312,7 +306,7 @@ static IDEBool IDEAPI printWithCrLf( IDECBHdl hdl, const char *message )
     hdl = hdl;
     fputs( message, errout );
     fflush( errout );
-    return( FALSE );
+    return( false );
 }
 
 static IDEBool IDEAPI getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWParam extra, IDEGetInfoLParam lparam )
@@ -323,7 +317,7 @@ static IDEBool IDEAPI getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWPara
     hdl = hdl;
     switch( type ) {
     default:
-        retn = TRUE;
+        retn = true;
         break;
     case IDE_GET_ENV_VAR:
         {
@@ -468,7 +462,7 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode )
             }
         }
         if( IDEDRV_SUCCESS == retcode ) {
-            inf->loaded = TRUE;
+            inf->loaded = true;
         }
     }
     *p_runcode = runcode;
@@ -520,7 +514,7 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode )
             retcode = IDEDRV_ERR_LOAD;
         }
         if( IDEDRV_SUCCESS == retcode ) {
-            inf->loaded = TRUE;
+            inf->loaded = true;
         }
     }
     *p_runcode = runcode;
@@ -571,7 +565,7 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
 
     retcode = ensureLoaded( inf, &runcode );
     if( retcode == IDEDRV_SUCCESS ) {
-        IDEBool fatal = FALSE;
+        IDEBool fatal = false;
         initConsole();
         runcode = IDERunYourSelf( inf->ide_handle, cmd_line, &fatal );
         finiConsole();
@@ -600,14 +594,14 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
             RunSelfFn fun;
             runcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF, (P_FUN *)&fun );
             if( 0 == runcode ) {
-                IDEBool fatal = FALSE;
+                IDEBool fatal = false;
                 initConsole();
                 runcode = fun( inf->ide_handle, cmd_line, &fatal );
                 finiConsole();
                 retcode = retcodeFromFatal( fatal, runcode, retcode );
                 if( retcode == IDEDRV_ERR_RUN_FATAL ) {
                     sysdepDLLUnload( inf );
-                    inf->loaded = FALSE;
+                    inf->loaded = false;
                 }
             } else {
                 retcode = IDEDRV_ERR_RUN;
@@ -619,7 +613,7 @@ int IdeDrvExecDLL               // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
                 initConsole();
                 runcode = fun( cmd_line );
                 finiConsole();
-                retcode = retcodeFromFatal( FALSE, runcode, retcode );
+                retcode = retcodeFromFatal( false, runcode, retcode );
             } else {
                 retcode = IDEDRV_ERR_RUN;
             }
@@ -649,7 +643,7 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
 
     retcode = ensureLoaded( inf, &runcode );
     if( retcode == IDEDRV_SUCCESS ) {
-        IDEBool fatal = FALSE;
+        IDEBool fatal = false;
         initConsole();
         runcode = IDERunYourSelfArgv( inf->ide_handle, argc, argv, &fatal );
         finiConsole();
@@ -678,14 +672,14 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
             RunSelfFnArgv fun;
             runcode = sysdepDLLgetProc( inf, IDETOOL_RUNSELF_ARGV, (P_FUN *)&fun );
             if( 0 == runcode ) {
-                IDEBool fatal = FALSE;
+                IDEBool fatal = false;
                 initConsole();
                 runcode = fun( inf->ide_handle, argc, argv, &fatal );
                 finiConsole();
                 retcode = retcodeFromFatal( fatal, runcode, retcode );
                 if( retcode == IDEDRV_ERR_RUN_FATAL ) {
                     sysdepDLLUnload( inf );
-                    inf->loaded = FALSE;
+                    inf->loaded = false;
                 }
             } else {
                 retcode = IDEDRV_ERR_RUN;
@@ -697,7 +691,7 @@ int IdeDrvExecDLLArgv           // EXECUTE THE DLL ONE TIME (LOAD IF REQ'D)
                 initConsole();
                 runcode = fun( argc, argv );
                 finiConsole();
-                retcode = retcodeFromFatal( FALSE, runcode, retcode );
+                retcode = retcodeFromFatal( false, runcode, retcode );
             } else {
                 retcode = IDEDRV_ERR_RUN;
             }
@@ -717,7 +711,7 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
 // Static Linkage: nothing to unload
 {
     if( inf->loaded ) {
-        inf->loaded = FALSE;
+        inf->loaded = false;
         IDEFiniDLL( inf->ide_handle );
     }
     return( IDEDRV_SUCCESS );
@@ -732,7 +726,7 @@ int IdeDrvUnloadDLL             // UNLOAD THE DLL
         if( 0 == sysdepDLLgetProc( inf, IDETOOL_FINIDLL, (P_FUN*)&fini ) ) {
             fini( inf->ide_handle );
         }
-        inf->loaded = FALSE;
+        inf->loaded = false;
         if( 0 == sysdepDLLUnload( inf ) ) {
             retcode = IDEDRV_SUCCESS;
         } else {
@@ -752,7 +746,7 @@ int IdeDrvStopRunning           // SIGNAL A BREAK
 // Static Linkage: direct call
 {
     if( inf->loaded ) {
-        inf->loaded = FALSE;
+        inf->loaded = false;
         IDEStopRunning();
     }
     return( IDEDRV_SUCCESS );
@@ -805,10 +799,10 @@ int IdeDrvPrintError            // UNLOAD THE DLL
 
 void IdeDrvChainCallbacks       // SET CALLBACKS FOR DLL CALLLING A DLL
     ( void *cb                  // - parent dll callbacks
-    , void *info )              // - parent dll initialization
+    , void *inf )               // - parent dll initialization
 {
     CBPtr   = (IDECallBacks *)cb;
-    InfoPtr = (IDEInitInfo *)info;
+    InfoPtr = (IDEInitInfo *)inf;
 }
 
 void *IdeDrvGetCallbacks                // GET CALLBACKS

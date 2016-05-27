@@ -40,8 +40,8 @@
 #include "clibext.h"
 
 
-static IDECBHdl     ideHdl;
-static IDECallBacks *ideCb;
+static IDECBHdl     IdeHdl;
+static IDECallBacks *IdeCbs;
 static IDEInitInfo  *ideInfo;
 
 unsigned IDEAPI IDEGetVersion( void )
@@ -49,11 +49,11 @@ unsigned IDEAPI IDEGetVersion( void )
     return( IDE_CUR_DLL_VER );
 }
 
-IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
+IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 {
-    ideHdl = hdl;
-    ideCb = cb;
-    *info = NULL;
+    IdeHdl = cbhdl;
+    IdeCbs = cb;
+    *hdl = NULL;
     return( InitSubSystems() != 0 );
 }
 
@@ -61,7 +61,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
     hdl = hdl;
     ideInfo = info;
-    return( FALSE );
+    return( false );
 }
 
 IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
@@ -69,7 +69,7 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
     char        *argv[ 3 ];
 
     hdl = hdl;
-    *fatalerr = FALSE;
+    *fatalerr = false;
     argv[ 0 ] = "";
     argv[ 1 ] = (char *)opts;
     argv[ 2 ] = NULL;
@@ -83,7 +83,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     IDEBool* fatal_error )      // - addr[ fatality indication ]
 {
     hdl = hdl; argc = argc;
-    *fatal_error = FALSE;
+    *fatal_error = false;
     return( WlibMainLine( argv ) != 0 );
 }
 
@@ -113,8 +113,8 @@ char *WlibGetEnv( char *name )
 {
     char *env;
 
-    if( ideInfo->ignore_env == FALSE && ideCb != NULL ) {
-        if( ideCb->GetInfo( ideHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) == FALSE ) {
+    if( !ideInfo->ignore_env && IdeCbs != NULL ) {
+        if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)name, (IDEGetInfoLParam)&env ) ) {
             return( env );
         }
     }
@@ -125,13 +125,13 @@ void FatalResError( void )
 {
     IDEMsgInfo          msg_info;
 
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         msg_info.severity = IDEMSGSEV_ERROR;
         msg_info.flags = 0;
         msg_info.helpfile = NULL;
         msg_info.helpid = 0;
         msg_info.msg = NO_RES_MESSAGE;
-        ideCb->PrintWithInfo( ideHdl, &msg_info );
+        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
     }
     longjmp( Env, 1 );
 }
@@ -146,9 +146,9 @@ void FatalError( int str, ... )
     va_start( arglist, str );
     MsgGet( str, buff );
     vsnprintf( msg, 512, buff, arglist );
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_ERROR, msg );
-        ideCb->PrintWithInfo( ideHdl, &msg_info );
+        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
     }
     va_end( arglist );
     longjmp( Env, 1 );
@@ -166,9 +166,9 @@ void Warning( int str, ... )
     MsgGet( str, buff );
     va_start( arglist, str );
     vsnprintf( msg, 512, buff, arglist );
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_WARNING, msg );
-        ideCb->PrintWithInfo( ideHdl, &msg_info );
+        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
     }
     va_end( arglist );
 }
@@ -183,9 +183,9 @@ void Message( char *buff, ... )
         return;
     va_start( arglist, buff );
     vsnprintf( msg, 512, buff, arglist );
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         IdeMsgInit( &msg_info, IDEMSGSEV_NOTE_MSG, msg );
-        ideCb->PrintWithInfo( ideHdl, &msg_info );
+        IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
     }
     va_end( arglist );
 }
@@ -209,7 +209,7 @@ void Usage( void )
     int                 str_last;
     IDEMsgInfo          msg_info;
     int                 count;
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         msg_info.severity = IDEMSGSEV_BANNER;
         count = 3;
         msg_info.flags = 0;
@@ -228,7 +228,7 @@ void Usage( void )
             if( ideInfo && ideInfo->ver > 2 && ideInfo->console_output &&
                 ( count > 20 && buff[ 0 ] == '\0' || count == 24 ) ) {
                 msg_info.msg = "    (Press Return to continue)" ;
-                ideCb->PrintWithInfo( ideHdl, &msg_info );
+                IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
                 if( Wait_for_return() )
                     break;
                 count = 0;
@@ -238,7 +238,7 @@ void Usage( void )
             if( buff[ 0 ] == '\0' ) {
                 continue;
             }
-            ideCb->PrintWithInfo( ideHdl, &msg_info );
+            IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
         }
     }
     longjmp( Env, 1 );
@@ -266,7 +266,7 @@ void Banner( void )
         return;
 
     alreadyDone = 1;
-    if( ideCb != NULL ) {
+    if( IdeCbs != NULL ) {
         msg_info.severity = IDEMSGSEV_BANNER;
         msg_info.flags = 0;
         msg_info.helpfile = NULL;
@@ -274,7 +274,7 @@ void Banner( void )
         text = bannerText;
         while( *text ) {
             msg_info.msg = *text++;
-            ideCb->PrintWithInfo( ideHdl, &msg_info );
+            IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
         }
     }
 }

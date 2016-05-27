@@ -199,8 +199,8 @@ void TreeEdgeBreaker::purgeContents( void )
     _verticalLines.reset();
     _horizontalLines.reset();
 
-    _horizontalSorted = FALSE;
-    _verticalSorted = FALSE;
+    _horizontalSorted = false;
+    _verticalSorted = false;
 }
 
 static int TreeEdgeBreaker::compareLinesV( const TreeLine ** lineLhs,
@@ -285,7 +285,7 @@ void TreeEdgeBreaker::breakLinesV( void )
      */
     if( !_horizontalSorted ) {
         _horizontalLines.sort( (TComp) TreeEdgeBreaker::compareLinesV );
-        _horizontalSorted = TRUE;
+        _horizontalSorted = true;
     }
 
     /*
@@ -303,7 +303,7 @@ void TreeEdgeBreaker::breakLinesV( void )
             continue;
         }
 
-        bool overlapNode = FALSE;
+        bool overlapNode = false;
 
         if( _verticalLines[ indexV ]->_lineCoords.y1 < _verticalLines[ indexV ]->_lineCoords.y2 ) {
             startY = _verticalLines[ indexV ]->_lineCoords.y1;
@@ -355,7 +355,7 @@ void TreeEdgeBreaker::breakLinesV( void )
                                                      _verticalLines[ indexV ]->_lineCoords.x1,
                                                      _horizontalY - HSKIP );
 
-                    overlapNode = TRUE;
+                    overlapNode = true;
 
                 /*
                  * Case 2:
@@ -364,7 +364,7 @@ void TreeEdgeBreaker::breakLinesV( void )
                 } else if( _horizontalLines[ indexH ]->getLineType() == TreeLine::Node
                            && overlapNode ) {
                     startY = _horizontalY + HSKIP;
-                    overlapNode = FALSE;
+                    overlapNode = false;
                 /*
                  * Case 3:
                  *      - met an ordinary type of line (tree ring connector or ptr)
@@ -404,7 +404,7 @@ void TreeEdgeBreaker::breakLinesH( void )
 
     if( !_verticalSorted ) {
         _verticalLines.sort( (TComp) TreeEdgeBreaker::compareLinesH );
-        _verticalSorted = TRUE;
+        _verticalSorted = true;
     }
 
     /*
@@ -422,7 +422,7 @@ void TreeEdgeBreaker::breakLinesH( void )
             continue;
         }
 
-        bool overlapNode = FALSE;
+        bool overlapNode = false;
 
         if( _horizontalLines[ indexH ]->_lineCoords.x1 < _horizontalLines[ indexH ]->_lineCoords.x2 ) {
             startX = _horizontalLines[ indexH ]->_lineCoords.x1;
@@ -474,7 +474,7 @@ void TreeEdgeBreaker::breakLinesH( void )
                                                         _horizontalLines[ indexH ]->_lineCoords.y1,
                                                         _verticalX - VSKIP,
                                                         _horizontalLines[ indexH ]->_lineCoords.y1 );
-                    overlapNode = TRUE;
+                    overlapNode = true;
 
                 /*
                  * Case 2:
@@ -483,7 +483,7 @@ void TreeEdgeBreaker::breakLinesH( void )
                 } else if( _verticalLines[ indexV ]->getLineType() == TreeLine::Node
                            && overlapNode ) {
                     startX = _verticalX + VSKIP;
-                    overlapNode = FALSE;
+                    overlapNode = false;
                 /*
                  * Case 3:
                  *      - met an ordinary type of line (tree ring connector or ptr)

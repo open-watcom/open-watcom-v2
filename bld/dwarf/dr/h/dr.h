@@ -92,13 +92,13 @@ typedef enum {
     DR_VIRTUALITY_VIRTUAL = 1
 } dr_virtuality;
 
-#define DR_HANDLE_VOID  ((dr_handle)(pointer_int)-1)        /* special handle denoting void type */
-#define DR_HANDLE_NUL   ((dr_handle)(pointer_int)0)
+#define DRMEM_HDL_VOID  ((drmem_hdl)(pointer_int)-1)        /* special handle denoting void type */
+#define DRMEM_HDL_NULL  ((drmem_hdl)(pointer_int)0)
 
 #if defined( USE_VIRTMEM )
-typedef unsigned long   dr_handle;
+typedef unsigned long   drmem_hdl;
 #else
-typedef char            *dr_handle;
+typedef char            *drmem_hdl;
 #endif
 
 struct WDRRoutines {                                        /* defaults */
@@ -127,7 +127,7 @@ typedef unsigned                dr_fileidx;
         except      \
     };
 
-typedef bool    (*DRWLKBLK)( dr_handle, int index, void * );
+typedef bool    (*DRWLKBLK)( drmem_hdl, int index, void * );
 
 #include "drinit.h"
 #include "drmod.h"

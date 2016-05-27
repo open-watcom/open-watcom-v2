@@ -39,20 +39,20 @@
 typedef struct {
     int         size;   /* available room */
     int         free;   /* next free entry */
-    dr_handle   *stack; /* values */
+    drmem_hdl   *stack; /* values */
 } dr_context_stack;
 
 typedef struct {
     dr_cu_handle        compunit;       /* current compile unit */
-    dr_handle           start;          /* die to start from */
-    dr_handle           end;            /* end of compile unit */
-    dr_handle           functionhdl;    /* containing function */
-    dr_handle           classhdl;       /* containing class */
+    drmem_hdl           start;          /* die to start from */
+    drmem_hdl           end;            /* end of compile unit */
+    drmem_hdl           functionhdl;    /* containing function */
+    drmem_hdl           classhdl;       /* containing class */
     dr_context_stack    stack;          /* stack of classes / functions */
 } dr_search_context;
 
 typedef struct {
-    dr_handle           handle;         /* symbol's handle */
+    drmem_hdl           handle;         /* symbol's handle */
     dr_sym_type         type;           /* symbol's type */
     char                *name;          /* symbol's name */
     dr_search_context   *context;       /* context to resume search */

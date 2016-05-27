@@ -55,9 +55,6 @@ unsigned   min;
 unsigned   sec;
 } timedate;
 
-#define TRUE    1
-#define FALSE   0
-
 /* constants */
 #define MAXIOBUFFER     512*127
 

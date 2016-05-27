@@ -42,15 +42,14 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "peepopt.h"
+#include "redefby.h"
 
-extern  bool                    IsVolatile(name*);
+
 extern  bool                    InsOrderDependant(instruction*,instruction*);
-extern  bool_maybe              ReDefinedBy( instruction *, name * );
 extern  bool                    SameThing( name *, name * );
 extern  bool                    SideEffect( instruction * );
 extern  bool                    ChangeIns(instruction *,name *,name **,change_type);
 extern  opcode_entry            *ResetGenEntry( instruction *ins );
-extern  bool                    VisibleToCall(instruction*,name*,bool);
 extern  bool                    VolatileIns(instruction*);
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.int_value )
@@ -67,7 +66,7 @@ static  bool    InsChangeable( instruction *ins, name *new_op, name **op )
     if( AfterRegAlloc ) {
         return( ChangeIns( ins, new_op, op, CHANGE_GEN | CHANGE_CHECK ) );
     }
-    return( TRUE );
+    return( true );
 }
 
 static  void    InsReset( instruction *ins ) {
@@ -92,7 +91,7 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
             a->operands[ 1 ] = cons;
             ResetGenEntry( a );
             FreeIns( b );
-            return( TRUE );
+            return( true );
         }
     } else if( a->operands[ 0 ] == b->operands[ 0 ] ) {
         /* A op X -> A     A op f(X,Y) -> B */
@@ -110,7 +109,7 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
         instruction *ins;
 
         for( ins = a->head.next; ins != b; ins = ins->head.next ) {
-            if( InsOrderDependant( ins, b ) ) return( FALSE );
+            if( InsOrderDependant( ins, b ) ) return( false );
             if( ins->head.opcode == OP_BLOCK ) {
                 Zoiks( ZOIKS_111 );
             }
@@ -128,7 +127,7 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
                 a->operands[ 1 ] = cons;
                 ResetGenEntry( a );
                 ResetGenEntry( b );
-                return( TRUE );
+                return( true );
             } else {
                 /* retreat! retreat! */
                 a->result = old_res_a;
@@ -143,10 +142,10 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
             b->operands[ 0 ] = a->operands[ 0 ];
             b->operands[ 1 ] = cons;
             ResetGenEntry( b );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  ONE_OP  DoAdd;
@@ -188,15 +187,15 @@ static bool AndOr( instruction *and_ins, instruction *or_ins )
     signed_32   new_and;
     name        *mask;
 
-    if( and_ins->operands[ 0 ] != and_ins->result ) return( FALSE );
-    if( or_ins->operands[ 0 ] != or_ins->result ) return( FALSE );
+    if( and_ins->operands[ 0 ] != and_ins->result ) return( false );
+    if( or_ins->operands[ 0 ] != or_ins->result ) return( false );
     new_and = OP2VAL( and_ins ) & ~OP2VAL( or_ins );
-    if( new_and == OP2VAL( and_ins ) ) return( FALSE );
+    if( new_and == OP2VAL( and_ins ) ) return( false );
     mask = AllocS32Const( new_and );
-    if( !InsChangeable( and_ins, mask, &and_ins->operands[ 1 ] ) ) return( FALSE );
+    if( !InsChangeable( and_ins, mask, &and_ins->operands[ 1 ] ) ) return( false );
     and_ins->operands[ 1 ] = mask;
     InsReset( and_ins );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -209,8 +208,8 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
     signed_32   and;
     name        *mask;
 
-    if( or_ins->operands[ 0 ] != or_ins->result ) return( FALSE );
-    if( and_ins->operands[ 0 ] != and_ins->result ) return( FALSE );
+    if( or_ins->operands[ 0 ] != or_ins->result ) return( false );
+    if( and_ins->operands[ 0 ] != and_ins->result ) return( false );
     or = OP2VAL( or_ins );
     and = OP2VAL( and_ins );
     if( ( and & or ) == and ) { // the AND bits are a subset of the OR bits
@@ -220,15 +219,15 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
         or_ins->table = NULL;
         InsReset( or_ins );
         FreeIns( and_ins );
-        return( TRUE );
+        return( true );
     } else {
         new_or = or & and;
-        if( new_or == OP2VAL( or_ins ) ) return( FALSE );
+        if( new_or == OP2VAL( or_ins ) ) return( false );
         mask = AllocS32Const( new_or );
-        if( !InsChangeable( or_ins, mask, &or_ins->operands[ 1 ] ) ) return( FALSE );
+        if( !InsChangeable( or_ins, mask, &or_ins->operands[ 1 ] ) ) return( false );
         or_ins->operands[ 1 ] = mask;
         InsReset( or_ins );
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -240,7 +239,7 @@ static bool OrAndOr( instruction *a, instruction *b )
     signed_32   and_val;
     name        *mask;
 
-    if( a->result != b->result ) return( FALSE );
+    if( a->result != b->result ) return( false );
     a->head.opcode = OP_AND;
     b->head.opcode = OP_OR;
     and_val = OP2VAL( a ) & OP2VAL( b );
@@ -252,12 +251,12 @@ static bool OrAndOr( instruction *a, instruction *b )
         a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
-        return( TRUE );
+        return( true );
     }
     /* Put things back the way they were */
     a->head.opcode = OP_OR;
     b->head.opcode = OP_AND;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -268,7 +267,7 @@ static bool AndOrAnd( instruction *a, instruction *b )
     signed_32   or_val;
     name        *mask;
 
-    if( a->result != b->result ) return( FALSE );
+    if( a->result != b->result ) return( false );
     a->head.opcode = OP_OR;
     b->head.opcode = OP_AND;
     or_val = OP2VAL( a ) | OP2VAL( b );
@@ -280,19 +279,19 @@ static bool AndOrAnd( instruction *a, instruction *b )
         a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
-        return( TRUE );
+        return( true );
     }
     /* Put things back the way they were */
     a->head.opcode = OP_AND;
     b->head.opcode = OP_OR;
-    return( FALSE );
+    return( false );
 }
 
 
 static  bool    DoRShift( instruction *a, instruction *b )
 /*******************************************************/
 {
-    if( a->type_class != b->type_class ) return( FALSE );
+    if( a->type_class != b->type_class ) return( false );
     return( DoAdd( a, b ) );
 }
 
@@ -309,7 +308,7 @@ static bool LRShift( instruction *a, instruction *b )
 /*************************************************/
 {
     a=a;b=b;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -318,7 +317,7 @@ static bool RLShift( instruction *a, instruction *b )
 /*************************************************/
 {
     a=a;b=b;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -327,7 +326,7 @@ static bool Nop3( instruction *a, instruction *b )
 /****************************************************/
 {
     a=a;b=b;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -336,11 +335,11 @@ static bool SameOpWithConst( instruction *ins, instruction *next )
 {
     name        *op;
 
-    if( ins->result != next->operands[ 0 ] ) return( FALSE );
+    if( ins->result != next->operands[ 0 ] ) return( false );
     op = next->operands[ 1 ];
-    if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-    return( TRUE );
+    if( op->n.class != N_CONSTANT ) return( false );
+    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
+    return( true );
 }
 
 
@@ -349,12 +348,12 @@ static bool OpConst( instruction *ins )
 {
     name        *op;
 
-    if( ins->num_operands != 2 ) return( FALSE );
+    if( ins->num_operands != 2 ) return( false );
     op = ins->operands[ 1 ];
-    if( op->n.class != N_CONSTANT ) return( FALSE );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-    if( !_IsIntegral( ins->type_class ) ) return( FALSE );
-    return( TRUE );
+    if( op->n.class != N_CONSTANT ) return( false );
+    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
+    if( !_IsIntegral( ins->type_class ) ) return( false );
+    return( true );
 }
 
 
@@ -371,7 +370,7 @@ static  instruction     *FindInsPair( instruction *ins,
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( next->head.opcode == op && SameOpWithConst( ins, next ) ) {
             if( oprtn( ins, next ) ) {
-                *pchange = TRUE;
+                *pchange = true;
                 return( ins );
             }
         }
@@ -398,26 +397,26 @@ static instruction *FindInsTriple( instruction *ins, bool *pchange,
     instruction *ins3;
     instruction *next;
 
-    change = FALSE;
+    change = false;
     next = FindInsPair( ins, &ins2, &change, op1, op2, op1rtn );
     if( change ) {
-        *pchange = TRUE;
+        *pchange = true;
         return( next );
     } else if( ins2 != NULL ) {
         FindInsPair( ins2, &ins3, &change, op2, op1, op2rtn );
         if( change ) {
-            *pchange = TRUE;
+            *pchange = true;
             return( ins );
         }
         if( ins3 == NULL ) {
             if( op12rtn( ins, ins2 ) ) {
-                *pchange = TRUE;
+                *pchange = true;
                 return( ins );
             }
             return( next );
         }
         if( op121rtn( ins, ins2 ) ) {
-            *pchange = TRUE;
+            *pchange = true;
             return( ins );
         }
         return( ins->head.next );
@@ -483,8 +482,8 @@ static bool DoArithmeticOps( instruction *ins, bool *change, instruction **n )
 {
     instruction *next;
 
-    if( ins->type_class == I8 || ins->type_class == U8 ) return( FALSE );
-    if( !OpConst( ins ) ) return( FALSE );
+    if( ins->type_class == I8 || ins->type_class == U8 ) return( false );
+    if( !OpConst( ins ) ) return( false );
     switch( ins->head.opcode ) {
     case OP_ADD:
         next = AddOpt( ins, change );
@@ -508,10 +507,10 @@ static bool DoArithmeticOps( instruction *ins, bool *change, instruction **n )
         next = RShiftOpt( ins, change );
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     *n = next;
-    return( TRUE );
+    return( true );
 }
 
 static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
@@ -526,13 +525,16 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
     case OP_PTR_TO_FOREIGN:
         break;
     default:
-        return( FALSE );
+        return( false );
     }
     next = ins->head.next;
-    if( ReDefinedBy( ins, ins->operands[ 0 ] ) ) return( FALSE );       // BBB - cnv U2 U1 [eax] -> ax
+    if( _IsReDefinedBy( ins, ins->operands[ 0 ] ) )
+        return( false );       // BBB - cnv U2 U1 [eax] -> ax
     for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-        if( ReDefinedBy( next, ins->result ) ) return( FALSE );
-        if( ReDefinedBy( next, ins->operands[ 0 ] ) ) return( FALSE );
+        if( _IsReDefinedBy( next, ins->result ) )
+            return( false );
+        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+            return( false );
         if( ins->head.opcode == OP_CONVERT && next->head.opcode == OP_CONVERT ) {
             if( ins->result == next->operands[ 0 ] &&
                 ins->type_class == next->base_type_class ) {
@@ -542,10 +544,13 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 //         the first ins if it is not needed
 
                 // pointer conversions are too dangerous to fold
-                if( _IsPointer( next->type_class ) || _IsPointer( next->base_type_class ) ) return( FALSE );
-                if( _IsPointer( ins->type_class ) ) return( FALSE );
+                if( _IsPointer( next->type_class ) || _IsPointer( next->base_type_class ) )
+                    return( false );
+                if( _IsPointer( ins->type_class ) )
+                    return( false );
                 // watch for converting down - bad to fold
-                if( ins->type_class < ins->base_type_class ) return( FALSE );
+                if( ins->type_class < ins->base_type_class )
+                    return( false );
                 next->base_type_class = ins->base_type_class;
                 next->operands[ 0 ] = ins->operands[ 0 ];
                 if( next->operands[ 0 ]->n.class == N_TEMP ) {
@@ -553,8 +558,8 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 }
                 // in case we are in register allocator
                 next->table = NULL;
-                *change = TRUE;
-                return( TRUE );
+                *change = true;
+                return( true );
             }
         }
         if( ( ins->head.opcode == OP_PTR_TO_NATIVE && next->head.opcode == OP_PTR_TO_FOREIGN ) ||
@@ -563,12 +568,12 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 next->operands[ 0 ] = ins->operands[ 0 ];
                 next->head.opcode = OP_MOV;
                 next->table = NULL;
-                *change = TRUE;
-                return( TRUE );
+                *change = true;
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool ReferencedBy( instruction *ins, name *op ) {
@@ -577,8 +582,8 @@ static bool ReferencedBy( instruction *ins, name *op ) {
     name        *curr;
 
     if( _OpIsCall( ins->head.opcode ) ) {
-        if( VisibleToCall( ins, op, FALSE ) ) {
-            return( TRUE );
+        if( _IsVisibleToCall( ins, op, false ) ) {
+            return( true );
         }
     }
     // this should only be called for index names and USE_ADDRESS temps
@@ -586,10 +591,10 @@ static bool ReferencedBy( instruction *ins, name *op ) {
         curr = ins->operands[i];
         // assume anything which looks at memory uses op
         if( curr->n.class == N_INDEXED ||
-            curr->n.class == N_MEMORY ) return( TRUE );
-        if( SameThing( curr, op ) ) return( TRUE );
+            curr->n.class == N_MEMORY ) return( true );
+        if( SameThing( curr, op ) ) return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
@@ -600,24 +605,28 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
     if( ins->result != NULL ) {
         switch( ins->result->n.class ) {
         case N_TEMP:
-            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY ) break;
+            if( ( ins->result->v.usage & USE_ADDRESS ) == EMPTY )
+                break;
+            /* fall down */
         case N_INDEXED:
         case N_MEMORY:
-            if( SideEffect( ins ) ) return( FALSE );
+            if( SideEffect( ins ) )
+                return( false );
             for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-                if( ReferencedBy( next, ins->result ) ) break;
-                if( ReDefinedBy( next, ins->result ) ) {
+                if( ReferencedBy( next, ins->result ) )
+                    break;
+                if( _IsReDefinedBy( next, ins->result ) ) {
                     if( next->result == ins->result ) {
-                        *change = TRUE;
+                        *change = true;
                         FreeIns( ins );
-                        return( TRUE );
+                        return( true );
                     }
                     break;
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool PeepOptBlock( block *blk, bool after_reg_alloc )
@@ -627,7 +636,7 @@ bool PeepOptBlock( block *blk, bool after_reg_alloc )
     instruction *next;
     bool        change;
 
-    change = FALSE;
+    change = false;
     AfterRegAlloc = after_reg_alloc;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
@@ -645,7 +654,7 @@ bool PeepOpt( block *start, block *(*func)(block *, void *parm), void *parm, boo
     block       *blk;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = start; blk != NULL; blk = func( blk, parm ) ) {
         change |= PeepOptBlock( blk, after_reg_alloc );
     }

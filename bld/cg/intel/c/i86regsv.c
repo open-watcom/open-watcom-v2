@@ -152,43 +152,57 @@ extern  void            ConstSavings( void ) {
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode != OP_MOV ) continue;
-            if( !_ConstTemp(ins->operands[0]) ) continue;
-            if( !_ConstTemp(ins->result) ) continue;
+            if( ins->head.opcode != OP_MOV )
+                continue;
+            if( !_ConstTemp(ins->operands[0]) )
+                continue;
+            if( !_ConstTemp(ins->result) )
+                continue;
             conf = NameConflict( ins, ins->operands[0] );
-            if( conf == NULL ) continue;
+            if( conf == NULL )
+                continue;
             other = NameConflict( ins, ins->result );
-            if( other == NULL ) continue;
-            if( _Isnt( conf, SAVINGS_JUST_CALCULATED ) ) continue;
-            if( _Isnt( other, SAVINGS_CALCULATED ) ) continue;
+            if( other == NULL )
+                continue;
+            if( _Isnt( conf, CST_SAVINGS_JUST_CALCULATED ) )
+                continue;
+            if( _Isnt( other, CST_SAVINGS_CALCULATED ) )
+                continue;
             _NEXTCON( conf ) = other;
         }
     }
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        if( _Is( conf, SAVINGS_JUST_CALCULATED ) && _ConstTemp( conf->name ) ) {
+        if( _Is( conf, CST_SAVINGS_JUST_CALCULATED ) && _ConstTemp( conf->name ) ) {
             for( other=_NEXTCON(conf); other != NULL; other=_NEXTCON(other) ) {
                 conf->savings += other->savings;
-                if( _Is( other, CONF_VISITED ) ) break;
+                if( _Is( other, CST_CONF_VISITED ) ) {
+                    break;
+                }
             }
-            _SetTrue( conf, CONF_VISITED ); /* already summed down the list */
+            _SetTrue( conf, CST_CONF_VISITED ); /* already summed down the list */
         }
     }
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         _NEXTCON( conf ) = NULL;
-        _SetFalse( conf, CONF_VISITED );
+        _SetFalse( conf, CST_CONF_VISITED );
     }
     MaxConstSave = 0;
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        if( !_ConstTemp( conf->name ) ) continue;
-        _SetFalse( conf, SAVINGS_JUST_CALCULATED );
-        if( _Isnt( conf, SAVINGS_CALCULATED ) ) continue;
-        if( conf->savings < MaxConstSave ) continue;
+        if( !_ConstTemp( conf->name ) )
+            continue;
+        _SetFalse( conf, CST_SAVINGS_JUST_CALCULATED );
+        if( _Isnt( conf, CST_SAVINGS_CALCULATED ) )
+            continue;
+        if( conf->savings < MaxConstSave )
+            continue;
         MaxConstSave = conf->savings;
     }
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
-        if( _ConstTemp( conf->name ) ) continue;
-        if( _Isnt( conf, SAVINGS_JUST_CALCULATED ) ) continue;
-        _SetFalse( conf, SAVINGS_JUST_CALCULATED );
+        if( _ConstTemp( conf->name ) )
+            continue;
+        if( _Isnt( conf, CST_SAVINGS_JUST_CALCULATED ) )
+            continue;
+        _SetFalse( conf, CST_SAVINGS_JUST_CALCULATED );
         if( conf->savings != 0 ) {
             conf->savings += MaxConstSave;
         }

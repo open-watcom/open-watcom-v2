@@ -36,23 +36,23 @@
 #include "dmpstr.h"
 #include "rcrtns.h"
 
-extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
-/************************************************************************/
+bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
+/******************************************************************/
 {
     long                prevpos;
     unsigned            len;
     unsigned            numread;
     unsigned            cursor;
     unsigned            stringlen;
-    char *              stringbuff;
+    char                *stringbuff;
 
     prevpos = RCSEEK( handle, offset, SEEK_SET );
     if( prevpos == -1 )
-        return( TRUE );
+        return( true );
     len = DMP_STR_BUF_LEN;
     stringbuff = (char *)RCALLOC( len );
     if( stringbuff == NULL )
-        return( TRUE );
+        return( true );
 
     printf( "\t\t   Strings:\n" );
     printf( "\t\t   --------" );
@@ -72,7 +72,7 @@ extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
             cursor = 0;
         }
         if( stringlen == 0 ) {
-            stringlen = (unsigned char)stringbuff[ cursor++ ];
+            stringlen = (unsigned char)stringbuff[cursor++];
             if( stringlen != 0 ) {
                 printf( "\n\t\t   " );
             }
@@ -82,8 +82,8 @@ extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
             for( ; stringlen > 0; --stringlen ) {
                 if( cursor >= numread )
                     break;
-                if( stringbuff[ cursor ] != '\0' && stringbuff[ cursor ] != '\n' ) {
-                    putchar( stringbuff[ cursor ] );
+                if( stringbuff[cursor] != '\0' && stringbuff[cursor] != '\n' ) {
+                    putchar( stringbuff[cursor] );
                 }
                 cursor++;
             }
@@ -97,5 +97,5 @@ extern int DumpString( uint_32 offset, uint_32 length, WResFileID handle )
 
     RCSEEK( handle, prevpos, SEEK_SET );
 
-    return( FALSE );
+    return( false );
 }

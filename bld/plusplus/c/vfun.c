@@ -159,7 +159,7 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     TYPE vfn_type;              // - type[ ptr to VF ]
 
     node = NodeBinary( CO_DOT, node, NodeOffset( vf_offset ) );
-    vfptr_type = MakeVFTableFieldType( TRUE );
+    vfptr_type = MakeVFTableFieldType( true );
     node->type = vfptr_type;
     node->flags |= PTF_LVALUE;
     node = PtdExprConst( node );

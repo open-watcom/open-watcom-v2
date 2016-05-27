@@ -90,7 +90,7 @@ int InitMsg( void )
 #else
     imageName = _LpDllName;;
 #endif
-    BannerPrinted = FALSE;
+    BannerPrinted = false;
     if( !OpenResFile( &hInstance, imageName ) ) {
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
@@ -111,9 +111,9 @@ int Msg_Get( int resourceid, char *buffer )
 {
     if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
         buffer[0] = '\0';
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,

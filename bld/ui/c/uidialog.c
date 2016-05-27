@@ -54,7 +54,7 @@ static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
     a_list              *list;
     a_combo_box         *combo;
 
-    flag = FALSE;
+    flag = false;
     if( field != NULL ) {
         switch( field->typ ) {
         case FLD_EDIT :
@@ -62,7 +62,7 @@ static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
             if( ui_dlg_info->edit_data != NULL ) {
                 edit = field->u.edit;
                 if( uieditisdirty() ) {
-                    flag = TRUE;
+                    flag = true;
                 }
                 uiedittrim( ui_dlg_info->edit_data->edit_buffer );
                 edit->buffer = ui_dlg_info->edit_data->edit_buffer;
@@ -82,7 +82,7 @@ static bool exit_field( a_dialog *ui_dlg_info, VFIELD *field )
             }
             if( ui_dlg_info->edit_data != NULL ) {
                 if( uieditisdirty() ) {
-                    flag = TRUE;
+                    flag = true;
                 }
                 uiedittrim( ui_dlg_info->edit_data->edit_buffer );
                 edit->buffer = ui_dlg_info->edit_data->edit_buffer;
@@ -123,10 +123,10 @@ static bool radiooff( VFIELD *fld )
     if( fld->typ == FLD_RADIO ) {
         r = fld->u.radio;
         if( r->value != r->group->value ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static VFIELD *nextfield( VFIELD *fld )
@@ -162,7 +162,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         return;
     area = &field->area;
     str = NULL;
-    use_hottext = FALSE;
+    use_hottext = false;
     memset( ctrlbuf, '\0', CTRL_BUF_LEN+1 );
 
     attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_EDIT];
@@ -213,7 +213,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         edit  = &combo->edit;
         list  = &combo->list;
 
-        if( combo->perm == FALSE ) {
+        if( combo->perm == false ) {
             ctrlbuf[0] = UiGChar[ UI_ARROW_DOWN ];  /* JBS was 25 */
             uivtextput( vs, area->row, area->col + area->width + 1,
                         UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
@@ -230,7 +230,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         if( list->get == NULL ) {
             list->get = uigetlistelement;
         }
-        if( list->box == NULL  &&  combo->perm == TRUE ) {
+        if( list->box == NULL  &&  combo->perm == true ) {
             c_area = *area;
             c_area.row += vs->area.row + 2;
             c_area.col += vs->area.col + 1;
@@ -286,7 +286,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
 
         strncat( ctrlbuf, check->str, CTRL_BUF_LEN - 4 );
         length = strlen( ctrlbuf );
-        use_hottext = TRUE;
+        use_hottext = true;
         break;
     case FLD_RADIO:
         attr = UIData->attrs[( current ) ? ATTR_CURR_EDIT : ATTR_NORMAL];
@@ -303,7 +303,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
 
         strncat( ctrlbuf, radio->str, CTRL_BUF_LEN - 4 );
         length = strlen( ctrlbuf );
-        use_hottext = TRUE;
+        use_hottext = true;
         break;
     }
     if( str != NULL ) {
@@ -314,7 +314,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         } else {
             hotattr = UIData->attrs[ ATTR_RADIO_HOTSPOT ];
         }
-        hotkey = uidrawhottext( vs, ctrlbuf, area, attr, hotattr, FALSE, FALSE, FALSE );
+        hotkey = uidrawhottext( vs, ctrlbuf, area, attr, hotattr, false, false, false );
         if( field->typ == FLD_CHECK ) {
             check->hotkey = hotkey;
         } else if( field->typ == FLD_RADIO ) {
@@ -335,7 +335,7 @@ static void *makevs( const char *title, int cols, int rows, int cpos, int rpos )
 {
     SAREA               area;
 
-    uiposition( &area, rows, cols, rpos, cpos, TRUE );
+    uiposition( &area, rows, cols, rpos, cpos, true );
     return( uiopen( &area, title, V_DIALOGUE ) );
 }
 
@@ -396,7 +396,7 @@ void *uiinitdialog( const char *title, ATTR attr, char *lines[],
     char                *s, *t, *line;
     SAREA               area;
 
-    uisetscreenarea( &area, TRUE, FALSE );
+    uisetscreenarea( &area, true, false );
     width = UIData->width - 2;
     for( depth = 0, i = 0 ; lines[ i ] != NULL ; ++i ) {
         s = lines[ i ];
@@ -461,7 +461,7 @@ static void enter_field( a_dialog *ui_dlg_info, VFIELD *field )
         if( ui_dlg_info->edit_data == NULL ) {
             ui_dlg_info->edit_data = uibegedit( ui_dlg_info->vs, area.row, area.col, area.width,
                                   UIData->attrs[ ATTR_CURR_EDIT ],
-                                  edit->buffer, edit->length, 0, 0, TRUE, 0,
+                                  edit->buffer, edit->length, 0, 0, true, 0,
                                   field->typ == FLD_INVISIBLE_EDIT );
         }
         break;
@@ -518,9 +518,9 @@ bool uigetdialogarea( a_dialog *ui_dlg_info, SAREA *area )
     if( ui_dlg_info != NULL && area != NULL ) {
         vs = ui_dlg_info->vs;
         *area = vs->area;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 a_dialog *uibegdialog( const char *title, VFIELD *fields, ORD rows, ORD cols, int rpos, int cpos )
@@ -632,7 +632,7 @@ static  void setcombobuffer( a_dialog *ui_dlg_info, VFIELD *fld )
         ui_dlg_info->edit_data->edit_buffer = edit->buffer;
         ui_dlg_info->edit_data->edit_eline.buffer = edit->buffer;
         ui_dlg_info->edit_data->edit_eline.length = edit->length;
-        ui_dlg_info->edit_data->edit_eline.update = TRUE;
+        ui_dlg_info->edit_data->edit_eline.update = true;
         ui_dlg_info->edit_data->edit_eline.index = 0;
         ui_dlg_info->edit_data->edit_eline.scroll = 0;
     }
@@ -866,7 +866,7 @@ bool uiresizedialog( a_dialog *ui_dlg_info, SAREA *new_area )
                          ( &ui_dlg_info->fields[i] == ui_dlg_info->curr ) );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static  ORD     PrevRow = 0;
@@ -890,7 +890,7 @@ static EVENT uicheckmove( EVENT ev, a_dialog *ui_dlg_info )
             if( ( row + 1 ) == vs->area.row ) { /* because it's framed */
                 PrevRow = row;
                 PrevCol = col;
-                ui_dlg_info->moving = TRUE;
+                ui_dlg_info->moving = true;
                 new_ev = EV_NO_EVENT;
             }
         }
@@ -924,7 +924,7 @@ static EVENT uicheckmove( EVENT ev, a_dialog *ui_dlg_info )
         break;
     case EV_MOUSE_RELEASE :
         if( ui_dlg_info->moving ) {
-            ui_dlg_info->moving = FALSE;
+            ui_dlg_info->moving = false;
             new_ev = EV_NO_EVENT;
         }
     }
@@ -938,7 +938,7 @@ static EVENT uitabkey( EVENT ev, a_dialog *ui_dlg_info )
     SAREA           area;
     EVENT           newev;
 
-    if( ui_dlg_info->first == NULL ) return( FALSE );
+    if( ui_dlg_info->first == NULL ) return( false );
     curr = ui_dlg_info->curr;
     newev = ev;
     switch( ev ){
@@ -1146,7 +1146,7 @@ EVENT uiprocessdialogevent( EVENT ev, a_dialog *ui_dlg_info )
         case FLD_LISTBOX:
         case FLD_EDIT_MLE:
             list = field->u.list;
-            ev = uilistbox( ev, list, TRUE );
+            ev = uilistbox( ev, list, true );
             break;
         case FLD_PULLDOWN:
             list = field->u.list;
@@ -1154,7 +1154,7 @@ EVENT uiprocessdialogevent( EVENT ev, a_dialog *ui_dlg_info )
                 ev = pulldownfilter( ev, ui_dlg_info );
             } else {
                 choice = list->choice;
-                ev = uilistbox( ev, list, FALSE );
+                ev = uilistbox( ev, list, false );
                 if( choice != list->choice ) {
                     ui_dlg_info->dirty = true;
                     print_field( ui_dlg_info->vs, field, true );

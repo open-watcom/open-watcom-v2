@@ -159,7 +159,7 @@ void CleanRecStuff( void )
 {
     ZeroIndicies( ClassList );
     ZeroIndicies( SegList );
-    Easy32 = FALSE;
+    Easy32 = false;
     NameIndex = 0;
     SegIndex = 0;
 }
@@ -190,7 +190,7 @@ static void proccoment( void )
     class = Rec1->u.coment.class;
     if( class == 0xAA ) {
         if( memcmp( Rec1->u.coment.coment, "80386", 5 ) == 0 ) {
-            Easy32 = TRUE;
+            Easy32 = true;
         }
     }
     WriteRecord();
@@ -202,10 +202,10 @@ static bool FindName( name_list *list, byte *name, int name_len )
     for( ; list != NULL; list = list->next ) {
         if( memicmp( list->name, name, name_len ) == 0 ) {
             list->lnameidx = NameIndex;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void SetExLnames( byte *name, int name_len )
@@ -246,10 +246,10 @@ static bool MatchIndex( name_list *list, unsigned index )
 {
     for( ; list != NULL; list = list->next ) {
         if( list->lnameidx == index ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void CheckSum( void )
@@ -320,7 +320,7 @@ static void ProcDataRec( bool is386 )
     unsigned long   endoffset;
 
     WriteRecord();
-    MakeUnsafe = FALSE;
+    MakeUnsafe = false;
     dataloc = Rec1->u.anyobj.rest;
     segidx = GetIndex( &dataloc );
     if( is386 || Easy32 ) {
@@ -333,12 +333,12 @@ static void ProcDataRec( bool is386 )
         if( segidx == exclude->segidx ) {
             if( offset < exclude->start_off ) {
                 if( endoffset >= exclude->start_off ) {
-                    MakeUnsafe = TRUE;
+                    MakeUnsafe = true;
                     break;
                 }
             } else {
                 if( exclude->end_off >= offset ) {
-                    MakeUnsafe = TRUE;
+                    MakeUnsafe = true;
                     break;
                 }
             }
@@ -365,14 +365,14 @@ void ProcessRec( void )
 {
     bool    is386;
 
-    is386 = FALSE;
+    is386 = false;
     switch( Rec1->head.class ) {
-    case SEGD32: is386 = TRUE;      // note the fall through
+    case SEGD32: is386 = true;      // note the fall through
     case SEGDEF: procsegdef( is386 ); break;
     case COMENT: proccoment(); break;
     case LNAMES: proclnames(); break;
-    case LEDA32: is386 = TRUE;      //  even more fall through here.
-    case LIDA32: is386 = TRUE;
+    case LEDA32: is386 = true;      //  even more fall through here.
+    case LIDA32: is386 = true;
     case LEDATA:
     case LIDATA: ProcDataRec( is386 ); break;
     case FIXU32:

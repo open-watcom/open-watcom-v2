@@ -67,64 +67,64 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
          * unless the tree code decided it was ok for a halfword instruction
          * Kludgey? Maybe just a little.
          */
-        if( op2->n.name_class == U2 ) return( TRUE );
-        if( op2->n.name_class == I2 ) return( TRUE );
-        return( FALSE );
+        if( op2->n.name_class == U2 ) return( true );
+        if( op2->n.name_class == I2 ) return( true );
+        return( false );
     case V_OP1SMALL:
-        if( op1->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( op1->c.int_value < 0 ) return( FALSE );
-        if( op1->c.int_value > 4095 ) return( FALSE );
-        return( TRUE );
+        if( op1->c.const_type != CONS_ABSOLUTE ) return( false );
+        if( op1->c.int_value < 0 ) return( false );
+        if( op1->c.int_value > 4095 ) return( false );
+        return( true );
     case V_OP1TEMP:
-        if( op1->n.class == N_TEMP ) return( TRUE );
-        return( FALSE );
+        if( op1->n.class == N_TEMP ) return( true );
+        return( false );
     case V_OP1ADDR:
     case V_OP1LOC:
-        if( op1->n.class == N_MEMORY ) return( TRUE );
-        return( FALSE );
+        if( op1->n.class == N_MEMORY ) return( true );
+        return( false );
     case V_OP2I2CON:
         if( op2->c.const_type == CONS_ABSOLUTE
-         && CFIsI16( op2->c.value ) ) return( TRUE );
-        return( FALSE );
+         && CFIsI16( op2->c.value ) ) return( true );
+        return( false );
     case V_LA2:
-        if( HW_CEqual( op1->r.reg, HW_G0 ) ) return( FALSE );
+        if( HW_CEqual( op1->r.reg, HW_G0 ) ) return( false );
         /* fall through ! */
     case V_OP2SMALL:
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( FALSE );
-        if( op2->c.int_value < 0 ) return( FALSE );
-        if( op2->c.int_value > 4095 ) return( FALSE );
-        return( TRUE );
+        if( op2->c.const_type != CONS_ABSOLUTE ) return( false );
+        if( op2->c.int_value < 0 ) return( false );
+        if( op2->c.int_value > 4095 ) return( false );
+        return( true );
     case V_MULPAIR:
-        if( !IsRegPair( result->r.reg ) ) return( FALSE );
+        if( !IsRegPair( result->r.reg ) ) return( false );
         tmp = LowReg( result->r.reg );
-        if( !HW_Equal( tmp, op1->r.reg ) ) return( FALSE );
-        return( TRUE );
+        if( !HW_Equal( tmp, op1->r.reg ) ) return( false );
+        return( true );
     case V_CONVPAIR:
-        if( !IsRegPair( result->r.reg ) ) return( FALSE );
+        if( !IsRegPair( result->r.reg ) ) return( false );
         tmp = HighReg( result->r.reg );
-        if( !HW_Equal( tmp, op1->r.reg ) ) return( FALSE );
-        return( TRUE );
+        if( !HW_Equal( tmp, op1->r.reg ) ) return( false );
+        return( true );
     case V_SIZE_SMALL:
-        if( op1->n.size > 256 ) return( FALSE );
-        return( TRUE );
+        if( op1->n.size > 256 ) return( false );
+        return( true );
     case V_OP2BYTE4CONS:
-        if( !CFIsI32( op2->c.value ) ) return( FALSE );
-        if( ( op2->c.int_value & 0xFFFFFF00 ) == 0 ) return( TRUE );
-        if( ( op2->c.int_value & 0xFFFF00FF ) == 0 ) return( TRUE );
-        if( ( op2->c.int_value & 0xFF00FFFF ) == 0 ) return( TRUE );
-        if( ( op2->c.int_value & 0x00FFFFFF ) == 0 ) return( TRUE );
-        return( FALSE );
+        if( !CFIsI32( op2->c.value ) ) return( false );
+        if( ( op2->c.int_value & 0xFFFFFF00 ) == 0 ) return( true );
+        if( ( op2->c.int_value & 0xFFFF00FF ) == 0 ) return( true );
+        if( ( op2->c.int_value & 0xFF00FFFF ) == 0 ) return( true );
+        if( ( op2->c.int_value & 0x00FFFFFF ) == 0 ) return( true );
+        return( false );
     case V_OP2BYTE2CONS:
-        if( !CFIsI16( op2->c.value ) ) return( FALSE );
-        if( ( op2->c.int_value & 0xFFFFFF00 ) == 0 ) return( TRUE );
-        if( ( op2->c.int_value & 0xFFFF00FF ) == 0 ) return( TRUE );
-        return( FALSE );
+        if( !CFIsI16( op2->c.value ) ) return( false );
+        if( ( op2->c.int_value & 0xFFFFFF00 ) == 0 ) return( true );
+        if( ( op2->c.int_value & 0xFFFF00FF ) == 0 ) return( true );
+        return( false );
     case V_CMPEQ_OP2ZERO:
-        if( !OtherVerify( V_CMPEQ, ins, op1, op2, result ) ) return( FALSE );
-        if( !OtherVerify( V_OP2ZERO, ins, op1, op2, result ) ) return( FALSE );
-        return( TRUE );
+        if( !OtherVerify( V_CMPEQ, ins, op1, op2, result ) ) return( false );
+        if( !OtherVerify( V_OP2ZERO, ins, op1, op2, result ) ) return( false );
+        return( true );
     default:
         return( OtherVerify( kind, ins, op1, op2, result ) );
     }
-    return( FALSE );
+    return( false );
 }

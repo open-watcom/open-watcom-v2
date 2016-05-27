@@ -36,6 +36,7 @@
 #include <dos.h>
 #include <direct.h>
 #include <conio.h>
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "lineprt.h"
@@ -64,11 +65,11 @@ static const char       *usageMsg[] = {
     NULL
 };
 
-int                     rflag = FALSE;
-int                     iflag = FALSE;
-int                     fflag = FALSE;
-int                     sflag = TRUE;
-int                     rxflag = FALSE;
+int                     rflag = false;
+int                     iflag = false;
+int                     fflag = false;
+int                     sflag = true;
+int                     rxflag = false;
 int                     error_occured = 0;
 
 typedef struct dd {
@@ -90,13 +91,13 @@ int main( int argc, char *argv[] )
     /* process options */
     while( ( ch = GetOpt( &argc, argv, "firRsvX", usageMsg ) ) != -1 ) {
         switch( ch ) {
-        case 'f': fflag  = TRUE;  iflag = FALSE; break;
-        case 'i': iflag  = TRUE;  fflag = FALSE; break;
+        case 'f': fflag  = true;  iflag = false; break;
+        case 'i': iflag  = true;  fflag = false; break;
         case 'R':
-        case 'r': rflag  = TRUE;  break;
-        case 's': sflag  = TRUE;  break;
-        case 'v': sflag  = FALSE; break;
-        case 'X': rxflag = TRUE;  break;
+        case 'r': rflag  = true;  break;
+        case 's': sflag  = true;  break;
+        case 'v': sflag  = false; break;
+        case 'X': rxflag = true;  break;
         }
     }
     if( argc < 2 )

@@ -63,7 +63,7 @@ static void *doFloodForward( flood_parms *fp ) {
     for( i = 0; i < n; i++ ) {
         next = fp->blk->edge[ i ].destination.u.blk;
         if( _Visited( next ) ) continue;
-        if( fp->func( next, fp->parm ) == FALSE ) break;
+        if( fp->func( next, fp->parm ) == false ) break;
         _MarkVisited( next );
         new_parms.blk = next;
         SafeRecurseCG( (func_sr)doFloodForward, &new_parms );
@@ -91,7 +91,7 @@ static void *doFloodBackward( flood_parms *fp ) {
     for( edge = fp->blk->input_edges; edge != NULL; edge = edge->next_source ) {
         next = edge->source;
         if( _Visited( next ) ) continue;
-        if( fp->func( next, fp->parm ) == FALSE ) break;
+        if( fp->func( next, fp->parm ) == false ) break;
         _MarkVisited( next );
         new_parms.blk = next;
         SafeRecurseCG( (func_sr)doFloodBackward, &new_parms );

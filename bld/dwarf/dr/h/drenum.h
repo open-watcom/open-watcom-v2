@@ -41,7 +41,7 @@ extern "C" {
 
 typedef bool (*enumCallback)( char *, unsigned_32, void * );
 
-extern void DRLoadEnum( dr_handle, void *, enumCallback );
+extern void DRLoadEnum( drmem_hdl, void *, enumCallback );
 
 #ifdef __cplusplus
 };

@@ -65,19 +65,19 @@ void    InitBlip() {
 #if 0
     char        *src_name;
 
-    BlipsOn = FALSE;
-    blipHandle = OpenFileMapping( FILE_MAP_WRITE, FALSE, SHMEM_NAME );
+    BlipsOn = false;
+    blipHandle = OpenFileMapping( FILE_MAP_WRITE, false, SHMEM_NAME );
     if( blipHandle != NULL ) {
         fileMapping = MapViewOfFile( blipHandle, FILE_MAP_WRITE, 0, 0, 0 );
         if( fileMapping == NULL ) {
             _Zoiks( ZOIKS_110 );
             return;
         }
-        BlipsOn = TRUE;
+        BlipsOn = true;
         src_name = FEAuxInfo( NULL, SOURCE_NAME );
         strncpy( &fileMapping->file_name[ 0 ], src_name, _MAX_PATH );
         strcpy( &fileMapping->rtn_name[ 0 ], "" );
-        fileMapping->debug.debug_info = FALSE;
+        fileMapping->debug.debug_info = false;
     }
 #endif
 }
@@ -98,7 +98,7 @@ void    FiniBlip() {
 bool    WantZoiks2() {
 /********************/
 
-    return( FALSE );
+    return( false );
 }
 
 

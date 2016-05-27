@@ -41,7 +41,7 @@
 typedef struct {                // CGEXPR -- codegen expression
     cg_name expr;               // - expression
     cg_type type;               // - expression type
-    unsigned garbage : 1;       // - TRUE ==> is garbage
+    unsigned garbage : 1;       // - true ==> is garbage
 } CGEXPR;
 
 static VSTK_CTL expressions;    // expressions stack
@@ -74,7 +74,7 @@ void CgExprPush(                // PUSH CG EXPRESSION RESULT
     top = VstkPush( &expressions );
     top->expr = expr;
     top->type = type;
-    top->garbage = FALSE;
+    top->garbage = false;
 }
 
 
@@ -115,7 +115,7 @@ void CgPushGarbage(             // PUSH GARBAGE (TO BE TRASHED/POPPED)
     top = VstkPush( &expressions );
     top->expr = NULL;
     top->type = 0;
-    top->garbage = TRUE;
+    top->garbage = true;
 }
 
 
@@ -123,25 +123,25 @@ bool CgExprPopGarbage(          // POP EXPR STACK IF TOP EXPR IS GARBAGE
     void )
 {
     CGEXPR* top;                // - top of stack
-    bool retn;                  // - TRUE ==> garbage was popped
+    bool retb;                  // - true ==> garbage was popped
 
     top = VstkTop( &expressions );
     if( top == NULL ) {
-        retn = TRUE;
+        retb = true;
     } else if( top->garbage ) {
         VstkPop( &expressions );
-        retn = TRUE;
+        retb = true;
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
 unsigned CgExprStackSize(       // RETURN # TEMPS STACKED
     void )
 {
-    return VstkDimension( &expressions ) + 1;
+    return VstkDimension( &expressions );
 }
 
 
@@ -166,7 +166,7 @@ static SYMBOL getExprTempSym(   // EMIT CGDone, CGTrash, OR COPY TO TEMP
     } else {
         temp = NULL;
     }
-    fctl->temp_dtoring = FALSE;
+    fctl->temp_dtoring = false;
     return temp;
 }
 #endif
@@ -218,7 +218,7 @@ void CgExprDtored(              // DTOR CG EXPRESSION
             temp = NULL;
         }
         if( fctl->temp_dtoring ) {
-            fctl->temp_dtoring = FALSE;
+            fctl->temp_dtoring = false;
             if( fctl->ctor_test ) {
                 pop_type |= DGRP_CTOR;
             }

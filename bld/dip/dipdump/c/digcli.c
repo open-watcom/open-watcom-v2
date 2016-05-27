@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "digtypes.h"
 #include "digcli.h"
 
@@ -114,7 +115,7 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
         case DIG_END:   whence = SEEK_END; break;
         default:
             dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", h, p, k ));
-            return( DCSEEK_ERROR );
+            return( DIG_SEEK_ERROR );
     }
 
     off = lseek( h, p, whence );

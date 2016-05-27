@@ -116,10 +116,10 @@ static  bool    GetValue( opt_entry *optn, char *ptr, char **val ) {
     *val = SkipBlanks( ptr );
     if( ( **val != '=' ) && ( **val != '#' ) ) {
         Warning( CO_NEED_EQUALS, optn->option );
-        return( FALSE );
+        return( false );
     } else {
         *val = SkipBlanks( *val + sizeof( char ) );
-        return( TRUE);
+        return( true );
     }
 }
 
@@ -139,7 +139,7 @@ static  void    BitOption( opt_entry *optn, bool negated ) {
             NewOptions |= OPT_LIST;
         }
         if( opt_bit & OPT_LIST ) {
-            SetLst( TRUE );
+            SetLst( true );
         }
         // SAVE turns off AUTOMATIC and vice-versa
         if( opt_bit & ( OPT_SAVE | OPT_AUTOMATIC ) ) {
@@ -151,7 +151,7 @@ static  void    BitOption( opt_entry *optn, bool negated ) {
     } else {
         NewOptions &= ~opt_bit;
         if( opt_bit & OPT_LIST ) {
-            SetLst( FALSE );
+            SetLst( false );
         }
     }
 }
@@ -456,26 +456,39 @@ static  bool    OptMatch( char *buff, const char __FAR *list, bool value ) {
 // Determine if option matches.
 
     for(;;) {
-        if( *buff == NULLCHAR ) break;
-        if( *buff == ' ' ) break;
-        if( *buff == '\t' ) break;
+        if( *buff == NULLCHAR )
+            break;
+        if( *buff == ' ' )
+            break;
+        if( *buff == '\t' )
+            break;
         if( value ) {
-            if( ( *buff == '=' ) || ( *buff == '#' ) ) break;
+            if( ( *buff == '=' ) || ( *buff == '#' ) ) {
+                break;
+            }
         }
         if( isalpha( *buff ) ) {
-            if( toupper( *buff ) != toupper( *list ) ) return( FALSE );
+            if( toupper( *buff ) != toupper( *list ) ) {
+                return( false );
+            }
         } else {
-            if( *buff != *list ) return( FALSE );
+            if( *buff != *list ) {
+                return( false );
+            }
         }
         ++list;
         ++buff;
     }
     if( isalpha( *list ) ) {
-        if( isupper( *list ) ) return( FALSE );
+        if( isupper( *list ) ) {
+            return( false );
+        }
     } else {
-        if( *list != NULLCHAR ) return( FALSE );
+        if( *list != NULLCHAR ) {
+            return( false );
+        }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -487,13 +500,14 @@ static  opt_entry       *GetOptn( char *buff, bool *negated ) {
     opt_entry   *optn;
 
     optn = CompOptns;
-    *negated = FALSE;
+    *negated = false;
     if( ( toupper( buff[ 0 ] ) == 'N' ) && ( toupper( buff[ 1 ] ) == 'O' ) ) {
-        *negated = TRUE;
+        *negated = true;
         buff += 2 * sizeof( char );
     }
     for( optn = CompOptns; optn->option != NULL; ++optn ) {
-        if( optn->flags & CTG ) continue;
+        if( optn->flags & CTG )
+            continue;
         if( OptMatch( buff, optn->option, optn->flags & VAL ) ) {
             return( optn );
         }
@@ -543,7 +557,7 @@ static  void  CompoundOptOption( char *buff ) {
     single_opt[0] = buff[0];
     i = 0;
     
-    while( buff[++i] != NULL ) {
+    while( buff[++i] != '\0' ) {
         opt_i = 1;
         single_opt[opt_i++] = buff[i];
         
@@ -652,10 +666,11 @@ static  void    ScanOpts( char *buff ) {
     if( strlen( SrcBuff ) > LastColumn ) {
         SrcBuff[ LastColumn ] = NULLCHAR;
     }
-    first_opt = TRUE;
+    first_opt = true;
     for(;;) {
         buff = SkipBlanks( buff );
-        if( *buff == NULLCHAR ) break;
+        if( *buff == NULLCHAR )
+            break;
         optn = GetOptn( buff, &negated );
         if( optn == NULL ) {
             if( !first_opt ) {
@@ -663,7 +678,7 @@ static  void    ScanOpts( char *buff ) {
             }
             break;
         }
-        first_opt = FALSE;
+        first_opt = false;
         if( ( optn->flags & SRC ) == 0 ) {
             Warning( CO_NOT_IN_SOURCE, optn->option );
             buff = SkipOpt( buff );
@@ -673,7 +688,8 @@ static  void    ScanOpts( char *buff ) {
                 if( negated ) {
                     Warning( CO_BAD_NO, optn->option );
                 }
-                if( !GetValue( optn, buff, &value ) ) continue;
+                if( !GetValue( optn, buff, &value ) )
+                    continue;
                 buff = SkipToken( value );
                 optn->proc_rtnstr( optn, value );
             } else {
@@ -695,8 +711,10 @@ static  int     GetDirective( char *buff ) {
     drctv = CompDrctvs;
     offset = 0;
     for(;;) {
-        if( drctv[ offset ] == NULL ) return( 0 );
-        if( OptMatch( buff, drctv[ offset ], FALSE ) ) return( offset + 1 );
+        if( drctv[ offset ] == NULL )
+            return( 0 );
+        if( OptMatch( buff, drctv[ offset ], false ) )
+            return( offset + 1 );
         offset++;
     }
 }

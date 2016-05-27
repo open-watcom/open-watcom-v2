@@ -42,7 +42,7 @@ a_window                *WndMain;
 wnd_switches            WndSwitches;
 int                     WndMaxDirtyRects = 6;
 int                     WndDClick = 300;
-bool                    WndIgnoreAllEvents = FALSE;
+bool                    WndIgnoreAllEvents = false;
 
 static int              wndProcNesting = 0;
 static gui_colour_set Colours = { GUI_BLACK, GUI_BLACK };
@@ -83,7 +83,7 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
 {
     wnd_create_struct   info;
 
-    if( !GUIWndInit( WndDClick, WndStyle ) ) return( FALSE );
+    if( !GUIWndInit( WndDClick, WndStyle ) ) return( false );
     GUIMDIInitMenuOnly();
     GUI3DDialogInit();
     GUISetBackgroundColour( &Colours );
@@ -103,7 +103,7 @@ static bool WndInitBody( char *title, res_name_or_id resource_menu )
     }
     GUISetBackgroundChar( WndMain->gui, WndBackgroundChar );
     WndSetWndMax();
-    return( TRUE );
+    return( true );
 }
 
 bool WndInit( char *title )
@@ -123,13 +123,13 @@ void WndShowWndMain( void )
 
 bool WndFini( void )
 {
-    if( !WndShutDownHook() ) return( FALSE );
+    if( !WndShutDownHook() ) return( false );
     GUIDestroyWnd( NULL );
     if( BusyString != NULL ) {
         WndFree( BusyString );
         BusyString = NULL;
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -224,7 +224,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
     void                *parm = spawnp->parm;
 
     wnd = GUIGetExtra( gui );
-    spawnp->ret = FALSE;
+    spawnp->ret = false;
     if( wnd == NULL ) return;
     if( WndIgnoreAllEvents ) {
         if( event == GUI_PAINT ) {
@@ -240,7 +240,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         if( WndIgnoreMouseMove( wnd ) ) return;
     }
     if( !WndDoingRefresh && wndProcNesting == 1 ) WndDoInput();
-    ret = TRUE;
+    ret = true;
 
     WndChooseEvent( wnd, event, parm );
     WndSelectEvent( wnd, event, parm );
@@ -288,14 +288,14 @@ static void DoMainEventProc( spawn_parms *spawnp )
             WndAddPopupMenu( wnd );
             WndEvent( wnd, event, parm );
         }
-        ret = FALSE;
+        ret = false;
         break;
     case GUI_NOT_ACTIVE:
         _Clr( wnd, WSW_ACTIVE );
         if( wnd != WndMain ) {
             WndEvent( wnd, event, parm );
         }
-        ret = FALSE;
+        ret = false;
         break;
     case GUI_MOVE:
         if( WndMain != NULL && WndIsMinimized( WndMain ) ) return;
@@ -367,7 +367,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         WndScrollTop( wnd );
         break;
     case GUI_KEYUP:
-        ret = FALSE;
+        ret = false;
         break;
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
@@ -419,10 +419,10 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndKeyEnter( wnd );
                 break;
             case GUI_KEY_SHIFT_TAB:
-                WndTabLeft( wnd, TRUE );
+                WndTabLeft( wnd, true );
                 break;
             case GUI_KEY_TAB:
-                WndTabRight( wnd, TRUE );
+                WndTabRight( wnd, true );
                 break;
             case GUI_KEY_LEFT:
                 if( GUI_SHIFT_STATE( state ) )
@@ -469,7 +469,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
                 WndScrollBottom( wnd );
                 break;
             default:
-                ret = FALSE;
+                ret = false;
                 break;
             }
         }
@@ -506,20 +506,20 @@ static void DoMainEventProc( spawn_parms *spawnp )
             ret = WndShutDownHook();
         } else {
             WndResizeHook( wnd );
-            ret = TRUE;
+            ret = true;
         }
         break;
     case GUI_TOOLBAR_FLOATING:
     case GUI_TOOLBAR_FIXED:
     case GUI_TOOLBAR_DESTROYED:
         WndSetToolBar( event );
-        ret = TRUE;
+        ret = true;
         break;
     case GUI_HSCROLL_NOTIFY:
         WndHScrollNotify( wnd );
         break;
     default:
-        ret = FALSE;
+        ret = false;
         break;
     }
     if( !WndDoingRefresh && wndProcNesting == 1 ) WndDoInput();

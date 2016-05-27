@@ -370,7 +370,7 @@ static bool cmpOptName( char *n1, char *n2 )
         c2 = *n2++;
         if( c1 == '\\' ) {
             if( c2 != '\\' ) {
-                return( FALSE );
+                return( false );
             }
             c1 = *n1++;
             c2 = *n2++;
@@ -379,13 +379,13 @@ static bool cmpOptName( char *n1, char *n2 )
             c2 = mytolower( c2 );
         }
         if( c1 != c2 ) {
-            return( FALSE );
+            return( false );
         }
         if( c1 == '\0' ) {
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool cmpChainName( char *n1, char *n2, size_t len )
@@ -399,7 +399,7 @@ static bool cmpChainName( char *n1, char *n2, size_t len )
         c2 = *n2++;
         if( c1 == '\\' ) {
             if( c2 != '\\' ) {
-                return( FALSE );
+                return( false );
             }
             c1 = *n1++;
             c2 = *n2++;
@@ -408,10 +408,10 @@ static bool cmpChainName( char *n1, char *n2, size_t len )
             c2 = mytolower( c2 );
         }
         if( c1 != c2 ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void addTarget( char *t )
@@ -994,7 +994,7 @@ static void doCHAIN( char *p )
         fail( "missing <option> in :chain. tag\n" );
     }
     p = copyNonSpaceUntil( p, tokbuff, '\0' );
-    cn = addChain( tokbuff, TRUE );
+    cn = addChain( tokbuff, true );
     p = skipSpace( p );
     // skip leading ':' character used to specify spaces on the beginning
     SKIP_BEG_MARK( p );
@@ -1178,7 +1178,7 @@ static void doUSAGEGRP( char *p )
         fail( "missing <option> in :usagegrp. tag\n" );
     }
     p = copyNonSpaceUntil( p, tokbuff, '\0' );
-    cn = addChain( tokbuff, FALSE );
+    cn = addChain( tokbuff, false );
     p = skipSpace( p );
     // skip leading ':' character used to specify spaces on the beginning
     SKIP_BEG_MARK( p );
@@ -1200,9 +1200,9 @@ static void checkForGMLEscape( char *p )
     if( c2 == '\0' || ! isalpha( c2 ) ) {
         return;
     }
-    is_escape = FALSE;
+    is_escape = false;
     if( *p == '\0' || ! isalpha( *p ) ) {
-        is_escape = TRUE;
+        is_escape = true;
     }
     if( is_escape ) {
         fail( "possible GML escape sequence: &%c%c\n", c1, c2 );
@@ -1332,19 +1332,19 @@ static void makeFieldName( char *n, char *f )
         c = mytolower( c );
     }
     if( c != '\0' ) {
-        special = FALSE;
+        special = false;
         if( isalnum( c ) ) {
             if( isdigit( c ) )
                 *f++ = '_';
             *f++ = c;
         } else {
             f = special_char( f, c );
-            special = TRUE;
+            special = true;
         }
-        sensitive = FALSE;
+        sensitive = false;
         for( ; (c = *n++) != '\0'; ) {
             if( c == '\\' ) {
-                sensitive = TRUE;
+                sensitive = true;
                 continue;
             } else if( isalnum( c ) ) {
                 if( special && *(f - 1) != '_' )
@@ -1352,12 +1352,12 @@ static void makeFieldName( char *n, char *f )
                 if( !sensitive )
                     c = mytolower( c );
                 *f++ = c;
-                special = FALSE;
+                special = false;
             } else {
                 f = special_char( f, c );
-                special = TRUE;
+                special = true;
             }
-            sensitive = FALSE;
+            sensitive = false;
         }
     }
     *f = '\0';
@@ -1555,7 +1555,7 @@ static bool markChainCode( CODESEQ *h, size_t level )
     CODESEQ *c;
     bool    rc;
 
-    rc = FALSE;
+    rc = false;
     for( c = h; c != NULL; c = c->sibling ) {
         if( c->option->chain != NULL && c->option->chain->code_used ) {
             if( c->children != NULL ) {
@@ -1566,7 +1566,7 @@ static bool markChainCode( CODESEQ *h, size_t level )
                 }
             } else if( c->option->slen == c->option->chain->clen + 1 ) {
                 c->chain = 1;
-                rc = TRUE;
+                rc = true;
             }
         }
     }
@@ -1594,7 +1594,7 @@ static bool useSwitchStmt( CODESEQ *h )
     count = 0;
     for( c = h; c != NULL; c = c->sibling ) {
         if( c->option->is_prefix ) {
-            return( TRUE );
+            return( true );
         }
         ++count;
     }
@@ -1606,7 +1606,7 @@ static void emitSuccessCode( unsigned depth, flow_control control )
     if( control & EC_CONTINUE ) {
         emitPrintf( depth, "continue;\n" );
     } else {
-        emitPrintf( depth, "return( FALSE );\n" );
+        emitPrintf( depth, "return( false );\n" );
     }
 }
 
@@ -1684,7 +1684,7 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         }
         emitPrintf( depth, "data->%s = %s;\n", o->enumerate->name, e->name );
         if( o->is_immediate ) {
-            emitPrintf( depth, "%s( data, TRUE );\n", o->immediate );
+            emitPrintf( depth, "%s( data, true );\n", o->immediate );
         }
     } else {
         if( o->is_timestamp ) {
@@ -1692,20 +1692,20 @@ static void emitAcceptCode( CODESEQ *c, unsigned depth, flow_control control )
         }
         if( o->is_negate ) {
             emitPrintf( depth, "if( %s( '-' ) ) {\n", FN_RECOG );
-            emitPrintf( depth+1, "data->%s = FALSE;\n", o->field_name );
+            emitPrintf( depth+1, "data->%s = false;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth+1, "%s( data, FALSE );\n", o->immediate );
+                emitPrintf( depth+1, "%s( data, false );\n", o->immediate );
             }
             emitPrintf( depth, "}else{\n" );
-            emitPrintf( depth+1, "data->%s = TRUE;\n", o->field_name );
+            emitPrintf( depth+1, "data->%s = true;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth+1, "%s( data, TRUE );\n", o->immediate );
+                emitPrintf( depth+1, "%s( data, true );\n", o->immediate );
             }
             emitPrintf( depth, "}\n" );
         } else {
-            emitPrintf( depth, "data->%s = TRUE;\n", o->field_name );
+            emitPrintf( depth, "data->%s = true;\n", o->field_name );
             if( o->is_immediate ) {
-                emitPrintf( depth, "%s( data, TRUE );\n", o->immediate );
+                emitPrintf( depth, "%s( data, true );\n", o->immediate );
             }
         }
     }
@@ -1732,7 +1732,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             if( c->accept ) {
                 emitAcceptCode( c, depth, control & ~ EC_CONTINUE );
             } else {
-                emitPrintf( depth, "return( TRUE );\n" );
+                emitPrintf( depth, "return( true );\n" );
             }
         } else if( c->chain_root ) {
             emitCode( c->children, depth, control | EC_CHAIN | EC_CONTINUE );
@@ -1746,7 +1746,7 @@ static void emitCodeTree( CODESEQ *c, unsigned depth, flow_control control )
             if( c->accept ) {
                 emitAcceptCode( c, depth, control );
             } else {
-                emitPrintf( depth, "return( TRUE );\n" );
+                emitPrintf( depth, "return( true );\n" );
             }
         }
     } else {
@@ -1823,7 +1823,7 @@ static void outputFN_PROCESS( void )
     ++depth;
     codeseq = genCode( optionList );
     emitCode( codeseq, depth, EC_NULL );
-    emitPrintf( depth, "return( TRUE );\n" );
+    emitPrintf( depth, "return( true );\n" );
     --depth;
     emitPrintf( depth, "}\n" );
 }
@@ -2016,15 +2016,15 @@ static void fillOutSpaces( char *buff, size_t n )
 static bool usageValid( OPTION *o, unsigned language )
 {
     if( o->synonym != NULL )
-        return( FALSE );
+        return( false );
     if( o->lang_usage[language] == NULL )
-        return( FALSE );
+        return( false );
     if( o->lang_usage[language][0] == '\0' )
-        return( FALSE );
+        return( false );
     if( o->is_internal && ( targetMask & targetDbgMask ) == 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void emitUsageH( bool page_flag )
@@ -2116,7 +2116,7 @@ static void createUsageHeader( unsigned language, void (*process_line)( bool ) )
                 }
             }
             *d = '\0';
-            process_line( FALSE );
+            process_line( false );
         }
     }
 }
@@ -2169,7 +2169,7 @@ static void processUsage( unsigned language, void (*process_line)( bool ) )
     }
     if( page != NULL && *page != '\0' ) {
         strcpy( tokbuff, page );
-        process_line( TRUE );
+        process_line( true );
     }
     createUsageHeader( language, process_line );
     clearChainUsage();
@@ -2178,7 +2178,7 @@ static void processUsage( unsigned language, void (*process_line)( bool ) )
         if( o->chain != NULL && !o->chain->usage_used ) {
             o->chain->usage_used = 1;
             createChainHeader( &t[i], language, max );
-            process_line( FALSE );
+            process_line( false );
         }
         tokbuff[0] = '\0';
         len = genOptionUsageStart( o );
@@ -2188,7 +2188,7 @@ static void processUsage( unsigned language, void (*process_line)( bool ) )
             strcat( tokbuff, "- " );
         }
         strcat( tokbuff, o->lang_usage[language] );
-        process_line( FALSE );
+        process_line( false );
     }
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
         fail( "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );

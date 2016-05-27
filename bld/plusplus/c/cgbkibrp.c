@@ -96,7 +96,7 @@ static unsigned parm_no;            // parm # being defined
     bool IbpEmpty(                  // DEBUG -- verify empty
         void )
     {
-        return ibrps == NULL;
+        return( ibrps == NULL );
     }
 
     void IbpDump( void )            // DEBUG -- dump all entries
@@ -225,7 +225,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     target_offset_t *offset )   // - addr[ offset from bound reference ]
 {
     IBRP *ibrp;                 // - current inline bound reference parm.
-    bool retn;                  // - TRUE ==> bound was located
+    bool retb;                  // - true ==> bound was located
     FN_CTL* fctl;               // - current file control
 
     fctl = FnCtlTop();
@@ -237,7 +237,7 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
     *trans = sym;
     *bound = NULL;
     *offset = 0;
-    retn = FALSE;
+    retb = false;
     RingIterBeg( ibrps, ibrp ) {
         if( ( sym == ibrp->u.parm )
           &&( fctl->handle == ibrp->handle ) ) {
@@ -254,11 +254,11 @@ bool IbpReference(              // LOCATE A BOUND REFERENCE
                 DumpSymbol( ibrp->u.parm );
             }
 #endif
-            retn = TRUE;
+            retb = true;
             break;
         }
     } RingIterEnd( ibrp )
-    return retn;
+    return( retb );
 }
 
 
@@ -460,7 +460,7 @@ cg_name IbpFetchVbRef(          // MAKE A REFERENCE FROM A BOUND PARAMETER
         temp = CgSaveAsTemp( &handle, op, vbptr_type );
         op = fetchVbVfPtr( CgFetchTemp( handle, vbptr_type )
                          , vb_index
-                         , MakeVBTableFieldType( TRUE )
+                         , MakeVBTableFieldType( true )
                          , &vboff_type );
         op = CGBinary( O_PLUS
                      , CgFetchTemp( handle, vbptr_type )
@@ -487,38 +487,35 @@ static bool locatedVFun(        // LOCATE VIRTUAL FUNCTION FOR BASE
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn)// - addr[ return adjustment ]
 {
-    bool retn;                  // - TRUE ==> can directly call *a_vfun
+    bool retb;                  // - true ==> can directly call *a_vfun
     SYMBOL exact_vfun;          // - exact vfun called
 
     exact_vfun = ScopeFindExactVfun( vfun
                                    , scopeForSymType( sym )
                                    , a_adj_this
                                    , a_adj_retn );
+    retb = false;
     if( NULL == exact_vfun ) {
-        retn = FALSE;
     } else if( 0 != *a_adj_retn ) {
-        retn = FALSE;
     } else if( CgBackFuncInlined( exact_vfun ) ) {
         CGFILE* cgfile;
+
         cgfile = CgioLocateAnyFile( exact_vfun );
         DbgVerify( cgfile != NULL, "locatedVfun -- no CGFILE" );
         if( cgfile->u.s.calls_inline ) {
-            retn = FALSE;
         } else if( cgfile->cond_flags != 0 ) {
-            retn = FALSE;
         } else {
             if( cgfile->u.s.state_table && FstabHasStateTable() ) {
-                retn = FALSE;
             } else {
                 *a_vfun = exact_vfun;
-                retn = TRUE;
+                retb = true;
             }
         }
     } else {
         *a_vfun = exact_vfun;
-        retn = TRUE;
+        retb = true;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -533,7 +530,7 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
     SYMBOL vf_this,             // - original symbol (for access)
     target_offset_t vf_offset,  // - offset to vf table ptr
     vindex vf_index,            // - index in vf table
-    bool *is_vcall,             // - addr[ TRUE ==> real virtual call ]
+    bool *is_vcall,             // - addr[ true ==> real virtual call ]
     target_offset_t* a_adj_this,// - addr[ this adjustment ]
     target_offset_t* a_adj_retn,// - addr[ return adjustment ]
     SYMBOL* a_exact_vfun )      // - addr[ exact vfun to be used ]
@@ -547,19 +544,19 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
 
     if( IbpReference( vf_this, &trans, &bound, &offset )
      && locatedVFun( bound, vfun, &act_fun, a_adj_this, a_adj_retn ) ) {
-        *is_vcall = FALSE;
+        *is_vcall = false;
         *a_exact_vfun = act_fun;
         expr = CgComma( this_expr
                       , CgSymbol( act_fun )
                       , CgGetCgType( act_fun->sym_type ) );
     } else {
         vfptr_type = typeVbVfPtr( trans );
-        *is_vcall = TRUE;
+        *is_vcall = true;
         *a_exact_vfun = NULL;
         expr = CgOffsetExpr( this_expr, vf_offset, vfptr_type );
         expr = fetchVbVfPtr( expr
                            , vf_index
-                           , MakeVFTableFieldType( TRUE )
+                           , MakeVFTableFieldType( true )
                            , &vfptr_type );
     }
     return expr;

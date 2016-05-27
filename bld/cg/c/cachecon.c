@@ -38,6 +38,8 @@
 #include "convins.h"
 #include "data.h"
 #include "namelist.h"
+#include "regalloc.h"
+
 
 extern  type_class_def  Unsigned[];
 
@@ -45,7 +47,6 @@ extern  void            SuffixIns(instruction*,instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
 extern  name            *DeAlias(name*);
 extern  void            DoNothing(instruction*);
-extern  conflict_node   *InMemory(conflict_node *);
 extern  bool            IsStackReg(name*);
 
 static  block           *Head;
@@ -137,7 +138,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     int                 num_operands;
 
     tmp_class = tmp_class;
-    change = FALSE;
+    change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             ins_class = Unsigned[ _OpClass( ins ) ];
@@ -146,12 +147,12 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
                 if( ins->operands[i] == cons  ) {
                     if( ins_class == temp->n.name_class ) {
                         ins->operands[i] = temp;
-                        change = TRUE;
+                        change = true;
                     } else {
 #if !( _TARGET & _TARG_AXP ) && ( _TARG_MEMORY & _TARG_LOW_FIRST )
                         if( _IsIntegral( ins_class ) && _IsIntegral( tmp_class ) ) {
                             ins->operands[i] = TempOffset( temp, 0, ins_class );
-                            change = TRUE;
+                            change = true;
                         }
 #endif
                     }

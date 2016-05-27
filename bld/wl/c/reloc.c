@@ -229,7 +229,7 @@ static bool FreeRelocList( reloc_info *list )
             _LnkFree( list->loc.addr );
         }
     }
-    return( FALSE );  /* needed for OS2 generic traversal routines */
+    return( false );  /* needed for OS2 generic traversal routines */
 }
 
 static void FreeRelocSect( section *sect )
@@ -244,14 +244,14 @@ static bool TraverseRelocBlock( reloc_info ** reloclist, unsigned num,
 {
     while( num-- > 0 ) {
         if( fn( *reloclist++ ) )
-            return( TRUE );
+            return( true );
         if( FmtData.type & MK_OS2_FLAT ) {
             if( fn( *reloclist++ ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
@@ -268,7 +268,7 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
         index = OSF_PAGE_COUNT( group->totalsize );
         for( highidx = OSF_RLIDX_HIGH( index ); highidx > 0; --highidx ) {
             if( TraverseRelocBlock( *reloclist, OSF_RLIDX_MAX, fn ) )
-                return( TRUE );
+                return( true );
             reloclist++;
         }
         lowidx = OSF_RLIDX_LOW( index );
@@ -276,7 +276,7 @@ bool TraverseOS2RelocList( group_entry *group, bool (*fn)( reloc_info * ) )
             return( TraverseRelocBlock( *reloclist, OSF_RLIDX_LOW( index ), fn ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void FreeGroupRelocs( group_entry *group )
@@ -376,7 +376,7 @@ bool DumpRelocList( reloc_info *list )
 /********************************************/
 {
     DumpMaxRelocList( &list, 0 );
-    return( FALSE );            /* so traverse works */
+    return( false );            /* so traverse works */
 }
 
 unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_32 size, void *ctx ), void *ctx )
@@ -386,7 +386,7 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_3
     unsigned_32         size;
     unsigned_32         total;
     reloc_info          *list;
-    bool                quit = FALSE;
+    bool                quit = false;
 
     total = 0;
     list = *head;
@@ -448,10 +448,10 @@ static bool SpillRelocList( reloc_info *list )
             _LnkFree( list->loc.addr );
             list->loc.spill = spill;
             list->sizeleft |= RELOC_SPILLED;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool SpillAreas( OVL_AREA *ovl );
@@ -461,12 +461,12 @@ static bool SpillSections( section *sect )
 {
     for( ; sect != NULL; sect = sect->next_sect ) {
         if( SpillRelocList( sect->reloclist ) )
-            return( TRUE );
+            return( true );
         if( SpillAreas( sect->areas ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool SpillAreas( OVL_AREA *ovl )
@@ -474,10 +474,10 @@ static bool SpillAreas( OVL_AREA *ovl )
 {
     for( ; ovl != NULL; ovl = ovl->next_area ) {
         if( SpillSections( ovl->sections ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool SwapOutRelocs( void )
@@ -486,30 +486,30 @@ bool SwapOutRelocs( void )
     group_entry         *group;
 
     if( !( LinkState & FMT_DECIDED ) )
-        return( FALSE );
+        return( false );
     if( FmtData.type & ( MK_OS2_FLAT | MK_PE ) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( TraverseOS2RelocList( group, SpillRelocList ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     } else if( FmtData.type & ( MK_OS2_16BIT | MK_QNX ) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( SpillRelocList( group->g.grp_relocs ) ) {
-                return( TRUE );
+                return( true );
             }
         }
     } else {
         if( SpillRelocList( Root->reloclist ) )
-            return( TRUE );
+            return( true );
         if( SpillAreas( Root->areas ) ) {
-            return( TRUE );
+            return( true );
         }
     }
     if( FmtData.type & MK_QNX ) {
         if( SpillRelocList( FloatFixups ) )
-            return( TRUE );
+            return( true );
         return( SpillRelocList( Root->reloclist ) );
     }
-    return( FALSE );
+    return( false );
 }

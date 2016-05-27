@@ -47,7 +47,7 @@
 #include "font.h"
 #include "segmem.h"
 #include "ismod32.h"
-#include "di386.h"
+#include "di386cli.h"
 #include "listbox.h"
 #include "rcstr.gh"
 #include "ldstr.h"
@@ -115,24 +115,23 @@ extern MODULEENTRY              DTModuleEntry;
 extern HWND                     MainWindow;
 extern WORD                     CharSizeX,CharSizeY;
 extern char                     *AppName;
-extern bool                     WDebug386;
 extern DWORD                    WindowsFlags;
 extern loginfo                  LogInfo;
 extern dumpany                  DumpAny;
 extern HANDLE                   ProgramTask;
 extern int                      MinAddrSpaces;
 extern HWND                     DumpDialogHwnd;
-extern BOOL                     WasFault;
+extern bool                     WasFault32;
 extern bool                     IsWin32App;
 extern WORD                     Win32CS;
 extern DWORD                    Win32InitialEIP;
 extern WORD                     Win32DS;
-extern BOOL                     FaultHandlerEntered;
-extern BOOL                     StatShowSymbols;
+extern bool                     FaultHandlerEntered;
+extern bool                     StatShowSymbols;
 extern char                     DebuggerOpts[128];
 extern int                      DumpHow;
-extern BOOL                     AlwaysRespondToDebugInChar;
-extern BOOL                     AlertOnWarnings;
+extern bool                     AlwaysRespondToDebugInChar;
+extern bool                     AlertOnWarnings;
 extern LBoxHdl                  *ListBox;
 extern WORD                     ExceptionAction;
 
@@ -169,7 +168,7 @@ void GetProfileInfo( void );
 void PutProfileInfo( void );
 void DoLogDialog( HWND );
 void EraseLog( void );
-void MakeLog( BOOL );
+void MakeLog( bool );
 
 /* notify.c */
 extern BOOL __export FAR PASCAL NotifyHandler( WORD, DWORD );

@@ -120,9 +120,9 @@ static void declareParameter(   // DEFINE A FUNCTION PARAMETER
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & DBG_DF ){
-                DwarfSymDebugGenSymbol( sym, TRUE, cgtype == TY_POINTER );
+                DwarfSymDebugGenSymbol( sym, true, cgtype == TY_POINTER );
             }else{
-                SymbolicDebugGenSymbol( sym, TRUE, cgtype == TY_POINTER );
+                SymbolicDebugGenSymbol( sym, true, cgtype == TY_POINTER );
             }
         }
         IbpDefineSym( fctl->handle, sym );
@@ -175,13 +175,13 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
       case CALL_IMPL_C :
       case CALL_IMPL_ELL_CPP :
       case CALL_IMPL_ELL_C :
-      { int index;                  // - parameter index
-        int max_parms;              // - # parameters
-        SYMBOL *psym;               // - addr[ parameter symbol ]
+      { unsigned index;             // - parameter index
+        unsigned max_parms;         // - # parameters
+        SYMBOL *psym1;              // - addr[ parameter symbol ]
         max_parms = VstkDimension( &sym_stack );
-        for( index = 0; index <= max_parms; ++index ) {
-            psym = VstkIndex( &sym_stack, index );
-            declareParameter( *psym );
+        for( index = 0; index < max_parms; ++index ) {
+            psym1 = VstkIndex( &sym_stack, index );
+            declareParameter( *psym1 );
         }
       } break;
     }
@@ -215,7 +215,7 @@ static void declareAuto(        // DECLARE AN AUTO SYMBOL
 {
     CGAutoDecl( (cg_sym_handle)sym, CgTypeSym( sym ) );
     if( SymRequiresDtoring( sym ) ) {
-        SymScope( sym )->u.s.dtor_reqd = TRUE;
+        SymScope( sym )->u.s.dtor_reqd = true;
     }
 }
 
@@ -248,9 +248,9 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                     if( ! SymIsAnonymous( sym ) ) {
                         if( !SymIsTemporary( sym ) ) {
                             if( GenSwitches & DBG_DF ){
-                                DwarfSymDebugGenSymbol( sym, TRUE, FALSE );
+                                DwarfSymDebugGenSymbol( sym, true, false );
                             }else{
-                                SymbolicDebugGenSymbol( sym, TRUE, FALSE );
+                                SymbolicDebugGenSymbol( sym, true, false );
                             }
                         }
                     }
@@ -267,9 +267,9 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                     declareAuto( sym );
                     if( fctl->debug_info && ( GenSwitches & DBG_LOCALS ) ) {
                         if( GenSwitches & DBG_DF ){
-                            DwarfDebugGenSymbol( sym, TRUE );
+                            DwarfDebugGenSymbol( sym, true );
                         }else{
-                            SymbolicDebugGenSymbol( sym, TRUE, FALSE );
+                            SymbolicDebugGenSymbol( sym, true, false );
                         }
                     }
                 }
@@ -283,9 +283,9 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
                 if( SymIsReferenced( sym ) || SymIsInitialized( sym ) ) {
                     if( ! CgDeclSkippableConstObj( sym ) ) {
                         if( GenSwitches & DBG_DF ){
-                            DwarfDebugGenSymbol( sym, TRUE );
+                            DwarfDebugGenSymbol( sym, true );
                         }else{
-                            SymbolicDebugGenSymbol( sym, TRUE, FALSE );
+                            SymbolicDebugGenSymbol( sym, true, false );
                         }
                     }
                 }
@@ -296,7 +296,7 @@ void CgDeclSym(                 // PROCESS SYMBOL IN BLOCK-OPEN SCOPE
         if( fctl->debug_info
          && ( GenSwitches & DBG_LOCALS ) ) {
             if( GenSwitches & (DBG_CV | DBG_DF ) ){
-                DBLocalType( (cg_sym_handle)sym, FALSE );
+                DBLocalType( (cg_sym_handle)sym, false );
             }
         }
         break;
@@ -308,21 +308,21 @@ bool CgDeclSkippableConstObj(   // DETERMINE IF SKIPPABLE CONST OBJ
     SYMBOL sym )                // - symbol
 {
     if( SymAddrTaken( sym ) ) {
-        return( FALSE );
+        return( false );
     }
     if( SymIsAutomatic( sym ) && ( GenSwitches & DBG_LOCALS ) ) {
         // if we are debugging locals; don't skip initialization
-        return( FALSE );
+        return( false );
     }
     if( SymIsConstantInt( sym ) ) {
-        return( TRUE );
+        return( true );
     }
     if( SymIsConstantNoCode( sym ) && ! SymIsReferenced( sym ) ) {
         if( SymIsStaticData( sym ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 

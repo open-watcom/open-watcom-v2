@@ -33,12 +33,12 @@
 typedef  struct name_ctl name_ctl;
 
 typedef struct{
-    bool        (*fn)( void *d, dr_handle dr_sym, const char *name );
+    bool        (*fn)( void *d, drmem_hdl dr_sym, const char *name );
     const char  *name;
     void        *d;
 } name_wlk;
 
 extern name_ctl *InitHashName( void );
 extern void     FiniHashName( name_ctl *ctl );
-extern void     AddHashName( name_ctl *ctl, const char *name, dr_handle sym );
+extern void     AddHashName( name_ctl *ctl, const char *name, drmem_hdl sym );
 extern bool     FindHashWalk( name_ctl *ctl, name_wlk *wlk );

@@ -229,12 +229,12 @@ extern bool CueFind( cue_idx cue, cue_state *ret )
         ret->fno = 0;
         ret->line = cue;
         ret->col = 1;
-        return( TRUE );
+        return( true );
     }
     cue -= PRIMARY_RANGE;
     if( cue < ctl->start[0].cue ) {
         Zoiks( ZOIKS_078 ); /* lower than low */
-        return( FALSE );
+        return( false );
     }
     hi = &ctl->start[1];
     for( blk = ctl->head; blk != NULL; blk = blk->next ) {
@@ -248,7 +248,7 @@ extern bool CueFind( cue_idx cue, cue_state *ret )
         hi = ctl->next;
         if( cue > ctl->state.cue ) { /* high than high */
             Zoiks( ZOIKS_078 );
-            return( FALSE );
+            return( false );
         }
     }
     do {
@@ -256,7 +256,7 @@ extern bool CueFind( cue_idx cue, cue_state *ret )
     } while( ( diff = cue - hi->cue ) < 0 );
     *ret = *hi;
     ret->line += diff;
-    return( TRUE );
+    return( true );
 }
 
 #if 0
@@ -340,7 +340,7 @@ extern void CueMap( cue_ctl *ctl, cue_state *base )
     for( fno = 0; fno <  DBFiles.count; ++fno ) {
         curr_idx = CueFMap( ctl, fno, curr_idx );
     }
-    return( TRUE );
+    return( true );
 }
 #endif
 #if 0
@@ -377,7 +377,7 @@ extern  void    InitDbgInfo( void )
     uint        fno;
 
     SrcFileNoInit();
-    DBNested( FALSE ); /* set nesting */
+    DBNested( false ); /* set nesting */
     SourceCueInit( &LineInfo );
     fno = DBSrcFile( FEAuxInfo( NULL, SOURCE_NAME ) );
 //    idx = CueAdd( fno, 1, 1 );
@@ -453,7 +453,7 @@ extern  void _CGAPI DBGenStMem( cg_sym_handle sym, dbg_loc loc )
     if( _IsModel( DBG_DF ) ) {
         DFGenStatic( sym, loc );
     } else if( _IsModel( DBG_CV ) ) {
-        CVGenStatic( sym, loc, TRUE );
+        CVGenStatic( sym, loc, true );
     } else {
     }
 }
@@ -514,7 +514,7 @@ extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
                 if( _IsModel( DBG_DF ) ) {
                     DFGenStatic( sym, loc );
                 } else if( _IsModel( DBG_CV ) ) {
-                    CVGenStatic( sym, loc, FALSE );
+                    CVGenStatic( sym, loc, false );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
                 } else {
                     WVGenStatic( sym , loc );
@@ -545,7 +545,7 @@ extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
                 loc = DBLocInit();
                 loc = DBLocSym( loc, sym );
             }
-            DBGenSym( sym, loc, FALSE );
+            DBGenSym( sym, loc, false );
             DBLocFini( loc );
         }
     }
@@ -610,7 +610,7 @@ extern  void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
         if( (attr & FE_IMPORT) == 0 ) {
             loc = DBLocInit();
             loc = DBLocSym( loc, sym );
-            DBGenSym( sym, loc, TRUE );
+            DBGenSym( sym, loc, true );
             DBLocFini( loc );
         }
     }
@@ -664,7 +664,7 @@ extern  dbg_block *DoDBBegBlock( int fast_codegen )
     blk = MkBlock();
     if( !fast_codegen ) {
         /*%%%% stick a NOP in the instruction stream, point it at block*/
-        AddBlockInfo( blk, TRUE );
+        AddBlockInfo( blk, true );
     }
     return( blk );
 }
@@ -690,7 +690,7 @@ extern  void    DoDBEndBlock( int fast_codegen )
     if( CurrProc->targ.debug != NULL ) {
         blk = CurrProc->targ.debug->blk;
         if( !fast_codegen ) {
-            AddBlockInfo( blk, FALSE );
+            AddBlockInfo( blk, false );
         }
         CurrProc->targ.debug->blk = blk->parent;
     }

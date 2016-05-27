@@ -32,12 +32,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "rdos.h"
 #include "debug.h"
 #include "cpuglob.h"
 
-#define FALSE   0
-#define TRUE    !FALSE
 
 #define DEBUG_MEMORY_MODEL_FLAT 1
 #define DEBUG_MEMORY_MODEL_16   2
@@ -104,7 +103,7 @@ static void DebugThread( void *Param );
 
 static struct TDebug    *DebugArr[MAX_DEBUG_THREADS];
 static int              ThreadArr[MAX_DEBUG_THREADS]; 
-static int              HasBreak = FALSE;
+static int              HasBreak = false;
 static int              BreakSel;
 static long             BreakOffset;
 static char             SelfKey = 0;
@@ -152,12 +151,13 @@ static void ReadThreadState( struct TDebugThread *obj )
     int ok;
     char str[21];
 
-    ok = FALSE;
+    ok = false;
     
     for( i = 0; i < 256 && !ok; i++ ) {
         RdosGetThreadState( i, &state );
-        if( state.ID == obj->ThreadID )
-            ok = TRUE;
+        if( state.ID == obj->ThreadID ) {
+            ok = true;
+        }
     }
 
     if (ok) {
@@ -202,12 +202,12 @@ static void InitDebugThread( struct TDebugThread *obj )
     obj->ThreadName = 0;
     obj->ThreadList = 0;
 
-    obj->FDebug = FALSE;
-    obj->FWasTrace = FALSE;
+    obj->FDebug = false;
+    obj->FWasTrace = false;
 
-    obj->FHasBreak = FALSE;
-    obj->FHasTrace = FALSE;
-    obj->FHasException = FALSE;
+    obj->FHasBreak = false;
+    obj->FHasTrace = false;
+    obj->FHasException = false;
 }
 
 static void InitProcessDebugThread( struct TDebugThread *obj, struct TCreateProcessEvent *event )
@@ -265,7 +265,7 @@ int HasFaultOccurred( struct TDebugThread *obj )
 
 static void ClearThreadBreak( struct TDebugThread *obj )
 {
-    obj->FHasBreak = FALSE;
+    obj->FHasBreak = false;
 }
 
 static int GetThreadMemoryModel( struct TDebugThread *obj )
@@ -303,24 +303,24 @@ int WriteMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Siz
 
 static void SetupGo( struct TDebugThread *obj )
 {
-    int         update = FALSE;
+    int         update = false;
     Tss         tss;
     opcode_type brk_opcode = 0;
 
-    obj->FDebug = FALSE;
-    obj->FWasTrace = FALSE;
+    obj->FDebug = false;
+    obj->FWasTrace = false;
 
     RdosGetThreadTss( obj->ThreadID, &tss );
     RdosReadThreadMem( obj->ThreadID, tss.cs, tss.eip, (char *)&brk_opcode, sizeof( brk_opcode ) );
 
     if( brk_opcode == BRKPOINT ) {
         tss.eip++;
-        update = TRUE;
+        update = true;
     }
 
     if( ( tss.eflags & TRACE_BIT ) != 0 ) {
         tss.eflags &= ~TRACE_BIT;
-        update = TRUE;
+        update = true;
     }
 
     if( update ) {
@@ -331,12 +331,12 @@ static void SetupGo( struct TDebugThread *obj )
 
 static void SetupTrace( struct TDebugThread *obj )
 {
-    int         update = FALSE;
+    int         update = false;
     Tss         tss;
     opcode_type brk_opcode = 0;
 
-    obj->FDebug = FALSE;
-    obj->FWasTrace = TRUE;
+    obj->FDebug = false;
+    obj->FWasTrace = true;
 
     RdosGetThreadTss( obj->ThreadID, &tss );
 
@@ -344,12 +344,12 @@ static void SetupTrace( struct TDebugThread *obj )
 
     if( brk_opcode == BRKPOINT ) {
         tss.eip++;
-        update = TRUE;
+        update = true;
     }
 
     if( ( tss.eflags & TRACE_BIT ) == 0 ) {
         tss.eflags |= TRACE_BIT;
-        update = TRUE;
+        update = true;
     }
 
     if( update ) {
@@ -424,9 +424,9 @@ static void SetException( struct TDebugThread *obj, struct TExceptionEvent *even
     int         i;
     opcode_type brk_opcode = 0;
 
-    obj->FHasBreak = FALSE;
-    obj->FHasTrace = FALSE;
-    obj->FHasException = FALSE;
+    obj->FHasBreak = false;
+    obj->FHasTrace = false;
+    obj->FHasException = false;
 
     ReadThreadState( obj );
     RdosGetThreadTss( obj->ThreadID, &tss );
@@ -441,101 +441,101 @@ static void SetException( struct TDebugThread *obj, struct TExceptionEvent *even
 
     switch( event->Code ) {
         case 0x80000003:
-            obj->FHasBreak = TRUE;
+            obj->FHasBreak = true;
             break;
 
         case 0x80000004:
-            obj->FHasTrace = TRUE;
+            obj->FHasTrace = true;
             break;
 
         case 0xC0000005:
             obj->FaultText = "Access violation";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000017:
             obj->FaultText = "No memory";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000001D:
             obj->FaultText = "Illegal instruction";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
             
         case 0xC0000025:
             obj->FaultText = "Noncontinuable exception";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000008C:
             obj->FaultText = "Array bounds exceeded";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000094:
             obj->FaultText = "Integer divide by zero";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000095:
             obj->FaultText = "Integer overflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000096:
             obj->FaultText = "Priviliged instruction";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC00000FD:
             obj->FaultText = "Stack overflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000013A:
             obj->FaultText = "Control-C exit";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000008D:
             obj->FaultText = "Float denormal operand";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000008E:
             obj->FaultText = "Float divide by zero";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC000008F:
             obj->FaultText = "Float inexact result";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000090:
             obj->FaultText = "Float invalid operation";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000091:
             obj->FaultText = "Float overflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000092:
             obj->FaultText = "Float stack check";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 0xC0000093:
             obj->FaultText = "Float underflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         default:
             obj->FaultText = "Protection fault";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
     }
 
@@ -571,7 +571,7 @@ static void SetException( struct TDebugThread *obj, struct TExceptionEvent *even
     for( i = 0; i < 8; i++ )
         obj->St[i] = tss.st[i];
 
-    obj->FDebug = TRUE;
+    obj->FDebug = true;
 }
 
 static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptionEvent *event )
@@ -579,9 +579,9 @@ static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptio
     Tss tss;
     int i;
 
-    obj->FHasBreak = FALSE;
-    obj->FHasTrace = FALSE;
-    obj->FHasException = FALSE;
+    obj->FHasBreak = false;
+    obj->FHasTrace = false;
+    obj->FHasException = false;
 
     ReadThreadState( obj );
     RdosGetThreadTss( obj->ThreadID, &tss );
@@ -589,57 +589,57 @@ static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptio
     switch ( event->Vector ) {
         case 0:
             obj->FaultText = "Integer divide by zero";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 1:
             obj->FaultText = "Hardware breakpoint";
-            obj->FHasTrace = TRUE;
+            obj->FHasTrace = true;
             break;
 
         case 3:
             obj->FaultText = "Software breakpoint";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 4:
             obj->FaultText = "Integer overflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 5:
             obj->FaultText = "Array bounds exceeded";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 6:
             obj->FaultText = "Illegal instruction";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 7:
             obj->FaultText = "Float invalid operation";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 10:
             obj->FaultText = "Invalid TSS";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 11:
             obj->FaultText = "Segment not present";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         case 12:
             obj->FaultText = "Stack overflow";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
 
         default:
             obj->FaultText = "Protection fault";
-            obj->FHasException = TRUE;
+            obj->FHasException = true;
             break;
     }
 
@@ -677,7 +677,7 @@ static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptio
     for (i = 0; i < 8; i++)
         obj->St[i] = tss.st[i];
 
-    obj->FDebug = TRUE;
+    obj->FDebug = true;
 }
 
 void WriteRegs( struct TDebugThread *obj )
@@ -734,7 +734,7 @@ static void InitProcessDebugModule( struct TDebugModule *obj, struct TCreateProc
     obj->CodeSel = 0;
     obj->DataSel = 0;
 
-    obj->FNew = FALSE;
+    obj->FNew = false;
 
     if ( SelfKey )
         DebugKey = RdosGetModuleFocusKey( event->Handle );
@@ -752,7 +752,7 @@ static void InitDllDebugModule( struct TDebugModule *obj, struct TLoadDllEvent *
     obj->CodeSel = 0;
     obj->DataSel = 0;
 
-    obj->FNew = TRUE;
+    obj->FNew = true;
 
     ReadModuleName( obj );
 }
@@ -774,7 +774,7 @@ static void InitKernelDebugModule( struct TDebugModule *obj, int Cs )
     else
         obj->Handle = 0;
         
-    obj->FNew = TRUE;
+    obj->FNew = true;
 }
 
 static void FreeDebugModule( struct TDebugModule *obj )
@@ -823,18 +823,18 @@ void InitDebug( struct TDebug *obj, const char *Program, const char *Param, cons
     obj->BreakList = 0;
     obj->WatchList = 0;
 
-    obj->FThreadChanged = FALSE;
-    obj->FModuleChanged = FALSE;
+    obj->FThreadChanged = false;
+    obj->FModuleChanged = false;
     obj->FHandle = 0;
 
     obj->FMemoryModel = DEBUG_MEMORY_MODEL_FLAT;
-    obj->FConfigChange = FALSE;
+    obj->FConfigChange = false;
     
-    obj->FAsyncBreak = FALSE;
+    obj->FAsyncBreak = false;
     obj->FAsyncSel = 0;
     obj->FAsyncOffset = 0;
 
-    obj->FWaitLoad = TRUE;
+    obj->FWaitLoad = true;
 
     RdosCreateThread( DebugThread, "Debug device", obj, 0x4000 );
 }
@@ -996,7 +996,7 @@ int HasThreadChange( struct TDebug *obj )
 
 void ClearThreadChange( struct TDebug *obj )
 {
-    obj->FThreadChanged = FALSE;
+    obj->FThreadChanged = false;
     obj->NewThread = 0;
 }
 
@@ -1007,7 +1007,7 @@ int HasModuleChange( struct TDebug *obj )
 
 void ClearModuleChange( struct TDebug *obj )
 {
-    obj->FModuleChanged = FALSE;
+    obj->FModuleChanged = false;
 }
 
 int HasConfigChange( struct TDebug *obj )
@@ -1017,7 +1017,7 @@ int HasConfigChange( struct TDebug *obj )
 
 void ClearConfigChange( struct TDebug *obj )
 {
-    obj->FConfigChange = FALSE;
+    obj->FConfigChange = false;
 }
 
 struct TDebugThread *GetMainThread( struct TDebug *obj )
@@ -1104,7 +1104,7 @@ int GetNextModule( struct TDebug *obj, int ModuleHandle )
 
     if (rm)
     {
-        rm->FNew = FALSE;
+        rm->FNew = false;
         return Handle;
     }
     else
@@ -1158,7 +1158,7 @@ void UnlockModule( struct TDebug *obj )
 int HasModule( struct TDebug *obj, const char *Name )
 {
     struct TDebugModule *m;
-    int found = FALSE;
+    int found = false;
 
     RdosEnterSection( obj->FSection );
 
@@ -1166,7 +1166,7 @@ int HasModule( struct TDebug *obj, const char *Name )
     while (m && !found)
     {
         if ( !strcmp( Name, m->ModuleName ) )
-            found = TRUE;
+            found = true;
         m = m->Next;    
     }        
     RdosLeaveSection( obj->FSection );
@@ -1183,7 +1183,7 @@ static void UpdateModules( struct TDebug *obj )
     model = GetThreadMemoryModel( obj->CurrentThread );                    
     if (model != obj->FMemoryModel) {
         obj->FMemoryModel = model;
-        obj->FConfigChange = TRUE;
+        obj->FConfigChange = true;
     }
     
     if ( obj->FMemoryModel != DEBUG_MEMORY_MODEL_FLAT ) {
@@ -1192,7 +1192,7 @@ static void UpdateModules( struct TDebug *obj )
             InitKernelDebugModule( m, obj->CurrentThread->Cs );
             if (m->Handle) {
                 InsertModule( obj, m );
-                obj->FModuleChanged = TRUE;
+                obj->FModuleChanged = true;
             }
             else
                 free( m );
@@ -1204,7 +1204,7 @@ static void UpdateModules( struct TDebug *obj )
 int IsBreak( struct TDebug *obj, int Sel, long Offset )
 {
     struct TDebugBreak *b;
-    int ok = FALSE;
+    int ok = false;
     
     RdosEnterSection( obj->FSection );
 
@@ -1213,7 +1213,7 @@ int IsBreak( struct TDebug *obj, int Sel, long Offset )
     while (b && !ok)
     {
         if (b->Sel == Sel && b->Offset == Offset)
-            ok = TRUE;
+            ok = true;
         else
             b = b->Next;
     }
@@ -1226,7 +1226,7 @@ int IsBreak( struct TDebug *obj, int Sel, long Offset )
 int IsWatch( struct TDebug *obj, int Sel, long Offset )
 {
     struct TDebugWatch *w;
-    int ok = FALSE;
+    int ok = false;
     
     RdosEnterSection( obj->FSection );
 
@@ -1235,7 +1235,7 @@ int IsWatch( struct TDebug *obj, int Sel, long Offset )
     while (w && !ok)
     {
         if (w->Sel == Sel && w->Offset == Offset)
-            ok = TRUE;
+            ok = true;
         else
             w = w->Next;
     }
@@ -1250,7 +1250,7 @@ void AddBreak( struct TDebug *obj, int Sel, long Offset, int Hw )
 {
     struct TDebugBreak *newbr;
     struct TDebugBreak *b;
-    int found = FALSE;
+    int found = false;
 
     newbr = (struct TDebugBreak *)malloc( sizeof( struct TDebugBreak ) );
     InitDebugBreak( newbr, Sel, Offset, Hw );    
@@ -1263,7 +1263,7 @@ void AddBreak( struct TDebug *obj, int Sel, long Offset, int Hw )
     if( b ) {
         while( b->Next ) {
             if( b->Sel == Sel && b->Offset == Offset )
-                found = TRUE;
+                found = true;
             b = b->Next;
         }
 
@@ -1312,7 +1312,7 @@ void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size )
 {
     struct TDebugWatch *neww;
     struct TDebugWatch *w;
-    int found = FALSE;
+    int found = false;
 
     neww = (struct TDebugWatch *)malloc( sizeof( struct TDebugWatch ) );
     InitDebugWatch( neww, Sel, Offset, Size );    
@@ -1325,7 +1325,7 @@ void AddWatch( struct TDebug *obj, int Sel, long Offset, int Size )
     if( w ) {
         while( w->Next ) {
             if( w->Sel == Sel && w->Offset == Offset )
-                found = TRUE;
+                found = true;
             w = w->Next;
         }
 
@@ -1431,7 +1431,7 @@ void Trace( struct TDebug *obj )
 
         if ( Instr[0] == 0xF && Instr[1] == 0xB ) {
             Offset += 7;
-            AddBreak( obj, Sel, Offset, TRUE );
+            AddBreak( obj, Sel, Offset, true );
             Go( obj );
             ClearBreak( obj, Sel, Offset );
         } else {
@@ -1451,19 +1451,15 @@ int AsyncGo( struct TDebug *obj, int ms )
         DoGo( obj );
 
         wait = RdosWaitTimeout( obj->UserWait, ms );
-        if ( wait ) {
-            return( TRUE );
-        }
-        else
-            return( FALSE );
+        return( wait != NULL );
     }
-    return( TRUE );
+    return( true );
 }
 
 int AsyncTrace( struct TDebug *obj, int ms )
 {
     char    Instr[2] = {0, 0};
-    int     ok = TRUE;
+    int     ok = true;
     void    *wait;
 
     if( obj->CurrentThread ) {
@@ -1474,12 +1470,12 @@ int AsyncTrace( struct TDebug *obj, int ms )
 
         if ( Instr[0] == 0xF && Instr[1] == 0xB ) {
             BreakOffset += 7;
-            AddBreak( obj, BreakSel, BreakOffset, TRUE );
+            AddBreak( obj, BreakSel, BreakOffset, true );
             ok = AsyncGo( obj, ms );
             if( ok ) {
                 ClearBreak( obj, BreakSel, BreakOffset );
             } else {
-                HasBreak = TRUE;
+                HasBreak = true;
             }
             return( ok );
         } else {
@@ -1487,14 +1483,10 @@ int AsyncTrace( struct TDebug *obj, int ms )
             DoTrace( obj );
 
             wait = RdosWaitTimeout( obj->UserWait, ms );
-            if( wait ) {
-                return( TRUE );
-            }
-            else
-                return( FALSE );
+            return( wait != NULL );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 int AsyncPoll( struct TDebug *obj, int ms )
@@ -1505,11 +1497,11 @@ int AsyncPoll( struct TDebug *obj, int ms )
     if (wait) {
         if( HasBreak ) {
             ClearBreak( obj, BreakSel, BreakOffset );
-            HasBreak = FALSE;
+            HasBreak = false;
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -1517,7 +1509,7 @@ void ExitAsync( struct TDebug *obj )
 {
     if ( obj->FAsyncBreak ) {
         ClearBreak( obj, obj->FAsyncSel, obj->FAsyncOffset );
-        obj->FAsyncBreak = FALSE;
+        obj->FAsyncBreak = false;
     }
 }
 
@@ -1558,8 +1550,8 @@ static void HandleTerminateProcess( struct TDebug *obj, int exitcode )
 
     obj->CurrentThread = 0;
     obj->NewThread = 0;
-    obj->FThreadChanged = TRUE;
-    obj->FModuleChanged = TRUE;
+    obj->FThreadChanged = true;
+    obj->FModuleChanged = true;
 
     RdosLeaveSection( obj->FSection );
 }
@@ -1594,7 +1586,7 @@ static void HandleException( struct TDebug *obj, struct TExceptionEvent *event, 
 
         if ( obj->FWaitLoad )
             ClearThreadBreak( Thread );
-        obj->FWaitLoad = FALSE;
+        obj->FWaitLoad = false;
     }
 
     RdosLeaveSection( obj->FSection );
@@ -1657,7 +1649,7 @@ static void SignalDebugData( struct TDebug *obj )
         case EVENT_CREATE_THREAD:
             RdosGetDebugEventData( obj->FHandle, &cte );
             HandleCreateThread( obj, &cte );
-            obj->FThreadChanged = TRUE;
+            obj->FThreadChanged = true;
             break;
 
         case EVENT_CREATE_PROCESS:
@@ -1667,7 +1659,7 @@ static void SignalDebugData( struct TDebug *obj )
 
         case EVENT_TERMINATE_THREAD:
             HandleTerminateThread( obj, thread );
-            obj->FThreadChanged = TRUE;
+            obj->FThreadChanged = true;
             if( obj->CurrentThread->ThreadID == thread )
                 obj->CurrentThread = 0;
             break;
@@ -1675,20 +1667,20 @@ static void SignalDebugData( struct TDebug *obj )
         case EVENT_TERMINATE_PROCESS:
             RdosGetDebugEventData( obj->FHandle, &ExitCode );
             HandleTerminateProcess( obj, ExitCode);
-            obj->FInstalled = FALSE;
+            obj->FInstalled = false;
             RdosSetSignal( obj->UserSignal );
             break;
 
         case EVENT_LOAD_DLL:
             RdosGetDebugEventData( obj->FHandle, &lde );
             HandleLoadDll( obj, &lde );
-            obj->FModuleChanged = TRUE;
+            obj->FModuleChanged = true;
             break;
 
         case EVENT_FREE_DLL:
             RdosGetDebugEventData( obj->FHandle, &handle );
             HandleFreeDll( obj, handle );
-            obj->FModuleChanged = TRUE;
+            obj->FModuleChanged = true;
             break;
 
         case EVENT_KERNEL:
@@ -1713,9 +1705,9 @@ static void SignalDebugData( struct TDebug *obj )
         }
 
         RdosSetSignal( obj->UserSignal );
-    }
-    else
+    } else {
         RdosContinueDebugEvent( obj->FHandle, thread );
+    }
 }
 
 static void DebugThread( void *Param )
@@ -1725,11 +1717,11 @@ static void DebugThread( void *Param )
     int thread;
     struct TDebug *obj = (struct TDebug *)Param;
 
-    obj->FInstalled = TRUE;
+    obj->FInstalled = true;
 
     CurrModuleHandle = RdosGetModuleHandle();
     SelfKey = RdosGetModuleFocusKey( CurrModuleHandle );    
-    if ( SelfKey != RdosGetFocus() )
+    if( SelfKey != RdosGetFocus() )
         SelfKey = 0;
         
     RdosWaitMilli( 250 );
@@ -1742,13 +1734,15 @@ static void DebugThread( void *Param )
         WaitHandle = RdosCreateWait();
         RdosAddWaitForDebugEvent( WaitHandle, obj->FHandle, obj );
         
-        while( obj->FInstalled )
-            if( RdosWaitForever( WaitHandle ) )
+        while( obj->FInstalled ) {
+            if( RdosWaitForever( WaitHandle ) ) {
                 SignalDebugData( obj );
-
+            }
+        }
         RdosCloseWait( WaitHandle );
-    } else
-        obj->FInstalled = FALSE;
+    } else {
+        obj->FInstalled = false;
+    }
 }
 
 int IsTerminated( struct TDebug *obj )

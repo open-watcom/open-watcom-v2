@@ -291,12 +291,12 @@ static int W3NumRows( a_window *wnd )
 static bool W3GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
 {
     wnd=wnd;
-    if( row >= TheSize ) return( FALSE );
-    if( piece != 0 ) return( FALSE );
+    if( row >= TheSize ) return( false );
+    if( piece != 0 ) return( false );
     line->text = Stuff[ row ];
-    line->tabstop = TRUE;
+    line->tabstop = true;
 //  line->extent = WND_MAX_EXTEND;
-    return( TRUE );
+    return( true );
 }
 
 

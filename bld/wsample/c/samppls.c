@@ -31,7 +31,7 @@
 
 #define WATCOM 1
 #define CMPLR WATCOM
-#define __STKCALL cdecl
+#define __STKCALL __cdecl
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
@@ -50,35 +50,31 @@
 #include "hw386.h"
 #include "dilintf.h"
 #include "dilproto.h"
-#define DEFVARS
 #include "timermod.h"
+#include "timer.h"
+#include "samppls.h"
+
+
+unsigned short          InitialCS;
+unsigned short          InitialSS;
+unsigned char           CGBreak;
+unsigned char           FakeBreak;
+unsigned char           SavedByte;
+unsigned char           XVersion;
 
 static MSB              Mach;
 static SEL_REMAP        SelBlk;
 static PTR386           CommonAddr = { 0, 0 };
-
-unsigned short  InitialCS;
-unsigned short  InitialSS;
-char            CGBreak;
-char            FakeBreak;
-char            SavedByte;
-char            XVersion;
-char            RateChanged;
-
-extern void             GrabVects();
-extern void             ReleVects();
-extern void             ReadRealClk( int *hour, int *min, int *sec );
-extern void             SetBiosClk( int count );
-
+static unsigned char    RateChanged;
 
 unsigned NextThread( unsigned tid )
 {
     return( !tid );
 }
 
-int VersionCheck()
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 void RecordSample( unsigned offset, unsigned short segment )
@@ -90,8 +86,8 @@ void RecordSample( unsigned offset, unsigned short segment )
             CallGraph->pref.tick = CurrTick;
         }
         ++CurrTick;
-        Samples->d.sample.sample[ SampleIndex ].offset = offset;
-        Samples->d.sample.sample[ SampleIndex ].segment = segment;
+        Samples->d.sample.sample[SampleIndex].offset = offset;
+        Samples->d.sample.sample[SampleIndex].segment = segment;
         ++SampleIndex;
         ++SampleCount;
     }
@@ -109,15 +105,15 @@ void RecordSample( unsigned offset, unsigned short segment )
 }
 
 
-void DummyCGraph()
+void DummyCGraph( void )
 {
-    Samples->d.sample.sample[ SampleIndex ].offset = 0;
-    Samples->d.sample.sample[ SampleIndex ].segment = -1;
+    Samples->d.sample.sample[SampleIndex].offset = 0;
+    Samples->d.sample.sample[SampleIndex].segment = -1;
     ++SampleIndex;
 }
 
 
-void GetCommArea()
+void GetCommArea( void )
 {
     if( CommonAddr.selector == 0 ) {    /* can't get the common region yet */
         Comm.cgraph_top = 0;
@@ -131,7 +127,7 @@ void GetCommArea()
     }
 }
 
-void ResetCommArea()
+void ResetCommArea( void )
 {
     if( CommonAddr.selector != 0 ) {    /* reset common variables */
         Comm.pop_no = 0;
@@ -143,7 +139,7 @@ void ResetCommArea()
 }
 
 
-void GetNextAddr()
+void GetNextAddr( void )
 {
     PTR386      addr;
     struct {
@@ -169,14 +165,14 @@ void GetNextAddr()
 static void check( int x )
 {
     if( x != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         MsgFini();
         _exit( -1 );
     }
 }
 
-void StopProg()
+void StopProg( void )
 {
 }
 
@@ -190,11 +186,12 @@ static int bcd2hex( int i )
 }
 
 
-void FixTime( void )
+static void FixTime( void )
 {
     int hour,min,sec,count;
 
-    if( !RateChanged ) return;
+    if( !RateChanged )
+        return;
     ReadRealClk( &hour, &min, &sec );
     hour = bcd2hex( hour );
     min  = bcd2hex( min );
@@ -210,7 +207,6 @@ void FixTime( void )
 
 void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
 {
-
     PTR386      addr;
     char        buff[BSIZE];
     int         len;
@@ -228,7 +224,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     GrabVects();
     FixTime();
     if( dbg_load( prog, NULL, dos_args ) != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
         Output( prog );
         Output( "\r\n" );
         ReleVects();
@@ -247,9 +243,11 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     for( ;; ) {
         check( dbg_go() );
         check( dbg_rdmsb( &Mach ) );
-        if( Mach.msb_event == EV_SLBA ) continue;
+        if( Mach.msb_event == EV_SLBA )
+            continue;
         FixTime();
-        if( Mach.msb_event != EV_BKPT ) break;
+        if( Mach.msb_event != EV_BKPT )
+            break;
         if( FakeBreak || CGBreak ) {
             if( CGBreak ) {
                 RecordCGraph();
@@ -263,14 +261,16 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
             addr.offset = Mach.msb_eip;
             dbg_pwrite( &addr, 1, &SavedByte );
             FakeBreak = 0;
-        } else if(( Mach.msb_edx & 0xffff ) != 0 ) {    /* this is a mark */
+        } else if( (Mach.msb_edx & 0xffff) != 0 ) {    /* this is a mark */
             len = 0;
             addr.selector = Mach.msb_edx & 0xffff;
             addr.offset = Mach.msb_eax;
             for( ;; ) {
-                dbg_pread( &addr, 1, buff+len );
-                if( len == BSIZE ) buff[ len ] = '\0';
-                if( buff[len] == '\0' ) break;
+                dbg_pread( &addr, 1, (unsigned char *)buff + len );
+                if( len == BSIZE )
+                    buff[len] = '\0';
+                if( buff[len] == '\0' )
+                    break;
                 ++len;
                 addr.offset++;
             }
@@ -286,12 +286,12 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     outp( TIMER0, 0 );
     FixTime();
     if( Mach.msb_event <= 16 ) {
-        Output( MsgArray[MSG_SAMPLE_3-ERR_FIRST_MESSAGE] );
-        Output( MsgArray[Exceptions[Mach.msb_event]+MSG_EXCEPT_0-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_3 - ERR_FIRST_MESSAGE] );
+        Output( MsgArray[Exceptions[Mach.msb_event]+MSG_EXCEPT_0 - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
     } else if( Mach.msb_event != EV_TERM ) {
         char buff[10];
-        Output( MsgArray[MSG_SAMPLE_4-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_4 - ERR_FIRST_MESSAGE] );
         Output( itoa( Mach.msb_event, buff, 10 ) );
         Output( "\r\n" );
     }
@@ -315,7 +315,7 @@ void SysParseOptions( char c, char **cmd )
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

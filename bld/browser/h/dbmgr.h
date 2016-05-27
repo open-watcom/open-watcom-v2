@@ -58,7 +58,7 @@ public:
             void            setModule( const char * file,
                                        WCValSList<String> * enabled,
                                        WCValSList<String> * disabled=NULL );
-            void            editModule( const char * f, bool create = FALSE );
+            void            editModule( const char * f, bool create = false );
             Module *        module() { return _module; }
 
 protected:

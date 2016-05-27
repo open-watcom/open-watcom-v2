@@ -133,13 +133,13 @@ static void MarkDead( void *_seg )
         return;
 
     if( seg->iscode ) {
-        seg->isdead = TRUE;
+        seg->isdead = true;
     } else {
         if( FmtData.type & MK_PE ) {
             char *segname = seg->u.leader->segname;
             if( ( strcmp( segname, CoffPDataSegName ) == 0 )
                 || ( strcmp(segname, CoffReldataSegName) == 0 ) ) {
-                seg->isdead = TRUE;
+                seg->isdead = true;
             }
         }
     }
@@ -337,7 +337,7 @@ static void AddArc( dist_arc arc )
 
 static bool NotAnArc( dist_arc arc )
 /**********************************/
-/* return TRUE if this is not an arc in the current module */
+/* return true if this is not an arc in the current module */
 {
     unsigned    index;
     arcdata *   arclist;
@@ -345,10 +345,10 @@ static bool NotAnArc( dist_arc arc )
     arclist = CurrMod->x.arclist;
     for( index = arclist->numarcs; index-- > 0; ) {
         if( arclist->arcs[index].test == arc.test ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void RefDistribSym( symbol * sym )
@@ -393,7 +393,7 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
 {
     if( ( sym->p.seg == NULL )
         || ( ( sym->u.d.ovlstate & OVL_VEC_MASK ) != OVL_UNDECIDED ) ) {
-        return( TRUE );
+        return( true );
     }
 /*
  * at this point, we know it has already been defined, but does not have an
@@ -401,9 +401,9 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
 */
     if( LowestAncestor( sym_ovlnum, SectOvlTab[ ovlnum ] ) != sym_ovlnum ) {
         Vectorize( sym );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static void DoRefGraph( unsigned_16 ovlnum, mod_entry * mod )

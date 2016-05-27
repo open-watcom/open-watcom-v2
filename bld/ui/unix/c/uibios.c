@@ -50,7 +50,7 @@ static const char       *UITermType = NULL; /* global so that the debugger can g
 
 bool UIAPI uiset80col( void )
 {
-    return( TRUE );
+    return( true );
 }
 
 unsigned UIAPI uiclockdelay( unsigned milli )

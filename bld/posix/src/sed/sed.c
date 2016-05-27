@@ -53,9 +53,9 @@ static char     *loc2;                  /* Immediately after advance() completin
 static char     *locs;                  /* match() sets this as a backtrack backstop */
 
                                         /* command-logic flags */
-static bool     lastline = FALSE;       /* do-line flag */
-static bool     jump = FALSE;           /* jump to cmd's link address if set */
-static bool     delete = FALSE;         /* delete command flag */
+static bool     lastline = false;       /* do-line flag */
+static bool     jump = false;           /* jump to cmd's link address if set */
+static bool     delete = false;         /* delete command flag */
 
                                         /* tagged-pattern tracking */
 static char     *bracend[MAXTAGS+1];    /* tagged pattern start pointers */
@@ -105,7 +105,7 @@ void execute( const char *file )        /* name of text source file to filter */
             }
             return;
         }
-        jump = FALSE;
+        jump = false;
         spend = execp;
                                         /* compiled commands execute loop */
         for( ipc = cmds; ipc->command != 0; ipc++ ) {
@@ -118,7 +118,7 @@ void execute( const char *file )        /* name of text source file to filter */
                 break;                  /* don't exec rest of compiled cmds */
 
             if( jump ) {                /* if jump set, follow cmd's link */
-                jump = FALSE;
+                jump = false;
                 if( (ipc = ipc->u.link) == NULL ) {
                     break;
                 }
@@ -134,7 +134,7 @@ void execute( const char *file )        /* name of text source file to filter */
 
         readout();                      /* emit any append text */
 
-        delete = FALSE;                 /* clear delete flag; get next cmd */
+        delete = false;                 /* clear delete flag; get next cmd */
     }
 }
 
@@ -155,14 +155,14 @@ static bool selected( sedcmd *ipc )
         else if( *p2 == CLNUM ) {
             c = p2[1];
             if( lnum > linenum[c] ) {
-                ipc->flags.inrange = FALSE;
+                ipc->flags.inrange = false;
                 return( allbut );
             }
             if( lnum == linenum[c] ) {
-                ipc->flags.inrange = FALSE;
+                ipc->flags.inrange = false;
             }
-        } else if( match( p2, FALSE, FALSE ) ) {
-            ipc->flags.inrange = FALSE;
+        } else if( match( p2, false, false ) ) {
+            ipc->flags.inrange = false;
         }
     } else if( *p1 == CEND ) {
         if( !lastline ) {
@@ -173,11 +173,11 @@ static bool selected( sedcmd *ipc )
         if( lnum != linenum[c] )
             return( allbut );
         if( p2 ) {
-            ipc->flags.inrange = TRUE;
+            ipc->flags.inrange = true;
         }
-    } else if( match( p1, FALSE, FALSE ) ) {
+    } else if( match( p1, false, false ) ) {
         if( p2 )
-            ipc->flags.inrange = TRUE;
+            ipc->flags.inrange = true;
     } else {
         return( allbut );
     }
@@ -205,7 +205,7 @@ static bool match(
 
     if( gf ) {
         if( *expbuf )
-            return( FALSE );
+            return( false );
         p1 = linebuf;
         p2 = genbuf;
         while( ( *p1++ = *p2++ ) != 0 ) ;
@@ -219,7 +219,7 @@ static bool match(
     if( *p2++ ) {
         loc1 = p1;
         if( *p2 == CCHR && p2[1] != *p1 ) /* 1st char is wrong */
-            return( FALSE );            /*   so fail */
+            return( false );            /*   so fail */
         return( advance( p1, p2 ) );    /* else try to match rest */
     }
                                         /* literal 1st character quick check */
@@ -232,7 +232,7 @@ static bool match(
                 }
             }
         } while( *p1++ );
-        return( FALSE );                /* didn't find that first char */
+        return( false );                /* didn't find that first char */
     }
                                         /* else try unanchored pattern match */
     do {
@@ -241,7 +241,7 @@ static bool match(
         }
     } while( *p1++ );
                                         /* didn't match either way */
-    return( FALSE );
+    return( false );
 }
 
 /* attempt to advance match pointer by one pattern element */
@@ -261,28 +261,28 @@ static bool advance(
         switch( *ep++ ) {
         case CCHR:                      /* literal character */
             if( *ep++ != *lp++ )        /* if chars unequal */
-                return( FALSE );        /* return false */
+                return( false );        /* return false */
             break;                      /* matched */
 
         case CDOT:                      /* anything but NUL */
             if( *lp++ == 0 )            /* first NUL is at EOL */
-                return( FALSE );        /* return false */
+                return( false );        /* return false */
             break;                      /* matched */
 
         case CNL:                       /* start-of-line */
         case CDOL:                      /* end-of-line */
             if( *lp != 0 )              /* found that first NUL? */
-                return( FALSE );        /* return false */
+                return( false );        /* return false */
             break;                      /* matched */
 
         case CEOF:                      /* end-of-address mark */
             loc2 = lp;                  /* set second loc */
-            return( TRUE );             /* return true */
+            return( true );             /* return true */
 
         case CCL:                       /* a closure */
             c = *lp++;
             if( !TESTCHARSET( ep, c ) ) /* is char in set? */
-                return( FALSE );        /* return false */
+                return( false );        /* return false */
             ep += CHARSETSIZE;          /* skip rest of bitmask */
             break;                      /*   and keep going */
 
@@ -298,7 +298,7 @@ static bool advance(
             bbeg = brastart[(int)*ep];
             ct = bracend[(int)*ep++] - bbeg;
             if( !memeql( bbeg, lp, ct ) )
-                return( FALSE );        /* return false */
+                return( false );        /* return false */
             lp += ct;
             break;                      /* matched */
 
@@ -313,10 +313,10 @@ static bool advance(
 
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
-                    return( TRUE );
+                    return( true );
                 lp -= ct;
             }
-            return( FALSE );
+            return( false );
 
         case CDOT | STAR:               /* match .* */
             curlp = lp;                 /* save closure start loc */
@@ -351,19 +351,19 @@ static bool advance(
                         if( lp == locs )
                             break;
                         if( advance( lp, ep ) )
-                            return( TRUE );
+                            return( true );
                     } while( lp-- > curlp );
-                    return( FALSE );
+                    return( false );
             }
 
             do {
                 if( *lp == c ) {
                     if( advance( lp, ep ) ) {
-                        return( TRUE );
+                        return( true );
                     }
                 }
             } while( lp-- > curlp );
-            return( FALSE );
+            return( false );
 
         default:
             fprintf( stderr, "sed: RE error, %o\n", *--ep );
@@ -372,7 +372,7 @@ static bool advance(
         case CBRA | STAR:               /* start of starred tagged pattern */
             {
                 int const       tagindex = *ep;
-                bool            matched = FALSE;
+                bool            matched = false;
 
                 curlp = lp;                 /* save closure start loc */
                 ct = ep[1];
@@ -380,7 +380,7 @@ static bool advance(
                 ep++;
                 while( advance( brastart[tagindex] = bracend[tagindex], ep+1 ) && bracend[tagindex] > brastart[tagindex] )
                     if( advance( bracend[tagindex], ep + ct ) ) { /* Try to match RE after \(...\) */
-                        matched = TRUE;          /* Remember greediest match */
+                        matched = true;          /* Remember greediest match */
                         bbeg = brastart[tagindex];
                         tep = bracend[tagindex];
                     }
@@ -388,7 +388,7 @@ static bool advance(
                 if( matched ) {                  /* Did we match RE after \(...\) */
                     brastart[tagindex] = bbeg;    /* Set details of match */
                     bracend[tagindex] = tep;
-                    return( TRUE );
+                    return( true );
                 }
 
                 return( advance( bracend[tagindex], ep + ct ) ); /* Zero matches */
@@ -397,7 +397,7 @@ static bool advance(
         case CBRA | MTYPE:              /* \(...\)\{m,n\} WFB */
             {
                 int const       tagindex = *ep;
-                int             matched = FALSE;
+                int             matched = false;
 
                 curlp = lp;             /* save closure start loc */
                 ct = ep[1];
@@ -407,7 +407,7 @@ static bool advance(
                 while( i1 && advance( lp, ep+2 ) && bracend[tagindex] > lp )
                     brastart[tagindex] = lp, lp = bracend[tagindex], i1--;
                 if( i1 )
-                    return( FALSE );
+                    return( false );
                 if( !i2 )
                     return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
                 if( i2 == 0xFF )
@@ -415,7 +415,7 @@ static bool advance(
 
                 while( advance( brastart[tagindex] = bracend[tagindex], ep+2 ) && bracend[tagindex] > brastart[tagindex] && i2 )
                     if( i2--, advance( bracend[tagindex], ep + ct + 1 ) ) { /* Try to match RE after \(...\) */
-                        matched = TRUE; /* Remember greediest match */
+                        matched = true; /* Remember greediest match */
                         bbeg = brastart[tagindex];
                         tep = bracend[tagindex];
                     }
@@ -423,11 +423,11 @@ static bool advance(
                 if( matched ) {         /* Did we match RE after \(...\) */
                     brastart[tagindex] = bbeg; /* Set details of match */
                     bracend[tagindex] = tep;
-                    return( TRUE );
+                    return( true );
                 }
 
                 if( i1 )
-                    return( FALSE );
+                    return( false );
                 return( advance( bracend[tagindex], ep + ct + 1 ) ); /* Zero matches */
             }
 
@@ -437,7 +437,7 @@ static bool advance(
             while( c == *lp && i1 )
                 lp++, i1--;
             if( i1 )
-                return( FALSE );
+                return( false );
             if( !i2 )
                 break;
             if( i2 == 0xFF )
@@ -450,14 +450,14 @@ static bool advance(
         case CKET | STAR:               /* match \(..\)* */
         case CKET | MTYPE:              /* match \(..\)\{...\} */
             bracend[(int)*ep] = lp;     /* mark it */
-            return( TRUE );
+            return( true );
 
         case CDOT | MTYPE:              /* match .\{...\} */
             i1 = *(unsigned char *)ep++, i2 = *(unsigned char *)ep++;
             while( *lp && i1 )
                 lp++, i1--;
             if( i1 )
-                return( FALSE );
+                return( false );
             if( !i2 )
                 break;
             if( i2 == 0xFF )
@@ -475,7 +475,7 @@ static bool advance(
             while( c = *lp, TESTCHARSET( tep, c ) && i1 )
                 lp++, i1--;
             if( i1 )
-                return( FALSE );
+                return( false );
             if( !i2 )
                 break;
             if( i2 == 0xFF )
@@ -492,7 +492,7 @@ static bool advance(
             while( memeql( bbeg, lp, ct ) && i1 )
                 lp += ct, i1--;
             if( i1 )
-                return( FALSE );
+                return( false );
             if( !i2 )
                 break;
             if( i2 == 0xFF )
@@ -502,10 +502,10 @@ static bool advance(
                 lp+= ct, i2--;
             while( lp >= curlp ) {
                 if( advance( lp, ep ) )
-                    return( TRUE );
+                    return( true );
                 lp -= ct;
             }
-            return( FALSE );
+            return( false );
 
         } /* switch( *ep++ ) */
     }
@@ -516,14 +516,14 @@ static bool substitute( sedcmd const *ipc ) /* ptr to s command struct */
 {
     int fcnt = ipc->flags.nthone;
 
-    if( !match( ipc->u.lhs, FALSE, FALSE ) ) /* if no match */
-        return( FALSE );                /* command fails */
+    if( !match( ipc->u.lhs, false, false ) ) /* if no match */
+        return( false );                /* command fails */
 
     if( fcnt ) {
-        while( --fcnt > 0 && *loc2 && match( ipc->u.lhs, FALSE, TRUE ) )
+        while( --fcnt > 0 && *loc2 && match( ipc->u.lhs, false, true ) )
             ;
         if( fcnt != 0 ) {
-            return( FALSE );            /* command fails */
+            return( false );            /* command fails */
         }
     }
 
@@ -531,11 +531,11 @@ static bool substitute( sedcmd const *ipc ) /* ptr to s command struct */
 
     if( ipc->flags.global ) {           /* if global flag enabled */
         /* cycle through possibles */
-        while( *loc2 && match( ipc->u.lhs, TRUE, FALSE ) ) {
+        while( *loc2 && match( ipc->u.lhs, true, false ) ) {
             dosub( ipc->rhs );          /* so substitute */
         }
     }
-    return( TRUE );                     /* we succeeded */
+    return( true );                     /* we succeeded */
 }
 
 /* generate substituted right-hand side (of s command) */
@@ -655,7 +655,7 @@ static void listto(
 /* execute compiled command pointed at by ipc */
 static void command( sedcmd *ipc )
 {
-    static bool     didsub = FALSE;     /* true if last s succeeded */
+    static bool     didsub = false;     /* true if last s succeeded */
     static char     holdsp[MAXHOLD];    /* the hold space */
     static char     *hspend = holdsp;   /* hold space end pointer */
     register char   *p1;
@@ -670,13 +670,13 @@ static void command( sedcmd *ipc )
         break;
 
     case CCMD:                          /* change pattern space */
-        delete = TRUE;
+        delete = true;
         if( !ipc->flags.inrange || lastline )
             printf( "%s\n", ipc->u.lhs );
         break;
 
     case DCMD:                          /* delete pattern space */
-        delete = TRUE;
+        delete = true;
         break;
 
     case CDCMD:                         /* delete a line in pattern space */
@@ -686,8 +686,8 @@ static void command( sedcmd *ipc )
             return;
         while( ( *p2++ = *p1++ ) != 0 ) ;
         spend = p2 - 1;
-        delete = TRUE;
-        jump = TRUE;
+        delete = true;
+        jump = true;
         break;
 
     case EQCMD:                         /* show current line number */
@@ -738,7 +738,7 @@ static void command( sedcmd *ipc )
         break;
 
     case BCMD:                          /* branch to label */
-        jump = TRUE;
+        jump = true;
         break;
 
     case LCMD:                          /* list text */
@@ -751,7 +751,7 @@ static void command( sedcmd *ipc )
         readout();                      /* do any pending a, r commands */
         if( ( execp = getinpline( linebuf ) ) == NULL ) {
             pending = ipc;
-            delete = TRUE;
+            delete = true;
             break;
         }
         spend = execp;
@@ -763,7 +763,7 @@ static void command( sedcmd *ipc )
         if( ( execp = getinpline( spend ) ) == NULL ) {
             *--spend = '\0';            /* Remove '\n' added for new line */
             pending = ipc;
-            delete = TRUE;
+            delete = true;
             break;
         }
         spend = execp;
@@ -813,8 +813,8 @@ static void command( sedcmd *ipc )
     case CTCMD:                         /* branch on last s failed */
         if( didsub == ( ipc->command == CTCMD ) )
             break;                      /* no branch if last s failed, else */
-        didsub = FALSE;
-        jump = TRUE;                    /*  set up to jump to assoc'd label */
+        didsub = false;
+        jump = true;                    /*  set up to jump to assoc'd label */
         break;
 
     case CWCMD:                         /* write one line from pattern space */
@@ -893,11 +893,11 @@ static char *getinpline( register char *buf )  /* where to send the input */
         return( buf );                  /* return ptr to terminating null */
     }
     if( eargc == 0 )                    /* if no more args */
-        lastline = TRUE;                /*    set a flag */
+        lastline = true;                /*    set a flag */
     return( NULL );
 }
 
-/* return TRUE if *a... == *b... for count chars, FALSE otherwise */
+/* return true if *a... == *b... for count chars, false otherwise */
 static bool memeql(
     register char const *a,
     register char const *b,
@@ -905,10 +905,10 @@ static bool memeql(
 {
     while( count-- ) {                  /* look at count characters */
         if( *a++ != *b++ ) {            /* if any are nonequal   */
-            return( FALSE );            /*    return FALSE for false */
+            return( false );            /*    return false for false */
         }
     }
-    return( TRUE );                     /* compare succeeded */
+    return( true );                     /* compare succeeded */
 }
 
 /* write file indicated by r command to output */

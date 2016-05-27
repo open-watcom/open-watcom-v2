@@ -47,7 +47,7 @@ static bool WorthAConversion( name *temp )
 */
 {
     temp = temp;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -107,7 +107,7 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
 static bool ConvertInsToInt( instruction *ins, name *temp )
 /**********************************************************
 
-    Convert ins to an integer instruction if "temp" is involved. Return TRUE
+    Convert ins to an integer instruction if "temp" is involved. Return true
     if we changed something.
 */
 {
@@ -118,29 +118,29 @@ static bool ConvertInsToInt( instruction *ins, name *temp )
             ins->head.opcode = OP_CONVERT;
             ins->base_type_class = SW;
             ins->table = NULL;
-            return( TRUE );
+            return( true );
         }
         if( ins->result == temp ) {
             ins->head.opcode = OP_CONVERT;
             ins->table = NULL;
             ins->type_class = SW;
-            return( TRUE );
+            return( true );
         }
     } else {
         for( i = ins->num_operands; i-- > 0; ) {
             if( ins->operands[i] == temp ) {
                 ins->type_class = SW;
                 ConvertOtherOperands( ins, temp );
-                return( TRUE );
+                return( true );
             }
         }
         if( ins->result == temp ) {
             ins->type_class = SW;
             ConvertOtherOperands( ins, temp );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -177,7 +177,7 @@ static bool ConvertToInt( name *temp )
     type_class_def      class;
     bool                change;
 
-    change = FALSE;
+    change = false;
     temp->n.name_class = SW;
     temp->n.size = 4;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -200,20 +200,20 @@ static bool ConvertIfPossible( name *temp )
 */
 {
     if( ( temp->v.usage & USE_ADDRESS|USE_MEMORY|VAR_VOLATILE|NEEDS_MEMORY ) ) {
-        return( FALSE );
+        return( false );
     }
-    if( temp->t.temp_flags & ALIAS ) return( FALSE );
-    if( temp->t.alias != temp ) return( FALSE );
+    if( temp->t.temp_flags & ALIAS ) return( false );
+    if( temp->t.alias != temp ) return( false );
     switch( temp->n.name_class ) {
     case I1:
     case I2:
         return( ConvertToInt( temp ) );
     case U1:
     case U2:
-        if( !WorthAConversion( temp ) ) return( FALSE );
+        if( !WorthAConversion( temp ) ) return( false );
         return( ConvertToInt( temp ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -226,7 +226,7 @@ extern bool CharsAndShortsToInts( void )
     name        *temp;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         change |= ConvertIfPossible( temp );
     }

@@ -48,13 +48,11 @@
 #include "arutls.h"
 #include "downscan.h"
 #include "dsname.h"
+#include "fmtcnvt.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-
-extern  int             FmtS2I(char *,int,bool,intstar4 *,bool,int *);
-extern  int             FmtS2F(char *,int,int,bool,int,int,reallong *,bool,int *,bool);
 
 /* Forward declarations */
 static  void    ConstBase( uint base );
@@ -87,7 +85,7 @@ static  void    IntC( void ) {
 
     /* If OPT_SHORT is enabled, then default ints are 2 bytes, not 4 */
     if( Options & OPT_SHORT ) {
-        if( FmtS2I( CITNode->opnd, CITNode->opnd_size, FALSE, &CITNode->value.intstar4, FALSE, NULL ) != INT_OK ) {
+        if( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &CITNode->value.intstar4, false, NULL ) != INT_OK ) {
             // don't issue an overflow for -2147483648
             // but we need to be careful since we do want an
             // overflow for I - 2147483648
@@ -108,7 +106,7 @@ static  void    IntC( void ) {
         CnvTo( CITNode, FT_INTEGER_2, TypeSize( FT_INTEGER_2 ) );
 
     } else {
-        if( FmtS2I( CITNode->opnd, CITNode->opnd_size, FALSE, &CITNode->value.intstar4, FALSE, NULL ) != INT_OK ) {
+        if( FmtS2I( CITNode->opnd, CITNode->opnd_size, false, &CITNode->value.intstar4, false, NULL ) != INT_OK ) {
             // don't issue an overflow for -2147483648
             // but we need to be careful since we do want an
             // overflow for I - 2147483648
@@ -131,12 +129,11 @@ static  bool    CnvFloat( itnode *cit, int prec ) {
     bool        ext;
 
     ext = ( Options & OPT_EXTEND_REAL ) != 0;
-    if( FmtS2F( cit->opnd, cit->opnd_size, 0, FALSE, 0, prec,
-                &cit->value.dble, FALSE, NULL, ext ) != FLT_OK ) {
+    if( FmtS2F( cit->opnd, cit->opnd_size, 0, false, 0, prec, &cit->value.extended, false, NULL, ext ) != FLT_OK ) {
         OpndErr( CN_FLOAT );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -223,11 +220,11 @@ static  bool    Number( void ) {
 
     if( CITNode->opn.ds == DSOPN_PHI ) {
         AdvanceITPtr();
-        if( !RecPlus() && !RecMin() ) return( FALSE );
+        if( !RecPlus() && !RecMin() ) return( false );
     }
-    if( CITNode->opn.ds < DSOPN_INT ) return( FALSE );
+    if( CITNode->opn.ds < DSOPN_INT ) return( false );
     AdvanceITPtr();
-    return( TRUE );
+    return( true );
 }
 
 
@@ -235,9 +232,9 @@ static  bool    Complex( void ) {
 //=========================
 
     if( Number() && RecComma() && Number() && RecCloseParen() ) {
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -446,7 +443,7 @@ void    GetIntConst( void ) {
 void    DownScan( void ) {
 //==================
 
-    AError = FALSE;
+    AError = false;
     BkLink = NULL;
     FieldNode = NULL;
     for(;;) {
@@ -455,6 +452,8 @@ void    DownScan( void ) {
         }
         DSTable[ CITNode->opn.ds ]();
         MoveDown();
-        if( RecTrmOpr() ) break;
+        if( RecTrmOpr() ) {
+            break;
+        }
     }
 }

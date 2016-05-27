@@ -213,7 +213,7 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
     int                 fileType;
     char *              newfilename;
     char *              tempfilename;
-    bool                quotes_found = FALSE;
+    bool                quotes_found = false;
 
     filename = GetNextFile( &fileType, TYPE_LIB_FILE, TYPE_OBJ_FILE, TYPE_INVALID_FILE );
     if( filename != NULL ) {
@@ -238,7 +238,7 @@ static void get_library(OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
                 newfilename = ReallocMem( filename, strlen( filename ) + 4 );
                 if( *newfilename == '"' ) {
                     tempfilename = newfilename + 1;                     /* skip leading " */
-                    quotes_found = TRUE;
+                    quotes_found = true;
                 } else {
                     tempfilename = newfilename;
                 }
@@ -304,7 +304,7 @@ static char *VerifyDot( char *filename )
     char *              newfilename;
     char *              tempfilename;
     char *              filecopy;
-    bool                quotes_found = FALSE;
+    bool                quotes_found = false;
 
     filecopy = DupStrMem(filename);
     if( strchr( filename, '.' ) == NULL ) {
@@ -313,7 +313,7 @@ static char *VerifyDot( char *filename )
         if( *newfilename == '"' ) {
             tempfilename = newfilename + 1;                     /* skip leading " */
             tempfilename[strlen( tempfilename ) - 1] = '\0';    /* smite trailing " */
-            quotes_found = TRUE;
+            quotes_found = true;
         } else {
             tempfilename = newfilename;
         }
@@ -400,8 +400,8 @@ static void del_string( OPT_STRING **p )
 /*
  * Create the '.exp' file
  */
-void CreateExp( OPT_STORAGE *cmdOpts, char * name )
-/*************************************************/
+static void CreateExp( OPT_STORAGE *cmdOpts, char * name )
+/********************************************************/
 {
     char *              newstr;
     OPT_STRING *        optStr;

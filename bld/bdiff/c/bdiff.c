@@ -52,7 +52,7 @@ static const char   *SyncString = NULL;
 
 static char         *newName;
 
-void Usage( const char *name )
+static void Usage( const char *name )
 {
     char msgbuf[MAX_RESOURCE_SIZE];
     int i;
@@ -70,7 +70,7 @@ void Usage( const char *name )
     exit( EXIT_FAILURE );
 }
 
-algorithm ParseArgs( int argc, char **argv )
+static algorithm ParseArgs( int argc, char **argv )
 {
     char        **arg;
     char        *curr;

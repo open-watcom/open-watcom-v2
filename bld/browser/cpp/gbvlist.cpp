@@ -59,8 +59,8 @@ public:
                      GBVListPage( SearchContext * ctxt, WVList * list );
                     ~GBVListPage();
 
-    bool            operator==( const GBVListPage & ) const { return FALSE; }
-    bool            operator==( WObject const & ) const { return FALSE; }
+    bool            operator==( const GBVListPage & ) const { return false; }
+    bool            operator==( WObject const & ) const { return false; }
 
     SearchContext * _context;
     WVList *        _symbols;
@@ -89,13 +89,13 @@ GBVListPage::~GBVListPage()
 }
 
 GlobalViewList::GlobalViewList( const char * text )
-            : HotWindowList( text, TRUE,
+            : HotWindowList( text, true,
                              WBRWinStyleDefault
                                 | (WStyleVScroll | WStyleVRows )
                                 | WStyleVRows
                                 | WStyleVScrollEvents
                                 | WStyleHScrollAll )
-            , _full( FALSE )
+            , _full( false )
 //-------------------------------------------------------------------
 {
     _findFilter = new KeySymbol;
@@ -127,7 +127,7 @@ bool GlobalViewList::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_LIST_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GlobalViewList::reallyClose()
@@ -135,21 +135,21 @@ bool GlobalViewList::reallyClose()
 {
     viewManager()->viewDying( this );
 
-    return TRUE;
+    return true;
 }
 
 bool GlobalViewList::gettingFocus( WWindow * )
 //--------------------------------------------
 {
     viewManager()->eventOccured( VEGettingFocus, this );
-    return FALSE;
+    return false;
 }
 
 bool GlobalViewList::losingFocus( WWindow * )
 //-------------------------------------------
 {
     viewManager()->eventOccured( VELosingFocus, this );
-    return FALSE;
+    return false;
 }
 
 bool GlobalViewList::paint()
@@ -163,7 +163,7 @@ bool GlobalViewList::paint()
         dev.open( this );
         dev.drawText( WPoint(0,0), "No symbols found with current query" );
         dev.close();
-        return TRUE;
+        return true;
     }
 }
 
@@ -175,7 +175,7 @@ void GlobalViewList::event( ViewEvent ve, View * view )
             int             i;
             int             maxRows = getRows() + _topIndex;
             DetailView *    dtv = (DetailView *) view;
-            dr_handle       drhdl = dtv->symHandle();
+            drmem_hdl       drhdl = dtv->symHandle();
 
             for( i = _topIndex; i < maxRows; i += 1 ) {
                 Symbol * sym = getSymbol( i );
@@ -227,7 +227,7 @@ void GlobalViewList::setMenus( MenuManager * mgr )
         mgr->registerForMenu( this, ListMenus[ i ] );
     }
 
-    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+    menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
 
     changed( NULL );    // disable menus
 }
@@ -300,11 +300,11 @@ void GlobalViewList::findFirst()
 
         if( sym == NULL ) {
             errMessage( "Matching symbol not found" );
-            menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+            menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
             _lastFound = -1;
         } else {
             select( _lastFound );
-            menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), TRUE );
+            menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), true );
         }
     }
 }
@@ -326,7 +326,7 @@ void GlobalViewList::findNext()
 
     if( sym == NULL ) {
         errMessage( "No more matching symbols" );
-        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), FALSE );
+        menuManager()->enableMenu( MIMenuID(MMLocate,LMFindNext), false );
         _lastFound = -1;
     } else {
         select( _lastFound );
@@ -383,7 +383,7 @@ Symbol * GlobalViewList::getSymbol( int index )
             _pages->add( new GBVListPage( ctxt, list ) );
 
             if( ctxt == NULL ) {
-                _full = TRUE;
+                _full = true;
             }
         }
 
@@ -421,7 +421,7 @@ void GlobalViewList::reLoad()
 //---------------------------
 {
     _pages->deleteContents();
-    _full = FALSE;
+    _full = false;
     _topIndex = 0;
     _selected = -1;
     reset();
@@ -452,11 +452,11 @@ void GlobalViewList::changed( WWindow * )
 //---------------------------------------
 {
     int      sel = selected();
-    bool     enable = FALSE;
+    bool     enable = false;
     Symbol * sym = getSymbol( sel );
 
     if( sym ) {
-        enable = TRUE;
+        enable = true;
     }
 
     menuManager()->enableMenu( MIMenuID( MMDetail, DMDetail ), enable );

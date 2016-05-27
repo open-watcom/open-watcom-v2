@@ -38,12 +38,12 @@
 #include "sample.h"
 #include "smpstuff.h"
 #include "wmsg.h"
-#define DEFVARS
 #include "timermod.h"
 #include "rsi1632.h"
 
-TSF32   Proc;
-byte    Break;
+
+static TSF32   Proc;
+static byte    Break;
 
 static seg_offset       CommonAddr = { 0, 0 };
 
@@ -52,12 +52,12 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
-int VersionCheck( void )
+bool VersionCheck( void )
 {
-    return( TRUE );
+    return( true );
 }
 
-void RecordSample( unsigned long offset, unsigned short segment )
+static void RecordSample( unsigned long offset, unsigned short segment )
 {
     if( InsiderTime == 1 && SamplerOff == 0 ) {
         LastSampleIndex = SampleIndex;
@@ -68,8 +68,8 @@ void RecordSample( unsigned long offset, unsigned short segment )
             }
         }
         ++CurrTick;
-        Samples->d.sample.sample[ SampleIndex ].offset = offset;
-        Samples->d.sample.sample[ SampleIndex ].segment = segment;
+        Samples->d.sample.sample[SampleIndex].offset = offset;
+        Samples->d.sample.sample[SampleIndex].segment = segment;
         ++SampleIndex;
         ++SampleCount;
         if( CallGraphMode ) {
@@ -160,7 +160,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
         error_num = D32DebugLoad( prog, buff, &Proc );
     }
     if( error_num != 0 ) {
-        Output( MsgArray[MSG_SAMPLE_2-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
         Output( prog );
         Output( "\r\n" );
         MsgFini();
@@ -194,8 +194,10 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
                 if( rsi_addr32_check( where.offset, where.segment, 1, NULL ) != MEMBLK_VALID )
                     break;
                 D32DebugRead( where.offset, where.segment, 0, &buff[len], 1 );
-                if( len == BSIZE ) break;
-                if( buff[len] == '\0' ) break;
+                if( len == BSIZE )
+                    break;
+                if( buff[len] == '\0' )
+                    break;
                 len++;
                 where.offset++;
             }
@@ -214,8 +216,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     }
     D32UnHookTimer();
     if( Proc.int_id != 0x21 ) {
-        Output( MsgArray[MSG_SAMPLE_1-ERR_FIRST_MESSAGE] );
-        Output( MsgArray[Exceptions[Proc.int_id]+MSG_EXCEPT_0-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_SAMPLE_1 - ERR_FIRST_MESSAGE] );
+        Output( MsgArray[Exceptions[Proc.int_id] + MSG_EXCEPT_0 - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
     }
     D32DebugTerm();
@@ -235,7 +237,7 @@ void SysParseOptions( char c, char **cmd )
         SetTimerRate( cmd );
         break;
     default:
-        Output( MsgArray[MSG_INVALID_OPTION-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_INVALID_OPTION - ERR_FIRST_MESSAGE] );
         buff[0] = c;
         buff[1] = '\0';
         Output( buff );

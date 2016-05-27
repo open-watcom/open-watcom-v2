@@ -118,10 +118,10 @@ LRESULT CALLBACK MainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             DisplayDialog();
             break;
         case TMENU_RCDATA:
-            DisplayData( TRUE );
+            DisplayData( true );
             break;
         case TMENU_USERDEF:
-            DisplayData( FALSE );
+            DisplayData( false );
             break;
         case TMENU_CURSOR:
             DisplayCursor( hwnd );

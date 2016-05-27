@@ -63,10 +63,10 @@ typedef bool (*DRLFILEWLK)( void *, dr_line_file * );
 typedef bool (*DRLDIRWLK)( void *, dr_line_dir * );
 
 /* get stmt list from ccu, if none return NULL */
-extern dr_handle    DRGetStmtList( dr_handle ccu );
+extern drmem_hdl    DRGetStmtList( drmem_hdl ccu );
 
 /* walk lines given statement list handle */
-extern bool         DRWalkLines( dr_handle, uint_16, DRCUEWLK, void * );
+extern bool         DRWalkLines( drmem_hdl, uint_16, DRCUEWLK, void * );
 
 /* walk files given statement list handle */
-extern bool         DRWalkLFiles( dr_handle, DRLFILEWLK, void *, DRLDIRWLK, void * );
+extern bool         DRWalkLFiles( drmem_hdl, DRLFILEWLK, void *, DRLDIRWLK, void * );

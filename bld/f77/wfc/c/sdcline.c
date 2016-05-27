@@ -54,7 +54,7 @@ bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
 
     fname = fname; rest = rest; p = p;
     *opt_array = NULL;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -69,8 +69,8 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
     *rest = NULL;
     opt_num = 0;
     for(;;) {
-        scanning_file_name = FALSE;
-        quoted = FALSE;
+        scanning_file_name = false;
+        quoted = false;
         ptr = SkipBlanks( ptr );
         if( *ptr == NULLCHAR ) break;
         if( _IsSwitchChar( *ptr ) ) {
@@ -83,7 +83,7 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
             ++opt_num;
         } else if( *fn == NULL ) {
             *fn = ptr;
-            scanning_file_name = TRUE;
+            scanning_file_name = true;
         } else {
             *rest = ptr;
             break;
@@ -93,12 +93,12 @@ bool    MainCmdLine( char **fn, char **rest, char **opts, char *ptr ) {
                 break;
             if( quoted ) {
                 if( *ptr == '\"' ) {
-                    quoted = FALSE;
+                    quoted = false;
                     if(scanning_file_name)
                         *ptr = NULLCHAR;
                 }
             } else if( *ptr == '\"' ) {
-                quoted = TRUE;
+                quoted = true;
                 if(scanning_file_name)
                     *fn = ptr+1;
             } else if( ( *ptr == ' ' ) || ( *ptr == '\t' ) ) {

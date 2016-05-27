@@ -66,13 +66,13 @@ static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
 
   optbegin
     if( PrevClass( max->start_del ) != OC_LABEL )
-        optreturn( FALSE );
+        optreturn( false );
     lbl = PrevIns( max->start_del );
     if( _Attr( lbl ) & ATTR_SHORT )
-        optreturn( FALSE );
+        optreturn( false );
     cl = PrevClass( lbl );
     if( !_TransferClass( cl ) )
-        optreturn( FALSE );
+        optreturn( false );
     DeleteQueue( lbl );
     InsertQueue( lbl, PrevIns( max->start_com ) );
     add = PrevIns( max->start_del );
@@ -84,7 +84,7 @@ static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
         }
     }
     Untangle( lbl );
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 
@@ -141,13 +141,13 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
 {
   optbegin
     if( _IsModel( NO_OPTIMIZATION ) )
-        optreturn( FALSE );
+        optreturn( false );
     if( _ClassInfo( add ) != _ClassInfo( old ) )
-        optreturn( FALSE );
+        optreturn( false );
     if( _InsLen( add ) != _InsLen( old ) )
-        optreturn( FALSE );
+        optreturn( false );
     if( _ObjLen( add ) != _ObjLen( old ) )
-        optreturn( FALSE );
+        optreturn( false );
     switch( _Class( old ) ) {
     case OC_BDATA:
         /* User may be doing stupid stuff like stringing together a bunch
@@ -158,35 +158,35 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
          */
         /* fall through */
     case OC_DEAD:
-        optreturn( FALSE );
+        optreturn( false );
     case OC_JMP:
     case OC_CALL:
     case OC_LABEL:
     case OC_LREF:
         if( _Label( old ) != _Label( add ) )
-            optreturn( FALSE );
+            optreturn( false );
         break;
     case OC_JCOND:
         if( _JmpCond( old ) != _JmpCond( add ) )
-            optreturn( FALSE );
+            optreturn( false );
         if( _Label( old ) != _Label( add ) )
-            optreturn( FALSE );
+            optreturn( false );
 #if _TARGET & _TARG_RISC
         if( old->oc.oc_jcond.index != add->oc.oc_jcond.index )
-            return( FALSE );
+            return( false );
 #endif
         break;
     case OC_RET:
         if( _RetPop( old ) != _RetPop( add )
           || (_Attr( old ) & ATTR_NORET) != (_Attr( add ) & ATTR_NORET) )
-            optreturn( FALSE );
+            optreturn( false );
         break;
     default:
-        if( Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) == FALSE )
-            optreturn( FALSE );
+        if( Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) == false )
+            optreturn( false );
         break;
     }
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 
@@ -196,7 +196,7 @@ static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 )
   optbegin
     c->save = 0;
     for( ;; ) {
-        if( CommonInstr( p1, p2 ) == FALSE )
+        if( CommonInstr( p1, p2 ) == false )
             break;
         c->start_com = p1;
         c->start_del = p2;
@@ -248,13 +248,13 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins )
         }
     }
     if( max.save == 0 )
-        optreturn( FALSE );
+        optreturn( false );
     if( JustMoveLabel( &max, ins ) )
-        optreturn( TRUE );
+        optreturn( true );
     if( OptForSize < 25 )
-        optreturn( FALSE );
+        optreturn( false );
     if( max.save <= OptInsSize( OC_JMP, OC_DEST_NEAR ) )
-        optreturn( FALSE );
+        optreturn( false );
     TransformJumps( ins, first );
     add = PrevIns( max.start_del );
     try = PrevIns( max.start_com );
@@ -272,7 +272,7 @@ extern  bool    ComTail( ins_entry *list, ins_entry *ins )
     }
     Untangle( lbl );
     IsolatedCode( add );
-    optreturn( TRUE );
+    optreturn( true );
 }
 
 
@@ -285,7 +285,7 @@ extern  bool    ComCode( ins_entry *jmp )
     bool        common;
 
   optbegin
-    common = FALSE;
+    common = false;
     com = NULL;
     new = _Label( jmp )->ins;
     if( new != NULL ) {
@@ -308,10 +308,10 @@ extern  bool    ComCode( ins_entry *jmp )
             com = PrevIns( jmp );
             if( com == NULL )
                 break;
-            if( CommonInstr( new, com ) == FALSE )
+            if( CommonInstr( new, com ) == false )
                 break;
             com = PrevIns( DelInstr( com ) );
-            common = TRUE;
+            common = true;
             if( _Class( jmp ) == OC_DEAD ) {
                 optreturn( common );
             }

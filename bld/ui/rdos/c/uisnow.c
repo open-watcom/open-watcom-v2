@@ -40,5 +40,5 @@ void intern vertretrace( void ) {}
 
 bool intern issnow( BUFFER *bptr )
 {
-    return( FALSE );
+    return( false );
 }

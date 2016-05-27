@@ -583,7 +583,7 @@ RegExp *ranToRE( SubStr s )
 static void optimize( Ins *i )
 {
     while( !i->i.marked ) {
-        i->i.marked = TRUE;
+        i->i.marked = true;
         if( i->i.tag == CHAR ) {
             i = (Ins *)i->i.link;
         } else if( i->i.tag == GOTO || i->i.tag == FORK ) {
@@ -719,7 +719,7 @@ void genCode( FILE *o, RegExp *re )
 
     optimize( ins );
     for(j = 0; j < re->size;){
-        ins[j].i.marked = FALSE;
+        ins[j].i.marked = false;
         if( ins[j].i.tag == CHAR ) {
             j = (Ins *)ins[j].i.link - ins;
         } else {

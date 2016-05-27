@@ -53,7 +53,7 @@ static  bool    ByteConst( name *operand )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    HalfWordConst( name *operand )
@@ -71,7 +71,7 @@ static  bool    HalfWordConst( name *operand )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    UHalfWordConst( name *operand )
@@ -85,20 +85,20 @@ static  bool    UHalfWordConst( name *operand )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    Is64BitConst( name *operand )
 /*******************************************/
 {
-    // Return TRUE if constant is not a 32-bit (canonical) const
+    // Return true if constant is not a 32-bit (canonical) const
     // A canonical 64-bit constant is one whose bits 63:32 == bit 31
     if( operand->c.const_type == CONS_ABSOLUTE ) {
         if( operand->c.int_value_2 != (operand->c.int_value >> 31) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static  bool    Symmetric( opcode_defs opcode )
@@ -112,9 +112,9 @@ static  bool    Symmetric( opcode_defs opcode )
     case OP_AND:
     case OP_OR:
     case OP_XOR:
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static  type_class_def  InsTypeClass( instruction *ins )
@@ -141,7 +141,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
     }
     if( natural == 2 ) {
         if( _IsntTargetModel( ALIGNED_SHORT ) ) {
-            return( FALSE );
+            return( false );
         }
     }
     switch( op->n.class ) {
@@ -152,7 +152,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
         // Note: this assumes we always put global elements on 8-byte
         // boundaries
         // correction - front end only puts globals on 4-byte boundaries
-        if( align == 8 ) return( FALSE );
+        if( align == 8 ) return( false );
         /* fall through */
     case N_TEMP:
         // Note: this assumes we are not packing elements of size < 8 into
@@ -170,7 +170,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
         }
         return( align <= actual );
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  bool    DoVerify( vertype kind, instruction *ins )
@@ -196,14 +196,14 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ ins->type_class ] &&
             ( ins->operands[ 1 ]->c.int_value & 0x8000 ) &&
-            TypeClassSize[ ins->type_class ] >= 4 ) return( FALSE );
+            TypeClassSize[ ins->type_class ] >= 4 ) return( false );
 #endif
         return( HalfWordConst( ins->operands[ 1 ] ) );
     case V_HALFWORDCONST1:
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ ins->type_class ] &&
             ( ins->operands[ 0 ]->c.int_value & 0x8000 ) &&
-            TypeClassSize[ ins->type_class ] >= 4 ) return( FALSE );
+            TypeClassSize[ ins->type_class ] >= 4 ) return( false );
 #endif
         return( HalfWordConst( ins->operands[ 0 ] ) );
     case V_AXPBRANCH:   // FIXME: appears to be unused!
@@ -230,25 +230,25 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
         case 2:
         case 4:
         case 8:
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case V_BASE_8:
         switch( ins->base_type_class ) {
         case I8:
         case U8:
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case V_BASE_4:
         switch( ins->base_type_class ) {
         case I4:
         case U4:
         case CP:
         case PT:
-            return( TRUE );
+            return( true );
         }
-        return( FALSE );
+        return( false );
     case V_UNSIGNED:
         return( Unsigned[ ins->type_class ] == ins->type_class );
     case V_OP1_AL2:

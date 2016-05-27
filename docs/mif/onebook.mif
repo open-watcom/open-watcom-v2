@@ -52,6 +52,7 @@ doc_verbose = 0
 company=Open Watcom
 
 wgml_optfile=wgmlopts.tmp
+wgml_tmp_batchfile=wgml.tmp
 whpcvt_optfile=whpcopts.tmp
 gml_lib=../gml/syslib
 wine_hc_batch=winehc.bat
@@ -471,12 +472,13 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
 # create DOSEMU batch file to run wgml utility
 #-------------------------------------------------------
-    @%create $(dosemu_wgml_batch)
-    @%append $(dosemu_wgml_batch) lredir w: linux\fs$(docs_dir)
-    @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
-    @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
-    @%append $(dosemu_wgml_batch) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
-    @%append $(dosemu_wgml_batch) exitemu
+    @%create $(wgml_tmp_batchfile)
+    @%append $(wgml_tmp_batchfile) lredir w: linux\fs$(docs_dir)
+    @%append $(wgml_tmp_batchfile) @set GMLLIB=$(%GMLLIB)
+    @%append $(wgml_tmp_batchfile) @set GMLINC=$(%GMLINC)
+    @%append $(wgml_tmp_batchfile) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
+    @%append $(wgml_tmp_batchfile) exitemu
+    @crlf -d $(wgml_tmp_batchfile) $(dosemu_wgml_batch)
 !else ifeq use_dosemu dosbox
 #-------------------------------------------------------
 # create DOSBOX batch file to run wgml utility

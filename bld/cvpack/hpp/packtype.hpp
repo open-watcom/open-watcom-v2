@@ -100,7 +100,7 @@ class LFLeafStruct {
     protected :
 
         virtual bool IsEqual( const LFLeafStruct& ) const {
-            return TRUE;
+            return true;
         }
 
         virtual void DerivedPut( ExeMaker& ) const { }
@@ -153,7 +153,7 @@ class LFSubField : public LFLeafStruct {
         bool IsEqual( const LFLeafStruct& ) const;
 
         virtual bool IsSubFieldEqual( const LFSubField& ) const {
-            return TRUE;
+            return true;
         }
 
         virtual void DerivedPut( ExeMaker& ) const { }

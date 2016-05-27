@@ -162,7 +162,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
     if( Options & METAWARE_COMPATIBLE || (ext_pref[0]==0 && int_pref[0]==0) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset, FALSE );
+            FmtHexNum( temp, 0, l_entry->offset, false );
             if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s[%s]", frame, sep, temp);
@@ -190,7 +190,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
             break;
 
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset, FALSE );
+            FmtHexNum( temp, 0, l_entry->offset, false );
             if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
                 frame = "ds:";
             sprintf( buff, "%s%s%s[%s]", int_pref, frame, sep, temp);
@@ -397,7 +397,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             } else {
                 *p++ = '+';
             }
-            FmtHexNum( p, 0, nvalue, FALSE );
+            FmtHexNum( p, 0, nvalue, false );
         }
     }
     return( strlen( buff ) );
@@ -414,8 +414,8 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     signed_32           value;
 
     mask = 0;
-    sign_extended = FALSE;
-    no_prefix = FALSE;
+    sign_extended = false;
+    no_prefix = false;
     value = ins->op[op_num].value;
     switch( ins->op[op_num].ref_type ) {
     case DRT_SPARC_BYTE:
@@ -439,7 +439,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
         mask = 0xffffffff;
         break;
     case DRT_X64_QWORD:
-        sign_extended = TRUE;
+        sign_extended = true;
         // fall down
     case DRT_SPARC_DWORD:
     case DRT_SPARC_DFLOAT:
@@ -480,7 +480,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 if ( len > size ) {
                     size = len;
                     mask = 0xffffffff;
-                    sign_extended = TRUE;
+                    sign_extended = true;
                 }
                 break;
             default:
@@ -502,7 +502,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 FmtHexNum( buff, size, 0, no_prefix );
             }
             buff += strlen( buff );
-            no_prefix = TRUE;
+            no_prefix = true;
         }
     }
     FmtHexNum( buff, size, mask & value, no_prefix );
@@ -547,10 +547,10 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
         } else if( op->value > 0 ) {
-            FmtHexNum( buff, 0, op->value, FALSE );
+            FmtHexNum( buff, 0, op->value, false );
         } else if( op->value < 0 ) {
             buff[0] = '-';
-            FmtHexNum( &buff[1], 0, -op->value, FALSE );
+            FmtHexNum( &buff[1], 0, -op->value, false );
         }
         break;
     case DO_IMMED:

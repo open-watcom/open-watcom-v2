@@ -31,14 +31,16 @@
 
 #include "rcsapi.h"
 
-#define RCS_CFG "rcs.cfg"
+
+#define RCS_CFG     "rcs.cfg"
 #define RCS_SECTION "rcs settings"
-#define RCS_KEY "rcs settings"
+#define RCS_KEY     "rcs settings"
 #define RCS_DEFAULT "generic"
 
-#define BUFLEN 512
+#define BUFLEN      512
 
 #define MAX_RCS_STRING_LEN 10 // including nullchar
+
 class userData;
 
 class rcsSystem {
@@ -63,13 +65,13 @@ public:
     mksRcsSystem() { checkin_name = "mks_ci"; checkout_name = "mks_co"; };
     int hasShell() { return( 1 ); };
     int runShell() {
-        #if defined( __WINDOWS__ ) || defined( __NT__ )
-            DWORD rc;
-            rc = WinExec( (LPSTR)"mksrcs.exe", SW_RESTORE );
-            return( rc > 31 );
-        #else
-            return( system( "mksrcs.exe" ) == 0 );
-        #endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+        DWORD rc;
+        rc = WinExec( (LPSTR)"mksrcs.exe", SW_RESTORE );
+        return( rc > 31 );
+#else
+        return( system( "mksrcs.exe" ) == 0 );
+#endif
     };
 };
 extern mksRcsSystem MksRcs;
@@ -98,13 +100,13 @@ public:
     pvcsSystem() { checkin_name = "pvcs_ci"; checkout_name = "pvcs_co"; };
     int hasShell() { return( 1 ); };
     int runShell() {
-        #if defined( __WINDOWS__ ) || defined( __NT__ )
-            DWORD       rc;
-            rc = WinExec( (LPSTR)"pvcswinu.exe", SW_RESTORE );
-            return( rc > 31 );
-        #else
-            return( system( "pvcswinu.exe" ) == 0 );
-        #endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+        DWORD       rc;
+        rc = WinExec( (LPSTR)"pvcswinu.exe", SW_RESTORE );
+        return( rc > 31 );
+#else
+        return( system( "pvcswinu.exe" ) == 0 );
+#endif
     };
 };
 extern pvcsSystem Pvcs;
@@ -149,13 +151,13 @@ public:
     p4System() { checkin_name = "p4_ci"; checkout_name = "p4_co"; };
     int hasShell() { return( 1 ); };
     int runShell() {
-        #if defined( __WINDOWS__ ) || defined( __NT__ )
-            DWORD       rc;
-            rc = WinExec( (LPSTR)"p4win.exe", SW_RESTORE );
-            return( rc > 31 );
-        #else
-            return( system( "p4win.exe" ) == 0 );
-        #endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+        DWORD       rc;
+        rc = WinExec( (LPSTR)"p4win.exe", SW_RESTORE );
+        return( rc > 31 );
+#else
+        return( system( "p4win.exe" ) == 0 );
+#endif
     };
 };
 extern p4System Perforce;

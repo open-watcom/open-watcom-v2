@@ -143,10 +143,10 @@ bool    CGOpenf( void )
 {
     ObjFile = CreateStream( FEAuxInfo( NULL, OBJECT_FILE_NAME ) );
     if( ObjFile == INVALID_HANDLE )
-        return( FALSE );
+        return( false );
     BufList = NewBuffer();              // allocate first buffer
     CurBuf = BufList;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -154,8 +154,8 @@ void    OpenObj( void )
 /*********************/
 {
     ObjOffset = INVALID_OBJHANDLE;
-    NeedSeek = FALSE;
-    EraseObj = FALSE;
+    NeedSeek = false;
+    EraseObj = false;
 }
 
 
@@ -293,7 +293,7 @@ void    PutObjBytes( const void *buff, uint len )
 {
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
-        NeedSeek = FALSE;
+        NeedSeek = false;
     }
     PutStream( ObjFile, buff, len );
     ObjOffset += len;
@@ -307,7 +307,7 @@ void    PutObjOMFRec( byte class, const void *buff, uint len )
 
     if( NeedSeek ) {
         SeekStream( ObjFile, ObjOffset );
-        NeedSeek = FALSE;
+        NeedSeek = false;
     }
     blen = _TargetShort( len + 1 );
     cksum = class;
@@ -350,7 +350,7 @@ void    PatchObj( objhandle rec, uint roffset, const byte *buff, uint len )
     SeekStream( ObjFile, recoffset + 2 + reclen );
     PutStream( ObjFile, &cksum, 1 );
 
-    NeedSeek = TRUE;
+    NeedSeek = true;
 }
 
 
@@ -359,14 +359,14 @@ void    GetFromObj( objhandle rec, uint roffset, byte *buff, uint len )
 {
     SeekStream( ObjFile, Byte( rec ) + roffset + 3 );
     GetStream( ObjFile, buff, len );
-    NeedSeek = TRUE;
+    NeedSeek = true;
 }
 
 
 void    AbortObj( void )
 /**********************/
 {
-    EraseObj = TRUE;
+    EraseObj = true;
 }
 
 
@@ -406,6 +406,6 @@ void    CloseObj( void )
 void    ScratchObj( void )
 /************************/
 {
-    EraseObj = TRUE;
+    EraseObj = true;
     CloseObj();
 }

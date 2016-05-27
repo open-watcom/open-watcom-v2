@@ -33,6 +33,7 @@
 #include <malloc.h>
 #include "heap.h"
 
+
 // This file is compiled to ensure that important structures don't change.
 // The following sizes are important to maintaining the alignment of the heap
 #define SIZEOF_FREELIST     (TAG_SIZE * 3)

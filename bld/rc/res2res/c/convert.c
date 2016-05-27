@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "bool.h"
 #include "param.h"
 #include "wresall.h"
 #include "m2wres.h"
@@ -42,17 +43,17 @@
 
 #define TMP_FILENAME "__TMP__.RES"
 
-static int ConvertFileMResToWRes( WResFileID infile )
-/***************************************************/
+static bool ConvertFileMResToWRes( WResFileID infile )
+/****************************************************/
 {
     WResFileID      tempfile;
-    int             error;
+    bool            error;
 
     tempfile = WResOpenNewFile( TMP_FILENAME );
-    if (tempfile == -1) {
+    if( tempfile == -1 ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
-        return( TRUE );
+        return( true );
     }
     /* put a message out if quiet option not selected */
     if (!CmdLineParms.Quiet) {
@@ -65,20 +66,20 @@ static int ConvertFileMResToWRes( WResFileID infile )
     return( error );
 } /* ConvertFileMResToWRes */
 
-static int ConvertFileWResToMRes( WResFileID infile )
+static bool ConvertFileWResToMRes( WResFileID infile )
 /***************************************************/
 {
     WResFileID      tempfile;
-    int             error;
+    bool            error;
 
     tempfile = MResOpenNewFile( TMP_FILENAME );
-    if (tempfile == -1) {
+    if( tempfile == -1 ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
-        return( TRUE );
+        return( true );
     }
     /* put a message out if quiet option not selected */
-    if (!CmdLineParms.Quiet) {
+    if( !CmdLineParms.Quiet ) {
         puts( "Converting Open Watcom .RES to Microsoft .RES" );
     }
     error = ConvertWResToMRes( infile, tempfile );
@@ -87,32 +88,32 @@ static int ConvertFileWResToMRes( WResFileID infile )
     return( error );
 } /* ConvertFileWResToMRes */
 
-static int ChangeTmpToOutFile( void )
-/***********************************/
+static bool ChangeTmpToOutFile( void )
+/************************************/
 {
     int             fileerror;      /* error while deleting or renaming */
 
     /* remove the old copy of the output file */
     fileerror = remove( CmdLineParms.OutFileName );
-    if (fileerror) {
-        if (errno == ENOENT) {
+    if( fileerror ) {
+        if( errno == ENOENT ) {
             /* ignore the error if it says that the file doesn't exist */
             errno = 0;
         } else {
             perror( NULL );
-            return( TRUE );
+            return( true );
         }
     }
     /* rename the temp file to the output file */
     fileerror = rename( TMP_FILENAME, CmdLineParms.OutFileName );
-    if (fileerror) {
+    if( fileerror ) {
         /* probably should check if errno is EXDEV at this point and copy */
         /* file if it is */
         perror( NULL );
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 } /* ChangeTmpToOutFile */
 
 
@@ -120,16 +121,16 @@ int ConvertFiles( void )
 /**********************/
 {
     WResFileID      infile;
-    int             error;
+    bool            error;
     int             fileerror;      /* error while deleting or renaming */
 
     infile = ResOpenFileRO( CmdLineParms.InFileName );
-    if (infile == -1) {
+    if( infile == -1 ) {
         perror( "Error (input file): " );
-        return( TRUE );
+        return( 1 );
     }
 
-    if (WResIsWResFile( infile )) {
+    if( WResIsWResFile( infile ) ) {
         /* the input file is in Open Watcom format so convert to MS format */
         error = ConvertFileWResToMRes( infile );
     } else {
@@ -139,15 +140,16 @@ int ConvertFiles( void )
 
     ResCloseFile( infile );
 
-    if (error) {
+    if( error ) {
         puts("Error writing to output file");
         fileerror = remove( TMP_FILENAME );
-        if (fileerror) {
+        if( fileerror ) {
             perror( NULL );
         }
     } else {
         error = ChangeTmpToOutFile();
     }
-
-    return( error );
+    if( error )
+        return( 1 );
+    return( 0 );
 } /* ConvertFiles */

@@ -87,22 +87,24 @@ char *DupQuoteStrMem( const char *str, char quote )
 {
     char *              p;
     size_t              len;
-    bool                add_quote = FALSE;
+    bool                add_quote = false;
 
     len = strlen( str );
     if( quote != '\0' ) {
         for( ;; ) {
-            if( str[0] == '"'  && str[len-1] == '"'  ) break;
-            if( str[0] == '\'' && str[len-1] == '\'' ) break;
+            if( str[0] == '"'  && str[len - 1] == '"'  )
+                break;
+            if( str[0] == '\'' && str[len - 1] == '\'' )
+                break;
             len += 2;
-            add_quote = TRUE;
+            add_quote = true;
         }
     }
     p = AllocMem( len + 1 );
     if( add_quote ) {
         p[0] = quote;
         strcpy( &(p[1]), str );
-        p[len-1] = quote;
+        p[len - 1] = quote;
         p[len] = '\0';
     } else {
         strcpy( p, str );

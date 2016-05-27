@@ -131,25 +131,25 @@ static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bo
 void AddCharStringTable( stringtable *strtab, char data )
 /*******************************************************/
 {
-    AddToStringTable( strtab, &data, sizeof( char ), FALSE );
+    AddToStringTable( strtab, &data, sizeof( char ), false );
 }
 
 char *AddStringStringTable( stringtable *strtab, char *data )
 /***********************************************************/
 {
-    return( AddToStringTable( strtab, data, strlen( data ) + 1, FALSE ) );
+    return( AddToStringTable( strtab, data, strlen( data ) + 1, false ) );
 }
 
 char *AddBufferStringTable( stringtable *strtab, void *data, unsigned len )
 /**************************************************************************/
 {
-    return( AddToStringTable( strtab, data, len, FALSE ) );
+    return( AddToStringTable( strtab, data, len, false ) );
 }
 
 char *AddSymbolStringTable( stringtable *strtab, char *data, unsigned len )
 /**************************************************************************/
 {
-    return( AddToStringTable( strtab, data, len, TRUE ) );
+    return( AddToStringTable( strtab, data, len, true ) );
 }
 
 void ZeroStringTable( stringtable *strtab, unsigned len )
@@ -174,7 +174,7 @@ static bool WriteStringBlock( void *_blk, void *_param )
     stringblock *blk = _blk;
     strblkparam *param = _param;
     param->fn( param->info, blk->data, blk->size );
-    return FALSE;
+    return false;
 }
 
 void WriteStringTable( stringtable *strtab,

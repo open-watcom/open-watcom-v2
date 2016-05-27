@@ -40,11 +40,11 @@
 #include <sys/stat.h>
 #include "sample.h"
 #include "smpstuff.h"
-#include "intrptr.h"
 #include "os.h"
-#include "timermod.h"
 #include "wmsg.h"
 
+#define global_timer_data
+#include "timermod.h"
 
 void InitTimerRate( void )
 {
@@ -65,18 +65,19 @@ void SetTimerRate( char **cmd )
 }
 
 #ifdef __NETWARE__
-extern void SetRestoreRate( char ** cmd)
+extern void SetRestoreRate( char **cmd )
 {
     /*
     //  If someone codes a value of 1 then they are in HUGE trouble!
     //  Just set to 0, which is DOS default!
     */
     TimerRestoreValue = GetNumber( 0, 0xFFFF, cmd, 10 );
-    if(1 == TimerRestoreValue)
+    if( 1 == TimerRestoreValue ) {
         TimerRestoreValue = 0;
+    }
 }
 
-extern void ResolveRateDifferences(void)
+extern void ResolveRateDifferences( void )
 {
     /*
     //  On NetWare 5 and 6, the default interrupt will be at approx 145 Hz. We
@@ -112,11 +113,12 @@ unsigned SafeMargin( void )
       20 sec is an arbitrary period of time considered safety margin: no
       DOS function should take more time tying-up int21 resources.
     */
-    if( safe_wait > Ceiling / 2 )  safe_wait = Ceiling / 2;
+    if( safe_wait > Ceiling / 2 )
+        safe_wait = Ceiling / 2;
     margin = Ceiling - safe_wait;
 
     if( margin < (TICKS_PER_HUNDRED / 100) ) {
-        Output( MsgArray[MSG_BUFF_SMALL-ERR_FIRST_MESSAGE] );
+        Output( MsgArray[MSG_BUFF_SMALL - ERR_FIRST_MESSAGE] );
         Output( "\r\n" );
         fatal();
     }

@@ -102,7 +102,7 @@ typedef TemplateList<TreeLine *> TreeLineList;
 class TreeEdgeBreaker
 {
 public:
-            TreeEdgeBreaker() : _horizontalSorted( FALSE ), _verticalSorted( FALSE ) {}
+            TreeEdgeBreaker() : _horizontalSorted( false ), _verticalSorted( false ) {}
             ~TreeEdgeBreaker() {}
             void addLine( TreeLine * _line );
             void purgeContents( void );

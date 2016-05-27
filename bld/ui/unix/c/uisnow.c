@@ -46,5 +46,5 @@ bool intern issnow( BUFFER *bptr )
     if( isscreen( bptr ) ) {
         uioffmouse();
     }
-    return( FALSE );
+    return( false );
 }

@@ -59,11 +59,11 @@ static  bool    SubStr2( intstar4 *subscripts ) {
 
     subscripts++;
     got_colon = RecColon();
-    hi = FALSE;
+    hi = false;
     if( !RecNOpn() ) {
         CIntExpr();
         *subscripts = ITIntValue( CITNode );
-        hi = TRUE;
+        hi = true;
     }
     if( got_colon ) {
         AdvanceITPtr();
@@ -109,11 +109,11 @@ void    CpEquivalence(void) {
         eq_head = NULL;
         num_equived = 0;
         for(;;) {
-            AError = FALSE;
+            AError = false;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 num_equived++;
                 sym = LkSym();
-                ill_name = TRUE;
+                ill_name = true;
                 if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
                     if( sym->u.ns.flags & SY_DATA_INIT ) {
                         NameErr( ST_DATA_ALREADY, sym );
@@ -124,7 +124,7 @@ void    CpEquivalence(void) {
                         IllName( sym );
                     } else {
                         sym->u.ns.flags |= SY_IN_EQUIV;
-                        ill_name = FALSE;
+                        ill_name = false;
                     }
                 } else {
                     IllName( sym );
@@ -140,13 +140,13 @@ void    CpEquivalence(void) {
                 subscripts = equiv.subscrs;
                 if( RecOpenParen() ) {
                     if( !RecNOpn() || !RecNextOpr( OPR_COL ) ) {
-                        sub_strung = FALSE;
+                        sub_strung = false;
                         for(;;) {
                             CIntExpr();
                             *subscripts = ITIntValue( CITNode );
                             AdvanceITPtr();
                             if( RecColon() ) {
-                                sub_strung = TRUE;
+                                sub_strung = true;
                                 break;
                             }
                             subscripts++;
@@ -169,7 +169,7 @@ void    CpEquivalence(void) {
                             }
                         }
                     } else {
-                        sub_strung = TRUE;
+                        sub_strung = true;
                     }
                     if( sub_strung ) {
                         equiv.substr = 1;

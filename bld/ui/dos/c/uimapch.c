@@ -85,9 +85,9 @@ bool UIMapCharacters( unsigned char mapchar[], unsigned char mapdata[][16] )
             MapCharacter( mapchar[i], mapdata[i] );
         }
         ResetSequencer();
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 bool FlipCharacterMap( void )
@@ -103,7 +103,7 @@ bool FlipCharacterMap( void )
         new |= ( old >> 4 ) & 0x0f;
         new |= ( old << 4 ) & 0xf0;
         UIData->attrs[ATTR_DIAL_FRAME] = new;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

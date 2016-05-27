@@ -53,8 +53,8 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
     bool        can_demote;
 
     frum = name->tipe;
-    can_demote = FALSE;
-    demote_this_node = FALSE;
+    can_demote = false;
+    demote_this_node = false;
     if( TypeClass( frum ) <= I4 ) {
         switch( name->class ) {
         case TN_UNARY: /* go left*/
@@ -64,12 +64,12 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_CONVERT:
             case O_ROUND:
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
-                demote_this_node = TRUE;
+                demote_this_node = true;
                 break;
             case O_POINTS:
 #if _TARG_MEMORY == _TARG_LOW_FIRST
-                can_demote = TRUE;
-                demote_this_node = TRUE;
+                can_demote = true;
+                demote_this_node = true;
 #endif
                 break;
             }
@@ -99,7 +99,7 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
                 if( can_demote ) {
                     can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );
                 }
-                demote_this_node = TRUE;
+                demote_this_node = true;
                 break;
             }
             break;
@@ -111,8 +111,8 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             break;
         case TN_FLOW_OUT:
         case TN_CONS:
-            can_demote = TRUE;
-            demote_this_node = TRUE;
+            can_demote = true;
+            demote_this_node = true;
             break;
         }
         if( !just_test && demote_this_node && frum->length > tipe->length ) {
@@ -127,8 +127,8 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
 extern  void    TGDemote( tn name, type_def *tipe ) {
 /***************************************************/
 
-    if( DemoteTree( name, tipe, TRUE ) ) {
-        DemoteTree( name, tipe, FALSE );
+    if( DemoteTree( name, tipe, true ) ) {
+        DemoteTree( name, tipe, false );
     }
 }
 

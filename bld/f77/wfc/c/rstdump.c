@@ -104,7 +104,7 @@ static  bool    CkInCommon( sym_id sym ) {
     unsigned_32 offset;
     bool        global_item;
 
-    global_item = FALSE;
+    global_item = false;
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
         leader = sym;
@@ -140,7 +140,7 @@ static  bool    DumpVariable( sym_id sym ) {
     bool                global_item;
     bool                cp_reloc; // is array compile-time relocatable
 
-    global_item = FALSE;
+    global_item = false;
     flags = sym->u.ns.flags;
     CkDataOk( sym );
     if( !(flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) ) {
@@ -160,15 +160,13 @@ static  bool    DumpVariable( sym_id sym ) {
             NameErr( SV_ARR_PARM, sym );
         } else {
             if( cp_reloc ) {
-                global_item = TRUE;
+                global_item = true;
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
                     if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
-                        if( _SymSize( sym ) * _ArrElements( sym ) >
-                            DataThreshold ) {
-                            AllocGlobal( _SymSize( sym )*_ArrElements( sym ),
-                                         (flags & SY_DATA_INIT) != 0 );
+                        if( _SymSize( sym ) * _ArrElements( sym ) > DataThreshold ) {
+                            AllocGlobal( _SymSize( sym ) * _ArrElements( sym ), (flags & SY_DATA_INIT) != 0 );
                         }
                     }
                 }
@@ -179,7 +177,7 @@ static  bool    DumpVariable( sym_id sym ) {
             if( (flags & SY_IN_DIMEXPR) && (flags & SY_IN_COMMON) == 0 ) {
                 NameErr( SV_ARR_DECL, sym );
             } else {
-                global_item = TRUE;
+                global_item = true;
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
                 } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
@@ -355,10 +353,10 @@ bool    StmtNoRef( sym_id sn ) {
 
 // Check if statement number has been referenced.
 
-    if( StNumbers.wild_goto ) return( TRUE );
-    if( ( sn->u.st.flags & SN_AFTR_BRANCH ) == 0 ) return( TRUE );
-    if( sn->u.st.flags & ( SN_ASSIGNED | SN_BRANCHED_TO ) ) return( TRUE );
-    return( FALSE );
+    if( StNumbers.wild_goto ) return( true );
+    if( ( sn->u.st.flags & SN_AFTR_BRANCH ) == 0 ) return( true );
+    if( sn->u.st.flags & ( SN_ASSIGNED | SN_BRANCHED_TO ) ) return( true );
+    return( false );
 }
 
 
@@ -414,7 +412,7 @@ static  void    DumpStrings( void ) {
         if( MList->u.ns.flags & SY_PS_ENTRY ) continue;
         if( MList->u.ns.u1.s.typ == FT_CHAR ) {
             if( ( MList->u.ns.xt.size != 0 ) && !( Options & OPT_AUTOMATIC ) ) {
-                AllocGlobal( MList->u.ns.xt.size, FALSE );
+                AllocGlobal( MList->u.ns.xt.size, false );
             }
         }
     }

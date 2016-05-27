@@ -240,11 +240,11 @@ static void InitStatDialog( HWND hwnd )
     GetCurrAddr( &( statdata->curr_addr ), info->regs );
     if( FindWatSymbol( &( statdata->curr_addr ), &si, TRUE ) == FOUND ) {
         RCsprintf( buff, STR_SRC_INFO_FMT, si.linenum, si.filename );
-        StatShowSymbols = TRUE;
+        StatShowSymbols = true;
         CheckDlgButton( hwnd, STAT_SYMBOLS, ( StatShowSymbols ) ? BST_CHECKED : BST_UNCHECKED );
     } else {
         RCsprintf( buff, STR_N_A );
-        StatShowSymbols = FALSE;
+        StatShowSymbols = false;
         EnableWindow( GetDlgItem( hwnd, STAT_SYMBOLS ), FALSE );
     }
     SetDlgMonoFont( hwnd, STAT_SRC_INFO );
@@ -453,11 +453,7 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
             break;
 #endif
         case STAT_SYMBOLS:
-            if( StatShowSymbols == TRUE ) {
-                StatShowSymbols = FALSE;
-            } else {
-                StatShowSymbols = TRUE;
-            }
+            StatShowSymbols = !StatShowSymbols;
             DisplayAsmLines( hwnd, &( statdata->curr_addr ) );
             break;
         case IDCANCEL:

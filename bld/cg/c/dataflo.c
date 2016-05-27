@@ -74,16 +74,16 @@ static  bool    AllocBefore( void *n1, void *n2 )
 
     /* const temps after all others */
     if( (t1->t.temp_flags & CONST_TEMP) && !(t2->t.temp_flags & CONST_TEMP) ) {
-        return( FALSE );
+        return( false );
     }
     if( !(t1->t.temp_flags & CONST_TEMP) && (t2->t.temp_flags & CONST_TEMP) ) {
-        return( TRUE );
+        return( true );
     }
     if( t1->v.conflict == NULL && t2->v.conflict != NULL ) {
-        return( FALSE );
+        return( false );
     }
     if( t1->v.conflict != NULL ) {
-        if( t2->v.conflict == NULL ) return( TRUE );
+        if( t2->v.conflict == NULL ) return( true );
         return( t1->v.conflict->savings > t2->v.conflict->savings );
     } else {
         return( t1->t.v.id > t2->t.v.id );
@@ -142,7 +142,7 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
     if( list == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
         if( !MoreUseInOtherTemps ) return( all_used );
-        MoreUseInOtherTemps = FALSE;
+        MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );
     for( opnd = Names[ list ]; opnd != NULL; opnd = opnd->n.next_name ) {
@@ -160,14 +160,13 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
                 if( conf == NULL && first_time ) {
                     conf = AddConflictNode( actual_name );
                 }
-                if( conf != NULL && !( conf->state & CONFLICT_ON_HOLD )
-                 && _GBitEmpty( conf->id.out_of_block ) ) {
+                if( conf != NULL && _Isnt( conf, CST_CONFLICT_ON_HOLD ) && _GBitEmpty( conf->id.out_of_block ) ) {
                     _GBitAssign( conf->id.out_of_block, *bit );
                     _GBitTurnOn( all_used, *bit );
                     _GBitNext( bit );
                     if( _GBitEmpty( conf->id.out_of_block ) ) {
-                        conf->state |= CONFLICT_ON_HOLD;
-                        MoreUseInOtherTemps = TRUE;
+                        _SetTrue( conf, CST_CONFLICT_ON_HOLD );
+                        MoreUseInOtherTemps = true;
                     }
                 }
             }
@@ -203,13 +202,13 @@ extern  void    MakeConflicts( void )
     global_bit_set     bit;
 
     CheckGlobals();
-    MoreUseInOtherTemps = TRUE;
+    MoreUseInOtherTemps = true;
     _GBitFirst( bit );
     if( !BlockByBlock ) {
         RoughSortTemps();
     }
-    AssignGlobalBits( N_TEMP, &bit, TRUE );
-    MemoryBits = AssignGlobalBits( N_MEMORY, &bit, TRUE );
+    AssignGlobalBits( N_TEMP, &bit, true );
+    MemoryBits = AssignGlobalBits( N_MEMORY, &bit, true );
     PropagateConflicts();
 }
 
@@ -221,12 +220,12 @@ extern  bool    MoreConflicts( void )
 
     _GBitFirst( bit );
     _GBitInit( MemoryBits, EMPTY );
-    bit = AssignGlobalBits( N_TEMP, &bit, FALSE );
+    bit = AssignGlobalBits( N_TEMP, &bit, false );
     if( !_GBitEmpty( bit ) ) {
         PropagateConflicts();
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -242,7 +241,7 @@ static  void    PropagateConflicts( void )
     /*   (When we run out of bits, everything } else { is forced to memory)*/
 
     FindReferences();
-    if( BlockByBlock == FALSE ) {
+    if( BlockByBlock == false ) {
         LiveAnalysis( HeadBlock, MemoryBits );
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -286,7 +285,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
         tail = tail->next_block;
     }
     for( ;; ) {
-        change = FALSE;
+        change = false;
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
             data = blk->dataflow;
 
@@ -309,7 +308,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             }
             if( !_GBitSame( data->out, new ) ) {
                 data->out = new;
-                change = TRUE;
+                change = true;
             }
 
             /*   new IN == ( new OUT - DEF ) union USE*/
@@ -318,9 +317,9 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             _GBitTurnOn( new, data->use );
             if( !_GBitSame( data->in, new ) ) {
                 _GBitAssign( data->in, new );
-                change = TRUE;
+                change = true;
             }
         }
-        if( change == FALSE ) break;
+        if( change == false ) break;
     }
 }

@@ -413,7 +413,7 @@ extern  void    FlushOP( seg_id id ) {
 extern        bool    AskSegBlank( segment_id id )
 /************************************************/
 {   id = 0;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -879,7 +879,7 @@ extern void HWBIndexGen(  char reg, hw_sym *table ) {
     bead->reg = reg;
     bead->br  = 0;
     bead->table = table;
-    bead->lit = HWLitAddr( table, 0, FALSE );
+    bead->lit = HWLitAddr( table, 0, false );
 }
 
 extern void HWDataGen( int length, int rep, byte *value ) {
@@ -943,7 +943,7 @@ static void HWMKAddrGen( bead_def **end_lnk, hw_sym *sym, offset val ) {
 /*** Insert a DC A(sym+val) *************/
     bead_addr *bead;
 
-    bead = MKSymAddr( sym, val, FALSE );
+    bead = MKSymAddr( sym, val, false );
     bead->common.next = *end_lnk;
     *end_lnk = (bead_def*)bead;
 }
@@ -1283,24 +1283,24 @@ static int TryCoalesce( bead_def **lnk,  bead_hwins_ss1 *next ){
       next->s1.a = l1+l2;
       next->s2.disp = first->s2.disp;
       Remove( lnk );
-      return( TRUE );
+      return( true );
     }else{
-      return( FALSE );
+      return( false );
     }
 }
 
 static int AdjacentSX( hwins_op_sx  *s1, hwins_op_sx  *s2, int l ){
 /*** see if s1 is right beside s2 ***/
     if( s1->ref != s2->ref ){
-        return( FALSE );
+        return( false );
     }
     if( s1->b  != s2->b ){
-        return( FALSE );
+        return( false );
     }
     if( s1->disp+l != s2->disp ){
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void FreeRefs( any_bead_hwins *bead ) {

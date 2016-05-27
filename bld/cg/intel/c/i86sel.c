@@ -240,7 +240,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     old = SetOP( AskCodeSeg() );
     table->value_lbl = AskForNewLabel();
     CodeLabel( table->value_lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
-    GenSelEntry( TRUE );
+    GenSelEntry( true );
     table->lbl = AskForNewLabel();
     if( tipe != real_tipe ) {
         to_sub = lo;
@@ -255,7 +255,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     } else {
         GenValuesBackward( list, hi, lo, to_sub, tipe );
     }
-    GenSelEntry( FALSE );
+    GenSelEntry( false );
     CodeLabel( table->lbl, 0 );
     tab_ptr = &table->cases[ 0 ];
     curr = lo;

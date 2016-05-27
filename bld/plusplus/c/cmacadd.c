@@ -284,7 +284,7 @@ void PCHDumpMacroCheck(         // DUMP MACRO CHECK INFO INTO PCHDR
 bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 {
-    bool ret;
+    bool retb;
     int macros_different;
     unsigned max_rlen;
     unsigned rlen;
@@ -318,7 +318,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             endif
         endif
     */
-    ret = TRUE;
+    retb = true;
     max_rlen = PCHReadUInt();
     pch_macro = CMemAlloc( max_rlen );
     for( ; (rlen = PCHReadUInt()) != 0; ) {
@@ -338,7 +338,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                         break;
                     }
                     PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, pch_macro->macro_name );
-                    ret = FALSE;
+                    retb = false;
                     break;
                 }
                 if( macros_different ) {
@@ -351,7 +351,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         } RingIterEnd( new_macro )
         if( matched_macro != NULL ) {
             /* macro is in current compilation */
-            if( ret == FALSE ) {
+            if( !retb ) {
                 /* problem was detected */
                 break;
             }
@@ -361,7 +361,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
                 // (1) original macro was referenced during first #include
                 // but no definition in current compilation
                 PCHWarn2p( WARN_PCH_CONTENTS_MACRO_NOT_PRESENT, pch_macro->macro_name );
-                ret = FALSE;
+                retb = false;
                 break;
             }
             // (3) queue macro to be deleted when PCH is loaded
@@ -373,24 +373,24 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
         }
     }
     CMemFree( pch_macro );
-    if( ret ) {
+    if( retb ) {
         for( i = 0; i < MACRO_HASH_SIZE; ++i ) {
             RingIterBeg( macroHashTable[i], cmdln_macro ) {
                 if(( cmdln_macro->macro_flags & MFLAG_PCH_CHECKED ) == 0 ) {
                     // (4) macro was not defined when pch was created
                     if( cmdln_macro->macro_flags & MFLAG_USER_DEFINED ) {
                         PCHWarn2p( WARN_PCH_CONTENTS_MACRO_DIFFERENT, cmdln_macro->macro_name );
-                        ret = FALSE;
+                        retb = false;
                         break;
                     }
                 }
             } RingIterEnd( cmdln_macro )
         }
     }
-    if( ret == FALSE ) {
+    if( !retb ) {
         RingFree( &macroPCHDeletes );
     }
-    return( ret );
+    return( retb );
 }
 
 pch_status PCHReadMacros( void )
@@ -629,7 +629,7 @@ bool MacroExists(           // TEST IF MACRO EXISTS
         mac->macro_flags |= MFLAG_REFERENCED;
         exists = ( (mac->macro_flags & MFLAG_SPECIAL ) == 0 );
     } else {
-        exists = FALSE;
+        exists = false;
     }
     return exists;
 }
@@ -638,11 +638,13 @@ bool MacroExists(           // TEST IF MACRO EXISTS
 bool MacroDependsDefined    // MACRO DEPENDENCY: DEFINED OR NOT
     ( void )
 {
-    bool retn = MacroExists( Buffer, TokenLen );
+    bool retb;
+
+    retb = MacroExists( Buffer, TokenLen );
 #ifdef OPT_BR
-    retn = BrinfDependsMacroDefined( retn, Buffer, TokenLen );
+    retb = BrinfDependsMacroDefined( retb, Buffer, TokenLen );
 #endif
-    return retn;
+    return( retb );
 }
 
 
@@ -673,14 +675,14 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
 void MacroUndefine(             // UNDEFINE CURRENT NAME AS MACRO
     size_t len )                // - length of macro name
 {
-    doMacroUndef( Buffer, len, FALSE );
+    doMacroUndef( Buffer, len, false );
 }
 
 void MacroCmdLnUndef(           // -U<macro-name>
     char *name,                 // - macro name
     size_t len )                // - length of macro name
 {
-    doMacroUndef( name, len, TRUE );
+    doMacroUndef( name, len, true );
 }
 
 void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
@@ -709,10 +711,10 @@ bool MacroStateMatchesCurrent( MACRO_STATE *ms )
 /**********************************************/
 {
     if( ms->curr_offset != MacroOffset ) {
-        return( FALSE );
+        return( false );
     }
     if( ms->undef_count != undefCount ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }

@@ -65,11 +65,11 @@ char *      ExtraNames[] = {
     "virtdevice"
 };
 
-bool            DebugInfo = FALSE;
-bool            MapOption = FALSE;
+bool            DebugInfo = false;
+bool            MapOption = false;
 format_type     FmtType = FMT_DEFAULT;
 extra_type      FmtInfo = NO_EXTRA;
-bool            HaveDefFile = FALSE;
+bool            HaveDefFile = false;
 
 static void         DoConvert( void );
 
@@ -158,7 +158,7 @@ static void BuildWATCOM( void )
     PrefixWrite( Commands[ RUN_SLOT ], "name ", 5 );
     if( Commands[ MAP_SLOT ] != NULL ) {
         PrefixWrite( Commands[ MAP_SLOT ], "option map=", 11 );
-        MapOption = FALSE;     // make sure it isn't generated a second time.
+        MapOption = false;     // make sure it isn't generated a second time.
     }
     PrefixWrite( Commands[ LIBRARY_SLOT ], "library ", 8 );
     if( MapOption ) {

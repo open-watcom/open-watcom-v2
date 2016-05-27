@@ -1944,7 +1944,6 @@ objs_lr2 = &
 ../doc/lr/src/tzos2.gml &
 ../doc/lr/src/tzref.gml &
 ../doc/lr/src/tzset.gml &
-../doc/lr/src/udirent.gml &
 ../doc/lr/src/ulltoa.gml &
 ../doc/lr/src/ultoa.gml &
 ../doc/lr/src/umask.gml &

@@ -35,6 +35,7 @@
 
 // Definitions for DLL processing with C++
 
+#define IDEFN(x)    ((IDECallBacks *)CompInfo.idecbs)->x
 
 void IdePrintFini               // COMPLETE PRINTING
     ( void )

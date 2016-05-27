@@ -113,13 +113,12 @@ extern DWORD                    TerminateCSIP;
 extern HWND                     DebuggerWindow;
 extern int                      ModuleTop;
 extern int                      CurrentModule;
-extern BOOL                     FaultHandlerEntered;
+extern bool                     FaultHandlerEntered;
 extern int                      SaveStdIn;
 extern int                      SaveStdOut;
-extern BOOL                     WDebug386;
 extern WORD                     WPCount;
 extern HMODULE                  DebugeeModule;
-extern WORD                     WasInt32;
+extern bool                     WasInt32;
 extern BOOL                     DebugDebugeeOnly;
 extern HTASK                    TaskAtFault;
 extern WORD                     Win386Sig[];
@@ -128,7 +127,7 @@ extern FARPROC                  SubClassProcInstance;
 extern bool                     HardModeRequired;
 extern BOOL                     InputLocked;
 extern bool                     ForceHardMode;
-extern BOOL                     InSoftMode;
+extern bool                     InSoftMode;
 extern WORD                     CSAlias;
 extern WORD                     SegmentToAccess;
 extern BOOL                     PendingTrap;
@@ -200,9 +199,7 @@ DWORD ReadMem( WORD sel, DWORD off, LPVOID buff, DWORD size );
 /* notify.c */
 BOOL FAR PASCAL NotifyHandler( WORD id, DWORD data );
 
-/* wgod.c */
-void StartWDebug386( void );
-void KillWDebug386( void );
+/* debug output */
 #ifdef DEBUG
 #define OUT_BREAK       0x0001
 #define OUT_ERR         0x0002

@@ -65,16 +65,16 @@ static  bool    isNiceCondIns( instruction *ins )
 
     oc = ins->head.opcode;
     if( !_OpIsCondition( oc ) )
-        return( FALSE );
+        return( false );
     if( oc == OP_CMP_LESS || oc == OP_CMP_GREATER )
-        return( TRUE );
+        return( true );
     if( (oc == OP_CMP_LESS_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
         && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) )
-        return( TRUE );
+        return( true );
     if( (oc == OP_CMP_GREATER_EQUAL) && (ins->operands[1]->n.class == N_CONSTANT)
         && (ins->operands[1]->c.const_type == CONS_ABSOLUTE) )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 
@@ -129,50 +129,50 @@ static  bool    FindFlowOut( block *blk )
         ins = ins->head.prev;
     }
     if( !isNiceCondIns( ins ) )
-        return( FALSE );
+        return( false );
     if( TypeClassSize[ ins->type_class ] > WORD_SIZE )
-        return( FALSE );
+        return( false );
     true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
     if( true_blk->inputs != 1 )
-        return( FALSE );
+        return( false );
     if( true_blk->targets != 1 )
-        return( FALSE );
+        return( false );
 
     false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
     if( false_blk->inputs != 1 )
-        return( FALSE );
+        return( false );
     if( false_blk->targets != 1 )
-        return( FALSE );
+        return( false );
 
     join_blk = false_blk->edge[0].destination.u.blk;
     if( join_blk != true_blk->edge[0].destination.u.blk )
-        return( FALSE );
+        return( false );
     if( join_blk->inputs != 2 )
-        return( FALSE );
+        return( false );
     if( join_blk->class & UNKNOWN_DESTINATION )
-        return( FALSE );
+        return( false );
 
     ins0 = SetToConst( false_blk, &false_cons );
     if( ins0 == NULL )
-        return( FALSE );
+        return( false );
     ins1 = SetToConst( true_blk, &true_cons );
     if( ins1 == NULL )
-        return( FALSE );
+        return( false );
     if( true_cons - false_cons == -1 ) {
         true_cons = false_cons;
         false_cons = true_cons - 1;
-        reverse = TRUE;
+        reverse = true;
     } else {
         if( true_cons - false_cons != 1 )
-            return( FALSE );
-        reverse = FALSE;
+            return( false );
+        reverse = false;
     }
     result = ins0->result;
     if( result != ins1->result )
-        return( FALSE );
+        return( false );
     class = ins0->type_class;
     if( class != ins1->type_class )
-        return( FALSE );
+        return( false );
 
     oc = ins->head.opcode;
     if( oc == OP_CMP_GREATER || oc == OP_CMP_GREATER_EQUAL )
@@ -232,7 +232,7 @@ static  bool    FindFlowOut( block *blk )
     join_blk->inputs = 1;
     blk->class &= ~CONDITIONAL;
     blk->class |= JUMP;
-    return( TRUE );
+    return( true );
 }
 
 
@@ -242,7 +242,7 @@ extern  bool    SetOnCondition( void )
     block       *blk;
     bool        change;
 
-    change = FALSE;
+    change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->class & CONDITIONAL ) {
             change |= FindFlowOut( blk );

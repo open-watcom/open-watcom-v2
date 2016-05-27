@@ -40,6 +40,7 @@ extern "C" {
 #if defined( __WATCOMC__ )
 #include <_comdef.h>
 #endif
+#include "bool.h"
 #include "dm_pts.h"
 
 /*
@@ -78,7 +79,7 @@ mangled_type __is_mangled_internal(             // IS NAME MANGLED? INTERNAL?
     size_t len )                                // - length of name
 ;                                               // RETURNS one of following:
 
-int __unmangled_name(                           // FIND UNMANGLED BASE NAME
+bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
     char const *name,                           // - mangled C++ name
     size_t len,                                 // - length of mangled name
     char const **basep,                         // - location of C++ base name
@@ -109,7 +110,7 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
 
 #endif // !__DIP__
 
-int __scope_name(                               // EXTRACT A C++ SCOPE NAME
+bool __scope_name(                              // EXTRACT A C++ SCOPE NAME
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     unsigned index,                             // - scope wanted

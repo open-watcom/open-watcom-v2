@@ -59,7 +59,7 @@ struct Context {
 
 
 static struct Context   curContext;
-static bool             curContextInitialized = FALSE;
+static bool             curContextInitialized = false;
 
 static struct Context   stack[MAX_INDIRECTIONS];
 static int              stackItems = 0;
@@ -85,7 +85,8 @@ bool OpenCmdLineContext( void )
 {
     int                 len;
 
-    if( curContextInitialized )  Zoinks();
+    if( curContextInitialized )
+        Zoinks();
     clear_context( &curContext );
 
     /*** Make a copy of the command line ***/
@@ -95,9 +96,9 @@ bool OpenCmdLineContext( void )
 
     curContext.data = curContext.dataStart;
     curContext.dataLen = strlen( curContext.dataStart );
-    curContextInitialized = TRUE;
+    curContextInitialized = true;
     curContext.type = COMMAND_LINE_CONTEXT;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -107,18 +108,19 @@ bool OpenCmdLineContext( void )
 bool OpenEnvironContext( const char *envVar )
 /*******************************************/
 {
-    if( curContextInitialized )  Zoinks();
+    if( curContextInitialized )
+        Zoinks();
     clear_context( &curContext );
 
     curContext.data = getenv( envVar );
     curContext.dataStart = curContext.data;
     if( curContext.data == NULL )
-        return( TRUE );
+        return( true );
     curContext.dataLen = strlen( curContext.dataStart );
 
-    curContextInitialized = TRUE;
+    curContextInitialized = true;
     curContext.type = ENVIRON_VAR_CONTEXT;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -128,16 +130,17 @@ bool OpenEnvironContext( const char *envVar )
 bool OpenFileContext( const char *filename )
 /******************************************/
 {
-    if( curContextInitialized )  Zoinks();
+    if( curContextInitialized )
+        Zoinks();
     clear_context( &curContext );
 
     curContext.fp = fopen( filename, "rt" );
     if( curContext.fp == NULL )
-        return( TRUE );
+        return( true );
 
-    curContextInitialized = TRUE;
+    curContextInitialized = true;
     curContext.type = COMMAND_FILE_CONTEXT;
-    return( FALSE );
+    return( false );
 }
 
 
@@ -161,7 +164,7 @@ void CloseContext( void )
         }
     }
 
-    curContextInitialized = FALSE;
+    curContextInitialized = false;
     clear_context( &curContext );
 }
 
@@ -179,7 +182,7 @@ void PushContext( void )
     memcpy( &stack[stackItems], &curContext, sizeof(struct Context) );
     stackItems++;
     clear_context( &curContext );
-    curContextInitialized = FALSE;
+    curContextInitialized = false;
 }
 
 
@@ -194,7 +197,7 @@ void PopContext( void )
     if( stackItems == 0 )  Zoinks();
     memcpy( &curContext, &stack[stackItems-1], sizeof(struct Context) );
     stackItems--;
-    curContextInitialized = TRUE;
+    curContextInitialized = true;
 }
 
 

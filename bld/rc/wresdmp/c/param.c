@@ -171,7 +171,7 @@ static void CheckExtention( char * path )
 static void DefaultParms( void )
 {
     CmdLineParms.PrintHelp = 0;
-    CmdLineParms.DumpContents = 0;
+    CmdLineParms.DumpContents = false;
     CmdLineParms.Name = NULL;
     CmdLineParms.Type = NULL;
     CmdLineParms.FileName[0] = '\0';

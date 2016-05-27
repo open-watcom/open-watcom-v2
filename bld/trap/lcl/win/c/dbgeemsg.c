@@ -165,7 +165,7 @@ void EnterSoftMode( void )
     if( InSoftMode ) {
         return;
     }
-    InSoftMode = TRUE;
+    InSoftMode = true;
     Out((OUT_SOFT,"Entering Soft Mode, task at fault=%04x", TaskAtFault ));
 
     while( QuerySendMessage( NULL, NULL, NULL, &msg ) ) {
@@ -187,7 +187,7 @@ void ExitSoftMode( void )
     if( !InSoftMode ) {
         return;
     }
-    InSoftMode = FALSE;
+    InSoftMode = false;
 
     Out((OUT_SOFT,"Exiting Soft Mode" ));
 

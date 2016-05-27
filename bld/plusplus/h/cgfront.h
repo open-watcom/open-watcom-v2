@@ -54,13 +54,13 @@ typedef enum                    // DTORING_KIND -- kind of DTORing to be applied
 ,   DTORING_COMPONENT           // - component
 } DTORING_KIND;
 
-enum                            // DEFINE TYPE OF POINTER CONVERSION
+typedef enum                    // DEFINE TYPE OF POINTER CONVERSION
 {   CNVPTR_DERIVED_ONLY    = 0  // - can only convert derived
 ,   CNVPTR_VIRT_TO_DERIVED = 1  // - can convert virtual to derived
 ,   CNVPTR_CAST            = 2  // - a cast conversion (from the C++ source)
 ,   CNVPTR_CONST_VOLATILE  = 4  // - const/volatile checks may be needed later
 ,   CNVPTR_NO_TRUNC        = 8  // - don't do truncation check
-};
+} CNVPTR_REQD;
 
 typedef enum                    // DEFINE RESULTS OF CONVERSION
 {   CNV_OK                      // - conversion successful or not required
@@ -236,7 +236,7 @@ PTREE AnalyseCtorExpr(          // ANALYSE CTOR EXPRESSION
 ;
 PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     PTREE expr,                 // - delete expression
-    bool in_dtor )              // - TRUE ==> call from inside DTOR
+    bool in_dtor )              // - true ==> call from inside DTOR
 ;
 PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     TYPE class_type,            // - class to be destructed
@@ -279,11 +279,11 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
 PTREE AnalyseOperator(          // ANALYSE AN OPERATOR
     PTREE expr )                // - expression
 ;
-unsigned AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
+CNV_RETN AnalysePtrCV(          // CHECK PTR CONVERSION FOR CONST/VOLATILE
     PTREE expr,                 // - expression for error
     TYPE proto,                 // - type of target
     TYPE argument,              // - type of source
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 ;
 PTREE AnalyseReturnClassVal     // RETURN CLASS VALUE
     ( PTREE retn_expr )         // - expression for return
@@ -313,7 +313,7 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
 CNV_RETN AnalyseTypeCtor(       // ANALYSE CONSTRUCTOR FOR A TYPE
     SCOPE scope,                // - start scope for component ctors (NULLable)
     TYPE type,                  // - type for CTOR (may be an abstract class)
-    unsigned conversion,        // - type of conversion reqd
+    CNV_REQD reqd_cnv,          // - type of conversion reqd
     SYMBOL *ctor,               // - ctor to be filled in
     PTREE *initial )            // - addr( initialization arguments )
 ;
@@ -325,7 +325,7 @@ target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
 ;
 PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
-    bool exact )                // - TRUE ==> exact CTORing of classes
+    bool exact )                // - true ==> exact CTORing of classes
 ;
 PTREE CallArgsArrange(          // ARRANGE CALL ARGUMENTS
     TYPE ftype,                 // - function type
@@ -346,18 +346,18 @@ bool CastCommonClass            // CAST (IMPLICITLY) TO A COMMON CLASS
 PTREE CastImplicit              // IMPLICIT CAST
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 ;
 PTREE CastImplicitCommonPtrExpr // CONVERT TO COMMON PTR EXPRESSION
     ( PTREE expr                // - the expression
     , CNV_DIAG *diagnosis       // - diagnosis
-    , bool check_cv )           // - TRUE ==> check CV QUALIFICATION
+    , bool check_cv )           // - true ==> check CV QUALIFICATION
 ;
 PTREE CastImplicitRight         // IMPLICIT CAST OF RIGHT OPERAND
     ( PTREE expr                // - expression
     , TYPE type                 // - target type
-    , CNV_REQD reqd             // - required kind of conversion
+    , CNV_REQD reqd_cnv         // - required kind of conversion
     , CNV_DIAG* diagnosis )     // - diagnosis
 ;
 void CDtorScheduleArgRemap(     // SCHEDULE CTOR/DTOR ARG.S REMAP, IF REQ'D
@@ -435,7 +435,7 @@ CGFILE_INS CgFrontFuncOpen(     // OPEN A FUNCTION (AND ITS FILE)
 ;
 void CgFrontGotoNear(           // EMIT GOTO IN NEAR SPACE (CS,GOTO)
     CGINTEROP opcode,           // - opcode to determine type of label ref.
-    unsigned condition,         // - condition for goto
+    cg_op condition,            // - condition for goto
     CGLABEL label )             // - label number
 ;
 void CgFrontInitRef(            // EMIT TO INIT-REF SEGMENT
@@ -447,10 +447,10 @@ void CgFrontLabdefCs(           // DEFINE A CS LABEL
 void CgFrontLabdefGoto(         // DEFINE A GOTO LABEL
     CGLABEL label )             // - label number
 ;
-unsigned CgFrontLabelCs(        // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
+CGLABEL CgFrontLabelCs(         // GET NEXT AVAILABLE LABEL # (CONTROL SEQ)
     void )
 ;
-unsigned CgFrontLabelGoto(      // GET NEXT AVAILABLE LABEL # (GOTO)
+CGLABEL CgFrontLabelGoto(       // GET NEXT AVAILABLE LABEL # (GOTO)
     void )
 ;
 void CgFrontLabfreeCs(          // FREE CS LABELS
@@ -528,7 +528,7 @@ void CgSetType(                 // SET NORMAL TYPE FOR GENERATION
 void CgSetTypeExact(            // SET EXACT TYPE FOR GENERATION
     TYPE type )                 // - the type
 ;
-unsigned CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
+CNV_RETN CgTypeTruncation(      // GET CNV_... FOR TRUNCATION
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 ;
@@ -593,8 +593,8 @@ PTREE ClassInitialize(          // INITIALIZE A CLASS OBJECT
 TYPE ClassTypeForType(          // GET CLASS TYPE FOR TYPE OR REFERENCE TO IT
     TYPE type )                 // - input type
 ;
-unsigned ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
-    unsigned retn,              // - return value: CNV_...
+CNV_RETN ConversionDiagnose(    // DIAGNOSE RETURN FROM A CONVERSION
+    CNV_RETN retn,              // - return value: CNV_...
     PTREE expr,                 // - current expression
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
@@ -627,6 +627,7 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     CNV_DIAG *diag_class,       // - diagnosis: class
     CNV_DIAG *diag_mem_ptr )    // - diagnosis: member ptr.
 ;
+#if 0
 unsigned ConvertExpr(           // GENERALIZED CONVERSION
     PTREE *expr_addr,           // - addr( expression to be converted )
     TYPE proto,                 // - prototype
@@ -645,10 +646,11 @@ unsigned ConvertExprDiagResult( // CONVERT AND DIAGNOSE RESULT
     unsigned conversion,        // - type of conversion
     CNV_DIAG *diagnosis )       // - diagnosis information
 ;
+#endif
 PTREE ConvertMembPtrConst(      // CONVERT TO TEMP. A MEMBER-PTR CONST
     PTREE *a_expr )             // - addr [expression]
 ;
-unsigned ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
+CNV_RETN ConvertOvFunNode(      // CONVERT FUN (FUN IS OVERLOADED), NO FREE
     TYPE tgt,                   // - target type
     PTREE func )                // - overloaded function
 ;
@@ -846,7 +848,7 @@ PTREE MembPtrZero(              // MAKE A NULL MEMBER POINTER CONSTANT
 CNV_RETN MembPtrConvert(        // CONVERT A MEMBER POINTER
     PTREE *a_expr,              // - addr[ conversion expression, not class ]
     TYPE tgt_type,              // - target type (member-pointer)
-    unsigned conversion )       // - type of conversion
+    CNV_REQD reqd_cnv )         // - type of conversion
 ;
 PTREE MembPtrDereference(       // DO '.*' AND '->*' operations
     PTREE expr )                // - expression to be processed
@@ -891,7 +893,7 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
 PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
-    bool exact )                // - TRUE ==> exact CTORing of classes
+    bool exact )                // - true ==> exact CTORing of classes
 ;
 PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
@@ -1004,7 +1006,7 @@ PTREE NodeConvertClassExact(    // CONVERT TO "CLASS_EXACT"
     PTREE node )                // - node
 ;
 CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
-    unsigned conversion,        // - type of conversion
+    CNVPTR_REQD reqd_cnvptr,    // - type of conversion
     PTREE *expr,                // - expression to be converted
     TYPE src,                   // - source type (converted from)
     TYPE tgt )                  // - target type (converted to)
@@ -1013,7 +1015,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
     PTREE *expr,                // - addr( ptr to be converted )
     TYPE base,                  // - base type
     SEARCH_RESULT *result,      // - search result
-    bool positive )             // - TRUE ==> use positive value
+    bool positive )             // - true ==> use positive value
 ;
 PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE expr,                 // - expr to cast
@@ -1167,8 +1169,8 @@ PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
 ;
 PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
     PTREE b_expr,               // - boolean expression
-    PTREE t_expr,               // - TRUE expression
-    PTREE f_expr )              // - FALSE expression
+    PTREE t_expr,               // - true expression
+    PTREE f_expr )              // - false expression
 ;
 PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
     PTREE dup,                  // - tree to be processed
@@ -1310,7 +1312,7 @@ unsigned PtrConvertCommon(      // CONVERT TO COMMON PTR
 bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
     AUX_INFO * pragma )         // - pragma
 ;
-bool PragmaName(                // RETURN TRUE IF NAME OF PRAGMA IS SIMPLE
+bool PragmaName(                // RETURN true IF NAME OF PRAGMA IS SIMPLE
     AUX_INFO *pragma,           // - pragma
     char **id )                 // - returned name
 ;
@@ -1468,7 +1470,7 @@ TYPE UdcFindType                // FIND TARGET TYPE FOR UDCF
 TYPE UserDefTypeForType(        // GET ENUM or CLASS TYPE FOR TYPE OR REFERENCE TO IT
     TYPE type )                 // - input type
 ;
-unsigned UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
+CNV_RETN UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
     PTREE *expr,                // - addr( expression to be converted )
     TYPE src,                   // - source type (a class)
     TYPE tgt )                  // - target type

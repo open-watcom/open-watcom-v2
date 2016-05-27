@@ -100,8 +100,8 @@ static char     **filenames = NULL;
 static int      nofilenames = 0;
 static char     *out_filename = NULL;
 
-static bool scanString( char *buf, const char *str, unsigned len )
-/*****************************************************************/
+static bool scanString( char *buf, const char *str, size_t len )
+/**************************************************************/
 {
     bool        have_quote;
     char        c;

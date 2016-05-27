@@ -390,7 +390,7 @@ static void logDisasm( WORD CS, DWORD EIP )
 /*
  * logSysInfo - record basic system info
  */
-static void logSysInfo( BOOL wasfault )
+static void logSysInfo( bool wasfault )
 {
     char        *s;
     time_t      tod;
@@ -787,7 +787,7 @@ char underLine[] = "============================================================
 /*
  * MakeLog - make the log file
  */
-void MakeLog( BOOL wasfault )
+void MakeLog( bool wasfault )
 {
     char        *str;
 

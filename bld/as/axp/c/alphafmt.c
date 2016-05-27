@@ -129,9 +129,9 @@ static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx ) {
 
     if( OP_HAS_RELOC( op ) ) {
         Error( RELOC_NOT_ALLOWED, opIdx );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static void addReloc( asm_reloc *reloc, op_reloc_target target, owl_reloc_type type, unsigned loc, bool is_named ) {
@@ -184,7 +184,7 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
         break;
     default:
         //Error( "internal - unexpected default type" );
-        assert( FALSE );
+        assert( false );
         ret = OWL_RELOC_ABSOLUTE;
     }
     return( ret );
@@ -238,7 +238,7 @@ static ins_funccode getFuncCode( ins_table *table, instruction *ins ) {
         if( ins->format->flags & QF_D ) fc += 0x040;
         break;
     default:
-        assert( FALSE ); // Others should have no need to call this.
+        assert( false ); // Others should have no need to call this.
     }
     return( fc );
 }
@@ -276,7 +276,7 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
         Error( BAD_BASE_REG_FOR_STACKVAR );
         return;
     }
-    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), TRUE );
+    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), true );
     doOpcodeRaRb( buffer, table->opcode, RegIndex( ins->operands[0]->reg ), FP_REG_IDX, 0 );
 }
 #endif
@@ -295,7 +295,7 @@ static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_ope
     int_16              low, high[2];
     uint_8              base_reg;
     owl_reloc_type      type;
-    bool                hi_reloc_emitted = FALSE;
+    bool                hi_reloc_emitted = false;
 
     if( force_pair ) {
         assert( reloc != NULL );
@@ -326,7 +326,7 @@ static unsigned ldaConst32( uint_32 *buffer, uint_8 d_reg, uint_8 s_reg, ins_ope
                 type = relocType( op->reloc.type, OWL_RELOC_HALF_HI );
                 if( type == OWL_RELOC_HALF_HI ) {
                     doReloc( reloc, op, OWL_RELOC_HALF_HI, buffer );
-                    hi_reloc_emitted = TRUE; // only need to generate h^ once
+                    hi_reloc_emitted = true; // only need to generate h^ once
                 } else {
                     assert( type == OWL_RELOC_HALF_LO );
                     // a l^ modifier was specified explicitly
@@ -388,7 +388,7 @@ static unsigned load32BitLiteral( uint_32 *buffer, ins_operand *op0, ins_operand
         val = op0->constant;
     }
     return( ldaConst32( buffer, RegIndex( op1->reg ), ZERO_REG_IDX,
-                        op0, val, NULL, FALSE ) );
+                        op0, val, NULL, false ) );
 }
 
 static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt ) {
@@ -397,7 +397,7 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
     ins_operand     *op0, *op1;
     uint_32         extra = 0;
     uint_32         abs_val;
-    bool            ready = TRUE;
+    bool            ready = true;
 
     op0 = operands[0];
     op1 = operands[1];
@@ -412,10 +412,10 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
             extra = _LIT( abs_val ); // this lit is between 0..255
             // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
         } else {
-            ready = FALSE;
+            ready = false;
         }
     } else {
-        ready = FALSE;
+        ready = false;
     }
     if( ready ) {
         doOpcodeFcRaRc( buffer, OPCODE_BIS, FUNCCODE_BIS, ZERO_REG_IDX, RegIndex( op1->reg ), extra );
@@ -471,13 +471,13 @@ static void ITLoadAddress( ins_table *table, instruction *ins, uint_32 *buffer, 
         if( op->reloc.type == ASM_RELOC_UNSPECIFIED ) {
             // Then we should emit LDA-LDAH pair.
             inc = ldaConst32( buffer, RegIndex( ins->operands[0]->reg ),
-                              s_reg, op, op->constant, reloc, TRUE );
+                              s_reg, op, op->constant, reloc, true );
             numExtendedIns += inc - 1;
             return;
         }
     }
     inc = ldaConst32( buffer, RegIndex( ins->operands[0]->reg ), s_reg, op,
-                      op->constant, reloc, FALSE );
+                      op->constant, reloc, false );
     numExtendedIns += inc - 1;
 /*
     doOpcodeRaRb( buffer, table->opcode, RegIndex( ins->operands[0]->reg ),
@@ -606,9 +606,9 @@ static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, 
     }
     if( lasterr != -1 ) {
         opError( ins, actual, wanted, lasterr );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op ) {
@@ -625,7 +625,7 @@ static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op ) {
     ot_array        *verify_table[3] = { (ot_array *)&verify1, &verify2, (ot_array *)&verify3 };
     int             num_var;
 
-    if( num_op == 0 ) return( TRUE );
+    if( num_op == 0 ) return( true );
     assert( num_op <= 3 );
     verify = verify_table[ num_op - 1 ];
     if( num_op == 1 ) {
@@ -689,7 +689,7 @@ static void ITMemJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_
             }
             /* load addr to $at (as s_reg) from op1 */
             inc = ldaConst32( buffer, AT_REG_IDX, ZERO_REG_IDX, op1,
-                              op1->constant, reloc, TRUE );
+                              op1->constant, reloc, true );
             doMemJump( buffer + inc, table, RegIndex( op0->reg ), AT_REG_IDX,
                        NULL, 0, reloc );
             numExtendedIns += inc;  // total # of instructions = inc + 1
@@ -713,7 +713,7 @@ static void ITMemJump( ins_table *table, instruction *ins, uint_32 *buffer, asm_
         Warning( INS_USES_AT_REG );
     }
     /* Gen code to load addr to $at (as s_reg) from op1 */
-    inc = ldaConst32( buffer, AT_REG_IDX, ZERO_REG_IDX, op0, op0->constant, reloc, TRUE );
+    inc = ldaConst32( buffer, AT_REG_IDX, ZERO_REG_IDX, op0, op0->constant, reloc, true );
     doMemJump( buffer + inc, table, d_reg_idx, AT_REG_IDX,
                NULL, 0, reloc );
     numExtendedIns += inc;  // total # of instructions = inc + 1
@@ -735,7 +735,7 @@ static bool retOperandsValidate( instruction *ins, ins_opcount num_op ) {
     ot_array        *verify_table[3] = { (ot_array *)&verify1, (ot_array *)&verify2, (ot_array *)&verify3 };
     int             num_var;
 
-    if( num_op == 0 ) return( TRUE );
+    if( num_op == 0 ) return( true );
     assert( num_op <= 3 );
     verify = verify_table[ num_op - 1 ];
     if( num_op == 1 ) {
@@ -1107,30 +1107,30 @@ bool AlphaValidate( instruction *ins ) {
         op = ins->operands[ i ];
         if( ( op->type & fmt->ops[ i ] ) != op->type ) {
             opError( ins, op->type, fmt->ops[ i ], i );
-            return( FALSE );
+            return( false );
         }
     }
     if( i < MAX_OPERANDS ) {
         if( ( fmt->ops[ i ] & OP_NOTHING ) != OP_NOTHING ) {
             Error( NOT_ENOUGH_INSOP );
-            return( FALSE );
+            return( false );
         }
     }   // NOTE: It might not catch all improper operand combinations
         // because we're using flags here
-    return( TRUE );
+    return( true );
 }
 
 #ifdef _STANDALONE_
 static void emitIns( owl_section_handle hdl, char *inscode, int size ) {
 //**********************************************************************
 
-    ObjEmitData( hdl, inscode, size, TRUE );
+    ObjEmitData( hdl, inscode, size, true );
 }
 #else
 static void emitIns( char *inscode, int size ) {
 //**********************************************
 
-    ObjEmitData( inscode, size, TRUE );
+    ObjEmitData( inscode, size, true );
 }
 #endif
 
@@ -1170,13 +1170,13 @@ void AlphaEmit( instruction *ins ) {
                 reloc.first = curr_reloc->next;
                 if( curr_reloc->is_named ) {
 #ifdef _STANDALONE_
-                    ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ), curr_reloc->type, TRUE, TRUE );
+                    ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ), curr_reloc->type, true, true );
                 } else {
-                    ObjEmitReloc( hdl, &curr_reloc->target.label, curr_reloc->type, TRUE, FALSE );
+                    ObjEmitReloc( hdl, &curr_reloc->target.label, curr_reloc->type, true, false );
 #else
-                    ObjEmitReloc( SymName( curr_reloc->target.ptr ), curr_reloc->type, TRUE, TRUE );
+                    ObjEmitReloc( SymName( curr_reloc->target.ptr ), curr_reloc->type, true, true );
                 } else {
-                    ObjEmitReloc( &curr_reloc->target.label, curr_reloc->type, TRUE, FALSE );
+                    ObjEmitReloc( &curr_reloc->target.label, curr_reloc->type, true, false );
 #endif
                 }
 #ifdef AS_DEBUG_DUMP

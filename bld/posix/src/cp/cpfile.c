@@ -49,6 +49,7 @@
 #elif defined( __NT__ )
 #include <windows.h>
 #endif
+#include "bool.h"
 #include "watcom.h"
 #include "cp.h"
 #include "fnutils.h"
@@ -82,9 +83,9 @@ extern int _inline_strcmp( char *, char * );
     DosGetFullPath( dest, fulldest );
     DosGetFullPath( src, fullsrc );
     if( !strcmp( fulldest, fullsrc ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* dosSameFile */
 
@@ -98,7 +99,7 @@ static int osSameFile( char *dest, char *src )
     }
     src = src;
     dest = dest;
-    return( TRUE );
+    return( true );
 
 } /* osSameFile */
 
@@ -115,9 +116,9 @@ static int osSameFile( char *dest, char *src )
     GetFullPathName( dest, MAX_PATH, fulldest, &fp );
     GetFullPathName( src, MAX_PATH, fullsrc, &fp );
     if( !stricmp( fulldest, fullsrc ) ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 
 } /* osSameFile */
 
@@ -138,7 +139,7 @@ static int sameFile( char *dest, struct stat *ds, char *src, struct stat *ss )
             }
         }
     }
-    return( FALSE );
+    return( false );
 
 } /* sameFile */
 #endif

@@ -72,7 +72,7 @@ static void State_delete(State *s)
 static Ins **closure( Ins **cP, Ins *i )
 {
     while( !i->i.marked ) {
-        i->i.marked = TRUE;
+        i->i.marked = true;
         *(cP++) = i;
         if(i->i.tag == FORK){
             cP = closure(cP, i + 1);
@@ -96,7 +96,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
         if( i->i.tag == CHAR || i->i.tag == TERM ) {
             *cP++ = i;
         } else {
-            i->i.marked = FALSE;
+            i->i.marked = false;
         }
     }
     kCount = cP - kernel;
@@ -123,7 +123,7 @@ static State *DFA_findState( DFA *d, Ins **kernel, uint kCount )
         d->toDo = s;
     }
     for( iP = kernel; (i = *iP) != NULL; ++iP ) {
-        i->i.marked = FALSE;
+        i->i.marked = false;
     }
     return s;
 }

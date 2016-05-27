@@ -232,7 +232,7 @@ static char MouInit( void )
     char            savedmode;
     unsigned short  off, i, j, s1, s2;
     int             ret;
-    static int      first_time = TRUE;
+    static int      first_time = true;
 
     Points = _POINTS;
 
@@ -246,7 +246,7 @@ static char MouInit( void )
         with not doing the initialization all the time.
     */
     if( first_time ) {
-        first_time = FALSE;
+        first_time = false;
         savedmode = _peekb( BIOS_PAGE, 0x49 );  /* Save video mode          */
         _pokeb( BIOS_PAGE, 0x49, 6 );           /* Set magic mode           */
 
@@ -255,7 +255,7 @@ static char MouInit( void )
         _pokeb( BIOS_PAGE, 0x49, savedmode );   /* Put the old mode back    */
 
         if( ret != -1 ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -270,7 +270,7 @@ static char MouInit( void )
         }
     }
     ResetSequencer();
-    return( TRUE );
+    return( true );
 }
 
 //  Deinitialize the mouse routines.
@@ -342,7 +342,7 @@ static char CheckEgaVga( void )
         ) {
         DrawCursor  = DrawEgaVgaCursor;
         EraseCursor = EraseEgaVgaCursor;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

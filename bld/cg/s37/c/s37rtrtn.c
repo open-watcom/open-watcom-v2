@@ -180,9 +180,9 @@ extern  bool            RTLeaveOp2( instruction *ins ) {
         if( ins->head.opcode == OP_MUL
          || ins->head.opcode == OP_SUB
          || ins->head.opcode == OP_ADD ){
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( FALSE );
+    return( false );
 }

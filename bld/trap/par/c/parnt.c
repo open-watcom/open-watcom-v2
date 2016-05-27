@@ -56,7 +56,7 @@ void FiniSys( void );
 bool Terminate( void )
 {
         FiniSys();
-        return( TRUE );
+        return( true );
 }
 #endif
 

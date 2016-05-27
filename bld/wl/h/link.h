@@ -96,7 +96,7 @@ typedef unsigned long stateflag;
 #define FMT_INITIALIZED         0x00000200
 #define UNDEFED_SYM_ERROR       0x00000400
 #define GENERATE_LIB_LIST       0x00000800
-#define HAVE_16BIT_CODE         0x00001000      // TRUE if we have 16 bit code.
+#define HAVE_16BIT_CODE         0x00001000      // true if we have 16 bit code.
 #define HAVE_ALPHA_CODE         0x00002000
 #define HAVE_PPC_CODE           0x00004000
 #define HAVE_I86_CODE           0x00008000

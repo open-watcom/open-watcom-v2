@@ -82,7 +82,7 @@ extern an BGCall( cn call, bool use_return, bool in_line )
     if( state->attr & ROUTINE_IS_SETJMP ) {
         call_ins->flags.call_flags |= CALL_IS_SETJMP;
     }
-    if( use_return == FALSE ) {
+    if( use_return == false ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 
@@ -186,9 +186,9 @@ extern void InitTargProc( void )
     // For d1+ or higher, force accesses to locals to go through $fp since frame
     // pointer is what the DWARF debug info is currently referencing.
     if( _IsModel( DBG_LOCALS ) )
-        CurrProc->targ.base_is_fp = TRUE;
+        CurrProc->targ.base_is_fp = true;
     else
-        CurrProc->targ.base_is_fp = FALSE;
+        CurrProc->targ.base_is_fp = false;
 }
 
 

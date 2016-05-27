@@ -51,14 +51,14 @@ extern int ScreenHandle;        // from uibios.c
 /* Novell Labs Certification. */
 static struct ScreenStruct * ScreenPointer = NULL;
 static unsigned         shift_state = 0;
-static bool BlockedOnKeyboard = FALSE;
+static bool BlockedOnKeyboard = false;
 static struct {
     bool    inUse;
     BYTE    keyType;
     BYTE    keyValue;
     BYTE    keyStatus;
     BYTE    scanCode;
-} SavedKey = { FALSE };
+} SavedKey = { false };
 
 unsigned char UIAPI uicheckshift( void )
 /**************************************/
@@ -78,13 +78,13 @@ BYTE * scanCode;
         *keyValue = SavedKey.keyValue;
         *keyStatus = SavedKey.keyStatus;
         *scanCode = SavedKey.scanCode;
-        SavedKey.inUse = FALSE;
-        return( TRUE );
+        SavedKey.inUse = false;
+        return( true );
     } else if( CheckKeyStatus( ScreenPointer ) ) {
         GetKey( ScreenPointer, keyType, keyValue, keyStatus, scanCode, 0 );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -259,11 +259,11 @@ void intern waitforevent( void )
 /******************************/
 {
     if( !SavedKey.inUse ) {
-        BlockedOnKeyboard = TRUE;
+        BlockedOnKeyboard = true;
         GetKey( ScreenPointer, &SavedKey.keyType, &SavedKey.keyValue,
                     &SavedKey.keyStatus, &SavedKey.scanCode, 0 );
-        BlockedOnKeyboard = FALSE;
-        SavedKey.inUse = TRUE;
+        BlockedOnKeyboard = false;
+        SavedKey.inUse = true;
     }
 }
 

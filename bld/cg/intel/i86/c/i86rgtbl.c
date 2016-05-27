@@ -685,10 +685,10 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
     }
     for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -732,10 +732,10 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
     }
     for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -888,10 +888,10 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 
     for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, regs ) ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -925,10 +925,10 @@ extern  hw_reg_set      FixedRegs( void )
 extern  bool    IsStackReg( name *sp )
 /************************************/
 {
-    if( sp == NULL ) return( FALSE );
-    if( sp->n.class != N_REGISTER ) return( FALSE );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( FALSE );
-    return( TRUE );
+    if( sp == NULL ) return( false );
+    if( sp->n.class != N_REGISTER ) return( false );
+    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( false );
+    return( true );
 }
 
 

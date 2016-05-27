@@ -59,7 +59,7 @@ typedef struct seg_cue {
 
 
 
-extern void  InitCueList( cue_list *ctl ) {
+void  InitCueList( cue_list *ctl ) {
 /*********************************/
 
     ctl->head = NULL;
@@ -88,8 +88,8 @@ seg_cue *InitSegCue( cue_list *ctl, addr_seg seg, addr_off offset )
     return( curr );
 }
 
-extern  void AddCue( seg_cue *ctl, dr_line_data *new )
-/****************************************************/
+void AddCue( seg_cue *ctl, dr_line_data *new )
+/********************************************/
 // Add a new offset to the last block if full alloc a new one
 // bump the item count
 {
@@ -179,8 +179,9 @@ static  seg_cue  *FindSegCue( cue_list *list, addr_ptr *mach )
     return( last );
 }
 
-extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ) {
-/****************************************************/
+bool FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret )
+/*****************************************************************/
+{
     cue_blk     *blk;
     cue_info    *info;
     off_cmp     cmp;
@@ -214,7 +215,7 @@ extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ) {
                     break;
                 } else {
                      //shouldn't happen an error
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
@@ -242,9 +243,9 @@ extern  int FindCueOffset( cue_list *list, addr_ptr *mach, cue_item *ret ) {
             }
         }
         ret->next_offset = next_off;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 typedef enum {
@@ -259,10 +260,9 @@ typedef enum {
     ST_SQUEEZE_HIGH,      // found next higher
 } line_state;
 
-extern   dfline_find FindCue( cue_list    *list,
-                              cue_item    *item,
-                              dfline_search what ) {
-/****************************************************/
+dfline_find FindCue( cue_list *list, cue_item *item, dfline_search what )
+/***********************************************************************/
+{
     cue_blk         *blk;
     cue_info        *info;
     unsigned_16     rem;
@@ -443,8 +443,9 @@ void  FiniCueInfo( cue_list *list )
 }
 #ifdef DEBUG
 #include <stdarg.h>
-extern void myprintf( char *ctl, ... ) {
-/** my printf ************************/
+void myprintf( char *ctl, ... )
+/** my printf ****************/
+{
     va_list argument;
     char buff[100];
     long val;
@@ -496,7 +497,7 @@ extern void myprintf( char *ctl, ... ) {
         }
     }
     va_end( argument );
-    DCWrite( 1, buff, curr-buff );
+    DCWrite( 1, buff, curr - buff );
 
 }
 

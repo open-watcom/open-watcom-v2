@@ -36,11 +36,11 @@ struct scope_node {
     scope_node *next;
     addr_off            start;
     addr_off            end;
-    dr_handle           what;
+    drmem_hdl           what;
 };
 extern scope_node *AddScope( scope_node *where, addr_off start,
                                                 addr_off end,
-                                               dr_handle what );
+                                               drmem_hdl what );
 extern scope_node *FindScope( scope_node *last, addr_off in );
 extern void InitScope( scope_ctl *ctl );
 extern void FiniScope( scope_ctl *ctl );

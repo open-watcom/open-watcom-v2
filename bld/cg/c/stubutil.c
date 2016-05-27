@@ -116,10 +116,10 @@ extern  char    *DoIToS( char * buff, int buff_len, signed_32 i ) {
     p = buff + buff_len;
     *p = NULLCHAR;
     if( i < 0 ) {
-        neg = TRUE;
+        neg = true;
         i = -i;
     } else {
-        neg = FALSE;
+        neg = false;
     }
     while( i != 0 ) {
         *--p = i % 10 + '0';
@@ -428,7 +428,7 @@ extern  n       *NewNode( nclass c, cg_type t ) {
     nd->t = t;
     nd->id = ++NodeId;
     nd->src = NULL;
-    nd->burnt = FALSE;
+    nd->burnt = false;
     NodeList = nd;
     return( nd );
 }
@@ -504,10 +504,10 @@ extern  bool    LkUpOp( cg_op o, cg_op *l ) {
 
     while( *l != O_NOP ) {
         if( o == *l++ ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 extern  void    VerOp( cg_op o, cg_op *l ) {
 //==========================================
@@ -625,7 +625,7 @@ extern  bool    CheckInLine( n * t ) {
     b   *bk;
 
     if( (*(call_class*)FEAuxInfo( t->h, CALL_CLASS ) & MAKE_CALL_INLINE) == 0 ) {
-        return( FALSE );
+        return( false );
     }
     icall = CGAlloc( sizeof( ic ) );
     icall->t = t->t;
@@ -657,7 +657,7 @@ extern  bool    CheckInLine( n * t ) {
     Code( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     Action( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     NodeList = nlist;
-    return TRUE;
+    return true;
 }
 extern  void    DumpSubTree( n *t ) {
 //===================================
@@ -774,7 +774,7 @@ extern  segment_id      SetFile( segment_id seg ) {
 
     old = CurSeg;
     CurSeg = seg;
-    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[ seg ] == FALSE ) {
+    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[ seg ] == false ) {
         CGError( "BESetSeg - bad segment (%d)", seg );
     } else {
         if( Files[ seg ].hdl == 0 ) {
@@ -790,7 +790,7 @@ extern  segment_id      SetFile( segment_id seg ) {
             } else {
                 Files[ seg ].hdl = FCreate( Files[ seg ].name );
                 if( Files[ seg ].hdl != -1 ) {
-                    Files[ seg ].exists = TRUE;
+                    Files[ seg ].exists = true;
                     ++FilesOpen;
                 } else {
                     Files[ seg ].hdl = 0;

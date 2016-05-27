@@ -119,7 +119,7 @@ static PSTK_CTL sym_scopes;     // active scopes for a definition
 static carve_t carve_blk_scope; // carver: active block scopes
 static carve_t carve_scope_ins; // carver: scope instructions
 static ACTBLK* ring_active_blks;// ring of active block scopes
-static bool enableMacRefs;      // TRUE ==> macro references to be processed
+static bool enableMacRefs;      // true ==> macro references to be processed
 static BRI_Handle* bri_handle;  // handle for browse-file writer
 
 
@@ -383,7 +383,7 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
     PSTK_ITER sym_iter;         // - iterator: new active scopes
     SCOPE ascope;               // - scope: old active scopes
     SCOPE sscope;               // - scope: new active scopes
-    bool retn;                  // - return: TRUE ==> scope was adjusted
+    bool retb;                  // - return: true ==> scope was adjusted
     bool short_circuit;         // - can short-circuit scope adjustment
     bool in_template;           // - active scope is in a TEMPLATE_PARM scope
 
@@ -400,14 +400,14 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
         switch( scope->id ) {
           default :
             if( scope == top ) {
-                short_circuit = TRUE;
+                short_circuit = true;
                 break;
             }
             // drops thru
           case SCOPE_TEMPLATE_DECL :
           case SCOPE_TEMPLATE_PARM :
           case SCOPE_TEMPLATE_INST :
-            short_circuit = FALSE;
+            short_circuit = false;
             break;
         }
 #ifdef NDEBUG
@@ -420,14 +420,14 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             }
             PstkIterUpOpen( &act_iter, &active_scopes );
             PstkIterDnOpen( &sym_iter, &sym_scopes );
-            in_template = FALSE;
+            in_template = false;
             for( ; ; ) {
                 ascope = PstkIterUpNext( &act_iter );
                 sscope = PstkIterDnNext( &sym_iter );
                 if( ascope != sscope ) break;
                 if( ascope == NULL ) break;
                 if( ascope->id == SCOPE_TEMPLATE_PARM ){
-                    in_template = TRUE;
+                    in_template = true;
                 }
             }
             if( ascope != NULL ) {
@@ -442,7 +442,7 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
             if( !in_template && sscope != NULL ) {
                 for( ;; ) {
                     if( scope->id == SCOPE_TEMPLATE_PARM ) {
-                        in_template = TRUE;
+                        in_template = true;
                         break;
                     }
                     if( scope == sscope ) break;
@@ -466,11 +466,11 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
                 if( NULL == top ) break;
             }
         }
-        retn = TRUE;
+        retb = true;
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 #undef ShcVerify
@@ -479,25 +479,25 @@ static bool activeScopesReset   // RESET ACTIVE SCOPES
 static bool activeScopesAdjust  // ADJUST ACTIVE SCOPES
     ( SYMBOL sym )
 {
-    bool retn;                  // - return: TRUE ==> scope for symbol
+    bool retb;                  // - return: true ==> scope for symbol
     TOKEN_LOCN *locn;
 
     if( NULL == sym->name ) {
-        retn = FALSE;
+        retb = false;
     } else {
         SCOPE scope = sym->name->containing;
         if( NULL == scope ) {
-            retn = FALSE;
+            retb = false;
         } else {
             if( sym->locn != NULL ){
                 locn = &sym->locn->tl;
             } else {
                 locn = NULL;
             }
-            retn = activeScopesReset( scope, locn );
+            retb = activeScopesReset( scope, locn );
         }
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -986,9 +986,9 @@ bool BrinfDependsMacroDefined   // DEPENDENCY: MACRO DEFINED OR NOT
         ExtraRptIncrementCtr( ctr_dep_macro_defined );
         if( defed ) {
             val = BrinfMacAddDefin( name, nlen );
-            enableMacRefs = FALSE;
+            enableMacRefs = false;
             mac = MacroLookup( name, nlen );
-            enableMacRefs = TRUE;
+            enableMacRefs = true;
             type = MVT_DEFINED;
         } else {
             val = BrinfMacAddUndef( name, nlen );
@@ -1119,7 +1119,7 @@ static void startBrinfPCH       // START A BROWSE-FILE WHICH HAS PCH REFERENCE
     SRCFILE srcf;
     TOKEN_LOCN start = { 0, 0, 0 };
 
-    BrinfInit( FALSE );
+    BrinfInit( false );
     fname = IoSuppFullPath( PCHFileName(), full_name, sizeof( full_name ) );
     fname = FNameAdd( fname );
     BrinfWriteIns( IC_BR_PCH, fname );
@@ -1180,7 +1180,7 @@ void BrinfPchRead               // INSERT PCH REFERENCE INTO BROWSING
 
 
 void BrinfInit                  // START OF PROCESSING FOR BROWSE INFO
-    ( bool primary )            // - TRUE ==> primary initialization
+    ( bool primary )            // - true ==> primary initialization
 {
     if( primary ) {
         bri_handle = NULL;
@@ -1206,7 +1206,7 @@ void BrinfInit                  // START OF PROCESSING FOR BROWSE INFO
         ref_file = NULL;
         ref_line = 0;
         ref_col = 0;
-        enableMacRefs = TRUE;
+        enableMacRefs = true;
         if( primary ) {
             MacroWriteBrinf();
         }

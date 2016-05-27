@@ -181,7 +181,7 @@ static void    WndPaintRows( a_window *wnd, wnd_row start_row, int num )
     wnd_attr            prev_attr;
     bool                had_cache;
 
-    had_cache = WndSetCache( wnd, FALSE );
+    had_cache = WndSetCache( wnd, false );
     WndBegPaint( wnd, start_row, num );
     notify_row = WND_NO_ROW;
     prev_attr = 0;

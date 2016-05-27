@@ -337,7 +337,7 @@ void init_tokens( char **input_file )
         check = *input_file;
         if( check[0] == '/' || check[0] == '-' ) {
             if( tolower( check[1] ) == 'q' && check[2] == '\0' ) {
-                flags.quiet = TRUE;
+                flags.quiet = true;
                 continue;
             }
             if( tolower( check[1] ) == 'e' && check[2] == '\0' ) {
@@ -346,11 +346,11 @@ void init_tokens( char **input_file )
                 continue;
             }
             if( tolower( check[1] ) == 'i' && check[2] == '\0' ) {
-                flags.imperfect = TRUE;
+                flags.imperfect = true;
                 continue;
             }
             if( tolower( check[1] ) == 'm' && check[2] == '\0' ) {
-                flags.mask_hash = TRUE;
+                flags.mask_hash = true;
                 continue;
             }
             if( tolower( check[1] ) == 's' && check[2] == '\0' ) {
@@ -359,11 +359,11 @@ void init_tokens( char **input_file )
                 continue;
             }
             if( tolower( check[1] ) == 't' && check[2] == '\0' ) {
-                flags.tiny_output = TRUE;
+                flags.tiny_output = true;
                 continue;
             }
             if( tolower( check[1] ) == 'a' && check[2] == '\0' ) {
-                flags.align = TRUE;
+                flags.align = true;
                 continue;
             }
         }
@@ -480,7 +480,7 @@ void init_arrays( unsigned first_index, unsigned last_index )
     // weight 0 is never used so it can be used in weights[] to see
     // what letters have weights
     for( i = 1; i <= MAX_WEIGHTS; ++i ) {
-        available[i] = TRUE;
+        available[i] = true;
     }
 }
 
@@ -509,7 +509,7 @@ void sort_frequency( void )
     next[LETTER_MAX] = LETTER_MIN;
     /* sort the list of characters in descending order of frequency */
     do {
-        change = FALSE;
+        change = false;
         c = most_used_character;
         for(;;) {
             previous = c;
@@ -522,13 +522,13 @@ void sort_frequency( void )
                 next[c] = next[after_c];
                 next[after_c] = c;
                 next[previous] = after_c;
-                change = TRUE;
+                change = true;
             }
         }
     } while( change );
     /* sort lists of equal frequency characters in ascending order */
     do {
-        change = FALSE;
+        change = false;
         c = most_used_character;
         for(;;) {
             previous = c;
@@ -542,7 +542,7 @@ void sort_frequency( void )
                     next[c] = next[after_c];
                     next[after_c] = c;
                     next[previous] = after_c;
-                    change = TRUE;
+                    change = true;
                 }
             }
         }
@@ -624,13 +624,13 @@ bool share_letter( letter_t c, letter_t *p1, letter_t *p2 )
                 if( partial[h] != NULL_KEYWORD ) {
                     ++collisions[i];
                     ++collisions[partial[h]];
-                    return( TRUE );
+                    return( true );
                 }
                 partial[h] = i;
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool check( letter_t c )
@@ -648,22 +648,22 @@ bool check( letter_t c )
     if( first_scale == 1 && last_scale == 1 ) {
         while( freq[c] != 0 && c != most_used_character ) {
             if( share_letter( c, first, last ) ) {
-                return( FALSE );
+                return( false );
             }
             c = next[c];
         }
     } else {
         while( freq[c] != 0 && c != most_used_character ) {
             if( share_letter( c, first, first ) ) {
-                return( FALSE );
+                return( false );
             }
             if( share_letter( c, last, last ) ) {
-                return( FALSE );
+                return( false );
             }
             c = next[c];
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool try_hash( letter_t c )
@@ -677,7 +677,7 @@ bool try_hash( letter_t c )
     unsigned last_weight;
     unsigned adjust;
 
-    works = TRUE;
+    works = true;
     first_weight = first_scale * weights[c];
     last_weight = last_scale * weights[c];
     for( i = 1; i <= num_keywords; ++i ) {
@@ -698,7 +698,7 @@ bool try_hash( letter_t c )
         if( done[i] + found == 2 ) {
             index = do_hash( hash[i] + adjust );
             if( used[index] != NULL_KEYWORD ) {
-                works = FALSE;
+                works = false;
                 break;
             }
             done[i] += found;
@@ -709,10 +709,10 @@ bool try_hash( letter_t c )
             hash[i] += adjust;
         }
     }
-    if( works == TRUE ) {
+    if( works == true ) {
         works = check( next[c] );
     }
-    if( works == FALSE ) {
+    if( works == false ) {
         undo( c, i - 1 );
     }
     return( works );
@@ -740,11 +740,11 @@ void try_for_hash( void )
 
     c = most_used_character;
     weights[c] = 1;
-    available[weights[c]] = FALSE;
+    available[weights[c]] = false;
     do {
         works = try_hash( c );
         if( works ) {
-            available[weights[c]] = FALSE;
+            available[weights[c]] = false;
             c = next[c];
             if( c == most_used_character )
                 break;
@@ -756,7 +756,7 @@ void try_for_hash( void )
             do {
                 while( weights[c] == num_keywords && c != most_used_character ) {
                     c = prev[c];
-                    available[weights[c]] = TRUE;
+                    available[weights[c]] = true;
                     undo( c, num_keywords );
                 }
                 if( c == most_used_character )
@@ -769,7 +769,7 @@ void try_for_hash( void )
         search = next_weight();
         if( search == 0 )
             break;
-        available[search] = FALSE;
+        available[search] = false;
         weights[c] = 0;
         c = next[c];
     }
@@ -784,11 +784,11 @@ bool hash_ok( void )
         h = do_hash( hash[i] );
         for( j = i + 1; j <= num_keywords; ++j ) {
             if( h == do_hash( hash[j] ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool quick_failure( void )
@@ -802,13 +802,13 @@ bool quick_failure( void )
                 if( first[i] == first[j] ) {
                     if( last[i] == last[j] ) {
                         output( "quick check: %s -- %s\n", tokens[i], tokens[j] );
-                        return( TRUE );
+                        return( true );
                     }
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 bool hash_func( unsigned first_index, unsigned last_index )
@@ -823,11 +823,11 @@ bool hash_func( unsigned first_index, unsigned last_index )
     init_arrays( first_index, last_index );
     sort_frequency();
     if( quick_failure() ) {
-        return( FALSE );
+        return( false );
     }
     try_for_hash();
     if( hash_ok() ) {
-        return( TRUE );
+        return( true );
     }
     w = 1;
     for( i = 1; i <= num_keywords; ++i ) {
@@ -836,7 +836,7 @@ bool hash_func( unsigned first_index, unsigned last_index )
         }
     }
     output( "keyword '%s' had the most collisions\n", tokens[w] );
-    return( FALSE );
+    return( false );
 }
 
 void dump_common_defs( unsigned first_index, unsigned last_index )
@@ -1138,7 +1138,7 @@ bool hash_search( void )
                         dump_weights( j, i );
                         dump_hash();
                     }
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
@@ -1146,7 +1146,7 @@ bool hash_search( void )
             break;
         ++hashsize;
     } while( hashsize <= hashmask );
-    return( FALSE );
+    return( false );
 }
 
 int main( int argc, char **argv )

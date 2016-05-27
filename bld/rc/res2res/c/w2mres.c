@@ -30,11 +30,12 @@
 
 
 #include <string.h>
+#include <stddef.h>
 #include "wresall.h"
-#include "types.h"
 #include "bincpy.h"
 #include "w2mres.h"
 #include "rcrtns.h"
+
 
 static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
 /*************************************************************/
@@ -60,7 +61,7 @@ static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
     return( newname );
 }
 
-static int ConvertOneWResource( WResFileID infile, WResFileID outfile,
+static bool ConvertOneWResource( WResFileID infile, WResFileID outfile,
                             WResDirWindow wind )
 /********************************************************************/
 {
@@ -78,8 +79,8 @@ static int ConvertOneWResource( WResFileID infile, WResFileID outfile,
     outhead.MemoryFlags = langinfo->MemoryFlags;
     outhead.Size = langinfo->Length;
 
-    //FIXME! The last argument should be TRUE for Win32 resources
-    error = MResWriteResourceHeader( &outhead, outfile, FALSE );
+    //FIXME! The last argument should be true for Win32 resources
+    error = MResWriteResourceHeader( &outhead, outfile, false );
     if (!error) {
         RCSEEK( infile, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( infile, outfile, outhead.Size );
@@ -91,24 +92,24 @@ static int ConvertOneWResource( WResFileID infile, WResFileID outfile,
     return( error );
 } /* ConvertOneWResource */
 
-static int ConvertWResources( WResFileID infile, WResDir indir,
+static bool ConvertWResources( WResFileID infile, WResDir indir,
                     WResFileID outfile )
 /*************************************************************/
 {
     WResDirWindow       wind;
-    int                 error;
+    bool                error;
 
 
-    if (WResIsEmpty( indir )) {
-        error = TRUE;
+    if( WResIsEmpty( indir ) ) {
+        error = true;
     } else {
-        error = FALSE;
+        error = false;
         wind = WResFirstResource( indir );
-        while (!WResIsLastResource( wind, indir ) && !error ) {
+        while( !WResIsLastResource( wind, indir ) && !error ) {
             error = ConvertOneWResource( infile, outfile, wind );
             wind = WResNextResource( wind, indir );
         }
-        if (!error) {
+        if( !error ) {
             /* convert the last resource */
             error = ConvertOneWResource( infile, outfile, wind );
         }
@@ -117,20 +118,20 @@ static int ConvertWResources( WResFileID infile, WResDir indir,
     return( error );
 } /* ConvertWResource */
 
-int ConvertWResToMRes( WResFileID infile, WResFileID outfile )
+bool ConvertWResToMRes( WResFileID infile, WResFileID outfile )
 /************************************************************/
 {
     WResDir             indir;
-    int                 error;
+    bool                error;
 
     indir = WResInitDir();
-    if (WResDirInitError( indir ) ) {
-        return( TRUE );
+    if( WResDirInitError( indir ) ) {
+        return( true );
     }
 
     error = WResReadDir( infile, indir, NULL );
 
-    if (!error) {
+    if( !error ) {
         error = ConvertWResources( infile, indir, outfile );
     }
 

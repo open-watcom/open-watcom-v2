@@ -433,7 +433,7 @@ static void AddParms( void )
     for( parm = ParmList; parm != NULL; parm = parm->next_parm ) {
         new_sym_handle = SYM_NULL;
         parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
-        parm->sym.attribs.is_parm = TRUE;
+        parm->sym.attribs.is_parm = true;
         h = parm->sym.info.hash;
         if( parm->sym.name[0] == '\0' ) {
             /* no name ==> ... */
@@ -563,7 +563,7 @@ static void ChkParms( void )
             prev_parm = parm;
             prev_sym_handle = sym_handle;
             parm->sym.flags |= SYM_DEFINED | SYM_ASSIGNED;
-            parm->sym.attribs.is_parm = TRUE;
+            parm->sym.attribs.is_parm = true;
         }
         if( prev_parm != NULL ) {
 #if _CPU == 370

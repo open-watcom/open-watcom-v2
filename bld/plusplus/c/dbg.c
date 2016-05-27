@@ -989,9 +989,9 @@ static bool findScope( void *e, const void *s )
     SCOPE_DEFN *holder = e;
 
     if( holder->defn == s ) {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 void DbgForgetScope(            // SCOPE is useless, so don't dump it
@@ -1109,7 +1109,8 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
 
 
 #define PUSH_NODE( ctl, node ) \
-    if( node != NULL ) *(PTREE*)VstkPush(&ctl) = node
+    if( node != NULL ) *(PTREE *)VstkPush( &ctl ) = node
+
 static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     PTREE node )                // - node in parse tree
 {
@@ -1117,11 +1118,11 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
     char *node_name;            // - name of node
     VSTK_CTL ctl;               // - VSTK control information (nodes)
     VSTK_CTL dup;               // - VSTK control information (duplicates)
-    int dup_out;                // - last duplicate printed
+    unsigned dup_out;           // - last duplicate printed
 
     VstkOpen( &ctl, sizeof( PTREE ), 32 );
     VstkOpen( &dup, sizeof( PTREE ), 8 );
-    dup_out = -1;
+    dup_out = 0;
     for( ; ; ) {
         switch( node->op ) {
           case PT_ERROR :
@@ -1305,14 +1306,13 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             dumpLocation( &node->locn );
             dumpPtreeFlags( node );
             if( node->u.subtree[0] != NULL ) {
-                for( duped = VstkTop( &dup )
-                   ;
-                   ; duped = VstkNext( &dup, duped ) ) {
-                    if( duped == NULL ) {
-                        PUSH_NODE( dup, node->u.subtree[0] );
-                    } else if( *duped == node->u.subtree[0] ) {
+                VstkIterBeg( &dup, duped ) {
+                    if( *duped == node->u.subtree[0] ) {
                         break;
                     }
+                }
+                if( duped == NULL ) {
+                    PUSH_NODE( dup, node->u.subtree[0] );
                 }
             }
           } break;
@@ -1347,11 +1347,12 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
             if( next != NULL ) {
                 node = *next;
             } else {
-                ++dup_out;
-                if( dup_out > VstkDimension( &dup ) ) break;
+                if( dup_out >= VstkDimension( &dup ) )
+                    break;
                 next = VstkIndex( &dup, dup_out );
                 printf( "--------------- duplicate ------------\n" );
                 node = *next;
+                ++dup_out;
             }
         }
     }

@@ -48,7 +48,7 @@ typedef union hdl_type {
 extern  cg_init_info    BEInit(cg_switches switches, cg_target_switches tg_switches,
                                uint size,proc_revision proc) {
     cg_init_info        info;
-    info.version.is_large = TRUE;
+    info.version.is_large = true;
     info.version.revision = II_REVISION;
 #if _TARGET & _TARG_IAPX86
     info.version.target = II_TARG_8086;

@@ -46,17 +46,17 @@ static bool EndOfAsmStmt( void )
                 break;
             }
         }
-        return( TRUE );
+        return( true );
     }
     if( CurToken == T_EOF )
-        return( TRUE );
+        return( true );
     if( CurToken == T_NULL )
-        return( TRUE );
+        return( true );
     if( CurToken == T___ASM )
-        return( TRUE );
+        return( true );
     if( CurToken == T_RIGHT_BRACE )
-        return( TRUE );
-    return( FALSE );
+        return( true );
+    return( false );
 }
 
 static void GetAsmLine( void )
@@ -106,7 +106,7 @@ void AsmStmt( void )
 
     NextToken();
     AsmSysInit( buff );
-    too_many_bytes = FALSE;
+    too_many_bytes = false;
     if( CurToken == T_LEFT_BRACE ) {
         NextToken();
         for( ;; ) {             // grab assembler lines
@@ -114,7 +114,7 @@ void AsmStmt( void )
             if( AsmCodeAddress > MAXIMUM_BYTESEQ ) {
                 if( !too_many_bytes ) {
                     CErr1( ERR_TOO_MANY_BYTES_IN_PRAGMA );
-                    too_many_bytes = TRUE;
+                    too_many_bytes = true;
                 }
                 // reset index to we don't overrun buffer
                 AsmCodeAddress = 0;

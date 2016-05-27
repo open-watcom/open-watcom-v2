@@ -20,6 +20,7 @@ set PROJNAME=build utilities
     <CPCMD> <OWOBJDIR>/comstrip.exe <OWBINDIR>/comstrip<CMDEXT>
     <CPCMD> <OWOBJDIR>/genverrc.exe <OWBINDIR>/genverrc<CMDEXT>
     <CCCMD> <OWOBJDIR>/diff.exe     <OWBINDIR>/diff<CMDEXT>
+    <CCCMD> <OWOBJDIR>/crlf.exe     <OWBINDIR>/crlf<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
@@ -33,6 +34,8 @@ set PROJNAME=build utilities
     rm -f <OWBINDIR>/genverrc<CMDEXT>
     echo rm -f <OWBINDIR>/diff<CMDEXT>
     rm -f <OWBINDIR>/diff<CMDEXT>
+    echo rm -f <OWBINDIR>/crlf<CMDEXT>
+    rm -f <OWBINDIR>/crlf<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

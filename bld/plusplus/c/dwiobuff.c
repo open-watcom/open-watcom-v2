@@ -77,8 +77,8 @@ static DWIOBUFF *allocateBuffer(// ALLOCATE A NEW BUFFER
     ctl->current_offset = 0;
     ctl->block_num = 0;
     ctl->reading = 0;
-    ctl->written = FALSE;
-    ctl->writing = FALSE;
+    ctl->written = false;
+    ctl->writing = false;
     RingAppend( &activeBufs, ctl );
     return ctl;
 }
@@ -98,8 +98,8 @@ static DWIOBUFF *findWrBuffer(  // FIND A BUFFER FOR WRITING
 
     ctl = allocateBuffer();
     ctl->disk_addr = IoSuppTempNextBlock( DWBLOCK_FACTOR );
-    ctl->writing = TRUE;
-    ctl->written = FALSE;
+    ctl->writing = true;
+    ctl->written = false;
     return ctl;
 }
 
@@ -159,7 +159,7 @@ static DWIOBUFF *findBuffer(    // FIND A SPECIFIC BUFFER
                           , ctl->data );
             extractPrevNext( ctl );
             ctl->disk_addr = block;
-            ctl->written = TRUE;
+            ctl->written = true;
         } else {
             activateBuffer( ctl );
         }
@@ -184,7 +184,7 @@ static DWIOBUFF *findReWrBuffer(// FIND BUFFER FOR RE-WRITE
 {
     DWIOBUFF *ctl;
     ctl = findBuffer( block );
-    ctl->writing = TRUE;
+    ctl->writing = true;
     return ctl;
 }
 
@@ -192,7 +192,7 @@ static DWIOBUFF *findReWrBuffer(// FIND BUFFER FOR RE-WRITE
 static void finishWrBuffer(     // COMPLETE WRITE-USE OF A BUFFER
     DWIOBUFF *ctl )             // - buffer control
 {
-    ctl->writing = FALSE;
+    ctl->writing = false;
     deactivateBuffer( ctl );
 }
 
@@ -228,7 +228,7 @@ DWIOBUFF *DwioBuffWrite(        // WRITE A RECORD
             len = size;
         }
         memcpy( pointXfer( ctl ), record, len );
-        ctl->written = FALSE;
+        ctl->written = false;
         ctl->current_offset += len;
         record = (void *)((char *)record + len);
         size -= len;

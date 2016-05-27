@@ -30,7 +30,7 @@ else
    echo "set GMLLIB=w:\gml\syslib;w:\doc\whelp;w:\doc\hlp;.\testlib" >> wgml.bat
    echo "w:\gml\dos\wgml.exe $fn ( file wgml.opt out $fb.ops %1 %2 %3 %4 %5 %6 %7 %8 %9 >$fb.old" >> wgml.bat
    echo "exitemu" >> wgml.bat
-   dosemu -dumb wgml.bat
+   dosemu -dumb -quiet wgml.bat
 fi
    $OWROOT/bld/wgml/$WGML_DIR/wgml.exe $fn "(" file wgml.opt out $fb.nps $1 $2 $3 $4 $5 $6 $7 $8 $9 >$fb.ntr
    $OWROOT/bld/wgml/$WGML_DIR/wgml.exe $fn -r "(" file wgml.opt out $fb.nps $1 $2 $3 $4 $5 $6 $7 $8 $9 >$fb.new

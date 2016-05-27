@@ -66,7 +66,7 @@ void    MarkIFUsed( IFF function ) {
 bool    IsIFUsed( IFF function ) {
 //================================
 
-// Return TRUE if bit ( function mod 8 ) of IFUsed[ function/8 ] is on.
+// Return true if bit ( function mod 8 ) of IFUsed[ function/8 ] is on.
 
     return( ( IFUsed[ function >> 3 ] & ( 1 << ( function & 7 ) ) ) != 0 );
 }

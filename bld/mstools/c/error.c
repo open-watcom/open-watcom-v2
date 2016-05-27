@@ -40,7 +40,7 @@ static void     do_nothing( void );
 
 
 static void             (*bannerFunc)( void ) = do_nothing;
-static bool             displayWarnings = TRUE;
+static bool             displayWarnings = true;
 
 
 /*

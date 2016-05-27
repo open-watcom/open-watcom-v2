@@ -79,7 +79,7 @@ static blk_t * newBlk( cv_t *cv )
     newblk->next = *blklist;
     *blklist = newblk;
     cv->blk_count++;
-    cv->size_chg = TRUE;
+    cv->size_chg = true;
     return newblk;
 }
 
@@ -123,7 +123,7 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
     cv->blk_list = NULL;
     cv->free_list = NULL;
     cv->blk_map = NULL;
-    cv->size_chg = FALSE;
+    cv->size_chg = false;
     DbgAssert( cv->elm_size >= 2 * sizeof(void *) );
     DbgAssert( cv->elm_count != 0 );
     DbgVerify( cv->blk_top < 0x10000, "carve: size * #/block > 64k" );
@@ -140,7 +140,7 @@ void CarveVerifyAllGone( carve_t cv, char *node_name )
     char        buff[80];
     bool        some_unfreed;
 
-    some_unfreed = FALSE;
+    some_unfreed = false;
     for( block = cv->blk_list; block != NULL; block = block->next ) {
         compare = block->data + cv->blk_top;
         do {
@@ -153,7 +153,7 @@ void CarveVerifyAllGone( carve_t cv, char *node_name )
                 if( ! some_unfreed ) {
                     FmtStr( buff, 80, "carve %s unfreed:", node_name );
                     WriteStdOut( buff );
-                    some_unfreed = TRUE;
+                    some_unfreed = true;
                 }
                 FmtStr( buff, 80, " %h", compare );
                 WriteStdOut( buff );

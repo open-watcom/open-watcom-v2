@@ -94,7 +94,7 @@ mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_reg
     cud->ra = mr->mips.u31.ra.u._32[I64LO32];
     cud->sp = mr->mips.u29.sp.u._32[I64LO32];
     cud->fp = mr->mips.u30.r30.u._32[I64LO32];    // NYI: may not be used?
-    cud->first_frame = TRUE;
+    cud->first_frame = true;
     return( MS_OK );
 }
 
@@ -243,21 +243,30 @@ mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
         }
     }
 #endif
-    if( frame_start == 0 ) return( MS_FAIL );
+    if( frame_start == 0 )
+        return( MS_FAIL );
     if( cud->first_frame ) {
-        cud->first_frame = FALSE;
+        cud->first_frame = false;
         cud->sp = frame_start + frame_size;
         cud->fp = frame_start + frame_size;
         if( prev_ra_off != NO_OFF ) {
-            if( !GetAnOffset( frame_start + prev_ra_off, &cud->ra ) ) return( MS_FAIL );
+            if( !GetAnOffset( frame_start + prev_ra_off, &cud->ra ) ) {
+                return( MS_FAIL );
+            }
         }   /* else return address in ra is still valid */
     } else {
-        if( !GetAnOffset( frame_start, &cud->sp ) ) return( MS_FAIL );
-        if( !GetAnOffset( cud->sp + sizeof( unsigned_32 ), &cud->ra ) ) return( MS_FAIL );
-        if( !GetAnOffset( frame_start + prev_fp_off, &cud->fp ) ) return( MS_FAIL );
+        if( !GetAnOffset( frame_start, &cud->sp ) )
+            return( MS_FAIL );
+        if( !GetAnOffset( cud->sp + sizeof( unsigned_32 ), &cud->ra ) )
+            return( MS_FAIL );
+        if( !GetAnOffset( frame_start + prev_fp_off, &cud->fp ) ) {
+            return( MS_FAIL );
+        }
     }
-    if( cud->ra == 0 ) return( MS_FAIL );
-    if( cud->sp <= frame_start ) return( MS_FAIL );
+    if( cud->ra == 0 )
+        return( MS_FAIL );
+    if( cud->sp <= frame_start )
+        return( MS_FAIL );
     stack->mach.offset = cud->sp;
     execution->mach.offset = cud->ra;
 //    if( VariableFrame( execution->mach.offset ) ) {

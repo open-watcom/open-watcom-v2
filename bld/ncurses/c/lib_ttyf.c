@@ -27,16 +27,16 @@
  ****************************************************************************/
 
 /*
- *		def_prog_mode()
- *		def_shell_mode()
- *		reset_prog_mode()
- *		reset_shell_mode()
- *		savetty()
- *		resetty()
+ *              def_prog_mode()
+ *              def_shell_mode()
+ *              reset_prog_mode()
+ *              reset_shell_mode()
+ *              savetty()
+ *              resetty()
  */
 
 #include <curses_p.h>
-#include <term.h>		/* cur_term */
+#include <term.h>               /* cur_term */
 
 MODULE_ID("$Id: lib_ttyflags.c,v 1.9 2002/10/12 21:28:16 tom Exp $")
 
@@ -60,10 +60,10 @@ NCURSES_EXPORT(int)
 _nc_get_tty_mode(TTY * buf)
 {
     if (cur_term == 0
-	|| GET_TTY(cur_term->Filedes, buf) != 0)
-	return (ERR);
+        || GET_TTY(cur_term->Filedes, buf) != 0)
+        return (ERR);
     TR(TRACE_BITS, ("_nc_get_tty_mode(%d): %s",
-		    cur_term->Filedes, _nc_trace_ttymode(buf)));
+                    cur_term->Filedes, _nc_trace_ttymode(buf)));
     return (OK);
 }
 
@@ -71,10 +71,10 @@ NCURSES_EXPORT(int)
 _nc_set_tty_mode(TTY * buf)
 {
     if (cur_term == 0
-	|| SET_TTY(cur_term->Filedes, buf) != 0)
-	return (ERR);
+        || SET_TTY(cur_term->Filedes, buf) != 0)
+        return (ERR);
     TR(TRACE_BITS, ("_nc_set_tty_mode(%d): %s",
-		    cur_term->Filedes, _nc_trace_ttymode(buf)));
+                    cur_term->Filedes, _nc_trace_ttymode(buf)));
     return (OK);
 }
 
@@ -89,13 +89,13 @@ def_shell_mode(void)
      */
 
     if (_nc_get_tty_mode(&cur_term->Ottyb) != OK)
-	returnCode(ERR);
+        returnCode(ERR);
 #ifdef TERMIOS
     if (cur_term->Ottyb.c_oflag & tabs)
-	tab = back_tab = NULL;
+        tab = back_tab = NULL;
 #else
     if (cur_term->Ottyb.sg_flags & XTABS)
-	tab = back_tab = NULL;
+        tab = back_tab = NULL;
 #endif
     returnCode(OK);
 }
@@ -106,7 +106,7 @@ def_prog_mode(void)
     T((T_CALLED("def_prog_mode()")));
 
     if (_nc_get_tty_mode(&cur_term->Nttyb) != OK)
-	returnCode(ERR);
+        returnCode(ERR);
 #ifdef TERMIOS
     cur_term->Nttyb.c_oflag &= ~tabs;
 #else
@@ -121,16 +121,16 @@ reset_prog_mode(void)
     T((T_CALLED("reset_prog_mode()")));
 
     if (cur_term != 0) {
-	if (_nc_set_tty_mode(&cur_term->Nttyb) == OK) {
+        if (_nc_set_tty_mode(&cur_term->Nttyb) == OK) {
 #if 0
-	    if (SP) {
-		if (SP->_keypad_on)
-		    _nc_keypad(TRUE);
-		NC_BUFFERED(TRUE);
-	    }
+            if (SP) {
+                if (SP->_keypad_on)
+                    _nc_keypad(true);
+                NC_BUFFERED(true);
+            }
 #endif
-	    returnCode(OK);
-	}
+            returnCode(OK);
+        }
     }
     returnCode(ERR);
 }
@@ -142,19 +142,19 @@ reset_shell_mode(void)
 
     if (cur_term != 0) {
 #if 0
-	if (SP) {
-	    _nc_keypad(FALSE);
-	    _nc_flush();
-	    NC_BUFFERED(FALSE);
-	}
+        if (SP) {
+            _nc_keypad(false);
+            _nc_flush();
+            NC_BUFFERED(false);
+        }
 #endif
-	returnCode(_nc_set_tty_mode(&cur_term->Ottyb));
+        returnCode(_nc_set_tty_mode(&cur_term->Ottyb));
     }
     returnCode(ERR);
 }
 
 /*
-**	savetty()  and  resetty()
+**      savetty()  and  resetty()
 **
 */
 

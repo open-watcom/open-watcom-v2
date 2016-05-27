@@ -365,7 +365,7 @@ void    FCAddMixCX( void ) {
 
 // Add a complex to a scalar.
 
-    XMixed( O_PLUS, TRUE );
+    XMixed( O_PLUS, true );
 }
 
 
@@ -374,7 +374,7 @@ void    FCAddMixXC( void ) {
 
 // Add a scalar to a complex.
 
-    XMixed( O_PLUS, FALSE );
+    XMixed( O_PLUS, false );
 }
 
 
@@ -383,7 +383,7 @@ void    FCSubMixCX( void ) {
 
 // Subtract a scalar from a complex.
 
-    XMixed( O_MINUS, TRUE );
+    XMixed( O_MINUS, true );
 }
 
 
@@ -392,7 +392,7 @@ void    FCSubMixXC( void ) {
 
 // Subtract a scalar from a complex.
 
-    XMixed( O_MINUS, FALSE );
+    XMixed( O_MINUS, false );
 }
 
 
@@ -401,7 +401,7 @@ void    FCMulMixCX( void ) {
 
 // Multiply a complex by a scalar.
 
-    XMulDivMix( O_TIMES, TRUE, GetU16() );
+    XMulDivMix( O_TIMES, true, GetU16() );
 }
 
 
@@ -410,7 +410,7 @@ void    FCMulMixXC( void ) {
 
 // Multiply a scalar by a complex.
 
-    XMulDivMix( O_TIMES, FALSE, GetU16() );
+    XMulDivMix( O_TIMES, false, GetU16() );
 }
 
 
@@ -419,7 +419,7 @@ void    FCDivMixCX( void ) {
 
 // Divide a complex by a scalar.
 
-    XMulDivMix( O_DIV, TRUE, GetU16() );
+    XMulDivMix( O_DIV, true, GetU16() );
 }
 
 
@@ -428,7 +428,7 @@ void    FCDivMixXC( void ) {
 
 // Divide a scalar by a complex.
 
-    XCmplxMixOp( RT_C8DIV, FALSE );
+    XCmplxMixOp( RT_C8DIV, false );
 }
 
 
@@ -515,7 +515,7 @@ void    FCExpMixCX( void ) {
 
 // Binary exponentiation for complex**non-complex.
 
-    XCmplxMixOp( RT_C8POW, TRUE );
+    XCmplxMixOp( RT_C8POW, true );
 }
 
 
@@ -524,7 +524,7 @@ void    FCExpMixXC( void ) {
 
 // Binary exponentiation for non-complex**complex.
 
-    XCmplxMixOp( RT_C8POW, FALSE );
+    XCmplxMixOp( RT_C8POW, false );
 }
 
 

@@ -69,11 +69,11 @@ extern  bool    ValidLbl( label_struct *lbl ) {
     chk = Handles;
     for(;;) {
         if( chk == NULL ) break;
-        if( chk == lbl ) return( TRUE );
+        if( chk == lbl ) return( true );
         chk = chk->link;
     }
     _Zoiks( ZOIKS_042 );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -89,10 +89,10 @@ extern  label_handle    AskForLabel( sym_handle sym ) {
     new->hwlabel = NULL;
     new->hwbase.sym = NULL;
     new->hwbase.disp = 0;
-    new->runtime = FALSE;
-    new->reached = FALSE;
-    new->condemned = FALSE;
-    new->keep = FALSE;
+    new->runtime = false;
+    new->reached = false;
+    new->condemned = false;
+    new->keep = false;
     return( new );
 }
 
@@ -110,7 +110,7 @@ extern  label_handle    AskRTLabel( sym_handle *sym ) {
     label_struct        *new;
 
     new = AskForLabel( sym );
-    new->runtime = TRUE;
+    new->runtime = true;
     return( new );
 }
 
@@ -119,7 +119,7 @@ extern  bool    TellReachedLabel( label_struct *lbl ) {
 /******************************************************/
 
     ValidLbl( lbl );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -127,7 +127,7 @@ extern  bool    AskIfReachedLabel( label_struct *lbl ) {
 /******************************************************/
 
     ValidLbl( lbl );
-    return( FALSE );
+    return( false );
 }
 
 
@@ -198,7 +198,7 @@ extern  void    TellKeepLabel( label_struct *lbl ) {
 /***********************************************/
 
     ValidLbl( lbl );
-    lbl->keep = TRUE;
+    lbl->keep = true;
 }
 
 
@@ -234,7 +234,7 @@ static  label_struct       *NextCondemned( label_struct *lbl ) {
     for(;;) {
         if( lbl == NULL ) break;
         if( lbl->condemned ) {
-            lbl->condemned = FALSE;     /* this is not a reprieve */
+            lbl->condemned = false;     /* this is not a reprieve */
             break;
         }
         lbl = lbl->link;
@@ -247,7 +247,7 @@ extern  void    TellCondemnedLabel( label_struct *lbl ) {
 /****************************************************/
 
     ValidLbl( lbl );
-    lbl->condemned = TRUE;
+    lbl->condemned = true;
 }
 
 
@@ -268,7 +268,7 @@ extern  void    TellFreeAllLabels() {
 
     bool        unfreed;
 
-    unfreed = FALSE;
+    unfreed = false;
     while( Handles != NULL ) {
         TellScrapLabel( Handles );
     }

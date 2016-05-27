@@ -69,7 +69,7 @@ Module::Module( const char *name, WCValSList<String> & enabled,
     int                               i;
     MsgRetType                        ret;
 
-    _dataFile = new ElfFile( name, FALSE );
+    _dataFile = new ElfFile( name, false );
 
     DwarfFileMerger merger( name, enabled, disabled );
 
@@ -146,7 +146,7 @@ static bool searchHook( dr_sym_context * symctxt, void *data )
             WBRFree( symctxt->name );
             symctxt->name = NULL;
             info->context = new SearchContext( *symctxt->context );
-            return FALSE;   // <----- early return -- stop search
+            return false;   // <----- early return -- stop search
         }
 
         if( info->numItems > 0 ) {
@@ -170,7 +170,7 @@ static bool searchHook( dr_sym_context * symctxt, void *data )
         WBRFree( symctxt->name );
     }
 
-    return TRUE;    // continue searching
+    return true;    // continue searching
 }
 
 SearchContext * Module::findSymbols( WVList *symbols, KeySymbol *filter,
@@ -210,7 +210,7 @@ SearchContext * Module::findSymbols( WVList *symbols, KeySymbol *filter,
     }
 }
 
-static bool referenceHook( dr_handle, dr_ref_info * refinfo, char * name,
+static bool referenceHook( drmem_hdl, dr_ref_info * refinfo, char * name,
                            void * info )
 //-----------------------------------------------------------------------
 {
@@ -222,11 +222,11 @@ static bool referenceHook( dr_handle, dr_ref_info * refinfo, char * name,
         if( ref->line() == refinfo->line && ref->column() == refinfo->column
                 && strcmp( ref->sourceFile(), refinfo->file ) == 0 ) {
             WBRFree( name );
-            return TRUE;
+            return true;
         }
     }
     list->add( new Reference( refinfo, name ) );
-    return TRUE;    // keep going
+    return true;    // keep going
 }
 
 bool Module::findReferences( WVList *list, Symbol *data )
@@ -243,7 +243,7 @@ struct RefSymData {
     WVList *    list;
 };
 
-static bool refSymHook( dr_handle drhdl, dr_ref_info *, char * name,
+static bool refSymHook( drmem_hdl drhdl, dr_ref_info *, char * name,
                         void * info )
 //-------------------------------------------------------------------
 {
@@ -255,15 +255,15 @@ static bool refSymHook( dr_handle drhdl, dr_ref_info *, char * name,
     for( i = 0; i < data->list->count(); i += 1 ) {
         if( ((Symbol *)(*data->list)[ i ])->getHandle() == drhdl ) {
             WBRFree( name );
-            return TRUE;        // <---- early return
+            return true;        // <---- early return
         }
     }
 
     stype = DRGetSymType( drhdl );
-    sym = Symbol::defineSymbol( stype, drhdl, DR_HANDLE_NUL, data->me, name );
+    sym = Symbol::defineSymbol( stype, drhdl, DRMEM_HDL_NULL, data->me, name );
     data->list->add( sym );
 
-    return TRUE;    // continue
+    return true;    // continue
 }
 
 bool Module::findRefSyms( WVList *list, Symbol * sym )

@@ -63,7 +63,7 @@ extern  void    DupSegOp( instruction *ins, instruction *new_ins, int i ) {
 /*************************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->operands[i], TRUE );
+    MoveSeg( ins, new_ins, new_ins->operands[i], true );
 }
 
 
@@ -71,7 +71,7 @@ extern  void    DupSegRes( instruction *ins, instruction *new_ins ) {
 /*******************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->result, TRUE );
+    MoveSeg( ins, new_ins, new_ins->result, true );
 }
 
 
@@ -79,7 +79,7 @@ extern  void    MoveSegOp( instruction *ins, instruction *new_ins, int i ) {
 /**************************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->operands[i], FALSE );
+    MoveSeg( ins, new_ins, new_ins->operands[i], false );
 }
 
 
@@ -87,7 +87,7 @@ extern  void    MoveSegRes( instruction *ins, instruction *new_ins ) {
 /********************************************************************/
 
 
-    MoveSeg( ins, new_ins, new_ins->result, FALSE );
+    MoveSeg( ins, new_ins, new_ins->result, false );
 }
 
 
@@ -96,16 +96,16 @@ static bool SegMemLoc( name *op ) {
 /*
  * Return true if the operand COULD be the one associated with the segment */
 
-    if( op->n.class == N_INDEXED ) return( TRUE );
-    if( op->n.class != N_MEMORY ) return( FALSE );
+    if( op->n.class == N_INDEXED ) return( true );
+    if( op->n.class != N_MEMORY ) return( false );
     if( op->m.memory_type == CG_LBL ) {
         /* kluge for TLS stuff - want to be able to put fs: override on
            the __tls_array runtime label - BBB May 15, 1996 */
-        if( AskIfRTLabel( op->v.symbol ) )  return( TRUE );
-        return( FALSE ); /* made by Addressable */
+        if( AskIfRTLabel( op->v.symbol ) )  return( true );
+        return( false ); /* made by Addressable */
     }
-    if( op->m.memory_type == CG_CLB ) return( FALSE ); /* made by Addressable */
-    return( TRUE );
+    if( op->m.memory_type == CG_CLB ) return( false ); /* made by Addressable */
+    return( true );
 }
 
 

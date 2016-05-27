@@ -5,6 +5,7 @@
 #include "wattcp.h"
 #include "chksum.h"
 #include "misc.h"
+#include "getput.h"
 
 /*
  * Functions for get/put short/long. Pointer is _NOT_ advanced.
@@ -64,16 +65,6 @@ void __putlong (DWORD var, BYTE *ptr)   /* in <resolv.h> */
   PUTLONG (var, ptr);
 }
 
-/*
- * If compiler/linker doesn't see our defines for htonl() etc.
- */
-#undef htonl
-#undef ntohl
-#undef htons
-#undef ntohs
-#undef inchksum
-#undef inchksum_fast
-
 DWORD htonl (DWORD val) { return intel(val); }
 DWORD ntohl (DWORD val) { return intel(val); }
 WORD  htons (WORD  val) { return intel16(val); }
@@ -91,8 +82,6 @@ WORD inchksum (const void *ptr, int len)
 /*
  * For old compatibility (linking old .o-files with new libwatt.a)
  */
-#undef intel   
-#undef intel16
 
 DWORD intel  (DWORD val) { return htonl(val); }
 WORD  intel16(WORD  val) { return htons(val); }

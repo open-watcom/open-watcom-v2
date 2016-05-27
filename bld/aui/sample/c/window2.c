@@ -184,22 +184,22 @@ static bool W2GetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *li
                 line->text = "<TAB2>";
                 line->indent = WndWidth( wnd ) / 2;
             } else {
-                return( FALSE );
+                return( false );
             }
         } else if( row == 1 ) {
-            if( piece != 0 ) return( FALSE );
+            if( piece != 0 ) return( false );
             line->text = "--------------------------------------------";
-            line->static_text = TRUE;
-            line->tabstop = FALSE;
-            return( TRUE );
+            line->static_text = true;
+            line->tabstop = false;
+            return( true );
         }
     } else {
-        if( piece != 0 ) return( FALSE );
+        if( piece != 0 ) return( false );
         row += w2->top - TITLE_SIZE;
-        if( row >= WORD_SIZE ) return( FALSE );
+        if( row >= WORD_SIZE ) return( false );
         line->text = w2->words[row];
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -228,18 +228,18 @@ static bool W2EventProc( a_window * wnd, gui_event gui_ev, void *parm )
         w2->wnd = wnd;
         w2->top = 0;
         WndRepaint( wnd );
-        return( TRUE );
+        return( true );
     case GUI_RESIZE :
         Pos( wnd, 0 );
         WndRepaint( wnd );
-        return( TRUE );
+        return( true );
     case GUI_DESTROY :
         WndFree( w2 );
-        return( TRUE );
+        return( true );
     default :
         break;
     }
-    return( FALSE );
+    return( false );
 }
 
 static wnd_info W2Info = {

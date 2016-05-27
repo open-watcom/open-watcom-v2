@@ -54,7 +54,7 @@ extern asmreloc         *AsmRelocs;     // A list of relocs to be handled
                                         // by the caller
 
 extern void AsmInit( void );            // Call before using the assembler
-extern int  AsmLine( const char * );    // return 1 if parsed  ok
+extern bool AsmLine( const char * );    // return false if parsed  ok
 extern void AsmFini( void );            // Call after giving all the input and
                                         // before using the AsmCodeBuffer
 extern void AsmFiniRelocs( void );      // Call to free memory used by reloc items

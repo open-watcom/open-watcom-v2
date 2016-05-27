@@ -54,22 +54,22 @@ float_handle BFCheckFloatLimit( float_handle f )
     int sign;
     bool err;
 
-    err = FALSE;
+    err = false;
     sign = BFSign( f );
     if( sign > 0 ) {
         if( BFCmp( f, (float_handle)&MaxPosFloat ) > 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
         } else if( BFCmp( f, (float_handle)&MinPosFloat ) < 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     } else if( sign < 0 ) {
         if( BFCmp( f, (float_handle)&MaxNegFloat ) < 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
         } else if( BFCmp( f, (float_handle)&MinNegFloat ) > 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     }
@@ -84,23 +84,23 @@ extern float_handle BFCheckDblLimit( float_handle f )
     int sign;
     bool err;
 
-    err = FALSE;
+    err = false;
     sign = BFSign( f );
     if( sign > 0 ) {
         if( BFCmp( f, (float_handle)&MaxPosDbl ) > 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
         } else if( BFCmp( f, (float_handle)&MinPosDbl ) == -1 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
 
         }
     } else if( sign < 0 ) {
         if( BFCmp( f, (float_handle)&MaxNegDbl ) < 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_OVERFLOW );
         } else if( BFCmp( f, (float_handle)&MinNegDbl ) > 0 ) {
-            err = TRUE;
+            err = true;
             CErr1( ERR_FLOATING_CONSTANT_UNDERFLOW );
         }
     }

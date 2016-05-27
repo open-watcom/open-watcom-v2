@@ -66,7 +66,7 @@ name_list           *ClassList = NULL;
 name_list           *SegList = NULL;
 exclude_list        *ExcludeList = NULL;
 
-static bool         MakeBackup = TRUE;
+static bool         MakeBackup = true;
 static bool         NewOption;
 static EX_STATE     ExcludeState;
 static exclude_list *ExEntry;
@@ -192,14 +192,15 @@ static void ProcList( bool (*fn)(char *,int), char ***argv )
 {
     char *  item;
     char *  comma;
-    bool    checksep;   // TRUE iff we should check for a separator.
+    bool    checksep;   // true iff we should check for a separator.
 
     (**argv)++;        // skip the option character.
-    checksep = FALSE;
+    checksep = false;
     for( ; **argv != NULL; (*argv)++ ) {
         item = **argv;
         if( checksep ) {                // separator needed to continue list
-            if( *item != ',' ) break;
+            if( *item != ',' )
+                break;
             item++;
         }
         // while commas inside string
@@ -212,7 +213,7 @@ static void ProcList( bool (*fn)(char *,int), char ***argv )
         if( *item != '\0' ) {
             checksep = fn( item, strlen( item ) );
         } else {        // we had a comma at end of string, so no sep needed
-            checksep = FALSE;
+            checksep = false;
         }
     }
     if( ExcludeState != EX_NONE ) {
@@ -240,11 +241,11 @@ static bool ProcClass( char *item, int len )
 {
     if( NewOption ) {
         FreeList( ClassList );
-        NewOption = FALSE;
+        NewOption = false;
         ClassList = NULL;
     }
     MakeListItem( &ClassList, item, len );
-    return( TRUE );     // TRUE == check for a list separator
+    return( true );     // true == check for a list separator
 }
 
 static bool ProcSeg( char *item, int len )
@@ -252,11 +253,11 @@ static bool ProcSeg( char *item, int len )
 {
     if( NewOption ) {
         FreeList( SegList );
-        NewOption = FALSE;
+        NewOption = false;
         SegList = NULL;
     }
     MakeListItem( &SegList, item, len );
-    return( TRUE );     // TRUE == check for a list separator
+    return( true );     // true == check for a list separator
 }
 
 static bool ProcExclude( char *item, int len )
@@ -274,7 +275,7 @@ static bool ProcExclude( char *item, int len )
             memcpy( ExEntry->name, item, len );
             *(ExEntry->name + len ) = '\0';
             ExcludeState = EX_GOT_SEG;
-            return( FALSE );
+            return( false );
         case EX_GOT_SEG:
             ExEntry->start_off = strtoul( item, &endptr, 16 );
             len -= endptr - item;
@@ -290,7 +291,7 @@ static bool ProcExclude( char *item, int len )
                 Warning( "invalid range separator" );
                 ExcludeState = EX_NONE;
                 MemFree( ExEntry );
-                return( TRUE );
+                return( true );
             }
             item++;
             len--;
@@ -302,10 +303,10 @@ static bool ProcExclude( char *item, int len )
             }
             LinkList( (void **)&ExcludeList, ExEntry );
             ExcludeState = EX_NONE;
-            return( TRUE );     // want a list separator after this.
+            return( true );     // want a list separator after this.
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void ProcessOption( char ***argv )
@@ -314,7 +315,7 @@ static void ProcessOption( char ***argv )
     char *  item;
     char    option;
 
-    NewOption = TRUE;
+    NewOption = true;
     (**argv)++;        // skip the switch character.
     item = **argv;
     option = tolower( *item );
@@ -329,7 +330,7 @@ static void ProcessOption( char ***argv )
         ProcList( ProcExclude, argv );
         break;
     case 'b':
-        MakeBackup = FALSE;
+        MakeBackup = false;
         (*argv)++;
         break;
     default:
@@ -423,7 +424,7 @@ static void ProcFile( char * fname )
     name = alloca( namelen );
     if( name == NULL ) Suicide();           // null == no stack space left.
     strcpy( name, fname );
-    ReplaceExt( name, ".obj", FALSE );
+    ReplaceExt( name, ".obj", false );
     InFile = QOpen( name, O_RDONLY | O_BINARY, 0 );
     for(;;) {
         CleanRecStuff();
@@ -457,9 +458,9 @@ static void ProcFile( char * fname )
         if( bak == NULL ) Suicide();           // null == no stack space left.
         strcpy( bak, name );
         if( ftype == ENDLIBRARY ) {
-            ReplaceExt( bak, ".bak", TRUE );
+            ReplaceExt( bak, ".bak", true );
         } else {
-            ReplaceExt( bak, ".bob", TRUE );
+            ReplaceExt( bak, ".bob", true );
         }
         CopyFile( name, bak );
     }

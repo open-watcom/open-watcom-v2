@@ -40,6 +40,7 @@
 #define INCL_DOSPROCESS
 #include <wos2.h>
 #define INCL_NOXLATE_DOS16
+#include "bool.h"
 #include "namepipe.h"
 #include "nmp.h"
 #include "trperr.h"
@@ -93,10 +94,11 @@ static int DoOpen( char *buff, char *end, char *suff, HPIPE *phdl )
 
     strcpy( end, suff );
     rc = PipeOpen( buff+1, phdl );
-    if( rc != 0 ) return( FALSE );
+    if( rc != 0 )
+        return( false );
     DosConnectNmPipe( *phdl );
     DosSetNmPHandState( *phdl, NP_WAIT | NP_READMODE_MESSAGE );
-    return( TRUE );
+    return( true );
 }
 
 static int WrBuff( HPIPE hdl, char FAR *data, int length )
@@ -168,8 +170,8 @@ static void FAR JoinPipeThread( void FAR * _thread )
     }
     DoClose( me->write_hdl );
     DoClose( him->read_hdl );
-    me->connected = FALSE;
-    me->connect_started = FALSE;
+    me->connected = false;
+    me->connect_started = false;
     _endthread();
 }
 
@@ -210,7 +212,7 @@ static void FAR ConnectThread( void FAR * _thread )
         switch( buff[0] ) {
         case END_CONNECT_SERV:
         case END_CONNECT_TRAP:
-            me->connected = TRUE;
+            me->connected = true;
             if( him->connected ) {
                 StartThread( JoinPipeThread, link, &link->serv, &link->trap );
                 StartThread( JoinPipeThread, link, &link->trap, &link->serv );
@@ -224,7 +226,7 @@ static void FAR ConnectThread( void FAR * _thread )
             break;
         case CONNECT_SERV:
             if( him->connect_started ) {
-                me->connect_started = TRUE;
+                me->connect_started = true;
 //              cprintf( "Ack to connect serv\r\n" );
                 Ack( hdl );
             } else {
@@ -234,7 +236,7 @@ static void FAR ConnectThread( void FAR * _thread )
             break;
         case CONNECT_TRAP:
             if( him->present ) {
-                me->connect_started = TRUE;
+                me->connect_started = true;
                 end = buff + strlen( buff );
                 DoOpen( buff, end, READ_TRAP_SUFF, &link->trap.read_hdl );
                 DoOpen( buff, end, READ_SERV_SUFF, &link->serv.read_hdl );
@@ -249,7 +251,7 @@ static void FAR ConnectThread( void FAR * _thread )
             break;
         case DISCO_SERV:
         case DISCO_TRAP:
-            me->connect_started = FALSE;
+            me->connect_started = false;
 //          cprintf( "Disco\r\n" );
             DosSleep( 100 );
             Ack( hdl );
@@ -257,7 +259,7 @@ static void FAR ConnectThread( void FAR * _thread )
         }
     }
 //    cprintf( "Connect thread ending for (%d)\r\n", hdl );
-    me->present = FALSE;
+    me->present = false;
     DoClose( hdl );
     if( !him->present ) {
         FreeLink( link );
@@ -293,14 +295,14 @@ static void ProcessRequest( HPIPE hdl, char *buff )
             link->name = strdup( buff+1 );
             link->next = Links;
             Links = link;
-            link->trap.present = FALSE;
-            link->serv.present = FALSE;
-            link->trap.connected = FALSE;
-            link->serv.connected = FALSE;
-            link->trap.connect_started = FALSE;
-            link->serv.connect_started = FALSE;
+            link->trap.present = false;
+            link->serv.present = false;
+            link->trap.connected = false;
+            link->serv.connected = false;
+            link->trap.connect_started = false;
+            link->serv.connect_started = false;
             if( DoOpen( buff, end, CONN_SERV_SUFF, &link->serv.conn_hdl ) ) {
-                link->serv.present = TRUE;
+                link->serv.present = true;
                 StartThread( ConnectThread, link, &link->serv, &link->trap );
 //              cprintf( "Ack to Open Serv (%d)\r\n", link->serv.conn_hdl );
                 Ack( hdl );
@@ -311,7 +313,7 @@ static void ProcessRequest( HPIPE hdl, char *buff )
         break;
     case OPEN_TRAP:
         if( link && DoOpen( buff, end, CONN_TRAP_SUFF, &link->trap.conn_hdl ) ) {
-            link->trap.present = TRUE;
+            link->trap.present = true;
             StartThread( ConnectThread, link, &link->trap, &link->serv );
 //          cprintf( "Ack to Open Trap (%d)\r\n", link->trap.conn_hdl );
             Ack( hdl );

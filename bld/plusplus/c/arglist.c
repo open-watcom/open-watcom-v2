@@ -177,7 +177,7 @@ arg_list *MakeMemberArgList( SYMBOL sym, int num_args )
     mocklist = AllocArgListTemp( num_args );
     func_args = SymFuncArgList( sym );
     mocklist->except_spec = func_args->except_spec;
-    mocklist->type_list[0] = TypeThisSymbol( sym, TRUE );
+    mocklist->type_list[0] = TypeThisSymbol( sym, true );
     if( num_args > 1 ) {
         memcpy( &mocklist->type_list[1]
               , func_args->type_list

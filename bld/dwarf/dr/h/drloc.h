@@ -51,9 +51,9 @@ typedef struct {
 
 typedef dr_loc_callbck_def const dr_loc_callbck;
 
-extern bool         DRLocationAT( dr_handle var, dr_loc_callbck *callbck, void *d );
-extern bool         DRParmEntryAT( dr_handle var, dr_loc_callbck *callbck, void *d );
-extern bool         DRLocBasedAT( dr_handle var, dr_loc_callbck *callbck, void *d );
-extern bool         DRRetAddrLocation( dr_handle var, dr_loc_callbck *callbck, void *d );
-extern bool         DRSegLocation( dr_handle var, dr_loc_callbck *callbck, void *d );
-extern dr_handle    DRStringLengthAT( dr_handle str );
+extern bool         DRLocationAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
+extern bool         DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
+extern bool         DRLocBasedAT( drmem_hdl var, dr_loc_callbck *callbck, void *d );
+extern bool         DRRetAddrLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d );
+extern bool         DRSegLocation( drmem_hdl var, dr_loc_callbck *callbck, void *d );
+extern drmem_hdl    DRStringLengthAT( drmem_hdl str );

@@ -154,8 +154,8 @@ static dip_status TryFindTrailer( dig_fhandle h, unsigned long *offp,
     cv_trailer          sig;
     unsigned long       pos;
 
-    pos = DCSeek( h, DCSEEK_POSBACK( sizeof( sig ) ), DIG_END );
-    if( pos == DCSEEK_ERROR ) {
+    pos = DCSeek( h, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
+    if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     if( DCRead( h, &sig, sizeof( sig ) ) != sizeof( sig ) ) {

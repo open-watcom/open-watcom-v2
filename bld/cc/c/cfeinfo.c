@@ -116,7 +116,7 @@ static const char *VarParmFuncs[] = {
 extern const alt_inline_funcs FlatAlternates[];
 
 static struct STRUCT_byte_seq( 1 ) FinallyCode = { 
-    1, FALSE, { 0xc3 }   /* ret */
+    1, false, { 0xc3 }   /* ret */
 };
 
 static hw_reg_set TryFiniParms[] = {
@@ -125,7 +125,7 @@ static hw_reg_set TryFiniParms[] = {
 };
 
 static struct STRUCT_byte_seq( 6 ) TryFiniCode = { 
-    6, FALSE, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
+    6, false, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
 #endif
@@ -141,7 +141,7 @@ bool VarParm( SYMPTR sym )
     TYPEPTR     fn_typ;
 
     if( sym == NULL )
-        return( FALSE );
+        return( false );
 
     if( sym->flags & SYM_FUNCTION ) {
         fn_typ = sym->sym_type;
@@ -149,12 +149,12 @@ bool VarParm( SYMPTR sym )
         if( fn_typ->u.fn.parms != NULL ) {
             for( parm_types = fn_typ->u.fn.parms; (typ = *parm_types) != NULL; ++parm_types ) {
                 if( typ->decl_type == TYPE_DOT_DOT_DOT ) {
-                    return( TRUE );
+                    return( true );
                 }
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -168,7 +168,7 @@ bool VarFunc( SYMPTR sym )
     char        *p;
 
     if( sym == NULL )
-        return( FALSE );
+        return( false );
 
     if( sym->flags & SYM_FUNCTION ) {
         p = sym->name;
@@ -177,11 +177,11 @@ bool VarFunc( SYMPTR sym )
 
         if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0 
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
-            return( TRUE );
+            return( true );
 
         return( VarParm( sym ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
@@ -318,14 +318,14 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
     inf = LangInfo( flags, inf );
     if( inf != NULL ) {
         if( inf->cclass & REVERSE_PARMS ) {
-            return( TRUE );
+            return( true );
         }
     }
 #else
     flags = flags;
     inf = inf;
 #endif
-    return( FALSE );
+    return( false );
 }
 
 static aux_info *InfoLookup( SYMPTR sym )
@@ -460,15 +460,15 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
     if( sym_handle != SYM_NULL ) {
         SymGet( sym, sym_handle );
         if( sym->mods & FLAG_NORETURN )
-            return( TRUE );
+            return( true );
         ent = AuxLookup( SymName( sym, sym_handle ) );
         if( ent != NULL ) {
             if( ent->info->cclass & SUICIDAL ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 call_class GetCallClass( SYM_HANDLE sym_handle )

@@ -22,7 +22,7 @@
 
 :include cpluspro.sp
 
-#if defined(__DOS__) && defined(__386__)
+#if defined(__DOS__)
  #define _DOSFAR _WCFAR
 #else
  #define _DOSFAR _WCI86FAR
@@ -111,7 +111,7 @@ _WCRTLINK extern int      bdos( int __dosfn, unsigned int __dx,
                                 unsigned int __al);
 _WCRTLINK extern void     _chain_intr( void
                                       (_WCINTERRUPT _DOSFAR *__handler)() );
-#if defined(__NT__) || ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) )
+#if defined(__NT__) || ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) )
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, void **__storage );
 #else
 _WCRTLINK extern unsigned _dos_allocmem( unsigned __size, unsigned *__seg );
@@ -127,7 +127,7 @@ _WCRTLINK extern unsigned _dos_findfirst( const char *__path,
                                           struct find_t *__buf );
 _WCRTLINK extern unsigned _dos_findnext( struct find_t *__buf );
 _WCRTLINK extern unsigned _dos_findclose( struct find_t *__buf );
-#if defined(__NT__) || ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) )
+#if defined(__NT__) || ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) )
 _WCRTLINK extern unsigned _dos_freemem( void *__storage );
 #else
 _WCRTLINK extern unsigned _dos_freemem( unsigned __seg );

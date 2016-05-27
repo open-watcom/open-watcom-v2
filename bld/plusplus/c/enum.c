@@ -191,8 +191,8 @@ void InitEnumState( ENUM_DATA *edata, PTREE id )
     }
     edata->next_value.u._32[0] = 0;
     edata->next_value.u._32[1] = 0;
-    edata->next_signed = FALSE;
-    edata->has_sign = FALSE;
+    edata->next_signed = false;
+    edata->has_sign = false;
     SrcFileGetTokenLocn( &(edata->locn) );
     if( id != NULL ) {
         edata->locn = id->locn;
@@ -262,24 +262,24 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         /* value was specified */
         DbgVerify( val->op == PT_INT_CONSTANT, "Bad enum value" );
         if( SignedIntType( val->type ) ) {
-            edata->next_signed = TRUE;
+            edata->next_signed = true;
         } else {
-            edata->next_signed = FALSE;
+            edata->next_signed = false;
         }
         if( NULL == Integral64Type( val->type ) ) {
             if( edata->next_signed
              && val->u.int_constant >= 0 ) {
-                edata->next_signed = FALSE;
+                edata->next_signed = false;
             }
         } else {
             if( edata->next_signed
              && ! val->u.int64_constant.u.sign.v ) {
-                edata->next_signed = FALSE;
+                edata->next_signed = false;
             }
         }
         if( ! edata->has_sign
          && edata->next_signed ) {
-            edata->has_sign = TRUE;
+            edata->has_sign = true;
             if ( edata->index & 1 ) {
                 // move to next bigger signed range
                 ++ edata->index;
@@ -289,7 +289,7 @@ void MakeEnumMember( ENUM_DATA *edata, PTREE id, PTREE val )
         PTreeFree( val );
     } else if( edata->next_signed ) {
         if( edata->next_value.u.sign.v == 0 ) {
-            edata->next_signed = FALSE;
+            edata->next_signed = false;
         }
     }
     PTreeFree( id );
@@ -312,8 +312,8 @@ DECL_SPEC *MakeEnumType( ENUM_DATA *edata )
     DECL_SPEC *dspec;
 
     dspec = PTypeActualType( edata->type );
-    dspec->type_defined = TRUE;
-    dspec->type_declared = TRUE;
+    dspec->type_defined = true;
+    dspec->type_declared = true;
     return( dspec );
 }
 
@@ -327,15 +327,15 @@ static bool enumNameOK( TYPE type, NAME name )
             if( type->u.t.sym->name->name == name ) {
                 // 14.2.1 para 2
                 // <class T> can be ref'd as enum T if an enum type is used
-                return( TRUE );
+                return( true );
             }
         }
     }
     enum_type = EnumType( type );
     if( SimpleTypeName( enum_type ) != name ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 DECL_SPEC *EnumReference( ENUM_DATA *edata )
@@ -367,7 +367,7 @@ DECL_SPEC *EnumReference( ENUM_DATA *edata )
                 }
             }
             if( result != NULL ) {
-                if( ScopeCheckSymbol( result, sym ) == FALSE ) {
+                if( !ScopeCheckSymbol( result, sym ) ) {
                     /* no errors */
                     ref_type = type;
                 }
@@ -404,8 +404,8 @@ DECL_SPEC *EnumReference( ENUM_DATA *edata )
         CErr1( ERR_CANNOT_REFERENCE_UNNAMED_ENUM );
     }
     dspec = PTypeActualType( ref_type );
-    dspec->nameless_allowed = TRUE;
-    dspec->type_elaborated = TRUE;
+    dspec->nameless_allowed = true;
+    dspec->type_elaborated = true;
     dspec->name = name;
     return( dspec );
 }

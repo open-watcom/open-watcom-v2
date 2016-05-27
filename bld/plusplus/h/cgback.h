@@ -80,7 +80,7 @@ unsigned CgBackGetInlineDepth(  // GET MAXIMUM INLINE DEPTH
     void )
 ;
 void CgBackSetInlineRecursion(  // SET INLINE RECURSION
-    bool allowed )              // - TRUE ==> inline recursion allowed
+    bool allowed )              // - true ==> inline recursion allowed
 ;
 bool CgBackGetInlineRecursion(  // GET INLINE RECURSION
     void )

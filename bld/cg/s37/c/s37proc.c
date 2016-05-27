@@ -311,7 +311,7 @@ static bool AddTo( hwins_op_any *reg_op, long amt )
 {
     hwins_op_any        hwop;
 
-    if( amt == 0 ) return( FALSE );
+    if( amt == 0 ) return( false );
     if( amt < _4K ) {
         RegOffset( &hwop, amt, reg_op->r );
         HWInsGen( HWOP_LA, reg_op, &hwop, NULL );
@@ -319,7 +319,7 @@ static bool AddTo( hwins_op_any *reg_op, long amt )
         RefInt( &hwop, amt );
         HWInsGen( HWOP_A, reg_op, &hwop, NULL );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -339,7 +339,7 @@ static bool SkipOverParms()
         CurrProc->targ.save_area -= CurrProc->parms.size;
         return( AddTo( &sp_op, CurrProc->parms.size ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 

@@ -62,6 +62,35 @@
 #include "dbgwintr.h"
 
 
+/*********************************************/
+/* TODO! review all these prototypes declaration if they are local(static) or external */
+
+bool DlgNewWithSym( const char *title, char *buff, int buff_len );
+bool DlgUpTheStack( void );
+bool DlgAreYouNuts( unsigned long mult );
+bool DlgBackInTime( bool warn );
+bool DlgIncompleteUndo( void );
+bool DlgBreak( address addr );
+void ProcAccel( void );
+void ProcDisplay( void );
+void ProcFont( void );
+void ProcHelp( void );
+#ifndef NDEBUG
+void ProcInternal( void );
+#endif
+void ProcPaint( void );
+void ProcView( void );
+void ProcConfigFile( void );
+void ConfigDisp( void );
+void ConfigFont( void );
+void ConfigPaint( void );
+int TabIntervalGet( void );
+void TabIntervalSet( int new );
+void VarSaveWndToScope( void *wnd );
+void VarRestoreWndFromScope( void *wnd );
+/*********************************************/
+
+
 extern void             *WndAsmInspect(address addr);
 
 volatile bool           BrkPending;
@@ -69,10 +98,6 @@ volatile bool           BrkPending;
 static char             *CmdData;
 static bool             Done;
 
-
-void WndMemInit( void )
-{
-}
 
 unsigned DUIConfigScreen( void )
 {
@@ -157,7 +182,7 @@ enum {
 
 bool RequestDone;
 
-DWORD WINAPI ControlFunc( LPVOID parm )
+static DWORD WINAPI ControlFunc( LPVOID parm )
 {
     parm = parm;
     do {
@@ -180,9 +205,10 @@ DWORD WINAPI ControlFunc( LPVOID parm )
     return( 0 ); // thread over!
 }
 
-void RunRequest( int req )
+static void RunRequest( int req )
 {
-    if( _IsOn( SW_TASK_RUNNING ) ) return;
+    if( _IsOn( SW_TASK_RUNNING ) )
+        return;
     WaitForSingleObject( Requestdonesem, INFINITE ); // wait for last request to finish
     Req = req;
     _SwitchOn( SW_TASK_RUNNING );

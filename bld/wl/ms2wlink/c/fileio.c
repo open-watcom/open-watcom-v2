@@ -37,7 +37,7 @@
 
 #include "clibext.h"
 
-static bool     DeleteMsg = FALSE;
+static bool     DeleteMsg = false;
 
 // file io routines
 
@@ -47,7 +47,7 @@ static void IOError( char *msgstart, const char *name )
     char *  tempmsg;
     char *  realmsg;
 
-    DeleteMsg = TRUE;
+    DeleteMsg = true;
     tempmsg = Msg3Splice( msgstart, name, ": " );
     realmsg = Msg2Splice( tempmsg, strerror( errno ) );
     MemFree( tempmsg );
@@ -137,10 +137,10 @@ bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
     bool            eof;
     char            ch;
 
-    eof = FALSE;
+    eof = false;
     while( --size > 0 ) {
         if( QRead( file, &ch, 1, name ) == 0 ) {
-            eof = TRUE;
+            eof = true;
             break;
         } else if( ch != '\r' ) {
             *dest++ = ch;

@@ -239,9 +239,9 @@ static CGIOBUFF *allocateBuffer(// ALLOCATE A NEW BUFFER
     ctl->disk_addr = block;
     ctl->free_offset = 0;
     ctl->reading = 0;
-    ctl->written = FALSE;
-    ctl->writing = FALSE;
-    ctl->active = FALSE;
+    ctl->written = false;
+    ctl->writing = false;
+    ctl->active = false;
     DbgStmt( ctl->check = CGIOBUFF_CHECK );
     RingAppend( &allBufs, ctl );
     ExtraRptIncrementCtr( ctr_buffers );
@@ -263,9 +263,9 @@ static CGIOBUFF *findWrBuffer(  // FIND A BUFFER FOR WRITING
         ctl = allocateBuffer( block );
         addDirectoryEntry( ctl );
     }
-    ctl->active = TRUE;
-    ctl->writing = TRUE;
-    ctl->written = FALSE;
+    ctl->active = true;
+    ctl->writing = true;
+    ctl->written = false;
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
     return( ctl );
 }
@@ -283,10 +283,10 @@ static CGIOBUFF *findRdBuffer(  // FIND A BUFFER FOR READING
         ctl = allocateBuffer( block );
         setDirectoryEntry( block, ctl );
         IoSuppTempRead( block, TMPBLOCK_BSIZE, ctl->data );
-        ctl->written = TRUE;
+        ctl->written = true;
         ctl->free_offset = TMPBLOCK_BSIZE;
     }
-    ctl->active = TRUE;
+    ctl->active = true;
     ++ctl->reading;
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
     return ctl;
@@ -297,9 +297,9 @@ static void finishWrBuffer(     // COMPLETE WRITE-USE OF A BUFFER
     CGIOBUFF *ctl )             // - buffer control
 {
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
-    ctl->writing = FALSE;
+    ctl->writing = false;
     if( ctl->reading == 0 ) {
-        ctl->active = FALSE;
+        ctl->active = false;
     }
     addToReuseList( ctl );
 }
@@ -311,7 +311,7 @@ static void finishRdBuffer(     // COMPLETE READ-USE OF A BUFFER
     DbgAssert( ctl->check == CGIOBUFF_CHECK );
     -- ctl->reading;
     if( ctl->reading == 0 && ! ctl->writing ) {
-        ctl->active = FALSE;
+        ctl->active = false;
         addToReuseList( ctl );
     }
 }
@@ -807,6 +807,6 @@ void CgioBuffZap(               // ZAP A WRITTEN AREA OF A BUFFER
     dest = (CGINTER *)( ctl->data + zap.offset );
     dest->opcode = ins->opcode;
     dest->value = ins->value;
-    ctl->written = FALSE;
+    ctl->written = false;
     finishRdBuffer( ctl );
 }

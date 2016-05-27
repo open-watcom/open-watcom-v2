@@ -188,7 +188,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
             state->return_reg = StructReg();
         }
         if( !( state->attr & ROUTINE_ALLOCS_RETURN ) ) {
-            tmp = ReturnReg( WD, FALSE );
+            tmp = ReturnReg( WD, false );
             HW_TurnOn( state->modify, tmp );
         }
     } else {

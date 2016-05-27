@@ -44,23 +44,24 @@
 #include "smpstuff.h"
 #include "intrptr.h"
 #include "os.h"
-#define DEFVARS
 #include "timermod.h"
+#include "interc.h"
+#include "indos.h"
+#include "rmhooks.h"
+#include "hooks.h"
+#include "realmode.h"
 
 
-intrptr                 old_timer_handler;
+#define _CHAIN_TO( x ) (*x)()
 
-unsigned                Save_Request = FALSE;
-
-
-extern int              InDOS(void);
-/*
- Located int SAMPLE.C
-*/
 extern void             StopAndSave( void );
-extern intrptr          HookTimer(intrptr);
 
-extern void             RecordSample( union INTPACK FAR_PTR *r );
+#ifdef __NETWARE__
+static bool             Save_Request = false;
+#else
+bool                    Save_Request = false;
+#endif
+static intrptr          old_timer_handler;
 
 unsigned NextThread( unsigned tid )
 {
@@ -93,69 +94,48 @@ unsigned NextThread( unsigned tid )
     and things start making sense.
 */
 
-void __interrupt __far timer_handler( union INTPACK r )
+static void __interrupt __far timer_handler( union INTPACK r )
 {
-    if( --TimerMod == 0 )
-    {
+    if( --TimerMod == 0 ) {
         TimerMod = TimerMult;
         _CHAIN_TO( old_timer_handler );
-    }
-    else
-    {
+    } else {
         /* end of interrupt (expected by 8259 before you do RETI) */
         outp( INT_CTRL, EOI );
     }
 
-    if( ! SamplerOff )
-    {
-        if( InsiderTime == 0 )
-        {
+    if( !SamplerOff ) {
+        if( InsiderTime == 0 ) {
             ++InsiderTime;
-            if( SampleIndex == 0 )
-            {
+            if( SampleIndex == 0 ) {
                 Samples->pref.tick = CurrTick;
-                if( CallGraphMode )
-                {
+                if( CallGraphMode ) {
                     CallGraph->pref.tick = CurrTick;
                 }
             }
             ++CurrTick;
-            #ifdef __NETWARE__
-                /* avoid pointer truncation warning */
-                RecordSample( (union INTPACK *)FP_OFF(&r) );
-            #else
-                RecordSample( &r );
-            #endif
-            if( SampleIndex >= Margin )
-            {
-                if( InDOS() )
-                {
-                    Save_Request = TRUE;
-                }
-                else
-                {
+            RecordSample( &r );
+            if( SampleIndex >= Margin ) {
+                if( InDOS() ) {
+                    Save_Request = true;
+                } else {
                     /*
                         We are not in DOS so we can suspend things for a while
                         and save our block of samples
                     */
-                    if( Save_Request )
-                    {
-                        Save_Request = 0;
+                    if( Save_Request ) {
+                        Save_Request = false;
                     }
                     StopAndSave();
                 }
-                if( SampleIndex >= Ceiling )
-                {
-                    if( CallGraphMode )
-                    {
+                if( SampleIndex >= Ceiling ) {
+                    if( CallGraphMode ) {
                         --SampleCount;
                         SampleIndex = LastSampleIndex;
-                    }
-                    else
-                    {
+                    } else {
                         --SampleIndex;
                     }
-                    LostData = TRUE;
+                    LostData = true;
                 }
             }
             --InsiderTime;
@@ -168,19 +148,18 @@ void __interrupt __far timer_handler( union INTPACK r )
     Following function doesn't start the timer per say. It makes it go through
     our own timer interrupt handler.
 */
-extern short GetCS(void);
+extern short GetCS( void );
 #pragma aux GetCS = 0x8c 0xc8;
 
 void StartTimer( void )
 {
     TimerMod = TimerMult;
-    old_timer_handler = HookTimer( MK_FP( GetCS(), (int)&timer_handler ) );
+    old_timer_handler = HookTimer( MK_FP( GetCS(), (unsigned)&timer_handler ) );
 
     /*
     //  Only access the clock if we have overridden the default
     */
-    if(DEF_MULT != TimerMult)
-    {
+    if( DEF_MULT != TimerMult ) {
         outp( TIMER0, DIVISOR & 0xff );
         outp( TIMER0, DIVISOR >> 8 );
     }

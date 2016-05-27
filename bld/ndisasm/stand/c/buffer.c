@@ -165,7 +165,7 @@ void BufferPrint( void )
 
 void BufferHex( unsigned prec, unsigned long value )
 {
-    FmtHexNum( IntermedBuffer, prec, value, FALSE );
+    FmtHexNum( IntermedBuffer, prec, value, false );
     BufferConcat( IntermedBuffer );
 }
 

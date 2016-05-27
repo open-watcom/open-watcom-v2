@@ -136,9 +136,9 @@ class Retriever {
 
         bool ReadExeCode(char* buffer) {
             if ( SeekRead(buffer,0L,_lfaBase) != _lfaBase ) {
-                return FALSE;
+                return false;
             }
-            return TRUE;
+            return true;
         }
 
     private :

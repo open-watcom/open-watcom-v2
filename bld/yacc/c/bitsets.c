@@ -88,10 +88,10 @@ bool Empty( a_word *s )
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool EmptyIntersection( a_word *s, a_word *t )
@@ -100,10 +100,10 @@ bool EmptyIntersection( a_word *s, a_word *t )
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ & *t++ ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool Equal( a_word *s, a_word *t )
@@ -112,10 +112,10 @@ bool Equal( a_word *s, a_word *t )
 
     for( n = wperset; n > 0; --n ) {
         if( *s++ != *t++ ) {
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 void Intersection( a_word *s, a_word *t )

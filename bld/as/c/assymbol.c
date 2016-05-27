@@ -102,7 +102,7 @@ static void hdl_remove( sym_reloc_hdls *hdls, sym_handle sym ) {
         }
         hdl = hdl->next;
     }
-    assert( FALSE );    // sym should be in the list!
+    assert( false );    // sym should be in the list!
 }
 
 static uint_32 symHash( const char *sym ) {
@@ -178,7 +178,7 @@ extern sym_handle SymAdd( const char *sym_name, sym_class class ) {
 #ifndef _STANDALONE_
 extern bool SymLocationKnown( sym_handle sym ) {
 //**********************************************
-// Return TRUE if we know where a given label is
+// Return true if we know where a given label is
 // going to be located.
 
     assert( sym->class == SYM_LABEL );
@@ -379,7 +379,7 @@ extern bool SymRelocIsClean( bool is_clean ) {
 //********************************************
 // Just a debug tool to see whether I've cleaned up.
 
-    static bool isClean = FALSE;
+    static bool isClean = false;
     bool        prev;
 
     prev = isClean;
@@ -404,21 +404,21 @@ extern void SymFini( void ) {
     #endif
 #endif
 
-    reloc = SymGetReloc( TRUE, &sym );
+    reloc = SymGetReloc( true, &sym );
     while( reloc != NULL ) {
 #ifdef AS_DEBUG_DUMP
-        assert( SymRelocIsClean( FALSE ) == FALSE );
+        assert( !SymRelocIsClean( false ) );
 #endif
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( TRUE, &sym );
+        reloc = SymGetReloc( true, &sym );
     }
-    reloc = SymGetReloc( FALSE, &sym );
+    reloc = SymGetReloc( false, &sym );
     while( reloc != NULL ) {
 #ifdef AS_DEBUG_DUMP
-        assert( SymRelocIsClean( FALSE ) == FALSE );
+        assert( !SymRelocIsClean( false ) );
 #endif
         SymDestroyReloc( sym, reloc );
-        reloc = SymGetReloc( FALSE, &sym );
+        reloc = SymGetReloc( false, &sym );
     }
     assert( hi_reloc_hdls.head == NULL && hi_reloc_hdls.tail == NULL );
     assert( lo_reloc_hdls.head == NULL && lo_reloc_hdls.tail == NULL );

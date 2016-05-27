@@ -720,7 +720,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
     }
     stk = what->stk;
     if( stk <= what->ops ){
-        what->error = TRUE;
+        what->error = true;
         return;
     }
     switch( loc->class & 0xf0 ) {
@@ -747,7 +747,7 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
         switch( loc->class & 0x0f ) {
         case LOP_ADD:
             if( (stk[0].state & stk[1].state) & EXPR_VAR ) {
-                what->error = TRUE;
+                what->error = true;
                 return;
             }
             if( stk[1].state & EXPR_VAR  ){
@@ -763,12 +763,12 @@ static  void    DoLocFold( dbg_loc loc, fold_expr *what )
             stk[1] = tmp;
             break;
         default:
-           what->error = TRUE;
+           what->error = true;
            break;
         }
         break;
     default:
-       what->error = TRUE;
+       what->error = true;
        break;
     }
     what->stk = stk;
@@ -780,15 +780,15 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
     fold_expr      expr;
 
     expr.stk = &expr.ops[FOLD_EXPR];
-    expr.error = FALSE;
+    expr.error = false;
     DoLocFold( loc, &expr );
     if( !expr.error ) {
         if( expr.stk == &expr.ops[FOLD_EXPR-1] ) {
             *ret = expr.ops[FOLD_EXPR-1];
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  dbg_type    CVLocCharBlock( dbg_loc loc, cg_type len_type )
@@ -1505,19 +1505,19 @@ static int  MkFlist( dbg_struct st )
             break;
         case FIELD_METHOD:{
             field_any        *curr;
-            int               count;
+            int               count1;
 
-            count = 1;
+            count1 = 1;
             for( curr = field->entry.next; curr != NULL; curr = curr->entry.next ) {
                 if( curr->entry.field_type != FIELD_METHOD )
                     break;
                 if( strcmp( curr->method.name, field->method.name ) != 0 )
                     break;
-                ++count;
+                ++count1;
                 field = curr;
             }
             fld.a_method = StartType( out, LFG_METHOD );
-            fld.a_method->count = count;
+            fld.a_method->count = count1;
             fld.a_method->mList = ++TypeIdx;
             CVPutStr( out, field->method.name );
             len += EndSub( out );  /* write out subfield accum length */

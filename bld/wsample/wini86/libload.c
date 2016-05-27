@@ -144,7 +144,7 @@ static void newModule( HANDLE hmod, char *name, samp_block_kinds kind )
     if( handle >= 0 ) {
         read( handle, &de, sizeof( de ) );
         if( de.signature == DOS_SIGNATURE ) {
-            lseek( handle, (de.file_size-1L)*512L+(long)de.mod_size, SEEK_SET );
+            lseek( handle, ( de.file_size - 1L ) * 512L + (long)de.mod_size, SEEK_SET );
         } else {
             lseek( handle, 0, SEEK_SET );
         }
@@ -161,11 +161,13 @@ static void newModule( HANDLE hmod, char *name, samp_block_kinds kind )
         close( handle );
     }
 
-    for( i=1;i<8192;i++ ) {
+    for( i = 1; i < 8192; i++ ) {
         if( !MyGlobalEntryModule( &ge, hmod, i ) ) {
             if( numsegs > 0 ) {
                 sel = horkyFindSegment( hmod, i );
-                if( sel == 0 ) continue;
+                if( sel == 0 ) {
+                    continue;
+                }
             } else {
                 continue;
             }

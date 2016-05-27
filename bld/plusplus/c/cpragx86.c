@@ -188,7 +188,7 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
 #if _CPU == 8086
     AsmInit( 0, cpu, fpu, GET_FPU_EMU( CpuSwitches ) );
 #else
-    AsmInit( 1, cpu, fpu, FALSE );
+    AsmInit( 1, cpu, fpu, false );
 #endif
 }
 
@@ -218,7 +218,7 @@ static bool GetAliasInfo(
         return( IS_ID_OR_KEYWORD( CurToken ) );
     NextToken();
     if( !IS_ID_OR_KEYWORD( CurToken ) )         // error
-        return( FALSE );
+        return( false );
     PragCurrAlias();
     strcpy( buff, Buffer );
     NextToken();
@@ -240,10 +240,10 @@ static bool GetAliasInfo(
             if( isfar16 ) {
                 CurrInfo->flags |= AUX_FLAG_FAR16;
             }
-            PragEnding( TRUE );
+            PragEnding( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 static void GetParmInfo(
@@ -471,7 +471,7 @@ void PragAux(                   // #PRAGMA AUX ...
     if( have.uses_auto ) {
         AsmSysUsesAuto();
     }
-    PragEnding( TRUE );
+    PragEnding( true );
 }
 
 typedef enum
@@ -697,8 +697,8 @@ static int insertFixups( VBUF *src_code )
 #endif
     VBUF                out_code;
 
-    uses_auto = FALSE;
-    perform_fixups = FALSE;
+    uses_auto = false;
+    perform_fixups = false;
     head = FixupHead;
     if( head == NULL ) {
         out_code = *src_code;
@@ -859,7 +859,7 @@ static int insertFixups( VBUF *src_code )
             }
             VbufSetLen( &out_code, len );
         }
-        perform_fixups = TRUE;
+        perform_fixups = true;
     }
     len = VbufLen( &out_code );
     seq = CMemAlloc( offsetof( byte_seq, data ) + len );
@@ -956,7 +956,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( FALSE );
+    PragEnding( false );
 }
 
 void AsmSysInit( void )
@@ -1109,7 +1109,7 @@ void AsmSysLine( const char *buf )
 #if _CPU == 8086
     AsmLine( buf, GET_FPU_EMU( CpuSwitches ) );
 #else
-    AsmLine( buf, FALSE );
+    AsmLine( buf, false );
 #endif
 }
 
@@ -1122,7 +1122,7 @@ static int GetByteSeq( void )
     int             uses_auto;
     VBUF            code_buffer;
 #if _CPU == 8086
-    bool            use_fpu_emu = FALSE;
+    bool            use_fpu_emu = false;
 #endif
 
     VbufInit( &code_buffer );
@@ -1141,9 +1141,9 @@ static int GetByteSeq( void )
             AsmCodeBuffer = VbufBuffer( &code_buffer );
 #if _CPU == 8086
             AsmLine( Buffer, use_fpu_emu );
-            use_fpu_emu = FALSE;
+            use_fpu_emu = false;
 #else
-            AsmLine( Buffer, FALSE );
+            AsmLine( Buffer, false );
 #endif
             len = AsmCodeAddress;
             NextToken();
@@ -1154,14 +1154,14 @@ static int GetByteSeq( void )
 #if _CPU == 8086
             if( use_fpu_emu ) {
                 AddAFix( len, NULL, FIX_SEG, 0 );
-                use_fpu_emu = FALSE;
+                use_fpu_emu = false;
             }
 #endif
             VbufBuffer( &code_buffer )[ len++ ] = U32Fetch( Constant64 );
             NextToken();
         } else {
 #if _CPU == 8086
-            use_fpu_emu = FALSE;
+            use_fpu_emu = false;
 #endif
             fixword = FixupKeyword();
             if( fixword == FIXWORD_NONE )
@@ -1169,7 +1169,7 @@ static int GetByteSeq( void )
             if( fixword == FIXWORD_FLOAT ) {
 #if _CPU == 8086
                 if( GET_FPU_EMU( CpuSwitches ) ) {
-                    use_fpu_emu = TRUE;
+                    use_fpu_emu = true;
                 }
 #endif
             } else { /* seg or offset */
@@ -1245,7 +1245,7 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
                 --len;
             }
         }
-        index = PragRegIndex( Registers, str, len, TRUE );
+        index = PragRegIndex( Registers, str, len, true );
         if( index != -1 ) {
             return( RegBits[RegMap[index]] );
         }
@@ -1262,13 +1262,13 @@ hw_reg_set PragRegName(         // GET REGISTER NAME
 static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
 {
     if( parms1 == parms2 ) {
-        return( TRUE );
+        return( true );
     }
     if( parms1 != NULL && parms2 != NULL ) {
         for(;;) {
             if( HW_Equal( *parms1, *parms2 ) ) {
                 if( HW_CEqual( *parms1, HW_EMPTY ) ) {
-                    return( TRUE );
+                    return( true );
                 }
                 ++parms1;
                 ++parms2;
@@ -1277,7 +1277,7 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 // The following defines which flags are to be ignored when checking
@@ -1308,7 +1308,7 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         inf2 = &DefaultInfo;
     }
     if( inf1 == inf2 ) {
-        return TRUE;
+        return true;
     }
     return
            ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
@@ -1324,12 +1324,12 @@ bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
-        return FALSE;
+        return false;
     }
     if( ReverseParms( fnp ) ) {
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
 bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
@@ -1340,34 +1340,34 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     // only the obj_name can be set for variables everything else is
     // specific to functions except for "__cdecl" and "__syscall"
     if( datap == &CdeclInfo ) {
-        return( TRUE );
+        return( true );
     }
     if( datap == &SyscallInfo ) {
-        return( TRUE );
+        return( true );
     }
     def_info = &DefaultInfo;
     if( datap->cclass != def_info->cclass ) {
-        return( FALSE );
+        return( false );
     }
     if( datap->code != def_info->code ) {
-        return( FALSE );
+        return( false );
     }
     if( ! parmSetsIdentical( datap->parms, def_info->parms ) ) {
-        return( FALSE );
+        return( false );
     }
     if( ! HW_Equal( datap->returns, def_info->returns ) ) {
-        return( FALSE );
+        return( false );
     }
     if( ! HW_Equal( datap->streturn, def_info->streturn ) ) {
-        return( FALSE );
+        return( false );
     }
     if( ! HW_Equal( datap->save, def_info->save ) ) {
-        return( FALSE );
+        return( false );
     }
     if( datap->flags != def_info->flags ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1430,7 +1430,7 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
         newp = &DefaultInfo;
     }
     if( oldp == newp ) {
-        return TRUE;
+        return true;
     }
     return( ( okClassChange( oldp->cclass
                          , newp->cclass

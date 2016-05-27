@@ -57,7 +57,7 @@ extern  void    DataAlign( unsigned_32 align ) {
     curr_loc = AskLocation();
     modulus = curr_loc % align;
     if( modulus != 0 ) {
-        if( AskSegBlank( AskOP() ) == FALSE ) {
+        if( AskSegBlank( AskOP() ) == false ) {
             IterBytes( (offset)( align - modulus ), 0 );
         } else {
             IncLocation( align - modulus );

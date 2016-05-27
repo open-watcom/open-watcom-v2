@@ -46,7 +46,7 @@
 
 #define MAX_SECS    255
 
-bool    byte_swap = FALSE;
+bool    byte_swap = false;
 
 struct section_data Sections[DR_DEBUG_NUM_SECTS];
 
@@ -296,11 +296,11 @@ int main( int argc, char *argv[] )
 
 #ifdef __BIG_ENDIAN__
     if( o_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
-        byte_swap = TRUE;
+        byte_swap = true;
     }
 #else
     if( o_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-        byte_swap = TRUE;
+        byte_swap = true;
     }
 #endif
 

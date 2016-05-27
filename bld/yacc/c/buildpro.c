@@ -145,8 +145,8 @@ a_pro *addpro( a_sym *sym, a_sym **rhs, int n )
     pro->sym = sym;
     pro->next = sym->pro;
     pro->SR_conflicts = NULL;
-    pro->used = FALSE;
-    pro->unit = FALSE;
+    pro->used = false;
+    pro->unit = false;
     sym->pro = pro;
     return( pro );
 }

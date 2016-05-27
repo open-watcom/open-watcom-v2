@@ -174,7 +174,7 @@ extern void AsNumLabelEmit( uint_32 label_num, owl_section_handle section, owl_o
                 #else
                 ObjDirectEmitReloc(
                 #endif
-                  reloc->location.offset, &numlabel_ref, OWL_RELOC_HALF_LO, FALSE );
+                  reloc->location.offset, &numlabel_ref, OWL_RELOC_HALF_LO, false );
                 SymDestroyReloc( new_fw_sym, reloc );
                 reloc = new_fw_sym->lo_relocs;
             }
@@ -253,7 +253,7 @@ extern void AsNumLabelFini( void ) {
                 #else
                 ObjSetLocation( reloc->offset );
                 // Emit a reloc to beginning of code stream
-                if( ObjEmitMetaReloc( reloc->type, TRUE ) ) {
+                if( ObjEmitMetaReloc( reloc->type, true ) ) {
                     // Patch up addend
                     #ifdef AS_ALPHA
                     // Reloc must be relative. So shift addend left 2 bits.

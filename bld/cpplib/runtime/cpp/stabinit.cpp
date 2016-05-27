@@ -75,6 +75,7 @@ static void dispatch_init(      // INITIALIZE DISPATCH BLOCK
 }
 
 
+extern "C"
 void CPPLIB( exc_setup )        // SETUP DISPATCH, EXCEPTION RECORDS
     ( DISPATCH_EXC* disp        // - dispatch record
     , THROW_RO* throw_ro        // - throw r/o block

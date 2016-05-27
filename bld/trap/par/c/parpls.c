@@ -59,5 +59,5 @@ void FreePorts( unsigned first, unsigned last )
 unsigned AccessPorts( unsigned first, unsigned last )
 {
     first = first; last = last;
-    return( TRUE );
+    return( true );
 }

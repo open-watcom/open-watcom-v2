@@ -36,6 +36,8 @@
 
 #include <stdio.h>
 #include <windows.h>    /* required for all Windows applications */
+#include "cover16.h"
+
 
 typedef long (FAR PASCAL *FPROC)();
 
@@ -55,8 +57,7 @@ long FAR PASCAL __export Function2( long var1, long var2 )
 }
 
 #pragma off (unreferenced);
-BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment,
-                         WORD wHeapSize, LPSTR lpszCmdLine )
+extern BOOL FAR PASCAL LibMain( HINSTANCE hInstance, WORD wDataSegment, WORD wHeapSize, LPSTR lpszCmdLine )
 #pragma on (unreferenced);
 {
     HINSTANCE hlib;

@@ -113,7 +113,7 @@ static void DoSavedExport( symbol *sym )
         exp->impname = NULL;
         AddToExportList( exp );
     } else {
-        AddNameTable( sym->name, strlen( sym->name ), TRUE, &FmtData.u.nov.exp.export );
+        AddNameTable( sym->name, strlen( sym->name ), true, &FmtData.u.nov.exp.export );
     }
 }
 
@@ -125,7 +125,7 @@ static bool StoreCDatData( void *_piece, void *_loc )
 
     PutInfo( *loc, piece->data, piece->length );
     *loc += piece->length;
-    return( FALSE );
+    return( false );
 }
 
 void StoreInfoData( comdat_info *info )
@@ -178,9 +178,9 @@ static bool CheckSameData( symbol *sym, comdat_info *info )
     }
     if( piece == NULL ) {       // found a match
         info->sym->u.datasym = sym;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 static bool CheckAltSym( void *_sym, void *_info )
@@ -192,7 +192,7 @@ static bool CheckAltSym( void *_sym, void *_info )
     if( sym != info->sym && IS_SYM_COMDAT( sym ) && (sym->info & SYM_HAS_DATA) ) {
         return( CheckSameData( sym, info ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 void InfoCDatAltDef( comdat_info *info )
@@ -227,7 +227,7 @@ static void AddCDatAltDef( segdata *sdata, symbol *sym, unsigned_8 *data,
         info.pieces = NULL;
         piece.data = data;
         piece.length = sdata->length;
-        piece.free_data = FALSE;
+        piece.free_data = false;
         RingAppend( &info.pieces, &piece );
         InfoCDatAltDef( &info );
     }
@@ -255,7 +255,7 @@ static void DoIncSymbol( void *_sym )
             } else {
                 data = GetSegContents( sym->p.seg, sym->p.seg->u1.vm_offs );
             }
-            sym->p.seg->isdead = FALSE;
+            sym->p.seg->isdead = false;
             DefineComdat( sym->p.seg, mainsym, sym->addr.off, sym->info & SYM_CDAT_SEL_MASK, data );
         } else if( !(mainsym->info & SYM_DEFINED) )  {
             DoSavedImport( sym );       // FIXME can lose defs here.
@@ -357,7 +357,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
     }
     **grouptab = group;
     (*grouptab)++;
-    return( FALSE );
+    return( false );
 }
 
 void DoIncGroupDefs( void )
@@ -429,7 +429,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     class_entry     *class;
     bool            isovlclass;
 
-    isovlclass = FALSE;
+    isovlclass = false;
     if( FmtData.type & MK_OVERLAYS ) {
         sdata->iscode = CheckOvlClass( clname, &isovlclass );
     }
@@ -462,7 +462,7 @@ static void CheckQNXSegMismatch( stateflag mask )
     if( (FmtData.type & MK_QNX) && (LinkState & mask)
                                 && !FmtData.u.qnx.seen_mismatch ) {
         LnkMsg( WRN+LOC+MSG_CANNOT_HAVE_16_AND_32, NULL );
-        FmtData.u.qnx.seen_mismatch = TRUE;
+        FmtData.u.qnx.seen_mismatch = true;
     }
 }
 
@@ -485,7 +485,7 @@ void AddSegment( segdata *sd, class_entry *class )
     }
     if( sd->isabs ) {
         info |= SEG_ABSOLUTE;
-        sd->isdefd = TRUE;
+        sd->isdefd = true;
     }
     if( sd->isabs || sd->combine == COMBINE_INVALID ) {
         leader = MakeNewLeader( sd, class, info );
@@ -520,7 +520,7 @@ void AddSegment( segdata *sd, class_entry *class )
         }
     }
     if( DBISkip( leader ) ) {
-        sd->isdead = TRUE;
+        sd->isdead = true;
     }
     if( sd->isabs ) {
         leader->seg_addr.off = 0;
@@ -619,11 +619,11 @@ static void AddToLeader( seg_leader *seg, segdata *sdata )
         if( length < sdata->length )
             length = sdata->length;
         if( first->isuninit ) {
-            first->isdead = TRUE;
+            first->isdead = true;
             RingPush( &seg->pieces, sdata );
             sdata->length = length;
         } else {
-            sdata->isdead = TRUE;
+            sdata->isdead = true;
             RingAppend( &seg->pieces, sdata );
             first->length = length;
         }
@@ -757,14 +757,14 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
         if( seg != NULL && sym->p.seg != NULL ) {
             frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
             if( sym->p.seg->u.leader->combine != COMBINE_COMMON ) {
-                frame_ok = FALSE;
+                frame_ok = false;
             }
         } else if( sym->p.seg != NULL ) {
-            frame_ok = FALSE;
+            frame_ok = false;
         } else if( frame != sym->addr.seg ) {
-            frame_ok = FALSE;
+            frame_ok = false;
         } else {
-            frame_ok = TRUE;
+            frame_ok = true;
         }
         if( !(frame_ok && off == sym->addr.off) ) {
             ReportMultiple( sym, sym->name, name_len );
@@ -827,16 +827,16 @@ static segdata *GetSegment( char *seg_name, char *class_name, char *group_name,
     } else {
         sect = Root;
     }
-    class = FindClass( sect, class_name, !use_16, FALSE );
+    class = FindClass( sect, class_name, !use_16, false );
     info = 0;
     sdata = AllocSegData();
     sdata->u.name = seg_name;
     sdata->align = align;
     sdata->combine = comb;
-    sdata->isuninit = TRUE;
+    sdata->isuninit = true;
     if( !use_16 ) {
         info |= USE_32;
-        sdata->is32bit = TRUE;
+        sdata->is32bit = true;
     }
     leader = FindALeader( sdata, class, info );
     if( group_name != NULL ) {
@@ -975,13 +975,13 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
 {
     if( IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED) ) {
         AddCDatAltDef( sdata, sym, data, select );
-        sdata->isdead = TRUE;
+        sdata->isdead = true;
         return;
     }
     if( sym->mod != NULL && sym->mod != CurrMod ) {
         CheckComdatSym( sym, select );
         AddCDatAltDef( sdata, sym, data, select );
-        sdata->isdead = TRUE;
+        sdata->isdead = true;
     } else {
         if( (sym->info & SYM_DEFINED) && !IS_SYM_COMDAT( sym ) ) {
             sym = HashReplace( sym );
@@ -1052,7 +1052,7 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
         if( condsym == NULL ) {
             condsym = MakeWeakExtdef( name, defsym );
         } else if( (condsym->info & SYM_DEFINED) && !IS_SYM_COMMUNAL( condsym ) ) {
-            generate = FALSE;
+            generate = false;
             if( mainsym == NULL ) {
                 break;
             }
@@ -1085,7 +1085,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
 {
     symbol      **symlist;
 
-    symlist = GetVFList( defsym, sym, TRUE, rtns );
+    symlist = GetVFList( defsym, sym, true, rtns );
     sym->info |= SYM_VF_REFS_DONE;
     if( symlist != NULL ) {
         sym->e.vfdata = symlist;
@@ -1118,7 +1118,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
          * for dead code elimination */
         if( (LinkFlags & STRIP_CODE)
                         && !(sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) ) {
-            GetVFList( def, sym, FALSE, rtns );
+            GetVFList( def, sym, false, rtns );
             sym->e.def = def;
             sym->info |= SYM_VF_REFS_DONE;
             DataRef( def );
@@ -1128,7 +1128,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
             if( IS_SYM_PURE_REF( sym ) ^ ispure ) {
                 LnkMsg( LOC_REC+WRN+MSG_VF_PURE_MISMATCH, "S", sym );
             }
-            symlist = GetVFList( def, NULL, TRUE, rtns );
+            symlist = GetVFList( def, NULL, true, rtns );
             if( symlist == NULL ) {
                 if( !CheckVFList( sym ) ) {
                     LnkMsg( LOC_REC+WRN+MSG_VF_TABLE_MISMATCH, "S", sym );
@@ -1223,9 +1223,9 @@ bool SeenDLLRecord( void )
     LinkState |= FMT_SEEN_IMPORT_CMT;
     if( !HintFormat( MK_OS2 | MK_PE | MK_ELF | MK_NOVELL ) ) {
         LnkMsg( LOC+WRN+MSG_DLL_WITH_386, NULL );
-        return( FALSE );    /* Not OK to process import/export records. */
+        return( false );    /* Not OK to process import/export records. */
     } else {
-        return( TRUE );
+        return( true );
     }
 }
 
@@ -1262,7 +1262,7 @@ static void ExportSymbol( length_name *expname )
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
     sym->info |= SYM_EXPORTED;
-    AddNameTable( expname->name, expname->len, TRUE, &FmtData.u.nov.exp.export );
+    AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
 }
 
 void HandleExport( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
@@ -1283,13 +1283,13 @@ bool CheckVFList( symbol *sym )
 
     if( sym->info & SYM_VF_MARKED ) {
         ConvertVFSym( sym );
-        return( TRUE );
+        return( true );
     }
     for( symlist = sym->e.vfdata + 1; *symlist != NULL; ++symlist ) {
         if( (*symlist)->info & (SYM_DEFINED | SYM_VF_MARKED) ) {
             ConvertVFSym( sym );
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }

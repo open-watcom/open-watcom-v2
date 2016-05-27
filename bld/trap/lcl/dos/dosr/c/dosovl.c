@@ -68,9 +68,9 @@ bool CheckOvl( addr32_ptr start )
         hdr->hook = &OvlTrap;
         OvlRequest = MK_FP( start.segment, hdr->handler_offset );
         RunProg( &TaskRegs, &TaskRegs ); /* init overlay manager */
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 trap_retval ReqOvl_state_size( void )

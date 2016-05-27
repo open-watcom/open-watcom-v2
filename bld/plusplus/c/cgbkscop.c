@@ -104,12 +104,12 @@ struct scope_res                // SCOPE_RES -- unresolved scope
     DT_METHOD dtm;              // - function dtor method
     unsigned : 0;               // - alignment
     unsigned dtorables;         // - # dtorable items in scope
-    unsigned statement : 1;     // - TRUE ==> is statement scope
-    unsigned dtor_ct : 1;       // - TRUE ==> has can-throw dtorable
-    unsigned call_ct : 1;       // - TRUE ==> has can-throw call
-    unsigned scanning : 1;      // - TRUE ==> is being scanned now
-    unsigned gen_stab : 1;      // - TRUE ==> scan detected state-table req'd
-    unsigned scope_throw : 1;   // - TRUE ==> IC_SCOPE_THROW in scope
+    unsigned statement : 1;     // - true ==> is statement scope
+    unsigned dtor_ct : 1;       // - true ==> has can-throw dtorable
+    unsigned call_ct : 1;       // - true ==> has can-throw call
+    unsigned scanning : 1;      // - true ==> is being scanned now
+    unsigned gen_stab : 1;      // - true ==> scan detected state-table req'd
+    unsigned scope_throw : 1;   // - true ==> IC_SCOPE_THROW in scope
     unsigned : 0;               // - alignment
 };
 
@@ -255,7 +255,7 @@ static bool _printCallNode
         } RingIterEnd( fu );
         VbufFree( &vbuf );
     }
-    return FALSE;
+    return false;
 }
 
 #define _printAction1   _printAction
@@ -322,7 +322,7 @@ static SCOPE_RES* openScopesPush // PUSH OPEN-SCOPES STACK
         ++ enclosing->toresolve;
         sr->scope_throw = enclosing->scope_throw;
     } else {
-        sr->scope_throw = FALSE;
+        sr->scope_throw = false;
     }
     return sr;
 }
@@ -419,14 +419,14 @@ static SCOPE_RES* markScopeGen  // MARK SCOPE AS GENERATED
 
     for( enc = sr; ; enc = enc->enclosing ) {
         DbgVerify( enc != NULL, "makeScopeGen -- no scopes" );
-        enc->gen_stab = TRUE;
+        enc->gen_stab = true;
 #ifndef NDEBUG
         if( enc != sr ) {
             _printScopeRes( enc, "enclosed scope made genable" );
         }
 #endif
         if( enc->scope != NULL ) {
-            enc->scope->u.s.cg_stab = TRUE;
+            enc->scope->u.s.cg_stab = true;
             break;
         }
     }
@@ -442,7 +442,7 @@ static SCOPE_RES* scopeResolve  // COMPLETE SCOPE RESOLUTION, IF POSSIBLE
         if( ! sr->gen_stab ) {
             UNR_USAGE* su;      // - current usage
             bool thrdt;         // - throwable dtor found
-            thrdt = FALSE;
+            thrdt = false;
             RingIterBeg( sr->unresolved, su ) {
                 switch( su->type ) {
                   case SCUSE_DTOR_BLK :
@@ -502,11 +502,11 @@ static SCOPE_RES* newScope      // ALLOCATE A NEW SCOPE TO BE RESOLVED
     sr->unresolved = NULL;
     sr->toresolve = 0;
     sr->dtorables = 0;
-    sr->statement = FALSE;
-    sr->dtor_ct = FALSE;
-    sr->call_ct = FALSE;
-    sr->scanning = TRUE;
-    sr->gen_stab = FALSE;
+    sr->statement = false;
+    sr->dtor_ct = false;
+    sr->call_ct = false;
+    sr->scanning = true;
+    sr->gen_stab = false;
     return sr;
 }
 
@@ -536,7 +536,7 @@ void CgResScStmtScanBegin       // START SCANNING OF A STATEMENT SCOPE
     , DT_METHOD dtm )           // - dtor method for function
 {
     SCOPE_RES* sr = newScope( scope, caller, dtm );
-    sr->statement = TRUE;
+    sr->statement = true;
     _printScopeRes( sr, "Start scanning statement scope" );
 }
 
@@ -550,7 +550,7 @@ SCOPE CgResScScanEnd            // COMPLETE SCANNING OF A SCOPE
 
     sr = openScopesPop();
     DbgVerify( sr != NULL, "Scope is NULL" );
-    sr->scanning = FALSE;
+    sr->scanning = false;
     _printScopeRes( sr, "Complete scanning scope" );
     RingAppend( &scopes, sr );
     top = sr->enclosing;
@@ -573,7 +573,7 @@ void CgResScopeGen              // FORCE GENERATION OF CURRENT SCOPE
 {
     SCOPE_RES* sr;              // - current scope
 
-    owner->state_table = TRUE;
+    owner->state_table = true;
     sr = openScopesTop();
     makeScopeGen( sr );
     _printScopeRes( sr, "Force scope gen" );
@@ -584,44 +584,44 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
     ( SYMBOL fun                // - the function
     , CALLNODE** a_callnode )   // - addr[ NULL or CALLNODE for function ]
 {
-    bool retn;                  // - return: TRUE ==> process it
+    bool retb;                  // - return: true ==> process it
 
     *a_callnode = NULL;
-    if( NULL == fun ) return TRUE;
+    if( NULL == fun ) return true;
     _printFunction( fun, "resolve:" );
     fun = symDefaultBase( fun );
     if( fun->flag & SF_FN_LONGJUMP ) {
         _print( (fun->flag & SF_LONGJUMP) ? "throwable\n" : "non-throwable\n" );
-        retn = TRUE;
+        retb = true;
     } else {
         if( SymIsInitialized( fun ) ) {
             _print( "not resolved\n" );
             *a_callnode = CgrfCallNode( fun );
-            retn = TRUE;
+            retb = true;
         } else {
             TYPE* except_spec = SymFuncArgList( fun )->except_spec;
             if( NULL != except_spec
              && NULL == *except_spec ) {
                 fun->flag |= SF_NO_LONGJUMP;
                 _print( "non-throwable with throw()\n" );
-                return TRUE;
+                return true;
             } else {
                 REPO_REC_FUN* frec = RepoFunRead( fun->name->name );
                 if( NULL == frec ) {
                     _print( "assumed throwable, called not initialized\n" );
                     fun->flag |= SF_LONGJUMP;
-                    retn = TRUE;
+                    retb = true;
                 } else {
                     _print( "deleted: repository has IG_LONGJUMP\n" );
                     DbgVerify( frec->flags & RFFLAG_IG_LONGJUMP
                              , "resolveSymbol -- bad repository function" );
                     RepoFunRelease( frec );
-                    retn = FALSE;
+                    retb = false;
                 }
             }
         }
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -675,7 +675,7 @@ static void resolvedCallInScope // PROCESS A RESOLVED CALL FOR A SCOPE
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable call after dtorables" );
             } else {
-                sr->call_ct = TRUE;
+                sr->call_ct = true;
                 _printScopeRes( sr, "throwable call before dtorables" );
             }
         }
@@ -694,7 +694,7 @@ static void resolvedCallInStmt  // PROCESS A RESOLVED CALL FOR A STATEMENT
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable stmt call, dtorables" );
             } else {
-                sr->call_ct = TRUE;
+                sr->call_ct = true;
                 _printScopeRes( sr, "throwable stmt call, no dtorables" );
             }
         }
@@ -713,7 +713,7 @@ static void resolvedCtorInStmt  // PROCESS A RESOLVED CTOR CALL FOR A STMT
                 makeScopeGen( sr );
                 _printScopeRes( sr, "throwable stmt ctor, dtorables" );
             } else {
-                sr->call_ct = TRUE;
+                sr->call_ct = true;
                 _printScopeRes( sr, "throwable stmt ctor, no dtorables" );
             }
         }
@@ -791,7 +791,7 @@ static void resolvedDtor        // PROCESS A RESOLVED DTOR
                 makeScopeGen( sr );
                 _printScopeRes( sr, "dtor made scope genable" );
             } else {
-                sr->dtor_ct = TRUE;
+                sr->dtor_ct = true;
                 _printScopeRes( sr, "first throwable dtor in scope" );
             }
         }
@@ -825,7 +825,7 @@ static void resolvedDtorBlk     // PROCESS A RESOLVED DTOR IN SCOPE
             makeScopeGen( sr );
             _printScopeRes( sr, "dtor made scope genable" );
         } else {
-            sr->dtor_ct = TRUE;
+            sr->dtor_ct = true;
             _printScopeRes( sr, "first throwable dtor in scope" );
         }
     }
@@ -836,7 +836,7 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
     ( SYMBOL fun )              // - function (DTOR)
 {
     SCOPE_RES* sr;              // - an open scope
-    bool top_scope;             // - TRUE ==> is top scope
+    bool top_scope;             // - true ==> is top scope
     CALLNODE* called;           // - NULL or node for unresolved dtor
 
     fun = symDefaultBase( fun );
@@ -850,13 +850,13 @@ static void resolveDtorBlk      // ADD: DTOR IN SCOPE TO RESOLVE
             unresolvedDtor( fun, called, sr, SCUSE_DTOR_BLK );
         }
         ++ sr->dtorables;
-        top_scope = TRUE;
+        top_scope = true;
         OpenScopesIterBeg( sr ) {
             if( ! top_scope ) {
                 DbgVerify( ! sr->statement, "CgResDtorBlk -- statement scope" );
                 resolveCallEnc( sr, called, fun );
             }
-            top_scope = FALSE;
+            top_scope = false;
         } OpenScopesIterEnd( sr );
     }
 }
@@ -868,7 +868,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
     , SYMBOL dtor )             // - function (DTOR)
 {
     SCOPE_RES* sr;              // - an open scope
-    bool top_scope;             // - TRUE ==> is top scope
+    bool top_scope;             // - true ==> is top scope
     CALLNODE* dtornode;         // - NULL or node for unresolved dtor
     CALLNODE* ctornode;         // - NULL or node for unresolved ctor
 
@@ -893,7 +893,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
             resolveSymbol( ctor, &ctornode );
             resolveCall( owner, ctor, ctornode );
         }
-        top_scope = TRUE;
+        top_scope = true;
         OpenScopesIterBeg( sr ) {
             if( top_scope ) {
                 if( ctor != NULL ) {
@@ -904,7 +904,7 @@ static void resolveDtorStmt     // ADD: DTOR IN STATEMENT TO RESOLVE
                         addFnUsageSc( ctornode, sr );
                     }
                 }
-                top_scope = FALSE;
+                top_scope = false;
             } else {
                 DbgVerify( ! sr->statement, "CgResDtorBlk -- statement scope" );
                 if( NULL != ctor ) {
@@ -984,7 +984,7 @@ void CgResScopeThrow            // SCOPE CONTAINS THROW
             makeScopeGen( sr );
             _printScopeRes( sr, "throw made scope genable" );
         }
-        sr->scope_throw = TRUE;
+        sr->scope_throw = true;
     } OpenScopesIterEnd( sr )
 }
 
@@ -1048,7 +1048,7 @@ static void resolveScopeGenned  // RESOLUTIONS FOR SCOPE WITH STATE TABLE
     DT_METHOD dtm;              // - default function dtor method
 
     _printScopeResAll( sr, "Resolved as gen" );
-//  sr->scope->cg_stab = TRUE;
+//  sr->scope->cg_stab = true;
     dtm = sr->dtm;
     node = sr->func;
     CgrfMarkNodeGen( node );
@@ -1117,10 +1117,10 @@ static void resolveScopeNoGen   // RESOLUTIONS FOR SCOPE WITHOUT STATE TABLE
 void CgResolve                  // RESOLVE ANY PENDING ACTIONS
     ( void )
 {
-    static bool active;         // - TRUE ==> resolution is active
+    static bool active;         // - true ==> resolution is active
 
     if( active ) return;
-    active = TRUE;
+    active = true;
     for( ; ; ) {
         RES_ACT* res = VstkPop( &actions );
         if( NULL == res ) break;
@@ -1139,7 +1139,7 @@ void CgResolve                  // RESOLVE ANY PENDING ACTIONS
             break;
         }
     }
-    active = FALSE;
+    active = false;
 }
 
 
@@ -1157,7 +1157,7 @@ bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 

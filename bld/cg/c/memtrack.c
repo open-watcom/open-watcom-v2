@@ -201,7 +201,7 @@ static void TrPrt( tracker *trk, char *fmt, ... )
     }
     va_end( args );
     *ptr = '\0';
-    trk->print_line( buff, ptr - buff );
+    trk->print_line( buff, (unsigned)( ptr - buff ) );
 }
 
 
@@ -292,7 +292,7 @@ extern  int TrValidate( void *chunk, void (*ra)(), tracker *trk )
     for(;;) {
         if( entry == 0 ) {
             TrPrt( trk, "%W unowned chunk %D", "Validate", ra, chunk );
-            return( FALSE );
+            return( false );
         }
         if( _POINTER( entry->mem ) == _POINTER( chunk ) ) break;
         entry = entry->next;
@@ -391,17 +391,17 @@ static int ValidChunk( TRPTR entry, char *who, void (*ra)(), tracker *trk )
     if( *((unsigned char *)_POINTER_ADD( chunk, entry->size )) != ALLOC_BYTE ) {
         TrPrt( trk, "%W %D overrun allocation of %U bytes", who, ra,
              chunk, entry->size );
-        return( FALSE );
+        return( false );
 #ifdef _SYS_CHKS
     } else if( !MemOk( chunk, entry->size + 1 ) ) {
         TrPrt( trk, "%W boundry tag hammered %D", who, ra, chunk );
-        return( FALSE );
+        return( false );
     } else if( ( chunk = MemOtherOk() ) != 0 ) {
         TrPrt( trk, "%W bad free list entry at %D", who, ra, chunk );
-        return( FALSE );
+        return( false );
 #endif
     }
-    return( TRUE );
+    return( true );
 }
 
 extern  int TrChkRange( void *start, unsigned len, void (*ra)(), tracker *trk )
@@ -415,7 +415,7 @@ extern  int TrChkRange( void *start, unsigned len, void (*ra)(), tracker *trk )
     for(;;) {
         if( ptr == 0 ) {
             TrPrt( trk, "%W %D not in any allocation", "ChkRange", ra, start );
-            return( FALSE );
+            return( false );
         }
         end_chunk = _POINTER_ADD( ptr->mem, ptr->size );
         if( _POINTER( start ) >= _POINTER( ptr->mem )
@@ -426,7 +426,7 @@ extern  int TrChkRange( void *start, unsigned len, void (*ra)(), tracker *trk )
     if( _POINTER( end ) > _POINTER( end_chunk ) ) {
         TrPrt( trk, "%W %D+%U overruns allocation %D+%U", "ChkRange", ra,
                 start, len, ptr->mem, ptr->size );
-        return( FALSE );
+        return( false );
     }
     return( ValidChunk( ptr, "ChkRange", ra, trk ) );
 }
@@ -438,13 +438,13 @@ extern  int     TrFreeSize( void *chunk, unsigned given_size, tracker *trk )
     TRPTR       prev;
     int         ret;
 
-    if( chunk == 0 ) return( TRUE );
+    if( chunk == 0 ) return( true );
     prev = 0;
     entry = trk->allocated_list;
     for(;;) {
         if( entry == 0 ) {
             TrPrt( trk, "%W unowned chunk %D", "Free", TR_NO_ROUTINE, chunk );
-            return( FALSE );
+            return( false );
         }
         if( _POINTER( chunk ) == _POINTER( entry->mem ) ) break;
         prev = entry;
@@ -464,7 +464,7 @@ extern  int     TrFreeSize( void *chunk, unsigned given_size, tracker *trk )
     if( given_size != 0 && given_size != size ) {
         TrPrt( trk, "%W %D allocated %U, freed %U", "FreeSize", TR_NO_ROUTINE,
             chunk, size, given_size );
-        return( FALSE );
+        return( false );
     }
     return( ret );
 }

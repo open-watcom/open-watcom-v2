@@ -62,8 +62,8 @@ bool ProcDos( void )
 /*************************/
 {
     OvlLevel = 0;
-    ProcOne( DosOptions, SEP_NO, FALSE );
-    return( TRUE );
+    ProcOne( DosOptions, SEP_NO, false );
+    return( true );
 }
 
 static void SetOvlClasses( void )
@@ -90,7 +90,7 @@ static bool AddClass( void )
     ovlclass->name[ Token.len ] = '\0';
     ovlclass->next_name = OvlClasses;
     OvlClasses = ovlclass;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcOverlay( void )
@@ -102,15 +102,15 @@ bool ProcOverlay( void )
 bool ProcDistribute( void )
 /********************************/
 {
-    FmtData.u.dos.distribute = TRUE;
-    return( TRUE );
+    FmtData.u.dos.distribute = true;
+    return( true );
 }
 
 bool ProcPadSections( void )
 /*********************************/
 {
-    FmtData.u.dos.pad_sections = TRUE;
-    return( TRUE );
+    FmtData.u.dos.pad_sections = true;
+    return( true );
 }
 
 bool ProcFixedLib( void )
@@ -156,12 +156,12 @@ bool ProcBegin( void )
         CurrFList = &sect->files;
     }
     OvlLevel++;
-    while( ProcOne( Sections, SEP_NO, FALSE ) != FALSE ) {}  // NULL LOOP
+    while( ProcOne( Sections, SEP_NO, false ) != false ) {}  // NULL LOOP
     if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
         CurrFList = oldflist;
         CurrSect = oldsect;
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcInto( void )
@@ -173,7 +173,7 @@ bool ProcInto( void )
     ret = GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME );
     if( ret ) {
         CurrSect->outfile = NewOutFile( FileName( Token.this,Token.len,
-                                                          E_OVL, FALSE ) );
+                                                          E_OVL, false ) );
     } else {
         LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
     }
@@ -217,7 +217,7 @@ bool ProcEnd( void )
     if( CurrSect->relocs != 0 ) {   // this only happens if the user specifies
         CurrSect->relocs = 0;       // an overlay area with no files in it.
     }
-    return( FALSE );    /*  cause loop to be exited in ProcBegin */
+    return( false );    /*  cause loop to be exited in ProcBegin */
 }
 
 void MakeNewSection( void )
@@ -250,33 +250,33 @@ bool ProcSection( void )
         LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, FALSE );      // check for INTO
-        while( ProcOne( Directives, SEP_NO, FALSE ) != FALSE ) {
+        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
+        while( ProcOne( Directives, SEP_NO, false ) != false ) {
             RestoreParser();
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcSmall( void )
 /***************************/
 {
-    FmtData.u.dos.ovl_short = TRUE;
-    return( TRUE );
+    FmtData.u.dos.ovl_short = true;
+    return( true );
 }
 
 bool ProcCom( void )
 /*************************/
 {
     Extension = E_COM;
-    return( TRUE );
+    return( true );
 }
 
 bool ProcDynamic( void )
 /*****************************/
 {
-    FmtData.u.dos.dynamic = TRUE;
-    return( TRUE );
+    FmtData.u.dos.dynamic = true;
+    return( true );
 }
 
 static bool AddNoVector( void )
@@ -286,7 +286,7 @@ static bool AddNoVector( void )
 
     sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
     sym->u.d.ovlstate |= ( OVL_FORCE | OVL_NO_VECTOR );
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNoVector( void )
@@ -299,7 +299,7 @@ static bool AddVector( void )
 /***************************/
 {
     Vectorize( SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len ) );
-    return(TRUE);
+    return(true);
 }
 
 bool ProcVector( void )
@@ -316,7 +316,7 @@ static bool AddForceVector( void )
     sym = SymOp( ST_CREATE | ST_REFERENCE, Token.this, Token.len );
     Vectorize( sym );
     sym->u.d.ovlstate |= OVL_ALWAYS;
-    return(TRUE);
+    return(true);
 }
 
 bool ProcForceVector( void )
@@ -332,33 +332,33 @@ bool ProcAutoSection( void )
         LnkMsg( LOC+LINE+WRN+MSG_NO_SECTION_IN_ROOT, NULL );
     } else {
         MakeNewSection();
-        ProcOne( SectOptions, SEP_NO, FALSE );      // check for INTO
+        ProcOne( SectOptions, SEP_NO, false );      // check for INTO
         CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( ProcOne( Directives, SEP_NO, FALSE ) != FALSE ) {}
+        while( ProcOne( Directives, SEP_NO, false ) != false ) {}
         CmdFlags &= ~CF_AUTOSECTION;
     }
-    return( TRUE );
+    return( true );
 }
 
 bool ProcNoIndirect( void )
 /********************************/
 {
-    FmtData.u.dos.noindirect = TRUE;
-    return( TRUE );
+    FmtData.u.dos.noindirect = true;
+    return( true );
 }
 
 bool ProcFullHeader( void )
 /*************************/
 {
-    FmtData.u.dos.full_mz_hdr = TRUE;
-    return( TRUE );
+    FmtData.u.dos.full_mz_hdr = true;
+    return( true );
 }
 
 bool ProcStandard( void )
 /******************************/
 {
-    FmtData.u.dos.dynamic = FALSE;
-    return( TRUE );
+    FmtData.u.dos.dynamic = false;
+    return( true );
 }
 
 bool ProcArea( void )

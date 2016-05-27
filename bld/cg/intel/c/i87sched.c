@@ -38,6 +38,7 @@
 #include "data.h"
 #include "x87.h"
 #include "edge.h"
+#include "redefby.h"
 
 
 extern  int     Max87Stk;
@@ -52,7 +53,6 @@ extern  int             FPRegNum(name *);
 extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
-extern  bool_maybe      ReDefinedBy(instruction *,name *);
 extern  name            *DeAlias(name *);
 extern  block           *AddPreBlock( block *postblk );
 extern  void            RevCond( instruction * );
@@ -141,15 +141,15 @@ extern  bool    FPFreeIns( instruction *ins ) {
         if( temp->whole_block ) {
             if( ins->u.gen_table->generate == G_MFST &&
                 temp->actual_op == ins->result ) {
-                return( TRUE ); // will likely merge into the previous op
+                return( true ); // will likely merge into the previous op
             }
         } else if( ins == temp->first && temp->defined ) {
-            return( TRUE );
+            return( true );
         } else if( ins == temp->last && ins->u.gen_table->generate == G_MFLD ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 extern  int     FPStkOver( instruction *ins, int stk_depth )
@@ -669,11 +669,11 @@ static  temp_entry      *AddTempEntry( name *op ) {
         temp->savings = 0;
         temp->actual_locn = ACTUAL_NONE;
         temp->savings = 0;
-        temp->cached = FALSE;
-        temp->defined = FALSE;
-        temp->killed = FALSE;
-        temp->global = FALSE;
-        temp->whole_block = FALSE;
+        temp->cached = false;
+        temp->defined = false;
+        temp->killed = false;
+        temp->global = false;
+        temp->whole_block = false;
     }
     return( temp );
 }
@@ -688,13 +688,13 @@ static  void            DefUseTemp( name *op,
     temp = AddTempEntry( op );
     if( op->v.offset != temp->actual_op->v.offset ||
         op->n.size != temp->actual_op->n.size ) {
-        temp->killed = TRUE;
+        temp->killed = true;
         return;
     }
     if( temp->first == NULL ) temp->first = ins;
     temp->last = ins;
     temp->savings++;
-    if( defined ) temp->defined = TRUE;
+    if( defined ) temp->defined = true;
 }
 
 
@@ -704,7 +704,7 @@ static  void            KillTempEntry( name *op ) {
     temp_entry  *temp;
 
     temp = AddTempEntry( op );
-    temp->killed = TRUE;
+    temp->killed = true;
 }
 
 
@@ -712,11 +712,14 @@ static  void    CheckTemp( instruction *ins, name *op, bool defined ) {
 /*********************************************************************/
 
     if( op->n.class == N_MEMORY ) {
-        if( _IsntModel( RELAX_ALIAS ) ) return;
+        if( _IsntModel( RELAX_ALIAS ) ) {
+            return;
+        }
     } else if( op->n.class != N_TEMP ) {
         return;
     }
-    if( op->v.usage & USE_ADDRESS ) return;
+    if( op->v.usage & USE_ADDRESS )
+        return;
     if( !_GenIs8087( ins->u.gen_table->generate ) ) {
         KillTempEntry( op );
     } else {
@@ -743,10 +746,10 @@ extern  void    InitTempEntries( block *blk ) {
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->ins_flags & FP_INS_INTRODUCED ) continue;
         for( i = 0; i < ins->num_operands; ++i ) {
-            CheckTemp( ins, ins->operands[i], FALSE );
+            CheckTemp( ins, ins->operands[i], false );
         }
         if( ins->result != NULL ) {
-            CheckTemp( ins, ins->result, TRUE );
+            CheckTemp( ins, ins->result, true );
         }
     }
     TempList = SortList( TempList, offsetof( temp_entry, next ), Better );
@@ -773,10 +776,10 @@ static  bool    StackBetween( instruction *first, instruction *last, int inc ) {
     instruction *ins;
     bool        enough;
 
-    enough = TRUE;
+    enough = true;
     for( ins = first; ins != last; ins = ins->head.next ) {
         if( ins->s.stk_depth >= (Max87Stk-1) || _OpIsCall( ins->head.opcode ) ) {
-            enough = FALSE;
+            enough = false;
         }
         ins->s.stk_depth += inc;
     }
@@ -793,7 +796,7 @@ static  void    KillRelatedTemps( name *op )
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->op->n.class == N_MEMORY &&
             temp->op->v.symbol == op->v.symbol ) {
-            temp->killed = TRUE;
+            temp->killed = true;
         }
     }
 }
@@ -806,14 +809,14 @@ static  bool    OKToCache( temp_entry *temp ) {
 
     ins = temp->first;
     if( ins->num_operands <= NumOperands( ins ) )
-        return( TRUE );
+        return( true );
     seg = ins->operands[ ins->num_operands - 1 ];
     for( ins = ins->head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         /*
          * Might be a segment load or some other sort of nonsense here.
          */
-        if( ReDefinedBy( ins, seg ) ) {
-            return( FALSE );
+        if( _IsReDefinedBy( ins, seg ) ) {
+            return( false );
         }
     }
     return( _BLOCK( ins ) == Entry );
@@ -859,7 +862,7 @@ static  void    CacheTemps( block *blk ) {
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->killed ) continue;
         if( !OKToCache( temp ) ) {
-            temp->killed = TRUE;
+            temp->killed = true;
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
@@ -873,12 +876,12 @@ static  void    CacheTemps( block *blk ) {
             if( Entry != NULL ) {
                 temp->first = blk->ins.hd.next;
                 temp->last = blk->ins.hd.prev;
-                temp->whole_block = TRUE;
+                temp->whole_block = true;
             } else {
                 if( temp->defined ) continue;
                 if( temp->first == temp->last ) continue;
             }
-            temp->global = TRUE;
+            temp->global = true;
         } else {
             if( !temp->defined ) continue; // I'm not sure if these save anything
             if( temp->defined && temp->first->u.gen_table->generate!=G_MFST ) continue;
@@ -887,7 +890,7 @@ static  void    CacheTemps( block *blk ) {
         }
         if( StackBetween( temp->first, temp->last, 0 ) ) {
             StackBetween( temp->first, temp->last, 1 );
-            temp->cached = TRUE;
+            temp->cached = true;
         }
     }
     owner = &TempList;

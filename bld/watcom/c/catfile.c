@@ -41,9 +41,8 @@
 #include <string.h>
 #include <ctype.h>
 #include <sys/stat.h>
+#include "bool.h"
 
-#define TRUE  1
-#define FALSE 0
 
 typedef struct PathGroup {
     char    *drive;
@@ -59,10 +58,10 @@ struct {                        // Program switches
     unsigned sort_alpha :1;     // - sort alphabetically
     unsigned emit_hdr   :1;     // - emit header for file
 } switches = {
-    FALSE,
-    FALSE,
-    FALSE,
-    FALSE
+    false,
+    false,
+    false,
+    false
 };
 
 typedef struct {                // Text
@@ -116,8 +115,8 @@ static int errMsg               // PRINT ERROR MESSAGE
 static void turnOffOrder        // REMOVE ORDER SWITCHES
     ( void )
 {
-    switches.sort_date = FALSE;
-    switches.sort_alpha = FALSE;
+    switches.sort_date = false;
+    switches.sort_alpha = false;
 }
 
 
@@ -202,21 +201,21 @@ static int processSwitch        // PROCESS SWITCH
     switch( sw[1] ) {
       case 'd' :
         turnOffOrder();
-        switches.sort_date = TRUE;
+        switches.sort_date = true;
         retn = 0;
         break;
       case 'k' :
         turnOffOrder();
-        switches.sort_kluge = TRUE;
+        switches.sort_kluge = true;
         retn = 0;
         break;
       case 'a' :
         turnOffOrder();
-        switches.sort_alpha = TRUE;
+        switches.sort_alpha = true;
         retn = 0;
         break;
       case 'h' :
-        switches.emit_hdr = TRUE;
+        switches.emit_hdr = true;
         retn = 0;
         break;
       default :
@@ -565,7 +564,7 @@ static int processCmdLine       // PROCESS COMMAND LINE
         if( retn != 0 ) break;
     }
     if( ! any_options ) {
-        switches.sort_kluge = TRUE;
+        switches.sort_kluge = true;
     }
     return retn;
 }

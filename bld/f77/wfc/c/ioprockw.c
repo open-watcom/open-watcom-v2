@@ -63,13 +63,13 @@ static bool FormatIdentifier( void ) {
 //====================================
 
     if( RecComma() && RecNextOpr( OPR_EQU ) )
-        return FALSE;
+        return false;
     if( RecCloseParen() )
-        return FALSE;
+        return false;
     if( RecTrmOpr() )
-        return FALSE;
+        return false;
     ReqComma();
-    return TRUE;
+    return true;
 }
 
 
@@ -244,7 +244,7 @@ void    FormatIdd( void ) {
         Extension( IL_NO_ASTERISK );
     } else if( RecIntVar() ) {
         CkVarRef();
-        StNumbers.var_format = TRUE;
+        StNumbers.var_format = true;
         GFmtVarSet();
     } else {
         ProcIOExpr();           // will allow for array name alone
@@ -412,7 +412,7 @@ void    KeywordList( void ) {
     bool        morelist;
 
     if( RecNextOpr( OPR_EQU ) ) {
-        morelist = TRUE;
+        morelist = true;
     } else {
         if( Permission( IO_UNIT ) ) {
             Unit();

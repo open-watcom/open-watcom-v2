@@ -108,7 +108,7 @@ static int reScanGetNextChar( void )
 {
     CurrChar = *SrcFile->src_ptr++;
     if( CurrChar == '\0' ) {
-        CompFlags.rescan_buffer_done = TRUE;
+        CompFlags.rescan_buffer_done = true;
     }
     return( CurrChar );
 }
@@ -320,7 +320,7 @@ static TOKEN ScanWide( void )        // scan something that starts with L
     TokenLen = 2;
     if( c == '"' ) {                    // L"abc"
         token = ScanString();
-        CompFlags.wide_char_string = TRUE;
+        CompFlags.wide_char_string = true;
     } else if( c == '\'' ) {            // L'a'
         token = CharConst( TYPE_WCHAR );
     } else {                            // regular identifier
@@ -534,7 +534,7 @@ static bool ScanHex( int max, const unsigned char **pbuf )
     }
     Constant = value;
     if( count == max ) {                /* no characters matched */
-        return( FALSE );            /* indicate no characters matched */
+        return( false );            /* indicate no characters matched */
 /*          CErr1( ERR_INVALID_HEX_CONSTANT );  */
     }
     if( too_big ) {
@@ -543,7 +543,7 @@ static bool ScanHex( int max, const unsigned char **pbuf )
             CWarn1( WARN_CONSTANT_TOO_BIG, ERR_CONSTANT_TOO_BIG );
         }
     }
-    return( TRUE );                        /* indicate characters were matched */
+    return( true );                        /* indicate characters were matched */
 }
 
 typedef enum { CNV_32, CNV_64, CNV_OVR } cnv_cc;
@@ -1217,7 +1217,7 @@ static TOKEN CharConst( DATA_TYPE char_type )
     token = T_CONSTANT;
     i = 0;
     value = 0;
-    error = FALSE;
+    error = false;
     for( ;; ) {
         if( c == '\r' || c == '\n' ) {
             token = T_BAD_TOKEN;
@@ -1331,10 +1331,10 @@ static TOKEN ScanString( void )
     bool        ok;
     bool        error;
 
-    ok = FALSE;
-    error = FALSE;
-    CompFlags.wide_char_string = FALSE;
-    CompFlags.trigraph_alert = FALSE;
+    ok = false;
+    error = false;
+    CompFlags.wide_char_string = false;
+    CompFlags.trigraph_alert = false;
     c = NextChar();
     Buffer[0] = c;
     TokenLen = 1;
@@ -1343,7 +1343,7 @@ static TOKEN ScanString( void )
             if( NestLevel != SkipLevel ) {
                 if ( CompFlags.extensions_enabled ) {
                     CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
-                    ok = TRUE;
+                    ok = true;
                 } else {
                     CErr1( ERR_MISSING_QUOTE );
                 }
@@ -1354,7 +1354,7 @@ static TOKEN ScanString( void )
             break;
         if( c == '"' ) {
             NextChar();
-            ok = TRUE;
+            ok = true;
             break;
         }
 
@@ -1415,7 +1415,7 @@ int ESCChar( int c, const unsigned char **pbuf, bool *error )
         if( ScanHex( 127, pbuf ) ) {
             n = Constant;
         } else {                        /* '\xz' where z is not a hex char */
-            *error = TRUE;
+            *error = true;
             n = 'x';
         }
     } else {
@@ -1659,7 +1659,7 @@ bool ReScanToken( void )
     CompFlags.rescan_buffer_done = 0;
     CompFlags.doing_macro_expansion = 1;        // return macros as ID's
     CurToken = ScanToken();
-    CompFlags.doing_macro_expansion = FALSE;
+    CompFlags.doing_macro_expansion = false;
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
         CurToken = T_LSTRING;
     }
@@ -1709,9 +1709,9 @@ bool InitPPScan( void )
     if( ScanFunc[SCAN_NUM] == ScanNum ) {
         ScanFunc[SCAN_NUM] = ScanPPDigit;
         ScanFunc[SCAN_DOT] = ScanPPDot;
-        return( TRUE );         // indicate changed to PP mode
+        return( true );         // indicate changed to PP mode
     }
-    return( FALSE );            // indicate already in PP mode
+    return( false );            // indicate already in PP mode
 }
 
 // called when CollectParms() and CDefine() are finished gathering tokens

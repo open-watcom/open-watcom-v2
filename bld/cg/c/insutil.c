@@ -74,7 +74,8 @@ static void RenumFrom( instruction *ins ) {
                 ins->id = id;
             }
             blk = _BLOCK( ins )->next_block;
-            if( blk == NULL ) break;
+            if( blk == NULL )
+                break;
             ins = blk->ins.hd.next;
         }
     }
@@ -86,7 +87,7 @@ static  conflict_info   *AddConfInfo( conflict_node *conf ) {
 
     conflict_info       *info;
 
-    if( conf->state & CONF_VISITED ) {
+    if( _Is( conf, CST_CONF_VISITED ) ) {
         for( info = ConflictInfo; ; ++info ) {
             if( info->conf == conf ) {
                 break;
@@ -95,7 +96,7 @@ static  conflict_info   *AddConfInfo( conflict_node *conf ) {
     } else {
         info = &ConflictInfo[CurrInfo++];
         info->conf = conf;
-        conf->state |= CONF_VISITED;
+        _SetTrue( conf, CST_CONF_VISITED );
     }
     return( info );
 }
@@ -156,7 +157,7 @@ static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
     FindAllConflicts( ins1, ins2, CB_FOR_INS1 );
     FindAllConflicts( ins2, ins1, CB_FOR_INS2 );
     for( info = ConflictInfo; info->conf != NULL; ++info ) {
-        info->conf->state &= ~CONF_VISITED;
+        _SetFalse( info->conf, CST_CONF_VISITED );
     }
 }
 
@@ -208,7 +209,9 @@ extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum 
                     break;
                 }
                 next = blk->ins.hd.next;
-                if ( next->head.opcode != OP_BLOCK ) break;
+                if ( next->head.opcode != OP_BLOCK ) {
+                    break;
+                }
             }
             pref->id = next->id;
         }
@@ -254,7 +257,7 @@ extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum 
 extern  void    PrefixIns( instruction *ins, instruction *pref ) {
 /****************************************************************/
 
-    PrefixInsRenum( ins, pref, TRUE );
+    PrefixInsRenum( ins, pref, true );
 }
 
 

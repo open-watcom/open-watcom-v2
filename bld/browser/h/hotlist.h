@@ -70,7 +70,7 @@ public:
         virtual const char *    getString( int index ) = 0;
         virtual int             getHotSpot( int index, bool pressed ) = 0;
         virtual int             getHotOffset( int ) { return 0; }
-        virtual bool            full() { return TRUE; }
+        virtual bool            full() { return true; }
 
 protected:
         void            scrollToSelected();
@@ -82,7 +82,7 @@ protected:
 
 private:
         void            changed();
-        void            performScroll( long diff, bool absolute = FALSE );
+        void            performScroll( long diff, bool absolute = false );
 
         bool            _leftDown;
         int             _hotPressIdx;
@@ -123,7 +123,7 @@ class HotWindowList : public WBRWindow, public HotSpotList
 {
 public:
                                 HotWindowList( const char * text,
-                                               bool infinite = FALSE,
+                                               bool infinite = false,
                                                WStyle stl =
                                                WBRWinStyleDefault |
                                                HotSpotListStyleDefault );

@@ -107,7 +107,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( state->attr & ROUTINE_OS ) {
         call_ins->flags.call_flags |= CALL_OS_LINKAGE;
     }
-    if( use_return == FALSE ) {
+    if( use_return == false ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 
@@ -240,11 +240,11 @@ static  bool    ZappedBy( cn call, reg_num reg ) {
 
     zap = CallZap( call->state );
     this = WordReg( reg );
-    if( HW_Ovlap( zap, this ) ) return( TRUE );
-    if( !( call->state->attr & ROUTINE_OS ) ) return( FALSE );
-    if( call->state->regs.SA == reg ) return( TRUE );
-    if( call->state->regs.PR == reg ) return( TRUE );
-    return( FALSE );
+    if( HW_Ovlap( zap, this ) ) return( true );
+    if( !( call->state->attr & ROUTINE_OS ) ) return( false );
+    if( call->state->regs.SA == reg ) return( true );
+    if( call->state->regs.PR == reg ) return( true );
+    return( false );
 }
 
 
@@ -256,7 +256,7 @@ static  void    InitSaveRegs() {
     reg_num i;
 
     for( i = 0; i < 15; ++i ) {
-        Used[ i ] = FALSE;
+        Used[ i ] = false;
     }
 }
 
@@ -266,13 +266,13 @@ static  bool    GoodSaveReg( cn call, reg_num reg ) {
 
     hw_reg_set  fixed, this;
 
-    if( Used[ reg ] ) return( FALSE );
-    if( ZappedBy( call, reg ) ) return( FALSE );
+    if( Used[ reg ] ) return( false );
+    if( ZappedBy( call, reg ) ) return( false );
     this = WordReg( reg );
     fixed = FixedRegs();
-    if( HW_Ovlap( this, fixed ) ) return( FALSE );
-    Used[ reg ] = TRUE;
-    return( TRUE );
+    if( HW_Ovlap( this, fixed ) ) return( false );
+    Used[ reg ] = true;
+    return( true );
 }
 
 

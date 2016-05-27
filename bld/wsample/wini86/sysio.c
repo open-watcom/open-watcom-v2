@@ -29,11 +29,15 @@
 ****************************************************************************/
 
 
+#include <windows.h>
 #include <malloc.h>
 #include "tinyio.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "sysio.h"
+
+
+int SysOpen( char *name );
 
 void SysInit( void )
 {

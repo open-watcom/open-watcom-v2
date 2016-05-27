@@ -40,7 +40,7 @@
                         file. The parm is the name of the TIX file being
                         looked for (minus the trailing ".tix"). If the
                         function returns zero, the UI library initialization
-                        will fail (uiinit will return FALSE). Returning a
+                        will fail (uiinit will return false). Returning a
                         non-zero value will allow UI library initialization
                         to succeed (assuming nothing else goes wrong).
 */

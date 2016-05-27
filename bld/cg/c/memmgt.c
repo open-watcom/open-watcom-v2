@@ -141,7 +141,7 @@ extern  pointer CGAlloc( size_t size )
             _AlignmentCheck( chunk, 8 );
             return( chunk );
         }
-        if( _MemCheck( size ) == FALSE ) break;
+        if( _MemCheck( size ) == false ) break;
     }
     if( ( MemOut == MO_FATAL ) || ( InOptimizer != 0 ) ) {
         FatalError( "Out of memory" );

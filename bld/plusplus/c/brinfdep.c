@@ -49,7 +49,7 @@ struct MACDEP                   // MACDEP -- macro dependency
     MEPTR macro;                // - macro
     MACVALUE* value;            // - value
     MAC_VTYPE type;             // - type of dependency
-    uint_8 written          :1; // - TRUE ==> written out
+    uint_8 written          :1; // - true ==> written out
     unsigned :0;                // - alignment
 };
 
@@ -144,7 +144,7 @@ void BrinfDepWrite              // WRITE DEPENDENCY INFORMATION
                 break;
               DbgDefault( "bad type of macro dependency" );
             }
-            cd->written = TRUE;
+            cd->written = true;
         }
     } RingIterEnd( cd );
 }
@@ -212,7 +212,7 @@ void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
             md->macro = macro;
             md->value = value;
             md->type = type;
-            md->written = FALSE;
+            md->written = false;
             IfDbgToggle( browse ) {
                 DbgStmt(
                     printf( "BrowseDep: macadd %x SRCFILE %x MACRO %x"

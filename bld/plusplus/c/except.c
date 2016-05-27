@@ -122,13 +122,13 @@ static void makeThrowCnvAccess( // MAKE A THROW CONVERSION, WITH ACCESS
     TYPE_SIG_ACCESS access )    // - type of access
 {
     THROW_CNV *cnv;             // - conversion entry
-    bool err_occurred;          // - set to TRUE if error occurred
+    bool err_occurred;          // - set to true if error occurred
 
     cnv = RingCarveAlloc( ctl->carver, &ctl->hdr );
     cnv->offset = offset;
     cnv->sig = TypeSigFind( access, type, &ctl->err_locn, &err_occurred );
     if( err_occurred ) {
-        ctl->error_occurred = TRUE;
+        ctl->error_occurred = true;
     }
 }
 
@@ -173,7 +173,7 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
     SCOPE base_scope,           // - scope for base class
     THROW_CNV_CTL *ctl )        // - control area
 {
-    bool retn;                  // - TRUE ==> generate conversion
+    bool retb;                  // - true ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
     thr_scope = TypeScope( ctl->src_type );
@@ -182,15 +182,15 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
       case DERIVED_YES :
       case DERIVED_YES_BUT_VIRTUAL :
         ctl->offset = ThrowBaseOffset( thr_scope, base_scope );
-        retn = TRUE;
+        retb = true;
         break;
       case DERIVED_YES_BUT_AMBIGUOUS :
       case DERIVED_YES_BUT_PRIVATE :
       case DERIVED_YES_BUT_PROTECTED :
-        retn = FALSE;
+        retb = false;
         break;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -261,7 +261,7 @@ unsigned ThrowCnvInit(          // THROW CONVERSIONS: INITIALIZE
     ctl->hdr = NULL;
     ctl->cur = NULL;
     type = TypeCanonicalThr( type );
-    ctl->error_occurred = FALSE;
+    ctl->error_occurred = false;
     thr_obj = ThrowCategory( type );
     if( thr_obj == THROBJ_REFERENCE ) {
         makeThrowCnvNoAcc( ctl, type, 0 );

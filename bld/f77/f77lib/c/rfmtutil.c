@@ -47,6 +47,7 @@
 #include "ioerr.h"
 #include "cctrl.h"
 #include "wrutils.h"
+#include "fmtcnvt.h"
 
 #include <stdlib.h>
 #include <ctype.h>
@@ -296,9 +297,9 @@ void    R_FILog( void ) {
     } else {
         ch = toupper( fcb->buffer[ fcb->col ] );
         if( ch == 'F' ) {
-            SetLogValue( _LogValue( FALSE ) );
+            SetLogValue( _LogValue( false ) );
         } else if( ch == 'T' ) {
-            SetLogValue( _LogValue( TRUE ) );
+            SetLogValue( _LogValue( true ) );
         }
     }
     if( __AllowCommaSep() ) { // don't flush but search for comma separator
@@ -330,7 +331,7 @@ void    R_FIFloat( void ) {
     int         prec;
     int         status;
     bool        comma;
-    int         width;
+    uint        width;
 
     fcb = IOCB->fileinfo;
     fmtptr = &IOCB->fmtptr->fmt2;
@@ -347,11 +348,10 @@ void    R_FIFloat( void ) {
         break;
     default:
         prec = PRECISION_SINGLE;
-    };
+    }
     comma = __AllowCommaSep();
-    status = FmtS2F( &fcb->buffer[ fcb->col ], fmtptr->fld1,
-                     fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
-                     IOCB->scale, prec, &value, comma, &width, FALSE );
+    status = FmtS2F( fcb->buffer + fcb->col, fmtptr->fld1, fmtptr->fld2, ( fcb->blanks == BLANK_ZERO ),
+                     IOCB->scale, prec, &value, comma, &width, false );
     if( status == FLT_OK ) {
         if( comma && ( fmtptr->fld1 != width ) ) {
             fcb->col += width;
@@ -554,7 +554,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
     }
 #endif
     for(;;) {
-        valid = FALSE;
+        valid = false;
         if( !isxdigit( ch1 ) ) {
             if( ch1 != ' ' ) break;
             ch1 = '0';
@@ -563,7 +563,7 @@ static bool FmtH2B( char *src, uint width, char PGM *dst, int len, PTYPE typ ) {
             if( ch2 != ' ' ) break;
             ch2 = '0';
         }
-        valid = TRUE;
+        valid = true;
         *dst = ( Hex( ch1 ) << 4 ) + Hex( ch2 );
 #if defined( _M_IX86 ) || defined( __AXP__ ) || defined( __PPC__ )
         if( typ == PT_CHAR ) {
@@ -731,7 +731,7 @@ void    R_FIInt( void ) {
 
     intstar4    value;
     uint        width;
-    int         new_width;
+    uint        new_width;
     int         status;
     ftnfile     *fcb;
     bool        comma;
@@ -740,8 +740,7 @@ void    R_FIInt( void ) {
     width = IOCB->fmtptr->fmt2.fld1;
     ChkBuffLen( width );
     comma = __AllowCommaSep();
-    status = FmtS2I( &fcb->buffer[ fcb->col ], width,
-                     ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
+    status = FmtS2I( fcb->buffer + fcb->col, width, ( fcb->blanks == BLANK_ZERO ), &value, comma, &new_width );
     if( status == INT_INVALID ) {
         IOErr( IO_BAD_CHAR );
     } else if( status == INT_OVERFLOW ) {

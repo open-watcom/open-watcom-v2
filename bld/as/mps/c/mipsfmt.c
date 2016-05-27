@@ -141,9 +141,9 @@ static bool ensureOpAbsolute( ins_operand *op, uint_8 opIdx )
 {
     if( OP_HAS_RELOC( op ) ) {
         Error( RELOC_NOT_ALLOWED, opIdx );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -198,7 +198,7 @@ static owl_reloc_type relocType( asm_reloc_type type, owl_reloc_type default_typ
         break;
     default:
         //Error( "internal - unexpected default type" );
-        assert( FALSE );
+        assert( false );
         ret = OWL_RELOC_ABSOLUTE;
     }
     return( ret );
@@ -254,7 +254,7 @@ static ins_funccode getFuncCode( ins_table *table, instruction *ins )
         if( ins->format->flags & QF_D ) fc += 0x040;
         break;
     default:
-        assert( FALSE ); // Others should have no need to call this.
+        assert( false ); // Others should have no need to call this.
     }
     return( fc );
 }
@@ -371,7 +371,7 @@ static void doAutoVar( asm_reloc *reloc, op_reloc_target targ, uint_32 *buffer, 
         Error( BAD_BASE_REG_FOR_STACKVAR );
         return;
     }
-    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), TRUE );
+    addReloc( reloc, targ, OWL_RELOC_FP_OFFSET, (unsigned)( (char *)buffer - (char *)result ), true );
     doOpcodeRsRt( buffer, table->opcode, MIPS_FRAME_REG, RegIndex( ins->operands[0]->reg ), 0 );
 }
 #endif
@@ -436,7 +436,7 @@ static unsigned load32BitLiteral( uint_32 *buffer, ins_operand *op0, ins_operand
         val = op0->constant;
     }
     return( loadConst32( buffer, RegIndex( op1->reg ), MIPS_ZERO_SINK,
-                         op0, val, NULL, FALSE ) );
+                         op0, val, NULL, false ) );
 }
 
 
@@ -446,7 +446,7 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
     ins_operand     *op0, *op1;
     uint_32         extra;
     uint_32         abs_val;
-    bool            ready = TRUE;
+    bool            ready = true;
 
     op0 = operands[0];
     op1 = operands[1];
@@ -461,10 +461,10 @@ static void doMov( uint_32 *buffer, ins_operand *operands[], domov_option m_opt 
             extra = _LIT( abs_val ); // this lit is between 0..255
             // ensureOpAbsolute( op0, 0 );  should be done before calling doMov
         } else {
-            ready = FALSE;
+            ready = false;
         }
     } else {
-        ready = FALSE;
+        ready = false;
     }
     if( ready ) {
         doOpcodeFcRsRt( buffer, OPCODE_BIS, FUNCCODE_BIS,
@@ -709,9 +709,9 @@ static bool opValidate( ot_array *verify, instruction *ins, ins_opcount num_op, 
     }
     if( lasterr != -1 ) {
         opError( ins, actual, wanted, lasterr );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -730,14 +730,14 @@ static bool jmpOperandsValidate( instruction *ins, ins_opcount num_op, bool link
     unsigned        num_var;
 
     if( num_op == 0 )
-        return( FALSE );
+        return( false );
     assert( num_op <= 2 );
     verify = verify_table[num_op - 1];
     if( num_op == 1 ) {
         num_var = sizeof( verify1 ) / sizeof( **verify1 ) / 3;
     } else {
         if( !link ) // two-operand from only valid for 'jal', not 'j'
-            return( FALSE );
+            return( false );
         num_var = sizeof( verify2 ) / sizeof( **verify2 ) / 3;
     }
     assert( num_var <= MAX_VARIETIES );
@@ -843,7 +843,8 @@ static bool retOperandsValidate( instruction *ins, ins_opcount num_op )
     ot_array        *verify_table[3] = { (ot_array *)&verify1, &verify2, (ot_array *)&verify3 };
     unsigned        num_var;
 
-    if( num_op == 0 ) return( TRUE );
+    if( num_op == 0 )
+        return( true );
     assert( num_op <= 3 );
     verify = verify_table[num_op - 1];
     if( num_op == 1 ) {
@@ -1224,13 +1225,13 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
         if( op->reloc.type == ASM_RELOC_UNSPECIFIED ) {
             // We should emit lui/addiu pair.
             inc = loadConst32( buffer, RegIndex( ins->operands[0]->reg ),
-                               s_reg, op, op->constant, reloc, TRUE );
+                               s_reg, op, op->constant, reloc, true );
             numExtendedIns += inc - 1;
             return;
         }
     }
     inc = loadConst32( buffer, RegIndex( ins->operands[0]->reg ), s_reg, op,
-                       op->constant, reloc, FALSE );
+                       op->constant, reloc, false );
     numExtendedIns += inc - 1;
 }
 
@@ -1390,17 +1391,17 @@ bool MIPSValidate( instruction *ins )
         op = ins->operands[i];
         if( ( op->type & fmt->ops[i] ) != op->type ) {
             opError( ins, op->type, fmt->ops[i], i );
-            return( FALSE );
+            return( false );
         }
     }
     if( i < MAX_OPERANDS ) {
         if( ( fmt->ops[i] & OP_NOTHING ) != OP_NOTHING ) {
             Error( NOT_ENOUGH_INSOP );
-            return( FALSE );
+            return( false );
         }
     }   // NOTE: It might not catch all improper operand combinations
         // because we're using flags here
-    return( TRUE );
+    return( true );
 }
 
 
@@ -1408,13 +1409,13 @@ bool MIPSValidate( instruction *ins )
 static void emitIns( owl_section_handle hdl, char *inscode, int size )
 //********************************************************************
 {
-    ObjEmitData( hdl, inscode, size, TRUE );
+    ObjEmitData( hdl, inscode, size, true );
 }
 #else
 static void emitIns( char *inscode, int size )
 //********************************************
 {
-    ObjEmitData( inscode, size, TRUE );
+    ObjEmitData( inscode, size, true );
 }
 #endif
 
@@ -1456,18 +1457,18 @@ void MIPSEmit( instruction *ins )
                 if( curr_reloc->is_named ) {
 #ifdef _STANDALONE_
                     ObjEmitReloc( hdl, SymName( curr_reloc->target.ptr ),
-                                  curr_reloc->type, TRUE, TRUE );
+                                  curr_reloc->type, true, true );
 #else
                     ObjEmitReloc( SymName( curr_reloc->target.ptr ),
-                                  curr_reloc->type, TRUE, TRUE );
+                                  curr_reloc->type, true, true );
 #endif
                 } else {
 #ifdef _STANDALONE_
                     ObjEmitReloc( hdl, &curr_reloc->target.label,
-                                  curr_reloc->type, TRUE, FALSE );
+                                  curr_reloc->type, true, false );
 #else
                     ObjEmitReloc( &curr_reloc->target.label,
-                                  curr_reloc->type, TRUE, FALSE );
+                                  curr_reloc->type, true, false );
 #endif
                 }
 #ifdef AS_DEBUG_DUMP

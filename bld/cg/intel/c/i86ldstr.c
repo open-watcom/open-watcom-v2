@@ -37,6 +37,8 @@
 #include "makeins.h"
 #include "data.h"
 #include "namelist.h"
+#include "redefby.h"
+
 
 extern  hw_reg_set      *RegSets[];
 
@@ -54,7 +56,6 @@ extern  bool            DoesSomething( instruction* );
 extern  name            *HighPart( name *, type_class_def );
 extern  name            *LowPart( name *, type_class_def );
 extern  hw_reg_set      FullReg( hw_reg_set );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
 extern  void            MoveSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );
@@ -102,7 +103,7 @@ static  name    **Enregister( instruction *ins )
     }
     /* only RISCify CMPs, TESTs, and MOVs when optimizing for size */
     if( PreferSize && !_OpIsCondition( ins->head.opcode ) )
-        return( FALSE );
+        return( false );
     for( i = ins->num_operands; i-- > 0; ) {
         switch( ins->operands[i]->n.class ) {
         case N_INDEXED:
@@ -249,13 +250,13 @@ static  bool    LoadStoreIns( instruction *ins )
     name        *reg;
 
     if( !DoesSomething( ins ) )
-        return( FALSE );
+        return( false );
     op_ptr = Enregister( ins );
     if( op_ptr == NULL )
-        return( FALSE );
+        return( false );
     hw_reg = FindRegister( ins );
     if( hw_reg == NULL )
-        return( FALSE );
+        return( false );
     reg = AllocRegName( *hw_reg );
     op = *op_ptr;
     if( op == ins->result ) {
@@ -274,16 +275,16 @@ static  bool    LoadStoreIns( instruction *ins )
     }
     ins = MakeGeneratable( ins );
     ins->ins_flags |= INS_RISCIFIED;
-    return( TRUE );
+    return( true );
 }
 
 #if _TARGET & _TARG_IAPX86
-static  bool    FixMem16Moves( void ) { return( FALSE ); }
+static  bool    FixMem16Moves( void ) { return( false ); }
 static  void    CompressMem16Moves( void ) {}
 #else
 static  bool    SplitMem16Move( instruction *ins )
 /*************************************************
-    Return TRUE if we can split the 16-bit move
+    Return true if we can split the 16-bit move
     instruction given into two one-byte moves.
 */
 {
@@ -296,10 +297,10 @@ static  bool    SplitMem16Move( instruction *ins )
         reg = ins->result->r.reg;
         HW_COnlyOn( reg, HW_ABCD );
         if( HW_CEqual( reg, HW_EMPTY ) ) {
-            return( FALSE );
+            return( false );
         }
-        if( ReDefinedBy( ins, ins->operands[0] ) ) {
-            return( FALSE );
+        if( _IsReDefinedBy( ins, ins->operands[0] ) ) {
+            return( false );
         }
     }
     new_h = MakeMove( HighPart( ins->operands[0], U1 ), HighPart( ins->result, U1 ), U1 );
@@ -319,7 +320,7 @@ static  bool    SplitMem16Move( instruction *ins )
 
     new_h = MakeGeneratable( new_h );
     new_l = MakeGeneratable( new_l );
-    return( TRUE );
+    return( true );
 }
 
 static  void    RestoreMem16Move( instruction *ins )
@@ -366,10 +367,10 @@ static  bool    FixMem16Moves( void )
     instruction *next;
 
     if( OptForSize != 0 )
-        return( FALSE );
+        return( false );
     if( !_CPULevel( CPU_586 ) )
-        return( FALSE );
-    changed = FALSE;
+        return( false );
+    changed = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
@@ -435,25 +436,25 @@ extern  bool    LdStAlloc( void )
        Run RISCifier for all modes, but sometimes (depending on CPU and
        optimization) prefer shorter non-RISC version of instructions.
     */
-    PreferSize = FALSE;
+    PreferSize = false;
     if( OptForSize > 50 ) {
-        PreferSize = TRUE;
+        PreferSize = true;
     }
     if( !_CPULevel( CPU_486 ) ) {
-        PreferSize = TRUE;
+        PreferSize = true;
     }
 
 #if 0  /* You can optionally disable riscifer when optimizing for size */
-    if (PreferSize) return( FALSE );
+    if (PreferSize) return( false );
 #endif
 
-    changed = FALSE;
+    changed = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;      /* list is shifting underneath us */
             if( LoadStoreIns( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
-                changed = TRUE;
+                changed = true;
             }
         }
     }
@@ -470,7 +471,7 @@ static bool CanCompressOperand( instruction *ins, name **popnd )
 
     reg = (*popnd)->r.reg;
     if( HW_Ovlap( reg, ins->head.next->head.live.regs ) ) {
-        return( FALSE );
+        return( false );
     }
     // make sure that the REG is not used in any operands besides
     // the one which we are thinking of replacing BBB - Dec 4, 1993
@@ -478,7 +479,7 @@ static bool CanCompressOperand( instruction *ins, name **popnd )
         if( &ins->operands[i] != popnd ) {
             op = ins->operands[i];
             if( op->n.class == N_REGISTER && HW_Ovlap( op->r.reg, reg ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
@@ -488,17 +489,17 @@ static bool CanCompressOperand( instruction *ins, name **popnd )
         switch( op->n.class ) {
         case N_REGISTER:
             if( HW_Ovlap( op->r.reg, reg ) )
-                return( FALSE );
+                return( false );
             break;
         case N_INDEXED:
             if( HW_Ovlap( op->i.index->r.reg, reg ) )
-                return( FALSE );
+                return( false );
             break;
         default:
             break;
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static bool     CanCompressResult( instruction *ins,
@@ -512,24 +513,24 @@ static bool     CanCompressResult( instruction *ins,
 
     reg = ins->result->r.reg;
     if( HW_Ovlap( reg, next->head.next->head.live.regs ) ) {
-        return( FALSE );
+        return( false );
     }
     if( popnd != NULL ) {
         if( *popnd != ins->result ) {
-            return( FALSE );
+            return( false );
         }
         if( next->result != prev_op0 ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         for( i = 0; i < ins->num_operands; ++i ) {
             op = ins->operands[i];
             if( op->n.class == N_REGISTER && HW_Ovlap( op->r.reg, reg ) ) {
-                return( FALSE );
+                return( false );
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 static void     CompressIns( instruction *ins )

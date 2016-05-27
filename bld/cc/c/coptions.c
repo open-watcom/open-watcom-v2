@@ -1225,7 +1225,7 @@ static void Set_TP( void )
     char    *togname;
 
     togname = CopyOfParm();
-    SetToggleFlag( togname, TRUE );
+    SetToggleFlag( togname, true );
     CMemFree( togname );
 }
 
@@ -1243,6 +1243,7 @@ static void Set_V( void )           { CompFlags.generate_prototypes = 1; }
 
 static void Set_WE( void )          { CompFlags.warnings_cause_bad_exit = 1; }
 static void Set_WO( void )          { CompFlags.using_overlays = 1; }
+static void Set_WPX( void )         { Check_global_prototype = 1; }
 static void Set_WX( void )          { WngLevel = 4; }
 static void SetWarningLevel( void ) { WngLevel = OptValue; }
 static void Set_WCD( void )         { EnableDisableMessage( 0, OptValue ); }
@@ -1732,6 +1733,7 @@ static struct option const CFE_Options[] = {
     { "wce=#",  0,              Set_WCE },
     { "we",     0,              Set_WE },
     { "wo",     0,              Set_WO },
+    { "wpx",    0,              Set_WPX },
     { "wx",     0,              Set_WX },
     { "w=#",    0,              SetWarningLevel },
     { "x",      0,              Set_X },

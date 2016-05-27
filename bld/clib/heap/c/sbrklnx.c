@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stdlib.h>
 #include <sys/types.h>
@@ -38,21 +37,16 @@
 #include "linuxsys.h"
 #include "heapacc.h"
 #include "heap.h"
+#include "rterrno.h"
 #include "rtdata.h"
+#include "thread.h"
 
-_WCRTLINK void _WCNEAR *sbrk( int increment ) {
-    return( __brk( _curbrk + increment ) );
-}
 
-_WCRTLINK int brk( void *endds ) {
-    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
-}
-
-_WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
+void _WCNEAR *__brk( unsigned brk_value )
 {
     unsigned old_brk_value;
     unsigned sys_brk_value;
-    
+
     /* try setting the block of memory */
     _AccessNHeap();
 
@@ -66,10 +60,20 @@ _WCRTLINK void _WCNEAR *__brk( unsigned brk_value )
         _curbrk = sys_brk_value;
         brk_value = sys_brk_value;
     }
-    
+
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
-    
+
     _ReleaseNHeap();
     return( (void _WCNEAR *)old_brk_value );
+}
+
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
+    return( __brk( _curbrk + increment ) );
+}
+
+_WCRTLINK int brk( void *endds )
+{
+    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
 }

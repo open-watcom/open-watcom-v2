@@ -135,10 +135,10 @@ bool LFLeafStruct::TypeListEqual( const type_index* refIndices,
                                   const uint        count ) {
     for ( uint i = 0; i < count; i++ ) {
         if ( ! TypeEqual(refIndices[i], tIndices[i] ) ) {
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool LFLeafStruct::AttrEqual( const cv_fldattr ref,
@@ -304,7 +304,7 @@ bool LFVftPath::IsEqual( const LFLeafStruct& target ) const
     if ( _vftPath.count == dc(target)._vftPath.count ) {
         return TypeListEqual(_bases,dc(target)._bases,_vftPath.count);
     }
-    return FALSE;
+    return false;
 }
 
 bool LFArgList::IsEqual( const LFLeafStruct& target ) const
@@ -313,7 +313,7 @@ bool LFArgList::IsEqual( const LFLeafStruct& target ) const
     if ( _argList.argcount == dc(target)._argList.argcount ) {
         return TypeListEqual(_indices,dc(target)._indices,_argList.argcount);
     }
-    return FALSE;
+    return false;
 }
 
 bool LFDefArg::IsEqual( const LFLeafStruct& target ) const
@@ -328,7 +328,7 @@ bool LFDerived::IsEqual( const LFLeafStruct& target ) const
     if ( _derived.count == dc(target)._derived.count ) {
         return TypeListEqual(_indices, dc(target)._indices, _derived.count);
     }
-    return FALSE;
+    return false;
 }
 
 bool LFBitField::IsEqual( const LFLeafStruct& target ) const
@@ -343,7 +343,7 @@ bool LFMethodList::IsEqual( const LFLeafStruct& target ) const
 /************************************************************/
 {
     if ( _mList -> entries() != dc(target)._mList -> entries() ) {
-        return FALSE;
+        return false;
     }
     WCPtrConstSListIter<my_ct_mlist> refIter(*_mList);
     WCPtrConstSListIter<my_ct_mlist> tIter(*dc(target)._mList);
@@ -356,10 +356,10 @@ bool LFMethodList::IsEqual( const LFLeafStruct& target ) const
         if ( refPtr -> vtab != tPtr-> vtab ||
              ! AttrEqual( refPtr -> attr, tPtr -> attr ) ||
              ! TypeEqual( refPtr -> type, tPtr -> type ) ) {
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }
 
 bool LFDimConu::IsEqual( const LFLeafStruct& target ) const
@@ -471,10 +471,10 @@ bool LFFieldList::IsEqual( const LFLeafStruct& target ) const
     WCPtrConstSListIter<LFSubField> targetIter( dc(target)._subFieldList );
     while ( ++targetIter && ++refIter ) {
         if ( ! refIter.current() -> IsEquivalent( *targetIter.current() ) ) {
-            return FALSE;
+            return false;
         }
     }
-    return TRUE;
+    return true;
 }
 
 void LFLeafStruct::FixTypeList( type_index*       tList,

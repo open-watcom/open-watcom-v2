@@ -83,18 +83,18 @@ bool PragmaChangeConsistent(    // TEST IF PRAGMA CHANGE IS CONSISTENT
         oldp = &DefaultInfo;
     }
     if( oldp == newp ) {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool PragmaOKForInlines(        // TEST IF PRAGMA IS SUITABLE FOR INLINED FN
     AUX_INFO *fnp )             // - pragma
 {
     if( fnp->code != NULL ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
@@ -105,19 +105,19 @@ bool PragmaOKForVariables(      // TEST IF PRAGMA IS SUITABLE FOR A VARIABLE
     // only the obj_name can be set for variables everything else is
     // specific to functions except for "__cdecl"
     if( datap == &CdeclInfo ) {
-        return( TRUE );
+        return( true );
     }
     def_info = &DefaultInfo;
     if( datap->cclass != def_info->cclass ) {
-        return( FALSE );
+        return( false );
     }
     if( datap->code != def_info->code ) {
-        return( FALSE );
+        return( false );
     }
     if( datap->flags != def_info->flags ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 // The following defines which flags are to be ignored when checking
@@ -139,7 +139,7 @@ bool PragmasTypeEquivalent(     // TEST IF TWO PRAGMAS ARE TYPE-EQUIVALENT
         inf2 = &DefaultInfo;
     }
     if( inf1 == inf2 ) {
-        return TRUE;
+        return true;
     }
     return
            ( ( inf1->cclass & ~CALL_CLASS_IGNORE ) ==
@@ -164,7 +164,7 @@ bool AsmSysInsertFixups( VBUF *code )
     seq->length = len;
     memcpy( seq->data, VbufBuffer( code ), len );
     lnk = &seq->relocs;
-    uses_auto = FALSE;
+    uses_auto = false;
     for( curr = AsmRelocs; curr != NULL; curr = curr->next ) {
         sym = ScopeASMUseSymbol( NameCreateNoLen( curr->name ), &uses_auto );
         if( sym != NULL ) {
@@ -231,7 +231,7 @@ char const *AsmSysDefineByte( void )
 void AsmSysDone( void )
 /*********************/
 {
-    PragEnding( FALSE );
+    PragEnding( false );
 }
 
 void *AsmQuerySymbol( const char *name )

@@ -54,7 +54,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
 {
     syscall_res res;
     struct ksigevent ksev;
-    int id;
+    timer_t id;
 
     if( __tmr == NULL ) {
         _RWD_errno = EINVAL;
@@ -78,7 +78,7 @@ _WCRTLINK int timer_create( clockid_t __clk, struct sigevent *__sevp, timer_t *_
                       (u_long)&ksev, 
                       (u_long)&id );
     if( !__syscall_iserror( res ) ) {
-        *__tmr = (timer_t)(intptr_t)id;
+        *__tmr = id;
     }
     __syscall_return( int, res );
 }

@@ -24,17 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DOS performance sampling core.
 *
 ****************************************************************************/
 
 
-#include "int32typ.h"
+typedef void __based( __segname( "_CODE" ) ) (*report_fn_ptr)( void );
 
-IsDebuggerExecuting_func    IsDebuggerExecuting;
-DoneWithInterrupt_func      DoneWithInterrupt;
-GetDebugInterruptData_func  GetDebugInterruptData;
-ResetDebugInterrupts32_func ResetDebugInterrupts32;
-SetDebugInterrupts32_func   SetDebugInterrupts32;
-DebuggerIsExecuting_func    DebuggerIsExecuting;
+typedef struct pblock {
+    seg         envstring;
+    seg_offset  commandln;
+    seg_offset  fcb01;
+    seg_offset  fcb02;
+    seg_offset  startsssp;
+    seg_offset  startcsip;
+} pblock;
+
+extern unsigned short   __near GetPSP( void );
+extern void             __near DOSLoadProg( char __near *, pblock __near *, report_fn_ptr );
+extern void             __far DOSRunProg( seg_offset __near * );

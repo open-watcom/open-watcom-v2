@@ -333,22 +333,31 @@ extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
 
     mode_action action;
 
-    if( tipe->refno == TY_HUGE_POINTER ) return( FALSE );
+    if( tipe->refno == TY_HUGE_POINTER )
+        return( false );
     CheckPointer( l_addr );
-    if( l_addr->format == NF_NAME ) return( FALSE );
+    if( l_addr->format == NF_NAME )
+        return( false );
     CheckPointer( r_addr );
-    if( r_addr->format == NF_NAME ) return( FALSE );
+    if( r_addr->format == NF_NAME )
+        return( false );
     action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
-    if( action == ADD_LA ) return( TRUE );
-    if( action == ADD_RA ) return( TRUE );
-    #if WORD_SIZE == 2
-        if( action == SHRNK_R ) return( TRUE );
-        if( action == SHRNK_L ) return( TRUE );
-    #else
-        if( action == XPAND_R ) return( TRUE );
-        if( action == XPAND_L ) return( TRUE );
-    #endif
-    return( FALSE );
+    if( action == ADD_LA )
+        return( true );
+    if( action == ADD_RA )
+        return( true );
+#if WORD_SIZE == 2
+    if( action == SHRNK_R )
+        return( true );
+    if( action == SHRNK_L )
+        return( true );
+#else
+    if( action == XPAND_R )
+        return( true );
+    if( action == XPAND_L )
+        return( true );
+#endif
+    return( false );
 }
 
 
@@ -359,11 +368,12 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 
     lx = x; ly = y;
     x += y; lx += ly;
-    if( lx != x ) return( FALSE );
-    #if _TARGET & _TARG_370
-        if( lx < 0 || lx >= 4096 ) return( FALSE );
-    #endif
-    return( TRUE );
+    if( lx != x ) return( false );
+#if _TARGET & _TARG_370
+    if( lx < 0 || lx >= 4096 )
+        return( false );
+#endif
+    return( true );
 }
 
 
@@ -377,10 +387,14 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
 
     CheckPointer( l_addr );
     CheckPointer( r_addr );
-    if( !AddToTypeLength( l_addr->u.n.offset, r_addr->u.n.offset ) ) return( NULL );
-    if( l_addr->format == NF_NAME ) return( NULL );
-    if( r_addr->format == NF_NAME ) return( NULL );
-    if( tipe->refno == TY_HUGE_POINTER ) return( NULL );
+    if( !AddToTypeLength( l_addr->u.n.offset, r_addr->u.n.offset ) )
+        return( NULL );
+    if( l_addr->format == NF_NAME )
+        return( NULL );
+    if( r_addr->format == NF_NAME )
+        return( NULL );
+    if( tipe->refno == TY_HUGE_POINTER )
+        return( NULL );
     addr = NewAddrName();
     for(;;) {
         action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
@@ -479,7 +493,9 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
             AddrFree( addr );
             return( NULL );
         }
-        if( _HaveMode( action ) ) break;
+        if( _HaveMode( action ) ) {
+            break;
+        }
     }
     BGDone( l_addr );
     BGDone( r_addr );
@@ -491,15 +507,20 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
 static  bool    ShiftConst( an r_addr ) {
 /***************************************/
 
-    if( r_addr->format != NF_CONS ) return( FALSE );
-    if( r_addr->class != CL_CONS2 ) return( FALSE );
+    if( r_addr->format != NF_CONS )
+        return( false );
+    if( r_addr->class != CL_CONS2 )
+        return( false );
 #if WORD_SIZE == 2
-    if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 16 ) return( FALSE );
-    if( _IsTargetModel( BIG_DATA ) && _IsntTargetModel( CHEAP_POINTER ) ) return( FALSE );
+    if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 16 )
+        return( false );
+    if( _IsTargetModel( BIG_DATA ) && _IsntTargetModel( CHEAP_POINTER ) )
+        return( false );
 #else
-    if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 8 ) return( FALSE );
+    if( r_addr->u.n.offset < 0 || r_addr->u.n.offset > 8 )
+        return( false );
 #endif
-    return( TRUE );
+    return( true );
 }
 
 
@@ -508,11 +529,15 @@ extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
 
     tipe = tipe;
     CheckPointer( l_addr );
-    if( l_addr->format == NF_NAME ) return( FALSE );
-    if( l_addr->class != CL_TEMP_OFFSET ) return( FALSE );
-    if( l_addr->u.n.offset == 0 ) return( FALSE );
-    if( !ShiftConst( r_addr ) ) return( FALSE );
-    return( TRUE );
+    if( l_addr->format == NF_NAME )
+        return( false );
+    if( l_addr->class != CL_TEMP_OFFSET )
+        return( false );
+    if( l_addr->u.n.offset == 0 )
+        return( false );
+    if( !ShiftConst( r_addr ) )
+        return( false );
+    return( true );
 }
 
 
@@ -523,11 +548,13 @@ static  bool    ShiftToTypeLength( type_length x, unsigned_16 y ) {
 
     lx = x;
     x <<= y; lx <<= y;
-    if( lx != x ) return( FALSE );
+    if( lx != x )
+        return( false );
 #if _TARGET & _TARG_370
-    if( lx < 0 || lx >= 4096 ) return( FALSE );
+    if( lx < 0 || lx >= 4096 )
+        return( false );
 #endif
-    return( TRUE );
+    return( true );
 }
 
 
@@ -542,13 +569,18 @@ extern  an      AddrShift( an l_addr, an r_addr, type_def *tipe ) {
     type_class_def      class;
 
     addr = NULL;
-    if( !ShiftConst( r_addr ) ) return( NULL );
+    if( !ShiftConst( r_addr ) )
+        return( NULL );
     CheckPointer( l_addr );
-    if( l_addr->format == NF_NAME ) return( NULL );
-    if( l_addr->class != CL_TEMP_OFFSET ) return( NULL );
-    if( l_addr->u.n.offset == 0 ) return( NULL );
+    if( l_addr->format == NF_NAME )
+        return( NULL );
+    if( l_addr->class != CL_TEMP_OFFSET )
+        return( NULL );
+    if( l_addr->u.n.offset == 0 )
+        return( NULL );
     rv = r_addr->u.n.offset;
-    if( !ShiftToTypeLength( l_addr->u.n.offset, rv ) ) return( NULL );
+    if( !ShiftToTypeLength( l_addr->u.n.offset, rv ) )
+        return( NULL );
     addr = NewAddrName();
     addr->u.n.offset = l_addr->u.n.offset << rv;  /* new constant after shift*/
     class = TypeClass( tipe );

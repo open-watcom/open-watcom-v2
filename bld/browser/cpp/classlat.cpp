@@ -63,8 +63,8 @@ ClassLattice::ClassLattice( Symbol * sym, bool relax )
         : _drhandle( sym->getHandle() )
         , _module( sym->getModule() )
         , _name( WBRStrDup( sym->name() ) )
-        , _basesLoaded( FALSE )
-        , _derivedsLoaded( FALSE )
+        , _basesLoaded( false )
+        , _derivedsLoaded( false )
         , _effAccess( (dr_access)0 )
         , _virtual( VIRT_NOT_SET )
         , _relaxedVirt( relax )
@@ -76,14 +76,14 @@ ClassLattice::ClassLattice( Symbol * sym, bool relax )
 }
 
 // Internal ctor, used to create non-root nodes
-ClassLattice::ClassLattice( dr_handle drhdl, Module * mod, char * name,
+ClassLattice::ClassLattice( drmem_hdl drhdl, Module * mod, char * name,
                             ClassList * vlist, dr_access acc,
                             dr_virtuality virt, bool relaxVirt, int level )
         : _drhandle( drhdl )
         , _module( mod )
         , _name( name )
-        , _basesLoaded( FALSE )
-        , _derivedsLoaded( FALSE )
+        , _basesLoaded( false )
+        , _derivedsLoaded( false )
         , _flatClasses( vlist )
         , _effAccess( acc )
         , _virtual( (VirtLevel)virt )
@@ -117,7 +117,7 @@ ClassLattice::~ClassLattice( void )
 
 }
 
-ClassLattice * ClassLattice::newLattice( dr_handle drhdl, Module * mod,
+ClassLattice * ClassLattice::newLattice( drmem_hdl drhdl, Module * mod,
                                          char * name, ClassList * vlist,
                                          dr_access acc, dr_virtuality virt,
                                          int level )
@@ -156,7 +156,7 @@ Symbol * ClassLattice::makeSymbol( void )
 //---------------------------------------
 {
     char * name = WBRStrDup( _name );
-    return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DR_HANDLE_NUL, _module, name );
+    return Symbol::defineSymbol( DR_SYM_CLASS, _drhandle, DRMEM_HDL_NULL, _module, name );
 }
 
 void ClassLattice::enumerateBases( BaseCB callback, void * obj )
@@ -183,7 +183,7 @@ void ClassLattice::loadBases( void )
     if( !_basesLoaded ) {
         _module->setModule();
         DRBaseSearch( _drhandle, this, baseHook );
-        _basesLoaded = TRUE;
+        _basesLoaded = true;
     }
 }
 
@@ -196,7 +196,7 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
     ClassList* list = _flatClasses;
     ClassList  adjust;
     int        levelDiff = 0;
-    bool       levelSet = FALSE;
+    bool       levelSet = false;
     int        i;
 
     REQUIRE( lattTo != this, "classlattice::joinlattice -- join to myself" );
@@ -236,7 +236,7 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
                                         int tryDiff = work->_bases[ l - 1 ]->_class->_level + 1 - work->_level;
                                         if( !levelSet ) {
                                             levelDiff = tryDiff;
-                                            levelSet = TRUE;
+                                            levelSet = true;
                                         } else {
                                             if( tryDiff > levelDiff ) {
                                                 levelDiff = tryDiff;
@@ -265,7 +265,7 @@ void ClassLattice::joinLattice( ClassLattice * lattTo )
  * in the lattice, and if so returns a pointer to it.
  */
 
-ClassLattice * ClassLattice::joinTo( dr_handle drhdl, dr_virtuality virt,
+ClassLattice * ClassLattice::joinTo( drmem_hdl drhdl, dr_virtuality virt,
                                      dr_access effAccess, int level )
 //---------------------------------------------------------------------------
 {
@@ -325,8 +325,8 @@ void ClassLattice::adjustLevelsUp( int levelDiff )
     _level += levelDiff;
 }
 
-static bool ClassLattice::baseHook( dr_sym_type, dr_handle drhdl, char * name,
-                                   dr_handle inheritHandle, void * obj )
+static bool ClassLattice::baseHook( dr_sym_type, drmem_hdl drhdl, char * name,
+                                   drmem_hdl inheritHandle, void * obj )
 //----------------------------------------------------------------------------
 {
     dr_access        access;
@@ -358,7 +358,7 @@ static bool ClassLattice::baseHook( dr_sym_type, dr_handle drhdl, char * name,
 
     me->_bases.add( ptr );
 
-    return TRUE;
+    return true;
 }
 
 void ClassLattice::derivedClasses( WVList & symlist )
@@ -393,7 +393,7 @@ void ClassLattice::setDeriveds( void )
                 }
             }
         }
-        _derivedsLoaded = TRUE;
+        _derivedsLoaded = true;
     }
 }
 
@@ -403,12 +403,12 @@ void ClassLattice::loadDeriveds( void )
     if( !_derivedsLoaded ) {
         _module->setModule();
         DRDerivedSearch( _drhandle, this, deriveHook );
-        _derivedsLoaded = TRUE;
+        _derivedsLoaded = true;
     }
 }
 
-static bool ClassLattice::deriveHook( dr_sym_type, dr_handle drhdl,
-                                     char * name, dr_handle inheritHandle,
+static bool ClassLattice::deriveHook( dr_sym_type, drmem_hdl drhdl,
+                                     char * name, drmem_hdl inheritHandle,
                                      void * obj )
 //-------------------------------------------------------------------------
 {
@@ -440,7 +440,7 @@ static bool ClassLattice::deriveHook( dr_sym_type, dr_handle drhdl,
     DerivationPtr * ptr = me->ClassLattice::newPtr( addnode, access, virtuality );
     me->_deriveds.add( ptr );
 
-    return TRUE;
+    return true;
 }
 
 /*
@@ -454,19 +454,19 @@ char * ClassLattice::derivation( ClassLattice *cls )
     char            buf[ 18 ];  // long enough for "protected virtual"
     DerivationPtr * ptr;
     int             i;
-    bool            found = FALSE;
+    bool            found = false;
 
     for( i = _deriveds.count(); i > 0 && !found; i -= 1 ) {
         ptr = _deriveds[ i - 1 ];
         if( cls == ptr->_class ) {
-            found = TRUE;
+            found = true;
         }
     }
 
     for( i = _bases.count(); i > 0 && !found; i -= 1 ) {
         ptr = _bases[ i - 1 ];
         if( cls == ptr->_class ) {
-            found = TRUE;
+            found = true;
         }
     }
 

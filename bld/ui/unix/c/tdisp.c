@@ -163,7 +163,7 @@ bool TInfCheck( void )
 
 
 // Whether to use code-changing optimizations in ti
-static bool OptimizeTerminfo= TRUE;
+static bool OptimizeTerminfo= true;
 
 /* TermInfo terminal codes
 */
@@ -178,7 +178,7 @@ static bool TIARev=     0;      // inverted (reverse)
 static bool TIAACS=     0;      // alternate character set
 
 // True if clearing/filling operations will use the current back colour
-static bool TI_FillColourSet= FALSE;
+static bool TI_FillColourSet= false;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         if( _capable_of( cursor_invisible ) ) { \
@@ -287,7 +287,7 @@ static bool TI_FillColourSet= FALSE;
                                 ( clr_eos && _capable_of( clr_eos ) ) )
 
 static unsigned         TI_repeat_cutoff = ~0U;
-static bool             TI_ignore_bottom_right = TRUE;
+static bool             TI_ignore_bottom_right = true;
 
 static void TI_SETATTR( void )
 /****************************/
@@ -646,10 +646,10 @@ static void TI_SETCOLOUR( int f, int b )
             UIDebugPrintf1( "\n%s\n", enter_reverse_mode );
             UIDebugPrintf0( "[<enter_reverse_mode-^^^^^^^^^^^^>]" );
             TIARev = 1;
-            TI_FillColourSet = FALSE;
+            TI_FillColourSet = false;
         } else {
             TIARev = 0;
-            TI_FillColourSet = TRUE;
+            TI_FillColourSet = true;
         }
         TI_SETATTR();
     } else {
@@ -679,7 +679,7 @@ static int TI_PUT_FILE( const char *fnam )
         // open file
         fil = ti_fopen( fnam );
         if( fil == NULL )
-            return( FALSE );
+            return( false );
 
         // output file to terminal
         while( !feof( fil ) ) {
@@ -688,7 +688,7 @@ static int TI_PUT_FILE( const char *fnam )
         }
         fclose( fil );
     }
-    return( TRUE );
+    return( true );
 }
 
 #define TI_PATH_NAME    "/usr/lib/terminfo/?/"
@@ -704,7 +704,7 @@ static int TI_EXEC_PROG( char *pnam )
         // get full path name of program
         ppath = (char *)alloca( TI_PATH_LEN + strlen( pnam ) );
         if( ppath == NULL ) {
-            return( FALSE );
+            return( false );
         }
         strcpy( ppath, TI_PATH_NAME );
         strcat( ppath, pnam );
@@ -730,11 +730,11 @@ static int TI_EXEC_PROG( char *pnam )
 
         // if program failed...
         if( ret == -1 ) {
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static MONITOR  ui_data = {
@@ -766,7 +766,7 @@ static bool setupscrnbuff( int rows, int cols )
     if( isatty( UIConHandle ) ) {
         if( ioctl( UIConHandle, TIOCGWINSZ, &size ) < 0 ) {
             if( rows == 0 || cols == 0 ) {
-                return( FALSE );
+                return( false );
             }
             // otherwise, use the defaults passed in
         } else {
@@ -787,10 +787,10 @@ static bool setupscrnbuff( int rows, int cols )
     scrn = uirealloc( scrn, num );
 
     if( scrn == NULL )
-        return( FALSE );
+        return( false );
     if( (shadow = uirealloc( shadow, num )) == 0 ) {
         uifree( scrn );
-        return( FALSE );
+        return( false );
     }
     save_cursor_type = -1; /* C_NORMAL; */
     num /= sizeof( PIXEL );
@@ -800,7 +800,7 @@ static bool setupscrnbuff( int rows, int cols )
     }
     UIData->screen.origin = scrn;
     UIData->screen.increment = UIData->width;
-    return( TRUE );
+    return( true );
 }
 
 static volatile int SizePending;
@@ -951,18 +951,18 @@ static int ti_init( void )
     }
 
     if( !ti_initconsole() )
-        return( FALSE );
+        return( false );
 
     if( !initmonitor() )
-        return( FALSE );
+        return( false );
     if( !initkeyboard() )
-        return( FALSE );
+        return( false );
 
     if( TCAP_MONOCHROME ) {
         UIData->colour = M_TERMINFO_MONO;
     }
 
-    UIData->no_blowup = TRUE;
+    UIData->no_blowup = true;
 
     tmp = getenv( "TIOPTIMIZE" );
     if( tmp != NULL ) {
@@ -985,7 +985,7 @@ static int ti_init( void )
 
     // Set up screen buffer
     if( !setupscrnbuff( rows, cols ) )
-        return( FALSE );
+        return( false );
 
     uiinitcursor();
 
@@ -999,7 +999,7 @@ static int ti_init( void )
     ti_find_cutoff();
 
     ti_refresh( 1 );
-    return( TRUE );
+    return( true );
 }
 
 static int ti_fini( void )

@@ -66,18 +66,18 @@ bool UIAPI uichecklist( EVENT ev, EVENT *eptr )
 {
     while( *eptr != EV_NO_EVENT ) {
         if( ( ev >= *eptr ) && ( ev <= *( eptr+1 ) ) ) {
-            return( TRUE );
+            return( true );
         }
         eptr += 2;
     }
     ++eptr;
     while( *eptr != EV_NO_EVENT ) {
         if( ev == *eptr ) {
-            return( TRUE );
+            return( true );
         }
         ++eptr;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -101,9 +101,9 @@ bool UIAPI uiinlist( EVENT ev )
 
     // EV_KILL_UI is implicitly pushed as part of every list
     if( ev == EV_KILL_UI ) {
-        return( TRUE );
+        return( true );
     }
-    found = FALSE;
+    found = false;
     if( UIData->events) {
         for( index = UIData->events->num_lists-1; index >= 0; --index ) {
             if( UIData->events->events[ index ] == NULL ) break;

@@ -214,7 +214,7 @@ DetailView * ViewManager::findDetailView( const Symbol * sym,
     return findDetailView( sym->getHandle(), vt );
 }
 
-DetailView * ViewManager::findDetailView( dr_handle drhdl, DetailView::ViewType vt )
+DetailView * ViewManager::findDetailView( drmem_hdl drhdl, DetailView::ViewType vt )
 //--------------------------------------------------------------------------------
 {
     int             i;

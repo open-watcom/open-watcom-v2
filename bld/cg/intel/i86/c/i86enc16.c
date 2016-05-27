@@ -160,7 +160,7 @@ static  byte    DoDisp( name *op, hw_reg_set regs )
     } else {
         dmod = D16;
         ILen += 2;
-        DoSymRef( op->i.base, val, FALSE );
+        DoSymRef( op->i.base, val, false );
     }
     return( dmod );
 }
@@ -327,7 +327,7 @@ extern  void    DoMAddr( name *op )
     if( op->n.class == N_CONSTANT ) {
         _Zoiks( ZOIKS_035 );
     } else {        /* assume global name*/
-        DoSymRef( op, op->v.offset, FALSE );
+        DoSymRef( op, op->v.offset, false );
     }
 }
 
@@ -340,7 +340,7 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 
 
     regs = CalcSegment( op->v.symbol, op->m.memory_type );
-    if( ( alt_encoding == FALSE && ZPageType != ZP_USES_DS )
+    if( ( alt_encoding == false && ZPageType != ZP_USES_DS )
       ||  !HW_COvlap( regs, HW_SS ) ) {
         zptype = ZP_USES_SS;
     } else {
@@ -380,7 +380,7 @@ extern  void    LayModRM( name *op )
     switch( op->n.class ) {
     case N_MEMORY:
         CheckSize();
-        Inst[RMR] |= DoMDisp( op, TRUE );
+        Inst[RMR] |= DoMDisp( op, true );
         break;
     case N_TEMP:
         CheckSize();
@@ -448,12 +448,12 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
     kind = kind;
     ILen += 2;
     if( op->c.const_type == CONS_OFFSET ) {
-        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, FALSE );
+        DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
         if( op->c.value == NULL ) {
             DoSegRef( op->c.int_value );
         } else {
-            DoSymRef( op->c.value, 0, TRUE );
+            DoSymRef( op->c.value, 0, true );
         }
     } else if( op->c.const_type == CONS_ADDRESS ) {
         _Zoiks( ZOIKS_045 );

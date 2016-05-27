@@ -423,7 +423,7 @@ void FiniOS2FlatLoadFile( void )
     SeekLoad( stub_len + sizeof(os2_flat_header) );
     curr_loc += WriteObjectTables( &exe_head, curr_loc );
     exe_head.resname_off = curr_loc;
-    curr_loc += ResNonResNameTable( TRUE );  // TRUE - do resident table.
+    curr_loc += ResNonResNameTable( true );  // true - do resident table.
     exe_head.rsrc_off = exe_head.resname_off;
     exe_head.num_rsrcs = 0;
     exe_head.entry_off = curr_loc;
@@ -454,7 +454,7 @@ void FiniOS2FlatLoadFile( void )
         exe_head.l.page_shift = FmtData.u.os2.segment_shift;
     }
     exe_head.nonres_off = PosLoad();
-    exe_head.nonres_size = ResNonResNameTable( FALSE );  // FALSE = do non-res.
+    exe_head.nonres_size = ResNonResNameTable( false );  // false = do non-res.
     if( exe_head.nonres_size == 0 ) exe_head.nonres_off = 0;
     curr_loc = PosLoad();
     DBIWrite();
@@ -547,11 +547,11 @@ bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )
 
     if( sym->info & SYM_EXPORTED ) {
         dll = AllocDLLInfo();
-        dll->isordinal = TRUE;
+        dll->isordinal = true;
         dll->m.modnum = NULL;
         dll->u.ordinal = ((entry_export *)sym->e.export)->ordinal;
         *dllhandle = dll;
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }

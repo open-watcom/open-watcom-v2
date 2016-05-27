@@ -93,7 +93,7 @@ BOOL ToDebugger( private_msg pmsg )
 
 } /* ToDebugger */
 
-void EnableMainMenu( UINT bit )
+static void EnableMainMenu( UINT bit )
 {
     HMENU       menu;
     int         i;

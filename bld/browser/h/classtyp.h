@@ -47,7 +47,7 @@ class Module;
 class ClassType : public Symbol
 {
 public:
-                 ClassType( dr_handle drhdl, dr_handle drhdl_prt,
+                 ClassType( drmem_hdl drhdl, drmem_hdl drhdl_prt,
                             Module * m, char * name )
                     : Symbol( drhdl, drhdl_prt, m, name ) {}
     virtual     ~ClassType() {}
@@ -63,7 +63,7 @@ public:
 
 private:
 
-    static  bool        memberHook( dr_sym_type, dr_handle, char *, dr_handle, void * );
+    static  bool        memberHook( dr_sym_type, drmem_hdl, char *, drmem_hdl, void * );
     static  void        doBases( ClassLattice *, dr_search, MemberSearchData * );
             void        getMembers( WVList &, dr_search );
 

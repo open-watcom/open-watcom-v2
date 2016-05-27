@@ -56,28 +56,28 @@ bool GBVCallOutline::contextHelp( bool is_active_win )
     if( is_active_win ) {
         WBRWinBase::helpInfo()->sysHelpId( BRH_CALL_TREE_VIEW );
     }
-    return( TRUE );
+    return( true );
 }
 
 bool GBVCallOutline::reallyClose()
 //-----------------------------------
 {
     viewManager()->viewDying( this );
-    return TRUE;
+    return true;
 }
 
 bool GBVCallOutline::gettingFocus( WWindow * )
 //-----------------------------------------------
 {
     viewManager()->eventOccured( VEGettingFocus, this );
-    return FALSE;
+    return false;
 }
 
 bool GBVCallOutline::losingFocus( WWindow * )
 //----------------------------------------------
 {
     viewManager()->eventOccured( VELosingFocus, this );
-    return FALSE;
+    return false;
 }
 
 const char * GBVCallOutline::emptyText()

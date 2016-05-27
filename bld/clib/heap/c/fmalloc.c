@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description:  Implementation of far malloc() and _fmalloc().
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -34,7 +35,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <i86.h>
 #include "extfunc.h"
 #include "heapacc.h"
 #include "heap.h"
@@ -137,7 +137,7 @@ release_heap:
     return( MK_FP( seg, offset ) );
 }
 
-#if defined(_M_I86) && defined(__DOS__) && defined(__BIG_DATA__)
+#if defined(__DOS__) && defined(__BIG_DATA__)
 static void ___nheapgrow( void )
 {
     /* near heap growing routine in large data models. */

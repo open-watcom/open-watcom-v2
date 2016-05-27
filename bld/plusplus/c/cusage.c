@@ -84,7 +84,7 @@ typedef struct usage_data {
 
 static bool Wait_for_return( char const *page_text )
 /**************************************************/
-// return TRUE if we should stop printing
+// return true if we should stop printing
 {
     if( CompFlags.ide_console_output ) {
         int   c;
@@ -94,14 +94,14 @@ static bool Wait_for_return( char const *page_text )
         c = getchar();
         return( c == 'q' || c == 'Q' );
     }
-    return FALSE;
+    return false;
 }
 
 static bool willPrintALine( usage_data *info )
 {
     bool     retval;
 
-    retval = FALSE;
+    retval = false;
     if( ++(info->count) > info->nrows ) {
         retval = Wait_for_return( info->page_text );
         info->count = 0;

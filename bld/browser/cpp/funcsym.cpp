@@ -58,8 +58,8 @@ void FunctionSym::operator delete( void * mem )
     _pool.free( mem );
 }
 
-static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle drhdl,
-                                char * name, dr_handle drhdl_prt, void * info )
+static bool FunctionSym::memberHook( dr_sym_type symtype, drmem_hdl drhdl,
+                                char * name, drmem_hdl drhdl_prt, void * info )
 //---------------------------------------------------------------------------
 {
     FuncSearchData * data = ( FuncSearchData * ) info;
@@ -68,7 +68,7 @@ static bool FunctionSym::memberHook( dr_sym_type symtype, dr_handle drhdl,
     sym = defineSymbol( symtype, drhdl, drhdl_prt, data->me->getModule(), name );
     data->list->add( sym );
 
-    return TRUE;
+    return true;
 }
 
 
@@ -112,22 +112,22 @@ void FunctionSym::callers( WVList & list )
     }
 }
 
-static bool FunctionSym::callHook( dr_handle, dr_ref_info * ref, char * name,
+static bool FunctionSym::callHook( drmem_hdl, dr_ref_info * ref, char * name,
                                    void * info )
 //---------------------------------------------------------------------------
 {
     Symbol *         sym;
     callSearchData * data = (callSearchData *) info;
-    dr_handle        other;
+    drmem_hdl        other;
     dr_sym_type      stype;
 
     other = ref->dependent;
     stype = DRGetSymType( other );
     if( stype == DR_SYM_FUNCTION ) {
-        sym = Symbol::defineSymbol(stype, other, DR_HANDLE_NUL, data->me->getModule(),name);
+        sym = Symbol::defineSymbol(stype, other, DRMEM_HDL_NULL, data->me->getModule(),name);
         data->list->add( sym );
     } else {
         WBRFree( name );
     }
-    return TRUE;    // continue
+    return true;    // continue
 }

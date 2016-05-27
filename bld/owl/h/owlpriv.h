@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "bool.h"
 #include "owl.h"
 #include "owstring.h"
 #include "owbuffer.h"
@@ -50,9 +51,6 @@ typedef struct owl_reloc_info   owl_reloc_info;
 typedef struct owl_line_info    owl_line_info;
 
 typedef uint_32                 owl_section_num;
-
-#define FALSE                   0
-#define TRUE                    1
 
 struct owl_line_info {
     owl_offset                  addr;

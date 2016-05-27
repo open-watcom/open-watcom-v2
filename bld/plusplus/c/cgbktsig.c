@@ -51,7 +51,7 @@
 #endif
 
 static carve_t carveTYPE_SIG_ENT;   // allocations for TYPE_SIG_ENT
-static bool type_sig_gened;         // TRUE ==> a type signature was gen'ed
+static bool type_sig_gened;         // true ==> a type signature was gen'ed
 
 
 TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
@@ -59,16 +59,16 @@ TYPE_SIG *BeTypeSignature(      // GET TYPE_SIG FOR A TYPE
 {
     TYPE_SIG *sig;              // - type signature for type
     TYPE_SIG *base;             // - base type signatures for type
-    bool errors;                // - TRUE set if error occurred
+    bool errors;                // - true set if error occurred
 
     sig = TypeSigFind( TSA_GEN, type, NULL, &errors );
     DbgVerify( ! errors, "BeTypeSignature -- unexpected errors" );
     base = sig->base;
     if( NULL == base ) {
-        sig->cgref = TRUE;
+        sig->cgref = true;
     } else {
         for( ; base != NULL; base = base->base ) {
-            base->cgref = TRUE;
+            base->cgref = true;
         }
     }
     return sig;
@@ -181,8 +181,8 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
 
     if( ! ts->cgref ) return;
     if( ts->cggen ) return;
-    ts->cggen = TRUE;
-    type_sig_gened = TRUE;
+    ts->cggen = true;
+    type_sig_gened = true;
     thr = ThrowCategory( ts->type );
     if( thr == THROBJ_ANYTHING ) return;
 #ifndef NDEBUG
@@ -268,7 +268,7 @@ void BeGenTypeSignatures(       // GENERATE ALL TYPE SIGNATURES
     void )
 {
     do {
-        type_sig_gened = FALSE;
+        type_sig_gened = false;
         TypeSigWalk( &genTypeSig );
     } while( type_sig_gened );
 }

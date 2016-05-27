@@ -329,8 +329,8 @@ struct comp_info {                      // Compiler information
     unsigned    :0;                     // - alignment
     DLL_DATA*   dll_data;               // - data for DLL
     void*       exit_jmpbuf;            // - jmpbuf for DLL exit
-    void*       dll_handle;             // - dll handle
-    void*       dll_callbacks;          // - dll call backs
+    void*       idehdl;                 // - IDE handle
+    void*       idecbs;                 // - IDE call backs
     int         compfile_max;           // - max # files to compile
     int         compfile_cur;           // - current # of file to compile
     void*       primary_srcfile;        // - SRCFILE for primary file

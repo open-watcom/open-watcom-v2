@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -41,6 +41,11 @@
 #include "dllmain.h"
 
 
+/* Local Window callback functions prototypes */
+WINEXPORT HDDEDATA CALLBACK DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
+                    HSZ hsz1, HSZ hsz2, HDDEDATA hData, DWORD dwData1, DWORD dwData2 );
+WINEXPORT BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam );
+
 static  HCONV       hConv = 0;
 static  DWORD       idInstance = 0L;
 static  HINSTANCE   hInstance = NULL;
@@ -49,7 +54,7 @@ static  BOOL        bConnected = FALSE;
 static  BOOL        bAppSpawned = FALSE;
 static  FARPROC     lpDdeProc;
 
-void doReset( void )
+static void doReset( void )
 {
     // reset for another connect
     hConv = NULL;
@@ -147,7 +152,7 @@ int extern __export FAR PASCAL EDITConnect( void )
     return( TRUE );
 }
 
-BOOL doExecute( char *szCommand )
+static BOOL doExecute( char *szCommand )
 {
     HDDEDATA    hddeData;
 

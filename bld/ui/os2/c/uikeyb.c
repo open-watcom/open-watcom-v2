@@ -72,7 +72,7 @@ static bool os2getkey( struct _KBDKEYINFO *keyInfo )
     if( KbdCharIn( keyInfo, IO_NOWAIT, 0 ) == 0  ) {
         return( keyInfo->fbStatus != 0 );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

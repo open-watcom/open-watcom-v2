@@ -32,7 +32,7 @@
 
 #include "as.h"
 
-static bool insErrFlag = FALSE;    // to tell whether we had problems or not
+static bool insErrFlag = false;    // to tell whether we had problems or not
 
 #define INS( a, b, c, d, e ) { a, b, c, d, e, NULL }
 
@@ -560,12 +560,13 @@ extern void InsAddOperand( instruction *ins, ins_operand *op ) {
     if( ins->num_operands == MAX_OPERANDS ) {
         if( !insErrFlag ) {
             Error( MAX_NUMOP_EXCEEDED );
-            insErrFlag = TRUE;
+            insErrFlag = true;
         }
         MemFree( op );
         return;
     }
-    if( insErrFlag) insErrFlag = FALSE;
+    if( insErrFlag)
+        insErrFlag = false;
     ins->operands[ ins->num_operands++ ] = op;
 }
 
@@ -582,12 +583,12 @@ extern void InsEmit( instruction *ins ) {
     }
     #endif
 #endif
-    if( insErrFlag == FALSE && AlphaValidate( ins ) ) {
-        #ifdef _STANDALONE_
+    if( !insErrFlag && AlphaValidate( ins ) ) {
+#ifdef _STANDALONE_
         AlphaEmit( CurrentSection, ins );
-        #else
+#else
         AlphaEmit( ins );
-        #endif
+#endif
     }
 }
 

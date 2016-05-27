@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 /*
- *	comp_error.c -- Error message routines
+ *      comp_error.c -- Error message routines
  *
  */
 
@@ -42,7 +42,7 @@
 
 MODULE_ID("$Id: comp_error.c,v 1.25 2002/09/07 20:05:07 tom Exp $")
 
-NCURSES_EXPORT_VAR(bool) _nc_suppress_warnings = FALSE;
+NCURSES_EXPORT_VAR(bool) _nc_suppress_warnings = false;
 NCURSES_EXPORT_VAR(int) _nc_curr_line = 0; /* current line # in input */
 NCURSES_EXPORT_VAR(int) _nc_curr_col = 0; /* current column # in input */
 
@@ -59,11 +59,11 @@ NCURSES_EXPORT(void)
 _nc_set_type(const char *const name)
 {
     if (termtype == 0)
-	termtype = typeMalloc(char, MAX_NAME_SIZE + 1);
+        termtype = typeMalloc(char, MAX_NAME_SIZE + 1);
     if (termtype != 0) {
-	termtype[0] = '\0';
-	if (name)
-	    strncat(termtype, name, MAX_NAME_SIZE);
+        termtype[0] = '\0';
+        if (name)
+            strncat(termtype, name, MAX_NAME_SIZE);
     }
 }
 
@@ -78,11 +78,11 @@ where_is_problem(void)
 {
     fprintf(stderr, "\"%s\"", sourcename);
     if (_nc_curr_line >= 0)
-	fprintf(stderr, ", line %d", _nc_curr_line);
+        fprintf(stderr, ", line %d", _nc_curr_line);
     if (_nc_curr_col >= 0)
-	fprintf(stderr, ", col %d", _nc_curr_col);
+        fprintf(stderr, ", col %d", _nc_curr_col);
     if (termtype != 0 && termtype[0] != '\0')
-	fprintf(stderr, ", terminal '%s'", termtype);
+        fprintf(stderr, ", terminal '%s'", termtype);
     fputc(':', stderr);
     fputc(' ', stderr);
 }
@@ -93,7 +93,7 @@ _nc_warning(const char *const fmt,...)
     va_list argp;
 
     if (_nc_suppress_warnings)
-	return;
+        return;
 
     where_is_problem();
     va_start(argp, fmt);

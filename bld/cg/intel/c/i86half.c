@@ -73,9 +73,9 @@ extern    type_class_def        Unsigned[];
 extern  bool    IndexOverlaps( instruction *ins, int i ) {
 /********************************************************/
 
-    if( ins->operands[i]->n.class != N_INDEXED ) return( FALSE );
-    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( TRUE );
-    return( FALSE );
+    if( ins->operands[i]->n.class != N_INDEXED ) return( false );
+    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( true );
+    return( false );
 }
 
 #if _TARGET & _TARG_IAPX86

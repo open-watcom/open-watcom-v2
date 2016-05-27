@@ -75,7 +75,7 @@ public:
 
 protected:
             int         findNode( TreeNode * node );
-            int         findNode( dr_handle drhdl );
+            int         findNode( drmem_hdl drhdl );
             int         findChild( TreeNode * node );
             bool        isChild( TreeNode * node );
             int         findParent( TreeNode * node );

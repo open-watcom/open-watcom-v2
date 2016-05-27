@@ -48,12 +48,12 @@ public:
             bool        addPtr( TreePtr * ptr );
             void        unWrap( void );
     virtual void        addEdges( TreeEdgeBreaker * );
-            void        cut() { _cut = TRUE; }
-            void        join() { _cut = FALSE; }
+            void        cut() { _cut = true; }
+            void        join() { _cut = false; }
             bool        isCut() { return _cut; }
 
     virtual int         getLevel( void ) const;
-    virtual dr_handle   getHandle( void ) const { return DR_HANDLE_NUL; }
+    virtual drmem_hdl   getHandle( void ) const { return DRMEM_HDL_NULL; }
     virtual TreePtr*    getPtr( TreeList_T, int );
     virtual TreeNode*   getNode( TreeList_T, int );
     virtual int         getCount( TreeList_T );

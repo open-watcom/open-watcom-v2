@@ -281,8 +281,8 @@ extern instruction *rALLOCA( instruction *ins )
     temp = AllocTemp( ins->type_class );
     class = WD;
     stack_align = STACK_ALIGNMENT;
-    check = TRUE;
-    CurrProc->targ.base_is_fp = TRUE;
+    check = true;
+    CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
         value = amount->c.int_value;
         value = _RoundUp( value, stack_align );
@@ -290,7 +290,7 @@ extern instruction *rALLOCA( instruction *ins )
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
         PrefixIns( ins, first );
         if( value <= ( _TARGET_PAGE_SIZE - 7 ) ) {
-            check = FALSE;
+            check = false;
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
@@ -337,18 +337,18 @@ extern instruction      *rM_SIMPCMP( instruction *ins )
     opcode_defs         opcode;
     bool                reverse;
 
-    reverse = FALSE;
+    reverse = false;
     opcode = 0;
     assert( ins->result == NULL );
     switch( ins->head.opcode ) {
     case OP_CMP_NOT_EQUAL:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_EQUAL:
         opcode = OP_SET_EQUAL;
         break;
     case OP_CMP_GREATER:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_LESS_EQUAL:
         opcode = OP_SET_LESS_EQUAL;
@@ -370,7 +370,7 @@ extern instruction      *rM_SIMPCMP( instruction *ins )
         }
         break;
     case OP_CMP_GREATER_EQUAL:
-        reverse = TRUE;
+        reverse = true;
         /* fall through */
     case OP_CMP_LESS:
         opcode = OP_SET_LESS;

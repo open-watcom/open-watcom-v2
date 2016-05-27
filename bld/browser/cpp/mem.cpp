@@ -245,7 +245,7 @@ Memory::Memory()
     _trmem_set_min_alloc( MINALLOC, TrHdl );
 
 #ifdef __WINDOWS__
-    _trmem_prt_use_seg_num( TrHdl, TRUE );
+    _trmem_prt_use_seg_num( TrHdl, true );
 #endif
 }
 

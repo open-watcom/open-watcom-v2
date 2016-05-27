@@ -97,13 +97,13 @@ bool RemoteConnect( void )
             rc = DosSetNmPHandState( pipeHdl, NP_WAIT | NP_READMODE_BYTE );
             if( rc != 0 ) {
                 DosDisConnectNmPipe( pipeHdl );
-                return( FALSE );
+                return( false );
             }
-            return( TRUE );
+            return( true );
         }
         DosSleep( 200 );
     }
-    return( FALSE );
+    return( false );
 }
 
 

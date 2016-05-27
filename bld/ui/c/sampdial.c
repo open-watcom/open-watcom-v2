@@ -37,7 +37,7 @@
 
 #define EV_SCREWUP      0x604
 
-bool    Marking = FALSE;
+bool    Marking = false;
 
 
 static a_hot_spot hot_msg = {

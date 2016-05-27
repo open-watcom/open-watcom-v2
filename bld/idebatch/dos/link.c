@@ -44,7 +44,7 @@ _dword __ConvId;
 
 static char linkName[128];
 
-void _farstrcpy( char __far *dest, const char __far *src )
+static void _farstrcpy( char __far *dest, const char __far *src )
 {
     while( *dest++ = *src++ );
 }

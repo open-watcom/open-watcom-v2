@@ -41,6 +41,8 @@
 #include "trperr.h"
 #include "madx86.h"
 #include "x86cpu.h"
+#include "di386cli.h"
+
 
 BOOL IsSegSize32( WORD seg )
 {

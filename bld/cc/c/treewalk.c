@@ -55,7 +55,7 @@ int WalkExprTree( TREEPTR p,
             temp = p;
             p = p->left;
             temp->left = parent;
-            temp->visit = TRUE;
+            temp->visit = true;
             parent = temp;
         }
         if( parent == NULL ) {
@@ -83,7 +83,7 @@ do_postfix_call:
                 return( 0 );
 move_up_to_parent:
             if( parent->visit ) {
-                parent->visit = FALSE;
+                parent->visit = false;
                 temp = parent;
                 parent = temp->left;
                 temp->left = p;

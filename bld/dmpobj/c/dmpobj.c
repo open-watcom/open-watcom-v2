@@ -52,7 +52,7 @@ void leave( int rc )
 
 static void ShowProductInfo( void )
 {
-    if( quiet == FALSE ) {
+    if( !quiet ) {
         Output( banner1w( "OMF Dump Utility", BAN_VER_STR ) CRLF );
         Output( banner2 CRLF );
         Output( banner2a( "1984" ) CRLF );
@@ -97,23 +97,23 @@ int main( int argc, char **argv )
     OutputInit();
     OutputSetFH( stdout );
 
-    Descriptions = FALSE;
-    InterpretComent = TRUE;
-    TranslateIndex = FALSE;
-    list_file = FALSE;
-    is_intel = FALSE;
-    quiet = FALSE;
+    Descriptions = false;
+    InterpretComent = true;
+    TranslateIndex = false;
+    list_file = false;
+    is_intel = false;
+    quiet = false;
     for( i = 1; i < argc; ++i ) {
         if( argv[i][0] == '-' ) {
             switch( tolower( argv[i][1] ) ) {
             case 'l':
-                list_file = TRUE;
+                list_file = true;
                 break;
             case 'd':
-                Descriptions = TRUE;
+                Descriptions = true;
                 break;
             case 'c':
-                InterpretComent = FALSE;
+                InterpretComent = false;
                 break;
             case 'r':
                 if( strnicmp( argv[i] + 1, "rec=", 4 ) == 0 ) {
@@ -128,17 +128,17 @@ int main( int argc, char **argv )
                         OutputFini();
                     }
                 } else {
-                    DumpRaw = TRUE;
+                    DumpRaw = true;
                 }
                 break;
             case 'i':
-                is_intel = FALSE;
+                is_intel = false;
                 break;
             case 'q':
-                quiet = TRUE;
+                quiet = true;
                 break;
             case 't':
-                TranslateIndex = TRUE;
+                TranslateIndex = true;
                 break;
             default:
                 usage();

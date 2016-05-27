@@ -49,10 +49,7 @@ trap_retval ReqSet_break( void )
     sel = acc->break_addr.segment;
     offset = acc->break_addr.offset;
 
-    if ( (sel & 3 ) == 0 )
-        hw = TRUE;
-    else
-        hw = FALSE;
+    hw = ( (sel & 3) == 0 );
 
     obj = GetCurrentDebug();
 

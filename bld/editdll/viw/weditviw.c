@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <wwindows.h>
 #include <string.h>
 #include <stdio.h>
 #include <ddeml.h>
@@ -41,12 +41,17 @@
 #include "dllmain.h"
 
 
+/* Local Window callback functions prototypes */
+WINEXPORT HDDEDATA EDITAPI DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
+                    HSZ hszTopic, HSZ hszItem, HDDEDATA hData, DWORD dwData1,
+                    DWORD dwData2 );
+
 static  HCONV       hConv;
 static  DWORD       idInstance;
 static  HINSTANCE   hInstance;
 static  BOOL        bConnected = FALSE;
 
-BOOL doReset( void )
+static BOOL doReset( void )
 {
     // reset for another connect
     hConv = 0;
@@ -54,7 +59,7 @@ BOOL doReset( void )
     return( TRUE );
 }
 
-char doRequest( char *szCommand )
+static char doRequest( char *szCommand )
 {
     HDDEDATA    hddeData;
     HSZ         hszCommand;

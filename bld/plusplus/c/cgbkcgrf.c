@@ -112,10 +112,10 @@ static unsigned max_inline_depth;   // maximum depth of inlining
 static unsigned oe_size;            // size for inlining static functions
 
 static struct {
-    unsigned    inline_recursion:1; // TRUE ==> inline recursion allowed
-    unsigned    any_state_tables:1; // TRUE ==> state tables somewhere
-    unsigned    only_once_found :1; // TRUE ==> ->once_inl fn somewhere
-//  unsigned    not_inlined_set :1; // TRUE ==> not_inline set somewhere
+    unsigned    inline_recursion:1; // true ==> inline recursion allowed
+    unsigned    any_state_tables:1; // true ==> state tables somewhere
+    unsigned    only_once_found :1; // true ==> ->once_inl fn somewhere
+//  unsigned    not_inlined_set :1; // true ==> not_inline set somewhere
 } callGraphFlags;
 
 typedef enum                    // TCF -- types of functions
@@ -131,7 +131,7 @@ typedef enum                    // TCF -- types of functions
 typedef struct                  // SCAN_INFO -- scanning information
 {   CALLNODE* cnode;            // - current node
     CGFILE *file_ctl;           // - current file
-    unsigned has_except_spec :1;// - TRUE ==> has except spec.
+    unsigned has_except_spec :1;// - true ==> has except spec.
     SYMBOL scope_call_cmp_dtor; // - component dtor for scope-call optimization
     SYMBOL scope_call_tmp_dtor; // - temporary dtor for scope-call optimization
     SYMBOL scope_call_blk_dtor; // - scope dtor for scope-call optimization
@@ -192,7 +192,7 @@ void CgrfMarkNodeGen(           // MARK NODE AS GEN-ED, IF REQ'D
       }
         // drops thru
       default :
-        cnode->stab_gen = TRUE;
+        cnode->stab_gen = true;
         break;
     }
 }
@@ -248,30 +248,30 @@ static bool funcInlineable(     // DETERMINE IF FUNCTION INLINE-ABLE
     DbgAssert( sym != NULL );
     if( max_inline_depth == 0 ) {
         // no inlining allowed
-        return( FALSE );
+        return( false );
     }
     if( ! SymIsInitialized( sym ) ) {
         // sym has no code to inline
-        return( FALSE );
+        return( false );
     }
     if( SymIsUninlineable( sym ) ) {
         // sym has been tagged as not being inlineable
         // e.g., contains _asm code that references auto vars
-        return( FALSE );
+        return( false );
     }
     if( SymIsEllipsisFunc( sym ) ) {
         // function could not access parms through <stdarg.h> if inlined
-        return( FALSE );
+        return( false );
     }
     // used to have: if( TypeHasPragma( sym->sym_type ) ) (why? AFS)
     pragma = TypeHasPragma( sym->sym_type );
     if( pragma != NULL ) {
         if( ! PragmaOKForInlines( pragma ) ) {
             // something weird and system specific would cause a problem
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -279,20 +279,20 @@ static bool oeInlineable(       // DETERMINE IF /oe CAN INLINE THE FUNCTION
     SYMBOL sym,                 // - symbol for node
     CGFILE *cgfile )            // - code gen file for function
 {
-    bool retn;                  // - TRUE ==> CAN BE /oe inlined
+    bool retb;                  // - true ==> CAN BE /oe inlined
 
     if( funcInlineable( sym ) ) {
         if( cgfile == NULL ) {
-            retn = FALSE;
+            retb = false;
         } else if( cgfile->u.s.oe_inl ) {
-            retn = TRUE;
+            retb = true;
         } else {
-            retn = FALSE;
+            retb = false;
         }
     } else {
-        retn = FALSE;
+        retb = false;
     }
-    return retn;
+    return( retb );
 }
 
 
@@ -309,18 +309,18 @@ static bool shouldBeInlined(    // DETERMINE IF INLINING AN INLINABLE FN IS OK
     FN_CTL *fctl;               // - current file control
 
     if( CgBackInlinedDepth() >= max_inline_depth ) {
-        return( FALSE );
+        return( false );
     }
     fctl = FnCtlTop();
     if( fctl == NULL || SymIsThunk( fctl->func ) ) {
-        return FALSE;
+        return false;
     }
     if( ! callGraphFlags.inline_recursion ) {
         for( ; fctl != NULL; fctl = FnCtlPrev( fctl ) ) {
-            if( sym == fctl->func ) return( FALSE );
+            if( sym == fctl->func ) return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -330,19 +330,19 @@ static CALLNODE* addNode(       // ADD A CALL NODE
     CALLNODE* node = CgrfAddFunction( call_graph, sym );
     switch( cgbackFuncType( sym ) ) {
       case TCF_VFT :
-        node->is_vft = TRUE;
+        node->is_vft = true;
         break;
       case TCF_INLINE :
-        node->inline_fun = TRUE;
+        node->inline_fun = true;
         if( funcInlineable( sym ) ) {
-            node->inlineable = TRUE;
+            node->inlineable = true;
             sym->flag |= SF_CG_INLINEABLE;
         }
         break;
       case TCF_OTHER_FUNC :
       case TCF_STATIC :
         if( funcInlineable( sym ) ) {
-            node->inlineable = TRUE;
+            node->inlineable = true;
             if( oe_size > 0 ) {
                 node->inlineable_oe = canBeOeInlined( node );
                 if( node->inlineable_oe ) {
@@ -460,15 +460,15 @@ static void scanInit(           // INIT FOR COMMONALITY BETWEEN SCAN, RE-SCAN
     SCAN_INFO* scan )           // - scan information
 {
     call_graph->scanning = cnode;
-    call_graph->stmt_scope = FALSE;
+    call_graph->stmt_scope = false;
     cnode->stmt_state = STS_NONE;
-    cnode->stab_gen = FALSE;
+    cnode->stab_gen = false;
     cnode->dtor_method = DTM_DIRECT;
     scan->cnode = cnode;
     scan->scope_call_blk_dtor = NULL;
     scan->scope_call_tmp_dtor = NULL;
     scan->scope_call_cmp_dtor = NULL;
-    scan->has_except_spec = FALSE;
+    scan->has_except_spec = false;
     scan->file_ctl = file_ctl;
     CgioOpenInput( file_ctl );
 }
@@ -525,8 +525,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
         _printScanInt( "-- function flags: %x\n", func->flag );
     }
     opcodes = 0;
-//  call_graph->assumed_longjump = FALSE;
-//  call_graph->does_longjump = FALSE;
+//  call_graph->assumed_longjump = false;
+//  call_graph->does_longjump = false;
     for( ; ; ) {
         ins = CgioReadICMaskCount( sc.file_ctl, ICOPM_CALLGRAPH, ICOPM_OE_COUNT, &opcodes );
         // The following comment is a trigger for the ICMASK program to start
@@ -585,7 +585,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
           { SCOPE scope = ins->value.pvalue;
             if( NULL != scope && scope->u.s.try_catch ) {
                 CgrfMarkNodeGen( cnode );
-                scope->u.s.cg_stab = TRUE;
+                scope->u.s.cg_stab = true;
             }
             if( call_graph->scope_call_opt ) {
                 sc.curr_scope = scope;
@@ -597,7 +597,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                         break;
                       default :
                         CgrfMarkNodeGen( cnode );
-                        scope->u.s.cg_stab = TRUE;
+                        scope->u.s.cg_stab = true;
                         break;
                     }
                 }
@@ -611,21 +611,21 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
           case IC_EXPR_TEMP:
             if( ! call_graph->scope_call_opt ) continue;
             CgResScStmtScanBegin( sc.curr_scope, cnode, sc.func_dtm );
-            call_graph->stmt_scope = TRUE;
+            call_graph->stmt_scope = true;
             continue;
           case IC_STMT_SCOPE_END :
             if( ! call_graph->scope_call_opt ) continue;
             if( call_graph->stmt_scope ) {
                 CgResScScanEnd();
-                call_graph->stmt_scope = FALSE;
+                call_graph->stmt_scope = false;
             }
             continue;
           case IC_EXCEPT_SPEC :
             if( call_graph->scope_call_opt ) {
                 CgResScopeGen( cnode );
             }
-            sc.has_except_spec = TRUE;
-            cnode->stab_gen = TRUE;
+            sc.has_except_spec = true;
+            cnode->stab_gen = true;
             // drops thru
           case IC_CATCH :
             addTypeSigRefs( cnode, ins->value.pvalue );
@@ -635,7 +635,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
                 CgResScopeGen( cnode );
                 cnode->stmt_state = STS_GEN;
             }
-            cnode->stab_gen = TRUE;
+            cnode->stab_gen = true;
             continue;
           case IC_CALL_SETUP :
           { if( NULL != func
@@ -647,12 +647,12 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             addCalleeFunc( cnode, ins->value.pvalue );
           } continue;
           case IC_DTOR_SUBOBJS :
-            cnode->state_table = TRUE;
+            cnode->state_table = true;
             if( sc.func_dtm != DTM_DIRECT_SMALL ) continue;
             // drops thru
           case IC_DLT_DTORED :
             if( ! call_graph->scope_call_opt ) {
-                cnode->state_table = TRUE;
+                cnode->state_table = true;
                 CgrfMarkNodeGen( cnode );
                 continue;
             }
@@ -683,7 +683,7 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             addAddrOf( cnode, ins->value.pvalue );
             continue;
           case IC_FUNCTION_STAB :
-            cnode->state_table = TRUE;
+            cnode->state_table = true;
             cnode->cond_flags = ins->value.uvalue;
             continue;
           case IC_THROW_RO_BLK :
@@ -719,19 +719,19 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             if( DTM_DIRECT_SMALL == sc.func_dtm
              || DTM_TABLE_SMALL == sc.func_dtm ) {
                 cnode->depth = max_inline_depth + 1;
-                sc.file_ctl->u.s.not_inline = TRUE;
-//              callGraphFlags.not_inlined_set = TRUE;
+                sc.file_ctl->u.s.not_inline = true;
+//              callGraphFlags.not_inlined_set = true;
                 _DUMP_CGRF( "static'ed dtor for -xds: %s\n", func );
             }
             continue;
           case IC_VFT_BEG :     // START OF VFT DEFINITION
           { VFT_DEFN* pvft;     // - points at vft definition
-            SYMBOL sym;
+            SYMBOL sym1;
             ExtraRptIncrementCtr( ctr_vfts_scanned );
             pvft = RingCarveAlloc( carve_vft, &vft_defs );
-            sym = ins->value.pvalue;
-            pvft->vft = sym;
-            sym->flag &= ~SF_REFERENCED;
+            sym1 = ins->value.pvalue;
+            pvft->vft = sym1;
+            sym1->flag &= ~SF_REFERENCED;
             pvft->cgfile = sc.file_ctl;
             pvft->location = CgioLastRead( sc.file_ctl );
             CgioReadICUntilOpcode( sc.file_ctl, IC_INIT_DONE );
@@ -760,7 +760,7 @@ static void pushCaller(         // PUSH A CALLER FOR DEPTH COMPUTATION
 
     inl = VstkPush( &ctl->calls );
     inl->callee = node;
-    inl->expanded = FALSE;
+    inl->expanded = false;
 }
 
 
@@ -778,7 +778,7 @@ static void scanVftDefn(        // SCAN VFT DEFINITION
         return;
     }
     call_graph->scanning = NULL;
-    cnode->calls_done = TRUE;
+    cnode->calls_done = true;
     ExtraRptIncrementCtr( ctr_vfts_genned );
     _DUMP_CGRF( "scan VFT body: %s\n", vft );
     pvft = NULL;
@@ -883,9 +883,7 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
     CGFILE *cgfile;                     // - function codegen file
     SYMBOL func;                        // - called function
 
-    stk = VstkTop( &ctl->calls );
-    for(;;) {
-        if( stk == NULL ) break;
+    VstkIterBeg( &ctl->calls, stk ) {
         if( stk->expanded ) {
             func = stk->callee->base.object;
             if( func != NULL ) {
@@ -894,14 +892,15 @@ static void checkForExpandOnceInlines(  // scan for "at most 1" inline requests
                     // found a max 1 inline function
                     if( cgfile->u.s.once_inl ) {
                         // make it out of line
-                        cgfile->u.s.oe_inl = FALSE;
-                        cgfile->u.s.once_inl = FALSE;
+                        cgfile->u.s.oe_inl = false;
+                        cgfile->u.s.once_inl = false;
                     }
                 }
             }
         }
-        if( stk == last ) break;
-        stk = VstkNext( &ctl->calls, stk );
+        if( stk == last ) {
+            break;
+        }
     }
 }
 
@@ -912,19 +911,17 @@ static bool recursiveExpand(    // DETERMINE IF RECURSIVE EXPANSION
 {
     INLINEE *stk;               // - stacked inlinee
 
-    stk = VstkTop( &ctl->calls );
-    while( stk != NULL ) {
+    VstkIterBeg( &ctl->calls, stk ) {
         if( stk->expanded && ( stk->callee == target ) ) {
             if( callGraphFlags.only_once_found ) {
                 // a recursion will cause multiple expansions of an inline
                 // in this call path (at least one inline + one out of line)
                 checkForExpandOnceInlines( ctl, stk );
             }
-            return( TRUE );
+            return( true );
         }
-        stk = VstkNext( &ctl->calls, stk );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -939,7 +936,7 @@ static void markAsGen(          // MARK CODE FILE TO BE GENERATED
         if( cgfile != NULL && ! cgfile->u.s.refed ) {
             func = callNodeCaller( node );
             ExtraRptIncrementCtr( ctr_gened );
-            cgfile->u.s.refed = TRUE;
+            cgfile->u.s.refed = true;
             if( NULL != func ) {
                 SegmentMarkUsed( func->segid );
             }
@@ -976,7 +973,7 @@ static bool procEdge(           // PROCESS EDGE IN CALL GRAPH
             target->depth = max_inline_depth + 1;
             markAsGen( target );
             if( ! target->flowed_recurse ) {
-                target->flowed_recurse = TRUE;
+                target->flowed_recurse = true;
                 pushCaller( ctl, target );
             }
         } else {
@@ -985,7 +982,7 @@ static bool procEdge(           // PROCESS EDGE IN CALL GRAPH
             if( ! curr_node->is_vft ) {
                 CGFILE* cgfile;
                 cgfile = nodeCgFile( curr_node );
-                cgfile->u.s.calls_inline = TRUE;
+                cgfile->u.s.calls_inline = true;
             }
             pushCaller( ctl, target );
         }
@@ -996,7 +993,7 @@ static bool procEdge(           // PROCESS EDGE IN CALL GRAPH
         }
         target->depth = 1;
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1043,7 +1040,7 @@ static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
      && node->addrs == 0
      && node->inline_fun
      && node->inlineable ) {
-        return( FALSE );
+        return( false );
     }
     ctl->depth = 1;
     pushCaller( ctl, node );
@@ -1059,7 +1056,7 @@ static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
             }
         } else {
             ExtraRptIncrementCtr( ctr_nodes_visited );
-            inl->expanded = TRUE;
+            inl->expanded = true;
             node = inl->callee;
             if( depth > node->depth ) {
                 node->depth = depth;
@@ -1073,7 +1070,7 @@ static bool procInlineFunction( // PROCESS INLINE FUNCTIONS IN CALL GRAPH
             CgrfWalkCalls( ctl, node, &procEdge );
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1096,27 +1093,27 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
     if( node->inlineable ) {
         func = node->base.object;
         if( TCF_STATIC == cgbackFuncType( func ) ) {
-            flags.oe_small = FALSE;
-            flags.oe_static = FALSE;
+            flags.oe_small = false;
+            flags.oe_static = false;
             if( node->opcodes <= oe_size ) {
-                flags.oe_small = TRUE;
+                flags.oe_small = true;
 #if 0
             } else if( node->refs == 1 && SymIsRegularStaticFunc( func ) ) {
-                flags.oe_static = TRUE;
+                flags.oe_static = true;
 #else
             } else if( node->refs == 1  ) {
-                flags.oe_static = TRUE;
+                flags.oe_static = true;
 #endif
             }
             if( flags.oe_small || flags.oe_static ) {
                 cgfile = nodeCgFile( node );
                 if( cgfile != NULL ) {
-                    cgfile->u.s.oe_inl = TRUE;
+                    cgfile->u.s.oe_inl = true;
                     if( flags.oe_static ) {
                     // we are inlining a static function that is called once
                     // (mark it so that it only gets inlined once!)
-                        cgfile->u.s.once_inl = TRUE;
-                        callGraphFlags.only_once_found = TRUE;
+                        cgfile->u.s.once_inl = true;
+                        callGraphFlags.only_once_found = true;
                         _DUMP_CGRF( "inlined once-called static function: %s\n", func );
                     } else {
                         _DUMP_CGRF( "inlined a global function: %s\n", func );
@@ -1125,7 +1122,7 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1173,7 +1170,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
     ctl = ctl;
     ExtraRptIncrementCtr( ctr_nodes_visited );
     if( node->state_table ) {
-        callGraphFlags.any_state_tables = TRUE;
+        callGraphFlags.any_state_tables = true;
     }
     func = node->base.object;
     if( node->addrs > 0 ) {
@@ -1198,7 +1195,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
             func->flag &= ~SF_CG_INLINEABLE;
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1221,7 +1218,7 @@ static bool pruneFunction(      // PRUNE UNREFERENCED FUNCTION
         }
         break;
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1240,7 +1237,7 @@ static bool procStabEdge(       // PROCESS INLINE-CALL EDGE FROM NODE
             }
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1253,8 +1250,8 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
     unsigned depth;             // - current depth
     unsigned cond_flags;        // - # conditional flags
     unsigned max_cond_flags;    // - maximum # conditional flags
-    bool state_table;           // - TRUE ==> requires state table
-    bool stab_gen;              // - TRUE ==> state table to be genned
+    bool state_table;           // - true ==> requires state table
+    bool stab_gen;              // - true ==> state table to be genned
 
     ExtraRptIncrementCtr( ctr_nodes_visited );
     if( ! node->is_vft ) {
@@ -1274,16 +1271,16 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
                     node = inl->callee;
                     cond_flags -= node->cond_flags;
                 } else {
-                    inl->expanded = TRUE;
+                    inl->expanded = true;
                     node = inl->callee;
                     if( node->state_table ) {
-                        state_table = TRUE;
+                        state_table = true;
                         cond_flags += node->cond_flags;
                         if( cond_flags > max_cond_flags ) {
                             max_cond_flags = cond_flags;
                         }
                         if( node->stab_gen ) {
-                            stab_gen = TRUE;
+                            stab_gen = true;
                         }
                     }
                     ++ depth;
@@ -1315,7 +1312,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
 #endif
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -1337,21 +1334,21 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     DbgCgioEndFront();
     carve_vft = CarveCreate( sizeof( VFT_DEFN ), 16 );
     SegmentCodeCgInit();
-    callGraphFlags.any_state_tables = FALSE;
-    callGraphFlags.only_once_found = FALSE;
-//  callGraphFlags.not_inlined_set = FALSE;
+    callGraphFlags.any_state_tables = false;
+    callGraphFlags.only_once_found = false;
+//  callGraphFlags.not_inlined_set = false;
     if( ! CompFlags.inline_functions ) {
         max_inline_depth = 0;
-        ctl.scope_call_opt = FALSE;
+        ctl.scope_call_opt = false;
     } else {
         max_inline_depth = bounding_depth;
         if( ! CompFlags.dt_method_pragma
          && ( CompInfo.dt_method_speced == DTM_DIRECT
            || CompInfo.dt_method_speced == DTM_DIRECT_SMALL
            || CompInfo.dt_method_speced == DTM_TABLE_SMALL ) ) {
-            ctl.scope_call_opt = FALSE;
+            ctl.scope_call_opt = false;
         } else {
-            ctl.scope_call_opt = TRUE;
+            ctl.scope_call_opt = true;
         }
     }
     call_graph = &ctl;
@@ -1413,7 +1410,7 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     // or do not have their address taken
     VstkOpen( &ctl.calls, sizeof( INLINEE ), 32 );
     do {
-        ctl.pruned = FALSE;
+        ctl.pruned = false;
         CgrfWalkFunctions( &ctl, &pruneFunction );
     } while( ctl.pruned );
     if( max_inline_depth > 0 ) {
@@ -1457,7 +1454,7 @@ bool CgBackFuncInlined(         // DETERMINE IF FUNCTION INVOCATION INLINED
 
 
 void CgBackSetInlineRecursion(  // SET INLINE RECURSION
-    bool allowed )              // - TRUE ==> inline recursion allowed
+    bool allowed )              // - true ==> inline recursion allowed
 {
     callGraphFlags.inline_recursion = allowed;
 }

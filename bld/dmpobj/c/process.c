@@ -129,14 +129,16 @@ static void doProcModel( void )
 {
     byte        tmp;
 
-    if( EndRec() ) return;
+    if( EndRec() )
+        return;
     Output( INDENT "Processor     : 80" );
     tmp = GetByte();
     if( tmp != '0' ) {
         Output( "%c", tmp );
     }
     Output( "86" CRLF );
-    if( EndRec() ) return;
+    if( EndRec() )
+        return;
     Output( INDENT "Memory Model  : " );
     tmp = GetByte();
     switch( tolower( tmp ) ) {
@@ -150,10 +152,12 @@ static void doProcModel( void )
         Output( "Unknown(%c)" CRLF, tmp );
         break;
     }
-    if( EndRec() ) return;
+    if( EndRec() )
+        return;
     tmp = GetByte();
     Output( INDENT "Optimized     : %s" CRLF, ( tmp == 'O' ) ? "Yes" : "No" );
-    if( EndRec() ) return;
+    if( EndRec() )
+        return;
     Output( INDENT "Floating point: " );
     tmp = GetByte();
     switch( tmp ) {
@@ -172,7 +176,8 @@ static void doWeakLazyExtern( void )
     byte extern_idx;
 
     for(;;) {
-        if( EndRec() ) break;
+        if( EndRec() )
+            break;
         extern_idx = GetIndex();
         default_resolution = GetIndex();
          Output( INDENT INDENT "EI(%u) default: EI(%u)\n", extern_idx, default_resolution );
@@ -271,7 +276,7 @@ static void doVirtualConditional( void )
         Output( INDENT "  - '%s'   -'%s'\n", GetXname( idx ),
                 GetXname( def_idx ) );
     }
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
         idx = GetIndex();
         Output( INDENT INDENT "conditional: LI(%u)\n", idx );
     }
@@ -350,8 +355,8 @@ static int doEasyOmf( byte c_bits )
 {
     if( c_bits == 0x80 && memcmp( RecPtr, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
         Output( INDENT "---- PharLap 80386 object deck ----" CRLF );
-        IsPharLap = TRUE;
-        IsIntel = FALSE;
+        IsPharLap = true;
+        IsIntel = false;
         return( 1 );
     }
     return( 0 );
@@ -367,7 +372,7 @@ static int doMSOmf( void )
         byte    version;
 
         version = GetByte();
-        IsIntel = FALSE;
+        IsIntel = false;
         NamePtr = RecPtr;
         NameLen = RecLen - 3;
         RecPtr += NameLen;
@@ -533,7 +538,7 @@ void ProcComent( void )
             break;
         }
     }
-    if( ! ( dont_print || EndRec() ) ) {
+    if( !( dont_print || EndRec() ) ) {
         OutputData( 0L, 0L );
     }
 }
@@ -541,7 +546,7 @@ void ProcComent( void )
 void ProcLNames( unsigned_16 *index )
 /***********************************/
 {
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
        GetName();
        AddLname();
        Output( INDENT "%u - %N" CRLF, ++(*index) );
@@ -551,7 +556,7 @@ void ProcLNames( unsigned_16 *index )
 void ProcNames( unsigned_16 *index )
 /**********************************/
 {
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
        GetName();
        Output( INDENT "%u - %N" CRLF, ++(*index) );
     }
@@ -560,7 +565,7 @@ void ProcNames( unsigned_16 *index )
 void ProcExtNames( void )
 /***********************/
 {
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
        GetName();
        if( TranslateIndex ) {
            AddXname();
@@ -575,7 +580,7 @@ void ProcComExtDef( void )
     unsigned    name;
     unsigned    typ;
 
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
         name = GetIndex();
         typ = GetIndex();
         Output(INDENT "%u - LNAME:%u Type:%u" CRLF, ++Importindex, name, typ);
@@ -673,7 +678,7 @@ void ProcSegDefs( void )
         ovl = GetIndex();
     }
     phar_access = NULL;
-    if( IsPharLap && EndRec() == FALSE ) {
+    if( IsPharLap && !EndRec() ) {
         phar_attr = GetByte();
         use32 = phar_attr & EASY_USE32_FIELD;
         phar_attr &= EASY_PROTECT_FIELD;
@@ -763,8 +768,8 @@ void ProcPubDefs( void )
 {
     unsigned_32 puboff;
 
-    getBase( TRUE );
-    while( ! EndRec() ) {
+    getBase( true );
+    while( !EndRec() ) {
         GetName();
         puboff = GetEither();
         Output( INDENT "%X - %N Type:%u" CRLF, puboff, GetIndex() );
@@ -779,7 +784,7 @@ void ProcComDef( void )
     unsigned_32 num;
     unsigned_32 size;
 
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
         GetName();
         type = GetIndex();  /* type index */
         seg = GetByte();   /* data seg type */
@@ -815,7 +820,7 @@ static void DoLinNumsMS( void )
     if( Descriptions ) {
         Output( INDENT "Number pairs are \"line#:offset\"" CRLF );
     }
-    if( ! EndRec() ) {
+    if( !EndRec() ) {
         count = 0;
         do {
             line_num = GetUInt();
@@ -832,7 +837,7 @@ static void DoLinNumsMS( void )
                 break;
             }
             ++count;
-        } while( ! EndRec() );
+        } while( !EndRec() );
         if( count % 4 != 0 ) {  /* if count % 4 == 0 then CRLF already output */
             Output( CRLF );
         }
@@ -939,7 +944,7 @@ void ProcLinNums( void )
 {
     switch( DbgStyle ) {
     case DBG_CODEVIEW:
-        getBase( TRUE );
+        getBase( true );
         DoLinNumsMS();
         break;
     case DBG_HLL:
@@ -1036,7 +1041,7 @@ static void DoLidata( void )
     unsigned_16 first_block_offset;
 
     first_block_offset = RecOffset();
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
         idBlock( INDWIDTH, first_block_offset );
     }
 }
@@ -1089,7 +1094,7 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
     Segdeflist  *sd;
     Grpdeflist  *gd;
     unsigned_16 idx;
-    bool        needcrlf = FALSE;
+    bool        needcrlf = false;
     size_t      deltacol;
 
 #define         FRAMECOL     39u
@@ -1105,7 +1110,7 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
         sd = GetSegdef( idx );
         if( sd != NULL ) {
             *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segind ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
     case FRAME_GRP:
@@ -1113,7 +1118,7 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
             *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpind ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
 
@@ -1121,7 +1126,7 @@ static bool doFrameTranslateIndex( byte frame, size_t *printpos )
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
     case FRAME_ABS:
@@ -1147,7 +1152,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
     Segdeflist  *sd;
     Grpdeflist  *gd;
     unsigned_16 idx;
-    bool        needcrlf = FALSE;
+    bool        needcrlf = false;
     size_t      deltacol;
 
 #define         TARGETCOL     58u
@@ -1163,7 +1168,7 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
         sd = GetSegdef( idx );
         if( sd != NULL ) {
             *printpos = Output( "%<- '%s'", deltacol, GetLname( sd->segind ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
     case TARGET_GRPWD:
@@ -1171,14 +1176,14 @@ static bool doTargetTranslateIndex( byte target, size_t *printpos )
         gd = GetGrpdef( idx );
         if( gd != NULL ) {
             *printpos = Output( "%<- '%s'", deltacol, GetLname( gd->grpind ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
     case TARGET_EXTWD:
         idx = GetIndex();
         if( TranslateIndex ) {
             *printpos = Output( "%<- '%s'", deltacol, GetXname( idx ) );
-            needcrlf = TRUE;
+            needcrlf = true;
         }
         break;
     case TARGET_ABSWD:
@@ -1213,7 +1218,7 @@ static void explicitFixup( byte typ )
     byte        frame;
     data_ptr    RecPtrsave;
     data_ptr    RecPtrsave1;
-    bool        needcrlf = FALSE;
+    bool        needcrlf = false;
     size_t      printpos;
 
     offset = ( ( typ & 0x03 ) << 8 ) + GetByte();
@@ -1300,7 +1305,7 @@ void ProcFixup( void )
         Output( INDENT "----- ----  -----------  "
             "---------------  ---------------------------" CRLF );
     }
-    while( ! EndRec() ) {
+    while( !EndRec() ) {
         typ = GetByte();
         if( typ & FIXUPP_FIXUP ) {
             explicitFixup( typ );
@@ -1605,7 +1610,7 @@ void ProcComDat( void )
             ComAlign[align], ComSel[sel], ComAlloc[alloc] );
     if( alloc == 0 ) { /* explict allocation */
         Output( " ==> " );
-        getBase( FALSE );
+        getBase( false );
     }
     Output( CRLF );
     sym = GetIndex();

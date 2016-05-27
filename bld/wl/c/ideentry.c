@@ -55,14 +55,14 @@ typedef struct {
 
 static IDECBHdl         IdeHdl;
 static IDEInitInfo      InitInfo;
-static IDECallBacks     *IdeCB;
+static IDECallBacks     *IdeCbs;
 
 static extra_cmd_info ExtraCmds[] = {
-    IDE_GET_TARGET_FILE,"name    ",     FALSE,
-    IDE_GET_OBJ_FILE,   "file    ",     TRUE,
-    IDE_GET_LIB_FILE,   "lib     ",     TRUE,
-    IDE_GET_RES_FILE,   "opt res=",     FALSE,
-    0,                  "\0",           FALSE
+    IDE_GET_TARGET_FILE,"name    ",     false,
+    IDE_GET_OBJ_FILE,   "file    ",     true,
+    IDE_GET_LIB_FILE,   "lib     ",     true,
+    IDE_GET_RES_FILE,   "opt res=",     false,
+    0,                  "\0",           false
 };
 
 static IDEMsgSeverity SeverityMap[] = {
@@ -79,14 +79,14 @@ static IDEMsgSeverity SeverityMap[] = {
 #if defined( DLLS_IMPLEMENTED )
 bool ExecDLLPgm( char *pname, char *cmdline )
 /********************************************/
-// return TRUE if an error
+// return true if an error
 {
     IDEDRV              inf;
     IDEDRV_STATUS       status;
 
     status = IDEDRV_ERR_LOAD;
     IdeDrvInit( &inf, pname, NULL );
-    IdeDrvChainCallbacks( IdeCB, &InitInfo );
+    IdeDrvChainCallbacks( IdeCbs, &InitInfo );
     status = IdeDrvExecDLL( &inf, cmdline );
     IdeDrvUnloadDLL( &inf );
     return( status != IDEDRV_SUCCESS );
@@ -99,16 +99,16 @@ void WriteStdOut( char *str )
 /**********************************/
 {
     CheckBreak();
-    if( IdeCB != NULL ) {
-        IdeCB->PrintWithCRLF( IdeHdl, str );
+    if( IdeCbs != NULL ) {
+        IdeCbs->PrintWithCRLF( IdeHdl, str );
     }
 }
 
 void WriteStdOutNL( void )
 /*******************************/
 {
-    if( IdeCB != NULL ) {
-        IdeCB->PrintWithCRLF( IdeHdl, "\n" );
+    if( IdeCbs != NULL ) {
+        IdeCbs->PrintWithCRLF( IdeHdl, "\n" );
     }
 }
 
@@ -119,7 +119,7 @@ void WriteStdOutInfo( char *str, unsigned level, char *symbol )
     unsigned    msgclass;
 
     CheckBreak();
-    if( IdeCB != NULL ) {
+    if( IdeCbs != NULL ) {
         IdeMsgInit( &info, SeverityMap[(level & CLASS_MSK) >> NUM_SHIFT], str );
         msgclass = level & CLASS_MSK;
         if( msgclass != BANNER && msgclass >= (WRN & CLASS_MSK) ) {
@@ -129,7 +129,7 @@ void WriteStdOutInfo( char *str, unsigned level, char *symbol )
         if( symbol != NULL ) {
             IdeMsgSetLnkSymbol( &info, symbol );
         }
-        IdeCB->PrintWithInfo( IdeHdl, &info );
+        IdeCbs->PrintWithInfo( IdeHdl, &info );
     }
 }
 
@@ -138,9 +138,9 @@ char * GetEnvString( char *envname )
 {
     char *retval;
 
-    if( IdeCB == NULL || InitInfo.ignore_env )
+    if( IdeCbs == NULL || InitInfo.ignore_env )
         return( NULL );
-    IdeCB->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)envname, (IDEGetInfoLParam)&retval );
+    IdeCbs->GetInfo( IdeHdl, IDE_GET_ENV_VAR, (IDEGetInfoWParam)envname, (IDEGetInfoLParam)&retval );
     return( retval );
 }
 
@@ -155,10 +155,10 @@ static bool GetAddtlCommand( IDEInfoType cmd, char *buf )
 {
     cmd = cmd;
     buf = buf;
-    return FALSE;
+    return false;
 #if 0
-    if( InitInfo.cmd_line_has_files ) return FALSE;
-    return !IdeCB->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam)&buf );
+    if( InitInfo.cmd_line_has_files ) return false;
+    return !IdeCbs->GetInfo( IdeHdl, cmd, NULL, (IDEGetInfoLParam)&buf );
 #endif
 }
 
@@ -188,9 +188,10 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /****************************************************************/
 {
     hdl = hdl;
-    if( info->ver < IDE_CUR_INFO_VER5 ) return TRUE;
+    if( info->ver < IDE_CUR_INFO_VER5 )
+        return true;
     InitInfo = *info;
-    return FALSE;
+    return false;
 }
 
 unsigned IDEAPI IDEGetVersion( void )
@@ -213,14 +214,14 @@ void IDEAPI IDEFreeHeap( void )
 #endif
 }
 
-IDEBool IDEAPI IDEInitDLL( IDECBHdl hdl, IDECallBacks *cb, IDEDllHdl *info )
-/**************************************************************************/
+IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
+/***************************************************************************/
 {
-    info = info;
-    IdeHdl = hdl;
-    IdeCB = cb;
+    hdl = hdl;
+    IdeHdl = cbhdl;
+    IdeCbs = cb;
     InitSubSystems();
-    return FALSE;
+    return false;
 }
 
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )

@@ -105,7 +105,7 @@ extern imp_image_handle         *ImageList;
 
 extern dip_status               VMInit( imp_image_handle *, unsigned long );
 extern void                     VMFini( imp_image_handle * );
-extern void                     *VMBlock( imp_image_handle *, virt_mem, unsigned );
+extern void                     *VMBlock( imp_image_handle *, virt_mem, size_t );
 extern void                     *VMRecord( imp_image_handle *, virt_mem );
 extern unsigned                 VMShrink(void);
 
