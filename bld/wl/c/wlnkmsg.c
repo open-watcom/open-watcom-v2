@@ -94,7 +94,7 @@ int InitMsg( void )
     if( !OpenResFile( &hInstance, imageName ) ) {
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( Msg_Get( MSG_PRODUCT, buff ) ) {
+            if( Msg_Get( MSG_GENERAL_HELP_0, buff ) ) {
                 Res_Flag = EXIT_SUCCESS;
                 return( Res_Flag );
             }

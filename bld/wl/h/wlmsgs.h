@@ -31,8 +31,6 @@
 
 #define MSG_LANG_SPACING        1000
 
-#define    MSG_PRODUCT                            0 + MSG_BASE
-#define    MSG_COPYRIGHT                          1 + MSG_BASE
 #define    MSG_INTERNAL                           2 + MSG_BASE
 #define    MSG_LOADING_OBJECT                     3 + MSG_BASE
 #define    MSG_SEARCHING_LIBS                     4 + MSG_BASE
