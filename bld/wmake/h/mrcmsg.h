@@ -257,9 +257,9 @@ typedef struct table_type {
     char    *msgtype;
 } TABLE_TYPE;
 
-extern int      MsgInit( void );
-extern int      MsgGet( int resourceid, char *buffer );
+extern BOOLEAN  MsgInit( void );
+extern BOOLEAN  MsgGet( int resourceid, char *buffer );
 extern void     MsgGetTail( int resourceid, char *buffer );
 extern void     MsgFini( void );
-extern int      MsgReOrder( int resourceid, char *buff, char **paratype );
+extern BOOLEAN  MsgReOrder( int resourceid, char *buff, char **paratype );
 extern BOOLEAN  ResAutoDep( char *name, time_t stamp, BOOLEAN (*chk)(time_t,time_t), time_t *pmax_time );
