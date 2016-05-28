@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include "heapwalk.h"
 
-char            *HeapWalkName;
+const char      *HeapWalkName;
 HWND            HeapWalkMainWindow;
 HINSTANCE       Instance;
 BOOL            ListingDPMI;
@@ -46,6 +46,6 @@ int             LSortType;
 HWND            ResHwnd[MAX_RES];
 HeapConfigInfo  Config;
 
-char            *HeapTitles;
-char            *HeapDPMITitles;
-char            *HeapLocalTitles;
+const char      *HeapTitles;
+const char      *HeapDPMITitles;
+const char      *HeapLocalTitles;

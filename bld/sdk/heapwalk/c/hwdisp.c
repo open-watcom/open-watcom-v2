@@ -62,7 +62,7 @@ static HWND MkDisplayWin( UINT captionid, HWND parent )
 {
 
     HWND        hdl;
-    char        *caption;
+    const char  *caption;
 
     caption = HWGetRCString( captionid );
     hdl = CreateWindow(

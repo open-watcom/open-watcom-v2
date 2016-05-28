@@ -303,6 +303,8 @@ extern char *DUILoadString( int id )
     int         size;
 
     size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
+    if( size < 0 )
+        size = 0;
     buff[size] = NULLCHAR;
     ret = DbgAlloc( size + 1 );
     strcpy( ret, buff );

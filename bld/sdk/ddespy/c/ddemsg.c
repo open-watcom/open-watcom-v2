@@ -149,7 +149,7 @@ static msglist DDEErrorMsgs[] = {
  */
 static char *fmtAlias( unsigned long id, char *alias, unsigned type, size_t *prefixlen )
 {
-    char        *prefix;
+    const char  *prefix;
     char        *ret;
     size_t      len;
     int         fmt_len;
@@ -370,7 +370,7 @@ void RefreshAliases( void )
 char *GetFmtStr( UINT fmt, char *buf )
 {
     char        *ret;
-    char        *fmtstr;
+    const char  *fmtstr;
 
     ret = SrchMsg( fmt, FormatMsgs, NULL );
     if( ret == NULL ) {

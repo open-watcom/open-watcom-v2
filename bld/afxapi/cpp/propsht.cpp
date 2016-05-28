@@ -291,11 +291,9 @@ void CPropertySheet::Construct( UINT nIDCaption, CWnd *pParentWnd, UINT iSelectP
 {
     if( nIDCaption != 0 ) {
         m_strCaption.LoadString( nIDCaption );
-        Construct( m_strCaption, pParentWnd, iSelectPage, hbmWatermark, hpalWatermark,
-                   hbmHeader );
+        Construct( m_strCaption, pParentWnd, iSelectPage, hbmWatermark, hpalWatermark, hbmHeader );
     } else {
-        Construct( (LPCTSTR)NULL, pParentWnd, iSelectPage, hbmWatermark, hpalWatermark,
-                   hbmHeader );
+        Construct( (LPCTSTR)NULL, pParentWnd, iSelectPage, hbmWatermark, hpalWatermark, hbmHeader );
     }
 }
 

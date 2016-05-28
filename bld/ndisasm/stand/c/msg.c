@@ -80,7 +80,7 @@ int MsgInit( void )
 
 int MsgGet( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( 0 );
     }

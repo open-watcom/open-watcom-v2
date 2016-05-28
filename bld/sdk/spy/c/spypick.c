@@ -86,7 +86,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
     char        name[64];
     char        id[10];
     char        str[512];
-    char        *fmtstr;
+    const char  *fmtstr;
     int         len;
     RECT        rect;
 

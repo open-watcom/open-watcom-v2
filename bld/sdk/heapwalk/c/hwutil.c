@@ -76,7 +76,7 @@ void SetStaticText( HWND hwnd, int id, char *str ) {
 int ErrorBox( HWND hwnd, UINT msgid, UINT type ) {
 
     int         ret;
-    char        *msg;
+    const char  *msg;
 
     msg = HWGetRCString( msgid );
     ret = MessageBox( hwnd, msg, HeapWalkName, type );
@@ -108,7 +108,7 @@ void KillPushWin( HWND *push ) {
  * MakePushWin - create push windows and place them at the top of a window
  */
 
-HWND *MakePushWin( HWND hwnd, char *str, WORD cnt, ... ) {
+HWND *MakePushWin( HWND hwnd, const char *str, WORD cnt, ... ) {
 
     char        *start;
     char        *end;

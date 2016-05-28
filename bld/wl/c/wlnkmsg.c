@@ -109,7 +109,7 @@ int InitMsg( void )
 
 int Msg_Get( int resourceid, char *buffer )
 {
-    if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
+    if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

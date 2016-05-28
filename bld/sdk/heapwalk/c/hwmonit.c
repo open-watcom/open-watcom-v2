@@ -75,10 +75,10 @@ typedef struct {
 
 typedef struct {
     WORD        use_cnt;
-    HBRUSH      brush[ SIZE_CNT ];
+    HBRUSH      brush[SIZE_CNT];
 } MonitorTools;
 
-static COLORREF         BarColors[ SIZE_CNT ] = {
+static COLORREF         BarColors[SIZE_CNT] = {
                                 RGB( 0, 0, 0 ),
                                 RGB( 0, 255, 0 ),
                                 RGB( 255, 0, 0 ),
@@ -88,7 +88,7 @@ static COLORREF         BarColors[ SIZE_CNT ] = {
                         };
 
 static BOOL             LabelsInitialized = FALSE;
-static char             *MonitorLabels[ SIZE_CNT ];
+static const char       *MonitorLabels[SIZE_CNT];
 static MonitorTools     Brushes;
 
 
@@ -111,23 +111,23 @@ static BOOL GetMonitorInfo( LocalMonInfo *info ) {
     taskinfo.dwSize = sizeof( TASKENTRY );
 
     TaskFindHandle( &taskinfo, info->task_hdl );
-    info->sizes[ STATIC_SIZE ] = taskinfo.wStackTop;
-    info->sizes[ STACK_SIZE ] = taskinfo.wStackBottom - taskinfo.wStackTop;
-    info->sizes[ FIXED_SIZE ] = 0;
-    info->sizes[ MOVE_SIZE ] = 0;
-    info->sizes[ FREE_SIZE ] = 0;
+    info->sizes[STATIC_SIZE] = taskinfo.wStackTop;
+    info->sizes[STACK_SIZE] = taskinfo.wStackBottom - taskinfo.wStackTop;
+    info->sizes[FIXED_SIZE] = 0;
+    info->sizes[MOVE_SIZE] = 0;
+    info->sizes[FREE_SIZE] = 0;
 
     ret = LocalFirst( &localinfo, info->handle );
     while( ret ) {
         switch( localinfo.wFlags ) {
         case LF_FIXED:
-            info->sizes[ FIXED_SIZE ] += localinfo.wSize;
+            info->sizes[FIXED_SIZE] += localinfo.wSize;
             break;
         case LF_MOVEABLE:
-            info->sizes[ MOVE_SIZE ] += localinfo.wSize;
+            info->sizes[MOVE_SIZE] += localinfo.wSize;
             break;
         case LF_FREE:
-            info->sizes[ FREE_SIZE ] += localinfo.wSize;
+            info->sizes[FREE_SIZE] += localinfo.wSize;
             break;
         }
         ret = LocalNext( &localinfo );
@@ -136,9 +136,9 @@ static BOOL GetMonitorInfo( LocalMonInfo *info ) {
     if( !memcmp( info, &old_info, sizeof( LocalMonInfo ) ) ) {
         return( FALSE );
     }
-    info->sizes[ OTHER_SIZE ] = info->total_size;
+    info->sizes[OTHER_SIZE] = info->total_size;
     for( i=0; i < SIZE_CNT; i++ ) {
-        if( i != OTHER_SIZE ) info->sizes[ OTHER_SIZE ] -= info->sizes[i];
+        if( i != OTHER_SIZE ) info->sizes[OTHER_SIZE] -= info->sizes[i];
     }
     return( TRUE );
 }
@@ -167,10 +167,10 @@ static void PaintMonitor( HWND hwnd, HDC dc, LocalMonInfo *info ) {
     area.top = BAR_HITE;
     area.bottom = 2 * BAR_HITE;
     area.left = BAR_XPOS;
-    for( i=0; i < SIZE_CNT; i++ ) {
-        if( info->sizes[i] == 0 ) continue;
-        area.right = area.left + SECTION_WIDTH( info->sizes[i],
-                                                info->total_size );
+    for( i = 0; i < SIZE_CNT; i++ ) {
+        if( info->sizes[i] == 0 )
+            continue;
+        area.right = area.left + SECTION_WIDTH( info->sizes[i], info->total_size );
         FillRect( dc, &area, Brushes.brush[i] );
 
         xpos = ( area.left + area.right ) / 2;
@@ -180,8 +180,7 @@ static void PaintMonitor( HWND hwnd, HDC dc, LocalMonInfo *info ) {
         xpos += TICK_LENGTH;
         LineTo( dc, xpos, ypos );
         if( i == STACK_SIZE ) {
-            sprintf( buf, MonitorLabels[i], info->sizes[i],
-                     info->stack_used );
+            sprintf( buf, MonitorLabels[i], info->sizes[i], info->stack_used );
         } else {
             sprintf( buf, MonitorLabels[i], info->sizes[i] );
         }
@@ -299,12 +298,12 @@ void BeginMonitor( heap_list *item ) {
     char                *msgtitle;
 
     if( !LabelsInitialized ) {
-        MonitorLabels[ STATIC_SIZE ] = HWGetRCString( STR_STATIC_DATA );
-        MonitorLabels[ STACK_SIZE ] = HWGetRCString( STR_STACK_ALLOCATED );
-        MonitorLabels[ FIXED_SIZE ] = HWGetRCString( STR_FIXED_HEAP );
-        MonitorLabels[ MOVE_SIZE ] = HWGetRCString( STR_MOVEABLE_HEAP );
-        MonitorLabels[ FREE_SIZE ] = HWGetRCString( STR_FREE_HEAP );
-        MonitorLabels[ OTHER_SIZE ] = HWGetRCString( STR_MONITOR_UNKNOWN );
+        MonitorLabels[STATIC_SIZE] = HWGetRCString( STR_STATIC_DATA );
+        MonitorLabels[STACK_SIZE] = HWGetRCString( STR_STACK_ALLOCATED );
+        MonitorLabels[FIXED_SIZE] = HWGetRCString( STR_FIXED_HEAP );
+        MonitorLabels[MOVE_SIZE] = HWGetRCString( STR_MOVEABLE_HEAP );
+        MonitorLabels[FREE_SIZE] = HWGetRCString( STR_FREE_HEAP );
+        MonitorLabels[OTHER_SIZE] = HWGetRCString( STR_MONITOR_UNKNOWN );
         LabelsInitialized = TRUE;
     }
     if( Brushes.use_cnt == 0 ) {

@@ -96,7 +96,7 @@ int AsMsgInit( void )
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             msgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( AsMsgGet( USAGE_1, name ) ) {
+            if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
                 return( 1 );
             }
         }
@@ -117,7 +117,7 @@ int AsMsgGet( int resourceid, char *buffer ) {
 //********************************************
 
 #ifdef _STANDALONE_
-    if( LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( 0 );
     }

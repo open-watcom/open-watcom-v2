@@ -39,8 +39,8 @@ char *WndLoadString( gui_res_id id )
     char        *ret;
     int         size;
 
-    if( !GUILoadString( id, buff, sizeof( buff ) -1 ) ) {
-        buff[0]='\0';
+    if( !GUILoadString( id, buff, sizeof( buff ) ) ) {
+        buff[0] = '\0';
     }
     size = strlen( buff ) + 1;
     ret = WndMustAlloc( size );

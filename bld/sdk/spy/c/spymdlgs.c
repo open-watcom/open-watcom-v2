@@ -58,7 +58,7 @@ BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     bool        fl;
     HWND        nwnd, pwnd;
     ctl_id      cmdid;
-    char        *fmtstr;
+    const char  *fmtstr;
     char        title[100];
 
     switch( msg ) {
@@ -187,7 +187,7 @@ BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     int         i;
     bool        fl;
     ctl_id      cmdid;
-    char        *rcstr;
+    const char  *rcstr;
     int         id;
 
     lparam = lparam;
@@ -317,7 +317,7 @@ static void WindowIsDestroyed( HWND hwnd ) {
 
     char        hwndstring[30];
     char        buf[100];
-    char        *fmtstr;
+    const char  *fmtstr;
 
     EnableWindow( GetDlgItem( hwnd, MSGSEL_SHOWINFO ), FALSE );
     EnableWindow( GetDlgItem( hwnd, MSGSEL_HILIGHT ), FALSE );
@@ -347,7 +347,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     char        tmp[20];
     char        class_name[80];
     char        *endptr;
-    char        *warnmsg;
+    const char  *warnmsg;
     char        *strptr;
     bool        fl;
 

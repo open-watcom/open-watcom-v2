@@ -90,7 +90,7 @@ int init_msgs( void )
 
 int get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
-    if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) != 0 ) {
+    if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( 0 );
     }

@@ -63,7 +63,7 @@ message *GetMessageDataFromID( int msgid, char *class_name )
 void ProcessIncomingMessage( int msgid, char *class_name, char *res )
 {
     message     *msg;
-    char        *fmtstr;
+    const char  *fmtstr;
     char        buf[256];
 
     res[0] = 0;

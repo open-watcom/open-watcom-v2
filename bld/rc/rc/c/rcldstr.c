@@ -108,7 +108,7 @@ bool InitRcMsgs( void )
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) != 0 ) {
+    if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }

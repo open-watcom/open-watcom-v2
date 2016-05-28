@@ -86,9 +86,7 @@ int MsgInit( char *fname )
 void MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( LoadString( &hInstance, resourceid,
-        (LPSTR) buffer, MAX_RESOURCE_SIZE ) == 0 ) {
-    } else {
+    if( LoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }

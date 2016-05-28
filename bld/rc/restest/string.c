@@ -41,19 +41,19 @@ void DisplayStrings( HWND hwnd )
     int         ret;
 
     lb = GetDlgItem( hwnd, LBOX );
-    for( i=0; i < 1000; i++ ) {
+    for( i = 0; i < 1000; i++ ) {
 #ifdef __NT__
         ret = LoadStringW( Instance, i, (LPWSTR)buf, sizeof( buf ) );
 #else
         ret = LoadString( Instance, i, buf, sizeof( buf ) );
 #endif
-        if( ret ) {
-            ret ++;
+        if( ret > 0 ) {
+            ret++;
 #ifdef __NT__
             ret *= 2;
 #endif
             LBPrintf( lb, "" );
-            LBPrintf( lb, "STRING: %d", (int)i );
+            LBPrintf( lb, "STRING: %u", i );
             LBDump( lb, buf, ret );
         }
     }

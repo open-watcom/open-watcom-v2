@@ -789,7 +789,7 @@ char underLine[] = "============================================================
  */
 void MakeLog( bool wasfault )
 {
-    char        *str;
+    const char  *str;
 
     if( !startLogFile() ) {
         str = GetRCString( STR_LOG_OPEN_FAILED );

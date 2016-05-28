@@ -67,7 +67,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     WNDCLASS    wc;
     MSG         msg;
     HMENU       smh;
-    char        *menuname;
+    const char  *menuname;
 
     /*
      * don't let two of us run!
@@ -184,7 +184,7 @@ void Death( DWORD msgid, ... )
 {
     char        tmp[128];
     va_list     al;
-    char        *str;
+    const char  *str;
 
 
     InterruptUnRegister( NULL );

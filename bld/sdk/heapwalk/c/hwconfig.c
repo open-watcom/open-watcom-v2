@@ -110,7 +110,7 @@ static void GetDefaults( HeapConfigInfo *info ) {
 
     WORD        x;
     WORD        y;
-    char        *str;
+    const char  *str;
 
     info->save_glob_pos = TRUE;
     info->save_mem_pos = TRUE;

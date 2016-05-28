@@ -89,7 +89,7 @@ void RCvfprintf( FILE *fp, msg_id strid, va_list al )
 /*
  * RCMessageBox - display a message box with a string from a resource
  */
-int RCMessageBox( HWND hwnd, msg_id msgid, char *title, UINT type )
+int RCMessageBox( HWND hwnd, msg_id msgid, const char *title, UINT type )
 {
     char        *msg;
     int         ret;

@@ -108,7 +108,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     char            szInstallPath[MAX_PATH];
     char            *pch;
     char            *pszTitle;
-    char            *pszMessage;
+    const char      *pszMessage;
     char            *pszUninstallFile;
     HWND            hDlg;
     WIN32_FIND_DATA wfd;

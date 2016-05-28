@@ -95,7 +95,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 static int Msg_Get( int resourceid, char *buffer )
 {
-    if ( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
+    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( 0 );
     }

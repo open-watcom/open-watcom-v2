@@ -104,7 +104,7 @@ static int GetString(   WResLangInfo    *res,
     } while( !( (stringlen == 0) && (stringnum < 0) ) );
     lpszBuffer[ix2] = '\0';
 
-    return( 0 );
+    return( ix2 );
 }
 
 int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,

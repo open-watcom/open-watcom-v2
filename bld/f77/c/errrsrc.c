@@ -51,9 +51,10 @@ static  unsigned        MsgShift;
 #define RF_OPENED       0x01            // Resource file opened
 #define RF_INITIALIZED  0x02            // Resource system initialized
 
-static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where ) {
+static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 // Fool the resource compiler into thinking that the resource information
 // starts at offset 0.
+{
     if( where == SEEK_SET ) {
         return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
@@ -64,18 +65,21 @@ static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int
 // Client routines setup for wres library
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int     LoadMsg( unsigned int msg, char *buffer, int buff_size ) {
+int     LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
-    if( !(ResFlags & RF_INITIALIZED) ) return( 0 );
-    return( !LoadString( &hInstance, msg+MsgShift, buffer, buff_size ) );
+{
+    if( (ResFlags & RF_INITIALIZED) == 0 )
+        return( 0 );
+    return( LoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
 }
 
 
-static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
+static  void    BldErrMsg( unsigned int err, char *buffer, va_list args )
 // Build error message.
+{
     *buffer = NULLCHAR;
-    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE-1 ) ) {
+    if( LoadMsg( err, &buffer[1], ERR_BUFF_SIZE - 1 ) ) {
         buffer[0] = ' ';
         Substitute( buffer, buffer, args );
     }
@@ -95,13 +99,15 @@ static  void    ErrorInit( const char *pgm_name )
     ResFlags |= RF_INITIALIZED;
 }
 
-static  void    ErrorFini( void ) {
+static  void    ErrorFini( void )
+{
     if( ResFlags & RF_OPENED ) {
         CloseResFile( &hInstance );
     }
 }
 
-void    __InitResource( void ) {
+void    __InitResource( void )
+{
     __ErrorInit = &ErrorInit;
     __ErrorFini = &ErrorFini;
     __BldErrMsg = &BldErrMsg;

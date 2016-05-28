@@ -95,7 +95,7 @@ BOOL AFXAPI AfxWinInit( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpC
         pApp->m_pszHelpFilePath = _tcsdup( pszFile );
         if( pApp->m_pszAppName == NULL ) {
             TCHAR szAppName[256];
-            if( ::LoadString( hInstance, AFX_IDS_APP_TITLE, szAppName, 255 ) != 0 ) {
+            if( ::LoadString( hInstance, AFX_IDS_APP_TITLE, szAppName, 256 ) > 0 ) {
                 pApp->m_pszAppName = _tcsdup( szAppName );
             } else {
                 pApp->m_pszAppName = _tcsdup( pApp->m_pszExeName );
