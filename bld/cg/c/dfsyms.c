@@ -401,8 +401,8 @@ extern  void    DFSymRange( cg_sym_handle sym, offset size ){
     // a FIXME
 
     if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
-    	ARange = FEBack( sym );
-    	DWAddress( Client, size );
+        ARange = FEBack( sym );
+        DWAddress( Client, size );
     }
 }
 
