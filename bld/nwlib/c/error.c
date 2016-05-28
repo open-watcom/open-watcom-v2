@@ -64,8 +64,8 @@ void FiniMsg( void ) {}
 #endif
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  int             Res_Flag;
 static  unsigned        MsgShift;
+static  bool            res_failure = true;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -97,29 +97,29 @@ void InitMsg( void )
     imageName = _LpDllName;
 #endif
     if( !OpenResFile( &hInstance, imageName ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            Res_Flag = EXIT_SUCCESS;
             return;
         }
         CloseResFile( &hInstance );
     }
-    Res_Flag = EXIT_FAILURE;
+    res_failure = true;
     FatalResError();
 }
 
 void MsgGet( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_ERROR_SIZE ) <= 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }
 
 void FiniMsg( void )
 {
-    if( Res_Flag == EXIT_SUCCESS ) {
+    if( !res_failure ) {
         if( CloseResFile( &hInstance ) ) {
-            Res_Flag = EXIT_FAILURE;
+            res_failure = true;
             longjmp( Env, 1 );
         }
     }

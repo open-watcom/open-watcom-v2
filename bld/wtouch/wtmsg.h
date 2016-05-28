@@ -51,7 +51,7 @@ typedef struct table_type {
     char        *msgtype;
 } TABLE_TYPE;
 
-extern int MsgInit( void );
-extern int MsgGet( int resourceid, char *buffer );
+extern bool MsgInit( void );
+extern bool MsgGet( int resourceid, char *buffer );
 extern void MsgSubStr( int resourceid, char *buff, char *p );
 extern void MsgFini( void );

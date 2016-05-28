@@ -75,8 +75,8 @@ int Msg_Fini( void )
 #define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  int             Res_Flag;
 static  unsigned        MsgShift;
+static  bool            res_failure = true;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -93,46 +93,46 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 /* declare struct WResRoutines WResRtns {...} */
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-static int Msg_Get( int resourceid, char *buffer )
+static bool Msg_Get( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 }
 
 
-int Msg_Init( void )
+bool Msg_Init( void )
 {
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
-                Res_Flag = EXIT_SUCCESS;
-                return( Res_Flag );
+                return( true );
             }
         }
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
-    Res_Flag = EXIT_FAILURE;
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    return Res_Flag;
+    res_failure = true;
+    return( false );
 }
 
 
-int Msg_Fini( void )
+bool Msg_Fini( void )
 {
-    int     retcode = EXIT_SUCCESS;
+    bool    retcode = true;
 
-    if( Res_Flag == EXIT_SUCCESS ) {
+    if( !res_failure ) {
         if ( CloseResFile( &hInstance ) ) {
-            Res_Flag = EXIT_FAILURE;
-            retcode = EXIT_FAILURE;
+            res_failure = true;
+            retcode = false;
         }
         hInstance.handle = NIL_HANDLE;
     }

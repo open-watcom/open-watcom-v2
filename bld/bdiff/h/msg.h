@@ -31,9 +31,9 @@
 
 #define MAX_RESOURCE_SIZE   80
 
-extern int  MsgInit( void );
+extern bool MsgInit( void );
 extern void MsgFini( void );
-extern int  GetMsg( char *, int );
+extern bool GetMsg( char *, int );
 extern void MsgPrintf( int resourceid, va_list arglist );
 extern void Message( int format, ... );
 extern void PatchError( int format, ... );

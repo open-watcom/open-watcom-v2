@@ -97,8 +97,6 @@
 /* Function prototypes */
 
 /* From msg.c */
-int MsgInit( void );
-void MsgFini( void );
 
 typedef enum {
     PATCH_RET_OKAY,

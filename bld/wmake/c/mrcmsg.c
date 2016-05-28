@@ -117,10 +117,10 @@ BOOLEAN MsgInit( void )
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = FALSE;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( MsgGet( MSG_USAGE_BASE, name ) ) {
-                res_failure = FALSE;
                 return( TRUE );
             }
         }

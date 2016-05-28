@@ -72,6 +72,7 @@ static unsigned         msgShift;
 #define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
 
 static HANDLE_INFO      hInstance = {0};
+static bool             res_failure = true;
 
 static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
 //************************************************************************************
@@ -86,45 +87,47 @@ static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int w
 WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
-int AsMsgInit( void )
-//*******************
+bool AsMsgInit( void )
+//********************
 {
 #ifdef _STANDALONE_
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             msgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
-                return( 1 );
+                return( true );
             }
         }
+        AsMsgFini();
     }
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    AsMsgFini();
-    return( 0 );
+    res_failure = true;
+    return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
     if( msgShift >= TXT_MSG_SIZE )
         msgShift = 0;
     msgShift -= AS_MSG_BASE;
-    return( 1 );
+    return( true );
 #endif
 }
 
-int AsMsgGet( int resourceid, char *buffer ) {
-//********************************************
-
+bool AsMsgGet( int resourceid, char *buffer )
+//*******************************************
+{
 #ifdef _STANDALONE_
-    if( LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( false );
     }
 #else
     strcpy( buffer, asMessages[resourceid + msgShift] );
 #endif
-    return( 1 );
+    return( true );
 }
 
 void AsMsgFini( void ) {

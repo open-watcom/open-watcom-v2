@@ -65,7 +65,7 @@ void APIENTRY timerThread( WTimer *t ) {
         return;
     }
     t->_id = WinStartTimer( t->_anchorBlock, NULLHANDLE, 0, t->_interval );
-    while( WinGetMsg( t->_anchorBlock, &qmsg, NULLHANDLE, 0, 0) ) {
+    while( WinGetMsg( t->_anchorBlock, &qmsg, NULLHANDLE, 0, 0 ) ) {
         if( (qmsg.msg == WM_TIMER) && (LONGFROMMP( qmsg.mp1 ) == t->_id) ) {
             t->tick();
         } else if( (qmsg.msg == WM_QUIT) && (LONGFROMMP( qmsg.mp1 ) == t->_id) ) {

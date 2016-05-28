@@ -57,7 +57,7 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  int             Res_Flag;
+static  bool            res_failure = true;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
@@ -73,7 +73,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 
 WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 
-int InitMsg( void )
+bool InitMsg( void )
 {
     char        buff[_MAX_PATH];
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
@@ -92,24 +92,24 @@ int InitMsg( void )
 #endif
     BannerPrinted = false;
     if( !OpenResFile( &hInstance, imageName ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( Msg_Get( MSG_GENERAL_HELP_0, buff ) ) {
-                Res_Flag = EXIT_SUCCESS;
-                return( Res_Flag );
+                return( true );
             }
         }
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
     WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
-    Res_Flag = EXIT_FAILURE;
-    return( Res_Flag );
+    res_failure = true;
+    return( false );
 }
 
-int Msg_Get( int resourceid, char *buffer )
+bool Msg_Get( int resourceid, char *buffer )
 {
-    if( Res_Flag != EXIT_SUCCESS || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -199,14 +199,14 @@ void Msg_Write_Map( int resourceid, ... )
     va_end( arglist );
 }
 
-int FiniMsg( void )
+bool FiniMsg( void )
 {
-    int     retcode = EXIT_SUCCESS;
+    bool    retcode = true;
 
-    if( Res_Flag == EXIT_SUCCESS ) {
+    if( !res_failure ) {
         if( CloseResFile( &hInstance ) ) {
-            Res_Flag = EXIT_FAILURE;
-            retcode = EXIT_FAILURE;
+            res_failure = true;
+            retcode = false;
         }
     }
     return( retcode );
