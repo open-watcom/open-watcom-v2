@@ -233,3 +233,4 @@ extern vhandle          MakeDummyVar( void );
 extern int              GetOptionVarValue( vhandle var_handle, bool is_minimal );
 extern char             *TrimQuote(char*);
 extern void             SetDefaultAutoSetValue( vhandle var_handle );
+extern bool             CheckForceDLLInstall( char *name );

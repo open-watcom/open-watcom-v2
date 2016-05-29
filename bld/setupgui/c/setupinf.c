@@ -63,6 +63,8 @@
 #ifdef PATCH
     #include "bdiff.h"
     #include "installp.h"
+    #include "msg.h"
+    #include "exetype.h"
 #endif
 #include "watcom.h"
 
@@ -131,9 +133,6 @@ struct patch_info {
     char                *exetype;
     char                *condition;
 } *PatchInfo = NULL;
-
-extern bool             ExeType( const char *name, char *type );
-
 #endif
 
 static struct disk_info {
@@ -2461,8 +2460,8 @@ static int PrepareSetupInfo( FILE *io, pass_type pass )
     return( result );
 }
 
-extern bool CheckForceDLLInstall( char *name )
-/********************************************/
+bool CheckForceDLLInstall( char *name )
+/*************************************/
 {
     int         i;
     if( name == NULL ) {
@@ -2476,8 +2475,8 @@ extern bool CheckForceDLLInstall( char *name )
     return( false );
 }
 
-extern long SimInit( char *inf_name )
-/***********************************/
+long SimInit( char *inf_name )
+/****************************/
 {
     long                result;
     void                *io;
@@ -2619,38 +2618,38 @@ void SimTargetDirName( int i, char *buff, size_t buff_len )
     ReplaceVars( buff, buff_len, TargetInfo[i].name );
 }
 
-extern bool SimTargetNeedsUpdate( int i )
-/***************************************/
+bool SimTargetNeedsUpdate( int i )
+/********************************/
 {
     return( TargetInfo[i].needs_update );
 }
 
-extern disk_size SimTargetSpaceNeeded( int i )
-/********************************************/
+disk_size SimTargetSpaceNeeded( int i )
+/*************************************/
 {
     return( TargetInfo[i].space_needed );
 }
 
-extern disk_size SimMaxTmpFile( int i )
-/*************************************/
+disk_size SimMaxTmpFile( int i )
+/******************************/
 {
     return( TargetInfo[i].max_tmp_file );
 }
 
-extern int SimGetTargNumFiles( int i )
-/************************************/
+int SimGetTargNumFiles( int i )
+/*****************************/
 {
     return( TargetInfo[i].num_files );
 }
 
-extern void SimSetTargTempDisk( int parm, char disk )
-/****************************************************/
+void SimSetTargTempDisk( int parm, char disk )
+/********************************************/
 {
     *TargetInfo[parm].temp_disk = disk;
 }
 
-extern char *SimGetTargTempDisk( int parm )
-/*****************************************/
+char *SimGetTargTempDisk( int parm )
+/**********************************/
 {
     return( TargetInfo[parm].temp_disk );
 }
@@ -2673,14 +2672,14 @@ int SimGetNumDisks( void )
  * =======================================================================
  */
 
-extern int SimDirTargNum( int i )
-/*******************************/
+int SimDirTargNum( int i )
+/************************/
 {
     return( DirInfo[i].target );
 }
 
-extern int SimDirParent( int i )
-/******************************/
+int SimDirParent( int i )
+/***********************/
 {
     return( DirInfo[i].parent );
 }
@@ -2704,14 +2703,14 @@ void SimDirNoSlash( int i, char *buff, size_t buff_len )
     }
 }
 
-extern bool SimDirUsed( int i )
-/*****************************/
+bool SimDirUsed( int i )
+/**********************/
 {
     return( DirInfo[i].used );
 }
 
-extern void SimGetDir( int i, char *buff, size_t buff_len )
-/*********************************************************/
+void SimGetDir( int i, char *buff, size_t buff_len )
+/**************************************************/
 {
     SimDirNoSlash( i, buff, buff_len );
     ConcatDirSep( buff );
@@ -2729,8 +2728,8 @@ int SimNumFiles( void )
     return( SetupInfo.files.num );
 }
 
-extern void SimGetFileDesc( int parm, char *buff )
-/************************************************/
+void SimGetFileDesc( int parm, char *buff )
+/*****************************************/
 {
     if( FileInfo[parm].num_files == 0 ) {
         strcpy( buff, FileInfo[parm].filename );
@@ -2739,14 +2738,14 @@ extern void SimGetFileDesc( int parm, char *buff )
     }
 }
 
-extern void SimGetFileName( int parm, char *buff )
-/************************************************/
+void SimGetFileName( int parm, char *buff )
+/*****************************************/
 {
     strcpy( buff, FileInfo[parm].filename );
 }
 
-extern long SimFileSize( int parm )
-/*********************************/
+long SimFileSize( int parm )
+/**************************/
 {
     long        size;
     int         len;
@@ -2760,22 +2759,22 @@ extern long SimFileSize( int parm )
 }
 
 
-extern long SimSubFileSize( int parm, int subfile )
-/*************************************************/
+long SimSubFileSize( int parm, int subfile )
+/******************************************/
 {
     return( FileInfo[parm].files[subfile].size );
 }
 
 
-extern int SimFileDisk( int parm, char *buff )
-/********************************************/
+int SimFileDisk( int parm, char *buff )
+/*************************************/
 {
     strcpy( buff, DiskInfo[FileInfo[parm].disk_index].desc );
     return( FileInfo[parm].disk_index );
 }
 
-extern int SimFileDiskNum( int parm )
-/***********************************/
+int SimFileDiskNum( int parm )
+/****************************/
 {
     return( FileInfo[parm].disk_index );
 }
@@ -2786,8 +2785,8 @@ void SimFileDir( int parm, char *buff, size_t buff_len )
     SimGetDir( FileInfo[parm].dir_index, buff, buff_len );
 }
 
-extern int SimFileDirNum( int parm )
-/**********************************/
+int SimFileDirNum( int parm )
+/***************************/
 {
     return( FileInfo[parm].dir_index );
 }
@@ -2801,8 +2800,8 @@ bool SimFileOldDir( int parm, char *buff, size_t buff_len )
     return( true );
 }
 
-extern bool SimFileSplit( int parm )
-/**********************************/
+bool SimFileSplit( int parm )
+/***************************/
 {
     return( FileInfo[parm].file_type == '1' ||
             FileInfo[parm].file_type == 'm' ||
@@ -2815,87 +2814,87 @@ static bool SimFileFirstSplit( int parm )
     return( FileInfo[parm].file_type == '1' );
 }
 
-extern bool SimFileLastSplit( int parm )
-/**************************************/
+bool SimFileLastSplit( int parm )
+/*******************************/
 {
     return( FileInfo[parm].file_type == '$' );
 }
 
-extern int SimNumSubFiles( int parm )
-/***********************************/
+int SimNumSubFiles( int parm )
+/****************************/
 {
     return( FileInfo[parm].num_files );
 }
 
-extern bool SimSubFileInOldDir( int parm, int subfile )
-/*****************************************************/
+bool SimSubFileInOldDir( int parm, int subfile )
+/**********************************************/
 {
     return( FileInfo[parm].files[subfile].in_old_dir != 0 );
 }
 
-extern bool SimSubFileInNewDir( int parm, int subfile )
-/*****************************************************/
+bool SimSubFileInNewDir( int parm, int subfile )
+/**********************************************/
 {
     return( FileInfo[parm].files[subfile].in_new_dir != 0 );
 }
 
-extern bool SimSubFileReadOnly( int parm, int subfile )
-/*****************************************************/
+bool SimSubFileReadOnly( int parm, int subfile )
+/**********************************************/
 {
     return( FileInfo[parm].files[subfile].read_only != 0 );
 }
 
-extern bool SimSubFileExecutable( int parm, int subfile )
-/*******************************************************/
+bool SimSubFileExecutable( int parm, int subfile )
+/************************************************/
 {
     return( FileInfo[parm].files[subfile].executable );
 }
 
-extern bool SimSubFileIsNLM( int parm, int subfile )
-/**************************************************/
+bool SimSubFileIsNLM( int parm, int subfile )
+/*******************************************/
 {
     return( FileInfo[parm].files[subfile].is_nlm );
 }
 
-extern bool SimSubFileIsDLL( int parm, int subfile )
-/**************************************************/
+bool SimSubFileIsDLL( int parm, int subfile )
+/*******************************************/
 {
     return( FileInfo[parm].files[subfile].is_dll );
 }
 
-extern bool SimSubFileNewer( int parm, int subfile )
-/**************************************************/
+bool SimSubFileNewer( int parm, int subfile )
+/*******************************************/
 {
     return( FileInfo[parm].files[subfile].disk_date >
             FileInfo[parm].files[subfile].date );
 }
 
-extern time_t SimSubFileDate( int parm, int subfile )
-/***************************************************/
+time_t SimSubFileDate( int parm, int subfile )
+/********************************************/
 {
     return( FileInfo[parm].files[subfile].date );
 }
 
-extern int SimSubFileExists( int parm, int subfile )
-/**************************************************/
+int SimSubFileExists( int parm, int subfile )
+/*******************************************/
 {
     return( SimSubFileInOldDir( parm, subfile ) || SimSubFileInNewDir( parm, subfile ) );
 }
 
-extern void SimSubFileName( int parm, int subfile, char *buff )
-/*************************************************************/
+void SimSubFileName( int parm, int subfile, char *buff )
+/******************************************************/
 {
     strcpy( buff, FileInfo[parm].files[subfile].name );
 }
 
-extern vhandle SimSubFileVar( int parm, int subfile )
-/***************************************************/
+vhandle SimSubFileVar( int parm, int subfile )
+/********************************************/
 {
     return( FileInfo[parm].files[subfile].dst_var );
 }
 
-extern bool SimFileUpToDate( int parm )
-/*************************************/
+bool SimFileUpToDate( int parm )
+/******************************/
 {
     struct file_info    *info;
     int                 i;
@@ -2968,8 +2967,8 @@ void SimGetPMGroup( char *buff, size_t buff_len )
     }
 }
 
-extern int SimGetNumPMProgs( void )
-/*********************************/
+int SimGetNumPMProgs( void )
+/**************************/
 {
     return( SetupInfo.pm_files.num );
 }
@@ -2990,8 +2989,8 @@ static int SimFindDirForFile( char *buff )
 }
 
 
-extern int SimGetPMProgName( int parm, char *buff )
-/*************************************************/
+int SimGetPMProgName( int parm, char *buff )
+/******************************************/
 {
     strcpy( buff, PMInfo[parm].filename );
     // Return directory index.
@@ -3016,8 +3015,8 @@ void SimGetPMDesc( int parm, char *buff, size_t buff_len )
     buff[buff_len - 1] = '\0';
 }
 
-extern long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
-/*******************************************************************/
+long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
+/************************************************************/
 {
     if( PMInfo[parm].icoioname == NULL ) {
         ReplaceVars( buff, buff_len, PMInfo[parm].filename );
@@ -3028,8 +3027,8 @@ extern long SimGetPMIconInfo( int parm, char *buff, size_t buff_len )
     return( (unsigned long)(unsigned short)SimFindDirForFile( buff ) | ((unsigned long)(unsigned short)PMInfo[parm].icon_pos ) << 16 );
 }
 
-extern bool SimCheckPMCondition( int parm )
-/*****************************************/
+bool SimCheckPMCondition( int parm )
+/**********************************/
 {
     return( EvalCondition( PMInfo[parm].condition ) );
 }
@@ -3066,9 +3065,9 @@ int SimNumProfile( void )
     return( SetupInfo.profile.num );
 }
 
-extern void SimProfInfo( int parm, char *app_name, char *key_name, char *value,
+void SimProfInfo( int parm, char *app_name, char *key_name, char *value,
                          char *file_name, char *hive_name )
-/*****************************************************************************/
+/**********************************************************************/
 {
     strcpy( app_name, ProfileInfo[parm].app_name );
     strcpy( key_name, ProfileInfo[parm].key_name );
@@ -3085,8 +3084,8 @@ extern void SimProfInfo( int parm, char *app_name, char *key_name, char *value,
     }
 }
 
-extern bool SimCheckProfCondition( int parm )
-/*******************************************/
+bool SimCheckProfCondition( int parm )
+/************************************/
 {
     return( EvalCondition( ProfileInfo[parm].condition ) );
 }
@@ -3127,14 +3126,14 @@ int SimNumAutoExec( void )
     return( SetupInfo.autoexec.num );
 }
 
-extern append_mode SimGetAutoExecStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/**************************************************************************************************/
+append_mode SimGetAutoExecStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/*******************************************************************************************/
 {
     return( SimGetConfigStringsFrom( AutoExecInfo, i, new_var, buff, buff_len ) );
 }
 
-extern bool SimCheckAutoExecCondition( int parm )
-/***********************************************/
+bool SimCheckAutoExecCondition( int parm )
+/****************************************/
 {
     return( EvalCondition( AutoExecInfo[parm].condition ) );
 }
@@ -3146,14 +3145,14 @@ int SimNumConfig( void )
 }
 
 
-extern append_mode SimGetConfigStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/************************************************************************************************/
+append_mode SimGetConfigStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/*****************************************************************************************/
 {
     return( SimGetConfigStringsFrom( ConfigInfo, i, new_var, buff, buff_len ) );
 }
 
-extern bool SimCheckConfigCondition( int parm )
-/*********************************************/
+bool SimCheckConfigCondition( int parm )
+/**************************************/
 {
     return( EvalCondition( ConfigInfo[parm].condition ) );
 }
@@ -3165,14 +3164,14 @@ int SimNumEnvironment( void )
 }
 
 
-extern append_mode SimGetEnvironmentStrings( int i, const char **new_var, char *buff, size_t buff_len )
-/*****************************************************************************************************/
+append_mode SimGetEnvironmentStrings( int i, const char **new_var, char *buff, size_t buff_len )
+/**********************************************************************************************/
 {
     return( SimGetConfigStringsFrom( EnvironmentInfo, i, new_var, buff, buff_len ) );
 }
 
-extern bool SimCheckEnvironmentCondition( int parm )
-/**************************************************/
+bool SimCheckEnvironmentCondition( int parm )
+/*******************************************/
 {
     return( EvalCondition( EnvironmentInfo[parm].condition ) );
 }
@@ -3189,44 +3188,44 @@ int SimNumAssociations( void )
     return( SetupInfo.associations.num );
 }
 
-extern void SimGetAssociationExt( int parm, char *buff )
-/******************************************************/
+void SimGetAssociationExt( int parm, char *buff )
+/***********************************************/
 {
     strcpy( buff, AssociationInfo[parm].ext );
 }
 
-extern void SimGetAssociationKeyName( int parm, char *buff )
-/**********************************************************/
+void SimGetAssociationKeyName( int parm, char *buff )
+/***************************************************/
 {
     strcpy( buff, AssociationInfo[parm].keyname );
 }
 
-extern void SimGetAssociationProgram( int parm, char *buff )
-/**********************************************************/
+void SimGetAssociationProgram( int parm, char *buff )
+/***************************************************/
 {
     strcpy( buff, AssociationInfo[parm].program );
 }
 
-extern void SimGetAssociationDescription( int parm, char *buff )
-/**************************************************************/
+void SimGetAssociationDescription( int parm, char *buff )
+/*******************************************************/
 {
     strcpy( buff, AssociationInfo[parm].description );
 }
 
-extern int SimGetAssociationIconIndex( int parm )
-/***********************************************/
+int SimGetAssociationIconIndex( int parm )
+/****************************************/
 {
     return( AssociationInfo[parm].icon_index );
 }
 
-extern int SimGetAssociationNoOpen( int parm )
-/********************************************/
+int SimGetAssociationNoOpen( int parm )
+/*************************************/
 {
     return( AssociationInfo[parm].no_open );
 }
 
-extern bool SimCheckAssociationCondition( int parm )
-/**************************************************/
+bool SimCheckAssociationCondition( int parm )
+/*******************************************/
 {
     return( EvalCondition( AssociationInfo[parm].condition ) );
 }
@@ -3243,14 +3242,14 @@ int SimNumLabels( void )
     return( SetupInfo.label.num );
 }
 
-extern void SimGetLabelDir( int parm, char *buff )
-/************************************************/
+void SimGetLabelDir( int parm, char *buff )
+/*****************************************/
 {
     strcpy( buff, LabelInfo[parm].dir );
 }
 
-extern void SimGetLabelLabel( int parm, char *buff )
-/************************************************/
+void SimGetLabelLabel( int parm, char *buff )
+/*******************************************/
 {
     strcpy( buff, LabelInfo[parm].label );
 }
@@ -3268,8 +3267,8 @@ int SimNumUpgrades( void )
     return( SetupInfo.upgrade.num );
 }
 
-extern char *SimGetUpgradeName( int parm )
-/****************************************/
+char *SimGetUpgradeName( int parm )
+/*********************************/
 {
     return( UpgradeInfo[parm].name );
 }
@@ -3280,8 +3279,8 @@ extern char *SimGetUpgradeName( int parm )
  * =======================================================================
  */
 
-extern char *SimGetTargetDriveLetter( int parm )
-/**********************************************/
+char *SimGetTargetDriveLetter( int parm )
+/***************************************/
 {
     char *buff;
     char temp[_MAX_PATH];
@@ -3321,8 +3320,8 @@ static void MarkUsed( int dir_index )
 }
 
 #if defined ( __NT__ )
-extern void CheckDLLCount( char *install_name )
-/*********************************************/
+void CheckDLLCount( char *install_name )
+/**************************************/
 {
     // Takes care of DLL usage counts in the Win95/WinNT registry;
     // removes DLLs if their usage count goes to zero and the user
@@ -3617,6 +3616,7 @@ static bool PatchErrorDialog( PATCH_RET_CODE ret, int i )
 }
 
 
+#if 0
 static bool FindStr( FILE *fp, char *fullpath, char *pattern )
 /************************************************************/
 {
@@ -3663,7 +3663,6 @@ static bool FindStr( FILE *fp, char *fullpath, char *pattern )
     free( buff );
     return( false );
 }
-
 
 bool ReadBlock( char *fullpath, char *pattern, void *block, long blocklen )
 /*************************************************************************/
@@ -3733,7 +3732,7 @@ bool WriteBlock( char *fullpath, char *pattern, void *block, long blocklen )
 
     return( foundstr );
 }
-
+#endif
 
 typedef struct {
     FILE    *log_file;
@@ -3811,8 +3810,8 @@ static int DoPatchFile( const char *src, char *dst, unsigned_32 flag )
 }
 
 
-extern bool PatchFiles( void )
-/****************************/
+bool PatchFiles( void )
+/*********************/
 {
     // this function performs the operations normally done in a batch file
     // (like applyd.bat).  Operations are:  patch file, copy (create) file,
@@ -3962,7 +3961,11 @@ extern bool PatchFiles( void )
             StatusShow( true );
             if( access( destfullpath, F_OK ) != 0 ) {
                 LogWriteMsgStr( log, "IDS_CREATINGDIR", destfullpath );
+#ifdef __UNIX__
+                if( mkdir( destfullpath, PMODE_RWX ) == 0 ) {
+#else
                 if( mkdir( destfullpath ) == 0 ) {
+#endif
                     LogWriteMsg( log, "IDS_SUCCESS" );
                 } else {
                     guiret = MsgBox( NULL, "IDS_CREATEDIRERROR", GUI_YES_NO, destfullpath );
@@ -4375,8 +4378,8 @@ static void FreeAssociationInfo( void )
     }
 }
 
-extern void FreeAllStructs( void )
-/********************************/
+void FreeAllStructs( void )
+/*************************/
 {
     FreeTargetVal();
     FreeDiskInfo();
@@ -4412,14 +4415,14 @@ void SimGetSpawnCommand( char *buff, size_t buff_len, int i )
     ReplaceVars( buff, buff_len, SpawnInfo[i].command );
 }
 
-extern bool SimEvalSpawnCondition( int i )
-/****************************************/
+bool SimEvalSpawnCondition( int i )
+/*********************************/
 {
     return( EvalCondition( SpawnInfo[i].condition ) );
 }
 
-extern when_time SimWhen( int i )
-/*******************************/
+when_time SimWhen( int i )
+/************************/
 {
     return( SpawnInfo[i].when );
 }
