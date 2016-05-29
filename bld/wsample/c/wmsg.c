@@ -36,49 +36,52 @@
 #include <stdarg.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#if defined(__WINDOWS__)
-#include <windows.h>
-#endif
-#include "sample.h"
-#include "smpstuff.h"
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
+#if defined(__WINDOWS__)
+    #include <windows.h>
+#endif
+#include "wio.h"
+#include "sample.h"
+#include "smpstuff.h"
 #include "wreslang.h"
-#if !defined(__WINDOWS__)
 #include "wressetr.h"
 #include "wresset2.h"
-#include "watcom.h"
-#endif
 #include "wmsg.h"
 
 #include "clibext.h"
 
 
-#if !defined(__WINDOWS__)
-#ifndef STDOUT_HANDLE
- #define STDOUT_HANDLE   ((int)1)
-#endif
-#define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
-#endif
+#define NO_RES_MESSAGE  "Error: could not open message resource file.\r\n"
+#define NO_RES_SIZE     (sizeof( NO_RES_MESSAGE ) - 1)
 
-#if defined (__NETWARE__)
-/*
-// process.h exists for netware !!!
-*/
-_WCRTLINK extern char *_cmdname( char *__name );
-#endif
+char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #if !defined(__WINDOWS__)
 static  HANDLE_INFO     hInstance = { 0 };
 #endif
 
-char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
-extern void             Output( char FAR_PTR * );
+static bool MsgReadErrArray( PHANDLE_INFO inst )
+{
+    int         i;
+    char        buffer[128];
+    unsigned    msg_shift;
+
+    msg_shift = _WResLanguage() * MSG_LANG_SPACING;
+    for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
+        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+            if( i == ERR_FIRST_MESSAGE )
+                return( false );
+            buffer[0] = '\0';
+        }
+        MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
+        if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
+            return( false );
+        _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
+    }
+    return( true );
+}
 
 #if !defined(__WINDOWS__)
 
@@ -95,10 +98,8 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int MsgInit( void )
+bool MsgInit( void )
 {
-    int         i;
-    unsigned    msg_shift;
     char        buffer[_MAX_PATH];
 #if defined(_PLS)
     char        *fname;
@@ -119,58 +120,24 @@ int MsgInit( void )
 #endif
         if( hInstance.handle != NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
             if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-                msg_shift = _WResLanguage() * MSG_LANG_SPACING;
-                for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-                    if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
-                        if( i == ERR_FIRST_MESSAGE ) {
-                            break;
-                        }
-                        buffer[0] = '\0';
-                    }
-                    MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-
-                    if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
-                        break;
-#if defined( __I86__ )
-                    _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
-#else
-                    strcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
-#endif
-                }
+                MsgReadErrArray( &hInstance );
                 CloseResFile( &hInstance );
-                return( 1 );
+                return( true );
             }
             CloseResFile( &hInstance );
         }
     }
-    write( STDOUT_HANDLE, NO_RES_MESSAGE, NO_RES_SIZE );
-    return( 0 );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    return( false );
 }
+
 #else
 
-int MsgInit( HANDLE inst );
-
-int MsgInit( HANDLE inst )
+bool MsgInit( HINSTANCE inst )
 {
-    int         i;
-    char        buffer[128];
-    unsigned    msg_shift;
-
-    msg_shift = _WResLanguage() * MSG_LANG_SPACING;
-
-    for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
-            if( i == ERR_FIRST_MESSAGE )
-                return( 0 );
-            buffer[0] = '\0';
-        }
-        MsgArray[i - ERR_FIRST_MESSAGE] = my_alloc( strlen( buffer ) + 1 );
-        if( MsgArray[i - ERR_FIRST_MESSAGE] == NULL )
-            return( 0 );
-        _fstrcpy( MsgArray[i - ERR_FIRST_MESSAGE], buffer );
-    }
-    return( 1 );
+    return( MsgReadErrArray( inst ) );
 }
+
 #endif
 
 void MsgFini( void )

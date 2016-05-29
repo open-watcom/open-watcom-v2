@@ -393,12 +393,15 @@ static bool ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     SendDlgItemMessage( dlg, elt->control, ctl_combo_clr_msg( dlg, elt->control ), 0, 0L );
     for( id = elt->info.combo.start_id; id <= elt->info.combo.end_id; ++id ) {
-
-        LoadString( inst, id, value, sizeof( value ) );
-        value[49] = '\0';
-        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ), 0, (LPARAM)value );
+        int len = LoadString( inst, id, value, sizeof( value ) );
+        if( len < 0 )
+            len = 0;
+        value[len] = '\0';
+        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ),
+                            0, (LPARAM)value );
     }
-    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), choose, 0 );
+    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ),
+                            choose, 0 );
 
     return( true );
 }

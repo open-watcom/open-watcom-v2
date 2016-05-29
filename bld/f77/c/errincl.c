@@ -28,6 +28,7 @@
 *
 ****************************************************************************/
 
+
 #include "ftnstd.h"
 #include "ftextvar.h"
 #include "errincl.h"
@@ -35,12 +36,11 @@
 #include "errrtns.h"
 
 
-const unsigned char __FAR * const __FAR *PGroupTable = GroupTable;
-const char          __FAR *PErrWord = ErrWord;
-
 #define CARET_SHIFT  6
 #define LENGTH_MASK  (1 << CARET_SHIFT) - 1
 
+const unsigned char __FAR * const __FAR *PGroupTable = GroupTable;
+const char          __FAR *PErrWord = ErrWord;
 
 static const unsigned char  __FAR *GetMsg( unsigned int err )
 // Get pointer to message.
@@ -55,7 +55,6 @@ static const unsigned char  __FAR *GetMsg( unsigned int err )
     return( msg );
 }
 
-
 static const char   __FAR *GetWord( unsigned int index )
 // Get pointer to word.
 {
@@ -68,9 +67,9 @@ static const char   __FAR *GetWord( unsigned int index )
     return( word );
 }
 
-
-static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
+static void BldErrMsg( unsigned int err, char *buffer, va_list args )
 // Build error message.
+{
     const char          __FAR *char_ptr;
     const unsigned char __FAR *phrase_ptr;
     char                *buff_start;
@@ -99,11 +98,13 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
         for( ;; ) {
             chr = *char_ptr;
             char_ptr++;
-            if( --len < 0 ) break;
+            if( --len < 0 )
+                break;
             *buffer = chr;
             buffer++;
         }
-        if( word_count == 0 ) break;
+        if( word_count == 0 )
+            break;
 #if _CSET != _KANJI
         *buffer = ' ';
         buffer++;
@@ -113,17 +114,17 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args ) {
     Substitute( buff_start, buff_start, args );
 }
 
-
-static  void    ErrorInit( const char *unused ) {
+static void ErrorInit( const char *unused )
+{
     unused = unused;
 }
 
-
-static  void    ErrorFini( void ) {
+static void ErrorFini( void )
+{
 }
 
-
-void    __InitError( void ) {
+void __InitError( void )
+{
     __ErrorInit = &ErrorInit;
     __ErrorFini = &ErrorFini;
     __BldErrMsg = &BldErrMsg;

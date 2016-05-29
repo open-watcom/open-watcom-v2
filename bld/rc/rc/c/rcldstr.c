@@ -43,8 +43,6 @@
 #include "clibext.h"
 
 
-extern HANDLE_INFO  Instance;
-
 #if defined( INCL_MSGTEXT )
 
 static char *StringTable[] = {
@@ -70,6 +68,8 @@ void FiniRcMsgs( void ) {}
 
 #include "rclayer0.h"
 #include "wreslang.h"
+
+extern HANDLE_INFO  Instance;
 
 static unsigned MsgShift;
 

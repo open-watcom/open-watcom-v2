@@ -39,9 +39,9 @@
 /* No string to be loaded can be more than LDSTR_MAX_STR_LEN bytes long. */
 #define LDSTR_MAX_STR_LEN       500
 
-static char     getStringBuffer[LDSTR_MAX_STR_LEN];
-static char     tmpBuf[LDSTR_MAX_STR_LEN];
-static HANDLE   curInst;
+static char         getStringBuffer[LDSTR_MAX_STR_LEN];
+static char         tmpBuf[LDSTR_MAX_STR_LEN];
+static HINSTANCE    curInst;
 
 /*
  * GetRCString - return a pointer to a string from the resource file
@@ -107,7 +107,7 @@ void FreeRCString( char *str )
 /*
  * SetInstance - set the instance handle used to load resource strings
  */
-void SetInstance( HANDLE inst )
+void SetInstance( HINSTANCE inst )
 {
     curInst = inst;
 

@@ -268,9 +268,7 @@ static void addToolBarItem( tool_item *item )
         info.flags = 0;
     }
     id = getTip( item->name );
-    if( id >= 0 ) {
-        LoadString( InstanceHandle, id, info.tip, MAX_TIP );
-    } else {
+    if( id < 0 || LoadString( InstanceHandle, id, info.tip, MAX_TIP ) <= 0 ) {
         info.tip[0] = '\0';
     }
     info.depressed = false;

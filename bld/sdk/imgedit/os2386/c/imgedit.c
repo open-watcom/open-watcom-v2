@@ -248,7 +248,7 @@ int main( int argc, char *argv[] )
         parseCmdLine( argc, argv );
     }
 
-    while ( WinGetMsg(hab, &qmsg, 0, 0, 0) ) {
+    while( WinGetMsg( hab, &qmsg, 0, 0, 0 ) ) {
         WinDispatchMsg( hab, &qmsg );
     }
 

@@ -29,5 +29,4 @@
 ****************************************************************************/
 
 
-extern int     LoadMsg( unsigned int msg, char *buffer, int buff_size );
 extern void    __InitResource( void );
