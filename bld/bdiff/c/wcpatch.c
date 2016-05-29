@@ -34,11 +34,10 @@
 #include "wpatchio.h"
 #include "wpatch.h"
 #include "newfile.h"
+#include "msg.h"
 
 #include "clibext.h"
 
-
-#define FALSE 0
 
 struct {
     size_t  origSrcDirLen;
@@ -54,6 +53,7 @@ void    DirCmpFiles( const char *srcDir, char *srcFiles[], const char *tgtDir, c
 
 void main( int argc, char *argv[] )
 {
+    MsgInit();
     if( argc != 4 ) {
         printf( "Usage: WCPATCH source-dir target-dir patchfile\n" );
         printf( "where source-dir is the directory containing the original files,\n" );
@@ -69,6 +69,7 @@ void main( int argc, char *argv[] )
     glob.origSrcDirLen = strlen( argv[1] );
     glob.origTgtDirLen = strlen( argv[2] );
     WPatchCreate( argv[1], argv[2], argv[3] );
+    MsgFini();
 }
 
 void WPatchCreate( const char *SrcDirName, const char *TgtDirName, const char *patch_name )

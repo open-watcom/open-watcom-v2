@@ -33,6 +33,7 @@
 #include "bdiff.h"
 #include "diff.h"
 #include "wpatch.h"
+#include "msg.h"
 
 
 byte    *PatchFile;
