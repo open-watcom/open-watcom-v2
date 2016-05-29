@@ -39,7 +39,7 @@
 /************************************************************************
  * SetInstance - must be called before any other routine in this file
  ***********************************************************************/
-void        SetInstance( HANDLE inst );
+void        SetInstance( HINSTANCE inst );
 char        *AllocRCString( msg_id id );
 void        FreeRCString( char *str );
 const char  *GetRCString( msg_id msgid );
