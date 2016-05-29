@@ -34,7 +34,6 @@
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "wstrip.h"
@@ -76,7 +75,7 @@ bool Msg_Fini( void )
 #include "wreslang.h"
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
@@ -160,11 +159,11 @@ static void Outc( char c )
 
 void Banner( void )
 {
-    Outs( 1, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
-    Outs( 1, banner2 );
-    Outs( 1, banner2a( "1988" ) );
-    Outs( 1, banner3 );
-    Outs( 1, banner3a );
+    Outs( true, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
+    Outs( true, banner2 );
+    Outs( true, banner2a( "1988" ) );
+    Outs( true, banner3 );
+    Outs( true, banner3a );
 }
 
 void Usage( void )
@@ -174,7 +173,7 @@ void Usage( void )
 
     for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
         Msg_Get( i, msg_buffer );
-        Outs( 1, msg_buffer );
+        Outs( true, msg_buffer );
     }
     Msg_Fini();
     exit( -1 );
@@ -184,24 +183,23 @@ void Fatal( int reason, const char *insert )
 /* the reason doesn't have to be good */
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         i = 0;
+    size_t      i;
 
     Msg_Get( reason, msg_buffer );
-    while( msg_buffer[i] != '\0' ) {
+    for( i = 0; msg_buffer[i] != '\0'; ++i ) {
         if( msg_buffer[i] == '%' ) {
-            if( msg_buffer[i+1] == 's' ) {
-                Outs( 0, insert );
-            } else {
-                Outc( msg_buffer[i+1] );
-            }
             i++;
+            if( msg_buffer[i] == 's' ) {
+                Outs( false, insert );
+            } else {
+                Outc( msg_buffer[i] );
+            }
         } else {
             Outc( msg_buffer[i] );
         }
-        i++;
     }
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
-    Outs( 1, msg_buffer );
+    Outs( true, msg_buffer );
     Msg_Fini();
     exit( -1 );
 }
