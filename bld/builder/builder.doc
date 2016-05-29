@@ -204,6 +204,9 @@ THen command is not interpreted by builder and is passed to the host system.
         Command Line Options
         --------------------
 
+First builder is searching for BUILDER_OPT environment variable and process 
+content as command line. Next process true command line.
+
 The following command line options are recognized:
 
         -c ctl_file
