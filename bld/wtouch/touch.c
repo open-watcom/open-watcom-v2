@@ -45,12 +45,15 @@
 #include <direct.h>
 #include <sys/utime.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "touch.h"
 #include "wtmsg.h"
+
 #include "clibext.h"
+
 
 extern touchflags   TouchFlags;
 extern timestruct   TimeAdjust;
@@ -425,7 +428,7 @@ static int doTouchFile( char *full_name, struct dirent *ndir,
     return 0;
 }
 
-    
+
 static void doTouch( void )
 /*************************/
 {
@@ -466,22 +469,22 @@ static void doTouch( void )
         // it more palatable if required.
         // the splitpath will nuke the dot instead of the last part of
         // the directory
-        if( 
-        #ifndef __UNIX__
-            ( item[len - 1] == '\\' ) ||
-        #endif
-            ( item[len - 1] == '/' ) ) {
+#ifdef __UNIX__
+        if( item[len - 1] == '/' ) {
+#else
+        if( item[len - 1] == '\\' || item[len - 1] == '/' ) {
+#endif
             strcpy( dir_name, item );
             dir_name[len] = '.';
             dir_name[len + 1] = '\0';
             item = dir_name;
         } else if( ( strpbrk( item, "*?" ) == NULL ) && !stat( item, &sb ) && S_ISDIR( sb.st_mode ) ) {
             strcpy( dir_name, item );
-        #ifdef __UNIX__
+#ifdef __UNIX__
             dir_name[len] = '/';
-        #else
+#else
             dir_name[len] = '\\';
-        #endif
+#endif
             dir_name[len + 1] = '.';
             dir_name[len + 2] = '\0';
             item = dir_name;
@@ -528,7 +531,7 @@ static void doTouch( void )
                             if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
                         #else
                             if( ndir->d_attr & _A_SUBDIR ) {
-                                            
+
                                 _makepath( full_name, drive, dir, ndir->d_name, NULL );
                         #endif
                                 insertFileSpec( strdup(full_name), curr );
@@ -574,7 +577,7 @@ static void doTouch( void )
 int main( int argc, char **argv )
 /*******************************/
 {
-    if( !MsgInit() ) 
+    if( !MsgInit() )
         return( 1 );
     if( !processOptions( argc, argv ) )
         return( 1 );

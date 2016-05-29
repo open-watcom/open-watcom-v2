@@ -34,11 +34,14 @@
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
+
 #include "clibext.h"
+
 
 #define RESOURCE_MAX_SIZE       128
 
@@ -49,20 +52,21 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-int Msg_Init( void )
+
+bool Msg_Init( void )
 {
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
-static int Msg_Get( int resourceid, char *buffer )
+static bool Msg_Get( int resourceid, char *buffer )
 {
     strcpy( buffer, StringTable[resourceid] );
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
-int Msg_Fini( void )
+bool Msg_Fini( void )
 {
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
 #else
@@ -141,10 +145,12 @@ bool Msg_Fini( void )
 
 #endif
 
-static void Outs( int nl, char *s )
+static void Outs( bool nl, const char *s )
 {
     write( STDOUT_FILENO, s, strlen( s ) );
-    if( nl ) write( STDOUT_FILENO, "\r\n", 2 );
+    if( nl ) {
+        write( STDOUT_FILENO, "\r\n", 2 );
+    }
 }
 
 static void Outc( char c )
@@ -174,7 +180,7 @@ void Usage( void )
     exit( -1 );
 }
 
-void Fatal( int reason, char *insert )
+void Fatal( int reason, const char *insert )
 /* the reason doesn't have to be good */
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];

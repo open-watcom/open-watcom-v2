@@ -41,6 +41,7 @@
 #else
 #include <sys/utime.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "sopen.h"
 #include "machtype.h"
@@ -117,7 +118,7 @@ static int res = 0;
 static unsigned bufsize;
 
 
-static void FatalDelTmp( int reason, char *insert )
+static void FatalDelTmp( int reason, const char *insert )
 {
     Fatal( reason, insert );
 }

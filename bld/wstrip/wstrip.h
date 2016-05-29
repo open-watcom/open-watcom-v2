@@ -34,8 +34,8 @@
 
 #define MSG_LANG_SPACING    1000
 
-extern void    Fatal( int, char * );
-extern int     Msg_Init( void );
-extern int     Msg_Fini( void );
+extern void    Fatal( int, const char * );
+extern bool    Msg_Init( void );
+extern bool    Msg_Fini( void );
 extern void    Usage( void );
 extern void    Banner( void );

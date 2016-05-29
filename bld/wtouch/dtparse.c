@@ -57,6 +57,7 @@
 #include <sys/utime.h>
 #include "tinyio.h"
 #endif
+#include "bool.h"
 #include "touch.h"
 #include "wtmsg.h"
 

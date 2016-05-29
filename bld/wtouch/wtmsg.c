@@ -37,12 +37,13 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
-#include "wio.h"
 #include "bool.h"
+#include "wio.h"
 #include "wtmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+
 #include "clibext.h"
 
 

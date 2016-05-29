@@ -75,7 +75,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 
 bool InitMsg( void )
 {
-    char        buff[_MAX_PATH];
+    char        msg_buff[RESOURCE_MAX_SIZE];
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
 #else
@@ -95,7 +95,7 @@ bool InitMsg( void )
         res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( Msg_Get( MSG_GENERAL_HELP_0, buff ) ) {
+            if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
                 return( true );
             }
         }
