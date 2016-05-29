@@ -7,8 +7,8 @@ if [ ! -f $OWBINDIR/builder ]; then
     echo Cannot find builder - did you run build.sh?
 else
     cd $OWSRCDIR
-    builder $OWBUILDEROPTS -i clean
-    builder $OWBUILDEROPTS -i bootclean
+    builder -i clean
+    builder -i bootclean
 fi
 # Delete the builder and wmake build directories
 if [ -d $OWSRCDIR/builder/$OWOBJDIR ]; then rm -rf $OWSRCDIR/builder/$OWOBJDIR; fi
