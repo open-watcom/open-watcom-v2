@@ -282,7 +282,7 @@ BOOL FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
     char        buf[40];
     char        *end;
     char        *last;
-    char        *str;
+    const char  *str;
 
     switch( msg ) {
     case WM_INITDIALOG:

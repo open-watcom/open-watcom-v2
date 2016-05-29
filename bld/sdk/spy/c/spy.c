@@ -151,7 +151,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
     MSG         msg;
 #ifdef __NT__
     HWND        prev_hwnd;
-    char        *errstr;
+    const char  *errstr;
 #endif
 
     cmdline = cmdline;

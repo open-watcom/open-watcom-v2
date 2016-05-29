@@ -620,7 +620,7 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     DWORD       exstyle;
     char        tmp[40];
     int         len;
-    char        *rcstr;
+    const char  *rcstr;
     int         i;
     int         j;
 
@@ -745,7 +745,7 @@ void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
 void SetSpyState( spystate ss )
 {
     char        str[130];
-    char        *rcstr;
+    const char  *rcstr;
     int         len;
 
     SpyState = ss;

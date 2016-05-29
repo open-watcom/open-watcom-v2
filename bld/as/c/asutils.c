@@ -61,9 +61,9 @@ char            AsResBuffer[ MAX_RESOURCE_SIZE ];
 
 static unsigned numErrors, numWarnings;
 
-extern void Banner( void ) {
-//**************************
-
+void Banner( void )
+//*****************
+{
     static bool printed = false;
 
     if( _IsOption( BE_QUIET ) || printed )
@@ -84,9 +84,9 @@ extern void Banner( void ) {
     printed = true;
 }
 
-extern void Usage( void ) {
-//*************************
-
+void Usage( void )
+//****************
+{
     int         ctr;
 
     for( ctr = USAGE_1; ctr <= USAGE_LAST; ++ctr ) {
@@ -95,10 +95,10 @@ extern void Usage( void ) {
     }
 }
 
-extern void AsOutMessage( FILE *fp, int resource_id, ... ) {
-//**********************************************************
+void AsOutMessage( FILE *fp, int resource_id, ... )
+//*************************************************
 // Simply stuffs out the message. No header added.
-
+{
     va_list     arglist;
 
     va_start( arglist, resource_id );
@@ -137,18 +137,18 @@ static void outMsg( FILE *fp, msg_type mtype, int resource_id, va_list *arglist 
     }
 }
 
-static void abortMsg( void ) {
-//****************************
-
+static void abortMsg( void )
+//**************************
+{
     outMsg( stderr, MSG_ERROR, ABORT_PARSE, NULL );
     if( ErrorFile ) {
         outMsg( ErrorFile, MSG_ERROR, ABORT_PARSE, NULL );
     }
 }
 
-extern void AsError( int resource_id, ... ) {
-//*******************************************
-
+void AsError( int resource_id, ... )
+//**********************************
+{
     va_list     arglist;
 
     va_start( arglist, resource_id );
@@ -166,9 +166,9 @@ extern void AsError( int resource_id, ... ) {
     }
 }
 
-extern void AsWarning( int resource_id, ... ) {
-//*********************************************
-
+void AsWarning( int resource_id, ... )
+//************************************
+{
     va_list     arglist;
 
     va_start( arglist, resource_id );
@@ -182,42 +182,44 @@ extern void AsWarning( int resource_id, ... ) {
     numWarnings++;
 }
 
-extern bool ErrorsExceeding( unsigned count ) {
-//*********************************************
-
+bool ErrorsExceeding( unsigned count )
+//************************************
+{
     return( numErrors > count );
 }
 
-extern bool WarningsExceeding( unsigned count ) {
-//***********************************************
-
+bool WarningsExceeding( unsigned count )
+//**************************************
+{
     return( numWarnings > count );
 }
 
-extern void ErrorReport( void ) {
-//*******************************
-
-    if( !DoReport ) return;
-    if( _IsOption( BE_QUIET ) ) return;
+void ErrorReport( void )
+//**********************
+{
+    if( !DoReport )
+        return;
+    if( _IsOption( BE_QUIET ) )
+        return;
     AsMsgGet( AS_ERROR_REPORT, AsResBuffer );
     printf( AsResBuffer, CurrFilename, CurrLineno, numWarnings, numErrors );
 }
 
-extern void ErrorCountsReset( void ) {
-//************************************
-
+void ErrorCountsReset( void )
+//***************************
+{
     numErrors = numWarnings = 0;
 }
 
-extern void AbortParse( void ) {
-//******************************
-
+void AbortParse( void )
+//*********************
+{
     longjmp( AsmParse, 1 );
 }
 
-extern char *MakeAsmFilename( const char *orig_name ) {
-//*****************************************************
-
+char *MakeAsmFilename( const char *orig_name )
+//********************************************
+{
     static char ret[ _MAX_PATH ];
     char        default_ext[] = "asm";
     char        drive[ _MAX_DRIVE ];
@@ -237,12 +239,13 @@ extern char *MakeAsmFilename( const char *orig_name ) {
 }
 
 #ifdef AS_DEBUG_DUMP
-extern void DebugPrintf( char *fmt, ... ) {
-//*****************************************
-
+void DebugPrintf( char *fmt, ... )
+//********************************
+{
     va_list     args;
 
-    if( !_IsOption( DUMP_DEBUG_MSGS ) ) return;
+    if( !_IsOption( DUMP_DEBUG_MSGS ) )
+        return;
     va_start( args, fmt );
     vprintf( fmt, args );
     va_end( args );
@@ -254,8 +257,8 @@ extern void DebugPrintf( char *fmt, ... ) {
 
 char        AsResBuffer[ MAX_RESOURCE_SIZE ];
 
-extern void AsError( int resource_id, ... )
-//*****************************************
+void AsError( int resource_id, ... )
+//**********************************
 {
     va_list     arglist;
     char        msg[ MAX_RESOURCE_SIZE ];
@@ -267,8 +270,8 @@ extern void AsError( int resource_id, ... )
     AsmError( msg );    // CC provides this
 }
 
-extern void AsWarning( int resource_id, ... )
-//*******************************************
+void AsWarning( int resource_id, ... )
+//************************************
 {
     va_list     arglist;
     char        msg[ MAX_RESOURCE_SIZE ];
@@ -284,9 +287,9 @@ extern void AsWarning( int resource_id, ... )
 
 // Functions common to both inline and standalone assemblers.
 
-extern char *AsStrdup( const char *str ) {
-//****************************************
-
+char *AsStrdup( const char *str )
+//*******************************
+{
     char    *mem;
     size_t  len;
 

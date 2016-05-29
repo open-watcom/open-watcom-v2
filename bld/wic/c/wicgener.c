@@ -47,10 +47,11 @@
     #include "trmem.h"
 #endif
 
-static int _fileNum = 0;
+static int      _fileNum = 0;
 static unsigned MsgShift = 0;
+static bool     res_failure = true;
 
-static void reportBadHeap(int retval);
+static void reportBadHeap( int retval );
 
 /*Forward declarations */
 void incDebugCount(void);
@@ -87,6 +88,7 @@ void initWicResources( char * fname )
     hInstance.filename = fname;
     hInstance.handle = open( hInstance.filename, O_RDONLY | O_BINARY );
     if( hInstance.handle != NIL_HANDLE ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             return;
@@ -95,17 +97,17 @@ void initWicResources( char * fname )
         hInstance.handle = NIL_HANDLE;
     }
     fprintf( stderr, "Internal error: Cannot open resources" );
+    res_failure = true;
     wicExit(-1);
 }
 
-int getResStr( int resourceid, char *buffer )
+bool getResStr( int resourceid, char *buffer )
 {
-    if ( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) != 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = 0;
-        return 0;
-    } else {
-        return 1;
+        return( false );
     }
+    return( true );
 }
 
 void zapWicResources(void)

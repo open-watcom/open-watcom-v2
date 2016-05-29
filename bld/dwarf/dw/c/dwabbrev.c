@@ -130,7 +130,7 @@ unsigned MarkAbbrevAsUsed( dw_client cli, abbrev_code *abbrev )
     if( *abbrev & AB_SIBLING ) {
         buf[0] = DW_CHILDREN_yes;
         CLIWrite( DW_DEBUG_ABBREV, buf, 1 );
-        CLIWrite( DW_DEBUG_ABBREV, sibling_attr, sizeof(sibling_attr) );
+        CLIWrite( DW_DEBUG_ABBREV, sibling_attr, sizeof( sibling_attr ) );
     } else {
         buf[0] = DW_CHILDREN_no;
         CLIWrite( DW_DEBUG_ABBREV, buf, 1 );

@@ -194,7 +194,7 @@ BOOL FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     char        buf[256];
     DWORD       amt;
-    char        *str;
+    const char  *str;
 
     switch( msg ) {
     case WM_INITDIALOG:

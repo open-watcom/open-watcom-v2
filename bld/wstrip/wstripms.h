@@ -24,19 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  message processing related declaration
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#define MAX_RESOURCE_SIZE   80
+#include "msg.gh"
 
-extern bool MsgInit( void );
-extern void MsgFini( void );
-extern bool GetMsg( char *, int );
-extern void MsgPrintf( int resourceid, va_list arglist );
-extern void Message( int format, ... );
-extern void PatchError( int format, ... );
-extern void FilePatchError( int format, ... );
-extern void FileCheck( FILE *fd, const char *name );
-extern void SeekCheck( int rc, const char *name );
+#define MSG_LANG_SPACING    1000

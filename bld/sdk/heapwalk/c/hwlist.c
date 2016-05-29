@@ -45,11 +45,12 @@ typedef struct glb_state{
     BOOL                sel_valid;
 }GlobStateStruct;
 
-static char             *gbl_types[ 11 ];
-static char             *res_types[ 15 ];
+static const char       *gbl_types[ 11 ];
+static const char       *res_types[ 15 ];
 static char             Buffer[100];
 
-void InitListStrTables( void ) {
+void InitListStrTables( void )
+{
     gbl_types[ 0 ] = HWGetRCString( STR_MC_UNKNOWN );
     gbl_types[ 1 ] = HWGetRCString( STR_DGROUP );
     gbl_types[ 2 ] = HWGetRCString( STR_DATA );
@@ -120,21 +121,23 @@ int SortByGlobType( heap_list **p1, heap_list **p2 )
                     ret = t1 - t2;
                 }
             } else if( tmp == GT_RESOURCE ) {
-                if( t1 >= (sizeof( res_types ) /sizeof( char *) ) ) {
-                    ret = strcmp( HWGetRCString( STR_LOWER_UNKNOWN ),
-                                  res_types[t2] );
-                } else if( t2 >= (sizeof( res_types ) /sizeof( char *) ) ) {
-                    ret = strcmp(  res_types[t1],
-                                   HWGetRCString( STR_LOWER_UNKNOWN ) );
-                } else ret = strcmp( res_types[t1], res_types[t2] );
+                if( t1 >= ( sizeof( res_types ) / sizeof( char * ) ) ) {
+                    ret = strcmp( HWGetRCString( STR_LOWER_UNKNOWN ), res_types[t2] );
+                } else if( t2 >= ( sizeof( res_types ) / sizeof( char * ) ) ) {
+                    ret = strcmp(  res_types[t1], HWGetRCString( STR_LOWER_UNKNOWN ) );
+                } else {
+                    ret = strcmp( res_types[t1], res_types[t2] );
+                }
             }
         }
         return( ret );
     } else {
         t1 = (*p1)->info.mem.desc.type;
         t2 = (*p2)->info.mem.desc.type;
-        if( t1 == t2 ) return( 0 );
-        if( t1 == 2 ) return( 1 );
+        if( t1 == t2 )
+            return( 0 );
+        if( t1 == 2 )
+            return( 1 );
         return( -1 );
     }
 } /* SortByType */
@@ -270,8 +273,8 @@ BOOL FormatHeapListItem( char *line, unsigned index )
             sprintf( type,"%s(%d)", gbl_types[GT_CODE], hl->info.ge.wData );
         } else if( hl->info.ge.wType == GT_RESOURCE ) {
             sprintf( type,"%s(%s)", gbl_types[GT_RESOURCE],
-                   (hl->info.ge.wData < (sizeof( res_types ) /sizeof( char *))) ?
-                    res_types[ hl->info.ge.wData ]: HWGetRCString( STR_LOWER_UNKNOWN ) );
+                   (hl->info.ge.wData < ( sizeof( res_types ) / sizeof( char * ) )) ?
+                    res_types[ hl->info.ge.wData ] : HWGetRCString( STR_LOWER_UNKNOWN ) );
         } else {
             strcpy( type,gbl_types[hl->info.ge.wType] );
         }

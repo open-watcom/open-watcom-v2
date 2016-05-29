@@ -250,7 +250,7 @@ static void relToAbs( char *path, char *out )
 /*
  * ReportSave
  */
-void ReportSave( HWND parent, char *fname, char *appname, bool save_ok )
+void ReportSave( HWND parent, char *fname, const char *appname, bool save_ok )
 {
     char        ful_fname[_MAX_PATH];
     char        buf[_MAX_PATH + 20];
@@ -270,7 +270,7 @@ void ReportSave( HWND parent, char *fname, char *appname, bool save_ok )
  * SaveListBox - save out a list box
  */
 void SaveListBox( int how, void (*writefn)( FILE * ), char *tmpname,
-                  char *appname, HWND mainhwnd, HWND listbox )
+                  const char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
     bool        ret;

@@ -73,7 +73,7 @@ void LogHeader( FILE *f )
 void DumpHeader( FILE *fptr )
 {
     time_t      tm;
-    char        *str;
+    const char  *str;
 
     tm = time( NULL );
     str = GetRCString( STR_EVENT_LIST_LINE );

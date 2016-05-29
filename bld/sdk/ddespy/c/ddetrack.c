@@ -1017,7 +1017,7 @@ LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     void                        **ptr;
     RECT                        area;
     WORD                        cmd;
-    char                        *wintitle;
+    const char                  *wintitle;
 
     info = (DDETrackInfo *)GET_WNDINFO( hwnd );
     switch( msg ) {

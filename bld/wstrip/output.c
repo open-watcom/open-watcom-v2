@@ -38,7 +38,9 @@
 #include "watcom.h"
 #include "wstrip.h"
 #include "banner.h"
+
 #include "clibext.h"
+
 
 #define RESOURCE_MAX_SIZE       128
 
@@ -49,20 +51,21 @@ static char *StringTable[] = {
     #include "incltext.gh"
 };
 
-int Msg_Init( void )
+
+bool Msg_Init( void )
 {
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
-static int Msg_Get( int resourceid, char *buffer )
+static bool Msg_Get( int resourceid, char *buffer )
 {
     strcpy( buffer, StringTable[resourceid] );
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
-int Msg_Fini( void )
+bool Msg_Fini( void )
 {
-    return( EXIT_SUCCESS );
+    return( true );
 }
 
 #else
@@ -72,11 +75,11 @@ int Msg_Fini( void )
 #include "wreslang.h"
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  int             Res_Flag;
 static  unsigned        MsgShift;
+static  bool            res_failure = true;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -93,46 +96,46 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 /* declare struct WResRoutines WResRtns {...} */
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-static int Msg_Get( int resourceid, char *buffer )
+static bool Msg_Get( int resourceid, char *buffer )
 {
-    if ( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) != 0 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 }
 
 
-int Msg_Init( void )
+bool Msg_Init( void )
 {
     char        name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
-                Res_Flag = EXIT_SUCCESS;
-                return( Res_Flag );
+                return( true );
             }
         }
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
-    Res_Flag = EXIT_FAILURE;
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    return Res_Flag;
+    res_failure = true;
+    return( false );
 }
 
 
-int Msg_Fini( void )
+bool Msg_Fini( void )
 {
-    int     retcode = EXIT_SUCCESS;
+    bool    retcode = true;
 
-    if( Res_Flag == EXIT_SUCCESS ) {
+    if( !res_failure ) {
         if ( CloseResFile( &hInstance ) ) {
-            Res_Flag = EXIT_FAILURE;
-            retcode = EXIT_FAILURE;
+            res_failure = true;
+            retcode = false;
         }
         hInstance.handle = NIL_HANDLE;
     }
@@ -141,10 +144,12 @@ int Msg_Fini( void )
 
 #endif
 
-static void Outs( int nl, char *s )
+static void Outs( bool nl, const char *s )
 {
     write( STDOUT_FILENO, s, strlen( s ) );
-    if( nl ) write( STDOUT_FILENO, "\r\n", 2 );
+    if( nl ) {
+        write( STDOUT_FILENO, "\r\n", 2 );
+    }
 }
 
 static void Outc( char c )
@@ -154,11 +159,11 @@ static void Outc( char c )
 
 void Banner( void )
 {
-    Outs( 1, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
-    Outs( 1, banner2 );
-    Outs( 1, banner2a( "1988" ) );
-    Outs( 1, banner3 );
-    Outs( 1, banner3a );
+    Outs( true, banner1w( "Executable Strip Utility", _WSTRIP_VERSION_ ) );
+    Outs( true, banner2 );
+    Outs( true, banner2a( "1988" ) );
+    Outs( true, banner3 );
+    Outs( true, banner3a );
 }
 
 void Usage( void )
@@ -168,34 +173,33 @@ void Usage( void )
 
     for( i = MSG_USAGE_FIRST; i <= MSG_USAGE_LAST; i++ ) {
         Msg_Get( i, msg_buffer );
-        Outs( 1, msg_buffer );
+        Outs( true, msg_buffer );
     }
     Msg_Fini();
     exit( -1 );
 }
 
-void Fatal( int reason, char *insert )
+void Fatal( int reason, const char *insert )
 /* the reason doesn't have to be good */
 {
     char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         i = 0;
+    size_t      i;
 
     Msg_Get( reason, msg_buffer );
-    while( msg_buffer[i] != '\0' ) {
+    for( i = 0; msg_buffer[i] != '\0'; ++i ) {
         if( msg_buffer[i] == '%' ) {
-            if( msg_buffer[i+1] == 's' ) {
-                Outs( 0, insert );
-            } else {
-                Outc( msg_buffer[i+1] );
-            }
             i++;
+            if( msg_buffer[i] == 's' ) {
+                Outs( false, insert );
+            } else {
+                Outc( msg_buffer[i] );
+            }
         } else {
             Outc( msg_buffer[i] );
         }
-        i++;
     }
     Msg_Get( MSG_WSTRIP_ABORT, msg_buffer );
-    Outs( 1, msg_buffer );
+    Outs( true, msg_buffer );
     Msg_Fini();
     exit( -1 );
 }

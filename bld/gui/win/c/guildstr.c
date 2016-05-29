@@ -91,7 +91,7 @@ bool GUILoadStrFini( void )
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
     if( buffer != NULL && buffer_length != 0 ) {
-        if( _wpi_loadstring( GUIResHInst, id, (LPSTR)buffer, buffer_length ) != 0 ) {
+        if( _wpi_loadstring( GUIResHInst, id, (LPSTR)buffer, buffer_length ) > 0 ) {
             return( true );
         } else {
             buffer[0] = '\0';

@@ -107,7 +107,7 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    if( LoadString( WRGetInstance(), resid, buff, buff_len ) != 0 ) {
+    if( LoadString( WRGetInstance(), resid, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }

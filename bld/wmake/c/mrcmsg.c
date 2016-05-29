@@ -85,9 +85,10 @@ static  TABLE_TYPE  PARA_TABLE[] = {
 
 static  HANDLE_INFO hInstance = { 0 };
 static  unsigned    MsgShift;
+static  BOOLEAN     res_failure = TRUE;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
@@ -108,32 +109,34 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 #endif
 
-int MsgInit( void )
-/*****************/
+BOOLEAN MsgInit( void )
+/*********************/
 {
 #ifndef BOOTSTRAP
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = FALSE;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( MsgGet( MSG_USAGE_BASE, name ) ) {
-                return( 1 );
+                return( TRUE );
             }
         }
+        MsgFini();
     }
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    MsgFini();
-    return( 0 );
+    res_failure = TRUE;
+    return( FALSE );
 #else    
-    return( 1 );
+    return( TRUE );
 #endif
 }
 
 
-int MsgGet( int resourceid, char *buffer )
-/***********************************************/
+BOOLEAN MsgGet( int resourceid, char *buffer )
+/********************************************/
 {
 #ifdef BOOTSTRAP
     {
@@ -149,12 +152,12 @@ int MsgGet( int resourceid, char *buffer )
         strcpy( buffer, s->s );
     }
 #else
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( FALSE );
     }
 #endif
-    return( 1 );
+    return( TRUE );
 }
 
 void MsgGetTail( int resourceid, char *buffer )
@@ -201,25 +204,25 @@ static char *msgInTable( int resourceid )
 }
 
 
-int MsgReOrder( int resourceid, char *buff, char **paratype )
-/******************************************************************/
+BOOLEAN MsgReOrder( int resourceid, char *buff, char **paratype )
+/***************************************************************/
 {
-    int rvalue = 0;
+    BOOLEAN rvalue = FALSE;
 
     MsgGet( resourceid, buff );
     *paratype = msgInTable( resourceid );
     if( *paratype != NULL ) {
         buff = strchr( buff, '%' );
         while( buff != NULL ) {
-            if( *(buff+1) == '%' ) {
+            if( *(buff + 1) == '%' ) {
                 buff++;
-            } else if( *(buff+1) == **paratype ) {
+            } else if( *(buff + 1) == **paratype ) {
                 break;
-            } else if( *(buff+1) == *(*paratype+1) ) {
-                rvalue = 1;
+            } else if( *(buff + 1) == *(*paratype + 1) ) {
+                rvalue = TRUE;
                 break;
             }
-            buff = strchr( (buff+1), '%' );
+            buff = strchr( (buff + 1), '%' );
         }
     }
     return( rvalue );

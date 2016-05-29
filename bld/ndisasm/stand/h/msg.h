@@ -41,8 +41,8 @@
 
 #define MAX_RESOURCE_SIZE   128
 
-extern int MsgInit( void );
-extern int MsgGet( int, char * );
+extern bool MsgInit( void );
+extern bool MsgGet( int, char * );
 extern void MsgFini( void );
 
 #endif

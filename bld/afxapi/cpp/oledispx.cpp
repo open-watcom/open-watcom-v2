@@ -71,8 +71,7 @@ void AFXAPI AfxThrowOleDispatchException( WORD wCode, UINT nDescriptionID, UINT 
 /***************************************************************************************/
 {
     TCHAR szDescription[1024];
-    HINSTANCE hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nDescriptionID ),
-                                                 RT_STRING );
+    HINSTANCE hInstance = AfxFindResourceHandle( MAKEINTRESOURCE( nDescriptionID ), RT_STRING );
     ::LoadString( hInstance, nDescriptionID, szDescription, 1024 );
     throw new COleDispatchException( szDescription, nHelpID, wCode );
 }

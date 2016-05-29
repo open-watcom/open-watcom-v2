@@ -39,18 +39,18 @@
 /************************************************************************
  * SetInstance - must be called before any other routine in this file
  ***********************************************************************/
-void    SetInstance( HANDLE inst );
-char    *AllocRCString( msg_id id );
-void    FreeRCString( char *str );
-char    *GetRCString( msg_id msgid );
-int     CopyRCString( msg_id id, char *buf, int bufsize );
+void        SetInstance( HANDLE inst );
+char        *AllocRCString( msg_id id );
+void        FreeRCString( char *str );
+const char  *GetRCString( msg_id msgid );
+int         CopyRCString( msg_id id, char *buf, int bufsize );
 
 /*
  * All functions below this point obtain strings using AllocRCString and
  * FreeRCString
  */
 
-int     RCMessageBox( HWND hwnd , msg_id msgid, char *title, UINT type );
+int     RCMessageBox( HWND hwnd , msg_id msgid, const char *title, UINT type );
 void    RCfprintf( FILE *fp, msg_id strid, ...  );
 int     RCsprintf( char *buf, msg_id fmtid, ... );
 void    RCvfprintf( FILE *fp, msg_id strid, va_list al );

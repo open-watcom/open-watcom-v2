@@ -47,10 +47,10 @@
 #define STDOUT_FILENO   1
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  int             Res_Flag;
+static  bool            res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
+#define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 
 static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
@@ -66,43 +66,41 @@ static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int w
 
 WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 
-int MsgInit( char *fname )
-/************************/
+bool MsgInit( char *fname )
+/*************************/
 {
     hInstance.handle = NIL_HANDLE;
     if( !OpenResFile( &hInstance, fname ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            Res_Flag = EXIT_SUCCESS;
-            return( Res_Flag );
+            return( true );
         }
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
-    Res_Flag = EXIT_FAILURE;
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    return( Res_Flag );
+    res_failure = true;
+    return( false );
 }
 
 void MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( LoadString( &hInstance, resourceid,
-        (LPSTR) buffer, MAX_RESOURCE_SIZE ) == 0 ) {
-    } else {
+    if( res_failure || LoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }
 
-int MsgFini( void )
-/*****************/
+bool MsgFini( void )
+/******************/
 {
-    int     retcode = EXIT_SUCCESS;
+    bool    retcode = true;
 
-    if( Res_Flag == EXIT_SUCCESS ) {
+    if( !res_failure ) {
         if ( CloseResFile( &hInstance ) ) {
-            Res_Flag = EXIT_FAILURE;
-            retcode = EXIT_FAILURE;
+            res_failure = true;
+            retcode = false;
         }
     }
-    return retcode;
+    return( retcode );
 }

@@ -48,7 +48,7 @@ LPWDATA _GetWindowData( HWND hwnd )
 {
     int i;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         if( _MainWindowData->windows[i]->hwnd == hwnd ) {
             return( _MainWindowData->windows[i] );
         }
@@ -64,7 +64,7 @@ LPWDATA _GetActiveWindowData( void )
 {
     int i;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         if( _MainWindowData->windows[i]->active ) {
             return( _MainWindowData->windows[i] );
         }
@@ -81,7 +81,7 @@ void _MakeWindowActive( LPWDATA w )
     int         i;
     LPWDATA     last=NULL;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         if( _MainWindowData->windows[i]->active ) {
             last = _MainWindowData->windows[i];
             last->active = FALSE;
@@ -89,7 +89,8 @@ void _MakeWindowActive( LPWDATA w )
         }
     }
     w->active = TRUE;
-    if( last == w ) last = NULL;
+    if( last == w )
+        last = NULL;
     _ShowWindowActive( w, last );
 
 } /* _MakeWindowActive */
@@ -102,10 +103,12 @@ LPWDATA _IsWindowedHandle( int handle )
     int         i,j;
     LPWDATA     w;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         w = _MainWindowData->windows[i];
-        for( j=0;j<w->handle_cnt;j++ ) {
-            if( handle == w->handles[j] ) return( w );
+        for( j = 0; j < w->handle_cnt; j++ ) {
+            if( handle == w->handles[j] ) {
+                return( w );
+            }
         }
     }
     return( NULL );
@@ -120,13 +123,13 @@ void _RemoveWindowedHandle( int handle )
     int         i,j,k;
     LPWDATA     w;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         w = _MainWindowData->windows[i];
-        for( j=0;j<w->handle_cnt;j++ ) {
+        for( j = 0; j < w->handle_cnt; j++ ) {
             if( handle == w->handles[j] ) {
                 w->handle_cnt--;
-                for( k=j;k<w->handle_cnt;k++ ) {
-                    w->handles[k] = w->handles[k+1];
+                for( k = j; k < w->handle_cnt; k++ ) {
+                    w->handles[k] = w->handles[k + 1];
                 }
             }
         }
@@ -140,7 +143,11 @@ void _RemoveWindowedHandle( int handle )
 void _WindowsExit( void )
 {
     _ExecutionComplete();
-    if( !_MainWindowDestroyed )  while( _BlockingMessageLoop( FALSE ) );
+    if( !_MainWindowDestroyed ) {
+        while( _BlockingMessageLoop( FALSE ) ) {
+            ;
+        }
+    }
     _WindowsExitRtn = NULL;
 
 } /* _WindowsExit */
@@ -198,7 +205,8 @@ void _WCI86FAR *_MemAlloc( unsigned size )
     tmp = FARmalloc( size );
     if( tmp == NULL ) {
         _OutOfMemory();
-        while( _MessageLoop( FALSE ) );
+        while( _MessageLoop( FALSE ) )
+            ;
         _WindowsExitRtn = NULL;
         exit( 0 );
     }
@@ -217,7 +225,8 @@ void _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size )
     tmp = FARrealloc( ptr, size );
     if( tmp == NULL ) {
         _OutOfMemory();
-        while( _MessageLoop( FALSE ) );
+        while( _MessageLoop( FALSE ) )
+            ;
         _WindowsExitRtn = NULL;
         exit( 0 );
     }
@@ -310,7 +319,7 @@ LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
     w->CurrentLineNumber = 1L;
     w->TopLineNumber = 1L;
     w->LastLineNumber = 1L;
-    w->tmpbuff = _MemAlloc( sizeof( line_data ) + MAX_BUFF+1 );
+    w->tmpbuff = _MemAlloc( sizeof( line_data ) + MAX_BUFF + 1 );
     w->CaretType = ORIGINAL_CURSOR;
     w->hwnd = hwnd;
 
@@ -318,8 +327,9 @@ LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
     hlist = NULL;
     while( 1 ) {
         h = va_arg( al, int );
-        if( h == -1 ) break;
-        hlist = realloc( hlist, (hcnt+1) * sizeof( h ) );
+        if( h == -1 )
+            break;
+        hlist = realloc( hlist, ( hcnt + 1 ) * sizeof( h ) );
         hlist[hcnt] = h;
         hcnt++;
     }
@@ -336,11 +346,11 @@ void _DestroyAWindow( LPWDATA w )
 {
     int i,j;
 
-    for( i=0;i<_MainWindowData->window_count;i++ ) {
+    for( i = 0; i < _MainWindowData->window_count; i++ ) {
         if( _MainWindowData->windows[i] == w ) {
             _MainWindowData->window_count--;
-            for( j=i;j<_MainWindowData->window_count;j++ ) {
-                _MainWindowData->windows[j] = _MainWindowData->windows[j+1];
+            for( j = i; j < _MainWindowData->window_count; j++ ) {
+                _MainWindowData->windows[j] = _MainWindowData->windows[j + 1];
             }
             _ReleaseWindowResources( w );
             _MemFree( w->handles );

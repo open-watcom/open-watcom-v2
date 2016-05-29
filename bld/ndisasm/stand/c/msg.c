@@ -48,6 +48,7 @@
 
 static HANDLE_INFO      hInstance = {0};
 static unsigned         MsgShift;
+static bool             res_failure = true;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 {
@@ -60,31 +61,33 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int MsgInit( void )
+bool MsgInit( void )
 {
     char            name[_MAX_PATH];
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
-                return( 1 );
+                return( true );
             }
         }
+        MsgFini();
     }
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    MsgFini();
-    return( 0 );
+    res_failure = true;
+    return( false );
 }
 
-int MsgGet( int resourceid, char *buffer )
+bool MsgGet( int resourceid, char *buffer )
 {
-    if( LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) == -1 ) {
+    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 }
 
 void MsgFini( void )

@@ -121,7 +121,7 @@ int MsgInit( void )
             if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
                 msg_shift = _WResLanguage() * MSG_LANG_SPACING;
                 for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-                    if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
+                    if( LoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
                         if( i == ERR_FIRST_MESSAGE ) {
                             break;
                         }
@@ -159,7 +159,7 @@ int MsgInit( HANDLE inst )
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
 
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
-        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) == -1 ) {
+        if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
             if( i == ERR_FIRST_MESSAGE )
                 return( 0 );
             buffer[0] = '\0';

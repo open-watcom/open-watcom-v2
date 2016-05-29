@@ -348,10 +348,13 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         case HEAPMENU_ABOUT:
             ai.owner = hwnd;
             ai.inst = Instance;
-            ai.name = HWGetRCString( STR_ABOUT_NAME );
-            ai.version = HWGetRCString( STR_ABOUT_VERSION );
-            ai.title = HWGetRCString( STR_ABOUT_TITLE );
+            ai.name = HWAllocRCString( STR_ABOUT_NAME );
+            ai.version = HWAllocRCString( STR_ABOUT_VERSION );
+            ai.title = HWAllocRCString( STR_ABOUT_TITLE );
             DoAbout( &ai );
+            HWFreeRCString( ai.title );
+            HWFreeRCString( ai.version );
+            HWFreeRCString( ai.name );
             break;
         case HEAPMENU_HELP_CONTENTS:
             WWinHelp( hwnd, "heapwalk.hlp", HELP_CONTENTS, 0 );

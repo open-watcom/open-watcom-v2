@@ -256,7 +256,7 @@ typedef struct heapconfiginfo {
 /*
  * globals
  */
-extern char             *HeapWalkName;
+extern const char       *HeapWalkName;
 extern HWND             HeapWalkMainWindow;
 extern HINSTANCE        Instance;
 extern BOOL             ListingDPMI;
@@ -266,9 +266,9 @@ extern int              HeapListSize;
 extern heap_list        **HeapList;
 extern bool             WDebug386;
 extern BOOL             RefreshMainWindow;
-extern char             *HeapTitles;
-extern char             *HeapDPMITitles;
-extern char             *HeapLocalTitles;
+extern const char       *HeapTitles;
+extern const char       *HeapDPMITitles;
+extern const char       *HeapLocalTitles;
 extern int              GSortType;
 extern int              LSortType;
 extern HWND             ResHwnd[MAX_RES];
@@ -357,7 +357,7 @@ HWND DisplayLocalHeapInfo( HWND parent );
 void SetStaticText( HWND hwnd, int id, char *str );
 void CenterDlg( HWND hwnd );
 int ErrorBox( HWND hwnd, UINT msgid, UINT type );
-HWND *MakePushWin( HWND hwnd, char *str, WORD cnt, ... );
+HWND *MakePushWin( HWND hwnd, const char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
 /* hwmonit */
@@ -371,4 +371,4 @@ void InitializeStringTables( void );
 BOOL InitStringTable( void );
 char *HWAllocRCString( UINT id );
 void HWFreeRCString( char *str );
-char *HWGetRCString( UINT msgid );
+const char *HWGetRCString( UINT msgid );

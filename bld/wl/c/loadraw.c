@@ -196,7 +196,7 @@ static void WriteHexLine( void )
         curr_offs = (unsigned_16)( next_addr.off - ( next_addr.seg << 16 ) );
     }
 
-    sprintf( str_buf, ":%02x%04x00", buf_offset, curr_offs );                   // Intel Hex header
+    sprintf( str_buf, ":%02x%04x00", (unsigned)buf_offset, curr_offs );         // Intel Hex header
     checksum = buf_offset + (( curr_offs >> 8 ) & 0xFF) + (curr_offs & 0xFF);   // Start checksum using above elements
 
     i = 0;

@@ -334,7 +334,7 @@ BOOL CString::LoadString( HINSTANCE hInstance, UINT nID )
     LPTSTR lpBuffer = GetBuffer( 1024 );
     int nLength = ::LoadString( hInstance, nID, lpBuffer, 1024 );
     ReleaseBuffer( nLength );
-    return( nLength != 0 );
+    return( nLength > 0 );
 }
 
 BOOL CString::LoadString( UINT nID )

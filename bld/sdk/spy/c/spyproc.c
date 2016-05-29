@@ -111,7 +111,7 @@ static void disableSpy( void )
 static void setMultipleWindows( HWND hwnd )
 {
     char        str[128];
-    char        *rcstr;
+    const char  *rcstr;
 
     rcstr = GetRCString( STR_MULTIPLE_WIN_TITLE );
     sprintf( str, rcstr, SpyName );
@@ -126,7 +126,7 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
 {
     char        str[128];
     char        tmp[32];
-    char        *fmtstr;
+    const char  *fmtstr;
     int         len;
 
     len = GetWindowText( selwin, tmp, sizeof( tmp ) );
@@ -176,7 +176,7 @@ static void setUpForPick( HWND hwnd, UINT_PTR timerid ) {
 
 static void doSpyAll( HWND hwnd, BOOL state ) {
 
-    char        *rcstr;
+    const char  *rcstr;
     char        tmp[32];
 
     if( !state ) {

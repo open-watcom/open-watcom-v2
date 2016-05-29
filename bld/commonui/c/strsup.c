@@ -48,9 +48,14 @@ static HANDLE   curInst;
  *             - the pointer is only valid until the next call to
  *               GetString
  */
-char *GetRCString( msg_id msgid )
+const char *GetRCString( msg_id msgid )
 {
-    LoadString( curInst, msgid, getStringBuffer, LDSTR_MAX_STR_LEN );
+    int         len;
+
+    len = LoadString( curInst, msgid, getStringBuffer, LDSTR_MAX_STR_LEN );
+    if( len < 0 )
+        len = 0;
+    getStringBuffer[len] = '\0';
     return( getStringBuffer );
 
 } /* GetRCString */
@@ -65,9 +70,12 @@ char *AllocRCString( msg_id id )
     int         len;
 
     len = LoadString( curInst, id, tmpBuf, LDSTR_MAX_STR_LEN );
-    ret = MemAlloc( len + 1 );
+    if( len < 0 )
+        len = 0;
+    tmpBuf[len++] = '\0';
+    ret = MemAlloc( len );
     if( ret != NULL ) {
-        strcpy( ret, tmpBuf );
+        memcpy( ret, tmpBuf, len );
     }
     return( ret );
 
@@ -81,6 +89,9 @@ int CopyRCString( msg_id id, char *buf, int bufsize )
     int         len;
 
     len = LoadString( curInst, id, buf, bufsize );
+    if( len < 0 )
+        len = 0;
+    buf[len] = '\0';
     return( len );
 
 } /* CopyRCString */

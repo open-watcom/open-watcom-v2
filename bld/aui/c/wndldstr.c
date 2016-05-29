@@ -37,13 +37,13 @@ char *WndLoadString( gui_res_id id )
 {
     char        buff[256];
     char        *ret;
-    int         size;
+    size_t      size;
 
-    if( !GUILoadString( id, buff, sizeof( buff ) -1 ) ) {
-        buff[0]='\0';
+    if( !GUILoadString( id, buff, sizeof( buff ) ) ) {
+        buff[0] = '\0';
     }
     size = strlen( buff ) + 1;
     ret = WndMustAlloc( size );
-    strcpy( ret, buff );
+    memcpy( ret, buff, size );
     return( ret );
 }

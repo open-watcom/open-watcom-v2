@@ -237,7 +237,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
 BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        resdata[256], ch;
-    char        *errstr;
+    const char  *errstr;
     char        *res;
     LRESULT     top;
     int         sel;
