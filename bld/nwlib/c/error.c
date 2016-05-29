@@ -117,8 +117,9 @@ void MsgGet( int resourceid, char *buffer )
 
 void FiniMsg( void )
 {
-    if( !res_failure ) {
+    if( hInstance.handle != NIL_HANDLE ) {
         if( CloseResFile( &hInstance ) ) {
+            hInstance.handle = NIL_HANDLE;
             res_failure = true;
             longjmp( Env, 1 );
         }

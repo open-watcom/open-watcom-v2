@@ -65,17 +65,16 @@ static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int
 // Client routines setup for wres library
 WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
-int     LoadMsg( unsigned int msg, char *buffer, int buff_size )
+static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
 {
-    if( (ResFlags & RF_INITIALIZED) == 0 )
-        return( 0 );
-    return( LoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
+    return( (ResFlags & RF_INITIALIZED) != 0
+            && LoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
 }
 
 
-static  void    BldErrMsg( unsigned int err, char *buffer, va_list args )
+static void BldErrMsg( unsigned int err, char *buffer, va_list args )
 // Build error message.
 {
     *buffer = NULLCHAR;
@@ -85,7 +84,7 @@ static  void    BldErrMsg( unsigned int err, char *buffer, va_list args )
     }
 }
 
-static  void    ErrorInit( const char *pgm_name )
+static void ErrorInit( const char *pgm_name )
 {
     hInstance.handle = NIL_HANDLE;
     if( OpenResFile( &hInstance, pgm_name ) )
@@ -99,14 +98,14 @@ static  void    ErrorInit( const char *pgm_name )
     ResFlags |= RF_INITIALIZED;
 }
 
-static  void    ErrorFini( void )
+static void ErrorFini( void )
 {
     if( ResFlags & RF_OPENED ) {
         CloseResFile( &hInstance );
     }
 }
 
-void    __InitResource( void )
+void __InitResource( void )
 {
     __ErrorInit = &ErrorInit;
     __ErrorFini = &ErrorFini;

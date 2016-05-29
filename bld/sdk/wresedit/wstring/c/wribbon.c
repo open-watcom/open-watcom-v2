@@ -295,9 +295,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
             }
-            if( WRibbonNames[i].tip_id >= 0 ) {
-                LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP );
-            } else {
+            if( WRibbonNames[i].tip_id < 0 || LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
                 WRibbonInfo->items[i].tip[0] = '\0';
             }
         } else {
@@ -317,9 +315,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
             }
-            if( WSORibbonNames[i].tip_id >= 0 ) {
-                LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP );
-            } else {
+            if( WSORibbonNames[i].tip_id < 0 || LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
                 WSORibbonInfo->items[i].tip[0] = '\0';
             }
         } else {

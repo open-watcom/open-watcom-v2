@@ -46,6 +46,7 @@
 
 #define DEFCTLNAME      "builder.ctl"
 #define DEFCTLENV       "BUILDER_CTL"
+#define OPTCTLENV       "BUILDER_OPT"
 
 #define DEF_BACKUP      1
 #define MAX_BACKUP      9
@@ -139,12 +140,14 @@ static void AddCtlFile( const char *name )
 
 static char **getvalue( char **argv, char *buff )
 {
+    *buff = '\0';
     if( argv[0][2] != '\0' ) {
         strcpy( buff, &argv[0][2] );
         return( argv );
     }
     ++argv;
-    strcpy( buff, argv[0] );
+    if( argv[0] != NULL )
+        strcpy( buff, argv[0] );
     return( argv );
 }
 
@@ -155,13 +158,10 @@ static void Usage( void )
     exit( 0 );
 }
 
-static void ProcessOptions( char *argv[] )
+static bool ProcessOptions( char *argv[], bool opt_end )
 {
     char        parm_buff[_MAX_PATH];
-    bool        opt_end;
 
-    LogBackup = DEF_BACKUP;
-    opt_end = false;
     while( argv[0] != NULL ) {
         if( !opt_end && argv[0][0] == '-' ) {
             switch( tolower( argv[0][1] ) ) {
@@ -209,13 +209,96 @@ static void ProcessOptions( char *argv[] )
         } else if( !opt_end && strchr( argv[0], '=' ) != NULL ) {
             putenv( argv[0] );
         } else {
-            sprintf( parm_buff, "%d",++ParmCount );
+            sprintf( parm_buff, "%d", ++ParmCount );
             if( setenv( parm_buff, argv[0], 1 ) != 0 ) {
                 Fatal( "Can not set parameter %u\n", ParmCount );
             }
         }
         ++argv;
     }
+    return( opt_end );
+}
+
+int parse_string( char *env, char **args )
+{
+    char        parm_buff[_MAX_PATH];
+    int         pos;
+    bool        quoted;
+    char        prev, c;
+    int         argc;
+
+    quoted = false;
+    pos = 0;
+    argc = 0;
+    prev = '\0';
+    while( (c = *env++) != '\0' ) {
+        if( prev == '\\' ) {
+            if( args != NULL )
+                parm_buff[pos - 1] = c;
+            prev = '\0';
+            continue;
+        } else if( isspace( c ) ) {
+            if( !quoted ) {
+                if( pos > 0 ) {
+                    if( args != NULL ) {
+                        parm_buff[pos] = '\0';
+                        args[argc] = strdup( parm_buff );
+                    }
+                    ++argc;
+                    pos = 0;
+                    prev = '\0';
+                }
+                continue;
+            }
+        } else if( c == '"' ) {
+            quoted = !quoted;
+            if( !quoted ) {
+                if( args != NULL ) {
+                    parm_buff[pos] = '\0';
+                    args[argc] = strdup( parm_buff );
+                }
+                ++argc;
+                pos = 0;
+                prev = '\0';
+            }
+            continue;
+        }
+        if( args != NULL )
+            parm_buff[pos] = c;
+        ++pos;
+        prev = c;
+    }
+    if( pos > 0 ) {
+        if( args != NULL ) {
+            parm_buff[pos] = '\0';
+            args[argc] = strdup( parm_buff );
+        }
+        ++argc;
+    }
+    return( argc );
+}
+
+static bool ProcessEnv( bool opt_end )
+{
+    char        **args;
+    char        *env;
+    int         argc;
+
+    env = getenv( OPTCTLENV );
+    if( env != NULL ) {
+        argc = parse_string( env, NULL );
+        if( argc > 0 ) {
+            args = malloc( ( argc + 1 ) * sizeof( char * ) );
+            argc = parse_string( env, args );
+            args[argc] = NULL;
+            opt_end = ProcessOptions( args, opt_end );
+            while( argc > 0 ) {
+                free( args[--argc] );
+            }
+            free( args );
+        }
+    }
+    return( opt_end );
 }
 
 static void PushInclude( const char *name )
@@ -618,9 +701,13 @@ int main( int argc, char *argv[] )
     ctl_file    *next;
     const char  *p;
     int         rc = 0;
+    bool        opt_end;
 
     SysInit( argc, argv );
-    ProcessOptions( argv + 1 );
+    LogBackup = DEF_BACKUP;
+    opt_end = false;
+    opt_end = ProcessEnv( opt_end );
+    opt_end = ProcessOptions( argv + 1, opt_end );
     if( CtlList == NULL ) {
         p = getenv( DEFCTLENV );
         if( p == NULL )

@@ -372,9 +372,9 @@ extern char *DUILoadString( int id )
 
     size = WinLoadString( 0, NULLHANDLE, id, sizeof( buff ), buff );
 //    size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
-    buff[size] = NULLCHAR;
-    ret = DbgAlloc( size + 1 );
-    strcpy( ret, buff );
+    buff[size++] = NULLCHAR;
+    ret = DbgAlloc( size );
+    memcpy( ret, buff, size );
     return( ret );
 }
 

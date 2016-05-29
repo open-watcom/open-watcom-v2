@@ -1529,9 +1529,9 @@ extern char *DUILoadString( int id )
     size = LoadString( GetModuleHandle( NULL ), id, buff, sizeof( buff ) );
     if( size < 0 )
         size = 0;
-    buff[size] = NULLCHAR;
-    ret = DbgAlloc( size + 1 );
-    strcpy( ret, buff );
+    buff[size++] = NULLCHAR;
+    ret = DbgAlloc( size );
+    memcpy( ret, buff, size );
     return( ret );
 }
 

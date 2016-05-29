@@ -57,12 +57,12 @@ else
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
     cd $OWSRCDIR
-    builder $OWBUILDEROPTS boot
+    builder boot
     RC=$?
     if [ $RC -ne 0 ]; then
         echo "builder bootstrap build error"
     else
-        builder $OWBUILDEROPTS build
+        builder build
         RC=$?
         if [ $RC -ne 0 ]; then
             echo "builder bootstrap build error"

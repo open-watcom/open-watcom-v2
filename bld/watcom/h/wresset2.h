@@ -52,7 +52,6 @@ typedef struct handle_info {
 
 #ifndef WIN_GUI
 #define LoadString      WResLoadString
-typedef PHANDLE_INFO    HINSTANCE;
 typedef unsigned int    UINT;
 typedef char            _WCI86FAR *LPSTR;
 typedef const char      _WCI86FAR *LPCSTR;

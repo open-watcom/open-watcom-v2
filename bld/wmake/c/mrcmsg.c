@@ -139,18 +139,16 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
 /********************************************/
 {
 #ifdef BOOTSTRAP
-    {
-        struct idstr *s;
-        struct idstr msgid;
+    struct idstr *s;
+    struct idstr msgid;
 
-        msgid.id = resourceid;
-        s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
-        if( s == NULL ) {
-            buffer[0] = '\0';
-            return( 0 );
-        }
-        strcpy( buffer, s->s );
+    msgid.id = resourceid;
+    s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
+    if( s == NULL ) {
+        buffer[0] = '\0';
+        return( FALSE );
     }
+    strcpy( buffer, s->s );
 #else
     if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';

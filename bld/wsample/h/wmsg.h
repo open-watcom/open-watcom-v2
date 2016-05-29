@@ -141,9 +141,9 @@
 extern char FAR_PTR     *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #ifdef __WINDOWS__
-extern int      MsgInit( HANDLE inst );
+extern bool     MsgInit( HINSTANCE inst );
 #else
-extern int      MsgInit( void );
+extern bool     MsgInit( void );
 #endif
 extern void     MsgFini( void );
 extern void     MsgPrintfUsage( int first_ln, int last_ln );

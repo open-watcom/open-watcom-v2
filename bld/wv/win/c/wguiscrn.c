@@ -58,7 +58,7 @@ bool            TrapForceHardMode = false;
 static HWND     FocusWnd;
 
 #if 0
-ToggleHardMode( void )
+void ToggleHardMode( void )
 {
     TrapForceHardMode = !TrapForceHardMode;
 #ifdef __GUI__

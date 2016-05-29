@@ -47,7 +47,6 @@
 #define NOT_OK 1
 #define A_OK 2
 
-extern int      MsgInit( HANDLE );
 static char     sampleClass[] = "WsamplewClass";
 
 /*
