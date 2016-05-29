@@ -84,7 +84,6 @@ typedef enum {
 } var_type;
 
 extern int              GetOptionVarValue( vhandle var_handle, bool is_minimal );
-extern bool             CheckForceDLLInstall( char *name );
 
 static char             new_val[MAXENVVAR + 1];
 

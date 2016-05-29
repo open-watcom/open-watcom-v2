@@ -32,11 +32,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <direct.h>
 #include <string.h>
-#include <io.h>
+#ifdef __UNIX__
+    #include <dirent.h>
+#else
+    #include <direct.h>
+#endif
+#include "wio.h"
 #include "wstd.h"
 #include "exedos.h"
+#include "exetype.h"
 
 
 #if defined( EXETYPE_MAIN )

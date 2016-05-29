@@ -970,7 +970,7 @@ static void MakeParentDir( const char *dir, char *drive, char *path )
     strcat( parent, path );
     MakeParentDir( parent, drive, path );
 #if defined( __UNIX__ )
-    mkdir( parent, 0777 );
+    mkdir( parent, PMODE_RWX );
 #else
     mkdir( parent );
 #endif
@@ -999,7 +999,7 @@ static bool CreateDstDir( int i, char *buff, size_t buff_len )
         return( true );
     MakeParentDir( buff, drive, path );
 #if defined( __UNIX__ )
-    if( mkdir( buff, 0777 ) == 0 )
+    if( mkdir( buff, PMODE_RWX ) == 0 )
 #else
     if( mkdir( buff ) == 0 )
 #endif
