@@ -85,7 +85,7 @@ typedef struct {
         FILE            *fd;
         const char      *name;
         bool            dirty;
-        char            buff[BUFFER_SIZE];
+        char            *buff;
 } MY_FILE;
 
 #include "bpatch.h"
@@ -93,6 +93,6 @@ typedef struct {
 
 // Memory management
 
-extern void             *bdiff_malloc( size_t );
-extern void             *bdiff_realloc( void *, size_t );
-extern void             bdiff_free( void * );
+#define bdiff_malloc    malloc
+#define bdiff_realloc   realloc
+#define bdiff_free      free

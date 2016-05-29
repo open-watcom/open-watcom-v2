@@ -53,6 +53,7 @@ void MyOpen( MY_FILE *file, FILE *fd, const char *name )
     file->len = 0;
     file->dirty = false;
     file->name = name;
+    file->buff = bdiff_malloc( BUFFER_SIZE );
 }
 
 void MyClose( MY_FILE *file )
@@ -64,6 +65,10 @@ void MyClose( MY_FILE *file )
         }
     }
     fclose( file->fd );
+    if( file->buff != NULL ) {
+        bdiff_free( file->buff );
+        file->buff = NULL;
+    }
 }
 
 void InBuffer( MY_FILE *file, foff off, size_t len, size_t eob )

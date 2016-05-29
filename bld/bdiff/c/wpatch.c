@@ -38,8 +38,6 @@
 #include "clibext.h"
 
 
-#define FALSE 0
-
 struct {
     size_t origSrcDirLen;
     size_t origTgtDirLen;
@@ -53,6 +51,7 @@ void    DirGetFiles( DIR *dirp, char *Files[], char *Dirs[] );
 
 void main( int argc, char *argv[] ) 
 {
+    MsgInit();
     if( argc != 3 ) {
         printf( "Usage: WPATCH patchfile target-dir\n" );
         printf( "where target-dir is the directory containing files to be modified,\n" );
@@ -65,6 +64,7 @@ void main( int argc, char *argv[] )
         printf( "All rights reserved.  Watcom is a trademark of Sybase, Inc.\n\n");
     }
     WPatchApply( argv[1], argv[2] );
+    MsgFini();
 }
 
 void WPatchApply( const char *patch_name, const char *TgtPath )

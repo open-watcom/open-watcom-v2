@@ -45,7 +45,6 @@ wcpatch_objs = &
     $+$(__subdir__)$-/msg.obj &
     $+$(__subdir__)$-/wcptchio.obj &
     $+$(__subdir__)$-/wcpatch.obj &
-    $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/wbdiff.obj &
     $+$(__subdir__)$-/diff.obj
 
@@ -81,7 +80,6 @@ wpatch_objs = &
     $+$(__subdir__)$-/oldfile.obj &
     $+$(__subdir__)$-/wpatchio.obj &
     $+$(__subdir__)$-/wpatch.obj &
-    $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/bpatch.obj
 
 wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
@@ -112,8 +110,7 @@ bpatch_objs = &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/oldfile.obj &
     $+$(__subdir__)$-/patchio.obj &
-    $+$(__subdir__)$-/patmain.obj &
-    $+$(__subdir__)$-/bdiffmem.obj
+    $+$(__subdir__)$-/patmain.obj
 
 bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM__
@@ -142,8 +139,7 @@ bdump_objs = &
     $+$(__subdir__)$-/myio.obj &
     $+$(__subdir__)$-/oldfile.obj &
     $+$(__subdir__)$-/patchio.obj &
-    $+$(__subdir__)$-/patmain.obj &
-    $+$(__subdir__)$-/bdiffmem.obj
+    $+$(__subdir__)$-/patmain.obj
 
 bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
 !ifndef __WATCOM__
@@ -171,7 +167,6 @@ extra_cpp_bdiff_flags += -DUSE_DBGINFO
 bdiff_objs = &
     $+$(__subdir__)$-/bdiff.obj &
     $+$(__subdir__)$-/diff.obj &
-    $+$(__subdir__)$-/bdiffmem.obj &
     $+$(__subdir__)$-/dopatch.obj &
     $+$(__subdir__)$-/msg.obj
 
@@ -200,8 +195,7 @@ __subdir__=bpcmt
 extra_cpp_bpcmt_flags = -DBPCMT
 
 bpcmt_objs = &
-    $+$(__subdir__)$-/bpcmt.obj &
-    $+$(__subdir__)$-/bdiffmem.obj
+    $+$(__subdir__)$-/bpcmt.obj
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
 !ifndef __WATCOM__

@@ -120,8 +120,7 @@ static int         NumHoles;
 static save_hole   *HoleArray = NULL;
 static int         HoleArraySize;
 
-//static PATCH_RET_CODE InitHoles( void )
-PATCH_RET_CODE InitHoles( void )
+static PATCH_RET_CODE InitHoles( void )
 {
     NumHoles = 0;
     HoleArraySize = (64*1024L) / sizeof( save_hole ) - 1;
