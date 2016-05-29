@@ -211,6 +211,7 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
+[ ENDIF ]
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
 [ ENDIF ]
