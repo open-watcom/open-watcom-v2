@@ -147,6 +147,7 @@ system begin pharlap
 end
 
 system begin pharlap_linux
+    option osname='Linux x86 PharLap'
     libpath %OWSRCDIR%/clib/library/linux.386/mf_r
     libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
     format phar ^
@@ -288,6 +289,14 @@ system begin nt
     libpath %OWSRCDIR%/fpuemu/386/stub386
     libpath %OWSRCDIR%/w32api/nt386
     library kernel32,user32,gdi32,advapi32,comdlg32,ole32,oleaut32,winspool,shell32,uuid,comctl32
+    format windows nt ^
+    runtime console=4.0
+end
+
+system begin pe_linux
+    option osname='Linux x86 PE'
+    libpath %OWSRCDIR%/clib/library/linux.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
     format windows nt ^
     runtime console=4.0
 end
