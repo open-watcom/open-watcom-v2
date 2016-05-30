@@ -77,7 +77,7 @@
 #define LOP_DUP         0x0a
 #define LOP_NOP         0x0b
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 /* no location, class 0x */
 
@@ -147,7 +147,7 @@ typedef union {
     loc_operator        op;
 } loc_entry;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 typedef char            *loc_expr;
 
