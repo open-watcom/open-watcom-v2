@@ -36,14 +36,14 @@
 #include "dwmem.h"
 #include "dwmac.h"
 
-struct parm {
-    struct parm         *next;
+typedef struct dw_parm {
+    struct dw_parm      *next;
     size_t              len;
     char                name[1];        /* not nul terminated */
-};
+} dw_parm;
 
 struct dw_macro {
-    struct parm         *parms;
+    dw_parm             *parms;
     dw_linenum          line;
     size_t              len;
     char                name[1];        /* not nul terminated */
@@ -89,13 +89,13 @@ dw_macro DWENTRY DWMacDef( dw_client cli, dw_linenum line, const char *name )
 
 void DWENTRY DWMacParam( dw_client cli, dw_macro mac, const char *name )
 {
-    struct parm         *parm;
+    dw_parm             *parm;
     size_t              len;
 
     _Validate( mac != NULL && name != NULL );
 
     len = strlen( name );
-    parm = CLIAlloc( sizeof( struct parm ) - 1 + len );
+    parm = CLIAlloc( sizeof( dw_parm ) - 1 + len );
     parm->next = mac->parms;
     mac->parms = parm;
     parm->len = len;
@@ -107,7 +107,7 @@ void DWENTRY DWMacFini( dw_client cli, dw_macro mac, const char *def )
 {
     uint_8              buf[1 + MAX_LEB128];
     uint_8              *end;
-    struct parm         *parm;
+    dw_parm             *parm;
 
     _Validate( mac != NULL );
 

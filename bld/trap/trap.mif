@@ -87,9 +87,7 @@ sys_x86_qnx  = sys pharlap rex disable 1014, 1023
 # For now Linux is linked as a PE DLL file since we have code to load
 # this under Linux already. Eventually it should be an ELF shared library.
 
-sys_x86_linux = form windows nt dll opt dosseg &
-            libpath $(clib_dir)/library/linux.386/mf_r &
-            libpath $(mathlib_dir)/library/msdos.386/ms_r &
+sys_x86_linux = sys pe_linux dll opt dosseg &
             export TrapLoad_.1 &
             option description $(description)
 

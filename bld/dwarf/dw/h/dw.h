@@ -42,22 +42,22 @@
 
 
 /* The client id; required by all DW calls except DWInit() */
-typedef struct dw_client *      dw_client;
+typedef struct dw_client        *dw_client;
 
 /* used for macro definitions */
-typedef struct dw_macro *       dw_macro;
+typedef struct dw_macro         *dw_macro;
 
 /* temporary value that is used to build location expressions */
-typedef struct dw_loc_id *      dw_loc_id;
+typedef struct dw_loc_id        *dw_loc_id;
 
 /* a label within a location expression */
-typedef struct dw_loc_label *   dw_loc_label;
+typedef struct dw_loc_label     *dw_loc_label;
 
 /* a temporary value used to build location lists */
-typedef struct dw_list_id *     dw_list_id;
+typedef struct dw_list_id       *dw_list_id;
 
 /* a 'compiled' location expression or list */
-typedef struct dw_loc_handle *  dw_loc_handle;
+typedef struct dw_loc_handle    *dw_loc_handle;
 
 /* an id for a debugging record */
 typedef uint_32                 dw_handle;

@@ -1,4 +1,4 @@
-#pmake: build small 16bit generic cgsupp ix86 static os_dos cpu_i86
+#pmake: build small 16bit generic cgsupp ix86 static os_dos os_win cpu_i86
 #pmake:msdos
 processor=086
 model=ms

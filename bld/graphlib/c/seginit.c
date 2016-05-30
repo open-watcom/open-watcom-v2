@@ -211,7 +211,7 @@ void _InitSegments( void )
 #if defined( __386__ )
     if( _IsRational() || _IsCodeBuilder() ) {
         seg = FP_SEG( &_BiosSeg );
-    } else if( _IsFlashTek() ) {    // FlashTek
+    } else if( _IsFlashTek() ) {        // FlashTek
         seg = __x386_zero_base_selector;
     } else {
         // variables already initialized to PharLap defaults

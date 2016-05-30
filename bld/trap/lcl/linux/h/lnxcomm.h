@@ -41,7 +41,7 @@
 
 /* Use 4-byte packing for compatibility with the default packing used by GCC */
 
-#pragma pack( push, 4 )
+#include "pushpck4.h"
 
 /* Options set using PTRACE_SETOPTIONS */
 #define PTRACE_O_TRACESYSGOOD   0x00000001
@@ -363,6 +363,6 @@ extern u_short          flatCS;
 extern u_short          flatDS;
 extern pid_t            pid;
 
-#pragma pack( pop )
+#include "poppck.h"
 
 #endif  /* _LINUXCOMM_H */

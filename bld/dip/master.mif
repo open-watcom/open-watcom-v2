@@ -64,7 +64,7 @@ extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
 inc_dirs = -I"../h" $(dwarfr_inc_dirs) $(extra_incs) -I"$(dig_dir)/h"
 
 lflags_dll_dos_386     = sys pharlap rex disable 1023,1014
-lflags_dll_linux_386   = sys pharlap rex disable 1023,1014
+lflags_dll_linux_386   = sys pharlap_linux rex disable 1023,1014
 lflags_dll_qnx_i86     = sys qnx disable 1023
 lflags_dll_qnx_386     = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86     = sys windows op rwr
