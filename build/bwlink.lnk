@@ -146,6 +146,11 @@ system begin pharlap
     format phar ^
 end
 
+system begin pharlap_linux
+    libpath %OWSRCDIR%/clib/library/linux.386/mf_r
+    libpath %OWSRCDIR%/mathlib/library/linux.386/ms_r
+    format phar ^
+end
 
 system begin os2
     option osname='OS/2 16-bit'

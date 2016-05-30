@@ -60,7 +60,7 @@ extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
 # lflags stuff
 ###############
 lflags_dll_dos_386   = sys pharlap rex disable 1023,1014
-lflags_dll_linux_386 = sys pharlap rex disable 1023,1014
+lflags_dll_linux_386 = sys pharlap_linux rex disable 1023,1014
 lflags_dll_qnx_386   = sys pharlap rex disable 1023,1014
 lflags_dll_win_i86   = sys windows op rwr
 
