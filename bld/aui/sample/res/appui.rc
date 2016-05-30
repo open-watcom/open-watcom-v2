@@ -1,2 +1,2 @@
-#include <windows.h>
+#include "wresdefn.h"
 #include "appcomm.rc"
