@@ -1,4 +1,4 @@
-#pmake: build flat register 32bit generic cgsupp ix86 dynamic os_dos os_qnx os_os2 os_nt os_nov cpu_386 profile
+#pmake: build flat register 32bit generic cgsupp ix86 dynamic os_dos os_qnx os_os2 os_nt os_nov os_win cpu_386 profile
 #pmake: msdos qnx os2 winnt netware
  
 processor  = 386
