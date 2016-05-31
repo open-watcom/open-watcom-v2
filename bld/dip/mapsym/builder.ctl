@@ -46,6 +46,7 @@ set PROJNAME=mapsym<OWBLDVER>
     <CCCMD> rdos386/<PROJNAME>.dll        <OWRELROOT>/rdos/
     <CCCMD> rdos386/<PROJNAME>.sym        <OWRELROOT>/rdos/
 
+    <CCCMD> linuxx64/<PROJNAME>.so        <OWRELROOT>/binl64/
     <CCCMD> ntx64/<PROJNAME>.dll          <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
