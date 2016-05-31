@@ -1,22 +1,15 @@
 # build host specific macros
-blib            = $(librarian_$(bld_cpu))
-bcc             = $(cc_$(bld_cpu))
-bcl             = $(cl_$(bld_cpu))
-bas             = $(as_$(bld_cpu))
+blib            = $(blibrarian_$(bld_cpu))
+bcc             = $(bcc_$(bld_cpu))
+bcl             = $(bcl_$(bld_cpu))
+bas             = $(bas_$(bld_cpu))
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 
-!ifdef inc_dirs_lang_$(bld_os)
-bld_inc_dirs_lang = $(inc_dirs_lang_$(bld_os))
-!else
-bld_inc_dirs_lang = $(inc_dirs_lang_osi)
-!endif
-bld_inc_dirs_sys  = $(bld_inc_dirs_lang) $(inc_dirs_sys_$(bld_os))
-
-bld_incs        = $(bld_extra_incs) $(bld_inc_dirs_sys) -I"$(watcom_dir)/h"
+bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 !ifneq bootstrap 1
-no_def_include  = -x -xx -zam
+no_def_include  = -x #-xx -zam
 !endif
 
 !ifeq release 0
