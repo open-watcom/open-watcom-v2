@@ -22,7 +22,7 @@ export OWTOOLS=GCC
 # Documentation related variables
 
 # Set this variable to 0 to suppress documentation build
-export OWDOCBUILD=0
+export OWDOCBUILD=1
 
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 # export OWGHOSTSCRIPTPATH=$PATH

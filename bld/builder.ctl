@@ -84,8 +84,10 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/bmp2eps/builder.ctl ]
 # Build ide2make tool for idedemo
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/lib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ide/ide2make/builder.ctl ]
+[ ENDIF ]
 # Miscellaneous libraries/utilities required during installers build
 [ INCLUDE <OWSRCDIR>/setupgui/ziplib/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/setupgui/zlib/builder.ctl ]
@@ -202,11 +204,16 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/wclass/builder.ctl ]
 # Other GUI tools
 [ INCLUDE <OWSRCDIR>/wprof/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/browser/builder.ctl ]
+[ ENDIF ]
 # The IDE tools
 [ INCLUDE <OWSRCDIR>/editdll/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/idebatch/builder.ctl ]
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/ide/builder.ctl ]
+[ ENDIF ]
 # The miscelaneous tools
 [ INCLUDE <OWSRCDIR>/cmdedit/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/cvpack/builder.ctl ]
@@ -219,7 +226,9 @@ cdsay .
 # Source code samples
 [ INCLUDE <OWSRCDIR>/src/builder.ctl ]
 # IDE samples
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/idedemo/builder.ctl ]
+[ ENDIF ]
 # Build help viewer
 [ INCLUDE <OWSRCDIR>/hlpview/builder.ctl ]
 # Build help compilers
@@ -234,7 +243,9 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/setupgui/builder.ctl ]
 
 # only test build for now
+[ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
+[ ENDIF ]
 # Build documentation
 [ IFDEF <OWDOCBUILD> 1 ]
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
