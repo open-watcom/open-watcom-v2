@@ -423,7 +423,14 @@ char *ResName( char *res )
 
     len = strlen( res );
     memcpy( buff, res, len );
-    buff[len+0] = _WResLanguage() + '0';
-    buff[len+1] = '\0';
+    switch( _WResLanguage() ) {
+    case RLE_JAPANESE:
+        buff[len + 0] = '1';
+        break;
+    default:
+        buff[len + 0] = '0';
+        break;
+    }
+    buff[len + 1] = '\0';
     return( buff );
 }
