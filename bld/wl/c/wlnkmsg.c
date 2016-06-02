@@ -109,7 +109,7 @@ bool InitMsg( void )
 
 bool Msg_Get( int resourceid, char *buffer )
 {
-    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

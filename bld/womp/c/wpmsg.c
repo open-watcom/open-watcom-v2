@@ -86,7 +86,7 @@ bool MsgInit( char *fname )
 void MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( res_failure || LoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }

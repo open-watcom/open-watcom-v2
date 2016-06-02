@@ -32,12 +32,16 @@
 #ifndef WRESDEFN_INCLUDED
 #define WRESDEFN_INCLUDED
 
-#if defined( WIN_GUI )
+#if defined( __NT__ )
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined( __WINDOWS__ )
+#include <windows.h>
+#else
+#define WINRESDEFN
 #endif
 
-#if !defined( WIN_GUI )
+#if defined( WINRESDEFN )
 
 /*** predefined type numbers ***/
 #define RT_CURSOR           1
@@ -84,7 +88,7 @@
 
 #define RT_TOOLBAR          0xF1
 
-#if !defined( WIN_GUI )
+#if defined( WINRESDEFN )
 
 /* Dialog box button identifiers */
 #define IDOK                1

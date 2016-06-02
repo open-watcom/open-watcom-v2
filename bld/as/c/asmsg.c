@@ -120,7 +120,7 @@ bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
 #ifdef _STANDALONE_
-    if( res_failure || LoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

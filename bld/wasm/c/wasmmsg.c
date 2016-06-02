@@ -233,7 +233,7 @@ bool MsgGet( int id, char *buffer )
     strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #else
-    if( res_failure || LoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
