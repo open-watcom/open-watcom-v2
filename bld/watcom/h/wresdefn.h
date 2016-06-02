@@ -43,50 +43,63 @@
 
 #if defined( WINRESDEFN )
 
+#if defined( _M_I86 )
+#define MAKEINTRESOURCE( x )    ((char __far *)(pointer_int)(unsigned short)(x))
+#else
+#define MAKEINTRESOURCE( x )    ((char *)(pointer_int)(unsigned short)(x))
+#endif
+
+#endif
+
+#define RESOURCE2INT( x )       ((unsigned short)(pointer_int)(x))
+
+#if defined( WINRESDEFN )
+
 /*** predefined type numbers ***/
-#define RT_CURSOR           1
-#define RT_BITMAP           2
-#define RT_ICON             3
-#define RT_MENU             4
-#define RT_DIALOG           5
-#define RT_STRING           6
-#define RT_FONTDIR          7
-#define RT_FONT             8
-#define RT_ACCELERATOR      9
-#define RT_RCDATA           10
-#define RT_GROUP_CURSOR     12      /* note: no type 13 resource */
-#define RT_GROUP_ICON       14
+#define RT_CURSOR           MAKEINTRESOURCE( 1 )
+#define RT_BITMAP           MAKEINTRESOURCE( 2 )
+#define RT_ICON             MAKEINTRESOURCE( 3 )
+#define RT_MENU             MAKEINTRESOURCE( 4 )
+#define RT_DIALOG           MAKEINTRESOURCE( 5 )
+#define RT_STRING           MAKEINTRESOURCE( 6 )
+#define RT_FONTDIR          MAKEINTRESOURCE( 7 )
+#define RT_FONT             MAKEINTRESOURCE( 8 )
+#define RT_ACCELERATOR      MAKEINTRESOURCE( 9 )
+#define RT_RCDATA           MAKEINTRESOURCE( 10 )
+#define RT_GROUP_CURSOR     MAKEINTRESOURCE( 12 )     /* note: no type 13 resource */
+#define RT_GROUP_ICON       MAKEINTRESOURCE( 14 )
 
 #endif
 
 // these symbols are not defined in windows.h
 #ifndef RT_VERSIONINFO
-#define RT_VERSIONINFO      16
+#define RT_VERSIONINFO      MAKEINTRESOURCE( 16 )
 #endif
 
 #ifndef RT_MESSAGETABLE
-#define RT_MESSAGETABLE     11      /* for NT res files only */
+#define RT_MESSAGETABLE     MAKEINTRESOURCE( 11 )      /* for NT res files only */
 #endif
 #ifndef RT_ERRTABLE
-#define RT_ERRTABLE         11
+#define RT_ERRTABLE         MAKEINTRESOURCE( 11 )
 #endif
 #ifndef RT_NAMETABLE
-#define RT_NAMETABLE        15
+#define RT_NAMETABLE        MAKEINTRESOURCE( 15 )
 #endif
 #ifndef RT_VERSION
-#define RT_VERSION          16
+#define RT_VERSION          MAKEINTRESOURCE( 16 )
 #endif
 #ifndef RT_DLGINCLUDE
-#define RT_DLGINCLUDE       17
+#define RT_DLGINCLUDE       MAKEINTRESOURCE( 17 )
 #endif
 #ifndef RT_HTML
-#define RT_HTML             23
+#define RT_HTML             MAKEINTRESOURCE( 23 )
 #endif
 #ifndef RT_MANIFEST
-#define RT_MANIFEST         24
+#define RT_MANIFEST         MAKEINTRESOURCE( 24 )
 #endif
 
-#define RT_TOOLBAR          0xF1
+#define RT_DLGINIT          MAKEINTRESOURCE( 0xF0 )
+#define RT_TOOLBAR          MAKEINTRESOURCE( 0xF1 )
 
 #if defined( WINRESDEFN )
 

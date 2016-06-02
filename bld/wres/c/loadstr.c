@@ -124,7 +124,7 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     WResInitIDFromNum( block_num, &block_id );
-    WResInitIDFromNum( (long)RT_STRING, &string_type );
+    WResInitIDFromNum( RESOURCE2INT( RT_STRING ), &string_type );
 
     if( dir == NULL ) {
         InitResources2( &dir, hInstance );

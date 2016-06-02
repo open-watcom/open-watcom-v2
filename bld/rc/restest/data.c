@@ -65,7 +65,7 @@ BOOL CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
                         Error( "data", "You did not enter a numeric value" );
                     }
                 }
-                dataType = (LPCSTR) MAKELONG( val, 0 );
+                dataType = (LPCSTR)MAKELONG( val, 0 );
             }
             EndDialog( hwnd, 0 );
         }

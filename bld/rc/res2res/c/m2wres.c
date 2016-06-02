@@ -73,7 +73,7 @@ static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir ou
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
-        if( type->IsName || type->ID.Num != RT_NAMETABLE ||
+        if( type->IsName || type->ID.Num != RESOURCE2INT( RT_NAMETABLE ) ||
                         CmdLineParms.KeepNameTable ) {
             error = WResAddResource( type, name, mheader->MemoryFlags, offset,
                         mheader->Size, outdir, NULL, &duplicate );

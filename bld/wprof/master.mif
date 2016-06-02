@@ -118,7 +118,7 @@ wprofgui.res : ../res/wprofgui.rc $(rcfiles) .AUTODEPEND
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wprofui.res : ../res/wprofui.rc .AUTODEPEND
-    $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $[@ -fo=$^@
+    $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
 
 usage.u : ../h/usage.sp
     *wsplice -u $< $@

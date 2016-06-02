@@ -313,7 +313,7 @@ static bool readMResDir( WResFileID handle, WResDir currdir, bool *dup_discarded
 
         /* MResReadResourceHeader leaves the file at the start of the resource*/
         if( !error ) {
-            if( !type->IsName && type->ID.Num == RT_NAMETABLE ) {
+            if( !type->IsName && type->ID.Num == RESOURCE2INT( RT_NAMETABLE ) ) {
                 error = false;
             } else {
                 error = WResAddResource2( type, name, head->MemoryFlags,
