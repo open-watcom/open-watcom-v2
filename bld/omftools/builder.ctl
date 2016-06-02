@@ -1,11 +1,13 @@
 # OMF tools Builder Control file
 # ==============================
 
-set PROJDIR=<CWD>
 set PROJNAME=omftools
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -36,5 +38,5 @@ set PROJNAME=omftools
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

@@ -1,11 +1,11 @@
 # AUI Sample Builder Control file
 # ===============================
 
-set PROJDIR=<CWD>
-set PROJNAME=aui samples
+set PROJNAME=auisampl
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -18,5 +18,5 @@ set PROJNAME=aui samples
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

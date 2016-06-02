@@ -1,11 +1,11 @@
 # Browser Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
 set PROJNAME=browser
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 # pmake priorities are used to build:
 # 1) dlgprs/o
@@ -19,6 +19,7 @@ set PROJNAME=browser
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -37,5 +38,5 @@ set PROJNAME=browser
     <CCCMD> brg/ntaxp/wbrg.exe     <OWRELROOT>/axpnt/wbrg.exe
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

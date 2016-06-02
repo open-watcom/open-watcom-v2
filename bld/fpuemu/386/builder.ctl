@@ -1,15 +1,16 @@
 # 386 FPU emulator Builder Control file
 # =====================================
 
-set PROJDIR=<CWD>
-set PROJNAME=FPU emu 386
+set PROJNAME=emu386
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -28,5 +29,5 @@ set PROJNAME=FPU emu 386
     <CCCMD> qnx386/emu387        <OWRELROOT>/qnx/binq/emu387
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

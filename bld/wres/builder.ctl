@@ -1,15 +1,16 @@
 # WRES Builder Control file
 # =========================
 
-set PROJDIR=<CWD>
-set PROJNAME=wres library
+set PROJNAME=wres
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -45,5 +46,5 @@ set PROJNAME=wres library
     <CCCMD> osi386/ms_s/wres.lib    <OWRELROOT>/lib386/netware/wresfs.lib
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

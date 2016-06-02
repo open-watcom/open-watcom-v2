@@ -1,15 +1,18 @@
 # ide2make Builder Control file
 # =============================
 
-set PROJDIR=<CWD>
 set PROJNAME=ide2make
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -34,6 +37,5 @@ set PROJNAME=ide2make
     <CCCMD> linuxx64/ide2make.exe <OWRELROOT>/binl64/ide2make
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
 
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

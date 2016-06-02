@@ -1,15 +1,16 @@
 # WIC Builder Control file
 # ========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wic
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -19,5 +20,5 @@ set PROJNAME=wic
     <CCCMD> nt386/wic.exe  <OWRELROOT>/binnt/wic.exe
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

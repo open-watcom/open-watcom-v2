@@ -1,8 +1,6 @@
 # Default actions Builder Control File 
 # ====================================
 
-set BINTOOL=0
-
 cdsay <PROJDIR>
 
 [ BLOCK .<PROJNAME> . ]

@@ -1,11 +1,11 @@
 # WATCOM CRTL extension libraries Builder Control file
 # ====================================================
 
-set PROJDIR=<CWD>
 set PROJNAME=watcom
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 cdsay <PROJDIR>
 
@@ -22,5 +22,5 @@ cdsay <PROJDIR>
     rm -rf <OWOBJDIR>
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

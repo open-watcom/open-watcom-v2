@@ -7,8 +7,6 @@
 # included this one.
 # NB: PROJNAME must be the tool's base name.
 
-set BINTOOL=0
-
 cdsay <PROJDIR>
 
 [ BLOCK .<PROJNAME> . ]

@@ -1,15 +1,16 @@
 # WSAMPLE Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
 set PROJNAME=wsample
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -29,5 +30,5 @@ set PROJNAME=wsample
     <CCCMD> linuxx64/wsample.exe    <OWRELROOT>/binl64/wsample
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

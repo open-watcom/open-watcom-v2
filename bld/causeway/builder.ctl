@@ -1,15 +1,16 @@
 # CauseWay Builder Control file
 # =============================
 
-set PROJDIR=<CWD>
-set PROJNAME=CauseWay
+set PROJNAME=causeway
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -37,5 +38,5 @@ set PROJNAME=CauseWay
     <CCCMD> cwc/linuxx64/cwstub.exe <OWRELROOT>/binl64/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

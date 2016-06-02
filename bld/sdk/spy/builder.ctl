@@ -1,15 +1,16 @@
 # SPY Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
 set PROJNAME=wspy
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -25,5 +26,5 @@ set PROJNAME=wspy
     <CCCMD> ntx64/ntspyhk.dll  <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

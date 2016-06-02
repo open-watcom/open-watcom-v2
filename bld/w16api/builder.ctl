@@ -4,12 +4,12 @@
 set PROJDIR=<CWD>
 set PROJNAME=w16api
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -19,5 +19,5 @@ set PROJNAME=w16api
 #    <CCCMD> <OWSRCDIR>/sdk/misc/ctl3d.h   <OWRELROOT>/h/win/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

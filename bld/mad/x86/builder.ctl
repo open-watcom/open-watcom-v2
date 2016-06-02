@@ -1,21 +1,26 @@
 # x86 MAD Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
 set PROJNAME=madx86
-[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
-set PROJNAME=madx86<OWBLDVER>
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
+
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+#=====================================
+    set PROJNAME=madx86<OWBLDVER>
 
 [ BLOCK .<WATCOMBOOT>. .1. ]
+#===========================
     [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK .<WATCOMBOOT>. .. ]
+#==========================
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -49,5 +54,5 @@ set PROJNAME=madx86<OWBLDVER>
     <CCCMD> ntx64/<PROJNAME>.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

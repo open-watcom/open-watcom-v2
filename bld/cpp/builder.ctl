@@ -4,8 +4,7 @@
 set PROJDIR=<CWD>
 set PROJNAME=wcpp
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
@@ -14,5 +13,5 @@ set PROJNAME=wcpp
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

@@ -1,14 +1,12 @@
 # setupgui Builder Control file
 # =============================
  
-set PROJDIR=<CWD>
 set PROJNAME=setupgui
+
+set PROJDIR=<CWD>
  
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
  
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

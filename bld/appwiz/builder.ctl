@@ -1,11 +1,11 @@
 # Open Watcom Application Wizard control file
 #============================================
 
-set PROJDIR=<CWD>
 set PROJNAME=appwiz
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -14,5 +14,5 @@ set PROJNAME=appwiz
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

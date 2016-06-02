@@ -1,21 +1,26 @@
 # WATCOM DIP Builder Control file
 # ===============================
 
-set PROJDIR=<CWD>
 set PROJNAME=watcom
-[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
-set PROJNAME=watcom<OWBLDVER>
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
+
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+#=====================================
+    set PROJNAME=watcom<OWBLDVER>
 
 [ BLOCK .<WATCOMBOOT>. .1. ]
+#===========================
     [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK .<WATCOMBOOT>. .. ]
+#==========================
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -50,5 +55,5 @@ set PROJNAME=watcom<OWBLDVER>
     <CCCMD> ntx64/<PROJNAME>.dll      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

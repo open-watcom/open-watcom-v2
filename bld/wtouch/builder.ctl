@@ -1,15 +1,16 @@
 # WTOUCH Builder Control file
 # ===========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wtouch
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -25,5 +26,5 @@ set PROJNAME=wtouch
     <CCCMD> linuxarm/wtouch.exe  <OWRELROOT>/arml/wtouch
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

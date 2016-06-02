@@ -1,14 +1,12 @@
 # dipdump Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
 set PROJNAME=dipdump
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
-[ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

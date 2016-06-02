@@ -1,15 +1,16 @@
 # WFL Builder Control file
 # ========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wfl
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -44,5 +45,5 @@ set PROJNAME=wfl
     <CCCMD> axp/ntx64/wflaxp.exe        <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#==================
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

@@ -1,15 +1,16 @@
 # afxapi Builder Control file
 # ===========================
 
-set PROJDIR=<CWD>
 set PROJNAME=afxapi
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -40,5 +41,5 @@ set PROJNAME=afxapi
     <CCCMD> nt386u.dll/owfs??u.lib        <OWRELROOT>/lib386/nt/afx/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]
