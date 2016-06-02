@@ -1,6 +1,12 @@
 # Master Builder Control File
 # ===========================
 
+# Default to build.log
+set LOGFNAME=build
+set LOGEXT=log
+set CPCMD=acopy
+set CCCMD=accopy
+
 # Set default output directory
 [ BLOCK .<OWRELROOT> . ]
 #=======================
@@ -9,14 +15,19 @@
         set OWRELROOT=<OWROOT>/rel
     [ ENDIF ]
 
+# Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
+[ BLOCK <BLD_HOST> NT OS2 DOS ]
+#==============================
+    set CMDEXT=.exe
+    set DYEXT=.dll
+
+[ BLOCK <BLD_HOST> UNIX ]
+#========================
+    set CMDEXT=
+    set DYEXT=.so
+
 [ BLOCK . . ]
 #============
-
-# Default to build.log
-set LOGFNAME=build
-set LOGEXT=log
-set CPCMD=acopy
-set CCCMD=accopy
 
 [ BLOCK .<1> . ]
 #===============
@@ -92,18 +103,6 @@ set CCCMD=accopy
 #======================
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule
-
-# Configure executable extension: DOS, OS/2 and Windows use .exe, others nothing
-
-[ BLOCK <BLD_HOST> NT OS2 DOS ]
-#==============================
-    set CMDEXT=.exe
-    set DYEXT=.dll
-
-[ BLOCK <BLD_HOST> UNIX ]
-#========================
-    set CMDEXT=
-    set DYEXT=.so
 
 [ BLOCK . . ]
 #============
