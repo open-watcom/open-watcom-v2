@@ -104,8 +104,11 @@ void DToLD( double d, xreal *ten )
 void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
                 unsigned d, unsigned e, char format, char exp_char )
 {
-    double      value = LDToD( v );
+    double      value;
 
+    b=b;c=c;d=d;e=e;format=format;exp_char=exp_char;
+
+    value = LDToD( v );
     sprintf( buff, "%.*g", a, value );
     if( buff[0] == '0' && buff[1] == NULLCHAR ) {
         buff[1] = '.';
@@ -119,6 +122,7 @@ void SToLD( const char *ptr, const char **end, xreal *v )
 {
     char *endx;
 
+    //*v = strtold( ptr, &endx );
     DToLD( strtod( ptr, &endx ), v );
     *end = endx;
 }

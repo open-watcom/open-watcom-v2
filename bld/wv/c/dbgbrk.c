@@ -1098,7 +1098,7 @@ static int FindNextBPIndex( void )
 
     max = 0;
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if( bp->index > max ) {
+        if( max < bp->index ) {
             max = bp->index;
         }
     }

@@ -102,6 +102,8 @@ static bool CallRoutine( void )
 }
 
 
+#define _RoundUp( size, word )        ( ((size)+((word)-1)) & ~((word)-1) )
+
 bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
 {
     bool                ret;
@@ -118,7 +120,7 @@ bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
         if( ExprSP->v.loc.e[0].type!=LT_ADDR && ExprSP->v.loc.e[0].u.p==NULL ) {
             /* push item */
             src = StkEntry( 1 );
-            amount = (src->info.size + (align-1)) & -align;
+            amount = _RoundUp( src->info.size, align );
             if( _IsOff( SW_STACK_GROWS_UP ) ) {
                 stack.mach.offset -= amount;
             }

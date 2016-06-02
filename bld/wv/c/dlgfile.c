@@ -123,6 +123,7 @@ char *GetLastExe( void )
 
 void SetLastCfg( const char *to )
 {
+    to=to;
     SetLast( &LastCfg, TxtBuff );
 }
 

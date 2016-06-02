@@ -240,7 +240,7 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         WndMenuEnable( wnd, MENU_SEARCH_SOURCE, ( row != WND_NO_ROW && row <= srch->num_rows ) );
         break;
     case MENU_SEARCH_SOURCE:
-        new = WndModInspect( srch->found[ row ].mod );
+        new = WndModInspect( srch->found[row].mod );
         if( new == NULL )
             break;
         WndSetSrchIgnoreCase( srch->ignore_case );

@@ -259,7 +259,6 @@ static const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-static  WNDMODIFY RegModify;
 static  void    RegModify( a_window *wnd, int row, int piece )
 {
     int                     i;
@@ -357,7 +356,6 @@ static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static WNDGETLINE RegGetLine;
 static  bool    RegGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {

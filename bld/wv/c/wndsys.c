@@ -140,6 +140,7 @@ static const char WindowNameTab[] =
 
 static void ToWndChooseNew( a_window *p )
 {
+    p=p;
     WndChooseNew();
 }
 
@@ -376,9 +377,11 @@ static void ProcessMacro( wnd_macro *mac )
 
 static bool AmpEqual( const char *label, char ch )
 {
-    ch = tolower( ch );
+    int lowerch;
+
+    lowerch = tolower( ch );
     while( label[0] != NULLCHAR ) {
-        if( label[0] == '&' && ch == tolower( label[1] ) )
+        if( label[0] == '&' && tolower( label[1] ) == lowerch )
             return( true );
         ++label;
     }

@@ -213,6 +213,7 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct lookup_reg   *ld = d;
 
+    has_sublist=has_sublist;
     if( memicmp( ld->name, ri->name, ld->len ) != 0 )
         return( WR_CONTINUE );
     if( ri->name[ld->len] != NULLCHAR )

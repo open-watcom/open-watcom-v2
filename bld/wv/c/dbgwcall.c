@@ -59,9 +59,9 @@ static gui_menu_struct CallMenu[] = {
 
 typedef struct call_window {
     cached_traceback    tb;
-    gui_ord     max_sym_len;
+    gui_ord             max_sym_len;
 } call_window;
-#define WndCall( wnd ) ( (call_window*)WndExtra( wnd ) )
+#define WndCall( wnd ) ( (call_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_SYMBOL,

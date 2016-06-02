@@ -55,8 +55,7 @@ static bool GetLine( unsigned handle, buffer *buff, unsigned str_len )
         if( buff->ptr + str_len > buff->end ) {
             keep = buff->end - buff->ptr;
             memcpy( buff->start, buff->ptr, keep );
-            buff->end = ReadStream( handle, buff->start+keep, buff->size-keep )
-                                + buff->start + keep;
+            buff->end = ReadStream( handle, buff->start + keep, buff->size - keep ) + buff->start + keep;
             if( buff->start + str_len >= buff->end )
                 return( false );
             buff->ptr = buff->start;

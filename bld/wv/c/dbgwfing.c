@@ -41,14 +41,24 @@
 #include "fingmsg.h"
 
 
-extern int WndNumColours;
-extern a_window *WndMain;
-
 #if 0
 #define _EXPIRY_YEAR    1988
 #define _EXPIRY_MONTH   5
 #define _EXPIRY_DAY     1
 #endif
+
+#ifdef _EXPIRY_YEAR
+struct date_st {
+    char day;
+    char month;
+    int year;
+};
+
+extern struct date_st getdate( void );
+#endif
+
+extern int WndNumColours;
+extern a_window *WndMain;
 
 static gui_coord BitmapSize;
 static gui_ord  Width;
@@ -59,14 +69,19 @@ static gui_ord  Height;
 #ifdef _EXPIRY_YEAR
 static bool ChkDate( void )
 {
-    struct date_st { char day; char month; int year; } date;
-    extern struct date_st getdate();
+    struct date_st date;
+
     date = getdate();
-    if( date.year  < _EXPIRY_YEAR  ) return( true );
-    if( date.year  > _EXPIRY_YEAR  ) return( false );
-    if( date.month < _EXPIRY_MONTH ) return( true );
-    if( date.month > _EXPIRY_MONTH ) return( false );
-    if( date.day   > _EXPIRY_DAY   ) return( false );
+    if( date.year  < _EXPIRY_YEAR  )
+        return( true );
+    if( date.year  > _EXPIRY_YEAR  )
+    	return( false );
+    if( date.month < _EXPIRY_MONTH )
+    	return( true );
+    if( date.month > _EXPIRY_MONTH )
+    	return( false );
+    if( date.day   > _EXPIRY_DAY   )
+    	return( false );
     return( true );
 }
 #endif
@@ -85,7 +100,6 @@ void FingClose( void )
 }
 
 
-static WNDNUMROWS FingNumRows;
 static int FingNumRows( a_window *wnd )
 {
     wnd=wnd;
@@ -93,18 +107,19 @@ static int FingNumRows( a_window *wnd )
 }
 
 
-static WNDGETLINE FingGetLine;
 static  bool    FingGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
-    if( piece != 0 ) return( false );
+    if( piece != 0 )
+    	return( false );
     row -= TOP_BLANK( wnd );
     if( row < 0 ) {
         line->text = " ";
         return( true );
     }
     if( row >= FingMessageSize ) {
-        if( !GUIIsGUI() || piece != 0 ) return( false );
+        if( !GUIIsGUI() || piece != 0 )
+        	return( false );
         row -= FingMessageSize;
         switch( row ) {
         case 0:
@@ -123,7 +138,6 @@ static  bool    FingGetLine( a_window *wnd, int row, int piece,
     return( true );
 }
 
-static WNDCALLBACK FingEventProc;
 static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
@@ -198,6 +212,7 @@ void FingOpen( void )
     info.style |= GUI_POPUP | GUI_NOFRAME;
     info.scroll = GUI_NOSCROLL;
     WndFing = WndCreateWithStruct( &info );
-    if( WndFing == NULL ) return;
-    WndRepaint( WndFing );
+    if( WndFing != NULL ) {
+    	WndRepaint( WndFing );
+    }
 }

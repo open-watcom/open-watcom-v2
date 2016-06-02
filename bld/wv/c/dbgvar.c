@@ -1047,6 +1047,7 @@ static void ArrayParms( var_node *v, array_info *ainfo )
 }
 
 static var_node *VarFirstNodeInScope( var_info *i, scope_state *s );
+
 static var_node *DoVarNextNode( var_info *i, var_node *v )
 {
     if( v->next != NULL )
@@ -1064,6 +1065,7 @@ static bool VarNodeHidden( var_info *i, var_node *v )
     var_type_bits       hide;
     var_node            *vstruct;
 
+    i=i;
     vstruct = VarFindParentStruct( v );
     if( vstruct != NULL && vstruct->display_type != NULL ) {
         hide = vstruct->display_type->hide;
@@ -1552,6 +1554,7 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
     array_info          ainfo;
     DIPHDL( sym, field );
 
+    info=info;
     if( v->node_type == NODE_INHERIT ) {
         name = StrCopy( ": ", TxtBuff );
         if( v->bits & VARNODE_PROTECTED ) {
@@ -1715,7 +1718,7 @@ void VarExpandRow( var_info *i, var_node *v, int row )
         the re-opening leaves any sub-expansions as they were.
 */
 {
-
+    row=row;
     if( v->node_type == NODE_INHERIT ) {
         v->display ^= VARDISP_INHERIT_CLOSED;
         VarNodeDisplayUpdate( v );
@@ -1737,6 +1740,7 @@ void VarExpandRow( var_info *i, var_node *v, int row )
 
 void VarExpandRowNoCollapse( var_info *i, var_node *v, int row )
 {
+    row=row;
     if( v->node_type == NODE_INHERIT ) {
         v->display ^= VARDISP_INHERIT_CLOSED;
         VarNodeDisplayUpdate( v );
@@ -2597,6 +2601,7 @@ void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
 {
     var_node    *curr;
 
+    i=i;
     *pinherit = 0;
     *pdepth = 0;
     for( curr = v->parent; curr != NULL; curr = curr->parent ) {

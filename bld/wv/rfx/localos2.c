@@ -69,8 +69,8 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = datetime.weekday;
 }
 
-int LocalInteractive( sys_handle fh )
-/*******************************/
+bool LocalInteractive( sys_handle fh )
+/************************************/
 {
     APIRET type;
     APIRET flags;
@@ -82,12 +82,12 @@ int LocalInteractive( sys_handle fh )
 #else
     if( DosQueryHType( fh, &type, &flags ) ) {
 #endif
-        return( 0 );
+        return( false );
     }
     if( type == 1 ) {   /* device type */
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }
 
 void LocalGetBuff( char *buff, unsigned size )

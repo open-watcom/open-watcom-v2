@@ -76,19 +76,19 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = date.day_of_week;
 }
 
-int LocalInteractive( sys_handle fh )
-/*******************************/
+bool LocalInteractive( sys_handle fh )
+/************************************/
 {
     tiny_ret_t rc;
 
     rc = TinyGetDeviceInfo( fh );
     if( TINY_ERROR( rc ) ) {
-        return( 0 );
+        return( false );
     }
     if( TINY_INFO( rc ) & TIO_CTL_DEVICE ) {
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }
 
 void LocalGetBuff( char *buff, unsigned size )

@@ -43,5 +43,5 @@ extern error_handle  LocalRename( const char *, const char * );
 extern void          LocalTime( int *hour, int *min, int *sec, int *hundredths );
 extern void          LocalDate( int *year, int *month, int *day, int *weekday );
 extern error_handle  LocalDateTime( sys_handle, int *, int *, int );
-extern int           LocalInteractive( sys_handle );
+extern bool          LocalInteractive( sys_handle );
 extern void          LocalGetBuff( char *, unsigned );

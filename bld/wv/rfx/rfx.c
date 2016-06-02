@@ -106,7 +106,7 @@ char                    *TxtBuff;
 char                    Buff[BUFF_LEN];
 char                    NullStr[] = { NULLCHAR };
 int                     MaxOnLine = { 0 };
-int                     Typing = { 0 };
+bool                    Typing = false;
 error_handle            ErrorStatus = { 0 };
 object_loc              DefaultLocation = LOC_DEFAULT;
 static  file_parse      Parse1;
@@ -210,10 +210,9 @@ static char * Day[] = {
 
 
 /* Forward declarations */
-extern  void    Replace( const char *frum, const char *to, char *into );
-extern  void    FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
-extern  int     GetFreeSpace( dir_handle *h, object_loc loc );
-extern  void    CopyStrMax( const char *src, char *dst, unsigned max_len );
+extern void     Replace( const char *frum, const char *to, char *into );
+extern void     FinishName( const char *fn, file_parse *parse, object_loc loc, int addext );
+extern int      GetFreeSpace( dir_handle *h, object_loc loc );
 
 void    FreeCopySpec( COPYPTR junk );
 void    ProcCD( int argc, char **argv, int crlf );
@@ -226,9 +225,10 @@ void    ProcErase( int argc, char **argv );
 void    ProcDelDir( int argc, char **argv );
 void    ProcRename( int argc, char **argv );
 void    ProcType( int argc, char **argv );
-int     ProcDrive( int argc, char **argv );
+bool    ProcDrive( int argc, char **argv );
 
-static void    FormatDTA( char *buff, trap_dta *dir, bool wide );
+static void     CopyStrMax( const char *src, char *dst, size_t max_len );
+static void     FormatDTA( char *buff, trap_dta *dir, bool wide );
 
 /**************************************************************************/
 /* UTILITIES                                                              */
@@ -382,7 +382,7 @@ static char *Copy( const void *s, void *d, unsigned len ) {
 static char *Fill( void *d, int len, char filler ) {
 
     char *dst = d;
-    while( len-- ) {
+    while( len-- > 0 ) {
         *dst++ = filler;
     }
     return( dst );
@@ -740,14 +740,14 @@ int main( int argc, char **argv )
     return( 0 );
 }
 
-static int Option( const char * str, char opt )
+static bool Option( const char * str, char opt )
 {
     if( *str == '/' || *str == '-' ) {
         if( tolower( str[1] ) == opt ) {
-            return( 1 );
+            return( true );
         }
     }
-    return( 0 );
+    return( false );
 }
 
 /**************************************************************************/
@@ -823,7 +823,7 @@ int ProcessArgv( int argc, char **argv, const char *cmd ) {
     } else if( strcmp( argv[0], "?" ) == 0 ) {
         Help();
     } else if( strcmp( argv[0], "" ) == 0 ) {
-    } else if( ProcDrive( argc, argv ) == 0 ) {
+    } else if( !ProcDrive( argc, argv ) ) {
         if( cmd != NULL ) {
             system( cmd );
         }
@@ -962,23 +962,23 @@ void FreeCopySpec( COPYPTR junk )
     DbgFree( junk );
 }
 
-static int HasWildCards( const char * src )
+static bool HasWildCards( const char * src )
 {
     if( strchr( src, '?' ) != NULL )
-        return( 1 );
+        return( true );
     if( strchr( src, '*' ) != NULL )
-        return( 1 );
-    return( 0 );
+        return( true );
+    return( false );
 }
 
 
-static int IsDir( const char *src, object_loc src_loc )
+static bool IsDir( const char *src, object_loc src_loc )
 {
     long rc;
 
     rc = GetAttrs( src, src_loc );
     if( rc < 0 ) {
-        return( 0 );
+        return( false );
     }
     return( (rc & IO_SUBDIRECTORY) != 0 );
 }
@@ -1186,14 +1186,14 @@ static error_handle   CopyASpec( const char *f1, const char *f2, object_loc f1lo
 }
 
 
-static void WildCopy( int recursive )
+static void WildCopy( bool recursive )
 {
     COPYPTR         list;
-    int             first;
+    bool            first;
     error_handle    errh;
-    int             none_in_root;
+    bool            none_in_root;
 
-    first = 1;
+    first = true;
     none_in_root = false;
     while( (list = CopySpecs) != NULL ) { /* Careful. List shifts underfoot */
         errh = CopyASpec( list->src, list->dst, list->src_loc, list->dst_loc );
@@ -1220,7 +1220,7 @@ static void WildCopy( int recursive )
             TransSetErr( errh );
             return;
         }
-        first = 0;
+        first = false;
         FreeCopySpec( list );
         MaxOnLine = 0;
     }
@@ -1235,14 +1235,14 @@ void ProcCopy( int argc, char **argv )
     char        name[80];
     char        *endp;
 
-    recursive = 0;
+    recursive = false;
     dst = NULL;
     src = NULL;
     FilesCopied = 0;
     DirectoriesMade = 0;
     for( i = 0; i < argc; ++i ) {
         if( Option( argv[i], 's' ) ) {
-            recursive = 1;
+            recursive = true;
         } else if( src == NULL ) {
             src = argv[i];
         } else if( dst == NULL ) {
@@ -1277,10 +1277,10 @@ void ProcCopy( int argc, char **argv )
             *endp = '.';
             *++endp = NULLCHAR;
         }
-        if( HasWildCards( dst ) == 0 ) {
+        if( !HasWildCards( dst ) ) {
             i = 0;
             if( HasWildCards( src ) || IsDir( src, src_loc ) ) {
-                if( IsDir( dst, dst_loc ) == 0 ) {
+                if( !IsDir( dst, dst_loc ) ) {
                     MakeDir( dst, dst_loc );
                     i = 1;
                 }
@@ -1318,9 +1318,9 @@ void ProcType( int argc, char **argv )
     }
     src = RealName( argv[0], &src_loc );
     AddCopySpec( src, "con", src_loc, LOC_LOCAL );
-    Typing = 1;
-    WildCopy( 0 );
-    Typing = 0;
+    Typing = true;
+    WildCopy( false );
+    Typing = false;
 }
 
 /**************************************************************************/
@@ -1686,15 +1686,15 @@ void ProcErase( int argc, char **argv )
 {
     object_loc  src_loc;
     const char  *src;
-    int         recursive;
+    bool        recursive;
     int         i;
-    int         erased_one;
+    bool        erased_one;
 
-    recursive = 0;
+    recursive = false;
     src = NULL;
     for( i = 0; i < argc; ++i ) {
         if( Option( argv[i], 's' ) ) {
-            recursive = 1;
+            recursive = true;
         } else if( src == NULL ) {
             src = argv[i];
         } else {
@@ -1736,15 +1736,15 @@ void ProcDelDir( int argc, char **argv )
     object_loc      src_loc;
     const char      *src;
     char            *tmp;
-    int             recursive;
+    bool            recursive;
     int             i;
     error_handle    errh;
 
-    recursive = 0;
+    recursive = false;
     src = NULL;
     for( i = 0; i < argc; ++i ) {
         if( Option( argv[i], 's' ) ) {
-            recursive = 1;
+            recursive = true;
         } else if( src == NULL ) {
             src = argv[i];
         } else {
@@ -1783,28 +1783,28 @@ void ProcDelDir( int argc, char **argv )
 /* DRV:                                                                   */
 /**************************************************************************/
 
-int ProcDrive( int argc, char **argv )
+bool ProcDrive( int argc, char **argv )
 {
     const char  *src;
     object_loc  src_loc;
     size_t      len;
 
     if( argc != 1 )
-        return( 0 );
+        return( false );
     src = argv[0];
     src = RealName( src, &src_loc );
     len = strlen( src ) - 1;
     if( src[len] != ':' )
-        return( 0 );
+        return( false );
     if( len == 0 ) {
         DefaultLocation = src_loc;
-        return( 1 );
+        return( true );
     } else if( len == 1 ) {
         SetDrv( *src, src_loc );
         DefaultLocation = src_loc;
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }
 
 /**************************************************************************/

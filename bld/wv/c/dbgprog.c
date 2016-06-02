@@ -854,7 +854,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
 {
     open_access         loc;
     const char          *name;
-    unsigned            len;
+    size_t              len;
     static char         fullname[2048];
     image_entry         *image;
     file_handle         fh;

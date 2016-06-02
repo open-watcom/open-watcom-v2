@@ -41,12 +41,12 @@
 
 typedef struct sorted_names {
     struct sorted_names *next;
+    mod_handle          mod;
+    name_list           list;
     bool                code;
     bool                data;
     bool                d2_only;
     bool                dup_ok;
-    mod_handle          mod;
-    name_list           list;
 } sorted_names;
 
 static sorted_names *SortedNames = NULL;
@@ -55,18 +55,29 @@ name_list *SymCompInit( bool code, bool data, bool d2_only, bool dup_ok, mod_han
 {
     void                *old;
     sorted_names        *curr;
+    walk_find           wf;
 
     for( curr = SortedNames; curr != NULL; curr = curr->next ) {
-        if( code != curr->code ) continue;
-        if( data != curr->data ) continue;
-        if( d2_only != curr->d2_only ) continue;
-        if( dup_ok != curr->dup_ok ) continue;
-        if( mod != curr->mod ) continue;
+        if( code != curr->code )
+            continue;
+        if( data != curr->data )
+            continue;
+        if( d2_only != curr->d2_only )
+            continue;
+        if( dup_ok != curr->dup_ok )
+            continue;
+        if( mod != curr->mod )
+            continue;
         return( &curr->list );
     }
     old = DUIHourGlass( NULL );
     _Alloc( curr, sizeof( *curr ) );
-    NameListInit( &curr->list, ( code ? WF_CODE : 0 ) + ( data ? WF_DATA : 0 ) );
+    wf = 0;
+    if( code )
+        wf |= WF_CODE;
+    if( data )
+        wf |= WF_DATA;
+    NameListInit( &curr->list, wf );
     NameListAddModules( &curr->list, mod, d2_only, dup_ok );
     DUIHourGlass( old );
     curr->next = SortedNames;
@@ -99,11 +110,15 @@ void SymCompMatches( name_list *list, char *match, unsigned *pfirst, unsigned *p
     len = strlen( match );
     for( first = 0; first < NameListNumRows( list ); ++first ) {
         NameListName( list, first, TxtBuff, SN_SOURCE );
-        if( strnicmp( match, TxtBuff, len ) == 0 ) break;
+        if( strnicmp( match, TxtBuff, len ) == 0 ) {
+            break;
+        }
     }
     for( last = first; last < NameListNumRows( list ); ++last ) {
         NameListName( list, last, TxtBuff, SN_SOURCE );
-        if( strnicmp( match, TxtBuff, len ) != 0 ) break;
+        if( strnicmp( match, TxtBuff, len ) != 0 ) {
+            break;
+        }
     }
     *pfirst = first;
     *plast = last;
