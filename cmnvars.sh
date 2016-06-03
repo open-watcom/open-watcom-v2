@@ -33,4 +33,13 @@ export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
 export INCLUDE=$OWDEFINCLUDE
 export WATCOM=$OWDEFWATCOM
 
+# Set Watcom tool chain version to WATCOMVER variable
+unset WATCOMVER
+if [ "$OWTOOLS" = "WATCOM" ]; then
+    echo export WATCOMVER=__WATCOMC__ >watcom.gc
+    wcc386 -p watcom.gc >watcom.sh
+    . ./watcom.sh
+    rm watcom.*
+fi
+
 echo Open Watcom build environment
