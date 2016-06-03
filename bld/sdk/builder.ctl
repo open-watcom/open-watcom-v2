@@ -1,8 +1,6 @@
 # SDK Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
-
 [ INCLUDE <OWROOT>/build/master.ctl ]
 [ LOG <LOGFNAME>.<LOGEXT> ]
 
@@ -21,6 +19,4 @@ cdsay .
 [ INCLUDE wde/builder.ctl ]
 [ INCLUDE imgedit/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

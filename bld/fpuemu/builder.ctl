@@ -9,6 +9,4 @@ cdsay .
 [ INCLUDE i86/builder.ctl ]
 [ INCLUDE 386/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

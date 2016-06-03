@@ -1,11 +1,11 @@
 # Documentation Builder Control file
 # ==================================
 
-set PROJDIR=<CWD>
 set PROJNAME=docs
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 cdsay <PROJDIR>
 
@@ -18,9 +18,9 @@ cdsay <PROJDIR>
     pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
     
 [ BLOCK . . ]
-#============
 
 [ BLOCK <1> docs rel ]
+#=====================
     cdsay <PROJDIR>
 
 [ BLOCK <1> docs rel cprel ]
@@ -37,5 +37,5 @@ cdsay <PROJDIR>
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

@@ -13,7 +13,5 @@ cdsay .
 [ INCLUDE ppc/builder.ctl ]
 [ INCLUDE owcc/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .
 

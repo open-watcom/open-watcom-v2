@@ -12,6 +12,4 @@ cdsay .
 [ INCLUDE export/builder.ctl ]
 [ INCLUDE mapsym/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

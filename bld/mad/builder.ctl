@@ -11,6 +11,4 @@ cdsay .
 [ INCLUDE ppc/builder.ctl ]
 [ INCLUDE mps/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

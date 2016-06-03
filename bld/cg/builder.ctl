@@ -12,6 +12,4 @@ cdsay .
 [ INCLUDE risc/mps/builder.ctl ]
 [ INCLUDE risc/ppc/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

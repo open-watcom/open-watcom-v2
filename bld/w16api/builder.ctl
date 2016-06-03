@@ -1,8 +1,9 @@
 # Windows 16-bit API Builder Control file
 # =======================================
 
-set PROJDIR=<CWD>
 set PROJNAME=w16api
+
+set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 

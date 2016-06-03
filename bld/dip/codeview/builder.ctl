@@ -1,8 +1,9 @@
 # CodeView DIP Builder Control file
 # =================================
 
-set PROJDIR=<CWD>
 set PROJNAME=codeview
+
+set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 

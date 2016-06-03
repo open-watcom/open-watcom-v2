@@ -1,7 +1,7 @@
-# DWARF Writer Builder Control file
+# DWARF Reader Builder Control file
 # =================================
 
-set PROJNAME=dwarfdw
+set PROJNAME=dwarfdr
 
 set PROJDIR=<CWD>
 

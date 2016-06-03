@@ -10,6 +10,4 @@ cdsay .
 [ INCLUDE 386/builder.ctl ]
 [ INCLUDE axp/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

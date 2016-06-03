@@ -11,6 +11,4 @@ cdsay .
 [ INCLUDE ide/builder.ctl ]
 [ INCLUDE cfg/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .
