@@ -8,10 +8,6 @@ bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-!ifneq bootstrap 1
-no_def_include  = -x #-xx -zam
-!endif
-
 !ifeq release 0
 bld_gen_cflags  = -d2-w8-j-fo=.obj
 !else
@@ -19,10 +15,10 @@ bld_gen_cflags  = -ox-w8-j-fo=.obj
 !endif
 
 # options for source compilations
-bld_cflags      = $(bld_gen_cflags) $(no_def_include)
+bld_cflags      = $(bld_gen_cflags)
 
 # options for single source utility compilations
-bld_clflags     = $(bld_gen_cflags) $(no_def_include) -fe=$^@
+bld_clflags     = $(bld_gen_cflags) -fe=$^@
 
 # options for linking
 bld_ldflags     =
