@@ -40,6 +40,7 @@ addons:
       name: "open-watcom/open-watcom-v2"
       description: "Build submitted via Travis CI"
 
+    notification_email:    malak.jiri@gmail.com
     build_command_prepend: . $OWROOT/cmnvars.sh
     build_command:         . $OWROOT/build.sh
     branch_pattern:        master
