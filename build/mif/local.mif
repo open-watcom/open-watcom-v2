@@ -81,7 +81,7 @@ common_cppflags_linux = -D__LINUX__ -D__UNIX__ -D__FLAT__
 common_cppflags_386   = -D_M_IX86 -D__386__ -D__LINUX_386__
 common_cppflags_x64   = -D_M_X64 -D__LINUX_X64__
 common_cppflags_ppc   = -D__PPC__
-common_cppflags_mips  = -D__MIPS__ -Umips
+common_cppflags_mps   = -D__MIPS__ -Umips
 common_cppflags_arm   = -D_M_ARM -D__LINUX_ARM__
 
 # common release/debug flags
@@ -191,7 +191,7 @@ cppflags_linux = $(common_cppflags_linux)
 cppflags_osi   = $(common_cppflags_linux)
 cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
-cppflags_mips  = $(common_cppflags_mips)
+cppflags_mps   = $(common_cppflags_mps)
 cppflags_x64   = $(common_cppflags_x64)
 cppflags_arm   = $(common_cppflags_arm)
 
