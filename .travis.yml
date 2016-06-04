@@ -42,5 +42,5 @@ addons:
 
     notification_email:    malak.jiri@gmail.com
     build_command_prepend:
-    build_command:         . $OWROOT/build.sh
+    build_command:         $OWROOT/build.sh
     branch_pattern:        master
