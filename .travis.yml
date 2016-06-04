@@ -33,3 +33,13 @@ after_failure:
  - git add -f .
  - git commit -m "Travis CI build $TRAVIS_BUILD_NUMBER - log files"
  - git push -f origin
+
+addons:
+  coverity_scan:
+    project:
+      name: "open-watcom/open-watcom-v2"
+      description: "Build submitted via Travis CI"
+
+    build_command_prepend: . $OWROOT/cmnvars.sh
+    build_command:         . $OWROOT/build.sh
+    branch_pattern:        master
