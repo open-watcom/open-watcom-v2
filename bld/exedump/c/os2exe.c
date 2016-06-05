@@ -379,7 +379,7 @@ static void dmp_obj_flags( unsigned_32 flags )
 {
     char    name[256];
 
-    name[0] = 0;
+    name[0] = '\0';
     if( flags & OBJ_READABLE ) {
         strcat( name, "READABLE|" );
     }
@@ -426,7 +426,7 @@ static void dmp_obj_flags( unsigned_32 flags )
         strcat( name, "IOPL|" );
     }
     if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = 0;
+        name[strlen(name)-1] = '\0';
     }
     Wdputs( name );
     Wdputslc( "\n" );

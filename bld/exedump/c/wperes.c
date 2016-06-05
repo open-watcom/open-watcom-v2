@@ -135,7 +135,7 @@ static res_name get_name( unsigned_32 offset )
         name[i] = uniname[i];
     }
     lname.rname = name;
-    lname.rname[lname.len] = 0;
+    lname.rname[lname.len] = '\0';
     return( lname );
 }
 

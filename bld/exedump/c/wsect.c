@@ -220,8 +220,8 @@ static void dump_hex( const uint_8 *input, uint length )
             ++i;
             ++offset;
         }
-        *p = 0;
-        printable[ i ] = 0;
+        *p = '\0';
+        printable[i] = '\0';
         Puthex( old_offset, 8 );
         Wdputc( ':' );
         Wdputs( hex );
