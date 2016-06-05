@@ -195,11 +195,11 @@ void reportError(WicErrors err, ...) {
     }
     errStrLen += sprintf(errStr+errStrLen, "%s: ", errPrefix[errType]);
 
-    if (!getResStr(err, resStr)) {
+    if( !getResStr( err, resStr ) ) {
         printf("Internal error inside ReportError, can't get resource, exiting...\n");
         exit(1);
     }
-    va_start(arglist, err);
+    va_start( arglist, err );
     errStrLen += vsprintf(errStr+errStrLen, resStr, arglist);
     va_end(arglist);
     if (g_currPos == NULL || displayThisError)
@@ -386,26 +386,27 @@ void checkMemory(void) {
 
 /*------------------------ Exit -----------------------------------*/
 
-void printUsageAndExit(void) {
+void printUsageAndExit( void )
+{
     int i = MSG_USAGE_BASE;
     int j = 0;
     char resStr[MAX_RESOURCE_SIZE];
 
-    if (!getResStr(i, resStr)) {
-        reportError(FATAL_INTERNAL, "Can't get usage resource");
+    if( !getResStr( i, resStr ) ) {
+        reportError( FATAL_INTERNAL, "Can't get usage resource" );
     }
 
-    while (FingerMsg[j])
-        printf("%s\n", FingerMsg[j++]);
+    while( FingerMsg[j] )
+        printf( "%s\n", FingerMsg[j++] );
 
-    while (strcmp(resStr, "END") != 0) {
-        printf("%s\n", resStr);
+    while( strcmp( resStr, "END" ) != 0 ) {
+        printf( "%s\n", resStr );
         ++i;
-        if (!getResStr(i, resStr)) {
-            reportError(FATAL_INTERNAL, "Can't get usage resource");
+        if( !getResStr( i, resStr ) ) {
+            reportError( FATAL_INTERNAL, "Can't get usage resource" );
         }
     }
-    wicExit(0);
+    wicExit( 0 );
 }
 
 /*--------------------- Debugging ----------------------------------*/

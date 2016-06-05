@@ -129,7 +129,7 @@ BOOLEAN MsgInit( void )
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = TRUE;
     return( FALSE );
-#else    
+#else
     return( TRUE );
 #endif
 }
@@ -159,7 +159,7 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
 }
 
 void MsgGetTail( int resourceid, char *buffer )
-/****************************************************/
+/*********************************************/
 {
     char        msg[MAX_RESOURCE_SIZE];
     char const  *p;

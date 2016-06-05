@@ -110,7 +110,7 @@ void MsgPutUsage( void )
     for( i = MSG_USE_BASE;; i++ ) {
         only_newline = 0;
         MsgGet( i, msg_buff );
-        if( (msg_buff[ 0 ] == '~')&&(msg_buff[ 1 ] == 0 ) ) {
+        if( (msg_buff[0] == '~') && (msg_buff[1] == 0 ) ) {
             only_newline = 1;
         }
 #if 0
