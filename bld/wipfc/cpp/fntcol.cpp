@@ -39,8 +39,11 @@ FontCollection::FontCollection( int cp ) : bytes( 0 )
     fnt.height = 0;
     fnt.width = 0;
     fnt.codePage = cp;
-    add( fnt );                 //set the default font
-    
+    try {
+        add( fnt );                 //set the default font
+    }
+    catch( Class2Error &e ) {
+    }
 }
 /****************************************************************************/
 size_t FontCollection::add( FontEntry& fnt )

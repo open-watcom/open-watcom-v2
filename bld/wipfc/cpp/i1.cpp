@@ -170,7 +170,7 @@ size_t I1::write( std::FILE* out )
             Synonym* syn( document->synonym( *itr ) );
             primary->addSynonym( syn->location() );
         }
-        catch( Class1Error& e ) {
+        catch( Class3Error& e ) {
             printError( e.code );
         }
     }
