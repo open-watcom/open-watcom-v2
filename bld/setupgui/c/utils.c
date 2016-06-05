@@ -1206,12 +1206,10 @@ bool CheckDrive( bool issue_message )
     for( i = 0; i < max_targs; i++ ) {
         // get drive letter for each target (actually the path including the drive letter)
         disks[i] = SimGetTargetDriveLetter( i );
-        ConcatDirSep( disks[i] );
-        if( disks[i] == NULL ) {
+        if( disks[i] == NULL )
             return( false );
-        } else {
-            disk_counted[i] = false;
-        }
+        ConcatDirSep( disks[i] );
+        disk_counted[i] = false;
     }
     // check for enough disk space, combine drives that are the same
     for( i = 0; i < max_targs; i++ ) {
