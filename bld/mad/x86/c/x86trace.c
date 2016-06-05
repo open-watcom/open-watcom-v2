@@ -49,8 +49,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *m
 
 mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_registers *mr )
 {
-    if( mr->x86.cpu.ss  == watch_stack.mach.segment
-        && mr->x86.cpu.esp <  watch_stack.mach.offset ) {
+    if( mr->x86.cpu.ss == watch_stack.mach.segment && mr->x86.cpu.esp < watch_stack.mach.offset ) {
         /*
            we're down some levels in a recursive call -- want to unwind.
         */
@@ -233,7 +232,8 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
             return( MTRH_STEP );
         break;
     default:
-        if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT ) break;
+        if( dd->ins.flags.u.x86 & DIF_X86_EMU_INT )
+            break;
         if( ( dd->ins.flags.u.x86 & DIF_X86_FP_INS )
             && ( ( dd->ins.flags.u.x86 & DIF_X86_FWAIT ) || ( MCSystemConfig()->fpu == X86_EMU ) ) )
             break;
@@ -391,9 +391,7 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         ConvAddr32ToAddr48( data.a32, a.mach );
     }
     len = 0;
-    for( ;; ) {
-        if( MCReadMem( a, sizeof( data.b[0] ), &data.b[0] ) == 0 )
-            break;
+    while( MCReadMem( a, sizeof( data.b[0] ), &data.b[0] ) != 0 ) {
         a.mach.offset++;
         if( len + 1 < buff_size )
             buff[len] = data.b[0];

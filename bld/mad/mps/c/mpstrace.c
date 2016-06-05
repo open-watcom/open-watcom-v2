@@ -146,10 +146,11 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
 
         if( dd->ins.flags.u.mips & DIF_MIPS_LINK ) {
             // note that linking conditonal jumps unconditionally update r31!
-            if( dd->ins.type == DI_MIPS_JALR )
+            if( dd->ins.type == DI_MIPS_JALR ) {
                 base = dd->ins.op[0].base;  // 'jalr' may update any register
-            else
+            } else {
                 base = DR_MIPS_r31;         // everything else updates r31
+            }
             if( base != DR_MIPS_r0 ) {
                 reg = TRANS_REG( out, base );
                 *reg = out->mips.pc;
@@ -208,9 +209,7 @@ mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *bu
         return( MS_OK );
     a.mach.offset = mr->mips.u4.a0.u._32[I64LO32];
     len = 0;
-    for( ;; ) {
-        if( MCReadMem( a, sizeof( ch ), &ch ) == 0 )
-            break;
+    while( MCReadMem( a, sizeof( ch ), &ch ) != 0 ) {
         if( len + 1 < buff_size )
             buff[len] = ch;
         if( ch == '\0' )
