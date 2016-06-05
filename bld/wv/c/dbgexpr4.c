@@ -448,7 +448,7 @@ void DoAddr( void )
         ExprSetAddrInfo( ExprSP, false );
         if( ExprSP->th != NULL ) {
             GetMADTypeDefaultAt( ExprSP->v.addr, MTK_ADDRESS, &mti );
-            TypePointer(ExprSP->th, TM_FAR, mti.b.bits / BITS_PER_BYTE, ExprSP->th);
+            TypePointer( ExprSP->th, TM_FAR, BITS2BYTES( mti.b.bits ), ExprSP->th );
             ExprSP->info.kind = TK_POINTER;
         } else {
             ExprSP->info.kind = TK_ADDRESS;

@@ -36,7 +36,7 @@
 #include "jvmtypes.h"
 #include "madregs.h"
 
-#define BIT_OFF( who ) (offsetof( mad_registers, jvm.who ) * BITS_PER_BYTE)
+#define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, jvm.who ) )
 
 enum {
     RS_NONE,
@@ -237,15 +237,15 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
             return( MS_MODIFIED );
         }
     } else {
-        p_old = (unsigned_8 *)old + (ri->bit_start / BITS_PER_BYTE);
-        p_cur = (unsigned_8 *)cur + (ri->bit_start / BITS_PER_BYTE);
+        p_old = (unsigned_8 *)old + BYTEIDX( ri->bit_start );
+        p_cur = (unsigned_8 *)cur + BYTEIDX( ri->bit_start );
         size = ri->bit_size;
-        if( size >= BITS_PER_BYTE ) {
+        if( size >= BYTES2BITS( 1 ) ) {
             /* it's going to be byte aligned */
-            return( memcmp( p_old, p_cur, size / BITS_PER_BYTE ) != 0 ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
+            return( memcmp( p_old, p_cur, BITS2BYTES( size ) ) != 0 ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
         } else {
             mask = (1 << size) - 1;
-            #define GET_VAL( w ) (((*p_##w >> (ri->bit_start % BITS_PER_BYTE))) & mask)
+            #define GET_VAL( w )    ((*p_##w >> BITIDX( ri->bit_start )) & mask)
             return( GET_VAL( old ) != GET_VAL( cur ) ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
         }
     }
@@ -263,7 +263,7 @@ mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_reg
 
     memset( a, 0, sizeof( *a ) );
     bit_start = ri->bit_start;
-    p = (unsigned_32 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
+    p = (unsigned_32 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
     a->mach.offset = *p;
     return( MS_OK );
 }

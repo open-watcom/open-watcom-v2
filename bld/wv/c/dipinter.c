@@ -93,7 +93,7 @@ void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
     mad_type_info       mti;
 
     MADTypeInfo( mt, &mti );
-    ti->size = mti.b.bits / BITS_PER_BYTE;
+    ti->size = BITS2BYTES( mti.b.bits );
     ti->modifier = TM_NONE;
     switch( mti.b.kind ) {
     case MTK_INTEGER:

@@ -294,7 +294,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     } else {
         for( i = 0; i < num_possible; ++i ) {
             MADTypeInfo( possible[i].type, &tinfo );
-            if( memcmp( &value, possible[i].data, tinfo.b.bits / BITS_PER_BYTE ) == 0 ) {
+            if( memcmp( &value, possible[i].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ) {
                 break;
             }
         }

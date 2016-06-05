@@ -100,7 +100,8 @@ ExceptDlgInfo * FaultGetExceptDlgInfo( HWND fault )
 
 }
 
-static void SetIp( HWND hwnd, address *addr ) {
+static void SetIp( HWND hwnd, address *addr )
+{
     mad_type_info   host;
     mad_type_info   mti;
     void            *item;
@@ -110,7 +111,7 @@ static void SetIp( HWND hwnd, address *addr ) {
     max = BUF_SIZE - 1;
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, addr ), &mti );
-    item = alloca( ( mti.b.bits / BITS_PER_BYTE ) + 1);
+    item = alloca( BITS2BYTES( mti.b.bits ) + 1 );
     MADTypeConvert( &host, addr, &mti, item, 0 );
     MADTypeToString( 16, &mti, item, buf, &max );
     SetDlgItemText( hwnd, INT_CS_IP, buf );

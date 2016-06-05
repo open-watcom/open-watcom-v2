@@ -49,23 +49,23 @@ void BitGet( unsigned_8 *dst, unsigned_8 *src, unsigned short start,
     int             right_shift;
     unsigned_8      mask;
 
-    right_shift = start % BITS_PER_BYTE;
-    left_shift = BITS_PER_BYTE - right_shift;
-    extra = size % BITS_PER_BYTE;
-    size /= BITS_PER_BYTE;
+    right_shift = BITIDX( start );
+    left_shift = BYTES2BITS( 1 ) - right_shift;
+    extra = BITIDX( size );
+    size = BYTEIDX( size );
     if( extra ) {
         memset( dst, 0, size + 1 );
     } else {
         memset( dst, 0, size );
     }
-    src += ( start / BITS_PER_BYTE );
+    src += BYTEIDX( start );
     for( i = 0; i < size; i++ ) {
         dst[i] = ( src[i] >> right_shift ) | ( src[i + 1] << left_shift );
     }
 
     if( extra ) {
         mask = 0xFF;
-        mask >>= ( BITS_PER_BYTE - extra );
+        mask >>= ( BYTES2BITS( 1 ) - extra );
         dst[size] |= ( ( src[size] >> right_shift ) & mask );
     }
 }
@@ -82,9 +82,9 @@ void BitPut(unsigned_8 *dst, unsigned short start, unsigned_8 *src,
     int             extra;
     int             i;
 
-    dst += ( start / BITS_PER_BYTE );
-    start %= BITS_PER_BYTE;
-    rshift = BITS_PER_BYTE - start;
+    dst += BYTEIDX( start );
+    start = BITIDX( start );
+    rshift = BYTES2BITS( 1 ) - start;
     lmask = rmask = 0xFF;
     lmask <<= start;
     if( size < rshift ){
@@ -97,14 +97,14 @@ void BitPut(unsigned_8 *dst, unsigned short start, unsigned_8 *src,
     *dst |= ( rmask & ( *src << start ) );
     if( size != 0 ) {
         dst++;
-        extra = size % BITS_PER_BYTE;
-        size /= BITS_PER_BYTE;
+        extra = BITIDX( size );
+        size = BYTEIDX( size );
         for( i = 0; i < size; i++ ) {
             dst[i] = ( ( src[i] >> rshift ) | ( src[i + 1] << start ) );
         }
         if( extra != 0 ){
             rmask = 0xFF;
-            rmask >>= ( BITS_PER_BYTE - extra );
+            rmask >>= ( BYTES2BITS( 1 ) - extra );
             dst[size] &= ~rmask;
             dst[size] |= ( rmask & ( src[size] >> rshift ) );
         }

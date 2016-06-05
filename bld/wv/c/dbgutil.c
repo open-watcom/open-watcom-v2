@@ -68,10 +68,10 @@ unsigned DefaultSize( default_kind dk )
     mti.b.kind = MTK_BASIC;
     if( info.size == 0 ) {
         GetMADTypeDefaultAt( GetCodeDot(),
-                (dk==DK_INT) ? MTK_INTEGER : MTK_ADDRESS, &mti );
-        info.size = mti.b.bits / BITS_PER_BYTE;
+                ( dk == DK_INT ) ? MTK_INTEGER : MTK_ADDRESS, &mti );
+        info.size = BITS2BYTES( mti.b.bits );
         if( mti.b.kind == MTK_ADDRESS ) {
-            info.size -= (mti.a.seg.bits / BITS_PER_BYTE);
+            info.size -= BITS2BYTES( mti.a.seg.bits );
         }
     }
     if( info.kind == TK_POINTER && info.modifier == TM_FAR ) {
@@ -79,7 +79,7 @@ unsigned DefaultSize( default_kind dk )
             /* haven't gotten the info yet */
             GetMADTypeDefaultAt( GetCodeDot(), MTK_ADDRESS, &mti );
         }
-        info.size -= (mti.a.seg.bits / BITS_PER_BYTE);
+        info.size -= BITS2BYTES( mti.a.seg.bits );
     }
     return( info.size );
 }

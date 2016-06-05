@@ -245,7 +245,7 @@ static void RemoveOneWP( brkp *bp )
     if( bp->status.b.in_place && SectIsLoaded( bp->loc.addr.sect_id,OVL_MAP_EXE ) ) {
         bp->status.b.in_place = false;
         MADTypeInfo( bp->th, &mti );
-        RemoteRestoreWatch( bp->loc.addr, mti.b.bits / BITS_PER_BYTE );
+        RemoteRestoreWatch( bp->loc.addr, BITS2BYTES( mti.b.bits ) );
     }
 }
 
@@ -1062,7 +1062,7 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
 
     if( !IS_BP_EXECUTE( th ) ) {
         MADTypeInfo( th, &mti );
-        size = mti.b.bits / BITS_PER_BYTE;
+        size = BITS2BYTES( mti.b.bits );
         enough_iron = RemoteSetWatch( loc, size, &mult );
     } else {
         enough_iron = true;
@@ -1071,7 +1071,7 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
         if( IS_BP_EXECUTE( wp->th ) )
             continue;
         MADTypeInfo( wp->th, &mti );
-        if( !RemoteSetWatch( wp->loc.addr, mti.b.bits / BITS_PER_BYTE, &mult ) ) {
+        if( !RemoteSetWatch( wp->loc.addr, BITS2BYTES( mti.b.bits ), &mult ) ) {
             enough_iron = false;
         }
     }
@@ -1082,7 +1082,7 @@ bool BrkCheckWatchLimit( address loc, mad_type_handle th )
         if( IS_BP_EXECUTE( wp->th ) )
             continue;
         MADTypeInfo( wp->th, &mti );
-        RemoteRestoreWatch( wp->loc.addr, mti.b.bits / BITS_PER_BYTE );
+        RemoteRestoreWatch( wp->loc.addr, BITS2BYTES( mti.b.bits ) );
     }
     if( !enough_iron ) {
         return( DlgAreYouNuts( mult ) );
@@ -1407,7 +1407,7 @@ static brkp *SetPoint( memory_expr def_seg, mad_type_handle th )
     ReqEOC();
     if( !IS_BP_EXECUTE( th ) ) {
         MADTypeInfo( th, &mti );
-        switch( mti.b.bits / BITS_PER_BYTE ) {
+        switch( BITS2BYTES( mti.b.bits ) ) {
         case 1:
         case 2:
         case 4:
@@ -1459,7 +1459,7 @@ bool BreakWrite( address addr, mad_type_handle th, const char *comment )
     if( IS_BP_EXECUTE( th ) )
         return( false );
     MADTypeInfo( th, &mti );
-    switch( mti.b.bits / BITS_PER_BYTE ) {
+    switch( BITS2BYTES( mti.b.bits ) ) {
     case 8:
         if( !Is8ByteBreakpointsSupported() ) {
             ok_to_try = false;
@@ -1661,7 +1661,7 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
                         if( !drop_hit )
                             hit = true;
                     } else {
-                        if( ( memcmp( &bp->item, &item, mti.b.bits / BITS_PER_BYTE ) != 0 ) || !bp->status.b.has_value ) {
+                        if( ( memcmp( &bp->item, &item, BITS2BYTES( mti.b.bits ) ) != 0 ) || !bp->status.b.has_value ) {
                             hit = true;
                         }
                     }
@@ -1786,7 +1786,7 @@ void InsertWPs( void )
         if( wp->status.b.active && SectIsLoaded( wp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
             wp->status.b.in_place = true;
             MADTypeInfo( wp->th, &mti );
-            RemoteSetWatch( wp->loc.addr, mti.b.bits / BITS_PER_BYTE, &mult );
+            RemoteSetWatch( wp->loc.addr, BITS2BYTES( mti.b.bits ), &mult );
         }
     }
 }

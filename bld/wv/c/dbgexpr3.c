@@ -847,7 +847,7 @@ void ToItemMAD( stack_entry *entry, item_mach *tmp, mad_type_info *mti )
     unsigned            bytes;
     mad_type_info       src;
 
-    bytes = mti->b.bits / BITS_PER_BYTE;
+    bytes = BITS2BYTES( mti->b.bits );
     switch( mti->b.kind ) {
     case MTK_INTEGER:
         ConvertTo( entry, TK_INTEGER, TM_UNSIGNED, bytes );

@@ -115,9 +115,9 @@ bool PerformExplicitCall( address start, mad_string ctype, int num_parms )
 
     stack = GetRegSP();
     GetMADTypeDefaultAt( stack, MTK_INTEGER, &mti );
-    align = mti.b.bits / BITS_PER_BYTE;
+    align = BITS2BYTES( mti.b.bits );
     for( ; num_parms > 0; --num_parms ) {
-        if( ExprSP->v.loc.e[0].type!=LT_ADDR && ExprSP->v.loc.e[0].u.p==NULL ) {
+        if( ExprSP->v.loc.e[0].type != LT_ADDR && ExprSP->v.loc.e[0].u.p == NULL ) {
             /* push item */
             src = StkEntry( 1 );
             amount = _RoundUp( src->info.size, align );

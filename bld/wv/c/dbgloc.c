@@ -140,18 +140,17 @@ void LocationTrunc( location_list *ll, unsigned bits )
 }
 #endif
 
-#define BPB             BITS_PER_BYTE
 #define TEMP_SIZE       128
 #define MAX_BIT_SIZE    0x1000
 #define BUMP_INTERNAL( i, b )   (i).u.p = (byte *)(i).u.p + (b)
 #define NORMALIZE_BITSTART( i )                             \
     {                                                       \
         if( (i).type == LT_ADDR ) {                         \
-            (i).u.addr.mach.offset += (i).bit_start / BPB;  \
+            (i).u.addr.mach.offset += BYTEIDX( (i).bit_start ); \
         } else {                                            \
             BUMP_INTERNAL( i, (i).bit_start / 8 );          \
         }                                                   \
-        (i).bit_start %= BPB;                               \
+        (i).bit_start = BITIDX( (i).bit_start );            \
     }
 
 static dip_status DoLocAssign( location_list *dst, location_list *src,
@@ -174,20 +173,21 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
     unsigned_32         pad_bytes = 0;
     bool                mem_mod;
     size_t              (*modify)( address, const void *, size_t );
+    unsigned long       bits;
 
     modify = _IsOn( SW_RECORD_LOCATION_ASSIGN ) ? ChangeMem : ProgPoke;
     mem_mod = false;
-    len *= BPB; /* turn byte length into bit length */
+    bits = BYTES2BITS( len ); /* turn byte length into bit length */
     padding = false;
     sidx = 0;
     didx = 0;
     sitem.bit_length = 0;
     ditem.bit_length = 0;
-    for( ; len > 0; len -= size ) {
+    for( ; bits > 0; bits -= size ) {
         while( sitem.bit_length == 0 ) {
             if( padding ) {
                 sitem.bit_start = 0;
-                sitem.bit_length = sizeof( pad_bytes ) * BPB;
+                sitem.bit_length = TYPE2BITS( pad_bytes );
                 sitem.type = LT_INTERNAL;
                 sitem.u.p = &pad_bytes;
             } else if( sidx < src->num ) {
@@ -196,7 +196,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                     padding = true;
                     if( sign_extend ) {
                         size = sitem.bit_start + sitem.bit_length - 1;
-                        num_bytes = size / BPB;
+                        num_bytes = BYTEIDX( size );
                         if( sitem.type == LT_ADDR ) {
                             sitem.u.addr.mach.offset += num_bytes;
                             if( ProgPeek( sitem.u.addr, &tmp2, 1 ) != 1 ) {
@@ -206,30 +206,30 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                         } else {
                             tmp2 = *( (byte *)sitem.u.p + num_bytes );
                         }
-                        if( tmp2 & (1 << ( size % BPB )) ) {
+                        if( tmp2 & (1 << BITIDX( size )) ) {
                             /* sign bit is on - flip padding bytes */
                             pad_bytes = ~pad_bytes;
                         }
                     }
                 }
-            } else if( len > MAX_BIT_SIZE ) {
+            } else if( bits > MAX_BIT_SIZE ) {
                 sitem.bit_length = MAX_BIT_SIZE;
             } else {
-                sitem.bit_length = len;
+                sitem.bit_length = bits;
             }
         }
         while( ditem.bit_length == 0 ) {
             if( didx < dst->num ) {
                 ditem = dst->e[didx++];
                 if( didx == dst->num && ditem.bit_length != 0 ) {
-                    if( len > ditem.bit_length ) {
-                        len = ditem.bit_length;
+                    if( bits > ditem.bit_length ) {
+                        bits = ditem.bit_length;
                     }
                 }
-            } else if( len > MAX_BIT_SIZE ) {
+            } else if( bits > MAX_BIT_SIZE ) {
                 ditem.bit_length = MAX_BIT_SIZE;
             } else {
-                ditem.bit_length = len;
+                ditem.bit_length = bits;
             }
         }
         if( !mem_mod && ditem.type == LT_ADDR ) {
@@ -245,11 +245,11 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
         if( sitem.bit_start == 0
           && ditem.bit_start == 0
           && (sitem.type != LT_ADDR || ditem.type != LT_ADDR)
-          && size >= BPB ) {
+          && size >= BYTES2BITS( 1 ) ) {
             /* special case - can move straight from one to the other */
-            num_bytes = size / BPB;
-            size -= num_bytes * BPB;
-            len -= num_bytes * BPB;
+            num_bytes = BYTEIDX( size );
+            size -= BYTES2BITS( num_bytes );
+            bits -= BYTES2BITS( num_bytes );
             if( sitem.type == LT_ADDR ) {
                 if( ProgPeek( sitem.u.addr, ditem.u.p, num_bytes ) != num_bytes )
                     return( DS_ERR|DS_NO_READ_MEM );
@@ -265,14 +265,14 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                 BUMP_INTERNAL( sitem, num_bytes );
                 BUMP_INTERNAL( ditem, num_bytes );
             }
-            sitem.bit_length -= num_bytes * BPB;
-            ditem.bit_length -= num_bytes * BPB;
+            sitem.bit_length -= BYTES2BITS( num_bytes );
+            ditem.bit_length -= BYTES2BITS( num_bytes );
         }
         if( size != 0 ) {
             /* generalized case, have to bit-blit */
-            if( size > TEMP_SIZE * BPB )
-                size = TEMP_SIZE * BPB;
-            num_bytes = ( sitem.bit_start + size + ( BPB - 1 ) ) / BPB;
+            if( size > BYTES2BITS( TEMP_SIZE ) )
+                size = BYTES2BITS( TEMP_SIZE );
+            num_bytes = UNALGN_BITS2BYTES( sitem.bit_start + size );
             if( sitem.type == LT_ADDR ) {
                 if( ProgPeek( sitem.u.addr, tmp, num_bytes ) != num_bytes ) {
                     return( DS_ERR|DS_NO_READ_MEM );
@@ -280,7 +280,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
             } else {
                 memcpy( tmp, sitem.u.p, num_bytes );
             }
-            mask = (1 << ( ( sitem.bit_start + size ) % BPB )) - 1;
+            mask = (1 << BITIDX( sitem.bit_start + size )) - 1;
             if( mask != 0 ) {
                 tmp[num_bytes - 1] &= mask;
             }
@@ -290,14 +290,14 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                 shift = -shift;
                 for( i = 0; i < num_bytes; ++i ) {
                     tmp3 = tmp[i];
-                    tmp[i] = (tmp3 << shift) | (tmp2 >> (BPB - shift));
+                    tmp[i] = (tmp3 << shift) | (tmp2 >> (BYTES2BITS( 1 ) - shift));
                     tmp2 = tmp3;
                 }
-                tmp[i] = tmp2 >> (BPB-shift);
+                tmp[i] = tmp2 >> (BYTES2BITS( 1 ) - shift);
             } else if( shift > 0 ) {
                 for( i = num_bytes; i-- > 0; ) {
                     tmp3 = tmp[i];
-                    tmp[i] = (tmp3 >> shift) | (tmp2 << (BPB - shift));
+                    tmp[i] = (tmp3 >> shift) | (tmp2 << (BYTES2BITS( 1 ) - shift));
                     tmp2 = tmp3;
                 }
             }
@@ -314,8 +314,8 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                 tmp[0] &= ~mask;
                 tmp[0] |= tmp2;
             }
-            num_bytes = ( ditem.bit_start + size ) / BPB;
-            dest_num_bytes = ( ditem.bit_start + size + ( BPB - 1 ) ) / BPB;
+            num_bytes = BYTEIDX( ditem.bit_start + size );
+            dest_num_bytes = UNALGN_BITS2BYTES( ditem.bit_start + size );
             if( dest_num_bytes > num_bytes ) {
                 if( ditem.type == LT_ADDR ) {
                     ditem.u.addr.mach.offset += num_bytes;
@@ -326,7 +326,7 @@ static dip_status DoLocAssign( location_list *dst, location_list *src,
                 } else {
                     tmp2 = *( (byte *)ditem.u.p + num_bytes );
                 }
-                mask = (1 << ( ( ditem.bit_start + size ) % BPB )) - 1;
+                mask = (1 << BITIDX( ditem.bit_start + size )) - 1;
                 tmp2 &= ~mask;
                 tmp[num_bytes] &= mask;
                 tmp[num_bytes] |= tmp2;

@@ -235,7 +235,7 @@ static void FillInDefaults( dip_type_info *info )
         if( info->size == 0 ) {
             if( ModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
-                info->size = mti.b.bits / BITS_PER_BYTE;
+                info->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
@@ -260,7 +260,7 @@ static void FillInDefaults( dip_type_info *info )
             if( info->size == 0 ) {
                 if( info->modifier == TM_NEAR )
                     mti.b.bits -= mti.a.seg.bits;
-                info->size = mti.b.bits / BITS_PER_BYTE;
+                info->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
@@ -631,7 +631,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         break;
     case 22:
         GetMADTypeDefault( MTK_ADDRESS, &mti );
-        size = (mti.b.bits - mti.a.seg.bits) / BITS_PER_BYTE;
+        size = BITS2BYTES( mti.b.bits - mti.a.seg.bits );
         if( parm ) {
             size += sizeof( addr_seg );
             TypePointer( ExprSP->th, TM_FAR, size, th );

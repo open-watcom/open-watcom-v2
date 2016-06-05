@@ -56,7 +56,7 @@ static walk_result MadMemTypeWalk( mad_type_handle th, void *d )
         data->labels[i] = DupStr( TxtBuff );
         data->info[i].type = th;
         data->info[i].item_width = GetMADMaxFormatWidth( th );
-        data->info[i].item_size = tinfo.b.bits / BITS_PER_BYTE;
+        data->info[i].item_size = BITS2BYTES( tinfo.b.bits );
         data->info[i].piece_radix = MADTypePreferredRadix( th );
         ipl = 80 / ( data->info[i].item_width + 1 ); // kludge
         if( ipl > 16 ) {

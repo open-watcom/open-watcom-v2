@@ -410,7 +410,7 @@ void LRValue( stack_entry *entry )
                     /* change typing from "array of..." to "pointer to..." */
                     GetMADTypeDefaultAt( entry->v.addr, MTK_ADDRESS, &mti );
                     TypeBase( entry->th, th, NULL, NULL );
-                    TypePointer( th, TM_FAR, mti.b.bits / BITS_PER_BYTE, entry->th );
+                    TypePointer( th, TM_FAR, BITS2BYTES( mti.b.bits ), entry->th );
                     TypeInfo( entry->th, entry->lc, &entry->info );
                 } else {
                     ExprSetAddrInfo( entry, false );

@@ -174,7 +174,7 @@ static item_type ItemTypeFromMADType( mad_type_handle th )
     case MTK_INTEGER:
     case MTK_XMM:
     case MTK_CUSTOM:
-        return( ItemType( mti.b.bits / BITS_PER_BYTE ) );
+        return( ItemType( BITS2BYTES( mti.b.bits ) ) );
     case MTK_ADDRESS:
         switch( mti.b.bits ) {
         case 16:
