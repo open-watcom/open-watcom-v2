@@ -813,10 +813,13 @@ SYMBOL CgBackOpDelete(          // GET ADDRESIBLE OPERATOR DELETE FOR A TYPE
     SEARCH_RESULT* result;      // - lookup result
     SYMBOL op_del;              // - operator delete
 
+    op_del = NULL;
     result = ScopeFindNaked( TypeScope( type ), CppOperatorName( CO_DELETE ) );
-    op_del = ClassFunMakeAddressable( result->sym_name->name_syms );
-    ScopeFreeResult( result );
-    return op_del;
+    if( result != NULL ) {
+        op_del = ClassFunMakeAddressable( result->sym_name->name_syms );
+        ScopeFreeResult( result );
+    }
+    return( op_del );
 }
 
 

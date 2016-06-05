@@ -200,7 +200,8 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
     PTREE next;                 // - next node
     PTREE dlt;                  // - a node to be deleted
 
-    if( curr == NULL ) return curr;
+    if( curr == NULL )
+        return curr;
     last = NULL;
     while( NodeIsBinaryOp( curr, CO_COMMA ) ) {
         next = curr->u.subtree[1];
@@ -259,7 +260,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
             last = next;
         }
     }
-    return curr;
+    return( curr );
 }
 
 

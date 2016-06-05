@@ -83,6 +83,8 @@ static int nameCmp( omf_file_handle ofh, omf_idx n1, omf_idx n2 )
     if( s1 == NULL )
         return( 1 );
     s2 = OmfGetLName( ofh->lnames, n2 );
+    if( s2 == NULL )
+        return( 1 );
     if( s1->len != s2->len )
         return( 1 );
     return( stricmp( s1->string, s2->string ) );
