@@ -88,7 +88,7 @@ typedef uint_32         dw_size_t;
 
 /*
     dw_uconst is an unsigned integer constant of maximum size
-    dw_uconst is a signed integer constant of maximum size
+    dw_sconst is a signed integer constant of maximum size
 */
 typedef uint_32         dw_uconst;
 typedef int_32          dw_sconst;
