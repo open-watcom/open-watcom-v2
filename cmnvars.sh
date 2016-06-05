@@ -36,7 +36,7 @@ export WATCOM=$OWDEFWATCOM
 # Set Watcom tool chain version to WATCOMVER variable
 unset WATCOMVER
 if [ "$OWTOOLS" = "WATCOM" ]; then
-    echo export WATCOMVER=__WATCOMC__ >watcom.gc
+    echo export WATCOMVER=__WATCOMC__>watcom.gc
     wcc386 -p watcom.gc >watcom.sh
     . ./watcom.sh
     rm watcom.*

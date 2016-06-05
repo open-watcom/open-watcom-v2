@@ -38,7 +38,7 @@ set BEGINLIBPATH=%OWDEFBEGINLIBPATH%
 REM Set Watcom tool chain version to WATCOMVER variable
 set WATCOMVER=
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
-echo set WATCOMVER=__WATCOMC__ >watcom.gc
+echo set WATCOMVER=__WATCOMC__>watcom.gc
 wcc386 -p watcom.gc >watcom.bat
 watcom.bat
 del watcom.*
