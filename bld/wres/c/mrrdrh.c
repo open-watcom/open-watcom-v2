@@ -49,10 +49,12 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
         error = true;
         WRES_ERROR( WRS_MALLOC_FAILED );
     }
-    newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
-    if( newhead->head16 == NULL ) {
-        error = true;
-        WRES_ERROR( WRS_MALLOC_FAILED );
+    if( !error ) {
+        newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
+        if( newhead->head16 == NULL ) {
+            error = true;
+            WRES_ERROR( WRS_MALLOC_FAILED );
+        }
     }
     if( !error ) {
         error = ResPadDWord( handle );
@@ -96,7 +98,9 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
         newhead->head16->Characteristics = tmp32;
     }
     if( error && newhead != NULL ) {
-        WRESFREE( newhead->head16 );
+        if( newhead->head16 != NULL ) {
+            WRESFREE( newhead->head16 );
+        }
         WRESFREE( newhead );
         newhead = NULL;
     }

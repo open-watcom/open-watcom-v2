@@ -52,7 +52,8 @@ WINEXPORT BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
 /*
  * MarkPrint - call back function for processing marks
  */
-static void MarkPrint( char *str ) {
+static void MarkPrint( char *str )
+{
     LBStrPrintf( MainLBox, str );
 }
 
@@ -115,12 +116,12 @@ BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * QueryEnd - warn the user about the consequences of exitting
  */
-static BOOL QueryEnd( HWND owner ) {
+static bool QueryEnd( HWND owner ) {
 
     INT_PTR     rc;
 
     if( GetNextOwnedProc( NULL ) == NULL ) {
-        return( TRUE );
+        return( true );
     }
     rc = JDialogBox( Instance, "END_DLG", owner, QueryEndDlgProc );
     return( rc == END_YES );

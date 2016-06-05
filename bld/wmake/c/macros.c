@@ -513,9 +513,9 @@ STATIC void addMacro( const char *name, char *value )
     } else if( new == NULL ) {
         new = MallocSafe( sizeof( *new ) ); /* get memory for new node */
         new->node.name = StrDupSafe( macro );
-        AddHashNode( macTab, (HASHNODE *)new );
         new->value = value;
         new->readonly = Glob.macreadonly;
+        AddHashNode( macTab, (HASHNODE *)new );
     } else {
         FreeSafe( value );  /* read only macro - don't change */
     }

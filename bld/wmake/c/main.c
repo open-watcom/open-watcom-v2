@@ -404,10 +404,10 @@ STATIC void parseFiles( void )
  * post:    filesToDo == NULL
  */
 {
-    char    *p;
-    NODE    *cur;
-    NODE    *newhead;
-    RET_T   ret;
+    const char  *p;
+    NODE        *cur;
+    NODE        *newhead;
+    RET_T       ret;
 
     Glob.preproc = TRUE;            /* turn on preprocessor */
 

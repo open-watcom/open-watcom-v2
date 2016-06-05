@@ -1005,7 +1005,8 @@ static void DoCostlyRefresh( void *dum )
 /*
  * RefreshCostlyInfo -
  */
-void RefreshCostlyInfo( void ) {
+void RefreshCostlyInfo( void )
+{
     _beginthread( DoCostlyRefresh, 0, NULL );
     Sleep( 0 );         /* make sure the new thread gets the semaphore */
 }
@@ -1013,7 +1014,8 @@ void RefreshCostlyInfo( void ) {
 /*
  * freeInfo - free all info except costly info and reset pointers to NULL
  */
-static void freeInfo( void ) {
+static void freeInfo( void )
+{
     if( titleIndex != NULL ) {
         MemFree( titleIndex );
         titleIndex = NULL;

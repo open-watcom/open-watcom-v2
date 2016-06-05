@@ -39,6 +39,7 @@
 
 #define INIT_ALLOCSIZE  20
 #define RE_ALLOCSIZE    10
+
 /*
  * getName
  */
