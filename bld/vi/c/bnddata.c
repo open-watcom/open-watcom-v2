@@ -225,7 +225,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
         if( fgets( buff, max, gf->data.f ) == NULL ) {
             return( true );
         }
-        for( i = strlen( buff ); i && isWSorCtrlZ( buff[i - 1] ); --i ) {
+        for( i = strlen( buff ); i > 0 && isWSorCtrlZ( buff[i - 1] ); --i ) {
             buff[i - 1] = '\0';
         }
         break;
@@ -235,7 +235,7 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
         }
         gf->gf.a.currline++;
         if( BndMemory == NULL ) {
-            read( gf->data.handle, buff, gf->gf.a.length+1 );
+            read( gf->data.handle, buff, gf->gf.a.length + 1 );
         } else {
             memcpy( buff, gf->data.pos, gf->gf.a.length + 1 );
             gf->data.pos += gf->gf.a.length + 1;
