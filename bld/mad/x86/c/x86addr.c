@@ -61,7 +61,7 @@ int             DIGENTRY MIAddrComp( const address *ap, const address *bp, mad_a
         if( a.offset >  b.offset ) return( +1 );
                                    return( -1 );
     }
-    if( AddrCharacteristics( *ap ) & X86AC_REAL ) {
+    if( REAL_SEG( *ap ) ) {
         a.segment = (addr_seg)( a.segment + ( a.offset >> 4 ) );
         b.segment = (addr_seg)( b.segment + ( b.offset >> 4 ) );
         a.offset = a.offset & 0x0F;
@@ -102,7 +102,8 @@ long            DIGENTRY MIAddrDiff( const address *a, const address *b, mad_add
 
 mad_status      DIGENTRY MIAddrMap( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
 {
-    if( !(AddrCharacteristics( GetRegIP( mr ) ) & X86AC_REAL) ) return( MS_FAIL );
+    if( !REAL_SEG( GetRegIP( mr ) ) )
+        return( MS_FAIL );
     /*
         we're in real mode and already have a known address. We can
         use the known address to calculate this address's mapping.
@@ -113,7 +114,8 @@ mad_status      DIGENTRY MIAddrMap( addr_ptr *a, const addr_ptr *map, const addr
 
 mad_status      DIGENTRY MIAddrFlat( const mad_registers *mr )
 {
-    if( (AddrCharacteristics( GetRegIP( mr ) ) & X86AC_REAL) ) return( MS_FAIL );
+    if( REAL_SEG( GetRegIP( mr ) ) )
+        return( MS_FAIL );
     return( MS_OK );
 }
 
@@ -125,7 +127,7 @@ mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, cons
     mr = mr;
     memset( &addr, 0, sizeof( addr ) );
     addr.mach = *a;
-    if( !(AddrCharacteristics( addr ) & X86AC_REAL) )
+    if( !REAL_SEG( addr ) )
         return( MS_FAIL );
     start = (unsigned_16)( ((unsigned long)a->segment << 4) + a->offset );
     end = (unsigned_16)( start + size );

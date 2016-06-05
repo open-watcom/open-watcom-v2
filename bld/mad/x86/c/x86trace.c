@@ -190,7 +190,7 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
             break;
         /* fall through */
     case DI_X86_into:
-        if( !( dd->characteristics & X86AC_REAL ) )
+        if( ( dd->characteristics & X86AC_REAL ) == 0 )
             break;
         return( MTRH_SIMULATE );
     case DI_X86_iret:
@@ -330,7 +330,7 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
         /* fall through */
     case DI_X86_int:
         /* only in real mode */
-        if( !( dd->characteristics & X86AC_REAL ) )
+        if( ( dd->characteristics & X86AC_REAL ) == 0 )
             break;
         out->x86 = in->x86;
         sp = GetRegSP( out );
