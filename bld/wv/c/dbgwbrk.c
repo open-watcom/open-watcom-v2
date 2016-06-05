@@ -341,6 +341,7 @@ extern a_window *WndBrkOpen( void )
 
     brkw = WndMustAlloc( sizeof( *brkw ) );
     wnd = DbgWndCreate( LIT_DUI( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
-    if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
+    if( wnd != NULL )
+        WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

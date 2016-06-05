@@ -246,7 +246,6 @@ wnd_info RepInfo = {
 };
 
 
-extern WNDOPEN WndRepOpen;
 extern a_window *WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );

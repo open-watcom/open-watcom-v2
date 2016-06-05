@@ -400,12 +400,12 @@ void InitMachState( void )
     save_state  *other;
 
     StateCurr = AllocState();
-    StateCurr->action = ACTION_NONE;
     other = AllocState();
-    other->action = ACTION_NONE;
     if( StateCurr == NULL || other == NULL ) {
         StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
     }
+    StateCurr->action = ACTION_NONE;
+    other->action = ACTION_NONE;
     other->next = StateCurr;
     other->prev = StateCurr;
     StateCurr->next = other;
@@ -566,10 +566,10 @@ bool AdvMachState( int action )
             StateCurr = StateCurr->next;
         } else {
             new = AllocState();
-            new->action = action;
             if( new == NULL ) {
                 StateCurr = StateCurr->next;
             } else {
+                new->action = action;
                 new->prev = StateCurr;
                 new->next = StateCurr->next;
                 new->next->prev = new;

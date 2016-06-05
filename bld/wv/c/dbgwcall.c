@@ -243,9 +243,7 @@ wnd_info CallInfo = {
 extern a_window *WndCallOpen( void )
 {
     call_window *call;
-    a_window    *wnd;
 
     call = WndMustAlloc( sizeof( call_window ) );
-    wnd = DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon );
-    return( wnd );
+    return( DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon ) );
 }

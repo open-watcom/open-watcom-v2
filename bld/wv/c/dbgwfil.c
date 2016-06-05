@@ -850,6 +850,8 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndclass, file, &SrcIcon );
+    if( wnd == NULL )
+        return( wnd );
     if( ch != NULL ) {
         FileSetDotAddr( wnd, CueAddr( ch ) );
         FileSetTitle( wnd, file->mod );
@@ -858,8 +860,6 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
         WndSetTitle( wnd, file->name );
     }
     file->track = track;
-    if( wnd == NULL )
-        return( wnd );
     FileSetTitle( wnd, file->mod );
     WndSetSwitches( wnd, WSW_LBUTTON_SELECTS + WSW_RBUTTON_SELECTS +
                          WSW_CHAR_CURSOR + WSW_SUBWORD_SELECT );
