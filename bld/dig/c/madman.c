@@ -829,7 +829,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *src,
             v->a.offset = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.offset = (addr_seg)*(unsigned_32 *)valp;
+            v->a.offset = *(unsigned_32 *)valp;
             break;
         default:
             return( MS_UNSUPPORTED );
