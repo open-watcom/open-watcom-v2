@@ -68,6 +68,8 @@ int YYPARSER::yyparse()
   YYSTYPE *yyvp;
   int yyerrflag;
 
+  yyval = 0;
+  yylval = 0;
   yyerrflag = 0;
   yyaction = 0;
   yysp = yys;
