@@ -92,6 +92,8 @@ typedef enum flags {
 #define GUI_HRANGE_SET( wnd ) ( ( wnd->flags & HRANGE_SET ) != 0 )
 #define GUI_VRANGE_SET( wnd ) ( ( wnd->flags & VRANGE_SET ) != 0 )
 
+#define GUI_IS_DIALOG( wnd ) ( ( wnd->flags & IS_DIALOG ) != 0 )
+
 typedef struct wnd_colour {
     WPI_COLOUR fore;
     WPI_COLOUR back;

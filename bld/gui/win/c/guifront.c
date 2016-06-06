@@ -75,7 +75,7 @@ void GUIBringToFront( gui_window *wnd )
     same_window = ( GUICurrWnd == wnd );
     parent_is_dlg = false;
     if( wnd->parent ) {
-        if( wnd->parent->flags & IS_DIALOG ) {
+        if( GUI_IS_DIALOG( wnd->parent ) ) {
             parent_is_dlg = true;
         }
     }

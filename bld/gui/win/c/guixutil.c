@@ -85,8 +85,8 @@ bool GUIIsOpen( gui_window *wnd )
 bool GUIIsParentADialog( gui_window *wnd )
 {
     wnd = GUIGetParentWindow( wnd );
-    while( wnd ) {
-        if( wnd->flags & IS_DIALOG ) {
+    while( wnd != NULL ) {
+        if( GUI_IS_DIALOG( wnd ) ) {
             return( true );
         }
         wnd = GUIGetParentWindow( wnd );
@@ -155,7 +155,7 @@ bool GUISetupStruct( gui_window *wnd, gui_create_info *dlg_info,
 {
     GUICalcLocation( &dlg_info->rect, pos, size, parent );
     if( wnd != NULL ) {
-        if( !(wnd->flags & IS_DIALOG) ) {
+        if( !GUI_IS_DIALOG( wnd ) ) {
             wnd->style = dlg_info->style;
             wnd->scroll = dlg_info->scroll;
         }
@@ -686,7 +686,7 @@ gui_window *GUIGetFirstSibling( gui_window *wnd )
     }
 
     parent = wnd->parent;
-    if( ( parent == NULL ) || ( parent->flags & IS_DIALOG ) ) {
+    if( ( parent == NULL ) || GUI_IS_DIALOG( parent ) ) {
         return( NULL );
     }
 
