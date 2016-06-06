@@ -379,8 +379,8 @@ void GUIDoFreeField( VFIELD *field, a_radio_group **group )
     case FLD_RADIO :
         radio = field->u.radio;
         if( ( group != NULL ) && ( *group != radio->group ) ) {
-            FreeRadioGroup( radio->group );
             *group = radio->group;
+            FreeRadioGroup( radio->group );
         }
         GUIFreeRadio( radio );
         break;

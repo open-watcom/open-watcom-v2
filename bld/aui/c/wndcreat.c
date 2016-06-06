@@ -188,7 +188,6 @@ extern void WndInitCreateStruct( wnd_create_struct *info )
 }
 
 
-extern WNDCREATE        WndCreate;
 extern a_window *WndCreate( char *title, wnd_info *wndinfo, wnd_class wndclass,
                               void *extra )
 {
@@ -215,11 +214,12 @@ extern void     WndDestroy( a_window *wnd )
         WndFiniCacheLines();
         WndCleanUp();
     }
-    if( wnd == WndMain ) WndMain = NULL;
+    if( wnd == WndMain ) {
+        WndMain = NULL;
+    }
 }
 
 
-extern WNDCLOSE WndClose;
 extern void WndClose( a_window *wnd )
 {
     bool        old;
