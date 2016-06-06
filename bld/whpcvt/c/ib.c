@@ -755,18 +755,16 @@ int ib_trans_line(
             trans_add_char( CHR_TEMP_HLINK , section, &alloc_size );
         } else if( ch == CH_LIST_ITEM ) {
             if( Curr_list->type != LIST_TYPE_SIMPLE ) {
+                buf[0] = '\0';
                 if( Curr_list->type == LIST_TYPE_UNORDERED ) {
                     // generate a bullet, correctly spaced for tab size
-                    buf[0] = '\0';
-                    for( ctr = 1; ctr <= Text_Indent; ctr++)
-                    {
+                    for( ctr = 1; ctr <= Text_Indent; ctr++ ) {
                         strcat( buf, " " );
                     }
                     buf[ Text_Indent / 2 - 1 ] = CHR_BULLET;
                 } else if( Curr_list->type == LIST_TYPE_ORDERED ) {
                     /* ordered list type */
-                    sprintf( buf, "%*d. ", Text_Indent - 2,
-                                                        Curr_list->number );
+                    sprintf( buf, "%*d. ", Text_Indent - 2, Curr_list->number );
                     ++Curr_list->number;
                 }
                 trans_add_str_wrap( buf, section, &alloc_size );
