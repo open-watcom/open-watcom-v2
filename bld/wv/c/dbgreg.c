@@ -277,13 +277,13 @@ static void FreeState( save_state *state )
 {
     state->prev->next = state->next;
     state->next->prev = state->prev;
-    _Free( state->s.ovl );
-    FreeMemDelta( state );
-    _Free( state );
     if( DbgRegs == &state->s )
         DbgRegs = NULL;
     if( PrevRegs == &state->s )
         PrevRegs = NULL;
+    _Free( state->s.ovl );
+    FreeMemDelta( state );
+    _Free( state );
     --NumStateEntries;
 }
 
