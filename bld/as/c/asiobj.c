@@ -83,6 +83,7 @@ static void doEmitLabel( label_list label ) {
     if( label->is_numeric ) {
         AsNumLabelEmit( label->label_num, NULL, AsmCodeAddress, 0 );
     } else {
+        loc.section = NULL;
         loc.offset = AsmCodeAddress;
         SymSetLocation( label->sym, loc );
     }

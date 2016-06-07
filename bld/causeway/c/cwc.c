@@ -543,7 +543,6 @@ static int ProcessEXE( char *fname, char *oname )
     fo = fopen( oname, "wb" );
     if( fo == NULL ) {
         printf( "Output file %s can not be created.", oname );
-        fclose( f );
         return( -1 );
     }
     // write header

@@ -3583,6 +3583,8 @@ bool ProcDef( token_idx i, bool proc_def )
     } else {
         // fixme -- nested procs can be ok /**/myassert( CurrProc == NULL );
         /**/myassert( n != INVALID_IDX );
+        if( n == INVALID_IDX )
+            return( RC_ERROR );
         dir = (dir_node *)AsmGetSymbol( AsmBuffer[n].string_ptr );
         /**/myassert( dir != NULL );
         CurrProc = dir;
