@@ -93,13 +93,16 @@ static int ProcSet( char *cmd )
         return( 1 );
     *rep++ = '\0';
     /* Our setenv() is extended vs. POSIX, check for blank value is not necessary */
-#ifndef __WATCOMC__
+    /* Watcom implementation is non-conforming to POSIX, return value is incorrect in some cases */
     if( *rep == '\0' ) {
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ < 1300 )
+        setenv( var, NULL, 1 );
+#else
         /* Delete the environment variable! */
         unsetenv( var );
+#endif
         return( 0 );
     }
-#endif
     return( setenv( var, rep, 1 ) );
 }
 
