@@ -1,9 +1,9 @@
 # Master Open Watcom Builder Control file
 # =======================================
 
+set PROJDIR=<CWD>
+
 [ INCLUDE <OWROOT>/build/master.ctl ]
-#[ LOG <LOGFNAME>.<LOGEXT> ]
-[ LOG <OWSRCDIR>/<LOGFNAME>.<LOGEXT> ]
 
 echo Build host: <BLD_HOST>
 
@@ -253,5 +253,5 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
 
 [ BLOCK . . ]
-#============
+
 cdsay .

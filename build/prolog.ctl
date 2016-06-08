@@ -1,5 +1,4 @@
 [ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
 
 [ BLOCK <PROJNAME> <OWNOBUILD> ]
     set NOBUILD=<1>

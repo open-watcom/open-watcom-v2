@@ -104,5 +104,9 @@ set CCCMD=accopy
     set LOGFNAME=docclean
     echo **** DOCCLEAN rule
 
+[ BLOCK .<PROJDIR> . ]
+    error PROJDIR must be set!
+
 [ BLOCK . . ]
-#============
+
+[ LOG <PROJDIR>/<LOGFNAME>.<LOGEXT> ]
