@@ -1,4 +1,4 @@
-#pmake/150: os_os2 cpu_i86 aui_sample
+#pmake/150: nobuild guitool os_os2 cpu_i86 aui_sample
 
 host_os  = os2
 host_cpu = i86

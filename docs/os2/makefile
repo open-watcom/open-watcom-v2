@@ -1,4 +1,4 @@
-#pmake: build docs os_os2
+#pmake: build guitool docs os_os2
 
 dotarget=os2
 

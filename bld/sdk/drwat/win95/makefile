@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_386 build drwat
+#pmake: build guitool os_nt cpu_386 drwat
 
 host_os  = nt
 host_cpu = 386

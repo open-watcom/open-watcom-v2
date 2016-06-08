@@ -1,4 +1,4 @@
-#pmake: os_os2 cpu_i86
+#pmake: nobuild guitool os_os2 cpu_i86
 #
 # Open Watcom Debugger makefile for OS/2 PM
 #

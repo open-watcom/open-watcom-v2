@@ -1,4 +1,4 @@
-#pmake: build cxx os_win cpu_i86
+#pmake: build guitool cxx os_win cpu_i86
 
 host_os  = win
 host_cpu = i86

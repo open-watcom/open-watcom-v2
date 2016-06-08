@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_axp drwat
+#pmake: nobuild guitool os_nt cpu_axp drwat
 host_os  = nt
 host_cpu = axp
 

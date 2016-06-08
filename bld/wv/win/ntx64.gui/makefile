@@ -1,4 +1,4 @@
-#pmake: build os_nt cpu_x64
+#pmake: build guitool os_nt cpu_x64
 #
 # WATCOM Debugger makefile for NT (real GUI version)
 #

@@ -1,4 +1,4 @@
-#pmake: build cpu_i86 os_dos
+#pmake: build guitool cpu_i86 os_dos
 proj_name = fscopy
 
 host_os  = dos
