@@ -31,9 +31,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <string.h>
 #include <sys/stat.h>
-
 #include "make.h"
 #include "mrcmsg.h"
 #include "msg.h"
@@ -375,12 +373,15 @@ unsigned FmtStr( char *buff, const char *fmt, ... )
  * quick sprintf routine... see doFmtStr
  */
 {
-    va_list args;
+    va_list     args;
+    unsigned    rc;
 
     assert( buff != NULL && fmt != NULL );
 
     va_start( args, fmt );
-    return( doFmtStr( buff, fmt, args ) );
+    rc = doFmtStr( buff, fmt, args );
+    va_end( args );
+    return( rc );
 }
 
 
@@ -493,6 +494,7 @@ void PrtMsg( enum MsgClass num, ... )
             len = doFmtStr( buff, msgbuff, args );
         }
     }
+    va_end( args );
     if( !(num & NEOL) ) {
         buff[len++] = EOL;
     }
@@ -501,20 +503,28 @@ void PrtMsg( enum MsgClass num, ... )
     }
     write( fh, buff, len );
     if( !Glob.compat_nmake
-      && ( num == ( FTL | LOC | CANNOT_NEST_FURTHER) || num == ( ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
+      && ( num == (FTL | LOC | CANNOT_NEST_FURTHER) || num == (ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
-    }
-    if( class == FTL ) {
-        exit( ExitSafe( EXIT_FATAL ) );
     }
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
 #endif
 
+#ifdef __WATCOMC__
+__declspec(noreturn) void     PrtMsgFtl( enum MsgClass num, ... )
+{
+    va_list args;
+
+    va_start( args, num );
+    PrtMsg( num, args );
+    va_end( args );
+    exit( ExitSafe( EXIT_FATAL ) );
+}
+#endif
 
 void Usage( void )
-/***********************/
+/****************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;

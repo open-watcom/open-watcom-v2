@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "make.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
@@ -65,14 +64,14 @@ STATIC struct scarce {
 
 #ifdef TRMEM
 
-#if defined( __WATCOMC__ ) || !defined( __UNIX__ )
-    #include <malloc.h>
-#endif
 #include <sys/types.h>
 #include "wio.h"
 #include "trmem.h"
 
+#include "clibext.h"
+
 #define TRMEM_ENV_VAR   "TRMEM_CODE"
+
 enum {
     TRMEM_DO_NOT_PRINT  = 0x0001,
     TRMEM_IGNORE_ERROR  = 0x0002
@@ -113,18 +112,18 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | PRNTSTR, "Near heap is damaged!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Near heap is damaged!" ));
         case _HEAPBADNODE:
-            PrtMsg( FTL | PRNTSTR, "Bad node in Near heap!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Near heap!" ));
         }
         switch( _fheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | PRNTSTR, "Far heap is damaged!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Far heap is damaged!" ));
         case _HEAPBADNODE:
-            PrtMsg( FTL | PRNTSTR, "Bad node in Far heap!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Far heap!" ));
         }
 #else
         switch( _heapchk() ) {
@@ -132,9 +131,9 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsg( FTL | PRNTSTR, "Heap is damaged!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Heap is damaged!" ));
         case _HEAPBADNODE:
-            PrtMsg( FTL | PRNTSTR, "Bad node in Heap!" );
+            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Heap!" ));
         }
 #endif
         busy = FALSE;
@@ -263,7 +262,7 @@ void MemInit( void )
     Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
-        PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
+        PrtMsgExit(( FTL | PRNTSTR, "Unable to track memory!" ));
     }
 #endif
 }
@@ -339,7 +338,7 @@ void *MallocSafe( size_t size )
     ptr = doAlloc( size );
 #endif
     if( ptr == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
+        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
     }
     return( ptr );
 }
@@ -358,7 +357,7 @@ void *CallocSafe( size_t size )
     ptr = doAlloc( size, _trmem_guess_who() );
 
     if( ptr == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
+        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
     }
 #else
     ptr = MallocSafe( size );
@@ -399,7 +398,7 @@ char *StrDupSafe( const char *str )
 #ifdef TRMEM
     p = doAlloc( len, _trmem_guess_who() );
     if( p == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
+        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
     }
 #else
     p = MallocSafe( len );
@@ -444,7 +443,7 @@ void FAR *FarMalloc( size_t size )
 
     p = FarMaybeMalloc( size );
     if( p == NULL ) {
-        PrtMsg( FTL | OUT_OF_MEMORY );
+        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
     }
 
     return( p );

@@ -34,10 +34,9 @@
 #define _MASSERT_H
 
 #ifdef NDEBUG
-#   define assert(expr) ((void)0)
+#   define assert(expr)
 #else
-    extern int MyAssert( const char *, const char *, int );
-#   define assert(expr) ((void)((expr) ? 0 : MyAssert(#expr,__FILE__,__LINE__)))
+#   define assert(expr) if( !(expr) ) PrtMsgExit(( FTL | ASSERTION_FAILED, #expr, __FILE__, __LINE__ ))
 #endif
 
 #endif /* !_MASSERT_H */

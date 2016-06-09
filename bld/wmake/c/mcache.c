@@ -33,13 +33,10 @@
     #include <dirent.h>
 #else
     #include <direct.h>
-    #include <string.h>
 #endif
 #include <sys/stat.h>
 #include <sys/types.h>
-
 #include "make.h"
-#include "massert.h"
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
@@ -50,6 +47,7 @@
 
 #include "clibext.h"
 #include "pathgrp.h"
+
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )
 #define USE_DIR_CACHE

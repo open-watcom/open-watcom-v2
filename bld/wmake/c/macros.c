@@ -36,21 +36,19 @@
     #include <sys/types.h>  // Implicitly included by <direct.h>
 #endif
 #include <stdlib.h>
-#include <string.h>
-
 #include "make.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mhash.h"
 #include "macros.h"
 #include "mmemory.h"
-
 #include "mmisc.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
 
@@ -831,7 +829,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
 
     default:
 #ifdef DEVELOPMENT
-        PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
+        PrtMsgExit(( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" ));
 #else
         PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
         break;
@@ -928,7 +926,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     char    *p;
 
     if( depth > MAX_MAC_NEST ) {
-        PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+        PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
     }
 
     result = deMacroToEnd( depth, end1, end2 );
@@ -938,7 +936,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         ++depth;
         if( depth > MAX_MAC_NEST ) {
-            PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+            PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
         }
 
         /*
@@ -1102,7 +1100,7 @@ STATIC char *PartDeMacroProcess( void )
             break;
         default:
 #ifdef DEVELOPMENT
-            PrtMsg( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" );
+            PrtMsgExit(( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" ));
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

@@ -29,11 +29,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "mmemory.h"
+#include "mrcmsg.h"
+#include "msg.h"
 #include "mhash.h"
+
 #include "clibext.h"
 
 

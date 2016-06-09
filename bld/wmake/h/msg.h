@@ -33,6 +33,12 @@
 
 #define YES_CHAR    'Y' /* must be upper case */
 
+#ifdef __WATCOMC__
+#define PrtMsgExit(x)   PrtMsgFtl x
+#else
+#define PrtMsgExit(x)   {PrtMsg x; exit( ExitSafe( EXIT_FATAL ) );}
+#endif
+
 enum MsgClass {
     NUM_MSK     = 0x03ff,   /* these are valid msg numbers          */
 
@@ -60,6 +66,9 @@ enum {
 
 extern unsigned FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
+#ifdef __WATCOMC__
+extern __declspec(noreturn) void     PrtMsgFtl( enum MsgClass num, ... );
+#endif
 extern void     Usage( void );
 extern BOOLEAN  GetYes( enum MsgClass querymsg );
 extern void     LogInit( const char *logname );

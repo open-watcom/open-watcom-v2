@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "mcache.h"
 #include "mmemory.h"
@@ -41,6 +39,7 @@
 #include "mtarget.h"
 #include "mvecstr.h"
 #include "msuffix.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
 
@@ -246,7 +245,7 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
 /*******************************************************************/
 {
     PATHNODE    **tail;
-    PATHNODE    *new;
+    PATHNODE    *newpath;
     const char  *p;
     size_t      len;
 
@@ -258,24 +257,25 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
             tail = &(*tail)->next;
         } while( *tail != *pathring );
     }
-
     p = path;
     while( *p != NULLCHAR ) {
         /* find end of path in string */
         while( *p != NULLCHAR && *p != PATH_SPLIT && *p != ';' ) {
             ++p;
         }
+        len = p - path;                                     /* get length of sub-path */
+        if( len > 0 ) {
+            char    *p1;
 
-        new = MallocSafe( sizeof( *new ) );     /* get a new node */
-        len = p - path;                         /* get length of sub-path */
-        new->name = MallocSafe( len + 1 );      /* make copy of sub-path */
-        memcpy( new->name, path, len );
-        new->name[len] = NULLCHAR;
-        FixName( new->name );
-
-        *tail = new;        /* link into ring - but don't close ring yet */
-        tail = &new->next;
-
+            p1 = MallocSafe( len + 1 );                     /* make copy of sub-path */
+            memcpy( p1, path, len );
+            p1[len] = NULLCHAR;
+            FixName( p1 );
+            newpath = MallocSafe( sizeof( *newpath ) );     /* get a new node */
+            newpath->name = p1;
+            *tail = newpath;           /* link into ring - but don't close ring yet */
+            tail = &newpath->next;
+        }
         if( *p != NULLCHAR ) {
             ++p;
             path = p;       /* advance to next path in string */
@@ -286,7 +286,7 @@ STATIC void addPathToPathRing( PATHRING *pathring, const char *path )
 
 
 void SetSufPath( const char *name, const char *path )
-/**********************************************************/
+/***************************************************/
 /* name with . */
 {
     SUFFIX      *suffix;
@@ -522,7 +522,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
  * walk a path ring, and attempt to find fname.ext using different paths
  */
 {
-    PATHNODE    *currpath;
+    PATHNODE    *pathnode;
     char        fake_name[_MAX_PATH];
 
     assert( pathring != NULL );
@@ -533,17 +533,17 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
         dir = NULL;
     }
     _makepath( fake_name, NULL, dir, fname, ext );
-    currpath = *pathring;
+    pathnode = *pathring;
     do {
-        _makepath( buffer, NULL, currpath->name, fake_name, NULL );
+        _makepath( buffer, NULL, pathnode->name, fake_name, NULL );
         if( chkOneName( buffer, chktarg ) == RET_SUCCESS ) {
             if( Glob.optimize ) {       /* nail down pathring here */
-                *pathring = currpath;
+                *pathring = pathnode;
             }
             return( RET_SUCCESS );
         }
-        currpath = currpath->next;
-    } while( currpath != *pathring );
+        pathnode = pathnode->next;
+    } while( pathnode != *pathring );
 
     return( RET_ERROR );
 }

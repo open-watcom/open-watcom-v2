@@ -29,14 +29,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #if defined(__OS2__) || defined(__DOS__)
    #include <stdio.h>
 #endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-
 #include "make.h"
 #include "mtarget.h"
 #include "macros.h"
@@ -51,6 +49,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+
 #include "clibext.h"
 
 
@@ -205,7 +204,7 @@ STATIC void checkCtrl( const char *p )
     // p != NULL is checked by caller
     while( *p ) {          // scan for control characters
         if( !isprint( *p ) ) {
-            PrtMsg( FTL | CTRL_CHAR_IN_CMD, *p );
+            PrtMsgExit(( FTL | CTRL_CHAR_IN_CMD, *p ));
         }
         ++p;
     }
@@ -499,7 +498,7 @@ STATIC RET_T doMusts( void )
     RET_T   ret;
 
     if( firstTargFound == NULL && mustTargs == NULL ) {
-        PrtMsg( FTL | NO_TARGETS_SPECIFIED );
+        PrtMsgExit(( FTL | NO_TARGETS_SPECIFIED ));
     }
 
     UpdateInit();

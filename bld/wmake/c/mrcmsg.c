@@ -30,22 +30,21 @@
 
 
 #include <stdio.h>
-#include <string.h>
 #include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+
 #include "clibext.h"
 
-#ifdef BOOTSTRAP
 
+#ifdef BOOTSTRAP
 
     static struct idstr { int id; char *s; } StringTable[] = {
         #define pick( id, en, jp )  {id, en},

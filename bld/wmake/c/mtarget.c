@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "mmemory.h"
 #include "mhash.h"
@@ -39,6 +37,7 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mtarget.h"
+
 #include "clibext.h"
 
 
