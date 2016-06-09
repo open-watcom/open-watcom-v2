@@ -156,22 +156,22 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
 
     *a_context = context;
     *a_prefix = ctx_names[ context ];
+    data = NULL;
     switch( context ) {
-      case CTX_INIT :
-      case CTX_FINI :
-      case CTX_CMDLN_VALID :
-      case CTX_FORCED_INCS :
-      case CTX_SOURCE :
-      case CTX_CG_OPT :
-      case CTX_ENDFILE:
-        data = NULL;
+    case CTX_INIT :
+    case CTX_FINI :
+    case CTX_CMDLN_VALID :
+    case CTX_FORCED_INCS :
+    case CTX_SOURCE :
+    case CTX_CG_OPT :
+    case CTX_ENDFILE:
         break;
-      case CTX_CMDLN_ENV :
-      case CTX_CMDLN_PGM :
+    case CTX_CMDLN_ENV :
+    case CTX_CMDLN_PGM :
         data = CtxGetSwitchAddr();
         break;
-      case CTX_CG_FUNC :
-      case CTX_FUNC_GEN :
+    case CTX_CG_FUNC :
+    case CTX_FUNC_GEN :
         data = func;
         break;
     }

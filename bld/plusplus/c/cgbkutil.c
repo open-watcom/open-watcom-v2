@@ -336,10 +336,10 @@ static bool dtmTabular(         // DETERMINE IF METHOD IS TABULAR
 {
     bool retb;                  // - true ==> is tabular
 
+    retb = false;
     switch( method ) {
     DbgDefault( "dtmTabular -- bad method" );
     case DTM_DIRECT :
-        retb = false;
         break;
     case DTM_DIRECT_SMALL :
     case DTM_TABLE_SMALL :

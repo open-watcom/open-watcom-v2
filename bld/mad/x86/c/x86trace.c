@@ -189,7 +189,7 @@ static mad_trace_how CheckSpecial( mad_trace_data *td, mad_disasm_data *dd, cons
             break;
         /* fall through */
     case DI_X86_into:
-        if( ( dd->characteristics & X86AC_REAL ) == 0 )
+        if( (dd->characteristics & X86AC_REAL) == 0 )
             break;
         return( MTRH_SIMULATE );
     case DI_X86_iret:
@@ -330,7 +330,7 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
         /* fall through */
     case DI_X86_int:
         /* only in real mode */
-        if( ( dd->characteristics & X86AC_REAL ) == 0 )
+        if( (dd->characteristics & X86AC_REAL) == 0 )
             break;
         out->x86 = in->x86;
         sp = GetRegSP( out );
@@ -375,13 +375,13 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         buff[0] = '\0';
     a = GetRegIP( mr );
     memset( &data, 0, sizeof( data ) );
-    MCReadMem( a, sizeof( data.b ), &data );
+    MCReadMem( a, sizeof( data.b ), data.b );
     if( data.b[0] != BRK_POINT )
         return( MS_FAIL );
     mr->x86.cpu.eip += 1;
     if( data.b[1] != JMP_SHORT )
         return( MS_OK );
-    if( memcmp( &data.b[3], "WVIDEO", 6 ) != 0 )
+    if( memcmp( data.b + 3, "WVIDEO", 6 ) != 0 )
         return( MS_OK );
     a = GetRegSP( mr );
     MCReadMem( a, sizeof( addr_ptr ), &data );
@@ -391,7 +391,7 @@ mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buf
         ConvAddr32ToAddr48( data.a32, a.mach );
     }
     len = 0;
-    while( MCReadMem( a, sizeof( data.b[0] ), &data.b[0] ) != 0 ) {
+    while( MCReadMem( a, sizeof( data.b[0] ), data.b ) != 0 ) {
         a.mach.offset++;
         if( len + 1 < buff_size )
             buff[len] = data.b[0];

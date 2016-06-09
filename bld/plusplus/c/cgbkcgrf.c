@@ -465,6 +465,8 @@ static void scanInit(           // INIT FOR COMMONALITY BETWEEN SCAN, RE-SCAN
     cnode->stab_gen = false;
     cnode->dtor_method = DTM_DIRECT;
     scan->cnode = cnode;
+    scan->func_dtm = DTM_DIRECT;
+    scan->curr_scope = NULL;
     scan->scope_call_blk_dtor = NULL;
     scan->scope_call_tmp_dtor = NULL;
     scan->scope_call_cmp_dtor = NULL;

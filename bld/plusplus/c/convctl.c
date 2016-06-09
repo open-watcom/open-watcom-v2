@@ -1077,6 +1077,7 @@ CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
     CNV_RETN retn;              // - return: CNV_...
 
     if( ( 0x80 >> pcp_tgt ) & pcPtrChk[ pcp_src ] ) {
+        retn = CNV_ERR;
         switch( pcp_src ) {
         DbgDefault( "pcPtrValidate -- bad case" );
         case PC_PTR_BASED_VOID :
@@ -1086,12 +1087,12 @@ CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                     retn = CNV_OK;
                 } else {
                     PTreeErrorExpr( expr, ERR_SEGOP_OPERANDS );
-                    retn = CNV_ERR;
+//                    retn = CNV_ERR;
                 }
                 break;
             case PC_PTR_FAR16 :
                 PTreeErrorExpr( expr, ERR_SEGOP_OPERANDS );
-                retn = CNV_ERR;
+//                retn = CNV_ERR;
                 break;
             case PC_PTR_BASED_VOID :
               { derived_status status;
@@ -1108,7 +1109,7 @@ CNV_RETN PcPtrValidate(         // VALIDATE PC-FORMAT PTRS
                         status = ScopeDerived( scope_src, scope_tgt );
                         if( status == DERIVED_YES_BUT_VIRTUAL ) {
                             PTreeErrorExpr( expr, ERR_VIRTUAL_FOR_BASED_VOID );
-                            retn = CNV_ERR;
+//                            retn = CNV_ERR;
                         } else {
                             retn = CNV_OK;
                         }

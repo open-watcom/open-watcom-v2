@@ -39,7 +39,7 @@
 #include "clibext.h"
 
 
-#define OP_1 0
+#define OP_1            0
 
 static dis_handle       DH;
 address                 DbgAddr;
