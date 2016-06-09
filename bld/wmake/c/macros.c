@@ -1100,6 +1100,10 @@ STATIC char *PartDeMacroProcess( void )
             break;
         default:
 #ifdef DEVELOPMENT
+            FreeVec( vec );
+            if( wsvec != NULL ) {
+                FreeVec( wsvec );
+            }
             PrtMsgExit(( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" ));
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
@@ -1110,7 +1114,6 @@ STATIC char *PartDeMacroProcess( void )
     if( wsvec != NULL ) {       /* trim trailing ws */
         FreeVec( wsvec );
     }
-
     text = FinishVec( vec );
     return( text );
 }

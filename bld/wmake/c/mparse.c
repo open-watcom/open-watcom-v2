@@ -773,6 +773,7 @@ STATIC void getBody( FLIST *head )
             s = PreGetCH();
             if( s == STRM_END ) {
                 UnGetCH( s );
+                FreeVec( buf );
                 PrtMsg( ERR | LOC | UNEXPECTED_EOF );
                 return;
             }
