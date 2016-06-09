@@ -1665,11 +1665,11 @@ extern  void    GenSeg( hw_reg_set regs ) {
     if( _IsEmulation() ) {
         for( i = 0; i < SEGS; ++i ) {
             if( HW_Equal( segreg, SegTab[i] ) ) {
+                if( FPPatchType != FPP_NONE ) {
+                    FPPatchType = SegPatchTab[i];
+                }
                 break;
             }
-        }
-        if( FPPatchType != FPP_NONE ) {
-            FPPatchType = SegPatchTab[i];
         }
     }
 }

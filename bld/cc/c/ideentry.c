@@ -355,7 +355,7 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
         argv = getFrontEndArgv( args, argc, infile, outfile );
         ret = FrontEnd( argv );
     }
-    if( !GlobalCompFlags.ide_cmd_line_has_files ) {
+    if( !GlobalCompFlags.ide_cmd_line_has_files && argc > 0 ) {
         free( argv );
     }
 #if HEAP_CHK  == 1

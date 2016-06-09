@@ -682,6 +682,7 @@ hw_reg_set *PragManyRegSets( void )
     }
     if( i == MAXIMUM_PARMSETS ) {
         CErr1( ERR_TOO_MANY_PARM_SETS );
+        --i;
     }
     HW_CAsgn( buff[i++], HW_EMPTY );
     i *= sizeof( hw_reg_set );
