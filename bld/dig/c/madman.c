@@ -796,9 +796,9 @@ static mad_status DecomposeInt( const mad_type_info *mti, const void *src, decom
             v->i.u._8[bytes] |= 0xff << bit_shift;
             ++bytes;
 #if defined( __BIG_ENDIAN__ )
-            memset( &v->i.u._8[0], 0xff, DI_SIZE - i );
+            memset( &v->i.u._8[0], 0xff, DI_SIZE - bytes );
 #else
-            memset( &v->i.u._8[bytes], 0xff, DI_SIZE - i );
+            memset( &v->i.u._8[bytes], 0xff, DI_SIZE - bytes );
 #endif
         }
     }
