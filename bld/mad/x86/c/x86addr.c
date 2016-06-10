@@ -121,7 +121,7 @@ mad_status      DIGENTRY MIAddrFlat( const mad_registers *mr )
 
 mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, const mad_registers *mr )
 {
-    unsigned_16         start, end;
+    unsigned_32         start, end;
     address             addr;
 
     mr = mr;
@@ -129,8 +129,8 @@ mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, cons
     addr.mach = *a;
     if( !REAL_SEG( addr ) )
         return( MS_FAIL );
-    start = (unsigned_16)( ((unsigned long)a->segment << 4) + a->offset );
-    end = (unsigned_16)( start + size );
+    start = ((unsigned_32)a->segment << 4) + a->offset;
+    end = start + size;
     if( start < 0x400 || end < 0x400 )
         return( MS_OK );
     return( MS_FAIL );
@@ -138,8 +138,8 @@ mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, cons
 
 unsigned AddrCharacteristics( address a )
 {
-    unsigned_8  character;
+    unsigned_8  characteristics;
 
-    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS, 0, NULL, sizeof( character ), &character );
-    return( character );
+    MCMachineData( a, X86MD_ADDR_CHARACTERISTICS, 0, NULL, sizeof( characteristics ), &characteristics );
+    return( characteristics );
 }
