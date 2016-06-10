@@ -50,8 +50,8 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
 {
     void                *shlib;
     mad_init_func       *init_func;
-    char                newpath[PATH_MAX];
-    char                full_path[PATH_MAX];
+    char                newpath[_MAX_PATH];
+    char                full_path[_MAX_PATH];
     mad_status          status;
 
     strcpy( newpath, path );
