@@ -424,9 +424,7 @@ static void ProcessDirectoryQueue( void )
     while( head != NULL ) {
         dirh = opendir( "." );
         if( dirh != NULL ) {
-            for( ;; ) {
-                if( DoneFlag )
-                    return;
+            while( !DoneFlag ) {
                 dp = readdir( dirh );
                 if( dp == NULL )
                     break;
@@ -446,6 +444,9 @@ static void ProcessDirectoryQueue( void )
                 }
             }
             closedir( dirh );
+        }
+        if( DoneFlag ) {
+            return;
         }
         last_ok = NULL;
         while( head->next != NULL ) {

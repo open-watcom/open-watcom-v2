@@ -46,7 +46,7 @@ extern bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle );
 extern bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle );
 
 extern bool WResReadFixedTypeRecord( WResTypeInfo * newtype, WResFileID handle );
-extern bool WResReadFixedTypeRecord2( WResTypeInfo * newtype, WResFileID handle );
+extern bool WResReadFixedTypeRecord1or2( WResTypeInfo * newtype, WResFileID handle );
 
 extern WResResInfo      *WResReadResRecord( WResFileID handle );
 extern WResTypeInfo     *WResReadTypeRecord( WResFileID handle );

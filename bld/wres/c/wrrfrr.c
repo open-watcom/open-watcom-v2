@@ -72,8 +72,7 @@ bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID handle )
 }
 
 /*
- * WResReadFixedResRecord2 - reads the fixed part of a Res info record for
- *                           version 2
+ * WResReadFixedResRecord2 - reads the fixed part of a Res info record for version 2
  */
 bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID handle )
 /********************************************************************/

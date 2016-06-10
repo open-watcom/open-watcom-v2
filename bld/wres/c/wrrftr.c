@@ -50,15 +50,15 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
     return( true );
 } /* WResReadFixedTypeRecord */
 
-bool WResReadFixedTypeRecord2( WResTypeInfo *newtype, WResFileID handle )
-/***********************************************************************/
+bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID handle )
+/**************************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
-    WResFileSSize   numread;
-    WResTypeInfo2   info;
+    WResFileSSize       numread;
+    WResTypeInfo1or2    info;
 
-    numread = WRESREAD( handle, &info, sizeof( WResTypeInfo2 ) );
-    if( numread == sizeof( WResTypeInfo2 ) ) {
+    numread = WRESREAD( handle, &info, sizeof( WResTypeInfo1or2 ) );
+    if( numread == sizeof( WResTypeInfo1or2 ) ) {
         newtype->NumResources = info.NumResources;
         newtype->TypeName.IsName = info.TypeName.IsName;
         if( newtype->TypeName.IsName ) {

@@ -133,7 +133,7 @@ bool Msg_Fini( void )
     bool    retcode = true;
 
     if( !res_failure ) {
-        if ( CloseResFile( &hInstance ) ) {
+        if( CloseResFile( &hInstance ) ) {
             res_failure = true;
             retcode = false;
         }
@@ -146,7 +146,11 @@ bool Msg_Fini( void )
 
 static void Outs( bool nl, const char *s )
 {
+#ifdef _WIN64
+    write( STDOUT_FILENO, s, (unsigned)strlen( s ) );
+#else
     write( STDOUT_FILENO, s, strlen( s ) );
+#endif
     if( nl ) {
         write( STDOUT_FILENO, "\r\n", 2 );
     }

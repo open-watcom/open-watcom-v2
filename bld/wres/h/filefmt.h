@@ -84,44 +84,46 @@ typedef struct WResTypeInfo {
     WResID      TypeName;
 } WResTypeInfo;
 
-
 /*
- * WResID2, WResIDName2, WResResInfo2 are used in version 2 and below
+ * WResID1or2, WResIDName1or2 are used in version 2 and 1
  */
-typedef struct WResIDName2 {            /* this is a "Pascal style" string */
-    uint_8      NumChars;               /* length */
-    char        Name[1];                /* followed by that many characters */
-} WResIDName2;                          /* NOTE: there is no trailing '\0' */
+typedef struct WResIDName1or2 {     /* this is a "Pascal style" string */
+    uint_8      NumChars;           /* length */
+    char        Name[1];            /* followed by that many characters */
+} WResIDName1or2;                   /* NOTE: there is no trailing '\0' */
 
-typedef struct WResID2 {
+typedef struct WResID1or2 {
     uint_8      IsName; /* if true then ID is a Name otherwise Num */
     union {
-        uint_16     Num;        /* number of the ID */
-        WResIDName2 Name;       /* name of the ID */
+        uint_16         Num;        /* number of the ID */
+        WResIDName1or2  Name;       /* name of the ID */
     } ID;
-} _WCUNALIGNED WResID2;
+} _WCUNALIGNED WResID1or2;
 
-typedef struct WResResInfo2 {
-    uint_16     NumResources;   /* # of resources of this type and name */
-    WResID2     ResName;
-} WResResInfo2;
-
-typedef struct WResTypeInfo2 {
+typedef struct WResTypeInfo1or2 {
     uint_16     NumResources;   /* number of resources of this type */
-    WResID2     TypeName;
-} WResTypeInfo2;
-
+    WResID1or2  TypeName;
+} WResTypeInfo1or2;
 
 /*
- * WResResInfo1 is the structure used in version 1 and below
+ * WResResInfo2 are used in version 2
  */
-typedef struct WResResInfo10 {
+typedef struct WResResInfo2 {
+    uint_16     NumResources;   /* # of resources of this type and name */
+    WResID1or2  ResName;
+} WResResInfo2;
+
+/*
+ * WResResInfo1 is the structure used in version 1
+ */
+typedef struct WResResInfo1 {
     uint_16     MemoryFlags;
     uint_32     Offset;/* offset of resource body in file */
     uint_32     Length;/* length in bytes of resource body */
-    WResID2     ResName;
+    WResID1or2  ResName;
 } _WCUNALIGNED WResResInfo1;
 
+/**************************/
 
 typedef struct WResResInfo {
     uint_16     NumResources;   /* # of resources of this type and name */
