@@ -259,9 +259,9 @@ long MemSize( void )
 
     x = DosMaxAlloc();
 #ifdef _M_I86
-    return( 16L * (long) x );
+    return( 16L * (long)x );
 #else
-    return( 4096L * (long) x );
+    return( 4096L * (long)x );
 #endif
 
 } /* MemSize */
@@ -349,7 +349,7 @@ vi_rc ChangeDrive( int drive )
     unsigned    b;
     unsigned    total, c;
 
-    a = (char) tolower( drive ) - (char) 'a';
+    a = (char)tolower( drive ) - 'a';
     b = a + 1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );
@@ -361,7 +361,7 @@ vi_rc ChangeDrive( int drive )
 }/* ChangeDrive */
 
 #if defined( _M_I86 ) || defined( __4G__ )
-    #define KEY_PTR (char *) 0x00400017;
+    #define KEY_PTR (char *)0x00400017;
 #else
     #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif

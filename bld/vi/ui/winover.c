@@ -108,7 +108,7 @@ void MarkOverlap( window_id wid )
  */
 void RestoreOverlap( window_id wid, bool scrflag )
 {
-    window              *w, *wo, *o;
+    window              *w, *wow, *ow;
     windim              i, j;
     size_t              k, l;
     window_id           *whoover;
@@ -140,9 +140,9 @@ void RestoreOverlap( window_id wid, bool scrflag )
              * if we are not over someone, check for over us
              */
             if( !BAD_ID( *whoover ) ) {
-                wo = WINDOW_FROM_ID( *whoover );
-                AccessWindow( wo );
-                k = (i - wo->area.x1) + (j - wo->area.y1) * wo->width;
+                wow = WINDOW_FROM_ID( *whoover );
+                AccessWindow( wow );
+                k = (i - wow->area.x1) + (j - wow->area.y1) * wow->width;
                 /*
                  * if we are being overlapped at the same
                  * spot, then point the guy overlapping us
@@ -153,21 +153,21 @@ void RestoreOverlap( window_id wid, bool scrflag )
                  * text to the screen
                  */
                 if( !BAD_ID( *over ) ) {
-                    o = WINDOW_FROM_ID( *over );
-                    AccessWindow( o );
-                    l = (i - o->area.x1) + (j - o->area.y1) * o->width;
-                    o->whooverlapping[l] = *whoover;
-                    wo->overlap[k] = *over;
-                    ReleaseWindow( o );
+                    ow = WINDOW_FROM_ID( *over );
+                    AccessWindow( ow );
+                    l = (i - ow->area.x1) + (j - ow->area.y1) * ow->width;
+                    ow->whooverlapping[l] = *whoover;
+                    wow->overlap[k] = *over;
+                    ReleaseWindow( ow );
                 } else {
-                    wo->overlap[k] = NO_WINDOW;
-                    wo->overcnt[j - wo->area.y1]--;
+                    wow->overlap[k] = NO_WINDOW;
+                    wow->overcnt[j - wow->area.y1]--;
                     if( scrflag ) {
-                        WRITE_SCREEN( *scr, wo->text[k] );
+                        WRITE_SCREEN( *scr, wow->text[k] );
                     }
                     *img = *whoover;
                 }
-                ReleaseWindow( wo );
+                ReleaseWindow( wow );
             } else {
                 /*
                  * we are not overlapping anyone, so
@@ -178,11 +178,11 @@ void RestoreOverlap( window_id wid, bool scrflag )
                  * if not, clear the screen
                  */
                 if( !BAD_ID( *over ) ) {
-                    o = WINDOW_FROM_ID( *over );
-                    AccessWindow( o );
-                    l = (i - o->area.x1) + (j - o->area.y1) * o->width;
-                    o->whooverlapping[l] = NO_WINDOW;
-                    ReleaseWindow( o );
+                    ow = WINDOW_FROM_ID( *over );
+                    AccessWindow( ow );
+                    l = (i - ow->area.x1) + (j - ow->area.y1) * ow->width;
+                    ow->whooverlapping[l] = NO_WINDOW;
+                    ReleaseWindow( ow );
                 } else {
                     if( scrflag ) {
                         WRITE_SCREEN( *scr, WindowNormalAttribute );

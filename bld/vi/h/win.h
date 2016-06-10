@@ -128,7 +128,7 @@ extern void     DefaultWindows( RECT *world, RECT *workspace );
 extern void     InitWindows( void );
 extern void     FiniWindows( void );
 extern int      WindowAuxInfo( window_id wid, int type );
-extern vi_rc    NewWindow2( window_id *wid, window_info *info );
+extern vi_rc    NewWindow2( window_id *wid, window_info *wi );
 extern void     CloseAWindow( window_id wid );
 extern void     CloseAChildWindow( window_id wid );
 extern bool     InsideWindow( window_id wid, int x, int y );

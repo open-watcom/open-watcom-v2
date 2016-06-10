@@ -43,6 +43,7 @@
 #endif
 
 typedef void * SEG16 ptr_16;
+
 typedef struct {
    USHORT  cb;
    USHORT  type;
@@ -57,9 +58,9 @@ uint_32 BIOSGetColorRegister( unsigned short reg )
 {
     THUNKEDVIO  vcr;
     struct {
-        unsigned char r;
-        unsigned char g;
-        unsigned char b;
+        BYTE    r;
+        BYTE    g;
+        BYTE    b;
     } data;
 
     vcr.cb = sizeof( vcr );
@@ -75,9 +76,9 @@ void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g,
 {
     THUNKEDVIO  vcr;
     struct {
-        unsigned char r;
-        unsigned char g;
-        unsigned char b;
+        BYTE    r;
+        BYTE    g;
+        BYTE    b;
     } data;
 
     data.r = r;
@@ -93,10 +94,11 @@ void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g,
 
 void BIOSGetColorPalette( void _FAR *palette )
 {
-    VIOPALSTATE         *pal_state;
-    USHORT              size, i;
-    char _FAR           *pal = palette;
+    VIOPALSTATE     *pal_state;
+    USHORT          size, i;
+    char            _FAR *pal;
 
+    pal = palette;
     size = sizeof( VIOPALSTATE ) + sizeof( USHORT ) * (MAX_COLOR_REGISTERS - 1);
     pal_state = MemAlloc( size );
     pal_state->cb = size;

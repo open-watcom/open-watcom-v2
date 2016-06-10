@@ -40,7 +40,7 @@ extern unsigned short   BIOSGetCursor( unsigned char );
 extern void             BIOSSetCursor( unsigned char, unsigned char, unsigned char );
 extern void             BIOSNewCursor( unsigned char top, unsigned char bottom );
 // screen info functions
-extern char             BIOSGetRowCount( void );
+extern unsigned char    BIOSGetRowCount( void );
 extern uint_32          BIOSGetVideoMode( void );
 // screen update functions
 extern void             BIOSUpdateScreen( size_t, unsigned );

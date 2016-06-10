@@ -36,7 +36,7 @@
 /*--------------------- Resources --------------------------------*/
 
 void initWicResources( char * fname );
-int getResStr( int resourceid, char *buffer );
+bool getResStr( int resourceid, char *buffer );
 void zapWicResources(void);
 
 /*------------------------ Error reporting ----------------------*/

@@ -151,11 +151,11 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
                              winarea *wd, bool mouse )
 {
     vi_key      key;
-    bool        done = false;
+    bool        done;
     windim      x1, x2, y1, y2;
     windim      nx1, nx2, ny1, ny2;
-    int         mrow = 0;
-    int         mcol = 0;
+    int         mrow;
+    int         mcol;
     windim      dx, dy;
     int         bclr;
     window      *w;
@@ -187,6 +187,8 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
     /*
      * engage in resizing
      */
+    mrow = 0;
+    mcol = 0;
     for( ;; ) {
 
         /*
@@ -197,9 +199,10 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
             mcol = MouseCol;
             DisplayMouse( true );
         }
-        for( ;; ) {
+        done = false;
+        dy = dx = 0;
+        while( dx == 0 && dy == 0 && !done ) {
             key = GetNextEvent( true );
-            dy = dx = 0;
             if( key == VI_KEY( ESC ) ) {
                 done = true;
             } else {
@@ -247,9 +250,6 @@ static void dickWithAWindow( window_id wid, bool topcorner, bool move, bool *dor
                         }
                     }
                 }
-            }
-            if( dx != 0 || dy != 0 || done ) {
-                break;
             }
         }
         if( mouse ) {

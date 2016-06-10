@@ -44,14 +44,14 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
     size_t      len;
     struct stat st;
 
-    tmpname = malloc( strlen( path ) + strlen( nd->d_name ) + 3 );
+    len = strlen( path );
+    tmpname = malloc( len + strlen( nd->d_name ) + 3 );
     strcpy( tmpname, path );
-    len = strlen( tmpname );
     if( tmpname[len - 1] != FILE_SEP ) {
-        tmpname[len] = FILE_SEP;
-        tmpname[len + 1] = '\0';
+        tmpname[len++] = FILE_SEP;
+        tmpname[len] = '\0';
     }
-    strcat( tmpname, nd->d_name );
+    strcpy( tmpname + len, nd->d_name );
     stat( tmpname, &st );
     free( tmpname );
     tmp->attr = 0;
