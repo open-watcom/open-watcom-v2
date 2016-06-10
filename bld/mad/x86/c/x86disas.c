@@ -447,21 +447,20 @@ static const unsigned_8 RegIndex[] = {
 
 static dword RegValue( const mad_registers *mr, int idx )
 {
-    dword       *reg;
     dword       mask;
+    unsigned_8  reg_idx;
 
     if( idx >= DR_X86_es && idx <= DR_X86_gs ) {
-        idx -= DR_X86_es - 8;
+        reg_idx = idx - DR_X86_es + 8;
         mask = 0xffff;
     } else if( idx >= DR_X86_ax && idx <= DR_X86_di ) {
-        idx -= DR_X86_ax;
+        reg_idx = idx - DR_X86_ax;
         mask = 0xffff;
     } else {
-        idx -= DR_X86_eax;
+        reg_idx = idx - DR_X86_eax;
         mask = 0xffffffff;
     }
-    reg = (dword *)( (unsigned_8 *)mr + RegIndex[idx] );
-    return( *reg & mask );
+    return( (*(dword *)( (unsigned_8 *)mr + RegIndex[reg_idx] )) & mask );
 }
 
 static int GetSegRegOverride( mad_disasm_data *dd, dis_operand *op )

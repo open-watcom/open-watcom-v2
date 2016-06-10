@@ -435,7 +435,7 @@ static vi_rc doGREP( const char *dirlist )
     /*
      * prepare list array
      */
-    list = (char **)MemAlloc( sizeof( char *) * MAX_FILES );
+    list = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
 
     /*
      * create info. window
@@ -740,7 +740,7 @@ static vi_rc fSearch( const char *fn, char *r )
                         }
                         // copy the part of the string NOT in buff
                         for( ;; ) {
-                            if( j == MAX_DISP || *res == CR || *res == LF || res == &context_display[MAX_DISP] ) {
+                            if( j == MAX_DISP || *res == CR || *res == LF || res == context_display + MAX_DISP ) {
                                 r[j] = '\0';
                                 break;
                             }
@@ -749,7 +749,7 @@ static vi_rc fSearch( const char *fn, char *r )
                         }
                         res = buff;
                     } else {
-                        res = &buffloc[-strlen( sString )];
+                        res = buffloc - strlen( sString );
                         for( ;; ) {
                             if( *res == LF || res == buff ) {
                                 if( *res == LF ) {
@@ -762,7 +762,7 @@ static vi_rc fSearch( const char *fn, char *r )
                     }
                     // now copy the string ( all that is in buff )
                     for( ;; ) {
-                        if( j == MAX_DISP || *res == CR || *res == LF || res == &buff[bytecnt] ) {
+                        if( j == MAX_DISP || *res == CR || *res == LF || res == buff + bytecnt ) {
                             r[j] = '\0';
                             break;
                         }

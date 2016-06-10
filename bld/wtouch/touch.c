@@ -275,17 +275,17 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
         return;
     }
     /* we need to access the file's time stamp and increment it */
-    #if defined( __LINUX__ )
-        {
-            struct stat buf;
-            stat( full_name, &buf );
-            ftime = buf.st_mtime;
-        }
-    #elif defined( __QNX__ )
-        ftime = dir->d_stat.st_mtime;
-    #else
-        ftime = _d2ttime( dir->d_date, dir->d_time );
-    #endif
+#if defined( __LINUX__ )
+    {
+        struct stat buf;
+        stat( full_name, &buf );
+        ftime = buf.st_mtime;
+    }
+#elif defined( __QNX__ )
+    ftime = dir->d_stat.st_mtime;
+#else
+    ftime = _d2ttime( dir->d_date, dir->d_time );
+#endif
     ptime = localtime( &ftime );
     touchTime = *ptime;
     incTouchTime();
@@ -317,9 +317,9 @@ static int processOptions( int argc, char **argv )
         p = *++argv;
         switch( p[0] ) {
         case '-':
-    #ifndef __UNIX__
+#ifndef __UNIX__
         case '/':
-    #endif
+#endif
             if( ( isalpha( p[1] ) || p[1] == '?' ) && p[2] == '\0' ) {
                 switch( tolower( p[1] ) ) {
                 case '?':
@@ -493,22 +493,23 @@ static void doTouch( void )
         number_of_successful_touches = 0;
 #ifdef __LINUX__
         strcpy( full_name, item );
+        ndir = NULL;
         number_of_successful_touches += doTouchFile( full_name, ndir, &stamp );
         {
 #else
         dirpt = opendir( item );
-        if( dirpt ) {
+        if( dirpt != NULL ) {
             while( (ndir = readdir( dirpt )) != NULL ) {
                 int attr;
 
                 _makepath( full_name, drive, dir, ndir->d_name, NULL );
-            #ifdef __QNX__
+    #ifdef __QNX__
                 attr = ndir->d_stat.st_mode;
                 if( S_ISREG( attr ) ) {
-            #else
+    #else
                 attr = ndir->d_attr;
                 if( !( ndir->d_attr & ( _A_VOLID | _A_SUBDIR ) ) ) {
-            #endif
+    #endif
                     number_of_successful_touches +=
                         doTouchFile( full_name, ndir, &stamp );
                 }
@@ -523,17 +524,17 @@ static void doTouch( void )
                 dirpt = opendir( full_name );
                 // it would make no sense for this to fail, and I'm not entirely sure
                 // what to do if it does....
-                if( dirpt ) {
+                if( dirpt != NULL ) {
                     while( (ndir = readdir( dirpt )) != NULL ) {
                         if ( '.' != *ndir->d_name ) {
-                        #ifdef __UNIX__
+#ifdef __UNIX__
                             _makepath( full_name, drive, dir, ndir->d_name, NULL );
                             if( !stat( full_name, &sb ) && S_ISDIR( sb.st_mode) ) {
-                        #else
+#else
                             if( ndir->d_attr & _A_SUBDIR ) {
 
                                 _makepath( full_name, drive, dir, ndir->d_name, NULL );
-                        #endif
+#endif
                                 insertFileSpec( strdup(full_name), curr );
                             }
                         }

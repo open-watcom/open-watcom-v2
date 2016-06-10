@@ -103,7 +103,8 @@ static const char *ExtLst[] = {
 #ifndef __UNIX__
     ".qnx", "",
 #endif
-        NULL };
+    NULL
+};
 
 static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
@@ -430,14 +431,14 @@ int main( int argc, char *argv[] )
 #endif
     }
     add_file = 0;
-    j = argc-1;
+    j = argc - 1;
     while( j > 0 ) {
 #ifdef __UNIX__
         if( argv[j][0] == '-' ) {
 #else
         if( argv[j][0] == '-' || argv[j][0] == '/' ) {
 #endif
-            argvlen = strlen(argv[j] );
+            argvlen = strlen( argv[j] );
             for( i = 1; i < argvlen; i++ ) {
                 switch( argv[j][i] ) {
                 case 'q': quiet = true; break;

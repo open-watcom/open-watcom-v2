@@ -200,7 +200,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
     if( add_drives ) {
         for( i = 'A'; i <= 'Z'; i++ ) {
             if( DoGetDriveType( i ) != DRIVE_TYPE_NONE ) {
-                MySprintf( str, "  [%c:]", (char) i - 'A' + 'a' );
+                MySprintf( str, "  [%c:]", (char)i - 'A' + 'a' );
                 addDirData( cfile, str );
             }
         }
