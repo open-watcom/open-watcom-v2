@@ -39,6 +39,12 @@
 #define PrtMsgExit(x)   {PrtMsg x; exit( ExitSafe( EXIT_FATAL ) );}
 #endif
 
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
+#define _NORETURN __declspec(noreturn)
+#else
+#define _NORETURN
+#endif
+
 enum MsgClass {
     NUM_MSK     = 0x03ff,   /* these are valid msg numbers          */
 
@@ -66,8 +72,8 @@ enum {
 
 extern unsigned FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
-#ifdef __WATCOMC__
-extern __declspec(noreturn) void     PrtMsgFtl( enum MsgClass num, ... );
+#if defined( __WATCOMC__ )
+extern _NORETURN void   PrtMsgFtl( enum MsgClass num, ... );
 #endif
 extern void     Usage( void );
 extern BOOLEAN  GetYes( enum MsgClass querymsg );

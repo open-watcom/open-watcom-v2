@@ -512,7 +512,7 @@ void PrtMsg( enum MsgClass num, ... )
 #endif
 
 #ifdef __WATCOMC__
-__declspec(noreturn) void     PrtMsgFtl( enum MsgClass num, ... )
+_NORETURN void     PrtMsgFtl( enum MsgClass num, ... )
 {
     va_list args;
 
