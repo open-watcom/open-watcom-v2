@@ -65,7 +65,7 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_MAX       100
 
 typedef enum {
-    #define pick(e,h,ih,wid)    e,
+    #define pick(e,h,ih,wih)    e,
     #include "diphndls.h"
     #undef pick
     MAX_HK
