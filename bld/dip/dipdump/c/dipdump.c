@@ -965,21 +965,20 @@ static int DumpFile( const char *file, char **dips )
     if( InitDIP( dips ) ) {
         process_info    *proc = DIPCreateProcess();
 
-        if( proc ) {
+        if( proc != NULL ) {
             int         prty;
             mod_handle  mh = 0;
 
-            for( prty = DIPPriority( 0 );
-                 prty != 0;
-                 prty = DIPPriority( prty ) ) {
+            for( prty = DIPPriority( 0 ); prty != 0; prty = DIPPriority( prty ) ) {
                 DIGCliSeek( fh, 0, DIG_ORG );
                 mh = DIPLoadInfo( fh, 0, prty );
-                if( mh != NO_MOD )
+                if( mh != NO_MOD ) {
                     break;
+                }
             }
             if( mh != NO_MOD ) {
                 DIPMapInfo( mh, NULL );
-                InfoMsg( "DIP opened '%s' at prty=%d, mh=%lx\n", file, prty, (long)mh);
+                InfoMsg( "DIP opened '%s' at prty=%d, mh=%lx\n", file, prty, (long)mh );
 
                 /*
                  * Enumerate the debug info.
