@@ -64,13 +64,12 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_EXPORTS   75
 #define DIP_PRIOR_MAX       100
 
-typedef unsigned_8 handle_kind; enum {
-    HK_IMAGE,
-    HK_TYPE,
-    HK_CUE,
-    HK_SYM,
+typedef enum {
+    #define pick(e,h,ih,wid)    e,
+    #include "diphndls.h"
+    #undef pick
     MAX_HK
-};
+} handle_kind;
 
 typedef unsigned_8 symbol_source; enum {
     SS_MODULE,
@@ -97,12 +96,12 @@ typedef unsigned_8 symbol_name; enum {
     SN_LAST
 };
 
-typedef unsigned_8 default_kind; enum {
+typedef enum {
     DK_INT,
     DK_DATA_PTR,
     DK_CODE_PTR,
     DK_LAST
-};
+} default_kind;
 
 typedef unsigned_16 dip_status; enum {
     DS_OK,

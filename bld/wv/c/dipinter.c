@@ -264,10 +264,9 @@ static char     WVName[] = "Debugger Internal";
 static unsigned DIGREGISTER WVHandleSize( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        0,
-        sizeof( imp_type_handle ),
-        0,
-        sizeof( imp_sym_handle )
+        #define pick(e,h,ih,wih)    wih,
+        #include "diphndls.h"
+        #undef pick
     };
     return( Sizes[hk] );
 }

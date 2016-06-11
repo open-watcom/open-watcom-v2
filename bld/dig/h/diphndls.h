@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,49 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  DIP handles kind related declaration.
 *
 ****************************************************************************/
 
 
-#include "jvmdip.h"
-
-/*
-   Misc. stuff.
-*/
-
-const char      DIPImpName[] = "Java";
-
-unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
-{
-    static unsigned_8 Sizes[] = {
-        #define pick(e,h,ih,wih)    ih,
-        #include "diphndls.h"
-        #undef pick
-    };
-
-    return( Sizes[hk] );
-}
-
-dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
-{
-    /* nothing to do */
-    return( DS_FAIL );
-}
-
-dip_status      DIGENTRY DIPImpStartup( void )
-{
-    /* nothing to do */
-    return( DS_OK );
-}
-
-void            DIGENTRY DIPImpShutdown( void )
-{
-    /* nothing to do */
-}
-
-void            DIGENTRY DIPImpCancel( void )
-{
-    /* nothing to do */
-}
+/*      enum    DIP manager handle      DIP's imp.handle            WV internal                */
+pick( HK_IMAGE, sizeof( image_handle ), sizeof( imp_image_handle ), 0                           )
+pick( HK_TYPE,  sizeof( type_handle ),  sizeof( imp_type_handle ),  sizeof( imp_type_handle )   )
+pick( HK_CUE,   sizeof( cue_handle ),   sizeof( imp_cue_handle ),   0                           )
+pick( HK_SYM,   sizeof( sym_handle ),   sizeof( imp_sym_handle ),   sizeof( imp_sym_handle )    )

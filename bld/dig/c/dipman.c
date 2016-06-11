@@ -103,13 +103,17 @@ static struct {
     dip_imp_routines    *rtns;
     dip_sys_handle      sys_hdl;
 }                       LoadedDIPs[MAX_DIPS];
-static unsigned         MaxHdlSize[MAX_HK];
 
-static const unsigned_8 MgrHdlOverhead[MAX_HK] = {
-    sizeof( image_handle ),
-    sizeof( type_handle ),
-    sizeof( cue_handle ),
-    sizeof( sym_handle )
+static unsigned         MaxImpHdlSize[] = {
+    #define pick(e,h,ih,wid)    0,
+    #include "diphndls.h"
+    #undef pick
+};
+
+static const unsigned_8 MgrHdlSize[] = {
+    #define pick(e,h,ih,wid)    h,
+    #include "diphndls.h"
+    #undef pick
 };
 
 #define STRXX(x)    #x
@@ -195,8 +199,8 @@ static void SetHdlSizes( dip_imp_routines *rtns )
 
     for( hk = 0; hk < MAX_HK; ++hk ) {
         size = rtns->handle_size( hk );
-        if( size > MaxHdlSize[hk] ) {
-            MaxHdlSize[hk] = size;
+        if( size > MaxImpHdlSize[hk] ) {
+            MaxImpHdlSize[hk] = size;
         }
     }
 }
@@ -277,7 +281,7 @@ void DIPFini( void )
 
 unsigned DIPHandleSize( handle_kind hk )
 {
-    return( MaxHdlSize[hk] + MgrHdlOverhead[hk] );
+    return( MgrHdlSize[hk] + MaxImpHdlSize[hk] );
 }
 
 dip_status DIPMoreMem( unsigned amount )
