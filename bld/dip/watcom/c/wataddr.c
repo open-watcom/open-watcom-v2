@@ -260,6 +260,7 @@ mem_block FindSegBlock( imp_image_handle *ii, imp_mod_handle im, unsigned long o
 
     if( offset == 0 ) {
         block.start = NilAddr;
+        block.len = 0;
         return( block );
     }
     if( SegBlockCache.ii == ii

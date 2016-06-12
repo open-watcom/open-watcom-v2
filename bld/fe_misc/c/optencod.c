@@ -1105,6 +1105,7 @@ static void doJUSAGE( char *p )
         for( o = optionList; o != NULL; o = o->synonym ) {
             usage = pickUpRest( p );
             if( *usage == '\0' ) {
+                free( usage );
                 usage = strdup( o->lang_usage[LANG_English] );
             }
             o->lang_usage[LANG_Japanese] = usage;
@@ -2190,6 +2191,7 @@ static void processUsage( unsigned language, void (*process_line)( bool ) )
         strcat( tokbuff, o->lang_usage[language] );
         process_line( false );
     }
+    free( t );
     if( ( maxUsageLen / langMaxChar[language] ) > CONSOLE_WIDTH ) {
         fail( "usage message exceeds %u chars\n%s\n", CONSOLE_WIDTH, maxusgbuff );
     }

@@ -45,6 +45,6 @@ extern bool             IsInternalModName( const char *start, size_t len );
 extern dip_status       DIGREGISTER WVTypeAddRef( imp_image_handle *ii, imp_type_handle *it );
 extern dip_status       DIGREGISTER WVTypeRelease( imp_image_handle *ii, imp_type_handle *it );
 extern dip_status       DIGREGISTER WVTypeFreeAll( imp_image_handle *ii );
-extern dip_status       DIGREGISTER WVSymAddRef( imp_image_handle *ii, imp_sym_handle *it );
-extern dip_status       DIGREGISTER WVSymRelease( imp_image_handle *ii, imp_sym_handle *it );
+extern dip_status       DIGREGISTER WVSymAddRef( imp_image_handle *ii, imp_sym_handle *is );
+extern dip_status       DIGREGISTER WVSymRelease( imp_image_handle *ii, imp_sym_handle *is );
 extern dip_status       DIGREGISTER WVSymFreeAll( imp_image_handle *ii );

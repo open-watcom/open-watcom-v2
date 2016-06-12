@@ -46,7 +46,7 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 extern char             DPMICheck;
-extern addr_seg         _psp;
+//extern addr_seg         _psp;
 
 static char             *cmdStart;
 

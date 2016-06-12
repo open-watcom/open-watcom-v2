@@ -27,8 +27,7 @@
 
 static char default_name[] = { "noname.bmp" };
 
-static int
-bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, int cmd )
+static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, int cmd )
 {
     int             success = 0;
     unsigned long   width;
@@ -83,6 +82,7 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
         }
         bmpal = (bmp_rgb_quad *)malloc( palsize );
         if( !fread( bmpal, palsize, 1, in ) ) {
+            free( bmpal );
             return 0;
         }
     }
@@ -131,49 +131,50 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
                             }
                             break;
                         case 8: {
-                            unsigned char   *frow;
-                            size_t          frowbytes;
-
-                            frowbytes = width * sizeof( unsigned char );
-                            frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
-                            frow = (unsigned char *)malloc( frowbytes );
-                            // Expand 8bpp data using palette
-                            for( y = 0; y < height; y++ ) {
-                                fread( frow, frowbytes, 1, in );
-                                row = *rowp;
-                                for( x = 0; x < width; x++ ) {
-                                    row[x*3+0] = bmpal[frow[x]].blue;
-                                    row[x*3+1] = bmpal[frow[x]].green;
-                                    row[x*3+2] = bmpal[frow[x]].red;
+                                unsigned char   *frow;
+                                size_t          frowbytes;
+    
+                                frowbytes = width * sizeof( unsigned char );
+                                frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
+                                frow = (unsigned char *)malloc( frowbytes );
+                                // Expand 8bpp data using palette
+                                for( y = 0; y < height; y++ ) {
+                                    fread( frow, frowbytes, 1, in );
+                                    row = *rowp;
+                                    for( x = 0; x < width; x++ ) {
+                                        row[x*3+0] = bmpal[frow[x]].blue;
+                                        row[x*3+1] = bmpal[frow[x]].green;
+                                        row[x*3+2] = bmpal[frow[x]].red;
+                                    }
+                                    rowp--;
                                 }
-                                rowp--;
-                            }
                             }
                             break;
                         case 4: {
-                            unsigned char   *frow, nibble;
-                            size_t          frowbytes;
-
-                            frowbytes = ( width * sizeof( unsigned char ) + 1 ) / 2;
-                            frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
-                            frow = (unsigned char *)malloc( frowbytes );
-                            // Expand 4bpp data using palette
-                            for( y = 0; y < height; y++ ) {
-                                fread( frow, frowbytes, 1, in );
-                                row = *rowp;
-                                for( x = 0; x < width; x++ ) {
-                                    nibble = frow[x/2];
-                                    if( x & 1 )
-                                        nibble &= 0x0F;
-                                    else
-                                        nibble >>= 4;
-
-                                    row[x*3+0] = bmpal[nibble].blue;
-                                    row[x*3+1] = bmpal[nibble].green;
-                                    row[x*3+2] = bmpal[nibble].red;
+                                unsigned char   *frow, nibble;
+                                size_t          frowbytes;
+    
+                                frowbytes = ( width * sizeof( unsigned char ) + 1 ) / 2;
+                                frowbytes = ( frowbytes + 3 ) & ~3;   // Dword aligned
+                                frow = (unsigned char *)malloc( frowbytes );
+                                // Expand 4bpp data using palette
+                                for( y = 0; y < height; y++ ) {
+                                    fread( frow, frowbytes, 1, in );
+                                    row = *rowp;
+                                    for( x = 0; x < width; x++ ) {
+                                        nibble = frow[x/2];
+                                        if( x & 1 )
+                                            nibble &= 0x0F;
+                                        else
+                                            nibble >>= 4;
+    
+                                        row[x*3+0] = bmpal[nibble].blue;
+                                        row[x*3+1] = bmpal[nibble].green;
+                                        row[x*3+2] = bmpal[nibble].red;
+                                    }
+                                    rowp--;
                                 }
-                                rowp--;
-                            }
+                                free( frow );
                             }
                             break;
                         default:
@@ -190,17 +191,16 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
                                 bmeps_add_rgb( row[x*3+2], row[x*3+1], row[x*3+0] );
                         }
                         bmeps_end_image( out );
-                  }
-                  /* done with rows */
-                  rowp = rows;
-                  for( y = 0; y < height; y++ ) {
-                      row = *rowp;
-                      if( row )
-                        free( row );
-
-                      *(rowp++) = NULL;
-                  }
-                  free( rows );
+                    }
+                    /* done with rows */
+                    rowp = rows;
+                    for( y = 0; y < height; y++ ) {
+                        row = *rowp;
+                        if( row != NULL )
+                            free( row );
+                        *(rowp++) = NULL;
+                    }
+                    free( rows );
                 }
             }
             bmeps_footer(out);
@@ -221,6 +221,8 @@ bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned long *h, in
         break;
     }
     /* done with it */
+    if( bmpal != NULL )
+        free( bmpal );
     return success;
 }
 

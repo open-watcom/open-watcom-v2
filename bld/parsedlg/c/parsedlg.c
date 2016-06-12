@@ -833,6 +833,8 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
             p = strtok( NULL, "\"" );
             p = strtok( NULL, "\"" );
             if( opt.font ) {
+                if( font_name != NULL )
+                    free( font_name );
                 font_name = malloc( strlen( opt.font_name ) + 1 );
                 strcpy( font_name, opt.font_name );
                 if( opt.font_size != 0 ) {
@@ -840,6 +842,8 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
                 }
             } else {
                 if( p != NULL ) {
+                    if( font_name != NULL )
+                        free( font_name );
                     font_name = malloc( strlen( p ) + 10 );
                     strcpy( font_name, p );
                     p2 = malloc( sizeof(char *) );
@@ -853,6 +857,8 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
     }
     process_style( dlg_hdr.parms, "DIALOG" );
     if( font_set == 0 ) {
+        if( font_name != NULL )
+            free( font_name );
         font_name = malloc( 7 );
         strcpy( font_name, "Helv" );
         font_size = 10;
@@ -944,13 +950,18 @@ int main( int argc, char *argv[] )
     char    *buff1;
     char    *buff2;
     char    *separators = " \t";
+    size_t  len;
     
     i = process_cmdl( argc, argv );
     if( i == 0 ) {
         disp_usage();
         return( -1 );
     }
-    strcpy( fname, argv[ i ] );
+    len = strlen( argv[i] );
+    if( len > PATH_MAX - 1 )
+        len = PATH_MAX - 1;
+    memcpy( fname, argv[i], len );
+    fname[len] = '\0';
     if( strrchr( fname, '.' ) == NULL )
         strcat( fname, ".dlg" );
     fi = fopen( fname, "r" );
@@ -959,7 +970,11 @@ int main( int argc, char *argv[] )
         return( -1 );
     }
     if( i + 1 < argc ) {
-        strcpy( fname, argv[ i + 1 ] );
+        len = strlen( argv[i + 1] );
+        if( len > PATH_MAX - 1 )
+            len = PATH_MAX - 1;
+        memcpy( fname, argv[i + 1], len );
+        fname[len] = '\0';
         if( strrchr( fname, '.' ) == NULL ) {
             strcat( fname, ".dlg" );
         }

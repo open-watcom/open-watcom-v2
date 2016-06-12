@@ -139,21 +139,19 @@ void KillDebugger( int rc )
 
 void GUImain( void )
 {
-#if defined(__OSI__) || __WATCOMC__ < 1000
-    {
-    long    result;
-
 #if defined(__OSI__)
-    _Extender = 1;
-#endif
-    result = DPMIAllocateLDTDescriptors( 1 );
-    if( result < 0 ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
-    _ExtenderRealModeSelector = result & 0xffff;
-    if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
-        StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
-    }
+    {
+        long    result;
+    
+        _Extender = 1;
+        result = DPMIAllocateLDTDescriptors( 1 );
+        if( result < 0 ) {
+            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
+        }
+        _ExtenderRealModeSelector = result & 0xffff;
+        if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
+            StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );
+        }
     }
 #endif
     SaveOrigVectors();
