@@ -483,13 +483,13 @@ static void dtorRef(            // reference a dtor in state table
     SYMBOL dtor = ins->value.pvalue;
 
     switch( sc->func_dtm ) {
-      case DTM_DIRECT_TABLE :
+    case DTM_DIRECT_TABLE :
         addAddrOf( cnode, dtor );
         // drops thru
-      case DTM_DIRECT :
+    case DTM_DIRECT :
         addCalleeFuncToGen( cnode, dtor );
         break;
-      default :
+    default :
         addAddrOf( cnode, dtor );
         break;
     }
@@ -572,7 +572,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             }
             continue;
           case IC_SCOPE_CALL_FUN :
-            if( ! call_graph->scope_call_opt ) continue;
+            if( ! call_graph->scope_call_opt )
+                continue;
             CgResScopeCall( cnode
                           , ins->value.pvalue
                           , sc.scope_call_cmp_dtor
@@ -607,7 +608,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
           } continue;
           case IC_BLOCK_DONE :
           case IC_BLOCK_END :
-            if( ! call_graph->scope_call_opt ) continue;
+            if( ! call_graph->scope_call_opt )
+                continue;
             sc.curr_scope = CgResScScanEnd();
             continue;
           case IC_EXPR_TEMP:
@@ -650,7 +652,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
           } continue;
           case IC_DTOR_SUBOBJS :
             cnode->state_table = true;
-            if( sc.func_dtm != DTM_DIRECT_SMALL ) continue;
+            if( sc.func_dtm != DTM_DIRECT_SMALL )
+                continue;
             // drops thru
           case IC_DLT_DTORED :
             if( ! call_graph->scope_call_opt ) {
@@ -665,7 +668,8 @@ static void scanFunctionBody(   // SCAN FUNCTION FOR CALLS
             }
             continue;
           case IC_SCOPE_THROW :
-            if( ! call_graph->scope_call_opt ) continue;
+            if( ! call_graph->scope_call_opt )
+                continue;
             CgResScopeThrow( cnode );
             continue;
           case IC_NEW_CTORED :

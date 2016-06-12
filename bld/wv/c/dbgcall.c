@@ -260,6 +260,7 @@ void ProcCall( void )
     const char          *old;
     location_list       ll;
     dip_type_info       ti;
+    dip_type_info       *pti;
     char                *p;
     const mad_reg_info  **parm_reg;
 
@@ -296,26 +297,29 @@ void ProcCall( void )
         Scan();
         if( CurrToken != T_RIGHT_PAREN ) {
             for( ; ; ) {
+                pti = &ti;
                 if( CurrToken == T_DIV ) {
                     Scan();
                     if( CurrToken == T_DIV ) {
                         Scan();
                         /* on stack */
                         LocationCreate( &ll, LT_INTERNAL, NULL );
+                        pti = NULL;
                     } else {
-                        GetLocation( &ll, &ti );
+                        GetLocation( &ll, pti );
                     }
                 } else {
                     if( DefParms[parm] == NULL ) {
                         /* on stack */
                         LocationCreate( &ll, LT_INTERNAL, NULL );
+                        pti = NULL;
                     } else {
                         old = ReScan( DefParms[parm] );
-                        GetLocation( &ll, &ti );
+                        GetLocation( &ll, pti );
                         ReScan( old );
                     }
                 }
-                PushLocation( &ll, &ti );
+                PushLocation( &ll, pti );
                 NormalExpr();
                 SwapStack( 1 );
                 ++parm;

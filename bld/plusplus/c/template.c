@@ -737,7 +737,7 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
     if( currentTemplate->args != NULL ) {
         curr = NULL;
         stop = ScopeOrderedStart( currentTemplate->decl_scope );
-        for(;;) {
+        for( ;; ) {
             curr = ScopeOrderedNext( stop, curr );
             if( curr == NULL ) break;
 
@@ -953,6 +953,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
             default:
                 DbgStmt( DumpSymbol( curr ) );
                 CFatal( "not yet implemented: mergeClassTemplates" );
+                return( NULL );
             }
             parms = PTreeBinary( CO_LIST, parms, parm );
         }
