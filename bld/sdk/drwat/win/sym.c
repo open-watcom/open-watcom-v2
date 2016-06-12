@@ -42,6 +42,7 @@
 #include "drwatcom.h"
 #include "sopen.h"
 #include "dip.h"
+#include "dipimp.h"
 #include "dipcli.h"
 
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
