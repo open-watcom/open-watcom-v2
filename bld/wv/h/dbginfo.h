@@ -71,9 +71,9 @@ typedef struct sym_list {
 
 #define SL2SH( l )      ((sym_handle *)((l)->h))
 
-#define cue_SIZE        DIPHandleSize( HK_CUE )
-#define sym_SIZE        DIPHandleSize( HK_SYM )
-#define type_SIZE       DIPHandleSize( HK_TYPE )
+#define cue_SIZE        DIPHandleSize( HK_CUE, 0 )
+#define sym_SIZE        DIPHandleSize( HK_SYM, 0 )
+#define type_SIZE       DIPHandleSize( HK_TYPE, 0 )
 
 #define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
 

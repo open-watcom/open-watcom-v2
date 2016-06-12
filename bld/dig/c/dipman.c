@@ -286,9 +286,13 @@ void DIPFini( void )
     }
 }
 
-unsigned DIPHandleSize( handle_kind hk )
+size_t DIPHandleSize( handle_kind hk, int mgr_size )
 {
-    return( MgrHdlSize[hk] + MaxImpHdlSize[hk] );
+    if( mgr_size ) {
+        return( MgrHdlSize[hk] );
+    } else {
+        return( MgrHdlSize[hk] + MaxImpHdlSize[hk] );
+    }
 }
 
 dip_status DIPMoreMem( unsigned amount )
@@ -498,7 +502,7 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
     ii = FindImageMapSlot( ActProc );
     if( ii == NO_IMAGE_IDX )
         return( NO_MOD );
-    ih = DIGCliAlloc( DIPHandleSize( HK_IMAGE ) + extra );
+    ih = DIGCliAlloc( DIPHandleSize( HK_IMAGE, 0 ) + extra );
     if( ih == NULL ) {
         DIPCliStatus( DS_ERR|DS_NO_MEM );
         return( NO_MOD );
@@ -515,7 +519,7 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
             *ActProc->ih_add = ih;
             ActProc->ih_add = &ih->next;
             ih->dip = LoadedDIPs[j].rtns;
-            ih->extra = (unsigned_8 *)ih + DIPHandleSize( HK_IMAGE );
+            ih->extra = (unsigned_8 *)ih + DIPHandleSize( HK_IMAGE, 0 );
             ih->ii = ii;
             LoadingImageIdx = ii;
             return( MK_MH( ii, 0 ) );
@@ -644,7 +648,7 @@ walk_result WalkTypeList( mod_handle mh, TYPE_WALKER *tw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    type_handle         *th = __alloca( DIPHandleSize( HK_TYPE ) );
+    type_handle         *th = __alloca( DIPHandleSize( HK_TYPE, 0 ) );
     walk_result         wr;
 
     wr = WR_CONTINUE;
@@ -682,7 +686,7 @@ static walk_result GblSymWalk( mod_handle mh, void *d )
 static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
 {
     image_handle        *ih;
-    sym_handle          *sh = __alloca( DIPHandleSize( HK_SYM ) );
+    sym_handle          *sh = __alloca( DIPHandleSize( HK_SYM, 0 ) );
     image_idx           ii = 0;
     imp_mod_handle      imh;
     mod_handle          mh;
@@ -769,7 +773,7 @@ walk_result WalkFileList( mod_handle mh, CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
-    cue_handle          *ch = __alloca( DIPHandleSize( HK_CUE ) );
+    cue_handle          *ch = __alloca( DIPHandleSize( HK_CUE, 0 ) );
 
     ih = MH2IH( mh );
     if( ih == NULL )
@@ -909,7 +913,7 @@ dip_status TypePointer( type_handle *base_th, type_modifier tm, unsigned size,
 {
     if( base_th->ap & AP_FULL )
         return( DS_ERR|DS_TOO_MANY_POINTERS );
-    memcpy( ptr_th, base_th, DIPHandleSize( HK_TYPE ) );
+    memcpy( ptr_th, base_th, DIPHandleSize( HK_TYPE, 0 ) );
     ptr_th->ap <<= AP_SHIFT;
     if( tm == TM_NEAR ) {
         if( size == 2 ) {
@@ -932,7 +936,7 @@ dip_status TypeBase( type_handle *th, type_handle *base_th, location_context *lc
     image_handle        *ih;
 
     if( th->ap != 0 ) {
-        memcpy( base_th, th, DIPHandleSize( HK_TYPE ) );
+        memcpy( base_th, th, DIPHandleSize( HK_TYPE, 0 ) );
         base_th->ap >>= AP_SHIFT;
         return( DS_OK );
     }

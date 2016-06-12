@@ -1273,7 +1273,7 @@ bool CnvAddr( address addr, char *buff, size_t buff_len )
     search_result   sr;
     size_t          name_len;
 
-    sym = alloca( DIPHandleSize( HK_SYM ) );
+    sym = alloca( DIPHandleSize( HK_SYM, 0 ) );
 //    MapAddressToActual( exeImage, &addr.mach );
     sr = AddrSym( NO_MOD, addr, sym );
     switch( sr ) {

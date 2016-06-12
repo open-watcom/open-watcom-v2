@@ -55,7 +55,7 @@ BOOL GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
     cue_handle  *cue;
 
-    cue = MemAlloc( DIPHandleSize( HK_CUE ) );
+    cue = MemAlloc( DIPHandleSize( HK_CUE, 0 ) );
     if( AddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
         MemFree( cue );
         return( FALSE );
@@ -77,7 +77,7 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
     search_result       sr;
     location_list       ll;
 
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM, 0 ) );
     sr = AddrSym( NO_MOD, *addr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:

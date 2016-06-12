@@ -1028,19 +1028,22 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     address             addr;
 
     index = 0;
-    ch = alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
     if( LineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
-        if( LineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) return;
+        if( LineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) {
+            return;
+        }
     }
-    sh = alloca( DIPHandleSize( HK_SYM ) );
+    sh = alloca( DIPHandleSize( HK_SYM, 0 ) );
     addr = CueAddr( ch );
-    if( AddrSym( mh, addr, sh ) == SR_NONE ) return;
+    if( AddrSym( mh, addr, sh ) == SR_NONE )
+        return;
     while( index < curr_file->rtn_count ) {
         curr_rtn = curr_file->routine[index];
         if( curr_rtn->sh != NULL
-         && SymCmp( curr_rtn->sh, sh ) == 0 ) {
+          && SymCmp( curr_rtn->sh, sh ) == 0 ) {
             curr_sio->curr_rtn = curr_rtn;
             break;
         }
