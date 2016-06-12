@@ -75,9 +75,10 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr * addr, void * d )
 
 
 
-sym_handle * DIGCLIENT DIPCliSymCreate( void * d )
-/************************************************/
+imp_sym_handle * DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
+/*************************************************************************/
 {
+    ih=ih;
     d=d;
     return( NULL );
 }

@@ -112,11 +112,12 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *ptr ) {
 /*
  * DIPCliSymCreate
  */
-sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr ) {
+imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d ) {
 #ifdef DEBUG
     MessageBox( NULL, "symcreate called", "dipcli.c", MB_OK );
 #endif
-    ptr = ptr;
+    ih=ih;
+    d=d;
     return( NULL );
 }
 

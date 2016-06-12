@@ -65,21 +65,17 @@ unsigned        DIPImagePriority( mod_handle );
  *      Information Walkers
  */
 typedef         walk_result (IMAGE_WALKER)( mod_handle, void * );
-walk_result     WalkImageList( IMAGE_WALKER *, void * );
-
 typedef         walk_result (MOD_WALKER)( mod_handle, void * );
-walk_result     WalkModList( mod_handle, MOD_WALKER *, void * );
-
 typedef         walk_result (TYPE_WALKER)( type_handle *, void * );
-walk_result     WalkTypeList( mod_handle, TYPE_WALKER *, void * );
-
 typedef         walk_result (SYM_WALKER)( sym_walk_info, sym_handle *, void * );
+typedef         walk_result (CUE_WALKER)( cue_handle *, void * );
+
+walk_result     WalkImageList( IMAGE_WALKER *, void * );
+walk_result     WalkModList( mod_handle, MOD_WALKER *, void * );
+walk_result     WalkTypeList( mod_handle, TYPE_WALKER *, void * );
 walk_result     WalkSymList( symbol_source, void *, SYM_WALKER *, void * );
 walk_result     WalkSymListEx( symbol_source, void *, SYM_WALKER *, location_context *, void * );
-
-typedef         walk_result (CUE_WALKER)( cue_handle *, void * );
 walk_result     WalkFileList( mod_handle, CUE_WALKER *, void * );
-
 
 /*
  * Image Information

@@ -148,22 +148,19 @@ static const address    NilAddr = { 0 };
 /*
  * Client interface
  */
-
-/*
- * DCSymCreate is here so that DIPRegister'd functions can call it.
- */
-imp_sym_handle *DCSymCreate( imp_image_handle *iih, void *d )
+static imp_sym_handle * DIGCLIENT _DIPCliSymCreate( imp_image_handle *iih, void *d )
 {
-    sym_handle  *sh;
+    imp_sym_handle  *ish;
 
-    sh = DIPCliSymCreate( d );
-    sh->ii = IIH2IH( iih )->ii;
-    return( SH2ISH( sh ) );
-}
-
-static imp_sym_handle * DIGCLIENT DIPCliSymCreate2( imp_image_handle *iih, void *d )
-{
-    return( DCSymCreate( iih, d ) );
+    ish = DIPCliSymCreate( iih, d );
+    if( ish != NULL ) {
+        if( iih != NULL ) {
+            ISH2SH( ish )->ii = IIH2IH( iih )->ii;
+        } else {
+            ISH2SH( ish )->ii = NO_IMAGE_IDX;
+        }
+    }
+    return( ish );
 }
 
 dip_client_routines DIPClientInterface = {
@@ -174,7 +171,7 @@ dip_client_routines DIPClientInterface = {
     DIGCliRealloc,
     DIGCliFree,
     DIPCliMapAddr,
-    DIPCliSymCreate2,
+    _DIPCliSymCreate,
     DIPCliItemLocation,
     DIPCliAssignLocation,
     DIPCliSameAddrSpace,

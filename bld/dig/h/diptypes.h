@@ -33,25 +33,6 @@
 #define DIPTYPES_H_INCLUDED
 
 #include "digtypes.h"
-#include "digpck.h"
-
-struct process_info;
-struct image_handle;
-struct type_handle;
-struct cue_handle;
-struct sym_handle;
-struct dip_imp_routines;
-struct location_context;
-
-typedef struct process_info     process_info;
-typedef struct image_handle     image_handle;
-typedef struct type_handle      type_handle;
-typedef struct cue_handle       cue_handle;
-typedef struct sym_handle       sym_handle;
-typedef struct dip_imp_routines dip_imp_routines;
-typedef unsigned_32             mod_handle;
-typedef unsigned_32             cue_fileid;
-typedef struct location_context location_context;
 
 
 #define NO_MOD              ((mod_handle)0)
@@ -63,6 +44,29 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_NORMAL    50
 #define DIP_PRIOR_EXPORTS   75
 #define DIP_PRIOR_MAX       100
+
+#include "digpck.h"
+
+struct image_handle;
+struct type_handle;
+struct cue_handle;
+struct sym_handle;
+
+typedef struct image_handle     image_handle;
+typedef struct type_handle      type_handle;
+typedef struct cue_handle       cue_handle;
+typedef struct sym_handle       sym_handle;
+
+struct process_info;
+struct dip_imp_routines;
+struct location_context;
+
+typedef struct process_info     process_info;
+typedef struct dip_imp_routines dip_imp_routines;
+typedef struct location_context location_context;
+
+typedef unsigned_32             mod_handle;
+typedef unsigned_32             cue_fileid;
 
 typedef enum {
     #define pick(e,h,ih,wih)    e,
@@ -230,4 +234,5 @@ typedef struct {
 } lookup_item;
 
 #include "digunpck.h"
+
 #endif
