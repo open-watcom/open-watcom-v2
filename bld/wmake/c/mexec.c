@@ -189,12 +189,10 @@ STATIC char *createTmpFileName( void )
                 FreeVec( buf );
                 FreeSafe( tmpPath );
                 PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
-                return( NULL );
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
                 PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
-                return( NULL );
             }
         }
         if( tmpPath == NULL ) {

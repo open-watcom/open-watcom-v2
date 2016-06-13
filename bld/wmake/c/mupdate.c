@@ -961,7 +961,6 @@ RET_T Update( TARGET *targ )
         } else {
             // Target doesn't exist and we have no clue how to make it. Bomb out.
             PrtMsgExit(( FTL | UNABLE_TO_MAKE, targ->node.name ));
-            return( RET_ERROR );
         }
     }
 

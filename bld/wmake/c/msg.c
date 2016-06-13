@@ -511,7 +511,7 @@ void PrtMsg( enum MsgClass num, ... )
 #pragma off(check_stack);
 #endif
 
-#ifdef __WATCOMC__
+#if defined( __WATCOMC__ ) || !defined( NDEBUG )
 _NORETURN void     PrtMsgFtl( enum MsgClass num, ... )
 {
     va_list args;
