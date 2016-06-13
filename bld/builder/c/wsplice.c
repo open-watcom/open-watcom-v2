@@ -268,7 +268,7 @@ int main(               // MAIN-LINE
                     Error( "Unable to open indirect argument file" );
                     continue;
                 }
-    
+
                 fgets( st, 512, f );
                 fclose( f );
             }
@@ -405,6 +405,9 @@ int main(               // MAIN-LINE
             dest_time.modtime = src_time.st_mtime;
             utime( tgt, &dest_time );
         }
+    }
+    for( count = 0; count < arg_count; ++count ) {
+        free( param[count] );
     }
 
     return( ErrCount );
