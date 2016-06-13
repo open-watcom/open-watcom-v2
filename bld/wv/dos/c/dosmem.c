@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <malloc.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -39,7 +40,6 @@
 
 extern void __far _ovl_addarea( unsigned, unsigned );
 
-extern addr_seg     _psp;
 extern unsigned     _STACKTOP;
 
 unsigned            OvlAreaSize;

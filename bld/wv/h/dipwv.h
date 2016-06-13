@@ -39,20 +39,24 @@ typedef struct {
     unsigned short      s;
 } wv_type_entry;
 
-enum wv_sym_class {
+typedef enum {
     SC_TYPE,
     SC_INTERNAL,
     SC_USER
-};
+} wv_sym_class;
+
+typedef enum {
+    #define pick(n,tk,tm,tt) INTERNAL_ ## n,
+    #include "dipwvsym.h"
+    #undef pick
+} internal_idx;
 
 typedef struct {
     wv_type_entry       t;
-    enum wv_sym_class   sc;
+    wv_sym_class        sc;
     union {
-        /* for SC_INTERNAL */
-        unsigned        internal;
-        /* remainder for SC_USER */
-        unsigned long   uint;
+        internal_idx    internal;   /* for SC_INTERNAL */
+        unsigned long   uint;       /* remainder for SC_USER */
         long            sint;
         xreal           real;
         xcomplex        cmplx;
@@ -67,7 +71,7 @@ typedef struct {
 } wv_sym_entry;
 
 struct imp_sym_handle {
-    wv_sym_entry        *p;
+    const wv_sym_entry  *p;
     const mad_reg_info  *ri;
 };
 
