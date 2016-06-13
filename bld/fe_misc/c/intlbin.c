@@ -91,7 +91,7 @@ static void processLang( char *prefix, unsigned lang ) {
     curr_offset = 0;
     for( component = LS_MIN; component < LS_MAX; ++component ) {
         header.offset[ curr_offset++ ] = ftell( fp );
-        sprintf( fname, ".6%s%02u." LOCALE_DATA_EXT, componentName[ component ], lang );
+        sprintf( fname, "%.6s%02u." LOCALE_DATA_EXT, componentName[ component ], lang );
         fname[0] = (char)tolower(fname[0]);
         ifp = fopen( fname, "rb" );
         if( !ifp ) {
