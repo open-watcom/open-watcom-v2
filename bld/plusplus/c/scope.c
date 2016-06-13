@@ -290,6 +290,10 @@ struct qualify_stack {
     SCOPE               enclosing;
 };
 
+typedef struct walker_data {
+    void (*rtn)( SYMBOL );
+} walker_data;
+
 SCOPE g_CurrScope;
 SCOPE g_FileScope;
 SCOPE g_InternalScope;
@@ -1429,18 +1433,20 @@ static void scopeWalkSymbolNameSymbols( SYMBOL_NAME name, void *data )
 /********************************************************************/
 {
     SYMBOL sym;
-    void (*rtn)( SYMBOL ) = (void(*)(SYMBOL))data;
 
     RingIterBeg( name->name_syms, sym ) {
-        (*rtn)( sym );
+        ((walker_data *)data)->rtn( sym );
     } RingIterEnd( sym )
 }
 
 void ScopeWalkSymbols( SCOPE scope, void (*walker)( SYMBOL ) )
 /************************************************************/
 {
+    walker_data wlkdata;
+
     if( scope != NULL ) {
-        HashWalkData( scope->names, &scopeWalkSymbolNameSymbols, walker );
+        wlkdata.rtn = walker;
+        HashWalkData( scope->names, &scopeWalkSymbolNameSymbols, &wlkdata );
     }
 }
 
@@ -3647,7 +3653,7 @@ static void newLookupData( lookup_walk *data, NAME name )
     DbgStmt( memset( data, -1, sizeof( *data ) ) );
     data->start = NULL;
     data->disambiguate = NULL;
-    data->consider_mask = ~0;
+    data->consider_mask = ~0U;
     data->ignore = NULL;
     data->name = name;
     data->type = NULL;
@@ -4329,7 +4335,7 @@ static void setConsiderMask( lookup_walk *data, unsigned lexical )
     SCOPE disambig;
     unsigned mask;
 
-    mask = ~0;
+    mask = ~0U;
     if( data->user_conversion ) {
         mask = _ScopeMask( SCOPE_CLASS );
     }
@@ -6410,6 +6416,8 @@ static walk_status findExactOverride( BASE_STACK *top, void *parm )
     auto CLASS_TABLE location1;
     auto CLASS_TABLE location2;
 
+    save_check = 0;
+    save_top = NULL;
     scope = top->scope;
     if( scope == data->base ) {
         if( data->found != NULL ) {
@@ -7375,6 +7383,10 @@ static void saveScope( void *e, carve_walk_base *d )
     s->ordered = SymbolGetIndex( save_ordered );
     save_using_list = s->using_list;
     s->using_list = CarveGetIndex( carveUSING_NS, save_using_list );
+    save_owner_ns = NULL;
+    save_owner_sym = NULL;
+    save_owner_type = NULL;
+    save_owner_tinfo = NULL;
     switch( s->id ) {
     case SCOPE_FILE:
         save_owner_ns = s->owner.ns;
@@ -7498,6 +7510,13 @@ static void saveSymbol( void *e, carve_walk_base *d )
     s->name = SymbolNameGetIndex( save_name );
     save_locn = s->locn;
     s->locn = SymTokenLocnGetIndex( save_locn );
+    save_con = NULL;
+    save_u_ns = NULL;
+    save_u_sym = NULL;
+    save_u_type = NULL;
+    save_u_tinfo = NULL;
+    save_u_defn = NULL;
+    save_u_defarg_info = NULL;
     switch( s->id ) {
     case SC_NAMESPACE:
         save_u_ns = s->u.ns;
