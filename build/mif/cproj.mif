@@ -34,79 +34,43 @@ objs_subdir = $(bin_subdir)
 objs_subdir = $(host_os)$(host_cpu)
 !endif
 
-bcc_386         = *wcc386
-bcc_i86         = *wcc
-bcc_axp         = *wccaxp
-bcc_ppc         = *wccppc
-bcc_mps         = *wccmps
-
-bcl_386         = *wcl386
-bcl_i86         = *wcl
-bcl_axp         = *wclaxp
-bcl_ppc         = *wclppc
-bcl_mps         = *wclmps
-
-bcxx_386        = *wpp386
-bcxx_i86        = *wpp
-bcxx_axp        = *wppaxp
-bcxx_ppc        = *wppppc
-bcxx_mps        = *wppmps
-
-blinker_386     = *wlink
-blinker_i86     = *wlink
-blinker_axp     = *wlink
-blinker_ppc     = *wlink
-blinker_mps     = *wlink
-
-blibrarian_386  = *wlib
-blibrarian_i86  = *wlib
-blibrarian_axp  = *wlib
-blibrarian_ppc  = *wlib
-blibrarian_mps  = *wlib
-
-bas_386         = *wasm
-bas_i86         = *wasm
-bas_axp         = *wasaxp
-bas_ppc         = *wasppc
-bas_mps         = *wasmps
-
 !ifeq bootstrap 1
 
-cc_386          = $(bcc_386)
-cc_i86          = $(bcc_i86)
-cc_axp          = $(bcc_axp)
-cc_ppc          = $(bcc_ppc)
-cc_mps          = $(bcc_mps)
+cc_386          = *wcc386
+cc_i86          = *wcc
+cc_axp          = *wccaxp
+cc_ppc          = *wccppc
+cc_mps          = *wccmps
 
-cl_386          = $(bcl_386)
-cl_i86          = $(bcl_i86)
-cl_axp          = $(bcl_axp)
-cl_ppc          = $(bcl_ppc)
-cl_mps          = $(bcl_mps)
+cl_386          = *wcl386
+cl_i86          = *wcl
+cl_axp          = *wclaxp
+cl_ppc          = *wclppc
+cl_mps          = *wclmps
 
-cxx_386         = $(bcxx_386)
-cxx_i86         = $(bcxx_i86)
-cxx_axp         = $(bcxx_axp)
-cxx_ppc         = $(bcxx_ppc)
-cxx_mps         = $(bcxx_mps)
+cxx_386         = *wpp386
+cxx_i86         = *wpp
+cxx_axp         = *wppaxp
+cxx_ppc         = *wppppc
+cxx_mps         = *wppmps
 
-linker_386      = $(blinker_386)
-linker_i86      = $(blinker_i86)
-linker_axp      = $(blinker_axp)
-linker_ppc      = $(blinker_ppc)
-linker_mps      = $(blinker_mps)
+linker_386      = *wlink
+linker_i86      = *wlink
+linker_axp      = *wlink
+linker_ppc      = *wlink
+linker_mps      = *wlink
 
-librarian_386   = $(blibrarian_386)
-librarian_i86   = $(blibrarian_i86)
-librarian_axp   = $(blibrarian_axp)
-librarian_ppc   = $(blibrarian_ppc)
-librarian_mps   = $(blibrarian_mps)
+librarian_386   = *wlib
+librarian_i86   = *wlib
+librarian_axp   = *wlib
+librarian_ppc   = *wlib
+librarian_mps   = *wlib
 
-as_386          = $(bas_386)
-as_i86          = $(bas_i86)
-as_axp          = $(bas_axp)
-as_ppc          = $(bas_ppc)
-as_mps          = $(bas_mps)
+as_386          = *wasm
+as_i86          = *wasm
+as_axp          = *wasaxp
+as_ppc          = *wasppc
+as_mps          = *wasmps
 
 !else
 

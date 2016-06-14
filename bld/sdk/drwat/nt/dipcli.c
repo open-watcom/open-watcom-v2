@@ -46,7 +46,6 @@
  */
 static void mapAddress( addr_ptr *addr, ModuleNode *mod )
 {
-
     DWORD       seg;
 
     if( addr->segment == MAP_FLAT_CODE_SELECTOR ) {

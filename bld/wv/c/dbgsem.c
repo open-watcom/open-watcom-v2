@@ -713,15 +713,16 @@ static void BasicType( unsigned basic_type )
     DIPHDL( type, th );
 
     WalkModList( NO_MOD, FindInternalMod, &mod_srch );
-    internal = TypeCreate( th, mod_srch.mh );
+    TypeInit( th, mod_srch.mh );
     info.kind = TI_KIND_EXTRACT( basic_type );
     info.modifier = TI_MOD_EXTRACT( basic_type );
     info.size = TI_SIZE_EXTRACT( basic_type );
     FillInDefaults( &info );
-    internal->t.k = info.kind;
-    internal->t.m = info.modifier;
-    internal->t.s = info.size;
-    internal->ri = NULL;
+    ith = TH2ITH( th );
+    ith->t.k = info.kind;
+    ith->t.m = info.modifier;
+    ith->t.s = info.size;
+    ith->ri = NULL;
     PushType( th );
 }
 

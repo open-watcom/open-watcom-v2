@@ -5,9 +5,12 @@ proj_name = cc
 !ifeq bootstrap 1
 exename     = bwcc
 dllname     = bwccd
+exe_subdir = .
 !else
 exename     = wcc
 dllname     = wccd
+exe_subdir = $(bin_subdir)
+additional_cleanup_subdir = $(exe_subdir)
 !endif
 !ifneq target_cpu i86
 exename     +=$(target_cpu)
@@ -131,13 +134,14 @@ inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_i
 
 !ifdef cc_dll
 
-$(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exe_subdir)/$(exename).exe : $(depends_drv) $(exe_subdir)/$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        @if not exist $(exe_subdir) mkdir $(exe_subdir)
 !ifndef __WATCOM__
-        $(cl) $(clflags_gen) $(comp_objs_drv) $(dllname).lib $(ldflags_gen)
+        $(cl) $(clflags_gen) $(comp_objs_drv) $(exe_subdir)/$(dllname).lib $(ldflags_gen)
 !else
         @%write drv.lnk $(lflags)
         @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(dllname).lib
+        @%append drv.lnk lib $(exe_subdir)/$(dllname).lib
 !ifeq host_os dos
         @%append drv.lnk lib cwdll.lib
 !endif
@@ -147,7 +151,8 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_ex
 
 !else
 
-$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exe_subdir)/$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        @if not exist $(exe_subdir) mkdir $(exe_subdir)
 !ifndef __WATCOM__
         $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
@@ -161,7 +166,8 @@ $(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_
 
 !endif
 
-$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exe_subdir)/$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+        @if not exist $(exe_subdir) mkdir $(exe_subdir)
 !ifndef __WATCOM__
         $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else

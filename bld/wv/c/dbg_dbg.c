@@ -174,9 +174,9 @@ const wv_sym_entry *LookupInternalName( lookup_item *li )
         } else {
             cmp = memicmp;
         }
-        if( cmp( null_start, li->name.start, null_len ) != 0 )
-            return( NULL );
-        return( (const wv_sym_entry *)&wvINT_NIL );
+        if( cmp( null_start, li->name.start, null_len ) == 0 ) {
+            return( (const wv_sym_entry *)&wvINT_NIL );
+        }
     }
     return( NULL );
 }
@@ -315,7 +315,7 @@ void InternalValue( internal_idx index, void *d )
         break;
     case INTERNAL_32:
         GetMADTypeDefault( MTK_INTEGER, &mti );
-        *(unsigned_16 *)d = (mti.b.bits >= 32);
+        *(unsigned_16 *)d = ( mti.b.bits >= 32 );
         break;
     case INTERNAL_loaded:
         *(unsigned_16 *)d = _IsOff( SW_PROC_ALREADY_STARTED );
@@ -354,7 +354,7 @@ void InternalValue( internal_idx index, void *d )
         *(unsigned_16 *)d = 1;
         break;
     case INTERNAL_src:
-        *(unsigned_16 *)d = ActiveWindowLevel == SOURCE;
+        *(unsigned_16 *)d = ( ActiveWindowLevel == SOURCE );
         break;
     case INTERNAL_NIL:
         *(address *)d = NilAddr;

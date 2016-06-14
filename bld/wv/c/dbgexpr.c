@@ -151,7 +151,7 @@ bool AllocatedString( stack_entry *stk )
         return( false );
     if( stk->flags & SF_LOCATION )
         return( false );
-    return( stk->v.string.allocated != 0 );
+    return( stk->v.string.allocated != NULL );
 }
 
 

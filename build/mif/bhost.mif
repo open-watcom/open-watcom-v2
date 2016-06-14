@@ -1,4 +1,24 @@
 # build host specific macros
+bcc_386         = *wcc386
+bcc_axp         = *wccaxp
+bcc_ppc         = *wccppc
+bcc_mps         = *wccmps
+
+bcl_386         = *wcl386
+bcl_axp         = *wclaxp
+bcl_ppc         = *wclppc
+bcl_mps         = *wclmps
+
+blibrarian_386  = *wlib
+blibrarian_axp  = *wlib
+blibrarian_ppc  = *wlib
+blibrarian_mps  = *wlib
+
+bas_386         = *wasm
+bas_axp         = *wasaxp
+bas_ppc         = *wasppc
+bas_mps         = *wasmps
+
 blib            = $(blibrarian_$(bld_cpu))
 bcc             = $(bcc_$(bld_cpu))
 bcl             = $(bcl_$(bld_cpu))
