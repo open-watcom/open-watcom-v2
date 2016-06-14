@@ -104,7 +104,7 @@ dip_status      TypeProcInfo( type_handle *t, type_handle *r, unsigned p );
 dip_status      TypePtrAddrSpace( type_handle *, location_context *, address * );
 dip_status      TypeThunkAdjust( type_handle *, type_handle *, location_context *, address * );
 dip_status      TypePointer( type_handle *, type_modifier, unsigned, type_handle * );
-void            *TypeCreate( type_handle *, mod_handle );
+void            TypeInit( type_handle *, mod_handle );
 int             TypeCmp( type_handle *, type_handle * );
 size_t          TypeName( type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size );
 dip_status      TypeAddRef( type_handle * );

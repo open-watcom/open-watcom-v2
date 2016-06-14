@@ -69,6 +69,8 @@
 #define         TI_SIZE_EXTRACT( ti )   ((ti) & 0xff)
 #define         TI_CREATE( tk, tm, ts ) (((tk) << 12) | ((tm) << 8) | (ts))
 
+#define         TH2ITH( th )    ((imp_type_handle *)((char *)(th)+DIPHandleSize(HK_TYPE,true)))
+
 enum {
     SEM_MISC        = 0x00,
     SEM_DO          = 0x20,
@@ -708,7 +710,7 @@ OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
 static void BasicType( unsigned basic_type )
 {
     struct internal_mod         mod_srch;
-    struct imp_type_handle      *internal;
+    struct imp_type_handle      *ith;
     dip_type_info               info;
     DIPHDL( type, th );
 

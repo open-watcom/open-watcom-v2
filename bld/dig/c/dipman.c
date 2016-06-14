@@ -898,11 +898,10 @@ dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
     return( ih->dip->tipe_info( IH2IIH( ih ), TH2ITH( th ), lc, ti ) );
 }
 
-void *TypeCreate( type_handle *th, mod_handle mh )
+void TypeInit( type_handle *th, mod_handle mh )
 {
     th->ii = MH_IMAGE( mh );
     th->ap = 0;
-    return( TH2ITH( th ) );
 }
 
 dip_status TypePointer( type_handle *base_th, type_modifier tm, unsigned size,
