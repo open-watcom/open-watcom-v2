@@ -69,8 +69,6 @@
 #define         TI_SIZE_EXTRACT( ti )   ((ti) & 0xff)
 #define         TI_CREATE( tk, tm, ts ) (((tk) << 12) | ((tm) << 8) | (ts))
 
-#define         TH2ITH( th )    ((imp_type_handle *)((char *)(th)+DIPHandleSize(HK_TYPE,true)))
-
 enum {
     SEM_MISC        = 0x00,
     SEM_DO          = 0x20,

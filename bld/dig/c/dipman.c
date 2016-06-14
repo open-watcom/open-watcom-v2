@@ -148,20 +148,6 @@ static const address    NilAddr = { 0 };
 /*
  * Client interface
  */
-static imp_sym_handle * DIGCLIENT _DIPCliSymCreate( imp_image_handle *iih, void *d )
-{
-    imp_sym_handle  *ish;
-
-    ish = DIPCliSymCreate( iih, d );
-    if( ish != NULL ) {
-        if( iih != NULL ) {
-            ISH2SH( ish )->ii = IIH2IH( iih )->ii;
-        } else {
-            ISH2SH( ish )->ii = NO_IMAGE_IDX;
-        }
-    }
-    return( ish );
-}
 
 dip_client_routines DIPClientInterface = {
     DIP_MAJOR,
@@ -171,7 +157,7 @@ dip_client_routines DIPClientInterface = {
     DIGCliRealloc,
     DIGCliFree,
     DIPCliMapAddr,
-    _DIPCliSymCreate,
+    DIPCliSymCreate,
     DIPCliItemLocation,
     DIPCliAssignLocation,
     DIPCliSameAddrSpace,
@@ -1143,6 +1129,15 @@ dip_status SymInfo( sym_handle *sh, location_context *lc, sym_info *si )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     return( ih->dip->sym_info( IH2IIH( ih ), SH2ISH( sh ), lc, si ) );
+}
+
+void SymInit( sym_handle *sh, image_handle *ih )
+{
+    if( ih != NULL ) {
+        sh->ii = ih->ii;
+    } else {
+        sh->ii = NO_IMAGE_IDX;
+    }
 }
 
 dip_status SymParmLocation( sym_handle *sh, location_context *lc,

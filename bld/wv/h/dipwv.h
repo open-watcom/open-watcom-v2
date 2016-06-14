@@ -33,6 +33,11 @@
 #include "diptypes.h"
 #include "madtypes.h"
 
+
+#define SL2ISH( l )     ((imp_sym_handle *)((l)->h+DIPHandleSize(HK_SYM,true)))
+#define IIH2IH( i )     ((image_handle *)((char *)(i)-DIPHandleSize(HK_IMAGE,true)))
+#define TH2ITH( t )     ((imp_type_handle *)((char *)(t)+DIPHandleSize(HK_TYPE,true)))
+
 typedef struct {
     type_kind           k;
     type_modifier       m;

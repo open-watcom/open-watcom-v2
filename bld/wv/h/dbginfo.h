@@ -32,8 +32,20 @@
 
 #ifndef __DBGINFO_INCLUDED
 #define __DBGINFO_INCLUDED
+
 #include "dip.h"
 #include "dbgmem.h"
+
+
+#define SL2SH( l )      ((sym_handle *)((l)->h))
+
+#define cue_SIZE        DIPHandleSize( HK_CUE, 0 )
+#define sym_SIZE        DIPHandleSize( HK_SYM, 0 )
+#define type_SIZE       DIPHandleSize( HK_TYPE, 0 )
+
+#define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
+
+#define DIPHDL( t, v )  t##_handle *v = (t##_handle*)__alloca( t##_SIZE )
 
 typedef unsigned_8 inspect_type; enum {
     INSP_CODE,
@@ -68,16 +80,6 @@ typedef struct sym_list {
     location_list       loc;
     byte                h[1]; /* variable size */
 } sym_list;
-
-#define SL2SH( l )      ((sym_handle *)((l)->h))
-
-#define cue_SIZE        DIPHandleSize( HK_CUE, 0 )
-#define sym_SIZE        DIPHandleSize( HK_SYM, 0 )
-#define type_SIZE       DIPHandleSize( HK_TYPE, 0 )
-
-#define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
-
-#define DIPHDL( t, v )  t##_handle *v = (t##_handle*)__alloca( t##_SIZE )
 
 typedef struct map_entry        map_entry;
 typedef struct image_entry      image_entry;
@@ -114,4 +116,5 @@ typedef enum {
     REMAP_ERROR,
     REMAP_WRONG_IMAGE,
 } remap_return;
+
 #endif

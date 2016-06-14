@@ -77,15 +77,20 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d )
     MapAddrForImage( id, addr );
 }
 
+static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
+{
+    sym_list        *new_sl;
+
+    _ChkAlloc( new_sl, sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    SymInit( SL2SH( new_sl ), IIH2IH( iih ) );
+    new_sl->next = *sl_head;
+    *sl_head = new_sl;
+    return( SL2ISH( new_sl ) );
+}
+
 imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *iih, void *d )
 {
-    sym_list    **sl_head = d;
-    sym_list    *new;
-
-    _ChkAlloc( new, sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-    new->next = *sl_head;
-    *sl_head = new;
-    return( (imp_sym_handle *)(new->h + DIPHandleSize( HK_SYM, true )) );
+    return( DoSymCreate( iih, (sym_list **)d ) );
 }
 
 void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
@@ -636,7 +641,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     }
     if( se == NULL && ri == NULL )
         return( SR_NONE );
-    is = DIPCliSymCreate( ii, d );
+    is = DoSymCreate( ii, (sym_list **)d );
     is->p  = se;
     is->ri = ri;
     return( SR_EXACT );

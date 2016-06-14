@@ -120,6 +120,7 @@ dip_status      SymType( sym_handle *, type_handle * );
 dip_status      SymLocation( sym_handle *, location_context *, location_list * );
 dip_status      SymValue( sym_handle *, location_context *, void * );
 dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
+void            SymInit( sym_handle *sh, image_handle *ih );
 dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
 dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
 dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );
