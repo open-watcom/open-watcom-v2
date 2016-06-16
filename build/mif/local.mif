@@ -680,11 +680,12 @@ cxx = g++ -pipe -c
 cl  = gcc -pipe
 !endif
 
-cppflags_bsd   = $(common_cppflags_bsd)
-cppflags_osi   = $(common_cppflags_bsd)
+cppflags_osx   = $(common_cppflags_osx)
+cppflags_osi   = $(common_cppflags_osx)
 cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_x64   = $(common_cppflags_x64)
+cppflags_arm   = $(common_cppflags_arm)
 
 cxxflags = -std=c++98
 
