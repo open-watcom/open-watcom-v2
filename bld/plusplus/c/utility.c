@@ -50,14 +50,14 @@ char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
     return( tgt );
 }
 
-
+#ifndef __APPLE__
 char *stpcpy(                   // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string
 {
     return( stpcpy_after( string, &src_string ) - 1 );
 }
-
+#endif
 
 char *stvcpy_after(             // COPY VECTOR, UPDATE SOURCE POINTER
     char *tgt,                  // - target
