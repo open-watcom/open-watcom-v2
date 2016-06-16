@@ -99,7 +99,23 @@ const char FAR *BuiltIns = {
 
 #elif defined( __OSX__ ) || defined( __APPLE__ )
     "__OSX__=\n"
+    "__BSD__=\n"
     "__UNIX__=\n"
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
+        "__BSDX64__=\n"
+        "__OSXX64__=\n"
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
+        "__BSDX386__=\n"
+        "__OSXX386__=\n"
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
+        "__BSDPPC__=\n"
+        "__OSXPPC__=\n"
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
+        "__BSDARM__=\n"
+        "__OSXARM__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
 
 #elif defined( __LINUX__ ) || defined( __linux__ )
     "__LINUX__=\n"
