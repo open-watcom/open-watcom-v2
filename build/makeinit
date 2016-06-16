@@ -96,6 +96,18 @@ bld64host_osi = 1
 !else ifdef __HAIKUPPC__
 bld_cpu = ppc
 bld_os = haiku
+!else ifdef __OSX386__
+bld_cpu = 386
+bld_os = osx
+!else ifdef __OSXX64__
+bld_cpu = x64
+bld_os = osx
+!else ifdef __OSXPPC__
+bld_cpu = ppc
+bld_os = osx
+!else ifdef __OSXARM__
+bld_cpu = arm
+bld_os = osx
 !endif
 
 !ifdef nulldevice_$(bld_os)

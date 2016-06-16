@@ -19,7 +19,7 @@ OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
 
 output_redirect()
 {
-    $1 $2 $3 $4 $5 $6 >>$OWBUILDER_BOOTX_OUTPUT 2>&1
+    "$@" >>$OWBUILDER_BOOTX_OUTPUT 2>&1
 }
 
 rm -f $OWBUILDER_BOOTX_OUTPUT
@@ -35,6 +35,10 @@ else
         FreeBSD)
             output_redirect make -f ../posmake clean
             output_redirect make -f ../posmake TARGETDEF=-D__BSD__
+            ;;
+        Darwin)
+            output_redirect make -f ../posmake clean
+            output_redirect make -f ../posmake TARGETDEF=-D__OSX__
             ;;
         Haiku)
             output_redirect make -f ../posmake clean
