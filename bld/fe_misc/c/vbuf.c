@@ -76,7 +76,7 @@ void VbufReqd(                  // ENSURE BUFFER IS OF SUFFICIENT SIZE
     if( reqd >= vbuf->len ) {
         reqd = BUFFER_SIZE( reqd );
         new_buffer = _MemoryAllocate( reqd );
-        stvcpy( new_buffer, vbuf->buf, vbuf->used );
+        stxvcpy( new_buffer, vbuf->buf, vbuf->used );
         FREE_BUFFER( vbuf );
         vbuf->buf = new_buffer;
         vbuf->len = reqd;
@@ -106,7 +106,7 @@ void VbufConcVector             // CONCATENATE A VECTOR
 {
     if( size > 0 ) {
         VbufReqd( vbuf, vbuf->used + size );
-        stvcpy( vbuf->buf + vbuf->used, vect, size );
+        stxvcpy( vbuf->buf + vbuf->used, vect, size );
         vbuf->used += size;
     }
 }
@@ -118,7 +118,7 @@ void VbufConcVbuf               // CONCATENATE A VBUF
 {
     if( vbuf2->used > 0 ) {
         VbufReqd( vbuf1, vbuf1->used + vbuf2->used );
-        stvcpy( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
+        stxvcpy( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
         vbuf1->used += vbuf2->used;
     }
 }
@@ -130,7 +130,7 @@ void VbufConcVbufRev(           // CONCATENATE STRING BACKWARDS TO vbuf->buf
 {
     if( vbuf2->used > 0 ) {
         VbufReqd( vbuf1, vbuf1->used + vbuf2->used );
-        stvcpyr( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
+        stxvcpyr( vbuf1->buf + vbuf1->used, vbuf2->buf, vbuf2->used );
         vbuf1->used += vbuf2->used;
     }
 }
@@ -145,8 +145,8 @@ void VbufPrepVbuf               // PREPEND A VBUF TO VBUF
     if( vbuf2->used > 0 ) {
         VbufInit( &temp );
         VbufReqd( &temp, vbuf1->used + vbuf2->used );
-        stvcpy( temp.buf, vbuf2->buf, vbuf2->used );
-        stvcpy( temp.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
+        stxvcpy( temp.buf, vbuf2->buf, vbuf2->used );
+        stxvcpy( temp.buf + vbuf2->used, vbuf1->buf, vbuf1->used );
         temp.used = vbuf1->used + vbuf2->used;
         VbufFree( vbuf1 );
         *vbuf1 = temp;
@@ -168,7 +168,7 @@ void VbufConcDecimal(           // CONCATENATE DECIMAL # TO vbuf->buf
 {
     char    buffer[16];         // - temp buffer
 
-    stdcpy( buffer, value );
+    stxdcpy( buffer, value );
     VbufConcStr( vbuf, buffer );
 }
 
@@ -179,7 +179,7 @@ void VbufConcInteger(           // CONCATENATE INTEGER # TO vbuf->buf
 {
     char    buffer[16];         // - temp buffer
 
-    sticpy( buffer, value );
+    stxicpy( buffer, value );
     VbufConcStr( vbuf, buffer );
 }
 
@@ -189,7 +189,7 @@ void VbufConcI64(               // CONCATENATE I64 # TO vbuf->buf
 {
     char    buffer[25];         // - temp buffer
 
-    sti64cpy( buffer, value );
+    stxi64cpy( buffer, value );
     VbufConcStr( vbuf, buffer );
 }
 
@@ -212,7 +212,7 @@ void VbufConcStrRev(            // CONCATENATE STRING BACKWARDS TO vbuf->buf
     conc_size = strlen( string );
     if( conc_size > 0 ) {
         VbufReqd( vbuf, vbuf->used + conc_size );
-        stvcpyr( vbuf->buf + vbuf->used, string, conc_size );
+        stxvcpyr( vbuf->buf + vbuf->used, string, conc_size );
         vbuf->used += conc_size;
     }
 }
@@ -243,8 +243,8 @@ void VbufPrepStr(               // PREPEND STRING TO vbuf->buf
     if( prep_size > 0 ) {
         VbufInit( &temp );
         VbufReqd( &temp, prep_size + vbuf->used );
-        stvcpy( temp.buf, string, prep_size );
-        stvcpy( temp.buf + prep_size, vbuf->buf, vbuf->used );
+        stxvcpy( temp.buf, string, prep_size );
+        stxvcpy( temp.buf + prep_size, vbuf->buf, vbuf->used );
         temp.used = prep_size + vbuf->used;
         VbufFree( vbuf );
         *vbuf = temp;
