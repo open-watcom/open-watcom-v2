@@ -654,13 +654,8 @@ bld_cflags   = $(common_cflags) $(common_flags) -o $@
 bld_cxxflags = -std=c++98
 
 # options for linking
-!ifdef __CLANG__
-bld_ldflags_cxx = -lstdc++
-bld_ldflags_dll_cxx = -lstdc++
-!else
-bld_ldflags_cxx = -lsupc++ -lstdc++
-bld_ldflags_dll_cxx = -lsupc++ -lstdc++
-!endif
+bld_ldflags_cxx = -lc++
+bld_ldflags_dll_cxx = -lc++
 
 bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
 
