@@ -57,6 +57,8 @@
                           _debug( ltoa( n, buff, 16 ) );\
                         }
 
+#define GET_ENV_FROM_PSP()  (*(addr_seg __far *)MK_FP(_psp, 0x2c))
+
 typedef struct {
     uint_16     limit;
     uint_32     base;
@@ -231,7 +233,7 @@ extern void main( void )
     void                __far *switchaddr;
 
     segread( &RMRegs );
-    Envseg = *(unsigned __far *)MK_FP( _psp, 0x2c );
+    Envseg = GET_ENV_FROM_PSP();
     switchaddr = GetPModeAddr( &dpmisize );
     dpmimem = malloc( dpmisize + 15 );
     dpmiseg = FP_SEG( dpmimem ) + ( FP_OFF( dpmimem ) + 15 ) / 16;

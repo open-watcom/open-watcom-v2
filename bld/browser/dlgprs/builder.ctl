@@ -1,11 +1,11 @@
 # dlgprs Builder Control file
 # =============================
 
-set PROJDIR=<CWD>
 set PROJNAME=dlgprs
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deftool.ctl ]
 
@@ -14,5 +14,5 @@ set PROJNAME=dlgprs
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

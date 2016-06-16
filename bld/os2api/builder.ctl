@@ -1,15 +1,16 @@
 # os2api Builder Control file
 # ==========================
 
-set PROJDIR=<CWD>
 set PROJNAME=os2api
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -29,6 +30,5 @@ set PROJNAME=os2api
     <CCCMD> os2386/lib/*.lib      <OWRELROOT>/lib386/os2/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
 
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

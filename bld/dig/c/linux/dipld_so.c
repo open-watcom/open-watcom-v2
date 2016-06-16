@@ -49,8 +49,8 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 {
     void                *shlib;
     dip_init_func       *init_func;
-    char                newpath[PATH_MAX];
-    char                full_path[PATH_MAX];
+    char                newpath[_MAX_PATH];
+    char                full_path[_MAX_PATH];
     dip_status          status;
 
     strcpy( newpath, path );

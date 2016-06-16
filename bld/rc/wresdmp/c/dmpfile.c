@@ -66,49 +66,49 @@ static void ConvertTypeIDToStr( WResID * id, char * str, int maxlen )
         ConvertIDToStr( id, str, maxlen );
     } else {
         switch (id->ID.Num) {
-        case RT_CURSOR:
+        case RESOURCE2INT( RT_CURSOR ):
             strncpy( str, "cursor", maxlen );
             break;
-        case RT_BITMAP:
+        case RESOURCE2INT( RT_BITMAP ):
             strncpy( str, "bitmap", maxlen );
             break;
-        case RT_ICON:
+        case RESOURCE2INT( RT_ICON ):
             strncpy( str, "icon", maxlen );
             break;
-        case RT_MENU:
+        case RESOURCE2INT( RT_MENU ):
             strncpy( str, "menu", maxlen );
             break;
-        case RT_DIALOG:
+        case RESOURCE2INT( RT_DIALOG ):
             strncpy( str, "dialog", maxlen );
             break;
-        case RT_STRING:
+        case RESOURCE2INT( RT_STRING ):
             strncpy( str, "string table", maxlen );
             break;
-        case RT_FONTDIR:
+        case RESOURCE2INT( RT_FONTDIR ):
             strncpy( str, "font directory", maxlen );
             break;
-        case RT_FONT:
+        case RESOURCE2INT( RT_FONT ):
             strncpy( str, "font", maxlen );
             break;
-        case RT_ACCELERATOR:
+        case RESOURCE2INT( RT_ACCELERATOR ):
             strncpy( str, "accelerator table", maxlen );
             break;
-        case RT_RCDATA:
+        case RESOURCE2INT( RT_RCDATA ):
             strncpy( str, "rcdata", maxlen );
             break;
-        case RT_ERRTABLE:
+        case RESOURCE2INT( RT_ERRTABLE ):
             strncpy( str, "error table", maxlen );
             break;
-        case RT_GROUP_CURSOR:
+        case RESOURCE2INT( RT_GROUP_CURSOR ):
             strncpy( str, "cursor group", maxlen );
             break;
-        case RT_GROUP_ICON:
+        case RESOURCE2INT( RT_GROUP_ICON ):
             strncpy( str, "icon group", maxlen );
             break;
-        case RT_NAMETABLE:
+        case RESOURCE2INT( RT_NAMETABLE ):
             strncpy( str, "nametable", maxlen );
             break;
-        case RT_VERSIONINFO:
+        case RESOURCE2INT( RT_VERSIONINFO ):
             strncpy( str, "versioninfo", maxlen );
             break;
         default:

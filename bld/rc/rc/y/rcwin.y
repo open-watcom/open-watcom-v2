@@ -649,14 +649,14 @@ raw-data-item
 rcdata-resource
     : name-id Y_RCDATA opt-resource-info-stmts user-defined-data
         {
-            SemAddResourceFree( $1, WResIDFromNum( (long)RT_RCDATA ),
+            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ),
                     MEMFLAG_PURE | MEMFLAG_MOVEABLE | MEMFLAG_DISCARDABLE, $4 );
         }
     | name-id Y_RCDATA resource-options opt-resource-info-stmts user-defined-data
         {
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_DISCARDABLE|MEMFLAG_MOVEABLE,
                     MEMFLAG_PURE );
-            SemAddResourceFree( $1, WResIDFromNum( (long)RT_RCDATA ), $3.flags, $5 );
+            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_RCDATA ) ), $3.flags, $5 );
         }
     ;
 
@@ -781,13 +781,13 @@ string-id
 accelerators-resource
     : name-id Y_ACCELERATORS opt-resource-info-stmts acc-section
         {
-            SemAddResourceFree( $1, WResIDFromNum( (long)RT_ACCELERATOR ),
+            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
                 MEMFLAG_PURE | MEMFLAG_MOVEABLE, $4 );
         }
     | name-id Y_ACCELERATORS resource-options opt-resource-info-stmts acc-section
         {
             SemWINCheckMemFlags( &($3), 0, MEMFLAG_MOVEABLE, MEMFLAG_PURE );
-            SemAddResourceFree( $1, WResIDFromNum( (long)RT_ACCELERATOR ),
+            SemAddResourceFree( $1, WResIDFromNum( RESOURCE2INT( RT_ACCELERATOR ) ),
                     $3.flags, $5 );
         }
     ;

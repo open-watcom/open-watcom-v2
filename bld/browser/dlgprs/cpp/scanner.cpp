@@ -70,31 +70,33 @@ Scanner::Scanner( const char * fileName )
 Scanner::~Scanner()
 //-----------------
 {
+    delete _identifiers;
+    delete _strings;
     delete _file;
 }
 
 const char * Scanner::getString( int idx )
 //----------------------------------------
 {
-    return (*_strings)[ idx ];
+    return (*_strings)[idx];
 }
 
 const char * Scanner::getIdent( int idx )
 //---------------------------------------
 {
-    return (*_identifiers)[ idx ];
+    return (*_identifiers)[idx];
 }
 
 bool Scanner::error( char const * errStr )
 //----------------------------------------
 {
     const int BufferSize = 80;
-    char buffer[ BufferSize ];
+    char buffer[BufferSize];
     int  nRead;
 
     nRead = _file->read( buffer, BufferSize );
 
-    buffer[ nRead - 1 ] = '\0';
+    buffer[nRead - 1] = '\0';
 
     fprintf( stderr, "%s: %s\n", _file->getFileName(), errStr );
     fprintf( stderr, "near <%s>\n", buffer );
@@ -169,18 +171,18 @@ void Scanner::readDecimal( YYSTYPE & lval )
 //-----------------------------------------
 {
     const int   MaxBufLen = 10;
-    char        buffer[ MaxBufLen ];
+    char        buffer[MaxBufLen];
     int         bufPos;         // position in buffer
 
     for( bufPos = 0; bufPos < MaxBufLen; bufPos += 1 ) {
         if( isEOF() || !isDigit() ) break;
-        buffer[ bufPos ] = (char) _current;
+        buffer[bufPos] = (char) _current;
         get();
     }
 
     assert( bufPos < MaxBufLen );
 
-    buffer[ bufPos ] = '\0';
+    buffer[bufPos] = '\0';
     lval = (YYSTYPE) atoi( buffer );
 }
 
@@ -188,20 +190,20 @@ void Scanner::readHex( YYSTYPE & lval )
 //-------------------------------------
 {
     const int   MaxBufLen = 10;
-    char        buffer[ MaxBufLen ];
+    char        buffer[MaxBufLen];
     int         bufPos;         // position in buffer
 
     get();  // move past x (ie. 0x7f)
 
     for( bufPos = 0; bufPos < MaxBufLen; bufPos += 1 ) {
         if( isEOF() || !isHexDigit() ) break;
-        buffer[ bufPos ] = (char) _current;
+        buffer[bufPos] = (char) _current;
         get();
     }
 
     assert( bufPos < MaxBufLen );
 
-    buffer[ bufPos ] = '\0';
+    buffer[bufPos] = '\0';
     lval = (YYSTYPE) strtol( buffer, NULL, 16 );
 }
 
@@ -209,7 +211,7 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 //----------------------------------------------
 {
     const int   MaxBufLen = 512;
-    char        buffer[ MaxBufLen ];
+    char        buffer[MaxBufLen];
     int         bufPos;         // position in buffer
     char *      dupStr;
 
@@ -217,7 +219,7 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 
     for( bufPos = 0; bufPos < MaxBufLen; bufPos += 1 ) {
         if( isQuote() || isEOF() ) break;
-        buffer[ bufPos ] = (char) _current;
+        buffer[bufPos] = (char) _current;
         get();
     }
 
@@ -227,9 +229,9 @@ void Scanner::readQuotedString( YYSTYPE & lval )
 
     assert( bufPos < MaxBufLen );
 
-    buffer[ bufPos ] = '\0';
+    buffer[bufPos] = '\0';
 
-    dupStr = new char[ strlen( buffer ) + 1 ];
+    dupStr = new char[strlen( buffer ) + 1];
     strcpy( dupStr, buffer );
 
     lval =  (YYSTYPE) _strings->size();
@@ -243,7 +245,7 @@ short Scanner::getToken( YYSTYPE & lval )
 // in _current.
 {
     const int   MaxBufLen = 512;
-    char        buffer[ MaxBufLen ];
+    char        buffer[MaxBufLen];
     int         bufPos;                 // position in buffer
     char        special;
 
@@ -284,7 +286,7 @@ short Scanner::getToken( YYSTYPE & lval )
     }
 
     for( bufPos = 0; bufPos < MaxBufLen; bufPos += 1 ) {
-        buffer[ bufPos ] = (char) _current;
+        buffer[bufPos] = (char) _current;
 
         get();
         if( isEOF() || isSpace() || isSpecial() ) break;
@@ -294,7 +296,7 @@ short Scanner::getToken( YYSTYPE & lval )
 
     assert( bufPos < MaxBufLen );
 
-    buffer[ bufPos ] = '\0';
+    buffer[bufPos] = '\0';
 
     return tokenValue( buffer, lval );
 }
@@ -316,7 +318,7 @@ short Scanner::tokenValue( const char * tok, YYSTYPE & lval )
     if( res ) {
         return res->token;
     } else {
-        dupStr = new char[ strlen( tok ) + 1 ];
+        dupStr = new char[strlen( tok ) + 1];
         strcpy( dupStr, tok );
 
         lval =  (YYSTYPE) _identifiers->size();

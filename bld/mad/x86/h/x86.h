@@ -34,6 +34,10 @@
 #include "madx86.h"
 #include "dis.h"
 
+
+#define BIG_SEG( a )    ((AddrCharacteristics(a)&X86AC_BIG)!=0)
+#define REAL_SEG( a )   ((AddrCharacteristics(a)&X86AC_REAL)!=0)
+
 typedef enum { LN, L1, L2, L3, L5, L6, LX } processor_level;
 
 enum toggle_states {
@@ -143,5 +147,3 @@ extern signed_16                GetDataWord( void );
 extern signed_32                GetDataLong( void );
 extern char                     *JmpLabel( unsigned long addr, addr_off off );
 extern char                     *ToSegStr( uint_32 value, uint_16 seg, uint_32 addr );
-
-#define BIG_SEG( a )    ((AddrCharacteristics(a)&X86AC_BIG)!=0)

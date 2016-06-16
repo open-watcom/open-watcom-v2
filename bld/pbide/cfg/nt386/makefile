@@ -1,4 +1,4 @@
-#pmake: build os_nt cpu_386
+#pmake: build guitool os_nt cpu_386
 
 all : pbidex.cfg pbide.cfg .symbolic
 

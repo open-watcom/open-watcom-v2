@@ -95,6 +95,7 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
     }
     ui_dlg_info = GUIGetDialog( wnd );
     edit = NULL;
+    ret = false;
     switch( field->typ ) {
     case FLD_HOT:
         ret = GUISetHotSpotText( field->u.hs, text );
@@ -131,7 +132,6 @@ bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text )
         break;
     default :
         return( false );   /* without redrawing field */
-        break;
     }
     if( ( edit != NULL ) && ( ui_dlg_info != NULL ) ) {
         ret = GUISetEditText( edit, text, field->typ != FLD_EDIT );

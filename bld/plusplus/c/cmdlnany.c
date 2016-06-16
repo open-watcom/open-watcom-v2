@@ -355,7 +355,7 @@ void DefSwitchMacro( char *n )
     char *p;
     char buff[64];
 
-    p = stpcpy( buff, "__SW_" );
+    p = stxpcpy( buff, "__SW_" );
     strcpy( p, n );
     PreDefineStringMacro( buff );
 }
@@ -442,7 +442,7 @@ static bool openCmdFile(        // OPEN A COMMAND FILE
 {
     char fnm[ _MAX_PATH ];      // - buffer for name
 
-    stvcpy( fnm, filename, size );
+    stxvcpy( fnm, filename, size );
     StripQuotes( fnm );
     return IoSuppOpenSrc( fnm, FT_CMD );
 }
@@ -457,7 +457,7 @@ static const char *get_env(     // GET ENVIRONMENT VAR
     if( len >= sizeof( buf ) ) {
         env = NULL;
     } else {
-        stvcpy( buf, var, len );
+        stxvcpy( buf, var, len );
         env = CppGetEnv( buf );
     }
     return( env );
@@ -474,7 +474,7 @@ static void scanInputFile(       // PROCESS NAME OF INPUT FILE
     ++CompInfo.compfile_max;
     if( CompInfo.compfile_max == CompInfo.compfile_cur ) {
         if( WholeFName == NULL ) {
-            stvcpy( filename, fnm, len );
+            stxvcpy( filename, fnm, len );
             StripQuotes( filename );
             WholeFName = FNameAdd( filename );
         } else {

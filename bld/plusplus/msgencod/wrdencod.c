@@ -695,7 +695,7 @@ static int write_define(        // WRITE DEFINE STATEMENTS
         // messages involve an extra ' ' at the end
         // so we'll add 16 and round up to mos 16 to be absolutely safe
         fmt_size = ( ( msg_size + 16 ) + 0x0f ) & ~ 0x0f;
-        stucpy( stpcpy( msg, "#define MAX_MSG " ), fmt_size );
+        stucpy( stxpcpy( msg, "#define MAX_MSG " ), fmt_size );
         retn = (*writer)( msg );
         QUITIF( retn != 0 );
         retn = (*writer)( "" );
@@ -794,7 +794,7 @@ static int process_group(       // GRP OPTION FOUND
         retn = alloc_ring( &RingGroups , sizeof( struct word ) + length ,
                                                     &new );
         QUITIF( retn != 0 ) :: NO_ERRS;
-        stvcpy( new->text , name , length );
+        stxvcpy( new->text , name , length );
     ENDGUESS
     return( retn );
 }
@@ -880,7 +880,7 @@ static int scan_words(          // SCAN WORDS
             scan_name( &cptr , &name , &length );
             QUITIF( length == 0 ) :: GET_WORDS;
             size += length + 1;
-            stvcpy( text , name , length );
+            stxvcpy( text , name , length );
             word = (WORD *)_ring_lookup( (void *)RingWords
                                        , offsetof( struct word , text )
                                        , text );
@@ -891,7 +891,7 @@ static int scan_words(          // SCAN WORDS
                 QUITIF( retn != 0 ) :: NO_ERRS;
                 word->count = 0;
                 word->code = 0;
-                stvcpy( word->text , name , length );
+                stxvcpy( word->text , name , length );
             ENDIF
             ++word->count;
             *tgt++ = word;
@@ -952,7 +952,7 @@ static int process_symbol(      // SYM OPTION FOUND
         QUITIF( symsize != 0 ) :: NO_SYMBOL;
         retn = msgerr( "Missing symbol name after :MSGSYM" );
     ADMIT :: PRINT_FILE
-        stvcpy( sym, symbol, symsize );
+        stxvcpy( sym, symbol, symsize );
         stxcpy( symnum, ( group_num << 10 ) + symbol_num );
         GUESS :: NO_ERRS
             retn = write_h_str( "#define " );
@@ -1186,7 +1186,7 @@ static int scan_filename(       // SCAN FILE NAME FROM TEXT LINE
         retn = msgerr( "Out of memory" );
         *tgt = NULL;
     ADMIT :: ALL_OK
-        stvcpy( new , name , size );
+        stxvcpy( new , name , size );
         *scanner = cptr;
         retn = 0;
         *tgt = new;

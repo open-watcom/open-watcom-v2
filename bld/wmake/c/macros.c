@@ -36,21 +36,19 @@
     #include <sys/types.h>  // Implicitly included by <direct.h>
 #endif
 #include <stdlib.h>
-#include <string.h>
-
 #include "make.h"
 #include "mstream.h"
 #include "mlex.h"
 #include "mhash.h"
 #include "macros.h"
 #include "mmemory.h"
-
 #include "mmisc.h"
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
 
@@ -491,13 +489,14 @@ STATIC char *trimMacroValue( char *v )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC void addMacro( const char *name, char *value )
-/****************************************************
+STATIC BOOLEAN addMacro( const char *name, char *value )
+/******************************************************
  * post:    new macro possibly allocated, copy of name made
  */
 {
     char    macro[MAX_MAC_NAME];
     MACRO   *new;
+    BOOLEAN unused_value;
 
     assert( *name != ENVVAR );
 
@@ -506,6 +505,7 @@ STATIC void addMacro( const char *name, char *value )
 
     new = getMacroNode( macro );     /* check if redefinition */
 
+    unused_value = FALSE;
     if( new != NULL && !new->readonly ) {   /* reuse old node */
         FreeSafe( (void *)new->value );
         new->value = value;
@@ -513,12 +513,13 @@ STATIC void addMacro( const char *name, char *value )
     } else if( new == NULL ) {
         new = MallocSafe( sizeof( *new ) ); /* get memory for new node */
         new->node.name = StrDupSafe( macro );
-        AddHashNode( macTab, (HASHNODE *)new );
         new->value = value;
         new->readonly = Glob.macreadonly;
+        AddHashNode( macTab, (HASHNODE *)new );
     } else {
-        FreeSafe( value );  /* read only macro - don't change */
+        unused_value = TRUE;
     }
+    return( unused_value );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
@@ -828,7 +829,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
 
     default:
 #ifdef DEVELOPMENT
-        PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
+        PrtMsgExit(( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" ));
 #else
         PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
         break;
@@ -925,7 +926,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     char    *p;
 
     if( depth > MAX_MAC_NEST ) {
-        PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+        PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
     }
 
     result = deMacroToEnd( depth, end1, end2 );
@@ -935,7 +936,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         ++depth;
         if( depth > MAX_MAC_NEST ) {
-            PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+            PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
         }
 
         /*
@@ -1099,7 +1100,11 @@ STATIC char *PartDeMacroProcess( void )
             break;
         default:
 #ifdef DEVELOPMENT
-            PrtMsg( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" );
+            FreeVec( vec );
+            if( wsvec != NULL ) {
+                FreeVec( wsvec );
+            }
+            PrtMsgExit(( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" ));
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif
@@ -1109,7 +1114,6 @@ STATIC char *PartDeMacroProcess( void )
     if( wsvec != NULL ) {       /* trim trailing ws */
         FreeVec( wsvec );
     }
-
     text = FinishVec( vec );
     return( text );
 }
@@ -1250,8 +1254,9 @@ void DefMacro( const char *name )
  */
 {
     char        *value;
+    BOOLEAN     unused_value;
     char        *temp;
-    char        *EnvVarValue = NULL; /* used for env. variables (full demacro) */
+    char        *EnvVarValue;   /* used for env. variables (full demacro) */
     ENV_TRACKER *env;
 #ifdef CLEAN_ENVIRONMENT_VAR
     ELIST       *tempEList;
@@ -1263,9 +1268,12 @@ void DefMacro( const char *name )
     value = DeMacroName( temp, name );
     FreeSafe( temp );
 
+    unused_value = TRUE;
+    EnvVarValue = NULL;
+
     if( *name == ENVVAR || (Glob.compat_nmake && getenv( name ) != NULL ) ) {
         if( *name != ENVVAR ) {
-            addMacro( name, value );
+            unused_value = addMacro( name, value );
         }
         UnGetCH( EOL );
         InsString( value, FALSE );
@@ -1274,14 +1282,13 @@ void DefMacro( const char *name )
     }
 
     if( *name == ENVVAR ) {
-            /* remember strlen( name ) is one byte larger than we want
-             * because *name == ENVVAR, and we'll ignore that byte
-             */
+        /* remember strlen( name ) is one byte larger than we want
+         * because *name == ENVVAR, and we'll ignore that byte
+         */
         assert( EnvVarValue != NULL );
         env = MallocSafe( sizeof( ENV_TRACKER )
                 + strlen( name ) + strlen( EnvVarValue ) + 1 );
         FmtStr( env->value, "%s=%s", name + 1, EnvVarValue );
-        FreeSafe( value );
         PutEnvSafe( env );
     } else {
         if( Glob.compat_nmake ) {
@@ -1296,18 +1303,20 @@ void DefMacro( const char *name )
 #endif
                     setenv( name, EnvVarValue, TRUE );
                 } else {
-                    addMacro( name, value );
+                    unused_value = addMacro( name, value );
                 }
             } else {
                 if( getenv( name ) == NULL) {
-                    addMacro( name, value);
+                    unused_value = addMacro( name, value);
                 }
             }
 
         } else {
-            addMacro( name, value );
+            unused_value = addMacro( name, value );
         }
     }
+    if( unused_value )
+        FreeSafe( value );
     FreeSafe( EnvVarValue );
 }
 

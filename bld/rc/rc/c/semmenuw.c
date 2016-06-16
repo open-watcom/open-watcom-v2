@@ -329,7 +329,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         if( error)
             goto OutputWriteError;
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( (long)RT_MENU ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
     } else {
         RCFREE( name );
     }

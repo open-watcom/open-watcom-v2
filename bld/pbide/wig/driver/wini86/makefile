@@ -1,4 +1,4 @@
-##pmake: nobuild os_win cpu_i86
+##pmake: nobuild guitool os_win cpu_i86
 
 name = pbide
 lnk = $(name).lnk

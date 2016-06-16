@@ -73,10 +73,14 @@ OVL_EXTERN int SymCompare( void *pa, void *pb )
     a_symbol    *a = *(a_symbol **)pa;
     a_symbol    *b = *(a_symbol **)pb;
 
-    if( a->key == 0 ) SetKey( a );
-    if( b->key == 0 ) SetKey( b );
-    if( a->key > b->key ) return( +1 );
-    if( a->key < b->key ) return( -1 );
+    if( a->key == 0 )
+        SetKey( a );
+    if( b->key == 0 )
+        SetKey( b );
+    if( a->key > b->key )
+        return( +1 );
+    if( a->key < b->key )
+        return( -1 );
     cmpa = TxtBuff;
     cmpb = cmpa + SymName( ASymHdl( a ), NULL, SN_SOURCE, cmpa, TXT_LEN/2 ) + 1;
     SymName( ASymHdl( b ), NULL, SN_SOURCE, cmpb, TXT_LEN/2-1 );
@@ -90,18 +94,24 @@ static bool CheckType( sym_handle *sym, name_list *name )
 
     if( name->d2_only ) {
         mod = SymMod( sym );
-        if( mod == NO_MOD ) return( false );
-        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) return( false );
+        if( mod == NO_MOD )
+            return( false );
+        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) {
+            return( false );
+        }
     }
     SymInfo( sym, NULL, &sinfo );
     switch( sinfo.kind ) {
     case SK_CODE:
     case SK_PROCEDURE:
-        if( sinfo.compiler ) return( false );
-        if( name->type & WF_CODE ) return( true );
+        if( sinfo.compiler )
+            return( false );
+        if( name->type & WF_CODE )
+            return( true );
         break;
     case SK_DATA:
-        if( name->type & WF_DATA ) return( true );
+        if( name->type & WF_DATA )
+            return( true );
         break;
     case SK_NONE:
         return( true );
@@ -117,11 +127,14 @@ static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
 //    char        *p;
     a_symbol    *curr;
 
-    if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
-    if( !CheckType( sym, name ) ) return( WR_CONTINUE );
+    if( swi != SWI_SYMBOL )
+        return( WR_CONTINUE );
+    if( !CheckType( sym, name ) )
+        return( WR_CONTINUE );
 //    p = TxtBuff;
     curr = DbgAlloc( sizeof( a_symbol ) + sym_SIZE - 1 );
-    if( curr == NULL ) return( WR_STOP );
+    if( curr == NULL )
+        return( WR_STOP );
     HDLAssign( sym, ASymHdl( curr ), sym );
     curr->key = 0;
     curr->next = name->list;

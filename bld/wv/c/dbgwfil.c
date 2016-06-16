@@ -91,7 +91,7 @@ typedef struct {
     address             dotaddr;
     char                *name;
     a_window            *asw;
-    unsigned            eof;
+    int                 eof;
     bool                track           : 1;
     bool                erase           : 1;
     bool                toggled_break   : 1;
@@ -150,7 +150,7 @@ static address GetRowAddr( file_window *file, wnd_row row, bool exact )
 
     if( file->mod == NO_MOD || row < 0 )
         return( NilAddr );
-    switch( LineCue( file->mod, file->file_id, row+1, 0, ch ) ) {
+    switch( LineCue( file->mod, file->file_id, row + 1, 0, ch ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:
@@ -295,20 +295,20 @@ static void FilePos( a_window *wnd, int pos )
     if( pos < 0 )
         pos = 0;
     if( file->viewhndl == NULL ) {
-        if( pos+WndRows(wnd) > file->eof )
+        if( pos + WndRows( wnd ) > file->eof )
             return;
         WndSetTop( wnd, pos );
         return;
     }
-    if( FReadLine( file->viewhndl, pos+WndRows(wnd), 0, TxtBuff, TXT_LEN ) < 0 ) {
-        pos = FCurrLine( file->viewhndl ) - WndRows(wnd) - 1;
+    if( FReadLine( file->viewhndl, pos + WndRows( wnd ), 0, TxtBuff, TXT_LEN ) < 0 ) {
+        pos = FCurrLine( file->viewhndl ) - WndRows( wnd ) - 1;
         if( pos < 0 ) {
             pos = 0;
         }
     }
     WndSetTop( wnd, pos );
     if( pos >= file->rows ) {
-        file->rows = pos+1;
+        file->rows = pos + 1;
         file->rows_offset = FLastOffset( file->viewhndl );
     }
     if( file->rows == 0 )
@@ -323,7 +323,6 @@ static void FilePos( a_window *wnd, int pos )
 }
 
 
-static WNDSCROLL FileScroll;
 static int FileScroll( a_window *wnd, int lines )
 {
     int         old_top;
@@ -334,7 +333,6 @@ static int FileScroll( a_window *wnd, int lines )
 }
 
 
-static  WNDMODIFY FileModify;
 static  void    FileModify( a_window *wnd, int row, int piece )
 {
     file_window *file = WndFile( wnd );
@@ -367,7 +365,6 @@ static void FileSetDotAddr( a_window *wnd, address addr )
     }
 }
 
-static  WNDNOTIFY       FileNotify;
 static void FileNotify( a_window *wnd, wnd_row row, int piece )
 {
     file_window *file = WndFile( wnd );
@@ -421,7 +418,6 @@ void FileBreakGadget( a_window *wnd, wnd_line_piece *line, bool curr, brkp *bp )
 }
 
 
-static WNDGETLINE FileGetLine;
 static  bool    FileGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -449,7 +445,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
             addr = GetRowAddr( file, row, true );
         }
         if( !IS_NIL_ADDR( addr ) ) {
-            bp = FindBreakByLine( file->mod, file->file_id, row+1 );
+            bp = FindBreakByLine( file->mod, file->file_id, row + 1 );
             FileBreakGadget( wnd, line, curr, bp );
         }
         return( true );
@@ -462,7 +458,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
             line->indent = MaxGadgetLength;
         }
         if( file->viewhndl == NULL ) {
-            Format( TxtBuff, LIT_DUI( No_Source_Line ), row+1 );
+            Format( TxtBuff, LIT_DUI( No_Source_Line ), row + 1 );
             if( LineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
                 if( (CueAdjust( ch, -1, ch ) & DS_ERR) ) {
                     file->eof = CueLine( ch );
@@ -470,7 +466,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
             }
             return( true );
         }
-        len = FReadLine( file->viewhndl, row+1, 0, TxtBuff, MAX_LINE_LEN );
+        len = FReadLine( file->viewhndl, row + 1, 0, TxtBuff, MAX_LINE_LEN );
         if( len < 0 ) {
             file->eof = row;
             return( false );
@@ -582,7 +578,7 @@ static void FileTrack( a_window *wnd, cue_handle *ch )
         }
         FileSetTitle( wnd, mod );
         SeekToTheEnd( file );
-        file->eof = UINT_MAX;
+        file->eof = INT_MAX;
         WndZapped( wnd );
         FilePosInit( wnd );
         file->active = NOT_ACTIVE;
@@ -645,9 +641,8 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     }
     line = CueLine( ch );
     if( mod != file->mod || CueFileId( ch ) != file->file_id ) {
-        if( !file->track ) {
+        if( !file->track )
             return( false );
-        }
         FileTrack( wnd, ch );
     }
     --line;
@@ -737,7 +732,6 @@ static void ClearSrcFile( file_window *file )
     }
 }
 
-static WNDREFRESH FileRefresh;
 static void FileRefresh( a_window *wnd )
 {
     file_window *file = WndFile( wnd );
@@ -752,7 +746,7 @@ static void FileRefresh( a_window *wnd )
         }
         WndZapped( wnd );
     }
-    if( UpdateFlags & (UP_CSIP_CHANGE+UP_STACKPOS_CHANGE) ) {
+    if( UpdateFlags & (UP_CSIP_CHANGE + UP_STACKPOS_CHANGE) ) {
         FileNewIP( wnd );
     }
     if( (UpdateFlags & (UP_NEW_SRC|UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
@@ -826,7 +820,7 @@ wnd_info FileInfo = {
     NoNextRow,
     FileNotify,
     ChkFlags,
-    UP_NEW_SRC+UP_SYM_CHANGE+UP_CSIP_CHANGE+UP_STACKPOS_CHANGE+UP_BREAK_CHANGE,
+    UP_NEW_SRC + UP_SYM_CHANGE + UP_CSIP_CHANGE + UP_STACKPOS_CHANGE + UP_BREAK_CHANGE,
     DefPopUp( FileMenu )
 };
 
@@ -849,13 +843,15 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
         file->file_id = CueFileId( ch );
         line = CueLine( ch );
     }
-    file->track = 0;
+    file->track = false;
     file->erase = erase;
     file->toggled_break = false;
-    file->eof = UINT_MAX;
+    file->eof = INT_MAX;
     file->name = DupStr( name );
     file->dotaddr = NilAddr;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &FileInfo, wndclass, file, &SrcIcon );
+    if( wnd == NULL )
+        return( wnd );
     if( ch != NULL ) {
         FileSetDotAddr( wnd, CueAddr( ch ) );
         FileSetTitle( wnd, file->mod );
@@ -864,11 +860,9 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
         WndSetTitle( wnd, file->name );
     }
     file->track = track;
-    if( wnd == NULL )
-        return( wnd );
     FileSetTitle( wnd, file->mod );
-    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS+WSW_RBUTTON_SELECTS+
-                         WSW_CHAR_CURSOR+WSW_SUBWORD_SELECT );
+    WndSetSwitches( wnd, WSW_LBUTTON_SELECTS + WSW_RBUTTON_SELECTS +
+                         WSW_CHAR_CURSOR + WSW_SUBWORD_SELECT );
     WndClrSwitches( wnd, WSW_HIGHLIGHT_CURRENT );
     if( line != 0 ) {
         WndZapped( wnd );

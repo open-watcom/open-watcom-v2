@@ -46,33 +46,33 @@
 static int CheckPredefType( const char * restype )
 {
     if (!stricmp( restype, "CURSOR" )) {
-        return( RT_CURSOR );
+        return( RESOURCE2INT( RT_CURSOR ) );
     } else if (!stricmp( restype, "BITMAP" )) {
-        return( RT_BITMAP );
+        return( RESOURCE2INT( RT_BITMAP ) );
     } else if (!stricmp( restype, "ICON" )) {
-        return( RT_ICON );
+        return( RESOURCE2INT( RT_ICON ) );
     } else if (!stricmp( restype, "MENU" )) {
-        return( RT_MENU );
+        return( RESOURCE2INT( RT_MENU ) );
     } else if (!stricmp( restype, "DIALOG" )) {
-        return( RT_DIALOG );
+        return( RESOURCE2INT( RT_DIALOG ) );
     } else if (!stricmp( restype, "STRING" )) {
-        return( RT_STRING );
+        return( RESOURCE2INT( RT_STRING ) );
     } else if (!stricmp( restype, "FONTDIR" )) {
-        return( RT_FONTDIR );
+        return( RESOURCE2INT( RT_FONTDIR ) );
     } else if (!stricmp( restype, "FONT" )) {
-        return( RT_FONT );
+        return( RESOURCE2INT( RT_FONT ) );
     } else if (!stricmp( restype, "ACCELERATOR" )) {
-        return( RT_ACCELERATOR );
+        return( RESOURCE2INT( RT_ACCELERATOR ) );
     } else if (!stricmp( restype, "RCDATA" )) {
-        return( RT_RCDATA );
+        return( RESOURCE2INT( RT_RCDATA ) );
     } else if (!stricmp( restype, "ERRTABLE" )) {
-        return( RT_ERRTABLE );
+        return( RESOURCE2INT( RT_ERRTABLE ) );
     } else if (!stricmp( restype, "GROUP_CURSOR" )) {
-        return( RT_GROUP_CURSOR );
+        return( RESOURCE2INT( RT_GROUP_CURSOR ) );
     } else if (!stricmp( restype, "GROUP_ICON" )) {
-        return( RT_GROUP_ICON );
+        return( RESOURCE2INT( RT_GROUP_ICON ) );
     } else if (!stricmp( restype, "NAMETABLE" )) {
-        return( RT_NAMETABLE );
+        return( RESOURCE2INT( RT_NAMETABLE ) );
     } else {
         return( 0 );
     }

@@ -1615,7 +1615,7 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_register
     } else if( bit_start == REG_BIT_OFF( cpu.gs ) ) {
         a->mach.segment = mr->x86.cpu.gs;
     } else {
-        p = (unsigned_32 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
+        p = (unsigned_32 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
         a->mach.offset = *p;
         a->mach.segment = mr->x86.cpu.ds;
         if( ri->bit_size == 16 ) {

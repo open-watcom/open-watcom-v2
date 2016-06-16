@@ -5,6 +5,12 @@
 #
 # Expects POSIX or OW tools.
 
+if [ -z "$1" ]; then
+    BUILDER_ARG=build
+else
+    BUILDER_ARG=$1
+fi
+
 if [ -z "$OWROOT" ]; then
     . ./setvars.sh
 fi
@@ -62,7 +68,7 @@ else
     if [ $RC -ne 0 ]; then
         echo "builder bootstrap build error"
     else
-        builder build
+        builder $BUILDER_ARG
         RC=$?
         if [ $RC -ne 0 ]; then
             echo "builder bootstrap build error"

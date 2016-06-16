@@ -117,7 +117,7 @@ static char *stxcpy(            // CONCATENATE HEXADECIMAL NUMBER
     char buffer[16];
 
     sprintf( buffer, "%x", value );
-    return stpcpy( tgt, buffer );
+    return stxpcpy( tgt, buffer );
 }
 
 
@@ -307,9 +307,9 @@ static void textType(           // GET TEXT FOR A TYPE
 
     FormatType( type, &prefix, &suffix );
     *text++ = ' ';
-    text = stpcpy( text, VbufString( &prefix ) );
-    text = stpcpy( text, id );
-    text = stpcpy( text, VbufString( &suffix ) );
+    text = stxpcpy( text, VbufString( &prefix ) );
+    text = stxpcpy( text, id );
+    text = stxpcpy( text, VbufString( &suffix ) );
     VbufFree( &prefix );
     VbufFree( &suffix );
 }
@@ -326,12 +326,12 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
     pnode = node->pnode;
     switch( pnode->op ) {
       case PT_ERROR :
-        stpcpy( buffer, PTREE_ERROR_NODE );
+        stxpcpy( buffer, PTREE_ERROR_NODE );
         type_add = false;
         break;
       case PT_UNARY :
       case PT_BINARY :
-        stpcpy( buffer, DbgOperator( pnode->cgop ) );
+        stxpcpy( buffer, DbgOperator( pnode->cgop ) );
         type_add = printTypes;
         break;
       case PT_INT_CONSTANT :
@@ -340,7 +340,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
           case TYP_SSHORT :
           case TYP_SINT :
           case TYP_SLONG :
-            sticpy( buffer, pnode->u.int_constant );
+            stxicpy( buffer, pnode->u.int_constant );
             break;
           case TYP_SLONG64 :
           case TYP_ULONG64 :
@@ -352,7 +352,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
             text[1] = '\0';
             break;
           default :
-            stdcpy( buffer, pnode->u.uint_constant );
+            stxdcpy( buffer, pnode->u.uint_constant );
             break;
         }
         type_add = printTypes;
@@ -362,7 +362,7 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = printTypes;
         break;
       case PT_STRING_CONSTANT :
-        stvcpy( buffer, pnode->u.string->string, pnode->u.string->len );
+        stxvcpy( buffer, pnode->u.string->string, pnode->u.string->len );
         type_add = printTypes;
         break;
       case PT_TYPE :
@@ -370,43 +370,43 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
         type_add = false;
         break;
       case PT_ID :
-        stpcpy( buffer, NameStr( pnode->u.id.name ) );
+        stxpcpy( buffer, NameStr( pnode->u.id.name ) );
         type_add = false;
         break;
       case PT_SYMBOL :
         if( pnode->cgop == CO_NAME_THIS ) {
-            stpcpy( buffer, "this" );
+            stxpcpy( buffer, "this" );
         } else if( pnode->cgop == CO_NAME_CDTOR_EXTRA ) {
-            stpcpy( buffer, "cdtor_extra" );
+            stxpcpy( buffer, "cdtor_extra" );
         } else {
             SYMBOL sym;
             if( pnode->cgop == CO_NAME_PARM_REF ) {
-                text = stpcpy( buffer, "parm-ref:" );
+                text = stxpcpy( buffer, "parm-ref:" );
             } else {
                 text = buffer;
             }
             sym = pnode->u.symcg.symbol;
             if( sym == NULL ) {
-                stpcpy( text, "this" );
+                stxpcpy( text, "this" );
             } else if( sym->name == NULL ) {
-                stpcpy( text, "**NULL**" );
+                stxpcpy( text, "**NULL**" );
             } else if( sym->name->name == NULL ) {
-                stpcpy( text, "**NULL**" );
+                stxpcpy( text, "**NULL**" );
             } else {
-                stpcpy( text, NameStr( sym->name->name ) );
+                stxpcpy( text, NameStr( sym->name->name ) );
             }
         }
         type_add = printTypes;
         break;
       case PT_DUP_EXPR :
-        text = stpcpy( buffer, "dup[" );
+        text = stxpcpy( buffer, "dup[" );
         text = stxcpy( text, (unsigned)(pointer_int)pnode->u.subtree[0] );
-        stpcpy( text, "]" );
+        stxpcpy( text, "]" );
         type_add = printTypes;
         break;
       case PT_IC :
-        text = stpcpy( buffer, DbgIcOpcode( pnode->u.ic.opcode ) );
-        text = stpcpy( text, " " );
+        text = stxpcpy( buffer, DbgIcOpcode( pnode->u.ic.opcode ) );
+        text = stxpcpy( text, " " );
         text = stxcpy( text, pnode->u.ic.value.uvalue );
         type_add = printTypes;
         break;
@@ -417,9 +417,9 @@ static char *textPTREE(         // GET TEXT FOR A PARSE-TREE NODE
                 , (pnode->flags & PTF_LVALUE ) ? "<LV> " : "<RV> " );
     }
     if( 0 != node->numb ) {
-        text = stpcpy( strend( buffer ), " {" );
-        text = stdcpy( text, node->numb );
-        text = stpcpy( text, "}" );
+        text = stxpcpy( strend( buffer ), " {" );
+        text = stxdcpy( text, node->numb );
+        text = stxpcpy( text, "}" );
     }
     return( buffer );
 }
@@ -550,24 +550,24 @@ static void printSubtree(       // PRINT A SUBTREE
     begLine();
     if( subtree->next == subtrees ) {
         print_locn = true;
-        bptr = stpcpy( buffer, "tree[" );
+        bptr = stxpcpy( buffer, "tree[" );
     } else {
         endLine();
         begLine();
         print_locn = false;
-        bptr = stpcpy( buffer, "dup[" );
+        bptr = stxpcpy( buffer, "dup[" );
     }
     bptr = stxcpy( bptr, (unsigned)(pointer_int)subtree->root );
     if( print_locn ) {
         PTreeExtractLocn( subtree->root, &locn );
         if( NULL != locn.src_file ) {
-            bptr = stpcpy( bptr, " " );
-            bptr = stpcpy( bptr, SrcFileName( locn.src_file ) );
-            bptr = stpcpy( bptr, " line[" );
-            bptr = stdcpy( bptr, locn.line );
-            bptr = stpcpy( bptr, "] column[" );
-            bptr = stdcpy( bptr, locn.column );
-            bptr = stpcpy( bptr, "]" );
+            bptr = stxpcpy( bptr, " " );
+            bptr = stxpcpy( bptr, SrcFileName( locn.src_file ) );
+            bptr = stxpcpy( bptr, " line[" );
+            bptr = stxdcpy( bptr, locn.line );
+            bptr = stxpcpy( bptr, "] column[" );
+            bptr = stxdcpy( bptr, locn.column );
+            bptr = stxpcpy( bptr, "]" );
         }
     }
     centreText( buffer, subtree->centre );

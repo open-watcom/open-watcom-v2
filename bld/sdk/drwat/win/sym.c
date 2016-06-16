@@ -42,6 +42,7 @@
 #include "drwatcom.h"
 #include "sopen.h"
 #include "dip.h"
+#include "dipimp.h"
 #include "dipcli.h"
 
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
@@ -172,7 +173,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     if( !StatShowSymbols || curProcess == NULL ) {
         return( FALSE );
     }
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM, 0 ) );
     dipaddr.sect_id = 0;
     dipaddr.indirect = FALSE;
     dipaddr.mach.offset = addr->offset;
@@ -194,7 +195,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         SymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
 //      SymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cue = MemAlloc( DIPHandleSize( HK_CUE ) );
+            cue = MemAlloc( DIPHandleSize( HK_CUE, 0 ) );
             if( AddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
                 MemFree( cue );
                 ret = FALSE;
@@ -375,8 +376,10 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *info ) {
 /*
  * DIPCliSymCreate
  */
-sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr ) {
-    ptr = ptr;
+imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
+{
+    ih=ih;
+    d=d;
     return( NULL );
 }
 

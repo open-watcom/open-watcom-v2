@@ -49,17 +49,9 @@
 #include "tistrail.h"
 #include "wstrip.h"
 #include "wressetr.h"
+
 #include "clibext.h"
 
-#include "pushpck1.h"
-typedef struct WResHeader {
-    uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
-    uint_32     DirOffset;      /* offset to the start of the directory */
-    uint_16     NumResources;   /* number of resourses in the file */
-    uint_16     NumTypes;       /* number of different types of resources in file */
-    uint_16     WResVer;        /* WRESVERSION */
-} WResHeader;
-#include "poppck.h"
 
 #define MXFNAME         130
 #define BUFSIZE         0x4000
@@ -70,6 +62,16 @@ typedef struct WResHeader {
 #define WRESMAGIC1      0xC3D2CDCF
 
 #define SEEK_POSBACK(p) (-(long)(p))
+
+#include "pushpck1.h"
+typedef struct WResHeader {
+    uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
+    uint_32     DirOffset;      /* offset to the start of the directory */
+    uint_16     NumResources;   /* number of resourses in the file */
+    uint_16     NumTypes;       /* number of different types of resources in file */
+    uint_16     WResVer;        /* WRESVERSION */
+} WResHeader;
+#include "poppck.h"
 
 typedef enum {
     WRAP_NONE,
@@ -93,15 +95,16 @@ static char *Buffer;
 
 static const char *ExtLst[] = {
 #ifdef __UNIX__
-        "", ".qnx",
+    "", ".qnx",
 #endif
-        ".exe", ".dll",
-        ".exp", ".rex",
-        ".nlm", ".dsk", ".lan", ".nam",
+    ".exe", ".dll",
+    ".exp", ".rex",
+    ".nlm", ".dsk", ".lan", ".nam",
 #ifndef __UNIX__
-        ".qnx", "",
+    ".qnx", "",
 #endif
-        NULL };
+    NULL
+};
 
 static const char SymExt[] = { ".sym" };
 static const char ResExt[] = { ".res" };
@@ -113,7 +116,7 @@ static char    fbuff[_MAX_PATH2];
 static bool quiet = false;
 static bool nodebug_ok = false;
 static bool res = false;
-static unsigned bufsize;
+static size_t bufsize;
 
 
 static void FatalDelTmp( int reason, const char *insert )
@@ -205,9 +208,9 @@ static bool TryCV4( int h, info_info *info )
         return( false );
     }
     if( memcmp( head.sig, CV4_NB09, sizeof( head.sig ) ) != 0
-     && memcmp( head.sig, CV4_NB08, sizeof( head.sig ) ) != 0
-     && memcmp( head.sig, CV4_NB07, sizeof( head.sig ) ) != 0
-     && memcmp( head.sig, CV4_NB05, sizeof( head.sig ) ) != 0 ) {
+      && memcmp( head.sig, CV4_NB08, sizeof( head.sig ) ) != 0
+      && memcmp( head.sig, CV4_NB07, sizeof( head.sig ) ) != 0
+      && memcmp( head.sig, CV4_NB05, sizeof( head.sig ) ) != 0 ) {
         return( false );
     }
     info->len = head.offset;
@@ -301,13 +304,13 @@ static void AddInfo( void )
         if( lseek( fin.h, 0L, SEEK_SET ) == -1L ) {
             Fatal( MSG_SEEK_ERROR, fin.name );
         }
-        CopyData( &fin, &fout, ~0L );
+        CopyData( &fin, &fout, ~0UL );
     }
 
     /* transfer info file to output file */
     lseek( finfo.h, 0L, SEEK_SET );
     lseek( fout.h, 0L, SEEK_END );
-    CopyData( &finfo, &fout, ~0L );
+    CopyData( &finfo, &fout, ~0UL );
 
     /* add header (trailer), if required */
     if( res ) {
@@ -373,7 +376,7 @@ static void StripInfo( void )
     }
 
     /* transfer remaining data */
-    CopyData( &fin, &fout, ~0L );
+    CopyData( &fin, &fout, ~0UL );
 }
 
 static bool Suffix( char *fname, const char *suff )
@@ -428,14 +431,14 @@ int main( int argc, char *argv[] )
 #endif
     }
     add_file = 0;
-    j = argc-1;
+    j = argc - 1;
     while( j > 0 ) {
 #ifdef __UNIX__
         if( argv[j][0] == '-' ) {
 #else
         if( argv[j][0] == '-' || argv[j][0] == '/' ) {
 #endif
-            argvlen = strlen(argv[j] );
+            argvlen = strlen( argv[j] );
             for( i = 1; i < argvlen; i++ ) {
                 switch( argv[j][i] ) {
                 case 'q': quiet = true; break;

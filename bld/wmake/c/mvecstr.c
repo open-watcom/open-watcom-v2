@@ -29,15 +29,13 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #define _IN_MVECSTR
-
 #include "make.h"
 #include "mmemory.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mvecstr.h"
+
 
 #define MIN_TEXT    507     /* minimum length we'll create text */
 
@@ -238,7 +236,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     clen = vec->d.totlen;             /* hold for overflow check */
     vec->d.totlen += len;
     if( clen > vec->d.totlen ) {      /* check for overflow */
-        PrtMsg( FTL | LOC | MAXIMUM_STRING_LENGTH );
+        PrtMsgExit(( FTL | LOC | MAXIMUM_STRING_LENGTH ));
     }
 
     tail = vec->d.tail;

@@ -235,7 +235,7 @@ static void FillInDefaults( dip_type_info *info )
         if( info->size == 0 ) {
             if( ModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
-                info->size = mti.b.bits / BITS_PER_BYTE;
+                info->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
@@ -260,7 +260,7 @@ static void FillInDefaults( dip_type_info *info )
             if( info->size == 0 ) {
                 if( info->modifier == TM_NEAR )
                     mti.b.bits -= mti.a.seg.bits;
-                info->size = mti.b.bits / BITS_PER_BYTE;
+                info->size = BITS2BYTES( mti.b.bits );
             }
         }
         break;
@@ -631,7 +631,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         break;
     case 22:
         GetMADTypeDefault( MTK_ADDRESS, &mti );
-        size = (mti.b.bits - mti.a.seg.bits) / BITS_PER_BYTE;
+        size = BITS2BYTES( mti.b.bits - mti.a.seg.bits );
         if( parm ) {
             size += sizeof( addr_seg );
             TypePointer( ExprSP->th, TM_FAR, size, th );
@@ -708,20 +708,21 @@ OVL_EXTERN walk_result FindInternalMod( mod_handle mh, void *d )
 static void BasicType( unsigned basic_type )
 {
     struct internal_mod         mod_srch;
-    struct imp_type_handle      *internal;
+    struct imp_type_handle      *ith;
     dip_type_info               info;
     DIPHDL( type, th );
 
     WalkModList( NO_MOD, FindInternalMod, &mod_srch );
-    internal = TypeCreate( th, mod_srch.mh );
+    TypeInit( th, mod_srch.mh );
     info.kind = TI_KIND_EXTRACT( basic_type );
     info.modifier = TI_MOD_EXTRACT( basic_type );
     info.size = TI_SIZE_EXTRACT( basic_type );
     FillInDefaults( &info );
-    internal->t.k = info.kind;
-    internal->t.m = info.modifier;
-    internal->t.s = info.size;
-    internal->ri = NULL;
+    ith = TH2ITH( th );
+    ith->t.k = info.kind;
+    ith->t.m = info.modifier;
+    ith->t.s = info.size;
+    ith->ri = NULL;
     PushType( th );
 }
 

@@ -1,12 +1,12 @@
 # RSI lib Builder Control file
 # ============================
 
-set PROJDIR=<CWD>
-set PROJNAME=RSI library
+set PROJNAME=rsilib
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
-cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

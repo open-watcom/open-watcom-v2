@@ -253,7 +253,7 @@ static addr_off GetAnOffset( address *where )
     if( Is32BitSegment ) {
         return( GetDataLong() );
     } else {
-        return( (unsigned short) GetDataWord() );
+        return( (unsigned short)GetDataWord() );
     }
 }
 
@@ -273,6 +273,8 @@ static address GetFarAddr( address *return_location )
 {
     address addr;
 
+    addr.sect_id = 0;
+    addr.indirect = 0;
     addr.mach.offset = GetAnOffset( return_location );
     addr.mach.segment = GetDataWord();
     if( Is32BitSegment ) {

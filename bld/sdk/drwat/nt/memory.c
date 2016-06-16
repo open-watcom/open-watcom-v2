@@ -37,6 +37,7 @@
 #include "memory.h"
 #include "jdlg.h"
 
+
 #ifndef CHICAGO
 
 /* Local Window callback functions prototypes */

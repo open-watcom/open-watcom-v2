@@ -3074,13 +3074,16 @@ static void applyFnClassMods( TYPE declarator, DECL_SPEC *dspec )
     if( ! dspec->arg_declspec ) {
         if( ScopeType( GetCurrScope(), SCOPE_CLASS ) ) {
             /* we are building up a member function declaration */
+            fn_type = NULL;
             for( type = declarator; type != NULL; type = type->of ) {
                 if( type->id == TYP_FUNCTION ) {
                     fn_type = type;
                     /* keep going; we want the last function type */
                 }
             }
-            if( fn_type->u.f.pragma == NULL ) {
+            if( fn_type == NULL ) {
+                CErr1( ERR_BAD_FN_MODIFIER );
+            } else if( fn_type->u.f.pragma == NULL ) {
                 /* only apply class modifiers if no #pragma used in fn */
                 ClassAddFunctionMods( fn_type );
             }

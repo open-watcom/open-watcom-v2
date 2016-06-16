@@ -760,7 +760,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             goto OutputWriteError;
 
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( (long)RT_DIALOG ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
     } else {
         RCFREE( name );
     }

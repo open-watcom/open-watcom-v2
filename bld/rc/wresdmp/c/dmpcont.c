@@ -56,27 +56,27 @@ bool DumpContents( WResTypeInfo *type, WResResInfo *res,
         error = false;
     } else {
         switch (type->TypeName.ID.Num) {
-        case RT_MENU:
+        case RESOURCE2INT( RT_MENU ):
             if( os == WRES_OS_WIN16 ) {
                 error = DumpMenu( lang->Offset, lang->Length, handle );
             } else {
                 error = false;
             }
             break;
-        case RT_DIALOG:
+        case RESOURCE2INT( RT_DIALOG ):
             if( os == WRES_OS_WIN16 ) {
                 error = DumpDialog( lang->Offset, lang->Length, handle );
             } else {
                 error = false;
             }
             break;
-        case RT_GROUP_ICON:
+        case RESOURCE2INT( RT_GROUP_ICON ):
             error = DumpIconGroup( lang->Offset, lang->Length, handle );
             break;
-        case RT_GROUP_CURSOR:
+        case RESOURCE2INT( RT_GROUP_CURSOR ):
             error = DumpCursorGroup( lang->Offset, lang->Length, handle );
             break;
-        case RT_STRING:
+        case RESOURCE2INT( RT_STRING ):
             if( os == WRES_OS_WIN16 ) {
                 error = DumpString( lang->Offset, lang->Length, handle );
             } else {

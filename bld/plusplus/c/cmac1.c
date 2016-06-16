@@ -372,10 +372,10 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
         TokenLen = file_name_copy( Buffer, SrcFileNameCurrent() );
         return( T_STRING );
     case MACRO_DATE:
-        TokenLen = stpcpy( Buffer, __Date ) - Buffer + 1;
+        TokenLen = stxpcpy( Buffer, __Date ) - Buffer + 1;
         return( T_STRING );
     case MACRO_TIME:
-        TokenLen = stpcpy( Buffer, __Time ) - Buffer + 1;
+        TokenLen = stxpcpy( Buffer, __Time ) - Buffer + 1;
         return( T_STRING );
     case MACRO_FUNCTION:
     case MACRO_FUNC:
@@ -462,7 +462,7 @@ static void saveParm(
             last_token = token_list;
             do {
                 token_list = token_list->next;
-                p = stvcpy( p, token_list->buf, token_list->length );
+                p = stxvcpy( p, token_list->buf, token_list->length );
             } while( token_list != last_token );
             RingFree( &token_list );
         }

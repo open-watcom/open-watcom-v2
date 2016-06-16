@@ -271,7 +271,6 @@ void defs( void )
     token_n     gentoken;
     a_sym       *sym;
     int         ctype;
-    char        *dupbuf( void );
     char        *type;
     a_prec      prec;
     char        *union_name = NULL;

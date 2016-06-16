@@ -162,23 +162,23 @@ int octal_dig(                  // GET OCTAL DIGIT FOR CHAR (OR 8)
 double SafeAtof(                // CONVERT STRING TO DOUBLE
     char *src )                 // - source charcaters
 ;
-char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
+char *stxdcpy(                  // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
     unsigned int value )        // - value to be concatenated
 ;
-char *sticpy(                   // CONCATENATE INTEGER NUMBER
+char *stxicpy(                  // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
     signed int value )          // - value to be concatenated
 ;
-char *sti64cpy(                 // CONCATENATE I64 NUMBER
+char *stxi64cpy(                // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
     signed_64 value )           // - value to be concatenated
 ;
-char *stpcpy(                   // CONCATENATE STRING AS STRING
+char *stxpcpy(                  // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string
 ;
-char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
+char *stxpcpy_after(            // COPY STRING, UPDATE SOURCE POINTER
     char *tgt,                  // - target
     char const **src )          // - addr( source )
 ;
@@ -195,17 +195,17 @@ char *strsave(                  // ALLOCATE AND SAVE A STRING
 char *strpermsave(              // ALLOCATE AND SAVE A STRING IN PERMANENT STORAGE
     const char *str )           // - source string
 ;
-char *stvcpyr(                  // CONCATENATE VECTOR AS A STRING REVERSE
+char *stxvcpyr(                 // CONCATENATE VECTOR AS A STRING REVERSE
     char *string,               // - target location
     const char *vector,         // - source vector to be copied reversed
     size_t vsize )              // - size of source vector
 ;
-char *stvcpy(                   // CONCATENATE VECTOR AS A STRING
+char *stxvcpy(                  // CONCATENATE VECTOR AS A STRING
     char *string,               // - target location
     const char *vector,         // - source vector to be copied
     size_t vsize )              // - size of source vector
 ;
-char *stvcpy_after(             // COPY VECTOR, UPDATE SOURCE POINTER
+char *stxvcpy_after(            // COPY VECTOR, UPDATE SOURCE POINTER
     char *tgt,                  // - target
     char const **src,           // - addr( source )
     size_t vsize )              // - vector size

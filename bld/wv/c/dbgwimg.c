@@ -74,25 +74,30 @@ static void CalcIndents( a_window *wnd )
     max_symbol = WndExtentX( wnd, LIT_DUI( Debug_Information ) );
     for( img = DbgImageList; img != NULL; img = img->link ) {
         curr = WndExtentX( wnd, img->image_name );
-        if( curr > max_image ) max_image = curr;
+        if( max_image < curr )
+            max_image = curr;
         curr = WndExtentX( wnd, ImgSymFileName( img, false ) );
-        if( curr > max_symbol ) max_symbol = curr;
+        if( max_symbol < curr ) {
+            max_symbol = curr;
+        }
     }
-    Indents[PIECE_SYMBOL] = max_image + 2*WndMaxCharX( wnd );
-    Indents[PIECE_DIP] = Indents[PIECE_SYMBOL] + max_symbol + 4*WndMaxCharX( wnd );
+    Indents[PIECE_SYMBOL] = max_image + 2 * WndMaxCharX( wnd );
+    Indents[PIECE_DIP] = Indents[PIECE_SYMBOL] + max_symbol + 4 * WndMaxCharX( wnd );
 }
 
 static image_entry      *ImgGetImage( int row )
 {
     image_entry *img;
-    int         count;
 
-    count = 0;
-    if( row < 0 ) return( NULL );
-    for( img = DbgImageList; img != NULL; img = img->link ) {
-        if( count++ == row ) return( img );
+    img = NULL;
+    if( row >= 0 ) {
+        for( img = DbgImageList; img != NULL; img = img->link ) {
+            if( row-- == 0 ) {
+                break;
+            }
+        }
     }
-    return( NULL );
+    return( img );
 }
 
 static void     ImgInit( a_window *wnd )
@@ -159,7 +164,6 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     }
 }
 
-static WNDNUMROWS ImgNumRows;
 static int ImgNumRows( a_window *wnd )
 {
     image_entry *img;
@@ -173,7 +177,6 @@ static int ImgNumRows( a_window *wnd )
     return( count );
 }
 
-static WNDGETLINE ImgGetLine;
 static  bool    ImgGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -200,7 +203,8 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
                 return( false );
             }
         case 1:
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             SetUnderLine( wnd, line );
             return( true );
         default:
@@ -211,7 +215,8 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
         line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
         img = ImgGetImage( row );
-        if( img == NULL ) return( false );
+        if( img == NULL )
+            return( false );
         switch( piece ) {
         case PIECE_IMAGE:
             line->text = img->image_name;
@@ -233,14 +238,12 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
     return( false );
 }
 
-static WNDREFRESH ImgRefresh;
 static void     ImgRefresh( a_window *wnd )
 {
     ImgInit( wnd );
 }
 
 
-static WNDCALLBACK ImgEventProc;
 static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;

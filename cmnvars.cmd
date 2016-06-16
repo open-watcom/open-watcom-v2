@@ -35,6 +35,15 @@ set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 set BEGINLIBPATH=%OWDEFBEGINLIBPATH%
 
+REM Set Watcom tool chain version to WATCOMVER variable
+set WATCOMVER=
+if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
+echo set WATCOMVER=__WATCOMC__>watcom.gc
+wcc386 -p watcom.gc >watcom.bat
+watcom.bat
+del watcom.*
+:no_watcom
+
 REM OS specifics
 
 REM Ensure COMSPEC points to CMD.EXE

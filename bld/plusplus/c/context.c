@@ -156,22 +156,22 @@ bool CtxCurrent(                // GET CURRENT CONTEXT
 
     *a_context = context;
     *a_prefix = ctx_names[ context ];
+    data = NULL;
     switch( context ) {
-      case CTX_INIT :
-      case CTX_FINI :
-      case CTX_CMDLN_VALID :
-      case CTX_FORCED_INCS :
-      case CTX_SOURCE :
-      case CTX_CG_OPT :
-      case CTX_ENDFILE:
-        data = NULL;
+    case CTX_INIT :
+    case CTX_FINI :
+    case CTX_CMDLN_VALID :
+    case CTX_FORCED_INCS :
+    case CTX_SOURCE :
+    case CTX_CG_OPT :
+    case CTX_ENDFILE:
         break;
-      case CTX_CMDLN_ENV :
-      case CTX_CMDLN_PGM :
+    case CTX_CMDLN_ENV :
+    case CTX_CMDLN_PGM :
         data = CtxGetSwitchAddr();
         break;
-      case CTX_CG_FUNC :
-      case CTX_FUNC_GEN :
+    case CTX_CG_FUNC :
+    case CTX_FUNC_GEN :
         data = func;
         break;
     }
@@ -191,39 +191,39 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
 {
     char *buf;                  // - points into buffer
 
-    buf = stpcpy( CompilerContext, ctx_names[ context ] );
+    buf = stxpcpy( CompilerContext, ctx_names[ context ] );
     switch( context ) {
       case CTX_CMDLN_ENV :
       case CTX_CMDLN_PGM :
-        buf = stpcpy( buf, ": " );
-        buf = stpcpy( buf, CtxGetSwitchAddr() );
+        buf = stxpcpy( buf, ": " );
+        buf = stxpcpy( buf, CtxGetSwitchAddr() );
         break;
       case CTX_FORCED_INCS :
       case CTX_SOURCE :
         if( location.src_file == NULL ) break;
-        buf = stpcpy( buf, ": " );
-        buf = stpcpy( buf, SrcFileName( location.src_file ) );
-        buf = stpcpy( buf, "(" );
-        buf = stdcpy( buf, location.line );
-        buf = stpcpy( buf, "," );
-        buf = stdcpy( buf, location.column );
-        buf = stpcpy( buf, ")" );
+        buf = stxpcpy( buf, ": " );
+        buf = stxpcpy( buf, SrcFileName( location.src_file ) );
+        buf = stxpcpy( buf, "(" );
+        buf = stxdcpy( buf, location.line );
+        buf = stxpcpy( buf, "," );
+        buf = stxdcpy( buf, location.column );
+        buf = stxpcpy( buf, ")" );
         break;
       case CTX_CG_FUNC :
       case CTX_FUNC_GEN :
-        buf = stpcpy( buf, ": " );
+        buf = stxpcpy( buf, ": " );
         if( func == NULL ) {
-            buf = stpcpy( buf, "data generation" );
+            buf = stxpcpy( buf, "data generation" );
         } else {
             VBUF vbuf;
-            buf = stpcpy( buf, DbgSymNameFull( func, &vbuf ) );
+            buf = stxpcpy( buf, DbgSymNameFull( func, &vbuf ) );
             VbufFree( &vbuf );
         }
         if( ( context == CTX_FUNC_GEN )
           &&( line != 0 ) ) {
-            buf = stpcpy( buf, "(" );
-            buf = stdcpy( buf, location.line );
-            buf = stpcpy( buf, ")" );
+            buf = stxpcpy( buf, "(" );
+            buf = stxdcpy( buf, location.line );
+            buf = stxpcpy( buf, ")" );
         }
         break;
     }

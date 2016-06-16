@@ -1,15 +1,16 @@
 # UI lib Builder Control file
 # ===========================
 
-set PROJDIR=<CWD>
-set PROJNAME=ui library
+set PROJNAME=ui
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -17,5 +18,5 @@ set PROJNAME=ui library
 #    <CCCMD> qnx/tix/*.tix <OWRELROOT>/qnx/tix/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

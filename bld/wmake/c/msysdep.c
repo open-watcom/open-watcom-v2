@@ -41,7 +41,6 @@
     #include "tinyio.h"
 #endif
 #include "pcobj.h"
-#include "msysdep.h"
 
 #if defined( __DOS__ )
 

@@ -1,15 +1,16 @@
 # IDE configuration Builder Control file
 # ======================================
 
-set PROJDIR=<CWD>
-set PROJNAME=ide cfg
+set PROJNAME=idecfg
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -24,5 +25,5 @@ set PROJNAME=ide cfg
     <CCCMD> wini86/*.cfg      <OWRELROOT>/binw/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

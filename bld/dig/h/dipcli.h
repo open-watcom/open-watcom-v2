@@ -38,7 +38,7 @@
 void            DIGCLIENT DIPCliImageUnload( mod_handle );
 
 void            DIGCLIENT DIPCliMapAddr( addr_ptr *, void * );
-sym_handle      *DIGCLIENT DIPCliSymCreate( void * );
+imp_sym_handle  *DIGCLIENT DIPCliSymCreate( imp_image_handle *, void * );
 dip_status      DIGCLIENT DIPCliItemLocation( location_context *, context_item, location_list * );
 dip_status      DIGCLIENT DIPCliAssignLocation( location_list *, location_list *, unsigned long );
 dip_status      DIGCLIENT DIPCliSameAddrSpace( address, address );

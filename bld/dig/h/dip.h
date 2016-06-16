@@ -47,7 +47,7 @@ void            DIPCancel( void );
 void            DIPFini( void );
 void            DIPFiniLatest( void );
 
-unsigned        DIPHandleSize( handle_kind hk );
+size_t          DIPHandleSize( handle_kind hk, int mgr_size );
 
 dip_status      DIPMoreMem( unsigned amount );
 
@@ -65,21 +65,17 @@ unsigned        DIPImagePriority( mod_handle );
  *      Information Walkers
  */
 typedef         walk_result (IMAGE_WALKER)( mod_handle, void * );
-walk_result     WalkImageList( IMAGE_WALKER *, void * );
-
 typedef         walk_result (MOD_WALKER)( mod_handle, void * );
-walk_result     WalkModList( mod_handle, MOD_WALKER *, void * );
-
 typedef         walk_result (TYPE_WALKER)( type_handle *, void * );
-walk_result     WalkTypeList( mod_handle, TYPE_WALKER *, void * );
-
 typedef         walk_result (SYM_WALKER)( sym_walk_info, sym_handle *, void * );
+typedef         walk_result (CUE_WALKER)( cue_handle *, void * );
+
+walk_result     WalkImageList( IMAGE_WALKER *, void * );
+walk_result     WalkModList( mod_handle, MOD_WALKER *, void * );
+walk_result     WalkTypeList( mod_handle, TYPE_WALKER *, void * );
 walk_result     WalkSymList( symbol_source, void *, SYM_WALKER *, void * );
 walk_result     WalkSymListEx( symbol_source, void *, SYM_WALKER *, location_context *, void * );
-
-typedef         walk_result (CUE_WALKER)( cue_handle *, void * );
 walk_result     WalkFileList( mod_handle, CUE_WALKER *, void * );
-
 
 /*
  * Image Information
@@ -108,7 +104,7 @@ dip_status      TypeProcInfo( type_handle *t, type_handle *r, unsigned p );
 dip_status      TypePtrAddrSpace( type_handle *, location_context *, address * );
 dip_status      TypeThunkAdjust( type_handle *, type_handle *, location_context *, address * );
 dip_status      TypePointer( type_handle *, type_modifier, unsigned, type_handle * );
-void            *TypeCreate( type_handle *, mod_handle );
+void            TypeInit( type_handle *, mod_handle );
 int             TypeCmp( type_handle *, type_handle * );
 size_t          TypeName( type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size );
 dip_status      TypeAddRef( type_handle * );
@@ -124,6 +120,7 @@ dip_status      SymType( sym_handle *, type_handle * );
 dip_status      SymLocation( sym_handle *, location_context *, location_list * );
 dip_status      SymValue( sym_handle *, location_context *, void * );
 dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
+void            SymInit( sym_handle *sh, image_handle *ih );
 dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
 dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
 dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );

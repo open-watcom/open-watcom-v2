@@ -191,10 +191,8 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
 
     /* Ensure in_name contains a value. */
 
-    length = strlen( in_name );
-    if( (in_name == NULL) || (length == 0) ) {
+    if( in_name == NULL || (length = strlen( in_name )) == 0 )
         return( out_font );
-    }
 
     /* Initialize the out_font. */
 
@@ -598,6 +596,8 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
             outtrans_ptr = OUT_FONT_CUR_PTR();
             OUT_FONT_ADD_OFF( sizeof( out_font->outtrans->table ) );
 
+            translation_start = NULL;
+
             /* Convert the data in uint16_array to our format, which requires
              * actual pointers in place of the offsets recorded in *out_font:
              *      outtrans_ptr is the pointer version of out_font->outtrans.
@@ -641,7 +641,7 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
                         size = 1;
                     } else {
                         translation_start = outtrans_data + (uint16_array[i] & 0x00ff);
-                        size = *translation_start;
+                        size = *translation_start++;
                     }
 
                     /* Allocate space and perform other common operations. */
@@ -662,7 +662,6 @@ cop_font * parse_font( FILE * in_file, char const * in_name )
                     if( (uint16_array[i] & 0xff00) == 0x00 ) {
                         *byte_ptr = (uint16_array[i] & 0x00ff);
                     } else {
-                        ++translation_start;
                         memcpy( byte_ptr, translation_start, size );
                     }
                 }

@@ -148,7 +148,8 @@ extern sym_handle SymLookup( const char *sym_name ) {
 
     sym = hashTable[ symHash( sym_name ) ];
     while( sym != NULL ) {
-        if( !strcmp( sym_name, sym->name ) ) break;
+        if( !strcmp( sym_name, sym->name ) )
+            break;
         sym = sym->next;
     }
     return( sym );
@@ -315,7 +316,7 @@ extern void SymDestroyReloc( sym_handle sym, sym_reloc reloc ) {
 
     assert( sym->class == SYM_LABEL );
     assert( reloc );
-    if( reloc->prev ) {
+    if( reloc->prev != NULL ) {
         reloc->prev->next = reloc->next;
     } else {    // the head element
         if( sym->hi_relocs == reloc ) {
@@ -331,7 +332,7 @@ extern void SymDestroyReloc( sym_handle sym, sym_reloc reloc ) {
             }
         }
     }
-    if( reloc->next ) {
+    if( reloc->next != NULL ) {
         reloc->next->prev = reloc->prev;
     }
     MemFree( reloc );
@@ -343,12 +344,10 @@ extern sym_reloc SymMatchReloc( bool is_high, sym_handle sym, sym_section sectio
     sym_reloc           curr;
 
     assert( sym->class == SYM_LABEL );
-    curr = ( is_high ? sym->hi_relocs : sym->lo_relocs );
-    while( curr ) {
+    for( curr = ( is_high ? sym->hi_relocs : sym->lo_relocs ); curr != NULL; curr = curr->next ) {
         if( curr->location.section == section ) {    // want same section handle
-            return( curr );
+            break;
         }
-        curr = curr->next;
     }
     return( curr );
 }
@@ -362,13 +361,15 @@ extern sym_reloc SymGetReloc( bool is_high, sym_handle *get_hdl ) {
     sym_reloc_hdl_list  lhdl;
 
     if( is_high ) {     // getting a high reloc
-        if( ( lhdl = hi_reloc_hdls.head ) == NULL ) return( NULL );
+        if( ( lhdl = hi_reloc_hdls.head ) == NULL )
+            return( NULL );
         assert( lhdl->hdl->hi_relocs != NULL );
         *get_hdl = lhdl->hdl;
         return( lhdl->hdl->hi_relocs );
     }
     // getting a low reloc
-    if( ( lhdl = lo_reloc_hdls.head ) == NULL ) return( NULL );
+    if( ( lhdl = lo_reloc_hdls.head ) == NULL )
+        return( NULL );
     assert( lhdl->hdl->lo_relocs != NULL );
     *get_hdl = lhdl->hdl;
     return( lhdl->hdl->lo_relocs );
@@ -399,9 +400,10 @@ extern void SymFini( void ) {
     sym_reloc   reloc;
 
 #ifdef AS_DEBUG_DUMP
-    #ifdef _STANDALONE_
-    if( _IsOption( DUMP_SYMBOL_TABLE ) ) DumpSymbolTable();
-    #endif
+  #ifdef _STANDALONE_
+    if( _IsOption( DUMP_SYMBOL_TABLE ) )
+        DumpSymbolTable();
+  #endif
 #endif
 
     reloc = SymGetReloc( true, &sym );
@@ -456,7 +458,8 @@ extern void DumpSymbolTable( void ) {
 
     for( i = 0; i < HASH_TABLE_SIZE; i++ ) {
         curr = hashTable[ i ];
-        if( curr == NULL ) continue;
+        if( curr == NULL )
+            continue;
         printf( "Bucket %d: ", i );
         while( curr != NULL ) {
             DumpSymbol( curr );

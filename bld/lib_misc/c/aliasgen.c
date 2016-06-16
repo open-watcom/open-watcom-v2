@@ -122,7 +122,8 @@ void *AllocMem( size_t bytes )
     void *              p;
 
     p = malloc( bytes );
-    if( p == NULL )  FatalError( "Insufficient memory." );
+    if( p == NULL )
+        FatalError( "Insufficient memory." );
     return( p );
 }
 
@@ -137,7 +138,8 @@ void *ReallocMem( void *buf, size_t bytes )
     void *              p;
 
     p = realloc( buf, bytes );
-    if( p == NULL )  FatalError( "Insufficient memory." );
+    if( p == NULL )
+        FatalError( "Insufficient memory." );
     return( p );
 }
 
@@ -186,17 +188,19 @@ static int parse_words( const char *command, char **words )
 
     while( *p != '\0' ) {
         /*** Skip any leading whitespace ***/
-        while( isspace( *p ) )  p++;
+        while( isspace( *p ) )
+            p++;
 
         /*** Handle the word ***/
-        if( *p == '\0' )  break;
+        if( *p == '\0' )
+            break;
         pLookAhead = p;
         while( *pLookAhead != '\0'  &&  !isspace( *pLookAhead ) ) {
             pLookAhead++;
         }
         if( words != NULL ) {
             len = pLookAhead - p;       /* # of chars, excluding the null */
-            words[numWords] = (char *)AllocMem( (len+1) * sizeof(char) );
+            words[numWords] = (char *)AllocMem( ( len + 1 ) * sizeof( char ) );
             strncpy( words[numWords], p, len );
             words[numWords][len] = '\0';
         }
@@ -204,7 +208,8 @@ static int parse_words( const char *command, char **words )
         p = pLookAhead;
         numWords++;
     }
-    if( words != NULL )  words[numWords] = NULL;        /* last string */
+    if( words != NULL )
+        words[numWords] = NULL;        /* last string */
 
     return( numWords );
 }
@@ -224,6 +229,15 @@ static void add_system( struct Alias *alias, char *system )
     alias->systems = syselem;
 }
 
+static void free_systems( struct SysElem *syselem )
+{
+    struct SysElem *syselem_next;
+
+    for( ; syselem != NULL; syselem = syselem_next ) {
+        syselem_next = syselem->next;
+        FreeMem( syselem );
+    }
+}
 
 /*
  * Add a line to the MIF file.
@@ -402,8 +416,7 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
     aliasmips.systems = NULL;
 
     /*** Separate into groups by CPU type ***/
-    syselem = alias->systems;
-    while( syselem != NULL ) {
+    for( syselem = alias->systems; syselem != NULL; syselem = syselem->next ) {
         if( !strcmp( syselem->system, "nta" ) ) {               /* AXP */
             add_system( &aliasaxp, syselem->system );
         } else if( !strcmp( syselem->system, "axp" ) ) {        /* AXP */
@@ -423,21 +436,24 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
         } else {                                                /* x86 */
             add_system( &aliasix86, syselem->system );
         }
-        syselem = syselem->next;
     }
 
     /*** Build any necessary assembler files ***/
     if( aliasix86.systems != NULL ) {
         make_asm_ix86( miffile, &aliasix86, outdir );
+        free_systems( aliasix86.systems );
     }
     if( aliasaxp.systems != NULL ) {
         make_asm_axp( miffile, &aliasaxp, outdir );
+        free_systems( aliasaxp.systems );
     }
     if( aliasppc.systems != NULL ) {
         make_asm_ppc( miffile, &aliasppc, outdir );
+        free_systems( aliasppc.systems );
     }
     if( aliasppc.systems != NULL ) {
         make_asm_mips( miffile, &aliasmips, outdir );
+        free_systems( aliasmips.systems );
     }
 }
 
@@ -456,6 +472,7 @@ static int do_line( FILE *infile, FILE *miffile, char *outdir )
     char **             words;
     struct Alias        alias;
     int                 count;
+    int                 rc;
 
     /*** Prepare the next line ***/
     p = fgets( line, 1024, infile );
@@ -475,33 +492,36 @@ static int do_line( FILE *infile, FILE *miffile, char *outdir )
 
     /*** Extract the individual words ***/
     numwords = parse_words( line, NULL );
-    if( numwords == -1 ) {
-        FatalError( "Error on line %d", curline );
-        return( -1 );
-    }
-    if( numwords == 0 ) {               /* skip blank lines */
+    if( numwords == 0 ) {        /* skip blank lines */
+        rc = 2;
         curline++;
-        return( 2 );
-    }
-    words = (char **)AllocMem( (numwords+1) * sizeof(char*) );
-    numwords = parse_words( line, words );
-    if( numwords < 4 ) {
+    } else if( numwords < 4 ) {
+        rc = -1;
         FatalError( "Error on line %d", curline );
-        return( -1 );
+    } else {
+        words = (char **)AllocMem( ( numwords + 1 ) * sizeof( char * ) );
+        if( words != NULL ) {
+            numwords = parse_words( line, words );
+        
+            /*** Construct an Alias structure and create the alias ***/
+            alias.filename = words[0];
+            alias.realname = words[1];
+            alias.aliasname = words[2];
+            alias.systems = NULL;
+            for( count=3; words[count]!=NULL; count++ ) {       /* build system list */
+                add_system( &alias, words[count] );
+            }
+            do_alias( miffile, &alias, outdir );
+            for( count = 0; words[count] != NULL; count++ ) {   /* free all words */
+                FreeMem( words[count] );
+            }
+            FreeMem( words );
+            free_systems( alias.systems );
+        }
+        rc = 1;
+        curline++;
     }
-
-    /*** Construct an Alias structure and create the alias ***/
-    alias.filename = words[0];
-    alias.realname = words[1];
-    alias.aliasname = words[2];
-    alias.systems = NULL;
-    for( count=3; words[count]!=NULL; count++ ) {   /* build system list */
-        add_system( &alias, words[count] );
-    }
-    do_alias( miffile, &alias, outdir );
-
-    curline++;
-    return( 1 );
+    return( rc );
 }
 
 
@@ -536,16 +556,16 @@ int main( int argc, char *argv[] )
     while( alive ) {
         rc = do_line( infile, miffile, outdir );
         switch( rc ) {
-          case 0:                       /* ok, but not done */
+        case 0:                         /* ok, but not done */
             alive = 0;
             break;
-          case 2:                       /* comment */
+        case 2:                         /* comment */
             break;
-          case 1:                       /* got one more */
+        case 1:                         /* got one more */
             fputc( '.', stdout );
             fflush( stdout );
             break;
-          default:
+        default:
             Zoinks();
             break;
         }

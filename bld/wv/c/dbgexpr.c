@@ -151,7 +151,7 @@ bool AllocatedString( stack_entry *stk )
         return( false );
     if( stk->flags & SF_LOCATION )
         return( false );
-    return( stk->v.string.allocated != 0 );
+    return( stk->v.string.allocated != NULL );
 }
 
 
@@ -397,7 +397,7 @@ void ExprSetAddrInfo( stack_entry *stk, bool trunc )
     stk->info.kind = TK_ADDRESS;
     stk->info.modifier = TM_FAR;
     GetMADTypeDefaultAt( stk->v.addr, MTK_ADDRESS, &mti );
-    stk->info.size = mti.b.bits / BITS_PER_BYTE;
+    stk->info.size = BITS2BYTES( mti.b.bits );
     if( trunc ) {
         stk->v.addr.mach.offset &= ~0UL >> ( sizeof( addr48_off ) * 8 - ( mti.b.bits - mti.a.seg.bits ) );
     }

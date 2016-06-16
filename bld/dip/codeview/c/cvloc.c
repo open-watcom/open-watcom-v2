@@ -220,8 +220,8 @@ dip_status LocationManyReg( imp_image_handle *ii,
             return( ds );
         }
         memcpy( &ll->e[j], &reg_ll.e[0], reg_ll.num * sizeof( reg_ll.e[0] ) );
-        ll->e[j].bit_start += reg->start * BITS_PER_BYTE;
-        ll->e[j].bit_length = reg->len * BITS_PER_BYTE;
+        ll->e[j].bit_start += BYTES2BITS( reg->start );
+        ll->e[j].bit_length = BYTES2BITS( reg->len );
         j += reg_ll.num;
         ll->flags |= reg_ll.flags;
     }

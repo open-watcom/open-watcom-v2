@@ -49,47 +49,6 @@
 #include "clibext.h"
 
 
-typedef int     cmp_func( const void *, const void *, size_t );
-
-typedef struct wv_sym_list      wv_sym_list;
-struct wv_sym_list {
-    wv_sym_list         *next;
-    wv_sym_entry        s;
-};
-
-static wv_sym_list      *WmonSymLst;
-
-enum {
-    INTERNAL_radix,
-    INTERNAL_monitor,
-    INTERNAL_top,
-    INTERNAL_bottom,
-    INTERNAL_psp,
-    INTERNAL_pid,
-    INTERNAL_remote,
-    INTERNAL_code,
-    INTERNAL_data,
-    INTERNAL_machine,
-    INTERNAL_cpu,
-    INTERNAL_fpu,
-    INTERNAL_os,
-    INTERNAL_32,
-    INTERNAL_left,
-    INTERNAL_right,
-    INTERNAL_etid,
-    INTERNAL_ctid,
-    INTERNAL_ntid,
-    INTERNAL_ip,
-    INTERNAL_sp,
-    INTERNAL_bp,
-    INTERNAL_loaded,
-    INTERNAL_WV_TNG,
-    INTERNAL_NIL,
-    INTERNAL_src,
-    INTERNAL_kanji,
-};
-
-
 #ifdef _OVERLAYED_
 #define CONST
 #else
@@ -109,82 +68,37 @@ enum {
         { np #vn }                              \
     }
 
+#define INTERNAL_SYM( n, tk, tm, ts ) \
+    WV_SYM( INT, tk, tm, ts, INTERNAL, INTERNAL_ ## n, n, "dbg$" )
 
-#define INTERNAL_SYM( tk, tm, s, n ) \
-    WV_SYM( INT, tk, tm, s, INTERNAL, INTERNAL_ ## n, n, "dbg$" )
+typedef int     cmp_func( const void *, const void *, size_t );
 
-#define INTEGER_SYM( name ) \
-    INTERNAL_SYM( INTEGER, UNSIGNED, sizeof( unsigned_16 ), name )
-
-#define ADDRESS_SYM( name ) \
-    INTERNAL_SYM( ADDRESS, FAR, sizeof( address ), name )
+typedef struct wv_sym_list {
+    struct wv_sym_list  *next;
+    wv_sym_entry        s;
+} wv_sym_list;
 
 /*
  * Definitions
  */
-INTEGER_SYM( radix );
-INTEGER_SYM( monitor );
-INTEGER_SYM( top );
-INTEGER_SYM( bottom );
-INTEGER_SYM( psp );
-INTEGER_SYM( pid );
-INTEGER_SYM( remote );
-INTEGER_SYM( machine );
-INTEGER_SYM( cpu );
-INTEGER_SYM( fpu );
-INTEGER_SYM( os );
-INTEGER_SYM( 32 );
-INTEGER_SYM( left );
-INTEGER_SYM( right );
-INTEGER_SYM( etid );
-INTEGER_SYM( ctid );
-INTEGER_SYM( ntid );
-INTEGER_SYM( loaded );
-INTEGER_SYM( WV_TNG );
-INTEGER_SYM( src );
-INTEGER_SYM( kanji );
-
-ADDRESS_SYM( code );
-ADDRESS_SYM( data );
-ADDRESS_SYM( ip );
-ADDRESS_SYM( sp );
-ADDRESS_SYM( bp );
-ADDRESS_SYM( NIL );
+#define pick(n,tk,tm,tt) INTERNAL_SYM( n, tk, tm, sizeof( tt ) );
+#include "dipwvsym.h"
+#undef pick
 
 CONST wv_sym_entry *const ListInternal[] = {
-    (wv_sym_entry *)&wvINT_radix,
-    (wv_sym_entry *)&wvINT_monitor,
-    (wv_sym_entry *)&wvINT_top,
-    (wv_sym_entry *)&wvINT_bottom,
-    (wv_sym_entry *)&wvINT_psp,
-    (wv_sym_entry *)&wvINT_pid,
-    (wv_sym_entry *)&wvINT_remote,
-    (wv_sym_entry *)&wvINT_code,
-    (wv_sym_entry *)&wvINT_data,
-    (wv_sym_entry *)&wvINT_machine,
-    (wv_sym_entry *)&wvINT_cpu,
-    (wv_sym_entry *)&wvINT_fpu,
-    (wv_sym_entry *)&wvINT_os,
-    (wv_sym_entry *)&wvINT_32,
-    (wv_sym_entry *)&wvINT_left,
-    (wv_sym_entry *)&wvINT_right,
-    (wv_sym_entry *)&wvINT_etid,
-    (wv_sym_entry *)&wvINT_ctid,
-    (wv_sym_entry *)&wvINT_ntid,
-    (wv_sym_entry *)&wvINT_ip,
-    (wv_sym_entry *)&wvINT_sp,
-    (wv_sym_entry *)&wvINT_bp,
-    (wv_sym_entry *)&wvINT_loaded,
-    (wv_sym_entry *)&wvINT_WV_TNG,
-    (wv_sym_entry *)&wvINT_src,
-    (wv_sym_entry *)&wvINT_kanji,
+    #define pick(n,tk,tm,tt) (const wv_sym_entry *)&wvINT_ ## n,
+    #include "dipwvsym.h"
+    #undef pick
     NULL
 };
 
-static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item *li )
+static wv_sym_list      *WmonSymLst;
+
+static const wv_sym_entry   *StaticInternalLookup( lookup_item *li )
 {
-    cmp_func            *cmp;
-    wv_sym_entry        *curr;
+    cmp_func                    *cmp;
+    const wv_sym_entry          *curr;
+    const wv_sym_entry * const  *list;
 
     if( li->scope.start != NULL )
         return( NULL );
@@ -193,7 +107,7 @@ static wv_sym_entry *StaticLookup( const wv_sym_entry * const *list, lookup_item
     } else {
         cmp = memicmp;
     }
-    for( ; (curr = (wv_sym_entry *)*list) != NULL; ++list ) {
+    for( list = ListInternal; (curr = *list) != NULL; ++list ) {
         if( li->name.len == SYM_NAME_LEN( curr->name )
           && cmp( li->name.start, SYM_NAME_NAME( curr->name ), li->name.len ) == 0 ) {
             return( curr );
@@ -213,6 +127,7 @@ static walk_result FindReg( const mad_reg_info *ri, int has_sublist, void *d )
 {
     struct lookup_reg   *ld = d;
 
+    has_sublist=has_sublist;
     if( memicmp( ld->name, ri->name, ld->len ) != 0 )
         return( WR_CONTINUE );
     if( ri->name[ld->len] != NULLCHAR )
@@ -239,14 +154,14 @@ const mad_reg_info *LookupRegName( const mad_reg_info *parent, lookup_item *li )
     return( lr.ri );
 }
 
-wv_sym_entry *LookupInternalName( lookup_item *li )
+const wv_sym_entry *LookupInternalName( lookup_item *li )
 {
-    wv_sym_entry    *se;
-    const char      *null_start;
-    size_t          null_len;
-    cmp_func        *cmp;
+    const wv_sym_entry  *se;
+    const char          *null_start;
+    size_t              null_len;
+    cmp_func            *cmp;
 
-    se = StaticLookup( ListInternal, li );
+    se = StaticInternalLookup( li );
     if( se != NULL )
         return( se );
     if( TokenName( T_SSL_SPEC_NULL, &null_start, &null_len ) ) {
@@ -259,14 +174,14 @@ wv_sym_entry *LookupInternalName( lookup_item *li )
         } else {
             cmp = memicmp;
         }
-        if( cmp( null_start, li->name.start, null_len ) != 0 )
-            return( NULL );
-        return( (wv_sym_entry *)&wvINT_NIL );
+        if( cmp( null_start, li->name.start, null_len ) == 0 ) {
+            return( (const wv_sym_entry *)&wvINT_NIL );
+        }
     }
     return( NULL );
 }
 
-wv_sym_entry *LookupUserName( lookup_item *li )
+const wv_sym_entry *LookupUserName( lookup_item *li )
 {
     wv_sym_list         *sl;
     cmp_func            *cmp;
@@ -306,7 +221,7 @@ bool CreateSym( lookup_item *li, dip_type_info *ti )
     wv_type_entry       info;
     wv_sym_list         *new;
 
-    if( (li->mod != NO_MOD) && !IsInternalMod( li->mod ) )
+    if( ( li->mod != NO_MOD ) && !IsInternalMod( li->mod ) )
         return( false );
     if( li->scope.start != NULL )
         return( false );
@@ -353,7 +268,7 @@ static void GetNPXType( void )
     }
 }
 
-void InternalValue( unsigned index, void *d )
+void InternalValue( internal_idx index, void *d )
 {
     mad_type_info       mti;
 
@@ -400,7 +315,7 @@ void InternalValue( unsigned index, void *d )
         break;
     case INTERNAL_32:
         GetMADTypeDefault( MTK_INTEGER, &mti );
-        *(unsigned_16 *)d = (mti.b.bits >= 32);
+        *(unsigned_16 *)d = ( mti.b.bits >= 32 );
         break;
     case INTERNAL_loaded:
         *(unsigned_16 *)d = _IsOff( SW_PROC_ALREADY_STARTED );
@@ -421,8 +336,8 @@ void InternalValue( unsigned index, void *d )
         *(unsigned_16 *)d = DbgRegs->tid;
         break;
     case INTERNAL_ntid:
-    *(unsigned_16 *)d = GetNextTID();
-    break;
+        *(unsigned_16 *)d = GetNextTID();
+        break;
     case INTERNAL_ip:
         *(address *)d = GetRegIP();
         AddrFix( d );
@@ -439,7 +354,7 @@ void InternalValue( unsigned index, void *d )
         *(unsigned_16 *)d = 1;
         break;
     case INTERNAL_src:
-        *(unsigned_16 *)d = ActiveWindowLevel == SOURCE;
+        *(unsigned_16 *)d = ( ActiveWindowLevel == SOURCE );
         break;
     case INTERNAL_NIL:
         *(address *)d = NilAddr;

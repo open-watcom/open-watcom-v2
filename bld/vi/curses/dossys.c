@@ -160,9 +160,9 @@ long MemSize( void )
 
     x = DosMaxAlloc();
 #ifdef _M_I86
-    return( 16L * (long) x );
+    return( 16L * (long)x );
 #else
-    return( 4096L * (long) x );
+    return( 4096L * (long)x );
 #endif
 
 } /* MemSize */
@@ -185,7 +185,7 @@ int ChangeDrive( int drive )
     unsigned    b;
     unsigned    total, c;
 
-    a = (char) tolower( drive ) - (char) 'a';
+    a = (char)tolower( drive ) - 'a';
     b = a + 1;
     _dos_setdrive( b, &total );
     _dos_getdrive( &c );
@@ -302,20 +302,20 @@ void MyVioShowBuf( size_t offset, unsigned short nchars )
 
 } /* MyVioShowBuf */
 
-// void            BIOSSetColorRegister( short, char, char, char );
+// void            BIOSSetColorRegister( unsigned short, unsigned char, unsigned char, unsigned char );
 // void            BIOSGetColorPalette( void _FAR * );
 // void            BIOSSetBlinkAttr( void );
 // void            BIOSSetNoBlinkAttr( void );
 // short           BIOSTestKeyboard( void );
 // short           BIOSGetKeyboard( char );
 // short           BIOSKeyboardHit( char );
-// char            BIOSGetRowCount( void );
-// unsigned long   BIOSGetVideoMode( void );
-// long            BIOSGetColorRegister( short );
+// unsigned char   BIOSGetRowCount( void );
+// uint_32         BIOSGetVideoMode( void );
+// uint_32         BIOSGetColorRegister( unsigned short );
 
 unsigned short BIOSGetCursor( unsigned char type )
 {
-    int x, y;
+    short   x, y;
 
     getyx( CursesWindow, x, y );
     return( ( y << 8 ) | ( x & 0xFF ) );

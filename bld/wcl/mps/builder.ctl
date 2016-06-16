@@ -1,15 +1,18 @@
 # wcl Builder Control file
 # ========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wclmps
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -35,5 +38,5 @@ set PROJNAME=wclmps
     <CCCMD> linuxx64/wclmps.exe   <OWRELROOT>/binl64/wclmps
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

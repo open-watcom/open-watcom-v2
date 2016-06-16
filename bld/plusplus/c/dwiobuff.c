@@ -232,7 +232,8 @@ DWIOBUFF *DwioBuffWrite(        // WRITE A RECORD
         ctl->current_offset += len;
         record = (void *)((char *)record + len);
         size -= len;
-        if( size == 0 ) break;
+        if( size == 0 )
+            break;
         if( ctl->next_addr == 0 ) {
             next = findWrBuffer();
             ctl->next_addr = next->disk_addr;
@@ -276,9 +277,8 @@ DWIOBUFF *DwioBuffSeek(         // POSITION TO SPECIFIED OFFSET FROM START
             } else {
                 if( ctl->prev_addr == 0 ) {
                     DbgStmt( CFatal( "dwiobuff: attempt to seek off start of file" ) );
-                } else {
-                    next = findReWrBuffer( ctl->prev_addr );
                 }
+                next = findReWrBuffer( ctl->prev_addr );
             }
         }
         finishWrBuffer( ctl );

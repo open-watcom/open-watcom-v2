@@ -30,22 +30,22 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <string.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "envlkup.h"
 #include "dosutil.h"
 
-#define DOSEnv 0x002C
 
-extern  addr_seg    _psp;
+#define GET_ENV_FROM_PSP()  (*(addr_seg __far *)MK_FP(_psp, 0x2c))
 
 const char __far *DOSEnvFind( const char __far *name )
 {
     const char  __far *env;
     const char  __far *p;
 
-    env = MK_FP( *((unsigned __far *)MK_FP( _psp, DOSEnv )), 0 );
+    env = MK_FP( GET_ENV_FROM_PSP(), 0 );
     do {
         p = name;
         do {

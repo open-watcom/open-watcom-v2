@@ -259,7 +259,6 @@ static const char *RegValueName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-static  WNDMODIFY RegModify;
 static  void    RegModify( a_window *wnd, int row, int piece )
 {
     int                     i;
@@ -295,7 +294,7 @@ static  void    RegModify( a_window *wnd, int row, int piece )
     } else {
         for( i = 0; i < num_possible; ++i ) {
             MADTypeInfo( possible[i].type, &tinfo );
-            if( memcmp( &value, possible[i].data, tinfo.b.bits / BITS_PER_BYTE ) == 0 ) {
+            if( memcmp( &value, possible[i].data, BITS2BYTES( tinfo.b.bits ) ) == 0 ) {
                 break;
             }
         }
@@ -357,7 +356,6 @@ static void     RegMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static WNDGETLINE RegGetLine;
 static  bool    RegGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
@@ -502,7 +500,5 @@ extern a_window *WndMadRegOpen( mad_type_kind kind, wnd_class_wv wndclass, gui_r
     reg = WndMustAlloc( sizeof( reg_window ) );
     reg->kind = kind;
     wnd = DbgWndCreate( LIT_ENG( Empty ), &MadRegInfo, wndclass, reg, icon );
-    if( wnd == NULL )
-        return( NULL );
     return( wnd );
 }

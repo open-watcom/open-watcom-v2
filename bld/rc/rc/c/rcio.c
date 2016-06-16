@@ -355,11 +355,11 @@ static void WriteWINTables( void )
 {
     if( CurrResFile.StringTable != NULL ) {
         SemWINWriteStringTable( CurrResFile.StringTable,
-                    WResIDFromNum( (long)(pointer_int)RT_STRING ) );
+                    WResIDFromNum( RESOURCE2INT( RT_STRING ) ) );
     }
     if( CurrResFile.ErrorTable != NULL ) {
         SemWINWriteStringTable( CurrResFile.ErrorTable,
-                    WResIDFromNum( (long)(pointer_int)RT_ERRTABLE ) );
+                    WResIDFromNum( RESOURCE2INT( RT_ERRTABLE ) ) );
     }
     if( CurrResFile.FontDir != NULL ) {
         SemWINWriteFontDir();

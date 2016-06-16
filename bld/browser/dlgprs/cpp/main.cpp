@@ -41,30 +41,30 @@ Binding * CurrBinding = NULL;
 
 int main( int argc, char * argv[] ) {
 
-try {
-
-    if( argc != 5 ) {
-        printf( "Usage: prsdlg <dlg file> <bnd file> <output header> <output source>\n" );
-        return 0;
+    try {
+    
+        if( argc != 5 ) {
+            printf( "Usage: prsdlg <dlg file> <bnd file> <output header> <output source>\n" );
+            return 0;
+        }
+    
+        DialogParser dlgparse( argv[1] );
+        dlgparse.yyparse();
+    
+        if( CurrDialog != NULL ) {
+            BindingParser bndparse( argv[2] );
+            bndparse.yyparse();
+        }
+    
+        if( CurrDialog != NULL && CurrBinding != NULL ) {
+            CurrBinding->bind( CurrDialog, argv[3], argv[4] );
+        }
+    
+    } catch( FileExcept oops ) {
+        static const char * act[] = { "open", "close", "read", "write", "seek", "tell", "stat" };
+    
+        printf( "Error %sing %s: %d -- %s\n", act[ oops._action ], oops._fileName, oops._error, oops._message );
     }
-
-    DialogParser dlgparse( argv[1] );
-    dlgparse.yyparse();
-
-    if( CurrDialog ) {
-        BindingParser bndparse( argv[2] );
-        bndparse.yyparse();
-    }
-
-    if( CurrDialog && CurrBinding ) {
-        CurrBinding->bind( CurrDialog, argv[3], argv[4] );
-    }
-
-} catch( FileExcept oops ) {
-    static const char * act[] = { "open", "close", "read", "write", "seek", "tell", "stat" };
-
-    printf( "Error %sing %s: %d -- %s\n", act[ oops._action ], oops._fileName, oops._error, oops._message );
-}
     return 0;
 }
 

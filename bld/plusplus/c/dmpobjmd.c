@@ -147,7 +147,7 @@ static DUMP_INFO* dumpOffset(   // DUMP OFFSET LINE
 static DUMP_INFO* dumpParentage( // DUMP PARENTAGE
     DUMP_INFO* di )             // - dump information
 {
-    char**daughter;             // - daughter class
+    char **daughter;            // - daughter class
 
     VstkIterBeg( &di->stack, daughter ) {
         di = bufferInit( di );

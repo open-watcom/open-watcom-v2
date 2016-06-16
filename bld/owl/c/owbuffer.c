@@ -208,7 +208,7 @@ void OWLENTRY OWLBufferRead( owl_buffer *buffer, owl_offset location, char *dst,
     bytes_remaining = len;
     while( bytes_remaining ) {
         index = location / buffer->bin_size;
-        if( index > NUM_BINS ) {
+        if( index >= NUM_BINS ) {
             // reading past the end of the damn buffer
             memset( dst, 0, bytes_remaining );
             break;

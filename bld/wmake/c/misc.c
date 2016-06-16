@@ -34,15 +34,17 @@
 #else
     #include <direct.h>
 #endif
-#include <string.h>
 #include <sys/types.h>
-
 #include "make.h"
 #include "mmemory.h"
 #include "mmisc.h"
 #include "mlex.h"
+#include "mrcmsg.h"
+#include "msg.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
+
 
 static ENV_TRACKER  *envList;
 

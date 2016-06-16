@@ -1,21 +1,26 @@
 # MAPSYM DIP Builder Control file
 # ===============================
 
-set PROJDIR=<CWD>
 set PROJNAME=mapsym
-[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
-set PROJNAME=mapsym<OWBLDVER>
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
+
+[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+#=====================================
+    set PROJNAME=mapsym<OWBLDVER>
 
 [ BLOCK .<WATCOMBOOT>. .1. ]
+#===========================
     [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
 [ BLOCK .<WATCOMBOOT>. .. ]
+#==========================
     [ INCLUDE <OWROOT>/build/defdylib.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -46,8 +51,9 @@ set PROJNAME=mapsym<OWBLDVER>
     <CCCMD> rdos386/<PROJNAME>.dll        <OWRELROOT>/rdos/
     <CCCMD> rdos386/<PROJNAME>.sym        <OWRELROOT>/rdos/
 
+    <CCCMD> linuxx64/<PROJNAME>.so        <OWRELROOT>/binl64/
     <CCCMD> ntx64/<PROJNAME>.dll          <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

@@ -79,10 +79,10 @@ void LocalDate( int *year, int *month, int *day, int *weekday )
     *weekday = lctime->tm_wday;
 }
 
-int LocalInteractive( sys_handle fh )
-/***********************************/
+bool LocalInteractive( sys_handle fh )
+/************************************/
 {
-    return( isatty( fh ) );
+    return( isatty( fh ) != 0 );
 }
 
 void LocalGetBuff( char *buff, unsigned size )

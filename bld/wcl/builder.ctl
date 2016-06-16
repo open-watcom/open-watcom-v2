@@ -1,8 +1,9 @@
 # wcl Builder Control file
 # ========================
 
+set PROJDIR=<CWD>
+
 [ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
@@ -13,7 +14,5 @@ cdsay .
 [ INCLUDE ppc/builder.ctl ]
 [ INCLUDE owcc/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .
 

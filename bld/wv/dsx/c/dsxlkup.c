@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
 #include "bool.h"
@@ -37,13 +38,9 @@
 #include "dbgdefn.h"
 #include "dsxutil.h"
 #include "envlkup.h"
-#ifdef __OSI__
-  #include <stdlib.h>
-#else
-  extern int                    _psp;
-#endif
 
-#define PSP_ENV_VARS_OFF        0x2c
+
+#define GET_ENV_FROM_PSP()  (*(addr_seg *)((char *)DPMIGetSegmentBaseAddress( _psp )+0x2c))
 
 const char *DOSEnvFind( const char *name )
 {
@@ -53,8 +50,7 @@ const char *DOSEnvFind( const char *name )
     const char  *env;
     const char  *p;
 
-    env = (char *)DPMIGetSegmentBaseAddress( *(addr_seg *)
-        ((unsigned_8 *)DPMIGetSegmentBaseAddress( _psp )+PSP_ENV_VARS_OFF));
+    env = (char *)DPMIGetSegmentBaseAddress( GET_ENV_FROM_PSP() );
     do {
         p = name;
         do {

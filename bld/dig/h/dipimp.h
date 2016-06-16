@@ -32,8 +32,6 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#include "diptypes.h"
-
 #include "digpck.h"
 
 struct imp_image_handle;

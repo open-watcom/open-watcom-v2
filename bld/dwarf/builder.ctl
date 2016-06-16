@@ -2,13 +2,13 @@
 # ==========================
 
 set PROJDIR=<CWD>
-set PROJNAME=DWARF
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
 
-[ INCLUDE <OWROOT>/build/deflib.ctl ]
+cdsay .
 
-[ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+[ INCLUDE dr/builder.ctl ]
+[ INCLUDE dw/builder.ctl ]
+[ INCLUDE util/builder.ctl ]
+
+cdsay .

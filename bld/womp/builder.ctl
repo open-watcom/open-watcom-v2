@@ -1,11 +1,11 @@
 # WOMP Builder Control file
 # =========================
 
-set PROJDIR=<CWD>
 set PROJNAME=womp
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 cdsay .
 
@@ -25,3 +25,7 @@ cdsay .
 #==================
 #     rm -f h/wmpmsg.gh
 #    sweep killobjs
+
+[ BLOCK . . ]
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

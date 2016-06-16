@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 
-typedef unsigned_8 walk_find; enum {
+typedef enum {
     WF_CODE = 1,
     WF_DATA = 2
-};
+} walk_find;
 
 #define SKIP_ENTRIES 50
 typedef struct {

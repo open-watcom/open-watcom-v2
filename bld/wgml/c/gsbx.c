@@ -302,96 +302,90 @@ static void box_char_element( doc_element * cur_el ) {
 
         /* insert vertical ascenders into the text lines */
 
-        cur_text = cur_el->element.text.first;
-        if( cur_text != NULL ) {
-            while( cur_text != NULL ) {
-                cur_chars = cur_text->first;
-                if( cur_op == bx_eop ) {            // eop uses prev_line
-                    cur_hline = prev_line;
-                } else {
-                    cur_hline = box_line->first;
-                }
-                while( cur_hline != NULL ) {  // iterate over all horizontal lines
-                    for( i_b = 0; i_b < cur_hline->current; i_b++ ) {
-                        if( (cur_hline->cols[i_b].v_ind == bx_v_both)
-                                || (cur_hline->cols[i_b].v_ind == bx_v_up) ) {  // ascender needed
+        for( cur_text = cur_el->element.text.first; cur_text != NULL; cur_text = cur_text->next ) {
+            cur_chars = cur_text->first;
+            if( cur_op == bx_eop ) {            // eop uses prev_line
+                cur_hline = prev_line;
+            } else {
+                cur_hline = box_line->first;
+            }
+            for( ; cur_hline != NULL; cur_hline = cur_hline->next ) {  // iterate over all horizontal lines
+                for( i_b = 0; i_b < cur_hline->current; i_b++ ) {
+                    if( (cur_hline->cols[i_b].v_ind == bx_v_both)
+                            || (cur_hline->cols[i_b].v_ind == bx_v_up) ) {  // ascender needed
 
-                            cur_pos = cur_hline->cols[i_b].col + g_page_left
-                                                                   - box_col_width;
-                            if( cur_chars != NULL ) {   // insert ascender if cur_chars exists
-                                h_done = false;
-                                if( cur_chars == cur_text->first ) {    // first text_chars
-                                    last_pos = g_page_left;
-                                } else {
-                                    last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
-                                }
-                                if( cur_pos < last_pos ) {  // can't use current column
-                                    continue;
-                                }
+                        cur_pos = cur_hline->cols[i_b].col + g_page_left - box_col_width;
+                        if( cur_chars != NULL ) {   // insert ascender if cur_chars exists
+                            h_done = false;
+                            if( cur_chars == cur_text->first ) {    // first text_chars
+                                last_pos = g_page_left;
+                            } else {
+                                last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
+                            }
+                            if( cur_pos < last_pos ) {  // can't use current column
+                                continue;
+                            }
 
-                                /* The column is known to be possible */
+                            /* The column is known to be possible */
 
-                                while( cur_chars != NULL ) {
-                                    if( cur_chars->x_address <= cur_pos ) { // need to check next text_chars
-                                        if( cur_chars->next == NULL) {
-                                            last_pos = cur_chars->x_address + cur_chars->width;
-                                            cur_chars = cur_chars->next;
-                                            break;
-                                        } else {
-                                            cur_chars = cur_chars->next;
-                                            last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
-                                        }
-                                        if( cur_pos < last_pos ) { // can't use current column
-                                            break;
-                                        }
-                                    } else {
-
-                                        /* box col position is not inside any text_chars */
-
-                                        new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
-                                        new_chars->x_address = cur_pos;
-                                        new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
-                                        if( cur_chars->prev == NULL ) { // first text_chars in cur_text
-                                            cur_text->first = new_chars;
-                                        } else {
-                                            new_chars->prev = cur_chars->prev;
-                                            cur_chars->prev->next = new_chars;
-                                        }
-                                        new_chars->next = cur_chars;
-                                        cur_chars->prev = new_chars;
-                                        h_done = true;
+                            while( cur_chars != NULL ) {
+                                if( cur_chars->x_address <= cur_pos ) { // need to check next text_chars
+                                    if( cur_chars->next == NULL) {
+                                        last_pos = cur_chars->x_address + cur_chars->width;
+                                        cur_chars = cur_chars->next;
                                         break;
+                                    } else {
+                                        cur_chars = cur_chars->next;
+                                        last_pos = cur_chars->prev->x_address + cur_chars->prev->width;
                                     }
                                     if( cur_pos < last_pos ) { // can't use current column
-                                        continue;
+                                        break;
                                     }
+                                } else {
+
+                                    /* box col position is not inside any text_chars */
+
+                                    new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
+                                    new_chars->x_address = cur_pos;
+                                    new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
+                                    if( cur_chars->prev == NULL ) { // first text_chars in cur_text
+                                        cur_text->first = new_chars;
+                                    } else {
+                                        new_chars->prev = cur_chars->prev;
+                                        cur_chars->prev->next = new_chars;
+                                    }
+                                    new_chars->next = cur_chars;
+                                    cur_chars->prev = new_chars;
+                                    h_done = true;
+                                    break;
                                 }
-                                if( h_done ) {      // process next box column
+                                if( cur_pos < last_pos ) { // can't use current column
                                     continue;
                                 }
                             }
-                            if( (cur_chars == NULL) && (cur_pos >= last_pos) ) {   // append ascender if out of text_chars
-                                if( cur_text->first == NULL ) { // empty line
-                                    new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
-                                    new_chars->prev = new_chars;
-                                    new_chars->x_address = cur_pos;
-                                    new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
-                                    cur_text->first = new_chars;
-                                    cur_text->last = new_chars;
-                                } else {
-                                    new_chars = cur_text->last;
-                                    new_chars->next = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
-                                    new_chars->next->prev = new_chars;
-                                    new_chars->next->x_address = cur_pos;
-                                    new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
-                                    cur_text->last = new_chars->next;
-                                }
+                            if( h_done ) {      // process next box column
+                                continue;
+                            }
+                        }
+                        if( (cur_chars == NULL) && (cur_pos >= last_pos) ) {   // append ascender if out of text_chars
+                            if( cur_text->first == NULL ) { // empty line
+                                new_chars = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
+                                new_chars->prev = new_chars;
+                                new_chars->x_address = cur_pos;
+                                new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
+                                cur_text->first = new_chars;
+                                cur_text->last = new_chars;
+                            } else {
+                                new_chars = cur_text->last;
+                                new_chars->next = alloc_text_chars( &bin_device->box.chars.vertical_line, 1, g_curr_font );
+                                new_chars->next->prev = new_chars;
+                                new_chars->next->x_address = cur_pos;
+                                new_chars->width = cop_text_width( new_chars->text, new_chars->count, g_curr_font );
+                                cur_text->last = new_chars->next;
                             }
                         }
                     }
-                    cur_hline = cur_hline->next;
                 }
-                cur_text = cur_text->next;
             }
         }
         /* insert the element into the page */

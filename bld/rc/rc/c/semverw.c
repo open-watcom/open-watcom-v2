@@ -448,7 +448,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
         SemWINSetResourceLanguage( &lang, false );
-        SemAddResourceFree( name, WResIDFromNum( RT_VERSIONINFO ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
         RCFREE( name );
     }

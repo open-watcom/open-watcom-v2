@@ -31,7 +31,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <string.h>
 #include "sopen.h"
 #include "make.h"
 #include "macros.h"
@@ -41,7 +40,9 @@
 #include "msuffix.h"
 #include "mmemory.h"
 #include "mpreproc.h"
+
 #include "clibext.h"
+
 
 /*
  * This file implements something I'll call a "stream".  A stream consists
@@ -358,7 +359,7 @@ STRM_T GetCHR( void )
                     popSENT();
                     flagEOF = 1;
                 } else {
-                    PrtMsg( FTL | LOC | BARF_CHARACTER, result );
+                    PrtMsgExit(( FTL | LOC | BARF_CHARACTER, result ));
                 }
             }
             if( result == '\f' ) {

@@ -135,7 +135,7 @@ static int CompareEvents( const void *p1, const void *p2 )
 }
 
 /*
- * BIOSGetCursor - set current cursor postion
+ * BIOSSetCursor - set current cursor postion
  */
 void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {

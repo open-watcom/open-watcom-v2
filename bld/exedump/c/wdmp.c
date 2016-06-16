@@ -391,7 +391,7 @@ int main( int argc, char * const *argv )
     int     found_file;
 
     WSize = 0;
-    Write_buff[WSize] = 0;
+    Write_buff[WSize] = '\0';
     if( parse_options( argc, argv ) ) {
         return( 1 );
     }

@@ -169,11 +169,11 @@ extern void AsNumLabelEmit( uint_32 label_num, owl_section_handle section, owl_o
             _DBGMSG1( "emitting all the unemitted l^relocs\n" );
             while( ( reloc = new_fw_sym->lo_relocs ) != NULL ) {
                 numlabel_ref = AsNumLabelGetNum( SymName( new_fw_sym ) );
-                #ifdef _STANDALONE_
+#ifdef _STANDALONE_
                 ObjDirectEmitReloc( reloc->location.section,
-                #else
+#else
                 ObjDirectEmitReloc(
-                #endif
+#endif
                   reloc->location.offset, &numlabel_ref, OWL_RELOC_HALF_LO, false );
                 SymDestroyReloc( new_fw_sym, reloc );
                 reloc = new_fw_sym->lo_relocs;
@@ -235,36 +235,36 @@ extern void AsNumLabelFini( void ) {
         while( label ) {
             reloc = label->relocs;
             while( reloc ) {
-                #ifdef _STANDALONE_
+#ifdef _STANDALONE_
                 OWLSetLocation( reloc->section, reloc->offset );
                 OWLEmitMetaReloc( reloc->section, reloc->offset, label->section, reloc->type );
                 // Need to put label->offset into reloc's location!
-                #ifdef AS_ALPHA
+    #ifdef AS_ALPHA
                 // If reloc is relative, we shift addend left 2 bits.
                 if( IS_RELOC_RELATIVE( reloc->type ) ) {
                     OWLEmitRelocAddend( reloc->section, reloc->type,
                                         label->offset >> 2 );
                 } else {
-                #endif
+    #endif
                     OWLEmitRelocAddend( reloc->section, reloc->type, label->offset );
-                #ifdef AS_ALPHA
+    #ifdef AS_ALPHA
                 }
-                #endif
-                #else
+    #endif
+#else
                 ObjSetLocation( reloc->offset );
                 // Emit a reloc to beginning of code stream
                 if( ObjEmitMetaReloc( reloc->type, true ) ) {
                     // Patch up addend
-                    #ifdef AS_ALPHA
+    #ifdef AS_ALPHA
                     // Reloc must be relative. So shift addend left 2 bits.
                     ObjEmitRelocAddend( reloc->type, label->offset >> 2 );
-                    #else
+    #else
                     ObjEmitRelocAddend( reloc->type, label->offset );
-                    #endif
+    #endif
                 } else {
                     Error( ABS_REF_NOT_ALLOWED, "<numeric label>" );
                 }
-                #endif
+#endif
                 label->relocs = reloc->next;
                 MemFree( reloc );
                 reloc = label->relocs;

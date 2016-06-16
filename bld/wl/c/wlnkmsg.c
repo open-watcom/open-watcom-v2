@@ -109,7 +109,7 @@ bool InitMsg( void )
 
 bool Msg_Get( int resourceid, char *buffer )
 {
-    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -168,23 +168,23 @@ void Msg_Put_Args(
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
 {
     switch( typech ) {
-        case 's':
-            arginfo->string = va_arg( *args, char * );
-            break;
-        case 'x':
-        case 'd':
-            arginfo->int_16 = va_arg( *args, unsigned int );
-            break;
-        case 'l':
-            arginfo->int_32 = va_arg( *args, unsigned long );
-            break;
-        case 'A':
-        case 'a':
-            arginfo->address = va_arg( *args, targ_addr * );
-            break;
-        case 'S':
-            arginfo->symb = va_arg( *args, symbol * );
-            break;
+    case 's':
+        arginfo->string = va_arg( *args, char * );
+        break;
+    case 'x':
+    case 'd':
+        arginfo->int_16 = va_arg( *args, unsigned int );
+        break;
+    case 'l':
+        arginfo->int_32 = va_arg( *args, unsigned long );
+        break;
+    case 'A':
+    case 'a':
+        arginfo->address = va_arg( *args, targ_addr * );
+        break;
+    case 'S':
+        arginfo->symb = va_arg( *args, symbol * );
+        break;
     }
 }
 

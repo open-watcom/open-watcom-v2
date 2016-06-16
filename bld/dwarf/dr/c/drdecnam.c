@@ -1433,9 +1433,8 @@ static void FORDecVariable( BrokenName_T *decname, Loc_T *loc )
             type_loc.inParam = inParam;
 
             FORDecType( decname, &type_loc );
+            FORAddConstVal( decname, loc, &type_loc );
         }
-
-        FORAddConstVal( decname, loc, &type_loc );
     }
 }
 

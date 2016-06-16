@@ -168,12 +168,11 @@ mad_status  DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *b
         return( MS_OK );
     a.mach.offset = mr->axp.u16.a0.u64.u._32[0];
     len = 0;
-    for( ;; ) {
-        if( MCReadMem( a, sizeof( ch ), &ch ) == 0 )
-            break;
+    while( MCReadMem( a, sizeof( ch ), &ch ) != 0 ) {
         if( len + 1 < buff_size )
             buff[len] = ch;
-        if( ch == '\0' ) break;
+        if( ch == '\0' )
+            break;
         a.mach.offset++;
         ++len;
     }

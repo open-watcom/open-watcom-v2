@@ -1,14 +1,12 @@
 # ppc cg Builder Control file
 # ===========================
 
-set PROJDIR=<CWD>
-set PROJNAME=PowerPC cg
+set PROJNAME=cgppc
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/deflib.ctl ]
 
-[ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

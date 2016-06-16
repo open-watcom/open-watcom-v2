@@ -363,7 +363,7 @@ mad_type_handle FindMADTypeHandle( mad_type_kind tk, unsigned size )
 {
     struct find_handle  data;
 
-    data.bits = size * BITS_PER_BYTE;
+    data.bits = BYTES2BITS( size );
     data.th = MAD_NIL_TYPE_HANDLE;
     MADTypeWalk( tk, CheckOneHandle, &data );
     return( data.th );

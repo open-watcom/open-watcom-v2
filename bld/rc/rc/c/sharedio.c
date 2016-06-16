@@ -235,42 +235,42 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         type = WResIDToStr( typeid );
     } else {
         switch( typeid->ID.Num ) {
-        case RT_CURSOR:
-        case RT_GROUP_CURSOR:
+        case RESOURCE2INT( RT_CURSOR ):
+        case RESOURCE2INT( RT_GROUP_CURSOR ):
             type = "cursor";
             break;
-        case RT_BITMAP:
+        case RESOURCE2INT( RT_BITMAP ):
             type = "bitmap";
             break;
-        case RT_ICON:
-        case RT_GROUP_ICON:
+        case RESOURCE2INT( RT_ICON ):
+        case RESOURCE2INT( RT_GROUP_ICON ):
             type = "icon";
             break;
-        case RT_MENU:
+        case RESOURCE2INT( RT_MENU ):
             type = "menu";
             break;
-        case RT_DIALOG:
+        case RESOURCE2INT( RT_DIALOG ):
             type = "dialog";
             break;
-        case RT_FONTDIR:
+        case RESOURCE2INT( RT_FONTDIR ):
             type = "font directory";
             break;
-        case RT_FONT:
+        case RESOURCE2INT( RT_FONT ):
             type = "font";
             break;
-        case RT_ACCELERATOR:
+        case RESOURCE2INT( RT_ACCELERATOR ):
             type = "accelerator";
             break;
-        case RT_RCDATA:
+        case RESOURCE2INT( RT_RCDATA ):
             type = "rcdata";
             break;
-        case RT_VERSIONINFO:
+        case RESOURCE2INT( RT_VERSIONINFO ):
             type = "version info";
             break;
-        case RT_MESSAGETABLE:
+        case RESOURCE2INT( RT_MESSAGETABLE ):
             type = "message table";
             break;
-        case RT_TOOLBAR:
+        case RESOURCE2INT( RT_TOOLBAR ):
             type = "toolbar";
             break;
         default:
@@ -286,7 +286,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         name = namebuf;
         itoa( nameid->ID.Num, name, 10 );
     }
-    if( !typeid->IsName && typeid->ID.Num == (uint_16)(pointer_int)RT_STRING ) {
+    if( !typeid->IsName && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;
         if( file1 != NULL && file2 != NULL ) {
             if( warn ) {

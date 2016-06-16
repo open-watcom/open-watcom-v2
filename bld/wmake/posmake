@@ -16,8 +16,6 @@ macros.o: ../c/macros.c
 	$(CC) $(CFLAGS) -c $?
 main.o: ../c/main.c
 	$(CC) $(CFLAGS) -c $?
-massert.o: ../c/massert.c
-	$(CC) $(CFLAGS) -c $?
 mautodep.o: ../c/mautodep.c
 	$(CC) $(CFLAGS) -c $?
 mautoomf.o: ../c/mautoomf.c
@@ -71,7 +69,7 @@ wsplice.o: ../../builder/c/wsplice.c
 clibext.o: ../../watcom/c/clibext.c
 	$(CC) $(CFLAGS) -c $?
 
-OBJS = macros.o main.o massert.o mautodep.o mautoomf.o mautoorl.o mautores.o \
+OBJS = macros.o main.o mautodep.o mautoomf.o mautoorl.o mautores.o \
  mcache.o memory.o mexec.o mglob.o mhash.o misc.o mlex.o mlexmac.o mlexprs.o \
  mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
  mtarget.o mupdate.o mvecstr.o autodept.o clibext.o

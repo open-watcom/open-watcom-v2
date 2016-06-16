@@ -101,8 +101,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     clicks_t            addr_tick_index;
 
     quiet=quiet;
-    ch = alloca( DIPHandleSize( HK_CUE ) );
-    ch2 = alloca( DIPHandleSize( HK_CUE ) );
+    ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
+    ch2 = alloca( DIPHandleSize( HK_CUE, 0 ) );
     curr_file = curr_sio->curr_file;
     curr_mod = curr_sio->curr_mod;
     if( curr_file->fid == 0 || LineCue( curr_mod->mh, curr_sio->curr_file->fid,

@@ -1,8 +1,9 @@
 # RISC assemblers Builder Control file
 # ====================================
 
+set PROJDIR=<CWD>
+
 [ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
@@ -10,6 +11,4 @@ cdsay .
 [ INCLUDE mps/builder.ctl ]
 [ INCLUDE ppc/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

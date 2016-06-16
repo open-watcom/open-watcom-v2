@@ -441,6 +441,7 @@ wnd_macro *MacAddDel( unsigned key, wnd_class_wv wndclass, cmd_list *cmds )
             if( curr == NULL ) {
                 FreeCmdList( cmds );
                 Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
+                return( curr );
             }
             curr->key = key;
             curr->wndclass = wndclass;

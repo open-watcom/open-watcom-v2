@@ -1,11 +1,11 @@
 # WGML Builder Control file
 # =========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wgml
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -18,5 +18,5 @@ set PROJNAME=wgml
     pmake -d wgml <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

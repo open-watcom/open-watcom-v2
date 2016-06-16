@@ -114,8 +114,8 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         ActPoint( bp, false );
         break;
     case MENU_BREAK_CREATE_NEW:
-        if( !DlgBreak( NilAddr ) ) break;
-        WndScrollBottom( wnd );
+        if( DlgBreak( NilAddr ) )
+            WndScrollBottom( wnd );
         break;
     case MENU_BREAK_CLEAR:
         RemoveBreak( bp->loc.addr );
@@ -141,7 +141,8 @@ static void     BrkModify( a_window *wnd, int row, int piece )
         return;
     }
     bp = BrkGetBP( row );
-    if( bp == NULL ) return;
+    if( bp == NULL )
+        return;
     if( piece == PIECE_ACTIVE ) {
         WndRowDirty( wnd, row );
         WndBreak( wnd )->toggled_break = true;
@@ -228,7 +229,7 @@ static  bool    BrkGetLine( a_window *wnd, int row, int piece,
 
 static void     BrkInit( a_window *wnd )
 {
-    gui_ord             length,max;
+    gui_ord             length, max;
     break_window        *wndbreak;
     brkp                *bp;
     int                 count;
@@ -249,7 +250,7 @@ static void     BrkInit( a_window *wnd )
 #endif
     wndbreak->addr_indent = length;
 
-    length += max + 2*WndMaxCharX( wnd );
+    length += max + 2 * WndMaxCharX( wnd );
     wndbreak->source_indent = length;
 
     if( wndbreak->toggled_break ) {
@@ -340,6 +341,7 @@ extern a_window *WndBrkOpen( void )
 
     brkw = WndMustAlloc( sizeof( *brkw ) );
     wnd = DbgWndCreate( LIT_DUI( WindowBrk ), &BrkInfo, WND_BREAK, brkw, &BrkIcon );
-    if( wnd != NULL ) WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
+    if( wnd != NULL )
+        WndClrSwitches( wnd, WSW_ONLY_MODIFY_TABSTOP );
     return( wnd );
 }

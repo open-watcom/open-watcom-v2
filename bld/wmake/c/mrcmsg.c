@@ -30,22 +30,21 @@
 
 
 #include <stdio.h>
-#include <string.h>
 #include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
-
 #include "make.h"
 #include "mcache.h"
 #include "mrcmsg.h"
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+
 #include "clibext.h"
 
-#ifdef BOOTSTRAP
 
+#ifdef BOOTSTRAP
 
     static struct idstr { int id; char *s; } StringTable[] = {
         #define pick( id, en, jp )  {id, en},
@@ -129,7 +128,7 @@ BOOLEAN MsgInit( void )
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = TRUE;
     return( FALSE );
-#else    
+#else
     return( TRUE );
 #endif
 }
@@ -150,7 +149,7 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
     }
     strcpy( buffer, s->s );
 #else
-    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( FALSE );
     }
@@ -159,7 +158,7 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
 }
 
 void MsgGetTail( int resourceid, char *buffer )
-/****************************************************/
+/*********************************************/
 {
     char        msg[MAX_RESOURCE_SIZE];
     char const  *p;

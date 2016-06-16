@@ -307,6 +307,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         }
         WndFontHook( wnd );
         WndResetScroll( wnd );
+        /* fall through */
     case GUI_RESIZE:
         _Clr( wnd, WSW_ICONIFIED );
         cursor = WndHourGlass( NULL );
@@ -480,6 +481,7 @@ static void DoMainEventProc( spawn_parms *spawnp )
         break;
     case GUI_DESTROY:
         WndDestroy( wnd );
+        wnd = NULL;
         break;
     case GUI_ICONIFIED:
         _Set( wnd, WSW_ICONIFIED );
@@ -522,7 +524,8 @@ static void DoMainEventProc( spawn_parms *spawnp )
         ret = false;
         break;
     }
-    if( !WndDoingRefresh && wndProcNesting == 1 ) WndDoInput();
+    if( !WndDoingRefresh && wndProcNesting == 1 )
+        WndDoInput();
     if( WndValid( wnd ) ) { // could have been freed
         WndEndSelectEvent( wnd );
         WndSayMatchMode( wnd );

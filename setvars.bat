@@ -12,10 +12,22 @@ REM Set this entry to identify your toolchain used by build process
 REM supported values are WATCOM VISUALC INTEL
 set OWTOOLS=WATCOM
 
-REM Documentation related variables
+REM Build control related variables
+REM ###############################
 
 REM Set this variable to 0 to suppress documentation build
 set OWDOCBUILD=1
+
+REM Set this variable to 1 to suppress tools GUI version build
+REM If it is used then only tools character mode version is build
+REM set OWGUINOBUILD=1
+
+REM Set this variable to list of OW projects to suppress their build
+REM Example set OWNOBUILD=ide browser dlgprs
+REM set OWNOBUILD=
+
+REM Documentation related variables
+REM ###############################
 
 REM Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 REM set OWGHOSTSCRIPTPATH=%PATH%
@@ -35,6 +47,8 @@ REM path must not include any spaces
 REM set OWDOSBOX=dosbox
 
 :common_setup
+
+REM ###############################
 
 REM Invoke the batch file for the common environment
 call %OWROOT%\cmnvars.bat

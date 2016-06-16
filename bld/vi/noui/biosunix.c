@@ -33,8 +33,8 @@
 #include "win.h"
 
 uint_32 BIOSGetColorRegister( unsigned short a ) { return( 0 ); }
-void BIOSSetNoBlinkAttr() {}
-void BIOSSetBlinkAttr() {}
+void BIOSSetNoBlinkAttr( void ) {}
+void BIOSSetBlinkAttr( void ) {}
 void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b ) {}
 void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col ) {}
 unsigned short BIOSGetCursor( unsigned char page ) { return 0; }

@@ -139,6 +139,8 @@ vi_rc SrcRead( sfile *curr, files *fi, const char *data, vlist *vl )
     }
     if( curr->hasvar ) {
         Expand( id, tmp, vl );
+    } else {
+        strcpy( id, tmp );
     }
     data = GetNextWord1( data, tmp );
     if( *tmp == '\0' ) {

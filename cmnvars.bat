@@ -33,6 +33,15 @@ set PATH=%OWBINDIR%;%OWROOT%\build;%OWDEFPATH%
 set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 
+REM Set Watcom tool chain version to WATCOMVER variable
+set WATCOMVER=
+if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
+echo set WATCOMVER=__WATCOMC__>watcom.gc
+wcc386 -p watcom.gc >watcom.bat
+call watcom.bat
+del watcom.*
+:no_watcom
+
 REM OS specifics
 
 REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems

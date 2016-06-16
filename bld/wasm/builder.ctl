@@ -1,15 +1,18 @@
 # wasm Builder Control file
 # =========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wasm
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -44,6 +47,5 @@ set PROJNAME=wasm
     <CCCMD> ntx64/wasm.exe      <OWRELROOT>/binnt64/
 
 [ BLOCK . . ]
-#============
 
-cdsay <PROJDIR>
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

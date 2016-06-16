@@ -36,8 +36,4 @@ objs += idedrv.obj
 objs += idemsgfm.obj
 !endif
 
-!ifeq release 0
-objs += massert.obj
-!endif
-
 objs += $(trmem_objs)

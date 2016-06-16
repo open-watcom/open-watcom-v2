@@ -1,15 +1,16 @@
 # IDE demo Builder Control file
 # ==============================
 
-set PROJDIR=<CWD>
 set PROJNAME=idedemo
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <1> rel cprel ]
@@ -49,5 +50,5 @@ set PROJNAME=idedemo
     <CCCMD> src/win32/furnitu.obj   <OWRELROOT>/samples/ide/fortran/win32/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

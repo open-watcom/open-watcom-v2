@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern const mad_reg_info *LookupRegName( const mad_reg_info *parent, lookup_item *li );
-extern wv_sym_entry *LookupInternalName( lookup_item *li );
-extern wv_sym_entry *LookupUserName( lookup_item *li );
-extern void PurgeUserNames( void );
-extern bool CreateSym( lookup_item *li, dip_type_info *ti );
-extern void InternalValue( unsigned index, void *d );
+extern const mad_reg_info   *LookupRegName( const mad_reg_info *parent, lookup_item *li );
+extern const wv_sym_entry   *LookupInternalName( lookup_item *li );
+extern const wv_sym_entry   *LookupUserName( lookup_item *li );
+extern void                 PurgeUserNames( void );
+extern bool                 CreateSym( lookup_item *li, dip_type_info *ti );
+extern void                 InternalValue( internal_idx index, void *d );

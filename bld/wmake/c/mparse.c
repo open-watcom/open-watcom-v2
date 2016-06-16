@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "mstream.h"
 #include "mlex.h"
@@ -44,6 +42,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mparse.h"
+
 #include "clibext.h"
 
 
@@ -69,7 +68,7 @@ STATIC void ignoring( TOKEN_T t, BOOLEAN freelex )
     case TOK_PATH:      y = M_PATH;         break;
     default:
 #ifdef DEVELOPMENT
-        PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "ignoring" );
+        PrtMsgExit(( FTL | LOC | INVALID_TOKEN_IN, t, "ignoring" ));
 #else
         y = M_UNKNOWN_TOKEN;
 #endif
@@ -774,6 +773,7 @@ STATIC void getBody( FLIST *head )
             s = PreGetCH();
             if( s == STRM_END ) {
                 UnGetCH( s );
+                FreeVec( buf );
                 PrtMsg( ERR | LOC | UNEXPECTED_EOF );
                 return;
             }
@@ -1004,7 +1004,7 @@ TLIST *Parse( void )
             break;
         default:
 #ifdef DEVELOPMENT
-            PrtMsg( FTL | INVALID_TOKEN_IN, "Parse" );
+            PrtMsgExit(( FTL | INVALID_TOKEN_IN, "Parse" ));
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

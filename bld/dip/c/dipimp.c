@@ -35,6 +35,7 @@
 #include <windows.h>
 #include <i86.h>
 #endif
+#include "diptypes.h"
 #include "dipimp.h"
 
 #ifndef DIP_PRIORITY

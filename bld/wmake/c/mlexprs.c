@@ -39,12 +39,12 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mvecstr.h"
+
 #include "clibext.h"
 
 
 char    *targ_path;
 char    *dep_path;
-
 
 STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
 /**********************************************************
@@ -82,7 +82,7 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     }
 
     if( pos >= _MAX_PATH ) {
-        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
     }
     file[pos] = NULLCHAR;
 
@@ -181,12 +181,12 @@ TOKEN_T LexPath( STRM_T s )
 
         if( string_open ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsg( FTL | LOC | ERROR_STRING_OPEN );
+            PrtMsgExit(( FTL | LOC | ERROR_STRING_OPEN ));
         }
 
         if( pos == _MAX_PATH ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
         }
 
         path[pos] = NULLCHAR;
@@ -238,7 +238,7 @@ STATIC TOKEN_T lexFileName( STRM_T s )
         s = PreGetCH();
     }
     if( pos == _MAX_PATH ) {
-        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
     }
     file[pos] = NULLCHAR;
     UnGetCH( s );
@@ -394,8 +394,7 @@ STATIC TOKEN_T lexDotName( void )
             s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 );
-            return( TOK_NULL );
+            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ));
         }
         ext[pos] = NULLCHAR;
     }
@@ -412,7 +411,7 @@ STATIC TOKEN_T lexDotName( void )
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); //NOTREACHED
+            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 )); //NOTREACHED
         }
         ext[pos] = NULLCHAR;
 
@@ -470,8 +469,7 @@ STATIC BOOLEAN checkMacro( STRM_T s )
         s = PreGetCH();
     }
     if( pos == MAX_MAC_NAME ) {
-        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 );
-        return( 0 );
+        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 ));
     }
     mac[pos] = NULLCHAR;
     ws = isws( s );
@@ -538,7 +536,7 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
         }
 
         if( pos >= _MAX_PATH ) {
-            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
         }
 
         buffer[pos] = NULLCHAR;

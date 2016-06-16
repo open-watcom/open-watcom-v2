@@ -9,7 +9,7 @@ vpath %.c c ../watcom/c ../builder/c
 
 all: $(OWOBJDIR) $(OWBINDIR)/wmake
 
-CFILES=macros.c main.c massert.c mautodep.c mautoomf.c mautoorl.c mautores.c \
+CFILES=macros.c main.c mautodep.c mautoomf.c mautoorl.c mautores.c \
  mcache.c memory.c mexec.c mglob.c mhash.c misc.c mlex.c mlexmac.c mlexprs.c \
  mparse.c mpreproc.c mrcmsg.c msg.c mstream.c msuffix.c msysdep.c \
  mtarget.c mupdate.c mvecstr.c autodept.c clibext.c

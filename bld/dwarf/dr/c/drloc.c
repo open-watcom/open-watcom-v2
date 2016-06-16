@@ -96,7 +96,7 @@ static void DoLocExpr( unsigned_8       *p,
     uint_32         stk2;
     uint_32         utmp;
     int_32          stmp;
-    uint_32         stack[100];
+    uint_32         stack[101];
     uint_32         *top;
     uint_32         *stk_top;
     dr_loc_kind     kind;
@@ -108,6 +108,7 @@ static void DoLocExpr( unsigned_8       *p,
     var = var;
     end = &p[length];
     stk_top = &stack[100];
+    stack[100] = 0;
     top = stk_top;
     if( callbck->init!= NULL  ) {
         kind = callbck->init( d, &utmp );

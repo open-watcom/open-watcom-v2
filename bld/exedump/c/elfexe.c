@@ -324,7 +324,7 @@ static void dmp_prog_flgs( unsigned_32 flags )
 {
     char    name[128];
 
-    name[0] = 0;
+    name[0] = '\0';
     if( flags & PF_X ) {
         strcat( name, " EXECUTABLE |" );
     }
@@ -335,7 +335,7 @@ static void dmp_prog_flgs( unsigned_32 flags )
         strcat( name, " READABLE |" );
     }
     if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = 0;
+        name[strlen(name)-1] = '\0';
     }
     Wdputs( "flags = " );
     Wdputs( name );
@@ -350,7 +350,7 @@ static void dmp_sec_flgs( unsigned_32 flags )
 {
     char    name[128];
 
-    name[0] = 0;
+    name[0] = '\0';
     if( flags & SHF_WRITE ) {
         strcat( name, " WRITABLE |" );
     }
@@ -361,7 +361,7 @@ static void dmp_sec_flgs( unsigned_32 flags )
         strcat( name, " EXEC_INSTR |" );
     }
     if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = 0;
+        name[strlen(name)-1] = '\0';
     }
     Wdputs( "flags = " );
     Wdputs( name );
@@ -543,7 +543,7 @@ static void dmp_prog_sec( unsigned_32 start )
         Wlseek( elf_sec.sh_offset + start );
         Wread( string_table, elf_sec.sh_size );
     } else {
-        string_table = 0;
+        string_table = NULL;
     }
     if( Elf_head.e_phnum ) {
         Banner( "ELF Program Header" );
@@ -586,7 +586,7 @@ static void dmp_prog_sec( unsigned_32 start )
 //          elf_sec.sh_offset += start;  // relocate file pos
             Wdputs( "             Section Header #" );
             Putdec( i );
-            if( string_table ) {
+            if( string_table != NULL ) {
                 Wdputs( " \"" );
                 Wdputs( &(string_table[elf_sec.sh_name]) );
                 Wdputs( "\"" );
@@ -612,7 +612,7 @@ static void dmp_prog_sec( unsigned_32 start )
                             Elf_head.e_shentsize * elf_sec.sh_info );
                     Wread( &rel_sec, sizeof( Elf32_Shdr ) );
                     swap_shdr( &rel_sec );
-                    if( string_table ) {
+                    if( string_table != NULL ) {
                         Wdputs( " \"" );
                         Wdputs( &string_table[rel_sec.sh_name] );
                         Wdputs( "\"" );
@@ -652,7 +652,7 @@ static void dmp_prog_sec( unsigned_32 start )
             }
             if( Options_dmp & DEBUG_INFO ) {
                 Wdputslc( "\n" );
-                if( string_table ) {
+                if( string_table != NULL ) {
                     dmp_sec_data( &(string_table[elf_sec.sh_name]),
                                   elf_sec.sh_type,
                                   elf_sec.sh_offset+start,
@@ -673,7 +673,7 @@ static void dmp_prog_sec( unsigned_32 start )
             offset +=  Elf_head.e_shentsize;
         }
     }
-    if( string_table ) {
+    if( string_table != NULL ) {
         free( string_table );
     }
 }

@@ -35,7 +35,7 @@
 #include "mpstypes.h"
 #include "madregs.h"
 
-#define BIT_OFF( who ) (offsetof( mad_registers, mips.who ) * BITS_PER_BYTE)
+#define BIT_OFF( who ) BYTES2BITS( offsetof( mad_registers, mips.who ) )
 #define IS_FP_BIT(x)   (x >= BIT_OFF(f0) && x < BIT_OFF(f31) + 64)
 
 #define MIPS_SWAP_REG_64(x)                         \
@@ -525,15 +525,15 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
             return( MS_MODIFIED );
         }
     } else {
-        p_old = (unsigned_8 *)old + (ri->bit_start / BITS_PER_BYTE);
-        p_cur = (unsigned_8 *)cur + (ri->bit_start / BITS_PER_BYTE);
+        p_old = (unsigned_8 *)old + BYTEIDX( ri->bit_start );
+        p_cur = (unsigned_8 *)cur + BYTEIDX( ri->bit_start );
         size = ri->bit_size;
-        if( size >= BITS_PER_BYTE ) {
+        if( size >= BYTES2BITS( 1 ) ) {
             /* it's going to be byte aligned */
-            return( memcmp( p_old, p_cur, size / BITS_PER_BYTE ) != 0 ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
+            return( memcmp( p_old, p_cur, BITS2BYTES( size ) ) != 0 ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
         } else {
             mask = (1 << size) - 1;
-            #define GET_VAL( w ) (((*p_##w >> (ri->bit_start % BITS_PER_BYTE))) & mask)
+            #define GET_VAL( w )    ((*p_##w >> BITIDX( ri->bit_start )) & mask)
             return( GET_VAL( old ) != GET_VAL( cur ) ? MS_MODIFIED_SIGNIFICANTLY : MS_OK );
         }
     }
@@ -554,7 +554,7 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers cons
     if( IS_FP_BIT( bit_start ) ) {
         return( MS_FAIL );
     }
-    p = (unsigned_64 *)((unsigned_8 *)mr + (bit_start / BITS_PER_BYTE));
+    p = (unsigned_64 *)((unsigned_8 *)mr + BYTEIDX( bit_start ));
     a->mach.offset = p->u._32[I64LO32];
     return( MS_OK );
 }
@@ -596,7 +596,7 @@ walk_result DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_info 
     if( ri != NULL ) {
         switch( ((mips_reg_info *)ri)->sublist_code ) {
         case RS_DWORD:
-            curr = RegSubList[ri->bit_start / (sizeof( unsigned_64 ) * BITS_PER_BYTE)];
+            curr = RegSubList[TYPEIDX( ri->bit_start, unsigned_64 )];
             break;
         default:
             curr = SubList[((mips_reg_info *)ri)->sublist_code];
@@ -755,7 +755,7 @@ static mad_status AddSubList( unsigned idx, const sublist_data *sub, unsigned nu
     unsigned    i;
     unsigned    j;
 
-    i = RegList[idx].info.bit_start / (sizeof( unsigned_64 ) * BITS_PER_BYTE);
+    i = TYPEIDX( RegList[idx].info.bit_start, unsigned_64 );
     if( RegSubList[i] != NULL )
         return( MS_OK );
     RegSubList[i] = MCAlloc( sizeof( mips_reg_info ) * (num + 1) );
@@ -785,7 +785,7 @@ mad_status RegInit( void )
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_DWORD:
-            curr = RegList[i].info.bit_start / (sizeof(unsigned_64)*BITS_PER_BYTE);
+            curr = TYPEIDX( RegList[i].info.bit_start, unsigned_64 );
             if( curr > max )
                 max = curr;
             RegListHalf[half_idx] = RegList[i];
@@ -825,7 +825,7 @@ void RegFini( void )
     for( i = 0; i < NUM_ELTS( RegList ); ++i ) {
         switch( RegList[i].sublist_code ) {
         case RS_DWORD:
-            curr = RegList[i].info.bit_start / (sizeof( unsigned_64 ) * BITS_PER_BYTE);
+            curr = TYPEIDX( RegList[i].info.bit_start, unsigned_64 );
             if( curr > max )
                 max = curr;
             break;

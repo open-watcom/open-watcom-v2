@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "macros.h"
 #include "mmemory.h"

@@ -379,8 +379,8 @@ void GUIDoFreeField( VFIELD *field, a_radio_group **group )
     case FLD_RADIO :
         radio = field->u.radio;
         if( ( group != NULL ) && ( *group != radio->group ) ) {
-            FreeRadioGroup( radio->group );
             *group = radio->group;
+            FreeRadioGroup( radio->group );
         }
         GUIFreeRadio( radio );
         break;
@@ -904,11 +904,8 @@ void GUIFreeDialog( a_dialog *ui_dlg_info, VFIELD *fields, char *title,
                     bool colours_set, bool is_dialog )
 {
     if( ui_dlg_info != NULL ) {
-        if( is_dialog ) {
-            uienddialog( ui_dlg_info );
-        } else {
-            uifreedialog( ui_dlg_info );
-        }
+        GUIDeleteDialog( ui_dlg_info );
+        uienddialog( ui_dlg_info );
     }
     if( colours_set ) {
         GUIResetDialColours();

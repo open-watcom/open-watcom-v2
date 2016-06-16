@@ -48,12 +48,10 @@
     #include <sys/wait.h>
 #endif
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 #ifdef DLLS_IMPLEMENTED
-    #include <idedrv.h>
+    #include "idedrv.h"
 #endif
-
 #include "make.h"
 #include "mtarget.h"
 #include "macros.h"
@@ -68,7 +66,9 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+
 #include "clibext.h"
+
 
 #ifdef __UNIX__
   #define MASK_ALL_ITEMS  "*"
@@ -188,13 +188,11 @@ STATIC char *createTmpFileName( void )
             if( strlen( tmpPath ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
-                PrtMsg( FTL | TMP_PATH_TOO_LONG );
-                return( NULL );
+                PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
-                PrtMsg( FTL | TMP_PATH_TOO_LONG );
-                return( NULL );
+                PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
             }
         }
         if( tmpPath == NULL ) {
@@ -2059,7 +2057,7 @@ STATIC RET_T execLine( char *line )
     }
     rc = shellSpawn( p, flags );
     if( OSCorrupted() ) {
-        PrtMsg( FTL | OS_CORRUPTED );
+        PrtMsgExit(( FTL | OS_CORRUPTED ));
     }
     CheckForBreak();
     if( rc != RET_SUCCESS && !( flags & FLAG_IGNORE ) ) {
@@ -2090,7 +2088,7 @@ INT32 ExecCommand( char *line )
     // Execute command - run it always, always silent, and get real retcode
     rc = shellSpawn( p, FLAG_SILENT | FLAG_SHELL_RC );
     if( OSCorrupted() ) {
-        PrtMsg( FTL | OS_CORRUPTED );
+        PrtMsgExit(( FTL | OS_CORRUPTED ));
     }
     CheckForBreak();
 

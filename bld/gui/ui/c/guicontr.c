@@ -186,7 +186,6 @@ void GUIFreeAllControls( gui_window *wnd )
     gui_control *control;
     gui_control *next;
     dialog_node *dlg_node;
-    a_dialog    *ui_dlg_info;
 
     for( control = wnd->controls; control != NULL; control = next ) {
         next = control->sibling;
@@ -195,13 +194,8 @@ void GUIFreeAllControls( gui_window *wnd )
     wnd->controls = NULL;
     dlg_node = GUIGetDlgByWnd( wnd );
     if( dlg_node != NULL ) {
-        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields, dlg_node->name,
-                       dlg_node->colours_set, GUI_IS_DIALOG( wnd ) );
-        ui_dlg_info = dlg_node->ui_dlg_info;
-        GUIDeleteDialog( ui_dlg_info );
-        if( !GUI_IS_DIALOG( wnd ) ) {
-            GUIMemFree( ui_dlg_info );
-        }
+        GUIFreeDialog( dlg_node->ui_dlg_info, dlg_node->ui_dlg_info->fields,
+                dlg_node->name, dlg_node->colours_set, GUI_IS_DIALOG( wnd ) );
     }
 }
 

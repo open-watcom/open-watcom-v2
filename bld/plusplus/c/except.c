@@ -176,18 +176,18 @@ static bool validateBase(       // VALIDATE BASE CLASS OK
     bool retb;                  // - true ==> generate conversion
     SCOPE thr_scope;            // - scope for throw
 
+    retb = false;
     thr_scope = TypeScope( ctl->src_type );
     switch( ScopeDerived( thr_scope, base_scope ) ) {
-      DbgDefault( "validateBase -- impossible derived type" );
-      case DERIVED_YES :
-      case DERIVED_YES_BUT_VIRTUAL :
+    DbgDefault( "validateBase -- impossible derived type" );
+    case DERIVED_YES :
+    case DERIVED_YES_BUT_VIRTUAL :
         ctl->offset = ThrowBaseOffset( thr_scope, base_scope );
         retb = true;
         break;
-      case DERIVED_YES_BUT_AMBIGUOUS :
-      case DERIVED_YES_BUT_PRIVATE :
-      case DERIVED_YES_BUT_PROTECTED :
-        retb = false;
+    case DERIVED_YES_BUT_AMBIGUOUS :
+    case DERIVED_YES_BUT_PRIVATE :
+    case DERIVED_YES_BUT_PROTECTED :
         break;
     }
     return( retb );

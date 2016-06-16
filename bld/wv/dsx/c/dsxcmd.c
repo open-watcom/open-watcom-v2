@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -46,7 +47,6 @@
 #define PSP_CMDTAIL_OFF         0x80
 
 extern char             DPMICheck;
-extern addr_seg         _psp;
 
 static char             *cmdStart;
 

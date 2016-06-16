@@ -1,15 +1,18 @@
 # wpp Builder Control file
 # ========================
 
-set PROJDIR=<CWD>
 set PROJNAME=wpp
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -60,5 +63,5 @@ set PROJNAME=wpp
     <CCCMD> linuxarm/wppi8601.int   <OWRELROOT>/arml/
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

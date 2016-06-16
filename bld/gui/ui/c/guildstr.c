@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include "wio.h"
+#include "watcom.h"
 #include "wresdefn.h"
 #include "wressetr.h"
 #include "wresset2.h"
@@ -114,7 +115,7 @@ bool GUILoadStrFini( void )
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
     if( GUIMsgInitFlag && buffer != NULL && buffer_length != 0 ) {
-        if( LoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) > 0 ) {
+        if( WResLoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) > 0 ) {
             return( true );
         } else {
             buffer[0] = '\0';

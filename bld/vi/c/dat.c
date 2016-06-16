@@ -44,7 +44,8 @@ vi_rc ReadDataFile( const char *file, char **buffer, bool (*fn_alloc)(int), bool
 #endif
 {
     GENERIC_FILE        gf;
-    int                 i, dcnt, len, size;
+    int                 i, dcnt, size;
+    size_t              len;
     char                token[MAX_STR], buff[MAX_STR];
     char                *buffdata;
     bool                hasvals;

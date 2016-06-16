@@ -182,13 +182,13 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     } else {
         MADTypeInfo( tmp_bp->th, &mti );
     }
-    GUISetChecked( gui, CTL_BRK_EXECUTE, mti.b.bits == 0*BITS_PER_BYTE );
-    GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == 1*BITS_PER_BYTE );
-    GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == 2*BITS_PER_BYTE );
-    GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == 4*BITS_PER_BYTE );
+    GUISetChecked( gui, CTL_BRK_EXECUTE, mti.b.bits == BYTES2BITS( 0 ) );
+    GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == BYTES2BITS( 1 ) );
+    GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == BYTES2BITS( 2 ) );
+    GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == BYTES2BITS( 4 ) );
     
     GUIEnableControl( gui, CTL_BRK_QWORD, Is8ByteBreakpointsSupported() );
-    GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == 8*BITS_PER_BYTE );
+    GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == BYTES2BITS( 8 ) );
 
     if( dlg->cmd_error ) {
         id = CTL_BRK_CMD_LIST;

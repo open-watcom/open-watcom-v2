@@ -203,7 +203,7 @@ static gui_ord MemHeader( a_window *wnd, int piece )
         StrAddr( &addr, TxtBuff, TXT_LEN );
         if( strcmp( buff, TxtBuff ) == 0 )
             break;
-        len = WndExtentX( wnd, buff ) + 2*WndMidCharX( wnd );
+        len = WndExtentX( wnd, buff ) + 2 * WndMidCharX( wnd );
         return( len );
     }
     return( -1 );
@@ -964,7 +964,9 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
         if( mem->init_type != MAD_NIL_TYPE_HANDLE ) {
             mem->piece_type = MemByteType;
             for( i = 0; i < MemData.num_types; i++ ) {
-                if( MemData.info[i].type == mem->init_type ) break;
+                if( MemData.info[i].type == mem->init_type ) {
+                    break;
+                }
             }
             if( i != MemData.num_types ) {
                 mem->piece_type = i;

@@ -93,7 +93,7 @@ SYMBOL FormatMsg( VBUF *pbuf, char *fmt, va_list arg )
             case '7':   /* %07d */
             case '8':   /* %08d */
             case '9':   /* %09d */
-                len = sticpy( local_buf, va_arg( arg, int ) ) - local_buf;
+                len = stxicpy( local_buf, va_arg( arg, int ) ) - local_buf;
                 leading( pbuf, '0', ( cfmt - '0' ) - len );
                 VbufConcStr( pbuf, local_buf );
                 break;

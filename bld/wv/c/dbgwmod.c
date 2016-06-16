@@ -61,7 +61,7 @@ enum {
 };
 
 typedef struct {
-    bool        open : 1;
+    bool        open   : 1;
     bool        source : 1;
 } modinfo;
 
@@ -84,8 +84,8 @@ static int ModNumRows( a_window *wnd )
 
 static void ModCalcIndent( a_window *wnd )
 {
-    gui_ord     extent,max_extent;
-    int         i,size;
+    gui_ord     extent, max_extent;
+    int         i, size;
     mod_window  *mod = WndMod( wnd );
 
     size = ModListNumRows( ModList( mod ) );
@@ -93,7 +93,7 @@ static void ModCalcIndent( a_window *wnd )
     for( i = 0; i < size; ++i ) {
         ModListName( ModList( mod ), i, TxtBuff );
         extent = WndExtentX( wnd, TxtBuff );
-        if( extent > max_extent ) {
+        if( max_extent < extent ) {
             max_extent = extent;
         }
     }
@@ -201,7 +201,8 @@ static  bool    ModGetLine( a_window *wnd, int row, int piece,
     mod_window  *mod = WndMod( wnd );
     modinfo     *info;
 
-    if( row >= ModListNumRows( ModList( mod ) ) ) return( false );
+    if( row >= ModListNumRows( ModList( mod ) ) )
+        return( false );
     handle = ModListMod( ModList( mod ), row );
     line->tabstop = false;
     switch( piece ) {

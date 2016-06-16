@@ -1,4 +1,4 @@
-#pmake: build os_os2 cpu_386
+#pmake: build guitool os_os2 cpu_386
 #
 # Open Watcom Debugger makefile for OS/2 Presentation Manager
 #

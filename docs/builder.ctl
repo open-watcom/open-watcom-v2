@@ -1,26 +1,27 @@
 # Documentation Builder Control file
 # ==================================
 
-set PROJDIR=<CWD>
 set PROJNAME=docs
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 cdsay <PROJDIR>
 
+[ BLOCK .<OWGUINOBUILD> .1 ]
+    set PROJPMAKE=guitool .not .and
+
 [ BLOCK <1> docs build rel ]
 #===========================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h
+    pmake -d build <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h
 
 [ BLOCK <1> docsclean clean ]
 #============================
-    pmake -d build <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    
-[ BLOCK . . ]
-#============
+    pmake -d build <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
 [ BLOCK <1> docs rel ]
+#=====================
     cdsay <PROJDIR>
 
 [ BLOCK <1> docs rel cprel ]
@@ -37,5 +38,6 @@ cdsay <PROJDIR>
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+    set PROJPMAKE=
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

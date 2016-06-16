@@ -70,7 +70,7 @@ static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // by WLINK when linked with 16-bit version of WATFOR-77.
 {
     return( (ResFlags & RF_INITIALIZED) != 0
-            && LoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
+            && WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
 }
 
 

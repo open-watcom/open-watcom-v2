@@ -98,7 +98,7 @@ const char OPCODE_DONE[]   = {  17,   0    };
 //
 ////////////////////////////////////////////////////////////////////////////
 
-char* stpcpy                    // STRING COPY
+char* stxpcpy                    // STRING COPY
     ( char* tgt                 // - target
     , char const* src )         // - source
 {
@@ -829,12 +829,12 @@ char* ExpOp::nodeName                   // DEFAULT NODE NAME FOR ExpOp
         char* p = buffer;
         char buf[32];
         if( 0 != _type ) {
-            p = stpcpy( p, " " );
-            p = stpcpy( p, (char const *)_type );
+            p = stxpcpy( p, " " );
+            p = stxpcpy( p, (char const *)_type );
         }
         if( 0 != _id ) {
-            p = stpcpy( p, " id=" );
-            p = stpcpy( p, utoa( _id, buf, 16 ) );
+            p = stxpcpy( p, " id=" );
+            p = stxpcpy( p, utoa( _id, buf, 16 ) );
         }
     }
     return buffer;
@@ -1063,11 +1063,11 @@ char* ExpBitMask::nodeName              // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, "BitMask(" );
-    p = stpcpy( p, _start );
-    p = stpcpy( p, "," );
-    p = stpcpy( p, _size );
-    p = stpcpy( p, ")" );
+    p = stxpcpy( p, "BitMask(" );
+    p = stxpcpy( p, _start );
+    p = stxpcpy( p, "," );
+    p = stxpcpy( p, _size );
+    p = stxpcpy( p, ")" );
     ExpOp::nodeName( p );
     return buffer;
 }
@@ -1129,10 +1129,10 @@ char* ExpCallBack::nodeName             // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, "CallBack " );
-    p = stpcpy( p, _rtn );
-    p = stpcpy( p, " " );
-    p = stpcpy( p, _data );
+    p = stxpcpy( p, "CallBack " );
+    p = stxpcpy( p, _rtn );
+    p = stxpcpy( p, " " );
+    p = stxpcpy( p, _data );
     return buffer;
 }
 
@@ -1182,9 +1182,9 @@ char* ExpInteger::nodeName              // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, _value );
+    p = stxpcpy( p, _value );
     if( options.verbose ) {
-        p = stpcpy( p, " Integer" );
+        p = stxpcpy( p, " Integer" );
         ExpOp::nodeName( p );
     }
     return buffer;
@@ -1238,9 +1238,9 @@ char* ExpPatchNode::nodeName            // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, "PatchNode[ " );
-    p = stpcpy( p, _handle );
-    p = stpcpy( p, " ]" );
+    p = stxpcpy( p, "PatchNode[ " );
+    p = stxpcpy( p, _handle );
+    p = stxpcpy( p, " ]" );
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
@@ -1295,9 +1295,9 @@ char* ExpSym::nodeName                  // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, _name );
+    p = stxpcpy( p, _name );
     if( options.verbose ) {
-        p = stpcpy( p, " Symbol" );
+        p = stxpcpy( p, " Symbol" );
         ExpOp::nodeName( p );
     }
     return buffer;
@@ -1356,9 +1356,9 @@ char* ExpTemp::nodeName                 // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, "Temp[" );
-    p = stpcpy( p, _number );
-    p = stpcpy( p, "]" );
+    p = stxpcpy( p, "Temp[" );
+    p = stxpcpy( p, _number );
+    p = stxpcpy( p, "]" );
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
@@ -1422,7 +1422,7 @@ char* ExpOpCode::nodeName               // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, _opcode );
+    p = stxpcpy( p, _opcode );
     if( options.verbose ) {
         ExpOp::nodeName( p );
     }
@@ -1711,8 +1711,8 @@ char* ExpCall::nodeName                 // GET NODE NAME
 #endif
     char const *handle = _handle;
     if( 0 != handle ) {
-        p = stpcpy( p, handle );
-        p = stpcpy( p, " " );
+        p = stxpcpy( p, handle );
+        p = stxpcpy( p, " " );
     }
     return buffer;
 }
@@ -1841,9 +1841,9 @@ char* ExpVarArgBase::nodeName           // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, "CgVarargsBasePtr( " );
-    p = stpcpy( p, _type );
-    p = stpcpy( p, " )" );
+    p = stxpcpy( p, "CgVarargsBasePtr( " );
+    p = stxpcpy( p, _type );
+    p = stxpcpy( p, " )" );
     if( options.verbose ) {
         ExpOp::nodeName( buffer );
     }
@@ -1880,7 +1880,7 @@ char* ExpType::nodeName                 // GET NODE NAME
     const
 {
     char* p = buffer;
-    p = stpcpy( p, _type );
+    p = stxpcpy( p, _type );
     return buffer;
 }
 #endif

@@ -1,11 +1,13 @@
 # mkdisk Builder Control file
 # ===========================
  
-set PROJDIR=<CWD>
 set PROJNAME=mkdisk
+
+set BINTOOL=0
+
+set PROJDIR=<CWD>
  
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
  
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -29,5 +31,5 @@ set PROJNAME=mkdisk
     rm -f <OWBINDIR>/mkinf<CMDEXT>
  
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

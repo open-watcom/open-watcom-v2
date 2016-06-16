@@ -209,7 +209,7 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     if( (mk & (MMK_VOLATILE | MMK_WRITE)) == 0 )
         return( WR_CONTINUE );
     MADTypeInfo( th, &mti );
-    bytes = mti.b.bits / BITS_PER_BYTE;
+    bytes = BITS2BYTES( mti.b.bits );
     if( bytes > MAX_DELTA_BYTES )
         return( WR_STOP ); /* don't fit */
     new = NewMemDelta( a, (mem_delta_size)bytes );
@@ -277,13 +277,13 @@ static void FreeState( save_state *state )
 {
     state->prev->next = state->next;
     state->next->prev = state->prev;
-    _Free( state->s.ovl );
-    FreeMemDelta( state );
-    _Free( state );
     if( DbgRegs == &state->s )
         DbgRegs = NULL;
     if( PrevRegs == &state->s )
         PrevRegs = NULL;
+    _Free( state->s.ovl );
+    FreeMemDelta( state );
+    _Free( state );
     --NumStateEntries;
 }
 
@@ -400,12 +400,12 @@ void InitMachState( void )
     save_state  *other;
 
     StateCurr = AllocState();
-    StateCurr->action = ACTION_NONE;
     other = AllocState();
-    other->action = ACTION_NONE;
     if( StateCurr == NULL || other == NULL ) {
         StartupErr( LIT_ENG( ERR_NO_MEMORY ) );
     }
+    StateCurr->action = ACTION_NONE;
+    other->action = ACTION_NONE;
     other->next = StateCurr;
     other->prev = StateCurr;
     StateCurr->next = other;
@@ -566,10 +566,10 @@ bool AdvMachState( int action )
             StateCurr = StateCurr->next;
         } else {
             new = AllocState();
-            new->action = action;
             if( new == NULL ) {
                 StateCurr = StateCurr->next;
             } else {
+                new->action = action;
                 new->prev = StateCurr;
                 new->next = StateCurr->next;
                 new->next->prev = new;
@@ -997,7 +997,7 @@ void ParseRegSet( bool multiple, location_list *ll, dip_type_info *ti )
     ll->num = 0;
     ll->flags = 0;
     for( ; list != NULL; list = list->prev ) {
-        ti->size += list->ri->bit_size / BITS_PER_BYTE;
+        ti->size += BITS2BYTES( list->ri->bit_size );
         RegLocation( DbgRegs, list->ri, &reg_loc );
         LocationAppend( ll, &reg_loc );
     }
@@ -1030,7 +1030,7 @@ void RegValue( item_mach *value, const mad_reg_info *reginfo, machine_state *mac
     location_list               dst_ll;
     unsigned                    size;
 
-    size = ( reginfo->bit_size + (BITS_PER_BYTE-1) ) / BITS_PER_BYTE;
+    size = UNALGN_BITS2BYTES( reginfo->bit_size );
     RegLocation( mach, reginfo, &src_ll );
     LocationCreate( &dst_ll, LT_INTERNAL, value );
     LocationAssign( &dst_ll, &src_ll, size, false );

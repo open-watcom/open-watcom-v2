@@ -80,10 +80,11 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
 {
     FullAccelEntry      entry;
 
+    entry.Win32 = false;
+    entry.startoftable = 0;
     if( event.strevent || flags.typegiven ) {
         CheckAccelFlags( &flags.flags, idval );
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ) {
-            entry.Win32 = false;
             entry.u.entry.Ascii = event.event;
             entry.u.entry.Flags = flags.flags;
             entry.u.entry.Id = idval;
@@ -97,7 +98,6 @@ FullAccelEntry SemWINMakeAccItem( AccelEvent event, unsigned long idval,
     } else {
         RcError( ERR_ACCEL_NO_TYPE, idval );
         ErrorHasOccured = true;
-        entry.Win32 = false;
         entry.u.entry.Ascii = 0;
         entry.u.entry.Flags = 0;
         entry.u.entry.Id = 0;

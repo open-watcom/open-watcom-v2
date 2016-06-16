@@ -33,26 +33,35 @@
 #include "diptypes.h"
 #include "madtypes.h"
 
+
+#define SL2ISH( l )     ((imp_sym_handle *)((l)->h+DIPHandleSize(HK_SYM,true)))
+#define IIH2IH( i )     ((image_handle *)((char *)(i)-DIPHandleSize(HK_IMAGE,true)))
+#define TH2ITH( t )     ((imp_type_handle *)((char *)(t)+DIPHandleSize(HK_TYPE,true)))
+
 typedef struct {
     type_kind           k;
     type_modifier       m;
     unsigned short      s;
 } wv_type_entry;
 
-enum wv_sym_class {
+typedef enum {
     SC_TYPE,
     SC_INTERNAL,
     SC_USER
-};
+} wv_sym_class;
+
+typedef enum {
+    #define pick(n,tk,tm,tt) INTERNAL_ ## n,
+    #include "dipwvsym.h"
+    #undef pick
+} internal_idx;
 
 typedef struct {
     wv_type_entry       t;
-    enum wv_sym_class   sc;
+    wv_sym_class        sc;
     union {
-        /* for SC_INTERNAL */
-        unsigned        internal;
-        /* remainder for SC_USER */
-        unsigned long   uint;
+        internal_idx    internal;   /* for SC_INTERNAL */
+        unsigned long   uint;       /* remainder for SC_USER */
         long            sint;
         xreal           real;
         xcomplex        cmplx;
@@ -61,40 +70,13 @@ typedef struct {
     }   v;
 } fixed_wv_sym_entry;
 
-/* Note: The following strcture previously was:
-
 typedef struct {
-    fixed_wv_sym_entry;
+    fixed_wv_sym_entry  info;
     char                name[1];
 } wv_sym_entry;
 
-This was fine with Watcom and gcc 3.2, but not gcc 3.3. If you
-change the fixed_wv_sym_entry struct, wv_sym_entry needs to
-reflect those changes and vice versa.
-
-*/
-
-typedef struct {
-    struct {
-        wv_type_entry       t;
-        enum wv_sym_class   sc;
-        union {
-            /* for SC_INTERNAL */
-            unsigned        internal;
-            /* remainder for SC_USER */
-            unsigned long   uint;
-            long            sint;
-            xreal           real;
-            xcomplex        cmplx;
-            void            *string;
-            address         addr;
-        }   v;
-    } info;
-    char                name[1];        /* variable sized, first is length */
-} wv_sym_entry;
-
 struct imp_sym_handle {
-    wv_sym_entry        *p;
+    const wv_sym_entry  *p;
     const mad_reg_info  *ri;
 };
 

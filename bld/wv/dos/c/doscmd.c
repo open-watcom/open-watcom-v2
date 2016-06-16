@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include <ctype.h>
 #include "dbgdefn.h"
 #include "dbgdata.h"
@@ -41,7 +42,6 @@
 #include "dbglkup.h"
 
 
-extern addr_seg         _psp;
 extern unsigned         OvlAreaSize;
 
 

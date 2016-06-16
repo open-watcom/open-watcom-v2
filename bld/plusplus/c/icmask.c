@@ -268,9 +268,7 @@ static void scanSource( char *fname )
     line = 0;
     begin_found = 0;
     mask_id = NULL;
-    for(;;) {
-        ok = fgets( buff, sizeof(buff), src_c );
-        if( ok == NULL ) break;
+    while( (ok = fgets( buff, sizeof( buff ), src_c )) != NULL ) {
         ++line;
         if( begin_found ) {
             t = strstr( buff, "// ICMASK END" );
@@ -302,12 +300,16 @@ static void scanSource( char *fname )
                 p = skipMacroName( p );
                 c = *p;
                 *p = '\0';
+                if( mask_id != NULL )
+                    free( mask_id );
                 mask_id = strdup( s );
                 *p = c;
                 begin_found = 1;
             }
         }
     }
+    if( mask_id != NULL )
+        free( mask_id );
     if( begin_found ) {
         fail( "// ICMASK BEGIN found without matching // ICMASK END\n" );
     }

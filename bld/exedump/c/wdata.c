@@ -133,7 +133,7 @@ static void dmp_reloc_item( struct relocation_item *reloc )
         imp_nam = Wmalloc( string_len + 1 );
         Wread( imp_nam, string_len );
         imp_nam[ string_len ] = '\0';
-        if( imp_nam == NULL ) {
+        if( *imp_nam == '\0' ) {
             Wdputs( "*** import table error" );
         } else {
             Wdputs( imp_nam );

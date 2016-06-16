@@ -494,10 +494,10 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     dir[0] = '\0';
     splitFileName( path, &pd );
     if( fd->drv[0] == '\0' ) {
-        pp = stpcpy( dir, path );
+        pp = stxpcpy( dir, path );
     } else if( pd.drv[0] == '\0' ) {
-        pp = stpcpy( dir, fd->drv );
-        pp = stpcpy( pp, path );
+        pp = stxpcpy( dir, fd->drv );
+        pp = stxpcpy( pp, path );
     } else {
         return( retb );
     }

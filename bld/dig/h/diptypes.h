@@ -33,25 +33,6 @@
 #define DIPTYPES_H_INCLUDED
 
 #include "digtypes.h"
-#include "digpck.h"
-
-struct process_info;
-struct image_handle;
-struct type_handle;
-struct cue_handle;
-struct sym_handle;
-struct dip_imp_routines;
-struct location_context;
-
-typedef struct process_info     process_info;
-typedef struct image_handle     image_handle;
-typedef struct type_handle      type_handle;
-typedef struct cue_handle       cue_handle;
-typedef struct sym_handle       sym_handle;
-typedef struct dip_imp_routines dip_imp_routines;
-typedef unsigned_32             mod_handle;
-typedef unsigned_32             cue_fileid;
-typedef struct location_context location_context;
 
 
 #define NO_MOD              ((mod_handle)0)
@@ -64,13 +45,35 @@ typedef struct location_context location_context;
 #define DIP_PRIOR_EXPORTS   75
 #define DIP_PRIOR_MAX       100
 
-typedef unsigned_8 handle_kind; enum {
-    HK_IMAGE,
-    HK_TYPE,
-    HK_CUE,
-    HK_SYM,
+#include "digpck.h"
+
+struct image_handle;
+struct type_handle;
+struct cue_handle;
+struct sym_handle;
+
+typedef struct image_handle     image_handle;
+typedef struct type_handle      type_handle;
+typedef struct cue_handle       cue_handle;
+typedef struct sym_handle       sym_handle;
+
+struct process_info;
+struct dip_imp_routines;
+struct location_context;
+
+typedef struct process_info     process_info;
+typedef struct dip_imp_routines dip_imp_routines;
+typedef struct location_context location_context;
+
+typedef unsigned_32             mod_handle;
+typedef unsigned_32             cue_fileid;
+
+typedef enum {
+    #define pick(e,h,ih,wih)    e,
+    #include "diphndls.h"
+    #undef pick
     MAX_HK
-};
+} handle_kind;
 
 typedef unsigned_8 symbol_source; enum {
     SS_MODULE,
@@ -97,12 +100,12 @@ typedef unsigned_8 symbol_name; enum {
     SN_LAST
 };
 
-typedef unsigned_8 default_kind; enum {
+typedef enum {
     DK_INT,
     DK_DATA_PTR,
     DK_CODE_PTR,
     DK_LAST
-};
+} default_kind;
 
 typedef unsigned_16 dip_status; enum {
     DS_OK,
@@ -231,4 +234,5 @@ typedef struct {
 } lookup_item;
 
 #include "digunpck.h"
+
 #endif

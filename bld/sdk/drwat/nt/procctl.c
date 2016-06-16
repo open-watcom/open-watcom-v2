@@ -34,6 +34,9 @@
 #include "drwatcom.h"
 #include "menu.h"
 
+
+#ifdef DEBUG
+
 typedef struct {
     HWND        hwnd;
     DWORD       flags;
@@ -41,7 +44,6 @@ typedef struct {
     char        *text;
 } MsgBoxInfo;
 
-#ifdef DEBUG
 /*
  * MsgBoxMain
  */
@@ -60,7 +62,7 @@ static void MsgBoxMain( void *_info )
  *                  so the debugger thread is never frozen waiting for
  *                  someone to hit OK
  */
-void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
+static void DebugThdMsgBox( HWND hwnd, char *text, char *title, DWORD flags ) {
 
     MsgBoxInfo          *info;
 

@@ -97,9 +97,12 @@ bool ScanStatus( void )
 
 static int      range( int x, int min_x, int max_x, int default_x )
 {
-    if( x == -1 ) x = default_x;
-    if( x < min_x ) x = min_x;
-    if( x > max_x ) x = max_x;
+    if( x == -1 )
+        x = default_x;
+    if( x < min_x )
+        x = min_x;
+    if( x > max_x )
+        x = max_x;
     return( x );
 }
 

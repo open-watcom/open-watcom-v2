@@ -112,10 +112,11 @@ browser *FOpenSource( const char *name, sm_mod_handle mod, sm_cue_fileid id )
     if( SMNilHandle( fp ) )
         return( NULL );
     hndl = FInitSource( fp, mod, id );
-    _SMAlloc( hndl->open_name, strlen( name ) + 1 );
-    strcpy( hndl->open_name, name );
     if( hndl == NULL ) {
         SMClose( fp );
+    } else {
+        _SMAlloc( hndl->open_name, strlen( name ) + 1 );
+        strcpy( hndl->open_name, name );
     }
     return( hndl );
 }

@@ -369,7 +369,7 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
     unsigned            onscr;
 #endif
     viattr_t            attr;
-    int                  end, spend, cnt1, cnt2, sscol, spl;
+    int                 end, spend, cnt1, cnt2, sscol, spl;
 
     if( EditFlags.Quiet ) {
         return;
@@ -387,10 +387,11 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
         }
         spl = line;
         sscol = 1 + scol;
-        spend = end = ecol + 2;
-        if( spend > w->width - 1 ) {
-            spend = end = w->width - 1;
+        end = ecol + 2;
+        if( end > w->width - 1 ) {
+            end = w->width - 1;
         }
+        spend = end;
         if( sscol < 1 ) {
             sscol = 1;
         }
@@ -401,10 +402,11 @@ static void changeColorOfDisplayLine( int line, int scol, int ecol, type_style *
         }
         spl = line - 1;
         sscol = scol;
-        spend = end = ecol + 1;
-        if( spend > w->width ) {
-            spend = end = w->width;
+        end = ecol + 1;
+        if( end > w->width ) {
+            end = w->width;
         }
+        spend = end;
         if( sscol < 0 ) {
             sscol = 0;
         }

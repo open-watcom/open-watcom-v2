@@ -7,6 +7,8 @@ set OWBUILDER_REDIR_ERROUT=2^>^&1
 set NUL=
 :skip_errout
 if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
+set BUILDER_ARG=%1
+if "%BUILDER_ARG%" == "" set BUILDER_ARG=build
 cd %OWSRCDIR%\wmake
 if not exist %OWOBJDIR%\%NUL% mkdir %OWOBJDIR%
 cd %OWOBJDIR%
@@ -33,6 +35,6 @@ if errorlevel == 1 goto error_exit
 cd %OWSRCDIR%
 builder boot
 if errorlevel == 1 goto error_exit
-builder build
+builder %BUILDER_ARG%
 :error_exit
 cd %OWROOT%

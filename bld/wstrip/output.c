@@ -98,7 +98,7 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
-    if( res_failure || LoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -133,7 +133,7 @@ bool Msg_Fini( void )
     bool    retcode = true;
 
     if( !res_failure ) {
-        if ( CloseResFile( &hInstance ) ) {
+        if( CloseResFile( &hInstance ) ) {
             res_failure = true;
             retcode = false;
         }
@@ -146,7 +146,11 @@ bool Msg_Fini( void )
 
 static void Outs( bool nl, const char *s )
 {
+#ifdef _WIN64
+    write( STDOUT_FILENO, s, (unsigned)strlen( s ) );
+#else
     write( STDOUT_FILENO, s, strlen( s ) );
+#endif
     if( nl ) {
         write( STDOUT_FILENO, "\r\n", 2 );
     }

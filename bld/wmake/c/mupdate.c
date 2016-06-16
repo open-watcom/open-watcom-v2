@@ -29,14 +29,12 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <time.h>
 #if defined( __WATCOMC__ ) || defined( __UNIX__ )
 #include <utime.h>
 #else
 #include <sys/utime.h>
 #endif
-
 #include "make.h"
 #include "macros.h"
 #include "mcache.h"
@@ -52,6 +50,7 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+
 #include "clibext.h"
 #include "pathgrp.h"
 
@@ -87,7 +86,7 @@ void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
 /*************************************************************/
 {
     if( exStackP == MAX_EXSTACK ) {
-        PrtMsg( FTL| PERCENT_MAKE_DEPTH );
+        PrtMsgExit(( FTL | PERCENT_MAKE_DEPTH ));
     }
     exStack[exStackP].targ   = targ;
     exStack[exStackP].dep    = dep;
@@ -250,13 +249,13 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     if( err != NULL ) {
         ++cListCount;
         if( ExecCList( err ) != RET_SUCCESS ) {
-            PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] );
+            PrtMsgExit(( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] ));
         }
     } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
                 if( unlink( targ->node.name ) != 0 ) {
-                    PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
+                    PrtMsgExit(( FTL | SYSERR_DELETING_ITEM, targ->node.name ));
                 }
             }
         }
@@ -359,7 +358,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
                 targ->attr.symbolic = TRUE;
                 return( RET_SUCCESS );
             }
-            PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name );
+            PrtMsgExit(( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name ));
         }
     }
     if( !Glob.noexec ) {
@@ -370,7 +369,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
         if( before != NULL ) {
             ++cListCount;
             if( ExecCList( before ) != RET_SUCCESS ) {
-                PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] );
+                PrtMsgExit(( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] ));
             }
         }
         doneBefore = TRUE;
@@ -882,10 +881,10 @@ RET_T Update( TARGET *targ )
         return( RET_SUCCESS );
     }
     if( targ->special ) {
-        PrtMsg( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name );
+        PrtMsgExit(( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name ));
     }
     if( targ->busy ) {
-        PrtMsg( FTL | RECURSIVE_DEFINITION, targ->node.name );
+        PrtMsgExit(( FTL | RECURSIVE_DEFINITION, targ->node.name ));
     }
     PrtMsg( DBG | INF | NEOL | UPDATING_TARGET, targ->node.name );
     targ->busy = TRUE;
@@ -961,8 +960,7 @@ RET_T Update( TARGET *targ )
             return( RET_ERROR );
         } else {
             // Target doesn't exist and we have no clue how to make it. Bomb out.
-            PrtMsg( FTL | UNABLE_TO_MAKE, targ->node.name );
-            return( RET_ERROR );
+            PrtMsgExit(( FTL | UNABLE_TO_MAKE, targ->node.name ));
         }
     }
 

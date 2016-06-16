@@ -103,10 +103,9 @@ static event_record *RepGetEvent( int row )
 }
 
 
-static WNDNUMROWS RepNumRows;
 static int RepNumRows( a_window *wnd )
 {
-    int         count;
+    int                 count;
     event_record        *ev;
 
     wnd = wnd;
@@ -118,23 +117,25 @@ static int RepNumRows( a_window *wnd )
 }
 
 
-static WNDREFRESH RepRefresh;
 static void RepRefresh( a_window *wnd )
 {
     event_record        *ev;
-    gui_ord             extent,max_addr, max_cue;
-    int                 count,row;
+    gui_ord             extent, max_addr, max_cue;
+    int                 count, row;
 
-    if( EventList != NULL ) WndMoveCurrent( wnd, RepNumRows( wnd )-1, 0 );
+    if( EventList != NULL )
+        WndMoveCurrent( wnd, RepNumRows( wnd ) - 1, 0 );
     max_addr = 0;
     max_cue = 0;
     count = 0;
     for( ev = EventList; ev != NULL; ev = ev->next ) {
         RepInitEv( ev );
         extent = WndExtentX( wnd, ev->addr_string );
-        if( extent > max_addr ) max_addr = extent;
+        if( max_addr < extent )
+            max_addr = extent;
         extent = WndExtentX( wnd, ev->cue );
-        if( extent > max_cue ) max_cue = extent;
+        if( max_cue < extent )
+            max_cue = extent;
         ++count;
     }
     max_addr += WndMaxCharX( wnd );
@@ -185,7 +186,6 @@ static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static  WNDGETLINE RepGetLine;
 static  bool    RepGetLine( a_window *wnd, int row, int piece,
                             wnd_line_piece *line )
 {
@@ -193,9 +193,11 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 
     wnd = wnd;
     ev = RepGetEvent( row );
-    if( ev == NULL ) return( false );
+    if( ev == NULL )
+        return( false );
     line->tabstop = false;
-    if( piece >= PIECE__LAST ) return( false );
+    if( piece >= PIECE__LAST )
+        return( false );
     line->indent = Indents[piece];
     switch( piece ) {
     case PIECE_ADDRESS:
@@ -215,7 +217,6 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 }
 
 
-static WNDCALLBACK RepEventProc;
 static bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
@@ -245,7 +246,6 @@ wnd_info RepInfo = {
 };
 
 
-extern WNDOPEN WndRepOpen;
 extern a_window *WndRepOpen( void )
 {
     return( DbgWndCreate( LIT_DUI( WindowReplay ), &RepInfo, WND_REPLAY, NULL, &RepIcon ) );

@@ -1,15 +1,18 @@
 # wcl Builder Control file
 # ========================
 
-set PROJDIR=<CWD>
 set PROJNAME=owcc
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
 [ BLOCK <1> rel ]
+#================
     cdsay <PROJDIR>
 
 [ BLOCK <BINTOOL> build ]
@@ -48,5 +51,5 @@ set PROJNAME=owcc
     <CCCMD> linuxarm/owcc.exe    <OWRELROOT>/arml/owcc
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

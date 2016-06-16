@@ -36,7 +36,9 @@ xname = $(xname_$(target)_$(host_cpu))
 !ifeq target rsi
 !include $(rsilib_dir)/client.mif
 !endif
+!ifneq target win
 !include wres.mif
+!endif
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
 objs_nt_386     = sampnt.obj sysinit.obj sampexe.obj

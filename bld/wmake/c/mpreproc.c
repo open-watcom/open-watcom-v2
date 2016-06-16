@@ -29,8 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
-
 #include "make.h"
 #include "mstream.h"
 #include "mlex.h"
@@ -42,7 +40,9 @@
 #include "mpreproc.h"
 #include "mrcmsg.h"
 #include "msg.h"
+
 #include "clibext.h"
+
 
 /*
  * This module presents a stream of characters to mlex.c.  Stripped from the
@@ -448,7 +448,7 @@ STATIC void bangIf( BOOLEAN (*logical)(void), directiveTok tok )
  */
 {
     if( nestLevel >= MAX_NEST ) {
-        PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
+        PrtMsgExit(( FTL | LOC | IF_NESTED_TOO_DEEP ));
     }
 
     nest[nestLevel++] = curNest; // save old nesting on the stack
@@ -484,7 +484,7 @@ STATIC void bangEndIf( void )
     PrtMsg( DBG | INF | LOC | AT_ENDIF );
 
     if( nestLevel == 0 ) {
-        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
+        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] ));
     }
     curNest = nest[--nestLevel];
 
@@ -501,7 +501,7 @@ STATIC void doElse( void )
  */
 {
     if( nestLevel == 0 ) {
-        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
+        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] ));
     }
 
     if( curNest.elseFound ) {
@@ -549,7 +549,7 @@ STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok )
     FmtStr( buf, "%s %s", directives[D_ELSE], directives[tok] );
 
     if( nestLevel == 0 ) {
-        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
+        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, buf ));
     }
 
     if( curNest.elseFound ) {
@@ -611,8 +611,7 @@ STATIC void bangElse( void )
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
         (void)eatToEOL();
-        PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok],
-            directives[D_ELSE] );
+        PrtMsgExit(( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] ));
     }
 }
 

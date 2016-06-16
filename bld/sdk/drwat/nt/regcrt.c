@@ -139,7 +139,7 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
 
     if( rinfo != NULL ) {
         MADTypeInfo( rinfo->type, &mti );
-        value = alloca( mti.b.bits / BITS_PER_BYTE );
+        value = alloca( BITS2BYTES( mti.b.bits ) );
         BitGet( value, (unsigned char *)regs, rinfo->bit_start, rinfo->bit_size );
         radix = MADTypePreferredRadix( mtype );
         max_len = create[i].length + 1;

@@ -90,12 +90,13 @@ static thread_state     *GetThreadRow( int row )
 
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) {
-        if( num++ == row ) return( thd );
+        if( num++ == row ) {
+            break;
+        }
     }
-    return( NULL );
+    return( thd );
 }
 
-static WNDNUMROWS RunTrdNumRows;
 static int RunTrdNumRows( a_window *wnd )
 {
     thread_state    *thd;
@@ -107,7 +108,6 @@ static int RunTrdNumRows( a_window *wnd )
     return( num );
 }
 
-static WNDCALLBACK RunTrdEventProc;
 static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     parm=parm;
@@ -172,7 +172,6 @@ static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
     DbgUpdate( UP_THREAD_STATE );
 }
 
-static WNDREFRESH RunTrdRefresh;
 static void RunTrdRefresh( a_window *wnd )
 {
     thread_state    *thd;
@@ -203,17 +202,19 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
             if( piece < PieceCount ) {
                 line->text = HeaderArr[piece];
                 return( true );
-            } 
+            }
             return( false );
         case 1:
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             SetUnderLine( wnd, line );
             return( true );
         default:
             return( false );
         }
     } else {
-        if( thd == NULL ) return( false );
+        if( thd == NULL )
+            return( false );
         line->tabstop = false;
         line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;

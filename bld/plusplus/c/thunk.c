@@ -94,17 +94,18 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
     NAME name;                  // - name of new symbol
     symbol_class thunk_class;   // - SC_.. for thunk
 
+    thunk_class = SC_NULL;
     switch( classification ) {
-      case SPECIAL_OP_DEL_THUNK :
-      case SPECIAL_OP_DELAR_THUNK :
+    case SPECIAL_OP_DEL_THUNK :
+    case SPECIAL_OP_DELAR_THUNK :
         thunk_class = SC_STATIC;
         break;
-      case SPECIAL_DTOR_THUNK :
-      case SPECIAL_COPY_THUNK :
-      case SPECIAL_CTOR_THUNK :
+    case SPECIAL_DTOR_THUNK :
+    case SPECIAL_COPY_THUNK :
+    case SPECIAL_CTOR_THUNK :
         thunk_class = SC_MEMBER;
         break;
-      DbgDefault( "addrThunkSymbol -- bad classification" );
+    DbgDefault( "addrThunkSymbol -- bad classification" );
     }
     name = CppSpecialName( classification );
     scope = SymScope( sym );

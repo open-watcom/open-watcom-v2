@@ -560,39 +560,36 @@ static void MacReSize( a_window *wnd )
     int             piece;
     gui_ord         size;
     wnd_class_wv    wndclass;
-    gui_ord         max[PIECE_LAST];
+    gui_ord         max_size[PIECE_LAST];
     int             i;
 
     for( piece = 0; piece < PIECE_LAST; ++piece ) {
-        max[piece] = WndExtentX( wnd, *Titles[piece] );
+        max_size[piece] = WndExtentX( wnd, *Titles[piece] );
     }
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         size = WndExtentX( wnd, KeyName( mac->key ) );
         if( size < MIN_KEY_SIZE( wnd ) )
             size = MIN_KEY_SIZE( wnd );
-        if( size > max[PIECE_KEY] ) {
-            max[PIECE_KEY] = size;
+        if( max_size[PIECE_KEY] < size ) {
+            max_size[PIECE_KEY] = size;
         }
     }
     for( i = 0; i < ArraySize( WhatList ); ++i ) {
         size = WndExtentX( wnd, *WhatList[i] );
-        if( size > max[PIECE_WHAT] ) {
-            max[PIECE_WHAT] = size;
+        if( max_size[PIECE_WHAT] < size ) {
+            max_size[PIECE_WHAT] = size;
         }
     }
     for( wndclass = 0; wndclass < WND_CURRENT; ++wndclass ) {
         size = WndExtentX( wnd, *WndDisplayNames[wndclass] );
-        if( size > max[PIECE_WHERE] ) {
-            max[PIECE_WHERE] = size;
+        if( max_size[PIECE_WHERE] < size ) {
+            max_size[PIECE_WHERE] = size;
         }
     }
     Indents[PIECE_KEY] = WndAvgCharX( wnd );
-    Indents[PIECE_WHERE] = Indents[PIECE_KEY] +
-                        max[PIECE_KEY] + 2 * WndAvgCharX( wnd );
-    Indents[PIECE_WHAT] = Indents[PIECE_WHERE] +
-                        max[PIECE_WHERE] + 2 * WndAvgCharX( wnd );
-    Indents[PIECE_TEXT] =  Indents[PIECE_WHAT] +
-                        max[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_WHERE] = Indents[PIECE_KEY] + max_size[PIECE_KEY] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_WHAT] = Indents[PIECE_WHERE] + max_size[PIECE_WHERE] + 2 * WndAvgCharX( wnd );
+    Indents[PIECE_TEXT] = Indents[PIECE_WHAT] + max_size[PIECE_WHAT] + 2 * WndAvgCharX( wnd );
 }
 
 static void     MacRefresh( a_window *wnd )

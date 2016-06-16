@@ -859,9 +859,9 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
     defn = defn;
     if( *TextSegName == '\0' ) {
         if( IsBigCode() ) {
-            stpcpy( stpcpy( seg_name, ModuleName ), TS_SEG_CODE );
+            stxpcpy( stxpcpy( seg_name, ModuleName ), TS_SEG_CODE );
         } else {
-            stpcpy( seg_name, TS_SEG_CODE );
+            stxpcpy( seg_name, TS_SEG_CODE );
         }
         CMemFree( TextSegName );
         TextSegName = strsave( seg_name );

@@ -254,6 +254,7 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
         FileClose( fh );
         FreeRing( parmlist );
         Error( ERR_NONE, LIT_ENG( ERR_NO_MEMORY ) );
+        return;
     }
     strcpy( inv->name, name );
     inv->in_size = 0;

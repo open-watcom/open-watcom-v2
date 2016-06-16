@@ -103,7 +103,7 @@ void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
             cur = cur->next;
         }
         loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RT_TOOLBAR ), flags, loc );
+        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), flags, loc );
     }
     semFreeToolBar( toolbar );
 }

@@ -31,11 +31,21 @@
 
 #ifndef MACH_TYPES_INCLUDED
 #define MACH_TYPES_INCLUDED
+
 #include "watcom.h"
 
-#include "pushpck1.h"
+#define BITS_PER_BYTE           8U
 
-#define BITS_PER_BYTE   8U
+#define UNALGN_BITS2BYTES(x)    (((x) + (BITS_PER_BYTE - 1)) / BITS_PER_BYTE)
+#define BITS2BYTES(x)           ((x) / BITS_PER_BYTE)
+#define BYTES2BITS(x)           ((x) * BITS_PER_BYTE)
+#define TYPE2BITS(t)            (sizeof(t) * BITS_PER_BYTE)
+
+#define BYTEIDX(x)              ((x) / BITS_PER_BYTE)
+#define BITIDX(x)               ((x) % BITS_PER_BYTE)
+#define TYPEIDX(x,t)            ((x) / TYPE2BITS(t))
+
+#include "pushpck1.h"
 
 typedef unsigned_32     dword;
 typedef unsigned_16     word;
@@ -46,23 +56,23 @@ typedef dword           addr48_off;
 typedef word            addr_seg;
 
 typedef struct {
-    byte        mantissa[2];
-    word        xmant   : 7;
-    word        exp     : 8;
-    word        sign    : 1;
+    byte                mantissa[2];
+    word                xmant   : 7;
+    word                exp     : 8;
+    word                sign    : 1;
 } sreal_fields;
 
 typedef struct {
-    byte        mantissa[6];
-    word        xmant   : 4;
-    word        exp     : 11;
-    word        sign    : 1;
+    byte                mantissa[6];
+    word                xmant   : 4;
+    word                exp     : 11;
+    word                sign    : 1;
 } lreal_fields;
 
 typedef struct {
-    byte        mantissa[8];
-    word        exp     : 15;
-    word        sign    : 1;
+    byte                mantissa[8];
+    word                exp     : 15;
+    word                sign    : 1;
 } xreal_fields;
 
 typedef union {
@@ -81,61 +91,58 @@ typedef union {
 } xreal;
 
 typedef struct {
-    float       re;
-    float       im;
+    float               re;
+    float               im;
 } scomplex;
 
 typedef struct {
-    double      re;
-    double      im;
+    double              re;
+    double              im;
 } lcomplex;
 
 typedef struct {
-    xreal       re;
-    xreal       im;
+    xreal               re;
+    xreal               im;
 } xcomplex;
 
 typedef struct {
-    addr32_off  offset;
-    addr_seg    segment;
+    addr32_off          offset;
+    addr_seg            segment;
 } addr32_ptr;
 
 typedef struct {
-    addr48_off  offset;
-    addr_seg    segment;
+    addr48_off          offset;
+    addr_seg            segment;
 } addr48_ptr;
 
-typedef addr48_ptr  addr_ptr;
-typedef addr48_off  addr_off;
+typedef addr48_ptr      addr_ptr;
+typedef addr48_off      addr_off;
 
 typedef struct {
-    addr_ptr    mach;
-    word        sect_id: 15;
-    word        indirect: 1;
+    addr_ptr            mach;
+    word                sect_id: 15;
+    word                indirect: 1;
 } address;
 
 typedef struct {
-    address         start;
-    unsigned long   len;
+    address             start;
+    unsigned long       len;
 } mem_block;
 
-#define SET_NIL_ADDR( addr )    \
-        { (addr).indirect = 0; (addr).sect_id = 0; (addr).mach.segment = 0; (addr).mach.offset = 0; }
+#include "poppck.h"
 
-#define IS_NIL_ADDR( addr )     ( ((addr).indirect == 0)          \
-                                && ((addr).mach.segment == 0)     \
-                                && ((addr).mach.offset == 0) )
+#define SET_NIL_ADDR( addr )    \
+    { (addr).indirect = 0; (addr).sect_id = 0; (addr).mach.segment = 0; (addr).mach.offset = 0; }
+
+#define IS_NIL_ADDR( addr )     \
+    (((addr).indirect == 0) && ((addr).mach.segment == 0) && ((addr).mach.offset == 0))
 
 #define ConvAddr32ToAddr48( addr32, addr48 ) \
-\
-        (addr48).segment = (addr32).segment; \
-        (addr48).offset  = (addr32).offset;
+    (addr48).segment = (addr32).segment; \
+    (addr48).offset  = (addr32).offset;
 
 #define ConvAddr48ToAddr32( addr48, addr32 ) \
-\
-        (addr32).segment = (addr48).segment; \
-        (addr32).offset  = (addr48).offset;
-
-#include "poppck.h"
+    (addr32).segment = (addr48).segment; \
+    (addr32).offset  = (addr48).offset;
 
 #endif

@@ -7,11 +7,11 @@
 
 # Change this to point your Open Watcom source tree
 #
-# 	Note: '=' sign in path is not allowed (build will fail).
-#	Try to keep a OWROOT path short and simple like
-#       /tmp/ow There is dosemu used to build some parts
-#	of the software. dosemu can hang if OWROOT is long
-#	or contain long names of the directories.
+# Note: '=' sign in path is not allowed (build will fail).
+# Try to keep a OWROOT path short and simple like
+# /tmp/ow There is dosemu used to build some parts
+# of the software. dosemu can hang if OWROOT is long
+# or contain long names of the directories.
 
 export OWROOT=$(realpath `pwd`)
 
@@ -19,10 +19,22 @@ export OWROOT=$(realpath `pwd`)
 # supported values are WATCOM GCC CLANG
 export OWTOOLS=GCC
 
-# Documentation related variables
+# Build control related variables
+##################################
 
-# Set this variable to 0 to suppress documentation build
+# Set this variable to 0/1 to suppress/enable documentation build
 export OWDOCBUILD=0
+
+# Set this variable to 1 to suppress tools GUI version build
+# If it is used then only tools character mode version is build
+# export OWGUINOBUILD=1
+
+# Set this variable to list of OW projects to suppress their build
+# Example export OWNOBUILD=ide browser dlgprs
+# export OWNOBUILD=
+
+# Documentation related variables
+##################################
 
 # Change this to the PATH required by GhostScript for PDF creation on used host OS (optional)
 # export OWGHOSTSCRIPTPATH=$PATH
@@ -50,10 +62,7 @@ export OWDOCBUILD=0
 
 # export OWDOSBOX=dosbox
 
-# AUTOFILL: If OWROOT not set, assume current working directory
-if [ -z "$OWROOT" ]; then export OWROOT=`pwd`; fi
-# AUTOFILL: Assuming Linux, use GCC
-if [ -z "$OWTOOLS" ]; then export OWTOOLS=GCC; fi
+##################################
 
 # Invoke the script for the common environment
 . $OWROOT/cmnvars.sh

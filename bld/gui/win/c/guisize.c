@@ -59,7 +59,7 @@ bool GUIResizeWindow( gui_window *wnd, gui_rect *rect )
             phwnd = parent->hwnd;
         }
         GUICalcLocation( rect, &pos, &size, phwnd );
-        if( wnd->flags & IS_DIALOG ) {
+        if( GUI_IS_DIALOG( wnd ) ) {
             // dialogs are owned by, but not children of, phwnd
             // so lets map pos to its real parent
             pt.x = pos.x;

@@ -1,4 +1,4 @@
-#pmake: build os_win cpu_i86
+#pmake: build guitool os_win cpu_i86
 
 all : pbidex.cfg pbide.cfg .symbolic
 

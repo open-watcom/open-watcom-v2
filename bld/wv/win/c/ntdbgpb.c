@@ -53,6 +53,7 @@ BOOL CALLBACK FindPidPB( HWND  hwnd, LPARAM  lParam )
 {
     char buff[256];
 
+    lParam=lParam;
     GetClassName( hwnd, buff, sizeof( buff ) );
     if( strstr( buff, "PBFRAME" ) != NULL ) {
         GetWindowThreadProcessId(hwnd, &PidPB );

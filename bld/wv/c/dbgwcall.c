@@ -59,9 +59,9 @@ static gui_menu_struct CallMenu[] = {
 
 typedef struct call_window {
     cached_traceback    tb;
-    gui_ord     max_sym_len;
+    gui_ord             max_sym_len;
 } call_window;
-#define WndCall( wnd ) ( (call_window*)WndExtra( wnd ) )
+#define WndCall( wnd ) ( (call_window *)WndExtra( wnd ) )
 
 enum {
     PIECE_SYMBOL,
@@ -243,9 +243,7 @@ wnd_info CallInfo = {
 extern a_window *WndCallOpen( void )
 {
     call_window *call;
-    a_window    *wnd;
 
     call = WndMustAlloc( sizeof( call_window ) );
-    wnd = DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon );
-    return( wnd );
+    return( DbgWndCreate( LIT_DUI( WindowCalls ), &CallInfo, WND_CALL, call, &CallIcon ) );
 }

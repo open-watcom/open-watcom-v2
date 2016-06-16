@@ -279,7 +279,7 @@ static void logStack( ExceptDlgInfo *info ) {
     MADRegSpecialGet( MSR_SP, info->regs, &( sp.mach ) );
     MADTypeInfoForHost( MTK_ADDRESS, sizeof( address ), &host );
     MADTypeInfo( MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &sp ), &mti );
-    item = alloca( ( mti.b.bits / BITS_PER_BYTE ) + 1 );
+    item = alloca( BITS2BYTES( mti.b.bits ) + 1 );
 #ifdef __AXP__
     word_size = 8;
 #else

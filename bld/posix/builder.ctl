@@ -1,11 +1,13 @@
 # POSIX Builder Control file
 # ==========================
 
-set PROJDIR=<CWD>
-set PROJNAME=build POSIX tools
+set PROJNAME=posixutl
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set BINTOOL=0
+
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ INCLUDE <OWROOT>/build/defrule.ctl ]
 
@@ -60,5 +62,5 @@ set PROJNAME=build POSIX tools
     # Currently not built by default
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

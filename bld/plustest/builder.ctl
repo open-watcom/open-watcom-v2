@@ -1,18 +1,20 @@
 # plustest Builder Control file
 # =============================
 
-set PROJDIR=<CWD>
 set PROJNAME=plustest
 
-[ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
+set PROJDIR=<CWD>
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
 
 [ BLOCK <1> test ]
+#=================
     wmake -h
 
 [ BLOCK <1> testclean ]
+#======================
     wmake -h clean
 
 [ BLOCK . . ]
-#============
-cdsay <PROJDIR>
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]

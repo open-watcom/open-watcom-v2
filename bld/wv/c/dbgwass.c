@@ -98,31 +98,31 @@ typedef struct {
 } asm_addr;
 
 typedef struct {
-        asm_addr        *ins;
-        int             ins_size;
-        address         active;
-        address         dotaddr;
-        address         cache_addr;
-        mad_disasm_data *cache_dd;
-        unsigned        ddsize;
-        gui_ord         ins_end;
-        gui_ord         address_end;
-        gui_ord         last_width;
-        a_window        *src;
-        mod_handle      mod;
-        struct {
-            mod_handle  mod;
-            cue_fileid  file_id;
-        }               src_list;
-        void            *viewhndl;
-        unsigned        num_toggles;
-        gui_menu_struct *popup;
-        mad_type_handle def_addr;
-        unsigned        addr_len;
-        bool            track           : 1;
-        bool            toggled_break   : 1;
-        bool            source          : 1;
-        bool            hex             : 1;
+    asm_addr        *ins;
+    int             ins_size;
+    address         active;
+    address         dotaddr;
+    address         cache_addr;
+    mad_disasm_data *cache_dd;
+    unsigned        ddsize;
+    gui_ord         ins_end;
+    gui_ord         address_end;
+    gui_ord         last_width;
+    a_window        *src;
+    mod_handle      mod;
+    struct {
+        mod_handle  mod;
+        cue_fileid  file_id;
+    }               src_list;
+    void            *viewhndl;
+    unsigned        num_toggles;
+    gui_menu_struct *popup;
+    mad_type_handle def_addr;
+    unsigned        addr_len;
+    bool            track           : 1;
+    bool            toggled_break   : 1;
+    bool            source          : 1;
+    bool            hex             : 1;
 } asm_window;
 #define WndAsm( wnd ) ( (asm_window *)WndExtra( wnd ) )
 
@@ -211,8 +211,8 @@ static  void    AsmResize( a_window *wnd )
     if( size <= 0 )
         size = 1;
     first = asw->ins[0].addr;
-    new_ins = WndAlloc( size*sizeof( *new_ins ) );
-    memset( new_ins, 0, size*sizeof( *new_ins ) );
+    new_ins = WndAlloc( size * sizeof( *new_ins ) );
+    memset( new_ins, 0, size * sizeof( *new_ins ) );
     if( new_ins == NULL ) {
         WndClose( wnd );
         WndNoMemory();
@@ -693,9 +693,8 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
             case 1:
                 line->indent += WndExtentX( wnd, buff ) + 2 * WndMidCharX( wnd );
                 StrAddr( &addr, TxtBuff, TXT_LEN );
-                if( strcmp( buff, TxtBuff ) == 0 )
-                    break;
-                rc = true;
+                if( strcmp( buff, TxtBuff ) != 0 )
+                    rc = true;
                 break;
             }
             NewCurrRadix( old_radix );
@@ -727,9 +726,8 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     case PIECE_BREAK:
         line->tabstop = false;
         line->extent = WND_NO_EXTEND;
-        if( src_line != 0 )
-            break;
-        FileBreakGadget( wnd, line, curr, FindBreak( addr ) );
+        if( src_line == 0 )
+            FileBreakGadget( wnd, line, curr, FindBreak( addr ) );
         break;
     case PIECE_ADDRESS:
         if( src_line != 0 ) {
@@ -1076,13 +1074,14 @@ a_window *DoWndAsmOpen( address addr, bool track )
         return( NULL );
     }
     asw->active = addr;
-    asw->track = 0;
+    asw->track = false;
     asw->cache_addr = NilAddr;
     asw->dotaddr = NilAddr;
     asw->last_width = 0;
     wnd = DbgTitleWndCreate( LIT_DUI( WindowAssembly ), &AsmInfo, WND_ASSEMBLY,
                              asw, &AsmIcon, TITLE_SIZE, false );
-    if( wnd == NULL ) return( wnd );
+    if( wnd == NULL )
+        return( wnd );
     asw->track = track;
     asw->def_addr = MAD_NIL_TYPE_HANDLE;
     AsmSetDotAddr( wnd, addr );

@@ -61,7 +61,7 @@ size_t EnvLkup( const char *name, char *buff, size_t buff_len )
         }
     }
     if( output ) {
-        buff[len] = NULLCHAR;
+        *buff = NULLCHAR;
     }
     return( len );
 }

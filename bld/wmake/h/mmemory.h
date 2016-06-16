@@ -32,9 +32,6 @@
 #ifndef _MEMORY_H
 #define _MEMORY_H   1
 
-#include <string.h>
-
-
 extern void *MallocUnSafe( size_t size );
 extern void *MallocSafe( size_t size );
 extern void *CallocSafe( size_t size ); /* different from stdlib rtn */

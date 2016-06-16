@@ -45,7 +45,7 @@ char *RingNameAllocVct(         // ALLOCATE A NAME, FOR A VECTOR
     RINGNAME *element;          // - new entry
 
     element = RingAlloc( &ctl->ring, offsetof( RINGNAME, name ) + len + 1 );
-    stvcpy( element->name, vector, len );
+    stxvcpy( element->name, vector, len );
     if( ! ctl->case_sensitive ) {
         strlwr( element->name );
     }

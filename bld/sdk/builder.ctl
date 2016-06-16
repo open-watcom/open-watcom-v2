@@ -4,7 +4,6 @@
 set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/master.ctl ]
-[ LOG <LOGFNAME>.<LOGEXT> ]
 
 cdsay .
 
@@ -21,6 +20,4 @@ cdsay .
 [ INCLUDE wde/builder.ctl ]
 [ INCLUDE imgedit/builder.ctl ]
 
-[ BLOCK . . ]
-#============
 cdsay .

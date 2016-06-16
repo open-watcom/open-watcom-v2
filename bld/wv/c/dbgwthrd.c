@@ -77,7 +77,6 @@ static thread_state     *GetThreadRow( int row )
     return( thd );
 }
 
-static WNDNUMROWS TrdNumRows;
 static int TrdNumRows( a_window *wnd )
 {
     thread_state    *thd;
@@ -119,10 +118,12 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         }
         return;
     case MENU_THREAD_FREEZE:
-        if( thd->state == THD_THAW ) thd->state = THD_FREEZE;
+        if( thd->state == THD_THAW )
+            thd->state = THD_FREEZE;
         break;
     case MENU_THREAD_THAW:
-        if( thd->state == THD_FREEZE ) thd->state = THD_THAW;
+        if( thd->state == THD_FREEZE )
+            thd->state = THD_THAW;
         break;
     case MENU_THREAD_CHANGE_TO:
         switch( thd->state ) {
@@ -137,7 +138,6 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static WNDREFRESH TrdRefresh;
 static void TrdRefresh( a_window *wnd )
 {
     thread_state    *thd;
@@ -181,14 +181,16 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
                 return( false );
             }
         case 1:
-            if( piece != 0 ) return( false );
+            if( piece != 0 )
+                return( false );
             SetUnderLine( wnd, line );
             return( true );
         default:
             return( false );
         }
     } else {
-        if( thd == NULL ) return( false );
+        if( thd == NULL )
+            return( false );
         line->tabstop = false;
         line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;

@@ -57,10 +57,6 @@
     #define ME_HOST             ME_LITTLE
 #endif
 
-#define BITS2BYTES(x)           (((x) + (BITS_PER_BYTE - 1)) / BITS_PER_BYTE)
-#define TYPE2BITS(x)            (sizeof(x) * BITS_PER_BYTE)
-#define BYTESPOS(x)             ((x) / BITS_PER_BYTE)
-#define BITSPOS(x)              ((x) % BITS_PER_BYTE)
 
 const static unsigned EndMap[2][8] = {
     { 0, 1, 2, 3, 4, 5, 6, 7 },     /* ME_LITTLE */
@@ -667,9 +663,9 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
     mti->b.kind = tk;
     mti->b.handler_code = MAD_DEFAULT_HANDLING;
     if( size < 0 ) {
-        mti->b.bits = (dig_size_bits)( -size * BITS_PER_BYTE );
+        mti->b.bits = (dig_size_bits)BYTES2BITS( -size );
     } else {
-        mti->b.bits = (dig_size_bits)( size * BITS_PER_BYTE );
+        mti->b.bits = (dig_size_bits)BYTES2BITS( size );
     }
     mti->i.endian = ME_HOST;
     switch( tk ) {
@@ -767,15 +763,14 @@ typedef union {
 
 /* Convert integer of specified type to native representation (64-bit) */
 // NYI: non-two's complement support
-static mad_status DecomposeInt( const mad_type_info *mti, const void *src,
-                                decomposed_item *v )
+static mad_status DecomposeInt( const mad_type_info *mti, const void *src, decomposed_item *v )
 {
     unsigned    bytes;
     unsigned    i;
     unsigned    bit_shift;
     unsigned_8  *dst = &v->i.u._8[0];
 
-    bytes = BYTESPOS( mti->b.bits );
+    bytes = BITS2BYTES( mti->b.bits );
 #if defined( __BIG_ENDIAN__ )
     dst += DI_SIZE - bytes;     /* low bytes are higher in memory */
 #endif
@@ -795,15 +790,15 @@ static mad_status DecomposeInt( const mad_type_info *mti, const void *src,
 #endif
     /* sign extend if necessary */
     if( mti->i.nr != MNR_UNSIGNED ) {
-        i = BYTESPOS( mti->i.sign_pos );
-        bit_shift = BITSPOS( mti->i.sign_pos );
-        if( v->i.u._8[i] & (1 << bit_shift) ) {
-            v->i.u._8[i] |= 0xff << bit_shift;
-            ++i;
+        bytes = BYTEIDX( mti->i.sign_pos );
+        bit_shift = BITIDX( mti->i.sign_pos );
+        if( v->i.u._8[bytes] & (1 << bit_shift) ) {
+            v->i.u._8[bytes] |= 0xff << bit_shift;
+            ++bytes;
 #if defined( __BIG_ENDIAN__ )
-            memset( &v->i.u._8[0], 0xff, DI_SIZE - i );
+            memset( &v->i.u._8[0], 0xff, DI_SIZE - bytes );
 #else
-            memset( &v->i.u._8[i], 0xff, DI_SIZE - i );
+            memset( &v->i.u._8[bytes], 0xff, DI_SIZE - bytes );
 #endif
         }
     }
@@ -818,9 +813,9 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *src,
     valp = src;
     if( mti->a.seg.pos == 0 ) {
         /* segment is at the low end - offset above it */
-        if( BITSPOS( mti->a.seg.bits ) != 0 )
+        if( BITIDX( mti->a.seg.bits ) != 0 )
             return( MS_UNSUPPORTED );
-        valp = (const unsigned_8 *)src + BYTESPOS( mti->a.seg.bits );
+        valp = (const unsigned_8 *)src + BYTEIDX( mti->a.seg.bits );
     }
 // NYI - address endianness translation doesn't work yet
 //    if( mti->i.endian == ME_HOST ) {
@@ -829,7 +824,7 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *src,
             v->a.offset = *(unsigned_16 *)valp;
             break;
         case 32:
-            v->a.offset = (addr_seg)*(unsigned_32 *)valp;
+            v->a.offset = *(unsigned_32 *)valp;
             break;
         default:
             return( MS_UNSUPPORTED );
@@ -860,9 +855,9 @@ static mad_status DecomposeAddr( const mad_type_info *mti, const void *src,
         valp = src;
         if( mti->a.seg.pos != 0 ) {
             /* segment is at the high end - offset below it */
-            if( BITSPOS( mti->a.seg.pos ) != 0 )
+            if( BITIDX( mti->a.seg.pos ) != 0 )
                 return( MS_UNSUPPORTED );
-            valp = (const unsigned_8 *)src + BYTESPOS( mti->a.seg.pos );
+            valp = (const unsigned_8 *)src + BYTEIDX( mti->a.seg.pos );
         }
         // TODO: byte swap segment also
         switch( mti->a.seg.bits ) {
@@ -898,14 +893,14 @@ static void ShiftBits( unsigned bits, int amount, void *d )
     bool        neg;
 
     if( amount != 0 ) {
-        bytes = BITS2BYTES( bits );
+        bytes = UNALGN_BITS2BYTES( bits );
         neg = false;
         if( amount < 0 ) {
             amount = -amount;
             neg = true;
         }
-        byte_shift = BYTESPOS( amount );
-        bit_shift = BITSPOS( amount );
+        byte_shift = BYTEIDX( amount );
+        bit_shift = BITIDX( amount );
         if( byte_shift != 0 ) {
             if( !neg ) {
                 /* left shift */
@@ -935,14 +930,14 @@ static void ShiftBits( unsigned bits, int amount, void *d )
                 /* left shift */
                 for( i = byte_shift; i < bytes; ++i ) {
                     tmp2 = ((unsigned_8 *)d)[i];
-                    ((unsigned_8 *)d)[i] = (((unsigned_8 *)d)[i] << bit_shift) | (tmp1 >> (BITS_PER_BYTE - bit_shift));
+                    ((unsigned_8 *)d)[i] = (((unsigned_8 *)d)[i] << bit_shift) | (tmp1 >> (BYTES2BITS( 1 ) - bit_shift));
                     tmp1 = tmp2;
                 }
             } else {
                 /* right shift */
                 for( j = bytes - byte_shift; j-- > 0; ) {
                     tmp2 = ((unsigned_8 *)d)[j];
-                    ((unsigned_8 *)d)[j] = (((unsigned_8 *)d)[j] >> bit_shift) | (tmp1 << (BITS_PER_BYTE - bit_shift));
+                    ((unsigned_8 *)d)[j] = (((unsigned_8 *)d)[j] >> bit_shift) | (tmp1 << (BYTES2BITS( 1 ) - bit_shift));
                     tmp1 = tmp2;
                 }
             }
@@ -959,18 +954,17 @@ static void ExtractBits( dig_size_bits pos, dig_size_bits len, const void *src, 
 #if !defined( __BIG_ENDIAN__ )
     dst_size = dst_size;
 #endif
-    src = (unsigned_8 *)src + BYTESPOS( pos );
-    bit_shift = BITSPOS( pos );
-    bytes = BITS2BYTES( bit_shift + len );
+    src = (unsigned_8 *)src + BYTEIDX( pos );
+    bit_shift = BITIDX( pos );
     memset( &tmp, 0, sizeof( tmp ) );
-    memcpy( &tmp, src, bytes );
-    ShiftBits( bit_shift + len, -bit_shift, &tmp );
-    bytes = BYTESPOS( len );
-    tmp.u._8[bytes] &= BitMask[BITSPOS( len )];
+    memcpy( &tmp, src, UNALGN_BITS2BYTES( bit_shift + len ) );
+    ShiftBits( bit_shift + len, -(signed char)bit_shift, &tmp );
+    tmp.u._8[BYTEIDX( len )] &= BitMask[BITIDX( len )];
+    bytes = UNALGN_BITS2BYTES( len );
 #if defined( __BIG_ENDIAN__ )
-    dst = (unsigned_8 *)dst + dst_size - BITS2BYTES( len );
+    dst = (unsigned_8 *)dst + dst_size - bytes;
 #endif
-    memcpy( dst, &tmp, BITS2BYTES( len ) );
+    memcpy( dst, &tmp, bytes );
 }
 
 static void InsertBits( dig_size_bits pos, dig_size_bits len, const void *src, void *dst )
@@ -980,12 +974,12 @@ static void InsertBits( dig_size_bits pos, dig_size_bits len, const void *src, v
     unsigned            i;
     int                 bit_shift;
 
-    bytes = BITS2BYTES( len );
-    dst = (unsigned_8 *)dst + BYTESPOS( pos );
-    bit_shift = BITSPOS( pos );
+    bytes = UNALGN_BITS2BYTES( len );
+    dst = (unsigned_8 *)dst + BYTEIDX( pos );
+    bit_shift = BITIDX( pos );
     memset( &tmp, 0, sizeof( tmp ) );
     memcpy( &tmp, src, bytes );
-    bytes = BITS2BYTES( bit_shift + len );
+    bytes = UNALGN_BITS2BYTES( bit_shift + len );
     ShiftBits( bit_shift + len, bit_shift, &tmp );
     for( i = 0; i < bytes; ++i ) {
         ((unsigned_8 *)dst)[i] |= ((unsigned_8 *)&tmp)[i];
@@ -993,8 +987,7 @@ static void InsertBits( dig_size_bits pos, dig_size_bits len, const void *src, v
 }
 
 //NYI: non radix 2, sign-magnitude floats
-static mad_status DecomposeFloat( const mad_type_info *mti, const void *src,
-                                    decomposed_item *v )
+static mad_status DecomposeFloat( const mad_type_info *mti, const void *src, decomposed_item *v )
 {
     unsigned    bytes;
     unsigned    mant_bits;
@@ -1003,7 +996,7 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *src,
     unsigned_8  *dst = &v->f.mantissa.u._8[0];
 
     memset( v, 0, sizeof( *v ) );
-    bytes = BYTESPOS( mti->b.bits );
+    bytes = BITS2BYTES( mti->b.bits );
     if( memcmp( &v->f.mantissa, src, bytes ) == 0 ) {
         v->f.type = F_ZERO;
         /* number is zero */
@@ -1033,8 +1026,7 @@ static mad_status DecomposeFloat( const mad_type_info *mti, const void *src,
     mant_bits = mti->b.bits - mti->f.exp.data.b.bits - 1;
     if( mti->f.exp.hidden && (v->f.type != F_DENORMAL) )
         mant_bits += 1;
-    ShiftBits( TYPE2BITS( v->f.mantissa ),
-        TYPE2BITS( v->f.mantissa ) - mant_bits, &v->f.mantissa );
+    ShiftBits( TYPE2BITS( v->f.mantissa ), TYPE2BITS( v->f.mantissa ) - mant_bits, &v->f.mantissa );
     if( v->f.type == F_DENORMAL ) {
         for( shifts = 0; (v->f.mantissa.u._8[sizeof( v->f.mantissa ) - 1] & 0x80) == 0; ++shifts ) {
             ShiftBits( TYPE2BITS( v->f.mantissa ), 1, &v->f.mantissa );
@@ -1061,7 +1053,7 @@ static mad_status ComposeInt( decomposed_item *v, const mad_type_info *mti, void
     unsigned    i;
     unsigned_8  *src = &v->i.u._8[0];
 
-    bytes = BYTESPOS( mti->b.bits );
+    bytes = BITS2BYTES( mti->b.bits );
 #if defined( __BIG_ENDIAN__ )
     src += DI_SIZE - bytes;     /* low bytes are higher in memory */
 #endif
@@ -1075,35 +1067,33 @@ static mad_status ComposeInt( decomposed_item *v, const mad_type_info *mti, void
     return( MS_OK );
 }
 
-static mad_status ComposeAddr( decomposed_item *v,
-                                const mad_type_info *mti, void *dst )
+static mad_status ComposeAddr( decomposed_item *v, const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
 
     if( mti->a.seg.pos == 0 ) {
-        bytes = BYTESPOS( mti->a.seg.bits );
+        bytes = BITS2BYTES( mti->a.seg.bits );
         memcpy( dst, &v->a.segment, bytes );
         dst = (unsigned_8 *)dst + bytes;
-        bytes = BYTESPOS( mti->b.bits - mti->a.seg.bits );
+        bytes = BITS2BYTES( mti->b.bits - mti->a.seg.bits );
         memcpy( dst, &v->a.offset, bytes );
     } else {
-        bytes = BYTESPOS( mti->b.bits - mti->a.seg.bits );
+        bytes = BITS2BYTES( mti->b.bits - mti->a.seg.bits );
         memcpy( dst, &v->a.offset, bytes );
         dst = (unsigned_8 *)dst + bytes;
-        bytes = BYTESPOS( mti->a.seg.bits );
+        bytes = BITS2BYTES( mti->a.seg.bits );
         memcpy( dst, &v->a.segment, bytes );
     }
     return( MS_OK );
 }
 
-static mad_status ComposeFloat( decomposed_item *v,
-                                const mad_type_info *mti, void *dst )
+static mad_status ComposeFloat( decomposed_item *v, const mad_type_info *mti, void *dst )
 {
     unsigned    bytes;
     unsigned    mant_bits;
     unsigned    i;
 
-    bytes = BYTESPOS( mti->b.bits );
+    bytes = BITS2BYTES( mti->b.bits );
     memset( dst, 0, bytes );
     if( v->f.type == F_ZERO ) {
         /* number is zero */
@@ -1220,7 +1210,7 @@ static char *U64CvtNum( unsigned_64 val, mad_radix radix, char *p, int bit_lengt
         digits = bit_length;
         break;
     case 16:
-        digits = 2 * BYTESPOS( bit_length );
+        digits = 2 * BITS2BYTES( bit_length );
         break;
     default:
         digits = 0;
@@ -1409,9 +1399,9 @@ static mad_status FloatTypeToString( mad_radix radix, mad_type_info const *mti, 
     case 16:
         p = d;
 #if !defined( __BIG_ENDIAN__ )
-        p += BYTESPOS( mti->b.bits );
+        p += BITS2BYTES( mti->b.bits );
 #endif
-        for( len = 0; len < 2 * BYTESPOS( mti->b.bits ); len += 2 ) {
+        for( len = 0; len < 2 * BITS2BYTES( mti->b.bits ); len += 2 ) {
 #if !defined( __BIG_ENDIAN__ )
             --p;
 #endif

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,17 +25,13 @@
 *
 *  ========================================================================
 *
-* Description:  Local assertion failed function
+* Description:  DIP handles kind related declaration.
 *
 ****************************************************************************/
 
-#include "make.h"
-#include "mrcmsg.h"
-#include "msg.h"
 
-int MyAssert( const char *expr, const char *file, int line )
-/*****************************************************************/
-{
-    PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );
-    return( 1 ); // Never gets here!
-}
+/*      enum    DIP manager handle      DIP's imp.handle            WV internal                */
+pick( HK_IMAGE, sizeof( image_handle ), sizeof( imp_image_handle ), 0                           )
+pick( HK_TYPE,  sizeof( type_handle ),  sizeof( imp_type_handle ),  sizeof( imp_type_handle )   )
+pick( HK_CUE,   sizeof( cue_handle ),   sizeof( imp_cue_handle ),   0                           )
+pick( HK_SYM,   sizeof( sym_handle ),   sizeof( imp_sym_handle ),   sizeof( imp_sym_handle )    )

@@ -74,7 +74,6 @@ enum {
 };
 
 
-static  WNDMODIFY       FuncModify;
 static  void    FuncModify( a_window *wnd, int row, int piece )
 {
     address     addr;
@@ -117,15 +116,15 @@ static int FuncNumRows( a_window *wnd )
 
 static void CalcIndent( a_window *wnd )
 {
-    gui_ord     len,max;
-    int         row,rows;
+    gui_ord     len, max;
+    int         row, rows;
 
     rows = FuncNumRows( wnd );
     max = 0;
     for( row = 0; row < rows; ++row ) {
         FuncGetSourceName( wnd, row );
         len = WndExtentX( wnd, TxtBuff );
-        if( len > max ) {
+        if( max < len ) {
             max = len;
         }
     }
@@ -156,7 +155,7 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     piece=piece;
     addr = NilAddr;
     if( row != WND_NO_ROW )
-        NameListAddr( NameList( func ), row );
+        addr = NameListAddr( NameList( func ), row );
     switch( id ) {
     case MENU_INITIALIZE:
         if( IS_NIL_ADDR( addr ) ) {
@@ -185,7 +184,6 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 }
 
 
-static WNDGETLINE FuncGetLine;
 static  bool    FuncGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
@@ -228,7 +226,6 @@ extern  void    FuncNewMod( a_window *wnd, mod_handle mod )
 }
 
 
-static WNDREFRESH FuncRefresh;
 static void FuncRefresh( a_window *wnd )
 {
     func_window *func = WndFunc( wnd );
@@ -265,7 +262,6 @@ static void FuncSetOptions( a_window *wnd )
     FuncNewOptions( wnd );
 }
 
-static WNDCALLBACK FuncEventProc;
 static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );

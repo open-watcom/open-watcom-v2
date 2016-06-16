@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include "drwatcom.h"
 #include "dip.h"
+#include "dipimp.h"
 #include "dipcli.h"
 #include "mem.h"
 
@@ -45,7 +46,6 @@
  */
 static void mapAddress( addr_ptr *addr, ModuleNode *mod )
 {
-
     DWORD       seg;
 
     if( addr->segment == MAP_FLAT_CODE_SELECTOR ) {
@@ -104,19 +104,21 @@ void DIGCLIENT DIGCliFree( void *ptr ) {
 /*
  * DIPCliMapAddr
  */
-void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *ptr ) {
-
+void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *ptr )
+{
     mapAddress( addr, ptr );
 }
 
 /*
  * DIPCliSymCreate
  */
-sym_handle *DIGCLIENT DIPCliSymCreate( void *ptr ) {
+imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
+{
 #ifdef DEBUG
     MessageBox( NULL, "symcreate called", "dipcli.c", MB_OK );
 #endif
-    ptr = ptr;
+    ih=ih;
+    d=d;
     return( NULL );
 }
 

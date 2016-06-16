@@ -142,10 +142,10 @@ void DrawBorder( window_id wid )
         topecol = topscol + strlen( w->borderdata ) - 1;
     }
 
-    tl = (w->area.x1) + (w->area.y1) * EditVars.WindMaxWidth;
-    tr = (w->area.x2) + (w->area.y1) * EditVars.WindMaxWidth;
-    bl = (w->area.x1) + (w->area.y2) * EditVars.WindMaxWidth;
-    br = (w->area.x2) + (w->area.y2) * EditVars.WindMaxWidth;
+    tl = w->area.x1 + w->area.y1 * EditVars.WindMaxWidth;
+    tr = w->area.x2 + w->area.y1 * EditVars.WindMaxWidth;
+    bl = w->area.x1 + w->area.y2 * EditVars.WindMaxWidth;
+    br = w->area.x2 + w->area.y2 * EditVars.WindMaxWidth;
     xtl = 0;
     xtr = w->width - 1;
     xbl = (w->height - 1) * w->width;

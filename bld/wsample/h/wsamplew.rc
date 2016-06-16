@@ -2,20 +2,17 @@
 #include "wsamprc.h"
 ApplIcon ICON wsamplew.ico
 
-#undef pick2
-#undef resname
 #define pick2( e_string, j_string ) e_string
 #define resname( name ) name##0
-
 #include "wsampres.rc"
-
-#undef pick2
 #undef resname
+#undef pick2
+
 #define pick2( e_string, j_string ) j_string
 #define resname( name ) name##1
-
 #include "wsampres.rc"
-
+#undef resname
+#undef pick2
 
 ApplAccl ACCELERATORS
 BEGIN

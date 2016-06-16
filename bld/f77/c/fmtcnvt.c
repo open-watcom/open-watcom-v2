@@ -269,6 +269,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
                 field++;
             }
             canon.flags |= EXPONENT;
+            exp = 0;
             if( (stop == field) || (FmtS2I( field, stop - field, blanks, &exp, false, NULL ) != INT_OK) ) {
                 canon.flags |= BAD_EXPONENT;
             }

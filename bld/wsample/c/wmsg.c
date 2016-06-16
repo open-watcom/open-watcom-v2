@@ -41,13 +41,14 @@
 #endif
 #if defined(__WINDOWS__)
     #include <windows.h>
+#else
+    #include "wressetr.h"
+    #include "wresset2.h"
 #endif
 #include "wio.h"
 #include "sample.h"
 #include "smpstuff.h"
 #include "wreslang.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wmsg.h"
 
 #include "clibext.h"
@@ -62,7 +63,11 @@ char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 static  HANDLE_INFO     hInstance = { 0 };
 #endif
 
-static bool MsgReadErrArray( PHANDLE_INFO inst )
+#if defined(__WINDOWS__)
+bool MsgInit( HINSTANCE inst )
+#else
+static bool MsgReadErrArray( void )
+#endif
 {
     int         i;
     char        buffer[128];
@@ -70,7 +75,11 @@ static bool MsgReadErrArray( PHANDLE_INFO inst )
 
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
+#if !defined(__WINDOWS__)
+        if( WResLoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+#else
         if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+#endif
             if( i == ERR_FIRST_MESSAGE )
                 return( false );
             buffer[0] = '\0';
@@ -84,7 +93,6 @@ static bool MsgReadErrArray( PHANDLE_INFO inst )
 }
 
 #if !defined(__WINDOWS__)
-
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
  * starts at offset 0 */
@@ -120,7 +128,7 @@ bool MsgInit( void )
 #endif
         if( hInstance.handle != NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
             if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-                MsgReadErrArray( &hInstance );
+                MsgReadErrArray();
                 CloseResFile( &hInstance );
                 return( true );
             }
@@ -130,14 +138,6 @@ bool MsgInit( void )
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
-
-#else
-
-bool MsgInit( HINSTANCE inst )
-{
-    return( MsgReadErrArray( inst ) );
-}
-
 #endif
 
 void MsgFini( void )

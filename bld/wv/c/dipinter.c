@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include "dbgdefn.h"
 #undef AddrMod
 #undef AddrSym
@@ -39,11 +40,10 @@
 #include "dbglit.h"
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "dipcli.h"
 #include "dipimp.h"
+#include "dipcli.h"
 #include "dipwv.h"
 #include "mad.h"
-#include <stddef.h>
 #include "strutil.h"
 #include "dbgloc.h"
 #include "dbgovl.h"
@@ -77,15 +77,20 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d )
     MapAddrForImage( id, addr );
 }
 
-sym_handle *DIGCLIENT DIPCliSymCreate( void *d )
+static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
 {
-    sym_list    **sl_head = d;
-    sym_list    *new;
+    sym_list        *new_sl;
 
-    _ChkAlloc( new, sizeof(sym_list)-sizeof(byte) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );//
-    new->next = *sl_head;
-    *sl_head = new;
-    return( SL2SH( new ) );
+    _ChkAlloc( new_sl, sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
+    SymInit( SL2SH( new_sl ), IIH2IH( iih ) );
+    new_sl->next = *sl_head;
+    *sl_head = new_sl;
+    return( SL2ISH( new_sl ) );
+}
+
+imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *iih, void *d )
+{
+    return( DoSymCreate( iih, (sym_list **)d ) );
 }
 
 void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
@@ -93,7 +98,7 @@ void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
     mad_type_info       mti;
 
     MADTypeInfo( mt, &mti );
-    ti->size = mti.b.bits / BITS_PER_BYTE;
+    ti->size = BITS2BYTES( mti.b.bits );
     ti->modifier = TM_NONE;
     switch( mti.b.kind ) {
     case MTK_INTEGER:
@@ -121,7 +126,8 @@ void MadTypeToDipTypeInfo( mad_type_handle mt, dip_type_info *ti )
 dip_status RegLocation( machine_state *regs, const mad_reg_info *ri, location_list *ll )
 {
 
-    if( regs == NULL || ri == NULL ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
+    if( regs == NULL || ri == NULL )
+        return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
     LocationCreate( ll, LT_INTERNAL, &regs->mr );
     LocationSet( ll, ri->bit_start, ri->bit_size );
     ll->flags = ri->flags << LLF_REG_FLAGS_SHIFT;
@@ -134,7 +140,8 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
     sym_info            info;
     DIPHDL( sym, sh );
 
-    if( lc == NULL ) return( DS_ERR|DS_NO_CONTEXT );
+    if( lc == NULL )
+        return( DS_ERR|DS_NO_CONTEXT );
     switch( ci ) {
     case CI_FRAME:
         if( lc->maybe_have_frame ) {
@@ -156,17 +163,19 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
             }
         }
         if( Context.maybe_have_frame
-            && AddrComp( Context.frame, lc->frame ) == 0
-            && AddrComp( Context.execution, lc->execution ) == 0 ) {
+          && AddrComp( Context.frame, lc->frame ) == 0
+          && AddrComp( Context.execution, lc->execution ) == 0 ) {
             /* cache result in global context item */
             Context.have_frame = lc->have_frame;
             Context.maybe_have_frame = false;
         }
-        if( !lc->have_frame ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
+        if( !lc->have_frame )
+            return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
         LocationCreate( ll, LT_ADDR, &lc->frame );
         return( DS_OK );
     case CI_STACK:
-        if( !lc->have_stack ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
+        if( !lc->have_stack )
+            return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
         LocationCreate( ll, LT_ADDR, &lc->stack );
         return( DS_OK );
     case CI_EXECUTION:
@@ -185,7 +194,8 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
                 lc->have_object = true;
             }
         }
-        if( !lc->have_object ) return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
+        if( !lc->have_object )
+            return( DS_ERR|DS_CONTEXT_ITEM_INVALID );
         *ll = lc->object;
         return( DS_OK );
     case CI_DEF_ADDR_SPACE:
@@ -264,10 +274,9 @@ static char     WVName[] = "Debugger Internal";
 static unsigned DIGREGISTER WVHandleSize( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
-        0,
-        sizeof( imp_type_handle ),
-        0,
-        sizeof( imp_sym_handle )
+        #define pick(e,h,ih,wih)    wih,
+        #include "diphndls.h"
+        #undef pick
     };
     return( Sizes[hk] );
 }
@@ -511,7 +520,7 @@ static dip_status DIGREGISTER WVSymType( imp_image_handle *ii, imp_sym_handle *i
 static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, location_list *ll )
 {
-    wv_sym_entry        *se;
+    const wv_sym_entry  *se;
     void                *d;
 
     ii = ii;
@@ -524,7 +533,7 @@ static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handl
         if( se->info.t.k == TK_STRING ) {
             d = se->info.v.string;
         } else {
-            d = &se->info.v;
+            d = (void *)&se->info.v;
         }
         LocationCreate( ll, LT_INTERNAL, d );
         break;
@@ -538,7 +547,8 @@ static dip_status DIGREGISTER WVSymValue( imp_image_handle *ii, imp_sym_handle *
                         location_context *lc, void *d )
 {
     ii = ii; lc = lc;
-    if( is->ri != NULL || is->p->info.sc != SC_INTERNAL ) return( DS_ERR|DS_BAD_PARM );
+    if( is->ri != NULL || is->p->info.sc != SC_INTERNAL )
+        return( DS_ERR|DS_BAD_PARM );
     InternalValue( is->p->info.v.internal, d );
     return( DS_OK );
 }
@@ -604,11 +614,13 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
 {
     imp_type_handle     *it;
     imp_sym_handle      *is;
-    wv_sym_entry        *se;
+    const wv_sym_entry  *se;
     const mad_reg_info  *ri;
 
-    if( li->type != ST_NONE ) return( SR_NONE );
-    if( li->scope.start != NULL ) return( SR_NONE );
+    if( li->type != ST_NONE )
+        return( SR_NONE );
+    if( li->scope.start != NULL )
+        return( SR_NONE );
     se = NULL;
     ri = NULL;
     switch( ss ) {
@@ -619,14 +631,17 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     case SS_MODULE:
     case SS_SCOPED:
         se = LookupInternalName( li );
-        if( se != NULL ) break;
+        if( se != NULL )
+            break;
         ri = LookupRegName( NULL, li );
-        if( ri != NULL ) break;
+        if( ri != NULL )
+            break;
         se = LookupUserName( li );
         break;
     }
-    if( se == NULL && ri == NULL ) return( SR_NONE );
-    is = DCSymCreate( ii, d );
+    if( se == NULL && ri == NULL )
+        return( SR_NONE );
+    is = DoSymCreate( ii, (sym_list **)d );
     is->p  = se;
     is->ri = ri;
     return( SR_EXACT );
@@ -918,7 +933,8 @@ static char **DIPErrTxt[] = {
 char *DIPMsgText( dip_status status )
 {
     status &= ~DS_ERR;
-    if( status > DS_INVALID_OPERATOR ) status = DS_FAIL;
+    if( status > DS_INVALID_OPERATOR )
+        status = DS_FAIL;
     return( *DIPErrTxt[status] );
 }
 
@@ -928,7 +944,8 @@ static bool CheckDIPLoad( char *dip, bool defaults )
 
     ret = DIPLoad( dip );
     if( ret != DS_OK ) {
-        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) ) return( false );
+        if( defaults && (ret == (DS_ERR|DS_FOPEN_FAILED)) )
+            return( false );
         DIPFini();
         Format( TxtBuff, LIT_ENG( DIP_load_failed ), dip, DIPMsgText( ret ) );
         StartupErr( TxtBuff );

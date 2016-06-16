@@ -324,7 +324,7 @@ static void dmp_prog_flgs( unsigned_32 flags )
 {
     char    name[128];
 
-    name[0] = 0;
+    name[0] = '\0';
     if( flags & PF_X ) {
         strcat( name, " EXECUTABLE |" );
     }
@@ -335,7 +335,7 @@ static void dmp_prog_flgs( unsigned_32 flags )
         strcat( name, " READABLE |" );
     }
     if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = 0;
+        name[strlen(name)-1] = '\0';
     }
     Wdputs( "flags = " );
     Wdputs( name );
@@ -350,7 +350,7 @@ static void dmp_sec_flgs( unsigned_32 flags )
 {
     char    name[128];
 
-    name[0] = 0;
+    name[0] = '\0';
     if( flags & SHF_WRITE ) {
         strcat( name, " WRITABLE |" );
     }
@@ -361,7 +361,7 @@ static void dmp_sec_flgs( unsigned_32 flags )
         strcat( name, " EXEC_INSTR |" );
     }
     if( name[strlen(name)-1] == '|' ) {
-        name[strlen(name)-1] = 0;
+        name[strlen(name)-1] = '\0';
     }
     Wdputs( "flags = " );
     Wdputs( name );
@@ -543,7 +543,7 @@ static void dmp_prog_sec( unsigned_32 start )
         Wlseek( elf_sec.sh_offset + start );
         Wread( string_table, elf_sec.sh_size );
     } else {
-        string_table = 0;
+        string_table = NULL;
     }
     if( Elf_head.e_phnum ) {
         Banner( "ELF Program Header" );
