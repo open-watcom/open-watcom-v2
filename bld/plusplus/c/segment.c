@@ -271,7 +271,7 @@ static PC_SEGMENT *segmentAlloc(    // SEGMENT: ALLOCATE NEW SEGMENT
     size = strlen( seg_name );
     curr = RingAlloc( &seg_list, offsetof( PC_SEGMENT, name ) + size + 1 );
     curr->sibling = curr;
-    stvcpy( curr->name, seg_name, size );
+    stxvcpy( curr->name, seg_name, size );
     curr->offset = 0;
     curr->dgroup = (( control & SA_IN_DGROUP ) != 0 );
     curr->lab_gened = false;

@@ -38,7 +38,7 @@
 
 #include "clibext.h"
 
-char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
+char *stxpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
     char *tgt,                  // - target
     char const **src )          // - addr( source )
 {
@@ -51,15 +51,15 @@ char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
 }
 
 
-char *stpcpy(                   // CONCATENATE STRING AS STRING
+char *stxpcpy(                   // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string
 {
-    return( stpcpy_after( string, &src_string ) - 1 );
+    return( stxpcpy_after( string, &src_string ) - 1 );
 }
 
 
-char *stvcpy_after(             // COPY VECTOR, UPDATE SOURCE POINTER
+char *stxvcpy_after(             // COPY VECTOR, UPDATE SOURCE POINTER
     char *tgt,                  // - target
     char const **src,           // - addr( source )
     size_t vsize )              // - vector size
@@ -75,16 +75,16 @@ char *stvcpy_after(             // COPY VECTOR, UPDATE SOURCE POINTER
 }
 
 
-char *stvcpy(                   // CONCATENATE VECTOR AS A STRING
+char *stxvcpy(                   // CONCATENATE VECTOR AS A STRING
     char *string,               // - target location
     const char *vector,         // - source vector to be copied
     size_t vsize )              // - size of source vector
 {
-    return( stvcpy_after( string, &vector, vsize ) - 1 );
+    return( stxvcpy_after( string, &vector, vsize ) - 1 );
 }
 
 
-char *stvcpyr(                  // CONCATENATE VECTOR AS A STRING REVERSE
+char *stxvcpyr(                  // CONCATENATE VECTOR AS A STRING REVERSE
     char *string,               // - target location
     const char *vector,         // - source vector to be copied reversed
     size_t vsize )              // - size of source vector
@@ -106,7 +106,7 @@ char *vctsave(                  // ALLOCATE AND SAVE VECTOR AS STRING
     char * new_str;             // - target string
 
     new_str = (char *) CMemAlloc( vsize + 1 );
-    stvcpy( new_str, vector, vsize );
+    stxvcpy( new_str, vector, vsize );
     return( new_str );
 }
 
@@ -234,27 +234,27 @@ int classify_escape_char(       // CLASSIFY TYPE OF ESCAPE
 }
 
 
-char *stdcpy(                   // CONCATENATE DECIMAL NUMBER
+char *stxdcpy(                  // CONCATENATE DECIMAL NUMBER
     char *tgt,                  // - target location
     unsigned int value )        // - value to be concatenated
 {
     char buffer[16];
 
-    return stpcpy( tgt, ultoa( value, buffer, 10 ) );
+    return stxpcpy( tgt, ultoa( value, buffer, 10 ) );
 }
 
 
-char *sticpy(                   // CONCATENATE INTEGER NUMBER
+char *stxicpy(                  // CONCATENATE INTEGER NUMBER
     char *tgt,                  // - target location
     signed int value )          // - value to be concatenated
 {
     char buffer[16];
 
-    return stpcpy( tgt, ltoa( value, buffer, 10 ) );
+    return stxpcpy( tgt, ltoa( value, buffer, 10 ) );
 }
 
 
-char *sti64cpy(                 // CONCATENATE I64 NUMBER
+char *stxi64cpy(                // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
     signed_64 value )           // - value to be concatenated
 {

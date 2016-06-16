@@ -259,28 +259,28 @@ unsigned scan_over_vector_spaces(                       // SCAN PAST Vct. ' '
               unsigned vsize );                         // - vector size
 const char _FARD *scan_over_white_space(                // scan past white
               const char _FARD * location );            // - start position
-char _FARD *sticpy(                                     // concat. integer
+char _FARD *stxicpy(                                    // concat. integer
               void _FARD * target,                      // - target position
               int value );                              // - integer
-char _FARD *stpcpy(                                     // concat. string
+char _FARD *stxpcpy(                                    // concat. string
               void _FARD * target,                      // - target position
               const void _FARD * source );              // - string
 #if defined( __SMALL_DATA__ )
-  char far   *stpcpyfn(                                 // concat. string
+  char far   *stxpcpyfn(                                // concat. string
               void far * target,                        // - target position
               const void _FARD * source );              // - string
-  char _FARD *stpcpynf(                                 // concat. string
+  char _FARD *stxpcpynf(                                // concat. string
               void _FARD * target,                      // - target position
               const void far * source );                // - string
 #else
-  #define stpcpyfn stpcpy                               // - use stpcpy
-  #define stpcpynf stpcpy                               // - use stpcpy
+  #define stxpcpyfn stxpcpy                             // - use stxpcpy
+  #define stxpcpynf stxpcpy                             // - use stxpcpy
 #endif
-char _FARD *stpcpylist(                                 // concat. list str.s
+char _FARD *stxpcpylist(                                 // concat. list str.s
               char _FARD * target,                      // - target position
               const char _FARD * string1,               // - strings, NULL
               ... );
-char _FARD *stpcpyvlist(                                // CONCAT FROM LIST
+char _FARD *stxpcpyvlist(                                // CONCAT FROM LIST
               char _FARD *target,                       // - target address
               const char _FARD * _FARD * list );        // - points to list
 char _FARD *stpfill(                                    // concat. fill char.
@@ -298,8 +298,8 @@ char _FARD *strchrs(                                    // test occurence
               void _FARD * target,                      // - target position
               const void far * source );                // - string
 #else
-  #define strcpyfn stpcpy                               // - use stpcpy
-  #define strcpynf stpcpy                               // - use stpcpy
+  #define strcpyfn stxpcpy                              // - use stxpcpy
+  #define strcpynf stxpcpy                              // - use stxpcpy
 #endif
 char _FARD *strend(                                     // point at '\0'
               const void _FARD * string );              // - string
@@ -322,7 +322,7 @@ int         strvect_ilookup(                            // CASE-INSENS. LOOKUP
 char _FARD *stucpy(                                     // concat. unsigned
               void _FARD * target,                      // - target position
               unsigned value );                         // - unsigned value
-char _FARD *stvcpy(                                     // concat. vector
+char _FARD *stxvcpy(                                    // concat. vector
               void _FARD * target,                      // - target position
               const void _FARD * vector,                // - vector
               unsigned max_size );                      // - size

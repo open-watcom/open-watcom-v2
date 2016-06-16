@@ -1089,7 +1089,7 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
     char const * end = &line[ sizeof( line ) ];
     char * cur = line;
     unsigned ctr;
-    stpcpy( cur, "" );
+    stxpcpy( cur, "" );
     for( ctr = 0; ; ++ ctr ) {
         unsigned flag = flag_value[ ctr ];
         if( 0 == flag ) break;
@@ -1101,7 +1101,7 @@ static void dumpPtreeFlags      // DUMP FLAGS IN PTREE NODE
                 cur = line;
             }
             *cur = ' ';
-            cur = stpcpy( cur+1, name );
+            cur = stxpcpy( cur+1, name );
         }
     }
     printf( flag_fmt, line );
@@ -1171,7 +1171,7 @@ static void dumpPTreeNode(      // DUMP A PARSE TREE NODE
           }
             break;
           case PT_STRING_CONSTANT :
-            stvcpy( buffer, node->u.string->string, node->u.string->len );
+            stxvcpy( buffer, node->u.string->string, node->u.string->len );
             printf( "PT_STRING_CONSTANT" F_BADDR
                     " flags"        F_HEX_4
                     " string"       F_STRING
@@ -1451,12 +1451,12 @@ void DumpMemberPtrInfo(         // DUMP MEMBER_PTR_CAST STRUCTURE
 
     flags[0] = '\0';
     fptr = flags;
-    if( inf->safe )           fptr = stpcpy( fptr, "safe," );
-    if( inf->init_conv )      fptr = stpcpy( fptr, "init_conv," );
-    if( inf->delta_reqd )     fptr = stpcpy( fptr, "delta_reqd," );
-    if( inf->mapping_reqd )   fptr = stpcpy( fptr, "mapping_reqd," );
-    if( inf->test_reqd )      fptr = stpcpy( fptr, "test_reqd," );
-    if( inf->single_mapping ) fptr = stpcpy( fptr, "single_mapping," );
+    if( inf->safe )           fptr = stxpcpy( fptr, "safe," );
+    if( inf->init_conv )      fptr = stxpcpy( fptr, "init_conv," );
+    if( inf->delta_reqd )     fptr = stxpcpy( fptr, "delta_reqd," );
+    if( inf->mapping_reqd )   fptr = stxpcpy( fptr, "mapping_reqd," );
+    if( inf->test_reqd )      fptr = stxpcpy( fptr, "test_reqd," );
+    if( inf->single_mapping ) fptr = stxpcpy( fptr, "single_mapping," );
     --fptr;
     *fptr = '\0';
     printf( "MEMBER_PTR_CAST" F_BADDR
