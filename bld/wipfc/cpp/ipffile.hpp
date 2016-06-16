@@ -66,7 +66,7 @@ private:
     std::FILE* stream;
     wchar_t ungottenChar;
     bool ungotten;
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
     std::wint_t readMBChar();
 #endif
 };

@@ -31,7 +31,7 @@
 #include "errors.hpp"
 #include "util.hpp"
 #include <cstdlib>
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
     #include <mbctype.h>
 #endif
 
@@ -48,7 +48,7 @@ IpfFile::IpfFile( const std::wstring*  fname ) : IpfData(), fileName ( fname ),
 //Returns EOB if end-of-file reached
 std::wint_t IpfFile::get()
 {
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
     std::wint_t ch( 0 );
     if( ungotten ) {
         ch = ungottenChar;
@@ -87,7 +87,7 @@ void IpfFile::unget( wchar_t ch )
         decLine();
 }
 /*****************************************************************************/
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
 std::wint_t IpfFile::readMBChar()
 {
     wchar_t ch = 0;

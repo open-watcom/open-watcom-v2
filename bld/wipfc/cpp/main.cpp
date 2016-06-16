@@ -112,7 +112,7 @@ static void processCommandLine(int argc, char **argv, Compiler& c)
     int outIndex( 0 );
     bool info( false );
     for( int count = 1; count < argc; ++count ) {
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
         if( argv[count][0] == '-' ) {
 #else
         if( argv[count][0] == '-' || argv[count][0] == '/' ) {

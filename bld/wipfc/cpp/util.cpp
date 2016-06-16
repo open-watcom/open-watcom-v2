@@ -35,7 +35,7 @@
 #include <cstring>
 #include <memory>
 #include <string>
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <unistd.h>
 #else
     #include <direct.h>
@@ -122,7 +122,7 @@ std::string canonicalPath( char* arg )
     std::auto_ptr< char > cwd( ::getcwd( 0, 0 ) );
     std::string fullpath( cwd.get() );
     std::string inFile( arg );
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
     const char* srchstr = "../";
     char sep = '/';
 #else
@@ -138,7 +138,7 @@ std::string canonicalPath( char* arg )
                 inFile.erase( idx1, 3 );
             }
             else if( !fullpath.empty() ) {
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
                 idx2 = 0;
 #else
                 idx2 = fullpath.find( ':' );    //don't kill drive
@@ -156,7 +156,7 @@ std::string canonicalPath( char* arg )
     }
     else
         fullpath = inFile;
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
     if( fullpath.size() > PATH_MAX )
         throw FatalError( ERR_PATH_MAX );
 #endif
