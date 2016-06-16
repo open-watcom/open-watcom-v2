@@ -247,10 +247,16 @@ incl_file_opts = -include
 # common settings
 ############################
 common_cppflags_bsd = -D__BSD__ -D__UNIX__ -D__FLAT__
+!ifdef __OSX__
+common_cppflags_osx = -D__OSX__
+!else
+common_cppflags_osx =
+!endif
 
 common_cppflags_386   = -D_M_IX86 -D__386__ -D__BSD_386__
 common_cppflags_x64   = -D_M_X64 -D__BSD_X64__
 common_cppflags_ppc   = -D__PPC__
+common_cppflags_arm   = -D__ARM__
 
 # common release/debug flags
 common_flags_rel = -O -g
@@ -317,14 +323,17 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags_bsd) $(common_cppflags_$(bld_cpu))
+bld_cppflags = $(common_cppflags_bsd) $(common_cppflags_osx) $(common_cppflags_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
 bld_cxxflags = -std=c++98
 
 # options for linking
-!ifdef __CLANG__
+!ifdef __OSX__
+bld_ldflags_cxx = -lc++
+bld_ldflags_dll_cxx = -lc++
+!else ifdef __CLANG__
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else
@@ -332,7 +341,7 @@ bld_ldflags_cxx = -lsupc++ -lstdc++
 bld_ldflags_dll_cxx = -lsupc++ -lstdc++
 !endif
 
-bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+bld_ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
 
 bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
@@ -357,6 +366,7 @@ cl  = gcc -pipe
 
 cppflags_bsd   = $(common_cppflags_bsd)
 cppflags_osi   = $(common_cppflags_bsd)
+cppflags_osx   = $(common_cppflags_osx)
 cppflags_386   = $(common_cppflags_386)
 cppflags_ppc   = $(common_cppflags_ppc)
 cppflags_x64   = $(common_cppflags_x64)
@@ -368,7 +378,7 @@ cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib
 cflags_wind = $(cflags_gen)
 
 # options for linking
-ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
+ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
 
 ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
 ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
