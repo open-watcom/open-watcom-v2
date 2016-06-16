@@ -174,10 +174,12 @@ char *sti64cpy(                 // CONCATENATE I64 NUMBER
     char *tgt,                  // - target location
     signed_64 value )           // - value to be concatenated
 ;
+#ifndef __APPLE__
 char *stpcpy(                   // CONCATENATE STRING AS STRING
     char *string,               // - target location
     const char *src_string )    // - source string
 ;
+#endif
 char *stpcpy_after(             // COPY STRING, UPDATE SOURCE POINTER
     char *tgt,                  // - target
     char const **src )          // - addr( source )
