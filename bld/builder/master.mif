@@ -36,6 +36,7 @@ sys_linux = sys.obj sysposix.obj
 sys_haiku = sys.obj sysposix.obj
 sys_nt    = sysnt.obj sysdoscd.obj
 sys_os2   = sys.obj sysos2.obj sysdoscd.obj
+sys_osx   = sys.obj sysposix.obj
 
 builder_objs = builder.obj utils.obj $(sys_$(host_os)) runit.obj pmake.obj equals.obj $(cl_objs_gen)
 sweep_objs   = sweep.obj $(cl_objs_gen)
