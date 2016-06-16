@@ -27,7 +27,7 @@ export OWDOCBUILD=0
 
 # Set this variable to 1 to suppress tools GUI version build
 # If it is used then only tools character mode version is build
-# export OWGUINOBUILD=1
+export OWGUINOBUILD=1
 
 # Set this variable to list of OW projects to suppress their build
 # Example export OWNOBUILD=ide browser dlgprs
