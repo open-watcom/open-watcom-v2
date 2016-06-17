@@ -5,6 +5,7 @@ wclass_inc_dirs_nt    = -I"$(wclass_dir)/win/hpp" -I"$(wclass_dir)/hpp" -I"$(gui
 wclass_inc_dirs_linux = -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 wclass_inc_dirs_win   = -I"$(wclass_dir)/win/hpp" -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 wclass_inc_dirs_haiku = -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
+wclass_inc_dirs_osx   = -I"$(wclass_dir)/hpp" -I"$(gui_dir)/h"
 !ifdef wclass_inc_dirs_$(host_os)_$(host_cpu)
 wclass_inc_dirs = $(wclass_inc_dirs_$(host_os)_$(host_cpu))
 !else
