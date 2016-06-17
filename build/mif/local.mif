@@ -80,10 +80,15 @@ additional_cleanup_sys = *.pdb
 
 # common settings
 ############################
-common_cppflags_nt = -D__NT__ -D__FLAT__
+common_cppflags = -D__FLAT__
 
-common_cppflags_386  = -D__386__ -D__NT_386__
-common_cppflags_x64  = -D__NT_X64__
+common_cppflags_nt = -D__NT__
+
+common_cppflags_386  = -D__386__
+common_cppflags_x64  =
+
+common_cppflags_nt_386  = -D__NT_386__
+common_cppflags_nt_x64  = -D__NT_X64__
 
 # common release/debug flags
 !ifdef __INTEL__
@@ -158,7 +163,7 @@ bld_cl_sys =
 
 bld_incs = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
-bld_cppflags = $(common_cppflags_nt) $(common_cppflags_$(bld_cpu))
+bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags_$(bld_cpu)) $(common_cppflags_$(bld_os)_$(bld_cpu))
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
@@ -192,10 +197,11 @@ cl   = cl -nologo
 
 !endif
 
-cppflags_nt  = $(common_cppflags_nt)
-cppflags_osi = $(common_cppflags_nt)
-cppflags_386 = $(common_cppflags_386)
-cppflags_x64 = $(common_cppflags_x64)
+cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
+cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
+
+cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
+cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 
 cxxflags = -EHsc
 
@@ -414,7 +420,7 @@ cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
 cppflags_bsd    = $(common_cppflags) $(common_cppflags_bsd)
 cppflags_haiku  = $(common_cppflags) $(common_cppflags_haiku)
 cppflags_osx    = $(common_cppflags) $(common_cppflags_osx)
-cppflags_osi    = $(common_cppflags) $(common_cppflags_$(bld_os))
+cppflags_osi    = $(common_cppflags) $(common_cppflags_$(host_os))
 
 cppflags_386    = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_ppc    = $(common_cppflags_ppc) $(common_cppflags_$(host_os)_ppc)
