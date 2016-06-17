@@ -33,7 +33,7 @@ dwutils.obj
 inc_dirs = -I. -I"../h"
 
 dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else
     $(librarian) $(libflags) $(objs)

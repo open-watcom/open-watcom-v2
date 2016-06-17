@@ -38,7 +38,7 @@ libs = ver.lib
 extra_l_flags = opt map
 
 $(proj_name).exe : $(objs) $(proj_name).res
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}

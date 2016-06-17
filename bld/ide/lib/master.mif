@@ -39,7 +39,7 @@ objs = &
     mvswitch.obj &
     mworkfil.obj
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_i86 = -zc -zm
 !endif
 
@@ -48,7 +48,7 @@ inc_dirs = -I. -I"../h" $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 .cpp : ../cpp
 
 $(name).lib : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $<
 !else
     $(librarian) $(libflags) $<

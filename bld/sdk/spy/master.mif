@@ -41,7 +41,7 @@ extra_c_flags     = -s -fh
 extra_c_flags_i86 = -zu -2 -zW
 extra_c_flags_386 = -4
 extra_c_flags_spydll = -DSPYDLL
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 !ifeq host_os win
 extra_c_flags_spydll += -mc
 !endif
@@ -74,7 +74,7 @@ version_res_exe_nt_x64 = exever.res
 xlibs = $(dllname).lib $(wpi_lib) $(commonui_lib)
 
 $(name).exe : rcstr.gh $(dllname).dll $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
 !else
         %create $^&.lnk
@@ -86,7 +86,7 @@ $(name).exe : rcstr.gh $(dllname).dll $(objs) $(xlibs) $(name).res $(version_res
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
 $(dllname).dll : $(dll_objs)
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
         $(linker) name $@ $(lflags_dll) file {$(dll_objs)}
 !else
         $(cl) $(clflags_dll) $< $(ldflags_dll) $(extra_ldflags_dll)

@@ -53,7 +53,7 @@ wcpatch_objs += $+$(__subdir__)$-/symtab.obj
 !endif
 
 wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
 !else
     @%create $^&.lnk
@@ -83,7 +83,7 @@ wpatch_objs = &
     $+$(__subdir__)$-/bpatch.obj
 
 wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
 !else
     @%create $^&.lnk
@@ -113,7 +113,7 @@ bpatch_objs = &
     $+$(__subdir__)$-/patmain.obj
 
 bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
 !else
     @%create $^&.lnk
@@ -142,7 +142,7 @@ bdump_objs = &
     $+$(__subdir__)$-/patmain.obj
 
 bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
 !else
     @%create $^&.lnk
@@ -175,7 +175,7 @@ bdiff_objs += $+$(__subdir__)$-/symtab.obj
 !endif
 
 bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
 !else
     @%create $^&.lnk
@@ -198,7 +198,7 @@ bpcmt_objs = &
     $+$(__subdir__)$-/bpcmt.obj
 
 bpcmt.exe : $(bpcmt_objs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bpcmt_objs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(bpcmt_objs)}
@@ -216,7 +216,7 @@ bplevel_objs = &
     $+$(__subdir__)$-/bplevel.obj
 
 bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(bplevel_objs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file { $(bplevel_objs) }

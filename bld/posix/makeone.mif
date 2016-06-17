@@ -22,7 +22,7 @@ inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
 #       define the main target
 #
 $(name).exe: $(objs) $(posix_lib:$(to_os_path))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         @%create $(name).lnk

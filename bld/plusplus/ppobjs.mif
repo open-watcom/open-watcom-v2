@@ -214,7 +214,7 @@ common_objs = &
 plusplus_trmem_objs = $(_subdir_)trmem.obj
 !endif
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 # assumes Watcom math library
 plusplus_matherr_objs = $(_subdir_)cmatherr.obj
 !endif

@@ -9,7 +9,7 @@ libmisc_autodepends = .autodepend
 .c: ../c
 
 aliasgen.exe : aliasgen.obj
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}

@@ -30,14 +30,14 @@ all: batserv.exe tst.exe .symbolic
 inc_dirs = -I"../h"
 
 batserv.exe : batserv.obj batpipe.obj
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
 !else
         $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
 !endif
 
 tst.exe : tst.obj batcli.obj batpipe.obj
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {tst.obj batcli.obj batpipe.obj}

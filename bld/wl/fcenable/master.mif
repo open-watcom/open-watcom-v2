@@ -31,7 +31,7 @@ extra_c_flags_mem      = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 
 fcenable.exe : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(objs)}

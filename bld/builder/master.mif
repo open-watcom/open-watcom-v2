@@ -15,7 +15,7 @@ posix_commands_nt    = diff.exe
 all_commands         += builder.exe
 !endif
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifeq bootstrap 1
 !ifndef %LOGFNAME
 cl_libs_gen =
@@ -55,7 +55,7 @@ diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
 
 builder.exe : $(builder_objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(builder_objs)}
@@ -71,7 +71,7 @@ builder.exe : $(builder_objs)
 !endif
 
 .obj.exe :
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}

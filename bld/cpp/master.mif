@@ -24,7 +24,7 @@ all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 
 wcpp.exe : $(wcpp_objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(wcpp_objs)}

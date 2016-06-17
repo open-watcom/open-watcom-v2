@@ -136,7 +136,7 @@ inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_i
 
 $(exe_subdir)/$(exename).exe : $(depends_drv) $(exe_subdir)/$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_gen) $(comp_objs_drv) $(exe_subdir)/$(dllname).lib $(ldflags_gen)
 !else
         @%write drv.lnk $(lflags)
@@ -153,7 +153,7 @@ $(exe_subdir)/$(exename).exe : $(depends_drv) $(exe_subdir)/$(dllname).dll $(com
 
 $(exe_subdir)/$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
         @%write exe.lnk $(lflags)
@@ -168,7 +168,7 @@ $(exe_subdir)/$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) 
 
 $(exe_subdir)/$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
         @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
         @%write dll.lnk $(lflags_dll)

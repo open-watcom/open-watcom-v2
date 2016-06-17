@@ -30,7 +30,7 @@ objs =                  &
 # genc.obj, genobj.obj, and recover.obj are unused
 
 $(proj_name).exe : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(objs)}

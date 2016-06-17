@@ -41,7 +41,7 @@ version_res_exe_nt_x64 = exever.res
 xlibs = $(wpi_lib) $(commonui_lib)
 
 $(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
         $(LINKER) $(lflags) name $^@ file { $(objs) } lib { $(xlibs) }
 !ifeq host_cpu axp
 !ifeq release 0

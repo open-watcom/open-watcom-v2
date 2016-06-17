@@ -180,7 +180,7 @@ verrc_exe = $(exename)
 !ifdef plusplus_dll
  
 $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_gen) $(comp_objs_drv) $(dllname).lib $(ldflags_gen)
 !else
     @%write drv.lnk $(lflags)
@@ -196,7 +196,7 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_ex
 !else
  
 $(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
     @%write exe.lnk $(lflags)
@@ -210,7 +210,7 @@ $(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res
 !endif
  
 $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
     @%write dll.lnk $(lflags_dll)

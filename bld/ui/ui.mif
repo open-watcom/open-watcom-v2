@@ -93,7 +93,7 @@ objs = &
 objs += $(trmem_objs) $($(ui_os))
 
 $(name).lib: $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $<
 !else
     $(librarian) $(libflags) $<

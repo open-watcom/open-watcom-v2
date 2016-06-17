@@ -1,10 +1,10 @@
 !ifneq bootstrap 1
 !ifeq host_cpu x64
-!undef __WATCOM__
+!undef __WATCOM_TOOLS__
 !else ifeq host_cpu arm
-!undef __WATCOM__
+!undef __WATCOM_TOOLS__
 !else
-!define __WATCOM__
+!define __WATCOM_TOOLS__
 !endif
 !endif
 
@@ -661,7 +661,7 @@ inc_dirs_lang   = $(inc_dirs_lang_osi)
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 !else
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"

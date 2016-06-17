@@ -11,7 +11,7 @@ nmake_hdrs  = cmdlnprs.gc
 #
 
 nmake.exe : $(nmake_hdrs) $(nmake_objs) $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(nmake_objs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(nmake_objs)}

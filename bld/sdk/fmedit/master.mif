@@ -56,7 +56,7 @@ extra_cpp_flags = -DFMEDITDLL
 extra_c_flags = -s
 extra_c_flags_win = -zu -zw
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_fmedit = -bd
 !endif
 
@@ -72,7 +72,7 @@ version_res_dll_nt_x64 = version.res
 !include verrc.mif
 
 $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}

@@ -49,7 +49,7 @@ cxx_386     += $(bld_incs)
 ######################
 
 !ifeq bootstrap 1
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 
 !ifdef __LOADDLL__
 !loaddll wcc    wccd.dll
@@ -70,11 +70,11 @@ cxx_386     += $(bld_incs)
 # definitions for VISUALC and INTEL toolchains
 #
 ##############################################################################
-!if defined("__MSVC__") || defined("__INTEL__")
+!if defined("__MSVC_TOOLS__") || defined("__INTEL_TOOLS__")
 
 !if defined("__NT__")
 
-!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64"
+!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64"
 
 additional_cleanup_sys = *.pdb
 
@@ -91,7 +91,7 @@ common_cppflags_nt_386  = -D__NT_386__
 common_cppflags_nt_x64  = -D__NT_X64__
 
 # common release/debug flags
-!ifdef __INTEL__
+!ifdef __INTEL_TOOLS__
 common_flags_rel = -Ox -Zi -fast
 common_flags_dbg = -Zi -fast
 !else
@@ -146,7 +146,7 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
-!ifdef __INTEL__
+!ifdef __INTEL_TOOLS__
 bcc  = icl -nologo -c
 bcxx = icl -nologo -c
 bcl  = icl -nologo
@@ -181,11 +181,11 @@ bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_libs_
 
 bld_libflags = -out:$^@
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
-!ifdef __INTEL__
+!ifdef __INTEL_TOOLS__
 cc  = icl -nologo -c
 cxx = icl -nologo -c
 cl  = icl -nologo
@@ -254,12 +254,12 @@ incl_file_opts = -FI
 # definitions for CLANG and GCC toolchain
 #
 ##############################################################################
-!else if defined("__CLANG__") || defined("__GCC__")
+!else if defined("__CLANG_TOOLS__") || defined("__GCC_TOOLS__")
 
 !if defined("__LINUX__") || defined("__BSD__") || defined("__HAIKU__") || defined("__OSX__")
 
 !ifdef __LINUX__
-!if !defined( "__WATCOM__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
+!if !defined( "__WATCOM_TOOLS__" ) || "$(bld_cpu)" == "x64" || "$(bld_cpu)" == "arm"
 use_for_build = 1
 !endif
 !else ifdef __BSD__
@@ -316,7 +316,7 @@ common_flags = $(common_flags_dbg)
 !endif
 
 # Warning flags: all enabled except the ones that have no use besides annoy people
-!ifdef __CLANG__
+!ifdef __CLANG_TOOLS__
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses -Wno-self-assign -Wno-implicit-exception-spec-mismatch -ferror-limit=200
 !else
 common_cflags_wng = -Wall -Wno-switch -Wno-missing-braces -Wno-parentheses
@@ -354,7 +354,7 @@ cl_libs = $(cl_libs_gen)
 
 # bld settings
 ############################
-!ifdef __CLANG__
+!ifdef __CLANG_TOOLS__
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
 bcl  = clang -pipe
@@ -381,7 +381,7 @@ bld_cxxflags = -std=c++98
 !ifdef __OSX__
 bld_ldflags_cxx = -lc++
 bld_ldflags_dll_cxx = -lc++
-!else ifdef __CLANG__
+!else ifdef __CLANG_TOOLS__
 bld_ldflags_cxx = -lstdc++
 bld_ldflags_dll_cxx = -lstdc++
 !else
@@ -402,11 +402,11 @@ bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_
 
 bld_libflags = crs $^@
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 
 # standard settings
 ############################
-!ifdef __CLANG__
+!ifdef __CLANG_TOOLS__
 cc   = clang -pipe -c
 cxx  = clang++ -pipe -c
 cl   = clang -pipe

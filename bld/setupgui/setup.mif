@@ -201,7 +201,7 @@ virgin.exe: $(gendeps) dosstub.exe
 !else
 
 virgin.exe: $(gendeps)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     $(linker) name $^@ @setup.lnk
@@ -212,7 +212,7 @@ virgin.exe: $(gendeps)
 !else ifneq host_os win
 
 setup.exe: $(gendeps) setupui.res
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     $(linker) name $^@ @setup.lnk

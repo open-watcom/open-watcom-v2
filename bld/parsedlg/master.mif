@@ -13,7 +13,7 @@ inc_dirs = -I"../h" -I"$(watcom_dir)/h"
 .c: ../c
 
 $(proj_name).exe : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(objs)}

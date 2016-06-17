@@ -96,7 +96,7 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(
 .msg:   ../../h
 
 $(name).lib : guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
 !else
     $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)

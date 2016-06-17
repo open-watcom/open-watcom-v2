@@ -9,7 +9,7 @@ errsrc_autodepends = .autodepend
 .c: ../c
 
 errsrc.exe : errsrc.obj
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}

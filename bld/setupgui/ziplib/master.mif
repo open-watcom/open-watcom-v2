@@ -52,7 +52,7 @@ objs = &
     zuchgdat.obj
 
 $(proj_name).lib : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else
     $(librarian) $(libflags) $(objs)

@@ -12,7 +12,7 @@ inc_dirs = -I"../h"
 .c: ../c
 
 .obj.exe :
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $< $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$<}

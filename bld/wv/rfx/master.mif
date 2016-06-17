@@ -50,7 +50,7 @@ objs += inthdlrs.obj
 !endif
 
 rfx.exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file { $(objs) }

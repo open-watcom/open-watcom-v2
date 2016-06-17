@@ -42,7 +42,7 @@ libs += $(wres_lib)
 
 
 wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }

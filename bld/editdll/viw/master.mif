@@ -31,7 +31,7 @@ verrc_dll = weditviw
 all: weditviw.dll wedit.dll .SYMBOLIC
 
 wedit.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $[@ $(cl_objs) $(ldflags)
 !else
         $(linker) name $^@ op implib @dll.lnk file $[@
@@ -39,7 +39,7 @@ wedit.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(host_
         @%make bind_version_res_dll
 
 weditviw.dll : weditviw.obj $(cl_objs) dll.lnk $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $[@ $(cl_objs) $(ldflags)
 !else
         $(linker) name $^@ @dll.lnk file $[@

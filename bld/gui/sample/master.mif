@@ -44,7 +44,7 @@ objs =  dlgstat.obj     &
 
 ###############
 sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
 !else
 !ifeq sys nlm

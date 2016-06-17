@@ -16,7 +16,7 @@ objs =  main.obj    &
         param.obj
 
 $(proj_name).exe : $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(objs)}

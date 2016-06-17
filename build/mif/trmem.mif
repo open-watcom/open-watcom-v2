@@ -1,6 +1,6 @@
 trmem_cflags = -I"$(trmem_dir)"
 trmem_cover_cflags = -I"$(trmem_dir)"
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 trmem_cflag_i86 = -of+
 trmem_cflag_386 = -of+
 trmem_cflags += -s

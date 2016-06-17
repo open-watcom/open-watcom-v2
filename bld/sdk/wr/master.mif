@@ -84,7 +84,7 @@ version_res_dll_nt_x64 = version.res
 !include verrc.mif
 
 $(name).dll: $(win_yacc_file).h rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(object) $(xlibs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(object)} lib {$(xlibs)}

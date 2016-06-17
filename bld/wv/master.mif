@@ -10,7 +10,7 @@ wv_autodepends = .AUTODEPEND
 
 additional_cleanup = *.u *.gdl
 
-wv_trmem = 1
+#wv_trmem = 1
 
 dig_os_os2_386 = os2v2
 dig_os_dos_386 = dsx
@@ -206,14 +206,14 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifeq host_os linux
 extra_ldflags = -ldl
 !endif
 !endif
 
 $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
     %create $^&.lnk
@@ -244,7 +244,7 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
 !endif
 
 wd.lib : litdef.gh $(engine_objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(engine_objs)
 !else
     $(librarian) $(libflags) $(engine_objs)

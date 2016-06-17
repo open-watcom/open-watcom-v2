@@ -41,7 +41,7 @@ extra_c_flags     = -s
 extra_c_flags_win = -zu-zw-zc
 
 # preprocessor objects
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_preproc = -zm
 extra_c_flags_ppexpr  = -zm
 extra_c_flags_ppmacro = -zm
@@ -68,7 +68,7 @@ version_res_dll_nt_x64 = version.res
 xlibs = $(wres_lib) $(wr_lib) $(wpi_lib) $(commonui_lib)
 
 $(name).dll: rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
 !else
         @%create tmp.lnk

@@ -337,7 +337,7 @@ verrc_dll = $(dllname)
 !include verrc.mif
 
 $(dllname).dll: $(intname).lib owf.res $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(intname).lib $(ldflags)
 !else
     %create $^&.lnk

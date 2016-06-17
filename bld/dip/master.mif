@@ -57,7 +57,7 @@ extra_c_flags   = -s
 
 extra_c_flags_i86 = -zc -zu
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_dipimp = -zlf -os     # -os ensures byte align for code
 !endif
 
@@ -79,13 +79,13 @@ verrc_dll = $(name)
 !include verrc.mif
 
 xname = $(name)$(ext_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
 xname = $(name)$(ext_lib_shared)
 !endif
 !endif
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 objs += $(imp_objs_watcom)
 !endif
 
@@ -94,7 +94,7 @@ imp_libs += $(dwarfr_lib)
 !endif
 
 $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_dll) $(objs) $(imp_libs) $(ldflags_dll)
 !else
 !ifdef imp_libs

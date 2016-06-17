@@ -141,7 +141,7 @@ target = $(target_basename)$(trap_ext_$(host_os))
 !else
 target = $(target_basename).trp
 !endif
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
 target = $(target_basename)$(ext_lib_shared)
 !endif

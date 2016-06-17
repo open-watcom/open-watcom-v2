@@ -21,7 +21,7 @@ inc_dirs = -I"../h" $(idelib_inc_dirs) $(wclass_inc_dirs)
 libs = $(idelib_lib) $(wclass_lib)
 
 $(proj_name).exe : $(objs) $(libs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $< $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}

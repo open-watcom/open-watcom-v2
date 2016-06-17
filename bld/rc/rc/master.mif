@@ -205,7 +205,7 @@ res_exe = wrc.res
 !ifdef wrc_dll
 
 $(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_gen) $(objs_drv) $(dllname).lib $(ldflags_gen)
 !else
         @%write drv.lnk $(lflags)
@@ -218,7 +218,7 @@ $(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(versio
 !else
 
 $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(res_exe) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs_exe) $(xlibs) $(ldflags)
 !else
         @%write exe.lnk $(lflags)
@@ -235,7 +235,7 @@ $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(res_exe) $(v
 !endif
 
 $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(res_dll) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_dll) $(objs_dll) $(xlibs) $(ldflags_dll)
 !else
         @%write dll.lnk $(lflags_dll)

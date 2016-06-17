@@ -121,7 +121,7 @@ extra_c_flags = -fh
 extra_c_flags_386 = -of+
 !endif
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_aslexyy = -fh=pch02.pch
 extra_c_flags_asilexyy = -fh=pch03.pch
 extra_c_flags_preproc = -fh=$^:pch04.pch
@@ -133,7 +133,7 @@ extra_c_flags_trmemcvr = -fh=$^:pch05.pch
 extra_c_flags_pathlist = -fh=$^:pch06.pch
 !endif
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 stand_pch_c_flags = -fh=stand.pch
 !endif
 
@@ -185,7 +185,7 @@ all_as += $(name).exe
 all : $(all_as) .symbolic
 
 $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
 !else
     $(linker) name $(lname) $(lflags) file {$(as_objs)} lib {$(libs)}
@@ -198,7 +198,7 @@ $(name).res : $(as_dir)/h/as.rc msg.gh
     $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 
 asinline.lib : asi_msg.gh $(asi_objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(asi_objs)
 !else
     $(librarian) $(libflags) $(asi_objs)

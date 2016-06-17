@@ -14,7 +14,7 @@ dll_objs = $(dll_subdir)/clibext.obj
 
 inc_dirs = -I"../h"
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 libs = clibext.lib clibexts.lib
 !endif
 

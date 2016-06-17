@@ -18,7 +18,7 @@ all : cwstub.exe $(proj_name).exe .symbolic
 !endif
 
 $(proj_name).exe : copystub.gh decstub.gh $(objs)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
