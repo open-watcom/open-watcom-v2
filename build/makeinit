@@ -102,6 +102,8 @@ bld_os = osx
 !else ifdef __OSXX64__
 bld_cpu = x64
 bld_os = osx
+bld64host_osx = 1
+bld64host_osi = 1
 !else ifdef __OSXPPC__
 bld_cpu = ppc
 bld_os = osx
