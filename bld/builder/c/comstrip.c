@@ -36,7 +36,7 @@
 
 char    buf[2048];
 
-char *skipwhite( char *s )
+static char *skipwhite( char *s )
 {
     while( *s && isspace( *s ) )
         s++;

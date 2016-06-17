@@ -174,7 +174,7 @@ static void      PutNL( void );                        // - output a newline
 static void      AddIncludePathList( char *path );     // - add to list of include paths
 static void      ProcessRecord( int, char * );   // - PROCESS A RECORD OF INPUT
 static void      EatWhite( void );               // - eat white space
-static int       Expr( void );
+static bool      Expr( void );
 
 // DATA (READ ONLY)
 
@@ -588,7 +588,7 @@ static bool GetToken( char op )
     return( true );
 };
 
-static int PrimaryExpr( void )
+static bool PrimaryExpr( void )
 {
     SEGMENT     *new;           // - new segment
     bool        ret;
@@ -598,8 +598,7 @@ static int PrimaryExpr( void )
         if( !GetToken( OP_RPAREN ) ) {
             Error( "Expecting ')'" );
         }
-    } 
-    else {
+    } else {
         new = SegmentLookUp( Token );
         ScanString();
         if( new != NULL && new->seg_type == SEG_KEEP ) {
@@ -611,7 +610,7 @@ static int PrimaryExpr( void )
     return( ret );
 }
 
-static int NotExpr( void )
+static bool NotExpr( void )
 {
     if( GetToken( OP_NOT ) ) {
         return( !PrimaryExpr() );
@@ -620,9 +619,9 @@ static int NotExpr( void )
     }
 }
 
-static int AndExpr( void )
+static bool AndExpr( void )
 {
-    int ret;
+    bool ret;
 
     ret = NotExpr();
     while( GetToken( OP_AND ) ) {
@@ -631,9 +630,9 @@ static int AndExpr( void )
     return( ret );
 }
 
-static int Expr( void )
+static bool Expr( void )
 {
-    int ret;
+    bool ret;
 
     ret = AndExpr();
     while( GetToken( OP_OR ) ) {

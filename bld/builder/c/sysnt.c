@@ -47,7 +47,7 @@
 
 char    Title[TITLESIZE];
 
-void SysInitTitle( int argc, char *argv[] )
+static void SysInitTitle( int argc, char *argv[] )
 {
     int i;
 
@@ -64,7 +64,7 @@ void SysInitTitle( int argc, char *argv[] )
     SetConsoleTitle( Title );
 }
 
-void SysSetTitle( char *title )
+static void SysSetTitle( char *title )
 {
     char        *end;
 

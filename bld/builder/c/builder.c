@@ -219,7 +219,7 @@ static bool ProcessOptions( char *argv[], bool opt_end )
     return( opt_end );
 }
 
-int parse_string( char *env, char **args )
+static int parse_string( char *env, char **args )
 {
     char        parm_buff[_MAX_PATH];
     int         pos;
