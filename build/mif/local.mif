@@ -474,7 +474,7 @@ incl_file_opts = -include
 # Unknown toolchain
 #
 ##############################################################################
-!else ifndef __WATCOM__
+!else ifneq %OWTOOLS WATCOM
 !error "Toolchain is unsupported by OW build system"
 !endif
 
