@@ -11,4 +11,3 @@ which = TRAP
 extra_cpp_flags = -dPHARLAP
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
-!include $(trap_dir)/master.mif

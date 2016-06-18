@@ -49,4 +49,5 @@ msg.obj : msg.c ../h/msg.h ../h/wlnkmsg.h
 demangle.obj : $(lib_misc_dir)/c/demangle.c
         $(compile) -i="$(lib_misc_dir)/h"
 
+!include tools.mif
 !include ../master.mif

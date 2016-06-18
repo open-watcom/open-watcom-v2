@@ -4,6 +4,7 @@
 comp_sys = /bt=dos
 link_sys = pharlap
 
+!include tools.mif
 !include ../makefile
 
 msgstrm.exe : $(OBJS) makefile msgstrm.lnk

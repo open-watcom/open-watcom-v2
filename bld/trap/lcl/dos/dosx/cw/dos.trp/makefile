@@ -12,4 +12,3 @@ which = TRAP
 extra_cpp_flags = -DCAUSEWAY
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
-!include $(trap_dir)/master.mif

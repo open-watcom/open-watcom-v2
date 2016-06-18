@@ -122,10 +122,10 @@ w32_lang_root  = $(%WATCOM)
 
 exes = &
     do1_fpis.exe do1_fpcs.exe &
-	do2_fpis.exe do2_fpcs.exe &
+    do2_fpis.exe do2_fpcs.exe &
     do1_fpic.exe do1_fpcc.exe &
-	do2_fpic.exe do2_fpcc.exe &
-	dos_fpim.exe dos_fpcm.exe &
+    do2_fpic.exe do2_fpcc.exe &
+    dos_fpim.exe dos_fpcm.exe &
     dos_fpil.exe dos_fpcl.exe &
     dos_fpih.exe dos_fpch.exe &
     pls_fpir.exp pls_fpcr.exp &
@@ -165,7 +165,7 @@ do2_fpis.exe : $(mathtest)
 do2_fpcs.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -ms -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj 
-	
+
 do1_fpic.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -mc -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
@@ -173,7 +173,7 @@ do1_fpic.exe : $(mathtest)
 do1_fpcc.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dFIRSTHALF -mc -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
-	
+
 do2_fpic.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -mc -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
@@ -181,7 +181,7 @@ do2_fpic.exe : $(mathtest)
 do2_fpcc.exe : $(mathtest)
     $(cc_i86) $[@ $(tiny_opts) -dSECONDHALF -mc -fpc -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj
-	
+
 dos_fpim.exe : $(mathtest)
     $(cc_i86) $[@ $(comp_opts) -mm -fpi -bt=dos
     $(linker_i86) SYSTEM dos $(link_opts) LIBPATH $(dos16_libdir) FILE $^*.obj

@@ -20,4 +20,3 @@ extra_c_flags = -zu
 inc_dirs = $(rsilib_inc_dirs)
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
-!include $(trap_dir)/master.mif
