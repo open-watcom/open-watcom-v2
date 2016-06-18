@@ -41,3 +41,4 @@ extra_linker = &
 !endif
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
+!include $(trap_dir)/master.mif

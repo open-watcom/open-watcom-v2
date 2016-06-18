@@ -19,3 +19,4 @@ extra_a_flags = -DCAUSEWAY
 inc_dirs = -I"$(causeway_dir)/inc" -I"$(comp_cfg_dir)/h"
 
 !include $(trap_dir)/lcl/dos/dosx/dosx.mif
+!include $(trap_dir)/master.mif
