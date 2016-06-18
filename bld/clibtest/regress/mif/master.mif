@@ -104,6 +104,7 @@
 !inject runlnx                                   r_linux386                r_linuxx64
 #=====================================================================================
 
+!include tools.mif
 !include testenv2.mif
 
 .extensions:

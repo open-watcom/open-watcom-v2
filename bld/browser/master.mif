@@ -34,6 +34,7 @@ to_os_path=/=\
 !include $(wclass_dir)/client.mif
 !include $(gui_dir)/client.mif
 !include $(ui_dir)/client.mif
+!include tools.mif
 
 !include ../template.mif
 
@@ -148,7 +149,7 @@ dmem.obj : mem.cpp
 
 !ifdef wbrw_h_$(host_os)
 $(wbrw_h_$(host_os)): .ALWAYS
-curr_dir=$+$(%cwd)$-
+curr_dir=$+$(%__CWD__)$-
     @cd $(doc_path_$(host_os):$(to_os_path))
     @wmake -h hbook=wbrw header=1
     @cd $(curr_dir)

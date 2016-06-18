@@ -8,6 +8,8 @@ additional_cleanup = mkdginfo.bat
 !include defrule.mif
 !include deftarg.mif
 
+!include tools.mif
+
 .asm: ..
 .c: ..
 .h: ..
@@ -58,12 +60,12 @@ cwsrun.exe : $(cwsrun_objs)
 
 tntrun.exe : $(tntrun_objs)
   $(linker) name $^&.exp system pharlap ext option stack=32k,map file {$(tntrun_objs)} lib {clib3r.lib}
-  $(%tntdir)\bin\rebind $(%tntdir)\bin\rtk\tntb.exe $^&.exp -exe $^@
+  $(tntdir)\bin\rebind $(tntdir)\bin\rtk\tntb.exe $^&.exp -exe $^@
 
 x32run.exe : $(x32run_objs)
   $(linker) name $^@ system x32r option map,dosseg file {$(x32run_objs)} lib {clib3r.lib}
   x32fix $^@
-   
+
 # Probably should use default build rules?
 tntrun.obj : loader.c #../loader.h
   $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
@@ -73,7 +75,7 @@ d4grun.obj : loader.c #../loader.h dginfo.gh
   $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
 cwsrun.obj : loader.c #../loader.h
   $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
-        
+
 dginfo.gh : $(rsi_root)/bin/dos4g.exe
   @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh
   -mkdginfo
@@ -94,7 +96,7 @@ w32run.exe : $(ntldr_objs) ntstub.exe
   @%append $^&.lnk file {$(ntldr_objs)}
   @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe
   $(linker) name $^@ @$^&.lnk
-  
+
 ntstub.exe : ntstub.obj
   $(linker) name $^@ system dos option map file {ntstub.obj}
 
@@ -103,7 +105,7 @@ ntstub.exe : ntstub.obj
 all: .symbolic
 
 extra_c_flags_loader = -D__OS2 -D__CALL21__
-        
+
 os2ldr.exe : $(os2ldr_objs) os2stub.exe
   $(linker) name $^@ system os2v2 pmc opt map,stack=32k,stub=os2stub.exe file {$(os2ldr_objs)} lib {os2386.lib}
 

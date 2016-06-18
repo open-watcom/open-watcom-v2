@@ -77,7 +77,7 @@ sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
-        $(wbind) $* -s $(%watcom)/binw/win386.ext -R -k $(rcopt) $(rcname).res
+        $(wbind) $* -s $(%WATCOM)/binw/win386.ext -R -k $(rcopt) $(rcname).res
 !else
         $(rc) -k $(rcname).res $@
 !endif

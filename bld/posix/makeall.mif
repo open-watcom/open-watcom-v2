@@ -22,7 +22,7 @@ all : lib $(commands) .symbolic
     @%null
 
 lib : .symbolic $(__MAKEFILES__)
-curr_dir_all=$+ $(%CWD) $-
+curr_dir_all=$+ $(%__CWD__) $-
     @if not exist $(libdir) @mkdir $(libdir)
     @cd $(libdir)
     !@wmake -h $(mkfile)
@@ -38,7 +38,7 @@ $(commands) : .symbolic $(__MAKEFILES__)
     !@wmake -h -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
-curr_dir_all=$+ $(%CWD) $-
+curr_dir_all=$+ $(%__CWD__) $-
     @echo clean $(libdir)
     @cd $(libdir)
     @%make clean_all_objs

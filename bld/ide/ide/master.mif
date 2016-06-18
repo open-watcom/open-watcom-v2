@@ -107,7 +107,7 @@ ide.res : ide.rc $(gui_dir)/h/gui.rc
 
 !ifdef ide_h_$(host_os)
 $(ide_h_$(host_os)): .ALWAYS
-curr_dir=$+$(%cwd)$-
+curr_dir=$+$(%__CWD__)$-
         @cd $(doc_path_$(host_os):$(to_os_path))
         @wmake -h hbook=ide header=1
         @cd $(curr_dir)

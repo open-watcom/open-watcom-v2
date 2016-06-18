@@ -14,6 +14,8 @@
 !include $(posix_dir)/common.mif
 !include deftarg.mif
 
+!include tools.mif
+
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
 
 .c: $(posix_dir)/src/$(name)
@@ -75,6 +77,6 @@ $(name).exe: $(objs) $(posix_lib:$(to_os_path))
 !endif
 !else ifeq host_os dos
 !ifeq host_cpu 386
-        $(posix_dir:$(to_os_path))\misc\pharlap\bind386 $(posix_dir:$(to_os_path))\misc\pharlap\run386b $(name).exp
+        $(pharlap)bind386 $(pharlap)run386b $(name).exp
 !endif
 !endif

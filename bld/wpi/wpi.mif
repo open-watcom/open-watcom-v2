@@ -39,7 +39,7 @@ CFLAGS = $(CMN_CFLAGS) $(PLAT_CFLAGS) $(EXTRA_CFLAGS)
 .error
     @cd $(MAIN_DIR)
 
-MAIN_DIR = $+ $(%__cwd__)/.. $-
+MAIN_DIR = $+ $(%__CWD__)/.. $-
 OBJ_DIR  = $(MAIN_DIR)/$(OBJ_NDIR)
 LIB_DIR = $(MAIN_DIR)/lib
 UPD_DIR = $(%LIBROOT)/wpi

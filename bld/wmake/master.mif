@@ -166,7 +166,7 @@ do : .symbolic
     wmake -h -n | sed -f ../mkdo.sed >do.bat
 
 test : $(xname).exe .always .symbolic
-curr_dir=$+$(%CWD)$-
+curr_dir=$+$(%__CWD__)$-
     cd ../regress
 !ifdef __UNIX__
     -./test.sh $(curr_dir)/$(xname).exe

@@ -39,6 +39,7 @@ xname = $(xname_$(target)_$(host_cpu))
 !ifneq target win
 !include wres.mif
 !endif
+!include tools.mif
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
 objs_nt_386     = sampnt.obj sysinit.obj sampexe.obj
