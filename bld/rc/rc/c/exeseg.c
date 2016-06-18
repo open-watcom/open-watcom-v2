@@ -181,7 +181,7 @@ extern uint_32 ComputeSegmentSize( WResFileID handle, SegTable * segs, int shift
             numread = RCREAD( handle, &num_relocs, sizeof(uint_16) );
             if( numread != sizeof(uint_16) )
                 return( 0 );
-            length += (unsigned_32)num_relocs * (unsigned_32)OS_RELOC_ITEM_SIZE;
+            length += (unsigned_32)( (unsigned_32)num_relocs * (unsigned_32)OS_RELOC_ITEM_SIZE );
         }
     }
 

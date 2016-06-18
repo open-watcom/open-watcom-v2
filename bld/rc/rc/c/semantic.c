@@ -194,7 +194,7 @@ void SemAddResource( WResID * name, WResID * type, ResMemFlags flags, ResLocatio
     SemAddResource2( name, type, flags, loc, NULL );
 }
 
-void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
+void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
                 ResLocation loc, const char *filename )
 /******************************************************************/
 {
