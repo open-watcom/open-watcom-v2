@@ -1,5 +1,5 @@
 # toggle debugger DLL's base version-by-version
-!if ($(%OWBLDVER) - ($(%OWBLDVER)/2)*2) 
+!if ($(bld_ver) - ($(bld_ver)/2)*2) 
 dll_start = 00000
 !else
 dll_start = 40000
