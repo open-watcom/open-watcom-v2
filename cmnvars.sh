@@ -34,7 +34,7 @@ export INCLUDE=$OWDEFINCLUDE
 export WATCOM=$OWDEFWATCOM
 
 # Set Watcom tool chain version to WATCOMVER variable
-unset WATCOMVER
+export WATCOMVER=0
 if [ "$OWTOOLS" = "WATCOM" ]; then
     echo export WATCOMVER=__WATCOMC__>watcom.gc
     wcc386 -p watcom.gc >watcom.sh

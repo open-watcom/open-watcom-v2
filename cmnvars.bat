@@ -34,7 +34,7 @@ set INCLUDE=%OWDEFINCLUDE%
 set WATCOM=%OWDEFWATCOM%
 
 REM Set Watcom tool chain version to WATCOMVER variable
-set WATCOMVER=
+set WATCOMVER=0
 if not '%OWTOOLS%' == 'WATCOM' goto no_watcom
 echo set WATCOMVER=__WATCOMC__>watcom.gc
 wcc386 -p watcom.gc >watcom.bat
