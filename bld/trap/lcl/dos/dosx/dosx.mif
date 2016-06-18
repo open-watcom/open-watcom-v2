@@ -8,7 +8,6 @@ extra_objs      += $(dosx_trap_objs)
 
 inc_dirs += -I"$(trap_dir)/lcl/dos/dosx/h"
 
-!include tools.mif
 !include $(trap_dir)/lcl/dos/dos.mif
 
 dosx_serv_objs_i86 = misc7086.obj
@@ -35,4 +34,4 @@ dosx_serv_objs = &
         x86cpu.obj &
         $(dosx_serv_objs_$(host_cpu))
 
-!include $(trap_dir)/master.mif
+!include tools.mif
