@@ -177,7 +177,7 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
     char    *newname;
 
     if( add_quotes ) {
-        if( head->MenuName != NULL || head->MenuName->name[0] != '\0' ) {
+        if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
             len = strlen( head->MenuName->name );
             newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
             newname[0] = '"';

@@ -322,7 +322,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
             }
             if( !error ) {
                 tmp16 = name->ord.wOrdinalID;
-                ResWriteUint16( &tmp16, handle );
+                error = ResWriteUint16( &tmp16, handle );
             }
         } else {
             error = ResWriteString( name->name, use_unicode, handle );
