@@ -188,8 +188,12 @@ mode_clflags   += -\"op nored\"
 mode_clflags   += -"op nored"
 !endif
 !ifneq bootstrap 1
-mode_cflags  += -x -xx -zam
-mode_clflags += -x -xx -zam
+mode_cflags  += -x
+mode_clflags += -x
+!endif
+!if ( "$(bootstrap)" != "1" ) || ( $(watcom_ver) >= 1300 )
+mode_cflags  += -xx -zam
+mode_clflags += -xx -zam
 !endif
 
 !ifndef $(proj_name)_nosymfile
