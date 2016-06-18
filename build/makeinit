@@ -1,19 +1,21 @@
-bld_ver      = $(%OWBLDVER)
-bld_ver_str  = $(%OWBLDVERSTR)
+bld_ver      = $+$(%OWBLDVER)$-
+bld_ver_str  = $+$(%OWBLDVERSTR)$-
 patch_level  = 0
-contrib_dir  = $(%OWROOT)/contrib
-build_dir    = $(%OWROOT)/build
-src_dir      = $(%OWSRCDIR)
-docs_dir     = $(%OWDOCSDIR)
+contrib_dir  = $+$(%OWROOT)$-/contrib
+build_dir    = $+$(%OWROOT)$-/build
+src_dir      = $+$(%OWSRCDIR)$-
+docs_dir     = $+$(%OWDOCSDIR)$-
+watcom_ver   = $+$(%WATCOMVER)$-
+toolchain    = $+$(%OWTOOLS)$-
 
-bin_subdir   = $(%OWOBJDIR)
+bin_subdir   = $+$(%OWOBJDIR)$-
 !ifdef %OWDLLOBJDIR
-dll_subdir   = $(%OWDLLOBJDIR)
+dll_subdir   = $+$(%OWDLLOBJDIR)$-
 !else
 dll_subdir   = dllobjs
 !endif
 
-verbose      = $(%OWVERBOSE)
+verbose      = $+$(%OWVERBOSE)$-
 
 # don't ask, just nuke the files
 .ERASE
@@ -22,15 +24,15 @@ mif_path     = $(build_dir)/mif
 
 .mif: $(mif_path)
 
-!ifeq %OWTOOLS WATCOM
+!ifeq toolchain WATCOM
 !define __WATCOM_TOOLS__
-!else ifeq %OWTOOLS VISUALC
+!else ifeq toolchain VISUALC
 !define __MSVC_TOOLS__
-!else ifeq %OWTOOLS GCC
+!else ifeq toolchain GCC
 !define __GCC_TOOLS__
-!else ifeq %OWTOOLS CLANG
+!else ifeq toolchain CLANG
 !define __CLANG_TOOLS__
-!else ifeq %OWTOOLS INTEL
+!else ifeq toolchain INTEL
 !define __INTEL_TOOLS__
 !else
 # if not defined or unknow value, default to WATCOM
@@ -38,8 +40,8 @@ mif_path     = $(build_dir)/mif
 !endif
 
 !ifdef %BOOTSTRAP_CPU
-bld_cpu = $(%BOOTSTRAP_CPU)
-bld_os = $(%BOOTSTRAP_OS)
+bld_cpu = $+$(%BOOTSTRAP_CPU)$-
+bld_os = $+$(%BOOTSTRAP_OS)$-
 !else ifdef __MSDOS__
 bld_cpu = 386
 bld_os = dos
@@ -120,53 +122,10 @@ nulldevice = /dev/null
 nulldevice = nul
 !endif
 
-!include cdirs.mif
-
 # default windowing support
 !ifdef %OWDEFAULT_WINDOWING
-default_windowing = $(%OWDEFAULT_WINDOWING)
+default_windowing = $+$(%OWDEFAULT_WINDOWING)$-
 !endif
 
-tools_root      = $(%OWTOOLROOT)
-
-!ifndef __UNIX__
-
-# The NOVELLNDK environment variable should be added during install. If not, the default location is
-# C:\NOVELL\NDK\NWSDK.
-nwndk_root      = $(%NOVELLNDK)
-nwos2dir=$(tools_root)\nwos2lib
-#nwdir=$(tools_root)\nwclib
-#nwsrc=$(tools_root)\src
-#nw40src=$(tools_root)\nw40src
-#nw40dir=$(tools_root)\nw40clib
-
-#
-# define directories (with trailing \)
-#
-pharlap=$(tools_root)\
-flashtek=$(tools_root)\x32\
-#
-# define directories (without trailing \)
-#
-plsdir=$(tools_root)\dilib
-adsdir=$(tools_root)\adslib
-
-!else
-
-# The NOVELLNDK environment variable should be added during install. If not, the default location is
-# C:\NOVELL\NDK\NWSDK.
-nwndk_root      = $(%NOVELLNDK)
-nwos2dir=$(tools_root)/nwos2lib
-
-#
-# define directories (with trailing \)
-#
-pharlap=$(tools_root)/
-flashtek=$(tools_root)/x32/
-#
-# define directories (without trailing /)
-#
-plsdir=$(tools_root)/dilib
-adsdir=$(tools_root)/adslib
-
-!endif
+!include cdirs.mif
+!include tools.mif
