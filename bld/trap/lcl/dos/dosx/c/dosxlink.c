@@ -357,33 +357,30 @@ static const char *GetHelpName( const char *exe_name )
         pe_header       pe;
     }   head;
 
-    handle = -1;
     rc = TinyOpen( exe_name, 0 );
-    if( TINY_ERROR( rc ) )
-        goto exp;
-    handle = TINY_INFO( rc );
-    TinyRead( handle, &head.dos, sizeof( head.dos ) );
-    if( head.dos.signature != DOS_SIGNATURE )
-        goto exp;
-    TinySeek( handle, OS2_NE_OFFSET, SEEK_SET );
-    TinyRead( handle, &off, sizeof( off ) );
-    TinySeek( handle, off, SEEK_SET );
-    TinyRead( handle, &head.pe, sizeof( head.pe ) );
-    TinyClose( handle );
-    handle = -1;
-    switch( head.pe.signature ) {
-    case PE_SIGNATURE:
-    case PL_SIGNATURE:
-        if( head.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
-            _DBG_Writeln( "Want PEDHELP" );
-            return( HELPNAME_DS );
+    if( TINY_OK( rc ) ) {
+        handle = TINY_INFO( rc );
+        TinyRead( handle, &head.dos, sizeof( head.dos ) );
+        if( head.dos.signature != DOS_SIGNATURE ) {
+            TinyClose( handle );
+        } else {
+            TinySeek( handle, OS2_NE_OFFSET, SEEK_SET );
+            TinyRead( handle, &off, sizeof( off ) );
+            TinySeek( handle, off, SEEK_SET );
+            TinyRead( handle, &head.pe, sizeof( head.pe ) );
+            TinyClose( handle );
+            switch( head.pe.signature ) {
+            case PE_SIGNATURE:
+            case PL_SIGNATURE:
+                if( head.pe.subsystem == PE_SS_PL_DOSSTYLE ) {
+                    _DBG_Writeln( "Want PEDHELP" );
+                    return( HELPNAME_DS );
+                }
+                _DBG_Writeln( "Want PENHELP" );
+                return( HELPNAME_NS );
+            }
         }
-        _DBG_Writeln( "Want PENHELP" );
-        return( HELPNAME_NS );
     }
-exp:
-    if( handle != -1 )
-        TinyClose( handle );
     _DBG_Writeln( "Want PLSHELP" );
     return( HELPNAME );
 }
