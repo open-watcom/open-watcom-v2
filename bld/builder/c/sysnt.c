@@ -93,7 +93,7 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     HANDLE              pipe_input;
     HANDLE              pipe_output;
     SECURITY_ATTRIBUTES sa;
-    DWORD               rc = 0;
+    DWORD               rc;
 
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
@@ -106,6 +106,7 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     DuplicateHandle( cp, GetStdHandle( STD_ERROR_HANDLE ), cp, &parent_std_error, 0, TRUE, DUPLICATE_SAME_ACCESS );
     SetStdHandle( STD_OUTPUT_HANDLE, pipe_output );
     SetStdHandle( STD_ERROR_HANDLE, pipe_output );
+    rc = 0;
     if( !DuplicateHandle( cp, pipe_input, cp, readpipe, 0, FALSE, DUPLICATE_SAME_ACCESS ) ) {
         rc = GetLastError();
     }
@@ -156,7 +157,7 @@ int SysRunCommand( const char *cmd )
         if( readpipe != INVALID_HANDLE_VALUE ) {
             CloseHandle( readpipe );
         }
-        return( rc );
+        return( -1 );
     }
     if( readpipe != INVALID_HANDLE_VALUE ) {
         for( ;; ) {
@@ -178,8 +179,8 @@ int SysRunCommand( const char *cmd )
         CloseHandle( readpipe );
     }
     WaitForSingleObject( pinfo.hProcess, INFINITE );
-    GetExitCodeProcess( pinfo.hProcess, &rc );      
+    GetExitCodeProcess( pinfo.hProcess, &rc );
     CloseHandle( pinfo.hProcess );
     CloseHandle( pinfo.hThread );
-    return( rc );
+    return( (int)rc );
 }

@@ -52,42 +52,81 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "OS2", 1 );
 }
 
-int SysRunCommandPipe( const char *cmd, int *readpipe )
+static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
 {
-    int         rc;
     HFILE       pipe_input;
     HFILE       pipe_output;
     HFILE       std_output;
     HFILE       std_error;
-    char        *cmdnam = strdup( cmd );
-    char        *sp = strchr( cmdnam, ' ' );
+    char        *cmdnam;
+    char        *sp;
+    int         rc;
 
+    *readpipe = 0;
+    cmdnam = strdup( cmd );
+    if( cmdnam == NULL )
+        return( -1 );
+    sp = strchr( cmdnam, ' ' );
     if( sp != NULL ) {
         *sp = '\0';
         sp++;
     }
-
+    rc = -1;
     std_output = 1;
     std_error  = 2;
-    rc = DosCreatePipe( &pipe_input, &pipe_output, BUFSIZE );
-    if( rc != 0 )
-        return( rc );
-    rc = DosDupHandle( pipe_output, &std_output );
-    if( rc != 0 )
-        return( rc );
-    rc = DosDupHandle( pipe_output, &std_error );
-    if( rc != 0 )
-        return( rc );
-    DosClose( pipe_output );
-    rc = spawnl( P_NOWAIT, cmdnam, cmdnam, sp, NULL );
-    DosClose( std_output );
-    DosClose( std_error );
-    *readpipe = _hdopen( ( int ) pipe_input, O_RDONLY );
+    if( DosCreatePipe( &pipe_input, &pipe_output, BUFSIZE ) == 0 ) {
+        if( DosDupHandle( pipe_output, &std_output ) == 0 ) {
+            if( DosDupHandle( pipe_output, &std_error ) == 0 ) {
+                DosClose( pipe_output );
+                rc = spawnl( P_NOWAIT, cmdnam, cmdnam, sp, NULL );
+                DosClose( std_output );
+                DosClose( std_error );
+                *readpipe = pipe_input;
+            }
+        }
+    }
     free( cmdnam );
-    return rc;
+    return( rc );
 }
 
 int SysChdir( char *dir )
 {
     return SysDosChdir( dir );
+}
+
+int SysRunCommand( const char *cmd )
+{
+    int         my_std_output;
+    int         my_std_error;
+    ULONG       bytes_read;
+    int         rc;
+    HFILE       readpipe;
+    char        buff[256 + 1];
+    APIRET      rc2;
+
+    my_std_output = dup( STDOUT_FILENO );
+    my_std_error = dup( STDERR_FILENO );
+    rc = SysRunCommandPipe( cmd, &readpipe );
+    dup2( my_std_output, STDOUT_FILENO );
+    dup2( my_std_error, STDERR_FILENO );
+    close( my_std_output );
+    close( my_std_error );
+    if( rc == -1 ) {
+        if( readpipe != 0 )
+            DosClose( readpipe );
+        return( rc );
+    }
+    if( readpipe != 0 ) {
+        rc2 = DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read );
+        while( rc2 == 0 && bytes_read != 0 ) {
+            buff[bytes_read] = '\0';
+            Log( Quiet, "%s", buff );
+            rc2 = DosRead( readpipe, buff, sizeof( buff ) - 1, &bytes_read );
+        }
+        DosClose( readpipe );
+    }
+    /* free up the zombie (if there is one) */
+    while( wait( &rc ) == -1 && errno == EINTR )
+        ;
+    return( rc );
 }

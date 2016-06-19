@@ -44,29 +44,35 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "DOS", 1 );
 }
 
-int SysRunCommandPipe( const char *cmd, int *readpipe )
-{
-    /* no pipes for DOS so we call spawn with P_WAIT and hence cannot log */
-    char        *cmdnam = strdup( cmd );
-    char        *sp = strchr( cmdnam, ' ' );
-    int         rc;
-
-    if( sp != NULL ) {
-        *sp = '\0';
-        sp++;
-    }
-    rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
-    *readpipe = -1;
-    free( cmdnam );
-    return rc;
-}
-
 int SysChdir( char *dir )
 {
     return SysDosChdir( dir );
 }
 
-int wait( int *status )
+int SysRunCommand( const char *cmd )
 {
-    return 0;
+    int         my_std_output;
+    int         my_std_error;
+    int         rc;
+    char        *cmdnam;
+    char        *sp;
+
+    cmdnam = strdup( cmd );
+    if( cmdnam == NULL )
+        return( -1 );
+    sp = strchr( cmdnam, ' ' );
+    if( sp != NULL ) {
+        *sp = '\0';
+        sp++;
+    }
+    my_std_output = dup( STDOUT_FILENO );
+    my_std_error = dup( STDERR_FILENO );
+    /* no pipes for DOS so we call spawn with P_WAIT and hence cannot log */
+    rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
+    dup2( my_std_output, STDOUT_FILENO );
+    dup2( my_std_error, STDERR_FILENO );
+    close( my_std_output );
+    close( my_std_error );
+    free( cmdnam );
+    return( rc );
 }

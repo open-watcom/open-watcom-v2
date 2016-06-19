@@ -73,8 +73,9 @@ void Log( bool quiet, const char *str, ... )
 void LogFlush( void )
 {
     fflush( stderr );
-    if( LogFile != NULL )
+    if( LogFile != NULL ) {
         fflush( LogFile );
+    }
 }
 
 void OpenLog( const char *name )

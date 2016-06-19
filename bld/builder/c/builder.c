@@ -60,7 +60,7 @@ typedef struct ctl_file {
 
 bool               Quiet;
 include            *IncludeStk;
-FILE               *LogFile;
+FILE               *LogFile = NULL;
 static ctl_file    *CtlList;
 static char        Line[MAX_LINE];
 static char        ProcLine[MAX_LINE];
@@ -288,7 +288,7 @@ static bool ProcessEnv( bool opt_end )
     if( env != NULL ) {
         argc = parse_string( env, NULL );
         if( argc > 0 ) {
-            args = malloc( ( argc + 1 ) * sizeof( char * ) );
+            args = Alloc( ( argc + 1 ) * sizeof( char * ) );
             argc = parse_string( env, args );
             args[argc] = NULL;
             opt_end = ProcessOptions( args, opt_end );

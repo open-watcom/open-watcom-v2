@@ -30,13 +30,13 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c
 
-sys_dos   = sys.obj sysdos.obj sysdoscd.obj
+sys_dos   = sysdos.obj sysdoscd.obj
 sys_nt    = sysnt.obj sysdoscd.obj
-sys_os2   = sys.obj sysos2.obj sysdoscd.obj
+sys_os2   = sysos2.obj sysdoscd.obj
 
 sys_objs = $(sys_$(host_os))
 !ifndef sys_$(host_os)
-sys_objs = sys.obj sysposix.obj
+sys_objs = sysposix.obj
 !endif
 
 builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj equals.obj $(cl_objs_gen)
