@@ -47,7 +47,7 @@ void            DIPCancel( void );
 void            DIPFini( void );
 void            DIPFiniLatest( void );
 
-size_t          DIPHandleSize( handle_kind hk, int mgr_size );
+size_t          DIPHandleSize( handle_kind hk, bool mgr_size );
 
 dip_status      DIPMoreMem( unsigned amount );
 

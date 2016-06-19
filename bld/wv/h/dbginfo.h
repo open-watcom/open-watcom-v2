@@ -39,9 +39,9 @@
 
 #define SL2SH( l )      ((sym_handle *)((l)->h))
 
-#define cue_SIZE        DIPHandleSize( HK_CUE, 0 )
-#define sym_SIZE        DIPHandleSize( HK_SYM, 0 )
-#define type_SIZE       DIPHandleSize( HK_TYPE, 0 )
+#define cue_SIZE        DIPHandleSize( HK_CUE, false )
+#define sym_SIZE        DIPHandleSize( HK_SYM, false )
+#define type_SIZE       DIPHandleSize( HK_TYPE, false )
 
 #define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
 
