@@ -283,11 +283,13 @@ static int gpm_tm_init( void )
     len = readlink( procname, tty_name, sizeof( tty_name ) - 1 );
     if( len < 0 )
         goto out;
-    if( memcmp( tty_name, "/dev/tty", len ) == 0 ) {
+    tty_name[len] = '\0';
+    if( strcmp( tty_name, "/dev/tty" ) == 0 ) {
         len = readlink( "/proc/self/fd/0", tty_name, sizeof( tty_name ) - 1 );
         if( len < 0 ) {
             goto out;
         }
+        tty_name[len] = '\0';
     }
     len--;
     mult = 1;
