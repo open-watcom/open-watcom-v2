@@ -60,7 +60,7 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
     rewind( in );
 
     // Check for the 'BM' header
-    if( !fread( &bmfh, sizeof( bmfh ), 1, in ) || ( bmfh.type != 0x4d42 ))
+    if( !fread( &bmfh, sizeof( bmfh ), 1, in ) || ( bmfh.type != 0x4d42 ) )
         return 0;
 
     if( !fread( &bmih, sizeof( bmih ), 1, in ) )
@@ -91,9 +91,9 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
     width   = bmih.width;
     height  = bmih.height;
 
-    switch(cmd) {
+    switch( cmd ) {
     case 0:
-        if(out) {
+        if( out ) {
             bmeps_header( out, (name ? name : default_name), width, height );
             if( bmeps_get_draft() ) {
                 success = 1;
@@ -148,6 +148,7 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
                                     }
                                     rowp--;
                                 }
+                                free( frow );
                             }
                             break;
                         case 4: {
@@ -187,8 +188,9 @@ static int bmp_run( FILE *out, FILE *in, char *name, unsigned long *w, unsigned 
                         rowp = rows;
                         for( y = 0; y < height; y++ ) {
                             row = *(rowp++);
-                            for(x = 0; x < width; x++)
+                            for( x = 0; x < width; x++ ) {
                                 bmeps_add_rgb( row[x*3+2], row[x*3+1], row[x*3+0] );
+                            }
                         }
                         bmeps_end_image( out );
                     }
