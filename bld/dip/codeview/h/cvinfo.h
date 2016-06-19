@@ -31,9 +31,11 @@
 
 
 #ifndef DIP_CV
+#define DIP_CV
 
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "cv4w.h"
@@ -158,7 +160,6 @@ extern cs_compile               *GetCompInfo( imp_image_handle *, imp_mod_handle
 #define SCOPE_TOKEN "::"
 #define SCOPE_TOKEN_LEN (sizeof(SCOPE_TOKEN)-1)
 
-#define DIP_CV
 #endif
 
 //temp

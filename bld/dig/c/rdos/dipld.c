@@ -32,10 +32,12 @@
 
 #include <string.h>
 #include <rdos.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"
 #include "dipsys.h"
+
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {

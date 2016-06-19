@@ -32,6 +32,7 @@
 
 #include <stddef.h>
 #include <ctype.h>
+#include "bool.h"
 #include "dbgdefn.h"
 #include "dbgdata.h"
 #include "dbglit.h"

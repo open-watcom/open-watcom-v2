@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include "bool.h"
 #include "wio.h"
 #define MD_x86
 #define MD_axp

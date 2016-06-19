@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <windows.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipcli.h"

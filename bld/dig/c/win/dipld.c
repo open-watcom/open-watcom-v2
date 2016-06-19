@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <i86.h>
 #include <windows.h>
+#include "bool.h"
 #include "watcom.h"
 #include "dip.h"
 #include "dipimp.h"
