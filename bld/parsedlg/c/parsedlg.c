@@ -64,6 +64,9 @@
 #define STR_SPC     "\t"
 #endif
 
+#define DEFAULT_FONT_NAME   "Helv"
+#define DEFAULT_FONT_SIZE   10
+
 typedef struct _statement {
     char    name[ MAX_NAME_LEN ];
     char    text[ MAX_LINE_LEN ];
@@ -146,7 +149,7 @@ void process_f_option( char *fname )
             for( opt.flist_cnt = 0; !feof( fp ); ++opt.flist_cnt )
                 fgets( buff1, MAX_NAME_LEN, fp );
             fseek( fp, 0, SEEK_SET );
-            opt.flist_data = malloc( opt.flist_cnt * sizeof(char *) );
+            opt.flist_data = malloc( opt.flist_cnt * sizeof( char * ) );
             for( i = 0; i < opt.flist_cnt; ++i ) {
                 my_fgets( buff1, MAX_NAME_LEN, fp );
                 opt.flist_data[ i ] = malloc( strlen( buff1 ) + 1 );
@@ -846,7 +849,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
                         free( font_name );
                     font_name = malloc( strlen( p ) + 10 );
                     strcpy( font_name, p );
-                    p2 = malloc( sizeof(char *) );
+                    p2 = malloc( sizeof( char * ) );
                     *p2 = font_name;
                     convert_font( p2, 1 );
                     free( p2 );
@@ -857,11 +860,9 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
     }
     process_style( dlg_hdr.parms, "DIALOG" );
     if( font_set == 0 ) {
-        if( font_name != NULL )
-            free( font_name );
-        font_name = malloc( 7 );
-        strcpy( font_name, "Helv" );
-        font_size = 10;
+        font_name = malloc( sizeof( DEFAULT_FONT_NAME ) );
+        strcpy( font_name, DEFAULT_FONT_NAME );
+        font_size = DEFAULT_FONT_SIZE;
     }
     sysmodal = process_parms( dlg_hdr.parms, MAX_STMT_PARMS, control_class_win,
         control_class_os2, CTRL_NAME_CNT, 0, check_parm_item, "FCF_SYSMODAL" );
@@ -904,7 +905,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
 #endif
         out_parms_style( fo, dlg_hdr.parms, "DIALOG" );
     }
-    if(( font_name != NULL ) || ( font_size != 0 )) {
+    if( font_name != NULL ) {
         fprintf( fo, "%sPRESPARAMS PP_FONTNAMESIZE, ", STR_SPC );
         if( font_size != 0 ) {
             fprintf( fo, "\"%ld.%s\"\n", font_size, font_name );
