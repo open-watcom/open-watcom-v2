@@ -533,8 +533,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
         break;
     }
 
-    RCSEEK( info->Handle, 0, SEEK_SET );
-    return( true );
+    return( RCSEEK( info->Handle, 0, SEEK_SET ) != -1 );
 } /* openExeFileInfoRO */
 
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )

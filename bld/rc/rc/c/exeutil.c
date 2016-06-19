@@ -106,7 +106,7 @@ static uint_32 FloorLog2( uint_32 value )
     uint_32 log;
 
     if( value == 0 ) {
-        return( 0 );
+        return( 0U );
     }
     log = 31;
     while( (value & 0x80000000UL) == 0 ) {  /* done if high bit on */
@@ -129,11 +129,11 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
     }
 
     shift_old = 16;
-    shift = FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15;
+    shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
     /* It is possible for the algorithm to blow up so don't check for != use <*/
     while( shift < shift_old ) {
         shift_old = shift;
-        shift = FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15;
+        shift = (uint_16)( FloorLog2( filelen + numobjs * (1L << shift_old) ) - 15 );
     }
 
     /* In event of the rare case that the algorithm blew up take the min */
