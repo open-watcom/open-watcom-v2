@@ -90,7 +90,6 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     HANDLE              cp;
     HANDLE              parent_std_output;
     HANDLE              parent_std_error;
-    HANDLE              pipe_input;
     HANDLE              pipe_output;
     SECURITY_ATTRIBUTES sa;
     DWORD               rc;
