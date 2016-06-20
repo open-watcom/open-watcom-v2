@@ -62,7 +62,6 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
     char        *sp;
     int         rc;
 
-    *readpipe = 0;
     cmdnam = strdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
@@ -74,14 +73,13 @@ static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
     rc = -1;
     std_output = 1;
     std_error  = 2;
-    if( DosCreatePipe( &pipe_input, &pipe_output, BUFSIZE ) == 0 ) {
+    if( DosCreatePipe( readpipe, &pipe_output, BUFSIZE ) == 0 ) {
         if( DosDupHandle( pipe_output, &std_output ) == 0 ) {
             if( DosDupHandle( pipe_output, &std_error ) == 0 ) {
                 DosClose( pipe_output );
                 rc = spawnl( P_NOWAIT, cmdnam, cmdnam, sp, NULL );
                 DosClose( std_output );
                 DosClose( std_error );
-                *readpipe = pipe_input;
             }
         }
     }
@@ -104,6 +102,7 @@ int SysRunCommand( const char *cmd )
     char        buff[256 + 1];
     APIRET      rc2;
 
+    readpipe = 0;
     my_std_output = dup( STDOUT_FILENO );
     my_std_error = dup( STDERR_FILENO );
     rc = SysRunCommandPipe( cmd, &readpipe );

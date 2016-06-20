@@ -53,7 +53,6 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     const char  **argv;
     int         i;
 
-    *readpipe = -1;
     cmdnam = strdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
@@ -76,6 +75,7 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     argv[i] = NULL;
     pid = -1;
     if( pipe( pipe_fd ) != -1 ) {
+        *readpipe = pipe_fd[0];
         if( dup2( pipe_fd[1], STDOUT_FILENO ) != -1 ) {
             if( dup2( pipe_fd[1], STDERR_FILENO ) != -1 ) {
                 close( pipe_fd[1] );
@@ -96,7 +96,6 @@ static int SysRunCommandPipe( const char *cmd, int *readpipe )
     free( argv );
     if( pid == -1 )
         return( -1 );
-    *readpipe = pipe_fd[0];
     return( 0 );
 }
 
@@ -122,6 +121,7 @@ int SysRunCommand( const char *cmd )
     int         readpipe;
     char        buff[256 + 1];
 
+    readpipe = -1;
     my_std_output = dup( STDOUT_FILENO );
     my_std_error = dup( STDERR_FILENO );
     rc = SysRunCommandPipe( cmd, &readpipe );

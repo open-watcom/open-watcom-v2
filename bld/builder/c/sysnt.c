@@ -94,11 +94,12 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     HANDLE              pipe_output;
     SECURITY_ATTRIBUTES sa;
     DWORD               rc;
+    STARTUPINFO         sinfo;
 
     sa.nLength = sizeof( sa );
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
-    if( !CreatePipe( &pipe_input, &pipe_output, &sa, 0 ) ) {
+    if( !CreatePipe( readpipe, &pipe_output, &sa, 0 ) ) {
         return( GetLastError() );
     }
     cp = GetCurrentProcess();
@@ -106,18 +107,11 @@ static DWORD RunChildProcessCmdl( const char *cmdl, LPPROCESS_INFORMATION pinfo,
     DuplicateHandle( cp, GetStdHandle( STD_ERROR_HANDLE ), cp, &parent_std_error, 0, TRUE, DUPLICATE_SAME_ACCESS );
     SetStdHandle( STD_OUTPUT_HANDLE, pipe_output );
     SetStdHandle( STD_ERROR_HANDLE, pipe_output );
+    memset( &sinfo, 0, sizeof( sinfo ) );
+    sinfo.cb = sizeof( sinfo );
     rc = 0;
-    if( !DuplicateHandle( cp, pipe_input, cp, readpipe, 0, FALSE, DUPLICATE_SAME_ACCESS ) ) {
+    if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
         rc = GetLastError();
-    }
-    CloseHandle( pipe_input );
-    if( rc == 0 ) {
-        STARTUPINFO     sinfo;
-        memset( &sinfo, 0, sizeof( sinfo ) );
-        sinfo.cb = sizeof( sinfo );
-        if( !CreateProcess( NULL, (LPSTR)cmdl, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, pinfo ) ) {
-            rc = GetLastError();
-        }
     }
     CloseHandle( pipe_output );
     SetStdHandle( STD_OUTPUT_HANDLE, parent_std_output );
@@ -150,8 +144,8 @@ int SysRunCommand( const char *cmd )
     HANDLE              readpipe;
     PROCESS_INFORMATION pinfo;
 
-    memset( &pinfo, 0, sizeof( pinfo ) );
     readpipe = INVALID_HANDLE_VALUE;
+    memset( &pinfo, 0, sizeof( pinfo ) );
     rc = RunChildProcessCmdl( cmd, &pinfo, &readpipe );
     if( rc != 0 ) {
         if( readpipe != INVALID_HANDLE_VALUE ) {
