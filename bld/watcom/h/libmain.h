@@ -38,6 +38,7 @@ extern unsigned APIENTRY LibMain( unsigned hmod, unsigned termination );
 #elif defined( __NT__ )
 
 extern int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
+#pragma aux _LibMain "_*"
 extern int APIENTRY LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )

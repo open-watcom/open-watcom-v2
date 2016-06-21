@@ -56,13 +56,14 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
         $(cl) $(clflags) $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
 !else
         %create $^&.lnk
-!ifeq sys_windowed 1
-!ifeq host_os nt
-        @%append $^&.lnk alias _WinMain='_WinMain@16'
-!endif
-!endif
+        @for %o in ($(objsroot)) do @%append $^&.lnk file %o
+        @%append $^&.lnk $(start_flags)
+        @for %o in ($(objinit)) do @%append $^&.lnk file %o
+        @%append $^&.lnk $(more_flags)
+        @for %o in ($(objs)) do @%append $^&.lnk file %o
+        @%append $^&.lnk $(final_flags)
         @for %l in ($(libs)) do @%append $^&.lnk lib %l
-        $(linker) name $(lname) $(lflags) file {$(objsroot)} $(start_flags) file {$(objinit)} $(more_flags) file {$(objs)} $(final_flags) @$^&.lnk
+        $(linker) name $(lname) $(lflags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
         %make bind_win386

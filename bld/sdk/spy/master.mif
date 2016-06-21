@@ -49,10 +49,6 @@ extra_c_flags_spydll += -mc
 
 extra_l_flags_win = option stack=9k, heapsize=2k lib $(dllname).lib, commdlg.lib
 extra_l_flags_nt  = lib $(dllname).lib
-!ifeq host_cpu  386
-# To maintain cross-version linkability
-extra_l_flags_nt  += alias '_WinMain'='_WinMain@16'
-!endif
 
 extra_l_flags_dll = option implib
 

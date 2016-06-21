@@ -68,9 +68,6 @@ libs += $(wr_lib)
 extra_l_flags     = lib { $(libs) }
 
 extra_l_flags_win = option rwr, stack=16k, heapsize=2k lib ddeml.lib
-!ifeq host_cpu 386
-extra_l_flags_nt = alias '_WinMain'='_WinMain@16'
-!endif
 extra_l_flags_os2 = option stack=12k, heapsize=2k
 
 inc_dirs  = -I. -Ih -I"../h" $(wres_inc_dirs) $(wr_inc_dirs) $(commonui_inc_dirs) $(wpi_inc_dirs)
