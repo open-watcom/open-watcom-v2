@@ -223,7 +223,7 @@ static void FreeFiles( file_list *list )
 
     for( ; list != NULL; list = next ) {
         next = list->next_file;
-        if( list->status & STAT_HAS_MEMBER && list->u.member != NULL ) {
+        if( (list->status & STAT_HAS_MEMBER) && list->u.member != NULL ) {
             FreeList( list->u.member );
         }
         _LnkFree( list );

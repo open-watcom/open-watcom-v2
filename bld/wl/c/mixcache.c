@@ -91,7 +91,7 @@ bool CacheOpen( file_list *list )
             return( false );
         }
     }
-    if( !(file->flags & INSTAT_SET_CACHE) ) {
+    if( (file->flags & INSTAT_SET_CACHE) == 0 ) {
         if( LinkFlags & CACHE_FLAG ) {
             file->flags |= INSTAT_FULL_CACHE;
         } else if( LinkFlags & NOCACHE_FLAG ) {
@@ -137,7 +137,7 @@ void CacheClose( file_list *list, unsigned pass )
     file->flags &= ~INSTAT_IN_USE;
     switch( pass ) {
     case 1: /* first pass */
-        nukecache = !(file->flags & INSTAT_LIBRARY);
+        nukecache = ( (file->flags & INSTAT_LIBRARY) == 0 );
         if( file->flags & INSTAT_FULL_CACHE ) {
             if( nukecache ) {
                 FreeObjCache( list );

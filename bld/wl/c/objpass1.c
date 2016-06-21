@@ -257,7 +257,7 @@ static void DoIncSymbol( void *_sym )
             }
             sym->p.seg->isdead = false;
             DefineComdat( sym->p.seg, mainsym, sym->addr.off, sym->info & SYM_CDAT_SEL_MASK, data );
-        } else if( !(mainsym->info & SYM_DEFINED) )  {
+        } else if( (mainsym->info & SYM_DEFINED) == 0 )  {
             DoSavedImport( sym );       // FIXME can lose defs here.
         }
         CarveFree( CarveSymbol, sym );
@@ -380,7 +380,7 @@ void Set64BitMode( void )
 {
     LinkState |= FMT_SEEN_64_BIT;
     if( !HintFormat( MK_ALLOW_64 ) ) {
-        if( !(ObjFormat & FMT_TOLD_XXBIT) ) {
+        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                         CurrMod->f.source->file->name, 64 );
@@ -394,7 +394,7 @@ void Set32BitMode( void )
 {
     LinkState |= FMT_SEEN_32_BIT;
     if( !HintFormat( MK_ALLOW_32 ) ) {
-        if( !(ObjFormat & FMT_TOLD_XXBIT) ) {
+        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                         CurrMod->f.source->file->name, 32 );
@@ -406,7 +406,7 @@ void Set16BitMode( void )
 /******************************/
 {
     if( !HintFormat( MK_ALLOW_16 ) ) {
-        if( !(ObjFormat & FMT_TOLD_XXBIT) ) {
+        if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
             ObjFormat |= FMT_TOLD_XXBIT;
             LnkMsg( WRN+MSG_FOUND_XXBIT_OBJ, "sd",
                     CurrMod->f.source->file->name, 16 );
@@ -440,7 +440,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
     }
     sect = DBIGetSect( clname );
     if( sect == NULL ) {
-        if( !(FmtData.type & MK_OVERLAYS) || isovlclass ) {
+        if( (FmtData.type & MK_OVERLAYS) == 0 || isovlclass ) {
             sect = CurrSect;
         } else {
             sect = NonSect;
@@ -495,7 +495,7 @@ void AddSegment( segdata *sd, class_entry *class )
         leader = FindALeader( sd, class, info );
         if( ( (leader->info & USE_32) != (info & USE_32) ) &&
             !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
-            !(FmtData.type & MK_RAW) ) {
+            (FmtData.type & MK_RAW) == 0 ) {
             char    *segname_16;
             char    *segname_32;
 
@@ -712,7 +712,7 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     if( ( group->leaders != NULL ) &&
         ( (group->leaders->info & USE_32) != (seg->info & USE_32) ) &&
         !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
-        !(FmtData.type & MK_RAW) ) {
+        (FmtData.type & MK_RAW) == 0 ) {
 
         char    *segname_16;
         char    *segname_32;
@@ -904,7 +904,7 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
     } else {
         symtype = SYM_COMMUNAL_16;
     }
-    if( !(sym->info & SYM_DEFINED) || IS_SYM_IMPORTED( sym ) ) {
+    if( (sym->info & SYM_DEFINED) == 0 || IS_SYM_IMPORTED( sym ) ) {
         if( IS_SYM_IMPORTED( sym ) ) {
             sym = HashReplace( sym );
         }
@@ -1005,7 +1005,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
 {
     symbol      *defaultsym;
 
-    if( !(sym->info & (SYM_DEFINED | SYM_EXPORTED)) && !IS_SYM_IMPORTED( sym )
+    if( (sym->info & (SYM_DEFINED | SYM_EXPORTED)) == 0 && !IS_SYM_IMPORTED( sym )
                                                   && !IS_SYM_COMMUNAL( sym ) ) {
         if( IS_SYM_A_REF( sym ) && !IS_SYM_LINK_WEAK( sym ) ) {
             if( IS_SYM_VF_REF( sym ) ) {
@@ -1016,7 +1016,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
             if( def != defaultsym ) {
                 LnkMsg( LOC_REC+WRN+MSG_LAZY_EXTDEF_MISMATCH, "S",sym );
             }
-        } else if( !(sym->info & SYM_OLDHAT) || IS_SYM_LINK_WEAK( sym ) ) {
+        } else if( (sym->info & SYM_OLDHAT) == 0 || IS_SYM_LINK_WEAK( sym ) ) {
             if( isweak ) {
                 SET_SYM_TYPE( sym, SYM_WEAK_REF );
             } else {
@@ -1095,7 +1095,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
             SET_SYM_TYPE( sym, SYM_VF_REF );
         }
     } else {                    // might still need this if eliminated
-        if( (LinkFlags & STRIP_CODE) && !(sym->info & SYM_EXPORTED) ) {
+        if( (LinkFlags & STRIP_CODE) && (sym->info & SYM_EXPORTED) == 0 ) {
             sym->e.def = defsym;
         }
     }
@@ -1117,7 +1117,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
         /* if defined, still may have to keep track of conditional symbols
          * for dead code elimination */
         if( (LinkFlags & STRIP_CODE)
-                        && !(sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) ) {
+                        && (sym->info & (SYM_VF_REFS_DONE | SYM_EXPORTED)) == 0 ) {
             GetVFList( def, sym, false, rtns );
             sym->e.def = def;
             sym->info |= SYM_VF_REFS_DONE;
@@ -1148,7 +1148,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
                 }
                 _LnkFree( startlist );
             }
-        } else if( IS_SYM_A_REF( sym ) || !(sym->info & SYM_OLDHAT) ) {
+        } else if( IS_SYM_A_REF( sym ) || (sym->info & SYM_OLDHAT) == 0 ) {
             DefineVirtualFunction( sym, def, ispure, rtns );
         }
     }
@@ -1236,7 +1236,7 @@ void HandleImport( length_name *intname, length_name *modname, length_name *extn
     symbol      *sym;
 
     sym = SymOp( ST_CREATE, intname->name, intname->len );
-    if( !(sym->info & SYM_DEFINED) ) {
+    if( (sym->info & SYM_DEFINED) == 0 ) {
         if( CurrMod != NULL ) {
             Ring2Append( &CurrMod->publist, sym );
             sym->mod = CurrMod;

@@ -55,7 +55,7 @@ void NormalizeAddr( void )
 {
     unsigned_32 new_seg;
 
-    DbgAssert( !(FmtData.type & MK_PROT_MODE) );
+    DbgAssert( (FmtData.type & MK_PROT_MODE) == 0 );
 
     if( CurrSect == NonSect || !FmtData.u.dos.ovl_short ) {
         new_seg = (CurrLoc.off >> FmtData.SegShift) + CurrLoc.seg;
@@ -72,7 +72,7 @@ static offset BumpUp( offset ptr, offset size )
 /*********************************************/
 {
     ptr += size;
-    if( CurrentSeg != NULL && !(CurrentSeg->info & USE_32) && !(FmtData.type & MK_RAW) && ptr > 0x10000 ) {
+    if( CurrentSeg != NULL && (CurrentSeg->info & USE_32) == 0 && (FmtData.type & MK_RAW) == 0 && ptr > 0x10000 ) {
         LnkMsg( ERR+MSG_SEG_TOO_BIG, "sl", CurrentSeg->segname,
                 (unsigned long)(ptr-0x10000) );
     }

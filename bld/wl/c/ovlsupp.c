@@ -398,8 +398,8 @@ static void OvlRefVector( symbol *sym )
         return;
     if( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED )
         return;
-    if( !(sym->info & SYM_DEFINED) ) {
-        if( !(sym->u.d.ovlstate & OVL_REF) ) {
+    if( (sym->info & SYM_DEFINED) == 0 ) {
+        if( (sym->u.d.ovlstate & OVL_REF) == 0 ) {
             sym->u.d.ovlref = CurrSect->ovl_num;
             sym->u.d.ovlstate |= OVL_REF;
         } else if( FmtData.u.dos.distribute ) {
@@ -421,7 +421,7 @@ static void OvlRefVector( symbol *sym )
 void TryRefVector( symbol *sym )
 /**************************************/
 {
-    if( !(FmtData.type & MK_OVERLAYS) )
+    if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
     if( (LinkState & SEARCHING_LIBRARIES) && FmtData.u.dos.distribute ) {
         RefDistribSym( sym );
@@ -433,7 +433,7 @@ void TryRefVector( symbol *sym )
 void OvlUseVector( symbol *sym, extnode *newnode )
 /********************************************************/
 {
-    if( !(FmtData.type & MK_OVERLAYS) )
+    if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
     if( IS_SYM_COMMUNAL( sym ) )
         return;
@@ -451,7 +451,7 @@ void IndirectCall( symbol *sym )
 {
     unsigned_16 ovl_num;
 
-    if( !(FmtData.type & MK_OVERLAYS) )
+    if( (FmtData.type & MK_OVERLAYS) == 0 )
         return;
     if( NO_VECTOR( sym ) )
         return;
@@ -552,7 +552,7 @@ void EmitOvlVectors( void )
         loader_name = _LongOvlldr;
     }
     symptr = RefISymbol( loader_name );
-    if( !(symptr->info & SYM_DEFINED) ) {
+    if( (symptr->info & SYM_DEFINED) == 0 ) {
         LnkMsg( ERR+MSG_NO_OVERLAY_LOADER, NULL );
     } else if( isshort ) {
         ShortVectors( symptr );

@@ -70,7 +70,7 @@ extern void     DBIAddrInfoScan( seg_leader *,
 extern void     DBILineWalk( lineinfo *, void (*)(lineinfo *) );
 extern unsigned DBICalcLineQty( lineinfo * );
 
-#define MOD_NOT_DEBUGGABLE(mod) ( !((mod)->modinfo & MOD_NEED_PASS_2) || \
-                                    (mod)->modinfo & MOD_IMPORT_LIB      )
+#define MOD_NOT_DEBUGGABLE(mod) ( ((mod)->modinfo & MOD_NEED_PASS_2) == 0 || \
+                                    ((mod)->modinfo & MOD_IMPORT_LIB) )
 
 extern group_entry *    DBIGroups;

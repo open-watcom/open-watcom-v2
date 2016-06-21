@@ -263,14 +263,14 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
 
     for( exe_type = restab->Dir.Head; exe_type != NULL;
                 exe_type = exe_type->Next ) {
-        if( type->TypeName.IsName && !(exe_type->Info.type & 0x8000) ) {
+        if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *) ((char *) restab->Str.StringBlock +
                             (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
                 && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
                             exe_type_name->NumChars ) ) break;
-        } else if( !(type->TypeName.IsName) && exe_type->Info.type & 0x8000 ) {
+        } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
                 break;
@@ -405,7 +405,7 @@ unsigned long ImportProcTable( unsigned long *count )
 /**********************************************************/
 {
     return( WriteTabList( FmtData.u.os2.imp_tab_list, count,
-                          !(LinkFlags & CASE_FLAG) ) );
+                          (LinkFlags & CASE_FLAG) == 0 ) );
 }
 
 unsigned long ImportModTable( unsigned long *count )
@@ -499,7 +499,7 @@ unsigned long ResNonResNameTable( bool dores )
         if( !exp->isexported ) continue;
         if( exp->isanonymous ) continue;
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
-            if( !(LinkFlags & CASE_FLAG) ) {
+            if( (LinkFlags & CASE_FLAG) == 0 ) {
                 strupr( exp->name );
             }
             namelen = strlen( exp->name );
@@ -684,7 +684,7 @@ void ChkOS2Exports( void )
         symptr = exp->sym;
         if( IS_SYM_ALIAS( symptr ) ) {
             symptr = UnaliasSym( ST_FIND, symptr );
-            if( symptr == NULL || !(symptr->info & SYM_DEFINED) ) {
+            if( symptr == NULL || (symptr->info & SYM_DEFINED) == 0 ) {
                 LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", exp->sym->name );
                 continue;               // <----- DANGER weird control flow!
             } else if( exp->sym->info & SYM_WAS_LAZY ) {
@@ -698,7 +698,7 @@ void ChkOS2Exports( void )
 
             exp->sym = symptr;
         }
-        if( !(symptr->info & SYM_DEFINED) ) {
+        if( (symptr->info & SYM_DEFINED) == 0 ) {
             LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", symptr->name );
         } else {
             exp->addr = symptr->addr;
@@ -724,7 +724,7 @@ void ChkOS2Exports( void )
         }
     }   // NOTE: there is a continue in this loop!
     AssignOrdinals();    /* make sure all exports have ordinals */
-    if(( FmtData.type & MK_WIN_VXD ) && ( num_entries != 1 )) {
+    if( (FmtData.type & MK_WIN_VXD) && ( num_entries != 1 ) ) {
         LnkMsg( FTL+MSG_VXD_INCORRECT_EXPORT, NULL );
     }
 }

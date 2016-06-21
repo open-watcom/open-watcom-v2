@@ -123,11 +123,11 @@ void DoRelocs( void )
                     omftype = LOC_BASE_OFFSET_32;
                     break;
                 }
-            } else if( omftype == LOC_MS_LINK_OFFSET && !(ObjFormat & FMT_32BIT_REC) ) {
+            } else if( omftype == LOC_MS_LINK_OFFSET && (ObjFormat & FMT_32BIT_REC) == 0 ) {
                 omftype = LOC_BASE_OFFSET_32 + 1; // index of special table.
             }
             fixtype = RelocTypeMap[omftype];
-            if( !(typ & 0x40) ) {
+            if( (typ & 0x40) == 0 ) {
                 fixtype |= FIX_REL;
             }
             place_to_fix = ((typ & 3) << 8) + *ObjBuff++;

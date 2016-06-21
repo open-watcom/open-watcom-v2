@@ -211,7 +211,7 @@ static unsigned_32 WritePharSegData( void )
     pos += size;
     for( group = Groups; group != NULL; group = group->next_group ) {
         flags = DR_BASE | DR_IS_APP | DR_IS_USER;
-        if( !(group->segflags & SEG_DATA) ) {
+        if( (group->segflags & SEG_DATA) == 0 ) {
             flags |= DR_IS_CODE;
         }
         WriteDescriptor( pos, group->totalsize, flags );

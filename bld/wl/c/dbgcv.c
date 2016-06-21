@@ -404,7 +404,7 @@ void CVAddGlobal( symbol *sym )
 {
     unsigned    size;
 
-    if( !( sym->info & SYM_STATIC ) ) {
+    if( (sym->info & SYM_STATIC) == 0 ) {
         if( ( sym->p.seg == NULL )
             || IS_SYM_IMPORTED( sym )
             || sym->p.seg->is32bit ) {
@@ -482,7 +482,7 @@ void CVGenLines( lineinfo *info )
 
     seg = info->seg;
 
-    if( !( CurrMod->modinfo & DBI_LINE ) )
+    if( (CurrMod->modinfo & DBI_LINE) == 0 )
         return;
     adjust = seg->a.delta + seg->u.leader->seg_addr.off;
     if( LineInfo.offbase == 0 ) { // this is our first time through.
@@ -560,7 +560,7 @@ static void CVAddAddrAdd( segdata *sdata, offset delta, offset size, void *cooki
 void CVAddAddrInfo( seg_leader *seg )
 /******************************************/
 {
-    if( !( seg->info & SEG_CODE ) )
+    if( (seg->info & SEG_CODE) == 0 )
         return;
     DBIAddrInfoScan( seg, CVAddAddrInit, CVAddAddrAdd, NULL );
 }
@@ -591,7 +591,7 @@ void CVGenAddrInfo( seg_leader *seg )
 {
     cv_seginfo          info;
 
-    if( !( seg->info & SEG_CODE ) )
+    if( (seg->info & SEG_CODE) == 0 )
         return;
     DBIAddrInfoScan( seg, CVGenAddrInit, CVGenAddrAdd, &info );
 }
@@ -601,7 +601,7 @@ void CVDefClass( class_entry *class, unsigned_32 size )
 {
     group_entry *group;
 
-    if( ( class->flags & CLASS_DEBUG_INFO ) == CLASS_DWARF )
+    if( (class->flags & CLASS_DEBUG_INFO) == CLASS_DWARF )
         return;
     SectAddrs[CVSECT_MISC].u.vm_offs += size;
     group = AllocGroup( AutoGrpName, &DBIGroups );
@@ -702,7 +702,7 @@ void CVFini( section *sect )
     map.cSegLog = NumGroups;
     DumpInfo( CVSECT_MISC, &map, sizeof( cv_sst_seg_map ) - sizeof( seg_desc ) );
     memset( &desc, 0, sizeof( seg_desc ) );
-    desc.u.b.fSel = !( LinkFlags & MK_REAL_MODE );
+    desc.u.b.fSel = ( (LinkFlags & MK_REAL_MODE) == 0 );
     desc.u.b.fRead = true;
     desc.iSegName = 0xFFFF;
     desc.iClassName = 0xFFFF;
@@ -710,7 +710,7 @@ void CVFini( section *sect )
         desc.frame = group->grp_addr.seg;
         desc.offset = group->grp_addr.off;
         desc.cbseg = group->totalsize;
-        if( !( group->segflags & SEG_DATA ) ) {
+        if( (group->segflags & SEG_DATA) == 0 ) {
             desc.u.b.fExecute = 1;
         } else {
             desc.u.b.fExecute = 0;

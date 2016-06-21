@@ -117,7 +117,7 @@ bool CleanCachedHandles( void )
     infilelist *list;
 
     for( list = CachedFiles; list != NULL; list = list->next ) {
-        if( !(list->flags & INSTAT_IN_USE) && list->handle != NIL_FHANDLE ) {
+        if( (list->flags & INSTAT_IN_USE) == 0 && list->handle != NIL_FHANDLE ) {
             break;
         }
     }
@@ -232,12 +232,12 @@ bool DoObjOpen( infilelist *file )
         }
     }
     if( fp != NIL_FHANDLE ) {
-        if( !(file->flags & INSTAT_GOT_MODTIME) ) {
+        if( (file->flags & INSTAT_GOT_MODTIME) == 0 ) {
             file->modtime = QFModTime( fp );
         }
         file->handle = fp;
         return( true );
-    } else if( !(file->flags & INSTAT_NO_WARNING) ) {
+    } else if( (file->flags & INSTAT_NO_WARNING) == 0 ) {
         err = ( file->flags & INSTAT_OPEN_WARNING ) ? WRN+MSG_CANT_OPEN : ERR+MSG_CANT_OPEN;
         PrintIOError( err, "12", name );
         file->prefix = NULL;

@@ -224,7 +224,7 @@ static void FixSymAddr( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( !IS_SYM_IMPORTED(sym) && !(sym->info & SYM_DEAD) && sym->addr.off > 0 && sym->p.seg != NULL ) {
+    if( !IS_SYM_IMPORTED(sym) && (sym->info & SYM_DEAD) == 0 && sym->addr.off > 0 && sym->p.seg != NULL ) {
         sym->addr.off -= sym->p.seg->u.leader->seg_addr.off;
         sym->addr.off -= sym->p.seg->a.delta;
     }
@@ -282,12 +282,12 @@ static void PrepSymbol( void *_sym, void *info )
     sym->publink = CarveGetIndex( CarveSymbol, sym->publink );
     if( sym->info & SYM_IS_ALTDEF ) {
         mainsym = sym->e.mainsym;
-        if( !(mainsym->info & SYM_NAME_XLATED) ) {
+        if( (mainsym->info & SYM_NAME_XLATED) == 0 ) {
             mainsym->name = GetString( info, mainsym->name );
             mainsym->info |= SYM_NAME_XLATED;
         }
         sym->name = mainsym->name;
-    } else if( !(sym->info & SYM_NAME_XLATED) ) {
+    } else if( (sym->info & SYM_NAME_XLATED) == 0 ) {
         sym->name = GetString( info, sym->name );
         sym->info |= SYM_NAME_XLATED;
     }
@@ -302,7 +302,7 @@ static void PrepSymbol( void *_sym, void *info )
         if( FmtData.type & (MK_OS2 | MK_PE) ) {
             sym->p.import = CarveGetIndex( CarveDLLInfo, sym->p.import );
         }
-    } else if( !(sym->info & SYM_IS_ALTDEF) || IS_SYM_COMDAT(sym) ) {
+    } else if( (sym->info & SYM_IS_ALTDEF) == 0 || IS_SYM_COMDAT(sym) ) {
         sym->p.seg = CarveGetIndex( CarveSegData, sym->p.seg );
         sym->u.altdefs = CarveGetIndex( CarveSymbol, sym->u.altdefs );
     }
@@ -507,7 +507,7 @@ static void WriteAltData( perm_write_info *info )
 
     info->currpos = 0;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( sym->info & SYM_IS_ALTDEF && sym->info & SYM_HAS_DATA ) {
+        if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_HAS_DATA) ) {
             savepos = info->currpos;
             VMemWritePermFile( info, sym->p.seg->u1.vm_ptr, sym->p.seg->length );
             sym->p.seg->u1.vm_offs = savepos;
@@ -524,7 +524,7 @@ static unsigned_32 WriteLibList( perm_write_info *info, bool douser )
 
     numlibs = 0;
     for( file = ObjLibFiles; file != NULL; file = file->next_file ) {
-        if( !(((file->status & STAT_USER_SPECD) != 0) ^ douser) ) {
+        if( (((file->status & STAT_USER_SPECD) != 0) ^ douser) == 0 ) {
             U32WritePermFile( info, (unsigned_32)(pointer_int)GetString( info, file->file->name ) );
             BufWritePermFile( info, &file->priority, sizeof( file->priority ) );
             numlibs++;
@@ -540,7 +540,7 @@ void WritePermData( void )
     perm_write_info     info;
     unsigned            strsize;
 
-    if( !(LinkFlags & INC_LINK_FLAG) || LinkState & LINK_ERROR )
+    if( (LinkFlags & INC_LINK_FLAG) == 0 || (LinkState & LINK_ERROR) )
         return;
     InitStringTable( &info.strtab, false );
     AddCharStringTable( &info.strtab, '\0' );   // make 0 idx not valid
@@ -744,7 +744,7 @@ static void RebuildSymbol( void *_sym, void *info )
         if( FmtData.type & (MK_OS2 | MK_PE) ) {
             sym->p.import = CarveMapIndex( CarveDLLInfo, sym->p.import );
         }
-    } else if( !(sym->info & SYM_IS_ALTDEF) || IS_SYM_COMDAT(sym) ) {
+    } else if( (sym->info & SYM_IS_ALTDEF) == 0 || IS_SYM_COMDAT(sym) ) {
         sym->p.seg = CarveMapIndex( CarveSegData, sym->p.seg );
         sym->u.altdefs = CarveMapIndex( CarveSymbol, sym->u.altdefs );
     }
@@ -1009,7 +1009,7 @@ void *GetAltdefContents( segdata *sdata )
 void FreeSavedRelocs( void )
 /*********************************/
 {
-    if( !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
         _LnkFree( ReadRelocs );
         ReadRelocs = NULL;
     }
@@ -1019,7 +1019,7 @@ void CleanPermData( void )
 /*******************************/
 {
 #ifndef NDEBUG
-    if( !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
         CarveVerifyAllGone( CarveLeader, "seg_leader" );
         CarveVerifyAllGone( CarveModEntry, "mod_entry" );
         CarveVerifyAllGone( CarveDLLInfo, "dll_sym_info" );

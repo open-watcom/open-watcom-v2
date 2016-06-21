@@ -418,7 +418,7 @@ static void __near MoveRetTrap( unsigned to_seg, ovltab_entry_ptr ovl )
         rt_new->traps[i].ret_list = rt->traps[i].ret_list;
         rt_new->traps[i].stack_trap = rt->traps[i].stack_trap;
         rt_new->traps[i].context = rt->traps[i].context;
-        if( !(ovl->flags_anc & FLAG_ACTIVE_TRAP) ) {
+        if( (ovl->flags_anc & FLAG_ACTIVE_TRAP) == 0 ) {
             stkptr = MK_FP( FP_SEG( &stkptr ), rt->traps[i].stack_trap + 4 );
             /* fix the stack up */
             *stkptr = to_seg;
@@ -594,7 +594,7 @@ unsigned __near __LoadNewOverlay__( unsigned ovl_num )
 #endif
 
     ovl = __OVLTAB__.entries + ovl_num - 1;
-    if( !(ovl->flags_anc & FLAG_INMEM) ) {
+    if( (ovl->flags_anc & FLAG_INMEM) == 0 ) {
         if( ovl->flags_anc & FLAG_RET_TRAP ) {
 #ifdef OVL_MULTITHREAD
             // Prevent fixups of the return trap for this overlay

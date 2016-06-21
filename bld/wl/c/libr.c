@@ -332,7 +332,7 @@ static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
             list->u.dict = NULL;
             return( false );
         }
-        if( !(LinkFlags & CASE_FLAG) || numdicts == 1 ) {
+        if( (LinkFlags & CASE_FLAG) == 0 || numdicts == 1 ) {
             SortARDict( &list->u.dict->a );
         }
     }
@@ -380,7 +380,7 @@ mod_entry *SearchLib( file_list *lib, char *name )
     if( lib->u.dict == NULL ) {
         if( CheckLibraryType( lib, &pos, true ) == -1 )
             return( NULL );
-        if( !(lib->status & STAT_IS_LIB) ) {
+        if( (lib->status & STAT_IS_LIB) == 0 ) {
             BadLibrary( lib );
             return( NULL );
         }

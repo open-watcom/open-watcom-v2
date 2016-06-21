@@ -131,7 +131,7 @@ static void CheckUninit( void *_seg, void *dummy )
     segnode *seg = _seg;
 
     dummy = dummy;
-    if( !(seg->info & SEG_LXDATA_SEEN) ) {
+    if( (seg->info & SEG_LXDATA_SEEN) == 0 ) {
         seg->entry->isuninit = true;
         if( seg->entry->u1.vm_ptr ) {
             ReleaseInfo( seg->entry->u1.vm_ptr );
@@ -379,7 +379,7 @@ static void LinkDirective( void )
         ProcVFReference();
         break;
     case LDIR_PACKDATA:
-        if( !(LinkFlags & PACKDATA_FLAG) ) {
+        if( (LinkFlags & PACKDATA_FLAG) == 0 ) {
             PackDataLimit = _GetU32UN( ObjBuff );
             LinkFlags |= PACKDATA_FLAG;
         }
@@ -562,7 +562,7 @@ static void ProcAlias( void )
         ObjBuff += aliaslen;
         targetlen = *ObjBuff++;
         sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
-        if( !sym || !(sym->info & SYM_DEFINED) ) {
+        if( !sym || (sym->info & SYM_DEFINED) == 0 ) {
             MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
         }
     }
@@ -601,7 +601,7 @@ static void ProcModuleEnd( void )
             seg = (segnode *)FindNode( SegNodes, targetidx );
             StartInfo.type = START_IS_SDATA;
             StartInfo.targ.sdata= seg->entry;
-            if( seg->info & SEG_CODE && LinkFlags & STRIP_CODE ) {
+            if( (seg->info & SEG_CODE) && (LinkFlags & STRIP_CODE) ) {
                 RefSeg( (segdata *)seg->entry );
             }
             StartInfo.mod = CurrMod;
@@ -703,7 +703,7 @@ static void ProcSegDef( void )
     if( ObjFormat & FMT_EASY_OMF ) {
         SkipIdx();                          // skip overlay name index
         if( ObjBuff < EOObjRec ) {          // the optional attribute field present
-            if( !(*ObjBuff & 0x4) ) {       // if USE32 bit not set;
+            if( (*ObjBuff & 0x4) == 0 ) {       // if USE32 bit not set;
                 sdata->is32bit = false;
             }
         }
@@ -856,7 +856,7 @@ static void ProcVFTableRecord( bool ispure )
     symbol      *sym;
     vflistrtns  rtns;
 
-    if( !(LinkFlags & VF_REMOVAL) )
+    if( (LinkFlags & VF_REMOVAL) == 0 )
         return;
     ext = (extnode *) FindNode( ExtNodes, GetIdx() );
     sym = ext->entry;
@@ -879,7 +879,7 @@ static void ProcVFReference( void )
     list_of_names       *lname;
     unsigned            index;
 
-    if( !(LinkFlags & VF_REMOVAL) )
+    if( (LinkFlags & VF_REMOVAL) == 0 )
         return;
     index = GetIdx();
     if( index == 0 ) {
@@ -901,7 +901,7 @@ static void ProcVFReference( void )
             DefineVFReference( seg, ext->entry, false );
         }
     }
-    if( !(ext->entry->info & SYM_DEFINED) ) {
+    if( (ext->entry->info & SYM_DEFINED) == 0 ) {
         ext->entry->info |= SYM_VF_MARKED;
     }
 }
@@ -945,7 +945,7 @@ void SkipIdx( void )
 /*************************/
 /* skip the index */
 {
-    if (*ObjBuff++ & IS_2_BYTES) {
+    if( *ObjBuff++ & IS_2_BYTES ) {
         ObjBuff++;
     }
 }
@@ -957,7 +957,7 @@ unsigned_16 GetIdx( void )
     unsigned_16 index;
 
     index = *ObjBuff++;
-    if (index & IS_2_BYTES) {
+    if( index & IS_2_BYTES ) {
         index = (index & 0x7f) * 256 + *ObjBuff++;
     }
     return( index );

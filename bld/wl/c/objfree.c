@@ -79,7 +79,7 @@ static void FreeSections( section *sec )
     for( ; sec != NULL; sec = next ) {
         next = sec->next_sect;
         FreeFiles( sec->files );
-        if( !(LinkFlags & INC_LINK_FLAG) ) {
+        if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
             FreeMods( sec->mods );
             FreeClasses( sec->classlist );
         }
@@ -158,7 +158,7 @@ static void FreeFiles( file_list *list )
     for( ; list != NULL; list = next ) {
         next = list->next_file;
         CacheClose( list, 3 );
-        if( list->status & STAT_HAS_MEMBER && list->u.member != NULL ) {
+        if( (list->status & STAT_HAS_MEMBER) && list->u.member != NULL ) {
             FreeList( list->u.member );
         }
         _PermFree( list );
@@ -176,7 +176,7 @@ void CleanLinkStruct( void )
     FreeFiles( Root->files );
     ObjLibFiles = NULL;
     Root->files = NULL;
-    if( !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
         FreeMods( LibModules );
     }
     if( SymFileName != NULL ) {

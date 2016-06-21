@@ -220,7 +220,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
         AddBufferStringTable( tab->strtab, sym->name, len );
         elfsym.st_name = off;
         off += len;
-        if( tableSH->sh_info == 0 && !(sym->info & SYM_STATIC) ) {
+        if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }
         SetElfSym( hdr, &elfsym, sym );

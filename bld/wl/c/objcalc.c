@@ -263,7 +263,7 @@ static void SetLeaderSeg( void *_seg )
 {
     seg_leader      *seg = _seg;
 
-    if( !(seg->info & SEG_ABSOLUTE) ) {
+    if( (seg->info & SEG_ABSOLUTE) == 0 ) {
         seg->seg_addr.seg = seg->group->grp_addr.seg;
     }
 }
@@ -299,7 +299,7 @@ static void ReallocFileSegs( void )
         }
     }
     for( class = Root->classlist; class != NULL; class = class->next_class ){
-        if( !(class->flags & CLASS_DEBUG_INFO) ) {
+        if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             RingWalk( class->segs, SetLeaderSeg );
         }
     }
@@ -316,10 +316,10 @@ static void FindUninitDataStart( void )
     setnext = true;
     FmtData.dgroupsplitseg = NULL;
     FmtData.bsspad = 0;
-    if( !(LinkState & DOSSEG_FLAG) )
+    if( (LinkState & DOSSEG_FLAG) == 0 )
         return;
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( !(class->flags & CLASS_DEBUG_INFO) ) {
+        if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             if( class->flags & CLASS_LXDATA_SEEN ) {
                 setnext = true;
             } else if( setnext ) {
@@ -416,7 +416,7 @@ static void AllocSeg( void *_seg )
 {
     seg_leader  *seg = _seg;
 
-    if( !(seg->info & SEG_ABSOLUTE) ) {
+    if( (seg->info & SEG_ABSOLUTE) == 0 ) {
         if( IS_DBG_DWARF( seg ) ) {
             CurrLoc.off = 0;
         }
@@ -464,13 +464,13 @@ static void CalcGrpAddr( group_entry *currgrp )
                     ChkLocated( &save, true );  //   after making sure address
                     break;                      //   isn't already past here
                 }
-                if( !(class->flags & CLASS_DEBUG_INFO) ) { // skip Debug classes, they've already been done
+                if( (class->flags & CLASS_DEBUG_INFO) == 0 ) { // skip Debug classes, they've already been done
                     RingWalk( class->segs, AllocSeg );
                 }
             }
         } else {
             Ring2Lookup( seg, FindEndAddr, &info );
-            if( (FmtData.type & MK_REAL_MODE) && !(seg->info & USE_32)
+            if( (FmtData.type & MK_REAL_MODE) && (seg->info & USE_32) == 0
                 && (info.end_addr - info.grp_addr > 64 * 1024L) ) {
                 LnkMsg( ERR+MSG_GROUP_TOO_BIG, "sl", currgrp->sym->name,
                         info.end_addr - info.grp_addr - 64 * 1024L );
@@ -582,7 +582,7 @@ static void DefinePublics( void )
         if( MapFlags & MAP_VERBOSE ) {
             WriteModSegs();
         }
-        if( !( MapFlags & MAP_LINES ) ) {
+        if( (MapFlags & MAP_LINES) == 0 ) {
             StopMapBuffering();
         }
     }
@@ -724,7 +724,7 @@ static bool DefPubSym( void *_pub, void *_info )
         }
     }
     if( (MapFlags & MAP_FLAG) && !SkipSymbol( pub ) ) {
-        if( info->first && !(MapFlags & MAP_GLOBAL) ) {
+        if( info->first && (MapFlags & MAP_GLOBAL) == 0 ) {
             WritePubModHead();
             info->first = false;
         }
@@ -750,12 +750,12 @@ void DoPubs( section *sect )
     pubdefinfo  info;
 
     if( (CurrMod->modinfo & MOD_NEED_PASS_2)
-        && !(CurrMod->modinfo & MOD_IMPORT_LIB) ) {
+        && (CurrMod->modinfo & MOD_IMPORT_LIB) == 0 ) {
         DBIAddModule( CurrMod, sect );
     }
     info.symarray = NULL;
     if( (MapFlags & MAP_SORT)
-        && !(MapFlags & MAP_GLOBAL)
+        && (MapFlags & MAP_GLOBAL) == 0
         && ( CurrMod->publist != NULL ) ) {
         _ChkAlloc( info.symarray,
                         Ring2Count( CurrMod->publist ) * sizeof( symbol * ) );
@@ -1038,7 +1038,7 @@ static void ReOrderClasses( section *sec )
         currcl->next_class = NULL;
         CheckClassUninitialized( currcl );
         if( (FmtData.type & (MK_NOVELL | MK_PHAR_LAP | MK_OS2_LX))
-            && !(currcl->flags & CLASS_32BIT) ) {
+            && (currcl->flags & CLASS_32BIT) == 0 ) {
             ord = ORD_REALMODE;
         } else {
             name = currcl->name;

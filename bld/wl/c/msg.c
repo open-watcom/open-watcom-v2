@@ -135,7 +135,7 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     str = va_arg( *args, symbol * )->name;
                 }
-                if( !(LinkFlags & DONT_UNMANGLE) ) {
+                if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
                     if( size > (len-1) ) size = len - 1;
                     CurrSymName = dest;
@@ -417,7 +417,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
         LinkState |= LINK_ERROR;
     }
     if( num & OUT_TERM ) {
-        if( !(LinkFlags & QUIET_FLAG) ) {
+        if( (LinkFlags & QUIET_FLAG) == 0 ) {
             WLPrtBanner();
             WriteStdOutInfo( buff, num, CurrSymName );
         } else if( class != (INF & CLASS_MSK)) {
@@ -593,12 +593,12 @@ void WLPrtBanner( void )
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( sym->info & SYM_STATIC && !(MapFlags & MAP_STATICS) ) return true;
+    if( sym->info & SYM_STATIC && (MapFlags & MAP_STATICS) == 0 ) return true;
 #if defined(__WATCOMC__)
     { int art;
 
     art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
-    return !(MapFlags & MAP_ARTIFICIAL) && art == __MANGLED_INTERNAL;
+    return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
     }
 #else
     return false;
@@ -618,7 +618,7 @@ int SymAlphaCompare( const void *a, const void *b )
 
     left = *((symbol **) a);
     right = *((symbol **) b);
-    if( !(LinkFlags & DONT_UNMANGLE) ) {
+    if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
         __unmangled_name( left->name, 0, &leftname, &leftsize );
         __unmangled_name( right->name, 0, &rightname, &rightsize );
     } else {

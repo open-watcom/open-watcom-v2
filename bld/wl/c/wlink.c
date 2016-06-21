@@ -304,7 +304,7 @@ static void PreAddrCalcFormatSpec( void )
     }
 #endif
 #ifdef _PHARLAP
-    if( FmtData.type & MK_PHAR_FLAT && LinkState & HAVE_16BIT_CODE && !(CmdFlags & CF_HAVE_REALBREAK)) {
+    if( (FmtData.type & MK_PHAR_FLAT) && (LinkState & HAVE_16BIT_CODE) && (CmdFlags & CF_HAVE_REALBREAK) == 0 ) {
         LnkMsg( WRN+MSG_NO_REALBREAK_WITH_16BIT, NULL );
     }
 #endif
@@ -374,7 +374,7 @@ static void DoDefaultSystem( void )
  * os/2 v1 & os/2 v2), and if that doesn't decide it, haul in the default
  * system block */
 {
-    if( !(LinkState & FMT_DECIDED) ) {
+    if( (LinkState & FMT_DECIDED) == 0 ) {
         if( LinkState & FMT_SEEN_64_BIT ) {
             HintFormat( MK_64BIT );
         } else if( LinkState & FMT_SEEN_32_BIT ) {
@@ -382,7 +382,7 @@ static void DoDefaultSystem( void )
         } else {
             HintFormat( MK_16BIT | MK_QNX );
         }
-        if( !(LinkState & FMT_DECIDED) ) {
+        if( (LinkState & FMT_DECIDED) == 0 ) {
             if( LinkState & FMT_SPECIFIED ) {
                 LnkMsg( FTL+MSG_AMBIG_FORMAT, NULL );
             }

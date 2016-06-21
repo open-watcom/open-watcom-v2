@@ -168,7 +168,7 @@ bool ProcCodeviewDBI( void )
 bool ProcLine( void )
 /**************************/
 {
-    if( !(LinkFlags & ANY_DBI_FLAG) ) {
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_LINE;
@@ -179,7 +179,7 @@ bool ProcLine( void )
 bool ProcDBIStatic( void )
 /*******************************/
 {
-    if( !(LinkFlags & ANY_DBI_FLAG) ) {
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_STATICS;
@@ -190,7 +190,7 @@ bool ProcDBIStatic( void )
 bool ProcType( void )
 /**************************/
 {
-    if( !(LinkFlags & ANY_DBI_FLAG) ) {
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_TYPE;
@@ -200,7 +200,7 @@ bool ProcType( void )
 bool ProcLocal( void )
 /***************************/
 {
-    if( !(LinkFlags & ANY_DBI_FLAG) ) {
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_LOCAL;
@@ -210,7 +210,7 @@ bool ProcLocal( void )
 bool ProcAll( void )
 /*************************/
 {
-    if( !(LinkFlags & ANY_DBI_FLAG) ) {
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 ) {
         LinkFlags |= DWARF_DBI_FLAG;
     }
     DBIFlag |= DBI_ALL;

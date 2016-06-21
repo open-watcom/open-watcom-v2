@@ -84,7 +84,7 @@ static ElfSymTable *    ElfSymTab;
 /* Put debugging info into section WITHIN the file instead of appending a
  * separate elf file at the end */
 
-#define INJECT_DEBUG ( SymFileName == NULL && LinkFlags & DWARF_DBI_FLAG )
+#define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & DWARF_DBI_FLAG) )
 
 static void AddSecIdxName( ElfHdr *hdr, int idx, char *name )
 /***********************************************************/
@@ -417,7 +417,7 @@ void ChkElfData( void )
         if( IsSymElfImported(sym) ) {
             NumImports++;
         } else if( IsSymElfExported(sym) ) {
-            if( !(sym->info & SYM_DEFINED) ) {
+            if( (sym->info & SYM_DEFINED) == 0 ) {
                 LnkMsg( ERR+MSG_EXP_SYM_NOT_FOUND, "s", sym->name );
             }
             NumExports++;

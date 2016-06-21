@@ -140,20 +140,20 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         }
         if( group->segflags & SEG_DATA ) {
             objrec.flags |= OBJ_READABLE;
-            if( !(group->segflags & SEG_READ_ONLY) ) {
+            if( (group->segflags & SEG_READ_ONLY) == 0 ) {
                 objrec.flags |= OBJ_WRITEABLE;
             }
         } else {
             objrec.flags |= OBJ_EXECUTABLE;
-            if( !(group->segflags & SEG_READ_ONLY) ) {
+            if( (group->segflags & SEG_READ_ONLY) == 0 ) {
                 objrec.flags |= OBJ_READABLE;
             }
         }
         if( group->segflags & SEG_DISCARD ) {
             objrec.flags |= OBJ_DISCARDABLE;
         }
-        if( group->segflags & SEG_PURE || (group == DataGroup &&
-                         FmtData.u.os2.flags & SINGLE_AUTO_DATA) ) {
+        if( (group->segflags & SEG_PURE) || (group == DataGroup &&
+                         (FmtData.u.os2.flags & SINGLE_AUTO_DATA)) ) {
             objrec.flags |= OBJ_SHARABLE;
         }
         if( group->segflags & SEG_PRELOAD ) {
@@ -383,7 +383,7 @@ static unsigned WriteDataPages( unsigned long loc )
     }
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
-    } else if( !(FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) ) {
+    } else if( (FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) == 0 ) {
         PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift )
                              - last_page );
     }
@@ -526,7 +526,7 @@ void FiniOS2FlatLoadFile( void )
         if( LinkState & LINK_ERROR ) {
             exe_head.flags |= OSF_LINK_ERROR;
         }
-        if( FmtData.type & MK_OS2_LX
+        if( (FmtData.type & MK_OS2_LX)
             && (FmtData.u.os2.toggle_relocs ^ FmtData.u.os2.gen_int_relocs) ) {
             exe_head.flags |= OSF_INTERNAL_FIXUPS_DONE;
         }

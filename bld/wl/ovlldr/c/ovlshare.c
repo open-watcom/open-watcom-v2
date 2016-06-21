@@ -41,7 +41,7 @@ extern unsigned __far _ovl_openflags( unsigned share )
     unsigned    old;
 
     old = __OVLSHARE__ >> SHARE_SHIFT;
-    if( !(__OVLFLAGS__ & OVL_DOS3) ) {
+    if( (__OVLFLAGS__ & OVL_DOS3) == 0 ) {
         share = 0;
     } else if( share > 4 ) {
         share = 4;

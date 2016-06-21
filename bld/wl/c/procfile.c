@@ -123,7 +123,7 @@ static void CheckNewFile( mod_entry *mod, file_list *list,
 {
     time_t      modtime;
 
-    if( !(LinkFlags & GOT_CHGD_FILES) || AlwaysCheckUsingDate ) {
+    if( (LinkFlags & GOT_CHGD_FILES) == 0 || AlwaysCheckUsingDate ) {
         if( QModTime( list->file->name, &modtime ) || modtime > mod->modtime ) {
             list->status |= STAT_HAS_CHANGED;
         }
@@ -249,7 +249,7 @@ static void PrepareModList( void )
     for( mod = LibModules; mod != NULL; mod = mod->n.next_mod ) {
         if( mod->f.fname == NULL ) {
             mod->modinfo |= MOD_KILL;
-        } else if( !(mod->modinfo & MOD_VISITED) ) {
+        } else if( (mod->modinfo & MOD_VISITED) == 0 ) {
             list = AddObjLib( mod->f.fname, LIB_PRIORITY_MID );
             CheckNewFile( mod, list, 1);
             CheckBlacklist( list, blacklist );
@@ -307,7 +307,7 @@ static void SetAltDefData( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_COMDAT) && !(sym->info & SYM_HAS_DATA) ) {
+    if( (sym->info & SYM_IS_ALTDEF) && (sym->info & SYM_COMDAT) && (sym->info & SYM_HAS_DATA) == 0 ) {
         sym->p.seg->u1.vm_ptr = sym->e.mainsym->p.seg->u1.vm_ptr;
     }
 }
@@ -325,7 +325,7 @@ static void IncIterateMods( mod_entry *mod, void (*proc_fn)(mod_entry *),
     bool haschanged;
 
     for( ; mod != NULL; mod = mod->n.next_mod ) {
-        haschanged = mod->modinfo & MOD_KILL || mod->f.source->status & STAT_HAS_CHANGED;
+        haschanged = (mod->modinfo & MOD_KILL) || (mod->f.source->status & STAT_HAS_CHANGED);
         if( haschanged == dochanged ) {
             proc_fn( mod );
         }
@@ -513,7 +513,7 @@ static void DoPass1( mod_entry *next, file_list *list )
                     next->modinfo |= member->flags;
                     _LnkFree( member );
                 }
-                if( !(list->status & STAT_HAS_MEMBER) ) {
+                if( (list->status & STAT_HAS_MEMBER) == 0 ) {
                     next->modinfo |= list->status & DBI_MASK;
                     if( list->status & STAT_LAST_SEG ) {
                         next->modinfo |= MOD_LAST_SEG;
@@ -645,7 +645,7 @@ unsigned long ObjPass1( void )
     loc = CallPass1[ GET_FMT_IDX( ObjFormat ) ]();
     CollapseLazyExtdefs();
     SymModEnd();
-    if( !(CurrMod->modinfo & MOD_GOT_NAME) ) {
+    if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
         savename = CurrMod->name;
         CurrMod->name = AddStringStringTable( &PermStrings, savename );
         _LnkFree( savename );
@@ -700,10 +700,10 @@ void ResolveUndefined( void )
             }
         }
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( ( !(sym->info & SYM_DEFINED) && !IS_SYM_WEAK_REF( sym )
+            if( ( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF( sym )
                  || (FmtData.type & MK_NOVELL) && IS_SYM_IMPORTED( sym )
                     && (sym->info & (SYM_REFERENCED | SYM_LOCAL_REF)) )
-                && !(sym->info & SYM_IS_ALTDEF) ) {
+                && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 LibFind( sym->name, (sym->info & SYM_CHECKED) != 0 );
             }
             sym->info |= SYM_CHECKED;
@@ -723,7 +723,7 @@ void ProcLocalImports( void )
 
     if( FmtData.type & MK_PE ) {
         for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-            if( !(sym->info & SYM_DEFINED) && !IS_SYM_WEAK_REF(sym) && !(sym->info & SYM_IS_ALTDEF) ) {
+            if( (sym->info & SYM_DEFINED) == 0 && !IS_SYM_WEAK_REF(sym) && (sym->info & SYM_IS_ALTDEF) == 0 ) {
                 ImportPELocalSym( sym );
             }
         }

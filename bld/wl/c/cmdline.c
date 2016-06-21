@@ -235,7 +235,7 @@ void DoCmdFile( char *fname )
         Suicide();
     }
     GetExtraCommands();
-    if( !(LinkState & FMT_DECIDED) ) {
+    if( (LinkState & FMT_DECIDED) == 0 ) {
         /* restrict set to automatically decided ones */
 #if defined( __QNX__ )
 #define LAST_CHANCE ( MK_OS2_LX | MK_OS2_LE | MK_OS2_NE | MK_QNX )
@@ -270,7 +270,7 @@ void DoCmdFile( char *fname )
         CmdOvlFini();
         AddObjLib( "wovl.lib", LIB_PRIORITY_MIN );     // add a reference to wovl.lib
     }
-    if( Name == NULL || !(CmdFlags & CF_HAVE_FILES) ) {
+    if( Name == NULL || (CmdFlags & CF_HAVE_FILES) == 0 ) {
         Ignite();
         LnkMsg( FTL+MSG_NO_FILES_FOUND, NULL );
     }
@@ -729,7 +729,7 @@ void AddFmtLibPaths( void )
     struct select_format const *check;
     exe_format                  possible;
 
-    if( !(LinkState & FMT_DECIDED) )
+    if( (LinkState & FMT_DECIDED) == 0 )
         return;
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
         if( (~possible & FmtData.type) == 0 ) {
@@ -757,7 +757,7 @@ bool HintFormat( exe_format hint )
     struct select_format const *check;
     exe_format                  possible;
 
-    if( !(hint & FmtData.type) )
+    if( (hint & FmtData.type) == 0 )
         return( false );
     FmtData.type &= hint;
     if( LinkState & FMT_DECIDED )
@@ -792,15 +792,15 @@ void DecideFormat( void )
     exe_format  allowed;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
-    if( !(LinkState & FMT_DECIDED) ) {
+    if( (LinkState & FMT_DECIDED) == 0 ) {
         possible = FmtData.type;
         allowed = MK_OS2_NE | MK_OS2_LX;
-        if( !(LinkState & FMT_SEEN_IMPORT_CMT) )
+        if( (LinkState & FMT_SEEN_IMPORT_CMT) == 0 )
             allowed = ~allowed;
         if( (possible & allowed) != 0 )
             possible &= allowed;
         HintFormat( possible );
-        if( !(LinkState & FMT_DECIDED) ) {
+        if( (LinkState & FMT_DECIDED) == 0 ) {
             Msg_Get( MSG_FORMAT_NOT_DECIDED, rc_buff );
             LnkMsg( FTL+MSG_INTERNAL, "s", rc_buff );
         }
@@ -813,7 +813,7 @@ void FreeFormatStuff( void )
     struct select_format const *check;
     exe_format                  possible;
 
-    if( !(LinkState & FMT_DECIDED) )
+    if( (LinkState & FMT_DECIDED) == 0 )
         return;
     for( check = PossibleFmt; (possible = check->bits) != 0; ++check ) {
         if( (~possible & FmtData.type) == 0 ) {
@@ -1078,9 +1078,9 @@ bool ProcOffset( void )
 {
     if( !GetLong( &FmtData.base ) )
         return( false );
-    if( !(FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) ) {
+    if( (FmtData.type & (MK_PHAR_LAP|MK_QNX_FLAT|MK_RAW)) == 0 ) {
         ChkBase( 64 * 1024 );
-    } else if( !(FmtData.type & (MK_OS2_FLAT|MK_PE)) ) {
+    } else if( (FmtData.type & (MK_OS2_FLAT|MK_PE)) == 0 ) {
         ChkBase( 4 * 1024 );
     }
     return( true );

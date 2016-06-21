@@ -242,7 +242,7 @@ void ProcLinsym( void )
     }
     if( !IS_SYM_COMDAT(sym) ) return;
     is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
-    if( sym->mod == CurrMod && !(sym->info & SYM_DEAD) ) {
+    if( sym->mod == CurrMod && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
     }
 }
@@ -250,7 +250,7 @@ void ProcLinsym( void )
 static void DoAltDef( comdat_info *info )
 /***************************************/
 {
-    if( !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
         FreeSegData( info->sdata );
     } else {
         Ring2Append( &CurrMod->segs, info->sdata );
@@ -309,7 +309,7 @@ static void AddToLinkerComdat( symbol *sym )
     if( leader == NULL ) {
         sdata->u.name = GetNewName();
         sym->addr.off = 0;
-        if( !(FmtData.type & MK_OVERLAYS) || !(alloc & 1) ) {
+        if( (FmtData.type & MK_OVERLAYS) == 0 || (alloc & 1) == 0 ) {
             sect = Root;
         } else {
             sect = NonSect;             /* data in an overlaid app */
@@ -502,7 +502,7 @@ void ProcComdat( void )
         RingAppend( &CDatList, info );
         if( IS_SYM_COMDAT(sym) ) {
             CheckComdatSym( sym, info->flags & ~SYM_DEAD );
-        } else if( !(IS_SYM_REGULAR(sym) && sym->info & SYM_DEFINED) ) {
+        } else if( !(IS_SYM_REGULAR(sym) && (sym->info & SYM_DEFINED)) ) {
             if( sym->info & SYM_DEFINED ) {
                 sym = HashReplace( sym );
             }
@@ -523,7 +523,7 @@ void ProcComdat( void )
             info->flags &= ~SYM_DEAD;
         }
     }
-    if( info->flags & SYM_DEAD && !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (info->flags & SYM_DEAD) && (LinkFlags & INC_LINK_FLAG) == 0 ) {
         ObjFormat |= FMT_IGNORE_FIXUPP;
     } else {
         ObjFormat &= ~(FMT_IGNORE_FIXUPP | FMT_IS_LIDATA);
