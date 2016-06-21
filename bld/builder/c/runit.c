@@ -276,6 +276,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
             *owner = curr;
             owner = &curr->next;
         }
+        closedir( directory );
     }
     *list = head;
     if( cond_copy ) {
