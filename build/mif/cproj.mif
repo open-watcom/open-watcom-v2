@@ -191,7 +191,7 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x
 mode_clflags += -x
 !endif
-!if ( "$(bootstrap)" != "1" ) || ( $(watcom_ver) >= 1300 )
+!if ( "$(bootstrap)" != "1" ) || ( $(watcom_ver) > 1300 )
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
