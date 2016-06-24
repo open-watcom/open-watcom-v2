@@ -222,6 +222,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         h = Hash( FixName( entry->d_name ), HASH_PRIME );
         cnew = myMalloc( sizeof( *cnew ) );
         if( cnew == NULL ) {
+            closedir( parent );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
