@@ -307,7 +307,7 @@ static int __fnmatch( char *pattern, char *string )
     len = 0;
     do {
         if( star_char ) {
-            if( string[len] == 0 ) {
+            if( string[len] == NULLCHAR ) {
                 return( 0 );
             }
             len++;
@@ -413,7 +413,7 @@ const char *DoWildCard( const char *base )
 
     while( (entry = readdir( parent )) != NULL ) {
 #ifndef __UNIX__
-        if( ( entry->d_attr & IGNORE_MASK ) == 0 ) {
+        if( (entry->d_attr & IGNORE_MASK) == 0 ) {
 #endif
             if( __fnmatch( pattern, entry->d_name ) ) {
                 break;

@@ -184,10 +184,10 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #endif
 
     /* clear the memory */
-    _fmemset( *pdhead, 0, sizeof( **pdhead ) );
+    FarMemSet( *pdhead, 0, sizeof( **pdhead ) );
 
     len = strlen( path );
-    _fmemcpy( (*pdhead)->dh_name, path, len + 1 );
+    FarMemCpy( (*pdhead)->dh_name, path, len + 1 );
     name_ptr = path + len;
 
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
@@ -329,7 +329,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     _splitpath2( fullpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
     ext = pg.ext;
-    if( ext[0] == '.' && ext[1] == 0 ) {
+    if( ext[0] == '.' && ext[1] == NULLCHAR ) {
         ext = NULL;
     }
     _makepath( name, NULL, NULL, pg.fname, ext );

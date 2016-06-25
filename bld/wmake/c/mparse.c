@@ -939,7 +939,7 @@ TLIST *Parse( void )
                 linkCList( btlist, bclist );
                 bclist = NULL;
                 btlist = NULL;
-                if( (Glob.compat_nmake || Glob.compat_unix) && token_filename == TRUE ) {
+                if( (Glob.compat_nmake || Glob.compat_unix) && token_filename ) {
                     exPop();
                     token_filename = FALSE;
                 }

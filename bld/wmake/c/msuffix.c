@@ -206,7 +206,7 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
     }
 
     if( FindSuffix( ptr ) == NULL ) {
-        if( Glob.compat_nmake == TRUE ) {
+        if( Glob.compat_nmake ) {
             AddFrontSuffix( ptr );
             return( TRUE );
         } else {

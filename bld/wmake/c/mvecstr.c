@@ -185,7 +185,7 @@ STATIC char *expandVec( VECSTR vec )
 
     d = result;
     for( ; cur != NULL; cur = cur->next ) {
-        _fmemcpy( d, cur->text, cur->len );
+        FarMemCpy( d, cur->text, cur->len );
         d += cur->len;
     }
     *d = NULLCHAR;
@@ -235,12 +235,12 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
 
                         /* we have room in tail for all of text */
         if( tail->len + len <= MIN_TEXT ) {
-            _fmemcpy( fptr, text, len );
+            FarMemCpy( fptr, text, len );
             tail->len += len;
             return;
         } else if( tail->len < MIN_TEXT ) { /* partially empty buffer */
             clen = MIN_TEXT - tail->len;    /* room remaining */
-            _fmemcpy( fptr, text, clen );
+            FarMemCpy( fptr, text, clen );
             tail->len = MIN_TEXT;
                 /* setup to make a new entry with remainder of text */
             text += clen;
@@ -254,7 +254,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     if( len1 < MIN_TEXT )
         len1 = MIN_TEXT;
     new = FarMallocSafe( sizeof( *new ) + len1 );
-    _fmemcpy( new->text, text, len );
+    FarMemCpy( new->text, text, len );
     new->len = len;
     new->next = NULL;
 

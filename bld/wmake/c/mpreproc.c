@@ -322,7 +322,7 @@ STATIC BOOLEAN ifOp( void )
     parseExpr( &temp, test );
 
     FreeSafe( test );
-    return( (BOOLEAN)temp.data.number );
+    return( temp.data.number != 0 );
 }
 
 
@@ -392,7 +392,7 @@ STATIC BOOLEAN ifEq( void )
     if( v1 == NULL ) {
         return( 0 );
     }
-    ret = strcmp( v1, v2 ) == 0;
+    ret = ( strcmp( v1, v2 ) == 0 );
 
     FreeSafe( (void *)v1 );
     FreeSafe( v2 );
@@ -416,7 +416,7 @@ STATIC BOOLEAN ifEqi( void )
     if( v1 == NULL ) {
         return( 0 );
     }
-    ret = stricmp( v1, v2 ) == 0;
+    ret = ( stricmp( v1, v2 ) == 0 );
 
     FreeSafe( (void *)v1 );
     FreeSafe( v2 );
@@ -683,8 +683,7 @@ STATIC void bangInject( void )
         mac_name = curr;
         curr = skipUntilWS( curr );
         if( *curr != NULLCHAR ) {
-            *curr = NULLCHAR;
-            ++curr;
+            *curr++ = NULLCHAR;
         }
         if( !IsMacroName( mac_name ) ) {
             break;
@@ -986,15 +985,15 @@ STATIC void handleBang( void )
 }
 
 
-static int PreTestString( const char *str )
-/******************************************
+static BOOLEAN PreTestString( const char *str )
+/**********************************************
  * Test if 'str' is the next sequence of characters in stream.
  * If not, push back any characters read.
  */
 {
     const char  *p = str;
     STRM_T      s;
-    int         rc = FALSE;
+    BOOLEAN     rc = FALSE;
 
     for( ;; ) {
         s = GetCHR();
@@ -1759,7 +1758,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     break;
                 case OP_STRING:
                     leftVal->data.number =
-                        !strcmp( leftVal->data.string, rightVal.data.string );
+                        ( strcmp( leftVal->data.string, rightVal.data.string ) == 0 );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
@@ -1780,7 +1779,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     break;
                 case OP_STRING:
                     leftVal->data.number =
-                        !!strcmp( leftVal->data.string, rightVal.data.string );
+                        ( strcmp( leftVal->data.string, rightVal.data.string ) != 0 );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:

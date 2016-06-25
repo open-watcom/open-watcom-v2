@@ -120,7 +120,7 @@ BOOLEAN AutoDepCheck( char *name, time_t stamp,
     void                        *dep;
     BOOLEAN                     obs;
 
-    quick_logic = !(Glob.rcs_make | Glob.debug | Glob.show_offenders);
+    quick_logic = !(Glob.rcs_make || Glob.debug || Glob.show_offenders);
     obs = FALSE;
 
     for( pcurr = &AutoDepTypes[0]; (curr = *pcurr) != NULL; pcurr++ ) {

@@ -70,7 +70,7 @@ enum {
     #undef pick
 };
 
-extern unsigned FmtStr( char *buf, const char *fmt, ... );
+extern size_t   FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
 #if defined( __WATCOMC__ ) || !defined( NDEBUG )
 extern _NORETURN void   PrtMsgFtl( enum MsgClass num, ... );

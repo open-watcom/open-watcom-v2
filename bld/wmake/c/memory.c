@@ -92,7 +92,7 @@ STATIC void printLine( void *h, const char *buf, unsigned size )
         write( trkfile, buf, size );
         write( trkfile, "\n", 1 );
     }
-    if( !(trmemCode & TRMEM_DO_NOT_PRINT) ) {
+    if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
          write( STDOUT_FILENO, buf, size );
          write( STDOUT_FILENO, "\n", 1 );
     }
@@ -101,7 +101,7 @@ STATIC void printLine( void *h, const char *buf, unsigned size )
 STATIC void MemCheck( void )
 /**************************/
 {
-    static int  busy = FALSE;   /* protect against recursion thru PrtMsg */
+    static BOOLEAN  busy = FALSE;   /* protect against recursion thru PrtMsg */
 
 #if defined( __WATCOMC__ )
     if( !busy ) {

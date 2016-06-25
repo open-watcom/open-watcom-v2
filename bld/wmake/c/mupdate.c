@@ -319,7 +319,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
     if( Glob.touch ) {
         ++cListCount;
         ResetExecuted();
-        if( targ->attr.symbolic == FALSE ) {
+        if( !targ->attr.symbolic ) {
             CacheRelease();
             if( TouchFile( targ->node.name ) != RET_SUCCESS ) {
                 PrtMsg( ERR | COULD_NOT_TOUCH, targ->node.name );
@@ -393,7 +393,7 @@ RET_T MakeList( TLIST *tlist )
     ret = RET_SUCCESS;
     for( ; tlist != NULL; tlist = tlist->next ) {
         targ = tlist->target;
-        if( targ->mentioned == FALSE ) {
+        if( !targ->mentioned ) {
             PrtMsg( WRN | TARGET_NOT_MENTIONED, targ->node.name );
             targ->mentioned = TRUE;
         }   /* warning suggested by John */
@@ -906,7 +906,7 @@ RET_T Update( TARGET *targ )
                 targ->cmds_done = TRUE;
             }
         }
-    } else if( targ->scolon == FALSE ) {    /* double colon */
+    } else if( !targ->scolon ) {        /* double colon */
         PrtMsg( DBG | INF | M_EXPLICIT_RULE, M_DCOLON );
         for( curdep = targ->depend; curdep != NULL; curdep = curdep->next ) {
             if( resolve( targ, curdep ) != RET_SUCCESS ) {
@@ -964,7 +964,7 @@ RET_T Update( TARGET *targ )
         }
     }
 
-    targ->updated = targ->attr.multi == FALSE;
+    targ->updated = ( !targ->attr.multi );
     targ->busy = FALSE;
     targ->error = FALSE;
     return( RET_SUCCESS );
@@ -1125,7 +1125,7 @@ void UpdateInit( void )
 {
     /* according to ANSI standard... this should be true */
 
-    assert( doneBefore == FALSE && cListCount == 0ul && exStackP == 0 );
+    assert( !doneBefore && cListCount == 0ul && exStackP == 0 );
     DoingUpdate = TRUE;
 }
 

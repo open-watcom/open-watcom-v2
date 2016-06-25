@@ -149,7 +149,7 @@ static orl_return findDependInfo( orl_sec_handle section )
     char    *name;
 
     name = ORLSecGetName( section );
-    if( !strcmp( name, dependSectionName ) ) {
+    if( strcmp( name, dependSectionName ) == 0 ) {
         orlDependsInfo = section;
         return( ORL_FALSE );
     }

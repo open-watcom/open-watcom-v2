@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include <sys/stat.h>
 #include "make.h"
 #include "mrcmsg.h"
@@ -139,7 +140,7 @@ STATIC char *strDec( char *dest, UINT16 num )
     do {
         ++dest;
         res = div( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -166,7 +167,7 @@ STATIC char *strDecL( char *dest, UINT32 num )
     do {
         ++dest;
         res = ldiv( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -225,8 +226,8 @@ STATIC char *strDec2( char *dest, UINT16 num )
     assert( dest != NULL );
 
     res = div( num % 100, 10 );
-    *dest++ = res.quot + '0';
-    *dest++ = res.rem + '0';
+    *dest++ = (char)( '0' + res.quot );
+    *dest++ = (char)( '0' + res.rem );
     return( dest );
 }
 
@@ -241,14 +242,14 @@ STATIC char *strDec5( char *dest, UINT16 num )
     res.quot = num;
     for( temp = dest + 4; temp >= dest; --temp ) {
         res = div( res.quot, 10 );
-        *temp = res.rem + '0';
+        *temp = (char)( '0' + res.rem );
     }
     return( dest + 5 );
 }
 
 
-STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
-/************************************************************************
+STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
+/**********************************************************************
  * quick vsprintf routine
  * assumptions - format string does not end in '%'
  *             - only use of '%' is as follows:
@@ -364,35 +365,44 @@ STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
         }
     }
     *dest = NULLCHAR;
-    return( (unsigned)(dest - buff) );
+    return( dest - buff );
 }
 
 
-unsigned FmtStr( char *buff, const char *fmt, ... )
+size_t FmtStr( char *buff, const char *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
 {
     va_list     args;
-    unsigned    rc;
+    size_t      len;
 
     assert( buff != NULL && fmt != NULL );
 
     va_start( args, fmt );
-    rc = doFmtStr( buff, fmt, args );
+    len = doFmtStr( buff, fmt, args );
     va_end( args );
-    return( rc );
+    return( len );
 }
 
-
-STATIC void logWrite( const char *buff, size_t len )
-/**************************************************/
+STATIC void writeOutput( unsigned class, int fh, const char *buff, size_t len )
+/*****************************************************************************/
 {
-    if( logFH != -1 ) {
-        write( logFH, buff, (unsigned)len );
+    if( class != INF ) {
+        if( logFH != -1 ) {
+#ifdef _WIN64
+            write( logFH, buff, (unsigned)len );
+#else
+            write( logFH, buff, len );
+#endif
+        }
     }
+#ifdef _WIN64
+    write( fh, buff, (unsigned)len );
+#else
+    write( fh, buff, len );
+#endif
 }
-
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
@@ -405,7 +415,7 @@ void PrtMsg( enum MsgClass num, ... )
     va_list         args;
     char            buff[1024];
     enum MsgClass   pref = M_ERROR;
-    unsigned        len;
+    size_t          len;
     unsigned        class;
     const char      *fname;
     UINT16          fline;
@@ -454,7 +464,7 @@ void PrtMsg( enum MsgClass num, ... )
             pref = M_ERROR;
             break;
         }
-        if( !(num & PRNTSTR) ) {
+        if( (num & PRNTSTR) == 0 ) {
             len += FmtStr( &buff[len], "%M(%c%D): ", pref, wefchar, num & NUM_MSK );
         }
     }
@@ -467,24 +477,17 @@ void PrtMsg( enum MsgClass num, ... )
      * with the doFmtStr() substitution.
      */
     if( len > 0 ) {
-        if( class != INF ) {
-            logWrite( buff, len );
-        }
-        write( fh, buff, len );
+        writeOutput( class, fh, buff, len );
     }
 
     va_start( args, num );
     if( num & PRNTSTR ) {       /* print a big string */
         str = va_arg( args, char * );
-
-        if( class != INF ) {
-            logWrite( str, strlen( str ) );
-        }
-        write( fh, str, (unsigned)strlen( str ) );
+        writeOutput( class, fh, str, strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
-        if( ( num & NUM_MSK ) >= END_OF_RESOURCE_MSG ) {
-            len = doFmtStr( buff, msgText[(num&NUM_MSK)-END_OF_RESOURCE_MSG], args );
+        if( (num & NUM_MSK) >= END_OF_RESOURCE_MSG ) {
+            len = doFmtStr( buff, msgText[(num & NUM_MSK) - END_OF_RESOURCE_MSG], args );
         } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
             USEARGVALUE = 1;
             reOrder( args, paratype ); /* reposition the parameters */
@@ -495,13 +498,10 @@ void PrtMsg( enum MsgClass num, ... )
         }
     }
     va_end( args );
-    if( !(num & NEOL) ) {
+    if( (num & NEOL) == 0 ) {
         buff[len++] = EOL;
     }
-    if( class != INF ) {
-        logWrite( buff, len );
-    }
-    write( fh, buff, len );
+    writeOutput( class, fh, buff, len );
     if( !Glob.compat_nmake
       && ( num == (FTL | LOC | CANNOT_NEST_FURTHER) || num == (ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
         PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
@@ -531,7 +531,7 @@ void Usage( void )
 
     for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) {
+        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == NULLCHAR ) ) {
             break;
         }
         PrtMsg( INF | PRNTSTR, msgbuff );
@@ -575,7 +575,6 @@ void LogInit( const char *name )
     if( name != NULL ) {
         logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT, PMODE_RW );
     }
-    return;
 }
 
 

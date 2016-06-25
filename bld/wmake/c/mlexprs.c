@@ -561,7 +561,7 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
                 IsDoubleQuote = TRUE;
             } else {
                 /* Found the end of the Double Quoted String */
-                if( *(current + 1) != NULLCHAR) {
+                if( *(current + 1) != NULLCHAR ) {
                     UnGetCH( STRM_MAGIC );
                     InsString( StrDupSafe( current + 1 ), TRUE );
                     UnGetCH( STRM_TMP_LEX_START );

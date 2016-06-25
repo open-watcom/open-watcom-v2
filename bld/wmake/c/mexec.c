@@ -274,7 +274,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
                     }
                     FreeSafe( DeMacroBody );
                 }
-                if( firstTime == TRUE ) {
+                if( firstTime ) {
                     WriteVec( outText, " > " );
                     firstTime = FALSE;
                 } else {
@@ -371,7 +371,7 @@ STATIC RET_T createFile( const FLIST *head )
                 ret = RET_ERROR;
             }
             if( close( handle ) != -1 ) {
-                if( head->keep == FALSE ) {
+                if( !head->keep ) {
                     temp = NewNKList();
                     temp->fileName = StrDupSafe( tmpFileName );
                     temp->next     = noKeepList;
@@ -450,7 +450,7 @@ STATIC RET_T writeInlineFiles( FLIST *head, char **commandIn )
         if( !Glob.noexec ) {
             ret = createFile( current );
         } else {
-            if( current->keep == FALSE ) {
+            if( !current->keep ) {
                 temp = NewNKList();
                 temp->fileName = StrDupSafe( current->fileName );
                 temp->next     = noKeepList;
@@ -541,7 +541,7 @@ STATIC RET_T percentMake( char *arg )
             newtarg = TRUE;
         }
         ret = Update( calltarg );
-        if( newtarg && Glob.noexec == FALSE ) {
+        if( newtarg && !Glob.noexec ) {
             /* we created a target - don't need it any more */
             KillTarget( calltarg->node.name );
         }
@@ -598,9 +598,9 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         ++p;    // Skip the first quote
         ++fn;
         while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
-             ++p;
+            ++p;
         }
-        if( *p!= NULLCHAR ) {
+        if( *p != NULLCHAR ) {
             *p++ = NULLCHAR;
         }
     }
@@ -658,7 +658,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
 
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
-        len = (p - text) + 1;
+        len = ( p - text ) + 1;
         if( write( currentFileHandle, text, (unsigned)len ) != (int)len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
@@ -704,9 +704,9 @@ STATIC RET_T percentRename( char *arg )
         ++p;    // Skip the first quote
         ++fn1;
         while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
-             ++p;
+            ++p;
         }
-        if( *p!= NULLCHAR ) {
+        if( *p != NULLCHAR ) {
             *p++ = NULLCHAR;
         }
     }
@@ -730,9 +730,9 @@ STATIC RET_T percentRename( char *arg )
         ++p;    // Skip the first quote
         ++fn2;
         while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
-             ++p;
+            ++p;
         }
-        if( *p!= NULLCHAR ) {
+        if( *p != NULLCHAR ) {
             *p++ = NULLCHAR;
         }
     }
@@ -1020,7 +1020,7 @@ STATIC RET_T handleIf( char *cmd )
 
     save = *p;
     *p = NULLCHAR;
-    not = stricmp( tmp1, "NOT" ) == 0;
+    not = ( stricmp( tmp1, "NOT" ) == 0 );
     *p = save;
 
     if( not ) {             /* discard the "NOT" get next word */
@@ -1092,7 +1092,7 @@ STATIC RET_T handleIf( char *cmd )
         }
         *p = NULLCHAR;
         *end1 = NULLCHAR;       /* null-terminate tmp1 again */
-        condition = strcmp( tmp1, tmp2 ) == 0;
+        condition = ( strcmp( tmp1, tmp2 ) == 0 );
     }
 
     p = SkipWS( p + 1 );
@@ -1427,17 +1427,17 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
             p++;
             while( isalpha( p[0] ) ) {
                 switch( tolower( p[0] ) ) {
-                    case 'f':
-                        flags->bForce = TRUE;
-                        break;
-                    case 'r':
-                        flags->bDirs = TRUE;
-                        break;
-                    case 'v':
-                        flags->bVerbose = TRUE;
-                        break;
-                    default:
-                        return( handleRMSyntaxError() );
+                case 'f':
+                    flags->bForce = TRUE;
+                    break;
+                case 'r':
+                    flags->bDirs = TRUE;
+                    break;
+                case 'v':
+                    flags->bVerbose = TRUE;
+                    break;
+                default:
+                    return( handleRMSyntaxError() );
                 }
                 p++;
             }
@@ -1500,7 +1500,7 @@ STATIC BOOLEAN remove_item( const char *name, const rm_flags *flags, BOOLEAN dir
 static int IsDotOrDotDot( const char *fname )
 {
     /* return 1 if fname is "." or "..", 0 otherwise */
-    return( fname[0] == '.' && ( fname[1] == 0 || ( fname[1] == '.' && fname[2] == 0 ) ) );
+    return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
 static BOOLEAN doRM( const char *f, const rm_flags *flags )
@@ -1518,7 +1518,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
     size_t              len;
     DIR                 *d;
     struct dirent       *nd;
-    int                 rc = TRUE;
+    BOOLEAN             rc = TRUE;
 
     /* separate file name to path and file name parts */
     len = strlen( f );
@@ -1888,7 +1888,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
     }
 #endif
     comnum = findInternal( cmdname );
-    if( !(flags & FLAG_SILENT) ||
+    if( (flags & FLAG_SILENT) == 0 ||
         (Glob.noexec && (comnum != COM_FOR || (flags & FLAG_SHELL)) &&
         !percent_cmd) ) {
         if( !Glob.noheader && !Glob.compat_posix ) {
@@ -1907,7 +1907,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
     if( hasMetas( cmd ) && comnum != COM_SET && comnum != COM_FOR ) {
         flags |= FLAG_SHELL; /* pass to shell because of '>','<' or '|' */
     }
-    if( ( flags & FLAG_ENV_ARGS ) != 0 && ( flags & FLAG_SHELL ) == 0 ) {
+    if( (flags & FLAG_ENV_ARGS) && (flags & FLAG_SHELL) == 0 ) {
         tmp_env = makeTmpEnv( arg );
     }
 /*
@@ -2052,7 +2052,7 @@ STATIC RET_T execLine( char *line )
         PrtMsgExit(( FTL | OS_CORRUPTED ));
     }
     CheckForBreak();
-    if( rc != RET_SUCCESS && !( flags & FLAG_IGNORE ) ) {
+    if( rc != RET_SUCCESS && (flags & FLAG_IGNORE) == 0 ) {
         return( RET_ERROR );
     }
     return( RET_SUCCESS );
