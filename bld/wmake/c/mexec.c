@@ -601,8 +601,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
              ++p;
         }
         if( *p!= NULLCHAR ) {
-            *p = NULLCHAR;
-            p++;
+            *p++ = NULLCHAR;
         }
     }
 
@@ -626,8 +625,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
             closeCurrentFile();
             return( RET_ERROR );
         }
-        *p = NULLCHAR;      /* terminate file name */
-        ++p;
+        *p++ = NULLCHAR;    /* terminate file name */
         text = p;           /* set text pointer */
         p += strlen( p );   /* find null terminator */
     } else {
@@ -709,8 +707,7 @@ STATIC RET_T percentRename( char *arg )
              ++p;
         }
         if( *p!= NULLCHAR ) {
-            *p = NULLCHAR;
-            p++;
+            *p++ = NULLCHAR;
         }
     }
 
@@ -720,8 +717,7 @@ STATIC RET_T percentRename( char *arg )
         PrtMsg( INF | PRNTSTR, p );
         return( RET_ERROR );
     }
-    *p = NULLCHAR;          /* terminate first file name */
-    ++p;
+    *p++ = NULLCHAR;        /* terminate first file name */
 
     /* Get second file name as well */
     p = SkipWS( p );
@@ -737,8 +733,7 @@ STATIC RET_T percentRename( char *arg )
              ++p;
         }
         if( *p!= NULLCHAR ) {
-            *p = NULLCHAR;
-            p++;
+            *p++ = NULLCHAR;
         }
     }
 
@@ -747,10 +742,9 @@ STATIC RET_T percentRename( char *arg )
         return( RET_ERROR );
     }
     *p = NULLCHAR;          /* terminate second file name */
-    if( rename( fn1, fn2 )  == 0)
+    if( rename( fn1, fn2 ) == 0 )
         return( RET_SUCCESS );
-    else
-        return( RET_ERROR );
+    return( RET_ERROR );
 }
 
 STATIC RET_T percentCmd( const char *cmdname, char *arg )
@@ -1362,7 +1356,7 @@ STATIC RET_T handleCD( char *cmd )
     }
 
     if( p[1] == ':' ) {             /* just a drive: arg, print the cd */
-        s = SkipWS( (char *)p+2 );
+        s = SkipWS( (char *)p + 2 );
         if( *s == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
@@ -1451,16 +1445,14 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
         }
     }
 
-    if( p && *p ) {
+    if( p != NULL && *p != NULLCHAR ) {
         *pfile = p;
         p = FindNextWS(p);
         if( *p == NULLCHAR ) {
             p = NULL;
-        }
-        else {
+        } else {
             *p++ = NULLCHAR;
         }
-
     } else {
         return( RET_WARN );
     }

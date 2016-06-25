@@ -471,11 +471,9 @@ STATIC char *trimMacroValue( char *v )
     for( p = v; *p != NULLCHAR; ++p ) {
         if( !isws( *p ) ) {
             if( space ) {
-                *t = ' ';
-                ++t;
+                *t++ = ' ';
             }
-            *t = *p;
-            ++t;
+            *t++ = *p;
             space = 0;
         } else {
             space = 1;

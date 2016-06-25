@@ -144,8 +144,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
                 if( string_open ) {
                     *dst++ = t;
                     pos++;
-                } else
-                if( isws( t ) ) {
+                } else if( isws( t ) ) {
                     break;
                 } else {
                     *dst++ = t;
