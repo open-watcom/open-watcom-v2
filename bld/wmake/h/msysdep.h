@@ -151,19 +151,18 @@ typedef enum {
     SOA_UP_TO_DATE,
 } autodep_ret_t;
 
-typedef struct dll_cmd DLL_CMD;
-struct dll_cmd {
-    DLL_CMD     *next;
-    char const  *cmd_name;
+typedef struct dll_cmd {
+    struct dll_cmd  *next;
+    char const      *cmd_name;
 #ifdef DLLS_IMPLEMENTED
-    IDEDRV      inf;
+    IDEDRV          inf;
 #endif
-};
+} DLL_CMD;
 
 extern int              SwitchChar( void );
 extern int              OSCorrupted( void );
 extern RET_T            TouchFile( const char *name );
-extern BOOLEAN          IdenticalAutoDepTimes( time_t, time_t );
+extern bool             IdenticalAutoDepTimes( time_t, time_t );
 extern void             InitHardErr( void );
 extern void             OSLoadDLL( char *cmd, char *dll_name, char *ent_name );
 extern DLL_CMD          *OSFindDLL( char const *cmd_name );

@@ -50,8 +50,8 @@ UINT16          inlineLevel;
 STATIC TLIST    *firstTarget;   /* first set of targets parsed this invocation */
 
 
-STATIC void ignoring( TOKEN_T t, BOOLEAN freelex )
-/*************************************************
+STATIC void ignoring( TOKEN_T t, bool freelex )
+/**********************************************
  * print message saying ignoring token, and if freelex then LexMaybeFree( t )
  */
 {
@@ -107,25 +107,25 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
                 PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr );
             } else {
                 char *targname = AddCreator( CurAttr.u.ptr );
-                WildTList( dest, targname, TRUE, TRUE);
+                WildTList( dest, targname, true, true);
                 FreeSafe( targname );
             }
             FreeSafe( CurAttr.u.ptr );
             break;
         case TOK_DOTNAME:
             if( !IsDotWithCmds( CurAttr.u.dotname ) ) {
-                ignoring( TOK_DOTNAME, TRUE );
+                ignoring( TOK_DOTNAME, true );
             } else {
                 FmtStr( dotname, ".%s", DotNames[CurAttr.u.dotname] );
-                WildTList( dest, dotname, TRUE, TRUE);
+                WildTList( dest, dotname, true, true);
             }
             break;
         case TOK_FILENAME:
-            WildTList( dest, CurAttr.u.ptr, TRUE, TRUE);
+            WildTList( dest, CurAttr.u.ptr, true, true);
             FreeSafe( CurAttr.u.ptr );
             break;
         default:
-            ignoring( t, TRUE );
+            ignoring( t, true );
             break;
         }
 
@@ -134,8 +134,8 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
 }
 
 
-STATIC void setSColon( const TLIST *tlist, BOOLEAN scolon )
-/**********************************************************
+STATIC void setSColon( const TLIST *tlist, bool scolon )
+/*******************************************************
  * Set the targets in tlist to scolon.  Check if any are being
  * coerced to double colon, and print an error message.
  */
@@ -265,46 +265,46 @@ STATIC DEPEND *buildDepend( TATTR *pattr )
         case TOK_DOTNAME:
             switch( CurAttr.u.dotname ) {
             case DOT_ALWAYS:
-                pattr->always = TRUE;
+                pattr->always = true;
                 break;
             case DOT_AUTO_DEPEND:
-                pattr->auto_dep = TRUE;
+                pattr->auto_dep = true;
                 break;
             case DOT_PRECIOUS:
-                pattr->precious = TRUE;
+                pattr->precious = true;
                 break;
             case DOT_MULTIPLE:
-                pattr->multi= TRUE;
+                pattr->multi= true;
                 break;
             case DOT_PROCEDURE:
-                pattr->multi= TRUE;
+                pattr->multi= true;
                 // fall through
             case DOT_SYMBOLIC:
-                pattr->symbolic = TRUE;
+                pattr->symbolic = true;
                 break;
             case DOT_EXPLICIT:
-                pattr->explicit = TRUE;
+                pattr->explicit = true;
                 break;
             case DOT_EXISTSONLY:
-                pattr->existsonly = TRUE;
+                pattr->existsonly = true;
                 break;
             case DOT_RECHECK:
-                pattr->recheck = TRUE;
+                pattr->recheck = true;
                 break;
             default:
-                ignoring( TOK_DOTNAME, TRUE );
+                ignoring( TOK_DOTNAME, true );
                 break;
             }
             break;
         case TOK_FILENAME:
-            WildTList( list, CurAttr.u.ptr, TRUE, FALSE );
+            WildTList( list, CurAttr.u.ptr, true, false );
             FreeSafe( CurAttr.u.ptr );        /* not needed any more */
             while( *list != NULL ) {        /* find tail again */
                 list = &(*list)->next;
             }
             break;
         default:
-            ignoring( t, TRUE );
+            ignoring( t, true );
             break;
         }
     }
@@ -398,7 +398,7 @@ STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
 {
     TATTR       attr;       /* hold attributes here */
     DEPEND      *dep;       /* a DEPEND that describes dependents from file */
-    BOOLEAN     nodep;      /* true if no dependents from file              */
+    bool        nodep;      /* true if no dependents from file              */
 
     /* get the target list, and the last token processed */
     t = buildTargs( btlist, t );
@@ -421,7 +421,7 @@ STATIC void parseTargDep( TOKEN_T t, TLIST **btlist )
 
         dep = NewDepend();
         TargInitAttr( &attr );
-        attr.symbolic = TRUE;
+        attr.symbolic = true;
     }
 
     /* now we attach this depend to each target */
@@ -437,7 +437,7 @@ STATIC void parseExtensions( void )
  */
 {
     TOKEN_T     t;
-    BOOLEAN     any;
+    bool        any;
 
     for( ;; ) {
         t = LexToken( LEX_PARSER );
@@ -451,7 +451,7 @@ STATIC void parseExtensions( void )
         ClearSuffixes();
         return;
     }
-    any = FALSE;
+    any = false;
     for( ;; ) {
         t = LexToken( LEX_PARSER );
         if( t == TOK_EOL || t == TOK_END ) {
@@ -468,9 +468,9 @@ STATIC void parseExtensions( void )
                 PrtMsg( ERR | LOC | REDEF_OF_SUFFIX, CurAttr.u.ptr );
             }
             FreeSafe( CurAttr.u.ptr );
-            any = TRUE;
+            any = true;
         } else {
-            ignoring( t, TRUE );
+            ignoring( t, true );
         }
     }
     if( !any ) {
@@ -494,18 +494,18 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
     }
     for( ;; ) {
         switch( CurAttr.u.dotname ) {
-        case DOT_BLOCK:         Glob.block = TRUE;              break;
-        case DOT_CONTINUE:      Glob.cont = TRUE;               break;
-        case DOT_ERASE:         Glob.erase = TRUE;              break;
-        case DOT_FUZZY:         Glob.fuzzy = TRUE;              break;
-        case DOT_IGNORE:        Glob.ignore = TRUE;             break;
-        case DOT_HOLD:          Glob.hold = TRUE;               break;
-        case DOT_NOCHECK:       Glob.nocheck = TRUE;            break;
-        case DOT_OPTIMIZE:      Glob.optimize = TRUE;           break;
-        case DOT_SILENT:        Glob.silent = TRUE;             break;
-        case DOT_RCS_MAKE:      Glob.rcs_make = TRUE;           break;
+        case DOT_BLOCK:         Glob.block = true;              break;
+        case DOT_CONTINUE:      Glob.cont = true;               break;
+        case DOT_ERASE:         Glob.erase = true;              break;
+        case DOT_FUZZY:         Glob.fuzzy = true;              break;
+        case DOT_IGNORE:        Glob.ignore = true;             break;
+        case DOT_HOLD:          Glob.hold = true;               break;
+        case DOT_NOCHECK:       Glob.nocheck = true;            break;
+        case DOT_OPTIMIZE:      Glob.optimize = true;           break;
+        case DOT_SILENT:        Glob.silent = true;             break;
+        case DOT_RCS_MAKE:      Glob.rcs_make = true;           break;
         default:
-            ignoring( TOK_DOTNAME, TRUE );
+            ignoring( TOK_DOTNAME, true );
             break;
         }
         for( ;; ) {
@@ -514,7 +514,7 @@ STATIC void parseDotName( TOKEN_T t, TLIST **btlist )
                 return;
             }
             if( t != TOK_DOTNAME ) {
-                ignoring( t, TRUE );
+                ignoring( t, true );
             }
         }
     }
@@ -637,7 +637,7 @@ STATIC void parseSuf( void )
                 head = cur;
             }
         } else {
-            ignoring( t, TRUE );
+            ignoring( t, true );
         }
         t = LexToken( LEX_PARSER );
     }
@@ -660,7 +660,7 @@ STATIC void parseSuf( void )
         if( t == TOK_END || t == TOK_EOL ) {
             break;
         }
-        ignoring( t, TRUE );
+        ignoring( t, true );
         t = LexToken( LEX_PATH );
     }
 
@@ -690,15 +690,15 @@ STATIC char *getFileName( const char *intext, size_t *offset )
 {
     VECSTR      tempStr;
     char        *ret;
-    BOOLEAN     doubleQuote;    //are there double quotes
+    bool        doubleQuote;    //are there double quotes
 
     assert( intext != NULL && offset != NULL );
 
     *offset     = 0;
-    doubleQuote = FALSE;
+    doubleQuote = false;
 
     if( intext[*offset] == DOUBLEQUOTE ) {
-        doubleQuote = TRUE;
+        doubleQuote = true;
         *offset     = 1;
     }
     for( ;; ) {
@@ -778,7 +778,7 @@ STATIC void getBody( FLIST *head )
                 return;
             }
             UnGetCH( s );
-            temp = ignoreWSDeMacro( TRUE, ForceDeMacro() );
+            temp = ignoreWSDeMacro( true, ForceDeMacro() );
             if( temp[0] == LESSTHAN ) {
                 if( temp[1] == LESSTHAN ) {
                     /* terminator of inline file is found when first
@@ -789,11 +789,11 @@ STATIC void getBody( FLIST *head )
                          ++currChar;
                      }
                      if( *currChar == NULLCHAR ) {
-                         current->keep = FALSE;
+                         current->keep = false;
                      } else if( strnicmp( currChar, NOKEEP, 6 ) == 0 ) {
-                         current->keep = FALSE;
+                         current->keep = false;
                      } else if( strnicmp( currChar, KEEP, 4 ) == 0 ) {
-                         current->keep = TRUE;
+                         current->keep = true;
                      } else {
                          /* error only expecting (NO)KEEP */
                          PrtMsg( ERR | LOC | NOKEEP_ONLY );
@@ -910,16 +910,16 @@ TLIST *Parse( void )
     CLIST   *newclist;
     CLIST   *bclist;
     TLIST   *btlist;
-    BOOLEAN clist_warning_given;
-    BOOLEAN token_filename;
+    bool    clist_warning_given;
+    bool    token_filename;
 
     firstTarget = NULL;
 
     bclist = NULL;
     btlist = NULL;
 
-    clist_warning_given = FALSE;
-    token_filename      = FALSE;
+    clist_warning_given = false;
+    token_filename      = false;
 
     for( ;; ) {
         /*
@@ -931,7 +931,7 @@ TLIST *Parse( void )
             ImplicitDeMacro = (Glob.compat_nmake || Glob.compat_unix) && btlist->target->sufsuf;
         }
         t = LexToken( LEX_PARSER );
-        ImplicitDeMacro = FALSE;
+        ImplicitDeMacro = false;
 
         if( t != TOK_CMD && t != TOK_EOL ) {
             if( btlist != NULL ) {
@@ -941,10 +941,10 @@ TLIST *Parse( void )
                 btlist = NULL;
                 if( (Glob.compat_nmake || Glob.compat_unix) && token_filename ) {
                     exPop();
-                    token_filename = FALSE;
+                    token_filename = false;
                 }
             }
-            clist_warning_given = FALSE;
+            clist_warning_given = false;
         }
 
         if( t == TOK_END ) {
@@ -962,7 +962,7 @@ TLIST *Parse( void )
                 if( btlist == NULL ) {
                     if( !clist_warning_given ) {
                         PrtMsg( WRN | LOC | CLIST_HAS_NO_OWNER );
-                        clist_warning_given = TRUE;
+                        clist_warning_given = true;
                     }
                     FreeSafe( CurAttr.u.ptr );
                 } else {
@@ -979,7 +979,7 @@ TLIST *Parse( void )
                      */
                     ImplicitDeMacro = (Glob.compat_nmake || Glob.compat_unix) && btlist->target->sufsuf;
                     newclist->inlineHead = GetInlineFile( &(newclist->text) );
-                    ImplicitDeMacro = FALSE;
+                    ImplicitDeMacro = false;
                     bclist = newclist;
                 }
             }
@@ -995,7 +995,7 @@ TLIST *Parse( void )
             if( (Glob.compat_nmake || Glob.compat_unix) && btlist != NULL ) {
                 if( btlist->target != NULL && btlist->target->depend != NULL ) {
                     exPush( btlist->target, btlist->target->depend, NULL );
-                    token_filename = TRUE;
+                    token_filename = true;
                 }
             }
             break;
@@ -1019,7 +1019,7 @@ void ParseInit( void )
 /********************/
 {
     inlineLevel   = 0;
-    DoingUpdate = FALSE;
+    DoingUpdate = false;
 }
 
 

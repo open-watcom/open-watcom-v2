@@ -102,7 +102,7 @@ STATIC  char    tmpFileChar  ;          /* temp file number chari   */
 STATIC  int     currentFileHandle;      /* %write, %append, %create */
 STATIC  char    *currentFileName;
 
-static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags );
+static bool     RecursiveRM( const char *dir, const rm_flags *flags );
 
 #define COM_MAX_LEN 16              /* must be able to hold any OS cmdname */
 
@@ -229,18 +229,18 @@ STATIC char *createTmpFileName( void )
 
 
 STATIC RET_T processInlineFile( int handle, const char *body,
-    const char *fileName, BOOLEAN writeToFile )
+    const char *fileName, bool writeToFile )
 /***********************************************************/
 {
     int         index;
     RET_T       ret;
     char        *DeMacroBody;
     int         currentSent;
-    BOOLEAN     firstTime;
+    bool        firstTime;
     VECSTR      outText;
     char        c;
 
-    firstTime = TRUE;
+    firstTime = true;
     currentSent = 0;
     ret         = RET_SUCCESS;
 
@@ -250,8 +250,8 @@ STATIC RET_T processInlineFile( int handle, const char *body,
     // deMacroed
     for( index = 0; (c = body[index++]) != NULLCHAR; ) {
         if( c == EOL ) {
-            InsString( body + currentSent, FALSE );
-            DeMacroBody = ignoreWSDeMacro( FALSE, ForceDeMacro() );
+            InsString( body + currentSent, false );
+            DeMacroBody = ignoreWSDeMacro( false, ForceDeMacro() );
             currentSent = index;
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
@@ -276,7 +276,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
                 }
                 if( firstTime ) {
                     WriteVec( outText, " > " );
-                    firstTime = FALSE;
+                    firstTime = false;
                 } else {
                     WriteVec( outText, " >> " );
                 }
@@ -293,7 +293,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
 STATIC RET_T writeLineByLine( int handle, const char *body )
 /**********************************************************/
 {
-    return( processInlineFile( handle, body, NULL, TRUE ) );
+    return( processInlineFile( handle, body, NULL, true ) );
 }
 
 
@@ -331,7 +331,7 @@ STATIC RET_T VerbosePrintTempFile( const FLIST *head )
 
     for( current = head; current != NULL; current = current->next ) {
         assert( current->fileName != NULL );
-        ret = processInlineFile( 0, current->body, current->fileName, FALSE );
+        ret = processInlineFile( 0, current->body, current->fileName, false );
     }
     return( ret );
 }
@@ -355,7 +355,7 @@ STATIC RET_T createFile( const FLIST *head )
          * and then get it back out using DeMacro to fully DeMacro
          */
         UnGetCH( STRM_MAGIC );
-        InsString( head->fileName, FALSE );
+        InsString( head->fileName, false );
         fileName = DeMacro( TOK_MAGIC );
         GetCHR();           /* eat STRM_MAGIC */
     } else {
@@ -502,13 +502,13 @@ STATIC RET_T percentMake( char *arg )
  * do a recursive make of the target in arg
  */
 {
-    char         *finish;
-    TARGET       *calltarg;
-    RET_T        ret;
-    char         *buf;
-    char         *start;
-    BOOLEAN      newtarg;
-    BOOLEAN      more_targets;
+    char        *finish;
+    TARGET      *calltarg;
+    RET_T       ret;
+    char        *buf;
+    char        *start;
+    bool        newtarg;
+    bool        more_targets;
 
     /* %make <target> <target> ... */
     buf = MallocSafe( _MAX_PATH );
@@ -520,25 +520,25 @@ STATIC RET_T percentMake( char *arg )
         if( *start == NULLCHAR ) {
             break;
         }
-        more_targets = FALSE;
+        more_targets = false;
         for( finish = start; *finish != NULLCHAR; ++finish ) {
             if( isws( *finish ) ) {
-                more_targets = TRUE;
+                more_targets = true;
                 *finish = NULLCHAR;
                 break;
             }
         }
 
         /* try to find this file on path or in targets */
-        ret = TrySufPath( buf, start, &calltarg, FALSE );
+        ret = TrySufPath( buf, start, &calltarg, false );
 
-        newtarg = FALSE;
+        newtarg = false;
         if( ( ret == RET_SUCCESS && calltarg == NULL ) || ret == RET_ERROR ) {
             /* Either file doesn't exist, or it exists and we don't already
              * have a target for it.  Either way, we create a new target.
              */
             calltarg = NewTarget( buf );
-            newtarg = TRUE;
+            newtarg = true;
         }
         ret = Update( calltarg );
         if( newtarg && !Glob.noexec ) {
@@ -811,7 +811,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
         return( percentWrite( arg, WR_WRITE ) );
 
     default:
-        assert( FALSE );
+        assert( false );
         break;
     };
 
@@ -983,8 +983,8 @@ STATIC RET_T handleIf( char *cmd )
  *          { EXIST <file>        }
  */
 {
-    BOOLEAN     not;        /* flag for not keyword                     */
-    BOOLEAN     condition;  /* whether the condition was T or F         */
+    bool        not;        /* flag for not keyword                     */
+    bool        condition;  /* whether the condition was T or F         */
     char        *p;         /* used to scan the string                  */
     char const  *tmp1;      /* one of NOT | ERRORLEVEL | <str1> | EXIST */
     char const  *tmp2;      /* one of <number> | "==" | <file> | <str2> */
@@ -1244,7 +1244,7 @@ STATIC RET_T handleFor( char *line )
  * "FOR" {ws}* "%"["%"]<var> {ws}+ "IN" {ws}+ "("<set>")" {ws}+ "DO" {ws}+ <cmd>
  */
 {
-    static BOOLEAN  busy = FALSE;   /* recursion protection */
+    static bool     busy = false;   /* recursion protection */
     const char      *var;           /* loop variable name incl. %           */
     char            *set;           /* set of values for looping            */
     const char      *cmd;           /* command to execute                   */
@@ -1264,7 +1264,7 @@ STATIC RET_T handleFor( char *line )
         PrtMsg( ERR | NO_NESTED_FOR, dosInternals[COM_FOR] );
         return( RET_ERROR );
     }
-    busy = TRUE;
+    busy = true;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_FOR] );
@@ -1272,7 +1272,7 @@ STATIC RET_T handleFor( char *line )
 
     cmd = var = set = NULL;     /* Just to shut up gcc */
     if( getForArgs( line, &var, &set, &cmd ) != RET_SUCCESS ) {
-        busy = FALSE;
+        busy = false;
         return( RET_ERROR );
     }
 
@@ -1311,7 +1311,7 @@ STATIC RET_T handleFor( char *line )
 
             if( execLine( exec ) != RET_SUCCESS ) {
                 FreeSafe( exec );
-                busy = FALSE;
+                busy = false;
                 /* abandon remaining file entries */
                 DoWildCardClose();
                 return( RET_ERROR );
@@ -1325,7 +1325,7 @@ STATIC RET_T handleFor( char *line )
     }
 
     FreeSafe( exec );
-    busy = FALSE;
+    busy = false;
     return( RET_SUCCESS );
 }
 #ifdef __WATCOMC__
@@ -1416,9 +1416,9 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
 
                             /* first run? */
     if( line ) {
-        flags->bForce   = FALSE;
-        flags->bDirs    = FALSE;
-        flags->bVerbose = FALSE;
+        flags->bForce   = false;
+        flags->bDirs    = false;
+        flags->bVerbose = false;
 
         p = SkipWS( line + 2 ); /* find first non-ws after "RM" */
 
@@ -1428,13 +1428,13 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
             while( isalpha( p[0] ) ) {
                 switch( tolower( p[0] ) ) {
                 case 'f':
-                    flags->bForce = TRUE;
+                    flags->bForce = true;
                     break;
                 case 'r':
-                    flags->bDirs = TRUE;
+                    flags->bDirs = true;
                     break;
                 case 'v':
-                    flags->bVerbose = TRUE;
+                    flags->bVerbose = true;
                     break;
                 default:
                     return( handleRMSyntaxError() );
@@ -1460,8 +1460,8 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
     return( RET_SUCCESS );
 }
 
-STATIC BOOLEAN remove_item( const char *name, const rm_flags *flags, BOOLEAN dir )
-/********************************************************************************/
+STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
+/**************************************************************************/
 {
     int     rc;
     char    *inf_msg;
@@ -1503,7 +1503,7 @@ static int IsDotOrDotDot( const char *fname )
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
 }
 
-static BOOLEAN doRM( const char *f, const rm_flags *flags )
+static bool doRM( const char *f, const rm_flags *flags )
 {
     iolist              *tmp;
     iolist              *dhead = NULL;
@@ -1518,7 +1518,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
     size_t              len;
     DIR                 *d;
     struct dirent       *nd;
-    BOOLEAN             rc = TRUE;
+    bool                rc = true;
 
     /* separate file name to path and file name parts */
     len = strlen( f );
@@ -1550,8 +1550,8 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
 #endif
     d = opendir( fpath );
     if( d == NULL ) {
-//        Log( FALSE, "File (%s) not found.\n", f );
-        return( TRUE );
+//        Log( false, "File (%s) not found.\n", f );
+        return( true );
     }
 
     while( ( nd = readdir( d ) ) != NULL ) {
@@ -1590,21 +1590,21 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
                 dtail = tmp;
                 memcpy( tmp->name, fpath, len );
             } else {
-//                Log( FALSE, "%s is a directory, use -r\n", fpath );
+//                Log( false, "%s is a directory, use -r\n", fpath );
 //                retval = EACCES;
-                rc = FALSE;
+                rc = false;
             }
 #ifdef __UNIX__
         } else if( access( fpath, W_OK ) == -1 && errno == EACCES && !flags->bDirs ) {
 #else
         } else if( (nd->d_attr & _A_RDONLY) && !flags->bDirs ) {
 #endif
-//            Log( FALSE, "%s is read-only, use -f\n", fpath );
+//            Log( false, "%s is read-only, use -f\n", fpath );
 //            retval = EACCES;
-            rc = FALSE;
+            rc = false;
         } else {
-            if( !remove_item( fpath, flags, FALSE ) ) {
-                rc = FALSE;
+            if( !remove_item( fpath, flags, false ) ) {
+                rc = false;
             }
         }
     }
@@ -1613,7 +1613,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
     for( tmp = dhead; tmp != NULL; tmp = dhead ) {
         dhead = tmp->next;
         if( !RecursiveRM( tmp->name, flags ) ) {
-            rc = FALSE;
+            rc = false;
         }
         free( tmp );
     }
@@ -1621,12 +1621,12 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
 }
 
 
-static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags )
-/******************************************************************/
+static bool RecursiveRM( const char *dir, const rm_flags *flags )
+/***************************************************************/
 /* RecursiveRM - do an RM recursively on all files */
 {
-    BOOLEAN     rc;
-    BOOLEAN     rc2;
+    bool        rc;
+    bool        rc2;
     char        fname[_MAX_PATH];
 
     /* purge the files */
@@ -1634,14 +1634,14 @@ static BOOLEAN RecursiveRM( const char *dir, const rm_flags *flags )
     strcat( fname, "/" MASK_ALL_ITEMS );
     rc = doRM( fname, flags );
     /* purge the directory */
-    rc2 = remove_item( dir, flags, TRUE );
+    rc2 = remove_item( dir, flags, true );
     if( rc )
         rc = rc2;
     return( rc );
 }
 
-STATIC BOOLEAN processRM( const char *name, const rm_flags *flags )
-/*****************************************************************/
+STATIC bool processRM( const char *name, const rm_flags *flags )
+/**************************************************************/
 {
     if( flags->bDirs ) {
         if( strcmp( name, MASK_ALL_ITEMS ) == 0 ) {
@@ -1654,16 +1654,16 @@ STATIC BOOLEAN processRM( const char *name, const rm_flags *flags )
                 if( S_ISDIR( buf.st_mode ) ) {
                     return( RecursiveRM( name, flags ) );
                 } else {
-                    return( remove_item( name, flags, FALSE ) );
+                    return( remove_item( name, flags, false ) );
                 }
             }
         }
-        return( TRUE );
+        return( true );
     } else {
         if( strpbrk( name, WILD_METAS ) != NULL ) {
             return( doRM( name, flags ) );
         } else {
-            return( remove_item( name, flags, FALSE ) );
+            return( remove_item( name, flags, false ) );
         }
     }
 }
@@ -1705,24 +1705,24 @@ STATIC RET_T handleRM( char *cmd )
     return( rt );
 }
 
-STATIC BOOLEAN hasMetas( const char *cmd )
-/*****************************************
+STATIC bool hasMetas( const char *cmd )
+/**************************************
  * determine whether a command line has meta characters in it or not
  */
 {
 #if defined( __DOS__ ) || defined( __NT__ )
-    const char *p;
-    BOOLEAN quoted;
+    const char  *p;
+    bool        quoted;
 
-    quoted = FALSE;
+    quoted = false;
     for( p = cmd; *p != NULLCHAR; ++p ) {
         if( *p == '"' ) {
             quoted = !quoted;
         } else if( !quoted && strchr( SHELL_METAS, *p ) != NULL ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 #elif defined( __OS2__ ) || defined( __UNIX__ )
     const char  *p;
@@ -1731,10 +1731,10 @@ STATIC BOOLEAN hasMetas( const char *cmd )
         if( *p == SHELL_ESC && p[1] != NULLCHAR ) {
             ++p;
         } else if( strchr( SHELL_METAS, *p ) != NULL ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 
 #endif
 }
@@ -1832,7 +1832,7 @@ STATIC void killTmpEnv( UINT16 tmp )
 STATIC RET_T shellSpawn( char *cmd, int flags )
 /*********************************************/
 {
-    BOOLEAN     percent_cmd;        // is this a percent cmd?
+    bool        percent_cmd;        // is this a percent cmd?
     int         comnum;             // index into dosInternals
     char        cmdname[_MAX_PATH]; // copied from cmd
     char        *arg;               // used in parsing cmd into "words"
@@ -2106,7 +2106,7 @@ RET_T ExecCList( CLIST *clist )
         currentFlist = clist->inlineHead;
         if( ret == RET_SUCCESS ) {
             UnGetCH( STRM_MAGIC );
-            InsString( clist->text, FALSE );
+            InsString( clist->text, false );
             line = DeMacro( TOK_MAGIC );
             GetCHR();        /* eat STRM_MAGIC */
             if( Glob.verbose ) {

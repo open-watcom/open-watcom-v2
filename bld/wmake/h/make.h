@@ -87,18 +87,18 @@ struct Glob {
 
     BIT     hold        : 1;/* on error don't erase (and don't ask)          */
     BIT     shell       : 1;/* execute commands through the shell            */
-    BIT     preproc     : 1;/* TRUE - preprocessor on, FALSE - off           */
+    BIT     preproc     : 1;/* true - preprocessor on, false - off           */
     BIT     erroryet    : 1;/* has PrtMsg printed an error yet?              */
-    BIT     cachedir    : 1;/* TRUE if dir caching turned on                 */
-    BIT     nomakeinit  : 1;/* TRUE if we are to suppress parsing makeinit   */
+    BIT     cachedir    : 1;/* true if dir caching turned on                 */
+    BIT     nomakeinit  : 1;/* true if we are to suppress parsing makeinit   */
     BIT     macreadonly : 1;/* should macro definitions be read only?        */
     BIT     headerout   : 1;/* has the header been printed out yet?          */
 
-    BIT     rcs_make    : 1;/* TRUE if new target's date is max of dep dates */
-    BIT     fuzzy       : 1;/* TRUE .AUTODEPEND times can be off by 1 minute */
-    BIT     keep_spaces : 1;/* TRUE keep spaces in macro defns               */
-    BIT     compat_unix : 1;/* TRUE if UNIX compatibility desired            */
-    BIT     compat_posix: 1;/* TRUE if POSIX conformance desired             */
+    BIT     rcs_make    : 1;/* true if new target's date is max of dep dates */
+    BIT     fuzzy       : 1;/* true .AUTODEPEND times can be off by 1 minute */
+    BIT     keep_spaces : 1;/* true keep spaces in macro defns               */
+    BIT     compat_unix : 1;/* true if UNIX compatibility desired            */
+    BIT     compat_posix: 1;/* true if POSIX conformance desired             */
     BIT     compat_nmake: 1;/* Microsoft nmake Optioning-Compatability switch*/
     BIT     verbose     : 1;/* Bit to list out the contents of a tmp file    */
     BIT     auto_depends: 1;/* force autodepends info to be used             */

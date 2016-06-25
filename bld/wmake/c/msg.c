@@ -454,12 +454,12 @@ void PrtMsg( enum MsgClass num, ... )
             pref = M_WARNING;
             break;
         case ERR:
-            Glob.erroryet = TRUE;
+            Glob.erroryet = true;
             wefchar = 'E';
             pref = M_ERROR;
             break;
         case FTL:
-            Glob.erroryet = TRUE;
+            Glob.erroryet = true;
             wefchar = 'F';
             pref = M_ERROR;
             break;
@@ -543,8 +543,8 @@ void Usage( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-BOOLEAN GetYes( enum MsgClass querymsg )
-/**********************************************
+bool GetYes( enum MsgClass querymsg )
+/************************************
  * ask question, and return true if user responds 'y', else false
  * You should phrase the question such that the default action is the least
  * damaging (ie: the 'no' action is least damaging).
@@ -555,7 +555,7 @@ BOOLEAN GetYes( enum MsgClass querymsg )
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
     if( read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     return( toupper( buf[0] ) == YES_CHAR );

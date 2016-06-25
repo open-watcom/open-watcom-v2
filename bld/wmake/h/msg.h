@@ -76,6 +76,6 @@ extern void     PrtMsg( enum MsgClass num, ... );
 extern _NORETURN void   PrtMsgFtl( enum MsgClass num, ... );
 #endif
 extern void     Usage( void );
-extern BOOLEAN  GetYes( enum MsgClass querymsg );
+extern bool     GetYes( enum MsgClass querymsg );
 extern void     LogInit( const char *logname );
 extern void     LogFini( void );

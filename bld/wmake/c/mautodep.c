@@ -66,25 +66,25 @@ void AutoDepInit( void )
 }
 
 
-static BOOLEAN isTargObsolete( char const *name, time_t stamp,
-    BOOLEAN (*chk)( time_t, time_t ), time_t *pmax_time,
+static bool isTargObsolete( char const *name, time_t stamp,
+    bool (*chk)(time_t,time_t), time_t *pmax_time,
     auto_dep_info const *curr, void *dep )
 /************************************************************/
 {
     char        *dep_name;
     time_t      auto_dep_time;  // time stamp in auto-depend info
     time_t      curr_dep_time;  // time stamp in dependent file (if it exists)
-    BOOLEAN     exists;
-    BOOLEAN     obsolete;
+    bool        exists;
+    bool        obsolete;
 
-    exists = TRUE, obsolete = FALSE;
+    exists = true, obsolete = false;
     curr->trans_dep( dep, &dep_name, &auto_dep_time );
     if( CacheTime( dep_name, &curr_dep_time ) != RET_SUCCESS ) {
-        exists = FALSE, obsolete = TRUE;
+        exists = false, obsolete = true;
     } else {
         if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time ) ||
                 (*chk)( stamp, curr_dep_time ) ) {
-            obsolete = TRUE;
+            obsolete = true;
         }
         if( curr_dep_time > *pmax_time ) {
             *pmax_time = curr_dep_time; // Glob.all should not affect comparison
@@ -109,19 +109,19 @@ static BOOLEAN isTargObsolete( char const *name, time_t stamp,
 }
 
 
-BOOLEAN AutoDepCheck( char *name, time_t stamp,
-    BOOLEAN (*chk)( time_t, time_t ), time_t *pmax_time )
+bool AutoDepCheck( char *name, time_t stamp,
+    bool (*chk)(time_t,time_t), time_t *pmax_time )
 /*******************************************************/
 {
-    BOOLEAN                     quick_logic;
+    bool                        quick_logic;
     auto_dep_info const * const *pcurr;
     auto_dep_info const         *curr;
     void                        *hdl;
     void                        *dep;
-    BOOLEAN                     obs;
+    bool                        obs;
 
     quick_logic = !(Glob.rcs_make || Glob.debug || Glob.show_offenders);
-    obs = FALSE;
+    obs = false;
 
     for( pcurr = &AutoDepTypes[0]; (curr = *pcurr) != NULL; pcurr++ ) {
         if( (hdl = curr->init_file( name )) != NULL ) {
@@ -138,7 +138,7 @@ BOOLEAN AutoDepCheck( char *name, time_t stamp,
             return( obs );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 

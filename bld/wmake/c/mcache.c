@@ -458,9 +458,9 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
 }
 
 
-BOOLEAN CacheExists( const char *fullpath )
-/*************************************************
- * return TRUE if the file in fullpath exists, FALSE otherwise
+bool CacheExists( const char *fullpath )
+/***bool************************************
+ * return true if the file in fullpath exists, false otherwise
  */
 {
     assert( fullpath != NULL );
@@ -473,11 +473,11 @@ BOOLEAN CacheExists( const char *fullpath )
 #endif
         switch( maybeCache( fullpath, NULL ) ) {
         case CACHE_OK:
-            return( TRUE );
+            return( true );
         case CACHE_NOT_ENUF_MEM:
             break;
         default:
-            return( FALSE );
+            return( false );
         }
     }
 #endif

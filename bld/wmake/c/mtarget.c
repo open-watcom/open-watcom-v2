@@ -42,10 +42,10 @@
 
 
 /* just for people to copy in */
-const TATTR FalseAttr = { FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE };
+const TATTR FalseAttr = { false, false, false, false, false, false, false };
 
 #define HASH_PRIME    211
-#define CASESENSITIVE FALSE  // Is Target Name case sensitive
+#define CASESENSITIVE false  // Is Target Name case sensitive
 
 STATIC HASHTAB    *targTab;
 STATIC DEPEND     *freeDepends;
@@ -144,7 +144,7 @@ TARGET *NewTarget( const char *name )
     TARGET  *new;
 
     new = CallocSafe( sizeof( *new ) );
-    new->executed = TRUE;
+    new->executed = true;
     new->date = OLDEST_DATE;
     new->node.name = FixName( StrDupSafe( name ) );
     AddHashNode( targTab, (HASHNODE *)new );
@@ -463,8 +463,8 @@ void KillTarget( const char *name )
 }
 
 
-STATIC TARGET *findOrNewTarget( const char *tname, BOOLEAN mentioned )
-/*********************************************************************
+STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
+/******************************************************************
  * Return a pointer to a target with name name.  Create target if necessary.
  */
 {
@@ -475,13 +475,13 @@ STATIC TARGET *findOrNewTarget( const char *tname, BOOLEAN mentioned )
     if( targ == NULL ) {
         targ = NewTarget( name );
         if( name[0] == DOT && isextc( name[1] ) ) {
-            targ->special = TRUE;
+            targ->special = true;
             if( stricmp( name + 1, BEFORE_S ) == 0 ||
                 stricmp( name + 1, AFTER_S )  == 0 ) {
-                targ->before_after = TRUE;
+                targ->before_after = true;
             }
             if( stricmp( name + 1, DEFAULT_S ) == 0 ) {
-                targ->dot_default = TRUE;
+                targ->dot_default = true;
             }
         }
     }
@@ -493,9 +493,9 @@ STATIC TARGET *findOrNewTarget( const char *tname, BOOLEAN mentioned )
 }
 
 
-RET_T WildTList( TLIST **list, const char *base, BOOLEAN mentioned,
-                 BOOLEAN expandWildCardPath)
-/******************************************************************
+RET_T WildTList( TLIST **list, const char *base, bool mentioned,
+                 bool expandWildCardPath )
+/***************************************************************
  * Build a TLIST using base as a wildcarded path.  Uses DoWildCard().
  * Pushes targets onto list.
  */
@@ -589,8 +589,8 @@ void PrintTargFlags( const TATTR *tattr )
 }
 
 
-STATIC BOOLEAN printTarg( void *node, void *ptr )
-/***********************************************/
+STATIC bool printTarg( void *node, void *ptr )
+/********************************************/
 {
     TARGET const * const    targ = node;
     DEPEND const            *curdep;
@@ -598,7 +598,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
 
     (void)ptr; // Unused
     if( targ->special ) {
-        return( FALSE );             /* don't print special targets */
+        return( false );             /* don't print special targets */
     } else {
         if( !targ->scolon && targ->depend == NULL ) {
             PrtMsg( INF | NEOL | PTARG_NAME, targ->node.name );
@@ -634,7 +634,7 @@ STATIC BOOLEAN printTarg( void *node, void *ptr )
     }
     PrtMsg( INF | NEWLINE );
 
-    return( FALSE );
+    return( false );
 }
 
 
@@ -673,14 +673,14 @@ void PrintTargets( void )
 void TargInitAttr( TATTR *attr )
 /******************************/
 {
-    attr->precious   = FALSE;
-    attr->symbolic   = FALSE;
-    attr->multi      = FALSE;
-    attr->explicit   = FALSE;
-    attr->always     = FALSE;
-    attr->auto_dep   = FALSE;
-    attr->existsonly = FALSE;
-    attr->recheck    = FALSE;
+    attr->precious   = false;
+    attr->symbolic   = false;
+    attr->multi      = false;
+    attr->explicit   = false;
+    attr->always     = false;
+    attr->auto_dep   = false;
+    attr->existsonly = false;
+    attr->recheck    = false;
 }
 
 
@@ -698,12 +698,12 @@ void TargAttrOrAttr( TATTR *tattr, TATTR attr )
 }
 
 
-STATIC BOOLEAN resetEx( void *targ, void *ptr )
-/*********************************************/
+STATIC bool resetEx( void *targ, void *ptr )
+/******************************************/
 {
     (void)ptr; // Unused
-    ((TARGET *)targ)->executed = TRUE;
-    return( FALSE );
+    ((TARGET *)targ)->executed = true;
+    return( false );
 }
 
 
@@ -714,16 +714,16 @@ void ResetExecuted( void )
 }
 
 
-STATIC BOOLEAN noCmds( void *trg, void *ptr )
-/*******************************************/
+STATIC bool noCmds( void *trg, void *ptr )
+/****************************************/
 {
     TARGET  *targ = trg;
 
     (void)ptr; // Unused
     if( targ->depend != NULL && targ->depend->clist == NULL ) {
-        targ->allow_nocmd = TRUE;
+        targ->allow_nocmd = true;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -816,12 +816,12 @@ void TargetInit( void )
 
 
 #ifndef NDEBUG
-STATIC BOOLEAN walkFree( void *targ, void *ptr )
-/**********************************************/
+STATIC bool walkFree( void *targ, void *ptr )
+/*******************************************/
 {
     (void)ptr; // Unused
     freeTarget( (TARGET*)targ );
-    return( FALSE );
+    return( false );
 }
 #endif
 

@@ -60,8 +60,8 @@ typedef struct {
 } obj_comment;
 #include "poppck.h"
 
-static BOOLEAN verifyObjFile( int fh )
-/************************************/
+static bool verifyObjFile( int fh )
+/*********************************/
 {
     struct {
         obj_record  header;
@@ -69,21 +69,21 @@ static BOOLEAN verifyObjFile( int fh )
     }   theadr;
 
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
-        return( FALSE );
+        return( false );
     }
     if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
-        return( FALSE );
+        return( false );
     }
     if( theadr.header.command != CMD_THEADR ) {
-        return( FALSE );
+        return( false );
     }
     if( (theadr.name.len + 2) != theadr.header.length ) {
-        return( FALSE );
+        return( false );
     }
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -107,8 +107,8 @@ STATIC handle OMFInitFile( const char *name )
 }
 
 
-static BOOLEAN getOMFCommentRecord( omf_info *info )
-/**************************************************/
+static bool getOMFCommentRecord( omf_info *info )
+/***********************************************/
 {
     obj_record  header;
     obj_comment comment;
@@ -144,9 +144,9 @@ static BOOLEAN getOMFCommentRecord( omf_info *info )
         nameBuffer[len - 1] = NULLCHAR;
         info->time_stamp = _dos2timet( comment.dos_date * 0x10000L + comment.dos_time );
         info->name = &nameBuffer[0];
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 STATIC dep_handle OMFNextDep( dep_handle info )

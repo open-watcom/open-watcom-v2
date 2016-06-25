@@ -203,14 +203,14 @@ RET_T TouchFile( const char *name )
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
 
-BOOLEAN IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
-/**********************************************************/
+bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
+/*******************************************************/
 {
     time_t  diff_time;
 
     /* in_obj can be a DOS time so we need to round to the nearest two-second */
     if( in_obj == stamp || in_obj == (stamp & ~1) ) {
-        return( TRUE );
+        return( true );
     }
     if( in_obj < stamp ) {
         /* stamp is newer than time in .OBJ file */
@@ -218,11 +218,11 @@ BOOLEAN IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
             /* check for a "tiny" difference in times (almost identical) */
             diff_time = stamp - in_obj;
             if( diff_time <= FUZZY_DELTA ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 #ifdef DLLS_IMPLEMENTED
@@ -363,7 +363,7 @@ static void breakHandler( int sig_number )
 
 void InitSignals( void ) {
     sig_count = 0;
-    DoingUpdate = FALSE;
+    DoingUpdate = false;
 #ifndef __UNIX__
     signal( SIGBREAK, breakHandler );
 #endif

@@ -58,9 +58,9 @@ typedef enum {
 /*
  * prototypes
  */
-extern RET_T    InsFile( const char *namem, BOOLEAN envsearch );
+extern RET_T    InsFile( const char *namem, bool envsearch );
 extern void     InsOpenFile( int fh );
-extern void     InsString( const char *str, BOOLEAN weFree );
+extern void     InsString( const char *str, bool weFree );
 extern void     UnGetCH( STRM_T s );
 extern STRM_T   GetCHR( void );
 extern void     StreamInit( void );

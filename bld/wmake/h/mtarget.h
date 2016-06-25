@@ -99,7 +99,7 @@ struct Target {
     BIT     mentioned   : 1;    /* target mentioned in a makefile       */
     BIT     executed    : 1;    /* cmds executed since last getdate     */
     BIT     error       : 1;    /* error occured while updating target  */
-    BIT     scolon      : 1;    /* scolon == TRUE; dcolon == FALSE      */
+    BIT     scolon      : 1;    /* scolon == true; dcolon == false      */
 
     BIT     special     : 1;    /* special targ - dotname|implicit rule */
     BIT     before_after: 1;    /* is it .BEFORE or .AFTER              */
@@ -140,7 +140,7 @@ struct Depend {
 struct fileStruct {
     char    *fileName;
     char    *body;
-    BOOLEAN keep;
+    bool    keep;
     FLIST   *next;
 };
 
@@ -210,8 +210,8 @@ extern void     PrintTargets( void );
 extern CLIST    *DotCList( DotName dot );
 extern void     ResetExecuted( void );
 extern void     CheckNoCmds( void );
-extern RET_T    WildTList( TLIST **stack, const char *base, BOOLEAN mentioned,
-                BOOLEAN expandWildCardPath );
+extern RET_T    WildTList( TLIST **stack, const char *base, bool mentioned,
+                            bool expandWildCardPath );
 extern void     TargInitAttr( TATTR *attr );
 extern void     TargAttrOrAttr( TATTR *tattr, TATTR attr );
 
