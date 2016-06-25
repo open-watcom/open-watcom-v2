@@ -113,7 +113,7 @@ static void massageDollarOctothorpe( char *p )
 /********************************************/
 {
     assert( p != NULL );
-    for( ; *p; ++p ) {
+    for( ; *p != NULLCHAR; ++p ) {
         switch( *p ) {
         case '$':
             *p = TMP_DOL_C;
@@ -182,7 +182,7 @@ const char *procPath( const char *fullpath )
         _makepath( dirBuf, NULL, NULL, NULL, pg.ext );
         break;
     default:
-        dirBuf[0] = '\0';
+        dirBuf[0] = NULLCHAR;
     }
 
     massageDollarOctothorpe( dirBuf );
@@ -468,7 +468,7 @@ STATIC char *trimMacroValue( char *v )
 
     space = 0;
     t = v;
-    for( p = v; *p != '\0'; ++p ) {
+    for( p = v; *p != NULLCHAR; ++p ) {
         if( !isws( *p ) ) {
             if( space ) {
                 *t = ' ';
@@ -481,7 +481,7 @@ STATIC char *trimMacroValue( char *v )
             space = 1;
         }
     }
-    *t = '\0';
+    *t = NULLCHAR;
     return( v );
 }
 

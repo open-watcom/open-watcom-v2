@@ -63,7 +63,7 @@ STATIC void reOrder( va_list args, char *paratype )
 {
     int         i;
 
-    for( i = 1; i >= 0 && *paratype != '\0'; --i ) {
+    for( i = 1; i >= 0 && *paratype != NULLCHAR; --i ) {
         switch( *paratype++ ) {
         case 'D':
         case 'd':
@@ -116,7 +116,7 @@ STATIC char *strApp( char *dest, const char *src )
 {
     assert( dest != NULL && src != NULL );
 
-    while( (*dest = *src) != '\0' ) {
+    while( (*dest = *src) != NULLCHAR ) {
         ++dest;
         ++src;
     }
@@ -206,7 +206,7 @@ STATIC char *fStrApp( char *dest, const char FAR *fstr )
 {
     assert( dest != NULL && fstr != NULL );
 
-    while( *dest = *fstr ) {
+    while( (*dest = *fstr) != NULLCHAR ) {
         ++dest;
         ++fstr;
     }

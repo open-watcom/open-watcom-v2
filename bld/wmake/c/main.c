@@ -202,7 +202,7 @@ STATIC void checkCtrl( const char *p )
 /************************************/
 {
     // p != NULL is checked by caller
-    while( *p ) {          // scan for control characters
+    while( *p != NULLCHAR ) {       // scan for control characters
         if( !isprint( *p ) ) {
             PrtMsgExit(( FTL | CTRL_CHAR_IN_CMD, *p ));
         }
@@ -219,8 +219,8 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
  * of some features in microsoft compatability
  */
 {
-    char        select = '\0';  /* - or swchar (*argv)[0]       */
-    char        option = '\0';  /* the option (*argv)[1]        */
+    char        select;         /* - or swchar (*argv)[0]       */
+    char        option;         /* the option (*argv)[1]        */
     const char  *p;             /* working pointer to *argv     */
     NODE        *new;           /* for adding a new file        */
     int         options[256 + 1] = { 0 };
@@ -327,7 +327,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     } // while( *++argv != NULL )
 
     if( Glob.compat_nmake && Glob.compat_unix ) {
-        PrtMsg( ERR | INCOMPATIBLE__OPTIONS, select, option );
+        PrtMsg( ERR | INCOMPATIBLE__OPTIONS );
         Usage();
     }
 
@@ -340,7 +340,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         unsigned        opt_index;
         char            default_option[] = " -?";
 
-        makeopts[0] = 0;
+        makeopts[0] = NULLCHAR;
         opt_index = 'a' - 1;
         while( ++opt_index <= 'z' ) {
             if( options[opt_index + 1] ) {
@@ -349,27 +349,27 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 case 'n':
                     break;
                 case 'l':
-                    strcat( makeopts, *makeopts ? " -l " : "-l " );
+                    strcat( makeopts, *makeopts != NULLCHAR ? " -l " : "-l " );
                     strcat( makeopts, *log_name );
                     break;
                 case 'm':
                     if( Glob.nomakeinit ) {
-                        strcat( makeopts, *makeopts ? " -m" : "-m" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -m" : "-m" );
                     }
                     if( Glob.compat_nmake ) {
-                        strcat( makeopts, *makeopts ? " -ms" : "-ms" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -ms" : "-ms" );
                     }
                     break;
                 case 's':
                     if( Glob.silentno ) {
-                        strcat( makeopts, *makeopts ? " -sn" : "-sn" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -sn" : "-sn" );
                     } else {
-                        strcat( makeopts, *makeopts ? " -s" : "-s" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -s" : "-s" );
                     }
                     break;
                 default:
                     default_option[2] = (char)opt_index;
-                    strcat( makeopts, default_option + (int)(*makeopts == '\0') );
+                    strcat( makeopts, default_option + (int)( *makeopts == NULLCHAR ) );
                 }
             }
 

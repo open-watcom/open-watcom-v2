@@ -640,7 +640,7 @@ STATIC void bangDefine( void )
 static char *skipUntilWS( char *p )
 /*********************************/
 {
-    while( *p != '\0' && !isws( *p ) ) {
+    while( *p != NULLCHAR && !isws( *p ) ) {
         ++p;
     }
     return( p );
@@ -665,24 +665,25 @@ STATIC void bangInject( void )
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     contents = SkipWS( text );
-    if( *contents == '\0' ) {
+    if( *contents == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_contents = skipUntilWS( contents );
-    if( *end_contents == '\0' ) {
+    if( *end_contents == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_contents = '\0';
+    *end_contents = NULLCHAR;
     curr = end_contents + 1;
     for( ;; ) {
         curr = SkipWS( curr );
-        if( *curr == '\0' ) break;
+        if( *curr == NULLCHAR )
+            break;
         mac_name = curr;
         curr = skipUntilWS( curr );
-        if( *curr != '\0' ) {
-            *curr = '\0';
+        if( *curr != NULLCHAR ) {
+            *curr = NULLCHAR;
             ++curr;
         }
         if( !IsMacroName( mac_name ) ) {
@@ -720,41 +721,41 @@ STATIC void bangLoadDLL( void )
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     cmd_name = SkipWS( text );
-    if( *cmd_name == '\0' ) {
+    if( *cmd_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_cmd_name = skipUntilWS( cmd_name );
-    if( *end_cmd_name == '\0' ) {
+    if( *end_cmd_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_cmd_name = '\0';
+    *end_cmd_name = NULLCHAR;
     dll_name = SkipWS( end_cmd_name + 1 );
-    if( *dll_name == '\0' ) {
+    if( *dll_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_dll_name = skipUntilWS( dll_name );
-    if( *end_dll_name == '\0' ) {
+    if( *end_dll_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
-    *end_dll_name = '\0';
+    *end_dll_name = NULLCHAR;
     ent_name = SkipWS( end_dll_name + 1 );
-    if( *ent_name == '\0' ) {
+    if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
     end_ent_name = skipUntilWS( ent_name );
-    if( *end_ent_name == '\0' ) {
+    if( *end_ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, ent_name );
         FreeSafe( text );
         return;
     }
-    *end_ent_name = '\0';
+    *end_ent_name = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
     FreeSafe( text );
 }
@@ -1005,7 +1006,7 @@ static int PreTestString( const char *str )
             break;
         }
         ++p;
-        if( *p == '\0' ) {
+        if( *p == NULLCHAR ) {
             rc = TRUE;
             break;
         }

@@ -144,13 +144,13 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
     msgid.id = resourceid;
     s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
     if( s == NULL ) {
-        buffer[0] = '\0';
+        buffer[0] = NULLCHAR;
         return( FALSE );
     }
     strcpy( buffer, s->s );
 #else
     if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
-        buffer[0] = '\0';
+        buffer[0] = NULLCHAR;
         return( FALSE );
     }
 #endif

@@ -141,7 +141,7 @@ static BOOLEAN getOMFCommentRecord( omf_info *info )
         if( (unsigned)read( hdl, nameBuffer, len ) != len ) {
             break;  // darn, it's broke
         }
-        nameBuffer[len - 1] = '\0';
+        nameBuffer[len - 1] = NULLCHAR;
         info->time_stamp = _dos2timet( comment.dos_date * 0x10000L + comment.dos_time );
         info->name = &nameBuffer[0];
         return( TRUE );

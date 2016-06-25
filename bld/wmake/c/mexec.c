@@ -490,7 +490,7 @@ STATIC int findInternal( const char *cmd )
         }
         // remove '.' from the command end
         strcpy( buff, cmd );
-        buff[len - 1] = '\0';
+        buff[len - 1] = NULLCHAR;
         cmd = buff;
     }
     return( (int)( key - (char **)dosInternals ) );
@@ -597,7 +597,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     } else {
         ++p;    // Skip the first quote
         ++fn;
-        while( *p!= DOUBLEQUOTE && *p!= NULLCHAR ) {
+        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
              ++p;
         }
         if( *p!= NULLCHAR ) {
@@ -626,12 +626,12 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
             closeCurrentFile();
             return( RET_ERROR );
         }
-        *p = '\0';          /* terminate file name */
+        *p = NULLCHAR;      /* terminate file name */
         ++p;
         text = p;           /* set text pointer */
         p += strlen( p );   /* find null terminator */
     } else {
-        *p = '\0';          /* terminate file name */
+        *p = NULLCHAR;      /* terminate file name */
         text = p;           /* set text pointer */
     }
 
@@ -705,7 +705,7 @@ STATIC RET_T percentRename( char *arg )
     } else {
         ++p;    // Skip the first quote
         ++fn1;
-        while( *p!= DOUBLEQUOTE && *p!= NULLCHAR ) {
+        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
              ++p;
         }
         if( *p!= NULLCHAR ) {
@@ -720,7 +720,7 @@ STATIC RET_T percentRename( char *arg )
         PrtMsg( INF | PRNTSTR, p );
         return( RET_ERROR );
     }
-    *p = '\0';              /* terminate first file name */
+    *p = NULLCHAR;          /* terminate first file name */
     ++p;
 
     /* Get second file name as well */
@@ -733,7 +733,7 @@ STATIC RET_T percentRename( char *arg )
     } else {
         ++p;    // Skip the first quote
         ++fn2;
-        while( *p!= DOUBLEQUOTE && *p!= NULLCHAR ) {
+        while( *p != DOUBLEQUOTE && *p != NULLCHAR ) {
              ++p;
         }
         if( *p!= NULLCHAR ) {
@@ -746,7 +746,7 @@ STATIC RET_T percentRename( char *arg )
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( RET_ERROR );
     }
-    *p = '\0';              /* terminate second file name */
+    *p = NULLCHAR;          /* terminate second file name */
     if( rename( fn1, fn2 )  == 0)
         return( RET_SUCCESS );
     else
@@ -946,7 +946,7 @@ STATIC RET_T handleSet( char *cmd )
 
     ++p;                        /* advance to character after '=' */
 
-                        /* +1 for '=' (already +1 for '\0' in ENV_TRACKER) */
+                        /* +1 for '=' (already +1 for NULLCHAR in ENV_TRACKER) */
     env = MallocSafe( sizeof( *env ) + 1 + (endname - name) + strlen( p ) );
     FmtStr( env->value, "%s=%s", name, p );
     retcode = PutEnvSafe( env );
@@ -1545,13 +1545,13 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
         memcpy( fpath, f, i );
     }
     fpathend = fpath + i;
-    *fpathend = '\0';
+    *fpathend = NULLCHAR;
 #ifdef __UNIX__
     memcpy( fname, f + j, len - j + 1 );
 #else
     if( strcmp( f + j, MASK_ALL_ITEMS ) == 0 ) {
         fname[0] = '*';
-        fname[1] = '\0';
+        fname[1] = NULLCHAR;
     } else {
         memcpy( fname, f + j, len - j + 1 );
     }
@@ -1574,7 +1574,7 @@ static BOOLEAN doRM( const char *f, const rm_flags *flags )
         /* set up file name, then try to delete it */
         len = strlen( nd->d_name );
         memcpy( fpathend, nd->d_name, len );
-        fpathend[len] = 0;
+        fpathend[len] = NULLCHAR;
         len += i + 1;
 #ifdef __UNIX__
         stat( fpath, &buf );
@@ -1766,7 +1766,7 @@ static void dumpCommand( char *cmd )
         PrtMsg( INF | PRNTSTR, cmd );
     } else {
         c = *z;
-        *z = '\0';
+        *z = NULLCHAR;
         PrtMsg( INF | PRNTSTR, cmd );
         *z = c;
     }
@@ -1781,7 +1781,7 @@ STATIC UINT16 makeTmpEnv( char *arg )
  */
 {
     UINT16      tmp;
-    char        buf[20];    /* "WMAKExxxxx=" + '\0' = 11 + room for FmtStr */
+    char        buf[20];    /* "WMAKExxxxx=" + NULLCHAR = 11 + room for FmtStr */
     size_t      len;
     ENV_TRACKER *env;
 
@@ -1797,7 +1797,7 @@ STATIC UINT16 makeTmpEnv( char *arg )
     if( len < 13 ) {     /* need room for " @WMAKExxxxx" */
         return( 0 );
     }
-                        /* "WMAKExxxxx=" + arg + '\0' */
+                        /* "WMAKExxxxx=" + arg + NULLCHAR */
     env = MallocSafe( sizeof( ENV_TRACKER ) + len + 12 );
     FmtStr( env->value, "WMAKE%d=%s", tmp, arg );
     if( PutEnvSafe( env ) != 0 ) {
@@ -2052,7 +2052,7 @@ STATIC RET_T execLine( char *line )
     assert( !isws( *p ) );
 
     // NMAKE quietly ignores empty commands
-    if( Glob.compat_nmake && *p == '\0' ) {
+    if( Glob.compat_nmake && *p == NULLCHAR ) {
         return( RET_SUCCESS );
     }
     rc = shellSpawn( p, flags );
@@ -2082,7 +2082,7 @@ INT32 ExecCommand( char *line )
     assert( !isws( *p ) );
 
     // NMAKE quietly ignores empty commands here; should we as well?
-    if( Glob.compat_nmake && *p == '\0' ) {
+    if( Glob.compat_nmake && *p == NULLCHAR ) {
         return( RET_SUCCESS );
     }
     // Execute command - run it always, always silent, and get real retcode

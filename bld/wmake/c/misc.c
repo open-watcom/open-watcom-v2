@@ -319,7 +319,7 @@ static int __fnmatch( char *pattern, char *string )
             string++;
         }
         pattern++;
-    } while( *pattern && !IS_WILDCARD_CHAR( pattern ) );
+    } while( *pattern != NULLCHAR && !IS_WILDCARD_CHAR( pattern ) );
     if( star_char == 0 ) {
         /*
          * match is OK, try next pattern section
@@ -329,7 +329,7 @@ static int __fnmatch( char *pattern, char *string )
         /*
          * star pattern section, try locate exact match
          */
-        while( *string ) {
+        while( *string != NULLCHAR ) {
             if( FNameCmpChr( *p, *string ) == 0 ) {
                 for( i = 1; i < len; i++ ) {
                     if( FNameCmpChr( *(p + i), *(string + i) ) != 0 ) {
@@ -478,16 +478,14 @@ int PutEnvSafe( ENV_TRACKER *env )
         ++p;
     }
     rc = putenv( env->value );  // put into environment
-    if( p[0] == '=' && p[1] == '\0' ) {
+    if( p[0] == '=' && p[1] == NULLCHAR ) {
         rc = 0;                 // we are deleting the envvar, ignore errors
     }
     len = p - env->value + 1;   // len including '='
-    walk = &envList;
-    while( *walk != NULL ) {
+    for( walk = &envList; *walk != NULL; walk = &(*walk)->next ) {
         if( strncmp( (*walk)->value, env->value, len ) == 0 ) {
             break;
         }
-        walk = &(*walk)->next;
     }
     old = *walk;
     if( old != NULL ) {

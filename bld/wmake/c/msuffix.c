@@ -529,7 +529,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
     if( *pathring == NULL ) {
         return( RET_ERROR );
     }
-    if( dir[0] == '\0' ) {
+    if( dir[0] == NULLCHAR ) {
         dir = NULL;
     }
     _makepath( fake_name, NULL, dir, fname, ext );
