@@ -426,8 +426,8 @@ void MemShrink( void )
 
 #ifdef USE_FAR
 
-void FAR *FarMaybeMalloc( size_t size )
-/********************************************/
+void FAR *FarMallocUnSafe( size_t size )
+/**************************************/
 {
     if( !largeNearSeg ) {
         memGrow();
@@ -436,12 +436,12 @@ void FAR *FarMaybeMalloc( size_t size )
 }
 
 
-void FAR *FarMalloc( size_t size )
-/***************************************/
+void FAR *FarMallocSafe( size_t size )
+/************************************/
 {
     void FAR *p;
 
-    p = FarMaybeMalloc( size );
+    p = FarMallocUnSafe( size );
     if( p == NULL ) {
         PrtMsgExit(( FTL | OUT_OF_MEMORY ));
     }
@@ -450,8 +450,8 @@ void FAR *FarMalloc( size_t size )
 }
 
 
-void FarFree( void FAR *p )
-/********************************/
+void FarFreeSafe( void FAR *p )
+/*****************************/
 {
     _ffree( p );
 }

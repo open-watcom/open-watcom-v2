@@ -39,17 +39,6 @@
 
 #define MIN_TEXT    507     /* minimum length we'll create text */
 
-#ifndef USE_FAR
-    /* allocate intermediate vectors in regular memory */
-#   define myMalloc(size)    MallocSafe(size)
-#   define myFree(ptr)       FreeSafe(ptr)
-
-#else
-    /* allocate intermediate vectors in far memory to reduce fragmentation */
-#   define myMalloc(size)    FarMalloc(size)
-#   define myFree(ptr)       FarFree(ptr)
-#endif
-
 typedef struct vecEntry FAR *ENTRYPTR;
 
 struct vecEntry {
@@ -170,7 +159,7 @@ void FreeVec( VECSTR vec )
     while( walk != NULL ) {
         cur = walk;
         walk = walk->next;
-        myFree( cur );
+        FarFreeSafe( cur );
     }
 
     ((OURPTR)vec)->next = freeVec;
@@ -264,7 +253,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     len1 = len;
     if( len1 < MIN_TEXT )
         len1 = MIN_TEXT;
-    new = myMalloc( sizeof( *new ) + len1 );
+    new = FarMallocSafe( sizeof( *new ) + len1 );
     _fmemcpy( new->text, text, len );
     new->len = len;
     new->next = NULL;
@@ -316,7 +305,7 @@ void CatVec( VECSTR dest, VECSTR src )
         cur = walk;
         walk = walk->next;
         cpyTxt( dest, cur->text, cur->len );
-        myFree( cur );
+        FarFreeSafe( cur );
     }
     ((OURPTR)src)->next = freeVec;
     freeVec = (OURPTR)src;

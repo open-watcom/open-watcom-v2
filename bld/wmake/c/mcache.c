@@ -116,16 +116,6 @@ typedef struct directHead {
 
 STATIC DHEADPTR cacheHead;
 
-#ifdef USE_FAR
-#   define  myMalloc( size )    FarMaybeMalloc( size )
-#   define  myFree( ptr )       FarFree( ptr )
-#   define  myCmp( f, n )       _fFNameCmp( f, n )
-#else
-#   define  myMalloc( size )    MallocUnSafe( size )
-#   define  myFree( ptr )       FreeSafe( ptr )
-#   define  myCmp( f, n )       FNameCmp( f, n )
-#endif
-
 
 STATIC void freeDirectList( DHEADPTR dhead )
 /******************************************/
@@ -143,13 +133,13 @@ STATIC void freeDirectList( DHEADPTR dhead )
         for( h = 0; h < HASH_PRIME; h++ ) {
             for( cwalk = dhead->dh_table[h]; cwalk != NULL; cwalk = cwalk_next ) {
                 cwalk_next = cwalk->ce_next;
-                myFree( cwalk );
+                FarFreeSafe( cwalk );
 #ifdef CACHE_STATS
                 bytes += sizeof( *cwalk );
 #endif
             }
         }
-        myFree( dhead );
+        FarFreeSafe( dhead );
 #ifdef CACHE_STATS
         bytes += sizeof( *dhead );
 #endif
@@ -185,7 +175,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
     }
 #endif
 
-    *pdhead = myMalloc( sizeof( **pdhead ) );
+    *pdhead = FarMallocUnSafe( sizeof( **pdhead ) );
     if( *pdhead == NULL ) {
         return( CACHE_NOT_ENUF_MEM );
     }
@@ -220,7 +210,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #endif
         /* we tromp on entry, and get hash value */
         h = Hash( FixName( entry->d_name ), HASH_PRIME );
-        cnew = myMalloc( sizeof( *cnew ) );
+        cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
             closedir( parent );
             freeDirectList( *pdhead );  /* roll back, and abort */
@@ -284,7 +274,7 @@ STATIC DHEADPTR findDir( const char *path )
 
     dlast = NULL;
     for( dcur = cacheHead; dcur != NULL; dcur = dcur->dh_next ) {
-        if( *path == *dcur->dh_name && myCmp( dcur->dh_name, path ) == 0 ) {
+        if( *path == *dcur->dh_name && FarFNameCmp( dcur->dh_name, path ) == 0 ) {
             break;
         }
         dlast = dcur;
@@ -312,7 +302,7 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
     h = Hash( name, HASH_PRIME );
 
     for( ccur = dir->dh_table[h]; ccur != NULL; ccur = ccur->ce_next ) {
-        if( myCmp( ccur->ce_name, name ) == 0 ) {
+        if( FarFNameCmp( ccur->ce_name, name ) == 0 ) {
             return( ccur );
         }
     }

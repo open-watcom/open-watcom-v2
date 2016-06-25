@@ -47,6 +47,16 @@
     #define USE_SCARCE  1
 #endif
 
+#if defined( _M_I86 )
+# define USE_FAR            1       /* use far memory for some things       */
+# define USE_SCARCE         1       /* use scarce memory management         */
+# define FAR                __far   /* use far memory                       */
+# define FILE_BUFFER_SIZE   512     /* amount to read() at a time           */
+#else
+# define FAR                        /* don't use far memory at all          */
+# define FILE_BUFFER_SIZE   4096    /* amount to read() at a time           */
+#endif
+
 #if defined( __DOS__ )
 # define PATH_SPLIT         ';'     /* path seperator                       */
 # define PATH_SPLIT_S       ";"     /* path seperator in string form        */
@@ -61,15 +71,6 @@
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
-#if defined( _M_I86 )
-# define USE_FAR            1       /* use far memory for some things       */
-# define USE_SCARCE         1       /* use scarce memory management         */
-# define FAR                __far
-# define FILE_BUFFER_SIZE   512     /* amount to read() at a time           */
-#else
-# define FAR
-# define FILE_BUFFER_SIZE   4096    /* amount to read() at a time           */
-#endif
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
 #elif defined( __OS2__ ) || defined( __NT__ )
@@ -88,8 +89,6 @@
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
-# define FILE_BUFFER_SIZE   4096    /* amount to read() at a time           */
-# define FAR                        /* don't use far memory at all          */
 # define DLL_CMD_ENTRY      "EXEC_CMD"   /* entry-pt for .DLL version of command */
 
 #elif defined( __UNIX__ )
@@ -108,8 +107,6 @@
 # define MAX_SUFFIX         16      /* must fit dotname, or largest .ext.ext*/
 # define MAX_TOK_SIZE       130     /* Maximum token size                   */
 # define LINE_BUFF          80      /* length of one-line user input buffer */
-# define FILE_BUFFER_SIZE   4096    /* amount to read() at a time           */
-# define FAR                        /* don't use far memory at all          */
 # define DLL_CMD_ENTRY      "???"   /* entry-pt for .DLL version of command */
 
 #else

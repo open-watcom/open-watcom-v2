@@ -253,8 +253,8 @@ static int FNameCmpChr( char a, char b )
 
 
 #ifdef USE_FAR
-int _fFNameCmp( const char FAR *a, const char FAR *b )
-/***********************************************************/
+int FarFNameCmp( const char FAR *a, const char FAR *b )
+/*****************************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
     return( _fstricmp( a, b ) );
