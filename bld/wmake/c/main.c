@@ -57,6 +57,15 @@ STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
 STATIC NODE     *filesToDo;         /* pointers into argv to -f files   */
 
+static void parseString( const char *s )
+{
+    TLIST       *tlist;
+
+    InsString( s, FALSE );
+    tlist = Parse();
+    FreeTList( tlist );
+}
+
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
@@ -65,53 +74,49 @@ STATIC void doBuiltIns( const char *makeopts )
  * perform the builtin commands
  */
 {
-    TLIST   *tlist;
-    char    buf[2048];
-    char    *cpy;
+    char        buf[2048];
+    char        *cpy;
+    const char  FAR *suffices;
+    const char  FAR *builtins;
 
     if( !Glob.overide ) {
         DoingBuiltIn = TRUE;
-        FmtStr( buf, "%F", BuiltIns );
         cpy = MallocSafe( 2048 + strlen( makeopts ) );
+        FmtStr( buf, "%F", BuiltIns );
         FmtStr( cpy, buf, makeopts );
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        parseString( cpy );
         strcpy(cpy, "MAKE=" );
-        if( _cmdname( cpy + sizeof "MAKE=" - 1 ) == NULL ) {
+        if( _cmdname( cpy + sizeof( "MAKE=" ) - 1 ) == NULL ) {
             strcat( cpy, "wmake" );
         }
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        parseString( cpy );
         if( Glob.compat_nmake || Glob.compat_unix ) {
-            // suffixes must be parsed before builtins
-            const char  *suffices = MSSuffixList;
-            const char  *builtins = MSBuiltIn;
-
-            FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %F", makeopts );
-            InsString( cpy, FALSE );
-            tlist = Parse();
-            FreeTList( tlist );
-            if( Glob.compat_posix ) {
-                suffices = POSIXSuffixList;
-                builtins = POSIXBuiltIn;
-            } else if( Glob.compat_unix ) {
-                suffices = UNIXSuffixList;
-                builtins = UNIXBuiltIn;
-            }
-            FmtStr( cpy, "%F", suffices );
-            InsString( cpy, FALSE );
-            tlist = Parse();
-            FreeTList( tlist );
-            FmtStr( buf, "%F", builtins );
-        } else {
-            FmtStr( buf, "%F", SuffixList );
+            FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %s", makeopts );
+            parseString( cpy );
         }
-        FmtStr( cpy, buf, makeopts );
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        if( Glob.compat_nmake ) {
+            suffices = MSSuffixList;
+            builtins = MSBuiltIn;
+        } else if( Glob.compat_posix ) {
+            suffices = POSIXSuffixList;
+            builtins = POSIXBuiltIn;
+        } else if( Glob.compat_unix ) {
+            suffices = UNIXSuffixList;
+            builtins = UNIXBuiltIn;
+        } else {
+            suffices = SuffixList;
+            builtins = NULL;
+        }
+        // suffixes must be parsed before builtins
+        if( suffices != NULL ) {
+            FmtStr( cpy, "%F", suffices );
+            parseString( cpy );
+        }
+        if( builtins != NULL ) {
+            FmtStr( buf, "%F", builtins );
+            FmtStr( cpy, buf, makeopts );
+            parseString( cpy );
+        }
         FreeSafe( cpy );
         DoingBuiltIn = FALSE;
     }
@@ -223,7 +228,10 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     char        option;         /* the option (*argv)[1]        */
     const char  *p;             /* working pointer to *argv     */
     NODE        *new;           /* for adding a new file        */
-    int         options[256 + 1] = { 0 };
+    int         options[256] = { FALSE };
+
+#define SET_OPTION(o)   options[(unsigned char)(o) | 0x20] = TRUE
+#define CHK_OPTION(o)   options[(unsigned char)(o)]
 
     if( (p = argv[1]) != NULL ) {
         if( strcmp( p, "?" ) == 0
@@ -233,7 +241,6 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     }
 
     Glob.macreadonly = TRUE;
-
     while( (p = *++argv) != NULL ) {
         checkCtrl( p );
         select = p[0];
@@ -294,27 +301,28 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     Usage();
                     break;
                 }
-                options[(option | 0x20) + 1] = TRUE;
+                SET_OPTION( option );
                 continue;
             }
             if( p[3] == NULLCHAR ) {
                 if( option == 'm'  && tolower( p[2] ) == 's' ) {
                     Glob.compat_nmake = TRUE;
                     Glob.nocheck   = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    SET_OPTION( option );
                     continue;
                 }
                 if( option == 's'  && tolower( p[2] ) == 'n' ) {
                     Glob.silentno  = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    SET_OPTION( option );
                     continue;
                 }
                 if( option == 'u'  && tolower( p[2] ) == 'x' ) {
-                    Glob.compat_unix = TRUE;
+                    /* POSIX compatibility */
                     Glob.compat_posix = TRUE;
+                    Glob.compat_unix = TRUE;
                     Glob.nomakeinit = TRUE;
                     Glob.nocheck    = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    SET_OPTION( option );
                     continue;
                 }
             }
@@ -334,17 +342,15 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     Glob.macreadonly = FALSE;
 
     {
-        // 120 allows for 30 options.
-        size_t const    optsize = 120 + (*log_name ? strlen( *log_name ) + 1: 0) + 1;
-        char * const    makeopts = MallocSafe( optsize );
-        unsigned        opt_index;
-        char            default_option[] = " -?";
+        char    *makeopts;
+        char    default_option[] = " -?";
 
+        // 120 allows for 30 options.
+        makeopts = MallocSafe( 120 + strlen( *log_name ) + 1 + 1 );
         makeopts[0] = NULLCHAR;
-        opt_index = 'a' - 1;
-        while( ++opt_index <= 'z' ) {
-            if( options[opt_index + 1] ) {
-                switch( opt_index ) {
+        for( option = 'a'; option <= 'z'; ++option ) {
+            if( CHK_OPTION( option ) ) {
+                switch( option ) {
                 case 'f':
                 case 'n':
                     break;
@@ -367,15 +373,29 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                         strcat( makeopts, *makeopts != NULLCHAR ? " -s" : "-s" );
                     }
                     break;
+                case 'u':
+                    if( Glob.compat_posix ) {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -ux" : "-ux" );
+                    } else {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -u" : "-u" );
+                    }
+                    break;
                 default:
-                    default_option[2] = (char)opt_index;
-                    strcat( makeopts, default_option + (int)( *makeopts == NULLCHAR ) );
+                    default_option[2] = option;
+                    p = default_option;
+                    if( *makeopts == NULLCHAR )
+                        ++p;
+                    strcat( makeopts, p );
                 }
             }
 
         }
         return( makeopts );
     }
+
+#undef SET_OPTION
+#undef CHK_OPTION
+
 }
 
 
@@ -559,7 +579,7 @@ STATIC void init( char const * const *argv )
 #endif
     filesToDo = NULL;
     mustTargs = NULL;
-    log_name = NULL;
+    log_name = "";
     LogFini();
     LogInit( procLogName( argv ) );
     makeopts = procFlags( argv, &log_name );
