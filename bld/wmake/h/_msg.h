@@ -40,10 +40,7 @@
 
 /* banner */
 
-pick( BANNER = END_OF_RESOURCE_MSG, \
-    banner1w( "Make", _WMAKE_VERSION_ ) "\n" \
-    banner2 "\n" banner2a( "1988" ) "\n" \
-    banner3 "\n" banner3a )
+pick( BANNER, banner1w( "Make", _WMAKE_VERSION_ ) "\n" banner2 "\n" banner2a( "1988" ) "\n" banner3 "\n" banner3a )
 
 /*
  * All messages beyond here appear only under certain conditions in debugging
@@ -69,5 +66,3 @@ pick( HIT_ON_HASH,              "\thit %d" )
 pick( CACHE_FREED_BYTES,        "\t%l bytes freed" )
 pick( CACHE_MEM,                "\tNot enough memory to cache directory" )
 #endif
-
-pick( MSG_MAX,                  NULL )

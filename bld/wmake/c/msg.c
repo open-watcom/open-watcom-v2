@@ -53,8 +53,12 @@ typedef union msg_arg {
 STATIC MSG_ARG  ArgValue[2];
 STATIC int      USEARGVALUE = 0;    /* set to non_zero if ArgValue is used */
 
-STATIC const char FAR * const FAR msgText[] = {
-    #define pick( num, string ) string,
+#define pick( num, string ) static const char FAR __literal_ ## num [] = { string };
+#include "_msg.h"
+#undef pick
+
+STATIC const char FAR * const msgText[] = {
+    #define pick( num, string ) __literal_ ## num,
     #include "_msg.h"
     #undef pick
 };
@@ -202,8 +206,8 @@ STATIC char *strHex( char *dest, UINT16 num )
 
 
 #ifdef USE_FAR
-STATIC char *fStrApp( char *dest, const char FAR *fstr )
-/******************************************************/
+STATIC char *farStrApp( char *dest, const char FAR *fstr )
+/********************************************************/
 {
     assert( dest != NULL && fstr != NULL );
 
@@ -214,7 +218,7 @@ STATIC char *fStrApp( char *dest, const char FAR *fstr )
     return( dest );
 }
 #else
-#   define fStrApp( n, f )  strApp( n, f )
+#   define farStrApp( n, f )  strApp( n, f )
 #endif
 
 
@@ -260,7 +264,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
  *  %L  : long string ( the process exits here to let another function to
           print the long string. Trailing part must be printed
           using other calls. see printMac()@macros. )
- *  %M  : a message number from msgText
+ *  %M  : a message number
  *  %Z  : strerror( errno ) - print a system error
  *  %c  : character
  *  %d  : decimal
@@ -310,7 +314,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 *dest++ = ')';
                 break;
             case 'F' :
-                dest = fStrApp( dest, va_arg( args, char FAR * ) );
+                dest = farStrApp( dest, va_arg( args, char FAR * ) );
                 positnArg( args, (UINT16)sizeof( char FAR * ) );
                 break;
             case 'L' :
@@ -320,7 +324,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
             case 'M' :
                 MsgGet( va_arg( args, int ), msgbuff );
                 positnArg( args, (UINT16)sizeof( int ) );
-                dest = fStrApp( dest, msgbuff );
+                dest = strApp( dest, msgbuff );
                 break;
             case 'Z' :
 #if defined( __DOS__ )
@@ -486,8 +490,8 @@ void PrtMsg( enum MsgClass num, ... )
         writeOutput( class, fh, str, strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
-        if( (num & NUM_MSK) >= END_OF_RESOURCE_MSG ) {
-            len = doFmtStr( buff, msgText[(num & NUM_MSK) - END_OF_RESOURCE_MSG], args );
+        if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {
+            len = doFmtStr( buff, msgText[(num & NUM_MSK) - MSG_SPECIAL_BASE], args );
         } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
             USEARGVALUE = 1;
             reOrder( args, paratype ); /* reposition the parameters */

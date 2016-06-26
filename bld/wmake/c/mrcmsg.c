@@ -44,6 +44,8 @@
 #include "clibext.h"
 
 
+#define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
+
 #ifdef BOOTSTRAP
 
     static struct idstr { int id; char *s; } StringTable[] = {
@@ -76,8 +78,7 @@ static  TABLE_TYPE  PARA_TABLE[] = {
         { NO_DEF_CMDS_FOR_MAKE,         "sE" },
         { PTARG_IS_TYPE_M,              "EM" },
         { IMP_ENV_M,                    "EM" },
-        { GETDATE_MSG,                  "sE" },
-        { END_OF_RESOURCE_MSG,          NULL } 
+        { GETDATE_MSG,                  "sE" }
 };
 
 #ifndef BOOTSTRAP
@@ -189,7 +190,7 @@ static char *msgInTable( int resourceid )
 {
     int i;
 
-    for( i = 0; PARA_TABLE[i].msgid < END_OF_RESOURCE_MSG; i++ ) {
+    for( i = 0; i < ARRAY_SIZE( PARA_TABLE ); i++ ) {
         if( resourceid == PARA_TABLE[i].msgid ) {
             return( PARA_TABLE[i].msgtype );
         }

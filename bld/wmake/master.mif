@@ -99,7 +99,7 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-$(xname).exe :: usageend.gh $(objs) $(libs) wmake.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(xname).exe :: usage.gh usagej.gh $(objs) $(libs) wmake.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -112,23 +112,10 @@ wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh
         $(rc_aui) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp
-        *wsplice -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" -o "%n%n%n%n" $< $@
+        *wsplice -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
 
 usagej.gh : ../h/usage.sp
-        *wsplice -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" -o "%n%n%n%n" $< $@
-
-usageend.gh : usage.gh
-        *wsplice -f "%+" -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)%n" $< $@
-
-# usage.h : ..\h\usage.sp
-# I want the usage message codes to be generated on the fly, and also
-# padded by ten ( so that versions in different languages will still
-# compile ).  Fortunately, by simply defining more constants, we don't
-# make the final program any larger.  Oh well - the end justifying the
-# means, I suppose. CSK
-#       *wsplice -k$(OS) -kENGLISH -f "%s"..\h\usage.sp -o "%n%n%n%n%n%n%n%n%n%n" usage.h
-#       *wsplice -f "#define USAGE_LN_%$# (MSG_USAGE_BASE+%$#)%+" usage.h usage.h
-#       *wsplice -f "%s%+"usage.h -o "$#define MSG_USAGE_LAST (MSG_USAGE_BASE+%$#)" usage.h
+        *wsplice -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
 
 ##############################################################################
 # special case targets

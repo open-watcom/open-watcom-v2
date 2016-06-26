@@ -242,10 +242,7 @@
 
 #define MSG_USAGE_BASE                  230
 
-#include "usageend.gh"
-
-#define END_OF_RESOURCE_MSG             MSG_USAGE_LAST
-
+#define MSG_SPECIAL_BASE                260
 
 #define MSG_LANG_SPACING                1000
 

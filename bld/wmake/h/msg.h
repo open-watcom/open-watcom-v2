@@ -65,9 +65,11 @@ enum MsgClass {
 
 
 enum {
+    START_OF__MSG_H = MSG_SPECIAL_BASE - 1,
     #define pick( name, string ) name,
     #include "_msg.h"
     #undef pick
+    MSG_MAX
 };
 
 extern size_t   FmtStr( char *buf, const char *fmt, ... );
