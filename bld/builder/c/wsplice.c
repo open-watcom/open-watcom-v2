@@ -89,10 +89,26 @@
 #define OP_LPAREN   '('
 #define OP_RPAREN   ')'
 
+#define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
+
+enum                    // PROCESSING MODES
+{
+    MODE_DELETE,        // - deleting
+    MODE_OUTPUT,        // - outputting
+    MODE_SKIPPING       // - skipping to ENDSEGMENT
+};
+
+#define KEYWORDS  \
+    pick( KW_SEGMENT,     "segment"     ) /* SEGMENT expr */        \
+    pick( KW_ELSESEGMENT, "elsesegment" ) /* ELSESEGMENT [expr] */  \
+    pick( KW_ENDSEGMENT,  "endsegment"  ) /* ENDSEGMENT */          \
+    pick( KW_REMOVE,      "remove"      ) /* REMOVE segment-name */ \
+    pick( KW_KEEP,        "keep"        ) /* KEEP segment-name */   \
+    pick( KW_INCLUDE,     "include"     ) /* INCLUDE file */
+
 typedef union textent   TEXTENT;
 typedef struct segment  SEGMENT;
 typedef struct filestk  FILESTK;
-typedef struct kw       KW;
 typedef struct segstk   SEGSTK;
 typedef struct ipathlst IPATHLST;
 typedef unsigned        PROCMODE;
@@ -144,79 +160,56 @@ struct filestk {                        // define FILESTK
     char                name[1];        // - file name
 };
 
-struct kw {                             // define KW
-    unsigned            code;           // - code
-    char                *name;          // - name
-};
-
 struct ipathlst {                       // define ipathlst
     struct ipathlst     *next;          // - next pointer
     char                path[1];        // - path
 };
 
-// LOCAL ROUTINES
-
-static bool      Expr( void );
+typedef enum            // define KW codes
+{
+    #define pick(enum,text) enum,
+    KEYWORDS
+    #undef pick
+    KW_COMMENT,         // - comment
+    KW_TEXT,            // - text
+    KW_EOF,             // - end of file
+} KW;
 
 // DATA (READ ONLY)
 
-enum                    // define KW codes
-{
-    KW_EOF,             // - end of file
-    KW_COMMENT,         // - comment
-    KW_TEXT,            // - text
-    KW_SEGMENT,         // - SEGMENT
-    KW_ELSESEGMENT,     // - ELSESEGMENT
-    KW_ENDSEGMENT,      // - ENDSEGMENT
-    KW_REMOVE,          // - REMOVE
-    KW_KEEP,            // - KEEP
-    KW_INCLUDE          // - INCLUDE
+static const char * const KwTable[] = {     // - key words table
+    #define pick(enum,text) text,
+    KEYWORDS
+    #undef pick
 };
-
-static KW KwTable[] =                            // - key words table
-{
-    {   KW_SEGMENT,     "segment"       },      // SEGMENT expr
-    {   KW_ELSESEGMENT, "elsesegment"   },      // ELSESEGMENT [expr]
-    {   KW_ENDSEGMENT,  "endsegment"    },      // ENDSEGMENT
-    {   KW_REMOVE,      "remove"        },      // REMOVE segment-name
-    {   KW_KEEP,        "keep"          },      // KEEP segment-name
-    {   KW_INCLUDE,     "include"       },      // INCLUDE file
-    {   0,              NULL            }
-};
-
 
 // DATA (READ/WRITE)
-static unsigned  ErrCount;               // - number of errors
-static FILE      *OutputFile;            // - output file
-static FILESTK   *Files;                 // - stack of opened files
-static SEGMENT   *Segments;              // - list of segments
-static SEGSTK    *SegStk;                // - active-segments stack
-static char      KwChar = { ':' };       // - key word definition character
-static TEXTENT   *SourceText;            // - source text
-static char      Token[32];              // - scan token
-static char      Record[1024];           // - input record
-static char      *Rptr;                  // - ptr into record
-static PROCMODE  ProcessMode;            // - processing mode
-static char      *OutFmt = "%s";         // - output format
-static unsigned  OutNum = 0;             // - output number
-static int       UnixStyle;              // - Unix style newlines?
-static int       TabStop;                // - tab spacing
-static IPATHLST  *IncPathList;           // - list of include paths
-static int       RestoreTime = false;    // - set tgt-file timestamp to src-file
-static char      OutBuffer[1024];        // - output buffer
-static unsigned  OutBufferLen;           // - output buffer current len
+static unsigned     ErrCount;               // - number of errors
+static FILE         *OutputFile;            // - output file
+static FILESTK      *Files;                 // - stack of opened files
+static SEGMENT      *Segments;              // - list of segments
+static SEGSTK       *SegStk;                // - active-segments stack
+static char         KwChar = { ':' };       // - key word definition character
+static TEXTENT      *SourceText;            // - source text
+static char         Token[32];              // - scan token
+static char         Record[1024];           // - input record
+static const char   *Rptr;                  // - ptr into record
+static PROCMODE     ProcessMode;            // - processing mode
+static const char   *OutFmt = "%s";         // - output format
+static unsigned     OutNum = 0;             // - output number
+static bool         UnixStyle = false;      // - Unix style newlines?
+static int          TabStop = 0;            // - tab spacing
+static IPATHLST     *IncPathList;           // - list of include paths
+static bool         RestoreTime = false;    // - set tgt-file timestamp to src-file
+static char         OutBuffer[1024];        // - output buffer
+static unsigned     OutBufferLen;           // - output buffer current len
 
-enum                    // PROCESSING MODES
-{
-    MODE_DELETE,        // - deleting
-    MODE_OUTPUT,        // - outputting
-    MODE_SKIPPING       // - skipping to ENDSEGMENT
-};
+// LOCAL ROUTINES
 
+static bool     Expr( void );
 
-static void Error( // ERROR MESSAGE
-    char *msg, // - message
-    ... )// - extra info
+// ERROR MESSAGE
+static void Error( const char *msg, ... )
 {
     char        emsg[128];      // - error message
     char        *eptr;          // - ptr. into error message
@@ -269,7 +262,7 @@ static SEGSTK *PushSegStack()// PUSH THE SEGMENT STACK
     return( stk );
 }
 
-static void PopSegStack( void )// POP SEGMENTS STACK
+static void PopSegStack( void ) // POP SEGMENTS STACK
 {
     SEGSTK      *top;           // - top entry on stack
 
@@ -285,34 +278,34 @@ static void PopSegStack( void )// POP SEGMENTS STACK
 
 //OPEN FILE, TRUNCATE NAME IF NECESSARY
 static FILE *OpenFileTruncate(
-    char *file_name, // - file to be opened
-    char *mode )// - file mode
+    const char *file_name,    // - file to be opened
+    const char *mode )        // - file mode
 {
     FILE        *new = NULL;
 
     new = fopen( file_name, mode );
     if( new == NULL ) {
-        char    buff[FILENAME_MAX];
+        char    buffer[FILENAME_MAX + 3];
+        char    new_name[FILENAME_MAX];
         char    *drive;
         char    *dir;
         char    *fname;
         char    *ext;
 
-        _splitpath2( file_name, buff, &drive, &dir, &fname, &ext );
+        _splitpath2( file_name, buffer, &drive, &dir, &fname, &ext );
         if( fname != NULL && strlen( fname ) > 8 )
             fname[8] = '\0';
         if( ext != NULL && strlen( ext ) > 3 )
             ext[3] = '\0';
-        // this is ok, because file_name can only get shorter
-        _makepath( file_name, drive, dir, fname, ext );
-        new = fopen( file_name, mode );
+        _makepath( new_name, drive, dir, fname, ext );
+        new = fopen( new_name, mode );
     }
     return( new );
 }
 
-static FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
-    char *file_name, // - file to be opened
-    char *mode )// - file mode
+static FILE *OpenFilePathList(  //OPEN FILE, TRY EACH LOCATION IN PATH LIST
+    const char *file_name,    // - file to be opened
+    const char *mode )        // - file mode
 {
     FILE        *new = NULL;
 
@@ -336,8 +329,8 @@ static FILE *OpenFilePathList( //OPEN FILE, TRY EACH LOCATION IN PATH LIST
 
 // OPEN FILE
 static void OpenFileNormal(
-    char *file_name, // - file to be opened
-    char *mode )// - file mode
+    const char *file_name,    // - file to be opened
+    const char *mode )        // - file mode
 {
     FILE        *new;           // - new file ptr.
     FILESTK     *stk;           // - new stack entry
@@ -363,7 +356,7 @@ static void OpenFileNormal(
 // CLOSE CURRENT FILE
 static void CloseFile( void )
 {
-    FILESTK     *stk;           // - file stack
+    FILESTK     *stk;       // - file stack
 
     while( SegStk != NULL ) {
         Error( "Unclosed segment from line %u", SegStk->rec_def );
@@ -378,8 +371,9 @@ static void CloseFile( void )
 
 static void EatWhite( void )
 {
-    while( isspace( *Rptr ) )
+    while( isspace( *Rptr ) ) {
         ++Rptr;
+    }
 }
 
 static bool IsOper( char ch )
@@ -401,7 +395,7 @@ static bool ScanString( void )
 {
     char        *eptr;          // - end-of-string ptr.
     char        *cptr;          // - points into string
-    char        *rptr;          // - points into record
+    const char  *rptr;          // - points into record
 
     EatWhite();
     rptr = Rptr;
@@ -444,9 +438,9 @@ static bool GetToken( char op )
 };
 
 // INITIALIZE TO PROCESS RECORD
-static unsigned RecordInitialize( char *record )
+static KW RecordInitialize( const char *record )
 {
-    KW  *pkw;           // - ptr. into KW table
+    KW  i;
 
     Rptr = record;
     if( !ScanString() )
@@ -461,19 +455,18 @@ static unsigned RecordInitialize( char *record )
         }
         return( KW_COMMENT );
     }
-    pkw = KwTable;
-    while( pkw->code != 0 ) {
-        if( 0 == stricmp( pkw->name, &Token[1] ) )
-            return( pkw->code );
-        ++pkw;
+    for( i = 0; i < ARRAY_SIZE( KwTable ); ++i ) {
+        if( 0 == stricmp( KwTable[i], &Token[1] ) ) {
+            return( i );
+        }
     }
     return( KW_TEXT );
 }
 
 // READ A RECORD
-static unsigned ReadInput( void )
+static KW ReadInput( void )
 {
-    unsigned    retn;           // - return: type of record
+    KW  retn;               // - return: type of record
 
     if( NULL == fgets( Record, sizeof( Record ), Files->file_ptr ) ) {
         retn = KW_EOF;
@@ -486,7 +479,7 @@ static unsigned ReadInput( void )
 }
 
 // LOOK UP A SEGMENT
-static SEGMENT *SegmentLookUp( char *seg_name )
+static SEGMENT *SegmentLookUp( const char *seg_name )
 {
     SEGMENT     *sptr;          // - points to current segment
     size_t      size;           // - size of name
@@ -610,20 +603,20 @@ static void PutNL( void )
     OutputChar( '\n' );
 }
 
-static void OutputString( char *p, char *record )
+static void OutputString( const char *p, const char *record )
 {
-    char        *r;
+    const char  *r;
     unsigned    col;
     unsigned    space;
     char        numstr[30];
 
-    for( ; *p != '\0';++p ) {
+    for( ; *p != '\0'; ++p ) {
         if( *p == '%' ) {
             ++p;
             switch( *p ) {
             case 's':
                 col = 0;
-                for( r = record; *r != '\0' && !( *r == '\r' && *( r + 1 ) == '\0' );++r ) {
+                for( r = record; *r != '\0' && !( *r == '\r' && *( r + 1 ) == '\0' ); ++r ) {
                     if( *r != '\t' || TabStop == 0 ) {
                         OutputChar( *r );
                         ++col;
@@ -661,9 +654,8 @@ static void OutputString( char *p, char *record )
     }
 }
 
-static void ProcessRecord( // PROCESS A RECORD OF INPUT
-    int kw, // - key-word for record
-    char *record )// - record
+// PROCESS A RECORD OF INPUT
+static void ProcessRecord( KW kw, const char *record )
 {
     SEGMENT *seg;       // - current segment
 
@@ -738,9 +730,9 @@ static void ProcessRecord( // PROCESS A RECORD OF INPUT
 }
 
 // PROCESS SOURCE FILE
-static void ProcessSource( char *src_file ) // - starting file
+static void ProcessSource( const char *src_file ) // - starting file
 {
-    int kw;     // - current key-word
+    KW  kw;     // - current key-word
 
     ProcessMode = MODE_OUTPUT;
     SegStk = NULL;
@@ -758,7 +750,7 @@ static void ProcessSource( char *src_file ) // - starting file
 }
 
 // ADD TO PATH LIST
-static void AddIncludePathList( char *path )
+static void AddIncludePathList( const char *path )
 {
     IPATHLST    *lptr;          // - point to new path entry
     IPATHLST    *p;             // - point to list
