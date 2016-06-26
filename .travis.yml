@@ -3,11 +3,19 @@ language:
 
 before_install:
 # install latest OS fixes
- - sudo apt-get -qq update
+# - sudo apt-get -qq update # save time, job has limited time to work
 # install DOSEMU
  - sudo apt-get install -y dosemu
 
 before_script:
+# get clone of GitHub repository for Travis CI return files
+# some of them are overwriten by build process
+# configure Git
+ - git config --global user.email "travis@travis-ci.org"
+ - git config --global user.name "Travis CI"
+ - git config --global push.default simple
+# clone GitHub repository
+ - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME
 # initialize OW build environment variables
  - . $OWROOT/cmnvars.sh
 
@@ -16,15 +24,8 @@ script:
 
 after_failure:
 # after failure transfer log files back to GitHub repository
- - cd $HOME
-# configure Git
- - git config --global user.email "travis@travis-ci.org"
- - git config --global user.name "Travis CI"
- - git config --global push.default simple
-# clone GitHub repository
- - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
+ - cd $HOME/travis-ci-ow-builds
 # copy new log files to git repository tree
- - cd travis-ci-ow-builds
  - if [ ! -d bld ]; then mkdir bld; fi
  - if [ ! -d docs ]; then mkdir docs; fi
  - cp $OWROOT/bld/*.log bld/
@@ -36,16 +37,8 @@ after_failure:
 
 after_success:
 # after success transfer OW build to GitHub repository
- - cd $HOME
-# configure Git
- - git config --global user.email "travis@travis-ci.org"
- - git config --global user.name "Travis CI"
- - git config --global push.default simple
-# clone GitHub repository
- - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
-# copy new log files to git repository tree
- - cd travis-ci-ow-builds
-# commit new log files to GitHub repository
+ - cd $HOME/travis-ci-ow-builds
+# commit updated files to GitHub repository
  - git add -f .
  - git commit -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
  - git push -f origin
