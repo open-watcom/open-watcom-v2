@@ -156,23 +156,19 @@ using std::wscanf;
 :include valist.sp
 
 :segment QNX | LINUX
-#define BUFSIZ          4096        /*  Default buffer size                 */
 #define _NFILES         16          /*  minimum guaranteed open files       */
-#define FILENAME_MAX    255
+#define BUFSIZ          4096        /*  Default buffer size                 */
 :elsesegment
+#define _NFILES         20          /* number of files that can be handled */
 #if defined(_M_I86)
- #define BUFSIZ         512
+ #define BUFSIZ         512         /*  Default buffer size                 */
 #else
- #define BUFSIZ         4096
-#endif
-::
-#define _NFILES         20      /* number of files that can be handled */
-#if defined(__OS2__) || defined(__NT__)
- #define FILENAME_MAX   260
-#else
- #define FILENAME_MAX   144
+ #define BUFSIZ         4096        /*  Default buffer size                 */
 #endif
 :endsegment
+:keep FILENAME
+:include maxpath.sp
+:remove FILENAME
 
 :: This (strange?) technique keeps the name '__iobuf' in the global namespace.
 struct __stream_link;
@@ -194,10 +190,12 @@ struct __iobuf {
 
 :segment CNAME
 namespace std {
+
 :endsegment
 typedef struct __iobuf FILE;
 typedef long           fpos_t;
 :segment CNAME
+
 }
 :endsegment
 
@@ -207,15 +205,16 @@ typedef long           fpos_t;
 :include ext.sp
  #define FOPEN_MAX      _NFILES
  #define OPEN_MAX       FOPEN_MAX
- #if defined(__OS2__) || defined(__NT__)
-  #define PATH_MAX      259 /* maximum length of full pathname excl. '\0' */
- #else
-  #define PATH_MAX      143 /* maximum length of full pathname excl. '\0' */
- #endif
 #else  /* extensions disabled */
  #define FOPEN_MAX      (_NFILES-2)
 #endif /* extensions disabled */
 :endsegment
+:keep PATHMAX
+:segment DOS
+
+:include maxpath.sp
+:endsegment
+:remove PATHMAX
 
 :segment CNAME
 _WCRTLINK extern std::FILE  *__get_iob_ptr( void );
