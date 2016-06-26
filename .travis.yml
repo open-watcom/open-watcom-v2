@@ -15,7 +15,7 @@ before_script:
  - git config --global user.name "Travis CI"
  - git config --global push.default simple
 # clone GitHub repository
- - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME
+ - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME/travis-ci-ow-builds
 # initialize OW build environment variables
  - . $OWROOT/cmnvars.sh
 
