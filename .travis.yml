@@ -2,14 +2,11 @@ language:
  - c
 
 before_install:
-# install latest OS fixes
-# - sudo apt-get -qq update # save time, job has limited time to work
 # install DOSEMU
  - sudo apt-get install -y dosemu
 
 before_script:
-# get clone of GitHub repository for Travis CI return files
-# some of them are overwriten by build process
+# get clone of GitHub repository to return Travis CI OW build/log files
 # configure Git
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis CI"
@@ -17,7 +14,17 @@ before_script:
 # clone GitHub repository
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME/travis-ci-ow-builds
 # initialize OW build environment variables
+ - export OWROOT=$TRAVIS_BUILD_DIR
+ - export OWTOOLS=CLANG
+ - export OWRELROOT=$HOME/travis-ci-ow-builds/rel
+ - export OWOBJDIR=binbuild
+ - export OWDOCBUILD=0
+ - export OWDOCQUIET=1
+ - export USE_FILENAME_VERSION=1
+ - export OWVERBOSE=0
+ - export BUILDER_OPT=-q
  - . $OWROOT/cmnvars.sh
+
 
 script:
  - sh $OWROOT/build.sh rel
@@ -27,21 +34,21 @@ after_failure:
  - cd $HOME/travis-ci-ow-builds
 # copy new log files to git repository tree
  - if [ ! -d bld ]; then mkdir bld; fi
- - if [ ! -d docs ]; then mkdir docs; fi
  - cp $OWROOT/bld/*.log bld/
+ - if [ ! -d docs ]; then mkdir docs; fi
  - cp $OWROOT/docs/*.log docs/
 # commit new log files to GitHub repository
  - git add -f .
- - git commit -m "Travis CI build $TRAVIS_BUILD_NUMBER (failure) - log files"
- - git push -f origin
+ - git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (failure) - log files"
+ - git push --quiet -f origin
 
 after_success:
 # after success transfer OW build to GitHub repository
  - cd $HOME/travis-ci-ow-builds
 # commit updated files to GitHub repository
  - git add -f .
- - git commit -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
- - git push -f origin
+ - git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
+ - git push --quiet -f origin
 
 #addons:
 #  coverity_scan:
