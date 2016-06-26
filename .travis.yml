@@ -12,7 +12,7 @@ before_script:
  - . $OWROOT/cmnvars.sh
 
 script:
- - . $OWROOT/build.sh rel
+ - sh $OWROOT/build.sh rel
 
 after_failure:
 # after failure transfer log files back to GitHub repository
