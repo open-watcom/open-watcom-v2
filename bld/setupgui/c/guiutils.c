@@ -134,8 +134,8 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
             GUIGetRGB( GUI_BLACK, &foreg );     /* foreground */
 
             /* Start at bottom left of hotspot and use neagtive offset */
-            GUIDrawTextRGB( gui, gui_banner2, sizeof( gui_banner2 ) - 1, row_count - 2, indent, foreg, rgb );
-            GUIDrawTextRGB( gui, gui_banner2a, sizeof( gui_banner2a ) - 1, row_count - 1, indent, foreg, rgb );
+            GUIDrawTextRGB( gui, banner2, sizeof( banner2 ) - 1, row_count - 2, indent, foreg, rgb );
+            GUIDrawTextRGB( gui, banner2a( "1984" ), sizeof( banner2a( "1984" ) ) - 1, row_count - 1, indent, foreg, rgb );
 
         } else {
             for( i = 0; i < sizeof( Bolt ) / sizeof( Bolt[0] ); ++i ) {
