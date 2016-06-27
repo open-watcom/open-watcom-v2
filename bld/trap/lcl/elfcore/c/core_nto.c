@@ -63,10 +63,10 @@ static void *neutrino_init( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr )
     ctx_neutrino    *ctx = NULL;
     Elf_Note        note;
     char            *note_name;
-    bool            swap = FALSE;
+    bool            swap = false;
 
     if( ehdr->e_ident[EI_DATA] != NATIVE_ELF_ORDER ) {
-        swap = TRUE;
+        swap = true;
     }
 
     /* See if the core file looks like something we understand */
@@ -136,7 +136,7 @@ static size_t neutrino_name( void *_ctx, char *name, size_t len )
 static int neutrino_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
 {
     ctx_neutrino    *ctx = _ctx;
-    long            rc = FALSE;
+    long            rc = false;
 
     // TODO: add support for non-x86 architectures
     if( ctx->e_hdr->e_machine == EM_386 ) {
@@ -147,7 +147,7 @@ static int neutrino_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
         *mad = MAD_X86;
         *cpu = X86_486;
         *fpu = X86_487;
-        rc = TRUE;
+        rc = true;
     }
     return( rc );
 }
