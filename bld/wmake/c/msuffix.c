@@ -44,11 +44,12 @@
 #include "pathgrp.h"
 
 
-#define HASH_PRIME  13
-#define CASESENSITIVE false // Is suffix name case insensitive
-STATIC HASHTAB  *sufTab;
-STATIC UINT16   nextId;
-STATIC UINT16   prevId;     // Has to be one less than nextId
+#define HASH_PRIME      13
+#define CASESENSITIVE   false       // Is suffix name case insensitive
+
+STATIC HASHTAB          *sufTab;
+STATIC UINT16           nextId;
+STATIC UINT16           prevId;     // Has to be one less than nextId
 
 
 STATIC void freePathRing( PATHRING pathring )

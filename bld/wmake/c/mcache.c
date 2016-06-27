@@ -459,7 +459,7 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
 
 
 bool CacheExists( const char *fullpath )
-/***bool************************************
+/***************************************
  * return true if the file in fullpath exists, false otherwise
  */
 {

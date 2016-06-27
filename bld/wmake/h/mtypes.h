@@ -74,7 +74,6 @@ enum {
     IS_BARF     =   0x80
 };
 
-
 #define isascii(__c)    ((__c) >= CHAR_MIN && (__c) <= CHAR_MAX)
 
 extern const UINT8 IsArray[258];

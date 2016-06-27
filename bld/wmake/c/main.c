@@ -388,7 +388,6 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     strcat( makeopts, p );
                 }
             }
-
         }
         return( makeopts );
     }

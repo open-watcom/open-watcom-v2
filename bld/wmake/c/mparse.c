@@ -107,7 +107,7 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
                 PrtMsg( ERR | LOC | SUFFIX_DOESNT_EXIST, CurAttr.u.ptr );
             } else {
                 char *targname = AddCreator( CurAttr.u.ptr );
-                WildTList( dest, targname, true, true);
+                WildTList( dest, targname, true, true );
                 FreeSafe( targname );
             }
             FreeSafe( CurAttr.u.ptr );
@@ -117,11 +117,11 @@ STATIC TOKEN_T buildTargs( TLIST **dest, TOKEN_T t )
                 ignoring( TOK_DOTNAME, true );
             } else {
                 FmtStr( dotname, ".%s", DotNames[CurAttr.u.dotname] );
-                WildTList( dest, dotname, true, true);
+                WildTList( dest, dotname, true, true );
             }
             break;
         case TOK_FILENAME:
-            WildTList( dest, CurAttr.u.ptr, true, true);
+            WildTList( dest, CurAttr.u.ptr, true, true );
             FreeSafe( CurAttr.u.ptr );
             break;
         default:
@@ -939,7 +939,7 @@ TLIST *Parse( void )
                 linkCList( btlist, bclist );
                 bclist = NULL;
                 btlist = NULL;
-                if( (Glob.compat_nmake || Glob.compat_unix) && token_filename ) {
+                if( ( Glob.compat_nmake || Glob.compat_unix ) && token_filename ) {
                     exPop();
                     token_filename = false;
                 }
@@ -1018,7 +1018,7 @@ TLIST *Parse( void )
 void ParseInit( void )
 /********************/
 {
-    inlineLevel   = 0;
+    inlineLevel = 0;
     DoingUpdate = false;
 }
 

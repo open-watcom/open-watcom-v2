@@ -46,7 +46,7 @@ extern HASH_T   Hash( const char *name, HASH_T prime );
 
 extern HASHTAB  *NewHashTab( HASH_T prime );
 extern void     AddHashNode( HASHTAB *tab, HASHNODE *node );
-extern bool     WalkHashTab( HASHTAB *tab, bool (*func)(void *node, void *ptr), void *ptr );
+extern bool     WalkHashTab( HASHTAB *tab, bool (*func)(void *node,void *ptr), void *ptr );
 extern void     FreeHashTab( HASHTAB *tab );
 extern HASHNODE *FindHashNode( HASHTAB *tab, const char *name, bool caseSenstive );
 extern HASHNODE *RemHashNode( HASHTAB *tab, const char *name, bool caseSenstive );

@@ -162,7 +162,7 @@ const char *procPath( const char *fullpath )
 
     case FORM_PATH:
         _makepath( dirBuf, pg.drive, pg.dir, NULL, NULL );
-        if( Glob.compat_nmake) {
+        if( Glob.compat_nmake ) {
             if( dirBuf[0] == NULLCHAR ) {
                 dirBuf[0] = '.';
                 dirBuf[1] = NULLCHAR;
@@ -462,11 +462,11 @@ char *GetMacroValue( const char *name )
 STATIC char *trimMacroValue( char *v )
 /************************************/
 {
-    int     space;
+    bool    space;
     char    *t;
     char    *p;
 
-    space = 0;
+    space = false;
     t = v;
     for( p = v; *p != NULLCHAR; ++p ) {
         if( !isws( *p ) ) {
@@ -474,9 +474,9 @@ STATIC char *trimMacroValue( char *v )
                 *t++ = ' ';
             }
             *t++ = *p;
-            space = 0;
+            space = false;
         } else {
-            space = 1;
+            space = true;
         }
     }
     *t = NULLCHAR;

@@ -120,7 +120,7 @@ bool AutoDepCheck( char *name, time_t stamp,
     void                        *dep;
     bool                        obs;
 
-    quick_logic = !(Glob.rcs_make || Glob.debug || Glob.show_offenders);
+    quick_logic = !( Glob.rcs_make || Glob.debug || Glob.show_offenders );
     obs = false;
 
     for( pcurr = &AutoDepTypes[0]; (curr = *pcurr) != NULL; pcurr++ ) {
