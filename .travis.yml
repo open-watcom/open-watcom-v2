@@ -46,9 +46,9 @@ after_success:
 # after success transfer OW build to GitHub repository
  - cd $HOME/travis-ci-ow-builds
 # commit updated files to GitHub repository
- - git add -f .
- - git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
- - git push --quiet -f origin
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git add -f .; fi
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"; fi
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git push --quiet -f origin; fi
 
 #addons:
 #  coverity_scan:
