@@ -131,17 +131,17 @@ common_clflags_lib_shared = -MT -LD
 ext_lib_shared = .dll
 
 # extra objects for linking via cl
-cl_objs_gen =
-cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+cl_extra_objs_gen =
+cl_extra_objs_dll =
+cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
 !ifeq sys_dll 1
-cl_objs = $(cl_objs_dll)
-cl_libs = $(cl_libs_dll)
+cl_extra_objs = $(cl_extra_objs_dll)
+cl_extra_libs = $(cl_extra_libs_dll)
 !else
-cl_objs = $(cl_objs_gen)
-cl_libs = $(cl_libs_gen)
+cl_extra_objs = $(cl_extra_objs_gen)
+cl_extra_libs = $(cl_extra_libs_gen)
 !endif
 
 # bld settings
@@ -177,7 +177,7 @@ bld_ldflags  =  -link -nologo &
     $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -Fe$@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = -out:$^@
 
@@ -216,9 +216,9 @@ ldflags_gen_all  = -link -nologo &
     -INCREMENTAL:NO -DEFAULTLIB:user32.lib -DEFAULTLIB:ole32.lib -DEFAULTLIB:advapi32.lib &
     -DEFAULTLIB:shell32.lib -DEFAULTLIB:gdi32.lib -DEFAULTLIB:comdlg32.lib
 
-ldflags_gen  = $(cl_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ldflags_$(proj_type))
-ldflags_dll  = $(cl_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
-ldflags_wind = $(cl_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_gen  = $(cl_extra_libs_gen) $(ldflags_gen_all) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_extra_libs_dll) $(ldflags_gen_all) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
+ldflags_wind = $(cl_extra_libs_gen) $(ldflags_gen_all) -SUBSYSTEM:WINDOWS $(extra_ldflags) $(bld_ldflags_$(proj_type))
 
 !ifeq sys_dll 1
 ldflags = $(ldflags_dll)
@@ -339,17 +339,17 @@ common_clflags_lib_shared = -shared
 ext_lib_shared = .so
 
 # extra objects for linking via cl
-cl_objs_gen =
-cl_objs_dll =
-cl_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
-cl_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
+cl_extra_objs_gen =
+cl_extra_objs_dll =
+cl_extra_libs_gen = $(watcom_dir)/$(bin_subdir)/clibext.lib
+cl_extra_libs_dll = $(watcom_dir)/$(bin_subdir)/clibexts.lib
 
 !ifeq sys_dll 1
-cl_objs = $(cl_objs_dll)
-cl_libs = $(cl_libs_dll)
+cl_extra_objs = $(cl_extra_objs_dll)
+cl_extra_libs = $(cl_extra_libs_dll)
 !else
-cl_objs = $(cl_objs_gen)
-cl_libs = $(cl_libs_gen)
+cl_extra_objs = $(cl_extra_objs_gen)
+cl_extra_libs = $(cl_extra_libs_gen)
 !endif
 
 # bld settings
@@ -398,7 +398,7 @@ bld_ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 bld_ldflags  = $(bld_extra_ldflags) $(bld_ldflags_$(proj_type))
 
 # options for linking via cl
-bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_libs_gen) $(bld_ldflags1)
+bld_clflags  = $(bld_cppflags) $(common_cflags) $(common_flags) -o $@ $(cl_extra_libs_gen) $(bld_ldflags1)
 
 bld_libflags = crs $^@
 
@@ -441,8 +441,8 @@ ldflags1 = $(common_ldflags) -Wl,-map,$^&.map
 ldflags1 = $(common_ldflags) -Wl,-Map,$^&.map
 !endif
 
-ldflags_gen  = $(cl_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
-ldflags_dll  = $(cl_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
+ldflags_gen  = $(cl_extra_libs_gen) $(extra_ldflags) $(bld_ldflags_$(proj_type))
+ldflags_dll  = $(cl_extra_libs_dll) $(extra_ldflags_dll) $(bld_ldflags_dll_$(proj_type))
 ldflags_wind = $(ldflags_gen)
 
 !ifeq sys_dll 1

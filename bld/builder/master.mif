@@ -18,8 +18,8 @@ all_commands         += builder.exe
 !ifndef __WATCOM_TOOLS__
 !ifeq bootstrap 1
 !ifndef %LOGFNAME
-cl_libs_gen =
-cl_objs_gen = clibext.obj
+cl_extra_libs_gen =
+cl_extra_objs_gen = clibext.obj
 !endif
 !endif
 !endif
@@ -39,10 +39,10 @@ sys_objs = $(sys_$(host_os))
 sys_objs = sysposix.obj
 !endif
 
-builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj equals.obj $(cl_objs_gen)
-sweep_objs   = sweep.obj $(cl_objs_gen)
-wsplice_objs = wsplice.obj $(cl_objs_gen)
-diff_objs    = diff.obj $(cl_objs_gen)
+builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj equals.obj $(cl_extra_objs_gen)
+sweep_objs   = sweep.obj $(cl_extra_objs_gen)
+wsplice_objs = wsplice.obj $(cl_extra_objs_gen)
+diff_objs    = diff.obj $(cl_extra_objs_gen)
 cdsay_objs   = cdsay.obj equals.obj
 
 extra_cpp_flags = -DSTANDALONE_RX
