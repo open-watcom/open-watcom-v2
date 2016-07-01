@@ -301,10 +301,9 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 #######################
 # PREPROCESSOR SETINGS
 ######
+cppflags_all    = $(mode_cppflags) -D_ENABLE_AUTODEPEND
 !ifeq bootstrap 1
-cppflags_all    = $(mode_cppflags) -DBOOTSTRAP
-!else
-cppflags_all    = $(mode_cppflags)
+cppflags_all    += -DBOOTSTRAP
 !endif
 
 cppflags_win    = -DSTRICT
