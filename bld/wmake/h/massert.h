@@ -36,7 +36,7 @@
 #ifdef NDEBUG
 #   define assert(expr)
 #else
-#   define assert(expr)  ((expr)?(void)0:PrtMsgFtl( FTL | ASSERTION_FAILED, #expr, __FILE__, __LINE__ ))
+#   define assert(expr)  ((expr)?(void)0:massert( #expr, __FILE__, __LINE__ ))
 #endif
 
 #endif /* !_MASSERT_H */

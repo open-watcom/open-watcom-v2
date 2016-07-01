@@ -506,24 +506,16 @@ void PrtMsg( enum MsgClass num, ... )
         buff[len++] = EOL;
     }
     writeOutput( class, fh, buff, len );
-    if( !Glob.compat_nmake
-      && ( num == (FTL | LOC | CANNOT_NEST_FURTHER) || num == (ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
-        PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
-    }
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
 #endif
 
-#if defined( __WATCOMC__ ) || !defined( NDEBUG )
-_NORETURN void     PrtMsgFtl( enum MsgClass num, ... )
+#if !defined( NDEBUG )
+void massert( const char *expr, const char *file, int line )
 {
-    va_list args;
-
-    va_start( args, num );
-    PrtMsg( num, args );
-    va_end( args );
-    exit( ExitSafe( EXIT_FATAL ) );
+    PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );
+    ExitFatal();
 }
 #endif
 
@@ -540,7 +532,7 @@ void Usage( void )
         }
         PrtMsg( INF | PRNTSTR, msgbuff );
     }
-    exit( ExitSafe( EXIT_OK ) );
+    ExitOK();
 }
 
 

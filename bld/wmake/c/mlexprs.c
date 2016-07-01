@@ -82,7 +82,8 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     }
 
     if( pos >= _MAX_PATH ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        ExitFatal();
     }
     file[pos] = NULLCHAR;
 
@@ -181,12 +182,14 @@ TOKEN_T LexPath( STRM_T s )
 
         if( string_open ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsgExit(( FTL | LOC | ERROR_STRING_OPEN ));
+            PrtMsg( FTL | LOC | ERROR_STRING_OPEN );
+            ExitFatal();
         }
 
         if( pos == _MAX_PATH ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            ExitFatal();
         }
 
         path[pos] = NULLCHAR;
@@ -238,7 +241,8 @@ STATIC TOKEN_T lexFileName( STRM_T s )
         s = PreGetCH();
     }
     if( pos == _MAX_PATH ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        ExitFatal();
     }
     file[pos] = NULLCHAR;
     UnGetCH( s );
@@ -394,7 +398,8 @@ STATIC TOKEN_T lexDotName( void )
             s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ));
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 );
+            ExitFatal();
         }
         ext[pos] = NULLCHAR;
     }
@@ -411,7 +416,8 @@ STATIC TOKEN_T lexDotName( void )
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 )); //NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); //NOTREACHED
+            ExitFatal();
         }
         ext[pos] = NULLCHAR;
 
@@ -469,7 +475,8 @@ STATIC bool checkMacro( STRM_T s )
         s = PreGetCH();
     }
     if( pos == MAX_MAC_NAME ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 ));
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 );
+        ExitFatal();
     }
     mac[pos] = NULLCHAR;
     ws = isws( s );
@@ -536,7 +543,8 @@ STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
         }
 
         if( pos >= _MAX_PATH ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            ExitFatal();
         }
 
         buffer[pos] = NULLCHAR;

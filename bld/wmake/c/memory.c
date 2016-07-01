@@ -112,18 +112,22 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Near heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Near heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Near heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Near heap!" );
+            ExitFatal();
         }
         switch( _fheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Far heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Far heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Far heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Far heap!" );
+            ExitFatal();
         }
 #else
         switch( _heapchk() ) {
@@ -131,9 +135,11 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Heap!" );
+            ExitFatal();
         }
 #endif
         busy = false;
@@ -262,7 +268,8 @@ void MemInit( void )
     Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
-        PrtMsgExit(( FTL | PRNTSTR, "Unable to track memory!" ));
+        PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
+        ExitFatal();
     }
 #endif
 }
@@ -338,7 +345,8 @@ void *MallocSafe( size_t size )
     ptr = doAlloc( size );
 #endif
     if( ptr == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
     return( ptr );
 }
@@ -357,7 +365,8 @@ void *CallocSafe( size_t size )
     ptr = doAlloc( size, _trmem_guess_who() );
 
     if( ptr == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 #else
     ptr = MallocSafe( size );
@@ -398,7 +407,8 @@ char *StrDupSafe( const char *str )
 #ifdef TRMEM
     p = doAlloc( len, _trmem_guess_who() );
     if( p == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 #else
     p = MallocSafe( len );
@@ -443,7 +453,8 @@ void FAR *FarMallocSafe( size_t size )
 
     p = FarMallocUnSafe( size );
     if( p == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 
     return( p );

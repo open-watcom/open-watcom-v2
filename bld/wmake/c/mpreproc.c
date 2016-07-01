@@ -448,7 +448,8 @@ STATIC void bangIf( bool (*logical)(void), directiveTok tok )
  */
 {
     if( nestLevel >= MAX_NEST ) {
-        PrtMsgExit(( FTL | LOC | IF_NESTED_TOO_DEEP ));
+        PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
+        ExitFatal();
     }
 
     nest[nestLevel++] = curNest; // save old nesting on the stack
@@ -484,7 +485,8 @@ STATIC void bangEndIf( void )
     PrtMsg( DBG | INF | LOC | AT_ENDIF );
 
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
+        ExitFatal();
     }
     curNest = nest[--nestLevel];
 
@@ -501,7 +503,8 @@ STATIC void doElse( void )
  */
 {
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
+        ExitFatal();
     }
 
     if( curNest.elseFound ) {
@@ -549,7 +552,8 @@ STATIC void doElIf( bool (*logical)(void), directiveTok tok )
     FmtStr( buf, "%s %s", directives[D_ELSE], directives[tok] );
 
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, buf ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
+        ExitFatal();
     }
 
     if( curNest.elseFound ) {
@@ -611,7 +615,8 @@ STATIC void bangElse( void )
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
         (void)eatToEOL();
-        PrtMsgExit(( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] ));
+        PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
+        ExitFatal();
     }
 }
 

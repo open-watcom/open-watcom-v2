@@ -359,7 +359,8 @@ STRM_T GetCHR( void )
                     popSENT();
                     flagEOF = 1;
                 } else {
-                    PrtMsgExit(( FTL | LOC | BARF_CHARACTER, result ));
+                    PrtMsg( FTL | LOC | BARF_CHARACTER, result );
+                    ExitFatal();
                 }
             }
             if( result == '\f' ) {

@@ -68,7 +68,8 @@ STATIC void ignoring( TOKEN_T t, bool freelex )
     case TOK_PATH:      y = M_PATH;         break;
     default:
 #ifdef DEVELOPMENT
-        PrtMsgExit(( FTL | LOC | INVALID_TOKEN_IN, t, "ignoring" ));
+        PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "ignoring" );
+        ExitFatal();
 #else
         y = M_UNKNOWN_TOKEN;
 #endif
@@ -76,6 +77,9 @@ STATIC void ignoring( TOKEN_T t, bool freelex )
     }
 
     PrtMsg( ERR | LOC | IGNORE_OUT_OF_PLACE_M, y );
+    if( !Glob.compat_nmake ) {
+        PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
+    }
 
     if( freelex ) {
         LexMaybeFree( t );
@@ -1004,7 +1008,8 @@ TLIST *Parse( void )
             break;
         default:
 #ifdef DEVELOPMENT
-            PrtMsgExit(( FTL | INVALID_TOKEN_IN, "Parse" ));
+            PrtMsg( FTL | INVALID_TOKEN_IN, "Parse" );
+            ExitFatal();
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

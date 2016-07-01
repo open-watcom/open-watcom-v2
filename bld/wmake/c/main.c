@@ -209,7 +209,8 @@ STATIC void checkCtrl( const char *p )
     // p != NULL is checked by caller
     while( *p != NULLCHAR ) {       // scan for control characters
         if( !isprint( *p ) ) {
-            PrtMsgExit(( FTL | CTRL_CHAR_IN_CMD, *p ));
+            PrtMsg( FTL | CTRL_CHAR_IN_CMD, *p );
+            ExitFatal();
         }
         ++p;
     }
@@ -517,7 +518,8 @@ STATIC RET_T doMusts( void )
     RET_T   ret;
 
     if( firstTargFound == NULL && mustTargs == NULL ) {
-        PrtMsgExit(( FTL | NO_TARGETS_SPECIFIED ));
+        PrtMsg( FTL | NO_TARGETS_SPECIFIED );
+        ExitFatal();
     }
 
     UpdateInit();
@@ -588,8 +590,8 @@ STATIC void init( char const * const *argv )
 }
 
 
-int ExitSafe( int rc )
-/********************/
+static int ExitSafe( int rc )
+/***************************/
 {
     static bool busy = false;   /* recursion protection */
 
@@ -630,6 +632,21 @@ int ExitSafe( int rc )
     }
 
     return( rc );
+}
+
+NO_RETURN void ExitFatal( void )
+{
+    exit( ExitSafe( EXIT_FATAL ) );
+}
+
+NO_RETURN void ExitError( void )
+{
+    exit( ExitSafe( EXIT_ERROR ) );
+}
+
+NO_RETURN void ExitOK( void )
+{
+    exit( ExitSafe( EXIT_OK ) );
 }
 
 int main( int argc, char **argv )

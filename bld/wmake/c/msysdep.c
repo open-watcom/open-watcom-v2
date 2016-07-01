@@ -337,7 +337,7 @@ void CheckForBreak( void )
     if( sig_count > 0 ) {
         sig_count = 0;
         PrtMsg( ERR | USER_BREAK_ENCOUNTERED );
-        exit( ExitSafe( EXIT_ERROR ) );
+        ExitError();
     }
 }
 

@@ -827,7 +827,8 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
 
     default:
 #ifdef DEVELOPMENT
-        PrtMsgExit(( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" ));
+        PrtMsg( FTL | LOC | INVALID_TOKEN_IN, t, "deMacroToEnd()" );
+        ExitFatal();
 #else
         PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
         break;
@@ -924,7 +925,11 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
     char    *p;
 
     if( depth > MAX_MAC_NEST ) {
-        PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
+        PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+        if( !Glob.compat_nmake ) {
+            PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
+        }
+        ExitFatal();
     }
 
     result = deMacroToEnd( depth, end1, end2 );
@@ -934,7 +939,11 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 
         ++depth;
         if( depth > MAX_MAC_NEST ) {
-            PrtMsgExit(( FTL | LOC | CANNOT_NEST_FURTHER ));
+            PrtMsg( FTL | LOC | CANNOT_NEST_FURTHER );
+            if( !Glob.compat_nmake ) {
+                PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
+            }
+            ExitFatal();
         }
 
         /*
@@ -1102,7 +1111,8 @@ STATIC char *PartDeMacroProcess( void )
             if( wsvec != NULL ) {
                 FreeVec( wsvec );
             }
-            PrtMsgExit(( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" ));
+            PrtMsg( FTL | INVALID_TOKEN_IN, t, "PartDeMacro" );
+            ExitFatal();
 #else
             PrtMsg( WRN | LOC | IGNORE_OUT_OF_PLACE_M, M_UNKNOWN_TOKEN );
 #endif

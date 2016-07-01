@@ -86,7 +86,8 @@ void exPush( TARGET *targ, DEPEND *dep, DEPEND *impDep )
 /*************************************************************/
 {
     if( exStackP == MAX_EXSTACK ) {
-        PrtMsgExit(( FTL | PERCENT_MAKE_DEPTH ));
+        PrtMsg( FTL | PERCENT_MAKE_DEPTH );
+        ExitFatal();
     }
     exStack[exStackP].targ   = targ;
     exStack[exStackP].dep    = dep;
@@ -249,13 +250,15 @@ STATIC RET_T carryOut( TARGET *targ, CLIST *clist, time_t max_time )
     if( err != NULL ) {
         ++cListCount;
         if( ExecCList( err ) != RET_SUCCESS ) {
-            PrtMsgExit(( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] ));
+            PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_ERROR] );
+            ExitFatal();
         }
     } else if( !(targ->attr.precious || targ->attr.symbolic) ) {
         if( !Glob.hold && targExists( targ ) ) {
             if( Glob.erase || GetYes( SHOULD_FILE_BE_DELETED ) ) {
                 if( unlink( targ->node.name ) != 0 ) {
-                    PrtMsgExit(( FTL | SYSERR_DELETING_ITEM, targ->node.name ));
+                    PrtMsg( FTL | SYSERR_DELETING_ITEM, targ->node.name );
+                    ExitFatal();
                 }
             }
         }
@@ -358,7 +361,8 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
                 targ->attr.symbolic = true;
                 return( RET_SUCCESS );
             }
-            PrtMsgExit(( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name ));
+            PrtMsg( FTL | NO_DEF_CMDS_FOR_MAKE, DotNames[DOT_DEFAULT], targ->node.name );
+            ExitFatal();
         }
     }
     if( !Glob.noexec ) {
@@ -369,7 +373,8 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
         if( before != NULL ) {
             ++cListCount;
             if( ExecCList( before ) != RET_SUCCESS ) {
-                PrtMsgExit(( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] ));
+                PrtMsg( FTL | S_COMMAND_RET_BAD, DotNames[DOT_BEFORE] );
+                ExitFatal();
             }
         }
         doneBefore = true;
@@ -378,7 +383,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
     ret = carryOut( targ, clist, findMaxTime( targ, dep, max_time ) );
     exPop();
     if( ret == RET_ERROR ) {
-        exit( ExitSafe( EXIT_ERROR ) );
+        ExitError();
     }
     return( ret );
 }
@@ -881,10 +886,12 @@ RET_T Update( TARGET *targ )
         return( RET_SUCCESS );
     }
     if( targ->special ) {
-        PrtMsgExit(( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name ));
+        PrtMsg( FTL | ATTEMPT_MAKE_SPECIAL, targ->node.name );
+        ExitFatal();
     }
     if( targ->busy ) {
-        PrtMsgExit(( FTL | RECURSIVE_DEFINITION, targ->node.name ));
+        PrtMsg( FTL | RECURSIVE_DEFINITION, targ->node.name );
+        ExitFatal();
     }
     PrtMsg( DBG | INF | NEOL | UPDATING_TARGET, targ->node.name );
     targ->busy = true;
@@ -960,7 +967,8 @@ RET_T Update( TARGET *targ )
             return( RET_ERROR );
         } else {
             // Target doesn't exist and we have no clue how to make it. Bomb out.
-            PrtMsgExit(( FTL | UNABLE_TO_MAKE, targ->node.name ));
+            PrtMsg( FTL | UNABLE_TO_MAKE, targ->node.name );
+            ExitFatal();
         }
     }
 

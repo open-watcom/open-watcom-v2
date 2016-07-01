@@ -115,6 +115,12 @@ struct Glob {
 #define STATIC static
 #endif
 
+#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
+#define NO_RETURN   __declspec(noreturn)
+#else
+#define NO_RETURN
+#endif
+
 extern struct Glob      Glob;
 extern const char FAR   BuiltIns[];
 extern const char FAR   MSBuiltIn[];
@@ -125,7 +131,9 @@ extern const char FAR   MSSuffixList[];
 extern const char FAR   UNIXSuffixList[];
 extern const char FAR   POSIXSuffixList[];
 
-extern int  ExitSafe( int rc );
+NO_RETURN extern void ExitFatal( void );
+NO_RETURN extern void ExitError( void );
+NO_RETURN extern void ExitOK( void );
 extern void Header( void );
 
 #endif

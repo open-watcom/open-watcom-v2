@@ -188,11 +188,13 @@ STATIC char *createTmpFileName( void )
             if( strlen( tmpPath ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
-                PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
+                PrtMsg( FTL | TMP_PATH_TOO_LONG );
+                ExitFatal();
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
-                PrtMsgExit(( FTL | TMP_PATH_TOO_LONG ));
+                PrtMsg( FTL | TMP_PATH_TOO_LONG );
+                ExitFatal();
             }
         }
         if( tmpPath == NULL ) {
@@ -776,7 +778,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     switch( num ) {
     case PER_ABORT:
         closeCurrentFile();
-        exit( ExitSafe( EXIT_ERROR ) );
+        ExitError();
 
     case PER_APPEND:
         return( percentWrite( arg, WR_APPEND ) );
@@ -795,7 +797,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
 
     case PER_QUIT:
         closeCurrentFile();
-        exit( ExitSafe( EXIT_OK ) );
+        ExitOK();
 
     case PER_RENAME:
         return( percentRename( arg ) );
@@ -803,7 +805,7 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     case PER_STOP:
         closeCurrentFile();
         if( !GetYes( DO_YOU_WISH_TO_CONT ) ) {
-            exit( ExitSafe( EXIT_OK ) );
+            ExitOK();
         }
         break;
 
@@ -2049,7 +2051,8 @@ STATIC RET_T execLine( char *line )
     }
     rc = shellSpawn( p, flags );
     if( OSCorrupted() ) {
-        PrtMsgExit(( FTL | OS_CORRUPTED ));
+        PrtMsg( FTL | OS_CORRUPTED );
+        ExitFatal();
     }
     CheckForBreak();
     if( rc != RET_SUCCESS && (flags & FLAG_IGNORE) == 0 ) {
@@ -2080,7 +2083,8 @@ INT32 ExecCommand( char *line )
     // Execute command - run it always, always silent, and get real retcode
     rc = shellSpawn( p, FLAG_SILENT | FLAG_SHELL_RC );
     if( OSCorrupted() ) {
-        PrtMsgExit(( FTL | OS_CORRUPTED ));
+        PrtMsg( FTL | OS_CORRUPTED );
+        ExitFatal();
     }
     CheckForBreak();
 
