@@ -477,6 +477,7 @@ dw_handle DWENTRY DWFormalParameter(
         _Abort( ABORT_INVALID_DEFAULT_VALUE );
         break;
     }
+    va_end( args );
     /* AT_name */
     if( name == NULL ) {
         name = "";

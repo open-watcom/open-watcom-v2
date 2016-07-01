@@ -348,6 +348,7 @@ void EchoAPI              // EchoAPI ROUTINE
                 EchoAPIChar( *text );
             }
         }
+        va_end( args );
     }
 }
 

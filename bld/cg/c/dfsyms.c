@@ -277,10 +277,12 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... ){
         break;
       }
     default:
+        va_end( args );
         abort();
         break;
     }
     SetOP( old );
+    va_end( args );
 }
 
 
