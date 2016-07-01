@@ -32,6 +32,7 @@ script:
 after_failure:
 # after failure transfer log files back to GitHub repository
  - cd $HOME/travis-ci-ow-builds
+ - git checkout --quiet -f
 # copy new log files to git repository tree
  - if [ ! -d bld ]; then mkdir bld; fi
  - cp $OWROOT/bld/*.log bld/
