@@ -8,9 +8,9 @@ errsrc_autodepends = .autodepend
 
 .c: ../c
 
-errsrc.exe : errsrc.obj
+errsrc.exe : errsrc.obj $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) errsrc.obj $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {errsrc.obj}
 !endif

@@ -18,14 +18,16 @@
 
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
 
+libs = $(posix_lib:$(to_os_path))
+
 .c: $(posix_dir)/src/$(name)
 
 #
 #       define the main target
 #
-$(name).exe: $(objs) $(posix_lib:$(to_os_path))
+$(name).exe: $(objs) $(libs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         @%create $(name).lnk
         @%append $(name).lnk name $@
@@ -33,7 +35,7 @@ $(name).exe: $(objs) $(posix_lib:$(to_os_path))
 !ifeq release 0 
         @%append $(name).lnk option symfile
 !endif
-        @%append $(name).lnk lib $(posix_lib:$(to_os_path))
+        @%append $(name).lnk lib $(libs)
 !ifeq host_os os2
 !  ifeq host_cpu i86
         @%append $(name).lnk system os2 pmc

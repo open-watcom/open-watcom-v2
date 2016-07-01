@@ -80,7 +80,7 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-$(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -93,18 +93,18 @@ $(name).exe : $(name).res $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_cp
 
 !ifeq host_os os2
 
-$(name).res : ../res/os2/$(name).rc $(rcdeps)
+$(name).res : ../res/os2/$(name).rc $(rcdeps) $(__MAKEFILES__)
         $(rc) $(rc_flags) -ad -zk0 -I"../res/os2" $(cppflags) $(rc_inc_path) $[@ -fo=$^@
 
 !else
 
-$(name).res : ../res/$(name).rc rcstr.gh
+$(name).res : ../res/$(name).rc rcstr.gh $(__MAKEFILES__)
         $(rc) $(rc_flags) -ad -zk0 $(cppflags) $(rc_inc_path) $[@ -fo=$^@
 
 !endif
 
-rcstrmsg.gh : ../res/wimgedit.msg
+rcstrmsg.gh : ../res/wimgedit.msg $(__MAKEFILES__)
         $(cpp) $(rc_aui_flags) -o$^@ $[@
 
-rcstr.gh : rcstrmsg.gh
+rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
         *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@

@@ -12,7 +12,7 @@ inc_dirs        = -I"$(wrc_dir)/h"
 
 objs = mkcdpg.obj
 
-$(proj_name).exe : $(objs)
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else

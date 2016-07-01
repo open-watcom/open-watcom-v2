@@ -29,14 +29,14 @@ all: batserv.exe tst.exe .symbolic
 
 inc_dirs = -I"../h"
 
-batserv.exe : batserv.obj batpipe.obj
+batserv.exe : batserv.obj batpipe.obj $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
 !else
         $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
 !endif
 
-tst.exe : tst.obj batcli.obj batpipe.obj
+tst.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
 !else
@@ -52,7 +52,7 @@ name = int
 
 objs = $(name).obj link.obj int21.obj
 
-$(name).exe : $(objs)
+$(name).exe : $(objs) $(__MAKEFILES__)
        $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
 
 !else ifeq host_os win
@@ -74,11 +74,11 @@ inc_dirs = -I"../win" -I"../dos"
 all : $(name).exe $(name)e.exe .SYMBOLIC
     @%null
 
-$(name).exe : $(objs) $(lnk) $(name).res
+$(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
     $(rc) $(name).res $^@
 
-$(name)e.exe : $(objse) $(lnk) $(name).res
+$(name)e.exe : $(objse) $(lnk) $(name).res $(__MAKEFILES__)
     $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
     $(rc) $(name).res $^@
 
@@ -95,7 +95,7 @@ $(lnk) : makefile
     @%append $(lnk) segment CLASS 'DATA' PRELOAD FIXED
     @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
 
-$(name)e.obj : $(name).c
+$(name)e.obj : $(name).c $(__MAKEFILES__) .AUTODEPEND
     $(cc) $(cflags) $(inc_path) -D__EDITOR__ -fo=$@ $[@
 
 !endif

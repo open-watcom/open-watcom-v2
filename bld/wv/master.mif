@@ -212,7 +212,7 @@ extra_ldflags = -ldl
 !endif
 !endif
 
-$(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
@@ -243,7 +243,7 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
-wd.lib : litdef.gh $(engine_objs)
+wd.lib : litdef.gh $(engine_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(engine_objs)
 !else
@@ -361,52 +361,52 @@ dlg_command  = cp $[@ $@
 dlgj_command = cp $[@ $@
 !endif
 
-dlgayn.gdl : $(rdir)/dlgs/dlgayn.dlg
+dlgayn.gdl : $(rdir)/dlgs/dlgayn.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgbrk.gdl : $(rdir)/dlgs/dlgbrk.dlg
+dlgbrk.gdl : $(rdir)/dlgs/dlgbrk.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgcmd.gdl : $(rdir)/dlgs/dlgcmd.dlg
+dlgcmd.gdl : $(rdir)/dlgs/dlgcmd.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlglist.gdl : $(rdir)/dlgs/dlglist.dlg
+dlglist.gdl : $(rdir)/dlgs/dlglist.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgnewp.gdl : $(rdir)/dlgs/dlgnewp.dlg
+dlgnewp.gdl : $(rdir)/dlgs/dlgnewp.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgoptn.gdl : $(rdir)/dlgs/dlgoptn.dlg
+dlgoptn.gdl : $(rdir)/dlgs/dlgoptn.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgvarx.gdl : $(rdir)/dlgs/dlgvarx.dlg
+dlgvarx.gdl : $(rdir)/dlgs/dlgvarx.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgamb.gdl : $(rdir)/dlgs/dlgamb.dlg
+dlgamb.gdl : $(rdir)/dlgs/dlgamb.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgwind.gdl : $(rdir)/dlgs/dlgwind.dlg
+dlgwind.gdl : $(rdir)/dlgs/dlgwind.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgstk.gdl : $(rdir)/dlgs/dlgstk.dlg
+dlgstk.gdl : $(rdir)/dlgs/dlgstk.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlghis.gdl : $(rdir)/dlgs/dlghis.dlg
+dlghis.gdl : $(rdir)/dlgs/dlghis.dlg $(__MAKEFILES__)
     $(dlg_command)
-dlgasync.gdl : $(rdir)/dlgs/dlgasync.dlg
+dlgasync.gdl : $(rdir)/dlgs/dlgasync.dlg $(__MAKEFILES__)
     $(dlg_command)
 
-japayn.gdl : $(rdir)/dlgs/japayn.dlg
+japayn.gdl : $(rdir)/dlgs/japayn.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japbrk.gdl : $(rdir)/dlgs/japbrk.dlg
+japbrk.gdl : $(rdir)/dlgs/japbrk.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japcmd.gdl : $(rdir)/dlgs/japcmd.dlg
+japcmd.gdl : $(rdir)/dlgs/japcmd.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japlist.gdl : $(rdir)/dlgs/japlist.dlg
+japlist.gdl : $(rdir)/dlgs/japlist.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japnewp.gdl : $(rdir)/dlgs/japnewp.dlg
+japnewp.gdl : $(rdir)/dlgs/japnewp.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japoptn.gdl : $(rdir)/dlgs/japoptn.dlg
+japoptn.gdl : $(rdir)/dlgs/japoptn.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japvarx.gdl : $(rdir)/dlgs/japvarx.dlg
+japvarx.gdl : $(rdir)/dlgs/japvarx.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japamb.gdl : $(rdir)/dlgs/japamb.dlg
+japamb.gdl : $(rdir)/dlgs/japamb.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japwind.gdl : $(rdir)/dlgs/japwind.dlg
+japwind.gdl : $(rdir)/dlgs/japwind.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japstk.gdl : $(rdir)/dlgs/japstk.dlg
+japstk.gdl : $(rdir)/dlgs/japstk.dlg $(__MAKEFILES__)
     $(dlgj_command)
-japhis.gdl : $(rdir)/dlgs/japhis.dlg
+japhis.gdl : $(rdir)/dlgs/japhis.dlg $(__MAKEFILES__)
     $(dlgj_command)
 
 rcfiles = &
@@ -431,22 +431,22 @@ rcfiles = &
     $(hdir)/dlgasync.h &
     $(wv_dialogs)
 
-wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh .autodepend
+wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
     $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvuidll.res : $(rdir)/wvuidll.rc litdef.gh .autodepend
+wvuidll.res : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
+wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) .autodepend
+wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
+wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
+wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 ####################
@@ -460,16 +460,16 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) .autodepend
 
 .str: h;$(rdir)/strings
 
-litdefm.tmp : menu.str
-    $(cpp) $(rc_aui_flags) -o$@ $<
+litdefm.tmp : menu.str $(__MAKEFILES__)
+    $(cpp) $(rc_aui_flags) -o$@ $[@
 
-litdefs1.tmp : wdeng.str
-    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
+litdefs1.tmp : wdeng.str $(__MAKEFILES__)
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
-litdefs2.tmp : wddui.str
-    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $<
+litdefs2.tmp : wddui.str $(__MAKEFILES__)
+    $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
-litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp
+litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $^@ 
     *awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
     *awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
@@ -481,11 +481,11 @@ wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN
 wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
-usage.gh : $(hdir)/usage.sp
-    *wsplice -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
+usage.gh : $(hdir)/usage.sp $(__MAKEFILES__)
+    *wsplice -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
-usagej.gh : $(hdir)/usage.sp
-    *wsplice -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
+usagej.gh : $(hdir)/usage.sp $(__MAKEFILES__)
+    *wsplice -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-usage.u : $(hdir)/usage.sp
+usage.u : $(hdir)/usage.sp $(__MAKEFILES__)
     *wsplice -u -kENGLISH -k$(host_os) -klinkres $[@ $@

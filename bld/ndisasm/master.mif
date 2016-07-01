@@ -23,7 +23,7 @@ additional_cleanup = *.u
 !include wres.mif
 !include trmem.mif
 
-xlibs = $(orl_lib) $(wres_lib)
+libs = $(orl_lib) $(wres_lib)
 
 extra_cpp_flags = -D__DISASM__
 
@@ -66,7 +66,7 @@ stand_objs      = args.obj &
                 refproc.obj &
                 cmdlhelp.obj
 
-disasm_objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
+objs = $(stand_objs) $(dis_objs) demangle.obj $(trmem_objs)
 
 # systems where version resources must be added to .EXE
 version_res_exe_nt_386 = exever.res
@@ -74,26 +74,26 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-$(exe_name) : msg.gh $(dis_prereq) $(disasm_objs) $(xlibs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu))
+$(exe_name) : msg.gh $(dis_prereq) $(objs) $(libs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(disasm_objs) $(xlibs) $(ldflags)
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $(lname) $(lflags) file {$(disasm_objs)} lib {$(xlibs)}
+        $(linker) name $(lname) $(lflags) file {$(objs)} lib {$(libs)}
         @%make bind_osildr
 !endif
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $@ . $^&.res
 
-distbls.gh : ./disbuild.exe
+distbls.gh : ./disbuild.exe $(__MAKEFILES__)
         $[@
 
-./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
+./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
         $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
-$(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh
+$(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
         $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
-msg.gh : ../stand/wdis.msg
+msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
         *awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 optencod_opt_qnx = -u $(extra_link_res_qnx) 
@@ -103,12 +103,12 @@ optencod_targ_linux = linux
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
  
-usage.gh : ../stand/options.gml
-        optencod -q $(optencod_opt_$(host_os)) $]@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
+usage.gh : ../stand/options.gml $(__MAKEFILES__)
+        optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
         %append usage.tmp "."
         *awk -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
 
-usagej.gh : ../stand/options.gml
-        optencod -l 1 -q $]@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
+usagej.gh : ../stand/options.gml $(__MAKEFILES__)
+        optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
         %append usagej.tmp "."
         *awk -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp

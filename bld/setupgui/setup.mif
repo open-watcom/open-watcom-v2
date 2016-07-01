@@ -190,7 +190,7 @@ all : virgin.exe csetup.exe f77setup.exe .SYMBOLIC
 
 !ifeq host_os win
 
-virgin.exe: $(gendeps) dosstub.exe
+virgin.exe: $(gendeps) dosstub.exe $(__MAKEFILES__)
 !ifdef win386
     $(linker) name $(lname) @setup.lnk
     $(wbind) -q -n $(lname)
@@ -200,7 +200,7 @@ virgin.exe: $(gendeps) dosstub.exe
 
 !else
 
-virgin.exe: $(gendeps)
+virgin.exe: $(gendeps) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -211,7 +211,7 @@ virgin.exe: $(gendeps)
 
 !else ifneq host_os win
 
-setup.exe: $(gendeps) setupui.res
+setup.exe: $(gendeps) setupui.res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -257,35 +257,35 @@ setup.lnk : ../setup.mif $(__MAKEFILES__)
     @for %i in ( $(objs) ) do @%append setup.lnk file %i
     @for %i in ( $(libs) ) do @%append setup.lnk lib %i
 
-nonibm.obj : $(clib_dir)/startup/c/nonibm.c
+nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)
 
-setupui.res : setupui.rc $(dep_res1)
+setupui.res : setupui.rc $(dep_res1) $(__MAKEFILES__)
     $(rc_aui) $(gui_inc_dirs) $[@ -fo=setupui.res
 
-csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
+csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
 
-jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp
+jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
-f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp
+f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
 
-jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp
+jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
-setup.res : setup.rc $(dep_res1) ../res/generic.bmp
+setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
 
-dosstub.exe : dosstub.c
+dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@
 
-csetup.exe   : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
-f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
-jcsetup.exe  : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
-jfsetup.exe  : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe
+csetup.exe   : csetup.res
+f77setup.exe : f77setup.res
+jcsetup.exe  : jcsetup.res
+jfsetup.exe  : jfsetup.res
 
-csetup.exe f77setup.exe jcsetup.exe jfsetup.exe :
-    cp $]@ $^@
-    cp $]&.sym $^&.sym
+csetup.exe f77setup.exe jcsetup.exe jfsetup.exe : $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
+    cp virgin.exe $^@
+    cp virgin.sym $^&.sym
     $(rc_out) $[@ $^@ $(bind_version_res_exe_add)

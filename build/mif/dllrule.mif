@@ -1,4 +1,4 @@
-.c{$(dll_subdir)}.obj: $($(proj_name)_autodepends)
+.c{$(dll_subdir)}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
         @if not exist $(dll_subdir) mkdir $(dll_subdir)
 !ifeq verbose 1
         $(cc) $(cflags_dll) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@
@@ -7,7 +7,7 @@
         @$(cc) $(cflags_dll) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 !endif
 
-.cpp{$(dll_subdir)}.obj: $($(proj_name)_autodepends)
+.cpp{$(dll_subdir)}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
         @if not exist $(dll_subdir) mkdir $(dll_subdir)
 !ifeq verbose 1
         $(cxx) $(cflags_dll) $(cxxflags) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@

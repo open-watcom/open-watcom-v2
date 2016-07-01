@@ -11,9 +11,9 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-.obj.exe :
+.obj.exe : $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) $[@ $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {$[@}
 !endif

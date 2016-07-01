@@ -46,7 +46,7 @@ verrc_exe = $(name)
 verrc_exe_skel = ../../exever.rc
 !include verrc.mif
 
-$(name).exe : $(extra_deps) $(objs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(name).exe : $(extra_deps) $(objs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
@@ -54,12 +54,12 @@ $(name).exe : $(extra_deps) $(objs) $(version_res_exe_$(host_os)_$(host_cpu))
 !endif
         @%make bind_version_res_exe
 
-owcchelp.gh: ../../owcchelp.sp
-        *wsplice -f "\"%s\"," $< $@
+owcchelp.gh: ../../owcchelp.sp $(__MAKEFILES__)
+        *wsplice -f "\"%s\"," $[@ $@
 
-$(owcc_specs): $(wlink_dir)/lnk/specs.sp
+$(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
 !ifeq bootstrap 1
-        *wsplice -k Pspecs $< - | sed -f ../../convtool.sed >$@
+        *wsplice -k Pspecs $[@ - | sed -f ../../convtool.sed >$@
 !else
-        *wsplice -k Pspecs $< $@
+        *wsplice -k Pspecs $[@ $@
 !endif

@@ -33,23 +33,16 @@ vicomp_objs = &
     srcvar.obj &
     parse.obj
 
-.obj.exe :
+.obj.exe : $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) $[@ $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {$[@}
 !endif
 
-edbind.exe : edbind.obj
+vicomp.exe : $(vicomp_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) $(vicomp_objs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$<}
-!endif
-
-vicomp.exe : $(vicomp_objs)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {$(vicomp_objs)}
 !endif

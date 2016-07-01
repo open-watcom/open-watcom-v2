@@ -30,20 +30,20 @@ objs =              &
 
 !ifeq host_os nt
 objs += msgtbl.obj
-libs = version.lib
+win_libs = version.lib
 !else
-libs = ver.lib
+win_libs = ver.lib
 !endif
 
 extra_l_flags = opt map
 
-$(proj_name).exe : $(objs) $(proj_name).res
+$(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+        $(cl) $(clflags) $(objs) $(win_libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
 !endif
 	$(rc) $(proj_name).res
 
-$(proj_name).res : $(proj_name).rc
-        $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $< -fo=$@
+$(proj_name).res : $(proj_name).rc $(__MAKEFILES__)
+        $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

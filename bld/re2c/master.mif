@@ -23,9 +23,9 @@ extra_c_flags_scanner = -wcd=118
 extra_c_flags_parser = -pil
 !endif
 
-$(proj_name).exe : $(objs)
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
+        $(cl) $(clflags) $(objs) $(ldflags)
 !else
         $(linker) name $@ $(lflags) file {$(objs)}
 !endif

@@ -15,7 +15,7 @@ objs =  main.obj    &
         format.obj  &
         param.obj
 
-$(proj_name).exe : $(objs)
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
