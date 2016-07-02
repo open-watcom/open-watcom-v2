@@ -115,8 +115,8 @@ struct Glob {
 #define STATIC static
 #endif
 
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
-#define NO_RETURN   __declspec(noreturn)
+#if defined( _NORETURN )
+#define NO_RETURN   _NORETURN
 #else
 #define NO_RETURN
 #endif
