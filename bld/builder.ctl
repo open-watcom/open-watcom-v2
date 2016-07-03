@@ -71,6 +71,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/bind/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/ctl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
