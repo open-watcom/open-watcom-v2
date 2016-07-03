@@ -24,8 +24,6 @@ cl_extra_objs_gen = clibext.obj
 !endif
 !endif
 
-all : $(all_commands) $(posix_commands_$(host_os))
-
 inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c
@@ -48,6 +46,8 @@ cdsay_objs   = cdsay.obj equals.obj
 extra_cpp_flags = -DSTANDALONE_RX
 
 extra_c_flags_genverrc = -D_VERSION=$(bld_ver)
+
+all : $(all_commands) .SYMBOLIC
 
 sweep.exe :   $(sweep_objs)
 wsplice.exe : $(wsplice_objs)

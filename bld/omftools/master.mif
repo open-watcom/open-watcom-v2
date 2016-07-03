@@ -10,10 +10,10 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
+all: objchg.exe objfind.exe objlist.exe objxdef.exe objxref.exe .SYMBOLIC
+
 objchg.exe: objchg.obj hashtab.obj misc.obj
 objfind.exe: objfind.obj hashtab.obj misc.obj
 objlist.exe: objlist.obj misc.obj
 objxdef.exe: objxdef.obj misc.obj
 objxref.exe: objxref.obj hashtab.obj misc.obj
-
-all: objchg.exe objfind.exe objlist.exe objxdef.exe objxref.exe .symbolic
