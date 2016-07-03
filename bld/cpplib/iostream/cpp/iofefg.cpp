@@ -41,6 +41,7 @@
 #include "iofhdr.h"
 #include "fltsupp.h"
 
+extern "C" {
 
 static void __setiofEFGfmt( void ) {
 #ifndef IN_SLIB
@@ -62,7 +63,6 @@ static void __setiofEFGfmt( void ) {
 #endif
 }
 
-extern "C" {
     XI( __ppfltused_, __setiofEFGfmt, INIT_PRIORITY_LIBRARY )
 #if !defined(__AXP__)
     #pragma aux __ppfltused_ "*";
