@@ -567,7 +567,7 @@ static int ProcessCtlFile( const char *name )
     char        *log_name;
     int         res;
     bool        logit;
-    bool        pmake;
+    bool        res_nolog;
     int         rc;
 
     rc = 0;
@@ -632,13 +632,12 @@ static int ProcessCtlFile( const char *name )
                     Log( false, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
-                pmake = ( strnicmp( p, "PMAKE", 5 ) == 0 && p[5] == ' ' );
-                res = RunIt( p, IgnoreErrors );
+                res = RunIt( p, IgnoreErrors, &res_nolog );
                 if( res != 0 ) {
-                    if( !IgnoreErrors || !pmake ) {
-                        if( !logit ) {
-                            Log( false, "<%s> => ", Line );
-                        }
+                    if( !logit ) {
+                        Log( false, "<%s> => ", Line );
+                    }
+                    if( !res_nolog ) {
                         Log( false, "non-zero return: %d\n", res );
                     }
                     if( !IgnoreErrors ) {

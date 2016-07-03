@@ -7,10 +7,10 @@ builder_autodepends = .autodepend
 !include deftarg.mif
 !include exerule.mif
 
-all_commands	= sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe
-!ifndef __UNIX__
-all_commands	+= diff.exe
-!endif
+all_commands_dos = diff.exe
+all_commands_nt  = diff.exe
+all_commands_os2 = diff.exe
+all_commands	= sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe $(all_commands_$(host_os))
 !ifneq bootstrap 1
 all_commands	+= builder.exe
 !endif
@@ -28,13 +28,13 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c
 
-!ifdef __UNIX__
-sys_objs = sysposix.obj
+sys_dos  = sysdoscd.obj sysdos.obj
+sys_nt   = sysdoscd.obj sysnt.obj
+sys_os2  = sysdoscd.obj sysos2.obj
+!ifdef sys_$(host_os)
+sys_objs = $(sys_$(host_os))
 !else
-sys_dos  = sysdos.obj
-sys_nt   = sysnt.obj
-sys_os2  = sysos2.obj
-sys_objs = sysdoscd.obj $(sys_$(host_os))
+sys_objs = sysposix.obj
 !endif
 
 builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj equals.obj $(cl_extra_objs_gen)
@@ -56,16 +56,16 @@ cdsay.exe :   $(cdsay_objs)
 
 builder.exe : $(builder_objs)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(builder_objs) $(ldflags)
+    $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$(builder_objs)}
+    $(linker) name $@ $(lflags) file {$(builder_objs)}
 !endif
-!if "$(host_os)" == "$(bld_os)"         # Don't copy unless host_os=build_os
-!ifndef %LOGFNAME                       # Don't copy unless build outside builder
+!if "$(host_os)" == "$(bld_os)"     # Don't copy unless host_os=build_os
+!ifndef %LOGFNAME                   # Don't copy unless build outside builder
 !ifdef __UNIX__
-        cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
+    cp   $^. $(%OWBINDIR)/$^&       # Remove .exe from working name
 !else
-        copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
+    copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif
 !endif
 !endif

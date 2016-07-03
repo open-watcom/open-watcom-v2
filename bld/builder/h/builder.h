@@ -37,7 +37,7 @@
 extern bool         Quiet;
 
 extern const char   *LogDirEquals( char *dir );
-extern int          RunIt( char *, bool );
+extern int          RunIt( char *, bool, bool * );
 extern void         SysInit( int argc, char *argv[] );
 extern int          SysRunCommand( const char * );
 extern int          SysChdir( char * );
