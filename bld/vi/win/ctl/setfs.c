@@ -39,6 +39,7 @@
 #include "rcstr.gh"
 #include <assert.h>
 #include "wprocmap.h"
+#include "winctl.h"
 
 
 /* Local Windows CALLBACK function prototypes */

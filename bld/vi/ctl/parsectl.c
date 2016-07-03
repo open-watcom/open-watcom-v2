@@ -94,8 +94,8 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-int empty_data( char *ret ) 
-/*************************/
+static int empty_data( char *ret ) 
+/********************************/
 {
     char                *end;
 

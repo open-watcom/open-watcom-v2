@@ -43,6 +43,7 @@
 #include "win.h"
 #ifdef __WIN__
   #include "color.h"
+  #include "winctl.h"
 #endif
 
 #include "clibext.h"

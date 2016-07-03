@@ -1,7 +1,7 @@
-# vicomp Builder Control file
+# edbind Builder Control file
 # ============================
 
-set PROJNAME=vicomp
+set PROJNAME=edbind
 
 set BINTOOL=0
 
@@ -18,12 +18,12 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/vicomp.exe   <OWBINDIR>/vicomp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/edbind.exe   <OWBINDIR>/bedbind<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/vicomp<CMDEXT>
-    rm -f <OWBINDIR>/vicomp<CMDEXT>
+    echo rm -f <OWBINDIR>/bedbind<CMDEXT>
+    rm -f <OWBINDIR>/bedbind<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

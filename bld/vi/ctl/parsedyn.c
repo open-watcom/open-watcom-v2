@@ -64,8 +64,9 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-int empty_data( char *ret ) 
-/*************************/
+#if 0
+static int empty_data( char *ret ) 
+/********************************/
 {
     char    *end;
 
@@ -81,6 +82,7 @@ int empty_data( char *ret )
 
     return( 0 );
 }
+#endif
 
 int main( int argc, char *argv[] ) 
 /********************************/

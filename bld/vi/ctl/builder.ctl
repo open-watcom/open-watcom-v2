@@ -1,7 +1,7 @@
-# vicomp Builder Control file
+# victl Builder Control file
 # ============================
 
-set PROJNAME=vicomp
+set PROJNAME=victl
 
 set BINTOOL=0
 
@@ -18,12 +18,15 @@ set PROJDIR=<CWD>
 [ BLOCK <BINTOOL> build ]
 #========================
     cdsay <PROJDIR>
-    <CPCMD> <OWOBJDIR>/vicomp.exe   <OWBINDIR>/vicomp<CMDEXT>
+    <CPCMD> <OWOBJDIR>/parsectl.exe <OWBINDIR>/parsectl<CMDEXT>
+    <CPCMD> <OWOBJDIR>/parsedyn.exe <OWBINDIR>/parsedyn<CMDEXT>
 
 [ BLOCK <BINTOOL> clean ]
 #========================
-    echo rm -f <OWBINDIR>/vicomp<CMDEXT>
-    rm -f <OWBINDIR>/vicomp<CMDEXT>
+    echo rm -f <OWBINDIR>/parsectl<CMDEXT>
+    rm -f <OWBINDIR>/parsectl<CMDEXT>
+    echo rm -f <OWBINDIR>/parsedyn<CMDEXT>
+    rm -f <OWBINDIR>/parsedyn<CMDEXT>
 
 [ BLOCK <1> rel cprel ]
 #======================

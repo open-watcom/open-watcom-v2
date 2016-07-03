@@ -38,6 +38,7 @@
 #include "util.h"
 #include "globals.h"
 #include "wprocmap.h"
+#include "winctl.h"
 
 
 /* Local Windows CALLBACK function prototypes */

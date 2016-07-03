@@ -9,14 +9,14 @@ inc_dirs_bsd   = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 inc_dirs_osx   = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 inc_dirs_haiku = $(ui_inc_dirs) -I"$(ui_dir)/unix/h"
 
-winstuff = -I"$(ideact_dir)" $(wpi_inc_dirs) $(commonui_inc_dirs)
+winstuff = -I"$(vi_dir)/win/ctl" -I"$(ideact_dir)" $(wpi_inc_dirs) $(commonui_inc_dirs)
 
 !ifeq sys_windowed 1
-inc_dirs_nt  = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" $(winstuff)
-inc_dirs_win = -I"$(vi_dir)/ctl" -I"$(vi_dir)/win" $(winstuff)
-inc_dirs_os2 = -I"$(vi_dir)/ctl" -I"$(vi_dir)/pm" $(winstuff)
+inc_dirs_nt  = -I"$(vi_dir)/win" $(winstuff)
+inc_dirs_win = -I"$(vi_dir)/win" $(winstuff)
+inc_dirs_os2 = -I"$(vi_dir)/pm" $(winstuff)
 !else
 inc_dirs_win = -I"$(vi_dir)/win"
 !endif
 
-rc_inc_dirs = -I"$(vi_dir)/res" -I"$(vi_dir)/win" $(commonui_inc_dirs)
+rc_inc_dirs = -I"$(vi_dir)/res" -I"$(vi_dir)/win" -I"$(vi_dir)/win/ctl" $(commonui_inc_dirs)

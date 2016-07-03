@@ -36,6 +36,7 @@
 #include "ctltype.h"
 #include "util.h"
 #include "wprocmap.h"
+#include "winctl.h"
 
 
 /* Local Windows CALLBACK function prototypes */

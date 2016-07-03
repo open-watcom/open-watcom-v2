@@ -12,7 +12,7 @@ c_dirs_root = $(vi_dir)/nt;$(vi_dir)/win
 ! else
 c_dirs_root = $(vi_dir)/win
 ! endif
-c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(vi_dir)/ctl;$(watcom_dir)/c
+c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/dos;$(vi_dir)/win/ctl;$(watcom_dir)/c
 !else
 c_dirs = $(vi_dir)/c;$(c_dirs_root);$(vi_dir)/ui;$(watcom_dir)/c
 !endif
