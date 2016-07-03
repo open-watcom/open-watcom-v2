@@ -54,7 +54,6 @@ void SysInit( int argc, char *argv[] )
 
 static int SysRunCommandPipe( const char *cmd, HFILE *readpipe )
 {
-    HFILE       pipe_input;
     HFILE       pipe_output;
     HFILE       std_output;
     HFILE       std_error;
