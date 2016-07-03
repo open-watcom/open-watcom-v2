@@ -41,6 +41,7 @@
     #include <dos.h>
 #endif
 #include "wio.h"
+#include "bool.h"
 #include "watcom.h"
 #include "pmake.h"
 
@@ -102,28 +103,45 @@ static void WriteCmdFile( pmake_data *data )
 
 static int RunCommand( const char *cmd )
 {
-    char        *cmdnam;
+    const char  *p;
     char        *sp;
+    char        c;
     const char  **argv;
     int         i;
+    bool        skip_sp;
 
-    cmdnam = strdup( cmd );
-    argv = malloc( strlen( cmd ) * sizeof( char * ) );
-    i = 0;
-    for( sp = cmdnam; sp != NULL; ) {
-        while( *sp != '\0' && *sp == ' ' )
-            ++sp;
-        argv[i++] = sp;
-        sp = strchr( sp, ' ' );
-        if( sp != NULL ) {
-            *sp = '\0';
-            sp++;
+    skip_sp = true;
+    i = 1;
+    for( p = cmd; *p != '\0'; ++p ) {
+        if( *p == ' ' ) {
+            skip_sp = true;
+        } else if( skip_sp ) {
+            ++i;
+            skip_sp = false;
         }
     }
+    argv = (const char **)malloc( i * sizeof( char * ) + strlen( cmd ) + 1 );
+    if( argv == NULL )
+        return( 1 );    // error no memory
+    sp = (char *)argv + i * sizeof( char * );
+    skip_sp = true;
+    i = 0;
+    for( p = cmd; (c = *p) != '\0'; ++p ) {
+        if( c == ' ' ) {
+            if( skip_sp )
+                continue;
+            skip_sp = true;
+            c = '\0';
+        } else if( skip_sp ) {
+            skip_sp = false;
+            argv[i++] = sp;
+        }
+        *sp++ = c;
+    }
+    *sp = '\0';
     argv[i] = NULL;
-    i = (int)spawnvp( P_WAIT, cmdnam, argv );
-    free( cmdnam );
-    free( (void *)argv );
+    i = (int)spawnvp( P_WAIT, (char *)argv + i * sizeof( char * ), argv );
+    free( argv );
     return( i );
 }
 
@@ -131,7 +149,6 @@ static int DoPMake( pmake_data *data )
 {
     pmake_list  *curr;
     int         res;
-    char        cmd[256];
     int         rc;
 
     res = 0;
@@ -145,11 +162,11 @@ static int DoPMake( pmake_data *data )
             fputs( "==== ", stdout );
             puts( curr->dir_name );
         }
-        PMakeCommand( data, cmd );
-        rc = RunCommand( cmd );
+        PMakeCommand( data, buffer );
+        rc = RunCommand( buffer );
         if( rc != 0 ) {
             res = rc;
-            if( data->ignore_err == 0 ) {
+            if( data->ignore_errors == 0 ) {
                 break;
             }
         }
@@ -168,7 +185,7 @@ static int ProcPMake( pmake_data  *data )
     return( res );
 }
 
-char    *Help[] = {
+static char    *Help[] = {
 "Usage: pmake [options] [targ_list] [make options]",
 "     Execute 'wmake' in each subdirectory of the current working",
 "     directory that has a makefile which contains the specified ",
@@ -209,7 +226,7 @@ char    *Help[] = {
     NULL
 };
 
-void PrintHelp( void )
+static void PrintHelp( void )
 {
     int         i;
 
@@ -218,7 +235,7 @@ void PrintHelp( void )
     exit( EXIT_FAILURE );
 }
 
-char    CmdBuff[512];
+static char     CmdBuff[512];
 
 #if !defined( __WATCOMC__ )
 int main( int argc, char **argv )
@@ -228,7 +245,7 @@ int main( void )
 {
 #endif
     pmake_data  *data;
-    int         rc = 0;
+    int         rc;
 
 #if !defined( __WATCOMC__ )
     _argv = argv;
@@ -251,6 +268,7 @@ int main( void )
      */
     if( data->batch ) {
         WriteCmdFile( data );
+        rc = 0;
     } else {
         rc = ProcPMake( data );
     }

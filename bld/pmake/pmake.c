@@ -71,18 +71,18 @@ typedef struct dirqueue {
     char                name[_MAX_PATH];
 } dirqueue;
 
-int                     NumDirectories;
+static int              NumDirectories;
 
-dirqueue                *QueueHead = NULL;
-dirqueue                *QueueTail = NULL;
-volatile int            DoneFlag;
-jmp_buf                 exit_buff;
+static dirqueue         *QueueHead = NULL;
+static dirqueue         *QueueTail = NULL;
+static volatile int     DoneFlag;
+static jmp_buf          exit_buff;
 
-pmake_data              Options;
-char                    Buff[512];
-char                    *CmdLine;
-char                    saveDirBuff[_MAX_PATH];
-char                    *SaveDir = saveDirBuff;
+static pmake_data       Options;
+static char             Buff[512];
+static const char       *CmdLine;
+static char             saveDirBuff[_MAX_PATH];
+static char             *SaveDir = saveDirBuff;
 
 static char *StringCopy( char *dst, const char *src )
 {
@@ -213,9 +213,7 @@ static unsigned CheckTargets( char *filename )
         return( 0 );
     ResetMatches();
     prio = 0;
-    for( ;; ) {
-        if( fgets( Buff, sizeof( Buff ), mf ) == NULL )
-            break;
+    while( fgets( Buff, sizeof( Buff ), mf ) != NULL ) {
         curr_prio = CompareTargets( Buff );
         if( prio != 0 && curr_prio == 0 )
             break;
@@ -420,16 +418,12 @@ static void ProcessDirectoryQueue( void )
     if( makefile == NULL ) {
         makefile = DEFAULT_MAKE_FILE;
     }
-    head = QueueHead;
-    while( head != NULL ) {
+    for( head = QueueHead; head != NULL; head = QueueHead ) {
         dirh = opendir( "." );
         if( dirh != NULL ) {
-            while( !DoneFlag ) {
-                dp = readdir( dirh );
-                if( dp == NULL )
-                    break;
+            while( (dp = readdir( dirh )) != NULL ) {
 #ifdef __UNIX__
-                if( !stat( dp->d_name, &buf ) && S_ISDIR( buf.st_mode ) ) {
+                if( stat( dp->d_name, &buf ) == 0 && S_ISDIR( buf.st_mode ) ) {
 #else
                 if( dp->d_attr & _A_SUBDIR ) {
 #endif
@@ -442,6 +436,9 @@ static void ProcessDirectoryQueue( void )
                 } else if( stricmp( dp->d_name, makefile ) == 0 ) {
                     TestDirectory( head, makefile );
                 }
+                if( DoneFlag ) {
+                    break;
+                }
             }
             closedir( dirh );
         }
@@ -449,7 +446,7 @@ static void ProcessDirectoryQueue( void )
             return;
         }
         last_ok = NULL;
-        while( head->next != NULL ) {
+        for( ; head->next != NULL; head = QueueHead ) {
             if( last_ok == NULL ) {
                 if( chdir( RelativePath( head->name, head->next->name ) ) == 0 )
                     break;
@@ -463,10 +460,8 @@ static void ProcessDirectoryQueue( void )
             }
             sprintf( Buff, "PMAKE warning: can not change directory to %s", head->next->name );
             PMakeOutput( Buff );
-            head = QueueHead;
         }
         DeQueue();
-        head = QueueHead;
     }
 }
 
@@ -474,35 +469,31 @@ static int GetNumber( int default_num )
 {
     int         number;
 
-    if( !isdigit( CmdLine[0] ) )
+    if( !isdigit( *CmdLine ) )
         return( default_num );
     number = 0;
-    for( ;; ) {
-        if( !isdigit( CmdLine[0] ) )
-            return( number );
+    for( ; isdigit( *CmdLine ); ++CmdLine ) {
         number *= 10;
-        number += CmdLine[0] - '0';
-        ++CmdLine;
+        number += *CmdLine - '0';
     }
+    return( number );
 }
 
 static char *GetString( void )
 {
-    char        *p;
+    const char  *p;
     size_t      len;
     char        *new;
 
-    while( isspace( CmdLine[0] ) )
+    while( isspace( *CmdLine ) )
         ++CmdLine;
-    if( CmdLine[0] == '\0' )
+    if( *CmdLine == '\0' )
         return( NULL );
     p = CmdLine;
-    for( ;; ) {
-        if( isspace( CmdLine[0] ) )
+    for( ; *CmdLine != '\0'; ++CmdLine ) {
+        if( isspace( *CmdLine ) ) {
             break;
-        if( CmdLine[0] == '\0' )
-            break;
-        ++CmdLine;
+        }
     }
     len = CmdLine - p;
     new = safe_malloc( len + 1 );
@@ -520,7 +511,7 @@ static void SortDirectories( void )
     char        buff[_MAX_PATH];
     int         i;
 
-    dir_array = safe_malloc( sizeof( *dir_array )* NumDirectories );
+    dir_array = safe_malloc( sizeof( *dir_array ) * NumDirectories );
     i = 0;
     for( curr = Options.dir_list; curr != NULL; curr = curr->next ) {
         dir_array[i++] = curr;
@@ -588,7 +579,7 @@ static void DoIt( void )
             }
             break;
         case 'i':
-            Options.ignore_err = 1;
+            Options.ignore_errors = 1;
             break;
         case 'l':
             Options.levels = GetNumber( 1 );
@@ -656,13 +647,13 @@ static void DoIt( void )
 
 pmake_data *PMakeBuild( const char *cmd )
 {
-    void                ( *old_sig ) ( int );
+    void                (*old_sig)( int );
     volatile int        ret;
 
     getcwd( SaveDir, _MAX_PATH );
     DoneFlag = 0;
     old_sig = signal( SIGINT, SetDoneFlag );
-    CmdLine = ( char *) cmd;
+    CmdLine = cmd;
     ret = setjmp( exit_buff );
     if( ret == 0 )
         DoIt();
