@@ -22,8 +22,6 @@ fpu_flags_qnx_386 = -fpc
 !include defrule.mif
 !include deftarg.mif
 
-.ERASE
-
 .c : ../c
 .asm : ../asm
 

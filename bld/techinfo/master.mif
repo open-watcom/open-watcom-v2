@@ -6,9 +6,6 @@ techinfo_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-.CONTINUE
-.ERASE
-
 os2objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj
 dosobjs = $(os2objs) monint.obj
 

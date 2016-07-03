@@ -5,8 +5,6 @@ emu386_distrib_lib = 1
 
 additional_cleanup = usage.u
 
-.ERASE
-
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif

@@ -1,7 +1,7 @@
 host_cpu = i86
 host_os  = dos
+
 !include cproj.mif
-.erase
 
 objs = wrdencod.obj msgencio.obj
 

@@ -18,8 +18,6 @@ suppress_bd = 1
 
 .extensions: .res .dlg .rc .cur .ico
 
-.ERASE
-
 objs =  align.obj       &
         space.obj       &
         fmedit.obj      &

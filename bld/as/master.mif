@@ -240,7 +240,6 @@ $(asi_lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
     *wsplice $(splice_opts) $[@ $(asi_lex_in).tmp
     sed -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
 
-.ERASE
 $(lex_out).c : $(lex_in).re $(__MAKEFILES__)
     $(re2c) $(lex_flags) $[@ > $@
 

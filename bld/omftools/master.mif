@@ -4,23 +4,16 @@ omftools_autodepends = .autodepend
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
-
-all: objchg.exe objfind.exe objlist.exe objxdef.exe objxref.exe .symbolic
+!include exerule.mif
 
 inc_dirs = -I"../h"
 
 .c: ../c
-
-.obj.exe :
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$<}
-!endif
-
 
 objchg.exe: objchg.obj hashtab.obj misc.obj
 objfind.exe: objfind.obj hashtab.obj misc.obj
 objlist.exe: objlist.obj misc.obj
 objxdef.exe: objxdef.obj misc.obj
 objxref.exe: objxref.obj hashtab.obj misc.obj
+
+all: objchg.exe objfind.exe objlist.exe objxdef.exe objxref.exe .symbolic

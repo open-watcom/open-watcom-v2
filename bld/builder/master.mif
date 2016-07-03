@@ -5,14 +5,14 @@ builder_autodepends = .autodepend
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
-all_commands         = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe
-posix_commands_dos   = diff.exe
-posix_commands_os2   = diff.exe
-posix_commands_nt    = diff.exe
-
+all_commands	= sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe
+!ifndef __UNIX__
+all_commands	+= diff.exe
+!endif
 !ifneq bootstrap 1
-all_commands         += builder.exe
+all_commands	+= builder.exe
 !endif
 
 !ifndef __WATCOM_TOOLS__
@@ -30,13 +30,13 @@ inc_dirs = -I"../h" -I"$(pmake_dir)" -I"$(posix_dir)/h"
 
 .c : ../c;$(pmake_dir);$(posix_dir)/misc;$(watcom_dir)/c
 
-sys_dos   = sysdos.obj sysdoscd.obj
-sys_nt    = sysnt.obj sysdoscd.obj
-sys_os2   = sysos2.obj sysdoscd.obj
-
-sys_objs = $(sys_$(host_os))
-!ifndef sys_$(host_os)
+!ifdef __UNIX__
 sys_objs = sysposix.obj
+!else
+sys_dos  = sysdos.obj
+sys_nt   = sysnt.obj
+sys_os2  = sysos2.obj
+sys_objs = sysdoscd.obj $(sys_$(host_os))
 !endif
 
 builder_objs = builder.obj utils.obj $(sys_objs) runit.obj pmake.obj equals.obj $(cl_extra_objs_gen)
@@ -68,11 +68,4 @@ builder.exe : $(builder_objs)
         copy $^. $(%OWBINDIR) > nul     # MS-influenced command noisy
 !endif
 !endif
-!endif
-
-.obj.exe :
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $< $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$<}
 !endif

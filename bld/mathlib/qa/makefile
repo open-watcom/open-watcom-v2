@@ -49,7 +49,6 @@
 !include defrule.mif
 !include deftarg.mif
 
-.erase
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm
 

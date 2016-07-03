@@ -146,11 +146,9 @@ $(TARGET): $(OBJS) $(LIBARG)
 $(OBJDIR)asmpkt.obj:  asmpkt.asm
 $(OBJDIR)asmpkt4.obj: asmpkt4.asm
 
-.ERASE
 .c{$(OBJDIR)}.obj: .AUTODEPEND
           *$(CC) $[@ $(CFLAGS) -fo=$@
 
-.ERASE
 .asm{$(OBJDIR)}.obj:
           *$(AS) $[@ $(AFLAGS) -fo=$@
 

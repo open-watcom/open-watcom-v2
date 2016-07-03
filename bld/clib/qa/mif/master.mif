@@ -87,7 +87,6 @@ a_dbg_flags = -d1
     @set PATH=$(%WATCOM)\binnt;$(%WATCOM)\binw;$(%PATH)
 !endif
 
-.erase
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm
 

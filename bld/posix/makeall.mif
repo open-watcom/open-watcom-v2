@@ -1,11 +1,8 @@
 #
 #   define macro for OS's which need POSIX utilities
 #
-need_posix_dos = 1
-need_posix_nt  = 1
-need_posix_os2 = 1
 
-!ifdef need_posix_$(host_os)
+!ifndef __UNIX__
 
 !include $(posix_dir)/commands.mif
 !include $(posix_dir)/common.mif
