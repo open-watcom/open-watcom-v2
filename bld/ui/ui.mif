@@ -92,11 +92,11 @@ objs = &
 
 objs += $(trmem_objs) $($(ui_os))
 
-$(name).lib: $(objs)
+$(name).lib: $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-    $(blib) $(bld_libflags) $<
+    $(blib) $(bld_libflags) $(objs)
 !else
-    $(librarian) $(libflags) $<
+    $(librarian) $(libflags) $(objs)
 !endif
 
 !ifeq SAMPLE_MODE WIN_C_M_J

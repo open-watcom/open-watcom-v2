@@ -8,7 +8,7 @@
 all : $(libname).lib .symbolic
     @%null
 
-$(libname).lib : $(objs) $(libs)
+$(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     %create tmp.lbc
     @for %i in ($(libs)) do @%append tmp.lbc +%i
     @for %i in ($(objs)) do @%append tmp.lbc +%i

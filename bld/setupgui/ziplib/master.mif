@@ -51,7 +51,7 @@ objs = &
     zuchgall.obj &
     zuchgdat.obj
 
-$(proj_name).lib : $(objs)
+$(proj_name).lib : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

@@ -43,7 +43,7 @@ inc_dirs = -I"../h"
 
 objs = $(objs_$(host_os)) $(extra_objs_$(host_os))
 
-wpi.lib: $(objs)
+wpi.lib: $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

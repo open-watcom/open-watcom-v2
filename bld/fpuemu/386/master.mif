@@ -30,13 +30,17 @@ extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
 
 !ifeq host_os dos
 
-emu387.lib: emu387.obj 386inite.obj
-    $(librarian) $(libflags) $<
+objs = emu387.obj 386inite.obj
+
+emu387.lib: $(objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(objs)
 
 !else ifeq host_os qnx
 
-emu387: usage.u qnxemu87.obj emu387.obj fpeqnx.obj
-    $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=usage.u file {$<}
+objs = qnxemu87.obj emu387.obj fpeqnx.obj
+
+emu387: usage.u $(objs)
+    $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=usage.u file {$(objs)}
 
 usage.u : ../../usage.sp
     *wsplice -u $< $@
@@ -45,8 +49,10 @@ usage.u : ../../usage.sp
 
 !else
 
-emu387.lib noemu387.lib: 386stub.obj
-    $(librarian) $(libflags) $<
+objs = 386stub.obj
+
+emu387.lib noemu387.lib: $(objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(objs)
 
 !endif
 

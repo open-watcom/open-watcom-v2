@@ -64,25 +64,31 @@ objs_win = initemuw.obj
 
 all: emu86_$(cpu_size) emu86
 
-emu86 : usage.u qemu87.obj
-    $(linker) name $^@ $(lflags) opt res=usage.u file {$<}
+emu86 : usage.u qemu87.obj $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) opt res=usage.u file {qemu87.obj}
 !endif
 
-emu86_$(cpu_size): usage.u qnxemu87.obj emu8087.obj fpeqnx.obj
-    $(linker) name $^@ $(lflags) opt priv=0,long,res=usage.u file {$<}
+objs = qnxemu87.obj emu8087.obj fpeqnx.obj
+
+emu86_$(cpu_size): usage.u $(objs) $(__MAKEFILES__)
+    $(linker) name $^@ $(lflags) opt priv=0,long,res=usage.u file {$(objs)}
 
 usage.u : ../../usage.sp
     *wsplice -u $< $@
 
 !else ifeq host_os stub
 
-noemu87.lib: emustub.obj
-    $(librarian) $(libflags) $<
+objs = emustub.obj
+
+noemu87.lib: $(objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(objs)
 
 !else
 
-emu87.lib: $(objs_$(host_os))
-    $(librarian) $(libflags) $<
+objs = $(objs_$(host_os))
+
+emu87.lib: $(objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(objs)
 
 !endif
 

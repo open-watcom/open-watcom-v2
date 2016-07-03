@@ -162,20 +162,20 @@ all : $(dirs) $(libs) .SYMBOLIC
 .def.lbc:
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
-.lbc.lib:
-    $(librarian) $(libflags) @$<
+.lbc.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) @$[@
 
-.obj.lib:
-    $(librarian) $(libflags) $<
+.obj.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
 
-{ddk}.lbc{ddk}.lib:
-    $(librarian) $(libflags) @$<
+{ddk}.lbc{ddk}.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) @$[@
 
-{ddk}.obj{ddk}.lib:
-    $(librarian) $(libflags) $<
+{ddk}.obj{ddk}.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) $[@
 
 {directx}.c{directx}.lib: $(w32api_autodepends)
 !ifeq verbose 1
@@ -188,11 +188,11 @@ all : $(dirs) $(libs) .SYMBOLIC
 {directx}.def{directx}.lbc:
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
 
-{directx}.lbc{directx}.lib:
-    $(librarian) $(libflags) @$<
+{directx}.lbc{directx}.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) @$[@
 
-{directx}.obj{directx}.lib:
-    $(librarian) $(libflags) $<
+{directx}.obj{directx}.lib: $(__MAKEFILES__)
+    $(librarian) $(libflags) $[@
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @%create $@

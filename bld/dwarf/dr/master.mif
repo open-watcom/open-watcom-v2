@@ -61,7 +61,7 @@ extra_c_flags_win = -zW
 extra_c_flags_drutils  = -I"$(lib_misc_dir)/h"
 extra_c_flags_drsearch = -I"$(posix_dir)/h"
 
-dwarfr.lib : $(objs)
+dwarfr.lib : $(objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

@@ -33,7 +33,7 @@ objs = &
     cwkrnl3.obj &
     cwkrnl4.obj
 
-cwdll.lib : $(objs)
+cwdll.lib : $(objs) $(__MAKEFILES__)
     @%make cwapi.lbc
     $(librarian) $(libflags) $(objs) @cwapi.lbc
 

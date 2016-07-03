@@ -45,7 +45,7 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 #-------------------------------------------------------------------------------
 #cc = wcl -c -cc++
 
-$(libname).lib : errcod.gh $(files)
+$(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     @%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     $(librarian) $(lib_flags) $^@ @$(libname).lbc

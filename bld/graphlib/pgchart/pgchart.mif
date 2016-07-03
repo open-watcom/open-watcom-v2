@@ -83,19 +83,19 @@ extra_c_flags_win = -zW
 
 all : pgchart.gh chart.lib chart2.lib .symbolic
 
-chart.lib : graph.gh pgchart.lbc
+chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
         $(librarian) $(libflags) @pgchart.lbc
 
-chart2.lib : graph2.gh pgchart2.lbc
+chart2.lib : graph2.gh pgchart2.lbc $(__MAKEFILES__)
         $(librarian) $(libflags) @pgchart2.lbc
 
-pgchart.lbc : $(objs)
+pgchart.lbc : $(objs) $(__MAKEFILES__)
         %create $@
-        @for %i in ($<) do @%append $@ +%i
+        @for %i in ($(objs)) do @%append $@ +%i
 
-pgchart2.lbc : $(v2_objs)
+pgchart2.lbc : $(v2_objs) $(__MAKEFILES__)
         %create $@
-        @for %i in ($<) do @%append $@ +%i
+        @for %i in ($(v2_objs)) do @%append $@ +%i
 
 wsplice_options_dos = -kDOS
 wsplice_options_os2 = -kDOS

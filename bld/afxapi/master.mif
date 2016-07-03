@@ -317,11 +317,11 @@ afx.h: afx.mh
     *awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h
 
-$(libname).lib: $(objs) $(static_objs)
-    $(librarian) $(libflags) $<
+$(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
+    $(librarian) $(libflags) $(objs) $(static_objs)
 
-$(intname).lib: $(objs)
-    $(librarian) -z=tmp.def $(libflags) $<
+$(intname).lib: $(objs) $(__MAKEFILES__)
+    $(librarian) -z=tmp.def $(libflags) $(objs)
     sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
     sort < tmp2.def > tmp3.def
     uniq tmp3.def > export.def

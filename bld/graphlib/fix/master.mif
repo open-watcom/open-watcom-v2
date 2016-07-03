@@ -17,14 +17,14 @@ all: graph.lib graph2.lib
 
 !ifeq host_cpu i86
 
-tmp.lib : ../../dosi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj
+tmp.lib : ../../dosi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj $(__MAKEFILES__)
     @%write  tmp.lbc  +../../dosi86/graphi.lib
     @%append tmp.lbc  +../../dosi86/dummy.obj
     @%append tmp.lbc  +../../dosi86/fsmath.obj
     @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
     $(librarian) $(libflags) @tmp.lbc
 
-tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj
+tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj $(__MAKEFILES__)
     @%write  tmp2.lbc  +../../dosi86/graphi2.lib
     @%append tmp2.lbc  +../../dosi86/dummy.obj
     @%append tmp2.lbc  +../../dosi86/fsmath.obj
@@ -33,7 +33,7 @@ tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86
 
 !else
 
-tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386r/chart.lib ../../pgchart/dos386s/chart.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj
+tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386r/chart.lib ../../pgchart/dos386s/chart.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj $(__MAKEFILES__)
     @%write  tmp.lbc  +../../dos386s/graphi.lib
     @%append tmp.lbc  -globals
     @%append tmp.lbc  -bit
@@ -53,7 +53,7 @@ tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386
     @%append tmp.lbc  +../../pgchart/dos386s/chart.lib
     $(librarian) $(libflags) @tmp.lbc
 
-tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos386r/chart2.lib ../../pgchart/dos386s/chart2.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj
+tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos386r/chart2.lib ../../pgchart/dos386s/chart2.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj $(__MAKEFILES__)
     @%write  tmp2.lbc  +../../dos386s/graphi2.lib
     @%append tmp2.lbc  -globals
     @%append tmp2.lbc  -bit
@@ -81,14 +81,14 @@ tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos
 
 all: graph.lib graph2.lib
 
-tmp.lib : ../../qnxi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj
+tmp.lib : ../../qnxi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj $(__MAKEFILES__)
     @%write  tmp.lbc  +../../qnxi86/graphi.lib
     @%append tmp.lbc  +../../qnxi86/dummy.obj
     @%append tmp.lbc  +../../qnxi86/fsmath.obj
     @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
     $(librarian) $(libflags) @tmp.lbc
 
-tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj
+tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj $(__MAKEFILES__)
     @%write  tmp2.lbc  +../../qnxi86/graphi2.lib
     @%append tmp2.lbc  +../../qnxi86/dummy.obj
     @%append tmp2.lbc  +../../qnxi86/fsmath.obj
@@ -99,23 +99,23 @@ tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86
 
 all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
 
-graph3r.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386r/chart.lib
+graph3r.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386r/chart.lib $(__MAKEFILES__)
     $(librarian) $(libflags) +../../qnx386r/graphi.lib +../../pgchart/dos386r/chart.lib
 
-graph3s.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386s/chart.lib
+graph3s.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386s/chart.lib $(__MAKEFILES__)
     $(librarian) $(libflags) +../../qnx386s/graphi.lib +../../pgchart/dos386s/chart.lib
 
-graph23r.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386r/chart2.lib
+graph23r.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386r/chart2.lib $(__MAKEFILES__)
     $(librarian) $(libflags) +../../qnx386r/graphi2.lib +../../pgchart/dos386r/chart2.lib
 
-graph23s.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386s/chart2.lib
+graph23s.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386s/chart2.lib $(__MAKEFILES__)
     $(librarian) $(libflags) +../../qnx386s/graphi2.lib +../../pgchart/dos386s/chart2.lib
 
 !endif
 
 !endif
 
-graph.lib : $(clibdir) tmp.lib
+graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     @rm -f *.obj
   # find external references - and check for double precision usage
     objxref -e=../except tmp.lib | sort >ref.tmp
