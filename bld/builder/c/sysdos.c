@@ -34,7 +34,9 @@
 #include <string.h>
 #include <dos.h>
 #include <process.h>
+#include <direct.h>
 #include "builder.h"
+#include "tinyio.h"
 
 
 void SysInit( int argc, char *argv[] )
@@ -56,23 +58,58 @@ int SysRunCommand( const char *cmd )
     int         rc;
     char        *cmdnam;
     char        *sp;
+    tiny_ret_t  tinyrc;
+    int         ofh;
+    char        temp_name[256];
+    char        buff[256 + 1];
+    unsigned    bytes_read;
 
     cmdnam = strdup( cmd );
     if( cmdnam == NULL )
         return( -1 );
     sp = strchr( cmdnam, ' ' );
     if( sp != NULL ) {
-        *sp = '\0';
-        sp++;
+        *sp++ = '\0';
     }
-    my_std_output = dup( STDOUT_FILENO );
-    my_std_error = dup( STDERR_FILENO );
-    /* no pipes for DOS so we call spawn with P_WAIT and hence cannot log */
-    rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
-    dup2( my_std_output, STDOUT_FILENO );
-    dup2( my_std_error, STDERR_FILENO );
-    close( my_std_output );
-    close( my_std_error );
+    rc = -1;
+    getcwd( temp_name, 256 );
+    memset( temp_name + strlen( temp_name ), 0, 13 );
+    tinyrc = TinyCreateTemp( temp_name, TIO_NORMAL );
+    if( TINY_OK( tinyrc ) ) {
+        ofh = TINY_INFO( tinyrc );
+        my_std_output = TINY_INFO( TinyDup( STDOUT_FILENO ) );
+        my_std_error = TINY_INFO( TinyDup( STDERR_FILENO ) );
+        TinyDup2( ofh, STDOUT_FILENO);
+        TinyDup2( ofh, STDERR_FILENO);
+        /* no pipes for DOS so we call spawn with P_WAIT */
+        rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
+        TinyDup2( my_std_output, STDOUT_FILENO );
+        TinyDup2( my_std_error, STDERR_FILENO );
+        TinyClose( my_std_output );
+        TinyClose( my_std_error );
+        TinyClose( ofh );
+        tinyrc = TinyOpen( temp_name, TIO_READ );
+        if( TINY_OK( tinyrc ) ) {
+            ofh = TINY_INFO( tinyrc );
+            tinyrc = TinyRead( ofh, buff, 256 );
+            while( TINY_OK( tinyrc ) && (bytes_read = TINY_INFO( tinyrc )) != 0 ) {
+                unsigned    i;
+                char        *dst;
+
+                dst = buff;
+                for( i = 0; i < bytes_read; ++i ) {
+                    if( buff[i] != '\r' ) {
+                        *dst++ = buff[i];
+                    }
+                }
+                *dst = '\0';
+                Log( Quiet, "%s", buff );
+                tinyrc = TinyRead( ofh, buff, 256 );
+            }
+            TinyClose( ofh );
+        }
+        TinyDelete( temp_name );
+    }
     free( cmdnam );
     return( rc );
 }
