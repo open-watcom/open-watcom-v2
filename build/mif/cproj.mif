@@ -686,7 +686,7 @@ rc              = *bwrc
 rcaui           = *bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
-rc_aui          = $(rcaui) -x -xb -r -bt=windows $(rc_aui_flags)
+rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
 
 # current project setup
 !ifeq sys_dll 1
