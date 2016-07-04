@@ -96,7 +96,7 @@ struct {
 
 typedef struct dirstack {
     struct dirstack     *prev;
-    unsigned char       name_len;
+    unsigned short      name_len;
     char                name[_MAX_FNAME + _MAX_EXT];
 } dirstack;
 
@@ -390,7 +390,7 @@ static void ProcessCurrentDirectory( void )
                 stack = SafeMalloc( sizeof( *stack ) );
                 if( DoneFlag )
                     return;
-                stack->name_len = strlen( dp->d_name );
+                stack->name_len = (unsigned short)strlen( dp->d_name );
                 memcpy( stack->name, dp->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
                 Stack = stack;
