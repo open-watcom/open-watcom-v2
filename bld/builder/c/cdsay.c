@@ -41,7 +41,7 @@
 #include <limits.h>
 #include "builder.h"
 
-void LogDir( char *dir )
+static void LogDir( const char *dir )
 {
     printf( "%s", LogDirEquals( dir ) );
 }
@@ -57,20 +57,20 @@ static unsigned ChgDir( char *dir )
     if( dir[0] == '\0' )
         return( 0 );
     len = strlen( dir );
-    end = &dir[len - 1];
-#ifdef __UNIX__
+    end = dir + len - 1;
     if( len > 1 && ( *end == '\\' || *end == '/' ) ) {
+#ifdef __UNIX__
         *end = '\0';
-    }
 #else
-    if( len > 1 && ( *end == '\\' || *end == '/' ) && *(end - 1) != ':' ) {
-        *end = '\0';
-        --len;
+        if( len != 3 || dir[1] != ':' ) ) {
+            *end = '\0';
+            --len;
+        }
     }
     if( len > 1 && dir[1] == ':' ) {
         _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
-    }
 #endif
+    }
     return( chdir( dir ) );
 }
 
