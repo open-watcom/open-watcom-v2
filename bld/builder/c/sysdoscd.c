@@ -46,17 +46,19 @@ int SysDosChdir( char *dir )
     if( dir[0] == '\0' )
         return( 0 );
     len = strlen( dir );
-    end = &dir[len - 1];
-    switch( *end ) {
-    case '\\':
-    case '/':
-        if( end > dir && end[-1] != ':' ) {
-            *end = '\0';
-            --len;
+    if( len > 1 ) {
+        end = dir + len - 1;
+        switch( *end ) {
+        case '\\':
+        case '/':
+            if( len != 3 || dir[1] != ':' ) {
+                *end = '\0';
+                --len;
+            }
+            break;
         }
-        break;
     }
-    if( len > 2 && dir[1] == ':' ) {
+    if( len > 1 && dir[1] == ':' ) {
         _dos_setdrive( toupper( dir[0] ) - 'A' + 1, &total );
     }
     return( chdir( dir ) );

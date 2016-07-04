@@ -28,6 +28,9 @@
 *
 ****************************************************************************/
 
+
+#define PMAKE_COMMAND_SIZE  512
+
 typedef struct pmake_list       pmake_list;
 struct pmake_list {
     pmake_list          *next;
@@ -61,11 +64,11 @@ typedef struct {
     target_list *targ_list;
 } pmake_data;
 
-pmake_data      *PMakeBuild( const char *cmd );
-void            PMakeCommand( pmake_data *, char * );
-void            PMakeCleanup( pmake_data * );
+extern pmake_data   *PMakeBuild( char *cmd );
+extern void         PMakeCommand( pmake_data *, char * );
+extern void         PMakeCleanup( pmake_data * );
 
 /*
         provided by the client
 */
-void            PMakeOutput( char *data );
+extern void         PMakeOutput( const char *data );

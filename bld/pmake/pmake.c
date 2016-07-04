@@ -65,6 +65,16 @@
 #define TARGET_NOT_USED 0
 #define TARGET_USED     1
 
+#define SKIP_SPACES(p)  while( isspace(*(p)) ) ++(p)
+#define SKIP_NOSPACE(p) while( *(p) != '\0' && !isspace(*(p)) ) ++(p)
+
+#ifdef __UNIX__
+#define IS_SUBDIR(d)  (stat(d->d_name, &buf) == 0 && S_ISDIR(buf.st_mode))
+#else
+#define IS_SUBDIR(d)  (d->d_attr & _A_SUBDIR)
+#endif
+#define DOT_OR_DOTDOT(d) (d->d_name[0] == '.' && (d->d_name[1] == '\0' || d->d_name[1] == '.' && d->d_name[2] == '\0'))
+
 typedef struct dirqueue {
     struct dirqueue     *next;
     unsigned            depth;
@@ -80,13 +90,13 @@ static jmp_buf          exit_buff;
 
 static pmake_data       Options;
 static char             Buff[512];
-static const char       *CmdLine;
+static char             *CmdLine;
 static char             saveDirBuff[_MAX_PATH];
 static char             *SaveDir = saveDirBuff;
 
 static char *StringCopy( char *dst, const char *src )
 {
-    while( ( *dst = *src ) != '\0' ) {
+    while( (*dst = *src) != '\0' ) {
         ++dst;
         ++src;
     }
@@ -108,8 +118,9 @@ static void error( char *fmt, ... )
 
 static void *safe_malloc( size_t n )
 {
-    void        *p = malloc( n );
+    void        *p;
 
+    p = malloc( n );
     if( p == NULL ) {
         error( "out of memory when allocating %d bytes", n );
     }
@@ -121,16 +132,17 @@ static int _comparison( const void *pp1, const void *pp2 )
     pmake_list  *p1;
     pmake_list  *p2;
 
-    p1 = *( pmake_list**) pp1;
-    p2 = *( pmake_list**) pp2;
+    p1 = *(pmake_list **)pp1;
+    p2 = *(pmake_list **)pp2;
     if( p1->priority > p2->priority )
         return( +1 );
     if( p1->priority < p2->priority )
         return( -1 );
 
     if( Options.reverse ) {
-        pmake_list      *t = p1;
+        pmake_list  *t;
 
+        t = p1;
         p1 = p2;
         p2 = t;
     }
@@ -156,31 +168,26 @@ static unsigned CompareTargets( char *line )
     target_list *curr;
 
     priority = DEFAULT_PRIORITY;
-    while( isspace( *line ) )
-        line++;
+    SKIP_SPACES( line );
     if( *line != '#' )
         return( 0 );
     line++;
-    while( isspace( *line ) )
-        line++;
+    SKIP_SPACES( line );
     if( strnicmp( line, COOKIE, sizeof( COOKIE ) - 1 ) != 0 )
         return( 0 );
     line += ( sizeof( COOKIE ) - 1 );
-    while( isspace( *line ) )
-        line++;
+    SKIP_SPACES( line );
     if( *line == '/' ) {
         ++line;
         priority = strtoul( line, &line, 0 );
         if( priority == 0 )
             return( 0 );
-        while( isspace( *line ) )
-            line++;
+        SKIP_SPACES( line );
     }
     if( *line != ':' )
         return( 0 );
     line++;
-    while( isspace( *line ) )
-        line++;
+    SKIP_SPACES( line );
     while( *line != '\0' ) {
         for( curr = Options.targ_list; curr != NULL; curr = curr->next ) {
             if( curr->used == TARGET_NOT_USED ) {
@@ -194,10 +201,8 @@ static unsigned CompareTargets( char *line )
                 }
             }
         }
-        while( !isspace( *line ) )
-            line++;
-        while( isspace( *line ) )
-            line++;
+        SKIP_NOSPACE( line );
+        SKIP_SPACES( line );
     }
     return( priority );
 }
@@ -292,29 +297,29 @@ static char *PrependDotDotSlash( char *str, int count )
 
 static char *RelativePath( char *oldpath, char *newpath )
 {
-    int         ofs = 0;
+    int         ofs;
     char        *tp;
     unsigned    newdepth;
     unsigned    olddepth;
 
     if( oldpath == NULL )
         return( newpath );
-    while( newpath[ofs] == oldpath[ofs] ) {
+    for( ofs = 0; newpath[ofs] == oldpath[ofs]; ++ofs ) {
         // newpath and oldpath are identical
-        if( newpath[ofs] == '\0' )
+        if( newpath[ofs] == '\0' ) {
             return( "" );
-        ofs++;
+        }
     }
     // oldpath is a prefix of newpath
     if( oldpath[ofs] == '\0' && IS_DIR_SEP( newpath[ofs] ) ) {
-        return( &newpath[ofs + 1] );
+        return( newpath + ofs + 1 );
     }
     // newpath is a prefix of oldpath
     if( newpath[0] == '\0' && IS_DIR_SEP( oldpath[ofs] ) ) {
         newdepth = CountDepth( newpath, 0 );
         olddepth = CountDepth( oldpath, 0 );
         tp = PrependDotDotSlash( Buff, olddepth - newdepth );
-        *( --tp ) = '\0'; // remove trailing slash
+        *(--tp) = '\0'; // remove trailing slash
         return( Buff );
     }
     /* back up to start of directory */
@@ -418,22 +423,18 @@ static void ProcessDirectoryQueue( void )
     if( makefile == NULL ) {
         makefile = DEFAULT_MAKE_FILE;
     }
-    for( head = QueueHead; head != NULL; head = QueueHead ) {
+    while( (head = QueueHead) != NULL ) {
+        /* process directory */
         dirh = opendir( "." );
         if( dirh != NULL ) {
             while( (dp = readdir( dirh )) != NULL ) {
-#ifdef __UNIX__
-                if( stat( dp->d_name, &buf ) == 0 && S_ISDIR( buf.st_mode ) ) {
-#else
-                if( dp->d_attr & _A_SUBDIR ) {
-#endif
-                    if( dp->d_name[0] == '.' ) {
-                        if( dp->d_name[1] == '\0' || dp->d_name[1] == '.' && dp->d_name[2] == '\0' ) {
-                            continue;
-                        }
-                    }
+                if( IS_SUBDIR( dp ) ) {
+                    if( DOT_OR_DOTDOT( dp ) )
+                        continue;
+                    /* queue subdirectory */
                     EnQueue( dp->d_name );
                 } else if( stricmp( dp->d_name, makefile ) == 0 ) {
+                    /* add directory with makefile to the list for next processing */
                     TestDirectory( head, makefile );
                 }
                 if( DoneFlag ) {
@@ -445,6 +446,8 @@ static void ProcessDirectoryQueue( void )
         if( DoneFlag ) {
             return;
         }
+        /* set current directory to first queued subdirectory, remove it from queue and process */
+        /* skip subdirectory entry if it cannot be set as current directory */
         last_ok = NULL;
         for( ; head->next != NULL; head = QueueHead ) {
             if( last_ok == NULL ) {
@@ -481,25 +484,17 @@ static int GetNumber( int default_num )
 
 static char *GetString( void )
 {
-    const char  *p;
-    size_t      len;
-    char        *new;
+    char    *start;
 
-    while( isspace( *CmdLine ) )
-        ++CmdLine;
+    SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' )
         return( NULL );
-    p = CmdLine;
-    for( ; *CmdLine != '\0'; ++CmdLine ) {
-        if( isspace( *CmdLine ) ) {
-            break;
-        }
+    start = CmdLine;
+    SKIP_NOSPACE( CmdLine );
+    if( *CmdLine != '\0' ) {
+        *CmdLine++ = '\0';
     }
-    len = CmdLine - p;
-    new = safe_malloc( len + 1 );
-    memcpy( new, p, len );
-    new[len] = '\0';
-    return( new );
+    return( start );
 }
 
 static void SortDirectories( void )
@@ -545,16 +540,14 @@ static void DoIt( void )
     Options.command = safe_malloc( sizeof( DEFAULT_MAKE_CMD ) );
     StringCopy( Options.command, DEFAULT_MAKE_CMD );
     Options.levels = INT_MAX;
-    while( *CmdLine == ' ' )
-        ++CmdLine;
+    SKIP_SPACES( CmdLine );
     if( *CmdLine == '\0' || *CmdLine == '?' ) {
         Options.want_help = 1;
         return;
     }
     /* gather options */
     for( ;; ) {
-        while( isspace( *CmdLine ) )
-            ++CmdLine;
+        SKIP_SPACES( CmdLine );
         if( *CmdLine != '-' && *CmdLine != '/' )
             break;
         ++CmdLine;
@@ -612,8 +605,7 @@ static void DoIt( void )
     if( !Options.notargets ) {
         owner = &Options.targ_list;
         for( ;; ) {
-            while( isspace( *CmdLine ) )
-                ++CmdLine;
+            SKIP_SPACES( CmdLine );
             if( *CmdLine == '\0' )
                 break;
             if( *CmdLine == '-' || *CmdLine == '/' ) {
@@ -635,8 +627,11 @@ static void DoIt( void )
         Options.targ_list->string = safe_malloc( sizeof( ALL_TARGET ) );
         StringCopy( Options.targ_list->string, ALL_TARGET );
     }
-    while( isspace( *CmdLine ) )
-        CmdLine++;
+    SKIP_SPACES( CmdLine );
+    Options.cmd_args = CmdLine;
+    /* end of command line processing */
+
+    /* start directory tree processing */
     NumDirectories = 0;
     InitQueue( SaveDir );
     ProcessDirectoryQueue();
@@ -645,7 +640,7 @@ static void DoIt( void )
     }
 }
 
-pmake_data *PMakeBuild( const char *cmd )
+pmake_data *PMakeBuild( char *cmd )
 {
     void                (*old_sig)( int );
     volatile int        ret;
@@ -659,6 +654,8 @@ pmake_data *PMakeBuild( const char *cmd )
         DoIt();
     signal( SIGINT, old_sig );
     chdir( SaveDir );
+    if( DoneFlag )
+        Options.signaled = 1;
     while( QueueHead != NULL ) {
         DeQueue();
     }
@@ -666,9 +663,6 @@ pmake_data *PMakeBuild( const char *cmd )
         PMakeCleanup( &Options );
         return( NULL );
     }
-    if( DoneFlag )
-        Options.signaled = 1;
-    Options.cmd_args = CmdLine;
     return( &Options );
 }
 
@@ -685,8 +679,6 @@ void PMakeCleanup( pmake_data *data )
 {
     void        *tmp;
 
-    free( data->command );
-    free( data->makefile );
     while( data->dir_list != NULL ) {
         tmp = data->dir_list->next;
         free( data->dir_list );
@@ -694,7 +686,6 @@ void PMakeCleanup( pmake_data *data )
     }
     while( data->targ_list != NULL ) {
         tmp = data->targ_list->next;
-        free( data->targ_list->string );
         free( data->targ_list );
         data->targ_list = tmp;
     }

@@ -35,6 +35,8 @@
 
 #define MAX_LINE    4096
 
+#define IS_BLANK(c) ((c)==' ' || (c)=='\t')
+
 extern FILE         *LogFile;
 
 extern void         Fatal( const char *, ... );

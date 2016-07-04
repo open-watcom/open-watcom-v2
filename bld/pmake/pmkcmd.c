@@ -57,9 +57,9 @@
 #define TMPBAT "tmp.bat"
 #endif
 
-static char     buffer[512];
+static char     buffer[PMAKE_COMMAND_SIZE];
 
-void PMakeOutput( char *out )
+void PMakeOutput( const char *out )
 {
     puts( out );
 }
@@ -101,11 +101,9 @@ static void WriteCmdFile( pmake_data *data )
     }
 }
 
-static int RunCommand( const char *cmd )
+static int RunCommand( char *cmd )
 {
-    const char  *p;
-    char        *sp;
-    char        c;
+    char        *p;
     const char  **argv;
     int         i;
     bool        skip_sp;
@@ -120,28 +118,25 @@ static int RunCommand( const char *cmd )
             skip_sp = false;
         }
     }
-    argv = (const char **)malloc( i * sizeof( char * ) + strlen( cmd ) + 1 );
+    argv = (const char **)malloc( i * sizeof( char * ) );
     if( argv == NULL )
         return( 1 );    // error no memory
-    sp = (char *)argv + i * sizeof( char * );
     skip_sp = true;
     i = 0;
-    for( p = cmd; (c = *p) != '\0'; ++p ) {
-        if( c == ' ' ) {
+    for( p = cmd; *p != '\0'; ++p ) {
+        if( *p == ' ' ) {
             if( skip_sp )
                 continue;
             skip_sp = true;
-            c = '\0';
+            *p = '\0';
         } else if( skip_sp ) {
             skip_sp = false;
-            argv[i++] = sp;
+            argv[i++] = p;
         }
-        *sp++ = c;
     }
-    *sp = '\0';
     argv[i] = NULL;
-    i = (int)spawnvp( P_WAIT, (char *)argv + i * sizeof( char * ), argv );
-    free( argv );
+    i = (int)spawnvp( P_WAIT, cmd, argv );
+    free( (void *)argv );
     return( i );
 }
 

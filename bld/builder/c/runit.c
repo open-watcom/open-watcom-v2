@@ -74,6 +74,8 @@
 #define ENTRY_NOT_CHANGED2() ((stat(entry_dst, &statdst) == 0) && (stat(entry_src, &statsrc) == 0) && (statdst.st_mtime == statsrc.st_mtime))
 #endif
 
+#define COPY_BUFF_SIZE  (32 * 1024)
+
 typedef struct dd {
   struct dd     *next;
   char          attr;
@@ -86,7 +88,7 @@ static int      sflag = true;
 
 static int RecursiveRM( const char *dir );
 
-static void LogDir( char *dir )
+static void LogDir( const char *dir )
 {
     Log( false, "%s", LogDirEquals( dir ) );
 }
@@ -162,7 +164,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
     *list = NULL;
     strcpy( srcdir, src );
     end = &dst[strlen( dst ) - 1];
-    while( end[0] == ' ' || end[0] == '\t' ) {
+    while( IS_BLANK( end[0] ) ) {
         --end;
     }
     end[1] = '\0';
@@ -265,8 +267,8 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
     return( rc );
 }
 
-static int mkdir_nested( char *path )
-/***********************************/
+static int mkdir_nested( const char *path )
+/*****************************************/
 {
 #ifdef __UNIX__
     struct stat sb;
@@ -283,7 +285,7 @@ static int mkdir_nested( char *path )
 
 #ifndef __UNIX__
     /* special case for drive letters */
-    if( p[0] && p[1] == ':' ) {
+    if( p[0] != '\0' && p[1] == ':' ) {
         p += 2;
     }
 #endif
@@ -331,7 +333,7 @@ static int mkdir_nested( char *path )
     return( 0 );
 }
 
-static int ProcOneCopy( char *src, char *dst, bool cond_copy )
+static int ProcOneCopy( const char *src, const char *dst, bool cond_copy, char *buff )
 {
     FILE            *sp;
     FILE            *dp;
@@ -339,7 +341,6 @@ static int ProcOneCopy( char *src, char *dst, bool cond_copy )
     size_t          out;
     struct stat     srcbuf;
     struct utimbuf  dstbuf;
-    static char     buff[32 * 1024];
 
     sp = fopen( src, "rb" );
     if( sp == NULL ) {
@@ -380,7 +381,7 @@ static int ProcOneCopy( char *src, char *dst, bool cond_copy )
         }
     }
     Log( false, "Copying '%s' to '%s'...\n", src, dst );
-    while( (len = fread( buff, 1, sizeof( buff ), sp )) != 0 ) {
+    while( (len = fread( buff, 1, COPY_BUFF_SIZE, sp )) != 0 ) {
         if( ferror( sp ) ) {
             Log( false, "Error reading '%s': %s\n", src, strerror( errno ) );
             fclose( sp );
@@ -420,35 +421,31 @@ static int ProcOneCopy( char *src, char *dst, bool cond_copy )
 
 static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_errors )
 {
-    char        *src;
     char        *dst;
     copy_entry  *list;
     copy_entry  *next;
     int         res;
 
-    src = cmd;
-    dst = strchr( src, ' ' );
-    if( dst == NULL ) {
-        dst = strchr( src, '\t' );
-        if( dst == NULL ) {
-            Log( false, "Missing destination parameter\n" );
-            return( 1 );
+    for( dst = cmd; *dst != '\0'; ++dst ) {
+        if( IS_BLANK( *dst ) ) {
+            *dst++ = '\0';
+            dst = SkipBlanks( dst );
+            break;
         }
     }
-    *dst = '\0';
-    dst = SkipBlanks( dst + 1 );
     if( *dst == '\0' ) {
-        Log( false, "Missing destination parameter\n" );
+        Log( false, "Missing parameter\n" );
         return( 1 );
     }
-    res = BuildList( src, dst, test_abit, cond_copy, &list );
-    if( res == 0 ) {
+    res = BuildList( cmd, dst, test_abit, cond_copy, &list );
+    if( res == 0 && list != NULL ) {
+        char    *buff = Alloc( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
             next = list->next;
             if( res == 0 || ignore_errors ) {
                 int     rc;
 
-                rc = ProcOneCopy( list->src, list->dst, cond_copy );
+                rc = ProcOneCopy( list->src, list->dst, cond_copy, buff );
                 if( rc != 0 ) {
                     res = rc;
 #ifndef __UNIX__
@@ -461,16 +458,17 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_erro
             }
             free( list );
         }
+        free( buff );
     }
     return( res );
 }
 
-static int ProcMkdir( char *cmd )
+static int ProcMkdir( const char *cmd )
 {
     return( mkdir_nested( cmd ) );
 }
 
-void PMakeOutput( char *str )
+void PMakeOutput( const char *str )
 {
     Log( false, "%s\n", str );
 }
@@ -479,7 +477,7 @@ static int DoPMake( pmake_data *data )
 {
     pmake_list  *curr;
     int         res;
-    char        cmd[256];
+    char        cmd[PMAKE_COMMAND_SIZE];
     int         rc = 0;
 
     for( curr = data->dir_list; curr != NULL; curr = curr->next ) {
@@ -521,12 +519,12 @@ static int ProcPMake( char *cmd, bool ignore_errors )
         PMakeCleanup( data );
         return( 2 );
     }
-    strcpy( save, IncludeStk->cwd );
     data->ignore_errors = ignore_errors;
+    strcpy( save, IncludeStk->cwd );
     res = DoPMake( data );
+    PMakeCleanup( data );
     SysChdir( save );
     getcwd( IncludeStk->cwd, sizeof( IncludeStk->cwd ) );
-    PMakeCleanup( data );
     return( res );
 }
 

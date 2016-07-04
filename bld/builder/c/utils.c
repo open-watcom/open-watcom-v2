@@ -113,8 +113,8 @@ void *Alloc( size_t size )
 
 char *SkipBlanks( const char *p )
 {
-    while( ( *p == ' ' ) || ( *p == '\t' ) ) {
+    while( IS_BLANK( *p ) ) {
         ++p;
     }
-    return( ( char* ) p );
+    return( (char *)p );
 }
