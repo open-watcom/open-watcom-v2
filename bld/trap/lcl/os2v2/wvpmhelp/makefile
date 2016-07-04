@@ -27,7 +27,7 @@ w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
 
 tmplnk = tmp.lnk
 
-wdpmhook.dll: pmhook.obj
+wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
     @%write  $(tmplnk) name $^@ sys os2v2 dll
     @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map
@@ -36,7 +36,7 @@ wdpmhook.dll: pmhook.obj
     @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
     $(linker) @$(tmplnk)
 
-wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res
+wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res $(__MAKEFILES__)
     @%write  $(tmplnk) name $^@ system os2v2 pm
     @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map

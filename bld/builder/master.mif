@@ -54,7 +54,7 @@ wsplice.exe : $(wsplice_objs)
 diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
 
-builder.exe : $(builder_objs)
+builder.exe : $(builder_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else

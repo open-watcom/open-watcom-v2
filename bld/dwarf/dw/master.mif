@@ -49,5 +49,8 @@ dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
 
 dwabbrev.obj : dwabbrev.c dwabinfo.gh
 
-testcli.exe : testcli.obj testtest.obj testdump.obj dwarfw.lib
-    $(linker) name $@ $(lflags) file {testcli.obj testtest.obj testdump.obj} lib {dwarfw.lib}
+test_objs = testcli.obj testtest.obj testdump.obj
+test_libs = dwarfw.lib
+
+testcli.exe : $(test_objs) $(test_lib) $(__MAKEFILES__)
+    $(linker) name $@ $(lflags) file {$(test_objs)} lib {$(test_libs)}

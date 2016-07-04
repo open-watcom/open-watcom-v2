@@ -61,7 +61,7 @@ all: cmdedit.exe #dcmdedit.exe
 # CMDEDIT.EXE
 #
 cmdobjs = dosstart.obj $(dosobjs)
-cmdedit.exe: $(cmdobjs) makefile
+cmdedit.exe: $(cmdobjs) $(__MAKEFILES__)
             @%write $(lnk) debug all system dos name cmdedit lib clibs
             @%append $(lnk) option map, dosseg, symfile
             @for %i in ($(cmdobjs)) do @%append $(lnk) file %i
@@ -72,7 +72,7 @@ cmdedit.exe: $(cmdobjs) makefile
 #
 tstobjs = dcmdedit.obj $(dosobjs)
 
-dcmdedit.exe: $(tstobjs) makefile
+dcmdedit.exe: $(tstobjs) $(__MAKEFILES__)
             @%write $(lnk) system dos debug all name dcmdedit
             @%append $(lnk) option map, dosseg
             @for %i in ($(tstobjs)) do @%append $(lnk) file %i
@@ -89,7 +89,7 @@ all: os2edit.dll os2edit.exe os22edit.exe #cmdshell.exe
 #
 cmd2objs = cmdstart.obj $(os2zuobjs)
 
-os2edit.dll: $(cmd2objs) makefile
+os2edit.dll: $(cmd2objs) $(__MAKEFILES__)
             @%write d$(lnk) name os2edit lib clibs
             @%append d$(lnk) system os2_dll initinstance option manyautodata
             @%append d$(lnk) option map=os2edid.map, nocaseex, dosseg, newfiles, symfile
@@ -102,7 +102,7 @@ os2edit.dll: $(cmd2objs) makefile
 #
 ts2objs = dcmdedit.obj ftos.obj $(os2objs)
 
-dos2edit.exe: $(ts2objs) makefile
+dos2edit.exe: $(ts2objs) $(__MAKEFILES__)
             @%write $(lnk) debug all name dos2edit system os2 pmc
             @%append $(lnk) option map, dosseg, newfiles
             @for %i in ($(ts2objs)) do @%append $(lnk) file %i
@@ -113,7 +113,7 @@ dos2edit.exe: $(ts2objs) makefile
 #
 cmdshellobjs = cobjs/cmdshell.obj cobjs/ftos.obj $(os2cmdshellobjs)
 
-cmdshell.exe: $(cmdshellobjs) makefile
+cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
             @%write c$(lnk) debug all name cmdshell system os2 pmc
             @%append c$(lnk) option map, dosseg, nocaseex
             @for %i in ($(cmdshellobjs)) do @%append c$(lnk) file %i
@@ -123,13 +123,13 @@ cmdshell.exe: $(cmdshellobjs) makefile
 # OS2EDIT.EXE
 #
 
-os2edit.exe:    os2edit.c
-        $(cc) $< -ox -d1 $(inc_dirs_sys)
+os2edit.exe: os2edit.c $(__MAKEFILES__)
+        $(cc) $[@ -ox -d1 $(inc_dirs_sys)
         $(linker) debug all op symfile, map sys os2 file os2edit
 #
 # OS22EDIT.EXE
 #
-os22edit.exe:    os22edit.c
-        $(cc) $< -ox -d1 $(inc_dirs_sys)
+os22edit.exe: os22edit.c $(__MAKEFILES__)
+        $(cc) $[@ -ox -d1 $(inc_dirs_sys)
         $(linker) debug all op symfile, map sys os2 file os22edit
 !endif

@@ -15,10 +15,10 @@ all : wstub.exe wstubq.exe
 !define host_$(host_os)$(host_cpu)
 
 !ifdef host_dosi86
-wstub.exe : wstub.obj
+wstub.exe : wstub.obj $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file $[@
 
-wstubq.exe : wstubq.obj
+wstubq.exe : wstubq.obj $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file $[@
 !else
 wstub.exe wstubq.exe :

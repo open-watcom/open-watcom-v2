@@ -42,7 +42,7 @@ libs = $(wpi_lib) $(commonui_lib)
 
 $(name).exe : rcstr.gh $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifdef __WATCOM_TOOLS__
-        $(LINKER) $(lflags) name $^@ file { $(objs) } lib { $(libs) }
+        $(linker) $(lflags) name $^@ file { $(objs) } lib { $(libs) }
 !ifeq host_cpu axp
 !ifeq release 0
         cvpack $(name).exe

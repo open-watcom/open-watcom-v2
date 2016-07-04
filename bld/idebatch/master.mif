@@ -12,7 +12,7 @@ idebatch_autodepend = .AUTODEPEND
 
 all: batserv.exe tst.exe .symbolic
 
-batserv.exe : batserv.obj
+batserv.exe : batserv.obj $(__MAKEFILES__)
         $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
 
 batcli.obj : batcli.c

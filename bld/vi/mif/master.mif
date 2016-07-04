@@ -94,7 +94,7 @@ setgen.dh : ../win/ctl/setgen.dyn
 setfs.dh setgen.dh: $(__MAKEFILES__)
     parsedyn $[@ $@ Dyn_$^&
 
-$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) .AUTODEPEND
+$(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)

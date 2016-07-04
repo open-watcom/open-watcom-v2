@@ -26,14 +26,15 @@ all : vi.ps .SYMBOLIC
 #all : vi.ps vi.hlp .SYMBOLIC
     %null
 
-vi.ps : vi.gml settings.gml intro.gml basic.gml &
-        inter.gml advan.gml vipref.gml &
-        cmds.gml modes.gml &
-        win_menu.gml regexp.gml env.gml scripts.gml &
-        extra.gml &
-        spmapkey.gml &
-        oper.gml worddef.gml speckeys.gml &
-        a_errcod.gml a_cmdmod.gml a_symkey.gml
+vi.ps : &
+    vi.gml settings.gml intro.gml basic.gml &
+    inter.gml advan.gml vipref.gml &
+    cmds.gml modes.gml &
+    win_menu.gml regexp.gml env.gml scripts.gml &
+    extra.gml &
+    spmapkey.gml &
+    oper.gml worddef.gml speckeys.gml &
+    a_errcod.gml a_cmdmod.gml a_symkey.gml
     -$(wgml) vi ( file nb7x9ps index passes 2 cpinch 20 # verbose statistics
     # Bodge supplying missing functions
     bvi -s << vi.ps
@@ -54,14 +55,14 @@ q
 #    -$(wgml) vi.gml (file nb7x9ps pass 1 cpi 20 stat verb dev term nopause out *.res
 
 vi.hlp: vihelp.src toc vihlp
-        @erase vitoc.hlp
-        @erase toc.hlp
-        @erase toc.ind
-        @erase vitoc.src
-        @erase toc.src
-        @erase vihelp.src
-        @erase links.hlp
-        @%null
+    @erase vitoc.hlp
+    @erase toc.hlp
+    @erase toc.ind
+    @erase vitoc.src
+    @erase toc.src
+    @erase vihelp.src
+    @erase links.hlp
+    @%null
 
 vihelp.src: vi.gml .SYMBOLIC
     @%create $(optsfile)

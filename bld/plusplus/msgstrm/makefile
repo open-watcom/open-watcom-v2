@@ -14,12 +14,12 @@ OBJS = files.obj        &
 
 compiler = /d1 /w4 /zq /ox /os /xs /ew /ms /bt=dos
 
-msgstrm.exe : $(OBJS) makefile msgstrm.os2 msgstrm.stb
+msgstrm.exe : $(OBJS) makefile msgstrm.os2 msgstrm.stb $(__MAKEFILES__)
     $(linker) @msgstrm.os2
 #   $(pharlap)bind386 $(pharlap)run386b msgstrm.exp -exe msgstrm.exe
 #   @rm -f msgstrm.exp
 
-msgstrm.stb : $(OBJS) makefile msgstrm.dos
+msgstrm.stb : $(OBJS) makefile msgstrm.dos $(__MAKEFILES__)
     $(linker) @msgstrm.dos
 
 msgstrm.os2 : makefile $(objs)

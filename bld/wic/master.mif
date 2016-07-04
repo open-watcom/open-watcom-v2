@@ -42,7 +42,7 @@ inc_dirs = -I"../h"
 
 ##############################################################################
 
-$(name).exe : $(objs) $(osildr) wic.res $(wres_lib)
+$(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
     %create $^&.lnk
     @%append $^&.lnk option quiet
     @%append $^&.lnk debug all

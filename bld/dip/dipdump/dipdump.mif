@@ -25,10 +25,10 @@ inc_dirs = -I"../h" -I"$(dig_dir)/h"
 
 .c: ../c;$(dig_srcs);$(mad_srcs)
 
-objs =  dipdump.obj &
-        digcli.obj  &
-        dipcli.obj  &
-        $(dip_objs)
-        
+objs = &
+    dipdump.obj &
+    digcli.obj  &
+    dipcli.obj  &
+    $(dip_objs)
 
 !include exetarg.mif

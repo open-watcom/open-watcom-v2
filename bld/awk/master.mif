@@ -12,17 +12,17 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-objs =              &
-        b.obj       &
-        main.obj    &
-        parse.obj   &
-        proctab.obj &
-        tran.obj    &
-        lib.obj     &
-        run.obj     &
-        lex.obj     &
-        ytab.obj    &
-        missin95.obj
+objs = &
+    b.obj &
+    main.obj &
+    parse.obj &
+    proctab.obj &
+    tran.obj &
+    lib.obj &
+    run.obj &
+    lex.obj &
+    ytab.obj &
+    missin95.obj
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_ytab = -wcd=118 -wcd=202

@@ -37,7 +37,7 @@ emu387.lib: $(objs) $(__MAKEFILES__)
 
 objs = qnxemu87.obj emu387.obj fpeqnx.obj
 
-emu387: usage.u $(objs)
+emu387: usage.u $(objs) $(__MAKEFILES__)
     $(linker) name $^@ $(lflags) opt priv=0,map,long,quiet,res=usage.u file {$(objs)}
 
 usage.u : ../../usage.sp

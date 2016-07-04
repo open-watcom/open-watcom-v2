@@ -43,7 +43,7 @@ extra_c_flags_mempool = -I"$(browse_dir)/h"
 
 inc_dirs = -I. -I"../h"
 
-dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs)
+dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(c_objs) $(ldflags)
 !else

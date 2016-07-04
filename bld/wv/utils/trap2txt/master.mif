@@ -12,14 +12,14 @@ extra_cpp_flags = -DMD_x86
 
 .cpp: ../c
 
-objs =            &
-    trap2txt.obj  &
-    trsp_cap.obj  &
-    trsp_env.obj  &
-    trspfinf.obj  &
-    trspfile.obj  &
-    trsp_ovl.obj  &
-    trsp_thr.obj  &
+objs = &
+    trap2txt.obj &
+    trsp_cap.obj &
+    trsp_env.obj &
+    trspfinf.obj &
+    trspfile.obj &
+    trsp_ovl.obj &
+    trsp_thr.obj &
     trap_x86.obj
 
 !include exetarg.mif

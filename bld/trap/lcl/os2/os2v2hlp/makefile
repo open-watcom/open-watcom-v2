@@ -19,6 +19,6 @@ os2v2hlp_autodepends = .AUTODEPEND
 
 extra_l_flags = op dosseg imp DOS32WRITE DOSCALLS.282,DOS32DEBUG DOSCALLS.317
 
-os2v2hlp.exe : os2v2hlp.obj
+os2v2hlp.exe : os2v2hlp.obj $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file {os2v2hlp.obj}
                 

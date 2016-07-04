@@ -26,7 +26,7 @@ compile = $(comp386) $[@ -ox-4-d1-w4-zq-i"$(watcom_h)"
 .c.obj :
         $(compile)
 
-command.exe : $(objs) wlink.res
+command.exe : $(objs) wlink.res $(__MAKEFILES__)
         @%create tmp.lnk
         @for %i in ($(objs)) do @%append tmp.lnk file %i
         $(linker) name $^&.exp debug all sys pharlap option undefsok,map libpath $(wres_dir)/lib lib wresf @tmp.lnk

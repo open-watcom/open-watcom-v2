@@ -32,10 +32,10 @@ w : nmpbind.exe .symbolic
 
 d : dnmpbind.exe .symbolic
 
-nmpbind.exe : _err.gh _jerr.gh $(objs)
+nmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
     $(linker) name $^@ $(lflags) file { $objs }
 
-dnmpbind.exe : _err.gh _jerr.gh $(objs)
+dnmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
     $(linker) name $^@ $(lflags) file { $objs }
 
 .c: ../c

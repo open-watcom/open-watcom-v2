@@ -14,5 +14,5 @@ objs =  resdump.obj  &
         loadchar.obj &
         loadtype.obj
 
-$(proj_name).exe : $(objs)
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file {$(objs)}

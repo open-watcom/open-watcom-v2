@@ -1,17 +1,17 @@
 objdostimeroot = &
-        int.obj
+    int.obj
 
 objdossizeroot = &
-        dosmain.obj
+    dosmain.obj
 
 objdossize = &
-        doscmds.obj &
-        dosmouse.obj &
-        dossys.obj &
-        dosdir.obj &
-        time.obj  &
-        spawn.obj &
-        uicurse.c
+    doscmds.obj &
+    dosmouse.obj &
+    dossys.obj &
+    dosdir.obj &
+    time.obj  &
+    spawn.obj &
+    uicurse.c
 
 extraobjs = $(objdossize)
 extraobjsroot = $(objdostimeroot) $(objdossizeroot)
