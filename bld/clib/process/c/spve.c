@@ -73,7 +73,7 @@
 #if defined( __DOS__ ) && defined( _M_I86 )
     #define ENV_ARG     unsigned
     #define ENVPARM     envseg
-    #define SPVE_NEAR   _WCI86NEAR      #__based( __segname( "_STACK" ) )
+    #define SPVE_NEAR   _WCI86NEAR      //__based( __segname( "_STACK" ) )
 #else
     #define ENV_ARG     CHAR_TYPE *
     #define ENVPARM     envmem
