@@ -56,20 +56,23 @@ int SysRunCommand( const char *cmd )
     int         my_std_output;
     int         my_std_error;
     int         rc;
-    char        *cmdnam;
-    char        *sp;
+    char        *pgmname;
+    char        *cmdline;
     tiny_ret_t  tinyrc;
     int         ofh;
     char        temp_name[256];
     char        buff[256 + 1];
     unsigned    bytes_read;
 
-    cmdnam = strdup( cmd );
-    if( cmdnam == NULL )
+    pgmname = strdup( cmd );
+    if( pgmname == NULL )
         return( -1 );
-    sp = strchr( cmdnam, ' ' );
-    if( sp != NULL ) {
-        *sp++ = '\0';
+    cmdline = strchr( pgmname, ' ' );
+    if( cmdline != NULL ) {
+        *cmdline++ = '\0';
+        while( *cmdline == ' ' ) {
+            ++cmdline;
+        }
     }
     rc = -1;
     getcwd( temp_name, 256 );
@@ -82,7 +85,7 @@ int SysRunCommand( const char *cmd )
         TinyDup2( ofh, STDOUT_FILENO);
         TinyDup2( ofh, STDERR_FILENO);
         /* no pipes for DOS so we call spawn with P_WAIT */
-        rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
+        rc = spawnlp( P_WAIT, pgmname, pgmname, cmdline, NULL );
         TinyDup2( my_std_output, STDOUT_FILENO );
         TinyDup2( my_std_error, STDERR_FILENO );
         TinyClose( my_std_output );
