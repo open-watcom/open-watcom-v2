@@ -62,18 +62,27 @@
     #define _POSIX_HANDLE_CLEANUP
 #endif
 
-#if defined( __DOS__ ) && defined( _M_I86 )
-    #define SPVE_NEAR _WCI86NEAR
-#else
-    #define SPVE_NEAR
-#endif
-
 #if defined( __OS2__ ) && defined( __BIG_DATA__ )
     #define LIB_ALLOC   lib_fmalloc
     #define LIB_FREE    lib_ffree
 #else
     #define LIB_ALLOC   lib_nmalloc
     #define LIB_FREE    lib_nfree
+#endif
+
+#if defined( __DOS__ ) && defined( _M_I86 )
+    #define ENV_ARG     unsigned
+    #define ENVPARM     envseg
+    #define SPVE_NEAR   _WCI86NEAR      #__based( __segname( "_STACK" ) )
+#else
+    #define ENV_ARG     CHAR_TYPE *
+    #define ENVPARM     envmem
+    #define SPVE_NEAR
+#endif
+
+#if defined( __DOS__ )
+extern int  __dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env );
+#pragma aux __dospawn "_*" parm caller [];
 #endif
 
 /* P_OVERLAY macro expands to a variable, not a constant! */
@@ -97,20 +106,12 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
     return( 0 );
 }
 
-#if defined( __OS2__ ) || defined( __NT__ )
-#define x_dospawn __F_NAME(_dospawn,_wdospawn)
-#else
-static int x_dospawn( int mode, CHAR_TYPE SPVE_NEAR *pgmname, CHAR_TYPE SPVE_NEAR *cmdline,
-  #if defined( _M_I86 )
-    unsigned env,
-  #else
-    CHAR_TYPE *env,
-  #endif
-    const CHAR_TYPE * const *argv ) {
-
+#if defined( __DOS__ )
+static int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
+{
     /* do this here instead of in the .asm files */
-    __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
-    return( __F_NAME(_dospawn,_wdospawn)( mode, pgmname, cmdline, env, argv ) );
+    __ccmdline( pgmname, argv, cmdline, 0 );
+    return( __dospawn( mode, pgmname, cmdline, env ) );
 }
 #endif
 
@@ -144,12 +145,6 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
     int                     rc;
-
-#if defined( __DOS__ ) && defined( _M_I86 )
- #define        ENVPARM envseg
-#else
- #define        ENVPARM envmem
-#endif
 
 #ifdef __USE_POSIX_HANDLE_STRINGS
     CHAR_TYPE               **newEnvp;
@@ -316,7 +311,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
             } else {
                 _RWD_errno = 0;
                 /* user specified an extension, so try it */
-                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
 #if defined( __OS2__ ) || defined( __NT__ )
         }
@@ -335,12 +330,12 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
             } else {
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
                 _RWD_errno = 0;
-                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 _RWD_errno = 0;
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
-                retval = x_dospawn( mode, p, cmdline, ENVPARM, argv );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
                 if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                     /* try for a .BAT file */
                     _RWD_errno = 0;

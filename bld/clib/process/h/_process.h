@@ -31,8 +31,7 @@
 
 #include <malloc.h>
 
-typedef int (*execveaddr_type)( const char *__path, const char *const __argv[],
-                            const char *const __envp[] );
+typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 
 extern execveaddr_type __execaddr( void );
 #ifdef __WIDECHAR__
@@ -44,14 +43,7 @@ extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * con
 extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, int );
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
-#if defined( _M_I86 ) && defined( __DOS__ )
-extern int  _dospawn(int,char _WCI86NEAR *,char _WCI86NEAR *,unsigned, const char * const *);
-#else
-extern int  _dospawn(int,char *,char *, char *, const char * const *);
-#endif
-#if defined( __DOS__ )
-#pragma aux _dospawn "_*" parm caller [];
-#endif
+extern int  _dospawn( int, char *, char *, char *, const char * const * );
 #endif
 #ifdef __RDOS__
 extern int  _doexec(char *,char *, const char * const *);

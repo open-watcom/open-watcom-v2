@@ -74,10 +74,10 @@ _DATA   ends
 
 _TEXT   segment
 
-        public  __dospawn
+        public  ___dospawn
 
 
-        defp    __dospawn
+        defp    ___dospawn
         push    bp
         mov     bp,sp                   ; gain access to parms
 if _MODEL and _BIG_CODE
@@ -211,7 +211,7 @@ endif
         pop     si                      ; . . .
         pop     bp                      ; . . .
         ret                             ; return
-__dospawn endp
+___dospawn endp
 
 _TEXT   ends
         end

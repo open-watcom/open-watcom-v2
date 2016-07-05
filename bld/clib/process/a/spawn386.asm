@@ -70,10 +70,10 @@ _DATA   ends
 
 _TEXT   segment
 
-        public  __dospawn
+        public  ___dospawn
 
 
-        defp    __dospawn
+        defp    ___dospawn
         push    ebp
         mov     ebp,esp                 ; gain access to parms
 
@@ -159,7 +159,7 @@ endif
         pop     esi                     ; . . .
         pop     ebp                     ; . . .
         ret                             ; return
-__dospawn endp
+___dospawn endp
 
 _TEXT   ends
         end
