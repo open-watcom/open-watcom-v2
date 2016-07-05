@@ -4,6 +4,7 @@ yacc_autodepends = .autodepend
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
 inc_dirs = -I"$(yacc_dir)/h"
 
@@ -29,9 +30,4 @@ objs =                  &
         yacc.obj
 # genc.obj, genobj.obj, and recover.obj are unused
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+$(proj_name).exe : $(objs)

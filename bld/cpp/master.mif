@@ -7,6 +7,7 @@ wcpp_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
 .c : ../c;$(posix_dir)/misc;$(watcom_dir)/c
 
@@ -23,18 +24,10 @@ wcpp_objs       = wcpp.obj $(common_objs)
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 
-wcpp.exe : $(wcpp_objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(wcpp_objs) $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(wcpp_objs)}
-!endif
+wcpp.exe : $(wcpp_objs)
 
-mkmk.exe : $(mkmk_objs) $(__MAKEFILES__)
-        $(linker) name $@ $(lflags) file {$(mkmk_objs)}
+mkmk.exe : $(mkmk_objs)
 
-testpp.exe : $(testpp_objs) $(__MAKEFILES__)
-        $(linker) name $@ $(lflags) file {$(testpp_objs)}
+testpp.exe : $(testpp_objs)
 
-dumpmac.exe : $(dumpmac_objs) $(__MAKEFILES__)
-        $(linker) name $@ $(lflags) file {$(dumpmac_objs)}
+dumpmac.exe : $(dumpmac_objs)

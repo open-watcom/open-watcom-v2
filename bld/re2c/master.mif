@@ -4,6 +4,7 @@ re2c_autodepends = .autodepend
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
 inc_dirs = -I"$(re2c_dir)/h"
 
@@ -23,9 +24,4 @@ extra_c_flags_scanner = -wcd=118
 extra_c_flags_parser = -pil
 !endif
 
-$(proj_name).exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+$(proj_name).exe : $(objs)
