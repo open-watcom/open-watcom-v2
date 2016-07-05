@@ -5,9 +5,10 @@ techinfo_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
 objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj
-!if host_os dos
+!ifeq host_os dos
 objs += monint.obj
 !endif
 
@@ -23,4 +24,5 @@ extra_l_flags_os2 = op newfile
 .c: ..
 .asm: ..
 
-!include exetarg.mif
+techinfo.exe : $(objs)
+

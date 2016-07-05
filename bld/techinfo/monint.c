@@ -38,7 +38,7 @@
 
 extern int LineCount;
 
-short Control = (                               \
+static short Control = (                               \
                ( IC_AFFINE | RC_NEAR | PC_53 )  \
                | ( MCW_EM & ~                   \
                    ( EM_INVALID                 \
@@ -49,10 +49,10 @@ short Control = (                               \
                    | EM_PRECISION )             \
                ) );
 
-volatile short Sample_On = 0;
-volatile unsigned short NDP_Status;
+static volatile short Sample_On = 0;
+static volatile unsigned short NDP_Status;
 
-volatile struct NDP_Environment {
+static volatile struct NDP_Environment {
     unsigned short control_word;
     unsigned short status_word;
     unsigned short tag_word;
@@ -81,7 +81,7 @@ extern  void    __fstenv( void );
 
 #define NUM_INTS 0x80
 
-volatile short int_tick[NUM_INTS] = {
+static volatile short int_tick[NUM_INTS] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -96,7 +96,7 @@ volatile short int_tick[NUM_INTS] = {
 #define _INTERRUPT  __interrupt
 #endif
 
-void (_INTERRUPT *prev_int[NUM_INTS])();
+static void (_INTERRUPT *prev_int[NUM_INTS])();
 
 #define intx( N )                                   \
     static void _INTERRUPT int_rtn_##N()             \
@@ -244,7 +244,7 @@ intx( 0x7D )
 intx( 0x7E )
 intx( 0x7F )
 
-void (_INTERRUPT *new_int[NUM_INTS])() = {
+static void (_INTERRUPT *new_int[NUM_INTS])() = {
     int_rtn_0x00, int_rtn_0x01, int_rtn_0x02, int_rtn_0x03,
     int_rtn_0x04, int_rtn_0x05, int_rtn_0x06, int_rtn_0x07,
     int_rtn_0x08, int_rtn_0x09, int_rtn_0x0A, int_rtn_0x0B,
