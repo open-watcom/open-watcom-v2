@@ -113,6 +113,6 @@ int SysRunCommand( const char *cmd )
         }
         TinyDelete( temp_name );
     }
-    free( cmdnam );
+    free( pgmname );
     return( rc );
 }
