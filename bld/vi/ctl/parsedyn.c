@@ -45,7 +45,7 @@ static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
-    int     i;
+    size_t  i;
 
     for( ; (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL; ) {
 
