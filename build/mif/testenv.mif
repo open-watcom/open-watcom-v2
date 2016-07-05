@@ -65,7 +65,7 @@
 #
 # linker = wlink
 #
-# uncomment below if you want to see more 
+# uncomment below if you want to see more
 # !define noisy 1
 #
 
@@ -505,17 +505,17 @@ bld_extra_defines = -DINLINETEST
 !  ifdef buildtest
 #    build version of C compiler for 386
 !    ifdef __DOS__
-!      define comp_wcc_386 $(src_dir)\cc\386\dos386\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(bin_subdir)\wcc386
 !    else ifdef __OS2__
-!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(bin_subdir)\wcc386
 !    else ifdef __LINUX386__
-!      define comp_wcc_386 $(src_dir)/cc/386/linux386/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linux386/$(bin_subdir)/wcc386.exe
 !    else ifdef __LINUXX64__
-!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/wcc386.exe
+!      define comp_wcc_386 $(src_dir)/cc/386/linuxx64/$(bin_subdir)/wcc386.exe
 !    else ifdef __NT386__
-!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\nt386.dll\$(bin_subdir)\wcc386
 !    else ifdef __NTX64__
-!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\wcc386
+!      define comp_wcc_386 $(src_dir)\cc\386\ntx64.dll\$(bin_subdir)\wcc386
 !    endif
 !  else ifdef %CTEST_WCC_386
 !    define comp_wcc_386 $+$(%CTEST_WCC_386)$-
