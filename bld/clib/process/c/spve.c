@@ -71,13 +71,9 @@
 #endif
 
 #if defined( __DOS__ ) && defined( _M_I86 )
-    #define ENV_ARG     unsigned
     #define ENVPARM     envseg
-    #define SPVE_NEAR   _WCI86NEAR      //__based( __segname( "_STACK" ) )
 #else
-    #define ENV_ARG     CHAR_TYPE *
     #define ENVPARM     envmem
-    #define SPVE_NEAR
 #endif
 
 #if defined( __DOS__ )
@@ -107,7 +103,7 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
 }
 
 #if defined( __DOS__ )
-static int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
+int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
 {
     /* do this here instead of in the .asm files */
     __ccmdline( pgmname, argv, cmdline, 0 );

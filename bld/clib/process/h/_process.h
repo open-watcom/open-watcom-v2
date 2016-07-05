@@ -31,6 +31,19 @@
 
 #include <malloc.h>
 
+
+#if defined( __DOS__ ) && defined( _M_I86 )
+    #define SPVE_NEAR   __near      //__based( __segname( "_STACK" ) )
+    #define ENV_ARG     unsigned
+#else
+    #define SPVE_NEAR
+  #ifdef __WIDECHAR__
+    #define ENV_ARG     wchar_t *
+  #else
+    #define ENV_ARG     char *
+  #endif
+#endif
+
 typedef int (*execveaddr_type)( const char *__path, const char *const __argv[], const char *const __envp[] );
 
 extern execveaddr_type __execaddr( void );
@@ -38,12 +51,12 @@ extern execveaddr_type __execaddr( void );
 extern int  __wcenvarg( const wchar_t* const *, const wchar_t* const *, wchar_t**, wchar_t**, unsigned*, size_t*, int );
 extern void __wccmdline( wchar_t *, const wchar_t * const *, wchar_t *, int );
 extern wchar_t *__wSlash_C( wchar_t *switch_c, unsigned char use_slash );
-extern int  _wdospawn( int, wchar_t *, wchar_t *, wchar_t *, const wchar_t * const * );
+extern int  _wdospawn( int, wchar_t SPVE_NEAR *, wchar_t SPVE_NEAR *, ENV_ARG, const wchar_t * const * );
 #else
 extern int  __cenvarg( const char* const *, const char* const *, char**, char**, unsigned*, size_t*, int );
 extern void __ccmdline( char *, const char * const *, char *, int );
 extern char *__Slash_C( char *switch_c, unsigned char use_slash );
-extern int  _dospawn( int, char *, char *, char *, const char * const * );
+extern int  _dospawn( int, char SPVE_NEAR *, char SPVE_NEAR *, ENV_ARG, const char * const * );
 #endif
 #ifdef __RDOS__
 extern int  _doexec(char *,char *, const char * const *);
