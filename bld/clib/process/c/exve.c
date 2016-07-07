@@ -227,8 +227,8 @@ _WCRTLINK int execve( path, argv, envp )
     char                *name;
     int                 file;
     an_exe_header       exe;            /* Room for exe file header */
+    char                *_envptr;
     char                *envptr;
-    char                *envstrings;
     unsigned            envseg;
     unsigned            envpara;
     size_t              cmdline_len;
@@ -284,7 +284,7 @@ _WCRTLINK int execve( path, argv, envp )
         argvv[i] = argv[i];
     }
     argvv[0] = buffer;           /* 22-jan-88 set program name */
-    envpara = __cenvarg( argvv, envp, &envptr, &envstrings,
+    envpara = __cenvarg( argvv, envp, &_envptr, &envptr,
                          &envseg, &cmdline_len, TRUE );
     if( envpara == -1 )
         goto error;
@@ -294,7 +294,7 @@ _WCRTLINK int execve( path, argv, envp )
         save_file_handles();
     _doexec( (char _WCI86NEAR *)buffer, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
-    free( envptr );
+    free( _envptr );
     free( argvv );
 error: /* Clean up after error */
     return( -1 );

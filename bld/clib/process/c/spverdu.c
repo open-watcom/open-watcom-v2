@@ -66,8 +66,8 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                        const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
 {
     const CHAR_TYPE * const *envp = (const CHAR_TYPE * const *)in_envp;
-    CHAR_TYPE               *envmem;
-    CHAR_TYPE               *envstrings;
+    CHAR_TYPE               *_envptr;
+    CHAR_TYPE               *envptr;
     unsigned                envseg;
     int                     len;
     CHAR_TYPE               *np;
@@ -75,7 +75,6 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     CHAR_TYPE               *end_of_p;
     int                     rc;
     int                     retval;
-    int                     num_of_paras;       /* for environment */
     size_t                  cmdline_len;
     CHAR_TYPE               *cmdline_mem;
     CHAR_TYPE               *cmdline;
@@ -89,19 +88,17 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         return( rc );
     }
 
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
-        &envstrings, &envseg,
-        &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
+                        &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         return( -1 );
     }
-    num_of_paras = retval;
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
         p = (CHAR_TYPE *)alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
-            lib_free( envmem );
+            lib_free( _envptr );
             return( -1 );
         }
     } else {
@@ -131,8 +128,8 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                 retval = -1; /* assume file doesn't exist */
                 if( file_exists( p ) ) {
                     /* the environment will have to be reconstructed */
-                    lib_free( envmem );
-                    envmem = NULL;
+                    lib_free( _envptr );
+                    _envptr = NULL;
                     __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                     retval = spawnl( mode, getenv( STRING( "COMSPEC" ) ),
                         STRING( "COMMAND" ),
@@ -142,25 +139,25 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
             } else {
                 _RWD_errno = 0;
                 /* user specified an extension, so try it */
-                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
             }
         } else {
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
             _RWD_errno = 0;
-            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
+            retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 _RWD_errno = 0;
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
-                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envmem, argv );
+                retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
                 if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                     /* try for a .BAT file */
                     _RWD_errno = 0;
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
                     if( file_exists( p ) ) {
                         /* the environment will have to be reconstructed */
-                        lib_free( envmem );
-                        envmem = NULL;
+                        lib_free( _envptr );
+                        _envptr = NULL;
                         __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                         retval = spawnl( mode, getenv( STRING( "COMSPEC" ) ),
                             STRING( "COMMAND" ),
@@ -173,6 +170,6 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     }
     LIB_FREE( cmdline_mem );
     LIB_FREE( np );
-    lib_free( envmem );
+    lib_free( _envptr );
     return( retval );
 }

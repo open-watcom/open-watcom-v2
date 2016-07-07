@@ -62,18 +62,22 @@
     #define _POSIX_HANDLE_CLEANUP
 #endif
 
+#if defined( __DOS_086__ )
+    #define SPVE_NEAR   __near      //__based( __segname( "_STACK" ) )
+    #define ENV_ARG     unsigned
+    #define ENVPARM     envseg
+#else
+    #define SPVE_NEAR
+    #define ENV_ARG     CHAR_TYPE *
+    #define ENVPARM     envptr
+#endif
+
 #if defined( __OS2__ ) && defined( __BIG_DATA__ )
     #define LIB_ALLOC   lib_fmalloc
     #define LIB_FREE    lib_ffree
 #else
     #define LIB_ALLOC   lib_nmalloc
     #define LIB_FREE    lib_nfree
-#endif
-
-#if defined( __DOS__ ) && defined( _M_I86 )
-    #define ENVPARM     envseg
-#else
-    #define ENVPARM     envmem
 #endif
 
 #if defined( __DOS__ )
@@ -103,7 +107,7 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
 }
 
 #if defined( __DOS__ )
-int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
+static int _dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdline, ENV_ARG env, const char * const *argv )
 {
     /* do this here instead of in the .asm files */
     __ccmdline( pgmname, argv, cmdline, 0 );
@@ -118,8 +122,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                                           const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
 {
     const CHAR_TYPE * const *envp = (const CHAR_TYPE * const *)in_envp;
-    CHAR_TYPE               *envmem;
-    CHAR_TYPE               *envstrings;
+    CHAR_TYPE               *_envptr;
+    CHAR_TYPE               *envptr;
     unsigned                envseg;
     int                     len;
     CHAR_TYPE SPVE_NEAR     *np;
@@ -220,8 +224,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     }
  #endif
 #endif
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
-        &envstrings, &envseg, &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
+        &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         _POSIX_HANDLE_CLEANUP;
         return( -1 );
@@ -232,7 +236,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     if( np == NULL ) {
         p = (CHAR_TYPE SPVE_NEAR *)alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
-            lib_free( envmem );
+            lib_free( _envptr );
             _POSIX_HANDLE_CLEANUP;
             return( -1 );
         }
@@ -244,18 +248,18 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #if defined( __DOS__ )
     _RWD_Save8087( &_87save );
 #endif
-#if defined( __DOS__ ) && defined( _M_I86 )
+#if defined( __DOS_086__ )
     if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         unsigned    segment;
 
         if( _dos_allocmem( num_of_paras, &segment ) != 0 ) {
             lib_nfree( np );
-            lib_free( envmem );
+            lib_free( _envptr );
             _POSIX_HANDLE_CLEANUP;
             return( -1 );
         }
         envseg = segment;
-        _fmemcpy( MK_FP( segment, 0 ), envstrings, num_of_paras * 16 );
+        _fmemcpy( MK_FP( segment, 0 ), envptr, num_of_paras * 16 );
     }
 #endif
     /* allocate the cmdline buffer */
@@ -294,8 +298,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                 if( file_exists( p ) ) {
 #if defined( __DOS__ )
                     /* the environment will have to be reconstructed */
-                    lib_free( envmem );
-                    envmem = NULL;
+                    lib_free( _envptr );
+                    _envptr = NULL;
 #endif
                     __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                     retval = __F_NAME(spawnl,_wspawnl)( mode,
@@ -344,8 +348,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #endif
                     if( file_exists( p ) ) {
                         /* the environment will have to be reconstructed */
-                        lib_free( envmem );
-                        envmem = NULL;
+                        lib_free( _envptr );
+                        _envptr = NULL;
                         __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                         retval = __F_NAME(spawnl,_wspawnl)( mode,
                             __F_NAME(getenv,_wgetenv)( STRING( "COMSPEC" ) ),
@@ -360,8 +364,8 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     _POSIX_HANDLE_CLEANUP;
     LIB_FREE( cmdline_mem );
     LIB_FREE( np );
-    lib_free( envmem );
-#if !defined(__OS2__) && defined( _M_I86 )
+    lib_free( _envptr );
+#if defined( __DOS_086__ )
     if( _RWD_osmode != DOS_MODE ) {     /* if protect-mode e.g. DOS/16M */
         _dos_freemem( envseg );
     }

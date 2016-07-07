@@ -67,15 +67,14 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
                      const CHAR_TYPE * const argv[] )
 {
     const CHAR_TYPE * const *envp = (const CHAR_TYPE **)_RWD_environ;
-    CHAR_TYPE               *envmem;
-    CHAR_TYPE               *envstrings;
+    CHAR_TYPE               *_envptr;
+    CHAR_TYPE               *envptr;
     unsigned                envseg;
     int                     len;
     CHAR_TYPE               *np;
     CHAR_TYPE               *p;
     CHAR_TYPE               *end_of_p;
     int                     retval;
-    int                     num_of_paras;       /* for environment */
     size_t                  cmdline_len;
     CHAR_TYPE               *cmdline_mem;
     CHAR_TYPE               *cmdline;
@@ -84,19 +83,17 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
 
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &envmem,
-        &envstrings, &envseg,
-        &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
+                        &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         return( -1 );
     }
-    num_of_paras = retval;
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
         p = (CHAR_TYPE *)alloca( len*sizeof(CHAR_TYPE) );
         if( p == NULL ) {
-            lib_free( envmem );
+            lib_free( _envptr );
             return( -1 );
         }
     } else {
@@ -147,8 +144,8 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
                 if( file_exists( p ) ) {
 spawn_command_com:
                 /* the environment will have to be reconstructed */
-                lib_free( envmem );
-                envmem = NULL;
+                lib_free( _envptr );
+                _envptr = NULL;
                 __F_NAME(__ccmdline,__wccmdline)( p, argv, cmdline, 1 );
                 retval = execl( getenv("COMSPEC"),
                     "COMMAND",
@@ -161,6 +158,6 @@ spawn_command_com:
 cleanup:
     LIB_FREE( cmdline_mem );
     LIB_FREE( np );
-    lib_free( envmem );
+    lib_free( _envptr );
     return( retval );
 }

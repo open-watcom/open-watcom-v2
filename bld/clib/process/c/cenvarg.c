@@ -63,8 +63,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
  */
     const CHAR_TYPE     *const argv[],  /* i: arguments for new process */
     const CHAR_TYPE     *const envp[],  /* i: env strings for new process */
-    CHAR_TYPE           **envptr,       /* o: allocated memory for env */
-    CHAR_TYPE           **envstrings,   /* o: pointer to environment strings */
+    CHAR_TYPE           **_envptr,      /* o: allocated memory for env */
+    CHAR_TYPE           **envptr,       /* o: pointer to environment strings */
     unsigned            *envseg,        /* o: start of env (on para boundary) */
     size_t              *cmdline_len,   /* o: size required to hold cmd line */
     int                 exec )          /* i: TRUE if for exec */
@@ -109,8 +109,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
         }
     }
     _RWD_amblksiz = oamblksiz;
-    *envptr = p;
-#if defined( _M_I86 ) && defined( __DOS__ )
+    *_envptr = p;
+#if defined( __DOS_086__ )
   #if defined(__SMALL_DATA__)
     p = (char *) (((unsigned) p + 15) & 0xfff0);
   #else           /* large data models */         /* 12-aug-88 */
@@ -125,7 +125,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 #else
     *envseg = 0;
 #endif
-    *envstrings = p;            /* save ptr to env strings. 07-oct-92 */
+    *envptr = p;            /* save ptr to env strings. 07-oct-92 */
     if( envp != NULL ){
         for( i = 0; envp[i] != NULL; ++i ){
             p = stpcpy( p, envp[i] ) + 1;
@@ -154,7 +154,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     if( len > 126 ) {
         _RWD_errno = E2BIG;
         _RWD_doserrno = E_badenv;
-        lib_free( *envptr );
+        lib_free( *_envptr );
         return( -1 );
     }
     len = _MAX_PATH;    /* always use _MAX_PATH chars for DOS */
