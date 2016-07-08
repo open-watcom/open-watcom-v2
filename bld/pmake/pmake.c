@@ -78,7 +78,7 @@
 typedef struct dirqueue {
     struct dirqueue     *next;
     unsigned            depth;
-    char                name[_MAX_PATH];
+    char                name[1];
 } dirqueue;
 
 static int              NumDirectories;
@@ -103,7 +103,7 @@ static char *StringCopy( char *dst, const char *src )
     return( dst );
 }
 
-static void error( char *fmt, ... )
+static void error( const char *fmt, ... )
 {
     va_list     arg;
 
@@ -162,10 +162,11 @@ static void ResetMatches( void )
     }
 }
 
-static unsigned CompareTargets( char *line )
+static unsigned CompareTargets( const char *line )
 {
     unsigned    priority;
     target_list *curr;
+    char        *numend;
 
     priority = DEFAULT_PRIORITY;
     SKIP_SPACES( line );
@@ -179,9 +180,10 @@ static unsigned CompareTargets( char *line )
     SKIP_SPACES( line );
     if( *line == '/' ) {
         ++line;
-        priority = strtoul( line, &line, 0 );
+        priority = strtoul( line, &numend, 0 );
         if( priority == 0 )
             return( 0 );
+        line = numend;
         SKIP_SPACES( line );
     }
     if( *line != ':' )
@@ -207,7 +209,7 @@ static unsigned CompareTargets( char *line )
     return( priority );
 }
 
-static unsigned CheckTargets( char *filename )
+static unsigned CheckTargets( const char *filename )
 {
     FILE        *mf;
     unsigned    curr_prio;
@@ -228,25 +230,27 @@ static unsigned CheckTargets( char *filename )
     return( prio );
 }
 
-static void InitQueue( char *cwd )
+static void InitQueue( const char *cwd )
 {
     dirqueue    *qp;
+    size_t      len;
 
-    qp = safe_malloc( sizeof( *qp ) );
+    len = strlen( cwd );
+    qp = safe_malloc( sizeof( *qp ) + len );
     qp->next = NULL;
     qp->depth = 0;
-    StringCopy( qp->name, cwd );
+    memcpy( qp->name, cwd, len + 1 );
     QueueHead = qp;
     QueueTail = qp;
 }
 
-static void EnQueue( char *path )
+static void EnQueue( const char *path )
 {
     dirqueue    *qp;
     char        *p;
 
     if( QueueHead->depth < Options.levels ) {
-        qp = safe_malloc( sizeof( *qp ) );
+        qp = safe_malloc( sizeof( *qp ) + strlen( QueueHead->name ) + 1 + strlen( path ) );
         qp->next = NULL;
         qp->depth = QueueHead->depth + 1;
         p = StringCopy( qp->name, QueueHead->name );
@@ -272,7 +276,7 @@ static void DeQueue( void )
     }
 }
 
-static unsigned CountDepth( char *path, unsigned slashcount )
+static unsigned CountDepth( const char *path, unsigned slashcount )
 {
     while( *path != '\0' ) {
         if( IS_DIR_SEP( *path ) ) {
@@ -295,7 +299,7 @@ static char *PrependDotDotSlash( char *str, int count )
     return( str );
 }
 
-static char *RelativePath( char *oldpath, char *newpath )
+static const char *RelativePath( const char *oldpath, const char *newpath )
 {
     int         ofs;
     char        *tp;
@@ -378,26 +382,26 @@ static int TrueTarget( void )
     return( eval_stk[0] );
 }
 
-static void TestDirectory( dirqueue *head, char *makefile )
+static void TestDirectory( const char *makefile )
 {
     unsigned    prio;
     pmake_list  *new;
     size_t      len;
 
     if( Options.verbose ) {
-        sprintf( Buff, ">>> PMAKE >>> %s/%s", head->name, makefile );
+        sprintf( Buff, ">>> PMAKE >>> %s/%s", QueueHead->name, makefile );
         PMakeOutput( "" );
         PMakeOutput( Buff );
     }
     prio = CheckTargets( makefile );
     if( prio != 0 && TrueTarget() ) {
-        len = strlen( head->name );
+        len = strlen( QueueHead->name );
         new = safe_malloc( sizeof( *new ) + len );
         new->next = Options.dir_list;
         Options.dir_list = new;
-        new->depth = head->depth;
+        new->depth = QueueHead->depth;
         new->priority = prio;
-        StringCopy( new->dir_name, head->name );
+        StringCopy( new->dir_name, QueueHead->name );
         ++NumDirectories;
     }
 }
@@ -408,12 +412,35 @@ static void SetDoneFlag( int sig_no )
     DoneFlag = 1;
 }
 
+static void NextSubdir( void )
+{
+    dirqueue    *last_ok;
+
+    /* skip subdirectory entry if it cannot be set as current directory */
+    last_ok = NULL;
+    while( QueueHead->next != NULL ) {
+        if( last_ok == NULL ) {
+            if( chdir( RelativePath( QueueHead->name, QueueHead->next->name ) ) == 0 )
+                break;
+            last_ok = QueueHead;
+            QueueHead = QueueHead->next;
+        } else if( chdir( RelativePath( last_ok->name, QueueHead->next->name ) ) == 0 ) {
+            free( last_ok );
+            break;
+        } else {
+            DeQueue();
+        }
+        sprintf( Buff, "PMAKE warning: can not change directory to %s", QueueHead->next->name );
+        PMakeOutput( Buff );
+    }
+    /* remove last/current entry from queue a set to next entry for processing */
+    DeQueue();
+}
+
 static void ProcessDirectoryQueue( void )
 {
     DIR                 *dirh;
     struct dirent       *dp;
-    dirqueue            *head;
-    dirqueue            *last_ok;
     char                *makefile;
 #ifdef __UNIX__
     struct stat          buf;
@@ -423,7 +450,7 @@ static void ProcessDirectoryQueue( void )
     if( makefile == NULL ) {
         makefile = DEFAULT_MAKE_FILE;
     }
-    while( (head = QueueHead) != NULL ) {
+    while( QueueHead != NULL ) {
         /* process directory */
         dirh = opendir( "." );
         if( dirh != NULL ) {
@@ -435,7 +462,7 @@ static void ProcessDirectoryQueue( void )
                     EnQueue( dp->d_name );
                 } else if( stricmp( dp->d_name, makefile ) == 0 ) {
                     /* add directory with makefile to the list for next processing */
-                    TestDirectory( head, makefile );
+                    TestDirectory( makefile );
                 }
                 if( DoneFlag ) {
                     break;
@@ -446,25 +473,8 @@ static void ProcessDirectoryQueue( void )
         if( DoneFlag ) {
             return;
         }
-        /* set current directory to first queued subdirectory, remove it from queue and process */
-        /* skip subdirectory entry if it cannot be set as current directory */
-        last_ok = NULL;
-        for( ; head->next != NULL; head = QueueHead ) {
-            if( last_ok == NULL ) {
-                if( chdir( RelativePath( head->name, head->next->name ) ) == 0 )
-                    break;
-                last_ok = head;
-                QueueHead = head->next;
-            } else if( chdir( RelativePath( last_ok->name, head->next->name ) ) == 0 ) {
-                free( last_ok );
-                break;
-            } else {
-                DeQueue();
-            }
-            sprintf( Buff, "PMAKE warning: can not change directory to %s", head->next->name );
-            PMakeOutput( Buff );
-        }
-        DeQueue();
+        /* set current directory to first possible queued subdirectory */
+        NextSubdir();
     }
 }
 
@@ -502,7 +512,7 @@ static void SortDirectories( void )
     pmake_list  **dir_array;
     pmake_list  *curr;
     char        *prev_name;
-    char        *new_name;
+    const char  *new_name;
     char        buff[_MAX_PATH];
     int         i;
 
