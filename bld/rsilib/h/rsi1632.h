@@ -168,7 +168,7 @@ extern void         FAR16 rm1B_handler( void );
 extern void         FAR16 passup_hotkey( void );
 /* d32dbgld.c */
 extern void         D32SetCurrentObject( long cookie );
-extern int          D32DebugLoad( const char *, char FarPtr, TSF32 FarPtr );
+extern int          D32DebugLoad( const char *, const char FarPtr, TSF32 FarPtr );
 extern int          D32Relocate( Fptr32 FarPtr fp );
 extern int          D32Unrelocate( Fptr32 FarPtr fp );
 /* mem32.asm */
