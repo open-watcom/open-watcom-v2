@@ -45,7 +45,7 @@
 
 _WCRTLINK int chsize( int handle, long size )
 {
-    int         ret_code = 0;
+    int         rc;
     long        current_offset, diff;
     unsigned    amount;
     auto char   buff[512];
@@ -57,7 +57,7 @@ _WCRTLINK int chsize( int handle, long size )
     if( current_offset == -1 )
         return( -1 );
     diff = size - __lseek( handle, 0L, SEEK_END );
-    
+    rc = 0;
     if( diff > 0 ) {
         /*** Increase file size ***/
         memset( buff, 0, 512 );
@@ -65,11 +65,11 @@ _WCRTLINK int chsize( int handle, long size )
             amount = 512;
             if( diff < 512 )
                 amount = diff;
-            ret_code = write( handle, buff, amount );
-            if( ret_code != amount ) {              /* 09-nov-92 */
+            rc = write( handle, buff, amount );
+            if( rc != amount ) {
                 if( _RWD_doserrno == E_access )
                     _RWD_errno = ENOSPC;
-                ret_code = -1;
+                rc = -1;
                 break;
             }
             diff -= amount;
@@ -79,14 +79,14 @@ _WCRTLINK int chsize( int handle, long size )
         /*** Shrink the file ***/
         status = __lseek( handle, size, SEEK_SET );
         if( status != -1 ) {
-            tiny_ret_t rc;
+            tiny_ret_t rc1;
             
-            rc = TinyWrite( handle, buff, 0 );
-            if( TINY_ERROR( rc ) ) {
-                ret_code = __set_errno_dos( TINY_INFO( rc ) );
+            rc1 = TinyWrite( handle, buff, 0 );
+            if( TINY_ERROR( rc1 ) ) {
+                rc = __set_errno_dos( TINY_INFO( rc1 ) );
             }
         } else {
-            ret_code = -1;
+            rc = -1;
         }
         if( current_offset > size ) {
             current_offset = size;
@@ -95,8 +95,8 @@ _WCRTLINK int chsize( int handle, long size )
     
     status = __lseek( handle, current_offset, SEEK_SET );
     if( status == -1)
-        ret_code = -1;
-    if( ret_code != -1 )
-        ret_code = 0;
-    return( ret_code );
+        rc = -1;
+    if( rc != -1 )
+        rc = 0;
+    return( rc );
 }

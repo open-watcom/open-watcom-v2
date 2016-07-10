@@ -53,28 +53,28 @@
 
 
 #if defined(__WINDOWS_386__)
-  static int __read( int handle, void *buf, unsigned len )
+static int __read( int handle, void *buf, unsigned len )
 #else
-  _WCRTLINK int read( int handle, void *buf, unsigned len )
+_WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
 {
-    unsigned read_len, total_len;
-    unsigned reduce_idx, finish_idx;
-    unsigned iomode_flags;
-    char *buffer = buf;
+    unsigned    read_len, total_len;
+    unsigned    reduce_idx, finish_idx;
+    unsigned    iomode_flags;
+    char        *buffer = buf;
 #if defined(__NT__)
-    DWORD   amount_read;
-    BOOL    rc;
-    HANDLE  h;
+    DWORD       amount_read;
+    BOOL        rc;
+    HANDLE      h;
 #elif defined(__OS2__)
-    OS_UINT amount_read;
-    APIRET rc;
+    OS_UINT     amount_read;
+    APIRET      rc;
 #else
-    unsigned amount_read;
-    tiny_ret_t rc;
+    unsigned    amount_read;
+    tiny_ret_t  rc;
 #endif
 #ifdef DEFAULT_WINDOWING
-    LPWDATA res;
+    LPWDATA     res;
 #endif
 
     __handle_check( handle, -1 );
@@ -88,7 +88,7 @@
         return( -1 );
 #endif
     }
-    if( !(iomode_flags & _READ) ) {
+    if( (iomode_flags & _READ) == 0 ) {
         _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
@@ -201,7 +201,6 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
     int         rc;
 
     __handle_check( handle, -1 );
-
     while( len > 0 ) {
         if( len > MAXBUFF ) {
             readamt = MAXBUFF;
@@ -219,6 +218,5 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
         buffer = ((char *)buffer) + readamt;
     }
     return( total );
-
 }
 #endif
