@@ -33,7 +33,7 @@
 #ifndef _STACKLOW_H_INCLUDED
 #define _STACKLOW_H_INCLUDED
 
-#define __Align4K( x ) (((x)+0xfffL) & ~0xfffL )
+#define __Align4K( x )  __ROUND_UP_SIZE(x, 0x1000L)
 
 #if defined( _M_IX86 )
     extern  unsigned    _SP( void );

@@ -78,10 +78,10 @@ int __GrowSeg( __segment seg, unsigned int amount )
             amount = ~0;
         if( amount < _amblksiz )
             amount = _amblksiz;
-        n = ( amount + 0x0f ) >> 4;
+        n = __ROUND_UP_SIZE_TO_PARA( amount );
         if( n == 0 )
             n = PARAS_IN_64K;
-        old_heap_paras = old_heaplen >> 4;
+        old_heap_paras = __ROUND_DOWN_SIZE_TO_PARA( old_heaplen );
         n += old_heap_paras;
         /*
             We shouldn't extend segments to 64k if we are not going to

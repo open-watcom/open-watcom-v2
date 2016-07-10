@@ -97,7 +97,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
             continue;
 
         new_heap_len = heap->heaplen - ( last_len - FRL_SIZE );
-        new_heap_len = ( new_heap_len + 0x0f ) & ~0x0f;
+        new_heap_len = __ROUND_UP_SIZE( new_heap_len, 16 );
         adjust_len = heap->heaplen - new_heap_len;
         if( adjust_len == 0 )
             continue;
@@ -126,7 +126,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         rc = DosReallocSeg( new_heap_len, heap_seg );
   #else
         if( new_heap_len != 0 ) {
-            rc = TinySetBlock( new_heap_len >> 4, heap_seg );
+            rc = TinySetBlock( __ROUND_DOWN_SIZE_TO_PARA( new_heap_len ), heap_seg );
         } else {
             rc = TinySetBlock( PARAS_IN_64K, heap_seg );
         }

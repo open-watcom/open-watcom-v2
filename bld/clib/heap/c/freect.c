@@ -49,7 +49,7 @@ _WCRTLINK unsigned int _freect( size_t size )
     mheapptr        mhp;
 
     count = 0;
-    size_of_chunk = (size + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    size_of_chunk = __ROUND_UP_SIZE( size + TAG_SIZE, ROUND_SIZE );
     if( size_of_chunk < size )
         return( 0 );
     if( size_of_chunk < FRL_SIZE ) {

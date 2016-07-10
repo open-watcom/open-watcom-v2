@@ -87,7 +87,7 @@ _WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
         len = (unsigned long)n * size;
         if( len == 0  || len >= 0x100000 ) return( HUGE_NULL );
         if( len > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
-        paras = (len + 15) >> 4;
+        paras = __ROUND_UP_SIZE_TO_PARA( len );
         seg = _dosalloc( paras );
         if( seg < 0 ) return( HUGE_NULL );  /* allocation failed */
         hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );

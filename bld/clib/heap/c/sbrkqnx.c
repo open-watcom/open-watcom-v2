@@ -52,7 +52,7 @@ void _WCNEAR *__brk( unsigned brk_value )
         _RWD_errno = ENOMEM;
         return( (void _WCNEAR *)-1 );
     }
-    seg_size = ( brk_value + 0x0f ) >> 4;
+    seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( seg_size == 0 ) {
         seg_size = 0x1000;
     }

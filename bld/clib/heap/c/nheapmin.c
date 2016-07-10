@@ -199,7 +199,7 @@ _WCRTLINK int _nheapshrink( void )
             // this miniheapblk is still being used
   #if defined(__DOS_EXT__)
             frlptr new_last_free;
-            new_last_free = (frlptr)((((unsigned)last_free + 0xfff) & ~0xfff) - TAG_SIZE);
+            new_last_free = (frlptr)( __ROUND_UP_SIZE( (unsigned)last_free, 0x1000 ) - TAG_SIZE );
             if( new_last_free == last_free ) {
   #endif
                 // remove entire entry

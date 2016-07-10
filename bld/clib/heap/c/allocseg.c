@@ -80,7 +80,7 @@ __segment __AllocSeg( unsigned int amount )
     amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
     if( amount < _amblksiz )
         amount = _amblksiz;
-    n = ( amount + 0x0f ) >> 4;
+    n = __ROUND_UP_SIZE_TO_PARA( amount );
     if( n == 0 )
         n = 0x1000;
 #if defined(__OS2__)

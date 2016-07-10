@@ -239,7 +239,7 @@ _WCRTLINK int _grow_handles( int num )
                 tiny_ret_t  rc;
 
                 /* may allocate a segment of memory! */
-                num = (num+1) & ~1; /* make even */
+                num = __ROUND_UP_SIZE( num, 2 );    /* make even */
                 rc = TinySetMaxHandleCount( num );
                 if( TINY_ERROR( rc ) ) {
                     __set_errno_dos( TINY_INFO( rc ) );

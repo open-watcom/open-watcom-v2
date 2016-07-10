@@ -150,7 +150,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 
     // Try to determine which miniheap to begin allocating from.
     // first, round up the amount
-    size = (amt + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    size = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
     if( size < FRL_SIZE ) {
         size = FRL_SIZE;
     }

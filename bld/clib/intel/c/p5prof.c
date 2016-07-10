@@ -86,7 +86,7 @@ static void p5_profile_init( void )
             curr->hi_cycle = 0;
         }
         len = strlen( curr->name ) + 1;
-        len = (len + 3) & ~3;
+        len = __ROUND_UP_SIZE( len, 4 );
         curr = (void *)( (char *)curr + ( offsetof( P5_timing_info, name ) + len ) );
     }
 }
@@ -162,7 +162,7 @@ static void p5_profile_fini( void )
         curr->lo_cycle = 0;
         curr->hi_cycle = 0;
         len = strlen( curr->name ) + 1;
-        len = (len + 3) & ~3;
+        len = __ROUND_UP_SIZE( len, 4 );
         curr = (void *)( (char *)curr + ( offsetof( P5_timing_info, name ) + len ) );
     }
     fclose( out );

@@ -87,7 +87,7 @@ _WCRTLINK void _nheapgrow( void )
 
     _AccessNHeap();
     /* calculate # pages which always has extra slack space (ie. 0x10) */
-    curr_paras = (( _curbrk + 0x10 ) & ~0x0f ) >> 4;
+    curr_paras = __ROUND_UP_SIZE_TO_PARA( _curbrk + 1 );
     if( curr_paras == 0 ) {
         /* we're already at 64k */
         _ReleaseNHeap();

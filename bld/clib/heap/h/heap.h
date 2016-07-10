@@ -221,13 +221,13 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #define PARAS_IN_64K    (0x1000)
 #define END_TAG         (~0)
 
-#define TAG_SIZE        (sizeof(tag))
+#define TAG_SIZE        (sizeof( tag ))
 #if defined( _M_I86 )
-    #define ROUND_SIZE  (TAG_SIZE-1)
+    #define ROUND_SIZE  (TAG_SIZE)
 #else
-    #define ROUND_SIZE  (TAG_SIZE+TAG_SIZE-1)
+    #define ROUND_SIZE  (TAG_SIZE + TAG_SIZE)
 #endif
-#define FRL_SIZE        ((sizeof(frl)+ROUND_SIZE)&~ROUND_SIZE)
+#define FRL_SIZE        __ROUND_UP_SIZE( sizeof(frl), ROUND_SIZE )
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1

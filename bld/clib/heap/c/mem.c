@@ -61,23 +61,22 @@
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
-unsigned __MemAllocator( unsigned size, __segment segment, unsigned offset )
+unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
 {
     frlptr  result;
 
     result = 0;                                 // assume the worst
     setup_segment( segment );                   // setup DS for 16bit Intel
 
-    if( size != 0 ) {                           // quit if size is zero
-        unsigned    new_size;
+    if( req_size != 0 ) {                       // quit if size is zero
+        unsigned    size;
 
-        new_size = size + TAG_SIZE + ROUND_SIZE;// round up size
-        if( new_size >= size ) {                // quit if overflowed
+        size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );// round up size
+        if( size >= req_size ) {                // quit if overflowed
             heapblkp    _WCI86NEAR *heap;
             unsigned    largest;
 
             heap = (heapblkp _WCI86NEAR *)offset;
-            size = new_size & ~ROUND_SIZE;      // make size even
             largest = heap->largest_blk;
             if( size < FRL_SIZE ) {
                 size = FRL_SIZE;

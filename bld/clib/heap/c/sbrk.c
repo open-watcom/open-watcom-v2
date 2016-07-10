@@ -106,7 +106,7 @@ extern  int SegmentLimit( void );
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-    increment = ( increment + 0x0fff ) & ~0x0fff;
+    increment = __ROUND_UP_SIZE( increment, 0x1000 );
     return( (void _WCNEAR *)DPMIAlloc( increment ) );
 }
 
@@ -133,7 +133,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-    increment = ( increment + 0x0fff ) & ~0x0fff;
+    increment = __ROUND_UP_SIZE( increment, 0x1000 );
     return( (void _WCNEAR *)TinyMemAlloc( increment ) );
 }
 
@@ -152,7 +152,7 @@ void _WCNEAR *__brk( unsigned brk_value )
         return( (void _WCNEAR *)-1 );
     }
 #ifdef _M_I86
-    seg_size = ( brk_value + 0x0f ) >> 4;
+    seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( seg_size == 0 ) {
         seg_size = 0x1000;
     }
@@ -170,7 +170,7 @@ void _WCNEAR *__brk( unsigned brk_value )
     if( _IsOS386() ) {
         int parent;
 
-        seg_size = ( brk_value + 15U ) / 16U;
+        seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
         if( seg_size == 0 )
             seg_size = 0x0FFFFFFF;
         parent = SegInfo( GetDS() );
@@ -208,7 +208,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         void _WCNEAR *p;
 
         if( increment > 0 ) {
-            increment = ( increment + 0x0fff ) & ~0x0fff;
+            increment = __ROUND_UP_SIZE( increment, 0x1000 );
             if( _IsRational() ) {
                 p = TinyDPMIAlloc( increment );
             } else {
