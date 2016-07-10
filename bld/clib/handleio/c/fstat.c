@@ -165,7 +165,7 @@ static tiny_ret_t _getfileinfo_lfn( int handle, lfninfo_t *lfninfo )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfninfo, RM_TB_PARM1_LINEAR, sizeof( *lfninfo ) );
     return( 0 );

@@ -81,7 +81,7 @@ static tiny_ret_t __getdcwd_lfn( char *buff, unsigned char drv )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     strcpy( buff, RM_TB_PARM1_LINEAR );
     return( 0 );
