@@ -41,7 +41,6 @@
     #include <dos.h>
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #include "tinyos2.h"
 #elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
@@ -63,7 +62,9 @@ int __HeapMin( __segment seg, unsigned one_seg )
     heapblk             _WCFAR *heap;
     farfrlptr           last_free;
     farfrlptr           end_tag;
-#if !( defined(__QNX__) || defined(__WINDOWS__) )
+#if defined(__OS2__)
+    APIRET              rc;
+#elif defined(__DOS__)
     tiny_ret_t          rc;
 #endif
 
@@ -121,16 +122,18 @@ int __HeapMin( __segment seg, unsigned one_seg )
                 return( -1 );
             }
         }
-#else
-  #if defined(__OS2__)
+#elif defined(__OS2__)
         rc = DosReallocSeg( new_heap_len, heap_seg );
-  #else
+        if( rc ) {
+            _ReleaseFHeap();
+            return( __set_errno_dos( rc ) );
+        }
+#else
         if( new_heap_len != 0 ) {
             rc = TinySetBlock( __ROUND_DOWN_SIZE_TO_PARA( new_heap_len ), heap_seg );
         } else {
             rc = TinySetBlock( PARAS_IN_64K, heap_seg );
         }
-  #endif
         if( TINY_ERROR( rc ) ) {
             _ReleaseFHeap();
             return( __set_errno_dos( TINY_INFO( rc ) ) );
@@ -140,7 +143,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         /* make the changes to the heap structure */
         heap->heaplen = new_heap_len;
         last_free->len -= adjust_len;
-        end_tag = (farfrlptr)(((FARPTR) last_free) + last_free->len );
+        end_tag = (farfrlptr)( ((FARPTR)last_free) + last_free->len );
         end_tag->len = END_TAG;
         end_tag->prev = 0;
     }

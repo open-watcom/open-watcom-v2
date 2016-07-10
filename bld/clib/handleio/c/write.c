@@ -40,12 +40,7 @@
     #include <windows.h>
 #endif
 #include "rterrno.h"
-#if defined(__NT__)
-#elif defined(__WINDOWS__)
-    #include "tinyio.h"
-#elif defined(__OS2__)
-    #include "tinyos2.h"
-#else
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
 #include "iomode.h"
@@ -182,7 +177,6 @@ static int zero_pad( int handle )           /* 09-jan-95 */
 
     if( curPos > eodPos ) {
         bytesToWrite = curPos - eodPos;         /* amount to pad by */
-
         if( bytesToWrite > 0 ) {                /* only write if needed */
             memset( zeroBuf, 0x00, PAD_SIZE );  /* zero out a buffer */
             do {                                /* loop until done */
@@ -215,14 +209,16 @@ static int zero_pad( int handle )           /* 09-jan-95 */
 static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt )
 /********************************************************************************/
 {
+    int         rc;
 #ifdef DEFAULT_WINDOWING
     LPWDATA     res;
 #endif
 #if defined(__NT__)
     HANDLE      h;
-    int         rc;
+#elif defined(__OS2__)
+    APIRET      rc1;
 #else
-    tiny_ret_t  rc;
+    tiny_ret_t  rc1;
 #endif
 
     rc = 0;
@@ -235,25 +231,21 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 #if defined(__NT__)
         h = __getOSHandle( handle );
         if( !WriteFile( h, (LPCVOID)buffer, (DWORD)len, (LPDWORD)amt, NULL ) ) {
-            rc = __set_errno_nt();
+            return( __set_errno_nt() );
         }
-#elif defined(__OS2_286__)
-        rc = DosWrite( handle, (PVOID)buffer, (USHORT)len, (PUSHORT)amt );
 #elif defined(__OS2__)
-        rc = DosWrite( handle, (PVOID)buffer, (ULONG)len, (PULONG)amt );
-#else
-        rc = TinyWrite( handle, buffer, len );
-        *amt = TINY_LINFO( rc );
-        if( TINY_OK( rc ) ) {
-            rc = 0;
+        rc1 = DosWrite( handle, (PVOID)buffer, (OS_UINT)len, (OS_PUINT)amt );
+        if( rc1 ) {
+            return( __set_errno_dos( rc1 ) );
         }
+#else
+        rc1 = TinyWrite( handle, buffer, len );
+        if( TINY_ERROR( rc1 ) ) {
+            return( __set_errno_dos( TINY_INFO( rc1 ) ) );
+        }
+        *amt = TINY_LINFO( rc1 );
 #endif
     }
-#if !defined(__NT__)
-    if( TINY_ERROR( rc ) ) {
-        rc = __set_errno_dos( TINY_INFO( rc ) );
-    }
-#endif
     if( *amt != len ) {
         rc = ENOSPC;
         _RWD_errno = rc;
@@ -268,19 +260,22 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 #endif
 /**********************************************************************/
 {
-    unsigned    iomode_flags;
-    char        *buf;
-    unsigned    buf_size;
-    unsigned    len_written, i, j;
+    unsigned        iomode_flags;
+    char            *buf;
+    unsigned        buf_size;
+    unsigned        len_written, i, j;
+    int             rc;
 #if defined(__NT__)
-    HANDLE      h;
-    LONG        cur_ptr_low;
-    LONG        cur_ptr_high;
-    DWORD       rc1;
+    HANDLE          h;
+    LONG            cur_ptr_low;
+    LONG            cur_ptr_high;
+    DWORD           rc1;
+#elif defined(__OS2__)
+    unsigned long   dummy;
+    APIRET          rc1;
 #else
-    tiny_ret_t  rc1;
+    tiny_ret_t      rc1;
 #endif
-    int         rc2;
 
     __handle_check( handle, -1 );
     iomode_flags = __GetIOMode( handle );
@@ -293,7 +288,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         return( -1 );
 #endif
     }
-    if( !(iomode_flags & _WRITE) ) {
+    if( (iomode_flags & _WRITE) == 0 ) {
         _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
@@ -305,7 +300,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     // put a semaphore around our writes
 
     _AccessFileH( handle );
-    if( (iomode_flags & _APPEND) && !(iomode_flags & _ISTTY) ) {
+    if( (iomode_flags & _APPEND) && (iomode_flags & _ISTTY) == 0 ) {
 #if defined(__NT__)
         if( GetFileType( h ) == FILE_TYPE_DISK ) {
             cur_ptr_low = 0;
@@ -319,15 +314,14 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
             }
         }
 #elif defined(__OS2__)
-        {
-            unsigned long       dummy;
-            rc1 = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
-            // should we explicitly ignore ERROR_SEEK_ON_DEVICE here?
+        rc1 = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
+        // should we explicitly ignore ERROR_SEEK_ON_DEVICE here?
+        if( rc1 ) {
+            _ReleaseFileH( handle );
+            return( __set_errno_dos( rc1 ) );
         }
 #else
         rc1 = TinySeek( handle, 0L, SEEK_END );
-#endif
-#if !defined(__NT__)
         if( TINY_ERROR( rc1 ) ) {
             _ReleaseFileH( handle );
             return( __set_errno_dos( TINY_INFO( rc1 ) ) );
@@ -336,7 +330,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     }
 
     len_written = 0;
-    rc2 = 0;
+    rc = 0;
 
     // Pad the file with zeros if necessary
     if( iomode_flags & _FILEEXT ) {
@@ -345,12 +339,12 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
         // It is not required to pad a file with zeroes on an NTFS file system;
         // unfortunately it is required on FAT (and probably FAT32). (JBS)
-        rc2 = zero_pad( handle );
+        rc = zero_pad( handle );
     }
 
-    if( rc2 == 0 ) {
+    if( rc == 0 ) {
         if( iomode_flags & _BINARY ) {  /* if binary mode */
-            rc2 = os_write( handle, buffer, len, &len_written );
+            rc = os_write( handle, buffer, len, &len_written );
             /* end of binary mode part */
         } else {    /* text mode */
             i = stackavail();
@@ -372,11 +366,11 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
                     buf[j] = '\r';
                     ++j;
                     if( j == buf_size ) {
-                        rc2 = os_write( handle, buf, buf_size, &j );
-                        if( rc2 == -1 )
+                        rc = os_write( handle, buf, buf_size, &j );
+                        if( rc == -1 )
                             break;
                         len_written += j;
-                        if( rc2 == ENOSPC )
+                        if( rc == ENOSPC )
                             break;
                         len_written = i;
                         j = 0;
@@ -386,19 +380,19 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
                 ++i;
                 ++j;
                 if( j == buf_size ) {
-                    rc2 = os_write( handle, buf, buf_size, &j );
-                    if( rc2 == -1 )
+                    rc = os_write( handle, buf, buf_size, &j );
+                    if( rc == -1 )
                         break;
                     len_written += j;
-                    if( rc2 == ENOSPC )
+                    if( rc == ENOSPC )
                         break;
                     len_written = i;
                     j = 0;
                 }
             }
             if( j ) {
-                rc2 = os_write( handle, buf, j, &i );
-                if( rc2 == ENOSPC ) {
+                rc = os_write( handle, buf, j, &i );
+                if( rc == ENOSPC ) {
                     len_written += i;
                 } else {
                     len_written = len;
@@ -408,8 +402,8 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
         }
     }
     _ReleaseFileH( handle );
-    if( rc2 == -1 ) {
-        return( rc2 );
+    if( rc == -1 ) {
+        return( rc );
     } else {
         return( len_written );
     }

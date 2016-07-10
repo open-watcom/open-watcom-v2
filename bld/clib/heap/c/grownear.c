@@ -104,10 +104,10 @@ void __FreeDPMIBlocks( void )
 {
     mheapptr    mhp;
     dpmi_hdr    *dpmi;
-    mheapptr    mph_next;
+    mheapptr    mhp_next;
 
-    for( mhp = __nheapbeg; mhp != NULL; mph = mph_next ) {
-        mph_next = mhp->next;
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp_next ) {
+        mhp_next = mhp->next;
         // see if the last free entry has the full size of
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.

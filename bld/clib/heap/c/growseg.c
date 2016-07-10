@@ -50,7 +50,6 @@
 #endif
 #include "rtdata.h"
 #if defined(__OS2__)
-    #include "tinyos2.h"
 #elif defined(__QNX__)
 #elif defined(__WINDOWS__)
 #else

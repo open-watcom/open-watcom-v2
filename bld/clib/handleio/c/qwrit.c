@@ -36,10 +36,7 @@
     #include <windows.h>
 #endif
 #include "rterrno.h"
-#if defined(__NT__)
-#elif defined(__OS2__)
-    #include "tinyos2.h"
-#else
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
 #include "iomode.h"
@@ -98,19 +95,16 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     DWORD           len_written;
     HANDLE          h;
     int             error;
-#elif defined(__WARP__)
-    ULONG           len_written;
-#elif defined(__OS2_286__)
-    USHORT          len_written;
+#elif defined(__OS2__)
+    OS_UINT         len_written;
+    APIRET          rc;
+    unsigned long   dummy;
 #else
     unsigned        len_written;
-#endif
-#if !defined(__NT__)
     tiny_ret_t      rc;
 #endif
 
     __handle_check( handle, -1 );
-
 #if defined(__NT__)
     h = __getOSHandle( handle );
 #endif
@@ -125,14 +119,13 @@ int __qwrite( int handle, const void *buffer, unsigned len )
             return( __set_errno_dos( error ) );
         }
 #elif defined(__OS2__)
-        {
-            unsigned long       dummy;
-            rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
+        rc = DosChgFilePtr( handle, 0L, SEEK_END, &dummy );
+        if( rc ) {
+            _ReleaseFileH( handle );
+            return( __set_errno_dos( rc ) );
         }
 #else
         rc = TinySeek( handle, 0L, SEEK_END );
-#endif
-#if !defined(__NT__)
         if( TINY_ERROR( rc ) ) {
             _ReleaseFileH( handle );
             return( __set_errno_dos( TINY_INFO( rc ) ) );
@@ -161,20 +154,25 @@ int __qwrite( int handle, const void *buffer, unsigned len )
     }
 #elif defined(__OS2__)
     rc = DosWrite( handle, (PVOID)buffer, len, &len_written );
-#elif defined(__WINDOWS_386__)
-    rc = __TinyWrite( handle, buffer, len );
-    len_written = TINY_LINFO( rc );
+    if( rc ) {
+        if( atomic == 1 ) {
+            _ReleaseFileH( handle );
+        }
+        return( __set_errno_dos( rc ) );
+    }
 #else
+  #if defined(__WINDOWS_386__)
+    rc = __TinyWrite( handle, buffer, len );
+  #else
     rc = TinyWrite( handle, buffer, len );
-    len_written = TINY_LINFO( rc );
-#endif
-#if !defined(__NT__)
+  #endif
     if( TINY_ERROR( rc ) ) {
         if( atomic == 1 ) {
             _ReleaseFileH( handle );
         }
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
+    len_written = TINY_LINFO( rc );
 #endif
     if( len_written != len ) {
         _RWD_errno = ENOSPC;

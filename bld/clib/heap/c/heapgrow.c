@@ -40,7 +40,6 @@
 #elif defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #include "tinyos2.h"
 #elif defined(_M_IX86)
     #include "tinyio.h"
 #endif

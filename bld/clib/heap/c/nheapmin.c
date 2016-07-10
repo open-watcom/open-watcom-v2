@@ -37,18 +37,18 @@
 #include "heap.h"
 #include "heapacc.h"
 #if defined(__WINDOWS_286__) || defined(__NT__)
- #include <windows.h>
+    #include <windows.h>
 #elif defined(__WINDOWS_386__)
- #include "windpmi.h"
+    #include "windpmi.h"
 #endif
 #if defined(__OS2__)
- #include <wos2.h>
+    #include <wos2.h>
 #endif
 #if defined(__RDOS__)
- #include <rdos.h>
+    #include <rdos.h>
 #endif
 #if defined(__CALL21__)
- #include "tinyio.h"
+    #include "tinyio.h"
 #endif
 
 

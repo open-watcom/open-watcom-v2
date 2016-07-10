@@ -35,9 +35,7 @@
     #define INCL_DOSMEMMGR
 #endif
 #include "rterrno.h"
-#if defined(__OS2__)
-    #include "tinyos2.h"
-#else
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
 #include "iomode.h"
@@ -85,14 +83,11 @@ int __qread( int handle, void *buffer, unsigned len )
 {
 #if defined( __NT__ )
     DWORD           amount_read;
-#elif defined(__WARP__)
-    ULONG           amount_read;
-#elif defined(__OS2_286__)
-    USHORT          amount_read;
+#elif defined(__OS2__)
+    OS_UINT         amount_read;
+    APIRET          rc;
 #else
     unsigned        amount_read;
-#endif
-#if !defined( __NT__ )
     tiny_ret_t      rc;
 #endif
 
@@ -120,17 +115,19 @@ int __qread( int handle, void *buffer, unsigned len )
     }
 #elif defined(__OS2__)
     rc = DosRead( handle, buffer, len, &amount_read );
-#elif defined( __WINDOWS_386__ )
-    rc = __TinyRead( handle, buffer, len );
-    amount_read = TINY_LINFO( rc );
+    if( rc ) {
+        return( __set_errno_dos( rc ) );
+    }
 #else
+  #if defined( __WINDOWS_386__ )
+    rc = __TinyRead( handle, buffer, len );
+  #else
     rc = TinyRead( handle, buffer, len );
-    amount_read = TINY_LINFO( rc );
-#endif
-#if !defined(__NT__)
+  #endif
     if( TINY_ERROR( rc ) ) {
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }
+    amount_read = TINY_LINFO( rc );
 #endif
     return( amount_read );
 }
