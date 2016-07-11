@@ -227,9 +227,9 @@ _WCRTLINK int execve( path, argv, envp )
     char                *name;
     int                 file;
     an_exe_header       exe;            /* Room for exe file header */
-    char                *_envptr;
-    char                *envptr;
-    unsigned            envseg;
+    char                *_envptr;       /* environment ptr (unaligned) */
+    char                *envptr;        /* environment ptr (DOS 16-bit aligned to para) */
+    unsigned            envseg;         /* environment segment (DOS 16-bit normalized, zero for others) */
     unsigned            envpara;
     size_t              cmdline_len;
     char                cmdline[128];   /* Command line build up here */

@@ -66,9 +66,9 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
                        const CHAR_TYPE * const argv[], const CHAR_TYPE * const in_envp[] )
 {
     const CHAR_TYPE * const *envp = (const CHAR_TYPE * const *)in_envp;
-    CHAR_TYPE               *_envptr;
-    CHAR_TYPE               *envptr;
-    unsigned                envseg;
+    CHAR_TYPE               *_envptr;       /* environment ptr (unaligned) */
+    CHAR_TYPE               *envptr;        /* environment ptr (DOS 16-bit aligned to para) */
+    unsigned                envseg;         /* environment segment (DOS 16-bit normalized, zero for others) */
     int                     len;
     CHAR_TYPE               *np;
     CHAR_TYPE               *p;

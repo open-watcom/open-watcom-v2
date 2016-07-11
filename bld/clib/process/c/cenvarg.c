@@ -63,9 +63,9 @@ int __F_NAME(__cenvarg,__wcenvarg)(
  */
     const CHAR_TYPE     *const argv[],  /* i: arguments for new process */
     const CHAR_TYPE     *const envp[],  /* i: env strings for new process */
-    CHAR_TYPE           **_envptr,      /* o: allocated memory for env */
-    CHAR_TYPE           **envptr,       /* o: pointer to environment strings */
-    unsigned            *envseg,        /* o: start of env (on para boundary) */
+    CHAR_TYPE           *_envptr;       /* o: environment ptr (unaligned) */
+    CHAR_TYPE           *envptr;        /* o: environment ptr (DOS 16-bit aligned to para) */
+    unsigned            envseg;         /* o: environment segment (DOS 16-bit normalized, zero for others) */
     size_t              *cmdline_len,   /* o: size required to hold cmd line */
     int                 exec )          /* i: TRUE if for exec */
 {
