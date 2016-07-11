@@ -97,8 +97,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         if( last_len <= FRL_SIZE )
             continue;
 
-        new_heap_len = heap->heaplen - ( last_len - FRL_SIZE );
-        new_heap_len = __ROUND_UP_SIZE( new_heap_len, 16 );
+        new_heap_len = __ROUND_UP_SIZE_PARA( heap->heaplen - ( last_len - FRL_SIZE ) );
         adjust_len = heap->heaplen - new_heap_len;
         if( adjust_len == 0 )
             continue;

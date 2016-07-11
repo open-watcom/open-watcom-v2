@@ -101,7 +101,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     }
 #endif
     /* round environment length to para */
-    length = __ROUND_UP_SIZE( length, 16 );
+    length = __ROUND_UP_SIZE_PARA( length );
 #if defined( __DOS_086__ )
     /* add space for pointer alignment */
     /* so we can start on a paragraph boundary even if memory pointer is not aligned to para */
@@ -125,9 +125,9 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 #if defined( __DOS_086__ )
     /* align DOS 16-bit environment pointer to para boundary */
   #if defined(__SMALL_DATA__)
-    p = (char *)__ROUND_UP_SIZE( FP_OFF( p ), 16 );
+    p = (char *)__ROUND_UP_SIZE_PARA( FP_OFF( p ) );
   #else     /* __LARGE_DATA__ */
-    p = MK_FP( FP_SEG( p ), __ROUND_UP_SIZE( FP_OFF( p ), 16 ) );
+    p = MK_FP( FP_SEG( p ), __ROUND_UP_SIZE_PARA( FP_OFF( p ) ) );
   #endif
     /* normalize DOS 16-bit aligned environment pointer to segment */
     *envseg = FP_SEG( p ) + __ROUND_DOWN_SIZE_TO_PARA( FP_OFF( p ) );

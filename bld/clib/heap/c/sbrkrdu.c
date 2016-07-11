@@ -39,7 +39,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     void *p;
 
     if( increment > 0 ) {
-        increment = __ROUND_UP_SIZE( increment, 0x1000 );
+        increment = __ROUND_UP_SIZE_4K( increment );
         p = RdosAllocateMem( increment );
         if( p != NULL ) {
             return( p );

@@ -65,54 +65,60 @@ static int only_one_bit( size_t x )
     return 1;
 }
 
-_WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
-    {
-        unsigned long len;
+_WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
+{
+    unsigned long   amount;
 #if defined(__WINDOWS__)
-        HANDLE hmem;
-        LPSTR p;
+    HANDLE          hmem;
+    LPSTR           p;
 
-        len = (unsigned long)n * size;
-        if( len == 0 ) return( HUGE_NULL );
-        if( len > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
-        hmem = GlobalAlloc( GMEM_MOVEABLE|GMEM_ZEROINIT, len );
-        if( hmem == NULL ) return( HUGE_NULL );
-        p = GlobalLock( hmem );
-        return( p );
+    amount = (unsigned long)numb * size;
+    if( amount == 0 )
+        return( HUGE_NULL );
+    if( amount > 65536 && ! only_one_bit( size ) )
+        return( HUGE_NULL );
+    hmem = GlobalAlloc( GMEM_MOVEABLE|GMEM_ZEROINIT, amount );
+    if( hmem == NULL )
+        return( HUGE_NULL );
+    p = GlobalLock( hmem );
+    return( p );
 #else
-        long seg;
-        unsigned int paras;
-        char _WCHUGE *hp;
+    long            seg;
+    unsigned int    num_of_paras;
+    char            _WCHUGE *hp;
 
-        len = (unsigned long)n * size;
-        if( len == 0  || len >= 0x100000 ) return( HUGE_NULL );
-        if( len > 65536 && ! only_one_bit( size ) ) return( HUGE_NULL );
-        paras = __ROUND_UP_SIZE_TO_PARA( len );
-        seg = _dosalloc( paras );
-        if( seg < 0 ) return( HUGE_NULL );  /* allocation failed */
-        hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );
-        for( ;; ) {
-            size = 0x8000;
-            if( paras < 0x0800 )
-                size = paras << 4;
-            _fmemset( hp, 0, size );
-            if( paras < 0x0800 )
-                break;
-            hp = hp + size;
-            paras -= 0x0800;
-        }
-        return( (void _WCHUGE *)MK_FP( (unsigned short)seg, 0 ) );
-#endif
+    amount = (unsigned long)numb * size;
+    if( amount == 0  || amount >= 0x100000 )
+        return( HUGE_NULL );
+    if( amount > 65536 && ! only_one_bit( size ) )
+        return( HUGE_NULL );
+    num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
+    seg = _dosalloc( num_of_paras );
+    if( seg < 0 )
+        return( HUGE_NULL );  /* allocation failed */
+    hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );
+    for( ;; ) {
+        size = 0x8000;
+        if( num_of_paras < 0x0800 )
+            size = num_of_paras << 4;
+        _fmemset( hp, 0, size );
+        if( num_of_paras < 0x0800 )
+            break;
+        hp = hp + size;
+        num_of_paras -= 0x0800;
     }
+    return( (void _WCHUGE *)MK_FP( (unsigned short)seg, 0 ) );
+#endif
+}
 
 #if defined(__WINDOWS__)
   #pragma aux hfree modify [es]
 #endif
 _WCRTLINK void hfree( void _WCHUGE *ptr )
-    {
+{
 #if defined(__WINDOWS__)
-        __FreeSeg( FP_SEG( ptr ) );
+    __FreeSeg( FP_SEG( ptr ) );
 #else
-        _dosfree( ptr );
+    _dosfree( ptr );
 #endif
-    }
+}

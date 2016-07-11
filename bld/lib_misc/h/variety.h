@@ -324,11 +324,14 @@
 #define __null_check( p, a )
 #define __stream_check( s, a )
 
-#define __ROUND_DOWN_SIZE_TO_PARA( __x ) ((__x)>>4)
-#define __ROUND_UP_SIZE_TO_PARA( __x ) (((__x)+(15))>>4)
+#define __ROUND_UP_SIZE_4K( __x )           __ROUND_UP_SIZE(__x,4096)
+#define __ROUND_UP_SIZE_PARA( __x )         __ROUND_UP_SIZE(__x,16)
 
-#define __ROUND_DOWN_SIZE( __x, __amt ) ((__x)&(~((__amt)-1)))
-#define __ROUND_UP_SIZE( __x, __amt ) (((__x)+((__amt)-1))&(~((__amt)-1)))
+#define __ROUND_DOWN_SIZE_TO_PARA( __x )    ((__x)>>4)
+#define __ROUND_UP_SIZE_TO_PARA( __x )      (((__x)+15)>>4)
+
+#define __ROUND_DOWN_SIZE( __x, __amt )     ((__x)&(~((__amt)-1)))
+#define __ROUND_UP_SIZE( __x, __amt )       (((__x)+((__amt)-1))&(~((__amt)-1)))
 ///
 /// This doesn't work for far pointer's
 ///

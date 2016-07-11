@@ -54,7 +54,7 @@ void _WCNEAR *__brk( unsigned brk_value )
     }
     seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( seg_size == 0 ) {
-        seg_size = 0x1000;
+        seg_size = PARAS_IN_64K;
     }
     /* try setting the block of memory */
     _AccessNHeap();

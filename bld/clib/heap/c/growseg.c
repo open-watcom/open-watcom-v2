@@ -59,7 +59,7 @@
 
 int __GrowSeg( __segment seg, unsigned int amount )
 {
-    unsigned        n;             /* number of paragraphs desired   */
+    unsigned        num_of_paras;   /* number of paragraphs desired   */
     unsigned int    old_heaplen;
     unsigned int    old_heap_paras;
     heapblk         _WCFAR *p;
@@ -77,11 +77,11 @@ int __GrowSeg( __segment seg, unsigned int amount )
             amount = ~0;
         if( amount < _amblksiz )
             amount = _amblksiz;
-        n = __ROUND_UP_SIZE_TO_PARA( amount );
-        if( n == 0 )
-            n = PARAS_IN_64K;
+        num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
+        if( num_of_paras == 0 )
+            num_of_paras = PARAS_IN_64K;
         old_heap_paras = __ROUND_DOWN_SIZE_TO_PARA( old_heaplen );
-        n += old_heap_paras;
+        num_of_paras += old_heap_paras;
         /*
             We shouldn't extend segments to 64k if we are not going to
             use the space for this allocation.  In protected-mode
@@ -89,31 +89,31 @@ int __GrowSeg( __segment seg, unsigned int amount )
             later on when we know we can use the space.
         */
 #if defined(__QNX__)
-        if( n > PARAS_IN_64K )
+        if( num_of_paras > PARAS_IN_64K )
             return( 0 );
 #elif defined(__OS2__) || defined(__WINDOWS__)
-        if( n > PARAS_IN_64K ) {
+        if( num_of_paras > PARAS_IN_64K ) {
             if( _RWD_osmode != DOS_MODE ) {
                 /* protected-mode */
                 return( 0 );
             } else {
-                n = PARAS_IN_64K;
+                num_of_paras = PARAS_IN_64K;
             }
         }
 #else
-        if( n > PARAS_IN_64K )
-            n = PARAS_IN_64K;
+        if( num_of_paras > PARAS_IN_64K )
+            num_of_paras = PARAS_IN_64K;
 #endif
 #if defined(__OS2__)
-        if( DosReallocSeg( n << 4, seg ) != 0 )
+        if( DosReallocSeg( num_of_paras << 4, seg ) != 0 )
             return( 0 );
 #elif defined(__QNX__)
-        if( qnx_segment_realloc( seg, ((long)n) << 4 ) == -1 )
+        if( qnx_segment_realloc( seg, ((long)num_of_paras) << 4 ) == -1 )
             return( 0 );
 #elif defined(__WINDOWS__)
-        if( old_heap_paras < ( PARAS_IN_64K - 2 ) && n == PARAS_IN_64K ) {
-            n = PARAS_IN_64K - 2;
-        } else if( n > ( PARAS_IN_64K - 2 ) ) {
+        if( old_heap_paras < ( PARAS_IN_64K - 2 ) && num_of_paras == PARAS_IN_64K ) {
+            num_of_paras = PARAS_IN_64K - 2;
+        } else if( num_of_paras > ( PARAS_IN_64K - 2 ) ) {
             /*
               in Standard mode, GlobalRealloc may change selectors
               if size > 65519 (64k-17)! (p. 4-246 Windows Ref) AFS 23-apr-91
@@ -127,15 +127,15 @@ int __GrowSeg( __segment seg, unsigned int amount )
             if( hmem == NULL ) {
                 return( 0 );
             }
-            if( GlobalReAlloc( hmem, ((long)n) << 4, __win_realloc_flags) == NULL ){
+            if( GlobalReAlloc( hmem, ((long)num_of_paras) << 4, __win_realloc_flags) == NULL ){
                 return( 0 );
             }
         }
 #else
-        if( TINY_ERROR( TinySetBlock( n, seg ) ) )
+        if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) )
             return( 0 );
 #endif
-        p->heaplen = n << 4;        /* put in new heap length */
+        p->heaplen = num_of_paras << 4;        /* put in new heap length */
         pfree = MK_FP( seg, p->freehead.prev );
         if( FP_OFF( pfree ) + pfree->len != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
