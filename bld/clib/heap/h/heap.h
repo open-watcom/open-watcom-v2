@@ -227,7 +227,14 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #else
     #define ROUND_SIZE  (TAG_SIZE + TAG_SIZE)
 #endif
-#define FRL_SIZE        __ROUND_UP_SIZE( sizeof(frl), ROUND_SIZE )
+#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( frl ), ROUND_SIZE )
+
+#define MEMBLK_LEN(p)               __ROUND_DOWN_SIZE( (p)->len, 2 )
+#define IS_MEMBLK_USED(p)           (((p)->len & 1) != 0)
+#define SET_MEMBLK_SIZE_USED(p,s)   (p)->len = ((s) | 1)
+#define SET_MEMBLK_USED(p)          (p)->len |= 1
+#define IS_MEMBLK_END(p)            ((p)->len == END_TAG)
+#define SET_MEMBLK_END(p)           (p)->len = END_TAG
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1
