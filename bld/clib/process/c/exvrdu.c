@@ -83,15 +83,14 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     CHAR_TYPE               *fname;
     CHAR_TYPE               *ext;
 
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
-                        &envptr, &envseg, &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr, &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         return( -1 );
     }
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
-        p = (CHAR_TYPE *)alloca( len*sizeof(CHAR_TYPE) );
+        p = (CHAR_TYPE *)alloca( len * sizeof( CHAR_TYPE ) );
         if( p == NULL ) {
             lib_free( _envptr );
             return( -1 );
@@ -99,13 +98,13 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
     } else {
         p = np;
     }
-    __F_NAME(_splitpath2,_wsplitpath2)( path, p + (len-_MAX_PATH2),
+    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ),
                                         &drive, &dir, &fname, &ext );
 
     /* allocate the cmdline buffer */
     cmdline_mem = LIB_ALLOC( cmdline_len * sizeof( CHAR_TYPE ) );
     if( cmdline_mem == NULL ) {
-        cmdline = (CHAR_TYPE *)alloca( cmdline_len*sizeof(CHAR_TYPE) );
+        cmdline = (CHAR_TYPE *)alloca( cmdline_len * sizeof( CHAR_TYPE ) );
         if( cmdline == NULL ) {
             retval = -1;
             _RWD_errno = E2BIG;

@@ -88,8 +88,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
         return( rc );
     }
 
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
-                        &envptr, &envseg, &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr, &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         return( -1 );
     }
@@ -104,8 +103,7 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
     } else {
         p = np;
     }
-    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ),
-                                        &drive, &dir, &fname, &ext );
+    __F_NAME(_splitpath2,_wsplitpath2)( path, p + ( len - _MAX_PATH2 ), &drive, &dir, &fname, &ext );
 
     /* allocate the cmdline buffer */
     cmdline_mem = LIB_ALLOC( cmdline_len * sizeof( CHAR_TYPE ) );

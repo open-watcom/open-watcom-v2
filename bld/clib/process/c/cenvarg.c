@@ -69,14 +69,17 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     size_t              *cmdline_len,   /* o: size required to hold cmd line */
     int                 exec )          /* i: TRUE if for exec */
 {
-    unsigned            length;
-    unsigned            oamblksiz;
+    unsigned            length;         /* environment length in bytes */
+    unsigned            old_amblksiz;
     CHAR_TYPE           *p;
     CHAR_TYPE _WCNEAR   *np;
-    unsigned            len;
+    unsigned            len;            /* command line length in characters */
     int                 i;
 
-    if( envp == NULL ){
+#if !defined( __DOS_086__ )
+    exec = exec;
+#endif
+    if( envp == NULL ) {
 #ifdef __WIDECHAR__
         if( _RWD_wenviron == NULL )
             __create_wide_environment();
@@ -84,62 +87,74 @@ int __F_NAME(__cenvarg,__wcenvarg)(
         envp = (const CHAR_TYPE * const *)__F_NAME(_RWD_environ,_RWD_wenviron);
     }
     length = 0;
-    if( envp != NULL ){
+    if( envp != NULL ) {
         for( i = 0; envp[i] != NULL; i++ ) {
-            length += __F_NAME(strlen,wcslen)( envp[i] ) + 1;
+            length += ( __F_NAME(strlen,wcslen)( envp[i] ) + 1 ) * sizeof( CHAR_TYPE );
         }
     }
-    ++length; /* trailing \0 for env */
-    if( exec ){
+    length += sizeof( CHAR_TYPE ); /* trailing \0 for env */
+#if defined( __DOS_086__ )
+    if( exec ) {
         /* store argv[0] at 2 bytes past end of env */
-        length += 2 + __F_NAME(strlen,wcslen)( argv[0] ) + 1;
+        length += 2;
+        length += strlen( argv[0] ) + 1;
     }
-    length += 15;       /* so we can start on a paragraph boundary */
-
-    oamblksiz = _RWD_amblksiz;
+#endif
+    /* round environment length to para */
+    length = __ROUND_UP_SIZE( length, 16 );
+#if defined( __DOS_086__ )
+    /* add space for pointer alignment */
+    /* so we can start on a paragraph boundary even if memory pointer is not aligned to para */
+    length += 15;
+#endif
+    /* allocate space for new environment */
+    old_amblksiz = _RWD_amblksiz;
     _RWD_amblksiz = 16; /* force allocation in 16 byte increments */
-    p = np = lib_nmalloc( length*sizeof(CHAR_TYPE) );
-    if( np == NULL ){   /* 03-aug-88 */
-        p = lib_malloc( length*sizeof(CHAR_TYPE) );
-        if( p == NULL ){
+    p = np = lib_nmalloc( length );
+    if( np == NULL ) {
+        p = lib_malloc( length );
+        if( p == NULL ) {
             _RWD_errno = ENOMEM;
             _RWD_doserrno = E_nomem;
-            _RWD_amblksiz = oamblksiz;
+            _RWD_amblksiz = old_amblksiz;
             return( -1 );
         }
     }
-    _RWD_amblksiz = oamblksiz;
+    _RWD_amblksiz = old_amblksiz;
     *_envptr = p;
 #if defined( __DOS_086__ )
+    /* align DOS 16-bit environment pointer to para boundary */
   #if defined(__SMALL_DATA__)
-    p = (char *) (((unsigned) p + 15) & 0xfff0);
-  #else           /* large data models */         /* 12-aug-88 */
-    p = MK_FP( FP_SEG(p), (( FP_OFF(p) + 15) & 0xfff0) );
+    p = (char *)__ROUND_UP_SIZE( FP_OFF( p ), 16 );
+  #else     /* __LARGE_DATA__ */
+    p = MK_FP( FP_SEG( p ), __ROUND_UP_SIZE( FP_OFF( p ), 16 ) );
   #endif
-    {
-        CHAR_TYPE _WCFAR *temp;
-
-        temp = p;
-        *envseg = FP_SEG( temp ) + FP_OFF( temp )/16;
-    }
+    /* normalize DOS 16-bit aligned environment pointer to segment */
+    *envseg = FP_SEG( p ) + __ROUND_DOWN_SIZE_TO_PARA( FP_OFF( p ) );
+    /* correct environment length (subtract aditional pointer alignment space) */
+    length -= 15;
 #else
     *envseg = 0;
 #endif
-    *envptr = p;            /* save ptr to env strings. 07-oct-92 */
-    if( envp != NULL ){
-        for( i = 0; envp[i] != NULL; ++i ){
+    *envptr = p;            /* save ptr to env strings. */
+    if( envp != NULL ) {
+        for( i = 0; envp[i] != NULL; ++i ) {
             p = stpcpy( p, envp[i] ) + 1;
         }
     }
     *p++ = NULLCHAR;
+#if defined( __DOS_086__ )
     if( exec ) {
-        __F_NAME(strcpy,wcscpy)( p + 2, argv[0] );
+        *p++ = 1;
+        *p++ = 0;
+        strcpy( p, argv[0] );
     }
-
+#endif
     len = 0;
     if( argv[0] != NULL ) {
-        for( i = 1; argv[i] != NULL; ++i ){
-            if( len != 0 ) ++len;       /* plus 1 for blank separator */
+        for( i = 1; argv[i] != NULL; ++i ) {
+            if( len != 0 )
+                ++len;       /* plus 1 for blank separator */
             len += __F_NAME(strlen,wcslen)( argv[i] );
         }
     }
@@ -150,7 +165,7 @@ int __F_NAME(__cenvarg,__wcenvarg)(
     len += _MAX_PATH2 + 1;
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
     len += _MAX_PATH2 + 1;
-#else
+#else       /* __DOS__ */
     if( len > 126 ) {
         _RWD_errno = E2BIG;
         _RWD_doserrno = E_badenv;
@@ -161,7 +176,8 @@ int __F_NAME(__cenvarg,__wcenvarg)(
 #endif
     *cmdline_len = len;
 
-    return( length / 16 );
+    /* convert environment length in bytes to length in para */
+    return( __ROUND_DOWN_SIZE_TO_PARA( length ) );
 }
 
 

@@ -92,15 +92,15 @@ extern int  __dospawn( int mode, char SPVE_NEAR *pgmname, char SPVE_NEAR *cmdlin
 
 static int file_exists( const CHAR_TYPE *filename )                     /* 05-apr-91 */
 {
-#if defined(__OS2__) || defined( __NT__ )
-    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 )
-        return( 1 );
-#else
+#if defined( __DOS__ )
     /* should use _dos_findfirst to avoid DOS APPEND bug */
     struct find_t  find_buf;
 
     if( _dos_findfirst( filename,
             _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM, &find_buf ) == 0 )
+        return( 1 );
+#else       /* __OS2__, __NT__ */
+    if( __F_NAME(access,_waccess)( filename, 0 ) == 0 )
         return( 1 );
 #endif
     return( 0 );
@@ -130,7 +130,9 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
     CHAR_TYPE SPVE_NEAR     *p;
     CHAR_TYPE SPVE_NEAR     *end_of_p;
     int                     retval;
-    int                     num_of_paras;       /* for environment */
+#if defined( __DOS_086__ )
+    int                     num_of_paras;   /* for environment */
+#endif
     size_t                  cmdline_len;
     CHAR_TYPE SPVE_NEAR     *cmdline_mem;
     CHAR_TYPE SPVE_NEAR     *cmdline;
@@ -207,14 +209,7 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
 #else   // 32-bit
     prot_mode286 = FALSE;
 
- #if defined(__OS2__) || defined(__NT__)
-    use_cmd = 1;
-    if( mode == OLD_P_OVERLAY ) {
-        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
-        _POSIX_HANDLE_CLEANUP;
-        return( rc );
-    }
- #else      // __DOS__
+ #if defined(__DOS__)
     use_cmd = 0;
     if( mode >= OLD_P_OVERLAY ) {
         _RWD_errno = EINVAL;
@@ -222,15 +217,23 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
         _POSIX_HANDLE_CLEANUP;
         return( rc );
     }
+ #else      /* __OS2__, __NT__ */
+    use_cmd = 1;
+    if( mode == OLD_P_OVERLAY ) {
+        rc = __F_NAME(execve,_wexecve)(path, argv, envp);
+        _POSIX_HANDLE_CLEANUP;
+        return( rc );
+    }
  #endif
 #endif
-    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr,
-        &envptr, &envseg, &cmdline_len, FALSE );
+    retval = __F_NAME(__cenvarg,__wcenvarg)( argv, envp, &_envptr, &envptr, &envseg, &cmdline_len, FALSE );
     if( retval == -1 ) {
         _POSIX_HANDLE_CLEANUP;
         return( -1 );
     }
+#if defined( __DOS_086__ )
     num_of_paras = retval;
+#endif
     len = __F_NAME(strlen,wcslen)( path ) + 7 + _MAX_PATH2;
     np = LIB_ALLOC( len * sizeof( CHAR_TYPE ) );
     if( np == NULL ) {
@@ -313,7 +316,9 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
                 /* user specified an extension, so try it */
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, ENVPARM, argv );
             }
-#if defined( __OS2__ ) || defined( __NT__ )
+#if defined( __DOS__ )
+        } else {
+#else       /* __OS2__, __NT__ */
         }
         /*
          * consider the following valid executable filenames:
@@ -321,8 +326,6 @@ _WCRTLINK int __F_NAME(spawnve,_wspawnve)( int mode, const CHAR_TYPE * path,
          * we must always try to add .exe, etc.
          */
         if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
-#else
-        } else {
 #endif
             end_of_p = p + __F_NAME(strlen,wcslen)( p );
             if( prot_mode286 ) {

@@ -233,27 +233,27 @@ _WCRTLINK int execve( path, argv, envp )
     unsigned            envpara;
     size_t              cmdline_len;
     char                cmdline[128];   /* Command line build up here */
-    char                buffer[80];     /* file name */
+    char                pgmname[80];    /* file name */
     int                 isexe;
     extern unsigned     __exec_para;
     unsigned            para;
     const char          **argvv;
     int                 i;
 
-    strncpy( buffer, path, 75 );
-    name = strrchr( buffer, '\\' );
-    if( strchr( name == NULL ? buffer : name, '.' ) != NULL ) {
-        file = open( buffer, O_BINARY|O_RDONLY, 0 );
+    strncpy( pgmname, path, 75 );
+    name = strrchr( pgmname, '\\' );
+    if( strchr( name == NULL ? pgmname : name, '.' ) != NULL ) {
+        file = open( pgmname, O_BINARY|O_RDONLY, 0 );
         _RWD_errno = ENOENT;
         if( file == -1 ) {
             goto error;
         }
     } else {
-        strcat( buffer, ".com" );
-        file = open( buffer, O_BINARY|O_RDONLY, 0 );
+        strcat( pgmname, ".com" );
+        file = open( pgmname, O_BINARY|O_RDONLY, 0 );
         if( file == -1 ) {
-            strcpy( strrchr( buffer, '.' ), ".exe" );
-            file = open( buffer, O_BINARY|O_RDONLY, 0 );
+            strcpy( strrchr( pgmname, '.' ), ".exe" );
+            file = open( pgmname, O_BINARY|O_RDONLY, 0 );
             _RWD_errno = ENOENT;
             if( file == -1 ) {
                 goto error;
@@ -283,16 +283,15 @@ _WCRTLINK int execve( path, argv, envp )
     while( --i > 0 ) {
         argvv[i] = argv[i];
     }
-    argvv[0] = buffer;           /* 22-jan-88 set program name */
-    envpara = __cenvarg( argvv, envp, &_envptr, &envptr,
-                         &envseg, &cmdline_len, TRUE );
+    argvv[0] = pgmname;         /* set program name */
+    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, TRUE );
     if( envpara == -1 )
         goto error;
     para += __ROUND_DOWN_SIZE_TO_PARA( PSP_SIZE ) + __exec_para + __ROUND_UP_SIZE_TO_PARA( strlen( path ) );
-    __ccmdline( buffer, (const char * const *)argvv, cmdline, 0 );
+    __ccmdline( pgmname, (const char * const *)argvv, cmdline, 0 );
     if( doalloc( para, envseg, envpara ) )
         save_file_handles();
-    _doexec( (char _WCI86NEAR *)buffer, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
+    _doexec( (char _WCI86NEAR *)pgmname, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
     free( _envptr );
     free( argvv );
