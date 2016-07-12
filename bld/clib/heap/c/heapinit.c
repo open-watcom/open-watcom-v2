@@ -57,7 +57,7 @@ void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
     last_tag = (tag *) ( (PTR)p1 + amount );
     last_tag[0] = END_TAG;
     /* build a block for _nfree() */
-    ((frlptr)p1)->len = amount | 1;
+    SET_MEMBLK_SIZE_USED( (frlptr)p1, amount );
     ++__nheapbeg->numalloc;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (PTR)p1 + TAG_SIZE );

@@ -384,7 +384,9 @@ void Test_alloca_stackavail__memavl__memmax( test_result *result )
     tracethisloop = AskTrace( result->funcname, __LINE__ );
     for( ctr = 0; ctr < buffsize; ++ctr ) {
         *(buffer + ctr) = 6;
-        if( tracethisloop ) ShowDot( ctr );
+        if( tracethisloop ) {
+            ShowDot( ctr );
+        }
     }   // Make sure that the buffer is accessible before returning
     if( tracethisloop ) cprintf( "\r\nTrace done. No problems detected.\r\n");
     result->status = TEST_PASS;
@@ -827,7 +829,11 @@ void Test__freect( test_result *result )
         strcpy( result->msg, errmsg[10] );
         return;
     }
-    for( ctr = 0; ctr < num-1 && _nmalloc( sizeof(double) ) != NULL; ++ctr );
+    for( ctr = 0; ctr < num - 1; ++ctr ) {
+        if( _nmalloc( sizeof( double ) ) == NULL ) {
+            break;
+        }
+    }
     if( _freect( sizeof( double ) ) != 1 || ctr != num - 1 ) {
         result->status = TEST_FAIL;
         strcpy( result->msg, errmsg[11] );

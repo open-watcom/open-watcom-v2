@@ -137,7 +137,7 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
                     pprev->next = pnext;
                     pnext->prev = pprev;
                 }
-                pcur->len |= 1;                 // mark as allocated
+                SET_MEMBLK_USED( pcur );        // mark as allocated
                                                 // get pointer to user area
                 result = (frlptr)((PTR)pcur + TAG_SIZE);
             }
@@ -168,7 +168,7 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
         frlptr pfree;
 
         pfree = (frlptr)(pointer - TAG_SIZE);
-        if( pfree->len & 1 ) {                  // quit if storage is free
+        if( IS_MEMBLK_USED( pfree ) ) {         // quit if storage is free
             heapblkp    _WCI86NEAR *heap;
             frlptr      pnext;
             frlptr      pprev;
@@ -181,9 +181,9 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                 unsigned numfree;
 
                 // look at next block to try and coalesce
-                len = pfree->len & ~1;          // get next block
+                len = MEMBLK_SIZE( pfree );      // get next block
                 pnext = (frlptr)((PTR)pfree + len);
-                if( (pnext->len & 1) == 0 ) {   // if it is free
+                if( !IS_MEMBLK_USED( pnext ) ) {   // if it is free
                     len += pnext->len;          // include the length
                     pfree->len = len;           // update pfree length
                     if( pnext == heap->rover ) {    // check for rover
@@ -264,11 +264,9 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                                                 // point at next allocated
                     pnext = (frlptr)((PTR)pfree + pfree->len);
                     for(;;) {
-                        len = pnext->len;
-                        if( len & 1 ) {         // pnext is allocated
-                            if( len != END_TAG ) {  // check for end TAG
-                                len &= ~1;          // advance pnext
-                                pnext = (frlptr)((PTR)pnext + len);
+                        if( IS_MEMBLK_USED( pnext ) ) {    // pnext is allocated
+                            if( pnext->len != END_TAG ) {  // check for end TAG
+                                pnext = (frlptr)((PTR)pnext + MEMBLK_SIZE( pnext ));
                                 average--;
                                 if( !average ) {    // give up search
                                     break;

@@ -159,15 +159,15 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             req_size = __ROUND_UP_SIZE( req_size, 2 );
             size = flp->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
-                flp->len = req_size | 1;// adjust size and set allocated bit
+                SET_MEMBLK_SIZE_USED( flp, req_size );// adjust size and set allocated bit
                 // Make up a free block at the end
                 flp2 = (frlptr)((PTR)flp + req_size);
-                flp2->len = size | 1;
+                SET_MEMBLK_SIZE_USED( flp2, size );
                 ++mhp->numalloc;
                 mhp->largest_blk = 0;
                 _nfree( (PTR)flp2 + TAG_SIZE );
             } else {
-                flp->len |= 1; // set allocated bit
+                SET_MEMBLK_USED( flp ); // set allocated bit
             }
             return( flp );
         }
@@ -343,7 +343,7 @@ static int __AdjustAmount( unsigned *amount )
           nb. pathological case: where _amblksiz == 0xffff, we don't
                                  want the usual round up to even
         */
-        amt = _amblksiz & ~1u;
+        amt = __ROUND_DOWN_SIZE( _amblksiz, 2 );
     }
 #if defined(__WINDOWS_386__) || defined(__WARP__) || defined(__NT__) \
   || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
@@ -466,7 +466,7 @@ static int __CreateNewNHeap( unsigned amount )
     flp = __LinkUpNewMHeap( p1 );
     amount = flp->len;
     /* build a block for _nfree() */
-    flp->len = amount | 1;
+    SET_MEMBLK_SIZE_USED( flp, amount );
     ++p1->numalloc;
     p1->largest_blk = 0;
     _nfree( (PTR)flp + TAG_SIZE );
@@ -559,7 +559,7 @@ int __ExpandDGROUP( unsigned amount )
         amount = flp->len;
     }
     /* build a block for _nfree() */
-    flp->len = amount | 1;
+    SET_MEMBLK_SIZE_USED( flp, amount );
     ++p1->numalloc;                         /* 28-dec-90 */
     p1->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (PTR)flp + TAG_SIZE );

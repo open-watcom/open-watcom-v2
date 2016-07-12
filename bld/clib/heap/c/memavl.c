@@ -50,7 +50,7 @@ _WCRTLINK size_t _memavl( void )
         length = 0;
         _AccessNHeap();
         for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            for( pnext = mhp->freehead.next; pnext != (frlptr) &mhp->freehead; pnext = pnext->next ) {
+            for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
                 length += __ROUND_DOWN_SIZE( pnext->len - TAG_SIZE, ROUND_SIZE );
             }
         }

@@ -56,12 +56,12 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg )
         if( p == NULL ) {
             p = (frlptr)(heapbeg + 1);
         } else {    /* advance to next entry */
-            for( heapbeg = __nheapbeg;; heapbeg = heapbeg->next ) {
-                if( heapbeg->next == NULL ) break;
-                if( (PTR)heapbeg <= (PTR)p &&
-                    (PTR)heapbeg+heapbeg->len > (PTR)p ) break;
+            for( heapbeg = __nheapbeg; heapbeg->next != NULL; heapbeg = heapbeg->next ) {
+                if( (PTR)heapbeg <= (PTR)p && (PTR)heapbeg + heapbeg->len > (PTR)p ) {
+                    break;
+                }
             }
-            q = (frlptr)((PTR)p + (p->len & ~1));
+            q = (frlptr)((PTR)p + MEMBLK_SIZE( p ));
             if( q <= p ) {
                 return( _HEAPBADNODE );
             }
@@ -84,8 +84,8 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg )
         }
         entry->_pentry  = p;
         entry->_useflag = _FREEENTRY;
-        entry->_size    = p->len & ~1;
-        if( p->len & 1 ) {
+        entry->_size    = MEMBLK_SIZE( p );
+        if( IS_MEMBLK_USED( p ) ) {
             entry->_useflag = _USEDENTRY;
         }
         return( _HEAPOK );

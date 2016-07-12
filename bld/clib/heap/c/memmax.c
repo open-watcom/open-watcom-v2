@@ -46,7 +46,7 @@ _WCRTLINK size_t _memmax( void )  /* return size of largest free piece from near
         maxlen = 0;
         _AccessNHeap();
         for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            for( pnext = mhp->freehead.next; pnext != (frlptr) &mhp->freehead; pnext = pnext->next ) {
+            for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
                 size = __ROUND_DOWN_SIZE( pnext->len - TAG_SIZE, ROUND_SIZE );
                 if( size > maxlen ) {
                     maxlen = size;

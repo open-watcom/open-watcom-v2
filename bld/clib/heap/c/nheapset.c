@@ -63,15 +63,12 @@ _WCRTLINK int _nheapset( unsigned int fill )
     _AccessNHeap();
 
     for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-        curr = mhp->freehead.next;
-        for( ;; ) {
-            if( curr == (frlptr) &mhp->freehead ) break;
+        for( curr = mhp->freehead.next; curr != (frlptr)&mhp->freehead; curr = curr->next ) {
 #if defined(_M_IX86)
             _fmemset( (void _WCFAR *)(curr + 1), fill, curr->len - sizeof(frl) );
 #else
             memset( (void *)(curr + 1), fill, curr->len - sizeof(frl) );
 #endif
-            curr = curr->next;
         }
     }
     _ReleaseNHeap();

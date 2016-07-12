@@ -84,7 +84,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         }
         /* verify the last block is free */
         last_free = MK_FP( heap_seg, heap->freehead.prev );
-        if( (last_free->len & 1) != 0 )
+        if( IS_MEMBLK_USED( last_free ) )
             continue;
 
         /* verify the last block is just before the end of the heap */

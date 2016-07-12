@@ -111,7 +111,7 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
         }
 
         // not found near rover, so search the list
-        for( p1 = __nheapbeg; p1; p1 = p1->next ) {
+        for( p1 = __nheapbeg; p1 != NULL; p1 = p1->next ) {
             if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
                 // break twice!
                 goto found_it;
