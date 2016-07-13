@@ -556,7 +556,7 @@ typedef struct monitor {
     unsigned        mouse_rpt_delay;/* repeat delay                     */
     unsigned        mouse_clk_delay;/* double click delay               */
     unsigned        tick_delay;     /* clock tick delay                 */
-    int             cursor_on;      /* cursor on flag                   */
+    bool            cursor_on;      /* cursor on flag                   */
     int             cursor_attr;    /* cursor attribute                 */
     ORD             cursor_row;     /* cursor row                       */
     ORD             cursor_col;     /* cursor column                    */
@@ -635,7 +635,6 @@ extern      void            uibarf( void );
 extern      void            uiblankarea( SAREA );
 extern      void            uiblankscreen( void );
 extern      void            uiblankattr( ATTR );
-extern      bool            uichecklist( EVENT, EVENT _FARD * );
 extern      void            uiclose( VSCREEN _FARD * );
 extern      void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );
 extern      bool            uiconfig( char *, char ** );
@@ -663,7 +662,8 @@ extern      unsigned int    uiextkeyboard( void );
 extern      bool            uiinit( int );
 extern      void            uiinitcursor( void );
 extern      bool            uiinitgmouse( int );
-extern      bool            uiinlist( EVENT );
+extern      bool            uiinlist( EVENT, EVENT _FARD * );
+extern      bool            uiinlists( EVENT );
 extern      bool            uiintoplist( EVENT );
 extern      bool            uikeepbackground( void );
 extern      void            *uimalloc( size_t );

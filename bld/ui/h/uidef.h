@@ -160,6 +160,7 @@ int             intern          videopage( void );
 void            intern          vertretrace( void );
 EVENT           intern          getanyevent( void );
 void            intern          waitforevent( void );
+void            intern          initeventlists( void );
 
 #ifdef __cplusplus
 }

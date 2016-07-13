@@ -130,8 +130,8 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
         editline->update = false;
     }
     if( ev > EV_NO_EVENT ) {
-        if( uiinlist( ev ) == false ) {
-            growing = uiinlist( EV_BUFFER_FULL );
+        if( !uiinlists( ev ) ) {
+            growing = uiinlists( EV_BUFFER_FULL );
             scrollable = growing || ( editline->length > editline->fldlen );
             buffer.content = editline->buffer;
             buffer.length = editline->length;
@@ -165,7 +165,7 @@ EVENT UIAPI uiveditevent( VSCREEN *vptr, VEDITLINE *editline, EVENT ev )
                     ev = EV_BUFFER_FULL;   /* may clobber EV_BUMP_RIGHT */
                 }
             }
-//            if( ev != EV_NO_EVENT && !uiinlist( ev ) ) {   /* 891206 */
+//            if( ev != EV_NO_EVENT && !uiinlists( ev ) ) {
 //                ev = EV_NO_EVENT;
 //            }
         }

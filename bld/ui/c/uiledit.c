@@ -90,7 +90,7 @@ void uieditmarking( bool set, unsigned anchor )
 {
     Eline.mark_attr = UIData->attrs[ ATTR_MARK_NORMAL ];
     if( set ) {
-        if( Eline.marking == false ) {
+        if( !Eline.marking ) {
             Eline.marking = true;
             Eline.update  = true;
             Eline.mark_anchor = anchor;
@@ -230,7 +230,8 @@ EVENT uiledit( EVENT ev )
                 }
             }
         }
-        if( !uiinlist( ev ) ) break;
+        if( !uiinlists( ev ) )
+            break;
         /* THIS CASE FALLS INTO THE DEFAULT */
     default:
         new = ev;

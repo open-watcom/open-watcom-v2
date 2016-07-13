@@ -32,7 +32,16 @@
 
 #include "uidef.h"
 
-static          EVENTLIST               EventList       = { 0 };
+
+static EVENTLIST EventList = { 0 };
+
+
+void initeventlists( void )
+/*************************/
+{
+    UIData->events = &EventList;
+    UIData->events->num_lists = 0;
+}
 
 
 EVENTLIST* UIAPI uigetlist( void )
@@ -52,17 +61,14 @@ void UIAPI uiputlist( EVENTLIST *eventlist )
 void UIAPI uipushlist( EVENT *list )
 /***********************************/
 {
-    if( UIData->events == NULL ) {
-        UIData->events = &EventList;
-    }
     if( UIData->events->num_lists < MAX_EVENT_LISTS ) {
-        UIData->events->events[ UIData->events->num_lists++ ] = list;
+        UIData->events->events[UIData->events->num_lists++] = list;
     }
 }
 
 
-bool UIAPI uichecklist( EVENT ev, EVENT *eptr )
-/**********************************************/
+bool UIAPI uiinlist( EVENT ev, EVENT *eptr )
+/******************************************/
 {
     while( *eptr != EV_NO_EVENT ) {
         if( ( ev >= *eptr ) && ( ev <= *( eptr + 1 ) ) ) {
@@ -86,37 +92,41 @@ EVENT *UIAPI uipoplist( void )
 {
     register EVENT      *list;
 
-    UIData->events->num_lists--;
-    list = UIData->events->events[ UIData->events->num_lists ];
-    UIData->events->events[ UIData->events->num_lists ] = NULL;
+    list = NULL;
+    if( UIData->events->num_lists > 0 ) {
+        UIData->events->num_lists--;
+        list = UIData->events->events[UIData->events->num_lists];
+        UIData->events->events[UIData->events->num_lists] = NULL;
+    }
     return( list );
 }
 
 
-bool UIAPI uiinlist( EVENT ev )
+bool UIAPI uiinlists( EVENT ev )
 /******************************/
 {
-    register    int                     index;
-    register    bool                    found;
+    register int    index;
 
     // EV_KILL_UI is implicitly pushed as part of every list
-    if( ev == EV_KILL_UI ) {
+    if( ev == EV_KILL_UI )
         return( true );
-    }
-    found = false;
-    for( index = UIData->events->num_lists-1; index >= 0; --index ) {
-        if( UIData->events->events[ index ] == NULL ) break;
-        found = uichecklist( ev, UIData->events->events[ index ] );
-        if( found ) {
-            break;
+    if( UIData->events->num_lists > 0 ) {
+        for( index = UIData->events->num_lists - 1; index >= 0; --index ) {
+            if( UIData->events->events[index] == NULL )
+                break;
+            if( uiinlist( ev, UIData->events->events[index] ) ) {
+                return( true );
+            }
         }
     }
-    return( found );
+    return( false );
 }
 
 
 bool UIAPI uiintoplist( EVENT ev )
 /*********************************/
 {
-    return( uichecklist( ev, UIData->events->events[ UIData->events->num_lists - 1 ] ) );
+    if( UIData->events->num_lists > 0 )
+        return( uiinlist( ev, UIData->events->events[UIData->events->num_lists - 1] ) );
+    return( false );
 }

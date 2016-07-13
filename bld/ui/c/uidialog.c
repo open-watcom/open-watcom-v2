@@ -213,7 +213,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         edit  = &combo->edit;
         list  = &combo->list;
 
-        if( combo->perm == false ) {
+        if( !combo->perm ) {
             ctrlbuf[0] = UiGChar[ UI_ARROW_DOWN ];  /* JBS was 25 */
             uivtextput( vs, area->row, area->col + area->width + 1,
                         UIData->attrs[ ATTR_SCROLL_ICON ], ctrlbuf, 1 );
@@ -230,7 +230,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
         if( list->get == NULL ) {
             list->get = uigetlistelement;
         }
-        if( list->box == NULL  &&  combo->perm == true ) {
+        if( list->box == NULL && combo->perm ) {
             c_area = *area;
             c_area.row += vs->area.row + 2;
             c_area.col += vs->area.col + 1;
@@ -1218,7 +1218,7 @@ an_event uidialog( a_dialog *ui_dlg_info )
     ev = EV_NO_EVENT;
     enter_field( ui_dlg_info, ui_dlg_info->curr );
 
-    while( ev == EV_NO_EVENT || !uiinlist( ev ) ) {
+    while( ev == EV_NO_EVENT || !uiinlists( ev ) ) {
         field = ui_dlg_info->curr;
         if( field != NULL ) {
             switch( field->typ ) {

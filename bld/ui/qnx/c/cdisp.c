@@ -159,7 +159,7 @@ static EVENT cd_sizeevent( void )
     console_arm( UIConCtrl, UIConsole, 0, arm | _CON_EVENT_SIZE );
     if( !(state & _CON_EVENT_SIZE) )
         return( EV_NO_EVENT );
-    if( !uiinlist( EV_BACKGROUND_RESIZE ) )
+    if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
     if( !setupscrnbuff() )
         return( EV_NO_EVENT );

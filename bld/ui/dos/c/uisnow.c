@@ -50,7 +50,7 @@ void intern vertretrace( void )
 /*****************************/
 {
 #ifndef __386__
-    if( ( UIData->colour == M_CGA ) && ( UIData->no_snow == false ) ) {
+    if( ( UIData->colour == M_CGA ) && !UIData->no_snow ) {
         /* wait for vertical retrace */
         vertsync();
     }
@@ -65,7 +65,7 @@ bool intern issnow( BUFFER *bptr )
     snow = false;
     if( isscreen( bptr ) ) {
         uioffmouse();
-        if( ( UIData->colour == M_CGA ) && ( UIData->no_snow == false ) ) {
+        if( ( UIData->colour == M_CGA ) && !UIData->no_snow ) {
             snow = true;
         }
     }

@@ -832,7 +832,7 @@ static EVENT td_sizeevent( void )
 
     if( !SizePending )
         return( EV_NO_EVENT );
-    if( !uiinlist( EV_BACKGROUND_RESIZE ) )
+    if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
     if( !setupscrnbuff( UIData->height, UIData->width ) )
         return( EV_NO_EVENT );

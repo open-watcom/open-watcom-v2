@@ -122,7 +122,7 @@ typedef struct a_check {
 typedef struct a_combo_box {
     a_list          list;
     an_edit_control edit;
-    int             perm;   // bool : permanent combo-box ?
+    bool            perm;
 } a_combo_box;
 
 typedef struct a_radio_group {

@@ -51,6 +51,7 @@ bool UIAPI uistart( void )
         uiattrs();
         openbackground();
         forceevinit();
+        initeventlists();
         return( true );
     }
     return( false );
