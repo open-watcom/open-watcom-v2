@@ -43,7 +43,7 @@
 #include "regalloc.h"
 
 
-extern    hw_reg_set      *RegSets[];
+extern  hw_reg_set      *RegSets[];
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  name            *GenConstData( byte *, type_class_def );
@@ -185,7 +185,8 @@ extern  bool    RTLeaveOp2( instruction *ins )
 {
     switch( ins->type_class ) {
     case FD:
-        if( _FPULevel( FPU_87 ) ) return( false );
+        if( _FPULevel( FPU_87 ) )
+            return( false );
         break;
 /* -- This is not true now - I8 math and parameters are kept in registers -- [RomanT]
     case I8:
@@ -195,7 +196,8 @@ extern  bool    RTLeaveOp2( instruction *ins )
     default:
         return( false );
     }
-    if( NumOperands( ins ) != 2 ) return( false );
+    if( NumOperands( ins ) != 2 )
+        return( false );
     return( true );
 }
 
@@ -279,29 +281,25 @@ extern  instruction     *rMAKECALL( instruction *ins )
             }
             if( temp->n.class == N_CONSTANT ) {
                 temp = Addressable( temp, info->operand_class );
-                la_ins = MakeUnary( OP_CAREFUL_LA, temp,
-                                      AllocRegName( HW_SI ), U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = la_ins->operands[0];
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 if( !SegIsSS( temp ) ) {
-                    new_ins = MakeMove( GetSegment( temp ),
-                                        AllocRegName(HW_ES), U2 );
+                    new_ins = MakeMove( GetSegment( temp ), AllocRegName(HW_ES), U2 );
                     HW_CTurnOn( all_regs, HW_ES );
                     PrefixIns( ins, new_ins );
                     ++RoutineNum;
                 }
             } else if( temp->n.class == N_TEMP ) {
-                la_ins = MakeUnary( OP_CAREFUL_LA,temp,
-                                    AllocRegName( HW_SI ),U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA,temp, AllocRegName( HW_SI ),U2 );
                 also_used = temp;
                 ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
             } else if( ins->num_operands == 3 ) {
-                new_ins = MakeMove( ins->operands[2],
-                                    AllocRegName(HW_ES), U2 );
+                new_ins = MakeMove( ins->operands[2], AllocRegName(HW_ES), U2 );
                 ins->operands[2] = new_ins->result;
                 PrefixIns( ins, new_ins );
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp,
@@ -316,16 +314,14 @@ extern  instruction     *rMAKECALL( instruction *ins )
             } else if( ( temp->n.class == N_MEMORY && !SegIsSS( temp ) ) ||
                        ( temp->n.class == N_INDEXED && temp->i.base != NULL &&
                          !SegIsSS( temp->i.base ) ) ) {
-                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1],
-                                      AllocRegName( HW_ES_SI ), PT );
+                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1], AllocRegName( HW_ES_SI ), PT );
                 also_used = ins->operands[1];
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
                 ++RoutineNum;
             } else {
-                la_ins = MakeUnary( OP_CAREFUL_LA, temp,
-                                    AllocRegName( HW_SI ), U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = temp;
                 ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
@@ -476,7 +472,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     HW_CTurnOn( tmp, HW_CX );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel(RoutineNum), 0, CG_LBL, U2 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( RoutineNum ), 0, CG_LBL, U2 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     new_ins->zap = &AllocRegName( HW_CX_DI )->r;
@@ -486,7 +482,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     result = AllocMemory( table, 0, CG_TBL, U2 ); /* so table gets freed!*/
     if( class == U2 ) {
         result = AllocRegName( HW_ES_DI );
-        result = AllocIndex( result, NULL, ( table->size - 1 )*2, U2 );
+        result = AllocIndex( result, NULL, ( table->size - 1 ) * 2, U2 );
     } else {
         result = AllocIndex( reg_name, result, 0, U2 );
     }

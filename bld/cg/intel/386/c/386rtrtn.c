@@ -207,7 +207,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     HW_CTurnOn( tmp, HW_ES );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel(RoutineNum), 0, CG_LBL, U4 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( RoutineNum ), 0, CG_LBL, U4 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     AddIns( new_ins );
@@ -221,7 +221,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
         HW_CAsgn( tmp, HW_CS );
         HW_CTurnOn( tmp, HW_EDI );
         result = AllocRegName( tmp );
-        result = AllocIndex( result, NULL, ( table->size - 1 )*4, U4 );
+        result = AllocIndex( result, NULL, ( table->size - 1 ) * 4, U4 );
         new_ins = MakeMove( result, AllocTemp( WD ), WD );
         AddIns( new_ins );
         result = new_ins->result;
@@ -245,7 +245,8 @@ extern  name    *Addressable( name *cons, type_class_def class )
     it into memory if it isnt)
 */
 {
-    if( cons->n.class == N_CONSTANT ) return( GenFloat( cons, class ) );
+    if( cons->n.class == N_CONSTANT )
+        return( GenFloat( cons, class ) );
     return( cons );
 }
 
@@ -259,22 +260,27 @@ extern  pointer BEAuxInfo( pointer hdl, aux_class request )
     case AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn1ES );
+            if( _IsntTargetModel( FLAT_MODEL ) )
+                return( &Scn1ES );
             return( &Scn1 );
         case RT_SCAN2:
             if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn4ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn4ES );
                 return( &Scn4 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn2ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn2ES );
                 return( &Scn2 );
             }
         case RT_SCAN4:
             if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn2ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn2ES );
                 return( &Scn2 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn4ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn4ES );
                 return( &Scn4 );
             }
         default:

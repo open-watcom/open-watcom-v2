@@ -43,11 +43,11 @@ extern  bool_maybe      ReDefinedBy( instruction *, name * );
 #endif
 
 extern  unsigned        DepthAlign( unsigned );
-extern  void            GenCallLabel(pointer);
+extern  void            GenCallLabel( pointer );
 extern  void            GenLabelReturn( void );
-extern  void            GenObjCode(instruction*);
+extern  void            GenObjCode( instruction * );
 extern  void            GenEpilog( void );
-extern  void            TellCondemnedLabel(label_handle);
+extern  void            TellCondemnedLabel( label_handle );
 
-extern  void    GenObject( void );
-extern  void    SortBlocks( void );
+extern  void            GenObject( void );
+extern  void            SortBlocks( void );
