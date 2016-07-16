@@ -856,7 +856,7 @@ static void PushEnum( void )
     struct enums_info *ei;
 
     ei = CMemAlloc( sizeof( struct enums_info ) );
-    ei->make_enums = CompFlags.make_enums_an_int;
+    ei->make_enums = (bool)CompFlags.make_enums_an_int;
     ei->next = EnumInfo;
     EnumInfo = ei;
 }
@@ -994,7 +994,7 @@ static void PragUnroll( void )
         unroll_count = 0;
         NextToken();
         if( CurToken == T_CONSTANT ) {
-            unroll_count = ( Constant > 255 ) ? 255 : Constant;
+            unroll_count = ( Constant > 255 ) ? 255 : (unroll_type)Constant;
             NextToken();
         }
         UnrollCount = unroll_count;

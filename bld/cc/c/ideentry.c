@@ -262,23 +262,12 @@ static int heap_size( struct heap_stat *stat ) {
 }
 #endif
 
-static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfile )
+static void getFrontEndArgv( char **argv, char *infile, char *outfile )
 {
-    char    **p;
-    int     count;
-
     if( !GlobalCompFlags.ide_cmd_line_has_files ) {
-        p = argv + 1;
-        if( argc > 0 ) {
-            argv = malloc( ( argc + 2 ) * sizeof( char * ) );
-            for( count = 0; count < argc - 1; ++count ) {
-                argv[count] = *p++;
-            }
-            p = argv + count;
-        }
         infile[0] = '\0';
         IDEFN( GetInfo )( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)infile );
-        *p++ = infile;
+        *argv++ = infile;
         outfile[0] = '\0';
         if( !IDEFN( GetInfo )( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)(outfile + 4) ) ) {
             outfile[0] = '-';
@@ -286,12 +275,9 @@ static char **getFrontEndArgv( char **argv, int argc, char *infile, char *outfil
             outfile[2] = 'o';
             outfile[3] = '=';
         }
-        *p++ = outfile;
-        *p = NULL;
-    } else if( argc > 0 ) {
-        ++argv;
+        *argv++ = outfile;
+        *argv = NULL;
     }
-    return( argv );
 }
 
 
@@ -313,12 +299,13 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = &env;
+    /* initialize argv array */
+    argv[0] = (char *)opts;
+    argv[1] = NULL;
+    getFrontEndArgv( argv + 1, infile, outfile );
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
     } else {
-        argv[0] = (char *)opts;
-        argv[1] = NULL;
-        getFrontEndArgv( argv, 0, infile, outfile );
         ret = FrontEnd( argv );
     }
 #if HEAP_CHK  == 1
@@ -331,6 +318,27 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
 }
 
 #ifdef __UNIX__
+char **init_argv( char **args, int argc, char *infile, char *outfile )
+{
+    char    **argv;
+    int     count;
+
+    count = 1 + 2;  // terminating NULL + possible input and output file
+    if( argc > 1 ) {
+        count += argc;
+    }
+    argv = malloc( count * sizeof( char * ) );
+    count = 0;
+    if( argc > 1 ) {
+        while( count < argc - 1 ) {
+            argv[count++] = *(++args);
+        }
+    }
+    argv[count] = NULL;
+    getFrontEndArgv( argv + count, infile, outfile );
+    return( argv );
+}
+
 IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     ( IDEDllHdl hdl,                // - handle for this instantiation
     int argc,                       // - # of arguments
@@ -343,21 +351,20 @@ IDEBool IDEAPI IDERunYourSelfArgv   // COMPILE A PROGRAM
     jmp_buf             env;
     char                infile[_MAX_PATH];      // - input file name
     char                outfile[4 + _MAX_PATH]; // - output file name (need room for "-fo=")
-    char                **argv = NULL;
+    char                **argv;
     int                 ret;
 
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = &env;
+    /* allocate and initialize argv array */
+    argv = init_argv( args, argc, infile, outfile );
     if( (ret = setjmp( env )) != 0 ) {  /* if fatal error has occurred */
         *fatal_error = true;
     } else {
-        argv = getFrontEndArgv( args, argc, infile, outfile );
         ret = FrontEnd( argv );
     }
-    if( !GlobalCompFlags.ide_cmd_line_has_files && argc > 0 ) {
-        free( argv );
-    }
+    free( argv );
 #if HEAP_CHK  == 1
     heap_check();
 #endif
