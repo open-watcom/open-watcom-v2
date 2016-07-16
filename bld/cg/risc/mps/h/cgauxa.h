@@ -31,4 +31,4 @@
 
 
 #include "rscauxa.h"
-#include "mipsauxa.h"
+#include "mpsauxa.h"

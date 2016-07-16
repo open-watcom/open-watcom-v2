@@ -36,7 +36,6 @@
 #include "zoiks.h"
 #include "freelist.h"
 #include "cfloat.h"
-#include "targsys.h"
 #include "cgaux.h"
 #include "data.h"
 

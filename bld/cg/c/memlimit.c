@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "targsys.h"
 #include "data.h"
 #include "cfloat.h"
 #include "objout.h"

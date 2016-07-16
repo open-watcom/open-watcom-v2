@@ -42,7 +42,7 @@
 #include "zoiks.h"
 #include "cgaux.h"
 #include "dw.h"
-#include "mipsregn.h"
+#include "mpsregn.h"
 #include "dwarf.h"
 #include "dfdbg.h"
 #include "dfsupp.h"

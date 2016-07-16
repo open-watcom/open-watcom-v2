@@ -44,7 +44,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "targsys.h"
 #include "cgdefs.h"
 #include "model.h"
 #include "cgmisc.h"

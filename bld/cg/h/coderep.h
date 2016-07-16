@@ -42,4 +42,3 @@
 #include "inslist.h"
 #include "optlbl.h"
 #include "block.h"
-#include "targsys.h"

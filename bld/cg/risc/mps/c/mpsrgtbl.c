@@ -31,9 +31,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "mipsregn.h"
+#include "mpsregn.h"
 #include "zoiks.h"
 #include "data.h"
+
 
 static  hw_reg_set      Empty[] = {
     EMPTY
