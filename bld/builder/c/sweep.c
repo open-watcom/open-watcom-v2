@@ -329,9 +329,7 @@ static void ExecuteCommands( void )
     }
     dirh = opendir( "." );
     if( dirh != NULL ) {
-        for( ;; ) {
-            if( DoneFlag )
-                return;
+        while( !DoneFlag ) {
             dp = readdir( dirh );
             if( dp == NULL )
                 break;
@@ -339,8 +337,9 @@ static void ExecuteCommands( void )
             {
                 struct stat buf;
                 stat( dp->d_name, &buf );
-                if( S_ISDIR( buf.st_mode ) )
+                if( S_ISDIR( buf.st_mode ) ) {
                     continue;
+                }
             }
 #else
             if( dp->d_attr & _A_SUBDIR )
@@ -366,9 +365,7 @@ static void ProcessCurrentDirectory( void )
         dirh = opendir( "." );
         if( dirh != NULL ) {
             --Options.levels;
-            for( ;; ) {
-                if( DoneFlag )
-                    return;
+            while( !DoneFlag ) {
                 dp = readdir( dirh );
                 if( dp == NULL )
                     break;
@@ -376,8 +373,9 @@ static void ProcessCurrentDirectory( void )
                 {
                     struct stat buf;
                     stat( dp->d_name, &buf );
-                    if( !S_ISDIR( buf.st_mode ) )
+                    if( !S_ISDIR( buf.st_mode ) ) {
                         continue;
+                    }
                 }
 #else
                 if( !( dp->d_attr & _A_SUBDIR ) )
@@ -388,8 +386,6 @@ static void ProcessCurrentDirectory( void )
                         continue;
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
-                if( DoneFlag )
-                    return;
                 stack->name_len = (unsigned short)strlen( dp->d_name );
                 memcpy( stack->name, dp->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
@@ -402,6 +398,9 @@ static void ProcessCurrentDirectory( void )
             }
             ++Options.levels;
             closedir( dirh );
+            if( DoneFlag ) {
+                return;
+            }
         }
     }
     if( Options.depthfirst ) {

@@ -285,14 +285,14 @@ static FILE *OpenFileTruncate(
 
     new = fopen( file_name, mode );
     if( new == NULL ) {
-        char    buffer[FILENAME_MAX + 3];
+        char    path_buffer[FILENAME_MAX + 3];
         char    new_name[FILENAME_MAX];
         char    *drive;
         char    *dir;
         char    *fname;
         char    *ext;
 
-        _splitpath2( file_name, buffer, &drive, &dir, &fname, &ext );
+        _splitpath2( file_name, path_buffer, &drive, &dir, &fname, &ext );
         if( fname != NULL && strlen( fname ) > 8 )
             fname[8] = '\0';
         if( ext != NULL && strlen( ext ) > 3 )
@@ -823,7 +823,8 @@ int main(               // MAIN-LINE
 
             env = getenv( arg + 1 );
             if( env != NULL ) {
-                strcpy( st, env );
+                strncpy( st, env, sizeof( st ) );
+                st[sizeof( st ) - 1] = '\0';
             } else {
                 f = fopen( arg + 1, "r" );
                 if( f == NULL ) {
@@ -831,7 +832,7 @@ int main(               // MAIN-LINE
                     continue;
                 }
 
-                fgets( st, 512, f );
+                fgets( st, sizeof( st ), f );
                 fclose( f );
             }
             len = strlen( st );

@@ -116,7 +116,7 @@ int SysRunCommand( const char *cmd )
 {
     int         my_std_output;
     int         my_std_error;
-    ssize_t     bytes_read;
+    size_t      bytes_read;
     int         rc;
     int         readpipe;
     char        buff[256 + 1];
@@ -135,7 +135,9 @@ int SysRunCommand( const char *cmd )
         return( rc );
     }
     if( readpipe != -1 ) {
-        while( (bytes_read = read( readpipe, buff, sizeof( buff ) - 1 )) > 0 ) {
+        while( (bytes_read = read( readpipe, buff, sizeof( buff ) - 1 )) != 0 ) {
+            if( (ssize_t)bytes_read == -1 )
+                break;
             buff[bytes_read] = '\0';
             Log( Quiet, "%s", buff );
         }

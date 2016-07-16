@@ -136,13 +136,13 @@ void ResetArchives( copy_entry *list )
     }
 }
 
-static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
+static int BuildList( const char *src, char *dst, bool test_abit, bool cond_copy, copy_entry **list )
 {
     copy_entry          *head;
     copy_entry          *curr;
     copy_entry          **owner;
     char                *end;
-    char                buff[_MAX_PATH2];
+    char                path_buffer[_MAX_PATH2];
     char                full[_MAX_PATH];
     char                srcdir[_MAX_PATH];
     char                *drive;
@@ -175,7 +175,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         case '\\':
         case '/':
             /* need to append source file name */
-            _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+            _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
             _makepath( full, NULL, dst, fn, ext );
             _fullpath( entry_dst, full, sizeof( entry_dst ) );
             break;
@@ -196,7 +196,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
         return( 0 );
     }
 #ifdef __UNIX__
-    _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+    _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
     _makepath( srcdir, drive, dir, NULL, NULL );
     _makepath( pattern, NULL, NULL, fn, ext );
     if( srcdir[0] == '\0' ) {
@@ -235,7 +235,7 @@ static int BuildList( char *src, char *dst, bool test_abit, bool cond_copy, copy
             }
 #endif
             rc = 0;
-            _splitpath2( srcdir, buff, &drive, &dir, &fn, &ext );
+            _splitpath2( srcdir, path_buffer, &drive, &dir, &fn, &ext );
             _makepath( full, drive, dir, dent->d_name, NULL );
             _fullpath( entry_src, full, sizeof( entry_src ) );
             strcpy( full, dst );
@@ -333,7 +333,7 @@ static int mkdir_nested( const char *path )
     return( 0 );
 }
 
-static int ProcOneCopy( const char *src, const char *dst, bool cond_copy, char *buff )
+static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_buff )
 {
     FILE            *sp;
     FILE            *dp;
@@ -353,26 +353,16 @@ static int ProcOneCopy( const char *src, const char *dst, bool cond_copy, char *
     }
     dp = fopen( dst, "wb" );
     if( dp == NULL ) {
-        char *end1, *end2, *end;
-
-        strcpy( buff, dst );
-        end1 = strrchr( buff, '/' );
-        end2 = strrchr( buff, '\\' );
-        if( end1 && end2 ) {
-            if( end1 > end2 ) {
-                end = end1;
-            } else {
-                end = end2;
+        len = strlen( dst );
+        while( len-- > 0 ) {
+            char c = dst[len];
+            if( c == '/' || c == '\\' ) {
+                dst[len] = '\0';
+                mkdir_nested( dst );
+                dst[len] = c;
+                dp = fopen( dst, "wb" );
+                break;
             }
-        } else if( end1 ) {
-            end = end1;
-        } else {
-            end = end2;
-        }
-        if( end ) {
-            end[0] = 0;
-            mkdir_nested( buff );
-            dp = fopen( dst, "wb" );
         }
         if( dp == NULL ) {
             Log( false, "Can not open '%s' for writing: %s\n", dst, strerror( errno ) );
@@ -381,14 +371,14 @@ static int ProcOneCopy( const char *src, const char *dst, bool cond_copy, char *
         }
     }
     Log( false, "Copying '%s' to '%s'...\n", src, dst );
-    while( (len = fread( buff, 1, COPY_BUFF_SIZE, sp )) != 0 ) {
+    while( (len = fread( copy_buff, 1, COPY_BUFF_SIZE, sp )) != 0 ) {
         if( ferror( sp ) ) {
             Log( false, "Error reading '%s': %s\n", src, strerror( errno ) );
             fclose( sp );
             fclose( dp );
             return( 1 );
         }
-        out = fwrite( buff, 1, len, dp );
+        out = fwrite( copy_buff, 1, len, dp );
         if( ferror( dp ) ) {
             Log( false, "Error writing '%s': %s\n", dst, strerror( errno ) );
             fclose( sp );
@@ -439,13 +429,13 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_erro
     }
     res = BuildList( cmd, dst, test_abit, cond_copy, &list );
     if( res == 0 && list != NULL ) {
-        char    *buff = Alloc( COPY_BUFF_SIZE );
+        char    *copy_buff = Alloc( COPY_BUFF_SIZE );
         for( ; list != NULL; list = next ) {
             next = list->next;
             if( res == 0 || ignore_errors ) {
                 int     rc;
 
-                rc = ProcOneCopy( list->src, list->dst, cond_copy, buff );
+                rc = ProcOneCopy( list->src, list->dst, cond_copy, copy_buff );
                 if( rc != 0 ) {
                     res = rc;
 #ifndef __UNIX__
@@ -458,7 +448,7 @@ static int ProcCopy( char *cmd, bool test_abit, bool cond_copy, bool ignore_erro
             }
             free( list );
         }
-        free( buff );
+        free( copy_buff );
     }
     return( res );
 }

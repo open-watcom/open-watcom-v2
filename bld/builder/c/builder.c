@@ -89,7 +89,7 @@ static void PutNumber( const char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -104,7 +104,7 @@ static void BackupLog( const char *log_name, unsigned copies )
         remove( log_name );
         return;
     }
-    _splitpath2( log_name, buff, &drive, &dir, &fn, &ext );
+    _splitpath2( log_name, path_buffer, &drive, &dir, &fn, &ext );
     while( copies != 0 ) {
         PutNumber( ext, temp_ext, copies );
         _makepath( new_name, drive, dir, fn, temp_ext );
@@ -304,7 +304,7 @@ static bool ProcessEnv( bool opt_end )
 static void PushInclude( const char *name )
 {
     include     *new;
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -323,7 +323,7 @@ static void PushInclude( const char *name )
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
     strcpy( new->name, name );
-    _splitpath2( name, buff, &drive, &dir, &fn, &ext );
+    _splitpath2( name, path_buffer, &drive, &dir, &fn, &ext );
     _makepath( dir_name, drive, dir, NULL, NULL );
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
@@ -646,7 +646,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result )
 {
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -661,7 +661,7 @@ static bool SearchUpDirs( const char *name, char *result )
             fclose( fp );
             return( true );
         }
-        _splitpath2( result, buff, &drive, &dir, &fn, &ext );
+        _splitpath2( result, path_buffer, &drive, &dir, &fn, &ext );
         if( *dir == '\0' )
             return( false );
         end = dir + strlen( dir ) - 1;
