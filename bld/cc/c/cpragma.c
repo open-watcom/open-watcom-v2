@@ -672,17 +672,17 @@ hw_reg_set *PragManyRegSets( void )
     int         i;
     hw_reg_set  list;
     hw_reg_set  *sets;
-    hw_reg_set  buff[MAXIMUM_PARMSETS];
+    hw_reg_set  buff[MAXIMUM_PARMSETS + 1];
 
-    for( i = 0; i < MAXIMUM_PARMSETS; ++i ) {
+    for( i = 0; i < MAXIMUM_PARMSETS + 1; ++i ) {
         list = PragRegList();
         if( HW_CEqual( list, HW_EMPTY ) )
             break;
         buff[i] = list;
     }
-    if( i == MAXIMUM_PARMSETS ) {
+    if( i > MAXIMUM_PARMSETS ) {
         CErr1( ERR_TOO_MANY_PARM_SETS );
-        --i;
+        i = MAXIMUM_PARMSETS;
     }
     HW_CAsgn( buff[i++], HW_EMPTY );
     i *= sizeof( hw_reg_set );
