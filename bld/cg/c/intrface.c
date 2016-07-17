@@ -53,6 +53,7 @@
 #include "objio.h"
 #include "blips.h"
 #include "bldsel.h"
+#include "intrface.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -437,8 +438,8 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 
 static  pointer                 NewBackReturn = NULL;
 
-extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
-/***************************************************************/
+pointer cg_internal LkAddBack( cg_sym_handle sym, pointer curr_back )
+/*******************************************************************/
 {
     back_handle bck;
 
@@ -448,8 +449,8 @@ extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
     return( TO_REAL_BACK( bck ) );
 }
 
-extern back_handle SymBack( cg_sym_handle sym )
-/*********************************************/
+back_handle cg_internal SymBack( cg_sym_handle sym )
+/**************************************************/
 {
     back_handle bck;
 
@@ -1713,8 +1714,8 @@ extern  void _CGAPI     DGCFloat( pointer cf, cg_type tipe )
     DGBytes( TypeLength( tipe ), &buff );
 }
 
-extern  const char  *AskName( pointer hdl, cg_class class )
-/*********************************************************/
+const char * cg_internal AskName( pointer hdl, cg_class class )
+/*************************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -1735,8 +1736,8 @@ extern  const char  *AskName( pointer hdl, cg_class class )
     }
 }
 
-extern  label_handle AskForSymLabel( pointer hdl, cg_class class )
-/****************************************************************/
+label_handle cg_internal AskForSymLabel( pointer hdl, cg_class class )
+/********************************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -1757,14 +1758,14 @@ extern  label_handle AskForSymLabel( pointer hdl, cg_class class )
     }
 }
 
-extern  import_handle   AskImportHandle( cg_sym_handle sym )
-/*******************************************************/
+import_handle   cg_internal AskImportHandle( cg_sym_handle sym )
+/**************************************************************/
 {
     return( FEBack( sym )->imp );
 }
 
-extern  void    TellImportHandle( cg_sym_handle sym, import_handle imp )
-/*******************************************************************/
+void    cg_internal TellImportHandle( cg_sym_handle sym, import_handle imp )
+/**************************************************************************/
 {
     FEBack( sym )->imp = imp;
 }

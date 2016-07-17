@@ -47,7 +47,9 @@
 #include "dbsyms.h"
 #include "objio.h"
 #include "optmain.h"
+#include "intrface.h"
 #include "feprotos.h"
+
 
 extern  void            OutFPPatch(fp_patches);
 extern  void            OutImport(cg_sym_handle,fix_class,bool);

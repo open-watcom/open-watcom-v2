@@ -35,10 +35,10 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rtrtn.h"
 
 
 extern  bool            IndexOkay(instruction*,name*);
-extern  bool            RTLeaveOp2(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  void            FixFPConsts(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);

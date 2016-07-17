@@ -51,6 +51,7 @@
 #include "objout.h"
 #include "object.h"
 #include "i86enc2.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);

@@ -39,4 +39,4 @@ extern  bool            AskIfCommonLabel( label_handle lbl );
 extern  offset          AskAddress( label_handle lbl );
 extern  pointer         AskLblPatch( label_handle lbl );
 extern  cg_sym_handle   AskForLblSym( label_handle lbl );
-extern  label_handle    AskForSymLabel( pointer hdl, cg_class class );
+//extern  label_handle    AskForSymLabel( pointer hdl, cg_class class );

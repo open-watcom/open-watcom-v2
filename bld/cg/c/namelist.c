@@ -39,10 +39,11 @@
 #include "data.h"
 #include "seldef.h"
 #include "bldsel.h"
+#include "intrface.h"
+
 
 extern  type_class_def  RegClass(hw_reg_set);
 extern  type_def        *ClassType(type_class_def);
-extern  pointer         LkAddBack(cg_sym_handle,pointer);
 
 static  pointer         *FrlHead[N_INDEXED+1];
 static  pointer         *ConstDefnFrl;

@@ -50,6 +50,7 @@
 #include "rscconst.h"
 #include "object.h"
 #include "axpenc.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 

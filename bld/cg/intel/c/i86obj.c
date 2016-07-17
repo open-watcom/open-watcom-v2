@@ -54,6 +54,7 @@
 #include "onexit.h"
 #include "ocentry.h"
 #include "optmain.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -137,9 +138,6 @@ typedef struct dbg_seg_info {
 } dbg_seg_info;
 
 
-extern  char            *AskRTName(rt_class);
-extern  void            TellImportHandle(cg_sym_handle,import_handle);
-extern  import_handle   AskImportHandle(cg_sym_handle);
 extern  void            TellDonePatch(label_handle);
 extern  void            TellAddress(label_handle,offset);
 extern  void            TellCommonLabel(label_handle,import_handle);

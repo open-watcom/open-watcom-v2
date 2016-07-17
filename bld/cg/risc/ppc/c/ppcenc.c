@@ -47,6 +47,7 @@
 #include "dbsyms.h"
 #include "object.h"
 #include "encode.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );

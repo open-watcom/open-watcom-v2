@@ -46,6 +46,7 @@
 #include "dbsyms.h"
 #include "blips.h"
 #include "redefby.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 

@@ -35,6 +35,7 @@
 #include "cfloat.h"
 #include "dumpio.h"
 #include "data.h"
+#include "intrface.h"
 #include "feprotos.h"
 
 extern  void            DumpRegName(hw_reg_set);
@@ -44,7 +45,6 @@ extern  void            DumpBlkId(block*);
 extern  void            DumpPossible(byte);
 extern  void            DumpTab(opcode_entry*);
 extern  name            *DeAlias(name*);
-extern  char            *AskName(pointer,cg_class);
 extern  hw_reg_set      HighReg(hw_reg_set);
 extern  hw_reg_set      LowReg(hw_reg_set);
 extern  void            DumpGBit(global_bit_set*);
@@ -210,7 +210,7 @@ extern  void    DumpOperand( name *operand ) {
             if( operand->i.index_flags & X_FAKE_BASE ) {
                 DumpChar( '{' );
                 if( base->n.class == N_MEMORY ) {
-                    DumpXString( AskName(base->v.symbol, base->m.memory_type) );
+                    DumpXString( AskName( base->v.symbol, base->m.memory_type ) );
                 } else if( base->n.class == N_TEMP ) {
                     if( _FrontEndTmp( base ) ) {
                         DumpXString( FEName( base->v.symbol ) );

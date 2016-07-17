@@ -34,6 +34,7 @@
 #include "coderep.h"
 #include "regset.h"
 #include "rttable.h"
+#include "rtrtn.h"
 #include "zoiks.h"
 
 rtn_info RTInfo[] = {
@@ -42,13 +43,14 @@ rtn_info RTInfo[] = {
     #undef PICK
 };
 
-extern  char    *AskRTName( rt_class rtindex ) {
-/**********************************************/
+const char  *AskRTName( rt_class rtindex )
+/****************************************/
+{
     return( RTInfo[rtindex].nam );
 }
 
-extern  bool    RTLeaveOp2( instruction *ins )
-/********************************************/
+bool    RTLeaveOp2( instruction *ins )
+/************************************/
 {
     ins = ins;
     return( false );

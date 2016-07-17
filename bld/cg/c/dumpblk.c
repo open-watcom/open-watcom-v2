@@ -33,14 +33,13 @@
 #include "coderep.h"
 #include "dumpio.h"
 #include "data.h"
+#include "intrface.h"
 
 extern  void            DumpIns(instruction*);
 extern  void            DumpLineNum(instruction*);
 extern  void            DumpInsList(block*);
 extern  void            DumpInstrsOnly(block*);
 extern  void            DumpSymList(name*);
-
-extern  char            *AskName(pointer,cg_class);
 
 static void DumpBlkFlags( block *blk )
 /************************************/
