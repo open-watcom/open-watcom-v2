@@ -55,6 +55,7 @@
 #include "i86enc2.h"
 #include "encode.h"
 #include "object.h"
+#include "i86proc.h"
 #include "feprotos.h"
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
@@ -63,7 +64,6 @@ extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            DoRTCall( rt_class rtn, bool pop );
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            DoRepOp( instruction *ins );
@@ -651,7 +651,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
 /****************************************************/
 
     any_oc              oc;
-    int                 rtindex;
+    rt_class            rtindex;
     label_handle        lbl;
     label_handle        lbl_2;
     name                *high;

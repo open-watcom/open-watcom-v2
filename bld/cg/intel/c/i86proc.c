@@ -400,10 +400,10 @@ static void FindIfExported( void ) {
 }
 
 
-extern void DoRTCall( rt_class rtn, bool pop )
-/********************************************/
+void DoRTCall( rt_class rtindex, bool pop )
+/*************************************/
 {
-    DoCall( RTLabel( rtn ), true, _IsTargetModel( BIG_CODE ), pop );
+    DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), pop );
 }
 
 

@@ -48,10 +48,10 @@
 #include "objprof.h"
 #include "object.h"
 #include "encode.h"
+#include "i86proc.h"
 #include "feprotos.h"
 
 
-extern  void            DoRTCall( rt_class rtn, bool pop );
 extern  void            DoSymRef( name *, offset, bool );
 extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );

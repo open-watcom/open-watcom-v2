@@ -24,18 +24,20 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for optask.c
+* Description:  Intel x86 procedure call generation.
 *
 ****************************************************************************/
 
 
-extern  label_handle    AskForNewLabel( void );
-extern  label_handle    AskRTLabel( cg_sym_handle sym );
-extern  label_handle    AskForLabel( cg_sym_handle sym );
-extern  bool            AskIfReachedLabel( label_handle lbl );
-extern  bool            AskIfRTLabel( label_handle lbl );
-extern  bool            AskIfUniqueLabel( label_handle lbl );
-extern  bool            AskIfCommonLabel( label_handle lbl );
-extern  offset          AskAddress( label_handle lbl );
-extern  pointer         AskLblPatch( label_handle lbl );
-extern  cg_sym_handle   AskForLblSym( label_handle lbl );
+extern bool         CanZapBP( void );
+extern void         AddCacheRegs( void );
+extern void         DoRTCall( rt_class rtindex, bool pop );
+extern void         GenProlog( void );
+extern void         InitStackDepth( block *blk );
+extern void         AdjustStackDepth( instruction *ins );
+extern void         AdjustStackDepthDirect( int adjust );
+extern bool         BaseIsSP( name *op );
+extern type_length  NewBase( name *op );
+extern void         GenEpilog( void );
+extern int          AskDisplaySize( int level );
+extern int          ParmsAtPrologue( void );

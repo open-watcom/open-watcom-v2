@@ -33,7 +33,7 @@
 
 extern pointer          cg_internal LkAddBack( cg_sym_handle sym, pointer curr_back );
 extern back_handle      cg_internal SymBack( cg_sym_handle sym );
-extern const char       cg_internal *AskName( pointer hdl, cg_class class );
+extern const char       * cg_internal AskName( pointer hdl, cg_class class );
 extern label_handle     cg_internal AskForSymLabel( pointer hdl, cg_class class );
 extern import_handle    cg_internal AskImportHandle( cg_sym_handle sym );
 extern void             cg_internal TellImportHandle( cg_sym_handle sym, import_handle imp );
