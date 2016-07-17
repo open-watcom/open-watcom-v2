@@ -51,10 +51,11 @@ extern  void    LookupRoutine( instruction *ins ) {
         opcode = OP_CMP;
     }
     rtn = RTInfo;
-    for( rtindex = 0; rtn->op != opcode || rtn->operand_class != ins->type_class; ++rtindex ) {
+    rtindex = 0;
+    while( rtn->op != opcode || rtn->operand_class != ins->type_class ) {
         ++rtn;
+        ++rtindex;
         if( rtn->op == OP_NOP ) {
-            ++rtindex;
             _Zoiks( ZOIKS_021 );
             break;
         }
