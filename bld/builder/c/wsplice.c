@@ -823,8 +823,12 @@ int main(               // MAIN-LINE
 
             env = getenv( arg + 1 );
             if( env != NULL ) {
-                strncpy( st, env, sizeof( st ) );
-                st[sizeof( st ) - 1] = '\0';
+                len = strlen( env );
+                if( len > sizeof( st ) - 1 ) {
+                    len = sizeof( st ) - 1;
+                }
+                memcpy( st, env, len + 1 );
+                st[len] = '\0';
             } else {
                 f = fopen( arg + 1, "r" );
                 if( f == NULL ) {
