@@ -32,6 +32,7 @@
 #include "optwif.h"
 #include "dumpio.h"
 #include "typedef.h"
+#include "regset.h"
 #include "rttable.h"
 #include "inslist.h"
 #include "rtrtn.h"
@@ -103,7 +104,7 @@ static  const char  *CondName( oc_jcond *oc ) {
 static  bool    LblName( label_handle lbl, bool no_prefix )
 /*********************************************************/
 {
-    if( ValidLbl( lbl ) == false )
+    if( !ValidLbl( lbl ) )
         return( false );
     if( no_prefix ) {
         if( lbl->lbl.sym == NULL ) {
@@ -335,10 +336,10 @@ extern  void    DumpLbl( label_handle lbl ) {
 
     ins_entry   *ref;
 
-    if( _ValidLbl( lbl ) == false )
+    if( !_ValidLbl( lbl ) )
         return;
     if( lbl->lbl.sym != NULL ) {
-        if( LblName( lbl ) ) {
+        if( LblName( lbl, true ) ) {
             DumpLiteral( " " );
         }
     }
