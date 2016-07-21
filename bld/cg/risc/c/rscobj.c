@@ -402,7 +402,7 @@ static const char   *LabelName( label_handle label )
 
     sym = AskForLblSym( label );
     if( AskIfRTLabel( label ) ) {
-        name = AskRTName( (rt_class)(pointer_int)sym );
+        name = AskRTName( SYM2RTIDX( sym ) );
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
             objName[ 0 ] = '.';
             objName[ 1 ] = '.';

@@ -40,7 +40,8 @@
 #include "jumps.h"
 #include "zoiks.h"
 #include "fppatch.h"
-#include "rtclass.h"
+#include "regset.h"
+#include "rttable.h"
 #include "i86obj.h"
 #include "objout.h"
 #include "cgauxinf.h"
@@ -384,7 +385,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
 
     sym = AskForLblSym( lbl );
     if( AskIfRTLabel( lbl ) ) {
-        OutRTImport( (rt_class)(pointer_int)sym, f );
+        OutRTImport( SYM2RTIDX( sym ), f );
         if( class & ATTR_FAR ) {
             _OutFarD( 0, 0 );
         } else {
@@ -496,7 +497,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
             lbl = *(pointer *)cur;
             cur += sizeof( pointer );
             if( AskIfRTLabel( lbl ) ) {
-                OutRTImportRel( (rt_class)(pointer_int)AskForLblSym( lbl ), F_OFFSET, false );
+                OutRTImportRel( SYM2RTIDX( AskForLblSym( lbl ) ), F_OFFSET, false );
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
@@ -606,7 +607,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
         lbl = oc->oc_handle.handle;
         sym = AskForLblSym( lbl );
         if( AskIfRTLabel( lbl ) ) {
-            OutRTImport( (rt_class)(pointer_int)sym, F_OFFSET );
+            OutRTImport( SYM2RTIDX( sym ), F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
             OutSpecialCommon( (import_handle)(pointer_int)sym, F_OFFSET, false );

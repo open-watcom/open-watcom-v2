@@ -84,7 +84,7 @@ static  void    Far16Parms( cn call ) {
     type_length         offset;
     name                *parmlist;
     call_state          *state;
-    rt_class            thunk_rtn;
+    rt_class            rtindex;
 
     call_ins = call->ins;
     parm_size = 0;
@@ -127,14 +127,14 @@ static  void    Far16Parms( cn call ) {
     AddIns( ins );
     if( call_ins->type_class == XX ) {
         if( state->attr & ROUTINE_ALLOCS_RETURN ) {
-            thunk_rtn = RT_Far16Cdecl;
+            rtindex = RT_Far16Cdecl;
         } else {
-            thunk_rtn = RT_Far16Pascal;
+            rtindex = RT_Far16Pascal;
         }
     } else {
-        thunk_rtn = RT_Far16Func;
+        rtindex = RT_Far16Func;
     }
-    lbl = RTLabel( thunk_rtn );
+    lbl = RTLabel( rtindex );
     call->name->u.n.name = AllocMemory( lbl, 0, CG_LBL, WD );
     call_ins->flags.call_flags |= CALL_FAR16 | CALL_POPS_PARMS;
     call_ins->operands[CALL_OP_USED] = AllocRegName( state->parm.used );

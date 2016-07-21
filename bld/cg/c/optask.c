@@ -82,8 +82,8 @@ extern  label_handle AskForNewLabel( void )
 }
 
 
-extern  label_handle AskRTLabel( cg_sym_handle sym )
-/**************************************************/
+label_handle AskRTLabel( cg_sym_handle sym )
+/******************************************/
 {
     label_handle    lbl;
 

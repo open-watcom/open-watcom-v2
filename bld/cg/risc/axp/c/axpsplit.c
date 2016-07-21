@@ -575,7 +575,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
 }
 #endif
 
-static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, name *p2 ) {
+static instruction *CheapCall( instruction *ins, rt_class rtindex, name *p1, name *p2 ) {
 /***************************************************************************************/
 
     instruction         *call;
@@ -584,7 +584,7 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     label_handle        lbl;
 
     reg = HW_EMPTY;
-    lbl = RTLabel( rt_call );
+    lbl = RTLabel( rtindex );
     call = NewIns( 3 );
     call->head.opcode = OP_CALL;
     call->type_class = WD;
