@@ -32,7 +32,7 @@
 
 #include "rtclass.h"
 
-#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_int)((i) - 1))
+#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_int)((i) + 1))
 #define SYM2RTIDX(s)    ((rt_class)(pointer_int)(s) - 1)
 
 typedef struct rtn_info {
