@@ -45,14 +45,14 @@ extern  name            *ScaleIndex( name *, name *,
                                 type_length, type_class_def, type_length, int, i_flags );
 extern  void            PrefixIns( instruction *, instruction * );
 
-static  name    *RTMemRef( rt_class rt_index )
-/*********************************************
+static  name    *RTMemRef( rt_class rtindex )
+/********************************************
     create a memory_name to reference the given runtime label.
 */
 {
     label_handle    lbl;
 
-    lbl = RTLabel( rt_index );
+    lbl = RTLabel( rtindex );
     return( AllocMemory( lbl, 0, CG_LBL, WD ) );
 }
 
