@@ -117,7 +117,8 @@ static void dumpAutoLocn( void )
     if( auto_locations ) {
         for( ; ; ) {
             curr = auto_locations;
-            if( ! curr ) break;
+            if( curr == NULL )
+                break;
             auto_locations = curr->next;
             if( ((pointer)TEMP_LOC_YES) == FEAuxInfo( curr->s, TEMP_LOC_NAME ) ) {
                 Action( "TEMP_LOC_TELL offset=%h symbol=%s%n"
@@ -505,7 +506,7 @@ extern  void    CGSelOther( sh *s, l *lb ) {
     Action( "CGSelOther" );
     Action( "( %d, %s )%n", s->i, Label( lb ) );
     CRefLabel(lb);
-    if(s->o!=NULL) { CGError( "Otherwise already defined" ); }
+    if( s->o != NULL ) { CGError( "Otherwise already defined" ); }
     s->o=lb;
 }
 extern  void    CGSelect( sh *s, n *e ) {
@@ -527,7 +528,7 @@ extern  void    CGSelect( sh *s, n *e ) {
         s->r=r->n;
         CGFree(r);
     }
-    if(s->o!=NULL) { Code( "default: %s%n", Label(s->o) ); }
+    if( s->o != NULL ) { Code( "default: %s%n", Label(s->o) ); }
     Code("}%n");
     CGFree(s);
 }
@@ -615,7 +616,7 @@ extern  n       *CGFEName( pointer sym, cg_type t ) {
     if( FEAttr( sym ) & FE_STATIC ) {
         bk = FEBack( sym );
         VerBack( bk );
-        if( !( FEAttr( sym ) & FE_IMPORT ) ) DRefLabel( bk->lp );
+        if( (FEAttr( sym ) & FE_IMPORT) == 0 ) DRefLabel( bk->lp );
         for( st = StaticList; st; st = st->n ) {
             if( st->s == sym ) break;
         }

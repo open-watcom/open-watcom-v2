@@ -412,7 +412,7 @@ extern  void    OptPull( void )
     case OC_JCOND:
     case OC_JMP:
 #if( OPTIONS & SHORT_JUMPS )
-        if( !(_Attr( FirstIns ) & ATTR_FAR) ) {
+        if( (_Attr( FirstIns ) & ATTR_FAR) == 0 ) {
             SetBranches();
         }
 #endif

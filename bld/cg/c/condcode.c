@@ -108,7 +108,7 @@ static void DoMarkUsedCC( block *blk )
     } else {
         blk->class |= BLOCK_VISITED;
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( !(edge->source->class & BLOCK_VISITED) ) {
+            if( (edge->source->class & BLOCK_VISITED) == 0 ) {
                 DoMarkUsedCC( edge->source );
             }
         }

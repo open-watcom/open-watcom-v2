@@ -570,7 +570,7 @@ extern  void    DFObjInitDbgInfo( void ) {
         debug_pch = FEAuxInfo( NULL, DBG_PCH_SYM );
         if( debug_pch != NULL ){
             attr = FEAttr( debug_pch );
-            if( !(attr & FE_IMPORT) ) {
+            if( (attr & FE_IMPORT) == 0 ) {
                 back_handle bck;
                 segment_id  old;
 

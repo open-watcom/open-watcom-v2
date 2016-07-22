@@ -109,8 +109,8 @@ static  conflict_node   *AddOne( name *opnd, block *blk )
 {
     if( opnd->v.usage & USE_MEMORY ) {
         if( opnd->n.class == N_TEMP ) {
-            if( !( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
-                if( !( opnd->t.temp_flags & HAD_CONFLICT ) ) {
+            if( (opnd->v.usage & USE_IN_ANOTHER_BLOCK) == 0 ) {
+                if( (opnd->t.temp_flags & HAD_CONFLICT) == 0 ) {
                     if( opnd->t.temp_flags & CROSSES_BLOCKS ) {
                         opnd->t.u.block_id = NO_BLOCK_ID;
                     } else {

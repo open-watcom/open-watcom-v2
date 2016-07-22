@@ -1510,7 +1510,7 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     } data;
     byte        *form;
 
-#if !( _TARG_MEMORY & _TARG_LOW_FIRST) == defined( __BIG_ENDIAN__ )
+#if ( ( _TARG_MEMORY & _TARG_LOW_FIRST ) != 0 ) == defined( __BIG_ENDIAN__ )
     data.val = value;
 #else
     {  // reverse them

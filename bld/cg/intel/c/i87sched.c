@@ -230,7 +230,7 @@ static  fp_attr FPAttr( instruction *ins ) {
     if( _OpIsCall( ins->head.opcode ) && ins->result != NULL ) {
         if( ins->result->n.class != N_REGISTER ) return( POPS_ALL );
         if( !HW_COvlap( ins->result->r.reg, HW_FLTS ) ) return( POPS_ALL );
-        return( PUSHES+POPS_ALL );
+        return( PUSHES + POPS_ALL );
     }
     if( ins->u.gen_table->generate == G_FCHOP ) return( NEEDS_ST0 );
     if( !_GenIs8087( ins->u.gen_table->generate ) ) {
@@ -884,7 +884,7 @@ static  void    CacheTemps( block *blk ) {
             temp->global = true;
         } else {
             if( !temp->defined ) continue; // I'm not sure if these save anything
-            if( temp->defined && temp->first->u.gen_table->generate!=G_MFST ) continue;
+            if( temp->defined && temp->first->u.gen_table->generate != G_MFST ) continue;
             if( RegAction( temp->last ) == NULL ) continue;
             if( temp->first == temp->last ) continue;
         }
@@ -1066,7 +1066,7 @@ extern  void    FPPostSched( block *blk ) {
     InitGlobalTemps();
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next->head.next ) {
         next = ins;
-        if( !( ins->ins_flags & FP_INS_INTRODUCED ) ) {
+        if( (ins->ins_flags & FP_INS_INTRODUCED) == 0 ) {
             attr = FPAttr( ins );
             temp = LookupTempEntry( ins->result );
             if( attr & NEEDS_ST0 && temp == NULL ) {

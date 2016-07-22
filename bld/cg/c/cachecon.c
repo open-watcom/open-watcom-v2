@@ -149,7 +149,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
                         ins->operands[i] = temp;
                         change = true;
                     } else {
-#if !( _TARGET & _TARG_AXP ) && ( _TARG_MEMORY & _TARG_LOW_FIRST )
+#if ( _TARGET & _TARG_AXP ) == 0 && ( _TARG_MEMORY & _TARG_LOW_FIRST )
                         if( _IsIntegral( ins_class ) && _IsIntegral( tmp_class ) ) {
                             ins->operands[i] = TempOffset( temp, 0, ins_class );
                             change = true;

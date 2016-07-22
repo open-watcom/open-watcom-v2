@@ -267,7 +267,7 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
             class = TypeClass( tipe );
             src_name = GenIns( src );
             if( dst_name->n.class == N_INDEXED &&
-             !( dst_name->i.index_flags & X_VOLATILE ) ) {
+             (dst_name->i.index_flags & X_VOLATILE) == 0 ) {
                 /* don't give him back an indexed name - it extends the life of*/
                 /* a pointer*/
                 temp = SAllocTemp( dst_name->n.name_class, dst_name->n.size );

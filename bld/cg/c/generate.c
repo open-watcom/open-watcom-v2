@@ -279,7 +279,7 @@ static  void            PostOptimize( void )
     }
     MergeIndex();
     if( _IsntModel( NO_OPTIMIZATION ) ) {
-    #if !(_TARGET & _TARG_RISC)
+    #if (_TARGET & _TARG_RISC) == 0
         //
         // Calling Conditions() at this point has nice optimization effect,
         // but doesn't working correctly right now. It optimizes conditions
@@ -307,7 +307,7 @@ static  void            PostOptimize( void )
         Score();
         DeadInstructions(); // cleanup junk after Score()
         if( !BlockByBlock ) LoopRegInvariant();
-    #if !(_TARGET & _TARG_RISC)
+    #if (_TARGET & _TARG_RISC) == 0
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
             Conditions();

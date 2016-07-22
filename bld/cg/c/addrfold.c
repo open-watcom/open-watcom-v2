@@ -652,7 +652,7 @@ extern  name    *GetValue( an addr, name *suggest ) {
     if( op->n.class == N_TEMP
      && op->v.symbol == NULL
      && ( addr->flags & FL_STACKABLE )
-     && !( addr->flags & FL_NEVER_STACK ) ) {
+     && (addr->flags & FL_NEVER_STACK) == 0 ) {
         FPSetStack( op );
     }
     return( op );

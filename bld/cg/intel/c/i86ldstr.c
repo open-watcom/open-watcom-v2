@@ -550,7 +550,7 @@ static void     CompressIns( instruction *ins )
     int         i;
     int         num_operands;
 
-    if( !(ins->ins_flags & INS_RISCIFIED) )
+    if( (ins->ins_flags & INS_RISCIFIED) == 0 )
         return;
     switch( ins->head.opcode ) {
     case OP_PUSH:

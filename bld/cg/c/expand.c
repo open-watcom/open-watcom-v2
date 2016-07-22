@@ -264,7 +264,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
                 switch( name->n.class ) {
                 case N_MEMORY:
                 case N_TEMP:
-                    if( name->v.conflict != NULL && !( name->v.usage & USE_MEMORY ) ) {
+                    if( name->v.conflict != NULL && (name->v.usage & USE_MEMORY) == 0 ) {
                         ins->head.state = OPERANDS_NEED_WORK;
                     }
                 }

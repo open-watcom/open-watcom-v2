@@ -257,7 +257,7 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 
     if( !_OpIsCall( ins->head.opcode ) ) return;
     if( !HW_CEqual( ins->result->r.reg, HW_ST0 ) ) return;
-    if( !( ins->flags.call_flags & CALL_IGNORES_RETURN ) ) return;
+    if( (ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 ) return;
     --*stk_level;
 }
 

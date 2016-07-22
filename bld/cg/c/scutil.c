@@ -242,7 +242,7 @@ extern  void    MemChanged( score *p, bool statics_too )
                     changed = true;
                     break;
                 case N_TEMP:
-                    if( !( curr->info.symbol.v->usage & USE_ADDRESS ) ) {
+                    if( (curr->info.symbol.v->usage & USE_ADDRESS) == 0 ) {
                         changed = true;
                     }
                     break;

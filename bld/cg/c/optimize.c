@@ -69,8 +69,8 @@ static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 };
 
 
-#define _IsIns( ins, attr )        ( OpAttrs[ins->head.opcode] & attr )
-#define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == false )
+#define _IsIns( ins, attr )        ((OpAttrs[ins->head.opcode] & attr) != 0)
+#define _IsntIns( ins, attr )      ((OpAttrs[ins->head.opcode] & attr) == 0)
 
 
 static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
@@ -181,8 +181,8 @@ extern  bool    SameThing( name *x, name *y )
      && x->v.symbol == y->v.symbol ) return( true );
     if( x->n.class == N_TEMP && y->n.class == N_TEMP ) {
         if( x->t.v.id != y->t.v.id ) return( false );
-        if( !( x->t.temp_flags & ALIAS )
-         && !( y->t.temp_flags & ALIAS ) ) return( false );
+        if( (x->t.temp_flags & ALIAS) == 0 && (y->t.temp_flags & ALIAS) == 0 )
+            return( false );
         return( true );
     }
     return( false );

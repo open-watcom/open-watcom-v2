@@ -96,8 +96,8 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
             }
         }
         if( _OpIsCall( ins->head.opcode ) &&
-           ! ( ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) &&
-               ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) ) ) {
+           ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 ||
+               (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
             blk->class |= CONTAINS_CALL;
         }
     }
@@ -120,7 +120,7 @@ static  void    LoadStoreIfCall( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if(( blk->class & CONTAINS_CALL ) && !( blk->class & REAL_REFERENCE )) {
+        if( (blk->class & CONTAINS_CALL) && (blk->class & REAL_REFERENCE) == 0 ) {
             flow = blk->dataflow;
             _GBitTurnOn( flow->need_load, *id );
             _GBitTurnOn( flow->need_store, *id );
@@ -140,7 +140,7 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !( blk->class & REAL_REFERENCE ) ) {
+        if( (blk->class & REAL_REFERENCE) == 0 ) {
             flow = blk->dataflow;
             if( _GBitOverlap( flow->need_load, *id ) && _GBitOverlap( flow->need_store, *id ) ) {
                 _GBitTurnOff( flow->need_load, *id );

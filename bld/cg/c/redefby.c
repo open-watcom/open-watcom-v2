@@ -266,7 +266,7 @@ bool_maybe  VisibleToCall( instruction *ins, name *op, bool modifies )
         if( _IsModel( FORTRAN_ALIASING ) ) {
             switch( op->m.memory_type ) {
             case CG_FE:
-                if( !( FEAttr( op->v.symbol ) & FE_VISIBLE ) ) {
+                if( (FEAttr( op->v.symbol ) & FE_VISIBLE ) == 0 ) {
                     return( MB_FALSE );
                 }
                 return( MB_TRUE );

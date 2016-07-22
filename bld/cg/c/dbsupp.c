@@ -218,7 +218,7 @@ extern  dbg_loc _CGAPI DBLocOp( dbg_loc loc, dbg_loc_op op, unsigned other )
         case TY_INT_2:
             stkop = LOC_OPER + LOP_IND_2;
             break;
-#if !( _TARGET & _TARG_IAPX86 )
+#if ( _TARGET & _TARG_IAPX86 ) == 0
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif

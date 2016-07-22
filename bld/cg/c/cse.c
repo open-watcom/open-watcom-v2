@@ -157,7 +157,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
         input = edge->source;
-        if( !( input->class & JUMP ) )
+        if( (input->class & JUMP) == 0 )
             continue;
         for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
             if( _IsntReDefinedBy( prev, op ) )
@@ -336,7 +336,7 @@ static  void    FindPartition( void )
         for( i = blk->targets; i > 0; --i ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
-                if( !( oth->class & PARTITION_ROOT ) && oth->inputs == 1 ) {
+                if( (oth->class & PARTITION_ROOT) == 0 && oth->inputs == 1 ) {
                     temp = oth->u.partition;
                     oth->u.partition = blk->u.partition;
                     blk->u.partition = temp;
@@ -1342,7 +1342,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         switch( defop->c.const_type ) {
                         case CONS_ABSOLUTE:
                             if( opnd->i.base != NULL
-                                && !(opnd->i.index_flags & X_FAKE_BASE) ) {
+                                && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
                                 disp = opnd->i.constant + defop->c.int_value;
                                 base = opnd->i.base;
                             }

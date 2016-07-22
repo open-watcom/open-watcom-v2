@@ -104,15 +104,14 @@ extern  pointer     Parm8087[MAX_8087_REG+1];
 #define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
             || ( _IsTargetModel( CHEAP_WINDOWS )                    \
-               && !( CurrProc->prolog_state &                       \
-                 ( GENERATE_EXPORT | GENERATE_FAT_PROLOG ) ) ) )
+               && (CurrProc->prolog_state & (GENERATE_EXPORT | GENERATE_FAT_PROLOG)) == 0 ) )
 
 #define DO_WINDOWS_CRAP ( _IsTargetModel( WINDOWS )                 \
                && ( !WINDOWS_CHEAP || CurrProc->contains_call ) )
 
 #define DO_BP_CHAIN ( ( (_IsTargetModel( NEED_STACK_FRAME ) || _IsModel( DBG_CV ) ) \
                && CurrProc->contains_call )                                         \
-             || ( CurrProc->prolog_state & GENERATE_FAT_PROLOG ) )
+             || (CurrProc->prolog_state & GENERATE_FAT_PROLOG) )
 
 #define CHAIN_FRAME ( DO_WINDOWS_CRAP || DO_BP_CHAIN )
 
@@ -120,7 +119,7 @@ extern  pointer     Parm8087[MAX_8087_REG+1];
               _IsntTargetModel( WINDOWS ) || WINDOWS_CHEAP )
 
 #define FAR_RET_ON_STACK ( (_RoutineIsLong( CurrProc->state.attr ) ) \
-             && !(CurrProc->state.attr & ROUTINE_NEVER_RETURNS))
+             && (CurrProc->state.attr & ROUTINE_NEVER_RETURNS) == 0 )
 
 type_length StackDepth;
 
@@ -207,7 +206,7 @@ static  void    ChkFDOp( name *op, int depth ) {
 
     if( op->n.class != N_TEMP )
         return;
-    if( !( op->v.usage & (USE_IN_ANOTHER_BLOCK|USE_ADDRESS) ) )
+    if( (op->v.usage & (USE_IN_ANOTHER_BLOCK | USE_ADDRESS)) == 0 )
         return;
     if( op->t.temp_flags & STACK_PARM )
         return;
@@ -293,7 +292,7 @@ static  bool    ScanLabelCalls( void ) {
     block   *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !( blk->class & CALL_LABEL ) )
+        if( (blk->class & CALL_LABEL) == 0 )
             continue;
         if( ScanForLabelReturn( blk->edge[0].destination.u.blk ) == NULL ) {
             return( false );
@@ -479,7 +478,7 @@ static  void    PrologHook( void )
 {
     int      size;
 
-    if( !( CurrProc->prolog_state & GENERATE_PROLOG_HOOKS ) )
+    if( (CurrProc->prolog_state & GENERATE_PROLOG_HOOKS) == 0 )
         return;
     size = ProEpiDataSize();
     if( size != 0 ) {
@@ -1143,7 +1142,7 @@ static  void    DoEpilog( void ) {
         } else {
             if( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) {
                 size = CurrProc->locals.size + CurrProc->targ.push_local_size;
-                if( (CurrProc->prolog_state & GENERATE_RESET_SP) || size!=0 ) {
+                if( (CurrProc->prolog_state & GENERATE_RESET_SP) || size != 0 ) {
                     /* sp is not pointing at saved registers already */
                     if( CurrProc->targ.sp_frame ) {
                         if( CurrProc->targ.sp_align ) {

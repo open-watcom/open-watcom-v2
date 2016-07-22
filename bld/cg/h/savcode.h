@@ -175,8 +175,8 @@
                     if( ( last_defn != NULL
                        || ( ( opnd->v.usage & USE_IN_ANOTHER_BLOCK )
                           && _GBitOverlap( conf->id.out_of_block, flow->in ) ) )
-                     && ( ( !(ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) )
-                       || ( !(ins->flags.call_flags & CALL_READS_NO_MEMORY ) )
+                     && ( ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 )
+                       || ( (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 )
                        || ( opnd->n.class == N_TEMP
                             && ( opnd->v.usage & USE_ADDRESS ) ) ) ) {
                         last_defn = NULL;

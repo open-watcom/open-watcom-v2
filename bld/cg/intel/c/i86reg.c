@@ -53,7 +53,7 @@ extern  hw_reg_set      AllCacheRegs( void );
 /* forward declaration */
 extern  void            UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux );
 
-#define _NPX( x ) ( !( (x) & ROUTINE_NO_8087_RETURNS ) )
+#define _NPX( x ) (((x) & ROUTINE_NO_8087_RETURNS) == 0)
 
 extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************************/
@@ -187,7 +187,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
         } else {
             state->return_reg = StructReg();
         }
-        if( !( state->attr & ROUTINE_ALLOCS_RETURN ) ) {
+        if( (state->attr & ROUTINE_ALLOCS_RETURN) == 0 ) {
             tmp = ReturnReg( WD, false );
             HW_TurnOn( state->modify, tmp );
         }

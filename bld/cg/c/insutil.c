@@ -230,7 +230,7 @@ extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum 
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS1 ) {
                     conf = info->conf;
-                    if( !( info->flags & CB_FOR_INS2 ) ) {
+                    if( (info->flags & CB_FOR_INS2) == 0 ) {
                         if( conf->ins_range.last == ins ) {
                             conf->ins_range.last = pref;
                         }
@@ -306,7 +306,7 @@ extern  void    SuffixIns( instruction *ins, instruction *suff ) {
             for( info = ConflictInfo; info->conf != NULL; ++info ) {
                 if( info->flags & CB_FOR_INS2 ) {
                     conf = info->conf;
-                    if( !( info->flags & CB_FOR_INS1 ) ) {
+                    if( (info->flags & CB_FOR_INS1) == 0 ) {
                         if( conf->ins_range.first == ins ) {
                             conf->ins_range.first = suff;
                         }

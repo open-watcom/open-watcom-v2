@@ -136,7 +136,7 @@ static  bool    LDone( any_oc *oc )
         optreturn( false );
     lbl = oc->oc_handle.handle;
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == false )
+    if( _TstStatus( lbl, CODELABEL ) == 0 )
         optreturn( false );
     _SetStatus( lbl, DYINGLABEL );
     TryScrapLabel( lbl );

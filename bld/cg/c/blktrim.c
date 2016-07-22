@@ -226,7 +226,7 @@ extern  void    MoveHead( block *old, block *new )
 {
     block       *blk;
 
-    if( !( old->class & LOOP_HEADER ) ) return;
+    if( (old->class & LOOP_HEADER) == 0 ) return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->loop_head == old ) {
             blk->loop_head = new;
@@ -375,7 +375,7 @@ static  bool    DoBlockTrim( void )
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
             next = blk->next_block;
-            if( !( blk->class & ( UNKNOWN_DESTINATION | BLOCK_VISITED ) ) ) {
+            if( (blk->class & (UNKNOWN_DESTINATION | BLOCK_VISITED)) == 0 ) {
                 while( blk->input_edges != NULL ) {
                     RemoveInputEdge( blk->input_edges );
                 }
@@ -385,7 +385,7 @@ static  bool    DoBlockTrim( void )
                 change |= SameTarget( blk );
             } else if( blk->class & JUMP ) {
                 target = blk->edge[ 0 ].destination.u.blk;
-                if( target != blk && !(target->class & UNKNOWN_DESTINATION) ) {
+                if( target != blk && (target->class & UNKNOWN_DESTINATION) == 0 ) {
                     for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
                         if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) {
                             break;
@@ -399,8 +399,8 @@ static  bool    DoBlockTrim( void )
                           && ( target->class & BIG_LABEL ) == 0
                           && ( CountIns(blk)+CountIns(target) ) <= INS_PER_BLOCK
                           ) {
-                        if( !( blk->class & ( RETURNED_TO | BIG_LABEL ) )
-                           && !( target->class & CALL_LABEL ) ) {
+                        if( (blk->class & (RETURNED_TO | BIG_LABEL) == 0 )
+                           && (target->class & CALL_LABEL) == 0 ) {
                             JoinBlocks( blk, target );
                             change = true;
                         }

@@ -134,7 +134,7 @@ static  void    TellTempLocs( void )
     int         ans;
 
     for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->v.symbol != NULL && !(temp->t.temp_flags & ALIAS) ) {
+        if( temp->v.symbol != NULL && (temp->t.temp_flags & ALIAS) == 0 ) {
             ans = (int)(pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
             if( ans == TEMP_LOC_QUIT ) break;
             if( temp->t.location == NO_LOCATION ) continue;
@@ -261,7 +261,7 @@ static  bool    In( name *op, name *name )
 {
     if( op->n.class == N_INDEXED ) {
         if( In( op->i.index, name ) ) return( true );
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+        if( op->i.base != NULL && (op->i.index_flags & X_FAKE_BASE) == 0 ) {
             return( In( op->i.base, name ) );
         }
     } else if( op->n.class == N_TEMP ) {
@@ -424,7 +424,7 @@ static  void    MarkUsage( name *op )
         if( op->i.index != NULL ) {
             MarkUsage( op->i.index );
         }
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+        if( op->i.base != NULL && (op->i.index_flags & X_FAKE_BASE) == 0 ) {
             MarkUsage( op->i.base );
         }
     } else if( op->n.class == N_TEMP ) {
@@ -489,7 +489,7 @@ extern  void    AssignOtherLocals( void )
         CalcNumberOfUses();
     }
     for( temp = Names[ N_TEMP ]; temp != LastTemp; temp = temp->n.next_name ) {
-        if( !( temp->v.usage & NEEDS_MEMORY ) ) continue;
+        if( (temp->v.usage & NEEDS_MEMORY) == 0 ) continue;
         if( temp->v.usage & HAS_MEMORY ) continue;
         if( temp->t.temp_flags & ALIAS ) continue;
         AllocNewLocal( temp );

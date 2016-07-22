@@ -336,7 +336,7 @@ extern  void    DumpLbl( label_handle lbl ) {
 
     ins_entry   *ref;
 
-    if( !_ValidLbl( lbl ) )
+    if( !ValidLbl( lbl ) )
         return;
     if( lbl->lbl.sym != NULL ) {
         if( LblName( lbl, true ) ) {
@@ -390,7 +390,9 @@ extern  void    DumpLbl( label_handle lbl ) {
             DumpPtr( ref );
             DumpLiteral( "  " );
             ref = _LblRef( ref );
-            if( ref == NULL ) break;
+            if( ref == NULL ) {
+                break;
+            }
         }
     }
     DumpNL();

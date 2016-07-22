@@ -141,7 +141,7 @@ extern  void    DGFEPtr( sym s, cg_type t, signed_32 o ) {
     Action( "( %s, %s, %l )%n", Name( s ), Tipe( t ), o );
     bk = (b*)FEBack(s);
     VerBack(bk);
-    if( !( FEAttr( s ) & FE_IMPORT ) ) DRefLabel( bk->lp );
+    if( (FEAttr( s ) & FE_IMPORT) == 0 ) DRefLabel( bk->lp );
     Put( "        A(" );
     PutName(bk);
     Put( ") + %l %s%n",o,Tipe(t) );
@@ -382,7 +382,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_INT_2:
             stkop = LOP_IND_2;
             break;
-#if !( _TARGET & _TARG_IAPX86 )
+#if ( _TARGET & _TARG_IAPX86 ) == 0
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif

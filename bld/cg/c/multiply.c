@@ -115,7 +115,7 @@ static  int     Factor( unsigned_32 num, int *cost )
 
     shlcnt = 0;
     for( ;; ) {
-        while( !( num & 1 ) ) {
+        while( (num & 1) == 0 ) {
             ++shlcnt;
             num >>= 1;
         }
@@ -242,7 +242,7 @@ extern  void    MulToShiftAdd( void )
             op = ins->operands[1];
             switch( op->n.class ) {
             case N_TEMP:
-                if( !(op->t.temp_flags & CONST_TEMP) ) continue;
+                if( (op->t.temp_flags & CONST_TEMP) == 0 ) continue;
                 ins->operands[1] = op->v.symbol;
                 /* fall through */
             case N_CONSTANT:

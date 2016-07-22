@@ -1444,7 +1444,7 @@ static  void    OutLEDataStart( bool iterated )
                 flag |= 1; /* continued */
             if( iterated )
                 flag |= 2;   /* LIDATA form */
-            if( !(FEAttr( rec->comdat_symbol ) & FE_GLOBAL) ) {
+            if( (FEAttr( rec->comdat_symbol ) & FE_GLOBAL) == 0 ) {
                 flag |= 0x4;    /* local comdat */
             }
             OutByte( flag, &obj->data );
@@ -2067,7 +2067,7 @@ static  void    OutExport( cg_sym_handle sym )
             obj->gen_static_exports = false;
         }
     } else {
-        if( !(attr & FE_GLOBAL) ) {
+        if( (attr & FE_GLOBAL) == 0 ) {
             EjectExports();
             obj->gen_static_exports = true;
         }
@@ -2141,7 +2141,7 @@ static  omf_idx     GenImport( cg_sym_handle sym, bool alt_dllimp )
         if( Imports == NULL ) {
             Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
         }
-        CheckImportSwitch( !(attr & FE_GLOBAL) );
+        CheckImportSwitch( (attr & FE_GLOBAL) == 0 );
         _TellImportHandle( sym, imp_idx, alt_dllimp );
         kind = NORMAL;
         if( attr & FE_DLLIMPORT ) {
@@ -2166,7 +2166,7 @@ static  omf_idx     GenImportComdat( void )
     if( Imports == NULL ) {
         Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
     }
-    CheckImportSwitch( !( FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) );
+    CheckImportSwitch( (FEAttr( CurrSeg->comdat_symbol ) & FE_GLOBAL) == 0 );
     DoOutObjectName( CurrSeg->comdat_symbol, OutName, Imports, SPECIAL );
     OutIdx( 0, Imports );           /* type index*/
     return( ImportHdl++ );
@@ -2512,7 +2512,7 @@ extern  void    IncLocation( offset by )
 
     CurrSeg->obj->pending_line_number = 0;
     sum = CurrSeg->location + by;
-    if( _IsntTargetModel( EZ_OMF ) && !(CurrSeg->attr & SEG_USE_32 ) ) {
+    if( _IsntTargetModel( EZ_OMF ) && (CurrSeg->attr & SEG_USE_32) == 0 ) {
         sum &= 0xFFFF;
     }
     if( sum < CurrSeg->location ) { /* if wrapped*/

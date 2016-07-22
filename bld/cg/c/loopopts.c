@@ -952,7 +952,7 @@ extern  void    CommonInvariant( void )
                 ( ( op->t.temp_flags & ONE_DEFINITION ) ) &&
                 ( res->n.class == N_TEMP ) &&
                 ( res->t.temp_flags & ONE_DEFINITION ) &&
-                ( !( res->t.temp_flags & MULT_DEFINITION ) ) &&
+                ( (res->t.temp_flags & MULT_DEFINITION) == 0 ) &&
                 !BlockByBlock ) {
                 ReplaceAllOccurences( res, op );
                 op->t.temp_flags |= CROSSES_BLOCKS;
@@ -1162,7 +1162,7 @@ extern  bool    Inducable( block *blk, instruction *ins ) {
 
     if( blk->depth == 0 )
         return( false );
-    if( ins->head.opcode!=OP_ADD && ins->head.opcode!=OP_SUB ) {
+    if( ins->head.opcode != OP_ADD && ins->head.opcode != OP_SUB ) {
         return( false );
     }
     if( _IsFloating( ins->type_class ) || _IsI64( ins->type_class ) ) {
@@ -2007,11 +2007,11 @@ static  void *MarkDown( block *blk ) {
 
     block_num   i;
 
-    if( !( blk->class & IN_LOOP ) )
+    if( (blk->class & IN_LOOP) == 0 )
         return NULL;
     if( blk == Head )
         return NULL;
-    if( !( blk->class & BLOCK_WILL_EXECUTE ) )
+    if( (blk->class & BLOCK_WILL_EXECUTE) == 0 )
         return NULL;
     blk->class &= ~BLOCK_WILL_EXECUTE;
     for( i = blk->targets; i-- > 0; ) {
@@ -2133,7 +2133,7 @@ static  void    MarkWillExecBlocks( void )
     /* First, prune some blocks we know won't necessarily execute */
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        if( !( blk->class & LOOP_EXIT ) )
+        if( (blk->class & LOOP_EXIT) == 0 )
             continue;
         for( i = blk->targets; i-- > 0; ) {
             MarkDown( blk->edge[i].destination.u.blk );
@@ -2159,7 +2159,7 @@ static  void    MarkWillExecBlocks( void )
     }
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        if( !( blk->class & BLOCK_WILL_EXECUTE ) )
+        if( (blk->class & BLOCK_WILL_EXECUTE) == 0 )
             continue;
         if( blk->ins.hd.next == (instruction *)&blk->ins ) {
             blk->class &= ~BLOCK_WILL_EXECUTE;
@@ -2489,7 +2489,7 @@ extern  bool    AnalyseLoop( induction *var, bool *ponecond,
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( var == NULL || ins != var->ins ) {
-                if( !_OpIsCondition( ins->head.opcode ) || ins->result!=NULL ) {
+                if( !_OpIsCondition( ins->head.opcode ) || ins->result != NULL ) {
                     if( var != NULL ) {
                         for( i = ins->num_operands; i-- > 0; ) {
                             usage = Uses( ins->operands[i], var->name );
@@ -3122,7 +3122,7 @@ static  bool    FindInvariants( void )
                 op = ins->result;
                 if( ( op->n.class == N_TEMP || op->n.class == N_MEMORY )
                   && ( _ChkLoopUsage( op, VU_VARIED_ONCE )  )
-                  && !( op->v.usage & USE_IN_ANOTHER_BLOCK )
+                  && (op->v.usage & USE_IN_ANOTHER_BLOCK) == 0
                   && !BlockByBlock ) {
                     SuffixPreHeader( ins );
                     if( op->n.class == N_TEMP ) {
@@ -3272,8 +3272,8 @@ static  bool    ReduceVar( induction *var )
     IncAndInit( var, new_temp, class );
     for( alias = var->alias; alias != var; alias = alias->alias ) {
         if( NoPathThru( var->ins, alias->ins, var->basic->ins )
-          && !( alias->name->v.usage & USE_IN_ANOTHER_BLOCK )
-          && !( var->name->v.usage & USE_IN_ANOTHER_BLOCK ) ) {
+          && (alias->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0
+          && (var->name->v.usage & USE_IN_ANOTHER_BLOCK) == 0 ) {
             ReplaceOccurences( alias->name, var->name );
             ins = MakeMove(new_temp,alias->name,class);
             PrefixIns(alias->ins,ins);
@@ -3376,7 +3376,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll ) {
     }
     loop_edge = &cond_blk->edge[0];
     exit_edge = &cond_blk->edge[1];
-    if( !( loop_edge->destination.u.blk->class & IN_LOOP ) ) {
+    if( (loop_edge->destination.u.blk->class & IN_LOOP) == 0 ) {
         loop_edge = &cond_blk->edge[1];
         exit_edge = &cond_blk->edge[0];
     }

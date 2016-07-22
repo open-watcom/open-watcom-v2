@@ -438,7 +438,7 @@ extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
     if( _OpIsJump( ins_i->head.opcode ) )
         return( true );
     if( _OpIsCall( ins_i->head.opcode ) ) {
-        if( !( ins_i->flags.call_flags & CALL_READS_NO_MEMORY )
+        if( (ins_i->flags.call_flags & CALL_READS_NO_MEMORY) == 0
           && ins_j->result != NULL
           && _IsVisibleToCall( ins_i, ins_j->result, false ) )
             return( true );
@@ -575,7 +575,7 @@ static void BuildDag( void )
                 link_multi = false;
                 BuildLink( dag_i, dag_j );
             } else if( used_cc &&
-                    (dag_j->ins->u.gen_table->op_type&MASK_CC)!=PRESERVE ) {
+                    (dag_j->ins->u.gen_table->op_type&MASK_CC) != PRESERVE ) {
                 /*
                     Consider this:
 
@@ -588,7 +588,7 @@ static void BuildDag( void )
                     to be scheduled after it.
                 */
                 BuildLink( dag_i, dag_j );
-            } else if( (dag_i->ins->u.gen_table->op_type&MASK_CC)!=PRESERVE
+            } else if( (dag_i->ins->u.gen_table->op_type&MASK_CC) != PRESERVE
                     && InsUsesCC( dag_j->ins ) ) {
                 /*
                     consider:
@@ -790,7 +790,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             break;
         if( chk->head.opcode == OP_BLOCK )
             break;
-        if( !(chk->ins_flags & INS_INDEX_ADJUST) && _IsReDefinedBy( chk, adj->result ) )
+        if( (chk->ins_flags & INS_INDEX_ADJUST) == 0 && _IsReDefinedBy( chk, adj->result ) )
             break;
         if( forward ) {
             if( chk->id > adj->id ) {

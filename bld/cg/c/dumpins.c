@@ -156,7 +156,7 @@ extern  void    DumpOperand( name *operand ) {
 
     if( operand->n.class == N_INDEXED ) {
         if( operand->i.base != NULL ) {
-            if( !( operand->i.index_flags & X_FAKE_BASE ) ) {
+            if( (operand->i.index_flags & X_FAKE_BASE) == 0 ) {
                 if( operand->i.index_flags & X_LOW_ADDR_BASE ) {
                     DumpLiteral( "l^" );
                 }
@@ -534,7 +534,7 @@ extern  void    DumpSym( name *sym ) {
                 DumpLiteral( " ALIAS " );
                 sym = DeAlias( sym );
                 DumpPtr( sym );
-            } else if( !( sym->t.temp_flags & ALIAS ) ) {
+            } else if( (sym->t.temp_flags & ALIAS) == 0 ) {
                 DumpLiteral( " MASTER" );
             }
             if( sym->t.temp_flags & VISITED ) {

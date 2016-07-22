@@ -392,7 +392,7 @@ static pointer  GetFromFrl( size_t amount, int frl_class )
     amount = amount;
     free = _FreeList[ frl_class ];
     if( free != NULL ) {
-        assert( !( free->length & ALLOCATED ) );
+        assert( (free->length & ALLOCATED) == 0 );
         free->length |= ALLOCATED;
         _FreeList[ frl_class ] = free->link;
         return( free );

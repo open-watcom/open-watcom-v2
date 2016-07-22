@@ -68,7 +68,7 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
     instruction     *cmp;
     unsigned        which;
 
-    if( !(blk->class & CONDITIONAL) ) return;
+    if( (blk->class & CONDITIONAL) == 0 ) return;
     if( blk->class & MULTIPLE_EXITS ) return;
     for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
         cmp = cmp->head.prev;
@@ -155,7 +155,7 @@ static  void *ScoreDescendants( block *blk )
 
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
-        if( ( son->inputs == 1 ) && !( son->class & BLOCK_VISITED ) ) {
+        if( ( son->inputs == 1 ) && (son->class & BLOCK_VISITED) == 0 ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
             for(;;) {
@@ -214,7 +214,7 @@ static  void    ScoreRoutine( void )
         MakeLiveInfo();
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( !( blk->class & BLOCK_VISITED ) ) {
+            if( (blk->class & BLOCK_VISITED) == 0 ) {
                 blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
                 ScoreClear( blk->cc );
                 for( ;; ) {

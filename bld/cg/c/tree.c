@@ -316,7 +316,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
             return( tipe );
         }
         if( rite->u.name->c.int_value < 0 ) return( tipe );
-        if( !( tipe->attr & TYPE_SIGNED ) ) return( tipe );
+        if( (tipe->attr & TYPE_SIGNED) == 0 ) return( tipe );
     } else {
         if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
             return( tipe );
@@ -554,7 +554,7 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
         } else {
             tipe = ResultType( left, rite, tipe, BinMat, false );
             if( tipe->attr & TYPE_POINTER ) {
-                if( !( left->tipe->attr & TYPE_POINTER ) ) {
+                if( (left->tipe->attr & TYPE_POINTER) == 0 ) {
                     temp = rite;
                     rite = left;
                     left = temp;
@@ -1446,7 +1446,7 @@ static  name *TNFindBase( tn node )
         return( TNGetLeafName( node ) );
     case TN_COMMA:
     case TN_SIDE_EFFECT:
-        if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
         op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->u2.t.rite );
         if( op != NULL ) return( op );
     /* fall through */
@@ -1456,14 +1456,14 @@ static  name *TNFindBase( tn node )
     /* fall through */
     case TN_LV_ASSIGN:
     case TN_LV_PRE_GETS:
-        if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
         op = SafeRecurseCG( (func_sr)TNFindBase, node->u2.t.rite );
         if( op != NULL ) return( op );
         if( node->u2.t.op == O_CONVERT ) return( NULL );
         if( node->class != TN_BINARY ) return( NULL );
         return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left ) );
     case TN_UNARY:
-        if( !( node->tipe->attr & TYPE_POINTER ) ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
         switch( node->u2.t.op ) {
         case O_PTR_TO_NATIVE:
         case O_PTR_TO_FOREIGN:
@@ -1559,12 +1559,14 @@ static  an  AddrGen( tn node )
 #endif
     retv = TreeGen( node );
     if( flags & TF_VOLATILE ) {
-        if( retv->format != NF_BOOL )
+        if( retv->format != NF_BOOL ) {
             retv->flags |= FL_VOLATILE;
+        }
     }
     if( alignment != 0 ) {
-        if( retv->format != NF_BOOL )
+        if( retv->format != NF_BOOL ) {
             retv->u.n.alignment = alignment;
+        }
     }
     if( retv->format != NF_BOOL )
         retv->u.n.base = base;
@@ -2320,8 +2322,7 @@ static  an  TNCall( tn what, bool ignore_return )
 #if _TARGET & _TARG_AXP
                 // kludge coming - Microsoft wants U4's sign extended to 8-byte
                 // quantities when passed as parms to routines.
-                if( parman->tipe->length == 4 &&
-                    !(parman->tipe->attr & TYPE_SIGNED) ) {
+                if( parman->tipe->length == 4 && (parman->tipe->attr & TYPE_SIGNED) == 0 ) {
                     parman = BGConvert( parman, TypeAddress( TY_INT_4 ) );
                 }
 #endif

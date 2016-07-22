@@ -73,10 +73,10 @@ static  bool    AllocBefore( void *n1, void *n2 )
     name    *t2 = n2;
 
     /* const temps after all others */
-    if( (t1->t.temp_flags & CONST_TEMP) && !(t2->t.temp_flags & CONST_TEMP) ) {
+    if( (t1->t.temp_flags & CONST_TEMP) && (t2->t.temp_flags & CONST_TEMP) == 0 ) {
         return( false );
     }
-    if( !(t1->t.temp_flags & CONST_TEMP) && (t2->t.temp_flags & CONST_TEMP) ) {
+    if( (t1->t.temp_flags & CONST_TEMP) == 0 && (t2->t.temp_flags & CONST_TEMP) ) {
         return( true );
     }
     if( t1->v.conflict == NULL && t2->v.conflict != NULL ) {

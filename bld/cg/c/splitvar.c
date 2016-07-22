@@ -225,7 +225,7 @@ extern  void    SplitVars( void )
     for( ;; ) {
         for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
             op = conf->name;
-            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) )
+            if( (op->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
                 continue;
             if( op->n.class != N_TEMP )
                 continue;

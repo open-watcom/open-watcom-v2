@@ -149,7 +149,7 @@ extern  void    GenObject( void )
         } else if( blk->class & LABEL_RETURN ) {
             GenLabelReturn();
         }
-        if( !( blk->class & LABEL_RETURN ) ) { /* maybe pointer to dead label */
+        if( (blk->class & LABEL_RETURN) == 0 ) { /* maybe pointer to dead label */
             for( targets = blk->targets; targets-- > 0; ) {
                 lbl = blk->edge[ targets ].destination.u.lbl;
                 TellReachedLabel( lbl );

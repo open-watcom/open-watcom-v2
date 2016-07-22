@@ -265,7 +265,7 @@ extern  void    ZeroMoves() {
 
 }
 
-#if !(_TARGET & _TARG_MIPS)
+#if (_TARGET & _TARG_MIPS) == 0
 /* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
  * have own version as well. Not sure about PowerPC.
  */

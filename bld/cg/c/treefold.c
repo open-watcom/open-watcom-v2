@@ -1265,7 +1265,7 @@ extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
         op = RevOpcode[  op - O_EQ  ];
     }
     fold = NULL;
-    if( rite->class == TN_CONS && left->class == TN_BIT_RVALUE && !(left->u2.b.is_signed) && !HasBigConst( left->tipe ) ) {
+    if( rite->class == TN_CONS && left->class == TN_BIT_RVALUE && !left->u2.b.is_signed && !HasBigConst( left->tipe ) ) {
         new_cons = rite->u.name->c.int_value;
         new_cons <<= left->u2.b.start;
         mask = TGMask32( left );
@@ -1424,7 +1424,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
                  */
                 tipe = base_l->tipe;
             }
-            if( !( tipe->attr & ( TYPE_FLOAT | TYPE_POINTER ) ) ) {
+            if( (tipe->attr & (TYPE_FLOAT | TYPE_POINTER )) == 0 ) {
                 cmp_result  cmp;
 
                 cmp = CheckCmpRange( op, CmpType( tipe ), rite->u.name->c.value );
@@ -1446,7 +1446,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
                     return( FoldCompare( op, IntToType( 1, TypeInteger ), IntToType( 0, TypeInteger ), TypeInteger ) );
                 }
             }
-            if( ( base_l != left ) && !( tipe->attr & TYPE_FLOAT ) ) {
+            if( ( base_l != left ) && (tipe->attr & TYPE_FLOAT) == 0 ) {
                 // If we couldn't fold the comparison, get rid of some lame converts
                 // the C++ compiler likes to emit. Careful with floats!
                 BurnToBase( left, base_l );

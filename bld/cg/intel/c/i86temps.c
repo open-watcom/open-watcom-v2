@@ -159,11 +159,11 @@ extern  void    RelocParms( void ) {
 extern  bool    TempAllocBefore( name *t1, name *t2 ) {
 /*****************************************************/
 
-    if( (t1->t.temp_flags & USED_AS_FD) && !(t2->t.temp_flags & USED_AS_FD) ) {
+    if( (t1->t.temp_flags & USED_AS_FD) && (t2->t.temp_flags & USED_AS_FD) == 0 ) {
         if( CurrProc->targ.sp_align ) return( false );
         return( true );
     }
-    if( (t2->t.temp_flags & USED_AS_FD) && !(t1->t.temp_flags & USED_AS_FD) ) {
+    if( (t2->t.temp_flags & USED_AS_FD) && (t1->t.temp_flags & USED_AS_FD) == 0 ) {
         if( CurrProc->targ.sp_align ) return( true );
         return( false );
     }

@@ -544,7 +544,7 @@ extern  an      BGBinary( cg_op op, an left,
     if( op == O_PLUS || op == O_MINUS
        && ( tipe->attr & TYPE_POINTER )
        && ( left->tipe->attr & TYPE_POINTER )
-       && !( rite->tipe->attr & ( TYPE_POINTER | TYPE_FLOAT ) ) ) {
+       && (rite->tipe->attr & (TYPE_POINTER | TYPE_FLOAT)) == 0 ) {
         /* Special case for pointer +- int. Don't convert! */
     } else {
         left = CheckType( left, tipe );

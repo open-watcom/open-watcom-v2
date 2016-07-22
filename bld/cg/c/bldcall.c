@@ -505,7 +505,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
                 }
                 ins = addr->u.i.ins;
                 PushInSameBlock( ins );
-                if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && !( addr->flags & FL_VOLATILE ) ) {
+                if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && (addr->flags & FL_VOLATILE) == 0 ) {
                     push_ins = PushOneParm( ins, ins->operands[0], ins->type_class, parm->offset, state );
                     // ins->result = ins->operands[0]; -- was this useful? BBB
                     FreeIns( ins );
@@ -629,7 +629,7 @@ extern  void    BGZapBase( name *base, type_def *tipe ) {
 
     if( base == NULL ) return;
     if( _IsntModel( FORTRAN_ALIASING ) ) return;
-    if( !( tipe->attr & TYPE_POINTER ) ) return;
+    if( (tipe->attr & TYPE_POINTER) == 0 ) return;
     ins = MakeNop();
     if( DummyIndex == NULL )
         DummyIndex = AllocTemp( WD );
