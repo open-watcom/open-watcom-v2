@@ -31,18 +31,9 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "regset.h"
 #include "addrname.h"
-#include "rttable.h"
 #include "zoiks.h"
 #include "objprof.h"
-
-
-label_handle GetWeirdPPCDotDotLabel( label_handle lbl )
-/*****************************************************/
-{
-    return( lbl );
-}
 
 
 void StartBlockProfiling( block *blk )

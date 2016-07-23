@@ -65,7 +65,7 @@ extern  void    DelLblDef( ins_entry *instr ) {
     lbl = _Label( instr );
     if( lbl == NULL ) optreturnvoid;
     if( lbl->refs != NULL ) optreturnvoid;
-    if( _TstStatus( lbl, DYINGLABEL ) == 0 ) optreturnvoid;
+    if( !_TstStatus( lbl, DYINGLABEL ) ) optreturnvoid;
     if( _TstStatus( lbl, REDIRECTION ) ) optreturnvoid;
     ScrapCodeLabel( lbl );
   optend
@@ -213,7 +213,7 @@ static  void    KillDeadLabels( ins_entry *instr ) {
         if( curr == NULL ) break;
         _ValidLbl( curr );
         if( curr->refs == NULL
-         && _TstStatus( curr, REDIRECTION | KEEPLABEL ) == 0
+         && !_TstStatus( curr, REDIRECTION | KEEPLABEL )
          && _TstStatus( curr, DYINGLABEL ) ) {
             *owner = curr->alias;
             if( curr->redirect != NULL ) {
@@ -249,7 +249,7 @@ static  void    ScrapCodeLabel( label_handle lbl ) {
     }
     *owner = lbl->lbl.link;
     redir = lbl->redirect;
-    code = ( _TstStatus( lbl, CODELABEL ) != 0 );
+    code = _TstStatus( lbl, CODELABEL );
     CGFree( lbl );
     if( !code ) optreturnvoid;
     if( redir == NULL ) optreturnvoid;
@@ -267,7 +267,7 @@ extern  void    TryScrapLabel( label_handle old ) {
     if( old->ins != NULL ) {
         KillDeadLabels( old->ins );
     } else if( _TstStatus( old, DYINGLABEL )
-         && _TstStatus( old, REDIRECTION | KEEPLABEL ) == 0 ) {
+         && !_TstStatus( old, REDIRECTION | KEEPLABEL ) ) {
         ScrapCodeLabel( old );
     }
   optend

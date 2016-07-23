@@ -2107,13 +2107,13 @@ static  void    CheckImportSwitch( bool next_is_static )
 }
 
 
-static void _TellImportHandle( cg_sym_handle sym, import_handle imp_idx, bool alt_dllimp )
+static void _TellImportHandle( cg_sym_handle sym, import_handle imphdl, bool alt_dllimp )
 /*************************************************************************************/
 {
     if( alt_dllimp ) {
-        FEBack( sym )->imp_alt = imp_idx;
+        FEBack( sym )->imp_alt = imphdl;
     } else {
-        TellImportHandle( sym, imp_idx );
+        TellImportHandle( sym, imphdl );
     }
 }
 
@@ -2885,11 +2885,11 @@ extern  void    OutReloc( segment_id seg, fix_class class, bool rel )
 }
 
 
-extern void OutSpecialCommon( import_handle imp_idx, fix_class class, bool rel )
-/******************************************************************************/
+void OutSpecialCommon( import_handle imphdl, fix_class class, bool rel )
+/**********************************************************************/
 {
     CheckLEDataSize( 3 * sizeof( offset ), true );
-    DoFix( imp_idx, rel, BASE_IMP, class, 0 );
+    DoFix( imphdl, rel, BASE_IMP, class, 0 );
 }
 
 
@@ -2915,20 +2915,20 @@ extern  void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
 extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
 /***************************************************************************/
 {
-    omf_idx     idx;
+    import_handle   imphdl;
 
-    idx = AskRTHandle( rtindex );
-    if( idx == NOT_IMPORTED ) {
-        idx = ImportHdl++;
+    imphdl = AskRTHandle( rtindex );
+    if( imphdl == NOT_IMPORTED ) {
+        imphdl = ImportHdl++;
         if( Imports == NULL ) {
             Imports = InitArray( sizeof( byte ), MODEST_IMP, INCREMENT_IMP );
         }
         CheckImportSwitch( false );
-        TellRTHandle( rtindex, idx );
+        TellRTHandle( rtindex, imphdl );
         OutName( AskRTName( rtindex ), Imports );
         OutIdx( 0, Imports );           /* type index*/
     }
-    OutSpecialCommon( idx, class, rel );
+    OutSpecialCommon( imphdl, class, rel );
 }
 
 

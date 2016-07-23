@@ -83,10 +83,10 @@ import_handle   AskRTHandle( rt_class rtindex )
 }
 
 
-void    TellRTHandle( rt_class rtindex, import_handle hdl )
-/*********************************************************/
+void    TellRTHandle( rt_class rtindex, import_handle imphdl )
+/************************************************************/
 {
-    RTHdls[rtindex] = hdl;
+    RTHdls[rtindex] = imphdl;
 }
 
 
@@ -97,7 +97,7 @@ label_handle RTLabel( rt_class rtindex )
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
-        lbl = AskRTLabel( RTIDX2SYM( rtindex ) );
+        lbl = AskForRTLabel( RTIDX2SYM( rtindex ) );
         RTLbls[rtindex] = lbl;
     }
     return( lbl );

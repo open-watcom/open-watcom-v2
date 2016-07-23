@@ -36,52 +36,59 @@
 #include "useinfo.h"
 #endif
 
+
+#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_int)((i) + 1))
+#define SYM2RTIDX(s)    ((rt_class)(pointer_int)(s) - 1)
+
+#define SYM2IMPHDL(s)   ((import_handle)(pointer_int)(s))
+#define IMPHDL2SYM(i)   ((cg_sym_handle)(pointer_int)(i))
+
 typedef enum {
-            CODELABEL           = 0x0001,
-            KEEPLABEL           = 0x0002,
-            DYINGLABEL          = 0x0004,
-            REACHED             = 0x0008,
-            SHORTREACH          = 0x0010,
-            CONDEMNED           = 0x0020,
-            RUNTIME             = 0x0040,
-            REDIRECTION         = 0x0080,
-            UNIQUE              = 0x0100,
-            COMMON_LBL          = 0x0200,
-            UNREACHABLE         = 0x0400,
-            OWL_OWNED           = 0x0800,
-            WEIRD_PPC_ALIAS     = 0x1000,
-            HAS_PPC_ALIAS       = 0x2000,
-            PROCEDURE           = 0x4000,
+    CODELABEL           = 0x0001,
+    KEEPLABEL           = 0x0002,
+    DYINGLABEL          = 0x0004,
+    REACHED             = 0x0008,
+    SHORTREACH          = 0x0010,
+    CONDEMNED           = 0x0020,
+    RUNTIME             = 0x0040,
+    REDIRECTION         = 0x0080,
+    UNIQUE              = 0x0100,
+    COMMON_LBL          = 0x0200,
+    UNREACHABLE         = 0x0400,
+    OWL_OWNED           = 0x0800,
+    WEIRD_PPC_ALIAS     = 0x1000,
+    HAS_PPC_ALIAS       = 0x2000,
+    PROCEDURE           = 0x4000,
 } status_bits;
 
 typedef struct label_def {
-        label_handle            link;
-        pointer                 patch;
-        cg_sym_handle           sym;
-        offset                  address;
-        status_bits             status;
+    label_handle            link;
+    pointer                 patch;
+    cg_sym_handle           sym;
+    offset                  address;
+    status_bits             status;
 } label_def;
 
 typedef struct code_lbl {
 #ifndef NDEBUG
-        use_info                useinfo;
+    use_info                useinfo;
 #endif
-        struct label_def        lbl;
-        struct code_lbl         *alias;
-        struct ins_entry        *ins;
-        struct ins_entry        *refs;
+    struct label_def        lbl;
+    struct code_lbl         *alias;
+    struct ins_entry        *ins;
+    struct ins_entry        *refs;
 #if  OPTIONS & SHORT_JUMPS
-        struct code_lbl         *redirect;
+    struct code_lbl         *redirect;
 #endif
 #if _TARGET & _TARG_RISC
-        struct code_lbl         *ppc_alt_name;
-        void                    *owl_symbol;
+    struct code_lbl         *ppc_alt_name;
+    void                    *owl_symbol;
 #endif
 } code_lbl;
 
 #define _SetStatus( var, stat ) var->lbl.status |= (stat)
 #define _ClrStatus( var, stat ) var->lbl.status &= ~(stat)
-#define _TstStatus( var, stat ) (var->lbl.status & (stat))
+#define _TstStatus( var, stat ) ((var->lbl.status & (stat)) != 0)
 
 #ifndef PRODUCTION
 #define _ValidLbl( lbl ) ValidLbl( lbl )
@@ -92,4 +99,3 @@ typedef struct code_lbl {
 extern bool ValidLbl( label_handle lbl );
 
 #include "optask.h"
-

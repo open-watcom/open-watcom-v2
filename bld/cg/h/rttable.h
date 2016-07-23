@@ -32,16 +32,13 @@
 
 #include "rtclass.h"
 
-#define RTIDX2SYM(i)    ((cg_sym_handle)(pointer_int)((i) + 1))
-#define SYM2RTIDX(s)    ((rt_class)(pointer_int)(s) - 1)
-
 typedef struct rtn_info {
-        char            *nam;
-        opcode_defs     op;
-        type_class_def  operand_class;
-        reg_set_index   left;
-        reg_set_index   right;
-        reg_set_index   result;
+    char            *nam;
+    opcode_defs     op;
+    type_class_def  operand_class;
+    reg_set_index   left;
+    reg_set_index   right;
+    reg_set_index   result;
 } rtn_info;
 
 extern    rtn_info      RTInfo[];

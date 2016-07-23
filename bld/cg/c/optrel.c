@@ -74,24 +74,30 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
     if( _TstStatus( lbl, UNREACHABLE ) ) {
         /* can't do anything with it */
     } else if( lbl->lbl.address == ADDR_UNKNOWN ) {
-        if( _TstStatus( lbl, SHORTREACH ) ) return( true );
+        if( _TstStatus( lbl, SHORTREACH ) )
+            return( true );
         obj_len = OptInsSize( OC_JMP, OC_DEST_SHORT );
         lbl_ins = Handle->ins;
         for( instr = NextIns( FirstIns ); instr != NULL; instr = NextIns( instr ) ) {
             obj_len += _ObjLen( instr );
-            if( obj_len > MAX_SHORT_FWD ) break;
+            if( obj_len > MAX_SHORT_FWD )
+                break;
             if( Jmp_to_lbl( instr ) ) {
                 jmp = instr;
             } else if( _TransferClass( _Class( instr ) ) ) {
                 add = instr;
             }
-            if( instr == lbl_ins ) return( true );
+            if( instr == lbl_ins ) {
+                return( true );
+            }
         }
     } else if( (AskLocation() - lbl->lbl.address) <= MAX_SHORT_BWD ) {
         return( true );
     }
-    if( add_ptr != NULL ) *add_ptr = add;
-    if( jmp_ptr != NULL ) *jmp_ptr = jmp;
+    if( add_ptr != NULL )
+        *add_ptr = add;
+    if( jmp_ptr != NULL )
+        *jmp_ptr = jmp;
     return( false );
 }
 
@@ -234,11 +240,13 @@ extern  void    SetBranches( void )
                 */
                 _JmpCond( FirstIns ) =
                                 ReverseCondition( _JmpCond( FirstIns ) );
-                was_keep = ( _TstStatus( Handle, KEEPLABEL ) != 0 );
+                was_keep = _TstStatus( Handle, KEEPLABEL );
                 _SetStatus( Handle, KEEPLABEL );
                 ChgLblRef( FirstIns, _Label( next ) );
                 ChgLblRef( next, Handle );
-                if( !was_keep ) _ClrStatus( Handle, KEEPLABEL );
+                if( !was_keep ) {
+                    _ClrStatus( Handle, KEEPLABEL );
+                }
             } else {
                 BigBranch( add, jmp );
             }

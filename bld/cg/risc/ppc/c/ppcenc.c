@@ -903,9 +903,9 @@ extern  void    GenKillLabel( label_handle lbl )
 /*******************************************/
 {
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == 0 )
+    if( !_TstStatus( lbl, CODELABEL ) )
         return;
-    // if( _TstStatus( lbl, OWL_OWNED ) != 0 )
+    // if( _TstStatus( lbl, OWL_OWNED ) )
     //     return;
     TryScrapLabel( lbl );
 }

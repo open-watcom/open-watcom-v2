@@ -32,4 +32,3 @@
 extern void             StartBlockProfiling( block *blk );
 extern void             EndBlockProfiling( void );
 extern segment_id       GenProfileData( char *fe_name, label_handle *data, label_handle *stack );
-extern label_handle     GetWeirdPPCDotDotLabel( label_handle lbl );

@@ -1764,10 +1764,10 @@ import_handle   cg_internal AskImportHandle( cg_sym_handle sym )
     return( FEBack( sym )->imp );
 }
 
-void    cg_internal TellImportHandle( cg_sym_handle sym, import_handle imp )
-/**************************************************************************/
+void    cg_internal TellImportHandle( cg_sym_handle sym, import_handle imphdl )
+/*****************************************************************************/
 {
-    FEBack( sym )->imp = imp;
+    FEBack( sym )->imp = imphdl;
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/

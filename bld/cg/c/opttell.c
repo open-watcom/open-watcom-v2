@@ -90,12 +90,12 @@ extern  void    TellProcLabel( label_handle lbl )
     _SetStatus( lbl, PROCEDURE );
 }
 
-extern  void    TellCommonLabel( label_handle lbl, unsigned hdl )
+void    TellCommonLabel( label_handle lbl, import_handle imphdl )
 /***************************************************************/
 {
   optbegin
     _ValidLbl( lbl );
-    lbl->lbl.sym = (cg_sym_handle)(pointer_int)hdl;
+    lbl->lbl.sym = IMPHDL2SYM( imphdl );
     _SetStatus( lbl, COMMON_LBL );
   optend
 }
@@ -207,7 +207,7 @@ extern  void    TellFreeAllLabels( void )
 #ifndef PRODUCTION
         if( _TstStatus( Handles, CODELABEL )
          && Handles->lbl.sym == NULL
-         && _TstStatus( Handles, REDIRECTION ) == 0
+         && !_TstStatus( Handles, REDIRECTION )
          && unfreed == false ) {
             _Zoiks( ZOIKS_001 );
             unfreed = true;

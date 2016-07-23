@@ -30,7 +30,7 @@
 
 
 extern  label_handle    AskForNewLabel( void );
-extern  label_handle    AskRTLabel( cg_sym_handle sym );
+extern  label_handle    AskForRTLabel( cg_sym_handle sym );
 extern  label_handle    AskForLabel( cg_sym_handle sym );
 extern  bool            AskIfReachedLabel( label_handle lbl );
 extern  bool            AskIfRTLabel( label_handle lbl );

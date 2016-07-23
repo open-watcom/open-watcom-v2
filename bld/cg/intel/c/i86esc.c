@@ -40,8 +40,7 @@
 #include "jumps.h"
 #include "zoiks.h"
 #include "fppatch.h"
-#include "regset.h"
-#include "rttable.h"
+#include "rtclass.h"
 #include "i86obj.h"
 #include "objout.h"
 #include "cgauxinf.h"
@@ -392,7 +391,7 @@ static  void    OutCodeDisp( label_handle lbl, fix_class f,
             _OutFarOff( 0 );
         }
     } else if( AskIfCommonLabel( lbl ) ) {
-        OutSpecialCommon( (import_handle)(pointer_int)sym, f, rel );
+        OutSpecialCommon( SYM2IMPHDL( sym ), f, rel );
         _OutFarOff( 0 );
     } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) { /* 90-05-22 */
         OutImport( sym, f, rel );
@@ -501,7 +500,7 @@ static  label_handle ExpandObj( byte *cur, int explen ) {
                 val = 0;
             } else {
                 if( AskIfCommonLabel( lbl ) ) {
-                    OutSpecialCommon( (import_handle)(pointer_int)AskForLblSym( lbl ), class, rel );
+                    OutSpecialCommon( SYM2IMPHDL( AskForLblSym( lbl ) ), class, rel );
                 } else {
                     OutReloc( seg, class, rel );
                 }
@@ -610,7 +609,7 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
             OutRTImport( SYM2RTIDX( sym ), F_OFFSET );
             lc = 0;
         } else if( AskIfCommonLabel( lbl ) ) {
-            OutSpecialCommon( (import_handle)(pointer_int)sym, F_OFFSET, false );
+            OutSpecialCommon( SYM2IMPHDL( sym ), F_OFFSET, false );
             lc = 0;
         } else if( sym != NULL && UseImportForm( FEAttr( sym ) ) ) {
             OutImport( sym, F_OFFSET, false );

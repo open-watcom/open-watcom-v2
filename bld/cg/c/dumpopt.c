@@ -32,8 +32,7 @@
 #include "optwif.h"
 #include "dumpio.h"
 #include "typedef.h"
-#include "regset.h"
-#include "rttable.h"
+#include "rtclass.h"
 #include "inslist.h"
 #include "rtrtn.h"
 #include "feprotos.h"
@@ -122,7 +121,7 @@ static  bool    LblName( label_handle lbl, bool no_prefix )
         DumpXString( AskRTName( SYM2RTIDX( lbl->lbl.sym ) ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
-        DumpInt( (int)(pointer_int)lbl->lbl.sym );
+        DumpInt( SYM2IMPHDL( lbl->lbl.sym ) );
         DumpLiteral( "] " );
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );

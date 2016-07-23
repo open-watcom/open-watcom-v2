@@ -61,10 +61,12 @@
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
 #define OWL_TO_HANDLE(x)    ((FILE *)x)
 
+#if _TARGET & _TARG_PPC
+extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
+#endif
 extern  void            TryScrapLabel( label_handle );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(char *,void *),void *,import_type);
 extern  bool            SymIsExported( cg_sym_handle );
-extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
 extern  void            TellAddress( label_handle, offset );
 extern  type_length     TempLocation( name * );
 extern  void            EmptyQueue( void );
@@ -938,7 +940,9 @@ extern  void    OutLabel( label_handle label )
     if( sym != NULL ) {
         attr = FEAttr( sym );
         if( attr & FE_PROC ) {
+#if _TARGET & _TARG_PPC
             label = GetWeirdPPCDotDotLabel( (label_handle)label );
+#endif
             tipe = OWL_TYPE_FUNCTION;
         }
     }
@@ -1002,7 +1006,9 @@ extern void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
     label_handle        lbl;
 
     owl_pdata = getPData( label );
+#if _TARGET & _TARG_PPC
     label = GetWeirdPPCDotDotLabel( label );
+#endif
     sym = AskForLblSym( label );
     OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( label ), OWL_RELOC_WORD );
     OWLEmitData( owl_pdata, (char *)&Zero, 4 );
