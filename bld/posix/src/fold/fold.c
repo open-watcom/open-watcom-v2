@@ -52,7 +52,7 @@ const char *usageTxt[] = {
 size_t  lineWidth;
 char    *lineBuffer;
 
-void fold( FILE *fh ) {
+static void fold( FILE *fh ) {
 
     int         ch;
     int         offs;

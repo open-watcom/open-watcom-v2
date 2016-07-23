@@ -97,7 +97,7 @@ void __far *__first_pid( void );
 
 segment_t __far *envp;
 
-void printCommand( unsigned seg )
+static void printCommand( unsigned seg )
 {
     segment_t __far     *env_seg;
     unsigned char __far *p;
@@ -139,7 +139,7 @@ void printCommand( unsigned seg )
     putchar( '\n' );
 }
 
-void do_ps( void )
+static void do_ps( void )
 {
     struct memblk __far *p;
     segment_t __far *pid;

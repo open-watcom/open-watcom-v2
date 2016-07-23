@@ -97,6 +97,22 @@
 void outdec( char *p, FILE *f, int n );
 void decode( FILE *in, FILE *out );
 
+/*
+ * Return the ptr in sp at which the character c appears;
+ * NULL if not found
+ */
+
+#if defined( __UNIX__ )
+static char *index( char *sp, int c )
+{
+    do {
+        if (*sp == c)
+            return(sp);
+    } while( *sp++ );
+    return( NULL );
+}
+#endif
+
 int main(int argc, char **argv)
 {
     FILE *in, *out;
@@ -307,17 +323,4 @@ void outdec( char *p, FILE *f, int n ) {
         putc(c2, f);
     if (n >= 3)
         putc(c3, f);
-}
-
-/*
- * Return the ptr in sp at which the character c appears;
- * NULL if not found
- */
-
-char* index( char *sp, int c ) {
-    do {
-        if (*sp == c)
-            return(sp);
-    } while( *sp++ );
-    return( NULL );
 }

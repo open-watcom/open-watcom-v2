@@ -28,6 +28,9 @@
 *
 ****************************************************************************/
 
+
+#include "fnutils.h"
+
 /*
  *  Motivation:
  *      Under HPFS it's possible to have directories and filenames that

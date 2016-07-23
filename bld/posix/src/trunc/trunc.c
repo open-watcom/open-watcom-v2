@@ -56,7 +56,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void errstr( char *str ) {
+static void errstr( char *str ) {
 
     size_t      len;
 

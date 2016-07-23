@@ -49,6 +49,7 @@
 #if defined( __NT__ )
 #include <windows.h>
 #endif
+#include "misc.h"
 
 #include "clibext.h"
 

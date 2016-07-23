@@ -57,6 +57,7 @@
 #include "list.h"
 #include "buffer.h"
 #include "port.h"
+#include "extract.h"
 
 
 static time_t          now = 0;                /* Current time */
@@ -66,7 +67,7 @@ static time_t          now = 0;                /* Current time */
  * it's because some required directory was not present, and if
  * so, create all required dirs.
  */
-int make_dirs( char *pathname, int uid, int gid) /* added -- JER */
+static int make_dirs( char *pathname, int uid, int gid) /* added -- JER */
 {
     char    *p;                      /* Points into path */
     int     madeone = 0;/* Did we do anything yet? */

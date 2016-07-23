@@ -54,4 +54,4 @@ extern char *index(char *s, int c);
 extern char *rindex(char *s, int c);
 extern char *valloc(unsigned size);
 extern void uprintf(int, char *, ... );
-
+extern int  ugetc(int f);

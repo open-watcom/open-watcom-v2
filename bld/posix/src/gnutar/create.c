@@ -138,7 +138,7 @@ void create_archive( void )
  * out is to read the whole file in order to let the MSC library routines
  * determine how many characters will actually be in the file...
  */
-long countbytes( int f )
+static long countbytes( int f )
 {
         long            cb;
         int             n;

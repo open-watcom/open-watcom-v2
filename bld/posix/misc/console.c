@@ -28,11 +28,14 @@
 *
 ****************************************************************************/
 
+
+#include "console.h"
+
 #if defined( __OS2__ )
 #define INCL_SUB
 #include <os2.h>
 
-int GetConsoleWidth()
+int GetConsoleWidth( void )
 {
     struct _VIOMODEINFO vio_mode;
 
@@ -43,7 +46,7 @@ int GetConsoleWidth()
     return( vio_mode.col );
 }
 
-int GetConsoleHeight()
+int GetConsoleHeight( void )
 {
     struct _VIOMODEINFO vio_mode;
 
@@ -56,7 +59,7 @@ int GetConsoleHeight()
 #elif defined( __NT__ )
     #include <windows.h>
 
-int GetConsoleWidth()
+int GetConsoleWidth( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO  buffer_info;
     HANDLE                      output_handle;
@@ -66,7 +69,7 @@ int GetConsoleWidth()
     return( buffer_info.dwMaximumWindowSize.X );
 }
 
-int GetConsoleHeight()
+int GetConsoleHeight( void )
 {
     CONSOLE_SCREEN_BUFFER_INFO  buffer_info;
     HANDLE                      output_handle;

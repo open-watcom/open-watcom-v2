@@ -54,7 +54,7 @@ static const char *usageMsg[] = {
 
 unsigned head;
 
-void DumpHead( FILE *fp )
+static void DumpHead( FILE *fp )
 {
     int c;
     unsigned line;

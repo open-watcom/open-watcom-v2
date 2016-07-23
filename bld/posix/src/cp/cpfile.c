@@ -73,7 +73,7 @@ extern long DosGetFullPath( char __FAR *org, char __FAR *real );
 /*
  * dosSameFile - DOS specific same file test
  */
-int dosSameFile( char *dest, char *src )
+static int dosSameFile( char *dest, char *src )
 {
 #define strcmp(p1,p2)           _inline_strcmp(p1,p2)
 extern int _inline_strcmp( char *, char * );
