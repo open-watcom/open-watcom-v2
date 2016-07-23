@@ -24,24 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  MIPS instruction encoding.
+* Description:  High level code generation routines. Lots of action here.
 *
 ****************************************************************************/
 
 
-extern void         GenCallLabelReg( pointer label, uint reg );
-#if 0
-extern void         EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type );
-extern void         GenLOADS32( signed_32 value, uint_8 reg );
-extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type );
-extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
-extern void         GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
-extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt );
-extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
-extern void         GenJType( uint_8 opcode, pointer label );
-extern void         GenRET( void );
-extern void         GenObjCode( instruction *ins );
-extern void         GenLabelReturn( void );
-extern byte         ReverseCondition( byte cond );
-extern byte         CondCode( instruction *ins );
-#endif
+extern  void            GenProlog( void );
+extern  void            GenEpilog( void );
+extern  void            AddCacheRegs( void );
+extern  void            InitStackDepth( block * );
+extern  int             AskDisplaySize( int level );
+extern  type_length     PushSize( type_length );
+extern  void            PushLocals( void );
+extern  void            SetTempLocation( name *, type_length );
+extern  type_length     TempLocation( name * );
+extern  bool            TempAllocBefore( void *, void * );

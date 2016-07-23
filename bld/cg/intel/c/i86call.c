@@ -60,7 +60,6 @@ extern  name            *SegmentPart(name*);
 extern  name            *OffsetPart(name*);
 extern  name            *DoParmDecl(cg_sym_handle,type_def*,hw_reg_set);
 extern  hw_reg_set      ReturnReg(type_class_def,bool);
-extern  type_length     PushSize(type_length);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  void            ReverseParmNodeList(pn *);
 extern  void            SuffixIns( instruction *, instruction * );

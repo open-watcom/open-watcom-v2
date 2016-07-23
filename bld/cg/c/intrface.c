@@ -54,6 +54,7 @@
 #include "blips.h"
 #include "bldsel.h"
 #include "intrface.h"
+#include "opttell.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -72,7 +73,6 @@ extern  void            AbortCG(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(label_handle);
-extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
 extern  void            BGParmDecl(cg_sym_handle,type_def*);
 extern  void            BGAutoDecl(cg_sym_handle,type_def*);

@@ -54,6 +54,7 @@
 #include "onexit.h"
 #include "ocentry.h"
 #include "optmain.h"
+#include "opttell.h"
 #include "intrface.h"
 #include "feprotos.h"
 
@@ -138,11 +139,6 @@ typedef struct dbg_seg_info {
 } dbg_seg_info;
 
 
-extern  void            TellDonePatch(label_handle);
-extern  void            TellAddress(label_handle,offset);
-extern  void            TellCommonLabel(label_handle,import_handle);
-extern  void            TellUnreachLabels(void);
-extern  void            KillLblRedirects( void );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char *,void *),void *,import_type);
 
 extern  bool            Used87;

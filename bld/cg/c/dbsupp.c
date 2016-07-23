@@ -41,6 +41,7 @@
 #include "cgaux.h"
 #include "types.h"
 #include "objout.h"
+#include "targetdb.h"
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
@@ -55,8 +56,6 @@ extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 extern  void            DoBigBckPtr(back_handle,offset);
-extern  type_length     NewBase(name*);
-extern  int             ParmsAtPrologue( void ) ;
 
 
 static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {

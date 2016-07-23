@@ -48,6 +48,7 @@
 #include "object.h"
 #include "encode.h"
 #include "intrface.h"
+#include "targetin.h"
 #include "feprotos.h"
 
 extern void DumpInsOnly( instruction * );
@@ -287,8 +288,8 @@ static  pointer symLabel( name *mem )
 }
 
 
-extern  type_length     TempLocation( name *temp )
-/************************************************/
+type_length     TempLocation( name *temp )
+/****************************************/
 {
     name                *base;
     type_length         offset;

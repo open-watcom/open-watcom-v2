@@ -50,8 +50,10 @@
 #include "blips.h"
 #include "ocentry.h"
 #include "optmain.h"
+#include "opttell.h"
 #include "object.h"
 #include "regalloc.h"
+#include "targetin.h"
 #include "feprotos.h"
 
 
@@ -78,7 +80,6 @@ extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
 extern  void            FreeAConflict( conflict_node * );
 extern  void            FreeProc( void );
-extern  void            GenProlog( void );
 extern  void            GenObject( void );
 extern  void            SortBlocks( void );
 extern  void            InitNames( void );
@@ -112,7 +113,6 @@ extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  void            TellFreeAllLabels( void );
 extern  bool            FixReturns( void );
 extern  instruction_id  Renumber( void );
 extern  void            SplitVars( void );
@@ -131,7 +131,6 @@ extern  void            LdStCompress( void );
 extern  void            MemtoBaseTemp( void );
 extern  void            FixMemBases( void );
 extern  bool            BGInInline( void );
-extern  void            AddCacheRegs( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 extern  void            PropNullInfo( void );

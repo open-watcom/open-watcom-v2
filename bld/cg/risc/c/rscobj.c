@@ -56,7 +56,11 @@
 #include "objio.h"
 #include "object.h"
 #include "intrface.h"
+#include "opttell.h"
+#include "targetin.h"
+#include "cgsrtlst.h"
 #include "feprotos.h"
+
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
 #define OWL_TO_HANDLE(x)    ((FILE *)x)
@@ -67,11 +71,7 @@ extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
 extern  void            TryScrapLabel( label_handle );
 extern  void            DoOutObjectName(cg_sym_handle,void(*)(char *,void *),void *,import_type);
 extern  bool            SymIsExported( cg_sym_handle );
-extern  void            TellAddress( label_handle, offset );
-extern  type_length     TempLocation( name * );
 extern  void            EmptyQueue( void );
-extern  void            TellUnreachLabels( void );
-extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
 extern  void            EmitInsReloc( axp_ins, pointer, owl_reloc_type );
 
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC

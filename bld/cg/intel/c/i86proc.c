@@ -47,7 +47,12 @@
 #include "object.h"
 #include "i86enc2.h"
 #include "encode.h"
+#include "targetin.h"
+#include "targetdb.h"
+#include "i86proc.h"
+#include "opttell.h"
 #include "feprotos.h"
+
 
 extern  void        OutDLLExport(uint,cg_sym_handle);
 extern  void        GenLeaSP(long);
@@ -79,7 +84,6 @@ extern  void        QuickSave(hw_reg_set,opcode_defs);
 extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
-extern  void        TellKeepLabel(label_handle);
 extern  void        GenKillLabel(label_handle);
 extern  void        GFstpM(pointer);
 extern  void        GenTouchStack( bool );
@@ -303,9 +307,9 @@ static  bool    ScanLabelCalls( void ) {
 #endif
 
 
-extern  void    AddCacheRegs( void ) {
-/******************************/
-
+void    AddCacheRegs( void )
+/**************************/
+{
 #if _TARGET & _TARG_80386
     if( CurrProc->targ.never_sp_frame )
         return;
@@ -400,7 +404,7 @@ static void FindIfExported( void ) {
 
 
 void DoRTCall( rt_class rtindex, bool pop )
-/*************************************/
+/*****************************************/
 {
     DoCall( RTLabel( rtindex ), true, _IsTargetModel( BIG_CODE ), pop );
 }
@@ -555,8 +559,8 @@ static  void    UnloadDS( void )
     }
 }
 
-extern  void    GenProlog( void )
-/*******************************/
+void    GenProlog( void )
+/***********************/
 {
     segment_id  old;
     hw_reg_set  to_push;
@@ -729,9 +733,9 @@ static  void    MoveParms( void )
 }
 
 
-extern  void    InitStackDepth( block *blk ) {
-/********************************************/
-
+void    InitStackDepth( block *blk )
+/**********************************/
+{
     if( blk->edge[0].flags & DOWN_ONE_CALL ) {
         StackDepth = WORD_SIZE;
     } else {
@@ -806,9 +810,9 @@ extern  bool    BaseIsSP( name *op ) {
 }
 
 
-extern  type_length NewBase( name *op ) {
-/*******************************************/
-
+type_length NewBase( name *op )
+/*****************************/
+{
     if( !BaseIsSP( op ) ) {
         return( op->t.location - CurrProc->targ.base_adjust );
     }
@@ -1006,9 +1010,9 @@ static  void        Pop( hw_reg_set to_pop ) {
     }
 }
 
-extern  type_length PushSize( type_length len ) {
-/***************************************************/
-
+type_length PushSize( type_length len )
+/*************************************/
+{
     if( len < WORD_SIZE )
         return( WORD_SIZE );
     return( ( len + (WORD_SIZE-1) ) & ~(WORD_SIZE-1) );
@@ -1074,9 +1078,9 @@ static  void    DoEnter( int level ) {
 }
 
 
-void    GenEpilog( void ) {
-/*************************/
-
+void    GenEpilog( void )
+/***********************/
+{
     type_length stack;
     fe_attr attr;
 
@@ -1205,15 +1209,15 @@ static  void    DoEpilog( void ) {
 }
 
 
-extern  int AskDisplaySize( int level ) {
-/*******************************************/
-
-    return( level*WORD_SIZE );
+int AskDisplaySize( int level )
+/*****************************/
+{
+    return( level * WORD_SIZE );
 }
 
-extern  int ParmsAtPrologue( void ) {
-/***************************/
-
+int ParmsAtPrologue( void )
+/*************************/
+{
     unsigned    ret_size;
     unsigned    parms_off_sp;
 

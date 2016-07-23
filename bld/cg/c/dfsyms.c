@@ -49,6 +49,7 @@
 #include "dbsyms.h"
 #include "dfsyms.h"
 #include "dfsupp.h"
+#include "targetdb.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
@@ -64,7 +65,6 @@ extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern void             DFFEPtrRef( cg_sym_handle sym );
 extern char             GetMemModel( void );
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  type_length     NewBase(name*);
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );

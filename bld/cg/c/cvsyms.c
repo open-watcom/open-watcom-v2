@@ -44,6 +44,7 @@
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "targetdb.h"
 #include "cvsyms.h"
 #include "feprotos.h"
 #include "cgprotos.h"
@@ -64,7 +65,6 @@ extern  void            CVPutINum64( cv_out *out, signed_64 num );
 extern  void            CVPutNullStr( cv_out * );
 extern  void            CVEndType( cv_out *out );
 extern  cg_sym_handle   LocSimpStatic(dbg_loc);
-extern  type_length     NewBase(name*);
 
 // global variables
 segment_id              CVSyms;

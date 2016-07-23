@@ -30,14 +30,7 @@
 
 
 extern bool         CanZapBP( void );
-extern void         AddCacheRegs( void );
 extern void         DoRTCall( rt_class rtindex, bool pop );
-extern void         GenProlog( void );
-extern void         InitStackDepth( block *blk );
 extern void         AdjustStackDepth( instruction *ins );
 extern void         AdjustStackDepthDirect( int adjust );
 extern bool         BaseIsSP( name *op );
-extern type_length  NewBase( name *op );
-extern void         GenEpilog( void );
-extern int          AskDisplaySize( int level );
-extern int          ParmsAtPrologue( void );

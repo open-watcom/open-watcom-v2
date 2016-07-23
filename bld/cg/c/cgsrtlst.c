@@ -33,6 +33,8 @@
 #include "cgstd.h"
 #include "cgmem.h"
 #include "memout.h"
+#include "cgsrtlst.h"
+
 
 extern  mem_out_action          SetMemOut(mem_out_action);
 

@@ -39,6 +39,7 @@
 #include "dbsyms.h"
 #include "blips.h"
 #include "regalloc.h"
+#include "cgsrtlst.h"
 
 
 enum allocation_state {
@@ -85,7 +86,6 @@ extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
 extern  hw_reg_set      HighOffsetReg(hw_reg_set);
 extern  void            DeadInstructions(void);
 extern  bool            IsSegReg(hw_reg_set);
-extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  bool            MoreConflicts(void);
 extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);

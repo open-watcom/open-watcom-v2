@@ -34,6 +34,8 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "data.h"
+#include "targetin.h"
+
 
 extern void MemtoBaseTemp( void )
 {
@@ -61,8 +63,8 @@ extern hw_reg_set ParmRegConflicts( hw_reg_set r ) {
     return( r );
 }
 
-extern type_length TempLocation( name *temp ) {
-
+type_length TempLocation( name *temp )
+{
     return( temp->t.location + CurrProc->locals.size );
 }
 

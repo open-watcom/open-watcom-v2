@@ -43,12 +43,12 @@
 #include "dbsyms.h"
 #include "rscenc2.h"
 #include "optmain.h"
+#include "opttell.h"
 
 
 extern  void    ObjBytes( const void *, unsigned );
 extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void    DoAlignment( offset );
-extern  void    TellScrapLabel( label_handle );
 extern  void    OutFuncStart( label_handle, offset, cg_linenum );
 extern  void    OutFuncEnd( offset );
 extern  void    OutPDataRec( label_handle, offset, offset );

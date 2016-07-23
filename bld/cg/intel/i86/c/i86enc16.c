@@ -42,6 +42,7 @@
 #include "data.h"
 #include "i86obj.h"
 #include "objprof.h"
+#include "targetdb.h"
 
 
 extern  void            DoSymRef( name *, offset, bool );
@@ -66,7 +67,6 @@ extern  void            DoAbsPatch( abspatch_handle *, int );
 extern  type_class_def  OpndSize( hw_reg_set );
 extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
-extern  type_length     NewBase( name * );
 extern  int             GetLog2( unsigned_32 );
 
 /* forward declarations */

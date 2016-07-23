@@ -52,7 +52,10 @@
 #include "object.h"
 #include "i86enc2.h"
 #include "intrface.h"
+#include "targetdb.h"
+#include "opttell.h"
 #include "feprotos.h"
+
 
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
@@ -60,7 +63,6 @@ extern  void            LayRegAC(hw_reg_set);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(gen_opcode);
 extern  void            Format(oc_class);
-extern  void            TellScrapLabel(label_handle);
 extern  void            LayRegRM(hw_reg_set);
 extern  void            LayRMRegOp(name*);
 extern  void            LayModRM(name*);
@@ -74,7 +76,6 @@ extern  void            DoFESymRef( cg_sym_handle, cg_class, offset, fe_fixup_ty
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
-extern  type_length     NewBase(name*);
 extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );

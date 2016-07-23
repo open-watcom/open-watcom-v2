@@ -47,6 +47,7 @@
 #include "dbsyms.h"
 #include "objio.h"
 #include "optmain.h"
+#include "opttell.h"
 #include "intrface.h"
 #include "feprotos.h"
 
@@ -56,9 +57,7 @@ extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutRTImport(rt_class,fix_class);
 extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
 extern  void            OutSelect(bool);
-extern  void            TellScrapLabel(label_handle);
 extern  void            GenKillLabel(label_handle);
-extern  void            TellKeepLabel(label_handle);
 extern  void            OutDataShort(unsigned_16);
 extern  void            OutDataLong(unsigned_32);
 extern  void            OutPatch(label_handle,patch_attr);
@@ -75,7 +74,6 @@ extern  void            InsertByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern  unsigned        SavePendingLine(unsigned);
 extern bool             UseImportForm(fe_attr);
-extern void             OutSpecialCommon(import_handle,fix_class,bool);
 
 static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
 static  void            OutShortDisp( label_handle lbl );

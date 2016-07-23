@@ -58,7 +58,6 @@ extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
 extern  void            AddIns(instruction*);
-extern  type_length     PushSize(type_length);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
 extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);

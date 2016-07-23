@@ -39,6 +39,7 @@
 #include "x87.h"
 #include "edge.h"
 #include "redefby.h"
+#include "cgsrtlst.h"
 
 
 extern  int     Max87Stk;
@@ -50,7 +51,6 @@ extern  instruction     *SuffFSTPRes(instruction *,name *,result_type );
 extern  name            *ST(int);
 extern  int             NumOperands(instruction *);
 extern  int             FPRegNum(name *);
-extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
 extern  name            *DeAlias(name *);

@@ -34,25 +34,28 @@
 #include "coderep.h"
 #include "data.h"
 #include "savings.h"
+#include "targetin.h"
+
 
 extern  name            *DeAlias(name*);
 extern  bool            UnChangeable(instruction*);
 extern  bool            DoesSomething(instruction*);
 extern  void            DoNothing(instruction*);
-extern  type_length     PushSize(type_length);
 extern  void            PropLocal(name*);
 
 extern  savings         Save;
 
 static  void    AssignPushLocals( void );
 
-extern  void    PushLocals( void ) {
-/*****************************
+void    PushLocals( void )
+/*************************
     Assign locals which can have their initial value pushed onto the stack
 */
-
-    if( BlockByBlock ) return;
-    if( Save.store_cost[WD] <= Save.push_cost[WD] ) return;
+{
+    if( BlockByBlock )
+        return;
+    if( Save.store_cost[WD] <= Save.push_cost[WD] )
+        return;
     AssignPushLocals();
 }
 
@@ -128,11 +131,11 @@ extern  void    AdjustPushLocal( name *temp ) {
 }
 
 
-extern  void    SetTempLocation( name *temp, type_length size ) {
-/****************************************************************
+void    SetTempLocation( name *temp, type_length size )
+/******************************************************
     Snag a temporary with length "size" off the stack and set it's location
 */
-
+{
     CurrProc->locals.size += size;
     temp->t.location = - CurrProc->locals.size
                       - CurrProc->locals.base;
@@ -156,20 +159,25 @@ extern  void    RelocParms( void ) {
 }
 
 
-extern  bool    TempAllocBefore( name *t1, name *t2 ) {
-/*****************************************************/
-
-    if( (t1->t.temp_flags & USED_AS_FD) && (t2->t.temp_flags & USED_AS_FD) == 0 ) {
-        if( CurrProc->targ.sp_align ) return( false );
+bool    TempAllocBefore( void *t1, void *t2 )
+/*******************************************/
+{
+    if( (((name *)t1)->t.temp_flags & USED_AS_FD) && (((name *)t2)->t.temp_flags & USED_AS_FD) == 0 ) {
+        if( CurrProc->targ.sp_align )
+            return( false );
         return( true );
     }
-    if( (t2->t.temp_flags & USED_AS_FD) && (t1->t.temp_flags & USED_AS_FD) == 0 ) {
-        if( CurrProc->targ.sp_align ) return( true );
+    if( (((name *)t2)->t.temp_flags & USED_AS_FD) && (((name *)t1)->t.temp_flags & USED_AS_FD) == 0 ) {
+        if( CurrProc->targ.sp_align )
+            return( true );
         return( false );
     }
-    if( t1->n.size < t2->n.size ) return( true );
-    if( t1->n.size != t2->n.size ) return( false );
+    if( ((name *)t1)->n.size < ((name *)t2)->n.size )
+        return( true );
+    if( ((name *)t1)->n.size != ((name *)t2)->n.size )
+        return( false );
     /* allocate big pointers the right way 'round for LES/LDS*/
-    if( t1->t.v.id == t2->t.v.id && t1->v.offset > t2->v.offset ) return( true );
+    if( ((name *)t1)->t.v.id == ((name *)t2)->t.v.id && ((name *)t1)->v.offset > ((name *)t2)->v.offset )
+        return( true );
     return( false );
 }

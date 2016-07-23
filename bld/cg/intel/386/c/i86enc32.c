@@ -49,6 +49,8 @@
 #include "object.h"
 #include "encode.h"
 #include "i86proc.h"
+#include "targetdb.h"
+#include "opttell.h"
 #include "feprotos.h"
 
 
@@ -76,7 +78,6 @@ extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
 extern  hw_reg_set      High64Reg( hw_reg_set );
 extern  hw_reg_set      Low64Reg( hw_reg_set );
-extern  type_length     NewBase( name * );
 extern  int             GetLog2( unsigned_32 );
 extern  void            DoNothing( instruction * );
 extern  bool            BaseIsSP( name * );
@@ -84,15 +85,12 @@ extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
 
-extern  void            TellOptimizerByPassed( void );
 extern  void            SetUpObj( bool );
 extern  void            OutDataByte( byte );
 extern  void            OutDataShort( unsigned_16 );
 extern  void            OutDataLong(unsigned_32);
 extern  void            OutRTImport( rt_class, fix_class );
-extern  void            TellKeepLabel( label_handle );
 extern  void            OutReloc( segment_id, fix_class, bool );
-extern  void            TellByPassOver( void );
 extern  void            OutLblPatch( label_handle, fix_class, offset );
 
 /* forward declarations */

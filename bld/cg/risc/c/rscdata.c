@@ -38,14 +38,15 @@
 #include "data.h"
 #include "objout.h"
 #include "namelist.h"
+#include "opttell.h"
 #include "feprotos.h"
+
 
 extern  void            ObjBytes( const void *, unsigned );
 extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
 extern  void            OutSegReloc( label_handle label, segment_id section );
 extern  void            AlignObject( unsigned );
 extern  void            TellOptimizerByPassed( void );
-extern  void            TellByPassOver( void );
 extern  void            IterBytes( offset, byte );
 
 extern  void    DataAlign( unsigned_32 align ) {

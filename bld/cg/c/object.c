@@ -42,14 +42,14 @@
 #include "encode.h"
 #include "edge.h"
 #include "redefby.h"
+#include "targetin.h"
+#include "opttell.h"
 #include "feprotos.h"
 
 extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(label_handle);
-extern  void            InitStackDepth(block*);
 extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );

@@ -45,12 +45,12 @@
 #include "namelist.h"
 #include "objio.h"
 #include "optmain.h"
+#include "opttell.h"
 #include "i86enc2.h"
 #include "encode.h"
 #include "feprotos.h"
 
 extern  void            OutPatch(label_handle,patch_attr);
-extern  void            TellKeepLabel(label_handle);
 extern  void            OutReloc(segment_id,fix_class,bool);
 extern  void            OutImport(cg_sym_handle,fix_class,bool);
 extern  void            OutBckImport( const char *name, back_handle bck, fix_class class );
@@ -60,8 +60,6 @@ extern  void            OutDataShort(unsigned_16);
 extern  void            OutDBytes(unsigned,const byte*);
 extern  void            SetUpObj(bool);
 extern  void            TellObjNewLabel( cg_sym_handle );
-extern  void            TellOptimizerByPassed( void );
-extern  void            TellByPassOver( void );
 extern  bool            UseImportForm( fe_attr );
 extern  void            IterBytes( offset len, byte pat );
 

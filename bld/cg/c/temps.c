@@ -37,6 +37,8 @@
 #include "cgaux.h"
 #include "data.h"
 #include "zoiks.h"
+#include "targetin.h"
+#include "cgsrtlst.h"
 #include "feprotos.h"
 
 typedef struct stack_temp {
@@ -54,13 +56,8 @@ typedef struct stack_entry {
 
 extern  name            *DeAlias(name *);
 extern  bool            SideEffect(instruction *);
-extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
 extern  void            DoNothing(instruction *);
 extern  void            TransferTempFlags(void);
-extern  void            PushLocals(void);
-extern  void            SetTempLocation(name *,type_length);
-extern  type_length     TempLocation( name * );
-extern  bool            TempAllocBefore( void *, void * );
 
 static    stack_entry   *StackMap;
 
@@ -478,7 +475,7 @@ extern  void    AssignOtherLocals( void )
         rest = LastTemp->n.next_name;
         LastTemp->n.next_name = NULL;
     }
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ), TempAllocBefore );
+    Names[N_TEMP] = SortList( Names[N_TEMP], offsetof( name, n.next_name ), TempAllocBefore );
     if( LastTemp != NULL ) {
         for( owner = &Names[N_TEMP]; *owner != NULL; ) {
             owner = &(*owner)->n.next_name;

@@ -34,7 +34,6 @@ extern  void            FreeBlock( void );
 extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
-extern  void            TellReachedLabel(label_handle);
 extern  void            InitStackDepth(block*);
 extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            Zoiks( int );
@@ -46,8 +45,6 @@ extern  unsigned        DepthAlign( unsigned );
 extern  void            GenCallLabel( pointer );
 extern  void            GenLabelReturn( void );
 extern  void            GenObjCode( instruction * );
-extern  void            GenEpilog( void );
-extern  void            TellCondemnedLabel( label_handle );
 
 extern  void            GenObject( void );
 extern  void            SortBlocks( void );

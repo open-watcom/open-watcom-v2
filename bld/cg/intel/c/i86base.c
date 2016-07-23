@@ -33,6 +33,8 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "cgsrtlst.h"
+
 
 #define MAX_SHORT_NEG   127
 #define MAX_SHORT_POS   127
@@ -48,12 +50,28 @@
 #endif
 
 static  int             CalcBaseSave( type_length bp, name *temp );
-static  void            SetTempLocations(void);
 static  void            SortTemps(void);
 
 extern  name            *DeAlias(name*);
-extern  void            *SortList(void *,unsigned,bool (*)(name*,name*) );
 extern  void            CountTempRefs(void);
+
+
+static  void    setTempLocations( void )
+/**************************************/
+{
+    name                *base;
+    name                *temp;
+
+    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+        base = DeAlias( temp );
+        if( base->t.location == NO_LOCATION ) {
+            temp->t.v.alt_location = NO_LOCATION;
+        } else {
+            temp->t.v.alt_location = base->t.location
+                                   + temp->v.offset - base->v.offset;
+        }
+    }
+}
 
 extern  type_length     AdjustBase( void ) {
 /*************************************
@@ -81,7 +99,7 @@ extern  type_length     AdjustBase( void ) {
     if( BlockByBlock ) {
         return( -( MAX_SHORT_POS & ~1 ) );
     }
-    SetTempLocations();
+    setTempLocations();
     CountTempRefs();
     SortTemps();
     best_bp = 0;
@@ -127,34 +145,15 @@ static  int             CalcBaseSave( type_length bp, name *temp ) {
 }
 
 
-static  void            SetTempLocations(void) {
-/**********************************************/
-
-    name                *base;
-    name                *temp;
-
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        base = DeAlias( temp );
-        if( base->t.location == NO_LOCATION ) {
-            temp->t.v.alt_location = NO_LOCATION;
-        } else {
-            temp->t.v.alt_location = base->t.location
-                                   + temp->v.offset - base->v.offset;
-        }
-    }
-}
-
-
-static  bool    TempBefore( name *t1, name *t2 ) {
+static  bool    TempBefore( void *t1, void *t2 ) {
 /************************************************/
 
-    return( t1->t.v.alt_location > t2->t.v.alt_location );
+    return( ((name *)t1)->t.v.alt_location > ((name *)t2)->t.v.alt_location );
 }
 
 
 static  void    SortTemps(void) {
 /*******************************/
 
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ),
-                                TempBefore );
+    Names[N_TEMP] = SortList( Names[N_TEMP], offsetof( name, n.next_name ), TempBefore );
 }

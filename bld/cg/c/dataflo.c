@@ -35,13 +35,13 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "data.h"
+#include "cgsrtlst.h"
 #include "feprotos.h"
 
 extern  void            FindReferences( void );
 extern  conflict_node   *AddConflictNode(name*);
 extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
-extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
 
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );
@@ -125,8 +125,7 @@ static  void    RoughSortTemps( void )
             }
         }
     }
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ),
-                                AllocBefore );
+    Names[N_TEMP] = SortList( Names[N_TEMP], offsetof( name, n.next_name ), AllocBefore );
 }
 
 
@@ -141,7 +140,8 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
 
     if( list == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
-        if( !MoreUseInOtherTemps ) return( all_used );
+        if( !MoreUseInOtherTemps )
+            return( all_used );
         MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );

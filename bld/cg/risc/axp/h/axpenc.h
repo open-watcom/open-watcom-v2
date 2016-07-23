@@ -41,7 +41,6 @@ extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displace
 extern void         GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
 extern void         GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
 extern void         GenRET( void );
-extern type_length  TempLocation( name *temp );
 extern void         GenObjCode( instruction *ins );
 #if 0
 extern void         GenJumpIf( instruction *ins, pointer label );

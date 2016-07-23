@@ -35,9 +35,9 @@
 #include "data.h"
 #include "makeins.h"
 #include "edge.h"
+#include "opttell.h"
 
 
-extern  void            TellScrapLabel( label_handle );
 extern  void            FreeABlock( block * );
 extern  instruction_id  Renumber( void );
 

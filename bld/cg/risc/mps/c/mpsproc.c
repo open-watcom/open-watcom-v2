@@ -41,7 +41,11 @@
 #include "dbsyms.h"
 #include "object.h"
 #include "mpsenc.h"
+#include "targetin.h"
+#include "targetdb.h"
+#include "opttell.h"
 #include "feprotos.h"
+
 
 extern  uint_32         CountBits( uint_32 );
 extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
@@ -57,10 +61,7 @@ extern  void            OutFuncStart( label_handle label, offset start, int line
 extern  void            OutFileStart( int line );
 extern  void            OutFuncEnd( offset end );
 extern  byte            RegTrans( hw_reg_set );
-extern  type_length     TempLocation( name * );
 extern  hw_reg_set      ReturnAddrReg( void );
-extern  void            TellKeepLabel( label_handle );
-extern  void            TellProcLabel( label_handle );
 extern  void            GenLOADS32( signed_32, uint_8 );
 
 
@@ -103,8 +104,8 @@ static  void calcUsedRegs( void )
 }
 
 
-extern  void AddCacheRegs( void )
-/*******************************/
+void AddCacheRegs( void )
+/***********************/
 {
 }
 
@@ -583,8 +584,8 @@ static  void emitEpilog( stack_map *map )
 }
 
 
-extern  void GenProlog( void )
-/****************************/
+void GenProlog( void )
+/********************/
 {
     segment_id          old;
     label_handle        label;
@@ -630,38 +631,39 @@ void GenEpilog( void )
 }
 
 
-extern  int AskDisplaySize( int level )
-/*************************************/
+int AskDisplaySize( int level )
+/*****************************/
 {
     level = level;
     return( 0 );
 }
 
 
-extern  void InitStackDepth( block *blk )
-/***************************************/
+void InitStackDepth( block *blk )
+/*******************************/
 {
     blk = blk;
 }
 
 
-extern  type_length PushSize( type_length len )
-/*********************************************/
+type_length PushSize( type_length len )
+/*************************************/
 {
-    if( len < REG_SIZE ) return( REG_SIZE );
+    if( len < REG_SIZE )
+        return( REG_SIZE );
     return( len );
 }
 
 
-extern  type_length NewBase( name *op )
-/*************************************/
+type_length NewBase( name *op )
+/*****************************/
 {
     return( TempLocation( op ) );
 }
 
 
-extern  int ParmsAtPrologue( void )
-/*********************************/
+int ParmsAtPrologue( void )
+/*************************/
 {
     return( 0 );
 }

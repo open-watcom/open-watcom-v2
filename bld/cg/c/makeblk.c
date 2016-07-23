@@ -41,11 +41,11 @@
 #include "stack.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "targetin.h"
+#include "opttell.h"
 #include "feprotos.h"
 
-extern  void            TellBeginExecutions(void);
 extern  void            FreeNames(void);
-extern  int             AskDisplaySize(int);
 extern  void            ReInitNames(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  type_class_def  TypeClass(type_def*);

@@ -51,6 +51,7 @@
 #include "object.h"
 #include "axpenc.h"
 #include "intrface.h"
+#include "targetin.h"
 #include "feprotos.h"
 
 
@@ -435,9 +436,9 @@ static  uint_8  storeOpcodes[] = {
     0x27,                       /* FL */
 };
 
-extern  type_length     TempLocation( name *temp ) {
-/**************************************************/
-
+type_length     TempLocation( name *temp )
+/****************************************/
+{
     name                *base;
     type_length         offset;
 
