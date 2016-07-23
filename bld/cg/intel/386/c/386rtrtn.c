@@ -39,6 +39,8 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "namelist.h"
+#include "makeblk.h"
+
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
@@ -51,7 +53,6 @@ extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  void            AddIns( instruction * );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  instruction     *rMAKECALL( instruction * );

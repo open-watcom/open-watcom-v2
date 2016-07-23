@@ -44,13 +44,13 @@
 #include "utils.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 static    pointer       *AddrNameFrl;
 
 extern  type_class_def  TypeClass(type_def*);
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  void            AllocALocal(name*);
 extern  void            BGDone(an);

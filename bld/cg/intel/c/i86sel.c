@@ -51,6 +51,7 @@
 #include "i86enc2.h"
 #include "ocentry.h"
 #include "encode.h"
+#include "makeblk.h"
 
 
 #define MIN_JUMPS       4            /* to make it worth while for jum*/
@@ -77,7 +78,6 @@ extern  an              BGDuplicate(an);
 extern  an              TreeGen(tn);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            BGDone(an);
-extern  void            AddIns(instruction*);
 extern  an              BGInteger( signed_32, type_def * );
 
 /* forward declarations */

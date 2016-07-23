@@ -39,6 +39,7 @@
 #include "x87.h"
 #include "namelist.h"
 #include "redefby.h"
+#include "makeblk.h"
 
 
 extern  name            *Parm8087[];
@@ -49,7 +50,6 @@ extern  int             Max87Stk;
 extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);
 extern  void            BGDone(an);
-extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  type_class_def  TypeClass(type_def*);
 extern  bool            DoesSomething(instruction*);

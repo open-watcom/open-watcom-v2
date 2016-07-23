@@ -36,9 +36,10 @@
 #include "zoiks.h"
 #include "stack.h"
 #include "data.h"
+#include "makeblk.h"
+
 
 extern  instruction_id  Renumber( void );
-extern  block           *NewBlock(label_handle,bool);
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, interval_depth level );

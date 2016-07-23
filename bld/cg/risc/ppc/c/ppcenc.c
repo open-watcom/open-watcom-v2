@@ -51,6 +51,7 @@
 #include "targetin.h"
 #include "feprotos.h"
 
+
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
 extern void GenCondJump( instruction * );

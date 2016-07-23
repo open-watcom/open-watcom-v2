@@ -39,7 +39,9 @@
 #include "data.h"
 #include "types.h"
 #include "makeaddr.h"
+#include "makeblk.h"
 #include "feprotos.h"
+
 
 typedef struct inline_parm {
         struct inline_parm      *next;
@@ -55,11 +57,7 @@ typedef struct inline_stack {
 } inline_stack;
 
 extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  void            EnLink(label_handle,bool);
-extern  void            AddIns(instruction*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            AddTarget(label_handle,bool);
-extern  void            GenBlock( block_class, int );
 extern  name            *BGNewTemp(type_def*);
 extern  void            BGDone(an);
 extern  an              BGCopy(an);

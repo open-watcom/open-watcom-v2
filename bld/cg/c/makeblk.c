@@ -43,6 +43,7 @@
 #include "namelist.h"
 #include "targetin.h"
 #include "opttell.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 extern  void            FreeNames(void);
@@ -55,8 +56,8 @@ extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
 
 
-extern  block   *MakeBlock( label_handle label, block_num edges )
-/***************************************************************/
+block   *MakeBlock( label_handle label, block_num edges )
+/*******************************************************/
 {
     block       *blk;
     block_edge  *edge;
@@ -93,8 +94,8 @@ extern  block   *MakeBlock( label_handle label, block_num edges )
 }
 
 
-extern  block   *NewBlock( label_handle label, bool label_dies )
-/**************************************************************/
+block   *NewBlock( label_handle label, bool label_dies )
+/******************************************************/
 {
     block       *blk;
 
@@ -108,8 +109,8 @@ extern  block   *NewBlock( label_handle label, bool label_dies )
 }
 
 
-extern  void    FreeABlock( block * blk )
-/***************************************/
+void    FreeABlock( block * blk )
+/*******************************/
 {
     if( blk->targets <= 1 ) {
         CGFree( blk );
@@ -119,8 +120,8 @@ extern  void    FreeABlock( block * blk )
 }
 
 
-extern  void    FreeBlock( void )
-/*******************************/
+void    FreeBlock( void )
+/***********************/
 {
     while( CurrBlock->ins.hd.next != (instruction *)&CurrBlock->ins ) {
         FreeIns( CurrBlock->ins.hd.next );
@@ -132,8 +133,8 @@ extern  void    FreeBlock( void )
 }
 
 
-extern  void    EnLink( label_handle label, bool label_dies )
-/***********************************************************/
+void    EnLink( label_handle label, bool label_dies )
+/***************************************************/
 {
     block       *blk;
 
@@ -143,8 +144,8 @@ extern  void    EnLink( label_handle label, bool label_dies )
     SrcLine = 0;
 }
 
-extern  void    AddIns( instruction *ins )
-/****************************************/
+void    AddIns( instruction *ins )
+/********************************/
 {
     if( HaveCurrBlock == false ) {
         EnLink( AskForNewLabel(), true );
@@ -161,8 +162,8 @@ extern  void    AddIns( instruction *ins )
 }
 
 
-extern  void    GenBlock( block_class class, int targets )
-/********************************************************/
+void    GenBlock( block_class class, int targets )
+/************************************************/
 {
     block       *new;
     block_edge  *edge;
@@ -228,8 +229,8 @@ extern  void    GenBlock( block_class class, int targets )
 }
 
 
-extern  block   *ReGenBlock( block *blk, label_handle lbl )
-/*********************************************************/
+block   *ReGenBlock( block *blk, label_handle lbl )
+/*************************************************/
 {
     block       *new;
     block_edge  *edge;
@@ -275,8 +276,8 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
 }
 
 
-extern  type_class_def  InitCallState( type_def *tipe )
-/*****************************************************/
+type_class_def  InitCallState( type_def *tipe )
+/*********************************************/
 {
     name            *name;
     cg_sym_handle   sym;
@@ -290,8 +291,8 @@ extern  type_class_def  InitCallState( type_def *tipe )
 }
 
 
-extern  void    AddTarget( label_handle dest, bool dest_label_dies )
-/******************************************************************/
+void    AddTarget( label_handle dest, bool dest_label_dies )
+/**********************************************************/
 /*   Don't handle expression jumps yet*/
 {
     block_edge  *edge;
@@ -306,8 +307,8 @@ extern  void    AddTarget( label_handle dest, bool dest_label_dies )
 }
 
 
-extern  block   *FindBlockWithLbl( label_handle label )
-/*****************************************************/
+block   *FindBlockWithLbl( label_handle label )
+/*********************************************/
 {
     block       *blk;
 
@@ -320,8 +321,8 @@ extern  block   *FindBlockWithLbl( label_handle label )
 }
 
 
-extern  void    FixEdges( void )
-/******************************/
+void    FixEdges( void )
+/**********************/
 {
     block       *blk;
     block       *dest;
@@ -396,8 +397,8 @@ static void *LinkReturns( void *arg )
     return( NOT_NULL );
 }
 
-extern  bool        FixReturns( void )
-/************************************/
+bool        FixReturns( void )
+/****************************/
 /* link all LABEL_RETURN blocks to any CALL_LABEL block they could*/
 /* have been invoked from*/
 {
@@ -423,8 +424,8 @@ extern  bool        FixReturns( void )
 }
 
 
-extern  void    UnFixEdges( void )
-/********************************/
+void    UnFixEdges( void )
+/************************/
 {
     block       *blk;
     block_num   targets;
@@ -445,8 +446,8 @@ extern  void    UnFixEdges( void )
 }
 
 
-extern  void    AddAnIns( block *blk, instruction *ins )
-/******************************************************/
+void    AddAnIns( block *blk, instruction *ins )
+/**********************************************/
 {
     block       *curr_block;
 
@@ -457,8 +458,8 @@ extern  void    AddAnIns( block *blk, instruction *ins )
 }
 
 
-extern  bool    BlkTooBig( void )
-/*******************************/
+bool    BlkTooBig( void )
+/***********************/
 {
     label_handle    blk;
 
@@ -476,8 +477,8 @@ extern  bool    BlkTooBig( void )
 }
 
 
-extern  void    NewProc( int level )
-/**********************************/
+void    NewProc( int level )
+/**************************/
 {
     proc_def    *new;
 
@@ -520,8 +521,8 @@ extern  void    NewProc( int level )
 }
 
 
-extern  void    FreeProc( void )
-/******************************/
+void    FreeProc( void )
+/**********************/
 {
     proc_def    *oldproc;
 

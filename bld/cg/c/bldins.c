@@ -45,17 +45,13 @@
 #include "treeprot.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 
 extern  void            GenKillLabel(label_handle);
-extern  void            GenBlock( block_class, int );
-extern  void            AddTarget(label_handle,bool);
 extern  void            Generate(bool);
-extern  void            EnLink(label_handle,bool);
-extern  void            AddIns(instruction*);
 extern  type_class_def  TypeClass(type_def*);
-extern  bool            BlkTooBig( void );
 extern  name            *AllocRegName( hw_reg_set );
 extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      ScratchReg( void );

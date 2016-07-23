@@ -40,6 +40,8 @@
 #include "objout.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
+
 
 typedef struct frame_patch {
         struct frame_patch      *next;
@@ -50,7 +52,6 @@ extern  int             SizeDisplayReg(void);
 extern  hw_reg_set      AllCacheRegs(void);
 extern  hw_reg_set      StackReg(void);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  void            AddIns(instruction*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  hw_reg_set      DisplayReg(void);
 

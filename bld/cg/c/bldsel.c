@@ -43,14 +43,11 @@
 #include "makeaddr.h"
 #include "bldsel.h"
 #include "bldselco.h"
+#include "makeblk.h"
 #include "cgsrtlst.h"
 
 
-extern  void            AddTarget(label_handle,bool);
-extern  void            EnLink(label_handle,bool);
-extern  void            AddIns(instruction*);
 extern  void            Generate(bool);
-extern  void            GenBlock( block_class, int );
 
 /* forward declarations */
 extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );

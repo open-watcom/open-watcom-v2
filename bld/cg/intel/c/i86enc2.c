@@ -52,6 +52,7 @@
 #include "object.h"
 #include "i86enc2.h"
 #include "intrface.h"
+#include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
 #include "feprotos.h"
@@ -533,11 +534,11 @@ void    GenCodePtr( pointer label ) {
 }
 
 
-void    GenCallLabel( pointer label ) {
-/**********************************************
+void    GenCallLabel( pointer label )
+/************************************
     generate a call to a label within the procedure (near call)
 */
-
+{
     DoCall( label, false, false, false );
 }
 

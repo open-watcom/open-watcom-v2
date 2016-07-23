@@ -40,6 +40,7 @@
 #include "objout.h"
 #include "ocentry.h"
 #include "encode.h"
+#include "object.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -226,13 +227,15 @@ extern void     FPPushParms( pn parm, call_state *state ) {
 }
 
 
-extern  void    InitZeroPage() {
-/******************************/
+void    InitZeroPage( void )
+/**************************/
+{
 }
 
 
-extern  void    FiniZeroPage() {
-/******************************/
+void    FiniZeroPage( void )
+/**************************/
+{
 }
 
 extern  void InitSegment() {

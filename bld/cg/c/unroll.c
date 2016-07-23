@@ -45,9 +45,9 @@
 #include "namelist.h"
 #include "blips.h"
 #include "edge.h"
+#include "makeblk.h"
 
 
-extern  block           *MakeBlock(label_handle,block_num);
 extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
 extern  bool            AnalyseLoop(induction*,bool*,instruction**,block**);
 extern  name            *DeAlias(name*);
@@ -59,7 +59,6 @@ extern  bool            InvariantOp(name *);
 extern  induction       *FindIndVar( name *);
 extern  void            RemoveInputEdge( block_edge * );
 extern  void            SuffixPreHeader( instruction * );
-extern  block           *NewBlock( label_handle, bool );
 extern  void            MarkLoop( void );
 extern  void            UnMarkLoop( void );
 extern  void            MarkInvariants( void );
@@ -70,7 +69,6 @@ extern  void            FlipCond( instruction * );
 extern  void            RevCond( instruction * );
 extern  int             CountIns( block *);
 extern  void            MoveDownLoop( block * );
-extern  block           *ReGenBlock( block *, label_handle );
 extern  void            MakeJumpBlock( block *, block_edge * );
 
 extern type_class_def   Signed[];

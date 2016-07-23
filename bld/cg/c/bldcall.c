@@ -47,6 +47,7 @@
 #include "blips.h"
 #include "redefby.h"
 #include "intrface.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 
@@ -57,15 +58,10 @@ extern  type_length     ParmMem(type_length,type_length,call_state*);
 extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
-extern  void            AddIns(instruction*);
 extern  type_class_def  ReturnClass(type_def*,call_attributes);
-extern  type_class_def  InitCallState(type_def*);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
-extern  void            EnLink(label_handle,bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  void            NewProc(int);
 extern  name            *StReturn(an,type_def*,instruction**);
 extern  hw_reg_set      StackReg(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);

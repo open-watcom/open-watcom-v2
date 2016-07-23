@@ -47,6 +47,7 @@
 #include "blips.h"
 #include "edge.h"
 #include "redefby.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 
@@ -64,7 +65,6 @@ typedef struct block_list {
 extern    type_class_def        Unsigned[];
 
 extern  int             GetLog2(unsigned_32);
-extern  block           *NewBlock(label_handle,bool);
 extern  bool            SameThing(name*,name*);
 extern  void            RevCond(instruction*);
 extern  void            PrefixIns(instruction*,instruction*);
@@ -76,7 +76,6 @@ extern  bool            RepOp(name**,name*,name*);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  void            RemoveInputEdge(block_edge*);
-extern  block           *ReGenBlock(block*,label_handle);
 extern  void            ConstToTemp(block*,block*,block*(*)(block*));
 extern  bool            SideEffect(instruction*);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);

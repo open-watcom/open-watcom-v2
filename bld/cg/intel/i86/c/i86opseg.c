@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "zeropage.h"
 #include "data.h"
+#include "object.h"
 
 zero_page_scheme        ZPageType;
 
@@ -48,8 +49,8 @@ extern  int             NumOperands( instruction * );
 static  int     Overs( name *op );
 static  int     CountSegOvers( void );
 
-extern  void    InitZeroPage( void )
-/***********************************
+void    InitZeroPage( void )
+/***************************
     Decide what type of "zeropage" scheme we should use (if it's worthwhile).
     This is sort of a misleading name, carried over from the days of the 6809.
     What it is is cheap addressing to the stack segment. We'll set BP to zero
@@ -100,8 +101,8 @@ extern  void    InitZeroPage( void )
 }
 
 
-extern  void    FiniZeroPage( void )
-/***********************************
+void    FiniZeroPage( void )
+/***************************
     Pop the "zeropage" register.
 */
 {

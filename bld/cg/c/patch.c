@@ -40,9 +40,10 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "patch.h"
+#include "makeblk.h"
+
 
 extern  type_class_def  TypeClass( type_def *);
-extern  void            AddIns( instruction * );
 
 patch *BGNewPatch( void )
 {

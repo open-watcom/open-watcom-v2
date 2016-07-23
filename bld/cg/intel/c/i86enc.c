@@ -56,7 +56,9 @@
 #include "encode.h"
 #include "object.h"
 #include "i86proc.h"
+#include "targetin.h"
 #include "feprotos.h"
+
 
 extern  void            DoAbsPatch(abspatch_handle*,int);
 extern  void            DoFunnyRef(int);

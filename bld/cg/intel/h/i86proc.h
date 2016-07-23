@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Intel x86 procedure call generation.
+* Description:  Routine call specific to Intel x86 architecture.
 *
 ****************************************************************************/
 

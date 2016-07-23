@@ -44,14 +44,15 @@
 #include "types.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
 #include "cgprotos.h"
+
 
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *AllocRegName(hw_reg_set);
 extern  name            *NearSegment(void);
 extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
 extern  type_class_def  TypeClass(type_def*);
-extern  void            AddIns(instruction*);
 extern  void            DataLabel(label_handle);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);

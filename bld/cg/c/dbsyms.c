@@ -54,10 +54,11 @@
 #include "cv4.h"
 #include "cvsyms.h"
 #include "namelist.h"
+#include "makeblk.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  void            AddIns(instruction*);
+
 extern  bool            DBNested( bool nested );
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);

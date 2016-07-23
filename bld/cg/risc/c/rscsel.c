@@ -38,8 +38,8 @@
 #include "types.h"
 #include "makeins.h"
 #include "bldselco.h"
+#include "makeblk.h"
 
-extern  void            AddIns( instruction * );
 
 extern  type_length     TypeClassLength[];
 

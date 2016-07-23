@@ -24,22 +24,26 @@
 *
 *  ========================================================================
 *
-* Description:  High level code generation routines. Lots of action here.
+* Description:  Block creation and destruction functions.
 *
 ****************************************************************************/
 
 
-extern  void            GenProlog( void );
-extern  void            GenEpilog( void );
-extern  void            AddCacheRegs( void );
-extern  void            InitStackDepth( block * );
-extern  int             AskDisplaySize( int level );
-extern  type_length     PushSize( type_length );
-extern  void            PushLocals( void );
-extern  void            SetTempLocation( name *, type_length );
-extern  type_length     TempLocation( name * );
-extern  bool            TempAllocBefore( void *, void * );
-extern  unsigned        DepthAlign( unsigned );
-extern  void            GenCallLabel( pointer );
-extern  void            GenLabelReturn( void );
-extern  void            GenObjCode( instruction * );
+extern  block           *MakeBlock( label_handle label, block_num edges );
+extern  block           *NewBlock( label_handle label, bool label_dies );
+extern  void            FreeABlock( block * blk );
+extern  void            FreeBlock( void );
+extern  void            EnLink( label_handle label, bool label_dies );
+extern  void            AddIns( instruction *ins );
+extern  void            GenBlock( block_class class, int targets );
+extern  block           *ReGenBlock( block *blk, label_handle lbl );
+extern  type_class_def  InitCallState( type_def *tipe );
+extern  void            AddTarget( label_handle dest, bool dest_label_dies );
+extern  block           *FindBlockWithLbl( label_handle label );
+extern  void            FixEdges( void );
+extern  bool            FixReturns( void );
+extern  void            UnFixEdges( void );
+extern  void            AddAnIns( block *blk, instruction *ins );
+extern  bool            BlkTooBig( void );
+extern  void            NewProc( int level );
+extern  void            FreeProc( void );

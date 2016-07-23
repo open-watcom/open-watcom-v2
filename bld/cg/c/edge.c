@@ -34,9 +34,10 @@
 #include "cgmem.h"
 #include "utils.h"
 #include "edge.h"
+#include "typedef.h"
+#include "makeblk.h"
 
 
-extern  block           *MakeBlock(label_handle,block_num);
 extern  void            SuffixIns(instruction *,instruction *);
 extern  void            RemoveIns(instruction *);
 extern  void            FixBlockIds(void);

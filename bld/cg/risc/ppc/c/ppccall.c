@@ -41,6 +41,8 @@
 #include "types.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
+
 
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
@@ -49,7 +51,6 @@ extern  name            *AllocRegName( hw_reg_set );
 extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  void            AddCallIns( instruction *, cn );
-extern  void            AddIns( instruction * );
 extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
 extern  name            *AllocRegName( hw_reg_set );
 extern  type_class_def  TypeClass( type_def * );

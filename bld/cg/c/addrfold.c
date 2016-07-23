@@ -44,9 +44,10 @@
 #include "makeaddr.h"
 #include "addrfold.h"
 #include "namelist.h"
+#include "makeblk.h"
+
 
 extern  type_class_def  TypeClass(type_def*);
-extern  void            AddIns(instruction*);
 extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  cg_type         NamePtrType(name*);

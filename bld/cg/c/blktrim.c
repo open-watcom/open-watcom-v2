@@ -36,9 +36,9 @@
 #include "makeins.h"
 #include "edge.h"
 #include "opttell.h"
+#include "makeblk.h"
 
 
-extern  void            FreeABlock( block * );
 extern  instruction_id  Renumber( void );
 
 /* forward declarations */

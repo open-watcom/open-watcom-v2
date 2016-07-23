@@ -40,8 +40,6 @@ extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, ui
 extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
 extern void         GenJType( uint_8 opcode, pointer label );
 extern void         GenRET( void );
-extern void         GenObjCode( instruction *ins );
-extern void         GenLabelReturn( void );
 extern byte         ReverseCondition( byte cond );
 extern byte         CondCode( instruction *ins );
 #endif

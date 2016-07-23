@@ -54,15 +54,13 @@
 #include "object.h"
 #include "regalloc.h"
 #include "targetin.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
 
 extern  void            FreeAName( name * );
-extern  void            AddAnIns( block *, instruction * );
-extern  void            UnFixEdges( void );
 extern  void            AssignTemps( void );
 extern  void            AssgnMoreTemps( block_num );
-extern  void            FixEdges( void );
 extern  bool            CommonSex( bool );
 extern  bool            SetOnCondition( void );
 extern  bool            BlockTrim( void );
@@ -74,14 +72,10 @@ extern  bool            LoopEnregister( void );
 extern  bool            CommonInvariant( void );
 extern  bool            TransLoops( bool );
 extern  bool            IndVars( void );
-extern  bool            BlkTooBig( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
 extern  void            FreeAConflict( conflict_node * );
-extern  void            FreeProc( void );
-extern  void            GenObject( void );
-extern  void            SortBlocks( void );
 extern  void            InitNames( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
@@ -113,7 +107,6 @@ extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  bool            FixReturns( void );
 extern  instruction_id  Renumber( void );
 extern  void            SplitVars( void );
 extern  name            *DeAlias( name * );

@@ -41,6 +41,7 @@
 #include "objout.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "makeblk.h"
 
 
 extern  hw_reg_set      *RegSets[];
@@ -60,7 +61,6 @@ extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  int             NumOperands( instruction * );
-extern  void            AddIns( instruction * );
 extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  hw_reg_set      ReturnReg( type_class_def, bool );

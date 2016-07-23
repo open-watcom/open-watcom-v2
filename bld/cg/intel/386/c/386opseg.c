@@ -34,6 +34,7 @@
 #include "data.h"
 #include "zeropage.h"
 #include "namelist.h"
+#include "object.h"
 
 zero_page_scheme        ZPageType;
 
@@ -100,8 +101,8 @@ static  void    AddGlobalIndex( void )
 }
 
 
-extern  void    InitZeroPage( void )
-/***********************************
+void    InitZeroPage( void )
+/***************************
     This is here to handle the "indexed" globals option.
     It should really be in its own module, but
     the ZeroPage stuff was called at just the
@@ -115,7 +116,7 @@ extern  void    InitZeroPage( void )
 }
 
 
-extern  void    FiniZeroPage( void )
-/**********************************/
+void    FiniZeroPage( void )
+/**************************/
 {
 }

@@ -454,15 +454,15 @@ type_length     TempLocation( name *temp )
     return( offset + base->t.location + temp->v.offset - base->v.offset );
 }
 
-void    GenCallLabelReg( pointer label, uint reg ) {
-/**************************************************/
-
+void    GenCallLabelReg( pointer label, uint reg )
+/************************************************/
+{
     GenBRANCH( 0x34, reg, label );
 }
 
-void    GenCallLabel( pointer label ) {
-/*************************************/
-
+void    GenCallLabel( pointer label )
+/***********************************/
+{
     CodeHandle( OC_CALL, 4, label );
 }
 

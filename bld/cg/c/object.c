@@ -44,12 +44,10 @@
 #include "redefby.h"
 #include "targetin.h"
 #include "opttell.h"
+#include "makeblk.h"
 #include "feprotos.h"
 
-extern  void            FreeBlock( void );
-extern  void            InitZeroPage( void );
-extern  void            FiniZeroPage( void );
-extern  block           *FindBlockWithLbl( label_handle label );
+
 extern  void            Zoiks( int );
 extern  void            ClearBlockBits( block_class );
 
@@ -68,8 +66,8 @@ static  source_line_number      DumpLineNum( source_line_number n,
 }
 
 
-extern  void    GenObject( void )
-/*******************************/
+void    GenObject( void )
+/***********************/
 {
     block               *blk;
     block               *next_blk;
@@ -764,8 +762,8 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
     return( best );
 }
 
-extern  void    SortBlocks( void )
-/********************************/
+void    SortBlocks( void )
+/************************/
 {
     block_queue unplaced;
     block_queue placed;
