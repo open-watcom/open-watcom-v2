@@ -31,7 +31,6 @@
 
 #if 0
 extern  void            FreeBlock( void );
-extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
 extern  void            InitStackDepth(block*);

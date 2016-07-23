@@ -96,11 +96,11 @@ void    CodeLabel( label_handle label, unsigned align ) {
 #endif
 }
 
-extern  void    CodeLineNum( cg_linenum line, bool label_line ) {
-/*****************************************************************
+void    CodeLineNumber( cg_linenum line, bool label_line )
+/*********************************************************
     Dump a line number into the queue
 */
-
+{
     any_oc      oc;
 
     if( line != 0 ) {

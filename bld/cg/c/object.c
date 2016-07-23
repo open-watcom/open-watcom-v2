@@ -47,7 +47,6 @@
 #include "feprotos.h"
 
 extern  void            FreeBlock( void );
-extern  void            CodeLineNum(cg_linenum,bool);
 extern  void            InitZeroPage( void );
 extern  void            FiniZeroPage( void );
 extern  block           *FindBlockWithLbl( label_handle label );
@@ -62,7 +61,7 @@ static  source_line_number      DumpLineNum( source_line_number n,
     if( _IsModel( NUMBERS ) ) {
         if( n > 0 && n != last ) {
             last = n;
-            CodeLineNum( n, label_line );
+            CodeLineNumber( n, label_line );
         }
     }
     return( last );

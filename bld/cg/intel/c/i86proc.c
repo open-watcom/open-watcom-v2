@@ -81,7 +81,6 @@ extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
-extern  void        CodeLineNum( cg_linenum,bool);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
 extern  void        GenKillLabel(label_handle);
@@ -578,7 +577,7 @@ void    GenProlog( void )
     }
 
     if( _IsModel( NUMBERS ) ) {
-        CodeLineNum( HeadBlock->ins.hd.line_num, false );
+        CodeLineNumber( HeadBlock->ins.hd.line_num, false );
     }
 
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2

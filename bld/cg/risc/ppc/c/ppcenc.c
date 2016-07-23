@@ -838,8 +838,8 @@ void    CodeLabel( label_handle label, unsigned alignment )
 }
 
 
-extern  void    CodeLineNum( cg_linenum line, bool label )
-/********************************************************/
+void    CodeLineNumber( cg_linenum line, bool label )
+/***************************************************/
 {
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
