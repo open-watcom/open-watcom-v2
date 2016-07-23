@@ -278,7 +278,6 @@ const char FAR UNIXBuiltIn[] = {
 /* The following definitions are taken from SUSv3 */
 const char FAR POSIXBuiltIn[] = {
     /* Predefined Macros */
-    "MAKE=make\n"
     "AR=ar\n"
     "ARFLAGS=-rv\n"
     "YACC=yacc\n"
