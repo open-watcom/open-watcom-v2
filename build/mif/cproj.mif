@@ -1,4 +1,4 @@
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifeq host_cpu x64
 !undef __WATCOM_TOOLS__
 !else ifeq host_cpu arm
@@ -20,7 +20,7 @@
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
 #
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifdef $(proj_name)_win32ver
 win32ver = $($(proj_name)_win32ver)
 !else
@@ -28,13 +28,13 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 !endif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 objs_subdir = $(bin_subdir)
 !else
 objs_subdir = $(host_os)$(host_cpu)
 !endif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 
 cc_386          = *wcc386
 cc_i86          = *wcc
@@ -187,11 +187,11 @@ mode_clflags   += -\"op nored\"
 !else
 mode_clflags   += -"op nored"
 !endif
-!ifneq bootstrap 1
+!ifndef bootstrap
 mode_cflags  += -x
 mode_clflags += -x
 !endif
-!if ( "$(bootstrap)" != "1" ) || ( $(watcom_ver) > 1300 )
+!if ! defined( bootstrap ) || ( $(watcom_ver) > 1300 )
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
@@ -302,7 +302,7 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 # PREPROCESSOR SETINGS
 ######
 cppflags_all    = $(mode_cppflags) -D_ENABLE_AUTODEPEND
-!ifeq bootstrap 1
+!ifdef bootstrap
 cppflags_all    += -DBOOTSTRAP
 !endif
 
@@ -603,7 +603,7 @@ rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_r
 # INCLUDE DIRECTORIES SETINGS
 ######
 # For bootstrap builds, include path configuration is compiler specific
-!ifeq bootstrap 1
+!ifdef bootstrap
 
 inc_dirs_sys_nt    =
 inc_dirs_sys_win   =

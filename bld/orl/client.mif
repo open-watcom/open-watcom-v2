@@ -2,7 +2,7 @@
 # ~~~~~~~~~~~~~~~~~~
 #
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 orl_lib = $(orl_dir)/$(objs_subdir)/orl.lib
 !else ifeq $(proj_name)_rtdll 1
 #

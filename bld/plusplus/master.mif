@@ -4,7 +4,7 @@ plusplus_autodepends = .autodepend
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
+!ifdef bootstrap
 exename     = bwpp
 dllname     = bwppd$(target_cpu)
 !else
@@ -99,7 +99,7 @@ extra_c_flags_ideentry = -Dwpp_dll
 extra_c_flags_maindrv  = -Dwpp_drv -DDLL_NAME=$(dllname)
 !endif
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifneq host_os linux
 # Using -os generates ENTER/LEAVE and Linux is too brain damaged
 # to handle ENTER instructions properly. Since GCC doesn't generate
@@ -119,7 +119,7 @@ extra_c_flags_srcfile  = $(extra_c_flags_srcfile_$(host_cpu))
 extra_c_flags_memmgr_axp = -DTRACKER
 extra_c_flags_memmgr_ppc = -DTRACKER
 extra_c_flags_memmgr_386 = -DTRACKER
-!ifneq bootstrap 1
+!ifndef bootstrap
 extra_c_flags_memmgr_386 += -of+
 !endif
 extra_c_flags_memmgr   = $(extra_c_flags_memmgr_$(host_cpu))

@@ -15,7 +15,7 @@ inc_dirs = -I"../h" -I"$(posix_dir)/h"
 
 common_objs = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlist.obj
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 

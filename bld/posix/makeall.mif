@@ -7,7 +7,7 @@
 !include $(posix_dir)/commands.mif
 !include $(posix_dir)/common.mif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 mkfile = -f $(libmakepath)/makefile
 altmkfile = -f $(altlibmakepath)/makefile
 !endif

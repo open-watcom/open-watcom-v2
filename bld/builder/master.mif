@@ -11,12 +11,12 @@ all_commands_dos = diff.exe
 all_commands_nt  = diff.exe
 all_commands_os2 = diff.exe
 all_commands	= sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe $(all_commands_$(host_os))
-!ifneq bootstrap 1
+!ifndef bootstrap
 all_commands	+= builder.exe
 !endif
 
 !ifndef __WATCOM_TOOLS__
-!ifeq bootstrap 1
+!ifdef bootstrap
 !ifndef %LOGFNAME
 cl_extra_libs_gen =
 cl_extra_objs_gen = clibext.obj

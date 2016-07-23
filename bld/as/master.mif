@@ -1,6 +1,6 @@
 proj_name = was
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 name = bwas$(target_cpu)
 !else
 name = was$(target_cpu)

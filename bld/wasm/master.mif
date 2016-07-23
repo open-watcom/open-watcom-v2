@@ -1,6 +1,6 @@
 proj_name = wasm
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 name = bwasm
 !else
 name = wasm

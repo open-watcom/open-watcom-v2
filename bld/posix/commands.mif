@@ -59,7 +59,7 @@
 !inject which     all     boot      #
 !inject who       all qnx           #
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 commands = $(boot)
 !else ifeq host_os qnx
 commands = $(qnx)

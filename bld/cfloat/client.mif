@@ -2,7 +2,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 cfloat_lib = $(cfloat_dir)/$(objs_subdir)/cf.lib
 !else ifeq $(proj_name)_rtdll 1
 #

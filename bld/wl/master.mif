@@ -7,7 +7,7 @@ proj_name = wlink
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
+!ifdef bootstrap
 exename     = bwlink
 dllname     = bwlinkd
 !else
@@ -24,7 +24,7 @@ additional_cleanup = usage.u
 # get rid of the -zc
 suppress_zc = 1
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 !include idedlls.mif
 !endif
 !include cproj.mif

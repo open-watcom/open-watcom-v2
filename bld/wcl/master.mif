@@ -5,7 +5,7 @@ wcl_autodepends = .AUTODEPEND
 !endif
 
 owcc_specs = specs.owc
-!ifeq bootstrap 1
+!ifdef bootstrap
 name       = b$(name)
 owcc_specs = b$(owcc_specs)
 !endif
@@ -58,7 +58,7 @@ owcchelp.gh: ../../owcchelp.sp $(__MAKEFILES__)
         *wsplice -f "\"%s\"," $[@ $@
 
 $(owcc_specs): $(wlink_dir)/lnk/specs.sp $(__MAKEFILES__)
-!ifeq bootstrap 1
+!ifdef bootstrap
         *wsplice -k Pspecs $[@ - | sed -f ../../convtool.sed >$@
 !else
         *wsplice -k Pspecs $[@ $@

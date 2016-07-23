@@ -20,11 +20,11 @@ inc_dirs = -I. -I.. -I"$(dip_dir)/watcom/h"
 
 objs = strip.obj output.obj
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 extra_cpp_flags = -DINCL_MSGTEXT
 !endif
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 libs = $(wres_lib)
 extra_l_flags = lib $(wres_lib)
 !endif
@@ -35,7 +35,7 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 dependants = msg.gh incltext.gh
 !else
 dependants = msg.gh wstrip.res
@@ -48,7 +48,7 @@ $(name).exe : $(dependants) $(objs) $(libs) $(version_res_exe_$(host_os)_$(host_
         $(linker) name $^@ $(lflags) file { $(objs) }
 !endif
         @%make bind_version_res_exe
-!ifneq bootstrap 1
+!ifndef bootstrap
         $(wstrip) -q -a -r $^@ . wstrip.res
 !endif
 

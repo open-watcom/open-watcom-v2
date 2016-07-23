@@ -7,7 +7,7 @@ wlib_autodepends = .AUTODEPEND
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
+!ifdef bootstrap
 exename     = bwlib
 dllname     = bwlibd
 !else
@@ -26,7 +26,7 @@ wlib_trmem = 1
 !include osi.mif
 !include dllbase.mif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 !include $(orl_dir)/orlobjs.mif
 !else
 !include wres.mif
@@ -64,7 +64,7 @@ common_objs = &
     $(_subdir_)ideentry.obj &
     $(trmem_objs)
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 wlib_orl_objs = $(orl_objs)
 !endif
 
@@ -83,7 +83,7 @@ exe_objs = $+$(wlib_template)$- $(drv_objs)
 # cflags
 
 extra_cpp_flags = -D__WLIB__
-!ifeq bootstrap 1
+!ifdef bootstrap
 extra_cpp_flags += -DINCL_MSGTEXT
 !endif
 !ifndef wlib_dll
@@ -115,7 +115,7 @@ version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
 
 # systems where version resources must be added to .EXE
-!ifneq bootstrap 1
+!ifndef bootstrap
 version_res_exe_nt_386 = exever.res
 version_res_exe_nt_x64 = exever.res
 !endif
@@ -128,19 +128,19 @@ inc_dirs =  -I. -I.. -I"../h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 .c: ../c;$(lib_misc_dir)/c;$(watcom_dir)/c;$(trmem_dir)
 .h: ../h;$(watcom_dir)/h
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 inc_dirs += -I"$(orl_dir)/elf/h" -I"$(orl_dir)/coff/h" -I"$(orl_dir)/omf/h"
 .c: $(orl_dir)/c;$(orl_dir)/elf/c;$(orl_dir)/coff/c;$(orl_dir)/omf/c;
 .h: $(orl_dir)/h;$(orl_dir)/elf/h;$(orl_dir)/coff/h;$(orl_dir)/omf/h;
 !endif
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 xlibs = $(wres_lib) $(orl_lib)
 !endif
 
 external_dependencies = $(osildr)
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 depends_msg = msg.gh incltext.gh $(external_dependencies)
 !else
 depends_msg = msg.gh wlib.res $(external_dependencies)
@@ -175,7 +175,7 @@ $(exename).exe: $(depends_exe) $(xlibs) $(exe_objs) $(version_res_exe_$(host_os)
     @%make bind_osildr
 !endif
     @%make bind_version_res_exe
-!ifneq bootstrap 1
+!ifndef bootstrap
     $(wstrip) -q -a -r $@ . wlib.res
 !endif
 
@@ -191,7 +191,7 @@ $(dllname).dll: $(depends_dll) $(xlibs) $(dll_objs) $(version_res_dll_$(host_os)
     $(linker) name $@ @dll.lnk
 !endif
     @%make bind_version_res_dll
-!ifneq bootstrap 1
+!ifndef bootstrap
     $(wstrip) -q -a -r $@ . wlib.res
 !endif
 

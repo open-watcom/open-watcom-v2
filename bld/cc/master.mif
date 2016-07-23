@@ -2,7 +2,7 @@ proj_name = cc
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
+!ifdef bootstrap
 boot_prefix = b
 !else
 bin_prefix  = $(bin_subdir)/
@@ -71,7 +71,7 @@ extra_cpp_flags += -D_CGDLL
 
 extra_c_flags_386 = -3r
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifeq release 1
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))

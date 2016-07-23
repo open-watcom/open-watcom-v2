@@ -57,7 +57,7 @@ objs_linux_x64  = samplnx.obj sysinit.obj sampexe.obj lnxutl.obj
 
 objs = $(objs_$(target)_$(host_cpu)) sample.obj sampdata.obj io.obj sysio.obj wmsg.obj
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 far_ptr_dos_dos =__far
 far_ptr_dos_rsi =__far
 far_ptr_win_win =__far

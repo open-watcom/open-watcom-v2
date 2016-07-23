@@ -48,7 +48,7 @@ cxx_386     += $(bld_incs)
 # bootstrap overrides
 ######################
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 !ifdef __WATCOM_TOOLS__
 
 !ifdef __LOADDLL__

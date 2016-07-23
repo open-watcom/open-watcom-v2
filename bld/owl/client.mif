@@ -2,7 +2,7 @@
 # ~~~~~~~~~~~~~~~~~~
 #
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 owl_lib = $(owl_dir)/$(objs_subdir)/owl.lib
 !else ifeq $(proj_name)_rtdll 1
 #

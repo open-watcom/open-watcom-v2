@@ -25,7 +25,7 @@ x32run_objs  = x32run.obj cmain32.obj x32start.obj
 os2ldr_objs  = cstrtos2.obj loader.obj int21.obj int21os2.obj tnk.obj
 ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 
 all : w32bind.exe
 

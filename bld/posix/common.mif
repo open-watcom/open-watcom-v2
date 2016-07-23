@@ -64,7 +64,7 @@ alt_subdir_os2i86_c = ms
 libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
 altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 libdir=$(subdir_$(host_cpu))
 altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 posix_lib = $(libdir)/posix.lib
