@@ -318,7 +318,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
 }
 
 #ifdef __UNIX__
-char **init_argv( char **args, int argc, char *infile, char *outfile )
+static char **init_argv( char **args, int argc, char *infile, char *outfile )
 {
     char    **argv;
     int     count;
