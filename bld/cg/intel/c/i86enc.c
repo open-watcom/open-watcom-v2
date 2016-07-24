@@ -965,7 +965,7 @@ void    GenObjCode( instruction *ins ) {
                 break;
             }
             LayACRegOp( left );
-            if( NumOperands( ins ) != 1 && right->c.int_value == 2 ) {
+            if( NumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
                 /* never address*/
                 TransferIns();
                 if( opnd_size ) {
@@ -975,7 +975,7 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_R1:
             LayRMRegOp( left );
-            if( ins->num_operands != 1 && right->c.int_value == 2 ) {
+            if( ins->num_operands != 1 && right->c.lo.int_value == 2 ) {
                 TransferIns();
                 if( opnd_size ) {
                     AddToTemp( M_OPND_SIZE );
@@ -993,11 +993,11 @@ void    GenObjCode( instruction *ins ) {
             break;
         case G_RNSHIFT:
             LayRMRegOp( left );
-            AddByte( right->c.int_value ); /* never address*/
+            AddByte( right->c.lo.int_value ); /* never address*/
             break;
         case G_NSHIFT:
             LayModRM( left );
-            AddByte( right->c.int_value ); /* never address*/
+            AddByte( right->c.lo.int_value ); /* never address*/
             break;
         case G_R2:
             LayRMRegOp( right );
@@ -1806,7 +1806,7 @@ static  void    AddSWCons( opcode_defs op, name *opnd, type_class_def class ) {
 */
 
     if( opnd->c.const_type == CONS_ABSOLUTE ) {
-        AddSWData( op, opnd->c.int_value, class );
+        AddSWData( op, opnd->c.lo.int_value, class );
     } else {
         switch( class ) {
         case U2:
@@ -1845,7 +1845,7 @@ extern  void    AddWCons( name *op, type_class_def kind ) {
 */
 
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddWData( op->c.int_value, kind );
+        AddWData( op->c.lo.int_value, kind );
     } else  {
         switch( kind ) {
         case U2:
@@ -1887,7 +1887,7 @@ static  void    AddSCons( name *op, type_class_def kind ) {
 */
 
     if( op->c.const_type == CONS_ABSOLUTE ) {
-        AddSData( op->c.int_value, kind );
+        AddSData( op->c.lo.int_value, kind );
     } else {
         switch( kind ) {
         case U2:
@@ -1952,7 +1952,7 @@ extern  void    GFldMorC( name *what ) {
 
     if( what->n.class == N_MEMORY || what->n.class == N_TEMP ) {
         GFldM( what );
-    } else if( what->c.int_value == 0 ) {
+    } else if( what->c.lo.int_value == 0 ) {
         GFldz();
     } else {
         GFld1();

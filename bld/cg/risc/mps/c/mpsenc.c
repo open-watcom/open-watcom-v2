@@ -272,8 +272,8 @@ static  uint_8 FindImmedOpcode( instruction *ins )
         if( ins->head.opcode == OP_SET_LESS_EQUAL ) {
             // need to increment the immediate by one (since CPU can do
             // 'less than' but not 'less than or equal')
-            ins->operands[1]->c.int_value++;
-            assert( ins->operands[1]->c.int_value <= MIPS_MAX_OFFSET );
+            ins->operands[1]->c.lo.int_value++;
+            assert( ins->operands[1]->c.lo.int_value <= MIPS_MAX_OFFSET );
         }
     } else {
         opcode = 0;
@@ -899,7 +899,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        imm_value = ins->operands[1]->c.int_value;
+        imm_value = ins->operands[1]->c.lo.int_value;
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // 'sll rd,rs,n'
@@ -930,7 +930,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         // 'addiu rt,$zero,immed'
-        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.int_value );
+        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -948,7 +948,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         // 'lui rt,immed'
-        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -956,7 +956,7 @@ static  void Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // 'addiu rt,$zero,immed'
-            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value );
+            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -995,7 +995,7 @@ static  void Encode( instruction *ins )
     case G_MOVE_UI:
         // a load of an unsigned 16-bit immediate
         // 'ori rt,rs,immed'
-        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value );
+        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );

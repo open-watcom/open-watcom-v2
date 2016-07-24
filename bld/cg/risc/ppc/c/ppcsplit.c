@@ -69,7 +69,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE );
 
     class = ins->type_class;
-    c = ins->operands[ 0 ]->c.int_value;
+    c = ins->operands[ 0 ]->c.lo.int_value;
     high = ( c >> 16 ) & 0xffff;
     low = c & 0xffff;
     high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, class );

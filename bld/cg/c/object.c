@@ -344,7 +344,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_LESS_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.int_value == 0 ) {
+                if( op2->c.lo.int_value == 0 ) {
                     prediction = NOT_TAKEN;
                 }
             }
@@ -354,7 +354,7 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
     case OP_CMP_GREATER_EQUAL:
         if( op2->n.class == N_CONSTANT ) {
             if( op2->c.const_type == CONS_ABSOLUTE ) {
-                if( op2->c.int_value == 0 ) {
+                if( op2->c.lo.int_value == 0 ) {
                     prediction = TAKEN;
                 }
             }

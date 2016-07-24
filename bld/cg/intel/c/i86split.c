@@ -1077,7 +1077,7 @@ extern  instruction     *rCMPCP( instruction *ins ) {
 
     assert( ins->type_class == CP );
     assert( ins->operands[ 1 ]->n.class == N_CONSTANT );
-    assert( ins->operands[ 1 ]->c.int_value == 0 );
+    assert( ins->operands[ 1 ]->c.lo.int_value == 0 );
     if( ins->head.opcode == OP_CMP_EQUAL ||
         ins->head.opcode == OP_CMP_NOT_EQUAL ) {
         if( _IsTargetModel( NULL_SELECTOR_BAD ) ) {

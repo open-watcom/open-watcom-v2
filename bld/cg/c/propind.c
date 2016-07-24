@@ -153,7 +153,7 @@ static  bool    DoProp( block *blk ) {
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _IsReDefinedBy( next, ins->result ) )
                         break;
-                    if( AdjustIndex( next, ins->result, op->c.int_value ) ) {
+                    if( AdjustIndex( next, ins->result, op->c.lo.int_value ) ) {
                         RemoveIns( ins );
                         SuffixIns( next, ins );
                         PeepOptBlock( blk, false );

@@ -493,16 +493,16 @@ extern  name            *TrimConst( name *c, type_class_def tipe ) {
 
     switch( tipe ) {
     case U1:
-        value = (unsigned_8)c->c.int_value;
+        value = (unsigned_8)c->c.lo.int_value;
         break;
     case I1:
-        value = (signed_8)c->c.int_value;
+        value = (signed_8)c->c.lo.int_value;
         break;
     case U2:
-        value = (unsigned_16)c->c.int_value;
+        value = (unsigned_16)c->c.lo.int_value;
         break;
     case I2:
-        value = (signed_16)c->c.int_value;
+        value = (signed_16)c->c.lo.int_value;
         break;
     case U4:
     case I4:
@@ -512,7 +512,7 @@ extern  name            *TrimConst( name *c, type_class_def tipe ) {
     default:
         return( c );
     }
-    if( value != c->c.int_value ) {
+    if( value != c->c.lo.int_value ) {
         c = AllocS32Const( value );
     }
     return( c );
@@ -635,21 +635,21 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = tosplit->c.int_value & 0xff;
+                u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = tosplit->c.int_value & 0xff;
+                s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = tosplit->c.int_value & 0xffff;
+                u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = tosplit->c.int_value & 0xffff;
+                s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value );
+                new = AllocS32Const( tosplit->c.lo.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value );
+                new = AllocUIntConst( tosplit->c.lo.int_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
@@ -660,7 +660,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -720,21 +720,21 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value_2 );
+                new = AllocS32Const( tosplit->c.hi.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value_2 );
+                new = AllocUIntConst( tosplit->c.hi.int_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
@@ -745,7 +745,7 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -979,7 +979,7 @@ static bool IndexOverlaps( instruction *ins, int i )
  */
 #define WORD                U4
 #define LONG_WORD           U8
-#define HIGH_WORD( x )      ( (x)->c.int_value_2 )
+#define HIGH_WORD( x )      ( (x)->c.hi.int_value )
 
 /* NB: The following routines are clones of their Intel counterparts
  * with all segment related junk stripped off.

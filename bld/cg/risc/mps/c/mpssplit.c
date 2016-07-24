@@ -177,7 +177,7 @@ extern instruction *rCONSTLOAD( instruction *ins )
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     class = ins->type_class;
-    c = ins->operands[0]->c.int_value;
+    c = ins->operands[0]->c.lo.int_value;
     high = ( c >> 16 ) & 0xffff;
     low  = c & 0xffff;
     high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, class );
@@ -284,7 +284,7 @@ extern instruction *rALLOCA( instruction *ins )
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
-        value = amount->c.int_value;
+        value = amount->c.lo.int_value;
         value = _RoundUp( value, stack_align );
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
@@ -360,7 +360,7 @@ extern instruction      *rM_SIMPCMP( instruction *ins )
             opcode = OP_SET_LESS;
             // TODO: we may be leaking memory here by losing track of the
             // original constant operand
-            value = ins->operands[1]->c.int_value;
+            value = ins->operands[1]->c.lo.int_value;
             ins->operands[1] = AllocS32Const( value + 1 );
         }
         if( ins->operands[1]->n.class == N_REGISTER ) {

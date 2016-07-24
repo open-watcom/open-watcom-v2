@@ -1,4 +1,4 @@
-/****************************************************************************
+F/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -223,10 +223,10 @@ extern  void    DumpOperand( name *operand ) {
         }
     } else if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value != 0 ) {
-                if( operand->c.int_value_2 != 0 && operand->c.int_value_2 != -1 )
-                    Dump8h( operand->c.int_value_2 );
-                Dump8h( operand->c.int_value );
+            if( operand->c.lo.int_value != 0 ) {
+                if( operand->c.hi.int_value != 0 && operand->c.hi.int_value != -1 )
+                    Dump8h( operand->c.hi.int_value );
+                Dump8h( operand->c.lo.int_value );
             } else {
                 CFCnvFS( operand->c.value, buffer, 20 );
                 DumpXString( buffer );
@@ -235,14 +235,14 @@ extern  void    DumpOperand( name *operand ) {
             if( operand->c.const_type == CONS_SEGMENT ) {
                 DumpLiteral( "SEG(" );
                 if( operand->c.value == NULL ) {
-                    DumpInt( operand->c.int_value );
+                    DumpInt( operand->c.lo.int_value );
                 } else {
                     DumpOperand( operand->c.value );
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
 #if _TARGET & _TARG_370
-                DumpInt( operand->c.int_value );
+                DumpInt( operand->c.lo.int_value );
 #else
                 DumpOperand( operand->c.value );
 #endif
@@ -257,8 +257,8 @@ extern  void    DumpOperand( name *operand ) {
                 if( operand->c.value != NULL ) {
                     DumpOperand( operand->c.value );
                 } else {
-                    if( operand->c.int_value != 0 ) {
-                        DumpLong( operand->c.int_value );
+                    if( operand->c.lo.int_value != 0 ) {
+                        DumpLong( operand->c.lo.int_value );
                     } else {
                         DumpLiteral( "NULL" );
                     }

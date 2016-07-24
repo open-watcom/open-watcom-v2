@@ -196,10 +196,10 @@ static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
 
     i64Defn.label = NULL;
     i64Defn.const_class = class;
-    i64Defn.value[ 0 ] = cons->c.int_value & 0xffff;
-    i64Defn.value[ 1 ] = ( cons->c.int_value >> 16 ) & 0xffff;
-    i64Defn.value[ 2 ] = cons->c.int_value_2 & 0xffff;
-    i64Defn.value[ 3 ] = ( cons->c.int_value_2 >> 16 ) & 0xffff;
+    i64Defn.value[ 0 ] = cons->c.lo.int_value & 0xffff;
+    i64Defn.value[ 1 ] = ( cons->c.lo.int_value >> 16 ) & 0xffff;
+    i64Defn.value[ 2 ] = cons->c.hi.int_value & 0xffff;
+    i64Defn.value[ 3 ] = ( cons->c.hi.int_value >> 16 ) & 0xffff;
     return( &i64Defn );
 }
 

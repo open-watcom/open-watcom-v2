@@ -315,7 +315,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
         if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
             return( tipe );
         }
-        if( rite->u.name->c.int_value < 0 ) return( tipe );
+        if( rite->u.name->c.lo.int_value < 0 ) return( tipe );
         if( (tipe->attr & TYPE_SIGNED) == 0 ) return( tipe );
     } else {
         if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
@@ -1809,13 +1809,13 @@ static  an  TNBitOpGets( tn node, type_def *tipe, bool yield_before_op )
     FreeTreeNode( lhs );
     U64ShiftR( &mask, shift, &shiftmask );  // shiftmask = mask >> shift;
     if( after_value->format == NF_CONS && after_value->class == CL_CONS2 ) {
-        retv = Int( shiftmask.u._32[I64LO32] & (unsigned_32)after_value->u.n.name->c.int_value );
-        if( (unsigned_32)retv->u.n.name->c.int_value != shiftmask.u._32[I64LO32] ) {
+        retv = Int( shiftmask.u._32[I64LO32] & (unsigned_32)after_value->u.n.name->c.lo.int_value );
+        if( (unsigned_32)retv->u.n.name->c.lo.int_value != shiftmask.u._32[I64LO32] ) {
             DoAnd( left, mask, node );
         }
-        if( retv->u.n.name->c.int_value != 0 ) {
+        if( retv->u.n.name->c.lo.int_value != 0 ) {
             free_retv = retv;
-            retv = Int( retv->u.n.name->c.int_value << shift );
+            retv = Int( retv->u.n.name->c.lo.int_value << shift );
             BGDone( free_retv );
             retv = BGOpGets( O_OR, left, retv, node->tipe, node->tipe );
         } else {

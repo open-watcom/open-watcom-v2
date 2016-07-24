@@ -133,7 +133,7 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     if( cons->c.const_type != CONS_ABSOLUTE ) return( NULL );
     if( CFTest( cons->c.value ) != 0 ) return( NULL );
     rel = ins->operands[ r ];
-    if( rel->c.const_type == CONS_OFFSET && !AskSegNear( (segment_id)rel->c.int_value ) )
+    if( rel->c.const_type == CONS_OFFSET && !AskSegNear( (segment_id)rel->c.lo.int_value ) )
         return( NULL );
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_FALSE:
@@ -175,7 +175,7 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
         return( NULL );
     if( result->c.const_type != CONS_ABSOLUTE ) 
         return( NULL );
-    if( result->c.int_value == 0 ) 
+    if( result->c.lo.int_value == 0 ) 
         is_true = !is_true;
     if( is_true ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );

@@ -766,7 +766,7 @@ extern  void        AdjustStackDepth( instruction *ins )
             _Zoiks( ZOIKS_077 );
             return;
         }
-        adjust = op->c.int_value;
+        adjust = op->c.lo.int_value;
         if( ins->head.opcode == OP_SUB ) {
             StackDepth += adjust;
         } else {
@@ -784,7 +784,7 @@ extern  void        AdjustStackDepth( instruction *ins )
         if( ins->flags.call_flags & CALL_POPS_PARMS ) {
             op = ins->operands[CALL_OP_POPS];
             if( op->n.class == N_CONSTANT ) {
-                StackDepth -= op->c.int_value;
+                StackDepth -= op->c.lo.int_value;
             }
         }
     default:

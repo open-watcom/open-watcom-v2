@@ -47,9 +47,9 @@ static  bool    ByteConst( name *operand )
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= 0 &&
-                        operand->c.int_value <= 255 );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= 0 &&
+                        operand->c.lo.int_value <= 255 );
             }
         }
     }
@@ -61,13 +61,13 @@ static  bool    HalfWordConst( name *operand )
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= -32768 &&
-                            operand->c.int_value <= 32767 );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= -32768 &&
+                            operand->c.lo.int_value <= 32767 );
             } else {
-                return( operand->c.int_value_2 == -1 &&
-                    operand->c.int_value <= 0 &&
-                    operand->c.int_value >= -32768 );
+                return( operand->c.hi.int_value == -1 &&
+                    operand->c.lo.int_value <= 0 &&
+                    operand->c.lo.int_value >= -32768 );
             }
         }
     }
@@ -79,9 +79,9 @@ static  bool    UHalfWordConst( name *operand )
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= 0 &&
-                            operand->c.int_value <= 0xffff );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= 0 &&
+                            operand->c.lo.int_value <= 0xffff );
             }
         }
     }
@@ -94,7 +94,7 @@ static  bool    Is64BitConst( name *operand )
     // Return true if constant is not a 32-bit (canonical) const
     // A canonical 64-bit constant is one whose bits 63:32 == bit 31
     if( operand->c.const_type == CONS_ABSOLUTE ) {
-        if( operand->c.int_value_2 != (operand->c.int_value >> 31) ) {
+        if( operand->c.hi.int_value != (operand->c.lo.int_value >> 31) ) {
             return( true );
         }
     }
@@ -195,21 +195,21 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
     case V_HALFWORDCONST2:
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ ins->type_class ] &&
-            ( ins->operands[ 1 ]->c.int_value & 0x8000 ) &&
+            ( ins->operands[ 1 ]->c.lo.int_value & 0x8000 ) &&
             TypeClassSize[ ins->type_class ] >= 4 ) return( false );
 #endif
         return( HalfWordConst( ins->operands[ 1 ] ) );
     case V_HALFWORDCONST1:
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ ins->type_class ] &&
-            ( ins->operands[ 0 ]->c.int_value & 0x8000 ) &&
+            ( ins->operands[ 0 ]->c.lo.int_value & 0x8000 ) &&
             TypeClassSize[ ins->type_class ] >= 4 ) return( false );
 #endif
         return( HalfWordConst( ins->operands[ 0 ] ) );
     case V_AXPBRANCH:   // FIXME: appears to be unused!
         op = ins->operands[ 1 ];
         return( ins->result == NULL && op->n.class == N_CONSTANT &&
-                op->c.const_type == CONS_ABSOLUTE && op->c.int_value == 0 );
+                op->c.const_type == CONS_ABSOLUTE && op->c.lo.int_value == 0 );
     case V_MIPSBRANCH:
         return( ins->result == NULL && (ins->head.opcode == OP_CMP_EQUAL
                 || ins->head.opcode == OP_CMP_NOT_EQUAL) );

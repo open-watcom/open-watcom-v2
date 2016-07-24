@@ -504,7 +504,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     first = NULL;
-    FactorInt32( ins->operands[0]->c.int_value, &high, &extra, &low );
+    FactorInt32( ins->operands[0]->c.lo.int_value, &high, &extra, &low );
     // work to be done here - need some way of accurately representing
     // the ldah rn,extra(rn) instruction
 }
@@ -529,7 +529,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     cons = ins->operands[0];
-    c = cons->c.int_value;
+    c = cons->c.lo.int_value;
     k = 65536U;
     high = c / k;
     low = c % k;
@@ -642,7 +642,7 @@ extern instruction *rALLOCA( instruction *ins ) {
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
-        value = amount->c.int_value;
+        value = amount->c.lo.int_value;
         value = _RoundUp( value, stack_align );
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );

@@ -62,7 +62,7 @@ static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
     if( op->n.class != N_CONSTANT || op->c.const_type != CONS_ABSOLUTE ) {
         return( NULL );
     }
-    U64Set( pcons, op->c.int_value, op->c.int_value_2 );
+    U64Set( pcons, op->c.lo.int_value, op->c.hi.int_value );
     return( ins );
 }
 

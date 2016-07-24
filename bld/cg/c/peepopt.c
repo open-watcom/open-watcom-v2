@@ -52,7 +52,7 @@ extern  bool                    ChangeIns(instruction *,name *,name **,change_ty
 extern  opcode_entry            *ResetGenEntry( instruction *ins );
 extern  bool                    VolatileIns(instruction*);
 
-#define OP2VAL( ins ) ( (ins)->operands[1]->c.int_value )
+#define OP2VAL( ins ) ( (ins)->operands[1]->c.lo.int_value )
 
 typedef bool    (ONE_OP)(instruction *,instruction *);
 typedef bool    (TWO_OP)(instruction *,instruction *);

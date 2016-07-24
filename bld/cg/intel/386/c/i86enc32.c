@@ -376,7 +376,7 @@ static  signed_32  GetNextAddConstant( instruction *ins )
            turn it into:
                 LEA     EAX, 3[ECX+EDX]
         */
-        disp = neg * next->operands[1]->c.int_value,
+        disp = neg * next->operands[1]->c.lo.int_value,
         DoNothing( next );
         break;
     }
@@ -402,7 +402,7 @@ extern  void    LayLeaRegOp( instruction *ins )
     case OP_ADD:
         if( right->n.class == N_CONSTANT ) {
             if( right->c.const_type == CONS_ABSOLUTE ) {
-                EA( HW_EMPTY, left->r.reg, 0, neg*right->c.int_value, NULL, true );
+                EA( HW_EMPTY, left->r.reg, 0, neg * right->c.lo.int_value, NULL, true );
             } else {
                 EA( HW_EMPTY, left->r.reg, 0, 0, right, true );
             }
@@ -412,7 +412,7 @@ extern  void    LayLeaRegOp( instruction *ins )
         }
         break;
     case OP_MUL:
-        switch( right->c.int_value ) {
+        switch( right->c.lo.int_value ) {
         case 3: shift = 1;  break;
         case 5: shift = 2;  break;
         case 9: shift = 3;  break;
@@ -422,7 +422,7 @@ extern  void    LayLeaRegOp( instruction *ins )
         break;
     case OP_LSHIFT:
         disp = GetNextAddConstant( ins );   /* 2004-11-05  RomanT */
-        switch( right->c.int_value ) {
+        switch( right->c.lo.int_value ) {
         case 1:
             if( _CPULevel( CPU_586 ) ) {
                 // want to avoid the extra big-fat 0 on 586's
@@ -432,7 +432,7 @@ extern  void    LayLeaRegOp( instruction *ins )
             }
             /* fall through */
         default:
-            EA( HW_EMPTY, left->r.reg, right->c.int_value, disp, NULL, true );
+            EA( HW_EMPTY, left->r.reg, right->c.lo.int_value, disp, NULL, true );
         }
         break;
     }
@@ -557,7 +557,7 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
     } else if( op->c.const_type == CONS_SEGMENT ) {
         ILen += 2;
         if( op->c.value == NULL ) {
-            DoSegRef( op->c.int_value );
+            DoSegRef( op->c.lo.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }
@@ -856,7 +856,7 @@ extern  void    Pow2Div( instruction *ins )
     bool        if_32;
 
     if_32 = false;
-    log2 = GetLog2( ins->operands[1]->c.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:

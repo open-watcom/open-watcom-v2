@@ -754,7 +754,7 @@ static  bool    OkToInvert( name *div )
     if( div->n.class != N_CONSTANT ) return( false );
     if( div->c.const_type != CONS_ABSOLUTE ) return( false );
     if( !CFIs32( div->c.value ) ) return( false );
-    if( GetLog2( div->c.int_value ) == -1 ) return( false );
+    if( GetLog2( div->c.lo.int_value ) == -1 ) return( false );
     return( true );
 }
 
@@ -1343,7 +1343,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         case CONS_ABSOLUTE:
                             if( opnd->i.base != NULL
                                 && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
-                                disp = opnd->i.constant + defop->c.int_value;
+                                disp = opnd->i.constant + defop->c.lo.int_value;
                                 base = opnd->i.base;
                             }
                             break;

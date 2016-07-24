@@ -149,8 +149,8 @@ extern  name    *Addressable( name *cons, type_class_def class )
             return( GenFloat( cons, class ) );
         case U8:
         case I8:
-            buffer.u._32[I64LO32] = cons->c.int_value;
-            buffer.u._32[I64HI32] = cons->c.int_value_2;
+            buffer.u._32[I64LO32] = cons->c.lo.int_value;
+            buffer.u._32[I64HI32] = cons->c.hi.int_value;
             return( GenConstData( (byte *)&buffer, class ) );
         default:
             Zoiks( ZOIKS_138 );

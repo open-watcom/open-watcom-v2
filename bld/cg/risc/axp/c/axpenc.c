@@ -816,7 +816,7 @@ static  void    Encode( instruction *ins ) {
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
         GenOPIMM( opcodes[0], opcodes[1],
-                        _NameReg( ins->operands[0] ), ins->operands[1]->c.int_value,
+                        _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value,
                         _NameReg( ins->result ) );
         break;
     case G_BYTE_CONST:
@@ -824,7 +824,7 @@ static  void    Encode( instruction *ins ) {
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         GenOPIMM( 0x10, 0x00,
-                        AXP_ZERO_SINK, (uint_8)ins->operands[0]->c.int_value,
+                        AXP_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value,
                         _NameReg( ins->result ) );
         break;
     case G_MOVE:
@@ -849,14 +849,14 @@ static  void    Encode( instruction *ins ) {
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        GenMEMINS( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenMEMINS( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            GenMEMINS( 0x08, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.int_value );
+            GenMEMINS( 0x08, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:

@@ -238,7 +238,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
                 AddIns( MakeUnary( OP_PUSH, ret_ptr, NULL, WD ) );
                 state->parm.offset += TypeClassSize[WD];
                 call_ins->operands[CALL_OP_POPS] =
-                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.int_value + TypeClassSize[WD] );
+                        AllocS32Const( call_ins->operands[CALL_OP_POPS]->c.lo.int_value + TypeClassSize[WD] );
                 if( state->attr & ROUTINE_REMOVES_PARMS ) {
                     call_ins->flags.call_flags |= CALL_POPS_PARMS;
                 }

@@ -599,12 +599,12 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
+        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -612,7 +612,7 @@ static  void    Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // addi rd, imm(r0)
-            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
+            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -687,17 +687,17 @@ static  void    Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // rlwinm dst,src,n,0,31-n
-            op2 = 31 - _FiveBits( ins->operands[1]->c.int_value );
-            b = _FiveBits( ins->operands[1]->c.int_value );
+            op2 = 31 - _FiveBits( ins->operands[1]->c.lo.int_value );
+            b = _FiveBits( ins->operands[1]->c.lo.int_value );
             GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 GenOPINS( 31, 824, _NameReg( ins->result ),
-                    ins->operands[1]->c.int_value, _NameReg( ins->operands[0] ) );
+                    ins->operands[1]->c.lo.int_value, _NameReg( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
-                b = _FiveBits( ins->operands[1]->c.int_value );
+                b = _FiveBits( ins->operands[1]->c.lo.int_value );
                 op2 = ( b << 5 ) | 31;
                 b = 32 - b;
                 GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
@@ -712,7 +712,7 @@ static  void    Encode( instruction *ins )
                 s = _NameReg( ins->result );
                 a = _NameReg( ins->operands[0] );
             }
-            GenOPIMM( ops[0], s, a, ins->operands[1]->c.int_value );
+            GenOPIMM( ops[0], s, a, ins->operands[1]->c.lo.int_value );
             break;
         }
         break;
@@ -737,7 +737,7 @@ static  void    Encode( instruction *ins )
         if( _IsSigned( ins->type_class ) ) {
             op1 = 11;
         }
-        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.int_value );
+        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value );
         break;
     case G_SIGN:
         assert( ins->operands[0]->n.class == N_REGISTER );

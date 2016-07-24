@@ -77,7 +77,7 @@ extern bool FoldIntoIndex( instruction *ins )
         cons = ins->operands[ 1 ];
         if( cons->n.class != N_CONSTANT ) return( false );
         if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
-        if( cons->c.int_value > 3 ) return( false );
+        if( cons->c.lo.int_value > 3 ) return( false );
 /*
         found SHL R1,n => R1
 */
@@ -134,7 +134,7 @@ extern bool FoldIntoIndex( instruction *ins )
                 int value;
                 sib.scale = sib.index->i.scale;
                 sib.reg = sib.index->i.index;
-                value = cons->c.int_value;
+                value = cons->c.lo.int_value;
                 if( ! is_base ) {
                     value <<= sib.scale;
                 }
@@ -144,7 +144,7 @@ extern bool FoldIntoIndex( instruction *ins )
                     if( sib.index->i.scale != 0 ) break;
                     sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE ); /* flip base and index */
                 }
-                sib.scale = cons->c.int_value + sib.index->i.scale;
+                sib.scale = cons->c.lo.int_value + sib.index->i.scale;
                 if( sib.scale > 3 ) break;
                 if( ins->operands[0] == ins->result ) {
                     sib.reg = sib.index->i.index;

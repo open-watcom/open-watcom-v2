@@ -66,7 +66,7 @@ static  int     CountOps( instruction *ins, name *cons ) {
     case OP_SUB:
         if( IsStackReg( ins->result ) ) {
             num_operands = 0;
-        } else if( cons->c.int_value == 1 ) {
+        } else if( cons->c.lo.int_value == 1 ) {
             num_operands = 1;
         } else {
             num_operands = ins->num_operands;

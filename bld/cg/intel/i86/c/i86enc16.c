@@ -212,7 +212,7 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
     unsigned    shift;
 
     if( ins->operands[1]->n.class == N_CONSTANT ) {
-        shift = ins->operands[1]->c.int_value;
+        shift = ins->operands[1]->c.lo.int_value;
         if( shift < 16 && OptForSize < 50 && ins->result->n.class == N_REGISTER ) {
             hreg = ins->result->r.reg;
             lreg = Low32Reg( hreg );
@@ -297,16 +297,13 @@ extern  void    LayLeaRegOp( instruction *ins )
     Inst[RMR] |= DoIndex( left->r.reg );
     if( ins->head.opcode == OP_ADD ) {
         if( right->c.const_type == CONS_ABSOLUTE ) {
-            Inst[RMR] |=
-                      Displacement( right->c.int_value,
-                                    left->r.reg );
+            Inst[RMR] |= Displacement( right->c.lo.int_value, left->r.reg );
         } else {
             Inst[RMR] |= D16;
             DoRelocConst( right, U2 );
         }
     } else {
-        Inst[RMR] |= Displacement( -right->c.int_value,
-                                    left->r.reg );
+        Inst[RMR] |= Displacement( -right->c.lo.int_value, left->r.reg );
     }
 }
 
@@ -451,7 +448,7 @@ extern  void    DoRelocConst( name *op, type_class_def kind )
         DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
     } else if( op->c.const_type == CONS_SEGMENT ) {
         if( op->c.value == NULL ) {
-            DoSegRef( op->c.int_value );
+            DoSegRef( op->c.lo.int_value );
         } else {
             DoSymRef( op->c.value, 0, true );
         }
@@ -589,7 +586,7 @@ extern void Pow2Div286( instruction *ins )
 {
     int         log2;
 
-    log2 = GetLog2( ins->operands[1]->c.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:
@@ -625,7 +622,7 @@ extern  void    Pow2Div( instruction *ins )
 {
     int         log2;
 
-    log2 = GetLog2( ins->operands[1]->c.int_value );
+    log2 = GetLog2( ins->operands[1]->c.lo.int_value );
     switch( ins->type_class ) {
     case I1:
     case U1:

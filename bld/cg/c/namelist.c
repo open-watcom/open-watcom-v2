@@ -104,7 +104,7 @@ static  name    *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_valu
     last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
-            if( (unsigned_32)new_c->c.int_value == low && (unsigned_32)new_c->c.int_value_2 == high ) {
+            if( (unsigned_32)new_c->c.lo.int_value == low && (unsigned_32)new_c->c.hi.int_value == high ) {
                 if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;
@@ -152,7 +152,7 @@ extern  name    *AllocConst( float_handle value ) {
     last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
-            if( new_c->c.int_value == int_value ) {
+            if( new_c->c.lo.int_value == int_value ) {
                 if( CFCompare( new_c->c.value, value ) == 0 ) {
                     CFFree( value );
                     // move constant found to front of list
@@ -167,18 +167,18 @@ extern  name    *AllocConst( float_handle value ) {
     }
     new_c = AllocName( N_CONSTANT, XX, 0 );
     new_c->c.value = value;
-    new_c->c.int_value = int_value;
+    new_c->c.lo.int_value = int_value;
     if( test < 0 ){
-        new_c->c.int_value_2 = -1; //sign extend
+        new_c->c.hi.int_value = -1; //sign extend
     } else {
-        new_c->c.int_value_2 = 0;
+        new_c->c.hi.int_value = 0;
     }
     new_c->c.static_defn = NULL;
     new_c->c.const_type = CONS_ABSOLUTE;
-    if( ConstOne == NULL && new_c->c.int_value == 1 ) {
+    if( ConstOne == NULL && new_c->c.lo.int_value == 1 ) {
         ConstOne = new_c;
     }
-    if( ConstZero == NULL && new_c->c.int_value == 0 &&  test == 0 ) {
+    if( ConstZero == NULL && new_c->c.lo.int_value == 0 &&  test == 0 ) {
         ConstZero = new_c;
     }
     if( int_value == 0 ) {
@@ -186,8 +186,8 @@ extern  name    *AllocConst( float_handle value ) {
             unsigned_64         i64val;
 
             i64val = CFCnvF64( value );
-            new_c->c.int_value   = i64val.u._32[I64LO32];
-            new_c->c.int_value_2 = i64val.u._32[I64HI32];
+            new_c->c.lo.int_value = i64val.u._32[I64LO32];
+            new_c->c.hi.int_value = i64val.u._32[I64HI32];
         }
     }
     return( new_c );
@@ -204,11 +204,11 @@ extern  name    *AllocAddrConst( name *value, int seg,
         if( new_c->c.const_type == class
          && new_c->c.value == value
          && new_c->n.name_class == name_class
-         && new_c->c.int_value == seg ) return( new_c );
+         && new_c->c.lo.int_value == seg ) return( new_c );
     }
     new_c = AllocName( N_CONSTANT, name_class, 0 );
     new_c->c.value = value;
-    new_c->c.int_value = seg;
+    new_c->c.lo.int_value = seg;
     new_c->c.static_defn = NULL;
     new_c->c.const_type = class;
     return( new_c );
@@ -255,8 +255,8 @@ extern  name    *AllocS64Const( unsigned_32 low, unsigned_32 high ) {
     if( new_c == NULL ){
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
-        new_c->c.int_value = low;
-        new_c->c.int_value_2 = high;
+        new_c->c.lo.int_value = low;
+        new_c->c.hi.int_value = high;
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {
@@ -275,8 +275,8 @@ extern  name    *AllocU64Const( unsigned_32 low, unsigned_32 high ) {
     if( new_c == NULL ){
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
-        new_c->c.int_value = low;
-        new_c->c.int_value_2 = high;
+        new_c->c.lo.int_value = low;
+        new_c->c.hi.int_value = high;
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {

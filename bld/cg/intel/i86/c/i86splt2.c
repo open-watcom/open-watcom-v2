@@ -97,16 +97,16 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = tosplit->c.int_value & 0xff;
+                u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = tosplit->c.int_value & 0xff;
+                s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = tosplit->c.int_value & 0xffff;
+                u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = tosplit->c.int_value & 0xffff;
+                s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_125 );
@@ -117,8 +117,7 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
                 new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -175,16 +174,16 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_125 );
@@ -195,8 +194,7 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
                 new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -738,10 +736,10 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
         switch( ins->type_class ) {
         case I8:
         case U8:
-            out->low      = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value & 0xffff ) );
-            out->mid_low  = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value >> 16 ) );
-            out->mid_high = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value_2 & 0xffff ) );
-            out->high     = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.int_value_2 >> 16 ) );
+            out->low      = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.lo.int_value & 0xffff ) );
+            out->mid_low  = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.lo.int_value >> 16 ) );
+            out->mid_high = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.hi.int_value & 0xffff ) );
+            out->high     = AllocIntConst( (unsigned_16)_TargetShort( tosplit->c.hi.int_value >> 16 ) );
             break;
         case FD:
             floatval = GetFloat( tosplit, FD );
@@ -773,7 +771,7 @@ extern  instruction     *rCYPSHIFT( instruction *ins )
 
     HalfType( ins );
     temp = AllocTemp( ins->type_class );
-    half_count = ins->operands[1]->c.int_value - temp->n.size * 8;
+    half_count = ins->operands[1]->c.lo.int_value - temp->n.size * 8;
     if( ins->head.opcode == OP_LSHIFT ) {
         ins1 = MakeBinary( OP_LSHIFT,
                         LowPart( ins->operands[0], ins->type_class ),

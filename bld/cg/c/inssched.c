@@ -772,7 +772,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     int         i;
     int         scale;
 
-    bias = adj->operands[1]->c.int_value;
+    bias = adj->operands[1]->c.lo.int_value;
     if( adj->head.opcode == OP_SUB )
         bias = -bias;
     if( forward )

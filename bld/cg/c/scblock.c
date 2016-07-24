@@ -251,20 +251,20 @@ extern  byte    HasZero( score *sc, name *n )
     bits = 0;
     if( n->n.class == N_CONSTANT ) {
         if( n->c.const_type == CONS_ABSOLUTE ) {
-            if( n->c.int_value == 0 ) {
+            if( n->c.lo.int_value == 0 ) {
                 bits = LO_HALF | HI_HALF;
             } else if( n->n.size == 2 ) {
-                if( ( n->c.int_value & 0x00ff ) == 0 ) {
+                if( ( n->c.lo.int_value & 0x00ff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.int_value & 0xff00 ) == 0 ) {
+                if( ( n->c.lo.int_value & 0xff00 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             } else if( n->n.size == 4 ) {
-                if( ( n->c.int_value & 0x0000ffff ) == 0 ) {
+                if( ( n->c.lo.int_value & 0x0000ffff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.int_value & 0xffff0000 ) == 0 ) {
+                if( ( n->c.lo.int_value & 0xffff0000 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             }

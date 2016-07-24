@@ -70,7 +70,7 @@ static  instruction     *CompareIns( block *blk )
 static  bool            IsZero( name *op )
 /****************************************/
 {
-    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.int_value == 0 );
+    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.lo.int_value == 0 );
 }
 
 

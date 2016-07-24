@@ -79,17 +79,17 @@ extern  bool    IndexOverlaps( instruction *ins, int i ) {
 }
 
 #if _TARGET & _TARG_IAPX86
-    #define WORD        U2
-    #define HALF_WORD   U1
-    #define LONG_WORD   U4
-    #define LONG_WORD_S I4
-    #define HIGH_WORD(x) ( ( ((x)->c.int_value) >> 16 ) & 0xffff )
+    #define WORD            U2
+    #define HALF_WORD       U1
+    #define LONG_WORD       U4
+    #define LONG_WORD_S     I4
+    #define HIGH_WORD(x)    ( ( ((x)->c.lo.int_value) >> 16 ) & 0xffff )
 #else
-    #define WORD        U4
-    #define HALF_WORD   U2
-    #define LONG_WORD   U8
-    #define LONG_WORD_S I8
-    #define HIGH_WORD( x )      ( (x)->c.int_value_2 )
+    #define WORD            U4
+    #define HALF_WORD       U2
+    #define LONG_WORD       U8
+    #define LONG_WORD_S     I8
+    #define HIGH_WORD( x )  ( (x)->c.hi.int_value )
 #endif
 
 

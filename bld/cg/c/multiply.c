@@ -176,7 +176,7 @@ static  instruction     *CheckMul( instruction *ins )
     type_class_def      class;
     int                 cost;
 
-    rhs = ins->operands[1]->c.int_value;
+    rhs = ins->operands[1]->c.lo.int_value;
     neg = false;
     class = ins->type_class;
     if( class == SW && rhs < 0 ) {

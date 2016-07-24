@@ -272,16 +272,16 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         switch( op->c.const_type ) {
         case CONS_ABSOLUTE:
             info->symbol.p = NULL;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_SEGMENT:
             info->symbol.p = &SegConstSymbol;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_OFFSET:
         case CONS_ADDRESS:
             info->symbol.p = op->c.value;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_HIGH_ADDR:
             /* FIXME: not sure what to do here */
@@ -290,7 +290,7 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
                 info->offset = (signed_32)(pointer_int)op->c.value;
             } else {
                 info->symbol.p = &HighAddrConst;
-                info->offset = (signed_32)op->c.int_value;
+                info->offset = (signed_32)op->c.lo.int_value;
             }
             break;
         default:

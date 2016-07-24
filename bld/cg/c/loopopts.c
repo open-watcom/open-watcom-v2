@@ -663,7 +663,7 @@ static  value   OpLTZero( name *op, bool fp ) {
         return( CMP_FALSE );
     if( fp && CFTest( op->c.value ) < 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.int_value < 0 )
+    if( !fp && op->c.lo.int_value < 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -676,7 +676,7 @@ static  value   OpEQZero( name *op, bool fp ) {
         return( CMP_FALSE );
     if( fp && CFTest( op->c.value ) == 0 )
         return( CMP_TRUE );
-    if( !fp && op->c.int_value == 0 )
+    if( !fp && op->c.lo.int_value == 0 )
         return( CMP_TRUE );
     return( CMP_FALSE );
 }
@@ -1200,10 +1200,10 @@ static  void    CheckBasic( instruction *ins, union name *name, union name *cons
         if( FindIndVar( name ) == NULL ) {
             if( ins->head.opcode == OP_ADD ) {
                 AddIndVar( ins, name, NULL, NULL, NULL, 0, 1,
-                           cons->c.int_value, 0, 1, ins->type_class );
+                           cons->c.lo.int_value, 0, 1, ins->type_class );
             } else { /* OP_SUB*/
                 AddIndVar( ins, name, NULL, NULL, NULL, 0, 1,
-                          -(cons->c.int_value), 0, 1, ins->type_class );
+                          -(cons->c.lo.int_value), 0, 1, ins->type_class );
             }
         }
     }
@@ -1299,7 +1299,7 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
     lasttimes = var->lasttimes;
     c = 0;
     if( cons != NULL ) {
-        c = cons->c.int_value;
+        c = cons->c.lo.int_value;
     }
     switch( ins->head.opcode ) {
     case OP_MOV:
@@ -2642,9 +2642,9 @@ extern  bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         return( false );
     if( op->c.const_type != CONS_ABSOLUTE )
         return( false );
-    init = op->c.int_value;
+    init = op->c.lo.int_value;
     *initial = init;
-    test = ins->operands[1]->c.int_value;
+    test = ins->operands[1]->c.lo.int_value;
     incr = var->plus;
     dist = test - init;
     if( Sgn( dist ) != Sgn( incr ) )
@@ -2847,7 +2847,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         signed_64       temp;
 
         // if we are going to overflow our type, bail!
-        I32ToI64( non_ind_op->c.int_value, &big_cons );
+        I32ToI64( non_ind_op->c.lo.int_value, &big_cons );
         I32ToI64( rep->times, &temp );
         U64Mul( &big_cons, &temp, &big_cons );
         I32ToI64( rep->plus, &temp );
