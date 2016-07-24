@@ -341,24 +341,18 @@ extern  name    *IntEquivalent( name *name ) {
 /********************************************/
 
     constant_defn       *defn;
-    unsigned_32         *value;
 
     defn = GetFloat( name, FS );
-    value = (unsigned_32 *)defn->value;
-    return( AllocConst( CFCnvU32F( _TargetBigInt( *value ) ) ) );
+    return( AllocConst( CFCnvU32F( _TargetBigInt( *(unsigned_32 *)( defn->value + 0 ) ) ) ) );
 }
 
 extern  name    *Int64Equivalent( name *name ) {
 /**********************************************/
 
     constant_defn       *defn;
-    unsigned_32         *low;
-    unsigned_32         *high;
 
     defn = GetFloat( name, FD );
-    low  = (unsigned_32 *)&defn->value[ 0 ];
-    high = (unsigned_32 *)&defn->value[ 2 ];
-    return( AllocU64Const( *low, *high ) );
+    return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
 }
 
 extern instruction      *rFSCONSCMP( instruction *ins ) {

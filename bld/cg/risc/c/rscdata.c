@@ -92,7 +92,7 @@ extern  void    DataLong( unsigned_32 val )
 
 // FIXME: This is a cheap, lousy hack
 #define MAX_HACK_LEN    ( 8 * 1024 )
-static byte     Buffer[ MAX_HACK_LEN ];
+static byte     Buffer[MAX_HACK_LEN];
 
 extern  void    IterBytes( offset len, byte pat )
 /***********************************************/
@@ -196,10 +196,10 @@ static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
 
     i64Defn.label = NULL;
     i64Defn.const_class = class;
-    i64Defn.value[ 0 ] = cons->c.lo.int_value & 0xffff;
-    i64Defn.value[ 1 ] = ( cons->c.lo.int_value >> 16 ) & 0xffff;
-    i64Defn.value[ 2 ] = cons->c.hi.int_value & 0xffff;
-    i64Defn.value[ 3 ] = ( cons->c.hi.int_value >> 16 ) & 0xffff;
+    i64Defn.value[0] = cons->c.lo.uint_value & 0xffff;
+    i64Defn.value[1] = ( cons->c.lo.uint_value >> 16 ) & 0xffff;
+    i64Defn.value[2] = cons->c.hi.uint_value & 0xffff;
+    i64Defn.value[3] = ( cons->c.hi.uint_value >> 16 ) & 0xffff;
     return( &i64Defn );
 }
 
@@ -222,7 +222,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
         AlignObject( 8 );
         assert( ( AskLocation() & 0x07 ) == 0 );
         OutLabel( defn->label );
-        DataBytes( TypeClassSize[ class ], &defn->value );
+        DataBytes( TypeClassSize[class], &defn->value );
         SetOP( old );
 
     }

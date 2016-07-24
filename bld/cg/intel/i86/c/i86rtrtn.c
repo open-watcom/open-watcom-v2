@@ -47,7 +47,7 @@
 extern  hw_reg_set      *RegSets[];
 
 extern  name            *GenFloat( name *, type_class_def );
-extern  name            *GenConstData( byte *, type_class_def );
+extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  void            DoNothing( instruction * );
 extern  void            ReplIns( instruction *, instruction * );
@@ -151,7 +151,7 @@ extern  name    *Addressable( name *cons, type_class_def class )
         case I8:
             buffer.u._32[I64LO32] = cons->c.lo.int_value;
             buffer.u._32[I64HI32] = cons->c.hi.int_value;
-            return( GenConstData( (byte *)&buffer, class ) );
+            return( GenConstData( &buffer, class ) );
         default:
             Zoiks( ZOIKS_138 );
             break;

@@ -73,8 +73,10 @@ extern    type_class_def        Unsigned[];
 extern  bool    IndexOverlaps( instruction *ins, int i ) {
 /********************************************************/
 
-    if( ins->operands[i]->n.class != N_INDEXED ) return( false );
-    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( true );
+    if( ins->operands[i]->n.class != N_INDEXED )
+        return( false );
+    if( SameThing( ins->operands[i]->i.index, ins->result ) )
+        return( true );
     return( false );
 }
 
@@ -83,13 +85,13 @@ extern  bool    IndexOverlaps( instruction *ins, int i ) {
     #define HALF_WORD       U1
     #define LONG_WORD       U4
     #define LONG_WORD_S     I4
-    #define HIGH_WORD(x)    ( ( ((x)->c.lo.int_value) >> 16 ) & 0xffff )
+    #define HIGH_WORD(x)    ((((x)->c.lo.uint_value) >> 16) & 0xffff)
 #else
     #define WORD            U4
     #define HALF_WORD       U2
     #define LONG_WORD       U8
     #define LONG_WORD_S     I8
-    #define HIGH_WORD( x )  ( (x)->c.hi.int_value )
+    #define HIGH_WORD( x )  ((x)->c.hi.uint_value)
 #endif
 
 
@@ -104,14 +106,14 @@ extern  instruction     *rSPLITOP( instruction *ins ) {
         temp = AllocTemp( LONG_WORD );
         HalfType( ins );
         new_ins = MakeBinary( ins->head.opcode,
-                        LowPart( ins->operands[ 0 ], WORD ),
-                        LowPart( ins->operands[ 1 ], WORD ),
-                        LowPart( temp,               WORD ),
+                        LowPart( ins->operands[0], WORD ),
+                        LowPart( ins->operands[1], WORD ),
+                        LowPart( temp,             WORD ),
                         WORD );
         ins2 = MakeBinary( ins->head.opcode,
-                        HighPart( ins->operands[ 0 ], WORD ),
-                        HighPart( ins->operands[ 1 ], WORD ),
-                        HighPart( temp,               WORD ),
+                        HighPart( ins->operands[0], WORD ),
+                        HighPart( ins->operands[1], WORD ),
+                        HighPart( temp,             WORD ),
                         WORD );
         if( ins->head.opcode == OP_ADD ) {
             ins2->head.opcode = OP_EXT_ADD;
@@ -124,8 +126,8 @@ extern  instruction     *rSPLITOP( instruction *ins ) {
         DupSegOp( ins, ins2, 0 );
         DupSegOp( ins, new_ins, 1 );
         DupSegOp( ins, ins2, 1 );
-        ins->operands[ 0 ] = temp;
-        ins->operands[ 1 ] = temp;
+        ins->operands[0] = temp;
+        ins->operands[1] = temp;
         PrefixIns( ins, new_ins );
         PrefixIns( ins, ins2 );
         ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
@@ -138,13 +140,13 @@ extern  instruction     *rSPLITOP( instruction *ins ) {
     } else {
         HalfType( ins );
         new_ins = MakeBinary( ins->head.opcode,
-                        LowPart( ins->operands[ 0 ], ins->type_class ),
-                        LowPart( ins->operands[ 1 ], ins->type_class ),
-                        LowPart( ins->result,        ins->type_class ),
+                        LowPart( ins->operands[0], ins->type_class ),
+                        LowPart( ins->operands[1], ins->type_class ),
+                        LowPart( ins->result,      ins->type_class ),
                         ins->type_class );
         DupSeg( ins, new_ins );
-        ins->operands[ 0 ] = HighPart( ins->operands[ 0 ], ins->type_class );
-        ins->operands[ 1 ] = HighPart( ins->operands[ 1 ], ins->type_class );
+        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
+        ins->operands[1] = HighPart( ins->operands[1], ins->type_class );
         ins->result = HighPart( ins->result, ins->type_class );
         if( ins->head.opcode == OP_ADD ) {
             ins->head.opcode = OP_EXT_ADD;
@@ -174,32 +176,29 @@ extern  instruction     *rSPLITMOVE( instruction *ins ) {
     CnvOpToInt( ins, 0 );
     if( IndexOverlaps( ins, 0 ) ) {
         temp = AllocTemp( LONG_WORD );
-        new_ins = MakeMove( LowPart( ins->operands[ 0 ], WORD ),
-                             LowPart( temp, WORD ), WORD );
-        ins2 = MakeMove( HighPart( ins->operands[ 0 ], WORD ),
-                             HighPart( temp, WORD ), WORD );
+        new_ins = MakeMove( LowPart( ins->operands[0], WORD ), LowPart( temp, WORD ), WORD );
+        ins2 = MakeMove( HighPart( ins->operands[0], WORD ), HighPart( temp, WORD ), WORD );
         DupSegOp( ins, new_ins, 0 );
         DupSegOp( ins, ins2, 0 );
-        ins->operands[ 0 ] = temp;
+        ins->operands[0] = temp;
         PrefixIns( ins, new_ins );
         PrefixIns( ins, ins2 );
         ins2 = MakeMove( LowPart( temp, WORD ), LowPart( ins->result, WORD ), WORD );
         DupSegRes( ins, ins2 );
         PrefixIns( ins, ins2 );
-        ins2 = MakeMove( HighPart( temp, WORD ),
-                          HighPart( ins->result, WORD ), WORD );
+        ins2 = MakeMove( HighPart( temp, WORD ), HighPart( ins->result, WORD ), WORD );
         ReplIns( ins, ins2 );
     } else {
         HalfType( ins );
-        new_ins = MakeMove( LowPart( ins->operands[ 0 ], ins->type_class ),
+        new_ins = MakeMove( LowPart( ins->operands[0], ins->type_class ),
                              LowPart( ins->result, ins->type_class ),
                              ins->type_class );
         DupSeg( ins, new_ins );
-        ins->operands[ 0 ] = HighPart( ins->operands[ 0 ], ins->type_class );
+        ins->operands[0] = HighPart( ins->operands[0], ins->type_class );
         ins->result = HighPart( ins->result, ins->type_class );
         if( new_ins->result->n.class == N_REGISTER
-         && ins->operands[ 0 ]->n.class == N_REGISTER
-         && HW_Ovlap( new_ins->result->r.reg, ins->operands[ 0 ]->r.reg ) ) {
+         && ins->operands[0]->n.class == N_REGISTER
+         && HW_Ovlap( new_ins->result->r.reg, ins->operands[0]->r.reg ) ) {
             SuffixIns( ins, new_ins );
             new_ins = ins;
         } else {
@@ -221,8 +220,7 @@ extern  instruction     *rMAKEU2( instruction *ins ) {
     if( IndexOverlaps( ins, 0 ) || IndexOverlaps( ins, 1 ) ) {
         ChangeType( ins, WORD );
         if( ins->result != NULL ) {
-            new_ins = MakeMove( HighPart( ins->operands[ 0 ], WORD ),
-                                 AllocTemp( WORD ), WORD );
+            new_ins = MakeMove( HighPart( ins->operands[0], WORD ), AllocTemp( WORD ), WORD );
             temp = HighPart( ins->result, WORD );
             ins->result = LowPart( ins->result, WORD );
             DupSegOp( ins, new_ins, 0 );
@@ -230,10 +228,9 @@ extern  instruction     *rMAKEU2( instruction *ins ) {
         } else {
             new_ins = ins;
         }
-        ins->operands[ 0 ] = LowPart( ins->operands[ 0 ], WORD );
-        if( ins->operands[ 1 ]->n.name_class == LONG_WORD
-         || ins->operands[ 1 ]->n.name_class == LONG_WORD_S ) {
-            ins->operands[ 1 ] = LowPart( ins->operands[ 1 ], WORD );
+        ins->operands[0] = LowPart( ins->operands[0], WORD );
+        if( ins->operands[1]->n.name_class == LONG_WORD || ins->operands[1]->n.name_class == LONG_WORD_S ) {
+            ins->operands[1] = LowPart( ins->operands[1], WORD );
         }
         if( ins->result != NULL ) {
             ins2 = MakeMove( new_ins->result, temp, WORD );
@@ -243,8 +240,7 @@ extern  instruction     *rMAKEU2( instruction *ins ) {
     } else {
         ChangeType( ins, WORD );
         if( ins->result != NULL ) {
-            new_ins = MakeMove( HighPart( ins->operands[ 0 ], WORD ),
-                                 HighPart( ins->result, WORD ), WORD );
+            new_ins = MakeMove( HighPart( ins->operands[0], WORD ), HighPart( ins->result, WORD ), WORD );
             ins->result = LowPart( ins->result, WORD );
             DupSegOp( ins, new_ins, 0 );
             DupSegRes( ins, new_ins );
@@ -252,8 +248,8 @@ extern  instruction     *rMAKEU2( instruction *ins ) {
         } else {
             new_ins = ins;
         }
-        ins->operands[ 0 ] = LowPart( ins->operands[ 0 ], WORD );
-        ins->operands[ 1 ] = LowPart( ins->operands[ 1 ], WORD );
+        ins->operands[0] = LowPart( ins->operands[0], WORD );
+        ins->operands[1] = LowPart( ins->operands[1], WORD );
     }
     return( new_ins );
 }
@@ -272,20 +268,19 @@ extern  instruction     *rSPLITNEG( instruction *ins ) {
 
     HalfType( ins );
     hi_res = HighPart( ins->result, ins->type_class );
-    hi_src = HighPart( ins->operands[ 0 ], ins->type_class );
+    hi_src = HighPart( ins->operands[0], ins->type_class );
     lo_res = LowPart( ins->result, ins->type_class );
-    lo_src = LowPart( ins->operands[ 0 ], ins->type_class );
+    lo_src = LowPart( ins->operands[0], ins->type_class );
     hi_ins = MakeUnary( OP_NEGATE, hi_src, hi_res, ins->type_class );
     lo_ins = MakeUnary( OP_NEGATE, lo_src, lo_res, ins->type_class );
     lo_ins->ins_flags |= INS_CC_USED;
-    subtract = MakeBinary( OP_EXT_SUB, hi_res, AllocIntConst( 0 ), hi_res,
-                            ins->type_class );
+    subtract = MakeBinary( OP_EXT_SUB, hi_res, AllocIntConst( 0 ), hi_res, ins->type_class );
     DupSegRes( ins, subtract );
     DupSeg( ins, hi_ins );
     DupSeg( ins, lo_ins );
     PrefixIns( ins, hi_ins );
-    ins->operands[ 0 ] = ins->result;
-    ins->operands[ 1 ] = AllocIntConst( 0 );
+    ins->operands[0] = ins->result;
+    ins->operands[1] = AllocIntConst( 0 );
     PrefixIns( ins, lo_ins );
     ReplIns( ins, subtract );
     UpdateLive( hi_ins, subtract );
@@ -305,10 +300,10 @@ extern  instruction     *rSPLITCMP( instruction *ins ) {
     byte                true_idx;
     byte                false_idx;
 
-    high_class = HalfClass[  ins->type_class  ];
-    low_class  = Unsigned[  high_class  ];
-    left = ins->operands[ 0 ];
-    right = ins->operands[ 1 ];
+    high_class = HalfClass[ins->type_class];
+    low_class  = Unsigned[high_class];
+    left = ins->operands[0];
+    right = ins->operands[1];
     true_idx = _TrueIndex( ins );
     false_idx = _FalseIndex( ins );
     switch( ins->head.opcode ) {
@@ -372,13 +367,13 @@ extern  instruction     *rSPLITCMP( instruction *ins ) {
                         false_idx, NO_JUMP,
                         high_class );
         if( high_class == WORD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
+          && right->n.class == N_CONSTANT
+          && right->c.const_type == CONS_ABSOLUTE
+          && HIGH_WORD( right ) == 0 ) {
             high = NULL;
         } else {
             high = MakeCondition( OP_CMP_LESS,
-                        not_equal->operands[ 0 ], not_equal->operands[ 1 ],
+                        not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
                         high_class );
         }
@@ -396,14 +391,14 @@ extern  instruction     *rSPLITCMP( instruction *ins ) {
                         false_idx, NO_JUMP,
                         high_class );
         if( high_class == WORD
-         && right->n.class == N_CONSTANT
-         && right->c.const_type == CONS_ABSOLUTE
-         && HIGH_WORD( right ) == 0 ) {
+          && right->n.class == N_CONSTANT
+          && right->c.const_type == CONS_ABSOLUTE
+          && HIGH_WORD( right ) == 0 ) {
             _SetBlockIndex( not_equal, true_idx, NO_JUMP );
             high = NULL;
         } else {
             high = MakeCondition( OP_CMP_GREATER,
-                        not_equal->operands[ 0 ], not_equal->operands[ 1 ],
+                        not_equal->operands[0], not_equal->operands[1],
                         true_idx, NO_JUMP,
                         high_class );
         }

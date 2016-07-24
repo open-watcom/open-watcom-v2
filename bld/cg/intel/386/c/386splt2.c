@@ -84,7 +84,6 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
@@ -105,14 +104,12 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
             } else if( class == I4 ) {
                 new = AllocS32Const( tosplit->c.lo.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.lo.int_value );
+                new = AllocU32Const( tosplit->c.lo.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[1] << 16;
-                u32 += floatval->value[0];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
@@ -239,7 +236,6 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
@@ -260,14 +256,12 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
             } else if( class == I4 ) {
                 new = AllocS32Const( tosplit->c.hi.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.hi.int_value );
+                new = AllocU32Const( tosplit->c.hi.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[3] << 16;
-                u32 += floatval->value[2];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
             new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
@@ -352,9 +346,7 @@ extern  instruction     *rSPLITPUSH( instruction *ins )
     name            *op;
     name            *temp;
 
-    new_ins = MakeUnary( ins->head.opcode,
-                         OffsetPart( ins->operands[0] ),
-                         NULL, U4 );
+    new_ins = MakeUnary( ins->head.opcode, OffsetPart( ins->operands[0] ), NULL, U4 );
     ins->operands[0] = SegmentPart( ins->operands[0] );
     op = ins->operands[0];
     DupSeg( ins, new_ins );

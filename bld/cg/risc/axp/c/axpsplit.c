@@ -529,7 +529,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     cons = ins->operands[0];
-    c = cons->c.lo.int_value;
+    c = cons->c.lo.uint_value;
     k = 65536U;
     high = c / k;
     low = c % k;
@@ -631,19 +631,17 @@ extern instruction *rALLOCA( instruction *ins ) {
     instruction         *first;
     instruction         *last;
     type_class_def      class;
-    unsigned_32         stack_align;
     bool                check;
 
     sreg = AllocRegName( StackReg() );
     amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
     class = WD;
-    stack_align = STACK_ALIGNMENT;
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
-        value = amount->c.lo.int_value;
-        value = _RoundUp( value, stack_align );
+        value = amount->c.lo.uint_value;
+        value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
         PrefixIns( ins, first );
@@ -652,9 +650,9 @@ extern instruction *rALLOCA( instruction *ins ) {
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
-        first = MakeBinary( OP_ADD, amount, AllocS32Const( stack_align - 1 ), temp, class );
+        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, class );
         PrefixIns( ins, first );
-        last = MakeBinary( OP_AND, temp, AllocS32Const( ~( stack_align - 1 ) ), real_amount, class );
+        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, class );
         PrefixIns( ins, last );
         last = MakeBinary( OP_SUB, sreg, real_amount, temp, class );
         PrefixIns( ins, last );

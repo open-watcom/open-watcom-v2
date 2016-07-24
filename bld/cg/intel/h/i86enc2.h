@@ -41,6 +41,6 @@ extern void     Gen4ByteValue( unsigned_32 value );
 extern void     GenCodePtr( pointer label );
 extern void     GenMJmp( instruction *ins );
 extern void     GenRJmp( instruction *ins );
-extern void     EyeCatchBytes( const byte *src, byte_seq_len len );
+extern void     EyeCatchBytes( const void *src, byte_seq_len len );
 extern void     GenReturn( int pop, bool is_long, bool iret );
-extern void     CodeBytes( const byte *src, byte_seq_len len );
+extern void     CodeBytes( const void *src, byte_seq_len len );

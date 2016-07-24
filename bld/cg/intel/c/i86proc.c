@@ -465,7 +465,7 @@ static  void    EmitNameInCode( void )
     TellKeepLabel( lbl );
     CodeLabel( lbl, 0 );
     GenKillLabel( lbl );
-    EyeCatchBytes( (const byte *)name, len );
+    EyeCatchBytes( name, len );
 }
 
 

@@ -104,7 +104,7 @@ static name *findConst64( unsigned_32 low, unsigned_32 high, pointer cf_value )
     last = &Names[N_CONSTANT];
     for( new_c = Names[N_CONSTANT]; new_c != NULL; new_c = new_c->n.next_name ) {
         if( new_c->c.const_type == CONS_ABSOLUTE ) {
-            if( (unsigned_32)new_c->c.lo.int_value == low && (unsigned_32)new_c->c.hi.int_value == high ) {
+            if( new_c->c.lo.uint_value == low && new_c->c.hi.uint_value == high ) {
                 if( CFCompare( new_c->c.value, cf_value ) == 0 ) {
                     // move constant found to front of list
                     *last = new_c->n.next_name;
@@ -283,8 +283,8 @@ name    *AllocS64Const( unsigned_32 low, unsigned_32 high )
     if( new_c == NULL ){
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
-        new_c->c.lo.int_value = low;
-        new_c->c.hi.int_value = high;
+        new_c->c.lo.uint_value = low;
+        new_c->c.hi.uint_value = high;
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {
@@ -303,8 +303,8 @@ name    *AllocU64Const( unsigned_32 low, unsigned_32 high )
     if( new_c == NULL ){
         new_c = AllocName( N_CONSTANT, XX, 0 );
         new_c->c.value = cf_value;
-        new_c->c.lo.int_value = low;
-        new_c->c.hi.int_value = high;
+        new_c->c.lo.uint_value = low;
+        new_c->c.hi.uint_value = high;
         new_c->c.static_defn = NULL;
         new_c->c.const_type = CONS_ABSOLUTE;
     } else {

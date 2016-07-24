@@ -642,7 +642,7 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
     }
 }
 
-static  void    DoCodeBytes( const byte *src, byte_seq_len len, oc_class class ) {
+static  void    DoCodeBytes( const void *src, byte_seq_len len, oc_class class ) {
 /*******************************************************************************
     Dump bytes "src" directly into the queue, for length "len".
 */
@@ -662,7 +662,7 @@ static  void    DoCodeBytes( const byte *src, byte_seq_len len, oc_class class )
     while( len + addlen > MAX_OBJ_LEN ) {
         Copy( src, oc->oc_entry.data, MAX_OBJ_LEN );
         InputOC( oc );
-        src += MAX_OBJ_LEN;
+        src = (char *)src + MAX_OBJ_LEN;
         len -= MAX_OBJ_LEN;
     }
     oc->oc_entry.hdr.reclen = offsetof( oc_entry, data ) + len + addlen;
@@ -674,14 +674,14 @@ static  void    DoCodeBytes( const byte *src, byte_seq_len len, oc_class class )
     CGFree( oc );
 }
 
-void    CodeBytes( const byte *src, byte_seq_len len ) {
-/**************************************************************/
-
+void    CodeBytes( const void *src, byte_seq_len len )
+/****************************************************/
+{
     DoCodeBytes( src, len, OC_BDATA );
 }
 
-void    EyeCatchBytes( const byte *src, byte_seq_len len ) {
-/******************************************************************/
-
+void    EyeCatchBytes( const void *src, byte_seq_len len )
+/********************************************************/
+{
     DoCodeBytes( src, len, OC_IDATA );
 }

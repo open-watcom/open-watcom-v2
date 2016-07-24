@@ -314,9 +314,9 @@ static  cg_class ConstDataClass( void ) {
     }
 }
 
-extern  name    *GenConstData( byte *buffer, type_class_def class ) {
-/*******************************************************************/
-
+extern  name    *GenConstData( const void *buffer, type_class_def class )
+/***********************************************************************/
+{
     segment_id          old;
     cg_class            cgclass;
     name                *result;
@@ -356,7 +356,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
 
     defn = GetFloat( cons, class );
     if( defn->label == NULL ) {
-        result = GenConstData( (byte *)&defn->value, class );
+        result = GenConstData( defn->value, class );
         defn->label = result->v.symbol;
     } else {
         result = AllocMemory( defn->label, 0, ConstDataClass(), class );
