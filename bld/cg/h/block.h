@@ -32,6 +32,19 @@
 
 #include "dominati.h"
 
+#define _IsBlkVisited( b )      ( ((b)->class & BLOCK_VISITED) != 0 )
+#define _MarkBlkUnVisited( b )  ( (b)->class &= ~BLOCK_VISITED )
+#define _MarkBlkVisited( b )    ( (b)->class |=  BLOCK_VISITED )
+
+#define _IsBlkMarked( b )       ( ((b)->class & BLOCK_MARKED) != 0 )
+#define _MarkBlkUnMarked( b )   ( (b)->class &= ~BLOCK_MARKED )
+#define _MarkBlkMarked( b )     ( (b)->class |=  BLOCK_MARKED )
+
+#define _IsBlkAttr( b, a )      ( ((b)->class & a) != 0 )
+#define _MarkBlkAttrNot( b, a ) ( (b)->class &= ~a )
+#define _MarkBlkAttr( b, a )    ( (b)->class |=  a )
+#define _SetBlkAttr( b, a )     ( (b)->class  =  a )
+
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
