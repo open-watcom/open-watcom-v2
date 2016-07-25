@@ -47,6 +47,20 @@
 #include "feprotos.h"
 
 
+/* block flag usage                                         */
+/*                                                          */
+/* BLOCK_VISITED is used in the sense of PARTITION_ROOT     */
+/*                                                          */
+#define INS_DEFINES_OWN_OPERAND INS_MARKED
+/*                                                          */
+
+/* Borrow a few fields and bits to label trees with bits and link stuff */
+
+#define _INSBITS( ins )   _LBitScalar((ins)->head.live.within_block)
+#define _BLKBITS( blk )   _LBitScalar((blk)->available_bit)
+#define _INSLINK( ins )   (*(instruction **)&(ins)->u2.cse_link)
+#define _NAMELINK( op )   (*(instruction **)&(op)->v.conflict)
+
 typedef enum {
         ALL_LIVE,
         OP_DIES,
@@ -58,7 +72,7 @@ extern type_class_def   Unsigned[];
 static instruction      *ExprHeads[LAST_CSE_OP+1];
 static bool             LeaveIndVars;
 
-extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
+extern  name            *ScaleIndex(name *,name *,type_length,type_class_def,type_length,int,i_flags);
 extern void             PrefixIns(instruction*,instruction*);
 extern void             SuffixIns(instruction*,instruction*);
 extern float_handle     CnvCFToType(float_handle,type_def*);
@@ -81,21 +95,8 @@ extern  bool            IsTrickyPointerConv( instruction * );
 
 /* forward declarations */
 static  void            TreeBits( block *root );
-static  void            DeleteFromList( instruction **owner,
-                                        instruction *ins, instruction *new );
+static  void            DeleteFromList( instruction **owner, instruction *ins, instruction *new );
 static  void            CleanTableEntries( block *root );
-
-/* Borrow a few fields and bits to label trees with bits and link stuff */
-
-#define _INSBITS( ins )   _LBitScalar((ins)->head.live.within_block)
-#define _BLKBITS( blk )   _LBitScalar((blk)->available_bit)
-#define _INSLINK( ins )   (*(instruction **)&(ins)->u2.cse_link)
-#define _NAMELINK( op )   (*(instruction **)&(op)->v.conflict)
-#define PARTITION_ROOT    BLOCK_VISITED
-#define INS_DEFINES_OWN_OPERAND INS_MARKED
-
-
-
 
 static  void    ReCalcAddrTaken( void )
 /**************************************
@@ -104,10 +105,12 @@ static  void    ReCalcAddrTaken( void )
     name        *temp;
 
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->v.usage & VAR_VOLATILE ) continue;
-        if( temp->v.symbol != NULL &&
-            ( FEAttr( temp->v.symbol ) & FE_ADDR_TAKEN ) ) continue;
-        if( temp->t.temp_flags & STACK_PARM ) continue; /* See DoParmDecl() */
+        if( temp->v.usage & VAR_VOLATILE )
+            continue;
+        if( temp->v.symbol != NULL && (FEAttr( temp->v.symbol ) & FE_ADDR_TAKEN) )
+            continue;
+        if( temp->t.temp_flags & STACK_PARM )   /* See DoParmDecl() */
+            continue;
         temp->v.usage &= ~USE_ADDRESS;
     }
     FindReferences();
@@ -219,17 +222,21 @@ static  bool    StretchABlock( block *blk )
     name                *op;
     int                 i;
 
-    if( blk->ins.hd.prev != blk->ins.hd.next ) return( false );
+    if( blk->ins.hd.prev != blk->ins.hd.next )
+        return( false );
     ins = blk->ins.hd.next;
-    if( !_OpIsCondition( ins->head.opcode ) ) return( false );
+    if( !_OpIsCondition( ins->head.opcode ) )
+        return( false );
     op = ins->operands[0];
     i = 1;
     if( op->n.class != N_CONSTANT ) {
         op = ins->operands[1];
         i = 0;
     }
-    if( op->n.class != N_CONSTANT ) return( false );
-    if( IsVolatile( ins->operands[i] ) ) return( false );
+    if( op->n.class != N_CONSTANT )
+        return( false );
+    if( IsVolatile( ins->operands[i] ) )
+        return( false );
     return( FindDefnBlocks( blk, ins, i ) );
 }
 
@@ -281,24 +288,35 @@ extern  bool    PropRegsOne( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( ins->head.opcode != OP_MOV ) continue;
+            if( ins->head.opcode != OP_MOV )
+                continue;
             reg = ins->operands[0];
-            if( FPSideEffect( ins ) ) continue;
-            if( reg->n.class != N_REGISTER ) continue;
+            if( FPSideEffect( ins ) )
+                continue;
+            if( reg->n.class != N_REGISTER )
+                continue;
             next = ins->head.next;
-            if( next->head.opcode == OP_BLOCK ) break;
-            if( FPStackIns( next ) ) continue;
-            if( next->head.opcode == OP_LA ) continue;
-            if( next->head.opcode == OP_CAREFUL_LA ) continue;
+            if( next->head.opcode == OP_BLOCK )
+                break;
+            if( FPStackIns( next ) )
+                continue;
+            if( next->head.opcode == OP_LA )
+                continue;
+            if( next->head.opcode == OP_CAREFUL_LA )
+                continue;
             if( next->num_operands != 1 ) {
-                if( next->num_operands <= NumOperands( next ) ) continue;
-                if( !IsSegReg( reg->r.reg ) ) continue;
+                if( next->num_operands <= NumOperands( next ) )
+                    continue;
+                if( !IsSegReg( reg->r.reg ) )
+                    continue;
                 opp = &next->operands[next->num_operands - 1];
             } else {
-                if( _IsConvert( next ) ) continue;
+                if( _IsConvert( next ) )
+                    continue;
                 opp = &next->operands[0];
             }
-            if( *opp != ins->result ) continue;
+            if( *opp != ins->result )
+                continue;
             *opp = reg;
             change = true;
         }
@@ -325,8 +343,8 @@ static  void    FindPartition( void )
     block_num   i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & BIG_LABEL ) != 0 || blk->inputs != 1 ) {
-            blk->class |= PARTITION_ROOT;
+        if( (blk->class & BIG_LABEL) || blk->inputs != 1 ) {
+            blk->class |= BLOCK_VISITED;
         }
         blk->u.partition = blk;
         _BLKBITS( blk ) = EMPTY;
@@ -336,7 +354,7 @@ static  void    FindPartition( void )
         for( i = blk->targets; i > 0; --i ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
-                if( (oth->class & PARTITION_ROOT) == 0 && oth->inputs == 1 ) {
+                if( (oth->class & BLOCK_VISITED) == 0 && oth->inputs == 1 ) {
                     temp = oth->u.partition;
                     oth->u.partition = blk->u.partition;
                     blk->u.partition = temp;
@@ -346,7 +364,7 @@ static  void    FindPartition( void )
         }
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & PARTITION_ROOT ) {
+        if( blk->class & BLOCK_VISITED ) {
             TreeBits( blk );
         }
     }
@@ -378,12 +396,15 @@ static  void    TreeBits( block *root )
             daddy = blk->input_edges->source;
             if( _BLKBITS( blk ) == 0 && _BLKBITS( daddy ) ) {
                 next_bit <<= 1;
-                if( next_bit == 0 ) break;
+                if( next_bit == 0 )
+                    break;
                 _BLKBITS( blk ) = _BLKBITS( daddy ) | next_bit;
                 change = true;
             }
         }
-        if( next_bit == 0 ) break;
+        if( next_bit == 0 ) {
+            break;
+        }
     }
 
     /* rip off any blocks in the partition without bits*/
@@ -400,7 +421,9 @@ static  void    TreeBits( block *root )
         } else {
             owner = &blk->u.partition;
         }
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
 }
 
@@ -447,12 +470,14 @@ static  instruction *WhichIsAncestor( instruction *ins1, instruction *ins2 )
                 } else if( ins->head.opcode == OP_BLOCK ) {
                     first = ins2;
                 }
-                if( first != NULL ) break;
+                if( first != NULL ) {
+                    break;
+                }
             }
         }
-    } else if( ( bits1 & bits2 ) == bits1 ) {
+    } else if( (bits1 & bits2) == bits1 ) {
         first = ins1;
-    } else if( ( bits1 & bits2 ) == bits2 ) {
+    } else if( (bits1 & bits2) == bits2 ) {
         first = ins2;
     } else { /* find a hoist point*/
         bits1 &= bits2;
@@ -486,7 +511,7 @@ static  void    CleanPartition( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~PARTITION_ROOT;
+        blk->class &= ~BLOCK_VISITED;
         blk->u.partition = NULL;
     }
 }
@@ -500,10 +525,14 @@ static  bool    CanCrossBlocks( instruction *ins1,
     in ForceTempsMemory.
 */
 {
-    if( !BlockByBlock ) return( true );
-    if( op->n.class != N_TEMP ) return( true );
-    if( _INSBITS( ins1 ) == _INSBITS( ins2 ) ) return( true );
-    if( op->t.temp_flags & CROSSES_BLOCKS ) return( true );
+    if( !BlockByBlock )
+        return( true );
+    if( op->n.class != N_TEMP )
+        return( true );
+    if( _INSBITS( ins1 ) == _INSBITS( ins2 ) )
+        return( true );
+    if( op->t.temp_flags & CROSSES_BLOCKS )
+        return( true );
     return( false );
 }
 
@@ -588,7 +617,9 @@ static  who_dies BinOpsLiveFrom( instruction *first,
                 result_dies = true;
             }
         }
-        if( result_dies ) return( RESULT_DIES );
+        if( result_dies ) {
+            return( RESULT_DIES );
+        }
     }
     return( ALL_LIVE );
 }
@@ -605,7 +636,8 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
     block               *target_blk;
     block               *blk;
 
-    if( OptForSize > 50 ) return( true );
+    if( OptForSize > 50 )
+        return( true );
     for( ins = target; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
@@ -614,12 +646,17 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
         ins = ins->head.next;
     }
     blk = _BLOCK( ins );
-    if( blk == target_blk ) return( true );
+    if( blk == target_blk )
+        return( true );
     while( blk != NULL ) {
-        if( blk->inputs != 1 ) _Zoiks( ZOIKS_103 ); // because we're in a partition
+        if( blk->inputs != 1 )
+            _Zoiks( ZOIKS_103 ); // because we're in a partition
         blk = blk->input_edges->source;
-        if( ( blk->class & SELECT ) != EMPTY ) return( false );
-        if( blk == target_blk ) return( true );
+        if( blk->class & SELECT )
+            return( false );
+        if( blk == target_blk ) {
+            return( true );
+        }
     }
     _Zoiks( ZOIKS_104 );
     return( true );
@@ -667,11 +704,12 @@ static  instruction     *ProcessExpr( instruction *ins1,
             return( NULL );
         }
     }
-    if( ins1->operands[0] != ins2->operands[0] ||
-        ins1->operands[i] != ins2->operands[i] ) {
-          if( !_OpCommutes( ins1->head.opcode ) ) return( NULL );
-          if( ins1->operands[0] != ins2->operands[i] ||
-              ins1->operands[i] != ins2->operands[0] ) return( NULL );
+    if( ins1->operands[0] != ins2->operands[0] || ins1->operands[i] != ins2->operands[i] ) {
+        if( !_OpCommutes( ins1->head.opcode ) )
+            return( NULL );
+        if( ins1->operands[0] != ins2->operands[i] || ins1->operands[i] != ins2->operands[0] ) {
+            return( NULL );
+        }
     }
     first = WhichIsAncestor( ins1, ins2 );
     if( first == ins2 ) {
@@ -679,13 +717,12 @@ static  instruction     *ProcessExpr( instruction *ins1,
         ins1 = first;
     }
     if( first == ins1 ) { /* or used to be ins2*/
-        if( ( ins1->ins_flags & INS_DEFINES_OWN_OPERAND ) == EMPTY ) {
+        if( (ins1->ins_flags & INS_DEFINES_OWN_OPERAND) == 0 ) {
             killed = BinOpsLiveFrom( ins1, ins2, ins1->operands[0],
                                       ins1->operands[i], ins1->result );
             if( killed != OP_DIES ) {
                 class = ins1->result->n.name_class;
-                if( killed == RESULT_DIES
-                 || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
+                if( killed == RESULT_DIES || !CanCrossBlocks( ins1, ins2, ins1->result ) ) {
                     temp = AllocTemp( class );
                     new_ins = MakeMove( temp, ins1->result, class );
                     ins1->result = temp;
@@ -703,14 +740,14 @@ static  instruction     *ProcessExpr( instruction *ins1,
         }
     } else if( first != NULL ) { /* we calculated a hoist point*/
         if( ins1->operands[0]->n.class != N_INDEXED
-         && ins1->operands[i]->n.class != N_INDEXED
-         && Hoistable( ins1, NULL )
-         && BinOpsLiveFrom( first->head.next, ins1, ins1->operands[0],
+          && ins1->operands[i]->n.class != N_INDEXED
+          && Hoistable( ins1, NULL )
+          && BinOpsLiveFrom( first->head.next, ins1, ins1->operands[0],
                             ins1->operands[i], NULL ) == ALL_LIVE
-         && BinOpsLiveFrom( first->head.next, ins2, ins2->operands[0],
+          && BinOpsLiveFrom( first->head.next, ins2, ins2->operands[0],
                             ins2->operands[i], NULL ) == ALL_LIVE
-         && HoistLooksGood( first, ins1 )
-         && HoistLooksGood( first, ins2 ) ) {
+          && HoistLooksGood( first, ins1 )
+          && HoistLooksGood( first, ins2 ) ) {
             class = ins1->type_class;
             temp = AllocTemp( class );
             temp->t.temp_flags |= CROSSES_BLOCKS;
@@ -747,14 +784,19 @@ static  bool    OkToInvert( name *div )
    must have said that it was OK.
 */
 {
-    if( _IsModel( FP_UNSTABLE_OPTIMIZATION ) ) return( true );
+    if( _IsModel( FP_UNSTABLE_OPTIMIZATION ) )
+        return( true );
     if( (div->n.class == N_TEMP) && (div->t.temp_flags & CONST_TEMP) ) {
         div = div->v.symbol;
     }
-    if( div->n.class != N_CONSTANT ) return( false );
-    if( div->c.const_type != CONS_ABSOLUTE ) return( false );
-    if( !CFIs32( div->c.value ) ) return( false );
-    if( GetLog2( div->c.lo.int_value ) == -1 ) return( false );
+    if( div->n.class != N_CONSTANT )
+        return( false );
+    if( div->c.const_type != CONS_ABSOLUTE )
+        return( false );
+    if( !CFIs32( div->c.value ) )
+        return( false );
+    if( GetLog2( div->c.lo.int_value ) == -1 )
+        return( false );
     return( true );
 }
 
@@ -775,9 +817,12 @@ static  bool    ProcessDivide( instruction *ins1, instruction *ins2 )
     who_dies            killed;
     name                *divisor;
 
-    if( ins1->type_class != ins2->type_class ) return( false );
-    if( !DivIsADog( ins1->type_class ) ) return( false );
-    if( ins1->operands[1] != ins2->operands[1] ) return( false );
+    if( ins1->type_class != ins2->type_class )
+        return( false );
+    if( !DivIsADog( ins1->type_class ) )
+        return( false );
+    if( ins1->operands[1] != ins2->operands[1] )
+        return( false );
     first = WhichIsAncestor( ins1, ins2 );
     if( first == ins2 ) {
         ins2 = ins1;
@@ -947,7 +992,9 @@ static  bool    DoArithOps( block *root )
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
     change = false;
     for( opcode = FIRST_CSE_OP; opcode <= LAST_CSE_OP; ++opcode ) {
@@ -974,7 +1021,7 @@ static  bool    PropagateExprs( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
-        if( blk->class & PARTITION_ROOT ) {
+        if( blk->class & BLOCK_VISITED ) {
             change |= DoArithOps( blk );
         }
     }
@@ -1007,19 +1054,27 @@ static bool FixOneStructRet( instruction *call )
 
     res = call->result;
     mova = call->head.prev;
-    if( mova->head.opcode != OP_MOV ) return( false );
+    if( mova->head.opcode != OP_MOV )
+        return( false );
     op = mova->operands[0];
-    if( op->n.class != N_CONSTANT ) return( false );
-    if( op->c.const_type != CONS_TEMP_ADDR ) return( false );
-    if( op->c.value != res ) return( false );
+    if( op->n.class != N_CONSTANT )
+        return( false );
+    if( op->c.const_type != CONS_TEMP_ADDR )
+        return( false );
+    if( op->c.value != res )
+        return( false );
     for( movr = call->head.next; movr->head.opcode == OP_NOP; ) {
         movr = movr->head.next;
     }
-    if( movr->head.opcode != OP_MOV ) return( false );
-    if( movr->type_class != XX ) return( false );
-    if( movr->operands[0] != res ) return( false );
+    if( movr->head.opcode != OP_MOV )
+        return( false );
+    if( movr->type_class != XX )
+        return( false );
+    if( movr->operands[0] != res )
+        return( false );
     res = movr->result;
-    if( res->n.class != N_TEMP ) return( false );
+    if( res->n.class != N_TEMP )
+        return( false );
     call->result = res;
     mova->operands[0] = AllocAddrConst(res,0,CONS_TEMP_ADDR,mova->type_class);
     FreeIns( movr );
@@ -1054,7 +1109,7 @@ static  bool    FixStructRet( block *root )
             if( _OpIsCall( ins->head.opcode ) ) {
                 if( ins->result != NULL &&
                    ins->result->n.class == N_TEMP &&
-                   ( ins->flags.call_flags & CALL_RETURNS_STRUCT ) &&
+                   (ins->flags.call_flags & CALL_RETURNS_STRUCT) &&
                    FixOneStructRet( ins ) ) {
                     change = true;
                 }
@@ -1062,7 +1117,9 @@ static  bool    FixStructRet( block *root )
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
     return( change );
 }
@@ -1080,10 +1137,11 @@ static  bool    isMoveIns( instruction *ins )
     Is "ins" a move type instruction?
 */
 {
-    if( ins->head.opcode == OP_MOV )return( true );
-    if( _IsConvert( ins )
-     && ins->operands[0]->n.class == N_CONSTANT
-     && ins->operands[0]->c.const_type == CONS_ABSOLUTE ) return( true );
+    if( ins->head.opcode == OP_MOV )
+        return( true );
+    if( _IsConvert( ins ) && ins->operands[0]->n.class == N_CONSTANT
+      && ins->operands[0]->c.const_type == CONS_ABSOLUTE )
+        return( true );
     return( false );
 }
 
@@ -1098,7 +1156,7 @@ static  bool    CanLinkMove( instruction *ins )
     /* only propagate constants and temps*/
     if( ins->operands[0]->n.class == N_REGISTER )
         return( false );
-    if( ins->operands[0]->n.class == N_TEMP && ( ins->operands[0]->t.temp_flags & STACK_PARM ) != 0 )
+    if( ins->operands[0]->n.class == N_TEMP && (ins->operands[0]->t.temp_flags & STACK_PARM) )
         return( false );
     if( ins->result->n.class == N_REGISTER )
         return( false );
@@ -1155,15 +1213,18 @@ static  bool    LinkableMove( instruction *ins )
     moves associated with it's result.
 */
 {
-    if( !isMoveIns( ins ) ) return( false );
-    if( !CanLinkMove( ins ) ) return( false );
-    if( ins->operands[0]->n.class == N_MEMORY ) return( false );
-    if( ins->operands[0]->n.class == N_INDEXED ) return( false );
+    if( !isMoveIns( ins ) )
+        return( false );
+    if( !CanLinkMove( ins ) )
+        return( false );
+    if( ins->operands[0]->n.class == N_MEMORY )
+        return( false );
+    if( ins->operands[0]->n.class == N_INDEXED )
+        return( false );
     if( ins->operands[0]->n.class == N_CONSTANT ) {
         if( ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
-            ins->operands[0] = AllocConst(
-                CnvCFToType( ins->operands[0]->c.value,
-                          ClassType( ins->type_class ) ) );
+            ins->operands[0] = AllocConst( CnvCFToType( ins->operands[0]->c.value,
+                                                ClassType( ins->type_class ) ) );
         }
     }
     return( true );
@@ -1186,7 +1247,9 @@ static  void    LinkMoves( block *root )
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
 }
 
@@ -1203,14 +1266,18 @@ static  void    LinkMemMoves( block *root )
     blk = root;
     for(;;) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( !isMoveIns( ins ) ) continue;
-            if( !CanLinkMove( ins ) ) continue;
-            if( ins->operands[0]->n.class != N_MEMORY &&
-                ins->operands[0]->n.class != N_INDEXED ) continue;
+            if( !isMoveIns( ins ) )
+                continue;
+            if( !CanLinkMove( ins ) )
+                continue;
+            if( ins->operands[0]->n.class != N_MEMORY && ins->operands[0]->n.class != N_INDEXED )
+                continue;
             CreateLink( ins, ins->operands[0] );
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
 }
 
@@ -1256,7 +1323,9 @@ static  void    CleanMoves( block *root )
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
     CleanTableEntries( root );
 }
@@ -1276,7 +1345,9 @@ static  void    CleanTableEntries( block *root )
             _INSLINK( ins ) = NULL;
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
 }
 
@@ -1341,8 +1412,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         base = NULL;
                         switch( defop->c.const_type ) {
                         case CONS_ABSOLUTE:
-                            if( opnd->i.base != NULL
-                                && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
+                            if( opnd->i.base != NULL && (opnd->i.index_flags & X_FAKE_BASE) == 0 ) {
                                 disp = opnd->i.constant + defop->c.lo.int_value;
                                 base = opnd->i.base;
                             }
@@ -1350,8 +1420,7 @@ static  bool    PropOpnd( instruction *ins, name **op,
                         case CONS_ADDRESS:
                         case CONS_OFFSET:
                         case CONS_TEMP_ADDR:
-                            if( opnd->i.base == NULL
-                                || (opnd->i.index_flags & X_FAKE_BASE) ) {
+                            if( opnd->i.base == NULL || (opnd->i.index_flags & X_FAKE_BASE) ) {
                                 disp = opnd->i.constant;
                                 base = defop->c.value;
                             }
@@ -1413,12 +1482,12 @@ static  bool    PropMoves( block *root, bool backward )
     for( ;; ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode != OP_LA
-             && ins->head.opcode != OP_CAREFUL_LA
-             && ins->head.opcode != OP_EXT_ADD
-             && ins->head.opcode != OP_EXT_SUB
-             && ins->head.opcode != OP_CALL_INDIRECT
-             && ins->head.opcode != OP_LOAD_UNALIGNED
-             && ins->head.opcode != OP_STORE_UNALIGNED ) {
+              && ins->head.opcode != OP_CAREFUL_LA
+              && ins->head.opcode != OP_EXT_ADD
+              && ins->head.opcode != OP_EXT_SUB
+              && ins->head.opcode != OP_CALL_INDIRECT
+              && ins->head.opcode != OP_LOAD_UNALIGNED
+              && ins->head.opcode != OP_STORE_UNALIGNED ) {
                 for( i = NumOperands( ins ); i-- > 0; ) {
                     switch( ins->operands[i]->n.class ) {
                     case N_INDEXED:
@@ -1459,7 +1528,9 @@ static  bool    PropMoves( block *root, bool backward )
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
     return( change );
 }
@@ -1485,7 +1556,7 @@ static  bool    DoPropagateMoves( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
-        if( blk->class & PARTITION_ROOT ) {
+        if( blk->class & BLOCK_VISITED ) {
             do {
                 block_changed = false;
                 if( FixStructRet( blk ) ) {
@@ -1548,11 +1619,13 @@ extern  bool    CommonSex( bool leave_indvars_alone )
     LeaveIndVars = leave_indvars_alone;
     FindPartition();
     anychange = LoadAddr();
-    if( PropRegsOne() ) anychange = true;
+    if( PropRegsOne() )
+        anychange = true;
     for( ;; ) {
         ReCalcAddrTaken();
         change = false;
-        if( DoPropagateMoves() ) change = true;
+        if( DoPropagateMoves() )
+            change = true;
         if( StretchEdges() ) {
             change = true;
             loops_killed = true;
@@ -1565,8 +1638,10 @@ extern  bool    CommonSex( bool leave_indvars_alone )
             CleanPartition();
             FindPartition();
         }
-        if( PropagateExprs() ) change = true;
-        if( change ) InsDead();
+        if( PropagateExprs() )
+            change = true;
+        if( change )
+            InsDead();
         if( change ) {
             anychange = true;
         } else {

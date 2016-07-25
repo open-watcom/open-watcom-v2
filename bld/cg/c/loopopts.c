@@ -51,16 +51,20 @@
 #include "feprotos.h"
 
 
+/* block flag usage                                         */
+/*                                                          */
+/* BLOCK_MARKED is used in the sense of BLOCK_WILL_EXECUTE  */
+/*                                                          */
+
+/* target specific. Can a pointer get anywhere near the boundary pointer values? */
+/* For 8086, yes. 0000 and FFFF are quite possible as pointer values */
+
+#define _POINTER_GETS_NEAR_BOUNDS 1
+
 typedef struct block_list {
     block                   *blk;
     struct block_list       *next;
 } block_list;
-
-/* target specific. Can a pointer get anywhere near the boundary pointer values?*/
-/* For 8086, yes. 0000 and FFFF are quite possible as pointer values*/
-
-#define _POINTER_GETS_NEAR_BOUNDS 1
-#define BLOCK_WILL_EXECUTE      BLOCK_MARKED
 
 extern type_class_def   Unsigned[];
 
@@ -177,7 +181,7 @@ extern block    *AddPreBlock( block *postblk )
     postblk->ins.hd.line_num = 0;
     preblk->loop_head = postblk->loop_head; /**/
     preblk->depth = postblk->depth;
-    if( ( postblk->class & LOOP_HEADER ) != EMPTY ) {
+    if( postblk->class & LOOP_HEADER ) {
         // we don't always add this block before a loop header
         // for instance, in the floating point scheduling stuff
         // we use this routine to add a safe 'decache' block
@@ -222,11 +226,11 @@ static bool     IsPreHeader( block *test ) {
         return( false );
     if( test->edge[0].destination.u.blk != Head )
         return( false );
-    if( ( test->class & IN_LOOP ) != EMPTY )
+    if( test->class & IN_LOOP )
         return( false );
     /* check that no other block outside the loop branches into the loop */
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
-        if( other != test && ( other->class & IN_LOOP ) == EMPTY ) {
+        if( other != test && (other->class & IN_LOOP) == 0 ) {
             for( i = other->targets; i-- > 0; ) {
                 if( other->edge[i].destination.u.blk->class & IN_LOOP ) {
                     return( false );
@@ -276,7 +280,7 @@ static void     PreHeader( void )
         PreHead = AddPreBlock( Head );
         for( edge = Head->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
-            if( edge->source != PreHead && ( edge->source->class & IN_LOOP ) == EMPTY ) {
+            if( edge->source != PreHead && (edge->source->class & IN_LOOP) == 0 ) {
                 MoveEdge( edge, PreHead );
             }
         }
@@ -305,7 +309,7 @@ extern void     MarkLoop( void )
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
         edge = &other_blk->edge[0];
         for( targets = other_blk->targets; targets > 0; --targets ) {
-            if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
+            if( (edge->destination.u.blk->class & IN_LOOP) == 0 ) {
                 other_blk->class |= LOOP_EXIT;
             }
             ++edge;
@@ -698,7 +702,7 @@ extern bool     Hoistable( instruction *ins, block *blk )
     will_execute = false;
     dangerous = false;
     big_const = false;
-    if( blk != NULL && LoopProtected && ( blk->class & BLOCK_WILL_EXECUTE ) ) {
+    if( blk != NULL && LoopProtected && (blk->class & BLOCK_MARKED) ) {
         will_execute = true;
     }
     if( _IsFloating( ins->type_class ) && _IsntTargetModel( I_MATH_INLINE ) ) {
@@ -955,9 +959,9 @@ extern void     CommonInvariant( void )
             res = ins->result;
             if( ( ins->head.opcode == OP_MOV ) &&
                 ( op->n.class == N_TEMP ) &&
-                ( ( op->t.temp_flags & ONE_DEFINITION ) ) &&
+                (op->t.temp_flags & ONE_DEFINITION) &&
                 ( res->n.class == N_TEMP ) &&
-                ( res->t.temp_flags & ONE_DEFINITION ) &&
+                (res->t.temp_flags & ONE_DEFINITION) &&
                 ( (res->t.temp_flags & MULT_DEFINITION) == 0 ) &&
                 !BlockByBlock ) {
                 ReplaceAllOccurences( res, op );
@@ -2015,9 +2019,9 @@ static  void *MarkDown( block *blk )
         return NULL;
     if( blk == Head )
         return NULL;
-    if( (blk->class & BLOCK_WILL_EXECUTE) == 0 )
+    if( (blk->class & BLOCK_MARKED) == 0 )
         return NULL;
-    blk->class &= ~BLOCK_WILL_EXECUTE;
+    blk->class &= ~BLOCK_MARKED;
     for( i = blk->targets; i-- > 0; ) {
         SafeRecurseCG( (func_sr)MarkDown, blk->edge[i].destination.u.blk );
     }
@@ -2051,7 +2055,7 @@ static  void    LabelDown( instruction *frum,
         blk = edge->destination.u.blk;
         if( ( go_around || blk != Head ) && (blk->class & IN_LOOP) ) {
             ins = blk->ins.hd.next;
-            if( ins->head.opcode == OP_BLOCK || ( ins->ins_flags & INS_VISITED ) == 0 ) {
+            if( ins->head.opcode == OP_BLOCK || (ins->ins_flags & INS_VISITED) == 0 ) {
                 blk->class |= BLOCK_VISITED;
             }
             ++edge;
@@ -2128,7 +2132,7 @@ static  void    MarkWillExecBlocks( void )
     instruction *nop;
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        blk->class |= BLOCK_WILL_EXECUTE;
+        blk->class |= BLOCK_MARKED;
     }
 
     /* First, prune some blocks we know won't necessarily execute */
@@ -2146,7 +2150,7 @@ static  void    MarkWillExecBlocks( void )
             continue;
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[i].destination.u.blk->inputs == 1 ) {
-                blk->edge[i].destination.u.blk->class &= ~BLOCK_WILL_EXECUTE;
+                blk->edge[i].destination.u.blk->class &= ~BLOCK_MARKED;
             }
         }
     }
@@ -2160,14 +2164,14 @@ static  void    MarkWillExecBlocks( void )
     }
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        if( (blk->class & BLOCK_WILL_EXECUTE) == 0 )
+        if( (blk->class & BLOCK_MARKED) == 0 )
             continue;
         if( blk->ins.hd.next == (instruction *)&blk->ins ) {
-            blk->class &= ~BLOCK_WILL_EXECUTE;
+            blk->class &= ~BLOCK_MARKED;
             continue;
         }
         if( PathFrom( Head->ins.hd.prev, Head->ins.hd.next, blk->ins.hd.next, true ) ) {
-            blk->class &= ~BLOCK_WILL_EXECUTE;
+            blk->class &= ~BLOCK_MARKED;
         }
     }
     if( nop != NULL ) {
@@ -2182,7 +2186,7 @@ static  void    UnMarkWillExecBlocks( void )
     block       *blk;
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        blk->class &= ~BLOCK_WILL_EXECUTE;
+        blk->class &= ~BLOCK_MARKED;
     }
 }
 
@@ -2583,7 +2587,7 @@ static  name    *InitialValue( name *op )
     for( ;; ) {
         if( other->head.opcode == OP_BLOCK ) {
             blk = _BLOCK( other );
-            if( ( blk->class & IN_LOOP ) != EMPTY )
+            if( blk->class & IN_LOOP )
                 return( NULL );
             if( blk->inputs != 1 )
                 return( NULL );
@@ -2635,7 +2639,7 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         ins->operands[1] = temp;
         RevCond( ins );
     }
-    if( blk->edge[ _TrueIndex( ins ) ].destination.u.blk->class & IN_LOOP ) {
+    if( blk->edge[_TrueIndex( ins )].destination.u.blk->class & IN_LOOP ) {
         _SetBlockIndex( ins, _FalseIndex( ins ), _TrueIndex( ins ) );
         FlipCond( ins );
     }
@@ -2732,7 +2736,7 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var )
     if( !CalcFinalValue( var, blk, ins, &final, &initial ) ) {
         return( false );
     }
-    dest = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
+    dest = blk->edge[_TrueIndex( ins )].destination.u.blk;
     if( dest->class & UNKNOWN_DESTINATION )
         return( false );
     if( dest->class & LOOP_HEADER )
@@ -2770,7 +2774,7 @@ static  bool    PointerOk( name *op )
         return( false );
     if( op->n.class != N_TEMP )
         return( false );
-    if( ( op->t.temp_flags & INDEXED ) == EMPTY )
+    if( (op->t.temp_flags & INDEXED) == 0 )
         return( false );
     return( true );
 #endif
@@ -2785,7 +2789,7 @@ static  bool    DangerousTypeChange( induction *var, induction *other )
 {
     invariant   *invar;
 
-    if( Unsigned[var->type_class ] == Unsigned[other->type_class] )
+    if( Unsigned[var->type_class] == Unsigned[other->type_class] )
         return( false );
     if( PointerOk( other->name ) )
         return( false );
@@ -2864,7 +2868,7 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
         I32ToI64( rep->plus, &temp );
         U64Add( &big_cons, &temp, &big_cons );
         // make sure we always allow negative values - hack for BMark
-        if( ( big_cons.u._32[I64HI32] & 0x80000000 ) == 0 ) {
+        if( (big_cons.u._32[I64HI32] & 0x80000000) == 0 ) {
             if( ConstOverflowsType( &big_cons, class ) ) {
                 return( false );
             }
@@ -3026,7 +3030,7 @@ static  bool    DoLoopInvariant( bool(*rtn)(void) )
     depth = MaxDepth();
     for( i = 1; i <= depth; ++i ) { /* do loop invariant code motion from the outside in*/
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( ( blk->class & LOOP_HEADER ) != EMPTY && blk->depth == i ) {
+            if( (blk->class & LOOP_HEADER) && blk->depth == i ) {
                 LPBlip();
                 Head = blk;
                 MarkLoop();
@@ -3194,7 +3198,7 @@ void    LoopEnregister( void )
 
     for( i = MaxDepth(); i >= 1; --i ) { /* do loop enregistering from the inside out */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( ( blk->class & LOOP_HEADER ) != EMPTY && blk->depth == i ) {
+            if( (blk->class & LOOP_HEADER) && blk->depth == i ) {
                 Head = blk;
                 MarkLoop();
                 ConstToTemp( PreHead, Loop, NextInLoop );
@@ -3408,7 +3412,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
 
             }
             for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-                if( ( blk->class & IN_LOOP ) != EMPTY ) {
+                if( blk->class & IN_LOOP ) {
                     PropIndexes( blk );
                 }
             }
@@ -3517,7 +3521,7 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
     /* do all loops inside this loop separately*/
 
     for( curr_block.blk = HeadBlock; curr_block.blk != NULL; curr_block.blk = curr_block.blk->next_block ) {
-        if( ( curr_block.blk->class & LOOP_HEADER ) && curr_block.blk->loop_head == header->blk ) {
+        if( (curr_block.blk->class & LOOP_HEADER) && curr_block.blk->loop_head == header->blk ) {
             curr_block.next = header;
             change |= DoInduction( &curr_block, reduce, unroll );
             while( *owner != NULL ) {   // hook inner indvars onto "list"

@@ -32,18 +32,18 @@
 
 #include "dominati.h"
 
-#define _IsBlkVisited( b )      ( ((b)->class & BLOCK_VISITED) != 0 )
-#define _MarkBlkUnVisited( b )  ( (b)->class &= ~BLOCK_VISITED )
-#define _MarkBlkVisited( b )    ( (b)->class |=  BLOCK_VISITED )
+#define _IsBlkAttr( b, a )      ( ((b)->class & (a)) != 0 )
+#define _MarkBlkAttrNot( b, a ) ( (b)->class &= ~(a) )
+#define _MarkBlkAttr( b, a )    ( (b)->class |=  (a) )
+#define _SetBlkAttr( b, a )     ( (b)->class  =  (a) )
 
-#define _IsBlkMarked( b )       ( ((b)->class & BLOCK_MARKED) != 0 )
-#define _MarkBlkUnMarked( b )   ( (b)->class &= ~BLOCK_MARKED )
-#define _MarkBlkMarked( b )     ( (b)->class |=  BLOCK_MARKED )
+#define _IsBlkVisited( b )      _IsBlkAttr( b, BLOCK_VISITED )
+#define _MarkBlkUnVisited( b )  _MarkBlkAttrNot( b, BLOCK_VISITED )
+#define _MarkBlkVisited( b )    _MarkBlkAttr( b, BLOCK_VISITED )
 
-#define _IsBlkAttr( b, a )      ( ((b)->class & a) != 0 )
-#define _MarkBlkAttrNot( b, a ) ( (b)->class &= ~a )
-#define _MarkBlkAttr( b, a )    ( (b)->class |=  a )
-#define _SetBlkAttr( b, a )     ( (b)->class  =  a )
+#define _IsBlkMarked( b )       _IsBlkAttr( b, BLOCK_MARKED )
+#define _MarkBlkUnMarked( b )   _MarkBlkAttrNot( b, BLOCK_MARKED )
+#define _MarkBlkMarked( b )     _MarkBlkAttr( b, BLOCK_MARKED )
 
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
