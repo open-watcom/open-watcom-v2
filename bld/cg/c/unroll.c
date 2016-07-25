@@ -46,30 +46,19 @@
 #include "blips.h"
 #include "edge.h"
 #include "makeblk.h"
+#include "loopopts.h"
 
 
-extern  instruction     *DupInstrs(instruction*,instruction*,instruction*,induction*,signed_32);
-extern  bool            AnalyseLoop(induction*,bool*,instruction**,block**);
 extern  name            *DeAlias(name*);
 extern  name            *SAllocIndex(name *,name *,type_length ,type_class_def ,type_length );
 extern  void            SuffixIns(instruction *,instruction *);
 extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
 extern  void            PrefixIns(instruction *,instruction *);
-extern  bool            InvariantOp(name *);
-extern  induction       *FindIndVar( name *);
 extern  void            RemoveInputEdge( block_edge * );
-extern  void            SuffixPreHeader( instruction * );
-extern  void            MarkLoop( void );
-extern  void            UnMarkLoop( void );
-extern  void            MarkInvariants( void );
-extern  void            UnMarkInvariants( void );
-extern  instruction     *DupIns( instruction *, instruction *, name *, signed_32 );
 extern  void            RemoveBlock( block * );
 extern  void            FlipCond( instruction * );
 extern  void            RevCond( instruction * );
 extern  int             CountIns( block *);
-extern  void            MoveDownLoop( block * );
-extern  void            MakeJumpBlock( block *, block_edge * );
 
 extern type_class_def   Signed[];
 extern block            *PreHead;

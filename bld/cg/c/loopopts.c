@@ -48,6 +48,7 @@
 #include "edge.h"
 #include "redefby.h"
 #include "makeblk.h"
+#include "loopopts.h"
 #include "feprotos.h"
 
 
@@ -97,7 +98,7 @@ block                   *PreHead;
 induction               *IndVarList;
 block                   *Loop;
 
-extern void     InitIndVars( void )
+static void     InitIndVars( void )
 /**********************************
     Initialize for induction variable processing
 */
@@ -161,7 +162,7 @@ static bool     InLoop( block *blk )
 }
 
 
-extern block    *AddPreBlock( block *postblk )
+block    *AddPreBlock( block *postblk )
 /*********************************************
     There is no preheader for this loop (loop has no initialization) so
     add a block right in front of the loop header and move any branch
@@ -288,7 +289,7 @@ static void     PreHeader( void )
 }
 
 
-extern void     MarkLoop( void )
+void     MarkLoop( void )
 /*******************************
     Mark the current loop (defined by Head) as IN_LOOP.  Also mark any
     blocks in the loop containing a branch out of the loop as LOOP_EXIT.
@@ -319,7 +320,7 @@ extern void     MarkLoop( void )
 }
 
 
-extern void     UnMarkLoop( void )
+void     UnMarkLoop( void )
 /*********************************
     Turn off the loop marking bits for the current loop.
 */
@@ -332,21 +333,21 @@ extern void     UnMarkLoop( void )
     }
 }
 
-extern block    *NextInLoop( block *blk )
+block    *NextInLoop( block *blk )
 /***************************************/
 {
     return( blk->u.loop );
 }
 
 
-extern block    *NextInProg( block *blk )
+block    *NextInProg( block *blk )
 /***************************************/
 {
     return( blk->next_block );
 }
 
 
-extern void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
+void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
 /**********************************************************************
     Turn the loop condition exit block into one that just transfers out
     of the loop.
@@ -414,7 +415,7 @@ static bool     KillOneTrippers( void )
 }
 
 
-extern void     UnMarkInvariants( void )
+void     UnMarkInvariants( void )
 /***************************************
     Turn off the bits which indicate that a name is loop invariant
 */
@@ -495,7 +496,7 @@ static void     ZapMemory( name *op )
 }
 
 
-extern void     MarkInvariants( void )
+void     MarkInvariants( void )
 /*************************************
     Mark all N_TEMP/N_MEMORY names as INVARIANT with respect to the
     current loop "Loop", then traverse the loop and turn off the
@@ -628,7 +629,7 @@ static bool     InvariantReg( name *op )
 }
 
 
-extern bool     InvariantOp( name *op )
+bool     InvariantOp( name *op )
 /**************************************
     return true if "op" is invariant with respect to "Loop"
 */
@@ -688,7 +689,7 @@ static value    OpEQZero( name *op, bool fp )
 }
 
 
-extern bool     Hoistable( instruction *ins, block *blk )
+bool     Hoistable( instruction *ins, block *blk )
 /********************************************************
     Is it safe to hoist instruction "ins" out of the loop (or if)?
 */
@@ -831,7 +832,7 @@ static void     UpdateLoopLiveInfo( instruction *ins )
     }
 }
 
-extern induction    *FindIndVar( name *op )
+induction    *FindIndVar( name *op )
 /******************************************
     Find an existing induction variable entry for "op".
 */
@@ -939,7 +940,7 @@ static bool     DifferentClasses( type_class_def c1, type_class_def c2 )
 }
 
 
-extern void     CommonInvariant( void )
+void     CommonInvariant( void )
 /**************************************
     find moves from one ONE_DEFINITION temp to another. These are
     loop invariant expressions that got hauled out of the loop

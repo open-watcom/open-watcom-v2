@@ -44,6 +44,8 @@
 #include "peepopt.h"
 #include "blips.h"
 #include "redefby.h"
+#include "indvars.h"
+#include "loopopts.h"
 #include "feprotos.h"
 
 
@@ -51,8 +53,8 @@
 /*                                                          */
 /* BLOCK_VISITED is used in the sense of PARTITION_ROOT     */
 /*                                                          */
+
 #define INS_DEFINES_OWN_OPERAND INS_MARKED
-/*                                                          */
 
 /* Borrow a few fields and bits to label trees with bits and link stuff */
 
@@ -80,11 +82,9 @@ extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
 extern bool             InsDead(void);
 extern bool             LoadAToMove(instruction*);
-extern bool             Hoistable(instruction*,block*);
 extern  bool            DeadBlocks(void);
 extern  void            RemoveInputEdge(block_edge*);
 extern  bool            DivIsADog(type_class_def);
-extern  bool            Inducable(block*,instruction*);
 extern  void            MoveHead(block*,block*);
 extern  void            MakeFlowGraph(void);
 extern  bool            BlockTrim(void);

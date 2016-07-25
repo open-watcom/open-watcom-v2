@@ -110,7 +110,7 @@ extern  bool            CreateBreak( void )
         } else if( pending == 0 ) {
             break_blk = blk;
         }
-        edge = &blk->edge[ 0 ];
+        edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 if( edge->flags & DEST_LABEL_DIES ) {
@@ -166,7 +166,7 @@ extern  bool            CreateBreak( void )
     and edge that goes to a block after break_blk
 */
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        edge = &blk->edge[ 0 ];
+        edge = &blk->edge[0];
         for( targets = blk->targets; targets > 0; --targets ) {
             if( (edge->flags & DEST_IS_BLOCK) == 0 || edge->destination.u.blk->gen_id >= break_blk->gen_id ) {
                 exit_edge = CGAlloc( sizeof( edge_list ) );
@@ -238,7 +238,7 @@ extern  bool            CreateBreak( void )
     blk->targets = 1;
     _SetBlkAttr( blk, BIG_LABEL | JUMP );
     _MarkBlkAttrNot( HeadBlock, BIG_LABEL );
-    edge = &blk->edge[ 0 ];
+    edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
     edge->destination.u.blk = HeadBlock;
     edge->source = blk;

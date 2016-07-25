@@ -55,6 +55,8 @@
 #include "regalloc.h"
 #include "targetin.h"
 #include "makeblk.h"
+#include "indvars.h"
+#include "loopopts.h"
 #include "feprotos.h"
 
 
@@ -67,11 +69,6 @@ extern  bool            BlockTrim( void );
 extern  bool            DeadBlocks( void );
 extern  void            MakeFlowGraph( void );
 extern  void            InitRegTbl( void );
-extern  bool            LoopInvariant( void );
-extern  bool            LoopEnregister( void );
-extern  bool            CommonInvariant( void );
-extern  bool            TransLoops( bool );
-extern  bool            IndVars( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
@@ -95,7 +92,6 @@ extern  int             ExpandOps( bool );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  void            LoopRegInvariant( void );
 extern  void            Score( void );
 extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );

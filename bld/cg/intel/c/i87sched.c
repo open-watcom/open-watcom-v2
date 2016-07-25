@@ -40,6 +40,8 @@
 #include "edge.h"
 #include "redefby.h"
 #include "cgsrtlst.h"
+#include "indvars.h"
+#include "loopopts.h"
 
 
 extern  int     Max87Stk;
@@ -54,7 +56,6 @@ extern  int             FPRegNum(name *);
 extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
 extern  name            *DeAlias(name *);
-extern  block           *AddPreBlock( block *postblk );
 extern  void            RevCond( instruction * );
 extern  int             FPStkReq( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
