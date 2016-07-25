@@ -328,7 +328,7 @@ static  void    FPAlloc( void ) {
             SetStackLevel( ins, &stk_level );
             AssignFPOps( ins, &stk_level );
         }
-        if( ( blk->class & RETURN ) && stk_level == 1 ) {
+        if( _IsBlkAttr( blk, RETURN ) && stk_level == 1 ) {
             stk_level = 0;
         }
         if( stk_level != 0 ) {

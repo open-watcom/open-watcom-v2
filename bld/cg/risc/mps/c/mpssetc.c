@@ -149,7 +149,7 @@ static  bool    FindFlowOut( block *blk )
         return( false );
     if( join_blk->inputs != 2 )
         return( false );
-    if( join_blk->class & UNKNOWN_DESTINATION )
+    if( _IsBlkAttr( join_blk, UNKNOWN_DESTINATION ) )
         return( false );
 
     ins0 = SetToConst( false_blk, &false_cons );
@@ -230,8 +230,8 @@ static  bool    FindFlowOut( block *blk )
     new_edge->next_source = NULL;
     join_blk->input_edges = new_edge;
     join_blk->inputs = 1;
-    blk->class &= ~CONDITIONAL;
-    blk->class |= JUMP;
+    _MarkBlkAttrNot( blk, CONDITIONAL );
+    _MarkBlkAttr( blk, JUMP );
     return( true );
 }
 
@@ -244,7 +244,7 @@ extern  bool    SetOnCondition( void )
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & CONDITIONAL ) {
+        if( _IsBlkAttr( blk, CONDITIONAL ) ) {
             change |= FindFlowOut( blk );
         }
     }

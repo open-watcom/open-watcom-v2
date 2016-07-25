@@ -106,9 +106,9 @@ static void DoMarkUsedCC( block *blk )
     if( ins != NULL ) {
         ins->ins_flags |= INS_CC_USED;
     } else {
-        blk->class |= BLOCK_VISITED;
+        _MarkBlkVisited( blk );
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( (edge->source->class & BLOCK_VISITED) == 0 ) {
+            if( !_IsBlkVisited( edge->source ) ) {
                 DoMarkUsedCC( edge->source );
             }
         }
@@ -362,7 +362,7 @@ extern  void    Conditions( void )
         cc->ins = NULL;
         cc->op_type = XX;
         blk->cc = cc;
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
     FlowConditions();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

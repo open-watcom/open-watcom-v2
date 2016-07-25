@@ -52,7 +52,7 @@ static  void    BitsOff( void )
     block               *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~( CONTAINS_CALL | BLOCK_MARKED | BLOCK_VISITED );
+        _MarkBlkAttrNot( blk, CONTAINS_CALL | BLOCK_MARKED | BLOCK_VISITED );
     }
 }
 
@@ -86,27 +86,27 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
     int         i;
     instruction *ins;
 
-    if( blk->class & (BIG_LABEL | RETURN | BIG_JUMP) ) {
-        blk->class |= BLOCK_MARKED;
+    if( _IsBlkAttr( blk, BIG_LABEL | RETURN | BIG_JUMP ) ) {
+        _MarkBlkMarked( blk );
         return;
     }
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
             if( SameConf( ins->operands[i], ins, conf ) ) {
-                blk->class |= BLOCK_MARKED;
+                _MarkBlkMarked( blk );
                 return;
             }
         }
         if( ins->result != NULL ) {
             if( SameConf( ins->result, ins, conf ) ) {
-                blk->class |= BLOCK_MARKED;
+                _MarkBlkMarked( blk );
                 return;
             }
         }
         if( _OpIsCall( ins->head.opcode ) &&
            ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 ||
                (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
-            blk->class |= CONTAINS_CALL;
+            _MarkBlkAttr( blk, CONTAINS_CALL );
         }
     }
 }
@@ -128,7 +128,7 @@ static  void    LoadStoreIfCall( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( (blk->class & CONTAINS_CALL) && (blk->class & BLOCK_MARKED) == 0 ) {
+        if( _IsBlkAttr( blk, CONTAINS_CALL ) && !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
             _GBitTurnOn( flow->need_load, *id );
             _GBitTurnOn( flow->need_store, *id );
@@ -148,7 +148,7 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( (blk->class & BLOCK_MARKED) == 0 ) {
+        if( !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
             if( _GBitOverlap( flow->need_load, *id ) && _GBitOverlap( flow->need_store, *id ) ) {
                 _GBitTurnOff( flow->need_load, *id );
@@ -231,7 +231,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
     BitsOff();
     blk = HeadBlock;
     if( blk != NULL ) {
-        blk->class |= BIG_LABEL;
+        _MarkBlkAttr( blk, BIG_LABEL );
     }
     _GBitAssign( id, conf->id.out_of_block );
     /* turn on bits before the conflict range */
@@ -240,19 +240,18 @@ static  void    CalculateLoadStore( conflict_node *conf )
             break;
         _GBitTurnOn( blk->dataflow->need_load, id );
         _GBitTurnOn( blk->dataflow->need_store, id );
-        blk->class |= BLOCK_MARKED;
+        _MarkBlkMarked( blk );
     }
     /* turn on bits in the conflict range */
     for( ; blk != NULL; blk = blk->next_block ) {
         flow = blk->dataflow;
         CheckRefs( conf, blk );
-        if( _GBitOverlap( flow->in, id ) && (blk->class & BIG_LABEL) ) {
+        if( _GBitOverlap( flow->in, id ) && _IsBlkAttr( blk, BIG_LABEL ) ) {
             _GBitTurnOn( flow->need_load, id );
         } else {
             _GBitTurnOff( flow->need_load, id );
         }
-        if( _GBitOverlap( flow->out, id )
-         && (blk->class & (RETURN | BIG_JUMP)) ) {
+        if( _GBitOverlap( flow->out, id ) && _IsBlkAttr( blk, RETURN | BIG_JUMP ) ) {
             _GBitTurnOn( flow->need_store, id );
         } else {
             _GBitTurnOff( flow->need_store, id );
@@ -271,7 +270,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
         blk = blk->next_block;
         if( blk == NULL )
             break;
-        blk->class |= BLOCK_MARKED;
+        _MarkBlkMarked( blk );
         _GBitTurnOn( flow->need_load, id );
         _GBitTurnOn( flow->need_store, id );
     }

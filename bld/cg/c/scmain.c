@@ -68,8 +68,10 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
     instruction     *cmp;
     unsigned        which;
 
-    if( (blk->class & CONDITIONAL) == 0 ) return;
-    if( blk->class & MULTIPLE_EXITS ) return;
+    if( !_IsBlkAttr( blk, CONDITIONAL ) )
+        return;
+    if( _IsBlkAttr( blk, MULTIPLE_EXITS ) )
+        return;
     for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
         cmp = cmp->head.prev;
     }
@@ -155,7 +157,7 @@ static  void *ScoreDescendants( block *blk )
 
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
-        if( ( son->inputs == 1 ) && (son->class & BLOCK_VISITED) == 0 ) {
+        if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
             for(;;) {
@@ -164,7 +166,8 @@ static  void *ScoreDescendants( block *blk )
                 if( !DoScore( son ) ) break;
                 UpdateLive( son->ins.hd.next, son->ins.hd.prev );
             }
-            son->class |= BLOCK_VISITED | BLOCK_MARKED;
+            _MarkBlkVisited( son );
+            _MarkBlkMarked( son );
             SafeRecurseCG( (func_sr)ScoreDescendants, son );
             FreeScoreBoard( son->cc );
             ScFree( son->cc );
@@ -174,9 +177,9 @@ static  void *ScoreDescendants( block *blk )
     HW_CAsgn( regs, HW_EMPTY );
     for( i = blk->targets; i-- > 0; ) {
         son = blk->edge[ i ].destination.u.blk;
-        if( son->class & BLOCK_MARKED ) {
+        if( _IsBlkMarked( son ) ) {
             HW_TurnOn( regs, son->ins.hd.next->head.live.regs );
-            son->class &= ~BLOCK_MARKED;
+            _MarkBlkUnMarked( son );
         }
     }
     HW_TurnOn( blk->ins.hd.live.regs, regs );
@@ -209,12 +212,12 @@ static  void    ScoreRoutine( void )
     if( ScoreCount != 0 ) {
         InitZero();
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            blk->class &= ~BLOCK_VISITED;
+            _MarkBlkUnVisited( blk );
         }
         MakeLiveInfo();
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( (blk->class & BLOCK_VISITED) == 0 ) {
+            if( !_IsBlkVisited( blk ) ) {
                 blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
                 ScoreClear( blk->cc );
                 for( ;; ) {
@@ -223,7 +226,7 @@ static  void    ScoreRoutine( void )
                     if( !DoScore( blk ) ) break;
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                 }
-                blk->class |= BLOCK_VISITED;
+                _MarkBlkVisited( blk );
                 ScoreDescendants( blk );
                 FreeScoreBoard( blk->cc );
                 ScFree( blk->cc );

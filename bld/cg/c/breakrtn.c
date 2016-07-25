@@ -89,7 +89,7 @@ extern  bool            CreateBreak( void )
     }
     FixEdges();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
 /*
     Run through the blocks and find a place (break_blk) where no previous
@@ -105,7 +105,7 @@ extern  bool            CreateBreak( void )
         if( AskIfReachedLabel( blk->label ) && blk != HeadBlock )
             break;
         if( (blk->edge[0].flags & BLOCK_LABEL_DIES) == 0 && blk != HeadBlock ) {
-            blk->class |= BLOCK_VISITED;
+            _MarkBlkVisited( blk );
             ++pending;
         } else if( pending == 0 ) {
             break_blk = blk;
@@ -114,8 +114,8 @@ extern  bool            CreateBreak( void )
         for( targets = blk->targets; targets > 0; --targets ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 if( edge->flags & DEST_LABEL_DIES ) {
-                    if( edge->destination.u.blk->class & BLOCK_VISITED ) {
-                        edge->destination.u.blk->class &= ~BLOCK_VISITED;
+                    if( _IsBlkVisited( edge->destination.u.blk ) ) {
+                        _MarkBlkUnVisited( edge->destination.u.blk );
                         if( --pending == 0 ) {
                             back_break_blk = blk->next_block;
                         }
@@ -127,7 +127,7 @@ extern  bool            CreateBreak( void )
     }
     /* clean up the BLOCK_VISITED flags */
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
     if( back_break_blk != NULL ) {
         break_blk = back_break_blk; /* always better to break on a back edge */
@@ -157,7 +157,7 @@ extern  bool            CreateBreak( void )
     BlockList = exit_blk;
     exit_blk->prev_block = break_blk->prev_block;
     exit_blk->next_block = NULL;
-    exit_blk->class = UNKNOWN_DESTINATION;
+    _SetBlkAttr( exit_blk, UNKNOWN_DESTINATION );
     break_blk->prev_block->next_block = exit_blk;
     break_blk->prev_block = NULL;
 
@@ -206,7 +206,7 @@ extern  bool            CreateBreak( void )
         FreeABlock( exit_blk );
     }
 
-    HeadBlock->class |= BIG_LABEL;
+    _MarkBlkAttr( HeadBlock, BIG_LABEL );
     HaveBreak = true;
 /*
     change any branches to HeadBlock from a block after break_blk into
@@ -236,8 +236,8 @@ extern  bool            CreateBreak( void )
     blk->id = 0;
     HeadBlock->label = AskForNewLabel();
     blk->targets = 1;
-    blk->class = BIG_LABEL | JUMP;
-    HeadBlock->class &= ~BIG_LABEL;
+    _SetBlkAttr( blk, BIG_LABEL | JUMP );
+    _MarkBlkAttrNot( HeadBlock, BIG_LABEL );
     edge = &blk->edge[ 0 ];
     edge->flags = DEST_IS_BLOCK;
     edge->destination.u.blk = HeadBlock;

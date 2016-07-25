@@ -239,8 +239,7 @@
                     _INS_NOT_BLOCK( blk->ins.hd.prev );
                     if( final_defn->id > blk->ins.hd.prev->id ) {
                         final_defn = blk->ins.hd.prev;
-                        if( ( blk->class & CONDITIONAL )
-                          || ( blk->class & SELECT ) ) {
+                        if( _IsBlkAttr( blk, CONDITIONAL | SELECT ) ) {
                             final_defn = blk->ins.hd.next;
                             while( !_OpIsJump( final_defn->head.opcode ) ) {
                                 final_defn = final_defn->head.next;

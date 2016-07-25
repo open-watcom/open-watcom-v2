@@ -92,7 +92,7 @@ void    GenObject( void )
     for( blk = HeadBlock; blk != NULL; blk = next_blk ) {
         if( blk->label != CurrProc->label && blk->label != NULL ) {
             last_line = DumpLineNum( blk->ins.hd.line_num, last_line, true );
-            if( (blk->class & ITERATIONS_KNOWN) && blk->iterations >= 10 ) {
+            if( _IsBlkAttr( blk, ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
                 align = DepthAlign( DEEP_LOOP_ALIGN );
             } else {
                 align = DepthAlign( blk->depth );
@@ -126,7 +126,7 @@ void    GenObject( void )
             }
         }
         EndBlockProfiling();
-        if( blk->class & (JUMP | BIG_JUMP) ) {
+        if( _IsBlkAttr( blk, JUMP | BIG_JUMP ) ) {
             if( BlockByBlock
              || next_blk == NULL
              || blk->edge[0].destination.u.lbl != next_blk->label ) {
@@ -135,10 +135,10 @@ void    GenObject( void )
                     GenJumpLabel( blk->edge[0].destination.u.lbl );
                 }
             }
-        } else if( blk->class & RETURN ) {
+        } else if( _IsBlkAttr( blk, RETURN ) ) {
             FiniZeroPage();
             GenEpilog();
-        } else if( blk->class & CALL_LABEL ) {
+        } else if( _IsBlkAttr( blk, CALL_LABEL ) ) {
             GenCallLabel( blk->edge[0].destination.u.blk );
             if( BlockByBlock ) {
                 if( next_blk == NULL ) {
@@ -147,10 +147,10 @@ void    GenObject( void )
                     GenJumpLabel( next_blk->label );
                 }
             }
-        } else if( blk->class & LABEL_RETURN ) {
+        } else if( _IsBlkAttr( blk, LABEL_RETURN ) ) {
             GenLabelReturn();
         }
-        if( (blk->class & LABEL_RETURN) == 0 ) { /* maybe pointer to dead label */
+        if( !_IsBlkAttr( blk, LABEL_RETURN ) ) { /* maybe pointer to dead label */
             for( targets = blk->targets; targets-- > 0; ) {
                 lbl = blk->edge[targets].destination.u.lbl;
                 TellReachedLabel( lbl );
@@ -448,18 +448,18 @@ static  void    FloodDown( block *from, flood_func func, void *parm ) {
     ClearBlockBits( FLOODED );
     stack = EdgeStackInit();
     PushTargets( stack, from );
-    from->class |= FLOODED;
+    _MarkBlkAttr( from, FLOODED );
     while( !EdgeStackEmpty( stack ) ) {
         edge = EdgeStackPop( stack );
         dest = edge->destination.u.blk;
-        if( dest->class & FLOODED )
+        if( _IsBlkAttr( dest, FLOODED ) )
             continue;
         decision = func( dest, parm );
         if( decision == ABORT )
             continue;
         if( decision == STOP )
             break;
-        dest->class |= FLOODED;
+        _MarkBlkAttr( dest, FLOODED );
         PushTargets( stack, dest );
     }
     EdgeStackFini( stack );
@@ -470,7 +470,7 @@ static  flood_decision PDFloodFunc( block *blk, flood_info *info ) {
 
     if( blk == info->dominator )
         return( ABORT );
-    if( blk->class & RETURN ) {
+    if( _IsBlkAttr( blk, RETURN ) ) {
         info->post_dominates = false;
         return( STOP );
     }
@@ -526,10 +526,10 @@ static  int     CallHeuristic( block *blk, instruction *cond ) {
 static  bool    LoopApplies( block *blk ) {
 /*****************************************/
 
-    if( blk->class & LOOP_HEADER )
+    if( _IsBlkAttr( blk, LOOP_HEADER ) )
         return( true );
-    if( blk->class & JUMP ) {
-        if( blk->edge[0].destination.u.blk->class & LOOP_HEADER ) {
+    if( _IsBlkAttr( blk, JUMP ) ) {
+        if( _IsBlkAttr( blk->edge[0].destination.u.blk, LOOP_HEADER ) ) {
             return( true );
         }
     }
@@ -654,10 +654,10 @@ static  int     StoreHeuristic( block *blk, instruction *cond ) {
 static  bool    ReturnApplies( block *blk ) {
 /*******************************************/
 
-    if( blk->class & RETURN )
+    if( _IsBlkAttr( blk, RETURN ) )
         return( true );
-    if( blk->class & JUMP ) {
-        if( blk->edge[0].destination.u.blk->class & RETURN ) {
+    if( _IsBlkAttr( blk, JUMP ) ) {
+        if( _IsBlkAttr( blk->edge[0].destination.u.blk, RETURN ) ) {
             return( true );
         }
     }
@@ -808,7 +808,7 @@ void    SortBlocks( void )
     for( curr = HeadBlock; curr != NULL; curr = next ) {
         next = curr->next_block;
         BQAdd( &unplaced, curr );
-        if( curr->class & RETURNED_TO ) {
+        if( _IsBlkAttr( curr, RETURNED_TO ) ) {
             // blocks which are returned to by a call_label routine
             // should not be placed because they are special cased in
             // BestFollower to come out directly after the CALL_LABEL

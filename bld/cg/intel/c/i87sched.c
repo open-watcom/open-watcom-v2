@@ -830,7 +830,7 @@ static  void    CacheTemps( block *blk ) {
 
     Entry = NULL;
     Exit = NULL;
-    if( (blk->class & LOOP_HEADER) && blk->inputs == 2 && blk->targets == 2 ) {
+    if( _IsBlkAttr( blk, LOOP_HEADER ) && blk->inputs == 2 && blk->targets == 2 ) {
         if( blk->edge[0].destination.u.blk == blk ) {
             Exit = blk->edge[1].destination.u.blk;
             exit_edge = &blk->edge[1];
@@ -851,7 +851,7 @@ static  void    CacheTemps( block *blk ) {
             }
         }
         if( Entry != NULL ) {
-            if( Entry->class & JUMP ) {
+            if( _IsBlkAttr( Entry, JUMP ) ) {
                 if( Exit->inputs != 1 ) {
                     Exit = AddPreBlock( Exit );
                     MoveEdge( exit_edge, Exit );

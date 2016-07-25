@@ -57,12 +57,15 @@ static  block   *FindUnMarkedInstance( void )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & BLOCK_VISITED ) continue;
+        if( _IsBlkVisited( blk ) )
+            continue;
         flow = blk->dataflow;
         if( _GBitOverlap( Id, flow->in )
          || _GBitOverlap( Id, flow->out )
          || _GBitOverlap( Id, flow->def )
-         || _GBitOverlap( Id, flow->use ) ) break;
+         || _GBitOverlap( Id, flow->use ) ) {
+            break;
+        }
     }
     return( blk );
 }
@@ -74,7 +77,7 @@ static  void    NotVisited( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
         blk->id = 0;
     }
 }
@@ -173,7 +176,7 @@ static  void    CleanUp( void )
 
     id = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
         blk->id = ++id;
     }
 }
@@ -187,8 +190,9 @@ static  void *MarkInstance( block *blk )
     data_flow_def       *flow;
     global_bit_set      *bitp;
 
-    if( blk->class & BLOCK_VISITED ) return NULL;
-    blk->class |= BLOCK_VISITED;
+    if( _IsBlkVisited( blk ) )
+        return( NULL );
+    _MarkBlkVisited( blk );
     blk->id = Instance;
     flow = blk->dataflow;
     if( _GBitOverlap( flow->in, Id ) ) {

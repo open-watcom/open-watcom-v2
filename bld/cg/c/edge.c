@@ -106,10 +106,10 @@ block   *SplitBlock( block *blk, instruction *ins )
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
     new_blk->next_block->prev_block = new_blk;
-    blk->class = blk->class & ~( CONDITIONAL | RETURN | SELECT | LOOP_EXIT | UNKNOWN_DESTINATION );
-    blk->class |= JUMP;
+    _MarkBlkAttrNot( blk, CONDITIONAL | RETURN | SELECT | LOOP_EXIT | UNKNOWN_DESTINATION );
+    _MarkBlkAttr( blk, JUMP );
     blk->targets = 1;
-    new_blk->class = new_blk->class & ~( LOOP_HEADER );
+    _MarkBlkAttrNot( new_blk, LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;

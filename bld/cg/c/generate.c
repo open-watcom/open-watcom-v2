@@ -401,7 +401,7 @@ static  void    BlockToCode( bool partly_done )
         HeadBlock->next_block->prev_block = NULL;
     }
     /* Kludge - need a pointer to the next block for CALL_LABEL - puke! */
-    if( HeadBlock->class & CALL_LABEL ) {
+    if( _IsBlkAttr( HeadBlock, CALL_LABEL ) ) {
         HeadBlock->v.next = HeadBlock->next_block;
     }
     HeadBlock->next_block = NULL;
@@ -482,7 +482,7 @@ static  void    BlockToCode( bool partly_done )
 
     /* generate the code for the block*/
 
-    if( CurrBlock->class & RETURN ) {
+    if( _IsBlkAttr( CurrBlock, RETURN ) ) {
         GenObject();
         FiniStackMap();
         FreeProc();
@@ -515,7 +515,7 @@ static  void    FlushBlocks( bool partly_done )
     }
     curr = CurrBlock;
     BlockByBlock = true;
-    classes = EMPTY;
+    classes = 0;
     for( blk = HeadBlock; blk != NULL; blk = next ) {
         next = blk->next_block;
         classes |= blk->class;

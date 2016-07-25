@@ -102,7 +102,7 @@ extern  void    FixBlockIds( void )
     name        *temp;
 
     id = 0;
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[ N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.u.block_id == NO_BLOCK_ID ) {
             temp->t.temp_flags |= VISITED;
         } else {
@@ -111,15 +111,17 @@ extern  void    FixBlockIds( void )
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ++id;
-        for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-            if( temp->t.temp_flags & VISITED ) continue;
-            if( temp->t.u.block_id != blk->id ) continue;
+        for( temp = Names[ N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
+            if( temp->t.temp_flags & VISITED )
+                continue;
+            if( temp->t.u.block_id != blk->id )
+                continue;
             temp->t.temp_flags |= VISITED;
             temp->t.u.block_id = id;
         }
         blk->id = id;
     }
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[ N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.temp_flags &= ~VISITED;
     }
 }
@@ -135,7 +137,8 @@ extern  block   *DupBlock( block *blk )
     block       *copy;
 
     copy = MakeBlock( AskForNewLabel(), blk->targets );
-    copy->class = ( blk->class & ~( LOOP_HEADER | ITERATIONS_KNOWN ) );
+    _SetBlkAttr( copy, blk->class );
+    _MarkBlkAttrNot( copy, LOOP_HEADER | ITERATIONS_KNOWN );
     copy->id = NO_BLOCK_ID;
     copy->depth = blk->depth;
     copy->gen_id = blk->gen_id;
@@ -187,7 +190,8 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
 
     // make a copy of each of the blocks in the original loop
     for( blk = tail; blk != NULL; blk = blk->u.loop ) {
-        if( ( blk->class & IGNORE ) != EMPTY ) continue;
+        if( _IsBlkAttr( blk, IGNORE ) )
+            continue;
         copy = DupBlock( blk );
         COPY_PTR( blk ) = copy;
         COPY_PTR( copy ) = blk;
@@ -210,16 +214,17 @@ static  block   *DupLoop( block *tail, loop_abstract *loop )
     // loop, otherwise we use the copy of the block.
     old_header = Head;
     for( blk = tail; blk != NULL; blk = blk->u.loop ) {
-        if( ( blk->class & IGNORE ) != EMPTY ) continue;
+        if( _IsBlkAttr( blk, IGNORE ) )
+            continue;
         copy = COPY_PTR( blk );
         for( i = 0; i < blk->targets; i++ ) {
-            dest = blk->edge[ i ].destination.u.blk;
-            if( ( dest->class & IN_LOOP ) != EMPTY ) {
+            dest = blk->edge[ i].destination.u.blk;
+            if( _IsBlkAttr( dest, IN_LOOP ) ) {
                 if( dest != old_header ) {
                     dest = COPY_PTR( dest );
                 }
             }
-            edge = &copy->edge[ i ];
+            edge = &copy->edge[ i];
             PointEdge( edge, dest );
             edge->flags &= ~ONE_ITER_EXIT;
             if( dest == old_header ) {
@@ -242,7 +247,7 @@ static  void    MarkHeaderEdges( block *loop, block *head )
 
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
-            edge = &blk->edge[ i ];
+            edge = &blk->edge[ i];
             if( edge->destination.u.blk == head ) {
                 edge->flags |= DEST_IS_HEADER;
             }
@@ -262,7 +267,7 @@ static  void    RedirectHeaderEdges( block *loop, block *new_head )
 
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
-            edge = &blk->edge[ i ];
+            edge = &blk->edge[ i];
             if( edge->flags & DEST_IS_HEADER ) {
                 MoveEdge( edge, new_head );
                 edge->source = blk;
@@ -280,7 +285,7 @@ static  void    UnMarkHeaderEdges( block *loop )
 
     for( blk = loop; blk != NULL; blk = blk->u.loop ) {
         for( i = 0; i < blk->targets; i++ ) {
-            edge = &blk->edge[ i ];
+            edge = &blk->edge[ i];
             edge->flags &= ~DEST_IS_HEADER;
         }
     }
@@ -304,14 +309,17 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
     *clean = false;
     unroll_count = Head->unroll_count;
     if( unroll_count == 0 ) {
-        if( _IsntModel( LOOP_UNROLLING ) ) return( 0 );
-        if( OptForSize != 0 ) return( false );
+        if( _IsntModel( LOOP_UNROLLING ) )
+            return( 0 );
+        if( OptForSize != 0 )
+            return( false );
         num_ins = 0;
         for( blk = loop_tail; blk != NULL; blk = blk->u.loop ) {
-            if( blk->class & SELECT ) return( 0 );
+            if( _IsBlkAttr( blk, SELECT ) )
+                return( 0 );
             num_ins += CountIns( blk );
         }
-        if( Head->class & ITERATIONS_KNOWN ) {
+        if( _IsBlkAttr( Head, ITERATIONS_KNOWN ) ) {
             for( unroll_count = MAX_CODE_SIZE / num_ins; unroll_count > 0; --unroll_count ) {
                 if( Head->iterations % ( unroll_count + 1 ) == 0 ) {
                     break;
@@ -340,7 +348,8 @@ static  bool    ReplaceName( name **pop, name *orig, name *new )
     type_length offset;
 
     op = *pop;
-    if( op == NULL ) return( false );
+    if( op == NULL )
+        return( false );
     switch( op->n.class ) {
     case N_INDEXED:
         if( op->i.index == orig ) {
@@ -393,7 +402,8 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
     signed_32   adjust;
 
     for( ind = IndVarList; ind != NULL; ind = ind->next ) {
-        if( _IsV( ind, IV_DEAD ) ) continue;
+        if( _IsV( ind, IV_DEAD ) )
+            continue;
         var = ind->name;
         temp = AllocTemp( var->n.name_class );
         adjust = scale * ind->plus;
@@ -436,7 +446,7 @@ extern  void    DumpLoop( block *loop )
         }
         DumpNL();
         DumpLiteral( "\tDest: " );
-        edge = &loop->edge[ 0 ];
+        edge = &loop->edge[ 0];
         for( i = 0; i < loop->targets; i++ ) {
             DumpPtr( edge->destination.u.blk );
             DumpChar( ' ' );
@@ -487,12 +497,12 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
 
     // allocate an array of these abstract loop thingies
     new_loops = CGAlloc( size );
-    first = &new_loops[ 0 ];
-    last = &new_loops[ reps - 1 ];
+    first = &new_loops[ 0];
+    last = &new_loops[ reps - 1];
 
     // create the actual copies - they will be independant of each other
     for( i = 0; i < reps; i++ ) {
-        curr = &new_loops[ i ];
+        curr = &new_loops[ i];
         DupLoop( tail, curr );
     }
 
@@ -508,8 +518,8 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     // we also take this opportunity to link the various copies together via
     // blk->next_block and blk->u.loop
     for( i = 1; i < reps; i++ ) {
-        curr = &new_loops[ i - 1 ];
-        next = &new_loops[   i   ];
+        curr = &new_loops[ i - 1];
+        next = &new_loops[   i  ];
         RedirectHeaderEdges( curr->tail, next->head );
         ChainTwoLoops( curr, next );
     }
@@ -551,34 +561,36 @@ static  bool    TractableCond( loop_condition *cond )
     ok = false;
 //    exit_true = false;
     MarkInvariants();
-    if( !InvariantOp( ins->operands[ 1 ] ) ) {
-        n = ins->operands[ 0 ];
-        ins->operands[ 0 ] = ins->operands[ 1 ];
-        ins->operands[ 1 ] = n;
+    if( !InvariantOp( ins->operands[ 1] ) ) {
+        n = ins->operands[ 0];
+        ins->operands[ 0] = ins->operands[ 1];
+        ins->operands[ 1] = n;
         RevCond( ins );
     }
-    if( InvariantOp( ins->operands[ 1 ] ) ) {
-        tmp = FindIndVar( ins->operands[ 0 ] );
+    if( InvariantOp( ins->operands[ 1] ) ) {
+        tmp = FindIndVar( ins->operands[ 0] );
         if( tmp != NULL ) {
             cond->induction = tmp;
-            cond->invariant = ins->operands[ 1 ];
+            cond->invariant = ins->operands[ 1];
             ok = true;
         }
     }
     UnMarkInvariants();
-    if( !ok ) return( false );
-    if( _IsV( cond->induction, IV_DEAD ) ) return( false );
-    if( ( blk->edge[ 0 ].destination.u.blk->class & IN_LOOP ) != EMPTY ) {
-        cond->exit_edge = blk->edge[ 1 ].destination.u.blk;
-        cond->loop_edge = blk->edge[ 0 ].destination.u.blk;
+    if( !ok )
+        return( false );
+    if( _IsV( cond->induction, IV_DEAD ) )
+        return( false );
+    if( _IsBlkAttr( blk->edge[ 0].destination.u.blk, IN_LOOP ) ) {
+        cond->exit_edge = blk->edge[ 1].destination.u.blk;
+        cond->loop_edge = blk->edge[ 0].destination.u.blk;
         if( _TrueIndex( ins ) == 1 ) {
             // want loop to continue executing if condition true
             FlipCond( ins );
             _SetBlockIndex( ins, 0, 1 );
         }
     } else {
-        cond->exit_edge = blk->edge[ 0 ].destination.u.blk;
-        cond->loop_edge = blk->edge[ 1 ].destination.u.blk;
+        cond->exit_edge = blk->edge[ 0].destination.u.blk;
+        cond->loop_edge = blk->edge[ 1].destination.u.blk;
         if( _TrueIndex( ins ) == 0 ) {
             // want loop to continue executing if condition true
             FlipCond( ins );
@@ -598,12 +610,14 @@ static  bool    TractableCond( loop_condition *cond )
     case OP_CMP_GREATER:
     case OP_CMP_GREATER_EQUAL:
         cond->opcode = opcode;
-        if( plus >= 0 ) ok = false;
+        if( plus >= 0 )
+            ok = false;
         break;
     case OP_CMP_LESS:
     case OP_CMP_LESS_EQUAL:
         cond->opcode = opcode;
-        if( plus <= 0 ) ok = false;
+        if( plus <= 0 )
+            ok = false;
         break;
     case OP_CMP_EQUAL:
     case OP_BIT_TEST_TRUE:
@@ -663,9 +677,9 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
 {
     block       *blk;
 
-    if( ( butt->class & CONDITIONAL ) != EMPTY ) {
+    if( _IsBlkAttr( butt, CONDITIONAL ) ) {
         blk = MakeBlock( AskForNewLabel(), 1 );
-        blk->class = JUMP | IN_LOOP;
+        _SetBlkAttr( blk, JUMP | IN_LOOP );
         blk->id = NO_BLOCK_ID;
         blk->gen_id = butt->gen_id;
         blk->ins.hd.line_num = 0;
@@ -676,7 +690,7 @@ static  block   *MakeNonConditional( block *butt, block_edge *edge )
         blk->prev_block = butt;
         butt->next_block = blk;
         blk->loop_head = Head;
-        PointEdge( &blk->edge[ 0 ], edge->destination.u.blk );
+        PointEdge( &blk->edge[ 0], edge->destination.u.blk );
         MoveEdge( edge, blk );
         UnMarkLoop();
         MarkLoop();
@@ -697,7 +711,9 @@ static  int     ExitEdges( block *head )
     count = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->loop_head == head || blk == head ) {
-            if( blk->class & LOOP_EXIT ) count++;
+            if( _IsBlkAttr( blk, LOOP_EXIT ) ) {
+                count++;
+            }
         }
     }
     return( count );
@@ -715,14 +731,20 @@ extern  bool    CanHoist( block *head )
 
     /* can't handle crap which isn't either a jump block or a conditional going to our head */
     for( edge = head->input_edges; edge != NULL; edge = edge->next_source ) {
-        if( ( edge->source->class & ( JUMP | CONDITIONAL ) ) == EMPTY ) return( false );
+        if( !_IsBlkAttr( edge->source, JUMP | CONDITIONAL ) ) {
+            return( false );
+        }
     }
 
     for( curr = head; curr != NULL; ) {
-        if( curr->class & LOOP_EXIT ) return( ExitEdges( head ) == 1 );
-        if( curr->targets > 1 ) break;
-        curr = curr->edge[ 0 ].destination.u.blk;
-        if( curr == head ) break;
+        if( _IsBlkAttr( curr, LOOP_EXIT ) )
+            return( ExitEdges( head ) == 1 );
+        if( curr->targets > 1 )
+            break;
+        curr = curr->edge[ 0].destination.u.blk;
+        if( curr == head ) {
+            break;
+        }
     }
     return( false );
 }
@@ -748,7 +770,7 @@ extern  void    HoistCondition( block *head )
         }
     }
 
-    for( blk = head; blk != NULL; blk = blk->edge[ 0 ].destination.u.blk ) {
+    for( blk = head; blk != NULL; blk = blk->edge[ 0].destination.u.blk ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             if( _OpIsCondition( ins->head.opcode ) ) {
                 RemoveIns( ins );
@@ -786,23 +808,27 @@ extern  void    HoistCondition( block **head, block *prehead )
     block       *blk;
 
     for( butt_edge = (*head)->input_edges; butt_edge != NULL; butt_edge = butt_edge->next_source ) {
-        if( butt_edge->source != prehead ) break;
+        if( butt_edge->source != prehead ) {
+            break;
+        }
     }
-    if( butt_edge == NULL ) return( false );
+    if( butt_edge == NULL )
+        return( false );
     butt = MakeNonConditional( butt_edge->source, butt_edge );
     butt_ins = butt->ins.hd.prev;
     prehead_ins = prehead->ins.hd.prev;
     blk = *head;
     // it should be either a simple jump or our (1 and only) cond. exit
-    if( ( blk->class & JUMP ) == EMPTY &&
-        ( blk->class & CONDITIONAL ) == EMPTY ) return( false );
+    if( !_IsBlkAttr( blk, JUMP | CONDITIONAL ) )
+        return( false );
     // the new head should have an input from prehead and one from the butt
     // any more and we have to bail out
-    if( blk->inputs > 2 ) return( false );
+    if( blk->inputs > 2 )
+        return( false );
     // transfer all instructions to prehead/butt
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         if( _OpIsCondition( ins->head.opcode ) ) {
-            return( ( blk->class & LOOP_EXIT ) != EMPTY );
+            return( _IsBlkAttr( blk, LOOP_EXIT ) );
         }
         butt_ins = DupIns( butt_ins, ins, NULL, 0 );
         next = ins->head.next;
@@ -820,9 +846,9 @@ static  void    MarkLoopHeader( block *loop, block *header )
 */
 {
     for( ; loop != NULL; loop = loop->u.loop ) {
-        if( loop->class & LOOP_HEADER ) {
+        if( _IsBlkAttr( loop, LOOP_HEADER ) ) {
             loop->loop_head = PreHead->loop_head;
-            if( PreHead->class & LOOP_HEADER ) {
+            if( _IsBlkAttr( PreHead, LOOP_HEADER ) ) {
                 loop->loop_head = PreHead;
             }
             break;
@@ -931,9 +957,9 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     SuffixPreHeader( add );
 
     // add a piece of code to check and make sure n and ( n - reps ) have the same sign
-    if( cond->complete == false && Signed[ comp_type ] != comp_type ) {
+    if( cond->complete == false && Signed[ comp_type] != comp_type ) {
         new = MakeBlock( AskForNewLabel(), 2 );
-        new->class = CONDITIONAL;
+        _SetBlkAttr( new, CONDITIONAL );
         new->loop_head = PreHead->loop_head;
         new->next_block = NULL;
         new->prev_block = NULL;
@@ -944,12 +970,12 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         temp = AllocTemp( comp_type );
         ins = MakeBinary( OP_XOR, add->result, cond->invariant, temp, comp_type );
         SuffixIns( new->ins.hd.prev, ins );
-        high_bit = 1 << ( ( 8 * TypeClassSize[ comp_type ] ) - 1 );
+        high_bit = 1 << ( ( 8 * TypeClassSize[ comp_type] ) - 1 );
         ins = MakeCondition( OP_BIT_TEST_TRUE, temp, AllocS32Const( high_bit ), 0, 1, comp_type );
         SuffixIns( new->ins.hd.prev, ins );
-        PointEdge( &new->edge[ 0 ], cleanup_copy->head );
-        PointEdge( &new->edge[ 1 ], loop->loop_head );
-        MoveEdge( &PreHead->edge[ 0 ], new );
+        PointEdge( &new->edge[ 0], cleanup_copy->head );
+        PointEdge( &new->edge[ 1], loop->loop_head );
+        MoveEdge( &PreHead->edge[ 0], new );
         AddBlocks( PreHead, new );
     }
 
@@ -957,8 +983,8 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     // then attach to our butt
     ins = Head->ins.hd.prev;
     ins->head.opcode = cond->opcode;
-    ins->operands[ 0 ] = cond->induction->name;
-    ins->operands[ 1 ] = add->result;
+    ins->operands[ 0] = cond->induction->name;
+    ins->operands[ 1] = add->result;
     _SetBlockIndex( ins, 0, 1 );
     if( cond->complete ) {
         block_edge      *edge;
@@ -966,36 +992,36 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
         // we have completely unrolled the loop - so behead it
         MarkHeaderEdges( loop, Head );
         RedirectHeaderEdges( loop, cond->exit_edge );
-        edge = &Head->edge[ 0 ];
-        if( ( edge->destination.u.blk->class & IN_LOOP ) == EMPTY ) {
-            edge = &Head->edge[ 1 ];
+        edge = &Head->edge[ 0];
+        if( !_IsBlkAttr( edge->destination.u.blk, IN_LOOP ) ) {
+            edge = &Head->edge[ 1];
         }
         FreeIns( ins );
         MakeJumpBlock( Head, edge );
         MarkLoopHeader( loop, Head->loop_head );
-        Head->class &= ~(LOOP_HEADER | ITERATIONS_KNOWN);
+        _MarkBlkAttrNot( Head, LOOP_HEADER | ITERATIONS_KNOWN );
     } else {
-        MoveEdge( &Head->edge[ 0 ], cond->loop_edge );
+        MoveEdge( &Head->edge[ 0], cond->loop_edge );
         if( cond->clean ) {
-            MoveEdge( &Head->edge[ 1 ], cond->exit_edge );
+            MoveEdge( &Head->edge[ 1], cond->exit_edge );
         } else {
-            MoveEdge( &Head->edge[ 1 ], cleanup_copy->head );
+            MoveEdge( &Head->edge[ 1], cleanup_copy->head );
         }
-        if( ( loop->class & JUMP ) != EMPTY ) {
-            if( loop->edge[ 0 ].destination.u.blk == Head ) {
+        if( _IsBlkAttr( loop, JUMP ) ) {
+            if( loop->edge[ 0].destination.u.blk == Head ) {
                 block   *blk;
 
-                Head->class &= ~LOOP_HEADER;
+                _MarkBlkAttrNot( Head, LOOP_HEADER );
                 blk = DupBlock( Head );
                 AddBlocks( loop, blk );
-                MoveEdge( &loop->edge[ 0 ], blk );
-                PointEdge( &blk->edge[ 0 ], Head->edge[ 0 ].destination.u.blk );
-                PointEdge( &blk->edge[ 1 ], Head->edge[ 1 ].destination.u.blk );
+                MoveEdge( &loop->edge[ 0], blk );
+                PointEdge( &blk->edge[ 0], Head->edge[ 0].destination.u.blk );
+                PointEdge( &blk->edge[ 1], Head->edge[ 1].destination.u.blk );
                 blk->u.loop = loop;
                 for( ;; ) {
                     if( loop->u.loop == Head ) {
                         loop->u.loop = NULL;
-                        loop->class |= LOOP_HEADER;
+                        _MarkBlkAttr( loop, LOOP_HEADER );
                         loop->loop_head = Head->loop_head;
                         MarkLoopHeader( blk, loop );
                         Head = loop;
@@ -1018,9 +1044,10 @@ extern  bool    Hoisted( block *head, instruction *compare )
         return( true );
     }
 #else
-    if( head->class & CONDITIONAL ) {
-        if( _OpIsCondition( head->ins.hd.next->head.opcode ) &&
-                compare == head->ins.hd.next ) return( true );
+    if( _IsBlkAttr( head, CONDITIONAL ) ) {
+        if( _OpIsCondition( head->ins.hd.next->head.opcode ) && compare == head->ins.hd.next ) {
+            return( true );
+        }
     }
 #endif
     return( false );
@@ -1037,9 +1064,11 @@ extern  bool    UnRoll()
     bool                one_cond;
     loop_abstract       cleanup_copy;
 
-    if( Head->class & DONT_UNROLL ) return( false );
+    if( _IsBlkAttr( Head, DONT_UNROLL ) )
+        return( false );
     unroll_count = UnrollCount( Loop, &cond.clean, &cond.complete );
-    if( unroll_count <= 0 ) return( false );
+    if( unroll_count <= 0 )
+        return( false );
     AnalyseLoop( NULL, &one_cond, &cond.compare_ins, &cond.compare_block );
     if( one_cond &&
         Hoisted( Head, cond.compare_ins ) &&
@@ -1047,11 +1076,11 @@ extern  bool    UnRoll()
         MarkHeaderEdges( Loop, Head );
         DupLoop( Loop, &cleanup_copy );
         RedirectHeaderEdges( cleanup_copy.tail, cleanup_copy.head );
-        cleanup_copy.head->class |= LOOP_HEADER | DONT_UNROLL;
+        _MarkBlkAttr( cleanup_copy.head, LOOP_HEADER | DONT_UNROLL );
         MarkLoopHeader( cleanup_copy.tail, cleanup_copy.head );
-        Head->class |= IGNORE;
+        _MarkBlkAttr( Head, IGNORE );
         last = DoUnroll( Loop, unroll_count, false );
-        Head->class &= ~IGNORE;
+        _MarkBlkAttrNot( Head, IGNORE );
         MarkLoopHeader( last, Head );
         MakeWorldGoAround( last, &cleanup_copy, &cond, unroll_count );
         cleanup_copy.head->loop_head = Head->loop_head;
@@ -1062,7 +1091,7 @@ extern  bool    UnRoll()
         last = DoUnroll( Loop, Head->unroll_count, false );
         MarkLoopHeader( last, Head );
     }
-    Head->class |= DONT_UNROLL;
+    _MarkBlkAttr( Head, DONT_UNROLL );
     FixBlockIds();
     ClearCopyPtrs( Loop );
     return( true );

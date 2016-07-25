@@ -160,7 +160,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
         input = edge->source;
-        if( (input->class & JUMP) == 0 )
+        if( !_IsBlkAttr( input, JUMP ) )
             continue;
         for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
             if( _IsntReDefinedBy( prev, op ) )
@@ -343,8 +343,8 @@ static  void    FindPartition( void )
     block_num   i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( (blk->class & BIG_LABEL) || blk->inputs != 1 ) {
-            blk->class |= BLOCK_VISITED;
+        if( _IsBlkAttr( blk, BIG_LABEL ) || blk->inputs != 1 ) {
+            _MarkBlkVisited( blk );
         }
         blk->u.partition = blk;
         _BLKBITS( blk ) = EMPTY;
@@ -354,7 +354,7 @@ static  void    FindPartition( void )
         for( i = blk->targets; i > 0; --i ) {
             if( edge->flags & DEST_IS_BLOCK ) {
                 oth = edge->destination.u.blk;
-                if( (oth->class & BLOCK_VISITED) == 0 && oth->inputs == 1 ) {
+                if( !_IsBlkVisited( oth ) && oth->inputs == 1 ) {
                     temp = oth->u.partition;
                     oth->u.partition = blk->u.partition;
                     blk->u.partition = temp;
@@ -364,7 +364,7 @@ static  void    FindPartition( void )
         }
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & BLOCK_VISITED ) {
+        if( _IsBlkVisited( blk ) ) {
             TreeBits( blk );
         }
     }
@@ -511,7 +511,7 @@ static  void    CleanPartition( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
         blk->u.partition = NULL;
     }
 }
@@ -652,7 +652,7 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
         if( blk->inputs != 1 )
             _Zoiks( ZOIKS_103 ); // because we're in a partition
         blk = blk->input_edges->source;
-        if( blk->class & SELECT )
+        if( _IsBlkAttr( blk, SELECT ) )
             return( false );
         if( blk == target_blk ) {
             return( true );
@@ -1021,7 +1021,7 @@ static  bool    PropagateExprs( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
-        if( blk->class & BLOCK_VISITED ) {
+        if( _IsBlkVisited( blk ) ) {
             change |= DoArithOps( blk );
         }
     }
@@ -1556,7 +1556,7 @@ static  bool    DoPropagateMoves( void )
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         SXBlip();
-        if( blk->class & BLOCK_VISITED ) {
+        if( _IsBlkVisited( blk ) ) {
             do {
                 block_changed = false;
                 if( FixStructRet( blk ) ) {

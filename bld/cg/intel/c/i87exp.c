@@ -972,7 +972,7 @@ static  void    RevFPCond( instruction *ins ) {
     block               *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
     for( other = ins; other->head.opcode != OP_BLOCK; ) {
         other = other->head.next;
@@ -995,13 +995,13 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
     block_num   i;
     block       *target;
 
-    blk->class |= BLOCK_VISITED;
+    _MarkBlkVisited( blk );
     for( ;; ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) {
             for( i = blk->targets; i-- > 0; ) {
                 target = blk->edge[ i ].destination.u.blk;
-                if( ( target->class & BLOCK_VISITED ) == EMPTY ) {
+                if( !_IsBlkVisited( target ) ) {
                     RevOtherCond( target, (instruction *)&target->ins );
                 }
             }

@@ -67,7 +67,7 @@ static instruction *FindPreviousIns( instruction *curr )
     if( prev->head.opcode == OP_BLOCK ) {
         blk = _BLOCK( prev );
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( edge->source->class & BLOCK_MARKED ) {
+            if( _IsBlkMarked( edge->source ) ) {
                 break;
             }
         }
@@ -88,7 +88,8 @@ static bool SafeOp( name *op, bool write )
     which reads registers. Writing a register is bad news though.
 */
 {
-    if( op == NULL ) return( true );
+    if( op == NULL )
+        return( true );
     switch( op->n.class ) {
     case N_TEMP:
     case N_CONSTANT:
@@ -120,7 +121,8 @@ static bool CheckReturn( instruction *ins )
     value = ReturnValue;
     while( ins->head.opcode != OP_CALL ) {
         if( ins->result == value ) {
-            if( ins->head.opcode != OP_MOV ) return( false );
+            if( ins->head.opcode != OP_MOV )
+                return( false );
             value = ins->operands[0];
         }
         // following will slide by block boundaries with greatest of ease
@@ -182,7 +184,8 @@ static void DoTrans( block *blk, instruction *call_ins )
 
     // make blk jump to the block after the prologue
     target = HeadBlock->edge[0].destination.u.blk;
-    blk->class = ( blk->class | JUMP ) & ~( CONDITIONAL | RETURN | SELECT );
+    _MarkBlkAttrNot( blk, CONDITIONAL | RETURN | SELECT );
+    _MarkBlkAttr( blk, JUMP );
 
     // remove blk from the input lists of any blocks which it might have
     // previously gone to
@@ -205,18 +208,26 @@ static bool SafePath( instruction *ins )
     int         i;
 
     for( ; ins->head.opcode != OP_BLOCK ; ins = ins->head.next ) {
-        if( SideEffect( ins ) ) return( false );
-        if( _OpIsCall( ins->head.opcode ) ) return( false );
+        if( SideEffect( ins ) )
+            return( false );
+        if( _OpIsCall( ins->head.opcode ) )
+            return( false );
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( !SafeOp( ins->operands[i], false ) ) return( false );
+            if( !SafeOp( ins->operands[i], false ) ) {
+                return( false );
+            }
         }
         if( ins->result == ReturnValue ) {
             // check to see if this value we are writing into the
             // return register is the value returned from the
             // recursive call we are eliminating - if so continue
-            if( CheckReturn( ins ) ) continue;
+            if( CheckReturn( ins ) ) {
+                continue;
+            }
         }
-        if( !SafeOp( ins->result, true ) ) return( false );
+        if( !SafeOp( ins->result, true ) ) {
+            return( false );
+        }
     }
     return( true );
 }
@@ -233,8 +244,9 @@ static block *SafeBlock( block *blk )
     block       *dest;
     block       *safe;
 
-    if( blk->class & BLOCK_MARKED ) return( NULL );
-    blk->class |= BLOCK_MARKED;
+    if( _IsBlkMarked( blk ) )
+        return( NULL );
+    _MarkBlkMarked( blk );
     safe = NULL;
     if( SafePath( blk->ins.hd.next ) ) {
         safe = blk;
@@ -246,7 +258,7 @@ static block *SafeBlock( block *blk )
             }
         }
     }
-    blk->class &= ~BLOCK_MARKED;
+    _MarkBlkUnMarked( blk );
     return( safe );
 }
 
@@ -281,9 +293,13 @@ static bool ScaryConditions( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; i++ ) {
-                if( ScaryOperand( ins->operands[i] ) ) return( true );
+                if( ScaryOperand( ins->operands[i] ) ) {
+                    return( true );
+                }
             }
-            if( ScaryOperand( ins->result ) ) return( true );
+            if( ScaryOperand( ins->result ) ) {
+                return( true );
+            }
         }
     }
     return( false );
@@ -313,22 +329,24 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     // check to make sure length of parm lists are the same
     parm = _TR_LINK( call_ins );
     for( ins = _PROC_LINK( CurrProc ); ins != NULL; ins = _TR_LINK( ins ) ) {
-        if( parm == NULL ) return( false );
+        if( parm == NULL )
+            return( false );
         parm = _TR_LINK( parm );
     }
-    if( parm != NULL ) return( false );
+    if( parm != NULL )
+        return( false );
 
     // check to see if all paths are hazard-free from the
     //  call ins to the return block
     ok = false;
     ReturnValue = call_ins->result;
-    blk->class |= BLOCK_MARKED;
+    _MarkBlkMarked( blk );
     // if the call is in the return block, then there are no
     // paths out of this routine which do not go through it
     // (except perhaps stuff calling aborts routines) so don't
     // bother - better running out of stack than an infinite loop
     // (besides - certain codegen stuff needs a RET block)
-    if( ( ( blk->class & RETURN ) == EMPTY ) && SafePath( call_ins->head.next ) ) {
+    if( !_IsBlkAttr( blk, RETURN ) && SafePath( call_ins->head.next ) ) {
         ok = true;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[i].destination.u.blk;
@@ -338,7 +356,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
             }
         }
     }
-    blk->class &= ~BLOCK_MARKED;
+    _MarkBlkUnMarked( blk );
     return( ok );
 }
 
@@ -349,7 +367,8 @@ extern void     TRAddParm( instruction *call_ins, instruction *parm_ins )
 */
 {
     // if either is NULL we've had an error and should refrain from GP faulting
-    if( call_ins == NULL || parm_ins == NULL ) return;
+    if( call_ins == NULL || parm_ins == NULL )
+        return;
     _TR_LINK( parm_ins ) = (void *)_TR_LINK( call_ins );
     _TR_LINK( call_ins ) = (void *)parm_ins;
 }
@@ -360,7 +379,8 @@ extern void     TRDeclareParm( instruction *parm_ins )
     is added to a linked list hanging off of CurrProc.
 */
 {
-    if( parm_ins == NULL ) return;
+    if( parm_ins == NULL )
+        return;
     _TR_LINK( parm_ins ) = (void *)_PROC_LINK( CurrProc );
     _PROC_LINK( CurrProc ) = (void *)parm_ins;
 }
