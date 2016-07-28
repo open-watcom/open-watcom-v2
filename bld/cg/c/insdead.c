@@ -97,7 +97,7 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
 
     change = false;
     for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-        if( just_the_loop && !_IsBlkAttr( blk, IN_LOOP ) ) {
+        if( just_the_loop && !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 ins->ins_flags &= ~INS_VISITED;
             }
@@ -305,7 +305,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
 
     if( just_the_loop ) {
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-            if( !_IsBlkAttr( blk, IN_LOOP ) ) {
+            if( !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
                 for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     MarkOpsUseful( ins );
                     if( ins->result != NULL ) {
@@ -318,7 +318,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
     do {
         change = false;
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-            if( !just_the_loop || _IsBlkAttr( blk, IN_LOOP ) ) {
+            if( !just_the_loop || _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
                 for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     if( !in_regalloc || DoesSomething( ins ) ) {
                         change |= CheckUseful( ins );

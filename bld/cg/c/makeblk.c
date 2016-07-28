@@ -221,8 +221,8 @@ void    GenBlock( block_class class, int targets )
         CGFree( CurrBlock );
         CurrBlock = new;
     }
-    if( _IsBlkAttr( CurrBlock, BIG_LABEL ) )        /* the only one that sticks*/
-        class |= BIG_LABEL;
+    if( _IsBlkAttr( CurrBlock, BLK_BIG_LABEL ) )        /* the only one that sticks*/
+        class |= BLK_BIG_LABEL;
     CurrBlock->class = class;
     while( --targets >= 1 ) {
         CurrBlock->edge[targets].flags = 0;
@@ -331,7 +331,7 @@ void    FixEdges( void )
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !_IsBlkAttr( blk, BIG_JUMP ) ) {
+        if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[  targets  ];
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
@@ -368,7 +368,7 @@ static void *LinkReturns( void *arg )
         return( NULL );
     if( _IsBlkVisited( blk ) )
         return( NOT_NULL );
-    if( _IsBlkAttr( blk, LABEL_RETURN ) ) {
+    if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
             if( blk->edge[ i ].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
@@ -379,7 +379,7 @@ static void *LinkReturns( void *arg )
 //        found = true;
     } else {
         _MarkBlkVisited( blk );
-        if( _IsBlkAttr( blk, CALL_LABEL ) ) {
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             if( blk->next_block == NULL )
                 return( (void *)(pointer_int)false );
             LinkReturnsParms[ 0 ] = link_to;
@@ -409,10 +409,10 @@ bool        FixReturns( void )
     block       *other_blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, CALL_LABEL ) ) {
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             _MarkBlkVisited( blk );
             if( blk->next_block == NULL ) return( false );
-            _MarkBlkAttr( blk, RETURNED_TO );
+            _MarkBlkAttr( blk, BLK_RETURNED_TO );
             LinkReturnsParms[ 0 ] = blk->next_block->label;
             LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
             if( !LinkReturns( NULL ) ) {
@@ -435,7 +435,7 @@ void    UnFixEdges( void )
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !_IsBlkAttr( blk, BIG_JUMP ) ) {
+        if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
                 edge = &blk->edge[  targets  ];
                 if( edge->flags & DEST_IS_BLOCK ) {
@@ -473,7 +473,7 @@ bool    BlkTooBig( void )
     if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( false );
     if( CurrBlock->targets != 0 ) return( false );
     blk = AskForNewLabel();
-    GenBlock( JUMP, 1 );
+    GenBlock( BLK_JUMP, 1 );
     AddTarget( blk, false );
     EnLink( blk, true );
     return( true );

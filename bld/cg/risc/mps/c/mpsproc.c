@@ -79,7 +79,7 @@ static  void calcUsedRegs( void )
     CurrProc->targ.leaf = true;
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, CALL_LABEL ) ) {
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             HW_TurnOn( used, ReturnAddrReg() );
         }
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

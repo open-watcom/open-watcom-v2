@@ -36,13 +36,15 @@
 #include "data.h"
 #include "stack.h"
 #include "redefby.h"
+#include "nullprop.h"
+
 
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
 extern  bool            BlockTrim( void );
 
-extern  void            ClearBlockBits( block_class mask )
-/********************************************************/
+void        ClearBlocksBits( block_class mask )
+/*********************************************/
 {
     block               *blk;
 
@@ -52,12 +54,22 @@ extern  void            ClearBlockBits( block_class mask )
     }
 }
 
+void            MarkBlkAllUnVisited( void )
+/*****************************************/
+{
+    block               *blk;
+
+    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
+        _MarkBlkUnVisited( blk );
+    }
+}
+
 static  instruction     *CompareIns( block *blk )
 /***********************************************/
 {
     instruction         *last;
 
-    if( _IsBlkAttr( blk, CONDITIONAL ) ) {
+    if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
         for( last = blk->ins.hd.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
             if( _OpIsCompare( last->head.opcode ) ) {
                 return( last );
@@ -215,7 +227,7 @@ static  bool            LastBlock( block *blk, bool forward )
 /***********************************************************/
 {
     if( forward ) {
-        if( _IsBlkAttr( blk, RETURN ) ) {
+        if( _IsBlkAttr( blk, BLK_RETURN ) ) {
             return( true );
         }
     } else {
@@ -348,8 +360,8 @@ static  void            *DominatingDeref( parm_struct *parms )
     return( dominated ? NOT_NULL : NULL );
 }
 
-extern  void            FloodDown( block *blk, block_class bits )
-/***************************************************************/
+static void     FloodDown( block *blk, block_class bits )
+/*******************************************************/
 {
     edge_stack          *stk;
     block_edge          *edge;
@@ -399,8 +411,8 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
         taken = blk->edge[_FalseIndex( cmp )].destination.u.blk;
         elim = blk->edge[_TrueIndex( cmp )].destination.u.blk;
     }
-    ClearBlockBits( BLOCK_VISITED );
-    FloodDown( taken, BLOCK_VISITED );
+    MarkBlkAllUnVisited();
+    FloodDown( taken, BLK_BLOCK_VISITED );
     stk = InitStack();
 
     /*
@@ -426,7 +438,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
         elim = edge->destination.u.blk;
     }
     FiniStack( stk );
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     return( side_effect );
 }
 
@@ -462,7 +474,7 @@ static  bool            NullProp( block *blk )
     parms.ins = cmp;
     parms.op = *ptr;
     parms.forward = true;
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
@@ -472,7 +484,7 @@ static  bool            NullProp( block *blk )
         }
     }
     parms.forward = false;
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         KillCondBlk( blk, cmp, dest_index );
         return( true );
@@ -480,8 +492,8 @@ static  bool            NullProp( block *blk )
     return( false );
 }
 
-extern  void            PropNullInfo( void )
-/*******************************************
+void            PropNullInfo( void )
+/***********************************
     Use pointer dereferences as information to enable folding of
     pointer comparisons versus NULL.
 */
@@ -497,7 +509,7 @@ extern  void            PropNullInfo( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
     }
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     if( change ){
         BlockTrim();
     }

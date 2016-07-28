@@ -53,7 +53,7 @@ static  void    Irreducable( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, ITERATIONS_KNOWN | LOOP_HEADER );
+        _MarkBlkAttrNot( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
         blk->loop_head = NULL;
         blk->depth = 1;
     }
@@ -77,7 +77,7 @@ static  void    NoBlocksToSelf( void )
             if( edge->source == blk ) {
                 new_blk = NewBlock( AskForNewLabel(), true );
                 /* set up new block to look like it was generated after blk*/
-                _SetBlkAttr( new_blk, JUMP );
+                _SetBlkAttr( new_blk, BLK_JUMP );
                 new_blk->gen_id = blk->gen_id;
                 new_blk->ins.hd.line_num = blk->ins.hd.line_num;
                 new_blk->next_block = blk->next_block;
@@ -129,7 +129,7 @@ static  void    ReturnsToBottom( void )
     }
     for( curr = last->prev_block; curr != NULL; curr = prev ) {
         prev = curr->prev_block;
-        if( _IsBlkAttr( curr, RETURN ) ) {
+        if( _IsBlkAttr( curr, BLK_RETURN ) ) {
             if( prev != NULL ) {
                 prev->next_block = curr->next_block;
             }
@@ -443,7 +443,7 @@ static  void    NestingDepth( void )
                                 if( blk->loop_head == NULL && blk != target ) {
                                     blk->loop_head = target;
                                 }
-                                _MarkBlkAttr( target, LOOP_HEADER );
+                                _MarkBlkAttr( target, BLK_LOOP_HEADER );
                                 change = true;
                                 break;
                             }
@@ -500,10 +500,10 @@ static  bool    Degenerate( void )
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !_IsBlkAttr( blk, LOOP_HEADER ) )
+        if( !_IsBlkAttr( blk, BLK_LOOP_HEADER ) )
             continue;
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( _IsBlkAttr( edge->source, SELECT ) ) {
+            if( _IsBlkAttr( edge->source, BLK_SELECT ) ) {
                 functionDegenerate = false;
                 FloodForward( edge->source, FlowDone, blk );
                 if( functionDegenerate ) {

@@ -40,6 +40,7 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "nullprop.h"
 #include "feprotos.h"
 
 
@@ -969,11 +970,8 @@ static  void    RevFPCond( instruction *ins ) {
 */
 
     instruction         *other;
-    block               *blk;
 
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkUnVisited( blk );
-    }
+    MarkBlkAllUnVisited();
     for( other = ins; other->head.opcode != OP_BLOCK; ) {
         other = other->head.next;
     }

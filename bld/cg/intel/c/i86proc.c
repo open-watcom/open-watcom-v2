@@ -264,10 +264,10 @@ static  block *ScanForLabelReturn( block *blk ) {
     block       *son;
     block_num   i;
 
-    if( _IsBlkAttr( blk, RETURN | CALL_LABEL ) )
+    if( _IsBlkAttr( blk, BLK_RETURN | BLK_CALL_LABEL ) )
         return( NULL );
     blk->edge[0].flags |= DOWN_ONE_CALL;
-    if( _IsBlkAttr( blk, LABEL_RETURN ) )
+    if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) )
         return( blk );
     for( i = 0; i < blk->targets; ++i ) {
         son = blk->edge[i].destination.u.blk;
@@ -295,7 +295,7 @@ static  bool    ScanLabelCalls( void ) {
     block   *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !_IsBlkAttr( blk, CALL_LABEL ) )
+        if( !_IsBlkAttr( blk, BLK_CALL_LABEL ) )
             continue;
         if( ScanForLabelReturn( blk->edge[0].destination.u.blk ) == NULL ) {
             return( false );

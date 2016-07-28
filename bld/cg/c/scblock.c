@@ -157,7 +157,7 @@ extern  bool    DoScore( block *blk )
         /* May all intel designers rot in hell forever and ever, amen*/
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
             if( had_condition ) {
-                _MarkBlkAttr( blk, MULTIPLE_EXITS );
+                _MarkBlkAttr( blk, BLK_MULTIPLE_EXITS );
             }
             had_condition = true;
         }

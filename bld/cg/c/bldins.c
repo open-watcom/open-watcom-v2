@@ -236,12 +236,12 @@ static  an      FlowOut( an node, type_def *tipe ) {
     temp = BGGlobalTemp( tipe );
     AddIns( MakeMove( AllocIntConst( FETrue() ), temp, temp->n.name_class ) );
     *(node->u.b.t) = CurrBlock->label;
-    GenBlock( JUMP, 1 );
+    GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
     EnLink( AskForNewLabel(), true );
     AddIns( MakeMove( AllocIntConst( 0 ), temp, temp->n.name_class ) );
     *(node->u.b.f) = CurrBlock->label;
-    GenBlock( JUMP, 1 );
+    GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
     EnLink( lbl, true );
     NamesCrossBlocks();
@@ -280,7 +280,7 @@ extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_
     NamesCrossBlocks();
     ins = MakeCondition( (opcode_defs)op, newleft, newrite, 0, 1, TypeClass( tipe ) );
     AddIns( ins );
-    GenBlock( CONDITIONAL, 2 );
+    GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( NULL, false );
     AddTarget( NULL, false );
     new = NewBoolNode();
@@ -333,7 +333,7 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
         ins = MakeCondition( OP_CMP_EQUAL, op, AllocIntConst( 0 ), 0, 1, class );
     }
     AddIns( ins );
-    GenBlock( CONDITIONAL, 2 );
+    GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( eq, false );
     lbl = AskForNewLabel();
     AddTarget( lbl, false );
@@ -346,7 +346,7 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
 #endif
     ins = MakeCondition( OP_CMP_LESS, op, AllocIntConst( 0 ), 0, 1, class );
     AddIns( ins );
-    GenBlock( CONDITIONAL, 2 );
+    GenBlock( BLK_CONDITIONAL, 2 );
     AddTarget( lt, false );
     AddTarget( gt, false );
     Generate( false );
@@ -367,7 +367,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
     switch( op ) {
     case O_LABEL:
         if( HaveCurrBlock ) {
-            GenBlock( JUMP, 1 );  /* block with 1 target*/
+            GenBlock( BLK_JUMP, 1 );  /* block with 1 target*/
             AddTarget( lbl, false );
             if( gen ) {
                 Generate( false );
@@ -379,7 +379,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
         break;
     case O_GOTO:
         if( HaveCurrBlock ) {
-            GenBlock( JUMP, 1 );
+            GenBlock( BLK_JUMP, 1 );
             AddTarget( lbl, false );
             if( gen ) {
                 Generate( false );
@@ -389,7 +389,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
         break;
     case O_INVOKE_LABEL:
         if( HaveCurrBlock ) {
-            GenBlock( CALL_LABEL, 1 );
+            GenBlock( BLK_CALL_LABEL, 1 );
             AddTarget( lbl, false );
 #if 0
             Need to make sure that next_block != NULL when we generate the
@@ -405,7 +405,7 @@ extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen ) {
     case O_LABEL_RETURN:
         if( HaveCurrBlock ) {
             AddIns( MakeNop() );
-            GenBlock( LABEL_RETURN, 0 );
+            GenBlock( BLK_LABEL_RETURN, 0 );
             if( gen ) {
                 Generate( false );
             }
@@ -438,21 +438,21 @@ extern  void    BGBigLabel( back_handle bck ) {
 /*********************************************/
 
     if( HaveCurrBlock ) {
-        GenBlock( JUMP, 1 );  /* block with 1 target*/
+        GenBlock( BLK_JUMP, 1 );  /* block with 1 target*/
         AddTarget( bck->lbl, false );
         Generate( false );
     }
     EnLink( bck->lbl, false );
     HaveCurrBlock = true;
     BigLabel();
-    _MarkBlkAttr( CurrBlock, BIG_LABEL );
+    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
 }
 
 
 extern  void    BGBigGoto( label_handle lbl, int level ) {
 /********************************************************/
 
-    GenBlock( BIG_JUMP, 1 ); // No longer supported!
+    GenBlock( BLK_BIG_JUMP, 1 ); // No longer supported!
     AddTarget( lbl, false );
     BigGoto( level );
     Generate( false );
@@ -647,7 +647,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             *(left->u.b.t) = rite->u.b.e;
             *(left->u.b.f) = CurrBlock->label;
             *(rite->u.b.f) = CurrBlock->label;
-            GenBlock( JUMP, 1 );
+            GenBlock( BLK_JUMP, 1 );
             AddTarget( NULL, false );
             left->u.b.f = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->u.b.t = rite->u.b.t;
@@ -659,7 +659,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             *(left->u.b.f) = rite->u.b.e;
             *(left->u.b.t) = CurrBlock->label;
             *(rite->u.b.t) = CurrBlock->label;
-            GenBlock( JUMP, 1 );
+            GenBlock( BLK_JUMP, 1 );
             AddTarget( NULL, false );
             left->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
             left->u.b.f = rite->u.b.f;
@@ -733,7 +733,7 @@ extern  void    BGStartBlock( void ) {
 
     if( _MemLow ) { /* break the block here and generate code*/
         lbl = AskForNewLabel();
-        GenBlock( JUMP, 1 );
+        GenBlock( BLK_JUMP, 1 );
         AddTarget( lbl, false );
         Generate( false );
         EnLink( lbl, true );

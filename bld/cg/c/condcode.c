@@ -34,11 +34,11 @@
 #include "cgmem.h"
 #include "data.h"
 #include "namelist.h"
+#include "nullprop.h"
 
 
 extern  void            DoNothing( instruction * );
 extern  bool            VolatileIns( instruction * );
-extern  void            ClearBlockBits( block_class );
 extern  bool            CondOverlaps( name *result, name *ccop );
 
 typedef enum {          /* in order of increasing amount of information */
@@ -125,7 +125,7 @@ static void MarkUsedCC( block *blk )
 */
 {
     DoMarkUsedCC( blk );
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
 }
 
 static  bool    Traverse( block *blk, name *zero )

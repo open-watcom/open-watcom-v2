@@ -184,8 +184,8 @@ static void DoTrans( block *blk, instruction *call_ins )
 
     // make blk jump to the block after the prologue
     target = HeadBlock->edge[0].destination.u.blk;
-    _MarkBlkAttrNot( blk, CONDITIONAL | RETURN | SELECT );
-    _MarkBlkAttr( blk, JUMP );
+    _MarkBlkAttrNot( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT );
+    _MarkBlkAttr( blk, BLK_JUMP );
 
     // remove blk from the input lists of any blocks which it might have
     // previously gone to
@@ -346,7 +346,7 @@ static bool     OkayToTransCall( block *blk, instruction *call_ins )
     // (except perhaps stuff calling aborts routines) so don't
     // bother - better running out of stack than an infinite loop
     // (besides - certain codegen stuff needs a RET block)
-    if( !_IsBlkAttr( blk, RETURN ) && SafePath( call_ins->head.next ) ) {
+    if( !_IsBlkAttr( blk, BLK_RETURN ) && SafePath( call_ins->head.next ) ) {
         ok = true;
         for( i = 0; i < blk->targets; i++ ) {
             dest = blk->edge[i].destination.u.blk;

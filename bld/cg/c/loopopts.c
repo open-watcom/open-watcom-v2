@@ -52,10 +52,10 @@
 #include "feprotos.h"
 
 
-/* block flag usage                                         */
-/*                                                          */
-/* BLOCK_MARKED is used in the sense of BLOCK_WILL_EXECUTE  */
-/*                                                          */
+/* block flag usage                                                 */
+/*                                                                  */
+/* BLK_BLOCK_MARKED is used in the sense of will execute            */
+/*                                                                  */
 
 /* target specific. Can a pointer get anywhere near the boundary pointer values? */
 /* For 8086, yes. 0000 and FFFF are quite possible as pointer values */
@@ -175,14 +175,14 @@ block    *AddPreBlock( block *postblk )
 
     preblk = NewBlock( postblk->label, false );
     /* set up new block to look like it was generated after postblk */
-    _SetBlkAttr( preblk, JUMP );
+    _SetBlkAttr( preblk, BLK_JUMP );
     preblk->id = NO_BLOCK_ID;
     preblk->gen_id = postblk->gen_id;
     preblk->ins.hd.line_num = postblk->ins.hd.line_num;
     postblk->ins.hd.line_num = 0;
     preblk->loop_head = postblk->loop_head; /**/
     preblk->depth = postblk->depth;
-    if( _IsBlkAttr( postblk, LOOP_HEADER ) ) {
+    if( _IsBlkAttr( postblk, BLK_LOOP_HEADER ) ) {
         // we don't always add this block before a loop header
         // for instance, in the floating point scheduling stuff
         // we use this routine to add a safe 'decache' block
@@ -227,13 +227,13 @@ static bool     IsPreHeader( block *test ) {
         return( false );
     if( test->edge[0].destination.u.blk != Head )
         return( false );
-    if( _IsBlkAttr( test, IN_LOOP ) )
+    if( _IsBlkAttr( test, BLK_IN_LOOP ) )
         return( false );
     /* check that no other block outside the loop branches into the loop */
     for( other = HeadBlock; other != NULL; other = other->next_block ) {
-        if( other != test && !_IsBlkAttr( other, IN_LOOP ) ) {
+        if( other != test && !_IsBlkAttr( other, BLK_IN_LOOP ) ) {
             for( i = other->targets; i-- > 0; ) {
-                if( _IsBlkAttr( other->edge[i].destination.u.blk, IN_LOOP ) ) {
+                if( _IsBlkAttr( other->edge[i].destination.u.blk, BLK_IN_LOOP ) ) {
                     return( false );
                 }
             }
@@ -281,7 +281,7 @@ static void     PreHeader( void )
         PreHead = AddPreBlock( Head );
         for( edge = Head->input_edges; edge != NULL; edge = next ) {
             next = edge->next_source;
-            if( edge->source != PreHead && !_IsBlkAttr( edge->source, IN_LOOP ) ) {
+            if( edge->source != PreHead && !_IsBlkAttr( edge->source, BLK_IN_LOOP ) ) {
                 MoveEdge( edge, PreHead );
             }
         }
@@ -302,7 +302,7 @@ void     MarkLoop( void )
     Loop = NULL;
     for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
         if( InLoop( other_blk ) ) {
-            _MarkBlkAttr( other_blk, IN_LOOP );
+            _MarkBlkAttr( other_blk, BLK_IN_LOOP );
             other_blk->u.loop = Loop;
             Loop = other_blk;
         }
@@ -310,8 +310,8 @@ void     MarkLoop( void )
     for( other_blk = Loop; other_blk != NULL; other_blk = other_blk->u.loop ) {
         edge = &other_blk->edge[0];
         for( targets = other_blk->targets; targets > 0; --targets ) {
-            if( !_IsBlkAttr( edge->destination.u.blk, IN_LOOP ) ) {
-                _MarkBlkAttr( other_blk, LOOP_EXIT );
+            if( !_IsBlkAttr( edge->destination.u.blk, BLK_IN_LOOP ) ) {
+                _MarkBlkAttr( other_blk, BLK_LOOP_EXIT );
             }
             ++edge;
         }
@@ -328,7 +328,7 @@ void     UnMarkLoop( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkAttrNot( blk, IN_LOOP | LOOP_EXIT );
+        _MarkBlkAttrNot( blk, BLK_IN_LOOP | BLK_LOOP_EXIT );
         blk->u.loop = NULL;
     }
 }
@@ -357,8 +357,8 @@ void     MakeJumpBlock( block *cond_blk, block_edge *exit_edge )
 
     RemoveInputEdge( &cond_blk->edge[0] );
     RemoveInputEdge( &cond_blk->edge[1] );
-    _MarkBlkAttrNot( cond_blk, CONDITIONAL );
-    _MarkBlkAttr( cond_blk, JUMP );
+    _MarkBlkAttrNot( cond_blk, BLK_CONDITIONAL );
+    _MarkBlkAttr( cond_blk, BLK_JUMP );
     cond_blk->targets = 1;
     edge = &cond_blk->edge[0];
     edge->flags = exit_edge->flags;
@@ -393,11 +393,11 @@ static bool     KillOneTrippers( void )
                         FreeIns( ins );
                     }
                 }
-                if( _IsBlkAttr( blk, LOOP_HEADER ) ) {
-                    _MarkBlkAttrNot( blk, LOOP_HEADER );
+                if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) ) {
+                    _MarkBlkAttrNot( blk, BLK_LOOP_HEADER );
                     loop_head = blk;
                 } else {
-                    _MarkBlkAttrNot( blk->loop_head, LOOP_HEADER );
+                    _MarkBlkAttrNot( blk->loop_head, BLK_LOOP_HEADER );
                     loop_head = blk->loop_head;
                 }
                 for( curr = HeadBlock; curr != NULL; curr = curr->next_block ) {
@@ -2016,7 +2016,7 @@ static  void *MarkDown( block *blk )
 {
     block_num   i;
 
-    if( !_IsBlkAttr( blk, IN_LOOP ) )
+    if( !_IsBlkAttr( blk, BLK_IN_LOOP ) )
         return( NULL );
     if( blk == Head )
         return( NULL );
@@ -2054,7 +2054,7 @@ static  void    LabelDown( instruction *frum,
     edge = &blk->edge[0];
     for( i = blk->targets; i > 0; --i ) {
         blk = edge->destination.u.blk;
-        if( ( go_around || blk != Head ) && _IsBlkAttr( blk, IN_LOOP ) ) {
+        if( ( go_around || blk != Head ) && _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
             ins = blk->ins.hd.next;
             if( ins->head.opcode == OP_BLOCK || (ins->ins_flags & INS_VISITED) == 0 ) {
                 _MarkBlkVisited( blk );
@@ -2139,7 +2139,7 @@ static  void    MarkWillExecBlocks( void )
     /* First, prune some blocks we know won't necessarily execute */
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
-        if( !_IsBlkAttr( blk, LOOP_EXIT ) )
+        if( !_IsBlkAttr( blk, BLK_LOOP_EXIT ) )
             continue;
         for( i = blk->targets; i-- > 0; ) {
             MarkDown( blk->edge[i].destination.u.blk );
@@ -2416,7 +2416,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
         SuffixIns( blk_end, ins );
         blk_end = DupIns( ins, cond, var->name, 0 );
     } else {
-        _MarkBlkAttrNot( cond_blk, LOOP_HEADER );
+        _MarkBlkAttrNot( cond_blk, BLK_LOOP_HEADER );
         MakeJumpBlock( cond_blk, exit_edge );
         if( know_bounds ) {
             ins = MakeMove( AllocS32Const( final ), var->name,
@@ -2520,7 +2520,7 @@ bool    AnalyseLoop( induction *var, bool *ponecond,
                         }
                     }
                 } else {
-                    if( _IsBlkAttr( blk, LOOP_EXIT ) ) {
+                    if( _IsBlkAttr( blk, BLK_LOOP_EXIT ) ) {
                         if( *pcond == NULL ) {
                             *pcond = ins;
                             *ponecond = true;
@@ -2588,7 +2588,7 @@ static  name    *InitialValue( name *op )
     for( ;; ) {
         if( other->head.opcode == OP_BLOCK ) {
             blk = _BLOCK( other );
-            if( _IsBlkAttr( blk, IN_LOOP ) )
+            if( _IsBlkAttr( blk, BLK_IN_LOOP ) )
                 return( NULL );
             if( blk->inputs != 1 )
                 return( NULL );
@@ -2640,7 +2640,7 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
         ins->operands[1] = temp;
         RevCond( ins );
     }
-    if( _IsBlkAttr( blk->edge[_TrueIndex( ins )].destination.u.blk, IN_LOOP ) ) {
+    if( _IsBlkAttr( blk->edge[_TrueIndex( ins )].destination.u.blk, BLK_IN_LOOP ) ) {
         _SetBlockIndex( ins, _FalseIndex( ins ), _TrueIndex( ins ) );
         FlipCond( ins );
     }
@@ -2711,7 +2711,7 @@ bool    CalcFinalValue( induction *var, block *blk, instruction *ins,
     }
     if( InstructionWillExec( var->ins ) ) {
         Head->iterations = ( *final - *initial ) / incr;
-        _MarkBlkAttr( Head, ITERATIONS_KNOWN );
+        _MarkBlkAttr( Head, BLK_ITERATIONS_KNOWN );
     }
     return( true );
 }
@@ -2738,9 +2738,9 @@ static  bool    FinalValue( instruction *ins, block *blk, induction *var )
         return( false );
     }
     dest = blk->edge[_TrueIndex( ins )].destination.u.blk;
-    if( _IsBlkAttr( dest, UNKNOWN_DESTINATION ) )
+    if( _IsBlkAttr( dest, BLK_UNKNOWN_DESTINATION ) )
         return( false );
-    if( _IsBlkAttr( dest, LOOP_HEADER ) )
+    if( _IsBlkAttr( dest, BLK_LOOP_HEADER ) )
         return( false );
     // class = var->name->n.name_class;
     class = ins->type_class;
@@ -3031,7 +3031,7 @@ static  bool    DoLoopInvariant( bool(*rtn)(void) )
     depth = MaxDepth();
     for( i = 1; i <= depth; ++i ) { /* do loop invariant code motion from the outside in*/
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, LOOP_HEADER ) && blk->depth == i ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == i ) {
                 LPBlip();
                 Head = blk;
                 MarkLoop();
@@ -3199,7 +3199,7 @@ void    LoopEnregister( void )
 
     for( i = MaxDepth(); i >= 1; --i ) { /* do loop enregistering from the inside out */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, LOOP_HEADER ) && blk->depth == i ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == i ) {
                 Head = blk;
                 MarkLoop();
                 ConstToTemp( PreHead, Loop, NextInLoop );
@@ -3391,11 +3391,11 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
     }
     loop_edge = &cond_blk->edge[0];
     exit_edge = &cond_blk->edge[1];
-    if( !_IsBlkAttr( loop_edge->destination.u.blk, IN_LOOP ) ) {
+    if( !_IsBlkAttr( loop_edge->destination.u.blk, BLK_IN_LOOP ) ) {
         loop_edge = &cond_blk->edge[1];
         exit_edge = &cond_blk->edge[0];
     }
-    if( unroll && _IsBlkAttr( Head, ITERATIONS_KNOWN ) && Head->iterations == 1 ) {
+    if( unroll && _IsBlkAttr( Head, BLK_ITERATIONS_KNOWN ) && Head->iterations == 1 ) {
         if( cond_blk != Head || Loop->u.loop == NULL ) {
             exit_edge->flags |= ONE_ITER_EXIT;
         }
@@ -3413,7 +3413,7 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
 
             }
             for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-                if( _IsBlkAttr( blk, IN_LOOP ) ) {
+                if( _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
                     PropIndexes( blk );
                 }
             }
@@ -3453,8 +3453,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
                 }
             }
             // DupNoncondInstrs( cond_blk, cond, PreHead );
-            _MarkBlkAttrNot( PreHead, JUMP );
-            _MarkBlkAttr( PreHead, CONDITIONAL );
+            _MarkBlkAttrNot( PreHead, BLK_JUMP );
+            _MarkBlkAttr( PreHead, BLK_CONDITIONAL );
             dupcond = MakeCondition( cond->head.opcode, cond->operands[0],
                                      cond->operands[1], _TrueIndex( cond ),
                                      _FalseIndex( cond ), cond->type_class );
@@ -3474,8 +3474,8 @@ static  bool    TwistLoop( block_list *header_list, bool unroll )
             }
             new_head->loop_head = Head->loop_head;
             Head->loop_head = new_head;
-            _MarkBlkAttrNot( Head, LOOP_HEADER );
-            _MarkBlkAttr( new_head, LOOP_HEADER );
+            _MarkBlkAttrNot( Head, BLK_LOOP_HEADER );
+            _MarkBlkAttr( new_head, BLK_LOOP_HEADER );
             Head = new_head;
         }
     }
@@ -3522,7 +3522,7 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
     /* do all loops inside this loop separately*/
 
     for( curr_block.blk = HeadBlock; curr_block.blk != NULL; curr_block.blk = curr_block.blk->next_block ) {
-        if( _IsBlkAttr( curr_block.blk, LOOP_HEADER ) && curr_block.blk->loop_head == header->blk ) {
+        if( _IsBlkAttr( curr_block.blk, BLK_LOOP_HEADER ) && curr_block.blk->loop_head == header->blk ) {
             curr_block.next = header;
             change |= DoInduction( &curr_block, reduce, unroll );
             while( *owner != NULL ) {   // hook inner indvars onto "list"
@@ -3564,9 +3564,9 @@ static  bool    DoInduction( block_list *header, bool reduce, bool unroll )
             MergeVars();
             if( ReduceInStrength() ) {
                 change = true;
-                _MarkBlkAttr( PreHead, IN_LOOP );
+                _MarkBlkAttr( PreHead, BLK_IN_LOOP );
                 LoopInsDead();
-                _MarkBlkAttrNot( PreHead, IN_LOOP );
+                _MarkBlkAttrNot( PreHead, BLK_IN_LOOP );
             }
             FreeBadVars();
             ElimIndVars();

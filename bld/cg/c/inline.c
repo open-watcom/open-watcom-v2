@@ -106,7 +106,7 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
         HaveCurrBlock = true;
     }
     lbl = AskForNewLabel();
-    GenBlock( JUMP, 1 );
+    GenBlock( BLK_JUMP, 1 );
     AddTarget( lbl, false );
     EnLink( lbl, true );
     InlineStack->tipe = tipe;

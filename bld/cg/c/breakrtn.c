@@ -34,6 +34,7 @@
 #include "cgmem.h"
 #include "data.h"
 #include "makeblk.h"
+#include "nullprop.h"
 
 
 typedef struct  edge_list {
@@ -88,15 +89,13 @@ extern  bool            CreateBreak( void )
         return( false );
     }
     FixEdges();
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkUnVisited( blk );
-    }
+
 /*
     Run through the blocks and find a place (break_blk) where no previous
     blocks are branched to from later blocks. IE: there are no backward branches
     around break_blk.
 */
-
+    MarkBlkAllUnVisited();
     break_blk = NULL;
     back_break_blk = NULL;
     pending = 0;
@@ -126,9 +125,7 @@ extern  bool            CreateBreak( void )
         }
     }
     /* clean up the BLOCK_VISITED flags */
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkUnVisited( blk );
-    }
+    MarkBlkAllUnVisited();
     if( back_break_blk != NULL ) {
         break_blk = back_break_blk; /* always better to break on a back edge */
     }
@@ -157,7 +154,7 @@ extern  bool            CreateBreak( void )
     BlockList = exit_blk;
     exit_blk->prev_block = break_blk->prev_block;
     exit_blk->next_block = NULL;
-    _SetBlkAttr( exit_blk, UNKNOWN_DESTINATION );
+    _SetBlkAttr( exit_blk, BLK_UNKNOWN_DESTINATION );
     break_blk->prev_block->next_block = exit_blk;
     break_blk->prev_block = NULL;
 
@@ -206,7 +203,7 @@ extern  bool            CreateBreak( void )
         FreeABlock( exit_blk );
     }
 
-    _MarkBlkAttr( HeadBlock, BIG_LABEL );
+    _MarkBlkAttr( HeadBlock, BLK_BIG_LABEL );
     HaveBreak = true;
 /*
     change any branches to HeadBlock from a block after break_blk into
@@ -236,8 +233,8 @@ extern  bool            CreateBreak( void )
     blk->id = 0;
     HeadBlock->label = AskForNewLabel();
     blk->targets = 1;
-    _SetBlkAttr( blk, BIG_LABEL | JUMP );
-    _MarkBlkAttrNot( HeadBlock, BIG_LABEL );
+    _SetBlkAttr( blk, BLK_BIG_LABEL | BLK_JUMP );
+    _MarkBlkAttrNot( HeadBlock, BLK_BIG_LABEL );
     edge = &blk->edge[0];
     edge->flags = DEST_IS_BLOCK;
     edge->destination.u.blk = HeadBlock;

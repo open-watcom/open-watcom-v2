@@ -44,82 +44,82 @@ extern  void            DumpSymList(name*);
 static void DumpBlkFlags( block *blk )
 /************************************/
 {
-    if( blk->class & RETURN ) {
+    if( blk->class & BLK_RETURN ) {
         DumpLiteral( "Ret " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & JUMP ) {
+    if( blk->class & BLK_JUMP ) {
         DumpLiteral( "Jmp " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & CONDITIONAL ) {
+    if( blk->class & BLK_CONDITIONAL ) {
         DumpLiteral( "Cond " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & SELECT ) {
+    if( blk->class & BLK_SELECT ) {
         DumpLiteral( "Sel " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & ITERATIONS_KNOWN ) {
+    if( blk->class & BLK_ITERATIONS_KNOWN ) {
         DumpLiteral( "Itr " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & BIG_LABEL ) {
+    if( blk->class & BLK_BIG_LABEL ) {
         DumpLiteral( "LBL " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & CALL_LABEL ) {
+    if( blk->class & BLK_CALL_LABEL ) {
         DumpLiteral( "LCall " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LABEL_RETURN ) {
+    if( blk->class & BLK_LABEL_RETURN ) {
         DumpLiteral( "LRet " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & RETURNED_TO ) {
+    if( blk->class & BLK_RETURNED_TO ) {
         DumpLiteral( "RetTo " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LOOP_HEADER ) {
+    if( blk->class & BLK_LOOP_HEADER ) {
         DumpLiteral( "LupHd " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & IN_LOOP ) {
+    if( blk->class & BLK_IN_LOOP ) {
         DumpLiteral( "InLup " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LOOP_EXIT ) {
+    if( blk->class & BLK_LOOP_EXIT ) {
         DumpLiteral( "LupEx " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & BLOCK_VISITED ) {
+    if( blk->class & BLK_BLOCK_VISITED ) {
         DumpLiteral( "Vst " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & BLOCK_MARKED ) {
+    if( blk->class & BLK_BLOCK_MARKED ) {
         DumpLiteral( "Mrk " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & UNKNOWN_DESTINATION ) {
+    if( blk->class & BLK_UNKNOWN_DESTINATION ) {
         DumpLiteral( "Dst? " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & MULTIPLE_EXITS ) {
+    if( blk->class & BLK_MULTIPLE_EXITS ) {
         DumpLiteral( "2Exits " );
     } else {
         DumpLiteral( "-------" );
@@ -341,7 +341,7 @@ extern  void    DumpLoops( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkId( blk );
-        if( blk->class & LOOP_HEADER ) {
+        if( blk->class & BLK_LOOP_HEADER ) {
             DumpLiteral( " Is loop header." );
         } else {
             DumpLiteral( "                " );

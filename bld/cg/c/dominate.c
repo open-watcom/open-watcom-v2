@@ -39,7 +39,6 @@
 #include "data.h"
 #include "dominate.h"
 
-extern void ClearBlockBits( block_class class );
 
 static block    *ReturnBlock;
 
@@ -52,7 +51,7 @@ static bool             AssignDominatorBits( void )
     ReturnBlock = NULL;
     _DBitFirst( id );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, RETURN ) ) {
+        if( _IsBlkAttr( blk, BLK_RETURN ) ) {
             if( ReturnBlock != NULL )
                 return( false );
             ReturnBlock = blk;

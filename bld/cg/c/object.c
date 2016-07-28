@@ -45,16 +45,16 @@
 #include "targetin.h"
 #include "opttell.h"
 #include "makeblk.h"
+#include "nullprop.h"
 #include "feprotos.h"
 
 
-/* block flag usage                                         */
-/*                                                          */
-/* BLOCK_VISITED is used in the sense of PLACED             */
-/*                                                          */
+/* block flag usage                                                 */
+/*                                                                  */
+/* BLK_BLOCK_VISITED is used in the sense of placed                 */
+/*                                                                  */
 
 extern  void            Zoiks( int );
-extern  void            ClearBlockBits( block_class );
 
 static  source_line_number      DumpLineNum( source_line_number n,
                                              source_line_number last,
@@ -92,7 +92,7 @@ void    GenObject( void )
     for( blk = HeadBlock; blk != NULL; blk = next_blk ) {
         if( blk->label != CurrProc->label && blk->label != NULL ) {
             last_line = DumpLineNum( blk->ins.hd.line_num, last_line, true );
-            if( _IsBlkAttr( blk, ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
+            if( _IsBlkAttr( blk, BLK_ITERATIONS_KNOWN ) && blk->iterations >= 10 ) {
                 align = DepthAlign( DEEP_LOOP_ALIGN );
             } else {
                 align = DepthAlign( blk->depth );
@@ -126,7 +126,7 @@ void    GenObject( void )
             }
         }
         EndBlockProfiling();
-        if( _IsBlkAttr( blk, JUMP | BIG_JUMP ) ) {
+        if( _IsBlkAttr( blk, BLK_JUMP | BLK_BIG_JUMP ) ) {
             if( BlockByBlock
              || next_blk == NULL
              || blk->edge[0].destination.u.lbl != next_blk->label ) {
@@ -135,10 +135,10 @@ void    GenObject( void )
                     GenJumpLabel( blk->edge[0].destination.u.lbl );
                 }
             }
-        } else if( _IsBlkAttr( blk, RETURN ) ) {
+        } else if( _IsBlkAttr( blk, BLK_RETURN ) ) {
             FiniZeroPage();
             GenEpilog();
-        } else if( _IsBlkAttr( blk, CALL_LABEL ) ) {
+        } else if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             GenCallLabel( blk->edge[0].destination.u.blk );
             if( BlockByBlock ) {
                 if( next_blk == NULL ) {
@@ -147,10 +147,10 @@ void    GenObject( void )
                     GenJumpLabel( next_blk->label );
                 }
             }
-        } else if( _IsBlkAttr( blk, LABEL_RETURN ) ) {
+        } else if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
             GenLabelReturn();
         }
-        if( !_IsBlkAttr( blk, LABEL_RETURN ) ) { /* maybe pointer to dead label */
+        if( !_IsBlkAttr( blk, BLK_LABEL_RETURN ) ) { /* maybe pointer to dead label */
             for( targets = blk->targets; targets-- > 0; ) {
                 lbl = blk->edge[targets].destination.u.lbl;
                 TellReachedLabel( lbl );
@@ -445,21 +445,21 @@ static  void    FloodDown( block *from, flood_func func, void *parm ) {
     flood_decision      decision;
     block_edge          *edge;
 
-    ClearBlockBits( FLOODED );
+    ClearBlocksBits( BLK_FLOODED );
     stack = EdgeStackInit();
     PushTargets( stack, from );
-    _MarkBlkAttr( from, FLOODED );
+    _MarkBlkAttr( from, BLK_FLOODED );
     while( !EdgeStackEmpty( stack ) ) {
         edge = EdgeStackPop( stack );
         dest = edge->destination.u.blk;
-        if( _IsBlkAttr( dest, FLOODED ) )
+        if( _IsBlkAttr( dest, BLK_FLOODED ) )
             continue;
         decision = func( dest, parm );
         if( decision == ABORT )
             continue;
         if( decision == STOP )
             break;
-        _MarkBlkAttr( dest, FLOODED );
+        _MarkBlkAttr( dest, BLK_FLOODED );
         PushTargets( stack, dest );
     }
     EdgeStackFini( stack );
@@ -470,7 +470,7 @@ static  flood_decision PDFloodFunc( block *blk, flood_info *info ) {
 
     if( blk == info->dominator )
         return( ABORT );
-    if( _IsBlkAttr( blk, RETURN ) ) {
+    if( _IsBlkAttr( blk, BLK_RETURN ) ) {
         info->post_dominates = false;
         return( STOP );
     }
@@ -526,10 +526,10 @@ static  int     CallHeuristic( block *blk, instruction *cond ) {
 static  bool    LoopApplies( block *blk ) {
 /*****************************************/
 
-    if( _IsBlkAttr( blk, LOOP_HEADER ) )
+    if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) )
         return( true );
-    if( _IsBlkAttr( blk, JUMP ) ) {
-        if( _IsBlkAttr( blk->edge[0].destination.u.blk, LOOP_HEADER ) ) {
+    if( _IsBlkAttr( blk, BLK_JUMP ) ) {
+        if( _IsBlkAttr( blk->edge[0].destination.u.blk, BLK_LOOP_HEADER ) ) {
             return( true );
         }
     }
@@ -654,10 +654,10 @@ static  int     StoreHeuristic( block *blk, instruction *cond ) {
 static  bool    ReturnApplies( block *blk ) {
 /*******************************************/
 
-    if( _IsBlkAttr( blk, RETURN ) )
+    if( _IsBlkAttr( blk, BLK_RETURN ) )
         return( true );
-    if( _IsBlkAttr( blk, JUMP ) ) {
-        if( _IsBlkAttr( blk->edge[0].destination.u.blk, RETURN ) ) {
+    if( _IsBlkAttr( blk, BLK_JUMP ) ) {
+        if( _IsBlkAttr( blk->edge[0].destination.u.blk, BLK_RETURN ) ) {
             return( true );
         }
     }
@@ -731,10 +731,10 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
     block_num   i;
 
     best = NULL;
-    switch( blk->class & (RETURN | JUMP | CONDITIONAL | SELECT | CALL_LABEL) ) {
-    case RETURN:
-    case JUMP:
-    case SELECT:
+    switch( blk->class & (BLK_RETURN | BLK_JUMP | BLK_CONDITIONAL | BLK_SELECT | BLK_CALL_LABEL) ) {
+    case BLK_RETURN:
+    case BLK_JUMP:
+    case BLK_SELECT:
         for( i = 0; i < blk->targets; i++ ) {
             best = blk->edge[i].destination.u.blk;
             if( !_IsBlkVisited( best ) ) {
@@ -743,7 +743,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
         }
         best = NULL;
         break;
-    case CONDITIONAL:
+    case BLK_CONDITIONAL:
         /*
          * If exactly one of the followers has already been placed,
          * then the other one is obviously the best candidate. Otherwise,
@@ -767,7 +767,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
             break;
         }
         break;
-    case CALL_LABEL:
+    case BLK_CALL_LABEL:
         for( curr = BQFirst( unplaced ); curr != NULL; curr = BQNext( unplaced, curr ) ) {
             if( curr->gen_id == ( blk->gen_id + 1 ) ) {
                 best = curr;
@@ -775,7 +775,7 @@ static  block   *BestFollower( block_queue *unplaced, block *blk ) {
             }
         }
         assert( best != NULL );
-        assert( (best->class & RETURNED_TO) != 0 );
+        assert( (best->class & BLK_RETURNED_TO) != 0 );
         break;
     }
     return( best );
@@ -790,7 +790,7 @@ void    SortBlocks( void )
     block       *next;
 //    block       *ret_block;
 
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     BlocksSortedBy( GenId );
     if( _IsModel( NO_OPTIMIZATION ) )
         return;
@@ -808,7 +808,7 @@ void    SortBlocks( void )
     for( curr = HeadBlock; curr != NULL; curr = next ) {
         next = curr->next_block;
         BQAdd( &unplaced, curr );
-        if( _IsBlkAttr( curr, RETURNED_TO ) ) {
+        if( _IsBlkAttr( curr, BLK_RETURNED_TO ) ) {
             // blocks which are returned to by a call_label routine
             // should not be placed because they are special cased in
             // BestFollower to come out directly after the CALL_LABEL
@@ -831,5 +831,5 @@ void    SortBlocks( void )
         }
     }
     HeadBlock = placed.first;
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
 }

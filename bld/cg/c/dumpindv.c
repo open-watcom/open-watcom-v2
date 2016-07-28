@@ -180,7 +180,7 @@ extern  void    DumpCurrLoop() {
     depth = MAX_INTERVAL_DEPTH;
     header = NULL;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & IN_LOOP ) {
+        if( blk->class & BLK_IN_LOOP ) {
             if( blk->depth < depth ) {
                 header = blk;
                 depth = header->depth;
@@ -189,13 +189,13 @@ extern  void    DumpCurrLoop() {
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkId( blk );
-        if( blk->class & IN_LOOP ) {
+        if( blk->class & BLK_IN_LOOP ) {
             if( blk == header ) {
                 DumpLiteral( " - Header" );
             } else {
                 DumpLiteral( " - In for(;;) {" );
             }
-            if( blk->class & LOOP_EXIT ) {
+            if( blk->class & BLK_LOOP_EXIT ) {
                 DumpLiteral( " Exits" );
             }
         }

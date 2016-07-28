@@ -36,6 +36,8 @@
 #include "cgdefs.h"
 #include "model.h"
 #include "stack.h"
+#include "nullprop.h"
+
 
 typedef bool (*flood_func)( block *, void * );
 
@@ -44,8 +46,6 @@ typedef struct stupid_struct_so_I_can_use_safe_recurse {
     flood_func  func;
     void        *parm;
 } flood_parms;
-
-extern  void    ClearBlockBits( block_class );
 
 static void *doFloodForward( flood_parms *fp )
 {
@@ -73,7 +73,7 @@ extern void FloodForward( block *blk, flood_func func, void *parm )
 {
     flood_parms parms;
 
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     parms.blk = blk;
     parms.func = func;
     parms.parm = parm;
@@ -108,7 +108,7 @@ extern void FloodBackwards( block *start, flood_func func, void *parm )
 {
     flood_parms parms;
 
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     parms.blk = start;
     parms.func = func;
     parms.parm = parm;

@@ -24,19 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Generate object code from symbolic instructions.
+* Description:  Propagate null pointer comparisons.
 *
 ****************************************************************************/
 
 
-#if 0
-extern  void            InitStackDepth(block*);
-extern  block           *FindBlockWithLbl( label_handle label );
-extern  void            Zoiks( int );
-extern  bool_maybe      ReDefinedBy( instruction *, name * );
-#endif
-
-extern  void            GenObject( void );
-extern  void            SortBlocks( void );
-extern  void            InitZeroPage( void );
-extern  void            FiniZeroPage( void );
+extern void            ClearBlocksBits( block_class mask );
+extern void            MarkBlkAllUnVisited( void );
+extern void            PropNullInfo( void );

@@ -57,6 +57,7 @@
 #include "makeblk.h"
 #include "indvars.h"
 #include "loopopts.h"
+#include "nullprop.h"
 #include "feprotos.h"
 
 
@@ -122,7 +123,6 @@ extern  void            FixMemBases( void );
 extern  bool            BGInInline( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
-extern  void            PropNullInfo( void );
 
 static  bool            abortCG;
 
@@ -397,7 +397,7 @@ static  void    BlockToCode( bool partly_done )
         HeadBlock->next_block->prev_block = NULL;
     }
     /* Kludge - need a pointer to the next block for CALL_LABEL - puke! */
-    if( _IsBlkAttr( HeadBlock, CALL_LABEL ) ) {
+    if( _IsBlkAttr( HeadBlock, BLK_CALL_LABEL ) ) {
         HeadBlock->v.next = HeadBlock->next_block;
     }
     HeadBlock->next_block = NULL;
@@ -478,7 +478,7 @@ static  void    BlockToCode( bool partly_done )
 
     /* generate the code for the block*/
 
-    if( _IsBlkAttr( CurrBlock, RETURN ) ) {
+    if( _IsBlkAttr( CurrBlock, BLK_RETURN ) ) {
         GenObject();
         FiniStackMap();
         FreeProc();

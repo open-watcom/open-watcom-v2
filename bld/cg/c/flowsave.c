@@ -37,14 +37,15 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "nullprop.h"
 #include "flowsave.h"
+
 
 extern  hw_reg_set      PushRegs[];
 
 extern  opcode_entry    *ResetGenEntry( instruction * );
 extern  void            PrefixIns( instruction *, instruction * );
 extern  void            SuffixIns( instruction *, instruction * );
-extern  void            ClearBlockBits( block_class );
 extern  uint_32         CountBits( uint_32 );
 extern  bool            IsSegReg( hw_reg_set );
 
@@ -110,7 +111,7 @@ static bool     InLoop( block *blk )
 {
     if( blk->loop_head != NULL )
         return( true );
-    if( _IsBlkAttr( blk, LOOP_HEADER ) )
+    if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) )
         return( true );
     return( false );
 }
@@ -123,7 +124,7 @@ static void DoFix( block *blk )
 
     if( _IsBlkVisited( blk ) )
         return;
-    if( _IsBlkAttr( blk, RETURN ) )
+    if( _IsBlkAttr( blk, BLK_RETURN ) )
         _Zoiks( ZOIKS_140 );
     blk->stack_depth += WORD_SIZE;
     _MarkBlkVisited( blk );
@@ -143,7 +144,7 @@ static void FixStackDepth( block *save, block *restore )
 {
     block_num   i;
 
-    ClearBlockBits( BLOCK_VISITED );
+    MarkBlkAllUnVisited();
     _MarkBlkVisited( restore );
     _MarkBlkVisited( save );
     if( save != restore ) {
@@ -241,7 +242,7 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
     if( !_DBitOverlap( restore->dom.id, info[curr_reg].post_dom_usage ) ) return( false );
     if( !_DBitOverlap( save->dom.id, restore->dom.dominator ) ) return( false );
     if( !_DBitOverlap( restore->dom.id, save->dom.post_dominator ) ) return( false );
-    if( _IsBlkAttr( restore, CONDITIONAL | SELECT ) )
+    if( _IsBlkAttr( restore, BLK_CONDITIONAL | BLK_SELECT ) )
         return( false );
     if( InLoop( save ) || InLoop( restore ) ) return( false );
     for( i = 0; i < curr_reg; i++ ) {
@@ -326,7 +327,7 @@ void FlowSave( hw_reg_set *preg )
         // in the normal prolog sequence
         save = reg_info[curr_reg].save;
         restore = reg_info[curr_reg].restore;
-        if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, RETURN ) ) ) {
+        if( ( save != NULL && save != HeadBlock ) && ( restore != NULL && !_IsBlkAttr( restore, BLK_RETURN ) ) ) {
             reg_type = WD;
         #if _TARGET & _TARG_INTEL
             if( IsSegReg( reg_info[curr_reg].reg ) ) {

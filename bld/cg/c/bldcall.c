@@ -95,7 +95,7 @@ extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
     NewProc( FELexLevel( sym ) );
     EnLink( AskForSymLabel( sym, CG_FE ), false );
     CurrProc->label = CurrBlock->label;
-    _MarkBlkAttr( CurrBlock, BIG_LABEL );
+    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
     class = InitCallState( tipe );
     AddIns( MakeNop() );
     return( class );
@@ -694,7 +694,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     AddIns( ins );
     if( last_ins != NULL )
         AddIns( last_ins );
-    GenBlock( RETURN, 0 );
+    GenBlock( BLK_RETURN, 0 );
     if( AddrList != NULL ) {
         _Zoiks( ZOIKS_003 );
     }

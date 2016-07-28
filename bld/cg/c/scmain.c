@@ -39,6 +39,8 @@
 #include "data.h"
 #include "utils.h"
 #include "stack.h"
+#include "nullprop.h"
+
 
 extern  void            MakeLiveInfo(void);
 extern  void            ProcMessage(msg_class);
@@ -68,9 +70,9 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
     instruction     *cmp;
     unsigned        which;
 
-    if( !_IsBlkAttr( blk, CONDITIONAL ) )
+    if( !_IsBlkAttr( blk, BLK_CONDITIONAL ) )
         return;
-    if( _IsBlkAttr( blk, MULTIPLE_EXITS ) )
+    if( _IsBlkAttr( blk, BLK_MULTIPLE_EXITS ) )
         return;
     for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
         cmp = cmp->head.prev;
@@ -211,9 +213,7 @@ static  void    ScoreRoutine( void )
     ScoreCalcList();
     if( ScoreCount != 0 ) {
         InitZero();
-        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            _MarkBlkUnVisited( blk );
-        }
+        MarkBlkAllUnVisited();
         MakeLiveInfo();
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

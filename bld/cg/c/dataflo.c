@@ -258,7 +258,7 @@ extern  void    SetInOut( block *blk )
         _GBitTurnOn( blk->dataflow->in, blk->dataflow->def );
         _GBitAssign( blk->dataflow->out, blk->dataflow->in );
     }
-    if( _IsBlkAttr( blk, RETURN ) ) {
+    if( _IsBlkAttr( blk, BLK_RETURN ) ) {
         HW_TurnOn( blk->ins.hd.live.regs, CurrProc->state.return_reg );
     }
     _LBitInit( blk->ins.hd.live.within_block, EMPTY );
@@ -292,12 +292,12 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             /*   The OUT set of a return block includes any globals*/
             /*   defined within the procedure*/
 
-            if( _IsBlkAttr( blk, RETURN | LABEL_RETURN ) ) {
+            if( _IsBlkAttr( blk, BLK_RETURN | BLK_LABEL_RETURN ) ) {
                 new = memory_bits;
             } else {
                 _GBitInit( new, EMPTY );
             }
-            if( !_IsBlkAttr( blk, BIG_JUMP ) ) {
+            if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
                 for( i = blk->targets; i-- > 0; ) {
                     target = blk->edge[ i ].destination.u.blk;
 

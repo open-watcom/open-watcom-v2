@@ -455,7 +455,7 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
     if( other != NULL ) {
         ++targets;
     }
-    GenBlock( SELECT, targets );
+    GenBlock( BLK_SELECT, targets );
     i = 0;
     for( ;; ) {
         if( table->cases[ i ] != other ) {
@@ -489,7 +489,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     if( other != NULL ) {
         ++targets;
     }
-    GenBlock( SELECT, targets );
+    GenBlock( BLK_SELECT, targets );
     i = 0;
     for(;;) {
         if( table->cases[ i ] != other ) {

@@ -49,10 +49,10 @@
 #include "feprotos.h"
 
 
-/* block flag usage                                         */
-/*                                                          */
-/* BLOCK_VISITED is used in the sense of PARTITION_ROOT     */
-/*                                                          */
+/* block flag usage                                                 */
+/*                                                                  */
+/* BLK_BLOCK_VISITED is used in the sense of partition root         */
+/*                                                                  */
 
 #define INS_DEFINES_OWN_OPERAND INS_MARKED
 
@@ -160,7 +160,7 @@ static  bool    FindDefnBlocks( block *blk, instruction *cond, int i )
     for( edge = blk->input_edges; edge != NULL; edge = next_source ) {
         next_source = edge->next_source;
         input = edge->source;
-        if( !_IsBlkAttr( input, JUMP ) )
+        if( !_IsBlkAttr( input, BLK_JUMP ) )
             continue;
         for( prev = input->ins.hd.prev; prev->head.opcode != OP_BLOCK; prev = prev->head.prev ) {
             if( _IsntReDefinedBy( prev, op ) )
@@ -331,7 +331,7 @@ extern  bool    PropRegsOne( void )
 static  void    FindPartition( void )
 /************************************
     Partition the flow graph into trees, with root indicated by
-    PARTITION_ROOT.  Nodes of the tree (except root) may have only one
+    BLK_BLOCK_VISITED.  Nodes of the tree (except root) may have only one
     input edge.  These are the partitions in which dataflow is easy to
     deal with since there is no merging of information.
 */
@@ -343,7 +343,7 @@ static  void    FindPartition( void )
     block_num   i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( _IsBlkAttr( blk, BIG_LABEL ) || blk->inputs != 1 ) {
+        if( _IsBlkAttr( blk, BLK_BIG_LABEL ) || blk->inputs != 1 ) {
             _MarkBlkVisited( blk );
         }
         blk->u.partition = blk;
@@ -652,7 +652,7 @@ static  bool            HoistLooksGood( instruction *target, instruction *orig )
         if( blk->inputs != 1 )
             _Zoiks( ZOIKS_103 ); // because we're in a partition
         blk = blk->input_edges->source;
-        if( _IsBlkAttr( blk, SELECT ) )
+        if( _IsBlkAttr( blk, BLK_SELECT ) )
             return( false );
         if( blk == target_blk ) {
             return( true );
