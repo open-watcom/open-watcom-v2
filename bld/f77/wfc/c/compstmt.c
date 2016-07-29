@@ -78,7 +78,7 @@ static void     FiniDo( void );
 static  void    ChkStatementSequence( void )
 {
     SetCtrlFlgs();
-    if( ( StmtSw & SS_HOLLERITH ) && ( StmtProc != PR_FMT ) ) {
+    if( (StmtSw & SS_HOLLERITH) && ( StmtProc != PR_FMT ) ) {
         Extension( HO_CONST );
     }
     if( SgmtSw & SG_DEFINING_MAP ) {
@@ -100,19 +100,19 @@ static  void    ChkStatementSequence( void )
             StmtPtrErr( SP_STATEMENT_REQUIRED, StmtKeywords[PR_STRUCTURE] );
         }
     }
-    if( ( ( SgmtSw & SG_PROLOG_DONE ) == 0 ) &&
-        ( ProgSw & PS_IN_SUBPROGRAM ) &&
+    if( ( (SgmtSw & SG_PROLOG_DONE) == 0 ) &&
+        (ProgSw & PS_IN_SUBPROGRAM) &&
         ( !CtrlFlgOn( CF_SPECIFICATION ) ) &&
         ( StmtProc != PR_FMT ) && ( StmtProc != PR_INCLUDE ) ) {
         Prologue();
     }
-    if( ( ( SgmtSw & SG_SYMTAB_RESOLVED ) == 0 ) &&
+    if( ( (SgmtSw & SG_SYMTAB_RESOLVED) == 0 ) &&
         ( !CtrlFlgOn( CF_SPECIFICATION | CF_SUBPROGRAM ) ) &&
         ( StmtProc != PR_FMT ) && ( StmtProc != PR_INCLUDE ) ) {
         STResolve();
         SgmtSw |= SG_SYMTAB_RESOLVED;
     }
-    if( Remember.endstmt || ( ( SgmtSw & SG_STMT_PROCESSED ) == 0 ) ) {
+    if( Remember.endstmt || ( (SgmtSw & SG_STMT_PROCESSED) == 0 ) ) {
         if( !CtrlFlgOn( CF_SUBPROGRAM ) && ( StmtProc != PR_INCLUDE ) ) {
             DefProg();
         }
@@ -179,11 +179,11 @@ void    CompStatement( void )
         if( CurrFile->link == NULL ) {  // no line numbering information for
             GSetDbugLine();             // include files
         }
-        if( CtrlFlgOn( CF_NEED_SET_LINE ) && ( Options & OPT_TRACE ) ) {
+        if( CtrlFlgOn( CF_NEED_SET_LINE ) && (Options & OPT_TRACE) ) {
             GSetSrcLine();
         }
         CheckOrder();
-        if( ( ProgSw & PS_BLOCK_DATA ) && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
+        if( (ProgSw & PS_BLOCK_DATA) && !CtrlFlgOn( CF_BLOCK_DATA ) ) {
             // if statement wasn't decodeable, don't issue an error
             if( StmtProc != PR_NULL ) {
                 StmtErr( BD_IN_BLOCK_DATA );
@@ -280,8 +280,8 @@ static void GetStmtType( void )
     if( CITNode->opn.ds != DSOPN_NAM ) {
         Error( ST_WANT_NAME );
         StmtProc = PR_NULL;
-    } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd+1) == 'O' ) &&
-               ( StmtSw & ( SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ ) ) ) {
+    } else if( ( *curr_opnd == 'D' ) && ( *(curr_opnd + 1) == 'O' ) &&
+               (StmtSw & (SS_EQ_THEN_COMMA | SS_COMMA_THEN_EQ)) ) {
         StmtProc = PR_DO;
         RemKeyword( CITNode, 2 );
     } else if( ( *curr_opnd == 'I' ) && ( *(curr_opnd+1) == 'F' ) &&
@@ -293,8 +293,7 @@ static void GetStmtType( void )
             StmtProc = PR_IF;
         }
         RemKeyword( CITNode, 2 );
-    } else if( ( ( StmtSw & SS_COMMA_THEN_EQ ) == 0 ) &&
-               ( ( StmtSw & SS_EQUALS_FOUND ) != 0 ) ) {
+    } else if( ( (StmtSw & SS_COMMA_THEN_EQ) == 0 ) && (StmtSw & SS_EQUALS_FOUND) ) {
         StmtProc = PR_ASNMNT;
         if( RecName() && RecNextOpr( OPR_LBR ) ) {
             if( SPtr1->opn.ds != DSOPN_PHI ) {
@@ -381,7 +380,7 @@ static void CheckOrder( void )
             Error( ST_SPEC_LATE );
         }
     } else if( CtrlFlgOn( CF_SPECIFICATION ) && (SgmtSw & SG_SEEN_DATA) ) {
-        if( ( StmtProc != PR_DATA ) && !(ExtnSw & XS_DATA_STMT_ORDER) ) {
+        if( ( StmtProc != PR_DATA ) && (ExtnSw & XS_DATA_STMT_ORDER) == 0 ) {
             Extension( ST_DATA_TOO_EARLY );
             ExtnSw |= XS_DATA_STMT_ORDER;
         }

@@ -1,4 +1,4 @@
-sw_c_common = -we-w8-zl-x-xx-zam-j-D__RT__
+sw_c_common = -we-w8-zl-x-xx-zam-j-wpx-D__RT__
 #sw_c_common = -wx-w8 -wce=307 -wce=308 -wce=309 -zl-x-xx-zam-D__RT__
 sw_a_common = -we
 !ifdef __UNIX__

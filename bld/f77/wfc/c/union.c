@@ -79,7 +79,7 @@ void    CpEndUnion( void ) {
 //      ENDUNION
 
     CSExtn();
-    if( !( SgmtSw & SG_DEFINING_STRUCTURE ) ) {
+    if( (SgmtSw & SG_DEFINING_STRUCTURE) == 0 ) {
         StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_UNION ] );
     }
     SgmtSw &= ~SG_DEFINING_UNION;
@@ -107,7 +107,7 @@ void    CpEndMap( void ) {
 //      ENDMAP
 
     CSExtn();
-    if( !( SgmtSw & SG_DEFINING_MAP ) ) {
+    if( (SgmtSw & SG_DEFINING_MAP) == 0 ) {
         StmtPtrErr( SP_UNMATCHED, StmtKeywords[ PR_MAP ] );
     }
     SgmtSw &= ~SG_DEFINING_MAP;

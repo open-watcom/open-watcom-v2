@@ -93,8 +93,8 @@ void    *FMemAlloc( size_t size ) {
         p = malloc( size );
 #endif
         if( p == NULL ) {
-            if( !(ProgSw & PS_STMT_TOO_BIG) &&
-                 (StmtSw & SS_SCANNING) && (ITHead != NULL) ) {
+            if( (ProgSw & PS_STMT_TOO_BIG) == 0
+              && (StmtSw & SS_SCANNING) && (ITHead != NULL) ) {
                 FreeITNodes( ITHead );
                 ITHead = NULL;
                 Error( MO_LIST_TOO_BIG );

@@ -785,7 +785,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
     dest = NULL;
     if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
         // assigning to statement function
-        if( !(OZOpts & OZOPT_O_INLINE) ) {
+        if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
             dest = SymAddr( sym );
         }
     } else {

@@ -95,7 +95,7 @@ void    StatProg( void ) {
     char        *ptr;
     uint        len;
 
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
+    if( (Options & OPT_QUIET) == 0 && (Options & OPT_TYPE) == 0 ) {
         len = MakeName( SrcName, SrcExtn, stats );
         stats[len] = ':';
         ++len;

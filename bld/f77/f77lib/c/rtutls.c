@@ -359,7 +359,7 @@ void    ChkSequential( int errmsg ) {
 void    ChkExist( void ) {
 //==================
 
-    if( !( IOCB->fileinfo->flags & FTN_FSEXIST ) ) {
+    if( (IOCB->fileinfo->flags & FTN_FSEXIST) == 0 ) {
         ReportNExist( IOCB->fileinfo );
         IOErr( IO_FILE_PROBLEM );
     }

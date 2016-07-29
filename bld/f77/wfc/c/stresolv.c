@@ -224,10 +224,10 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
 
     /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = a->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
+        unsigned_16     sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         b->name_equived->u.ns.flags |= sym_flags;
     } else if( ForceStatic( b->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = b->name_equived->u.ns.flags & ( SY_DATA_INIT | SY_SAVED );
+        unsigned_16     sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         a->name_equived->u.ns.flags |= sym_flags;
     }
 
@@ -240,7 +240,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
     dist = b_offset - a_offset;
     for(;;) {   // find leader of B
         q_ext = q->u.ns.si.va.vi.ec_ext;
-        if( ( q_ext->ec_flags & IN_EQUIV_SET ) == 0 ) {
+        if( (q_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
             SetHigh( q );
             break;
         }
@@ -248,15 +248,14 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         d += q_ext->offset;
         q = q_ext->link_eqv;
     }
-    q_in_common = ( q->u.ns.flags & SY_IN_COMMON ) ||
-                  ( q_ext->ec_flags & MEMBER_IN_COMMON );
+    q_in_common = (q->u.ns.flags & SY_IN_COMMON) || (q_ext->ec_flags & MEMBER_IN_COMMON);
     q_type = q_ext->ec_flags & ES_TYPE;
     if( q_type == ES_NO_TYPE ) {
         q_type = ClassifyType( q->u.ns.u1.s.typ );
     }
     for(;;) {   // find leader of A
         p_ext = p->u.ns.si.va.vi.ec_ext;
-        if( ( p_ext->ec_flags & IN_EQUIV_SET ) == 0 ) {
+        if( (p_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
             SetHigh( p );
             break;
         }
@@ -264,8 +263,7 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
         c += p_ext->offset;
         p = p_ext->link_eqv;
     }
-    p_in_common = ( p->u.ns.flags & SY_IN_COMMON ) ||
-                  ( p_ext->ec_flags & MEMBER_IN_COMMON );
+    p_in_common = (p->u.ns.flags & SY_IN_COMMON) || (p_ext->ec_flags & MEMBER_IN_COMMON);
     p_type = p_ext->ec_flags & ES_TYPE;
     if( p_type == ES_NO_TYPE ) {
         p_type = ClassifyType( p->u.ns.u1.s.typ );
@@ -283,10 +281,10 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             if( q_ext->com_blk != p_ext->com_blk ) {
                 // 2 names in common equivalenced
                 NamNamErr( EC_2NAM_EC, a_name, b_name );
-                if( !( a_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
+                if( (a_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
                     a_name->u.ns.flags &= ~SY_IN_EQUIV;
                 }
-                if( !( b_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET ) ) {
+                if( (b_name->u.ns.si.va.vi.ec_ext->ec_flags & IN_EQUIV_SET) == 0 ) {
                     b_name->u.ns.flags &= ~SY_IN_EQUIV;
                 }
                 return;
@@ -305,9 +303,9 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
             q_ext->com_blk = p_ext->com_blk;
             q_ext->ec_flags |= MEMBER_IN_COMMON;
         }
-        if( ( q->u.ns.flags & SY_DATA_INIT ) ||
-            ( p->u.ns.flags & SY_DATA_INIT ) ||
-            ( p_ext->ec_flags & MEMBER_INITIALIZED ) ) {
+        if( (q->u.ns.flags & SY_DATA_INIT) ||
+            (p->u.ns.flags & SY_DATA_INIT) ||
+            (p_ext->ec_flags & MEMBER_INITIALIZED) ) {
             // This used to be set by VarList in DATA, but there was
             // a problem with the following:
             //          equivalence (i,j)

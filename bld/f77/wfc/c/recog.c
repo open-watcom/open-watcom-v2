@@ -306,15 +306,15 @@ static  bool    IsVariable( void ) {
         return( false );
     LkSym();
     flags = CITNode->flags;
-    if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
+    if( (flags & SY_CLASS) == SY_VARIABLE ) {
         if( flags & SY_SUBSCRIPTED )
             return( false );
         return( true );
     }
-    if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
-        if( ( flags & SY_SUBPROG_TYPE ) != SY_FUNCTION )
+    if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
+        if( (flags & SY_SUBPROG_TYPE) != SY_FUNCTION )
             return( false );
-        if( !(flags & SY_PS_ENTRY) )
+        if( (flags & SY_PS_ENTRY) == 0 )
             return( false );
         GetFunctionShadow();
         return( true );
@@ -359,5 +359,5 @@ bool    ReqDoVar( void ) {
 bool    RecArrName( void ) {
 //====================
 
-    return( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_ARR );
+    return( (CITNode->opn.us & USOPN_WHAT) == USOPN_ARR );
 }

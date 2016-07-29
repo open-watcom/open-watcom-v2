@@ -112,11 +112,11 @@ void    GFiniSS( itnode *sym_node, itnode *ss_node ) {
         }                       // character*(*) and no upper bound specified
     }
     GenTypes( ss_node, ss_node->link );
-    if( !( sym_node->opn.us & USOPN_FLD ) ) {
+    if( (sym_node->opn.us & USOPN_FLD) == 0 ) {
         if( sym_node->opn.us & USOPN_SS1 ) { // length known at compile-time
             OutInt( sym_node->value.st.ss_size );
         }
-        if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+        if( (StmtSw & SS_DATA_INIT) == 0 ) {
             sym_node->value.st.ss_id = sym_node->sym_ptr;
             sym_node->sym_ptr = GTempString( 0 );
             OutPtr( sym_node->sym_ptr );

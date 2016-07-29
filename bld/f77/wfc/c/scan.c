@@ -143,7 +143,7 @@ void    Scan( void ) {
     char_class  ch_class;
     char_class  wasextch;
 
-    if( !(LexToken.flags & TK_LAST) ) {
+    if( (LexToken.flags & TK_LAST) == 0 ) {
         wasextch = 0;
         len = 0;
         tab = 0;
@@ -334,7 +334,7 @@ void    Scan( void ) {
                 Error( CC_BAD_CHAR );
                 break;
             case SCM :
-                if( !(ExtnSw & XS_EOL_COMMENT) ) {
+                if( (ExtnSw & XS_EOL_COMMENT) == 0 ) {
                     Extension( CC_EOL_COMMENT );
                     ExtnSw |= XS_EOL_COMMENT;
                 }
@@ -361,13 +361,13 @@ void    Scan( void ) {
                 ComPrint();
                 ScanNum();
                 if( Line >= 20 ) {
-                    if( !(ExtnSw & XS_CONT_20) ) {
+                    if( (ExtnSw & XS_CONT_20) == 0 ) {
                         Extension( CC_TOO_MANY_CONT );
                         ExtnSw |= XS_CONT_20;
                     }
                     if( (TkCrsr-TokenBuff) + (LastColumn-CONT_COL) > TOKLEN ) {
                         TkCrsr = TokenBuff; // so we don't overflow TokenBuff
-                        if( !(StmtSw & SS_CONT_ERROR_ISSUED) ) {
+                        if( (StmtSw & SS_CONT_ERROR_ISSUED) == 0 ) {
                             Error( CC_CONT_OVERFLOW );
                             StmtSw |= SS_CONT_ERROR_ISSUED;
                         }
@@ -471,8 +471,8 @@ token:  LexToken.stop  = TkCrsr;
             break;
         }
         LexToken.class = class;
-        if( !(ExtnSw & XS_CHAR_EXTN) && ( class != TO_LIT ) &&
-            ( class != TO_FMT ) && ( wasextch & C_EXT ) ) {
+        if( (ExtnSw & XS_CHAR_EXTN) == 0 && ( class != TO_LIT ) &&
+            ( class != TO_FMT ) && (wasextch & C_EXT) ) {
             Extension( CC_SET_EXTEND );
             ExtnSw |= XS_CHAR_EXTN;
         }
@@ -507,10 +507,10 @@ static  void    ScanNum( void ) {
         if( StmtNoFound ) {
             Error( CC_STMTNO_ON_CONT );
         }
-        if( ( ContType == C_BC ) || ( ContType & C_EXT ) ) {
+        if( ( ContType == C_BC ) || (ContType & C_EXT) ) {
             // non-FORTRAN char or WATFOR-77 extension
             // but issue message only once
-            if( !(ExtnSw & XS_CHAR_EXTN) ) {
+            if( (ExtnSw & XS_CHAR_EXTN) == 0 ) {
                 Extension( CC_SET_EXTEND );
                 ExtnSw |= XS_CHAR_EXTN;
             }

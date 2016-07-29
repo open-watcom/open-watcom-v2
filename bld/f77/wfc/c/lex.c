@@ -106,7 +106,7 @@ void    MakeITList( void ) {
     Lex.opr = OPR_TRM;
     Lex.oprpos = ( LexToken.line << 8 ) + LexToken.col + 1;
     Scan();
-    if( !(LexToken.flags & TK_EOL) ) {
+    if( (LexToken.flags & TK_EOL) == 0 ) {
         if( LexToken.col < CONT_COL - 1 ) {
             Error( CC_NOT_DIGITS );
         }
@@ -170,7 +170,7 @@ static  void FlushStatement( void ) {
 
     for(;;) {
         ComRead();
-        if( ( ProgSw & PS_SOURCE_EOF ) != 0 ) break;
+        if( ProgSw & PS_SOURCE_EOF ) break;
         if( StmtType != STMT_CONT ) break;
         ComPrint();
     }
@@ -198,13 +198,13 @@ static  void    SetSwitch( void ) {
         }
     } else if( BrCnt == 0 ) {
         if( Lex.opr == OPR_COM ) {
-            if( ( StmtSw & SS_EQUALS_FOUND ) != 0 ) {
+            if( StmtSw & SS_EQUALS_FOUND ) {
                 StmtSw |= SS_EQ_THEN_COMMA;
             } else {
                 StmtSw |= SS_COMMA_FOUND;
             }
         } else if( Lex.opr == OPR_EQU ) {
-            if( ( StmtSw & SS_COMMA_FOUND ) != 0 ) {
+            if( StmtSw & SS_COMMA_FOUND ) {
                 StmtSw |= SS_COMMA_THEN_EQ;
             } else {
                 StmtSw |= SS_EQUALS_FOUND;
@@ -251,7 +251,7 @@ static  void    GetOpr( void ) {
             LexToken.flags |= TK_LENSPEC;
         }
         Scan();
-        if( ( LexToken.class == TO_OPR ) && !(LexToken.flags & TK_EOL) &&
+        if( ( LexToken.class == TO_OPR ) && (LexToken.flags & TK_EOL) == 0 &&
             ( ( Lex.opr == OPR_MUL ) || ( Lex.opr == OPR_DIV ) ) &&
             ( Lex.opr == LkUpOpr() ) ) {
             if( Lex.opr == OPR_MUL ) {

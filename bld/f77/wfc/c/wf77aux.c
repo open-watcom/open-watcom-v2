@@ -303,7 +303,7 @@ void            InitAuxInfo( void ) {
     // Change auxiliary information for calls to run-time routines to match
     // the options used to compile the run-time routines
     if( CGOpts & CGOPT_M_LARGE ) {
-        if( !(CGOpts & CGOPT_WINDOWS) ) {
+        if( (CGOpts & CGOPT_WINDOWS) == 0 ) {
             HW_CTurnOff( IFXInfo.save, HW_DS );
             HW_CTurnOff( RtRtnInfo.save, HW_DS );
             HW_CTurnOff( RtStopInfo.save, HW_DS );
@@ -326,7 +326,7 @@ void            InitAuxInfo( void ) {
     HW_CTurnOff( IFVarInfo.save, HW_ES );
   #endif
 
-    if( !(CGOpts & CGOPT_SEG_REGS) ) {
+    if( (CGOpts & CGOPT_SEG_REGS) == 0 ) {
         if( _FloatingDS( CGOpts ) ) {
             HW_CTurnOff( DefaultInfo.save, HW_DS );
         }
@@ -507,7 +507,7 @@ static  void    AddDefaultLib( char *lib_ptr, int lib_len, char priority ) {
     default_lib         **lib;
     default_lib         *new_lib;
 
-    if( !( Options & OPT_DFLT_LIB ) )
+    if( (Options & OPT_DFLT_LIB) == 0 )
         return;
     if( ( *lib_ptr == '"' ) && ( lib_ptr[lib_len - 1] == '"' ) ) {
         lib_len -= 2;
@@ -1795,7 +1795,7 @@ static  void            GetSaveInfo( void ) {
     if( have.f_list ) {
         HW_Asgn( default_flt_n_seg, DefaultInfo.save );
         HW_CTurnOn( CurrAux->save, HW_FULL );
-        if( !have.f_exact && !(CGOpts & CGOPT_SEG_REGS) ) {
+        if( !have.f_exact && (CGOpts & CGOPT_SEG_REGS) == 0 ) {
             HW_CAsgn( flt_n_seg, HW_FLTS );
             HW_CTurnOn( flt_n_seg, HW_SEGS );
             HW_TurnOff( CurrAux->save, flt_n_seg );

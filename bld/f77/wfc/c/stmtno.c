@@ -108,7 +108,7 @@ sym_id  LookUp( unsigned_32 num ) {
     sym_ptr = NULL;
     if( num != 0 ) {
         sym_ptr = STStmtNo( num );
-        if( ( sym_ptr->u.st.flags & SN_INIT_MASK ) == SN_INIT ) {
+        if( (sym_ptr->u.st.flags & SN_INIT_MASK) == SN_INIT ) {
             sym_ptr->u.st.line = SrcRecNum;
         }
     }
@@ -140,8 +140,8 @@ sym_id  LkUpStmtNo( void ) {
             Warning( ST_TO_SELF );     // this is only a warning
         }                              // eg. 10 IF( FNX( Y ) )10,20,30
                                        // will not necessarily be infinite
-        if( ( flags & SN_DEFINED ) != 0 ) {
-            if( ( flags & SN_BAD_BRANCH ) != 0 ) {
+        if( flags & SN_DEFINED ) {
+            if( flags & SN_BAD_BRANCH ) {
                 Err( ST_CANNOT_BRANCH, sym_ptr );
             }
             csptr = CSHead;
@@ -151,23 +151,23 @@ sym_id  LkUpStmtNo( void ) {
                 if( csptr == NULL ) break;
             }
             if( csptr == NULL ) {
-                if( !(Options & OPT_WILD) ) {
+                if( (Options & OPT_WILD) == 0 ) {
                     Err( SP_INTO_STRUCTURE, sym_ptr );
                 }
             }
-            if( StNumbers.in_remote && ( ( flags & SN_IN_REMOTE ) == 0 ) ) {
+            if( StNumbers.in_remote && ( (flags & SN_IN_REMOTE) == 0 ) ) {
                 Err( SP_OUT_OF_BLOCK, sym_ptr );
             }
         } else {
             if( ( sym_ptr->u.st.block > CSHead->block ) ||
-                ( ( flags & SN_BRANCHED_TO ) == 0 ) ||
+                ( (flags & SN_BRANCHED_TO) == 0 ) ||
                 // Consider:      DO 10 I==1,2
                 //                  GOTO 10
                 //                  DO 10 J==1,2
                 //           10  CONTINUE
                 // When we compile "GOTO 10", 10 is no longer only
                 // a DO terminal statement number.
-                ( flags & SN_ONLY_DO_TERM ) ) {
+                (flags & SN_ONLY_DO_TERM) ) {
                 sym_ptr->u.st.flags &= ~SN_ONLY_DO_TERM;
                 sym_ptr->u.st.block = CSHead->block;
                 sym_ptr->u.st.line = SrcRecNum;
@@ -191,8 +191,8 @@ sym_id  LkUpFormat( void ) {
 
     sym_ptr = LookUp( GetStmtNo() );
     if( sym_ptr != NULL ) {
-        if( ( sym_ptr->u.st.flags & SN_DEFINED ) != 0 ) {
-            if( ( sym_ptr->u.st.flags & SN_FORMAT ) == 0 ) {
+        if( sym_ptr->u.st.flags & SN_DEFINED ) {
+            if( (sym_ptr->u.st.flags & SN_FORMAT) == 0 ) {
                 Err( ST_NOT_FORMAT, sym_ptr );
             }
         } else {
@@ -229,9 +229,9 @@ sym_id  LkUpAssign( void ) {
     if( sym_ptr != NULL ) {
         sym_ptr->u.st.ref_count++;
         sym_ptr->u.st.flags |= SN_ASSIGNED;
-        if( ( sym_ptr->u.st.flags & SN_DEFINED ) &&
-            ( ( sym_ptr->u.st.flags & SN_FORMAT ) == 0 ) &&
-            ( sym_ptr->u.st.flags & SN_BAD_BRANCH ) ) {
+        if( (sym_ptr->u.st.flags & SN_DEFINED) &&
+            ( (sym_ptr->u.st.flags & SN_FORMAT) == 0 ) &&
+            (sym_ptr->u.st.flags & SN_BAD_BRANCH) ) {
             Err( GO_CANNOT_ASSIGN, sym_ptr );
             sym_ptr->u.st.flags &= ~SN_ASSIGNED;
         }
@@ -253,13 +253,13 @@ unsigned_32     LkUpDoTerm( void ) {
     if( num != 0 ) {
         sym_ptr = LookUp( num );
         flags = sym_ptr->u.st.flags;
-        if( ( flags & SN_DEFINED ) != 0 ) {
+        if( flags & SN_DEFINED ) {
             Err( DO_BACKWARDS_DO, sym_ptr );
         }
-        if( ( flags & SN_ONLY_DO_TERM ) != 0 ) {
+        if( flags & SN_ONLY_DO_TERM ) {
             sym_ptr->u.st.block = CSHead->block;
             sym_ptr->u.st.line = SrcRecNum;
-        } else if( ( flags & (SN_INIT_MASK & ~SN_ASSIGNED) ) == SN_INIT ) {
+        } else if( (flags & (SN_INIT_MASK & ~SN_ASSIGNED)) == SN_INIT ) {
             // Assert: SN_ASSIGNED is only bit that might be set
 
             // Consider: ASSIGN 10 to I
@@ -288,7 +288,7 @@ void    DefStmtNo( unsigned_32 num ) {
 
     sym_ptr = LookUp( num );
     sym_ptr->u.st.ref_count++;
-    if( ( sym_ptr->u.st.flags & SN_DEFINED ) != 0 ) {
+    if( (sym_ptr->u.st.flags & SN_DEFINED) != 0 ) {
         Err( ST_ALREADY, sym_ptr );
     } else {
         StNumbers.blk_before = CSHead->block;
@@ -317,20 +317,19 @@ void    Update( unsigned_32 num ) {
     unsigned_16 block;
 
     sym = LookUp( num );
-    if( ( sym->u.st.flags & SN_DEFINED ) == 0 ) {
+    if( (sym->u.st.flags & SN_DEFINED) == 0 ) {
         sym->u.st.flags |= SN_DEFINED;
         block = StNumbers.blk_before; // allow branch to start of block
         if( block > CSHead->block ) { // end of structure occurred
             block = CSHead->block; // allow branch to end of block
         }
-        if( ( sym->u.st.flags & SN_BRANCHED_TO ) != 0 ) {
+        if( sym->u.st.flags & SN_BRANCHED_TO ) {
             if( sym->u.st.block < block ) {
-                if( !(Options & OPT_WILD) ) {
+                if( (Options & OPT_WILD) == 0 ) {
                     Err( SP_FROM_OUTSIDE, sym );
                 }
             }
-            if( !StNumbers.in_remote &&
-                ( ( sym->u.st.flags & SN_IN_REMOTE ) != 0 ) ) {
+            if( !StNumbers.in_remote && (sym->u.st.flags & SN_IN_REMOTE) ) {
                 Err( SP_OUT_OF_BLOCK, sym );
             }
         }
@@ -338,11 +337,11 @@ void    Update( unsigned_32 num ) {
     }
     if( CtrlFlgOn( CF_BAD_BRANCH_OBJECT ) ) {
         sym->u.st.flags |= SN_BAD_BRANCH;
-        if( ( sym->u.st.flags & SN_BRANCHED_TO ) != 0 ) {
+        if( sym->u.st.flags & SN_BRANCHED_TO ) {
             StmtIntErr( ST_BAD_BRANCHED, sym->u.st.line );
         }
         sym->u.st.flags &= ~SN_AFTR_BRANCH;
-        if( ( sym->u.st.flags & SN_ASSIGNED ) && ( StmtProc != PR_FMT ) ) {
+        if( (sym->u.st.flags & SN_ASSIGNED) && ( StmtProc != PR_FMT ) ) {
             StmtIntErr( GO_ASSIGNED_BAD, sym->u.st.line );
         }
     }
@@ -350,7 +349,7 @@ void    Update( unsigned_32 num ) {
         sym->u.st.flags |= SN_EXECUTABLE;
     }
     if( StmtProc != PR_FMT ) {
-        if( ( sym->u.st.flags & SN_FORMAT ) != 0 ) {
+        if( sym->u.st.flags & SN_FORMAT ) {
             Err( ST_EXPECT_FORMAT, sym );
         }
     }

@@ -147,7 +147,7 @@ static  void    CGStart( void ) {
         cpu = 0;
         cg_opts = FORTRAN_ALIASING|RELAX_ALIAS;
 #if COMP_CFG_CG_FPE
-        if( !( OZOpts & OZOPT_O_LOOP_INVAR ) ) {
+        if( (OZOpts & OZOPT_O_LOOP_INVAR) == 0 ) {
             cg_opts |= ENABLE_FP_EXCEPTIONS;
         }
 #endif

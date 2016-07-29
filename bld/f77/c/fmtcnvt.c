@@ -92,7 +92,7 @@ static int  Digits( canon_form *canon, char *field, char *stop, int decimals, bo
                     canon->exp--;
                 }
             } else {
-                if( !(canon->flags & DECIMAL) ) {
+                if( (canon->flags & DECIMAL) == 0 ) {
                      canon->exp = stop - field - decimals;
                 }
                 AddDig( canon, ch );
@@ -262,7 +262,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
                 canon.flags |= LONGDOUBLE;
             }
             // if E|D found but no decimal, use the specified # of decimals
-            if( !(canon.flags & DECIMAL) ) {
+            if( (canon.flags & DECIMAL) == 0 ) {
                 canon.exp = canon.col - decimals + canon.blanks;
             }
             if( ch != '-' ) {
@@ -290,10 +290,10 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
         return( FLT_INVALID );
     if( canon.flags & BAD_EXPONENT )
         return( FLT_INVALID );
-    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) && !(canon.flags & (LEFT_DIGITS|RIGHT_DIGITS)) )
+    if( (canon.flags & (FOUND_SIGN | DECIMAL | EXPONENT)) && (canon.flags & (LEFT_DIGITS | RIGHT_DIGITS)) == 0 )
         return( FLT_INVALID );
     canon.exp -= scale; // adjust for kP specifier
-    if( !(canon.flags & DECIMAL) ) { // if no '.' found
+    if( (canon.flags & DECIMAL) == 0 ) { // if no '.' found
         // adjust for BN specifier
         canon.exp -= canon.blanks;
     }
@@ -312,7 +312,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
     if( errno != 0 )
         return( FLT_RANGE_EXCEEDED );
     if( prec == PRECISION_SINGLE ) {
-        if( !(canon.flags & DOUBLE) && !( canon.flags & LONGDOUBLE ) ) {
+        if( (canon.flags & DOUBLE) == 0 && (canon.flags & LONGDOUBLE) == 0 ) {
 
             single      volatile sresult;
 
@@ -323,7 +323,7 @@ int FmtS2F( char *field, uint width, int decimals, bool blanks,
             *result = sresult;
         }
     } else if( prec == PRECISION_DOUBLE ) {
-        if( !(canon.flags & LONGDOUBLE) ) {
+        if( (canon.flags & LONGDOUBLE) == 0 ) {
 
             double      volatile sresult;
 

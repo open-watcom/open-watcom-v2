@@ -104,7 +104,7 @@ static  uint    SymClass( sym_id sym ) {
         return( flags >> SY_SUBPROG_IDX );
     }
     if( flags & SY_SUB_PARM ) return( NAME_ARGUMENT );
-    if( (flags & SY_SPECIAL_PARM) && !(StmtSw & SS_DATA_INIT) ) return( NAME_SF_DUMMY );
+    if( (flags & SY_SPECIAL_PARM) && (StmtSw & SS_DATA_INIT) == 0 ) return( NAME_SF_DUMMY );
     if( flags & SY_IN_COMMON ) return( NAME_COMMON_VAR );
     if( flags & SY_SUBSCRIPTED ) {
         if( _Allocatable( sym ) ) return( NAME_ALLOCATED_ARRAY );

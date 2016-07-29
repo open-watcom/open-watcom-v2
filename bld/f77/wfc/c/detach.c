@@ -155,7 +155,7 @@ void    DetSubList(void) {
         Error( SV_INV_SSCR );
     }
     // we must make sure the array isn't substrung before we can set OPN_SS1
-    if( !( cit->opn.us & USOPN_FLD ) && ( cit->sym_ptr->u.ns.u1.s.typ == FT_CHAR ) ) {
+    if( (cit->opn.us & USOPN_FLD) == 0 && ( cit->sym_ptr->u.ns.u1.s.typ == FT_CHAR ) ) {
         ch_size = cit->sym_ptr->u.ns.xt.size;
         if( ch_size > 0 ) {
             cit->opn.us |= USOPN_SS1;

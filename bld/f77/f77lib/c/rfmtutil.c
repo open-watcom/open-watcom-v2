@@ -649,15 +649,15 @@ static void FOHex( uint width ) {
 //  edit descriptor:
 
     if( IOCB->typ == PT_CPLX_8 ) {
-        if( !(IOCB->flags & IOF_FMTREALPART) ) {
+        if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.scomplex.realpart = IORslt.scomplex.imagpart;
         }
     } else if( IOCB->typ == PT_CPLX_16 ) {
-        if( !(IOCB->flags & IOF_FMTREALPART) ) {
+        if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.dcomplex.realpart = IORslt.dcomplex.imagpart;
         }
     } else if( IOCB->typ == PT_CPLX_32 ) {
-        if( !(IOCB->flags & IOF_FMTREALPART) ) {
+        if( (IOCB->flags & IOF_FMTREALPART) == 0 ) {
             IORslt.xcomplex.realpart = IORslt.xcomplex.imagpart;
         }
     }
