@@ -33,10 +33,11 @@
 #include <ctype.h>
 #include <assert.h>
 #include "cgdefs.h"
-#include "import.h"
 #include "coderep.h"
 #include "cgauxinf.h"
 #include "utils.h"
+#include "typedef.h"
+#include "objout.h"
 #include "feprotos.h"
 
 #include "langenvd.h"
@@ -256,12 +257,11 @@ static int GetExtName( cg_sym_handle sym, char *buffer, int max_len )
     return( 0 );
 }
 
-extern  void    DoOutObjectName( cg_sym_handle sym,
-                                void (*outputter)( char *, void * ),
-                                void *data,
-                                import_type kind ) {
+void    DoOutObjectName( cg_sym_handle sym,
+                        void (*outputter)( const char *, void * ),
+                        void *data, import_type kind )
 /*******************************************************************/
-
+{
     char        *dst;
     char        buffer[TS_MAX_OBJNAME + TRUNC_SYMBOL_HASH_LEN];
     unsigned    pref_len;

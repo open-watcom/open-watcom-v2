@@ -35,8 +35,6 @@
 #include "cgdefs.h"
 #include "cgauxinf.h"
 #include "system.h"
-#include "import.h"
-#include "fppatch.h"
 #include "cgmem.h"
 #include "zoiks.h"
 #include "data.h"
@@ -56,6 +54,8 @@
 #include "optmain.h"
 #include "opttell.h"
 #include "intrface.h"
+#include "i86obj.h"
+#include "i87data.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -139,10 +139,6 @@ typedef struct dbg_seg_info {
 } dbg_seg_info;
 
 
-extern  void            DoOutObjectName(cg_sym_handle,void(*)(const char *,void *),void *,import_type);
-
-extern  bool            Used87;
-
 /* Forward ref's */
 static  void            DumpImportResolve( cg_sym_handle sym, omf_idx idx );
 
@@ -202,8 +198,8 @@ static struct dbg_seg_info DbgSegs[] = {
 };
 
 
-extern  void    InitSegDefs( void )
-/*********************************/
+void    InitSegDefs( void )
+/*************************/
 {
     SegDefs = NULL;
     NameCache = NULL;
@@ -745,8 +741,8 @@ static void DoSegment( segdef *seg, array_control *dgroup_def, array_control *tg
 }
 
 
-extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
-/**************************************************************************************************/
+void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
+/******************************************************************************************/
 {
     segdef              *new;
     segdef              **owner;
@@ -833,8 +829,8 @@ static  void    OutString( const char *name, array_control *dest )
     OutBuffer( name, len, dest );
 }
 
-extern char GetMemModel( void )
-/*****************************/
+char GetMemModel( void )
+/**********************/
 {
     char model;
 
@@ -889,8 +885,8 @@ static void OutModel( array_control *dest )
     OutString( model, dest );
 }
 
-extern segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier )
-/******************************************************************************/
+segment_id DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier )
+/***********************************************************************************/
 {
     index_rec   *rec;
 
@@ -1005,8 +1001,8 @@ static  void    KillArray( array_control *arr )
     CGFree( arr );
 }
 
-extern  void    ObjInit( void )
-/*****************************/
+void    ObjInit( void )
+/*********************/
 {
     array_control       *names;         /* for LNAMES*/
     array_control       *dgroup_def;
@@ -1124,8 +1120,8 @@ extern  void    ObjInit( void )
 }
 
 
-extern  segment_id  SetOP( segment_id seg )
-/*****************************************/
+segment_id  SetOP( segment_id seg )
+/*********************************/
 {
     segment_id  old;
 
@@ -1142,14 +1138,14 @@ extern  segment_id  SetOP( segment_id seg )
     return( old );
 }
 
-extern  offset  AskLocation( void )
-/*********************************/
+offset  AskLocation( void )
+/*************************/
 {
     return( (offset)CurrSeg->location );
 }
 
-extern void ChkDbgSegSize( offset max, bool typing )
-/**************************************************/
+void ChkDbgSegSize( offset max, bool typing )
+/*******************************************/
 {
     dbg_seg_info    *info;
     segment_id      old;
@@ -1168,8 +1164,8 @@ extern void ChkDbgSegSize( offset max, bool typing )
 }
 
 
-extern  bool    UseImportForm( fe_attr attr )
-/*******************************************/
+bool    UseImportForm( fe_attr attr )
+/***********************************/
 {
     if( attr & (FE_GLOBAL|FE_IMPORT) )
         return( true );
@@ -1180,8 +1176,8 @@ extern  bool    UseImportForm( fe_attr attr )
 
 
 
-extern  bool    AskSegNear( segment_id id )
-/*****************************************/
+bool    AskSegNear( segment_id id )
+/*********************************/
 {
     index_rec   *rec;
 
@@ -1196,8 +1192,8 @@ extern  bool    AskSegNear( segment_id id )
 }
 
 
-extern  bool    AskSegBlank( segment_id id )
-/******************************************/
+bool    AskSegBlank( segment_id id )
+/**********************************/
 {
     index_rec *rec;
 
@@ -1208,8 +1204,8 @@ extern  bool    AskSegBlank( segment_id id )
 }
 
 
-extern  bool    AskSegPrivate( segment_id id )
-/********************************************/
+bool    AskSegPrivate( segment_id id )
+/************************************/
 {
     index_rec   *rec;
 
@@ -1220,8 +1216,8 @@ extern  bool    AskSegPrivate( segment_id id )
 }
 
 
-extern  bool    AskSegROM( segment_id id )
-/****************************************/
+bool    AskSegROM( segment_id id )
+/********************************/
 {
     index_rec   *rec;
 
@@ -1232,37 +1228,37 @@ extern  bool    AskSegROM( segment_id id )
 }
 
 
-extern  segment_id  AskBackSeg( void )
-/************************************/
+segment_id  AskBackSeg( void )
+/****************************/
 {
     return( BackSeg );
 }
 
 
-extern  segment_id  AskCodeSeg( void )
-/************************************/
+segment_id  AskCodeSeg( void )
+/****************************/
 {
     return( CodeSeg );
 }
 
 
-extern  bool    HaveCodeSeg( void )
-/*********************************/
+bool    HaveCodeSeg( void )
+/*************************/
 {
     return( CodeSeg != BACKSEGS );
 }
 
 
-extern  segment_id  AskAltCodeSeg( void )
-/***************************************/
+segment_id  AskAltCodeSeg( void )
+/*******************************/
 {
     return( CodeSeg );
 }
 
 static  segment_id  Code16Seg = 0;
 
-extern  segment_id  AskCode16Seg( void )
-/**************************************/
+segment_id  AskCode16Seg( void )
+/******************************/
 {
     if( Code16Seg == 0 ) {
         Code16Seg = --BackSegIdx;
@@ -1389,8 +1385,8 @@ static omf_idx NeedComdatNidx( import_type kind )
 }
 
 
-extern  void    OutSelect( bool starts )
-/**************************************/
+void    OutSelect( bool starts )
+/******************************/
 {
     object      *obj;
 
@@ -1502,8 +1498,8 @@ static  void    CheckLEDataSize( unsigned max_size, bool need_init )
     }
 }
 
-extern  void    SetUpObj( bool is_data )
-/**************************************/
+void    SetUpObj( bool is_data )
+/******************************/
 {
     object      *obj;
     bool        old_data;
@@ -1739,8 +1735,8 @@ static  void    FiniTarg( void )
     CGFree( obj );
 }
 
-extern  void    FlushOP( segment_id id )
-/**************************************/
+void    FlushOP( segment_id id )
+/******************************/
 {
     segment_id  old;
     index_rec   *rec;
@@ -1900,8 +1896,8 @@ static  void    EndModule( void )
 }
 
 
-extern  void    ObjFini( void )
-/*****************************/
+void    ObjFini( void )
+/*********************/
 {
 
     index_rec   *rec;
@@ -2217,8 +2213,8 @@ static void     OutVirtFuncRef( cg_sym_handle virt )
 }
 
 
-extern  void    OutDLLExport( uint words, cg_sym_handle sym )
-/********************************************************/
+void    OutDLLExport( uint words, cg_sym_handle sym )
+/***************************************************/
 {
     object      *obj;
 
@@ -2243,8 +2239,8 @@ extern  void    OutDLLExport( uint words, cg_sym_handle sym )
 }
 
 
-extern  void    OutLabel( label_handle lbl )
-/******************************************/
+void    OutLabel( label_handle lbl )
+/**********************************/
 {
     temp_patch          **owner;
     temp_patch          *curr_pat;
@@ -2344,8 +2340,8 @@ extern  void    OutLabel( label_handle lbl )
 }
 
 
-extern  void    AbsPatch( abspatch_handle patch_handle, offset lc )
-/*****************************************************************/
+void    AbsPatch( abspatch_handle patch_handle, offset lc )
+/*********************************************************/
 {
     abspatch *patch = (abspatch *)patch_handle;
     if( patch->flags & AP_HAVE_OFFSET ) {
@@ -2358,8 +2354,8 @@ extern  void    AbsPatch( abspatch_handle patch_handle, offset lc )
 }
 
 
-extern  void    *InitPatch( void )
-/********************************/
+void    *InitPatch( void )
+/************************/
 {
     return( InitArray( sizeof( obj_patch ),  MODEST_PAT, INCREMENT_PAT ) );
 }
@@ -2486,8 +2482,8 @@ static void DoFix( omf_idx idx, bool rel, base_type base, fix_class class, omf_i
 }
 
 
-extern  void    SetBigLocation( long_offset loc )
-/***********************************************/
+void    SetBigLocation( long_offset loc )
+/***************************************/
 {
     CurrSeg->location = loc;
     if( CurrSeg->comdat_label != NULL ) {
@@ -2501,8 +2497,8 @@ extern  void    SetBigLocation( long_offset loc )
     }
 }
 
-extern  void    IncLocation( offset by )
-/**************************************/
+void    IncLocation( offset by )
+/******************************/
 {
     long_offset     sum;
 
@@ -2530,8 +2526,8 @@ extern  void    IncLocation( offset by )
 }
 
 
-extern  void    SetLocation( offset loc )
-/***************************************/
+void    SetLocation( offset loc )
+/*******************************/
 {
     CurrSeg->location = loc;
     if( CurrSeg->comdat_label != NULL ) {
@@ -2551,8 +2547,8 @@ static  void    DecLocation( offset by )
     SetLocation( (offset)CurrSeg->location - by );
 }
 
-extern  void    OutFPPatch( fp_patches i )
-/****************************************/
+void    OutFPPatch( fp_patches i )
+/********************************/
 {
     omf_idx     idx;
 
@@ -2585,8 +2581,8 @@ extern  void    OutFPPatch( fp_patches i )
 }
 
 
-extern  void    OutPatch( label_handle lbl, patch_attr attr )
-/***********************************************************/
+void    OutPatch( label_handle lbl, patch_attr attr )
+/***************************************************/
 {
     temp_patch  *pat;
     object      *obj;
@@ -2603,8 +2599,8 @@ extern  void    OutPatch( label_handle lbl, patch_attr attr )
     obj->patches = pat;
 }
 
-extern  abspatch        *NewAbsPatch( void )
-/******************************************/
+abspatch        *NewAbsPatch( void )
+/**********************************/
 {
     abspatch    *new;
 
@@ -2710,8 +2706,8 @@ static  void    SetMaxWritten( void )
 }
 
 
-extern  void    OutDataByte( byte value )
-/***************************************/
+void    OutDataByte( byte value )
+/*******************************/
 {
     unsigned    i;
     unsigned    need;
@@ -2733,8 +2729,8 @@ extern  void    OutDataByte( byte value )
     _ARRAYOF( &obj->data, byte )[i] = value;
 }
 
-extern  void    OutDataShort( unsigned_16 value )
-/***********************************************/
+void    OutDataShort( unsigned_16 value )
+/***************************************/
 {
     unsigned    i;
     unsigned    need;
@@ -2757,8 +2753,8 @@ extern  void    OutDataShort( unsigned_16 value )
 }
 
 
-extern  void    OutDataLong( unsigned_32 value )
-/**********************************************/
+void    OutDataLong( unsigned_32 value )
+/**************************************/
 {
     unsigned    i;
     unsigned    need;
@@ -2781,8 +2777,8 @@ extern  void    OutDataLong( unsigned_32 value )
 }
 
 
-extern  void    OutAbsPatch( abspatch *patch, patch_attr attr )
-/*************************************************************/
+void    OutAbsPatch( abspatch *patch, patch_attr attr )
+/*****************************************************/
 {
     object      *obj;
     long_offset value;
@@ -2866,8 +2862,8 @@ static void DumpImportResolve( cg_sym_handle sym, omf_idx idx )
 }
 
 
-extern  void    OutReloc( segment_id seg, fix_class class, bool rel )
-/*******************************************************************/
+void    OutReloc( segment_id seg, fix_class class, bool rel )
+/***********************************************************/
 {
     index_rec   *rec;
 
@@ -2889,8 +2885,8 @@ void OutSpecialCommon( import_handle imphdl, fix_class class, bool rel )
 }
 
 
-extern  void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
-/********************************************************************/
+void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
+/***************************************************************/
 {
     fe_attr     attr;
 
@@ -2908,8 +2904,8 @@ extern  void    OutImport( cg_sym_handle sym, fix_class class, bool rel )
 }
 
 
-extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
-/***************************************************************************/
+void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
+/*******************************************************************/
 {
     import_handle   imphdl;
 
@@ -2928,14 +2924,14 @@ extern  void    OutRTImportRel( rt_class rtindex, fix_class class, bool rel )
 }
 
 
-extern  void    OutRTImport( rt_class rtindex, fix_class class )
-/**************************************************************/
+void    OutRTImport( rt_class rtindex, fix_class class )
+/******************************************************/
 {
     OutRTImportRel( rtindex, class, ( F_CLASS( class ) == F_OFFSET || F_CLASS( class ) == F_LDR_OFFSET ) );
 }
 
-extern  void    OutBckExport( const char *name, bool is_export )
-/**************************************************************/
+void    OutBckExport( const char *name, bool is_export )
+/******************************************************/
 {
     array_control       *exp;
     object              *obj;
@@ -2979,8 +2975,8 @@ extern  void    OutBckExport( const char *name, bool is_export )
     OutIdx( 0, exp );                       /* type index*/
 }
 
-extern  void    OutBckImport( const char *name, back_handle bck, fix_class class )
-/******************************************************************************/
+void    OutBckImport( const char *name, back_handle bck, fix_class class )
+/************************************************************************/
 {
     omf_idx     idx;
 
@@ -2999,8 +2995,8 @@ extern  void    OutBckImport( const char *name, back_handle bck, fix_class class
 }
 
 
-extern  void    OutLineNum( cg_linenum  line, bool label_line )
-/*************************************************************/
+void    OutLineNum( cg_linenum  line, bool label_line )
+/*****************************************************/
 {
     object      *obj;
 
@@ -3014,8 +3010,8 @@ extern  void    OutLineNum( cg_linenum  line, bool label_line )
 }
 
 
-extern  unsigned        SavePendingLine( unsigned new )
-/******************************************************
+unsigned        SavePendingLine( unsigned new )
+/**********************************************
 
         We're about to dump some alignment bytes. Save and restore
         the pending_line_number field so the that line number info
@@ -3052,8 +3048,8 @@ static  void    OutConcat( char *name1, char *name2, array_control *dest )
 #endif
 
 
-extern  void    OutDBytes( unsigned len, const byte *src )
-/********************************************************/
+void    OutDBytes( unsigned len, const byte *src )
+/************************************************/
 {
     unsigned    i;
     unsigned    max;
@@ -3094,8 +3090,8 @@ extern  void    OutDBytes( unsigned len, const byte *src )
 }
 
 
-extern  void    OutIBytes( byte pat, offset len )
-/***********************************************/
+void    OutIBytes( byte pat, offset len )
+/***************************************/
 {
     cmd_omf     cmd;
     object      *obj;
@@ -3134,14 +3130,14 @@ extern  void    OutIBytes( byte pat, offset len )
 }
 
 
-extern  segment_id  AskOP( void )
-/*******************************/
+segment_id  AskOP( void )
+/***********************/
 {
     return( CurrSeg->seg );
 }
 
-extern  bool    NeedBaseSet( void )
-/*********************************/
+bool    NeedBaseSet( void )
+/*************************/
 {
     bool        need;
 
@@ -3151,26 +3147,26 @@ extern  bool    NeedBaseSet( void )
 }
 
 
-extern  offset  AskMaxSize( void )
-/********************************/
+offset  AskMaxSize( void )
+/************************/
 {
     return( (offset)CurrSeg->max_size );
 }
 
-extern  long_offset  AskBigLocation( void )
-/*****************************************/
+long_offset  AskBigLocation( void )
+/*********************************/
 {
     return( CurrSeg->location );
 }
 
-extern  long_offset  AskBigMaxSize( void )
-/****************************************/
+long_offset  AskBigMaxSize( void )
+/********************************/
 {
     return( CurrSeg->max_size );
 }
 
-extern  void    TellObjNewLabel( cg_sym_handle lbl )
-/***********************************************/
+void    TellObjNewLabel( cg_sym_handle lbl )
+/******************************************/
 {
     if( lbl == NULL )
         return;
@@ -3201,8 +3197,8 @@ extern  void    TellObjNewLabel( cg_sym_handle lbl )
     }
 }
 
-extern  void    TellObjNewProc( cg_sym_handle proc )
-/***********************************************/
+void    TellObjNewProc( cg_sym_handle proc )
+/******************************************/
 {
     segment_id  old;
     segment_id  proc_id;
@@ -3249,8 +3245,8 @@ extern  void    TellObjNewProc( cg_sym_handle proc )
     SetOP( old );
 }
 
-extern void     TellObjVirtFuncRef( void *cookie )
-/************************************************/
+void     TellObjVirtFuncRef( void *cookie )
+/*****************************************/
 {
     segment_id          old;
     virt_func_ref_list  *new;
@@ -3276,8 +3272,8 @@ static  bool            InlineFunction( cg_sym_handle sym )
     return( false );
 }
 
-extern  segment_id      AskSegID( pointer hdl, cg_class class )
-/*************************************************************/
+segment_id      AskSegID( pointer hdl, cg_class class )
+/*****************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -3297,8 +3293,8 @@ extern  segment_id      AskSegID( pointer hdl, cg_class class )
     }
 }
 
-extern  bool            AskNameCode( pointer hdl, cg_class class )
-/****************************************************************/
+bool            AskNameCode( pointer hdl, cg_class class )
+/********************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -3313,8 +3309,8 @@ extern  bool            AskNameCode( pointer hdl, cg_class class )
     return( false );
 }
 
-extern  bool    AskNameROM( pointer hdl, cg_class class )
-/*******************************************************/
+bool    AskNameROM( pointer hdl, cg_class class )
+/***********************************************/
 {
     return( AskSegROM( AskSegID( hdl, class ) ) );
 }

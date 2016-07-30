@@ -24,19 +24,16 @@
 *
 *  ========================================================================
 *
-* Description:  Instruction queue manipulation.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void     InputOC( any_oc *oc );
-extern void     OutputOC( any_oc *, any_oc * );
-extern bool     ShrinkQueue( pointer_int size );
-extern void     InitQueue( void );
-extern void     EmptyQueue( void );
-extern void     FlushQueue( void );
-extern void     FiniQueue( void );
-extern void     AbortQueue( void );
+#include "gen8087.h"
 
-extern byte     ReverseCondition( byte );
-extern bool     CodeHasAbsPatch( oc_entry *code );
+
+extern name            *FPStatWord;
+extern name            *Parm8087[MAX_8087_REG + 1];
+extern bool            Used87;
+extern int             Max87Stk;

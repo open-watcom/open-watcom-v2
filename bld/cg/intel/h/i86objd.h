@@ -179,8 +179,3 @@ typedef struct abspatch {
         long_offset             value;
         abspatch_flags          flags;
 } abspatch;
-
-extern void             OutAbsPatch(abspatch *,patch_attr);
-extern void             DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );
-extern bool             UseRepForm( unsigned size );
-extern void             OutSpecialCommon( import_handle imphdl, fix_class class, bool rel );

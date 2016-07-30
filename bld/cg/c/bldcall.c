@@ -48,6 +48,10 @@
 #include "redefby.h"
 #include "intrface.h"
 #include "makeblk.h"
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#include "i86objd.h"
+#include "i86obj.h"
+#endif
 #include "feprotos.h"
 
 
@@ -69,9 +73,6 @@ extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
 extern  void            TNZapParms(void);
 extern  void            PushInSameBlock(instruction*);
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-extern  void            TellObjVirtFuncRef(void *);
-#endif
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
 extern  type_def        *ClassType(type_class_def);
@@ -149,7 +150,8 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         class = CallState( aux, tipe, new->state );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
-        if( cookie != NULL ) TellObjVirtFuncRef( cookie );
+        if( cookie != NULL )
+            TellObjVirtFuncRef( cookie );
 #elif _TARGET & _TARG_PPC
         CurrProc->targ.toc_clobbered = true;
 #endif

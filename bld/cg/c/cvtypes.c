@@ -55,7 +55,6 @@ static struct lf_info LFInfo[LFG_LAST] = {
     #undef _LFMAC
 };
 
-extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataShort(unsigned_16);
 extern  void        LocDump( dbg_loc );
 extern  dbg_loc     LocDupl( dbg_loc );

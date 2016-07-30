@@ -42,8 +42,9 @@
 #include "cvdbg.h"
 #include "dbsyms.h"
 #include "cvsyms.h"
-
-extern  segment_id  DbgSegDef( const char *, const char *, int  );
+#include "objout.h"
+#include "rtclass.h"
+#include "i86obj.h"
 
 
 extern  void    CVDefSegs( void ){

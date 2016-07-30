@@ -43,9 +43,9 @@
 #include "rscobj.h"
 #include "dbsyms.h"
 #include "cvsyms.h"
+#include "objout.h"
 #include "rsccvsup.h"
 
-extern  segment_id          DbgSegDef( const char *name );
 
 static  section_def         *CVSymMain;
 static  owl_section_handle  owlCVSym; //.debug$s for non-comdats .text

@@ -37,15 +37,15 @@
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
-#include "fppatch.h"
 #include "cfloat.h"
 #include "data.h"
 #include "i86objd.h"
 #include "objprof.h"
 #include "targetdb.h"
+#include "i86obj.h"
+#include "i86esc.h"
 
 
-extern  void            DoSymRef( name *, offset, bool );
 extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );
 extern  hw_reg_set      High32Reg( hw_reg_set );
@@ -56,14 +56,12 @@ extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );
 extern  void            LayOpbyte( gen_opcode );
 extern  void            LayRegRM( hw_reg_set );
-extern  void            DoSegRef( segment_id );
 extern  void            GenSeg( hw_reg_set );
 extern  void            LayW( type_class_def );
 extern  void            AddWCons( name *, type_class_def );
 extern  void            AddSData( signed_32, type_class_def );
 extern  void            AddWData( signed_32, type_class_def );
 extern  void            AddToTemp( byte );
-extern  void            DoAbsPatch( abspatch_handle *, int );
 extern  type_class_def  OpndSize( hw_reg_set );
 extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );

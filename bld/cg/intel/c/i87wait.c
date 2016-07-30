@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "data.h"
 
 extern  void            PrefixIns(instruction*,instruction*);

@@ -346,10 +346,9 @@ static  reg_set_index   IsSets[] = {
 
 #define _Combine( a, b )        ((a) * RL_NUMBER_OF_SETS + (b))
 
-extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 ) {
-/**************************************************************************/
-
-
+reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
+/****************************************************************/
+{
     if( s1 == s2 ) return( s1 );
     switch( _Combine( s1, s2 ) ) {
     default:
@@ -359,18 +358,18 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 ) {
     }
 }
 
-extern  hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used ) {
-/**********************************************************************/
-
+hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
+/************************************************************/
+{
     regs = regs;
     used = used;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      *ParmChoices( type_class_def class ) {
-/************************************************************/
-
+hw_reg_set      *ParmChoices( type_class_def class )
+/**************************************************/
+{
     switch( class ) {
     case I4:
     case U4:
@@ -392,9 +391,9 @@ extern  hw_reg_set      *ParmChoices( type_class_def class ) {
 }
 
 
-extern  hw_reg_set      ReturnReg( type_class_def class ) {
-/*********************************************************/
-
+hw_reg_set      ReturnReg( type_class_def class )
+/***********************************************/
+{
     switch( class ) {
     case FS:
     case FD:
@@ -418,15 +417,15 @@ extern  hw_reg_set      ReturnReg( type_class_def class ) {
     }
 }
 
-extern  hw_reg_set      *ParmRegs( void ) {
-/*****************************************/
-
+hw_reg_set      *ParmRegs( void )
+/*******************************/
+{
     return( &AllParmRegs[ 0 ] );
 }
 
-extern  hw_reg_set      ParmRegConflicts( hw_reg_set regs ) {
-/***********************************************************/
-
+hw_reg_set      ParmRegConflicts( hw_reg_set regs )
+/*************************************************/
+{
     hw_reg_set          conflicts;
 
     conflicts = regs;
@@ -482,25 +481,25 @@ extern  hw_reg_set      ParmRegConflicts( hw_reg_set regs ) {
 }
 
 
-extern  reg_set_index   SegIndex() {
-/**********************************/
-
+reg_set_index   SegIndex( void )
+/******************************/
+{
     return( RL_  );
 }
 
 
-extern  reg_set_index   NoSegments( reg_set_index idx ) {
-/*******************************************************/
-
+reg_set_index   NoSegments( reg_set_index idx )
+/*********************************************/
+{
     return( idx );
 }
 
 
-extern  reg_set_index   IndexIntersect( reg_set_index curr,
+reg_set_index   IndexIntersect( reg_set_index curr,
                                        type_class_def class,
-                                       bool is_temp_index ) {
+                                       bool is_temp_index )
 /***********************************************************/
-
+{
     curr = curr;
     class = class;
     is_temp_index = is_temp_index;
@@ -508,10 +507,10 @@ extern  reg_set_index   IndexIntersect( reg_set_index curr,
 }
 
 
-extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
-                            bool is_temp_index ) {
+bool    IsIndexReg( hw_reg_set reg, type_class_def class,
+                            bool is_temp_index )
 /************************************************/
-
+{
     hw_reg_set          *dregs;
 
     is_temp_index = is_temp_index;
@@ -525,107 +524,113 @@ extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
 }
 
 
-extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index ) {
-/****************************************************************/
-
+bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
+/******************************************************/
+{
     is_temp_index = is_temp_index;
     reg = reg;
     return( false );
 }
 
 
-extern  bool    IsSegReg( hw_reg_set regs ) {
-/*******************************************/
-
+bool    IsSegReg( hw_reg_set regs )
+/*********************************/
+{
     regs = regs;
     return( false );
 }
 
 
-extern  hw_reg_set      Low16Reg( hw_reg_set regs ) {
-/***************************************************/
-
+hw_reg_set      Low16Reg( hw_reg_set regs )
+/*****************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      High16Reg( hw_reg_set regs ) {
-/****************************************************/
+hw_reg_set      High16Reg( hw_reg_set regs )
+/******************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      Low32Reg( hw_reg_set regs ) {
-/***************************************************/
+hw_reg_set      Low32Reg( hw_reg_set regs )
+/*****************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      High32Reg( hw_reg_set regs ) {
-/****************************************************/
+hw_reg_set      High32Reg( hw_reg_set regs )
+/******************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      High48Reg( hw_reg_set regs ) {
-/****************************************************/
+hw_reg_set      High48Reg( hw_reg_set regs )
+/******************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      Low48Reg( hw_reg_set regs ) {
-/***************************************************/
+hw_reg_set      Low48Reg( hw_reg_set regs )
+/*****************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      High64Reg( hw_reg_set regs ) {
-/****************************************************/
-
+hw_reg_set      High64Reg( hw_reg_set regs )
+/******************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      Low64Reg( hw_reg_set regs ) {
-/***************************************************/
-
+hw_reg_set      Low64Reg( hw_reg_set regs )
+/*****************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      HighReg( hw_reg_set regs ) {
-/**************************************************/
-
+hw_reg_set      HighReg( hw_reg_set regs )
+/****************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set      LowReg( hw_reg_set regs ) {
-/*************************************************/
-
+hw_reg_set      LowReg( hw_reg_set regs )
+/***************************************/
+{
     regs = regs;
     return( HW_EMPTY );
 }
 
-extern  hw_reg_set      FullReg( hw_reg_set regs ) {
-/**************************************************/
+hw_reg_set      FullReg( hw_reg_set regs )
+/****************************************/
+{
     regs = regs;
     return( regs );
 }
 
 
-extern  type_class_def  RegClass( hw_reg_set regs ) {
-/***************************************************/
-
+type_class_def  RegClass( hw_reg_set regs )
+/*****************************************/
+{
     hw_reg_set          test;
 
     if( HW_COvlap( regs, HW_FPR ) ) return( FD );
@@ -639,9 +644,9 @@ extern  type_class_def  RegClass( hw_reg_set regs ) {
 }
 
 
-extern  bool    IsRegClass( hw_reg_set regs, type_class_def class ) {
-/*******************************************************************/
-
+bool    IsRegClass( hw_reg_set regs, type_class_def class )
+/*********************************************************/
+{
     hw_reg_set  *list;
 
     for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
@@ -653,21 +658,23 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class ) {
 }
 
 
-extern  reg_set_index   UsualPossible( type_class_def class ) {
-/*************************************************************/
-
+reg_set_index   UsualPossible( type_class_def class )
+/***************************************************/
+{
     return( IsSets[  class  ] );
 }
 
 
-extern  hw_reg_set      ActualParmReg( hw_reg_set reg ) {
-/*******************************************************/
+hw_reg_set      ActualParmReg( hw_reg_set reg )
+/*********************************************/
+{
     return( reg );
 }
 
-extern  hw_reg_set      FixedRegs() {
+hw_reg_set      FixedRegs( void )
 /***********************************/
 /* MJC do you really want to fix them */
+{
     hw_reg_set          fixed;
 
     HW_CAsgn( fixed, HW_R30 );
@@ -677,91 +684,94 @@ extern  hw_reg_set      FixedRegs() {
     return( fixed );
 }
 
-extern  hw_reg_set      VarargsHomePtr() {
-/****************************************/
-
+hw_reg_set      VarargsHomePtr( void )
+/************************************/
+{
     return( HW_D14 );
 }
 
-extern  hw_reg_set      StackReg() {
+hw_reg_set      StackReg( void )
 /**********************************/
 /* MJC should be up to linkage conventions */
+{
     return( HW_D30 );
 }
 
-extern  hw_reg_set      FrameBaseReg() {
-/**************************************/
-
+hw_reg_set      FrameBaseReg( void )
+/**********************************/
+{
     return( HW_D15 );
 }
 
-extern  hw_reg_set      FrameReg() {
+hw_reg_set      FrameReg( void )
 /**********************************/
 /* MJC should be up to linkage conventions */
+{
     if( CurrProc->targ.base_is_fp ) {
         return( HW_D15 );
     }
     return( HW_D30 );
 }
 
-extern  hw_reg_set      ScratchReg() {
-/************************************/
+hw_reg_set      ScratchReg( void )
+/********************************/
+{
     return( HW_D28 );
 }
 
-extern  hw_reg_set      ReturnAddrReg() {
-/***************************************/
+hw_reg_set      ReturnAddrReg( void )
+/***********************************/
 /* BBB Like MJC said ^ */
-
+{
     return( HW_D26 );
 }
 
 
-extern  hw_reg_set      DisplayReg() {
-/************************************/
-
+hw_reg_set      DisplayReg( void )
+/********************************/
+{
     return( HW_EMPTY );
 }
 
 
-extern  int     SizeDisplayReg() {
-/********************************/
-
+int     SizeDisplayReg( void )
+/****************************/
+{
     return( 0 );
 }
 
 
-extern  hw_reg_set      AllCacheRegs() {
-/**************************************/
-
+hw_reg_set      AllCacheRegs( void )
+/**********************************/
+{
     return( HW_EMPTY );
 }
 
-extern  hw_reg_set      *GPRegs() {
-/*********************************/
-
+hw_reg_set      *GPRegs( void )
+/*****************************/
+{
     return( QWordRegs );
 }
 
-extern  hw_reg_set      *FPRegs() {
-/*********************************/
-
+hw_reg_set      *FPRegs( void )
+/*****************************/
+{
     return( FloatRegs );
 }
 
-extern  hw_reg_set      *IdxRegs() {
-/**********************************/
-
+hw_reg_set      *IdxRegs( void )
+/******************************/
+{
     return( DWordRegs );
 }
 
-extern  void            InitRegTbl() {
-/************************************/
-
+void            InitRegTbl( void )
+/********************************/
+{
 }
 
-extern  byte            RegTrans( hw_reg_set reg )
-/************************************************/
+byte            RegTrans( hw_reg_set reg )
+/****************************************/
 {
     int                 i;
 
@@ -777,13 +787,13 @@ extern  byte            RegTrans( hw_reg_set reg )
     return( 0 );
 }
 
-extern  void SetArchIndex( name *new_r, hw_reg_set regs )
+void SetArchIndex( name *new_r, hw_reg_set regs )
 {
     new_r->r.arch_index = RegTrans( regs );
 }
 
 
-extern  axp_regn RegTransN( name *reg_name )
+axp_regn RegTransN( name *reg_name )
 /***** Translate reg name to enum name ****/
 {
     hw_reg_set reg;

@@ -33,7 +33,6 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "cgmem.h"
-#include "gen8087.h"
 #include "i87sched.h"
 #include "data.h"
 #include "x87.h"
@@ -42,9 +41,8 @@
 #include "cgsrtlst.h"
 #include "indvars.h"
 #include "loopopts.h"
+#include "i87data.h"
 
-
-extern  int     Max87Stk;
 
 extern  instruction     *PrefFXCH( instruction *ins, int i );
 extern  instruction     *SuffFXCH( instruction *ins, int i );

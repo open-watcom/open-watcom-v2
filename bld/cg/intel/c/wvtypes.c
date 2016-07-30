@@ -45,7 +45,6 @@
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
 extern  void            BuffWSLString(const char *);
-extern  void            ChkDbgSegSize( offset, bool );
 extern  void            DataShort(unsigned_16);
 extern  void            DataLong(unsigned_32);
 extern  void            DataBytes(unsigned_32,const void *);
@@ -605,7 +604,8 @@ static  void    EndType( bool check_too_big ) {
 
 
     if( _IsModel( DBG_TYPES ) ) {
-        if( check_too_big ) ChkDbgSegSize( MAX_TYPE_SIZE, true );
+        if( check_too_big )
+            ChkDbgSegSize( MAX_TYPE_SIZE, true );
         BuffEnd( DbgTypes );
     }
 }

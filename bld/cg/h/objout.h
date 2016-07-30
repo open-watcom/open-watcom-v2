@@ -1,3 +1,5 @@
+#include "import.h"
+
 extern void        ObjInit( void );
 extern void        ObjFini( void );
 extern void        InitSegDefs( void );
@@ -32,3 +34,7 @@ extern void        FEPtr( cg_sym_handle sym, type_def *tipe, offset plus );
 extern void        FEPtrBaseOffset( cg_sym_handle sym,  offset plus );
 extern void        FEPtrBase( cg_sym_handle sym );
 extern bool        FreeObjCache( void );
+extern char        GetMemModel( void );
+extern void        ChkDbgSegSize( offset max, bool typing );
+extern bool        AskSegNear( segment_id id );
+extern void        DoOutObjectName( cg_sym_handle sym, void (*outputter)( const char *, void * ), void *data, import_type kind );

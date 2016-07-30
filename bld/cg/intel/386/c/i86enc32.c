@@ -38,7 +38,6 @@
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
-#include "fppatch.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "p5prof.h"
@@ -51,10 +50,11 @@
 #include "i86proc.h"
 #include "targetdb.h"
 #include "opttell.h"
+#include "i86obj.h"
+#include "i86esc.h"
 #include "feprotos.h"
 
 
-extern  void            DoSymRef( name *, offset, bool );
 extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );
 extern  hw_reg_set      High32Reg( hw_reg_set );
@@ -65,14 +65,12 @@ extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );
 extern  void            LayOpbyte( gen_opcode );
 extern  void            LayRegRM( hw_reg_set );
-extern  void            DoSegRef( segment_id );
 extern  void            GenSeg( hw_reg_set );
 extern  void            LayW( type_class_def );
 extern  void            AddWCons( name *, type_class_def );
 extern  void            AddSData( signed_32, type_class_def );
 extern  void            AddToTemp( byte );
 extern  void            LayOpword( gen_opcode );
-extern  void            DoAbsPatch( abspatch_handle *, int );
 extern  type_class_def  OpndSize( hw_reg_set );
 extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
@@ -85,12 +83,6 @@ extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
 extern  int             CountIns( block *blk );
 
-extern  void            SetUpObj( bool );
-extern  void            OutDataByte( byte );
-extern  void            OutDataShort( unsigned_16 );
-extern  void            OutDataLong(unsigned_32);
-extern  void            OutRTImport( rt_class, fix_class );
-extern  void            OutReloc( segment_id, fix_class, bool );
 extern  void            OutLblPatch( label_handle, fix_class, offset );
 
 /* forward declarations */

@@ -31,24 +31,24 @@
 
 
 // section layout for OWL
-typedef struct section_def section_def;
-
-struct section_def {
-    section_def         *next;
+typedef struct section_def {
+    struct section_def  *next;
     segment_id          id;
     owl_func_handle     func;
     int                 line;
     int                 start;
     owl_section_handle  owl_handle;
     int                 is_start;
-};
+} section_def;
+
 //Linker comments
-#define  COMMENTV( a )  a,sizeof( a )-1
+#define COMMENTV( a )       a,sizeof( a )-1
 #define COFF_DRECTVE_DEFLIB "-defaultlib:"
 #define COFF_DRECTVE_STACK  "-stack"
 #define COFF_DRECTVE_HEAP   "-heap"
 #define COFF_DRECTVE_EXPORT "-export"
 
-extern section_def *FindSection( segment_id id );
-extern section_def *AddSection( segment_id id );
-extern owl_section_handle DbgSectDefComdat( const char *str );
+extern section_def          *FindSection( segment_id id );
+extern section_def          *AddSection( segment_id id );
+extern owl_section_handle   DbgSectDefComdat( const char *str );
+extern segment_id           DbgSegDef( const char *sect_name );

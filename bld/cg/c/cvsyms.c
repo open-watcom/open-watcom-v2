@@ -51,7 +51,6 @@
 
 extern  name            *DeAlias(name*);
 extern  void            DataLong( unsigned_32 );
-extern  char            GetMemModel( void );
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 #elif _TARGET & _TARG_80386

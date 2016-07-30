@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "cgmem.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -40,12 +39,11 @@
 #include "namelist.h"
 #include "redefby.h"
 #include "makeblk.h"
+#include "i87data.h"
 
 
-extern  name            *Parm8087[];
 extern  hw_reg_set      *RegSets[];
 extern  hw_reg_set      FPRegs[];
-extern  int             Max87Stk;
 
 extern  int             FPRegNum(name*);
 extern  void            DoNothing(instruction*);

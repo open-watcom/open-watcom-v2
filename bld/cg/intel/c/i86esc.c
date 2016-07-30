@@ -39,7 +39,6 @@
 #include "model.h"
 #include "jumps.h"
 #include "zoiks.h"
-#include "fppatch.h"
 #include "rtclass.h"
 #include "i86objd.h"
 #include "objout.h"
@@ -49,30 +48,18 @@
 #include "optmain.h"
 #include "opttell.h"
 #include "intrface.h"
+#include "i86obj.h"
+#include "i86esc.h"
 #include "feprotos.h"
 
 
-extern  void            OutFPPatch(fp_patches);
-extern  void            OutImport(cg_sym_handle,fix_class,bool);
-extern  void            OutRTImport(rt_class,fix_class);
-extern  void            OutRTImportRel(rt_class,fix_class,bool rel);
-extern  void            OutSelect(bool);
 extern  void            GenKillLabel(label_handle);
-extern  void            OutDataShort(unsigned_16);
-extern  void            OutDataLong(unsigned_32);
-extern  void            OutPatch(label_handle,patch_attr);
-extern  void            OutReloc(segment_id,fix_class,bool);
-extern  void            OutDataByte(byte);
-extern  void            OutDBytes(unsigned,const byte*);
-extern  void            SetUpObj(bool);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
-extern  abspatch_handle NewAbsPatch( void );
 extern  void            EmitByte(byte);
 extern  void            EmitSegId(segment_id);
 extern  void            InsertByte(byte);
 extern  int             OptInsSize(oc_class,oc_dest_attr);
-extern  unsigned        SavePendingLine(unsigned);
 extern bool             UseImportForm(fe_attr);
 
 static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );
@@ -237,9 +224,9 @@ static  void    DoRelocRef( cg_sym_handle sym, cg_class class,
     }
 }
 
-extern  void    DoLblRef( label_handle lbl, segment_id seg,
-                        offset val, escape_class kind )
-/*****************************************************/
+void    DoLblRef( label_handle lbl, segment_id seg,
+                    offset val, escape_class kind )
+/*************************************************/
 {
     EmitByte( ESC );
     EmitByte( LBL | kind );

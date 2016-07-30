@@ -32,7 +32,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "zoiks.h"
 #include "cfloat.h"
 #include "cgaux.h"
@@ -41,13 +40,11 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "nullprop.h"
+#include "i87data.h"
 #include "feprotos.h"
 
 
 extern  hw_reg_set      FPRegs[];
-extern  name            *FPStatWord;
-extern  int             Max87Stk;
-extern  bool            Used87;
 extern  opcode_entry    DoNop[];
 
 extern  void            Opt8087( void );
@@ -1027,7 +1024,7 @@ static  void    ExpCompare ( instruction *ins,
     if( !_CPULevel( CPU_386 ) ) {
         if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
             FPStatWord = AllocTemp( U2 );
-            FPStatWord->v.usage |= VAR_VOLATILE|USE_ADDRESS; /* so that it really gets allocd */
+            FPStatWord->v.usage |= VAR_VOLATILE | USE_ADDRESS; /* so that it really gets allocd */
             AllocALocal( FPStatWord );
         }
     }

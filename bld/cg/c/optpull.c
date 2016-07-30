@@ -48,7 +48,6 @@ extern  ins_entry       *PrevIns( ins_entry * );
 extern  oc_class        PrevClass( ins_entry * );
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NewInstr( any_oc * );
-extern  bool            CodeHasAbsPatch( oc_entry * );
 
 
 extern  bool    FindShort( ins_entry *ins, ins_entry *end )

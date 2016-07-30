@@ -38,14 +38,15 @@
 #include "data.h"
 #include "objout.h"
 #include "namelist.h"
+#include "i86objd.h"
+#include "i86obj.h"
 #include "feprotos.h"
+
 
 extern  name            *SegmentPart(name*);
 extern  name            *AllocRegName(hw_reg_set);
 extern  bool            HaveCodeGroup( void );
 extern  bool            AskSegPrivate(segment_id);
-extern  bool            AskSegNear(segment_id);
-extern  bool            AskNameCode(pointer,cg_class);
 
 
 extern  void    InitSegment( void ) {

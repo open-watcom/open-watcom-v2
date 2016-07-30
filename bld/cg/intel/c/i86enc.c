@@ -40,7 +40,6 @@
 #include "pcencode.h"
 #include "zoiks.h"
 #include "zeropage.h"
-#include "fppatch.h"
 #include "cfloat.h"
 #include "cgaux.h"
 #include "p5prof.h"
@@ -57,14 +56,14 @@
 #include "object.h"
 #include "i86proc.h"
 #include "targetin.h"
+#include "i86obj.h"
+#include "i87data.h"
+#include "i86esc.h"
 #include "feprotos.h"
 
 
-extern  void            DoAbsPatch(abspatch_handle*,int);
-extern  void            DoFunnyRef(int);
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
-extern  void            DoSegRef(segment_id);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
 extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
@@ -132,8 +131,6 @@ static  int             FPRegTrans( hw_reg_set reg );
 
 
 extern  pccode_def      PCCodeTable[];
-extern  name            *FPStatWord;
-extern  bool            Used87;
 
         template        Temp;           /* template for oc_entries */
         byte            Inst[INSSIZE];  /* template for instructions */
@@ -153,20 +150,23 @@ static  hw_reg_set RegTab[] = {
         HW_D( HW_AH ),          HW_D( HW_SP ),          HW_D( HW_SP ),
         HW_D( HW_CH ),          HW_D( HW_BP ),          HW_D( HW_BP ),
         HW_D( HW_DH ),          HW_D( HW_SI ),          HW_D( HW_ESI ),
-        HW_D( HW_BH ),          HW_D( HW_DI ),          HW_D( HW_EDI ) };
+        HW_D( HW_BH ),          HW_D( HW_DI ),          HW_D( HW_EDI )
+};
 
 static  hw_reg_set SegTab[] = {
 #define SEGS 6
         HW_D( HW_ES ),          HW_D( HW_CS ),
         HW_D( HW_SS ),          HW_D( HW_DS ),
-        HW_D( HW_FS ),          HW_D( HW_GS ) };
+        HW_D( HW_FS ),          HW_D( HW_GS )
+};
 
 static  fp_patches SegPatchTab[] = {
         FPP_ES,         FPP_CS,
         FPP_SS,         FPP_DS,
-        FPP_FS,         FPP_GS };
+        FPP_FS,         FPP_GS
+};
 
-        hw_reg_set FPRegs[] = {
+hw_reg_set FPRegs[] = {
         HW_D( HW_ST0 ),
         HW_D( HW_ST1 ),
         HW_D( HW_ST2 ),
@@ -174,7 +174,8 @@ static  fp_patches SegPatchTab[] = {
         HW_D( HW_ST4 ),
         HW_D( HW_ST5 ),
         HW_D( HW_ST6 ),
-        HW_D( HW_ST7 ) };
+        HW_D( HW_ST7 )
+};
 
 /* routines that maintain instruction buffers*/
 

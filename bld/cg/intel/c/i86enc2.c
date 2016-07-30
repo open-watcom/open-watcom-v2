@@ -36,25 +36,26 @@
 #include "optmain.h"
 #include "cgmem.h"
 #include "system.h"
-#include "escape.h"
+#include "i86objd.h"
 #include "pcencode.h"
 #include "cgauxinf.h"
 #include "cgdefs.h"
 #include "seldef.h"
 #include "pccode.h"
-#include "fppatch.h"
-#include "cypfunc.h"
 #include "encode.h"
 #include "data.h"
 #include "types.h"
 #include "utils.h"
 #include "objout.h"
 #include "object.h"
-#include "i86enc2.h"
 #include "intrface.h"
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
+#include "i87data.h"
+#include "i86esc.h"
+#include "i86obj.h"
+#include "i86enc2.h"
 #include "feprotos.h"
 
 
@@ -73,7 +74,6 @@ extern  void            Finalize( void );
 extern  void            AddByte(byte);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
-extern  void            DoFESymRef( cg_sym_handle, cg_class, offset, fe_fixup_types);
 extern  void            FlipCond(instruction*);
 extern  name            *DeAlias(name*);
 extern  name            *AllocUserTemp(pointer,type_class_def);
@@ -81,10 +81,6 @@ extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );
 static  void            Pushf(void);
-
-extern  fp_patches      FPPatchType;
-extern  bool            Used87;
-
 
 static byte UCondTable[] = {
 /***************************

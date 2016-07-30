@@ -24,19 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  Instruction queue manipulation.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern void     InputOC( any_oc *oc );
-extern void     OutputOC( any_oc *, any_oc * );
-extern bool     ShrinkQueue( pointer_int size );
-extern void     InitQueue( void );
-extern void     EmptyQueue( void );
-extern void     FlushQueue( void );
-extern void     FiniQueue( void );
-extern void     AbortQueue( void );
-
-extern byte     ReverseCondition( byte );
-extern bool     CodeHasAbsPatch( oc_entry *code );
+extern void     DoAbsPatch( abspatch_handle *handle, int len );
+extern void     DoFunnyRef( int segover );
+extern void     DoFESymRef( cg_sym_handle sym, cg_class class, offset val, fe_fixup_types fixup_type );
+extern void     DoSymRef( name *opnd, offset val, bool base );
+extern void     DoSegRef( segment_id seg );
+extern void     DoLblRef( label_handle lbl, segment_id seg, offset val, escape_class kind );

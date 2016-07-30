@@ -45,9 +45,11 @@
 #include "dw.h"
 #include "dwarf.h"
 #include "dfdbg.h"
+#include "objout.h"
+#include "rscobj.h"
 #include "cgprotos.h"
 
-extern  segment_id      DbgSegDef( const char *name );
+
 extern  void            OutBckExport( const char *name, bool is_export );
 
 

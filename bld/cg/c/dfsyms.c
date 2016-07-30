@@ -63,7 +63,6 @@ extern  void            DoBigLblPtr(cg_sym_handle);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern void             DFFEPtrRef( cg_sym_handle sym );
-extern char             GetMemModel( void );
 extern  name            *AllocUserTemp(pointer,type_class_def);
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );

@@ -41,6 +41,7 @@
 #include "treefold.h"
 #include "treeconv.h"
 #include "namelist.h"
+#include "objout.h"
 #include "feprotos.h"
 
 extern void             ReplIns(instruction*,instruction*);
@@ -52,11 +53,10 @@ extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
 extern bool             DoesSomething(instruction*);
 extern bool             NeedConvert(type_def*,type_def*);
-extern  bool            AskSegNear(segment_id);
-extern  void            SetCSEBits(instruction *,instruction *);
-extern  float_handle    OkToNegate( float_handle, type_def * );
+extern void             SetCSEBits(instruction *,instruction *);
+extern float_handle     OkToNegate( float_handle, type_def * );
 
-extern  bool    IsTrickyPointerConv( instruction *ins )
+extern bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************
     Is "ins" a near (based) to far pointer conversion that has
     to be carefully converted with taking segments into account?

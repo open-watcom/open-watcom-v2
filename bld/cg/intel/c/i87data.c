@@ -31,9 +31,16 @@
 
 
 #include "cgstd.h"
-#include "gen8087.h"
+#include "cg.h"
+#include "hwreg.h"
+#include "typclass.h"
+#include "addrname.h"
+#include "bckdef.h"
+#include "blocknum.h"
+#include "name.h"
+#include "i87data.h"
 
-pointer         FPStatWord;
-pointer         Parm8087[ MAX_8087_REG+1 ];
+name            *FPStatWord;
+name            *Parm8087[MAX_8087_REG + 1];
 bool            Used87;
 int             Max87Stk;

@@ -31,7 +31,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"
@@ -39,11 +38,10 @@
 #include "namelist.h"
 #include "redefby.h"
 #include "regalloc.h"
+#include "i87data.h"
 
 
 extern  hw_reg_set      FPRegs[];
-extern  name            *FPStatWord;
-extern  int             Max87Stk;
 
 extern  void            SuffixIns(instruction*,instruction*);
 extern  conflict_node   *NameConflict(instruction*,name*);

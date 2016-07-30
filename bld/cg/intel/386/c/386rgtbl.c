@@ -32,8 +32,8 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "i87data.h"
 
-extern  int             Max87Stk;
 
 /* some short forms*/
 #define RL_DP   RL_DBL_OR_PTR

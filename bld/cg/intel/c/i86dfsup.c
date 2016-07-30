@@ -47,7 +47,11 @@
 #include "dwarf.h"
 #include "dfdbg.h"
 #include "dfsupp.h"
+#include "objout.h"
+#include "rtclass.h"
+#include "i86obj.h"
 #include "cgprotos.h"
+
 
 #if _TARGET & _TARG_IAPX86
 extern  hw_reg_set      Low32Reg(hw_reg_set);
@@ -56,10 +60,8 @@ extern  hw_reg_set      Low64Reg(hw_reg_set);
 #endif
 
 
-extern  segment_id      DbgSegDef( const char *, const char *, int  );
 extern  hw_reg_set      StackReg(void);
 extern  hw_reg_set      DisplayReg(void);
-extern  void            OutBckExport( const char *name, bool is_export );
 extern  void            BackImpPtr( const char *nm, back_handle bck, offset plus );
 
 

@@ -33,7 +33,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "ocentry.h"
-#include "gen8087.h"
 #include "cgaux.h"
 #include "stack.h"
 #include "zoiks.h"
@@ -51,10 +50,12 @@
 #include "targetdb.h"
 #include "i86proc.h"
 #include "opttell.h"
+#include "i87data.h"
+#include "i86objd.h"
+#include "i86obj.h"
 #include "feprotos.h"
 
 
-extern  void        OutDLLExport(uint,cg_sym_handle);
 extern  void        GenLeaSP(long);
 extern  void        Gcld( void );
 extern  void        GenLeave( void );
@@ -102,7 +103,6 @@ static  int         Push( hw_reg_set to_push );
 static  void        DoEnter( int level );
 static  void        DoEpilog( void );
 
-extern  pointer     Parm8087[MAX_8087_REG+1];
 
 #define WINDOWS_CHEAP  ( ( _IsModel( DLL_RESIDENT_CODE ) &&         \
                ( CurrProc->state.attr & ROUTINE_LOADS_DS ) )        \
