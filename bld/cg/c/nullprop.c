@@ -43,24 +43,13 @@ extern void             KillCondBlk( block *blk, instruction *ins, int dest );
 extern  bool            SideEffect( instruction * );
 extern  bool            BlockTrim( void );
 
-void        ClearBlocksBits( block_class mask )
+void    ClearBlocksBitsMask( block_class mask )
 /*********************************************/
 {
     block               *blk;
 
-    mask = ~mask;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= mask;
-    }
-}
-
-void            MarkBlkAllUnVisited( void )
-/*****************************************/
-{
-    block               *blk;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        _MarkBlkUnVisited( blk );
     }
 }
 
@@ -411,7 +400,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
         taken = blk->edge[_FalseIndex( cmp )].destination.u.blk;
         elim = blk->edge[_TrueIndex( cmp )].destination.u.blk;
     }
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     FloodDown( taken, BLK_BLOCK_VISITED );
     stk = InitStack();
 
@@ -438,7 +427,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
         elim = edge->destination.u.blk;
     }
     FiniStack( stk );
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     return( side_effect );
 }
 
@@ -474,7 +463,7 @@ static  bool            NullProp( block *blk )
     parms.ins = cmp;
     parms.op = *ptr;
     parms.forward = true;
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
@@ -484,7 +473,7 @@ static  bool            NullProp( block *blk )
         }
     }
     parms.forward = false;
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         KillCondBlk( blk, cmp, dest_index );
         return( true );
@@ -509,7 +498,7 @@ void            PropNullInfo( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
     }
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     if( change ){
         BlockTrim();
     }

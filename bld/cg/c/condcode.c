@@ -125,7 +125,7 @@ static void MarkUsedCC( block *blk )
 */
 {
     DoMarkUsedCC( blk );
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
 }
 
 static  bool    Traverse( block *blk, name *zero )

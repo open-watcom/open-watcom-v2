@@ -213,7 +213,7 @@ static  void    ScoreRoutine( void )
     ScoreCalcList();
     if( ScoreCount != 0 ) {
         InitZero();
-        MarkBlkAllUnVisited();
+        _MarkBlkAllUnVisited();
         MakeLiveInfo();
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

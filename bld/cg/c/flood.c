@@ -73,7 +73,7 @@ extern void FloodForward( block *blk, flood_func func, void *parm )
 {
     flood_parms parms;
 
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     parms.blk = blk;
     parms.func = func;
     parms.parm = parm;
@@ -108,7 +108,7 @@ extern void FloodBackwards( block *start, flood_func func, void *parm )
 {
     flood_parms parms;
 
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     parms.blk = start;
     parms.func = func;
     parms.parm = parm;

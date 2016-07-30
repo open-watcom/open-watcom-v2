@@ -402,7 +402,7 @@ static  bool    DoBlockTrim( void )
                 }
             }
         }
-        MarkBlkAllUnVisited();
+        _MarkBlkAllUnVisited();
         if( change ) {
             BlocksUnTrimmed = false;
             any_change = true;

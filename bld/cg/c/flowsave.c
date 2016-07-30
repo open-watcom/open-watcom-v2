@@ -144,7 +144,7 @@ static void FixStackDepth( block *save, block *restore )
 {
     block_num   i;
 
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     _MarkBlkVisited( restore );
     _MarkBlkVisited( save );
     if( save != restore ) {

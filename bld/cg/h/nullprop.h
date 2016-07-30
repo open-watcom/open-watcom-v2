@@ -29,6 +29,5 @@
 ****************************************************************************/
 
 
-extern void            ClearBlocksBits( block_class mask );
-extern void            MarkBlkAllUnVisited( void );
+extern void            ClearBlocksBitsMask( block_class mask );
 extern void            PropNullInfo( void );

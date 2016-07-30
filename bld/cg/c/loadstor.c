@@ -218,7 +218,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
     block               *blk;
     data_flow_def       *flow;
 
-    ClearBlocksBits( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
     blk = HeadBlock;
     if( blk != NULL ) {
         _MarkBlkAttr( blk, BLK_BIG_LABEL );
@@ -274,7 +274,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
             _GBitTurnOff( flow->need_store, id );
         }
     }
-    ClearBlocksBits( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
+    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
 }
 
 

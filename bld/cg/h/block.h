@@ -45,6 +45,9 @@
 #define _MarkBlkUnMarked( b )   _MarkBlkAttrNot( b, BLK_BLOCK_MARKED )
 #define _MarkBlkMarked( b )     _MarkBlkAttr( b, BLK_BLOCK_MARKED )
 
+#define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
+#define _MarkBlkAllAttrNot( a ) ClearBlocksBitsMask( ~(a) )
+
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 

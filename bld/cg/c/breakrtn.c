@@ -95,7 +95,7 @@ extern  bool            CreateBreak( void )
     blocks are branched to from later blocks. IE: there are no backward branches
     around break_blk.
 */
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     break_blk = NULL;
     back_break_blk = NULL;
     pending = 0;
@@ -125,7 +125,7 @@ extern  bool            CreateBreak( void )
         }
     }
     /* clean up the BLOCK_VISITED flags */
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     if( back_break_blk != NULL ) {
         break_blk = back_break_blk; /* always better to break on a back edge */
     }

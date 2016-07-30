@@ -445,7 +445,7 @@ static  void    FloodDown( block *from, flood_func func, void *parm ) {
     flood_decision      decision;
     block_edge          *edge;
 
-    ClearBlocksBits( BLK_FLOODED );
+    _MarkBlkAllAttrNot( BLK_FLOODED );
     stack = EdgeStackInit();
     PushTargets( stack, from );
     _MarkBlkAttr( from, BLK_FLOODED );
@@ -790,7 +790,7 @@ void    SortBlocks( void )
     block       *next;
 //    block       *ret_block;
 
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     BlocksSortedBy( GenId );
     if( _IsModel( NO_OPTIMIZATION ) )
         return;
@@ -831,5 +831,5 @@ void    SortBlocks( void )
         }
     }
     HeadBlock = placed.first;
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
 }

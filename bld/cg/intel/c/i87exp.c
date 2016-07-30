@@ -971,7 +971,7 @@ static  void    RevFPCond( instruction *ins ) {
 
     instruction         *other;
 
-    MarkBlkAllUnVisited();
+    _MarkBlkAllUnVisited();
     for( other = ins; other->head.opcode != OP_BLOCK; ) {
         other = other->head.next;
     }
