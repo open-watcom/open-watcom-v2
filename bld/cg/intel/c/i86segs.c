@@ -45,8 +45,6 @@
 
 extern  name            *SegmentPart(name*);
 extern  name            *AllocRegName(hw_reg_set);
-extern  bool            HaveCodeGroup( void );
-extern  bool            AskSegPrivate(segment_id);
 
 
 extern  void    InitSegment( void ) {
