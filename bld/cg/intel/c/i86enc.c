@@ -65,7 +65,6 @@
 extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
-extern  void            GenCondJump(instruction*);
 extern  int             NumOperands(instruction*);
 extern  void            DoRepOp( instruction *ins );
 extern  void            Do4CXShift(instruction *,void (*)(instruction*) );
@@ -97,7 +96,6 @@ extern  void            AddWData(signed_32,type_class_def );
 extern  name            *LowPart(name *,type_class_def);
 extern  name            *HighPart(name *,type_class_def);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
-extern  void            GenKillLabel( label_handle );
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );
 extern  void            LayW( type_class_def class );

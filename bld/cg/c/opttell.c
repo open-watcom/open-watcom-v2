@@ -35,9 +35,8 @@
 #include "inslist.h"
 #include "object.h"
 #include "opttell.h"
+#include "encode.h"
 
-
-extern  void            GenKillLabel(label_handle);
 
 void    TellOptimizerByPassed( void )
 /***********************************/

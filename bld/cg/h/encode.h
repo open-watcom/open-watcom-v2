@@ -31,6 +31,9 @@
 
 
 extern void CodeLabel( label_handle, unsigned );
+#if _TARGET & _TARG_RISC
+extern void CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line );
+#endif
 extern void CodeLineNumber( unsigned_32, bool );
 extern void CodeHandle( oc_class, obj_length, label_handle );
 

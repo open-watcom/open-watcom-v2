@@ -50,10 +50,10 @@
 #include "intrface.h"
 #include "i86obj.h"
 #include "i86esc.h"
+#include "encode.h"
 #include "feprotos.h"
 
 
-extern  void            GenKillLabel(label_handle);
 extern  void            EmitOffset(offset);
 extern  void            EmitPtr(pointer);
 extern  void            EmitByte(byte);

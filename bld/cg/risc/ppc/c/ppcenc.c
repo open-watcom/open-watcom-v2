@@ -54,7 +54,6 @@
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
-extern void GenCondJump( instruction * );
 
 extern void             ObjBytes( const void *buffer, int size );
 extern byte             RegTrans( hw_reg_set );
@@ -64,7 +63,6 @@ extern hw_reg_set       FrameReg( void );
 extern name             *DeAlias( name * );
 extern void             TryScrapLabel( label_handle );
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
-extern void             GenCondJump( instruction *cond );
 
 extern type_class_def   Unsigned[];
 
@@ -177,8 +175,8 @@ static  gen_opcode  *FindImmedOpcodes( instruction *ins )
 }
 
 
-extern  void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
-//*******************************************************************************************
+void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
+//***********************************************************************************
 {
     ppc_ins             encoding;
 
@@ -187,8 +185,8 @@ extern  void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c
 }
 
 
-extern  void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
-//*****************************************************************************************
+void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
+//*********************************************************************************
 {
     ppc_ins             encoding;
 
@@ -197,8 +195,8 @@ extern  void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, 
 }
 
 
-extern  void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
-//*******************************************************************************
+void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
+//***********************************************************************
 {
     ppc_ins             encoding;
 
@@ -207,8 +205,8 @@ extern  void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed 
 }
 
 
-extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
-//***********************************************************
+void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
+//***************************************************
 {
     ppc_ins             encoding;
 
@@ -221,8 +219,8 @@ extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 }
 
 
-extern  void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
-/**************************************************************************************/
+void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
+/******************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -231,8 +229,8 @@ extern  void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displa
 }
 
 
-extern  void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
-/*********************************************************************************/
+void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
+/*************************************************************************/
 {
     ppc_ins             encoding;
     int_32              loc;
@@ -244,8 +242,8 @@ extern  void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolut
 }
 
 
-extern  void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
-/*************************************************************************************/
+void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
+/*****************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -255,8 +253,8 @@ extern  void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer 
 }
 
 
-extern  void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
-/***************************************************************************/
+void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
+/*******************************************************************/
 {
     ppc_ins             encoding;
 
@@ -265,8 +263,8 @@ extern  void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 }
 
 
-extern  void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
-/******************************************************************/
+void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
+/**********************************************************/
 {
     ppc_ins             encoding;
 
@@ -275,8 +273,8 @@ extern  void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
 }
 
 
-extern  void    GenRAWINS( ppc_ins encoding )
-/*******************************************/
+void    GenRAWINS( ppc_ins encoding )
+/***********************************/
 {
     _EmitIns( encoding );
 }
@@ -550,8 +548,8 @@ static  void    DbgBlkInfo( instruction *ins )
 }
 
 
-extern  void    GenRET( void )
-/****************************/
+void    GenRET( void )
+/********************/
 {
    ppc_ins      encoding;
 
@@ -884,8 +882,8 @@ static  gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },                     /* OP_CMP_GREATER_EQUAL */
 };
 
-extern  void    GenJumpIf( instruction *ins, pointer label )
-/**********************************************************/
+void    GenJumpIf( instruction *ins, pointer label )
+/**************************************************/
 {
     gen_opcode  *ops;
 
@@ -901,8 +899,8 @@ extern  void    GenJumpIf( instruction *ins, pointer label )
 }
 
 
-extern  void    GenKillLabel( label_handle lbl )
-/*******************************************/
+void    GenKillLabel( label_handle lbl )
+/**************************************/
 {
     _ValidLbl( lbl );
     if( !_TstStatus( lbl, CODELABEL ) )
@@ -933,8 +931,8 @@ byte    ReverseCondition( byte cond )
 }
 
 
-extern  label_handle LocateLabel( instruction *ins, int index )
-/****************************************************************/
+label_handle LocateLabel( instruction *ins, int index )
+/*****************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
@@ -954,8 +952,8 @@ static  block   *InsBlock( instruction *ins )
 }
 
 
-extern  void    GenCondJump( instruction *cond )
-/**********************************************/
+void    GenCondJump( instruction *cond )
+/**************************************/
 {
     label_handle        dest_false;
     label_handle        dest_true;
@@ -973,8 +971,8 @@ extern  void    GenCondJump( instruction *cond )
 }
 
 
-extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
-/************************************************************************/
+void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
+/****************************************************************/
 {
 #if 0
 

@@ -46,11 +46,11 @@
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 
-static  label_handle    LocateLabel( instruction *ins, int index ) {
+static  label_handle    LocateLabel( instruction *ins, int index )
 /*******************************************************************
     find the true or false ("index") label of the block containing "ins"
 */
-
+{
     if( index == NO_JUMP ) return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
@@ -59,9 +59,9 @@ static  label_handle    LocateLabel( instruction *ins, int index ) {
 }
 
 #if _TARGET & _TARG_RISC
-extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line ) {
-/***************************************************************************************/
-
+void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line )
+/*****************************************************************************/
+{
     any_oc      oc;
 
     if( OptForSize > 50 || align == 0 )
@@ -77,10 +77,11 @@ extern  void    CodeLabelLinenum( label_handle label, unsigned align, cg_linenum
 }
 #endif
 
-void    CodeLabel( label_handle label, unsigned align ) {
+void    CodeLabel( label_handle label, unsigned align )
 /********************************************************
     Drop label into the queue
 */
+{
     if( OptForSize > 50 || align == 0 )
         align = 1;
     CodeHandle( OC_LABEL, align - 1, label );
@@ -123,12 +124,12 @@ void    CodeLineNumber( cg_linenum line, bool label_line )
 }
 
 
-extern  void    CodeHandle( oc_class class, obj_length len, label_handle handle ) {
-/***************************************************************************
+void    CodeHandle( oc_class class, obj_length len, label_handle handle )
+/************************************************************************
     Dump a label reference to "handle" of class "class" (LREF or LABEL)
     into the queue.  Len is the code space taken.
 */
-
+{
     any_oc      oc;
 
     oc.oc_handle.hdr.class = class;
@@ -142,11 +143,11 @@ extern  void    CodeHandle( oc_class class, obj_length len, label_handle handle 
     InputOC( &oc );
 }
 
-static  void    DoCondJump( instruction *cond ) {
+static  void    DoCondJump( instruction *cond )
 /************************************************
     Generate a conditional branch
 */
-
+{
     any_oc              oc;
     label_handle        dest_true;
     label_handle        dest_false;
@@ -212,11 +213,11 @@ static  void    DoCondJump( instruction *cond ) {
     }
 }
 
-extern  void    GenCondJump( instruction *cond ) {
+void    GenCondJump( instruction *cond )
 /*************************************************
     Given conditional "cond", generate the correct jcc or setcc instruction
 */
-
+{
     label_handle    dest;
 
     if( cond->result == NULL ) {
@@ -234,11 +235,11 @@ extern  void    GenCondJump( instruction *cond ) {
     }
 }
 
-void    GenJumpLabel( label_handle label ) {
+void    GenJumpLabel( label_handle label )
 /*******************************************
     generate an unconditional jump to "label"
 */
-
+{
     CodeHandle( OC_JMP, OptInsSize( OC_JMP, OC_DEST_NEAR ), label );
 #if _TARGET & _TARG_RISC
 #ifndef NDEBUG
@@ -251,12 +252,12 @@ void    GenJumpLabel( label_handle label ) {
 #endif
 }
 
-extern  void    GenKillLabel( label_handle label ) {
+void    GenKillLabel( label_handle label )
 /**********************************************
     indicate that "label" won't be used again after the OC_LDONE comes
     out of the queue.
 */
-
+{
     segment_id      old;
 
     old = SetOP( AskCodeSeg() );

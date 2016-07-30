@@ -46,10 +46,11 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "makeblk.h"
+#include "ocentry.h"
+#include "encode.h"
 #include "feprotos.h"
 
 
-extern  void            GenKillLabel(label_handle);
 extern  void            Generate(bool);
 extern  type_class_def  TypeClass(type_def*);
 extern  name            *AllocRegName( hw_reg_set );

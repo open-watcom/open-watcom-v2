@@ -44,11 +44,12 @@
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
+#include "ocentry.h"
+#include "encode.h"
 #include "feprotos.h"
 
 
 extern  uint_32         CountBits( uint_32 );
-extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
 extern  hw_reg_set      *GPRegs( void );
 extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );

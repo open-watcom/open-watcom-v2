@@ -84,7 +84,6 @@ extern  void        GenUnkMov(hw_reg_set,pointer);
 extern  void        QuickSave(hw_reg_set,opcode_defs);
 extern  void        Gpusha( void );
 extern  void        Gpopa( void );
-extern  void        GenKillLabel(label_handle);
 extern  void        GFstpM(pointer);
 extern  void        GenTouchStack( bool );
 extern  void        GenLoadDS(void);
