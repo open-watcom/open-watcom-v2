@@ -41,7 +41,7 @@
 #include "zoiks.h"
 #include "data.h"
 #include "rtrtn.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"

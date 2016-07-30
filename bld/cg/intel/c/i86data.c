@@ -38,7 +38,7 @@
 #include "jumps.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "data.h"
 #include "utils.h"
 #include "objout.h"

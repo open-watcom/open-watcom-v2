@@ -44,7 +44,7 @@
 #include "p5prof.h"
 #include "data.h"
 #include "objout.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "objprof.h"
 #include "object.h"
 #include "encode.h"

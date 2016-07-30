@@ -41,7 +41,7 @@
 #include "zoiks.h"
 #include "fppatch.h"
 #include "rtclass.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "objout.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"

@@ -39,7 +39,7 @@
 #include "data.h"
 #include "utils.h"
 #include "namelist.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "regalloc.h"
 
 

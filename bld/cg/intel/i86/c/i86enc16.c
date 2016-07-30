@@ -40,7 +40,7 @@
 #include "fppatch.h"
 #include "cfloat.h"
 #include "data.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "objprof.h"
 #include "targetdb.h"
 

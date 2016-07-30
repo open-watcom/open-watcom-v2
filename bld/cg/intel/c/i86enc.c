@@ -48,7 +48,7 @@
 #include "display.h"
 #include "rtrtn.h"
 #include "utils.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "objout.h"
 #include "dbsyms.h"
 #include "objprof.h"

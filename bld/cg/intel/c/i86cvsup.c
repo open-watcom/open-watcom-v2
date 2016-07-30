@@ -36,7 +36,7 @@
 #include "procdef.h"
 #include "model.h"
 #include "ocentry.h"
-#include "i86obj.h"
+#include "i86objd.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "cvdbg.h"
