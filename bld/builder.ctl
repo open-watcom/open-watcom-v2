@@ -246,13 +246,18 @@ cdsay .
 #===========================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
-[ BLOCK <1> test testclean ]
-#===========================
+[ BLOCK <1> test testclean cleanlog ]
+#====================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
+
+[ BLOCK <1> test cleanrel ]
+#==========================
+    echo rm -rf <OWRELROOT>
+    rm -rf <OWRELROOT>
 
 [ BLOCK . . ]
 
