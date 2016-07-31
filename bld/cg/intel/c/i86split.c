@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,12 +42,13 @@
 #include "namelist.h"
 #include "i86objd.h"
 #include "regalloc.h"
+#include "i86obj.h"
+#include "split.h"
+#include "insutil.h"
+#include "rtcall.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  hw_reg_set      Op1Reg(instruction*);
-extern  hw_reg_set      ResultReg(instruction*);
-extern  hw_reg_set      ZapReg(instruction*);
 extern  instruction     *ByteShift(instruction*);
 extern  instruction     *CheapShift(instruction*);
 extern  instruction     *ClrHighDbl(instruction*);
@@ -56,38 +58,23 @@ extern  instruction     *HighCmp(instruction*);
 extern  instruction     *MakeFNeg(instruction*);
 extern  instruction     *MakeU2(instruction*);
 extern  instruction     *MakeU4(instruction*);
-extern  instruction     *MoveConst(unsigned_32,name*,type_class_def);
 extern  instruction     *Split4Neg(instruction*);
 extern  instruction     *SplitCPPush(instruction*);
 extern  instruction     *SplitCompare(instruction*);
 extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
-extern  instruction     *SplitUnary(instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *HighPart(name*,type_class_def);
-extern  name            *LowPart(name*,type_class_def);
 extern  name            *NearSegment(void);
-extern  name            *OffsetPart(name*);
-extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  name            *SegName(name*);
-extern  name            *SegmentPart(name*);
-extern  void            ChangeType(instruction*,type_class_def);
 extern  void            DelSeg(instruction*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DupSegRes(instruction*,instruction*);
-extern  void            HalfType(instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
 extern  void            RevCond(instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );
@@ -100,7 +87,6 @@ extern  instruction             *rCYPHIGH(instruction*);
 extern  instruction             *rCYPLOW(instruction*);
 //extern  instruction             *rDOCVT(instruction*);
 extern  instruction             *rDOUBLEHALF(instruction*);
-extern  instruction             *rMAKECALL(instruction*);
 extern  instruction             *rOP1MEM(instruction*);
 extern  instruction             *rFORCERESMEM(instruction*);
 extern  instruction             *rHIGHCMP(instruction*);
@@ -191,8 +177,6 @@ extern  instruction             *rMOVI8PT( instruction * );
 extern  void                    CnvOpToInt( instruction * ins, int op );
 
 extern  opcode_entry    String[];
-extern  type_class_def  DoubleClass[];
-
 
 instruction *(*ReduceTab[])( instruction * ) = {
     #define _R_( x, f )     f

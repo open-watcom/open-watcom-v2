@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "coderep.h"
 #include "addrname.h"
 #include "symdbg.h"
-#include "ocentry.h"
 #include "system.h"
 #include "model.h"
 #include "jumps.h"
@@ -267,9 +267,9 @@ static  void    DumpSavedDebug( void )
     SaveDbgOc = INFO_NOT_DEBUG;
 }
 
-static void DoAlignment( int len ) {
-/**********************************/
-
+void DoAlignment( int len )
+/*************************/
+{
     byte                *ptr;
     int                 nop;
     int                 i;

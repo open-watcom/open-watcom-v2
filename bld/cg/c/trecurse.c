@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,10 @@
 #include "stack.h"
 #include "namelist.h"
 #include "edge.h"
+#include "insutil.h"
+#include "insdead.h"
 
 
-extern  bool            SideEffect(instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction *,instruction *);
-extern  void            ReplIns(instruction *,instruction *);
 extern  void            RemoveInputEdge( block_edge * );
 
 static  name            *ReturnValue;

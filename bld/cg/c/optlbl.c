@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,9 @@
 extern  ins_entry       *DelInstr(ins_entry*);
 extern  void            DelRef(ins_entry**,ins_entry*);
 
-extern  void    TryScrapLabel( label_handle old );
-static  void    ScrapCodeLabel( label_handle lbl );
-
-extern  void    AddLblDef( ins_entry *instr ) {
-/*********************************************/
-
+void    AddLblDef( ins_entry *instr )
+/***********************************/
+{
     label_handle    lbl;
 
   optbegin
@@ -56,9 +54,9 @@ extern  void    AddLblDef( ins_entry *instr ) {
 }
 
 
-extern  void    DelLblDef( ins_entry *instr ) {
-/*********************************************/
-
+void    DelLblDef( ins_entry *instr )
+/***********************************/
+{
     label_handle    lbl;
 
   optbegin
@@ -72,9 +70,9 @@ extern  void    DelLblDef( ins_entry *instr ) {
 }
 
 
-extern  void    AddLblRef( ins_entry *instr ) {
-/*********************************************/
-
+void    AddLblRef( ins_entry *instr )
+/***********************************/
+{
     label_handle    lbl;
 
   optbegin
@@ -89,9 +87,9 @@ extern  void    AddLblRef( ins_entry *instr ) {
 }
 
 
-extern  void    DelLblRef( ins_entry *instr ) {
-/*********************************************/
-
+void    DelLblRef( ins_entry *instr )
+/***********************************/
+{
     label_handle    old;
 
   optbegin
@@ -102,9 +100,9 @@ extern  void    DelLblRef( ins_entry *instr ) {
 }
 
 
-extern  void    ChgLblRef( ins_entry *instr, label_handle new ) {
-/************************************************************/
-
+void    ChgLblRef( ins_entry *instr, label_handle new )
+/*****************************************************/
+{
     ins_entry       **owner;
     ins_entry       *curr;
     label_handle    old;
@@ -128,11 +126,11 @@ extern  void    ChgLblRef( ins_entry *instr, label_handle new ) {
 }
 
 
-extern  bool    UniqueLabel( label_handle lbl ) {
-/*********************************************
+bool    UniqueLabel( label_handle lbl )
+/**************************************
         Does the label have any alias which is a UNIQUE label?
 */
-
+{
   optbegin
     for( ; lbl != NULL; lbl = lbl->alias ) {
         if( _TstStatus( lbl, UNIQUE ) ) {
@@ -143,9 +141,9 @@ extern  bool    UniqueLabel( label_handle lbl ) {
 }
 
 
-extern  ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl ) {
-/****************************************************************************/
-
+ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
+/******************************************************************/
+{
     label_handle    old;
     label_handle    new;
     ins_entry       *old_jmp;
@@ -200,9 +198,9 @@ extern  ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl ) {
 }
 
 
-static  void    KillDeadLabels( ins_entry *instr ) {
-/**************************************************/
-
+static  void    KillDeadLabels( ins_entry *instr )
+/************************************************/
+{
     label_handle    curr;
     label_handle    *owner;
 
@@ -233,9 +231,9 @@ static  void    KillDeadLabels( ins_entry *instr ) {
 }
 
 
-static  void    ScrapCodeLabel( label_handle lbl ) {
-/***********************************************/
-
+void    ScrapCodeLabel( label_handle lbl )
+/****************************************/
+{
     label_handle    *owner;
     label_handle    redir;
     bool            code;
@@ -259,9 +257,9 @@ static  void    ScrapCodeLabel( label_handle lbl ) {
 }
 
 
-extern  void    TryScrapLabel( label_handle old ) {
-/**********************************************/
-
+void    TryScrapLabel( label_handle old )
+/***************************************/
+{
   optbegin
     if( old->refs != NULL ) optreturnvoid;
     if( old->ins != NULL ) {

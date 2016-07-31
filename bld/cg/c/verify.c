@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,13 @@
 #include "cfloat.h"
 #include "zoiks.h"
 #include "data.h"
+#include "split.h"
+#include "namelist.h"
+
 
 extern  int             GetLog2(unsigned_32);
-extern  name            *DeAlias(name*);
 
 extern  opcode_entry    DoNop[];
-extern  type_class_def  Unsigned[];
-
 
 static  bool    SameLocation( name *n1, name *n2 ) {
 /**************************************************/

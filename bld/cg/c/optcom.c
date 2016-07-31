@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,7 +48,6 @@ extern  void            AddNewJump( ins_entry *, label_handle );
 extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, label_handle );
 extern  label_handle    AddNewLabel( ins_entry *, obj_length );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *PrevIns( ins_entry * );

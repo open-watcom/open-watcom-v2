@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "cgaux.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
@@ -49,22 +49,17 @@
 #include "encode.h"
 #include "intrface.h"
 #include "targetin.h"
+#include "rgtbl.h"
+#include "rscobj.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
 
-extern void             ObjBytes( const void *buffer, int size );
-extern byte             RegTrans( hw_reg_set );
-extern void             OutReloc( label_handle, ppc_reloc, unsigned );
-extern hw_reg_set       StackReg( void );
-extern hw_reg_set       FrameReg( void );
-extern name             *DeAlias( name * );
-extern void             TryScrapLabel( label_handle );
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
-
-extern type_class_def   Unsigned[];
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )
@@ -175,8 +170,8 @@ static  gen_opcode  *FindImmedOpcodes( instruction *ins )
 }
 
 
-void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
-//***********************************************************************************
+static void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
+//******************************************************************************************
 {
     ppc_ins             encoding;
 
@@ -229,8 +224,8 @@ void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
 }
 
 
-void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
-/*************************************************************************/
+static void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
+/********************************************************************************/
 {
     ppc_ins             encoding;
     int_32              loc;
@@ -242,8 +237,8 @@ void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
 }
 
 
-void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
-/*****************************************************************************/
+static void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
+/************************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -253,8 +248,8 @@ void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
 }
 
 
-void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
-/*******************************************************************/
+static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
+/**************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -263,8 +258,8 @@ void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 }
 
 
-void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
-/**********************************************************/
+static void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
+/*****************************************************************/
 {
     ppc_ins             encoding;
 
@@ -273,8 +268,8 @@ void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
 }
 
 
-void    GenRAWINS( ppc_ins encoding )
-/***********************************/
+static void    GenRAWINS( ppc_ins encoding )
+/******************************************/
 {
     _EmitIns( encoding );
 }
@@ -882,8 +877,8 @@ static  gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },                     /* OP_CMP_GREATER_EQUAL */
 };
 
-void    GenJumpIf( instruction *ins, pointer label )
-/**************************************************/
+static void    GenJumpIf( instruction *ins, pointer label )
+/*********************************************************/
 {
     gen_opcode  *ops;
 
@@ -931,8 +926,8 @@ byte    ReverseCondition( byte cond )
 }
 
 
-label_handle LocateLabel( instruction *ins, int index )
-/*****************************************************/
+static label_handle LocateLabel( instruction *ins, int index )
+/************************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
@@ -971,8 +966,8 @@ void    GenCondJump( instruction *cond )
 }
 
 
-void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
-/****************************************************************/
+static void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
+/***********************************************************************/
 {
 #if 0
 
@@ -990,4 +985,45 @@ void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
     ins = ins; sym = sym; type = type;
     _Zoiks( ZOIKS_091 );
 #endif
+}
+
+void    ObjEmitSeq( byte_seq *code )
+/**********************************/
+{
+    byte_seq_reloc      *curr;
+    back_handle         back;
+    type_length         loc;
+    byte_seq_len        i;
+    ppc_ins             *code_ptr;
+    ppc_ins             opcode;
+    pointer             reloc_sym;
+    owl_reloc_type      reloc_type;
+
+    assert( code->length % 4 == 0 );
+    curr = SortListReloc( code->relocs );
+    code_ptr = (ppc_ins *)code->data;
+    for( i = 0; i < code->length; i += 4 ) {
+        opcode = *code_ptr++;
+        reloc_type = 0;
+        reloc_sym = NULL;
+        while( curr != NULL && curr->off == i ) {
+            back = SymBack( curr->sym );
+            switch( curr->type ) {
+            case OWL_RELOC_FP_OFFSET:
+                loc = TempLocation( (name *)back );
+                if( loc > 32767 ) {
+                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                }
+                opcode |= _SignedImmed( loc );
+                break;
+            case OWL_RELOC_PAIR:
+                break;
+            default:
+                reloc_type = curr->type;
+                reloc_sym = back->lbl;
+            }
+            curr = curr->next;
+        }
+        EmitInsReloc( opcode, reloc_sym, reloc_type );
+    }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,9 @@
 #include "stack.h"
 #include "data.h"
 #include "makeblk.h"
+#include "insutil.h"
 
 
-extern  instruction_id  Renumber( void );
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, interval_depth level );

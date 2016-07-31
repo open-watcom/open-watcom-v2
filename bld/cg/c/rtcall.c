@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,16 +37,15 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "rtcall.h"
+#include "optab.h"
 
-extern  name            *AllocRegName(hw_reg_set);
-extern  hw_reg_set      FirstReg(reg_set_index);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
+
 extern  void            DelSeg(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            FixCallIns(instruction*);
 #if _TARGET & _TARG_370
@@ -54,12 +54,8 @@ extern  hw_reg_set      LNReg( void );
 #endif
 #if _TARGET & _TARG_AXP
 extern  hw_reg_set      SavedRegs( void );
-extern  hw_reg_set      ReturnAddrReg( void );
 #elif _TARGET & _TARG_80386
-extern  hw_reg_set      ReturnReg(type_class_def,bool);
 #endif
-
-extern  hw_reg_set      *RegSets[];
 
 #if _TARGET & _TARG_AXP
     #define _ParmReg( x )       FirstReg( x )
@@ -67,8 +63,8 @@ extern  hw_reg_set      *RegSets[];
     #define _ParmReg( x )       FirstReg( x )
 #endif
 
-extern  instruction     *rMAKECALL( instruction *ins )
-/*****************************************************
+instruction     *rMAKECALL( instruction *ins )
+/*********************************************
     Using the table RTInfo[], do all the necessary stuff to turn
     instruction "ins" into a call to a runtime support routine.  Move
     the parms into registers, and move the return register of the
@@ -163,18 +159,4 @@ extern  instruction     *rMAKECALL( instruction *ins )
     FixCallIns( new_ins );
     UpdateLive( left_ins, last_ins );
     return( left_ins );
-}
-
-
-extern  hw_reg_set      FirstReg( reg_set_index index )
-/******************************************************
-    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
-    they are only one byte long.  This retrieves the first hw_reg_set
-    from the reg_set table "index".
-*/
-{
-    hw_reg_set  *list;
-
-    list = RegSets[index];
-    return( *list );
 }

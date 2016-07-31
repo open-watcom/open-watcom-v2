@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,15 +35,10 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "insdead.h"
+#include "optab.h"
 
-
-extern  void            DoNothing(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *DeAlias(name*);
-extern  bool            VolatileIns(instruction *);
-extern  hw_reg_set      Low16Reg( hw_reg_set regs );
-extern  hw_reg_set      High16Reg( hw_reg_set regs );
-extern  hw_reg_set      FullReg( hw_reg_set regs );
 
 static opcode_entry LDSES[1] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */

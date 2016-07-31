@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,13 @@
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "insdead.h"
 
 
 extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );
-extern  bool            InsDead( void );
 extern  bool            MoreConflicts( void );
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,
-                                    type_length,int,i_flags);
 
 static  block_num       Instance;
 static  global_bit_set  Id;

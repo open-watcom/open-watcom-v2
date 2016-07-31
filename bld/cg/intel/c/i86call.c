@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,25 +46,22 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "makeblk.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "typemap.h"
 #include "cgprotos.h"
 
 
 extern  name            *AddrConst(name*,segment_id,constant_class);
-extern  name            *AllocRegName(hw_reg_set);
 extern  name            *NearSegment(void);
-extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  type_class_def  TypeClass(type_def*);
 extern  void            DataLabel(label_handle);
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
 extern  void            AddCallIns(instruction*,cn);
-extern  name            *SegmentPart(name*);
-extern  name            *OffsetPart(name*);
 extern  name            *DoParmDecl(cg_sym_handle,type_def*,hw_reg_set);
-extern  hw_reg_set      ReturnReg(type_class_def,bool);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  void            ReverseParmNodeList(pn *);
-extern  void            SuffixIns( instruction *, instruction * );
 extern  name            *BGNewTemp( type_def *tipe );
 extern  void            BGDone( an );
 

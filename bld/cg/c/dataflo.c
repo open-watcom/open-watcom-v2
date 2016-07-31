@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,11 +37,12 @@
 #include "coderep.h"
 #include "data.h"
 #include "cgsrtlst.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern  void            FindReferences( void );
 extern  conflict_node   *AddConflictNode(name*);
-extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
 
 static  void            PropagateConflicts( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,24 +37,23 @@
 #include "data.h"
 #include "namelist.h"
 #include "blips.h"
+#include "expand.h"
+#include "split.h"
+#include "insdead.h"
+#include "rgtbl.h"
+#include "optab.h"
 
-extern  instruction     *Reduce(instruction*);
+
 extern  int             NumOperands(instruction*);
 extern  instruction     *NeedIndex(instruction*);
-extern  opcode_entry    *CodeTable(instruction*);
 extern  bool            DoVerify(vertype,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MarkCallI(instruction);
 extern  reg_set_index   SpecialPossible(instruction*);
 extern  reg_set_index   CallIPossible(instruction*);
-extern  bool            VolatileIns(instruction*);
 
-extern    op_regs       RegList[];
-extern    hw_reg_set    *RegSets[];
-
-static  instruction     *DoReduce( instruction *ins, opcode_entry *try,
-                                   bool has_index )
-/*********************************************************************/
+static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_index )
+/**********************************************************************************/
 {
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
@@ -275,8 +275,8 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
 }
 
 
-extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
-/************************************************************************/
+opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
+/****************************************************************/
 {
     opcode_entry        *try;
     operand_types       ops;
@@ -310,8 +310,8 @@ extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
 }
 
 
-extern  void    FixGenEntry( instruction *ins )
-/*********************************************/
+void    FixGenEntry( instruction *ins )
+/*************************************/
 {
 /* update the instruction to reflect new instruction needs*/
 
@@ -327,8 +327,8 @@ extern  void    FixGenEntry( instruction *ins )
 }
 
 
-extern  instruction     *PostExpandIns( instruction *ins )
-/********************************************************/
+instruction     *PostExpandIns( instruction *ins )
+/************************************************/
 {
     opcode_entry        *try;
     bool                dummy;
@@ -341,8 +341,8 @@ extern  instruction     *PostExpandIns( instruction *ins )
 }
 
 
-extern  instruction     *ExpandIns( instruction *ins )
-/****************************************************/
+instruction     *ExpandIns( instruction *ins )
+/********************************************/
 {
     opcode_entry        *try;
     bool                has_index;
@@ -353,8 +353,8 @@ extern  instruction     *ExpandIns( instruction *ins )
 }
 
 
-extern  int     ExpandOps( bool keep_on_truckin )
-/***********************************************/
+int     ExpandOps( bool keep_on_truckin )
+/***************************************/
 {
     block       *blk;
     instruction *ins;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -55,6 +56,7 @@
 #include "bldsel.h"
 #include "intrface.h"
 #include "opttell.h"
+#include "typemap.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -80,7 +82,6 @@ extern  an              TGen(tn,type_def*);
 extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
 extern  void            DataLabel(label_handle);
-extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
 extern  bool            BGInInline(void);

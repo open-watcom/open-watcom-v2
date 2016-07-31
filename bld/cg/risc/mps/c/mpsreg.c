@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +37,11 @@
 #include "cgmem.h"
 #include "data.h"
 #include "utils.h"
+#include "rgtbl.h"
+#include "typemap.h"
 #include "feprotos.h"
 
-extern  hw_reg_set      ReturnReg( type_class_def );
-extern  hw_reg_set      *ParmRegs( void );
-extern  type_class_def  ReturnClass( type_def *, call_attributes );
-extern  hw_reg_set      FixedRegs( void );
-extern  hw_reg_set      StackReg( void );
-extern  hw_reg_set      DisplayReg( void );
-extern  int             SizeDisplayReg( void );
-extern  hw_reg_set      ReturnAddrReg( void );
-extern  hw_reg_set      VarargsHomePtr( void );
+
 extern  void            UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux );
 
 extern hw_reg_set SavedRegs( void )

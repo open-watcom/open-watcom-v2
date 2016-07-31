@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,12 +45,10 @@
 #include "targetin.h"
 #include "opttell.h"
 #include "makeblk.h"
+#include "typemap.h"
 #include "feprotos.h"
 
-extern  void            FreeNames(void);
-extern  void            ReInitNames(void);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
-extern  type_class_def  TypeClass(type_def*);
 extern  void            RemoveInputEdge(block_edge*);
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);

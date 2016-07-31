@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -61,6 +62,7 @@
 #include "utils.h"
 #include "cgauxinf.h"
 #include "blips.h"
+#include "typemap.h"
 
 #include "feprotos.h"
 #include "cgprotos.h"

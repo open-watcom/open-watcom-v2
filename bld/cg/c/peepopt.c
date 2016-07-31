@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,14 +44,11 @@
 #include "namelist.h"
 #include "peepopt.h"
 #include "redefby.h"
+#include "insdead.h"
 
 
 extern  bool                    InsOrderDependant(instruction*,instruction*);
 extern  bool                    SameThing( name *, name * );
-extern  bool                    SideEffect( instruction * );
-extern  bool                    ChangeIns(instruction *,name *,name **,change_type);
-extern  opcode_entry            *ResetGenEntry( instruction *ins );
-extern  bool                    VolatileIns(instruction*);
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.lo.int_value )
 

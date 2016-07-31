@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,24 +39,17 @@
 #include "data.h"
 #include "namelist.h"
 #include "redefby.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "expand.h"
+#include "insutil.h"
+#include "optab.h"
 
 
-extern  hw_reg_set      *RegSets[];
-
-extern  type_class_def  RegClass(hw_reg_set);
-extern  instruction     *PostExpandIns(instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DelSeg(instruction*);
 extern  void            DeadInstructions(void);
-extern  bool            ChangeIns(instruction*,name*,name**,change_type);
-extern  bool            DoesSomething( instruction* );
-extern  name            *HighPart( name *, type_class_def );
-extern  name            *LowPart( name *, type_class_def );
-extern  hw_reg_set      FullReg( hw_reg_set );
 extern  void            MoveSegRes( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );

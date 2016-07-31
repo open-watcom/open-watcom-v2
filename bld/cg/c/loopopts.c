@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,6 +50,9 @@
 #include "redefby.h"
 #include "makeblk.h"
 #include "loopopts.h"
+#include "split.h"
+#include "insutil.h"
+#include "insdead.h"
 #include "feprotos.h"
 
 
@@ -67,23 +71,13 @@ typedef struct block_list {
     struct block_list       *next;
 } block_list;
 
-extern type_class_def   Unsigned[];
-
 extern int              GetLog2(unsigned_32);
 extern bool             SameThing(name *,name *);
 extern void             RevCond(instruction *);
-extern void             PrefixIns(instruction *,instruction *);
-extern void             PrefixInsRenum(instruction *,instruction *,bool);
-extern void             SuffixIns(instruction *,instruction *);
-extern void             ReplIns(instruction *,instruction *);
-extern bool             LoopInsDead(void);
 extern bool             RepOp(name **,name *,name *);
 extern void             FlipCond(instruction *);
-extern name             *DeAlias(name *);
 extern void             RemoveInputEdge(block_edge *);
 extern void             ConstToTemp(block *,block *,block *(*)(block *));
-extern bool             SideEffect(instruction *);
-extern name             *ScaleIndex(name *,name *,type_length,type_class_def,type_length,int,i_flags);
 extern int              CountIns(block *);
 extern void             FixBlockIds(void);
 extern bool             UnRoll(void);

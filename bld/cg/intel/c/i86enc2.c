@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "cgmem.h"
 #include "system.h"
@@ -56,13 +56,14 @@
 #include "i86esc.h"
 #include "i86obj.h"
 #include "i86enc2.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  void            EjectInst( void );
 extern  void            LayRegAC(hw_reg_set);
-extern  hw_reg_set      High32Reg(hw_reg_set);
 extern  void            LayOpbyte(gen_opcode);
 extern  void            Format(oc_class);
 extern  void            LayRegRM(hw_reg_set);
@@ -75,8 +76,6 @@ extern  void            AddByte(byte);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
 extern  void            FlipCond(instruction*);
-extern  name            *DeAlias(name*);
-extern  name            *AllocUserTemp(pointer,type_class_def);
 extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );
@@ -121,8 +120,8 @@ typedef enum {
         SIGNED_BOTH             /* always signed */
 } issigned;
 
-static issigned Signed[] = {
-/***************************
+static issigned signed_type[] = {
+/********************************
     what kind of a jump does the instruction need following it
 */
         UNSIGNED,       /* U1*/
@@ -185,7 +184,7 @@ byte    CondCode( instruction *cond ) {
     } else {
         is_signed = SIGNED_86;
     }
-    if( is_signed & Signed[cond->type_class] ) {
+    if( is_signed & signed_type[cond->type_class] ) {
         return( SCondTable[cond->head.opcode - FIRST_CONDITION] );
     } else {
         return( UCondTable[cond->head.opcode - FIRST_CONDITION] );

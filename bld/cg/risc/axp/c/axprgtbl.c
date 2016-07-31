@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,8 @@
 #include "axpregn.h"
 #include "zoiks.h"
 #include "data.h"
+#include "rgtbl.h"
+
 
 static  hw_reg_set      Empty[] = {
     EMPTY
@@ -808,4 +811,19 @@ axp_regn RegTransN( name *reg_name )
     }
     _Zoiks( ZOIKS_031 );
     return( AXP_REGN_END );
+}
+
+
+hw_reg_set      FirstReg( reg_set_index index )
+/**********************************************
+    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
+    they are only one byte long.  This retrieves the first hw_reg_set
+    from the reg_set table "index".
+
+    the tables above use RL_ consts rather that hw_reg_sets cause
+    it cheaper. This just picks off the first register from a
+    register list and returns it.
+*/
+{
+    return( *RegSets[index] );
 }

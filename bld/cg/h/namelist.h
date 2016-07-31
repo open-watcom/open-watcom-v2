@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -59,4 +60,3 @@ extern void             FreeAName( name *op );
 extern bool             NameFrlFree( void );
 extern i_flags          AlignmentToFlags( type_length alignment );
 extern type_length      FlagsToAlignment( i_flags flags );
-extern void             SetArchIndex( name *new_r, hw_reg_set regs );

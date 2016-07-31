@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,20 +39,12 @@
 #include "model.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "split.h"
+#include "insutil.h"
 
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            ChangeType(instruction*,type_class_def);
 
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
-
-extern  type_class_def  Unsigned[];
 
 extern instruction      *rCONSTLOAD( instruction *ins ) {
 /*******************************************************/

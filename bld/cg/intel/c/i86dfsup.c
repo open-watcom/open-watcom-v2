@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,7 +40,6 @@
 #include "typedef.h"
 #include "procdef.h"
 #include "model.h"
-#include "ocentry.h"
 #include "i86objd.h"
 #include "zoiks.h"
 #include "cgaux.h"
@@ -50,20 +50,12 @@
 #include "objout.h"
 #include "rtclass.h"
 #include "i86obj.h"
+#include "regset.h"
+#include "rgtbl.h"
 #include "cgprotos.h"
 
 
-#if _TARGET & _TARG_IAPX86
-extern  hw_reg_set      Low32Reg(hw_reg_set);
-#elif _TARGET & _TARG_80386
-extern  hw_reg_set      Low64Reg(hw_reg_set);
-#endif
-
-
-extern  hw_reg_set      StackReg(void);
-extern  hw_reg_set      DisplayReg(void);
 extern  void            BackImpPtr( const char *nm, back_handle bck, offset plus );
-
 
 extern  dw_client       Client;
 

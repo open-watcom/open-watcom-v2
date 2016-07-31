@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,16 +43,16 @@
 #include "treeconv.h"
 #include "namelist.h"
 #include "objout.h"
+#include "insutil.h"
+#include "typemap.h"
+#include "optab.h"
 #include "feprotos.h"
 
-extern void             ReplIns(instruction*,instruction*);
+
 extern void             DupSeg(instruction*,instruction*);
-extern void             DoNothing(instruction*);
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
-extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
-extern bool             DoesSomething(instruction*);
 extern bool             NeedConvert(type_def*,type_def*);
 extern void             SetCSEBits(instruction *,instruction *);
 extern float_handle     OkToNegate( float_handle, type_def * );

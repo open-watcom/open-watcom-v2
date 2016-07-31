@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,19 +47,13 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "makeblk.h"
-#include "ocentry.h"
 #include "encode.h"
+#include "rgtbl.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 
 extern  void            Generate(bool);
-extern  type_class_def  TypeClass(type_def*);
-extern  name            *AllocRegName( hw_reg_set );
-extern  hw_reg_set      ReturnAddrReg( void );
-extern  hw_reg_set      ScratchReg( void );
-extern  hw_reg_set      StackReg( void );
-extern  hw_reg_set      VarargsHomePtr( void );
-extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;

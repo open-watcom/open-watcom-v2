@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,25 +45,18 @@
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
-#include "ocentry.h"
 #include "encode.h"
+#include "rgtbl.h"
+#include "rscobj.h"
 #include "feprotos.h"
 
 
 extern  uint_32         CountBits( uint_32 );
-extern  hw_reg_set      *GPRegs( void );
-extern  hw_reg_set      *FPRegs( void );
 extern  hw_reg_set      SaveRegs( void );
 extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenIType( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenRType( uint_8, uint_8, uint_8, uint_8, uint_8 );
-extern  hw_reg_set      VarargsHomePtr( void );
 extern  void            GenRET( void );
-extern  void            OutFuncStart( label_handle label, offset start, int line );
-extern  void            OutFileStart( int line );
-extern  void            OutFuncEnd( offset end );
-extern  byte            RegTrans( hw_reg_set );
-extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            GenLOADS32( signed_32, uint_8 );
 
 

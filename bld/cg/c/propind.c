@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,11 @@
 #include "peepopt.h"
 #include "propind.h"
 #include "redefby.h"
+#include "insutil.h"
+#include "namelist.h"
 
 
-extern void         SuffixIns(instruction *,instruction *);
 extern bool         SameThing(name *,name *);
-extern name         *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
 extern void         RemoveIns( instruction *);
 
 static  byte    OpRefs( name *op, name *ref ) {

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,12 @@
 #include "zerobits.h"
 #include "makeins.h"
 #include "blips.h"
+#include "insdead.h"
+#include "optab.h"
+
 
 extern  bool            UnChangeable(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  bool            SideEffect(instruction*);
-extern  bool            DoesSomething(instruction*);
-extern  void            DoNothing(instruction*);
 
 extern  void    FreeJunk( block *blk )
 /*************************************

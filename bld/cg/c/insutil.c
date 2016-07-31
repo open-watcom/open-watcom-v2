@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,9 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "data.h"
+#include "insutil.h"
+#include "namelist.h"
+
 
 typedef enum {
         CB_FOR_INS1             = 0x01,
@@ -47,9 +51,7 @@ typedef struct  conflict_info {
 } conflict_info;
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  name            *DeAlias(name*);
 extern  int             CountIns(block*);
-extern  instruction_id  Renumber( void );
 
 #define MAX_CONF_INFO   ( 2 * ( MAX_OPS_PER_INS + 1 ) + 1 )
 static  int             CurrInfo;
@@ -162,9 +164,9 @@ static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
 }
 
 
-extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum ) {
-/*****************************************************************/
-
+void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum )
+/***********************************************************************/
+{
     conflict_info       *info;
     conflict_node       *conf;
     block               *blk;
@@ -247,25 +249,24 @@ extern  void    PrefixInsRenum( instruction *ins, instruction *pref, bool renum 
         ins->head.state = INS_NEEDS_WORK;
         pref->head.state = INS_NEEDS_WORK;
 
-    /*   Add live & conflict information for the new instruction*/
+    /*   Add live & conflict information for the new instruction */
 
         UpdateLive( pref, ins );
     }
 }
 
 
-extern  void    PrefixIns( instruction *ins, instruction *pref ) {
-/****************************************************************/
-
+void    PrefixIns( instruction *ins, instruction *pref )
+/******************************************************/
+{
     PrefixInsRenum( ins, pref, true );
 }
 
 
-extern  void    SuffixIns( instruction *ins, instruction *suff ) {
-/****************************************************************/
-
-/*   Link the new instruction into the instruction ring*/
-
+void    SuffixIns( instruction *ins, instruction *suff )
+/******************************************************/
+/*   Link the new instruction into the instruction ring */
+{
     conflict_info       *info;
     conflict_node       *conf;
 
@@ -327,9 +328,9 @@ extern  void    SuffixIns( instruction *ins, instruction *suff ) {
 }
 
 
-static  block   *GetBlockPointer( block *blk, instruction *ins ) {
-/****************************************************************/
-
+static  block   *GetBlockPointer( block *blk, instruction *ins )
+/**************************************************************/
+{
     if( blk != NULL ) return( blk );
     while( ins->head.opcode != OP_BLOCK ) {
         ins = ins->head.next;
@@ -338,9 +339,9 @@ static  block   *GetBlockPointer( block *blk, instruction *ins ) {
 }
 
 
-extern  void    ReplIns( instruction *ins, instruction *new ) {
-/*************************************************************/
-
+void    ReplIns( instruction *ins, instruction *new )
+/***************************************************/
+{
     block               *blk;
     conflict_info       *info;
     conflict_node       *conf;
@@ -429,8 +430,8 @@ extern  void    ReplIns( instruction *ins, instruction *new ) {
 }
 
 
-extern  instruction_id  Renumber( void )
-/**************************************/
+instruction_id  Renumber( void )
+/******************************/
 {
     block               *blk;
     instruction         *ins;
@@ -461,9 +462,9 @@ extern  instruction_id  Renumber( void )
 }
 
 
-extern  void            ClearInsBits( instruction_flags mask ) {
-/**************************************************************/
-
+void            ClearInsBits( instruction_flags mask )
+/****************************************************/
+{
     block               *blk;
     instruction         *ins;
 

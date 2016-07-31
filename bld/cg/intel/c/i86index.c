@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,26 +36,23 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
 #include "feprotos.h"
+
 
 extern  opcode_entry    String[];
 
-extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  bool            SegOver(name*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
 extern  name            *FindIndex(instruction*);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);
-extern  name            *OffsetPart(name*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  name            *SegmentPart(name*);
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
-extern  reg_set_index   NoSegments(reg_set_index);
 extern  void            MarkSegment(instruction*,name*);
 extern  void            NoMemIndex(instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  int             NumOperands(instruction*);
 extern  name            *IndexToTemp(instruction*,name*);
 extern  name            *FindIndex(instruction*);

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +43,15 @@
 #include "x87.h"
 #include "stack.h"
 #include "redefby.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "namelist.h"
+#include "optab.h"
 
 
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  instruction_id  Renumber(void);
-extern  hw_reg_set      StackReg(void);
 extern  int             CountIns(block*);
-extern  bool            IsSegReg(hw_reg_set);
-extern  bool            DoesSomething(instruction*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      LowReg(hw_reg_set);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  void            ClearInsBits( instruction_flags );
-extern  hw_reg_set      FullReg( hw_reg_set );
 
 #define DEPS_IN_BLOCK    20
 

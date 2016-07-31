@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -56,11 +57,11 @@ extern void         OutBckImport( const char *name, back_handle bck, fix_class c
 extern unsigned     SavePendingLine( unsigned new );
 extern void         OutDBytes( unsigned len, const byte *src );
 extern void         OutIBytes( byte pat, offset len );
-//extern void         TellObjNewProc( cg_sym_handle proc );
 extern void         TellObjVirtFuncRef( void *cookie );
 extern bool         AskNameCode( pointer hdl, cg_class class );
 extern segment_id   DbgSegDef( const char *seg_name, const char *seg_class, int seg_modifier );
 
 extern bool         UseRepForm( unsigned size );
+extern void         TellObjNewLabel( cg_sym_handle lbl );
 
 extern fp_patches   FPPatchType;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "cgaux.h"
 #include "stack.h"
 #include "zoiks.h"
@@ -53,6 +53,7 @@
 #include "i87data.h"
 #include "i86objd.h"
 #include "i86obj.h"
+#include "optab.h"
 #include "feprotos.h"
 
 
@@ -71,7 +72,6 @@ extern  void        GenRegAnd(hw_reg_set,type_length);
 extern  void        GenRegSub(hw_reg_set,type_length);
 extern  void        GenUnkSub(hw_reg_set,pointer);
 extern  void        AdjustPushLocal(name*);
-extern  bool        DoesSomething(instruction*);
 extern  void        GenRegAdd(hw_reg_set,type_length);
 extern  void        GenRegMove(hw_reg_set,hw_reg_set);
 extern  void        GenPushOffset(byte);

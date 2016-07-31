@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,8 +35,7 @@
 #include "cgmem.h"
 #include "hwreg.h"
 #include "data.h"
-
-extern  name            *DeAlias(name*);
+#include "namelist.h"
 
 
 static  void    Use( name *op, block *blk, var_usage usage )

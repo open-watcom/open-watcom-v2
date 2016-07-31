@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,17 +41,17 @@
 #include "redefby.h"
 #include "makeblk.h"
 #include "i87data.h"
+#include "expand.h"
+#include "split.h"
+#include "insutil.h"
+#include "rgtbl.h"
+#include "typemap.h"
+#include "optab.h"
 
-
-extern  hw_reg_set      *RegSets[];
-extern  hw_reg_set      FPRegs[];
 
 extern  int             FPRegNum(name*);
-extern  void            DoNothing(instruction*);
 extern  void            BGDone(an);
 extern  name            *BGNewTemp(type_def*);
-extern  type_class_def  TypeClass(type_def*);
-extern  bool            DoesSomething(instruction*);
 extern  void            ToRFld(instruction*);
 extern  void            ToRFstp(instruction*);
 extern  void            NoPop(instruction*);
@@ -60,13 +61,8 @@ extern  void            ToPopBin(instruction*);
 extern  void            NoMemBin(instruction*);
 extern  name*           ST(int);
 extern int              NumOperands(instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DelSeg(instruction*);
-extern  name            *LowPart(name*,type_class_def);
-extern  name            *HighPart(name*,type_class_def);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefFXCH(instruction*,int);
 extern  void            Wait8087( void );

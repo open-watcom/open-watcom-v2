@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +49,6 @@
 #include "peepopt.h"
 #include "memlimit.h"
 #include "blips.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "opttell.h"
 #include "object.h"
@@ -58,10 +58,15 @@
 #include "indvars.h"
 #include "loopopts.h"
 #include "nullprop.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "insutil.h"
+#include "insdead.h"
+#include "namelist.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 
-extern  void            FreeAName( name * );
 extern  void            AssignTemps( void );
 extern  void            AssgnMoreTemps( block_num );
 extern  bool            CommonSex( bool );
@@ -69,12 +74,10 @@ extern  bool            SetOnCondition( void );
 extern  bool            BlockTrim( void );
 extern  bool            DeadBlocks( void );
 extern  void            MakeFlowGraph( void );
-extern  void            InitRegTbl( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
 extern  void            FreeAConflict( conflict_node * );
-extern  void            InitNames( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
 extern  void            InitSegment( void );
@@ -82,14 +85,12 @@ extern  void            FiniSegment( void );
 extern  void            PushPostOps( void );
 extern  void            DeadTemps( void );
 extern  void            AxeDeadCode( void );
-extern  bool            InsDead( void );
 extern  void            OptSegs( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
 extern  void            MakeConflicts( void );
 extern  void            MakeLiveInfo( void );
 extern  void            LiveInfoUpdate( void );
-extern  int             ExpandOps( bool );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
@@ -97,16 +98,12 @@ extern  void            Score( void );
 extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
-extern  type_class_def  TypeClass( type_def * );
-extern  hw_reg_set      AllCacheRegs( void );
 extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  instruction_id  Renumber( void );
 extern  void            SplitVars( void );
-extern  name            *DeAlias( name * );
 extern  void            AssignOtherLocals( void );
 extern  void            BuildIndex( void );
 extern  bool            CreateBreak( void );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,22 +42,16 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "makeblk.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "typemap.h"
 
 
 extern  bool            AssgnParms(cn,bool);
 extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
-extern  hw_reg_set      StackReg( void );
-extern  name            *AllocRegName( hw_reg_set );
-extern  name            *SAllocIndex( name *, name *, type_length, type_class_def, type_length );
-extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  void            AddCallIns( instruction *, cn );
 extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
-extern  name            *AllocRegName( hw_reg_set );
-extern  type_class_def  TypeClass( type_def * );
 extern  hw_reg_set      ParmReg( type_class_def, type_length, type_length, call_state *);
-extern  instruction     *SuffixIns( instruction *, instruction * );
-extern  type_def        *ClassType( type_class_def );
-extern  type_class_def  ReturnClass( type_def *, call_attributes );
 
 extern  an      BGCall( cn call, bool use_return, bool in_line )
 /**************************************************************/

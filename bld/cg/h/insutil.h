@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,11 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for typemap.c
+* Description:  Instruction data manipulation routines.
 *
 ****************************************************************************/
 
 
-extern  type_def        *ClassType( type_class_def tipe );
-extern  type_class_def  ReturnClass( type_def *tipe, call_attributes attr );
-extern  type_class_def  TypeClass( type_def *tipe );
+extern void             PrefixInsRenum( instruction *ins, instruction *pref, bool renum );
+extern void             PrefixIns( instruction *ins, instruction *pref );
+extern void             SuffixIns( instruction *ins, instruction *suff );
+extern void             ReplIns( instruction *ins, instruction *new );
+extern instruction_id   Renumber( void );
+extern void             ClearInsBits( instruction_flags mask );

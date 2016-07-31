@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "coderep.h"
 #include "addrname.h"
 #include "procdef.h"
-#include "ocentry.h"
 #include "owl.h"
 #include "model.h"
 #include "zoiks.h"
@@ -44,14 +44,8 @@
 #include "rscenc2.h"
 #include "optmain.h"
 #include "opttell.h"
+#include "rscobj.h"
 
-
-extern  void    ObjBytes( const void *, unsigned );
-extern  void    OutReloc( label_handle, owl_reloc_type, unsigned );
-extern  void    DoAlignment( offset );
-extern  void    OutFuncStart( label_handle, offset, cg_linenum );
-extern  void    OutFuncEnd( offset );
-extern  void    OutPDataRec( label_handle, offset, offset );
 
 static  offset  LastUnique = ADDR_UNKNOWN;
 static  any_oc  debugOC;

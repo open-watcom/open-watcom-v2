@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,13 +40,11 @@
 #include "redefby.h"
 #include "regalloc.h"
 #include "i87data.h"
+#include "insutil.h"
+#include "rgtbl.h"
 
 
-extern  hw_reg_set      FPRegs[];
-
-extern  void            SuffixIns(instruction*,instruction*);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);

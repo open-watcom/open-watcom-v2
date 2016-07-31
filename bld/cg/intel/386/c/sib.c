@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,8 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "rgtbl.h"
+
 
 typedef enum {
     MODIFIES_NOTHING    = 0,
@@ -39,9 +42,6 @@ typedef enum {
     MODIFIES_REG        = 2,
 } mod_info;
 
-extern  hw_reg_set      Low64Reg( hw_reg_set );
-extern  hw_reg_set      High64Reg( hw_reg_set );
-extern  bool            IsIndexReg( hw_reg_set, type_class_def, bool );
 extern  bool            FoldIntoIndex( instruction * );
 extern  void            UpdateLive( instruction *, instruction * );
 

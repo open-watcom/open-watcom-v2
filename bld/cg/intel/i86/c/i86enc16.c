@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "pccode.h"
 #include "system.h"
 #include "pcencode.h"
@@ -44,14 +44,13 @@
 #include "targetdb.h"
 #include "i86obj.h"
 #include "i86esc.h"
+#include "rgtbl.h"
+#include "namelist.h"
 
 
 extern  void            LayRegAC( hw_reg_set );
 extern  void            LayOpword( gen_opcode );
-extern  hw_reg_set      High32Reg( hw_reg_set );
-extern  hw_reg_set      Low32Reg( hw_reg_set );
 extern  hw_reg_set      CalcSegment( cg_sym_handle, cg_class );
-extern  name            *DeAlias( name * );
 extern  void            AddByte( byte );
 extern  void            LayRMRegOp( name * );
 extern  void            LayOpbyte( gen_opcode );

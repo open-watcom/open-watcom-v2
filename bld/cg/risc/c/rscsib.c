@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,10 @@
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "rgtbl.h"
+
 
 extern  instruction     *SIBPossibleIndex(instruction*,name*,name**,bool*,hw_reg_set,hw_reg_set,bool*,bool*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      Low64Reg(hw_reg_set);
 extern  void            ReplaceOperand(instruction*,name*,name*);
 
 typedef struct sib_info {

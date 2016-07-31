@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,20 +48,16 @@
 #include "edge.h"
 #include "makeblk.h"
 #include "loopopts.h"
+#include "split.h"
+#include "insutil.h"
 
 
-extern  name            *DeAlias(name*);
-extern  name            *SAllocIndex(name *,name *,type_length ,type_class_def ,type_length );
-extern  void            SuffixIns(instruction *,instruction *);
-extern  name            *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
-extern  void            PrefixIns(instruction *,instruction *);
 extern  void            RemoveInputEdge( block_edge * );
 extern  void            RemoveBlock( block * );
 extern  void            FlipCond( instruction * );
 extern  void            RevCond( instruction * );
 extern  int             CountIns( block *);
 
-extern type_class_def   Signed[];
 extern block            *PreHead;
 extern block            *Head;
 extern induction        *IndVarList;

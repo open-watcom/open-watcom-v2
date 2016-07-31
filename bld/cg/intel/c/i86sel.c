@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,7 +50,6 @@
 #include "bldselco.h"
 #include "cgaux.h"
 #include "i86enc2.h"
-#include "ocentry.h"
 #include "encode.h"
 #include "makeblk.h"
 
@@ -76,7 +76,6 @@
 
 extern  an              BGDuplicate(an);
 extern  an              TreeGen(tn);
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
 extern  void            BGDone(an);
 extern  an              BGInteger( signed_32, type_def * );
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,7 +51,6 @@
 #include "wvtypes.h"
 #include "objio.h"
 #include "onexit.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "opttell.h"
 #include "intrface.h"
@@ -781,8 +781,8 @@ void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, b
     }
 }
 
-static void DoEmptyQueue( void )
-/******************************/
+void DoEmptyQueue( void )
+/***********************/
 {
     EmptyQueue();
     TellUnreachLabels();

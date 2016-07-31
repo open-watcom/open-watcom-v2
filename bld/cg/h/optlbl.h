@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -99,3 +100,13 @@ typedef struct code_lbl {
 extern bool ValidLbl( label_handle lbl );
 
 #include "optask.h"
+
+extern void         AddLblDef( ins_entry *instr );
+extern void         DelLblDef( ins_entry *instr );
+extern void         AddLblRef( ins_entry *instr );
+extern void         DelLblRef( ins_entry *instr );
+extern void         ChgLblRef( ins_entry *instr, label_handle new );
+extern bool         UniqueLabel( label_handle lbl );
+extern ins_entry    *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl );
+extern void         TryScrapLabel( label_handle old );
+extern void         ScrapCodeLabel( label_handle lbl );

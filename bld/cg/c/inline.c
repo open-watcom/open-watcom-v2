@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,8 @@
 #include "types.h"
 #include "makeaddr.h"
 #include "makeblk.h"
+#include "namelist.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 
@@ -56,8 +59,6 @@ typedef struct inline_stack {
         an                      addr;
 } inline_stack;
 
-extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  type_class_def  TypeClass(type_def*);
 extern  name            *BGNewTemp(type_def*);
 extern  void            BGDone(an);
 extern  an              BGCopy(an);

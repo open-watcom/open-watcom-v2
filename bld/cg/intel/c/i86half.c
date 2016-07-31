@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,37 +39,24 @@
 #include "zoiks.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "optab.h"
 
-extern  void            ChangeType(instruction*,type_class_def);
+
 extern  name            *IntEquivalent(name*);
 extern  void            DupSegOp(instruction*,instruction*,int);
-extern  opcode_entry    *CodeTable(instruction*);
 extern  bool            SameThing(name*,name*);
-extern  instruction     *MoveConst(unsigned_32,name*,type_class_def);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            HalfType(instruction*);
-extern  hw_reg_set      High32Reg(hw_reg_set);
-extern  hw_reg_set      High16Reg(hw_reg_set);
-extern  hw_reg_set      Low32Reg(hw_reg_set);
-extern  name            *AllocRegName(hw_reg_set);
-extern  hw_reg_set      Low16Reg(hw_reg_set);
 extern  name            *AddrConst(name*,int,constant_class);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  name            *SegName(name*);
 extern  void            DelSeg(instruction*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  bool            Overlaps( name *, name * );
-extern  name            *LowPart( name *, type_class_def );
-extern  name            *HighPart( name *, type_class_def );
 extern  void            CnvOpToInt( instruction *, int );
-
-extern    type_class_def        HalfClass[];
-extern    type_class_def        Unsigned[];
 
 extern  bool    IndexOverlaps( instruction *ins, int i ) {
 /********************************************************/

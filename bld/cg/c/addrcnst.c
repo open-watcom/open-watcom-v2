@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,7 @@
 #include "addrcnst.h"
 #include "makeins.h"
 #include "namelist.h"
-
-extern  void            PrefixIns(instruction*,instruction*);
+#include "insutil.h"
 
 
 extern  void    MakeMovAddrConsts( void ) {

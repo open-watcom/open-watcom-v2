@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgauxinf.h"
-#include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
 #include "cgswitch.h"
@@ -68,10 +68,8 @@
 #if _TARGET & _TARG_PPC
 extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
 #endif
-extern  void            TryScrapLabel( label_handle );
 extern  bool            SymIsExported( cg_sym_handle );
 extern  void            EmptyQueue( void );
-extern  void            EmitInsReloc( axp_ins, pointer, owl_reloc_type );
 
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC
 static  owl_section_handle      globalPdata;
@@ -909,8 +907,8 @@ void    OutSegReloc( label_handle label, segment_id seg )
         sect->owl_handle, OWL_RELOC_SECTION_INDEX );
 }
 
-owl_sym_linkage labelLinkage( label_handle label )
-/************************************************/
+static owl_sym_linkage labelLinkage( label_handle label )
+/*******************************************************/
 {
     cg_sym_handle       sym;
     owl_sym_linkage     linkage;
@@ -1114,8 +1112,8 @@ bool    CodeHasAbsPatch( oc_entry *code )
     return( false );    // NYI
 }
 
-static  bool    relocBefore( void *_p1, void *_p2 )
-/*************************************************/
+static bool    relocBefore( void *_p1, void *_p2 )
+/*****************************************/
 {
     byte_seq_reloc *p1 = _p1;
     byte_seq_reloc *p2 = _p2;
@@ -1131,50 +1129,14 @@ static  bool    relocBefore( void *_p1, void *_p2 )
     return( p1->off < p2->off );
 }
 
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
-{
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    axp_ins             *code_ptr;
-    axp_ins             opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
-
-    assert( code->length % 4 == 0 );
-    curr = SortList( code->relocs, offsetof( byte_seq_reloc, next ), relocBefore );
-    code_ptr = (axp_ins *)code->data;
-    for( i = 0; i < code->length; i += 4 ) {
-        opcode = *code_ptr++;
-        reloc_type = 0;
-        reloc_sym = NULL;
-        while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
-            switch( curr->type ) {
-            case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
-                if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
-                }
-                opcode |= _SignedImmed( loc );
-                break;
-            case OWL_RELOC_PAIR:
-                break;
-            default:
-                reloc_type = curr->type;
-                reloc_sym = back->lbl;
-            }
-            curr = curr->next;
-        }
-        EmitInsReloc( opcode, reloc_sym, reloc_type );
-    }
-}
-
 void    DoAlignment( int align )
 /******************************/
 {
     // NYI
     align = align;
+}
+
+byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
+{
+    return( SortList( relocs, offsetof( byte_seq_reloc, next ), relocBefore ) );
 }

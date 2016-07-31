@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,14 @@
 #include "coderep.h"
 #include "cfloat.h"
 #include "data.h"
+#include "rgtbl.h"
 
 
 extern  int             NumOperands(instruction*);
 extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
-extern  hw_reg_set      Low16Reg( hw_reg_set );
-extern  type_class_def  RegClass(hw_reg_set);
+//extern  hw_reg_set      Low16Reg( hw_reg_set );
+//extern  type_class_def  RegClass(hw_reg_set);
 
 
 extern  bool    DoVerify( vertype kind, instruction *ins ) {

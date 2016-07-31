@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,12 +33,12 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "insutil.h"
+#include "optab.h"
 
-extern  void            PrefixIns(instruction*,instruction*);
+
 extern  instruction     *MakeWait(void);
-extern  void            SuffixIns(instruction*,instruction*);
 extern  bool            SameThing(name*,name*);
-extern  bool            DoesSomething( instruction *ins );
 
 static  bool    OpsCollide( name *op_87, name *op_86 ) {
 /****************************************************/

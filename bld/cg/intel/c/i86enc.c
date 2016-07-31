@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "pccode.h"
 #include "system.h"
@@ -59,11 +59,12 @@
 #include "i86obj.h"
 #include "i87data.h"
 #include "i86esc.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      High32Reg(hw_reg_set);
-extern  hw_reg_set      Low32Reg(hw_reg_set);
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
 extern  int             NumOperands(instruction*);
 extern  void            DoRepOp( instruction *ins );
@@ -88,13 +89,10 @@ extern  name            *IntEquivalent(name*);
 extern  void            AdjustStackDepth(instruction*);
 extern  void            AdjustStackDepthDirect(int adjust);
 
-extern  hw_reg_set      FullReg(hw_reg_set);
+//extern  hw_reg_set      FullReg(hw_reg_set);
 extern  bool            BaseIsSP(name*);
 extern  type_length     TmpLoc(name*,name*);
-extern  name            *DeAlias(name*);
 extern  void            AddWData(signed_32,type_class_def );
-extern  name            *LowPart(name *,type_class_def);
-extern  name            *HighPart(name *,type_class_def);
 extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );

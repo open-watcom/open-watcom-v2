@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,10 +41,9 @@
 #include "seldef.h"
 #include "bldsel.h"
 #include "intrface.h"
+#include "rgtbl.h"
+#include "typemap.h"
 
-
-extern  type_class_def  RegClass( hw_reg_set );
-extern  type_def        *ClassType( type_class_def );
 
 static  pointer         *FrlHead[N_INDEXED + 1];
 static  pointer         *ConstDefnFrl;

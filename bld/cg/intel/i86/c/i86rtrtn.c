@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,28 +43,23 @@
 #include "namelist.h"
 #include "regalloc.h"
 #include "makeblk.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "rtcall.h"
+#include "optab.h"
 
-
-extern  hw_reg_set      *RegSets[];
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  void            DoNothing( instruction * );
-extern  void            ReplIns( instruction *, instruction * );
-extern  void            SuffixIns( instruction *, instruction * );
 extern  void            MoveSegRes( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
 extern  void            DelSeg( instruction * );
-extern  void            PrefixIns( instruction *, instruction * );
 extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  int             NumOperands( instruction * );
-extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  hw_reg_set      ReturnReg( type_class_def, bool );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes
@@ -117,20 +113,6 @@ const char  *AskRTName( rt_class rtindex )
 /****************************************/
 {
     return( RTInfo[rtindex].nam );
-}
-
-
-static  hw_reg_set      FirstReg( reg_set_index index )
-/******************************************************
-    the tables above use RL_ consts rather that hw_reg_sets cause
-    it cheaper. This just picks off the first register from a
-    register list and returns it.
-*/
-{
-    hw_reg_set  *list;
-
-    list = RegSets[index];
-    return( *list );
 }
 
 
@@ -234,8 +216,8 @@ static  void    FlipIns( instruction *ins )
 }
 
 
-extern  instruction     *rMAKECALL( instruction *ins )
-/*****************************************************
+instruction     *rMAKECALL( instruction *ins )
+/*********************************************
     turn an instruction into the approprate runtime call sequence, using
     the tables above to decide where parms go.
 */

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,11 @@
 #include "data.h"
 #include "savings.h"
 #include "targetin.h"
+#include "namelist.h"
+#include "optab.h"
 
 
-extern  name            *DeAlias(name*);
 extern  bool            UnChangeable(instruction*);
-extern  bool            DoesSomething(instruction*);
-extern  void            DoNothing(instruction*);
 extern  void            PropLocal(name*);
 
 extern  savings         Save;

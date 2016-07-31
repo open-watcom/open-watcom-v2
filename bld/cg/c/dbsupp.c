@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "procdef.h"
 #include "cgmem.h"
 #include "model.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "types.h"
@@ -45,18 +45,14 @@
 #ifndef NDEBUG
 #include "echoapi.h"
 #endif
+#include "regset.h"
+#include "rgtbl.h"
+#include "namelist.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  name            *DeAlias(name*);
-extern  name            *AllocUserTemp(pointer,type_class_def);
-#if _TARGET & _TARG_IAPX86
-extern  hw_reg_set      Low32Reg(hw_reg_set);
-#elif _TARGET & _TARG_80386
-extern  hw_reg_set      Low64Reg(hw_reg_set);
-#endif
-extern  void            DoBigBckPtr(back_handle,offset);
 
+extern  void            DoBigBckPtr(back_handle,offset);
 
 static  dbg_loc         LocCreate( dbg_loc loc, unsigned typ ) {
 /**************************************************************/

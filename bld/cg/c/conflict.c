@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,10 @@
 #include "freelist.h"
 #include "zoiks.h"
 #include "data.h"
+#include "rgtbl.h"
+#include "namelist.h"
 #include "feprotos.h"
 
-extern  reg_set_index   IndexIntersect(reg_set_index,type_class_def,bool);
-extern  reg_set_index   RegIntersect(reg_set_index,reg_set_index);
-extern  reg_set_index   SegIndex(void);
-extern  name            *DeAlias(name*);
 
 static  pointer         *ConfFrl;
 static  pointer         *ConfAliasVarsFrl;

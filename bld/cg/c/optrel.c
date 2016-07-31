@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "objout.h"
 #include "optmain.h"
 
-extern  void            TryScrapLabel(label_handle);
 extern  void            AddNewJump(ins_entry*,label_handle);
 extern  label_handle    AddNewLabel(ins_entry*,obj_length);
 extern  ins_entry       *PrevIns(ins_entry*);

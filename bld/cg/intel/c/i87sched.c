@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,8 @@
 #include "indvars.h"
 #include "loopopts.h"
 #include "i87data.h"
+#include "namelist.h"
+#include "optab.h"
 
 
 extern  instruction     *PrefFXCH( instruction *ins, int i );
@@ -51,9 +54,7 @@ extern  instruction     *SuffFSTPRes(instruction *,name *,result_type );
 extern  name            *ST(int);
 extern  int             NumOperands(instruction *);
 extern  int             FPRegNum(name *);
-extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
-extern  name            *DeAlias(name *);
 extern  void            RevCond( instruction * );
 extern  int             FPStkReq( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );

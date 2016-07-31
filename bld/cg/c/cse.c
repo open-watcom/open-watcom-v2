@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +48,11 @@
 #include "indvars.h"
 #include "loopopts.h"
 #include "feprotos.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "insdead.h"
+#include "typemap.h"
 
 
 /* block flag usage                                                 */
@@ -69,34 +75,26 @@ typedef enum {
         RESULT_DIES
 } who_dies;
 
-extern type_class_def   Unsigned[];
+extern float_handle     CnvCFToType(float_handle,type_def*);
+extern int              NumOperands(instruction*);
+extern bool             LoadAToMove(instruction*);
+extern bool             DeadBlocks(void);
+extern void             RemoveInputEdge(block_edge*);
+extern bool             DivIsADog(type_class_def);
+extern void             MoveHead(block*,block*);
+extern void             MakeFlowGraph(void);
+extern bool             BlockTrim(void);
+extern int              GetLog2(unsigned_32);
+extern void             FindReferences(void);
+extern bool             IsTrickyPointerConv( instruction * );
+
+/* forward declarations */
+static void             TreeBits( block *root );
+static void             DeleteFromList( instruction **owner, instruction *ins, instruction *new );
+static void             CleanTableEntries( block *root );
 
 static instruction      *ExprHeads[LAST_CSE_OP+1];
 static bool             LeaveIndVars;
-
-extern  name            *ScaleIndex(name *,name *,type_length,type_class_def,type_length,int,i_flags);
-extern void             PrefixIns(instruction*,instruction*);
-extern void             SuffixIns(instruction*,instruction*);
-extern float_handle     CnvCFToType(float_handle,type_def*);
-extern type_def         *ClassType(type_class_def);
-extern int              NumOperands(instruction*);
-extern bool             InsDead(void);
-extern bool             LoadAToMove(instruction*);
-extern  bool            DeadBlocks(void);
-extern  void            RemoveInputEdge(block_edge*);
-extern  bool            DivIsADog(type_class_def);
-extern  void            MoveHead(block*,block*);
-extern  void            MakeFlowGraph(void);
-extern  bool            BlockTrim(void);
-extern  int             GetLog2(unsigned_32);
-extern  bool            IsSegReg(hw_reg_set);
-extern  void            FindReferences(void);
-extern  bool            IsTrickyPointerConv( instruction * );
-
-/* forward declarations */
-static  void            TreeBits( block *root );
-static  void            DeleteFromList( instruction **owner, instruction *ins, instruction *new );
-static  void            CleanTableEntries( block *root );
 
 static  void    ReCalcAddrTaken( void )
 /**************************************

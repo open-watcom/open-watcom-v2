@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,10 @@
 #include "dumpio.h"
 #include "data.h"
 #include "intrface.h"
+#include "rgtbl.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern  void            DumpRegName(hw_reg_set);
 extern  bool            DumpFPUIns(instruction*);
@@ -44,12 +48,8 @@ extern  void            DumpOpcodeName(int);
 extern  void            DumpBlkId(block*);
 extern  void            DumpPossible(byte);
 extern  void            DumpTab(opcode_entry*);
-extern  name            *DeAlias(name*);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  hw_reg_set      LowReg(hw_reg_set);
 extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
-extern  type_length     FlagsToAlignment( i_flags );
 
 
 #define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )

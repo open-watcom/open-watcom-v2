@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,15 +39,10 @@
 #include "zerobits.h"
 #include "makeins.h"
 #include "namelist.h"
-
-extern  name            *LowPart(name*,type_class_def);
-extern  name            *HighPart(name*,type_class_def);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  bool            VolatileIns(instruction*);
-
-extern  type_class_def  HalfClass[];
-
+#include "expand.h"
+#include "split.h"
+#include "insutil.h"
+#include "insdead.h"
 
 
 static  bool    CheckIns( instruction **pins ) {

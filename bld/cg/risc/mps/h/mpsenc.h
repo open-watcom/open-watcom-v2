@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 extern void         GenCallLabelReg( pointer label, uint reg );
 #if 0
-extern void         EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
 extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type );
 extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );

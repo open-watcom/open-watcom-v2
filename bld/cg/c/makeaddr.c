@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,18 +46,15 @@
 #include "makeaddr.h"
 #include "namelist.h"
 #include "makeblk.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 static    pointer       *AddrNameFrl;
 
-extern  type_class_def  TypeClass(type_def*);
-extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
 extern  name            *BGNewTemp(type_def*);
 extern  void            AllocALocal(name*);
 extern  void            BGDone(an);
 extern  cg_type         NamePtrType( name *op );
-extern  name            *AllocRegName( hw_reg_set );
-
 
 static  void    CopyAddr( an src, an dst )
 /****************************************/

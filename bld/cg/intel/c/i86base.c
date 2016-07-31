@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,6 +35,7 @@
 #include "coderep.h"
 #include "data.h"
 #include "cgsrtlst.h"
+#include "namelist.h"
 
 
 #define MAX_SHORT_NEG   127
@@ -52,7 +54,6 @@
 static  int             CalcBaseSave( type_length bp, name *temp );
 static  void            SortTemps(void);
 
-extern  name            *DeAlias(name*);
 extern  void            CountTempRefs(void);
 
 

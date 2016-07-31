@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,28 +38,20 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "optab.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *HighPart(name*,type_class_def);
-extern  name            *LowPart(name*,type_class_def);
 extern  void            CheckCC(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
 extern  void            DupSeg(instruction*,instruction*);
 extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            MoveSegRes(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
 extern  void            RevCond(instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  hw_reg_set      HighReg(hw_reg_set);
-
-extern    hw_reg_set    *RegSets[];
-extern    op_regs       RegList[];
-
 
 type_class_def  HalfClass[] = {
     0,                  /* U1 */
@@ -118,6 +111,7 @@ type_class_def  Unsigned[] = {
     FL,                 /* FL*/
     XX                  /* XX*/
 };
+
 type_class_def  Signed[] = {
 /**************************/
 
@@ -141,9 +135,6 @@ type_class_def  Signed[] = {
     FL,                 /* FL*/
     XX                  /* XX*/
 };
-
-extern instruction *(*ReduceTab[])( instruction * );
-
 
 static  reg_set_index   ResultPossible( instruction *ins )
 /********************************************************/

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -52,6 +53,10 @@
 #include "i86objd.h"
 #include "i86obj.h"
 #endif
+#include "rgtbl.h"
+#include "insutil.h"
+#include "namelist.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 
@@ -59,26 +64,18 @@ extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
 extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
-extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
-extern  type_class_def  ReturnClass(type_def*,call_attributes);
-extern  type_class_def  TypeClass(type_def*);
 extern  void            Generate(bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
 extern  name            *StReturn(an,type_def*,instruction**);
-extern  hw_reg_set      StackReg(void);
-extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
 extern  void            TNZapParms(void);
 extern  void            PushInSameBlock(instruction*);
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
-extern  type_def        *ClassType(type_class_def);
 extern  bool            SegIsCS( name * );
 extern  type_length     ParmAlignment( type_def * );
-extern  void            SuffixIns( instruction *, instruction * );
 
 extern  bool            BlipsOn;
 

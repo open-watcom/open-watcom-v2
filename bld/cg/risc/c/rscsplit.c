@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,6 +41,12 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "rtcall.h"
+#include "optab.h"
+
 
 extern  instruction     *rMOVRESREG(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
@@ -61,7 +68,6 @@ extern  instruction     *rDOLOAD(instruction*);
 extern  instruction     *rDOSTORE(instruction*);
 extern  instruction     *rOP1CMEM(instruction*);
 extern  instruction     *rOP2CMEM(instruction*);
-extern  instruction     *rMAKECALL(instruction*);
 extern  instruction     *rDOTEST(instruction*);
 extern  instruction     *rCHANGETYPE(instruction*);
 extern  instruction     *rMOVEXX(instruction*);
@@ -94,20 +100,7 @@ extern  instruction     *rSEX_4TO8( instruction * );
 extern  instruction     *rCLRHI_4( instruction * );
 extern  instruction     *rMOVELOW( instruction * );
 
-extern  hw_reg_set      StackReg( void );
-extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      SavedRegs( void );
-
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-
-extern  name            *DeAlias( name * );
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            ChangeType(instruction*,type_class_def);
 
 extern  name            *GenFloat( name *, type_class_def );
 
@@ -115,23 +108,8 @@ extern  opcode_entry    *OpcodeTable( table_def );
 
 extern  void            UpdateLive( instruction *, instruction * );
 
-extern  hw_reg_set      ReturnAddrReg();
-extern  hw_reg_set      FirstReg( reg_set_index );
-
-extern  type_class_def  Unsigned[];
-extern  type_class_def  HalfClass[];
-
-extern  opcode_entry    *CodeTable( instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  hw_reg_set      Low16Reg( hw_reg_set regs );
-extern  hw_reg_set      Low32Reg( hw_reg_set regs );
-extern  hw_reg_set      Low64Reg( hw_reg_set regs );
-extern  hw_reg_set      High16Reg( hw_reg_set regs );
-extern  hw_reg_set      High32Reg( hw_reg_set regs );
-extern  hw_reg_set      High64Reg( hw_reg_set regs );
-extern  void            HalfType( instruction * );
 extern  bool            SameThing( name *, name * );
-
 
 instruction *(* ReduceTab[])() = {
     #define _R_( x, f )     f

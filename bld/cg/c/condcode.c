@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,10 +36,10 @@
 #include "data.h"
 #include "namelist.h"
 #include "nullprop.h"
+#include "insdead.h"
+#include "optab.h"
 
 
-extern  void            DoNothing( instruction * );
-extern  bool            VolatileIns( instruction * );
 extern  bool            CondOverlaps( name *result, name *ccop );
 
 typedef enum {          /* in order of increasing amount of information */

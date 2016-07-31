@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,11 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Prototypes for typemap.c
+* Description:  Expand instructions so that machine code can be generated.
 *
 ****************************************************************************/
 
 
-extern  type_def        *ClassType( type_class_def tipe );
-extern  type_class_def  ReturnClass( type_def *tipe, call_attributes attr );
-extern  type_class_def  TypeClass( type_def *tipe );
+extern  opcode_entry    *FindGenEntry( instruction *ins, bool *has_index );
+extern  void            FixGenEntry( instruction *ins );
+extern  instruction     *PostExpandIns( instruction *ins );
+extern  instruction     *ExpandIns( instruction *ins );
+extern  int             ExpandOps( bool keep_on_truckin );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,27 +42,21 @@
 #include "namelist.h"
 #include "nullprop.h"
 #include "i87data.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "optab.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      FPRegs[];
 extern  opcode_entry    DoNop[];
 
 extern  void            Opt8087( void );
-extern  bool            DoesSomething(instruction*);
 extern  int             NumOperands(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  int             Count87Regs(hw_reg_set);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
 extern  void            AllocALocal(name*);
 extern  void            RevCond(instruction*);
 extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  hw_reg_set      *IdxRegs( void );
 extern  void            InitFPStkReq( void );
 
 /* forward declarations */

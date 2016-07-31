@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +37,14 @@
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "regset.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "insutil.h"
 
-extern  void            ReplIns(instruction*,instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  bool            IndexRegOk(hw_reg_set,bool);
-extern  void            SuffixIns(instruction*,instruction*);
+
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  bool            UnChangeable(instruction*);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  hw_reg_set      LowReg(hw_reg_set);
 
 
 static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm,

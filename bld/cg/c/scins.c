@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,19 +36,20 @@
 #include "makeins.h"
 #include "data.h"
 #include "x87.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "namelist.h"
 
 
 extern  int             NumOperands(instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  bool            IndexOkay(instruction*,name*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  bool            CanReplace(instruction*);
 extern  instruction     *rSWAPOPS(instruction*);
 extern  instruction     *rSWAPCMP(instruction*);
-extern  bool            IsStackReg(name*);
 
-extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
-/**********************************************************/
+opcode_entry    *ResetGenEntry( instruction *ins )
+/************************************************/
+{
     opcode_entry        *try;
     bool                dummy;
 
@@ -72,8 +74,8 @@ extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
 }
 
 
-extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags ) {
-/**************************************************************************************
+bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
+/****************************************************************************
     Is it alright to change operand "*op" to a reference to "to" in
     instruction "ins".  We check here that the instruction would still
     be generatable by looking up its generate entry.  We must also check
@@ -82,8 +84,7 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
     R1 would be no good if the first form set condition codes but the
     second form did not.
 */
-
-
+{
     opcode_entry        *try;
     opcode_entry        *table;
     opcode_entry        *gen_table;
@@ -249,12 +250,12 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
 }
 
 
-extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
-/***********************************************************
+bool    FindRegOpnd( score *sc, instruction *ins )
+/*************************************************
     See if we can find an operand of "ins" that could be replaces by a
     register or an 'older' register (one that was defined first).
 */
-
+{
     int         i;
     bool        change;
 
@@ -273,8 +274,8 @@ extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
     return( change );
 }
 
-extern  void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
-/****************************************************************
+void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
+/********************************************************
     Make 'op1' and 'op2' equivalent in scoreboarder information
         - one of them must be a register
 */
@@ -303,12 +304,12 @@ extern  void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
     }
 }
 
-extern  bool    ScoreMove( score *sc, instruction *ins ) {
-/*********************************************************
+bool    ScoreMove( score *sc, instruction *ins )
+/***********************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
-
+{
     name        *src;
     name        *dst;
     int         src_index;
@@ -368,12 +369,12 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
 }
 
 
-extern  bool    ScoreLA( score *sc, instruction *ins ) {
-/*********************************************************
+bool    ScoreLA( score *sc, instruction *ins )
+/*********************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
-
+{
     name        *src;
     name        *dst;
     int         dst_index;
@@ -400,12 +401,12 @@ extern  bool    ScoreLA( score *sc, instruction *ins ) {
 }
 
 
-extern  void    ScZeroCheck( score *sc, instruction *ins ) {
-/***********************************************************
+void    ScZeroCheck( score *sc, instruction *ins )
+/*************************************************
     Check if instruction "ins" ends up with the result being Zero.  For
     example SUB R1,R1 => R1, results in R1 becoming 0.
 */
-
+{
     int i;
 
     if( ins->head.opcode != OP_XOR

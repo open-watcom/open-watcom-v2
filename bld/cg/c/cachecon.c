@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +40,11 @@
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "optab.h"
 
-
-extern  type_class_def  Unsigned[];
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  name            *DeAlias(name*);
-extern  void            DoNothing(instruction*);
-extern  bool            IsStackReg(name*);
 
 static  block           *Head;
 static  block           *(*Next)(block*);

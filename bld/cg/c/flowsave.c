@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +40,14 @@
 #include "namelist.h"
 #include "nullprop.h"
 #include "flowsave.h"
+#include "rgtbl.h"
+#include "score.h"
+#include "insutil.h"
 
 
 extern  hw_reg_set      PushRegs[];
 
-extern  opcode_entry    *ResetGenEntry( instruction * );
-extern  void            PrefixIns( instruction *, instruction * );
-extern  void            SuffixIns( instruction *, instruction * );
 extern  uint_32         CountBits( uint_32 );
-extern  bool            IsSegReg( hw_reg_set );
 
 static  block           *blockArray[_DBit_SIZE];
 static  int             bitCount;

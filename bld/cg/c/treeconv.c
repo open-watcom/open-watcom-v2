@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,9 +40,10 @@
 #include "cfloat.h"
 #include "utils.h"
 #include "makeaddr.h"
+#include "typemap.h"
+
 
 extern  void            BurnTree(tn);
-extern  type_class_def  TypeClass(type_def*);
 extern  float_handle    CnvCFToType( float_handle cf, type_def *tipe );
 
 

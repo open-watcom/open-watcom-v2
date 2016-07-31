@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,10 +38,10 @@
 #include "stack.h"
 #include "redefby.h"
 #include "nullprop.h"
+#include "insdead.h"
 
 
 extern void             KillCondBlk( block *blk, instruction *ins, int dest );
-extern  bool            SideEffect( instruction * );
 extern  bool            BlockTrim( void );
 
 void    ClearBlocksBitsMask( block_class mask )

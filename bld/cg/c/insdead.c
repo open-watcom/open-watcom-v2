@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,13 @@
 #include "x87.h"
 #include "makeins.h"
 #include "redefby.h"
+#include "insdead.h"
+#include "namelist.h"
+#include "optab.h"
 
 
-extern  void            FreeAName(name*);
 extern  block           *TailBlocks(void);
 extern  bool            BreakExists(void);
-extern  void            DoNothing(instruction*);
-extern  bool            DoesSomething(instruction*);
 
 
 static  void    InitVisitedTemps( void )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,6 +37,7 @@
 #include "block.h"
 #include "data.h"
 #include "optmain.h"
+#include "objout.h"
 
 extern  void            JmpToRet( ins_entry *, ins_entry * );
 extern  oc_class        NextClass( ins_entry * );

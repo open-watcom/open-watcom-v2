@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,13 +37,11 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "rtrtn.h"
+#include "insutil.h"
 
 
 extern  bool            IndexOkay(instruction*,name*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  void            FixFPConsts(instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
 
 static byte NumTab[LAST_OP-FIRST_OP+1] = {
 /*****************************************

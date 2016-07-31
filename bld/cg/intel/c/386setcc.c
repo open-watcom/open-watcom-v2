@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,9 @@
 #include "i64.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "insutil.h"
 
-extern  void            SuffixIns(instruction*,instruction*);
+
 extern  void            RemoveInputEdge(block_edge *);
 extern  void            FlipCond(instruction*);
 extern  void            RemoveBlock( block * );

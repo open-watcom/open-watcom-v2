@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
 #include "dw.h"
@@ -50,11 +50,12 @@
 #include "dfsyms.h"
 #include "dfsupp.h"
 #include "targetdb.h"
+#include "namelist.h"
 #include "cgprotos.h"
 #include "feprotos.h"
 
+
 extern  void            DoBigBckPtr(back_handle,offset);
-extern  name            *DeAlias(name*);
 extern  void            DataLong( unsigned_32 );
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes( offset len, byte pat );
@@ -63,7 +64,6 @@ extern  void            DoBigLblPtr(cg_sym_handle);
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 extern dw_loc_id        DBGLoc2DFCont( dbg_loc loc, dw_loc_id df_locid );
 extern void             DFFEPtrRef( cg_sym_handle sym );
-extern  name            *AllocUserTemp(pointer,type_class_def);
 
 extern  void            DFBlkBeg( dbg_block *blk, offset lc );
 static  void            DumpLocals( dbg_local *local );

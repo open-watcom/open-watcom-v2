@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,7 @@
 #include "coderep.h"
 #include "tables.h"
 #include "zoiks.h"
+#include "optab.h"
 #include "feprotos.h"
 
 extern  opcode_entry*   OpcodeTable(table_def);
@@ -42,10 +44,9 @@ extern  opcode_entry*   OpcodeTable(table_def);
 
 extern table_def OpTable[];
 
-extern  opcode_entry    *CodeTable( instruction *ins ) {
-/******************************************************/
-
-
+opcode_entry    *CodeTable( instruction *ins )
+/********************************************/
+{
     int         idx;
 
     idx = ins->head.opcode;
@@ -64,18 +65,20 @@ extern  opcode_entry    *CodeTable( instruction *ins ) {
 }
 
 
-extern  void    DoNothing( instruction *ins ) {
-/*********************************************/
-
+void    DoNothing( instruction *ins )
+/***********************************/
+{
     ins->table = OpcodeTable( DONOTHING );
     ins->u.gen_table = ins->table;
 }
 
 
-extern  bool    DoesSomething( instruction *ins ) {
-/*************************************************/
-
-    if( ins->u.gen_table == NULL ) return( true );
-    if( ins->u.gen_table->generate != G_NO ) return( true );
+bool    DoesSomething( instruction *ins )
+/***************************************/
+{
+    if( ins->u.gen_table == NULL )
+        return( true );
+    if( ins->u.gen_table->generate != G_NO )
+        return( true );
     return( false );
 }

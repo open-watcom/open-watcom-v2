@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,12 +34,8 @@
 #include "stack.h"
 
 extern  void            MultiLineNums(ins_entry*);
-extern  void            DelLblRef(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
 extern  ins_entry       *IsolatedCode(ins_entry*);
-extern  void            DelLblDef(ins_entry*);
-extern  void            AddLblRef(ins_entry*);
-extern  void            AddLblDef(ins_entry*);
 extern  void            FreeInstr(ins_entry*);
 
 
