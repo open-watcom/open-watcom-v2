@@ -1013,7 +1013,7 @@ type_length PushSize( type_length len )
 {
     if( len < WORD_SIZE )
         return( WORD_SIZE );
-    return( ( len + (WORD_SIZE-1) ) & ~(WORD_SIZE-1) );
+    return( _RoundUp( len, WORD_SIZE ) );
 }
 
 
@@ -1023,7 +1023,7 @@ static  void    AllocStack( void ) {
     type_length     size;
 
     /* keep stack aligned */
-    size = ( CurrProc->locals.size + (WORD_SIZE-1) ) & ~(WORD_SIZE-1);
+    size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
     if( BlockByBlock ) {
         GenUnkSub( HW_SP, &CurrProc->targ.prolog_loc );
@@ -1058,7 +1058,7 @@ static  void    DoEnter( int level ) {
     type_length size;
 
     /* keep stack aligned */
-    size = ( CurrProc->locals.size + (WORD_SIZE-1) ) & ~(WORD_SIZE-1);
+    size = _RoundUp( CurrProc->locals.size, WORD_SIZE );
     CurrProc->locals.size = size;
 
     CurrProc->parms.base += WORD_SIZE;

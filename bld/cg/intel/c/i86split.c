@@ -865,7 +865,7 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
     name                *op;
     name                *new_op = NULL;
 
-    size = (size + (WORD_SIZE-1)) &~(WORD_SIZE-1);
+    size = _RoundUp( size, WORD_SIZE );
     op = ins->operands[ 0 ];
     first_ins = NULL;
     for( ;; ) {
@@ -935,8 +935,7 @@ extern  instruction     *rDOLONGPUSH( instruction *ins ) {
         ReplIns( ins, move );
         ins = LoadStringOps( move, &move->operands[ 0 ], &move->result );
         /*% mov CX,const will be the first if it's there so try for SUB SP,CX*/
-        sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst(
-                               (size+(WORD_SIZE-1)) & ~(WORD_SIZE-1) ), sp, WD );
+        sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst( _RoundUp( size, WORD_SIZE ) ), sp, WD );
         if( ins->result != NULL && HW_CEqual( ins->result->r.reg, hw( CX ) ) ) {
             SuffixIns( ins, sub_sp );
         } else {
