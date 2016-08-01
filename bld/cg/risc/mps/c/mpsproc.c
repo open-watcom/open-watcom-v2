@@ -48,10 +48,10 @@
 #include "encode.h"
 #include "rgtbl.h"
 #include "rscobj.h"
+#include "utils.h"
 #include "feprotos.h"
 
 
-extern  uint_32         CountBits( uint_32 );
 extern  hw_reg_set      SaveRegs( void );
 extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenIType( uint_8, uint_8, uint_8, signed_16 );

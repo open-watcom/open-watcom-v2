@@ -43,11 +43,10 @@
 #include "rgtbl.h"
 #include "score.h"
 #include "insutil.h"
+#include "utils.h"
 
 
 extern  hw_reg_set      PushRegs[];
-
-extern  uint_32         CountBits( uint_32 );
 
 static  block           *blockArray[_DBit_SIZE];
 static  int             bitCount;

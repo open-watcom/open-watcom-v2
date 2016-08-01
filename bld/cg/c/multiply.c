@@ -36,13 +36,13 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "utils.h"
 
 
 extern  int             SubCost(void);
 extern  int             AddCost(void);
 extern  int             MulCost(unsigned_32);
 extern  int             ShiftCost( int );
-extern  uint_32         CountBits( uint_32 );
 
 #define MAXOPS  20
 

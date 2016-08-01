@@ -182,7 +182,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( false );
         break;
     default:
-        if( Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) == false )
+        if( !Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) )
             optreturn( false );
         break;
     }
@@ -196,7 +196,7 @@ static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 )
   optbegin
     c->save = 0;
     for( ;; ) {
-        if( CommonInstr( p1, p2 ) == false )
+        if( !CommonInstr( p1, p2 ) )
             break;
         c->start_com = p1;
         c->start_del = p2;
@@ -308,7 +308,7 @@ extern  bool    ComCode( ins_entry *jmp )
             com = PrevIns( jmp );
             if( com == NULL )
                 break;
-            if( CommonInstr( new, com ) == false )
+            if( !CommonInstr( new, com ) )
                 break;
             com = PrevIns( DelInstr( com ) );
             common = true;

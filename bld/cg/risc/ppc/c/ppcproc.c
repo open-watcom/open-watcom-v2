@@ -45,10 +45,10 @@
 #include "targetdb.h"
 #include "rgtbl.h"
 #include "rscobj.h"
+#include "utils.h"
 #include "feprotos.h"
 
 
-extern  uint_32         CountBits( uint_32 );
 extern  hw_reg_set      SaveRegs( void );
 
 
