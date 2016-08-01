@@ -42,10 +42,10 @@ void    *Copy( const void *x, void *y, uint len )
     return( CypCopy( x, y, len ) );
 }
 
-void    *Fill( void *start, uint len, byte filler )
-/*************************************************/
+void    *Fill( void *start, uint len, unsigned char filler )
+/**********************************************************/
 {
-    return( CpyFill( start, len, filler  ) );
+    return( CypFill( start, len, filler  ) );
 }
 
 bool    Equal( const void *src, const void *dst, uint length )
@@ -74,8 +74,8 @@ void    *Copy( const void *x, void *y, uint len )
     return( memcpy( y, x, len ) );
 }
 
-void    *Fill( void *start, uint len, byte filler )
-/*************************************************/
+void    *Fill( void *start, uint len, unsigned char filler )
+/**********************************************************/
 {
     return( memset( start, filler, len ) );
 }

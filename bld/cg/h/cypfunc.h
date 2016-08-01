@@ -31,7 +31,7 @@
 
 
 extern  void            *CypCopy( const void *, void *, uint );
-extern  void            *CypFill( void *, uint, byte );
+extern  void            *CypFill( void *, uint, unsigned char );
 extern  uint            CypLength( const char *);
 extern  bool            CypEqual( const void *, const void *, uint );
 

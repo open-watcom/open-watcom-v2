@@ -30,7 +30,7 @@
 
 
 extern void     *Copy( const void *x, void *y, uint len );
-extern void     *Fill( void *start, uint len, byte filler );
+extern void     *Fill( void *start, uint len, unsigned char filler );
 extern bool     Equal( const void *src, const void *dst, uint length );
 extern char     *CopyStr( const char *src, char *dst );
 extern uint     Length( const char *string );
