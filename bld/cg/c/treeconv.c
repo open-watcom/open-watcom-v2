@@ -40,6 +40,7 @@
 #include "cfloat.h"
 #include "utils.h"
 #include "makeaddr.h"
+#include "procdef.h"
 #include "typemap.h"
 
 

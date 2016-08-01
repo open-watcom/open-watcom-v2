@@ -42,6 +42,7 @@
 #include "namelist.h"
 #include "patch.h"
 #include "makeblk.h"
+#include "procdef.h"
 #include "typemap.h"
 
 
