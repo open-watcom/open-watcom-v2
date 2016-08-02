@@ -45,7 +45,7 @@ void    *Copy( const void *x, void *y, uint len )
 void    *Fill( void *start, uint len, unsigned char filler )
 /**********************************************************/
 {
-    return( CypFill( start, len, filler  ) );
+    return( CypFill( start, len, filler ) );
 }
 
 bool    Equal( const void *src, const void *dst, uint length )

@@ -801,7 +801,7 @@ static  void    InitFPPatches( void )
 static  void    OutName( const char *name, void *dst )
 /****************************************************/
 {
-    int             len;
+    uint            len;
     array_control   *dest = dst;
 
     len = Length( name );
@@ -823,7 +823,7 @@ static  void    OutObjectName( cg_sym_handle sym, array_control *dest )
 static  void    OutString( const char *name, array_control *dest )
 /****************************************************************/
 {
-    int len;
+    uint    len;
 
     len = Length( name );
     OutBuffer( name, len, dest );

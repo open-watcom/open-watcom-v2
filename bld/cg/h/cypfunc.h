@@ -30,26 +30,26 @@
 ****************************************************************************/
 
 
-extern  void            *CypCopy( const void *, void *, uint );
-extern  void            *CypFill( void *, uint, unsigned char );
-extern  uint            CypLength( const char *);
-extern  bool            CypEqual( const void *, const void *, uint );
+extern  void        *CypCopy( const void *, void *, uint );
+extern  void        *CypFill( void *, uint, unsigned char );
+extern  uint        CypLength( const char *);
+extern  bool        CypEqual( const void *, const void *, uint );
 
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 
 #if defined(__FLAT__) || defined(__SMALL__) || defined(__MEDIUM__)
-    #define _SAVES          0x06            /*      push    es */
-    #define _RESES          0x07            /*      pop     es */
-    #define _SETES          0x1E            /*      push    ds */ \
-                            0x07            /*      pop     es */
+    #define _SAVES  "push    es"
+    #define _RESES  "pop     es"
+    #define _SETES  "push    ds" \
+                    "pop     es"
     #define __ES
     #define __DS
 #else
     #define _SAVES
     #define _RESES
     #define _SETES
-    #define __ES es
-    #define __DS ds
+    #define __ES    es
+    #define __DS    ds
 #endif
 
 #pragma aux CypCopy = \
@@ -71,12 +71,12 @@ extern  bool            CypEqual( const void *, const void *, uint );
 #pragma aux CypLength = \
         _SAVES \
         _SETES \
-        "xor     ax,ax" \
-        "xor     cx,cx" \
-        "dec     cx" \
+        "xor    eax,eax" \
+        "xor    ecx,ecx" \
+        "dec    ecx" \
         "repne scasb" \
-        "not     cx" \
-        "inc     cx" \
+        "not    ecx" \
+        "inc    ecx" \
         _RESES \
         parm routine [__ES edi] \
         value [ecx] \
@@ -85,10 +85,10 @@ extern  bool            CypEqual( const void *, const void *, uint );
 #pragma aux CypEqual = \
         _SAVES \
         _SETES \
-        "xor    al,al" \
+        "xor    eax,eax" \
         "repe cmpsb" \
         "jne short L1" \
-        "inc    al" \
+        "inc    eax" \
     "L1:" \
         _RESES \
         parm routine [__DS esi] [__ES edi] [ecx] \
