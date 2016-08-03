@@ -76,7 +76,7 @@ extern  bool        CypEqual( const void *, const void *, uint );
         "dec    ecx" \
         "repne scasb" \
         "not    ecx" \
-        "inc    ecx" \
+        "dec    ecx" \
         _RESES \
         parm routine [__ES edi] \
         value [ecx] \
