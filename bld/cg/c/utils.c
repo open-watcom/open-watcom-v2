@@ -36,20 +36,20 @@
 
 #include "cypfunc.h"
 
-void    *Copy( const void *x, void *y, uint len )
-/***********************************************/
+void    *Copy( const void *x, void *y, size_t len )
+/*************************************************/
 {
     return( CypCopy( x, y, len ) );
 }
 
-void    *Fill( void *start, uint len, unsigned char filler )
-/**********************************************************/
+void    *Fill( void *start, size_t len, unsigned char filler )
+/************************************************************/
 {
     return( CypFill( start, len, filler ) );
 }
 
-bool    Equal( const void *src, const void *dst, uint length )
-/************************************************************/
+bool    Equal( const void *src, const void *dst, size_t length )
+/**************************************************************/
 {
     return( CypEqual( src, dst, length ) );
 }
@@ -60,7 +60,7 @@ char    *CopyStr( const char *src, char *dst )
     return( (char *)CypCopy( src, dst, CypLength( src ) + 1 ) - 1 );
 }
 
-uint    Length( const char *string )
+size_t  Length( const char *string )
 /**********************************/
 {
     return( CypLength( string ) );
@@ -68,20 +68,20 @@ uint    Length( const char *string )
 
 #else
 
-void    *Copy( const void *x, void *y, uint len )
-/***********************************************/
+void    *Copy( const void *x, void *y, size_t len )
+/*************************************************/
 {
     return( memcpy( y, x, len ) );
 }
 
-void    *Fill( void *start, uint len, unsigned char filler )
-/**********************************************************/
+void    *Fill( void *start, size_t len, unsigned char filler )
+/************************************************************/
 {
     return( memset( start, filler, len ) );
 }
 
-bool    Equal( const void *src, const void *dst, uint length )
-/************************************************************/
+bool    Equal( const void *src, const void *dst, size_t length )
+/**************************************************************/
 {
     return( memcmp( src, dst, length ) == 0 );
 }
@@ -93,7 +93,7 @@ char    *CopyStr( const char *src, char *dst )
     return( dst + strlen( dst ) );
 }
 
-uint    Length( const char *string )
+size_t  Length( const char *string )
 /**********************************/
 {
     return( strlen( string ) );
