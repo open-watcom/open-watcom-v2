@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern  void            LookupRoutine( instruction *ins );
+extern  rt_class        LookupRoutine( instruction *ins );
 extern  void            InitRT( void );
 extern  import_handle   AskRTHandle( rt_class rtindex );
 extern  void            TellRTHandle( rt_class rtindex, import_handle imphdl );

@@ -281,10 +281,10 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     return( new_ins );
 }
 
-extern void     LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
-
+rt_class    LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
     ins = ins;
-    RoutineNum = RT_NOP;
     _Zoiks( ZOIKS_101 );
+    return( RT_NOP );
 }

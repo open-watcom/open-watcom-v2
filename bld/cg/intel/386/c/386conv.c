@@ -36,7 +36,6 @@
 #include "makeins.h"
 #include "zoiks.h"
 #include "convins.h"
-#include "data.h"
 #include "namelist.h"
 #include "insutil.h"
 
@@ -426,7 +425,7 @@ extern  instruction     *rDOCVT( instruction *ins )
         new_ins = ins;
     } else if( how > BAD ) {
         ins->table = CRtn;
-        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
+//        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
         new_ins = ins;
     } else {
         new_ins = MakeMove( src, dst, ins->type_class );
@@ -439,11 +438,11 @@ extern  instruction     *rDOCVT( instruction *ins )
     return( new_ins );
 }
 
-extern  void    LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
-
+rt_class    LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
     conv_method how;
 
     how = AskHow( ins->base_type_class, ins->type_class );
-    RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
+    return( RTRoutineTable[how - ( BAD + 1 )] );
 }

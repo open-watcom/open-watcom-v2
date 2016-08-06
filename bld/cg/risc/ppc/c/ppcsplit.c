@@ -34,7 +34,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "tables.h"
-#include "rtclass.h"
 #include "zoiks.h"
 #include "model.h"
 #include "makeins.h"

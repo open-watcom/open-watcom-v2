@@ -32,7 +32,6 @@
 #include "optwif.h"
 #include "dumpio.h"
 #include "typedef.h"
-#include "rtclass.h"
 #include "inslist.h"
 #include "rtrtn.h"
 #include "feprotos.h"

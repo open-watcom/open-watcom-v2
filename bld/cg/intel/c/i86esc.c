@@ -39,7 +39,6 @@
 #include "model.h"
 #include "jumps.h"
 #include "zoiks.h"
-#include "rtclass.h"
 #include "i86objd.h"
 #include "objout.h"
 #include "cgauxinf.h"

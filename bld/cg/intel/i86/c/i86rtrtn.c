@@ -144,18 +144,19 @@ extern  name    *Addressable( name *cons, type_class_def class )
 }
 
 
-static void CheckForPCS( instruction *ins )
-/******************************************
+static rt_class CheckForPCS( instruction *ins, rt_class rtindex )
+/****************************************************************
     check to see if pointer subtract is really pointer - pointer
     or pointer - integer (PCS = Pointer Constant Subtract)
 */
 {
-    if( RoutineNum == RT_PTS ) {
+    if( rtindex == RT_PTS ) {
         if( ins->operands[1]->n.name_class != PT
          && ins->operands[1]->n.name_class != CP ) {
-            RoutineNum = RT_PCS;
+            rtindex = RT_PCS;
         }
     }
+    return( rtindex );
 }
 
 
@@ -236,15 +237,15 @@ instruction     *rMAKECALL( instruction *ins )
     conflict_node       *conf;
     hw_reg_set          tmp;
     type_class_def      parm2_class;
+    rt_class            rtindex;
 
     if( !_IsConvert( ins ) ) {
-        LookupRoutine( ins );
-        CheckForPCS( ins );
-    } else { /* RoutineNum might be wrong if we ran out of memory in ExpandIns*/
-        LookupConvertRoutine( ins );
+        rtindex = CheckForPCS( ins, LookupRoutine( ins ) );
+    } else { /* rtindex might be wrong if we ran out of memory in ExpandIns*/
+        rtindex = LookupConvertRoutine( ins );
     }
     FlipIns( ins );
-    info = &RTInfo[RoutineNum];
+    info = &RTInfo[rtindex];
     regs = FirstReg( info->left );
     all_regs = regs;
     tmp = ReturnReg( WD, false );
@@ -271,7 +272,7 @@ instruction     *rMAKECALL( instruction *ins )
                     new_ins = MakeMove( GetSegment( temp ), AllocRegName(HW_ES), U2 );
                     HW_CTurnOn( all_regs, HW_ES );
                     PrefixIns( ins, new_ins );
-                    ++RoutineNum;
+                    ++rtindex;
                 }
             } else if( temp->n.class == N_TEMP ) {
                 la_ins = MakeUnary( OP_CAREFUL_LA,temp, AllocRegName( HW_SI ),U2 );
@@ -292,7 +293,7 @@ instruction     *rMAKECALL( instruction *ins )
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
-                ++RoutineNum;
+                ++rtindex;
             } else if( ( temp->n.class == N_MEMORY && !SegIsSS( temp ) ) ||
                        ( temp->n.class == N_INDEXED && temp->i.base != NULL &&
                          !SegIsSS( temp->i.base ) ) ) {
@@ -301,7 +302,7 @@ instruction     *rMAKECALL( instruction *ins )
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
-                ++RoutineNum;
+                ++rtindex;
             } else {
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = temp;
@@ -325,7 +326,7 @@ instruction     *rMAKECALL( instruction *ins )
             PrefixIns( ins, new_ins );
         }
     } else if( NumOperands( ins ) == 2 ) {
-        if( RoutineNum == RT_DPOWI ) {
+        if( rtindex == RT_DPOWI ) {
             parm2_class = I4;
         } else {
             parm2_class = ins->type_class;
@@ -335,7 +336,7 @@ instruction     *rMAKECALL( instruction *ins )
         PrefixIns( ins, new_ins );
     }
     reg_name = AllocRegName( all_regs );
-    lbl = RTLabel( RoutineNum );
+    lbl = RTLabel( rtindex );
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;
@@ -409,22 +410,24 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     name        *label;
     hw_reg_set  tmp;
     name        *temp_result;
+    rt_class    rtindex;
 
     switch( class ) {
     case U1:
-        RoutineNum = RT_SCAN1;
+        rtindex = RT_SCAN1;
         break;
     case U2:
-        RoutineNum = RT_SCAN2;
+        rtindex = RT_SCAN2;
         break;
     case U4:
-        RoutineNum = RT_SCAN4;
+        rtindex = RT_SCAN4;
         break;
     default:
+        rtindex = RT_NOP;
         break;
     }
 
-    reg_name = AllocRegName( FirstReg( RTInfo[RoutineNum].left ) );
+    reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
     new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
@@ -449,12 +452,12 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    tmp = FirstReg( RTInfo[RoutineNum].left );
+    tmp = FirstReg( RTInfo[rtindex].left );
     HW_CTurnOn( tmp, HW_ES_DI );
     HW_CTurnOn( tmp, HW_CX );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( RoutineNum ), 0, CG_LBL, U2 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( rtindex ), 0, CG_LBL, U2 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     new_ins->zap = &AllocRegName( HW_CX_DI )->r;
@@ -496,11 +499,11 @@ extern  instruction     *rMAKEFNEG( instruction *ins )
     instruction         *last_ins;
     name                *reg_name;
     name                *exp_reg;
+    rt_class            rtindex;
 
-    LookupRoutine( ins );
-    CheckForPCS( ins );
-    lbl = RTLabel( RoutineNum );
-    info = &RTInfo[RoutineNum];
+    rtindex = CheckForPCS( ins, LookupRoutine( ins ) );
+    lbl = RTLabel( rtindex );
+    info = &RTInfo[rtindex];
     reg_name = AllocRegName( FirstReg( info->left ) );
     left_ins = MakeMove( ins->operands[0], reg_name, info->operand_class );
     ins->operands[0] = left_ins->result;

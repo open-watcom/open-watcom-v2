@@ -33,6 +33,7 @@
 #include "targsys.h"
 #include "optopts.h"
 #include "offset.h"
+#include "rtclass.h"
 #ifndef NDEBUG
 #include "useinfo.h"
 #endif

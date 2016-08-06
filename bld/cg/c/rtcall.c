@@ -80,13 +80,14 @@ instruction     *rMAKECALL( instruction *ins )
     hw_reg_set          regs;
     hw_reg_set          all_regs;
     hw_reg_set          tmp;
+    rt_class            rtindex;
 
     if( !_IsConvert( ins ) ) {
-        LookupRoutine( ins );
+        rtindex = LookupRoutine( ins );
     } else { /* look it up again in case we ran out of memory during expansion*/
-        LookupConvertRoutine( ins );
+        rtindex = LookupConvertRoutine( ins );
     }
-    info = &RTInfo[RoutineNum];
+    info = &RTInfo[rtindex];
     regs = _ParmReg( info->left );
     all_regs = regs;
     left_ins = MakeMove( ins->operands[0], AllocRegName( regs ),
@@ -115,7 +116,7 @@ instruction     *rMAKECALL( instruction *ins )
     }
 #endif
     reg_name = AllocRegName( all_regs );
-    lbl = RTLabel( RoutineNum );
+    lbl = RTLabel( rtindex );
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;

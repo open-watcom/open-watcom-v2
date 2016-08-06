@@ -39,8 +39,8 @@
 static  import_handle   RTHdls[RTSIZE];
 static  label_handle    RTLbls[RTSIZE];
 
-void    LookupRoutine( instruction *ins )
-/***************************************/
+rt_class    LookupRoutine( instruction *ins )
+/*******************************************/
 {
     rtn_info    *rtn;
     rt_class    rtindex;
@@ -60,7 +60,7 @@ void    LookupRoutine( instruction *ins )
             break;
         }
     }
-    RoutineNum = rtindex;
+    return( rtindex );
 }
 
 

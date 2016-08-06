@@ -43,7 +43,6 @@ extern  block                   *CurrBlock;
 extern  int                     InsId;
 extern  int                     TempId;
 extern  conflict_node           *ConfList;
-extern  rt_class                RoutineNum;
 extern  name                    *Names[N_INDEXED+1];
 extern  name                    *LastTemp;
 extern  name                    *DummyIndex;

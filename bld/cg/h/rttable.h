@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include "rtclass.h"
-
 typedef struct rtn_info {
     char            *nam;
     opcode_defs     op;

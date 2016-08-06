@@ -43,7 +43,6 @@
 #include "dbsyms.h"
 #include "cvsyms.h"
 #include "objout.h"
-#include "rtclass.h"
 #include "i86obj.h"
 
 

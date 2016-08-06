@@ -48,7 +48,6 @@
 #include "dfdbg.h"
 #include "dfsupp.h"
 #include "objout.h"
-#include "rtclass.h"
 #include "i86obj.h"
 #include "regset.h"
 #include "rgtbl.h"

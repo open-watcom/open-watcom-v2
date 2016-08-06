@@ -42,7 +42,6 @@ int                     InsId;
 int                     TempId;
 conflict_node           *ConfList;
 proc_def                *CurrProc;
-rt_class                RoutineNum;
 name                    *Names[N_INDEXED+1];
 name                    *LastTemp;
 name                    *DummyIndex;

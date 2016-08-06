@@ -169,20 +169,24 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     name        *result;
     name        *label;
     hw_reg_set  tmp;
+    rt_class    rtindex;
 
     switch( class ) {
     case U1:
-        RoutineNum = RT_SCAN1;
+        rtindex = RT_SCAN1;
         break;
     case U2:
-        RoutineNum = RT_SCAN2;
+        rtindex = RT_SCAN2;
         break;
     case U4:
-        RoutineNum = RT_SCAN4;
+        rtindex = RT_SCAN4;
+        break;
+    default:
+        rtindex = RT_NOP;
         break;
     }
 
-    reg_name = AllocRegName( FirstReg( RTInfo[RoutineNum].left ) );
+    reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
     new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
@@ -199,13 +203,13 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    tmp = FirstReg( RTInfo[RoutineNum].left );
+    tmp = FirstReg( RTInfo[rtindex].left );
     HW_CTurnOn( tmp, HW_ECX );
     HW_CTurnOn( tmp, HW_EDI );
     HW_CTurnOn( tmp, HW_ES );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( RoutineNum ), 0, CG_LBL, U4 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( rtindex ), 0, CG_LBL, U4 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     AddIns( new_ins );
