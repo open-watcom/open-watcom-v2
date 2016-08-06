@@ -134,13 +134,16 @@ wasmmsg.gh : ../h/wasm.msg $(__MAKEFILES__)
 wmpmsg.gh : ../h/womp.msg $(__MAKEFILES__)
         *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-usage.gh : ../h/options.gml $(__MAKEFILES__)
-        optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
-        *wsplice -t8  -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" -o "pick((MSG_USAGE_BASE+%$#%+), \".\", \"\")%n" $^&.tmp $@
+end.tmp :
+        %write $@ "." 
 
-usagej.gh : ../h/options.gml $(__MAKEFILES__)
+usage.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
+        optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
+        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp end.tmp $@
+
+usagej.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
         optencod -l 1 -q $[@ . . $^&.tmp any
-        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" -o "pick((MSG_USAGE_BASE+%$#%+), \"\", \".\")%n" $^&.tmp $@
+        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp end.tmp $@
 
 usage.u : ../h/options.gml $(__MAKEFILES__)
         optencod -q -u $@ $[@ . . . any
