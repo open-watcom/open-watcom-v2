@@ -67,7 +67,7 @@ char *FindNextWS( char *str )
  * str is not const because the return value is usually used to write data.
  */
 {
-    char    string_open = 0;
+    bool    string_open = false;
 
     while( *str != NULLCHAR ) {
         if( *str == BACKSLASH ) {
@@ -106,7 +106,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
  */
 {
     char    *orgdst = dst;
-    char    string_open = 0;
+    bool    string_open = false;
     size_t  pos = 0;
     int     t;
 
@@ -170,12 +170,7 @@ char *FixName( char *name )
 
     assert( name != NULL );
 
-    ptr = name;
-    hold = *ptr;
-    for( ;; ) {
-        if( hold == NULLCHAR ) {
-            break;
-        }
+    for( ptr = name; (hold = *ptr) != NULLCHAR; hold = *++ptr ) {
         if( hold == '/' ) {
             *ptr = '\\';
         } else if( isalpha( hold ) && hold < 'a') {
@@ -190,7 +185,6 @@ char *FixName( char *name )
         } else if( isalpha( hold ) && hold < 'a') {
             *ptr = hold - 'A' + 'a';
         }
-        hold = *++ptr;
     }
 
     return( name );
@@ -203,12 +197,7 @@ char *FixName( char *name )
 
     assert( name != NULL );
 
-    ptr = name;
-    hold = *ptr;
-    for( ;; ) {
-        if( hold == NULLCHAR ) {
-            break;
-        }
+    for( ptr = name; (hold = *ptr) != NULLCHAR; hold = *++ptr ) {
         if( hold == '/' ) {
             *ptr = '\\';
         }
@@ -219,7 +208,6 @@ char *FixName( char *name )
         if( hold == '/' ) {
             *ptr = '\\';
         }
-        hold = *++ptr;
     }
 
     return( name );
@@ -266,37 +254,37 @@ int FarFNameCmp( const char FAR *a, const char FAR *b )
 
 #define IS_WILDCARD_CHAR( x ) ((*x == '*') || (*x == '?'))
 
-static int __fnmatch( char *pattern, char *string )
-/**************************************************
+static bool __fnmatch( const char *pattern, const char *string )
+/***************************************************************
  * OS specific compare function FNameCmpChr
  * must be used for file names
  */
 {
-    char    *p;
-    int     len;
-    int     star_char;
-    int     i;
+    const char  *p;
+    int         len;
+    bool        star_char;
+    int         i;
 
     /*
      * check pattern section with wildcard characters
      */
-    star_char = 0;
+    star_char = false;
     while( IS_WILDCARD_CHAR( pattern ) ) {
         if( *pattern == '?' ) {
-            if( *string == 0 ) {
-                return( 0 );
+            if( *string == NULLCHAR ) {
+                return( false );
             }
             string++;
         } else {
-            star_char = 1;
+            star_char = true;
         }
         pattern++;
     }
-    if( *pattern == 0 ) {
-        if( (*string == 0) || star_char ) {
-            return( 1 );
+    if( *pattern == NULLCHAR ) {
+        if( (*string == NULLCHAR) || star_char ) {
+            return( true );
         } else {
-            return( 0 );
+            return( false );
         }
     }
     /*
@@ -308,18 +296,18 @@ static int __fnmatch( char *pattern, char *string )
     do {
         if( star_char ) {
             if( string[len] == NULLCHAR ) {
-                return( 0 );
+                return( false );
             }
             len++;
         } else {
             if( FNameCmpChr( *pattern, *string ) != 0 ) {
-                return( 0 );
+                return( false );
             }
             string++;
         }
         pattern++;
     } while( *pattern != NULLCHAR && !IS_WILDCARD_CHAR( pattern ) );
-    if( star_char == 0 ) {
+    if( !star_char ) {
         /*
          * match is OK, try next pattern section
          */
@@ -340,13 +328,13 @@ static int __fnmatch( char *pattern, char *string )
                      * if rest doesn't match, find next occurence
                      */
                     if( __fnmatch( pattern, string + len ) ) {
-                        return( 1 );
+                        return( true );
                     }
                 }
             }
             string++;
         }
-        return( 0 );
+        return( false );
     }
 }
 
@@ -491,7 +479,7 @@ int PutEnvSafe( ENV_TRACKER *env )
         *walk = old->next;      // unlink from chain
         FreeSafe( old );
     }
-    if( p[1] != 0 ) {           // we're giving it a new value
+    if( p[1] != NULLCHAR ) {    // we're giving it a new value
         env->next = envList;    // save the memory since putenv keeps a
         envList = env;          // pointer to it...
     } else {                    // we're deleting an old value

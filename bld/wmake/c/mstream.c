@@ -110,7 +110,7 @@ typedef struct streamEntry {
 STATIC SENT *headSent;      /* stack of sents in use    */
 STATIC SENT *freeSent;      /* stack of free sents      */
 
-STATIC int  flagEOF;
+STATIC bool flagEOF;
 
 STATIC SENT *getSENT( STYPE_T type )
 /***********************************
@@ -327,7 +327,7 @@ STRM_T GetCHR( void )
     SENT    *head;  /* this is just here for optimizing purposes */
     STRM_T  result;
 
-    flagEOF = 0;
+    flagEOF = false;
     for( ;; ) {
         head = headSent;
 
@@ -344,7 +344,7 @@ STRM_T GetCHR( void )
                         PrtMsg( WRN | EOF_BEFORE_ENDIF, "endif" );
                     }
                     popSENT();
-                    flagEOF = 1;
+                    flagEOF = true;
                     return( EOL );
                 }
             }
@@ -357,7 +357,7 @@ STRM_T GetCHR( void )
                     /* embedded ^Z terminates stream in MS mode */
                     result = EOL;
                     popSENT();
-                    flagEOF = 1;
+                    flagEOF = true;
                 } else {
                     PrtMsg( FTL | LOC | BARF_CHARACTER, result );
                     ExitFatal();
@@ -474,7 +474,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
 }
 
 
-int IsStreamEOF( void )
+bool IsStreamEOF( void )
 {
     return( flagEOF );
 }

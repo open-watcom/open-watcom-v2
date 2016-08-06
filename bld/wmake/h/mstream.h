@@ -66,6 +66,6 @@ extern STRM_T   GetCHR( void );
 extern void     StreamInit( void );
 extern void     StreamFini( void );
 extern RET_T    GetFileLine( const char **pname, UINT16 *pline );
-extern int      IsStreamEOF( void );
+extern bool     IsStreamEOF( void );
 
 #endif /* !_MSTREAM_H */

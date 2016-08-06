@@ -271,7 +271,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
                 outText = StartVec();
                 WriteVec( outText, "echo." );
                 if( DeMacroBody != NULL ) {
-                    if( *DeMacroBody != 0 ) {
+                    if( *DeMacroBody != NULLCHAR ) {
                         WriteVec( outText, DeMacroBody );
                     }
                     FreeSafe( DeMacroBody );

@@ -51,7 +51,7 @@ typedef union msg_arg {
 } MSG_ARG;
 
 STATIC MSG_ARG  ArgValue[2];
-STATIC int      USEARGVALUE = 0;    /* set to non_zero if ArgValue is used */
+STATIC bool     USEARGVALUE = false;    /* set to non_zero if ArgValue is used */
 
 #define pick( num, string ) static const char FAR __literal_ ## num [] = { string };
 #include "_msg.h"
@@ -493,10 +493,10 @@ void PrtMsg( enum MsgClass num, ... )
         if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {
             len = doFmtStr( buff, msgText[(num & NUM_MSK) - MSG_SPECIAL_BASE], args );
         } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
-            USEARGVALUE = 1;
+            USEARGVALUE = true;
             reOrder( args, paratype ); /* reposition the parameters */
             len = FmtStr( buff, msgbuff, ArgValue[0], ArgValue[1] );
-            USEARGVALUE = 0;
+            USEARGVALUE = false;
         } else {
             len = doFmtStr( buff, msgbuff, args );
         }

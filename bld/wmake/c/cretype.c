@@ -32,6 +32,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "bool.h"
 
     /* foreign language support */
 #define islang(__c)     ( ( (__c) >= 0x80 && (__c) <= 0xa7 ) || \
@@ -72,7 +73,7 @@
 #define BAR( stuff )    {                   \
     if( noneyet )   printf( #stuff );       \
     else            printf( " | " #stuff ); \
-    noneyet = 0;                            \
+    noneyet = false;                        \
 }
 
 
@@ -80,14 +81,14 @@ int main( void )
 /***************/
 {
     int     i;
-    int     noneyet;
+    bool    noneyet;
 
     /*printf( "extern UINT8 IsArray[] = {\n" );*/
     printf( "/*STRM_MAGIC*/  0,\n" );
     printf( "/*STRM_END  */  0" );      /* note: no ",\n" !! */
 
     for( i = 0; i <= 255; i++ ) {
-        noneyet = 1;
+        noneyet = true;
 
         if( isprint( i ) ) {
             printf( ",\n/*   '%c'    */  ", i );

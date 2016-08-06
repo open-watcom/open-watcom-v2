@@ -107,7 +107,7 @@ TOKEN_T LexPath( STRM_T s )
  */
 {
     char        path[_MAX_PATH];
-    char        string_open;
+    bool        string_open;
     unsigned    pos;
     VECSTR      vec;                /* we'll store file/path here */
 
@@ -143,7 +143,7 @@ TOKEN_T LexPath( STRM_T s )
          * is checked against isfilec().
          */
 
-        string_open = 0;
+        string_open = false;
 
         while( pos < _MAX_PATH && s != EOL && s != STRM_END ) {
             if( s == BACKSLASH ) {
