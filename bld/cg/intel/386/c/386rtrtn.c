@@ -157,7 +157,7 @@ bool    RTLeaveOp2( instruction *ins )
 
 extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
 /*********************************************************************************
-    generates a fake call to a rutime routine that looks up "value" in a table
+    generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
     returned by the "routine". The "routine" will be generated inline later.
     See BEAuxInfo for the code sequences generated. That will explain

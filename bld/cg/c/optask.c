@@ -82,13 +82,13 @@ extern  label_handle AskForNewLabel( void )
 }
 
 
-label_handle AskForRTLabel( cg_sym_handle sym )
-/*********************************************/
+label_handle AskForRTLabel( rt_class rtindex )
+/********************************************/
 {
     label_handle    lbl;
 
   optbegin
-    lbl = DoAskForLabel( sym );
+    lbl = DoAskForLabel( RTIDX2SYM( rtindex ) );
     _SetStatus( lbl, RUNTIME );
     optreturn( lbl );
 }

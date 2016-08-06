@@ -133,7 +133,7 @@ instruction     *rMAKECALL( instruction *ins )
     HW_TurnOn( all_regs, ReturnAddrReg() );
     }
 #endif
-    new_ins->zap = (register_name *) AllocRegName( all_regs );/* all parm regs could be zapped*/
+    new_ins->zap = (register_name *)AllocRegName( all_regs );   /* all parm regs could be zapped*/
     last_ins = new_ins;
     if( ins->result == NULL || _OpIsCondition( ins->head.opcode ) ) {
         /* comparison, still need conditional jumps*/

@@ -97,7 +97,7 @@ label_handle RTLabel( rt_class rtindex )
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
-        lbl = AskForRTLabel( RTIDX2SYM( rtindex ) );
+        lbl = AskForRTLabel( rtindex );
         RTLbls[rtindex] = lbl;
     }
     return( lbl );

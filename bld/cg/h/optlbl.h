@@ -98,16 +98,25 @@ typedef struct code_lbl {
 #define _ValidLbl( lbl )
 #endif
 
-extern bool ValidLbl( label_handle lbl );
+extern bool             ValidLbl( label_handle lbl );
 
-#include "optask.h"
+extern label_handle     AskForNewLabel( void );
+extern label_handle     AskForRTLabel( rt_class rtindex );
+extern label_handle     AskForLabel( cg_sym_handle sym );
+extern bool             AskIfReachedLabel( label_handle lbl );
+extern bool             AskIfRTLabel( label_handle lbl );
+extern bool             AskIfUniqueLabel( label_handle lbl );
+extern bool             AskIfCommonLabel( label_handle lbl );
+extern offset           AskAddress( label_handle lbl );
+extern pointer          AskLblPatch( label_handle lbl );
+extern cg_sym_handle    AskForLblSym( label_handle lbl );
 
-extern void         AddLblDef( ins_entry *instr );
-extern void         DelLblDef( ins_entry *instr );
-extern void         AddLblRef( ins_entry *instr );
-extern void         DelLblRef( ins_entry *instr );
-extern void         ChgLblRef( ins_entry *instr, label_handle new );
-extern bool         UniqueLabel( label_handle lbl );
-extern ins_entry    *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl );
-extern void         TryScrapLabel( label_handle old );
-extern void         ScrapCodeLabel( label_handle lbl );
+extern void             AddLblDef( ins_entry *instr );
+extern void             DelLblDef( ins_entry *instr );
+extern void             AddLblRef( ins_entry *instr );
+extern void             DelLblRef( ins_entry *instr );
+extern void             ChgLblRef( ins_entry *instr, label_handle new );
+extern bool             UniqueLabel( label_handle lbl );
+extern ins_entry        *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl );
+extern void             TryScrapLabel( label_handle old );
+extern void             ScrapCodeLabel( label_handle lbl );
