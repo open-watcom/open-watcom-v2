@@ -81,7 +81,7 @@ usage.gh : ../h/usage.sp wsplice
 	./wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
 
 cretype : ../c/cretype.c
-	$(CC) -o $@ $?
+	$(CC) -I../../watcom/h -o $@ $?
 
 isarray.gh : cretype
 	./cretype > $@

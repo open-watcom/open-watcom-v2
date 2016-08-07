@@ -3,7 +3,7 @@ CFLAGS = -funsigned-char -fno-common -g -O2 -Wall -Wno-switch
 DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
 
 $(OWOBJDIR)/%.o : %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OWOBJDIR) -o $@ $<
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 vpath %.c c ../watcom/c ../builder/c
 
@@ -24,7 +24,7 @@ $(OWOBJDIR)/usage.gh : h/usage.sp $(OWOBJDIR)/wsplice
 	$(OWOBJDIR)/wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' h/usage.sp $@
 
 $(OWOBJDIR)/cretype : cretype.c
-	$(CC) -o $@ $<
+	$(CC) -I../watcom/h -o $@ $<
 
 $(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype
 	$< > $@
