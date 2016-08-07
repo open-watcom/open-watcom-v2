@@ -39,8 +39,8 @@
 #include "data.h"
 #include "objout.h"
 #include "namelist.h"
-#include "i86objd.h"
-#include "i86obj.h"
+#include "x86objd.h"
+#include "x86obj.h"
 #include "split.h"
 #include "feprotos.h"
 

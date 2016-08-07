@@ -40,7 +40,7 @@
 #include "zoiks.h"
 #include "data.h"
 #include "rtrtn.h"
-#include "i86objd.h"
+#include "x86objd.h"
 #include "utils.h"
 #include "objout.h"
 #include "dbsyms.h"
@@ -54,7 +54,7 @@
 #include "optmain.h"
 #include "opttell.h"
 #include "intrface.h"
-#include "i86obj.h"
+#include "x86obj.h"
 #include "i87data.h"
 #include "feprotos.h"
 

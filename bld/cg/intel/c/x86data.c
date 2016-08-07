@@ -38,7 +38,7 @@
 #include "jumps.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
-#include "i86objd.h"
+#include "x86objd.h"
 #include "data.h"
 #include "utils.h"
 #include "objout.h"
@@ -46,9 +46,9 @@
 #include "objio.h"
 #include "optmain.h"
 #include "opttell.h"
-#include "i86enc2.h"
+#include "x86enc2.h"
 #include "encode.h"
-#include "i86obj.h"
+#include "x86obj.h"
 #include "feprotos.h"
 
 

@@ -49,7 +49,7 @@
 #include "bldsel.h"
 #include "bldselco.h"
 #include "cgaux.h"
-#include "i86enc2.h"
+#include "x86enc2.h"
 #include "encode.h"
 #include "makeblk.h"
 

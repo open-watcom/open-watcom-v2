@@ -1,5 +1,5 @@
 i86_objs = i86conv.obj &
-    i86enc16.obj &
+    i86enc.obj &
     i86ilen.obj &
     i86opseg.obj &
     i86optab.obj &
@@ -10,8 +10,7 @@ i86_objs = i86conv.obj &
     i86sib.obj &
     i86splt2.obj &
     i86table.obj &
-    i86type.obj &
-    i87wait.obj
+    i86type.obj
 
 
 src_path        = $(cg_dir)/intel/i86/c

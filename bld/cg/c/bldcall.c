@@ -50,8 +50,8 @@
 #include "intrface.h"
 #include "makeblk.h"
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-#include "i86objd.h"
-#include "i86obj.h"
+#include "x86objd.h"
+#include "x86obj.h"
 #endif
 #include "rgtbl.h"
 #include "insutil.h"

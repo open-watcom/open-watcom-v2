@@ -68,7 +68,7 @@
 #include "cgprotos.h"
 
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-    #include "i86segs.h"
+    #include "x86segs.h"
 #endif
 #ifndef NDEBUG
     #include "echoapi.h"

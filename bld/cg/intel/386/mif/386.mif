@@ -11,10 +11,9 @@
     386table.obj &
     386tls.obj  &
     386type.obj &
-    i86enc32.obj &
+    386enc.obj &
     rtcall.obj &
-    sib.obj &
-    i87wait.obj
+    sib.obj
 
 
 src_path        = $(cg_dir)/intel/386/c

@@ -36,14 +36,14 @@
 #include "typedef.h"
 #include "procdef.h"
 #include "model.h"
-#include "i86objd.h"
+#include "x86objd.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "cvdbg.h"
 #include "dbsyms.h"
 #include "cvsyms.h"
 #include "objout.h"
-#include "i86obj.h"
+#include "x86obj.h"
 
 
 extern  void    CVDefSegs( void ){
