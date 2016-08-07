@@ -58,7 +58,6 @@ extern  void            EmitPtr(pointer);
 extern  void            EmitByte(byte);
 extern  void            EmitSegId(segment_id);
 extern  void            InsertByte(byte);
-extern  int             OptInsSize(oc_class,oc_dest_attr);
 extern bool             UseImportForm(fe_attr);
 
 static void             DoRelocRef( cg_sym_handle sym, cg_class class, segment_id seg, offset val, escape_class kind );

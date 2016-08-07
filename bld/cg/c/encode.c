@@ -43,7 +43,6 @@
 #include "dumpio.h"
 
 
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            FlipCond(instruction*);
 
 static  label_handle    LocateLabel( instruction *ins, int index )

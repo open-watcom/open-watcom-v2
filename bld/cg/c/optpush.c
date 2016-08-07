@@ -32,6 +32,9 @@
 
 #include "optwif.h"
 #include "model.h"
+#include "inslist.h"
+#include "encode.h"
+
 
 extern  ins_entry       *IsolatedCode(ins_entry*);
 extern  void            AddInstr(ins_entry*,ins_entry*);
@@ -41,8 +44,6 @@ extern  void            UnLinkInstr(ins_entry*);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  oc_class        PrevClass(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
-
 
 extern  void    RetAftrCall( ins_entry *ret_instr ) {
 /***************************************************/

@@ -73,7 +73,6 @@ extern  void            LayOpword(gen_opcode);
 extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
 extern  void            AddByte(byte);
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            AddToTemp(byte);
 extern  void            FlipCond(instruction*);
 extern  void            EmitOffset(offset);

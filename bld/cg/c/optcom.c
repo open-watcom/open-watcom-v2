@@ -36,6 +36,8 @@
 #include "block.h"
 #include "data.h"
 #include "optmain.h"
+#include "encode.h"
+
 
 typedef struct common_info {
         ins_entry   *start_com;
@@ -51,7 +53,6 @@ extern  ins_entry       *NextIns( ins_entry * );
 extern  label_handle    AddNewLabel( ins_entry *, obj_length );
 extern  ins_entry       *DelInstr( ins_entry * );
 extern  ins_entry       *PrevIns( ins_entry * );
-extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
 extern  bool            FindShort( ins_entry *, ins_entry * );
 
 

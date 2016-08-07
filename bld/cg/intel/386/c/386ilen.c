@@ -31,8 +31,9 @@
 
 #include "cgstd.h"
 #include "cg.h"
-#include "ocentry.h"
+#include "coderep.h"
 #include "model.h"
+#include "encode.h"
 
 
 static byte NopList1[] = {

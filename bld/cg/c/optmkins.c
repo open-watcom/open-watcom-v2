@@ -32,12 +32,13 @@
 #include "optwif.h"
 #include "freelist.h"
 #include "utils.h"
+#include "inslist.h"
+#include "encode.h"
+
 
 extern  void            AddInstr( ins_entry *, ins_entry * );
 extern  ins_entry       *NextIns( ins_entry * );
 extern  oc_class        NextClass( ins_entry * );
-extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
-
 
 extern  ins_entry       *NewInstr( any_oc *oc )
 /*********************************************/

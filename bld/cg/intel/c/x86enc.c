@@ -93,7 +93,6 @@ extern  void            AdjustStackDepthDirect(int adjust);
 extern  bool            BaseIsSP(name*);
 extern  type_length     TmpLoc(name*,name*);
 extern  void            AddWData(signed_32,type_class_def );
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 extern  void            LayOpbyte( gen_opcode op );
 extern  void            LayOpword( gen_opcode op );
 extern  void            LayW( type_class_def class );

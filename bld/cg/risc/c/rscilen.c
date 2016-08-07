@@ -31,6 +31,9 @@
 
 
 #include "optwif.h"
+#include "inslist.h"
+#include "encode.h"
+
 
 extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr) {
 /******************************************************************/

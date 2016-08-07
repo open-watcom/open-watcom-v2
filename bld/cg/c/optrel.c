@@ -36,16 +36,16 @@
 #include "data.h"
 #include "objout.h"
 #include "optmain.h"
+#include "encode.h"
+
 
 extern  void            AddNewJump(ins_entry*,label_handle);
 extern  label_handle    AddNewLabel(ins_entry*,obj_length);
 extern  ins_entry       *PrevIns(ins_entry*);
 extern  void            ChgLblRef(ins_entry*,label_handle);
 extern  ins_entry       *NextIns(ins_entry*);
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 
 static  label_handle    Handle;
-
 
 static  bool    Jmp_to_lbl( ins_entry *instr )
 /********************************************/
