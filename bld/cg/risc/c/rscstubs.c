@@ -54,42 +54,6 @@ extern void AddSegment( instruction *ins ) {
     ins = ins;
 }
 
-extern  void    MoveSegRes( instruction *ins, instruction *new_ins ) {
-/********************************************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
-extern  void    MoveSegOp(instruction* ins,instruction* new_ins,int i) {
-/**********************************************************************/
-    new_ins = new_ins;
-    i = i;
-    ins = ins;
-}
-
-extern  void    DelSegRes( instruction *ins ) {
-/**********************************************/
-    ins = ins;
-}
-
-extern  void    DelSegOp( instruction *ins, int i ) {
-/**********************************************/
-    i = i;
-    ins = ins;
-}
-
-extern  void    DupSeg( instruction *ins, instruction *new_ins ) {
-/**********************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
-extern  void    DupSegRes( instruction *ins, instruction *new_ins ) {
-/*******************************************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
 extern void MergeIndex() {
 /**********************************************/
 }
@@ -364,12 +328,6 @@ extern  bool    LoadAToMove( instruction *ins ) {
 
 extern  void    FixCallIns( instruction *ins ) {
 /**********************************************/
-
-    ins = ins;
-}
-
-extern  void    DelSeg( instruction *ins ) {
-/******************************************/
 
     ins = ins;
 }

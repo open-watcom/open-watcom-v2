@@ -39,13 +39,12 @@
 #include "rgtbl.h"
 #include "expand.h"
 #include "namelist.h"
+#include "split.h"
 
 
 extern  int             NumOperands(instruction*);
 extern  bool            IndexOkay(instruction*,name*);
 extern  bool            CanReplace(instruction*);
-extern  instruction     *rSWAPOPS(instruction*);
-extern  instruction     *rSWAPCMP(instruction*);
 
 opcode_entry    *ResetGenEntry( instruction *ins )
 /************************************************/

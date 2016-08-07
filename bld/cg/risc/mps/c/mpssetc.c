@@ -37,11 +37,11 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "split.h"
 
 
 extern  void            RemoveInputEdge( block_edge *);
 extern  void            FlipCond( instruction * );
-extern  instruction     *rSWAPOPS( instruction *ins );
 extern  void            RemoveBlock( block * );
 
 /* This code looks for a sequence like the following:

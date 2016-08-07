@@ -41,12 +41,10 @@
 #include "insutil.h"
 #include "rtcall.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
-extern  void            DelSeg(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            FixCallIns(instruction*);
 #if _TARGET & _TARG_370
 extern  hw_reg_set      RAReg( void );

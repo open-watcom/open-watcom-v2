@@ -38,10 +38,9 @@
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "inssegs.h"
 
 
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  void            DupSeg( instruction *, instruction * );
 extern  bool            IsTrickyPointerConv( instruction *ins );
 
 
@@ -334,6 +333,12 @@ extern  instruction     *rDOCVT( instruction *ins )
         }
     }
     return( new_ins );
+}
+
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
 }
 
 rt_class    LookupConvertRoutine( instruction *ins )

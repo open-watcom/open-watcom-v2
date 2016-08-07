@@ -42,15 +42,12 @@
 #include "split.h"
 #include "insutil.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            CheckCC(instruction*,instruction*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            RevCond(instruction*);
 
 type_class_def  HalfClass[] = {
@@ -831,7 +828,7 @@ extern instruction      *rMAKESUB( instruction *ins )
 }
 
 
-extern instruction      *rCMPtrue( instruction *ins )
+extern instruction      *rCMPTRUE( instruction *ins )
 /***************************************************/
 {
     DoNothing( ins );
@@ -840,7 +837,7 @@ extern instruction      *rCMPtrue( instruction *ins )
 }
 
 
-extern instruction      *rCMPfalse( instruction *ins )
+extern instruction      *rCMPFALSE( instruction *ins )
 /****************************************************/
 {
     DoNothing( ins );

@@ -38,9 +38,7 @@
 #include "convins.h"
 #include "namelist.h"
 #include "insutil.h"
-
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  void            DupSeg( instruction *, instruction * );
+#include "inssegs.h"
 
 
 static  opcode_entry    ctable_C2TO1[] = {
@@ -436,6 +434,12 @@ extern  instruction     *rDOCVT( instruction *ins )
         }
     }
     return( new_ins );
+}
+
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
 }
 
 rt_class    LookupConvertRoutine( instruction *ins )

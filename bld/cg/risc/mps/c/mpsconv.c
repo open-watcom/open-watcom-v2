@@ -287,6 +287,12 @@ extern instruction *rDOCVT( instruction *ins )
     return( new_ins );
 }
 
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
+}
+
 rt_class    LookupConvertRoutine( instruction *ins )
 /**************************************************/
 {

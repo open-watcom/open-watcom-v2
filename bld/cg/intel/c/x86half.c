@@ -43,18 +43,14 @@
 #include "split.h"
 #include "insutil.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 extern  name            *IntEquivalent(name*);
-extern  void            DupSegOp(instruction*,instruction*,int);
 extern  bool            SameThing(name*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            DupSegRes(instruction*,instruction*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  name            *AddrConst(name*,int,constant_class);
-extern  void            DupSeg(instruction*,instruction*);
 extern  name            *SegName(name*);
-extern  void            DelSeg(instruction*);
 extern  bool            Overlaps( name *, name * );
 extern  void            CnvOpToInt( instruction *, int );
 

@@ -48,20 +48,10 @@
 #include "optab.h"
 
 
-extern  instruction     *rMOVRESREG(instruction*);
-extern  instruction     *rSWAPOPS(instruction*);
-//extern  instruction     *rDOCVT(instruction*);
-extern  instruction     *rOP1REG(instruction*);
-extern  instruction     *rOP2REG(instruction*);
-extern  instruction     *rMOVOP1TEMP(instruction*);
-extern  instruction     *rMOVOP2TEMP(instruction*);
-extern  instruction     *rMOVRESTEMP(instruction*);
+extern  instruction     *rDOCVT(instruction*);
 extern  instruction     *rPUSHTOMOV(instruction*);
 extern  instruction     *rPOPTOMOV(instruction*);
-extern  instruction     *rOP1MEM(instruction*);
-extern  instruction     *rOP2MEM(instruction*);
 extern  instruction     *rCONSTLOAD(instruction*);
-extern  instruction     *rSWAPCMP(instruction*);
 extern  instruction     *rSIMPCMP(instruction*);
 extern  instruction     *rDOSET(instruction*);
 extern  instruction     *rDOLOAD(instruction*);
@@ -71,8 +61,6 @@ extern  instruction     *rOP2CMEM(instruction*);
 extern  instruction     *rDOTEST(instruction*);
 extern  instruction     *rCHANGETYPE(instruction*);
 extern  instruction     *rMOVEXX(instruction*);
-extern  instruction     *rFORCERESMEM(instruction*);
-extern  instruction     *rMOVEINDEX(instruction*);
 extern  instruction     *rBIN2INT(instruction*);
 extern  instruction     *rBIN2QUAD(instruction*);
 extern  instruction     *rSHR(instruction*);

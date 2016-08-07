@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,11 @@
 ****************************************************************************/
 
 
-extern bool         CvtOk( type_class_def fr, type_class_def to );
-extern instruction  *DoConversion( instruction *ins );
-extern rt_class     LookupConvertRoutine( instruction *ins );
-
+#define DelSeg(i)
+#define DelSegOp(i,x)
+#define DelSegRes(i)
+#define DupSeg(i,ni)
+#define DupSegOp(i,ni,x)
+#define DupSegRes(i,ni)
+#define MoveSegOp(i,ni,x)
+#define MoveSegRes(i,ni)

@@ -4,7 +4,7 @@ risc_objs = &
         rscregsv.obj &
         rscsplit.obj &
         rscver.obj   &
-        rcsilen.obj  &
+        rscilen.obj  &
         rscobj.obj   &
         rscscore.obj &
         rscstubs.obj &

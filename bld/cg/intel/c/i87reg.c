@@ -42,11 +42,10 @@
 #include "i87data.h"
 #include "insutil.h"
 #include "rgtbl.h"
+#include "inssegs.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);

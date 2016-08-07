@@ -47,6 +47,7 @@
 #include "rgtbl.h"
 #include "typemap.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 extern  int             FPRegNum(name*);
@@ -61,8 +62,6 @@ extern  void            ToPopBin(instruction*);
 extern  void            NoMemBin(instruction*);
 extern  name*           ST(int);
 extern int              NumOperands(instruction*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DelSeg(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefFXCH(instruction*,int);
 extern  void            Wait8087( void );

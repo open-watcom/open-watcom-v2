@@ -46,10 +46,10 @@
 #include "insutil.h"
 #include "typemap.h"
 #include "optab.h"
+#include "inssegs.h"
 #include "feprotos.h"
 
 
-extern void             DupSeg(instruction*,instruction*);
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
 extern int              NumOperands(instruction*);

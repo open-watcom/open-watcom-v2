@@ -43,8 +43,6 @@
 #include "insutil.h"
 
 
-extern  instruction     *rSWAPCMP( instruction * );
-
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
 

@@ -174,7 +174,7 @@ extern  bool    OtherVerify( vertype kind, instruction *ins,
         if( ins->head.opcode == OP_CMP_EQUAL ) return( true );
         if( ins->head.opcode == OP_CMP_NOT_EQUAL ) return( true );
         break;
-    case V_CMPfalse:
+    case V_CMPFALSE:
         if( ins->result != NULL ) return ( false );
         if( NextCmp( ins ) ) return( false );
         if( op1 == op2 ) {
@@ -194,7 +194,7 @@ extern  bool    OtherVerify( vertype kind, instruction *ins,
             }
         }
         break;
-    case V_CMPtrue:
+    case V_CMPTRUE:
         if( ins->result != NULL ) return ( false );
         if( NextCmp( ins ) ) return( false );
         if( op1 == op2 ) {

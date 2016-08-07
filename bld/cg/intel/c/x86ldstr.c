@@ -44,14 +44,11 @@
 #include "expand.h"
 #include "insutil.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DelSeg(instruction*);
 extern  void            DeadInstructions(void);
-extern  void            MoveSegRes( instruction *, instruction * );
-extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  int             NumOperands( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
 

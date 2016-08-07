@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,7 +30,27 @@
 ****************************************************************************/
 
 
-extern bool         CvtOk( type_class_def fr, type_class_def to );
-extern instruction  *DoConversion( instruction *ins );
-extern rt_class     LookupConvertRoutine( instruction *ins );
-
+extern instruction      *rSPLITPUSH( instruction *ins );
+extern instruction      *rMAKEU2( instruction *ins );
+extern instruction      *rLOADLONGADDR( instruction *ins );
+extern instruction      *rHIGHCMP( instruction *ins );
+extern instruction      *rMAKEU4( instruction *ins );
+extern instruction      *rCLRHI_D( instruction *ins );
+extern instruction      *rEXT_PUSH1( instruction *ins );
+extern instruction      *rEXT_PUSH2( instruction *ins );
+extern instruction      *rINTCOMP( instruction *ins );
+extern instruction      *rCDQ( instruction *ins );
+extern instruction      *rCONVERT_UP( instruction *ins );
+extern instruction      *rCYP_SEX( instruction *ins );
+extern instruction      *rSPLIT8( instruction *ins );
+extern instruction      *rSPLIT8BIN( instruction *ins );
+extern instruction      *rSPLIT8NEG( instruction *ins );
+extern instruction      *rSPLIT8TST( instruction *ins );
+extern instruction      *rSPLIT8CMP( instruction *ins );
+#if 0
+extern instruction      *rCLRHIGH_DW( instruction *ins );
+extern instruction      *rSEX_DW( instruction *ins );
+#endif
+extern instruction      *rCYPSHIFT( instruction *ins );
+extern instruction      *rBYTESHIFT( instruction *ins );
+extern instruction      *rMOVE8LOW( instruction *ins );

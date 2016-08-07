@@ -46,6 +46,7 @@
 #include "insutil.h"
 #include "insdead.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 enum allocation_state {
@@ -68,9 +69,7 @@ extern  void            FreeAConflict(conflict_node *);
 extern  void            LiveInfoUpdate(void);
 extern  void            MakeLiveInfo(void);
 extern  void            FreeConflicts(void);
-extern  void            DelSegOp(instruction *,int);
 extern  void            FixChoices(void);
-extern  void            DelSegRes(instruction *);
 extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction *);
 extern  int             NumOperands(instruction *);

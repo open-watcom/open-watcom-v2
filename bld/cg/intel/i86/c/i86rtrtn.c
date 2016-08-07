@@ -47,16 +47,14 @@
 #include "insutil.h"
 #include "rtcall.h"
 #include "optab.h"
+#include "inssegs.h"
 
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  void            MoveSegRes( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
-extern  void            DelSeg( instruction * );
-extern  void            MoveSegOp( instruction *, instruction *, int );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  int             NumOperands( instruction * );
 extern  name            *AddrConst( name *, int, constant_class );

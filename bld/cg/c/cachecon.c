@@ -189,7 +189,6 @@ extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
     }
 }
 
-
 extern  void            MemConstTemp( conflict_node *conf ) {
 /************************************************************
 
@@ -216,7 +215,7 @@ extern  void            MemConstTemp( conflict_node *conf ) {
                 ins->head.state = INS_NEEDS_WORK;
                 ins->operands[i] = ins->operands[i]->v.symbol;
                 if( ins->head.opcode == OP_CONVERT ) {
-                    ins = rDOCVT( ins );
+                    ins = DoConversion( ins );
                 }
             }
             if( ins->result != NULL && ins->result->n.class == N_TEMP ) {

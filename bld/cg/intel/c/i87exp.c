@@ -45,6 +45,7 @@
 #include "rgtbl.h"
 #include "insutil.h"
 #include "optab.h"
+#include "inssegs.h"
 #include "feprotos.h"
 
 
@@ -55,8 +56,6 @@ extern  int             NumOperands(instruction*);
 extern  int             Count87Regs(hw_reg_set);
 extern  void            AllocALocal(name*);
 extern  void            RevCond(instruction*);
-extern  void            MoveSegRes(instruction*,instruction*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
 extern  void            InitFPStkReq( void );
 
 /* forward declarations */

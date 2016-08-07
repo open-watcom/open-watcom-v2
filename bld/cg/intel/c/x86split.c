@@ -44,8 +44,10 @@
 #include "regalloc.h"
 #include "x86obj.h"
 #include "split.h"
+#include "x86splt2.h"
 #include "insutil.h"
 #include "rtcall.h"
+#include "inssegs.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
@@ -68,72 +70,19 @@ extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *NearSegment(void);
 extern  name            *SegName(name*);
-extern  void            DelSeg(instruction*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
 extern  void            RevCond(instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );
 
-extern  instruction             *rCHANGESHIFT(instruction*);
 extern  instruction             *rFIXSHIFT(instruction *);
-extern  instruction             *rCLRHI_BW(instruction*);
-extern  instruction             *rCONVERT_LOW(instruction*);
-extern  instruction             *rCYPHIGH(instruction*);
-extern  instruction             *rCYPLOW(instruction*);
-//extern  instruction             *rDOCVT(instruction*);
-extern  instruction             *rDOUBLEHALF(instruction*);
-extern  instruction             *rOP1MEM(instruction*);
-extern  instruction             *rFORCERESMEM(instruction*);
-extern  instruction             *rHIGHCMP(instruction*);
-extern  instruction             *rLOADLONGADDR(instruction*);
+extern  instruction             *rDOCVT(instruction*);
 extern  instruction             *rMAKEFNEG(instruction*);
-extern  instruction             *rMAKEMOVE(instruction*);
-extern  instruction             *rMAKEU2(instruction*);
-extern  instruction             *rMAKEU4(instruction*);
-extern  instruction             *rMAKEXORRR(instruction*);
-extern  instruction             *rMOVEINDEX(instruction*);
-extern  instruction             *rMOVOP1TEMP(instruction*);
-extern  instruction             *rMOVOP2(instruction*);
-extern  instruction             *rMOVOP2TEMP(instruction*);
-extern  instruction             *rOP1REG(instruction*);
-extern  instruction             *rMOVOP1RES(instruction*);
-extern  instruction             *rMOVRESREG(instruction*);
-extern  instruction             *rOP1RESTEMP(instruction*);
-extern  instruction             *rRESREG(instruction*);
-extern  instruction             *rSPLIT8(instruction*);
 extern  instruction             *rSPLITCMP(instruction*);
 extern  instruction             *rSPLITMOVE(instruction*);
 extern  instruction             *rSPLITOP(instruction*);
-extern  instruction             *rSWAPCMP(instruction*);
-extern  instruction             *rSWAPOPS(instruction*);
-extern  instruction             *rUSEREGISTER(instruction*);
-extern  instruction             *rOP1RESREG(instruction*);
 extern  instruction             *rSPLITNEG(instruction*);
-extern  instruction             *rBYTESHIFT(instruction*);
-extern  instruction             *rCYPSHIFT(instruction*);
-extern  instruction             *rLOADOP2(instruction*);
-extern  instruction             *rMAKEADD(instruction*);
-extern  instruction             *rMAKENEG(instruction*);
-extern  instruction             *rMAKESUB(instruction*);
-extern  instruction             *rCMPtrue(instruction*);
-extern  instruction             *rCMPfalse(instruction*);
-extern  instruction             *rNEGADD(instruction*);
-extern  instruction             *rOP2MEM(instruction*);
-extern  instruction             *rCLRHI_D(instruction*);
-extern  instruction             *rADDRR(instruction*);
-extern  instruction             *rSPLITPUSH(instruction*);
-extern  instruction             *rEXT_PUSH1(instruction*);
-extern  instruction             *rEXT_PUSH2(instruction*);
-extern  instruction             *rCLRHI_R(instruction*);
-extern  instruction             *rMOVOP2RES(instruction*);
-extern  instruction             *rINTCOMP(instruction*);
-extern  instruction             *rCDQ(instruction*);
-extern  instruction             *rCYP_SEX(instruction*);
 extern  instruction             *rFLIPSIGN(instruction*);
 extern  instruction             *rTEMP2CONST(instruction*);
 extern  instruction             *rSAVEFACE(instruction*);
@@ -163,12 +112,6 @@ extern  instruction             *rCHPPT( instruction * );
 extern  instruction             *rMOVRESMEM( instruction * );
 extern  instruction             *rMAKEU4CONS( instruction * );
 extern  instruction             *rEXT_PUSHC( instruction * );
-extern  instruction             *rCONVERT_UP( instruction * );
-extern  instruction             *rSPLIT8BIN( instruction * );
-extern  instruction             *rSPLIT8NEG( instruction * );
-extern  instruction             *rSPLIT8TST( instruction * );
-extern  instruction             *rSPLIT8CMP( instruction * );
-extern  instruction             *rMOVE8LOW( instruction * );
 extern  instruction             *rCMPCP( instruction * );
 extern  instruction             *rMOVPTI8( instruction * );
 extern  instruction             *rMOVI8PT( instruction * );
