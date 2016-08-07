@@ -93,7 +93,7 @@ extern  void    BGPatchInteger( patch *hdl, signed_32 value ) {
             node->class = TN_CONS;
             node->u.name = c;
         } else {
-            hdl->u.ins->operands[ 0 ] = c;
+            hdl->u.ins->operands[0] = c;
             hdl->u.ins->num_operands = 1;
         }
     }

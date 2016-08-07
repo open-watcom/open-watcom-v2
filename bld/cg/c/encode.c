@@ -55,7 +55,7 @@ static  label_handle    LocateLabel( instruction *ins, int index )
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
-    return( _BLOCK( ins )->edge[  index  ].destination.u.lbl );
+    return( _BLOCK( ins )->edge[index].destination.u.lbl );
 }
 
 #if _TARGET & _TARG_RISC
@@ -189,8 +189,8 @@ static  void    DoCondJump( instruction *cond )
         oc.oc_jcond.cond = CondCode( cond );
         oc.oc_jcond.handle = dest_true;
 #if _TARGET & _TARG_RISC
-        assert( cond->operands[ 0 ]->n.class == N_REGISTER );
-        oc.oc_jcond.index = cond->operands[ 0 ]->r.arch_index;
+        assert( cond->operands[0]->n.class == N_REGISTER );
+        oc.oc_jcond.index = cond->operands[0]->r.arch_index;
         if( cond->operands[1]->n.class == N_REGISTER ) {
             oc.oc_jcond.index2 = cond->operands[1]->r.arch_index;
         } else {

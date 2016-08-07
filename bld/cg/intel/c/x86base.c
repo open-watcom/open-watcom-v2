@@ -63,7 +63,7 @@ static  void    setTempLocations( void )
     name                *base;
     name                *temp;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         base = DeAlias( temp );
         if( base->t.location == NO_LOCATION ) {
             temp->t.v.alt_location = NO_LOCATION;
@@ -104,7 +104,7 @@ extern  type_length     AdjustBase( void ) {
     CountTempRefs();
     SortTemps();
     best_bp = 0;
-    best_savings = CalcBaseSave( best_bp, Names[ N_TEMP ] );
+    best_savings = CalcBaseSave( best_bp, Names[N_TEMP] );
     last_location = NO_LOCATION;
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != last_location &&

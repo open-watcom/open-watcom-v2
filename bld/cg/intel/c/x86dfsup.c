@@ -76,7 +76,7 @@ static struct dbg_seg_names DwarfSegNames[DW_DEBUG_MAX] = {
 };
 
 
-extern sect_info DwarfSegs[ DW_DEBUG_MAX ];
+extern sect_info DwarfSegs[DW_DEBUG_MAX];
 
 
 

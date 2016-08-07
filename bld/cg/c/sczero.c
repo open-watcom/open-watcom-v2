@@ -95,9 +95,9 @@ static  name    *NonZeroPart( name *op, zero_bits z, type_class_def class ) {
 /******************************************************************/
 
     if( z & LO_HALF ) {
-        return( HighPart( op, HalfClass[  class  ] ) );
+        return( HighPart( op, HalfClass[class] ) );
     } else if( z & HI_HALF ) {
-        return( LowPart( op, HalfClass[  class  ] ) );
+        return( LowPart( op, HalfClass[class] ) );
     } else {
         return( op );
     }
@@ -164,15 +164,15 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
        && ins->head.opcode != OP_SUB ) ) return( false );
     if( ins->ins_flags & INS_CC_USED ) return( false );
     if( VolatileIns( ins ) ) return( false );
-    op1 = ins->operands[ 0 ];
-    op2 = ins->operands[ 1 ];
+    op1 = ins->operands[0];
+    op2 = ins->operands[1];
     res = ins->result;
     if( op1->n.size != op2->n.size ) return( false );
     if( res->n.size != op2->n.size ) return( false );
     class = ins->type_class;
     op1zpart = HasZero( sc, op1 );
     op2zpart = HasZero( sc, op2 );
-    hc = HalfClass[  class      ];
+    hc = HalfClass[class];
     ins1 = NULL;
     ins2 = NULL;
     change = false;
@@ -189,7 +189,8 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
             tmp2 = NonZeroRESPart( op1zpart );
             tmp3 = NonZeroOP2Part( op2zpart );
             tmp4 = NonZeroRESPart( op2zpart );
-            if( tmp1==0 || tmp2==0 || tmp3==0 || tmp4==0 ) return( false );
+            if( tmp1 == 0 || tmp2 == 0 || tmp3 == 0 || tmp4 == 0 )
+                return( false );
             ins1 = MakeMove( tmp1, tmp2, hc );
             ins2 = MakeMove( tmp3, tmp4, hc );
         } else {
@@ -200,7 +201,8 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
                 tmp2 = NonZeroOP1Part( zeropart );
                 tmp3 = NonZeroOP2Part( zeropart );
                 tmp4 = NonZeroRESPart( zeropart );
-                if( tmp1==0 || tmp2==0 || tmp3==0 || tmp4==0 ) return( false );
+                if( tmp1 == 0 || tmp2 == 0 || tmp3 == 0 || tmp4 == 0 )
+                    return( false );
                 ins2 = MakeClear( tmp1, hc );
                 ins1 = MakeBinary( OP_ADD, tmp2, tmp3, tmp4, hc );
             }
@@ -226,7 +228,8 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
                 tmp2 = NonZeroOP1Part( zeropart );
                 tmp3 = NonZeroOP2Part( zeropart );
                 tmp4 = NonZeroRESPart( zeropart );
-                if( tmp1==0 || tmp2==0 || tmp3==0 || tmp4==0 ) return( false );
+                if( tmp1 == 0 || tmp2 == 0 || tmp3 == 0 || tmp4 == 0 )
+                    return( false );
                 ins1 = MakeClear( tmp1, hc );
                 ins2 = MakeBinary( OP_AND, tmp2, tmp3, tmp4, hc );
             }
@@ -251,7 +254,8 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
             tmp2 = NonZeroRESPart( op1zpart );
             tmp3 = NonZeroOP2Part( op2zpart );
             tmp4 = NonZeroRESPart( op2zpart );
-            if( tmp1==0 || tmp2==0 || tmp3==0 || tmp4==0 ) return( false );
+            if( tmp1 == 0 || tmp2 == 0 || tmp3 == 0 || tmp4 == 0 )
+                return( false );
             ins1 = MakeMove( tmp1, tmp2, hc );
             ins2 = MakeMove( tmp3, tmp4, hc );
         } else if( _MatchZero( op1zpart, op2zpart ) ) {
@@ -261,7 +265,8 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
             tmp2 = NonZeroOP1Part( zeropart );
             tmp3 = NonZeroOP2Part( zeropart );
             tmp4 = NonZeroRESPart( zeropart );
-            if( tmp1==0 || tmp2==0 || tmp3==0 || tmp4==0 ) return( false );
+            if( tmp1 == 0 || tmp2 == 0 || tmp3 == 0 || tmp4 == 0 )
+                return( false );
             ins2 = MakeClear( tmp1, hc );
             ins1 = MakeBinary( ins->head.opcode, tmp2, tmp3, tmp4, hc );
         }

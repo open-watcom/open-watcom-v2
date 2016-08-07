@@ -103,14 +103,14 @@ static  hw_reg_set      floatRegSet( int index ) {
 /************************************************/
 
     assert( index >= FIRST_FLOAT_PARM_REG && index <= LAST_FLOAT_PARM_REG );
-    return( floatRegs[ index - FIRST_FLOAT_PARM_REG ] );
+    return( floatRegs[index - FIRST_FLOAT_PARM_REG] );
 }
 
 static  hw_reg_set      scalarRegSet( int index ) {
 /*************************************************/
 
     assert( index >= FIRST_SCALAR_PARM_REG && index <= LAST_SCALAR_PARM_REG );
-    return( scalarRegs[ index - FIRST_SCALAR_PARM_REG ] );
+    return( scalarRegs[index - FIRST_SCALAR_PARM_REG] );
 }
 
 extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state ) {

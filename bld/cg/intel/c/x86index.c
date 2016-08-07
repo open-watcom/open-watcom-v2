@@ -194,7 +194,7 @@ static  name    *FindSegment( instruction *ins ) {
                 return( NULL );
             /* careful ... this assumes small pushes split not movsb'd */
             /* see i86split */
-            if( ins->operands[ 0 ]->n.size > 4 * WORD_SIZE ) {
+            if( ins->operands[0]->n.size > 4 * WORD_SIZE ) {
                 return( NULL );
             }
         }
@@ -473,7 +473,7 @@ static  void    PropSegments( void ) {
                 if( ins->head.opcode == OP_MOV ) {
                     dst = NameConflict( ins, ins->result );
                     if( dst != NULL && _Is( dst, CST_WAS_SEGMENT ) ) {
-                        src = NameConflict( ins, ins->operands[ 0 ] );
+                        src = NameConflict( ins, ins->operands[0] );
                         if( src != NULL && _Isnt( src, CST_WAS_SEGMENT ) ) {
                             _SetTrue( src, CST_WAS_SEGMENT );
                             change = true;

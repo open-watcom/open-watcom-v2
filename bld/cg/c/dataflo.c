@@ -107,7 +107,7 @@ static  void    RoughSortTemps( void )
     instruction         *ins;
     int                 i;
 
-    for( opnd = Names[ N_TEMP ]; opnd != NULL; opnd = opnd->n.next_name ) {
+    for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY|USE_ADDRESS ) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
@@ -147,7 +147,7 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
         MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );
-    for( opnd = Names[ list ]; opnd != NULL; opnd = opnd->n.next_name ) {
+    for( opnd = Names[list]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY | USE_ADDRESS ) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
@@ -301,7 +301,7 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             }
             if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
                 for( i = blk->targets; i-- > 0; ) {
-                    target = blk->edge[ i ].destination.u.blk;
+                    target = blk->edge[i].destination.u.blk;
 
                     /*   new OUT = union of successors' IN*/
 

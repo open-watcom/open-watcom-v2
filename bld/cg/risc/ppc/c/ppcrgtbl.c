@@ -389,15 +389,15 @@ hw_reg_set      *ParmChoices( type_class_def class )
     case U4:
     case CP:
     case PT:
-        return( RegSets[ RL_PARM_4 ] );
+        return( RegSets[RL_PARM_4] );
     case I8:
     case U8:
     case XX:
-        return( RegSets[ RL_PARM_8 ] );
+        return( RegSets[RL_PARM_8] );
     case FS:
     case FD:
     case FL:
-        return( RegSets[ RL_PARM_F ] );
+        return( RegSets[RL_PARM_F] );
     default:
         _Zoiks( ZOIKS_118 );
         return( NULL );
@@ -658,7 +658,7 @@ bool    IsRegClass( hw_reg_set regs, type_class_def class )
 reg_set_index   UsualPossible( type_class_def class )
 /***************************************************/
 {
-    return( IsSets[ class ] );
+    return( IsSets[class] );
 }
 
 

@@ -78,16 +78,16 @@ static  bool    UselessCompare( instruction *ins, cc_control *cc, name *zero )
         if( cc->op_type != ins->type_class ) return( false );
     }
 #endif
-    if( ins->operands[ 0 ] == cc->left_op
-     && ins->operands[ 1 ] == cc->right_op ) {
+    if( ins->operands[0] == cc->left_op
+     && ins->operands[1] == cc->right_op ) {
         if( cc->state == CONDITIONS_SET ) return( true );
         if( opcode == OP_CMP_EQUAL ) return( true );
         if( opcode == OP_CMP_NOT_EQUAL ) return( true );
         if( cc->state == EQUALITY_CONDITIONS_SET ) return( false );
         if( ins->type_class == I1 ) return( true );
         if( ins->type_class == I2 ) return( true );
-    } else if( ins->operands[ 0 ] == cc->result_op
-            && ins->operands[ 1 ] == zero ) {
+    } else if( ins->operands[0] == cc->result_op
+            && ins->operands[1] == zero ) {
 #if _TARGET & _TARG_370
         if( cc->state == CONDITIONS_SET ) return( true );
 #endif
@@ -184,8 +184,8 @@ static  bool    Traverse( block *blk, name *zero )
             cc->result_op = ins->result;
             cc->op_type = ins->type_class;
             if( ins->head.opcode == OP_SUB ) {
-                cc->left_op = ins->operands[ 0 ];
-                cc->right_op = ins->operands[ 1 ];
+                cc->left_op = ins->operands[0];
+                cc->right_op = ins->operands[1];
             } else {
                 cc->left_op = NULL;
                 cc->right_op = NULL;
@@ -201,8 +201,8 @@ static  bool    Traverse( block *blk, name *zero )
                     cc->state = CONDITIONS_SET;
                     cc->result_op = NULL;
                     cc->op_type = ins->type_class;
-                    cc->left_op = ins->operands[ 0 ];
-                    cc->right_op = ins->operands[ 1 ];
+                    cc->left_op = ins->operands[0];
+                    cc->right_op = ins->operands[1];
                     cc->ins = ins;
                 }
             } else {
@@ -220,8 +220,8 @@ static  bool    Traverse( block *blk, name *zero )
                 }
                 cc->op_type = ins->type_class;
                 if( ins->head.opcode == OP_SUB ) {
-                    cc->left_op = ins->operands[ 0 ];
-                    cc->right_op = ins->operands[ 1 ];
+                    cc->left_op = ins->operands[0];
+                    cc->right_op = ins->operands[1];
                 } else {
                     cc->left_op = NULL;
                     cc->right_op = NULL;

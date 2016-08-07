@@ -132,15 +132,15 @@ static  bool    FindFlowOut( block *blk )
     }
     if( !isNiceCondIns( ins ) )
         return( false );
-    if( TypeClassSize[ ins->type_class ] > WORD_SIZE )
+    if( TypeClassSize[ins->type_class] > WORD_SIZE )
         return( false );
-    true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
+    true_blk = blk->edge[_TrueIndex( ins )].destination.u.blk;
     if( true_blk->inputs != 1 )
         return( false );
     if( true_blk->targets != 1 )
         return( false );
 
-    false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
+    false_blk = blk->edge[_FalseIndex( ins )].destination.u.blk;
     if( false_blk->inputs != 1 )
         return( false );
     if( false_blk->targets != 1 )

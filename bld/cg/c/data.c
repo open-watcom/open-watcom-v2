@@ -42,7 +42,7 @@ int                     InsId;
 int                     TempId;
 conflict_node           *ConfList;
 proc_def                *CurrProc;
-name                    *Names[N_INDEXED+1];
+name                    *Names[N_INDEXED + 1];
 name                    *LastTemp;
 name                    *DummyIndex;
 source_line_number      SrcLine;

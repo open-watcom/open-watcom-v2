@@ -202,7 +202,7 @@ static  void    DumpBlkLabel( block *b )
         DumpPtr( b->label );
         DumpChar( ' ' );
         DumpXString( AskName( AskForLblSym( b->label ), CG_FE ) );
-        if( b->edge[ 0 ].flags & BLOCK_LABEL_DIES ) {
+        if( b->edge[0].flags & BLOCK_LABEL_DIES ) {
             DumpLiteral( " label dies" );
         }
     }
@@ -305,28 +305,28 @@ static  void    DumpGotos( block *b, bool all )
 {
     block_num   i;
 
-    DumpPtr( &b->edge[ 0 ] );
+    DumpPtr( &b->edge[0] );
     DumpLiteral( "           Destinations: " );
     if( b->targets > 0 ) {
-        if( ( b->edge[ 0 ].flags & DEST_LABEL_DIES ) && all ) {
+        if( ( b->edge[0].flags & DEST_LABEL_DIES ) && all ) {
             DumpLiteral( "(kills) " );
         }
-        if( b->edge[ 0 ].flags & DEST_IS_BLOCK ) {
-            DumpBlkId( b->edge[ 0 ].destination.u.blk );
+        if( b->edge[0].flags & DEST_IS_BLOCK ) {
+            DumpBlkId( b->edge[0].destination.u.blk );
         } else {
             DumpChar( 'L' );
-            DumpPtr( b->edge[ 0 ].destination.u.lbl );
+            DumpPtr( b->edge[0].destination.u.lbl );
         }
         for( i = 1; i < b->targets; ++i ) {
             DumpLiteral( ", " );
-            if( ( b->edge[ i ].flags & DEST_LABEL_DIES ) && all ) {
+            if( ( b->edge[i].flags & DEST_LABEL_DIES ) && all ) {
                 DumpLiteral( "(kills) " );
             }
-            if( b->edge[ i ].flags & DEST_IS_BLOCK ) {
-                DumpBlkId( b->edge[ i ].destination.u.blk );
+            if( b->edge[i].flags & DEST_IS_BLOCK ) {
+                DumpBlkId( b->edge[i].destination.u.blk );
             } else {
                 DumpChar( 'L' );
-                DumpPtr( b->edge[ i ].destination.u.lbl );
+                DumpPtr( b->edge[i].destination.u.lbl );
             }
         }
     }
@@ -409,7 +409,7 @@ extern  void    DumpSymTab( void )
     int         class;
 
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
-        if( Names[ class ] != NULL ) {
+        if( Names[class] != NULL ) {
             DumpNL();
             switch( class ) {
             case N_CONSTANT:
@@ -428,7 +428,7 @@ extern  void    DumpSymTab( void )
                 DumpLiteral( "Indexed" );
                 break;
             }
-            DumpSymList( Names[ class ] );
+            DumpSymList( Names[class] );
             DumpNL();
         }
     }
@@ -460,7 +460,7 @@ extern  void    DumpEdges( block *b )
 
     DumpBlkId( b );
     for( i = 0; i < b->targets; i++ ) {
-        edge = &b->edge[ i ];
+        edge = &b->edge[i];
         DumpEdge( i, edge );
     }
 }

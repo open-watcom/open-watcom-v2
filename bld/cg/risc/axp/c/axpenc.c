@@ -274,12 +274,12 @@ static  uint_8  *FindOpcodes( instruction *ins ) {
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8 || ins->type_class == I8 ) {
-            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
-            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         }
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     } else if( _OpIsAlphaByteIns( ins->head.opcode ) ) {
         // WARNING: must use these values before calling FindOpcodes again
         opcodes = &ScratchOpcodes[0];
@@ -302,7 +302,7 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
 
     assert( _IsFloating( ins->type_class ) );
     if( _OpIsBinary( ins->head.opcode ) ) {
-        opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][ins->type_class != FS];
+        opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][( ins->type_class != FS ) ? 1 : 0];
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ins->head.opcode - FIRST_SET_OP][0];
     } else {

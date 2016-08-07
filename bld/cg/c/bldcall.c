@@ -185,8 +185,8 @@ extern  void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
 static  void    LinkParmIns( instruction *parm_def, instruction *ins ) {
 /**********************************************************************/
 
-    ins->operands[ 2 ] = (name *)parm_def; /* link them together*/
-    parm_def->operands[ 2 ] = (name *)ins;
+    ins->operands[2] = (name *)parm_def; /* link them together*/
+    parm_def->operands[2] = (name *)ins;
     ins->ins_flags |= INS_PARAMETER;
     parm_def->ins_flags |= INS_PARAMETER;
 }

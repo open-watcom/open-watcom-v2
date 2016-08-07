@@ -95,10 +95,10 @@ static char *createFourCharHash( const char *mangle, char *buff, int ucase )
         if( x > '9' ) {
             x += c - '0' - 10;
         }
-        buff[ TRUNC_SYMBOL_HASH_LEN - 1 - i ] = x;
+        buff[TRUNC_SYMBOL_HASH_LEN - 1 - i] = x;
         mangle_hash /= 36;
     }
-    buff[ i ] = '\0';
+    buff[i] = '\0';
     return( buff );
 }
 

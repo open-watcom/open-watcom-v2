@@ -57,11 +57,11 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     instruction         *new_ins;
     type_class_def      class;
 
-    assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
-    assert( ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE );
+    assert( ins->operands[0]->n.class == N_CONSTANT );
+    assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     class = ins->type_class;
-    c = ins->operands[ 0 ]->c.lo.int_value;
+    c = ins->operands[0]->c.lo.int_value;
     high = ( c >> 16 ) & 0xffff;
     low = c & 0xffff;
     high_part = AllocAddrConst( NULL, high, CONS_HIGH_ADDR, class );
@@ -80,11 +80,11 @@ extern  instruction     *rMOD2DIV( instruction *ins ) {
     instruction         *first_ins;
     instruction         *new_ins;
 
-    first_ins = MakeBinary( OP_DIV, ins->operands[ 0 ], ins->operands[ 1 ], ins->result, ins->type_class );
+    first_ins = MakeBinary( OP_DIV, ins->operands[0], ins->operands[1], ins->result, ins->type_class );
     PrefixIns( ins, first_ins );
-    new_ins = MakeBinary( OP_MUL, ins->operands[ 1 ], ins->result, ins->result, ins->type_class );
+    new_ins = MakeBinary( OP_MUL, ins->operands[1], ins->result, ins->result, ins->type_class );
     PrefixIns( ins, new_ins );
-    new_ins = MakeBinary( OP_SUB, ins->operands[ 0 ], ins->result, ins->result, ins->type_class );
+    new_ins = MakeBinary( OP_SUB, ins->operands[0], ins->result, ins->result, ins->type_class );
     ReplIns( ins, new_ins );
     UpdateLive( first_ins, new_ins );
     return( first_ins );

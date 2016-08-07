@@ -121,7 +121,7 @@ static  bool    DoProp( block *blk ) {
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->head.opcode == OP_ADD || ins->head.opcode == OP_SUB ) {
-            op = ins->operands[ 1 ];
+            op = ins->operands[1];
 
             /*
              * 2004-11-04  RomanT
@@ -138,19 +138,19 @@ static  bool    DoProp( block *blk ) {
                 !_IsPointer( ins->type_class ) &&  /* 2004-11-04  RomanT */
                 ( op->n.class != N_CONSTANT ||
                 op->c.const_type != CONS_ABSOLUTE ) ) {
-                if( ins->operands[ 0 ]->n.class != N_CONSTANT ||
-                    ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE ) {
+                if( ins->operands[0]->n.class != N_CONSTANT ||
+                    ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
                     // don't move scary constant (ADDRESS) over to right
                     // BBB - May 14, 1997
-                    ins->operands[ 1 ] = ins->operands[ 0 ];
-                    ins->operands[ 0 ] = op;
-                    op = ins->operands[ 1 ];
+                    ins->operands[1] = ins->operands[0];
+                    ins->operands[0] = op;
+                    op = ins->operands[1];
                 }
             }
 
             if( op->n.class == N_CONSTANT &&
                 op->c.const_type == CONS_ABSOLUTE &&
-                ins->result == ins->operands[ 0 ] ) {
+                ins->result == ins->operands[0] ) {
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _IsReDefinedBy( next, ins->result ) )
                         break;

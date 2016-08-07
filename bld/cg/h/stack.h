@@ -35,7 +35,7 @@ typedef void    *(*func_sr)(void *);
 
 #if defined( __WATCOMC__ ) && defined( _M_IX86 ) && !defined( __NT__ )
 
-#pragma aux SafeRecurseCG parm caller [ eax ebx ecx edx ]; /* just to be sure! must not put any parametr on the stack */
+#pragma aux SafeRecurseCG parm caller [eax ebx ecx edx]; /* just to be sure! must not put any parametr on the stack */
 
 #endif
 

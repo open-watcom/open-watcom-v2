@@ -153,7 +153,7 @@ extern instruction      *rMULSAVEFACE( instruction *ins ) {
 
     // we have a r1 mul 1 -> DX:AX here which the constant
     // folder was not able to catch, because of the weird regs
-    new_ins = MakeMove( ins->operands[ 0 ], AllocRegName( _AX ), ins->type_class );
+    new_ins = MakeMove( ins->operands[0], AllocRegName( _AX ), ins->type_class );
     ReplIns( ins, new_ins );
     return( new_ins );
 }
@@ -174,8 +174,8 @@ extern instruction      *rSEG_SEG( instruction *ins ) {
     name                *name1;
 
     name1 = AllocTemp( U2 );
-    new_ins = MakeMove( ins->operands[ 0 ], name1, U2 );
-    ins->operands[ 0 ] = name1;
+    new_ins = MakeMove( ins->operands[0], name1, U2 );
+    ins->operands[0] = name1;
     PrefixIns( ins, new_ins );
     MarkPossible( ins, name1, RL_WORD );
     ins->u.gen_table = NULL;
@@ -191,9 +191,9 @@ extern instruction      *rOP2CL( instruction *ins ) {
     name                *name1;
 
     name1 = AllocRegName( HW_CL );
-    new_ins = MakeConvert( ins->operands[ 1 ], name1, U1,
-                           ins->operands[ 1 ]->n.name_class );
-    ins->operands[ 1 ] = name1;
+    new_ins = MakeConvert( ins->operands[1], name1, U1,
+                           ins->operands[1]->n.name_class );
+    ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
     return( new_ins );
@@ -207,9 +207,9 @@ extern instruction      *rOP2CX( instruction *ins ) {
     name                *name1;
 
     name1 = AllocRegName( HW_CX );
-    new_ins = MakeConvert( ins->operands[ 1 ], name1, U2,
-                           ins->operands[ 1 ]->n.name_class );
-    ins->operands[ 1 ] = name1;
+    new_ins = MakeConvert( ins->operands[1], name1, U2,
+                           ins->operands[1]->n.name_class );
+    ins->operands[1] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
     return( new_ins );
@@ -225,13 +225,13 @@ extern instruction      *rMULREGISTER( instruction *ins ) {
     name                *name2;
 
     name1 = AllocRegName( Op1Reg( ins ) );
-    new_ins = MakeMove( ins->operands[ 0 ], name1, ins->type_class );
-    ins->operands[ 0 ] = name1;
+    new_ins = MakeMove( ins->operands[0], name1, ins->type_class );
+    ins->operands[0] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
     name2 = AllocRegName( ResultReg( ins ) );
     ins2 = MakeUnary( OP_MOV, name1, ins->result, ins->type_class );
-    ins2->base_type_class = DoubleClass[  ins->type_class  ];
+    ins2->base_type_class = DoubleClass[ins->type_class];
     ins->result = name2;
     ins->zap = &AllocRegName( ZapReg( ins ) )->r;
     MoveSegRes( ins, ins2 );
@@ -249,10 +249,10 @@ extern instruction      *rDIVREGISTER( instruction *ins ) {
     name                *name2;
 
     name1 = AllocRegName( Op1Reg( ins ) );
-    new_ins = MakeConvert( ins->operands[ 0 ], name1,
+    new_ins = MakeConvert( ins->operands[0], name1,
                           DoubleClass[ins->type_class],
                           ins->type_class );
-    ins->operands[ 0 ] = name1;
+    ins->operands[0] = name1;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
     name2 = AllocRegName( ResultReg( ins ) );
@@ -287,14 +287,14 @@ extern instruction      *rFSCONSCMP( instruction *ins ) {
 
     name                *name1;
 
-    name1 = ins->operands[ 1 ];
+    name1 = ins->operands[1];
     if( CFTest( name1->c.value ) > 0 ) {
         ChangeType( ins, I4 );
     } else {
         ChangeType( ins, U4 );
         RevCond( ins );
     }
-    ins->operands[ 1 ] = IntEquivalent( name1 );
+    ins->operands[1] = IntEquivalent( name1 );
     ins->table = NULL;
     return( ins );
 }
@@ -390,7 +390,7 @@ static  bool    CanLoadStringOps( instruction *ins ) {
 
     hw_reg_set  needs;
 
-    if( UseRepForm( ins->operands[ 0 ]->n.size ) ) {
+    if( UseRepForm( ins->operands[0]->n.size ) ) {
         needs = CX;
     } else {
         HW_CAsgn( needs, HW_EMPTY );
@@ -524,7 +524,7 @@ static  instruction     *LoadStringOps( instruction *ins,
     ins->table = String;
     ins->head.state = INS_NEEDS_WORK;
     *op1 = FakeIndex( ins->operands[0], new_op1 );
-    ins->operands[ 1 ] = ins->operands[ 0 ];
+    ins->operands[1] = ins->operands[0];
     HW_CTurnOff( new_op1, HW_SS );
     HW_CTurnOff( new_op1, HW_SP );
     HW_CTurnOff( new_op1, HW_ES );
@@ -548,14 +548,14 @@ static  instruction     *LoadStringOps( instruction *ins,
 extern instruction      *rMAKESTRCMP( instruction *ins ) {
 /*******************************************************/
 
-    return( LoadStringOps( ins, &ins->operands[ 0 ], &ins->operands[ 1 ] ) );
+    return( LoadStringOps( ins, &ins->operands[0], &ins->operands[1] ) );
 }
 
 
 extern instruction      *rMAKESTRMOVE( instruction *ins ) {
 /********************************************************/
 
-    return( LoadStringOps( ins, &ins->operands[ 0 ], &ins->result ) );
+    return( LoadStringOps( ins, &ins->operands[0], &ins->result ) );
 }
 
 
@@ -563,7 +563,7 @@ extern instruction      *rMAYBSTRMOVE( instruction *ins ) {
 /********************************************************/
 
     if( CanLoadStringOps( ins ) ) {
-        return( LoadStringOps( ins, &ins->operands[ 0 ], &ins->result ) );
+        return( LoadStringOps( ins, &ins->operands[0], &ins->result ) );
     } else {
         return( rSPLIT8( ins ) );
     }
@@ -585,7 +585,7 @@ extern instruction      *rMOVELOW( instruction *ins ) {
 
 /* e.g. convert U2==>U1*/
     ins->head.opcode = OP_MOV;
-    ins->operands[ 0 ] = LowPart( ins->operands[ 0 ], ins->type_class );
+    ins->operands[0] = LowPart( ins->operands[0], ins->type_class );
     ins->table = NULL;
     return( ins );
 }
@@ -642,8 +642,8 @@ extern instruction      *rMOVOP1MEM( instruction *ins ) {
         name_int = TempOffset( name_flt, 0, U4 );
     }
     name_flt->v.usage |= USE_MEMORY | NEEDS_MEMORY;
-    new_ins = MakeMove( ins->operands[ 0 ], name_int, name_int->n.name_class);
-    ins->operands[ 0 ] = name_flt;
+    new_ins = MakeMove( ins->operands[0], name_int, name_int->n.name_class);
+    ins->operands[0] = name_flt;
     MoveSegOp( ins, new_ins, 0 );
     PrefixIns( ins, new_ins );
     return( new_ins );
@@ -654,7 +654,7 @@ extern instruction      *rOP1CMEM( instruction *ins ) {
 /*********************************************************/
 
 
-    ins->operands[ 0 ] = Addressable( ins->operands[ 0 ], ins->type_class );
+    ins->operands[0] = Addressable( ins->operands[0], ins->type_class );
     return( ins );
 }
 
@@ -663,7 +663,7 @@ extern instruction      *rOP2CMEM( instruction *ins ) {
 /*********************************************************/
 
 
-    ins->operands[ 1 ] = Addressable( ins->operands[ 1 ], ins->type_class );
+    ins->operands[1] = Addressable( ins->operands[1], ins->type_class );
     return( ins );
 }
 
@@ -677,11 +677,11 @@ extern instruction      *rU_TEST( instruction *ins ) {
     name                *name2;
 
     ChangeType( ins, U2 );
-    name1 = ins->operands[ 0 ];
+    name1 = ins->operands[0];
     name2 = AllocTemp( U2 );
     new_ins = MakeMove( HighPart( name1, U2 ), name2, U2 );
     ins2 = MakeBinary( OP_OR, name2, LowPart( name1, U2 ), name2, U2 );
-    ins->operands[ 0 ] = name2;
+    ins->operands[0] = name2;
     DupSeg( ins, new_ins );
     DupSeg( ins, ins2 );
     DelSeg( ins );
@@ -696,8 +696,8 @@ extern instruction      *rCPSUB( instruction *ins ) {
 
     instruction         *new_ins;
 
-    new_ins = MakeBinary( OP_SUB, OffsetPart( ins->operands[ 0 ] ),
-                           OffsetPart( ins->operands[ 1 ] ),
+    new_ins = MakeBinary( OP_SUB, OffsetPart( ins->operands[0] ),
+                           OffsetPart( ins->operands[1] ),
                            ins->result, SW );
     DupSeg( ins, new_ins );
     ReplIns( ins, new_ins );
@@ -742,7 +742,7 @@ extern  instruction     *rMAKEU4CONS( instruction *ins ) {
 /*******************************************************/
 
     ChangeType( ins, U4 );
-    ins->operands[ 0 ] = IntEquivalent( ins->operands[ 0 ] );
+    ins->operands[0] = IntEquivalent( ins->operands[0] );
     return( ins );
 }
 
@@ -752,7 +752,7 @@ extern instruction      *rCHPPT( instruction *ins ) {
 
     ins->head.opcode = OP_MOV;
     ChangeType( ins, WD );
-    ins->operands[ 0 ] = OffsetPart( ins->operands[ 0 ] );
+    ins->operands[0] = OffsetPart( ins->operands[0] );
     return( ins );
 }
 
@@ -809,7 +809,7 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
     name                *new_op = NULL;
 
     size = _RoundUp( size, WORD_SIZE );
-    op = ins->operands[ 0 ];
+    op = ins->operands[0];
     first_ins = NULL;
     for( ;; ) {
         size -= WORD_SIZE;
@@ -858,7 +858,7 @@ extern  instruction     *rDOLONGPUSH( instruction *ins ) {
     instruction *temp_ins;
     hw_reg_set  hw_ss_sp;
 
-    size = ins->operands[ 0 ]->n.size;
+    size = ins->operands[0]->n.size;
     if( size <= 4*WORD_SIZE ) {
         return( SplitPush( ins, size ) );
     } else {
@@ -874,9 +874,9 @@ extern  instruction     *rDOLONGPUSH( instruction *ins ) {
         }
         at_sp = AllocIndex( temp, NULL, 0, XX );
         at_sp->n.size = size;
-        move = MakeMove( ins->operands[ 0 ], at_sp, XX );
+        move = MakeMove( ins->operands[0], at_sp, XX );
         ReplIns( ins, move );
-        ins = LoadStringOps( move, &move->operands[ 0 ], &move->result );
+        ins = LoadStringOps( move, &move->operands[0], &move->result );
         /*% mov CX,const will be the first if it's there so try for SUB SP,CX*/
         sub_sp = MakeBinary( OP_SUB, sp, AllocIntConst( _RoundUp( size, WORD_SIZE ) ), sp, WD );
         if( ins->result != NULL && HW_CEqual( ins->result->r.reg, hw( CX ) ) ) {
@@ -970,9 +970,9 @@ extern  void            CnvOpToInt( instruction * ins, int op ) {
 
     switch( ins->type_class ) {
     case FS:
-        name1 = ins->operands[ op ];
+        name1 = ins->operands[op];
         if( name1->n.class == N_CONSTANT ) {
-            ins->operands[ op ] = IntEquivalent( name1 );
+            ins->operands[op] = IntEquivalent( name1 );
         }
         break;
 #if _TARGET & _TARG_80386
@@ -980,9 +980,9 @@ extern  void            CnvOpToInt( instruction * ins, int op ) {
     // HighPart and LowPart if we don't get rid on constant
     // here
     case FD:
-        name1 = ins->operands[ op ];
+        name1 = ins->operands[op];
         if( name1->n.class == N_CONSTANT ) {
-            ins->operands[ op ] = Int64Equivalent( name1 );
+            ins->operands[op] = Int64Equivalent( name1 );
         }
         break;
 #endif
@@ -996,12 +996,12 @@ extern  instruction     *rCMPCP( instruction *ins ) {
 /***************************************************/
 
     assert( ins->type_class == CP );
-    assert( ins->operands[ 1 ]->n.class == N_CONSTANT );
-    assert( ins->operands[ 1 ]->c.lo.int_value == 0 );
+    assert( ins->operands[1]->n.class == N_CONSTANT );
+    assert( ins->operands[1]->c.lo.int_value == 0 );
     if( ins->head.opcode == OP_CMP_EQUAL ||
         ins->head.opcode == OP_CMP_NOT_EQUAL ) {
         if( _IsTargetModel( NULL_SELECTOR_BAD ) ) {
-            ins->operands[ 0 ] = HighPart( ins->operands[ 0 ], U2 );
+            ins->operands[0] = HighPart( ins->operands[0], U2 );
             ChangeType( ins, U2 );
             return( ins );
         }

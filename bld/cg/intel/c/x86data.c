@@ -317,7 +317,7 @@ extern  name    *GenConstData( const void *buffer, type_class_def class )
 
     TellOptimizerByPassed();
     cgclass = ConstDataClass();
-    size = TypeClassSize[ class ];
+    size = TypeClassSize[class];
     label = AskForLabel( NULL );
     if( cgclass == CG_CLB ) {
         old = SetOP( AskCodeSeg() );

@@ -52,7 +52,7 @@ opcode_entry    *CodeTable( instruction *ins )
     idx = ins->head.opcode;
     idx *= ( XX + 1 );
     idx += ins->type_class;
-    idx = OpTable[  idx  ];
+    idx = OpTable[idx];
     if( idx == BAD ) {
         _Zoiks( ZOIKS_052 );
     }

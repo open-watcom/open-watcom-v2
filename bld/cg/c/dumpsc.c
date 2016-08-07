@@ -75,7 +75,7 @@ static  void    DumpScList( score_list *curr ) {
         }
         DumpLong( curr->info.offset );
         DumpChar( '[' );
-        DumpRegName( ScoreList[ curr->info.index_reg ]->reg );
+        DumpRegName( ScoreList[curr->info.index_reg]->reg );
         DumpChar( ']' );
         break;
     case N_INITIAL:
@@ -106,7 +106,7 @@ extern  void    DumpSc( score *sc ) {
 
     i = 0;
     while( i < ScoreCount ) {
-        entry = ScoreList[ i ];
+        entry = ScoreList[i];
         DumpInt( i );
         DumpLiteral( " reg " );
         DumpRegName( entry->reg );
@@ -116,7 +116,7 @@ extern  void    DumpSc( score *sc ) {
         DumpInt( entry->high );
         for( reg = sc->next_reg; reg != sc; reg = reg->next_reg ) {
             DumpLiteral( "==" );
-            DumpRegName( ScoreList[ reg->index ]->reg );
+            DumpRegName( ScoreList[reg->index]->reg );
         }
         DumpLiteral( " generation " );
         DumpInt( sc->generation );

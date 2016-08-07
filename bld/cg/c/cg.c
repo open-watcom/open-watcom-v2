@@ -198,7 +198,7 @@ extern  n       *CGAttr( n *nd, cg_sym_attr attr ) {
 }
 
 static  int     DupNo = { 0 };
-static  n       *CGDuplicateArray[ 2 ];
+static  n       *CGDuplicateArray[2];
 extern  n       **CGDuplicate( n *nd ) {
 /************************************/
 
@@ -221,8 +221,8 @@ extern  n       **CGDuplicate( n *nd ) {
     new2->l = (n *)ACopyOf( buff );
     DumpT( nd );
     Code( "duplicate ===> %s %s%n", new1->l, new2->l );
-    CGDuplicateArray[ 0 ] = new1;
-    CGDuplicateArray[ 1 ] = new2;
+    CGDuplicateArray[0] = new1;
+    CGDuplicateArray[1] = new2;
     Action( " -> %t %t%n", new1, new2 );
     return( CGDuplicateArray );
 }

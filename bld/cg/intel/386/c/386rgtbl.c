@@ -638,12 +638,12 @@ void            InitRegTbl( void )
 */
 {
     if( _FPULevel( FPU_87 ) ) {
-        HW_CAsgn( STParmReg[ Max87Stk ], HW_EMPTY );
+        HW_CAsgn( STParmReg[Max87Stk], HW_EMPTY );
     }
     if( _IsTargetModel( INDEXED_GLOBALS ) ) {
-        HW_CAsgn( FPParm2Reg[ 0 ], HW_ECX_ESI );
+        HW_CAsgn( FPParm2Reg[0], HW_ECX_ESI );
     } else {
-        HW_CAsgn( FPParm2Reg[ 0 ], HW_ECX_EBX );
+        HW_CAsgn( FPParm2Reg[0], HW_ECX_EBX );
     }
 }
 
@@ -658,12 +658,11 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
     intersect_class     class;
     reg_set_index       result;
 
-    set1 = & IntersectInfo[ s1 ];
-    set2 = & IntersectInfo[ s2 ];
+    set1 = & IntersectInfo[s1];
+    set2 = & IntersectInfo[s2];
     class = set1->class;
     if( class == set2->class ) {
-        result = InterTable[ class ]
-                        [  set1->index * Width[ class ] + set2->index  ];
+        result = InterTable[class][set1->index * Width[class] + set2->index];
     } else if( s1 == RL_NUMBER_OF_SETS ) {
         result = s2;
     } else if( s2 == RL_NUMBER_OF_SETS ) {
@@ -683,9 +682,9 @@ hw_reg_set      *ParmChoices( type_class_def class )
     hw_reg_set  *list;
 
     if( _FPULevel( FPU_87 ) ) {
-        list = ParmSets8087[  class  ];
+        list = ParmSets8087[class];
     } else {
-        list = ParmSets[  class  ];
+        list = ParmSets[class];
     }
     return( list );
 }
@@ -693,7 +692,7 @@ hw_reg_set      *ParmChoices( type_class_def class )
 
 hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
 /*************************************************************
-    for parm [ 8087 ]. returns the next available 8087 parameter register
+    for parm [8087]. returns the next available 8087 parameter register
 */
 {
     if( HW_COvlap( regs, HW_FLTS ) ) {
@@ -729,9 +728,9 @@ hw_reg_set      ReturnReg( type_class_def class, bool use_87 )
     hw_reg_set          *list;
 
     if( _FPULevel( FPU_87 ) && use_87 ) {
-        list = RegSets[  Return8087[  class  ]  ];
+        list = RegSets[Return8087[class]];
     } else {
-        list = RegSets[  ReturnSets[  class  ]  ];
+        list = RegSets[ReturnSets[class]];
     }
     return( *list );
 }
@@ -765,7 +764,7 @@ reg_set_index   IndexIntersect( reg_set_index curr,
 */
 {
     is_temp_index = is_temp_index;
-    return( RegIntersect( curr, IndexSets[  class  ] ) );
+    return( RegIntersect( curr, IndexSets[class] ) );
 }
 
 
@@ -840,9 +839,9 @@ bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 
     is_temp_index = is_temp_index;
     if( RegClass( reg ) == U4 ) {
-        list = RegSets[ RL_DOUBLE ];
+        list = RegSets[RL_DOUBLE];
     } else {
-        list = RegSets[ RL_LONG_INDEX ];
+        list = RegSets[RL_LONG_INDEX];
     }
     for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {

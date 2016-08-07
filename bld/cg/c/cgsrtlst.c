@@ -152,10 +152,10 @@ static  void            ShellSort( void **array, unsigned length,
         do {
             swap = false;
             for( i=0; i<(length-gap); ++i ) {
-                if( (*before)( array[i+gap], array[i] ) ) {
+                if( (*before)( array[i + gap], array[i] ) ) {
                     t = array[i];
-                    array[i] = array[i+gap];
-                    array[i+gap] = t;
+                    array[i] = array[i + gap];
+                    array[i + gap] = t;
                     swap = true;
                 }
             }

@@ -734,8 +734,8 @@ extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
 #ifndef NDEBUG
     tn retn;
     EchoAPI( "CGInt64( %x %x, %t )"
-           , val.u._32[ I64LO32 ]
-           , val.u._32[ I64HI32 ]
+           , val.u._32[I64LO32]
+           , val.u._32[I64HI32]
            , tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( BGInt64( val, TypeAddress( tipe ) ) );
@@ -1388,7 +1388,7 @@ extern cg_name _CGAPI CGAlign( cg_name name, uint alignment )
 #endif
 }
 
-static  cg_name CGDuplicateArray[ 2 ];
+static  cg_name CGDuplicateArray[2];
 
 extern  cg_name * _CGAPI CGDuplicate( cg_name name )
 /**************************************************/
@@ -1402,8 +1402,8 @@ extern  cg_name * _CGAPI CGDuplicate( cg_name name )
 #endif
 
     addr = TGen( name, TypeAddress( TY_DEFAULT ) );
-    CGDuplicateArray[ 0 ] = TGReLeaf( BGCopy( addr ) );
-    CGDuplicateArray[ 1 ] = TGReLeaf( addr );
+    CGDuplicateArray[0] = TGReLeaf( BGCopy( addr ) );
+    CGDuplicateArray[1] = TGReLeaf( addr );
 
 #ifndef NDEBUG
     retn = CGDuplicateArray;
@@ -1579,7 +1579,7 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
     char        data[40];
     unsigned    slen = len;
     char        *d = data;
-    char        *dt = &data[sizeof(data)-1];
+    char        *dt = &data[sizeof( data ) - 1];
     const char  *s = value;
     char        *hex = "0123456789abcdef";
     char        c;
@@ -1596,8 +1596,8 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
             if(( d + (4+1) ) >= dt ) break;
             *d++ = '\\';
             *d++ = 'x';
-            *d++ = hex[ ( c >> 4 ) & 0x0f ];
-            *d++ = hex[ ( c >> 0 ) & 0x0f ];
+            *d++ = hex[( c >> 4 ) & 0x0f];
+            *d++ = hex[( c >> 0 ) & 0x0f];
         }
     }
     *d = '\0';

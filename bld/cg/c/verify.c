@@ -147,10 +147,10 @@ static  bool    Op2Pow2( instruction *ins ) {
 
     int         log;
 
-    log = GetLog2( ins->operands[ 1 ]->c.lo.int_value );
+    log = GetLog2( ins->operands[1]->c.lo.int_value );
     if( log == -1 ) return( false );
-    if( log == ( ( TypeClassSize[ ins->type_class ] * 8 ) - 1 ) ) {
-        if( Unsigned[ ins->type_class ] != ins->type_class ) {
+    if( log == ( ( TypeClassSize[ins->type_class] * 8 ) - 1 ) ) {
+        if( Unsigned[ins->type_class] != ins->type_class ) {
             return( false );
         }
     }

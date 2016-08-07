@@ -326,7 +326,7 @@ extern  bool    LoadAToMove( instruction *ins ) {
         return( false );
     if( ins->head.opcode != OP_LA && ins->head.opcode != OP_CAREFUL_LA )
         return( false );
-    op = ins->operands[ 0 ];
+    op = ins->operands[0];
     if( op->n.class != N_MEMORY )
         return( false );
     ins->head.opcode = OP_MOV;
@@ -335,9 +335,9 @@ extern  bool    LoadAToMove( instruction *ins ) {
         seg = AskBackSeg();
     }
     if( ins->type_class == WD || ins->type_class == SW ) {
-        ins->operands[ 0 ] = AddrConst( op, seg, CONS_OFFSET );
+        ins->operands[0] = AddrConst( op, seg, CONS_OFFSET );
     } else { /* must be a far pointer */
-        ins->operands[ 0 ] = AddrConst( op, seg, CONS_ADDRESS );
+        ins->operands[0] = AddrConst( op, seg, CONS_ADDRESS );
     }
     return( true );
 }

@@ -84,7 +84,7 @@ typedef struct oc_header {
 
 typedef struct oc_entry {
         oc_header               hdr;
-        byte                    data[ 1 ];
+        byte                    data[1];
 } oc_entry;
 
 typedef struct oc_handle {

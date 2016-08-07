@@ -65,7 +65,7 @@ static const char * Formats[] = {
 static  void    DumpAnAddr( an node ) {
 /*************************************/
 
-    DumpString( Classes[ node->class ] );
+    DumpString( Classes[node->class] );
     DumpChar( ' ' );
     switch( node->class ) {
     case CL_VALUE2:
@@ -110,7 +110,7 @@ static  void    DumpLbl( label_handle *what ) {
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( i = blk->targets; i-- > 0; ) {
-            if( what == &blk->edge[ i ].destination.u.lbl ) {
+            if( what == &blk->edge[i].destination.u.lbl ) {
                 DumpLiteral( "Target " );
                 DumpPtr( blk );
                 DumpChar( '(' );
@@ -156,7 +156,7 @@ static  void    DumpAnName( an node ) {
 extern  void    Dumpan( an node ) {
 /*********************************/
 
-    DumpString( Formats[ node->format ] );
+    DumpString( Formats[node->format] );
     DumpChar( ' ' );
     switch( node->format ) {
     case NF_ADDR:

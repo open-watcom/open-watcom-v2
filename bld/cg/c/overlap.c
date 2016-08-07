@@ -94,7 +94,7 @@ static  bool    ovUses( name *op1, name *index )
             Overlaps( index->i.base, op1 ) );
 }
 
-static  bool    (*OverlapTable[N_INDEXED+1][N_INDEXED+1])( name *, name * ) = {
+static  bool    (*OverlapTable[N_INDEXED + 1][N_INDEXED + 1])( name *, name * ) = {
 /* result       op ->   N_CONST N_MEM   N_TEMP  N_REG   N_INDEX */
 /* N_CONSTANT   */   {  ovNo,   ovNo,   ovNo,   ovNo,   ovNo },
 /* N_MEMORY     */   {  ovNo,   ovYes,  ovNo,   ovNo,   ovNo },

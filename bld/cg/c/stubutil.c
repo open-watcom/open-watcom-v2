@@ -99,7 +99,7 @@ extern  char    *DoIToHS( char * buff, int buff_len, int i ) {
     *buff = NULLCHAR;
     hexdigits = "0123456789abcdef";
     while( --length >= 0 ) {
-        *--buff = hexdigits[ i & 0x0f ];
+        *--buff = hexdigits[i & 0x0f];
         i = (unsigned)i >> 4;
     }
     *--buff = 'x';
@@ -327,7 +327,7 @@ extern  char    *Tipe( cg_type tipe ) {
         *--res = 'Y';
         *--res = 'T';
     } else {
-        res = Tipes[ tipe ];
+        res = Tipes[tipe];
     }
     return( res );
 }
@@ -410,7 +410,7 @@ extern  char    *Op( cg_op op ) {
     if( op >= STUB_MAX_OP ) {
         CGError( "Illegal operator" );
     } else {
-        res = Ops[ op ];
+        res = Ops[op];
     }
     return( res );
 }
@@ -774,30 +774,30 @@ extern  segment_id      SetFile( segment_id seg ) {
 
     old = CurSeg;
     CurSeg = seg;
-    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[ seg ] == false ) {
+    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[seg] == false ) {
         CGError( "BESetSeg - bad segment (%d)", seg );
     } else {
-        if( Files[ seg ].hdl == 0 ) {
+        if( Files[seg].hdl == 0 ) {
             if( FilesOpen > 10 ) {
-                for( i = 0; Files[ i ].hdl == 0; ++i );
-                FShut( Files[ i ].hdl );
+                for( i = 0; Files[i].hdl == 0; ++i );
+                FShut( Files[i].hdl );
                 --FilesOpen;
             }
-            if( Files[ seg ].exists ) {
-                Files[ seg ].hdl = open( Files[ seg ].name, O_RDWR );
-                lseek( Files[ seg ].hdl, 0, SEEK_END );
+            if( Files[seg].exists ) {
+                Files[seg].hdl = open( Files[seg].name, O_RDWR );
+                lseek( Files[seg].hdl, 0, SEEK_END );
                 ++FilesOpen;
             } else {
-                Files[ seg ].hdl = FCreate( Files[ seg ].name );
-                if( Files[ seg ].hdl != -1 ) {
-                    Files[ seg ].exists = true;
+                Files[seg].hdl = FCreate( Files[seg].name );
+                if( Files[seg].hdl != -1 ) {
+                    Files[seg].exists = true;
                     ++FilesOpen;
                 } else {
-                    Files[ seg ].hdl = 0;
+                    Files[seg].hdl = 0;
                 }
             }
         }
-        Out = Files[ seg ].hdl;
+        Out = Files[seg].hdl;
     }
     return( old );
 }
@@ -831,11 +831,11 @@ extern  char   *CFCnvFS( float_handle f, char *buffer, int maxlen ) {
         *buffer++ = '-';
         len = -len;
     }
-    buffer[ 2 ] = len % 10 + '0';
+    buffer[2] = len % 10 + '0';
     len /= 10;
-    buffer[ 1 ] = len % 10 + '0';
+    buffer[1] = len % 10 + '0';
     len /= 10;
-    buffer[ 0 ] = len + '0';
+    buffer[0] = len + '0';
     buffer += 3;
     return( buffer );
 }

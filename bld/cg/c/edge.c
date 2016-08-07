@@ -114,8 +114,8 @@ block   *SplitBlock( block *blk, instruction *ins )
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;
-    PointEdge( &blk->edge[ 0 ], new_blk );
-    edge = &new_blk->edge[ 0 ];
+    PointEdge( &blk->edge[0], new_blk );
+    edge = &new_blk->edge[0];
     for( i = 0; i < new_blk->targets; ++i ) {
         edge->source = new_blk;
         edge++;

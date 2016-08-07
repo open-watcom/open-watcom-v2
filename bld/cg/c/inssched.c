@@ -95,7 +95,7 @@ static dep_list_entry *AllocDep( void )
         new->used = 0;
         CurrDepBlock = new;
     }
-    return( &CurrDepBlock->entries[ CurrDepBlock->used++ ] );
+    return( &CurrDepBlock->entries[CurrDepBlock->used++] );
 }
 
 

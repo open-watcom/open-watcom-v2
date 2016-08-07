@@ -53,9 +53,9 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
 
     result = ins->result;
     if( ins->num_operands != 0 ) {
-        op1 = ins->operands[ 0 ];
+        op1 = ins->operands[0];
         if( ins->num_operands != 1 ) {
-            op2 = ins->operands[ 1 ];
+            op2 = ins->operands[1];
         }
     }
     switch( kind ) {
@@ -330,9 +330,9 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         // rINTCOMP reductions for 16-bit need work to handle < and >
         // comparisons - not worth it for now - BBB Apr 24, 1995
         if( ins->type_class != FS ) return( false );
-        if( ins->operands[ 1 ]->n.class == N_CONSTANT &&
-            ins->operands[ 1 ]->c.const_type == CONS_ABSOLUTE &&
-            CFTest( ins->operands[ 1 ]->c.value ) > 0 ) return( true );
+        if( ins->operands[1]->n.class == N_CONSTANT &&
+            ins->operands[1]->c.const_type == CONS_ABSOLUTE &&
+            CFTest( ins->operands[1]->c.value ) > 0 ) return( true );
 #endif
         return( false );
     default:

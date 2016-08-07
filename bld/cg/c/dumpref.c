@@ -48,7 +48,7 @@ extern  void    DumpOpcodeName( int opcode ) {
     if( opcode > OP_BLOCK || opcode < 0 ) {
         DumpLiteral( "??????" );
     } else {
-        DumpString( OpcodeList[ opcode ] );
+        DumpString( OpcodeList[opcode] );
         DumpChar( ' ' );
     }
 }

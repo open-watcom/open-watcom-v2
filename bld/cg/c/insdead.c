@@ -131,7 +131,7 @@ static  void            FreeUnVisitedTemps( void )
     name        *op;
     name        **owner;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for( ;; ) {
         op = *owner;
         if( op == NULL ) break;

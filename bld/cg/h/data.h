@@ -43,7 +43,7 @@ extern  block                   *CurrBlock;
 extern  int                     InsId;
 extern  int                     TempId;
 extern  conflict_node           *ConfList;
-extern  name                    *Names[N_INDEXED+1];
+extern  name                    *Names[N_INDEXED + 1];
 extern  name                    *LastTemp;
 extern  name                    *DummyIndex;
 extern  source_line_number      SrcLine;

@@ -95,7 +95,7 @@ extern  void    InitWeights( uint size ) {
         SetCost( Save.push_cost, COST( 1,11 ) );
         SetCost( Save.pop_cost, COST( 1,8 ) );
     }
-    Save.index_save     = Save.load_cost[ WD ];
+    Save.index_save     = Save.load_cost[WD];
 }
 
 
@@ -118,13 +118,13 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
        !HW_Ovlap( reg, must_save ) ) {
         cost = 0;
     } else {
-        cost = Save.pop_cost[ class ] + Save.push_cost[ class ];
+        cost = Save.pop_cost[class] + Save.push_cost[class];
     }
     op = conf->name;
     savings = conf->savings;
     if( _ConstTemp( op ) ) {
         /* adjust for the initial load */
-        cost += Weight( Save.load_cost[ class ] + Save.def_save[ class ],
+        cost += Weight( Save.load_cost[class] + Save.def_save[class],
                         conf->start_block );
         /* Adjust by a fudge factor */
         savings /= LOOP_FACTOR;

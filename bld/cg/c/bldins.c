@@ -130,13 +130,13 @@ extern  bool    FiniLabel( label_handle lbl, block *blk ) {
     block_num   i;
 
     for( i = blk->targets; i-- > 0; ) {
-        if( blk->edge[ i ].destination.u.lbl == lbl ) {
-            blk->edge[ i ].flags |= DEST_LABEL_DIES;
+        if( blk->edge[i].destination.u.lbl == lbl ) {
+            blk->edge[i].flags |= DEST_LABEL_DIES;
             return( true );
         }
     }
     if( blk->label == lbl ) {
-        blk->edge[ 0 ].flags |= BLOCK_LABEL_DIES;
+        blk->edge[0].flags |= BLOCK_LABEL_DIES;
         return( true );
     }
     return( false );
@@ -281,8 +281,8 @@ extern  an      BGCompare( cg_op op, an left, an rite, label_handle entry, type_
     AddTarget( NULL, false );
     new = NewBoolNode();
     new->u.b.e = entry;
-    new->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
-    new->u.b.f = &CurrBlock->edge[ 1 ].destination.u.lbl;
+    new->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
+    new->u.b.f = &CurrBlock->edge[1].destination.u.lbl;
     EnLink( AskForNewLabel(), true );
     return( new );
 }
@@ -645,7 +645,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             *(rite->u.b.f) = CurrBlock->label;
             GenBlock( BLK_JUMP, 1 );
             AddTarget( NULL, false );
-            left->u.b.f = &CurrBlock->edge[ 0 ].destination.u.lbl;
+            left->u.b.f = &CurrBlock->edge[0].destination.u.lbl;
             left->u.b.t = rite->u.b.t;
             new = left;
             AddrFree( rite );
@@ -657,7 +657,7 @@ extern  an      BGFlow( cg_op op, an left, an rite ) {
             *(rite->u.b.t) = CurrBlock->label;
             GenBlock( BLK_JUMP, 1 );
             AddTarget( NULL, false );
-            left->u.b.t = &CurrBlock->edge[ 0 ].destination.u.lbl;
+            left->u.b.t = &CurrBlock->edge[0].destination.u.lbl;
             left->u.b.f = rite->u.b.f;
             new = left;
             AddrFree( rite );

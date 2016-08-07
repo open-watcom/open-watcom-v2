@@ -50,12 +50,12 @@ extern  void    MakeMovAddrConsts( void ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_LA ) {
-                op = ins->operands[ 0 ];
+                op = ins->operands[0];
                 if( op->n.class == N_TEMP ) {
                     op->v.usage |= USE_IN_ANOTHER_BLOCK;
                     op = AllocAddrConst(op,0, CONS_TEMP_ADDR, ins->type_class);
                     ins->head.opcode = OP_MOV;
-                    ins->operands[ 0 ] = op;
+                    ins->operands[0] = op;
                 }
             }
         }

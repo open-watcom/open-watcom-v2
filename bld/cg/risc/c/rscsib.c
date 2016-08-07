@@ -71,7 +71,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
 
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class != N_CONSTANT ) return( false );
         if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
         if( cons->c.lo.int_value > 3 ) return( false );
@@ -79,14 +79,14 @@ extern bool FoldIntoIndex( instruction * ins ) {
         found SHL R1,n => R1
 */
     } else if( ins->head.opcode == OP_ADD ) {
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class != N_REGISTER ) return( false );
         if( cons->n.size != WORD_SIZE ) return( false );
         base_reg = cons->r.reg;
 /*
         found ADD R1,R2 => R1
 */
-        if( cons == ins->operands[ 0 ] ) {
+        if( cons == ins->operands[0] ) {
 /*
         found ADD R1,R1 => R1  <==> SHL R1,1 => R1
 */
@@ -96,7 +96,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
     } else {
         return( false );
     }
-    other_reg = ins->operands[ 0 ]->r.reg;
+    other_reg = ins->operands[0]->r.reg;
     sib_head = NULL;
     dies = false;
     next = ins;

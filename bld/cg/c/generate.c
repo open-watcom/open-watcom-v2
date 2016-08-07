@@ -324,7 +324,7 @@ static  void    FreeExtraTemps( name *last, block_num id )
     name        **owner;
     name        *temp;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for( ;; ) {
         temp = *owner;
         if( temp == last ) break;
@@ -365,7 +365,7 @@ static  void    ForceTempsMemory( void )
             op->v.conflict = NULL;
         }
     }
-    LastTemp = Names[ N_TEMP ];
+    LastTemp = Names[N_TEMP];
 }
 
 
@@ -529,7 +529,7 @@ static  void    FreeExtraSyms( name *last )
     name        *temp;
     name        *next;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for(;;) {
         temp = *owner;
         if( temp == last ) break;
@@ -545,12 +545,12 @@ static  void    FreeExtraSyms( name *last )
         next = temp->n.next_name;
         FreeAName( temp );
     }
-    Names[ N_CONSTANT ] = NULL;
+    Names[N_CONSTANT] = NULL;
     for( temp = Names[N_INDEXED]; temp != NULL; temp = next ) {
         next = temp->n.next_name;
         FreeAName( temp );
     }
-    Names[ N_INDEXED ] = NULL;
+    Names[N_INDEXED] = NULL;
 }
 
 

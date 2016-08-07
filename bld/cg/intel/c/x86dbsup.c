@@ -59,7 +59,7 @@ extern  void    BuffStart( temp_buff *temp, uint def ) {
 
 
     CurrBuff = temp;
-    temp->buff[ 1 ] = def;
+    temp->buff[1] = def;
     temp->index = 2;
     temp->fix_idx = 0;
 }
@@ -79,7 +79,7 @@ extern  void    BuffEnd( segment_id seg ) {
 
     ptr_type = TypeAddress( TY_LONG_POINTER );
     old = SetOP( seg );
-    CurrBuff->buff[ 0 ] = CurrBuff->index;
+    CurrBuff->buff[0] = CurrBuff->index;
     buff = CurrBuff->buff;
     last = 0;
     for( i = 0; i < CurrBuff->fix_idx; ++i ) {
@@ -121,7 +121,7 @@ extern  uint    BuffLoc( void ) {
 extern  void    BuffPatch( byte val, uint loc ) {
 /***********************************************/
 
-    CurrBuff->buff[  loc  ] = val;
+    CurrBuff->buff[loc] = val;
 }
 
 
@@ -129,7 +129,7 @@ extern  void    BuffByte( byte b ) {
 /**********************************/
 
     if( CurrBuff->index < DB_BUFF_SIZE ) {
-        CurrBuff->buff[  CurrBuff->index++  ] = b;
+        CurrBuff->buff[CurrBuff->index++] = b;
         if( CurrBuff->index >= DB_BUFF_SIZE ) {
             _Zoiks( ZOIKS_005 );
         }

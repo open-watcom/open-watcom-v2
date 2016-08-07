@@ -55,7 +55,7 @@ extern  int             CountIns(block*);
 
 #define MAX_CONF_INFO   ( 2 * ( MAX_OPS_PER_INS + 1 ) + 1 )
 static  int             CurrInfo;
-static  conflict_info   ConflictInfo[ MAX_CONF_INFO ];
+static  conflict_info   ConflictInfo[MAX_CONF_INFO];
 
 
 static void RenumFrom( instruction *ins ) {
@@ -152,8 +152,8 @@ static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
     conflict_info       *info;
 
     for( i = 0; i < MAX_CONF_INFO; ++i ) {
-        ConflictInfo[ i ].conf = NULL;
-        ConflictInfo[ i ].flags = CB_NONE;
+        ConflictInfo[i].conf = NULL;
+        ConflictInfo[i].flags = CB_NONE;
     }
     CurrInfo = 0;
     FindAllConflicts( ins1, ins2, CB_FOR_INS1 );

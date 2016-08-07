@@ -100,16 +100,16 @@ static  void    CopyList( score *frm, score *to,
     score_list  *new;
     score       *next;
 
-    if( to[ i ].list == NULL ) {
-        to[ i ].list = *sc_heads;
+    if( to[i].list == NULL ) {
+        to[i].list = *sc_heads;
         *sc_heads = (list_head *)**sc_heads;
         *to[i].list = NULL;
-        for( next = to[ i ].next_reg; next->list == NULL; next = next->next_reg ) {
+        for( next = to[i].next_reg; next->list == NULL; next = next->next_reg ) {
             next->list = next->prev_reg->list;
         }
     }
     if( *to[i].list == NULL ) {
-        next = to[ i ].next_reg;
+        next = to[i].next_reg;
         for( first = *frm[i].list; first != NULL; first = first->next ) {
             new = NewScListEntry();
             Copy( &first->info, &new->info, sizeof( score_info ) );
@@ -127,21 +127,21 @@ static  void    ScoreCopy( score *other_sc, score *sc )
     int         i;
 
     FreeScoreBoard( sc );
-    sc_heads = (list_head **)&sc[ ScoreCount ];
+    sc_heads = (list_head **)&sc[ScoreCount];
     i = ScoreCount;
     for( ;; ) {
         --i;
-        sc[ i ].next_reg = &sc[ other_sc[ i ].next_reg->index ];
-        sc[ i ].prev_reg = &sc[ other_sc[ i ].prev_reg->index ];
-        sc[ i ].generation = other_sc[ i ].generation;
-        sc[ i ].list = NULL;
+        sc[i].next_reg = &sc[other_sc[i].next_reg->index];
+        sc[i].prev_reg = &sc[other_sc[i].prev_reg->index];
+        sc[i].generation = other_sc[i].generation;
+        sc[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
         if( i == 0 ) break;
     }
     *sc_heads = NULL;
     i = ScoreCount;
-    sc_heads = (list_head **)&sc[ ScoreCount ];
+    sc_heads = (list_head **)&sc[ScoreCount];
     for( ;; ) {
         --i;
         CopyList( other_sc, sc, sc_heads, i );
@@ -158,7 +158,7 @@ static  void *ScoreDescendants( block *blk )
     hw_reg_set  regs;
 
     for( i = blk->targets; i-- > 0; ) {
-        son = blk->edge[ i ].destination.u.blk;
+        son = blk->edge[i].destination.u.blk;
         if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
@@ -178,7 +178,7 @@ static  void *ScoreDescendants( block *blk )
     }
     HW_CAsgn( regs, HW_EMPTY );
     for( i = blk->targets; i-- > 0; ) {
-        son = blk->edge[ i ].destination.u.blk;
+        son = blk->edge[i].destination.u.blk;
         if( _IsBlkMarked( son ) ) {
             HW_TurnOn( regs, son->ins.hd.next->head.live.regs );
             _MarkBlkUnMarked( son );

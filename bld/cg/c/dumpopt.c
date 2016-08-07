@@ -74,7 +74,7 @@ static const char *Conds[] = {
 static  const char  *CondName( oc_jcond *oc ) {
 /*********************************************/
 
-    return( Conds[ oc->cond ] );
+    return( Conds[oc->cond] );
 }
 
 #else
@@ -94,7 +94,7 @@ static const char *Conds[] = {
 static  const char  *CondName( oc_jcond *oc ) {
 /*********************************************/
 
-    return( Conds[ oc->cond - FIRST_CONDITION ] );
+    return( Conds[oc->cond - FIRST_CONDITION] );
 }
 
 #endif
@@ -212,7 +212,7 @@ extern  void    DumpOc( ins_entry *ins ) {
 
     DumpPtr( ins );
     DumpChar( ' ' );
-    DumpString(  CNames[ _Class( ins ) ] );
+    DumpString(  CNames[_Class( ins )] );
     DumpChar( ' ' );
     if( _Class( ins ) != OC_INFO ) {
         CheckAttr( ins->oc.oc_header.class );
@@ -291,7 +291,7 @@ static  void    DoData( oc_entry *instr ) {
     uint        len;
 
     for( len = 0; len < instr->hdr.reclen - offsetof( oc_entry, data ); ++len ) {
-        DumpByte( instr->data[ len ] );
+        DumpByte( instr->data[len] );
         DumpChar( ' ' );
     }
 }

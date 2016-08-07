@@ -86,7 +86,7 @@ cg_type FloatTypes[] = {
     TY_DOUBLE,
     TY_DEFAULT
 };
-cg_op ControlOps[  ] = {
+cg_op ControlOps[] = {
     O_GOTO,
     O_LABEL,
     O_INVOKE_LABEL,
@@ -95,7 +95,7 @@ cg_op ControlOps[  ] = {
     O_IF_FALSE,
     O_NOP
 };
-cg_op CompareOps[  ] = {
+cg_op CompareOps[] = {
     O_EQ,
     O_NE,
     O_LT,
@@ -104,13 +104,13 @@ cg_op CompareOps[  ] = {
     O_GE,
     O_NOP
 };
-cg_op FlowOps[  ] = {
+cg_op FlowOps[] = {
     O_FLOW_AND,
     O_FLOW_OR,
     O_FLOW_NOT,
     O_NOP
 };
-cg_op UnaryOps[  ] = {
+cg_op UnaryOps[] = {
     O_UMINUS,
     O_COMPLEMENT,
     O_POINTS,
@@ -135,7 +135,7 @@ cg_op UnaryOps[  ] = {
     O_PTR_TO_NATIVE,
     O_NOP
 };
-cg_op BinaryOps[  ] = {
+cg_op BinaryOps[] = {
     O_PLUS,
     O_MINUS,
     O_TIMES,
@@ -154,7 +154,7 @@ cg_op BinaryOps[  ] = {
     O_SIDE_EFFECT,
     O_NOP
 };
-cg_op FunkyOps[  ] = {
+cg_op FunkyOps[] = {
     O_POW,
     O_ATAN2,
     O_FMOD,
@@ -175,14 +175,14 @@ cg_op FunkyOps[  ] = {
     O_RETURN,
     O_NOP
 };
-char * Classes[  ] = {
+char * Classes[] = {
     "CG_FE",
     "CG_LBL",
     "CG_BACK",
     "CG_TBL",
     ""
 };
-char * Ops[  ] = {
+char * Ops[] = {
         "",
         "+",
         "O_INTERNAL_01",
@@ -299,7 +299,7 @@ char * Ops[  ] = {
         "O_LV_PRE_GETS",
         ""
 };
-char * Tipes[  ] = {
+char * Tipes[] = {
     "T_UINT_1",
     "T_INT_1",
     "T_UINT_2",

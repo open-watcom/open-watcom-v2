@@ -56,7 +56,7 @@ static cg_type  Types[] = {
 type_def        *ClassType( type_class_def tipe )
 /***********************************************/
 {
-    return( TypeAddress( Types[ tipe ] ) );
+    return( TypeAddress( Types[tipe] ) );
 }
 
 

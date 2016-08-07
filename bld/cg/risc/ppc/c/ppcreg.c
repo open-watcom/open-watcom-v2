@@ -95,7 +95,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
 {
     type_class_def      class;
     uint                i;
-    hw_reg_set          parms[ 24 ];
+    hw_reg_set          parms[24];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
 
@@ -107,7 +107,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
     state->attr = 0;
     i = 0;
     parm_src = ParmRegs();
-    parm_dst = &parms[ 0 ];
+    parm_dst = &parms[0];
     for(;;) {
         *parm_dst = *parm_src;
         if( HW_CEqual( *parm_dst, HW_EMPTY ) ) break;

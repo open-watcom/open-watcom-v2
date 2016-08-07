@@ -81,7 +81,7 @@ static  void    AssignPushLocals( void ) {
         if( DoesSomething( ins ) ) {
             if( ins->head.opcode != OP_MOV ) break;
             if( UnChangeable( ins ) ) break;
-            src = ins->operands[ 0 ];
+            src = ins->operands[0];
             dst = ins->result;
             if( src->n.class != N_REGISTER ) break;
             if( _IsFloating( src->n.name_class ) ) break; /*90-Dec-17*/
@@ -151,7 +151,7 @@ extern  void    RelocParms( void ) {
 
     name        *name;
 
-    for( name = Names[ N_TEMP ]; name != NULL; name = name->n.next_name ) {
+    for( name = Names[N_TEMP]; name != NULL; name = name->n.next_name ) {
         if( ( name->v.usage & HAS_MEMORY ) && ( name->t.temp_flags & STACK_PARM ) ) {
             name->t.location += CurrProc->parms.base;
         }

@@ -275,7 +275,7 @@ extern  name    *ST( int num ) {
     return an N_REGISTER for ST(num)
 */
 
-    return( AllocRegName( FPRegs[  num  ] ) );
+    return( AllocRegName( FPRegs[num] ) );
 }
 
 extern  instruction     *PrefFLDOp( instruction *ins,
@@ -448,7 +448,7 @@ static  instruction     *ExpUnary( instruction *ins,
     if( res != RES_STK0 ) {
         ins = SuffixFSTPRes( ins );
     }
-    unary->operands[ 0 ] = ST0;
+    unary->operands[0] = ST0;
     unary->result = ST0;
     return( ins );
 }
@@ -551,7 +551,7 @@ static  instruction     *ExpMove( instruction *ins,
         ins->u.gen_table = MFLD;
         break;
     case _Move( OP_CONS, RES_STK0 ):
-        if( CFTest( ins->operands[ 0 ]->c.value ) != 0 ) {
+        if( CFTest( ins->operands[0]->c.value ) != 0 ) {
             ins->u.gen_table = FLD1;
         } else {
             ins->u.gen_table = FLDZ;
@@ -586,7 +586,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
     name                *index;
 
     sp = AllocRegName( HW_SP );
-    size = TypeClassSize[ ins->type_class ];
+    size = TypeClassSize[ins->type_class];
     new_ins = MakeBinary( OP_SUB, sp, AllocIntConst( size ), sp, WD );
     new_ins->u.gen_table = RC;
     PrefixIns( ins, new_ins );
@@ -620,7 +620,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
             new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 0, ins->type_class );
-            new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+            new_ins = MakeMove( ins->operands[0], index,ins->type_class );
             ReplIns( ins, new_ins );
             ins = ExpMove( new_ins, op, RES_MEM );
 
@@ -636,7 +636,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
             new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 2, ins->type_class );
-            new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+            new_ins = MakeMove( ins->operands[0], index,ins->type_class );
             ReplIns( ins, new_ins );
             ins = ExpMove( new_ins, op, RES_MEM );
             ins = pop_ins;
@@ -645,7 +645,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 #elif _TARGET & _TARG_80386
     {
         index = AllocIndex( sp, NULL, 0, ins->type_class );
-        new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+        new_ins = MakeMove( ins->operands[0], index,ins->type_class );
         ReplIns( ins, new_ins );
         ins = ExpMove( new_ins, op, RES_MEM );
     }
@@ -878,10 +878,10 @@ static  void    ExchangeOps( instruction *ins ) {
     name        *op1;
     name        *op2;
 
-    op1 = ins->operands[ 0 ];
-    op2 = ins->operands[ 1 ];
-    ins->operands[ 0 ] = op2;
-    ins->operands[ 1 ] = op1;
+    op1 = ins->operands[0];
+    op2 = ins->operands[1];
+    ins->operands[0] = op2;
+    ins->operands[1] = op1;
 }
 
 
@@ -916,7 +916,7 @@ static  void    ExpBinary( instruction *ins,
     case _OPS( OP_CONS, OP_STK0 ):
         PrefixFLDOp( ins, op1, 0 );
         ins->u.gen_table = GenTab( ins, RRFBINP );
-        ins->operands[ 0 ] = ST1;
+        ins->operands[0] = ST1;
         break;
     case _OPS( OP_STK0, OP_STK1 ):
         ins->u.gen_table = GenTab( ins, RRFBINP );
@@ -935,8 +935,8 @@ static  void    ExpBinary( instruction *ins,
     case _OPS( OP_STK0, OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
         ins->u.gen_table = GenTab( ins, RNFBINP );
-        ins->operands[ 0 ] = ST1;
-        ins->operands[ 1 ] = ST0;
+        ins->operands[0] = ST1;
+        ins->operands[1] = ST0;
         break;
     case _OPS( OP_MEM , OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
@@ -989,7 +989,7 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) {
             for( i = blk->targets; i-- > 0; ) {
-                target = blk->edge[ i ].destination.u.blk;
+                target = blk->edge[i].destination.u.blk;
                 if( !_IsBlkVisited( target ) ) {
                     RevOtherCond( target, (instruction *)&target->ins );
                 }

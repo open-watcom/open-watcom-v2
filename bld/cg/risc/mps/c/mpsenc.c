@@ -239,12 +239,12 @@ static  uint_8  *FindOpcodes( instruction *ins )
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8 || ins->type_class == I8 ) {
-            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
-            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         }
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     } else {
         opcodes = NULL;
         assert( 0 );
@@ -265,7 +265,7 @@ static  uint_8 FindImmedOpcode( instruction *ins )
     if( _OpIsBinary( ins->head.opcode ) ) {
         opcode = BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcode = SetImmedOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )];
+        opcode = SetImmedOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0];
         if( ins->head.opcode == OP_SET_LESS_EQUAL ) {
             // need to increment the immediate by one (since CPU can do
             // 'less than' but not 'less than or equal')

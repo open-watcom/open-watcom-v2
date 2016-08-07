@@ -149,7 +149,7 @@ extern  void    ScoreSegments( score *sc )
     name        *dst;
     name        *src;
 
-    ds = &sc[ DS->r.reg_index ];
+    ds = &sc[DS->r.reg_index];
     for( xs = ds->next_reg; xs != ds; xs = xs->next_reg ) {
         if( xs->index == SS->r.reg_index ) {
             for( i = I_MAX; i-- > 0; ) {

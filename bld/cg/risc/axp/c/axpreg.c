@@ -84,7 +84,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
 {
     type_class_def      class;
     uint                i;
-    hw_reg_set          parms[ 20 ];
+    hw_reg_set          parms[20];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
     call_class          cclass;
@@ -112,7 +112,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
     i = 0;
-    parm_dst = &parms[ 0 ];
+    parm_dst = &parms[0];
     for( parm_src = ParmRegs(); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {

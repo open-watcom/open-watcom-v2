@@ -312,7 +312,7 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
     if( rite->class != TN_CONS ) return( tipe );
     if( left->tipe->attr & TYPE_FLOAT ) return( tipe );
     if( rite->tipe->attr & TYPE_FLOAT ) return( tipe );
-    if( tipe->length > TypeClassSize[ U4 ] ) return( tipe );
+    if( tipe->length > TypeClassSize[U4] ) return( tipe );
     if( left->tipe->attr & TYPE_SIGNED ) {
         if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
             return( tipe );

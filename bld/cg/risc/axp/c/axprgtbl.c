@@ -378,15 +378,15 @@ hw_reg_set      *ParmChoices( type_class_def class )
     case U4:
     case CP:
     case PT:
-        return( RegSets[ RL_PARM_4 ] );
+        return( RegSets[RL_PARM_4] );
     case I8:
     case U8:
     case XX:
-        return( RegSets[ RL_PARM_8 ] );
+        return( RegSets[RL_PARM_8] );
     case FS:
     case FD:
     case FL:
-        return( RegSets[ RL_PARM_F ] );
+        return( RegSets[RL_PARM_F] );
     default:
         _Zoiks( ZOIKS_124 );
         return( NULL );
@@ -423,7 +423,7 @@ hw_reg_set      ReturnReg( type_class_def class )
 hw_reg_set      *ParmRegs( void )
 /*******************************/
 {
-    return( &AllParmRegs[ 0 ] );
+    return( &AllParmRegs[0] );
 }
 
 hw_reg_set      ParmRegConflicts( hw_reg_set regs )
@@ -518,7 +518,7 @@ bool    IsIndexReg( hw_reg_set reg, type_class_def class,
 
     is_temp_index = is_temp_index;
     class = class;
-    for( dregs = &DWordRegs[ 0 ]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
+    for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
         if( HW_Equal( *dregs, reg ) ) {
             return( true );
         }
@@ -664,7 +664,7 @@ bool    IsRegClass( hw_reg_set regs, type_class_def class )
 reg_set_index   UsualPossible( type_class_def class )
 /***************************************************/
 {
-    return( IsSets[  class  ] );
+    return( IsSets[class] );
 }
 
 
@@ -781,11 +781,11 @@ byte            RegTrans( hw_reg_set reg )
     /*
      * This should be cached in the reg name and used instead of a stupid lookup
      */
-    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[ 0 ] ); i++ ) {
-        if( HW_Subset( QWordRegs[  i  ], reg ) ) return( i );
+    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
+        if( HW_Subset( QWordRegs[i], reg ) ) return( i );
     }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[ 0 ] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[  i  ] ) ) return( i );
+    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
+        if( HW_Equal( reg, FloatRegs[i] ) ) return( i );
     }
     return( 0 );
 }
@@ -803,11 +803,11 @@ axp_regn RegTransN( name *reg_name )
     int       i;
     reg = reg_name->r.reg;
 
-    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[ 0 ] ); i++ ) {
-        if( HW_Subset( QWordRegs[  i  ], reg ) ) return( i+AXP_REGN_r0 );
+    for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
+        if( HW_Subset( QWordRegs[i], reg ) ) return( i+AXP_REGN_r0 );
     }
-    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[ 0 ] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[  i  ] ) ) return( i+AXP_REGN_f0 );
+    for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
+        if( HW_Equal( reg, FloatRegs[i] ) ) return( i+AXP_REGN_f0 );
     }
     _Zoiks( ZOIKS_031 );
     return( AXP_REGN_END );

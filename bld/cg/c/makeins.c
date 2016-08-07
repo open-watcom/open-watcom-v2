@@ -153,8 +153,8 @@ extern  instruction     *MakeNary( opcode_defs opcode, name *left,
     ins->head.opcode = opcode;
     ins->type_class = class;
     ins->base_type_class = base_class;
-    ins->operands[ 0 ] = left;
-    ins->operands[ 1 ] = right;
+    ins->operands[0] = left;
+    ins->operands[1] = right;
     ins->result = result;
     return( ins );
 }

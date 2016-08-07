@@ -132,7 +132,7 @@ static  void    TellTempLocs( void )
     name        *temp;
     int         ans;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->v.symbol != NULL && (temp->t.temp_flags & ALIAS) == 0 ) {
             ans = (int)(pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
             if( ans == TEMP_LOC_QUIT ) break;
@@ -274,7 +274,7 @@ static  bool    UsedByLA( instruction *ins, name *temp )
 /******************************************************/
 {
     if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
-        if( ins->operands[ 0 ] == temp ) return( true );
+        if( ins->operands[0] == temp ) return( true );
     }
     return( false );
 }
@@ -301,7 +301,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( In( ins->operands[ i ], name ) ) {
+                if( In( ins->operands[i], name ) ) {
                     if( onlyins != NULL ) return( NULL );
                     onlyins = ins;
                 }
@@ -445,7 +445,7 @@ static  void    CalcNumberOfUses( void )
     instruction *ins;
     int         i;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.temp_flags & STACK_PARM ) {
             temp->v.block_usage = USED_TWICE;
         } else {
@@ -487,7 +487,7 @@ extern  void    AssignOtherLocals( void )
     if( !BlockByBlock ) {
         CalcNumberOfUses();
     }
-    for( temp = Names[ N_TEMP ]; temp != LastTemp; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != LastTemp; temp = temp->n.next_name ) {
         if( (temp->v.usage & NEEDS_MEMORY) == 0 ) continue;
         if( temp->v.usage & HAS_MEMORY ) continue;
         if( temp->t.temp_flags & ALIAS ) continue;
@@ -576,7 +576,7 @@ extern  void    FiniStackMap( void )
     stack_temp  *next2;
     name        *temp;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( ( temp->t.temp_flags & ALIAS ) != EMPTY ) continue;
         if( ( temp->v.usage & USE_ADDRESS ) == EMPTY ) continue;
         if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) continue;
@@ -630,7 +630,7 @@ extern  void            CountTempRefs( void )
     int                 i;
     name                *temp;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.u.ref_count = 0;
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

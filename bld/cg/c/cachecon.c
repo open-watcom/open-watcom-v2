@@ -112,7 +112,7 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
     }
     if( class == -1 )
         class = XX;
-    // return( Unsigned[ class ] );
+    // return( Unsigned[class] );
     // why? BBB - June 28, 1995
     return( class );
 }
@@ -138,7 +138,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            ins_class = Unsigned[ _OpClass( ins ) ];
+            ins_class = Unsigned[_OpClass( ins )];
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons  ) {
@@ -175,7 +175,7 @@ extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
 
     Head = head;
     Next = next;
-    for( cons = Names[ N_CONSTANT ]; cons != NULL; cons = cons->n.next_name ) {
+    for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_TEMP_ADDR ) continue;
         class = FindMaxClass( cons, &num_refs );
         if( class == XX ) continue;

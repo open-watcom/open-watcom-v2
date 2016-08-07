@@ -196,7 +196,7 @@ cost_val IfCost( sel_handle s_node, int entries )
     } else {
         jumpsize = SHORT_JUMP;
     }
-    cost = jumpsize + CmpSize[ tipe_length ];
+    cost = jumpsize + CmpSize[tipe_length];
     /* for char-sized switches, often the two-byte "cmp al,xx" is used.
        otherwise we need three bytes */
     if ( SelType( 0xffffffff ) != TY_UINT_1 && tipe_length == 1 )
@@ -247,7 +247,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
         to_sub = 0;
     }
     if( other == NULL ) {
-        other = table->cases[ 0 ];  /* no otherwise? he bakes!*/
+        other = table->cases[0];  /* no otherwise? he bakes!*/
     }
     if( tipe == TY_WORD ) {
         GenValuesForward( list, hi, lo, to_sub, tipe );
@@ -256,7 +256,7 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
     }
     GenSelEntry( false );
     CodeLabel( table->lbl, 0 );
-    tab_ptr = &table->cases[ 0 ];
+    tab_ptr = &table->cases[0];
     curr = lo;
     scan = list;
     if( tipe != TY_WORD ) {
@@ -366,7 +366,7 @@ tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
     table->value_lbl = NULL;
     CodeLabel( table->lbl, TypeAddress( TY_NEAR_CODE_PTR )->length );
     table->size = cases;
-    tab_ptr = &table->cases[ 0 ];
+    tab_ptr = &table->cases[0];
     for(;;) {
         if( SelCompare( lo, list->low ) < 0 ) {
             *tab_ptr = other;
@@ -435,7 +435,7 @@ void    MkSelOp( name *idx, type_class_def class )
     instruction         *ins;
 
     ins = NewIns( 1 );
-    ins->operands[ 0 ] = idx;
+    ins->operands[0] = idx;
     ins->head.opcode = OP_SELECT;
     ins->type_class = class;
     ins->result = NULL;

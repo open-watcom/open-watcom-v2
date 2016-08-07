@@ -172,7 +172,7 @@ extern  int     FPStkOver( instruction *ins, int stk_depth )
 
     max_depth = 0;
     for( i = ins->sequence + 1; i < MaxSeq; ++i ) {
-        depth = SeqMaxDepth[ i ] - SeqCurDepth[ i ];
+        depth = SeqMaxDepth[i] - SeqCurDepth[i];
         if( depth > max_depth ) max_depth = depth;
     }
     return( SeqMaxDepth[ins->sequence] - SeqCurDepth[ins->sequence] + max_depth + stk_depth - Max87Stk );
@@ -198,9 +198,9 @@ extern  void    FPCalcStk( instruction *ins, int *pdepth )
 {
     int         affect;
 
-    if( FPStackIns( ins ) ) SeqMaxDepth[ ins->sequence ] = ins->t.stk_max;
+    if( FPStackIns( ins ) ) SeqMaxDepth[ins->sequence] = ins->t.stk_max;
     affect = ins->stk_entry - ins->stk_exit;
-    SeqCurDepth[ ins->sequence ] += affect;
+    SeqCurDepth[ins->sequence] += affect;
     ins->stk_exit = *pdepth;
     ins->stk_entry = *pdepth + affect;
     ins->s.stk_depth = *pdepth + ins->s.stk_extra;
@@ -362,8 +362,8 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             break;
         case G_MCOMP:
             // if( temp->actual_locn != ACTUAL_1 ) _Zoiks( ZOIKS_076 );
-            ins->operands[ 0 ] = ST( ACTUAL_1 );
-            ins->operands[ 1 ] = ST( 0 );
+            ins->operands[0] = ST( ACTUAL_1 );
+            ins->operands[1] = ST( 0 );
             if( temp->actual_locn != ACTUAL_1 ) {
                 byte    *actual_owner;
 
@@ -384,9 +384,9 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             } else {
                 ins->u.gen_table = RRFBINP;
             }
-            ins->operands[ 0 ] = ST( temp->actual_locn );
-            ins->result = ins->operands[ 0 ];
-            ins->operands[ 1 ] = ST( 0 );
+            ins->operands[0] = ST( temp->actual_locn );
+            ins->result = ins->operands[0];
+            ins->operands[1] = ST( 0 );
             InsLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
             DecrementAll();
             break;
@@ -399,13 +399,13 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             temp->actual_locn = ACTUAL_0;
             if( ins->u.gen_table->generate == G_MFLD ) {
                 // PushStack( ins );
-                ins->operands[ 0 ] = ST( ACTUAL_0 );
+                ins->operands[0] = ST( ACTUAL_0 );
             } else {
                 GetToTopOfStack( ins, VIRTUAL_0 );
-                ins->operands[ 0 ] = ST( temp->actual_locn );
+                ins->operands[0] = ST( temp->actual_locn );
             }
         } else {
-            ins->operands[ 0 ] = ST( temp->actual_locn );
+            ins->operands[0] = ST( temp->actual_locn );
             // if( attr & PUSHES ) {
             //     PushStack( ins );
             // }
@@ -428,7 +428,7 @@ static  void    SetResultReg( instruction *ins, int virtual_reg ) {
 /**********************************************************/
 
     ins->result = ST( InsLoc( ins, virtual_reg ) );
-    ins->operands[ 0 ] = ins->result;
+    ins->operands[0] = ins->result;
 }
 
 
@@ -810,7 +810,7 @@ static  bool    OKToCache( temp_entry *temp ) {
     ins = temp->first;
     if( ins->num_operands <= NumOperands( ins ) )
         return( true );
-    seg = ins->operands[ ins->num_operands - 1 ];
+    seg = ins->operands[ins->num_operands - 1];
     for( ins = ins->head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         /*
          * Might be a segment load or some other sort of nonsense here.
@@ -933,19 +933,19 @@ extern  void    FPPreSched( block *blk ) {
     SeqCurDepth = CGAlloc( MaxSeq * sizeof( *SeqCurDepth ) );
     SeqMaxDepth = CGAlloc( MaxSeq * sizeof( *SeqMaxDepth ) );
     for( i = 0; i < MaxSeq; ++i ) {
-        SeqCurDepth[ i ] = SEQ_INIT_VALUE;
-        SeqMaxDepth[ i ] = 0;
+        SeqCurDepth[i] = SEQ_INIT_VALUE;
+        SeqMaxDepth[i] = 0;
     }
     for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
-        if( SeqCurDepth[ ins->sequence ] == SEQ_INIT_VALUE ) {
+        if( SeqCurDepth[ins->sequence] == SEQ_INIT_VALUE ) {
             if( FPStackIns( ins ) ) {
-                SeqCurDepth[ ins->sequence ] = ins->stk_exit;
+                SeqCurDepth[ins->sequence] = ins->stk_exit;
             }
         }
     }
     for( i = 0; i < MaxSeq; ++i ) {
-        if( SeqCurDepth[ i ] == SEQ_INIT_VALUE ) {
-            SeqCurDepth[ i ] = 0;
+        if( SeqCurDepth[i] == SEQ_INIT_VALUE ) {
+            SeqCurDepth[i] = 0;
         }
     }
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -959,9 +959,9 @@ extern  void    FPPreSched( block *blk ) {
          */
         ins->s.stk_extra = FPStkReq( ins ); // BBB - March 22, 1994
         depth = InsMaxDepth( ins ) + ins->s.stk_extra;
-        ins->t.stk_max = SeqMaxDepth[ ins->sequence ];
-        if( depth > SeqMaxDepth[ ins->sequence ] ) {
-            SeqMaxDepth[ ins->sequence ] = depth;
+        ins->t.stk_max = SeqMaxDepth[ins->sequence];
+        if( depth > SeqMaxDepth[ins->sequence] ) {
+            SeqMaxDepth[ins->sequence] = depth;
         }
     }
 }
@@ -1040,7 +1040,7 @@ static  void    ReOrderForCall( instruction *ins ) {
 
     int         i,count;
 
-    count = Count87Regs( ins->operands[ CALL_OP_USED ]->r.reg );
+    count = Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
     XchForCall( ins, count-1 );
     for( i = 0; i < count; ++i ) {
         PopStack( ins );

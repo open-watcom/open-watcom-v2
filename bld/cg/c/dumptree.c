@@ -170,7 +170,7 @@ static  void    DumpSubTree( tn node, int indent ) {
         DumpCall( node, indent );
         break;
     case TN_FLOW_OUT:
-        DumpStrType( node, Ops[ O_FLOW_OUT ], Null, indent );
+        DumpStrType( node, Ops[O_FLOW_OUT], Null, indent );
         DumpSubTree( node->u.left, indent+2 );
         break;
     case TN_QUESTION:

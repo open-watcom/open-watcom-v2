@@ -87,7 +87,7 @@ static  section_def             *currSection;
 
 #define N_SECTIONS              16
 
-static  section_def             *sectionDefs[ N_SECTIONS ];
+static  section_def             *sectionDefs[N_SECTIONS];
 
 static  short                   CurrFNo;
 
@@ -96,7 +96,7 @@ section_def *FindSection( segment_id id )
 {
     section_def         *curr;
 
-    curr = sectionDefs[ id % N_SECTIONS ];
+    curr = sectionDefs[id % N_SECTIONS];
     while( curr != NULL ) {
         if( curr->id == id ) break;
         curr = curr->next;
@@ -113,8 +113,8 @@ section_def *AddSection( segment_id id )
     new = CGAlloc( sizeof( section_def ) );
     bucket = id % N_SECTIONS;
     new->id = id;
-    new->next = sectionDefs[ bucket ];
-    sectionDefs[ bucket ] = new;
+    new->next = sectionDefs[bucket];
+    sectionDefs[bucket] = new;
     new->func  = NULL;
     new->is_start = true;
     return( new );
@@ -128,12 +128,12 @@ static void DeleteSections( void )
     section_def         *next;
 
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
-        if( sectionDefs[ bucket ] != NULL ) {
-            for( ptr = sectionDefs[ bucket ]; ptr != NULL; ptr = next ) {
+        if( sectionDefs[bucket] != NULL ) {
+            for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = next ) {
                 next = ptr->next;
                 CGFree( ptr );
             }
-            sectionDefs[ bucket ] = NULL;
+            sectionDefs[bucket] = NULL;
         }
     }
 }
@@ -300,8 +300,8 @@ static void DoDFSegRange( void )
 
     old = currSection;
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
-        if( sectionDefs[ bucket ] != NULL ) {
-            for( ptr = sectionDefs[ bucket ]; ptr != NULL; ptr = ptr->next ) {
+        if( sectionDefs[bucket] != NULL ) {
+            for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
 
                 tipe = OWLTellSectionType( ptr->owl_handle );
                 switch( tipe ){
@@ -382,7 +382,7 @@ static  int PutBytes( void *handle, const char *buffer, unsigned len )
 
 #define MAX_OBJ_NAME    1024
 
-static  char            objName[ MAX_OBJ_NAME ];
+static  char            objName[MAX_OBJ_NAME];
 
 static  void            NameGatherer( const char *name, void *data )
 /******************************************************************/
@@ -403,15 +403,15 @@ static const char   *LabelName( label_handle label )
     if( AskIfRTLabel( label ) ) {
         name = AskRTName( SYM2RTIDX( sym ) );
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
-            objName[ 0 ] = '.';
-            objName[ 1 ] = '.';
-            strcpy( &objName[ 2 ], name );
-            name = &objName[ 0 ];
+            objName[0] = '.';
+            objName[1] = '.';
+            strcpy( &objName[2], name );
+            name = &objName[0];
         }
         return( name );
     }
     if( sym != NULL ) {
-        buff = &objName[ 0 ];
+        buff = &objName[0];
         attr = FEAttr( sym );
         kind = NORMAL;
         if( (attr & FE_INTERNAL) == 0 ) {
@@ -419,9 +419,9 @@ static const char   *LabelName( label_handle label )
                 kind = DLLIMPORT;
             } else {
                 if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
-                    objName[ 0 ] = '.';
-                    objName[ 1 ] = '.';
-                    buff = &objName[ 2 ];
+                    objName[0] = '.';
+                    objName[1] = '.';
+                    buff = &objName[2];
                 }
             }
             DoOutObjectName( sym, NameGatherer, buff, kind );
@@ -716,7 +716,7 @@ void    AlignObject( unsigned align )
     offset      off;
     unsigned    mod;
     unsigned    add;
-    char        buffer[ MAX_ALIGN ];
+    char        buffer[MAX_ALIGN];
 
     assert( currSection != NULL );
     assert( _IsPowerOfTwo( align ) );

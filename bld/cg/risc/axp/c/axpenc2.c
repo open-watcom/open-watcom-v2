@@ -85,6 +85,6 @@ void EncodeCond( oc_jcond *oc ) {
     if( oc->hdr.class & ATTR_FLOAT ) {
         floating = 1;
     }
-    opcode = BranchOpcodes[ oc->cond - FIRST_COMPARISON ][ floating  ];
+    opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating];
     doBranch( opcode, oc->handle, oc->index );
 }

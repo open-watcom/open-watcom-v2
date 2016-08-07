@@ -130,7 +130,7 @@ extern  void    Wait8087( void ) {
                     case G_MFLD:
                     case G_MNFBIN:
                     case G_MRFBIN:
-                        last_fpop = ins->operands[ 0 ];
+                        last_fpop = ins->operands[0];
                         last_fpres = NULL;
                         last_fpins = ins;
                         break;

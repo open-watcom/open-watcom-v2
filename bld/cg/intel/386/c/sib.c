@@ -54,7 +54,7 @@ static  bool    InsIsCandidate( instruction *ins )
     if( reg == NULL ) return( false );
     if( reg->n.class != N_REGISTER ) return( false );
     if( reg->n.size != WORD_SIZE ) return( false );
-    if( ins->operands[ 0 ]->n.class != N_REGISTER ) return( false );
+    if( ins->operands[0]->n.class != N_REGISTER ) return( false );
     if( !IsIndexReg( reg->r.reg, WD, 0 ) ) return( false );
     return( true );
 }

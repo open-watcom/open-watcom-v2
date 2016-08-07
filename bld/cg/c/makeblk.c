@@ -86,7 +86,7 @@ block   *MakeBlock( label_handle label, block_num edges )
     blk->depth = 0;
     _DBitInit( blk->dom.id, 0U );
     for( i = 0; i < edges; i++ ) {
-        edge = &blk->edge[ i ];
+        edge = &blk->edge[i];
         edge->source = blk;
     }
     return( blk );
@@ -100,9 +100,9 @@ block   *NewBlock( label_handle label, bool label_dies )
 
     blk = MakeBlock( label, 1 );
     if( label_dies ) {
-        blk->edge[ 0 ].flags = BLOCK_LABEL_DIES;
+        blk->edge[0].flags = BLOCK_LABEL_DIES;
     } else {
-        blk->edge[ 0 ].flags = 0;
+        blk->edge[0].flags = 0;
     }
     return( blk );
 }
@@ -239,8 +239,8 @@ block   *ReGenBlock( block *blk, label_handle lbl )
     targets = blk->targets + 1;
     new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
-    new->edge[ targets-1 ].destination.u.lbl = lbl;
-    new->edge[ targets-1 ].flags = 0;
+    new->edge[targets - 1].destination.u.lbl = lbl;
+    new->edge[targets - 1].flags = 0;
     new->targets = targets;
 
     /*   Move all references to blk*/
@@ -297,7 +297,7 @@ void    AddTarget( label_handle dest, bool dest_label_dies )
 {
     block_edge  *edge;
 
-    edge = &CurrBlock->edge[  CurrBlock->targets++  ];
+    edge = &CurrBlock->edge[CurrBlock->targets++];
     edge->source = CurrBlock;
     edge->destination.u.lbl = dest;
     edge->next_source = NULL;
@@ -332,7 +332,7 @@ void    FixEdges( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[  targets  ];
+                edge = &blk->edge[targets];
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
                     edge->flags |= DEST_IS_BLOCK;
@@ -359,8 +359,8 @@ static void *LinkReturns( void *arg )
     label_handle        to_search;
 
     arg = arg;
-    link_to = LinkReturnsParms[ 0 ];
-    to_search = LinkReturnsParms[ 1 ];
+    link_to = LinkReturnsParms[0];
+    to_search = LinkReturnsParms[1];
     blk = FindBlockWithLbl( to_search );
 //    found = false;
     if( blk == NULL )
@@ -369,7 +369,7 @@ static void *LinkReturns( void *arg )
         return( NOT_NULL );
     if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
-            if( blk->edge[ i ].destination.u.lbl == link_to ) {
+            if( blk->edge[i].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
                 return( NOT_NULL );
             }
@@ -381,15 +381,15 @@ static void *LinkReturns( void *arg )
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             if( blk->next_block == NULL )
                 return( (void *)(pointer_int)false );
-            LinkReturnsParms[ 0 ] = link_to;
-            LinkReturnsParms[ 1 ] = blk->next_block->label;
+            LinkReturnsParms[0] = link_to;
+            LinkReturnsParms[1] = blk->next_block->label;
             if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
                 return( NULL );
             }
         } else {
             for( i = blk->targets; i-- > 0; ) {
-                LinkReturnsParms[ 0 ] = link_to;
-                LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
+                LinkReturnsParms[0] = link_to;
+                LinkReturnsParms[1] = blk->edge[i].destination.u.lbl;
                 if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
                     return( NULL );
                 }
@@ -412,8 +412,8 @@ bool        FixReturns( void )
             _MarkBlkVisited( blk );
             if( blk->next_block == NULL ) return( false );
             _MarkBlkAttr( blk, BLK_RETURNED_TO );
-            LinkReturnsParms[ 0 ] = blk->next_block->label;
-            LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
+            LinkReturnsParms[0] = blk->next_block->label;
+            LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
             if( !LinkReturns( NULL ) ) {
                 return( false );
             }
@@ -436,7 +436,7 @@ void    UnFixEdges( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[  targets  ];
+                edge = &blk->edge[targets];
                 if( edge->flags & DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );
                     edge->destination.u.lbl = edge->destination.u.blk->label;
@@ -491,11 +491,11 @@ void    NewProc( int level )
         CurrProc->curr_block = CurrBlock;
         CurrProc->lasttemp = LastTemp;
         CurrProc->dummy_index = DummyIndex;
-        CurrProc->names[ N_CONSTANT ] = Names[ N_CONSTANT ];
-        CurrProc->names[ N_MEMORY   ] = Names[ N_MEMORY   ];
-        CurrProc->names[ N_TEMP     ] = Names[ N_TEMP     ];
-        CurrProc->names[ N_REGISTER ] = Names[ N_REGISTER ];
-        CurrProc->names[ N_INDEXED  ] = Names[ N_INDEXED  ];
+        CurrProc->names[N_CONSTANT] = Names[N_CONSTANT];
+        CurrProc->names[N_MEMORY]   = Names[N_MEMORY];
+        CurrProc->names[N_TEMP]     = Names[N_TEMP];
+        CurrProc->names[N_REGISTER] = Names[N_REGISTER];
+        CurrProc->names[N_INDEXED]  = Names[N_INDEXED];
         CurrProc->block_by_block = BlockByBlock;
         CurrProc->ins_id = InsId;
         CurrProc->untrimmed = BlocksUnTrimmed;
@@ -548,11 +548,11 @@ void    FreeProc( void )
             HeadBlock = CurrProc->head_block;
             BlockList = CurrProc->tail_block;
             CurrBlock = CurrProc->curr_block;
-            Names[ N_CONSTANT ] = CurrProc->names[ N_CONSTANT ];
-            Names[ N_MEMORY   ] = CurrProc->names[ N_MEMORY   ];
-            Names[ N_TEMP     ] = CurrProc->names[ N_TEMP     ];
-            Names[ N_REGISTER ] = CurrProc->names[ N_REGISTER ];
-            Names[ N_INDEXED  ] = CurrProc->names[ N_INDEXED  ];
+            Names[N_CONSTANT] = CurrProc->names[N_CONSTANT];
+            Names[N_MEMORY]   = CurrProc->names[N_MEMORY];
+            Names[N_TEMP]     = CurrProc->names[N_TEMP];
+            Names[N_REGISTER] = CurrProc->names[N_REGISTER];
+            Names[N_INDEXED]  = CurrProc->names[N_INDEXED];
             LastTemp = CurrProc->lasttemp;
             DummyIndex = CurrProc->dummy_index;
             BlockByBlock = CurrProc->block_by_block;

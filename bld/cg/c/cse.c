@@ -93,7 +93,7 @@ static void             TreeBits( block *root );
 static void             DeleteFromList( instruction **owner, instruction *ins, instruction *new );
 static void             CleanTableEntries( block *root );
 
-static instruction      *ExprHeads[LAST_CSE_OP+1];
+static instruction      *ExprHeads[LAST_CSE_OP + 1];
 static bool             LeaveIndVars;
 
 static  void    ReCalcAddrTaken( void )
@@ -1074,7 +1074,7 @@ static bool FixOneStructRet( instruction *call )
     if( res->n.class != N_TEMP )
         return( false );
     call->result = res;
-    mova->operands[0] = AllocAddrConst(res,0,CONS_TEMP_ADDR,mova->type_class);
+    mova->operands[0] = AllocAddrConst( res, 0, CONS_TEMP_ADDR, mova->type_class );
     FreeIns( movr );
     return( true );
 }

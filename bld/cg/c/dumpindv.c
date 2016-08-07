@@ -161,9 +161,9 @@ extern  void    DumpInvariants() {
 /********************************/
 
     DumpLiteral( "Temps: " );
-    DumpInv( Names[ N_TEMP ] );
+    DumpInv( Names[N_TEMP] );
     DumpLiteral( "Memory: " );
-    DumpInv( Names[ N_MEMORY ] );
+    DumpInv( Names[N_MEMORY] );
 }
 
 extern  void    DumpCurrLoop() {

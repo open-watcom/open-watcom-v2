@@ -79,11 +79,11 @@ static  bool    CoveringDefinitions( name *op )
     name        *alias;
     int         i;
     uint        loc;
-    bool        covered[MAX_POSSIBLE_REG+1];
+    bool        covered[MAX_POSSIBLE_REG + 1];
 
     if( op->n.size > MAX_POSSIBLE_REG ) return( false );
     for( i = op->n.size; i-- > 0; ) {
-        covered[ i ] = false;
+        covered[i] = false;
     }
     for( alias = op->t.alias; alias != op; alias = alias->t.alias ) {
         if( alias->v.block_usage & DEF_WITHIN_BLOCK ) {
@@ -96,7 +96,7 @@ static  bool    CoveringDefinitions( name *op )
         }
     }
     for( i = op->n.size; i-- > 0; ) {
-        if( covered[ i ] == false ) return( false );
+        if( covered[i] == false ) return( false );
     }
     return( true );
 }

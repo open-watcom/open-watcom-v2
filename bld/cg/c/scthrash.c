@@ -219,7 +219,7 @@ static  bool    ThrashDown( instruction *ins ) {
     int         i;
     instruction *oth_ins;
 
-    Y = ins->operands[ 0 ];
+    Y = ins->operands[0];
     Z = ins->result;
     for( oth_ins = ins->head.prev; ; oth_ins = oth_ins->head.prev ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( false );
@@ -279,7 +279,7 @@ static  bool    ThrashUp( instruction *ins ) {
     int         i;
     instruction *oth_ins;
 
-    Y = ins->operands[ 0 ];
+    Y = ins->operands[0];
     Z = ins->result;
     for( oth_ins = ins->head.next; ; oth_ins = oth_ins->head.next ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( false );
@@ -300,7 +300,7 @@ static  bool    ThrashUp( instruction *ins ) {
         if( HW_Ovlap( thrsh_ins->zap->reg, Y->r.reg ) ) return( false );
         if( HW_Ovlap( thrsh_ins->zap->reg, Z->r.reg ) ) return( false );
         if( (thrsh_ins->head.opcode == OP_MOV)
-            && (thrsh_ins->operands[ 0 ] == Z)
+            && (thrsh_ins->operands[0] == Z)
             && (thrsh_ins->result        == Y) ) break;
         if( Modifies( Y, Z, oth_ins->result ) ) return( false );
     }
@@ -323,8 +323,8 @@ extern  bool    RegThrash( block *blk ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
          && UnChangeable( ins ) == false
-         && ins->operands[ 0 ]->n.class == N_REGISTER
-         && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[ 0 ]->r.reg )
+         && ins->operands[0]->n.class == N_REGISTER
+         && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[0]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );

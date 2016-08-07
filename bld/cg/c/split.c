@@ -197,7 +197,7 @@ extern  instruction     *Reduce( instruction *ins )
 /*************************************************/
 {
     ins->head.state = INS_NEEDS_WORK;
-    return( ReduceTab[ins->u.gen_table->generate-FIRST_REDUCT]( ins ) );
+    return( ReduceTab[ins->u.gen_table->generate - FIRST_REDUCT]( ins ) );
 }
 
 

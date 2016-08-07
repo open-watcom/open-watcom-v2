@@ -165,5 +165,5 @@ typedef struct block {
         block_class             class;
         signed_32               iterations;
         unsigned_32             unroll_count;
-        struct block_edge       edge[ 1 ];
+        struct block_edge       edge[1];
 } block;

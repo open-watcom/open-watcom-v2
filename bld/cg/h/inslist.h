@@ -131,7 +131,7 @@ typedef struct instruction {
             byte                stk_depth;
         }                       s;
         instruction_flags       ins_flags;
-        union name               *operands[ 1 ]; /*  operands */
+        union name               *operands[1]; /*  operands */
 } instruction;
 
 #define CALL_OP_USED            0

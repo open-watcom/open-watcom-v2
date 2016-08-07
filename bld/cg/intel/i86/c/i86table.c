@@ -1405,9 +1405,9 @@ extern  opcode_entry    *OpcodeTable( table_def i )
 */
 {
     if( _FPULevel( FPU_87 ) ) {
-        return( FPOpcodeList[ i ] );
+        return( FPOpcodeList[i] );
     } else {
-        return( OpcodeList[ i ] );
+        return( OpcodeList[i] );
     }
 }
 

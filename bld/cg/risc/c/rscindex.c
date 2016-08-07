@@ -129,7 +129,7 @@ static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_de
     ins = MakeUnary( OP_LA, memory, temp, WD );
     PrefixIns( memory_ins, ins );
     // Note: this assumes we put Memory names on 8-byte boundaries
-    flags = AlignmentToFlags( AlignmentMap[ memory->v.offset & 0x7 ] );
+    flags = AlignmentToFlags( AlignmentMap[memory->v.offset & 0x7] );
     if( memory->m.alignment != 0 ) {
         flags = AlignmentToFlags( memory->m.alignment );
     }

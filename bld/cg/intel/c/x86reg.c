@@ -54,7 +54,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
     call_class          cclass;
     type_class_def      class;
     uint                i;
-    hw_reg_set          parms[ 10 ];
+    hw_reg_set          parms[10];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
     hw_reg_set          *pregs;
@@ -153,7 +153,7 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
     }
     class = ReturnClass( tipe, state->attr );
     i = 0;
-    parm_dst = &parms[ 0 ];
+    parm_dst = &parms[0];
     for( parm_src = FEAuxInfo( aux, PARM_REGS ); !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {

@@ -340,7 +340,7 @@ extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
     CheckPointer( r_addr );
     if( r_addr->format == NF_NAME )
         return( false );
-    action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
+    action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
     if( action == ADD_LA )
         return( true );
     if( action == ADD_RA )
@@ -396,7 +396,7 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
         return( NULL );
     addr = NewAddrName();
     for(;;) {
-        action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
+        action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
         switch( action ) {
         case UNEXPECTED:
             AddrFree( addr );

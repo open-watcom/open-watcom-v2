@@ -346,7 +346,7 @@ extern  void    DumpPossible( byte idx ) {
     if( idx == RL_NUMBER_OF_SETS ) {
         DumpLiteral( " Choices ANY" );
     } else {
-        DumpRgSet( RegSets[  idx  ] );
+        DumpRgSet( RegSets[idx] );
     }
 }
 

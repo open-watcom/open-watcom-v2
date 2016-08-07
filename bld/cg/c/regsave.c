@@ -64,14 +64,14 @@ extern  void    SetLoopCost( uint time ) {
     save_def    loop_weight;
     int         i;
 
-    loop_weight         = ( LOOP_FACTOR*time ) / TOTAL_WEIGHT;
+    loop_weight         = ( LOOP_FACTOR * time ) / TOTAL_WEIGHT;
     if( loop_weight == 0 ) {
         loop_weight = 1;
     }
-    Save.loop_weight[ 0 ] = 1;
+    Save.loop_weight[0] = 1;
     i = 1;
     for(;;) {
-        Save.loop_weight[ i ] = Save.loop_weight[ i-1 ]*loop_weight;
+        Save.loop_weight[i] = Save.loop_weight[i - 1] * loop_weight;
         ++ i;
         if( i > MAX_LOOP ) break;
     }
@@ -84,23 +84,23 @@ extern  void    SetCost( save_def *array, save_def cost ) {
     save_def    cost2;
 
     cost2 = cost;
-    #if _TARGET & _TARG_IAPX86
-        cost2 *= 2;
-    #endif
-    array[ U1 ] = cost;
-    array[ I1 ] = cost;
-    array[ U2 ] = cost;
-    array[ I2 ] = cost;
-    array[ U4 ] = cost2;
-    array[ I4 ] = cost2;
-    array[ U8 ] = cost;         // FIXME - not sure about these...
-    array[ I8 ] = cost;
-    array[ CP ] = cost2;
-    array[ PT ] = cost2;
-    array[ FS ] = cost;
-    array[ FD ] = cost;
-    array[ FL ] = cost;
-    array[ XX ] = cost;
+#if _TARGET & _TARG_IAPX86
+    cost2 *= 2;
+#endif
+    array[U1] = cost;
+    array[I1] = cost;
+    array[U2] = cost;
+    array[I2] = cost;
+    array[U4] = cost2;
+    array[I4] = cost2;
+    array[U8] = cost;         // FIXME - not sure about these...
+    array[I8] = cost;
+    array[CP] = cost2;
+    array[PT] = cost2;
+    array[FS] = cost;
+    array[FD] = cost;
+    array[FL] = cost;
+    array[XX] = cost;
 }
 
 
@@ -108,9 +108,9 @@ extern  save_def        Weight( save_def value, block *blk ) {
 /************************************************************/
 
     if( blk->depth < MAX_LOOP ) {
-        value *= Save.loop_weight[  blk->depth  ];
+        value *= Save.loop_weight[blk->depth];
     } else {
-        value *= Save.loop_weight[  MAX_LOOP  ];
+        value *= Save.loop_weight[MAX_LOOP];
     }
     return( value );
 }

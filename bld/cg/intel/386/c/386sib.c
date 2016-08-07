@@ -74,7 +74,7 @@ extern bool FoldIntoIndex( instruction *ins )
     cons_add = false;
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class != N_CONSTANT ) return( false );
         if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
         if( cons->c.lo.int_value > 3 ) return( false );
@@ -83,12 +83,12 @@ extern bool FoldIntoIndex( instruction *ins )
 */
     } else if( ins->head.opcode == OP_ADD && ins->operands[0] == ins->result ) {
         // ADD Rx,?? => Rx
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class == N_CONSTANT && cons->c.const_type == CONS_ABSOLUTE ) {
 /*
         found ADD R1,c => R1
 */
-            if( TypeClassSize[ ins->type_class ] != WORD_SIZE ) return( false );
+            if( TypeClassSize[ins->type_class] != WORD_SIZE ) return( false );
             cons_add = true;
             HW_CAsgn( base_reg, HW_EMPTY );
         } else {
@@ -98,7 +98,7 @@ extern bool FoldIntoIndex( instruction *ins )
 /*
         found ADD R1,R2 => R1
 */
-            if( cons == ins->operands[ 0 ] ) {
+            if( cons == ins->operands[0] ) {
 /*
         found ADD R1,R1 => R1  <==> SHL R1,1 => R1
 */
@@ -109,7 +109,7 @@ extern bool FoldIntoIndex( instruction *ins )
     } else {
         return( false );
     }
-    other_reg = ins->operands[ 0 ]->r.reg;
+    other_reg = ins->operands[0]->r.reg;
     sib_head = NULL;
     dies = false;
     next = ins;
@@ -153,9 +153,9 @@ extern bool FoldIntoIndex( instruction *ins )
                     HW_TurnOff( tmp, ins->result->r.reg );
 
                     // following line is to prevent turning
-                    // "shl r1,n -> r2; op i -> base[ r1 + r2 ]"
+                    // "shl r1,n -> r2; op i -> base[r1 + r2]"
                     // into something which would look like
-                    // "op i -> base[ r1 + r1 * f(n) ]"
+                    // "op i -> base[r1 + r1 * f(n)]"
                     // which we couldn't handle because X_LOW_BASE
                     // stuff can't (currently) deal with same reg being
                     // both base and index.  BBB - May 17, 1996

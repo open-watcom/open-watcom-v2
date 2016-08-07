@@ -151,7 +151,7 @@ static  gen_opcode  *FindOpcodes( instruction *ins )
     if( _IsFloating( ins->type_class ) ) {
         opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
     } else {
-        opcodes = &BinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &BinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     }
     return( opcodes );
 }

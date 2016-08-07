@@ -272,16 +272,16 @@ extern  byte    HasZero( score *sc, name *n )
         }
     } else if( n->n.class == N_REGISTER ) {
         i  = n->r.reg_index;
-        if( ScoreLookup( &sc[ i ], ScZero ) ) {
+        if( ScoreLookup( &sc[i], ScZero ) ) {
             bits |= LO_HALF | HI_HALF;
         } else {
-            hi = ScoreList[ i ]->high;
-            lo = ScoreList[ i ]->low;
+            hi = ScoreList[i]->high;
+            lo = ScoreList[i]->low;
             if( hi != NO_INDEX && lo != NO_INDEX ) {
-                if( _IsZero( HasZero( sc, ScoreList[ lo ]->reg_name ) ) ) {
+                if( _IsZero( HasZero( sc, ScoreList[lo]->reg_name ) ) ) {
                     bits |= LO_HALF;
                 }
-                if( _IsZero( HasZero( sc, ScoreList[ hi ]->reg_name ) ) ) {
+                if( _IsZero( HasZero( sc, ScoreList[hi]->reg_name ) ) ) {
                     bits |= HI_HALF;
                 }
             }

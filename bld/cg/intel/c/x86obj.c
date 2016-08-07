@@ -233,7 +233,7 @@ static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
             break;
         if( (name_len + suff_len) == curr->name[0]
           && memcmp( name, &curr->name[1], name_len ) == 0
-          && memcmp( suff, &curr->name[name_len+1], suff_len ) == 0 ) {
+          && memcmp( suff, &curr->name[name_len + 1], suff_len ) == 0 ) {
             return( curr->idx );
         }
         owner = &curr->next;
@@ -247,7 +247,7 @@ static omf_idx GetNameIdx( const char *name, const char *suff, bool alloc )
     assert(( name_len + suff_len ) < 256 );
     curr->name[0] = name_len + suff_len;
     memcpy( &curr->name[1], name, name_len );
-    memcpy( &curr->name[name_len+1], suff, suff_len );
+    memcpy( &curr->name[name_len + 1], suff, suff_len );
     return( NameIndex );
 }
 
@@ -1151,7 +1151,9 @@ void ChkDbgSegSize( offset max, bool typing )
     segment_id      old;
     long_offset     curr;
 
-    info = &DbgSegs[typing ? 1 : 0];
+    info = DbgSegs;
+    if( typing )
+        info++;
     old = SetOP( *info->id );
     curr = (offset)CurrSeg->location;
     if( curr >= max ) {

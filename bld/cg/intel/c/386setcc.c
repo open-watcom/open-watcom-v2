@@ -63,7 +63,7 @@ static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
     }
     if( next->head.opcode != OP_BLOCK )
         return( NULL );
-    op = ins->operands[ 0 ];
+    op = ins->operands[0];
     if( op->n.class != N_CONSTANT || op->c.const_type != CONS_ABSOLUTE ) {
         return( NULL );
     }
@@ -103,22 +103,22 @@ static  bool    FindFlowOut( block *blk ) {
         ins = ins->head.prev;
     }
 //    prev = ins->head.prev;
-    if( TypeClassSize[ ins->type_class ] > WORD_SIZE )
+    if( TypeClassSize[ins->type_class] > WORD_SIZE )
         return( false );
-    true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
+    true_blk = blk->edge[_TrueIndex( ins )].destination.u.blk;
     if( true_blk->inputs != 1 )
         return( false );
     if( true_blk->targets != 1 )
         return( false );
 
-    false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
+    false_blk = blk->edge[_FalseIndex( ins )].destination.u.blk;
     if( false_blk->inputs != 1 )
         return( false );
     if( false_blk->targets != 1 )
         return( false );
 
-    join_blk = false_blk->edge[ 0 ].destination.u.blk;
-    if( join_blk != true_blk->edge[ 0 ].destination.u.blk )
+    join_blk = false_blk->edge[0].destination.u.blk;
+    if( join_blk != true_blk->edge[0].destination.u.blk )
         return( false );
     if( join_blk->inputs != 2 )
         return( false );
@@ -179,7 +179,7 @@ static  bool    FindFlowOut( block *blk ) {
     RemoveBlock( false_blk );
 
     blk->targets = 1;
-    new_edge = &blk->edge[ 0 ];
+    new_edge = &blk->edge[0];
     new_edge->destination.u.blk = join_blk;
     new_edge->next_source = NULL;
     join_blk->input_edges = new_edge;

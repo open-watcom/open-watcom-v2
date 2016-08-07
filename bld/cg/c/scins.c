@@ -104,7 +104,7 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
         class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[ class ] != to->n.size ) return( false );
+        if( TypeClassSize[class] != to->n.size ) return( false );
     }
     for( i = ins->num_operands; i-- > 0; ) {
         save_ops[i] = ins->operands[i];
@@ -165,10 +165,10 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     if( op->n.class != N_INDEXED ) return( false );
     if( op->i.index->n.class != N_REGISTER ) return( false );
     if( op->i.index->r.reg_index == NO_INDEX ) return( false );
-    this_reg = &sc[ op->i.index->r.reg_index  ];
+    this_reg = &sc[op->i.index->r.reg_index];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
-            reg_name = ScoreList[ curr_reg->index ]->reg_name;
+            reg_name = ScoreList[curr_reg->index]->reg_name;
             // OOPS! what about "op [edx] -> [edx]" which zaps edx...
             // if( opp != &ins->result ||       BBB - Feb 18 - 1994
             if( *opp != ins->result ||
@@ -205,10 +205,10 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;
-        this_reg = &sc[ op->r.reg_index ];
+        this_reg = &sc[op->r.reg_index];
         if( !HW_Ovlap( live, op->r.reg ) ) {
             for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
-                if( HW_Ovlap( live, ScoreList[  curr_reg->index  ]->reg )
+                if( HW_Ovlap( live, ScoreList[curr_reg->index]->reg )
                 && curr_reg->generation < this_reg->generation
                 && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
                               opp, CHANGE_GEN ) ) {
@@ -239,7 +239,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
         }
         for( i = ScoreCount; i-- > 0; ) {
             if( ScoreEqual( sc, i, &info )
-             && ChangeIns( ins, ScoreList[ i ]->reg_name, opp, CHANGE_GEN ) )
+             && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) )
                 return( true );
         }
 
@@ -315,7 +315,7 @@ bool    ScoreMove( score *sc, instruction *ins )
     int         dst_index;
     score_info  info;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     src_index = 0;
     if( src->n.class == N_REGISTER ) {
@@ -379,7 +379,7 @@ bool    ScoreLA( score *sc, instruction *ins )
     int         dst_index;
     score_info  info;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     if( dst->n.class == N_REGISTER ) {
         dst_index = dst->r.reg_index;
@@ -411,9 +411,9 @@ void    ScZeroCheck( score *sc, instruction *ins )
     if( ins->head.opcode != OP_XOR
      && ins->head.opcode != OP_MOD
      && ins->head.opcode != OP_SUB ) return;
-    if( ins->operands[ 0 ] != ins->operands[ 1 ] ) return;
-    if( ins->operands[ 0 ] != ins->result ) return;
-    if( ins->operands[ 0 ]->n.class != N_REGISTER ) return;
+    if( ins->operands[0] != ins->operands[1] ) return;
+    if( ins->operands[0] != ins->result ) return;
+    if( ins->operands[0]->n.class != N_REGISTER ) return;
     i = ins->result->r.reg_index;
     ScoreAssign( sc, i, ScZero );
 }

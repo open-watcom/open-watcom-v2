@@ -1262,7 +1262,7 @@ extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
         fold = left;
         left = rite;
         rite = fold;
-        op = RevOpcode[  op - O_EQ  ];
+        op = RevOpcode[op - O_EQ];
     }
     fold = NULL;
     if( rite->class == TN_CONS && left->class == TN_BIT_RVALUE && !left->u2.b.is_signed && !HasBigConst( left->tipe ) ) {
@@ -1366,7 +1366,7 @@ extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
         temp = left;
         left = rite;
         rite = temp;
-        op = RevOpcode[  op - O_EQ  ];
+        op = RevOpcode[op - O_EQ];
     }
     op_eq = false;
     if( ( op == O_EQ ) || ( op == O_NE ) ) {
@@ -1525,7 +1525,7 @@ extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe 
         temp = left;
         left = rite;
         rite = temp;
-        op = RevOpcode[  op - O_EQ  ];
+        op = RevOpcode[op - O_EQ];
     }
 
     if( op == O_GT && ( ( tipe->attr & TYPE_SIGNED ) == EMPTY ) ) {
@@ -1613,7 +1613,7 @@ extern  an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
         temp = left;
         left = rite;
         rite = temp;
-        op = RevOpcode[  op - O_EQ  ];
+        op = RevOpcode[op - O_EQ];
     }
     fold = NULL;
     if( rite->class == TN_CONS ) {

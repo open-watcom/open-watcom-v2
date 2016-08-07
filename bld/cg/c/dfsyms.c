@@ -73,7 +73,7 @@ static short            CurrFNo;
 static bool             CcuDef;
 
 
-sect_info DwarfSegs[ DW_DEBUG_MAX ];
+sect_info DwarfSegs[DW_DEBUG_MAX];
 
 static back_handle Pc_High;
 static back_handle Pc_Low;
