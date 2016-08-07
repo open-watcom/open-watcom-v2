@@ -57,6 +57,7 @@
 #include "intrface.h"
 #include "opttell.h"
 #include "typemap.h"
+#include "bldcall.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -76,10 +77,7 @@ extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
-extern  void            BGParmDecl(cg_sym_handle,type_def*);
-extern  void            BGAutoDecl(cg_sym_handle,type_def*);
 extern  an              TGen(tn,type_def*);
-extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
 extern  void            DataLabel(label_handle);
 extern  void            DataBytes(unsigned,const void *);

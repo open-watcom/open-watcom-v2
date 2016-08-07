@@ -40,6 +40,7 @@
 #include "zoiks.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "parmreg.h"
 #include "feprotos.h"
 
 

@@ -35,9 +35,9 @@
 #include "encode.h"
 
 
-extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr) {
-/******************************************************************/
-
+obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
+/*********************************************************/
+{
     class = class;
     attr = attr;
     return( 4 );

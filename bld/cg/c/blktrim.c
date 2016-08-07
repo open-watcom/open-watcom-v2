@@ -40,11 +40,8 @@
 #include "makeblk.h"
 #include "nullprop.h"
 #include "insutil.h"
+#include "blktrim.h"
 
-
-/* forward declarations */
-extern  void    RemoveInputEdge( block_edge *edge );
-extern  bool    BlockTrim( void );
 
 static  instruction     *FindOneCond( block *blk )
 /************************************************/
@@ -90,8 +87,8 @@ static  void    MarkReachableBlocks( void )
 }
 
 
-extern  int     CountIns( block *blk )
-/************************************/
+int     CountIns( block *blk )
+/****************************/
 {
     int         num_instrs;
     instruction *ins;
@@ -118,8 +115,8 @@ static  bool    FindBlock( block *target )
 }
 
 
-extern  void    RemoveBlock( block *blk )
-/***************************************/
+void    RemoveBlock( block *blk )
+/*******************************/
 {
     block_num   i;
     unsigned    last_line;
@@ -186,8 +183,8 @@ extern  void    RemoveBlock( block *blk )
 }
 
 
-extern  void    RemoveInputEdge( block_edge *edge )
-/*************************************************/
+void    RemoveInputEdge( block_edge *edge )
+/*****************************************/
 {
     block       *dest;
     block_edge  *prev;
@@ -207,8 +204,8 @@ extern  void    RemoveInputEdge( block_edge *edge )
 }
 
 
-extern  void    MoveHead( block *old, block *new )
-/*************************************************
+void    MoveHead( block *old, block *new )
+/*****************************************
 
     We're eliminating a loop header, so move it the the new
     block and point all loop_head pointers to the new block.
@@ -415,8 +412,8 @@ static  bool    DoBlockTrim( void )
     return( any_change );
 }
 
-extern void KillCondBlk( block *blk, instruction *ins, int dest )
-/***************************************************************/
+void KillCondBlk( block *blk, instruction *ins, int dest )
+/********************************************************/
 // Assume blk is a conditional with compare ins
 // Make dest the destination and delete the unused edge
 // Change blk to a JMP to dest edge
@@ -440,8 +437,8 @@ extern void KillCondBlk( block *blk, instruction *ins, int dest )
     FreeIns( ins );
 }
 
-extern  bool    DeadBlocks( void )
-/********************************/
+bool    DeadBlocks( void )
+/************************/
 {
     block       *blk;
     instruction *ins;
@@ -471,8 +468,8 @@ extern  bool    DeadBlocks( void )
 }
 
 
-extern  bool    BlockTrim( void )
-/*******************************/
+bool    BlockTrim( void )
+/***********************/
 {
     bool    change = false;
 

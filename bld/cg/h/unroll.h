@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,52 +25,20 @@
 *
 *  ========================================================================
 *
-* Description:  Instuction size calculation and NOP padding.
+* Description:  Loop unrolling optimizations. Contains lots of obsolete
+*               and/or nonfunctional code. Currently doesn't work at all
+*               because other optimizations munge loops into a form this
+*               module doesn't expect.
 *
 ****************************************************************************/
 
 
-#include "optwif.h"
-#include "model.h"
-#include "inslist.h"
-#include "encode.h"
-
-
-static byte NopList[] = {
-    2,                  /* objlen of first NOP pattern */
-    0x89, 0xc0,         /* MOV AX,AX */
-    0xfc                /* CLD */
-};
-
-byte *NopLists[] = { NopList, NopList };
-
-static  byte    InsSize[4][OC_DEST_FAR + 1] = {
-/*      OC_DEST_SHORT   OC_DEST_NEAR    OC_DEST_CHEAP   OC_DEST_FAR */
-{       0,              3,              4,              5 },    /* CALL */
-{       2,              3,              0,              5 },    /* JMP */
-{       2,              5,              0,              0 },    /* JCOND */
-{       2,              4,              0,              0 },    /* JCOND,386 */
-};
-
-
-obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
-/*********************************************************/
-{
-    obj_length  i;
-
-    switch( class ) {
-    default:
-    case OC_CALL:
-        i = 0;
-        break;
-    case OC_JMP:
-        i = 1;
-        break;
-    case OC_LREF:
-        return( 2 );
-    case OC_JCOND:
-        i = _CPULevel( CPU_386 ) ? 3 : 2;
-        break;
-    }
-    return( InsSize[i][attr] );
-}
+extern void     FixBlockIds( void );
+extern block    *DupBlock( block *blk );
+extern void     DumpLoop( block *loop );
+extern block    *AddBlocks( block *insertion_point, block *block_list );
+extern void     RemoveIns( instruction *ins );
+extern bool     CanHoist( block *head );
+extern void     HoistCondition( block *head );
+extern bool     Hoisted( block *head, instruction *compare );
+extern bool     UnRoll( void );

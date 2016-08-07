@@ -53,6 +53,7 @@
 #include "insutil.h"
 #include "insdead.h"
 #include "typemap.h"
+#include "blktrim.h"
 
 
 /* block flag usage                                                 */
@@ -78,12 +79,8 @@ typedef enum {
 extern float_handle     CnvCFToType(float_handle,type_def*);
 extern int              NumOperands(instruction*);
 extern bool             LoadAToMove(instruction*);
-extern bool             DeadBlocks(void);
-extern void             RemoveInputEdge(block_edge*);
 extern bool             DivIsADog(type_class_def);
-extern void             MoveHead(block*,block*);
 extern void             MakeFlowGraph(void);
-extern bool             BlockTrim(void);
 extern int              GetLog2(unsigned_32);
 extern void             FindReferences(void);
 extern bool             IsTrickyPointerConv( instruction * );

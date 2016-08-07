@@ -50,18 +50,14 @@
 #include "split.h"
 #include "insutil.h"
 #include "typemap.h"
+#include "bldcall.h"
 #include "cgprotos.h"
 
 
 extern  name            *AddrConst(name*,segment_id,constant_class);
 extern  name            *NearSegment(void);
 extern  void            DataLabel(label_handle);
-extern  bool            AssgnParms(cn,bool);
-extern  type_class_def  AddCallBlock(cg_sym_handle,type_def*);
-extern  void            AddCallIns(instruction*,cn);
-extern  name            *DoParmDecl(cg_sym_handle,type_def*,hw_reg_set);
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  void            ReverseParmNodeList(pn *);
 extern  name            *BGNewTemp( type_def *tipe );
 extern  void            BGDone( an );
 

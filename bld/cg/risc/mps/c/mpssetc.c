@@ -38,9 +38,9 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "split.h"
+#include "blktrim.h"
 
 
-extern  void            RemoveInputEdge( block_edge *);
 extern  void            FlipCond( instruction * );
 extern  void            RemoveBlock( block * );
 

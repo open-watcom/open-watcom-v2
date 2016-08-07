@@ -37,18 +37,13 @@
 #include "inslist.h"
 #include "blips.h"
 #include "optmain.h"
+#include "optutil.h"
+#include "optmkins.h"
 
-extern  void            FreePendingDeletes( void );
-extern  ins_entry       *DelInstr( ins_entry * );
+
 extern  void            OptPull( void );
 extern  void            OptPush( void );
-extern  void            AddInstr( ins_entry *, ins_entry * );
-extern  ins_entry       *NewInstr( any_oc * );
-extern  oc_class        PrevClass( ins_entry * );
-extern  void            FreeInstr( ins_entry * );
 extern  pointer_int     MemInUse( void );
-extern  ins_entry       *NextIns( ins_entry * );
-
 
 static  void    PullQueue( void )
 /*******************************/

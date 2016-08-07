@@ -37,13 +37,11 @@
 #include "objout.h"
 #include "optmain.h"
 #include "encode.h"
+#include "optutil.h"
+#include "optmkins.h"
 
 
-extern  void            AddNewJump(ins_entry*,label_handle);
-extern  label_handle    AddNewLabel(ins_entry*,obj_length);
-extern  ins_entry       *PrevIns(ins_entry*);
 extern  void            ChgLblRef(ins_entry*,label_handle);
-extern  ins_entry       *NextIns(ins_entry*);
 
 static  label_handle    Handle;
 

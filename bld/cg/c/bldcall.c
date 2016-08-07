@@ -57,11 +57,12 @@
 #include "insutil.h"
 #include "namelist.h"
 #include "typemap.h"
+#include "bldcall.h"
+#include "parmreg.h"
 #include "feprotos.h"
 
 
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
@@ -75,7 +76,6 @@ extern  void            PushInSameBlock(instruction*);
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
 extern  bool            SegIsCS( name * );
-extern  type_length     ParmAlignment( type_def * );
 
 extern  bool            BlipsOn;
 

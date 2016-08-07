@@ -38,11 +38,10 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "blktrim.h"
 
 
-extern  void            RemoveInputEdge(block_edge *);
 extern  void            FlipCond(instruction*);
-extern  void            RemoveBlock( block * );
 
 static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
 /*******************************************************************/

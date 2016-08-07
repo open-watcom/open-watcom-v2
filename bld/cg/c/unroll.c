@@ -50,13 +50,13 @@
 #include "loopopts.h"
 #include "split.h"
 #include "insutil.h"
+#include "blktrim.h"
+#include "unroll.h"
 
 
-extern  void            RemoveInputEdge( block_edge * );
 extern  void            RemoveBlock( block * );
 extern  void            FlipCond( instruction * );
 extern  void            RevCond( instruction * );
-extern  int             CountIns( block *);
 
 extern block            *PreHead;
 extern block            *Head;
@@ -78,8 +78,8 @@ typedef struct loop_condition {
 } loop_condition;
 
 
-extern  void    FixBlockIds( void )
-/**********************************
+void    FixBlockIds( void )
+/**************************
     Fix up the block_id field of temps.
 */
 {
@@ -112,8 +112,8 @@ extern  void    FixBlockIds( void )
     }
 }
 
-extern  block   *DupBlock( block *blk )
-/**************************************
+block   *DupBlock( block *blk )
+/******************************
     Create a copy of the given block and all the instructions in it.
     This copy is not linked in anywhere. It has room for as many edges
     as blk has targets, but the number of targets is set to 0. There
@@ -410,7 +410,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
     }
 }
 
-extern  void    DumpLoop( block *loop )
+void    DumpLoop( block *loop )
 {
     block_edge  *edge;
     block_num   i;
@@ -616,8 +616,8 @@ static  bool    TractableCond( loop_condition *cond )
     return( ok );
 }
 
-extern  block   *AddBlocks( block *insertion_point, block *block_list )
-/**********************************************************************
+block   *AddBlocks( block *insertion_point, block *block_list )
+/**************************************************************
     Insert the list of blocks after the given insertion point.
 */
 {
@@ -635,8 +635,8 @@ extern  block   *AddBlocks( block *insertion_point, block *block_list )
     return( last );
 }
 
-extern  void    RemoveIns( instruction *ins )
-/********************************************
+void    RemoveIns( instruction *ins )
+/************************************
     Remove the ins from the instruction ring. Does not take
     into account live info or anything else like that.
 */
@@ -705,8 +705,8 @@ static  int     ExitEdges( block *head )
     return( count );
 }
 
-extern  bool    CanHoist( block *head )
-/**************************************
+bool    CanHoist( block *head )
+/******************************
     Figure out if we can hoist the condition of a loop to the top of
     the loop. Basically, we can do this as long as there are no
     if's between the head and the comparison instruction.
@@ -735,8 +735,8 @@ extern  bool    CanHoist( block *head )
     return( false );
 }
 
-extern  void    HoistCondition( block *head )
-/********************************************
+void    HoistCondition( block *head )
+/************************************
     We want to knock stuff off the top of a loop until the condition
     which controls exit from the loop is the first statement in the
     loop. To do this, we remove each instruction and append it to the
@@ -775,8 +775,8 @@ extern  void    HoistCondition( block *head )
 }
 
 #if 0
-extern  void    HoistCondition( block **head, block *prehead )
-/*************************************************************
+void    HoistCondition( block **head, block *prehead )
+/*****************************************************
     Munge the loop and prehead so that the condition is the first statement in
     the loop. This only works for a loop which has no conditional blocks in it
     other than the exit condition. To do this, we hoist each instruction from
@@ -1022,7 +1022,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     // the cleanup stuff should all be pointing in the right place by now
 }
 
-extern  bool    Hoisted( block *head, instruction *compare )
+bool    Hoisted( block *head, instruction *compare )
 {
 #if 0
     if( CanHoist( head ) ) {
@@ -1039,8 +1039,8 @@ extern  bool    Hoisted( block *head, instruction *compare )
     return( false );
 }
 
-extern  bool    UnRoll()
-/***********************
+bool    UnRoll( void )
+/*********************
     Unroll the given loop n times.
 */
 {

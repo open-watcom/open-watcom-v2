@@ -35,6 +35,7 @@
 #include "data.h"
 #include "makeblk.h"
 #include "nullprop.h"
+#include "blktrim.h"
 
 
 typedef struct  edge_list {
@@ -44,14 +45,11 @@ typedef struct  edge_list {
         block_num               gen_id;
 } edge_list;
 
-extern  void            RemoveInputEdge(block_edge*);
-
 static  block           *Curr;
 static  block           *Break;
 static  edge_list       *BranchOuts;
 static  block           *Tail = { NULL };
 static  bool            HaveBreak = { false };
-
 
 static  void            FreeBranchOuts( void )
 /********************************************/

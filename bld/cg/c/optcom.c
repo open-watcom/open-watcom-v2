@@ -37,6 +37,8 @@
 #include "data.h"
 #include "optmain.h"
 #include "encode.h"
+#include "optutil.h"
+#include "optmkins.h"
 
 
 typedef struct common_info {
@@ -46,16 +48,8 @@ typedef struct common_info {
 } common_info;
 
 extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  void            AddNewJump( ins_entry *, label_handle );
-extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
-extern  ins_entry       *NextIns( ins_entry * );
-extern  label_handle    AddNewLabel( ins_entry *, obj_length );
-extern  ins_entry       *DelInstr( ins_entry * );
-extern  ins_entry       *PrevIns( ins_entry * );
 extern  bool            FindShort( ins_entry *, ins_entry * );
-
-
 
 static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
 /***************************************************************/

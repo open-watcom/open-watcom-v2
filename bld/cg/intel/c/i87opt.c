@@ -48,6 +48,7 @@
 #include "typemap.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "bldcall.h"
 
 
 extern  int             FPRegNum(name*);
@@ -69,7 +70,6 @@ extern  void            ReverseFPGen(instruction*);
 extern  bool            InsOrderDependant(instruction*,instruction*);
 extern  int             FPStkReq(instruction*);
 extern  bool            FPResultNotNeeded(instruction*);
-extern  void            ReserveStack( call_state *, instruction *, type_length );
 
 /* forward declarations */
 static  void            MoveThrough( name *from, name *to, instruction *from_ins,

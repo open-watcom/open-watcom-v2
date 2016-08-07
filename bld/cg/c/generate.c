@@ -64,6 +64,7 @@
 #include "insdead.h"
 #include "namelist.h"
 #include "typemap.h"
+#include "blktrim.h"
 #include "feprotos.h"
 
 
@@ -71,8 +72,6 @@ extern  void            AssignTemps( void );
 extern  void            AssgnMoreTemps( block_num );
 extern  bool            CommonSex( bool );
 extern  bool            SetOnCondition( void );
-extern  bool            BlockTrim( void );
-extern  bool            DeadBlocks( void );
 extern  void            MakeFlowGraph( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );

@@ -40,9 +40,8 @@
 #include "edge.h"
 #include "insutil.h"
 #include "insdead.h"
+#include "blktrim.h"
 
-
-extern  void            RemoveInputEdge( block_edge * );
 
 static  name            *ReturnValue;
 

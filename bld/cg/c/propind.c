@@ -41,10 +41,10 @@
 #include "redefby.h"
 #include "insutil.h"
 #include "namelist.h"
+#include "unroll.h"
 
 
 extern bool         SameThing(name *,name *);
-extern void         RemoveIns( instruction *);
 
 static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/

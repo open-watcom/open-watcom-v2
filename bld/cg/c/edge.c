@@ -38,10 +38,8 @@
 #include "typedef.h"
 #include "makeblk.h"
 #include "insutil.h"
+#include "unroll.h"
 
-
-extern  void            RemoveIns(instruction *);
-extern  void            FixBlockIds(void);
 
 void    PointEdge( block_edge *edge, block *new_dest )
 /*****************************************************

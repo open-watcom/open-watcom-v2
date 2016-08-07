@@ -46,14 +46,14 @@
 #include "opttell.h"
 #include "makeblk.h"
 #include "typemap.h"
+#include "blktrim.h"
 #include "feprotos.h"
 
+
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
-extern  void            RemoveInputEdge(block_edge*);
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
-
 
 block   *MakeBlock( label_handle label, block_num edges )
 /*******************************************************/

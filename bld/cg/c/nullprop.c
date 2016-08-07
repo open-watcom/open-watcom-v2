@@ -39,10 +39,8 @@
 #include "redefby.h"
 #include "nullprop.h"
 #include "insdead.h"
+#include "blktrim.h"
 
-
-extern void             KillCondBlk( block *blk, instruction *ins, int dest );
-extern  bool            BlockTrim( void );
 
 void    ClearBlocksBitsMask( block_class mask )
 /*********************************************/

@@ -27,18 +27,20 @@
 * Description:  Prototypes for bldcall.c
 *
 ****************************************************************************/
+
+
 extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe );
-extern  void    BGFiniCall( cn call );
-extern  cn      BGInitCall( an node, type_def *tipe, aux_handle aux );
-extern  void    BGAddParm( cn call, an parm );
-extern  void    BGAutoDecl( cg_sym_handle sym, type_def *tipe );
-extern  name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg );
-extern  void    BGParmDecl( cg_sym_handle sym, type_def *tipe );
-extern  void    AddCallIns( instruction *ins, cn call );
-extern  void    ReverseParmNodeList( pn *owner );
-extern  void    PushParms( pn parm, call_state *state );
-extern  void    ReserveStack( call_state *state, instruction *prev, type_length len );
-extern  void    ParmIns( pn parm, call_state *state );
-extern  void    BGZapBase( name *base, type_def *tipe );
-extern  void    BGReturn( an retval, type_def *tipe );
-extern  bool    AssgnParms( cn call, bool in_line );
+extern  void            BGFiniCall( cn call );
+extern  cn              BGInitCall( an node, type_def *tipe, aux_handle aux );
+extern  void            BGAddParm( cn call, an parm );
+extern  void            BGAutoDecl( cg_sym_handle sym, type_def *tipe );
+extern  name            *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg );
+extern  void            BGParmDecl( cg_sym_handle sym, type_def *tipe );
+extern  void            AddCallIns( instruction *ins, cn call );
+extern  void            ReverseParmNodeList( pn *owner );
+extern  void            PushParms( pn parm, call_state *state );
+extern  void            ReserveStack( call_state *state, instruction *prev, type_length len );
+extern  void            ParmIns( pn parm, call_state *state );
+extern  void            BGZapBase( name *base, type_def *tipe );
+extern  void            BGReturn( an retval, type_def *tipe );
+extern  bool            AssgnParms( cn call, bool in_line );

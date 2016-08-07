@@ -53,6 +53,8 @@
 #include "split.h"
 #include "insutil.h"
 #include "insdead.h"
+#include "blktrim.h"
+#include "unroll.h"
 #include "feprotos.h"
 
 
@@ -76,12 +78,7 @@ extern bool             SameThing(name *,name *);
 extern void             RevCond(instruction *);
 extern bool             RepOp(name **,name *,name *);
 extern void             FlipCond(instruction *);
-extern void             RemoveInputEdge(block_edge *);
 extern void             ConstToTemp(block *,block *,block *(*)(block *));
-extern int              CountIns(block *);
-extern void             FixBlockIds(void);
-extern bool             UnRoll(void);
-
 
 static int              NumIndVars;
 static bool             LoopProtected;

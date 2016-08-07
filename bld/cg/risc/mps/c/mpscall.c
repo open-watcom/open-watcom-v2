@@ -45,14 +45,11 @@
 #include "rgtbl.h"
 #include "insutil.h"
 #include "typemap.h"
+#include "bldcall.h"
+#include "parmreg.h"
 
 
-extern  bool            AssgnParms( cn, bool );
-extern  type_class_def  AddCallBlock( cg_sym_handle, type_def * );
-extern  void            AddCallIns( instruction *, cn );
 extern  type_def        *QParmType( cg_sym_handle, cg_sym_handle, type_def * );
-extern  hw_reg_set      ParmReg( type_class_def, type_length, type_length, call_state *);
-
 
 extern an BGCall( cn call, bool use_return, bool in_line )
 /********************************************************/

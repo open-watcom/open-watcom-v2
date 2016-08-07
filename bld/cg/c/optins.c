@@ -34,23 +34,18 @@
 #include "optwif.h"
 #include "model.h"
 #include "optmain.h"
+#include "optutil.h"
 
-extern  ins_entry       *ValidIns( ins_entry * );
-extern  oc_class        PrevClass( ins_entry * );
-extern  oc_class        NextClass( ins_entry * );
-extern  ins_entry       *DelInstr( ins_entry * );
+
 extern  void            SetBranches( void );
-extern  ins_entry       *NextIns( ins_entry * );
 extern  bool            StraightenCode( ins_entry * );
 extern  void            CheckStraightenCode( ins_entry * );
 extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  void            FreePendingDeletes( void );
 extern  bool            ComTail( ins_entry *, ins_entry * );
 extern  void            RetAftrCall( ins_entry * );
 extern  bool            RetAftrLbl( ins_entry * );
 extern  void            JmpRet( ins_entry * );
 extern  bool            ComCode( ins_entry * );
-extern  ins_entry       *PrevIns( ins_entry * );
 extern  void            CallRet( ins_entry * );
 extern  void            TraceCommon( ins_entry * );
 extern  void            MultiLineNums( ins_entry * );

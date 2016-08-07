@@ -32,9 +32,8 @@
 
 
 #include "optwif.h"
+#include "optutil.h"
 
-extern  ins_entry       *DelInstr(ins_entry*);
-extern  void            DelRef(ins_entry**,ins_entry*);
 
 void    AddLblDef( ins_entry *instr )
 /***********************************/

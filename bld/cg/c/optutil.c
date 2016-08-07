@@ -32,16 +32,17 @@
 
 #include "optwif.h"
 #include "stack.h"
+#include "optutil.h"
+#include "optmkins.h"
+
 
 extern  void            MultiLineNums(ins_entry*);
 extern  ins_entry       *Untangle(ins_entry*);
 extern  ins_entry       *IsolatedCode(ins_entry*);
-extern  void            FreeInstr(ins_entry*);
 
-
-extern  ins_entry       *ValidIns( ins_entry *instr ) {
-/****************************************************/
-
+ins_entry       *ValidIns( ins_entry *instr )
+/*******************************************/
+{
   optbegin
     for(;;) {
         if( instr == NULL ) break;
@@ -52,9 +53,9 @@ extern  ins_entry       *ValidIns( ins_entry *instr ) {
 }
 
 
-extern  ins_entry       *PrevIns( ins_entry *instr ) {
-/***************************************************/
-
+ins_entry       *PrevIns( ins_entry *instr )
+/******************************************/
+{
   optbegin
     if( instr == NULL ) {
         instr = LastIns;
@@ -72,9 +73,9 @@ extern  ins_entry       *PrevIns( ins_entry *instr ) {
 }
 
 
-extern  oc_class        PrevClass( ins_entry *instr ) {
-/*****************************************************/
-
+oc_class        PrevClass( ins_entry *instr )
+/*******************************************/
+{
     oc_class    class;
 
   optbegin
@@ -88,9 +89,9 @@ extern  oc_class        PrevClass( ins_entry *instr ) {
 }
 
 
-extern  ins_entry       *NextIns( ins_entry *instr ) {
-/***************************************************/
-
+ins_entry       *NextIns( ins_entry *instr )
+/******************************************/
+{
   optbegin
     if( instr == NULL ) {
         instr = FirstIns;
@@ -108,9 +109,9 @@ extern  ins_entry       *NextIns( ins_entry *instr ) {
 }
 
 
-extern  oc_class        NextClass( ins_entry *instr ) {
-/*****************************************************/
-
+oc_class        NextClass( ins_entry *instr )
+/*******************************************/
+{
     oc_class    class;
 
   optbegin
@@ -124,9 +125,9 @@ extern  oc_class        NextClass( ins_entry *instr ) {
 }
 
 
-extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
-/***************************************************************/
-
+void    AddInstr( ins_entry *instr, ins_entry *insert )
+/*****************************************************/
+{
   optbegin
     InsertQueue( instr, insert );
     switch( _Class( instr ) ) {
@@ -155,9 +156,9 @@ extern  void    AddInstr( ins_entry *instr, ins_entry *insert ) {
 }
 
 
-extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
-/***************************************************************/
-
+void    DelRef( ins_entry **owner, ins_entry *instr )
+/***************************************************/
+{
     ins_entry   *curr;
 
   optbegin
@@ -171,9 +172,9 @@ extern  void    DelRef(  ins_entry **owner, ins_entry *instr  ) {
 }
 
 
-extern  void    UnLinkInstr( ins_entry *old ) {
-/********************************************/
-
+void    UnLinkInstr( ins_entry *old )
+/***********************************/
+{
   optbegin
     InsDelete = true;
     DeleteQueue( old );
@@ -183,9 +184,9 @@ extern  void    UnLinkInstr( ins_entry *old ) {
 }
 
 
-static  ins_entry *DelInstr_Helper( ins_entry *old ) {
-/****************************************************/
-
+static  ins_entry *DelInstr_Helper( ins_entry *old )
+/**************************************************/
+{
     ins_entry   *next;
 
     UnLinkInstr( old );
@@ -234,9 +235,9 @@ static  ins_entry *DelInstr_Helper( ins_entry *old ) {
 }
 
 
-extern  ins_entry       *DelInstr( ins_entry *old ) {
-/***************************************************/
-
+ins_entry       *DelInstr( ins_entry *old )
+/*****************************************/
+{
     if( _Class( old ) != OC_DEAD ) {
         return( SafeRecurseCG( (func_sr)DelInstr_Helper, old ) );
     }
@@ -244,9 +245,9 @@ extern  ins_entry       *DelInstr( ins_entry *old ) {
 }
 
 
-extern  void    FreePendingDeletes() {
-/************************************/
-
+void    FreePendingDeletes( void )
+/********************************/
+{
     ins_entry   *next;
 
   optbegin

@@ -47,11 +47,11 @@
 #include "insutil.h"
 #include "namelist.h"
 #include "optab.h"
+#include "blktrim.h"
 
 
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  int             CountIns(block*);
 
 #define DEPS_IN_BLOCK    20
 

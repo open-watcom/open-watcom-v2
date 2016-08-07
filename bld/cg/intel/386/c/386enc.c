@@ -55,6 +55,7 @@
 #include "rgtbl.h"
 #include "namelist.h"
 #include "optab.h"
+#include "blktrim.h"
 #include "feprotos.h"
 
 
@@ -78,7 +79,6 @@ extern  int             GetLog2( unsigned_32 );
 extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );
-extern  int             CountIns( block *blk );
 
 extern  void            OutLblPatch( label_handle, fix_class, offset );
 

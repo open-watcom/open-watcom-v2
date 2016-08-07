@@ -71,8 +71,8 @@ static  byte    InsSize[6][OC_DEST_FAR + 1] = {
 };
 
 
-extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
-/******************************************************************
+obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
+/**********************************************************
     return the object code size of a given call/branch with a
     given attribute (short/near/far)
 */

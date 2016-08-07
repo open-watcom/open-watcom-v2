@@ -37,6 +37,7 @@
 #include "data.h"
 #include "insutil.h"
 #include "namelist.h"
+#include "blktrim.h"
 
 
 typedef enum {
@@ -51,7 +52,6 @@ typedef struct  conflict_info {
 } conflict_info;
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  int             CountIns(block*);
 
 #define MAX_CONF_INFO   ( 2 * ( MAX_OPS_PER_INS + 1 ) + 1 )
 static  int             CurrInfo;

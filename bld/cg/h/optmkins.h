@@ -24,52 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  Instuction size calculation and NOP padding.
+* Description:  Instruction creation and deletion.
 *
 ****************************************************************************/
 
 
-#include "optwif.h"
-#include "model.h"
-#include "inslist.h"
-#include "encode.h"
-
-
-static byte NopList[] = {
-    2,                  /* objlen of first NOP pattern */
-    0x89, 0xc0,         /* MOV AX,AX */
-    0xfc                /* CLD */
-};
-
-byte *NopLists[] = { NopList, NopList };
-
-static  byte    InsSize[4][OC_DEST_FAR + 1] = {
-/*      OC_DEST_SHORT   OC_DEST_NEAR    OC_DEST_CHEAP   OC_DEST_FAR */
-{       0,              3,              4,              5 },    /* CALL */
-{       2,              3,              0,              5 },    /* JMP */
-{       2,              5,              0,              0 },    /* JCOND */
-{       2,              4,              0,              0 },    /* JCOND,386 */
-};
-
-
-obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
-/*********************************************************/
-{
-    obj_length  i;
-
-    switch( class ) {
-    default:
-    case OC_CALL:
-        i = 0;
-        break;
-    case OC_JMP:
-        i = 1;
-        break;
-    case OC_LREF:
-        return( 2 );
-    case OC_JCOND:
-        i = _CPULevel( CPU_386 ) ? 3 : 2;
-        break;
-    }
-    return( InsSize[i][attr] );
-}
+extern ins_entry    *NewInstr( any_oc *oc );
+extern void         FreeInstr( ins_entry *instr );
+extern bool         InstrFrlFree( void );
+extern label_handle AddNewLabel( ins_entry *new, obj_length align );
+extern void         AddNewJump( ins_entry *new, label_handle lbl );

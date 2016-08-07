@@ -39,7 +39,10 @@
 #include "memlimit.h"
 #include "optmain.h"
 #include "namelist.h"
+#include "optmkins.h"
+#include "makeins.h"
 #include "feprotos.h"
+
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;
@@ -47,8 +50,6 @@ static    bool          IckyWicky;
 extern    pointer       MemStart;
 extern    pointer       MemFinish;
 
-extern  bool            InsFrlFree( void );
-extern  bool            InstrFrlFree( void );
 extern  bool            ConfFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            ScoreFrlFree( void );
