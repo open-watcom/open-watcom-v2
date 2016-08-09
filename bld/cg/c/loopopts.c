@@ -2026,7 +2026,7 @@ static  void    LabelDown( instruction *frum,
 /********************************************************************
     start labeling instructions INS_VISITED starting at "frum", stopping
     if we hit instruction "avoiding".  If we missed "avoiding", label
-    all successor blocks as BLOCK_VISITED. See paint analogy in PathFrom.
+    all successor blocks as BLK_BLOCK_VISITED. See paint analogy in PathFrom.
 */
 {
     block       *blk;
