@@ -125,7 +125,7 @@ static void savecursor( void )
         OldCursorType = C_NORMAL;
     }
     UIData->cursor_on = ( ( r.h.ch & BIOS_CURSOR_OFF ) == 0 );
-    if( UIData->cursor_on == false ) {
+    if( !UIData->cursor_on ) {
         OldCursorType = C_OFF;
     }
     /* read character and attribute */
@@ -175,7 +175,7 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
     } else {
         *type = C_NORMAL;
     }
-    if( UIData->cursor_on == false ) {
+    if( !UIData->cursor_on ) {
         *type = C_OFF;
     }
     /* read character and attribute */

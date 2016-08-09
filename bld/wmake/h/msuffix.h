@@ -74,14 +74,14 @@ extern void     SuffixInit( void );
 extern void     SuffixFini( void );
 
 extern void     ClearSuffixes( void );
-extern BOOLEAN  SufExists( const char *suf );
-extern BOOLEAN  SufBothExist( const char *sufsuf );
+extern bool     SufExists( const char *suf );
+extern bool     SufBothExist( const char *sufsuf );
 extern void     AddSuffix( const char *name );
 extern void     SetSufPath( const char *name, const char *path );
 extern char     *AddCreator( const char *sufsuf );
 extern void     PrintSuffixes( void );
 extern SUFFIX   *FindSuffix( const char *name );
-extern RET_T    TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN tryenv );
+extern RET_T    TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv );
 
 #endif
 

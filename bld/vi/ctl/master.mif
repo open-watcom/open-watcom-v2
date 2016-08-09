@@ -1,0 +1,14 @@
+proj_name = victl
+
+!ifndef vicomp_autodepends
+victl_autodepends = .autodepend
+!endif
+
+!include cproj.mif
+!include defrule.mif
+!include deftarg.mif
+!include exerule.mif
+
+.c : ..
+
+all : parsectl.exe parsedyn.exe .SYMBOLIC

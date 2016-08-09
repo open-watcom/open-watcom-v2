@@ -259,7 +259,7 @@ static bool getexport( void )
     while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {}  // handle misc options
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
-    if( !(FmtData.type & (MK_WINDOWS|MK_PE)) && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
+    if( (FmtData.type & (MK_WINDOWS|MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( getatoi( &val16 ) == ST_IS_ORDINAL ) {
             if( val16 > 63 ) {
                 LnkMsg( LOC+LINE+MSG_TOO_MANY_IOPL_WORDS+ ERR, NULL );
@@ -1245,7 +1245,7 @@ bool     ProcLinkVersion( void )
     VersBlock   vb;
 
     result = ProcGenericVersion( &vb , 255, 255, 0);
-    if( !( result & valid_result ) ) {
+    if( (result & valid_result) == 0 ) {
         return( false );    /* error has occurred */
     }
 
@@ -1262,7 +1262,7 @@ bool     ProcOsVersion( void )
     VersBlock   vb;
 
     result = ProcGenericVersion( &vb , 0, 99, 0);   /* from old default of 100 max */
-    if( !( result & valid_result ) ) {
+    if( (result & valid_result) == 0 ) {
         return( false );    /* error has occurred */
     }
 

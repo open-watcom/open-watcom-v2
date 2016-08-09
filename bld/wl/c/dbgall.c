@@ -180,12 +180,12 @@ static bool MSSkip( void )
     bool        iscv;
     bool        seencmt;
 
-    if( !( ObjFormat & FMT_OMF ) ) {
+    if( (ObjFormat & FMT_OMF) == 0 ) {
         return( LinkFlags & DWARF_DBI_FLAG );
     } else {
-        iscv = ( LinkFlags & CV_DBI_FLAG ) != 0;
-        seencmt = ( ObjFormat & FMT_DEBUG_COMENT ) != 0;
-        return( !( iscv ^ seencmt ) || ( LinkFlags & DWARF_DBI_FLAG ) );
+        iscv = (LinkFlags & CV_DBI_FLAG) != 0;
+        seencmt = (ObjFormat & FMT_DEBUG_COMENT) != 0;
+        return( (iscv ^ seencmt) == 0 || (LinkFlags & DWARF_DBI_FLAG) );
     }
 }
 
@@ -196,13 +196,13 @@ bool DBISkip( seg_leader *seg )
 {
     switch( seg->dbgtype ) {
     case MS_TYPE:
-        return( !( CurrMod->modinfo & DBI_TYPE ) || MSSkip() );
+        return( (CurrMod->modinfo & DBI_TYPE) == 0 || MSSkip() );
     case MS_LOCAL:
-        return( !( CurrMod->modinfo & DBI_LOCAL ) || MSSkip() );
+        return( (CurrMod->modinfo & DBI_LOCAL) == 0 || MSSkip() );
     case NOT_DEBUGGING_INFO:
         return( false );
     default:
-        return( !( CurrMod->modinfo & DBI_TYPE ) || !( LinkFlags & DWARF_DBI_FLAG ) );
+        return( (CurrMod->modinfo & DBI_TYPE) == 0 || (LinkFlags & DWARF_DBI_FLAG) == 0 );
     }
 }
 
@@ -230,7 +230,7 @@ void DBIPreAddrCalc( void )
     if( LinkFlags & NOVELL_DBI_FLAG ) {
         WalkMods( AddNovGlobals );
     }
-    if( !( LinkFlags & ANY_DBI_FLAG ) )
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 )
         return;
     if( LinkFlags & OLD_DBI_FLAG ) {
         modptr = ODBIP1ModuleFinished;
@@ -378,7 +378,7 @@ void DBIModGlobal( void *_sym )
 {
     symbol *sym = _sym;
 
-    if( !IS_SYM_ALIAS( sym ) && !( sym->info & SYM_DEAD ) ) {
+    if( !IS_SYM_ALIAS( sym ) && (sym->info & SYM_DEAD) == 0 ) {
         if( IS_SYM_IMPORTED( sym )
             || ( sym->p.seg != NULL )
                 && !IS_DBG_INFO( sym->p.seg->u.leader )
@@ -414,7 +414,7 @@ void DBIGenGlobal( symbol *sym, section *sect )
         CVGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
-    if( ( ( sym->info & SYM_STATIC ) == 0 )
+    if( ( (sym->info & SYM_STATIC) == 0 )
         && ( LinkFlags & NOVELL_DBI_FLAG ) ) {
         NovDBIGenGlobal( sym );
     }
@@ -548,7 +548,7 @@ void DBIWrite( void )
     outfilelist symfile;
     outfilelist *save;
 
-    if( !( LinkFlags & ANY_DBI_FLAG ) )
+    if( (LinkFlags & ANY_DBI_FLAG) == 0 )
         return;
     if( LinkFlags & CV_DBI_FLAG ) {
         // write DEBUG_TYPE_MISC: name of file containing the debug info

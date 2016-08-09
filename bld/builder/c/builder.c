@@ -60,7 +60,7 @@ typedef struct ctl_file {
 
 bool               Quiet;
 include            *IncludeStk;
-FILE               *LogFile;
+FILE               *LogFile = NULL;
 static ctl_file    *CtlList;
 static char        Line[MAX_LINE];
 static char        ProcLine[MAX_LINE];
@@ -70,7 +70,7 @@ static bool        IgnoreErrors;
 static unsigned    ParmCount;
 static unsigned    LogBackup;
 
-static void PutNumber( char *src, char *dst, unsigned num )
+static void PutNumber( const char *src, char *dst, unsigned num )
 {
     char        dig;
     int         i;
@@ -89,7 +89,7 @@ static void PutNumber( char *src, char *dst, unsigned num )
 
 static void BackupLog( const char *log_name, unsigned copies )
 {
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -104,7 +104,7 @@ static void BackupLog( const char *log_name, unsigned copies )
         remove( log_name );
         return;
     }
-    _splitpath2( log_name, buff, &drive, &dir, &fn, &ext );
+    _splitpath2( log_name, path_buffer, &drive, &dir, &fn, &ext );
     while( copies != 0 ) {
         PutNumber( ext, temp_ext, copies );
         _makepath( new_name, drive, dir, fn, temp_ext );
@@ -219,7 +219,7 @@ static bool ProcessOptions( char *argv[], bool opt_end )
     return( opt_end );
 }
 
-int parse_string( char *env, char **args )
+static int parse_string( const char *env, char **args )
 {
     char        parm_buff[_MAX_PATH];
     int         pos;
@@ -288,7 +288,7 @@ static bool ProcessEnv( bool opt_end )
     if( env != NULL ) {
         argc = parse_string( env, NULL );
         if( argc > 0 ) {
-            args = malloc( ( argc + 1 ) * sizeof( char * ) );
+            args = Alloc( ( argc + 1 ) * sizeof( char * ) );
             argc = parse_string( env, args );
             args[argc] = NULL;
             opt_end = ProcessOptions( args, opt_end );
@@ -304,7 +304,7 @@ static bool ProcessEnv( bool opt_end )
 static void PushInclude( const char *name )
 {
     include     *new;
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -323,7 +323,7 @@ static void PushInclude( const char *name )
         Fatal( "Could not open '%s': %s\n", name, strerror( errno ) );
     }
     strcpy( new->name, name );
-    _splitpath2( name, buff, &drive, &dir, &fn, &ext );
+    _splitpath2( name, path_buffer, &drive, &dir, &fn, &ext );
     _makepath( dir_name, drive, dir, NULL, NULL );
     if( SysChdir( dir_name ) != 0 ) {
         Fatal( "Could not CD to '%s': %s\n", dir_name, strerror( errno ) );
@@ -475,33 +475,16 @@ static void SubstLine( const char *in, char *out )
     }
 }
 
-static char *FirstWord( char *p )
+static char *GetWord( char *p, char **start )
 {
-    char        *start;
-
-    p = SkipBlanks( p );
-    if( *p == '\0' )
-        return( NULL );
-    start = p;
-    for( ;; ) {
-        switch( *p ) {
-        case '\0':
-            p[1] = '\0';
-            /* fall through */
-        case ' ':
-        case '\t':
-            *p = '\0';
-            return( start );
+    for( *start = p = SkipBlanks( p ); *p != '\0'; ++p ) {
+        if( IS_BLANK( *p ) ) {
+            *p++ = '\0';
+            break;
         }
-        ++p;
     }
+    return( p );
 }
-
-static char *NextWord( char *p )
-{
-    return( FirstWord( p + strlen( p ) + 1 ) );
-}
-
 
 /****************************************************************************
 *
@@ -518,45 +501,50 @@ static int MatchFound( char *p )
     int     i;
     int     EmptyOk = false;
     int     WordsExamined = 0;
+    char    *word;
 
-    p = NextWord( p );
-    if( p == NULL )
+    p = GetWord( p, &word );
+    if( *word == '\0' )
         Fatal( "Missing match word\n" );
 
-    if( *p == '(' ) { // Multiple match words, store them
-        p = NextWord( p );
+    if( *word == '(' ) { // Multiple match words, store them
+        p = GetWord( p, &word );
         for( ; MatchWords < 20; ) {
-            if( p == NULL )
+            if( *word == '\0' )
                 Fatal( "Missing match word\n" );
-            if( stricmp( p, "\"\"" ) == 0 ) // 'No parameter' indicator
+            if( stricmp( word, "\"\"" ) == 0 ) { // 'No parameter' indicator
                 EmptyOk = true;
-            else
-                Match[MatchWords++] = p;
-            p = NextWord( p );
-            if( strcmp( p, ")" ) == 0 ) {
-                p = NextWord( p );
+            } else {
+                Match[MatchWords++] = word;
+            }
+            p = GetWord( p, &word );
+            if( strcmp( word, ")" ) == 0 ) {
+                p = GetWord( p, &word );
                 break;
             }
         }
     } else {
-        Match[MatchWords++] = p;
-        p = NextWord( p );
+        Match[MatchWords++] = word;
+        p = GetWord( p, &word );
     }
 
     // At this point, p must point to the first word after the (last) match word
 
     for( ;; ) {
-        if( p == NULL || strcmp( p, "]" ) == 0 ) { // End of string
-            if( WordsExamined == 0 && EmptyOk )
-                return 1;
-            else
-                return 0;
+        if( *word == '\0' || strcmp( word, "]" ) == 0 ) { // End of string
+            if( WordsExamined == 0 && EmptyOk ) {
+                return( 1 );
+            } else {
+                return( 0 );
+            }
         }
         WordsExamined++;
-        for( i = 0; i < MatchWords; i++ )
-            if( stricmp( Match[i], p ) == 0 )
-                return 1;
-        p = NextWord( p );
+        for( i = 0; i < MatchWords; i++ ) {
+            if( stricmp( Match[i], word ) == 0 ) {
+                return( 1 );
+            }
+        }
+        p = GetWord( p, &word );
     }
 }
 
@@ -565,9 +553,10 @@ static int ProcessCtlFile( const char *name )
 {
     char        *p;
     char        *log_name;
+    char        *word;
     int         res;
     bool        logit;
-    bool        pmake;
+    bool        res_nolog;
     int         rc;
 
     rc = 0;
@@ -582,42 +571,43 @@ static int ProcessCtlFile( const char *name )
             break;
         case '[':
             /* a directive */
-            p = FirstWord( p + 1 );
-            if( stricmp( p, "INCLUDE" ) == 0 ) {
+            p = GetWord( p + 1, &word );
+            if( stricmp( word, "INCLUDE" ) == 0 ) {
                 if( !IncludeStk->skipping && !IncludeStk->ifdefskipping ) {
-                    PushInclude( NextWord( p ) );
+                    p = GetWord( p, &word );
+                    PushInclude( word );
                 }
-            } else if( stricmp( p, "LOG" ) == 0 ) {
+            } else if( stricmp( word, "LOG" ) == 0 ) {
                 if( IncludeStk->skipping == 0 ) {
-                    log_name = NextWord( p );
-                    p = NextWord( log_name );
-                    if( p == NULL || strcmp( p, "]" ) == 0 ) {
+                    p = GetWord( p, &log_name );
+                    p = GetWord( p, &word );
+                    if( *word == '\0' || strcmp( word, "]" ) == 0 ) {
                         BackupLog( log_name, LogBackup );
                     } else {
-                        BackupLog( log_name, strtoul( p, NULL, 0 ) );
+                        BackupLog( log_name, strtoul( word, NULL, 0 ) );
                     }
                     if( LogFile == NULL ) {
                         OpenLog( log_name );
                     }
                 }
-            } else if( stricmp( p, "BLOCK" ) == 0 ) {
+            } else if( stricmp( word, "BLOCK" ) == 0 ) {
                 IncludeStk->skipping = 0;   // New block: reset skip flags
                 IncludeStk->ifdefskipping = 0;
                 if( !MatchFound( p ) )
                     IncludeStk->skipping++;
                 break;
-            } else if( stricmp( p, "IFDEF" ) == 0 ) {
+            } else if( stricmp( word, "IFDEF" ) == 0 ) {
                 if( IncludeStk->ifdefskipping != 0 )
                     IncludeStk->ifdefskipping--;
                 if( !MatchFound( p ) )
                     IncludeStk->ifdefskipping++;
                 break;
-            } else if( stricmp( p, "ENDIF" ) == 0 ) {
+            } else if( stricmp( word, "ENDIF" ) == 0 ) {
                 if( IncludeStk->ifdefskipping != 0 )
                     IncludeStk->ifdefskipping--;
                 break;
             } else {
-                Fatal( "Unknown directive '%s' in '%s' line %d\n", p, IncludeStk->name, IncludeStk->lineno );
+                Fatal( "Unknown directive '%s' in '%s' line %d\n", word, IncludeStk->name, IncludeStk->lineno );
             }
             break;
         default:
@@ -632,10 +622,9 @@ static int ProcessCtlFile( const char *name )
                     Log( false, "+++<%s>+++\n", p );
                 }
                 strcpy( Line, p );
-                pmake = ( strnicmp( p, "PMAKE", 5 ) == 0 && p[5] == ' ' );
-                res = RunIt( p, IgnoreErrors );
+                res = RunIt( p, IgnoreErrors, &res_nolog );
                 if( res != 0 ) {
-                    if( !IgnoreErrors || !pmake ) {
+                    if( !res_nolog ) {
                         if( !logit ) {
                             Log( false, "<%s> => ", Line );
                         }
@@ -657,7 +646,7 @@ static int ProcessCtlFile( const char *name )
 
 static bool SearchUpDirs( const char *name, char *result )
 {
-    char        buff[_MAX_PATH2];
+    char        path_buffer[_MAX_PATH2];
     char        *drive;
     char        *dir;
     char        *fn;
@@ -672,8 +661,10 @@ static bool SearchUpDirs( const char *name, char *result )
             fclose( fp );
             return( true );
         }
-        _splitpath2( result, buff, &drive, &dir, &fn, &ext );
-        end = &dir[strlen( dir ) - 1];
+        _splitpath2( result, path_buffer, &drive, &dir, &fn, &ext );
+        if( *dir == '\0' )
+            return( false );
+        end = dir + strlen( dir ) - 1;
         if( end == dir )
             return( false );
         switch( *end ) {

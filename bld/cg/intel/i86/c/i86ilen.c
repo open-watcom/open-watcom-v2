@@ -31,6 +31,9 @@
 
 #include "optwif.h"
 #include "model.h"
+#include "inslist.h"
+#include "encode.h"
+
 
 static byte NopList[] = {
     2,                  /* objlen of first NOP pattern */
@@ -49,8 +52,8 @@ static  byte    InsSize[4][OC_DEST_FAR + 1] = {
 };
 
 
-extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
-/*****************************************************************/
+obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
+/*********************************************************/
 {
     obj_length  i;
 

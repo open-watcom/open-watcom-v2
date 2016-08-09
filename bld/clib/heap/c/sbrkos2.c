@@ -55,9 +55,9 @@ void _WCNEAR *__brk( unsigned brk_value )
         _RWD_errno = ENOMEM;
         return( (void _WCNEAR *)-1 );
     }
-    seg_size = ( brk_value + 0x0f ) >> 4;
+    seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( seg_size == 0 ) {
-        seg_size = 0x1000;
+        seg_size = PARAS_IN_64K;
     }
     /* try setting the block of memory */
     _AccessNHeap();
@@ -87,7 +87,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     if( increment > 0 ) {
         PBYTE       p;
 
-        increment = ( increment + 0x0fff ) & ~0x0fff;
+        increment = __ROUND_UP_SIZE_4K( increment );
         if( !DosAllocMem( (PPVOID)&p, increment, PAG_COMMIT|PAG_READ|PAG_WRITE ) ) {
             return( p );
         }

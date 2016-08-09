@@ -110,7 +110,7 @@ typedef struct streamEntry {
 STATIC SENT *headSent;      /* stack of sents in use    */
 STATIC SENT *freeSent;      /* stack of free sents      */
 
-STATIC int  flagEOF;
+STATIC bool flagEOF;
 
 STATIC SENT *getSENT( STYPE_T type )
 /***********************************
@@ -184,11 +184,11 @@ STATIC void pushFH( SENT *sent, int fh )
 }
 
 
-STATIC BOOLEAN fillBuffer( void )
-/********************************
+STATIC bool fillBuffer( void )
+/*****************************
  * Fill the top file buffer, and reset counters
- * returns: TRUE if buffer is not empty
- *          FALSE if buffer is empty (EOF)
+ * returns: true if buffer is not empty
+ *          false if buffer is empty (EOF)
  */
 {
     int     max;
@@ -227,8 +227,8 @@ STATIC BOOLEAN fillBuffer( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-RET_T InsFile( const char *name, BOOLEAN envsearch )
-/**********************************************************
+RET_T InsFile( const char *name, bool envsearch )
+/************************************************
  * Open file named name, and push it into stream.  If can't find name, it
  * tries an implicit suffix search (possibly using the env variable PATH)
  */
@@ -248,15 +248,15 @@ RET_T InsFile( const char *name, BOOLEAN envsearch )
         }
 
         tmp = getSENT( SENT_FILE );
-        tmp->free = TRUE;
+        tmp->free = true;
         tmp->data.file.name = StrDupSafe( path );
 
         pushFH( tmp, fh );
 
         if( !Glob.overide ) {
             UnGetCH( EOL );
-            InsString( path, FALSE );
-            InsString( "$+$(__MAKEFILES__)$- ", FALSE );
+            InsString( path, false );
+            InsString( "$+$(__MAKEFILES__)$- ", false );
             DefMacro( "__MAKEFILES__" );
         }
 
@@ -280,15 +280,15 @@ void InsOpenFile( int fh )
 #endif
 
     tmp = getSENT( SENT_FILE );
-    tmp->free = FALSE;
+    tmp->free = false;
     tmp->data.file.name = NULL;
 
     pushFH( tmp, fh );
 }
 
 
-void InsString( const char *str, BOOLEAN weFree )
-/*******************************************************
+void InsString( const char *str, bool weFree )
+/*********************************************
  * Push a string into the stream.  Assumes that contents of string remain
  * static while it is in the stream.  (ie: it doesn't make its own copy).
  * If weFree then, it will be FreeSafe'd when it is done.
@@ -327,7 +327,7 @@ STRM_T GetCHR( void )
     SENT    *head;  /* this is just here for optimizing purposes */
     STRM_T  result;
 
-    flagEOF = 0;
+    flagEOF = false;
     for( ;; ) {
         head = headSent;
 
@@ -344,7 +344,7 @@ STRM_T GetCHR( void )
                         PrtMsg( WRN | EOF_BEFORE_ENDIF, "endif" );
                     }
                     popSENT();
-                    flagEOF = 1;
+                    flagEOF = true;
                     return( EOL );
                 }
             }
@@ -357,9 +357,10 @@ STRM_T GetCHR( void )
                     /* embedded ^Z terminates stream in MS mode */
                     result = EOL;
                     popSENT();
-                    flagEOF = 1;
+                    flagEOF = true;
                 } else {
-                    PrtMsgExit(( FTL | LOC | BARF_CHARACTER, result ));
+                    PrtMsg( FTL | LOC | BARF_CHARACTER, result );
+                    ExitFatal();
                 }
             }
             if( result == '\f' ) {
@@ -381,7 +382,7 @@ STRM_T GetCHR( void )
             popSENT();
             return( result );
         }
-        assert( FALSE );    /* should never get here */
+        assert( false );    /* should never get here */
     }
 }
 
@@ -438,7 +439,7 @@ void StreamInit( void )
 RET_T GetFileLine( const char **pname, UINT16 *pline )
 /************************************************************
  * get filename, and line number of file closest to top of stack
- * FALSE - no files in stack; TRUE - returned data from top file
+ * false - no files in stack; true - returned data from top file
  */
 {
     SENT    *cur;
@@ -457,7 +458,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
      * Because we do a line++ when we return a {nl}, we have to check if
      * the last character returned was a {nl}.  We check the last character
      * if any characters have been read - it is just at cur[-1].  The only
-     * time that cur > buf == FALSE is when nothing has been read.  (Check
+     * time that cur > buf == false is when nothing has been read.  (Check
      * the code for reading - even after filling the buffer this doesn't
      * evaluate improperly).
      */
@@ -473,7 +474,7 @@ RET_T GetFileLine( const char **pname, UINT16 *pline )
 }
 
 
-int IsStreamEOF( void )
+bool IsStreamEOF( void )
 {
     return( flagEOF );
 }

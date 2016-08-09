@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,7 @@
 #include "addrcnst.h"
 #include "makeins.h"
 #include "namelist.h"
-
-extern  void            PrefixIns(instruction*,instruction*);
+#include "insutil.h"
 
 
 extern  void    MakeMovAddrConsts( void ) {
@@ -50,12 +50,12 @@ extern  void    MakeMovAddrConsts( void ) {
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( ins->head.opcode == OP_LA ) {
-                op = ins->operands[ 0 ];
+                op = ins->operands[0];
                 if( op->n.class == N_TEMP ) {
                     op->v.usage |= USE_IN_ANOTHER_BLOCK;
                     op = AllocAddrConst(op,0, CONS_TEMP_ADDR, ins->type_class);
                     ins->head.opcode = OP_MOV;
-                    ins->operands[ 0 ] = op;
+                    ins->operands[0] = op;
                 }
             }
         }

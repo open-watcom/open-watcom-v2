@@ -8,7 +8,7 @@
     wlink NAME $^* DEBUG line OPTION quiet FORM dos FILE $[*
 
 .before
-    set include=$(%include);..\h;$(wsampledir)h;$(ui_h)
+    set INCLUDE=$(%INCLUDE);..\h;$(wsampledir)h;$(ui_h)
 
 #all : smpsync.exe mergehlp.exe smpmt.exe .symbolic
 #@%null

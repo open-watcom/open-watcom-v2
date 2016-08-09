@@ -82,7 +82,8 @@ STATIC TOKEN_T lexLongFilePathName( STRM_T s, TOKEN_T tok )
     }
 
     if( pos >= _MAX_PATH ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        ExitFatal();
     }
     file[pos] = NULLCHAR;
 
@@ -106,7 +107,7 @@ TOKEN_T LexPath( STRM_T s )
  */
 {
     char        path[_MAX_PATH];
-    char        string_open;
+    bool        string_open;
     unsigned    pos;
     VECSTR      vec;                /* we'll store file/path here */
 
@@ -117,7 +118,7 @@ TOKEN_T LexPath( STRM_T s )
         }
 
         if( s == STRM_MAGIC ) {
-            InsString( DeMacro( TOK_EOL ), TRUE );
+            InsString( DeMacro( TOK_EOL ), true );
         } else if( !isfilec( s ) && s != PATH_SPLIT && s != ';' && s != '\"' && !isws( s ) ) {
             PrtMsg( ERR | LOC | EXPECTING_M, M_PATH );
         } else if( !isws( s ) ) {
@@ -142,7 +143,7 @@ TOKEN_T LexPath( STRM_T s )
          * is checked against isfilec().
          */
 
-        string_open = 0;
+        string_open = false;
 
         while( pos < _MAX_PATH && s != EOL && s != STRM_END ) {
             if( s == BACKSLASH ) {
@@ -181,12 +182,14 @@ TOKEN_T LexPath( STRM_T s )
 
         if( string_open ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsgExit(( FTL | LOC | ERROR_STRING_OPEN ));
+            PrtMsg( FTL | LOC | ERROR_STRING_OPEN );
+            ExitFatal();
         }
 
         if( pos == _MAX_PATH ) {
             FreeSafe( FinishVec( vec ) );
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            ExitFatal();
         }
 
         path[pos] = NULLCHAR;
@@ -238,7 +241,8 @@ STATIC TOKEN_T lexFileName( STRM_T s )
         s = PreGetCH();
     }
     if( pos == _MAX_PATH ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+        ExitFatal();
     }
     file[pos] = NULLCHAR;
     UnGetCH( s );
@@ -267,11 +271,11 @@ STATIC TOKEN_T lexFileName( STRM_T s )
 #endif
 
 
-STATIC BOOLEAN checkDotName( const char *str )
-/*********************************************
+STATIC bool checkDotName( const char *str )
+/******************************************
  * check if str is a special dotname. If it is, set CurAttr.u.dotname to the
- * appropriate value, and return TRUE.  If not a special dotname
- * return FALSE.
+ * appropriate value, and return true.  If not a special dotname
+ * return false.
  */
 {
     char        **key;
@@ -283,14 +287,14 @@ STATIC BOOLEAN checkDotName( const char *str )
     key = bsearch( &ptr, DotNames, DOT_MAX, sizeof( char * ), KWCompare );
 
     if( key == NULL ) {         /* not a special dot-name */
-        return( FALSE );
+        return( false );
     }
 
     CurAttr.u.dotname = (DotName)( (const char **)key - DotNames );
 
     assert( DOT_MIN < CurAttr.u.dotname && CurAttr.u.dotname < DOT_MAX );
 
-    return( TRUE );
+    return( true );
 }
 
 STATIC char *getCurlPath( void )
@@ -394,7 +398,8 @@ STATIC TOKEN_T lexDotName( void )
             s = PreGetCH();
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ));
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 );
+            ExitFatal();
         }
         ext[pos] = NULLCHAR;
     }
@@ -411,7 +416,8 @@ STATIC TOKEN_T lexDotName( void )
             ext[pos++] = s;
         }
         if( pos == MAX_SUFFIX ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 )); //NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_SUFFIX - 1 ); //NOTREACHED
+            ExitFatal();
         }
         ext[pos] = NULLCHAR;
 
@@ -450,10 +456,10 @@ STATIC TOKEN_T lexCmd( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC BOOLEAN checkMacro( STRM_T s )
-/*************************************
- * returns: TRUE    if the line WAS a macro defn
- *          FALSE   if it wasn't
+STATIC bool checkMacro( STRM_T s )
+/*********************************
+ * returns: true    if the line WAS a macro defn
+ *          false   if it wasn't
  * recognizes:      {macc}+{ws}*"="{ws}*{defn}*"\n"
  *                  {macc}+{ws}*"+="{ws}*{defn}*"\n"
  * second gets translated from "macro += defn" to "macro=$+$(macro)$- defn"
@@ -461,7 +467,7 @@ STATIC BOOLEAN checkMacro( STRM_T s )
 {
     char        mac[MAX_MAC_NAME];
     unsigned    pos;
-    BOOLEAN     ws;
+    bool        ws;
 
     pos = 0;
     while( pos < MAX_MAC_NAME && ismacc( s ) ) {
@@ -469,7 +475,8 @@ STATIC BOOLEAN checkMacro( STRM_T s )
         s = PreGetCH();
     }
     if( pos == MAX_MAC_NAME ) {
-        PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 ));
+        PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, MAX_MAC_NAME - 1 );
+        ExitFatal();
     }
     mac[pos] = NULLCHAR;
     ws = isws( s );
@@ -478,15 +485,15 @@ STATIC BOOLEAN checkMacro( STRM_T s )
     }
     if( s == '=' ) {
         DefMacro( mac );
-        return( TRUE );          /* go around again */
+        return( true );          /* go around again */
     } else if( s == '+' ) {
         s = PreGetCH();
         if( s == '=' ) {
-            InsString( ")$-", FALSE );
-            InsString( mac, FALSE );
-            InsString( "$+$(", FALSE );
+            InsString( ")$-", false );
+            InsString( mac, false );
+            InsString( "$+$(", false );
             DefMacro( mac );
-            return( TRUE );     /* go around again */
+            return( true );     /* go around again */
         }
         UnGetCH( s );
         s = '+';
@@ -497,16 +504,16 @@ STATIC BOOLEAN checkMacro( STRM_T s )
     if( ws ) {
         UnGetCH( SPACE );
     }
-    InsString( StrDupSafe( mac + 1 ), TRUE );
-    return( FALSE );
+    InsString( StrDupSafe( mac + 1 ), true );
+    return( false );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
 #endif
 
 
-STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
-/*******************************************************
+STATIC char *DeMacroDoubleQuote( bool IsDoubleQuote )
+/****************************************************
  * This procedure takes care of double quotes in the stream
  * Note: each double quote must be paired with a double quote in the
  * input stream or this will expand until the EOL a backlash double
@@ -519,7 +526,7 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
     VECSTR  OutString;
     int     pos;
     STRM_T  s;
-    BOOLEAN StartDoubleQuote;
+    bool    StartDoubleQuote;
 
 
     s = PreGetCH();
@@ -536,7 +543,8 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
         }
 
         if( pos >= _MAX_PATH ) {
-            PrtMsgExit(( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 )); // NOTREACHED
+            PrtMsg( FTL | LOC | MAXIMUM_TOKEN_IS, _MAX_PATH - 1 ); // NOTREACHED
+            ExitFatal();
         }
 
         buffer[pos] = NULLCHAR;
@@ -553,17 +561,17 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
                 /* Found the start of a Double Quoted String */
                 if( current != p ) {
                     UnGetCH( STRM_MAGIC );
-                    InsString( StrDupSafe( current ), TRUE );
+                    InsString( StrDupSafe( current ), true );
                     UnGetCH( STRM_TMP_LEX_START );
                     *current = NULLCHAR;
                     return( p );
                 }
-                IsDoubleQuote = TRUE;
+                IsDoubleQuote = true;
             } else {
                 /* Found the end of the Double Quoted String */
-                if( *(current + 1) != NULLCHAR) {
+                if( *(current + 1) != NULLCHAR ) {
                     UnGetCH( STRM_MAGIC );
-                    InsString( StrDupSafe( current + 1 ), TRUE );
+                    InsString( StrDupSafe( current + 1 ), true );
                     UnGetCH( STRM_TMP_LEX_START );
                     *(current + 1) = NULLCHAR;
                 }
@@ -590,7 +598,7 @@ STATIC char *DeMacroDoubleQuote( BOOLEAN IsDoubleQuote )
     CatStrToVec( OutString, p );
     FreeSafe( p );
     CatStrToVec( OutString, buffer );
-    p = DeMacroDoubleQuote( TRUE );
+    p = DeMacroDoubleQuote( true );
     CatStrToVec( OutString, p );
     FreeSafe( p );
     return( FinishVec( OutString ) );
@@ -603,13 +611,13 @@ TOKEN_T LexParser( STRM_T s )
  * remarks: possibly defines a macro
  */
 {
-    static BOOLEAN  atstart = TRUE;
+    static bool     atstart = true;
     char            *p;
 
     for( ;; ) {
 
         if( atstart ) {
-                /* atstart == TRUE if either of these succeed */
+                /* atstart == true if either of these succeed */
             if( isws( s ) ) {           /* cmd line */
                 return( lexCmd() );
             }
@@ -618,21 +626,21 @@ TOKEN_T LexParser( STRM_T s )
                 continue;
             }
 
-            atstart = FALSE;
+            atstart = false;
             UnGetCH( s );           /* put back our probe */
             s = STRM_MAGIC;         /* force macro expansion */
         }
 
         switch( s ) {
         case STRM_END:
-            atstart = TRUE;
+            atstart = true;
             return( TOK_END );
         case EOL:
-            atstart = TRUE;
+            atstart = true;
             return( TOK_EOL );
         case STRM_TMP_LEX_START:
         case STRM_MAGIC:
-            p = DeMacroDoubleQuote( FALSE );  /* expand to next white space */
+            p = DeMacroDoubleQuote( false );  /* expand to next white space */
             if( *p == NULLCHAR ) {  /* already at ws */
                 FreeSafe( p );
                 s = PreGetCH();     /* eat the ws */
@@ -640,18 +648,18 @@ TOKEN_T LexParser( STRM_T s )
                     s = PreGetCH();
                 }
                 if( s == EOL ) {
-                    atstart = TRUE;
+                    atstart = true;
                     return( TOK_EOL );
                 }
                 if( s == STRM_END ) {
-                    atstart = TRUE;
+                    atstart = true;
                     return( TOK_END );
                 }
                 UnGetCH( s );
-                p = DeMacroDoubleQuote( FALSE );
+                p = DeMacroDoubleQuote( false );
             }
             UnGetCH( STRM_MAGIC );  /* mark spot we have to expand from nxt */
-            InsString( p, TRUE );   /* put expansion in stream */
+            InsString( p, true );   /* put expansion in stream */
             break;
         case SPACE: /* fall through */
         case TAB:
@@ -661,7 +669,7 @@ TOKEN_T LexParser( STRM_T s )
             UnGetCH( s );
             return( lexDotName() ); /* could be a file... */
         case SEMI:                  /* treat semi-colon as {nl}{ws} */
-            InsString( "\n ", FALSE );
+            InsString( "\n ", false );
             break;                  /* try again */
         case COLON:
             s = PreGetCH();

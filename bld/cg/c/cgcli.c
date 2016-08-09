@@ -36,15 +36,12 @@
 #include <os2.h>
 #else
 #include <windows.h>
-// this is defined by windows.h - MS are such idiots
-#undef IGNORE
 #endif
 
 #undef BY_CG
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "targsys.h"
 #include "cgdefs.h"
 #include "model.h"
 #include "cgmisc.h"

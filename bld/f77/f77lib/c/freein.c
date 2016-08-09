@@ -113,7 +113,7 @@ signed_32   GetNum( void )
 static  void    FreeIOType( void ) {
 //============================
 
-    if( !(IOCB->flags & NML_DIRECTED) ) {
+    if( (IOCB->flags & NML_DIRECTED) == 0 ) {
         ArrayIOType();
         return;
     }

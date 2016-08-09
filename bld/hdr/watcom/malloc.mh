@@ -151,6 +151,7 @@ _WCRTLINK extern size_t _memmax( void );
 #ifdef __cplusplus
 namespace std {
 #endif
+
 _WCRTLINK extern void *calloc( size_t __n, size_t __size );
 _WCRTLINK extern void free( void *__ptr );
 _WCRTLINK extern void *malloc( size_t __size );

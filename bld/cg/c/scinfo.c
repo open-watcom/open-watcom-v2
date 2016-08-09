@@ -142,25 +142,25 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
 extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
 /*******************************************************************/
 
-    if( ScoreLookup( &p[ index ], info ) )
+    if( ScoreLookup( &p[index], info ) )
         return( true );
     if( _IsModel( SUPER_OPTIMAL ) ) {
         score_reg   *entry;
         bool        is_equal;
         type_length half_size;
 
-        entry = ScoreList[  index  ];
+        entry = ScoreList[index];
         if( entry->high == NO_INDEX || entry->low == NO_INDEX )
         return( false );
             /*  See if low parts & high parts of register pair contain*/
             /*  the right information*/
         if( info->class == N_CONSTANT )
         return( false );
-        if( ScoreLookup( &p[  entry->low  ], info ) == false )
+        if( ScoreLookup( &p[entry->low], info ) == false )
         return( false );
         half_size = entry->size / 2;
         info->offset += half_size;
-        is_equal = ScoreLookup( &p[  entry->high  ], info );
+        is_equal = ScoreLookup( &p[entry->high], info );
         info->offset -= half_size;
         return( is_equal );
     }
@@ -176,12 +176,12 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
 
     if( info->class == N_VOLATILE )
         return;
-    if( HW_Ovlap( ScoreList[ i ]->reg, CurrProc->state.unalterable ) )
+    if( HW_Ovlap( ScoreList[i]->reg, CurrProc->state.unalterable ) )
         return;
     new = NewScListEntry();
     Copy( info, &new->info, sizeof( score_info ) );
-    new->next = *p[ i ].list;
-    *p[ i ].list = new;
+    new->next = *p[i].list;
+    *p[i].list = new;
     j = ScoreCount;
     for(;;) {
        if( --j < 0 )
@@ -201,23 +201,23 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
         score       *curr;
 
         if( (info->class == N_INDEXED) && (info->index_reg != NO_INDEX) ) {
-            first = &p[ info->index_reg ];
+            first = &p[info->index_reg];
             curr = first;
             for(;;) {
-                info->index_reg = ScoreList[ curr->index ]->reg_name->r.reg_index;
-                if( ScoreLookup( &p[ i ], info ) == false ) {
+                info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
+                if( ScoreLookup( &p[i], info ) == false ) {
                     ScoreInsert( p, i, info );
                 }
                 curr = curr->next_reg;
                 if( curr == first ) break;
             }
         } else {
-            if( ScoreLookup( &p[ i ], info ) == false ) {
+            if( ScoreLookup( &p[i], info ) == false ) {
                 ScoreInsert( p, i, info );
             }
         }
     } else {
-        if( ScoreLookup( &p[ i ], info ) == false ) {
+        if( ScoreLookup( &p[i], info ) == false ) {
             ScoreInsert( p, i, info );
         }
     }
@@ -235,7 +235,7 @@ extern  void    ScoreAssign( score *p, int index, score_info *info ) {
         uint        lo_off;
         uint        offset;
 
-        entry = ScoreList[  index  ];
+        entry = ScoreList[index];
         if( entry->high != NO_INDEX && entry->low != NO_INDEX ) {
             if( info->class != N_CONSTANT ) {
                 hi_off = info->offset + entry->size / 2;
@@ -272,16 +272,16 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         switch( op->c.const_type ) {
         case CONS_ABSOLUTE:
             info->symbol.p = NULL;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_SEGMENT:
             info->symbol.p = &SegConstSymbol;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_OFFSET:
         case CONS_ADDRESS:
             info->symbol.p = op->c.value;
-            info->offset = op->c.int_value;
+            info->offset = op->c.lo.int_value;
             break;
         case CONS_HIGH_ADDR:
             /* FIXME: not sure what to do here */
@@ -290,7 +290,7 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
                 info->offset = (signed_32)(pointer_int)op->c.value;
             } else {
                 info->symbol.p = &HighAddrConst;
-                info->offset = (signed_32)op->c.int_value;
+                info->offset = (signed_32)op->c.lo.int_value;
             }
             break;
         default:
@@ -359,7 +359,7 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
     /*   has been overwritten*/
 
     last_offset = info->offset + op->n.size;
-    entry = ScoreList[ 0 ];
+    entry = ScoreList[0];
     for( i = ScoreCount; i > 0; --i ) {
         if( !HW_Subset( except, entry->reg ) ) {
             for( owner = scoreboard->list; (curr = *owner) != NULL; ) {

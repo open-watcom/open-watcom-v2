@@ -242,10 +242,7 @@
 
 #define MSG_USAGE_BASE                  230
 
-#include "usageend.gh"
-
-#define END_OF_RESOURCE_MSG             MSG_USAGE_LAST
-
+#define MSG_SPECIAL_BASE                260
 
 #define MSG_LANG_SPACING                1000
 
@@ -257,9 +254,9 @@ typedef struct table_type {
     char    *msgtype;
 } TABLE_TYPE;
 
-extern BOOLEAN  MsgInit( void );
-extern BOOLEAN  MsgGet( int resourceid, char *buffer );
+extern bool     MsgInit( void );
+extern bool     MsgGet( int resourceid, char *buffer );
 extern void     MsgGetTail( int resourceid, char *buffer );
 extern void     MsgFini( void );
-extern BOOLEAN  MsgReOrder( int resourceid, char *buff, char **paratype );
-extern BOOLEAN  ResAutoDep( char *name, time_t stamp, BOOLEAN (*chk)(time_t,time_t), time_t *pmax_time );
+extern bool     MsgReOrder( int resourceid, char *buff, char **paratype );
+extern bool     ResAutoDep( char *name, time_t stamp, bool (*chk)(time_t,time_t), time_t *pmax_time );

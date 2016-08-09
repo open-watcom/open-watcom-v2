@@ -181,7 +181,7 @@ void UIAPI uidisplayitem( MENUITEM *menu, DESCMENU *desc, int item, bool curr )
     ATTR                    chattr;
     int                     str_len;
 
-    active = !MENUGRAYED(*menu) && uiinlist( menu->event );
+    active = !MENUGRAYED(*menu) && uiinlists( menu->event );
     if( active ) {
         if( curr ) {
             attr = UIData->attrs[ATTR_CURR_ACTIVE];
@@ -643,7 +643,7 @@ EVENT intern menuevent( VSCREEN *vptr )
     if( newevent == EV_NO_EVENT ) {
         if ( uimenuson() && !uimenuisdisabled() ) {
             uipushlist( menu_list );
-            if( ( Menu->active == false ) || isdialogue( vptr ) ) {
+            if( !Menu->active || isdialogue( vptr ) ) {
                 ev = getprime( vptr );
             } else {
                 ev = getprime( NULL );

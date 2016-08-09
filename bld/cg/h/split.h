@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -27,48 +28,62 @@
 * Description:  Prototypes for split.c
 *
 ****************************************************************************/
-extern  type_class_def  Unsigned[];
-extern  type_class_def  Signed[]; 
-extern  hw_reg_set      Op1Reg( instruction *ins );
-extern  hw_reg_set      ResultReg( instruction *ins );
-extern  hw_reg_set      ZapReg( instruction *ins );
-extern  instruction     *MoveConst( unsigned_32 value, name *result, type_class_def class );
-extern  instruction     *Reduce( instruction *ins );
-extern  instruction     *rMOVOP1TEMP( instruction *ins );
-extern  instruction     *rMOVOP2TEMP( instruction *ins );
-extern  instruction     *rOP1REG( instruction *ins );
-extern  instruction     *rOP2REG( instruction *ins );
-extern  instruction     *rMOVRESREG( instruction *ins );
-extern  instruction     *rMOVRESTEMP( instruction *ins );
-extern  instruction     *rRESREG( instruction *ins );
-extern  instruction     *rOP1RESREG( instruction *ins );
-extern  instruction     *rUSEREGISTER( instruction *ins );
-extern  instruction     *rCHANGESHIFT( instruction *ins );
-extern  instruction     *rCLRHI_BW( instruction *ins );
-extern  instruction     *rCLRHI_R( instruction *ins );
-extern  instruction     *rCONVERT_LOW( instruction *ins );
-extern  instruction     *rCYPHIGH( instruction *ins );
-extern  instruction     *rCYPLOW( instruction *ins );
-extern  instruction     *rDOUBLEHALF( instruction *ins );
-extern  instruction     *rOP1MEM( instruction *ins );
-extern  instruction     *rOP2MEM( instruction *ins );
-extern  instruction     *rFORCERESMEM( instruction *ins );
-extern  instruction     *rMAKEMOVE( instruction *ins );
-extern  instruction     *rMAKEXORRR( instruction *ins );
-extern  instruction     *rADDRR( instruction *ins );
-extern  instruction     *rMOVOP2( instruction *ins );
-extern  instruction     *rMOVOP1RES( instruction *ins );
-extern  instruction     *rMOVOP2RES( instruction *ins );
-extern  instruction     *rSWAPOPS( instruction *ins );
-extern  instruction     *rSWAPCMP( instruction *ins );
-extern  instruction     *rMOVEINDEX( instruction *ins );
-extern  instruction     *rLOADOP2( instruction *ins );
-extern  instruction     *rNEGADD( instruction *ins );
-extern  instruction     *rMAKEADD( instruction *ins );
-extern  instruction     *rMAKENEG( instruction *ins );
-extern  instruction     *rMAKESUB( instruction *ins );
-extern  instruction     *rCMPtrue( instruction *ins );
-extern  instruction     *rCMPfalse( instruction *ins );
-extern  instruction     *rOP1RESTEMP( instruction *ins );
-extern  void    HalfType( instruction *ins );
-extern  void    ChangeType( instruction *ins, type_class_def class );
+
+
+extern type_class_def   Unsigned[];
+extern type_class_def   Signed[]; 
+extern type_class_def   DoubleClass[];
+extern type_class_def   HalfClass[];
+
+extern instruction *(*ReduceTab[])( instruction * );
+
+extern hw_reg_set       Op1Reg( instruction *ins );
+extern hw_reg_set       ResultReg( instruction *ins );
+extern hw_reg_set       ZapReg( instruction *ins );
+extern instruction      *MoveConst( unsigned_32 value, name *result, type_class_def class );
+extern instruction      *Reduce( instruction *ins );
+extern instruction      *SplitUnary( instruction *ins );
+
+extern void             HalfType( instruction *ins );
+extern void             ChangeType( instruction *ins, type_class_def class );
+extern name             *LowPart( name *tosplit, type_class_def class );
+extern name             *HighPart( name *tosplit, type_class_def class );
+extern name             *OffsetPart( name *tosplit );
+extern name             *SegmentPart( name *tosplit );
+
+extern instruction      *rMOVOP1TEMP( instruction *ins );
+extern instruction      *rMOVOP2TEMP( instruction *ins );
+extern instruction      *rOP1REG( instruction *ins );
+extern instruction      *rOP2REG( instruction *ins );
+extern instruction      *rMOVRESREG( instruction *ins );
+extern instruction      *rMOVRESTEMP( instruction *ins );
+extern instruction      *rRESREG( instruction *ins );
+extern instruction      *rOP1RESREG( instruction *ins );
+extern instruction      *rUSEREGISTER( instruction *ins );
+extern instruction      *rCHANGESHIFT( instruction *ins );
+extern instruction      *rCLRHI_BW( instruction *ins );
+extern instruction      *rCLRHI_R( instruction *ins );
+extern instruction      *rCONVERT_LOW( instruction *ins );
+extern instruction      *rCYPHIGH( instruction *ins );
+extern instruction      *rCYPLOW( instruction *ins );
+extern instruction      *rDOUBLEHALF( instruction *ins );
+extern instruction      *rOP1MEM( instruction *ins );
+extern instruction      *rOP2MEM( instruction *ins );
+extern instruction      *rFORCERESMEM( instruction *ins );
+extern instruction      *rMAKEMOVE( instruction *ins );
+extern instruction      *rMAKEXORRR( instruction *ins );
+extern instruction      *rADDRR( instruction *ins );
+extern instruction      *rMOVOP2( instruction *ins );
+extern instruction      *rMOVOP1RES( instruction *ins );
+extern instruction      *rMOVOP2RES( instruction *ins );
+extern instruction      *rSWAPOPS( instruction *ins );
+extern instruction      *rSWAPCMP( instruction *ins );
+extern instruction      *rMOVEINDEX( instruction *ins );
+extern instruction      *rLOADOP2( instruction *ins );
+extern instruction      *rNEGADD( instruction *ins );
+extern instruction      *rMAKEADD( instruction *ins );
+extern instruction      *rMAKENEG( instruction *ins );
+extern instruction      *rMAKESUB( instruction *ins );
+extern instruction      *rCMPTRUE( instruction *ins );
+extern instruction      *rCMPFALSE( instruction *ins );
+extern instruction      *rOP1RESTEMP( instruction *ins );

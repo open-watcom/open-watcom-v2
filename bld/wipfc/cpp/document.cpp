@@ -542,7 +542,7 @@ void Document::makeBitmaps()
         std::vector< std::string > paths;
         std::string cwd;    //empty string for current directory
         paths.push_back( cwd );
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
         std::string separators( ":;" );
         char slash( '/' );
 #else
@@ -566,7 +566,7 @@ void Document::makeBitmaps()
                     if( !fullname.empty() )
                         fullname += slash;
                     fullname += fname;
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
                     if( fullname.size() > PATH_MAX ) {
                         throw FatalError( ERR_PATH_MAX );
                     }
@@ -815,7 +815,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         std::vector< std::wstring > paths;
         std::wstring cwd;   //empty string for current directory
         paths.push_back( cwd );
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
         std::string separators( ":;" );
         char slash( '/' );
 #else
@@ -839,7 +839,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             if( !fname->empty() )
                 *fname += slash;
             *fname += lexer->text();
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
             if( fname->size() > PATH_MAX ) {
                 throw FatalError( ERR_PATH_MAX );
             }

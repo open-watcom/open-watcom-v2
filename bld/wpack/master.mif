@@ -27,8 +27,8 @@ objs += wildargv.obj
 !endif
 !endif
 
-$(proj_name).exe : $(objs)
-        $(linker) name $^@ $(lflags) file { $< }
+$(proj_name).exe : $(objs) $(__MAKEFILES__)
+        $(linker) name $^@ $(lflags) file { $(objs) }
 
 dtparse.obj : msg.gh
 

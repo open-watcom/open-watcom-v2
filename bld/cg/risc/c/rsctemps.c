@@ -34,24 +34,28 @@
 #include "coderep.h"
 #include "data.h"
 #include "savings.h"
+#include "targetin.h"
 
-extern  void    SetTempLocation( name *temp, type_length size ) {
-/****************************************************************
+
+void    SetTempLocation( name *temp, type_length size )
+/******************************************************
     Snag a temporary with length "size" off the stack and set it's location
 */
-
+{
     temp->t.location = CurrProc->locals.size;
     CurrProc->locals.size += size;
 }
 
-extern  void    PushLocals() {
-/****************************/
+void    PushLocals( void )
+/************************/
+{
 }
 
-extern  bool    TempAllocBefore( name *t1, name *t2 ) {
-/*****************************************************/
-
+bool    TempAllocBefore( void *t1, void *t2 )
+/*******************************************/
+{
     /* want larger things higher up the stack */
-    if( t1->n.size < t2->n.size ) return( true );
+    if( ((name *)t1)->n.size < ((name *)t2)->n.size )
+        return( true );
     return( false );
 }

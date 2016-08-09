@@ -560,6 +560,8 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
 
 #define IS_LFN(x)           (_RWD_uselfn && LFN_SIGN_OF(x) == _LFN_SIGN && LFN_HANDLE_OF(x))
 
+#define TINY_RET_ERROR(e)   ((e) | ~0xFFFF)
+
 #if defined( __WATCOM_LFN__ ) && !defined( _M_I86 )
 
 extern char             * const __lfn_rm_tb_linear;

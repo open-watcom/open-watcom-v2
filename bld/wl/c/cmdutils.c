@@ -916,7 +916,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
         Token.next--;           /* artificially back up one here. */
     }
     if( *Token.next == '\\' && separator == SEP_QUOTE
-                         && !(ctrl & TOK_IS_FILENAME) ) {
+                         && (ctrl & TOK_IS_FILENAME) == 0 ) {
         MapEscapeChar();        /* get escape chars starting in 1st pos. */
     }
     hmm = *Token.next;
@@ -948,7 +948,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '.':
-            if( !(ctrl & TOK_INCLUDE_DOT) && !forcematch ) {
+            if( (ctrl & TOK_INCLUDE_DOT) == 0 && !forcematch ) {
                 quit = true;
             }
             break;
@@ -969,7 +969,7 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
             }
             break;
         case '\\':
-            if( separator == SEP_QUOTE && !(ctrl & TOK_IS_FILENAME) ) {
+            if( separator == SEP_QUOTE && (ctrl & TOK_IS_FILENAME) == 0 ) {
                 MapEscapeChar();
             }
             break;

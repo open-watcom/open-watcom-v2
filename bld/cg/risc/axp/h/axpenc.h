@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 extern void         GenCallLabelReg( pointer label, uint reg );
 #if 0
-extern void         EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type );
 extern void         GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
 extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type );
@@ -41,12 +41,9 @@ extern void         GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displace
 extern void         GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
 extern void         GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src );
 extern void         GenRET( void );
-extern type_length  TempLocation( name *temp );
-extern void         GenObjCode( instruction *ins );
 #if 0
 extern void         GenJumpIf( instruction *ins, pointer label );
 #endif
-extern void         GenLabelReturn( void );
 extern byte         ReverseCondition( byte cond );
 extern byte         CondCode( instruction *ins );
 #endif

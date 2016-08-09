@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "cgmem.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "wvdbg.h"
 #include "data.h"
@@ -45,7 +45,6 @@
 extern  uint            BuffLoc(void);
 extern  void            BuffByte(byte);
 extern  void            BuffWSLString(const char *);
-extern  void            ChkDbgSegSize( offset, bool );
 extern  void            DataShort(unsigned_16);
 extern  void            DataLong(unsigned_32);
 extern  void            DataBytes(unsigned_32,const void *);
@@ -605,7 +604,8 @@ static  void    EndType( bool check_too_big ) {
 
 
     if( _IsModel( DBG_TYPES ) ) {
-        if( check_too_big ) ChkDbgSegSize( MAX_TYPE_SIZE, true );
+        if( check_too_big )
+            ChkDbgSegSize( MAX_TYPE_SIZE, true );
         BuffEnd( DbgTypes );
     }
 }

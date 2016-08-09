@@ -29,8 +29,8 @@ objs = &
     uncompr.obj  &
     zutil.obj 
 
-$(proj_name).lib : $(objs)
-!ifndef __WATCOM__
+$(proj_name).lib : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else
     $(librarian) $(libflags) $(objs)

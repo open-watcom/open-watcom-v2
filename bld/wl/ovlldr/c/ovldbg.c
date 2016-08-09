@@ -154,7 +154,7 @@ static bool RestoreOvlState( unsigned char __far *data )
             ovlnum++;
         }
         ovl = __OVLTAB__.entries + ovlnum - 1;
-        if( !( ovl->flags_anc & FLAG_INMEM ) ) {
+        if( (ovl->flags_anc & FLAG_INMEM) == 0 ) {
             if( (__OVLFLAGS__ & DBGAREA_VALID) && ( __OVLDBGINFO__.section != ovlnum ) ) {
                 __OVLTAB__.entries[__OVLDBGINFO__.section - 1].flags_anc |= FLAG_CHANGED;
             }
@@ -176,7 +176,7 @@ static bool RestoreOvlState( unsigned char __far *data )
     mask = 1;
     WALK_ALL_OVL( ovl ) {
 #ifndef OVL_WHOOSH
-        if( !(ovl->flags_anc & FLAG_INMEM) && (*data & mask) ) {
+        if( (ovl->flags_anc & FLAG_INMEM) == 0 && (*data & mask) ) {
             NAME( LoadOverlay )( OVLNUM( ovl ) );
         }
 #else

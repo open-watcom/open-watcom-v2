@@ -76,14 +76,14 @@ STATIC char     atStartOfLine;  /* EOL at the start of a line...
  * This is a slight optimization for the critical code in PreGetCH().  DJG
  */
 STATIC STRM_T   lastChar;
-STATIC BOOLEAN  doingPreProc;   // are we doing some preprocessing?
+STATIC bool     doingPreProc;   // are we doing some preprocessing?
 
 
 /*
  * MS Compatability extension to add the if (expression) functionality
  */
 
-STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok );
+STATIC void doElIf( bool (*logical)(void), directiveTok tok );
 
 // local functions
 STATIC void parseExpr ( DATAVALUE *leftVal, char *inString );
@@ -137,11 +137,11 @@ void PreProcInit( void )
     StreamInit();
 
     atStartOfLine = EOL;
-    doingPreProc = FALSE;
+    doingPreProc = false;
 
-    curNest.skip2endif = FALSE;
-    curNest.skip = FALSE;
-    curNest.elseFound = FALSE;
+    curNest.skip2endif = false;
+    curNest.skip = false;
+    curNest.elseFound = false;
     nestLevel = 0;
     lastChar = 0;
 }
@@ -252,16 +252,16 @@ STATIC directiveTok getPreTok( void )
 #endif
 
 
-STATIC BOOLEAN ifDef( void )
-/***************************
+STATIC bool ifDef( void )
+/************************
  * pre:
  * post:    atStartOfLine == EOL
- * returns: TRUE if macro is defined, FALSE otherwise
+ * returns: true if macro is defined, false otherwise
  */
 {
     char    *name;
     char    *value;
-    BOOLEAN ret;
+    bool    ret;
 
     assert( !curNest.skip2endif );
 
@@ -270,7 +270,7 @@ STATIC BOOLEAN ifDef( void )
 
     if( !IsMacroName( name ) ) {
         FreeSafe( name );
-        return( FALSE );
+        return( false );
     }
 
     value = GetMacroValue( name );
@@ -284,8 +284,8 @@ STATIC BOOLEAN ifDef( void )
 }
 
 
-STATIC BOOLEAN ifNDef( void )
-/***************************/
+STATIC bool ifNDef( void )
+/************************/
 {
     return( !ifDef() );
 }
@@ -304,8 +304,8 @@ STATIC void chopTrailWS( char *str )
 }
 
 
-STATIC BOOLEAN ifOp( void )
-/**************************
+STATIC bool ifOp( void )
+/***********************
  * MS Compatability  -
  * Allows for NMAKE compatability in binary and string operators
  * process the operands found in !if
@@ -322,7 +322,7 @@ STATIC BOOLEAN ifOp( void )
     parseExpr( &temp, test );
 
     FreeSafe( test );
-    return( (BOOLEAN)temp.data.number );
+    return( temp.data.number != 0 );
 }
 
 
@@ -363,7 +363,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     }
 
     UnGetCH( EOL );
-    InsString( value, TRUE );
+    InsString( value, true );
     value = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
@@ -377,14 +377,14 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
 }
 
 
-STATIC BOOLEAN ifEq( void )
-/**************************
+STATIC bool ifEq( void )
+/***********************
  * pre:
  * post:    atStartOfLine == EOL
- * returns: TRUE if macro equals text, FALSE otherwise
+ * returns: true if macro equals text, false otherwise
  */
 {
-    BOOLEAN     ret;
+    bool        ret;
     char const  *v1;
     char        *v2;
 
@@ -392,7 +392,7 @@ STATIC BOOLEAN ifEq( void )
     if( v1 == NULL ) {
         return( 0 );
     }
-    ret = strcmp( v1, v2 ) == 0;
+    ret = ( strcmp( v1, v2 ) == 0 );
 
     FreeSafe( (void *)v1 );
     FreeSafe( v2 );
@@ -401,14 +401,14 @@ STATIC BOOLEAN ifEq( void )
 }
 
 
-STATIC BOOLEAN ifEqi( void )
-/***************************
+STATIC bool ifEqi( void )
+/************************
  * pre:
  * post:    atStartOfLine == EOL
- * returns: TRUE if macro equals text (case independence), FALSE otherwise
+ * returns: true if macro equals text (case independence), false otherwise
  */
 {
-    BOOLEAN     ret;
+    bool        ret;
     char const  *v1;
     char        *v2;
 
@@ -416,7 +416,7 @@ STATIC BOOLEAN ifEqi( void )
     if( v1 == NULL ) {
         return( 0 );
     }
-    ret = stricmp( v1, v2 ) == 0;
+    ret = ( stricmp( v1, v2 ) == 0 );
 
     FreeSafe( (void *)v1 );
     FreeSafe( v2 );
@@ -425,22 +425,22 @@ STATIC BOOLEAN ifEqi( void )
 }
 
 
-STATIC BOOLEAN ifNEq( void )
-/**************************/
+STATIC bool ifNEq( void )
+/***********************/
 {
     return( !ifEq() );
 }
 
 
-STATIC BOOLEAN ifNEqi( void )
-/***************************/
+STATIC bool ifNEqi( void )
+/************************/
 {
     return( !ifEqi() );
 }
 
 
-STATIC void bangIf( BOOLEAN (*logical)(void), directiveTok tok )
-/********************************************************************
+STATIC void bangIf( bool (*logical)(void), directiveTok tok )
+/************************************************************
  * pre:
  * post:    nestLevel > old(nestLevel); skip if false logical, or currently
  *          skipping; !elseFound
@@ -448,21 +448,22 @@ STATIC void bangIf( BOOLEAN (*logical)(void), directiveTok tok )
  */
 {
     if( nestLevel >= MAX_NEST ) {
-        PrtMsgExit(( FTL | LOC | IF_NESTED_TOO_DEEP ));
+        PrtMsg( FTL | LOC | IF_NESTED_TOO_DEEP );
+        ExitFatal();
     }
 
     nest[nestLevel++] = curNest; // save old nesting on the stack
 
         // remember that curNest still contains info from previous level
     curNest.skip2endif = (curNest.skip || curNest.skip2endif);
-    curNest.skip = FALSE;
-    curNest.elseFound = FALSE;
+    curNest.skip = false;
+    curNest.elseFound = false;
 
     if( !curNest.skip2endif ) { // ok to interpret if arguments?
         curNest.skip = !logical();
     } else {
         // this block is to be skipped, don't interpret args to if
-        curNest.skip = TRUE;
+        curNest.skip = true;
         (void)eatToEOL();
     }
 
@@ -484,7 +485,8 @@ STATIC void bangEndIf( void )
     PrtMsg( DBG | INF | LOC | AT_ENDIF );
 
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ENDIF] );
+        ExitFatal();
     }
     curNest = nest[--nestLevel];
 
@@ -501,28 +503,29 @@ STATIC void doElse( void )
  */
 {
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, directives[D_ELSE] );
+        ExitFatal();
     }
 
     if( curNest.elseFound ) {
         PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, directives[D_ELSE],
             directives[D_ELSE] );
         // must set these because we may not have been skipping previous block
-        curNest.skip2endif = TRUE;
-        curNest.skip = TRUE;
+        curNest.skip2endif = true;
+        curNest.skip = true;
         return;
     }
-    curNest.elseFound = TRUE;
+    curNest.elseFound = true;
 
     if( !curNest.skip2endif ) {
         // check we're not skipping. if !skip then we should skip the else part.
         if( !curNest.skip ) {
             // skip to the end - we've done a block in this nesting
-            curNest.skip = TRUE;
-            curNest.skip2endif = TRUE;
+            curNest.skip = true;
+            curNest.skip2endif = true;
         } else {
             // we still haven't done block in this nesting, do the else portion
-            curNest.skip = FALSE;
+            curNest.skip = false;
         }
     }
 
@@ -537,8 +540,8 @@ STATIC void doElse( void )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok )
-/********************************************************************
+STATIC void doElIf( bool (*logical)(void), directiveTok tok )
+/************************************************************
  * post:    skip if !logical || skip2endif
  * aborts:  if not nested
  * errors:  if elseFound
@@ -549,14 +552,15 @@ STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok )
     FmtStr( buf, "%s %s", directives[D_ELSE], directives[tok] );
 
     if( nestLevel == 0 ) {
-        PrtMsgExit(( FTL | LOC | UNMATCHED_WITH_IF, buf ));
+        PrtMsg( FTL | LOC | UNMATCHED_WITH_IF, buf );
+        ExitFatal();
     }
 
     if( curNest.elseFound ) {
         PrtMsg( WRN | LOC | SKIPPING_AFTER_ELSE, buf, directives[D_ELSE] );
         // must set these because we may not have been skipping previous block
-        curNest.skip2endif = TRUE;
-        curNest.skip = TRUE;
+        curNest.skip2endif = true;
+        curNest.skip = true;
         (void)eatToEOL();
         return;
     }
@@ -565,8 +569,8 @@ STATIC void doElIf( BOOLEAN (*logical)(void), directiveTok tok )
         // check we're not skipping. if !skip, we should skip the else if part
         if( !curNest.skip ) {
             // skip to the end - we've done a block in this nesting
-            curNest.skip = TRUE;
-            curNest.skip2endif = TRUE;
+            curNest.skip = true;
+            curNest.skip2endif = true;
             (void)eatToEOL();
         } else {
             // we still haven't done block in this nesting, try this logical.
@@ -611,7 +615,8 @@ STATIC void bangElse( void )
     case D_IFNEQI:  doElIf( ifNEqi, D_IFNEQI ); break;
     default:
         (void)eatToEOL();
-        PrtMsgExit(( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] ));
+        PrtMsg( FTL | LOC | NOT_ALLOWED_AFTER_ELSE, directives[tok], directives[D_ELSE] );
+        ExitFatal();
     }
 }
 
@@ -640,7 +645,7 @@ STATIC void bangDefine( void )
 static char *skipUntilWS( char *p )
 /*********************************/
 {
-    while( *p != '\0' && !isws( *p ) ) {
+    while( *p != NULLCHAR && !isws( *p ) ) {
         ++p;
     }
     return( p );
@@ -665,35 +670,35 @@ STATIC void bangInject( void )
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     contents = SkipWS( text );
-    if( *contents == '\0' ) {
+    if( *contents == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_contents = skipUntilWS( contents );
-    if( *end_contents == '\0' ) {
+    if( *end_contents == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_contents = '\0';
+    *end_contents = NULLCHAR;
     curr = end_contents + 1;
     for( ;; ) {
         curr = SkipWS( curr );
-        if( *curr == '\0' ) break;
+        if( *curr == NULLCHAR )
+            break;
         mac_name = curr;
         curr = skipUntilWS( curr );
-        if( *curr != '\0' ) {
-            *curr = '\0';
-            ++curr;
+        if( *curr != NULLCHAR ) {
+            *curr++ = NULLCHAR;
         }
         if( !IsMacroName( mac_name ) ) {
             break;
         }
         UnGetCH( EOL );
-        InsString( contents, FALSE );
+        InsString( contents, false );
         value = GetMacroValue( mac_name );
         if( value != NULL ) {
-            InsString( " ", FALSE );
-            InsString( value, TRUE );
+            InsString( " ", false );
+            InsString( value, true );
         }
         DefMacro( mac_name );
     }
@@ -720,41 +725,41 @@ STATIC void bangLoadDLL( void )
     text = DeMacro( TOK_EOL );
     (void)eatToEOL();
     cmd_name = SkipWS( text );
-    if( *cmd_name == '\0' ) {
+    if( *cmd_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_cmd_name = skipUntilWS( cmd_name );
-    if( *end_cmd_name == '\0' ) {
+    if( *end_cmd_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
-    *end_cmd_name = '\0';
+    *end_cmd_name = NULLCHAR;
     dll_name = SkipWS( end_cmd_name + 1 );
-    if( *dll_name == '\0' ) {
+    if( *dll_name == NULLCHAR ) {
         FreeSafe( text );
         return;
     }
     end_dll_name = skipUntilWS( dll_name );
-    if( *end_dll_name == '\0' ) {
+    if( *end_dll_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
-    *end_dll_name = '\0';
+    *end_dll_name = NULLCHAR;
     ent_name = SkipWS( end_dll_name + 1 );
-    if( *ent_name == '\0' ) {
+    if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
         return;
     }
     end_ent_name = skipUntilWS( ent_name );
-    if( *end_ent_name == '\0' ) {
+    if( *end_ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, ent_name );
         FreeSafe( text );
         return;
     }
-    *end_ent_name = '\0';
+    *end_ent_name = NULLCHAR;
     OSLoadDLL( cmd_name, dll_name, ent_name );
     FreeSafe( text );
 }
@@ -869,7 +874,7 @@ STATIC void bangInclude( void )
                     _searchenv( text, INCLUDE, full_path );
                     ret = RET_ERROR;
                     if( *full_path != NULLCHAR ) {
-                        ret = InsFile( full_path, FALSE );
+                        ret = InsFile( full_path, false );
                     }
                     if( ret == RET_ERROR ) {
                         PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
@@ -896,7 +901,7 @@ STATIC void bangInclude( void )
             FreeSafe( temp );
             return;
         }
-        if( InsFile( text, FALSE ) != RET_SUCCESS ) {
+        if( InsFile( text, false ) != RET_SUCCESS ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
         }
     }
@@ -985,15 +990,15 @@ STATIC void handleBang( void )
 }
 
 
-static int PreTestString( const char *str )
-/******************************************
+static bool PreTestString( const char *str )
+/*******************************************
  * Test if 'str' is the next sequence of characters in stream.
  * If not, push back any characters read.
  */
 {
     const char  *p = str;
     STRM_T      s;
-    int         rc = FALSE;
+    bool        rc = false;
 
     for( ;; ) {
         s = GetCHR();
@@ -1005,8 +1010,8 @@ static int PreTestString( const char *str )
             break;
         }
         ++p;
-        if( *p == '\0' ) {
-            rc = TRUE;
+        if( *p == NULLCHAR ) {
+            rc = true;
             break;
         }
     }
@@ -1022,7 +1027,7 @@ STRM_T PreGetCH( void )
 {
     STRM_T  s;
     STRM_T  temp;
-    BOOLEAN skip;
+    bool    skip;
 
     s = GetCHR();
     if( !Glob.preproc ) {
@@ -1039,7 +1044,7 @@ STRM_T PreGetCH( void )
                     s = STRM_TMP_EOL;
                 }
             }
-            doingPreProc = TRUE;
+            doingPreProc = true;
 
             if( Glob.compat_nmake || Glob.compat_posix ) {
                 /* Check for NMAKE and UNIX compatible 'include' directive */
@@ -1056,7 +1061,7 @@ STRM_T PreGetCH( void )
 
                 s = GetCHR();
             }
-            doingPreProc = FALSE;
+            doingPreProc = false;
         }
 
         /* now we have a character of input */
@@ -1082,8 +1087,8 @@ STRM_T PreGetCH( void )
         }
 
         if( s == STRM_END ) {
-            curNest.skip = FALSE;       /* so we don't skip a later file */
-            curNest.skip2endif = FALSE;
+            curNest.skip = false;       /* so we don't skip a later file */
+            curNest.skip2endif = false;
 
             atStartOfLine = EOL;   /* reset preprocessor */
             lastChar = STRM_END;
@@ -1347,34 +1352,34 @@ STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, int *inde
 
 
 
-STATIC BOOLEAN IsMacro( char const *name )
-/****************************************/
+STATIC bool IsMacro( char const *name )
+/*************************************/
 {
     char    *value;
 
     // Seemingly redundant but GetMacroValue() needs plausible name
     if( !IsMacroName( name ) ) {
-       return( FALSE );
+       return( false );
     }
     value = GetMacroValue( name );
 
     if( value == NULL ) {
-        return( FALSE );
+        return( false );
     }
     FreeSafe( value );
-    return( TRUE );
+    return( true );
 }
 
 
-STATIC BOOLEAN name2function( TOKEN_TYPE const *current, char const *criterion,
-    BOOLEAN (*action)( const char * ) , BOOLEAN (**pquestion)( const char * ) )
+STATIC bool name2function( TOKEN_TYPE const *current, char const *criterion,
+    bool (*action)(const char *), bool (**pquestion)(const char *) )
 /*****************************************************************************/
 {
     if( stricmp( current->data.string, criterion ) != 0 ) {
-        return( FALSE );
+        return( false );
     }
     *pquestion = action;
-    return( TRUE );
+    return( true );
 }
 
 STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index )
@@ -1391,7 +1396,7 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index
     if( *probe != PAREN_LEFT || (probe = SkipWS( probe + 1), *probe == NULLCHAR) ) {
         current->type = OP_ERROR;
     } else {
-        BOOLEAN (*is)( const char * );
+        bool (*is)(const char *);
 
         if( name2function( current, DEFINED, IsMacro,   &is )
           || name2function( current, EXIST,  existFile, &is )
@@ -1758,7 +1763,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     break;
                 case OP_STRING:
                     leftVal->data.number =
-                        !strcmp( leftVal->data.string, rightVal.data.string );
+                        ( strcmp( leftVal->data.string, rightVal.data.string ) == 0 );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
@@ -1779,7 +1784,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                     break;
                 case OP_STRING:
                     leftVal->data.number =
-                        !!strcmp( leftVal->data.string, rightVal.data.string );
+                        ( strcmp( leftVal->data.string, rightVal.data.string ) != 0 );
                     leftVal->type = OP_INTEGER;
                     break;
                 default:
@@ -1964,16 +1969,16 @@ STATIC void multExpr( DATAVALUE *leftValue )
 }
 
 
-BOOLEAN existFile( char const *inPath )
-/*********************************************
+bool existFile( char const *inPath )
+/***********************************
  * This function is to determine whether or not a particular
  * filename / directory exists  (for use with EXIST())
  */
 {
      if( access( inPath, F_OK ) == 0 ) {
-         return( TRUE );
+         return( true );
      }
-     return( FALSE );
+     return( false );
 }
 
 

@@ -1,17 +1,17 @@
 objnttimeroot = &
-        int.obj
+    int.obj
 
 objntsizeroot = &
-        biosnt.obj
+    biosnt.obj
 
 objntsize = &
-        ntcmds.obj &
-        ntsys.obj &
-        ntmain.obj &
-        ntmouse.obj &
-        dosdir.obj &
-        time.obj  &
-        spawn.obj
+    ntcmds.obj &
+    ntsys.obj &
+    ntmain.obj &
+    ntmouse.obj &
+    dosdir.obj &
+    time.obj  &
+    spawn.obj
 
 extraobjs = $(objntsize)
 extraobjsroot = $(objnttimeroot) $(objntsizeroot)

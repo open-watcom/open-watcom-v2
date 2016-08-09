@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,14 @@
 #include "data.h"
 #include "objout.h"
 #include "optmain.h"
+#include "encode.h"
+#include "optutil.h"
+#include "optmkins.h"
 
-extern  void            TryScrapLabel(label_handle);
-extern  void            AddNewJump(ins_entry*,label_handle);
-extern  label_handle    AddNewLabel(ins_entry*,obj_length);
-extern  ins_entry       *PrevIns(ins_entry*);
+
 extern  void            ChgLblRef(ins_entry*,label_handle);
-extern  ins_entry       *NextIns(ins_entry*);
-extern  obj_length      OptInsSize(oc_class,oc_dest_attr);
 
 static  label_handle    Handle;
-
 
 static  bool    Jmp_to_lbl( ins_entry *instr )
 /********************************************/
@@ -74,24 +72,30 @@ static  bool    CanReach( label_handle lbl, ins_entry **add_ptr,
     if( _TstStatus( lbl, UNREACHABLE ) ) {
         /* can't do anything with it */
     } else if( lbl->lbl.address == ADDR_UNKNOWN ) {
-        if( _TstStatus( lbl, SHORTREACH ) ) return( true );
+        if( _TstStatus( lbl, SHORTREACH ) )
+            return( true );
         obj_len = OptInsSize( OC_JMP, OC_DEST_SHORT );
         lbl_ins = Handle->ins;
         for( instr = NextIns( FirstIns ); instr != NULL; instr = NextIns( instr ) ) {
             obj_len += _ObjLen( instr );
-            if( obj_len > MAX_SHORT_FWD ) break;
+            if( obj_len > MAX_SHORT_FWD )
+                break;
             if( Jmp_to_lbl( instr ) ) {
                 jmp = instr;
             } else if( _TransferClass( _Class( instr ) ) ) {
                 add = instr;
             }
-            if( instr == lbl_ins ) return( true );
+            if( instr == lbl_ins ) {
+                return( true );
+            }
         }
     } else if( (AskLocation() - lbl->lbl.address) <= MAX_SHORT_BWD ) {
         return( true );
     }
-    if( add_ptr != NULL ) *add_ptr = add;
-    if( jmp_ptr != NULL ) *jmp_ptr = jmp;
+    if( add_ptr != NULL )
+        *add_ptr = add;
+    if( jmp_ptr != NULL )
+        *jmp_ptr = jmp;
     return( false );
 }
 
@@ -234,11 +238,13 @@ extern  void    SetBranches( void )
                 */
                 _JmpCond( FirstIns ) =
                                 ReverseCondition( _JmpCond( FirstIns ) );
-                was_keep = ( _TstStatus( Handle, KEEPLABEL ) != 0 );
+                was_keep = _TstStatus( Handle, KEEPLABEL );
                 _SetStatus( Handle, KEEPLABEL );
                 ChgLblRef( FirstIns, _Label( next ) );
                 ChgLblRef( next, Handle );
-                if( !was_keep ) _ClrStatus( Handle, KEEPLABEL );
+                if( !was_keep ) {
+                    _ClrStatus( Handle, KEEPLABEL );
+                }
             } else {
                 BigBranch( add, jmp );
             }

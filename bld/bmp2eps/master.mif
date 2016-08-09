@@ -10,10 +10,10 @@ inc_dirs = -I"../h"
 
 .c: ../c
 
-objs =                  &
-        bmeps.obj       &
-        bmepsm.obj      &
-        bmepsoe.obj     &
-        bmpeps.obj
+objs = &
+    bmeps.obj &
+    bmepsm.obj &
+    bmepsoe.obj &
+    bmpeps.obj
 
 !include exetarg.mif

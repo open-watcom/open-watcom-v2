@@ -30,23 +30,23 @@ WINDOWS = 1
 
 !include trmem.mif
 
-object =    wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
-            wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
-            wrsvexe.obj wrsvres.obj &
-            wridfile.obj wrinfo.obj wrstrdup.obj &
-            wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
-            wrdata.obj wrnamoor.obj wrwresid.obj &
-            wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
-            wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
-            wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
-            preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
-            rcerrprt.obj rcgetenv.obj &
-            wrstubs.obj &
-            pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
-            exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
-            global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-            errors.obj tmpctl.obj autodep.obj &
-            dbtable.obj sharedio.obj rcspawn.obj
+objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
+    wrrdw16.obj wrrdwnt.obj wrrdres.obj wrimg.obj &
+    wrsvexe.obj wrsvres.obj &
+    wridfile.obj wrinfo.obj wrstrdup.obj &
+    wrlist.obj wrdel.obj wrstr.obj wrclean.obj &
+    wrdata.obj wrnamoor.obj wrwresid.obj &
+    wrselft.obj wrmemf.obj wrdmsg.obj wrctl3d.obj &
+    wrbitmap.obj wricon.obj wr_wres.obj wrselimg.obj &
+    wrrnames.obj wrhash.obj wredit.obj wrutil.obj $(trmem_objs) &
+    preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj &
+    rcerrprt.obj rcgetenv.obj &
+    wrstubs.obj &
+    pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
+    exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
+    global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
+    errors.obj tmpctl.obj autodep.obj &
+    dbtable.obj sharedio.obj rcspawn.obj
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 
@@ -67,7 +67,7 @@ inc_dirs = -I. -I"../h" $(cpp_inc_dirs) $(wres_inc_dirs) -I"$(wrc_dir)/h" $(comm
 
 rc_inc_dirs = #$(cpp_inc_dirs) $(wres_inc_dirs) -I"$(wrc_dir)/h" $(commonui_inc_dirs)
 
-xlibs = $(wres_lib) $(commonui_lib)
+libs = $(wres_lib) $(commonui_lib)
 
 #------------- LINK
 extra_l_flags_dll = op implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
@@ -83,11 +83,11 @@ version_res_dll_nt_x64 = version.res
 
 !include verrc.mif
 
-$(name).dll: $(win_yacc_file).h rcmsg.gh $(object) $(xlibs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(object) $(xlibs) $(ldflags)
+$(name).dll: $(win_yacc_file).h rcmsg.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(object)} lib {$(xlibs)}
+        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
@@ -100,18 +100,18 @@ test_system = $(test_system_$(host_os)_$(host_cpu))
 test_lflags = system $(test_system) name test debug all libpath $(watcom_dir)/lib
 test_lflags += option quiet, map, elim, v, static
 
-test.exe: $(name).lib $(TESTLNK) test.obj
+test.exe: $(name).lib $(TESTLNK) test.obj $(__MAKEFILES__)
         $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
-rcmsg.gh: wrmsg.gh
+rcmsg.gh: wrmsg.gh $(__MAKEFILES__)
         *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-wrmsg.gh: ../res/master.msg $(msgfiles)
+wrmsg.gh: ../res/master.msg $(msgfiles) $(__MAKEFILES__)
         $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
 
-$(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h
+$(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
         $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
         @rm -f $(win_yacc_file).c # C code isn't used
 
-$(name).res: ../res/wr.rc .AUTODEPEND
+$(name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
         $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@

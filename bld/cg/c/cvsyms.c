@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,25 +38,21 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "cgauxinf.h"
 #include "cvdbg.h"
 #include "data.h"
 #include "types.h"
 #include "objout.h"
+#include "targetdb.h"
 #include "cvsyms.h"
+#include "rgtbl.h"
+#include "namelist.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  name            *DeAlias(name*);
+
 extern  void            DataLong( unsigned_32 );
-extern  char            GetMemModel( void );
-#if _TARGET & _TARG_IAPX86
-extern  hw_reg_set      Low32Reg(hw_reg_set);
-#elif _TARGET & _TARG_80386
-extern  hw_reg_set      Low64Reg(hw_reg_set);
-#endif
 extern  void            DataBytes(unsigned,const void *);
 extern  void            DoBigLblPtr(cg_sym_handle);
 extern  void            CVPutStr( cv_out *, const char * );
@@ -64,7 +61,6 @@ extern  void            CVPutINum64( cv_out *out, signed_64 num );
 extern  void            CVPutNullStr( cv_out * );
 extern  void            CVEndType( cv_out *out );
 extern  cg_sym_handle   LocSimpStatic(dbg_loc);
-extern  type_length     NewBase(name*);
 
 // global variables
 segment_id              CVSyms;

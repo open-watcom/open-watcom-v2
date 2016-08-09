@@ -60,7 +60,7 @@ _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const 
         ;
 
     a = (const CHAR_TYPE **)alloca( num * sizeof( CHAR_TYPE * ) );
-    if( !a ) {
+    if( a == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }

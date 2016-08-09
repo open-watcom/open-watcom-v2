@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,17 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "targsys.h"
 #include "data.h"
 #include "cfloat.h"
 #include "objout.h"
 #include "memcheck.h"
 #include "memlimit.h"
-#include "ocentry.h"
 #include "optmain.h"
+#include "namelist.h"
+#include "optmkins.h"
+#include "makeins.h"
 #include "feprotos.h"
+
 
 static    pointer_int   MemLimit;
 static    bool          IckyWicky;
@@ -47,9 +50,6 @@ static    bool          IckyWicky;
 extern    pointer       MemStart;
 extern    pointer       MemFinish;
 
-extern  bool            InsFrlFree( void );
-extern  bool            InstrFrlFree( void );
-extern  bool            NameFrlFree( void );
 extern  bool            ConfFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            ScoreFrlFree( void );

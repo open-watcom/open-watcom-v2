@@ -166,7 +166,7 @@ static int doalloc( size, envdata, envsize )
         }
     }
     _pspptr( _RWD_psp )->envp = envseg;
-    movedata( envdata, 0, envseg, 0, envsize*16 );
+    movedata( envdata, 0, envseg, 0, envsize * 16 );
     resetints();
     for( ;; ) {
         for( p = doslowblock(); ; p = p + _mcbptr( p )->size + 1 ) {
@@ -227,33 +227,33 @@ _WCRTLINK int execve( path, argv, envp )
     char                *name;
     int                 file;
     an_exe_header       exe;            /* Room for exe file header */
-    char                *envptr;
-    char                *envstrings;
-    unsigned            envseg;
+    char                *_envptr;       /* environment ptr (unaligned) */
+    char                *envptr;        /* environment ptr (DOS 16-bit aligned to para) */
+    unsigned            envseg;         /* environment segment (DOS 16-bit normalized, zero for others) */
     unsigned            envpara;
     size_t              cmdline_len;
     char                cmdline[128];   /* Command line build up here */
-    char                buffer[80];     /* file name */
+    char                pgmname[80];    /* file name */
     int                 isexe;
     extern unsigned     __exec_para;
     unsigned            para;
     const char          **argvv;
     int                 i;
 
-    strncpy( buffer, path, 75 );
-    name = strrchr( buffer, '\\' );
-    if( strchr( name == NULL ? buffer : name, '.' ) != NULL ) {
-        file = open( buffer, O_BINARY|O_RDONLY, 0 );
+    strncpy( pgmname, path, 75 );
+    name = strrchr( pgmname, '\\' );
+    if( strchr( name == NULL ? pgmname : name, '.' ) != NULL ) {
+        file = open( pgmname, O_BINARY|O_RDONLY, 0 );
         _RWD_errno = ENOENT;
         if( file == -1 ) {
             goto error;
         }
     } else {
-        strcat( buffer, ".com" );
-        file = open( buffer, O_BINARY|O_RDONLY, 0 );
+        strcat( pgmname, ".com" );
+        file = open( pgmname, O_BINARY|O_RDONLY, 0 );
         if( file == -1 ) {
-            strcpy( strrchr( buffer, '.' ), ".exe" );
-            file = open( buffer, O_BINARY|O_RDONLY, 0 );
+            strcpy( strrchr( pgmname, '.' ), ".exe" );
+            file = open( pgmname, O_BINARY|O_RDONLY, 0 );
             _RWD_errno = ENOENT;
             if( file == -1 ) {
                 goto error;
@@ -269,11 +269,11 @@ _WCRTLINK int execve( path, argv, envp )
     }
     isexe = exe.id == EXE_ID || exe.id == _swap( EXE_ID );
     if( isexe ) {
-        para = (exe.length_div_512 - 1 )*(512/16)
-             + (exe.length_mod_512 + 15)/16
+        para = ( exe.length_div_512 - 1 ) * __ROUND_DOWN_SIZE_TO_PARA( 512 )
+             + __ROUND_UP_SIZE_TO_PARA( exe.length_mod_512 )
              +  exe.min_para - exe.header_para;
     } else {
-        para = (__lseek( file, 0, SEEK_END ) + MIN_COM_STACK + 15)/16;
+        para = __ROUND_UP_SIZE_TO_PARA( __lseek( file, 0, SEEK_END ) + MIN_COM_STACK );
     }
     close( file );
     i = 1;  /* copy the NULL terminator too */
@@ -283,18 +283,17 @@ _WCRTLINK int execve( path, argv, envp )
     while( --i > 0 ) {
         argvv[i] = argv[i];
     }
-    argvv[0] = buffer;           /* 22-jan-88 set program name */
-    envpara = __cenvarg( argvv, envp, &envptr, &envstrings,
-                         &envseg, &cmdline_len, TRUE );
+    argvv[0] = pgmname;         /* set program name */
+    envpara = __cenvarg( argvv, envp, &_envptr, &envptr, &envseg, &cmdline_len, TRUE );
     if( envpara == -1 )
         goto error;
-    para += PSP_SIZE/16 + __exec_para + (strlen( path ) + 15)/16;
-    __ccmdline( buffer, (const char * const *)argvv, cmdline, 0 );
+    para += __ROUND_DOWN_SIZE_TO_PARA( PSP_SIZE ) + __exec_para + __ROUND_UP_SIZE_TO_PARA( strlen( path ) );
+    __ccmdline( pgmname, (const char * const *)argvv, cmdline, 0 );
     if( doalloc( para, envseg, envpara ) )
         save_file_handles();
-    _doexec( (char _WCI86NEAR *)buffer, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
+    _doexec( (char _WCI86NEAR *)pgmname, (char _WCI86NEAR *)cmdline, isexe, exe.ss, exe.sp, exe.cs, exe.ip );
 
-    free( envptr );
+    free( _envptr );
     free( argvv );
 error: /* Clean up after error */
     return( -1 );

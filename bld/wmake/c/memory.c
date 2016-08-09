@@ -39,7 +39,7 @@
 
 
 #ifdef USE_FAR
-STATIC BOOLEAN largeNearSeg;    /* have we done a _nheapgrow() ? */
+STATIC bool     largeNearSeg;    /* have we done a _nheapgrow() ? */
 #endif
 
 #ifdef USE_SCARCE
@@ -92,7 +92,7 @@ STATIC void printLine( void *h, const char *buf, unsigned size )
         write( trkfile, buf, size );
         write( trkfile, "\n", 1 );
     }
-    if( !(trmemCode & TRMEM_DO_NOT_PRINT) ) {
+    if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
          write( STDOUT_FILENO, buf, size );
          write( STDOUT_FILENO, "\n", 1 );
     }
@@ -101,29 +101,33 @@ STATIC void printLine( void *h, const char *buf, unsigned size )
 STATIC void MemCheck( void )
 /**************************/
 {
-    static int  busy = FALSE;   /* protect against recursion thru PrtMsg */
+    static bool     busy = false;   /* protect against recursion thru PrtMsg */
 
 #if defined( __WATCOMC__ )
     if( !busy ) {
-        busy = TRUE;
+        busy = true;
 #ifdef USE_FAR
         switch( _nheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Near heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Near heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Near heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Near heap!" );
+            ExitFatal();
         }
         switch( _fheapchk() ) {
         case _HEAPOK:
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Far heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Far heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Far heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Far heap!" );
+            ExitFatal();
         }
 #else
         switch( _heapchk() ) {
@@ -131,12 +135,14 @@ STATIC void MemCheck( void )
         case _HEAPEMPTY:
             break;
         case _HEAPBADBEGIN:
-            PrtMsgExit(( FTL | PRNTSTR, "Heap is damaged!" ));
+            PrtMsg( FTL | PRNTSTR, "Heap is damaged!" );
+            ExitFatal();
         case _HEAPBADNODE:
-            PrtMsgExit(( FTL | PRNTSTR, "Bad node in Heap!" ));
+            PrtMsg( FTL | PRNTSTR, "Bad node in Heap!" );
+            ExitFatal();
         }
 #endif
-        busy = FALSE;
+        busy = false;
     }
 #endif
 }
@@ -166,13 +172,13 @@ void IfMemScarce( RET_T (*func)( void ) )
 
 STATIC RET_T tryScarce( void )
 /*****************************
- * returns: TRUE if a scarce routine managed to deallocate memory.
+ * returns: true if a scarce routine managed to deallocate memory.
  */
 {
-    BOOLEAN         did;
+    bool            did;
     struct scarce   *cur;
 
-    did = FALSE;
+    did = false;
     cur = scarceHead;
     while( cur != NULL && !did ) {
         did = (cur->func)() == RET_SUCCESS;
@@ -244,7 +250,7 @@ STATIC void memGrow( void )
 #ifdef USE_FAR
     _nheapgrow();
     _fheapgrow();
-    largeNearSeg = TRUE;
+    largeNearSeg = true;
 #else
 #if !defined( __NT__ ) && !defined( __UNIX__ )
     _heapgrow();
@@ -262,7 +268,8 @@ void MemInit( void )
     Handle = _trmem_open( malloc, free, _TRMEM_NO_REALLOC, NULL,
                           NULL, printLine, _TRMEM_CLOSE_CHECK_FREE );
     if( Handle == NULL ) {
-        PrtMsgExit(( FTL | PRNTSTR, "Unable to track memory!" ));
+        PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
+        ExitFatal();
     }
 #endif
 }
@@ -338,7 +345,8 @@ void *MallocSafe( size_t size )
     ptr = doAlloc( size );
 #endif
     if( ptr == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
     return( ptr );
 }
@@ -357,7 +365,8 @@ void *CallocSafe( size_t size )
     ptr = doAlloc( size, _trmem_guess_who() );
 
     if( ptr == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 #else
     ptr = MallocSafe( size );
@@ -398,7 +407,8 @@ char *StrDupSafe( const char *str )
 #ifdef TRMEM
     p = doAlloc( len, _trmem_guess_who() );
     if( p == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 #else
     p = MallocSafe( len );
@@ -416,7 +426,7 @@ void MemShrink( void )
 #ifdef USE_FAR
     _nheapshrink();
     _fheapshrink();
-    largeNearSeg = FALSE;
+    largeNearSeg = false;
 #elif !defined( __UNIX__ )
     _heapshrink();
 #endif
@@ -426,8 +436,8 @@ void MemShrink( void )
 
 #ifdef USE_FAR
 
-void FAR *FarMaybeMalloc( size_t size )
-/********************************************/
+void FAR *FarMallocUnSafe( size_t size )
+/**************************************/
 {
     if( !largeNearSeg ) {
         memGrow();
@@ -436,22 +446,23 @@ void FAR *FarMaybeMalloc( size_t size )
 }
 
 
-void FAR *FarMalloc( size_t size )
-/***************************************/
+void FAR *FarMallocSafe( size_t size )
+/************************************/
 {
     void FAR *p;
 
-    p = FarMaybeMalloc( size );
+    p = FarMallocUnSafe( size );
     if( p == NULL ) {
-        PrtMsgExit(( FTL | OUT_OF_MEMORY ));
+        PrtMsg( FTL | OUT_OF_MEMORY );
+        ExitFatal();
     }
 
     return( p );
 }
 
 
-void FarFree( void FAR *p )
-/********************************/
+void FarFreeSafe( void FAR *p )
+/*****************************/
 {
     _ffree( p );
 }

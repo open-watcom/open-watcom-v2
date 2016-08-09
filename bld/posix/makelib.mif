@@ -30,4 +30,12 @@ inc_dirs = -I"$(posix_dir)/h"
 #       define the main target
 #
 posix.lib : $(objs)
-        $(blib) $(bld_libflags) $<
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $(objs)
+!else if defined( bootstrap ) && ( $(watcom_ver) < 1300 )
+    @%create posix.lbc
+    @for %o in ($(objs)) do @%append posix.lbc %o
+    $(bld_lib) @posix.lbc
+!else
+    $(librarian) $(libflags) $(objs)
+!endif

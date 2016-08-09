@@ -2,15 +2,15 @@ set macro all F1 {help}
 set macro all F2 {accel main {&Data} {&Register}}
 set macro all F3 {
     if ( dbg$src ) {
-    display source/close;
-    display locals/close;
-    display register;
-    display assembly
+        display source/close;
+        display locals/close;
+        display register;
+        display assembly
     } else {
-    display assembly/close;
-    display register/close;
-    display locals;
-    display source
+        display assembly/close;
+        display register/close;
+        display locals;
+        display source
     }
 }
 set macro all F4 {accel main {&Window} {A&pplication}}

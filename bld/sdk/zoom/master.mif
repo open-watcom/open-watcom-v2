@@ -19,7 +19,7 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_l_flags_win = op stack=7k, heapsize=2k
 
-xlibs = $(commonui_lib)
+libs = $(commonui_lib)
 
 inc_dirs = -I. -I"../h" $(commonui_inc_dirs)
 
@@ -33,26 +33,26 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-$(name).exe : rcstr.gh $(objs) $(xlibs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(xlibs) $(ldflags)
+$(name).exe : rcstr.gh $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(xlibs)}
+        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
         $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
-$(name)j.exe : $(name).exe $(name)j.res
+$(name)j.exe : $(name).exe $(name)j.res $(__MAKEFILES__)
         cp $(name).exe $^@
         $(rc) -k $(name)j.res $^@
 
-rcstr.gh : rcstrmsg.gh
+rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
         *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-rcstrmsg.gh : ../res/wzoom.msg
+rcstrmsg.gh : ../res/wzoom.msg $(__MAKEFILES__)
         $(cpp) $(rc_aui_flags) -o$^@ $[@
 
-$(name).res : ../res/wzoom.rc .AUTODEPEND
+$(name).res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
         $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
-$(name)j.res : ../res/wzoom.rc .AUTODEPEND
+$(name)j.res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND
         $(rc) $(rc_flags) -DJAPANESE -ad -zk0 -I"../res/kanji" $(rc_inc_path) $[@ -fo=$^@

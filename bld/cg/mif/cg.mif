@@ -50,7 +50,6 @@ cg_objs = &
     makeaddr.obj &
     makeblk.obj &
     makeins.obj &
-    memtrack.obj &
     multiply.obj &
     namelist.obj &
     nullprop.obj &

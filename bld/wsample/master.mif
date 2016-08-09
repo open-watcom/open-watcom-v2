@@ -39,6 +39,7 @@ xname = $(xname_$(target)_$(host_cpu))
 !ifneq target win
 !include wres.mif
 !endif
+!include tools.mif
 
 objs_nt_axp     = sampaxp.obj sysinit.obj sampexe.obj
 objs_nt_386     = sampnt.obj sysinit.obj sampexe.obj
@@ -56,7 +57,7 @@ objs_linux_x64  = samplnx.obj sysinit.obj sampexe.obj lnxutl.obj
 
 objs = $(objs_$(target)_$(host_cpu)) sample.obj sampdata.obj io.obj sysio.obj wmsg.obj
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 far_ptr_dos_dos =__far
 far_ptr_dos_rsi =__far
 far_ptr_win_win =__far
@@ -213,7 +214,7 @@ libs += $(windbg_lib)
 !endif
 
 $(xname).exe : $(objs) $(libs) $(xname).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     @%write tmp.lnk $(lflags)
@@ -230,16 +231,16 @@ $(xname).exe : $(objs) $(libs) $(xname).res $(version_res_exe_$(host_os)_$(host_
 
 !endif
 
-./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
+./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
-nversion.tmp: ./mknver.exe
+nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     $[@ $^@
 
 !ifeq host_os win
-$(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
+$(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     $(rc_aui) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$^@
 !else
-$(xname).res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg
+$(xname).res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     $(rc_aui) $[@ -fo=$^@
 !endif

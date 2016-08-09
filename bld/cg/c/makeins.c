@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,13 +38,12 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "optab.h"
 
-
-extern  void            DoNothing(instruction*);
 
 static  pointer         *InsFrl;
 
-extern  void    InitIns( void ) {
+void    InitIns( void ) {
 /********************************
     Initialize the free list of "instruction"
 */
@@ -52,7 +52,7 @@ extern  void    InitIns( void ) {
 }
 
 
-extern  bool    InsFrlFree( void ) {
+bool    InsFrlFree( void ) {
 /******************************
     Free up the "instruction" free list.
 */
@@ -61,7 +61,7 @@ extern  bool    InsFrlFree( void ) {
 }
 
 
-extern  void    FreeIns( instruction *ins ) {
+void    FreeIns( instruction *ins ) {
 /********************************************
     Free an instruction "ins"
 */
@@ -88,7 +88,7 @@ extern  void    FreeIns( instruction *ins ) {
 }
 
 
-extern  instruction     *NewIns( int num ) {
+instruction     *NewIns( int num ) {
 /*******************************************
     Allocate a new instruction (with "num" operands) and initialize its
     fields to sensible defaults.
@@ -122,7 +122,7 @@ extern  instruction     *NewIns( int num ) {
 }
 
 
-extern  instruction     *MakeNop( void ) {
+instruction     *MakeNop( void ) {
 /*****************************************
     Return an initialized "NOP" instruction
 */
@@ -138,7 +138,7 @@ extern  instruction     *MakeNop( void ) {
 }
 
 
-extern  instruction     *MakeNary( opcode_defs opcode, name *left,
+instruction     *MakeNary( opcode_defs opcode, name *left,
                                      name *right, name *result,
                                      type_class_def class,
                                      type_class_def base_class,
@@ -153,14 +153,14 @@ extern  instruction     *MakeNary( opcode_defs opcode, name *left,
     ins->head.opcode = opcode;
     ins->type_class = class;
     ins->base_type_class = base_class;
-    ins->operands[ 0 ] = left;
-    ins->operands[ 1 ] = right;
+    ins->operands[0] = left;
+    ins->operands[1] = right;
     ins->result = result;
     return( ins );
 }
 
 
-extern  instruction     *MakeMove( name *src, name *dst,
+instruction     *MakeMove( name *src, name *dst,
                                    type_class_def class ) {
 /**********************************************************
     Make a move instruction (MOV src => dst)
@@ -173,7 +173,7 @@ extern  instruction     *MakeMove( name *src, name *dst,
 }
 
 
-extern  instruction     *MakeUnary( opcode_defs op, name *src,
+instruction     *MakeUnary( opcode_defs op, name *src,
                                     name *dst, type_class_def class ) {
 /**********************************************************************
     Make a unary instruction (op  src => dst)
@@ -183,7 +183,7 @@ extern  instruction     *MakeUnary( opcode_defs op, name *src,
 }
 
 
-extern  instruction     *MakeConvert( name *src, name *dst, type_class_def class,
+instruction     *MakeConvert( name *src, name *dst, type_class_def class,
                                       type_class_def base_class ) {
 /**********************************************************************
     Make a conversion instruction.  Convert "src" (type = "base_class") to
@@ -194,7 +194,7 @@ extern  instruction     *MakeConvert( name *src, name *dst, type_class_def class
 }
 
 
-extern  instruction     *MakeRound( name *src, name *dst, type_class_def class,
+instruction     *MakeRound( name *src, name *dst, type_class_def class,
                                       type_class_def base_class ) {
 /**********************************************************************
     Make a round instruction.  Convert "src" (type = "base_class") to
@@ -205,7 +205,7 @@ extern  instruction     *MakeRound( name *src, name *dst, type_class_def class,
 }
 
 
-extern  instruction     *MakeBinary( opcode_defs opcode, name *left,
+instruction     *MakeBinary( opcode_defs opcode, name *left,
                                      name *right, name *result,
                                      type_class_def class ) {
 /************************************************************
@@ -216,7 +216,7 @@ extern  instruction     *MakeBinary( opcode_defs opcode, name *left,
 }
 
 
-extern  instruction     *MakeCondition( opcode_defs opcode, name *left,
+instruction     *MakeCondition( opcode_defs opcode, name *left,
                                         name *right, int t, int f,
                                         type_class_def class ) {
 /***************************************************************

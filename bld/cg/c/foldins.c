@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,22 +42,22 @@
 #include "treefold.h"
 #include "treeconv.h"
 #include "namelist.h"
+#include "objout.h"
+#include "insutil.h"
+#include "typemap.h"
+#include "optab.h"
+#include "inssegs.h"
 #include "feprotos.h"
 
-extern void             ReplIns(instruction*,instruction*);
-extern void             DupSeg(instruction*,instruction*);
-extern void             DoNothing(instruction*);
+
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
-extern type_def         *ClassType(type_class_def);
 extern int              NumOperands(instruction*);
-extern bool             DoesSomething(instruction*);
 extern bool             NeedConvert(type_def*,type_def*);
-extern  bool            AskSegNear(segment_id);
-extern  void            SetCSEBits(instruction *,instruction *);
-extern  float_handle    OkToNegate( float_handle, type_def * );
+extern void             SetCSEBits(instruction *,instruction *);
+extern float_handle     OkToNegate( float_handle, type_def * );
 
-extern  bool    IsTrickyPointerConv( instruction *ins )
+extern bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************
     Is "ins" a near (based) to far pointer conversion that has
     to be carefully converted with taking segments into account?
@@ -64,7 +65,7 @@ extern  bool    IsTrickyPointerConv( instruction *ins )
 {
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
-        if( ins->base_type_class == U2 && TypeClassSize[ ins->type_class ] > WORD_SIZE )
+        if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE )
             return( true );
     }
 #else
@@ -128,12 +129,12 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     bool        truth;
 
     if( NumOperands( ins ) != 2 ) return( NULL );
-    cons = ins->operands[ c ];
+    cons = ins->operands[c];
     if( cons->n.class != N_CONSTANT ) return( NULL );
     if( cons->c.const_type != CONS_ABSOLUTE ) return( NULL );
     if( CFTest( cons->c.value ) != 0 ) return( NULL );
-    rel = ins->operands[ r ];
-    if( rel->c.const_type == CONS_OFFSET && !AskSegNear( (segment_id)rel->c.int_value ) )
+    rel = ins->operands[r];
+    if( rel->c.const_type == CONS_OFFSET && !AskSegNear( (segment_id)rel->c.lo.int_value ) )
         return( NULL );
     switch( ins->head.opcode ) {
     case OP_BIT_TEST_FALSE:
@@ -175,7 +176,7 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
         return( NULL );
     if( result->c.const_type != CONS_ABSOLUTE ) 
         return( NULL );
-    if( result->c.int_value == 0 ) 
+    if( result->c.lo.int_value == 0 ) 
         is_true = !is_true;
     if( is_true ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );
@@ -209,14 +210,14 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     left = NULL;
     rite = NULL;
     if( num_operands != 0 ) {
-        left = TName( ins->operands[ 0 ], left_tipe );
+        left = TName( ins->operands[0], left_tipe );
         if( num_operands > 1 ) {
-            if( ins->operands[ 1 ]->n.name_class == XX ) {
+            if( ins->operands[1]->n.name_class == XX ) {
                 rite_tipe = tipe;
             } else {
-                rite_tipe = ClassType( ins->operands[ 1 ]->n.name_class );
+                rite_tipe = ClassType( ins->operands[1]->n.name_class );
             }
-            rite = TName( ins->operands[ 1 ], rite_tipe );
+            rite = TName( ins->operands[1], rite_tipe );
         }
     }
     fold = NULL;
@@ -305,10 +306,10 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
             ins->table = NULL;
             // look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions
             if( result->n.class != N_CONSTANT &&
-                result->n.size != TypeClassSize[ ins->type_class ] ) return( NULL );
+                result->n.size != TypeClassSize[ins->type_class] ) return( NULL );
             // look out for scary MUL U4 EDX:EAX, c1 -> t1 type instructions
             if( result->n.class != N_CONSTANT &&
-                ins->result->n.size != TypeClassSize[ ins->type_class ] ) return( NULL );
+                ins->result->n.size != TypeClassSize[ins->type_class] ) return( NULL );
             new_ins = MakeMove( result, ins->result, ins->type_class );
             SetCSEBits( ins, new_ins );
             DupSeg( ins, new_ins );
@@ -326,12 +327,12 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     switch( ins->head.opcode ) {
     case OP_SUB:
         // change sub t1, k -> add t1, -k
-        if( ins->operands[ 1 ]->n.class == N_CONSTANT &&
-            ins->operands[ 1 ]->c.const_type == CONS_ABSOLUTE ) {
-            value = OkToNegate( ins->operands[ 1 ]->c.value, tipe );
+        if( ins->operands[1]->n.class == N_CONSTANT &&
+            ins->operands[1]->c.const_type == CONS_ABSOLUTE ) {
+            value = OkToNegate( ins->operands[1]->c.value, tipe );
             if( value != NULL ) {
                 new_const = AllocConst( value );
-                new_ins = MakeBinary( OP_ADD, ins->operands[ 0 ], new_const, ins->result, ins->type_class );
+                new_ins = MakeBinary( OP_ADD, ins->operands[0], new_const, ins->result, ins->type_class );
                 SetCSEBits( ins, new_ins );
                 DupSeg( ins, new_ins );
                 ReplIns( ins, new_ins );
@@ -348,10 +349,10 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     case OP_XOR:
         // for commutative op's prefer constant on right
         if( _IsPointer( ins->type_class ) ) break;
-        tmp = ins->operands[ 0 ];
+        tmp = ins->operands[0];
         if( tmp->n.class == N_CONSTANT && tmp->c.const_type == CONS_ABSOLUTE ) {
-            ins->operands[ 0 ] = ins->operands[ 1 ];
-            ins->operands[ 1 ] = tmp;
+            ins->operands[0] = ins->operands[1];
+            ins->operands[1] = tmp;
         }
         break;
     }
@@ -383,12 +384,12 @@ extern  instruction    *FoldIns( instruction *ins ) {
     if( have_const ) {
         i = NumOperands( ins );
         if( i > 1 ) {
-            if( RelocConst( ins->operands[ 1 ] ) ) {
+            if( RelocConst( ins->operands[1] ) ) {
                 return( CmpRelocZero( ins, 0, 1 ) );
             }
         }
         if( i != 0 ) {
-            if( RelocConst( ins->operands[ 0 ] ) ) {
+            if( RelocConst( ins->operands[0] ) ) {
                 return( CmpRelocZero( ins, 1, 0 ) );
             }
         }

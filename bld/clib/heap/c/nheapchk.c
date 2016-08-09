@@ -73,7 +73,7 @@ static int checkFreeList( size_t *free_size )
                 return( _HEAPBADNODE );
             }
             /* is entry allocated? */
-            if( p->len & 1 ) {
+            if( IS_MEMBLK_USED( p ) ) {
                 return( _HEAPBADNODE );
             }
             new_size = free_list_size + p->len;
@@ -98,7 +98,7 @@ static int checkFree( frlptr p )
     frlptr prev_prev;
 
     __nheapchk_current = p;
-    if( p->len & 1 ) {
+    if( IS_MEMBLK_USED( p ) ) {
         return( _HEAPBADNODE );
     }
     next = p->next;

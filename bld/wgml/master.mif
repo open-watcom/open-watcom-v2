@@ -42,18 +42,20 @@ libs += $(wres_lib)
 
 
 wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
         $(wstrip) -q -a -r $@ . wgml.res
 
-$(name).res : wgmlmsgs.gh ../h/wgml.msg ../h/wgmlmsg.h ../h/wgmlerr.msg ../h/wgml.rc
-        $(rc_aui) $]@ -fo=$@
+msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-wgmlmsgs.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        *awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $<
+$(name).res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
+        $(rc_aui) $[@ -fo=$@
 
-wgmlmsge.gh : ../h/wgmlerr.msg ../h/wgml.msg
-        *awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $<
+wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
+        *awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
+
+wgmlmsge.gh : $(msgfiles) $(__MAKEFILES__)
+        *awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)

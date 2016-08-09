@@ -2,7 +2,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 asminline_lib = $(as_dir)/$(target_cpu)/$(objs_subdir)/asinline.lib
 !else ifeq $(proj_name)_rtdll 1
 #

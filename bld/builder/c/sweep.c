@@ -96,7 +96,7 @@ struct {
 
 typedef struct dirstack {
     struct dirstack     *prev;
-    char                name_len;
+    unsigned short      name_len;
     char                name[_MAX_FNAME + _MAX_EXT];
 } dirstack;
 
@@ -104,14 +104,14 @@ dirstack        *Stack = NULL;
 int             DoneFlag = 0;
 
 
-void SetDoneFlag( int dummy )
+static void SetDoneFlag( int dummy )
 {
     dummy = dummy;
     DoneFlag = 1;
 }
 
 
-void *SafeMalloc( size_t n )
+static void *SafeMalloc( size_t n )
 {
     void *p = malloc( n );
     if( p == NULL ) {
@@ -124,7 +124,7 @@ void *SafeMalloc( size_t n )
 
 static char     CurrPathBuff[_MAX_PATH + 2];
 
-char *CurrPath( void )
+static char *CurrPath( void )
 {
     char        *p;
     dirstack    *stack;
@@ -146,7 +146,7 @@ char *CurrPath( void )
 }
 
 
-char *StringCopy( char *dst, char *src )
+static char *StringCopy( char *dst, char *src )
 {
     while( ( *dst = *src ) != '\0' ) {
         ++dst;
@@ -156,7 +156,7 @@ char *StringCopy( char *dst, char *src )
 }
 
 
-char *strip( char *buff )
+static char *strip( char *buff )
 {
     char        *p;
     char        *old;
@@ -173,7 +173,7 @@ char *strip( char *buff )
 }
 #define BUFF_SIZE       (16*1024)
 
-void Compare( char *buff )
+static void Compare( char *buff )
 {
     char        *one;
     char        *two;
@@ -240,7 +240,7 @@ void Compare( char *buff )
 }
 
 
-void SubstituteAndRun( char *fname )
+static void SubstituteAndRun( char *fname )
 {
     char        *src, *dst, *start;
     char        name[_MAX_FNAME];
@@ -316,7 +316,7 @@ void SubstituteAndRun( char *fname )
 }
 
 
-void ExecuteCommands( void )
+static void ExecuteCommands( void )
 {
     DIR                 *dirh;
     struct dirent       *dp;
@@ -329,9 +329,7 @@ void ExecuteCommands( void )
     }
     dirh = opendir( "." );
     if( dirh != NULL ) {
-        for( ;; ) {
-            if( DoneFlag )
-                return;
+        while( !DoneFlag ) {
             dp = readdir( dirh );
             if( dp == NULL )
                 break;
@@ -339,8 +337,9 @@ void ExecuteCommands( void )
             {
                 struct stat buf;
                 stat( dp->d_name, &buf );
-                if( S_ISDIR( buf.st_mode ) )
+                if( S_ISDIR( buf.st_mode ) ) {
                     continue;
+                }
             }
 #else
             if( dp->d_attr & _A_SUBDIR )
@@ -353,7 +352,7 @@ void ExecuteCommands( void )
 }
 
 
-void ProcessCurrentDirectory( void )
+static void ProcessCurrentDirectory( void )
 {
     DIR                 *dirh;
     struct dirent       *dp;
@@ -366,9 +365,7 @@ void ProcessCurrentDirectory( void )
         dirh = opendir( "." );
         if( dirh != NULL ) {
             --Options.levels;
-            for( ;; ) {
-                if( DoneFlag )
-                    return;
+            while( !DoneFlag ) {
                 dp = readdir( dirh );
                 if( dp == NULL )
                     break;
@@ -376,8 +373,9 @@ void ProcessCurrentDirectory( void )
                 {
                     struct stat buf;
                     stat( dp->d_name, &buf );
-                    if( !S_ISDIR( buf.st_mode ) )
+                    if( !S_ISDIR( buf.st_mode ) ) {
                         continue;
+                    }
                 }
 #else
                 if( !( dp->d_attr & _A_SUBDIR ) )
@@ -388,9 +386,7 @@ void ProcessCurrentDirectory( void )
                         continue;
                 }
                 stack = SafeMalloc( sizeof( *stack ) );
-                if( DoneFlag )
-                    return;
-                stack->name_len = strlen( dp->d_name );
+                stack->name_len = (unsigned short)strlen( dp->d_name );
                 memcpy( stack->name, dp->d_name, stack->name_len + 1 );
                 stack->prev = Stack;
                 Stack = stack;
@@ -402,6 +398,9 @@ void ProcessCurrentDirectory( void )
             }
             ++Options.levels;
             closedir( dirh );
+            if( DoneFlag ) {
+                return;
+            }
         }
     }
     if( Options.depthfirst ) {
@@ -410,7 +409,7 @@ void ProcessCurrentDirectory( void )
 }
 
 
-void PrintHelp( void )
+static void PrintHelp( void )
 {
     int i;
 
@@ -420,7 +419,7 @@ void PrintHelp( void )
 }
 
 
-int GetNumber( int default_num )
+static int GetNumber( int default_num )
 {
     int number;
 

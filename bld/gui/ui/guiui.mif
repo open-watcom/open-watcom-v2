@@ -97,7 +97,7 @@ sys_hooks = &
 
 sysobjs = $(wv_sysobjs) $(sys_hooks) $(sys_dep_objs)
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 # memory tracker cover routines
 extra_c_flags_helpmem = $(trmem_cover_cflags)
 !endif

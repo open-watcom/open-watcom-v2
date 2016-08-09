@@ -106,12 +106,12 @@ void    DSName( void ) {
         CITNode->opn.us |= USOPN_FLD;
         if( CITNode->sym_ptr != NULL ) { // make sure field name exists
             if( CITNode->sym_ptr->u.fd.dim_ext != NULL ) { // field is an array
-                if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_NWL ) {
+                if( (CITNode->opn.us & USOPN_WHAT) != USOPN_NWL ) {
                     CITNode->opn.us &= ~USOPN_WHAT;
                     CITNode->opn.us |= USOPN_ARR;
                     CkFieldNoList();
                 }
-            } else if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_NWL ) {
+            } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_NWL ) {
                 // field better be character and substrung
                 if( ( CITNode->sym_ptr->u.fd.typ != FT_CHAR ) || !SubStrung() ) {
                     AdvError( PC_SURP_PAREN );
@@ -173,10 +173,10 @@ void    DSName( void ) {
         }
     }
     sym_ptr = LkSym();
-    if( ( ASType & AST_DEXP ) && ( sym_ptr != InitVar ) &&
-        ( ( sym_ptr->u.ns.flags & SY_CLASS ) != SY_PARAMETER ) &&
-        ( ( ( sym_ptr->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) ||
-            ( ( sym_ptr->u.ns.flags & SY_SPECIAL_PARM ) == 0 ) ) ) {
+    if( (ASType & AST_DEXP) && ( sym_ptr != InitVar ) &&
+        ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_PARAMETER ) &&
+        ( ( (sym_ptr->u.ns.flags & SY_CLASS) != SY_VARIABLE ) ||
+            ( (sym_ptr->u.ns.flags & SY_SPECIAL_PARM) == 0 ) ) ) {
         NameErr( DA_BAD_VAR_IN_EXPR, sym_ptr );
     }
     if( ClassIs( SY_VARIABLE ) ) {
@@ -233,15 +233,15 @@ void    DSName( void ) {
         }
     }
     BIOutSymbol( sym_ptr );
-    if( ( sym_ptr->u.ns.flags & SY_REFERENCED ) == 0 ) {
+    if( (sym_ptr->u.ns.flags & SY_REFERENCED) == 0 ) {
         if( ASType & AST_ASF ) {
             if( sym_ptr != SFSymId ) {
                 sym_ptr->u.ns.flags |= SY_REFERENCED;
             }
-        } else if( ( ASType & AST_DEXP ) == 0 ) {
+        } else if( (ASType & AST_DEXP) == 0 ) {
             if( SgmtSw & SG_SYMTAB_RESOLVED ) {
                 sym_ptr->u.ns.flags |= SY_REFERENCED;
-            } else if( ASType & ( AST_DIM | AST_CEX | AST_DIEXP ) ) {
+            } else if( ASType & (AST_DIM | AST_CEX | AST_DIEXP) ) {
                 sym_ptr->u.ns.flags |= SY_REFERENCED;
             }
         }
@@ -308,35 +308,35 @@ static  void    SubProg( void ) {
                 }
             }
         } else {
-            if( ( ASType & AST_ASF ) == 0 ) { // if not defining s. f.
+            if( (ASType & AST_ASF) == 0 ) { // if not defining s. f.
                 IllName( CITNode->sym_ptr );
             }
         }
     } else if( sp_type == SY_SUBROUTINE ) {
         if( RecNWL() ) {
             if( ( StmtProc == PR_CALL ) && RecTrmOpr() ) {
-                if( ( CITNode->flags & SY_PS_ENTRY ) != 0 ) {
+                if( (CITNode->flags & SY_PS_ENTRY) != 0 ) {
                     Extension( SR_TRIED_RECURSION );
                 }
             } else {
                 IllName( CITNode->sym_ptr );
             }
-        } else if( ( ASType & AST_CNA ) == 0 ) {
+        } else if( (ASType & AST_CNA) == 0 ) {
             CkNameNoList();
-        } else if( ( CITNode->flags & SY_PS_ENTRY ) != 0 ) {
+        } else if( (CITNode->flags & SY_PS_ENTRY) != 0 ) {
             Extension( SR_TRIED_RECURSION );
         }
     } else if( sp_type == SY_FUNCTION ) {
         if( RecNWL() && SubStrung() && (CITNode->typ == FT_CHAR) &&
             (CITNode->flags & SY_PS_ENTRY) ) {
             GetFunctionShadow();
-        } else if( !RecNWL() && !(ASType & AST_CNA) ) {
+        } else if( !RecNWL() && (ASType & AST_CNA) == 0 ) {
             if( CITNode->flags & SY_PS_ENTRY ) {
                 GetFunctionShadow();
             } else {
                 CkNameNoList();
             }
-        } else if( ( CITNode->flags & SY_PS_ENTRY ) != 0 ) {
+        } else if( (CITNode->flags & SY_PS_ENTRY) != 0 ) {
             Extension( SR_TRIED_RECURSION );
         } else if( CITNode->flags & SY_INTRINSIC ) {
             if( CITNode->sym_ptr->u.ns.si.fi.index == IF_ISIZEOF ) {
@@ -361,7 +361,7 @@ static  void    ScanningFunction( void ) {
 
     if( CITNode->flags & SY_PS_ENTRY ) {
         Extension( SR_TRIED_RECURSION );
-    } else if( CITNode->flags & ( SY_USAGE | SY_DO_PARM | SY_IN_EC ) ) {
+    } else if( CITNode->flags & (SY_USAGE | SY_DO_PARM | SY_IN_EC) ) {
         IllName( CITNode->sym_ptr );
     } else if( CITNode->flags & SY_SAVED ) {
         Error( SA_SAVED );
@@ -390,7 +390,7 @@ static  void    CkIntrinsic( void ) {
     IFF         func;
 
     sym_ptr = CITNode->sym_ptr;
-    if( ( CITNode->flags & SY_SUB_PARM ) == 0 ) {
+    if( (CITNode->flags & SY_SUB_PARM) == 0 ) {
         typ = CITNode->typ;
         func = IFLookUp();
         if( func > 0 ) {
@@ -406,7 +406,7 @@ static  void    CkIntrinsic( void ) {
                 CITNode->size = TypeSize( CITNode->typ );
                 sym_ptr->u.ns.u1.s.typ = CITNode->typ;
                 sym_ptr->u.ns.xt.size = CITNode->size;
-                if( ( CITNode->typ != typ ) && ( CITNode->flags & SY_TYPE ) ) {
+                if( ( CITNode->typ != typ ) && (CITNode->flags & SY_TYPE) ) {
                     Error( LI_WRONG_TYPE );
                 }
             }
@@ -420,8 +420,8 @@ static  void    CkNameNoList( void ) {
 
 // Check that array/subprogram with no list is alright.
 
-    if( ( ASType & AST_IO ) && RecTrmOpr() && RecNextOpr( OPR_TRM ) ) {
-        if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_ARR ) {
+    if( (ASType & AST_IO) && RecTrmOpr() && RecNextOpr( OPR_TRM ) ) {
+        if( (CITNode->opn.us & USOPN_WHAT) != USOPN_ARR ) {
             ClassErr( SV_NO_LIST, CITNode->sym_ptr );
         }
         return;
@@ -445,9 +445,9 @@ static  void    CkFieldNoList( void ) {
     while( opr_node->value.sc.struct_chain != NULL ) {
         opr_node = opr_node->value.sc.struct_chain;
     }
-    if( ( ASType & AST_IO ) && ( opr_node->opr == OPR_TRM ) &&
+    if( (ASType & AST_IO) && ( opr_node->opr == OPR_TRM ) &&
         RecNextOpr( OPR_TRM ) ) {
-        if( ( CITNode->opn.us & USOPN_WHAT ) != USOPN_ARR ) {
+        if( (CITNode->opn.us & USOPN_WHAT) != USOPN_ARR ) {
             KnownClassErr( SV_NO_LIST, NAME_ARRAY );
         }
         return;
@@ -478,10 +478,10 @@ void    CkTypeDeclared( void ) {
 
     unsigned_16 flags;
 
-    if( ( SgmtSw & SG_IMPLICIT_NONE ) || ( Options & OPT_EXPLICIT ) ) {
+    if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
         flags = CITNode->sym_ptr->u.ns.flags;
-        if( ( flags & SY_TYPE ) == 0 ) {
-            if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+        if( (flags & SY_TYPE) == 0 ) {
+            if( (flags & SY_CLASS) == SY_SUBPROGRAM ) {
                 if( flags & SY_INTRINSIC ) return;
             }
             NameErr( TY_UNDECLARED, CITNode->sym_ptr );

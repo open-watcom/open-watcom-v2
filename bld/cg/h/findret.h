@@ -32,6 +32,6 @@
 
 extern  unsigned_32     FindRet();
 #pragma aux FindRet \
-    value [ dx ax ] \
-    modify [ sp ] \
+    value [dx ax] \
+    modify [sp] \
     ;

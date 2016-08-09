@@ -87,18 +87,18 @@ struct Glob {
 
     BIT     hold        : 1;/* on error don't erase (and don't ask)          */
     BIT     shell       : 1;/* execute commands through the shell            */
-    BIT     preproc     : 1;/* TRUE - preprocessor on, FALSE - off           */
+    BIT     preproc     : 1;/* true - preprocessor on, false - off           */
     BIT     erroryet    : 1;/* has PrtMsg printed an error yet?              */
-    BIT     cachedir    : 1;/* TRUE if dir caching turned on                 */
-    BIT     nomakeinit  : 1;/* TRUE if we are to suppress parsing makeinit   */
+    BIT     cachedir    : 1;/* true if dir caching turned on                 */
+    BIT     nomakeinit  : 1;/* true if we are to suppress parsing makeinit   */
     BIT     macreadonly : 1;/* should macro definitions be read only?        */
     BIT     headerout   : 1;/* has the header been printed out yet?          */
 
-    BIT     rcs_make    : 1;/* TRUE if new target's date is max of dep dates */
-    BIT     fuzzy       : 1;/* TRUE .AUTODEPEND times can be off by 1 minute */
-    BIT     keep_spaces : 1;/* TRUE keep spaces in macro defns               */
-    BIT     compat_unix : 1;/* TRUE if UNIX compatibility desired            */
-    BIT     compat_posix: 1;/* TRUE if POSIX conformance desired             */
+    BIT     rcs_make    : 1;/* true if new target's date is max of dep dates */
+    BIT     fuzzy       : 1;/* true .AUTODEPEND times can be off by 1 minute */
+    BIT     keep_spaces : 1;/* true keep spaces in macro defns               */
+    BIT     compat_unix : 1;/* true if UNIX compatibility desired            */
+    BIT     compat_posix: 1;/* true if POSIX conformance desired             */
     BIT     compat_nmake: 1;/* Microsoft nmake Optioning-Compatability switch*/
     BIT     verbose     : 1;/* Bit to list out the contents of a tmp file    */
     BIT     auto_depends: 1;/* force autodepends info to be used             */
@@ -115,17 +115,25 @@ struct Glob {
 #define STATIC static
 #endif
 
-extern struct Glob      Glob;
-extern const char FAR   *BuiltIns;
-extern const char FAR   *MSBuiltIn;
-extern const char FAR   *UNIXBuiltIn;
-extern const char FAR   *POSIXBuiltIn;
-extern const char FAR   *SuffixList;
-extern const char FAR   *MSSuffixList;
-extern const char FAR   *UNIXSuffixList;
-extern const char FAR   *POSIXSuffixList;
+#if defined( _NORETURN )
+#define NO_RETURN   _NORETURN
+#else
+#define NO_RETURN
+#endif
 
-extern int  ExitSafe( int rc );
+extern struct Glob      Glob;
+extern const char FAR   BuiltIns[];
+extern const char FAR   MSBuiltIn[];
+extern const char FAR   UNIXBuiltIn[];
+extern const char FAR   POSIXBuiltIn[];
+extern const char FAR   SuffixList[];
+extern const char FAR   MSSuffixList[];
+extern const char FAR   UNIXSuffixList[];
+extern const char FAR   POSIXSuffixList[];
+
+NO_RETURN extern void ExitFatal( void );
+NO_RETURN extern void ExitError( void );
+NO_RETURN extern void ExitOK( void );
 extern void Header( void );
 
 #endif

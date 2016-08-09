@@ -1,11 +1,9 @@
-proj_name = ctags
-
-ctags_autodepends = .AUTODEPEND
-
 !ifndef clib_ctags
-name = ctags
+proj_name = ctags
+ctags_autodepends = .AUTODEPEND
 !else
-name = clibtags
+proj_name = clibtags
+clibtags_autodepends = .AUTODEPEND
 !endif
 
 !include cproj.mif
@@ -18,17 +16,10 @@ inc_dirs = -I..
 
 extra_c_flags = -s
 
-extra_cpp_flags = $(def_flags)
-
-objs = ctags.obj scanc.obj file.obj globals.obj taglist.obj scanfor.obj scanasm.obj
-
 lflags_dos_386 = system dos4g
 
 extra_l_flags_dos = op stack=20k
 
-$(name).exe : $(objs)
-!ifdef __WATCOM__
-        $(linker) name $@ $(lflags) file {$(objs)}
-!else
-        $(cl) $(clflags) $< $(ldflags)
-!endif
+objs = ctags.obj scanc.obj file.obj globals.obj taglist.obj scanfor.obj scanasm.obj
+
+!include exetarg.mif

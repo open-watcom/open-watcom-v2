@@ -1028,7 +1028,7 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     address             addr;
 
     index = 0;
-    ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
+    ch = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
     if( LineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
@@ -1036,7 +1036,7 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
             return;
         }
     }
-    sh = alloca( DIPHandleSize( HK_SYM, 0 ) );
+    sh = alloca( DIPHandleSize( HK_SYM, false ) );
     addr = CueAddr( ch );
     if( AddrSym( mh, addr, sh ) == SR_NONE )
         return;

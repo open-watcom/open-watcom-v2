@@ -243,7 +243,7 @@ void InitDo( signed_32 term )
     do_entry    *do_pointer;
     sym_id      do_var;
 
-    if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+    if( (StmtSw & SS_DATA_INIT) == 0 ) {
         CSHead->branch = NextLabel();
         CSHead->bottom = NextLabel();
         CSHead->cycle = NextLabel();
@@ -292,24 +292,24 @@ void TermDo( void )
     if( CSHead->typ == CS_DO ) {
         do_pointer = CSHead->cs_info.do_parms;
         if( do_pointer->do_parm != NULL ) {
-            if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+            if( (StmtSw & SS_DATA_INIT) == 0 ) {
                 GLabel( CSHead->cycle );
             }
             GDoEnd();
             do_var = do_pointer->do_parm;
-            if( (do_var->u.ns.flags & SY_SPECIAL_PARM) &&
-                !(do_var->u.ns.flags & SY_PS_ENTRY) ) {
+            if( (do_var->u.ns.flags & SY_SPECIAL_PARM)
+              && (do_var->u.ns.flags & SY_PS_ENTRY) == 0 ) {
                 STUnShadow( do_var );
             }
             do_var->u.ns.flags &= ~SY_DO_PARM;
-            if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+            if( (StmtSw & SS_DATA_INIT) == 0 ) {
                 GLabel( CSHead->bottom );
             }
         }
     } else {
         Match();
     }
-    if( ( StmtSw & SS_DATA_INIT ) == 0 ) {
+    if( (StmtSw & SS_DATA_INIT) == 0 ) {
         FreeLabel( CSHead->branch );
         FreeLabel( CSHead->bottom );
         FreeLabel( CSHead->cycle );

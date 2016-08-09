@@ -12,7 +12,7 @@ inc_dirs = -I"../../h"
 objs =  die.obj &
         quit.obj
 
-util.lib : $(objs)
+util.lib : $(objs) $(__MAKEFILES__)
         $(librarian) $(libflags) $(objs)
 #        @%create $^&.lbc
 #        @for %i in ($(orl_objs)) do @%append $^&.lbc +%i

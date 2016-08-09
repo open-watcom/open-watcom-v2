@@ -93,5 +93,5 @@ extern byte             *SeqMaxDepth;
 extern byte             *SeqCurDepth;
 extern temp_entry       *TempList;
 
-#define RegLoc( seq, vir ) ( STLocations + (seq) )->actual_locn[ vir ]
+#define RegLoc( seq, vir ) ( STLocations + (seq) )->actual_locn[vir]
 #define InsLoc( ins, vir ) RegLoc( (ins)->sequence, vir )

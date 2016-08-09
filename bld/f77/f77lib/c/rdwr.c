@@ -109,11 +109,10 @@ void    IOPrologue( void ) {
         }
         fcb->accmode = accm;
     } else {
-        if( ( accm == ACCM_DIRECT ) &&
-                                ( IOCB->set_flags & SET_RECORDNUM ) == 0 ) {
+        if( ( accm == ACCM_DIRECT ) && (IOCB->set_flags & SET_RECORDNUM) == 0 ) {
             IOErr( IO_REC1_ACCM );
         } else if( ( ( accm == ACCM_SEQUENTIAL ) || ( accm == ACCM_APPEND ) ) &&
-                   ( IOCB->set_flags & SET_RECORDNUM ) ) {
+                   (IOCB->set_flags & SET_RECORDNUM) ) {
             IOErr( IO_REC2_ACCM );
         }
     }
@@ -122,7 +121,7 @@ void    IOPrologue( void ) {
     }
     form = fcb->formatted;
     if( form == 0 ) {                    // set up format if it was
-        if( !(IOCB->flags & IOF_NOFMT) ) {     // not previously set
+        if( (IOCB->flags & IOF_NOFMT) == 0 ) {     // not previously set
             form = FORMATTED_IO;
         } else {
             form = UNFORMATTED_IO;
@@ -131,7 +130,7 @@ void    IOPrologue( void ) {
     } else {
         if( (form == FORMATTED_IO) && (IOCB->flags & IOF_NOFMT) ) {
             IOErr( IO_AF1 );
-        } else if( (form == UNFORMATTED_IO) && !(IOCB->flags & IOF_NOFMT) ) {
+        } else if( (form == UNFORMATTED_IO) && (IOCB->flags & IOF_NOFMT) == 0 ) {
             IOErr( IO_AF2 );
         }
     }
@@ -147,7 +146,7 @@ void    IOPrologue( void ) {
             //     10    WRITE( 1, * ) 'write after EOF'
             // if an EOF condition was encounterd, we don't want IO_PAST_EOF
             // on the write
-            !( IOCB->flags & IOF_OUTPT ) ) {
+            (IOCB->flags & IOF_OUTPT) == 0 ) {
             if( fcb->recnum != fcb->eofrecnum ) {
                 IOErr( IO_PAST_EOF );
             } else {
@@ -165,7 +164,7 @@ void    IOPrologue( void ) {
         }
         fcb->col = 0;
     }
-    if( ( IOCB->flags & IOF_OUTPT ) && ( fcb->col == 0 ) ) {
+    if( (IOCB->flags & IOF_OUTPT) && ( fcb->col == 0 ) ) {
         memset( fcb->buffer, ' ', fcb->bufflen );
     }
 }
@@ -176,7 +175,7 @@ void    UpdateRecNum( ftnfile *fcb ) {
 
     if( _NoRecordOrganization( fcb ) ) return;
     if( _LogicalRecordOrganization( fcb ) ) {
-        if( !(fcb->flags & FTN_LOGICAL_RECORD) ) {
+        if( (fcb->flags & FTN_LOGICAL_RECORD) == 0 ) {
             // increment record count if this is first
             // physical record of logical record
             ++fcb->recnum;

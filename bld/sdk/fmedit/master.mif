@@ -18,8 +18,6 @@ suppress_bd = 1
 
 .extensions: .res .dlg .rc .cur .ico
 
-.ERASE
-
 objs =  align.obj       &
         space.obj       &
         fmedit.obj      &
@@ -56,7 +54,7 @@ extra_cpp_flags = -DFMEDITDLL
 extra_c_flags = -s
 extra_c_flags_win = -zu -zw
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_fmedit = -bd
 !endif
 
@@ -71,13 +69,13 @@ version_res_dll_nt_x64 = version.res
 
 !include verrc.mif
 
-$(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+$(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) verimp.obj $(library_files) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}
 !endif
     $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 
-$(name).res: ../res/$(name).rc .AUTODEPEND
+$(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@

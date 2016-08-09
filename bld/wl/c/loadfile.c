@@ -205,7 +205,7 @@ static void DoCVPack( void )
     int         retval;
     char        *name;
 
-    if( (LinkFlags & CVPACK_FLAG) && !(LinkState & LINK_ERROR) ) {
+    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
         if( SymFileName != NULL ) {
             name = SymFileName;
         } else {
@@ -252,7 +252,7 @@ void GetStkAddr( void )
 /****************************/
 /* Find the address of the stack */
 {
-    if( !(FmtData.type & MK_NOVELL) && !FmtData.dll ) {
+    if( (FmtData.type & MK_NOVELL) == 0 && !FmtData.dll ) {
         if( StackSegPtr != NULL ) {
             StackAddr.seg = StackSegPtr->seg_addr.seg;
             StackAddr.off = StackSegPtr->seg_addr.off + StackSegPtr->size;
@@ -295,7 +295,7 @@ static void DefABSSSym( char *name )
    symbol          *sym;
 
     sym = RefISymbol( name );
-    if( !(sym->info & SYM_DEFINED) || (sym->info & SYM_LINK_GEN) ) {
+    if( (sym->info & SYM_DEFINED) == 0 || (sym->info & SYM_LINK_GEN) ) {
         sym->info |= SYM_DEFINED | SYM_LINK_GEN;
         if( FmtData.type & MK_OVERLAYS ) {
             sym->u.d.ovlstate |= OVL_NO_VECTOR | OVL_FORCE;
@@ -352,7 +352,7 @@ static void DefBSSStartSize( char *name, class_entry *class )
         seg = (seg_leader *) RingFirst( class->segs );
         sym->p.seg = (segdata *) RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, !(seg->info & USE_32) );
+        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
@@ -374,7 +374,7 @@ static void DefBSSEndSize( char *name, class_entry *class )
         sym->p.seg = (segdata *) RingLast( seg->pieces );
         sym->addr.seg = seg->seg_addr.seg;
         sym->addr.off = seg->seg_addr.off + seg->size;
-        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, !(seg->info & USE_32) );
+        ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
     }
@@ -650,7 +650,7 @@ unsigned_32 MemorySize( void )
     section             *sect;
     ovl_area            *ovl;
 
-    if( !(FmtData.type & MK_REAL_MODE) ) {
+    if( (FmtData.type & MK_REAL_MODE) == 0 ) {
         return( Root->size );
     } else {
         start = MK_REAL_ADDR( Root->sect_addr.seg, Root->sect_addr.off );
@@ -992,8 +992,7 @@ static bool DoGroupLeader( void *_seg, void *_info )
     grpwriteinfo    *info = _info;
 
     // If class or sector should not be output, skip it
-    if ( !( (seg->class->flags & CLASS_NOEMIT) ||
-           (seg->segflags & SEG_NOEMIT) ) ) {
+    if ( !( (seg->class->flags & CLASS_NOEMIT) || (seg->segflags & SEG_NOEMIT) ) ) {
         info->seg_start = info->grp_start + SEG_GROUP_DELTA( seg );
         DoWriteLeader( seg, info );
     }

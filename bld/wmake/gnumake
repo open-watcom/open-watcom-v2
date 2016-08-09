@@ -3,7 +3,7 @@ CFLAGS = -funsigned-char -fno-common -g -O2 -Wall -Wno-switch
 DEFS = -D__LINUX__ -D__UNIX__= -DUNIX -Uunix -DBOOTSTRAP -DWMAKE
 
 $(OWOBJDIR)/%.o : %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) -I$(OWOBJDIR) -o $@ $<
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 vpath %.c c ../watcom/c ../builder/c
 
@@ -21,13 +21,10 @@ $(OWOBJDIR)/wsplice: $(OWOBJDIR)/wsplice.o $(OWOBJDIR)/clibext.o
 	$(CC) -g $^ -o $@
 
 $(OWOBJDIR)/usage.gh : h/usage.sp $(OWOBJDIR)/wsplice
-	$(OWOBJDIR)/wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' h/usage.sp -o "%n%n%n%n" $@
-
-$(OWOBJDIR)/usageend.gh: $(OWOBJDIR)/usage.gh $(OWOBJDIR)/wsplice
-	$(OWOBJDIR)/wsplice -f "%+" $(OWOBJDIR)/usage.gh -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+	$(OWOBJDIR)/wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' h/usage.sp $@
 
 $(OWOBJDIR)/cretype : cretype.c
-	$(CC) -o $@ $<
+	$(CC) -I../watcom/h -o $@ $<
 
 $(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype
 	$< > $@
@@ -35,7 +32,7 @@ $(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype
 $(OWBINDIR)/wmake: $(OWOBJDIR)/wmake
 	cp $< $@
 
-$(OWOBJDIR)/wmake: $(OWOBJDIR)/usageend.gh $(OWOBJDIR)/isarray.gh $(OBJS)
+$(OWOBJDIR)/wmake: $(OWOBJDIR)/usage.gh $(OWOBJDIR)/isarray.gh $(OBJS)
 	$(CC) -g $(OBJS) -o $@
 
 $(OWOBJDIR):

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,8 +39,8 @@
 #include "zoiks.h"
 #include "x87.h"
 #include "objout.h"
-#include "ocentry.h"
 #include "encode.h"
+#include "object.h"
 
 
 /* KLUDGEY crud for segment register */
@@ -50,42 +51,6 @@ extern  void    OptSegs() {
 
 extern void AddSegment( instruction *ins ) {
 /******************************************/
-    ins = ins;
-}
-
-extern  void    MoveSegRes( instruction *ins, instruction *new_ins ) {
-/********************************************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
-extern  void    MoveSegOp(instruction* ins,instruction* new_ins,int i) {
-/**********************************************************************/
-    new_ins = new_ins;
-    i = i;
-    ins = ins;
-}
-
-extern  void    DelSegRes( instruction *ins ) {
-/**********************************************/
-    ins = ins;
-}
-
-extern  void    DelSegOp( instruction *ins, int i ) {
-/**********************************************/
-    i = i;
-    ins = ins;
-}
-
-extern  void    DupSeg( instruction *ins, instruction *new_ins ) {
-/**********************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
-extern  void    DupSegRes( instruction *ins, instruction *new_ins ) {
-/*******************************************************************/
-    new_ins = new_ins;
     ins = ins;
 }
 
@@ -226,13 +191,15 @@ extern void     FPPushParms( pn parm, call_state *state ) {
 }
 
 
-extern  void    InitZeroPage() {
-/******************************/
+void    InitZeroPage( void )
+/**************************/
+{
 }
 
 
-extern  void    FiniZeroPage() {
-/******************************/
+void    FiniZeroPage( void )
+/**************************/
+{
 }
 
 extern  void InitSegment() {
@@ -265,7 +232,7 @@ extern  void    ZeroMoves() {
 
 }
 
-#if !(_TARGET & _TARG_MIPS)
+#if (_TARGET & _TARG_MIPS) == 0
 /* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
  * have own version as well. Not sure about PowerPC.
  */
@@ -361,12 +328,6 @@ extern  bool    LoadAToMove( instruction *ins ) {
 
 extern  void    FixCallIns( instruction *ins ) {
 /**********************************************/
-
-    ins = ins;
-}
-
-extern  void    DelSeg( instruction *ins ) {
-/******************************************/
 
     ins = ins;
 }

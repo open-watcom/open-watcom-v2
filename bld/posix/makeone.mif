@@ -14,16 +14,20 @@
 !include $(posix_dir)/common.mif
 !include deftarg.mif
 
+!include tools.mif
+
 inc_dirs = -I"$(posix_dir)/src/$(name)" -I"$(posix_dir)/h"
+
+libs = $(libdir)/posix.lib
 
 .c: $(posix_dir)/src/$(name)
 
 #
 #       define the main target
 #
-$(name).exe: $(objs) $(posix_lib:$(to_os_path))
-!ifndef __WATCOM__
-        $(cl) $(clflags) $< $(ldflags)
+$(name).exe: $(objs) $(libs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(libs:$(to_os_path)) $(ldflags)
 !else
         @%create $(name).lnk
         @%append $(name).lnk name $@
@@ -31,7 +35,7 @@ $(name).exe: $(objs) $(posix_lib:$(to_os_path))
 !ifeq release 0 
         @%append $(name).lnk option symfile
 !endif
-        @%append $(name).lnk lib $(posix_lib:$(to_os_path))
+        @%append $(name).lnk lib $(libs:$(to_os_path))
 !ifeq host_os os2
 !  ifeq host_cpu i86
         @%append $(name).lnk system os2 pmc
@@ -75,6 +79,6 @@ $(name).exe: $(objs) $(posix_lib:$(to_os_path))
 !endif
 !else ifeq host_os dos
 !ifeq host_cpu 386
-        $(posix_dir:$(to_os_path))\misc\pharlap\bind386 $(posix_dir:$(to_os_path))\misc\pharlap\run386b $(name).exp
+        $(pharlap)bind386 $(pharlap)run386b $(name).exp
 !endif
 !endif

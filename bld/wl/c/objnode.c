@@ -50,7 +50,7 @@
 
 #define NODE_ARRAY_SIZE 256
 #define MAX_NUM_NODES   128
-#define NEED_NEW_ARRAY( x ) (!((x) & 0xFF))
+#define NEED_NEW_ARRAY( x ) (((x) & 0xFF) == 0)
 #define ARRAY_NUM( x )      ((x) >> 8 )
 #define ELEMENT_NUM( x )    ((x) & 0xFF)
 

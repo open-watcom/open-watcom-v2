@@ -7,34 +7,22 @@ wcpp_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
 .c : ../c;$(posix_dir)/misc;$(watcom_dir)/c
 
-inc_dirs        = -I"../h" -I"$(posix_dir)/h"
+inc_dirs = -I"../h" -I"$(posix_dir)/h"
 
-common_objs     = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlist.obj
+common_objs = preproc.obj ppexpr.obj ppmacro.obj ppmem.obj ppenv.obj pathlist.obj
 
-mkmk_objs       = mkmk.obj $(common_objs)
-testpp_objs     = testpp.obj $(common_objs)
-dumpmac_objs    = dumpmac.obj ppdmpmac.obj $(common_objs)
-wcpp_objs       = wcpp.obj $(common_objs)
-
-!ifneq bootstrap 1
+!ifndef bootstrap
 all: mkmk.exe testpp.exe dumpmac.exe wcpp.exe .SYMBOLIC
 !endif
 
-wcpp.exe : $(wcpp_objs)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $< $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(wcpp_objs)}
-!endif
+wcpp.exe : wcpp.obj $(common_objs)
 
-mkmk.exe : $(mkmk_objs)
-        $(linker) name $@ $(lflags) file {$(mkmk_objs)}
+mkmk.exe : mkmk.obj $(common_objs)
 
-testpp.exe : $(testpp_objs)
-        $(linker) name $@ $(lflags) file {$(testpp_objs)}
+testpp.exe : testpp.obj $(common_objs)
 
-dumpmac.exe : $(dumpmac_objs)
-        $(linker) name $@ $(lflags) file {$(dumpmac_objs)}
+dumpmac.exe : dumpmac.obj ppdmpmac.obj $(common_objs)

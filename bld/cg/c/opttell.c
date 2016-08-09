@@ -34,12 +34,12 @@
 #include "zoiks.h"
 #include "inslist.h"
 #include "object.h"
+#include "opttell.h"
+#include "encode.h"
 
-extern  void            GenKillLabel(label_handle);
 
-
-extern  void    TellOptimizerByPassed( void )
-/*******************************************/
+void    TellOptimizerByPassed( void )
+/***********************************/
 /* tell the optimizer we're going around it so it won't flush while we're*/
 /* in the object file generator and zap our static variables*/
 {
@@ -47,15 +47,15 @@ extern  void    TellOptimizerByPassed( void )
 }
 
 
-extern  void    TellByPassOver( void )
-/************************************/
+void    TellByPassOver( void )
+/****************************/
 {
   optend
 }
 
 
-extern  void    TellAddress( label_handle lbl, offset addr )
-/**********************************************************/
+void    TellAddress( label_handle lbl, offset addr )
+/**************************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -64,8 +64,8 @@ extern  void    TellAddress( label_handle lbl, offset addr )
 }
 
 
-extern  void    TellDonePatch( label_handle lbl )
-/***********************************************/
+void    TellDonePatch( label_handle lbl )
+/***************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -74,8 +74,8 @@ extern  void    TellDonePatch( label_handle lbl )
 }
 
 
-extern  void    TellReachedLabel( label_handle lbl )
-/**************************************************/
+void    TellReachedLabel( label_handle lbl )
+/******************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -83,26 +83,26 @@ extern  void    TellReachedLabel( label_handle lbl )
   optend
 }
 
-extern  void    TellProcLabel( label_handle lbl )
-/***********************************************/
+void    TellProcLabel( label_handle lbl )
+/***************************************/
 {
     _ValidLbl( lbl );
     _SetStatus( lbl, PROCEDURE );
 }
 
-extern  void    TellCommonLabel( label_handle lbl, unsigned hdl )
+void    TellCommonLabel( label_handle lbl, import_handle imphdl )
 /***************************************************************/
 {
   optbegin
     _ValidLbl( lbl );
-    lbl->lbl.sym = (cg_sym_handle)(pointer_int)hdl;
+    lbl->lbl.sym = IMPHDL2SYM( imphdl );
     _SetStatus( lbl, COMMON_LBL );
   optend
 }
 
 
-extern  void    TellKeepLabel( label_handle lbl )
-/***********************************************/
+void    TellKeepLabel( label_handle lbl )
+/***************************************/
 {
   optbegin
     _ValidLbl( lbl );
@@ -111,8 +111,8 @@ extern  void    TellKeepLabel( label_handle lbl )
 }
 
 
-extern  void    TellNoSymbol( label_handle lbl )
-/**********************************************/
+void    TellNoSymbol( label_handle lbl )
+/**************************************/
 {
   optbegin
     if( lbl != NULL ) {
@@ -143,8 +143,8 @@ static  void    ReallyScrapLabel( label_handle lbl )
 }
 
 
-extern  void    TellScrapLabel( label_handle lbl )
-/************************************************/
+void    TellScrapLabel( label_handle lbl )
+/****************************************/
 {
   optbegin
     /* data labels in the code segment can't get freed until the end */
@@ -181,8 +181,8 @@ static  label_handle    NextCondemned( label_handle lbl )
 }
 
 
-extern  void    TellBeginExecutions( void )
-/*****************************************/
+void    TellBeginExecutions( void )
+/*********************************/
 {
     label_handle    dead;
 
@@ -196,8 +196,8 @@ extern  void    TellBeginExecutions( void )
 }
 
 
-extern  void    TellFreeAllLabels( void )
-/***************************************/
+void    TellFreeAllLabels( void )
+/*******************************/
 {
     bool        unfreed;
 
@@ -207,7 +207,7 @@ extern  void    TellFreeAllLabels( void )
 #ifndef PRODUCTION
         if( _TstStatus( Handles, CODELABEL )
          && Handles->lbl.sym == NULL
-         && _TstStatus( Handles, REDIRECTION ) == false
+         && !_TstStatus( Handles, REDIRECTION )
          && unfreed == false ) {
             _Zoiks( ZOIKS_001 );
             unfreed = true;
@@ -219,8 +219,8 @@ extern  void    TellFreeAllLabels( void )
 }
 
 
-extern  void    TellUnreachLabels( void )
-/****************************************
+void    TellUnreachLabels( void )
+/********************************
     Mark all the labels that have come out of the control flow queue as
     unreachable by a short jump.
 */
@@ -236,8 +236,8 @@ extern  void    TellUnreachLabels( void )
   optend
 }
 
-extern  void    KillLblRedirects( void )
-/**************************************/
+void    KillLblRedirects( void )
+/******************************/
 {
     label_handle    lbl;
 

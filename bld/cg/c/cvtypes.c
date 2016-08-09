@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "cvdbg.h"
 #include "data.h"
@@ -55,7 +55,6 @@ static struct lf_info LFInfo[LFG_LAST] = {
     #undef _LFMAC
 };
 
-extern  void        ChkDbgSegSize( offset, bool );
 extern  void        DataShort(unsigned_16);
 extern  void        LocDump( dbg_loc );
 extern  dbg_loc     LocDupl( dbg_loc );
@@ -466,7 +465,7 @@ extern  dbg_type    CVScalar( const char *name, cg_type tipe )
                     if( length == 1 ) {
                         index.f.size = 0; /* assume char (could be wide char )*/
                     } else {
-                        if( !(tipe_addr->attr & TYPE_SIGNED) ) {
+                        if( (tipe_addr->attr & TYPE_SIGNED) == 0 ) {
                             ++length;
                         }
                         index.f.size = length;
@@ -783,8 +782,8 @@ static bool FoldExpr( dbg_loc loc, fold_leaf *ret )
     expr.error = false;
     DoLocFold( loc, &expr );
     if( !expr.error ) {
-        if( expr.stk == &expr.ops[FOLD_EXPR-1] ) {
-            *ret = expr.ops[FOLD_EXPR-1];
+        if( expr.stk == &expr.ops[FOLD_EXPR - 1] ) {
+            *ret = expr.ops[FOLD_EXPR - 1];
             return( true );
         }
     }
@@ -1600,9 +1599,12 @@ static int  MkFlist( dbg_struct st )
                 }
                 DBLocFini( field->method.u.loc );
                 curr = field->entry.next;
-                if( curr == NULL )break;
-                if( curr->entry.field_type != FIELD_METHOD )break;
-                if( strcmp( curr->method.name, field->method.name ) != 0 )break;
+                if( curr == NULL )
+                    break;
+                if( curr->entry.field_type != FIELD_METHOD )
+                    break;
+                if( strcmp( curr->method.name, field->method.name ) != 0 )
+                    break;
                 field = curr;
                 curr = curr->entry.next;
                 a_mlist = BuffInc( out, sizeof( a_mlist ) );

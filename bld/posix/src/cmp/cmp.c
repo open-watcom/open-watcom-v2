@@ -61,7 +61,7 @@ int     flagSayItInHex;
 char buffer[ 2 ][ BUFFER_SIZE ];
 
 
-int cmp( int fh[2], char *names[2], long offs[2] ) {
+static int cmp( int fh[2], char *names[2], long offs[2] ) {
 
     int         i;
     const char  *fmt;

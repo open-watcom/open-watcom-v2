@@ -34,36 +34,34 @@
 #include "zoiks.h"
 #include "data.h"
 #include "redefby.h"
+#include "nullprop.h"
 
+
+/* block flag usage                                                 */
+/*                                                                  */
+/* BLK_BLOCK_MARKED is used in the sense of real reference          */
+/* BLK_BLOCK_VISITED is used in the sense of no load/store          */
+/*                                                                  */
+#define BLK_CONTAINS_CALL   BLK_LOOP_EXIT /* borrow. Only used during loop opts */
+/*                                                                  */
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-
-#define REAL_REFERENCE  BLOCK_MARKED
-#define NO_LOAD_STORE   BLOCK_VISITED
-#define CONTAINS_CALL   LOOP_EXIT /* borrow. Only used during loop opts */
-
-
-static  void    BitsOff( void )
-/*****************************/
-{
-    block               *blk;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~( CONTAINS_CALL | REAL_REFERENCE | NO_LOAD_STORE );
-    }
-}
-
 
 static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
 /*************************************************************************/
 {
     if( op->n.class == N_INDEXED ) {
-        if( NameConflict( ins, op->i.index ) == conf ) return( true );
+        if( NameConflict( ins, op->i.index ) == conf )
+            return( true );
         if( HasTrueBase( op ) ) {
-            if( NameConflict( ins, op->i.base ) == conf ) return( true );
+            if( NameConflict( ins, op->i.base ) == conf ) {
+                return( true );
+            }
         }
     } else {
-        if( NameConflict( ins, op ) == conf ) return( true );
+        if( NameConflict( ins, op ) == conf ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -71,34 +69,34 @@ static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
 
 static  void    CheckRefs( conflict_node *conf, block *blk )
 /***********************************************************
-    mark block as REAL_REFERENCE if it contains a reference to conf.
-    Also mark as CONTAINS_CALL if it does
+    mark block if it contains a reference to conf.
+    Also mark as BLK_CONTAINS_CALL if it does
 */
 {
     int         i;
     instruction *ins;
 
-    if( blk->class & ( BIG_LABEL | RETURN | BIG_JUMP ) ) {
-        blk->class |= REAL_REFERENCE;
+    if( _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_RETURN | BLK_BIG_JUMP ) ) {
+        _MarkBlkMarked( blk );
         return;
     }
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
             if( SameConf( ins->operands[i], ins, conf ) ) {
-                blk->class |= REAL_REFERENCE;
+                _MarkBlkMarked( blk );
                 return;
             }
         }
         if( ins->result != NULL ) {
             if( SameConf( ins->result, ins, conf ) ) {
-                blk->class |= REAL_REFERENCE;
+                _MarkBlkMarked( blk );
                 return;
             }
         }
         if( _OpIsCall( ins->head.opcode ) &&
-           ! ( ( ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) &&
-               ( ins->flags.call_flags & CALL_READS_NO_MEMORY ) ) ) {
-            blk->class |= CONTAINS_CALL;
+           ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 ||
+               (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 ) ) {
+            _MarkBlkAttr( blk, BLK_CONTAINS_CALL );
         }
     }
 }
@@ -120,7 +118,7 @@ static  void    LoadStoreIfCall( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if(( blk->class & CONTAINS_CALL ) && !( blk->class & REAL_REFERENCE )) {
+        if( _IsBlkAttr( blk, BLK_CONTAINS_CALL ) && !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
             _GBitTurnOn( flow->need_load, *id );
             _GBitTurnOn( flow->need_store, *id );
@@ -140,7 +138,7 @@ static  void    TurnOffLoadStoreBits( global_bit_set *id )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( !( blk->class & REAL_REFERENCE ) ) {
+        if( !_IsBlkMarked( blk ) ) {
             flow = blk->dataflow;
             if( _GBitOverlap( flow->need_load, *id ) && _GBitOverlap( flow->need_store, *id ) ) {
                 _GBitTurnOff( flow->need_load, *id );
@@ -188,7 +186,9 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( change == false ) break;
+        if( change == false ) {
+            break;
+        }
     }
 }
 
@@ -218,30 +218,30 @@ static  void    CalculateLoadStore( conflict_node *conf )
     block               *blk;
     data_flow_def       *flow;
 
-    BitsOff();
+    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
     blk = HeadBlock;
     if( blk != NULL ) {
-        blk->class |= BIG_LABEL;
+        _MarkBlkAttr( blk, BLK_BIG_LABEL );
     }
     _GBitAssign( id, conf->id.out_of_block );
     /* turn on bits before the conflict range */
     for( ; blk != NULL; blk = blk->next_block ) {
-        if( blk == conf->start_block ) break;
+        if( blk == conf->start_block )
+            break;
         _GBitTurnOn( blk->dataflow->need_load, id );
         _GBitTurnOn( blk->dataflow->need_store, id );
-        blk->class |= REAL_REFERENCE;
+        _MarkBlkMarked( blk );
     }
     /* turn on bits in the conflict range */
     for( ; blk != NULL; blk = blk->next_block ) {
         flow = blk->dataflow;
         CheckRefs( conf, blk );
-        if( _GBitOverlap( flow->in, id ) && ( blk->class & BIG_LABEL ) ) {
+        if( _GBitOverlap( flow->in, id ) && _IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
             _GBitTurnOn( flow->need_load, id );
         } else {
             _GBitTurnOff( flow->need_load, id );
         }
-        if( _GBitOverlap( flow->out, id )
-         && ( blk->class & ( RETURN | BIG_JUMP ) ) ) {
+        if( _GBitOverlap( flow->out, id ) && _IsBlkAttr( blk, BLK_RETURN | BLK_BIG_JUMP ) ) {
             _GBitTurnOn( flow->need_store, id );
         } else {
             _GBitTurnOff( flow->need_store, id );
@@ -249,15 +249,18 @@ static  void    CalculateLoadStore( conflict_node *conf )
         if( blk->ins.hd.prev != (instruction *)&blk->ins ) {
             _INS_NOT_BLOCK( blk->ins.hd.prev );
             _INS_NOT_BLOCK( conf->ins_range.last );
-            if( blk->ins.hd.prev->id >= conf->ins_range.last->id) break;
+            if( blk->ins.hd.prev->id >= conf->ins_range.last->id) {
+                break;
+            }
         }
     }
     /* turn on bits after the conflict range */
     while( blk != NULL ) {
         flow = blk->dataflow;
         blk = blk->next_block;
-        if( blk == NULL ) break;
-        blk->class |= REAL_REFERENCE;
+        if( blk == NULL )
+            break;
+        _MarkBlkMarked( blk );
         _GBitTurnOn( flow->need_load, id );
         _GBitTurnOn( flow->need_store, id );
     }
@@ -271,7 +274,7 @@ static  void    CalculateLoadStore( conflict_node *conf )
             _GBitTurnOff( flow->need_store, id );
         }
     }
-    BitsOff();
+    _MarkBlkAllAttrNot( BLK_CONTAINS_CALL | BLK_BLOCK_MARKED | BLK_BLOCK_VISITED );
 }
 
 

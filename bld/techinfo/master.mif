@@ -5,12 +5,12 @@ techinfo_autodepends = .AUTODEPEND
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
+!include exerule.mif
 
-.CONTINUE
-.ERASE
-
-os2objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj
-dosobjs = $(os2objs) monint.obj
+objs = techinfo.obj ptype.obj pbus.obj pprefix.obj ndptype.obj
+!ifeq host_os dos
+objs += monint.obj
+!endif
 
 extra_c_flags_dos = -os -s
 extra_c_flags_os2 = -os -s
@@ -24,5 +24,5 @@ extra_l_flags_os2 = op newfile
 .c: ..
 .asm: ..
 
-techinfo.exe : $($(host_os)objs)
-    $(linker) name $^@ $(lflags) file {$($(host_os)objs)}
+techinfo.exe : $(objs)
+

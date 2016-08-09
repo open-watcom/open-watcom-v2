@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,22 +40,16 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "object.h"
-#include "ocentry.h"
 #include "encode.h"
+#include "targetin.h"
+#include "targetdb.h"
+#include "rgtbl.h"
+#include "rscobj.h"
+#include "utils.h"
 #include "feprotos.h"
 
-extern  uint_32         CountBits( uint_32 );
-extern  hw_reg_set      *GPRegs( void );
-extern  hw_reg_set      *FPRegs( void );
+
 extern  hw_reg_set      SaveRegs( void );
-extern  hw_reg_set      FrameBaseReg( void );
-extern  void            OutFuncStart( label_handle label, offset start, int line );
-extern  void            OutFileStart( int line );
-extern  void            OutFuncEnd( offset end );
-extern  void            OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
-extern  byte            RegTrans( hw_reg_set );
-extern  void            OutTOCRec( label_handle lbl );
-extern  type_length     TempLocation( name * );
 
 
 static  void    CalcUsedRegs( void )
@@ -86,8 +81,8 @@ static  void    CalcUsedRegs( void )
     HW_TurnOn( CurrProc->state.used, used );
 }
 
-extern  void    AddCacheRegs( void )
-/**********************************/
+void    AddCacheRegs( void )
+/**************************/
 {
     if( !CurrProc->targ.base_is_fp ) {
         HW_TurnOff( CurrProc->state.unalterable, FrameBaseReg() );
@@ -462,8 +457,8 @@ static  void    emitEpilog( stack_map *map )
     }
 }
 
-extern  void    GenProlog( void )
-/*******************************/
+void    GenProlog( void )
+/***********************/
 {
     segment_id          old;
     label_handle        label;
@@ -530,34 +525,35 @@ void    GenEpilog( void )
 }
 
 
-extern  int     AskDisplaySize( int level )
-/*****************************************/
+int     AskDisplaySize( int level )
+/*********************************/
 {
     level = level;
     return( 0 );
 }
 
-extern  void    InitStackDepth( block *blk )
-/******************************************/
+void    InitStackDepth( block *blk )
+/**********************************/
 {
     blk = blk;
 }
 
-extern  type_length     PushSize( type_length len )
-/*************************************************/
+type_length     PushSize( type_length len )
+/*****************************************/
 {
-    if( len < REG_SIZE ) return( REG_SIZE );
+    if( len < REG_SIZE )
+        return( REG_SIZE );
     return( len );
 }
 
-extern  type_length     NewBase( name *op )
-/*****************************************/
+type_length     NewBase( name *op )
+/*********************************/
 {
     return( TempLocation( op ) );
 }
 
-extern  int     ParmsAtPrologue( void )
-/*************************************/
+int     ParmsAtPrologue( void )
+/*****************************/
 {
     return( 0 );
 }

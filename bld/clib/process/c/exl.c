@@ -39,30 +39,30 @@
 #include "_process.h"
 
 _WCRTLINK int __F_NAME((execl),_wexecl)( const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
-    {
-        va_list ap;
+{
+    va_list ap;
 
-        arg0 = arg0;
-        va_start( ap, path );
-        #if defined(__AXP__) || defined(__MIPS__)
-            #ifdef __WIDECHAR__
-                return( _wexecve( path, (const CHAR_TYPE**)ap.__base,
-                        (const CHAR_TYPE **)_RWD_wenviron ) );
-            #else
-                return( execve( path, (const CHAR_TYPE**)ap.__base,
-                        (const CHAR_TYPE **)_RWD_environ ) );
-            #endif
-        #else
-            #ifdef __WIDECHAR__
-                return( _wexecve( path, (const CHAR_TYPE**)ap[0],
-                        (const CHAR_TYPE **)_RWD_wenviron ) );
-            #else
-                #ifdef __RDOS__
-                    return( execv( path, (const CHAR_TYPE**)ap[0] ) );
-                #else
-                    return( execve( path, (const CHAR_TYPE**)ap[0],
-                            (const CHAR_TYPE **)_RWD_environ ) );
-                #endif
-            #endif
-        #endif
-    }
+    arg0 = arg0;
+    va_start( ap, path );
+#if defined(__AXP__) || defined(__MIPS__)
+  #ifdef __WIDECHAR__
+    return( _wexecve( path, (const CHAR_TYPE**)ap.__base,
+            (const CHAR_TYPE **)_RWD_wenviron ) );
+  #else
+    return( execve( path, (const CHAR_TYPE**)ap.__base,
+            (const CHAR_TYPE **)_RWD_environ ) );
+  #endif
+#else
+ #ifdef __WIDECHAR__
+    return( _wexecve( path, (const CHAR_TYPE**)ap[0],
+            (const CHAR_TYPE **)_RWD_wenviron ) );
+ #else
+  #ifdef __RDOS__
+    return( execv( path, (const CHAR_TYPE**)ap[0] ) );
+  #else
+    return( execve( path, (const CHAR_TYPE**)ap[0],
+            (const CHAR_TYPE **)_RWD_environ ) );
+  #endif
+ #endif
+#endif
+}

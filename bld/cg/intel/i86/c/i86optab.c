@@ -38,8 +38,8 @@
 #define         __X__   BAD
 
 
-table_def OpTable[(XX+1)*(LAST_OP-FIRST_OP+1)] = {
-/*************************************************
+table_def OpTable[(XX + 1) * (LAST_OP - FIRST_OP + 1)] = {
+/*********************************************************
     for each opcode/type, indicate which generate table to use.
     See i86table.c
 */

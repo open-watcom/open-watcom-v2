@@ -149,7 +149,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
         len = export->len;
         sym = SymOp( ST_FIND, export->name, len );
-        if( ( sym == NULL ) || !( sym->info & SYM_DEFINED ) ) {
+        if( ( sym == NULL ) || ( sym->info & SYM_DEFINED ) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
         } else if( !IS_SYM_IMPORTED(sym) ) {
 
@@ -214,10 +214,10 @@ void NovDBIAddGlobal( void * _sym )
     if( !IS_SYM_A_REF(sym)
             && !IS_SYM_ALIAS(sym)
             && ( sym->p.seg != NULL )
-            && !( sym->info & SYM_DEAD )
+            && (sym->info & SYM_DEAD) == 0
             && !sym->p.seg->isabs
-            && !( sym->info & SYM_STATIC )
-            && !( FmtData.u.nov.flags & DO_NOV_EXPORTS ) ) {
+            && (sym->info & SYM_STATIC) == 0
+            && (FmtData.u.nov.flags & DO_NOV_EXPORTS) == 0 ) {
         DbgInfoLen += strlen( sym->name ) + sizeof( nov_dbg_info );
     }
 }
@@ -237,7 +237,7 @@ void NovDBIGenGlobal( symbol *sym )
     nov_dbg_info    info;
 
     if( ( DbgInfoLen != 0 )
-        && ( !( FmtData.u.nov.flags & DO_NOV_REF_ONLY )
+        && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0
         || ( sym->info & SYM_REFERENCED ) ) ) {
         DbgInfoCount++;
         if( sym->addr.seg == DATA_SEGMENT ) {
@@ -386,7 +386,7 @@ static void GetProcOffsets( fixed_header *header )
         name = DEFAULT_PRELUDE_FN_CLIB;
     }
     sym = FindISymbol( name );
-    if( ( sym == NULL ) || !( sym->info & SYM_DEFINED ) ) {
+    if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
         LnkMsg( ERR + MSG_START_PROC_NOT_FOUND, NULL );
     } else {
         header->codeStartOffset = sym->addr.off;

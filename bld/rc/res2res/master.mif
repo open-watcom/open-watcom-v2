@@ -12,14 +12,14 @@ inc_dirs = -I"../h" $(wres_inc_dirs) -I"$(trmem_dir)"
 
 .c: ../c;$(trmem_dir);$(watcom_dir)/c
 
-objs =             &
-        bincpy.obj &
-        convert.obj &
-        layer0.obj &
-        m2wres.obj &
-        param.obj &
-        res2res.obj &
-        w2mres.obj
+objs = &
+    bincpy.obj &
+    convert.obj &
+    layer0.obj &
+    m2wres.obj &
+    param.obj &
+    res2res.obj &
+    w2mres.obj
 
 objs += trmemcvr.obj trmem.obj
 

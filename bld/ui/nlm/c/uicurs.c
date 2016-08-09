@@ -122,7 +122,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
         *type = C_NORMAL;
     }
 
-    if( UIData->cursor_on == false ) {
+    if( !UIData->cursor_on ) {
         *type = C_OFF;
     }
 
@@ -165,7 +165,7 @@ static void savecursor( void )
 
 // NYI -- should I be setting UIData->cursor_on ??? How???
 
-    if( UIData->cursor_on == false ) {
+    if( !UIData->cursor_on ) {
          OldCursorType = C_OFF;
     }
 

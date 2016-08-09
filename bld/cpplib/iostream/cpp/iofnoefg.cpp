@@ -40,6 +40,7 @@
 #include "iofhdr.h"
 #include "fltsupp.h"
 
+extern "C" {
 
 static void _no_support_loaded() {
     __fatal_runtime_error( "C++ floating-point support not loaded", 1 );
@@ -51,3 +52,5 @@ _type_EFG_cvtld   *__EFG_cvtld   = (_type_EFG_cvtld *)_no_support_loaded;
 #ifdef _LONG_DOUBLE_
 _type_EFG_cnvd2ld *__EFG_cnvd2ld = (_type_EFG_cnvd2ld *)_no_support_loaded;
 #endif
+
+}

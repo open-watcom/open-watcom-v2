@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,33 +41,26 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "rtcall.h"
+#include "optab.h"
 
-extern  instruction     *rMOVRESREG(instruction*);
-extern  instruction     *rSWAPOPS(instruction*);
-//extern  instruction     *rDOCVT(instruction*);
-extern  instruction     *rOP1REG(instruction*);
-extern  instruction     *rOP2REG(instruction*);
-extern  instruction     *rMOVOP1TEMP(instruction*);
-extern  instruction     *rMOVOP2TEMP(instruction*);
-extern  instruction     *rMOVRESTEMP(instruction*);
+
+extern  instruction     *rDOCVT(instruction*);
 extern  instruction     *rPUSHTOMOV(instruction*);
 extern  instruction     *rPOPTOMOV(instruction*);
-extern  instruction     *rOP1MEM(instruction*);
-extern  instruction     *rOP2MEM(instruction*);
 extern  instruction     *rCONSTLOAD(instruction*);
-extern  instruction     *rSWAPCMP(instruction*);
 extern  instruction     *rSIMPCMP(instruction*);
 extern  instruction     *rDOSET(instruction*);
 extern  instruction     *rDOLOAD(instruction*);
 extern  instruction     *rDOSTORE(instruction*);
 extern  instruction     *rOP1CMEM(instruction*);
 extern  instruction     *rOP2CMEM(instruction*);
-extern  instruction     *rMAKECALL(instruction*);
 extern  instruction     *rDOTEST(instruction*);
 extern  instruction     *rCHANGETYPE(instruction*);
 extern  instruction     *rMOVEXX(instruction*);
-extern  instruction     *rFORCERESMEM(instruction*);
-extern  instruction     *rMOVEINDEX(instruction*);
 extern  instruction     *rBIN2INT(instruction*);
 extern  instruction     *rBIN2QUAD(instruction*);
 extern  instruction     *rSHR(instruction*);
@@ -94,20 +88,7 @@ extern  instruction     *rSEX_4TO8( instruction * );
 extern  instruction     *rCLRHI_4( instruction * );
 extern  instruction     *rMOVELOW( instruction * );
 
-extern  hw_reg_set      StackReg( void );
-extern  hw_reg_set      ReturnAddrReg( void );
 extern  hw_reg_set      SavedRegs( void );
-
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-
-extern  name            *DeAlias( name * );
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            ChangeType(instruction*,type_class_def);
 
 extern  name            *GenFloat( name *, type_class_def );
 
@@ -115,23 +96,8 @@ extern  opcode_entry    *OpcodeTable( table_def );
 
 extern  void            UpdateLive( instruction *, instruction * );
 
-extern  hw_reg_set      ReturnAddrReg();
-extern  hw_reg_set      FirstReg( reg_set_index );
-
-extern  type_class_def  Unsigned[];
-extern  type_class_def  HalfClass[];
-
-extern  opcode_entry    *CodeTable( instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  hw_reg_set      Low16Reg( hw_reg_set regs );
-extern  hw_reg_set      Low32Reg( hw_reg_set regs );
-extern  hw_reg_set      Low64Reg( hw_reg_set regs );
-extern  hw_reg_set      High16Reg( hw_reg_set regs );
-extern  hw_reg_set      High32Reg( hw_reg_set regs );
-extern  hw_reg_set      High64Reg( hw_reg_set regs );
-extern  void            HalfType( instruction * );
 extern  bool            SameThing( name *, name * );
-
 
 instruction *(* ReduceTab[])() = {
     #define _R_( x, f )     f
@@ -493,16 +459,16 @@ extern  name            *TrimConst( name *c, type_class_def tipe ) {
 
     switch( tipe ) {
     case U1:
-        value = (unsigned_8)c->c.int_value;
+        value = (unsigned_8)c->c.lo.int_value;
         break;
     case I1:
-        value = (signed_8)c->c.int_value;
+        value = (signed_8)c->c.lo.int_value;
         break;
     case U2:
-        value = (unsigned_16)c->c.int_value;
+        value = (unsigned_16)c->c.lo.int_value;
         break;
     case I2:
-        value = (signed_16)c->c.int_value;
+        value = (signed_16)c->c.lo.int_value;
         break;
     case U4:
     case I4:
@@ -512,7 +478,7 @@ extern  name            *TrimConst( name *c, type_class_def tipe ) {
     default:
         return( c );
     }
-    if( value != c->c.int_value ) {
+    if( value != c->c.lo.int_value ) {
         c = AllocS32Const( value );
     }
     return( c );
@@ -605,13 +571,9 @@ extern  name    *Int64Equivalent( name *name )
 */
 {
     constant_defn       *defn;
-    unsigned_32         *low;
-    unsigned_32         *high;
 
     defn = GetFloat( name, FD );
-    low  = (unsigned_32 *)&defn->value[0];
-    high = (unsigned_32 *)&defn->value[2];
-    return( AllocU64Const( *low, *high ) );
+    return( AllocU64Const( *(unsigned_32 *)( defn->value + 0 ), *(unsigned_32 *)( defn->value + 2 ) ) );
 }
 
 extern  name    *LowPart( name *tosplit, type_class_def class )
@@ -627,7 +589,6 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     new = NULL;
@@ -635,32 +596,30 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = tosplit->c.int_value & 0xff;
+                u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = tosplit->c.int_value & 0xff;
+                s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = tosplit->c.int_value & 0xffff;
+                u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = tosplit->c.int_value & 0xffff;
+                s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value );
+                new = AllocS32Const( tosplit->c.lo.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value );
+                new = AllocU32Const( tosplit->c.lo.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[1] << 16;
-                u32 += floatval->value[0];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 0 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -712,7 +671,6 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     new = NULL;
@@ -720,32 +678,30 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value_2 );
+                new = AllocS32Const( tosplit->c.hi.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value_2 );
+                new = AllocU32Const( tosplit->c.hi.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[3] << 16;
-                u32 += floatval->value[2];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 2 ) ) ) );
             }
 #if 0
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value, tosplit->c.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
 #endif
         } else {
             _Zoiks( ZOIKS_044 );
@@ -979,7 +935,7 @@ static bool IndexOverlaps( instruction *ins, int i )
  */
 #define WORD                U4
 #define LONG_WORD           U8
-#define HIGH_WORD( x )      ( (x)->c.int_value_2 )
+#define HIGH_WORD( x )      ((x)->c.hi.uint_value)
 
 /* NB: The following routines are clones of their Intel counterparts
  * with all segment related junk stripped off.

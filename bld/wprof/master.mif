@@ -63,9 +63,9 @@ extra_l_flags_qnx       = op stack=32k, offset=36k, priv=3, res=$(extra_link_res
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 extra_l_flags_dos       = op stack=20k #export DOS4GOPTIONS=_DOS4GOPTIONS
 
-wprof_libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
+libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifeq host_os linux
 extra_ldflags = -ldl
 !endif
@@ -99,13 +99,13 @@ version_res_exe_nt_x64 = exever.res
 
 # explicit rules
 #################
-$(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(wprof_libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu))
+$(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @rm -f finger.obj
     @%make finger.obj
-!ifndef __WATCOM__
-    $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(wprof_libs) $(sys_libs) $(ldflags)
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(libs) $(sys_libs) $(ldflags)
 !else
-    $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(wprof_libs) $(sys_libs)}
+    $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(libs) $(sys_libs)}
 !endif
 !ifneq sys_windowed 1
     @%make bind_version_res_exe
@@ -114,11 +114,11 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
-wprofgui.res : ../res/wprofgui.rc $(rcfiles) .AUTODEPEND
+wprofgui.res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wprofui.res : ../res/wprofui.rc .AUTODEPEND
+wprofui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
 
-usage.u : ../h/usage.sp
-    *wsplice -u $< $@
+usage.u : ../h/usage.sp $(__MAKEFILES__)
+    *wsplice -u $[@ $@

@@ -36,17 +36,17 @@ typedef struct {
         int             exists;
 } FILE_CTL;
 
-extern  FILE_CTL        Files[MAX_SEG+1];
+extern  FILE_CTL        Files[MAX_SEG + 1];
 extern  int             FilesOpen;
 
-extern  bool            SegOk[MAX_SEG+1];
-extern  unsigned_32     Locs[MAX_SEG+1];
+extern  bool            SegOk[MAX_SEG + 1];
+extern  unsigned_32     Locs[MAX_SEG + 1];
 extern  int             SymDebug;
 extern  int             TypDebug;
 extern  int             Actions;
 extern  segment_id      CurSeg;
 extern  int             Out;
-extern  char            UBuff[UBUFF_LEN+1];
+extern  char            UBuff[UBUFF_LEN + 1];
 extern  a               *AutoList;
 extern  n               *NodeList;
 extern  l               *LblList;
@@ -71,6 +71,6 @@ extern  cg_op           FlowOps[];
 extern  cg_op           UnaryOps[];
 extern  cg_op           FunkyOps[];
 extern  cg_op           BinaryOps[];
-extern  char            * Classes[];
-extern  char            * Ops[];
-extern  char            * Tipes[];
+extern  char            *Classes[];
+extern  char            *Ops[];
+extern  char            *Tipes[];

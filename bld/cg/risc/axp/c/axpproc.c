@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,31 +43,21 @@
 #include "rscconst.h"
 #include "object.h"
 #include "axpenc.h"
+#include "targetin.h"
+#include "targetdb.h"
+#include "opttell.h"
+#include "encode.h"
+#include "rgtbl.h"
+#include "rscobj.h"
+#include "utils.h"
 #include "feprotos.h"
 
-extern  uint_32         CountBits( uint_32 );
-extern  void            CodeLabelLinenum( label_handle, unsigned, cg_linenum );
-extern  hw_reg_set      *GPRegs( void );
-extern  hw_reg_set      *FPRegs( void );
-extern  hw_reg_set      *ParmRegs( void );
+
 extern  hw_reg_set      SaveRegs( void );
 extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 extern  void            GenOPINS( uint_8, uint_8, uint_8, uint_8, uint_8 );
-extern  hw_reg_set      StackReg( void );
-extern  hw_reg_set      ScratchReg( void );
-extern  hw_reg_set      VarargsHomePtr( void );
 extern  void            GenRET( void );
-extern  void            OutFuncStart( label_handle label, offset start, int line );
-extern  void            OutFileStart( int line );
-extern  void            OutFuncEnd( offset end );
-extern void             OutPDataRec( label_handle label, uint_32 pro_size, uint_32 proc_end );
-extern  hw_reg_set      FrameBaseReg(void);
-extern  byte            RegTrans(hw_reg_set);
-extern  type_length     TempLocation( name * );
-extern  hw_reg_set      ReturnAddrReg( void );
 extern  void            EmitFuncStart( label_handle cg_linenum );
-extern  void            TellKeepLabel( label_handle );
-extern  void            TellProcLabel( label_handle );
 extern  void            GenLOADS32( signed_32, uint_8 );
 
 static  void    calcUsedRegs( void )
@@ -79,7 +70,7 @@ static  void    calcUsedRegs( void )
 
     HW_CAsgn( used, HW_EMPTY );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & CALL_LABEL ) != EMPTY ) {
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             HW_TurnOn( used, ReturnAddrReg() );
         }
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -100,8 +91,8 @@ static  void    calcUsedRegs( void )
 }
 
 
-extern  void    AddCacheRegs( void )
-/**********************************/
+void    AddCacheRegs( void )
+/**************************/
 {
 }
 
@@ -557,8 +548,8 @@ static  void    emitEpilog( stack_map *map )
 }
 
 
-extern  void    GenProlog( void )
-/*******************************/
+void    GenProlog( void )
+/***********************/
 {
     segment_id          old;
     label_handle        label;
@@ -603,38 +594,39 @@ void    GenEpilog( void )
 }
 
 
-extern  int     AskDisplaySize( int level )
-/*****************************************/
+int     AskDisplaySize( int level )
+/*********************************/
 {
     level = level;
     return( 0 );
 }
 
 
-extern  void    InitStackDepth( block *blk )
-/******************************************/
+void    InitStackDepth( block *blk )
+/**********************************/
 {
     blk = blk;
 }
 
 
-extern  type_length     PushSize( type_length len )
-/*************************************************/
+type_length     PushSize( type_length len )
+/*****************************************/
 {
-    if( len < REG_SIZE ) return( REG_SIZE );
+    if( len < REG_SIZE )
+        return( REG_SIZE );
     return( len );
 }
 
 
-extern  type_length     NewBase( name *op )
-/*****************************************/
+type_length     NewBase( name *op )
+/*********************************/
 {
     return( TempLocation( op ) );
 }
 
 
-extern  int     ParmsAtPrologue( void )
-/*************************************/
+int     ParmsAtPrologue( void )
+/*****************************/
 {
     return( 0 );
 }

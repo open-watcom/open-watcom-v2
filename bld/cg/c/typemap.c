@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,8 @@
 #include "typedef.h"
 #include "types.h"
 #include "procdef.h"
+#include "typemap.h"
+
 
 extern  type_class_def  MapPointer(cg_type);
 extern  type_class_def  MapIntReturn(cg_type);
@@ -50,16 +53,16 @@ static cg_type  Types[] = {
 };
 
 
-extern  type_def        *ClassType( type_class_def tipe ) {
-/*********************************************************/
-
-    return( TypeAddress( Types[ tipe ] ) );
+type_def        *ClassType( type_class_def tipe )
+/***********************************************/
+{
+    return( TypeAddress( Types[tipe] ) );
 }
 
 
-extern  type_class_def  ReturnClass( type_def *tipe, call_attributes attr ) {
-/***************************************************************************/
-
+type_class_def  ReturnClass( type_def *tipe, call_attributes attr )
+/*****************************************************************/
+{
     switch( tipe->refno ) {
     case TY_INT_1:
     case TY_UINT_1:
@@ -86,9 +89,9 @@ extern  type_class_def  ReturnClass( type_def *tipe, call_attributes attr ) {
 }
 
 
-extern  type_class_def  TypeClass( type_def *tipe ) {
-/***************************************************/
-
+type_class_def  TypeClass( type_def *tipe )
+/*****************************************/
+{
     switch( tipe->refno ) {
     case TY_INT_1:
         return( I1 );

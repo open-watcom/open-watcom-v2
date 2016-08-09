@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,20 +43,15 @@
 #include "x87.h"
 #include "stack.h"
 #include "redefby.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "namelist.h"
+#include "optab.h"
+#include "blktrim.h"
 
 
 extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
-extern  instruction_id  Renumber(void);
-extern  hw_reg_set      StackReg(void);
-extern  int             CountIns(block*);
-extern  bool            IsSegReg(hw_reg_set);
-extern  bool            DoesSomething(instruction*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      LowReg(hw_reg_set);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  void            ClearInsBits( instruction_flags );
-extern  hw_reg_set      FullReg( hw_reg_set );
 
 #define DEPS_IN_BLOCK    20
 
@@ -99,7 +95,7 @@ static dep_list_entry *AllocDep( void )
         new->used = 0;
         CurrDepBlock = new;
     }
-    return( &CurrDepBlock->entries[ CurrDepBlock->used++ ] );
+    return( &CurrDepBlock->entries[CurrDepBlock->used++] );
 }
 
 
@@ -438,7 +434,7 @@ extern bool InsOrderDependant( instruction *ins_i, instruction *ins_j )
     if( _OpIsJump( ins_i->head.opcode ) )
         return( true );
     if( _OpIsCall( ins_i->head.opcode ) ) {
-        if( !( ins_i->flags.call_flags & CALL_READS_NO_MEMORY )
+        if( (ins_i->flags.call_flags & CALL_READS_NO_MEMORY) == 0
           && ins_j->result != NULL
           && _IsVisibleToCall( ins_i, ins_j->result, false ) )
             return( true );
@@ -575,7 +571,7 @@ static void BuildDag( void )
                 link_multi = false;
                 BuildLink( dag_i, dag_j );
             } else if( used_cc &&
-                    (dag_j->ins->u.gen_table->op_type&MASK_CC)!=PRESERVE ) {
+                    (dag_j->ins->u.gen_table->op_type&MASK_CC) != PRESERVE ) {
                 /*
                     Consider this:
 
@@ -588,7 +584,7 @@ static void BuildDag( void )
                     to be scheduled after it.
                 */
                 BuildLink( dag_i, dag_j );
-            } else if( (dag_i->ins->u.gen_table->op_type&MASK_CC)!=PRESERVE
+            } else if( (dag_i->ins->u.gen_table->op_type&MASK_CC) != PRESERVE
                     && InsUsesCC( dag_j->ins ) ) {
                 /*
                     consider:
@@ -772,7 +768,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     int         i;
     int         scale;
 
-    bias = adj->operands[1]->c.int_value;
+    bias = adj->operands[1]->c.lo.int_value;
     if( adj->head.opcode == OP_SUB )
         bias = -bias;
     if( forward )
@@ -790,7 +786,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
             break;
         if( chk->head.opcode == OP_BLOCK )
             break;
-        if( !(chk->ins_flags & INS_INDEX_ADJUST) && _IsReDefinedBy( chk, adj->result ) )
+        if( (chk->ins_flags & INS_INDEX_ADJUST) == 0 && _IsReDefinedBy( chk, adj->result ) )
             break;
         if( forward ) {
             if( chk->id > adj->id ) {

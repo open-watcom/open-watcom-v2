@@ -150,7 +150,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 
     // Try to determine which miniheap to begin allocating from.
     // first, round up the amount
-    size = (amt + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    size = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
     if( size < FRL_SIZE ) {
         size = FRL_SIZE;
     }
@@ -175,10 +175,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
             miniheap_ptr = __nheapbeg;
         }
         // Search for free block
-        for(;;) {
-            if( miniheap_ptr == NULL ) {
-                break;                  // Expand heap and retry maybe
-            }
+        for( ; miniheap_ptr != NULL; miniheap_ptr = miniheap_ptr->next ) {
             __MiniHeapRover = miniheap_ptr;
             largest = miniheap_ptr->largest_blk;
 #if defined(__WARP__)
@@ -196,8 +193,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
             if( largest > __LargestSizeB4MiniHeapRover ) {
                 __LargestSizeB4MiniHeapRover = largest;
             }
-            miniheap_ptr = miniheap_ptr->next;
-        } /* forever */
+        }
         // OS/2 only - if not block of requested type, will allocate one and find in 2nd pass
         // Try to expand heap and retry
         if( expanded || !__ExpandDGROUP( amt ) ) {

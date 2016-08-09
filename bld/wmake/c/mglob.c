@@ -63,7 +63,7 @@ struct Glob Glob;
  * Be careful that these declarations doesn't exceed 2048 characters.
  * Note that this is just one big string - not an array of strings.
  */
-const char FAR *BuiltIns = {
+const char FAR BuiltIns[] = {
     "__MAKEOPTS__=%s\n"
     "__MAKEFILES__=\n"
     "__VERSION__=" BANSTR( _BANVER ) "\n"
@@ -100,6 +100,17 @@ const char FAR *BuiltIns = {
 #elif defined( __OSX__ ) || defined( __APPLE__ )
     "__OSX__=\n"
     "__UNIX__=\n"
+    #if defined( _M_X64 ) || defined( __x86_64__ ) || defined( __amd64__ ) || defined( __amd64 )
+        "__OSXX64__=\n"
+    #elif defined( _M_IX86 ) || defined( __i386 ) || defined( __i386__ )
+        "__OSX386__=\n"
+    #elif defined( __PPC__ ) || defined( __ppc__ ) || defined( __powerpc__ )
+        "__OSXPPC__=\n"
+    #elif defined( _M_ARM ) || defined( __ARM__ ) || defined( __arm__ )
+        "__OSXARM__=\n"
+    #else
+        #error Unknown CPU architecture
+    #endif
 
 #elif defined( __LINUX__ ) || defined( __linux__ )
     "__LINUX__=\n"
@@ -147,7 +158,7 @@ const char FAR *BuiltIns = {
 #endif
 };
 
-const char FAR *SuffixList = {
+const char FAR SuffixList[] = {
     ".SUFFIXES: "
         ".exe .nlm .dsk .lan .exp "             /* executable extensions */
         ".lib .obj "                            /* object file extensions */
@@ -156,18 +167,18 @@ const char FAR *SuffixList = {
         ".h .hpp .hxx .hh .fi .mif .inc\n"      /* include file extensions */
 };
 
-const char FAR *MSSuffixList = {
+const char FAR MSSuffixList[] = {
     ".SUFFIXES: "
         ".exe .obj .asm .c .cpp .cxx .bas .cbl .for .f .f90 .pas .res .rc"
 };
 
 
-const char FAR *UNIXSuffixList = {
+const char FAR UNIXSuffixList[] = {
     ".SUFFIXES: "
         ".exe .obj .c .y .l .f"
 };
 
-const char FAR *POSIXSuffixList = {
+const char FAR POSIXSuffixList[] = {
     ".SUFFIXES: "
         ".o .c .y .l .a .sh .f"
 };
@@ -176,7 +187,7 @@ const char FAR *POSIXSuffixList = {
  * Be careful that this doesn't exceed 2048 characters.  Note that this is just
  * one big string - not an array of strings.
  */
-const char FAR* MSBuiltIn = {
+const char FAR MSBuiltIn[] = {
     "AS=ml\n"
     "BC=bc\n"
     "CC=cl\n"
@@ -229,7 +240,7 @@ const char FAR* MSBuiltIn = {
 
 };
 
-const char FAR* UNIXBuiltIn = {
+const char FAR UNIXBuiltIn[] = {
      "YACC=yacc\n"
      "YFLAGS=\n"
      "LEX=lex\n"
@@ -265,9 +276,8 @@ const char FAR* UNIXBuiltIn = {
 };
 
 /* The following definitions are taken from SUSv3 */
-const char FAR* POSIXBuiltIn = {
+const char FAR POSIXBuiltIn[] = {
     /* Predefined Macros */
-    "MAKE=make\n"
     "AR=ar\n"
     "ARFLAGS=-rv\n"
     "YACC=yacc\n"

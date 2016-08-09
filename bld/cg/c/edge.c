@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,12 +35,11 @@
 #include "cgmem.h"
 #include "utils.h"
 #include "edge.h"
+#include "typedef.h"
+#include "makeblk.h"
+#include "insutil.h"
+#include "unroll.h"
 
-
-extern  block           *MakeBlock(label_handle,block_num);
-extern  void            SuffixIns(instruction *,instruction *);
-extern  void            RemoveIns(instruction *);
-extern  void            FixBlockIds(void);
 
 void    PointEdge( block_edge *edge, block *new_dest )
 /*****************************************************
@@ -105,15 +105,15 @@ block   *SplitBlock( block *blk, instruction *ins )
     new_blk->prev_block = blk;
     blk->next_block = new_blk;
     new_blk->next_block->prev_block = new_blk;
-    blk->class = blk->class & ~( CONDITIONAL | RETURN | SELECT | LOOP_EXIT | UNKNOWN_DESTINATION );
-    blk->class |= JUMP;
+    _MarkBlkAttrNot( blk, BLK_CONDITIONAL | BLK_RETURN | BLK_SELECT | BLK_LOOP_EXIT | BLK_UNKNOWN_DESTINATION );
+    _MarkBlkAttr( blk, BLK_JUMP );
     blk->targets = 1;
-    new_blk->class = new_blk->class & ~( LOOP_HEADER );
+    _MarkBlkAttrNot( new_blk, BLK_LOOP_HEADER );
     new_blk->inputs = 0;
     new_blk->input_edges = NULL;
     new_blk->id = NO_BLOCK_ID;
-    PointEdge( &blk->edge[ 0 ], new_blk );
-    edge = &new_blk->edge[ 0 ];
+    PointEdge( &blk->edge[0], new_blk );
+    edge = &new_blk->edge[0];
     for( i = 0; i < new_blk->targets; ++i ) {
         edge->source = new_blk;
         edge++;

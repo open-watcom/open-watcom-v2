@@ -60,7 +60,7 @@ static  void    WrnIssued( void ) {
 
 static  void    ErrIssued( void ) {
 // An error message has just been issued.
-    if( ( ProgSw & PS_SYMTAB_PROCESS ) == 0 ) {
+    if( (ProgSw & PS_SYMTAB_PROCESS) == 0 ) {
         CpError = true;
         AError = true;
     }
@@ -85,8 +85,8 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     column = 0;
     contline = 0;
     if( (SrcRecNum != 0) && // consider error opening source file
-        !(ProgSw & PS_SYMTAB_PROCESS) &&
-        !(ProgSw & PS_END_OF_SUBPROG) ) {
+        (ProgSw & PS_SYMTAB_PROCESS) == 0 &&
+        (ProgSw & PS_END_OF_SUBPROG) == 0 ) {
         if( StmtSw & SS_SCANNING ) {
             column = LexToken.col + 1;
             contline = LexToken.line;
@@ -121,8 +121,8 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     }
     if( CurrFile != NULL ) {
         if( ( SrcRecNum == 0 ) ||
-            ( ProgSw & PS_SYMTAB_PROCESS ) ||
-            ( ProgSw & PS_END_OF_SUBPROG ) ) {
+            (ProgSw & PS_SYMTAB_PROCESS) ||
+            (ProgSw & PS_END_OF_SUBPROG) ) {
             MsgFormat( "%s1: ", buffer, CurrFile->name );
         } else {
             MsgFormat( "%s1(%d2): ", buffer, CurrFile->name, SrcRecNum + contline );
@@ -179,8 +179,8 @@ void    Warning( int code, ... ) {
 // Warning message handler
     va_list     args;
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
-    if( ( Options & OPT_WARN ) != 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( Options & OPT_WARN ) {
         va_start( args, code );
         ErrHandler( "*WRN*", code, args );
         va_end( args );
@@ -192,8 +192,8 @@ void    Extension( int code, ... ) {
 // Extension Message Handler
     va_list     args;
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
-    if( ( Options & OPT_EXT ) != 0 ) {
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
+    if( Options & OPT_EXT ) {
         va_start( args, code );
         ErrHandler( "*EXT*", code, args );
         va_end( args );

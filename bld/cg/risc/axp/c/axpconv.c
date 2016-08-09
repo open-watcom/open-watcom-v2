@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,9 @@
 #include "convins.h"
 #include "data.h"
 #include "namelist.h"
+#include "insutil.h"
 
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
+
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *TrimConst( name *, type_class_def );
 
@@ -280,10 +281,16 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     return( new_ins );
 }
 
-extern void     LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
+}
 
+rt_class    LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
     ins = ins;
-    RoutineNum = RT_NOP;
     _Zoiks( ZOIKS_101 );
+    return( RT_NOP );
 }

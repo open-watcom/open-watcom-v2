@@ -1,7 +1,7 @@
 proj_name = gui
 name = gui
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 gui_trmem = 1
 !endif
 
@@ -81,7 +81,7 @@ extra_c_flags_nov = -4s
 extra_c_flags_win = -zw
 extra_c_flags_win_i86 = -zW
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 # memory tracker routines
 extra_c_flags_trmem = $(trmem_cflags)
 
@@ -96,7 +96,7 @@ inc_dirs = -I. -I"../h" -I"../../h" -I"$(hlpview_dir)/h" $(commonui_inc_dirs) $(
 .msg:   ../../h
 
 $(name).lib : guimsgs.gh $(objs) $(extra_objs) $(sysobjs) $(libs) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)
 !else
     $(librarian) $(libflags) $(objs) $(extra_objs) $(sysobjs) $(libs)

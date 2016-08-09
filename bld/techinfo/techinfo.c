@@ -61,22 +61,24 @@
 #include "monint.h"
 
 
-extern int PType( void );
-extern int PBus( void );
-extern int PPrefix( void );
-extern int NDPType( void );
-
 #define BANNER "Watcom's Techinfo Utility, Version 1.4"
 
 /* The following define for LEVEL was borrowed from definition in BPATCH */
 #define LEVEL           "WATCOM patch level .xxx"
 #define LEVEL_HEAD_SIZE (sizeof(LEVEL)-5)       /* w/o ".xxx\0" */
 
+extern int PType( void );
+extern int PBus( void );
+extern int PPrefix( void );
+extern int NDPType( void );
+
+int  LineCount = 0;
+
 /****************************************************************************/
 /*   define the environment variables relevant to WATCOM                    */
 /****************************************************************************/
 
-char *WATCOMC_EnvVars[] = {
+static char *WATCOMC_EnvVars[] = {
     "WATCOM",
     "EDPATH",
     "INCLUDE",
@@ -118,7 +120,7 @@ char *WATCOMC_EnvVars[] = {
     "HELP",         /* OS/2 */
     NULL };
 
-char *WSQL_EnvVars[] = {
+static char *WSQL_EnvVars[] = {
     "SQLPATH",
     "SQLSTART",
     "SQLCONNECT",
@@ -128,7 +130,7 @@ char *WSQL_EnvVars[] = {
     NULL };
 
 
-char *WATCOMC_Tools[] = {
+static char *WATCOMC_Tools[] = {
     // This list does not include all of the tools, just the major ones
     "ide",
     "watfor77",
@@ -153,7 +155,7 @@ char *WATCOMC_Tools[] = {
     "wlib",
     NULL };
 
-char *WSQL_Tools[] = {
+static char *WSQL_Tools[] = {
     // This list does not include all of the tools, just the major ones
 //    "acme",
 //    "acme32",
@@ -184,7 +186,7 @@ char *WSQL_Tools[] = {
     "rtsqlw",
     NULL };
 
-char *WATCOMC_Dirs[] = {
+static char *WATCOMC_Dirs[] = {
     "\\bin",
     "\\binb",
     "\\binp",
@@ -192,7 +194,7 @@ char *WATCOMC_Dirs[] = {
     "\\binnt",
     NULL };
 
-char *WSQL_Dirs[] = {
+static char *WSQL_Dirs[] = {
     "\\dos",
     "\\win",
     "\\win32",
@@ -203,7 +205,7 @@ char *WSQL_Dirs[] = {
     "\\mac",
     NULL };
 
-char *ProcessorType[2][8][2] =
+static char *ProcessorType[2][8][2] =
 {
     {
         { "8086",   "8088"  },
@@ -228,7 +230,7 @@ char *ProcessorType[2][8][2] =
     }
 };
 
-char *CoProcessorType[8] =
+static char *CoProcessorType[8] =
 {
     "No",
     "8087",
@@ -240,14 +242,13 @@ char *CoProcessorType[8] =
     "Pentium 4"
 };
 
-char *IsNotIs[2] =
+static char *IsNotIs[2] =
       { "is NOT",
         "IS" };
 
 //char BPATCHPATH[256];
-char WATCOMPATH[256];
-int  LineCount = 0;
-FILE *TechOutFile;
+static char WATCOMPATH[256];
+static FILE *TechOutFile;
 
 static void Usage( void )
 /***********************/

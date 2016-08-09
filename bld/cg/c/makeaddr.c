@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,19 +45,16 @@
 #include "utils.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "makeblk.h"
+#include "typemap.h"
 #include "feprotos.h"
 
 static    pointer       *AddrNameFrl;
 
-extern  type_class_def  TypeClass(type_def*);
-extern  name            *SAllocUserTemp(pointer,type_class_def,type_length);
-extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
 extern  void            AllocALocal(name*);
 extern  void            BGDone(an);
 extern  cg_type         NamePtrType( name *op );
-extern  name            *AllocRegName( hw_reg_set );
-
 
 static  void    CopyAddr( an src, an dst )
 /****************************************/
@@ -267,7 +265,7 @@ extern  an      MakeGets( an dst, an src, type_def *tipe )
             class = TypeClass( tipe );
             src_name = GenIns( src );
             if( dst_name->n.class == N_INDEXED &&
-             !( dst_name->i.index_flags & X_VOLATILE ) ) {
+             (dst_name->i.index_flags & X_VOLATILE) == 0 ) {
                 /* don't give him back an indexed name - it extends the life of*/
                 /* a pointer*/
                 temp = SAllocTemp( dst_name->n.name_class, dst_name->n.size );

@@ -167,7 +167,7 @@ static  void    DoLoop( TYPE do_type ) {
                     incr = GetIntValue( CITNode );
                     doptr->incr_value = incr;
                     doptr->increment = NULL;
-                    if( !(OZOpts & OZOPT_O_FASTDO) ) {
+                    if( (OZOpts & OZOPT_O_FASTDO) == 0 ) {
                         if( e2_const ) {
                             limit = GetIntValue( e2_node );
                             if( NeedIncrement( limit, incr, do_type ) ) {
@@ -189,7 +189,7 @@ static  void    DoLoop( TYPE do_type ) {
             if( _IsTypeInteger( do_type ) ) {
                 doptr->increment = NULL;
                 doptr->incr_value = 1;
-                if( !(OZOpts & OZOPT_O_FASTDO) ) {
+                if( (OZOpts & OZOPT_O_FASTDO) == 0 ) {
                     if( e2_const ) {
                         limit = GetIntValue( e2_node );
                         if( NeedIncrement( limit, 1, do_type ) ) {

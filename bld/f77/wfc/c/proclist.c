@@ -163,8 +163,9 @@ static  void    PrSubList( itnode *array_node ) {
     } else {
         if( array_node->opn.us & USOPN_FLD ) {
             if( array_node->sym_ptr->u.fd.typ == FT_CHAR ) {
-                if( !(StmtSw & SS_DATA_INIT) )
+                if( (StmtSw & SS_DATA_INIT) == 0 ) {
                     GFieldSCB( array_node->sym_ptr->u.fd.xt.size );
+                }
             }
         }
     }

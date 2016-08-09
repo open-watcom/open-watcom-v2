@@ -35,9 +35,9 @@
 
 #ifdef __NT__
 
-#define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
+#define ADJUST_ITEMLEN( a )     a = __ROUND_UP_SIZE(a, 8)
+#define ADJUST_BLOCKLEN( a )    a = __ROUND_UP_SIZE(a, 4)
+#define ROUND_CLASSLEN( a )     __ROUND_UP_SIZE(a, 2)
 #define _FARmemcpy              memcpy
 #define _ISFAR
 #define SLEN( a )               (strlen((a))*2+2)

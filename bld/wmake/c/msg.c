@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include <sys/stat.h>
 #include "make.h"
 #include "mrcmsg.h"
@@ -50,10 +51,14 @@ typedef union msg_arg {
 } MSG_ARG;
 
 STATIC MSG_ARG  ArgValue[2];
-STATIC int      USEARGVALUE = 0;    /* set to non_zero if ArgValue is used */
+STATIC bool     USEARGVALUE = false;    /* set to non_zero if ArgValue is used */
 
-STATIC const char FAR * const FAR msgText[] = {
-    #define pick( num, string ) string,
+#define pick( num, string ) static const char FAR __literal_ ## num [] = { string };
+#include "_msg.h"
+#undef pick
+
+STATIC const char FAR * const msgText[] = {
+    #define pick( num, string ) __literal_ ## num,
     #include "_msg.h"
     #undef pick
 };
@@ -63,7 +68,7 @@ STATIC void reOrder( va_list args, char *paratype )
 {
     int         i;
 
-    for( i = 1; i >= 0 && *paratype != '\0'; --i ) {
+    for( i = 1; i >= 0 && *paratype != NULLCHAR; --i ) {
         switch( *paratype++ ) {
         case 'D':
         case 'd':
@@ -116,7 +121,7 @@ STATIC char *strApp( char *dest, const char *src )
 {
     assert( dest != NULL && src != NULL );
 
-    while( (*dest = *src) != '\0' ) {
+    while( (*dest = *src) != NULLCHAR ) {
         ++dest;
         ++src;
     }
@@ -139,7 +144,7 @@ STATIC char *strDec( char *dest, UINT16 num )
     do {
         ++dest;
         res = div( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -166,7 +171,7 @@ STATIC char *strDecL( char *dest, UINT32 num )
     do {
         ++dest;
         res = ldiv( res.quot, 10 );
-        *--str = '0' + res.rem;
+        *--str = (char)( '0' + res.rem );
     } while( res.quot != 0 );
 
     while( dest >= orig ) {
@@ -201,19 +206,19 @@ STATIC char *strHex( char *dest, UINT16 num )
 
 
 #ifdef USE_FAR
-STATIC char *fStrApp( char *dest, const char FAR *fstr )
-/******************************************************/
+STATIC char *farStrApp( char *dest, const char FAR *fstr )
+/********************************************************/
 {
     assert( dest != NULL && fstr != NULL );
 
-    while( *dest = *fstr ) {
+    while( (*dest = *fstr) != NULLCHAR ) {
         ++dest;
         ++fstr;
     }
     return( dest );
 }
 #else
-#   define fStrApp( n, f )  strApp( n, f )
+#   define farStrApp( n, f )  strApp( n, f )
 #endif
 
 
@@ -225,8 +230,8 @@ STATIC char *strDec2( char *dest, UINT16 num )
     assert( dest != NULL );
 
     res = div( num % 100, 10 );
-    *dest++ = res.quot + '0';
-    *dest++ = res.rem + '0';
+    *dest++ = (char)( '0' + res.quot );
+    *dest++ = (char)( '0' + res.rem );
     return( dest );
 }
 
@@ -241,14 +246,14 @@ STATIC char *strDec5( char *dest, UINT16 num )
     res.quot = num;
     for( temp = dest + 4; temp >= dest; --temp ) {
         res = div( res.quot, 10 );
-        *temp = res.rem + '0';
+        *temp = (char)( '0' + res.rem );
     }
     return( dest + 5 );
 }
 
 
-STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
-/************************************************************************
+STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
+/**********************************************************************
  * quick vsprintf routine
  * assumptions - format string does not end in '%'
  *             - only use of '%' is as follows:
@@ -259,7 +264,7 @@ STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
  *  %L  : long string ( the process exits here to let another function to
           print the long string. Trailing part must be printed
           using other calls. see printMac()@macros. )
- *  %M  : a message number from msgText
+ *  %M  : a message number
  *  %Z  : strerror( errno ) - print a system error
  *  %c  : character
  *  %d  : decimal
@@ -309,7 +314,7 @@ STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
                 *dest++ = ')';
                 break;
             case 'F' :
-                dest = fStrApp( dest, va_arg( args, char FAR * ) );
+                dest = farStrApp( dest, va_arg( args, char FAR * ) );
                 positnArg( args, (UINT16)sizeof( char FAR * ) );
                 break;
             case 'L' :
@@ -319,7 +324,7 @@ STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
             case 'M' :
                 MsgGet( va_arg( args, int ), msgbuff );
                 positnArg( args, (UINT16)sizeof( int ) );
-                dest = fStrApp( dest, msgbuff );
+                dest = strApp( dest, msgbuff );
                 break;
             case 'Z' :
 #if defined( __DOS__ )
@@ -364,35 +369,44 @@ STATIC unsigned doFmtStr( char *buff, const char FAR *src, va_list args )
         }
     }
     *dest = NULLCHAR;
-    return( (unsigned)(dest - buff) );
+    return( dest - buff );
 }
 
 
-unsigned FmtStr( char *buff, const char *fmt, ... )
+size_t FmtStr( char *buff, const char *fmt, ... )
 /*******************************************************
  * quick sprintf routine... see doFmtStr
  */
 {
     va_list     args;
-    unsigned    rc;
+    size_t      len;
 
     assert( buff != NULL && fmt != NULL );
 
     va_start( args, fmt );
-    rc = doFmtStr( buff, fmt, args );
+    len = doFmtStr( buff, fmt, args );
     va_end( args );
-    return( rc );
+    return( len );
 }
 
-
-STATIC void logWrite( const char *buff, size_t len )
-/**************************************************/
+STATIC void writeOutput( unsigned class, int fh, const char *buff, size_t len )
+/*****************************************************************************/
 {
-    if( logFH != -1 ) {
-        write( logFH, buff, (unsigned)len );
+    if( class != INF ) {
+        if( logFH != -1 ) {
+#ifdef _WIN64
+            write( logFH, buff, (unsigned)len );
+#else
+            write( logFH, buff, len );
+#endif
+        }
     }
+#ifdef _WIN64
+    write( fh, buff, (unsigned)len );
+#else
+    write( fh, buff, len );
+#endif
 }
-
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
@@ -405,7 +419,7 @@ void PrtMsg( enum MsgClass num, ... )
     va_list         args;
     char            buff[1024];
     enum MsgClass   pref = M_ERROR;
-    unsigned        len;
+    size_t          len;
     unsigned        class;
     const char      *fname;
     UINT16          fline;
@@ -444,17 +458,17 @@ void PrtMsg( enum MsgClass num, ... )
             pref = M_WARNING;
             break;
         case ERR:
-            Glob.erroryet = TRUE;
+            Glob.erroryet = true;
             wefchar = 'E';
             pref = M_ERROR;
             break;
         case FTL:
-            Glob.erroryet = TRUE;
+            Glob.erroryet = true;
             wefchar = 'F';
             pref = M_ERROR;
             break;
         }
-        if( !(num & PRNTSTR) ) {
+        if( (num & PRNTSTR) == 0 ) {
             len += FmtStr( &buff[len], "%M(%c%D): ", pref, wefchar, num & NUM_MSK );
         }
     }
@@ -467,59 +481,41 @@ void PrtMsg( enum MsgClass num, ... )
      * with the doFmtStr() substitution.
      */
     if( len > 0 ) {
-        if( class != INF ) {
-            logWrite( buff, len );
-        }
-        write( fh, buff, len );
+        writeOutput( class, fh, buff, len );
     }
 
     va_start( args, num );
     if( num & PRNTSTR ) {       /* print a big string */
         str = va_arg( args, char * );
-
-        if( class != INF ) {
-            logWrite( str, strlen( str ) );
-        }
-        write( fh, str, (unsigned)strlen( str ) );
+        writeOutput( class, fh, str, strlen( str ) );
         len = 0;
     } else {                    /* print a formatted string */
-        if( ( num & NUM_MSK ) >= END_OF_RESOURCE_MSG ) {
-            len = doFmtStr( buff, msgText[(num&NUM_MSK)-END_OF_RESOURCE_MSG], args );
+        if( (num & NUM_MSK) >= MSG_SPECIAL_BASE ) {
+            len = doFmtStr( buff, msgText[(num & NUM_MSK) - MSG_SPECIAL_BASE], args );
         } else if( MsgReOrder( num & NUM_MSK, msgbuff, &paratype ) ) {
-            USEARGVALUE = 1;
+            USEARGVALUE = true;
             reOrder( args, paratype ); /* reposition the parameters */
             len = FmtStr( buff, msgbuff, ArgValue[0], ArgValue[1] );
-            USEARGVALUE = 0;
+            USEARGVALUE = false;
         } else {
             len = doFmtStr( buff, msgbuff, args );
         }
     }
     va_end( args );
-    if( !(num & NEOL) ) {
+    if( (num & NEOL) == 0 ) {
         buff[len++] = EOL;
     }
-    if( class != INF ) {
-        logWrite( buff, len );
-    }
-    write( fh, buff, len );
-    if( !Glob.compat_nmake
-      && ( num == (FTL | LOC | CANNOT_NEST_FURTHER) || num == (ERR | LOC | IGNORE_OUT_OF_PLACE_M))) {
-        PrtMsg( WRN | LOC | MICROSOFT_MAKEFILE );
-    }
+    writeOutput( class, fh, buff, len );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);
 #endif
 
-#if defined( __WATCOMC__ ) || !defined( NDEBUG )
-_NORETURN void     PrtMsgFtl( enum MsgClass num, ... )
+#if !defined( NDEBUG )
+void massert( const char *expr, const char *file, int line )
 {
-    va_list args;
-
-    va_start( args, num );
-    PrtMsg( num, args );
-    va_end( args );
-    exit( ExitSafe( EXIT_FATAL ) );
+    PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );
+    ExitFatal();
 }
 #endif
 
@@ -531,20 +527,20 @@ void Usage( void )
 
     for( i = MSG_USAGE_BASE;; i++ ) {
         MsgGet( i, msgbuff );
-        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == 0 ) ) {
+        if( ( msgbuff[0] == '.' ) && ( msgbuff[1] == NULLCHAR ) ) {
             break;
         }
         PrtMsg( INF | PRNTSTR, msgbuff );
     }
-    exit( ExitSafe( EXIT_OK ) );
+    ExitOK();
 }
 
 
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-BOOLEAN GetYes( enum MsgClass querymsg )
-/**********************************************
+bool GetYes( enum MsgClass querymsg )
+/************************************
  * ask question, and return true if user responds 'y', else false
  * You should phrase the question such that the default action is the least
  * damaging (ie: the 'no' action is least damaging).
@@ -555,7 +551,7 @@ BOOLEAN GetYes( enum MsgClass querymsg )
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
     if( read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     return( toupper( buf[0] ) == YES_CHAR );
@@ -575,7 +571,6 @@ void LogInit( const char *name )
     if( name != NULL ) {
         logFH = open( logName, O_WRONLY | O_APPEND | O_CREAT | O_TEXT, PMODE_RW );
     }
-    return;
 }
 
 

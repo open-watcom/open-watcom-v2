@@ -116,7 +116,7 @@ extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
     wpsrc_file->src_file = src_file;
     curr_sio->src_file = wpsrc_file;
     if( SymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
-        ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
+        ch = alloca( DIPHandleSize( HK_CUE, false ) );
         AddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
         wpsrc_file->rtn_line = CueLine( ch );
     }
@@ -177,7 +177,7 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
     int                     count;
     int                     count2;
 
-    ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
+    ch = alloca( DIPHandleSize( HK_CUE, false ) );
     lines = NULL;
     line_index = -1;
     last_srcline = 0;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,29 +42,22 @@
 #include "objout.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "makeblk.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "rtcall.h"
+#include "optab.h"
+#include "inssegs.h"
 
-
-extern    hw_reg_set      *RegSets[];
 
 extern  name            *GenFloat( name *, type_class_def );
-extern  name            *GenConstData( byte *, type_class_def );
+extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  void            DoNothing( instruction * );
-extern  void            ReplIns( instruction *, instruction * );
-extern  void            SuffixIns( instruction *, instruction * );
-extern  void            MoveSegRes( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
-extern  void            DelSeg( instruction * );
-extern  void            PrefixIns( instruction *, instruction * );
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
 extern  int             NumOperands( instruction * );
-extern  void            AddIns( instruction * );
-extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  hw_reg_set      ReturnReg( type_class_def, bool );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes
@@ -113,24 +107,10 @@ static  struct STRUCT_byte_seq( 18 ) Scn4 = {
 };
 
 
-extern  char    *AskRTName( rt_class rtindex )
-/********************************************/
+const char  *AskRTName( rt_class rtindex )
+/****************************************/
 {
     return( RTInfo[rtindex].nam );
-}
-
-
-static  hw_reg_set      FirstReg( reg_set_index index )
-/******************************************************
-    the tables above use RL_ consts rather that hw_reg_sets cause
-    it cheaper. This just picks off the first register from a
-    register list and returns it.
-*/
-{
-    hw_reg_set  *list;
-
-    list = RegSets[index];
-    return( *list );
 }
 
 
@@ -149,9 +129,9 @@ extern  name    *Addressable( name *cons, type_class_def class )
             return( GenFloat( cons, class ) );
         case U8:
         case I8:
-            buffer.u._32[I64LO32] = cons->c.int_value;
-            buffer.u._32[I64HI32] = cons->c.int_value_2;
-            return( GenConstData( (byte *)&buffer, class ) );
+            buffer.u._32[I64LO32] = cons->c.lo.int_value;
+            buffer.u._32[I64HI32] = cons->c.hi.int_value;
+            return( GenConstData( &buffer, class ) );
         default:
             Zoiks( ZOIKS_138 );
             break;
@@ -162,30 +142,32 @@ extern  name    *Addressable( name *cons, type_class_def class )
 }
 
 
-static void CheckForPCS( instruction *ins )
-/******************************************
+static rt_class CheckForPCS( instruction *ins, rt_class rtindex )
+/****************************************************************
     check to see if pointer subtract is really pointer - pointer
     or pointer - integer (PCS = Pointer Constant Subtract)
 */
 {
-    if( RoutineNum == RT_PTS ) {
+    if( rtindex == RT_PTS ) {
         if( ins->operands[1]->n.name_class != PT
          && ins->operands[1]->n.name_class != CP ) {
-            RoutineNum = RT_PCS;
+            rtindex = RT_PCS;
         }
     }
+    return( rtindex );
 }
 
 
-extern  bool    RTLeaveOp2( instruction *ins )
-/*********************************************
+bool    RTLeaveOp2( instruction *ins )
+/*************************************
     return true if it's a bad idea to put op2 into a temporary since we're
     gonna take the bugger's address in rMAKECALL anyway for FDD, FDC, EDA, etc
 */
 {
     switch( ins->type_class ) {
     case FD:
-        if( _FPULevel( FPU_87 ) ) return( false );
+        if( _FPULevel( FPU_87 ) )
+            return( false );
         break;
 /* -- This is not true now - I8 math and parameters are kept in registers -- [RomanT]
     case I8:
@@ -195,7 +177,8 @@ extern  bool    RTLeaveOp2( instruction *ins )
     default:
         return( false );
     }
-    if( NumOperands( ins ) != 2 ) return( false );
+    if( NumOperands( ins ) != 2 )
+        return( false );
     return( true );
 }
 
@@ -232,8 +215,8 @@ static  void    FlipIns( instruction *ins )
 }
 
 
-extern  instruction     *rMAKECALL( instruction *ins )
-/*****************************************************
+instruction     *rMAKECALL( instruction *ins )
+/*********************************************
     turn an instruction into the approprate runtime call sequence, using
     the tables above to decide where parms go.
 */
@@ -252,15 +235,15 @@ extern  instruction     *rMAKECALL( instruction *ins )
     conflict_node       *conf;
     hw_reg_set          tmp;
     type_class_def      parm2_class;
+    rt_class            rtindex;
 
     if( !_IsConvert( ins ) ) {
-        LookupRoutine( ins );
-        CheckForPCS( ins );
-    } else { /* RoutineNum might be wrong if we ran out of memory in ExpandIns*/
-        LookupConvertRoutine( ins );
+        rtindex = CheckForPCS( ins, LookupRoutine( ins ) );
+    } else { /* rtindex might be wrong if we ran out of memory in ExpandIns*/
+        rtindex = LookupConvertRoutine( ins );
     }
     FlipIns( ins );
-    info = &RTInfo[RoutineNum];
+    info = &RTInfo[rtindex];
     regs = FirstReg( info->left );
     all_regs = regs;
     tmp = ReturnReg( WD, false );
@@ -279,29 +262,25 @@ extern  instruction     *rMAKECALL( instruction *ins )
             }
             if( temp->n.class == N_CONSTANT ) {
                 temp = Addressable( temp, info->operand_class );
-                la_ins = MakeUnary( OP_CAREFUL_LA, temp,
-                                      AllocRegName( HW_SI ), U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = la_ins->operands[0];
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 if( !SegIsSS( temp ) ) {
-                    new_ins = MakeMove( GetSegment( temp ),
-                                        AllocRegName(HW_ES), U2 );
+                    new_ins = MakeMove( GetSegment( temp ), AllocRegName(HW_ES), U2 );
                     HW_CTurnOn( all_regs, HW_ES );
                     PrefixIns( ins, new_ins );
-                    ++RoutineNum;
+                    ++rtindex;
                 }
             } else if( temp->n.class == N_TEMP ) {
-                la_ins = MakeUnary( OP_CAREFUL_LA,temp,
-                                    AllocRegName( HW_SI ),U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA,temp, AllocRegName( HW_SI ),U2 );
                 also_used = temp;
                 ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
             } else if( ins->num_operands == 3 ) {
-                new_ins = MakeMove( ins->operands[2],
-                                    AllocRegName(HW_ES), U2 );
+                new_ins = MakeMove( ins->operands[2], AllocRegName(HW_ES), U2 );
                 ins->operands[2] = new_ins->result;
                 PrefixIns( ins, new_ins );
                 la_ins = MakeUnary( OP_CAREFUL_LA, temp,
@@ -312,20 +291,18 @@ extern  instruction     *rMAKECALL( instruction *ins )
                 DelSeg( la_ins );
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
-                ++RoutineNum;
+                ++rtindex;
             } else if( ( temp->n.class == N_MEMORY && !SegIsSS( temp ) ) ||
                        ( temp->n.class == N_INDEXED && temp->i.base != NULL &&
                          !SegIsSS( temp->i.base ) ) ) {
-                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1],
-                                      AllocRegName( HW_ES_SI ), PT );
+                la_ins = MakeUnary( OP_CAREFUL_LA, ins->operands[1], AllocRegName( HW_ES_SI ), PT );
                 also_used = ins->operands[1];
                 ins->operands[1] = la_ins->result;
                 PrefixIns( ins, la_ins );
                 HW_CTurnOn( all_regs, HW_ES );
-                ++RoutineNum;
+                ++rtindex;
             } else {
-                la_ins = MakeUnary( OP_CAREFUL_LA, temp,
-                                    AllocRegName( HW_SI ), U2 );
+                la_ins = MakeUnary( OP_CAREFUL_LA, temp, AllocRegName( HW_SI ), U2 );
                 also_used = temp;
                 ins->operands[1] = la_ins->result;
                 MoveSegOp( ins, la_ins, 0 );
@@ -347,7 +324,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
             PrefixIns( ins, new_ins );
         }
     } else if( NumOperands( ins ) == 2 ) {
-        if( RoutineNum == RT_DPOWI ) {
+        if( rtindex == RT_DPOWI ) {
             parm2_class = I4;
         } else {
             parm2_class = ins->type_class;
@@ -357,7 +334,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
         PrefixIns( ins, new_ins );
     }
     reg_name = AllocRegName( all_regs );
-    lbl = RTLabel( RoutineNum );
+    lbl = RTLabel( rtindex );
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = ins->type_class;
@@ -418,7 +395,7 @@ extern  instruction     *rMAKECALL( instruction *ins )
 
 extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
 /*********************************************************************************
-    generates a fake call to a rutime routine that looks up "value" in a table
+    generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
     returned by the "routine". The "routine" will be generated inline later.
     See BEAuxInfo for the code sequences generated. That will explain
@@ -431,22 +408,24 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     name        *label;
     hw_reg_set  tmp;
     name        *temp_result;
+    rt_class    rtindex;
 
     switch( class ) {
     case U1:
-        RoutineNum = RT_SCAN1;
+        rtindex = RT_SCAN1;
         break;
     case U2:
-        RoutineNum = RT_SCAN2;
+        rtindex = RT_SCAN2;
         break;
     case U4:
-        RoutineNum = RT_SCAN4;
+        rtindex = RT_SCAN4;
         break;
     default:
+        rtindex = RT_NOP;
         break;
     }
 
-    reg_name = AllocRegName( FirstReg( RTInfo[RoutineNum].left ) );
+    reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
     new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
@@ -471,12 +450,12 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    tmp = FirstReg( RTInfo[RoutineNum].left );
+    tmp = FirstReg( RTInfo[rtindex].left );
     HW_CTurnOn( tmp, HW_ES_DI );
     HW_CTurnOn( tmp, HW_CX );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel(RoutineNum), 0, CG_LBL, U2 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( rtindex ), 0, CG_LBL, U2 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     new_ins->zap = &AllocRegName( HW_CX_DI )->r;
@@ -486,7 +465,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     result = AllocMemory( table, 0, CG_TBL, U2 ); /* so table gets freed!*/
     if( class == U2 ) {
         result = AllocRegName( HW_ES_DI );
-        result = AllocIndex( result, NULL, ( table->size - 1 )*2, U2 );
+        result = AllocIndex( result, NULL, ( table->size - 1 ) * 2, U2 );
     } else {
         result = AllocIndex( reg_name, result, 0, U2 );
     }
@@ -518,11 +497,11 @@ extern  instruction     *rMAKEFNEG( instruction *ins )
     instruction         *last_ins;
     name                *reg_name;
     name                *exp_reg;
+    rt_class            rtindex;
 
-    LookupRoutine( ins );
-    CheckForPCS( ins );
-    lbl = RTLabel( RoutineNum );
-    info = &RTInfo[RoutineNum];
+    rtindex = CheckForPCS( ins, LookupRoutine( ins ) );
+    lbl = RTLabel( rtindex );
+    info = &RTInfo[rtindex];
     reg_name = AllocRegName( FirstReg( info->left ) );
     left_ins = MakeMove( ins->operands[0], reg_name, info->operand_class );
     ins->operands[0] = left_ins->result;

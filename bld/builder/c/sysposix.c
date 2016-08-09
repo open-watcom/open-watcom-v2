@@ -44,16 +44,25 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "UNIX", 1 );
 }
 
-int SysRunCommandPipe( const char *cmd, int *readpipe )
+static int SysRunCommandPipe( const char *cmd, int *readpipe )
 {
     int         pipe_fd[2];
     pid_t       pid;
-    char        *cmdnam = strdup( cmd );
-    char        *sp = cmdnam;
-    const char  **argv = malloc( strlen( cmd )* sizeof( char * ) );
-    int         i = 0;
+    char        *cmdnam;
+    char        *sp;
+    const char  **argv;
+    int         i;
 
-    while( sp != NULL ) {
+    cmdnam = strdup( cmd );
+    if( cmdnam == NULL )
+        return( -1 );
+    argv = malloc( strlen( cmd ) * sizeof( char * ) );
+    if( argv == NULL ) {
+        free( cmdnam );
+        return( -1 );
+    }
+    i = 0;
+    for( sp = cmdnam; sp != NULL; ) {
         while( *sp != '\0' && *sp == ' ' )
             ++sp;
         argv[i++] = sp;
@@ -64,29 +73,30 @@ int SysRunCommandPipe( const char *cmd, int *readpipe )
         }
     }
     argv[i] = NULL;
-    if( pipe( pipe_fd ) == -1 )
-        return( errno );
-    if( dup2( pipe_fd[1], STDOUT_FILENO ) == -1 )
-        return( errno );
-    if( dup2( pipe_fd[1], STDERR_FILENO ) == -1 )
-        return( errno );
-    close( pipe_fd[1] );
-    pid = fork();
-    if( pid == -1 )
-        return( -1 );
-    if( pid == 0 ) {
+    pid = -1;
+    if( pipe( pipe_fd ) != -1 ) {
+        *readpipe = pipe_fd[0];
+        if( dup2( pipe_fd[1], STDOUT_FILENO ) != -1 ) {
+            if( dup2( pipe_fd[1], STDERR_FILENO ) != -1 ) {
+                close( pipe_fd[1] );
+                pid = fork();
+                if( pid == 0 ) {
 #ifdef __WATCOMC__
-        execvp( cmdnam, argv );
+                    execvp( cmdnam, argv );
 #else
-        execvp( cmdnam, (char * const *)argv );
+                    execvp( cmdnam, (char * const *)argv );
 #endif
-        /* If above call to execvp() failed, do *not* call library termination routines! */
-        _exit( 127 );
+                    /* If above call to execvp() failed, do *not* call library termination routines! */
+                    _exit( 127 );
+                }
+            }
+        }
     }
     free( cmdnam );
     free( argv );
-    *readpipe = pipe_fd[0];
-    return 0;
+    if( pid == -1 )
+        return( -1 );
+    return( 0 );
 }
 
 int SysChdir( char *dir )
@@ -100,4 +110,41 @@ int SysChdir( char *dir )
         *end = '\0';
     }
     return( chdir( dir ) );
+}
+
+int SysRunCommand( const char *cmd )
+{
+    int         my_std_output;
+    int         my_std_error;
+    size_t      bytes_read;
+    int         rc;
+    int         readpipe;
+    char        buff[256 + 1];
+
+    readpipe = -1;
+    my_std_output = dup( STDOUT_FILENO );
+    my_std_error = dup( STDERR_FILENO );
+    rc = SysRunCommandPipe( cmd, &readpipe );
+    dup2( my_std_output, STDOUT_FILENO );
+    dup2( my_std_error, STDERR_FILENO );
+    close( my_std_output );
+    close( my_std_error );
+    if( rc == -1 ) {
+        if( readpipe != -1 )
+            close( readpipe );
+        return( rc );
+    }
+    if( readpipe != -1 ) {
+        while( (bytes_read = read( readpipe, buff, sizeof( buff ) - 1 )) != 0 ) {
+            if( (ssize_t)bytes_read == -1 )
+                break;
+            buff[bytes_read] = '\0';
+            Log( Quiet, "%s", buff );
+        }
+        close( readpipe );
+    }
+    /* free up the zombie (if there is one) */
+    while( wait( &rc ) == -1 && errno == EINTR )
+        ;
+    return( rc );
 }

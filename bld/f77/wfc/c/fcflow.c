@@ -91,8 +91,8 @@ void    FiniLabels( int label_type ) {
     for(;;) {
         curr = *owner;
         if( curr == NULL ) break;
-        if( ( curr->label & FORMAT_LABEL ) == label_type ) {
-            if( ( CGFlags & CG_FATAL ) == 0 ) {
+        if( (curr->label & FORMAT_LABEL) == label_type ) {
+            if( (CGFlags & CG_FATAL) == 0 ) {
                 if( curr->label & FORMAT_LABEL ) {
                     BEFiniBack( curr->handle );
                     BEFreeBack( curr->handle );
@@ -120,7 +120,7 @@ static  label_entry     *FindLabel( int label ) {
     le = LabelList;
     for(;;) {
         if( le == NULL ) break;
-        if( ( le->label & ~FORMAT_LABEL ) == label ) break;
+        if( (le->label & ~FORMAT_LABEL) == label ) break;
         le = le->link;
     }
     if( le == NULL ) {
@@ -309,7 +309,7 @@ void    FCAssignedGOTOList( void ) {
     for(;;) {
         sn = GetPtr();
         if( sn == NULL ) break;
-        if( ( sn->u.st.flags & SN_IN_GOTO_LIST ) == 0 ) {
+        if( (sn->u.st.flags & SN_IN_GOTO_LIST) == 0 ) {
             sn->u.st.flags |= SN_IN_GOTO_LIST;
             label = GetStmtLabel( sn );
             CGSelCase( s, label, sn->u.st.address );
@@ -464,7 +464,7 @@ void    FCSFCall( void ) {
         value = CGFEName( tmp, TY_CHAR );
     } else {
         sf_type = F772CGType( sf );
-        if( !(OZOpts & OZOPT_O_INLINE) ) {
+        if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
             value = CGUnary( O_POINTS, CGFEName( sf, sf_type ), sf_type );
         }
     }

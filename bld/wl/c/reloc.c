@@ -225,7 +225,7 @@ static bool FreeRelocList( reloc_info *list )
 /* free any reloc blocks pointed to by list */
 {
     for( ; list != NULL; list = list->next ) {
-        if( !( list->sizeleft & RELOC_SPILLED ) ) {
+        if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
             _LnkFree( list->loc.addr );
         }
     }
@@ -286,7 +286,7 @@ static void FreeGroupRelocs( group_entry *group )
     unsigned_32         index;
     reloc_info ***      reloclist;
 
-    if( !( LinkState & MAKE_RELOCS ) )
+    if( (LinkState & MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & ( MK_OS2_FLAT | MK_PE ) ) {
         TraverseOS2RelocList( group, FreeRelocList );
@@ -313,7 +313,7 @@ void FreeRelocInfo( void )
 {
     group_entry         *group;
 
-    if( !( LinkState & MAKE_RELOCS ) )
+    if( (LinkState & MAKE_RELOCS) == 0 )
         return;
     if( FmtData.type & ( MK_ELF | MK_OS2_FLAT | MK_PE | MK_OS2_16BIT | MK_QNX ) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
@@ -442,7 +442,7 @@ static bool SpillRelocList( reloc_info *list )
     virt_mem_size   spill;
 
     for( ; list != NULL; list = list->next ) {
-        if( !( list->sizeleft & RELOC_SPILLED ) ) {
+        if( (list->sizeleft & RELOC_SPILLED) == 0 ) {
             spill = SpillAlloc( RELOC_PAGE_SIZE );
             SpillWrite( spill, 0, list->loc.addr, RELOC_PAGE_SIZE - list->sizeleft );
             _LnkFree( list->loc.addr );
@@ -485,7 +485,7 @@ bool SwapOutRelocs( void )
 {
     group_entry         *group;
 
-    if( !( LinkState & FMT_DECIDED ) )
+    if( (LinkState & FMT_DECIDED) == 0 )
         return( false );
     if( FmtData.type & ( MK_OS2_FLAT | MK_PE ) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {

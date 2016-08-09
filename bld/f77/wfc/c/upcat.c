@@ -317,7 +317,7 @@ void            ParenCat( void ) {
         // check for CHAR(73) - CHAR is allowed in constant expressions
         } else if( (cit->opr != OPR_FBR) || !all_const_opns ||
                    ((cit->link->flags & SY_CLASS ) != SY_SUBPROGRAM) ||
-                   (!(cit->link->flags & SY_INTRINSIC)) ||
+                   ((cit->link->flags & SY_INTRINSIC) == 0) ||
                    (cit->link->sym_ptr->u.ns.si.fi.index != IF_CHAR) ) {
             ChkConstCatOpn( CITNode->link );
         }

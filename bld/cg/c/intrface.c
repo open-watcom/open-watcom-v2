@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -53,6 +54,10 @@
 #include "objio.h"
 #include "blips.h"
 #include "bldsel.h"
+#include "intrface.h"
+#include "opttell.h"
+#include "typemap.h"
+#include "bldcall.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -71,15 +76,10 @@ extern  void            AbortCG(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(label_handle);
-extern  void            TellNoSymbol(label_handle);
 extern  void            BGProcDecl(cg_sym_handle,type_def*);
-extern  void            BGParmDecl(cg_sym_handle,type_def*);
-extern  void            BGAutoDecl(cg_sym_handle,type_def*);
 extern  an              TGen(tn,type_def*);
-extern  void            BGReturn(an,type_def*);
 extern  an              BGSave(an);
 extern  void            DataLabel(label_handle);
-extern  type_class_def  TypeClass(type_def*);
 extern  void            DataBytes(unsigned,const void *);
 extern  void            IterBytes(offset,byte);
 extern  bool            BGInInline(void);
@@ -437,8 +437,8 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 
 static  pointer                 NewBackReturn = NULL;
 
-extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
-/***************************************************************/
+pointer cg_internal LkAddBack( cg_sym_handle sym, pointer curr_back )
+/*******************************************************************/
 {
     back_handle bck;
 
@@ -448,8 +448,8 @@ extern  pointer LkAddBack( cg_sym_handle sym, pointer curr_back )
     return( TO_REAL_BACK( bck ) );
 }
 
-extern back_handle SymBack( cg_sym_handle sym )
-/*********************************************/
+back_handle cg_internal SymBack( cg_sym_handle sym )
+/**************************************************/
 {
     back_handle bck;
 
@@ -732,8 +732,8 @@ extern  cg_name _CGAPI CGInt64( signed_64 val, cg_type tipe )
 #ifndef NDEBUG
     tn retn;
     EchoAPI( "CGInt64( %x %x, %t )"
-           , val.u._32[ I64LO32 ]
-           , val.u._32[ I64HI32 ]
+           , val.u._32[I64LO32]
+           , val.u._32[I64HI32]
            , tipe );
     verifyNotUserType( tipe );
     retn = TGLeaf( BGInt64( val, TypeAddress( tipe ) ) );
@@ -1386,7 +1386,7 @@ extern cg_name _CGAPI CGAlign( cg_name name, uint alignment )
 #endif
 }
 
-static  cg_name CGDuplicateArray[ 2 ];
+static  cg_name CGDuplicateArray[2];
 
 extern  cg_name * _CGAPI CGDuplicate( cg_name name )
 /**************************************************/
@@ -1400,8 +1400,8 @@ extern  cg_name * _CGAPI CGDuplicate( cg_name name )
 #endif
 
     addr = TGen( name, TypeAddress( TY_DEFAULT ) );
-    CGDuplicateArray[ 0 ] = TGReLeaf( BGCopy( addr ) );
-    CGDuplicateArray[ 1 ] = TGReLeaf( addr );
+    CGDuplicateArray[0] = TGReLeaf( BGCopy( addr ) );
+    CGDuplicateArray[1] = TGReLeaf( addr );
 
 #ifndef NDEBUG
     retn = CGDuplicateArray;
@@ -1509,7 +1509,7 @@ extern  void _CGAPI     DGInteger64( unsigned_64 value, cg_type tipe )
     } data;
     byte        *form;
 
-#if !( _TARG_MEMORY & _TARG_LOW_FIRST) == defined( __BIG_ENDIAN__ )
+#if ( ( _TARG_MEMORY & _TARG_LOW_FIRST ) == 0 ) == defined( __BIG_ENDIAN__ )
     data.val = value;
 #else
     {  // reverse them
@@ -1577,7 +1577,7 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
     char        data[40];
     unsigned    slen = len;
     char        *d = data;
-    char        *dt = &data[sizeof(data)-1];
+    char        *dt = &data[sizeof( data ) - 1];
     const char  *s = value;
     char        *hex = "0123456789abcdef";
     char        c;
@@ -1594,8 +1594,8 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
             if(( d + (4+1) ) >= dt ) break;
             *d++ = '\\';
             *d++ = 'x';
-            *d++ = hex[ ( c >> 4 ) & 0x0f ];
-            *d++ = hex[ ( c >> 0 ) & 0x0f ];
+            *d++ = hex[( c >> 4 ) & 0x0f];
+            *d++ = hex[( c >> 0 ) & 0x0f];
         }
     }
     *d = '\0';
@@ -1713,8 +1713,8 @@ extern  void _CGAPI     DGCFloat( pointer cf, cg_type tipe )
     DGBytes( TypeLength( tipe ), &buff );
 }
 
-extern  const char  *AskName( pointer hdl, cg_class class )
-/*********************************************************/
+const char * cg_internal AskName( pointer hdl, cg_class class )
+/*************************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -1735,8 +1735,8 @@ extern  const char  *AskName( pointer hdl, cg_class class )
     }
 }
 
-extern  label_handle AskForSymLabel( pointer hdl, cg_class class )
-/****************************************************************/
+label_handle cg_internal AskForSymLabel( pointer hdl, cg_class class )
+/********************************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -1757,16 +1757,16 @@ extern  label_handle AskForSymLabel( pointer hdl, cg_class class )
     }
 }
 
-extern  import_handle   AskImportHandle( cg_sym_handle sym )
-/*******************************************************/
+import_handle   cg_internal AskImportHandle( cg_sym_handle sym )
+/**************************************************************/
 {
     return( FEBack( sym )->imp );
 }
 
-extern  void    TellImportHandle( cg_sym_handle sym, import_handle imp )
-/*******************************************************************/
+void    cg_internal TellImportHandle( cg_sym_handle sym, import_handle imphdl )
+/*****************************************************************************/
 {
-    FEBack( sym )->imp = imp;
+    FEBack( sym )->imp = imphdl;
 }
 
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/

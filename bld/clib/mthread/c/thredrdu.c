@@ -123,7 +123,7 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
         return( -1L );
     }
 
-    stack_size = __Align4K( stack_size );
+    stack_size = __ROUND_UP_SIZE_4K( stack_size );
 
     wait_handle = RdosCreateWait();
 

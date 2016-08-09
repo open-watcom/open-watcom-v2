@@ -155,7 +155,7 @@ void    InitBlip( void )
     Zoiks2 = false;
     BlipsOn = false;
 #if defined( __NT__ ) || defined( __OSI__ )
-    buff[ 0 ] = 0;
+    buff[0] = 0;
 #else
     if( GetEnvVar( "WCGBLIPON", buff, 9 ) ) {
         BlipInit();

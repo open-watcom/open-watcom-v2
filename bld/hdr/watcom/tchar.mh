@@ -338,9 +338,11 @@ inline wchar_t *_wcsspnp( const wchar_t *__p1, const wchar_t *__p2 ) {
 #ifdef __cplusplus
 namespace std {
 #endif
+
 _WMRTLINK extern double wcstod( const wchar_t *__nptr, wchar_t **__endptr );
 _WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
+
 #ifdef __cplusplus
 }
 using std::wcstod;

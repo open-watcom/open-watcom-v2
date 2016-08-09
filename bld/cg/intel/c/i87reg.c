@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "zoiks.h"
 #include "data.h"
 #include "x87.h"
@@ -39,17 +39,13 @@
 #include "namelist.h"
 #include "redefby.h"
 #include "regalloc.h"
+#include "i87data.h"
+#include "insutil.h"
+#include "rgtbl.h"
+#include "inssegs.h"
 
 
-extern  hw_reg_set      FPRegs[];
-extern  name            *FPStatWord;
-extern  int             Max87Stk;
-
-extern  void            SuffixIns(instruction*,instruction*);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  int             NumOperands(instruction *);
@@ -84,8 +80,8 @@ extern  void    FPRegAlloc( void ) {
 
 
 
-static byte StackReq8087[LAST_IFUNC-FIRST_IFUNC+1] = {
-/********************************************************
+static byte StackReq8087[LAST_IFUNC - FIRST_IFUNC + 1] = {
+/*********************************************************
     how much stack over and above the parm
     does the operation require? NB: this number + number parms must be <= 4
 */
@@ -111,7 +107,7 @@ static byte StackReq8087[LAST_IFUNC-FIRST_IFUNC+1] = {
         2         /* OP_TANH */
 };
 
-static byte StackReq387[LAST_IFUNC-FIRST_IFUNC+1] = {
+static byte StackReq387[LAST_IFUNC - FIRST_IFUNC + 1] = {
 /********************************************************
     how much stack over and above the parm
     does the operation require? NB: this number + number parms must be <= 4
@@ -141,8 +137,8 @@ extern  void    InitFPStkReq( void ) {
 /******************************/
 
     if( _IsTargetModel( I_MATH_INLINE ) ) {
-        StackReq387[ OP_SIN-FIRST_IFUNC ] = 0;
-        StackReq387[ OP_COS-FIRST_IFUNC ] = 0;
+        StackReq387[OP_SIN - FIRST_IFUNC] = 0;
+        StackReq387[OP_COS - FIRST_IFUNC] = 0;
     }
 }
 
@@ -152,9 +148,9 @@ extern  int     FPStkReq( instruction *ins ) {
 
     if( !_OpIsIFunc( ins->head.opcode ) ) return( 0 );
     if( _FPULevel( FPU_387 ) ) {
-        return( StackReq387[ ins->head.opcode - FIRST_IFUNC ] );
+        return( StackReq387[ins->head.opcode - FIRST_IFUNC] );
     } else {
-        return( StackReq8087[ ins->head.opcode - FIRST_IFUNC ] );
+        return( StackReq8087[ins->head.opcode - FIRST_IFUNC] );
     }
 }
 
@@ -213,7 +209,7 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
     if( conf == NULL ) return( false );
     if( MathOpsBlowStack( conf, *stk_level ) ) return( false );
     ++*stk_level;
-    need_live_update = AssignARegister( conf, FPRegs[ *stk_level ] );
+    need_live_update = AssignARegister( conf, FPRegs[*stk_level] );
     return( need_live_update );
 }
 
@@ -232,7 +228,7 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
     /* Now check operands ... bump down stack level for each*/
     /* top of stack operand that will be popped (may be more than one)*/
     if( _OpIsCall( ins->head.opcode ) ) {
-        *stk_level -= Count87Regs( ins->operands[ CALL_OP_USED ]->r.reg );
+        *stk_level -= Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
     } else {
         old_level = *stk_level;
         for( i = ins->num_operands; i-- > 0; ) {
@@ -257,7 +253,7 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 
     if( !_OpIsCall( ins->head.opcode ) ) return;
     if( !HW_CEqual( ins->result->r.reg, HW_ST0 ) ) return;
-    if( !( ins->flags.call_flags & CALL_IGNORES_RETURN ) ) return;
+    if( (ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 ) return;
     --*stk_level;
 }
 
@@ -306,8 +302,8 @@ static  void    FPAlloc( void ) {
                 if( ins->operands[0]->n.class == N_TEMP && ( ( ins->operands[0]->t.temp_flags & CAN_STACK ) != EMPTY ) ) break;
                 name = AllocTemp( ins->base_type_class );
                 name->t.temp_flags |= CAN_STACK;
-                new_ins = MakeMove( ins->operands[ 0 ], name, ins->base_type_class );
-                ins->operands[ 0 ] = name;
+                new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
+                ins->operands[0] = name;
                 MoveSegOp( ins, new_ins, 0 );
                 PrefixIns( ins, new_ins );
                 ins = new_ins;
@@ -328,7 +324,7 @@ static  void    FPAlloc( void ) {
             SetStackLevel( ins, &stk_level );
             AssignFPOps( ins, &stk_level );
         }
-        if( ( blk->class & RETURN ) && stk_level == 1 ) {
+        if( _IsBlkAttr( blk, BLK_RETURN ) && stk_level == 1 ) {
             stk_level = 0;
         }
         if( stk_level != 0 ) {
@@ -403,18 +399,18 @@ static  void    CnvOperand( instruction *ins ) {
     case U1:
     case I1:
         t = AllocTemp( I2 );
-        new_ins = MakeConvert( ins->operands[ 0 ], t, I2, class );
+        new_ins = MakeConvert( ins->operands[0], t, I2, class );
         ins->base_type_class = I2;
-        ins->operands[ 0 ] = t;
+        ins->operands[0] = t;
         MoveSegOp( ins, new_ins, 0 );
         PrefixIns( ins, new_ins );
         InMemory( NameConflict( ins, t ) );
         break;
     case U2:
         t = AllocTemp( I4 );
-        new_ins = MakeConvert( ins->operands[ 0 ], t, I4, class );
+        new_ins = MakeConvert( ins->operands[0], t, I4, class );
         ins->base_type_class = I4;
-        ins->operands[ 0 ] = t;
+        ins->operands[0] = t;
         MoveSegOp( ins, new_ins, 0 );
         PrefixIns( ins, new_ins );
         InMemory( NameConflict( ins, t ) );
@@ -423,22 +419,22 @@ static  void    CnvOperand( instruction *ins ) {
     case I4:
     case I8:
     case U8:
-        if( ins->operands[ 0 ]->n.class == N_TEMP &&
-                ( ins->operands[ 0 ]->v.usage & HAS_MEMORY ) == 0 ) {
+        if( ins->operands[0]->n.class == N_TEMP &&
+                ( ins->operands[0]->v.usage & HAS_MEMORY ) == 0 ) {
             t = AllocTemp( class );
-            new_ins = MakeMove( ins->operands[ 0 ], t, class );
-            ins->operands[ 0 ] = t;
+            new_ins = MakeMove( ins->operands[0], t, class );
+            ins->operands[0] = t;
             MoveSegOp( ins, new_ins, 0 );
             PrefixIns( ins, new_ins );
             InMemory( NameConflict( ins, t ) );
         } else {
-            ToMemory( ins, ins->operands[ 0 ] );
+            ToMemory( ins, ins->operands[0] );
         }
         break;
     case U4:
         t = AllocTemp( U8 );
-        new_ins = MakeConvert( ins->operands[ 0 ], t, U8, U4 );
-        ins->operands[ 0 ] = t;
+        new_ins = MakeConvert( ins->operands[0], t, U8, U4 );
+        ins->operands[0] = t;
         MoveSegOp( ins, new_ins, 0 );
         PrefixIns( ins, new_ins );
         InMemory( NameConflict( ins, t ) );
@@ -510,7 +506,7 @@ extern  int     Count87Regs( hw_reg_set regs ) {
     i = 0;
     count = 0;
     for(;;) {
-        if( HW_Ovlap( FPRegs[ i ], regs ) ) {
+        if( HW_Ovlap( FPRegs[i], regs ) ) {
             ++count;
         }
         if( i == 7 ) break;
@@ -731,8 +727,8 @@ extern  bool    FPIsConvert( instruction *ins ) {
     type_class_def      res_class;
 
     if( !_FPULevel( FPU_87 ) ) return( false );
-    if( ins->operands[ 0 ]->n.class == N_CONSTANT ) return( false );
-    op_class = ins->operands[ 0 ]->n.name_class;
+    if( ins->operands[0]->n.class == N_CONSTANT ) return( false );
+    op_class = ins->operands[0]->n.name_class;
     res_class = ins->result->n.name_class;
     if( op_class == res_class ) return( false );
     if( _Is87Ins( ins ) ) return( true );
@@ -766,10 +762,10 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     for( next = ins->head.next; ; next = next->head.next ) {
         if( next->head.opcode == OP_BLOCK )
             return;
-        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+        if( _IsReDefinedBy( next, ins->operands[0] ) )
             return;
         if( next->head.opcode == next_op ) {
-            if( next->operands[ 0 ] == ins->operands[ 0 ] && next->type_class == ins->type_class ) {
+            if( next->operands[0] == ins->operands[0] && next->type_class == ins->type_class ) {
                 break;
             }
         }
@@ -777,7 +773,7 @@ static  void   FindSinCos( instruction *ins, opcode_defs next_op ) {
     temp = AllocTemp( ins->type_class );
     new_ins = MakeUnary( next_op, ins->operands[0], temp, ins->type_class );
     next->head.opcode = OP_MOV;
-    next->operands[ 0 ] = temp;
+    next->operands[0] = temp;
     SuffixIns( ins, new_ins );
     UpdateLive( ins, next );
 }

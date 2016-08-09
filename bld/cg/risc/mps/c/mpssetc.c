@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,12 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "insutil.h"
+#include "split.h"
+#include "blktrim.h"
 
-extern  void            SuffixIns( instruction *, instruction * );
-extern  void            RemoveInputEdge( block_edge *);
+
 extern  void            FlipCond( instruction * );
-extern  instruction     *rSWAPOPS( instruction *ins );
 extern  void            RemoveBlock( block * );
 
 /* This code looks for a sequence like the following:
@@ -100,7 +102,7 @@ static  instruction     *SetToConst( block *blk, signed_32 *pcons )
     op = ins->operands[0];
     if( op->n.class != N_CONSTANT || op->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    *pcons = op->c.int_value;
+    *pcons = op->c.lo.int_value;
     return( ins );
 }
 
@@ -130,15 +132,15 @@ static  bool    FindFlowOut( block *blk )
     }
     if( !isNiceCondIns( ins ) )
         return( false );
-    if( TypeClassSize[ ins->type_class ] > WORD_SIZE )
+    if( TypeClassSize[ins->type_class] > WORD_SIZE )
         return( false );
-    true_blk = blk->edge[ _TrueIndex( ins ) ].destination.u.blk;
+    true_blk = blk->edge[_TrueIndex( ins )].destination.u.blk;
     if( true_blk->inputs != 1 )
         return( false );
     if( true_blk->targets != 1 )
         return( false );
 
-    false_blk = blk->edge[ _FalseIndex( ins ) ].destination.u.blk;
+    false_blk = blk->edge[_FalseIndex( ins )].destination.u.blk;
     if( false_blk->inputs != 1 )
         return( false );
     if( false_blk->targets != 1 )
@@ -149,7 +151,7 @@ static  bool    FindFlowOut( block *blk )
         return( false );
     if( join_blk->inputs != 2 )
         return( false );
-    if( join_blk->class & UNKNOWN_DESTINATION )
+    if( _IsBlkAttr( join_blk, BLK_UNKNOWN_DESTINATION ) )
         return( false );
 
     ins0 = SetToConst( false_blk, &false_cons );
@@ -185,7 +187,7 @@ static  bool    FindFlowOut( block *blk )
 
         op1 = ins->operands[1];
         assert( op1->n.class == N_CONSTANT && op1->c.const_type == CONS_ABSOLUTE );
-        value = op1->c.int_value;
+        value = op1->c.lo.int_value;
         if( oc == OP_CMP_LESS_EQUAL )
             value += 1;
         else
@@ -230,8 +232,8 @@ static  bool    FindFlowOut( block *blk )
     new_edge->next_source = NULL;
     join_blk->input_edges = new_edge;
     join_blk->inputs = 1;
-    blk->class &= ~CONDITIONAL;
-    blk->class |= JUMP;
+    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
+    _MarkBlkAttr( blk, BLK_JUMP );
     return( true );
 }
 
@@ -244,7 +246,7 @@ extern  bool    SetOnCondition( void )
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & CONDITIONAL ) {
+        if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
             change |= FindFlowOut( blk );
         }
     }

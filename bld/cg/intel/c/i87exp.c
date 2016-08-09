@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,7 +33,6 @@
 #include "cgstd.h"
 #include "cgdefs.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "zoiks.h"
 #include "cfloat.h"
 #include "cgaux.h"
@@ -40,30 +40,22 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "nullprop.h"
+#include "i87data.h"
+#include "rgtbl.h"
+#include "insutil.h"
+#include "optab.h"
+#include "inssegs.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      FPRegs[];
-extern  name            *FPStatWord;
-extern  int             Max87Stk;
-extern  bool            Used87;
 extern  opcode_entry    DoNop[];
 
 extern  void            Opt8087( void );
-extern  bool            DoesSomething(instruction*);
 extern  int             NumOperands(instruction*);
-extern  name            *AllocRegName(hw_reg_set);
 extern  int             Count87Regs(hw_reg_set);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
 extern  void            AllocALocal(name*);
 extern  void            RevCond(instruction*);
-extern  void            MoveSegRes(instruction*,instruction*);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  hw_reg_set      *IdxRegs( void );
 extern  void            InitFPStkReq( void );
 
 /* forward declarations */
@@ -283,7 +275,7 @@ extern  name    *ST( int num ) {
     return an N_REGISTER for ST(num)
 */
 
-    return( AllocRegName( FPRegs[  num  ] ) );
+    return( AllocRegName( FPRegs[num] ) );
 }
 
 extern  instruction     *PrefFLDOp( instruction *ins,
@@ -456,7 +448,7 @@ static  instruction     *ExpUnary( instruction *ins,
     if( res != RES_STK0 ) {
         ins = SuffixFSTPRes( ins );
     }
-    unary->operands[ 0 ] = ST0;
+    unary->operands[0] = ST0;
     unary->result = ST0;
     return( ins );
 }
@@ -559,7 +551,7 @@ static  instruction     *ExpMove( instruction *ins,
         ins->u.gen_table = MFLD;
         break;
     case _Move( OP_CONS, RES_STK0 ):
-        if( CFTest( ins->operands[ 0 ]->c.value ) != 0 ) {
+        if( CFTest( ins->operands[0]->c.value ) != 0 ) {
             ins->u.gen_table = FLD1;
         } else {
             ins->u.gen_table = FLDZ;
@@ -594,7 +586,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
     name                *index;
 
     sp = AllocRegName( HW_SP );
-    size = TypeClassSize[ ins->type_class ];
+    size = TypeClassSize[ins->type_class];
     new_ins = MakeBinary( OP_SUB, sp, AllocIntConst( size ), sp, WD );
     new_ins->u.gen_table = RC;
     PrefixIns( ins, new_ins );
@@ -628,7 +620,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
             new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 0, ins->type_class );
-            new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+            new_ins = MakeMove( ins->operands[0], index,ins->type_class );
             ReplIns( ins, new_ins );
             ins = ExpMove( new_ins, op, RES_MEM );
 
@@ -644,7 +636,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
             new_ins->u.gen_table = RR1;
             PrefixIns( ins, new_ins );
             index = AllocIndex( index, NULL, 2, ins->type_class );
-            new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+            new_ins = MakeMove( ins->operands[0], index,ins->type_class );
             ReplIns( ins, new_ins );
             ins = ExpMove( new_ins, op, RES_MEM );
             ins = pop_ins;
@@ -653,7 +645,7 @@ static  instruction     *ExpPush( instruction *ins, operand_type op ) {
 #elif _TARGET & _TARG_80386
     {
         index = AllocIndex( sp, NULL, 0, ins->type_class );
-        new_ins = MakeMove( ins->operands[ 0 ], index,ins->type_class );
+        new_ins = MakeMove( ins->operands[0], index,ins->type_class );
         ReplIns( ins, new_ins );
         ins = ExpMove( new_ins, op, RES_MEM );
     }
@@ -886,10 +878,10 @@ static  void    ExchangeOps( instruction *ins ) {
     name        *op1;
     name        *op2;
 
-    op1 = ins->operands[ 0 ];
-    op2 = ins->operands[ 1 ];
-    ins->operands[ 0 ] = op2;
-    ins->operands[ 1 ] = op1;
+    op1 = ins->operands[0];
+    op2 = ins->operands[1];
+    ins->operands[0] = op2;
+    ins->operands[1] = op1;
 }
 
 
@@ -924,7 +916,7 @@ static  void    ExpBinary( instruction *ins,
     case _OPS( OP_CONS, OP_STK0 ):
         PrefixFLDOp( ins, op1, 0 );
         ins->u.gen_table = GenTab( ins, RRFBINP );
-        ins->operands[ 0 ] = ST1;
+        ins->operands[0] = ST1;
         break;
     case _OPS( OP_STK0, OP_STK1 ):
         ins->u.gen_table = GenTab( ins, RRFBINP );
@@ -943,8 +935,8 @@ static  void    ExpBinary( instruction *ins,
     case _OPS( OP_STK0, OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
         ins->u.gen_table = GenTab( ins, RNFBINP );
-        ins->operands[ 0 ] = ST1;
-        ins->operands[ 1 ] = ST0;
+        ins->operands[0] = ST1;
+        ins->operands[1] = ST0;
         break;
     case _OPS( OP_MEM , OP_CONS ):
         PrefixFLDOp( ins, op2, 1 );
@@ -969,11 +961,8 @@ static  void    RevFPCond( instruction *ins ) {
 */
 
     instruction         *other;
-    block               *blk;
 
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
-    }
+    _MarkBlkAllUnVisited();
     for( other = ins; other->head.opcode != OP_BLOCK; ) {
         other = other->head.next;
     }
@@ -995,13 +984,13 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
     block_num   i;
     block       *target;
 
-    blk->class |= BLOCK_VISITED;
+    _MarkBlkVisited( blk );
     for( ;; ) {
         ins = ins->head.next;
         if( ins->head.opcode == OP_BLOCK ) {
             for( i = blk->targets; i-- > 0; ) {
-                target = blk->edge[ i ].destination.u.blk;
-                if( ( target->class & BLOCK_VISITED ) == EMPTY ) {
+                target = blk->edge[i].destination.u.blk;
+                if( !_IsBlkVisited( target ) ) {
                     RevOtherCond( target, (instruction *)&target->ins );
                 }
             }
@@ -1029,7 +1018,7 @@ static  void    ExpCompare ( instruction *ins,
     if( !_CPULevel( CPU_386 ) ) {
         if( FPStatWord == NULL && ( !_CPULevel(CPU_286) || _IsEmulation() ) ) {
             FPStatWord = AllocTemp( U2 );
-            FPStatWord->v.usage |= VAR_VOLATILE|USE_ADDRESS; /* so that it really gets allocd */
+            FPStatWord->v.usage |= VAR_VOLATILE | USE_ADDRESS; /* so that it really gets allocd */
             AllocALocal( FPStatWord );
         }
     }

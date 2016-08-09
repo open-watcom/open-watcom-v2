@@ -119,8 +119,6 @@ HANDLE_ERROR:
     WResFreeDir( dir );
     if( handle != NIL_HANDLE )
         RCCLOSE( handle );
-    if( buffer != NULL )
-        RCFREE( buffer );
     return( true );
 }
 

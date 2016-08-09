@@ -17,6 +17,10 @@
 # There should be settings for supported building platforms
 #
 
+!ifdef %OWDOSBOX
+dosbox = $+$(%OWDOSBOX)$-
+!endif
+
 dosemu_wgml_batch=wgml.bat
 dosemu_gendev_batch=gendevb.bat
 
@@ -32,9 +36,9 @@ GENDEVCMD = $(docs_dir)\gml\os2\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os nt
 
-!ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
-GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+!ifdef dosbox
+WGMLCMD = $(dosbox) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+GENDEVCMD = $(dosbox) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 !else
 WGMLCMD = $(docs_dir)\gml\dos\wgml $(wgml_cmdl_params)
@@ -43,9 +47,9 @@ GENDEVCMD = $(docs_dir)\gml\dos\gendev $(gendev_cmdl_params)
 
 !else ifeq bld_os linux
 
-!ifdef %OWDOSBOX
-WGMLCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
-GENDEVCMD = $(%OWDOSBOX) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+!ifdef dosbox
+WGMLCMD = $(dosbox) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+GENDEVCMD = $(dosbox) -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
 use_dosemu = dosbox
 # only DOSBOX use upper cased file name
 wgml_ucase=1
@@ -64,6 +68,14 @@ use_dosemu = dosbox
 wgml_ucase=1
 
 !else ifeq bld_os haiku
+
+WGMLCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
+GENDEVCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole
+use_dosemu = dosbox
+# only DOSBOX use upper cased file name
+wgml_ucase=1
+
+!else ifeq bld_os osx
 
 WGMLCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e $(src_dir)" -c "d:$(dosemu_wgml_batch)" -noconsole
 GENDEVCMD = dosbox -noautoexec -c "mount c $(docs_dir)" -c "mount d ." -c "mount e .." -c "d:$(dosemu_gendev_batch)" -noconsole

@@ -1,6 +1,8 @@
-proj_name = libmisc
+proj_name = aliasgen
 
-libmisc_autodepends = .autodepend
+name = aliasgen
+
+aliasgen_autodepends = .autodepend
 
 !include cproj.mif
 !include defrule.mif
@@ -8,9 +10,11 @@ libmisc_autodepends = .autodepend
 
 .c: ../c
 
-aliasgen.exe : aliasgen.obj
-!ifndef __WATCOM__
-        $(cl) $(clflags) $< $(ldflags)
+objs = $(name).obj
+
+$(name).exe : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$<}
+        $(linker) name $@ $(lflags) file {$(objs)}
 !endif

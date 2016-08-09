@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,14 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "insutil.h"
+#include "utils.h"
 
-extern  void            PrefixIns(instruction*,instruction*);
+
 extern  int             SubCost(void);
 extern  int             AddCost(void);
 extern  int             MulCost(unsigned_32);
 extern  int             ShiftCost( int );
-extern  uint_32         CountBits( uint_32 );
 
 #define MAXOPS  20
 
@@ -115,7 +117,7 @@ static  int     Factor( unsigned_32 num, int *cost )
 
     shlcnt = 0;
     for( ;; ) {
-        while( !( num & 1 ) ) {
+        while( (num & 1) == 0 ) {
             ++shlcnt;
             num >>= 1;
         }
@@ -176,7 +178,7 @@ static  instruction     *CheckMul( instruction *ins )
     type_class_def      class;
     int                 cost;
 
-    rhs = ins->operands[1]->c.int_value;
+    rhs = ins->operands[1]->c.lo.int_value;
     neg = false;
     class = ins->type_class;
     if( class == SW && rhs < 0 ) {
@@ -242,7 +244,7 @@ extern  void    MulToShiftAdd( void )
             op = ins->operands[1];
             switch( op->n.class ) {
             case N_TEMP:
-                if( !(op->t.temp_flags & CONST_TEMP) ) continue;
+                if( (op->t.temp_flags & CONST_TEMP) == 0 ) continue;
                 ins->operands[1] = op->v.symbol;
                 /* fall through */
             case N_CONSTANT:

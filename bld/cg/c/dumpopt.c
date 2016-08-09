@@ -32,10 +32,10 @@
 #include "optwif.h"
 #include "dumpio.h"
 #include "typedef.h"
-#include "rtclass.h"
+#include "inslist.h"
+#include "rtrtn.h"
 #include "feprotos.h"
 
-extern  char            *AskRTName( rt_class );
 
 static  void            DoData( oc_entry *instr );
 static  void            DoLabel( oc_handle *instr );
@@ -74,7 +74,7 @@ static const char *Conds[] = {
 static  const char  *CondName( oc_jcond *oc ) {
 /*********************************************/
 
-    return( Conds[ oc->cond ] );
+    return( Conds[oc->cond] );
 }
 
 #else
@@ -94,25 +94,33 @@ static const char *Conds[] = {
 static  const char  *CondName( oc_jcond *oc ) {
 /*********************************************/
 
-    return( Conds[ oc->cond - FIRST_CONDITION ] );
+    return( Conds[oc->cond - FIRST_CONDITION] );
 }
 
 #endif
 
-static  bool    LblName( label_handle lbl ) {
-/*****************************************/
-
-
-    if( ValidLbl( lbl ) == false ) return( false );
-    DumpChar( 'L' );
-    DumpPtr( lbl );
-    if( lbl->lbl.sym == NULL ) return( true );
+static  bool    LblName( label_handle lbl, bool no_prefix )
+/*********************************************************/
+{
+    if( !ValidLbl( lbl ) )
+        return( false );
+    if( no_prefix ) {
+        if( lbl->lbl.sym == NULL ) {
+            return( false );
+        }
+    } else {
+        DumpChar( 'L' );
+        DumpPtr( lbl );
+        if( lbl->lbl.sym == NULL ) {
+            return( true );
+        }
+    }
     DumpChar( '(' );
     if( AskIfRTLabel( lbl ) ) {
-        DumpXString( AskRTName( (rt_class)(pointer_int)lbl->lbl.sym ) );
+        DumpXString( AskRTName( SYM2RTIDX( lbl->lbl.sym ) ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
-        DumpInt( (int)(pointer_int)lbl->lbl.sym );
+        DumpInt( SYM2IMPHDL( lbl->lbl.sym ) );
         DumpLiteral( "] " );
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );
@@ -153,7 +161,7 @@ static  void    DoInfo( any_oc *oc ) {
         break;
     case INFO_LDONE:
         DumpLiteral( "LDONE " );
-        LblName( oc->oc_handle.handle );
+        LblName( oc->oc_handle.handle, false );
         break;
     case INFO_DEAD_JMP:
         DumpLiteral( "DEAD  " );
@@ -204,7 +212,7 @@ extern  void    DumpOc( ins_entry *ins ) {
 
     DumpPtr( ins );
     DumpChar( ' ' );
-    DumpString(  CNames[ _Class( ins ) ] );
+    DumpString(  CNames[_Class( ins )] );
     DumpChar( ' ' );
     if( _Class( ins ) != OC_INFO ) {
         CheckAttr( ins->oc.oc_header.class );
@@ -262,7 +270,7 @@ extern  void    DumpOc( ins_entry *ins ) {
         DumpPtr( (pointer)(pointer_int)ins->oc.oc_rins.opcode );
         if( _HasReloc( &ins->oc.oc_rins ) ) {
             DumpLiteral( " [ " );
-            LblName( ins->oc.oc_rins.sym );
+            LblName( ins->oc.oc_rins.sym, false );
             DumpChar( ',' );
             DumpInt( ins->oc.oc_rins.reloc );
             DumpLiteral( " ] " );
@@ -283,7 +291,7 @@ static  void    DoData( oc_entry *instr ) {
     uint        len;
 
     for( len = 0; len < instr->hdr.reclen - offsetof( oc_entry, data ); ++len ) {
-        DumpByte( instr->data[ len ] );
+        DumpByte( instr->data[len] );
         DumpChar( ' ' );
     }
 }
@@ -298,10 +306,10 @@ static  void    DoLabel( oc_handle *instr ) {
     DumpLiteral( "align=<" );
     DumpByte( instr->hdr.objlen + 1 );
     DumpLiteral( "> " );
-    for(;;) {
-        if( LblName( lbl ) == false ) break;
+    while( LblName( lbl, false ) ) {
         lbl = lbl->alias;
-        if( lbl == NULL ) break;
+        if( lbl == NULL )
+            break;
         DumpChar( ' ' );
     }
 #if _TARGET & _TARG_RISC
@@ -314,10 +322,10 @@ static  void    DoLabel( oc_handle *instr ) {
 }
 
 
-static  void    DoRef( oc_handle *instr ) {
-/*****************************************/
-
-    LblName( instr->handle );
+static  void    DoRef( oc_handle *instr )
+/***************************************/
+{
+    LblName( instr->handle, false );
 }
 
 
@@ -326,11 +334,12 @@ extern  void    DumpLbl( label_handle lbl ) {
 
     ins_entry   *ref;
 
-    if( _ValidLbl( lbl ) == false ) return;
+    if( !ValidLbl( lbl ) )
+        return;
     if( lbl->lbl.sym != NULL ) {
-        DumpChar( '(' );
-        DumpXString( FEName( lbl->lbl.sym ) );
-        DumpLiteral( ") " );
+        if( LblName( lbl, true ) ) {
+            DumpLiteral( " " );
+        }
     }
     DumpLiteral( "addr==" );
     Dump8h( lbl->lbl.address );
@@ -379,7 +388,9 @@ extern  void    DumpLbl( label_handle lbl ) {
             DumpPtr( ref );
             DumpLiteral( "  " );
             ref = _LblRef( ref );
-            if( ref == NULL ) break;
+            if( ref == NULL ) {
+                break;
+            }
         }
     }
     DumpNL();

@@ -240,7 +240,7 @@ static tiny_ret_t _dos_find_first_lfn( const char *path, unsigned attrib, lfnfin
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfndta, RM_TB_PARM2_LINEAR, sizeof( *lfndta ) );
     return( dpmi_rm.ax );
@@ -266,7 +266,7 @@ static tiny_ret_t _dos_find_next_lfn( unsigned handle, lfnfind_t *lfndta )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     memcpy( lfndta, RM_TB_PARM1_LINEAR, sizeof( *lfndta ) );
     return( 0 );
@@ -289,7 +289,7 @@ static tiny_ret_t _dos_find_close_lfn( unsigned handle )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     return( 0 );
 #endif

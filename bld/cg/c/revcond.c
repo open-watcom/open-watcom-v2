@@ -63,13 +63,13 @@ extern  void    RevCond( instruction *ins ) {
 /*******************************************/
 /* what to do to a conditional if we reverse its operands */
 
-    ins->head.opcode = RevBranch[  ins->head.opcode - FIRST_CONDITION ];
+    ins->head.opcode = RevBranch[ins->head.opcode - FIRST_CONDITION];
 }
 
 extern  opcode_defs     FlipOpcode( opcode_defs opcode ) {
 /********************************************************/
 
-    return( FlipBranch[ opcode - FIRST_CONDITION ] );
+    return( FlipBranch[opcode - FIRST_CONDITION] );
 }
 
 extern  void    FlipCond( instruction *ins ) {

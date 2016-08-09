@@ -32,6 +32,22 @@
 
 #include "dominati.h"
 
+#define _IsBlkAttr( b, a )      ( ((b)->class & (a)) != 0 )
+#define _MarkBlkAttrNot( b, a ) ( (b)->class &= ~(a) )
+#define _MarkBlkAttr( b, a )    ( (b)->class |=  (a) )
+#define _SetBlkAttr( b, a )     ( (b)->class  =  (a) )
+
+#define _IsBlkVisited( b )      _IsBlkAttr( b, BLK_BLOCK_VISITED )
+#define _MarkBlkUnVisited( b )  _MarkBlkAttrNot( b, BLK_BLOCK_VISITED )
+#define _MarkBlkVisited( b )    _MarkBlkAttr( b, BLK_BLOCK_VISITED )
+
+#define _IsBlkMarked( b )       _IsBlkAttr( b, BLK_BLOCK_MARKED )
+#define _MarkBlkUnMarked( b )   _MarkBlkAttrNot( b, BLK_BLOCK_MARKED )
+#define _MarkBlkMarked( b )     _MarkBlkAttr( b, BLK_BLOCK_MARKED )
+
+#define _MarkBlkAllUnVisited()  ClearBlocksBitsMask( ~BLK_BLOCK_VISITED )
+#define _MarkBlkAllAttrNot( a ) ClearBlocksBitsMask( ~(a) )
+
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
@@ -50,31 +66,31 @@ typedef enum {
 } block_flags_consts;
 
 typedef enum {
-        RETURN                  = 0x00000001,
-        JUMP                    = 0x00000002,
-        CONDITIONAL             = 0x00000004,
-        SELECT                  = 0x00000008,
+        BLK_RETURN                  = 0x00000001,
+        BLK_JUMP                    = 0x00000002,
+        BLK_CONDITIONAL             = 0x00000004,
+        BLK_SELECT                  = 0x00000008,
 
-        ITERATIONS_KNOWN        = 0x00000010,
-        BIG_LABEL               = 0x00000020,
-        CALL_LABEL              = 0x00000040,
-        LABEL_RETURN            = 0x00000080,
+        BLK_ITERATIONS_KNOWN        = 0x00000010,
+        BLK_BIG_LABEL               = 0x00000020,
+        BLK_CALL_LABEL              = 0x00000040,
+        BLK_LABEL_RETURN            = 0x00000080,
 
-        LOOP_HEADER             = 0x00000100,
-        IN_LOOP                 = 0x00000200,
-        LOOP_EXIT               = 0x00000400,
-        BLOCK_VISITED           = 0x00000800,
+        BLK_LOOP_HEADER             = 0x00000100,
+        BLK_IN_LOOP                 = 0x00000200,
+        BLK_LOOP_EXIT               = 0x00000400,
+        BLK_BLOCK_VISITED           = 0x00000800,
 
-        RETURNED_TO             = 0x00001000,
-        UNKNOWN_DESTINATION     = 0x00002000,
-        BLOCK_MARKED            = 0x00004000,
-        MULTIPLE_EXITS          = 0x00008000,
+        BLK_RETURNED_TO             = 0x00001000,
+        BLK_UNKNOWN_DESTINATION     = 0x00002000,
+        BLK_BLOCK_MARKED            = 0x00004000,
+        BLK_MULTIPLE_EXITS          = 0x00008000,
 
-        DONT_UNROLL             = 0x00010000,
-        IGNORE                  = 0x00020000,
-        FLOODED                 = 0x00040000,
+        BLK_DONT_UNROLL             = 0x00010000,
+        BLK_IGNORE                  = 0x00020000,
+        BLK_FLOODED                 = 0x00040000,
 
-        BIG_JUMP                = 0x00000000    /* no longer supported */
+        BLK_BIG_JUMP                = 0x00000000    /* no longer supported */
 } block_class;
 
 
@@ -149,5 +165,5 @@ typedef struct block {
         block_class             class;
         signed_32               iterations;
         unsigned_32             unroll_count;
-        struct block_edge       edge[ 1 ];
+        struct block_edge       edge[1];
 } block;

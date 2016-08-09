@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-extern  void            LookupRoutine( instruction *ins );
+extern  rt_class        LookupRoutine( instruction *ins );
 extern  void            InitRT( void );
 extern  import_handle   AskRTHandle( rt_class rtindex );
-extern  void            TellRTHandle( rt_class rtindex, import_handle hdl );
+extern  void            TellRTHandle( rt_class rtindex, import_handle imphdl );
 extern  label_handle    RTLabel( rt_class rtindex );
 extern  rt_class        FindRTLabel( label_handle hdl );
-
+extern  const char      *AskRTName( rt_class rtindex );
+extern  bool            RTLeaveOp2( instruction *ins );

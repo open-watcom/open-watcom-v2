@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +37,16 @@
 #include "data.h"
 #include "stack.h"
 #include "redefby.h"
+#include "nullprop.h"
+#include "insdead.h"
+#include "blktrim.h"
 
-extern void             KillCondBlk( block *blk, instruction *ins, int dest );
-extern  bool            SideEffect( instruction * );
-extern  bool            BlockTrim( void );
 
-extern  void            ClearBlockBits( block_class mask )
-/********************************************************/
+void    ClearBlocksBitsMask( block_class mask )
+/*********************************************/
 {
     block               *blk;
 
-    mask = ~mask;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         blk->class &= mask;
     }
@@ -57,7 +57,7 @@ static  instruction     *CompareIns( block *blk )
 {
     instruction         *last;
 
-    if( blk->class & CONDITIONAL ) {
+    if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
         for( last = blk->ins.hd.prev; last->head.opcode != OP_BLOCK; last = last->head.prev ) {
             if( _OpIsCompare( last->head.opcode ) ) {
                 return( last );
@@ -70,7 +70,7 @@ static  instruction     *CompareIns( block *blk )
 static  bool            IsZero( name *op )
 /****************************************/
 {
-    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.int_value == 0 );
+    return( op->n.class == N_CONSTANT && op->c.const_type == CONS_ABSOLUTE && op->c.lo.int_value == 0 );
 }
 
 
@@ -166,7 +166,7 @@ static  void            PushTargets( edge_stack *stk, block *blk, bool forward )
 
     if( forward ) {
         for( i = 0; i < blk->targets; i++ ) {
-            Push( stk, &blk->edge[ i ] );
+            Push( stk, &blk->edge[i] );
         }
     } else {
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
@@ -215,9 +215,13 @@ static  bool            LastBlock( block *blk, bool forward )
 /***********************************************************/
 {
     if( forward ) {
-        if( blk->class & RETURN ) return( true );
+        if( _IsBlkAttr( blk, BLK_RETURN ) ) {
+            return( true );
+        }
     } else {
-        if( blk == HeadBlock ) return( true );
+        if( blk == HeadBlock ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -256,7 +260,7 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
                 return( BLOCK_REDEFS );
 #if 0
             if( curr->head.opcode == OP_MOV &&
-                curr->operands[ 0 ] == op &&
+                curr->operands[0] == op &&
                 curr->result != op ) {
                 parm_struct parms;
                 // we see mov t1 -> t2, and are trying to see if t1 has dominating
@@ -307,15 +311,17 @@ static  void            *DominatingDeref( parm_struct *parms )
     case BLOCK_REDEFS:
         return( NULL );
     }
-    if( LastBlock( parms->blk, parms->forward ) ||
-        ( parms->op->v.usage & USE_IN_ANOTHER_BLOCK ) == EMPTY ) return( NULL );
+    if( LastBlock( parms->blk, parms->forward ) || (parms->op->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
+        return( NULL );
     stk = InitStack();
     PushTargets( stk, parms->blk, parms->forward );
     for( dominated = true; dominated; ) {
-        if( Empty( stk ) ) break;
+        if( Empty( stk ) )
+            break;
         edge = Pop( stk );
         blk = EdgeBlock( edge, parms->forward );
-        if( blk->class & BLOCK_VISITED ) continue;
+        if( _IsBlkVisited( blk ) )
+            continue;
         result = BlockSearch( blk, FirstIns( blk, parms->forward ), parms->op, parms->forward );
         switch( result ) {
         case BLOCK_DEREFS:
@@ -336,25 +342,26 @@ static  void            *DominatingDeref( parm_struct *parms )
                 dominated = false;
             }
         }
-        blk->class |= BLOCK_VISITED;
+        _MarkBlkVisited( blk );
     }
     FiniStack( stk );
     return( dominated ? NOT_NULL : NULL );
 }
 
-extern  void            FloodDown( block *blk, block_class bits )
-/***************************************************************/
+static void     FloodDown( block *blk, block_class bits )
+/*******************************************************/
 {
     edge_stack          *stk;
     block_edge          *edge;
 
     stk = InitStack();
     for(;;) {
-        if( ( blk->class & bits ) != EMPTY ) {
-            blk->class |= bits;
+        if( _IsBlkAttr( blk, bits ) ) {
+            _MarkBlkAttr( blk, bits );
             PushTargets( stk, blk, true );
         }
-        if( Empty( stk ) ) break;
+        if( Empty( stk ) )
+            break;
         edge = Pop( stk );
         blk = edge->destination.u.blk;
     }
@@ -367,8 +374,11 @@ static  bool            BlockSideEffect( block *blk )
     instruction         *ins;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( _OpIsCall( ins->head.opcode ) ) return( true );
-        if( SideEffect( ins ) ) return( true );
+        if( _OpIsCall( ins->head.opcode ) )
+            return( true );
+        if( SideEffect( ins ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -383,14 +393,14 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
     block_edge          *edge;
 
     if( cmp_result ) {
-        taken = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
-        elim = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
+        taken = blk->edge[_TrueIndex( cmp )].destination.u.blk;
+        elim = blk->edge[_FalseIndex( cmp )].destination.u.blk;
     } else {
-        taken = blk->edge[ _FalseIndex( cmp ) ].destination.u.blk;
-        elim = blk->edge[ _TrueIndex( cmp ) ].destination.u.blk;
+        taken = blk->edge[_FalseIndex( cmp )].destination.u.blk;
+        elim = blk->edge[_TrueIndex( cmp )].destination.u.blk;
     }
-    ClearBlockBits( BLOCK_VISITED );
-    FloodDown( taken, BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
+    FloodDown( taken, BLK_BLOCK_VISITED );
     stk = InitStack();
 
     /*
@@ -399,7 +409,7 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
      * the other edge of the graph (the edge which is taken).
      */
     for( side_effect = false; !side_effect; ) {
-        if( ( elim->class & BLOCK_VISITED ) == EMPTY ) {
+        if( !_IsBlkVisited( elim ) ) {
             if( BlockSideEffect( elim ) ) {
                 side_effect = true;
                 break;
@@ -407,15 +417,16 @@ static  bool            EdgeHasSideEffect( block *blk, instruction *cmp, bool cm
             // should add something here which cuts out if we see a
             // deref of the temp we are searching for - a call to
             // BlockSearch with the appropriate parms should do
-            elim->class |= BLOCK_VISITED;
+            _MarkBlkVisited( elim );
             PushTargets( stk, elim, true );
         }
-        if( Empty( stk ) ) break;
+        if( Empty( stk ) )
+            break;
         edge = Pop( stk );
         elim = edge->destination.u.blk;
     }
     FiniStack( stk );
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     return( side_effect );
 }
 
@@ -428,7 +439,8 @@ static  bool            NullProp( block *blk )
     int                 dest_index;
 
     cmp = CompareIns( blk );
-    if( cmp == NULL ) return( false );
+    if( cmp == NULL )
+        return( false );
     switch( cmp->head.opcode ) {
     case OP_CMP_EQUAL:
         dest_index = _FalseIndex( cmp );
@@ -439,10 +451,10 @@ static  bool            NullProp( block *blk )
     default:
         return( false );
     }
-    if( IsZero( cmp->operands[ 0 ] ) ) {
-        ptr = &cmp->operands[ 1 ];
-    } else if( IsZero( cmp->operands[ 1 ] ) ) {
-        ptr = &cmp->operands[ 0 ];
+    if( IsZero( cmp->operands[0] ) ) {
+        ptr = &cmp->operands[1];
+    } else if( IsZero( cmp->operands[1] ) ) {
+        ptr = &cmp->operands[0];
     } else {
         return( false );
     }
@@ -450,7 +462,7 @@ static  bool            NullProp( block *blk )
     parms.ins = cmp;
     parms.op = *ptr;
     parms.forward = true;
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
@@ -460,7 +472,7 @@ static  bool            NullProp( block *blk )
         }
     }
     parms.forward = false;
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
         KillCondBlk( blk, cmp, dest_index );
         return( true );
@@ -468,8 +480,8 @@ static  bool            NullProp( block *blk )
     return( false );
 }
 
-extern  void            PropNullInfo( void )
-/*******************************************
+void            PropNullInfo( void )
+/***********************************
     Use pointer dereferences as information to enable folding of
     pointer comparisons versus NULL.
 */
@@ -477,13 +489,15 @@ extern  void            PropNullInfo( void )
     block               *blk;
     bool                change;
 
-    if( _IsModel( NO_OPTIMIZATION ) ) return;
-    if( _IsModel( NULL_DEREF_OK ) ) return;
+    if( _IsModel( NO_OPTIMIZATION ) )
+        return;
+    if( _IsModel( NULL_DEREF_OK ) )
+        return;
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         change |= NullProp( blk );
     }
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     if( change ){
         BlockTrim();
     }

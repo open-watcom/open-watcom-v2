@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,9 @@
 #include "convins.h"
 #include "data.h"
 #include "namelist.h"
+#include "insutil.h"
 
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
+
 extern  void            UpdateLive(instruction*,instruction*);
 
 
@@ -168,11 +169,13 @@ static opcode_entry     *CvtAddr[] = {
     #undef CVT_MAP
 };
 
+#if 0
 static  rt_class     RTRoutineTable[] = {
     #define RT_MAP(a,b) b,
     RTFUNC_MAPS
     #undef RT_MAP
 };
+#endif
 
 #define __x__   BAD
 
@@ -259,7 +262,7 @@ extern  instruction     *rDOCVT( instruction *ins ) {
         new_ins = ins;
     } else if( how > BAD ) {
         ins->table = CRtn;
-        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
+//        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
         new_ins = ins;
     } else {
         new_ins = MakeMove( src, dst, ins->type_class );
@@ -271,28 +274,35 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     return( new_ins );
 }
 
-extern  void    LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
+}
 
-    int         rtn;
+rt_class    LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
+    rt_class    rtindex;
 
-    #define _Munge( x, y )              ( (x) * XX + (y) )
+    #define _Munge( x, y )  ( (x) * XX + (y) )
+
     switch( _Munge( ins->base_type_class, ins->type_class ) ) {
     case _Munge( I4, FD ):
-        rtn = RT_I4TOD;
+        rtindex = RT_I4TOD;
         break;
     case _Munge( U4, FD ):
-        rtn = RT_U4TOD;
+        rtindex = RT_U4TOD;
         break;
     case _Munge( FD, I4 ):
-        rtn = RT_DTOI4;
+        rtindex = RT_DTOI4;
         break;
     case _Munge( FD, U4 ):
-        rtn = RT_DTOU4;
+        rtindex = RT_DTOU4;
         break;
     default:
-        rtn = RT_NOP;
+        rtindex = RT_NOP;
         break;
     }
-    RoutineNum = rtn;
+    return( rtindex );
 }

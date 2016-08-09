@@ -40,5 +40,5 @@
         0x89 0xC2               /* L1:  mov     dx,ax */ \
         0x31 0xC0               /*      xor     ax,ax */ \
                                 /* L2: */ \
-        parm routine [ bx ] \
+        parm routine [bx] \
         ;

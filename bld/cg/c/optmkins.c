@@ -32,15 +32,14 @@
 #include "optwif.h"
 #include "freelist.h"
 #include "utils.h"
+#include "inslist.h"
+#include "encode.h"
+#include "optutil.h"
+#include "optmkins.h"
 
-extern  void            AddInstr( ins_entry *, ins_entry * );
-extern  ins_entry       *NextIns( ins_entry * );
-extern  oc_class        NextClass( ins_entry * );
-extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
 
-
-extern  ins_entry       *NewInstr( any_oc *oc )
-/*********************************************/
+ins_entry       *NewInstr( any_oc *oc )
+/*************************************/
 {
     ins_entry   *instr;
     oc_length   len;
@@ -59,8 +58,8 @@ extern  ins_entry       *NewInstr( any_oc *oc )
 }
 
 
-extern  void    FreeInstr( ins_entry *instr )
-/*******************************************/
+void    FreeInstr( ins_entry *instr )
+/***********************************/
 {
     oc_length   len;
 
@@ -73,15 +72,15 @@ extern  void    FreeInstr( ins_entry *instr )
 }
 
 
-extern  bool    InstrFrlFree( void )
-/**********************************/
+bool    InstrFrlFree( void )
+/**************************/
 {
     return( FrlFreeAll( &InstrFrl, OCENTRY_SIZE ) );
 }
 
 
-extern  label_handle AddNewLabel( ins_entry *new, obj_length align )
-/******************************************************************/
+label_handle AddNewLabel( ins_entry *new, obj_length align )
+/**********************************************************/
 {
     label_handle    lbl;
     any_oc          oc;
@@ -106,8 +105,8 @@ extern  label_handle AddNewLabel( ins_entry *new, obj_length align )
 }
 
 
-extern  void    AddNewJump( ins_entry *new, label_handle lbl )
-/*********************************************************/
+void    AddNewJump( ins_entry *new, label_handle lbl )
+/****************************************************/
 {
     any_oc     oc;
 

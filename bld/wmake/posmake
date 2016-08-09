@@ -78,13 +78,10 @@ wsplice: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@
 
 usage.gh : ../h/usage.sp wsplice
-	./wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp -o "%n%n%n%n" $@
-
-usageend.gh: usage.gh wsplice
-	./wsplice -f "%+" usage.gh -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+	./wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' ../h/usage.sp $@
 
 cretype : ../c/cretype.c
-	$(CC) -o $@ $?
+	$(CC) -I../../watcom/h -o $@ $?
 
 isarray.gh : cretype
 	./cretype > $@
@@ -92,7 +89,7 @@ isarray.gh : cretype
 $(OWBINDIR)/wmake: wmake
 	cp wmake $@
 
-wmake: usageend.gh isarray.gh $(OBJS)
+wmake: usage.gh isarray.gh $(OBJS)
 	$(CC) -g $(OBJS) -o $@
 
 clean:

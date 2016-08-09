@@ -942,7 +942,7 @@ void    DefStructs( void ) {
                 com_eq  *ce_ext;
                 sym_id  eqv_set;
                 ce_ext = sym->u.ns.si.va.vi.ec_ext;
-                if( !(ce_ext->ec_flags & LEADER) ) continue;
+                if( (ce_ext->ec_flags & LEADER) == 0 ) continue;
                 if( ce_ext->ec_flags & MEMBER_IN_COMMON ) continue;
                 if( ce_ext->ec_flags & MEMBER_INITIALIZED ) continue;
                 eqv_set = STEqSetShadow( sym );
@@ -1011,7 +1011,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
     flags = sym->u.ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
         // SY_VARIABLE with SY_PS_ENTRY is shadow for function return value
-        if( !(flags & (SY_SUB_PARM | SY_PS_ENTRY)) ) {
+        if( (flags & (SY_SUB_PARM | SY_PS_ENTRY)) == 0 ) {
             if( flags & SY_IN_COMMON ) {
                 attr |= FE_STATIC | FE_VISIBLE;
             } else if( !_MgcIsMagic( sym ) &&
@@ -1038,7 +1038,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     attr |= FE_STATIC;
                 }
             } else if( (flags & SY_SUBSCRIPTED) || (sym->u.ns.u1.s.typ == FT_STRUCTURE) ) {
-                if( !(Options & OPT_AUTOMATIC) ) {
+                if( (Options & OPT_AUTOMATIC) == 0 ) {
                     attr |= FE_STATIC;
                 }
             } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
@@ -1048,7 +1048,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     attr |= FE_VOLATILE;
                 }
                 if( (sym->u.ns.xt.size != 0) || _Allocatable( sym ) ) {
-                    if( !(Options & OPT_AUTOMATIC) ) {
+                    if( (Options & OPT_AUTOMATIC) == 0 ) {
                         // if the assignment of the data pointer into the
                         // static SCB gets optimized out, remove this line
                         attr &= ~FE_VOLATILE;
@@ -1072,7 +1072,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
     } else if( ( flags & SY_CLASS ) == SY_COMMON ) {
         attr |= FE_GLOBAL | FE_STATIC | FE_VISIBLE;
     }
-    if( !(attr & FE_GLOBAL) ) {
+    if( (attr & FE_GLOBAL) == 0 ) {
         attr |= FE_INTERNAL;
     }
     return( attr );
@@ -1112,8 +1112,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
     } else if( ( flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         sp_type = flags & SY_SUBPROG_TYPE;
         if( sp_type != SY_STMT_FUNC ) {
-            if( !(flags & SY_SUB_PARM) ) {
-                if( !(flags & SY_PS_ENTRY) ) {
+            if( (flags & SY_SUB_PARM) == 0 ) {
+                if( (flags & SY_PS_ENTRY) == 0 ) {
                     if( (sp_type == SY_FUNCTION) ||
                         (sp_type == SY_SUBROUTINE) ||
                         (sp_type == SY_FN_OR_SUB) ) {
@@ -1413,7 +1413,7 @@ void    FEMessage( int msg, pointer x ) {
         Error( CP_BAD_SAVE, AuxName( x, name ) );
         break;
     case MSG_BLIP :
-        if( !(Options & OPT_QUIET) ) {
+        if( (Options & OPT_QUIET) == 0 ) {
             SendBlip();
         }
         break;
@@ -1589,13 +1589,13 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
 
             } else {
                 if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
-                    if( !(arg->id->u.ns.flags & SY_VALUE_PARM) ) {
+                    if( (arg->id->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                         if( Options & OPT_DESCRIPTOR ) {
                             arg_type = DBDereference( TY_POINTER, arg_type );
                         }
                     }
                 } else {
-                    if( !(arg->id->u.ns.flags & SY_VALUE_PARM) ) {
+                    if( (arg->id->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                         arg_type = DBDereference( TY_POINTER, arg_type );
                     }
                 }
@@ -1824,7 +1824,7 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
                     if( sym->u.ns.flags & SY_SUB_PARM ) {
                         db_type = DBDereference( TY_POINTER, db_type );
                         if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-                            if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
+                            if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                                 if( Options & OPT_DESCRIPTOR ) {
                                     db_type = DBDereference( TY_POINTER, db_type );
                                 }
@@ -1838,14 +1838,14 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
                     // character variable
                     db_type = DBDereference( TY_POINTER, db_type );
                     if( sym->u.ns.flags & SY_SUB_PARM ) {
-                        if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
+                        if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                             if( Options & OPT_DESCRIPTOR ) {
                                 db_type = DBDereference( TY_POINTER, db_type );
                             }
                         }
                     }
                 } else if( sym->u.ns.flags & SY_SUB_PARM ) {
-                    if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
+                    if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                         db_type = DBDereference( TY_POINTER, db_type );
                     }
                 }
@@ -2121,7 +2121,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
     case TEMP_LOC_TELL :
         return( NULL );
     case NEXT_DEPENDENCY :
-        if( !(Options & OPT_DEPENDENCY) ) {
+        if( (Options & OPT_DEPENDENCY) == 0 ) {
             return( NULL );
         } else {
             if( req_handle == NULL ) {

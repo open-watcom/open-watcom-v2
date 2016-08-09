@@ -71,6 +71,8 @@ cdsay .
 [ INCLUDE <OWSRCDIR>/ssl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/causeway/cwc/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/parsedlg/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/bind/builder.ctl ]
+[ INCLUDE <OWSRCDIR>/vi/ctl/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/vi/vicomp/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/omftools/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/whpcvt/builder.ctl ]
@@ -256,13 +258,18 @@ cdsay .
 #===========================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
-[ BLOCK <1> test testclean ]
-#===========================
+[ BLOCK <1> test testclean cleanlog ]
+#====================================
 [ INCLUDE <OWSRCDIR>/wasmtest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/ctest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/f77test/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/plustest/builder.ctl ]
 [ INCLUDE <OWSRCDIR>/clibtest/builder.ctl ]
+
+[ BLOCK <1> test cleanrel ]
+#==========================
+    echo rm -rf <OWRELROOT>
+    rm -rf <OWRELROOT>
 
 [ BLOCK . . ]
 

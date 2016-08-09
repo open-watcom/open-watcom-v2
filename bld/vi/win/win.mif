@@ -1,29 +1,33 @@
 special = rcstr.gh
 
-objwiny  =  main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
-                stubs.obj color.obj wstatus.obj font.obj &
-                window.obj display.obj getkey.obj cursor.obj command.obj &
-                utils.obj menu.obj filesel.obj flist.obj &
-                message.obj windir.obj contain.obj &
-                dde.obj srcwin.obj srcdde.obj tool.obj wintica.obj &
-                repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
-                finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
-                ftbar.obj startdlg.obj usage.obj tagdlg.obj &
-                hasshare.obj linedlg.obj &
-                clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
-                setfs.obj setscr.obj setgen.obj util.obj hotkey.obj &
-                ssbar.obj subclass.obj snoop.obj &
-                ideactiv.obj hackdctl.obj filetype.obj
+objwiny = &
+    main.obj mainwnd.obj editwnd.obj dosdir.obj time.obj &
+    stubs.obj color.obj wstatus.obj font.obj &
+    window.obj display.obj getkey.obj cursor.obj command.obj &
+    utils.obj menu.obj filesel.obj flist.obj &
+    message.obj windir.obj contain.obj &
+    dde.obj srcwin.obj srcdde.obj tool.obj wintica.obj &
+    repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
+    finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
+    ftbar.obj startdlg.obj usage.obj tagdlg.obj &
+    hasshare.obj linedlg.obj &
+    clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
+    hotkey.obj ssbar.obj subclass.obj snoop.obj &
+    ideactiv.obj filetype.obj
 
-extraobjs = $(objcb) $(objwiny)
+objwinctl = setfs.obj setscr.obj setgen.obj hackdctl.obj util.obj
 
-rc_deps = ../res/viw.ico ../res/filelist.dlg ../res/fgrep.dlg ../res/asavedlg.dlg &
-          ../res/finddlg.dlg ../res/grep.dlg ../res/cmd.dlg ../res/repdlg.dlg &
-          ../res/snoop.dlg ../res/startup.dlg  ../res/usage.dlg ../res/tagdlg.dlg &
-          ../res/linedlg.dlg ../res/clrbar.dlg ../res/ftbar.dlg ../res/dropclr.cur &
-          ../res/nodrop.cur ../res/dropft.cur ../res/dropss.cur &
-          $(commonui_dir)/h/about.dlg  &
-          ../ctl/setfs.dlg ../ctl/setscr.dlg ../ctl/setgen.dlg
+extraobjs = $(objcb) $(objwiny) $(objwinctl)
+
+rc_ctl_deps = ../win/ctl/setfs.dlg ../win/ctl/setscr.dlg ../win/ctl/setgen.dlg
+
+rc_deps = &
+    ../res/viw.ico ../res/filelist.dlg ../res/fgrep.dlg ../res/asavedlg.dlg &
+    ../res/finddlg.dlg ../res/grep.dlg ../res/cmd.dlg ../res/repdlg.dlg &
+    ../res/snoop.dlg ../res/startup.dlg  ../res/usage.dlg ../res/tagdlg.dlg &
+    ../res/linedlg.dlg ../res/clrbar.dlg ../res/ftbar.dlg ../res/dropclr.cur &
+    ../res/nodrop.cur ../res/dropft.cur ../res/dropss.cur &
+    $(commonui_dir)/h/about.dlg $(rc_ctl_deps)
 
 !ifeq sys_windowed 1
 other = $(name).res

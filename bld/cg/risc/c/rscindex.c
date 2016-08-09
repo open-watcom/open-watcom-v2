@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,20 +38,17 @@
 #include "data.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "insutil.h"
 #include "feprotos.h"
+
 
 extern  opcode_entry    String[];
 
-extern  void            SuffixIns(instruction*,instruction*);
-extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *IndexToTemp( instruction *, name * );
 extern  name            *FindIndex( instruction * );
-extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
-extern  i_flags         AlignmentToFlags( type_length );
-extern  name            *AllocRegName( hw_reg_set );
 
 extern  bool    IndexOkay( instruction *ins, name *index ) {
 /**********************************************************/
@@ -131,7 +129,7 @@ static  name    *MakeIndex( instruction *memory_ins, name *memory, type_class_de
     ins = MakeUnary( OP_LA, memory, temp, WD );
     PrefixIns( memory_ins, ins );
     // Note: this assumes we put Memory names on 8-byte boundaries
-    flags = AlignmentToFlags( AlignmentMap[ memory->v.offset & 0x7 ] );
+    flags = AlignmentToFlags( AlignmentMap[memory->v.offset & 0x7] );
     if( memory->m.alignment != 0 ) {
         flags = AlignmentToFlags( memory->m.alignment );
     }

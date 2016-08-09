@@ -53,7 +53,7 @@
 #include "thread.h"
 
 
-// _wpetenv and putenv are implemented this way so that each can call the
+// _wputenv and putenv are implemented this way so that each can call the
 // other without having the other call it, which would call the other, and
 // so on, making bad things happen.  This inter-calling is necessary to keep
 // the wide and MBCS environments consistent.  Also, with this method

@@ -173,7 +173,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     if( !StatShowSymbols || curProcess == NULL ) {
         return( FALSE );
     }
-    symhdl = MemAlloc( DIPHandleSize( HK_SYM, 0 ) );
+    symhdl = MemAlloc( DIPHandleSize( HK_SYM, false ) );
     dipaddr.sect_id = 0;
     dipaddr.indirect = FALSE;
     dipaddr.mach.offset = addr->offset;
@@ -195,7 +195,7 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         SymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
 //      SymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
-            cue = MemAlloc( DIPHandleSize( HK_CUE, 0 ) );
+            cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
             if( AddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
                 MemFree( cue );
                 ret = FALSE;

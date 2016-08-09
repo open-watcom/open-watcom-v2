@@ -34,7 +34,9 @@
 #include <string.h>
 #include <dos.h>
 #include <process.h>
+#include <direct.h>
 #include "builder.h"
+#include "tinyio.h"
 
 
 void SysInit( int argc, char *argv[] )
@@ -44,29 +46,73 @@ void SysInit( int argc, char *argv[] )
     setenv( "BLD_HOST", "DOS", 1 );
 }
 
-int SysRunCommandPipe( const char *cmd, int *readpipe )
-{
-    /* no pipes for DOS so we call spawn with P_WAIT and hence cannot log */
-    char        *cmdnam = strdup( cmd );
-    char        *sp = strchr( cmdnam, ' ' );
-    int         rc;
-
-    if( sp != NULL ) {
-        *sp = '\0';
-        sp++;
-    }
-    rc = spawnlp( P_WAIT, cmdnam, cmdnam, sp, NULL );
-    *readpipe = -1;
-    free( cmdnam );
-    return rc;
-}
-
 int SysChdir( char *dir )
 {
     return SysDosChdir( dir );
 }
 
-int wait( int *status )
+int SysRunCommand( const char *cmd )
 {
-    return 0;
+    int         my_std_output;
+    int         my_std_error;
+    int         rc;
+    char        *pgmname;
+    char        *cmdline;
+    tiny_ret_t  tinyrc;
+    int         ofh;
+    char        temp_name[256];
+    char        buff[256 + 1];
+    unsigned    bytes_read;
+
+    pgmname = strdup( cmd );
+    if( pgmname == NULL )
+        return( -1 );
+    cmdline = strchr( pgmname, ' ' );
+    if( cmdline != NULL ) {
+        *cmdline++ = '\0';
+        while( *cmdline == ' ' ) {
+            ++cmdline;
+        }
+    }
+    rc = -1;
+    getcwd( temp_name, 256 );
+    memset( temp_name + strlen( temp_name ), 0, 13 );
+    tinyrc = TinyCreateTemp( temp_name, TIO_NORMAL );
+    if( TINY_OK( tinyrc ) ) {
+        ofh = TINY_INFO( tinyrc );
+        my_std_output = TINY_INFO( TinyDup( STDOUT_FILENO ) );
+        my_std_error = TINY_INFO( TinyDup( STDERR_FILENO ) );
+        TinyDup2( ofh, STDOUT_FILENO);
+        TinyDup2( ofh, STDERR_FILENO);
+        /* no pipes for DOS so we call spawn with P_WAIT */
+        rc = spawnlp( P_WAIT, pgmname, pgmname, cmdline, NULL );
+        TinyDup2( my_std_output, STDOUT_FILENO );
+        TinyDup2( my_std_error, STDERR_FILENO );
+        TinyClose( my_std_output );
+        TinyClose( my_std_error );
+        TinyClose( ofh );
+        tinyrc = TinyOpen( temp_name, TIO_READ );
+        if( TINY_OK( tinyrc ) ) {
+            ofh = TINY_INFO( tinyrc );
+            tinyrc = TinyRead( ofh, buff, 256 );
+            while( TINY_OK( tinyrc ) && (bytes_read = TINY_INFO( tinyrc )) != 0 ) {
+                unsigned    i;
+                char        *dst;
+
+                dst = buff;
+                for( i = 0; i < bytes_read; ++i ) {
+                    if( buff[i] != '\r' ) {
+                        *dst++ = buff[i];
+                    }
+                }
+                *dst = '\0';
+                Log( Quiet, "%s", buff );
+                tinyrc = TinyRead( ofh, buff, 256 );
+            }
+            TinyClose( ofh );
+        }
+        TinyDelete( temp_name );
+    }
+    free( pgmname );
+    return( rc );
 }

@@ -219,7 +219,7 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym,
     }
     new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
     SymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
-    sym_size = DIPHandleSize( HK_SYM, 0 );
+    sym_size = DIPHandleSize( HK_SYM, false );
     new_rtn->sh = ProfAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );
     rtn_count = sym_file->rtn_count;
@@ -268,7 +268,7 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     if( SymLocation( sym, NULL, &ll ) != DS_OK ) {
         return( curr_mod->mod_file[0] );
     }
-    ch = alloca( DIPHandleSize( HK_CUE, 0 ) );
+    ch = alloca( DIPHandleSize( HK_CUE, false ) );
     switch( AddrCue( curr_mod->mh, ll.e[0].u.addr, ch ) ) {
     case    SR_NONE:
     case    SR_FAIL:
@@ -530,7 +530,7 @@ STATIC void resolveImageSamples( void )
     int                 index;
     int                 index2;
 
-    sh = alloca( DIPHandleSize( HK_SYM, 0 ) );
+    sh = alloca( DIPHandleSize( HK_SYM, false ) );
     massgd_data = CurrSIOData->massaged_sample;
     tick_index = 1;
     index = 0;

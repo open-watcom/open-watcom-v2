@@ -1,4 +1,4 @@
-!include $(cg_dir)/risc/mps/mif/mips.mif
+!include $(cg_dir)/risc/mps/mif/mps.mif
 !include $(cg_dir)/risc/mif/risc.mif
 !include $(cg_dir)/mif/master.mif
 

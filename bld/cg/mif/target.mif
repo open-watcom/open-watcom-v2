@@ -11,14 +11,14 @@ libs = cg$(target_name).lib $(hostcglibname) $(dwarfw_lib) $(owl_lib) $(cfloat_l
 target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
     @%null
 
-cg$(target_name).dll : cgdmain.obj $(libs)
+cg$(target_name).dll : cgdmain.obj $(libs) $(__MAKEFILES__)
     $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
-cgdllcli.lib : $(cg_client_objs)
-!ifndef __WATCOM__
-    $(blib) $(bld_libflags) $<
+cgdllcli.lib : $(cg_client_objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $(cg_client_objs)
 !else
-    $(librarian) $(libflags) $<
+    $(librarian) $(libflags) $(cg_client_objs)
 !endif
 
 !else
@@ -34,16 +34,16 @@ target : $(pre_obj_deps) cg$(target_name).lib $(hostcglibname) .SYMBOLIC
 debug_objs = $(cg_dump_objs)
 !endif
 
-cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
-!ifndef __WATCOM__
-    $(blib) $(bld_libflags) $<
+cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
 !else
-    $(librarian) $(libflags) $<
+    $(librarian) $(libflags) $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
 !endif
 
-$(hostcglibname) : $($(host_os)_objs)
-!ifndef __WATCOM__
-    $(blib) $(bld_libflags) $<
+$(hostcglibname) : $($(host_os)_objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $($(host_os)_objs)
 !else
-    $(librarian) $(libflags) $<
+    $(librarian) $(libflags) $($(host_os)_objs)
 !endif

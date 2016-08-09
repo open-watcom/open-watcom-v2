@@ -31,4 +31,4 @@
 
 
 #include "rscauxc.h"
-#include "mipsauxc.h"
+#include "mpsauxc.h"

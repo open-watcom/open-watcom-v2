@@ -84,15 +84,15 @@ void    CpAllocate( void )
     for(;;) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                 if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) &&
                     !( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) ) {
                     AdvanceITPtr();
                     ReqOpenParen();
                     sym->u.ns.u1.s.xflags |= SY_DEFINED;
                     GAllocate( sym );
-                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) &&
-                           !( sym->u.ns.flags & SY_SUBSCRIPTED ) ) {
+                } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0)
+                  && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
                     AdvanceITPtr();
                     ReqMul();
                     sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE | SY_DEFINED;
@@ -217,7 +217,7 @@ void    CpDeAllocate( void )
     for(;;) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
-            if( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) {
+            if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
                 if( (sym->u.ns.flags & SY_SUBSCRIPTED) && _Allocatable( sym ) ) {
                     GDeAllocate( sym );
                 } else if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size == 0) ) {

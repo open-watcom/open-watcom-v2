@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,15 +36,12 @@
 #include "data.h"
 #include "makeins.h"
 #include "edge.h"
+#include "opttell.h"
+#include "makeblk.h"
+#include "nullprop.h"
+#include "insutil.h"
+#include "blktrim.h"
 
-
-extern  void            TellScrapLabel( label_handle );
-extern  void            FreeABlock( block * );
-extern  instruction_id  Renumber( void );
-
-/* forward declarations */
-extern  void    RemoveInputEdge( block_edge *edge );
-extern  bool    BlockTrim( void );
 
 static  instruction     *FindOneCond( block *blk )
 /************************************************/
@@ -62,17 +60,6 @@ static  instruction     *FindOneCond( block *blk )
 }
 
 
-static  void    UnMarkBlocks( void )
-/**********************************/
-{
-    block       *blk;
-
-    for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
-    }
-}
-
-
 static  void    MarkReachableBlocks( void )
 /*****************************************/
 /* Written NON-Recursively for a very good reason. (stack blew up)*/
@@ -85,12 +72,12 @@ static  void    MarkReachableBlocks( void )
     for( change = true; change; ) {
         change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( blk->class & ( BIG_LABEL | BLOCK_VISITED | SELECT ) ) {
-                blk->class |= BLOCK_VISITED;
+            if( _IsBlkVisited( blk ) || _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_SELECT ) ) {
+                _MarkBlkVisited( blk );
                 for( i = blk->targets; i-- > 0; ) {
-                    son = blk->edge[ i ].destination.u.blk;
-                    if( ( son->class & BLOCK_VISITED ) == EMPTY ) {
-                        son->class |= BLOCK_VISITED;
+                    son = blk->edge[i].destination.u.blk;
+                    if( !_IsBlkVisited( son ) ) {
+                        _MarkBlkVisited( son );
                         change = true;
                     }
                 }
@@ -100,8 +87,8 @@ static  void    MarkReachableBlocks( void )
 }
 
 
-extern  int     CountIns( block *blk )
-/************************************/
+int     CountIns( block *blk )
+/****************************/
 {
     int         num_instrs;
     instruction *ins;
@@ -128,8 +115,8 @@ static  bool    FindBlock( block *target )
 }
 
 
-extern  void    RemoveBlock( block *blk )
-/***************************************/
+void    RemoveBlock( block *blk )
+/*******************************/
 {
     block_num   i;
     unsigned    last_line;
@@ -145,8 +132,8 @@ extern  void    RemoveBlock( block *blk )
     }
     for( i = 0; i < blk->targets; ++i ) {
         /* block may have already been removed by dead code removal*/
-        if( FindBlock( blk->edge[ i ].destination.u.blk ) ) {
-            RemoveInputEdge( & blk->edge[ i ] );
+        if( FindBlock( blk->edge[i].destination.u.blk ) ) {
+            RemoveInputEdge( & blk->edge[i] );
         }
     }
     last_line = blk->ins.hd.line_num;
@@ -196,8 +183,8 @@ extern  void    RemoveBlock( block *blk )
 }
 
 
-extern  void    RemoveInputEdge( block_edge *edge )
-/*************************************************/
+void    RemoveInputEdge( block_edge *edge )
+/*****************************************/
 {
     block       *dest;
     block_edge  *prev;
@@ -217,8 +204,8 @@ extern  void    RemoveInputEdge( block_edge *edge )
 }
 
 
-extern  void    MoveHead( block *old, block *new )
-/*************************************************
+void    MoveHead( block *old, block *new )
+/*****************************************
 
     We're eliminating a loop header, so move it the the new
     block and point all loop_head pointers to the new block.
@@ -226,14 +213,18 @@ extern  void    MoveHead( block *old, block *new )
 {
     block       *blk;
 
-    if( !( old->class & LOOP_HEADER ) ) return;
+    if( !_IsBlkAttr( old, BLK_LOOP_HEADER ) )
+        return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( blk->loop_head == old ) {
             blk->loop_head = new;
         }
     }
-    new->class |= old->class & (LOOP_HEADER|ITERATIONS_KNOWN);
-    old->class &= ~( LOOP_HEADER | ITERATIONS_KNOWN );
+    if( _IsBlkAttr( old, BLK_LOOP_HEADER ) )
+        _MarkBlkAttr( new, BLK_LOOP_HEADER );
+    if( _IsBlkAttr( old, BLK_ITERATIONS_KNOWN ) )
+        _MarkBlkAttr( new, BLK_ITERATIONS_KNOWN );
+    _MarkBlkAttrNot( old, BLK_LOOP_HEADER | BLK_ITERATIONS_KNOWN );
     new->iterations = old->iterations;
     new->loop_head = old->loop_head;
     old->loop_head = new;
@@ -249,12 +240,12 @@ static  bool    Retarget( block *blk )
     bool        success;
 
     success = true;                    /* assume can get rid of block*/
-    target = blk->edge[ 0 ].destination.u.blk;
+    target = blk->edge[0].destination.u.blk;
     edge = blk->input_edges;
     blk->input_edges = NULL;
     for( ; edge != NULL; edge = next ) {
         next = edge->next_source;
-        if( edge->source->class & ( SELECT | LABEL_RETURN ) ) {
+        if( _IsBlkAttr( edge->source, BLK_SELECT | BLK_LABEL_RETURN ) ) {
             success = false;   /* let the optimizer do it later on*/
             edge->next_source = blk->input_edges;
             blk->input_edges = edge;
@@ -289,7 +280,8 @@ static  void    JoinBlocks( block *jump, block *target )
 
     label = target->label;
     target->label = jump->label;
-    if( jump->class & BIG_LABEL ) target->class |= BIG_LABEL;
+    if( _IsBlkAttr( jump, BLK_BIG_LABEL ) )
+        _MarkBlkAttr( target, BLK_BIG_LABEL );
     jump->label = label;
     line_num = target->ins.hd.line_num;
     target->ins.hd.line_num = jump->ins.hd.line_num;
@@ -343,12 +335,14 @@ static  bool    SameTarget( block *blk )
     instruction *ins;
     block       *targ1, *targ2;
 
-    targ1 = blk->edge[ 0 ].destination.u.blk;
-    targ2 = blk->edge[ 1 ].destination.u.blk;
-    if( targ1 != targ2 ) return( false );
-    if( ( targ1->class | targ2->class ) & UNKNOWN_DESTINATION ) return( false );
-    blk->class &= ~CONDITIONAL;
-    blk->class |= JUMP;
+    targ1 = blk->edge[0].destination.u.blk;
+    targ2 = blk->edge[1].destination.u.blk;
+    if( targ1 != targ2 )
+        return( false );
+    if( _IsBlkAttr( targ1, BLK_UNKNOWN_DESTINATION ) || _IsBlkAttr( targ2, BLK_UNKNOWN_DESTINATION ) )
+        return( false );
+    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
+    _MarkBlkAttr( blk, BLK_JUMP );
     RemoveEdge( &blk->edge[1] );
     ins = blk->ins.hd.prev;
     while( !_OpIsCondition( ins->head.opcode ) ) {
@@ -375,32 +369,29 @@ static  bool    DoBlockTrim( void )
         MarkReachableBlocks();
         for( blk = HeadBlock->next_block; blk != NULL; blk = next ) {
             next = blk->next_block;
-            if( !( blk->class & ( UNKNOWN_DESTINATION | BLOCK_VISITED ) ) ) {
+            if( !_IsBlkVisited( blk ) && !_IsBlkAttr( blk, BLK_UNKNOWN_DESTINATION ) ) {
                 while( blk->input_edges != NULL ) {
                     RemoveInputEdge( blk->input_edges );
                 }
                 RemoveBlock( blk );
                 change = true;
-            } else if( blk->class & CONDITIONAL ) {
+            } else if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
                 change |= SameTarget( blk );
-            } else if( blk->class & JUMP ) {
-                target = blk->edge[ 0 ].destination.u.blk;
-                if( target != blk && !(target->class & UNKNOWN_DESTINATION) ) {
+            } else if( _IsBlkAttr( blk, BLK_JUMP ) ) {
+                target = blk->edge[0].destination.u.blk;
+                if( target != blk && !_IsBlkAttr( target, BLK_UNKNOWN_DESTINATION ) ) {
                     for( ins = blk->ins.hd.next; ins->head.opcode == OP_NOP; ins = ins->head.next ) {
                         if( ins->flags.nop_flags & (NOP_DBGINFO|NOP_DBGINFO_START) ) {
                             break;
                         }
                     }
                     if( ins->head.opcode == OP_BLOCK ) { /* was an empty block*/
-                        if( ( blk->class & BIG_LABEL ) == 0 ) {
+                        if( !_IsBlkAttr( blk, BLK_BIG_LABEL ) ) {
                             change |= Retarget( blk );
                         }
-                    } else if( target->inputs == 1
-                          && ( target->class & BIG_LABEL ) == 0
-                          && ( CountIns(blk)+CountIns(target) ) <= INS_PER_BLOCK
-                          ) {
-                        if( !( blk->class & ( RETURNED_TO | BIG_LABEL ) )
-                           && !( target->class & CALL_LABEL ) ) {
+                    } else if( target->inputs == 1 && !_IsBlkAttr( target, BLK_BIG_LABEL )
+                          && ( CountIns( blk ) + CountIns( target ) ) <= INS_PER_BLOCK ) {
+                        if( !_IsBlkAttr( blk, BLK_RETURNED_TO | BLK_BIG_LABEL ) && !_IsBlkAttr( target, BLK_CALL_LABEL ) ) {
                             JoinBlocks( blk, target );
                             change = true;
                         }
@@ -408,7 +399,7 @@ static  bool    DoBlockTrim( void )
                 }
             }
         }
-        UnMarkBlocks();
+        _MarkBlkAllUnVisited();
         if( change ) {
             BlocksUnTrimmed = false;
             any_change = true;
@@ -421,8 +412,8 @@ static  bool    DoBlockTrim( void )
     return( any_change );
 }
 
-extern void KillCondBlk( block *blk, instruction *ins, int dest )
-/***************************************************************/
+void KillCondBlk( block *blk, instruction *ins, int dest )
+/********************************************************/
 // Assume blk is a conditional with compare ins
 // Make dest the destination and delete the unused edge
 // Change blk to a JMP to dest edge
@@ -430,10 +421,10 @@ extern void KillCondBlk( block *blk, instruction *ins, int dest )
     block_edge  *edge;
     block       *dest_blk;
 
-    RemoveInputEdge( &blk->edge[ 0 ] );
-    RemoveInputEdge( &blk->edge[ 1 ] );
-    blk->class &= ~CONDITIONAL;
-    blk->class |= JUMP;
+    RemoveInputEdge( &blk->edge[0] );
+    RemoveInputEdge( &blk->edge[1] );
+    _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
+    _MarkBlkAttr( blk, BLK_JUMP );
     blk->targets = 1;
     dest_blk = blk->edge[dest].destination.u.blk;
     edge = &blk->edge[0];
@@ -446,8 +437,8 @@ extern void KillCondBlk( block *blk, instruction *ins, int dest )
     FreeIns( ins );
 }
 
-extern  bool    DeadBlocks( void )
-/********************************/
+bool    DeadBlocks( void )
+/************************/
 {
     block       *blk;
     instruction *ins;
@@ -456,12 +447,15 @@ extern  bool    DeadBlocks( void )
 
     change = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & CONDITIONAL ) {
+        if( _IsBlkAttr( blk, BLK_CONDITIONAL ) ) {
             ins = FindOneCond( blk );
-            if( ins == NULL ) continue;
-            if( ins->result != NULL ) continue;
+            if( ins == NULL )
+                continue;
+            if( ins->result != NULL )
+                continue;
             dest = _TrueIndex( ins );
-            if( dest != _FalseIndex( ins ) ) continue;
+            if( dest != _FalseIndex( ins ) )
+                continue;
             KillCondBlk( blk, ins, dest );
             change = true;
         }
@@ -474,8 +468,8 @@ extern  bool    DeadBlocks( void )
 }
 
 
-extern  bool    BlockTrim( void )
-/*******************************/
+bool    BlockTrim( void )
+/***********************/
 {
     bool    change = false;
 

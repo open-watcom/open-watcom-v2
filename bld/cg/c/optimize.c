@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,11 +39,11 @@
 #include "makeins.h"
 #include "redefby.h"
 #include "regalloc.h"
+#include "insutil.h"
+#include "insdead.h"
 
 
 extern  bool            PropagateMoves(void);
-extern  instruction_id  Renumber(void);
-extern  bool            SideEffect(instruction*);
 extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
 extern  void            FreeConflicts(void);
 extern  void            FindReferences(void);
@@ -69,8 +70,8 @@ static  opcode_attr OpAttrs[LAST_OP - FIRST_OP + 1] = {
 };
 
 
-#define _IsIns( ins, attr )        ( OpAttrs[ins->head.opcode] & attr )
-#define _IsntIns( ins, attr )      ( _IsIns( ins, attr ) == false )
+#define _IsIns( ins, attr )        ((OpAttrs[ins->head.opcode] & attr) != 0)
+#define _IsntIns( ins, attr )      ((OpAttrs[ins->head.opcode] & attr) == 0)
 
 
 static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
@@ -181,8 +182,8 @@ extern  bool    SameThing( name *x, name *y )
      && x->v.symbol == y->v.symbol ) return( true );
     if( x->n.class == N_TEMP && y->n.class == N_TEMP ) {
         if( x->t.v.id != y->t.v.id ) return( false );
-        if( !( x->t.temp_flags & ALIAS )
-         && !( y->t.temp_flags & ALIAS ) ) return( false );
+        if( (x->t.temp_flags & ALIAS) == 0 && (y->t.temp_flags & ALIAS) == 0 )
+            return( false );
         return( true );
     }
     return( false );

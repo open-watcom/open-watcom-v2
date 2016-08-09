@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,13 @@
 #include "cgaux.h"
 #include "data.h"
 #include "zoiks.h"
+#include "targetin.h"
+#include "cgsrtlst.h"
+#include "insdead.h"
+#include "namelist.h"
+#include "optab.h"
 #include "feprotos.h"
+
 
 typedef struct stack_temp {
         struct stack_temp       *others;
@@ -52,15 +59,7 @@ typedef struct stack_entry {
         type_length             size;
 } stack_entry;
 
-extern  name            *DeAlias(name *);
-extern  bool            SideEffect(instruction *);
-extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
-extern  void            DoNothing(instruction *);
 extern  void            TransferTempFlags(void);
-extern  void            PushLocals(void);
-extern  void            SetTempLocation(name *,type_length);
-extern  type_length     TempLocation( name * );
-extern  bool            TempAllocBefore( void *, void * );
 
 static    stack_entry   *StackMap;
 
@@ -133,8 +132,8 @@ static  void    TellTempLocs( void )
     name        *temp;
     int         ans;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
-        if( temp->v.symbol != NULL && !(temp->t.temp_flags & ALIAS) ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
+        if( temp->v.symbol != NULL && (temp->t.temp_flags & ALIAS) == 0 ) {
             ans = (int)(pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
             if( ans == TEMP_LOC_QUIT ) break;
             if( temp->t.location == NO_LOCATION ) continue;
@@ -261,7 +260,7 @@ static  bool    In( name *op, name *name )
 {
     if( op->n.class == N_INDEXED ) {
         if( In( op->i.index, name ) ) return( true );
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+        if( op->i.base != NULL && (op->i.index_flags & X_FAKE_BASE) == 0 ) {
             return( In( op->i.base, name ) );
         }
     } else if( op->n.class == N_TEMP ) {
@@ -275,7 +274,7 @@ static  bool    UsedByLA( instruction *ins, name *temp )
 /******************************************************/
 {
     if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
-        if( ins->operands[ 0 ] == temp ) return( true );
+        if( ins->operands[0] == temp ) return( true );
     }
     return( false );
 }
@@ -302,7 +301,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( In( ins->operands[ i ], name ) ) {
+                if( In( ins->operands[i], name ) ) {
                     if( onlyins != NULL ) return( NULL );
                     onlyins = ins;
                 }
@@ -424,7 +423,7 @@ static  void    MarkUsage( name *op )
         if( op->i.index != NULL ) {
             MarkUsage( op->i.index );
         }
-        if( op->i.base != NULL && !( op->i.index_flags & X_FAKE_BASE ) ) {
+        if( op->i.base != NULL && (op->i.index_flags & X_FAKE_BASE) == 0 ) {
             MarkUsage( op->i.base );
         }
     } else if( op->n.class == N_TEMP ) {
@@ -446,7 +445,7 @@ static  void    CalcNumberOfUses( void )
     instruction *ins;
     int         i;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.temp_flags & STACK_PARM ) {
             temp->v.block_usage = USED_TWICE;
         } else {
@@ -478,7 +477,7 @@ extern  void    AssignOtherLocals( void )
         rest = LastTemp->n.next_name;
         LastTemp->n.next_name = NULL;
     }
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ), TempAllocBefore );
+    Names[N_TEMP] = SortList( Names[N_TEMP], offsetof( name, n.next_name ), TempAllocBefore );
     if( LastTemp != NULL ) {
         for( owner = &Names[N_TEMP]; *owner != NULL; ) {
             owner = &(*owner)->n.next_name;
@@ -488,8 +487,8 @@ extern  void    AssignOtherLocals( void )
     if( !BlockByBlock ) {
         CalcNumberOfUses();
     }
-    for( temp = Names[ N_TEMP ]; temp != LastTemp; temp = temp->n.next_name ) {
-        if( !( temp->v.usage & NEEDS_MEMORY ) ) continue;
+    for( temp = Names[N_TEMP]; temp != LastTemp; temp = temp->n.next_name ) {
+        if( (temp->v.usage & NEEDS_MEMORY) == 0 ) continue;
         if( temp->v.usage & HAS_MEMORY ) continue;
         if( temp->t.temp_flags & ALIAS ) continue;
         AllocNewLocal( temp );
@@ -577,7 +576,7 @@ extern  void    FiniStackMap( void )
     stack_temp  *next2;
     name        *temp;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( ( temp->t.temp_flags & ALIAS ) != EMPTY ) continue;
         if( ( temp->v.usage & USE_ADDRESS ) == EMPTY ) continue;
         if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) continue;
@@ -631,7 +630,7 @@ extern  void            CountTempRefs( void )
     int                 i;
     name                *temp;
 
-    for( temp = Names[ N_TEMP ]; temp != NULL; temp = temp->n.next_name ) {
+    for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         temp->t.u.ref_count = 0;
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

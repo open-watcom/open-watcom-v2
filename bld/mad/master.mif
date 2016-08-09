@@ -53,7 +53,7 @@ extra_c_flags = -s
 extra_c_flags_i86 = -zu
 extra_c_flags_win = -zc
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_madimp = -zlf -os     # -os ensures byte align for code
 !endif
 
@@ -93,14 +93,14 @@ xname_basename = mad$(target_cpu)
 !endif
 
 xname = $(xname_basename)$(ext_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
 xname = $(xname_basename)$(ext_lib_shared)
 !endif
 !endif
 
 $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-!ifndef __WATCOM__
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
 !else
         $(linker) name $^@ $(lflags_dll) file {$(objs)}

@@ -376,5 +376,5 @@ static  opcode_entry    *OpcodeList[] = {
 extern  opcode_entry    *OpcodeTable( table_def i )
 /*************************************************/
 {
-    return( OpcodeList[ i ] );
+    return( OpcodeList[i] );
 }

@@ -133,11 +133,10 @@ void AddHashNode( HASHTAB *tab, HASHNODE *node )
 }
 
 
-BOOLEAN WalkHashTab( HASHTAB *tab,
-    BOOLEAN (*func)( void *node, void *ptr ), void *ptr )
-/********************************************************
- * walk a table applying func to each node.  If func returns TRUE,
- * this function aborts, returning TRUE.  func can do whatever it
+bool WalkHashTab( HASHTAB *tab, bool (*func)(void *node,void *ptr), void *ptr )
+/******************************************************************************
+ * walk a table applying func to each node.  If func returns true,
+ * this function aborts, returning true.  func can do whatever it
  * wants to node, since this routine saves its next state before
  * calling func.  ptr is passed to func without modification.
  */
@@ -155,12 +154,12 @@ BOOLEAN WalkHashTab( HASHTAB *tab,
             cur = walk;
             walk = walk->next;
             if( func( cur, ptr ) ) {
-                return( TRUE );
+                return( true );
             }
         }
         ++h;
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -175,8 +174,8 @@ void FreeHashTab( HASHTAB *tab )
 
 
 HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
-    BOOLEAN caseSensitive )
-/*************************************************************
+                        bool caseSensitive )
+/*******************************************************
  * Find node named name
  */
 {
@@ -197,7 +196,7 @@ HASHNODE *FindHashNode( HASHTAB *tab, const char *name,
 
 
 HASHNODE *RemHashNode( HASHTAB *tab, const char *name,
-                              BOOLEAN caseSensitive)
+                              bool caseSensitive)
 /************************************************************
  * unlink a node named name, and return pointer to unlinked node.
  * return NULL if node doesn't exist.

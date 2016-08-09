@@ -1,10 +1,10 @@
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifeq host_cpu x64
-!undef __WATCOM__
+!undef __WATCOM_TOOLS__
 !else ifeq host_cpu arm
-!undef __WATCOM__
+!undef __WATCOM_TOOLS__
 !else
-!define __WATCOM__
+!define __WATCOM_TOOLS__
 !endif
 !endif
 
@@ -20,7 +20,7 @@
 # Now it is setup to 0x400
 # to be OK for Windows 95 and Windows NT
 #
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifdef $(proj_name)_win32ver
 win32ver = $($(proj_name)_win32ver)
 !else
@@ -28,13 +28,13 @@ win32ver = -DWINVER=0x400 -D_WIN32_IE=0x300
 !endif
 !endif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 objs_subdir = $(bin_subdir)
 !else
 objs_subdir = $(host_os)$(host_cpu)
 !endif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 
 cc_386          = *wcc386
 cc_i86          = *wcc
@@ -187,9 +187,13 @@ mode_clflags   += -\"op nored\"
 !else
 mode_clflags   += -"op nored"
 !endif
-!ifneq bootstrap 1
-mode_cflags  += -x -xx -zam
-mode_clflags += -x -xx -zam
+!ifndef bootstrap
+mode_cflags  += -x
+mode_clflags += -x
+!endif
+!if ! defined( bootstrap ) || ( $(watcom_ver) > 1300 )
+mode_cflags  += -xx -zam
+mode_clflags += -xx -zam
 !endif
 
 !ifndef $(proj_name)_nosymfile
@@ -297,10 +301,9 @@ fpu_flags = $(def_fpu_flags_$(host_os)_$(host_cpu))
 #######################
 # PREPROCESSOR SETINGS
 ######
-!ifeq bootstrap 1
-cppflags_all    = $(mode_cppflags) -DBOOTSTRAP
-!else
-cppflags_all    = $(mode_cppflags)
+cppflags_all    = $(mode_cppflags) -D_ENABLE_AUTODEPEND
+!ifdef bootstrap
+cppflags_all    += -DBOOTSTRAP
 !endif
 
 cppflags_win    = -DSTRICT
@@ -600,7 +603,7 @@ rc_flags        = $(rc_flags_all) $(rc_flags_$(host_os)) $(rc_cppflags) $(proj_r
 # INCLUDE DIRECTORIES SETINGS
 ######
 # For bootstrap builds, include path configuration is compiler specific
-!ifeq bootstrap 1
+!ifdef bootstrap
 
 inc_dirs_sys_nt    =
 inc_dirs_sys_win   =
@@ -661,7 +664,7 @@ inc_dirs_lang   = $(inc_dirs_lang_osi)
 
 inc_dirs_sys    = $(inc_dirs_lang) $(inc_dirs_sys_$(host_os))
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 !else
 inc_path        = $(inc_dirs) $(inc_dirs_$(host_os)) -I"$(watcom_dir)/h"
@@ -683,7 +686,7 @@ rc              = *bwrc
 rcaui           = *bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
-rc_aui          = $(rcaui) -x -xb -r -bt=windows $(rc_aui_flags)
+rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
 
 # current project setup
 !ifeq sys_dll 1

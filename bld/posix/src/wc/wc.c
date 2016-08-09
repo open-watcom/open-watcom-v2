@@ -59,7 +59,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void PrintLine( unsigned long lines,
+static void PrintLine( unsigned long lines,
                 unsigned long words,
                 unsigned long chars,
                 const char *name )
@@ -81,7 +81,7 @@ void PrintLine( unsigned long lines,
 }
 
 
-void DoWC( FILE *fh, const char *name )
+static void DoWC( FILE *fh, const char *name )
 {
     int                 ch;
     int                 in_word = 0;

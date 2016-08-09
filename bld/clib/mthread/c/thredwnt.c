@@ -130,7 +130,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         return( -1L );
     }
 
-    stack_size = __Align4K( stack_size );
+    stack_size = __ROUND_UP_SIZE_4K( stack_size );
 
     td->rtn = start_addr;
     td->argument = arglist;

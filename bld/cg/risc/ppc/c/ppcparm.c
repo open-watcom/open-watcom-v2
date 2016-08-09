@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,13 +39,11 @@
 #include "regset.h"
 #include "zoiks.h"
 #include "ppcparm.h"
+#include "rgtbl.h"
+#include "typemap.h"
+#include "parmreg.h"
 #include "feprotos.h"
 
-
-extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
-extern  hw_reg_set      *ParmChoices(type_class_def);
-extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
-extern  type_class_def  TypeClass( type_def * );
 
 static  hw_reg_set      floatRegs[] = {
     HW_D_1( HW_F1 ),
@@ -105,14 +104,14 @@ static  hw_reg_set      floatRegSet( int index ) {
 /************************************************/
 
     assert( index >= FIRST_FLOAT_PARM_REG && index <= LAST_FLOAT_PARM_REG );
-    return( floatRegs[ index - FIRST_FLOAT_PARM_REG ] );
+    return( floatRegs[index - FIRST_FLOAT_PARM_REG] );
 }
 
 static  hw_reg_set      scalarRegSet( int index ) {
 /*************************************************/
 
     assert( index >= FIRST_SCALAR_PARM_REG && index <= LAST_SCALAR_PARM_REG );
-    return( scalarRegs[ index - FIRST_SCALAR_PARM_REG ] );
+    return( scalarRegs[index - FIRST_SCALAR_PARM_REG] );
 }
 
 extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state ) {

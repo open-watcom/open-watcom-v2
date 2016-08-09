@@ -52,11 +52,10 @@ clib_dir  = ../..
 cc_i86    = *wcc
 cc_386    = *wcc386
 cc_axp    = *wccaxp
-pharlap   = \tools\
-flashtek  = \tools\x32\
 !else
 !include cproj.mif
 !endif
+!include tools.mif
 
 # Avoid the need for !include $(clib_dir)/flags.mif with
 # debug flags need to be last to override optimization flags
@@ -88,7 +87,6 @@ a_dbg_flags = -d1
     @set PATH=$(%WATCOM)\binnt;$(%WATCOM)\binw;$(%PATH)
 !endif
 
-.erase
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm
 

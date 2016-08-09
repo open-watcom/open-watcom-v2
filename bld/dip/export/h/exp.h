@@ -35,6 +35,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "bool.h"

@@ -85,7 +85,7 @@ aux_info    *AuxLookup( sym_id sym ) {
     aux_info    *info;
 
     if( sym == NULL ) return( &FortranInfo );
-    if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
+    if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
         if( sym->u.ns.flags & SY_INTRINSIC ) {
             if( IFVarArgs( sym->u.ns.si.fi.index ) ) {
                 return( &IFVarInfo );
@@ -94,7 +94,7 @@ aux_info    *AuxLookup( sym_id sym ) {
             // arguments (instead of XF@xxxx)
             } else if( IFArgType( sym->u.ns.si.fi.index ) == FT_CHAR ) {
                 if( sym->u.ns.flags & SY_IF_ARGUMENT ) {
-                    if( !(Options & OPT_DESCRIPTOR) ) {
+                    if( (Options & OPT_DESCRIPTOR) == 0 ) {
                         return( &IFChar2Info );
                     }
                 }
@@ -105,7 +105,7 @@ aux_info    *AuxLookup( sym_id sym ) {
             return( &IFInfo );
         } else if( sym->u.ns.flags & SY_RT_ROUTINE ) {
             return( RTAuxInfo( sym ) );
-        } else if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_PROGRAM ) {
+        } else if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_PROGRAM ) {
             return( &ProgramInfo );
         } else {
             info = AuxLookupName( sym->u.ns.name, sym->u.ns.u2.name_len );

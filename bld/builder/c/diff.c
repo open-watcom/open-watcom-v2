@@ -139,7 +139,7 @@ char            *cmdusage =
 
 /* forward declarations */
 static SLONG   subseq( void );
-static SLONG   search( ULONG, ULONG, SLONG );
+static ULONG   search( ULONG, ULONG, SLONG );
 static USHORT  hash( char * );
 static char    *myalloc( ULONG, char * );
 static char    *compact( char *, ULONG, char * );
@@ -615,7 +615,7 @@ void unsort( void )
  * Generate maximum common subsequence chain in clist[]
  */
 
-SLONG
+static SLONG
 newcand(    SLONG a,        /* Line in fileA      */
             SLONG b,        /* Line in fileB      */
             SLONG pred      /* Line in fileB      */ )
@@ -642,7 +642,7 @@ SLONG subseq( void )
     SLONG               a;
     register ULONG      ktop;
     register SLONG      b;
-    register SLONG      s;
+    register ULONG      s;
     ULONG               r;
     SLONG               i;
     SLONG               cand;
@@ -709,7 +709,7 @@ SLONG subseq( void )
  * preset "fence" elements, (0, 0) and (slenA, slenB).
  */
 
-SLONG search( ULONG low, ULONG high, SLONG b )
+ULONG search( ULONG low, ULONG high, SLONG b )
 {
     register SLONG      temp;
     register ULONG      mid;
@@ -859,7 +859,7 @@ INT check( char *fileAname, char *fileBname )
  * Print a range
  */
 
-void range( SLONG from, SLONG to, SLONG w )
+static void range( SLONG from, SLONG to, SLONG w )
 {
     if( cflag ) {
         if( ( from -= cflag ) <= 0 ) {
@@ -882,7 +882,7 @@ void range( SLONG from, SLONG to, SLONG w )
  * Output a change entry: fileA[astart..aend] changed to fileB[bstart..bend]
  */
 
-void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
+static void change( SLONG astart, SLONG aend, SLONG bstart, SLONG bend )
 {
     char        c;
 

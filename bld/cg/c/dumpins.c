@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,11 @@
 #include "cfloat.h"
 #include "dumpio.h"
 #include "data.h"
+#include "intrface.h"
+#include "rgtbl.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern  void            DumpRegName(hw_reg_set);
 extern  bool            DumpFPUIns(instruction*);
@@ -43,13 +48,8 @@ extern  void            DumpOpcodeName(int);
 extern  void            DumpBlkId(block*);
 extern  void            DumpPossible(byte);
 extern  void            DumpTab(opcode_entry*);
-extern  name            *DeAlias(name*);
-extern  char            *AskName(pointer,cg_class);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  hw_reg_set      LowReg(hw_reg_set);
 extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
-extern  type_length     FlagsToAlignment( i_flags );
 
 
 #define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )
@@ -156,7 +156,7 @@ extern  void    DumpOperand( name *operand ) {
 
     if( operand->n.class == N_INDEXED ) {
         if( operand->i.base != NULL ) {
-            if( !( operand->i.index_flags & X_FAKE_BASE ) ) {
+            if( (operand->i.index_flags & X_FAKE_BASE) == 0 ) {
                 if( operand->i.index_flags & X_LOW_ADDR_BASE ) {
                     DumpLiteral( "l^" );
                 }
@@ -210,7 +210,7 @@ extern  void    DumpOperand( name *operand ) {
             if( operand->i.index_flags & X_FAKE_BASE ) {
                 DumpChar( '{' );
                 if( base->n.class == N_MEMORY ) {
-                    DumpXString( AskName(base->v.symbol, base->m.memory_type) );
+                    DumpXString( AskName( base->v.symbol, base->m.memory_type ) );
                 } else if( base->n.class == N_TEMP ) {
                     if( _FrontEndTmp( base ) ) {
                         DumpXString( FEName( base->v.symbol ) );
@@ -223,10 +223,10 @@ extern  void    DumpOperand( name *operand ) {
         }
     } else if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value != 0 ) {
-                if( operand->c.int_value_2 != 0 && operand->c.int_value_2 != -1 )
-                    Dump8h( operand->c.int_value_2 );
-                Dump8h( operand->c.int_value );
+            if( operand->c.lo.int_value != 0 ) {
+                if( operand->c.hi.int_value != 0 && operand->c.hi.int_value != -1 )
+                    Dump8h( operand->c.hi.int_value );
+                Dump8h( operand->c.lo.int_value );
             } else {
                 CFCnvFS( operand->c.value, buffer, 20 );
                 DumpXString( buffer );
@@ -235,14 +235,14 @@ extern  void    DumpOperand( name *operand ) {
             if( operand->c.const_type == CONS_SEGMENT ) {
                 DumpLiteral( "SEG(" );
                 if( operand->c.value == NULL ) {
-                    DumpInt( operand->c.int_value );
+                    DumpInt( operand->c.lo.int_value );
                 } else {
                     DumpOperand( operand->c.value );
                 }
             } else if( operand->c.const_type == CONS_OFFSET ) {
                 DumpLiteral( "OFFSET(" );
 #if _TARGET & _TARG_370
-                DumpInt( operand->c.int_value );
+                DumpInt( operand->c.lo.int_value );
 #else
                 DumpOperand( operand->c.value );
 #endif
@@ -257,8 +257,8 @@ extern  void    DumpOperand( name *operand ) {
                 if( operand->c.value != NULL ) {
                     DumpOperand( operand->c.value );
                 } else {
-                    if( operand->c.int_value != 0 ) {
-                        DumpLong( operand->c.int_value );
+                    if( operand->c.lo.int_value != 0 ) {
+                        DumpLong( operand->c.lo.int_value );
                     } else {
                         DumpLiteral( "NULL" );
                     }
@@ -534,7 +534,7 @@ extern  void    DumpSym( name *sym ) {
                 DumpLiteral( " ALIAS " );
                 sym = DeAlias( sym );
                 DumpPtr( sym );
-            } else if( !( sym->t.temp_flags & ALIAS ) ) {
+            } else if( (sym->t.temp_flags & ALIAS) == 0 ) {
                 DumpLiteral( " MASTER" );
             }
             if( sym->t.temp_flags & VISITED ) {

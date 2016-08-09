@@ -13,10 +13,7 @@ extra_c_flags = -s $(%COPTIONS)
 
 OBJS = main.obj ovl1.obj ovl2.obj ovl3.obj
 
-all : .symbolic
-    -wmake -h dmain.exe release=$(release)
-    -wmake -h lmain.exe release=$(release)
-    -wmake -h smain.exe release=$(release)
+all : dmain.exe lmain.exe smain.exe .symbolic
 
 dmain.exe : .always
     rm -f *.obj

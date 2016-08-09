@@ -71,9 +71,9 @@ static void *freebsd_init( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr )
         ctx->fd    = fd;
         ctx->e_hdr = ehdr;
         ctx->p_hdr = phdr;
-        ctx->swap  = FALSE;
+        ctx->swap  = false;
         if( ehdr->e_ident[EI_DATA] != NATIVE_ELF_ORDER ) {
-            ctx->swap = TRUE;
+            ctx->swap = true;
         }
     }
     return( ctx );
@@ -128,7 +128,7 @@ static size_t freebsd_name( void *_ctx, char *name, size_t len )
 static int freebsd_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
 {
     ctx_freebsd     *ctx = _ctx;
-    long            rc = FALSE;
+    long            rc = false;
 
     // TODO: add support for non-x86 architectures
     if( ctx->e_hdr->e_machine == EM_386 ) {
@@ -139,7 +139,7 @@ static int freebsd_qcfg( void *_ctx, int *mad, int *os, int *cpu, int *fpu )
         *mad = MAD_X86;
         *cpu = X86_486;
         *fpu = X86_487;
-        rc = TRUE;
+        rc = true;
     }
     return( rc );
 }

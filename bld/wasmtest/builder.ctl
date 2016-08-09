@@ -15,6 +15,12 @@ set PROJDIR=<CWD>
 #======================
     wmake -h clean
 
+[ BLOCK <1> cleanlog ]
+#======================
+    cdsay <PROJDIR>
+    echo rm -f *.log
+    rm -f *.log
+
 [ BLOCK . . ]
 
 [ INCLUDE <OWROOT>/build/epilog.ctl ]

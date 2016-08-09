@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,7 @@
 #include "freelist.h"
 #include "data.h"
 #include "namelist.h"
-
-extern  hw_reg_set      LowOffsetReg(hw_reg_set);
-extern  hw_reg_set      HighOffsetReg(hw_reg_set);
+#include "rgtbl.h"
 
 
 extern  pointer ScAlloc( size_t size )
@@ -88,7 +87,7 @@ extern  void    ScoreCalcList( void )
     }
     if( ScoreCount != 0 ) {
         ScoreList = ScAlloc( ScoreCount * ( sizeof( pointer ) + sizeof( score_reg ) ) );
-        curr = (score_reg *)&ScoreList[  ScoreCount  ];
+        curr = (score_reg *)&ScoreList[ScoreCount];
         i = 0;
         for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
             if( ScRealRegister( reg_name ) ) {
@@ -99,13 +98,13 @@ extern  void    ScoreCalcList( void )
                 curr->high_of = NO_INDEX;
                 curr->low_of = NO_INDEX;
                 reg_name->r.reg_index = i;
-                ScoreList[  i  ] = curr; /*% This avoids MANY multiplies!*/
+                ScoreList[i] = curr; /*% This avoids MANY multiplies!*/
                 ++curr;
                 ++i;
             }
         }
         i = ScoreCount;
-        while( curr != ScoreList[ 0 ] ) {
+        while( curr != ScoreList[0] ) {
             --curr;
             --i;
             reg = HighOffsetReg( curr->reg );
@@ -116,7 +115,7 @@ extern  void    ScoreCalcList( void )
                     curr->high = NO_INDEX;
                 } else {
                     curr->high = reg_name->r.reg_index;
-                    ScoreList[ curr->high ]->high_of = i;
+                    ScoreList[curr->high]->high_of = i;
                 }
             } else {
                 curr->high = NO_INDEX;
@@ -129,7 +128,7 @@ extern  void    ScoreCalcList( void )
                     curr->low = NO_INDEX;
                 } else {
                     curr->low = reg_name->r.reg_index;
-                    ScoreList[ curr->low ]->low_of = i;
+                    ScoreList[curr->low]->low_of = i;
                 }
             } else {
                 curr->low = NO_INDEX;
@@ -146,7 +145,7 @@ extern  void    ScoreClear( score *p )
     list_head   *list_heads;
 
     i = ScoreCount;
-    list_heads = (list_head *)&p[ i ];
+    list_heads = (list_head *)&p[i];
     *list_heads = NULL;  /* initialize free list*/
     i = 0;
     for( ;; ) {
@@ -203,7 +202,7 @@ extern  void    FreeScoreBoard( score *p )
             if( i == 0 ) break;
         }
         i = ScoreCount;
-        list_heads = (list_head *)&p[ i ];
+        list_heads = (list_head *)&p[i];
         *list_heads = NULL;  /* initialize free list*/
         for(;;) {
             --i;
@@ -242,7 +241,7 @@ extern  void    MemChanged( score *p, bool statics_too )
                     changed = true;
                     break;
                 case N_TEMP:
-                    if( !( curr->info.symbol.v->usage & USE_ADDRESS ) ) {
+                    if( (curr->info.symbol.v->usage & USE_ADDRESS) == 0 ) {
                         changed = true;
                     }
                     break;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,10 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "symdbg.h"
-#include "ocentry.h"
 #include "mipsenc.h"
 #include "reloc.h"
 #include "rscenc2.h"
-
-extern void ObjBytes( const void *, unsigned );
-extern void OutReloc( pointer, owl_reloc_type, unsigned );
+#include "rscobj.h"
 
 
 void EncodeRet( oc_ret *oc )

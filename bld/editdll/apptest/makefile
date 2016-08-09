@@ -15,4 +15,4 @@ apptest.exe : apptest.obj
     wlink name apptest @apptest.lnk file apptest.obj
 
 apptest.obj : apptest.c
-    wcc apptest.c -i=..;$(%watcom)\h\win /d2 /zc /zw
+    wcc apptest.c -i=..;$(%WATCOM)\h\win /d2 /zc /zw

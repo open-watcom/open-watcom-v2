@@ -96,9 +96,9 @@ void    GBegCall( itnode *itptr ) {
     OutPtr( itptr->sym_ptr );
     curr_obj = ObjTell();
     OutU16( 0 );
-    if( !(Options & OPT_DESCRIPTOR) ) {
+    if( (Options & OPT_DESCRIPTOR) == 0 ) {
         if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-            if( !(sp->u.ns.flags & SY_INTRINSIC) ) {
+            if( (sp->u.ns.flags & SY_INTRINSIC) == 0 ) {
                 if( sp->u.ns.u1.s.typ == FT_CHAR ) {
                     OutPtr( GTempString( sp->u.ns.xt.size ) );
                 }
@@ -131,7 +131,7 @@ void    GEndCall( itnode *itptr, int num_stmts ) {
         OutU16( num_stmts );
         arg = itptr->list;
         for(;;) {
-            if( ( arg->opn.us & USOPN_WHAT ) == USOPN_STN ) {
+            if( (arg->opn.us & USOPN_WHAT) == USOPN_STN ) {
                 GStmtAddr( arg->sym_ptr );
                 num_stmts--;
             }
@@ -150,7 +150,7 @@ void    GArg( void ) {
 
 // Generate an argument for subprogram, subscript, or substring.
 
-    if( ( CITNode->opn.us & USOPN_WHERE ) == USOPN_SAFE ) {
+    if( (CITNode->opn.us & USOPN_WHERE) == USOPN_SAFE ) {
         if( (CITNode->opn.us & USOPN_FLD) &&
             ((CITNode->opn.us & USOPN_WHAT) == USOPN_ARR) &&
             (CITNode->typ == FT_CHAR) ) {
@@ -160,11 +160,11 @@ void    GArg( void ) {
         }
         return;
     }
-    if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_SSR ) {
+    if( (CITNode->opn.us & USOPN_WHAT) == USOPN_SSR ) {
         EmitOp( FC_PUSH_SCB_LEN );
-    } else if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_CON ) {
+    } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_CON ) {
         PushOpn( CITNode );
-    } else if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_ARR ) {
+    } else if( (CITNode->opn.us & USOPN_WHAT) == USOPN_ARR ) {
         PushOpn( CITNode );
         if( CITNode->typ == FT_CHAR ) {
             EmitOp( FC_PASS_CHAR_ARRAY );
@@ -305,7 +305,7 @@ static  void    SetArgAddrs( void ) {
     OutPtr( ArgList->id );
     d_arg = ArgList->parms;
     while( d_arg != NULL ) {
-        if( ( d_arg->flags & ARG_STMTNO ) == 0 ) {
+        if( (d_arg->flags & ARG_STMTNO) == 0 ) {
             OutPtr( d_arg->id );
         }
         d_arg = d_arg->link;
@@ -319,7 +319,7 @@ void    GEpilog( void ) {
 
 // Generate a subprogram epilogue.
 
-    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) {
+    if( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) {
         GNullRetIdx();
     }
     if( EpilogLabel != 0 ) {
@@ -408,7 +408,7 @@ void    GCallWithArgs( void ) {
 static  void    FinishCALL( itnode *sp ) {
 //========================================
 
-    if( ( sp->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
+    if( (sp->sym_ptr->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
         // a FUNCTION invoked in a CALL statement
         EmitOp( FC_EXPR_DONE );
     }

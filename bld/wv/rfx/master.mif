@@ -49,16 +49,15 @@ objs += $(host_os)filio.obj &
 objs += inthdlrs.obj
 !endif
 
-rfx.exe : $(objs) $(__MAKEFILES__)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
-!else
-        $(linker) name $^@ $(lflags) file { $(objs) }
-!endif
-
-
 .str: $(wv_dir)/h
 
 .c: ..;../$(host_os)$(host_cpu);$(wv_dir)/$(host_os)/c;$(wv_dir)/c;$(dig_srcs);../../win/c
 
 .asm: ..;../$(host_os)i86
+
+rfx.exe : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+!else
+        $(linker) name $^@ $(lflags) file { $(objs) }
+!endif

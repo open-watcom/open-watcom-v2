@@ -21,26 +21,27 @@ extra_c_flags_trmem = $(trmem_cflags)
 .cpp: ../cpp
 .c: $(trmem_dir)
 
-objs =  whc.obj         &
-        hpjread.obj     &
-        hlpdir.obj      &
-        btrees.obj      &
-        myfile.obj      &
-        baggage.obj     &
-        system.obj      &
-        font.obj        &
-        context.obj     &
-        ctxomap.obj     &
-        ttlbtree.obj    &
-        keywords.obj    &
-        scanning.obj    &
-        hcerrors.obj    &
-        mem.obj         &
-        topic.obj       &
-        phrase.obj      &
-        bmx.obj         &
-        compress.obj    &
-        parsing.obj
+objs = &
+    whc.obj &
+    hpjread.obj &
+    hlpdir.obj &
+    btrees.obj &
+    myfile.obj &
+    baggage.obj &
+    system.obj &
+    font.obj &
+    context.obj &
+    ctxomap.obj &
+    ttlbtree.obj &
+    keywords.obj &
+    scanning.obj &
+    hcerrors.obj &
+    mem.obj &
+    topic.obj &
+    phrase.obj &
+    bmx.obj &
+    compress.obj &
+    parsing.obj
 
 objs += $(trmem_objs)
 

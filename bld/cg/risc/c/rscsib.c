@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,11 +38,10 @@
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "rgtbl.h"
+
 
 extern  instruction     *SIBPossibleIndex(instruction*,name*,name**,bool*,hw_reg_set,hw_reg_set,bool*,bool*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  hw_reg_set      Low64Reg(hw_reg_set);
 extern  void            ReplaceOperand(instruction*,name*,name*);
 
 typedef struct sib_info {
@@ -71,22 +71,22 @@ extern bool FoldIntoIndex( instruction * ins ) {
 
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class != N_CONSTANT ) return( false );
         if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
-        if( cons->c.int_value > 3 ) return( false );
+        if( cons->c.lo.int_value > 3 ) return( false );
 /*
         found SHL R1,n => R1
 */
     } else if( ins->head.opcode == OP_ADD ) {
-        cons = ins->operands[ 1 ];
+        cons = ins->operands[1];
         if( cons->n.class != N_REGISTER ) return( false );
         if( cons->n.size != WORD_SIZE ) return( false );
         base_reg = cons->r.reg;
 /*
         found ADD R1,R2 => R1
 */
-        if( cons == ins->operands[ 0 ] ) {
+        if( cons == ins->operands[0] ) {
 /*
         found ADD R1,R1 => R1  <==> SHL R1,1 => R1
 */
@@ -96,7 +96,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
     } else {
         return( false );
     }
-    other_reg = ins->operands[ 0 ]->r.reg;
+    other_reg = ins->operands[0]->r.reg;
     sib_head = NULL;
     dies = false;
     next = ins;
@@ -120,7 +120,7 @@ extern bool FoldIntoIndex( instruction * ins ) {
                 if( sib.index->i.scale != 0 ) break;
                 sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE ); /* flip base and index */
             }
-            sib.scale = cons->c.int_value + sib.index->i.scale;
+            sib.scale = cons->c.lo.int_value + sib.index->i.scale;
             if( sib.scale > 3 ) break;
             if( ins->operands[0] == ins->result ) {
                 sib.reg = sib.index->i.index;

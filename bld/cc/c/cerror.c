@@ -248,9 +248,11 @@ static void CErr( int parmno, int msgnum, ... )
         OutMsg( &info );
         ++ErrCount;
         PrintPostNotes();
+        va_end( args1 );
     } else {
         CMsgInfo( &info, 0, ERR_TOO_MANY_ERRORS, args1 );
         OutMsg( &info );
+        va_end( args1 );
         CSuicide();
     }
 }
@@ -302,6 +304,7 @@ static void CWarn( int parmno, int level, int msgnum, ... )
             OutMsg( &info );
             ++WngCount;
             PrintPostNotes();
+            va_end( args1 );
         }
     }
 }

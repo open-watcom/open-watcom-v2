@@ -45,7 +45,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     if( increment > 0 ) {
         LPVOID      p;
 
-        increment = ( increment + 0x0fff ) & ~0x0fff;
+        increment = __ROUND_UP_SIZE_4K( increment );
         //p = LocalAlloc( LMEM_FIXED, increment );
         p = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
         if( p != NULL )

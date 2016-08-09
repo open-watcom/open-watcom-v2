@@ -37,12 +37,7 @@
 .386p
         assume  nothing
 
-ifdef __NT__
-entry_point = __LibMain@12
-else
-entry_point = __LibMain
-endif
-        extrn   entry_point     : near
+        extrn   __LibMain       : near
         extrn   ___begtext      : near
 
 _TEXT   segment use32 word public 'CODE'
@@ -60,7 +55,7 @@ _DllMainCRTStartup@12:
 _wDllMainCRTStartup@12:
         public  _wDllMainCRTStartup@12:
 endif
-        jmp     entry_point
+        jmp     __LibMain
         dd      ___begtext      ; reference module with segment definitions
 ;
 ; copyright message

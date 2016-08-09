@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,24 +39,13 @@
 #include "rtrtn.h"
 #include "namelist.h"
 #include "rscconst.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
 
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-
-extern  hw_reg_set      StackReg(void);
-extern  hw_reg_set      ScratchReg(void);
-extern  hw_reg_set      ReturnAddrReg(void);
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
-extern  void            ChangeType(instruction*,type_class_def);
 
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *OffsetMem( name *, type_length, type_class_def );
-
-extern  type_class_def  Unsigned[];
 
 extern  instruction     *rLOAD_1( instruction *ins ) {
 /****************************************************/
@@ -504,7 +494,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     first = NULL;
-    FactorInt32( ins->operands[0]->c.int_value, &high, &extra, &low );
+    FactorInt32( ins->operands[0]->c.lo.int_value, &high, &extra, &low );
     // work to be done here - need some way of accurately representing
     // the ldah rn,extra(rn) instruction
 }
@@ -529,7 +519,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
     assert( ins->operands[0]->c.const_type == CONS_ABSOLUTE );
 
     cons = ins->operands[0];
-    c = cons->c.int_value;
+    c = cons->c.lo.uint_value;
     k = 65536U;
     high = c / k;
     low = c % k;
@@ -575,7 +565,7 @@ extern instruction      *rCONSTLOAD( instruction *ins ) {
 }
 #endif
 
-static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, name *p2 ) {
+static instruction *CheapCall( instruction *ins, rt_class rtindex, name *p1, name *p2 ) {
 /***************************************************************************************/
 
     instruction         *call;
@@ -584,7 +574,7 @@ static instruction *CheapCall( instruction *ins, rt_class rt_call, name *p1, nam
     label_handle        lbl;
 
     reg = HW_EMPTY;
-    lbl = RTLabel( rt_call );
+    lbl = RTLabel( rtindex );
     call = NewIns( 3 );
     call->head.opcode = OP_CALL;
     call->type_class = WD;
@@ -631,19 +621,17 @@ extern instruction *rALLOCA( instruction *ins ) {
     instruction         *first;
     instruction         *last;
     type_class_def      class;
-    unsigned_32         stack_align;
     bool                check;
 
     sreg = AllocRegName( StackReg() );
     amount = ins->operands[0];
     temp = AllocTemp( ins->type_class );
     class = WD;
-    stack_align = STACK_ALIGNMENT;
     check = true;
     CurrProc->targ.base_is_fp = true;
     if( amount->n.class == N_CONSTANT && amount->c.const_type == CONS_ABSOLUTE ) {
-        value = amount->c.int_value;
-        value = _RoundUp( value, stack_align );
+        value = amount->c.lo.uint_value;
+        value = _RoundUp( value, STACK_ALIGNMENT );
         real_amount = AllocS32Const( value );
         first = MakeBinary( OP_SUB, sreg, AllocS32Const( value ), temp, class );
         PrefixIns( ins, first );
@@ -652,9 +640,9 @@ extern instruction *rALLOCA( instruction *ins ) {
         }
     } else {
         real_amount = AllocTemp( ins->type_class );
-        first = MakeBinary( OP_ADD, amount, AllocS32Const( stack_align - 1 ), temp, class );
+        first = MakeBinary( OP_ADD, amount, AllocS32Const( STACK_ALIGNMENT - 1 ), temp, class );
         PrefixIns( ins, first );
-        last = MakeBinary( OP_AND, temp, AllocS32Const( ~( stack_align - 1 ) ), real_amount, class );
+        last = MakeBinary( OP_AND, temp, AllocU32Const( ~( STACK_ALIGNMENT - 1 ) ), real_amount, class );
         PrefixIns( ins, last );
         last = MakeBinary( OP_SUB, sreg, real_amount, temp, class );
         PrefixIns( ins, last );

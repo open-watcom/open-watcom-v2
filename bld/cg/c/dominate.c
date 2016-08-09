@@ -39,7 +39,6 @@
 #include "data.h"
 #include "dominate.h"
 
-extern void ClearBlockBits( block_class class );
 
 static block    *ReturnBlock;
 
@@ -52,12 +51,14 @@ static bool             AssignDominatorBits( void )
     ReturnBlock = NULL;
     _DBitFirst( id );
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & RETURN ) != EMPTY ) {
-            if( ReturnBlock != NULL ) return( false );
+        if( _IsBlkAttr( blk, BLK_RETURN ) ) {
+            if( ReturnBlock != NULL )
+                return( false );
             ReturnBlock = blk;
         }
         _DBitAssign( blk->dom.id, id );
-        if( _DBitEmpty( id ) ) return( false );
+        if( _DBitEmpty( id ) )
+            return( false );
         _DBitNext( &id );
     }
     return( ReturnBlock != NULL );
@@ -101,12 +102,14 @@ bool CalcDominatorInfo( void )
                     }
                     _DBitTurnOn( predecessors, blk->dom.id );
                     _DBitAssign( blk->dom.dominator, predecessors );
-                    if( !_DBitSame( blk->dom.dominator, old_dominator ) ) change = true;
+                    if( !_DBitSame( blk->dom.dominator, old_dominator ) ) {
+                        change = true;
+                    }
                 }
                 if( blk != ReturnBlock ) {
                     _DBitAssign( old_dominator, blk->dom.post_dominator );
                     _DBitAssign( successors, full_set );
-                    edge = &blk->edge[ 0 ];
+                    edge = &blk->edge[0];
                     for( i = 0; i < blk->targets; i++ ) {
                         _DBitAssign( temp_bits, full_set );
                         _DBitTurnOff( temp_bits, edge->destination.u.blk->dom.post_dominator );
@@ -115,7 +118,9 @@ bool CalcDominatorInfo( void )
                     }
                     _DBitTurnOn( successors, blk->dom.id );
                     _DBitAssign( blk->dom.post_dominator, successors );
-                    if( !_DBitSame( blk->dom.post_dominator, old_dominator ) ) change = true;
+                    if( !_DBitSame( blk->dom.post_dominator, old_dominator ) ) {
+                        change = true;
+                    }
                 }
             }
         } while( change );

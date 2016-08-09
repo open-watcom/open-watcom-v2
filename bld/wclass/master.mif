@@ -24,7 +24,7 @@ extra_c_flags = -s
 
 extra_c_flags_i86 = -zc -zm
 
-WCLASS_OBJS = &
+objs = &
         wabout.obj &
         wautodlg.obj &
         wbaritem.obj &
@@ -105,11 +105,11 @@ extra_objlib_win_i86    = $(win_objs) $(ndos_objs)
 extra_objlib_dos_386    = $(ndos_objs)
 extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
 
-extra_objlib = $(extra_objlib_$(host_os)_$(host_cpu))
+objs += $(extra_objlib_$(host_os)_$(host_cpu))
 
-$(name).lib : $(WCLASS_OBJS) $(extra_objlib)
-!ifndef __WATCOM__
-    $(blib) $(bld_libflags) $<
+$(name).lib : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(blib) $(bld_libflags) $(objs)
 !else
-    $(librarian) $(libflags) $<
+    $(librarian) $(libflags) $(objs)
 !endif

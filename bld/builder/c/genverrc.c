@@ -79,7 +79,7 @@ END
 
 unsigned line;
 
-void fatal( char *msg ) {
+static void fatal( char *msg ) {
     fprintf( stderr, "%s\n", msg );
     exit( EXIT_FAILURE );
 }

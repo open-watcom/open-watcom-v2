@@ -59,8 +59,8 @@ char    *STGetName( sym_id sym, char *buff ) {
 
 // Get the name of a symbol (check for shadowed symbols).
 
-    if( ( ( sym->u.ns.flags & SY_CLASS ) == SY_VARIABLE ) &&
-        ( sym->u.ns.flags & SY_SPECIAL_PARM ) ) {
+    if( ( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) &&
+        (sym->u.ns.flags & SY_SPECIAL_PARM) ) {
         sym = sym->u.ns.si.ms.sym;
     }
     return( STExtractName( sym, buff ) );
@@ -90,7 +90,7 @@ sym_id  STAdd( char *name, int length ) {
     memcpy( &sym->u.ns.name, name, length );
     sym->u.ns.flags = 0;
     sym->u.ns.u1.s.xflags = 0;
-    if( !(Options & OPT_REFERENCE) ) {
+    if( (Options & OPT_REFERENCE) == 0 ) {
         sym->u.ns.u1.s.xflags |= SY_FAKE_REFERENCE;
     }
     return( sym );
@@ -126,7 +126,7 @@ void    CkSymDeclared( sym_id sym ) {
 // Make sure type has been explicitly declared.
 
     if( (SgmtSw & SG_IMPLICIT_NONE) || (Options & OPT_EXPLICIT) ) {
-        if( !(sym->u.ns.flags & SY_TYPE) ) {
+        if( (sym->u.ns.flags & SY_TYPE) == 0 ) {
             NameErr( TY_UNDECLARED, sym );
         }
     }

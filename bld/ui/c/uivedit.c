@@ -262,7 +262,7 @@ EVENT UIAPI uieditevent( EVENT ev, VBUFFER *buffer )
         buffer->auto_clear = false;
     }
     if( cleared ) {
-        if( uiinlist( EV_BUFFER_CLEAR ) ) {
+        if( uiinlists( EV_BUFFER_CLEAR ) ) {
             new = EV_BUFFER_CLEAR;
         }
     }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,30 +34,22 @@
 #include "optwif.h"
 #include "model.h"
 #include "optmain.h"
+#include "optutil.h"
 
-extern  ins_entry       *ValidIns( ins_entry * );
-extern  ins_entry       *AliasLabels( ins_entry *, ins_entry * );
-extern  oc_class        PrevClass( ins_entry * );
-extern  oc_class        NextClass( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, label_handle );
-extern  ins_entry       *DelInstr( ins_entry * );
+
 extern  void            SetBranches( void );
-extern  ins_entry       *NextIns( ins_entry * );
 extern  bool            StraightenCode( ins_entry * );
 extern  void            CheckStraightenCode( ins_entry * );
 extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  void            FreePendingDeletes( void );
 extern  bool            ComTail( ins_entry *, ins_entry * );
 extern  void            RetAftrCall( ins_entry * );
 extern  bool            RetAftrLbl( ins_entry * );
 extern  void            JmpRet( ins_entry * );
 extern  bool            ComCode( ins_entry * );
-extern  ins_entry       *PrevIns( ins_entry * );
 extern  void            CallRet( ins_entry * );
 extern  void            TraceCommon( ins_entry * );
 extern  void            MultiLineNums( ins_entry * );
 extern  void            CloneCode( label_handle );
-extern  bool            UniqueLabel( label_handle );
 
 static  ins_entry       *Redirect( ins_entry *, ins_entry * );
 
@@ -412,7 +405,7 @@ extern  void    OptPull( void )
     case OC_JCOND:
     case OC_JMP:
 #if( OPTIONS & SHORT_JUMPS )
-        if( !(_Attr( FirstIns ) & ATTR_FAR) ) {
+        if( (_Attr( FirstIns ) & ATTR_FAR) == 0 ) {
             SetBranches();
         }
 #endif

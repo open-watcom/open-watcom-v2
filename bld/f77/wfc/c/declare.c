@@ -422,8 +422,8 @@ void    ArrayDecl( sym_id sym ) {
             }
         }
         sym->u.ns.si.va.u.dim_ext = &dim_list;
-        if( ( ProgSw & PS_IN_SUBPROGRAM ) &&
-            !( ProgSw & PS_BLOCK_DATA ) && !allocatable ) {
+        if( (ProgSw & PS_IN_SUBPROGRAM) &&
+            (ProgSw & PS_BLOCK_DATA) == 0 && !allocatable ) {
             dim_list.l.init_label = GBegSList();
         }
     }
@@ -549,8 +549,7 @@ void    ArrayDecl( sym_id sym ) {
             sym->u.fd.dim_ext = STSubsList( &dim_list );
         }
     } else {
-        if( (ProgSw & PS_IN_SUBPROGRAM) && !(ProgSw & PS_BLOCK_DATA) &&
-            pvd_ok ) {
+        if( (ProgSw & PS_IN_SUBPROGRAM) && (ProgSw & PS_BLOCK_DATA) == 0 && pvd_ok ) {
             dim_list.num_elts = num_elts;
             // for Psuedo-Variable Dimensioning ( WATFIVish )
             dim_list.dim_flags |= DIM_PVD;

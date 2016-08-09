@@ -102,8 +102,8 @@ void GetModifier( void )
     }
 }
 
-STATIC char *CatModifier( char *inString, BOOLEAN destroy )
-/**********************************************************
+STATIC char *CatModifier( char *inString, bool destroy )
+/*******************************************************
  *  Get the modifier
  *  if it is modify the value inInString to the specs of the modifier
  *  it then returns the modified string with the right format
@@ -169,7 +169,7 @@ TOKEN_T LexMSDollar( STRM_T s )
             temp[2] = NULLCHAR;
         }
 
-        CurAttr.u.ptr = CatModifier( temp, FALSE );
+        CurAttr.u.ptr = CatModifier( temp, false );
         return( MAC_NAME );
 
     } else {
@@ -248,7 +248,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
     char        text[MAX_TOK_SIZE];     /* temporary storage                */
     unsigned    pos;                    /* position in text                 */
     TOKEN_T     state;                  /* what are we collecting           */
-    BOOLEAN     done;                   /* are we done collecting ?         */
+    bool        done;                   /* are we done collecting ?         */
     VECSTR      vec;                    /* build string here                */
 
     assert( isascii( s ) );
@@ -264,7 +264,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
     }
 
     pos = 0;
-    done = FALSE;
+    done = false;
     while( !done ) {
         text[pos++] = s;
         if( pos == MAX_TOK_SIZE - 1 ) {
@@ -280,7 +280,7 @@ STATIC TOKEN_T lexSubString( STRM_T s )
         case STRM_MAGIC:
         case ')':
         case DOLLAR:
-            done = TRUE;
+            done = true;
             break;
         default:
             switch( state ) {
@@ -334,7 +334,7 @@ TOKEN_T LexMacDef( STRM_T s )
  */
 {
     char    *cur;
-    BOOLEAN onlyws;                 /* are we collecting ws?    */
+    bool    onlyws;                 /* are we collecting ws?    */
     char    text[MAX_TOK_SIZE];     /* store stuff here temp.   */
 
     if( s == STRM_END ) {

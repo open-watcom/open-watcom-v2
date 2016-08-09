@@ -88,39 +88,39 @@
                             == (op2) )
 
 #define _SuffixLoad( _1, _2, _3, class )   \
-             block_cost += Save.load_cost[ class ];
+             block_cost += Save.load_cost[class];
 
 #define _PrefixLoad( _1, _2, _3, class )   \
-             block_cost += Save.load_cost[ class ];
+             block_cost += Save.load_cost[class];
 
 #define _SuffixStore( _1, _2, _3, class )  \
-             block_cost += Save.store_cost[ class ];
+             block_cost += Save.store_cost[class];
 
 #define _PrefixStore( _1, _2, _3, class )  \
-             block_cost += Save.store_cost[ class ];
+             block_cost += Save.store_cost[class];
 
 #define _ReplaceOpnd( _1, ins, i, _2, class ) \
-             block_save += Save.use_save[ class ]; \
+             block_save += Save.use_save[class]; \
              if( i == 0 \
               && ins->head.opcode < FIRST_CONDITION \
               && ins->result != NULL \
               && ins->result->n.class == N_REGISTER ) { \
-                 block_save += Save.use_save[ class ]; \
+                 block_save += Save.use_save[class]; \
              }
 
 #define _ReplaceResult( _1, ins, _2, class ) \
             if( ( ins->head.opcode==OP_MOV || ins->head.opcode==OP_CONVERT ) \
              && ins->result->n.class == N_TEMP \
-             && ins->operands[ 0 ]->n.class == N_TEMP \
+             && ins->operands[0]->n.class == N_TEMP \
              && ins->result->t.location != NO_LOCATION \
              && ins->result->t.location \
-                     == ins->operands[ 0 ]->t.location ) { \
-                block_cost+=Save.load_cost[ class ]; \
+                     == ins->operands[0]->t.location ) { \
+                block_cost+=Save.load_cost[class]; \
             } else { \
-                block_save+=Save.def_save[ class ]; \
+                block_save+=Save.def_save[class]; \
                 if( ins->num_operands != 0 \
-                 && ins->operands[ 0 ]->n.class == N_REGISTER ) { \
-                    block_save+=Save.use_save[ class ]; \
+                 && ins->operands[0]->n.class == N_REGISTER ) { \
+                    block_save+=Save.use_save[class]; \
                 } \
             }
 
@@ -175,8 +175,8 @@
                     if( ( last_defn != NULL
                        || ( ( opnd->v.usage & USE_IN_ANOTHER_BLOCK )
                           && _GBitOverlap( conf->id.out_of_block, flow->in ) ) )
-                     && ( ( !(ins->flags.call_flags & CALL_WRITES_NO_MEMORY ) )
-                       || ( !(ins->flags.call_flags & CALL_READS_NO_MEMORY ) )
+                     && ( ( (ins->flags.call_flags & CALL_WRITES_NO_MEMORY) == 0 )
+                       || ( (ins->flags.call_flags & CALL_READS_NO_MEMORY) == 0 )
                        || ( opnd->n.class == N_TEMP
                             && ( opnd->v.usage & USE_ADDRESS ) ) ) ) {
                         last_defn = NULL;
@@ -239,8 +239,7 @@
                     _INS_NOT_BLOCK( blk->ins.hd.prev );
                     if( final_defn->id > blk->ins.hd.prev->id ) {
                         final_defn = blk->ins.hd.prev;
-                        if( ( blk->class & CONDITIONAL )
-                          || ( blk->class & SELECT ) ) {
+                        if( _IsBlkAttr( blk, BLK_CONDITIONAL | BLK_SELECT ) ) {
                             final_defn = blk->ins.hd.next;
                             while( !_OpIsJump( final_defn->head.opcode ) ) {
                                 final_defn = final_defn->head.next;

@@ -56,22 +56,10 @@ subdir_axp = _s
 subdir_mps = _s
 subdir_ppc = _s
 
-alt_subdir_dosi86_s = mc
-alt_subdir_os2i86_s = mc
-alt_subdir_dosi86_c = ms
-alt_subdir_os2i86_c = ms
-
-libmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
-altlibmakepath = $(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
-
-!ifeq bootstrap 1
+!ifdef bootstrap
 libdir=$(subdir_$(host_cpu))
-altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
-posix_lib = $(libdir)/posix.lib
 !else
-libdir=$(libmakepath:$(to_os_path))
-altlibdir=$(altlibmakepath:$(to_os_path))
-posix_lib = $(libmakepath)/posix.lib
+libdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))
 !endif
 
 #

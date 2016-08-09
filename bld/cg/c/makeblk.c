@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,22 +42,21 @@
 #include "stack.h"
 #include "makeaddr.h"
 #include "namelist.h"
+#include "targetin.h"
+#include "opttell.h"
+#include "makeblk.h"
+#include "typemap.h"
+#include "blktrim.h"
 #include "feprotos.h"
 
-extern  void            TellBeginExecutions(void);
-extern  void            FreeNames(void);
-extern  int             AskDisplaySize(int);
-extern  void            ReInitNames(void);
+
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
-extern  type_class_def  TypeClass(type_def*);
-extern  void            RemoveInputEdge(block_edge*);
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);
 
-
-extern  block   *MakeBlock( label_handle label, block_num edges )
-/***************************************************************/
+block   *MakeBlock( label_handle label, block_num edges )
+/*******************************************************/
 {
     block       *blk;
     block_edge  *edge;
@@ -66,7 +66,7 @@ extern  block   *MakeBlock( label_handle label, block_num edges )
     blk->next_block = NULL;
     blk->prev_block = NULL;
     blk->label = label;
-    blk->class = EMPTY;
+    blk->class = 0;
     blk->ins.hd.next = (instruction *)&blk->ins;
     blk->ins.hd.prev = (instruction *)&blk->ins;
     blk->ins.hd.opcode = OP_BLOCK;
@@ -86,30 +86,30 @@ extern  block   *MakeBlock( label_handle label, block_num edges )
     blk->depth = 0;
     _DBitInit( blk->dom.id, 0U );
     for( i = 0; i < edges; i++ ) {
-        edge = &blk->edge[ i ];
+        edge = &blk->edge[i];
         edge->source = blk;
     }
     return( blk );
 }
 
 
-extern  block   *NewBlock( label_handle label, bool label_dies )
-/**************************************************************/
+block   *NewBlock( label_handle label, bool label_dies )
+/******************************************************/
 {
     block       *blk;
 
     blk = MakeBlock( label, 1 );
     if( label_dies ) {
-        blk->edge[ 0 ].flags = BLOCK_LABEL_DIES;
+        blk->edge[0].flags = BLOCK_LABEL_DIES;
     } else {
-        blk->edge[ 0 ].flags = 0;
+        blk->edge[0].flags = 0;
     }
     return( blk );
 }
 
 
-extern  void    FreeABlock( block * blk )
-/***************************************/
+void    FreeABlock( block * blk )
+/*******************************/
 {
     if( blk->targets <= 1 ) {
         CGFree( blk );
@@ -119,8 +119,8 @@ extern  void    FreeABlock( block * blk )
 }
 
 
-extern  void    FreeBlock( void )
-/*******************************/
+void    FreeBlock( void )
+/***********************/
 {
     while( CurrBlock->ins.hd.next != (instruction *)&CurrBlock->ins ) {
         FreeIns( CurrBlock->ins.hd.next );
@@ -132,8 +132,8 @@ extern  void    FreeBlock( void )
 }
 
 
-extern  void    EnLink( label_handle label, bool label_dies )
-/***********************************************************/
+void    EnLink( label_handle label, bool label_dies )
+/***************************************************/
 {
     block       *blk;
 
@@ -143,8 +143,8 @@ extern  void    EnLink( label_handle label, bool label_dies )
     SrcLine = 0;
 }
 
-extern  void    AddIns( instruction *ins )
-/****************************************/
+void    AddIns( instruction *ins )
+/********************************/
 {
     if( HaveCurrBlock == false ) {
         EnLink( AskForNewLabel(), true );
@@ -161,8 +161,8 @@ extern  void    AddIns( instruction *ins )
 }
 
 
-extern  void    GenBlock( block_class class, int targets )
-/********************************************************/
+void    GenBlock( block_class class, int targets )
+/************************************************/
 {
     block       *new;
     block_edge  *edge;
@@ -220,16 +220,17 @@ extern  void    GenBlock( block_class class, int targets )
         CGFree( CurrBlock );
         CurrBlock = new;
     }
-    CurrBlock->class &= BIG_LABEL;   /* the only one that sticks*/
-    CurrBlock->class |= class;
+    if( _IsBlkAttr( CurrBlock, BLK_BIG_LABEL ) )        /* the only one that sticks*/
+        class |= BLK_BIG_LABEL;
+    CurrBlock->class = class;
     while( --targets >= 1 ) {
         CurrBlock->edge[targets].flags = 0;
     }
 }
 
 
-extern  block   *ReGenBlock( block *blk, label_handle lbl )
-/*********************************************************/
+block   *ReGenBlock( block *blk, label_handle lbl )
+/*************************************************/
 {
     block       *new;
     block_edge  *edge;
@@ -238,8 +239,8 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
     targets = blk->targets + 1;
     new = CGAlloc( sizeof( block ) + (targets-1) * sizeof( block_edge ) );
     Copy( blk, new, sizeof( block ) + ( targets - 2 ) * sizeof( block_edge ) );
-    new->edge[ targets-1 ].destination.u.lbl = lbl;
-    new->edge[ targets-1 ].flags = 0;
+    new->edge[targets - 1].destination.u.lbl = lbl;
+    new->edge[targets - 1].flags = 0;
     new->targets = targets;
 
     /*   Move all references to blk*/
@@ -275,8 +276,8 @@ extern  block   *ReGenBlock( block *blk, label_handle lbl )
 }
 
 
-extern  type_class_def  InitCallState( type_def *tipe )
-/*****************************************************/
+type_class_def  InitCallState( type_def *tipe )
+/*********************************************/
 {
     name            *name;
     cg_sym_handle   sym;
@@ -290,13 +291,13 @@ extern  type_class_def  InitCallState( type_def *tipe )
 }
 
 
-extern  void    AddTarget( label_handle dest, bool dest_label_dies )
-/******************************************************************/
+void    AddTarget( label_handle dest, bool dest_label_dies )
+/**********************************************************/
 /*   Don't handle expression jumps yet*/
 {
     block_edge  *edge;
 
-    edge = &CurrBlock->edge[  CurrBlock->targets++  ];
+    edge = &CurrBlock->edge[CurrBlock->targets++];
     edge->source = CurrBlock;
     edge->destination.u.lbl = dest;
     edge->next_source = NULL;
@@ -306,8 +307,8 @@ extern  void    AddTarget( label_handle dest, bool dest_label_dies )
 }
 
 
-extern  block   *FindBlockWithLbl( label_handle label )
-/*****************************************************/
+block   *FindBlockWithLbl( label_handle label )
+/*********************************************/
 {
     block       *blk;
 
@@ -320,8 +321,8 @@ extern  block   *FindBlockWithLbl( label_handle label )
 }
 
 
-extern  void    FixEdges( void )
-/******************************/
+void    FixEdges( void )
+/**********************/
 {
     block       *blk;
     block       *dest;
@@ -329,9 +330,9 @@ extern  void    FixEdges( void )
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & BIG_JUMP ) == 0 ) {
+        if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[  targets  ];
+                edge = &blk->edge[targets];
                 dest = FindBlockWithLbl( edge->destination.u.lbl );
                 if( dest != NULL ) {
                     edge->flags |= DEST_IS_BLOCK;
@@ -358,15 +359,17 @@ static void *LinkReturns( void *arg )
     label_handle        to_search;
 
     arg = arg;
-    link_to = LinkReturnsParms[ 0 ];
-    to_search = LinkReturnsParms[ 1 ];
+    link_to = LinkReturnsParms[0];
+    to_search = LinkReturnsParms[1];
     blk = FindBlockWithLbl( to_search );
 //    found = false;
-    if( blk == NULL ) return( NULL );
-    if( blk->class & BLOCK_VISITED ) return( NOT_NULL );
-    if( blk->class & LABEL_RETURN ) {
+    if( blk == NULL )
+        return( NULL );
+    if( _IsBlkVisited( blk ) )
+        return( NOT_NULL );
+    if( _IsBlkAttr( blk, BLK_LABEL_RETURN ) ) {
         for( i = blk->targets; i-- > 0; ) {
-            if( blk->edge[ i ].destination.u.lbl == link_to ) {
+            if( blk->edge[i].destination.u.lbl == link_to ) {
                 /* kick out ... already linked */
                 return( NOT_NULL );
             }
@@ -374,19 +377,19 @@ static void *LinkReturns( void *arg )
         blk = ReGenBlock( blk, link_to );
 //        found = true;
     } else {
-        blk->class |= BLOCK_VISITED;
-        if( blk->class & CALL_LABEL ) {
+        _MarkBlkVisited( blk );
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             if( blk->next_block == NULL )
                 return( (void *)(pointer_int)false );
-            LinkReturnsParms[ 0 ] = link_to;
-            LinkReturnsParms[ 1 ] = blk->next_block->label;
+            LinkReturnsParms[0] = link_to;
+            LinkReturnsParms[1] = blk->next_block->label;
             if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
                 return( NULL );
             }
         } else {
             for( i = blk->targets; i-- > 0; ) {
-                LinkReturnsParms[ 0 ] = link_to;
-                LinkReturnsParms[ 1 ] = blk->edge[ i ].destination.u.lbl;
+                LinkReturnsParms[0] = link_to;
+                LinkReturnsParms[1] = blk->edge[i].destination.u.lbl;
                 if( SafeRecurseCG( LinkReturns, NULL ) == NULL ) {
                     return( NULL );
                 }
@@ -396,8 +399,8 @@ static void *LinkReturns( void *arg )
     return( NOT_NULL );
 }
 
-extern  bool        FixReturns( void )
-/************************************/
+bool        FixReturns( void )
+/****************************/
 /* link all LABEL_RETURN blocks to any CALL_LABEL block they could*/
 /* have been invoked from*/
 {
@@ -405,17 +408,17 @@ extern  bool        FixReturns( void )
     block       *other_blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & CALL_LABEL ) {
-            blk->class |= BLOCK_VISITED;
+        if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
+            _MarkBlkVisited( blk );
             if( blk->next_block == NULL ) return( false );
-            blk->next_block->class |= RETURNED_TO;
-            LinkReturnsParms[ 0 ] = blk->next_block->label;
-            LinkReturnsParms[ 1 ] = blk->edge[ 0 ].destination.u.lbl;
+            _MarkBlkAttr( blk, BLK_RETURNED_TO );
+            LinkReturnsParms[0] = blk->next_block->label;
+            LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
             if( !LinkReturns( NULL ) ) {
                 return( false );
             }
             for( other_blk = HeadBlock; other_blk != NULL; other_blk = other_blk->next_block ) {
-                other_blk->class &= ~BLOCK_VISITED;
+                _MarkBlkUnVisited( other_blk );
             }
         }
     }
@@ -423,17 +426,17 @@ extern  bool        FixReturns( void )
 }
 
 
-extern  void    UnFixEdges( void )
-/********************************/
+void    UnFixEdges( void )
+/************************/
 {
     block       *blk;
     block_num   targets;
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & BIG_JUMP ) == 0 ) {
+        if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
             for( targets = blk->targets; targets-- > 0; ) {
-                edge = &blk->edge[  targets  ];
+                edge = &blk->edge[targets];
                 if( edge->flags & DEST_IS_BLOCK ) {
                     RemoveInputEdge( edge );
                     edge->destination.u.lbl = edge->destination.u.blk->label;
@@ -445,8 +448,8 @@ extern  void    UnFixEdges( void )
 }
 
 
-extern  void    AddAnIns( block *blk, instruction *ins )
-/******************************************************/
+void    AddAnIns( block *blk, instruction *ins )
+/**********************************************/
 {
     block       *curr_block;
 
@@ -457,8 +460,8 @@ extern  void    AddAnIns( block *blk, instruction *ins )
 }
 
 
-extern  bool    BlkTooBig( void )
-/*******************************/
+bool    BlkTooBig( void )
+/***********************/
 {
     label_handle    blk;
 
@@ -469,15 +472,15 @@ extern  bool    BlkTooBig( void )
     if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( false );
     if( CurrBlock->targets != 0 ) return( false );
     blk = AskForNewLabel();
-    GenBlock( JUMP, 1 );
+    GenBlock( BLK_JUMP, 1 );
     AddTarget( blk, false );
     EnLink( blk, true );
     return( true );
 }
 
 
-extern  void    NewProc( int level )
-/**********************************/
+void    NewProc( int level )
+/**************************/
 {
     proc_def    *new;
 
@@ -488,11 +491,11 @@ extern  void    NewProc( int level )
         CurrProc->curr_block = CurrBlock;
         CurrProc->lasttemp = LastTemp;
         CurrProc->dummy_index = DummyIndex;
-        CurrProc->names[ N_CONSTANT ] = Names[ N_CONSTANT ];
-        CurrProc->names[ N_MEMORY   ] = Names[ N_MEMORY   ];
-        CurrProc->names[ N_TEMP     ] = Names[ N_TEMP     ];
-        CurrProc->names[ N_REGISTER ] = Names[ N_REGISTER ];
-        CurrProc->names[ N_INDEXED  ] = Names[ N_INDEXED  ];
+        CurrProc->names[N_CONSTANT] = Names[N_CONSTANT];
+        CurrProc->names[N_MEMORY]   = Names[N_MEMORY];
+        CurrProc->names[N_TEMP]     = Names[N_TEMP];
+        CurrProc->names[N_REGISTER] = Names[N_REGISTER];
+        CurrProc->names[N_INDEXED]  = Names[N_INDEXED];
         CurrProc->block_by_block = BlockByBlock;
         CurrProc->ins_id = InsId;
         CurrProc->untrimmed = BlocksUnTrimmed;
@@ -520,8 +523,8 @@ extern  void    NewProc( int level )
 }
 
 
-extern  void    FreeProc( void )
-/******************************/
+void    FreeProc( void )
+/**********************/
 {
     proc_def    *oldproc;
 
@@ -545,11 +548,11 @@ extern  void    FreeProc( void )
             HeadBlock = CurrProc->head_block;
             BlockList = CurrProc->tail_block;
             CurrBlock = CurrProc->curr_block;
-            Names[ N_CONSTANT ] = CurrProc->names[ N_CONSTANT ];
-            Names[ N_MEMORY   ] = CurrProc->names[ N_MEMORY   ];
-            Names[ N_TEMP     ] = CurrProc->names[ N_TEMP     ];
-            Names[ N_REGISTER ] = CurrProc->names[ N_REGISTER ];
-            Names[ N_INDEXED  ] = CurrProc->names[ N_INDEXED  ];
+            Names[N_CONSTANT] = CurrProc->names[N_CONSTANT];
+            Names[N_MEMORY]   = CurrProc->names[N_MEMORY];
+            Names[N_TEMP]     = CurrProc->names[N_TEMP];
+            Names[N_REGISTER] = CurrProc->names[N_REGISTER];
+            Names[N_INDEXED]  = CurrProc->names[N_INDEXED];
             LastTemp = CurrProc->lasttemp;
             DummyIndex = CurrProc->dummy_index;
             BlockByBlock = CurrProc->block_by_block;

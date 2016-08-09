@@ -149,7 +149,7 @@ void DataRef( symbol * sym )
         strcpy( s + 2, sym->name );
         sym = SymOp( ST_FIND, s, len - 1 );
     }
-    if( sym->info & SYM_DEFINED && !IS_SYM_IMPORTED( sym ) ) {
+    if( (sym->info & SYM_DEFINED) && !IS_SYM_IMPORTED( sym ) ) {
         RefSeg( sym->p.seg );
     }
     sym->info |= SYM_DCE_REF;

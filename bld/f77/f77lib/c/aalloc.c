@@ -127,7 +127,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
     // 3. The flags for an array are right before the ADV
 
     va_start( args, num );
-    if( alloc_type & ( ALLOC_STAT | ALLOC_NONE ) ) {
+    if( alloc_type & (ALLOC_STAT | ALLOC_NONE) ) {
         stat = va_arg( args, intstar4 PGM * );
     } else {
         stat = NULL;
@@ -152,7 +152,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
             dims = va_arg( args, uint );
             elt_size = va_arg( args, unsigned_32 );
         }
-        if( Allocated( item, alloc_flags ) && !(alloc_flags & ALLOC_LOC) ) {
+        if( Allocated( item, alloc_flags ) && (alloc_flags & ALLOC_LOC) == 0 ) {
             if( stat != NULL ) {
                 *stat = STAT_ALREADY_ALLOC;
                 break;
@@ -173,8 +173,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
             }
 #elif defined( _M_IX86 )
             if( alloc_flags & ALLOC_EXTENDED ) {
-                *(void __far **)item = MK_FP( location >> 16,
-                                              location & 0x0000ffff );
+                *(void __far **)item = MK_FP( location >> 16, location & 0x0000ffff );
             } else {
                 *item = (void *)location;
             }
@@ -250,7 +249,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
         if( !Allocated( item, alloc_flags ) ) {
             istat = STAT_NOT_ALLOCATED;
         } else {
-            if( !(alloc_flags & ALLOC_LOC) ) {
+            if( (alloc_flags & ALLOC_LOC) == 0 ) {
 #if defined( _M_I86 )
   #if defined( __MEDIUM__ )
                 if( alloc_flags & ALLOC_EXTENDED ) {

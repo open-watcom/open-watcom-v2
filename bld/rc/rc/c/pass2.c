@@ -512,7 +512,7 @@ static RcStatus findEndOfResources( int *err_code )
         return( RCIOERR( oldhandle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     while( typeinfo.type != 0 ) {
-        for( i=0; i < typeinfo.num_resources; i++ ) {
+        for( i = typeinfo.num_resources; i > 0 ; --i ) {
             numread = RCREAD( oldhandle, &nameinfo, sizeof( resource_record ) );
             if( numread != sizeof( resource_record ) ) {
                 *err_code = errno;

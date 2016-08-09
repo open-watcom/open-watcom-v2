@@ -7,7 +7,7 @@ proj_name = wlink
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
+!ifdef bootstrap
 exename     = bwlink
 dllname     = bwlinkd
 !else
@@ -24,7 +24,7 @@ additional_cleanup = usage.u
 # get rid of the -zc
 suppress_zc = 1
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 !include idedlls.mif
 !endif
 !include cproj.mif
@@ -92,7 +92,7 @@ extra_l_flags_dll_os2 = initinstance terminstance op modname='$(dllname)'
 orl_lib = 
 !endif
 
-xlibs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
+libs = $(wres_lib) $(dwarfw_lib) $(orl_lib)
 
 ###########
 # rc stuff
@@ -114,8 +114,8 @@ verrc_dll = $(dllname)
 
 !ifdef wlink_dll
 
-$(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+$(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags_gen) $(comp_objs_drv) $(dllname).lib $(ldflags_gen)
 !else
     @%write drv.lnk $(lflags)
@@ -127,13 +127,13 @@ $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(
 
 !else
 
-$(exename).exe : $(extra_link_res_$(host_os)) wlink.res $(comp_objs_exe) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-    $(cl) $(clflags) $(comp_objs_exe) $(xlibs) $(ldflags)
+$(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
-    @for %i in ($(xlibs)) do @%append exe.lnk lib %i
+    @for %i in ($(libs)) do @%append exe.lnk lib %i
     $(linker) name $@ @exe.lnk
 !endif
     @%make bind_version_res_exe
@@ -141,13 +141,13 @@ $(exename).exe : $(extra_link_res_$(host_os)) wlink.res $(comp_objs_exe) $(xlibs
 
 !endif
 
-$(dllname).dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
-    $(cl) $(clflags_dll) $(comp_objs_dll) $(xlibs) $(ldflags_dll)
+$(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+    $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
     @%write dll.lnk $(lflags_dll)
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
-    @for %i in ($(xlibs)) do @%append dll.lnk lib %i
+    @for %i in ($(libs)) do @%append dll.lnk lib %i
     $(linker) name $@ @dll.lnk
 !endif
     @%make bind_version_res_dll
@@ -156,14 +156,14 @@ $(dllname).dll : wlink.res $(comp_objs_dll) $(xlibs) $(version_res_dll_$(host_os
 #################
 # auxiliary rules
 
-wlink.res : rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg ../h/wlink.rc
-    $(rc_aui) -I"$(wrc_dir)/h" $]@ -fo=$^@
+wlink.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
+    $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
 
-rcmsg.gh : wrcmsg.gh
+rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
     *awk -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
-wrcmsg.gh : $(wrc_dir)/h/rc.msg
+wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
-usage.u : ../h/usage.sp
-    *wsplice -u $< $@
+usage.u : ../h/usage.sp $(__MAKEFILES__)
+    *wsplice -u $[@ $@

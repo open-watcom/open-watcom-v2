@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,84 +40,62 @@
 #include "conflict.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "x86splt2.h"
+#include "insutil.h"
+#include "optab.h"
+#include "inssegs.h"
 
 
-extern  void            ChangeType( instruction *, type_class_def );
 extern  name            *IntEquivalent( name * );
-extern  void            DupSegOp( instruction *, instruction *, int );
-extern  opcode_entry    *CodeTable( instruction * );
 extern  bool            SameThing( name *, name * );
-extern  instruction     *MoveConst( unsigned_32, name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  void            DupSegRes( instruction *, instruction * );
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  void            SuffixIns( instruction *, instruction * );
-extern  void            HalfType( instruction * );
-extern  hw_reg_set      High64Reg( hw_reg_set );
-extern  hw_reg_set      High48Reg( hw_reg_set );
-extern  hw_reg_set      High32Reg( hw_reg_set );
-extern  hw_reg_set      High16Reg( hw_reg_set );
-extern  hw_reg_set      Low64Reg( hw_reg_set );
-extern  hw_reg_set      Low48Reg( hw_reg_set );
-extern  hw_reg_set      Low32Reg( hw_reg_set );
-extern  hw_reg_set      Low16Reg( hw_reg_set );
-extern  name            *AllocRegName( hw_reg_set );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  void            ReplIns( instruction *, instruction * );
-extern  void            PrefixIns( instruction *, instruction * );
-extern  void            DupSeg( instruction *, instruction * );
 extern  name            *SegName( name * );
-extern  name            *ScaleIndex( name *, name *, type_length, type_class_def, type_length, int, i_flags );
 extern  name            *OpAdjusted( name *, int, type_class_def );
 extern  int             NumOperands( instruction * );
 extern  bool            Overlaps( name *, name * );
 extern  void            CnvOpToInt( instruction *, int );
 extern  name            *Int64Equivalent( name * );
 
-extern    type_class_def        HalfClass[];
-extern    type_class_def        Unsigned[];
-
-extern  name    *LowPart( name *tosplit, type_class_def class )
-/*************************************************************/
+name    *LowPart( name *tosplit, type_class_def class )
+/*****************************************************/
 {
     name                *new = NULL;
     signed_8            s8;
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = tosplit->c.int_value & 0xff;
+                u8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = tosplit->c.int_value & 0xff;
+                s8 = tosplit->c.lo.int_value & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = tosplit->c.int_value & 0xffff;
+                u16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = tosplit->c.int_value & 0xffff;
+                s16 = tosplit->c.lo.int_value & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value );
+                new = AllocS32Const( tosplit->c.lo.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value );
+                new = AllocU32Const( tosplit->c.lo.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[1] << 16;
-                u32 += floatval->value[0];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 0 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_OFFSET );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -154,8 +133,8 @@ extern  name    *LowPart( name *tosplit, type_class_def class )
     return( new );
 }
 
-extern  name    *OffsetPart( name *tosplit )
-/******************************************/
+name    *OffsetPart( name *tosplit )
+/**********************************/
 {
     name        *new;
 
@@ -166,8 +145,7 @@ extern  name    *OffsetPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( tosplit );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_OFFSET ) );
+            return( AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_OFFSET ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( tosplit );
@@ -188,8 +166,8 @@ extern  name    *OffsetPart( name *tosplit )
 }
 
 
-extern  name    *SegmentPart( name *tosplit )
-/*******************************************/
+name    *SegmentPart( name *tosplit )
+/***********************************/
 {
     name        *new;
     name        *seg;
@@ -199,8 +177,7 @@ extern  name    *SegmentPart( name *tosplit )
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             return( AllocIntConst( 0 ) );
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            return( AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_SEGMENT ) );
+            return( AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT ) );
         } else {
             _Zoiks( ZOIKS_044 );
             return( NULL );
@@ -234,47 +211,43 @@ extern  name    *SegmentPart( name *tosplit )
 }
 
 
-extern  name    *HighPart( name *tosplit, type_class_def class )
-/**************************************************************/
+name    *HighPart( name *tosplit, type_class_def class )
+/******************************************************/
 {
     name                *new = NULL;
     signed_8            s8;
     unsigned_8          u8;
     signed_16           s16;
     unsigned_16         u16;
-    unsigned_32         u32;
     constant_defn       *floatval;
 
     switch( tosplit->n.class ) {
     case N_CONSTANT:
         if( tosplit->c.const_type == CONS_ABSOLUTE ) {
             if( class == U1 ) {
-                u8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                u8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocUIntConst( u8 );
             } else if( class == I1 ) {
-                s8 = ( tosplit->c.int_value >> 8 ) & 0xff;
+                s8 = ( tosplit->c.lo.int_value >> 8 ) & 0xff;
                 new = AllocIntConst( s8 );
             } else if( class == U2 ) {
-                u16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                u16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocUIntConst( u16 );
             } else if( class == I2 ) {
-                s16 = ( tosplit->c.int_value >> 16 ) & 0xffff;
+                s16 = ( tosplit->c.lo.int_value >> 16 ) & 0xffff;
                 new = AllocIntConst( s16 );
             } else if( class == I4 ) {
-                new = AllocS32Const( tosplit->c.int_value_2 );
+                new = AllocS32Const( tosplit->c.hi.int_value );
             } else if( class == U4 ) {
-                new = AllocUIntConst( tosplit->c.int_value_2 );
+                new = AllocU32Const( tosplit->c.hi.uint_value );
             } else if( class == FL ) {
                 _Zoiks( ZOIKS_129 );
             } else { /* FD */
                 floatval = GetFloat( tosplit, FD );
-                u32 = (unsigned_32)floatval->value[3] << 16;
-                u32 += floatval->value[2];
-                new = AllocConst( CFCnvU32F( _TargetLongInt( u32 ) ) );
+                new = AllocConst( CFCnvU32F( _TargetLongInt( *(unsigned_32 *)( floatval->value + 2 ) ) ) );
             }
         } else if( tosplit->c.const_type == CONS_ADDRESS ) {
-            new = AddrConst( tosplit->c.value,
-                                   tosplit->c.int_value, CONS_SEGMENT );
+            new = AddrConst( tosplit->c.value, tosplit->c.lo.int_value, CONS_SEGMENT );
         } else {
             _Zoiks( ZOIKS_044 );
         }
@@ -314,8 +287,8 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
 }
 
 
-extern  instruction     *SplitUnary( instruction *ins )
-/******************************************************
+instruction     *SplitUnary( instruction *ins )
+/**********************************************
  * Pushing floating point */
 {
     instruction     *new_ins;
@@ -347,8 +320,8 @@ extern  instruction     *SplitUnary( instruction *ins )
 }
 
 
-extern  instruction     *rSPLITPUSH( instruction *ins )
-/******************************************************
+instruction     *rSPLITPUSH( instruction *ins )
+/**********************************************
  * Pushing a 6 byte pointer */
 {
     instruction     *new_ins;
@@ -356,9 +329,7 @@ extern  instruction     *rSPLITPUSH( instruction *ins )
     name            *op;
     name            *temp;
 
-    new_ins = MakeUnary( ins->head.opcode,
-                         OffsetPart( ins->operands[0] ),
-                         NULL, U4 );
+    new_ins = MakeUnary( ins->head.opcode, OffsetPart( ins->operands[0] ), NULL, U4 );
     ins->operands[0] = SegmentPart( ins->operands[0] );
     op = ins->operands[0];
     DupSeg( ins, new_ins );
@@ -382,8 +353,8 @@ extern  instruction     *rSPLITPUSH( instruction *ins )
     }
 }
 
-extern  instruction     *rMAKEU2( instruction *ins )
-/***************************************************
+instruction     *rMAKEU2( instruction *ins )
+/*******************************************
  * for 48 bit pointers operations */
 {
     instruction     *new_ins;
@@ -431,8 +402,8 @@ extern  instruction     *rMAKEU2( instruction *ins )
 
 
 
-extern instruction      *rLOADLONGADDR( instruction *ins )
-/********************************************************/
+instruction      *rLOADLONGADDR( instruction *ins )
+/*************************************************/
 {
     instruction         *new_ins;
     name                *name1;
@@ -457,8 +428,8 @@ extern instruction      *rLOADLONGADDR( instruction *ins )
 }
 
 
-extern  instruction     *rHIGHCMP( instruction *ins )
-/****************************************************
+instruction     *rHIGHCMP( instruction *ins )
+/********************************************
  * floating point comparison with 0 */
 {
     if( ins->type_class == FD ) {
@@ -469,8 +440,8 @@ extern  instruction     *rHIGHCMP( instruction *ins )
 }
 
 
-extern  instruction     *rMAKEU4( instruction *ins )
-/***************************************************
+instruction     *rMAKEU4( instruction *ins )
+/*******************************************
  * change pointer '==' or '!=' to 6 byte compare */
 {
     name                *left;
@@ -528,8 +499,8 @@ extern  instruction     *rMAKEU4( instruction *ins )
 }
 
 
-extern  instruction     *rCLRHI_D( instruction *ins )
-/***************************************************/
+instruction     *rCLRHI_D( instruction *ins )
+/*******************************************/
 {
     name                *high;
     name                *low;
@@ -549,8 +520,8 @@ extern  instruction     *rCLRHI_D( instruction *ins )
 }
 
 
-extern  instruction     *rEXT_PUSH1( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH1( instruction *ins )
+/*********************************************/
 {
     name        *temp;
     instruction *new_ins;
@@ -566,8 +537,8 @@ extern  instruction     *rEXT_PUSH1( instruction *ins )
 
 
 
-extern  instruction     *rEXT_PUSH2( instruction *ins )
-/*****************************************************/
+instruction     *rEXT_PUSH2( instruction *ins )
+/*********************************************/
 {
     name        *temp;
     instruction *new_ins;
@@ -581,8 +552,8 @@ extern  instruction     *rEXT_PUSH2( instruction *ins )
     return( new_ins );
 }
 
-extern  instruction     *rINTCOMP( instruction *ins )
-/***************************************************/
+instruction     *rINTCOMP( instruction *ins )
+/*******************************************/
 {
     name                *left;
     name                *right;
@@ -649,8 +620,8 @@ extern  instruction     *rINTCOMP( instruction *ins )
     return( high );
 }
 
-extern  instruction     *rCDQ( instruction *ins )
-/***********************************************/
+instruction     *rCDQ( instruction *ins )
+/***************************************/
 {
     instruction *ins2;
     name        *high;
@@ -667,8 +638,8 @@ extern  instruction     *rCDQ( instruction *ins )
     return( ins );
 }
 
-extern  instruction     *rCONVERT_UP( instruction *ins )
-/******************************************************/
+instruction     *rCONVERT_UP( instruction *ins )
+/**********************************************/
 {
     name                *temp;
     instruction         *ins1;
@@ -696,8 +667,8 @@ extern  instruction     *rCONVERT_UP( instruction *ins )
     return( ins1 );
 }
 
-extern  instruction     *rCYP_SEX( instruction *ins )
-/***************************************************/
+instruction     *rCYP_SEX( instruction *ins )
+/*******************************************/
 {
     name            *op;
     name            *new_op;
@@ -717,13 +688,15 @@ extern  instruction     *rCYP_SEX( instruction *ins )
     return( ins );
 }
 
-extern  instruction     *rSPLIT8( instruction *ins ) { return( ins ); }
-extern  instruction     *rSPLIT8BIN( instruction *ins ) { return( ins ); }
-extern  instruction     *rSPLIT8NEG( instruction *ins ) { return( ins ); }
-extern  instruction     *rSPLIT8TST( instruction *ins ) { return( ins ); }
-extern  instruction     *rSPLIT8CMP( instruction *ins ) { return( ins ); }
-extern  instruction     *rCLRHIGH_DW( instruction *ins ) { return( ins ); }
-extern  instruction     *rSEX_DW( instruction *ins ) { return( ins ); }
-extern  instruction     *rCYPSHIFT( instruction *ins ) { return( ins ); }
-extern  instruction     *rBYTESHIFT( instruction *ins ) { return( ins ); }
-extern  instruction     *rMOVE8LOW( instruction *ins ) { return( ins ); }
+instruction     *rSPLIT8( instruction *ins ) { return( ins ); }
+instruction     *rSPLIT8BIN( instruction *ins ) { return( ins ); }
+instruction     *rSPLIT8NEG( instruction *ins ) { return( ins ); }
+instruction     *rSPLIT8TST( instruction *ins ) { return( ins ); }
+instruction     *rSPLIT8CMP( instruction *ins ) { return( ins ); }
+#if 0
+instruction     *rCLRHIGH_DW( instruction *ins ) { return( ins ); }
+instruction     *rSEX_DW( instruction *ins ) { return( ins ); }
+#endif
+instruction     *rCYPSHIFT( instruction *ins ) { return( ins ); }
+instruction     *rBYTESHIFT( instruction *ins ) { return( ins ); }
+instruction     *rMOVE8LOW( instruction *ins ) { return( ins ); }

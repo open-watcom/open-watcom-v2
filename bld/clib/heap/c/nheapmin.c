@@ -37,18 +37,18 @@
 #include "heap.h"
 #include "heapacc.h"
 #if defined(__WINDOWS_286__) || defined(__NT__)
- #include <windows.h>
+    #include <windows.h>
 #elif defined(__WINDOWS_386__)
- #include "windpmi.h"
+    #include "windpmi.h"
 #endif
 #if defined(__OS2__)
- #include <wos2.h>
+    #include <wos2.h>
 #endif
 #if defined(__RDOS__)
- #include <rdos.h>
+    #include <rdos.h>
 #endif
 #if defined(__CALL21__)
- #include "tinyio.h"
+    #include "tinyio.h"
 #endif
 
 
@@ -164,7 +164,7 @@ _WCRTLINK int _nheapshrink( void )
             return( 0 ); // No near heap, can't shrink
         }
         /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( mhp = __nheapbeg; mhp->next; mhp = mhp->next )
+        for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next )
             ;
         /* check that last free block is at end of heap */
         last_free = mhp->freehead.prev;
@@ -199,7 +199,7 @@ _WCRTLINK int _nheapshrink( void )
             // this miniheapblk is still being used
   #if defined(__DOS_EXT__)
             frlptr new_last_free;
-            new_last_free = (frlptr)((((unsigned)last_free + 0xfff) & ~0xfff) - TAG_SIZE);
+            new_last_free = (frlptr)( __ROUND_UP_SIZE_4K( (unsigned)last_free ) - TAG_SIZE );
             if( new_last_free == last_free ) {
   #endif
                 // remove entire entry
@@ -256,7 +256,7 @@ _WCRTLINK int _nheapshrink( void )
         mheapptr pnext;
 
         _AccessNHeap();
-        for( mhp = __nheapbeg; mhp; mhp = pnext ) {
+        for( mhp = __nheapbeg; mhp != NULL; mhp = pnext ) {
             pnext = mhp->next;
             if( mhp->len - sizeof( miniheapblkp ) == (mhp->freehead.prev)->len ) {
                 __ReleaseMiniHeap( mhp );

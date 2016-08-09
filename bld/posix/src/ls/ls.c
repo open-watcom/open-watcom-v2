@@ -230,15 +230,15 @@ int main( int argc, char *argv[] )
 /*
  * Compare routines follow
  */
-int Compare( struct dirent **p1, struct dirent **p2 )
+static int Compare( struct dirent **p1, struct dirent **p2 )
 {
     return( strcmp( (*p1)->d_name, (*p2)->d_name ) );
 }
-int CompareReverse( struct dirent **p1, struct dirent **p2 )
+static int CompareReverse( struct dirent **p1, struct dirent **p2 )
 {
     return( strcmp( (*p2)->d_name, (*p1)->d_name ) );
 }
-int CompareDate( struct dirent **p1, struct dirent **p2 )
+static int CompareDate( struct dirent **p1, struct dirent **p2 )
 {
     if( (*p1)->d_date < (*p2)->d_date ) {
         return( 1 );
@@ -254,7 +254,7 @@ int CompareDate( struct dirent **p1, struct dirent **p2 )
     }
     return( Compare( p1, p2 ) );
 }
-int CompareDateReverse( struct dirent **p1, struct dirent **p2 )
+static int CompareDateReverse( struct dirent **p1, struct dirent **p2 )
 {
     if( (*p1)->d_date > (*p2)->d_date ) {
         return( 1 );
@@ -270,7 +270,7 @@ int CompareDateReverse( struct dirent **p1, struct dirent **p2 )
     }
     return( CompareReverse( p1, p2 ) );
 }
-int CompareSize( struct dirent **p1, struct dirent **p2 )
+static int CompareSize( struct dirent **p1, struct dirent **p2 )
 {
     if( (*p1)->d_size < (*p2)->d_size ) {
         return( 1 );
@@ -280,7 +280,7 @@ int CompareSize( struct dirent **p1, struct dirent **p2 )
     }
     return( Compare( p1, p2 ) );
 }
-int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
+static int CompareSizeReverse( struct dirent **p1, struct dirent **p2 )
 {
     if( (*p1)->d_size > (*p2)->d_size ) {
         return( 1 );

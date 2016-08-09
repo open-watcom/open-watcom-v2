@@ -820,7 +820,7 @@ static EVENT td_sizeevent( void )
 
     if( !SizePending )
         return( EV_NO_EVENT );
-    if( !uiinlist( EV_BACKGROUND_RESIZE ) )
+    if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
     if( !setupscrnbuff( 0, 0 ) )
         return( EV_NO_EVENT );

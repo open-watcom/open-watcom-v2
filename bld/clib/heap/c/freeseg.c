@@ -41,7 +41,6 @@
     #include <dos.h>
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #include "tinyos2.h"
     #if defined(__BIG_DATA__)
         #define MODIFIES ds es
     #else
@@ -129,7 +128,6 @@ static int __DoFreeSeg( __segment first )
 #endif
     segments = (size + 65535L) >> 16;
     last = first + (__segment)((segments - 1L) << _RWD_HShift);
-
     return( tricky_free_seg( first, last ) );
 }
 #endif
@@ -148,14 +146,17 @@ int __FreeSeg( __segment seg )
     if( __DoFreeSeg( seg ) ) {
         return( -1 );
     }
+#elif defined(__OS2__)
+    APIRET  rc;
+
+    rc = __DoFreeSeg( seg );
+    if( rc ) {
+        return( __set_errno_dos( rc ) );
+    }
 #else
     tiny_ret_t rc;
 
-  #if defined(__OS2__)
-    rc = __DoFreeSeg( seg );
-  #else
     rc = TinyFreeBlock( seg );
-  #endif
     if( TINY_ERROR( rc ) ) {
         return( __set_errno_dos( TINY_INFO( rc ) ) );
     }

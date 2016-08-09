@@ -138,9 +138,6 @@ void    FiniClrPick( void );
 void    InitFtPick( void );
 void    FiniFtPick( void );
 
-bool    GetSetFSDialog( void );
-bool    GetSetScrDialog( void );
-bool    GetSetGenDialog( void );
 void    CenterWindowInRoot( HWND );
 
 // filetype.c

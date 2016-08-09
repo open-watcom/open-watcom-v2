@@ -94,9 +94,11 @@ void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         CLIWrite( sect, zeros, sizeof( zeros ) );
         break;
     default:
+        va_end( args );
         abort();
         break;
     }
+    va_end( args );
 }
 
 

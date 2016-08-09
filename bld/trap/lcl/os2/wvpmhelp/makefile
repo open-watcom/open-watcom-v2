@@ -18,7 +18,7 @@ wvpmhelp_autodepends = .AUTODEPEND
 w d : wdpmhook.dll wdpmhelp.exe .SYMBOLIC
         @%null
 
-wdpmhook.dll: pmhook.obj loadstd.obj
+wdpmhook.dll: pmhook.obj loadstd.obj $(__MAKEFILES__)
     @%write  $^&.lnk name $^@ sys os2 dll initglobal
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk option dosseg,quiet
@@ -29,7 +29,7 @@ wdpmhook.dll: pmhook.obj loadstd.obj
     @%append $^&.lnk segment class 'BSS' shared
     $(linker) @$^&.lnk
 
-wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj
+wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
     @%write  $^&.lnk name $^@ system os2 pm
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk file pmhelp.obj

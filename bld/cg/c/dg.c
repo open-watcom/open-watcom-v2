@@ -74,8 +74,8 @@ extern  void    DGAlign( uint algn ) {
 //====================================
 
     Action( "DGAlign( %d )%n", algn );
-    Locs[ CurSeg ] += (Locs[ CurSeg ] + algn - 1) % algn;
-    Put("        align to %d byte boundry (%d)%n", algn, Locs[ CurSeg ] );
+    Locs[CurSeg] += (Locs[CurSeg] + algn - 1) % algn;
+    Put("        align to %d byte boundry (%d)%n", algn, Locs[CurSeg] );
 }
 extern  uint    DGSeek( unsigned_32 where ) {
 //====================================
@@ -84,8 +84,8 @@ extern  uint    DGSeek( unsigned_32 where ) {
 
     Action( "DGSeek( %l )", where );
     Put( "        seek to location %l%n", where );
-    old = Locs[ CurSeg ];
-    Locs[ CurSeg ] = where;
+    old = Locs[CurSeg];
+    Locs[CurSeg] = where;
     Action( " -> %l%n", old );
     return( old );
 }
@@ -94,14 +94,14 @@ extern  void    DGUBytes( unsigned_32 len ) {
 
     Action( "DGUBytes( %l )%n", len );
     Put("        %l B(?)%n", len );
-    Locs[ CurSeg ] += len;
+    Locs[CurSeg] += len;
 }
 extern  void    DGIBytes( unsigned_32 len, byte pat ) {
 //=============================================
 
     Action( "DGIBytes( %l, %h )%n", len, pat );
     Put("        %d B(%h)%n", len, pat );
-    Locs[ CurSeg ] += len;
+    Locs[CurSeg] += len;
 }
 extern  void    DGLabel( b *bk ) {
 //================================
@@ -111,14 +111,14 @@ extern  void    DGLabel( b *bk ) {
     DDefLabel( bk->lp );
     VerBack(bk);
     PutName(bk);
-    bk->loc = Locs[ CurSeg ];
+    bk->loc = Locs[CurSeg];
     Put(":%n");
 }
 extern  unsigned_32     DGTell() {
 //========================
 
-    Action( "DGTell() -> %l%n", Locs[ CurSeg ] );
-    return( Locs[ CurSeg ] );
+    Action( "DGTell() -> %l%n", Locs[CurSeg] );
+    return( Locs[CurSeg] );
 }
 extern  unsigned_32     DGBackTell( b *bk ) {
 //===================================
@@ -141,11 +141,11 @@ extern  void    DGFEPtr( sym s, cg_type t, signed_32 o ) {
     Action( "( %s, %s, %l )%n", Name( s ), Tipe( t ), o );
     bk = (b*)FEBack(s);
     VerBack(bk);
-    if( !( FEAttr( s ) & FE_IMPORT ) ) DRefLabel( bk->lp );
+    if( (FEAttr( s ) & FE_IMPORT) == 0 ) DRefLabel( bk->lp );
     Put( "        A(" );
     PutName(bk);
     Put( ") + %l %s%n",o,Tipe(t) );
-    Locs[ CurSeg ] += TypeAddress( t )->length;
+    Locs[CurSeg] += TypeAddress( t )->length;
 }
 extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
 //==========================================================================
@@ -157,7 +157,7 @@ extern  void    DGBackPtr( b *bk, segment_id s, signed_32 o, cg_type t ) {
     Put( "        A(" );
     PutName(bk);
     Put( ") + %l (seg %d) %s%n",o,s,Tipe(t) );
-    Locs[ CurSeg ] += TypeAddress( t )->length;
+    Locs[CurSeg] += TypeAddress( t )->length;
 }
 extern  void    DGBytes( unsigned_32 len, const void *bp ) {
 //============================================
@@ -170,14 +170,14 @@ extern  void    DGBytes( unsigned_32 len, const void *bp ) {
         --len;
     }
     Put( "%n" );
-    Locs[ CurSeg ] += len;
+    Locs[CurSeg] += len;
 }
 extern  void    PutName( b *bk ) {
 //================================
 
     Put( "%s", Label( bk->lp ) );
     if( bk->s != NULL ) {
-        Put( " [ %s ]", Name( bk->s ) );
+        Put( " [%s]", Name( bk->s ) );
     }
 }
 extern  void    DGInteger(  unsigned_32 i,  cg_type  t ) {
@@ -188,16 +188,16 @@ extern  void    DGInteger(  unsigned_32 i,  cg_type  t ) {
     Action( "( %l, %s )%n", i, Tipe( t ) );
     Put( "        I(%l)", i );
     Put( " %s%n", Tipe(t) );
-    Locs[ CurSeg ] += TypeAddress( t )->length;
+    Locs[CurSeg] += TypeAddress( t )->length;
 }
 extern  void    DGCFloat( float_handle f, cg_type t ) {
 //=====================================================
-    char        buffer[ 80 ];
+    char        buffer[80];
 
     CFCnvFS( f, buffer, 80 );
     Put( "        F(%s)", buffer );
     Put( " %s%n", Tipe(t) );
-    Locs[ CurSeg ] += TypeAddress( t )->length;
+    Locs[CurSeg] += TypeAddress( t )->length;
 }
 extern  void    DGFloat( cchar_ptr f, cg_type t )
 //===============================================
@@ -206,20 +206,20 @@ extern  void    DGFloat( cchar_ptr f, cg_type t )
     VerTipe( t, FloatTypes );
     Put( "        F(%s) %s%n", f, Tipe( t ) );
     Action( "( %s, %s )%n", f, Tipe( t ) );
-    Locs[ CurSeg ] += TypeAddress( t )->length;
+    Locs[CurSeg] += TypeAddress( t )->length;
 }
 extern  void    DGChar( char c ) {
 //================================
 
     Action( "DGChar( %c )%n", c );
     Put( "        C(%c)%n",c );
-    Locs[ CurSeg ] += sizeof( char );
+    Locs[CurSeg] += sizeof( char );
 }
 extern  void    DGString( cchar_ptr s, uint len )
 //===============================================
 {
     Action( "DGString( ..., %d )%n", len );
-    Locs[ CurSeg ] += len;
+    Locs[CurSeg] += len;
     Put( "        S(" );
     for( ; len != 0; --len ) {
         Put( "%c", *s++ );
@@ -368,7 +368,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
 
     unsigned    stkop;
 
-    Action( "DBLocOp( %p, %s, %d ) ==>", loc, DBOpNames[ op ], other );
+    Action( "DBLocOp( %p, %s, %d ) ==>", loc, DBOpNames[op], other );
     stkop = 0;
     switch( op ) {
     case DB_OP_POINTS:
@@ -382,7 +382,7 @@ extern  dbg_loc         DBLocOp(dbg_loc loc, dbg_loc_op op, unsigned other) {
         case TY_INT_2:
             stkop = LOP_IND_2;
             break;
-#if !( _TARGET & _TARG_IAPX86 )
+#if ( _TARGET & _TARG_IAPX86 ) == 0
         case TY_NEAR_POINTER:
         case TY_NEAR_CODE_PTR:
 #endif

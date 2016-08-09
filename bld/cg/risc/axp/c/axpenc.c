@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <stdio.h>
 #include "cgdefs.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "axpencod.h"
 #include "reloc.h"
@@ -50,6 +50,12 @@
 #include "rscconst.h"
 #include "object.h"
 #include "axpenc.h"
+#include "intrface.h"
+#include "targetin.h"
+#include "rgtbl.h"
+#include "rscobj.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
 
 
@@ -57,19 +63,9 @@ extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
 extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
-extern void             ObjBytes( const char *buffer, unsigned size );
-extern byte             RegTrans( hw_reg_set );
-extern void             OutReloc( label_handle, axp_reloc, unsigned );
-extern hw_reg_set       StackReg( void );
-extern hw_reg_set       FrameReg( void );
-extern name             *DeAlias( name * );
-extern void             TryScrapLabel( label_handle );
-extern  void            ObjEmitSeq( byte_seq * );
 extern  opcode_defs     FlipOpcode( opcode_defs );
 
 extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
-
-extern type_class_def   Unsigned[];
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
@@ -197,9 +193,9 @@ static  uint_8  AlphaByteInsSizeBits[] = {
 // including an exhaustive table would have been too painful.
 static  uint_8  ScratchOpcodes[2];
 
-extern  void EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type ) {
-/**************************************************************************/
-
+static void EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type )
+/***********************************************************************/
+{
     any_oc          oc;
 
     oc.oc_rins.hdr.class = OC_RCODE;
@@ -278,12 +274,12 @@ static  uint_8  *FindOpcodes( instruction *ins ) {
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8 || ins->type_class == I8 ) {
-            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
-            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         }
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     } else if( _OpIsAlphaByteIns( ins->head.opcode ) ) {
         // WARNING: must use these values before calling FindOpcodes again
         opcodes = &ScratchOpcodes[0];
@@ -306,7 +302,7 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
 
     assert( _IsFloating( ins->type_class ) );
     if( _OpIsBinary( ins->head.opcode ) ) {
-        opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][ins->type_class != FS];
+        opcode = FloatingBinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][( ins->type_class != FS ) ? 1 : 0];
     } else if( _OpIsSet( ins->head.opcode ) ) {
         opcode = FloatingSetOpcodes[ins->head.opcode - FIRST_SET_OP][0];
     } else {
@@ -434,9 +430,9 @@ static  uint_8  storeOpcodes[] = {
     0x27,                       /* FL */
 };
 
-extern  type_length     TempLocation( name *temp ) {
-/**************************************************/
-
+type_length     TempLocation( name *temp )
+/****************************************/
+{
     name                *base;
     type_length         offset;
 
@@ -452,15 +448,15 @@ extern  type_length     TempLocation( name *temp ) {
     return( offset + base->t.location + temp->v.offset - base->v.offset );
 }
 
-void    GenCallLabelReg( pointer label, uint reg ) {
-/**************************************************/
-
+void    GenCallLabelReg( pointer label, uint reg )
+/************************************************/
+{
     GenBRANCH( 0x34, reg, label );
 }
 
-void    GenCallLabel( pointer label ) {
-/*************************************/
-
+void    GenCallLabel( pointer label )
+/***********************************/
+{
     CodeHandle( OC_CALL, 4, label );
 }
 
@@ -814,7 +810,7 @@ static  void    Encode( instruction *ins ) {
         assert( ins->result->n.class == N_REGISTER );
         opcodes = FindOpcodes( ins );
         GenOPIMM( opcodes[0], opcodes[1],
-                        _NameReg( ins->operands[0] ), ins->operands[1]->c.int_value,
+                        _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value,
                         _NameReg( ins->result ) );
         break;
     case G_BYTE_CONST:
@@ -822,7 +818,7 @@ static  void    Encode( instruction *ins ) {
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         GenOPIMM( 0x10, 0x00,
-                        AXP_ZERO_SINK, (uint_8)ins->operands[0]->c.int_value,
+                        AXP_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value,
                         _NameReg( ins->result ) );
         break;
     case G_MOVE:
@@ -847,14 +843,14 @@ static  void    Encode( instruction *ins ) {
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
-        GenMEMINS( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenMEMINS( 0x09, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
-            GenMEMINS( 0x08, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.int_value );
+            GenMEMINS( 0x08, _NameReg( ins->result ), AXP_ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -966,4 +962,45 @@ byte    CondCode( instruction *ins )
 /**********************************/
 {
     return( ins->head.opcode );
+}
+
+void    ObjEmitSeq( byte_seq *code )
+/**********************************/
+{
+    byte_seq_reloc      *curr;
+    back_handle         back;
+    type_length         loc;
+    byte_seq_len        i;
+    axp_ins             *code_ptr;
+    axp_ins             opcode;
+    pointer             reloc_sym;
+    owl_reloc_type      reloc_type;
+
+    assert( code->length % 4 == 0 );
+    curr = SortListReloc( code->relocs );
+    code_ptr = (axp_ins *)code->data;
+    for( i = 0; i < code->length; i += 4 ) {
+        opcode = *code_ptr++;
+        reloc_type = 0;
+        reloc_sym = NULL;
+        while( curr != NULL && curr->off == i ) {
+            back = SymBack( curr->sym );
+            switch( curr->type ) {
+            case OWL_RELOC_FP_OFFSET:
+                loc = TempLocation( (name *)back );
+                if( loc > 32767 ) {
+                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                }
+                opcode |= _SignedImmed( loc );
+                break;
+            case OWL_RELOC_PAIR:
+                break;
+            default:
+                reloc_type = curr->type;
+                reloc_sym = back->lbl;
+            }
+            curr = curr->next;
+        }
+        EmitInsReloc( opcode, reloc_sym, reloc_type );
+    }
 }

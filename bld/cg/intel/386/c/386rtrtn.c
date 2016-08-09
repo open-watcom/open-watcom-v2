@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,23 +40,18 @@
 #include "rtrtn.h"
 #include "objout.h"
 #include "namelist.h"
+#include "makeblk.h"
+#include "insutil.h"
+#include "rgtbl.h"
+#include "rtcall.h"
+#include "inssegs.h"
+
 
 extern  name            *GenFloat( name *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
-extern  void            ReplIns( instruction *, instruction * );
-extern  void            SuffixIns( instruction *, instruction * );
-extern  void            MoveSegRes( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
-extern  void            DelSeg( instruction * );
-extern  void            PrefixIns( instruction *, instruction * );
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  name            *AllocRegName( hw_reg_set );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  void            AddIns( instruction * );
-extern  name            *AllocIndex( name *, name *, type_length, type_class_def );
 extern  name            *AddrConst( name *, int, constant_class );
-extern  instruction     *rMAKECALL( instruction * );
-extern  hw_reg_set      FirstReg( reg_set_index );
 
 /*
  * If you add a new routine, let John know as the debugger recognizes
@@ -119,8 +115,8 @@ static  struct STRUCT_byte_seq( 6 ) Scn4ES = {  /* or Scn2 in USE16 */
 };
 
 
-extern  char    *AskRTName( rt_class rtindex )
-/********************************************/
+const char  *AskRTName( rt_class rtindex )
+/****************************************/
 {
     if( _IsTargetModel( INDEXED_GLOBALS ) ) {
         switch( rtindex ) {
@@ -146,8 +142,8 @@ extern  char    *AskRTName( rt_class rtindex )
 }
 
 
-extern  bool    RTLeaveOp2( instruction *ins )
-/*********************************************
+bool    RTLeaveOp2( instruction *ins )
+/*************************************
     return true if it's a bad idea to put op2 into a temporary since we're
     gonna take the bugger's address in rMAKECALL.
 */
@@ -159,7 +155,7 @@ extern  bool    RTLeaveOp2( instruction *ins )
 
 extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class )
 /*********************************************************************************
-    generates a fake call to a rutime routine that looks up "value" in a table
+    generates a fake call to a runtime routine that looks up "value" in a table
     and jumps to the appropriate case, using either a pointer or index
     returned by the "routine". The "routine" will be generated inline later.
     See BEAuxInfo for the code sequences generated. That will explain
@@ -171,20 +167,24 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     name        *result;
     name        *label;
     hw_reg_set  tmp;
+    rt_class    rtindex;
 
     switch( class ) {
     case U1:
-        RoutineNum = RT_SCAN1;
+        rtindex = RT_SCAN1;
         break;
     case U2:
-        RoutineNum = RT_SCAN2;
+        rtindex = RT_SCAN2;
         break;
     case U4:
-        RoutineNum = RT_SCAN4;
+        rtindex = RT_SCAN4;
+        break;
+    default:
+        rtindex = RT_NOP;
         break;
     }
 
-    reg_name = AllocRegName( FirstReg( RTInfo[RoutineNum].left ) );
+    reg_name = AllocRegName( FirstReg( RTInfo[rtindex].left ) );
     new_ins = MakeConvert( value, reg_name, class, value->n.name_class );
     AddIns( new_ins );
 
@@ -201,13 +201,13 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
     new_ins = NewIns( 3 );
     new_ins->head.opcode = OP_CALL;
     new_ins->type_class = U2;
-    tmp = FirstReg( RTInfo[RoutineNum].left );
+    tmp = FirstReg( RTInfo[rtindex].left );
     HW_CTurnOn( tmp, HW_ECX );
     HW_CTurnOn( tmp, HW_EDI );
     HW_CTurnOn( tmp, HW_ES );
     new_ins->operands[CALL_OP_USED] = AllocRegName( tmp );
     new_ins->operands[CALL_OP_USED2] = new_ins->operands[CALL_OP_USED];
-    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel(RoutineNum), 0, CG_LBL, U4 );
+    new_ins->operands[CALL_OP_ADDR] = AllocMemory( RTLabel( rtindex ), 0, CG_LBL, U4 );
     new_ins->result = NULL;
     new_ins->num_operands = 2;
     AddIns( new_ins );
@@ -221,7 +221,7 @@ extern  name    *ScanCall( tbl_control *table, name *value, type_class_def class
         HW_CAsgn( tmp, HW_CS );
         HW_CTurnOn( tmp, HW_EDI );
         result = AllocRegName( tmp );
-        result = AllocIndex( result, NULL, ( table->size - 1 )*4, U4 );
+        result = AllocIndex( result, NULL, ( table->size - 1 ) * 4, U4 );
         new_ins = MakeMove( result, AllocTemp( WD ), WD );
         AddIns( new_ins );
         result = new_ins->result;
@@ -245,7 +245,8 @@ extern  name    *Addressable( name *cons, type_class_def class )
     it into memory if it isnt)
 */
 {
-    if( cons->n.class == N_CONSTANT ) return( GenFloat( cons, class ) );
+    if( cons->n.class == N_CONSTANT )
+        return( GenFloat( cons, class ) );
     return( cons );
 }
 
@@ -259,22 +260,27 @@ extern  pointer BEAuxInfo( pointer hdl, aux_class request )
     case AUX_LOOKUP:
         switch( FindRTLabel( hdl ) ) {
         case RT_SCAN1:
-            if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn1ES );
+            if( _IsntTargetModel( FLAT_MODEL ) )
+                return( &Scn1ES );
             return( &Scn1 );
         case RT_SCAN2:
             if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn4ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn4ES );
                 return( &Scn4 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn2ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn2ES );
                 return( &Scn2 );
             }
         case RT_SCAN4:
             if( _IsntTargetModel( USE_32 ) ) {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn2ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn2ES );
                 return( &Scn2 );
             } else {
-                if( _IsntTargetModel( FLAT_MODEL ) ) return( &Scn4ES );
+                if( _IsntTargetModel( FLAT_MODEL ) )
+                    return( &Scn4ES );
                 return( &Scn4 );
             }
         default:

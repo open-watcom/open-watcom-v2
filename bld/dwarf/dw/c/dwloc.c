@@ -404,6 +404,7 @@ void DWENTRY DWLocOp( dw_client cli, dw_loc_id loc, uint user_op, ... )
         nextOp( cli, loc, op_code, 0 );
         break;
     }
+    va_end( args );
 }
 
 

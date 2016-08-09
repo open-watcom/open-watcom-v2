@@ -86,7 +86,7 @@ void PModList( mod_entry *head )
 void PModule( mod_entry *obj )
 /***********************************/
 {
-    if( !(obj->modinfo & MOD_NEED_PASS_2) )
+    if( (obj->modinfo & MOD_NEED_PASS_2) == 0 )
         return;
     DEBUG(( DBG_BASE, "2 : processing module %s", obj->name ));
     CurrMod = obj;

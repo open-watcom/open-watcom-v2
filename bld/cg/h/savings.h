@@ -38,11 +38,11 @@
 
 typedef struct savings {
         save_def        index_save;
-        save_def        load_cost[XX+1];
-        save_def        store_cost[XX+1];
-        save_def        use_save[XX+1];
-        save_def        def_save[XX+1];
-        save_def        push_cost[XX+1];
-        save_def        pop_cost[XX+1];
-        save_def        loop_weight[ MAX_LOOP + 1];
+        save_def        load_cost[XX + 1];
+        save_def        store_cost[XX + 1];
+        save_def        use_save[XX + 1];
+        save_def        def_save[XX + 1];
+        save_def        push_cost[XX + 1];
+        save_def        pop_cost[XX + 1];
+        save_def        loop_weight[MAX_LOOP + 1];
 } savings;

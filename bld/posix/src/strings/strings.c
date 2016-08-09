@@ -41,7 +41,7 @@
 
 char *OptEnvVar = "STRINGS";
 
-#define STATIC
+#define STATIC  static
 
 STATIC const char *usageTxt[] = {
     "Usage: strings [-?xX] [-num] [files...]",

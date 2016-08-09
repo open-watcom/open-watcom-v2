@@ -83,7 +83,7 @@ int             flagComplement;
                 If n is not present, then it defaults to 256.
 */
 
-unsigned char expandChar( char **str ) {
+static unsigned char expandChar( char **str ) {
 
     unsigned char   ch;
 
@@ -119,7 +119,7 @@ unsigned char expandChar( char **str ) {
 }
 
 
-size_t expandString( char *str, unsigned char *output ) {
+static size_t expandString( char *str, unsigned char *output ) {
 
     static const char class_msg[] = {
         "[] class must be of the form [x-y] or [a*n]\n"
@@ -186,7 +186,7 @@ size_t expandString( char *str, unsigned char *output ) {
 }
 
 
-void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *str2 ) {
+static void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *str2 ) {
 
     int         i;
     int         j;
@@ -226,7 +226,7 @@ void doTranslate( size_t len1, unsigned char *str1, size_t len2, unsigned char *
 }
 
 
-void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) {
+static void makeSet( size_t len, unsigned char *str, bool set[], bool no_dups ) {
 
     size_t      i;
 

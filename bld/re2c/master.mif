@@ -9,23 +9,18 @@ inc_dirs = -I"$(re2c_dir)/h"
 
 .c: ../c
 
-objs =                  &
-       actions.obj      &
-       code.obj         &
-       dfa.obj          &
-       main.obj         &
-       parser.obj       &
-       scanner.obj      &
-       substr.obj
+objs = &
+    actions.obj &
+    code.obj &
+    dfa.obj &
+    main.obj &
+    parser.obj &
+    scanner.obj &
+    substr.obj
 
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
 extra_c_flags_scanner = -wcd=118
 extra_c_flags_parser = -pil
 !endif
 
-$(proj_name).exe : $(objs)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $< $(ldflags)
-!else
-        $(linker) name $@ $(lflags) file {$(objs)}
-!endif
+!include exetarg.mif

@@ -234,7 +234,7 @@ static void WriteNonAbsSeg( void *_seg )
 {
     seg_leader *seg = _seg;
 
-    if( !(seg->info & SEG_ABSOLUTE) ) {
+    if( (seg->info & SEG_ABSOLUTE) == 0 ) {
         WriteFormat( 0, "%s", seg->segname );
         WriteFormat( 23, "%s", seg->class->name );
         if( seg->group != NULL ) {
@@ -866,7 +866,7 @@ void MapSizes( void )
         Msg_Get( MSG_MAP_OVL_SIZE, msg_buff );
         Write32( msg_buff, (unsigned long)AreaSize * 16 );
     }
-    if( !(FmtData.type & MK_NOVELL) && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
+    if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
 }

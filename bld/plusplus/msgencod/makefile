@@ -1,7 +1,7 @@
 host_cpu = i86
 host_os  = dos
+
 !include cproj.mif
-.erase
 
 objs = wrdencod.obj msgencio.obj
 
@@ -10,7 +10,7 @@ objs = wrdencod.obj msgencio.obj
     $(cc) $[. -oailt -s -d1 -zq -w3 -ml
     rm -f $[.
 
-msgencod.exe : $(objs) setbin.obj dosencod.exe msgencod.lnk
+msgencod.exe : $(objs) setbin.obj dosencod.exe msgencod.lnk $(__MAKEFILES__)
     $(linker) @msgencod.lnk
 
 msgencod.lnk : makefile
@@ -23,7 +23,7 @@ msgencod.lnk : makefile
     @%append $^@ FILE setbin
     @%append $^@ LIB siliblw
 
-dosencod.exe : $(objs) dosencod.lnk
+dosencod.exe : $(objs) dosencod.lnk $(__MAKEFILES__)
     $(linker) @dosencod.lnk
 
 dosencod.lnk : makefile

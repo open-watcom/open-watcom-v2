@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,14 +32,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "data.h"
+#include "insutil.h"
+#include "optab.h"
 
-extern  void            PrefixIns(instruction*,instruction*);
+
 extern  instruction     *MakeWait(void);
-extern  void            SuffixIns(instruction*,instruction*);
 extern  bool            SameThing(name*,name*);
-extern  bool            DoesSomething( instruction *ins );
 
 static  bool    OpsCollide( name *op_87, name *op_86 ) {
 /****************************************************/
@@ -130,7 +130,7 @@ extern  void    Wait8087( void ) {
                     case G_MFLD:
                     case G_MNFBIN:
                     case G_MRFBIN:
-                        last_fpop = ins->operands[ 0 ];
+                        last_fpop = ins->operands[0];
                         last_fpres = NULL;
                         last_fpins = ins;
                         break;

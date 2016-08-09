@@ -376,7 +376,7 @@ rewrite:
  *
  * If the read should be retried, readerror() returns to the caller.
  */
-void readerror( void )
+static void readerror( void )
 {
 #define READ_ERROR_MAX  10
 

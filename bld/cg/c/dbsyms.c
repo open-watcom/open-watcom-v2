@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,7 +35,6 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "cgmem.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "zoiks.h"
 #include "cgaux.h"
@@ -54,10 +54,11 @@
 #include "cv4.h"
 #include "cvsyms.h"
 #include "namelist.h"
+#include "makeblk.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
-extern  void            AddIns(instruction*);
+
 extern  bool            DBNested( bool nested );
 extern  dbg_loc         LocDupl(dbg_loc);
 extern  dbg_loc         LocReg(dbg_loc,name*);
@@ -650,7 +651,7 @@ static  void    AddBlockInfo( dbg_block *blk, bool start )
     ins->flags.nop_flags = NOP_DBGINFO;
     if( start )
         ins->flags.nop_flags |= NOP_DBGINFO_START;
-    ins->operands[ 0 ] = (name *)blk;
+    ins->operands[0] = (name *)blk;
     AddIns( ins );
 }
 
@@ -805,9 +806,9 @@ extern  void    EmitDbgInfo( instruction *ins )
 /*********************************************/
 {
     if( ins->flags.nop_flags & NOP_DBGINFO_START ) {
-        EmitDbg( INFO_DBG_BLK_BEG, ins->operands[ 0 ] );
+        EmitDbg( INFO_DBG_BLK_BEG, ins->operands[0] );
     } else {
-        EmitDbg( INFO_DBG_BLK_END, ins->operands[ 0 ] );
+        EmitDbg( INFO_DBG_BLK_END, ins->operands[0] );
     }
 }
 

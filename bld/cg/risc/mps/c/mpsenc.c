@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,7 +34,6 @@
 #include <stdio.h>
 #include "cgdefs.h"
 #include "coderep.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "mipsenc.h"
 #include "reloc.h"
@@ -49,20 +49,19 @@
 #include "rscconst.h"
 #include "object.h"
 #include "mpsenc.h"
+#include "intrface.h"
+#include "targetin.h"
+#include "rscobj.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
 
-extern void             ObjBytes( const void *buffer, unsigned size );
-extern byte             RegTrans( hw_reg_set );
-extern name             *DeAlias( name * );
-extern void             TryScrapLabel( label_handle );
-extern void             ObjEmitSeq( byte_seq * );
 extern opcode_defs      FlipOpcode( opcode_defs );
 extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
-
-extern type_class_def   Unsigned[];
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
@@ -189,8 +188,8 @@ static  uint_8 FloatingSetOpcodes[] = {
 };
 
 
-extern  void EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type )
-/*************************************************************************/
+static void EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type )
+/************************************************************************/
 {
     any_oc      oc;
 
@@ -240,12 +239,12 @@ static  uint_8  *FindOpcodes( instruction *ins )
 
     if( _OpIsBinary( ins->head.opcode ) ) {
         if( ins->type_class == U8 || ins->type_class == I8 ) {
-            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes8[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         } else {
-            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+            opcodes = &BinaryOpcodes4[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
         }
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &SetOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     } else {
         opcodes = NULL;
         assert( 0 );
@@ -266,12 +265,12 @@ static  uint_8 FindImmedOpcode( instruction *ins )
     if( _OpIsBinary( ins->head.opcode ) ) {
         opcode = BinaryImmedOpcodes[ins->head.opcode - FIRST_BINARY_OP];
     } else if( _OpIsSet( ins->head.opcode ) ) {
-        opcode = SetImmedOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class )];
+        opcode = SetImmedOpcodes[ins->head.opcode - FIRST_SET_OP][_IsSigned( ins->type_class ) ? 1 : 0];
         if( ins->head.opcode == OP_SET_LESS_EQUAL ) {
             // need to increment the immediate by one (since CPU can do
             // 'less than' but not 'less than or equal')
-            ins->operands[1]->c.int_value++;
-            assert( ins->operands[1]->c.int_value <= MIPS_MAX_OFFSET );
+            ins->operands[1]->c.lo.int_value++;
+            assert( ins->operands[1]->c.lo.int_value <= MIPS_MAX_OFFSET );
         }
     } else {
         opcode = 0;
@@ -451,8 +450,8 @@ static  uint_8  storeOpcodes[] = {
     0x3d,                       /* FL */
 };
 
-extern  type_length TempLocation( name *temp )
-/********************************************/
+type_length TempLocation( name *temp )
+/************************************/
 {
     name                *base;
     type_length         offset;
@@ -897,7 +896,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_REGISTER );
         assert( ins->operands[1]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
-        imm_value = ins->operands[1]->c.int_value;
+        imm_value = ins->operands[1]->c.lo.int_value;
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // 'sll rd,rs,n'
@@ -928,7 +927,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->n.class == N_CONSTANT );
         assert( ins->result->n.class == N_REGISTER );
         // 'addiu rt,$zero,immed'
-        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.int_value );
+        GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, (uint_8)ins->operands[0]->c.lo.int_value );
         break;
     case G_MOVE:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -946,7 +945,7 @@ static  void Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         // 'lui rt,immed'
-        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenIType( 0x0f, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -954,7 +953,7 @@ static  void Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // 'addiu rt,$zero,immed'
-            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value );
+            GenIType( 0x09, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -993,7 +992,7 @@ static  void Encode( instruction *ins )
     case G_MOVE_UI:
         // a load of an unsigned 16-bit immediate
         // 'ori rt,rs,immed'
-        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.int_value );
+        GenIType( 0x0d, _NameReg( ins->result ), MIPS_ZERO_SINK, ins->operands[0]->c.lo.int_value );
         break;
     case G_LOAD_UA:
         doLoadStoreUnaligned( ins, true );
@@ -1063,4 +1062,45 @@ byte CondCode( instruction *ins )
 /*******************************/
 {
     return( ins->head.opcode );
+}
+
+void    ObjEmitSeq( byte_seq *code )
+/**********************************/
+{
+    byte_seq_reloc      *curr;
+    back_handle         back;
+    type_length         loc;
+    byte_seq_len        i;
+    mips_ins            *code_ptr;
+    mips_ins            opcode;
+    pointer             reloc_sym;
+    owl_reloc_type      reloc_type;
+
+    assert( code->length % 4 == 0 );
+    curr = SortListReloc( code->relocs );
+    code_ptr = (mips_ins *)code->data;
+    for( i = 0; i < code->length; i += 4 ) {
+        opcode = *code_ptr++;
+        reloc_type = 0;
+        reloc_sym = NULL;
+        while( curr != NULL && curr->off == i ) {
+            back = SymBack( curr->sym );
+            switch( curr->type ) {
+            case OWL_RELOC_FP_OFFSET:
+                loc = TempLocation( (name *)back );
+                if( loc > 32767 ) {
+                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                }
+                opcode |= _SignedImmed( loc );
+                break;
+            case OWL_RELOC_PAIR:
+                break;
+            default:
+                reloc_type = curr->type;
+                reloc_sym = back->lbl;
+            }
+            curr = curr->next;
+        }
+        EmitInsReloc( opcode, reloc_sym, reloc_type );
+    }
 }

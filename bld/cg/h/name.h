@@ -60,7 +60,7 @@ typedef enum {
 
 #define X_BASE          (X_HIGH_BASE+X_LOW_BASE)
 #define HasTrueBase( op ) \
-                ( (op)->i.base != NULL && !((op)->i.index_flags & X_FAKE_BASE) )
+                ( (op)->i.base != NULL && ((op)->i.index_flags & X_FAKE_BASE) == 0 )
 #define HasAlignment( op ) \
                 ( (op)->i.index_flags & (X_ALIGNED_1|X_ALIGNED_2|X_ALIGNED_4|X_ALIGNED_8) )
 
@@ -141,20 +141,25 @@ typedef struct constant_defn {
         type_class_def          const_class;
 } constant_defn;
 
+typedef union value32 {
+        signed_32               int_value;
+        unsigned_32             uint_value;
+} value32;
+
 typedef struct const_name {
         struct name_def         _n;
         pointer                 value;
-        signed_32               int_value;
-        signed_32               int_value_2;    /* high part of 64-bit const */
+        value32                 lo;
+        value32                 hi;             /* high part of 64-bit const */
         struct constant_defn    *static_defn;
         constant_class          const_type;
 } const_name;
 
-typedef struct memory_name {            /*  global name value or address */
+typedef struct memory_name {                    /*  global name value or address */
         struct var_name         _v;
         union name              *same_sym;
-        cg_class                memory_type; /*  what the symbol points to */
-        type_length             alignment;   /*  alignment - 0 if naturally aligned */
+        cg_class                memory_type;    /*  what the symbol points to */
+        type_length             alignment;      /*  alignment - 0 if naturally aligned */
         m_flags                 memory_flags;
 } memory_name;
 
@@ -202,7 +207,7 @@ typedef union name {
         union   name            *_n;
 } name;
 
-#define _FrontEndTmp( op ) ( !( (op)->t.temp_flags & CONST_TEMP ) && \
+#define _FrontEndTmp( op ) ( ((op)->t.temp_flags & CONST_TEMP) == 0 && \
                                 (op)->v.symbol != NULL )
 
 #define _ConstTemp( op ) ( ( (op)->n.class == N_TEMP ) && \

@@ -75,8 +75,8 @@ void    InitBlip() {
         }
         BlipsOn = true;
         src_name = FEAuxInfo( NULL, SOURCE_NAME );
-        strncpy( &fileMapping->file_name[ 0 ], src_name, _MAX_PATH );
-        strcpy( &fileMapping->rtn_name[ 0 ], "" );
+        strncpy( &fileMapping->file_name[0], src_name, _MAX_PATH );
+        strcpy( &fileMapping->rtn_name[0], "" );
         fileMapping->debug.debug_info = false;
     }
 #endif
@@ -113,7 +113,7 @@ void    PGBlip( const char *name )
 /********************************/
 {
     name = name;
-    // strncpy( &fileMapping->rtn_name[ 0 ], name, MAX_RTN );
+    // strncpy( &fileMapping->rtn_name[0], name, MAX_RTN );
 }
 
 

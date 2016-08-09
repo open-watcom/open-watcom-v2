@@ -116,16 +116,6 @@ typedef struct directHead {
 
 STATIC DHEADPTR cacheHead;
 
-#ifdef USE_FAR
-#   define  myMalloc( size )    FarMaybeMalloc( size )
-#   define  myFree( ptr )       FarFree( ptr )
-#   define  myCmp( f, n )       _fFNameCmp( f, n )
-#else
-#   define  myMalloc( size )    MallocUnSafe( size )
-#   define  myFree( ptr )       FreeSafe( ptr )
-#   define  myCmp( f, n )       FNameCmp( f, n )
-#endif
-
 
 STATIC void freeDirectList( DHEADPTR dhead )
 /******************************************/
@@ -143,13 +133,13 @@ STATIC void freeDirectList( DHEADPTR dhead )
         for( h = 0; h < HASH_PRIME; h++ ) {
             for( cwalk = dhead->dh_table[h]; cwalk != NULL; cwalk = cwalk_next ) {
                 cwalk_next = cwalk->ce_next;
-                myFree( cwalk );
+                FarFreeSafe( cwalk );
 #ifdef CACHE_STATS
                 bytes += sizeof( *cwalk );
 #endif
             }
         }
-        myFree( dhead );
+        FarFreeSafe( dhead );
 #ifdef CACHE_STATS
         bytes += sizeof( *dhead );
 #endif
@@ -185,7 +175,7 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
     }
 #endif
 
-    *pdhead = myMalloc( sizeof( **pdhead ) );
+    *pdhead = FarMallocUnSafe( sizeof( **pdhead ) );
     if( *pdhead == NULL ) {
         return( CACHE_NOT_ENUF_MEM );
     }
@@ -194,10 +184,10 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #endif
 
     /* clear the memory */
-    _fmemset( *pdhead, 0, sizeof( **pdhead ) );
+    FarMemSet( *pdhead, 0, sizeof( **pdhead ) );
 
     len = strlen( path );
-    _fmemcpy( (*pdhead)->dh_name, path, len + 1 );
+    FarMemCpy( (*pdhead)->dh_name, path, len + 1 );
     name_ptr = path + len;
 
 #if !defined( __UNIX__ ) //|| defined( __WATCOMC__ )
@@ -220,8 +210,9 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 #endif
         /* we tromp on entry, and get hash value */
         h = Hash( FixName( entry->d_name ), HASH_PRIME );
-        cnew = myMalloc( sizeof( *cnew ) );
+        cnew = FarMallocUnSafe( sizeof( *cnew ) );
         if( cnew == NULL ) {
+            closedir( parent );
             freeDirectList( *pdhead );  /* roll back, and abort */
             *pdhead = NULL;
 #ifdef CACHE_STATS
@@ -283,7 +274,7 @@ STATIC DHEADPTR findDir( const char *path )
 
     dlast = NULL;
     for( dcur = cacheHead; dcur != NULL; dcur = dcur->dh_next ) {
-        if( *path == *dcur->dh_name && myCmp( dcur->dh_name, path ) == 0 ) {
+        if( *path == *dcur->dh_name && FarFNameCmp( dcur->dh_name, path ) == 0 ) {
             break;
         }
         dlast = dcur;
@@ -311,7 +302,7 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
     h = Hash( name, HASH_PRIME );
 
     for( ccur = dir->dh_table[h]; ccur != NULL; ccur = ccur->ce_next ) {
-        if( myCmp( ccur->ce_name, name ) == 0 ) {
+        if( FarFNameCmp( ccur->ce_name, name ) == 0 ) {
             return( ccur );
         }
     }
@@ -338,7 +329,7 @@ STATIC enum cacheRet maybeCache( const char *fullpath, CENTRYPTR *pc )
     _splitpath2( fullpath, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
     _makepath( path, pg.drive, pg.dir, NULL, NULL );
     ext = pg.ext;
-    if( ext[0] == '.' && ext[1] == 0 ) {
+    if( ext[0] == '.' && ext[1] == NULLCHAR ) {
         ext = NULL;
     }
     _makepath( name, NULL, NULL, pg.fname, ext );
@@ -467,9 +458,9 @@ RET_T CacheTime( const char *fullpath, time_t *ptime )
 }
 
 
-BOOLEAN CacheExists( const char *fullpath )
-/*************************************************
- * return TRUE if the file in fullpath exists, FALSE otherwise
+bool CacheExists( const char *fullpath )
+/***************************************
+ * return true if the file in fullpath exists, false otherwise
  */
 {
     assert( fullpath != NULL );
@@ -482,11 +473,11 @@ BOOLEAN CacheExists( const char *fullpath )
 #endif
         switch( maybeCache( fullpath, NULL ) ) {
         case CACHE_OK:
-            return( TRUE );
+            return( true );
         case CACHE_NOT_ENUF_MEM:
             break;
         default:
-            return( FALSE );
+            return( false );
         }
     }
 #endif

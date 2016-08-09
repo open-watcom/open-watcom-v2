@@ -94,7 +94,7 @@ struct {
 /* Read ELF header and check if it's roughly what we're expecting */
 static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
 {
-    int     result = FALSE;
+    int     result = false;
 
     lseek( fd, 0, SEEK_SET );
     if( read( fd, e_hdr, sizeof( *e_hdr ) ) >= sizeof( *e_hdr ) &&
@@ -102,10 +102,10 @@ static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
         e_hdr->e_ident[EI_CLASS] == ELFCLASS32) {
 #ifdef __BIG_ENDIAN__
         if( e_hdr->e_ident[EI_DATA] == ELFDATA2LSB )
-            Core.swap_bytes = TRUE;
+            Core.swap_bytes = true;
 #else
         if( e_hdr->e_ident[EI_DATA] == ELFDATA2MSB )
-            Core.swap_bytes = TRUE;
+            Core.swap_bytes = true;
 #endif
         if( Core.swap_bytes ) {
             SWAP_16( e_hdr->e_type );
@@ -123,7 +123,7 @@ static int elf_read_hdr( int fd, Elf32_Ehdr *e_hdr )
             SWAP_16( e_hdr->e_shstrndx );
         }
         if( e_hdr->e_phoff != 0 && e_hdr->e_phentsize >= sizeof( Elf32_Phdr ) ) {
-            result = TRUE;
+            result = true;
         }
     }
     return( result );
@@ -134,22 +134,22 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
 {
     Elf32_Phdr      *e_phdr;
     int             i;
-    int             result = FALSE;
+    int             result = false;
 
     *pp_hdr = malloc( sizeof( *e_phdr ) * e_hdr->e_phnum );
     if( *pp_hdr != NULL ) {
-        int         error = FALSE;
+        int         error = false;
 
         e_phdr = *pp_hdr;
         if( lseek( fd, e_hdr->e_phoff, SEEK_SET ) == e_hdr->e_phoff ) {
             for( i = 0; i < e_hdr->e_phnum; i++ ) {
                 if( read( fd, e_phdr, sizeof( *e_phdr ) ) < sizeof( *e_phdr ) ) {
-                    error = TRUE;
+                    error = true;
                     break;
                 }
                 /* Skip any extra bytes that might be present */
                 if( lseek( fd, e_hdr->e_phentsize - sizeof( *e_phdr ), SEEK_CUR ) < 0 ) {
-                    error = TRUE;
+                    error = true;
                     break;
                 }
                 if( Core.swap_bytes ) {
@@ -166,7 +166,7 @@ static int elf_read_phdr( int fd, Elf32_Ehdr *e_hdr, Elf32_Phdr **pp_hdr )
             }
         }
         if( !error ) {
-            result = TRUE;
+            result = true;
         }
     }
     return( result );
@@ -466,7 +466,7 @@ static int load_elf_header( const char *core_name, Elf32_Ehdr *ehdr, Elf32_Phdr 
 static int init_platform_driver( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr )
 {
     void        *ctx;
-    int         result = FALSE;
+    int         result = false;
     plat_drv_t  **drv;
 
     for( drv = drivers; *drv; ++drv ) {
@@ -474,7 +474,7 @@ static int init_platform_driver( int fd, Elf32_Ehdr *ehdr, Elf32_Phdr *phdr )
         if( ctx ) {
             Core.plat = *drv;
             Core.ctx = ctx;
-            result = TRUE;
+            result = true;
             break;
         }
     }
@@ -498,7 +498,7 @@ trap_retval ReqProg_load( void )
     prog_load_ret       *ret;
     char                *argv;
 
-    Core.mapping_shared = FALSE;
+    Core.mapping_shared = false;
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
     argv = GetInPtr( sizeof( *acc ) );
@@ -523,7 +523,7 @@ trap_retval ReqProg_load( void )
     if( Core.err_no == 0 ) {
         size_t      len;
 
-        Core.loaded = TRUE;
+        Core.loaded = true;
         /* If we have core, try setting up the executable file */
         len = Core.plat->name( Core.ctx, Core.exe_name, MAX_FULLPATH_LEN );
         if( len ) {
@@ -541,7 +541,7 @@ trap_retval ReqProg_kill( void )
     prog_kill_ret       *ret;
 
     if( Core.loaded ) {
-        Core.loaded = FALSE;
+        Core.loaded = false;
         close_platform_driver();
         close( Core.fd );
         if( Core.x_fd != NO_FILE ) {
@@ -552,7 +552,7 @@ trap_retval ReqProg_kill( void )
         if( Core.x_phdr ) free( Core.x_phdr );
         Core.fd = NO_FILE;
     }
-    Core.mapping_shared = FALSE;
+    Core.mapping_shared = false;
     ret = GetOutPtr( 0 );
     ret->err = 0;
     return( sizeof( *ret ) );
@@ -651,9 +651,9 @@ trap_retval ReqFile_string_to_fullpath( void )
     fullname[0] = '\0';
     len = 0;
     if( acc->file_type != TF_TYPE_EXE ) {
-        len = FindFilePath( FALSE, name, fullname );
+        len = FindFilePath( false, name, fullname );
     } else if( Core.mapping_shared ) {
-        len = FindFilePath( TRUE, name, fullname );
+        len = FindFilePath( true, name, fullname );
     } else {
         fd = load_elf_header( name, &ehdr, &phdr );
         if( (fd != NO_FILE) && init_platform_driver( fd, &ehdr, phdr ) ) {
@@ -812,7 +812,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
         switch( *parms ) {
         case 'I':
         case 'i':
-            Core.ignore_timestamp = TRUE;
+            Core.ignore_timestamp = true;
             break;
         }
         ++parms;
@@ -820,7 +820,7 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     err[0] = '\0'; /* all ok */
     ver.major = TRAP_MAJOR_VERSION;
     ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
+    ver.remote = false;
     return( ver );
 }
 

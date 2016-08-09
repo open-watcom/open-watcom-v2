@@ -83,7 +83,7 @@ static tiny_ret_t _unlink_lfn( const char *filename )
         return( -1 );
     }
     if( dpmi_rm.flags & 1 ) {
-        return( dpmi_rm.ax | ~ 0xFFFF );
+        return( TINY_RET_ERROR( dpmi_rm.ax ) );
     }
     return( 0 );
 #endif

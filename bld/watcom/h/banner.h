@@ -65,10 +65,6 @@
 #define banner2ps           banner2( "1984" )
 #define banner3ps           "All rights reserved.  Powersoft is a trademark of Sybase, Inc."
 
-/* Used by setupgui/c/guiinit.c */
-#define gui_banner2         "Copyright © 2002-" CURR_YEAR " The Open Watcom Contributors. All Rights Reserved."
-#define gui_banner2a        "Portions Copyright © 1984-2002 Sybase, Inc. All Rights Reserved."
-
 #if defined( _M_I86 )
   #define STR_BITNESS " (16-bit)"
 #elif defined( _M_IX86 )

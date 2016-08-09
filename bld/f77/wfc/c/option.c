@@ -94,7 +94,7 @@ static const char __FAR * const __FAR CompDrctvs[] = {
 #define DISK_MASK       (OPT_TYPE|OPT_PRINT)
 
 // Used for matching OZOpts bits
-#define _BitsMatched( bits, ptrn )      !((bits & ptrn) ^ ptrn)
+#define _BitsMatched( bits, ptrn )      (((bits & ptrn) ^ ptrn) == 0)
 
 static  char    *SkipOpt( char *buff ) {
 //======================================
@@ -319,7 +319,7 @@ static  void    CGOption( opt_entry *optn, bool negated ) {
         _Excl( CGOPT_DB_LINE | CGOPT_DB_LOCALS );
         _Excl( CGOPT_DI_CV | CGOPT_DI_DWARF | CGOPT_DI_WATCOM );
         CGOpts |= opt_bit;
-    } else if( !(opt_bit & CGOPT_NO_NO) ) {
+    } else if( (opt_bit & CGOPT_NO_NO) == 0 ) {
         CGOpts &= ~opt_bit;
     } else {
         Warning( CO_BAD_NO, optn->option );
@@ -342,7 +342,7 @@ static  void    OZOption( opt_entry *optn, bool negated ) {
     if( !negated ) {
         _OZExcl( OZOPT_O_SPACE | OZOPT_O_TIME );
         OZOpts |= opt_bit;
-    } else if( !(opt_bit & OZOPT_NO_NO) ) {
+    } else if( (opt_bit & OZOPT_NO_NO) == 0 ) {
         OZOpts &= ~opt_bit;
     } else {
         Warning( CO_BAD_NO, optn->option );
@@ -373,7 +373,7 @@ static  void    CPUOption( opt_entry *optn, bool negated ) {
         _CPUExcl( CPUOPT_FPC | CPUOPT_FPI | CPUOPT_FPI87 )
         _CPUExcl( CPUOPT_FPC | CPUOPT_FP287 | CPUOPT_FP387 | CPUOPT_FP5 );
         CPUOpts |= opt_bit;
-    } else if( !(opt_bit & CPUOPT_NO_NO) ) {
+    } else if( (opt_bit & CPUOPT_NO_NO) == 0 ) {
         CPUOpts &= ~opt_bit;
     } else {
         Warning( CO_BAD_NO, optn->option );

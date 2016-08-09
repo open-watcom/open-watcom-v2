@@ -4,7 +4,7 @@ host_os  = os2
 
 !include ../os2.mif
 
-sample2.exe : sample.obj sampdial.obj ui.lib
+sample2.exe : sample.obj sampdial.obj ui.lib $(__MAKEFILES__)
     @%create sample.lnk
     @%append sample.lnk  system os2v2
     @%append sample.lnk  option map

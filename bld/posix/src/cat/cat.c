@@ -53,7 +53,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void DoCAT( int fh ) {
+static void DoCAT( int fh ) {
     static char     buf[ BUFSIZE ];
     int             bytes_read;
     int             bytes_written;

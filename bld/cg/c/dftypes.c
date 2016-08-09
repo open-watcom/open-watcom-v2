@@ -47,9 +47,10 @@
 #include "utils.h"
 #include "dftypes.h"
 #include "dfsupp.h"
+#include "targetdb.h"
 #include "cgprotos.h"
 
-extern  type_length     NewBase(name*);
+
 extern dw_loc_handle    DBGLoc2DF( dbg_loc loc );
 
 

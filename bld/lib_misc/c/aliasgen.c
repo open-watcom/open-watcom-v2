@@ -451,7 +451,7 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
         make_asm_ppc( miffile, &aliasppc, outdir );
         free_systems( aliasppc.systems );
     }
-    if( aliasppc.systems != NULL ) {
+    if( aliasmips.systems != NULL ) {
         make_asm_mips( miffile, &aliasmips, outdir );
         free_systems( aliasmips.systems );
     }

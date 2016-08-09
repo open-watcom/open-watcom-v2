@@ -113,7 +113,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
             if( pheap->freehead.len != 0 )  return( _HEAPBADBEGIN );
             p = MK_FP( FP_SEG(pheap), sizeof( heapblk ) );
         } else {    /* advance to next entry */
-            q = (farfrlptr)((FARPTR)p + (p->len & ~1));
+            q = (farfrlptr)( (FARPTR)p + MEMBLK_SIZE( p ) );
             if( q <= p )  return( _HEAPBADNODE );
             p = q;
             if( pheap->heaplen != 0 && (tag)p > pheap->heaplen ) {
@@ -133,8 +133,8 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
     }
     entry->_pentry  = p;
     entry->_useflag = _FREEENTRY;
-    entry->_size    = p->len & ~1;
-    if( p->len & 1 ) {
+    entry->_size    = MEMBLK_SIZE( p );
+    if( IS_MEMBLK_USED( p ) ) {
         entry->_useflag = _USEDENTRY;
     }
     return( _HEAPOK );

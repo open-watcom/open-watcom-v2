@@ -41,23 +41,26 @@
 
 #define SEM_VALUE_MAX   INT_MAX
 
-extern unsigned is486( void );
-/* Try and flip the ID bit in EFlags */
-#pragma aux is486 =             \
+extern unsigned is386( void );
+/* Try and flip the AC bit in EFlags */
+#pragma aux is386 =             \
         ".586"                  \
+        "mov    dx,sp"          \
+        "and    sp,0xfffc"      \
         "pushfd"                \
         "pushfd"                \
         "pop    eax"            \
-        "xor    eax,0x200000"   \
+        "xor    eax,0x40000"    \
         "push   eax"            \
         "popfd"                 \
         "pushfd"                \
         "pop    ebx"            \
         "popfd"                 \
         "xor    eax,ebx"        \
-        "shr    eax,21"         \
+        "shr    eax,18"         \
         "and    eax,1"          \
-    value [eax] modify [ebx]
+        "mov    sp,dx"          \
+        value [eax] modify [ebx edx]
 
 static int  __cmpxchg = 0;
 
@@ -90,7 +93,7 @@ _WCRTLINK int sem_destroy( sem_t *sem )
 
 static void __check_cmpxchg( void )
 {
-    if( is486() ) {
+    if( !is386() ) {
         __cmpxchg = 1;
     }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,6 +36,10 @@
 #include "block.h"
 #include "data.h"
 #include "optmain.h"
+#include "encode.h"
+#include "optutil.h"
+#include "optmkins.h"
+
 
 typedef struct common_info {
         ins_entry   *start_com;
@@ -43,18 +48,8 @@ typedef struct common_info {
 } common_info;
 
 extern  ins_entry       *IsolatedCode( ins_entry * );
-extern  void            AddNewJump( ins_entry *, label_handle );
-extern  oc_class        PrevClass( ins_entry * );
 extern  ins_entry       *Untangle( ins_entry * );
-extern  ins_entry       *NextIns( ins_entry * );
-extern  void            ChgLblRef( ins_entry *, label_handle );
-extern  label_handle    AddNewLabel( ins_entry *, obj_length );
-extern  ins_entry       *DelInstr( ins_entry * );
-extern  ins_entry       *PrevIns( ins_entry * );
-extern  obj_length      OptInsSize( oc_class, oc_dest_attr );
 extern  bool            FindShort( ins_entry *, ins_entry * );
-
-
 
 static  bool    JustMoveLabel( common_info *max, ins_entry *ins )
 /***************************************************************/
@@ -182,7 +177,7 @@ static  bool    CommonInstr( ins_entry *old, ins_entry *add )
             optreturn( false );
         break;
     default:
-        if( Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) == false )
+        if( !Equal( &add->oc.oc_entry.data, &old->oc.oc_entry.data, _InsLen( add ) - offsetof( oc_entry, data ) ) )
             optreturn( false );
         break;
     }
@@ -196,7 +191,7 @@ static  void    FindCommon( common_info *c, ins_entry *p1, ins_entry *p2 )
   optbegin
     c->save = 0;
     for( ;; ) {
-        if( CommonInstr( p1, p2 ) == false )
+        if( !CommonInstr( p1, p2 ) )
             break;
         c->start_com = p1;
         c->start_del = p2;
@@ -308,7 +303,7 @@ extern  bool    ComCode( ins_entry *jmp )
             com = PrevIns( jmp );
             if( com == NULL )
                 break;
-            if( CommonInstr( new, com ) == false )
+            if( !CommonInstr( new, com ) )
                 break;
             com = PrevIns( DelInstr( com ) );
             common = true;

@@ -40,7 +40,7 @@ static const char Equals[] = "========================================"\
 
 static char        logdirbuff[BSIZE];
 
-const char *LogDirEquals( char *dir )
+const char *LogDirEquals( const char *dir )
 {
     char        tbuff[BSIZE];
     size_t      equals;

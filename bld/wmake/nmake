@@ -26,12 +26,7 @@ wsplice.exe: wsplice.obj clibext.obj
 # Use inline files for wsplice as a way to sidestep the metacharacter hell.
 usage.gh : ..\h\usage.sp wsplice.exe
         wsplice -kIS_RC -kENGLISH @<<usage.tmp 
--f "{MSG_USAGE_BASE+%#%+, \"%s\"}," ..\h\usage.sp -o "%n%n%n%n" $@
-<<
-
-usageend.gh: usage.gh wsplice.exe
-        wsplice @<<usageend.tmp 
--f "%+" usage.gh -o "#define MSG_USAGE_LAST (MSG_USAGE_BASE+%#)%n" $@
+-f "{MSG_USAGE_BASE+%#%+, \"%s\"}," ..\h\usage.sp $@
 <<
 
 cretype.exe : ..\c\cretype.c
@@ -43,7 +38,7 @@ isarray.gh : cretype.exe
 $(OWBINDIR)\wmake.exe: wmake.exe
         copy wmake.exe $@
 
-wmake.exe: usageend.gh isarray.gh $(OBJS)
+wmake.exe: usage.gh isarray.gh $(OBJS)
         $(CC) $(CFLAGS) -Fe$@ $(OBJS) $(LFLAGS)
 
 clean:

@@ -33,6 +33,7 @@
 #include "coderep.h"
 #include "dumpio.h"
 #include "data.h"
+#include "intrface.h"
 
 extern  void            DumpIns(instruction*);
 extern  void            DumpLineNum(instruction*);
@@ -40,87 +41,85 @@ extern  void            DumpInsList(block*);
 extern  void            DumpInstrsOnly(block*);
 extern  void            DumpSymList(name*);
 
-extern  char            *AskName(pointer,cg_class);
-
 static void DumpBlkFlags( block *blk )
 /************************************/
 {
-    if( blk->class & RETURN ) {
+    if( blk->class & BLK_RETURN ) {
         DumpLiteral( "Ret " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & JUMP ) {
+    if( blk->class & BLK_JUMP ) {
         DumpLiteral( "Jmp " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & CONDITIONAL ) {
+    if( blk->class & BLK_CONDITIONAL ) {
         DumpLiteral( "Cond " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & SELECT ) {
+    if( blk->class & BLK_SELECT ) {
         DumpLiteral( "Sel " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & ITERATIONS_KNOWN ) {
+    if( blk->class & BLK_ITERATIONS_KNOWN ) {
         DumpLiteral( "Itr " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & BIG_LABEL ) {
+    if( blk->class & BLK_BIG_LABEL ) {
         DumpLiteral( "LBL " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & CALL_LABEL ) {
+    if( blk->class & BLK_CALL_LABEL ) {
         DumpLiteral( "LCall " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LABEL_RETURN ) {
+    if( blk->class & BLK_LABEL_RETURN ) {
         DumpLiteral( "LRet " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & RETURNED_TO ) {
+    if( blk->class & BLK_RETURNED_TO ) {
         DumpLiteral( "RetTo " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LOOP_HEADER ) {
+    if( blk->class & BLK_LOOP_HEADER ) {
         DumpLiteral( "LupHd " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & IN_LOOP ) {
+    if( blk->class & BLK_IN_LOOP ) {
         DumpLiteral( "InLup " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & LOOP_EXIT ) {
+    if( blk->class & BLK_LOOP_EXIT ) {
         DumpLiteral( "LupEx " );
     } else {
         DumpLiteral( "------" );
     }
-    if( blk->class & BLOCK_VISITED ) {
+    if( blk->class & BLK_BLOCK_VISITED ) {
         DumpLiteral( "Vst " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & BLOCK_MARKED ) {
+    if( blk->class & BLK_BLOCK_MARKED ) {
         DumpLiteral( "Mrk " );
     } else {
         DumpLiteral( "----" );
     }
-    if( blk->class & UNKNOWN_DESTINATION ) {
+    if( blk->class & BLK_UNKNOWN_DESTINATION ) {
         DumpLiteral( "Dst? " );
     } else {
         DumpLiteral( "-----" );
     }
-    if( blk->class & MULTIPLE_EXITS ) {
+    if( blk->class & BLK_MULTIPLE_EXITS ) {
         DumpLiteral( "2Exits " );
     } else {
         DumpLiteral( "-------" );
@@ -203,7 +202,7 @@ static  void    DumpBlkLabel( block *b )
         DumpPtr( b->label );
         DumpChar( ' ' );
         DumpXString( AskName( AskForLblSym( b->label ), CG_FE ) );
-        if( b->edge[ 0 ].flags & BLOCK_LABEL_DIES ) {
+        if( b->edge[0].flags & BLOCK_LABEL_DIES ) {
             DumpLiteral( " label dies" );
         }
     }
@@ -306,28 +305,28 @@ static  void    DumpGotos( block *b, bool all )
 {
     block_num   i;
 
-    DumpPtr( &b->edge[ 0 ] );
+    DumpPtr( &b->edge[0] );
     DumpLiteral( "           Destinations: " );
     if( b->targets > 0 ) {
-        if( ( b->edge[ 0 ].flags & DEST_LABEL_DIES ) && all ) {
+        if( ( b->edge[0].flags & DEST_LABEL_DIES ) && all ) {
             DumpLiteral( "(kills) " );
         }
-        if( b->edge[ 0 ].flags & DEST_IS_BLOCK ) {
-            DumpBlkId( b->edge[ 0 ].destination.u.blk );
+        if( b->edge[0].flags & DEST_IS_BLOCK ) {
+            DumpBlkId( b->edge[0].destination.u.blk );
         } else {
             DumpChar( 'L' );
-            DumpPtr( b->edge[ 0 ].destination.u.lbl );
+            DumpPtr( b->edge[0].destination.u.lbl );
         }
         for( i = 1; i < b->targets; ++i ) {
             DumpLiteral( ", " );
-            if( ( b->edge[ i ].flags & DEST_LABEL_DIES ) && all ) {
+            if( ( b->edge[i].flags & DEST_LABEL_DIES ) && all ) {
                 DumpLiteral( "(kills) " );
             }
-            if( b->edge[ i ].flags & DEST_IS_BLOCK ) {
-                DumpBlkId( b->edge[ i ].destination.u.blk );
+            if( b->edge[i].flags & DEST_IS_BLOCK ) {
+                DumpBlkId( b->edge[i].destination.u.blk );
             } else {
                 DumpChar( 'L' );
-                DumpPtr( b->edge[ i ].destination.u.lbl );
+                DumpPtr( b->edge[i].destination.u.lbl );
             }
         }
     }
@@ -342,7 +341,7 @@ extern  void    DumpLoops( void )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         DumpBlkId( blk );
-        if( blk->class & LOOP_HEADER ) {
+        if( blk->class & BLK_LOOP_HEADER ) {
             DumpLiteral( " Is loop header." );
         } else {
             DumpLiteral( "                " );
@@ -410,7 +409,7 @@ extern  void    DumpSymTab( void )
     int         class;
 
     for( class = N_CONSTANT; class <= N_INDEXED; ++class ) {
-        if( Names[ class ] != NULL ) {
+        if( Names[class] != NULL ) {
             DumpNL();
             switch( class ) {
             case N_CONSTANT:
@@ -429,7 +428,7 @@ extern  void    DumpSymTab( void )
                 DumpLiteral( "Indexed" );
                 break;
             }
-            DumpSymList( Names[ class ] );
+            DumpSymList( Names[class] );
             DumpNL();
         }
     }
@@ -461,7 +460,7 @@ extern  void    DumpEdges( block *b )
 
     DumpBlkId( b );
     for( i = 0; i < b->targets; i++ ) {
-        edge = &b->edge[ i ];
+        edge = &b->edge[i];
         DumpEdge( i, edge );
     }
 }

@@ -2,37 +2,54 @@ language:
  - c
 
 before_install:
-# install latest OS fixes
- - sudo apt-get -qq update
 # install DOSEMU
  - sudo apt-get install -y dosemu
 
 before_script:
-# initialize OW build environment variables
- - . $OWROOT/cmnvars.sh
-
-script:
- - . $OWROOT/build.sh
-
-after_failure:
-# after failure transfer log files back to GitHub repository
- - cd $HOME
+# get clone of GitHub repository to return Travis CI OW build/log files
 # configure Git
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis CI"
  - git config --global push.default simple
 # clone GitHub repository
- - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git
+ - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME/travis-ci-ow-builds
+# initialize OW build environment variables
+ - export OWROOT=$TRAVIS_BUILD_DIR
+ - export OWTOOLS=CLANG
+ - export OWRELROOT=$HOME/travis-ci-ow-builds/rel
+ - export OWOBJDIR=binbuild
+ - export OWDOCBUILD=0
+ - export OWDOCQUIET=1
+ - export USE_FILENAME_VERSION=1
+ - export OWVERBOSE=0
+ - export BUILDER_OPT=-q
+ - . $OWROOT/cmnvars.sh
+
+
+script:
+ - sh $OWROOT/build.sh rel
+
+after_failure:
+# after failure transfer log files back to GitHub repository
+ - cd $HOME/travis-ci-ow-builds
+ - git checkout --quiet -f
 # copy new log files to git repository tree
- - cd travis-ci-ow-builds
  - if [ ! -d bld ]; then mkdir bld; fi
- - if [ ! -d docs ]; then mkdir docs; fi
  - cp $OWROOT/bld/*.log bld/
+ - if [ ! -d docs ]; then mkdir docs; fi
  - cp $OWROOT/docs/*.log docs/
 # commit new log files to GitHub repository
  - git add -f .
- - git commit -m "Travis CI build $TRAVIS_BUILD_NUMBER - log files"
- - git push -f origin
+ - git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (failure) - log files"
+ - git push --quiet -f origin
+
+after_success:
+# after success transfer OW build to GitHub repository
+ - cd $HOME/travis-ci-ow-builds
+# commit updated files to GitHub repository
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git add -f .; fi
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"; fi
+ - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git push --quiet -f origin; fi
 
 #addons:
 #  coverity_scan:

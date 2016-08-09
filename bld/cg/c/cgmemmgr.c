@@ -112,7 +112,7 @@ extern int _TinyDPMIGetFreeMemoryInformation( dpmi_mem * );
 #include "extender.h"
 
 extern char int2f( short );
-#pragma aux int2f parm [ ax ] value [ al ] = "int 2fh";
+#pragma aux int2f parm [ax] value [al] = "int 2fh";
 
 #pragma     aux     __psp "*";
 extern      short   __psp;
@@ -190,8 +190,8 @@ typedef struct blk_hdr {
 #define _WALKTAG( free ) ((frl *)((char *)(free) + (free)->length ))
 
 static mem_blk  *_Blks;
-static frl      *_FreeList[ MAX_CLASS + 1 ];
-static unsigned _ClassSizes[ MAX_CLASS + 1 ];
+static frl      *_FreeList[MAX_CLASS + 1];
+static unsigned _ClassSizes[MAX_CLASS + 1];
 
 #if  defined( __DOS__ ) || defined( __QNX__ )
 
@@ -390,11 +390,11 @@ static pointer  GetFromFrl( size_t amount, int frl_class )
     frl     *free;
 
     amount = amount;
-    free = _FreeList[ frl_class ];
+    free = _FreeList[frl_class];
     if( free != NULL ) {
-        assert( !( free->length & ALLOCATED ) );
+        assert( (free->length & ALLOCATED) == 0 );
         free->length |= ALLOCATED;
-        _FreeList[ frl_class ] = free->link;
+        _FreeList[frl_class] = free->link;
         return( free );
     }
     return( NULL );
@@ -475,8 +475,8 @@ extern void     MemFree( char *block )
 #endif
     } else {
         mem_class  = SizeToClass( length );
-        free->link = _FreeList[ mem_class ];
-        _FreeList[ mem_class ] = free;
+        free->link = _FreeList[mem_class];
+        _FreeList[mem_class] = free;
     }
 }
 

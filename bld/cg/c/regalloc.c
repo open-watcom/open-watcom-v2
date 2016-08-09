@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,6 +40,13 @@
 #include "dbsyms.h"
 #include "blips.h"
 #include "regalloc.h"
+#include "cgsrtlst.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "insutil.h"
+#include "insdead.h"
+#include "optab.h"
+#include "inssegs.h"
 
 
 enum allocation_state {
@@ -47,56 +55,35 @@ enum allocation_state {
     ALLOC_CONST_TEMP
 };
 
-extern  bool            SideEffect(instruction *);
 extern  void            NowDead(name *,conflict_node *,name_set *,block *);
-extern  void            PrefixIns(instruction *,instruction *);
 extern  void            BurnRegTree(reg_tree *);
 extern  conflict_node   *NameConflict(instruction *,name *);
 extern  void            BuildNameTree(conflict_node *);
 extern  void            AxeDeadCode(void);
 extern  void            BurnNameTree(reg_tree *);
 extern  bool            WorthProlog(conflict_node *,hw_reg_set);
-extern  void            DoNothing(instruction *);
-extern  int             ExpandOps(bool);
 extern  void            FindReferences(void);
 extern  void            NowAlive(name *,conflict_node *,name_set *,block *);
-extern  name            *DeAlias(name *);
 extern  void            BuildRegTree(conflict_node *);
 extern  void            FreeAConflict(conflict_node *);
-extern  bool            IsIndexReg(hw_reg_set,type_class_def,bool);
 extern  void            LiveInfoUpdate(void);
 extern  void            MakeLiveInfo(void);
 extern  void            FreeConflicts(void);
-extern  reg_set_index   SegIndex(void);
-extern  void            DelSegOp(instruction *,int);
 extern  void            FixChoices(void);
-extern  void            DelSegRes(instruction *);
 extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction *);
-extern  void            SuffixIns(instruction *,instruction *);
-extern  name            *ScaleIndex(name *,name *,type_length,type_class_def,type_length,int,i_flags);
-extern  void            FixGenEntry(instruction *);
 extern  int             NumOperands(instruction *);
 extern  void            CalcSavings(conflict_node *);
-extern  hw_reg_set      LowOffsetReg(hw_reg_set);
 extern  bool            PropagateMoves(void);
 extern  bool            PropRegsOne(void);
 extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
-extern  hw_reg_set      HighOffsetReg(hw_reg_set);
 extern  void            DeadInstructions(void);
-extern  bool            IsSegReg(hw_reg_set);
-extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 extern  bool            MoreConflicts(void);
 extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);
-extern  void            RegInsDead(void);
 extern  bool            IsUncacheableMemory( name * );
 extern  hw_reg_set      MustSaveRegs(void);
 extern  void            FreePossibleForAlias( conflict_node * );
-
-extern  op_regs          RegList[];
-extern  hw_reg_set       *RegSets[];
-
 
 static  bool    ContainedIn( name *name1, name *name2 ) {
 /********************************************************

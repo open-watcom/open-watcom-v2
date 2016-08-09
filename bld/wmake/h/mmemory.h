@@ -43,9 +43,23 @@ extern void MemShrink( void );
 
 #ifdef USE_FAR
 
-extern void FAR *FarMaybeMalloc( size_t size );
-extern void FAR *FarMalloc( size_t size );
-extern void     FarFree( void FAR *p );
+extern void FAR *FarMallocUnSafe( size_t size );
+extern void FAR *FarMallocSafe( size_t size );
+extern void     FarFreeSafe( void FAR *p );
+
+#define FarMemCpy           _fmemcpy
+#define FarMemCmp           _fmemcmp
+#define FarMemSet           _fmemset
+
+#else
+
+#define FarMallocUnSafe     MallocUnSafe
+#define FarMallocSafe       MallocSafe
+#define FarFreeSafe         FreeSafe
+
+#define FarMemCpy           memcpy
+#define FarMemCmp           memcmp
+#define FarMemSet           memset
 
 #endif
 
@@ -67,11 +81,5 @@ extern void IfMemScarce( RET_T (*func)( void ) );
          } FAR *_cmc_ptr;                            \
          *( _cmc_ptr )( d ) = *( _cmc_ptr )( s );    \
      }
-
-#if !defined( USE_FAR )
-#define _fmemcpy memcpy
-#define _fmemcmp memcmp
-#define _fmemset memset
-#endif
 
 #endif  /* !_MEMORY_H */

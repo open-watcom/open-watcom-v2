@@ -286,7 +286,7 @@ void    MacroELIFDEF( char *macro, uint macro_len ) {
 // Process ELIFDEF directive.
 
     --NestingLevel;
-    if( !( NestingStack & ( 1 << NestingLevel ) ) ) {
+    if( (NestingStack & ( 1 << NestingLevel )) == 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
     } else {
         if( NestingFlags & ( 1 << NestingLevel ) ) {
@@ -307,7 +307,7 @@ void    MacroELIFNDEF( char *macro, uint macro_len ) {
 // Process ELIFNDEF directive.
 
     --NestingLevel;
-    if( !( NestingStack & ( 1 << NestingLevel ) ) ) {
+    if( (NestingStack & ( 1 << NestingLevel )) == 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
     } else {
         if( NestingFlags & ( 1 << NestingLevel ) ) {
@@ -327,7 +327,7 @@ void    MacroELSE( void ) {
 // Process ELSE directive.
 
     --NestingLevel;
-    if( !( NestingStack & ( 1 << NestingLevel ) ) ) {
+    if( (NestingStack & ( 1 << NestingLevel )) == 0 ) {
         InfoError( CO_MACRO_STRUCTURE_MISMATCH );
     } else {
         NestingStack &= ~( 1 << NestingLevel );

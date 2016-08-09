@@ -30,8 +30,8 @@ inc_dirs_os2 = -I"$(clib_dir)/process/h"
 extra_c_flags_mem      = $(trmem_cover_cflags)
 extra_c_flags_trmem    = $(trmem_cflags)
 
-fcenable.exe : $(objs)
-!ifndef __WATCOM__
+fcenable.exe : $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file {$(objs)}

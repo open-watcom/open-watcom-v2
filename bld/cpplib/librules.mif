@@ -1,0 +1,24 @@
+.cpp.obj : $(__MAKEFILES__) .autodepend
+!ifeq verbose 1
+    $(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
+!else
+    @echo c++ $@
+    @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
+!endif
+
+.cpp{$(x_subdir)}.obj : $(__MAKEFILES__) .autodepend
+    @if not exist $(x_subdir) mkdir $(x_subdir)
+!ifeq verbose 1
+    $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
+!else
+    @echo xc++ $@
+    @$(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
+!endif
+
+.asm.obj : $(__MAKEFILES__) .autodepend
+!ifeq verbose 1
+    $(as) $(aflags) $[@
+!else
+    @echo as $@
+    @$(as) $(aflags) $[@
+!endif

@@ -17,7 +17,7 @@ all_exe = win386.ext
 
 all : $(all_$(fmt))
 
-OBJS_common = &
+objs_common = &
     begin.obj  &
     wininit.obj &
     win16thk.obj &
@@ -37,15 +37,15 @@ OBJS_common = &
     dllthunk.obj &
     toolhelp.obj
 
-OBJS_dll = $(OBJS_common) &
+objs_dll = $(objs_common) &
     windll.obj &
     libmain.obj
 
-OBJS_exe = $(OBJS_common) &
+objs_exe = $(objs_common) &
     winext.obj &
     winmain.obj
 
-OBJS_vxd = wdebug.obj &
+objs_vxd = wdebug.obj &
     $(fpuemu_dir)/386/win386/emu387.obj
 
 .asm : ../conv/win386;../asm
@@ -173,7 +173,7 @@ dllexelink : .PROCEDURE
     @%append $(LNK) segment CLASS 'BEGDATA' PRELOAD MOVEABLE
     @%append $(LNK) segment CLASS 'DATA' PRELOAD MOVEABLE
     @%append $(LNK) segment CLASS 'BSS' PRELOAD MOVEABLE
-    @for %i in ($(OBJS_$(fmt))) do @%append $(LNK) file %i
+    @for %i in ($(objs_$(fmt))) do @%append $(LNK) file %i
     @%append $(LNK) @imports.lnk
 !ifeq fmt exe
     @%append $(LNK) sys windows mem font
@@ -189,18 +189,18 @@ dllexelink : .PROCEDURE
 
 # explicit rules
 #################
-wdebug.386: $(OBJS_vxd)
+wdebug.386: $(objs_vxd) $(__MAKEFILES__)
     @%make vxdlink
     $(linker) @$(LNK)
 
-wemu387.386: $(OBJS_vxd)
+wemu387.386: $(objs_vxd) $(__MAKEFILES__)
     @%make vxdlink
     $(linker) @$(LNK)
 
-w386dll.ext : $(OBJS_dll)
+w386dll.ext : $(objs_dll) $(__MAKEFILES__)
     @%make dllexelink
     $(linker) @$(LNK)
 
-win386.ext : $(OBJS_exe)
+win386.ext : $(objs_exe) $(__MAKEFILES__)
     @%make dllexelink
     $(linker) @$(LNK)

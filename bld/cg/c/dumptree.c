@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,11 @@
 #include "procdef.h"
 #include "tree.h"
 #include "dumpio.h"
+#include "typemap.h"
 
 extern  void            DumpOperand(name*);
 extern  void            Dumpan(an);
 extern  void            DumpClass(type_class_def);
-
-extern  type_class_def  TypeClass(type_def*);
 
 static  void            DumpSubTree( tn node, int indent );
 
@@ -170,7 +170,7 @@ static  void    DumpSubTree( tn node, int indent ) {
         DumpCall( node, indent );
         break;
     case TN_FLOW_OUT:
-        DumpStrType( node, Ops[ O_FLOW_OUT ], Null, indent );
+        DumpStrType( node, Ops[O_FLOW_OUT], Null, indent );
         DumpSubTree( node->u.left, indent+2 );
         break;
     case TN_QUESTION:

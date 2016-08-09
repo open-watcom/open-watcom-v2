@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,16 +44,13 @@
 #include "namelist.h"
 #include "peepopt.h"
 #include "redefby.h"
+#include "insdead.h"
 
 
 extern  bool                    InsOrderDependant(instruction*,instruction*);
 extern  bool                    SameThing( name *, name * );
-extern  bool                    SideEffect( instruction * );
-extern  bool                    ChangeIns(instruction *,name *,name **,change_type);
-extern  opcode_entry            *ResetGenEntry( instruction *ins );
-extern  bool                    VolatileIns(instruction*);
 
-#define OP2VAL( ins ) ( (ins)->operands[1]->c.int_value )
+#define OP2VAL( ins ) ( (ins)->operands[1]->c.lo.int_value )
 
 typedef bool    (ONE_OP)(instruction *,instruction *);
 typedef bool    (TWO_OP)(instruction *,instruction *);
@@ -87,13 +85,13 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
     if( a->result == b->result ) {
         /* A op X -> A     A op f(X,Y) -> A */
         /* A op Y -> A                      */
-        if( InsChangeable( a, cons, &a->operands[ 1 ] ) ) {
-            a->operands[ 1 ] = cons;
+        if( InsChangeable( a, cons, &a->operands[1] ) ) {
+            a->operands[1] = cons;
             ResetGenEntry( a );
             FreeIns( b );
             return( true );
         }
-    } else if( a->operands[ 0 ] == b->operands[ 0 ] ) {
+    } else if( a->operands[0] == b->operands[0] ) {
         /* A op X -> A     A op f(X,Y) -> B */
         /* A op Y -> B     A op X      -> A */
         /* becomes */
@@ -116,15 +114,15 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
         }
 
         if( InsChangeable( a, b->result, &a->result ) &&
-            InsChangeable( b, a->operands[ 0 ], &b->result ) ) {
+            InsChangeable( b, a->operands[0], &b->result ) ) {
             old_res_a = a->result;
             old_res_b = b->result;
             a->result = b->result;
             b->result = a->operands[0];
-            if( InsChangeable( a, cons, &a->operands[ 1 ] ) &&
-                InsChangeable( b, a->operands[ 1 ], &b->operands[ 1 ] ) ) {
-                b->operands[ 1 ] = a->operands[ 1 ];
-                a->operands[ 1 ] = cons;
+            if( InsChangeable( a, cons, &a->operands[1] ) &&
+                InsChangeable( b, a->operands[1], &b->operands[1] ) ) {
+                b->operands[1] = a->operands[1];
+                a->operands[1] = cons;
                 ResetGenEntry( a );
                 ResetGenEntry( b );
                 return( true );
@@ -134,13 +132,13 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
                 b->result = old_res_b;
             }
         }
-    } else if( b->operands[ 0 ] != a->operands[0] || b->operands[1] != cons ) {
+    } else if( b->operands[0] != a->operands[0] || b->operands[1] != cons ) {
         /* A op X -> B     A op X      -> B */
         /* B op Y -> C     A op f(X,Y) -> C */
-        if( InsChangeable( b, a->operands[ 0 ], &b->operands[ 0 ] ) &&
-            InsChangeable( b, cons, &b->operands[ 1 ] ) ) {
-            b->operands[ 0 ] = a->operands[ 0 ];
-            b->operands[ 1 ] = cons;
+        if( InsChangeable( b, a->operands[0], &b->operands[0] ) &&
+            InsChangeable( b, cons, &b->operands[1] ) ) {
+            b->operands[0] = a->operands[0];
+            b->operands[1] = cons;
             ResetGenEntry( b );
             return( true );
         }
@@ -187,13 +185,13 @@ static bool AndOr( instruction *and_ins, instruction *or_ins )
     signed_32   new_and;
     name        *mask;
 
-    if( and_ins->operands[ 0 ] != and_ins->result ) return( false );
-    if( or_ins->operands[ 0 ] != or_ins->result ) return( false );
+    if( and_ins->operands[0] != and_ins->result ) return( false );
+    if( or_ins->operands[0] != or_ins->result ) return( false );
     new_and = OP2VAL( and_ins ) & ~OP2VAL( or_ins );
     if( new_and == OP2VAL( and_ins ) ) return( false );
     mask = AllocS32Const( new_and );
-    if( !InsChangeable( and_ins, mask, &and_ins->operands[ 1 ] ) ) return( false );
-    and_ins->operands[ 1 ] = mask;
+    if( !InsChangeable( and_ins, mask, &and_ins->operands[1] ) ) return( false );
+    and_ins->operands[1] = mask;
     InsReset( and_ins );
     return( true );
 }
@@ -208,12 +206,12 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
     signed_32   and;
     name        *mask;
 
-    if( or_ins->operands[ 0 ] != or_ins->result ) return( false );
-    if( and_ins->operands[ 0 ] != and_ins->result ) return( false );
+    if( or_ins->operands[0] != or_ins->result ) return( false );
+    if( and_ins->operands[0] != and_ins->result ) return( false );
     or = OP2VAL( or_ins );
     and = OP2VAL( and_ins );
     if( ( and & or ) == and ) { // the AND bits are a subset of the OR bits
-        or_ins->operands[ 0 ] = AllocS32Const( and );
+        or_ins->operands[0] = AllocS32Const( and );
         or_ins->num_operands = 1;
         or_ins->head.opcode = OP_MOV;
         or_ins->table = NULL;
@@ -224,8 +222,8 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
         new_or = or & and;
         if( new_or == OP2VAL( or_ins ) ) return( false );
         mask = AllocS32Const( new_or );
-        if( !InsChangeable( or_ins, mask, &or_ins->operands[ 1 ] ) ) return( false );
-        or_ins->operands[ 1 ] = mask;
+        if( !InsChangeable( or_ins, mask, &or_ins->operands[1] ) ) return( false );
+        or_ins->operands[1] = mask;
         InsReset( or_ins );
         return( true );
     }
@@ -244,10 +242,10 @@ static bool OrAndOr( instruction *a, instruction *b )
     b->head.opcode = OP_OR;
     and_val = OP2VAL( a ) & OP2VAL( b );
     mask = AllocS32Const( and_val );
-    if( InsChangeable( a, b->operands[ 1 ], &a->operands[ 1 ] ) &&
-        InsChangeable( b, mask, &b->operands[ 1 ] ) ) {
-        a->operands[ 1 ] = b->operands[ 1 ];
-        b->operands[ 1 ] = mask;
+    if( InsChangeable( a, b->operands[1], &a->operands[1] ) &&
+        InsChangeable( b, mask, &b->operands[1] ) ) {
+        a->operands[1] = b->operands[1];
+        b->operands[1] = mask;
         a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
@@ -272,10 +270,10 @@ static bool AndOrAnd( instruction *a, instruction *b )
     b->head.opcode = OP_AND;
     or_val = OP2VAL( a ) | OP2VAL( b );
     mask = AllocS32Const( or_val );
-    if( InsChangeable( a, b->operands[ 1 ], &a->operands[ 1 ] ) &&
-        InsChangeable( b, mask, &b->operands[ 1 ] ) ) {
-        a->operands[ 1 ] = b->operands[ 1 ];
-        b->operands[ 1 ] = mask;
+    if( InsChangeable( a, b->operands[1], &a->operands[1] ) &&
+        InsChangeable( b, mask, &b->operands[1] ) ) {
+        a->operands[1] = b->operands[1];
+        b->operands[1] = mask;
         a->table = b->table = NULL;
         InsReset( a );
         InsReset( b );
@@ -335,8 +333,8 @@ static bool SameOpWithConst( instruction *ins, instruction *next )
 {
     name        *op;
 
-    if( ins->result != next->operands[ 0 ] ) return( false );
-    op = next->operands[ 1 ];
+    if( ins->result != next->operands[0] ) return( false );
+    op = next->operands[1];
     if( op->n.class != N_CONSTANT ) return( false );
     if( op->c.const_type != CONS_ABSOLUTE ) return( false );
     return( true );
@@ -349,7 +347,7 @@ static bool OpConst( instruction *ins )
     name        *op;
 
     if( ins->num_operands != 2 ) return( false );
-    op = ins->operands[ 1 ];
+    op = ins->operands[1];
     if( op->n.class != N_CONSTANT ) return( false );
     if( op->c.const_type != CONS_ABSOLUTE ) return( false );
     if( !_IsIntegral( ins->type_class ) ) return( false );
@@ -528,15 +526,15 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
         return( false );
     }
     next = ins->head.next;
-    if( _IsReDefinedBy( ins, ins->operands[ 0 ] ) )
+    if( _IsReDefinedBy( ins, ins->operands[0] ) )
         return( false );       // BBB - cnv U2 U1 [eax] -> ax
     for( ; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( _IsReDefinedBy( next, ins->result ) )
             return( false );
-        if( _IsReDefinedBy( next, ins->operands[ 0 ] ) )
+        if( _IsReDefinedBy( next, ins->operands[0] ) )
             return( false );
         if( ins->head.opcode == OP_CONVERT && next->head.opcode == OP_CONVERT ) {
-            if( ins->result == next->operands[ 0 ] &&
+            if( ins->result == next->operands[0] &&
                 ins->type_class == next->base_type_class ) {
 
                 // change (cnv i1 -> i2; cnv i2 -> i4) into
@@ -552,9 +550,9 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
                 if( ins->type_class < ins->base_type_class )
                     return( false );
                 next->base_type_class = ins->base_type_class;
-                next->operands[ 0 ] = ins->operands[ 0 ];
-                if( next->operands[ 0 ]->n.class == N_TEMP ) {
-                    next->operands[ 0 ]->t.temp_flags &= ~CAN_STACK;
+                next->operands[0] = ins->operands[0];
+                if( next->operands[0]->n.class == N_TEMP ) {
+                    next->operands[0]->t.temp_flags &= ~CAN_STACK;
                 }
                 // in case we are in register allocator
                 next->table = NULL;
@@ -564,8 +562,8 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
         }
         if( ( ins->head.opcode == OP_PTR_TO_NATIVE && next->head.opcode == OP_PTR_TO_FOREIGN ) ||
             ( ins->head.opcode == OP_PTR_TO_FOREIGN && next->head.opcode == OP_PTR_TO_NATIVE ) ) {
-            if( ins->result == next->operands[ 0 ] ) {
-                next->operands[ 0 ] = ins->operands[ 0 ];
+            if( ins->result == next->operands[0] ) {
+                next->operands[0] = ins->operands[0];
                 next->head.opcode = OP_MOV;
                 next->table = NULL;
                 *change = true;

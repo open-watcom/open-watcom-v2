@@ -49,8 +49,8 @@
 
 
 _WCRTLINK int _wspawnve( int mode, const wchar_t *path,
-/**********************************************************/
     const wchar_t *const argv[], const wchar_t *const envp[] )
+/************************************************************/
 {
     char *              mbPath;
     char **             mbArgv;

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,13 @@
 #include "x87.h"
 #include "makeins.h"
 #include "redefby.h"
+#include "insdead.h"
+#include "namelist.h"
+#include "optab.h"
 
 
-extern  void            FreeAName(name*);
 extern  block           *TailBlocks(void);
 extern  bool            BreakExists(void);
-extern  void            DoNothing(instruction*);
-extern  bool            DoesSomething(instruction*);
 
 
 static  void    InitVisitedTemps( void )
@@ -97,7 +98,7 @@ static  bool            FreeUselessIns( block *tail, bool just_the_loop,
 
     change = false;
     for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-        if( just_the_loop && !( blk->class & IN_LOOP ) ) {
+        if( just_the_loop && !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
             for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                 ins->ins_flags &= ~INS_VISITED;
             }
@@ -130,7 +131,7 @@ static  void            FreeUnVisitedTemps( void )
     name        *op;
     name        **owner;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for( ;; ) {
         op = *owner;
         if( op == NULL ) break;
@@ -305,7 +306,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
 
     if( just_the_loop ) {
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-            if( !( blk->class & IN_LOOP ) ) {
+            if( !_IsBlkAttr( blk, BLK_IN_LOOP ) ) {
                 for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     MarkOpsUseful( ins );
                     if( ins->result != NULL ) {
@@ -318,7 +319,7 @@ static  void            FindUsefulIns( block * tail, bool just_the_loop,
     do {
         change = false;
         for( blk = tail; blk != NULL; blk = blk->prev_block ) {
-            if( !just_the_loop || ( blk->class & IN_LOOP ) ) {
+            if( !just_the_loop || _IsBlkAttr( blk, BLK_IN_LOOP ) ) {
                 for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
                     if( !in_regalloc || DoesSomething( ins ) ) {
                         change |= CheckUseful( ins );

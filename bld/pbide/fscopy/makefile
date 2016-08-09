@@ -14,5 +14,5 @@ fscopy_autodepends = .AUTODEPEND
 !include defrule.mif
 !include deftarg.mif
 
-wfscopy.exe : fscopy.obj
+wfscopy.exe : fscopy.obj $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file $[@

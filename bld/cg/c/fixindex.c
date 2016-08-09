@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,15 @@
 #include "x87.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "rtrtn.h"
+#include "insutil.h"
 
 
 extern  bool            IndexOkay(instruction*,name*);
-extern  bool            RTLeaveOp2(instruction*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  void            FixFPConsts(instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
 
-static byte NumTab[LAST_OP-FIRST_OP+1] = {
-/*****************************************
+static byte NumTab[LAST_OP - FIRST_OP + 1] = {
+/*********************************************
     Give the number of operand for each opcode. Anything above this
     is probably a segment override tagging along for the ride.
 */
@@ -62,7 +61,7 @@ extern  int     NumOperands( instruction *ins ) {
     see NumTab
 */
 
-    return( NumTab[ ins->head.opcode ] );
+    return( NumTab[ins->head.opcode] );
 }
 
 
@@ -194,7 +193,7 @@ static  name    *OpTemp( instruction *ins, uint i, uint j ) {
     FPSetStack( temp );
     new_ins = MakeMove( ins->operands[i], temp, class );
     ins->operands[i] = temp;
-    ins->operands[ j ] = temp;
+    ins->operands[j] = temp;
     PrefixIns( ins, new_ins );
     return( temp );
 }
@@ -208,8 +207,8 @@ static  instruction     *Split3( instruction *ins ) {
     name        *temp;
     instruction *new_ins;
 
-    if( ins->operands[ 0 ]->n.class == N_INDEXED
-     || ins->operands[ 0 ]->n.class == N_MEMORY ) {
+    if( ins->operands[0]->n.class == N_INDEXED
+     || ins->operands[0]->n.class == N_MEMORY ) {
         temp = OpTemp( ins, 0, 0 );
         if( temp->n.name_class != ins->result->n.name_class
           || FPIsStack( temp ) ) {
@@ -257,11 +256,11 @@ extern  instruction     *OneMemRef( instruction *ins ) {
     FixFPConsts( ins );
     if( ins->num_operands == 2 ) {
         if( ins->result != NULL ) { /* the tough case*/
-            op1 = ins->operands[ 0 ];
+            op1 = ins->operands[0];
             if( op1->n.class != N_INDEXED && op1->n.class != N_MEMORY ) {
                 op1 = NULL;
             }
-            op2 = ins->operands[ 1 ];
+            op2 = ins->operands[1];
             if( op2->n.class != N_INDEXED && op2->n.class != N_MEMORY ) {
                 op2 = NULL;
             }
@@ -299,8 +298,8 @@ extern  instruction     *OneMemRef( instruction *ins ) {
                 }
             }
         } else {
-            op1 = ins->operands[ 0 ];
-            op2 = ins->operands[ 1 ];
+            op1 = ins->operands[0];
+            op2 = ins->operands[1];
             if( op1->n.class != N_INDEXED && op1->n.class != N_MEMORY ) {
                 return( ins );
             }
@@ -311,7 +310,7 @@ extern  instruction     *OneMemRef( instruction *ins ) {
             OpTemp( ins, 0, 0 );
         }
     } else if( ins->num_operands == 1 && ins->result != NULL ) {
-        op1 = ins->operands[ 0 ];
+        op1 = ins->operands[0];
         res = ins->result;
         if( op1->n.class != N_INDEXED && op1->n.class != N_MEMORY ) {
             return( ins );

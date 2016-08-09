@@ -133,34 +133,34 @@ extern  bool    DumpFPUIns( instruction *ins ) {
         DumpOpcode( ins );
         DumpLiteral( "r " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_RNFBIN:
     case G_MNFBIN:
         DumpOpcode( ins );
         DumpLiteral( "  " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_RRFBINP:
         DumpOpcode( ins );
         DumpLiteral( "rp" );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         DumpLiteral( ",st" );
         break;
     case G_RNFBINP:
         DumpOpcode( ins );
         DumpLiteral( "p " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         DumpLiteral( ",st" );
         break;
     case G_MFLD:
     case G_RFLD:
         DumpLiteral( "fld   " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_MFST:
     case G_RFST:
@@ -205,13 +205,13 @@ extern  bool    DumpFPUIns( instruction *ins ) {
     case G_RCOMP:
         DumpLiteral( "fcomp " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_MCOM:
     case G_RCOM:
         DumpLiteral( "fcom  " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_MFSTNP:
     case G_RFSTNP:
@@ -222,7 +222,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
     case G_FTST:
         DumpLiteral( "ftst  " );
         DumpFPInfo( ins );
-        DumpOperand( ins->operands[ 0 ] );
+        DumpOperand( ins->operands[0] );
         break;
     case G_FXCH:
         DumpLiteral( "fxch  " );

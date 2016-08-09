@@ -164,16 +164,16 @@ static  void    ExOpen( void ) {
     if( IOCB->flags & BAD_BLOCKSIZE ) {
         IOErr( IO_IBLOCKSIZE );
     }
-    if( (status != STATUS_SCRATCH) || !(IOCB->set_flags & SET_FILENAME) ) {
+    if( (status != STATUS_SCRATCH) || (IOCB->set_flags & SET_FILENAME) == 0 ) {
         if( (status == STATUS_OLD) || (status == STATUS_NEW) ) {
-            if( !(IOCB->set_flags & SET_FILENAME) ) {
+            if( (IOCB->set_flags & SET_FILENAME) == 0 ) {
                 IOErr( IO_SNAME );
             }
         }
     } else {
         IOErr( IO_SNAME );
     }
-    if( !(IOCB->set_flags & SET_RECL) ) {
+    if( (IOCB->set_flags & SET_RECL) == 0 ) {
         if( accmode == ACCM_DIRECT ) {
             IOErr( IO_RACCM );
         }
@@ -228,11 +228,11 @@ static  void    ExOpen( void ) {
             if( form == FORMATTED_DFLT ) {
                 form = fcb->formatted;
             }
-            if( !(IOCB->set_flags & SET_RECL) ) {
+            if( (IOCB->set_flags & SET_RECL) == 0 ) {
                 IOCB->recl = fcb->bufflen;
                 IOCB->set_flags |= SET_RECL;
             }
-            if( !(IOCB->set_flags & SET_BLOCKSIZE) ) {
+            if( (IOCB->set_flags & SET_BLOCKSIZE) == 0 ) {
                 IOCB->blocksize = fcb->blocksize;
                 IOCB->set_flags |= SET_BLOCKSIZE;
             }
@@ -319,7 +319,7 @@ static  void    ExOpen( void ) {
         share = SHARE_COMPAT;
     }
     // check for status/file existence errors
-    if( ((status == STATUS_OLD) && !(fcb->flags & FTN_FSEXIST)) ||
+    if( ((status == STATUS_OLD) && (fcb->flags & FTN_FSEXIST) == 0) ||
         ((status == STATUS_NEW) && (fcb->flags & FTN_FSEXIST)) ) {
         if( !connected ) {
             DiscoFile( fcb );
@@ -336,7 +336,7 @@ static  void    ExOpen( void ) {
     }
     // if action was given or the file does not exist, use it
     // if the file exists, fcb->action will have been set by GetSysFileInfo()
-    if( ( IOCB->set_flags & SET_ACTPTR ) || !(fcb->flags & FTN_FSEXIST) ) {
+    if( (IOCB->set_flags & SET_ACTPTR) || (fcb->flags & FTN_FSEXIST) == 0 ) {
         fcb->action = action;
     }
     // Set up the new ftnfile structure - must be done before SysCreateFile()

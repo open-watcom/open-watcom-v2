@@ -259,7 +259,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                 addr = CGFEName( ReturnValue, F772CGType( sym ) );
             }
         } else {
-            if( (sym->u.ns.u1.s.typ == FT_CHAR) && !(Options & OPT_DESCRIPTOR) ) {
+            if( (sym->u.ns.u1.s.typ == FT_CHAR) && (Options & OPT_DESCRIPTOR) == 0 ) {
                 addr = SubAltSCB( CommonEntry );
             } else {
                 addr = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ),
@@ -272,7 +272,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             p_type = ArrayPtrType( sym );
             if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 addr = CGUnary( O_POINTS, CGFEName( sym, p_type ), p_type );
-                if( !(sym->u.ns.flags & SY_VALUE_PARM) ) {
+                if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 ) {
                     if( Options & OPT_DESCRIPTOR ) {
                         addr = SCBPointer( addr );
                     }
@@ -324,7 +324,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                 addr = CGFEName( shadow, shadow->u.ns.si.ms.u.cg_typ );
                 offset -= leader->u.ns.si.va.vi.ec_ext->low;
             } else if( (leader->u.ns.u1.s.typ == FT_CHAR) &&
-                       !(leader->u.ns.flags & SY_SUBSCRIPTED) ) {
+                       (leader->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
                 addr = CGBackName( leader->u.ns.si.va.u.bck_hdl, F772CGType( sym ) );
             } else {
                 addr = CGFEName( leader, F772CGType( sym ) );
@@ -336,7 +336,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
             i = CGInteger( offset, TY_INT_4 );
         }
         addr = CGBinary( O_PLUS, addr, i, SymPtrType( sym ) );
-        if( (sym->u.ns.u1.s.typ == FT_CHAR) && !(sym->u.ns.flags & SY_SUBSCRIPTED) ) {
+        if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
             // tell code generator where storage pointed to by SCB is located
             addr = CGBinary( O_COMMA, addr,
                              CGFEName( sym, F772CGType( sym ) ), TY_DEFAULT );
@@ -485,7 +485,7 @@ void    FCPop( void ) {
         dst = NULL;
         if( (sym->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) {
             // it's a statement function
-            if( !(OZOpts & OZOPT_O_INLINE) ) {
+            if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
                 dst = SymAddr( sym );
             }
         } else {

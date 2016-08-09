@@ -36,6 +36,8 @@
 #include "cgdefs.h"
 #include "model.h"
 #include "stack.h"
+#include "nullprop.h"
+
 
 typedef bool (*flood_func)( block *, void * );
 
@@ -45,14 +47,8 @@ typedef struct stupid_struct_so_I_can_use_safe_recurse {
     void        *parm;
 } flood_parms;
 
-#define _Visited( blk )         ( ( (blk)->class & BLOCK_VISITED ) != EMPTY )
-#define _UnVisited( blk )       ( (blk)->class &= ~BLOCK_VISITED )
-#define _MarkVisited( blk )     ( (blk)->class |=  BLOCK_VISITED )
-
-extern  void    ClearBlockBits( block_class );
-
-static void *doFloodForward( flood_parms *fp ) {
-
+static void *doFloodForward( flood_parms *fp )
+{
     block       *next;
     block_num   i;
     block_num   n;
@@ -61,28 +57,31 @@ static void *doFloodForward( flood_parms *fp ) {
     new_parms = *fp;
     n = fp->blk->targets;
     for( i = 0; i < n; i++ ) {
-        next = fp->blk->edge[ i ].destination.u.blk;
-        if( _Visited( next ) ) continue;
-        if( fp->func( next, fp->parm ) == false ) break;
-        _MarkVisited( next );
+        next = fp->blk->edge[i].destination.u.blk;
+        if( _IsBlkVisited( next ) )
+            continue;
+        if( fp->func( next, fp->parm ) == false )
+            break;
+        _MarkBlkVisited( next );
         new_parms.blk = next;
         SafeRecurseCG( (func_sr)doFloodForward, &new_parms );
     }
     return NULL;
 }
 
-extern void FloodForward( block *blk, flood_func func, void *parm ) {
+extern void FloodForward( block *blk, flood_func func, void *parm )
+{
     flood_parms parms;
 
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     parms.blk = blk;
     parms.func = func;
     parms.parm = parm;
     doFloodForward( &parms );
 }
 
-static void *doFloodBackward( flood_parms *fp ) {
-
+static void *doFloodBackward( flood_parms *fp )
+{
     block       *next;
     block_edge  *edge;
     flood_parms new_parms;
@@ -90,23 +89,26 @@ static void *doFloodBackward( flood_parms *fp ) {
     new_parms = *fp;
     for( edge = fp->blk->input_edges; edge != NULL; edge = edge->next_source ) {
         next = edge->source;
-        if( _Visited( next ) ) continue;
-        if( fp->func( next, fp->parm ) == false ) break;
-        _MarkVisited( next );
+        if( _IsBlkVisited( next ) )
+            continue;
+        if( fp->func( next, fp->parm ) == false )
+            break;
+        _MarkBlkVisited( next );
         new_parms.blk = next;
         SafeRecurseCG( (func_sr)doFloodBackward, &new_parms );
     }
     return NULL;
 }
 
-extern void FloodBackwards( block *start, flood_func func, void *parm ) {
+extern void FloodBackwards( block *start, flood_func func, void *parm )
 /************************************************************************
     Flood backwards in the flow graph, calling the given function for each
     block as it is visited
 */
+{
     flood_parms parms;
 
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
     parms.blk = start;
     parms.func = func;
     parms.parm = parm;

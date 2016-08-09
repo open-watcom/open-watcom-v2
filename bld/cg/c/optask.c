@@ -53,7 +53,7 @@ static  label_handle DoAskForLabel( cg_sym_handle sym )
     new->alias       = NULL;
     new->ins         = NULL;
     new->refs        = NULL;
-#if( OPTIONS & SHORT_JUMPS )
+#if OPTIONS & SHORT_JUMPS
     new->redirect    = NULL;
 #endif
 #if _TARGET & _TARG_RISC
@@ -82,13 +82,13 @@ extern  label_handle AskForNewLabel( void )
 }
 
 
-extern  label_handle AskRTLabel( cg_sym_handle sym )
-/**************************************************/
+label_handle AskForRTLabel( rt_class rtindex )
+/********************************************/
 {
     label_handle    lbl;
 
   optbegin
-    lbl = DoAskForLabel( sym );
+    lbl = DoAskForLabel( RTIDX2SYM( rtindex ) );
     _SetStatus( lbl, RUNTIME );
     optreturn( lbl );
 }
@@ -104,7 +104,9 @@ extern  label_handle AskForLabel( cg_sym_handle sym )
     new = DoAskForLabel( sym );
     if( sym != NULL ) {
         attr = FEAttr( sym );
-        if( attr & FE_UNIQUE ) _SetStatus( new, UNIQUE );
+        if( attr & FE_UNIQUE ) {
+            _SetStatus( new, UNIQUE );
+        }
     }
     optreturn( new );
 }
@@ -133,7 +135,7 @@ extern  bool    AskIfUniqueLabel( label_handle lbl )
 {
   optbegin
     _ValidLbl( lbl );
-    optreturn( _TstStatus( lbl, UNIQUE ) != 0 );
+    optreturn( _TstStatus( lbl, UNIQUE ) );
 }
 
 
@@ -142,7 +144,7 @@ extern  bool    AskIfCommonLabel( label_handle lbl )
 {
   optbegin
     _ValidLbl( lbl );
-    optreturn( _TstStatus( lbl, COMMON_LBL ) != 0 );
+    optreturn( _TstStatus( lbl, COMMON_LBL ) );
 }
 
 

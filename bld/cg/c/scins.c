@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,19 +36,19 @@
 #include "makeins.h"
 #include "data.h"
 #include "x87.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "namelist.h"
+#include "split.h"
 
 
 extern  int             NumOperands(instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
 extern  bool            IndexOkay(instruction*,name*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  bool            CanReplace(instruction*);
-extern  instruction     *rSWAPOPS(instruction*);
-extern  instruction     *rSWAPCMP(instruction*);
-extern  bool            IsStackReg(name*);
 
-extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
-/**********************************************************/
+opcode_entry    *ResetGenEntry( instruction *ins )
+/************************************************/
+{
     opcode_entry        *try;
     bool                dummy;
 
@@ -72,8 +73,8 @@ extern  opcode_entry    *ResetGenEntry( instruction *ins ) {
 }
 
 
-extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags ) {
-/**************************************************************************************
+bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
+/****************************************************************************
     Is it alright to change operand "*op" to a reference to "to" in
     instruction "ins".  We check here that the instruction would still
     be generatable by looking up its generate entry.  We must also check
@@ -82,8 +83,7 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
     R1 would be no good if the first form set condition codes but the
     second form did not.
 */
-
-
+{
     opcode_entry        *try;
     opcode_entry        *table;
     opcode_entry        *gen_table;
@@ -104,7 +104,7 @@ extern  bool    ChangeIns( instruction *ins, name *to, name **op, change_type fl
         class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[ class ] != to->n.size ) return( false );
+        if( TypeClassSize[class] != to->n.size ) return( false );
     }
     for( i = ins->num_operands; i-- > 0; ) {
         save_ops[i] = ins->operands[i];
@@ -165,10 +165,10 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     if( op->n.class != N_INDEXED ) return( false );
     if( op->i.index->n.class != N_REGISTER ) return( false );
     if( op->i.index->r.reg_index == NO_INDEX ) return( false );
-    this_reg = &sc[ op->i.index->r.reg_index  ];
+    this_reg = &sc[op->i.index->r.reg_index];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
-            reg_name = ScoreList[ curr_reg->index ]->reg_name;
+            reg_name = ScoreList[curr_reg->index]->reg_name;
             // OOPS! what about "op [edx] -> [edx]" which zaps edx...
             // if( opp != &ins->result ||       BBB - Feb 18 - 1994
             if( *opp != ins->result ||
@@ -205,10 +205,10 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;
-        this_reg = &sc[ op->r.reg_index ];
+        this_reg = &sc[op->r.reg_index];
         if( !HW_Ovlap( live, op->r.reg ) ) {
             for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
-                if( HW_Ovlap( live, ScoreList[  curr_reg->index  ]->reg )
+                if( HW_Ovlap( live, ScoreList[curr_reg->index]->reg )
                 && curr_reg->generation < this_reg->generation
                 && ChangeIns( ins, ScoreList[curr_reg->index]->reg_name,
                               opp, CHANGE_GEN ) ) {
@@ -239,7 +239,7 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
         }
         for( i = ScoreCount; i-- > 0; ) {
             if( ScoreEqual( sc, i, &info )
-             && ChangeIns( ins, ScoreList[ i ]->reg_name, opp, CHANGE_GEN ) )
+             && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) )
                 return( true );
         }
 
@@ -249,12 +249,12 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
 }
 
 
-extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
-/***********************************************************
+bool    FindRegOpnd( score *sc, instruction *ins )
+/*************************************************
     See if we can find an operand of "ins" that could be replaces by a
     register or an 'older' register (one that was defined first).
 */
-
+{
     int         i;
     bool        change;
 
@@ -273,8 +273,8 @@ extern  bool    FindRegOpnd( score *sc, instruction *ins ) {
     return( change );
 }
 
-extern  void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
-/****************************************************************
+void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
+/********************************************************
     Make 'op1' and 'op2' equivalent in scoreboarder information
         - one of them must be a register
 */
@@ -303,19 +303,19 @@ extern  void    ScoreMakeEqual( score *sc, name *op1, name *op2 )
     }
 }
 
-extern  bool    ScoreMove( score *sc, instruction *ins ) {
-/*********************************************************
+bool    ScoreMove( score *sc, instruction *ins )
+/***********************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
-
+{
     name        *src;
     name        *dst;
     int         src_index;
     int         dst_index;
     score_info  info;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     src_index = 0;
     if( src->n.class == N_REGISTER ) {
@@ -368,18 +368,18 @@ extern  bool    ScoreMove( score *sc, instruction *ins ) {
 }
 
 
-extern  bool    ScoreLA( score *sc, instruction *ins ) {
-/*********************************************************
+bool    ScoreLA( score *sc, instruction *ins )
+/*********************************************
     Update "sc" to reflect the affect of an OP_MOV instruction "ins" on
     the registers and memory locations.
 */
-
+{
     name        *src;
     name        *dst;
     int         dst_index;
     score_info  info;
 
-    src = ins->operands[ 0 ];
+    src = ins->operands[0];
     dst = ins->result;
     if( dst->n.class == N_REGISTER ) {
         dst_index = dst->r.reg_index;
@@ -400,20 +400,20 @@ extern  bool    ScoreLA( score *sc, instruction *ins ) {
 }
 
 
-extern  void    ScZeroCheck( score *sc, instruction *ins ) {
-/***********************************************************
+void    ScZeroCheck( score *sc, instruction *ins )
+/*************************************************
     Check if instruction "ins" ends up with the result being Zero.  For
     example SUB R1,R1 => R1, results in R1 becoming 0.
 */
-
+{
     int i;
 
     if( ins->head.opcode != OP_XOR
      && ins->head.opcode != OP_MOD
      && ins->head.opcode != OP_SUB ) return;
-    if( ins->operands[ 0 ] != ins->operands[ 1 ] ) return;
-    if( ins->operands[ 0 ] != ins->result ) return;
-    if( ins->operands[ 0 ]->n.class != N_REGISTER ) return;
+    if( ins->operands[0] != ins->operands[1] ) return;
+    if( ins->operands[0] != ins->result ) return;
+    if( ins->operands[0]->n.class != N_REGISTER ) return;
     i = ins->result->r.reg_index;
     ScoreAssign( sc, i, ScZero );
 }

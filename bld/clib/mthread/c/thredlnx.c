@@ -44,6 +44,7 @@
 #include "cthread.h"
 #include "linuxsys.h"
 
+
 struct __lnx_thread {
     thread_fn *start_addr;
     void *args;
@@ -51,12 +52,12 @@ struct __lnx_thread {
 
 static void __cloned_lnx_start_fn( void *thrvoiddata )
 {
-    struct __lnx_thread *thrdata = (struct __lnx_thread *)thrvoiddata;
-    
-    thrdata->start_addr(thrdata->args);
-    
-    free(thrvoiddata);
-    
+    struct __lnx_thread *thrdata;
+
+    thrdata = (struct __lnx_thread *)thrvoiddata;
+    thrdata->start_addr( thrdata->args );
+    free( thrvoiddata );
+
     _sys_exit( 0 );
 }
 
@@ -68,17 +69,17 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     struct __lnx_thread *thrdata;
 
     if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
-        return( -1L );
+        return( -1 );
     }
 
     thrdata = (struct __lnx_thread *)malloc(sizeof(struct __lnx_thread));
     if(thrdata == NULL) {
         _RWD_errno = ENOMEM;
-        return -1;
+        return( -1 );
     }
     thrdata->start_addr = start_addr;
     thrdata->args = arglist;
-    
+
     pid = clone( (int(*)(void *))__cloned_lnx_start_fn,  
                  (void*)((int)stack_bottom + stack_size),
                  CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, 

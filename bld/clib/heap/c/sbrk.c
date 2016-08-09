@@ -54,7 +54,7 @@ extern  unsigned short SS_Reg( void );
         "mov ax,ss"     \
     parm caller value [ax];
 
-extern  int SetBlock( unsigned short, size_t );
+extern  int SetBlock( unsigned short, unsigned );
 #pragma aux SetBlock =      \
         "mov    ah,04ah"    \
         "int    021h"       \
@@ -68,7 +68,7 @@ extern  unsigned short  GetDS( void );
         "mov    ax,ds"  \
     value [ax];
 
-extern  int SetBlock( unsigned short selector, int size );
+extern  int SetBlock( unsigned short selector, unsigned size );
 #pragma aux SetBlock =      \
         "push   es"         \
         "mov    es,ax"      \
@@ -106,7 +106,7 @@ extern  int SegmentLimit( void );
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-    increment = ( increment + 0x0fff ) & ~0x0fff;
+    increment = __ROUND_UP_SIZE_4K( increment );
     return( (void _WCNEAR *)DPMIAlloc( increment ) );
 }
 
@@ -133,7 +133,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 
 _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
-    increment = ( increment + 0x0fff ) & ~0x0fff;
+    increment = __ROUND_UP_SIZE_4K( increment );
     return( (void _WCNEAR *)TinyMemAlloc( increment ) );
 }
 
@@ -141,60 +141,53 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 
 void _WCNEAR *__brk( unsigned brk_value )
 {
-    unsigned    old_brk_value;
-    unsigned    seg_size;
-#ifdef _M_I86
-    __segment   segment;
-#endif
+    unsigned        old_brk_value;
+    unsigned short  segm;
+    unsigned        segm_size;
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
         return( (void _WCNEAR *)-1 );
     }
+    segm = _DGroup();
 #ifdef _M_I86
-    seg_size = ( brk_value + 0x0f ) >> 4;
-    if( seg_size == 0 ) {
-        seg_size = 0x1000;
+    segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
+    if( segm_size == 0 ) {
+        segm_size = PARAS_IN_64K;
     }
     /* try setting the block of memory */
-    segment = _DGroup();
     if( _RWD_osmode == DOS_MODE ) {
-        seg_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
-        segment = _RWD_psp;
-    }
-    if( SetBlock( segment, seg_size ) != 0 ) {
-        _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        segm_size += SS_Reg() - _RWD_psp;    /* add in code size (in paragraphs) */
+        segm = _RWD_psp;
     }
 #else
     if( _IsOS386() ) {
         int parent;
 
-        seg_size = ( brk_value + 15U ) / 16U;
-        if( seg_size == 0 )
-            seg_size = 0x0FFFFFFF;
-        parent = SegInfo( GetDS() );
+        segm_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
+        if( segm_size == 0 )
+            segm_size = 0x0FFFFFFF;
+        parent = SegInfo( segm );
         if( parent < 0 ) {
-            if( SetBlock( parent & 0xffff, seg_size ) < 0 ) {
+            if( SetBlock( parent & 0xffff, segm_size ) < 0 ) {
                 _RWD_errno = ENOMEM;
                 return( (void _WCNEAR *)-1 );
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        seg_size = ( brk_value + 4095U ) / 4096U;
-        if( seg_size == 0 )
-            seg_size = 0x000FFFFF;
+        segm_size = ( brk_value + 4095U ) / 4096U;
+        if( segm_size == 0 )
+            segm_size = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
             // convert from 4k pages to paragraphs
-            seg_size = seg_size * 256U;
+            segm_size = segm_size * 256U;
         }
     }
-    if( SetBlock( GetDS(), seg_size ) < 0 ) {
+#endif
+    if( SetBlock( segm, segm_size ) < 0 ) {
         _RWD_errno = ENOMEM;
         return( (void _WCNEAR *)-1 );
     }
-#endif
-
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
 
@@ -208,7 +201,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         void _WCNEAR *p;
 
         if( increment > 0 ) {
-            increment = ( increment + 0x0fff ) & ~0x0fff;
+            increment = __ROUND_UP_SIZE_4K( increment );
             if( _IsRational() ) {
                 p = TinyDPMIAlloc( increment );
             } else {

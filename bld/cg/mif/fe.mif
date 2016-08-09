@@ -8,7 +8,7 @@
 !include $(cfloat_dir)/client.mif
 !include $(dwarfw_dir)/client.mif
 
-!ifeq bootstrap 1
+!ifdef bootstrap
 obj_dir = $(objs_subdir)
 !else ifeq dll_cg 1
 obj_dir = $(objs_subdir).cgd

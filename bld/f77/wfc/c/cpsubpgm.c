@@ -246,7 +246,7 @@ void CpEntry( void )
     bool        in_subr;
     sym_id      sym;
 
-    if( ( ProgSw & PS_IN_SUBPROGRAM ) == 0 ) {
+    if( (ProgSw & PS_IN_SUBPROGRAM) == 0 ) {
         StmtErr( SR_ILL_IN_PROG );
     }
     if( !EmptyCSList() ) {
@@ -255,7 +255,7 @@ void CpEntry( void )
     if( ReqName( NAME_FUNCTION ) ) {
         in_subr = (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE;
         sym = LkSym();
-        if( ( sym->u.ns.flags & (SY_USAGE|SY_SUB_PARM|SY_IN_EC|SY_SAVED) ) ||
+        if( (sym->u.ns.flags & (SY_USAGE | SY_SUB_PARM | SY_IN_EC | SY_SAVED)) ||
             ( in_subr && (sym->u.ns.flags & SY_TYPE) ) ) {
             IllName( sym );
         } else {
@@ -302,19 +302,19 @@ static void CkRemBlock( void )
 
 void CpReturn( void )
 {
-    if( !(ProgSw & PS_IN_SUBPROGRAM) ) {
+    if( (ProgSw & PS_IN_SUBPROGRAM) == 0 ) {
         Extension( RE_IN_PROGRAM );
     }
     CkRemBlock();
     if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
-        if( ( ( SubProgId->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-            ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
+        if( ( (SubProgId->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
+            ( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) ) {
             GNullRetIdx();
         }
     } else {
         IntSubExpr();
-        if( ( ( SubProgId->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) &&
-            ( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_SUBROUTINE ) ) {
+        if( ( (SubProgId->u.ns.flags & SY_CLASS) == SY_SUBPROGRAM ) &&
+            ( (SubProgId->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) ) {
             GRetIdx();
         } else {
             Error( RE_ALT_IN_SUBROUTINE );
@@ -331,7 +331,7 @@ static void CkSubEnd( void )
 {
 // Check if we had an END statement.
 
-    if( ( SgmtSw & SG_STMT_PROCESSED ) && !Remember.endstmt ) {
+    if( (SgmtSw & SG_STMT_PROCESSED) && !Remember.endstmt ) {
         FiniSubProg();
         InitSubProg();
     }
@@ -381,7 +381,7 @@ static parameter *NameParm( entry_pt *entry )
             ( class != SY_FN_OR_SUB ) ) {
             IllName( sym );
             return( NULL );
-        } else if( flags & ( SY_PS_ENTRY | SY_INTRINSIC ) ) {
+        } else if( flags & (SY_PS_ENTRY | SY_INTRINSIC) ) {
             IllName( sym );
             return( NULL );
         }
@@ -452,8 +452,8 @@ static void DoWarps( void )
     for( parm = ArgList->parms; parm != NULL; parm = parm->link ) {
         if( parm->flags & ARG_STMTNO ) continue;
         sym = parm->id;
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
-        if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) continue;
+        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE ) continue;
+        if( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) continue;
         if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) == 0 ) continue;
         GWarp( sym );
     }
@@ -491,7 +491,7 @@ void Epilogue( void )
 {
 // Generate an epilogue.
 
-    if( ( SgmtSw & SG_PROLOG_DONE ) == 0 ) {
+    if( (SgmtSw & SG_PROLOG_DONE) == 0 ) {
         Prologue();
     }
     if( SubProgId != NULL ) {

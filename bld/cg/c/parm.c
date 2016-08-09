@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,12 +37,8 @@
 #include "zoiks.h"
 #include "data.h"
 #include "types.h"
+#include "rgtbl.h"
 #include "feprotos.h"
-
-
-extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
-extern  hw_reg_set      *ParmChoices(type_class_def);
-extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
 
 
 extern  hw_reg_set      ParmInLineReg( parm_state *state ) {
@@ -73,7 +70,7 @@ extern type_length      ParmMem( type_length length, type_length alignment, call
 #endif
     offset = state->parm.offset;
     if( offset & ( alignment - 1 ) ) {
-        offset = ( offset + alignment - 1 ) & ~ ( alignment - 1 );
+        offset = _RoundUp( offset, alignment );
     }
     state->parm.offset = offset + _RoundUp( length, word_size );
     if( state->parm.offset > MaxStack ) {

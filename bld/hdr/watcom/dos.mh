@@ -32,7 +32,9 @@
 
 :include wchar_t.sp
 
-:include namemax.sp
+:keep NAMEMAX
+:include maxpath.sp
+:remove NAMEMAX
 
 /* dosexterror struct */
 

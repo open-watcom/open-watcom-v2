@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-extern  bool        CvtOk( type_class_def fr, type_class_def to );
-extern  instruction *rDOCVT( instruction *ins );
-extern  void        LookupConvertRoutine( instruction *ins );
+extern bool         CvtOk( type_class_def fr, type_class_def to );
+extern instruction  *DoConversion( instruction *ins );
+extern rt_class     LookupConvertRoutine( instruction *ins );
 

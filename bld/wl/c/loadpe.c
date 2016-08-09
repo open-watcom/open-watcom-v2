@@ -165,7 +165,7 @@ static struct {
 #define WALK_IMPORT_SYMBOLS(sym) \
     for( (sym) = HeadSym; (sym) != NULL; (sym) = (sym)->link ) \
         if( IS_SYM_IMPORTED(sym) && (sym)->p.import != NULL \
-            /*&& !((sym)->info & SYM_DEAD)*/)
+            /*&& ((sym)->info & SYM_DEAD) == 0 */)
 
 static offset CalcIDataSize( void )
 /*********************************/
@@ -307,7 +307,7 @@ static void GenPETransferTable( void )
                 AlphaJump.high = dest >> 16;
                 AlphaJump.low = dest;
                 if( LinkState & MAKE_RELOCS ) {
-                    if( !(FmtData.objalign & 0xFFFF) ) {
+                    if( (FmtData.objalign & 0xFFFF) == 0 ) {
                         XFerReloc( sym->addr.off + offsetof( alpha_transfer, high ),
                                    group, PE_FIX_HIGH );
                     } else {
@@ -415,7 +415,7 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
             into the appropriate PE bits */
         if( group->segflags & SEG_DATA ) {
             object->flags |= PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
-            if( !(group->segflags & SEG_READ_ONLY) ) {
+            if( (group->segflags & SEG_READ_ONLY) == 0 ) {
                 object->flags |= PE_OBJ_WRITABLE;
             }
             init_data_size += object->physical_size;
@@ -424,7 +424,7 @@ static unsigned_32 WriteDataPages( exe_pe_header *h, pe_object *object, unsigned
             }
         } else {
             object->flags |= PE_OBJ_CODE | PE_OBJ_EXECUTABLE;
-            if( !(group->segflags & SEG_READ_ONLY) ) {
+            if( (group->segflags & SEG_READ_ONLY) == 0 ) {
                 object->flags |= PE_OBJ_READABLE;
             }
             if( group->segflags & SEG_NOPAGE) {
@@ -936,7 +936,7 @@ static void CheckNumRelocs( void )
     group_entry *group;
     symbol      *sym;
 
-    if( !(LinkState & MAKE_RELOCS) )
+    if( (LinkState & MAKE_RELOCS) == 0 )
         return;
     for( group = Groups; group != NULL; group = group->next_group ) {
         if( group->g.grp_relocs != NULL ) {
@@ -1103,10 +1103,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.nolargeaddressaware ) {
             PE64( h ).flags &= ~PE_FLG_LARGE_ADDRESS_AWARE;
         }
-        if( !(LinkState & MAKE_RELOCS) ) {
+        if( (LinkState & MAKE_RELOCS) == 0 ) {
             PE64( h ).flags |= PE_FLG_RELOCS_STRIPPED;
         }
-        if( !(LinkState & LINK_ERROR) ) {
+        if( (LinkState & LINK_ERROR) == 0 ) {
             PE64( h ).flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {
@@ -1259,10 +1259,10 @@ void FiniPELoadFile( void )
         if( FmtData.u.pe.largeaddressaware == 1 ) {
             PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
-        if( !(LinkState & MAKE_RELOCS) ) {
+        if( (LinkState & MAKE_RELOCS) == 0 ) {
             PE32( h ).flags |= PE_FLG_RELOCS_STRIPPED;
         }
-        if( !(LinkState & LINK_ERROR) ) {
+        if( (LinkState & LINK_ERROR) == 0 ) {
             PE32( h ).flags |= PE_FLG_IS_EXECUTABLE;
         }
         if( FmtData.dll ) {

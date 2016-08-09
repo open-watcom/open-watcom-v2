@@ -44,6 +44,8 @@
 #include "clibext.h"
 
 
+#define ARRAY_SIZE(a)   (sizeof( a ) / sizeof( (a)[0] ))
+
 #ifdef BOOTSTRAP
 
     static struct idstr { int id; char *s; } StringTable[] = {
@@ -76,15 +78,14 @@ static  TABLE_TYPE  PARA_TABLE[] = {
         { NO_DEF_CMDS_FOR_MAKE,         "sE" },
         { PTARG_IS_TYPE_M,              "EM" },
         { IMP_ENV_M,                    "EM" },
-        { GETDATE_MSG,                  "sE" },
-        { END_OF_RESOURCE_MSG,          NULL } 
+        { GETDATE_MSG,                  "sE" }
 };
 
 #ifndef BOOTSTRAP
 
 static  HANDLE_INFO hInstance = { 0 };
 static  unsigned    MsgShift;
-static  BOOLEAN     res_failure = TRUE;
+static  bool        res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
@@ -108,34 +109,34 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 #endif
 
-BOOLEAN MsgInit( void )
-/*********************/
+bool MsgInit( void )
+/******************/
 {
 #ifndef BOOTSTRAP
     static char     name[_MAX_PATH]; // static because address passed outside.
 
     hInstance.handle = NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = FALSE;
+        res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( MsgGet( MSG_USAGE_BASE, name ) ) {
-                return( TRUE );
+                return( true );
             }
         }
         MsgFini();
     }
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = TRUE;
-    return( FALSE );
+    res_failure = true;
+    return( false );
 #else
-    return( TRUE );
+    return( true );
 #endif
 }
 
 
-BOOLEAN MsgGet( int resourceid, char *buffer )
-/********************************************/
+bool MsgGet( int resourceid, char *buffer )
+/*****************************************/
 {
 #ifdef BOOTSTRAP
     struct idstr *s;
@@ -144,17 +145,17 @@ BOOLEAN MsgGet( int resourceid, char *buffer )
     msgid.id = resourceid;
     s = bsearch( &msgid, StringTable, _arraysize( StringTable ), sizeof( *s ), compar );
     if( s == NULL ) {
-        buffer[0] = '\0';
-        return( FALSE );
+        buffer[0] = NULLCHAR;
+        return( false );
     }
     strcpy( buffer, s->s );
 #else
     if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
-        buffer[0] = '\0';
-        return( FALSE );
+        buffer[0] = NULLCHAR;
+        return( false );
     }
 #endif
-    return( TRUE );
+    return( true );
 }
 
 void MsgGetTail( int resourceid, char *buffer )
@@ -189,7 +190,7 @@ static char *msgInTable( int resourceid )
 {
     int i;
 
-    for( i = 0; PARA_TABLE[i].msgid < END_OF_RESOURCE_MSG; i++ ) {
+    for( i = 0; i < ARRAY_SIZE( PARA_TABLE ); i++ ) {
         if( resourceid == PARA_TABLE[i].msgid ) {
             return( PARA_TABLE[i].msgtype );
         }
@@ -201,10 +202,10 @@ static char *msgInTable( int resourceid )
 }
 
 
-BOOLEAN MsgReOrder( int resourceid, char *buff, char **paratype )
-/***************************************************************/
+bool MsgReOrder( int resourceid, char *buff, char **paratype )
+/************************************************************/
 {
-    BOOLEAN rvalue = FALSE;
+    bool    rvalue = false;
 
     MsgGet( resourceid, buff );
     *paratype = msgInTable( resourceid );
@@ -216,7 +217,7 @@ BOOLEAN MsgReOrder( int resourceid, char *buff, char **paratype )
             } else if( *(buff + 1) == **paratype ) {
                 break;
             } else if( *(buff + 1) == *(*paratype + 1) ) {
-                rvalue = TRUE;
+                rvalue = true;
                 break;
             }
             buff = strchr( (buff + 1), '%' );

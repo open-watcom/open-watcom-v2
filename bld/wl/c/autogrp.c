@@ -119,7 +119,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
 
     if( seg == NULL ) {
         for( class = sec->classlist; class != NULL; class = class->next_class ) {
-            if( !(class->flags & CLASS_DEBUG_INFO) ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                  break;
             }
         }
@@ -131,7 +131,7 @@ static seg_leader *GetNextSeg( section *sec, seg_leader *seg )
     }
     for( seg = RingStep( class->segs, seg ); seg == NULL; seg = RingStep( class->segs, seg ) ) {
         for( class = class->next_class; class != NULL; class = class->next_class ) {
-            if( !(class->flags & CLASS_DEBUG_INFO) ) {
+            if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
                  break;
             }
         }
@@ -233,10 +233,10 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
     group->section = seg->class->section;
     while( num_segs != 0 ) {
         if( seg->group == NULL || seg->group == group ) {
-            if( !(seg->info & SEG_CODE) ) {
+            if( (seg->info & SEG_CODE) == 0 ) {
                 group->segflags |= SEG_DATA;
             }
-            if( !(seg->class->flags & CLASS_READ_ONLY) ) {
+            if( (seg->class->flags & CLASS_READ_ONLY) == 0 ) {
                 group->segflags &= ~SEG_READ_ONLY;
             }
             if( seg->class->flags & CLASS_COPY ) {  // If class is copied, mark group accordingly

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,14 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "data.h"
+#include "cgsrtlst.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern  void            FindReferences( void );
 extern  conflict_node   *AddConflictNode(name*);
-extern  name            *DeAlias(name*);
 extern  save_def        Weight( save_def value, block *blk );
-extern  void            *SortList(void *,unsigned int,bool(*)(void *,void *));
 
 static  void            PropagateConflicts( void );
 static  void            LiveAnalysis( block *tail, global_bit_set memory_bits );
@@ -73,10 +75,10 @@ static  bool    AllocBefore( void *n1, void *n2 )
     name    *t2 = n2;
 
     /* const temps after all others */
-    if( (t1->t.temp_flags & CONST_TEMP) && !(t2->t.temp_flags & CONST_TEMP) ) {
+    if( (t1->t.temp_flags & CONST_TEMP) && (t2->t.temp_flags & CONST_TEMP) == 0 ) {
         return( false );
     }
-    if( !(t1->t.temp_flags & CONST_TEMP) && (t2->t.temp_flags & CONST_TEMP) ) {
+    if( (t1->t.temp_flags & CONST_TEMP) == 0 && (t2->t.temp_flags & CONST_TEMP) ) {
         return( true );
     }
     if( t1->v.conflict == NULL && t2->v.conflict != NULL ) {
@@ -105,7 +107,7 @@ static  void    RoughSortTemps( void )
     instruction         *ins;
     int                 i;
 
-    for( opnd = Names[ N_TEMP ]; opnd != NULL; opnd = opnd->n.next_name ) {
+    for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY|USE_ADDRESS ) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
@@ -125,8 +127,7 @@ static  void    RoughSortTemps( void )
             }
         }
     }
-    Names[ N_TEMP ] = SortList( Names[ N_TEMP ], offsetof( name, n.next_name ),
-                                AllocBefore );
+    Names[N_TEMP] = SortList( Names[N_TEMP], offsetof( name, n.next_name ), AllocBefore );
 }
 
 
@@ -141,11 +142,12 @@ static  global_bit_set AssignGlobalBits( name_class_def list,
 
     if( list == N_TEMP ) {
         _GBitInit( all_used, EMPTY );
-        if( !MoreUseInOtherTemps ) return( all_used );
+        if( !MoreUseInOtherTemps )
+            return( all_used );
         MoreUseInOtherTemps = false;
     }
     _GBitInit( all_used, EMPTY );
-    for( opnd = Names[ list ]; opnd != NULL; opnd = opnd->n.next_name ) {
+    for( opnd = Names[list]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY | USE_ADDRESS ) ) ) {
             opnd->v.usage |= NEEDS_MEMORY | USE_MEMORY;
         } else if( opnd->v.usage & USE_IN_ANOTHER_BLOCK ) {
@@ -258,7 +260,7 @@ extern  void    SetInOut( block *blk )
         _GBitTurnOn( blk->dataflow->in, blk->dataflow->def );
         _GBitAssign( blk->dataflow->out, blk->dataflow->in );
     }
-    if( blk->class & RETURN ) {
+    if( _IsBlkAttr( blk, BLK_RETURN ) ) {
         HW_TurnOn( blk->ins.hd.live.regs, CurrProc->state.return_reg );
     }
     _LBitInit( blk->ins.hd.live.within_block, EMPTY );
@@ -292,14 +294,14 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
             /*   The OUT set of a return block includes any globals*/
             /*   defined within the procedure*/
 
-            if( blk->class & ( RETURN | LABEL_RETURN ) ) {
+            if( _IsBlkAttr( blk, BLK_RETURN | BLK_LABEL_RETURN ) ) {
                 new = memory_bits;
             } else {
                 _GBitInit( new, EMPTY );
             }
-            if( ( blk->class & BIG_JUMP ) == EMPTY ) {
+            if( !_IsBlkAttr( blk, BLK_BIG_JUMP ) ) {
                 for( i = blk->targets; i-- > 0; ) {
-                    target = blk->edge[ i ].destination.u.blk;
+                    target = blk->edge[i].destination.u.blk;
 
                     /*   new OUT = union of successors' IN*/
 

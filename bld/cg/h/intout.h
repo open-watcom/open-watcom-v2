@@ -32,10 +32,10 @@
 
 #if _HOSTOS & ( _OS220 | _PLDT | _WIN386 | _NT )
     #pragma aux IntOut \
-        parm routine [ esi ] [ eax ebx ecx edx ];
+        parm routine [esi] [eax ebx ecx edx];
 #else /* _DOS or _OSTWO */
     #pragma aux IntOut \
-        parm routine [ si ] [ ax bx cx dx ];
+        parm routine [si] [ax bx cx dx];
 #endif
 #pragma aux (IntOut) IntOut32 "IntOut_";
 #pragma aux (IntOut) IntOutII "IntOut_";

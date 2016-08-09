@@ -232,7 +232,7 @@ static const byte __FAR OprIndex[] = {
 static  bool    SimpleScript( itnode *op ) {
 //==========================================
 
-    if( ( op->opn.us & USOPN_WHERE ) != 0 )
+    if( op->opn.us & USOPN_WHERE )
         return( false );
     switch( op->opn.us & USOPN_WHAT ) {
     case USOPN_NNL:
@@ -248,21 +248,21 @@ static  int     SameScripts( itnode *op1, itnode *op2 ) {
 //=======================================================
 
     if( !SimpleScript( op1 ) ) return( 0 );
-    if( ( op1->opn.us & USOPN_WHAT ) == USOPN_NONE ) {
-        if( ( op2->opn.us & USOPN_WHAT ) == USOPN_CON ) {
+    if( (op1->opn.us & USOPN_WHAT) == USOPN_NONE ) {
+        if( (op2->opn.us & USOPN_WHAT) == USOPN_CON ) {
             return( ITIntValue( op2 ) );
         } else {
             return( 0 );
         }
     }
-    if( ( op1->opn.us & USOPN_WHAT ) != ( op2->opn.us & USOPN_WHAT ) ) {
+    if( (op1->opn.us & USOPN_WHAT) != (op2->opn.us & USOPN_WHAT) ) {
         return( 0 );
     }
-    if( ( op1->opn.us & USOPN_WHAT ) == USOPN_NNL ) {
+    if( (op1->opn.us & USOPN_WHAT) == USOPN_NNL ) {
         if( op1->sym_ptr == op2->sym_ptr ) {
             return( 1 );
         }
-    } else if( ( op1->opn.us & USOPN_WHAT ) == USOPN_CON ) {
+    } else if( (op1->opn.us & USOPN_WHAT) == USOPN_CON ) {
         return( ITIntValue( op2 ) - ITIntValue( op1 ) + 1 );
     }
     return( 0 );
@@ -591,7 +591,7 @@ static  bool    DoGenerate( TYPE typ1, TYPE typ2, uint *res_size ) {
     if( CITNode->link->opr == OPR_EQU ) {
         ResultType = typ1;
         *res_size = CITNode->size;
-        if( ( ASType & AST_ASF ) || CkAssignOk() ) return( true );
+        if( (ASType & AST_ASF) || CkAssignOk() ) return( true );
         return( false );
     } else {
         if( ( ( typ1 == FT_DOUBLE ) && ( typ2 == FT_COMPLEX ) ) ||
@@ -638,7 +638,7 @@ static  void    FixFldNode( void ) {
             CITNode->value.st.ss_size = next->value.st.ss_size;
         }
     } else {
-        if( ( next->opn.us & USOPN_WHAT ) == USOPN_ARR ) {
+        if( (next->opn.us & USOPN_WHAT) == USOPN_ARR ) {
             CITNode->opn.us &= ~USOPN_WHAT;
             CITNode->opn.us |= USOPN_ARR;
             // pass on structure name
@@ -699,7 +699,7 @@ static  void    Generate( void ) {
         } else {
             mask = LegalOprsB[ ( typ2 - FT_FIRST ) * LEGALOPR_TAB_COLS + typ1 - FT_FIRST ];
         }
-        if( ( ( mask >> ( op - OPTR_FIRST ) ) & 1 ) == 0 ) {
+        if( (( mask >> ( op - OPTR_FIRST ) ) & 1) == 0 ) {
             // illegal combination
             MoveDown();
             if( typ1 == FT_NO_TYPE ) {
@@ -790,7 +790,7 @@ static  TYPE    IFPromote( TYPE typ ) {
 // if the promote switch is activated we promote certain integer intrinsics
 // arguments
 
-    if( ( Options & OPT_PROMOTE ) && _IsTypeInteger( typ ) ) {
+    if( (Options & OPT_PROMOTE) && _IsTypeInteger( typ ) ) {
         typ = FT_INTEGER;
     }
     return( typ );
@@ -846,7 +846,7 @@ static  void    EvalList( void ) {
 //================================
 
     if( !AError ) {
-        if( RecNextOpr( OPR_EQU ) && !( CITNode->opn.us & USOPN_FLD ) ) {
+        if( RecNextOpr( OPR_EQU ) && (CITNode->opn.us & USOPN_FLD) == 0 ) {
             SetDefinedStatus();
         }
         ProcList( CITNode );
@@ -888,7 +888,7 @@ static  void    IFPrmChk( void ) {
             if( (parm_code == PC_ARRAY_NAME) && _Allocatable( sym ) )
                 break;
             if( (parm_code == PC_VARIABLE) && (sym->u.ns.u1.s.typ == FT_CHAR) &&
-                (sym->u.ns.xt.size == 0) && !(sym->u.ns.flags & SY_SUB_PARM) ) {
+                (sym->u.ns.xt.size == 0) && (sym->u.ns.flags & SY_SUB_PARM) == 0 ) {
                 sym->u.ns.u1.s.xflags |= SY_ALLOCATABLE;
                 break;
             }
@@ -923,13 +923,13 @@ static  void    IFPrmChk( void ) {
             break;
         default:
             if( CITNode->typ != parm_typ ) {
-                if( ( (CITNode->opn.us & USOPN_WHAT) == USOPN_CON) && TypeIs( parm_typ ) ) {
+                if( ((CITNode->opn.us & USOPN_WHAT) == USOPN_CON) && TypeIs( parm_typ ) ) {
                     // we don't want an error in the following case:
                     //          INTEGER*2 I
                     //          PRINT *, MOD( I, 3 )
                     // I is INTEGER*2 and 3 is INTEGER*4
                     CnvTo( CITNode, parm_typ, TypeSize( parm_typ ) );
-                } else if( ( Options & OPT_PROMOTE ) && ( parm_typ == FT_INTEGER ) &&
+                } else if( (Options & OPT_PROMOTE) && ( parm_typ == FT_INTEGER ) &&
                            TypeIs( parm_typ ) ) {
                     // check if we should allow
                     //  INTEGER*1 I
@@ -993,9 +993,9 @@ static  bool    IFAsOperator( void ) {
 
     if( CITNode->opr != OPR_FBR )
         return( false );
-    if( ( BkLink->flags & SY_CLASS ) != SY_SUBPROGRAM )
+    if( (BkLink->flags & SY_CLASS) != SY_SUBPROGRAM )
         return( false );
-    if( !(BkLink->flags & SY_INTRINSIC) )
+    if( (BkLink->flags & SY_INTRINSIC) == 0 )
         return( false );
     switch( BkLink->sym_ptr->u.ns.si.fi.index ) {
     case IF_ISIZEOF:
@@ -1026,8 +1026,8 @@ static  void    PrepArg( void ) {
             }
         }
     }
-    if( ( CITNode->opn.us & USOPN_WHAT ) == USOPN_STN ) {
-        if( !(ASType & AST_ALT) ) {
+    if( (CITNode->opn.us & USOPN_WHAT) == USOPN_STN ) {
+        if( (ASType & AST_ALT) == 0 ) {
             PrmCodeErr( SR_ILL_PARM, PC_STATEMENT );
         }
     } else {
@@ -1035,8 +1035,9 @@ static  void    PrepArg( void ) {
             if( CITNode->opn.us == USOPN_CON ) {
                 AddConst( CITNode );
             }
-            if( ( CITNode->opn.us & USOPN_SS1 ) == 0 )
-            GArg();
+            if( (CITNode->opn.us & USOPN_SS1) == 0 ) {
+                GArg();
+            }
         }
     }
     BackTrack();

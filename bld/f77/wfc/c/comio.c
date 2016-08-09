@@ -110,7 +110,7 @@ void ComRead( void )
         if( ( ch != 'C' ) && ( ch != 'c' ) && ( ch != '*' ) ) {
             if( ProgSw & PS_SKIP_SOURCE ) continue;
             if( ( ch == 'D' ) || ( ch == 'd' ) ) {
-                if( !(ExtnSw & XS_D_IN_COLUMN_1) ) {
+                if( (ExtnSw & XS_D_IN_COLUMN_1) == 0 ) {
                     Extension( CC_D_IN_COLUMN_1 );
                     ExtnSw |= XS_D_IN_COLUMN_1;
                 }
@@ -125,7 +125,7 @@ void ComRead( void )
                 chtype = CharSetInfo.character_set[ (unsigned char)ch ];
                 if( chtype == C_EL ) break;
                 if( ( chtype == C_CM ) && ( column != CONT_COL - 1 ) ) {
-                    if( ( ExtnSw & XS_EOL_COMMENT ) == 0 ) {
+                    if( (ExtnSw & XS_EOL_COMMENT) == 0 ) {
                         Extension( CC_EOL_COMMENT );
                         ExtnSw |= XS_EOL_COMMENT;
                     }
@@ -233,7 +233,7 @@ void ComPrint( void )
 {
     char        buffer[8];
 
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }
@@ -243,7 +243,7 @@ void LinePrint( void )
     char        buffer[8];
 
     ISNNumber++;
-    if( ( ProgSw & PS_DONT_GENERATE ) == 0 ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
     FmtInteger( buffer, CurrFile->rec, 7 );
     PrintLineInfo( buffer );
 }

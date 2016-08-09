@@ -73,8 +73,9 @@ void Log( bool quiet, const char *str, ... )
 void LogFlush( void )
 {
     fflush( stderr );
-    if( LogFile != NULL )
+    if( LogFile != NULL ) {
         fflush( LogFile );
+    }
 }
 
 void OpenLog( const char *name )
@@ -112,8 +113,8 @@ void *Alloc( size_t size )
 
 char *SkipBlanks( const char *p )
 {
-    while( ( *p == ' ' ) || ( *p == '\t' ) ) {
+    while( IS_BLANK( *p ) ) {
         ++p;
     }
-    return( ( char* ) p );
+    return( (char *)p );
 }

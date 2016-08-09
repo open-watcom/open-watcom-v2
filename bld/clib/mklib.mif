@@ -8,7 +8,7 @@
 all : $(objfiles) $(libname).lib .symbolic
     @%null
 
-$(libname).lib : $(objs)
+$(libname).lib : $(objs) $(__MAKEFILES__)
     $(librarian) $(lib_flags) $^@ $(objs)
 
 !include $(clib_dir)/clean.mif

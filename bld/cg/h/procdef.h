@@ -83,7 +83,7 @@ typedef struct proc_def {
         struct block            *head_block;
         struct block            *tail_block;
         struct proc_def         *next_proc;
-        union  name             *names[N_INDEXED+1];
+        union  name             *names[N_INDEXED + 1];
         struct block            *curr_block;
         pointer                 frame_index;
         pointer                 label;

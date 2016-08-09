@@ -1,57 +1,61 @@
-objtimeroot = rxwrap.obj rxsupp.obj tab_hell.obj regsub.obj findrx.obj &
-        mem.obj memdmp.obj fcbxmint.obj addstr.obj llrtns.obj &
-        parse.obj
+objtimeroot = &
+    rxwrap.obj rxsupp.obj tab_hell.obj regsub.obj findrx.obj &
+    mem.obj memdmp.obj fcbxmint.obj addstr.obj llrtns.obj &
+    parse.obj
 
-objtime = fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &
-        fcbblock.obj fcb.obj fcbmem.obj &
-        fcbsplit.obj fcbdup.obj fcbmerge.obj &
-        linenew.obj dc.obj &
-        lineptr.obj linefcb.obj linedisp.obj linemisc.obj &
-        linedel.obj lineins.obj lineyank.obj &
-        grep.obj editmain.obj &
-        filesave.obj filenew.obj &
-        undo.obj undostks.obj undo_do.obj &
-        clglob.obj clsubs.obj shove.obj &
-        match.obj cut.obj opmove.obj &
-        srcgen.obj fmatch.obj &
-        status.obj expr.obj op.obj &
-        lang.obj sstyle.obj sstyle_f.obj sstyle_c.obj &
-        sstyle_h.obj sstyle_g.obj sstyle_m.obj sstyle_p.obj
+objtime = &
+    fcbems.obj fcbxms.obj fcbdisk.obj fcbxmem.obj &
+    fcbblock.obj fcb.obj fcbmem.obj &
+    fcbsplit.obj fcbdup.obj fcbmerge.obj &
+    linenew.obj dc.obj &
+    lineptr.obj linefcb.obj linedisp.obj linemisc.obj &
+    linedel.obj lineins.obj lineyank.obj &
+    grep.obj editmain.obj &
+    filesave.obj filenew.obj &
+    undo.obj undostks.obj undo_do.obj &
+    clglob.obj clsubs.obj shove.obj &
+    match.obj cut.obj opmove.obj &
+    srcgen.obj fmatch.obj &
+    status.obj expr.obj op.obj &
+    lang.obj sstyle.obj sstyle_f.obj sstyle_c.obj &
+    sstyle_h.obj sstyle_g.obj sstyle_m.obj sstyle_p.obj
 
 objtime += rcs.obj
 
 objinit = init.obj getopt.obj autoenv.obj
 
-objsizeroot = name.obj key.obj &
-        globals.obj pdata.obj &
-        exdata.obj srcdata.obj
+objsizeroot = &
+    name.obj key.obj &
+    globals.obj pdata.obj &
+    exdata.obj srcdata.obj
 
-objsize = xmem.obj fcbswap.obj clset.obj hist.obj samefile.obj &
-        dirdisp.obj expandfn.obj getdir.obj &
-        mapkey.obj editmv.obj &
-        linenum.obj linework.obj &
-        undoclne.obj &
-        fcbdmp.obj &
-        file.obj filemove.obj filelast.obj &
-        fini.obj autosave.obj &
-        srchook.obj srcgoto.obj srclabel.obj srcif.obj &
-        srcfile.obj srccs.obj srcexpr.obj srcvar.obj srcinp.obj &
-        srcassgn.obj srcexpnd.obj srcnextw.obj &
-        filestk.obj dotmode.obj &
-        source.obj mark.obj &
-        move.obj change.obj delete.obj &
-        linefind.obj &
-        dat.obj parsecl.obj &
-        findcmd.obj savebuf.obj error.obj cmdline.obj editdc.obj &
-        word.obj hide.obj &
-        editins.obj getautoi.obj &
-        replace.obj dir.obj select.obj &
-        io.obj clread.obj cledit.obj misc.obj &
-        tags.obj alias.obj bnddata.obj abandon.obj &
-        filter.obj ex.obj exappend.obj &
-        wingen.obj printf.obj getspcmd.obj &
-        selrgn.obj cstatus.obj help.obj &
-        readstr.obj tab_e_c.obj gencfg.obj fts.obj
+objsize = &
+    xmem.obj fcbswap.obj clset.obj hist.obj samefile.obj &
+    dirdisp.obj expandfn.obj getdir.obj &
+    mapkey.obj editmv.obj &
+    linenum.obj linework.obj &
+    undoclne.obj &
+    fcbdmp.obj &
+    file.obj filemove.obj filelast.obj &
+    fini.obj autosave.obj &
+    srchook.obj srcgoto.obj srclabel.obj srcif.obj &
+    srcfile.obj srccs.obj srcexpr.obj srcvar.obj srcinp.obj &
+    srcassgn.obj srcexpnd.obj srcnextw.obj &
+    filestk.obj dotmode.obj &
+    source.obj mark.obj &
+    move.obj change.obj delete.obj &
+    linefind.obj &
+    dat.obj parsecl.obj &
+    findcmd.obj savebuf.obj error.obj cmdline.obj editdc.obj &
+    word.obj hide.obj &
+    editins.obj getautoi.obj &
+    replace.obj dir.obj select.obj &
+    io.obj clread.obj cledit.obj misc.obj &
+    tags.obj alias.obj bnddata.obj abandon.obj &
+    filter.obj ex.obj exappend.obj &
+    wingen.obj printf.obj getspcmd.obj &
+    selrgn.obj cstatus.obj help.obj &
+    readstr.obj tab_e_c.obj gencfg.obj fts.obj
 
 !ifeq sys_windowed 1
 !ifeq host_os os2

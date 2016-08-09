@@ -10,7 +10,7 @@ merge_autodepends = .autodepend
 .c: ../cpp;$(trmem_dir)
 .cpp: ../cpp;$(browse_dir)/cpp;$(trmem_dir)
 
-OBJECTS = &
+objs = &
     blip.obj     &
     dietree.obj  &
     dwmerger.obj &
@@ -39,13 +39,13 @@ OBJECTS = &
     wtime.obj
 
 !ifndef NDEBUG
-OBJECTS += debuglog.obj
+objs += debuglog.obj
 !endif
 
 !ifeq merge_trmem 1
-OBJECTS += dmem.obj trmem.obj trmemcpp.obj
+objs += dmem.obj trmem.obj trmemcpp.obj
 !else
-OBJECTS += mem.obj
+objs += mem.obj
 !endif
 
 inc_dirs = -I"../h" -I"$(browse_dir)/h" -I"$(dwarfr_dir)/h" -I"$(posix_dir)/h"
@@ -72,6 +72,6 @@ extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
-$(name).exe : $(OBJECTS)
-    $(linker) name $(lname) $(lflags) file {$(OBJECTS)}
+$(name).exe : $(objs) $(__MAKEFILES__)
+    $(linker) name $(lname) $(lflags) file {$(objs)}
     @%make bind_osildr

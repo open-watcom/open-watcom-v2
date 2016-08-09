@@ -32,6 +32,7 @@
 #include <string.h>
 #define INCL_DOSMODULEMGR
 #include <os2.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
 #include "dipsys.h"

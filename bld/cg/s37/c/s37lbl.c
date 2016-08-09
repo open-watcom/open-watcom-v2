@@ -104,7 +104,7 @@ extern  label_handle    AskForNewLabel() {
 }
 
 
-extern  label_handle    AskRTLabel( sym_handle *sym ) {
+extern  label_handle    AskForRTLabel( sym_handle *sym ) {
 /****************************************/
 
     label_struct        *new;

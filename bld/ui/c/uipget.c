@@ -41,7 +41,7 @@ EVENT intern saveevent( void )
 {
     register    EVENT                   ev;
 
-    if( Event > EV_NO_EVENT && uiinlist( Event ) ) {
+    if( Event > EV_NO_EVENT && uiinlists( Event ) ) {
         ev = Event;
         Event = -Event;
     } else {

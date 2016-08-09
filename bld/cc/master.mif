@@ -2,19 +2,24 @@ proj_name = cc
 
 # Base DLL name needs to be 8 chars or less on OS/2, argh! Additionally,
 # internal module name may be required to match file name on some platforms.
-!ifeq bootstrap 1
-exename     = bwcc
-dllname     = bwccd
-exe_subdir = .
+!ifdef bootstrap
+boot_prefix = b
 !else
-exename     = wcc
-dllname     = wccd
-exe_subdir = $(bin_subdir)
-additional_cleanup_subdir = $(exe_subdir)
+bin_prefix  = $(bin_subdir)/
 !endif
+
+exename     = $(boot_prefix)wcc
+dllname     = $(boot_prefix)wccd
 !ifneq target_cpu i86
 exename     +=$(target_cpu)
 dllname     +=$(target_cpu)
+!endif
+
+!ifdef bin_prefix
+additional_cleanup_subdir = $(bin_subdir)
+
+.BEFORE
+    @if not exist $(bin_subdir) mkdir $(bin_subdir)
 !endif
 
 cc_autodepends = .autodepend
@@ -66,7 +71,7 @@ extra_cpp_flags += -D_CGDLL
 
 extra_c_flags_386 = -3r
 
-!ifneq bootstrap 1
+!ifndef bootstrap
 !ifeq release 1
 extra_c_flags_cscan_386 = -5r
 extra_c_flags_cscan    = $(extra_c_flags_cscan_$(host_cpu))
@@ -134,14 +139,13 @@ inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_i
 
 !ifdef cc_dll
 
-$(exe_subdir)/$(exename).exe : $(depends_drv) $(exe_subdir)/$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-        @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
-        $(cl) $(clflags_gen) $(comp_objs_drv) $(exe_subdir)/$(dllname).lib $(ldflags_gen)
+$(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_prefix)$(dllname).lib $(ldflags_gen)
 !else
         @%write drv.lnk $(lflags)
         @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(exe_subdir)/$(dllname).lib
+        @%append drv.lnk lib $(bin_prefix)$(dllname).lib
 !ifeq host_os dos
         @%append drv.lnk lib cwdll.lib
 !endif
@@ -151,9 +155,8 @@ $(exe_subdir)/$(exename).exe : $(depends_drv) $(exe_subdir)/$(dllname).dll $(com
 
 !else
 
-$(exe_subdir)/$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-        @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
+$(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
         @%write exe.lnk $(lflags)
@@ -166,9 +169,8 @@ $(exe_subdir)/$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) 
 
 !endif
 
-$(exe_subdir)/$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
-        @if not exist $(exe_subdir) mkdir $(exe_subdir)
-!ifndef __WATCOM__
+$(bin_prefix)$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
         @%write dll.lnk $(lflags_dll)
@@ -243,7 +245,7 @@ weights.gh keywords.gh : $(key_objs)
         findhash -q -e ",OPR_NOP" $(key_objs)
 
 # optencod options and targets for various hosts
-optencod_opt_qnx = -u $(extra_link_res_$(host_os)) 
+optencod_opt_qnx = -u $(extra_link_res_$(host_os))
 optencod_targ_bsd   = bsd
 optencod_targ_haiku = haiku
 optencod_targ_qnx   = qnx

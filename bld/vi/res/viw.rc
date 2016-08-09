@@ -19,9 +19,6 @@
 #include "repdlg.h"
 #include "rcstr.gh"
 #include "uistr.gh"
-#include "../ctl/setfs.h"
-#include "../ctl/setscr.h"
-#include "../ctl/setgen.h"
 
 #define FIRST_COPYRIGHT_YEAR "1989"
 
@@ -94,6 +91,7 @@ END
 #include "ssbar.dlg"
 #include "repdlg.dlg"
 #include "snoop.dlg"
-#include "../ctl/setfs.dlg"
-#include "../ctl/setscr.dlg"
-#include "../ctl/setgen.dlg"
+
+#include "setfs.dlg"
+#include "setscr.dlg"
+#include "setgen.dlg"

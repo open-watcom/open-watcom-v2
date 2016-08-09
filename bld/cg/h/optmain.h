@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,13 +30,13 @@
 ****************************************************************************/
 
 
-extern  void    InputOC( any_oc *oc );
-extern  void    OutputOC( any_oc *, any_oc * );
-extern  bool    ShrinkQueue( pointer_int size );
-extern  void    InitQueue( void );
-extern  void    EmptyQueue( void );
-extern  void    FlushQueue( void );
-extern  void    FiniQueue( void );
-extern  void    AbortQueue( void );
+extern void     InputOC( any_oc *oc );
+extern void     OutputOC( any_oc *, any_oc * );
+extern bool     ShrinkQueue( pointer_int size );
+extern void     InitQueue( void );
+extern void     EmptyQueue( void );
+extern void     FlushQueue( void );
+extern void     FiniQueue( void );
+extern void     AbortQueue( void );
 
-extern  byte    ReverseCondition( byte );
+extern byte     ReverseCondition( byte );

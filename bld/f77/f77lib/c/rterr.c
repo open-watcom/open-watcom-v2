@@ -117,7 +117,7 @@ void    RTErrHandler( int errcode, va_list args ) {
 
     WriteErr( errcode, args );
     _RWD_XcptFlags |= XF_FATAL_ERROR;
-    if( !(_RWD_XcptFlags & XF_IO_INTERRUPTED) ) {
+    if( (_RWD_XcptFlags & XF_IO_INTERRUPTED) == 0 ) {
         RTSuicide();
     }
 }

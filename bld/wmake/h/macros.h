@@ -37,9 +37,9 @@
 #include "mlex.h"
 
 
-extern BOOLEAN      ImplicitDeMacro;
-extern BOOLEAN      IsPartDeMacro;
-extern BOOLEAN      DoingBuiltIn;
+extern bool         ImplicitDeMacro;
+extern bool         IsPartDeMacro;
+extern bool         DoingBuiltIn;
 
 extern void         MacroInit( void );
 extern void         MacroFini( void );
@@ -47,12 +47,12 @@ extern char         *GetMacroValue( const char *name );
 extern char         *WrnGetMacroValue( const char *name );
 extern void         DefMacro( const char *name );
 extern char         *DeMacro( TOKEN_T end );
-extern BOOLEAN      ForceDeMacro( void );
-extern char         *PartDeMacro( BOOLEAN forceDeMacro );
+extern bool         ForceDeMacro( void );
+extern char         *PartDeMacro( bool forceDeMacro );
 extern void         UnDefMacro( const char *name );
-extern BOOLEAN      IsMacroName( const char *name );
+extern bool         IsMacroName( const char *name );
 extern void         PrintMacros( void );
-extern char         *ignoreWSDeMacro( BOOLEAN partDeMacro, BOOLEAN forceDeMacro );
+extern char         *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro );
 extern const char   *procPath( const char *fullpath );
 extern char         *DeMacroSpecial( const char *InString );
 

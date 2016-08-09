@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,9 @@
 #include "makeins.h"
 #include "zoiks.h"
 #include "convins.h"
-#include "data.h"
 #include "namelist.h"
-
-extern  void            MoveSegOp( instruction *, instruction *, int );
-extern  void            PrefixIns( instruction *, instruction * );
-extern  void            DupSeg( instruction *, instruction * );
-extern  void            ReplIns( instruction *, instruction * );
+#include "insutil.h"
+#include "inssegs.h"
 
 
 static  opcode_entry    ctable_C2TO1[] = {
@@ -426,7 +423,7 @@ extern  instruction     *rDOCVT( instruction *ins )
         new_ins = ins;
     } else if( how > BAD ) {
         ins->table = CRtn;
-        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
+//        RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
         new_ins = ins;
     } else {
         new_ins = MakeMove( src, dst, ins->type_class );
@@ -439,11 +436,17 @@ extern  instruction     *rDOCVT( instruction *ins )
     return( new_ins );
 }
 
-extern  void    LookupConvertRoutine( instruction *ins ) {
-/********************************************************/
+instruction     *DoConversion( instruction *ins )
+/***********************************************/
+{
+    return( rDOCVT( ins ) );
+}
 
+rt_class    LookupConvertRoutine( instruction *ins )
+/**************************************************/
+{
     conv_method how;
 
     how = AskHow( ins->base_type_class, ins->type_class );
-    RoutineNum = RTRoutineTable[how - ( BAD + 1 )];
+    return( RTRoutineTable[how - ( BAD + 1 )] );
 }

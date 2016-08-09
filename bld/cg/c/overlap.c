@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,9 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "regset.h"
+#include "namelist.h"
 
-extern  name    *DeAlias( name * );
+
 extern  bool    Overlaps( name *, name * );
 
 static  bool    Conflicts( type_length start,  type_length end,
@@ -92,7 +94,7 @@ static  bool    ovUses( name *op1, name *index )
             Overlaps( index->i.base, op1 ) );
 }
 
-static  bool    (*OverlapTable[N_INDEXED+1][N_INDEXED+1])( name *, name * ) = {
+static  bool    (*OverlapTable[N_INDEXED + 1][N_INDEXED + 1])( name *, name * ) = {
 /* result       op ->   N_CONST N_MEM   N_TEMP  N_REG   N_INDEX */
 /* N_CONSTANT   */   {  ovNo,   ovNo,   ovNo,   ovNo,   ovNo },
 /* N_MEMORY     */   {  ovNo,   ovYes,  ovNo,   ovNo,   ovNo },

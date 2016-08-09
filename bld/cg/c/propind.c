@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,12 +39,12 @@
 #include "peepopt.h"
 #include "propind.h"
 #include "redefby.h"
+#include "insutil.h"
+#include "namelist.h"
+#include "unroll.h"
 
 
-extern void         SuffixIns(instruction *,instruction *);
 extern bool         SameThing(name *,name *);
-extern name         *ScaleIndex(name *,name *,type_length ,type_class_def ,type_length ,int ,i_flags );
-extern void         RemoveIns( instruction *);
 
 static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/
@@ -120,7 +121,7 @@ static  bool    DoProp( block *blk ) {
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->head.opcode == OP_ADD || ins->head.opcode == OP_SUB ) {
-            op = ins->operands[ 1 ];
+            op = ins->operands[1];
 
             /*
              * 2004-11-04  RomanT
@@ -137,23 +138,23 @@ static  bool    DoProp( block *blk ) {
                 !_IsPointer( ins->type_class ) &&  /* 2004-11-04  RomanT */
                 ( op->n.class != N_CONSTANT ||
                 op->c.const_type != CONS_ABSOLUTE ) ) {
-                if( ins->operands[ 0 ]->n.class != N_CONSTANT ||
-                    ins->operands[ 0 ]->c.const_type == CONS_ABSOLUTE ) {
+                if( ins->operands[0]->n.class != N_CONSTANT ||
+                    ins->operands[0]->c.const_type == CONS_ABSOLUTE ) {
                     // don't move scary constant (ADDRESS) over to right
                     // BBB - May 14, 1997
-                    ins->operands[ 1 ] = ins->operands[ 0 ];
-                    ins->operands[ 0 ] = op;
-                    op = ins->operands[ 1 ];
+                    ins->operands[1] = ins->operands[0];
+                    ins->operands[0] = op;
+                    op = ins->operands[1];
                 }
             }
 
             if( op->n.class == N_CONSTANT &&
                 op->c.const_type == CONS_ABSOLUTE &&
-                ins->result == ins->operands[ 0 ] ) {
+                ins->result == ins->operands[0] ) {
                 for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
                     if( _IsReDefinedBy( next, ins->result ) )
                         break;
-                    if( AdjustIndex( next, ins->result, op->c.int_value ) ) {
+                    if( AdjustIndex( next, ins->result, op->c.lo.int_value ) ) {
                         RemoveIns( ins );
                         SuffixIns( next, ins );
                         PeepOptBlock( blk, false );

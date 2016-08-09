@@ -57,6 +57,15 @@ STATIC TLIST    *mustTargs;         /* targets we must update           */
 STATIC TLIST    *firstTargFound;    /* first targets we ever found      */
 STATIC NODE     *filesToDo;         /* pointers into argv to -f files   */
 
+static void parseString( const char *s )
+{
+    TLIST       *tlist;
+
+    InsString( s, false );
+    tlist = Parse();
+    FreeTList( tlist );
+}
+
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
@@ -65,55 +74,51 @@ STATIC void doBuiltIns( const char *makeopts )
  * perform the builtin commands
  */
 {
-    TLIST   *tlist;
-    char    buf[2048];
-    char    *cpy;
+    char        buf[2048];
+    char        *cpy;
+    const char  FAR *suffices;
+    const char  FAR *builtins;
 
     if( !Glob.overide ) {
-        DoingBuiltIn = TRUE;
-        FmtStr( buf, "%F", BuiltIns );
+        DoingBuiltIn = true;
         cpy = MallocSafe( 2048 + strlen( makeopts ) );
+        FmtStr( buf, "%F", BuiltIns );
         FmtStr( cpy, buf, makeopts );
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        parseString( cpy );
         strcpy(cpy, "MAKE=" );
-        if( _cmdname( cpy + sizeof "MAKE=" - 1 ) == NULL ) {
+        if( _cmdname( cpy + sizeof( "MAKE=" ) - 1 ) == NULL ) {
             strcat( cpy, "wmake" );
         }
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        parseString( cpy );
         if( Glob.compat_nmake || Glob.compat_unix ) {
-            // suffixes must be parsed before builtins
-            const char  *suffices = MSSuffixList;
-            const char  *builtins = MSBuiltIn;
-
-            FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %F", makeopts );
-            InsString( cpy, FALSE );
-            tlist = Parse();
-            FreeTList( tlist );
-            if( Glob.compat_posix ) {
-                suffices = POSIXSuffixList;
-                builtins = POSIXBuiltIn;
-            } else if( Glob.compat_unix ) {
-                suffices = UNIXSuffixList;
-                builtins = UNIXBuiltIn;
-            }
-            FmtStr( cpy, "%F", suffices );
-            InsString( cpy, FALSE );
-            tlist = Parse();
-            FreeTList( tlist );
-            FmtStr( buf, "%F", builtins );
-        } else {
-            FmtStr( buf, "%F", SuffixList );
+            FmtStr( cpy, "%%MAKEFLAGS=$(%%MAKEFLAGS) %s", makeopts );
+            parseString( cpy );
         }
-        FmtStr( cpy, buf, makeopts );
-        InsString( cpy, FALSE );
-        tlist = Parse();
-        FreeTList( tlist );
+        if( Glob.compat_nmake ) {
+            suffices = MSSuffixList;
+            builtins = MSBuiltIn;
+        } else if( Glob.compat_posix ) {
+            suffices = POSIXSuffixList;
+            builtins = POSIXBuiltIn;
+        } else if( Glob.compat_unix ) {
+            suffices = UNIXSuffixList;
+            builtins = UNIXBuiltIn;
+        } else {
+            suffices = SuffixList;
+            builtins = NULL;
+        }
+        // suffixes must be parsed before builtins
+        if( suffices != NULL ) {
+            FmtStr( cpy, "%F", suffices );
+            parseString( cpy );
+        }
+        if( builtins != NULL ) {
+            FmtStr( buf, "%F", builtins );
+            FmtStr( cpy, buf, makeopts );
+            parseString( cpy );
+        }
         FreeSafe( cpy );
-        DoingBuiltIn = FALSE;
+        DoingBuiltIn = false;
     }
 }
 #ifdef __WATCOMC__
@@ -140,7 +145,7 @@ void Header( void )
         return;
     }
     if( !Glob.headerout ) {
-        Glob.headerout = TRUE;  /* so we don't print more than once */
+        Glob.headerout = true;  /* so we don't print more than once */
         PrtMsg( INF | BANNER );
     }
 }
@@ -165,7 +170,7 @@ STATIC void handleMacroDefn( const char *buf )
     assert( p != NULL );
     *p = '=';                   /* lex doesn't recognize '#' */
 
-    InsString( q, FALSE );     /* put arg into stream */
+    InsString( q, false );     /* put arg into stream */
     while( LexToken( LEX_PARSER ) != TOK_END ) {
         /* NOP - eat all the characters */
     }
@@ -179,7 +184,7 @@ STATIC void handleMacroDefn( const char *buf )
             *p = toupper( *p );
         }
 
-        InsString( q, FALSE );     /* put arg into stream */
+        InsString( q, false );     /* put arg into stream */
         while( LexToken( LEX_PARSER ) != TOK_END ) {
             /* NOP - eat the characters. Needs own eater. W.Briscoe 20041014 */
         }
@@ -194,7 +199,7 @@ STATIC void handleTarg( const char *buf )
     assert( buf != NULL );
 
     /* if it is not a valid target name, Update() won't be able to make it */
-    WildTList( &mustTargs, buf, FALSE, TRUE );
+    WildTList( &mustTargs, buf, false, true );
 }
 
 
@@ -202,9 +207,10 @@ STATIC void checkCtrl( const char *p )
 /************************************/
 {
     // p != NULL is checked by caller
-    while( *p ) {          // scan for control characters
+    while( *p != NULLCHAR ) {       // scan for control characters
         if( !isprint( *p ) ) {
-            PrtMsgExit(( FTL | CTRL_CHAR_IN_CMD, *p ));
+            PrtMsg( FTL | CTRL_CHAR_IN_CMD, *p );
+            ExitFatal();
         }
         ++p;
     }
@@ -219,11 +225,14 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
  * of some features in microsoft compatability
  */
 {
-    char        select = '\0';  /* - or swchar (*argv)[0]       */
-    char        option = '\0';  /* the option (*argv)[1]        */
+    char        select;         /* - or swchar (*argv)[0]       */
+    char        option;         /* the option (*argv)[1]        */
     const char  *p;             /* working pointer to *argv     */
     NODE        *new;           /* for adding a new file        */
-    int         options[256 + 1] = { 0 };
+    bool        options[256] = { false };
+
+#define SET_OPTION(o)   options[(unsigned char)(o) | 0x20] = true
+#define CHK_OPTION(o)   options[(unsigned char)(o)]
 
     if( (p = argv[1]) != NULL ) {
         if( strcmp( p, "?" ) == 0
@@ -232,8 +241,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
         }
     }
 
-    Glob.macreadonly = TRUE;
-
+    Glob.macreadonly = true;
     while( (p = *++argv) != NULL ) {
         checkCtrl( p );
         select = p[0];
@@ -242,31 +250,31 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
                 switch( option ) {
                 case '?':   Usage();                break;
-                case 'a':   Glob.all       = TRUE;  break;
-                case 'b':   Glob.block     = TRUE;  break;
-                case 'c':   Glob.nocheck   = TRUE;  break;
-                case 'd':   Glob.debug     = TRUE;  break;
-                case 'e':   Glob.erase     = TRUE;  break;
-                case 'h':   Glob.noheader  = TRUE;  break;
-                case 'i':   Glob.ignore    = TRUE;  break;
-                case 'j':   Glob.rcs_make  = TRUE;  break;
-                case 'k':   Glob.cont      = TRUE;  break;
-                case 'm':   Glob.nomakeinit= TRUE;  break;
-                case 'n':   Glob.noexec    = TRUE;  break;
-                case 'o':   Glob.optimize  = TRUE;  break;
-                case 'p':   Glob.print     = TRUE;  break;
-                case 'q':   Glob.query     = TRUE;  break;
-                case 'r':   Glob.overide   = TRUE;  break;
-                case 's':   Glob.silent    = TRUE;  break;
-                case 't':   Glob.touch     = TRUE;  break;
-                case 'u':   Glob.compat_unix= TRUE;  break;
-                case 'v':   Glob.verbose   = TRUE;  break;
-                case 'w':   Glob.auto_depends = TRUE;break;
+                case 'a':   Glob.all       = true;  break;
+                case 'b':   Glob.block     = true;  break;
+                case 'c':   Glob.nocheck   = true;  break;
+                case 'd':   Glob.debug     = true;  break;
+                case 'e':   Glob.erase     = true;  break;
+                case 'h':   Glob.noheader  = true;  break;
+                case 'i':   Glob.ignore    = true;  break;
+                case 'j':   Glob.rcs_make  = true;  break;
+                case 'k':   Glob.cont      = true;  break;
+                case 'm':   Glob.nomakeinit= true;  break;
+                case 'n':   Glob.noexec    = true;  break;
+                case 'o':   Glob.optimize  = true;  break;
+                case 'p':   Glob.print     = true;  break;
+                case 'q':   Glob.query     = true;  break;
+                case 'r':   Glob.overide   = true;  break;
+                case 's':   Glob.silent    = true;  break;
+                case 't':   Glob.touch     = true;  break;
+                case 'u':   Glob.compat_unix= true;  break;
+                case 'v':   Glob.verbose   = true;  break;
+                case 'w':   Glob.auto_depends = true;break;
 #ifdef CACHE_STATS
-                case 'x':   Glob.cachestat = TRUE;  break;
+                case 'x':   Glob.cachestat = true;  break;
 #endif
-                case 'y':   Glob.show_offenders = TRUE; break;
-                case 'z':   Glob.hold      = TRUE;  break;
+                case 'y':   Glob.show_offenders = true; break;
+                case 'z':   Glob.hold      = true;  break;
                     /* these options require a filename */
                 case 'f':
                 case 'l':
@@ -294,27 +302,28 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                     Usage();
                     break;
                 }
-                options[(option | 0x20) + 1] = TRUE;
+                SET_OPTION( option );
                 continue;
             }
             if( p[3] == NULLCHAR ) {
                 if( option == 'm'  && tolower( p[2] ) == 's' ) {
-                    Glob.compat_nmake = TRUE;
-                    Glob.nocheck   = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    Glob.compat_nmake = true;
+                    Glob.nocheck   = true;
+                    SET_OPTION( option );
                     continue;
                 }
                 if( option == 's'  && tolower( p[2] ) == 'n' ) {
-                    Glob.silentno  = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    Glob.silentno  = true;
+                    SET_OPTION( option );
                     continue;
                 }
                 if( option == 'u'  && tolower( p[2] ) == 'x' ) {
-                    Glob.compat_unix = TRUE;
-                    Glob.compat_posix = TRUE;
-                    Glob.nomakeinit = TRUE;
-                    Glob.nocheck    = TRUE;
-                    options[(option | 0x20) + 1] = TRUE;
+                    /* POSIX compatibility */
+                    Glob.compat_posix = true;
+                    Glob.compat_unix = true;
+                    Glob.nomakeinit = true;
+                    Glob.nocheck    = true;
+                    SET_OPTION( option );
                     continue;
                 }
             }
@@ -327,55 +336,66 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     } // while( *++argv != NULL )
 
     if( Glob.compat_nmake && Glob.compat_unix ) {
-        PrtMsg( ERR | INCOMPATIBLE__OPTIONS, select, option );
+        PrtMsg( ERR | INCOMPATIBLE__OPTIONS );
         Usage();
     }
 
-    Glob.macreadonly = FALSE;
+    Glob.macreadonly = false;
 
     {
-        // 120 allows for 30 options.
-        size_t const    optsize = 120 + (*log_name ? strlen( *log_name ) + 1: 0) + 1;
-        char * const    makeopts = MallocSafe( optsize );
-        unsigned        opt_index;
-        char            default_option[] = " -?";
+        char    *makeopts;
+        char    default_option[] = " -?";
 
-        makeopts[0] = 0;
-        opt_index = 'a' - 1;
-        while( ++opt_index <= 'z' ) {
-            if( options[opt_index + 1] ) {
-                switch( opt_index ) {
+        // 120 allows for 30 options.
+        makeopts = MallocSafe( 120 + strlen( *log_name ) + 1 + 1 );
+        makeopts[0] = NULLCHAR;
+        for( option = 'a'; option <= 'z'; ++option ) {
+            if( CHK_OPTION( option ) ) {
+                switch( option ) {
                 case 'f':
                 case 'n':
                     break;
                 case 'l':
-                    strcat( makeopts, *makeopts ? " -l " : "-l " );
+                    strcat( makeopts, *makeopts != NULLCHAR ? " -l " : "-l " );
                     strcat( makeopts, *log_name );
                     break;
                 case 'm':
                     if( Glob.nomakeinit ) {
-                        strcat( makeopts, *makeopts ? " -m" : "-m" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -m" : "-m" );
                     }
                     if( Glob.compat_nmake ) {
-                        strcat( makeopts, *makeopts ? " -ms" : "-ms" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -ms" : "-ms" );
                     }
                     break;
                 case 's':
                     if( Glob.silentno ) {
-                        strcat( makeopts, *makeopts ? " -sn" : "-sn" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -sn" : "-sn" );
                     } else {
-                        strcat( makeopts, *makeopts ? " -s" : "-s" );
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -s" : "-s" );
+                    }
+                    break;
+                case 'u':
+                    if( Glob.compat_posix ) {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -ux" : "-ux" );
+                    } else {
+                        strcat( makeopts, *makeopts != NULLCHAR ? " -u" : "-u" );
                     }
                     break;
                 default:
-                    default_option[2] = (char)opt_index;
-                    strcat( makeopts, default_option + (int)(*makeopts == '\0') );
+                    default_option[2] = option;
+                    p = default_option;
+                    if( *makeopts == NULLCHAR )
+                        ++p;
+                    strcat( makeopts, p );
                 }
             }
-
         }
         return( makeopts );
     }
+
+#undef SET_OPTION
+#undef CHK_OPTION
+
 }
 
 
@@ -408,14 +428,14 @@ STATIC void parseFiles( void )
     NODE        *newhead;
     RET_T       ret;
 
-    Glob.preproc = TRUE;            /* turn on preprocessor */
+    Glob.preproc = true;            /* turn on preprocessor */
 
                                     /* process makeinit */
     if( !Glob.nomakeinit ) {
         if( Glob.compat_nmake ) {
-            ret = InsFile( TOOLSINI_NAME, TRUE );
+            ret = InsFile( TOOLSINI_NAME, true );
         } else {
-            ret = InsFile( MAKEINIT_NAME, TRUE );
+            ret = InsFile( MAKEINIT_NAME, true );
         }
         if( ret == RET_SUCCESS ) {
             setFirstTarget( Parse() );
@@ -426,11 +446,11 @@ STATIC void parseFiles( void )
     }
 
     if( filesToDo == NULL ) {
-        ret = InsFile( MAKEFILE_NAME, FALSE );
+        ret = InsFile( MAKEFILE_NAME, false );
         if( ret == RET_SUCCESS ) {
             setFirstTarget( Parse() );
 #ifdef MAKEFILE_ALT
-        } else if( (ret = InsFile( MAKEFILE_ALT, FALSE )) == RET_SUCCESS ) {
+        } else if( (ret = InsFile( MAKEFILE_ALT, false )) == RET_SUCCESS ) {
             setFirstTarget( Parse() );
 #endif
         }
@@ -453,7 +473,7 @@ STATIC void parseFiles( void )
                 InsOpenFile( STDIN_FILENO );
                 ret = RET_SUCCESS;
             } else {
-                ret = InsFile( p, FALSE );
+                ret = InsFile( p, false );
             }
             if( ret == RET_SUCCESS ) {
                 setFirstTarget( Parse() );
@@ -465,14 +485,14 @@ STATIC void parseFiles( void )
 
     if( !Glob.nomakeinit ) {
         if( !Glob.compat_nmake ) {
-            ret = InsFile( MAKEFINI_NAME, TRUE );
+            ret = InsFile( MAKEFINI_NAME, true );
             if( ret == RET_SUCCESS ) {
                 setFirstTarget( Parse() );
             }
         }
     }
 
-    Glob.preproc = FALSE;           /* turn off preprocessor */
+    Glob.preproc = false;           /* turn off preprocessor */
 }
 
 
@@ -488,7 +508,7 @@ STATIC void ignoreNoCommands( const TLIST *tlist )
 {
     // set targets to be OK if there are no commands to update it
     for( ; tlist != NULL; tlist = tlist->next ) {
-        tlist->target->allow_nocmd = TRUE;
+        tlist->target->allow_nocmd = true;
     }
 }
 
@@ -498,7 +518,8 @@ STATIC RET_T doMusts( void )
     RET_T   ret;
 
     if( firstTargFound == NULL && mustTargs == NULL ) {
-        PrtMsgExit(( FTL | NO_TARGETS_SPECIFIED ));
+        PrtMsg( FTL | NO_TARGETS_SPECIFIED );
+        ExitFatal();
     }
 
     UpdateInit();
@@ -559,7 +580,7 @@ STATIC void init( char const * const *argv )
 #endif
     filesToDo = NULL;
     mustTargs = NULL;
-    log_name = NULL;
+    log_name = "";
     LogFini();
     LogInit( procLogName( argv ) );
     makeopts = procFlags( argv, &log_name );
@@ -569,13 +590,13 @@ STATIC void init( char const * const *argv )
 }
 
 
-int ExitSafe( int rc )
-/********************/
+static int ExitSafe( int rc )
+/***************************/
 {
-    static BOOLEAN  busy = FALSE;   /* recursion protection */
+    static bool busy = false;   /* recursion protection */
 
     if( !busy ) {
-        busy = TRUE;
+        busy = true;
         if( rc == EXIT_ERROR || rc == EXIT_FATAL ) {
             PrtMsg( ERR | MAKE_ABORT );
         }
@@ -611,6 +632,21 @@ int ExitSafe( int rc )
     }
 
     return( rc );
+}
+
+NO_RETURN void ExitFatal( void )
+{
+    exit( ExitSafe( EXIT_FATAL ) );
+}
+
+NO_RETURN void ExitError( void )
+{
+    exit( ExitSafe( EXIT_ERROR ) );
+}
+
+NO_RETURN void ExitOK( void )
+{
+    exit( ExitSafe( EXIT_OK ) );
 }
 
 int main( int argc, char **argv )

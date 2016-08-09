@@ -500,9 +500,8 @@ void SetNovFmt( void )
 /***************************/
 {
     Extension = E_NLM;
-    if( !(LinkState & FMT_SPECIFIED) && Name != NULL ) {
-        FmtData.u.nov.description = FileName( Name, strlen( Name ), E_NLM,
-                                                        CmdFlags & CF_UNNAMED );
+    if( (LinkState & FMT_SPECIFIED) == 0 && Name != NULL ) {
+        FmtData.u.nov.description = FileName( Name, strlen( Name ), E_NLM, CmdFlags & CF_UNNAMED );
     }
 }
 
@@ -697,7 +696,6 @@ void CmdNovFini( void )
 /****************************/
 {
     if( FmtData.u.nov.description == NULL && Name != NULL ) {
-        FmtData.u.nov.description = FileName( Name, strlen( Name ), Extension,
-                                                        CmdFlags & CF_UNNAMED );
+        FmtData.u.nov.description = FileName( Name, strlen( Name ), Extension, CmdFlags & CF_UNNAMED );
     }
 }

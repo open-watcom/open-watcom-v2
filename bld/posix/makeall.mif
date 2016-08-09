@@ -1,19 +1,29 @@
 #
 #   define macro for OS's which need POSIX utilities
 #
-need_posix_dos = 1
-need_posix_nt  = 1
-need_posix_os2 = 1
 
-!ifdef need_posix_$(host_os)
+!ifndef __UNIX__
 
 !include $(posix_dir)/commands.mif
 !include $(posix_dir)/common.mif
 
-!ifeq bootstrap 1
-mkfile = -f $(libmakepath)/makefile
-altmkfile = -f $(altlibmakepath)/makefile
+alt_subdir_dosi86_s = mc
+alt_subdir_os2i86_s = mc
+alt_subdir_dosi86_c = ms
+alt_subdir_os2i86_c = ms
+
+!ifdef bootstrap
+altlibdir=$(alt_subdir_$(host_os)$(host_cpu)_$(model))
+!else
+altlibdir=$(posix_dir)/misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))
 !endif
+
+!ifdef bootstrap
+mkfile = -f ../../misc/$(host_os)$(host_cpu)/$(subdir_$(host_cpu))/makefile
+altmkfile = -f ../../misc/$(host_os)$(host_cpu)/$(alt_subdir_$(host_os)$(host_cpu)_$(model))/makefile
+!endif
+
+curr_dir_all=$+$(%__CWD__)$-
 
 .before
 !include $(posix_dir)/setvars.mif
@@ -22,14 +32,12 @@ all : lib $(commands) .symbolic
     @%null
 
 lib : .symbolic $(__MAKEFILES__)
-curr_dir_all=$+ $(%CWD) $-
-    @if not exist $(libdir) @mkdir $(libdir)
-    @cd $(libdir)
+    @if not exist $(libdir:$(to_os_path)) @mkdir $(libdir:$(to_os_path))
+    @cd $(libdir:$(to_os_path))
     !@wmake -h $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-    @cd $(curr_dir_all)
-    @if not exist $(altlibdir) @mkdir $(altlibdir)
-    @cd $(altlibdir)
+    @if not exist $(altlibdir:$(to_os_path)) @mkdir $(altlibdir:$(to_os_path))
+    @cd $(altlibdir:$(to_os_path))
     !@wmake -h $(altmkfile)
 !endif
     @cd $(curr_dir_all)
@@ -38,13 +46,12 @@ $(commands) : .symbolic $(__MAKEFILES__)
     !@wmake -h -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
-curr_dir_all=$+ $(%CWD) $-
-    @echo clean $(libdir)
-    @cd $(libdir)
+    @echo clean $(libdir:$(to_os_path))
+    @cd $(libdir:$(to_os_path))
     @%make clean_all_objs
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
-    @echo clean $(altlibdir)
-    @cd $(altlibdir)
+    @echo clean $(altlibdir:$(to_os_path))
+    @cd $(altlibdir:$(to_os_path))
     @%make clean_all_objs
 !endif
     @cd $(curr_dir_all)

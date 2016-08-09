@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,15 +40,11 @@
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "optab.h"
 
-
-extern  type_class_def  Unsigned[];
-
-extern  void            SuffixIns(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  name            *DeAlias(name*);
-extern  void            DoNothing(instruction*);
-extern  bool            IsStackReg(name*);
 
 static  block           *Head;
 static  block           *(*Next)(block*);
@@ -66,7 +63,7 @@ static  int     CountOps( instruction *ins, name *cons ) {
     case OP_SUB:
         if( IsStackReg( ins->result ) ) {
             num_operands = 0;
-        } else if( cons->c.int_value == 1 ) {
+        } else if( cons->c.lo.int_value == 1 ) {
             num_operands = 1;
         } else {
             num_operands = ins->num_operands;
@@ -115,7 +112,7 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
     }
     if( class == -1 )
         class = XX;
-    // return( Unsigned[ class ] );
+    // return( Unsigned[class] );
     // why? BBB - June 28, 1995
     return( class );
 }
@@ -141,7 +138,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            ins_class = Unsigned[ _OpClass( ins ) ];
+            ins_class = Unsigned[_OpClass( ins )];
             num_operands = CountOps( ins, cons );
             for( i = 0; i < num_operands; ++i ) {
                 if( ins->operands[i] == cons  ) {
@@ -149,7 +146,7 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
                         ins->operands[i] = temp;
                         change = true;
                     } else {
-#if !( _TARGET & _TARG_AXP ) && ( _TARG_MEMORY & _TARG_LOW_FIRST )
+#if ( _TARGET & _TARG_AXP ) == 0 && ( _TARG_MEMORY & _TARG_LOW_FIRST )
                         if( _IsIntegral( ins_class ) && _IsIntegral( tmp_class ) ) {
                             ins->operands[i] = TempOffset( temp, 0, ins_class );
                             change = true;
@@ -178,7 +175,7 @@ extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
 
     Head = head;
     Next = next;
-    for( cons = Names[ N_CONSTANT ]; cons != NULL; cons = cons->n.next_name ) {
+    for( cons = Names[N_CONSTANT]; cons != NULL; cons = cons->n.next_name ) {
         if( cons->c.const_type == CONS_TEMP_ADDR ) continue;
         class = FindMaxClass( cons, &num_refs );
         if( class == XX ) continue;
@@ -191,7 +188,6 @@ extern  void    ConstToTemp( block *pre, block *head, block*(*next)(block*) ) {
         SuffixIns( pre->ins.hd.prev, MakeMove( cons, temp, class ) );
     }
 }
-
 
 extern  void            MemConstTemp( conflict_node *conf ) {
 /************************************************************
@@ -219,7 +215,7 @@ extern  void            MemConstTemp( conflict_node *conf ) {
                 ins->head.state = INS_NEEDS_WORK;
                 ins->operands[i] = ins->operands[i]->v.symbol;
                 if( ins->head.opcode == OP_CONVERT ) {
-                    ins = rDOCVT( ins );
+                    ins = DoConversion( ins );
                 }
             }
             if( ins->result != NULL && ins->result->n.class == N_TEMP ) {

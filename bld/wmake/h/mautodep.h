@@ -43,5 +43,5 @@ typedef struct  auto_dep_info {
 } auto_dep_info;
 
 extern void     AutoDepInit( void );
-extern BOOLEAN  AutoDepCheck( char *name, time_t stamp, BOOLEAN (*chk)( time_t, time_t ), time_t *pmax );
+extern bool     AutoDepCheck( char *name, time_t stamp, bool (*chk)(time_t,time_t), time_t *pmax );
 extern void     AutoDepFini( void );

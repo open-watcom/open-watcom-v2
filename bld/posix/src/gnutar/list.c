@@ -103,7 +103,7 @@ void list_archive( char *xname )
  * You must always userec(head) to skip past the header which this
  * routine reads.
  */
-int read_header( void )
+static int read_header( void )
 {
         int    i;
         long   sum, recsum;

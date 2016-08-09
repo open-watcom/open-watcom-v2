@@ -1,0 +1,30 @@
+tools_root = $+$(%OWTOOLROOT)$-
+!ifndef __UNIX__
+# with trailing slash
+flashtek=$(tools_root)\x32\
+pharlap=$(tools_root)\pharlap\
+# without trailing slash
+adsdir=$(tools_root)\adslib
+plsdir=$(tools_root)\dilib
+tntdir=$(tools_root)\tntlib
+# The NOVELLNDK environment variable should be added during install. If not, the default location is
+# C:\NOVELL\NDK\NWSDK.
+nwndk_root = $+$(%NOVELLNDK)$-
+nwos2dir=$(tools_root)\nwos2lib
+#nwdir=$(tools_root)\nwclib
+#nwsrc=$(tools_root)\src
+#nw40src=$(tools_root)\nw40src
+#nw40dir=$(tools_root)\nw40clib
+!else
+# with trailing slash
+flashtek=$(tools_root)/x32/
+pharlap=$(tools_root)/pharlap/
+# without trailing slash
+adsdir=$(tools_root)/adslib
+plsdir=$(tools_root)/dilib
+tntdir=$(tools_root)/tntlib
+# The NOVELLNDK environment variable should be added during install. If not, the default location is
+# C:\NOVELL\NDK\NWSDK.
+nwndk_root = $+$(%NOVELLNDK)$-
+nwos2dir=$(tools_root)/nwos2lib
+!endif

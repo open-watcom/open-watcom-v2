@@ -39,6 +39,8 @@
 #include "data.h"
 #include "utils.h"
 #include "stack.h"
+#include "nullprop.h"
+
 
 extern  void            MakeLiveInfo(void);
 extern  void            ProcMessage(msg_class);
@@ -68,8 +70,10 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
     instruction     *cmp;
     unsigned        which;
 
-    if( !(blk->class & CONDITIONAL) ) return;
-    if( blk->class & MULTIPLE_EXITS ) return;
+    if( !_IsBlkAttr( blk, BLK_CONDITIONAL ) )
+        return;
+    if( _IsBlkAttr( blk, BLK_MULTIPLE_EXITS ) )
+        return;
     for( cmp = blk->ins.hd.prev; cmp->head.opcode == OP_NOP; ) {
         cmp = cmp->head.prev;
     }
@@ -96,16 +100,16 @@ static  void    CopyList( score *frm, score *to,
     score_list  *new;
     score       *next;
 
-    if( to[ i ].list == NULL ) {
-        to[ i ].list = *sc_heads;
+    if( to[i].list == NULL ) {
+        to[i].list = *sc_heads;
         *sc_heads = (list_head *)**sc_heads;
         *to[i].list = NULL;
-        for( next = to[ i ].next_reg; next->list == NULL; next = next->next_reg ) {
+        for( next = to[i].next_reg; next->list == NULL; next = next->next_reg ) {
             next->list = next->prev_reg->list;
         }
     }
     if( *to[i].list == NULL ) {
-        next = to[ i ].next_reg;
+        next = to[i].next_reg;
         for( first = *frm[i].list; first != NULL; first = first->next ) {
             new = NewScListEntry();
             Copy( &first->info, &new->info, sizeof( score_info ) );
@@ -123,21 +127,21 @@ static  void    ScoreCopy( score *other_sc, score *sc )
     int         i;
 
     FreeScoreBoard( sc );
-    sc_heads = (list_head **)&sc[ ScoreCount ];
+    sc_heads = (list_head **)&sc[ScoreCount];
     i = ScoreCount;
     for( ;; ) {
         --i;
-        sc[ i ].next_reg = &sc[ other_sc[ i ].next_reg->index ];
-        sc[ i ].prev_reg = &sc[ other_sc[ i ].prev_reg->index ];
-        sc[ i ].generation = other_sc[ i ].generation;
-        sc[ i ].list = NULL;
+        sc[i].next_reg = &sc[other_sc[i].next_reg->index];
+        sc[i].prev_reg = &sc[other_sc[i].prev_reg->index];
+        sc[i].generation = other_sc[i].generation;
+        sc[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
         if( i == 0 ) break;
     }
     *sc_heads = NULL;
     i = ScoreCount;
-    sc_heads = (list_head **)&sc[ ScoreCount ];
+    sc_heads = (list_head **)&sc[ScoreCount];
     for( ;; ) {
         --i;
         CopyList( other_sc, sc, sc_heads, i );
@@ -154,8 +158,8 @@ static  void *ScoreDescendants( block *blk )
     hw_reg_set  regs;
 
     for( i = blk->targets; i-- > 0; ) {
-        son = blk->edge[ i ].destination.u.blk;
-        if( ( son->inputs == 1 ) && !( son->class & BLOCK_VISITED ) ) {
+        son = blk->edge[i].destination.u.blk;
+        if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
             for(;;) {
@@ -164,7 +168,8 @@ static  void *ScoreDescendants( block *blk )
                 if( !DoScore( son ) ) break;
                 UpdateLive( son->ins.hd.next, son->ins.hd.prev );
             }
-            son->class |= BLOCK_VISITED | BLOCK_MARKED;
+            _MarkBlkVisited( son );
+            _MarkBlkMarked( son );
             SafeRecurseCG( (func_sr)ScoreDescendants, son );
             FreeScoreBoard( son->cc );
             ScFree( son->cc );
@@ -173,10 +178,10 @@ static  void *ScoreDescendants( block *blk )
     }
     HW_CAsgn( regs, HW_EMPTY );
     for( i = blk->targets; i-- > 0; ) {
-        son = blk->edge[ i ].destination.u.blk;
-        if( son->class & BLOCK_MARKED ) {
+        son = blk->edge[i].destination.u.blk;
+        if( _IsBlkMarked( son ) ) {
             HW_TurnOn( regs, son->ins.hd.next->head.live.regs );
-            son->class &= ~BLOCK_MARKED;
+            _MarkBlkUnMarked( son );
         }
     }
     HW_TurnOn( blk->ins.hd.live.regs, regs );
@@ -208,13 +213,11 @@ static  void    ScoreRoutine( void )
     ScoreCalcList();
     if( ScoreCount != 0 ) {
         InitZero();
-        for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            blk->class &= ~BLOCK_VISITED;
-        }
+        _MarkBlkAllUnVisited();
         MakeLiveInfo();
 //        change = false;
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( !( blk->class & BLOCK_VISITED ) ) {
+            if( !_IsBlkVisited( blk ) ) {
                 blk->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
                 ScoreClear( blk->cc );
                 for( ;; ) {
@@ -223,7 +226,7 @@ static  void    ScoreRoutine( void )
                     if( !DoScore( blk ) ) break;
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                 }
-                blk->class |= BLOCK_VISITED;
+                _MarkBlkVisited( blk );
                 ScoreDescendants( blk );
                 FreeScoreBoard( blk->cc );
                 ScFree( blk->cc );

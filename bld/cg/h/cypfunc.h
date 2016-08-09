@@ -30,75 +30,68 @@
 ****************************************************************************/
 
 
-extern  byte            *CypCopy( const void *, void *, uint );
-extern  char            *CypFill( void *, uint, byte );
-extern  uint            CypLength( const char *);
-extern  bool            CypEqual( const void *,const void *, uint );
+extern  void        *CypCopy( const void *, void *, size_t );
+extern  void        *CypFill( void *, size_t, unsigned char );
+extern  size_t      CypLength( const char *);
+extern  bool        CypEqual( const void *, const void *, size_t );
 
 #if defined(__WATCOMC__) && defined( _M_IX86 )
 
 #if defined(__FLAT__) || defined(__SMALL__) || defined(__MEDIUM__)
-    #define _SAVES          0x06            /*      push    es */
-    #define _RESES          0x07            /*      pop     es */
-    #define _SETES          0x1E            /*      push    ds */ \
-                            0x07            /*      pop     es */
+    #define _SAVES  "push    es"
+    #define _RESES  "pop     es"
+    #define _SETES  "push    ds" \
+                    "pop     es"
     #define __ES
     #define __DS
 #else
     #define _SAVES
     #define _RESES
     #define _SETES
-    #define __ES es
-    #define __DS ds
+    #define __ES    es
+    #define __DS    ds
 #endif
 
 #pragma aux CypCopy = \
         _SAVES \
         _SETES \
-        0xF3            /*      rep     */ \
-        0xA4            /*      movsb   */ \
+        "rep movsb" \
         _RESES \
-        parm routine [ __DS esi ] [ __ES edi ] [ ecx ] \
-        value [ __ES edi ] \
-        ;
+        parm routine [__DS esi] [__ES edi] [ecx] \
+        value [__ES edi]
 
 #pragma aux CypFill = \
         _SAVES \
         _SETES \
-        0xF3            /*      rep     */ \
-        0xAA            /*      stosb   */ \
+        "rep stosb" \
         _RESES \
-        parm routine [ __ES edi ] [ ecx ] [ al ] \
-        value [ __ES edi ] \
-        ;
+        parm routine [__ES edi] [ecx] [al] \
+        value [__ES edi]
 
 #pragma aux CypLength = \
         _SAVES \
         _SETES \
-        0x31 0xC0       /*      xor     ax,ax */ \
-        0x31 0xC9       /*      xor     cx,cx */ \
-        0x49            /*      dec     cx */ \
-        0xF2            /*      repne   */ \
-        0xAE            /*      scasb   */ \
-        0xF7 0xD1       /*      not     cx */ \
-        0x49            /*      inc     cx */ \
+        "xor    eax,eax" \
+        "xor    ecx,ecx" \
+        "dec    ecx" \
+        "repne scasb" \
+        "not    ecx" \
+        "dec    ecx" \
         _RESES \
-        parm routine [ __ES edi ] \
-        value        [ ecx ]  \
-        modify[ eax ] \
-        ;
+        parm routine [__ES edi] \
+        value [ecx] \
+        modify[eax]
 
 #pragma aux CypEqual = \
         _SAVES \
         _SETES \
-        0x31 0xC0       /*      xor     ax,ax */ \
-        0xF3            /*      repe    */ \
-        0xA6            /*      cmpsb   */ \
-        0x75 0x01       /*      jne     L1 */ \
-        0x48            /*      dec     ax */ \
-                        /*L1:   */ \
+        "xor    eax,eax" \
+        "repe cmpsb" \
+        "jne short L1" \
+        "inc    eax" \
+    "L1:" \
         _RESES \
-        parm routine [ __DS esi ] [ __ES edi ] [ ecx ] \
-        value [ al ] \
-        ;
+        parm routine [__DS esi] [__ES edi] [ecx] \
+        value [al]
+
 #endif

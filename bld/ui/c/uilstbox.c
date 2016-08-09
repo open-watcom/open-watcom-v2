@@ -202,7 +202,7 @@ static int getlistsize( const void *data_handle, UIPICKGETTEXT *get )
 {
     int     item;
 
-    for( item = 0; (*get)( data_handle, item, NULL, 0 ) != false; item++ )
+    for( item = 0; (*get)( data_handle, item, NULL, 0 ); item++ )
         ;
     return( item );
 }

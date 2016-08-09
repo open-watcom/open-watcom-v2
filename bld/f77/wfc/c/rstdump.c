@@ -82,7 +82,7 @@ void    STDump( void ) {
         NList = IFList;
         IFList = NULL;
     }
-    if( !(ProgSw & PS_DONT_GENERATE) ) return;
+    if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
     ProgSw |= PS_SYMTAB_PROCESS;
     DumpStmtNos();              // must be before DumpMagSyms()
     DumpNameLists();            // dump the namelist data structures
@@ -114,10 +114,10 @@ static  bool    CkInCommon( sym_id sym ) {
             offset += eq_ext->offset;
             leader = eq_ext->link_eqv;
         }
-        if( ( eq_ext->ec_flags & MEMBER_IN_COMMON ) == 0 ) {
-            if( !( eq_ext->ec_flags & EQUIV_SET_ALLOC ) ) {
-                if( ForceStatic(sym->u.ns.flags) || !(Options & OPT_AUTOMATIC) ) {
-                    if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
+        if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
+            if( (eq_ext->ec_flags & EQUIV_SET_ALLOC) == 0 ) {
+                if( ForceStatic(sym->u.ns.flags) || (Options & OPT_AUTOMATIC) == 0 ) {
+                    if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
                         AllocGlobal( eq_ext->high - eq_ext->low,
                              (eq_ext->ec_flags & MEMBER_INITIALIZED) != 0 );
                         eq_ext->ec_flags |= EQUIV_SET_ALLOC;
@@ -143,19 +143,19 @@ static  bool    DumpVariable( sym_id sym ) {
     global_item = false;
     flags = sym->u.ns.flags;
     CkDataOk( sym );
-    if( !(flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) ) {
-        if( (flags & SY_REFERENCED) && !(sym->u.ns.u1.s.xflags & SY_DEFINED) ) {
+    if( (flags & (SY_SUB_PARM | SY_DATA_INIT | SY_IN_EC)) == 0 ) {
+        if( (flags & SY_REFERENCED) && (sym->u.ns.u1.s.xflags & SY_DEFINED) == 0 ) {
             NameWarn( VA_USED_NOT_DEFINED, sym );
         }
     }
-    if( ( flags & SY_IN_EQUIV ) &&
-        ( sym->u.ns.si.va.vi.ec_ext->ec_flags & LEADER ) &&
-        ( ( sym->u.ns.si.va.vi.ec_ext->ec_flags & ES_TYPE ) == ES_MIXED ) ) {
+    if( (flags & SY_IN_EQUIV) &&
+        (sym->u.ns.si.va.vi.ec_ext->ec_flags & LEADER) &&
+        ( (sym->u.ns.si.va.vi.ec_ext->ec_flags & ES_TYPE) == ES_MIXED ) ) {
         Extension( EV_MIXED_EQUIV );
     }
     if( flags & SY_SUBSCRIPTED ) {
         dim_list = sym->u.ns.si.va.u.dim_ext;
-        cp_reloc = !( flags & SY_SUB_PARM ) && !_Allocatable( sym );
+        cp_reloc = (flags & SY_SUB_PARM) == 0 && !_Allocatable( sym );
         if( cp_reloc && ( dim_list->num_elts == 0 ) ) {
             NameErr( SV_ARR_PARM, sym );
         } else {
@@ -163,8 +163,8 @@ static  bool    DumpVariable( sym_id sym ) {
                 global_item = true;
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
-                } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
-                    if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
+                } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
+                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
                         if( _SymSize( sym ) * _ArrElements( sym ) > DataThreshold ) {
                             AllocGlobal( _SymSize( sym ) * _ArrElements( sym ), (flags & SY_DATA_INIT) != 0 );
                         }
@@ -173,15 +173,15 @@ static  bool    DumpVariable( sym_id sym ) {
             }
         }
     } else if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
-        if( ( flags & SY_SUB_PARM ) == 0 ) {
+        if( (flags & SY_SUB_PARM) == 0 ) {
             if( (flags & SY_IN_DIMEXPR) && (flags & SY_IN_COMMON) == 0 ) {
                 NameErr( SV_ARR_DECL, sym );
             } else {
                 global_item = true;
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
-                } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
-                    if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
+                } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
+                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
                         if( sym->u.ns.xt.record->size > DataThreshold ) {
                             AllocGlobal( sym->u.ns.xt.record->size,
                                          (flags & SY_DATA_INIT) != 0 );
@@ -191,7 +191,7 @@ static  bool    DumpVariable( sym_id sym ) {
             }
         }
     } else if( sym->u.ns.u1.s.typ == FT_CHAR ) {
-        if( ( flags & SY_SUB_PARM ) == 0 ) {
+        if( (flags & SY_SUB_PARM) == 0 ) {
             global_item = !_Allocatable( sym );
             if( ( sym->u.ns.xt.size == 0 ) && !_Allocatable( sym ) ){
                 NameErr( CV_CHARSTAR_ILLEGAL, sym );
@@ -201,20 +201,20 @@ static  bool    DumpVariable( sym_id sym ) {
                 }
                 if( flags & SY_IN_EC ) {
                     global_item = CkInCommon( sym );
-                } else if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
-                    if( ForceStatic( flags ) || !(Options & OPT_AUTOMATIC) ) {
+                } else if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
+                    if( ForceStatic( flags ) || (Options & OPT_AUTOMATIC) == 0 ) {
                         AllocGlobal( sym->u.ns.xt.size,
                             (flags & SY_DATA_INIT) != 0 );
                     }
                 }
             }
         }
-    } else if( ( flags & ( SY_IN_EC | SY_SUB_PARM ) ) == 0 ) {
+    } else if( (flags & (SY_IN_EC | SY_SUB_PARM)) == 0 ) {
         if( flags & SY_IN_DIMEXPR ) {
             NameErr( SV_ARR_DECL, sym );
         }
     } else {
-        if( ( flags & SY_SUB_PARM ) == 0 ) {
+        if( (flags & SY_SUB_PARM) == 0 ) {
             global_item = CkInCommon( sym );
         }
     }
@@ -245,12 +245,12 @@ static  void    DumpLocalVars( void ) {
                 DumpVariable( sym );
             }
         } else if( class == SY_SUBPROGRAM ) {
-            if( ( flags & ( SY_REFERENCED | SY_EXTERNAL ) ) == 0 ) {
+            if( (flags & (SY_REFERENCED | SY_EXTERNAL)) == 0 ) {
                 UnrefSym( sym );
             }
             subprog_type = flags & SY_SUBPROG_TYPE;
             if( subprog_type == SY_REMOTE_BLOCK ) {
-                if( ( flags & SY_RB_DEFINED ) == 0 ) {
+                if( (flags & SY_RB_DEFINED) == 0 ) {
                     NameErr( SP_RB_UNDEFINED, sym );
                 }
             } else if( subprog_type == SY_STMT_FUNC ) {
@@ -262,7 +262,7 @@ static  void    DumpLocalVars( void ) {
                 AddSP2GList( sym );
             }
         } else { // if( class == SY_PARAMETER ) {
-            if( ( flags & SY_REFERENCED ) == 0 ) {
+            if( (flags & SY_REFERENCED) == 0 ) {
                 UnrefSym( sym );
             }
         }
@@ -275,7 +275,7 @@ static  void    DumpLocalVars( void ) {
     // subprogram.
     sym = BList;
     while( sym != NULL ) {    // common block list
-        if( ( SgmtSw & SG_BIG_SAVE ) || (Options & OPT_SAVE) ) {
+        if( (SgmtSw & SG_BIG_SAVE) || (Options & OPT_SAVE) ) {
             sym->u.ns.flags |= SY_SAVED;
         }
         AddCB2GList( sym );
@@ -295,7 +295,7 @@ static  void    UnrefSym( sym_id sym ) {
 
 // Issue a warning for unreferenced symbol.
 
-    if( !(sym->u.ns.u1.s.xflags & SY_FAKE_REFERENCE) ) {
+    if( (sym->u.ns.u1.s.xflags & SY_FAKE_REFERENCE) == 0 ) {
         NameWarn( VA_UNREFERENCED, sym );
     }
 }
@@ -312,7 +312,7 @@ static  void    CkDataOk( sym_id sym ) {
     unsigned_16 flags;
 
     flags = sym->u.ns.flags;
-    if( ( flags & SY_DATA_INIT ) == 0 ) return;
+    if( (flags & SY_DATA_INIT) == 0 ) return;
     name = sym;
     if( flags & SY_IN_EC ) {
         if( flags & SY_IN_COMMON ) {
@@ -320,10 +320,10 @@ static  void    CkDataOk( sym_id sym ) {
         } else { // if( flags & SY_IN_EQUIV ) {
             for(;;) {
                 eq_ext = sym->u.ns.si.va.vi.ec_ext;
-                if( ( eq_ext->ec_flags & LEADER ) != 0 ) break;
+                if( (eq_ext->ec_flags & LEADER) != 0 ) break;
                 sym = eq_ext->link_eqv;
             }
-            if( ( eq_ext->ec_flags & MEMBER_IN_COMMON ) == 0 ) {
+            if( (eq_ext->ec_flags & MEMBER_IN_COMMON) == 0 ) {
                 if( ProgSw & PS_BLOCK_DATA ) {
                     NameErr( BD_BLKDAT_NOT_COMMON, name );
                 }
@@ -332,11 +332,11 @@ static  void    CkDataOk( sym_id sym ) {
                 sym = eq_ext->com_blk;
             }
         }
-        if( ( sym->u.ns.flags & SY_BLANK_COMMON ) != 0 ) {
+        if( (sym->u.ns.flags & SY_BLANK_COMMON) != 0 ) {
             NameErr( DA_BLANK_INIT, name );
         } else {
             sym->u.ns.flags |= SY_COMMON_INIT;
-            if( ( ProgSw & PS_BLOCK_DATA ) == 0 ) {
+            if( (ProgSw & PS_BLOCK_DATA) == 0 ) {
                 NameExt( CM_COMMON, name );
             }
         }
@@ -354,8 +354,8 @@ bool    StmtNoRef( sym_id sn ) {
 // Check if statement number has been referenced.
 
     if( StNumbers.wild_goto ) return( true );
-    if( ( sn->u.st.flags & SN_AFTR_BRANCH ) == 0 ) return( true );
-    if( sn->u.st.flags & ( SN_ASSIGNED | SN_BRANCHED_TO ) ) return( true );
+    if( (sn->u.st.flags & SN_AFTR_BRANCH) == 0 ) return( true );
+    if( sn->u.st.flags & (SN_ASSIGNED | SN_BRANCHED_TO) ) return( true );
     return( false );
 }
 
@@ -373,7 +373,7 @@ static  void    DumpStmtNos( void ) {
     while( sn != NULL ) {
         sn_flags = sn->u.st.flags;
         st_number = GetStmtNum( sn );
-        if( ( sn_flags & SN_DEFINED ) == 0 ) {
+        if( (sn_flags & SN_DEFINED) == 0 ) {
             Error( ST_UNDEFINED, st_number, sn->u.st.line );
         } else {
             if( !StmtNoRef( sn ) ) {
@@ -411,7 +411,7 @@ static  void    DumpStrings( void ) {
         // check if shadow for function return value
         if( MList->u.ns.flags & SY_PS_ENTRY ) continue;
         if( MList->u.ns.u1.s.typ == FT_CHAR ) {
-            if( ( MList->u.ns.xt.size != 0 ) && !( Options & OPT_AUTOMATIC ) ) {
+            if( ( MList->u.ns.xt.size != 0 ) && (Options & OPT_AUTOMATIC) == 0 ) {
                 AllocGlobal( MList->u.ns.xt.size, false );
             }
         }

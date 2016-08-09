@@ -56,7 +56,7 @@ static const char *usageMsg[] = {
     NULL
 };
 
-void free_list( void )
+static void free_list( void )
 {
     inpfile     *curr;
 

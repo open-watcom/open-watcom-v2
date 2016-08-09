@@ -168,7 +168,7 @@ sub batch_output_reset_env
     }
 }
 
-sub batch_output_build_wmake_builder_rm
+sub batch_output_build_wmake_builder
 {
     # Create fresh builder tools to prevent lockup build server
     # if builder tools from previous build are somehow broken
@@ -205,7 +205,7 @@ sub batch_output_build_wmake_builder_rm
     } else {
         print BATCH 'if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe';
         print BATCH '%OWBINDIR%\wmake -h -f ..\binmake bootstrap=1 clean';
-        print BATCH '%OWBINDIR%\wmake -h -f ..\binmake bootstrap=1 builder.exe rm.exe';
+        print BATCH '%OWBINDIR%\wmake -h -f ..\binmake bootstrap=1 builder.exe';
     }
 }
 
@@ -229,10 +229,10 @@ sub make_boot_batch
     print BATCH "$setenv OWDOCQUIET=1";
     # Create fresh builder tools, to prevent lockup build server
     # if builder tools from previous build are somehow broken
-    batch_output_build_wmake_builder_rm();
+    batch_output_build_wmake_builder();
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder -i bootclean';
-    batch_output_build_wmake_builder_rm();
+    batch_output_build_wmake_builder();
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder boot';
     close(BATCH);
@@ -264,7 +264,7 @@ sub make_build_batch
     print BATCH "$setenv OWDOCQUIET=1";
     # start building by bootstrap tools.
     # Remove release directory tree.
-    print BATCH 'rm -rf ', $relroot;
+    print BATCH 'builder -i cleanrel';
     # Clean previous build.
     print BATCH "cd $OW"; print BATCH 'cd bld';
     print BATCH 'builder -i clean';
@@ -347,11 +347,7 @@ sub make_test_batch
         }
     }
     print BATCH "cd $OW"; print BATCH 'cd bld';
-    print BATCH 'rm -f ctest/*.log';
-    print BATCH 'rm -f wasmtest/*.log';
-    print BATCH 'rm -f f77test/*.log';
-    print BATCH 'rm -f plustest/*.log';
-    print BATCH 'rm -f clibtest/*.log';
+    print BATCH 'builder -i cleanlog';
     print BATCH 'builder -i test';
     close(BATCH);
     # On Windows it has no efect

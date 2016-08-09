@@ -51,30 +51,30 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
     size_t          free_size;
 
     /* round (new_size + tag) to multiple of pointer size */
-    new_size = (req_size + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    new_size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );
     if( new_size < req_size )
         new_size = ~0; //go for max
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
     p1 = FRL_BPTR( seg, offset, -TAG_SIZE );
-    old_size = p1->len & ~1;
+    old_size = MEMBLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
         p2 = FRL_BPTR( seg, p1, old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
-            free_size = p2->len;
             if( p2->len == END_TAG ) {
                 return( __HM_TRYGROW );
-            } else if( free_size & 1 ) { /* next piece is allocated */
+            } else if( IS_MEMBLK_USED( p2 ) ) { /* next piece is allocated */
                 break;
             } else {
+                free_size = p2->len;
                 pnext = p2->next;
                 pprev = p2->prev;
 
                 if( seg == _DGroup() ) { // near heap
-                    for( hblk = __nheapbeg; hblk->next; hblk = hblk->next ) {
+                    for( hblk = __nheapbeg; hblk->next != NULL; hblk = hblk->next ) {
                         if( FRL_BPTR( seg, hblk, 0 ) <= FRL_BPTR( seg, offset, 0 )
                           && FRL_BPTR( seg, hblk, hblk->len ) > FRL_BPTR( seg, offset, 0 ) ) {
                             break;
@@ -118,11 +118,11 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         /* shrinking the current allocation */
         if( old_size - new_size >= FRL_SIZE ) {
             /* block big enough to split */
-            p1->len = new_size | 1;
+            SET_MEMBLK_SIZE_USED( p1, new_size );
             p1 = FRL_BPTR( seg, p1, new_size );
-            p1->len = (old_size - new_size) | 1;
+            SET_MEMBLK_SIZE_USED( p1, old_size - new_size );
             if( seg == _DGroup() ) { // near heap
-                for( hblk = __nheapbeg; hblk->next; hblk = hblk->next ) {
+                for( hblk = __nheapbeg; hblk->next != NULL; hblk = hblk->next ) {
                     if( FRL_BPTR( seg, hblk, 0 ) <= FRL_BPTR( seg, offset, 0 )
                       && FRL_BPTR( seg, hblk, hblk->len ) > FRL_BPTR( seg, offset, 0 ) ) {
                         break;

@@ -34,6 +34,7 @@
 
 #include <limits.h>
 #include <stddef.h>     /* for things like size_t and such */
+#include "bool.h"
 
 
 /*
@@ -42,11 +43,6 @@
 #ifndef _WINDOWS_H
 typedef int_32          INT32;
 typedef uint_32         UINT32;
-
-enum {
-    FALSE = (0==1),
-    TRUE = (0==0)
-};
 #endif
 
 typedef int_16          INT16;
@@ -56,21 +52,16 @@ typedef uint_8          UINT8;
 
 typedef unsigned        BIT;        /* for bit fields in structures */
 
-typedef unsigned char   BOOLEAN;
-
-typedef struct Node NODE;       /* for singly linked lists */
-struct Node {
-    NODE        *next;
+typedef struct Node {
+    struct Node *next;
     char        *name;
-};
-
+} NODE;                     /* for singly linked lists */
 
 typedef enum {              /* our return type */
     RET_SUCCESS,            /* successful return from a function */
     RET_WARN,               /* warning return from a function    */
     RET_ERROR               /* error return from a function      */
 } RET_T;
-
 
 enum {
     IS_WS       =   0x01,
@@ -82,7 +73,6 @@ enum {
     IS_MACC     =   0x40,
     IS_BARF     =   0x80
 };
-
 
 #define isascii(__c)    ((__c) >= CHAR_MIN && (__c) <= CHAR_MAX)
 

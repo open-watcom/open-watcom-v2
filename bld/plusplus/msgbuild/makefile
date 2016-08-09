@@ -33,7 +33,7 @@ object_files +=  str.obj
 object_files +=  utility.obj
 object_files +=  word.obj
 
-msgencod.exe : $(object_files) dosencod.exe msgencod.lnk
+msgencod.exe : $(object_files) dosencod.exe msgencod.lnk $(__MAKEFILES__)
     $(linker) @msgencod.lnk
 
 msgencod.lnk : makefile
@@ -45,7 +45,7 @@ msgencod.lnk : makefile
     @%append $^@ FILE msgbuild
     @%append $^@ LIBRARY msgbuild.lib
 
-dosencod.exe : msgbuild.lib msgbuild.obj dosencod.lnk
+dosencod.exe : msgbuild.lib msgbuild.obj dosencod.lnk $(__MAKEFILES__)
     $(linker) @dosencod.lnk
 
 dosencod.lnk : makefile

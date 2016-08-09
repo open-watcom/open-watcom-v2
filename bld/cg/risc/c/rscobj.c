@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,11 +36,9 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cgauxinf.h"
-#include "ocentry.h"
 #include "cgmem.h"
 #include "reloc.h"
 #include "cgswitch.h"
-#include "import.h"
 #include "owl.h"
 #include "rscobj.h"
 #include "autodep.h"
@@ -55,23 +54,22 @@
 #include "rsccvsup.h"
 #include "objio.h"
 #include "object.h"
+#include "intrface.h"
+#include "opttell.h"
+#include "targetin.h"
+#include "cgsrtlst.h"
+#include "optmain.h"
 #include "feprotos.h"
+
 
 #define HANDLE_TO_OWL(x)    ((owl_file_handle)x)
 #define OWL_TO_HANDLE(x)    ((FILE *)x)
 
-extern  char            *AskRTName( rt_class );
-extern  void            TryScrapLabel( label_handle );
-extern  void            DoOutObjectName(cg_sym_handle,void(*)(char *,void *),void *,import_type);
-extern  bool            SymIsExported( cg_sym_handle );
+#if _TARGET & _TARG_PPC
 extern  label_handle    GetWeirdPPCDotDotLabel( label_handle );
-extern  void            TellAddress( label_handle, offset );
-extern  type_length     TempLocation( name * );
-extern  back_handle     SymBack( cg_sym_handle );
+#endif
+extern  bool            SymIsExported( cg_sym_handle );
 extern  void            EmptyQueue( void );
-extern  void            TellUnreachLabels( void );
-extern  void            *SortList( void *, unsigned, bool (*)( void *, void * ) );
-extern  void            EmitInsReloc( axp_ins, pointer, owl_reloc_type );
 
 static  owl_section_handle      owlTocSect; // contributions to TOC for PPC
 static  owl_section_handle      globalPdata;
@@ -89,16 +87,16 @@ static  section_def             *currSection;
 
 #define N_SECTIONS              16
 
-static  section_def             *sectionDefs[ N_SECTIONS ];
+static  section_def             *sectionDefs[N_SECTIONS];
 
 static  short                   CurrFNo;
 
-extern section_def *FindSection( segment_id id )
-/**********************************************/
+section_def *FindSection( segment_id id )
+/***************************************/
 {
     section_def         *curr;
 
-    curr = sectionDefs[ id % N_SECTIONS ];
+    curr = sectionDefs[id % N_SECTIONS];
     while( curr != NULL ) {
         if( curr->id == id ) break;
         curr = curr->next;
@@ -106,8 +104,8 @@ extern section_def *FindSection( segment_id id )
     return( curr );
 }
 
-extern section_def *AddSection( segment_id id )
-/*********************************************/
+section_def *AddSection( segment_id id )
+/**************************************/
 {
     section_def         *new;
     unsigned            bucket;
@@ -115,8 +113,8 @@ extern section_def *AddSection( segment_id id )
     new = CGAlloc( sizeof( section_def ) );
     bucket = id % N_SECTIONS;
     new->id = id;
-    new->next = sectionDefs[ bucket ];
-    sectionDefs[ bucket ] = new;
+    new->next = sectionDefs[bucket];
+    sectionDefs[bucket] = new;
     new->func  = NULL;
     new->is_start = true;
     return( new );
@@ -130,18 +128,18 @@ static void DeleteSections( void )
     section_def         *next;
 
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
-        if( sectionDefs[ bucket ] != NULL ) {
-            for( ptr = sectionDefs[ bucket ]; ptr != NULL; ptr = next ) {
+        if( sectionDefs[bucket] != NULL ) {
+            for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = next ) {
                 next = ptr->next;
                 CGFree( ptr );
             }
-            sectionDefs[ bucket ] = NULL;
+            sectionDefs[bucket] = NULL;
         }
     }
 }
 
-extern owl_section_handle DbgSectDefComdat( const char *str )
-/***********************************************************/
+owl_section_handle DbgSectDefComdat( const char *str )
+/****************************************************/
 {
     owl_section_handle  owl_handle;
 
@@ -149,8 +147,8 @@ extern owl_section_handle DbgSectDefComdat( const char *str )
     return( owl_handle );
 }
 
-extern  void    ObjInit( void )
-/*****************************/
+void    ObjInit( void )
+/*********************/
 {
     OpenObj();
     CurrFNo = 0;
@@ -198,10 +196,10 @@ static  void    DefaultLibs( void )
     }
 }
 
-static void stringOut( char *name, void *data )
-/*********************************************/
+static void stringOut( const char *name, void *data )
+/***************************************************/
 {
-    *(char **)data = name;
+    *(const char **)data = name;
 }
 
 static  void    AliasNames( void )
@@ -302,8 +300,8 @@ static void DoDFSegRange( void )
 
     old = currSection;
     for( bucket = 0; bucket < N_SECTIONS; bucket++ ) {
-        if( sectionDefs[ bucket ] != NULL ) {
-            for( ptr = sectionDefs[ bucket ]; ptr != NULL; ptr = ptr->next ) {
+        if( sectionDefs[bucket] != NULL ) {
+            for( ptr = sectionDefs[bucket]; ptr != NULL; ptr = ptr->next ) {
 
                 tipe = OWLTellSectionType( ptr->owl_handle );
                 switch( tipe ){
@@ -331,8 +329,8 @@ static void DoDFSegRange( void )
     currSection = old;
 }
 
-extern  void    ObjFini( void )
-/*****************************/
+void    ObjFini( void )
+/*********************/
 {
     offset          code_size;
     section_def     *curr;
@@ -384,36 +382,36 @@ static  int PutBytes( void *handle, const char *buffer, unsigned len )
 
 #define MAX_OBJ_NAME    1024
 
-static  char            objName[ MAX_OBJ_NAME ];
+static  char            objName[MAX_OBJ_NAME];
 
-static  void            NameGatherer( char *name, void *data )
-/************************************************************/
+static  void            NameGatherer( const char *name, void *data )
+/******************************************************************/
 {
     CopyStr( name, (char *)data );
 }
 
-static  char            *LabelName( label_handle label )
-/***************************************************/
+static const char   *LabelName( label_handle label )
+/**************************************************/
 {
     cg_sym_handle       sym;
-    char                *name;
+    const char          *name;
     char                *buff;
     import_type         kind;
     fe_attr             attr;
 
     sym = AskForLblSym( label );
     if( AskIfRTLabel( label ) ) {
-        name = AskRTName( (rt_class)(pointer_int)sym );
+        name = AskRTName( SYM2RTIDX( sym ) );
         if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
-            objName[ 0 ] = '.';
-            objName[ 1 ] = '.';
-            strcpy( &objName[ 2 ], name );
-            name = &objName[ 0 ];
+            objName[0] = '.';
+            objName[1] = '.';
+            strcpy( &objName[2], name );
+            name = &objName[0];
         }
         return( name );
     }
     if( sym != NULL ) {
-        buff = &objName[ 0 ];
+        buff = &objName[0];
         attr = FEAttr( sym );
         kind = NORMAL;
         if( (attr & FE_INTERNAL) == 0 ) {
@@ -421,9 +419,9 @@ static  char            *LabelName( label_handle label )
                 kind = DLLIMPORT;
             } else {
                 if( _TstStatus( label, WEIRD_PPC_ALIAS ) ) {
-                    objName[ 0 ] = '.';
-                    objName[ 1 ] = '.';
-                    buff = &objName[ 2 ];
+                    objName[0] = '.';
+                    objName[1] = '.';
+                    buff = &objName[2];
                 }
             }
             DoOutObjectName( sym, NameGatherer, buff, kind );
@@ -442,8 +440,8 @@ static  owl_symbol_handle labelOwlSym( label_handle lbl )
     return( lbl->owl_symbol );
 }
 
-extern  void    InitSegDefs( void )
-/*********************************/
+void    InitSegDefs( void )
+/*************************/
 {
     // fixme - should use routines with some error checking
     owl_client_funcs    funcs = { PutBytes, NULL, NULL, CGAlloc, CGFree };
@@ -479,8 +477,8 @@ extern  void    InitSegDefs( void )
 }
 
 
-extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
-/**************************************************************************************************/
+void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, bool use_16 )
+/******************************************************************************************/
 {
     section_def         *new;
     owl_section_type    type;
@@ -516,8 +514,8 @@ extern  void    DefSegment( segment_id id, seg_attr attr, const char *str, uint 
     new->owl_handle = OWLSectionInit( owlFile, str, type, 16 );
 }
 
-extern void    OutFileStart( int line )
-/*************************************/
+void    OutFileStart( int line )
+/******************************/
 {
     cue_state           info;
     char                *fname;
@@ -532,8 +530,9 @@ extern void    OutFileStart( int line )
         }
     }
 }
-extern void    OutFuncStart( label_handle label, offset start, cg_linenum line )
-/***************************************************************************/
+
+void    OutFuncStart( label_handle label, offset start, cg_linenum line )
+/***********************************************************************/
 {
     cue_state            info;
 
@@ -553,15 +552,15 @@ extern void    OutFuncStart( label_handle label, offset start, cg_linenum line )
 
 }
 
-extern void    OutFuncEnd( offset end )
-/*************************************/
+void    OutFuncEnd( offset end )
+/******************************/
 {
     OWLDebugFuncEnd( currSection->func, currSection->line, end );
     currSection->func = NULL;
 }
 
-extern  void    OutLineNum( cg_linenum line, bool label_line )
-/************************************************************/
+void    OutLineNum( cg_linenum line, bool label_line )
+/****************************************************/
 {
     cue_state            info;
     offset               lc;
@@ -593,8 +592,8 @@ extern  void    OutLineNum( cg_linenum line, bool label_line )
 }
 
 
-extern char GetMemModel( void )
-/*****************************/
+char GetMemModel( void )
+/**********************/
 {
     char    model;
 
@@ -616,45 +615,45 @@ extern char GetMemModel( void )
     return( model );
 }
 
-extern segment_id DbgSegDef( const char *str )
-/********************************************/
+segment_id DbgSegDef( const char *sect_name )
+/*******************************************/
 {
     section_def         *new;
     segment_id          id;
 
     id = --backSectIdx;
     new = AddSection( id );
-    new->owl_handle = OWLSectionInit( owlFile, str, OWL_SECTION_DEBUG, 1 );
+    new->owl_handle = OWLSectionInit( owlFile, sect_name, OWL_SECTION_DEBUG, 1 );
     return( id );
 }
 
-extern  bool    HaveCodeSeg( void )
-/*********************************/
+bool    HaveCodeSeg( void )
+/*************************/
 {
     return( codeSection != BACKSEGS );
 }
 
-extern  segment_id  AskCodeSeg( void )
-/************************************/
+segment_id  AskCodeSeg( void )
+/****************************/
 {
      return( codeSection );
 }
 
-extern  segment_id  AskAltCodeSeg( void )
-/***************************************/
+segment_id  AskAltCodeSeg( void )
+/*******************************/
 {
     return( codeSection );
 }
 
-extern  segment_id  AskBackSeg( void )
-/************************************/
+segment_id  AskBackSeg( void )
+/****************************/
 {
      return( dataSection );
 }
 
 
-extern  segment_id  AskOP( void )
-/*******************************/
+segment_id  AskOP( void )
+/***********************/
 {
     assert( currSection != NULL );
     return( currSection->id );
@@ -670,8 +669,8 @@ static  bool            InlineFunction( cg_sym_handle sym )
     return( (*(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & MAKE_CALL_INLINE) != 0 );
 }
 
-extern  segment_id  AskSegID( pointer hdl, cg_class class )
-/*********************************************************/
+segment_id  AskSegID( pointer hdl, cg_class class )
+/*************************************************/
 {
     switch( class ) {
     case CG_FE:
@@ -691,15 +690,15 @@ extern  segment_id  AskSegID( pointer hdl, cg_class class )
     }
 }
 
-extern  void    ObjBytes( const void *buffer, unsigned size )
-/***********************************************************/
+void    ObjBytes( const void *buffer, unsigned size )
+/***************************************************/
 {
     assert( currSection != NULL );
     OWLEmitData( currSection->owl_handle, buffer, size );
 }
 
-extern  bool    AskSegBlank( segment_id id )
-/******************************************/
+bool    AskSegBlank( segment_id id )
+/**********************************/
 {
     section_def         *sect;
     owl_section_type    tipe;
@@ -711,13 +710,13 @@ extern  bool    AskSegBlank( segment_id id )
 
 #define MAX_ALIGN       128
 
-extern  void    AlignObject( unsigned align )
-/*******************************************/
+void    AlignObject( unsigned align )
+/***********************************/
 {
     offset      off;
     unsigned    mod;
     unsigned    add;
-    char        buffer[ MAX_ALIGN ];
+    char        buffer[MAX_ALIGN];
 
     assert( currSection != NULL );
     assert( _IsPowerOfTwo( align ) );
@@ -739,8 +738,8 @@ extern  void    AlignObject( unsigned align )
 }
 
 
-extern  segment_id  SetOP( segment_id seg )
-/*****************************************/
+segment_id  SetOP( segment_id seg )
+/*********************************/
 {
     segment_id  old;
     section_def *new;
@@ -761,8 +760,8 @@ extern  segment_id  SetOP( segment_id seg )
 }
 
 
-extern  void    FlushOP( segment_id id )
-/**************************************/
+void    FlushOP( segment_id id )
+/******************************/
 {
     section_def         *sect;
     segment_id          old;
@@ -793,8 +792,8 @@ extern  void    FlushOP( segment_id id )
     OWLSectionFini( sect->owl_handle );
 }
 
-extern  bool    NeedBaseSet( void )
-/*********************************/
+bool    NeedBaseSet( void )
+/*************************/
 {
     bool        need;
 
@@ -807,43 +806,43 @@ extern  bool    NeedBaseSet( void )
     return( need );
 }
 
-extern  offset  AskLocation( void )
+offset  AskLocation( void )
+/*************************/
+{
+    assert( currSection != NULL );
+    return( OWLTellOffset( currSection->owl_handle ) );
+}
+
+
+long_offset  AskBigLocation( void )
 /*********************************/
 {
     assert( currSection != NULL );
     return( OWLTellOffset( currSection->owl_handle ) );
 }
 
-
-extern  long_offset  AskBigLocation( void )
-/*****************************************/
+offset  AskMaxSize( void )
+/************************/
 {
     assert( currSection != NULL );
-    return( OWLTellOffset( currSection->owl_handle ) );
+    return( OWLTellSize( currSection->owl_handle ) );
 }
 
-extern  offset  AskMaxSize( void )
+long_offset  AskBigMaxSize( void )
 /********************************/
 {
     assert( currSection != NULL );
     return( OWLTellSize( currSection->owl_handle ) );
 }
 
-extern  long_offset  AskBigMaxSize( void )
-/****************************************/
-{
-    assert( currSection != NULL );
-    return( OWLTellSize( currSection->owl_handle ) );
-}
-
-extern  void    SetLocation( offset loc )
-/***************************************/
+void    SetLocation( offset loc )
+/*******************************/
 {
     OWLSetLocation( currSection->owl_handle, loc );
 }
 
-extern  void    SetBigLocation( long_offset loc )
-/***********************************************/
+void    SetBigLocation( long_offset loc )
+/***************************************/
 {
     OWLSetLocation( currSection->owl_handle, loc );
 }
@@ -886,8 +885,8 @@ static void DumpImportResolve( label_handle label )
     }
 }
 
-extern  void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset )
-/*******************************************************************************/
+void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset )
+/**************************************************************************/
 {
     DumpImportResolve( label );
     offset = offset;
@@ -896,8 +895,8 @@ extern  void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offs
         labelOwlSym( label ), tipe );
 }
 
-extern  void    OutSegReloc( label_handle label, segment_id seg )
-/************************************************************/
+void    OutSegReloc( label_handle label, segment_id seg )
+/*******************************************************/
 {
     section_def             *sect;
 
@@ -908,8 +907,8 @@ extern  void    OutSegReloc( label_handle label, segment_id seg )
         sect->owl_handle, OWL_RELOC_SECTION_INDEX );
 }
 
-extern  owl_sym_linkage labelLinkage( label_handle label )
-/********************************************************/
+static owl_sym_linkage labelLinkage( label_handle label )
+/*******************************************************/
 {
     cg_sym_handle       sym;
     owl_sym_linkage     linkage;
@@ -926,8 +925,8 @@ extern  owl_sym_linkage labelLinkage( label_handle label )
     return( linkage );
 }
 
-extern  void    OutLabel( label_handle label )
-/********************************************/
+void    OutLabel( label_handle label )
+/************************************/
 {
     cg_sym_handle       sym;
     fe_attr             attr;
@@ -939,7 +938,9 @@ extern  void    OutLabel( label_handle label )
     if( sym != NULL ) {
         attr = FEAttr( sym );
         if( attr & FE_PROC ) {
+#if _TARGET & _TARG_PPC
             label = GetWeirdPPCDotDotLabel( (label_handle)label );
+#endif
             tipe = OWL_TYPE_FUNCTION;
         }
     }
@@ -955,8 +956,8 @@ extern  void    OutLabel( label_handle label )
 static int const Zero = 0;
 
 #if _TARGET & _TARG_PPC
-extern void OutTOCRec( label_handle label )
-/**************************************/
+void OutTOCRec( label_handle label )
+/**********************************/
 {
     label_handle    dot_lbl;
     label_handle    toc_lbl;
@@ -994,8 +995,8 @@ static owl_section_handle getPData( label_handle label )
     return( globalPdata );
 }
 
-extern void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
-/***************************************************************************/
+void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
+/***********************************************************************/
 {
     owl_section_handle  owl_pdata;
     cg_sym_handle       sym;
@@ -1003,7 +1004,9 @@ extern void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
     label_handle        lbl;
 
     owl_pdata = getPData( label );
+#if _TARGET & _TARG_PPC
     label = GetWeirdPPCDotDotLabel( label );
+#endif
     sym = AskForLblSym( label );
     OWLEmitReloc( owl_pdata, OWLTellOffset( owl_pdata ), labelOwlSym( label ), OWL_RELOC_WORD );
     OWLEmitData( owl_pdata, (char *)&Zero, 4 );
@@ -1034,28 +1037,28 @@ extern void OutPDataRec( label_handle label, offset proc_size, offset pro_size )
 }
 
 
-extern  void    *InitPatch( void )
-/********************************/
+void    *InitPatch( void )
+/************************/
 {
     return( NULL );
 }
 
-extern  void    AbsPatch( abspatch_handle patch, offset lc )
-/**********************************************************/
+void    AbsPatch( abspatch_handle patch, offset lc )
+/**************************************************/
 {
     patch = patch;
     lc = lc;
 }
 
-extern  void    DoEmptyQueue( void )
-/**********************************/
+void    DoEmptyQueue( void )
+/**************************/
 {
     EmptyQueue();
     TellUnreachLabels();
 }
 
-extern  void    TellObjNewProc( cg_sym_handle proc )
-/***********************************************/
+void    TellObjNewProc( cg_sym_handle proc )
+/******************************************/
 {
     segment_id  proc_id;
     segment_id  old;
@@ -1080,15 +1083,15 @@ extern  void    TellObjNewProc( cg_sym_handle proc )
     SetOP( old );
 }
 
-extern  void    IncLocation( offset by )
-/**************************************/
+void    IncLocation( offset by )
+/******************************/
 {
     /* This should only be used for bumping up our location in a BSS section */
     OWLEmitData( currSection->owl_handle, NULL, by );
 }
 
-extern  bool    AskNameROM( pointer hdl, cg_class class )
-/*******************************************************/
+bool    AskNameROM( pointer hdl, cg_class class )
+/***********************************************/
 {
     hdl = hdl; class = class;
     return( false );
@@ -1102,15 +1105,15 @@ unsigned DepthAlign( unsigned depth )
     return( 4 );
 }
 
-extern  bool    CodeHasAbsPatch( oc_entry *code )
-/***********************************************/
+bool    CodeHasAbsPatch( oc_entry *code )
+/***************************************/
 {
     code = code;
     return( false );    // NYI
 }
 
-static  bool    relocBefore( void *_p1, void *_p2 )
-/*************************************************/
+static bool    relocBefore( void *_p1, void *_p2 )
+/*****************************************/
 {
     byte_seq_reloc *p1 = _p1;
     byte_seq_reloc *p2 = _p2;
@@ -1126,50 +1129,14 @@ static  bool    relocBefore( void *_p1, void *_p2 )
     return( p1->off < p2->off );
 }
 
-extern  void    ObjEmitSeq( byte_seq *code )
-/******************************************/
-{
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    axp_ins             *code_ptr;
-    axp_ins             opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
-
-    assert( code->length % 4 == 0 );
-    curr = SortList( code->relocs, offsetof( byte_seq_reloc, next ), relocBefore );
-    code_ptr = (axp_ins *)code->data;
-    for( i = 0; i < code->length; i += 4 ) {
-        opcode = *code_ptr++;
-        reloc_type = 0;
-        reloc_sym = NULL;
-        while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
-            switch( curr->type ) {
-            case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
-                if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
-                }
-                opcode |= _SignedImmed( loc );
-                break;
-            case OWL_RELOC_PAIR:
-                break;
-            default:
-                reloc_type = curr->type;
-                reloc_sym = back->lbl;
-            }
-            curr = curr->next;
-        }
-        EmitInsReloc( opcode, reloc_sym, reloc_type );
-    }
-}
-
-extern  void    DoAlignment( int align )
-/**************************************/
+void    DoAlignment( int align )
+/******************************/
 {
     // NYI
     align = align;
+}
+
+byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
+{
+    return( SortList( relocs, offsetof( byte_seq_reloc, next ), relocBefore ) );
 }

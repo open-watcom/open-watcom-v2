@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,7 +38,6 @@
 #include "symdbg.h"
 #include "model.h"
 #include "types.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #ifndef NDEBUG
 #include "echoapi.h"
@@ -387,7 +387,7 @@ extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_m
 #ifndef NDEBUG
     EchoAPI( "DBBegArray( %i,%t,%i)", base, tipe, is_col_major );
 #endif
-     tipe = tipe;
+    tipe = tipe;
     ar = CGAlloc( sizeof( *ar ) );
     ar->num = 0;
 //  tipe_addr = TypeAddress( tipe );

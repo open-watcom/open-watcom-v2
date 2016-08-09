@@ -28,5 +28,5 @@ inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 
 .c: ../c
 
-wdsplice.dll : $(objs)
-    $(linker) name $@ $(lflags) file {$<}
+wdsplice.dll : $(objs) $(__MAKEFILES__)
+    $(linker) name $@ $(lflags) file {$(objs)}

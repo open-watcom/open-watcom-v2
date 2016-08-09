@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,14 +39,12 @@
 #include "data.h"
 #include "objout.h"
 #include "namelist.h"
+#include "opttell.h"
+#include "rscobj.h"
 #include "feprotos.h"
 
-extern  void            ObjBytes( const void *, unsigned );
-extern  void            OutReloc( label_handle, owl_reloc_type, unsigned );
-extern  void            OutSegReloc( label_handle label, segment_id section );
-extern  void            AlignObject( unsigned );
+
 extern  void            TellOptimizerByPassed( void );
-extern  void            TellByPassOver( void );
 extern  void            IterBytes( offset, byte );
 
 extern  void    DataAlign( unsigned_32 align ) {
@@ -91,7 +90,7 @@ extern  void    DataLong( unsigned_32 val )
 
 // FIXME: This is a cheap, lousy hack
 #define MAX_HACK_LEN    ( 8 * 1024 )
-static byte     Buffer[ MAX_HACK_LEN ];
+static byte     Buffer[MAX_HACK_LEN];
 
 extern  void    IterBytes( offset len, byte pat )
 /***********************************************/
@@ -195,10 +194,10 @@ static constant_defn    *GetI64Const( name *cons, type_class_def class ) {
 
     i64Defn.label = NULL;
     i64Defn.const_class = class;
-    i64Defn.value[ 0 ] = cons->c.int_value & 0xffff;
-    i64Defn.value[ 1 ] = ( cons->c.int_value >> 16 ) & 0xffff;
-    i64Defn.value[ 2 ] = cons->c.int_value_2 & 0xffff;
-    i64Defn.value[ 3 ] = ( cons->c.int_value_2 >> 16 ) & 0xffff;
+    i64Defn.value[0] = cons->c.lo.uint_value & 0xffff;
+    i64Defn.value[1] = ( cons->c.lo.uint_value >> 16 ) & 0xffff;
+    i64Defn.value[2] = cons->c.hi.uint_value & 0xffff;
+    i64Defn.value[3] = ( cons->c.hi.uint_value >> 16 ) & 0xffff;
     return( &i64Defn );
 }
 
@@ -221,7 +220,7 @@ extern  name    *GenFloat( name *cons, type_class_def class ) {
         AlignObject( 8 );
         assert( ( AskLocation() & 0x07 ) == 0 );
         OutLabel( defn->label );
-        DataBytes( TypeClassSize[ class ], &defn->value );
+        DataBytes( TypeClassSize[class], &defn->value );
         SetOP( old );
 
     }

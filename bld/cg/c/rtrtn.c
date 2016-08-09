@@ -39,9 +39,9 @@
 static  import_handle   RTHdls[RTSIZE];
 static  label_handle    RTLbls[RTSIZE];
 
-extern  void    LookupRoutine( instruction *ins ) {
-/*************************************************/
-
+rt_class    LookupRoutine( instruction *ins )
+/*******************************************/
+{
     rtn_info    *rtn;
     rt_class    rtindex;
     opcode_defs opcode;
@@ -51,21 +51,22 @@ extern  void    LookupRoutine( instruction *ins ) {
         opcode = OP_CMP;
     }
     rtn = RTInfo;
-    for( rtindex = 0; rtn->op != opcode || rtn->operand_class != ins->type_class; ++rtindex ) {
+    rtindex = 0;
+    while( rtn->op != opcode || rtn->operand_class != ins->type_class ) {
         ++rtn;
+        ++rtindex;
         if( rtn->op == OP_NOP ) {
-            ++rtindex;
             _Zoiks( ZOIKS_021 );
             break;
         }
     }
-    RoutineNum = rtindex;
+    return( rtindex );
 }
 
 
-extern  void    InitRT( void ) {
-/******************************/
-
+void    InitRT( void )
+/********************/
+{
     rt_class    rtindex;
 
     for( rtindex = 0; rtindex < RTSIZE; ++rtindex ) {
@@ -75,41 +76,43 @@ extern  void    InitRT( void ) {
 }
 
 
-extern  import_handle   AskRTHandle( rt_class rtindex ) {
-/*******************************************************/
-
+import_handle   AskRTHandle( rt_class rtindex )
+/*********************************************/
+{
     return( RTHdls[rtindex] );
 }
 
 
-extern  void    TellRTHandle( rt_class rtindex, import_handle hdl ) {
-/*******************************************************************/
-
-    RTHdls[rtindex] = hdl;
+void    TellRTHandle( rt_class rtindex, import_handle imphdl )
+/************************************************************/
+{
+    RTHdls[rtindex] = imphdl;
 }
 
 
-extern  label_handle RTLabel( rt_class rtindex ) {
-/************************************************/
-
+label_handle RTLabel( rt_class rtindex )
+/**************************************/
+{
     label_handle    lbl;
 
     lbl = RTLbls[rtindex];
     if( lbl == NULL ) {
-        lbl = AskRTLabel( (cg_sym_handle)(pointer_int)rtindex );
+        lbl = AskForRTLabel( rtindex );
         RTLbls[rtindex] = lbl;
     }
     return( lbl );
 }
 
 
-extern  rt_class    FindRTLabel( label_handle lbl ) {
-/***************************************************/
-
+rt_class    FindRTLabel( label_handle lbl )
+/*****************************************/
+{
     rt_class    rtindex;
 
     for( rtindex = 0; rtindex < RTSIZE; ++rtindex ) {
-        if( RTLbls[rtindex] == lbl ) break;
+        if( RTLbls[rtindex] == lbl ) {
+            break;
+        }
     }
     return( rtindex );
 }

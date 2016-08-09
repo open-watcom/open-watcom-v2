@@ -40,7 +40,6 @@
 #elif defined(__OS2__)
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #include "tinyos2.h"
 #elif defined(_M_IX86)
     #include "tinyio.h"
 #endif
@@ -87,7 +86,7 @@ _WCRTLINK void _nheapgrow( void )
 
     _AccessNHeap();
     /* calculate # pages which always has extra slack space (ie. 0x10) */
-    curr_paras = (( _curbrk + 0x10 ) & ~0x0f ) >> 4;
+    curr_paras = __ROUND_UP_SIZE_TO_PARA( _curbrk + 1 );
     if( curr_paras == 0 ) {
         /* we're already at 64k */
         _ReleaseNHeap();

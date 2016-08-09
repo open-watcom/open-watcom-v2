@@ -668,7 +668,7 @@ static void DumpHashTable( void )
 static void WipeSym( symbol *sym )
 /********************************/
 {
-    if( IS_SYM_IMPORTED(sym) && !(FmtData.type & MK_ELF) ) {
+    if( IS_SYM_IMPORTED(sym) && (FmtData.type & MK_ELF) == 0 ) {
         if( FmtData.type & MK_NOVELL ) {
             if( sym->p.import != DUMMY_IMPORT_PTR ) {
                 _LnkFree( sym->p.import );
@@ -701,7 +701,7 @@ void CleanSym( void )
 #ifdef _INT_DEBUG
     DumpHashTable();
 #endif
-    if( !(LinkFlags & INC_LINK_FLAG) ) {
+    if( (LinkFlags & INC_LINK_FLAG) == 0 ) {
         for( sym = HeadSym; sym != NULL; sym = next ) {
             next = sym->link;
             FreeSymbol( sym );
@@ -796,7 +796,7 @@ void SymModEnd( void )
     for( ; sym != NULL; sym = sym->link ) {
         sym->info &= ~SYM_IN_CURRENT;
         sym->info |= SYM_OLDHAT;
-        if( sym->info & SYM_REFERENCED && sym->info & SYM_DEFINED ) {
+        if( (sym->info & SYM_REFERENCED) && (sym->info & SYM_DEFINED) ) {
             sym->info &= ~SYM_REFERENCED;
             sym->info |= SYM_LOCAL_REF;
         }
@@ -809,7 +809,7 @@ void ClearRefInfo( symbol *sym )
 {
     symbol *    save;
 
-    if( !(sym->info & SYM_EXPORTED) ) {
+    if( (sym->info & SYM_EXPORTED) == 0 ) {
         save = *(sym->e.vfdata);
         _LnkFree( sym->e.vfdata );
         sym->e.def = save;
@@ -840,7 +840,7 @@ symbol *DefISymbol( char * name )
     symbol * sym;
 
     sym = RefISymbol( name );
-    if( sym->info & SYM_DEFINED && !(sym->info & SYM_LINK_GEN) ) {
+    if( (sym->info & SYM_DEFINED) && (sym->info & SYM_LINK_GEN) == 0 ) {
         LnkMsg( ERR+MSG_RESERVED_SYM_DEFINED, "s", name );
     }
     sym->info |= SYM_DEFINED | SYM_LINK_GEN;
@@ -1004,7 +1004,7 @@ static symbol *DoSymOp( sym_flags op, char *symname, unsigned length )
         DEBUG(( DBG_OLD, " - handle = %h", sym ));
         return( sym );
     }
-    if( !(op & ST_FIND) ) {
+    if( (op & ST_FIND) == 0 ) {
         sym = AddSym();
         sym->name = AddSymbolStringTable( &PermStrings, symname, length );
         sym->namelen_cmp = searchlen;
@@ -1043,12 +1043,12 @@ symbol *SymOp( sym_flags op, char *symname, unsigned length )
     symbol *    sym;
 
     sym = DoSymOp( op, symname, length );
-    if( !(op & ST_NOALIAS) ) {
+    if( (op & ST_NOALIAS) == 0 ) {
         sym = UnaliasSym( op, sym );
     }
     if( sym != NULL ) {
         if( op & ST_DEFINE ) {
-            if( IS_SYM_ALIAS( sym ) && sym->info & SYM_FREE_ALIAS ) {
+            if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_FREE_ALIAS) ) {
                 _LnkFree( sym->p.alias );
                 sym->info &= ~SYM_FREE_ALIAS;
             }
@@ -1119,7 +1119,7 @@ void ReportUndefined( void )
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         sym->info &= ~SYM_CLEAR_ON_P2;
-        if( !(sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) )  {
+        if( (sym->info & (SYM_DEFINED | SYM_IS_ALTDEF)) == 0 )  {
             if( LinkFlags & UNDEFS_ARE_OK ) {
                 level = WRN;
             } else {
@@ -1170,7 +1170,7 @@ void XReportSymAddr( symbol *sym )
     char                star;
 
     if( sym->info & SYM_REFERENCED ) {
-        if( IS_SYM_IMPORTED(sym) || (FmtData.type & MK_ELF && IsSymElfImported(sym)) ) {
+        if( IS_SYM_IMPORTED(sym) || ((FmtData.type & MK_ELF) && IsSymElfImported(sym)) ) {
             star = 'i';
         } else {
             star = ' ';
@@ -1191,7 +1191,7 @@ void XWriteImports( void )
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         if( IS_SYM_IMPORTED(sym) && sym->p.import != NULL ) {
-            if( !(FmtData.type & MK_NOVELL)
+            if( (FmtData.type & MK_NOVELL) == 0 
                    || sym->p.import != DUMMY_IMPORT_PTR  )
             {
                 if(sym->prefix && (strlen(sym->prefix) > 0))
@@ -1215,7 +1215,7 @@ symbol * AddAltDef( symbol *sym, sym_info sym_type )
 {
     symbol *    altsym;
 
-    if( !(LinkFlags & INC_LINK_FLAG) )
+    if( (LinkFlags & INC_LINK_FLAG) == 0 )
         return sym;
     altsym = AddSym();
     SET_SYM_TYPE( altsym, sym_type );
@@ -1239,7 +1239,7 @@ symbol * HashReplace( symbol *sym )
     if( IS_SYM_COMMUNAL(sym) ) {
         sym->p.seg->isdead = true;
     }
-    if( !(LinkFlags & INC_LINK_FLAG) )
+    if( (LinkFlags & INC_LINK_FLAG) == 0 )
         return sym;
     newsym = AddSym();
     newsym->e.mainsym = sym;
@@ -1287,7 +1287,7 @@ static void CleanAltDefs( symbol *sym )
     symbol *    testring;
     symbol *    altsym;
 
-    if( IS_SYM_ALIAS( sym ) || sym->info & SYM_DEAD || sym->u.altdefs == NULL )
+    if( IS_SYM_ALIAS( sym ) || (sym->info & SYM_DEAD) || sym->u.altdefs == NULL )
         return;
     testring = NULL;
     while( (altsym = RingPop( &sym->u.altdefs)) != NULL ) {
@@ -1296,7 +1296,7 @@ static void CleanAltDefs( symbol *sym )
                 altsym->u.datasym = NULL;
                 RingAppend( &testring, altsym );
             }
-        } else if( !(altsym->info & SYM_HAS_DATA) ) {
+        } else if( (altsym->info & SYM_HAS_DATA) == 0 ) {
             RingLookup( testring, SetNewDataSym, altsym );
         }
     }
@@ -1308,7 +1308,7 @@ static void UndefSymbol( symbol *sym )
     ClearSymUnion( sym );
     sym->addr.seg = UNDEFINED;
     sym->addr.off = 0;
-    if( !(sym->info & SYM_EXPORTED) && sym->e.def != NULL ) {
+    if( (sym->info & SYM_EXPORTED) == 0 && sym->e.def != NULL ) {
         sym->info = SYM_LAZY_REF | SYM_REFERENCED;
     } else {
         sym->info = SYM_REGULAR | SYM_REFERENCED;
@@ -1381,7 +1381,7 @@ void PurgeSymbols( void )
         } else if( sym->info & SYM_IS_ALTDEF ) {
             *list = sym->link;          // gonna get rid of these later
         } else {
-            if( IS_SYM_ALIAS(sym) && sym->info & SYM_WAS_LAZY ) {
+            if( IS_SYM_ALIAS(sym) && (sym->info & SYM_WAS_LAZY) ) {
                 WipeSym( sym );
                 sym->info = SYM_WEAK_REF | SYM_REFERENCED;
             }

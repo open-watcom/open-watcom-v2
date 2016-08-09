@@ -213,12 +213,12 @@ extra_a_flags_qnx = -D_QNX
 
 all: graphi.lib graphi2.lib .symbolic
 
-graphi.lib : graph.gh $(special_objs) $(objs)
+graphi.lib : graph.gh $(special_objs) $(objs) $(__MAKEFILES__)
         %create $^&.lbc
         @for %i in ($(objs)) do @%append $^&.lbc +%i
         $(librarian) $(libflags) @$^&.lbc
 
-graphi2.lib : graph2.gh $(special_objs) $(v2_objs)
+graphi2.lib : graph2.gh $(special_objs) $(v2_objs) $(__MAKEFILES__)
         %create $^&.lbc
         @for %i in ($(v2_objs)) do @%append $^&.lbc +%i
         $(librarian) $(libflags) @$^&.lbc

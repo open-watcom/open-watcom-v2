@@ -45,12 +45,12 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 #-------------------------------------------------------------------------------
 #cc = wcl -c -cc++
 
-$(libname).lib : errcod.gh $(files)
+$(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     @%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     $(librarian) $(lib_flags) $^@ @$(libname).lbc
 
-.c.obj : .autodepend
+.c.obj : .autodepend $(__MAKEFILES__)
 !ifeq verbose 1
     $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
 !else
@@ -58,7 +58,7 @@ $(libname).lib : errcod.gh $(files)
     @$(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
 !endif
 
-.asm.obj : .autodepend
+.asm.obj : .autodepend $(__MAKEFILES__)
 !ifeq verbose 1
     $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
 !else

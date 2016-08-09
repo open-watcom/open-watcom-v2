@@ -1,28 +1,28 @@
 objuitimeroot = &
-        windisp.obj &
-        winscrl.obj &
-        winnew.obj
+    windisp.obj &
+    winscrl.obj &
+    winnew.obj
 
 objuisizeroot = &
-        uiglob.obj &
-        ui8086.obj &
-        winbrdr.obj &
-        winthumb.obj &
-        winover.obj &
-        winshow.obj &
-        winswap.obj &
-        mouse.obj
+    uiglob.obj &
+    ui8086.obj &
+    winbrdr.obj &
+    winthumb.obj &
+    winover.obj &
+    winshow.obj &
+    winswap.obj &
+    mouse.obj
 
 objuisize = &
-        adjwin.obj &
-        hdlmouse.obj &
-        mouseev.obj &
-        winaux.obj &
-        wininit.obj &
-        winsize.obj &
-        wintica.obj &
-        filesel.obj &
-        menu.obj
+    adjwin.obj &
+    hdlmouse.obj &
+    mouseev.obj &
+    winaux.obj &
+    wininit.obj &
+    winsize.obj &
+    wintica.obj &
+    filesel.obj &
+    menu.obj
 
 uiobjs = $(objuisize) $(objuitime)
 uiobjsroot = $(objuisizeroot) $(objuitimeroot)

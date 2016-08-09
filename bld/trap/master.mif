@@ -160,16 +160,16 @@ extra_deps += nversion.tmp
 all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
         @%make $(target)
 
-$(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+$(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
         $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
 
-$(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+$(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
         $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
 
-./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h
+./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
         $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
-nversion.tmp: ./mknver.exe
+nversion.tmp: ./mknver.exe $(__MAKEFILES__)
         $[@ $^@
 
 !ifndef extra_dobjs
@@ -193,9 +193,11 @@ objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_objs)
 objs = $($(which)_common_objs) mxutil.obj $(remote_objs) $(extra_dobjs)
 !endif
 
-$(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
-!ifndef __WATCOM__
-        $(cl) $(clflags) $(objs) $(extra_libs) $(dbg_libs) $(ldflags)
+libs = $(extra_libs) $(dbg_libs)
+
+$(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
+        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         %create $^&.lnk
         @%append $^&.lnk $(mode_lflags)
@@ -206,7 +208,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
         @%append $^&.lnk op dosseg
 !endif
         @for %i in ($(objs)) do @%append $^&.lnk file %i
-        @for %i in ($(extra_libs) $(dbg_libs)) do @%append $^&.lnk library %i
+        @for %i in ($(libs)) do @%append $^&.lnk library %i
         @%append $^&.lnk $(extra_linker)
         $(linker) @$^&.lnk
 !endif
@@ -217,7 +219,7 @@ $(target) : $(extra_link_res_$(host_os)) $(objs) $(extra_libs) $(dbg_libs) $(res
         $(extra_cmds)
 !endif
 
-dbgstr.lib : dbgstr.obj
+dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
         $(librarian) $(libflags) +$[@
 
 inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
@@ -236,8 +238,8 @@ rc_inc_dirs = -I"$(trap_dir)/common"
 
 # implicit rules
 #################
-.rc.res: .AUTODEPEND
+.rc.res: $(__MAKEFILES__) .AUTODEPEND
         $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
-usage.u : ../$(srv).sp
+usage.u : ../$(srv).sp $(__MAKEFILES__)
         *wsplice -u $< $@

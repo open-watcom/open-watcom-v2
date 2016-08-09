@@ -30,13 +30,17 @@
 ****************************************************************************/
 
 
-extern void CodeLabel( label_handle, unsigned );
-extern void CodeLineNumber( unsigned_32, bool );
-extern void CodeHandle( oc_class, obj_length, label_handle );
+extern void         CodeLabel( label_handle, unsigned );
+#if _TARGET & _TARG_RISC
+extern void         CodeLabelLinenum( label_handle label, unsigned align, cg_linenum line );
+#endif
+extern void         CodeLineNumber( unsigned_32, bool );
+extern void         CodeHandle( oc_class, obj_length, label_handle );
+extern obj_length   OptInsSize( oc_class class, oc_dest_attr attr );
 
-extern void GenCondJump( instruction *ins );
-extern void GenJumpLabel( label_handle );
-extern void GenKillLabel( label_handle );
+extern void         GenCondJump( instruction *ins );
+extern void         GenJumpLabel( label_handle );
+extern void         GenKillLabel( label_handle );
 
-extern byte CondCode( instruction * );
-extern void GenSetCC( instruction * );
+extern byte         CondCode( instruction * );
+extern void         GenSetCC( instruction * );

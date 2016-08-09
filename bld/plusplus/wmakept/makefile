@@ -1,7 +1,7 @@
 # wmakept -- load DLL's and transfer to WMAKE
 
 .before
-    set include=$(%include);$(watcom_dir)\os220_h
+    set INCLUDE=$(%INCLUDE);$(watcom_dir)\os220_h
 
 
 .extensions:

@@ -55,9 +55,9 @@
 
 
 #if defined(__WARP__)
-#define BLKSIZE_ALIGN_MASK      0xFFFF  // 64kB
+#define BLKSIZE_ALIGN           0x10000 // 64kB
 #else
-#define BLKSIZE_ALIGN_MASK      0x0FFF  // 4kB
+#define BLKSIZE_ALIGN           0x1000  // 4kB
 #endif
 
 static frlptr __LinkUpNewMHeap( mheapptr );
@@ -104,26 +104,21 @@ void __FreeDPMIBlocks( void )
 {
     mheapptr    mhp;
     dpmi_hdr    *dpmi;
+    mheapptr    mhp_next;
 
-    mhp = __nheapbeg;
-    while( mhp != NULL ) {
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp_next ) {
+        mhp_next = mhp->next;
         // see if the last free entry has the full size of
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.
         if( (mhp->freehead.prev)->len + sizeof( miniheapblkp ) == mhp->len ) {
-            mheapptr    pnext;
-
             dpmi = ((dpmi_hdr *)mhp) - 1;
-            pnext = mhp->next;
             __unlink( mhp );
-            mhp = pnext;
             if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
                 TinyDPMIFree( dpmi->dpmi_handle );
             } else {                            // else DOS block below 1MB
                 TinyFreeBlock( dpmi->dos_seg_value );
             }
-        } else {
-            mhp = mhp->next;
         }
     }
 }
@@ -140,17 +135,14 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
         return( 0 );
     __FreeDPMIBlocks();
     prev_dpmi = NULL;
-    for( mhp = __nheapbeg; mhp; mhp = mhp->next ) {
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
         if( ((PTR)mhp + sizeof( miniheapblkp ) == (PTR)p1) && (mhp->numalloc == 1) ) {
             // The mini-heap contains only this memblk
             __unlink( mhp );
             dpmi = ((dpmi_hdr *)mhp) - 1;
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-            size = mhp->len + sizeof( dpmi_hdr ) + TAG_SIZE;
-            size += ( req_size - (p1->len - TAG_SIZE) );
-            size += BLKSIZE_ALIGN_MASK;
-            size &= ~BLKSIZE_ALIGN_MASK;
+            size = __ROUND_UP_SIZE( mhp->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - p1->len + TAG_SIZE, BLKSIZE_ALIGN );
             prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -164,18 +156,18 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             mhp->numalloc = 1;
 
             // round up to even number
-            req_size = (req_size + 1) & ~1;
+            req_size = __ROUND_UP_SIZE( req_size, 2 );
             size = flp->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
-                flp->len = req_size | 1;// adjust size and set allocated bit
+                SET_MEMBLK_SIZE_USED( flp, req_size );// adjust size and set allocated bit
                 // Make up a free block at the end
                 flp2 = (frlptr)((PTR)flp + req_size);
-                flp2->len = size | 1;
+                SET_MEMBLK_SIZE_USED( flp2, size );
                 ++mhp->numalloc;
                 mhp->largest_blk = 0;
                 _nfree( (PTR)flp2 + TAG_SIZE );
             } else {
-                flp->len |= 1; // set allocated bit
+                SET_MEMBLK_USED( flp ); // set allocated bit
             }
             return( flp );
         }
@@ -277,9 +269,9 @@ static void *RationalAlloc( size_t size )
         /* cannot allocate more than 64k from DOS real memory */
         return( NULL );
     }
-    save_DOS_block = TinyAllocBlock(( __minreal >> 4 ) | 1 );
+    save_DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( __minreal ) | 1 );
     if( TINY_OK( save_DOS_block ) ) {
-        DOS_block = TinyAllocBlock( size >> 4 );
+        DOS_block = TinyAllocBlock( __ROUND_DOWN_SIZE_TO_PARA( size ) );
         TinyFreeBlock( save_DOS_block );
         if( TINY_OK( DOS_block ) ) {
             dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
@@ -307,7 +299,7 @@ static int __AdjustAmount( unsigned *amount )
 #endif
 
     amt = old_amount;
-    amt = ( amt + TAG_SIZE + ROUND_SIZE) & ~ROUND_SIZE;
+    amt = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
     if( amt < old_amount ) {
         return( 0 );
     }
@@ -351,16 +343,15 @@ static int __AdjustAmount( unsigned *amount )
           nb. pathological case: where _amblksiz == 0xffff, we don't
                                  want the usual round up to even
         */
-        amt = _amblksiz & ~1u;
+        amt = __ROUND_DOWN_SIZE( _amblksiz, 2 );
     }
 #if defined(__WINDOWS_386__) || defined(__WARP__) || defined(__NT__) \
   || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
     /* make sure amount is a multiple of 4k/64k */
     *amount = amt;
-    amt += BLKSIZE_ALIGN_MASK;
+    amt = __ROUND_UP_SIZE( amt, BLKSIZE_ALIGN );
     if( amt < *amount )
         return( 0 );
-    amt &= ~BLKSIZE_ALIGN_MASK;
 #endif
     *amount = amt;
     return( *amount != 0 );
@@ -475,7 +466,7 @@ static int __CreateNewNHeap( unsigned amount )
     flp = __LinkUpNewMHeap( p1 );
     amount = flp->len;
     /* build a block for _nfree() */
-    flp->len = amount | 1;
+    SET_MEMBLK_SIZE_USED( flp, amount );
     ++p1->numalloc;
     p1->largest_blk = 0;
     _nfree( (PTR)flp + TAG_SIZE );
@@ -568,7 +559,7 @@ int __ExpandDGROUP( unsigned amount )
         amount = flp->len;
     }
     /* build a block for _nfree() */
-    flp->len = amount | 1;
+    SET_MEMBLK_SIZE_USED( flp, amount );
     ++p1->numalloc;                         /* 28-dec-90 */
     p1->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (PTR)flp + TAG_SIZE );

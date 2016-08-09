@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,11 +35,11 @@
 #include "cgmem.h"
 #include "data.h"
 #include "namelist.h"
+#include "nullprop.h"
+#include "insdead.h"
+#include "optab.h"
 
 
-extern  void            DoNothing( instruction * );
-extern  bool            VolatileIns( instruction * );
-extern  void            ClearBlockBits( block_class );
 extern  bool            CondOverlaps( name *result, name *ccop );
 
 typedef enum {          /* in order of increasing amount of information */
@@ -77,16 +78,16 @@ static  bool    UselessCompare( instruction *ins, cc_control *cc, name *zero )
         if( cc->op_type != ins->type_class ) return( false );
     }
 #endif
-    if( ins->operands[ 0 ] == cc->left_op
-     && ins->operands[ 1 ] == cc->right_op ) {
+    if( ins->operands[0] == cc->left_op
+     && ins->operands[1] == cc->right_op ) {
         if( cc->state == CONDITIONS_SET ) return( true );
         if( opcode == OP_CMP_EQUAL ) return( true );
         if( opcode == OP_CMP_NOT_EQUAL ) return( true );
         if( cc->state == EQUALITY_CONDITIONS_SET ) return( false );
         if( ins->type_class == I1 ) return( true );
         if( ins->type_class == I2 ) return( true );
-    } else if( ins->operands[ 0 ] == cc->result_op
-            && ins->operands[ 1 ] == zero ) {
+    } else if( ins->operands[0] == cc->result_op
+            && ins->operands[1] == zero ) {
 #if _TARGET & _TARG_370
         if( cc->state == CONDITIONS_SET ) return( true );
 #endif
@@ -106,9 +107,9 @@ static void DoMarkUsedCC( block *blk )
     if( ins != NULL ) {
         ins->ins_flags |= INS_CC_USED;
     } else {
-        blk->class |= BLOCK_VISITED;
+        _MarkBlkVisited( blk );
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( !(edge->source->class & BLOCK_VISITED) ) {
+            if( !_IsBlkVisited( edge->source ) ) {
                 DoMarkUsedCC( edge->source );
             }
         }
@@ -125,7 +126,7 @@ static void MarkUsedCC( block *blk )
 */
 {
     DoMarkUsedCC( blk );
-    ClearBlockBits( BLOCK_VISITED );
+    _MarkBlkAllUnVisited();
 }
 
 static  bool    Traverse( block *blk, name *zero )
@@ -183,8 +184,8 @@ static  bool    Traverse( block *blk, name *zero )
             cc->result_op = ins->result;
             cc->op_type = ins->type_class;
             if( ins->head.opcode == OP_SUB ) {
-                cc->left_op = ins->operands[ 0 ];
-                cc->right_op = ins->operands[ 1 ];
+                cc->left_op = ins->operands[0];
+                cc->right_op = ins->operands[1];
             } else {
                 cc->left_op = NULL;
                 cc->right_op = NULL;
@@ -200,8 +201,8 @@ static  bool    Traverse( block *blk, name *zero )
                     cc->state = CONDITIONS_SET;
                     cc->result_op = NULL;
                     cc->op_type = ins->type_class;
-                    cc->left_op = ins->operands[ 0 ];
-                    cc->right_op = ins->operands[ 1 ];
+                    cc->left_op = ins->operands[0];
+                    cc->right_op = ins->operands[1];
                     cc->ins = ins;
                 }
             } else {
@@ -219,8 +220,8 @@ static  bool    Traverse( block *blk, name *zero )
                 }
                 cc->op_type = ins->type_class;
                 if( ins->head.opcode == OP_SUB ) {
-                    cc->left_op = ins->operands[ 0 ];
-                    cc->right_op = ins->operands[ 1 ];
+                    cc->left_op = ins->operands[0];
+                    cc->right_op = ins->operands[1];
                 } else {
                     cc->left_op = NULL;
                     cc->right_op = NULL;
@@ -362,7 +363,7 @@ extern  void    Conditions( void )
         cc->ins = NULL;
         cc->op_type = XX;
         blk->cc = cc;
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
     FlowConditions();
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

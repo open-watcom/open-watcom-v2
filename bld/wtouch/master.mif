@@ -26,8 +26,8 @@ version_res_exe_nt_x64 = exever.res
 
 !include verrc.mif
 
-$(proj_name).exe : msg.gh $(objs) $(libs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+$(proj_name).exe : msg.gh $(objs) $(libs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
         $(linker) name $^@ $(lflags) file { $(objs) } lib {$(libs)}
@@ -35,14 +35,14 @@ $(proj_name).exe : msg.gh $(objs) $(libs) $(proj_name).res $(version_res_exe_$(h
         @%make bind_version_res_exe
         $(wstrip) -q -a -r $(proj_name).exe . $(proj_name).res
 
-$(proj_name).res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh
+$(proj_name).res : $(proj_name).rc $(proj_name).msg usage.gh usagej.gh msg.gh $(__MAKEFILES__)
         $(rc_aui) $[@ -fo=$^@
 
-usage.gh : usage.sp
-        *wsplice -kIS_RC -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $< $@
+usage.gh : usage.sp $(__MAKEFILES__)
+        *wsplice -kIS_RC -kENGLISH -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
-usagej.gh : usage.sp
-        *wsplice -kIS_RC -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $< $@
+usagej.gh : usage.sp $(__MAKEFILES__)
+        *wsplice -kIS_RC -kJAPANESE -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
-msg.gh : $(proj_name).msg
+msg.gh : $(proj_name).msg $(__MAKEFILES__)
         *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

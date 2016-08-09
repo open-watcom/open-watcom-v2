@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,28 +38,17 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "rgtbl.h"
+#include "split.h"
+#include "insutil.h"
+#include "optab.h"
+#include "inssegs.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  name            *AllocRegName(hw_reg_set);
-extern  name            *HighPart(name*,type_class_def);
-extern  name            *LowPart(name*,type_class_def);
 extern  void            CheckCC(instruction*,instruction*);
-extern  void            DoNothing(instruction*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DupSegRes(instruction*,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
-extern  void            MoveSegOp(instruction*,instruction*,int);
-extern  void            MoveSegRes(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            ReplIns(instruction*,instruction*);
 extern  void            RevCond(instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
-extern  hw_reg_set      HighReg(hw_reg_set);
-
-extern    hw_reg_set    *RegSets[];
-extern    op_regs       RegList[];
-
 
 type_class_def  HalfClass[] = {
     0,                  /* U1 */
@@ -118,6 +108,7 @@ type_class_def  Unsigned[] = {
     FL,                 /* FL*/
     XX                  /* XX*/
 };
+
 type_class_def  Signed[] = {
 /**************************/
 
@@ -141,9 +132,6 @@ type_class_def  Signed[] = {
     FL,                 /* FL*/
     XX                  /* XX*/
 };
-
-extern instruction *(*ReduceTab[])( instruction * );
-
 
 static  reg_set_index   ResultPossible( instruction *ins )
 /********************************************************/
@@ -209,7 +197,7 @@ extern  instruction     *Reduce( instruction *ins )
 /*************************************************/
 {
     ins->head.state = INS_NEEDS_WORK;
-    return( ReduceTab[ins->u.gen_table->generate-FIRST_REDUCT]( ins ) );
+    return( ReduceTab[ins->u.gen_table->generate - FIRST_REDUCT]( ins ) );
 }
 
 
@@ -442,7 +430,7 @@ extern instruction      *rCHANGESHIFT( instruction *ins )
 {
     signed_32   shift_count;
 
-    shift_count = ins->operands[1]->c.int_value;
+    shift_count = ins->operands[1]->c.lo.int_value;
     assert( shift_count >= 0 );
     ins->operands[1] = AllocS32Const( shift_count & ( ( WORD_SIZE * 8 ) - 1 ) );
     return( ins );
@@ -464,7 +452,7 @@ extern instruction      *rFIXSHIFT( instruction *ins )
      */
 #ifndef NDEBUG
     assert( ins->operands[1]->n.class == N_CONSTANT );
-    shift_count = ins->operands[1]->c.int_value;
+    shift_count = ins->operands[1]->c.lo.int_value;
     assert( shift_count >= REG_SIZE * 8 );
 #endif
     if( ins->head.opcode == OP_RSHIFT && Signed[ins->type_class] == ins->type_class ) {
@@ -621,7 +609,7 @@ extern instruction      *rDOUBLEHALF( instruction *ins )
     name                *name1;
 
     name1 = ins->operands[1];
-    name1 = AllocIntConst( name1->c.int_value>>1 );
+    name1 = AllocIntConst( name1->c.lo.int_value >> 1 );
     ins->operands[1] = name1;
     new_ins = MakeBinary( ins->head.opcode, ins->operands[0], name1,
                             ins->result, ins->type_class );
@@ -803,7 +791,7 @@ extern instruction      *rNEGADD( instruction *ins )
 static  void    NegOp2( instruction *ins )
 /****************************************/
 {
-    ins->operands[1] = AllocConst( CFCnvI32F( -ins->operands[1]->c.int_value ) );
+    ins->operands[1] = AllocConst( CFCnvI32F( -ins->operands[1]->c.lo.int_value ) );
 }
 
 
@@ -840,7 +828,7 @@ extern instruction      *rMAKESUB( instruction *ins )
 }
 
 
-extern instruction      *rCMPtrue( instruction *ins )
+extern instruction      *rCMPTRUE( instruction *ins )
 /***************************************************/
 {
     DoNothing( ins );
@@ -849,7 +837,7 @@ extern instruction      *rCMPtrue( instruction *ins )
 }
 
 
-extern instruction      *rCMPfalse( instruction *ins )
+extern instruction      *rCMPFALSE( instruction *ins )
 /****************************************************/
 {
     DoNothing( ins );

@@ -50,10 +50,10 @@ char *my_strupr( char *string )
 /*****************************/
 {
     char    *s;
-    
+
     if( string != NULL ) {
         for( s = string; *s; ++s ) {
-            *s = toupper( *s );
+            *s = (char)toupper( *s );
         }
     }
     return( string );
@@ -66,7 +66,7 @@ char *my_strlwr( char *string )
 
     if( string != NULL ) {
         for( s = string; *s; ++s ) {
-            *s = tolower( *s );
+            *s = (char)tolower( *s );
         }
     }
     return( string );
@@ -76,7 +76,7 @@ static char *get_line( char *buf, FILE *file )
 /********************************************/
 {
     char    *ret;
-    int     i;
+    size_t  i;
 
     for( ; (ret = fgets( buf, MAX_LINE_LEN, file )) != NULL; ) {
 
@@ -94,8 +94,8 @@ static char *get_line( char *buf, FILE *file )
     return( ret );
 }
 
-int empty_data( char *ret ) 
-/*************************/
+static int empty_data( char *ret ) 
+/********************************/
 {
     char                *end;
 

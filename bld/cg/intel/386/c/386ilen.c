@@ -31,8 +31,9 @@
 
 #include "cgstd.h"
 #include "cg.h"
-#include "ocentry.h"
+#include "coderep.h"
 #include "model.h"
+#include "encode.h"
 
 
 static byte NopList1[] = {
@@ -59,7 +60,7 @@ static byte NopList2[] = {
 
 byte *NopLists[] = { NopList1, NopList2 };
 
-static  byte    InsSize[ 6 ][ OC_DEST_FAR+1 ] = {
+static  byte    InsSize[6][OC_DEST_FAR + 1] = {
 /*      OC_DEST_SHORT   OC_DEST_NEAR    OC_DEST_CHEAP   OC_DEST_FAR */
 {       0,              6,              7,              8 },    /* CALL,16 */
 {       0,              5,              6,              7 },    /* CALL,32 */
@@ -70,8 +71,8 @@ static  byte    InsSize[ 6 ][ OC_DEST_FAR+1 ] = {
 };
 
 
-extern  obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
-/******************************************************************
+obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
+/**********************************************************
     return the object code size of a given call/branch with a
     given attribute (short/near/far)
 */

@@ -865,6 +865,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
             break;
         case RS_OPEN_ERROR:
             RcError( ERR_CANT_OPEN_FILE, errres->name, strerror( errno ) );
+            break;
         case RS_READ_INCMPLT:
             RcError( ERR_UNEXPECTED_EOF, errres->name );
             break;

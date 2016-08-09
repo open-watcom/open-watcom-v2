@@ -148,7 +148,7 @@ int main( int argc, char *argv[] )
     return( 0 );
 } /* main */
 
-int Compare( const void *_p1, const void *_p2 )
+static int Compare( const void *_p1, const void *_p2 )
 {
     const struct dirent **p1 = (const struct dirent **)_p1;
     const struct dirent **p2 = (const struct dirent **)_p2;

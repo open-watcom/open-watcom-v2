@@ -123,14 +123,14 @@ extern  cg_init_info    BEInit( cg_switches cg_data, cg_target_switches tg_data,
     InProc = NULL;
     FilesOpen = 0;
     for( i = 0; i < MAX_SEG; ++i ) {
-        Locs[ i ] = 0;
-        Files[ i ].hdl = 0;
-        Files[ i ].name = NULL;
-        Files[ i ].exists = false;
-        SegOk[ i ] = false;
+        Locs[i] = 0;
+        Files[i].hdl = 0;
+        Files[i].name = NULL;
+        Files[i].exists = false;
+        SegOk[i] = false;
     }
     CurSeg = 0;
-    Out = Files[ CurSeg ].hdl;
+    Out = Files[CurSeg].hdl;
     CodeSeg = -1;
     TargTypeInit();
     Action( "BEInit%n" );
@@ -163,8 +163,8 @@ extern  void    BECloseFiles()
         FShut( TypDebug );
     }
     for( i = 0; i < MAX_SEG; ++i ) {
-        if( Files[ i ].hdl != 0 ) {
-            FShut( Files[ i ].hdl );
+        if( Files[i].hdl != 0 ) {
+            FShut( Files[i].hdl );
         }
     }
 }
@@ -386,12 +386,12 @@ extern  void    BEFlushSeg( segment_id seg ) {
     if( seg == CodeSeg ) {
         CodeSeg = -1;
     }
-    if( Files[ seg ].hdl != 0 ) {
-        FShut( Files[ seg ].hdl );
+    if( Files[seg].hdl != 0 ) {
+        FShut( Files[seg].hdl );
     }
-    Files[ seg ].hdl = 0;
-    Files[ seg ].exists = false;
-    SegOk[ seg ] = false;
+    Files[seg].hdl = 0;
+    Files[seg].exists = false;
+    SegOk[seg] = false;
     StaticList = NULL;
 }
 
@@ -411,16 +411,16 @@ extern  void    BEDefSeg( segment_id id, seg_attr attr, const char *str, uint al
         CodeSeg = id;
         CurSeg = id;
     }
-    if( SegOk[ id ] ) {
-        if( Files[ id ].hdl != 0 ) {
-            FShut( Files[ id ].hdl );
+    if( SegOk[id] ) {
+        if( Files[id].hdl != 0 ) {
+            FShut( Files[id].hdl );
         }
         CGError( "BEDefSeg called twice (id %d) with no intervening BEFlushSeg%n", id );
     }
-    Files[ id ].name = new->str;
-    Files[ id ].hdl = 0;
-    SegOk[ id ] = true;
-    Locs[ id ] = 0;
+    Files[id].name = new->str;
+    Files[id].hdl = 0;
+    SegOk[id] = true;
+    Locs[id] = 0;
 }
 extern  bool    BEMoreMem( void ) {
 //=================================

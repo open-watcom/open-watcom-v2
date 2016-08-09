@@ -311,7 +311,7 @@ static  void    DefineEntries( void ) {
             if( ep->id->u.ns.u1.s.typ == FT_CHAR ) {
                 val = CGUnary( O_POINTS, val, TY_POINTER );
                 CGAddParm( call, val, TY_POINTER );
-                if( !(Options & OPT_DESCRIPTOR) ) {
+                if( (Options & OPT_DESCRIPTOR) == 0 ) {
                     val = CGFEName( FindArgShadow( ReturnValue ), TY_INTEGER );
                     val = CGUnary( O_POINTS, val, TY_INTEGER );
                     CGAddParm( call, val, TY_INTEGER );
@@ -548,7 +548,7 @@ void    FCCall( void ) {
             CGAddParm( call, CGInteger( num_args, TY_INTEGER ), TY_INTEGER );
         }
     } else if( (sp->u.ns.flags & SY_SUBPROG_TYPE) == SY_FUNCTION ) {
-        if( !(Options & OPT_DESCRIPTOR) && (sp->u.ns.u1.s.typ == FT_CHAR) ) {
+        if( (Options & OPT_DESCRIPTOR) == 0 && (sp->u.ns.u1.s.typ == FT_CHAR) ) {
             scb = GetPtr();
             arg = SCBPointer( CGFEName( scb, TY_CHAR ) );
 #if _CPU == 386
@@ -815,7 +815,7 @@ void    FCDArgInit( void ) {
     cg_name     dst;
 
     sym = GetPtr();
-    if( !(Options & OPT_DESCRIPTOR) ) {
+    if( (Options & OPT_DESCRIPTOR) == 0 ) {
         if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_FUNCTION ) {
             if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 arg = CGUnary( O_POINTS, CGFEName( ReturnValue, TY_POINTER ), TY_POINTER );
@@ -845,7 +845,7 @@ void    FCDArgInit( void ) {
         // character variable
         arg = CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ), TY_POINTER );
         dst = SCBPtrAddr( VarAltSCB( sym ) );
-        if( !(sym->u.ns.flags & SY_VALUE_PARM) && (Options & OPT_DESCRIPTOR) ) {
+        if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 && (Options & OPT_DESCRIPTOR) ) {
             arg = SCBPointer( arg );
         }
         CGDone( CGAssign( dst, arg, TY_POINTER ) );

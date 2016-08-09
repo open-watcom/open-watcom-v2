@@ -11,7 +11,7 @@ rcopt += -i=$(gui_dir)\$(type);$(gui_dir)\win
 !endif
 
 .before
-    @set include=$(sysinclude);$(gui_dir)\h;$(gui_dir)\$(type)\h;$(%include);$(lang_root)\h
+    @set INCLUDE=$(sysinclude);$(gui_dir)\h;$(gui_dir)\$(type)\h;$(%INCLUDE);$(lang_root)\h
 
 # database team uses fpi87 as default in 6.0
 !ifdef wsqlver
@@ -82,11 +82,11 @@ $(LNK): $(__makefiles__)
         @%append $(LNK) name sample
         @%append $(LNK) module clib
         @%append $(LNK) format novell 'sample nlm'
-        @%append $(LNK) libpath %WATCOM%\lib386
-        @%append $(LNK) libpath %WATCOM%\lib386\netware
-        @%append $(LNK) import @%WATCOM%\novi\clib.imp
+        @%append $(LNK) libpath $(%WATCOM)\lib386
+        @%append $(LNK) libpath $(%WATCOM)\lib386\netware
+        @%append $(LNK) import @$(%WATCOM)\novi\clib.imp
         @%append $(LNK) import @$(ui_dir)\$(os)\uinlm.imp
-        set lib=$(watcomlib);$(%lib)
+        set LIB=$(watcomlib);$(%LIB)
 
 !else
 
@@ -138,7 +138,7 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
-        $(wbind) $* -s $(%watcom)\binw\win386.ext -R -k $(rcopt) $(sysdep)
+        $(wbind) $* -s $(%WATCOM)\binw\win386.ext -R -k $(rcopt) $(sysdep)
 !else ifeq os pm
         $(lang_root)\binp\rc -p -x $(rcname).res $(name).exe
 !else
@@ -182,21 +182,21 @@ samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
 
 $(rcname).res : ../$(rcname).rc ../$(rcname).dlg
 !ifeq os pm
-        @set oinc=$(%include)
-        #set include=$(watcom_dir)\os220_h;$(%include)
-        set include=$(watcom_os220_h);$(%include)
+        @set OINC=$(%INCLUDE)
+        #set INCLUDE=$(watcom_dir)\os220_h;$(%INCLUDE)
+        set INCLUDE=$(watcom_os220_h);$(%INCLUDE)
         copy $(commonui_dir)\closebmp.bmp
         wcc -p -i..;..\h;$(gui_dir)\$(type) ..\$(rcname).rc -fo=tmp.rc
         @%write $(rcname).rc $#include <os2.h>
         copy $(rcname).rc+tmp.rc
         del tmp.rc
-        set opath=$(%path)
-        set path=$(lang_root)\binp
+        set OPATH=$(%PATH)
+        set PATH=$(lang_root)\binp
         #@$(lang_root)\binp\rc -r $(rcname).rc
         rc -r $(rcname).rc
         del $(rcname).rc
-        set path=$(%opath)
-        @set include=$(%oinc)
+        set PATH=$(%OPATH)
+        @set INCLUDE=$(%OINC)
         del closebmp.bmp
 !else
         $(rc) $(rcopt) -r $[@ -fo=$^@

@@ -26,7 +26,7 @@ compile = $(comp386) $[@ -ox-4-d1-w4-zq-i"$(watcom_h)"
 .c.obj :
         $(compile)
 
-command.exe : $(objs) wlink.res
+command.exe : $(objs) wlink.res $(__MAKEFILES__)
         @%create tmp.lnk
         @for %i in ($(objs)) do @%append tmp.lnk file %i
         $(linker) name $^&.exp debug all sys pharlap option undefsok,map libpath $(wres_dir)/lib lib wresf @tmp.lnk
@@ -49,4 +49,5 @@ msg.obj : msg.c ../h/msg.h ../h/wlnkmsg.h
 demangle.obj : $(lib_misc_dir)/c/demangle.c
         $(compile) -i="$(lib_misc_dir)/h"
 
+!include tools.mif
 !include ../master.mif

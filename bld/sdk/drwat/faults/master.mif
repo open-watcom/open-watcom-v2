@@ -17,17 +17,5 @@ targets += msg.exe
 
 all: $(targets)  .SYMBOLIC
 
-div0.exe : div0.obj
-        $(linker) name $^@ $(lflags) file { $< }
-
-gp.exe : gp.obj
-        $(linker) name $^@ $(lflags) file { $< }
-
-invins.exe : invins.obj
-        $(linker) name $^@ $(lflags) file { $< }
-
-msg.exe : msg.obj
-        $(linker) name $^@ $(lflags) file { $< }
-
-stack.exe : stack.obj
-        $(linker) name $^@ $(lflags) file { $< }
+.obj.exe : $(__MAKEFILES__)
+        $(linker) name $^@ $(lflags) file { $[@ }

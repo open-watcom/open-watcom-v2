@@ -75,7 +75,7 @@ static void addCharToString( string **p, char ch )
 
 }
 
-string *newString( void )
+static string *newString( void )
 {
     string      *tmp;
 
@@ -130,7 +130,7 @@ static void tailStdin( void )
 /*
  * tailFile - display the tail of a file
  */
-void tailFile( char *fname )
+static void tailFile( char *fname )
 {
     long line;
     char ch;

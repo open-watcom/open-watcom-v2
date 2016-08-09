@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,13 +36,10 @@
 #include "regset.h"
 #include "freelist.h"
 #include "zoiks.h"
+#include "rgtbl.h"
 
-extern  reg_set_index   RegIntersect(reg_set_index,reg_set_index);
-extern  hw_reg_set      HighOffsetReg(hw_reg_set);
-extern  hw_reg_set      LowOffsetReg(hw_reg_set);
+
 extern  reg_set_index   GetPossibleForTemp(conflict_node *, name *);
-
-extern  hw_reg_set      *RegSets[];
 
 static  pointer         *RegFrl;
 static  pointer         *TreeFrl;

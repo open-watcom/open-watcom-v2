@@ -193,7 +193,7 @@ void    FCCharNMove( void ) {
     dst = XPop();
     CloneCGName( dst, &dst, &dst2 );
 
-    if( OZOpts & OZOPT_O_SPACE || !equal ) {
+    if( (OZOpts & OZOPT_O_SPACE) || !equal ) {
         CGAddParm( call, CGInteger( src_len, TY_INTEGER ), TY_INTEGER );
     } else {
         // Special but common case, so we optimize it.
@@ -280,7 +280,7 @@ void    FCSubString( void ) {
             XPush( last );
             last = XPopValue( GetType2( typ_info ) );
         }
-        if( !( Options & OPT_BOUNDS ) ) {
+        if( (Options & OPT_BOUNDS) == 0 ) {
             CloneCGName( first_1, &first_1, &first_2 );
             len = CGBinary( O_MINUS, last, first_2, TY_INTEGER );
             len = CGBinary( O_PLUS, len, CGInteger( 1, TY_INTEGER ), TY_INTEGER );

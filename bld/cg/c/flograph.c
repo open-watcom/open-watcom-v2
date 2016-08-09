@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,9 +37,10 @@
 #include "zoiks.h"
 #include "stack.h"
 #include "data.h"
+#include "makeblk.h"
+#include "insutil.h"
 
-extern  instruction_id  Renumber( void );
-extern  block           *NewBlock(label_handle,bool);
+
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
 static  void            NewInterval( block *blk, interval_depth level );
@@ -52,7 +54,7 @@ static  void    Irreducable( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~(ITERATIONS_KNOWN+LOOP_HEADER);
+        _MarkBlkAttrNot( blk, BLK_ITERATIONS_KNOWN | BLK_LOOP_HEADER );
         blk->loop_head = NULL;
         blk->depth = 1;
     }
@@ -76,7 +78,7 @@ static  void    NoBlocksToSelf( void )
             if( edge->source == blk ) {
                 new_blk = NewBlock( AskForNewLabel(), true );
                 /* set up new block to look like it was generated after blk*/
-                new_blk->class = JUMP;
+                _SetBlkAttr( new_blk, BLK_JUMP );
                 new_blk->gen_id = blk->gen_id;
                 new_blk->ins.hd.line_num = blk->ins.hd.line_num;
                 new_blk->next_block = blk->next_block;
@@ -93,7 +95,7 @@ static  void    NoBlocksToSelf( void )
                 edge->destination.u.blk = new_blk;
                 edge->flags &= ~DEST_LABEL_DIES;
                 /* set new block to jump from new_blk to blk*/
-                new_edge = &new_blk->edge[ 0 ];
+                new_edge = &new_blk->edge[0];
                 new_edge->flags |= DEST_IS_BLOCK;
                 new_edge->destination.u.blk = blk;
                 new_edge->source = new_blk;
@@ -101,7 +103,8 @@ static  void    NoBlocksToSelf( void )
                 owner = &blk->input_edges;
                 for( ;; ) {
                     curr = *owner;
-                    if( curr == edge ) break;
+                    if( curr == edge )
+                        break;
                     owner = &(*owner)->next_source;
                 }
                 *owner = new_edge;
@@ -127,7 +130,7 @@ static  void    ReturnsToBottom( void )
     }
     for( curr = last->prev_block; curr != NULL; curr = prev ) {
         prev = curr->prev_block;
-        if( curr->class & RETURN ) {
+        if( _IsBlkAttr( curr, BLK_RETURN ) ) {
             if( prev != NULL ) {
                 prev->next_block = curr->next_block;
             }
@@ -146,10 +149,11 @@ static  void *MarkVisited( block *blk )
 {
     block_num   i;
 
-    blk->class |= BLOCK_VISITED;
+    _MarkBlkVisited( blk );
     for( i = 0; i < blk->targets; ++i ) {
-        if( blk->edge[ i ].destination.u.blk->class & BLOCK_VISITED ) continue;
-        SafeRecurseCG( (func_sr)MarkVisited, blk->edge[ i ].destination.u.blk );
+        if( _IsBlkVisited( blk->edge[i].destination.u.blk ) )
+            continue;
+        SafeRecurseCG( (func_sr)MarkVisited, blk->edge[i].destination.u.blk );
     }
     blk->prev_block = BlockList;
     BlockList = blk;
@@ -166,12 +170,12 @@ static  bool    DepthFirstSearch( void )
     MarkVisited( HeadBlock );
     reducible = true;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & BLOCK_VISITED ) == 0 ) {
+        if( !_IsBlkVisited( blk ) ) {
             blk->prev_block = BlockList;
             BlockList = blk;
             reducible = false;
         }
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
     }
     return( reducible );
 }
@@ -286,7 +290,9 @@ static  bool    FindIntervals( void )
                         }
                     }
                     edge = edge->next_source;
-                    if( edge == NULL ) break;
+                    if( edge == NULL ) {
+                        break;
+                    }
                 }
                 if( add == false ) {
                     curr->parent = prev_int;
@@ -302,7 +308,9 @@ static  bool    FindIntervals( void )
             }
         }
         ++ level;
-        if( num == prev_num || num == 1 ) break;
+        if( num == prev_num || num == 1 ) {
+            break;
+        }
     }
     return( num == 1 );
 }
@@ -321,12 +329,15 @@ static  void    ReorderBlocks( void )
     curr = HeadBlock->u.interval;
     for( ;; ) {
         for( ;; ) {
-            if( curr->next_sub_int != NULL ) break;
+            if( curr->next_sub_int != NULL )
+                break;
             curr = curr->parent;
-            if( curr == NULL )break;
+            if( curr == NULL )
+                break;
             curr->last_block = last_block;
         }
-        if( curr == NULL )break;
+        if( curr == NULL )
+            break;
         for( curr = curr->next_sub_int; curr->level > 0; ) {
             curr = curr->sub_int;
         }
@@ -354,11 +365,13 @@ static  void    EdgeLevels( void )
             id = edge->source->id;
             interval = blk->u.interval;
             for( ;; ) {
-                if( id >= interval->first_block->id
-                    && id <= interval->last_block->id ) break;
+                if( id >= interval->first_block->id && id <= interval->last_block->id )
+                    break;
                 edge->join_level = interval->level;
                 interval = interval->parent;
-                if( interval == NULL ) break;
+                if( interval == NULL ) {
+                    break;
+                }
             }
         }
     }
@@ -431,7 +444,7 @@ static  void    NestingDepth( void )
                                 if( blk->loop_head == NULL && blk != target ) {
                                     blk->loop_head = target;
                                 }
-                                target->class |= LOOP_HEADER;
+                                _MarkBlkAttr( target, BLK_LOOP_HEADER );
                                 change = true;
                                 break;
                             }
@@ -439,7 +452,9 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            if( change == false ) break;
+            if( change == false ) {
+                break;
+            }
         }
     }
 
@@ -486,12 +501,15 @@ static  bool    Degenerate( void )
     block_edge  *edge;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( ( blk->class & LOOP_HEADER ) == EMPTY ) continue;
+        if( !_IsBlkAttr( blk, BLK_LOOP_HEADER ) )
+            continue;
         for( edge = blk->input_edges; edge != NULL; edge = edge->next_source ) {
-            if( ( edge->source->class & SELECT ) != EMPTY ) {
+            if( _IsBlkAttr( edge->source, BLK_SELECT ) ) {
                 functionDegenerate = false;
                 FloodForward( edge->source, FlowDone, blk );
-                if( functionDegenerate ) return( true );
+                if( functionDegenerate ) {
+                    return( true );
+                }
             }
         }
     }

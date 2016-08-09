@@ -25,19 +25,18 @@ extra_l_flags_dll_os2 = initinstance terminstance pm op manyautodata
 
 all: epmlink.dll wedit.dll .SYMBOLIC
 
-epmlink.dll: epmlink.obj dll.lnk
-    $(linker) name $@ @$]@ file {$[@}
+epmlink.dll: epmlink.obj $(__MAKEFILES__)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
+    $(linker) name $@ @$^&.lnk file {$[@}
 
-wedit.dll: epmlink.obj dll.lnk
-    $(linker) name $@ op implib @$]@ file {$[@}
+wedit.dll: epmlink.obj $(__MAKEFILES__)
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
+    $(linker) name $@ op implib @$^&.lnk file {$[@}
     
-epmtest.exe : epmtest.obj wedit.lib
+epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
     $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
 
-epmspy.exe : epmspy.obj
+epmspy.exe : epmspy.obj $(__MAKEFILES__)
     $(linker) name $@ sys os2v2_pm file {epmspy.obj}
-    
-dll.lnk : $(__MAKEFILES__)
-    @%write  $@ $(lflags)
-    @%append $@ option description 'Open Watcom Editor DLL for EPM'
-

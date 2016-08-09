@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,13 +35,11 @@
 #include "coderep.h"
 #include "cgdefs.h"
 #include "symdbg.h"
-#include "ocentry.h"
 #include "ppcenc.h"
 #include "reloc.h"
 #include "rscenc2.h"
+#include "rscobj.h"
 
-extern void ObjBytes( const void *, unsigned );
-extern void OutReloc( pointer, owl_reloc_type, unsigned );
 
 void EncodeRet( oc_ret *oc ) {
 
@@ -87,6 +86,6 @@ void EncodeCond( oc_jcond *oc ) {
     if( oc->hdr.class & ATTR_FLOAT ) {
         floating = 1;
     }
-    opcode = BranchOpcodes[ oc->cond - FIRST_COMPARISON ][ floating  ];
+    opcode = BranchOpcodes[oc->cond - FIRST_COMPARISON][floating];
     doBranch( opcode, oc->handle, oc->index );
 }

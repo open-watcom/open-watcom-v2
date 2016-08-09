@@ -1,16 +1,16 @@
 objos2timeroot = &
-        int.obj
+    int.obj
 
 objos2sizeroot = &
-        biosos2.obj
+    biosos2.obj
 
 objos2size = &
-        os2sys.obj &
-        os2main.obj &
-        os2mouse.obj &
-        dosdir.obj &
-        time.obj  &
-        spawn.obj
+    os2sys.obj &
+    os2main.obj &
+    os2mouse.obj &
+    dosdir.obj &
+    time.obj  &
+    spawn.obj
 
 extraobjs = $(objos2size)
 extraobjsroot = $(objos2timeroot) $(objos2sizeroot)

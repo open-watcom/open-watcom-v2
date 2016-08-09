@@ -296,7 +296,7 @@ void ODBIP1ModuleFinished( mod_entry *obj )
     debug_info          *dinfo;
 
     dinfo = CurrSect->dbg_info;
-    if( ( dinfo == NULL ) || !( obj->modinfo & DBI_ALL ) )
+    if( ( dinfo == NULL ) || (obj->modinfo & DBI_ALL) == 0 )
         return;
     if( MOD_NOT_DEBUGGABLE( obj ) )
         return;
@@ -329,7 +329,7 @@ void ODBIDefClass( class_entry *cl, unsigned_32 size )
 static int ODBISymIsForGlobalDebugging( symbol *sym, mod_entry *currMod )
 /***********************************************************************/
 {
-    return( !( currMod->modinfo & DBI_ONLY_EXPORTS ) && ( ( currMod->modinfo & DBI_STATICS ) || !( sym->info & SYM_STATIC ) ) );
+    return( (currMod->modinfo & DBI_ONLY_EXPORTS) == 0 && ( (currMod->modinfo & DBI_STATICS) || (sym->info & SYM_STATIC) == 0 ) );
 }
 
 void ODBIAddGlobal( symbol *sym )
@@ -485,7 +485,7 @@ void ODBIAddModule( mod_entry *obj, section *sect )
     debug_info          *dptr;
 
     dptr = sect->dbg_info;
-    if( ( dptr == NULL ) || !( obj->modinfo & DBI_ALL ) )
+    if( ( dptr == NULL ) || (obj->modinfo & DBI_ALL) == 0 )
         return;
     dptr->modnum++;
     obj->d.o->modnum = dptr->modnum;
@@ -639,7 +639,7 @@ void ODBIGenLines( lineinfo *info )
     seg = info->seg;
 
     dinfo = CurrSect->dbg_info;
-    if( ( dinfo == NULL ) || !( CurrMod->modinfo & DBI_LINE ) )
+    if( ( dinfo == NULL ) || (CurrMod->modinfo & DBI_LINE) == 0 )
         return;
     lineqty = DBICalcLineQty( info );
     DoGenLocal( &dinfo->line, &dinfo->linelinks, &CurrMod->d.o->lines, lineqty * sizeof( ln_off_386 ) + sizeof( lineseg ) );
@@ -767,7 +767,7 @@ void ODBIGenModule( void )
     debug_info          *dptr;
 
     dptr = CurrSect->dbg_info;
-    if( ( dptr == NULL ) || !( CurrMod->modinfo & DBI_ALL ) )
+    if( ( dptr == NULL ) || (CurrMod->modinfo & DBI_ALL) == 0 )
         return;
     rec = CurrMod->d.o;
     name = CurrMod->name;

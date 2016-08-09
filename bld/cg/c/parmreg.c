@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,23 +38,21 @@
 #include "regset.h"
 #include "zoiks.h"
 #include "cgaux.h"
+#include "rgtbl.h"
+#include "parmreg.h"
 #include "feprotos.h"
 
 
-extern  hw_reg_set      InLineParm(hw_reg_set,hw_reg_set);
-extern  hw_reg_set      *ParmChoices(type_class_def);
-extern  hw_reg_set      ParmRegConflicts(hw_reg_set);
-
-extern  type_length     ParmAlignment( type_def *tipe ) {
-/*******************************************************/
-
+type_length     ParmAlignment( type_def *tipe )
+/*********************************************/
+{
     tipe = tipe;
     return( 1 );
 }
 
-extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state ) {
-/******************************************************************************************************************/
-
+hw_reg_set      ParmReg( type_class_def class, type_length len, type_length alignment, call_state *state )
+/********************************************************************************************************/
+{
     hw_reg_set  *possible;
     hw_reg_set  *reg_set;
     hw_reg_set  regs;

@@ -52,5 +52,5 @@ static const FU_entry FUnits[] = {
 
 const FU_entry *FUEntry( instruction *ins )
 {
-    return( &FUnits[ ins->u.gen_table->func_unit ] );
+    return( &FUnits[ins->u.gen_table->func_unit] );
 }

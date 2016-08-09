@@ -64,7 +64,7 @@ unsigned_32     CompTime;
 static  void StartCompile( void )
 {
     OpenLst();
-    if( !(Options & OPT_QUIET) && !(Options & OPT_TYPE) ) {
+    if( (Options & OPT_QUIET) == 0 && (Options & OPT_TYPE) == 0 ) {
         TOutBanner();
     }
     PrtBanner();
@@ -77,9 +77,9 @@ static void Compile( void )
     ProgSw |= PS_DONT_GENERATE;
     InitAuxInfo();      // must be done before ComRead()
     InvokeCompile();
-    if( ( ( Options & OPT_SYNTAX ) == 0 ) && // syntax check only
-        ( ( CurrFile != NULL ) ) &&          // not an "null" file
-        ( ( ProgSw & PS_ERROR ) == 0 ) ) {   // no error during first pass
+    if( ( (Options & OPT_SYNTAX) == 0 ) &&  // syntax check only
+        ( ( CurrFile != NULL ) ) &&         // not an "null" file
+        ( (ProgSw & PS_ERROR) == 0 ) ) {    // no error during first pass
         CurrFile->flags &= ~CONC_PENDING;
         CurrFile->rec = 0;
         SrcRecNum = 0;

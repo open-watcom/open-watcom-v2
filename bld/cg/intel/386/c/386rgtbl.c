@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,8 +33,9 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "data.h"
+#include "i87data.h"
+#include "rgtbl.h"
 
-extern  int             Max87Stk;
 
 /* some short forms*/
 #define RL_DP   RL_DBL_OR_PTR
@@ -630,24 +632,24 @@ static  reg_set_index   *InterTable[] = {
     OtherInter              /* others     */
 };
 
-extern  void            InitRegTbl( void )
-/*****************************************
+void            InitRegTbl( void )
+/*********************************
     Initialize the tables.
 */
 {
     if( _FPULevel( FPU_87 ) ) {
-        HW_CAsgn( STParmReg[ Max87Stk ], HW_EMPTY );
+        HW_CAsgn( STParmReg[Max87Stk], HW_EMPTY );
     }
     if( _IsTargetModel( INDEXED_GLOBALS ) ) {
-        HW_CAsgn( FPParm2Reg[ 0 ], HW_ECX_ESI );
+        HW_CAsgn( FPParm2Reg[0], HW_ECX_ESI );
     } else {
-        HW_CAsgn( FPParm2Reg[ 0 ], HW_ECX_EBX );
+        HW_CAsgn( FPParm2Reg[0], HW_ECX_EBX );
     }
 }
 
 
-extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
-/*************************************************************************
+reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
+/*****************************************************************
     return the intersection of two register lists
 */
 {
@@ -656,12 +658,11 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
     intersect_class     class;
     reg_set_index       result;
 
-    set1 = & IntersectInfo[ s1 ];
-    set2 = & IntersectInfo[ s2 ];
+    set1 = & IntersectInfo[s1];
+    set2 = & IntersectInfo[s2];
     class = set1->class;
     if( class == set2->class ) {
-        result = InterTable[ class ]
-                        [  set1->index * Width[ class ] + set2->index  ];
+        result = InterTable[class][set1->index * Width[class] + set2->index];
     } else if( s1 == RL_NUMBER_OF_SETS ) {
         result = s2;
     } else if( s2 == RL_NUMBER_OF_SETS ) {
@@ -673,25 +674,25 @@ extern  reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 }
 
 
-extern  hw_reg_set      *ParmChoices( type_class_def class )
-/***********************************************************
+hw_reg_set      *ParmChoices( type_class_def class )
+/***************************************************
     return a list of register which could be used to return type "class"
 */
 {
     hw_reg_set  *list;
 
     if( _FPULevel( FPU_87 ) ) {
-        list = ParmSets8087[  class  ];
+        list = ParmSets8087[class];
     } else {
-        list = ParmSets[  class  ];
+        list = ParmSets[class];
     }
     return( list );
 }
 
 
-extern  hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
-/*********************************************************************
-    for parm [ 8087 ]. returns the next available 8087 parameter register
+hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
+/*************************************************************
+    for parm [8087]. returns the next available 8087 parameter register
 */
 {
     if( HW_COvlap( regs, HW_FLTS ) ) {
@@ -712,38 +713,38 @@ extern  hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
 }
 
 
-extern  hw_reg_set      StructReg( void )
-/***************************************/
+hw_reg_set      StructReg( void )
+/*******************************/
 {
     return( HW_ESI );
 }
 
 
-extern  hw_reg_set      ReturnReg( type_class_def class, bool use_87 )
-/*********************************************************************
+hw_reg_set      ReturnReg( type_class_def class, bool use_87 )
+/*************************************************************
     return the "normal" return register used for type "class"
 */
 {
     hw_reg_set          *list;
 
     if( _FPULevel( FPU_87 ) && use_87 ) {
-        list = RegSets[  Return8087[  class  ]  ];
+        list = RegSets[Return8087[class]];
     } else {
-        list = RegSets[  ReturnSets[  class  ]  ];
+        list = RegSets[ReturnSets[class]];
     }
     return( *list );
 }
 
 
-extern  reg_set_index   SegIndex( void )
-/**************************************/
+reg_set_index   SegIndex( void )
+/******************************/
 {
     return( RL_SEG );
 }
 
 
-extern  reg_set_index   NoSegments( reg_set_index idx )
-/******************************************************
+reg_set_index   NoSegments( reg_set_index idx )
+/**********************************************
     return a register list like "idx" that doesn't include any segment regs
 */
 {
@@ -754,7 +755,7 @@ extern  reg_set_index   NoSegments( reg_set_index idx )
 }
 
 
-extern  reg_set_index   IndexIntersect( reg_set_index curr,
+reg_set_index   IndexIntersect( reg_set_index curr,
                                        type_class_def class,
                                        bool is_temp_index )
 /***********************************************************
@@ -763,11 +764,11 @@ extern  reg_set_index   IndexIntersect( reg_set_index curr,
 */
 {
     is_temp_index = is_temp_index;
-    return( RegIntersect( curr, IndexSets[  class  ] ) );
+    return( RegIntersect( curr, IndexSets[class] ) );
 }
 
 
-extern  bool    IsIndexReg( hw_reg_set reg, type_class_def class,
+bool    IsIndexReg( hw_reg_set reg, type_class_def class,
                             bool is_temp_index )
 /****************************************************************
     return true if "reg" can be used as an index of type "class"
@@ -806,8 +807,8 @@ static  type_class_def  NotFloatRegClass( hw_reg_set regs )
     return( XX );
 }
 
-extern  type_class_def  RegClass( hw_reg_set regs )
-/**************************************************
+type_class_def  RegClass( hw_reg_set regs )
+/******************************************
     return the type associated with "regs".
 */
 {
@@ -827,8 +828,8 @@ extern  type_class_def  RegClass( hw_reg_set regs )
     }
 }
 
-extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
-/***************************************************************
+bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
+/*******************************************************
     return true if "reg" is ok to be used as in index reg.
     "is_temp_index" means we'll also need to incorporate the
     AR/BP register into the index, since we're indexing an auto
@@ -838,9 +839,9 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 
     is_temp_index = is_temp_index;
     if( RegClass( reg ) == U4 ) {
-        list = RegSets[ RL_DOUBLE ];
+        list = RegSets[RL_DOUBLE];
     } else {
-        list = RegSets[ RL_LONG_INDEX ];
+        list = RegSets[RL_LONG_INDEX];
     }
     for( ; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
@@ -851,8 +852,8 @@ extern  bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 }
 
 
-extern  bool    IsSegReg( hw_reg_set regs )
-/******************************************
+bool    IsSegReg( hw_reg_set regs )
+/**********************************
     return true if "regs" is a segment register
 */
 {
@@ -864,8 +865,8 @@ extern  bool    IsSegReg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      Low16Reg( hw_reg_set regs )
-/**************************************************
+hw_reg_set      Low16Reg( hw_reg_set regs )
+/******************************************
     return the low order part of 16 bit register "regs"
 */
 {
@@ -874,8 +875,8 @@ extern  hw_reg_set      Low16Reg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      High16Reg( hw_reg_set regs )
-/***************************************************
+hw_reg_set      High16Reg( hw_reg_set regs )
+/*******************************************
     return the high order part of 16 bit register "regs"
 */
 {
@@ -884,8 +885,8 @@ extern  hw_reg_set      High16Reg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      Low32Reg( hw_reg_set regs )
-/**************************************************
+hw_reg_set      Low32Reg( hw_reg_set regs )
+/******************************************
     return the low order part of 32 bit register "regs"
 */
 {
@@ -897,8 +898,8 @@ extern  hw_reg_set      Low32Reg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      High32Reg( hw_reg_set regs )
-/***************************************************
+hw_reg_set      High32Reg( hw_reg_set regs )
+/*******************************************
     return the high order part of 32 bit register "regs"
 */
 {
@@ -908,8 +909,8 @@ extern  hw_reg_set      High32Reg( hw_reg_set regs )
     return( HW_EMPTY );
 }
 
-extern  hw_reg_set      FullReg( hw_reg_set regs )
-/*************************************************
+hw_reg_set      FullReg( hw_reg_set regs )
+/*****************************************
     given a register (eg AL), return the full register (eg EAX)
 */
 {
@@ -934,8 +935,8 @@ extern  hw_reg_set      FullReg( hw_reg_set regs )
     return( regs );
 }
 
-extern  hw_reg_set      Low48Reg( hw_reg_set regs )
-/**************************************************
+hw_reg_set      Low48Reg( hw_reg_set regs )
+/******************************************
     return the low order part of 48 bit register "regs"
 */
 {
@@ -949,8 +950,8 @@ extern  hw_reg_set      Low48Reg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      High48Reg( hw_reg_set regs )
-/***************************************************
+hw_reg_set      High48Reg( hw_reg_set regs )
+/*******************************************
     return the high order part of 48 bit register "regs"
 */
 {
@@ -964,8 +965,8 @@ extern  hw_reg_set      High48Reg( hw_reg_set regs )
     return( high );
 }
 
-extern  hw_reg_set      Low64Reg( hw_reg_set regs )
-/**************************************************
+hw_reg_set      Low64Reg( hw_reg_set regs )
+/******************************************
     return the low order part of 64 bit register "regs"
 */
 {
@@ -987,8 +988,8 @@ extern  hw_reg_set      Low64Reg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      High64Reg( hw_reg_set regs )
-/***************************************************
+hw_reg_set      High64Reg( hw_reg_set regs )
+/*******************************************
     return the high order part of 64 bit register "regs"
 */
 {
@@ -1004,8 +1005,8 @@ extern  hw_reg_set      High64Reg( hw_reg_set regs )
 
 
 
-extern  hw_reg_set      HighReg( hw_reg_set regs )
-/*************************************************
+hw_reg_set      HighReg( hw_reg_set regs )
+/*****************************************
     return the high order portion of "regs"
 */
 {
@@ -1027,8 +1028,8 @@ extern  hw_reg_set      HighReg( hw_reg_set regs )
     }
 }
 
-extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )
-/*******************************************************
+hw_reg_set      HighOffsetReg( hw_reg_set regs )
+/***********************************************
     return the portion of "regs" which would occupy the high memory address
 */
 {
@@ -1036,8 +1037,8 @@ extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )
 }
 
 
-extern  hw_reg_set      LowReg( hw_reg_set regs )
-/************************************************
+hw_reg_set      LowReg( hw_reg_set regs )
+/****************************************
     return the low order portion of "regs"
 */
 {
@@ -1058,8 +1059,8 @@ extern  hw_reg_set      LowReg( hw_reg_set regs )
     }
 }
 
-extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
-/******************************************************
+hw_reg_set      LowOffsetReg( hw_reg_set regs )
+/**********************************************
     return the portion of "regs" which would occupy the low memory address
 */
 {
@@ -1068,8 +1069,8 @@ extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
 
 
 
-extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
-/******************************************************************
+bool    IsRegClass( hw_reg_set regs, type_class_def class )
+/**********************************************************
     return true if "regs" has type "class" (eg I4, U4, etc)
 */
 {
@@ -1084,8 +1085,8 @@ extern  bool    IsRegClass( hw_reg_set regs, type_class_def class )
 }
 
 
-extern  hw_reg_set      ActualParmReg( hw_reg_set reg )
-/******************************************************
+hw_reg_set      ActualParmReg( hw_reg_set reg )
+/**********************************************
     given a register "reg", to be used to pass a parameter,
     decide which register name should really be used in
     the instruction generated to load it.
@@ -1097,8 +1098,8 @@ extern  hw_reg_set      ActualParmReg( hw_reg_set reg )
     return( reg );
 }
 
-extern  hw_reg_set      FixedRegs( void )
-/****************************************
+hw_reg_set      FixedRegs( void )
+/********************************
     return the set of register which may not be modified within this routine
 */
 {
@@ -1117,8 +1118,8 @@ extern  hw_reg_set      FixedRegs( void )
 }
 
 
-extern  bool    IsStackReg( name *sp )
-/************************************/
+bool    IsStackReg( name *sp )
+/****************************/
 {
     if( sp == NULL ) return( false );
     if( sp->n.class != N_REGISTER ) return( false );
@@ -1127,23 +1128,23 @@ extern  bool    IsStackReg( name *sp )
 }
 
 
-extern  hw_reg_set      StackReg( void )
-/**************************************/
+hw_reg_set      StackReg( void )
+/******************************/
 {
     return( HW_SP );
 }
 
 
-extern  hw_reg_set      DisplayReg( void )
-/****************************************/
+hw_reg_set      DisplayReg( void )
+/********************************/
 {
     if( CurrProc->targ.sp_frame ) return( HW_SP );
     return( HW_BP );
 }
 
 
-extern  int     SizeDisplayReg( void )
-/*************************************
+int     SizeDisplayReg( void )
+/*****************************
     return the size of the "pascal" display register entry on the stack
 */
 {
@@ -1151,8 +1152,8 @@ extern  int     SizeDisplayReg( void )
 }
 
 
-extern  hw_reg_set      AllCacheRegs( void )
-/*******************************************
+hw_reg_set      AllCacheRegs( void )
+/***********************************
     return the set of all registers that could be used to cache values
 */
 {
@@ -1173,10 +1174,24 @@ extern  hw_reg_set      AllCacheRegs( void )
     return( all );
 }
 
-extern  hw_reg_set      *IdxRegs( void )
-/***************************************
+hw_reg_set      *IdxRegs( void )
+/*******************************
     return a pointer to the set of "indexable" registers
 */
 {
     return( DoubleRegs );
+}
+
+hw_reg_set      FirstReg( reg_set_index index )
+/**********************************************
+    The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
+    they are only one byte long.  This retrieves the first hw_reg_set
+    from the reg_set table "index".
+
+    the tables above use RL_ consts rather that hw_reg_sets cause
+    it cheaper. This just picks off the first register from a
+    register list and returns it.
+*/
+{
+    return( *RegSets[index] );
 }

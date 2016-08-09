@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -34,22 +35,21 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "data.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
 
-extern  type_length     FlagsToAlignment( i_flags );
 
 extern  bool    OtherVerify( vertype, instruction *, name *, name *, name * );
-
-extern  type_class_def  Unsigned[];
 
 static  bool    ByteConst( name *operand )
 /****************************************/
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= 0 &&
-                        operand->c.int_value <= 255 );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= 0 &&
+                        operand->c.lo.int_value <= 255 );
             }
         }
     }
@@ -61,13 +61,13 @@ static  bool    HalfWordConst( name *operand )
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= -32768 &&
-                            operand->c.int_value <= 32767 );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= -32768 &&
+                            operand->c.lo.int_value <= 32767 );
             } else {
-                return( operand->c.int_value_2 == -1 &&
-                    operand->c.int_value <= 0 &&
-                    operand->c.int_value >= -32768 );
+                return( operand->c.hi.int_value == -1 &&
+                    operand->c.lo.int_value <= 0 &&
+                    operand->c.lo.int_value >= -32768 );
             }
         }
     }
@@ -79,9 +79,9 @@ static  bool    UHalfWordConst( name *operand )
 {
     if( operand->n.class == N_CONSTANT ) {
         if( operand->c.const_type == CONS_ABSOLUTE ) {
-            if( operand->c.int_value_2 == 0 ) {
-                return( operand->c.int_value >= 0 &&
-                            operand->c.int_value <= 0xffff );
+            if( operand->c.hi.int_value == 0 ) {
+                return( operand->c.lo.int_value >= 0 &&
+                            operand->c.lo.int_value <= 0xffff );
             }
         }
     }
@@ -94,7 +94,7 @@ static  bool    Is64BitConst( name *operand )
     // Return true if constant is not a 32-bit (canonical) const
     // A canonical 64-bit constant is one whose bits 63:32 == bit 31
     if( operand->c.const_type == CONS_ABSOLUTE ) {
-        if( operand->c.int_value_2 != (operand->c.int_value >> 31) ) {
+        if( operand->c.hi.int_value != (operand->c.lo.int_value >> 31) ) {
             return( true );
         }
     }
@@ -137,7 +137,7 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
     if( tipe == XX ) {
         natural = 1;    // FIXME - should be largest element of this structure
     } else {
-        natural = TypeClassSize[ tipe ];
+        natural = TypeClassSize[tipe];
     }
     if( natural == 2 ) {
         if( _IsntTargetModel( ALIGNED_SHORT ) ) {
@@ -180,36 +180,36 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
 
     switch( kind ) {
     case V_BYTECONST2:
-        return( ByteConst( ins->operands[ 1 ] ) );
+        return( ByteConst( ins->operands[1] ) );
     case V_BYTECONST1:
-        return( ByteConst( ins->operands[ 0 ] ) );
+        return( ByteConst( ins->operands[0] ) );
     case V_SYMMETRIC:
         return( Symmetric( ins->head.opcode ) );
     case V_OP1HIGHADDR:
-        return( ( ins->operands[ 0 ]->n.class == N_CONSTANT ) &&
-                ( ins->operands[ 0 ]->c.const_type == CONS_HIGH_ADDR ) );
+        return( ( ins->operands[0]->n.class == N_CONSTANT ) &&
+                ( ins->operands[0]->c.const_type == CONS_HIGH_ADDR ) );
     case V_UHALFWORDCONST2:
-        return( UHalfWordConst( ins->operands[ 1 ] ) );
+        return( UHalfWordConst( ins->operands[1] ) );
     case V_UHALFWORDCONST1:
-        return( UHalfWordConst( ins->operands[ 0 ] ) );
+        return( UHalfWordConst( ins->operands[0] ) );
     case V_HALFWORDCONST2:
 #if _TARGET & _TARG_AXP
-        if( ins->type_class == Unsigned[ ins->type_class ] &&
-            ( ins->operands[ 1 ]->c.int_value & 0x8000 ) &&
-            TypeClassSize[ ins->type_class ] >= 4 ) return( false );
+        if( ins->type_class == Unsigned[ins->type_class] &&
+            ( ins->operands[1]->c.lo.int_value & 0x8000 ) &&
+            TypeClassSize[ins->type_class] >= 4 ) return( false );
 #endif
-        return( HalfWordConst( ins->operands[ 1 ] ) );
+        return( HalfWordConst( ins->operands[1] ) );
     case V_HALFWORDCONST1:
 #if _TARGET & _TARG_AXP
-        if( ins->type_class == Unsigned[ ins->type_class ] &&
-            ( ins->operands[ 0 ]->c.int_value & 0x8000 ) &&
-            TypeClassSize[ ins->type_class ] >= 4 ) return( false );
+        if( ins->type_class == Unsigned[ins->type_class] &&
+            ( ins->operands[0]->c.lo.int_value & 0x8000 ) &&
+            TypeClassSize[ins->type_class] >= 4 ) return( false );
 #endif
-        return( HalfWordConst( ins->operands[ 0 ] ) );
+        return( HalfWordConst( ins->operands[0] ) );
     case V_AXPBRANCH:   // FIXME: appears to be unused!
-        op = ins->operands[ 1 ];
+        op = ins->operands[1];
         return( ins->result == NULL && op->n.class == N_CONSTANT &&
-                op->c.const_type == CONS_ABSOLUTE && op->c.int_value == 0 );
+                op->c.const_type == CONS_ABSOLUTE && op->c.lo.int_value == 0 );
     case V_MIPSBRANCH:
         return( ins->result == NULL && (ins->head.opcode == OP_CMP_EQUAL
                 || ins->head.opcode == OP_CMP_NOT_EQUAL) );
@@ -218,14 +218,14 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
     case V_RESNULL:
         return( ins->result == NULL );
     case V_WORD_OR_QUAD:
-        return( TypeClassSize[ ins->type_class ] == 4 ||
-                    TypeClassSize[ ins->type_class ] == 8 );
+        return( TypeClassSize[ins->type_class] == 4 ||
+                    TypeClassSize[ins->type_class] == 8 );
     case V_FLOAT:
         return( _IsFloating( ins->type_class ) );
     case V_REG_SIZE:
         assert( ins->type_class == XX );
         // FIXME: Alignment of structs not guaranteed to be equal to size
-        switch( ins->operands[ 0 ]->n.size ) {
+        switch( ins->operands[0]->n.size ) {
         case 1:
         case 2:
         case 4:
@@ -250,13 +250,13 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
         }
         return( false );
     case V_UNSIGNED:
-        return( Unsigned[ ins->type_class ] == ins->type_class );
+        return( Unsigned[ins->type_class] == ins->type_class );
     case V_OP1_AL2:
-        return( Aligned( ins->operands[ 0 ], 2, InsTypeClass( ins ) ) );
+        return( Aligned( ins->operands[0], 2, InsTypeClass( ins ) ) );
     case V_OP1_AL4:
-        return( Aligned( ins->operands[ 0 ], 4, InsTypeClass( ins ) ) );
+        return( Aligned( ins->operands[0], 4, InsTypeClass( ins ) ) );
     case V_OP1_AL8:
-        return( Aligned( ins->operands[ 0 ], 8, InsTypeClass( ins ) ) );
+        return( Aligned( ins->operands[0], 8, InsTypeClass( ins ) ) );
     case V_RES_AL2:
         return( Aligned( ins->result, 2, ins->type_class ) );
     case V_RES_AL4:
@@ -264,19 +264,19 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
     case V_RES_AL8:
         return( Aligned( ins->result, 8, ins->type_class ) );
     case V_OP1_RES_AL8:
-        return( Aligned( ins->operands[ 0 ], 8, InsTypeClass( ins ) ) &&
+        return( Aligned( ins->operands[0], 8, InsTypeClass( ins ) ) &&
                 Aligned( ins->result, 8, InsTypeClass( ins ) ) );
     case V_OP1_RES_AL4:
-        return( Aligned( ins->operands[ 0 ], 4, InsTypeClass( ins ) ) &&
+        return( Aligned( ins->operands[0], 4, InsTypeClass( ins ) ) &&
                 Aligned( ins->result, 4, InsTypeClass( ins ) ) );
     case V_RES_TEMP:
         return( ins->result->n.class == N_TEMP && ins->result->t.alias == NULL );
     case V_RESCONSTTEMP:
         return( _ConstTemp( ins->result ) );
     case V_OP164BITCONST:
-        assert( ins->operands[ 0 ]->n.class == N_CONSTANT );
-        return( Is64BitConst( ins->operands[ 0 ] ) );
+        assert( ins->operands[0]->n.class == N_CONSTANT );
+        return( Is64BitConst( ins->operands[0] ) );
     default:
-        return( OtherVerify( kind, ins, ins->operands[ 0 ], ins->operands[ 1 ], ins->result ) );
+        return( OtherVerify( kind, ins, ins->operands[0], ins->operands[1], ins->result ) );
     }
 }

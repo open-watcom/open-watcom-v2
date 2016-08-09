@@ -2,38 +2,39 @@
 intel_objs = &
     386funit.obj &
     386setcc.obj &
-    i86base.obj &
-    i86call.obj &
-    i86cvsup.obj &
-    i86dfsup.obj &
-    i86data.obj &
-    i86dbsup.obj &
-    i86enc.obj &
-    i86enc2.obj &
-    i86esc.obj &
-    i86half.obj &
-    i86index.obj &
-    i86ldstr.obj &
-    i86lesds.obj &
-    i86mul.obj &
-    i86obj.obj &
-    i86opcod.obj &
-    i86proc.obj &
-    i86reg.obj &
-    i86regsv.obj &
-    i86segs.obj &
-    i86sel.obj &
-    i86split.obj &
-    i86splt3.obj &
-    i86stubs.obj &
-    i86temps.obj &
-    i86ver.obj &
+    x86base.obj &
+    x86call.obj &
+    x86cvsup.obj &
+    x86dfsup.obj &
+    x86data.obj &
+    x86dbsup.obj &
+    x86enc.obj &
+    x86enc2.obj &
+    x86esc.obj &
+    x86half.obj &
+    x86index.obj &
+    x86ldstr.obj &
+    x86lesds.obj &
+    x86mul.obj &
+    x86obj.obj &
+    x86opcod.obj &
+    x86proc.obj &
+    x86reg.obj &
+    x86regsv.obj &
+    x86segs.obj &
+    x86sel.obj &
+    x86split.obj &
+    x86splt3.obj &
+    x86stubs.obj &
+    x86temps.obj &
+    x86ver.obj &
     i87data.obj &
     i87exp.obj &
     i87opt.obj &
     i87reg.obj &
     i87sched.obj &
     i87table.obj &
+    i87wait.obj &
     parmreg.obj &
     wvsyms.obj &
     wvtypes.obj

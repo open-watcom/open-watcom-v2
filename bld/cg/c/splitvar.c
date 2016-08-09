@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,15 +37,13 @@
 #include "data.h"
 #include "namelist.h"
 #include "regalloc.h"
+#include "insdead.h"
 
 
 extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );
-extern  bool            InsDead( void );
 extern  bool            MoreConflicts( void );
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,
-                                    type_length,int,i_flags);
 
 static  block_num       Instance;
 static  global_bit_set  Id;
@@ -57,12 +56,15 @@ static  block   *FindUnMarkedInstance( void )
     data_flow_def       *flow;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->class & BLOCK_VISITED ) continue;
+        if( _IsBlkVisited( blk ) )
+            continue;
         flow = blk->dataflow;
         if( _GBitOverlap( Id, flow->in )
          || _GBitOverlap( Id, flow->out )
          || _GBitOverlap( Id, flow->def )
-         || _GBitOverlap( Id, flow->use ) ) break;
+         || _GBitOverlap( Id, flow->use ) ) {
+            break;
+        }
     }
     return( blk );
 }
@@ -74,7 +76,7 @@ static  void    NotVisited( void )
     block       *blk;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
         blk->id = 0;
     }
 }
@@ -173,7 +175,7 @@ static  void    CleanUp( void )
 
     id = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        blk->class &= ~BLOCK_VISITED;
+        _MarkBlkUnVisited( blk );
         blk->id = ++id;
     }
 }
@@ -187,8 +189,9 @@ static  void *MarkInstance( block *blk )
     data_flow_def       *flow;
     global_bit_set      *bitp;
 
-    if( blk->class & BLOCK_VISITED ) return NULL;
-    blk->class |= BLOCK_VISITED;
+    if( _IsBlkVisited( blk ) )
+        return( NULL );
+    _MarkBlkVisited( blk );
     blk->id = Instance;
     flow = blk->dataflow;
     if( _GBitOverlap( flow->in, Id ) ) {
@@ -200,7 +203,7 @@ static  void *MarkInstance( block *blk )
         }
     }
     if( _GBitOverlap( flow->out, Id ) ) {
-        edge = &blk->edge[ 0 ];
+        edge = &blk->edge[0];
         for( i = blk->targets; i > 0; --i ) {
             bitp = &edge->destination.u.blk->dataflow->in;
             if( _GBitOverlap( *bitp, Id ) ) {
@@ -225,7 +228,7 @@ extern  void    SplitVars( void )
     for( ;; ) {
         for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
             op = conf->name;
-            if( !( op->v.usage & USE_IN_ANOTHER_BLOCK ) )
+            if( (op->v.usage & USE_IN_ANOTHER_BLOCK) == 0 )
                 continue;
             if( op->n.class != N_TEMP )
                 continue;

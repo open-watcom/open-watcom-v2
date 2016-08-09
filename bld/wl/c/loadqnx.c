@@ -288,7 +288,7 @@ static bool CheckQNXGrpFlag( void *_seg, void *_grp )
 // specified.
 
     if( sflags < 0x10 ) {
-        if( !(sflags & 1) ) {     // if can read/write or exec/read
+        if( (sflags & 1) == 0 ) {     // if can read/write or exec/read
             grp->u.qnxflags &= ~1;       // can for all segments.
             return true;                // no need to check others
         }
@@ -409,9 +409,7 @@ void FiniQNXLoadFile( void )
     WriteLoad( &record, sizeof( lmf_record ) );
     memset( &header, 0, sizeof( header ) );
     header.version = QNX_VERSION;
-    header.cflags = (FmtData.u.qnx.flags
-                | (FmtData.u.qnx.priv_level << QNX_PRIV_SHIFT))
-                & QNX_FLAG_MASK;
+    header.cflags = (FmtData.u.qnx.flags | (FmtData.u.qnx.priv_level << QNX_PRIV_SHIFT)) & QNX_FLAG_MASK;
     if( LinkState & FMT_SEEN_32_BIT ) {
         header.cflags |= _TCF_32BIT;
     }

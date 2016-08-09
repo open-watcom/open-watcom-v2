@@ -40,12 +40,7 @@
     #define INCL_DOSMEMMGR
 #endif
 #include "rterrno.h"
-#if defined(__NT__)
-#elif defined(__WINDOWS__)
-    #include "tinyio.h"
-#elif defined(__OS2__)
-    #include "tinyos2.h"
-#else
+#if defined( __DOS__ ) || defined( __WINDOWS__ )
     #include "tinyio.h"
 #endif
 #include "iomode.h"
@@ -58,31 +53,28 @@
 
 
 #if defined(__WINDOWS_386__)
-  static int __read( int handle, void *buf, unsigned len )
+static int __read( int handle, void *buf, unsigned len )
 #else
-  _WCRTLINK int read( int handle, void *buf, unsigned len )
+_WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
 {
-    unsigned read_len, total_len;
-    unsigned reduce_idx, finish_idx;
-    unsigned iomode_flags;
-    char *buffer = buf;
+    unsigned    read_len, total_len;
+    unsigned    reduce_idx, finish_idx;
+    unsigned    iomode_flags;
+    char        *buffer = buf;
 #if defined(__NT__)
-    DWORD   amount_read;
-    BOOL    rc;
-    HANDLE  h;
-#elif defined(__WARP__)
-    ULONG amount_read;
-#elif defined(__OS2_286__)
-    USHORT amount_read;
+    DWORD       amount_read;
+    BOOL        rc;
+    HANDLE      h;
+#elif defined(__OS2__)
+    OS_UINT     amount_read;
+    APIRET      rc;
 #else
-    unsigned amount_read;
-#endif
-#if !defined(__NT__)
-    tiny_ret_t rc;
+    unsigned    amount_read;
+    tiny_ret_t  rc;
 #endif
 #ifdef DEFAULT_WINDOWING
-    LPWDATA res;
+    LPWDATA     res;
 #endif
 
     __handle_check( handle, -1 );
@@ -96,7 +88,7 @@
         return( -1 );
 #endif
     }
-    if( !(iomode_flags & _READ) ) {
+    if( (iomode_flags & _READ) == 0 ) {
         _RWD_errno = EACCES;     /* changed from EBADF to EACCES 23-feb-89 */
         return( -1 );
     }
@@ -114,26 +106,25 @@
         {
 #if defined(__NT__)
             rc = ReadFile( h, buffer, len, &amount_read, NULL );
-            total_len = amount_read;
             if( !rc ) {
-                if (GetLastError() == ERROR_BROKEN_PIPE)
-                    return total_len;
-
+                if( GetLastError() == ERROR_BROKEN_PIPE )
+                    return( amount_read );
                 return( __set_errno_nt() );
             }
 #elif defined( __OS2__ )
             rc = DosRead( handle, buffer, len, &amount_read );
-            total_len = amount_read;
+            if( rc ) {
+                return( __set_errno_dos( rc ) );
+            }
 #else
             rc = TinyRead( handle, buffer, len );
-            total_len = TINY_LINFO( rc );
+            if( TINY_ERROR( rc ) ) {
+                return( __set_errno_dos( TINY_INFO( rc ) ) );
+            }
+            amount_read = TINY_LINFO( rc );
 #endif
+            total_len = amount_read;
         }
-#if !defined(__NT__)
-        if( TINY_ERROR( rc ) ) {
-            return( __set_errno_dos( TINY_INFO( rc ) ) );
-        }
-#endif
     } else {
         _AccessFileH( handle );
         total_len = 0;
@@ -151,31 +142,30 @@
                 rc = ReadFile( h, buffer, read_len, &amount_read, NULL );
                 if( !rc ) {
                     _ReleaseFileH( handle );
-
                     if( GetLastError() == ERROR_BROKEN_PIPE )
-                        return total_len;
-
+                        return( total_len );
                     return( __set_errno_nt() );
                 }
 #elif defined( __OS2__ )
                 rc = DosRead( handle, buffer, read_len, &amount_read );
+                if( rc ) {
+                    _ReleaseFileH( handle );
+                    return( __set_errno_dos( rc ) );
+                }
 #else
                 rc = TinyRead( handle, buffer, read_len );
+                if( TINY_ERROR( rc ) ) {
+                    _ReleaseFileH( handle );
+                    return( __set_errno_dos( TINY_INFO( rc ) ) );
+                }
                 amount_read = TINY_LINFO( rc );
 #endif
             }
-#if !defined(__NT__)
-            if( TINY_ERROR( rc ) ) {
-                _ReleaseFileH( handle );
-                return( __set_errno_dos( TINY_INFO( rc ) ) );
-            }
-#endif
             if( amount_read == 0 ) {                    /* EOF */
                 break;
             }
-            reduce_idx = 0;
-            finish_idx = reduce_idx;
-            for( ; reduce_idx < amount_read; ++reduce_idx ) {
+            finish_idx = 0;
+            for( reduce_idx = 0; reduce_idx < amount_read; ++reduce_idx ) {
                 if( buffer[ reduce_idx ] == 0x1a ) {    /* EOF */
                     __lseek( handle,
                            ((long)reduce_idx - (long)amount_read)+1L,
@@ -192,7 +182,7 @@
             buffer += finish_idx;
             read_len -= finish_idx;
             if( iomode_flags & _ISTTY ) {
-                break;  /* 04-feb-88, FWC */
+                break;
             }
         } while( read_len != 0 );
         _ReleaseFileH( handle );
@@ -201,7 +191,9 @@
 }
 
 #if defined( __WINDOWS_386__ )
+
 #define MAXBUFF 0x8000
+
 _WCRTLINK int read( int handle, void *buffer, unsigned len )
 {
     unsigned    total = 0;
@@ -209,7 +201,6 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
     int         rc;
 
     __handle_check( handle, -1 );
-
     while( len > 0 ) {
         if( len > MAXBUFF ) {
             readamt = MAXBUFF;
@@ -227,6 +218,5 @@ _WCRTLINK int read( int handle, void *buffer, unsigned len )
         buffer = ((char *)buffer) + readamt;
     }
     return( total );
-
 }
 #endif

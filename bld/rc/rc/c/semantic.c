@@ -194,7 +194,7 @@ void SemAddResource( WResID * name, WResID * type, ResMemFlags flags, ResLocatio
     SemAddResource2( name, type, flags, loc, NULL );
 }
 
-void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
+void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
                 ResLocation loc, const char *filename )
 /******************************************************************/
 {
@@ -210,7 +210,7 @@ void SemAddResource2( WResID * name, WResID * type, ResMemFlags flags,
     // so we warn the user
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
         if( !type->IsName && type->ID.Num > 0x7FFF ) {
-            namestr = WResIDToStr( name );
+            namestr = WResIDToStr( type );
             RcWarning( ERR_TYPE_GT_7FFF, namestr );
             RCFREE( namestr );
         }

@@ -61,7 +61,7 @@ objs += trmem.obj
 extra_c_flags_memory += -dTRACK -of+
 !endif
 
-$(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs)
+$(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs) $(__MAKEFILES__)
     $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
     $(wstrip) -q -a -r $@ . $(proj_name).res
 

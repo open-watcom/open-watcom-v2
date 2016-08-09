@@ -204,7 +204,7 @@ entry_export * AllocExport( char *name, unsigned len )
     if( name == NULL ) {
         exp->name = NULL;
     } else {
-        if( FmtData.type & MK_PE && FmtData.u.pe.no_stdcall ) {
+        if( (FmtData.type & MK_PE) && FmtData.u.pe.no_stdcall ) {
             chop = CheckStdCall( name, len );
             if( chop > 0 ) {
                 name++;
@@ -294,7 +294,7 @@ void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, o
 {
     dll_sym_info *      dll;
 
-    if( !(sym->info & SYM_DEFINED) ) {
+    if( (sym->info & SYM_DEFINED) == 0 ) {
         sym->info |= SYM_DEFINED | SYM_DCE_REF;
         if( LinkFlags & STRIP_CODE ) {
             DefStripImpSym(sym);
@@ -321,7 +321,8 @@ void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, o
 void KillDependantSyms( symbol *sym )
 /******************************************/
 {
-    if( !(FmtData.type & MK_PE) ) return;
+    if( (FmtData.type & MK_PE) == 0 )
+        return;
     sym = GetIATSym( sym );
     sym->info |= SYM_KILL;
 }
@@ -524,7 +525,7 @@ ordinal_t FindEntryOrdinal( targ_addr addr, group_entry *grp )
     exp->isexported = false;
     exp->isanonymous = false;
     exp->ordinal = max_ord + 1;
-    exp->ismovable = (grp->segflags & SEG_MOVABLE) != 0;
+    exp->ismovable = ( (grp->segflags & SEG_MOVABLE) != 0 );
     exp->next = NULL;
     exp->addr = addr;
     *owner = exp;

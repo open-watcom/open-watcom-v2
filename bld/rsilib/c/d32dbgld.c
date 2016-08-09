@@ -291,7 +291,7 @@ void D32SetCurrentObject( long cookie )
 
 /* Load an executable
 */
-int D32DebugLoad( const char *filename, char FarPtr cmdtail, TSF32 FarPtr tspv )
+int D32DebugLoad( const char *filename, const char FarPtr cmdtail, TSF32 FarPtr tspv )
 {
     int             result;
     char            cmdline[129];

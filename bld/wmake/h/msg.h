@@ -33,18 +33,6 @@
 
 #define YES_CHAR    'Y' /* must be upper case */
 
-#ifdef __WATCOMC__
-#define PrtMsgExit(x)   PrtMsgFtl x
-#else
-#define PrtMsgExit(x)   {PrtMsg x; exit( ExitSafe( EXIT_FATAL ) );}
-#endif
-
-#if defined( __WATCOMC__ ) && ( __WATCOMC__ > 1290 )
-#define _NORETURN __declspec(noreturn)
-#else
-#define _NORETURN
-#endif
-
 enum MsgClass {
     NUM_MSK     = 0x03ff,   /* these are valid msg numbers          */
 
@@ -65,17 +53,19 @@ enum MsgClass {
 
 
 enum {
+    START_OF__MSG_H = MSG_SPECIAL_BASE - 1,
     #define pick( name, string ) name,
     #include "_msg.h"
     #undef pick
+    MSG_MAX
 };
 
-extern unsigned FmtStr( char *buf, const char *fmt, ... );
+extern size_t   FmtStr( char *buf, const char *fmt, ... );
 extern void     PrtMsg( enum MsgClass num, ... );
-#if defined( __WATCOMC__ ) || !defined( NDEBUG )
-extern _NORETURN void   PrtMsgFtl( enum MsgClass num, ... );
+#if !defined( NDEBUG )
+extern void     massert( const char *expr, const char *file, int line );
 #endif
 extern void     Usage( void );
-extern BOOLEAN  GetYes( enum MsgClass querymsg );
+extern bool     GetYes( enum MsgClass querymsg );
 extern void     LogInit( const char *logname );
 extern void     LogFini( void );

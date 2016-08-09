@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,12 +36,12 @@
 #include "zerobits.h"
 #include "makeins.h"
 #include "blips.h"
+#include "insdead.h"
+#include "optab.h"
+
 
 extern  bool            UnChangeable(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
-extern  bool            SideEffect(instruction*);
-extern  bool            DoesSomething(instruction*);
-extern  void            DoNothing(instruction*);
 
 extern  void    FreeJunk( block *blk )
 /*************************************
@@ -157,7 +158,7 @@ extern  bool    DoScore( block *blk )
         /* May all intel designers rot in hell forever and ever, amen*/
         if( _OpIsCondition( ins->head.opcode ) && ins->result == NULL ) {
             if( had_condition ) {
-                blk->class |= MULTIPLE_EXITS;
+                _MarkBlkAttr( blk, BLK_MULTIPLE_EXITS );
             }
             had_condition = true;
         }
@@ -251,36 +252,36 @@ extern  byte    HasZero( score *sc, name *n )
     bits = 0;
     if( n->n.class == N_CONSTANT ) {
         if( n->c.const_type == CONS_ABSOLUTE ) {
-            if( n->c.int_value == 0 ) {
+            if( n->c.lo.int_value == 0 ) {
                 bits = LO_HALF | HI_HALF;
             } else if( n->n.size == 2 ) {
-                if( ( n->c.int_value & 0x00ff ) == 0 ) {
+                if( ( n->c.lo.int_value & 0x00ff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.int_value & 0xff00 ) == 0 ) {
+                if( ( n->c.lo.int_value & 0xff00 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             } else if( n->n.size == 4 ) {
-                if( ( n->c.int_value & 0x0000ffff ) == 0 ) {
+                if( ( n->c.lo.int_value & 0x0000ffff ) == 0 ) {
                     bits |= LO_HALF;
                 }
-                if( ( n->c.int_value & 0xffff0000 ) == 0 ) {
+                if( ( n->c.lo.int_value & 0xffff0000 ) == 0 ) {
                     bits |= HI_HALF;
                 }
             }
         }
     } else if( n->n.class == N_REGISTER ) {
         i  = n->r.reg_index;
-        if( ScoreLookup( &sc[ i ], ScZero ) ) {
+        if( ScoreLookup( &sc[i], ScZero ) ) {
             bits |= LO_HALF | HI_HALF;
         } else {
-            hi = ScoreList[ i ]->high;
-            lo = ScoreList[ i ]->low;
+            hi = ScoreList[i]->high;
+            lo = ScoreList[i]->low;
             if( hi != NO_INDEX && lo != NO_INDEX ) {
-                if( _IsZero( HasZero( sc, ScoreList[ lo ]->reg_name ) ) ) {
+                if( _IsZero( HasZero( sc, ScoreList[lo]->reg_name ) ) ) {
                     bits |= LO_HALF;
                 }
-                if( _IsZero( HasZero( sc, ScoreList[ hi ]->reg_name ) ) ) {
+                if( _IsZero( HasZero( sc, ScoreList[hi]->reg_name ) ) ) {
                     bits |= HI_HALF;
                 }
             }

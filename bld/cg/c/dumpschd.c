@@ -41,9 +41,9 @@
 #include "inssched.h"
 #include "dumpio.h"
 #include "dmpinc.h"
+#include "blktrim.h"
 
 extern  void            DumpIns(instruction *);
-extern  int             CountIns( block * );
 
 extern data_dag         *DataDag;
 

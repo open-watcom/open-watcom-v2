@@ -116,8 +116,7 @@ void InitArcBuffer( mod_entry * mod )
 /******************************************/
 /* set up the mod_entry arcdata field for dead code elimination */
 {
-    if( !( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute
-                && ( LinkState & SEARCHING_LIBRARIES ) ) ) {
+    if( !( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute && (LinkState & SEARCHING_LIBRARIES) ) ) {
         _PermAlloc( mod->x.arclist, sizeof(arcdata) - DIST_ONLY_SIZE );
     }
 }
@@ -187,11 +186,11 @@ void SetSegments( void )
     if( FmtData.type & MK_DOS16M ) {
         MakeDos16PM();
     }
-    if( !( LinkFlags & STRIP_CODE ) )
+    if( (LinkFlags & STRIP_CODE) == 0 )
         return;
     LinkState &= ~CAN_REMOVE_SEGMENTS;
     ObjFormat |= FMT_DEBUG_COMENT;
-    if( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         _LnkFree( ArcBuffer );
         ArcBuffer = NULL;
     }
@@ -205,7 +204,7 @@ void SetSegments( void )
     mod_entry **    currmod;
     unsigned        num_segdefs;
 
-    if( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         for( index = 1; index <= CurrModHandle; index++ ) {
             mod = ModTable[ index ];
             CurrMod = mod;
@@ -274,7 +273,7 @@ unsigned_16 LowestAncestor( unsigned_16 ovl1, section * sect )
     for( list = sect; list != NULL; list = list->parent ) {
         list->ovl_num |= SECT_VISITED;
     }
-    for( list = SectOvlTab[ ovl1 ]; !(list->ovl_num & SECT_VISITED); ) {
+    for( list = SectOvlTab[ ovl1 ]; (list->ovl_num & SECT_VISITED) == 0 ; ) {
         list = list->parent;
     }
     for( ; sect != NULL; sect = sect->parent ) {
@@ -298,7 +297,7 @@ void DefDistribSym( symbol * sym )
             seg = sym->p.seg;
             if( seg->iscode ) {      // if code..
                 NewRefVector( sym, sym->u.d.ovlref, arcs->ovlref );
-            } else if( !( sym->u.d.ovlstate & OVL_FORCE ) ) {
+            } else if( (sym->u.d.ovlstate & OVL_FORCE) == 0 ) {
                 // don't generate a vector.
                 sym->u.d.ovlstate |= OVL_FORCE | OVL_NO_VECTOR;
             }
@@ -494,7 +493,7 @@ static void ScanArcs( mod_entry *mod )
                         }
                     }
                 } else {
-                    if( !( sym->u.d.ovlstate & OVL_REF ) ) {
+                    if( (sym->u.d.ovlstate & OVL_REF) == 0 ) {
                         sym->u.d.ovlref = ovlnum;
                         sym->u.d.ovlstate |= OVL_REF;
                     } else {

@@ -68,7 +68,7 @@ unsigned short          const __lfn_rm_tb_segment = 0;
 
 static unsigned short   __lfn_rm_tb_selector = 0;
 
-#define TOTAL_RM_TB_SIZE_PARA   ((RM_TB_PARM1_SIZE + RM_TB_PARM2_SIZE + 15)/16)
+#define TOTAL_RM_TB_SIZE_PARA   __ROUND_UP_SIZE_TO_PARA( RM_TB_PARM1_SIZE + RM_TB_PARM2_SIZE )
 
 static void init( void )
 /**********************/

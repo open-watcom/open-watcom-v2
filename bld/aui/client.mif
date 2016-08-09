@@ -3,7 +3,7 @@
 aui_os2pm = 1
 !endif
 !endif
-!ifeq bootstrap 1
+!ifdef bootstrap
 aui_path = $(aui_dir)/$(objs_subdir)
 !else ifdef aui_os2pm
 aui_path = $(aui_dir)/$(objs_subdir).pm

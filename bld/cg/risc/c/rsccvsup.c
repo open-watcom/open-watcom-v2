@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,7 +36,6 @@
 #include "typedef.h"
 #include "procdef.h"
 #include "model.h"
-#include "ocentry.h"
 #include "zoiks.h"
 #include "cgaux.h"
 #include "cvdbg.h"
@@ -43,9 +43,9 @@
 #include "rscobj.h"
 #include "dbsyms.h"
 #include "cvsyms.h"
+#include "objout.h"
 #include "rsccvsup.h"
 
-extern  segment_id          DbgSegDef( const char *name );
 
 static  section_def         *CVSymMain;
 static  owl_section_handle  owlCVSym; //.debug$s for non-comdats .text

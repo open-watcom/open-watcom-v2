@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "zoiks.h"
 #include "coff.h"
 #include "cgaux.h"
-#include "ocentry.h"
 #include "optmain.h"
 #include "ppcenc.h"
 #include "ppcgen.h"
@@ -47,23 +47,19 @@
 #include "dbsyms.h"
 #include "object.h"
 #include "encode.h"
+#include "intrface.h"
+#include "targetin.h"
+#include "rgtbl.h"
+#include "rscobj.h"
+#include "split.h"
+#include "namelist.h"
 #include "feprotos.h"
+
 
 extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
-extern void GenCondJump( instruction * );
 
-extern void             ObjBytes( const void *buffer, int size );
-extern byte             RegTrans( hw_reg_set );
-extern void             OutReloc( label_handle, ppc_reloc, unsigned );
-extern hw_reg_set       StackReg( void );
-extern hw_reg_set       FrameReg( void );
-extern name             *DeAlias( name * );
-extern void             TryScrapLabel( label_handle );
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
-extern void             GenCondJump( instruction *cond );
-
-extern type_class_def   Unsigned[];
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )
@@ -155,7 +151,7 @@ static  gen_opcode  *FindOpcodes( instruction *ins )
     if( _IsFloating( ins->type_class ) ) {
         opcodes = &FPOpcodes[ins->head.opcode - FIRST_BINARY_OP][0];
     } else {
-        opcodes = &BinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class )][0];
+        opcodes = &BinaryOpcodes[ins->head.opcode - FIRST_BINARY_OP][_IsSigned( ins->type_class ) ? 1 : 0][0];
     }
     return( opcodes );
 }
@@ -174,8 +170,8 @@ static  gen_opcode  *FindImmedOpcodes( instruction *ins )
 }
 
 
-extern  void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
-//*******************************************************************************************
+static void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
+//******************************************************************************************
 {
     ppc_ins             encoding;
 
@@ -184,8 +180,8 @@ extern  void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c
 }
 
 
-extern  void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
-//*****************************************************************************************
+void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
+//*********************************************************************************
 {
     ppc_ins             encoding;
 
@@ -194,8 +190,8 @@ extern  void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, 
 }
 
 
-extern  void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
-//*******************************************************************************
+void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
+//***********************************************************************
 {
     ppc_ins             encoding;
 
@@ -204,8 +200,8 @@ extern  void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed 
 }
 
 
-extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
-//***********************************************************
+void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
+//***************************************************
 {
     ppc_ins             encoding;
 
@@ -218,8 +214,8 @@ extern  void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 }
 
 
-extern  void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
-/**************************************************************************************/
+void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
+/******************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -228,8 +224,8 @@ extern  void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displa
 }
 
 
-extern  void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
-/*********************************************************************************/
+static void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
+/********************************************************************************/
 {
     ppc_ins             encoding;
     int_32              loc;
@@ -241,8 +237,8 @@ extern  void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolut
 }
 
 
-extern  void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
-/*************************************************************************************/
+static void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
+/************************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -252,8 +248,8 @@ extern  void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer 
 }
 
 
-extern  void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
-/***************************************************************************/
+static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
+/**************************************************************************/
 {
     ppc_ins             encoding;
 
@@ -262,8 +258,8 @@ extern  void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 }
 
 
-extern  void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
-/******************************************************************/
+static void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
+/*****************************************************************/
 {
     ppc_ins             encoding;
 
@@ -272,8 +268,8 @@ extern  void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
 }
 
 
-extern  void    GenRAWINS( ppc_ins encoding )
-/*******************************************/
+static void    GenRAWINS( ppc_ins encoding )
+/******************************************/
 {
     _EmitIns( encoding );
 }
@@ -286,8 +282,8 @@ static  pointer symLabel( name *mem )
 }
 
 
-extern  type_length     TempLocation( name *temp )
-/************************************************/
+type_length     TempLocation( name *temp )
+/****************************************/
 {
     name                *base;
     type_length         offset;
@@ -547,8 +543,8 @@ static  void    DbgBlkInfo( instruction *ins )
 }
 
 
-extern  void    GenRET( void )
-/****************************/
+void    GenRET( void )
+/********************/
 {
    ppc_ins      encoding;
 
@@ -596,12 +592,12 @@ static  void    Encode( instruction *ins )
         assert( ins->operands[0]->c.const_type == CONS_HIGH_ADDR );
         assert( ins->result->n.class == N_REGISTER );
         /* addis k(r0) -> rn */
-        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value & 0xffff );
+        GenOPIMM( 15, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value & 0xffff );
         break;
     case G_MOVE_UI:
         /* a load of an unsigned 16-bit immediate */
         /* use or rd, imm(r0) */
-        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
+        GenOPIMM( 24, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
         break;
     case G_LEA:
         assert( ins->operands[0]->n.class == N_CONSTANT );
@@ -609,7 +605,7 @@ static  void    Encode( instruction *ins )
         switch( ins->operands[0]->c.const_type ) {
         case CONS_ABSOLUTE:
             // addi rd, imm(r0)
-            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.int_value );
+            GenOPIMM( 14, _NameReg( ins->result ), ZERO_SINK, ins->operands[0]->c.lo.int_value );
             break;
         case CONS_LOW_ADDR:
         case CONS_HIGH_ADDR:
@@ -684,17 +680,17 @@ static  void    Encode( instruction *ins )
         switch( ins->head.opcode ) {
         case OP_LSHIFT:
             // rlwinm dst,src,n,0,31-n
-            op2 = 31 - _FiveBits( ins->operands[1]->c.int_value );
-            b = _FiveBits( ins->operands[1]->c.int_value );
+            op2 = 31 - _FiveBits( ins->operands[1]->c.lo.int_value );
+            b = _FiveBits( ins->operands[1]->c.lo.int_value );
             GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
             break;
         case OP_RSHIFT:
             if( _IsSigned( ins->type_class ) ) {
                 GenOPINS( 31, 824, _NameReg( ins->result ),
-                    ins->operands[1]->c.int_value, _NameReg( ins->operands[0] ) );
+                    ins->operands[1]->c.lo.int_value, _NameReg( ins->operands[0] ) );
             } else {
                 // rlwinm dst,src,32-n,n,31
-                b = _FiveBits( ins->operands[1]->c.int_value );
+                b = _FiveBits( ins->operands[1]->c.lo.int_value );
                 op2 = ( b << 5 ) | 31;
                 b = 32 - b;
                 GenOPINS( 21, op2, _NameReg( ins->result ), b, _NameReg( ins->operands[0] ) );
@@ -709,7 +705,7 @@ static  void    Encode( instruction *ins )
                 s = _NameReg( ins->result );
                 a = _NameReg( ins->operands[0] );
             }
-            GenOPIMM( ops[0], s, a, ins->operands[1]->c.int_value );
+            GenOPIMM( ops[0], s, a, ins->operands[1]->c.lo.int_value );
             break;
         }
         break;
@@ -734,7 +730,7 @@ static  void    Encode( instruction *ins )
         if( _IsSigned( ins->type_class ) ) {
             op1 = 11;
         }
-        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.int_value );
+        GenCMPIMM( op1, _NameReg( ins->operands[0] ), ins->operands[1]->c.lo.int_value );
         break;
     case G_SIGN:
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -836,8 +832,8 @@ void    CodeLabel( label_handle label, unsigned alignment )
 }
 
 
-extern  void    CodeLineNum( cg_linenum line, bool label )
-/********************************************************/
+void    CodeLineNumber( cg_linenum line, bool label )
+/***************************************************/
 {
 #ifndef NDEBUG
     if( _IsTargetModel( ASM_OUTPUT ) ) {
@@ -881,8 +877,8 @@ static  gen_opcode  BranchOpcodes[][2] = {
     { INVERT, LT },                     /* OP_CMP_GREATER_EQUAL */
 };
 
-extern  void    GenJumpIf( instruction *ins, pointer label )
-/**********************************************************/
+static void    GenJumpIf( instruction *ins, pointer label )
+/*********************************************************/
 {
     gen_opcode  *ops;
 
@@ -898,12 +894,14 @@ extern  void    GenJumpIf( instruction *ins, pointer label )
 }
 
 
-extern  void    GenKillLabel( label_handle lbl )
-/*******************************************/
+void    GenKillLabel( label_handle lbl )
+/**************************************/
 {
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == false ) return;
-    // if( _TstStatus( lbl, OWL_OWNED ) != false ) return;
+    if( !_TstStatus( lbl, CODELABEL ) )
+        return;
+    // if( _TstStatus( lbl, OWL_OWNED ) )
+    //     return;
     TryScrapLabel( lbl );
 }
 
@@ -928,8 +926,8 @@ byte    ReverseCondition( byte cond )
 }
 
 
-extern  label_handle LocateLabel( instruction *ins, int index )
-/****************************************************************/
+static label_handle LocateLabel( instruction *ins, int index )
+/************************************************************/
 {
     if( index == NO_JUMP ) return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
@@ -949,8 +947,8 @@ static  block   *InsBlock( instruction *ins )
 }
 
 
-extern  void    GenCondJump( instruction *cond )
-/**********************************************/
+void    GenCondJump( instruction *cond )
+/**************************************/
 {
     label_handle        dest_false;
     label_handle        dest_true;
@@ -968,8 +966,8 @@ extern  void    GenCondJump( instruction *cond )
 }
 
 
-extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
-/************************************************************************/
+static void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
+/***********************************************************************/
 {
 #if 0
 
@@ -987,4 +985,45 @@ extern  void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
     ins = ins; sym = sym; type = type;
     _Zoiks( ZOIKS_091 );
 #endif
+}
+
+void    ObjEmitSeq( byte_seq *code )
+/**********************************/
+{
+    byte_seq_reloc      *curr;
+    back_handle         back;
+    type_length         loc;
+    byte_seq_len        i;
+    ppc_ins             *code_ptr;
+    ppc_ins             opcode;
+    pointer             reloc_sym;
+    owl_reloc_type      reloc_type;
+
+    assert( code->length % 4 == 0 );
+    curr = SortListReloc( code->relocs );
+    code_ptr = (ppc_ins *)code->data;
+    for( i = 0; i < code->length; i += 4 ) {
+        opcode = *code_ptr++;
+        reloc_type = 0;
+        reloc_sym = NULL;
+        while( curr != NULL && curr->off == i ) {
+            back = SymBack( curr->sym );
+            switch( curr->type ) {
+            case OWL_RELOC_FP_OFFSET:
+                loc = TempLocation( (name *)back );
+                if( loc > 32767 ) {
+                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                }
+                opcode |= _SignedImmed( loc );
+                break;
+            case OWL_RELOC_PAIR:
+                break;
+            default:
+                reloc_type = curr->type;
+                reloc_sym = back->lbl;
+            }
+            curr = curr->next;
+        }
+        EmitInsReloc( opcode, reloc_sym, reloc_type );
+    }
 }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,42 +47,35 @@
 #include "dbsyms.h"
 #include "blips.h"
 #include "redefby.h"
+#include "intrface.h"
+#include "makeblk.h"
+#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
+#include "x86objd.h"
+#include "x86obj.h"
+#endif
+#include "rgtbl.h"
+#include "insutil.h"
+#include "namelist.h"
+#include "typemap.h"
+#include "bldcall.h"
+#include "parmreg.h"
 #include "feprotos.h"
 
 
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
-extern  hw_reg_set      ParmReg(type_class_def,type_length,type_length,call_state*);
 extern  hw_reg_set      CallZap(call_state*);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
-extern  hw_reg_set      ActualParmReg(hw_reg_set);
 extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
-extern  void            AddIns(instruction*);
-extern  type_length     PushSize(type_length);
-extern  type_class_def  ReturnClass(type_def*,call_attributes);
-extern  type_class_def  InitCallState(type_def*);
-extern  type_class_def  TypeClass(type_def*);
-extern  void            GenBlock( block_class, int );
 extern  void            Generate(bool);
-extern  void            EnLink(label_handle,bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
-extern  void            NewProc(int);
 extern  name            *StReturn(an,type_def*,instruction**);
-extern  hw_reg_set      StackReg(void);
-extern  name            *SAllocIndex(name*,name*,type_length,type_class_def,type_length);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
 extern  void            TNZapParms(void);
 extern  void            PushInSameBlock(instruction*);
-#if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-extern  void            TellObjVirtFuncRef(void *);
-#endif
 extern  void            TRAddParm(instruction*,instruction*);
 extern  void            TRDeclareParm(instruction*);
-extern  type_def        *ClassType(type_class_def);
 extern  bool            SegIsCS( name * );
-extern  type_length     ParmAlignment( type_def * );
-extern  void            SuffixIns( instruction *, instruction * );
 
 extern  bool            BlipsOn;
 
@@ -99,7 +93,7 @@ extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
     NewProc( FELexLevel( sym ) );
     EnLink( AskForSymLabel( sym, CG_FE ), false );
     CurrProc->label = CurrBlock->label;
-    CurrBlock->class |= BIG_LABEL;
+    _MarkBlkAttr( CurrBlock, BLK_BIG_LABEL );
     class = InitCallState( tipe );
     AddIns( MakeNop() );
     return( class );
@@ -153,7 +147,8 @@ extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
         class = CallState( aux, tipe, new->state );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
         cookie = FEAuxInfo( aux, VIRT_FUNC_REFERENCE );
-        if( cookie != NULL ) TellObjVirtFuncRef( cookie );
+        if( cookie != NULL )
+            TellObjVirtFuncRef( cookie );
 #elif _TARGET & _TARG_PPC
         CurrProc->targ.toc_clobbered = true;
 #endif
@@ -190,8 +185,8 @@ extern  void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
 static  void    LinkParmIns( instruction *parm_def, instruction *ins ) {
 /**********************************************************************/
 
-    ins->operands[ 2 ] = (name *)parm_def; /* link them together*/
-    parm_def->operands[ 2 ] = (name *)ins;
+    ins->operands[2] = (name *)parm_def; /* link them together*/
+    parm_def->operands[2] = (name *)ins;
     ins->ins_flags |= INS_PARAMETER;
     parm_def->ins_flags |= INS_PARAMETER;
 }
@@ -504,7 +499,7 @@ extern  void            PushParms( pn parm, call_state *state ) {
                 }
                 ins = addr->u.i.ins;
                 PushInSameBlock( ins );
-                if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && !( addr->flags & FL_VOLATILE ) ) {
+                if( ins->head.opcode == OP_MOV && !IsVolatile( ins->operands[0] ) && (addr->flags & FL_VOLATILE) == 0 ) {
                     push_ins = PushOneParm( ins, ins->operands[0], ins->type_class, parm->offset, state );
                     // ins->result = ins->operands[0]; -- was this useful? BBB
                     FreeIns( ins );
@@ -628,7 +623,7 @@ extern  void    BGZapBase( name *base, type_def *tipe ) {
 
     if( base == NULL ) return;
     if( _IsntModel( FORTRAN_ALIASING ) ) return;
-    if( !( tipe->attr & TYPE_POINTER ) ) return;
+    if( (tipe->attr & TYPE_POINTER) == 0 ) return;
     ins = MakeNop();
     if( DummyIndex == NULL )
         DummyIndex = AllocTemp( WD );
@@ -698,7 +693,7 @@ extern  void    BGReturn( an retval, type_def *tipe ) {
     AddIns( ins );
     if( last_ins != NULL )
         AddIns( last_ins );
-    GenBlock( RETURN, 0 );
+    GenBlock( BLK_RETURN, 0 );
     if( AddrList != NULL ) {
         _Zoiks( ZOIKS_003 );
     }

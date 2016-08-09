@@ -44,8 +44,8 @@ version_res_dll_nt_x64 = version.res
 
 !ifdef sys_dll
 
-rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
-!ifndef __WATCOM__
+rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
@@ -54,8 +54,8 @@ rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu))
 
 !else
 
-rcsdll.lib: $(objs)
-!ifndef __WATCOM__
+rcsdll.lib: $(objs) $(__MAKEFILES__)
+!ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else
     $(librarian) $(libflags) $(objs)

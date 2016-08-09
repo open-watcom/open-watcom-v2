@@ -45,50 +45,45 @@
 
 
 _WCRTLINK int lock( int handle, unsigned long offset, unsigned long nbytes )
-    {
-#if defined(__WARP__)
-        APIRET          rc;
-        FILELOCK        lock_block;
+{
+#ifdef __OS2__
+    APIRET          rc;
+  #if defined(__WARP__)
+    FILELOCK        lock_block;
 
-        __handle_check( handle, -1 );
-        lock_block.lOffset = offset;
-        lock_block.lRange = nbytes;
-        /* last 2 arguments are not documented */
-        rc = DosSetFileLocks( handle, NULL, &lock_block, 0, 0 );
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );
-#elif defined(__OS2_286__)
-        APIRET          rc;
-/* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
-#ifdef INCL_16  
-        FILELOCK        flock;
+    __handle_check( handle, -1 );
+    lock_block.lOffset = offset;
+    lock_block.lRange = nbytes;
+    /* last 2 arguments are not documented */
+    rc = DosSetFileLocks( handle, NULL, &lock_block, 0, 0 );
+  /* __OS2_286__ */
+  #elif defined( INCL_16 )
+    /* The DDK prototype is different from the OS/2 1.x Toolkit! Argh! */
+    FILELOCK        flock;
 
-        __handle_check( handle, -1 );
-        flock.lOffset = offset;
-        flock.lRange  = nbytes;
-        rc = DosFileLocks( handle, NULL, &flock );
-#else
-        LONG lock_block[2];
+    __handle_check( handle, -1 );
+    flock.lOffset = offset;
+    flock.lRange  = nbytes;
+    rc = DosFileLocks( handle, NULL, &flock );
+  #else
+    LONG lock_block[2];
 
-        __handle_check( handle, -1 );
-        lock_block[0] = offset;
-        lock_block[1] = nbytes;
-        rc = DosFileLocks( handle, NULL, &lock_block );
-#endif  
-        if( rc != 0 ) {
-            return( __set_errno_dos( rc ) );
-        }
-        return( 0 );
-#else
-        tiny_ret_t rc;
-
-        __handle_check( handle, -1 );
-        rc = TinyLock( handle, offset, nbytes );
-        if( TINY_ERROR(rc) ) {
-            return( __set_errno_dos( TINY_INFO(rc) ) );
-        }
-        return( 0 );
-#endif
+    __handle_check( handle, -1 );
+    lock_block[0] = offset;
+    lock_block[1] = nbytes;
+    rc = DosFileLocks( handle, NULL, &lock_block );
+  #endif  
+    if( rc != 0 ) {
+        return( __set_errno_dos( rc ) );
     }
+#else
+    tiny_ret_t rc;
+
+    __handle_check( handle, -1 );
+    rc = TinyLock( handle, offset, nbytes );
+    if( TINY_ERROR(rc) ) {
+        return( __set_errno_dos( TINY_INFO(rc) ) );
+    }
+#endif
+    return( 0 );
+}

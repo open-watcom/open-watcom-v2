@@ -43,13 +43,11 @@
 #include "makeaddr.h"
 #include "bldsel.h"
 #include "bldselco.h"
+#include "makeblk.h"
+#include "cgsrtlst.h"
 
-extern  void            AddTarget(label_handle,bool);
-extern  void            EnLink(label_handle,bool);
-extern  void            AddIns(instruction*);
+
 extern  void            Generate(bool);
-extern  void            GenBlock( block_class, int );
-extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
 
 /* forward declarations */
 extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );
@@ -449,7 +447,7 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
     i = 0;
     targets = 0;
     for( ;; ) {
-        if( table->cases[ i ] != other ) {
+        if( table->cases[i] != other ) {
             ++targets;
         }
         if( ++i == table->size ) break;
@@ -457,11 +455,11 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
     if( other != NULL ) {
         ++targets;
     }
-    GenBlock( SELECT, targets );
+    GenBlock( BLK_SELECT, targets );
     i = 0;
     for( ;; ) {
-        if( table->cases[ i ] != other ) {
-            AddTarget( table->cases[ i ], false );
+        if( table->cases[i] != other ) {
+            AddTarget( table->cases[i], false );
         }
         if( ++i == table->size ) break;
     }
@@ -483,7 +481,7 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     i = 0;
     targets = 0;
     for(;;) {
-        if( table->cases[ i ] != other ) {
+        if( table->cases[i] != other ) {
             ++targets;
         }
         if( ++i == table->size ) break;
@@ -491,11 +489,11 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
     if( other != NULL ) {
         ++targets;
     }
-    GenBlock( SELECT, targets );
+    GenBlock( BLK_SELECT, targets );
     i = 0;
     for(;;) {
-        if( table->cases[ i ] != other ) {
-            AddTarget( table->cases[ i ], false );
+        if( table->cases[i] != other ) {
+            AddTarget( table->cases[i], false );
         }
         if( ++i == table->size ) break;
     }

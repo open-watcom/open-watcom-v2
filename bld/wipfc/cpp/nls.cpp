@@ -33,7 +33,7 @@
 #endif
 #include <cstdlib>
 #include <cstring>
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
     #include <clocale>
 #else
     #include <mbctype.h>
@@ -56,12 +56,12 @@ Nls::Nls( const char *loc ) : bytes( 0 ), useDBCS( false )
 /*****************************************************************************/
 void Nls::setCodePage( int cp )
 {
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
     _setmbcp( cp ); //doesn't do much of anything in OW
 #endif
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
         path += '\\';
 #else
         path += '/';
@@ -109,7 +109,7 @@ void Nls::setLocalization( const char *loc)
 {
     std::string path( Environment.value( "WIPFC" ) );
     if( path.length() )
-#ifndef __UNIX__
+#if !defined( __UNIX__ ) && !defined( __APPLE__ )
         path += '\\';
 #else
         path += '/';
@@ -121,7 +121,7 @@ void Nls::setLocalization( const char *loc)
         throw FatalError( ERR_LANG );
     readNLS( nls );
     std::fclose( nls );
-#ifdef __UNIX__
+#if defined( __UNIX__ ) || defined( __APPLE__ )
     std::setlocale( LC_ALL, loc );  //this doesn't really do anything in OW either
 #endif
     setCodePage( country.codePage );

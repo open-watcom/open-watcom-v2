@@ -286,7 +286,7 @@ void DoRM( const char *f )
 }
 
 /* DoRMdir - perform RM on a specified directory */
-void DoRMdir( const char *dir )
+static void DoRMdir( const char *dir )
 {
     unsigned    attribute;
     int         rc;

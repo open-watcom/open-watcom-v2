@@ -27,9 +27,9 @@ test_objs       =   dwdump$(obj) &
 test_objs       +=  trmem$(obj)
 !endif
 
-dwdump$(exe) : $(test_objs) $(orl_lib)
-!ifeq bootstrap 1
-        $(cc) -o $^@ $(test_objs) $(orl_lib) $(clib_dir)/$(objs_subdir)/libwatcom.a
+dwdump$(exe) : $(test_objs) $(orl_lib) $(__MAKEFILES__)
+!ifdef bootstrap
+    $(cc) -o $^@ $(test_objs) $(orl_lib) $(clib_dir)/$(objs_subdir)/libwatcom.a
 !else
-        $(linker) name $@ $(lflags) file {$(test_objs)}
+    $(linker) name $@ $(lflags) file {$(test_objs)}
 !endif

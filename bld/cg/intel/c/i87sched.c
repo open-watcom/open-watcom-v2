@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,15 +34,18 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "cgmem.h"
-#include "gen8087.h"
 #include "i87sched.h"
 #include "data.h"
 #include "x87.h"
 #include "edge.h"
 #include "redefby.h"
+#include "cgsrtlst.h"
+#include "indvars.h"
+#include "loopopts.h"
+#include "i87data.h"
+#include "namelist.h"
+#include "optab.h"
 
-
-extern  int     Max87Stk;
 
 extern  instruction     *PrefFXCH( instruction *ins, int i );
 extern  instruction     *SuffFXCH( instruction *ins, int i );
@@ -50,11 +54,7 @@ extern  instruction     *SuffFSTPRes(instruction *,name *,result_type );
 extern  name            *ST(int);
 extern  int             NumOperands(instruction *);
 extern  int             FPRegNum(name *);
-extern  void            *SortList(void *,unsigned,bool (*)(void *,void *) );
-extern  void            DoNothing(instruction *);
 extern  int             Count87Regs(hw_reg_set);
-extern  name            *DeAlias(name *);
-extern  block           *AddPreBlock( block *postblk );
 extern  void            RevCond( instruction * );
 extern  int             FPStkReq( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
@@ -172,7 +172,7 @@ extern  int     FPStkOver( instruction *ins, int stk_depth )
 
     max_depth = 0;
     for( i = ins->sequence + 1; i < MaxSeq; ++i ) {
-        depth = SeqMaxDepth[ i ] - SeqCurDepth[ i ];
+        depth = SeqMaxDepth[i] - SeqCurDepth[i];
         if( depth > max_depth ) max_depth = depth;
     }
     return( SeqMaxDepth[ins->sequence] - SeqCurDepth[ins->sequence] + max_depth + stk_depth - Max87Stk );
@@ -198,9 +198,9 @@ extern  void    FPCalcStk( instruction *ins, int *pdepth )
 {
     int         affect;
 
-    if( FPStackIns( ins ) ) SeqMaxDepth[ ins->sequence ] = ins->t.stk_max;
+    if( FPStackIns( ins ) ) SeqMaxDepth[ins->sequence] = ins->t.stk_max;
     affect = ins->stk_entry - ins->stk_exit;
-    SeqCurDepth[ ins->sequence ] += affect;
+    SeqCurDepth[ins->sequence] += affect;
     ins->stk_exit = *pdepth;
     ins->stk_entry = *pdepth + affect;
     ins->s.stk_depth = *pdepth + ins->s.stk_extra;
@@ -230,7 +230,7 @@ static  fp_attr FPAttr( instruction *ins ) {
     if( _OpIsCall( ins->head.opcode ) && ins->result != NULL ) {
         if( ins->result->n.class != N_REGISTER ) return( POPS_ALL );
         if( !HW_COvlap( ins->result->r.reg, HW_FLTS ) ) return( POPS_ALL );
-        return( PUSHES+POPS_ALL );
+        return( PUSHES + POPS_ALL );
     }
     if( ins->u.gen_table->generate == G_FCHOP ) return( NEEDS_ST0 );
     if( !_GenIs8087( ins->u.gen_table->generate ) ) {
@@ -362,8 +362,8 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             break;
         case G_MCOMP:
             // if( temp->actual_locn != ACTUAL_1 ) _Zoiks( ZOIKS_076 );
-            ins->operands[ 0 ] = ST( ACTUAL_1 );
-            ins->operands[ 1 ] = ST( 0 );
+            ins->operands[0] = ST( ACTUAL_1 );
+            ins->operands[1] = ST( 0 );
             if( temp->actual_locn != ACTUAL_1 ) {
                 byte    *actual_owner;
 
@@ -384,9 +384,9 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             } else {
                 ins->u.gen_table = RRFBINP;
             }
-            ins->operands[ 0 ] = ST( temp->actual_locn );
-            ins->result = ins->operands[ 0 ];
-            ins->operands[ 1 ] = ST( 0 );
+            ins->operands[0] = ST( temp->actual_locn );
+            ins->result = ins->operands[0];
+            ins->operands[1] = ST( 0 );
             InsLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
             DecrementAll();
             break;
@@ -399,13 +399,13 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             temp->actual_locn = ACTUAL_0;
             if( ins->u.gen_table->generate == G_MFLD ) {
                 // PushStack( ins );
-                ins->operands[ 0 ] = ST( ACTUAL_0 );
+                ins->operands[0] = ST( ACTUAL_0 );
             } else {
                 GetToTopOfStack( ins, VIRTUAL_0 );
-                ins->operands[ 0 ] = ST( temp->actual_locn );
+                ins->operands[0] = ST( temp->actual_locn );
             }
         } else {
-            ins->operands[ 0 ] = ST( temp->actual_locn );
+            ins->operands[0] = ST( temp->actual_locn );
             // if( attr & PUSHES ) {
             //     PushStack( ins );
             // }
@@ -428,7 +428,7 @@ static  void    SetResultReg( instruction *ins, int virtual_reg ) {
 /**********************************************************/
 
     ins->result = ST( InsLoc( ins, virtual_reg ) );
-    ins->operands[ 0 ] = ins->result;
+    ins->operands[0] = ins->result;
 }
 
 
@@ -810,7 +810,7 @@ static  bool    OKToCache( temp_entry *temp ) {
     ins = temp->first;
     if( ins->num_operands <= NumOperands( ins ) )
         return( true );
-    seg = ins->operands[ ins->num_operands - 1 ];
+    seg = ins->operands[ins->num_operands - 1];
     for( ins = ins->head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         /*
          * Might be a segment load or some other sort of nonsense here.
@@ -830,7 +830,7 @@ static  void    CacheTemps( block *blk ) {
 
     Entry = NULL;
     Exit = NULL;
-    if( (blk->class & LOOP_HEADER) && blk->inputs == 2 && blk->targets == 2 ) {
+    if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->inputs == 2 && blk->targets == 2 ) {
         if( blk->edge[0].destination.u.blk == blk ) {
             Exit = blk->edge[1].destination.u.blk;
             exit_edge = &blk->edge[1];
@@ -851,7 +851,7 @@ static  void    CacheTemps( block *blk ) {
             }
         }
         if( Entry != NULL ) {
-            if( Entry->class & JUMP ) {
+            if( _IsBlkAttr( Entry, BLK_JUMP ) ) {
                 if( Exit->inputs != 1 ) {
                     Exit = AddPreBlock( Exit );
                     MoveEdge( exit_edge, Exit );
@@ -884,7 +884,7 @@ static  void    CacheTemps( block *blk ) {
             temp->global = true;
         } else {
             if( !temp->defined ) continue; // I'm not sure if these save anything
-            if( temp->defined && temp->first->u.gen_table->generate!=G_MFST ) continue;
+            if( temp->defined && temp->first->u.gen_table->generate != G_MFST ) continue;
             if( RegAction( temp->last ) == NULL ) continue;
             if( temp->first == temp->last ) continue;
         }
@@ -933,19 +933,19 @@ extern  void    FPPreSched( block *blk ) {
     SeqCurDepth = CGAlloc( MaxSeq * sizeof( *SeqCurDepth ) );
     SeqMaxDepth = CGAlloc( MaxSeq * sizeof( *SeqMaxDepth ) );
     for( i = 0; i < MaxSeq; ++i ) {
-        SeqCurDepth[ i ] = SEQ_INIT_VALUE;
-        SeqMaxDepth[ i ] = 0;
+        SeqCurDepth[i] = SEQ_INIT_VALUE;
+        SeqMaxDepth[i] = 0;
     }
     for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
-        if( SeqCurDepth[ ins->sequence ] == SEQ_INIT_VALUE ) {
+        if( SeqCurDepth[ins->sequence] == SEQ_INIT_VALUE ) {
             if( FPStackIns( ins ) ) {
-                SeqCurDepth[ ins->sequence ] = ins->stk_exit;
+                SeqCurDepth[ins->sequence] = ins->stk_exit;
             }
         }
     }
     for( i = 0; i < MaxSeq; ++i ) {
-        if( SeqCurDepth[ i ] == SEQ_INIT_VALUE ) {
-            SeqCurDepth[ i ] = 0;
+        if( SeqCurDepth[i] == SEQ_INIT_VALUE ) {
+            SeqCurDepth[i] = 0;
         }
     }
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -959,9 +959,9 @@ extern  void    FPPreSched( block *blk ) {
          */
         ins->s.stk_extra = FPStkReq( ins ); // BBB - March 22, 1994
         depth = InsMaxDepth( ins ) + ins->s.stk_extra;
-        ins->t.stk_max = SeqMaxDepth[ ins->sequence ];
-        if( depth > SeqMaxDepth[ ins->sequence ] ) {
-            SeqMaxDepth[ ins->sequence ] = depth;
+        ins->t.stk_max = SeqMaxDepth[ins->sequence];
+        if( depth > SeqMaxDepth[ins->sequence] ) {
+            SeqMaxDepth[ins->sequence] = depth;
         }
     }
 }
@@ -1040,7 +1040,7 @@ static  void    ReOrderForCall( instruction *ins ) {
 
     int         i,count;
 
-    count = Count87Regs( ins->operands[ CALL_OP_USED ]->r.reg );
+    count = Count87Regs( ins->operands[CALL_OP_USED]->r.reg );
     XchForCall( ins, count-1 );
     for( i = 0; i < count; ++i ) {
         PopStack( ins );
@@ -1066,7 +1066,7 @@ extern  void    FPPostSched( block *blk ) {
     InitGlobalTemps();
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next->head.next ) {
         next = ins;
-        if( !( ins->ins_flags & FP_INS_INTRODUCED ) ) {
+        if( (ins->ins_flags & FP_INS_INTRODUCED) == 0 ) {
             attr = FPAttr( ins );
             temp = LookupTempEntry( ins->result );
             if( attr & NEEDS_ST0 && temp == NULL ) {

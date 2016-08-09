@@ -36,67 +36,73 @@
 
 #include "cypfunc.h"
 
-extern  byte    *Copy( const void *x, void *y, uint len ) {
-/*********************************************************/
-
+void    *Copy( const void *x, void *y, size_t len )
+/*************************************************/
+{
     return( CypCopy( x, y, len ) );
 }
 
-extern  bool    Equal( const void *src, const void *dst, int length ) {
-/*********************************************************************/
+void    *Fill( void *start, size_t len, unsigned char filler )
+/************************************************************/
+{
+    return( CypFill( start, len, filler ) );
+}
 
+bool    Equal( const void *src, const void *dst, size_t length )
+/**************************************************************/
+{
     return( CypEqual( src, dst, length ) );
 }
 
-extern  char    *CopyStr( const char *src, char *dst ) {
-/******************************************************/
-
+char    *CopyStr( const char *src, char *dst )
+/********************************************/
+{
     return( (char *)CypCopy( src, dst, CypLength( src ) + 1 ) - 1 );
 }
 
-extern  uint    Length( const char *string ) {
-/********************************************/
-
+size_t  Length( const char *string )
+/**********************************/
+{
     return( CypLength( string ) );
 }
 
 #else
 
-extern  byte    *Copy( const void *x, void *y, uint len ) {
-/*********************************************************/
-
+void    *Copy( const void *x, void *y, size_t len )
+/*************************************************/
+{
     return( memcpy( y, x, len ) );
 }
 
-extern  char    *Fill( void *start, uint len, byte filler ) {
-/***********************************************************/
-
-    return( memset( start,  filler, len  ) );
+void    *Fill( void *start, size_t len, unsigned char filler )
+/************************************************************/
+{
+    return( memset( start, filler, len ) );
 }
 
-extern  bool    Equal( const void *src, const void *dst, int length ) {
-/*********************************************************************/
-
+bool    Equal( const void *src, const void *dst, size_t length )
+/**************************************************************/
+{
     return( memcmp( src, dst, length ) == 0 );
 }
 
-extern  char    *CopyStr( const char *src, char *dst ) {
-/******************************************************/
-
+char    *CopyStr( const char *src, char *dst )
+/********************************************/
+{
     strcpy( dst, src );
     return( dst + strlen( dst ) );
 }
 
-extern  uint    Length( const char *string ) {
-/********************************************/
-
+size_t  Length( const char *string )
+/**********************************/
+{
     return( strlen( string ) );
 }
 
 #endif
 
-extern  uint_32 CountBits( uint_32 value )
-/****************************************/
+uint_32 CountBits( uint_32 value )
+/********************************/
 {
     uint_32     temp;
 

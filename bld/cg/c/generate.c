@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,40 +49,34 @@
 #include "peepopt.h"
 #include "memlimit.h"
 #include "blips.h"
-#include "ocentry.h"
 #include "optmain.h"
+#include "opttell.h"
 #include "object.h"
 #include "regalloc.h"
+#include "targetin.h"
+#include "makeblk.h"
+#include "indvars.h"
+#include "loopopts.h"
+#include "nullprop.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "insutil.h"
+#include "insdead.h"
+#include "namelist.h"
+#include "typemap.h"
+#include "blktrim.h"
 #include "feprotos.h"
 
 
-extern  void            FreeAName( name * );
-extern  void            AddAnIns( block *, instruction * );
-extern  void            UnFixEdges( void );
 extern  void            AssignTemps( void );
 extern  void            AssgnMoreTemps( block_num );
-extern  void            FixEdges( void );
 extern  bool            CommonSex( bool );
 extern  bool            SetOnCondition( void );
-extern  bool            BlockTrim( void );
-extern  bool            DeadBlocks( void );
 extern  void            MakeFlowGraph( void );
-extern  void            InitRegTbl( void );
-extern  bool            LoopInvariant( void );
-extern  bool            LoopEnregister( void );
-extern  bool            CommonInvariant( void );
-extern  bool            TransLoops( bool );
-extern  bool            IndVars( void );
-extern  bool            BlkTooBig( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
 extern  void            FreeAConflict( conflict_node * );
-extern  void            FreeProc( void );
-extern  void            GenProlog( void );
-extern  void            GenObject( void );
-extern  void            SortBlocks( void );
-extern  void            InitNames( void );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
 extern  void            InitSegment( void );
@@ -89,34 +84,25 @@ extern  void            FiniSegment( void );
 extern  void            PushPostOps( void );
 extern  void            DeadTemps( void );
 extern  void            AxeDeadCode( void );
-extern  bool            InsDead( void );
 extern  void            OptSegs( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
 extern  void            MakeConflicts( void );
 extern  void            MakeLiveInfo( void );
 extern  void            LiveInfoUpdate( void );
-extern  int             ExpandOps( bool );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  void            LoopRegInvariant( void );
 extern  void            Score( void );
 extern  void            MergeIndex( void );
 extern  void            ScoreInit( void );
 extern  void            ScoreFini( void );
-extern  type_class_def  TypeClass( type_def * );
-extern  hw_reg_set      AllCacheRegs( void );
 extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
 extern  void            ProcMessage( msg_class );
-extern  void            TellFreeAllLabels( void );
-extern  bool            FixReturns( void );
-extern  instruction_id  Renumber( void );
 extern  void            SplitVars( void );
-extern  name            *DeAlias( name * );
 extern  void            AssignOtherLocals( void );
 extern  void            BuildIndex( void );
 extern  bool            CreateBreak( void );
@@ -131,10 +117,8 @@ extern  void            LdStCompress( void );
 extern  void            MemtoBaseTemp( void );
 extern  void            FixMemBases( void );
 extern  bool            BGInInline( void );
-extern  void            AddCacheRegs( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
-extern  void            PropNullInfo( void );
 
 static  bool            abortCG;
 
@@ -279,7 +263,7 @@ static  void            PostOptimize( void )
     }
     MergeIndex();
     if( _IsntModel( NO_OPTIMIZATION ) ) {
-    #if !(_TARGET & _TARG_RISC)
+    #if (_TARGET & _TARG_RISC) == 0
         //
         // Calling Conditions() at this point has nice optimization effect,
         // but doesn't working correctly right now. It optimizes conditions
@@ -307,7 +291,7 @@ static  void            PostOptimize( void )
         Score();
         DeadInstructions(); // cleanup junk after Score()
         if( !BlockByBlock ) LoopRegInvariant();
-    #if !(_TARGET & _TARG_RISC)
+    #if (_TARGET & _TARG_RISC) == 0
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
             Conditions();
@@ -339,7 +323,7 @@ static  void    FreeExtraTemps( name *last, block_num id )
     name        **owner;
     name        *temp;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for( ;; ) {
         temp = *owner;
         if( temp == last ) break;
@@ -380,7 +364,7 @@ static  void    ForceTempsMemory( void )
             op->v.conflict = NULL;
         }
     }
-    LastTemp = Names[ N_TEMP ];
+    LastTemp = Names[N_TEMP];
 }
 
 
@@ -409,7 +393,7 @@ static  void    BlockToCode( bool partly_done )
         HeadBlock->next_block->prev_block = NULL;
     }
     /* Kludge - need a pointer to the next block for CALL_LABEL - puke! */
-    if( HeadBlock->class & CALL_LABEL ) {
+    if( _IsBlkAttr( HeadBlock, BLK_CALL_LABEL ) ) {
         HeadBlock->v.next = HeadBlock->next_block;
     }
     HeadBlock->next_block = NULL;
@@ -490,7 +474,7 @@ static  void    BlockToCode( bool partly_done )
 
     /* generate the code for the block*/
 
-    if( CurrBlock->class & RETURN ) {
+    if( _IsBlkAttr( CurrBlock, BLK_RETURN ) ) {
         GenObject();
         FiniStackMap();
         FreeProc();
@@ -523,7 +507,7 @@ static  void    FlushBlocks( bool partly_done )
     }
     curr = CurrBlock;
     BlockByBlock = true;
-    classes = EMPTY;
+    classes = 0;
     for( blk = HeadBlock; blk != NULL; blk = next ) {
         next = blk->next_block;
         classes |= blk->class;
@@ -544,7 +528,7 @@ static  void    FreeExtraSyms( name *last )
     name        *temp;
     name        *next;
 
-    owner = &Names[ N_TEMP ];
+    owner = &Names[N_TEMP];
     for(;;) {
         temp = *owner;
         if( temp == last ) break;
@@ -560,12 +544,12 @@ static  void    FreeExtraSyms( name *last )
         next = temp->n.next_name;
         FreeAName( temp );
     }
-    Names[ N_CONSTANT ] = NULL;
+    Names[N_CONSTANT] = NULL;
     for( temp = Names[N_INDEXED]; temp != NULL; temp = next ) {
         next = temp->n.next_name;
         FreeAName( temp );
     }
-    Names[ N_INDEXED ] = NULL;
+    Names[N_INDEXED] = NULL;
 }
 
 

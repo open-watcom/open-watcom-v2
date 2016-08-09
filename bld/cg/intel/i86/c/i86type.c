@@ -34,7 +34,7 @@
 #include "typedef.h"
 #include "types.h"
 #include "model.h"
-#include "targsys.h"
+
 
 //type_def THugeCP= {  TY_LONG_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };
 type_def TLongCP= {  TY_LONG_CODE_PTR,4,      TYPE_POINTER + TYPE_CODE };

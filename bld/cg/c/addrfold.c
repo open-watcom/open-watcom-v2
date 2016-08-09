@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,14 +45,12 @@
 #include "makeaddr.h"
 #include "addrfold.h"
 #include "namelist.h"
+#include "makeblk.h"
+#include "typemap.h"
 
-extern  type_class_def  TypeClass(type_def*);
-extern  void            AddIns(instruction*);
-extern  name            *AllocIndex(name*,name*,type_length,type_class_def);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
+
 extern  cg_type         NamePtrType(name*);
 extern  void            BGDone(an);
-extern  i_flags         AlignmentToFlags( type_length );
 
 static  void    LoadTempInt( an addr );
 
@@ -341,7 +340,7 @@ extern  bool    CypAddrPlus( an l_addr, an r_addr, type_def *tipe ) {
     CheckPointer( r_addr );
     if( r_addr->format == NF_NAME )
         return( false );
-    action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
+    action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
     if( action == ADD_LA )
         return( true );
     if( action == ADD_RA )
@@ -397,7 +396,7 @@ extern  an      AddrPlus( an l_addr, an r_addr, type_def *tipe ) {
         return( NULL );
     addr = NewAddrName();
     for(;;) {
-        action = AddTable[ Idx[ r_addr->class ] ][ Idx[ l_addr->class ] ];
+        action = AddTable[Idx[r_addr->class]][Idx[l_addr->class]];
         switch( action ) {
         case UNEXPECTED:
             AddrFree( addr );
@@ -652,7 +651,7 @@ extern  name    *GetValue( an addr, name *suggest ) {
     if( op->n.class == N_TEMP
      && op->v.symbol == NULL
      && ( addr->flags & FL_STACKABLE )
-     && !( addr->flags & FL_NEVER_STACK ) ) {
+     && (addr->flags & FL_NEVER_STACK) == 0 ) {
         FPSetStack( op );
     }
     return( op );

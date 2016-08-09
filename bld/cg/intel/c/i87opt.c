@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "gen8087.h"
 #include "cgmem.h"
 #include "zoiks.h"
 #include "makeins.h"
@@ -39,20 +39,21 @@
 #include "x87.h"
 #include "namelist.h"
 #include "redefby.h"
+#include "makeblk.h"
+#include "i87data.h"
+#include "expand.h"
+#include "split.h"
+#include "insutil.h"
+#include "rgtbl.h"
+#include "typemap.h"
+#include "optab.h"
+#include "inssegs.h"
+#include "bldcall.h"
 
-
-extern  name            *Parm8087[];
-extern  hw_reg_set      *RegSets[];
-extern  hw_reg_set      FPRegs[];
-extern  int             Max87Stk;
 
 extern  int             FPRegNum(name*);
-extern  void            DoNothing(instruction*);
 extern  void            BGDone(an);
-extern  void            AddIns(instruction*);
 extern  name            *BGNewTemp(type_def*);
-extern  type_class_def  TypeClass(type_def*);
-extern  bool            DoesSomething(instruction*);
 extern  void            ToRFld(instruction*);
 extern  void            ToRFstp(instruction*);
 extern  void            NoPop(instruction*);
@@ -62,13 +63,6 @@ extern  void            ToPopBin(instruction*);
 extern  void            NoMemBin(instruction*);
 extern  name*           ST(int);
 extern int              NumOperands(instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
-extern  void            DupSeg(instruction*,instruction*);
-extern  void            DelSeg(instruction*);
-extern  name            *LowPart(name*,type_class_def);
-extern  name            *HighPart(name*,type_class_def);
-extern  void            PrefixIns(instruction*,instruction*);
-extern  void            SuffixIns(instruction*,instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  void            PrefFXCH(instruction*,int);
 extern  void            Wait8087( void );
@@ -76,7 +70,6 @@ extern  void            ReverseFPGen(instruction*);
 extern  bool            InsOrderDependant(instruction*,instruction*);
 extern  int             FPStkReq(instruction*);
 extern  bool            FPResultNotNeeded(instruction*);
-extern  void            ReserveStack( call_state *, instruction *, type_length );
 
 /* forward declarations */
 static  void            MoveThrough( name *from, name *to, instruction *from_ins,
@@ -108,8 +101,8 @@ extern  void    FPParms( void ) {
                 if( FPRegNum( ins->result ) == 0 ) {
                     next = ins->head.next;
                     if( next->head.opcode == OP_BLOCK
-                     || (instruction *)ins->operands[ 2 ] != next /* not associated*/
-                     || (instruction *)next->operands[ 2 ] != ins ) {
+                     || (instruction *)ins->operands[2] != next /* not associated*/
+                     || (instruction *)next->operands[2] != ins ) {
                         Parm8087[i] = (name *)CurrProc; /* klude - means parm ignored*/
                     } else {
                         Parm8087[i] = next->result;
@@ -332,8 +325,8 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
                         UseInOther( ins->operands[1] );
                     }
                 }
-                new_ins = MakeNary( ins->head.opcode, ins->operands[ 0 ],
-                                    ins->operands[ 1 ], AllocRegName( HW_ST0 ),
+                new_ins = MakeNary( ins->head.opcode, ins->operands[0],
+                                    ins->operands[1], AllocRegName( HW_ST0 ),
                                     ins->type_class, ins->base_type_class,
                                     ins->num_operands );
                 Pushes( new_ins );
@@ -377,7 +370,7 @@ extern  void    FPPushParms( pn parm, call_state *state ) {
         }
         HW_CTurnOff( state->parm.used, HW_FLTS );
         while( parms-- > 0 ) {
-            HW_TurnOn( state->parm.used, FPRegs[ parms ] );
+            HW_TurnOn( state->parm.used, FPRegs[parms] );
         }
     }
 }
@@ -429,7 +422,7 @@ static  bool    FSinCos( instruction *ins1 ) {
         if( G( ins3 ) != G_MFLD ) {
             return( false );
         }
-        if( ins1->operands[ 0 ] != ins3->operands[ 0 ] ) {
+        if( ins1->operands[0] != ins3->operands[0] ) {
             return( false );
         }
         if( ins4->head.opcode != _OTHER( ins2->head.opcode ) ) {
@@ -442,8 +435,8 @@ static  bool    FSinCos( instruction *ins1 ) {
         if( G( ins3 ) != G_RFLD ) {
             return( false );
         }
-        if( FPRegNum( ins1->operands[ 0 ] ) !=
-            FPRegNum( ins3->operands[ 0 ] ) - 1 ) {
+        if( FPRegNum( ins1->operands[0] ) !=
+            FPRegNum( ins3->operands[0] ) - 1 ) {
                 return( false );
             }
         if( ins4->head.opcode != _OTHER( ins2->head.opcode ) ) {
@@ -453,7 +446,7 @@ static  bool    FSinCos( instruction *ins1 ) {
         if( G( ins2 ) != G_RFLD ) {
             return( false );
         }
-        if( FPRegNum( ins2->operands[ 0 ] ) != 1 ) {
+        if( FPRegNum( ins2->operands[0] ) != 1 ) {
             return( false );
         }
         if( ins3->head.opcode != _OTHER( ins1->head.opcode ) ) {
@@ -543,7 +536,7 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
     instruction *ret;
 
     ret = ins->head.next;
-    for( regs = RegSets[ RL_MOVE_REG ]; ; ++regs ) {
+    for( regs = RegSets[RL_MOVE_REG]; ; ++regs ) {
         if( HW_CEqual( *regs, HW_EMPTY ) ) return( ret );
         if( HW_Ovlap( *regs, next->head.live.regs ) ) continue;
         if( HW_Ovlap( *regs, ins->head.live.regs ) ) continue;
@@ -553,32 +546,32 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
     if( next->result->n.name_class == FS ) {
 #if _TARGET & _TARG_IAPX86
         if( OptForSize > 50 ) return( ret );
-        MoveThrough( LowPart( ins->operands[ 0 ], U2 ),
+        MoveThrough( LowPart( ins->operands[0], U2 ),
                      LowPart( next->result, U2 ), ins, next, reg, U2 );
-        MoveThrough( HighPart( ins->operands[ 0 ], U2 ),
+        MoveThrough( HighPart( ins->operands[0], U2 ),
                      HighPart( next->result, U2 ), ins, next, reg, U2 );
 #else
-        MoveThrough( ins->operands[ 0 ], next->result, ins, next, reg, U4 );
+        MoveThrough( ins->operands[0], next->result, ins, next, reg, U4 );
 #endif
     } else {
         if( OptForSize > 50 ) return( ret );
 #if _TARGET & _TARG_IAPX86
-        MoveThrough( LowPart( LowPart( ins->operands[ 0 ], U4 ), U2 ),
+        MoveThrough( LowPart( LowPart( ins->operands[0], U4 ), U2 ),
                      LowPart( LowPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
-        MoveThrough( HighPart( LowPart( ins->operands[ 0 ], U4 ), U2 ),
+        MoveThrough( HighPart( LowPart( ins->operands[0], U4 ), U2 ),
                      HighPart( LowPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
-        MoveThrough( LowPart( HighPart( ins->operands[ 0 ], U4 ), U2 ),
+        MoveThrough( LowPart( HighPart( ins->operands[0], U4 ), U2 ),
                      LowPart( HighPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
-        MoveThrough( HighPart( HighPart( ins->operands[ 0 ], U4 ), U2 ),
+        MoveThrough( HighPart( HighPart( ins->operands[0], U4 ), U2 ),
                      HighPart( HighPart( next->result      , U4 ), U2 ),
                      ins, next, reg, U2 );
 #else
-        MoveThrough( LowPart( ins->operands[ 0 ], U4 ),
+        MoveThrough( LowPart( ins->operands[0], U4 ),
                      LowPart( next->result, U4 ), ins, next, reg, U4 );
-        MoveThrough( HighPart( ins->operands[ 0 ], U4 ),
+        MoveThrough( HighPart( ins->operands[0], U4 ),
                      HighPart( next->result, U4 ), ins, next, reg, U4 );
 #endif
     }
@@ -599,7 +592,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     next = Next87Ins( ins );
     ret = ins->head.next;
     if( next == ins ) return( ret );
-    if( G( ins ) == G_RFLD && FPRegNum( ins->operands[ 0 ] ) == 0 ) {
+    if( G( ins ) == G_RFLD && FPRegNum( ins->operands[0] ) == 0 ) {
         if( G( next ) == G_MFST ) {
 
             /* FLD ST, FSTP X ===> FST X */
@@ -628,10 +621,10 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
         } else if( G( next ) == G_RNFBINP || G( next ) == G_RRFBINP ) {
 
             /* FLD ST, FopP ST(i),ST ==> Fop ST(i-1),ST */
-            if( FPRegNum( next->operands[ 0 ] ) == 0 ) {
+            if( FPRegNum( next->operands[0] ) == 0 ) {
                 ret = BackUpAndFree( ins, ins, next );
             } else {
-                AdjustST( &next->operands[ 0 ], -1 );
+                AdjustST( &next->operands[0], -1 );
                 NoPopRBin( next );
                 FreeIns( ins );
                 ret = next;
@@ -645,10 +638,10 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     } else if( G( ins ) == G_RFLD || G( ins ) == G_MFLD ) {
         if( ( G( next ) == G_RRFBINP || G( next ) == G_RNFBINP ) ) {
             if( G( ins ) == G_MFLD ) {
-                class = ins->operands[ 0 ]->n.name_class;
+                class = ins->operands[0]->n.name_class;
                 if( !_IsFloating( class ) ) return( ret ); /* need convert! */
             }
-            if( ( FPRegNum( next->operands[ 0 ] ) == 1 ) ) {
+            if( ( FPRegNum( next->operands[0] ) == 1 ) ) {
 
                 /* FLD X, FxxP ST(1) ==> Fxx X */
 
@@ -703,11 +696,11 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
                     ret = To86Move( ins, next );
                 }
             } else if( G( next ) == G_MRFBIN || G( next ) == G_MNFBIN ) {
-                if( ins->operands[0] == next->operands[ 0 ] ) {
+                if( ins->operands[0] == next->operands[0] ) {
 
                     /* FLD X, FOP X ==> FLD X, FOP ST */
 
-                    next->operands[ 0 ] = ST( 0 );
+                    next->operands[0] = ST( 0 );
                     DelSeg( next );
                     NoMemBin( next );
                     *again = true;
@@ -717,7 +710,7 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
         }
     } else if( G( ins ) == G_MFST || G( ins ) == G_RFST ) {
         if( G( next ) == G_MFLD
-        && ( next->operands[ 0 ] == ins->result )
+        && ( next->operands[0] == ins->result )
         &&   _IsFloating( ins->result->n.name_class )
         && !IsVolatile( ins->result ) ) {
 

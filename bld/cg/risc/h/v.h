@@ -31,8 +31,8 @@
 
 _V_( V_NO ),
 _V_( V_CMPEQ ),
-_V_( V_CMPfalse ),
-_V_( V_CMPtrue ),
+_V_( V_CMPFALSE ),
+_V_( V_CMPTRUE ),
 _V_( V_OFFSETZERO ),
 _V_( V_OP1ONE ),
 _V_( V_OP1RELOC ),

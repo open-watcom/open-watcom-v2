@@ -58,7 +58,7 @@ extern unsigned         __qnx_alloc_flags;
 
 __segment __AllocSeg( unsigned int amount )
 {
-    unsigned    n;              /* number of paragraphs desired   */
+    unsigned    num_of_paras;       /* number of paragraphs desired   */
     __segment   seg;
     heapstart   _WCFAR *p;
     tag         _WCFAR *last_tag;
@@ -80,15 +80,15 @@ __segment __AllocSeg( unsigned int amount )
     amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
     if( amount < _amblksiz )
         amount = _amblksiz;
-    n = ( amount + 0x0f ) >> 4;
-    if( n == 0 )
-        n = 0x1000;
+    num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
+    if( num_of_paras == 0 )
+        num_of_paras = PARAS_IN_64K;
 #if defined(__OS2__)
     seg = _NULLSEG;
-    if( DosAllocSeg( n << 4, (PSEL)&seg, 0 ) )
+    if( DosAllocSeg( num_of_paras << 4, (PSEL)&seg, 0 ) )
         return( _NULLSEG );
 #elif defined(__QNX__)
-    rc = qnx_segment_alloc_flags( ((long)n) << 4, __qnx_alloc_flags );
+    rc = qnx_segment_alloc_flags( ((long)num_of_paras) << 4, __qnx_alloc_flags );
     if( rc == (unsigned)-1 )
         return( _NULLSEG );
     seg = (__segment)rc;
@@ -97,7 +97,7 @@ __segment __AllocSeg( unsigned int amount )
         HANDLE hmem;
         LPSTR p;
 
-        hmem = GlobalAlloc( __win_alloc_flags, ((long)n) << 4 );
+        hmem = GlobalAlloc( __win_alloc_flags, ((long)num_of_paras) << 4 );
         if( hmem == NULL )
             return( _NULLSEG );
         p = GlobalLock( hmem );
@@ -116,14 +116,14 @@ __segment __AllocSeg( unsigned int amount )
         seg = FP_SEG( p );
     }
 #else
-    rc = TinyAllocBlock( n );
+    rc = TinyAllocBlock( num_of_paras );
     if( TINY_ERROR( rc ) ) {
         return( _NULLSEG );
     }
     seg = TINY_INFO( rc );
 #endif
     p = (heapstart _WCFAR *)MK_FP( seg, 0 );
-    p->h.heaplen = n << 4;
+    p->h.heaplen = num_of_paras << 4;
     p->h.prevseg = _NULLSEG;
     p->h.nextseg = _NULLSEG;
     p->h.rover   = offsetof( heapstart, first );

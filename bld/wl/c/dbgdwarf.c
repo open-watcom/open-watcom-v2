@@ -254,7 +254,7 @@ static void DwarfAddLines( lineinfo *info )
     } else {
         dwsize = 15;    // start and end sequence with 32-bit offset
     }
-    if( !( FmtData.type & MK_SEGMENTED ) ) {
+    if( (FmtData.type & MK_SEGMENTED) == 0 ) {
         dwsize -= 5;    // size of LNE_segment burst
     }
     lineptr = (ln_off_pair *)info->data;
@@ -311,7 +311,7 @@ void DwarfP1ModuleFinished( mod_entry *mod )
 void DwarfStoreAddrInfo( mod_entry *mod )
 /**********************************************/
 {
-    if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
+    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( mod->d.d->arange.size > 0 ) {
             mod->d.d->arange.u.vm_offs = SectionTable[SECT_DEBUG_ARANGE].size;
             mod->d.d->arange.size += sizeof( arange_prologue );
@@ -338,7 +338,7 @@ void DwarfAddModule( mod_entry *mod, section *sect )
     unsigned_32         stmt_list;
 
     sect = sect;
-    if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
+    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( mod->d.d->arange.size > 0 ) {
             mod->d.d->arange.u.vm_ptr = SectionTable[SECT_DEBUG_ARANGE].vm_ptr + mod->d.d->arange.u.vm_offs;
             arange_hdr.length = mod->d.d->arange.size - sizeof( unsigned_32 );
@@ -509,7 +509,7 @@ void DwarfGenGlobal( symbol *sym, section *sect )
     size_t      len;
 
     sect = sect;
-    if( !( CurrMod->modinfo & MOD_DBI_SEEN ) ) {
+    if( (CurrMod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( ( sym->p.seg == NULL ) || ( sym->p.seg->iscode ) ) {
             die.abbrev_code = LABEL_ABBREV_CODE;
         } else {
@@ -520,7 +520,7 @@ void DwarfGenGlobal( symbol *sym, section *sect )
         if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
             die.off += GetLinearGroupOffset( sym->p.seg->u.leader->group );
         }
-        die.isexternal = !( sym->info & SYM_STATIC );
+        die.isexternal = ( (sym->info & SYM_STATIC) == 0 );
         PutInfo( vmem_addr, &die, sizeof( symbol_die ) );
         vmem_addr += sizeof( symbol_die );
         if( FmtData.type & MK_SEGMENTED ) {
@@ -628,7 +628,7 @@ static void DwarfAddAddrAdd( segdata *sdata, offset delta, offset size,
     delta = delta;
     size = size;
     cookie = cookie;
-    if( isnewmod && !( sdata->o.mod->modinfo & MOD_DBI_SEEN ) ) {
+    if( isnewmod && (sdata->o.mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             sdata->o.mod->d.d->arange.size += sizeof( segmented_arange_tuple );
         } else {
@@ -679,7 +679,7 @@ static void DwarfGenAddrAdd( segdata *sdata, offset delta, offset size,
     if( !isnewmod )
         return;
     mod = sdata->o.mod;
-    if( !( mod->modinfo & MOD_DBI_SEEN ) ) {
+    if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             tuple->s.v2.length = size;
             tup_size = sizeof( segmented_arange_tuple );

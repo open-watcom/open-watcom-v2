@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -114,6 +115,7 @@ void    ScoreMakeEqual( score *sc, name *op1, name *op2 );
 bool    ScoreMove( score *sc, instruction *ins );
 bool    ScoreLA( score *sc, instruction *ins );
 void    ScZeroCheck( score *sc, instruction *ins );
+extern opcode_entry     *ResetGenEntry( instruction *ins );
 
 // scregs.c
 void    RegInsert( score *sc, int dst_idx, int src_idx );

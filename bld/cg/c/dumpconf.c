@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,13 +34,12 @@
 #include "coderep.h"
 #include "dumpio.h"
 #include "data.h"
+#include "rgtbl.h"
+
 
 extern  void            DumpOperand(name*);
 extern  void            DumpGBit(global_bit_set*);
 extern  void            DumpLBit(local_bit_set*);
-
-extern  hw_reg_set      *RegSets[];
-
 
 static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
 /*********************************************************************/
@@ -346,7 +346,7 @@ extern  void    DumpPossible( byte idx ) {
     if( idx == RL_NUMBER_OF_SETS ) {
         DumpLiteral( " Choices ANY" );
     } else {
-        DumpRgSet( RegSets[  idx  ] );
+        DumpRgSet( RegSets[idx] );
     }
 }
 

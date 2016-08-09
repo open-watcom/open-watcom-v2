@@ -51,7 +51,7 @@ static  void    ExEndFile( void ) {
     ChkIOOperation( fcb );
     ChkSequential( IO_AEND );
     ClrBuff();
-    if( !( fcb->flags & FTN_FSEXIST ) ) {
+    if( (fcb->flags & FTN_FSEXIST) == 0 ) {
         SysCreateFile( fcb );
     }
     // Some files like TERMINAL, SERIAL have no EOF.

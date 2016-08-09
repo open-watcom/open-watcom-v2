@@ -44,11 +44,12 @@
 #include "pathgrp.h"
 
 
-#define HASH_PRIME  13
-#define CASESENSITIVE FALSE // Is suffix name case insensitive
-STATIC HASHTAB  *sufTab;
-STATIC UINT16   nextId;
-STATIC UINT16   prevId;     // Has to be one less than nextId
+#define HASH_PRIME      13
+#define CASESENSITIVE   false       // Is suffix name case insensitive
+
+STATIC HASHTAB          *sufTab;
+STATIC UINT16           nextId;
+STATIC UINT16           prevId;     // Has to be one less than nextId
 
 
 STATIC void freePathRing( PATHRING pathring )
@@ -71,8 +72,8 @@ STATIC void freePathRing( PATHRING pathring )
 }
 
 
-STATIC BOOLEAN freeSuffix( void *node, void *ptr )
-/************************************************/
+STATIC bool freeSuffix( void *node, void *ptr )
+/*********************************************/
 {
     SUFFIX  *suffix = node;
     CREATOR *creator;
@@ -90,7 +91,7 @@ STATIC BOOLEAN freeSuffix( void *node, void *ptr )
 
     FreeSafe( suffix );
 
-    return( FALSE );
+    return( false );
 }
 
 
@@ -161,8 +162,8 @@ SUFFIX *FindSuffix( const char *name )
 }
 
 
-BOOLEAN SufExists( const char *name )    /* with . */
-/******************************************/
+bool SufExists( const char *name )    /* with . */
+/********************************/
 {
     assert( name != NULL && name[0] == DOT );
 
@@ -191,8 +192,8 @@ STATIC void AddFrontSuffix( char const *name )
 }
 
 
-BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
-/************************************************
+bool SufBothExist( const char *sufsuf )   /* .src.dest */
+/**************************************
  *  for MS-Option it only checks if the dependent suffix is defined
  *  so no need for checking the target suffix if it exists
  */
@@ -202,19 +203,19 @@ BOOLEAN SufBothExist( const char *sufsuf )   /* .src.dest */
     assert( sufsuf != NULL && sufsuf[0] == DOT && strchr( sufsuf + 1, DOT ) != NULL );
 
     if( findSuffixNode( sufsuf, &ptr ) == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( FindSuffix( ptr ) == NULL ) {
-        if( Glob.compat_nmake == TRUE ) {
+        if( Glob.compat_nmake ) {
             AddFrontSuffix( ptr );
-            return( TRUE );
+            return( true );
         } else {
-            return( FALSE );
+            return( false );
         }
 
     } else {
-        return( TRUE );
+        return( true );
     }
 
 }
@@ -420,8 +421,8 @@ char *AddCreator( const char *sufsuf )
     slist->targ_path = cur_targ_path;
     slist->dep_path = cur_dep_path;
     slist->cretarg = NewTarget( fullsufsuf );
-    slist->cretarg->special = TRUE;
-    slist->cretarg->sufsuf  = TRUE;
+    slist->cretarg->special = true;
+    slist->cretarg->sufsuf  = true;
     slist->cretarg->depend = NewDepend();
     slist->next = *sl;
     *sl = slist;
@@ -429,15 +430,15 @@ char *AddCreator( const char *sufsuf )
 }
 
 
-STATIC BOOLEAN printSuf( void *node, void *ptr )
-/**********************************************/
+STATIC bool printSuf( void *node, void *ptr )
+/*******************************************/
 {
     SUFFIX      *suffix = node;
     CREATOR     *cur;
     PATHNODE    *currpath;
     SLIST       *slist;
     CLIST       *cmds;
-    BOOLEAN     printed;
+    bool        printed;
 
     (void)ptr; // Unused
     PrtMsg( INF | PSUF_SUFFIX, suffix->node.name );
@@ -447,9 +448,9 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
             PrtMsg( INF | PSUF_FOUND_IN, currpath->name );
             currpath = currpath->next;
         } while( currpath != suffix->currpath );
-        printed = TRUE;
+        printed = true;
     } else {
-        printed = FALSE;
+        printed = false;
     }
     cur = suffix->creator;
     if( cur != NULL && printed ) {
@@ -484,7 +485,7 @@ STATIC BOOLEAN printSuf( void *node, void *ptr )
     }
     PrtMsg( INF | NEWLINE );
 
-    return( FALSE );
+    return( false );
 }
 
 
@@ -529,7 +530,7 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
     if( *pathring == NULL ) {
         return( RET_ERROR );
     }
-    if( dir[0] == '\0' ) {
+    if( dir[0] == NULLCHAR ) {
         dir = NULL;
     }
     _makepath( fake_name, NULL, dir, fname, ext );
@@ -549,8 +550,8 @@ STATIC RET_T findInPathRing( PATHRING *pathring, char *buffer,
 }
 
 
-RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN tryenv )
-/***************************************************************************************
+RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool tryenv )
+/************************************************************************************
  * it is NOT necessary that filename != buffer
  * the contents of buffer may be destroyed even if RET_ERROR is returned
  * first checks current directory, then any in suffix path
@@ -597,9 +598,9 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, BOOLEAN 
                 addPathToPathRing( &envpathring, env );
 
                 /* never cache %path */
-                Glob.cachedir = FALSE;
+                Glob.cachedir = false;
                 ret = findInPathRing( &envpathring, buffer, pg.dir, pg.fname, pg.ext, chktarg );
-                Glob.cachedir = TRUE;
+                Glob.cachedir = true;
 
                 freePathRing( envpathring );
             }

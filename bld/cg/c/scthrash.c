@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,17 +37,14 @@
 #include "makeins.h"
 #include "utils.h"
 #include "namelist.h"
+#include "regset.h"
+#include "rgtbl.h"
+#include "expand.h"
+#include "insutil.h"
 
-extern  void            ReplIns(instruction*,instruction*);
-extern  opcode_entry    *FindGenEntry(instruction*,bool*);
-extern  name            *ScaleIndex(name*,name*,type_length,type_class_def,type_length,int,i_flags);
-extern  bool            IndexRegOk(hw_reg_set,bool);
-extern  void            SuffixIns(instruction*,instruction*);
+
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            PrefixIns(instruction*,instruction*);
 extern  bool            UnChangeable(instruction*);
-extern  hw_reg_set      HighReg(hw_reg_set);
-extern  hw_reg_set      LowReg(hw_reg_set);
 
 
 static  name    *FindPiece( hw_reg_set opnd, hw_reg_set frm,
@@ -221,7 +219,7 @@ static  bool    ThrashDown( instruction *ins ) {
     int         i;
     instruction *oth_ins;
 
-    Y = ins->operands[ 0 ];
+    Y = ins->operands[0];
     Z = ins->result;
     for( oth_ins = ins->head.prev; ; oth_ins = oth_ins->head.prev ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( false );
@@ -281,7 +279,7 @@ static  bool    ThrashUp( instruction *ins ) {
     int         i;
     instruction *oth_ins;
 
-    Y = ins->operands[ 0 ];
+    Y = ins->operands[0];
     Z = ins->result;
     for( oth_ins = ins->head.next; ; oth_ins = oth_ins->head.next ) {
         if( oth_ins->head.opcode == OP_BLOCK ) return( false );
@@ -302,7 +300,7 @@ static  bool    ThrashUp( instruction *ins ) {
         if( HW_Ovlap( thrsh_ins->zap->reg, Y->r.reg ) ) return( false );
         if( HW_Ovlap( thrsh_ins->zap->reg, Z->r.reg ) ) return( false );
         if( (thrsh_ins->head.opcode == OP_MOV)
-            && (thrsh_ins->operands[ 0 ] == Z)
+            && (thrsh_ins->operands[0] == Z)
             && (thrsh_ins->result        == Y) ) break;
         if( Modifies( Y, Z, oth_ins->result ) ) return( false );
     }
@@ -325,8 +323,8 @@ extern  bool    RegThrash( block *blk ) {
         next = ins->head.next;
         if( ins->head.opcode == OP_MOV
          && UnChangeable( ins ) == false
-         && ins->operands[ 0 ]->n.class == N_REGISTER
-         && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[ 0 ]->r.reg )
+         && ins->operands[0]->n.class == N_REGISTER
+         && !HW_Ovlap( ins->head.next->head.live.regs, ins->operands[0]->r.reg )
          && ins->result->n.class == N_REGISTER ) {
             if( ThrashDown( ins ) || ThrashUp( ins ) ) {
                 UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );

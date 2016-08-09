@@ -30,18 +30,18 @@
 ****************************************************************************/
 
 
-    typedef enum {
-                OPT_REDIRECT,
-                OPT_RETAFTCALL,
-                OPT_ISOLATED,
-                OPT_LBLAFTJMP,
-                OPT_REVERSE,
-                OPT_CALLTORET,
-                OPT_JMPTORET,
-                OPT_COMMON,
+typedef enum {
+    OPT_REDIRECT,
+    OPT_RETAFTCALL,
+    OPT_ISOLATED,
+    OPT_LBLAFTJMP,
+    OPT_REVERSE,
+    OPT_CALLTORET,
+    OPT_JMPTORET,
+    OPT_COMMON,
 #if SHORT_JUMPS
-                OPT_JUMPS,
-                OPT_JCONDS,
+    OPT_JUMPS,
+    OPT_JCONDS,
 #endif
-                OPT_NULL
+    OPT_NULL
 } opt_class;

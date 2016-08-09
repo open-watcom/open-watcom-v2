@@ -38,7 +38,7 @@ extern void     CacheInit( void );
 extern void     CacheFini( void );
 extern void     CacheRelease( void );
 extern RET_T    CacheTime( const char *filename, time_t *ptime );
-extern BOOLEAN  CacheExists( const char *filename );
+extern bool     CacheExists( const char *filename );
 
 #endif
 

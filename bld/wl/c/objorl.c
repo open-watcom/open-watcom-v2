@@ -430,7 +430,7 @@ static void DefNosymComdats( void *_snode, void *dummy )
 
     dummy = dummy;
     sdata = snode->entry;
-    if( sdata == NULL || snode->info & SEG_DEAD )
+    if( sdata == NULL || (snode->info & SEG_DEAD) )
         return;
     if( sdata->iscdat && !sdata->hascdatsym && ( snode->contents != NULL )) {
         sdata->u1.vm_ptr = AllocStg( sdata->length );
@@ -464,8 +464,8 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     snode->entry = sdata;
     snode->handle = sec;
     sdata->iscdat = (flags & ORL_SEC_FLAG_COMDAT) != 0;
-    len = sizeof(CoffIDataSegName) - 1;
-    if( strnicmp(CoffIDataSegName, name, len) == 0 ) {
+    len = sizeof( CoffIDataSegName ) - 1;
+    if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
         SeenDLLRecord();
         CurrMod->modinfo |= MOD_IMPORT_LIB;
         if( name[len + 1] == '6' ) {    // it is the segment containg the name
@@ -545,7 +545,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
                 }
             }
         }
-    } else if( snode != NULL && snode->info & SEG_CODE ) {
+    } else if( snode != NULL && (snode->info & SEG_CODE) ) {
         if( FirstCodeSymName == NULL ) {
             FirstCodeSymName = name;
         }
@@ -597,7 +597,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
     type = ORLSymbolGetType( symhdl );
     name = ORLSymbolGetName( symhdl );
     if( type & ORL_SYM_TYPE_FILE ) {
-        if( !(CurrMod->modinfo & MOD_GOT_NAME) ) {
+        if( (CurrMod->modinfo & MOD_GOT_NAME) == 0 ) {
             CurrMod->modinfo |= MOD_GOT_NAME;
             _LnkFree( CurrMod->name );
             CurrMod->name = AddStringStringTable( &PermStrings, name );
@@ -624,7 +624,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         if( binding == ORL_SYM_BINDING_LOCAL ) {
             symop |= ST_STATIC | ST_NONUNIQUE;
         }
-        if( type & ORL_SYM_TYPE_UNDEFINED && binding != ORL_SYM_BINDING_ALIAS ){
+        if( (type & ORL_SYM_TYPE_UNDEFINED) && binding != ORL_SYM_BINDING_ALIAS ){
             symop |= ST_REFERENCE;
         } else {
             symop |= ST_NOALIAS;
@@ -656,7 +656,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         } else {
             newnode->isdefd = true;
             value = ORLSymbolGetValue( symhdl );
-            if( type & ORL_SYM_TYPE_COMMON && type & ORL_SYM_TYPE_OBJECT && sechdl == NULL) {
+            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL) {
                 sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, value );
@@ -666,7 +666,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             }
         }
         newnode->entry = sym;
-    } else if( type & ORL_SYM_TYPE_SECTION && type & ORL_SYM_CDAT_MASK
+    } else if( (type & ORL_SYM_TYPE_SECTION) && (type & ORL_SYM_CDAT_MASK)
                             && snode != NULL && !(snode->info & SEG_DEAD) ) {
         snode->entry->select = (type & ORL_SYM_CDAT_MASK) >> ORL_SYM_CDAT_SHIFT;
     }
@@ -782,14 +782,14 @@ static orl_return DoReloc( orl_reloc *reloc )
     if( !skip ) {
         seg = FindSegNode( reloc->section );
         addend = 0;
-        if( seg != NULL && !(seg->info & SEG_DEAD) && seg->entry != NULL
+        if( seg != NULL && (seg->info & SEG_DEAD) == 0 && seg->entry != NULL
                                                    && !seg->entry->isdead ) {
             SetCurrSeg( seg->entry, 0, seg->contents );
             frame.type = FIX_FRAME_TARG;
             ext = FindExtHandle( reloc->symbol );
             if( ext == NULL ) {
                 symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
-                if( symseg != NULL && !(seg->info & SEG_DEAD) ) {
+                if( symseg != NULL && (seg->info & SEG_DEAD) == 0 ) {
                     unsigned_64 val64;
 
                     val64 = ORLSymbolGetValue( reloc->symbol );
@@ -943,7 +943,7 @@ unsigned long ORLPass1( void )
         return( -1 );
     }
     if( CheckFlags( filehdl ) ) {
-        if( LinkState & HAVE_PPC_CODE && !FmtData.toc_initialized ) {
+        if( (LinkState & HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
             InitToc();
             FmtData.toc_initialized = 1;
         }

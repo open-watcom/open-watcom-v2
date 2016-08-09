@@ -39,7 +39,7 @@ objs_win = heapwalk.obj hwlist.obj hwproc.obj hwglob.obj hwsort.obj &
 
 objs = $(objs_$(host_os))
 
-$(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res
+$(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res $(__MAKEFILES__)
         $(linker) name $^@ $(lflags) file {$(objs) $(dis_objs)} lib {$(xlibs)}
         $(rc) -k $(name).res $^@
 

@@ -45,7 +45,7 @@ extern label_handle GetWeirdPPCDotDotLabel( label_handle lbl ) {
         return( lbl->ppc_alt_name );
     }
     if( AskIfRTLabel( lbl ) ) {
-        new = AskRTLabel( lbl->lbl.sym );
+        new = AskForRTLabel( SYM2RTIDX( lbl->lbl.sym ) );
     } else {
         new = AskForLabel( lbl->lbl.sym );
     }

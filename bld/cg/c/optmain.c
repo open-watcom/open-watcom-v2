@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,20 +37,13 @@
 #include "inslist.h"
 #include "blips.h"
 #include "optmain.h"
+#include "optutil.h"
+#include "optmkins.h"
 
-extern  void            FreePendingDeletes( void );
-extern  ins_entry       *DelInstr( ins_entry * );
+
 extern  void            OptPull( void );
 extern  void            OptPush( void );
-extern  void            AddInstr( ins_entry *, ins_entry * );
-extern  ins_entry       *NewInstr( any_oc * );
-extern  oc_class        PrevClass( ins_entry * );
-extern  void            TryScrapLabel( label_handle );
-extern  void            FreeInstr( ins_entry * );
 extern  pointer_int     MemInUse( void );
-extern  ins_entry       *NextIns( ins_entry * );
-extern  bool            UniqueLabel( label_handle );
-
 
 static  void    PullQueue( void )
 /*******************************/
@@ -136,7 +130,7 @@ static  bool    LDone( any_oc *oc )
         optreturn( false );
     lbl = oc->oc_handle.handle;
     _ValidLbl( lbl );
-    if( _TstStatus( lbl, CODELABEL ) == false )
+    if( !_TstStatus( lbl, CODELABEL ) )
         optreturn( false );
     _SetStatus( lbl, DYINGLABEL );
     TryScrapLabel( lbl );
