@@ -80,7 +80,7 @@ static imp_header *ReadInImp( dig_fhandle dfh )
         if( bunch > RELOC_BUFF_SIZE )
             bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGCliRead( h, buff, reloc_size ) != reloc_size ) {
+        if( DIGCliRead( dfh, buff, reloc_size ) != reloc_size ) {
             DIGCliFree( imp_start );
             return( NULL );
         }
