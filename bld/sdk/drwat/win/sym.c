@@ -54,8 +54,8 @@ static BOOL             dipIsLoaded;
 
 
 #if 0
-dig_fhandle PathOpen( char *name, unsigned len, char *ext ) {
-
+dig_fhandle PathOpen( char *name, unsigned len, char *ext )
+{
     char        path[ _MAX_PATH ];
     char        *realname;
     char        *filename;
@@ -83,8 +83,8 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext ) {
 /*
  * InitSymbols
  */
-BOOL InitSymbols( void ) {
-
+BOOL InitSymbols( void )
+{
     int         rc;
     BOOL        diploaded;
 
@@ -106,7 +106,8 @@ BOOL InitSymbols( void ) {
 /*
  * FiniSymbols
  */
-void FiniSymbols( void ) {
+void FiniSymbols( void )
+{
     if( dipIsLoaded ) {
         DIPFini();
         FiniDipMsgs();
@@ -116,8 +117,8 @@ void FiniSymbols( void ) {
 /*
  * LoadDbgInfo
  */
-BOOL LoadDbgInfo( void ) {
-
+BOOL LoadDbgInfo( void )
+{
     BOOL                err;
     unsigned            priority;
 
@@ -125,7 +126,7 @@ BOOL LoadDbgInfo( void ) {
     err = TRUE;
     curProcess = DIPCreateProcess();
     curFileHdl = DIGCliOpen( DTModuleEntry.szExePath , DIG_READ );
-    if( curFileHdl != -1 ) {
+    if( curFileHdl != DIG_NIL_HANDLE ) {
         DEBUGOUT( "File open OK" );
         priority = 0;
         for( ;; ) {
@@ -144,13 +145,13 @@ BOOL LoadDbgInfo( void ) {
     }
     if( err ) {
         DEBUGOUT( "LoadDbgInfo Failed" );
-        if( (int)curFileHdl != -1 ) {
+        if( curFileHdl != DIG_NIL_HANDLE ) {
             DIGCliClose( curFileHdl );
         }
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
         curModHdl = NO_MOD;
-        curFileHdl = -1;
+        curFileHdl = DIG_NIL_HANDLE;
         return( FALSE );
     }
     return( TRUE );
@@ -226,28 +227,28 @@ RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
 /*
  * FindSymbol - locate a symbol for a name
  */
-BOOL FindSymbol( ADDRESS *addr, syminfo *si ) {
-
+BOOL FindSymbol( ADDRESS *addr, syminfo *si )
+{
     return( doFindSymbol( addr, si, FALSE ) );
 }
 
 /*
  * SymFileClose - close the current symfile
  */
-void SymFileClose( void ) {
-
+void SymFileClose( void )
+{
     if( curModHdl != NO_MOD ) {
         DIPUnloadInfo( curModHdl );
     }
     if( curProcess != NULL ) {
         DIPDestroyProcess( curProcess );
     }
-    if( curFileHdl != -1 ) {
+    if( curFileHdl != DIG_NIL_HANDLE ) {
         DIGCliClose( curFileHdl );
     }
     curProcess = NULL;
     curModHdl = NO_MOD;
-    curFileHdl = -1;
+    curFileHdl = DIG_NIL_HANDLE;
 }
 
 
@@ -260,7 +261,8 @@ void SymFileClose( void ) {
 /*
  * DIPCliImageUnload
  */
-void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
+void DIGCLIENT DIPCliImageUnload( mod_handle hdl )
+{
     hdl = hdl;
     DEBUGOUT( "ImageUnload" );
     //
@@ -271,7 +273,8 @@ void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
 /*
  * DIPCliAlloc
  */
-void *DIGCLIENT DIGCliAlloc( size_t size ) {
+void *DIGCLIENT DIGCliAlloc( size_t size )
+{
     void        *ret;
 
     DEBUGOUT( "alloc BEGIN" );
@@ -283,8 +286,8 @@ void *DIGCLIENT DIGCliAlloc( size_t size ) {
 /*
  * DIPCliRealloc
  */
-void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size ) {
-
+void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size )
+{
     void        *ret;
 
     DEBUGOUT( "realloc BEGIN" );
@@ -296,7 +299,8 @@ void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size ) {
 /*
  * DIPCliFree
  */
-void DIGCLIENT DIGCliFree( void *ptr ) {
+void DIGCLIENT DIGCliFree( void *ptr )
+{
     DEBUGOUT( "free BEGIN" );
     MemFree( ptr );
     DEBUGOUT( "free END" );
@@ -309,8 +313,8 @@ void DIGCLIENT DIGCliFree( void *ptr ) {
  * it has the selector values themselves.  For the format of the module entry
  * see p 319 of Undocumented Windows
  */
-static WORD horkyFindSegment( HMODULE mod, WORD seg ) {
-
+static WORD horkyFindSegment( HMODULE mod, WORD seg )
+{
     WORD        sel;
     WORD        offset;
     GLOBALENTRY ge;
@@ -342,8 +346,8 @@ static WORD horkyFindSegment( HMODULE mod, WORD seg ) {
  *     f*cking Windows) and so we have to go find it ourselves using
  *     horkyFindSegment.
  */
-void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *info ) {
-
+void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *info )
+{
     GLOBALENTRY ge;
     LPVOID      ptr;
     WORD        sel;
@@ -387,7 +391,8 @@ imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
 /*
  * DIPCliSectLoaded
  */
-dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect ) {
+dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
+{
     //
     // there are no overlays in Windows so just return TRUE
     //
@@ -423,7 +428,8 @@ dip_status DIGCLIENT DIPCliAssignLocation( location_list *loc1,
 /*
  * DIPCliSameAddrSpace
  */
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 ) {
+dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 )
+{
     if( a1.mach.segment == a2.mach.segment ) {
         return( DS_OK );
     } else {
@@ -434,7 +440,8 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 ) {
 /*
  * DIPCliAddrSection
  */
-void DIGCLIENT DIPCliAddrSection( address *addr ) {
+void DIGCLIENT DIPCliAddrSection( address *addr )
+{
     addr->sect_id = 0;
 }
 
@@ -442,8 +449,8 @@ void DIGCLIENT DIPCliAddrSection( address *addr ) {
 /*
  * DIPCliOpen
  */
-dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
-
+dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
+{
     dig_fhandle         ret;
     int                 flags;
 
@@ -505,14 +512,16 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
 /*
  * DIPCliClose
  */
-void DIGCLIENT DIGCliClose( dig_fhandle hdl ) {
+void DIGCLIENT DIGCliClose( dig_fhandle hdl )
+{
     close( (int)hdl );
 }
 
 /*
  * DIPCliRemove
  */
-void DIGCLIENT DIGCliRemove( const char *path, dig_open mode ) {
+void DIGCLIENT DIGCliRemove( const char *path, dig_open mode )
+{
     mode = mode;
     remove( path );
 }
@@ -521,7 +530,8 @@ void DIGCLIENT DIGCliRemove( const char *path, dig_open mode ) {
 /*
  * DIPCliStatus
  */
-void DIGCLIENT DIPCliStatus( dip_status stat ) {
+void DIGCLIENT DIPCliStatus( dip_status stat )
+{
     stat = stat;
 }
 

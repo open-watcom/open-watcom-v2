@@ -135,16 +135,16 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, 
         _searchenv( trpfile, "PATH", RWBuff );
         rc = TinyOpen( RWBuff, TIO_READ );
     }
-    return( TINY_ERROR( rc ) ? DIG_NIL_HANDLE : TINY_INFO( rc ) );
+    return( TINY_ERROR( rc ) ? DIG_NIL_HANDLE : (dig_fhandle)TINY_INFO( rc ) );
 }
 
-unsigned DIGPathClose( dig_fhandle h )
+unsigned DIGPathClose( dig_fhandle dfh )
 {
-    TinyClose( h );
+    TinyClose( (tiny_handle_t)dfh );
     return( 0 );
 }
 
-long DIGGetSystemHandle( dig_fhandle h )
+long DIGGetSystemHandle( dig_fhandle dfh )
 {
-    return( h );
+    return( (long)dfh );
 }

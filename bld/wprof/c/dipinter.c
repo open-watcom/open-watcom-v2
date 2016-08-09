@@ -212,9 +212,9 @@ extern void WPDipSetProc( process_info *dip_proc )
 
 
 
-extern mod_handle WPDipLoadInfo( int f_handle, char * f_name, void * image,
+extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
                        int image_size, unsigned dip_start, unsigned dip_end )
-/***************************************************************************/
+/****************************************************************************/
 {
     unsigned    prio;
     mod_handle  dip_module;
@@ -223,9 +223,10 @@ extern mod_handle WPDipLoadInfo( int f_handle, char * f_name, void * image,
     prio = dip_start;
     for( ;; ) {
         prio = DIPPriority( prio );
-        if( prio == 0 || prio > dip_end ) break;
+        if( prio == 0 || prio > dip_end )
+            break;
         DIPStatus = DS_OK;
-        dip_module = DIPLoadInfo( f_handle, image_size, prio );
+        dip_module = DIPLoadInfo( dfh, image_size, prio );
         if( dip_module != NO_MOD ) {
             *(void **)ImageExtra( dip_module ) = image;
             DIPMapInfo( dip_module, image );

@@ -469,7 +469,7 @@ typedef struct {
     unsigned_16                 ords[ MAX_EXPORTS_PER ];
     unsigned long               cache_name_rva;
     unsigned                    cache_name_len;
-    unsigned                    h;
+    dig_fhandle                 h;
     unsigned char               name_cache[ NAME_CACHE_SIZE ];
 } pe_export_info;
 
