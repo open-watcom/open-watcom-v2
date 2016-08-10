@@ -137,7 +137,7 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
             amount = (unsigned)s;
         read_len = read( h, b, amount );
         if( read_len == (unsigned)-1 ) {
-            rc = (size_t)-1;
+            rc = DIG_RW_ERROR;
             break;
         }
         rc += read_len;
@@ -169,7 +169,7 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
             amount = (unsigned)s;
         write_len = write( h, b, amount );
         if( write_len == (unsigned)-1 ) {
-            rc = (size_t)-1;
+            rc = DIG_RW_ERROR;
             break;
         }
         rc += write_len;

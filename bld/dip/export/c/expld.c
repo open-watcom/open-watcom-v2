@@ -114,11 +114,11 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         size_t len;
 
         len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( len == DIG_READ_ERROR ) {
+        if( len == DIG_RW_ERROR ) {
             Buff.fpos = DIG_SEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( DIG_READ_ERROR );
+            return( DIG_RW_ERROR );
         }
         Buff.len = len;
         Buff.fpos += Buff.len;
@@ -664,7 +664,7 @@ static dip_status TryStub( dig_fhandle h, imp_image_handle *ii )
     any_header          head;
 
     switch( BRead( h, &head.mz, sizeof( head.mz ) ) ) {
-    case DIG_READ_ERROR:
+    case DIG_RW_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head.mz ):
         break;
@@ -716,7 +716,7 @@ static dip_status TryNLM( dig_fhandle h, imp_image_handle *ii )
     char                name[256];
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case DIG_READ_ERROR:
+    case DIG_RW_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;
@@ -846,7 +846,7 @@ static dip_status TryELF( dig_fhandle h, imp_image_handle *ii )
     bool                byte_swap;
 
     switch( BRead( h, &head, sizeof( head ) ) ) {
-    case DIG_READ_ERROR:
+    case DIG_RW_ERROR:
         return( DS_ERR|DS_FREAD_FAILED );
     case sizeof( head ):
         break;

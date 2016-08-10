@@ -146,7 +146,7 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void * b, size_t s )
             amount = (unsigned)s;
         write_len = write( (int)dfh, b, amount );
         if( write_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
+            return( DIG_RW_ERROR );
         }
         total += write_len;
         if( write_len != amount ) {

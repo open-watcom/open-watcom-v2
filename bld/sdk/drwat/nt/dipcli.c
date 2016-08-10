@@ -72,7 +72,8 @@ static void mapAddress( addr_ptr *addr, ModuleNode *mod )
 /*
  * DIPCliImageUnload
  */
-void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
+void DIGCLIENT DIPCliImageUnload( mod_handle hdl )
+{
     hdl = hdl;
     //
     // do nothing - we don't have anything to clean up
@@ -82,21 +83,24 @@ void DIGCLIENT DIPCliImageUnload( mod_handle hdl ) {
 /*
  * DIGCliAlloc
  */
-void *DIGCLIENT DIGCliAlloc( size_t size ) {
+void *DIGCLIENT DIGCliAlloc( size_t size )
+{
     return( MemAlloc( size ) );
 }
 
 /*
  * DIGCliRealloc
  */
-void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size ) {
+void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size )
+{
     return( MemReAlloc( ptr, size ) );
 }
 
 /*
  * DIGCliFree
  */
-void DIGCLIENT DIGCliFree( void *ptr ) {
+void DIGCLIENT DIGCliFree( void *ptr )
+{
     MemFree( ptr );
 }
 
@@ -126,7 +130,8 @@ imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
 /*
  * DIPCliSectLoaded
  */
-dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect ) {
+dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
+{
     //
     // there are no overlays in NT so just return TRUE
     //
@@ -168,7 +173,8 @@ dip_status DIGCLIENT DIPCliAssignLocation( location_list *loc1,
 /*
  * DIPCliSameAddrSpace
  */
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 ) {
+dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 )
+{
 //    return( a1.mach.segment == a2.mach.segment );
     a1 = a1;
     a2 = a2;
@@ -178,7 +184,8 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 ) {
 /*
  * DIPCliAddrSection
  */
-void DIGCLIENT DIPCliAddrSection( address *addr ) {
+void DIGCLIENT DIPCliAddrSection( address *addr )
+{
     addr->sect_id = 0;
 }
 
@@ -186,8 +193,8 @@ void DIGCLIENT DIPCliAddrSection( address *addr ) {
 /*
  * DIGCliOpen
  */
-dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode ) {
-
+dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
+{
     dig_fhandle         ret;
     int                 flags;
     OFSTRUCT            tmp;
@@ -231,7 +238,7 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
     DWORD       bytesread;
 
     if( !ReadFile( (HANDLE)hdl, buf, size, &bytesread, NULL ) )
-        return( (size_t)-1 );
+        return( DIG_RW_ERROR );
     return( bytesread );
 }
 
@@ -243,21 +250,23 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
     DWORD       byteswritten;
 
     if( !WriteFile( (HANDLE)hdl, buf, size, &byteswritten, NULL ) )
-        return( (size_t)-1 );
+        return( DIG_RW_ERROR );
     return( byteswritten );
 }
 
 /*
  * DIGCliClose
  */
-void DIGCLIENT DIGCliClose( dig_fhandle hdl ) {
+void DIGCLIENT DIGCliClose( dig_fhandle hdl )
+{
     CloseHandle( (HANDLE)hdl );
 }
 
 /*
  * DIGCliRemove
  */
-void DIGCLIENT DIGCliRemove( const char *path, dig_open mode ) {
+void DIGCLIENT DIGCliRemove( const char *path, dig_open mode )
+{
     mode = mode;
     DeleteFile( path );
 }
@@ -265,7 +274,8 @@ void DIGCLIENT DIGCliRemove( const char *path, dig_open mode ) {
 /*
  * DIPCliStatus
  */
-void DIGCLIENT DIPCliStatus( dip_status stat ) {
+void DIGCLIENT DIPCliStatus( dip_status stat )
+{
     stat = stat;
 }
 

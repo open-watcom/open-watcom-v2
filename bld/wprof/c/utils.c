@@ -261,7 +261,7 @@ size_t BigRead( int fh, void *buffer, size_t size )
             amount = (unsigned)size;
         read_len = read( fh, buffer, amount );
         if( read_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
+            return( DIG_RW_ERROR );
         }
         total += read_len;
         if( read_len != amount ) {

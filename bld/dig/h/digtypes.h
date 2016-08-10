@@ -59,7 +59,7 @@
 
 #define DIG_SEEK_POSBACK(x) ((unsigned long)-(long)(x))
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
-#define DIG_READ_ERROR      ((size_t)-1)
+#define DIG_RW_ERROR        ((size_t)-1)
 
 #define DIG_NIL_HANDLE      ((dig_fhandle)-1)
 

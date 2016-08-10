@@ -108,11 +108,11 @@ static size_t BRead( dig_fhandle h, void *b, size_t s )
         size_t  len;
 
         len = DCRead( h, &Buff.data[0], sizeof( Buff.data ) );
-        if( len == DIG_READ_ERROR ) {
+        if( len == DIG_RW_ERROR ) {
             Buff.fpos = DIG_SEEK_ERROR;
             Buff.off = 0;
             Buff.len = 0;
-            return( DIG_READ_ERROR );
+            return( DIG_RW_ERROR );
         }
         Buff.len = len;
         Buff.fpos += Buff.len;
