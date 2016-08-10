@@ -75,8 +75,12 @@ static unsigned MsgShift;
 
 bool InitRcMsgs( void )
 {
+    /*
+     * minimum size of testbuf is 2 characters (one character + terminator)
+     * otherwise WResLoadString return 0 (error)
+     */
+    char        testbuf[2];
     bool        error;
-    char        testbuf[1];
 #if defined( IDE_PGM ) || !defined( __WATCOMC__ )
     char        imageName[_MAX_PATH];
 #else
