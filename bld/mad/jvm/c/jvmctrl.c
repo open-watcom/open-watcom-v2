@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "jvm.h"
 
 imp_mad_state_data      *MADState;

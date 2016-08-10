@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "mips.h"
 #include "mpstypes.h"
 #include "madregs.h"

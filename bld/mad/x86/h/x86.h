@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <string.h>
 #include "madimp.h"
 #include "madx86.h"
 #include "dis.h"

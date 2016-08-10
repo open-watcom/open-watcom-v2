@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <string.h>
 #include "madimp.h"
 #include "madmips.h"
 #include "dis.h"

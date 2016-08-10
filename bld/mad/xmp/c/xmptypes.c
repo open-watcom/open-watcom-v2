@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "xmp.h"
 #include "xmptypes.h"
 #include "madregs.h"

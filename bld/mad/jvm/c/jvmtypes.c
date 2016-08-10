@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "jvm.h"
 #include "jvmtypes.h"
 #include "madregs.h"

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include "string.h"
 #include "mips.h"
 
 void            DIGENTRY MIAddrAdd( address *a, long b, mad_address_format af )
