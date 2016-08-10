@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "ppc.h"
 #include "ppctypes.h"

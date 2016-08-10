@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "axp.h"
 #include "axptypes.h"
 #include "madregs.h"

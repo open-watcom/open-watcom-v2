@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "mips.h"
 
 imp_mad_state_data      *MADState;

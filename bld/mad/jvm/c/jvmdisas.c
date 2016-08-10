@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <stdlib.h>
 #include "walloca.h"
 #include "jvm.h"

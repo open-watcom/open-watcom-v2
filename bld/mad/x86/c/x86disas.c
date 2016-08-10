@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "walloca.h"
 #include "x86.h"

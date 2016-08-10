@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "x86.h"
 #include "x86types.h"
 #include "madregs.h"

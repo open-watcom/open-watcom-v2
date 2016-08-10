@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include "string.h"
 #include "x86.h"
 
 void            DIGENTRY MIAddrAdd( address *a, long b, mad_address_format af )

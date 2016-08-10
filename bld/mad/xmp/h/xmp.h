@@ -30,6 +30,8 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <string.h>
 #include "madimp.h"
 
 #define NUM_REG_SET     1

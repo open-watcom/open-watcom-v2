@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include <ctype.h>
 #include "xmp.h"
 #include "xmptypes.h"
