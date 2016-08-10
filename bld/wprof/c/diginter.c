@@ -81,9 +81,9 @@ void DIGCLIENT DIGCliFree( void * p )
 
 
 dig_fhandle DIGCLIENT DIGCliOpen( const char * name, dig_open mode )
-/************************************************************/
+/******************************************************************/
 {
-    dig_fhandle     f;
+    int             fh;
     int             access;
 
     access = O_BINARY;
@@ -107,30 +107,32 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char * name, dig_open mode )
     if( mode & DIG_APPEND ) {
         access |= O_APPEND;
     }
-    f = open( name, access );
-    return( f );
+    fh = open( name, access );
+    if( fh == -1 )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)fh );
 }
 
 
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
-/******************************************************************************/
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
+/********************************************************************************/
 {
-    return( lseek( h, p, k ) );
+    return( lseek( (int)dfh, p, k ) );
 }
 
 
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle h, void * b , size_t s )
-/***************************************************************/
+size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void * b , size_t s )
+/*****************************************************************/
 {
-    return( BigRead( h, b, s ) );
+    return( BigRead( (int)dfh, b, s ) );
 }
 
 
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
-/*********************************************************************/
+size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void * b, size_t s )
+/***********************************************************************/
 {
 #ifdef _WIN64
     size_t      total;
@@ -142,7 +144,7 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
     while( s > 0 ) {
         if( amount > s )
             amount = (unsigned)s;
-        write_len = write( h, b, amount );
+        write_len = write( (int)dfh, b, amount );
         if( write_len == (unsigned)-1 ) {
             return( (size_t)-1 );
         }
@@ -155,16 +157,16 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void * b, size_t s )
     }
     return( total );
 #else
-    return( write( h, b, s ) );
+    return( write( (int)dfh, b, s ) );
 #endif
 }
 
 
 
-void DIGCLIENT DIGCliClose( dig_fhandle h )
-/*****************************************/
+void DIGCLIENT DIGCliClose( dig_fhandle dfh )
+/*******************************************/
 {
-    close( h );
+    close( (int)dfh );
 }
 
 

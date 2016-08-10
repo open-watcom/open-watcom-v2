@@ -34,7 +34,7 @@
 #include "exephar.h"
 #ifdef __LINUX__
 #include <sys/mman.h>
-#endif    
+#endif
 
 typedef struct {
 #ifdef __WATCOMC__
@@ -46,7 +46,7 @@ typedef struct {
 
 #define RELOC_BUFF_SIZE 64
 
-static imp_header *ReadInImp( int h )
+static imp_header *ReadInImp( dig_fhandle dfh )
 {
     simple_header       hdr;
     unsigned long       size;
@@ -59,41 +59,44 @@ static imp_header *ReadInImp( int h )
     unsigned long       buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
-    if( DIGCliRead( h, &hdr, sizeof( hdr ) ) != sizeof( hdr ) ) return( NULL );
-    if( hdr.signature != REX_SIGNATURE ) return( NULL );
+    if( DIGCliRead( dfh, &hdr, sizeof( hdr ) ) != sizeof( hdr ) )
+        return( NULL );
+    if( hdr.signature != REX_SIGNATURE )
+        return( NULL );
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
     bss_size = hdr.min_data * 4096;
     imp_start = DIGCliAlloc( size + bss_size );
-    if( imp_start == NULL ) return( NULL );
-    DIGCliSeek( h, hdr_size, DIG_ORG );
-    if( DIGCliRead( h, imp_start, size ) != size ) {
+    if( imp_start == NULL )
+        return( NULL );
+    DIGCliSeek( dfh, hdr_size, DIG_ORG );
+    if( DIGCliRead( dfh, imp_start, size ) != size ) {
         DIGCliFree( imp_start );
         return( NULL );
     }
-    DIGCliSeek( h, hdr.reloc_offset, DIG_ORG );
+    DIGCliSeek( dfh, hdr.reloc_offset, DIG_ORG );
     while( hdr.num_relocs != 0 ) {
         bunch = hdr.num_relocs;
-        if( bunch > RELOC_BUFF_SIZE ) bunch = RELOC_BUFF_SIZE;
+        if( bunch > RELOC_BUFF_SIZE )
+            bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGCliRead( h, buff, reloc_size ) != reloc_size ) {
+        if( DIGCliRead( dfh, buff, reloc_size ) != reloc_size ) {
             DIGCliFree( imp_start );
             return( NULL );
         }
         for( i = 0; i < bunch; ++i ) {
-            fixup_loc =
-                (void *)(imp_start + (buff[i] & ~0x80000000));
+            fixup_loc = (void *)(imp_start + (buff[i] & ~0x80000000));
             *fixup_loc += (unsigned long)imp_start;
         }
         hdr.num_relocs -= bunch;
     }
 #ifdef __LINUX__
-    /* On some platforms (such as AMD64 or x86 with NX bit), it is required 
+    /* On some platforms (such as AMD64 or x86 with NX bit), it is required
      * to map the code pages loaded from the BPD as executable, otherwise
      * a segfault will occur when attempting to run any BPD code.
      */
     mprotect((void*)((u_long)imp_start & ~4095), (size+4095) & ~4095, PROT_READ | PROT_WRITE | PROT_EXEC);
-#endif    
+#endif
     memset( imp_start + size, 0, bss_size );
     return( (imp_header *)imp_start );
 }

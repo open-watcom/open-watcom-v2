@@ -57,7 +57,7 @@ extern void         ClearRoutineInfo(file_info *curr_file);
 extern process_info *WPDipProc(void);
 extern void         WPDipDestroyProc(process_info *dip_proc);
 extern void         WPDipSetProc(process_info *dip_proc);
-extern mod_handle   WPDipLoadInfo(int f_handle,char *f_name,void *image,int image_size,unsigned int dip_start,unsigned int dip_end);
+extern mod_handle   WPDipLoadInfo(dig_fhandle dfh,char *f_name,void *image,int image_size,unsigned int dip_start,unsigned int dip_end);
 
 extern sio_data     *SIOData;
 extern sio_data     *CurrSIOData;
@@ -648,7 +648,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     } else if( curr_image->sym_name != NULL ) {
         sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
         if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_file,
+            curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)sym_file,
                                        curr_image->sym_name, curr_image,
                                        sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
@@ -661,7 +661,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         memcpy( curr_image->sym_name, FNameBuff, name_len );
         sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
         if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_file,
+            curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)sym_file,
                                       curr_image->sym_name, curr_image,
                                       sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
@@ -693,7 +693,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     }
     if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted
      && object_file != -1 ) {
-        curr_image->dip_handle = WPDipLoadInfo( object_file,
+        curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)object_file,
                                    curr_image->name, curr_image,
                                    sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
     }

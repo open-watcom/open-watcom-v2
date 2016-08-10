@@ -155,14 +155,14 @@ dig_fhandle DIGPathOpen( const char *name, size_t name_len,
         filename = FindFile( result, realname, DipExePathList );
     }
     if( filename == NULL ) {
-        return( -1 );
+        return( DIG_NIL_HANDLE );
     }
     return( DIGCliOpen( filename, DIG_READ ) );
 }
 
-unsigned DIGPathClose( dig_fhandle h )
+unsigned DIGPathClose( dig_fhandle dfh )
 {
-    DIGCliClose( h );
+    DIGCliClose( dfh );
     return( 0 );
 }
 #endif

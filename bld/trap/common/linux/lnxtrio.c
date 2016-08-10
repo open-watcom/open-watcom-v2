@@ -185,7 +185,7 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, c
     const char          *src;
     char                *dst;
     char                trpfile[256];
-    dig_fhandle         filehndl;
+    int                 fh;
     char                c;
 
     max_result = max_result;
@@ -214,26 +214,27 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, c
         dst += name_len;
     }
     *dst = '\0';
+    fh = -1;
     if( has_path ) {
-        filehndl = open( trpfile, O_RDONLY );
+        fh = open( trpfile, O_RDONLY );
     } else {
-        if( FindFilePath( trpfile, result ) == 0 ) {
-            filehndl = DIG_NIL_HANDLE;
-        } else {
-            filehndl = open( result, O_RDONLY );
+        if( FindFilePath( trpfile, result ) ) {
+            fh = open( result, O_RDONLY );
         }
     }
-    return( filehndl );
+    if( fh == -1 )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)fh );
 }
 
-unsigned DIGPathClose( dig_fhandle h )
+unsigned DIGPathClose( dig_fhandle dfh )
 {
-    close( h );
+    close( (int)dfh );
     return( 0 );
 }
 
 
-long DIGGetSystemHandle( dig_fhandle h )
+long DIGGetSystemHandle( dig_fhandle dfh )
 {
-    return( h );
+    return( (long)dfh );
 }

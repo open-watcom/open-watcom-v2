@@ -60,27 +60,32 @@ void DIGCLIENT DIGCliFree( void *p )
 
 dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
 {
-    return( FileOpen( name, mode ) );
+    file_handle fh;
+
+    fh = FileOpen( name, mode );
+    if( fh == NIL_HANDLE )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)fh );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
-    return( SeekStream( h, p, k ) );
+    return( SeekStream( (file_handle)dfh, p, k ) );
 }
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *b , size_t s )
 {
-    return( ReadStream( h, b, s ) );
+    return( ReadStream( (file_handle)dfh, b, s ) );
 }
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *b, size_t s )
 {
-    return( WriteStream( h, b, s ) );
+    return( WriteStream( (file_handle)dfh, b, s ) );
 }
 
-void DIGCLIENT DIGCliClose( dig_fhandle h )
+void DIGCLIENT DIGCliClose( dig_fhandle dfh )
 {
-    FileClose( h );
+    FileClose( (file_handle)dfh );
 }
 
 void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
