@@ -88,7 +88,7 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( ii, addr, &is->im ) == SR_NONE ) {
             return( SR_NONE );
         }
     } else {
@@ -144,11 +144,11 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
-        len = ImpInterface.sym_name( ii, is, lc, SN_OBJECT, NULL, 0 );
+        len = ImpInterface.SymName( ii, is, lc, SN_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
         mangled_name = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
+        ImpInterface.SymName( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
         return( __demangle_l( mangled_name, len, buff, buff_size ) );
@@ -159,11 +159,11 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                 break;
             return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK )
+            if( ImpInterface.SymLocation( ii, is, lc, &ll ) != DS_OK )
                 break;
             if( ll.num != 1 || ll.e[0].type != LT_ADDR )
                 break;
-            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+            if( ImpInterface.AddrMod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
                 break;
             if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
                 break;
@@ -254,9 +254,9 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
         scope_is = source;
-        len = ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
+        len = ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
         scope_name = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;
@@ -292,7 +292,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     im = IMH_NOMOD;
     switch( ss ) {
     case SS_SCOPED:
-        if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( ii, *(address *)source, &im ) == SR_NONE ) {
             im = MH2IMH( sym_li.mod );
         } else if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
             if( !sym_li.file_scope && sym_li.type == ST_NONE ) {

@@ -507,7 +507,7 @@ size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
 {
     cue_fileid      id;
 
-    id = ImpInterface.cue_file_id( ii, ic );
+    id = ImpInterface.CueFileId( ii, ic );
     switch( id ) {
     case 0:
         return( 0 );

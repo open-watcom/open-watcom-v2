@@ -279,7 +279,7 @@ unsigned        DCMachineData( address a, dig_info_type info_type,
 
 dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
-    return( ImpInterface.type_base( ii, it, base, NULL, NULL ) );
+    return( ImpInterface.TypeBase( ii, it, base, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )
@@ -323,8 +323,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.handle_size;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, handle_size ) ) / sizeof( INTER_FUNC * );
+    func = (INTER_FUNC **)&ImpInterface.QueryHandleSize;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, QueryHandleSize ) ) / sizeof( INTER_FUNC * );
     while( count != 0 ) {
         *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;

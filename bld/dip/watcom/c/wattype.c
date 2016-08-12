@@ -445,7 +445,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
     case NO_TYPE:
         return( DS_FAIL );
     case ARRAY_TYPE:
-        if( stricmp( ImpInterface.mod_src_lang( ii, im ), "fortran" ) == 0 ) {
+        if( stricmp( ImpInterface.ModSrcLang( ii, im ), "fortran" ) == 0 ) {
             it->f.s.col_major = 1;
             it->f.s.array_ss = 0;
             base = *it;
@@ -814,8 +814,8 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
             FreeLoad();
             save_major = it->f.s.col_major;
             it->f.s.col_major = 0;
-            ImpInterface.type_array_info( ii, it, lc, &info, NULL );
-            ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
+            ImpInterface.TypeArrayInfo( ii, it, lc, &info, NULL );
+            ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
             GetTypeInfo( ii, &tmp, lc, ti, ndims );
             it->f.s.col_major = save_major;
             if( ndims != NULL )
@@ -826,8 +826,8 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
             Type->start = NULL;
             break;
         case SUBRANGE_TYPE:
-            ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
-            ImpInterface.tipe_info( ii, &tmp, lc, ti );
+            ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
+            ImpInterface.TypeInfo( ii, &tmp, lc, ti );
             break;
         case POINTER_TYPE:
             {
@@ -1013,9 +1013,9 @@ dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
         tmp = *it;
         tmp.f.s.col_major = 0;
         for( count = tmp.f.s.array_ss-1; count != 0; --count ) {
-            ImpInterface.type_base( ii, &tmp, &tmp, NULL, NULL );
+            ImpInterface.TypeBase( ii, &tmp, &tmp, NULL, NULL );
         }
-        ImpInterface.type_array_info( ii, &tmp, lc, ai, index );
+        ImpInterface.TypeArrayInfo( ii, &tmp, lc, ai, index );
         ai->num_dims = tmp.f.s.array_ss - ai->num_dims + 1;
         ai->column_major = 1;
         return( DS_OK );
@@ -1084,7 +1084,7 @@ dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
         break;
     }
     PopLoad();
-    ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
+    ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
     ai->num_dims = 1;
     ret = GetTypeInfo( ii, &tmp, lc, &info, &ai->num_dims );
     if( ret != DS_OK )

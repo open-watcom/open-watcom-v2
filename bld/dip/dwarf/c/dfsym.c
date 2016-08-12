@@ -567,7 +567,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
 }
 
 
-#define SYMBOL_dot_return	".return"
+#define SYMBOL_dot_return       ".return"
 
 static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 /**********************************************************/
@@ -640,7 +640,7 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 
-#define SYMBOL_this	"this"
+#define SYMBOL_this     "this"
 
 static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 /***********************************************************/
@@ -1742,7 +1742,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 /************************************************************************/
 {
@@ -1750,7 +1750,7 @@ extern search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 /**********************************************************************/

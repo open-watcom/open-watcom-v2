@@ -189,7 +189,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     unsigned    size;
 
     for( hk = 0; hk < MAX_HK; ++hk ) {
-        size = rtns->handle_size( hk );
+        size = rtns->QueryHandleSize( hk );
         if( size > MaxImpHdlSize[hk] ) {
             MaxImpHdlSize[hk] = size;
         }
@@ -243,7 +243,7 @@ void DIPFiniLatest( void )
 
     for( i = MAX_DIPS - 1; i >= 0; --i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
-            LoadedDIPs[i].rtns->shutdown();
+            LoadedDIPs[i].rtns->Shutdown();
             if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
                 DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             }
@@ -260,7 +260,7 @@ void DIPFini( void )
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
-            LoadedDIPs[i].rtns->shutdown();
+            LoadedDIPs[i].rtns->Shutdown();
             if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
                 DIPSysUnload( &LoadedDIPs[i].sys_hdl );
             }
@@ -285,7 +285,7 @@ dip_status DIPMoreMem( unsigned amount )
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
-            if( LoadedDIPs[i].rtns->more_mem( amount ) == DS_OK ) {
+            if( LoadedDIPs[i].rtns->MoreMem( amount ) == DS_OK ) {
                 return( DS_OK );
             }
         }
@@ -300,13 +300,13 @@ void DIPCancel( void )
 
     for( i = 0; i < MAX_DIPS; ++i ) {
         if( LoadedDIPs[i].rtns != NULL ) {
-            LoadedDIPs[i].rtns->cancel();
+            LoadedDIPs[i].rtns->Cancel();
         }
     }
     if( LoadingImageIdx != NO_IMAGE_IDX ) {
         ih = II2IH( LoadingImageIdx );
         if( ih != NULL ) {
-            ih->dip->unload_info( IH2IIH( ih ) );
+            ih->dip->UnLoadInfo( IH2IIH( ih ) );
         }
         LoadingImageIdx = NO_IMAGE_IDX;
     }
@@ -344,7 +344,7 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     image_handle        *curr;
 
     DIPCliImageUnload( MK_MH( ih->ii, 0 ) );
-    ih->dip->unload_info( IH2IIH( ih ) );
+    ih->dip->UnLoadInfo( IH2IIH( ih ) );
     p->ih_map[ih->ii] = NULL;
     owner = &p->ih_list;
     for( ;; ) {
@@ -496,7 +496,7 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
             continue;
         if( LoadedDIPs[j].rtns->dip_priority != prio )
             continue;
-        ret = LoadedDIPs[j].rtns->load_info( file, IH2IIH( ih ) );
+        ret = LoadedDIPs[j].rtns->LoadInfo( file, IH2IIH( ih ) );
         if( ret == DS_OK ) {
             ActProc->ih_map[ii] = ih;
             ih->next = *ActProc->ih_add;
@@ -522,7 +522,7 @@ void DIPMapInfo( mod_handle mh, void *d )
 
     ih = MH2IH( mh );
     if( ih != NULL ) {
-        ih->dip->map_info( IH2IIH( ih ), d );
+        ih->dip->MapInfo( IH2IIH( ih ), d );
     }
     LoadingImageIdx = NO_IMAGE_IDX;
 }
@@ -598,7 +598,7 @@ static walk_result WalkOneModList( mod_handle mh, void *d )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( WR_STOP );
-    return( ih->dip->walk_mod_list( IH2IIH( ih ), ModGlue, d ) );
+    return( ih->dip->WalkModList( IH2IIH( ih ), ModGlue, d ) );
 }
 
 walk_result WalkModList( mod_handle mh, MOD_WALKER *mw, void *d )
@@ -643,7 +643,7 @@ walk_result WalkTypeList( mod_handle mh, TYPE_WALKER *tw, void *d )
         glue.lc = NULL;
         th->ii = MH_IMAGE( mh );
         th->ap = 0;
-        wr = ih->dip->walk_type_list( IH2IIH( ih ), MH2IMH( mh ),
+        wr = ih->dip->WalkTypeList( IH2IIH( ih ), MH2IMH( mh ),
                                 TypeGlue, TH2ITH( th ), &glue );
     }
     return( wr );
@@ -718,10 +718,10 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     if( ih != NULL ) {
         sh->ii = ii;
         if( ih->dip->minor == DIP_MINOR ) {
-            wr = ih->dip->walk_sym_list_ex( IH2IIH( ih ), ss, start,
+            wr = ih->dip->WalkSymListEx( IH2IIH( ih ), ss, start,
                                     SymGlue, SH2ISH( sh ), wd->lc, wd );
         } else {
-            wr = ih->dip->walk_sym_list( IH2IIH( ih ), ss, start,
+            wr = ih->dip->WalkSymList( IH2IIH( ih ), ss, start,
                                     SymGlue, SH2ISH( sh ), wd );
         }
     }
@@ -766,7 +766,7 @@ walk_result WalkFileList( mod_handle mh, CUE_WALKER *cw, void *d )
     glue.d = d;
     glue.lc = NULL;
     ch->ii = MH_IMAGE( mh );
-    return( ih->dip->walk_file_list( IH2IIH( ih ), MH2IMH( mh ),
+    return( ih->dip->WalkFileList( IH2IIH( ih ), MH2IMH( mh ),
                 CueGlue, CH2ICH( ch ), &glue ) );
 }
 
@@ -799,7 +799,7 @@ size_t ModName( mod_handle mh, char *buff, size_t buff_size )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->mod_name( IH2IIH( ih ), MH2IMH( mh ), buff, buff_size ) );
+    return( ih->dip->ModName( IH2IIH( ih ), MH2IMH( mh ), buff, buff_size ) );
 }
 
 char *ModSrcLang( mod_handle mh )
@@ -809,7 +809,7 @@ char *ModSrcLang( mod_handle mh )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( NULL );
-    return( ih->dip->mod_src_lang( IH2IIH( ih ), MH2IMH( mh ) ) );
+    return( ih->dip->ModSrcLang( IH2IIH( ih ), MH2IMH( mh ) ) );
 }
 
 dip_status ModHasInfo( mod_handle mh, handle_kind hk )
@@ -819,7 +819,7 @@ dip_status ModHasInfo( mod_handle mh, handle_kind hk )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->mod_info( IH2IIH( ih ), MH2IMH( mh ), hk ) );
+    return( ih->dip->ModInfo( IH2IIH( ih ), MH2IMH( mh ), hk ) );
 }
 
 dip_status ModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
@@ -829,7 +829,7 @@ dip_status ModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->mod_default( IH2IIH( ih ), MH2IMH( mh ), dk, ti ) );
+    return( ih->dip->ModDefault( IH2IIH( ih ), MH2IMH( mh ), dk, ti ) );
 }
 
 address ModAddr( mod_handle mh )
@@ -839,7 +839,7 @@ address ModAddr( mod_handle mh )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( NilAddr );
-    return( ih->dip->mod_addr( IH2IIH( ih ), MH2IMH( mh ) ) );
+    return( ih->dip->ModAddr( IH2IIH( ih ), MH2IMH( mh ) ) );
 }
 
 /*
@@ -850,7 +850,7 @@ mod_handle TypeMod( type_handle *th )
     image_handle        *ih;
 
     ih = II2IH( th->ii );
-    return( MK_MH( ih->ii, ih->dip->type_mod( IH2IIH( ih ), TH2ITH( th ) ) ) );
+    return( MK_MH( ih->ii, ih->dip->TypeMod( IH2IIH( ih ), TH2ITH( th ) ) ) );
 }
 
 dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
@@ -882,7 +882,7 @@ dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->tipe_info( IH2IIH( ih ), TH2ITH( th ), lc, ti ) );
+    return( ih->dip->TypeInfo( IH2IIH( ih ), TH2ITH( th ), lc, ti ) );
 }
 
 void TypeInit( type_handle *th, mod_handle mh )
@@ -929,10 +929,10 @@ dip_status TypeBase( type_handle *th, type_handle *base_th, location_context *lc
     base_th->ii = th->ii;
     base_th->ap = 0;
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->type_base( IH2IIH( ih ),
+        return( ih->dip->TypeBase( IH2IIH( ih ),
                 TH2ITH( th ), TH2ITH( base_th ), lc, ll ) );
     } else {
-        return( ih->dip->old_type_base( IH2IIH( ih ),
+        return( ih->dip->OldTypeBase( IH2IIH( ih ),
                 TH2ITH( th ), TH2ITH( base_th ) ) );
     }
 }
@@ -946,7 +946,7 @@ dip_status TypeAddRef( type_handle *th )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->type_addref( IH2IIH( ih ), TH2ITH( th ) ) );
+        return( ih->dip->TypeAddRef( IH2IIH( ih ), TH2ITH( th ) ) );
     } else {
         return( DS_OK );
     }
@@ -961,7 +961,7 @@ dip_status TypeRelease( type_handle *th )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->type_release( IH2IIH( ih ), TH2ITH( th ) ) );
+        return( ih->dip->TypeRelease( IH2IIH( ih ), TH2ITH( th ) ) );
     } else {
         return( DS_OK );
     }
@@ -976,7 +976,7 @@ dip_status TypeFreeAll( void )
         return( DS_OK );
     for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
         if( ih->dip->minor == DIP_MINOR ) {
-            ih->dip->type_freeall( IH2IIH( ih ) );
+            ih->dip->TypeFreeAll( IH2IIH( ih ) );
         }
     }
     return( DS_OK );
@@ -1000,7 +1000,7 @@ dip_status TypeArrayInfo( type_handle *th, location_context *lc,
         index_th->ap = 0;
         ith = TH2ITH( index_th );
     }
-    return( ih->dip->type_array_info( IH2IIH( ih ), TH2ITH( th ), lc, ai, ith ) );
+    return( ih->dip->TypeArrayInfo( IH2IIH( ih ), TH2ITH( th ), lc, ai, ith ) );
 }
 
 dip_status TypeProcInfo( type_handle *th, type_handle *parm_th, unsigned num )
@@ -1014,7 +1014,7 @@ dip_status TypeProcInfo( type_handle *th, type_handle *parm_th, unsigned num )
         return( DS_ERR|DS_NO_PROCESS );
     parm_th->ii = th->ii;
     parm_th->ap = 0;
-    return( ih->dip->type_proc_info( IH2IIH( ih ),
+    return( ih->dip->TypeProcInfo( IH2IIH( ih ),
         TH2ITH( th ), TH2ITH( parm_th ), num ) );
 }
 
@@ -1027,7 +1027,7 @@ dip_status TypePtrAddrSpace( type_handle *th, location_context *lc, address *a )
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->type_ptr_addr_space( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
+    return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
 dip_status TypeThunkAdjust( type_handle *oth, type_handle *mth,
@@ -1042,7 +1042,7 @@ dip_status TypeThunkAdjust( type_handle *oth, type_handle *mth,
     ih = II2IH( oth->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->type_thunk_adjust( IH2IIH( ih ),
+    return( ih->dip->TypeThunkAdjust( IH2IIH( ih ),
         TH2ITH( oth ), TH2ITH( mth ), lc, a ) );
 }
 
@@ -1055,7 +1055,7 @@ int TypeCmp( type_handle *th1, type_handle *th2 )
         return( 0 );
     if( th1->ii != th2->ii )
         return( th1->ii - th2->ii );
-    return( ih->dip->type_cmp( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ) ) );
+    return( ih->dip->TypeCmp( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ) ) );
 }
 
 size_t TypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, size_t buff_size )
@@ -1065,7 +1065,7 @@ size_t TypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, si
     ih = II2IH( th->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->type_name( IH2IIH( ih ), TH2ITH( th ), num, tag, buff, buff_size ) );
+    return( ih->dip->TypeName( IH2IIH( ih ), TH2ITH( th ), num, tag, buff, buff_size ) );
 }
 
 /*
@@ -1076,7 +1076,7 @@ mod_handle SymMod( sym_handle *sh )
     image_handle        *ih;
 
     ih = II2IH( sh->ii );
-    return( MK_MH( ih->ii, ih->dip->sym_mod( IH2IIH( ih ), SH2ISH( sh ) ) ) );
+    return( MK_MH( ih->ii, ih->dip->SymMod( IH2IIH( ih ), SH2ISH( sh ) ) ) );
 }
 
 //NYI: needs to do something for expression names
@@ -1087,7 +1087,7 @@ size_t SymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->sym_name( IH2IIH( ih ), SH2ISH( sh ), lc, sn, buff, buff_size ) );
+    return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, sn, buff, buff_size ) );
 }
 
 dip_status SymType( sym_handle *sh, type_handle *th )
@@ -1099,7 +1099,7 @@ dip_status SymType( sym_handle *sh, type_handle *th )
         return( DS_ERR|DS_NO_PROCESS );
     th->ii = sh->ii;
     th->ap = 0;
-    return( ih->dip->sym_type( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ) ) );
+    return( ih->dip->SymType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ) ) );
 }
 
 dip_status SymLocation( sym_handle *sh, location_context *lc, location_list *ll )
@@ -1109,7 +1109,7 @@ dip_status SymLocation( sym_handle *sh, location_context *lc, location_list *ll 
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->sym_location( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
+    return( ih->dip->SymLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
 }
 
 dip_status SymValue( sym_handle *sh, location_context *lc, void *value )
@@ -1119,7 +1119,7 @@ dip_status SymValue( sym_handle *sh, location_context *lc, void *value )
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->sym_value( IH2IIH( ih ), SH2ISH( sh ), lc, value ) );
+    return( ih->dip->SymValue( IH2IIH( ih ), SH2ISH( sh ), lc, value ) );
 }
 
 dip_status SymInfo( sym_handle *sh, location_context *lc, sym_info *si )
@@ -1129,7 +1129,7 @@ dip_status SymInfo( sym_handle *sh, location_context *lc, sym_info *si )
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->sym_info( IH2IIH( ih ), SH2ISH( sh ), lc, si ) );
+    return( ih->dip->SymInfo( IH2IIH( ih ), SH2ISH( sh ), lc, si ) );
 }
 
 void SymInit( sym_handle *sh, image_handle *ih )
@@ -1149,7 +1149,7 @@ dip_status SymParmLocation( sym_handle *sh, location_context *lc,
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->sym_parm_location( IH2IIH( ih ), SH2ISH( sh ), lc, ll, parm ) );
+    return( ih->dip->SymParmLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll, parm ) );
 }
 
 dip_status SymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
@@ -1161,7 +1161,7 @@ dip_status SymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
         return( DS_ERR|DS_NO_PROCESS );
     th->ii = sh->ii;
     th->ap = 0;
-    return( ih->dip->sym_obj_type( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ), ti ) );
+    return( ih->dip->SymObjType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ), ti ) );
 }
 
 dip_status SymObjLocation( sym_handle *sh, location_context *lc,
@@ -1172,7 +1172,7 @@ dip_status SymObjLocation( sym_handle *sh, location_context *lc,
     ih = II2IH( sh->ii );
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
-    return( ih->dip->sym_obj_location( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
+    return( ih->dip->SymObjLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
 }
 
 int SymCmp( sym_handle *sh1, sym_handle *sh2 )
@@ -1184,7 +1184,7 @@ int SymCmp( sym_handle *sh1, sym_handle *sh2 )
         return( 0 );
     if( sh1->ii != sh2->ii )
         return( sh1->ii - sh2->ii );
-    return( ih->dip->sym_cmp( IH2IIH( ih ), SH2ISH( sh1 ), SH2ISH( sh2 ) ) );
+    return( ih->dip->SymCmp( IH2IIH( ih ), SH2ISH( sh1 ), SH2ISH( sh2 ) ) );
 }
 
 dip_status SymAddRef( sym_handle *sh )
@@ -1196,7 +1196,7 @@ dip_status SymAddRef( sym_handle *sh )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->sym_addref( IH2IIH( ih ), SH2ISH( sh ) ) );
+        return( ih->dip->SymAddRef( IH2IIH( ih ), SH2ISH( sh ) ) );
     } else {
         return( DS_OK );
     }
@@ -1211,7 +1211,7 @@ dip_status SymRelease( sym_handle *sh )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     if( ih->dip->minor == DIP_MINOR ) {
-        return( ih->dip->sym_release( IH2IIH( ih ), SH2ISH( sh ) ) );
+        return( ih->dip->SymRelease( IH2IIH( ih ), SH2ISH( sh ) ) );
     } else {
         return( DS_OK );
     }
@@ -1226,7 +1226,7 @@ dip_status SymFreeAll( void )
         return( DS_OK );
     for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
         if( ih->dip->minor == DIP_MINOR ) {
-            ih->dip->sym_freeall( IH2IIH( ih ) );
+            ih->dip->SymFreeAll( IH2IIH( ih ) );
         }
     }
     return( DS_OK );
@@ -1240,7 +1240,7 @@ mod_handle CueMod( cue_handle *ch )
     image_handle        *ih;
 
     ih = II2IH( ch->ii );
-    return( MK_MH( ih->ii, ih->dip->cue_mod( IH2IIH( ih ), CH2ICH( ch ) ) ) );
+    return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( ch ) ) ) );
 }
 
 size_t CueFile( cue_handle *ch, char *buff, size_t buff_size )
@@ -1250,7 +1250,7 @@ size_t CueFile( cue_handle *ch, char *buff, size_t buff_size )
     ih = II2IH( ch->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->cue_file( IH2IIH( ih ), CH2ICH( ch ), buff, buff_size ) );
+    return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( ch ), buff, buff_size ) );
 }
 
 cue_fileid CueFileId( cue_handle *ch )
@@ -1258,7 +1258,7 @@ cue_fileid CueFileId( cue_handle *ch )
     image_handle        *ih;
 
     ih = II2IH( ch->ii );
-    return( ih->dip->cue_file_id( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
 dip_status CueAdjust( cue_handle *ch, int adj, cue_handle *ach )
@@ -1269,7 +1269,7 @@ dip_status CueAdjust( cue_handle *ch, int adj, cue_handle *ach )
     if( ih == NULL )
         return( DS_ERR|DS_NO_PROCESS );
     ach->ii = ch->ii;
-    return( ih->dip->cue_adjust( IH2IIH( ih ), CH2ICH( ch ), adj, CH2ICH( ach ) ) );
+    return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( ch ), adj, CH2ICH( ach ) ) );
 }
 
 unsigned long CueLine( cue_handle *ch )
@@ -1279,7 +1279,7 @@ unsigned long CueLine( cue_handle *ch )
     ih = II2IH( ch->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->cue_line( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
 unsigned CueColumn( cue_handle *ch )
@@ -1289,7 +1289,7 @@ unsigned CueColumn( cue_handle *ch )
     ih = II2IH( ch->ii );
     if( ih == NULL )
         return( 0 );
-    return( ih->dip->cue_column( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
 address CueAddr( cue_handle *ch )
@@ -1299,7 +1299,7 @@ address CueAddr( cue_handle *ch )
     ih = II2IH( ch->ii );
     if( ih == NULL )
         return( NilAddr );
-    return( ih->dip->cue_addr( IH2IIH( ih ), CH2ICH( ch ) ) );
+    return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
 search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
@@ -1315,7 +1315,7 @@ search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
         return( SR_FAIL );
     }
     ch->ii = ih->ii;
-    return( ih->dip->line_cue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( ch ) ) );
+    return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( ch ) ) );
 }
 
 search_result AddrCue( mod_handle mh, address addr, cue_handle *ch )
@@ -1331,7 +1331,7 @@ search_result AddrCue( mod_handle mh, address addr, cue_handle *ch )
     if( ih == NULL )
         return( SR_NONE );
     ch->ii = ih->ii;
-    return( ih->dip->addr_cue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( ch ) ) );
+    return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( ch ) ) );
 }
 
 int CueCmp( cue_handle *ch1, cue_handle *ch2 )
@@ -1343,7 +1343,7 @@ int CueCmp( cue_handle *ch1, cue_handle *ch2 )
         return( 0 );
     if( ch1->ii != ch2->ii )
         return( ch1->ii - ch2->ii );
-    return( ih->dip->cue_cmp( IH2IIH( ih ), CH2ICH( ch1 ), CH2ICH( ch2 ) ) );
+    return( ih->dip->CueCmp( IH2IIH( ih ), CH2ICH( ch1 ), CH2ICH( ch2 ) ) );
 }
 
 /*
@@ -1362,7 +1362,7 @@ search_result AddrMod( address a, mod_handle *mh )
         if( last_found != NO_IMAGE_IDX ) {
             ih = ActProc->ih_map[last_found];
             if( ih != NULL ) {
-                sr = ih->dip->addr_mod( IH2IIH( ih ), a, &imh );
+                sr = ih->dip->AddrMod( IH2IIH( ih ), a, &imh );
                 if( sr != SR_NONE ) {
                     *mh = MK_MH( last_found, imh );
                     return( sr );
@@ -1371,7 +1371,7 @@ search_result AddrMod( address a, mod_handle *mh )
         }
         for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
             if( ih->ii != last_found ) {
-                sr = ih->dip->addr_mod( IH2IIH( ih ), a, &imh );
+                sr = ih->dip->AddrMod( IH2IIH( ih ), a, &imh );
                 if( sr != SR_NONE ) {
                     ActProc->last_addr_mod_found = ih->ii;
                     *mh = MK_MH( ih->ii, imh );
@@ -1397,7 +1397,7 @@ search_result AddrSym( mod_handle mh, address a, sym_handle *sh )
     if( ih == NULL )
         return( SR_NONE );
     sh->ii = ih->ii;
-    return( ih->dip->addr_sym( IH2IIH( ih ), MH2IMH( mh ), a, SH2ISH( sh ) ) );
+    return( ih->dip->AddrSym( IH2IIH( ih ), MH2IMH( mh ), a, SH2ISH( sh ) ) );
 }
 
 //NYI: needs to do something for expression names
@@ -1453,9 +1453,9 @@ search_result LookupSymEx( symbol_source ss, void *source,
     li->mod = IMH2MH( MH2IMH( li->mod ) );
     if( ih != NULL ) {
         if( ih->dip->minor == DIP_MINOR ) {
-            sr = ih->dip->lookup_sym_ex( IH2IIH( ih ), ss, source, li, lc, d );
+            sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
         } else {
-            sr = ih->dip->lookup_sym( IH2IIH( ih ), ss, source, li, d );
+            sr = ih->dip->LookupSym( IH2IIH( ih ), ss, source, li, d );
         }
     } else {
         sr = SR_NONE;
@@ -1465,9 +1465,9 @@ search_result LookupSymEx( symbol_source ss, void *source,
         for( ih = ActProc->ih_list; ih != NULL; ih = ih->next ) {
             if( ih != cih ) {
                 if( ih->dip->minor == DIP_MINOR ) {
-                    sr = ih->dip->lookup_sym_ex( IH2IIH( ih ), ss, source, li, lc, d );
+                    sr = ih->dip->LookupSymEx( IH2IIH( ih ), ss, source, li, lc, d );
                 } else {
-                    sr = ih->dip->lookup_sym( IH2IIH( ih ), ss, source, li, d );
+                    sr = ih->dip->LookupSym( IH2IIH( ih ), ss, source, li, d );
                 }
                 if( sr != SR_NONE ) {
                     break;
@@ -1497,7 +1497,7 @@ search_result AddrScope( mod_handle mh, address addr, scope_block *scope )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( SR_NONE );
-    return( ih->dip->addr_scope( IH2IIH( ih ), MH2IMH( mh ), addr, scope ) );
+    return( ih->dip->AddrScope( IH2IIH( ih ), MH2IMH( mh ), addr, scope ) );
 }
 
 search_result ScopeOuter( mod_handle mh, scope_block *in, scope_block *out )
@@ -1512,5 +1512,5 @@ search_result ScopeOuter( mod_handle mh, scope_block *in, scope_block *out )
     ih = MH2IH( mh );
     if( ih == NULL )
         return( SR_NONE );
-    return( ih->dip->scope_outer( IH2IIH( ih ), MH2IMH( mh ), in, out ) );
+    return( ih->dip->ScopeOuter( IH2IIH( ih ), MH2IMH( mh ), in, out ) );
 }

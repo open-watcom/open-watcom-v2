@@ -37,6 +37,3 @@ extern mem_block                FindSegBlock( imp_image_handle *ii, imp_mod_hand
                                         unsigned long offset );
 extern unsigned                 AddrInfoSplit( info_block *curr, section_info *inf );
 extern void                     AddrInfoFini( section_info *inf );
-extern search_result DIGENTRY   DIPImpAddrMod( imp_image_handle *ii, address addr,
-                                        imp_mod_handle *imp );
-extern address DIGENTRY         DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im );

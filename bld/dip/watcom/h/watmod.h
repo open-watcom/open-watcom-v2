@@ -40,10 +40,3 @@ extern word             ModOff2Idx( section_info *inf, word off );
 extern walk_result      MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk, void *d );
 extern size_t           PrimaryCueFile( imp_image_handle *ii, imp_cue_handle *ic,
                                 char *buff, size_t buff_size );
-extern walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk,
-                                void *d );
-extern char *DIGENTRY       DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im );
-extern dip_status DIGENTRY  DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im,
-                                handle_kind hk );
-extern size_t DIGENTRY      DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
-                                char *buff, size_t buff_size );

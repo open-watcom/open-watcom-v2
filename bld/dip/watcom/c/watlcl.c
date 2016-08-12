@@ -876,7 +876,7 @@ walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR 
     walk_result         wr;
 
     wr = WR_CONTINUE;
-    if( ImpInterface.addr_mod( ii, *addr, &im ) != SR_NONE ) {
+    if( ImpInterface.AddrMod( ii, *addr, &im ) != SR_NONE ) {
         if( LoadLocalSyms( ii, im, &lclld ) == DS_OK ) {
             ptr = FindBlockScope( local->start, &blk, addr, local );
             if( ptr != NULL ) {
@@ -909,7 +909,7 @@ walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_
     walk_result         wr;
 
     wr = WR_CONTINUE;
-    if( ImpInterface.addr_mod( ii, scope->start, &im ) != SR_NONE ) {
+    if( ImpInterface.AddrMod( ii, scope->start, &im ) != SR_NONE ) {
         if( LoadLocalSyms( ii, im, &lclld ) == DS_OK ) {
             base = scope->unique >> 16;
             local->base_off = base;
