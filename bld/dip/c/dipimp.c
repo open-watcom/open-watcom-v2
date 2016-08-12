@@ -54,8 +54,6 @@
 address                 NilAddr;
 dip_client_routines     *DIPClient;
 
-dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
-
 dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
     DIP_MINOR,
@@ -240,7 +238,7 @@ dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
     return( DS_OK );
 }
 
-size_t DCWrite( dig_fhandle h, void *b, size_t s )
+size_t DCWrite( dig_fhandle h, const void *b, size_t s )
 {
     return( DIPClient->Write( h, b, s ) );
 }
@@ -269,7 +267,7 @@ dig_mad DCCurrMAD( void )
 }
 
 unsigned        DCMachineData( address a, dig_info_type info_type,
-                                dig_elen in_size,  void *in,
+                                dig_elen in_size,  const void *in,
                                 dig_elen out_size, void *out )
 {
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,MachineData) )

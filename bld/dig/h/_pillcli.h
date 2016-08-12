@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,22 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  DIG client callback function prototypes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H_INCLUDED
-#define DIGCLI_H_INCLUDED
-
-#define _DIGCli(n)  _DIGCli ## n *n
-
-#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#endif
+pick( link_buffer *,    BufferGet,  ( void *cookie, unsigned size ) )
+pick( void,             BufferRel,  ( void *cookie, link_buffer *buffer ) )
+pick( void,             Received,   ( void *cookie, link_buffer *data ) )
+pick( void,             State,      ( void *cookie, link_status ls, const link_message *msg ) )

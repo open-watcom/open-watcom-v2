@@ -74,7 +74,7 @@ const mad_type_data TypeArray[] = {
 #include "xmptypes.h"
 };
 
-walk_result     DIGENTRY MITypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
+walk_result DIGENTRY MADImpTypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void *data )
 {
     mad_type_handle     th;
     walk_result         wr;
@@ -90,22 +90,22 @@ walk_result     DIGENTRY MITypeWalk( mad_type_kind tk, MI_TYPE_WALKER *wk, void 
     return( WR_CONTINUE );
 }
 
-mad_string      DIGENTRY MITypeName( mad_type_handle th )
+mad_string DIGENTRY MADImpTypeName( mad_type_handle th )
 {
     return( TypeArray[th].name );
 }
 
-mad_radix       DIGENTRY MITypePreferredRadix( mad_type_handle th )
+mad_radix DIGENTRY MADImpTypePreferredRadix( mad_type_handle th )
 {
     return( TypeArray[th].hex ? 16 : 10 );
 }
 
-void            DIGENTRY MITypeInfo( mad_type_handle th, mad_type_info *ti )
+void DIGENTRY MADImpTypeInfo( mad_type_handle th, mad_type_info *ti )
 {
     memcpy( ti, TypeArray[th].u.info, sizeof( *ti ) );
 }
 
-mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
+mad_type_handle DIGENTRY MADImpTypeDefault( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
 {
     if( tk & MAS_IO ) {
         return( MAD_NIL_TYPE_HANDLE );
@@ -123,7 +123,7 @@ mad_type_handle DIGENTRY MITypeDefault( mad_type_kind tk, mad_address_format af,
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
+mad_status DIGENTRY MADImpTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, unsigned *buff_size_p )
 {
     radix = radix;
     mti = mti;
@@ -133,7 +133,7 @@ mad_status      DIGENTRY MITypeToString( mad_radix radix, const mad_type_info *m
     return( MS_UNSUPPORTED );
 }
 
-mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info *ti )
+mad_type_handle DIGENTRY MADImpTypeForDIPType( const dip_type_info *ti )
 {
     switch( ti->kind ) {
     case TK_DATA:
@@ -165,7 +165,7 @@ mad_type_handle DIGENTRY MITypeForDIPType( const dip_type_info *ti )
     return( MAD_NIL_TYPE_HANDLE );
 }
 
-mad_status      DIGENTRY MITypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status DIGENTRY MADImpTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
     return( MS_UNSUPPORTED );
 }

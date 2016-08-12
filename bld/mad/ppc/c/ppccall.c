@@ -48,19 +48,19 @@
  */
 
 
-mad_string              DIGENTRY MICallStackGrowsUp( void )
+mad_string DIGENTRY MADImpCallStackGrowsUp( void )
 {
     return( MS_FAIL );
 }
 
-const mad_string        *DIGENTRY MICallTypeList( void )
+const mad_string *DIGENTRY MADImpCallTypeList( void )
 {
     static const mad_string list[] = { MAD_MSTR_NIL };
 
     return( list );
 }
 
-mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address rtn, mad_registers const *in, mad_registers *out )
+mad_status DIGENTRY MADImpCallBuildFrame( mad_string call, address ret, address rtn, mad_registers const *in, mad_registers *out )
 {
     call = call;
     out->ppc = in->ppc;
@@ -70,14 +70,14 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
     return( MS_OK );
 }
 
-const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn )
+const mad_reg_info *DIGENTRY MADImpCallReturnReg( mad_string call, address rtn )
 {
     call = call; rtn = rtn;
 
     return( &RegList[IDX_r3].info );
 }
 
-const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address rtn )
+const mad_reg_info **DIGENTRY MADImpCallParmRegList( mad_string call, address rtn )
 {
     static const mad_reg_info *list[] = {
         &RegList[IDX_r3].info, &RegList[IDX_r4].info, &RegList[IDX_r5].info,
@@ -92,16 +92,16 @@ const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address r
 
 #define NO_OFF  (~(addr_off)0)
 
-unsigned        DIGENTRY MICallUpStackSize( void )
+unsigned DIGENTRY MADImpCallUpStackSize( void )
 {
     return( sizeof( mad_call_up_data ) );
 }
 
-mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
+mad_status DIGENTRY MADImpCallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
 {
     cud->lr = mr->ppc.lr.u._32[I64LO32];
     cud->sp = mr->ppc.u1.sp.u._32[I64LO32];
-    cud->fp = mr->ppc.r31.u._32[I64LO32];    // NYI: can float around
+    cud->fp = mr->ppc.u31.r31.u._32[I64LO32];    // NYI: can float around
     cud->first_frame = true;
     return( MS_OK );
 }
@@ -171,7 +171,7 @@ static int GetAnOffset( addr_off in, addr_off *off )
  *   have serious trouble figuring out what the return address is.
  */
 
-mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
+mad_status DIGENTRY MADImpCallUpStackLevel( mad_call_up_data *cud,
                                 const address *start,
                                 unsigned rtn_characteristics,
                                 long return_disp,

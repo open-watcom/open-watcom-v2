@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,22 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  DIG client callback function prototypes.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H_INCLUDED
-#define DIGCLI_H_INCLUDED
-
-#define _DIGCli(n)  _DIGCli ## n *n
-
-#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#endif
+pick( int,                  Load,       ( link_handle *, link_message * ) )
+pick( void,                 Unload,     ( link_handle * ) )
+pick( int,                  Init,       ( link_instance *, const char * ) )
+pick( unsigned,             MaxSize,    ( link_instance *, unsigned ) )
+pick( link_status,          Put,        ( link_instance *, link_buffer * ) )
+pick( unsigned,             Kicker,     ( link_instance * ) )
+pick( link_status,          Abort,      ( link_instance * ) )
+pick( link_status,          Fini,       ( link_instance * ) )
+pick( unsigned,             Message,    ( const link_message *, pil_language, unsigned, char * ) )
+pick( pill_private_func *,  Private,    ( const char * ) )

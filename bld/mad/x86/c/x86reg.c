@@ -441,7 +441,7 @@ static const mad_reg_set_data RegSet[] = {
     { MMXGetPiece, MMXToggleList, MAD_MSTR_MMX, MMXRegList, 1 },
     { XMMGetPiece, XMMToggleList, MAD_MSTR_XMM, XMMRegList, 1 } };
 
-unsigned DIGENTRY MIRegistersSize( void )
+unsigned DIGENTRY MADImpRegistersSize( void )
 {
     return( sizeof( struct x86_mad_registers ) );
 }
@@ -449,7 +449,7 @@ unsigned DIGENTRY MIRegistersSize( void )
 
 #define EXTRACT_ST( mr ) (((unsigned_16)(mr)->x86.u.fpu.sw >> SHIFT_st) & ((1<<LEN_st)-1))
 
-mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
 {
     unsigned    st;
     unsigned_16 tag;
@@ -463,7 +463,7 @@ mad_status DIGENTRY MIRegistersHost( mad_registers *mr )
     return( MS_MODIFIED );
 }
 
-mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
 {
     unsigned    st;
     unsigned_16 tag;
@@ -477,7 +477,7 @@ mad_status DIGENTRY MIRegistersTarget( mad_registers *mr )
     return( MS_MODIFIED );
 }
 
-walk_result DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     walk_result wr;
 
@@ -508,12 +508,12 @@ walk_result DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void
     return( WR_CONTINUE );
 }
 
-mad_string DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
+mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
 {
     return( rsd->name );
 }
 
-size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     char        str[80];
     size_t      len;
@@ -580,7 +580,7 @@ size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t b
     return( len );
 }
 
-unsigned DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
+unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 {
     switch( rsd - RegSet ) {
     case MMX_REG_SET:
@@ -1283,7 +1283,7 @@ static mad_status XMMGetPiece(
     return( MS_OK );
 }
 
-mad_status DIGENTRY MIRegSetDisplayGetPiece(
+mad_status DIGENTRY MADImpRegSetDisplayGetPiece(
     const mad_reg_set_data *rsd,
     const mad_registers *mr,
     unsigned piece,
@@ -1296,7 +1296,7 @@ mad_status DIGENTRY MIRegSetDisplayGetPiece(
     return( rsd->get_piece( mr, piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
 
-mad_status DIGENTRY MIRegSetDisplayModify(
+mad_status DIGENTRY MADImpRegSetDisplayModify(
     const mad_reg_set_data *rsd,
     const mad_reg_info *ri,
     const mad_modify_list **possible_p,
@@ -1482,7 +1482,7 @@ size_t RegDispType( mad_type_handle th, const void *d, char *buff, size_t buff_s
     return( MCString( p[*(unsigned_8 *)d].name, buff, buff_size ) );
 }
 
-mad_status DIGENTRY MIRegModified(
+mad_status DIGENTRY MADImpRegModified(
     const mad_reg_set_data *rsd,
     const mad_reg_info *ri,
     const mad_registers *old,
@@ -1574,7 +1574,7 @@ mad_status DIGENTRY MIRegModified(
     }
 }
 
-mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
+mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
     unsigned    bit_start;
     unsigned_32 *p;
@@ -1625,12 +1625,12 @@ mad_status DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_register
     return( MS_OK );
 }
 
-const mad_toggle_strings *DIGENTRY MIRegSetDisplayToggleList( const mad_reg_set_data *rsd )
+const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_set_data *rsd )
 {
     return( rsd->togglelist );
 }
 
-unsigned DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     unsigned    toggle;
     unsigned    save;
@@ -1678,7 +1678,7 @@ unsigned DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned o
     return( MADState->reg_state[index] );
 }
 
-walk_result DIGENTRY MIRegWalk(
+walk_result DIGENTRY MADImpRegWalk(
     const mad_reg_set_data *rsd,
     const mad_reg_info *ri,
     MI_REG_WALKER *wk,
@@ -1757,7 +1757,7 @@ address GetRegIP( const mad_registers *mr )
     return( a );
 }
 
-void DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
+void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -1775,7 +1775,7 @@ void DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr
     }
 }
 
-void DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
+void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -1793,7 +1793,7 @@ void DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr
     }
 }
 
-size_t DIGENTRY MIRegSpecialName(
+size_t DIGENTRY MADImpRegSpecialName(
     mad_special_reg sr,
     const mad_registers *mr,
     mad_address_format af,
@@ -1854,7 +1854,7 @@ size_t DIGENTRY MIRegSpecialName(
 }
 
 
-const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
+const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
 {
     static const mad_reg_info *list[] = {
         &CPU_eax.info,
@@ -1888,7 +1888,7 @@ const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
     return( list[ci-CI_EAX] );
 }
 
-void DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     mr = mr;
     flags = flags;
@@ -1896,7 +1896,7 @@ void DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_
     bit_size = bit_size;
 }
 
-void DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     bit_size = bit_size;
     if( flags & RF_GPREG )

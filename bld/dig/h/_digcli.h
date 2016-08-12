@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -30,17 +29,13 @@
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H_INCLUDED
-#define DIGCLI_H_INCLUDED
-
-#define _DIGCli(n)  _DIGCli ## n *n
-
-#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#endif
+pick( void *,           Alloc,          ( size_t ) )
+pick( void *,           Realloc,        ( void *, size_t ) )
+pick( void,             Free,           ( void * ) )
+pick( dig_fhandle,      Open,           ( const char *, dig_open ) )
+pick( unsigned long,    Seek,           ( dig_fhandle, unsigned long, dig_seek ) )
+pick( size_t,           Read,           ( dig_fhandle, void *, size_t ) )
+pick( size_t,           Write,          ( dig_fhandle, const void *, size_t ) )
+pick( void,             Close,          ( dig_fhandle ) )
+pick( void,             Remove,         ( const char *, dig_open ) )
+pick( unsigned,         MachineData,    ( address, dig_info_type, dig_elen, const void *, dig_elen, void * ) )

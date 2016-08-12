@@ -34,31 +34,31 @@
 
 imp_mad_state_data      *MADState;
 
-mad_status      DIGENTRY MIInit(void)
+mad_status DIGENTRY MADImpInit(void)
 {
     return( MS_FAIL );
 }
 
-void            DIGENTRY MIFini(void)
+void DIGENTRY MADImpFini(void)
 {
 }
 
-unsigned        DIGENTRY MIStateSize( void )
+unsigned DIGENTRY MADImpStateSize( void )
 {
     return( sizeof( *MADState ) );
 }
 
-void            DIGENTRY MIStateInit( imp_mad_state_data *new )
+void DIGENTRY MADImpStateInit( imp_mad_state_data *new )
 {
     memset( new, 0, sizeof( *new ) );
 }
 
-void            DIGENTRY MIStateSet( imp_mad_state_data *new )
+void DIGENTRY MADImpStateSet( imp_mad_state_data *new )
 {
     MADState = new;
 }
 
-void            DIGENTRY MIStateCopy( const imp_mad_state_data *src, imp_mad_state_data *dst )
+void DIGENTRY MADImpStateCopy( const imp_mad_state_data *src, imp_mad_state_data *dst )
 {
     memcpy( dst, src, sizeof( *dst ) );
 }

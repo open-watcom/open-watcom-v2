@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,22 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  DIG client callback function prototypes.
+* Description:  DIP client callback function prototypes.
 *
 ****************************************************************************/
 
 
-#ifndef DIGCLI_H_INCLUDED
-#define DIGCLI_H_INCLUDED
-
-#define _DIGCli(n)  _DIGCli ## n *n
-
-#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n ## p;
-#include "_digcli.h"
-#undef pick
-
-#endif
+pick( void,             ImageUnload,    ( mod_handle ) )
+pick( void,             MapAddr,        ( addr_ptr *, void * ) )
+pick( imp_sym_handle *, SymCreate,      ( imp_image_handle *, void * ) )
+pick( dip_status,       ItemLocation,   ( location_context *, context_item, location_list * ) )
+pick( dip_status,       AssignLocation, ( location_list *, location_list *, unsigned long ) )
+pick( dip_status,       SameAddrSpace,  ( address, address ) )
+pick( void,             AddrSection,    ( address * ) )
+pick( void,             Status,         ( dip_status ) )
+pick( dig_mad,          CurrMAD,        ( void ) )

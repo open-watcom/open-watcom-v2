@@ -33,19 +33,19 @@
 #include "axp.h"
 #include "madregs.h"
 
-unsigned        DIGENTRY MITraceSize( void )
+unsigned DIGENTRY MADImpTraceSize( void )
 {
     return( sizeof( mad_trace_data ) );
 }
 
-void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *mr )
+void DIGENTRY MADImpTraceInit( mad_trace_data *td, const mad_registers *mr )
 {
     td = td; mr = mr;
 
     /* nothing to do */
 }
 
-mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_registers *mr )
+mad_status DIGENTRY MADImpTraceHaveRecursed( address watch_stack, const mad_registers *mr )
 {
     if( mr->axp.u30.sp.u64.u._32[0] < watch_stack.mach.offset ) {
         return( MS_OK );
@@ -53,7 +53,7 @@ mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_reg
     return( MS_FAIL );
 }
 
-mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
+mad_trace_how DIGENTRY MADImpTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
 {
     mad_disasm_control  dc;
     addr_off            ra;
@@ -90,7 +90,7 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
     return( MTRH_BREAK );
 }
 
-mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
+mad_status DIGENTRY MADImpTraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
     mad_disasm_control  dc;
     axpreg              *reg;
@@ -128,7 +128,7 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
     return( MS_UNSUPPORTED );
 }
 
-void            DIGENTRY MITraceFini( mad_trace_data *td )
+void DIGENTRY MADImpTraceFini( mad_trace_data *td )
 {
     td = td;
 
@@ -138,7 +138,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
 #define JMP_SHORT       0xc3e00002
 #define BRK_POINT       0x00000080
 
-mad_status  DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
+mad_status DIGENTRY MADImpUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     address     a;
     struct {

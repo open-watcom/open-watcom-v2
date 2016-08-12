@@ -129,7 +129,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
 /*
         Return the size of the disassembler constrol structure.
 */
-unsigned                DIGENTRY MIDisasmDataSize( void )
+unsigned DIGENTRY MADImpDisasmDataSize( void )
 {
     return( sizeof( mad_disasm_data ) );
 }
@@ -137,7 +137,7 @@ unsigned                DIGENTRY MIDisasmDataSize( void )
 /*
         Return the length of the longest instruction name.
 */
-unsigned                DIGENTRY MIDisasmNameMax( void )
+unsigned DIGENTRY MADImpDisasmNameMax( void )
 {
     return( DisInsNameMax( &DH ) );
 }
@@ -177,7 +177,7 @@ mad_status DisasmOne( mad_disasm_data *dd, address *a, int adj )
         On exit, 'a' is adjusted to indicate the starting address of the
         instruction following the one that has been disassembled.
 */
-mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
+mad_status DIGENTRY MADImpDisasm( mad_disasm_data *dd, address *a, int adj )
 {
     return( DisasmOne( dd, a, adj ) );
 }
@@ -185,7 +185,7 @@ mad_status              DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int 
 /*
         Convert a disassembled instruction/operands into strings.
 */
-unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, unsigned buff_size )
+unsigned DIGENTRY MADImpDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, unsigned buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -231,7 +231,7 @@ unsigned                DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm
 /*
         Return the number of bytes in the instruction.
 */
-unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
+unsigned DIGENTRY MADImpDisasmInsSize( mad_disasm_data *dd )
 {
     return( dd->ins.size );
 }
@@ -241,7 +241,7 @@ unsigned                DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
         out of by restoring the register and memory contents to their
         original values, MS_FAIL if not.
 */
-mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
+mad_status DIGENTRY MADImpDisasmInsUndoable( mad_disasm_data *dd )
 {
     return( MS_FAIL|MS_ERR );
 }
@@ -273,13 +273,13 @@ mad_status              DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
 
 
 */
-mad_disasm_control      DIGENTRY MIDisasmControl( mad_disasm_data *dd, const mad_registers *mr )
+mad_disasm_control DIGENTRY MADImpDisasmControl( mad_disasm_data *dd, const mad_registers *mr )
 {
     //NYI:
     return( MDC_OPER | MDC_TAKEN );
 }
 
-mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *mr, address *next )
+mad_status DIGENTRY MADImpDisasmInsNext( mad_disasm_data *dd, const mad_registers *mr, address *next )
 {
     //NYI:
     return( MS_ERR|MS_UNSUPPORTED );
@@ -289,7 +289,7 @@ mad_status      DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registe
         Call back to a client routine describing all the memory references
         made by this instruction.
 */
-walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
+walk_result DIGENTRY MADImpDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     //NYI:
     return( WR_CONTINUE );
@@ -298,7 +298,7 @@ walk_result             DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEM
 /*
         Return the list of toggle strings for the disassembler.
 */
-const mad_toggle_strings        *DIGENTRY MIDisasmToggleList( void )
+const mad_toggle_strings *DIGENTRY MADImpDisasmToggleList( void )
 {
     //NYI:
     static const mad_toggle_strings list[] = {
@@ -321,7 +321,7 @@ const mad_toggle_strings        *DIGENTRY MIDisasmToggleList( void )
         (it operates the same as a JK flip-flop).
         Return the new toggle state.
 */
-unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
+unsigned DIGENTRY MADImpDisasmToggle( unsigned on, unsigned off )
 {
     unsigned    toggle;
 
@@ -335,7 +335,7 @@ unsigned                DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
 /*
         Given a string, convert that to an address to be examined.
 */
-mad_status              DIGENTRY MIDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a)
+mad_status DIGENTRY MADImpDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a)
 {
     //NYI:
     return( MS_FAIL );

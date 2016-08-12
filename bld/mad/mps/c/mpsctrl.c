@@ -33,7 +33,7 @@
 
 imp_mad_state_data      *MADState;
 
-mad_status DIGENTRY MIInit(void)
+mad_status DIGENTRY MADImpInit(void)
 {
     mad_status  ms;
 
@@ -47,30 +47,30 @@ mad_status DIGENTRY MIInit(void)
     return( ms );
 }
 
-void DIGENTRY MIFini(void)
+void DIGENTRY MADImpFini(void)
 {
     DisasmFini();
     RegFini();
 }
 
-unsigned DIGENTRY MIStateSize( void )
+unsigned DIGENTRY MADImpStateSize( void )
 {
     return( sizeof( *MADState ) );
 }
 
-void DIGENTRY MIStateInit( imp_mad_state_data *new )
+void DIGENTRY MADImpStateInit( imp_mad_state_data *new )
 {
     memset( new, 0, sizeof( *new ) );
     new->reg_state[CPU_REG_SET] = CT_HEX | CT_SYMBOLIC_NAMES;
     new->disasm_state = DT_PSUEDO_OPS;
 }
 
-void DIGENTRY MIStateSet( imp_mad_state_data *new )
+void DIGENTRY MADImpStateSet( imp_mad_state_data *new )
 {
     MADState = new;
 }
 
-void DIGENTRY MIStateCopy( imp_mad_state_data const *src, imp_mad_state_data *dst )
+void DIGENTRY MADImpStateCopy( imp_mad_state_data const *src, imp_mad_state_data *dst )
 {
     memcpy( dst, src, sizeof( *dst ) );
 }

@@ -87,7 +87,7 @@ static const mad_reg_set_data RegSet[] = {
 /*
         Return the size of the structure required to hold a register set.
 */
-unsigned        DIGENTRY MIRegistersSize( void )
+unsigned DIGENTRY MADImpRegistersSize( void )
 {
     return( sizeof( struct jvm_mad_registers ) );
 }
@@ -97,7 +97,7 @@ unsigned        DIGENTRY MIRegistersSize( void )
         received from the trap file. Return MS_OK if nothing was actually
         modified, MS_MODIFIED if some changes were made.
 */
-mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
 {
     return( MS_OK );
 }
@@ -108,7 +108,7 @@ mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
         it to the trap file (undo the effects of a MIRegistersHost). Return
         MS_OK if nothing was actually changed, MS_MODIFIED otherwise.
 */
-mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
 {
     return( MS_OK );
 }
@@ -117,7 +117,7 @@ mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
         Call back to the client routine with pointers to the various
         reg set structure(s).
 */
-walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     walk_result wr;
 
@@ -131,7 +131,7 @@ walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 /*
         Return the name of the register set.
 */
-mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
+mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
 {
     return( rsd->name );
 }
@@ -139,7 +139,7 @@ mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
 /*
         Return the register set level string (8086, 186, 286, etc).
 */
-size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     if( buff_size > 0 )
         *buff = '\0';
@@ -153,14 +153,14 @@ size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t b
         of rows and 'm' is the number of columns. The grouping is the number
         of columns (return value m).
 */
-unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
+unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 {
     return( 0 );
 }
 
 
 
-static mad_status       CPUGetPiece( unsigned piece,
+static mad_status   CPUGetPiece( unsigned piece,
                                 const char **descript_p,
                                 size_t *max_descript_p,
                                 const mad_reg_info **reg,
@@ -180,7 +180,7 @@ static mad_status       CPUGetPiece( unsigned piece,
 /*
         Fill in the information to display one register.
 */
-mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
+mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
                                 const char **descript_p,
@@ -198,7 +198,7 @@ static const mad_modify_list    DWordReg = { NULL, JVMT_N32_PTR, MAD_MSTR_NIL };
         A particular register has been selected for modification. Indicate
         what are the legal ranges of values for it.
 */
-mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
+mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     *num_possible_p = 1;
     *possible_p = &DWordReg;
@@ -216,7 +216,7 @@ mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, con
                                                   cares about
 
 */
-mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
+mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
 {
     addr_ptr    new_ip;
     unsigned_8  *p_old;
@@ -255,7 +255,7 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
         Given a register, fill in 'a' with the address that the register
         points at.
 */
-mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
+mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
     unsigned    bit_start;
     unsigned_32 *p;
@@ -270,7 +270,7 @@ mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, const mad_reg
 /*
         Return the toggle list strings for the register set.
 */
-const mad_toggle_strings *DIGENTRY MIRegSetDisplayToggleList( const mad_reg_set_data *rsd )
+const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_set_data *rsd )
 {
     return( rsd->togglelist );
 }
@@ -289,7 +289,7 @@ const mad_toggle_strings *DIGENTRY MIRegSetDisplayToggleList( const mad_reg_set_
         (it operates the same as a JK flip-flop).
         Return the new toggle state.
 */
-unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     unsigned    toggle;
     unsigned    *bits;
@@ -316,7 +316,7 @@ unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, uns
         the register set 'rsd'.
 */
 
-walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
+walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
     walk_result         wr;
 
@@ -334,7 +334,7 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
                 MSR_SP  - stack pointer
                 MSR_FP  - frame pointer
 */
-void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
+void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
 {
     ma->segment = 0;
     switch( sr ) {
@@ -354,7 +354,7 @@ void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, const mad_register
 /*
         Set a special register to the address 'a'.
 */
-void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
+void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -373,7 +373,7 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
 /*
         Get the name of a special register.
 */
-size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
+size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     unsigned    idx;
     size_t      len;
@@ -407,7 +407,7 @@ size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, const mad_registers *mr, m
         Convert a DIP context item enumeration to a MAD mad_reg_info
         pointer.
 */
-const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
+const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
 {
     const mad_reg_info  *reg;
 
@@ -432,7 +432,7 @@ const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
 /*
         The client is about to modify a register (or registers).
 */
-void            DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
 }
 
@@ -448,7 +448,7 @@ void            DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, un
                 MNT_MODIFY_FP   - frame pointer special reg has changed.
 
 */
-void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     unsigned    bit_end;
 

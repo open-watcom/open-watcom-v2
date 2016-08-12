@@ -35,6 +35,7 @@
 #include <windows.h>
 #include <i86.h>
 #endif
+#include "madcli.h"
 #include "madimp.h"
 
 #if defined( __WATCOMC__ )
@@ -53,81 +54,81 @@ mad_imp_routines        MadImpInterface = {
     MAD_MINOR,
     sizeof( MadImpInterface ),
 
-    MIInit,
-    MIFini,
-    MIStateSize,
-    MIStateInit,
-    MIStateSet,
-    MIStateCopy,
+    MADImpInit,
+    MADImpFini,
+    MADImpStateSize,
+    MADImpStateInit,
+    MADImpStateSet,
+    MADImpStateCopy,
 
-    MIAddrAdd,
-    MIAddrComp,
-    MIAddrDiff,
-    MIAddrMap,
-    MIAddrFlat,
-    MIAddrInterrupt,
+    MADImpAddrAdd,
+    MADImpAddrComp,
+    MADImpAddrDiff,
+    MADImpAddrMap,
+    MADImpAddrFlat,
+    MADImpAddrInterrupt,
 
-    MITypeWalk,
-    MITypeName,
-    MITypePreferredRadix,
-    MITypeForDIPType,
-    MITypeInfo,
-    MITypeDefault,
-    MITypeConvert,
-    MITypeToString,
+    MADImpTypeWalk,
+    MADImpTypeName,
+    MADImpTypePreferredRadix,
+    MADImpTypeForDIPType,
+    MADImpTypeInfo,
+    MADImpTypeDefault,
+    MADImpTypeConvert,
+    MADImpTypeToString,
 
-    MIRegistersSize,
-    MIRegistersHost,
-    MIRegistersTarget,
-    MIRegSetWalk,
-    MIRegSetName,
-    MIRegSetLevel,
-    MIRegSetDisplayGrouping,
-    MIRegSetDisplayGetPiece,
-    MIRegSetDisplayModify,
-    MIRegSetDisplayToggleList,
-    MIRegSetDisplayToggle,
-    MIRegModified,
-    MIRegInspectAddr,
-    MIRegWalk,
-    MIRegSpecialGet,
-    MIRegSpecialSet,
-    MIRegSpecialName,
-    MIRegFromContextItem,
-    MIRegUpdateStart,
-    MIRegUpdateEnd,
+    MADImpRegistersSize,
+    MADImpRegistersHost,
+    MADImpRegistersTarget,
+    MADImpRegSetWalk,
+    MADImpRegSetName,
+    MADImpRegSetLevel,
+    MADImpRegSetDisplayGrouping,
+    MADImpRegSetDisplayGetPiece,
+    MADImpRegSetDisplayModify,
+    MADImpRegSetDisplayToggleList,
+    MADImpRegSetDisplayToggle,
+    MADImpRegModified,
+    MADImpRegInspectAddr,
+    MADImpRegWalk,
+    MADImpRegSpecialGet,
+    MADImpRegSpecialSet,
+    MADImpRegSpecialName,
+    MADImpRegFromContextItem,
+    MADImpRegUpdateStart,
+    MADImpRegUpdateEnd,
 
-    MICallStackGrowsUp,
-    MICallTypeList,
-    MICallBuildFrame,
-    MICallReturnReg,
-    MICallParmRegList,
+    MADImpCallStackGrowsUp,
+    MADImpCallTypeList,
+    MADImpCallBuildFrame,
+    MADImpCallReturnReg,
+    MADImpCallParmRegList,
     NULL,
 
-    MIDisasmDataSize,
-    MIDisasmNameMax,
-    MIDisasm,
-    MIDisasmFormat,
-    MIDisasmInsSize,
-    MIDisasmInsUndoable,
-    MIDisasmControl,
-    MIDisasmInspectAddr,
-    MIDisasmMemRefWalk,
-    MIDisasmToggleList,
-    MIDisasmToggle,
+    MADImpDisasmDataSize,
+    MADImpDisasmNameMax,
+    MADImpDisasm,
+    MADImpDisasmFormat,
+    MADImpDisasmInsSize,
+    MADImpDisasmInsUndoable,
+    MADImpDisasmControl,
+    MADImpDisasmInspectAddr,
+    MADImpDisasmMemRefWalk,
+    MADImpDisasmToggleList,
+    MADImpDisasmToggle,
 
-    MITraceSize,
-    MITraceInit,
-    MITraceOne,
-    MITraceHaveRecursed,
-    MITraceSimulate,
-    MITraceFini,
+    MADImpTraceSize,
+    MADImpTraceInit,
+    MADImpTraceOne,
+    MADImpTraceHaveRecursed,
+    MADImpTraceSimulate,
+    MADImpTraceFini,
 
-    MIUnexpectedBreak,
-    MIDisasmInsNext,
-    MICallUpStackSize,
-    MICallUpStackInit,
-    MICallUpStackLevel,
+    MADImpUnexpectedBreak,
+    MADImpDisasmInsNext,
+    MADImpCallUpStackSize,
+    MADImpCallUpStackInit,
+    MADImpCallUpStackLevel,
 };
 
 #if defined( __WATCOMC__ ) && defined( __386__ )
@@ -152,22 +153,22 @@ DIG_DLLEXPORT mad_imp_routines * DIGENTRY MADLOAD( mad_status *status, mad_clien
     return( &MadImpInterface );
 }
 
-void            *MCAlloc( size_t amount )
+void    *MCAlloc( size_t amount )
 {
     return( MADClient->Alloc( amount ) );
 }
 
-void            *MCRealloc( void *p, size_t amount )
+void    *MCRealloc( void *p, size_t amount )
 {
     return( MADClient->Realloc( p, amount ) );
 }
 
-void            MCFree( void *p )
+void    MCFree( void *p )
 {
     MADClient->Free( p );
 }
 
-dig_fhandle     MCOpen( const char *name, dig_open mode )
+dig_fhandle MCOpen( const char *name, dig_open mode )
 {
     return( MADClient->Open( name, mode ) );
 }
@@ -177,67 +178,67 @@ unsigned long   MCSeek( dig_fhandle h, unsigned long p, dig_seek m )
     return( MADClient->Seek( h, p, m ) );
 }
 
-size_t          MCRead( dig_fhandle h, void *d, size_t l )
+size_t  MCRead( dig_fhandle h, void *d, size_t l )
 {
     return( MADClient->Read( h, d, l ) );
 }
 
-void            MCClose( dig_fhandle h )
+void    MCClose( dig_fhandle h )
 {
     MADClient->Close( h );
 }
 
-size_t          MCReadMem( address a, size_t size, void *buff )
+size_t  MCReadMem( address a, size_t size, void *buff )
 {
     return( MADClient->ReadMem( a, size, buff ) );
 }
 
-size_t          MCWriteMem( address a, size_t size, void *buff )
+size_t  MCWriteMem( address a, size_t size, const void *buff )
 {
     return( MADClient->WriteMem( a, size, buff ) );
 }
 
-size_t          MCString( mad_string id, char *buff, size_t buff_size )
+size_t  MCString( mad_string id, char *buff, size_t buff_size )
 {
     return( MADClient->String( id, buff, buff_size ) );
 }
 
-mad_status      MCAddString( mad_string id, const char *buff )
+mad_status  MCAddString( mad_string id, const char *buff )
 {
     return( MADClient->AddString( id, buff ) );
 }
 
-size_t          MCRadixPrefix( mad_radix radix, char *buff, size_t buff_size )
+size_t  MCRadixPrefix( mad_radix radix, char *buff, size_t buff_size )
 {
     return( MADClient->RadixPrefix( radix, buff, buff_size ) );
 }
 
-void            MCNotify( mad_notify_type nt, void *d )
+void    MCNotify( mad_notify_type nt, const void *d )
 {
     MADClient->Notify( nt, d );
 }
 
-unsigned        MCMachineData( address a, dig_info_type info_type, dig_elen in_size,  void *in, dig_elen out_size, void *out )
+unsigned    MCMachineData( address a, dig_info_type info_type, dig_elen in_size, const void *in, dig_elen out_size, void *out )
 {
     return( MADClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-mad_status      MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, size_t buff_size )
+mad_status  MCAddrToString( address a, mad_type_handle th, mad_label_kind lk, char *buff, size_t buff_size )
 {
     return( MADClient->AddrToString( a, th, lk, buff, buff_size ) );
 }
 
-mad_status      MCMemExpr( const char *expr, mad_radix radix, address *a )
+mad_status  MCMemExpr( const char *expr, mad_radix radix, address *a )
 {
     return( MADClient->MemExpr( expr, radix, a ) );
 }
 
-void            MCAddrSection( address *a )
+void    MCAddrSection( address *a )
 {
     MADClient->AddrSection( a );
 }
 
-mad_status      MCAddrOvlReturn( address *a )
+mad_status  MCAddrOvlReturn( address *a )
 {
     return( MADClient->AddrOvlReturn( a ) );
 }
@@ -247,22 +248,22 @@ system_config   *MCSystemConfig( void )
     return( MADClient->SystemConfig() );
 }
 
-mad_status      MCTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
+mad_status  MCTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *mti )
 {
     return( MADClient->TypeInfoForHost( tk, size, mti ) );
 }
 
-mad_status      MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
+mad_status  MCTypeConvert( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
     return( MADClient->TypeConvert( in_t, in_d, out_t, out_d, seg ) );
 }
 
-mad_status      MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
+mad_status  MCTypeToString( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
     return( MADClient->TypeToString( radix, mti, data, buff, buff_size_p ) );
 }
 
-void            MCStatus( mad_status ms )
+void    MCStatus( mad_status ms )
 {
     MCNotify( MNT_ERROR, &ms );
 }
@@ -308,8 +309,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&MadImpInterface.MIInit;
-    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, MIInit ) ) / sizeof( INTER_FUNC * );
+    func = (INTER_FUNC **)&MadImpInterface.Init;
+    count = ( sizeof( mad_imp_routines ) - offsetof( mad_imp_routines, Init ) ) / sizeof( INTER_FUNC * );
     while( count != 0 ) {
         *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;

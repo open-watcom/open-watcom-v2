@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,52 +40,51 @@
 
 #define PILL_VERSION    0
 
+#define _LinkImp(n)  _LinkImp ## n *n
+
+#define pick(r,n,p) typedef r DIGENTRY _LinkImp ## n ## p;
+#include "_pillimp.h"
+#undef pick
+
 struct pill_imp_routines {
     unsigned_16         version;
     unsigned_16         sizeof_struct;
 
-    int                 (DIGENTRY *LinkImpLoad)( link_handle *lh, link_message *msg );
-    void                (DIGENTRY *LinkImpUnload)( link_handle *lh );
-    int                 (DIGENTRY *LinkImpInit)( link_instance *li, const char *parm );
-    unsigned            (DIGENTRY *LinkImpMaxSize)( link_instance *li, unsigned req_size );
-    link_status         (DIGENTRY *LinkImpPut)( link_instance *li, link_buffer *data );
-    unsigned            (DIGENTRY *LinkImpKicker)( link_instance *li );
-    link_status         (DIGENTRY *LinkImpAbort)( link_instance *li );
-    link_status         (DIGENTRY *LinkImpFini)( link_instance *li );
-    unsigned            (DIGENTRY *LinkImpMessage)( const link_message *msg, pil_language pl, unsigned max, char *buff );
-    pill_private_func   *(DIGENTRY *LinkImpPrivate)( const char *string );
+    _LinkImp( Load );
+    _LinkImp( Unload );
+    _LinkImp( Init );
+    _LinkImp( MaxSize );
+    _LinkImp( Put );
+    _LinkImp( Kicker );
+    _LinkImp( Abort );
+    _LinkImp( Fini );
+    _LinkImp( Message );
+    _LinkImp( Private );
 };
 
-int                     DIGENTRY LinkImpLoad( link_handle *lh, link_message *msg );
-void                    DIGENTRY LinkImpUnload( link_handle *lh );
-int                     DIGENTRY LinkImpInit( link_instance *li, const char *parm );
-unsigned                DIGENTRY LinkImpMaxSize( link_instance *li, unsigned req_size );
-link_status             DIGENTRY LinkImpPut( link_instance *li, link_buffer *data );
-unsigned                DIGENTRY LinkImpKicker( link_instance *li );
-link_status             DIGENTRY LinkImpAbort( link_instance *li );
-link_status             DIGENTRY LinkImpFini( link_instance *li );
-unsigned                DIGENTRY LinkImpMessage( const link_message *msg, pil_language pl, unsigned max, char *buff );
-pill_private_func       *DIGENTRY LinkImpPrivate( const char *string );
-
+#define pick(r,n,p) extern r DIGENTRY LinkImp ## n ## p;
+#include "_pillimp.h"
+#undef pick
 
 typedef struct pill_client_routines {
     unsigned_16         version;
     unsigned_16         sizeof_struct;
 
-    void                *(DIGCLIENT *LCAlloc)( size_t );
-    void                *(DIGCLIENT *LCRealloc)( void *, size_t );
-    void                (DIGCLIENT *LCFree)( void * );
-    dig_fhandle         (DIGCLIENT *LCOpen)( const char *, dig_open );
-    unsigned long       (DIGCLIENT *LCSeek)( dig_fhandle, unsigned long, dig_seek );
-    unsigned            (DIGCLIENT *LCRead)( dig_fhandle, void *, unsigned );
-    unsigned            (DIGCLIENT *LCWrite)( dig_fhandle, const void *, unsigned );
-    void                (DIGCLIENT *LCClose)( dig_fhandle );
-    void                (DIGCLIENT *LCRemove)( const char *path, dig_open flags );
+    _DIGCli( Alloc );
+    _DIGCli( Realloc );
+    _DIGCli( Free );
 
-    link_buffer         *(DIGCLIENT *LCBufferGet)( void *cookie, unsigned size );
-    void                *(DIGCLIENT *LCBufferRel)( void *cookie, link_buffer *buffer );
-    void                (DIGCLIENT *LCReceived)( void *cookie, link_buffer *data );
-    void                (DIGCLIENT *LCState)( void *cookie, link_status ls, const link_message *msg );
+    _DIGCli( Open );
+    _DIGCli( Seek );
+    _DIGCli( Read );
+    _DIGCli( Write );
+    _DIGCli( Close );
+    _DIGCli( Remove );
+
+    _LinkCli( BufferGet );
+    _LinkCli( BufferRel );
+    _LinkCli( Received );
+    _LinkCli( State );
 } pill_client_routines;
 
 typedef pill_imp_routines * DIGENTRY pill_init_func( pill_status *status, pill_client_routines *client );
@@ -92,21 +92,10 @@ typedef pill_imp_routines * DIGENTRY pill_init_func( pill_status *status, pill_c
 typedef void DIGENTRY pill_fini_func( void );
 #endif
 
-void            *LCAlloc( size_t amount );
-void            *LCRealloc( void *p, size_t amount );
-void            LCFree( void *p );
-
-dig_fhandle     LCOpen( const char *path, dig_open flags );
-unsigned long   LCSeek( dig_fhandle h, unsigned long p, dig_seek w );
-unsigned        LCRead( dig_fhandle h, void *b, unsigned s );
-unsigned        LCWrite( dig_fhandle h, const void *b, unsigned s );
-void            LCClose( dig_fhandle h );
-void            LCRemove( const char *path, dig_open flags );
-
-link_buffer     *LCBufferGet( link_instance *li, unsigned size );
-void            *LCBufferRel( link_instance *li, link_buffer *buffer );
-void            LCReceived( link_instance *li, link_buffer *data );
-void            LCState( link_instance *li, link_status ls, link_message *msg );
+#define pick(r,n,p) extern r LC ## n ## p;
+#include "_digcli.h"
+#include "_pillcli.h"
+#undef pick
 
 #include "digunpck.h"
 

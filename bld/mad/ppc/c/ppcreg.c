@@ -191,12 +191,12 @@ static const mad_reg_set_data RegSet[] = {
     { FPUGetPiece, FPUToggleList, MAD_MSTR_FPU },
 };
 
-unsigned        DIGENTRY MIRegistersSize( void )
+unsigned DIGENTRY MADImpRegistersSize( void )
 {
     return( sizeof( struct ppc_mad_registers ) );
 }
 
-mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
 {
 #if !defined( __BIG_ENDIAN__ )
     int             i;
@@ -206,11 +206,11 @@ mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
+        PPC_SWAP_REG_64( (&mr->ppc.u0 + i)->r0 );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
+        PPC_SWAP_REG_64( (&mr->ppc.f0 + i)->u64 );
     }
     // Convert special registers
     PPC_SWAP_REG_64( mr->ppc.iar );
@@ -225,18 +225,18 @@ mad_status      DIGENTRY MIRegistersHost( mad_registers *mr )
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
+mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
 {
 #if !defined( __BIG_ENDIAN__ )
     int             i;
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
+        PPC_SWAP_REG_64( (&mr->ppc.u0 + i)->r0 );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
+        PPC_SWAP_REG_64( (&mr->ppc.f0 + i)->u64 );
     }
     // Convert special registers
     PPC_SWAP_REG_64( mr->ppc.iar );
@@ -251,7 +251,7 @@ mad_status      DIGENTRY MIRegistersTarget( mad_registers *mr )
     return( MS_OK );
 }
 
-walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     walk_result wr;
 
@@ -270,12 +270,12 @@ walk_result     DIGENTRY MIRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
     return( WR_CONTINUE );
 }
 
-mad_string      DIGENTRY MIRegSetName( const mad_reg_set_data *rsd )
+mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
 {
     return( rsd->name );
 }
 
-size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     char        str[80];
     size_t      len;
@@ -312,7 +312,7 @@ size_t DIGENTRY MIRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t b
     return( len );
 }
 
-unsigned        DIGENTRY MIRegSetDisplayGrouping( const mad_reg_set_data *rsd )
+unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 {
     rsd = rsd;
 
@@ -418,7 +418,7 @@ static mad_status       FPUGetPiece( unsigned piece,
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MIRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
+mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
                                 mad_registers const *mr,
                                 unsigned piece,
                                 const char **descript_p,
@@ -436,7 +436,7 @@ static const mad_modify_list    WordReg = { NULL, PPCT_H_WORD, MAD_MSTR_NIL };
 static const mad_modify_list    DWordReg = { NULL, PPCT_H_DWORD, MAD_MSTR_NIL };
 static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MAD_MSTR_NIL };
 
-mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
+mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     rsd = rsd;
 
@@ -456,7 +456,7 @@ mad_status      DIGENTRY MIRegSetDisplayModify( const mad_reg_set_data *rsd, con
     return( MS_OK );
 }
 
-mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
+mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
 {
     unsigned_64 new_ip;
     unsigned_8  *p_old;
@@ -491,7 +491,7 @@ mad_status DIGENTRY MIRegModified( const mad_reg_set_data *rsd, const mad_reg_in
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers const *mr, address *a )
+mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, mad_registers const *mr, address *a )
 {
     unsigned    bit_start;
     unsigned_64 *p;
@@ -510,12 +510,12 @@ mad_status      DIGENTRY MIRegInspectAddr( const mad_reg_info *ri, mad_registers
     return( MS_OK );
 }
 
-const mad_toggle_strings *DIGENTRY MIRegSetDisplayToggleList( const mad_reg_set_data *rsd )
+const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_set_data *rsd )
 {
     return( rsd->togglelist );
 }
 
-unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     unsigned    toggle;
     unsigned    *bits;
@@ -532,7 +532,7 @@ unsigned        DIGENTRY MIRegSetDisplayToggle( const mad_reg_set_data *rsd, uns
     return( *bits );
 }
 
-walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
+walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
     const ppc_reg_info  *curr;
     walk_result         wr;
@@ -569,7 +569,7 @@ walk_result     DIGENTRY MIRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
     return( WR_CONTINUE );
 }
 
-void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers const *mr, addr_ptr *ma )
+void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, mad_registers const *mr, addr_ptr *ma )
 {
     ma->segment = 0;
     switch( sr ) {
@@ -581,12 +581,12 @@ void            DIGENTRY MIRegSpecialGet( mad_special_reg sr, mad_registers cons
         break;
     case MSR_FP:
         //NYI: can actually float around
-        ma->offset = mr->ppc.r31.u._32[I64LO32];
+        ma->offset = mr->ppc.u31.r31.u._32[I64LO32];
         break;
     }
 }
 
-void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr const *ma )
+void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_ptr const *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -597,12 +597,12 @@ void            DIGENTRY MIRegSpecialSet( mad_special_reg sr, mad_registers *mr,
         break;
     case MSR_FP:
         //NYI: can actually float around
-        mr->ppc.r31.u._32[I64LO32] = ma->offset;
+        mr->ppc.u31.r31.u._32[I64LO32] = ma->offset;
         break;
     }
 }
 
-size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, size_t buff_size )
+size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, mad_registers const *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     unsigned    idx;
     size_t      len;
@@ -637,7 +637,7 @@ size_t DIGENTRY MIRegSpecialName( mad_special_reg sr, mad_registers const *mr, m
 }
 
 
-const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
+const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
 {
     const mad_reg_info  *reg;
 
@@ -671,12 +671,12 @@ const mad_reg_info *DIGENTRY MIRegFromContextItem( context_item ci )
     return( reg );
 }
 
-void            DIGENTRY MIRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     mr = mr; flags = flags; bit_start = bit_start; bit_size = bit_size;
 }
 
-void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     unsigned    i;
     unsigned    bit_end;
@@ -699,7 +699,7 @@ void            DIGENTRY MIRegUpdateEnd( mad_registers *mr, unsigned flags, unsi
     case BIT_OFF( u1 ): // sp
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case BIT_OFF( r31 ): // fp NYI: can float
+    case BIT_OFF( u31 ): // fp NYI: can float
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
     }

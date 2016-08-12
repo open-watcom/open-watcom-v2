@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -306,7 +307,7 @@ void DIPCancel( void )
     if( LoadingImageIdx != NO_IMAGE_IDX ) {
         ih = II2IH( LoadingImageIdx );
         if( ih != NULL ) {
-            ih->dip->UnLoadInfo( IH2IIH( ih ) );
+            ih->dip->UnloadInfo( IH2IIH( ih ) );
         }
         LoadingImageIdx = NO_IMAGE_IDX;
     }
@@ -344,7 +345,7 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     image_handle        *curr;
 
     DIPCliImageUnload( MK_MH( ih->ii, 0 ) );
-    ih->dip->UnLoadInfo( IH2IIH( ih ) );
+    ih->dip->UnloadInfo( IH2IIH( ih ) );
     p->ih_map[ih->ii] = NULL;
     owner = &p->ih_list;
     for( ;; ) {

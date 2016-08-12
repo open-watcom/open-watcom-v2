@@ -32,12 +32,12 @@
 #include "x86.h"
 #include "madregs.h"
 
-unsigned        DIGENTRY MITraceSize( void )
+unsigned DIGENTRY MADImpTraceSize( void )
 {
     return( sizeof( mad_trace_data ) );
 }
 
-void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *mr )
+void DIGENTRY MADImpTraceInit( mad_trace_data *td, const mad_registers *mr )
 {
     mr = mr;
 
@@ -46,7 +46,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *m
 }
 
 
-mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_registers *mr )
+mad_status DIGENTRY MADImpTraceHaveRecursed( address watch_stack, const mad_registers *mr )
 {
     if( mr->x86.cpu.ss == watch_stack.mach.segment && mr->x86.cpu.esp < watch_stack.mach.offset ) {
         /*
@@ -272,7 +272,7 @@ static walk_result TouchesScreenBuff( address a, mad_type_handle th, mad_memref_
     return( WR_STOP );
 }
 
-mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
+mad_trace_how DIGENTRY MADImpTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
 {
     mad_trace_how       th;
 
@@ -313,7 +313,7 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
     return( th );
 }
 
-mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
+mad_status DIGENTRY MADImpTraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
     address     sp;
     word        value;
@@ -349,7 +349,7 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
     return( MS_UNSUPPORTED );
 }
 
-void            DIGENTRY MITraceFini( mad_trace_data *td )
+void DIGENTRY MADImpTraceFini( mad_trace_data *td )
 {
     td = td;
 }
@@ -357,7 +357,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
 #define JMP_SHORT        ((unsigned char)0XEB)
 #define BRK_POINT        ((unsigned char)0XCC)
 
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
+mad_status DIGENTRY MADImpUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     address     a;
     union {
