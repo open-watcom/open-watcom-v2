@@ -41,11 +41,11 @@
 
 #define _LinkCli(n) _LinkCli ## n *n
 
-#define pick(r,n,p) typedef r DIGCLIENT _LinkCli ## n ## p;
+#define pick(r,n,p) typedef r DIGCLIENT _LinkCli ## n p;
 #include "_pillcli.h"
 #undef
 
-#define pick(r,n,p) extern r DIGCLIENT LinkCli ## n ## p;
+#define pick(r,n,p) extern r DIGCLIENT LinkCli ## n p;
 #include "_pillcli.h"
 #undef
 

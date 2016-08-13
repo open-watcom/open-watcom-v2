@@ -42,7 +42,7 @@
 
 #define _LinkImp(n)  _LinkImp ## n *n
 
-#define pick(r,n,p) typedef r DIGENTRY _LinkImp ## n ## p;
+#define pick(r,n,p) typedef r DIGENTRY _LinkImp ## n p;
 #include "_pillimp.h"
 #undef pick
 
@@ -62,7 +62,7 @@ struct pill_imp_routines {
     _LinkImp( Private );
 };
 
-#define pick(r,n,p) extern r DIGENTRY LinkImp ## n ## p;
+#define pick(r,n,p) extern r DIGENTRY LinkImp ## n p;
 #include "_pillimp.h"
 #undef pick
 
@@ -92,7 +92,7 @@ typedef pill_imp_routines * DIGENTRY pill_init_func( pill_status *status, pill_c
 typedef void DIGENTRY pill_fini_func( void );
 #endif
 
-#define pick(r,n,p) extern r LC ## n ## p;
+#define pick(r,n,p) extern r LC ## n p;
 #include "_digcli.h"
 #include "_pillcli.h"
 #undef pick

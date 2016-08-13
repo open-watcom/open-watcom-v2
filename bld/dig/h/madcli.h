@@ -38,11 +38,11 @@
 
 #define _MADCli(n)  _MADCli ## n *n
 
-#define pick(r,n,p) typedef r DIGCLIENT _MADCli ## n ## p;
+#define pick(r,n,p) typedef r DIGCLIENT _MADCli ## n p;
 #include "_madcli.h"
 #undef pick
 
-#define pick(r,n,p) extern r DIGCLIENT MADCli ## n ## p;
+#define pick(r,n,p) extern r DIGCLIENT MADCli ## n p;
 #include "_madcli.h"
 #undef pick
 

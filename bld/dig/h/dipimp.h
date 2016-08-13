@@ -72,7 +72,7 @@ typedef walk_result (DIGCLIENT IMP_CUE_WKR)( imp_image_handle *, imp_cue_handle 
 
 #define _DIPImp(n)  _DIPImp ## n *n
 
-#define pick(r,n,p) typedef r DIGENTRY _DIPImp ## n ## p;
+#define pick(r,n,p) typedef r DIGENTRY _DIPImp ## n p;
 #include "_dipimp.h"
 #undef pick
 
@@ -146,7 +146,7 @@ struct dip_imp_routines {
 
 extern const char       DIPImpName[];
 
-#define pick(r,n,p) extern r DIGENTRY DIPImp ## n ## p;
+#define pick(r,n,p) extern r DIGENTRY DIPImp ## n p;
 #include "_dipimp.h"
 #undef pick
 
@@ -194,7 +194,7 @@ DIG_DLLEXPORT dip_init_func DIPLOAD;
 DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #endif
 
-#define pick(r,n,p) extern r DC ## n ## p;
+#define pick(r,n,p) extern r DC ## n p;
 #include "_digcli.h"
 #include "_dipcli.h"
 #undef pick

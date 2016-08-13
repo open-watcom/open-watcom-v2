@@ -35,11 +35,11 @@
 
 #define _DIGCli(n)  _DIGCli ## n *n
 
-#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n ## p;
+#define pick(r,n,p) typedef r DIGCLIENT _DIGCli ## n p;
 #include "_digcli.h"
 #undef pick
 
-#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n ## p;
+#define pick(r,n,p) extern r DIGCLIENT DIGCli ## n p;
 #include "_digcli.h"
 #undef pick
 

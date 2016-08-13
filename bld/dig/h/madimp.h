@@ -50,7 +50,7 @@ typedef         walk_result (DIGCLIENT MI_MEMREF_WALKER)( address, mad_type_hand
 
 #define _MADImp(n)  _MADImp ## n *n
 
-#define pick(r,n,p) typedef r DIGENTRY _MADImp ## n ## p;
+#define pick(r,n,p) typedef r DIGENTRY _MADImp ## n p;
 #include "_madimp.h"
 #undef pick
 
@@ -138,7 +138,7 @@ typedef struct mad_imp_routines {
     _MADImp( CallUpStackLevel );
 } mad_imp_routines;
 
-#define pick(r,n,p) extern r DIGENTRY MADImp ## n ## p;
+#define pick(r,n,p) extern r DIGENTRY MADImp ## n p;
 #include "_madimp.h"
 #undef pick
 
@@ -190,7 +190,7 @@ DIG_DLLEXPORT mad_init_func MADLOAD;
 DIG_DLLEXPORT mad_fini_func MADUNLOAD;
 #endif
 
-#define pick(r,n,p) extern r MC ## n ## p;
+#define pick(r,n,p) extern r MC ## n p;
 #include "_digcli.h"
 #include "_madcli.h"
 #undef pick
