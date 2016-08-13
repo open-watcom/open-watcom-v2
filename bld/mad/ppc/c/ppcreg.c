@@ -206,11 +206,11 @@ mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (&mr->ppc.u0 + i)->r0 );
+        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (&mr->ppc.f0 + i)->u64 );
+        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
     }
     // Convert special registers
     PPC_SWAP_REG_64( mr->ppc.iar );
@@ -232,11 +232,11 @@ mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
 
     // Convert GPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (&mr->ppc.u0 + i)->r0 );
+        PPC_SWAP_REG_64( *(&mr->ppc.r0 + i) );
     }
     // Convert FPRs
     for( i = 0; i < 32; i++ ) {
-        PPC_SWAP_REG_64( (&mr->ppc.f0 + i)->u64 );
+        PPC_SWAP_REG_64( (*(&mr->ppc.f0 + i)).u64 );
     }
     // Convert special registers
     PPC_SWAP_REG_64( mr->ppc.iar );
@@ -581,7 +581,7 @@ void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, mad_registers const *mr, 
         break;
     case MSR_FP:
         //NYI: can actually float around
-        ma->offset = mr->ppc.u31.r31.u._32[I64LO32];
+        ma->offset = mr->ppc.r31.u._32[I64LO32];
         break;
     }
 }
@@ -597,7 +597,7 @@ void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, addr_p
         break;
     case MSR_FP:
         //NYI: can actually float around
-        mr->ppc.u31.r31.u._32[I64LO32] = ma->offset;
+        mr->ppc.r31.u._32[I64LO32] = ma->offset;
         break;
     }
 }
@@ -699,7 +699,7 @@ void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bi
     case BIT_OFF( u1 ): // sp
         MCNotify( MNT_MODIFY_SP, NULL );
         break;
-    case BIT_OFF( u31 ): // fp NYI: can float
+    case BIT_OFF( r31 ): // fp NYI: can float
         MCNotify( MNT_MODIFY_FP, NULL );
         break;
     }

@@ -71,7 +71,7 @@ REGS_LIST()
 #undef regpickr
 regpick( fpscr, WORD, FPU )
 
-#define regpickr(num)        regpicku(u##num,r##num,DWORD,CPU)
+#define regpickr(num)        regpick(r##num,DWORD,CPU)
 #define regpickuu(num,alias) regpicku(u##num,r##num,DWORD,CPU)
 REGS_LIST()
 #undef regpickuu

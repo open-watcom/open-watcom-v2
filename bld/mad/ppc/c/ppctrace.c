@@ -134,7 +134,7 @@ mad_status DIGENTRY MADImpUnexpectedBreak( mad_registers *mr, char *buff, size_t
         return( MS_OK );
     if( memcmp( data.name, "WVIDEO\0\0", 8 ) != 0 )
         return( MS_OK );
-    a.mach.offset = mr->ppc.u3.r3.u._32[I64LO32];
+    a.mach.offset = mr->ppc.r3.u._32[I64LO32];
     len = 0;
     while( MCReadMem( a, sizeof( ch ), &ch ) != 0 ) {
         if( len + 1 < buff_size )
