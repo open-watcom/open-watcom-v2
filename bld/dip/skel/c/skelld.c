@@ -36,7 +36,7 @@
         Loading/unloading symbolic information.
 */
 
-dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
 {
     //TODO:
     /*

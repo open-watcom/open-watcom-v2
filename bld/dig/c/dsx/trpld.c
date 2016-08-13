@@ -514,7 +514,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                *err;
     const char          *ptr;
-    dig_fhandle         dh;
+    dig_fhandle         dfh;
     trap_file_header    __far *head;
 #ifdef USE_FILENAME_VERSION
     char                filename[256];
@@ -531,19 +531,19 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    dh = DIGPathOpen( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
+    dfh = DIGPathOpen( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    dh = DIGPathOpen( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
+    dfh = DIGPathOpen( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
 #endif
-    if( dh == DIG_NIL_HANDLE ) {
+    if( dfh == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
-    err = ReadInTrap( DIGGetSystemHandle( dh ) );
-    DIGPathClose( dh );
+    err = ReadInTrap( DIGGetSystemHandle( dfh ) );
+    DIGPathClose( dfh );
     sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
     if( err == NULL ) {
         if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {

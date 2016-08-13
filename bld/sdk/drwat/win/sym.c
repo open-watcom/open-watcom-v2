@@ -73,7 +73,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' ) {
-        return( -1 );
+        return( DIG_NIL_HANDLE );
     } else {
         return( DIGCliOpen( path, DIG_READ ) );
     }
@@ -451,7 +451,7 @@ void DIGCLIENT DIPCliAddrSection( address *addr )
  */
 dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
 {
-    dig_fhandle         ret;
+    int                 ret;
     int                 flags;
 
     flags = O_BINARY;
@@ -460,17 +460,19 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
     if( mode & DIG_TRUNC ) flags |= O_TRUNC;
     if( mode & DIG_CREATE ) {
         flags |= O_CREAT;
-        ret = (dig_fhandle)sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
+        ret = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
     } else {
-        ret = (dig_fhandle)sopen3( path, flags, SH_DENYWR );
+        ret = sopen3( path, flags, SH_DENYWR );
     }
-    return( ret );
+    if( ret == -1 )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)ret );
 }
 
 /*
  * DIPCliSeek
  */
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long offset, dig_seek dipmode )
 {
     int                 mode;
     unsigned long       ret;
@@ -487,7 +489,7 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
         mode = SEEK_END;
         break;
     }
-    ret = lseek( (int)hdl, offset, mode );
+    ret = lseek( (int)dfh, offset, mode );
     DEBUGOUT( "seek END" );
     return( ret );
 }
@@ -495,26 +497,26 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
 /*
  * DIPCliRead
  */
-size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
+size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
-    return( read( (int)hdl, buf, size ) );
+    return( read( (int)dfh, buf, size ) );
 }
 
 /*
  * DIPCliWrite
  */
-size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *buf, size_t size )
 {
-    return( write( (int)hdl, buf, size ) );
+    return( write( (int)dfh, buf, size ) );
 }
 
 /*
  * DIPCliClose
  */
-void DIGCLIENT DIGCliClose( dig_fhandle hdl )
+void DIGCLIENT DIGCliClose( dig_fhandle dfh )
 {
-    close( (int)hdl );
+    close( (int)dfh );
 }
 
 /*

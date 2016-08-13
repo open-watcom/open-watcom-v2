@@ -118,7 +118,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_fhandle     filehndl;
+    dig_fhandle     dfh;
     const char      *ptr;
     trap_init_func  *init_func;
 #ifdef USE_FILENAME_VERSION
@@ -135,20 +135,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    filehndl = DIGPathOpen( filename, p - filename, "trp", NULL, 0 );
+    dfh = DIGPathOpen( filename, p - filename, "trp", NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    filehndl = DIGPathOpen( parms, ptr - parms, "trp", NULL, 0 );
+    dfh = DIGPathOpen( parms, ptr - parms, "trp", NULL, 0 );
 #endif
-    if( filehndl == DIG_NIL_HANDLE ) {
+    if( dfh == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
     parms = ptr;
-    ptr = ReadInTrap( DIGGetSystemHandle( filehndl ) );
-    DIGPathClose( filehndl );
+    ptr = ReadInTrap( DIGGetSystemHandle( dfh ) );
+    DIGPathClose( dfh );
     if( ptr != NULL ) {
         strcpy( buff, ptr );
     } else {

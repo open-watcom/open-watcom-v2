@@ -739,7 +739,9 @@ dig_fhandle DIGPathOpen( const char *name, size_t name_len, const char *ext, cha
         buff_size = sizeof( dummy );
     }
     fh = FullPathOpenInternal( name, name_len, ext, buff, buff_size, false );
-    return( ( fh == NIL_HANDLE ) ? DIG_NIL_HANDLE : (dig_fhandle)fh );
+    if( fh == NIL_HANDLE )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)fh );
 }
 
 unsigned DIGPathClose( dig_fhandle dfh )

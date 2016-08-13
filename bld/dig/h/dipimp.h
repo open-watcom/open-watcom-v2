@@ -200,6 +200,6 @@ DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #undef pick
 
 extern void         *DCAllocZ( size_t amount );
-extern dip_status   DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p );
+extern dip_status   DCReadAt( dig_fhandle dfh, void *b, size_t s, unsigned long p );
 
 #endif

@@ -34,7 +34,7 @@
 
 #define JAVA_SIG        "JAVA"
 
-dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
 {
     struct {
         char    sig[sizeof( JAVA_SIG ) - 1];
@@ -43,11 +43,12 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     unsigned    mb_size;
     dip_status  ds;
 
-    if( DCCurrMAD() != MAD_JVM ) return( DS_FAIL );
-    DCSeek( h, 0, DIG_ORG );
-    if( DCRead( h, &jcf, sizeof( jcf ) ) != sizeof( jcf ) ) return( DS_FAIL );
+    if( DCCurrMAD() != MAD_JVM )
+        return( DS_FAIL );
+    DCSeek( dfh, 0, DIG_ORG );
+    if( DCRead( dfh, &jcf, sizeof( jcf ) ) != sizeof( jcf ) ) return( DS_FAIL );
     if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 ) return( DS_FAIL );
-    DCClose( h );
+    DCClose( dfh );
     ii->cc = jcf.cc;
     if( GetU16( ii->cc + offsetof( ClassClass, major_version ) ) != JAVA_VERSION ) {
         return( DS_INFO_BAD_VERSION );

@@ -302,9 +302,9 @@ static void DIGREGISTER WVCancel( void )
 {
 }
 
-static dip_status DIGREGISTER WVLoadInfo( dig_fhandle f, imp_image_handle *ii )
+static dip_status DIGREGISTER WVLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
 {
-    f = f;
+    dfh = dfh;
     ii = ii;
     return( DS_FAIL );
 }

@@ -51,18 +51,18 @@ void DIPSysUnload( dip_sys_handle *sys_hdl )
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dig_fhandle         h;
+    dig_fhandle         dfh;
     imp_header          *dip;
     dip_init_func       *init_func;
     dip_status          status;
     char                dip_name[_MAX_PATH];
 
-    h = DIGPathOpen( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
-    if( h == DIG_NIL_HANDLE ) {
+    dfh = DIGPathOpen( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
+    if( dfh == DIG_NIL_HANDLE ) {
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    dip = ReadInImp( h );
-    DIGPathClose( h );
+    dip = ReadInImp( dfh );
+    DIGPathClose( dfh );
     status = DS_ERR|DS_INVALID_DIP;
     if( dip != NULL ) {
 #ifdef __WATCOMC__

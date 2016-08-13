@@ -217,35 +217,35 @@ dig_fhandle DCOpen( const char *path, dig_open flags )
     return( DIPClient->Open( path, flags ) );
 }
 
-unsigned long DCSeek( dig_fhandle h, unsigned long p, dig_seek w )
+unsigned long DCSeek( dig_fhandle dfh, unsigned long p, dig_seek w )
 {
-    return( DIPClient->Seek( h, p, w ) );
+    return( DIPClient->Seek( dfh, p, w ) );
 }
 
-size_t DCRead( dig_fhandle h, void *b, size_t s )
+size_t DCRead( dig_fhandle dfh, void *b, size_t s )
 {
-    return( DIPClient->Read( h, b, s ) );
+    return( DIPClient->Read( dfh, b, s ) );
 }
 
-dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
+dip_status DCReadAt( dig_fhandle dfh, void *b, size_t s, unsigned long p )
 {
-    if( DIPClient->Seek( h, p, DIG_ORG ) != p ) {
+    if( DIPClient->Seek( dfh, p, DIG_ORG ) != p ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DIPClient->Read( h, b, s ) != s ) {
+    if( DIPClient->Read( dfh, b, s ) != s ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     return( DS_OK );
 }
 
-size_t DCWrite( dig_fhandle h, const void *b, size_t s )
+size_t DCWrite( dig_fhandle dfh, const void *b, size_t s )
 {
-    return( DIPClient->Write( h, b, s ) );
+    return( DIPClient->Write( dfh, b, s ) );
 }
 
-void DCClose( dig_fhandle h )
+void DCClose( dig_fhandle dfh )
 {
-    DIPClient->Close( h );
+    DIPClient->Close( dfh );
 }
 
 void DCRemove( const char *path, dig_open flags )

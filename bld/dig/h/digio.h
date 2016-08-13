@@ -30,5 +30,5 @@
 
 
 extern dig_fhandle  DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
-extern unsigned     DIGPathClose( dig_fhandle handle );
-extern long         DIGGetSystemHandle( dig_fhandle handle );
+extern unsigned     DIGPathClose( dig_fhandle dfh );
+extern long         DIGGetSystemHandle( dig_fhandle dfh );

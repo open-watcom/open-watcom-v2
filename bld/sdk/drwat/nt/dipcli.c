@@ -195,7 +195,7 @@ void DIGCLIENT DIPCliAddrSection( address *addr )
  */
 dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
 {
-    dig_fhandle         ret;
+    HFILE               ret;
     int                 flags;
     OFSTRUCT            tmp;
 
@@ -205,14 +205,16 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
     if( mode & DIG_TRUNC ) flags |= OF_CREATE;
     if( mode & DIG_CREATE ) flags |= OF_CREATE;
     //NYI: should check for DIG_SEARCH
-    ret = (dig_fhandle)OpenFile( path, &tmp, flags );
-    return( ret );
+    ret = OpenFile( path, &tmp, flags );
+    if( ret == HFILE_ERROR )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)ret );
 }
 
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
@@ -227,17 +229,17 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_s
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( (HANDLE)hdl, offset, 0, mode ) );
+    return( SetFilePointer( (HANDLE)dfh, offset, 0, mode ) );
 }
 
 /*
  * DIPCliRead
  */
-size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
+size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( (HANDLE)hdl, buf, size, &bytesread, NULL ) )
+    if( !ReadFile( (HANDLE)dfh, buf, size, &bytesread, NULL ) )
         return( DIG_RW_ERROR );
     return( bytesread );
 }
@@ -245,11 +247,11 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
 /*
  * DIPCliWrite
  */
-size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( (HANDLE)hdl, buf, size, &byteswritten, NULL ) )
+    if( !WriteFile( (HANDLE)dfh, buf, size, &byteswritten, NULL ) )
         return( DIG_RW_ERROR );
     return( byteswritten );
 }
@@ -257,9 +259,9 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
 /*
  * DIGCliClose
  */
-void DIGCLIENT DIGCliClose( dig_fhandle hdl )
+void DIGCLIENT DIGCliClose( dig_fhandle dfh )
 {
-    CloseHandle( (HANDLE)hdl );
+    CloseHandle( (HANDLE)dfh );
 }
 
 /*

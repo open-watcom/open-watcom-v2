@@ -74,18 +74,17 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
 
     /* convert flags. */
     switch( mode & (DIG_READ | DIG_WRITE) ) {
-        case DIG_READ:
-            flgs = O_RDONLY;
-            break;
-        case DIG_WRITE:
-            flgs = O_WRONLY;
-            break;
-        case DIG_WRITE | DIG_READ:
-            flgs = O_RDWR;
-            break;
-        default:
-            return DIG_NIL_HANDLE;
-
+    case DIG_READ:
+        flgs = O_RDONLY;
+        break;
+    case DIG_WRITE:
+        flgs = O_WRONLY;
+        break;
+    case DIG_WRITE | DIG_READ:
+        flgs = O_RDWR;
+        break;
+    default:
+        return( DIG_NIL_HANDLE );
     }
 #ifdef O_BINARY
     flgs |= O_BINARY;
@@ -101,29 +100,31 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
     fd = open( name, flgs, 0777 );
 
     dprintf(( "DIGCliOpen: returns %d\n", fd ));
-    return( fd );
+    if( fd == -1 )
+        return( DIG_NIL_HANDLE );
+    return( (dig_fhandle)fd );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
+unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
     int     whence;
     long    off;
 
     switch( k ) {
-        case DIG_ORG:   whence = SEEK_SET; break;
-        case DIG_CUR:   whence = SEEK_CUR; break;
-        case DIG_END:   whence = SEEK_END; break;
-        default:
-            dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", h, p, k ));
-            return( DIG_SEEK_ERROR );
+    case DIG_ORG:   whence = SEEK_SET; break;
+    case DIG_CUR:   whence = SEEK_CUR; break;
+    case DIG_END:   whence = SEEK_END; break;
+    default:
+        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", (int)dfh, p, k ));
+        return( DIG_SEEK_ERROR );
     }
 
-    off = lseek( h, p, whence );
-    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", h, p, k, off ));
+    off = lseek( (int)dfh, p, whence );
+    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", (int)dfh, p, k, off ));
     return( off );
 }
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
+size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *b , size_t s )
 {
     size_t      rc;
 #ifdef _WIN64
@@ -135,7 +136,7 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
     while( s > 0 ) {
         if( amount > s )
             amount = (unsigned)s;
-        read_len = read( h, b, amount );
+        read_len = read( (int)dfh, b, amount );
         if( read_len == (unsigned)-1 ) {
             rc = DIG_RW_ERROR;
             break;
@@ -148,14 +149,14 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
         s -= amount;
     }
 #else
-    rc = read( h, b, s );
+    rc = read( (int)h, b, s );
 #endif
 
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", (int)dfh, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
+size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *b, size_t s )
 {
     size_t      rc;
 #ifdef _WIN64
@@ -167,7 +168,7 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
     while( s > 0 ) {
         if( amount > s )
             amount = (unsigned)s;
-        write_len = write( h, b, amount );
+        write_len = write( (int)dfh, b, amount );
         if( write_len == (unsigned)-1 ) {
             rc = DIG_RW_ERROR;
             break;
@@ -180,18 +181,19 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
         s -= amount;
     }
 #else
-    rc = write( h, b, s );
+    rc = write( (int)dfh, b, s );
 #endif
 
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", (int)dfh, b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-void DIGCLIENT DIGCliClose( dig_fhandle h )
+void DIGCLIENT DIGCliClose( dig_fhandle dfh )
 {
-    dprintf(( "DIGCliClose: h=%d\n", h ));
-    if( close( h ) )
-        dprintf(( "DIGCliClose: h=%d failed!!\n", h ));
+    dprintf(( "DIGCliClose: h=%d\n", (int)dfh ));
+    if( close( (int)dfh ) ) {
+        dprintf(( "DIGCliClose: h=%d failed!!\n", (int)dfh ));
+    }
 }
 
 void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )

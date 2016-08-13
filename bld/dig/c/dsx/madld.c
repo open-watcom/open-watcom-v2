@@ -48,17 +48,17 @@ void MADSysUnload( mad_sys_handle *sys_hdl )
 mad_status MADSysLoad( const char *path, mad_client_routines *cli,
                                 mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    dig_fhandle         h;
+    dig_fhandle         dfh;
     imp_header          *mad;
     mad_init_func       *init_func;
     mad_status          status;
 
-    h = DIGPathOpen( path, strlen( path ), "mad", NULL, 0 );
-    if( h == DIG_NIL_HANDLE ) {
+    dfh = DIGPathOpen( path, strlen( path ), "mad", NULL, 0 );
+    if( dfh == DIG_NIL_HANDLE ) {
         return( MS_ERR|MS_FOPEN_FAILED );
     }
-    mad = ReadInImp( h );
-    DIGPathClose( h );
+    mad = ReadInImp( dfh );
+    DIGPathClose( dfh );
     status = MS_ERR|MS_INVALID_MAD;
     if( mad != NULL ) {
 #ifdef __WATCOMC__

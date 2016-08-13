@@ -134,13 +134,13 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
  * GetNumSect - find the number of sections for this load
  */
 
-static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr, unsigned long end, unsigned *count )
+static dip_status GetNumSect( dig_fhandle dfh, unsigned long curr, unsigned long end, unsigned *count )
 {
     section_dbg_header  header;
 
     *count = 0;
     while( curr < end ) {
-        if( DCRead( sym_file, &header, sizeof( header ) ) != sizeof( header ) ) {
+        if( DCRead( dfh, &header, sizeof( header ) ) != sizeof( header ) ) {
             DCStatus( DS_ERR|DS_INFO_INVALID );
             return( DS_ERR|DS_INFO_INVALID );
         }
@@ -321,15 +321,15 @@ static dip_status DoPermInfo( imp_image_handle *ii )
 /*
  * DIPImpLoadInfo -- process symbol table info on end of .exe file
  */
-dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
+dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
 {
     dip_status          ret;
 
-    if( file == DIG_NIL_HANDLE ) {
+    if( dfh == DIG_NIL_HANDLE ) {
         DCStatus( DS_ERR|DS_FOPEN_FAILED );
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    ii->sym_file = file;
+    ii->sym_file = dfh;
     ii->sect = NULL;
     ii->lang = NULL;
     ret = DoPermInfo( ii );
@@ -345,14 +345,14 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
 
 dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff )
 {
-    dig_fhandle  sym_file;
+    dig_fhandle  dfh;
 
-    sym_file = inf->ctl->sym_file;
-    if( DCSeek( sym_file, offset, DIG_ORG ) != offset ) {
+    dfh = inf->ctl->sym_file;
+    if( DCSeek( dfh, offset, DIG_ORG ) != offset ) {
         DCStatus( DS_ERR|DS_FSEEK_FAILED );
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( sym_file, buff, size ) != size ) {
+    if( DCRead( dfh, buff, size ) != size ) {
         DCStatus( DS_ERR|DS_FREAD_FAILED );
         return( DS_ERR|DS_FREAD_FAILED );
     }

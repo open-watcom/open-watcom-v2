@@ -473,7 +473,7 @@ unsigned DIPPriority( unsigned old )
     return( prio == UINT_MAX ? 0 : prio );
 }
 
-mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
+mod_handle DIPLoadInfo( dig_fhandle dfh, unsigned extra, unsigned prio )
 {
     image_idx           ii;
     int                 j;
@@ -497,7 +497,7 @@ mod_handle DIPLoadInfo( dig_fhandle file, unsigned extra, unsigned prio )
             continue;
         if( LoadedDIPs[j].rtns->dip_priority != prio )
             continue;
-        ret = LoadedDIPs[j].rtns->LoadInfo( file, IH2IIH( ih ) );
+        ret = LoadedDIPs[j].rtns->LoadInfo( dfh, IH2IIH( ih ) );
         if( ret == DS_OK ) {
             ActProc->ih_map[ii] = ih;
             ih->next = *ActProc->ih_add;
