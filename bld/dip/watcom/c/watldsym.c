@@ -161,7 +161,7 @@ static dip_status GetNumSect( dig_fhandle dfh, unsigned long curr, unsigned long
             }
         }
         (*count)++;
-        curr = DCSeek( sym_file, DIG_SEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
+        curr = DCSeek( dfh, DIG_SEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
     }
     if( curr > end ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );

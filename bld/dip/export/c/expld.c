@@ -511,11 +511,11 @@ static char *CacheName( pe_export_info *exp, unsigned long rva )
             exp->cache_name_len = NAME_CACHE_SIZE;
         }
         pos = RVAToPos( rva, exp->head, exp->obj );
-        if( BSeek( exp->h, pos, DIG_ORG ) != pos ) {
+        if( BSeek( exp->dfh, pos, DIG_ORG ) != pos ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( NULL );
         }
-        if( BRead( exp->h, exp->name_cache, exp->cache_name_len ) != exp->cache_name_len ) {
+        if( BRead( exp->dfh, exp->name_cache, exp->cache_name_len ) != exp->cache_name_len ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }
@@ -534,16 +534,16 @@ static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp,
     char                *name;
     dip_status          ds;
 
-    if( BSeek( exp->h, exp->name_ptr_base, DIG_ORG ) != exp->name_ptr_base ) {
+    if( BSeek( exp->dfh, exp->name_ptr_base, DIG_ORG ) != exp->name_ptr_base ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( BRead( exp->h, exp->name_ptrs, num * sizeof( unsigned_32 ) ) != num * sizeof( unsigned_32 ) ) {
+    if( BRead( exp->dfh, exp->name_ptrs, num * sizeof( unsigned_32 ) ) != num * sizeof( unsigned_32 ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( BSeek( exp->h, exp->ord_base, DIG_ORG ) != exp->ord_base ) {
+    if( BSeek( exp->dfh, exp->ord_base, DIG_ORG ) != exp->ord_base ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( BRead( exp->h, exp->ords, num * sizeof( unsigned_16 ) ) != num * sizeof( unsigned_16 ) ) {
+    if( BRead( exp->dfh, exp->ords, num * sizeof( unsigned_16 ) ) != num * sizeof( unsigned_16 ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     for( i = 0; i < num; ++i ) {
@@ -560,8 +560,7 @@ static dip_status PEExportBlock( imp_image_handle *ii, pe_export_info *exp,
                     if( name == NULL ) {
                         return( DS_ERR|DS_FAIL );
                     }
-                    ds = AddSymbol( ii, j+1, exp_rva - exp->obj[j].rva,
-                                        strlen( name ), name );
+                    ds = AddSymbol( ii, j + 1, exp_rva - exp->obj[j].rva, strlen( name ), name );
                     if( ds != DS_OK ) {
                         return( ds );
                     }
@@ -954,11 +953,11 @@ static dip_status TryELF( dig_fhandle dfh, imp_image_handle *ii )
                     return( DS_ERR|DS_NO_MEM );
                 }
                 strings = new;
-                if( BSeek( h, strtab->sh_offset, DIG_ORG ) != strtab->sh_offset ) {
+                if( BSeek( dfh, strtab->sh_offset, DIG_ORG ) != strtab->sh_offset ) {
                     DCFree( strings );
                     return( DS_ERR|DS_FSEEK_FAILED );
                 }
-                if( BRead( h, strings, strtab->sh_size ) != strtab->sh_size ) {
+                if( BRead( dfh, strings, strtab->sh_size ) != strtab->sh_size ) {
                     DCFree( strings );
                     return( DS_ERR|DS_FREAD_FAILED );
                 }
@@ -966,11 +965,11 @@ static dip_status TryELF( dig_fhandle dfh, imp_image_handle *ii )
             off = sect[i].sh_offset;
             num_syms = sect[i].sh_size / sect[i].sh_entsize;
             for( j = 0; j < num_syms; ++j ) {
-                if( BSeek( h, off, DIG_ORG ) != off ) {
+                if( BSeek( dfh, off, DIG_ORG ) != off ) {
                     DCFree( strings );
                     return( DS_ERR|DS_FSEEK_FAILED );
                 }
-                if( BRead( h, &sym, sizeof( sym ) ) != sizeof( sym ) ) {
+                if( BRead( dfh, &sym, sizeof( sym ) ) != sizeof( sym ) ) {
                     DCFree( strings );
                     return( DS_ERR|DS_FREAD_FAILED );
                 }
@@ -988,14 +987,12 @@ static dip_status TryELF( dig_fhandle dfh, imp_image_handle *ii )
                 case STT_NOTYPE:
                 case STT_OBJECT:
                     if( sym.st_shndx < head.e_shnum ) {
-                        ds = AddSymbol( ii, MAP_FLAT_DATA_SELECTOR, sym.st_value,
-                                            len, name );
+                        ds = AddSymbol( ii, MAP_FLAT_DATA_SELECTOR, sym.st_value, len, name );
                     }
                     break;
                 case STT_FUNC:
                     if( sym.st_shndx < head.e_shnum ) {
-                        ds = AddSymbol( ii, MAP_FLAT_CODE_SELECTOR, sym.st_value,
-                                            len, name );
+                        ds = AddSymbol( ii, MAP_FLAT_CODE_SELECTOR, sym.st_value, len, name );
                     }
                     break;
                 }

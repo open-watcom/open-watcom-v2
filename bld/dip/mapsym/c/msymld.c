@@ -371,7 +371,7 @@ done:
 }
 
 /* Load all segments for a map */
-static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
+static dip_status LoadSegments( dig_fhandle dfh, imp_image_handle *ii, int count )
 {
     dip_status      ds;
     sym_segdef      seg;
@@ -382,14 +382,14 @@ static dip_status LoadSegments( dig_fhandle h, imp_image_handle *ii, int count )
     int             is_code;
 
     for( i = 0; i < count; ++i ) {
-        seg_start = BSeek( h, 0, DIG_CUR );
+        seg_start = BSeek( dfh, 0, DIG_CUR );
         if( seg_start == DIG_SEEK_ERROR ) {
             return( DS_ERR | DS_FSEEK_FAILED );
         }
-        if( BRead( h, &seg, SYM_SEGDEF_FIXSIZE ) != SYM_SEGDEF_FIXSIZE ) {
+        if( BRead( dfh, &seg, SYM_SEGDEF_FIXSIZE ) != SYM_SEGDEF_FIXSIZE ) {
             return( DS_ERR | DS_FREAD_FAILED );
         }
-        ds = ReadString( h, name, &name_len );
+        ds = ReadString( dfh, name, &name_len );
         if( ds != DS_OK )
             return( ds );
 
