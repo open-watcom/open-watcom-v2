@@ -47,7 +47,7 @@ static walk_result FindMods( imp_image_handle *ii,
     return( md->wk( ii, cde->iMod, md->d ) );
 }
 
-walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
                         IMP_MOD_WKR *wk, void *d )
 {
     struct find_mod     find;
@@ -67,7 +67,7 @@ walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
 
 #define GBL_NAME "__global"
 
-size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, size_t buff_size )
 {
     cv_directory_entry  *cde;
@@ -123,7 +123,7 @@ cs_compile *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
     }
 }
 
-char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     cs_compile  *comp_info;
 
@@ -141,7 +141,7 @@ char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle
     return( "c" );
 }
 
-dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     static const unsigned DmndType[MAX_HK] = {
@@ -231,13 +231,13 @@ search_result ImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
     return( SR_CLOSEST );
 }
 
-search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
                         imp_mod_handle *im )
 {
     return( ImpAddrMod( ii, a, im ) );
 }
 
-address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
+address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
                                 imp_mod_handle im )
 {
     cv_sst_module       *mp;
@@ -255,7 +255,7 @@ address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
     return( addr );
 }
 
-dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     cs_compile  *comp_info;

@@ -34,7 +34,7 @@
 
 imp_mad_state_data      *MADState;
 
-mad_status DIGENTRY MADImpInit(void)
+mad_status MADIMPENTRY( Init )(void)
 {
     mad_status  ms;
 
@@ -45,18 +45,18 @@ mad_status DIGENTRY MADImpInit(void)
     return( ms );
 }
 
-void DIGENTRY MADImpFini(void)
+void MADIMPENTRY( Fini )(void)
 {
     DisasmFini();
     RegFini();
 }
 
-unsigned DIGENTRY MADImpStateSize( void )
+unsigned MADIMPENTRY( StateSize )( void )
 {
     return( sizeof( *MADState ) );
 }
 
-void DIGENTRY MADImpStateInit( imp_mad_state_data *new )
+void MADIMPENTRY( StateInit )( imp_mad_state_data *new )
 {
     memset( new, 0, sizeof( *new ) );
     new->reg_state[CPU_REG_SET] = CT_HEX;
@@ -64,12 +64,12 @@ void DIGENTRY MADImpStateInit( imp_mad_state_data *new )
     new->reg_state[XMM_REG_SET] = XT_BYTE | XT_SIGNED;
 }
 
-void DIGENTRY MADImpStateSet( imp_mad_state_data *new )
+void MADIMPENTRY( StateSet )( imp_mad_state_data *new )
 {
     MADState = new;
 }
 
-void DIGENTRY MADImpStateCopy( const imp_mad_state_data *src, imp_mad_state_data *dst )
+void MADIMPENTRY( StateCopy )( const imp_mad_state_data *src, imp_mad_state_data *dst )
 {
     memcpy( dst, src, sizeof( *dst ) );
 }

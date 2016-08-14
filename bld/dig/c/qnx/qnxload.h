@@ -52,7 +52,7 @@ union any_rec {
     struct _lmf_eof         eof;
 };
 
-#define get( where, size ) if( DIGCliRead( fd, &where, sizeof( struct size ) ) \
+#define get( where, size ) if( DIGCli( Read )( fd, &where, sizeof( struct size ) ) \
                  != sizeof( struct size ) ) return( NULL );
 
 static int ProcDefn( struct _lmf_definition *defn, unsigned long *seg,
@@ -61,7 +61,7 @@ static int ProcDefn( struct _lmf_definition *defn, unsigned long *seg,
     unsigned    i;
 
     if( defn->version_no != 400 ) return( EINVAL );
-    SuppSegs = DIGCliAlloc( sizeof( *SuppSegs ) * (count+1));
+    SuppSegs = DIGCli( Alloc )( sizeof( *SuppSegs ) * (count+1));
     if( SuppSegs == NULL ) return( ENOMEM );
     for( i = 0; i < count; ++i ) {
         SuppSegs[i] = qnx_segment_alloc( seg[i] & 0xfffffff );
@@ -77,7 +77,7 @@ static int ProcData( int fd, struct _lmf_data *data, unsigned nbytes )
 
     pos = MK_FP( SuppSegs[ data->segment_index ], data->offset );
     nbytes -= sizeof( struct _lmf_data );
-    if( DIGCliRead( fd, pos, nbytes ) != nbytes ) return( EIO );
+    if( DIGCli( Read )( fd, pos, nbytes ) != nbytes ) return( EIO );
     return( EOK );
 }
 
@@ -87,7 +87,7 @@ static int ProcFixup( int fd, int size )
     unsigned short  *fix;
 
     for( ; size > 0; size -= sizeof( a_fix ) ) {
-        if( DIGCliRead( fd, &a_fix, sizeof(a_fix) ) != sizeof(a_fix) ) return(EIO);
+        if( DIGCli( Read )( fd, &a_fix, sizeof(a_fix) ) != sizeof(a_fix) ) return(EIO);
         fix = MK_FP( SuppSegs[ a_fix.fixup_seg_index ], a_fix.fixup_offset );
         *fix = SuppSegs[ *fix >> 3 ];
     }
@@ -109,7 +109,7 @@ static supp_header *ReadSupp( int fd )
     get( rec, _lmf_definition );
     size = head.data_nbytes - sizeof( struct _lmf_definition );
     if( size > sizeof( segs ) ) return( NULL );
-    if( DIGCliRead( fd, segs, size ) != size ) return( NULL );
+    if( DIGCli( Read )( fd, segs, size ) != size ) return( NULL );
     count = size / sizeof( unsigned long );
     if( ProcDefn( &rec.defn, segs, count ) != EOK ) return( NULL );
     for( ;; ) {
@@ -119,7 +119,7 @@ static supp_header *ReadSupp( int fd )
         case _LMF_RESOURCE_REC:
         case _LMF_ENDDATA_REC:
         case _LMF_FIXUP_80X87_REC:
-            DIGCliSeek( fd, head.data_nbytes, DIG_CUR );
+            DIGCli( Seek )( fd, head.data_nbytes, DIG_CUR );
             break;
         case _LMF_DATA_REC:
             get( rec, _lmf_data );
@@ -153,6 +153,6 @@ static void UnloadSupp( unsigned short *p )
             qnx_segment_free( *p );
             ++p;
         }
-        DIGCliFree( start );
+        DIGCli( Free )( start );
     }
 }

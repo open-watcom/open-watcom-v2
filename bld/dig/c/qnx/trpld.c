@@ -71,7 +71,7 @@ void KillTrap( void )
         FiniFunc = NULL;
     }
     if( TrapCode != NULL ) {
-        DIGCliFree( TrapCode );
+        DIGCli( Free )( TrapCode );
         TrapCode = NULL;
     }
 }

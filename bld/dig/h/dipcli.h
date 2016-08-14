@@ -36,13 +36,16 @@
 #include "diptypes.h"
 #include "digcli.h"
 
-#define _DIPCli(n)  _DIPCli ## n *n
+#define DIPCli(n)       DIPCli ## n
+#define _DIPCli(n)      _DIPCli ## n n
 
-#define pick(r,n,p) typedef r DIGCLIENT _DIPCli ## n p;
+#define DIPCLIENTRY(n)  DIGCLIENT DIPCli(n)
+
+#define pick(r,n,p) typedef r (DIGCLIENT *_DIPCli ## n) p;
 #include "_dipcli.h"
 #undef pick
 
-#define pick(r,n,p) extern r DIGCLIENT DIPCli ## n p;
+#define pick(r,n,p) extern r DIPCLIENTRY( n ) p;
 #include "_dipcli.h"
 #undef pick
 

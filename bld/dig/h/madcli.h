@@ -36,13 +36,16 @@
 #include "madtypes.h"
 #include "digcli.h"
 
-#define _MADCli(n)  _MADCli ## n *n
+#define MADCli(n)       MADCli ## n
+#define _MADCli(n)      _MADCli ## n n
 
-#define pick(r,n,p) typedef r DIGCLIENT _MADCli ## n p;
+#define MADCLIENTRY(n)  DIGCLIENT MADCli( n )
+
+#define pick(r,n,p) typedef r (DIGCLIENT *_MADCli ## n) p;
 #include "_madcli.h"
 #undef pick
 
-#define pick(r,n,p) extern r DIGCLIENT MADCli ## n p;
+#define pick(r,n,p) extern r MADCLIENTRY( n ) p;
 #include "_madcli.h"
 #undef pick
 

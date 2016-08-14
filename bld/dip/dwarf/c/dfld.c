@@ -372,7 +372,7 @@ static void LoadGlbHash( imp_image_handle *ii )
 }
 
 
-dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 /******************************************************************************/
 {
     dip_status          ret;
@@ -448,7 +448,7 @@ static bool ARangeItem( void *_info, dr_arange_data *arange )
 }
 
 
-void    DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 /*************************************************************/
 // Read in address ranges and build map
 {
@@ -470,7 +470,7 @@ void    DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
 }
 
 
-void    DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 /*******************************************************/
 {
     FiniDwarf( ii );

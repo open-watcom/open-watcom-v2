@@ -30,18 +30,6 @@
 ****************************************************************************/
 
 
-#if defined( _M_IX86 )
-#define MD_x86
-#elif defined __AXP__
-#define MD_axp
-#endif
-
-#include "mad.h"
-#include "madregs.h"
-#include <windows.h>
-
-extern void GetSysConfig(void);
-void LoadMADRegisters(mad_registers *MadRegisters, HANDLE threadhdl );
-void StoreMADRegisters(mad_registers *MadRegisters, HANDLE threadhdl );
-
-extern system_config SysConfig;
+extern void GetSysConfig( void );
+extern void LoadMADRegisters( mad_registers *MadRegisters, HANDLE threadhdl );
+extern void StoreMADRegisters( mad_registers *MadRegisters, HANDLE threadhdl );

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-pick( unsigned,         QueryHandleSize,    ( handle_kind ) )
+pick( unsigned,         HandleSize,         ( handle_kind ) )
 pick( dip_status,       MoreMem,            ( unsigned ) )
 pick( void,             Shutdown,           ( void ) )
 pick( void,             Cancel,             ( void ) )

@@ -270,7 +270,7 @@ mad_string ScanCall( void )
     char                buff[NAM_LEN];
 
     for( type = MADCallTypeList(); *type != MAD_MSTR_NIL; ++type ) {
-        MADCliString( *type, buff, sizeof( buff ) );
+        MADCli( String )( *type, buff, sizeof( buff ) );
         for( q = buff, p = TokenStart; ; ++p, ++q ) {
             if( !isalnum( *p ) ) {
                 if( p == TokenStart )

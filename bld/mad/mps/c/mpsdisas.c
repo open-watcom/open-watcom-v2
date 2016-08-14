@@ -100,12 +100,12 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     return( strlen( buff ) );
 }
 
-unsigned DIGENTRY MADImpDisasmDataSize( void )
+unsigned MADIMPENTRY( DisasmDataSize )( void )
 {
     return( sizeof( mad_disasm_data ) );
 }
 
-unsigned DIGENTRY MADImpDisasmNameMax( void )
+unsigned MADIMPENTRY( DisasmNameMax )( void )
 {
     return( DisInsNameMax( &DH ) );
 }
@@ -129,12 +129,12 @@ mad_status DisasmOne( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpDisasm( mad_disasm_data *dd, address *a, int adj )
+mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
     return( DisasmOne( dd, a, adj ) );
 }
 
-size_t DIGENTRY MADImpDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
+size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -192,14 +192,14 @@ size_t DIGENTRY MADImpDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, ma
     return( len );
 }
 
-unsigned DIGENTRY MADImpDisasmInsSize( mad_disasm_data *dd )
+unsigned MADIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
     dd = dd;
 
     return( sizeof( unsigned_32 ) );
 }
 
-mad_status DIGENTRY MADImpDisasmInsUndoable( mad_disasm_data *dd )
+mad_status MADIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
 {
     switch( dd->ins.type ) {
     case DI_MIPS_SYSCALL:
@@ -374,12 +374,12 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     return( MDC_OPER | MDC_TAKEN );
 }
 
-mad_disasm_control DIGENTRY MADImpDisasmControl( mad_disasm_data *dd, mad_registers const *mr )
+mad_disasm_control MADIMPENTRY( DisasmControl )( mad_disasm_data *dd, mad_registers const *mr )
 {
     return( DisasmControl( dd, mr ) );
 }
 
-mad_status DIGENTRY MADImpDisasmInsNext( mad_disasm_data *dd, mad_registers const *mr, address *next )
+mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, mad_registers const *mr, address *next )
 {
     mad_disasm_control  dc;
     addr_off            new;
@@ -411,7 +411,7 @@ mad_status DIGENTRY MADImpDisasmInsNext( mad_disasm_data *dd, mad_registers cons
     return( MS_OK );
 }
 
-walk_result DIGENTRY MADImpDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, mad_registers const *mr, void *d )
+walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, mad_registers const *mr, void *d )
 {
     address             a;
     unsigned            i;
@@ -455,7 +455,7 @@ walk_result DIGENTRY MADImpDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALK
     return( WR_CONTINUE );
 }
 
-const mad_toggle_strings *DIGENTRY MADImpDisasmToggleList( void )
+const mad_toggle_strings *MADIMPENTRY( DisasmToggleList )( void )
 {
     static const mad_toggle_strings list[] = {
         { MAD_MSTR_MPSEUDOINS, MAD_MSTR_PSEUDOINS, MAD_MSTR_RAWINS },
@@ -465,7 +465,7 @@ const mad_toggle_strings *DIGENTRY MADImpDisasmToggleList( void )
     return( list );
 }
 
-unsigned DIGENTRY MADImpDisasmToggle( unsigned on, unsigned off )
+unsigned MADIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
 {
     unsigned    toggle;
 
@@ -476,7 +476,7 @@ unsigned DIGENTRY MADImpDisasmToggle( unsigned on, unsigned off )
     return( MADState->disasm_state );
 }
 
-mad_status DIGENTRY MADImpDisasmInspectAddr(const char *start, unsigned len, mad_radix radix, mad_registers const *mr, address *a)
+mad_status MADIMPENTRY( DisasmInspectAddr )(const char *start, unsigned len, mad_radix radix, mad_registers const *mr, address *a)
 {
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;

@@ -70,9 +70,10 @@ typedef walk_result (DIGCLIENT IMP_TYPE_WKR)( imp_image_handle *, imp_type_handl
 typedef walk_result (DIGCLIENT IMP_SYM_WKR)( imp_image_handle *, sym_walk_info, imp_sym_handle *, void * );
 typedef walk_result (DIGCLIENT IMP_CUE_WKR)( imp_image_handle *, imp_cue_handle *, void * );
 
-#define _DIPImp(n)  _DIPImp ## n *n
+#define DIPImp(n)       DIPImp ## n
+#define _DIPImp(n)      _DIPImp ## n n
 
-#define pick(r,n,p) typedef r DIGENTRY _DIPImp ## n p;
+#define pick(r,n,p) typedef r (DIGENTRY *_DIPImp ## n) p;
 #include "_dipimp.h"
 #undef pick
 
@@ -82,7 +83,7 @@ struct dip_imp_routines {
     unsigned_16         dip_priority;
     const char          *dip_name;
 
-    _DIPImp( QueryHandleSize );
+    _DIPImp( HandleSize );
     _DIPImp( MoreMem );
     _DIPImp( Shutdown );
     _DIPImp( Cancel );
@@ -144,13 +145,15 @@ struct dip_imp_routines {
 };
 
 
-extern const char       DIPImpName[];
+extern const char       DIPImp( Name )[];
 
-#define pick(r,n,p) extern r DIGENTRY DIPImp ## n p;
+#define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
+
+#define pick(r,n,p) extern r DIPIMPENTRY( n ) p;
 #include "_dipimp.h"
 #undef pick
 
-extern dip_status   DIGENTRY DIPImpStartup( void );
+extern dip_status   DIPIMPENTRY( Startup )( void );
 
 typedef struct dip_client_routines {
     unsigned_8          major;

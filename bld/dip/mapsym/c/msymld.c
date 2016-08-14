@@ -452,7 +452,7 @@ static dip_status LoadSymFile( dig_fhandle dfh, imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 {
     dip_status  ds;
 
@@ -480,7 +480,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     msym_block  *b;
     msym_sym    *s;
@@ -493,7 +493,7 @@ void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     }
 }
 
-void DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     ImpUnloadInfo( ii );
 }

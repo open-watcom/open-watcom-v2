@@ -288,7 +288,7 @@ static void logStack( ExceptDlgInfo *info ) {
     data = alloca( word_size * 4 );
     logPrintf( STR_STACK_DATA );
     for( linecnt=0; linecnt < 20; linecnt ++ ) {
-        bytesread = MADCliReadMem( sp, word_size * 4, data );
+        bytesread = MADCli( ReadMem )( sp, word_size * 4, data );
         MADTypeConvert( &host, &sp, &mti, item, 0 );
         buff_len = sizeof( buff );
         MADTypeToString( 16, &mti, item, buff, &buff_len );
@@ -318,9 +318,9 @@ static walk_result logRegisterSet( const mad_reg_set_data *reg_set, void *_regs)
     char                    *set_level;
     unsigned                len;
 
-    len = MADCliString( MADRegSetName( reg_set ), NULL, 0 );
+    len = MADCli( String )( MADRegSetName( reg_set ), NULL, 0 );
     reg_name = alloca( len + 1 );
-    MADCliString( MADRegSetName( reg_set ), reg_name, len + 1 );
+    MADCli( String )( MADRegSetName( reg_set ), reg_name, len + 1 );
     len = MADRegSetLevel( reg_set, NULL, 0 );
     if( len == 0 ){
         logStrPrintf( "\n%s\n\n", reg_name );
@@ -657,7 +657,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     logPrintf( STR_OFFENDING_PROC_X, stats.name, info->procinfo->procid );
     type = info->dbinfo->u.Exception.ExceptionRecord.ExceptionCode;
     FormatException( buf, type );
-    MADCliAddrToString( info->init_ip,
+    MADCli( AddrToString )( info->init_ip,
         MADTypeDefault( MTK_ADDRESS, MAF_FULL, NULL, &( info->init_ip ) ),
         MLK_CODE, addr_buf, 63 );
     logPrintf( STR_ERR_OCCURRED_AT_X_Y, buf, addr_buf );

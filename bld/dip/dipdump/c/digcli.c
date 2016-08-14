@@ -43,7 +43,7 @@
 #endif
 
 
-void *DIGCLIENT DIGCliAlloc( size_t amount )
+void *DIGCLIENTRY( Alloc )( size_t amount )
 {
     void    *ptr = malloc( amount );
 
@@ -51,7 +51,7 @@ void *DIGCLIENT DIGCliAlloc( size_t amount )
     return( ptr );
 }
 
-void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
+void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 {
     void    *ptr = realloc( p, amount);
 
@@ -59,13 +59,13 @@ void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
     return( ptr );
 }
 
-void DIGCLIENT DIGCliFree( void *p )
+void DIGCLIENTRY( Free )( void *p )
 {
     dprintf(( "DIGCliFree: p=%p\n", p ));
     free( p );
 }
 
-dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
+dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     int     fd;
     int     flgs;
@@ -105,7 +105,7 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
     return( (dig_fhandle)fd );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
     int     whence;
     long    off;
@@ -124,7 +124,7 @@ unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k
     return( off );
 }
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
 {
     size_t      rc;
 #ifdef _WIN64
@@ -156,7 +156,7 @@ size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *b , size_t s )
     return( rc );
 }
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *b, size_t s )
 {
     size_t      rc;
 #ifdef _WIN64
@@ -188,7 +188,7 @@ size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *b, size_t s )
     return( rc );
 }
 
-void DIGCLIENT DIGCliClose( dig_fhandle dfh )
+void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
     dprintf(( "DIGCliClose: h=%d\n", (int)dfh ));
     if( close( (int)dfh ) ) {
@@ -196,14 +196,14 @@ void DIGCLIENT DIGCliClose( dig_fhandle dfh )
     }
 }
 
-void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
+void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
 {
     dprintf(( "DIGCliRemove: name=%p:{%s} mode=%#x\n", name, name, mode ));
     unlink( name );
     mode = mode;
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {

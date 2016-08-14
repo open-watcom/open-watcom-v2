@@ -36,9 +36,9 @@
    Misc. stuff.
 */
 
-const char      DIPImpName[] = "Java";
+const char      DIPImp( Name )[] = "Java";
 
-unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    ih,
@@ -49,24 +49,24 @@ unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     /* nothing to do */
     return( DS_FAIL );
 }
 
-dip_status      DIGENTRY DIPImpStartup( void )
+dip_status DIPIMPENTRY( Startup )( void )
 {
     /* nothing to do */
     return( DS_OK );
 }
 
-void            DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
     /* nothing to do */
 }
 
-void            DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
     /* nothing to do */
 }

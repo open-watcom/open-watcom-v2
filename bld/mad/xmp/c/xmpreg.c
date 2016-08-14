@@ -43,7 +43,7 @@ enum {
 /*
         Return the size of the structure required to hold a register set.
 */
-unsigned DIGENTRY MADImpRegistersSize( void )
+unsigned MADIMPENTRY( RegistersSize )( void )
 {
     //NYI:
     return( 0 );
@@ -54,7 +54,7 @@ unsigned DIGENTRY MADImpRegistersSize( void )
         received from the trap file. Return MS_OK if nothing was actually
         modified, MS_MODIFIED if some changes were made.
 */
-mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
+mad_status MADIMPENTRY( RegistersHost )( mad_registers *mr )
 {
     //NYI:
     return( MS_OK );
@@ -66,7 +66,7 @@ mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
         it to the trap file (undo the effects of a MIRegistersHost). Return
         MS_OK if nothing was actually changed, MS_MODIFIED otherwise.
 */
-mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
+mad_status MADIMPENTRY( RegistersTarget )( mad_registers *mr )
 {
     //NYI:
     return( MS_OK );
@@ -76,7 +76,7 @@ mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
         Call back to the client routine with pointers to the various
         reg set structure(s).
 */
-walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     //NYI:
     return( WR_CONTINUE );
@@ -85,7 +85,7 @@ walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
 /*
         Return the name of the register set.
 */
-mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
+mad_string MADIMPENTRY( RegSetName )( const mad_reg_set_data *rsd )
 {
     //NYI:
     return( MAD_MSTR_NIL );
@@ -94,7 +94,7 @@ mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
 /*
         Return the register set level string (8086, 186, 286, etc).
 */
-size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     //NYI:
     if( buff_size > 0 )
@@ -109,7 +109,7 @@ size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size
         of rows and 'm' is the number of columns. The grouping is the number
         of columns (return value m).
 */
-unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
+unsigned MADIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
     return( 0 );
 }
@@ -117,7 +117,7 @@ unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 /*
         Fill in the information to display one register.
 */
-mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
+mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
                                 const char **descript_p,
@@ -134,7 +134,7 @@ mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
         A particular register has been selected for modification. Indicate
         what are the legal ranges of values for it.
 */
-mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
+mad_status MADIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     //NYI:
     return( MS_FAIL );
@@ -150,7 +150,7 @@ mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, cons
                                                   in a way that the user
                                                   cares about
 */
-mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
+mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
 {
     //NYI:
     return( MS_FAIL );
@@ -160,7 +160,7 @@ mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_re
         Given a register, fill in 'a' with the address that the register
         points at.
 */
-mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
+mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
     //NYI:
     return( MS_FAIL );
@@ -169,7 +169,7 @@ mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_regi
 /*
         Return the toggle list strings for the register set.
 */
-const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_set_data *rsd )
+const mad_toggle_strings *MADIMPENTRY( RegSetDisplayToggleList )( const mad_reg_set_data *rsd )
 {
     //NYI:
     return( 0 );
@@ -189,7 +189,7 @@ const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_
         (it operates the same as a JK flip-flop).
         Return the new toggle state.
 */
-unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     unsigned    toggle;
     unsigned    *bits;
@@ -217,7 +217,7 @@ unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsign
         the register set 'rsd'.
 */
 
-walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
+walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
     //NYI:
     return( WR_CONTINUE );
@@ -230,7 +230,7 @@ walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
                 MSR_SP  - stack pointer
                 MSR_FP  - frame pointer
 */
-void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
+void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
 {
     //NYI:
 }
@@ -238,7 +238,7 @@ void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, 
 /*
         Set a special register to the address 'a'.
 */
-void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
+void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
 {
     //NYI:
 }
@@ -246,7 +246,7 @@ void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const 
 /*
         Get the name of a special register.
 */
-size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
+size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     //NYI:
     return( 0 );
@@ -257,7 +257,7 @@ size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, const mad_registers *m
         Convert a DIP context item enumeration to a MAD mad_reg_info
         pointer.
 */
-const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
+const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
 {
     //NYI:
     return( NULL );
@@ -266,7 +266,7 @@ const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
 /*
         The client is about to modify a register (or registers).
 */
-void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void MADIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     //NYI:
 }
@@ -283,7 +283,7 @@ void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned 
                 MNT_MODIFY_FP   - frame pointer special reg has changed.
 
 */
-void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     //NYI:
 }

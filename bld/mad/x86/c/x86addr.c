@@ -32,7 +32,7 @@
 
 #include "x86.h"
 
-void DIGENTRY MADImpAddrAdd( address *a, long b, mad_address_format af )
+void MADIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
 {
     unsigned    over;
 
@@ -48,7 +48,7 @@ void DIGENTRY MADImpAddrAdd( address *a, long b, mad_address_format af )
     }
 }
 
-int DIGENTRY MADImpAddrComp( const address *ap, const address *bp, mad_address_format af )
+int MADIMPENTRY( AddrComp )( const address *ap, const address *bp, mad_address_format af )
 {
     addr_ptr    a;
     addr_ptr    b;
@@ -81,7 +81,7 @@ int DIGENTRY MADImpAddrComp( const address *ap, const address *bp, mad_address_f
     }
 }
 
-long DIGENTRY MADImpAddrDiff( const address *a, const address *b, mad_address_format af )
+long MADIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )
 {
     long        diff;
     addr_seg    seg;
@@ -99,7 +99,7 @@ long DIGENTRY MADImpAddrDiff( const address *a, const address *b, mad_address_fo
     return( diff );
 }
 
-mad_status DIGENTRY MADImpAddrMap( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
+mad_status MADIMPENTRY( AddrMap )( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
 {
     if( !REAL_SEG( GetRegIP( mr ) ) )
         return( MS_FAIL );
@@ -111,14 +111,14 @@ mad_status DIGENTRY MADImpAddrMap( addr_ptr *a, const addr_ptr *map, const addr_
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpAddrFlat( const mad_registers *mr )
+mad_status MADIMPENTRY( AddrFlat )( const mad_registers *mr )
 {
     if( REAL_SEG( GetRegIP( mr ) ) )
         return( MS_FAIL );
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpAddrInterrupt( const addr_ptr *a, unsigned size, const mad_registers *mr )
+mad_status MADIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const mad_registers *mr )
 {
     unsigned_32         start, end;
     address             addr;

@@ -954,7 +954,7 @@ static int DumpFile( const char *file, char **dips )
     /*
      * Open the file
      */
-    dfh = DIGCliOpen( file, DIG_READ );
+    dfh = DIGCli( Open )( file, DIG_READ );
     if( dfh == DIG_NIL_HANDLE ) {
         return( ErrorMsg( "Failed to open '%s'\n", file ) );
     }
@@ -970,7 +970,7 @@ static int DumpFile( const char *file, char **dips )
             mod_handle  mh = 0;
 
             for( prty = DIPPriority( 0 ); prty != 0; prty = DIPPriority( prty ) ) {
-                DIGCliSeek( dfh, 0, DIG_ORG );
+                DIGCli( Seek )( dfh, 0, DIG_ORG );
                 mh = DIPLoadInfo( dfh, 0, prty );
                 if( mh != NO_MOD ) {
                     break;
@@ -996,7 +996,7 @@ static int DumpFile( const char *file, char **dips )
         }
         TermDIP();
     }
-    DIGCliClose( dfh );
+    DIGCli( Close )( dfh );
     return( rc );
 }
 

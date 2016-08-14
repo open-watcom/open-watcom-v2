@@ -66,18 +66,18 @@ static mad_status       MADStatus;
  * Client support routines
  */
 
-void DIGCLIENT MADCliAddrSection( address *addr )
+void MADCLIENTRY( AddrSection )( address *addr )
 {
     AddrSection( addr, OVL_MAP_CURR );
 }
 
-mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
+mad_status MADCLIENTRY( AddrOvlReturn )( address *addr )
 {
     return( FixOvlRetAddr( addr ) ? MS_OK : MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
-                            mad_label_kind lk, char *buff, size_t buff_len )
+mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
+                        mad_label_kind lk, char *buff, size_t buff_len )
 {
     char        *p;
 
@@ -96,7 +96,7 @@ mad_status      DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_FAIL );
 }
 
-mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address *a )
+mad_status MADCLIENTRY( MemExpr )( const char *expr, mad_radix radix, address *a )
 {
     const char  *old_scan;
     mad_radix   old_radix;
@@ -111,17 +111,17 @@ mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, addr
 }
 
 
-size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
+size_t MADCLIENTRY( ReadMem )( address a, size_t size, void *buff )
 {
     return( ProgPeek( a, buff, size ) );
 }
 
-size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
+size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
 {
     return( ProgPoke( a, buff, size ) );
 }
 
-size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
+size_t MADCLIENTRY( String )( mad_string mstr, char *buff, size_t buff_len )
 {
     static  char ** strings[] = {
         #define pick( e, es, js ) LITREF_ENG( e ),
@@ -142,14 +142,14 @@ size_t DIGCLIENT MADCliString( mad_string mstr, char *buff, size_t buff_len )
     return( len );
 }
 
-mad_status      DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
+mad_status MADCLIENTRY( AddString )( mad_string mstr, const char *str )
 {
     //MAD: NYI
     mstr = mstr; str = str;
     return( MS_FAIL );
 }
 
-size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
+size_t MADCLIENTRY( RadixPrefix )( mad_radix radix, char *buff, size_t buff_len )
 {
     const char          *start;
     size_t              len;
@@ -167,7 +167,7 @@ size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t
     return( len );
 }
 
-void            DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
+void MADCLIENTRY( Notify )( mad_notify_type nt, const void *d )
 {
     switch( nt ) {
     case MNT_ERROR:
@@ -197,7 +197,7 @@ void            DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
     }
 }
 
-system_config   *DIGCLIENT MADCliSystemConfig( void )
+system_config *MADCLIENTRY( SystemConfig )( void )
 {
     return( &SysConfig );
 }
@@ -335,7 +335,7 @@ static size_t NormalizeString( char *p )
 
 size_t GetMADNormalizedString( mad_string ms, char *buff, size_t buff_len )
 {
-    MADCliString( ms, buff, buff_len );
+    MADCli( String )( ms, buff, buff_len );
     return( NormalizeString( buff ) );
 }
 

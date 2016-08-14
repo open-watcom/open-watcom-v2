@@ -47,7 +47,7 @@
 /*
  * DIPCliImageUnload
  */
-void DIGCLIENT DIPCliImageUnload( mod_handle hdl )
+void DIPCLIENTRY( ImageUnload )( mod_handle hdl )
 {
     dprintf(( "DIPCliImageUnload: hld=%#x\n", hdl ));
     hdl = hdl;
@@ -56,7 +56,7 @@ void DIGCLIENT DIPCliImageUnload( mod_handle hdl )
 /*
  * DIPCliMapAddr
  */
-void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *ptr )
+void DIPCLIENTRY( MapAddr )( addr_ptr *addr, void *ptr )
 {
     dprintf(( "DIPCliMapAddr: addr=%p:{%04x:%08lx} ptr=%p\n",
               addr, addr->segment, (long)addr->offset, ptr ));
@@ -67,7 +67,7 @@ void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *ptr )
 /*
  * DIPCliSymCreate
  */
-imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
 {
     dprintf(( "DIPCliSymCreate: iih=%p, ptr=%p\n", ih, d ));
     ih=ih;
@@ -79,7 +79,7 @@ imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
 /*
  * DIPCliSectLoaded
  */
-dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
+dip_status DIPCLIENTRY( SectLoaded )( unsigned sect )
 {
     dprintf(( "DIPCliSectLoaded: ptr=%p\n", sect ));
     sect = sect;
@@ -90,7 +90,7 @@ dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
 /*
  * DIPCliItemLocation
  */
-dip_status DIGCLIENT DIPCliItemLocation( location_context *context,
+dip_status DIPCLIENTRY( ItemLocation )( location_context *context,
                                          context_item item, location_list *loc )
 {
     dprintf(( "DIPCliItemLocation:\n" ));
@@ -103,7 +103,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *context,
 /*
  * DIPCliAssignLocation
  */
-dip_status DIGCLIENT DIPCliAssignLocation( location_list *loc1,
+dip_status DIPCLIENTRY( AssignLocation )( location_list *loc1,
                                            location_list *loc2, unsigned long item )
 {
     dprintf(( "DIPCliAssignLocation:\n" ));
@@ -116,7 +116,7 @@ dip_status DIGCLIENT DIPCliAssignLocation( location_list *loc1,
 /*
  * DIPCliSameAddrSpace
  */
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 )
+dip_status DIPCLIENTRY( SameAddrSpace )( address a1, address a2 )
 {
     dprintf(( "DIPCliSameAddrSpace: a1=%04x:%08lx a2=%04x:%08lx\n",
               a1.mach.segment, (long)a1.mach.offset,
@@ -130,7 +130,7 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 )
 /*
  * DIPCliAddrSection
  */
-void DIGCLIENT DIPCliAddrSection( address *addr )
+void DIPCLIENTRY( AddrSection )( address *addr )
 {
     dprintf(( "DIPCliAddrSection: addr=%p:{%04x:%08lx}\n",
               addr, addr->mach.segment, addr->mach.offset ));
@@ -140,7 +140,7 @@ void DIGCLIENT DIPCliAddrSection( address *addr )
 /*
  * DIPCliStatus
  */
-void DIGCLIENT DIPCliStatus( dip_status stat )
+void DIPCLIENTRY( Status )( dip_status stat )
 {
     dprintf(( "DIPCliStatus: stat=%d\n", stat ));
     stat = stat;
@@ -149,7 +149,7 @@ void DIGCLIENT DIPCliStatus( dip_status stat )
 /*
  * DIPCliCurrMAD
  */
-dig_mad DIGCLIENT DIPCliCurrMAD( void )
+dig_mad DIPCLIENTRY( CurrMAD )( void )
 {
     //dprintf(( "DIPCliCurrMAD\n" ));
     return( MAD_X86 ); ///@todo option!

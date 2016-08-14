@@ -58,76 +58,76 @@ dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
     DIP_MINOR,
     DIP_PRIORITY,
-    DIPImpName,
+    DIPImp( Name ),
 
-    DIPImpQueryHandleSize,
-    DIPImpMoreMem,
-    DIPImpShutdown,
-    DIPImpCancel,
+    DIPImp( HandleSize ),
+    DIPImp( MoreMem ),
+    DIPImp( Shutdown ),
+    DIPImp( Cancel ),
 
-    DIPImpLoadInfo,
-    DIPImpMapInfo,
-    DIPImpUnloadInfo,
+    DIPImp( LoadInfo ),
+    DIPImp( MapInfo ),
+    DIPImp( UnloadInfo ),
 
-    DIPImpWalkModList,
-    DIPImpModName,
-    DIPImpModSrcLang,
-    DIPImpModInfo,
-    DIPImpModDefault,
-    DIPImpAddrMod,
-    DIPImpModAddr,
+    DIPImp( WalkModList ),
+    DIPImp( ModName ),
+    DIPImp( ModSrcLang ),
+    DIPImp( ModInfo ),
+    DIPImp( ModDefault ),
+    DIPImp( AddrMod ),
+    DIPImp( ModAddr ),
 
-    DIPImpWalkTypeList,
-    DIPImpTypeMod,
-    DIPImpTypeInfo,
-    DIPImpOldTypeBase,
-    DIPImpTypeArrayInfo,
-    DIPImpTypeProcInfo,
-    DIPImpTypePtrAddrSpace,
-    DIPImpTypeThunkAdjust,
-    DIPImpTypeCmp,
-    DIPImpTypeName,
+    DIPImp( WalkTypeList ),
+    DIPImp( TypeMod ),
+    DIPImp( TypeInfo ),
+    DIPImp( OldTypeBase ),
+    DIPImp( TypeArrayInfo ),
+    DIPImp( TypeProcInfo ),
+    DIPImp( TypePtrAddrSpace ),
+    DIPImp( TypeThunkAdjust ),
+    DIPImp( TypeCmp ),
+    DIPImp( TypeName ),
 
-    DIPImpWalkSymList,
-    DIPImpSymMod,
-    DIPImpSymName,
-    DIPImpSymType,
-    DIPImpSymLocation,
-    DIPImpSymValue,
-    DIPImpSymInfo,
-    DIPImpSymParmLocation,
-    DIPImpSymObjType,
-    DIPImpSymObjLocation,
-    DIPImpAddrSym,
-    DIPImpLookupSym,
-    DIPImpAddrScope,
-    DIPImpScopeOuter,
-    DIPImpSymCmp,
+    DIPImp( WalkSymList ),
+    DIPImp( SymMod ),
+    DIPImp( SymName ),
+    DIPImp( SymType ),
+    DIPImp( SymLocation ),
+    DIPImp( SymValue ),
+    DIPImp( SymInfo ),
+    DIPImp( SymParmLocation ),
+    DIPImp( SymObjType ),
+    DIPImp( SymObjLocation ),
+    DIPImp( AddrSym ),
+    DIPImp( LookupSym ),
+    DIPImp( AddrScope ),
+    DIPImp( ScopeOuter ),
+    DIPImp( SymCmp ),
 
-    DIPImpWalkFileList,
-    DIPImpCueMod,
-    DIPImpCueFile,
-    DIPImpCueFileId,
-    DIPImpCueAdjust,
-    DIPImpCueLine,
-    DIPImpCueColumn,
-    DIPImpCueAddr,
-    DIPImpLineCue,
-    DIPImpAddrCue,
-    DIPImpCueCmp,
+    DIPImp( WalkFileList ),
+    DIPImp( CueMod ),
+    DIPImp( CueFile ),
+    DIPImp( CueFileId ),
+    DIPImp( CueAdjust ),
+    DIPImp( CueLine ),
+    DIPImp( CueColumn ),
+    DIPImp( CueAddr ),
+    DIPImp( LineCue ),
+    DIPImp( AddrCue ),
+    DIPImp( CueCmp ),
 
-    DIPImpTypeBase,
+    DIPImp( TypeBase ),
 
-    DIPImpTypeAddRef,
-    DIPImpTypeRelease,
-    DIPImpTypeFreeAll,
+    DIPImp( TypeAddRef ),
+    DIPImp( TypeRelease ),
+    DIPImp( TypeFreeAll ),
 
-    DIPImpSymAddRef,
-    DIPImpSymRelease,
-    DIPImpSymFreeAll,
+    DIPImp( SymAddRef ),
+    DIPImp( SymRelease ),
+    DIPImp( SymFreeAll ),
 
-    DIPImpWalkSymListEx,
-    DIPImpLookupSymEx,
+    DIPImp( WalkSymListEx ),
+    DIPImp( LookupSymEx ),
 };
 
 #if defined( __WINDOWS__ )
@@ -146,12 +146,12 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
     {
         FARPROC start;
 
-        start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
+        start = MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
         *status = ((dip_status(DIGENTRY*)(void)) start)();
         FreeProcInstance( start );
     }
 #else
-    *status = DIPImpStartup();
+    *status = DIPImp( Startup )();
 #endif
     if( *status & DS_ERR )
         return( NULL );
@@ -275,7 +275,7 @@ unsigned        DCMachineData( address a, dig_info_type info_type,
     return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
     return( ImpInterface.TypeBase( ii, it, base, NULL, NULL ) );
 }
@@ -321,8 +321,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.QueryHandleSize;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, QueryHandleSize ) ) / sizeof( INTER_FUNC * );
+    func = (INTER_FUNC **)&ImpInterface.HandleSize;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTER_FUNC * );
     while( count != 0 ) {
         *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;

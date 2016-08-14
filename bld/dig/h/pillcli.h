@@ -39,13 +39,16 @@
 
 #include "digpck.h"
 
-#define _LinkCli(n) _LinkCli ## n *n
+#define LinkCli(n)      LinkCli ## n
+#define _LinkCli(n)     _LinkCli ## n n
 
-#define pick(r,n,p) typedef r DIGCLIENT _LinkCli ## n p;
+#define LINKCLIENTRY(n) DIGCLIENT LinkCli(n)
+
+#define pick(r,n,p) typedef r (DIGCLIENT *_LinkCli ## n) p;
 #include "_pillcli.h"
 #undef
 
-#define pick(r,n,p) extern r DIGCLIENT LinkCli ## n p;
+#define pick(r,n,p) extern r LINKCLIENTRY( n ) p;
 #include "_pillcli.h"
 #undef
 

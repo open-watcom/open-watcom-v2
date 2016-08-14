@@ -293,25 +293,25 @@ int VariableFrame( addr_off off )
     return( ins == INS_MOV_SP_FP );
 }
 
-unsigned DIGENTRY MADImpRegistersSize( void )
+unsigned MADIMPENTRY( RegistersSize )( void )
 {
     return( sizeof( struct axp_mad_registers ) );
 }
 
-mad_status DIGENTRY MADImpRegistersHost( mad_registers *mr )
+mad_status MADIMPENTRY( RegistersHost )( mad_registers *mr )
 {
     /* stash for the register walker */
     CurrPAL = mr->axp.active_pal;
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpRegistersTarget( mad_registers *mr )
+mad_status MADIMPENTRY( RegistersTarget )( mad_registers *mr )
 {
     mr = mr;
     return( MS_OK );
 }
 
-walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
+walk_result MADIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
     walk_result wr;
 
@@ -326,12 +326,12 @@ walk_result DIGENTRY MADImpRegSetWalk( mad_type_kind tk, MI_REG_SET_WALKER *wk, 
     return( WR_CONTINUE );
 }
 
-mad_string DIGENTRY MADImpRegSetName( const mad_reg_set_data *rsd )
+mad_string MADIMPENTRY( RegSetName )( const mad_reg_set_data *rsd )
 {
     return( rsd->name );
 }
 
-size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
+size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
     const char  *str;
     size_t      len;
@@ -358,7 +358,7 @@ size_t DIGENTRY MADImpRegSetLevel( const mad_reg_set_data *rsd, char *buff, size
     return( len );
 }
 
-unsigned DIGENTRY MADImpRegSetDisplayGrouping( const mad_reg_set_data *rsd )
+unsigned MADIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
     rsd = rsd;
     return( 0 );
@@ -473,7 +473,7 @@ static mad_status       FPUGetPiece( unsigned piece,
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
+mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 const mad_registers *mr,
                                 unsigned piece,
                                 const char **descript_p,
@@ -489,7 +489,7 @@ mad_status DIGENTRY MADImpRegSetDisplayGetPiece( const mad_reg_set_data *rsd,
 static const mad_modify_list    IntReg = { NULL, REG_TYPE( REG_BITS_INT ), MAD_MSTR_NIL };
 static const mad_modify_list    FltReg = { NULL, AXPT_DOUBLE, MAD_MSTR_NIL };
 
-mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
+mad_status MADIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
     rsd = rsd;
     switch( ri->bit_start ) {
@@ -508,7 +508,7 @@ mad_status DIGENTRY MADImpRegSetDisplayModify( const mad_reg_set_data *rsd, cons
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
+mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *cur )
 {
     unsigned_64 new_ip;
     unsigned_8  *p_old;
@@ -542,7 +542,7 @@ mad_status DIGENTRY MADImpRegModified( const mad_reg_set_data *rsd, const mad_re
     return( MS_OK );
 }
 
-mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_registers *mr, address *a )
+mad_status MADIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
     unsigned    bit_start;
     unsigned_32 *p;
@@ -564,12 +564,12 @@ mad_status DIGENTRY MADImpRegInspectAddr( const mad_reg_info *ri, const mad_regi
     return( MS_OK );
 }
 
-const mad_toggle_strings *DIGENTRY MADImpRegSetDisplayToggleList( const mad_reg_set_data *rsd )
+const mad_toggle_strings *MADIMPENTRY( RegSetDisplayToggleList )( const mad_reg_set_data *rsd )
 {
     return( rsd->togglelist );
 }
 
-unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on, unsigned off )
+unsigned MADIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
     unsigned    toggle;
     unsigned    *bits;
@@ -593,7 +593,7 @@ unsigned DIGENTRY MADImpRegSetDisplayToggle( const mad_reg_set_data *rsd, unsign
     return( *bits );
 }
 
-walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
+walk_result MADIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
     const axp_reg_info  *curr;
     walk_result         wr;
@@ -633,7 +633,7 @@ walk_result DIGENTRY MADImpRegWalk( const mad_reg_set_data *rsd, const mad_reg_i
     return( WR_CONTINUE );
 }
 
-void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
+void MADIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, addr_ptr *ma )
 {
     ma->segment = 0;
     switch( sr ) {
@@ -654,7 +654,7 @@ void DIGENTRY MADImpRegSpecialGet( mad_special_reg sr, const mad_registers *mr, 
     }
 }
 
-void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
+void MADIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const addr_ptr *ma )
 {
     switch( sr ) {
     case MSR_IP:
@@ -674,7 +674,7 @@ void DIGENTRY MADImpRegSpecialSet( mad_special_reg sr, mad_registers *mr, const 
     }
 }
 
-size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
+size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
     unsigned    idx;
     size_t      len;
@@ -722,7 +722,7 @@ size_t DIGENTRY MADImpRegSpecialName( mad_special_reg sr, const mad_registers *m
 }
 
 
-const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
+const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
 {
     const mad_reg_info  *reg;
 
@@ -737,7 +737,7 @@ const mad_reg_info *DIGENTRY MADImpRegFromContextItem( context_item ci )
     return( reg );
 }
 
-void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void MADIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     bit_size = bit_size;
     bit_start = bit_start;
@@ -745,7 +745,7 @@ void DIGENTRY MADImpRegUpdateStart( mad_registers *mr, unsigned flags, unsigned 
     mr = mr;
 }
 
-void DIGENTRY MADImpRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
+void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
     unsigned    i;
     unsigned    bit_end;

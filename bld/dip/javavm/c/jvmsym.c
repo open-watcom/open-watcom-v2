@@ -169,7 +169,7 @@ static walk_result WalkSymGlue( imp_image_handle *ii, sym_walk_info swi,
 }
 
 
-walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
                 symbol_source ss, void *source, IMP_SYM_WKR *wk,
                 imp_sym_handle *is, void *d )
 {
@@ -235,7 +235,7 @@ walk_result     DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii,
                         imp_sym_handle *is )
 {
     return( IMH_JAVA );
@@ -381,7 +381,7 @@ static unsigned Demangle( char *name, unsigned len, ji_ptr sig_ptr )
     return( len );
 }
 
-size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     symbol_name sn, char *buff, size_t buff_size )
 {
@@ -406,7 +406,7 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
     return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
-dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it )
 {
     it->sig = GetSignature( ii, is );
@@ -533,7 +533,7 @@ dip_status ImpSymLocation( imp_image_handle *ii, imp_sym_handle *is,
     return( FollowObject( sig, ll, obj_handle ) );
 }
 
-dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     ji_ptr      handle;
@@ -541,7 +541,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
     return( ImpSymLocation( ii, is, lc, ll, &handle ) );
 }
 
-dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, void *buff )
 {
     return( DS_FAIL );
@@ -559,7 +559,7 @@ dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
 //    addr_off          prolog_size;
 //    addr_off          epilog_size;
 
-dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 {
     unsigned    acc;
@@ -593,14 +593,14 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
     return( DS_OK );
 }
 
-dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
     return( DS_FAIL );
 }
 
-dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     struct methodblock  method;
@@ -624,7 +624,7 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
@@ -657,7 +657,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
     return( DS_FAIL );
 }
 
-search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
     search_result       sr;
@@ -761,7 +761,7 @@ static search_result CheckScopeName( struct lookup_data *ld )
     return( SR_EXACT );
 }
 
-search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 {
     struct lookup_data  data;
@@ -965,7 +965,7 @@ static search_result FindAScope( imp_image_handle *ii, scope_block *scope )
     return( (best.pc == off) ? SR_EXACT : SR_CLOSEST );
 }
 
-search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
                 imp_mod_handle im, address a, scope_block *scope )
 {
 
@@ -974,7 +974,7 @@ search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
     return( FindAScope( ii, scope ) );
 }
 
-search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 {
     if( in->unique == OBJECT_SCOPE ) return( SR_NONE );
@@ -982,7 +982,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
     return( FindAScope( ii, out ) );
 }
 
-int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 {
     if( is1->u.fb < is2->u.fb ) return( -1 );

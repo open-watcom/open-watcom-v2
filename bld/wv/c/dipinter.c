@@ -55,12 +55,14 @@
 
 #include "clibext.h"
 
+#define WVImp(n)            WVImp ## n
+#define WVIMPENTRY(n)       DIGREGISTER WVImp( n )
 
 /*
  * Client support routines
  */
 
-void DIGCLIENT DIPCliImageUnload( mod_handle mh )
+void DIPCLIENTRY( ImageUnload )( mod_handle mh )
 {
     image_entry         *image;
 
@@ -70,7 +72,7 @@ void DIGCLIENT DIPCliImageUnload( mod_handle mh )
     }
 }
 
-void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *d )
+void DIPCLIENTRY( MapAddr )( addr_ptr *addr, void *d )
 {
     image_entry         *id = d;
 
@@ -88,7 +90,7 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
     return( SL2ISH( new_sl ) );
 }
 
-imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *iih, void *d )
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *iih, void *d )
 {
     return( DoSymCreate( iih, (sym_list **)d ) );
 }
@@ -134,7 +136,7 @@ dip_status RegLocation( machine_state *regs, const mad_reg_info *ri, location_li
     return( DS_OK );
 }
 
-dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
+dip_status DIPCLIENTRY( ItemLocation )( location_context *lc, context_item ci,
                          location_list *ll )
 {
     sym_info            info;
@@ -210,29 +212,29 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context *lc, context_item ci,
     return( RegLocation( lc->regs, MADRegFromContextItem( ci ), ll ) );
 }
 
-dip_status DIGCLIENT DIPCliAssignLocation( location_list *dst,
+dip_status DIPCLIENTRY( AssignLocation )( location_list *dst,
                         location_list *src, unsigned long size )
 {
     return( LocationAssign( dst, src, size, false ) );
 }
 
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
+dip_status DIPCLIENTRY( SameAddrSpace )( address a, address b )
 {
     return( SameAddrSpace( a, b ) ? DS_OK : DS_FAIL );
 }
 
-void DIGCLIENT DIPCliAddrSection( address *addr )
+void DIPCLIENTRY( AddrSection )( address *addr )
 {
     AddrSection( addr, OVL_MAP_CURR );
 }
 
 
-void DIGCLIENT DIPCliStatus( dip_status status )
+void DIPCLIENTRY( Status )( dip_status status )
 {
     DIPStatus = status;
 }
 
-dig_mad DIGCLIENT DIPCliCurrMAD( void )
+dig_mad DIPCLIENTRY( CurrMAD )( void )
 {
     return( SysConfig.mad );
 }
@@ -269,9 +271,9 @@ search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch )
  * Internal symbol table interface routines
  */
 
-static char     WVName[] = "Debugger Internal";
+static char     WVImp( Name )[] = "Debugger Internal";
 
-static unsigned DIGREGISTER WVHandleSize( handle_kind hk )
+static unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
 {
     static const unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    wih,
@@ -281,52 +283,52 @@ static unsigned DIGREGISTER WVHandleSize( handle_kind hk )
     return( Sizes[hk] );
 }
 
-static dip_status DIGREGISTER WVMoreMem( unsigned amount )
+static dip_status WVIMPENTRY( MoreMem )( unsigned amount )
 {
     amount = amount;
     return( DS_FAIL );
 }
 
 #if 0
-static dip_status DIGREGISTER WVStartup( void )
+static dip_status WVIMPENTRY( Startup )( void )
 {
     return( DS_OK );
 }
 #endif
 
-static void DIGREGISTER WVShutdown( void )
+static void WVIMPENTRY( Shutdown )( void )
 {
 }
 
-static void DIGREGISTER WVCancel( void )
+static void WVIMPENTRY( Cancel )( void )
 {
 }
 
-static dip_status DIGREGISTER WVLoadInfo( dig_fhandle dfh, imp_image_handle *ii )
+static dip_status WVIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 {
     dfh = dfh;
     ii = ii;
     return( DS_FAIL );
 }
 
-static void DIGREGISTER WVMapInfo( imp_image_handle *ii, void *d )
+static void WVIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     ii = ii; d = d;
 }
 
-static void DIGREGISTER WVUnloadInfo( imp_image_handle *ii )
+static void WVIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     ii = ii;
 }
 
-static walk_result DIGREGISTER WVWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+static walk_result WVIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
 {
     return( wk( ii, WV_INT_MH, d ) );
 }
 
 static const char InternalName[] = "_dbg";
 
-static size_t DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im, char *name, size_t max )
+static size_t WVIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im, char *name, size_t max )
 {
     size_t  len;
 
@@ -343,13 +345,13 @@ static size_t DIGREGISTER WVModName( imp_image_handle *ii, imp_mod_handle im, ch
 }
 
 
-static char *DIGREGISTER WVModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+static char *WVIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     ii = ii; im = im;
     return( LIT_ENG( Empty ) );
 }
 
-static dip_status DIGREGISTER WVModInfo( imp_image_handle *ii, imp_mod_handle im,
+static dip_status WVIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im,
                         handle_kind hk )
 {
     static const dip_status Kinds[] = { DS_FAIL, DS_OK, DS_FAIL, DS_OK };
@@ -358,7 +360,7 @@ static dip_status DIGREGISTER WVModInfo( imp_image_handle *ii, imp_mod_handle im
     return( Kinds[hk] );
 }
 
-static dip_status DIGREGISTER WVModDefault( imp_image_handle *ii, imp_mod_handle im,
+static dip_status WVIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
                         handle_kind dk, dip_type_info *ti )
 {
     /* never called */
@@ -366,33 +368,33 @@ static dip_status DIGREGISTER WVModDefault( imp_image_handle *ii, imp_mod_handle
     return( DS_FAIL );
 }
 
-static search_result DIGREGISTER WVAddrMod( imp_image_handle *ii, address a, imp_mod_handle *imp )
+static search_result WVIMPENTRY( AddrMod )( imp_image_handle *ii, address a, imp_mod_handle *imp )
 {
     ii = ii; a = a; imp = imp;
     return( SR_NONE );
 }
 
-static address DIGREGISTER WVModAddr( imp_image_handle *ii, imp_mod_handle im )
+static address WVIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
 {
     ii = ii; im = im;
     return( NilAddr );
 }
 
 
-static walk_result DIGREGISTER WVWalkTypeList( imp_image_handle *ii, imp_mod_handle im,
+static walk_result WVIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im,
                         IMP_TYPE_WKR *wk, imp_type_handle *it, void *d )
 {
     ii = ii; im = im; wk = wk, it=it, d = d;
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle DIGREGISTER WVTypeMod( imp_image_handle *ii, imp_type_handle *it )
+static imp_mod_handle WVIMPENTRY( TypeMod )( imp_image_handle *ii, imp_type_handle *it )
 {
     ii = ii; it = it;
     return( WV_INT_MH );
 }
 
-static dip_status DIGREGISTER WVTypeInfo( imp_image_handle *ii, imp_type_handle *it,
+static dip_status WVIMPENTRY( TypeInfo )( imp_image_handle *ii, imp_type_handle *it,
                         location_context *lc, dip_type_info *ti )
 {
 
@@ -407,7 +409,7 @@ static dip_status DIGREGISTER WVTypeInfo( imp_image_handle *ii, imp_type_handle 
     return( DS_OK );
 }
 
-static dip_status DIGREGISTER WVTypeBase( imp_image_handle *ii, imp_type_handle *src_it,
+static dip_status WVIMPENTRY( TypeBase )( imp_image_handle *ii, imp_type_handle *src_it,
                                 imp_type_handle *dst_it )
 {
     ii = ii;
@@ -415,7 +417,7 @@ static dip_status DIGREGISTER WVTypeBase( imp_image_handle *ii, imp_type_handle 
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVTypeBaseLocation( imp_image_handle *ii, imp_type_handle *src_it,
+static dip_status WVIMPENTRY( TypeBaseLocation )( imp_image_handle *ii, imp_type_handle *src_it,
                     imp_type_handle *dst_it, location_context *lc, location_list *ll )
 {
     ii = ii; lc = lc; ll = ll;
@@ -423,7 +425,7 @@ static dip_status DIGREGISTER WVTypeBaseLocation( imp_image_handle *ii, imp_type
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVTypeArrayInfo( imp_image_handle *ii, imp_type_handle *it,
+static dip_status WVIMPENTRY( TypeArrayInfo )( imp_image_handle *ii, imp_type_handle *it,
                 location_context *lc, array_info *ai, imp_type_handle *index_it )
 {
     /* will never get called */
@@ -431,7 +433,7 @@ static dip_status DIGREGISTER WVTypeArrayInfo( imp_image_handle *ii, imp_type_ha
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVTypeProcInfo( imp_image_handle *ii, imp_type_handle *it,
+static dip_status WVIMPENTRY( TypeProcInfo )( imp_image_handle *ii, imp_type_handle *it,
                 imp_type_handle *parm_it, unsigned parm )
 {
     /* will never get called */
@@ -439,7 +441,7 @@ static dip_status DIGREGISTER WVTypeProcInfo( imp_image_handle *ii, imp_type_han
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVTypePtrAddrSpace( imp_image_handle *ii, imp_type_handle *it,
+static dip_status WVIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii, imp_type_handle *it,
                         location_context *lc, address *addr )
 {
     /* will never get called */
@@ -447,7 +449,7 @@ static dip_status DIGREGISTER WVTypePtrAddrSpace( imp_image_handle *ii, imp_type
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVTypeThunkAdjust( imp_image_handle *ii, imp_type_handle *obj_it,
+static dip_status WVIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii, imp_type_handle *obj_it,
                 imp_type_handle *member_it, location_context *lc, address *a )
 {
     /* will never get called */
@@ -455,14 +457,14 @@ static dip_status DIGREGISTER WVTypeThunkAdjust( imp_image_handle *ii, imp_type_
     return( DS_FAIL );
 }
 
-static walk_result DIGREGISTER WVWalkSymList( imp_image_handle *ii, symbol_source ss,
+static walk_result WVIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
                     void *src, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
 {
     ii = ii; ss = ss; src = src; wk = wk; is = is; d = d;
     return( WR_CONTINUE );
 }
 
-static walk_result DIGREGISTER WVWalkSymListEx( imp_image_handle *ii, symbol_source ss,
+static walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
                     void *src, IMP_SYM_WKR *wk, imp_sym_handle *is,
                     location_context *lc, void *d )
 {
@@ -470,13 +472,13 @@ static walk_result DIGREGISTER WVWalkSymListEx( imp_image_handle *ii, symbol_sou
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle DIGREGISTER WVSymMod( imp_image_handle *ii, imp_sym_handle *is )
+static imp_mod_handle WVIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii = ii; is = is;
     return( WV_INT_MH );
 }
 
-static size_t DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
+static size_t WVIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc,
                         symbol_name sn, char *name, size_t max )
 {
@@ -503,7 +505,7 @@ static size_t DIGREGISTER WVSymName( imp_image_handle *ii, imp_sym_handle *is,
     return( len );
 }
 
-static dip_status DIGREGISTER WVSymType( imp_image_handle *ii, imp_sym_handle *is,
+static dip_status WVIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
                         imp_type_handle *it )
 {
     ii = ii;
@@ -517,7 +519,7 @@ static dip_status DIGREGISTER WVSymType( imp_image_handle *ii, imp_sym_handle *i
     return( DS_OK );
 }
 
-static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handle *is,
+static dip_status WVIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, location_list *ll )
 {
     const wv_sym_entry  *se;
@@ -543,7 +545,7 @@ static dip_status DIGREGISTER WVSymLocation( imp_image_handle *ii, imp_sym_handl
     return( DS_OK );
 }
 
-static dip_status DIGREGISTER WVSymValue( imp_image_handle *ii, imp_sym_handle *is,
+static dip_status WVIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, void *d )
 {
     ii = ii; lc = lc;
@@ -553,7 +555,7 @@ static dip_status DIGREGISTER WVSymValue( imp_image_handle *ii, imp_sym_handle *
     return( DS_OK );
 }
 
-static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *is,
+static dip_status WVIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, sym_info *si )
 {
     memset( si, 0, sizeof( *si ) );
@@ -577,7 +579,7 @@ static dip_status DIGREGISTER WVSymInfo( imp_image_handle *ii, imp_sym_handle *i
     return( DS_OK );
 }
 
-static dip_status DIGREGISTER WVSymParmLocation( imp_image_handle *ii, imp_sym_handle *proc_is,
+static dip_status WVIMPENTRY( SymParmLocation )( imp_image_handle *ii, imp_sym_handle *proc_is,
                     location_context *lc, location_list *ll, unsigned parm )
 {
     /* will never get called */
@@ -585,7 +587,7 @@ static dip_status DIGREGISTER WVSymParmLocation( imp_image_handle *ii, imp_sym_h
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVSymObjType( imp_image_handle *ii, imp_sym_handle *proc_is,
+static dip_status WVIMPENTRY( SymObjType )( imp_image_handle *ii, imp_sym_handle *proc_is,
                     imp_type_handle *it, dip_type_info *ti )
 {
     /* will never get called */
@@ -593,7 +595,7 @@ static dip_status DIGREGISTER WVSymObjType( imp_image_handle *ii, imp_sym_handle
     return( DS_FAIL );
 }
 
-static dip_status DIGREGISTER WVSymObjLocation( imp_image_handle *ii, imp_sym_handle *proc_is,
+static dip_status WVIMPENTRY( SymObjLocation )( imp_image_handle *ii, imp_sym_handle *proc_is,
                     location_context *lc, location_list *ll )
 {
     /* will never get called */
@@ -601,7 +603,7 @@ static dip_status DIGREGISTER WVSymObjLocation( imp_image_handle *ii, imp_sym_ha
     return( DS_FAIL );
 }
 
-static search_result DIGREGISTER WVAddrSym( imp_image_handle *ii, imp_mod_handle im,
+static search_result WVIMPENTRY( AddrSym )( imp_image_handle *ii, imp_mod_handle im,
                         address addr, imp_sym_handle *is )
 {
     ii = ii; im = im; addr = addr; is = is;
@@ -647,20 +649,20 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     return( SR_EXACT );
 }
 
-static search_result DIGREGISTER WVLookupSym( imp_image_handle *ii,
+static search_result WVIMPENTRY( LookupSym )( imp_image_handle *ii,
                 symbol_source ss, void *src, lookup_item *li, void *d )
 {
     return( DoLookupSym( ii, ss, src, li, NULL, (sym_list **)d ) );
 }
 
-static search_result DIGREGISTER WVLookupSymEx( imp_image_handle *ii,
+static search_result WVIMPENTRY( LookupSymEx )( imp_image_handle *ii,
                 symbol_source ss, void *src, lookup_item *li,
                 location_context *lc, void *d )
 {
     return( DoLookupSym( ii, ss, src, li, lc, (sym_list **)d ) );
 }
 
-static search_result DIGREGISTER WVAddrScope( imp_image_handle *ii, imp_mod_handle im,
+static search_result WVIMPENTRY( AddrScope )( imp_image_handle *ii, imp_mod_handle im,
                         address pos, scope_block *scope )
 {
     /* never called */
@@ -668,7 +670,7 @@ static search_result DIGREGISTER WVAddrScope( imp_image_handle *ii, imp_mod_hand
     return( SR_NONE );
 }
 
-static search_result DIGREGISTER WVScopeOuter( imp_image_handle *ii, imp_mod_handle im,
+static search_result WVIMPENTRY( ScopeOuter )( imp_image_handle *ii, imp_mod_handle im,
                         scope_block *in, scope_block *out )
 {
     /* never called */
@@ -677,21 +679,21 @@ static search_result DIGREGISTER WVScopeOuter( imp_image_handle *ii, imp_mod_han
 }
 
 
-static walk_result DIGREGISTER WVWalkFileList( imp_image_handle *ii, imp_mod_handle im,
+static walk_result WVIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
             IMP_CUE_WKR *wk, imp_cue_handle *ic, void *d )
 {
     ii = ii; im = im; wk = wk; ic = ic; d = d;
     return( WR_CONTINUE );
 }
 
-static imp_mod_handle DIGREGISTER WVCueMod( imp_image_handle *ii, imp_cue_handle *ic )
+static imp_mod_handle WVIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
     return( WV_INT_MH );
 }
 
-static size_t DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
+static size_t WVIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic, char *name, size_t max )
 {
     /* will never get called */
     ii = ii; ic = ic; name = name; max = max;
@@ -699,14 +701,14 @@ static size_t DIGREGISTER WVCueFile( imp_image_handle *ii, imp_cue_handle *ic, c
 }
 
 
-static cue_fileid   DIGREGISTER WVCueFileId( imp_image_handle *ii, imp_cue_handle *ic )
+static cue_fileid   WVIMPENTRY( CueFileId )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
     return( 0 );
 }
 
-static dip_status DIGREGISTER WVCueAdjust( imp_image_handle *ii, imp_cue_handle *orig_ic,
+static dip_status WVIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *orig_ic,
                         int adj, imp_cue_handle *adj_ic )
 {
     /* will never get called */
@@ -714,21 +716,21 @@ static dip_status DIGREGISTER WVCueAdjust( imp_image_handle *ii, imp_cue_handle 
     return( DS_FAIL );
 }
 
-static unsigned long DIGREGISTER WVCueLine( imp_image_handle *ii, imp_cue_handle *ic )
+static unsigned long WVIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
     return( 0 );
 }
 
-static unsigned DIGREGISTER WVCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+static unsigned WVIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
     return( 0 );
 }
 
-static address DIGREGISTER WVCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+static address WVIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     /* will never get called */
     ii = ii; ic = ic;
@@ -736,14 +738,14 @@ static address DIGREGISTER WVCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
 }
 
 
-static search_result DIGREGISTER WVLineCue( imp_image_handle *ii,imp_mod_handle im, cue_fileid file,
+static search_result WVIMPENTRY( LineCue )( imp_image_handle *ii,imp_mod_handle im, cue_fileid file,
                     unsigned long line, unsigned column, imp_cue_handle *ic )
 {
     ii = ii; im=im; file = file; line = line; column = column; ic = ic;
     return( SR_NONE );
 }
 
-static search_result DIGREGISTER WVAddrCue( imp_image_handle *ii, imp_mod_handle im,
+static search_result WVIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
                                 address a, imp_cue_handle *ic )
 {
     ii = ii; im = im; a = a; ic = ic;
@@ -751,7 +753,7 @@ static search_result DIGREGISTER WVAddrCue( imp_image_handle *ii, imp_mod_handle
 }
 
 
-static int DIGREGISTER WVTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+static int WVIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
                         imp_type_handle *it2 )
 {
     /* never called */
@@ -760,7 +762,7 @@ static int DIGREGISTER WVTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 
-static int DIGREGISTER WVSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+static int WVIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
     /* never called */
@@ -769,7 +771,7 @@ static int DIGREGISTER WVSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
 }
 
 
-static int DIGREGISTER WVCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+static int WVIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                         imp_cue_handle *ic2 )
 {
     /* never called */
@@ -778,7 +780,7 @@ static int DIGREGISTER WVCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
 }
 
 
-static size_t DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
+static size_t WVIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, size_t max )
 {
     ii = ii; it = it; num = num; tag = tag; buff = buff; max = max;
@@ -786,41 +788,41 @@ static size_t DIGREGISTER WVTypeName( imp_image_handle *ii, imp_type_handle *it,
 }
 
 
-dip_status DIGREGISTER WVTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+static dip_status WVIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return( DS_OK );
 }
 
-dip_status DIGREGISTER WVTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+static dip_status WVIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return( DS_OK );
 }
 
-dip_status DIGREGISTER WVTypeFreeAll( imp_image_handle *ii )
+static dip_status WVIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
 {
     ii=ii;
     return( DS_OK );
 }
 
-dip_status DIGREGISTER WVSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
-{
-    ii=ii;
-    is=is;
-    return( DS_OK );
-}
-
-dip_status DIGREGISTER WVSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+static dip_status WVIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return( DS_OK );
 }
 
-dip_status DIGREGISTER WVSymFreeAll( imp_image_handle *ii )
+static dip_status WVIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
+{
+    ii=ii;
+    is=is;
+    return( DS_OK );
+}
+
+static dip_status WVIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
     ii=ii;
     return( DS_OK );
@@ -830,76 +832,76 @@ static dip_imp_routines InternalInterface = {
     DIP_MAJOR,
     DIP_MINOR,
     DIP_PRIOR_EXPORTS,
-    WVName,
+    WVImp( Name ),
 
-    WVHandleSize,
-    WVMoreMem,
-    WVShutdown,
-    WVCancel,
+    WVImp( HandleSize ),
+    WVImp( MoreMem ),
+    WVImp( Shutdown ),
+    WVImp( Cancel ),
 
-    WVLoadInfo,
-    WVMapInfo,
-    WVUnloadInfo,
+    WVImp( LoadInfo ),
+    WVImp( MapInfo ),
+    WVImp( UnloadInfo ),
 
-    WVWalkModList,
-    WVModName,
-    WVModSrcLang,
-    WVModInfo,
-    WVModDefault,
-    WVAddrMod,
-    WVModAddr,
+    WVImp( WalkModList ),
+    WVImp( ModName ),
+    WVImp( ModSrcLang ),
+    WVImp( ModInfo ),
+    WVImp( ModDefault ),
+    WVImp( AddrMod ),
+    WVImp( ModAddr ),
 
-    WVWalkTypeList,
-    WVTypeMod,
-    WVTypeInfo,
-    WVTypeBase,
-    WVTypeArrayInfo,
-    WVTypeProcInfo,
-    WVTypePtrAddrSpace,
-    WVTypeThunkAdjust,
-    WVTypeCmp,
-    WVTypeName,
+    WVImp( WalkTypeList ),
+    WVImp( TypeMod ),
+    WVImp( TypeInfo ),
+    WVImp( TypeBase ),
+    WVImp( TypeArrayInfo ),
+    WVImp( TypeProcInfo ),
+    WVImp( TypePtrAddrSpace ),
+    WVImp( TypeThunkAdjust ),
+    WVImp( TypeCmp ),
+    WVImp( TypeName ),
 
-    WVWalkSymList,
-    WVSymMod,
-    WVSymName,
-    WVSymType,
-    WVSymLocation,
-    WVSymValue,
-    WVSymInfo,
-    WVSymParmLocation,
-    WVSymObjType,
-    WVSymObjLocation,
-    WVAddrSym,
-    WVLookupSym,
-    WVAddrScope,
-    WVScopeOuter,
-    WVSymCmp,
+    WVImp( WalkSymList ),
+    WVImp( SymMod ),
+    WVImp( SymName ),
+    WVImp( SymType ),
+    WVImp( SymLocation ),
+    WVImp( SymValue ),
+    WVImp( SymInfo ),
+    WVImp( SymParmLocation ),
+    WVImp( SymObjType ),
+    WVImp( SymObjLocation ),
+    WVImp( AddrSym ),
+    WVImp( LookupSym ),
+    WVImp( AddrScope ),
+    WVImp( ScopeOuter ),
+    WVImp( SymCmp ),
 
-    WVWalkFileList,
-    WVCueMod,
-    WVCueFile,
-    WVCueFileId,
-    WVCueAdjust,
-    WVCueLine,
-    WVCueColumn,
-    WVCueAddr,
-    WVLineCue,
-    WVAddrCue,
-    WVCueCmp,
+    WVImp( WalkFileList ),
+    WVImp( CueMod ),
+    WVImp( CueFile ),
+    WVImp( CueFileId ),
+    WVImp( CueAdjust ),
+    WVImp( CueLine ),
+    WVImp( CueColumn ),
+    WVImp( CueAddr ),
+    WVImp( LineCue ),
+    WVImp( AddrCue ),
+    WVImp( CueCmp ),
 
-    WVTypeBaseLocation,
+    WVImp( TypeBaseLocation ),
 
-    WVTypeAddRef,
-    WVTypeRelease,
-    WVTypeFreeAll,
+    WVImp( TypeAddRef ),
+    WVImp( TypeRelease ),
+    WVImp( TypeFreeAll ),
 
-    WVSymAddRef,
-    WVSymRelease,
-    WVSymFreeAll,
+    WVImp( SymAddRef ),
+    WVImp( SymRelease ),
+    WVImp( SymFreeAll ),
 
-    WVWalkSymListEx,
-    WVLookupSymEx,
+    WVImp( WalkSymListEx ),
+    WVImp( LookupSymEx ),
 };
 
 static char **DIPErrTxt[] = {
@@ -1006,7 +1008,7 @@ void FiniDbgInfo( void )
 
 bool IsInternalMod( mod_handle mod )
 {
-    return( ImageDIP( mod ) == WVName );
+    return( ImageDIP( mod ) == WVImp( Name ) );
 }
 
 bool IsInternalModName( const char *start, size_t len )

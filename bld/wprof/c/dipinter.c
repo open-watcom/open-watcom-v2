@@ -59,24 +59,24 @@ STATIC dip_status   DIPStatus;
 
 
 
-void DIGCLIENT DIPCliImageUnload( mod_handle mh )
-/***********************************************/
+void DIPCLIENTRY( ImageUnload )( mod_handle mh )
+/**********************************************/
 {
     mh=mh;
 }
 
 
 
-void DIGCLIENT DIPCliMapAddr( addr_ptr * addr, void * d )
-/*******************************************************/
+void DIPCLIENTRY( MapAddr )( addr_ptr * addr, void * d )
+/******************************************************/
 {
     MapAddressToActual( (image_info *)d, addr );
 }
 
 
 
-imp_sym_handle * DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
-/*************************************************************************/
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
+/***********************************************************************/
 {
     ih=ih;
     d=d;
@@ -85,7 +85,7 @@ imp_sym_handle * DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
 
 
 
-dip_status DIGCLIENT DIPCliItemLocation( location_context * lc,
+dip_status DIPCLIENTRY( ItemLocation )( location_context * lc,
                             context_item ci, location_list * ll )
 /***************************************************************/
 {
@@ -97,7 +97,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context * lc,
 
 
 
-dip_status DIGCLIENT DIPCliAssignLocation( location_list * dst,
+dip_status DIPCLIENTRY( AssignLocation )( location_list * dst,
                         location_list * src, unsigned long size )
 /***************************************************************/
 {
@@ -109,8 +109,8 @@ dip_status DIGCLIENT DIPCliAssignLocation( location_list * dst,
 
 
 
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
-/**************************************************************/
+dip_status DIPCLIENTRY( SameAddrSpace )( address a, address b )
+/*************************************************************/
 {
     if( a.sect_id == 0 ) {
         a.sect_id = b.sect_id;
@@ -126,22 +126,22 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
 
 
 
-void DIGCLIENT DIPCliAddrSection( address * addr )
-/************************************************/
+void DIPCLIENTRY( AddrSection )( address * addr )
+/***********************************************/
 {
     MapAddressIntoSection( addr );
 }
 
 
 
-void DIGCLIENT DIPCliStatus( dip_status status )
-/**********************************************/
+void DIPCLIENTRY( Status )( dip_status status )
+/*********************************************/
 {
     DIPStatus = status;
 }
 
-dig_mad DIGCLIENT DIPCliCurrMAD( void )
-/*************************************/
+dig_mad DIPCLIENTRY( CurrMAD )( void )
+/************************************/
 {
     return( CurrSIOData->config.mad );
 }

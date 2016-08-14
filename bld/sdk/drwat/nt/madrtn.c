@@ -47,7 +47,7 @@ msglist MADMsgs[] = {
     0 , (char *)(pointer_int)-1
 };
 
-unsigned DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len )
+unsigned MADCLIENTRY( String )( mad_string mstr, char *buff, unsigned buff_len )
 {
     unsigned len;
     char *msg;
@@ -64,7 +64,7 @@ unsigned DIGCLIENT MADCliString( mad_string mstr, char *buff, unsigned buff_len 
     return( len );
 }
 
-size_t DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len )
+size_t MADCLIENTRY( RadixPrefix )( mad_radix radix, char *buff, size_t buff_len )
 {
     char    msg[10];
     size_t  len;
@@ -89,7 +89,7 @@ size_t DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_len
     return( len );
 }
 
-void DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
+void MADCLIENTRY( Notify )( mad_notify_type nt, const void *d )
 {
     if( StatHdl == NULL ){
         return;
@@ -97,22 +97,7 @@ void DIGCLIENT MADCliNotify( mad_notify_type nt, const void *d )
     PostMessage( StatHdl, STAT_MAD_NOTIFY, (WPARAM)nt, (LPARAM)d );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-{
-    enum x86_addr_characteristics       *a_char;
-
-    switch( SysConfig.mad ) {
-    case MAD_X86:
-        a_char = out;
-        *a_char = X86AC_BIG;
-        return( sizeof( *a_char ) );
-    }
-    return( 0 );
-}
-
-mad_status DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
+mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
                             mad_label_kind lk, char *buff, unsigned buff_len )
 {
     mad_type_info       mti;
@@ -126,34 +111,50 @@ mad_status DIGCLIENT MADCliAddrToString( address a, mad_type_handle th,
     return( MS_OK );
 }
 
-mad_status DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address *a )
+mad_status MADCLIENTRY( MemExpr )( const char *expr, mad_radix radix, address *a )
 {
     //stub
     return( MS_OK );
 }
 
-void DIGCLIENT MADCliAddrSection( address *addr )
+void MADCLIENTRY( AddrSection )( address *addr )
 {
     //stub
 }
 
-mad_status      DIGCLIENT MADCliAddrOvlReturn( address *addr )
-{
-    //stub
-    return( MS_FAIL );
-}
-
-
-
-mad_status DIGCLIENT MADCliAddString( mad_string mstr, const char *str )
+mad_status      MADCLIENTRY( AddrOvlReturn )( address *addr )
 {
     //stub
     return( MS_FAIL );
 }
 
-system_config *DIGCLIENT MADCliSystemConfig( void )
+
+
+mad_status MADCLIENTRY( AddString )( mad_string mstr, const char *str )
+{
+    //stub
+    return( MS_FAIL );
+}
+
+system_config *MADCLIENTRY( SystemConfig )( void )
 {
     return &SysConfig;
+}
+
+size_t MADCLIENTRY( ReadMem )( address a, size_t size, void *buff )
+{
+    DWORD bytesread;
+
+    ReadProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &bytesread );
+    return( bytesread );
+}
+
+size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
+{
+    DWORD byteswritten;
+
+    WriteProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );
+    return( byteswritten );
 }
 
 BOOL InitMADInfo(void)

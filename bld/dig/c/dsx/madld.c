@@ -42,7 +42,7 @@
 
 void MADSysUnload( mad_sys_handle *sys_hdl )
 {
-    DIGCliFree( *sys_hdl );
+    DIGCli( Free )( *sys_hdl );
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli,
@@ -72,7 +72,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCliFree( (void *)mad );
+        DIGCli( Free )( (void *)mad );
     }
     return( status );
 }

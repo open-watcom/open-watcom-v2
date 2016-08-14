@@ -46,7 +46,7 @@
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
-    DIGCliFree( (void *)*sys_hdl );
+    DIGCli( Free )( (void *)*sys_hdl );
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
@@ -84,7 +84,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCliFree( (void *)dip );
+        DIGCli( Free )( (void *)dip );
     }
     return( status );
 }

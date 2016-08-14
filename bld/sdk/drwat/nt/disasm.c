@@ -152,7 +152,7 @@ void Disassemble( address *addr, char *buf,int addbytes, unsigned max )
     if( addbytes  ) {
         ins_size = MADDisasmInsSize( MDData );
         item = alloca( ins_size );
-        MADCliReadMem( temp, ins_size, item );
+        MADCli( ReadMem )( temp, ins_size, item );
         for( i = 0; i < ins_size || i < MAX_INSTR_BYTES; i++ ) {
             if( i < ins_size ) {
                 sprintf( tail,"%02x", item[i] );

@@ -51,7 +51,7 @@ extra_l_flags = option quiet name $(exc_name)
 extra_l_flags_nt_axp = op start=WinMainCRTStartup ref WinMainCRTStartup
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
-extra_proj_obj_nt = global.obj param.obj procctl.obj dipcli.obj memory.obj &
+extra_proj_obj_nt = global.obj param.obj procctl.obj memory.obj &
             drproc.obj handler.obj memview.obj proclist.obj thrdctl.obj &
             pefile.obj autoget.obj lddips.obj memwndcd.obj &
             madrtn.obj madsys1.obj regstr.obj reglist.obj bitman.obj &
@@ -75,7 +75,7 @@ proj_obj =  listbox.obj log.obj stat.obj lognote.obj &
             drwatcom.obj sym.obj profile.obj fault.obj &
             disasm.obj &
             $(extra_proj_obj_$(host_os)) &
-            $(dip_objs)
+            $(dip_objs) dipcli.obj digcli.obj
 
 .asm : .
 .c : ../$(host_os);../c;$(dig_srcs);$(mad_srcs);$(dis_srcs)

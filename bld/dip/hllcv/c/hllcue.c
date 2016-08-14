@@ -196,7 +196,7 @@ static void *hllGetSortedLinnums( imp_image_handle *ii, imp_cue_handle *ic )
 /*
  * Walk the list of source files of a module.
  */
-walk_result DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
                                          imp_mod_handle im, IMP_CUE_WKR *wk,
                                          imp_cue_handle *ic, void *d )
 {
@@ -637,7 +637,7 @@ walk_result DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
 /*
  * Get the module of a cue.
  */
-imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     ii = ii;
     return( ic->im );
@@ -646,7 +646,7 @@ imp_mod_handle DIGENTRY DIPImpCueMod( imp_image_handle *ii, imp_cue_handle *ic )
 /*
  * Get the filename of a cue.
  */
-size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic,
                                  char *buff, size_t buff_size )
 {
     unsigned_8  name_len;
@@ -663,7 +663,7 @@ size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
 /*
  * Get the 'file id'.
  */
-cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                                       imp_cue_handle *ic )
 {
     ii = ii;
@@ -673,7 +673,7 @@ cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
 /*
  * Get the linenumber.
  */
-unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
                                         imp_cue_handle *ic )
 {
     unsigned_8 * entries;
@@ -726,7 +726,7 @@ unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
 /*
  * Get the column number - we've got no such information.
  */
-unsigned DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     ii = ii; ic = ic;
     return( 0 );
@@ -735,7 +735,7 @@ unsigned DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
 /*
  * Get the address.
  */
-address DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     unsigned_8 *entries;
     address     addr;
@@ -812,7 +812,7 @@ address DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
  * Reminder: A cue is a source file location. For HLL/CV it's a line for
  *           which code was generated.
  */
-dip_status DIGENTRY DIPImpCueAdjust( imp_image_handle *ii, imp_cue_handle *ic,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *ic,
                                      int adj, imp_cue_handle *aic )
 {
     dip_status rc;
@@ -1008,7 +1008,7 @@ static walk_result hllFindLineCueInFile( imp_image_handle *ii, imp_cue_handle *i
  * passed in values and return SR_CLOSEST. If there are no cues with
  * the proper characteristics, return SR_NONE
  */
-search_result DIGENTRY DIPImpLineCue( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
                                       cue_fileid file, unsigned long line,
                                       unsigned column, imp_cue_handle *ic )
 {
@@ -1155,7 +1155,7 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
  * return SR_NONE. If there is one exactly at the address return
  * SR_EXACT. Otherwise, return SR_CLOSEST.
  */
-search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii, imp_mod_handle im,
                                       address addr, imp_cue_handle *ic )
 {
     /*
@@ -1201,7 +1201,7 @@ search_result DIGENTRY DIPImpAddrCue( imp_image_handle *ii, imp_mod_handle im,
  * The reason for the constraints is so that a client can sort a list of handles
  * and binary search them.
  */
-int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                            imp_cue_handle *ic2 )
 {
     ii = ii;

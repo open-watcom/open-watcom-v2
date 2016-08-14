@@ -287,27 +287,27 @@ int WantUsage( const char *ptr )
 
 
 
-void *DIGCliAlloc( unsigned amount )
+void *DIGCLIENTRY( Alloc )( unsigned amount )
 {
     return( malloc( amount ) );
 }
 
-void DIGCliFree( void *p )
+void DIGCLIENTRY( Free )( void *p )
 {
    free( p );
 }
 
-unsigned long DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
-    return( lseek( h, p, k ) );
+    return( lseek( (int)dfh, p, k ) );
 }
 
-size_t DIGCliRead( dig_fhandle h, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
 {
-    return( read( h, b, s ) );
+    return( read( (int)dfh, b, s ) );
 }
 
-void DIGCliClose( dig_fhandle h )
+void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    close( h );
+    close( (int)dfh );
 }

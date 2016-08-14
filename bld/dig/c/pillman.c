@@ -60,21 +60,21 @@ static const pill_client_routines PILLClientInterface = {
     PILL_VERSION,
     sizeof( pill_client_routines ),
 
-    DIGCliAlloc,
-    DIGCliRealloc,
-    DIGCliFree,
+    DIGCli( Alloc ),
+    DIGCli( Realloc ),
+    DIGCli( Free ),
 
-    DIGCliOpen,
-    DIGCliSeek,
-    DIGCliRead,
-    DIGCliWrite,
-    DIGCliClose,
-    DIGCliRemove,
+    DIGCli( Open ),
+    DIGCli( Seek ),
+    DIGCli( Read ),
+    DIGCli( Write ),
+    DIGCli( Close ),
+    DIGCli( Remove ),
 
-    LinkCliBufferGet,
-    LinkCliBufferRel,
-    LinkCliReceived,
-    LinkCliState,
+    LinkCli( BufferGet ),
+    LinkCli( BufferRel ),
+    LinkCli( Received ),
+    LinkCli( State ),
 };
 
 /* for when LinkRegister is used */
@@ -92,7 +92,7 @@ link_handle     *LinkLoad( const char *name, link_message *msg )
     }
     len = strlen( name );
 
-    lh = DIGCliAlloc( sizeof( *lh ) + len );
+    lh = DIGCli( Alloc )( sizeof( *lh ) + len );
     if( lh == NULL ) {
         PILLSysNoMem( msg );
         return( NULL );
@@ -107,11 +107,11 @@ link_handle     *LinkLoad( const char *name, link_message *msg )
     if( !PILLSysLoad( name, &PILLClientInterface, lh, msg ) ) {
         if( msg->source == NULL ) {
             PILLList = lh->next;
-            DIGCliFree( lh );
+            DIGCli( Free )( lh );
         }
         return( NULL );
     }
-    if( !lh->rtns->LinkImpLoad( lh, msg ) ) {
+    if( !lh->rtns->Load( lh, msg ) ) {
         return( NULL );
     }
     return( lh );
@@ -121,7 +121,7 @@ link_handle     *LinkRegister( const pill_imp_routines *rtns, link_message *msg 
 {
     link_handle *lh;
 
-    lh = DIGCliAlloc( sizeof( *lh ) );
+    lh = DIGCli( Alloc )( sizeof( *lh ) );
     if( lh == NULL ) {
         PILLSysNoMem( msg );
         return( NULL );
@@ -133,7 +133,7 @@ link_handle     *LinkRegister( const pill_imp_routines *rtns, link_message *msg 
     lh->sys = NULL;
     lh->imp = NULL;
     lh->name[0] = '\0';
-    if( !lh->rtns->LinkImpLoad( lh, msg ) ) {
+    if( !lh->rtns->Load( lh, msg ) ) {
         return( NULL );
     }
     return( lh );
@@ -144,15 +144,15 @@ link_instance   *LinkInit( link_handle *lh, void *cookie, link_trigger *tp, cons
     link_instance       *li;
 
     if( parm == NULL ) parm = "";
-    li = DIGCliAlloc( sizeof( *li ) );
+    li = DIGCli( Alloc )( sizeof( *li ) );
     li->h = lh;
     li->cookie = cookie;
     li->tp = tp;
     li->ls = LS_INITIAL;
     LSuppQueueInit( &li->in );
     LSuppQueueInit( &li->out );
-    if( !lh->rtns->LinkImpInit( li, parm ) ) {
-        DIGCliFree( li );
+    if( !lh->rtns->Init( li, parm ) ) {
+        DIGCli( Free )( li );
         return( NULL );
     }
     li->next = lh->inst;
@@ -167,12 +167,12 @@ link_status     LinkStatus( link_instance *li )
 
 unsigned        LinkMaxSize( link_instance *li, unsigned req_size )
 {
-    return( li->h->rtns->LinkImpMaxSize( li, req_size ) );
+    return( li->h->rtns->MaxSize( li, req_size ) );
 }
 
 link_status     LinkPut( link_instance *li, link_buffer *data )
 {
-    return( li->h->rtns->LinkImpPut( li, data ) );
+    return( li->h->rtns->Put( li, data ) );
 }
 
 link_status     LinkPutMx( link_instance *li, unsigned num, const lmx_entry *put )
@@ -187,11 +187,11 @@ link_status     LinkPutMx( link_instance *li, unsigned num, const lmx_entry *put
     for( i = 0; i < num; ++i ) {
         total += put[i].len;
     }
-    buff = LinkCliBufferGet( li->cookie, total );
+    buff = LinkCli( BufferGet )( li->cookie, total );
     if( buff == NULL ) {
         PILLSysNoMem( &msg );
         li->ls = LS_FAILURE_TRANS;
-        LinkCliState( li->cookie, LS_FAILURE_TRANS, &msg );
+        LinkCli( State )( li->cookie, LS_FAILURE_TRANS, &msg );
         return( LS_FAILURE_TRANS );
     }
     buff->len = total;
@@ -200,7 +200,7 @@ link_status     LinkPutMx( link_instance *li, unsigned num, const lmx_entry *put
         memcpy( p, put[i].data, put[i].len );
         p += put[i].len;
     }
-    return( li->h->rtns->LinkImpPut( li, buff ) );
+    return( li->h->rtns->Put( li, buff ) );
 }
 
 unsigned        LinkKicker( void )
@@ -218,7 +218,7 @@ unsigned        LinkKicker( void )
     wait = PILL_KICK_WAIT;
     for( lh = PILLList; lh != NULL; lh = lh->next ) {
         for( li = lh->inst; li != NULL; li = li->next ) {
-            curr = lh->rtns->LinkImpKicker( li );
+            curr = lh->rtns->Kicker( li );
             if( curr < wait ) wait = curr;
         }
     }
@@ -238,14 +238,14 @@ static void KillInstance( link_instance *li )
         owner = &curr->next;
     }
     *owner = li->next;
-    DIGCliFree( li );
+    DIGCli( Free )( li );
 }
 
 link_status     LinkAbort( link_instance *li )
 {
     link_status         ls;
 
-    ls = li->h->rtns->LinkImpAbort( li );
+    ls = li->h->rtns->Abort( li );
     KillInstance( li );
     return( ls );
 }
@@ -254,7 +254,7 @@ link_status     LinkFini( link_instance *li )
 {
     link_status         ls;
 
-    ls = li->h->rtns->LinkImpFini( li );
+    ls = li->h->rtns->Fini( li );
     KillInstance( li );
     return( ls );
 }
@@ -264,7 +264,7 @@ unsigned        LinkMessage( const link_message *msg, pil_language pl, unsigned 
     unsigned    len;
 
     if( msg->source == NULL ) return( 0 );
-    len = msg->source->rtns->LinkImpMessage( msg, pl, max, buff );
+    len = msg->source->rtns->Message( msg, pl, max, buff );
     if( msg->source->inst == NULL ) {
         /* message when no instance active - something must have gone wrong
            with the load */
@@ -277,7 +277,7 @@ pill_private_func       *LinkPrivate( link_handle *lh, const char *string )
 {
     pill_private_func   *rtn;
 
-    rtn = lh->rtns->LinkImpPrivate( string );
+    rtn = lh->rtns->Private( string );
     if( rtn != NULL ) rtn = PILLSysFixFunc( lh, rtn );
     return( rtn );
 }
@@ -291,7 +291,7 @@ void            LinkUnload( link_handle *lh )
         LinkFini( lh->inst );
     }
     if( lh->rtns != NULL ) {
-        lh->rtns->LinkImpUnload( lh );
+        lh->rtns->Unload( lh );
     }
     if( lh->sys != NULL ) {
         PILLSysUnload( lh );
@@ -304,5 +304,5 @@ void            LinkUnload( link_handle *lh )
         owner = &curr->next;
     }
     *owner = lh->next;
-    DIGCliFree( lh );
+    DIGCli( Free )( lh );
 }

@@ -155,24 +155,24 @@ dip_client_routines DIPClientInterface = {
     DIP_MAJOR,
     DIP_MINOR_OLD,
     sizeof( dip_client_routines ),
-    DIGCliAlloc,
-    DIGCliRealloc,
-    DIGCliFree,
-    DIPCliMapAddr,
-    DIPCliSymCreate,
-    DIPCliItemLocation,
-    DIPCliAssignLocation,
-    DIPCliSameAddrSpace,
-    DIPCliAddrSection,
-    DIGCliOpen,
-    DIGCliSeek,
-    DIGCliRead,
-    DIGCliWrite,
-    DIGCliClose,
-    DIGCliRemove,
-    DIPCliStatus,
-    DIPCliCurrMAD,
-    DIGCliMachineData
+    DIGCli( Alloc ),
+    DIGCli( Realloc ),
+    DIGCli( Free ),
+    DIPCli( MapAddr ),
+    DIPCli( SymCreate ),
+    DIPCli( ItemLocation ),
+    DIPCli( AssignLocation ),
+    DIPCli( SameAddrSpace ),
+    DIPCli( AddrSection ),
+    DIGCli( Open ),
+    DIGCli( Seek ),
+    DIGCli( Read ),
+    DIGCli( Write ),
+    DIGCli( Close ),
+    DIGCli( Remove ),
+    DIPCli( Status ),
+    DIPCli( CurrMAD ),
+    DIGCli( MachineData )
 };
 
 
@@ -190,7 +190,7 @@ static void SetHdlSizes( dip_imp_routines *rtns )
     unsigned    size;
 
     for( hk = 0; hk < MAX_HK; ++hk ) {
-        size = rtns->QueryHandleSize( hk );
+        size = rtns->HandleSize( hk );
         if( size > MaxImpHdlSize[hk] ) {
             MaxImpHdlSize[hk] = size;
         }
@@ -326,9 +326,9 @@ static image_idx FindImageMapSlot( process_info *p )
         }
     }
     new_num = p->map_entries + IMAGE_MAP_GROW;
-    new = DIGCliRealloc( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
+    new = DIGCli( Realloc )( p->ih_map, new_num * sizeof( p->ih_map[0] ) );
     if( new == NULL ) {
-        DIPCliStatus( DS_ERR | DS_NO_MEM );
+        DIPCli( Status )( DS_ERR | DS_NO_MEM );
         return( NO_IMAGE_IDX );
     }
     ii = p->map_entries;
@@ -344,7 +344,7 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     image_handle        **owner;
     image_handle        *curr;
 
-    DIPCliImageUnload( MK_MH( ih->ii, 0 ) );
+    DIPCli( ImageUnload )( MK_MH( ih->ii, 0 ) );
     ih->dip->UnloadInfo( IH2IIH( ih ) );
     p->ih_map[ih->ii] = NULL;
     owner = &p->ih_list;
@@ -361,7 +361,7 @@ static void DIPCleanupInfo( process_info *p, image_handle *ih )
     if( ih->ii == p->last_addr_mod_found ) {
         p->last_addr_mod_found = NO_IMAGE_IDX;
     }
-    DIGCliFree( ih );
+    DIGCli( Free )( ih );
 }
 
 static void CleanupProcess( process_info *p, int unload )
@@ -376,11 +376,11 @@ static void CleanupProcess( process_info *p, int unload )
     } else {
         for( ih = p->ih_list; ih != NULL; ih = next ) {
             next = ih->next;
-            DIGCliFree( ih );
+            DIGCli( Free )( ih );
         }
     }
-    DIGCliFree( p->ih_map );
-    DIGCliFree( p );
+    DIGCli( Free )( p->ih_map );
+    DIGCli( Free )( p );
 }
 
 process_info *DIPCreateProcess( void )
@@ -390,16 +390,16 @@ process_info *DIPCreateProcess( void )
     image_idx           ii;
     int                 j;
 
-    p = DIGCliAlloc( sizeof( process_info ) );
+    p = DIGCli( Alloc )( sizeof( process_info ) );
     if( p == NULL ) {
-        DIPCliStatus( DS_ERR|DS_NO_MEM );
+        DIPCli( Status )( DS_ERR|DS_NO_MEM );
         return( NULL );
     }
     p->last_addr_mod_found = NO_IMAGE_IDX;
-    p->ih_map = DIGCliAlloc( IMAGE_MAP_INIT * sizeof( p->ih_map[0] ) );
+    p->ih_map = DIGCli( Alloc )( IMAGE_MAP_INIT * sizeof( p->ih_map[0] ) );
     if( p->ih_map == NULL ) {
-        DIGCliFree( p );
-        DIPCliStatus( DS_ERR|DS_NO_MEM );
+        DIGCli( Free )( p );
+        DIPCli( Status )( DS_ERR|DS_NO_MEM );
         return( NULL );
     }
     p->map_entries = IMAGE_MAP_INIT;
@@ -412,13 +412,13 @@ process_info *DIPCreateProcess( void )
             ii = FindImageMapSlot( p );
             if( ii == NO_IMAGE_IDX ) {
                 CleanupProcess( p, 0 );
-                DIPCliStatus( DS_ERR|DS_NO_MEM );
+                DIPCli( Status )( DS_ERR|DS_NO_MEM );
                 return( NULL );
             }
-            ih = DIGCliAlloc( sizeof( image_handle ) );
+            ih = DIGCli( Alloc )( sizeof( image_handle ) );
             if( ih == NULL ) {
                 CleanupProcess( p, 0 );
-                DIPCliStatus( DS_ERR|DS_NO_MEM );
+                DIPCli( Status )( DS_ERR|DS_NO_MEM );
                 return( NULL );
             }
             p->ih_map[ii] = ih;
@@ -481,15 +481,15 @@ mod_handle DIPLoadInfo( dig_fhandle dfh, unsigned extra, unsigned prio )
     dip_status          ret;
 
     if( ActProc == NULL ) {
-        DIPCliStatus( DS_ERR|DS_NO_PROCESS );
+        DIPCli( Status )( DS_ERR|DS_NO_PROCESS );
         return( NO_MOD );
     }
     ii = FindImageMapSlot( ActProc );
     if( ii == NO_IMAGE_IDX )
         return( NO_MOD );
-    ih = DIGCliAlloc( DIPHandleSize( HK_IMAGE, false ) + extra );
+    ih = DIGCli( Alloc )( DIPHandleSize( HK_IMAGE, false ) + extra );
     if( ih == NULL ) {
-        DIPCliStatus( DS_ERR|DS_NO_MEM );
+        DIPCli( Status )( DS_ERR|DS_NO_MEM );
         return( NO_MOD );
     }
     for( j = 0; j < MAX_DIPS; ++j ) {
@@ -513,7 +513,7 @@ mod_handle DIPLoadInfo( dig_fhandle dfh, unsigned extra, unsigned prio )
             break;
         }
     }
-    DIGCliFree( ih );
+    DIGCli( Free )( ih );
     return( NO_MOD );
 }
 
@@ -607,7 +607,7 @@ walk_result WalkModList( mod_handle mh, MOD_WALKER *mw, void *d )
     walk_glue           glue;
 
     if( ActProc == NULL ) {
-        DIPCliStatus( DS_ERR|DS_NO_PROCESS );
+        DIPCli( Status )( DS_ERR|DS_NO_PROCESS );
         return( WR_FAIL );
     }
     glue.walk.m = mw;
@@ -1312,7 +1312,7 @@ search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
     if( ih == NULL )
         return( SR_NONE );
     if( MH2IMH( mh ) == IMH_NOMOD ) {
-        DIPCliStatus( DS_ERR|DS_BAD_PARM );
+        DIPCli( Status )( DS_ERR|DS_BAD_PARM );
         return( SR_FAIL );
     }
     ch->ii = ih->ii;
@@ -1439,7 +1439,7 @@ search_result LookupSymEx( symbol_source ss, void *source,
             li->mod = curr_mod;
         break;
     case SS_BLOCK:
-        DIPCliStatus( DS_ERR|DS_BAD_PARM );
+        DIPCli( Status )( DS_ERR|DS_BAD_PARM );
         return( SR_NONE );
     case SS_SCOPESYM:
         sh = (sym_handle *)source;

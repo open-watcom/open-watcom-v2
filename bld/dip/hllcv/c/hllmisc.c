@@ -43,12 +43,12 @@ enum {
 CV_LAST_REG
 };
 
-const char      DIPImpName[] = "HLL/CV";
+const char      DIPImp( Name )[] = "HLL/CV";
 
 /*
  * Get the size of a handle.
  */
-unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    ih,
@@ -62,7 +62,7 @@ unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 /*
  * Free memory.
  */
-dip_status DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
@@ -71,7 +71,7 @@ dip_status DIGENTRY DIPImpMoreMem( unsigned size )
 /*
  * Module startup.
  */
-dip_status DIGENTRY DIPImpStartup(void)
+dip_status DIPIMPENTRY( Startup )(void)
 {
     return( DS_OK );
 }
@@ -79,14 +79,14 @@ dip_status DIGENTRY DIPImpStartup(void)
 /*
  * Module shutdown.
  */
-void DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
 }
 
 /*
  * ?
  */
-void DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
 }
 

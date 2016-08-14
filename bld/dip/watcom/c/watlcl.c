@@ -730,7 +730,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-dip_status DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     lcl_defn    defn;
@@ -779,7 +779,7 @@ dip_status DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
     return( FindTypeHandle( ii, is->im, defn.i.type_index, it ) );
 }
 
-dip_status DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
         imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
@@ -957,7 +957,7 @@ dip_status WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
 }
 
 
-search_result DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
                         imp_mod_handle im, address addr, scope_block *scope )
 {
     lcl_defn            blk;
@@ -980,7 +980,7 @@ search_result DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
 }
 
 
-search_result DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
                         imp_mod_handle im, scope_block *in, scope_block *out )
 {
     lcl_defn            blk;

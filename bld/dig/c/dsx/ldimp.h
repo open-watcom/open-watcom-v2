@@ -59,29 +59,29 @@ static imp_header *ReadInImp( dig_fhandle dfh )
     unsigned long       buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
-    if( DIGCliRead( dfh, &hdr, sizeof( hdr ) ) != sizeof( hdr ) )
+    if( DIGCli( Read )( dfh, &hdr, sizeof( hdr ) ) != sizeof( hdr ) )
         return( NULL );
     if( hdr.signature != REX_SIGNATURE )
         return( NULL );
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
     bss_size = hdr.min_data * 4096;
-    imp_start = DIGCliAlloc( size + bss_size );
+    imp_start = DIGCli( Alloc )( size + bss_size );
     if( imp_start == NULL )
         return( NULL );
-    DIGCliSeek( dfh, hdr_size, DIG_ORG );
-    if( DIGCliRead( dfh, imp_start, size ) != size ) {
-        DIGCliFree( imp_start );
+    DIGCli( Seek )( dfh, hdr_size, DIG_ORG );
+    if( DIGCli( Read )( dfh, imp_start, size ) != size ) {
+        DIGCli( Free )( imp_start );
         return( NULL );
     }
-    DIGCliSeek( dfh, hdr.reloc_offset, DIG_ORG );
+    DIGCli( Seek )( dfh, hdr.reloc_offset, DIG_ORG );
     while( hdr.num_relocs != 0 ) {
         bunch = hdr.num_relocs;
         if( bunch > RELOC_BUFF_SIZE )
             bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGCliRead( dfh, buff, reloc_size ) != reloc_size ) {
-            DIGCliFree( imp_start );
+        if( DIGCli( Read )( dfh, buff, reloc_size ) != reloc_size ) {
+            DIGCli( Free )( imp_start );
             return( NULL );
         }
         for( i = 0; i < bunch; ++i ) {

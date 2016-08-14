@@ -36,7 +36,7 @@
 /*
         Return the size of the trace control structure.
 */
-unsigned DIGENTRY MADImpTraceSize( void )
+unsigned MADIMPENTRY( TraceSize )( void )
 {
     return( sizeof( mad_trace_data ) );
 }
@@ -44,7 +44,7 @@ unsigned DIGENTRY MADImpTraceSize( void )
 /*
         Initialize for tracing.
 */
-void DIGENTRY MADImpTraceInit( mad_trace_data *td, const mad_registers *mr )
+void MADIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 {
     td->ra = 0;
 }
@@ -53,7 +53,7 @@ void DIGENTRY MADImpTraceInit( mad_trace_data *td, const mad_registers *mr )
         Return MS_OK if we have recursively entered a routine, based on
         the value of 'watch_stack'. Return MS_FAIL if not.
 */
-mad_status DIGENTRY MADImpTraceHaveRecursed( address watch_stack, const mad_registers *mr )
+mad_status MADIMPENTRY( TraceHaveRecursed )( address watch_stack, const mad_registers *mr )
 {
     //NYI:
     return( MS_FAIL );
@@ -79,7 +79,7 @@ mad_status DIGENTRY MADImpTraceHaveRecursed( address watch_stack, const mad_regi
             MTRK_NEXT           - Stop at the next sequential instruction
 
 */
-mad_trace_how DIGENTRY MADImpTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
+mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
 {
     addr_ptr next = mr->jvm.pc;
     next.offset += dd->ins.size;
@@ -144,7 +144,7 @@ mad_trace_how DIGENTRY MADImpTraceOne( mad_trace_data *td, mad_disasm_data *dd, 
         error status if something goes wrong. Return MS_UNSUPPORTED if this
         code can't handle simulating this instruction.
 */
-mad_status DIGENTRY MADImpTraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
+mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
     return( MS_UNSUPPORTED );
 }
@@ -152,7 +152,7 @@ mad_status DIGENTRY MADImpTraceSimulate( mad_trace_data *td, mad_disasm_data *dd
 /*
         Finalize tracing.
 */
-void DIGENTRY MADImpTraceFini( mad_trace_data *td )
+void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
     td = td;
 }
@@ -167,7 +167,7 @@ void DIGENTRY MADImpTraceFini( mad_trace_data *td )
         to the true length of the message, even if the message did not all
         fit into the buffer provided.
 */
-mad_status DIGENTRY MADImpUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, unsigned *buff_size_p )
 {
     unsigned    buff_size;
     char        data;

@@ -157,12 +157,12 @@ dig_fhandle DIGPathOpen( const char *name, size_t name_len,
     if( filename == NULL ) {
         return( DIG_NIL_HANDLE );
     }
-    return( DIGCliOpen( filename, DIG_READ ) );
+    return( DIGCli( Open )( filename, DIG_READ ) );
 }
 
 unsigned DIGPathClose( dig_fhandle dfh )
 {
-    DIGCliClose( dfh );
+    DIGCli( Close )( dfh );
     return( 0 );
 }
 #endif
@@ -314,7 +314,7 @@ void AssertionFailed( char * file, unsigned line )
     memcpy( buff, fname, size );
     buff[size] = ' ';                                   /*   1 */
     utoa( line, &buff[size + 1], 10 );                  /*  10 */
-                                                /* '\0'    + 1 */
+                                                        /* '\0' + 1 */
                                                         /* --- */
                                                         /*  12+_MAX_FNAME */
     fatal( LIT( Assertion_Failed ), buff );

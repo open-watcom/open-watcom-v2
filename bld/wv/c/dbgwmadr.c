@@ -208,7 +208,7 @@ static bool RegResize( a_window *wnd )
         WndNoCurrent( wnd );
     }
 
-    p = TxtBuff + MADCliString( MADRegSetName( reg->data ), TxtBuff, TXT_LEN );
+    p = TxtBuff + MADCli( String )( MADRegSetName( reg->data ), TxtBuff, TXT_LEN );
     *p++ = ' ';
     *p++ = '(';
     len = MADRegSetLevel( reg->data, p, TXT_LEN - ( p - TxtBuff ) );
@@ -254,7 +254,7 @@ static const char *RegValueName( const void *data_handle, int item )
         MADTypeHandleToString( MADTypePreferredRadix( possible->type ),
                 possible->type, possible->data, TxtBuff, &buff_len );
     } else {
-        MADCliString( possible->name, TxtBuff, buff_len );
+        MADCli( String )( possible->name, TxtBuff, buff_len );
     }
     return( TxtBuff );
 }

@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#if defined( _M_IX86 )
+#define MD_x86
+#elif defined __AXP__
+#define MD_axp
+#endif
+
 #include <stdlib.h>
 #include "commonui.h"
 #include "bool.h"

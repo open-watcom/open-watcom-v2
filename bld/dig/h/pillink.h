@@ -31,24 +31,26 @@
 
 
 #ifndef PILLINK_H
-#include "digpck.h"
-#include "piltypes.h"
-
-link_handle     *LinkLoad( const char *name, link_message *msg );
-link_handle     *LinkRegister( const pill_imp_routines *rtns, link_message *msg );
-link_instance   *LinkInit( link_handle *lh, void *cookie, link_trigger *tp, const char *parm );
-link_status     LinkStatus( link_instance *li );
-unsigned        LinkMaxSize( link_instance *li, unsigned req_size );
-link_status     LinkPut( link_instance *li, link_buffer *data );
-link_status     LinkPutMx( link_instance *li, unsigned num, const lmx_entry *put );
-unsigned        LinkKicker( void );
-link_status     LinkAbort( link_instance *li );
-link_status     LinkFini( link_instance *li );
-unsigned        LinkMessage( const link_message *msg, pil_language pl, unsigned max, char *buff );
-pill_private_func *LinkPrivate( link_handle *lh, const char *string );
-void            LinkUnload( link_handle *lh );
-
 #define PILLINK_H
 
+#include "digpck.h"
+
+#include "piltypes.h"
+
 #include "digunpck.h"
+
+extern link_handle          *LinkLoad( const char *name, link_message *msg );
+extern link_handle          *LinkRegister( const pill_imp_routines *rtns, link_message *msg );
+extern link_instance        *LinkInit( link_handle *lh, void *cookie, link_trigger *tp, const char *parm );
+extern link_status          LinkStatus( link_instance *li );
+extern unsigned             LinkMaxSize( link_instance *li, unsigned req_size );
+extern link_status          LinkPut( link_instance *li, link_buffer *data );
+extern link_status          LinkPutMx( link_instance *li, unsigned num, const lmx_entry *put );
+extern unsigned             LinkKicker( void );
+extern link_status          LinkAbort( link_instance *li );
+extern link_status          LinkFini( link_instance *li );
+extern unsigned             LinkMessage( const link_message *msg, pil_language pl, unsigned max, char *buff );
+extern pill_private_func    *LinkPrivate( link_handle *lh, const char *string );
+extern void                 LinkUnload( link_handle *lh );
+
 #endif

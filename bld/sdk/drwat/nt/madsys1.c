@@ -32,34 +32,12 @@
 
 #include <stdlib.h>
 
-#if defined( _M_IX86 )
-#define MD_x86
-#elif defined __AXP__
-#define MD_axp
-#endif
-
 #include "drwatcom.h"
 #include "mad.h"
 #include "madcli.h"
 #include "mem.h"
 #include "madsys1.h"
 
-
-size_t DIGCLIENT MADCliReadMem( address a, size_t size, void *buff )
-{
-    DWORD bytesread;
-
-    ReadProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &bytesread );
-    return( bytesread );
-}
-
-size_t DIGCLIENT MADCliWriteMem( address a, size_t size, const void *buff )
-{
-    DWORD byteswritten;
-
-    WriteProcessMemory( ProcessHdl, (void *)a.mach.offset, buff, size, &byteswritten );
-    return( byteswritten );
-}
 
 #if defined( _M_IX86 )
 void GetSysConfig(void)

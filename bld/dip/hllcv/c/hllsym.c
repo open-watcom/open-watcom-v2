@@ -1414,7 +1414,7 @@ walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
 /*
  * Walk a symbol list.
  */
-walk_result DIGENTRY DIPImpWalkSymList( imp_image_handle *ii, symbol_source ss,
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
                                         void *source, IMP_SYM_WKR *wk,
                                         imp_sym_handle *is, void *d )
 {
@@ -1424,7 +1424,7 @@ walk_result DIGENTRY DIPImpWalkSymList( imp_image_handle *ii, symbol_source ss,
 /*
  * Walk a symbol list, new api.
  */
-walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii,
                                           symbol_source ss, void *source,
                                           IMP_SYM_WKR *wk, imp_sym_handle *is,
                                           location_context *lc, void *d )
@@ -1436,7 +1436,7 @@ walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii,
 /*
  * Get the module of a symbol.
  */
-imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii = ii;
     return( is->im );
@@ -1553,7 +1553,7 @@ static size_t hllSymName( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get the symbol name.
  */
-size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
                                  location_context *lc, symbol_name sn,
                                  char *buff, size_t buff_size )
 {
@@ -1599,7 +1599,7 @@ dip_status hllSymType( imp_image_handle *ii, imp_sym_handle *is, imp_type_handle
 /*
  * Get the type of the given symbol.
  */
-dip_status DIGENTRY DIPImpSymType( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
                                    imp_type_handle *it )
 {
     return( hllSymType( ii, is, it ) );
@@ -1608,7 +1608,7 @@ dip_status DIGENTRY DIPImpSymType( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get the location of the given symbol.
  */
-dip_status DIGENTRY DIPImpSymLocation( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
                                        location_context *lc, location_list *ll )
 {
     return( hllSymLocation( ii, is, lc, ll ) );
@@ -1677,7 +1677,7 @@ dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
  * Copy the value of a constant symbol into 'buff'. You can get the
  * size required by doing a SymType followed by a TypeInfo.
  */
-dip_status DIGENTRY DIPImpSymValue( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
                                     location_context *lc, void *buff )
 {
     return( hllSymValue( ii, is, lc, buff ) );
@@ -1686,7 +1686,7 @@ dip_status DIGENTRY DIPImpSymValue( imp_image_handle *ii, imp_sym_handle *is,
 /*
  * Get some generic information about a symbol.
  */
-dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
                                    location_context *lc, sym_info *si )
 {
     void    *p;
@@ -1894,7 +1894,7 @@ static const unsigned_8 DXEAXList[]     = { CV_X86_DX, CV_X86_EAX };
 static const unsigned_8 ST1ST0List[]    = { CV_X86_ST1, CV_X86_ST0 };
 #endif
 
-dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
@@ -2034,7 +2034,7 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 #endif
 }
 
-dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
 #if 0
@@ -2056,7 +2056,7 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
 #endif
 }
 
-dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
@@ -2110,7 +2110,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
 #endif
 }
 
-search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
 #if 0
@@ -2365,7 +2365,7 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
 #endif
 }
 
-search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 {
 #if 0
@@ -2375,7 +2375,7 @@ search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
 #endif
 }
 
-search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
@@ -2386,7 +2386,7 @@ search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
 #endif
 }
 
-search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, scope_block *scope )
 {
 #if 0
@@ -2406,7 +2406,7 @@ search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
 #endif
 }
 
-search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 {
 #if 0
@@ -2454,7 +2454,7 @@ search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
  * The reason for the constraints is so that a client can sort a
  * list of handles and binary search them.
  */
-int DIGENTRY DIPImpSymCmp( imp_image_handle *ii,
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii,
                            imp_sym_handle *is1, imp_sym_handle *is2 )
 {
     ii = ii;
@@ -2467,21 +2467,21 @@ int DIGENTRY DIPImpSymCmp( imp_image_handle *ii,
     return( 0 );
 }
 
-dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
     ii=ii;
     return( DS_OK );

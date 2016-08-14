@@ -72,13 +72,13 @@ search_result FindMBIndex( imp_image_handle *ii, addr_off off, unsigned *idx )
     return( SR_NONE );
 }
 
-walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
                         IMP_MOD_WKR *wk, void *d )
 {
     return( wk( ii, IMH_JAVA, d ) );
 }
 
-size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
                     imp_mod_handle im, char *buff, size_t buff_size )
 {
     ji_ptr      name;
@@ -90,18 +90,18 @@ size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
     return( NameCopy( buff, NameBuff, buff_size, len ) );
 }
 
-char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     return( "java" );
 }
 
-dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     return( DS_OK );
 }
 
-search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
                 imp_mod_handle *im )
 {
     search_result       sr;
@@ -117,7 +117,7 @@ search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
     return( sr );
 }
 
-address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
+address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
                                 imp_mod_handle im )
 {
     address     a;
@@ -133,7 +133,7 @@ address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
     return( NilAddr );
 }
 
-dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
      return( DS_FAIL );
