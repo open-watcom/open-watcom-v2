@@ -33,7 +33,25 @@
 #ifndef DIPIMP_H_INCLUDED
 #define DIPIMP_H_INCLUDED
 
-#include "digpck.h"
+#define DIP_MAJOR       1
+#define DIP_MINOR       3
+#define DIP_MINOR_OLD   0
+
+#define MH2IMH( mh )    ((mh)&0x0000FFFF)
+#define IMH2MH( imh )   (imh)
+
+/*
+    An imp_mod_handle is defined as an unsigned_16. The value zero is
+    reserved to indicate "no module".
+*/
+#define IMH_NOMOD       ((imp_mod_handle)0)
+#define IMH_BASE        ((imp_mod_handle)1)
+#define IMH_GBL         ((imp_mod_handle)-1)
+
+#define DIPImp(n)       DIPImp ## n
+#define _DIPImp(n)      _DIPImp ## n n
+
+#define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
 
 struct imp_image_handle;
 struct imp_type_handle;
@@ -50,32 +68,24 @@ typedef struct imp_sym_handle   imp_sym_handle;
 typedef unsigned_16     imp_mod_handle;
 typedef unsigned_16     image_index;
 
-#define DIP_MAJOR       1
-#define DIP_MINOR       3
-#define DIP_MINOR_OLD   0
-
-#define MH2IMH( mh )    ((mh)&0x0000FFFF)
-#define IMH2MH( imh )   (imh)
-
-/*
-    An imp_mod_handle is defined as an unsigned_16. The value zero is
-    reserved to indicate "no module".
-*/
-#define IMH_NOMOD       ((imp_mod_handle)0)
-#define IMH_BASE        ((imp_mod_handle)1)
-#define IMH_GBL         ((imp_mod_handle)-1)
-
-typedef walk_result (DIGCLIENT IMP_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
-typedef walk_result (DIGCLIENT IMP_TYPE_WKR)( imp_image_handle *, imp_type_handle *, void * );
-typedef walk_result (DIGCLIENT IMP_SYM_WKR)( imp_image_handle *, sym_walk_info, imp_sym_handle *, void * );
-typedef walk_result (DIGCLIENT IMP_CUE_WKR)( imp_image_handle *, imp_cue_handle *, void * );
-
-#define DIPImp(n)       DIPImp ## n
-#define _DIPImp(n)      _DIPImp ## n n
+typedef walk_result (DIGCLIENT DIP_IMP_MOD_WALKER)( imp_image_handle *, imp_mod_handle, void * );
+typedef walk_result (DIGCLIENT DIP_IMP_TYPE_WALKER)( imp_image_handle *, imp_type_handle *, void * );
+typedef walk_result (DIGCLIENT DIP_IMP_SYM_WALKER)( imp_image_handle *, sym_walk_info, imp_sym_handle *, void * );
+typedef walk_result (DIGCLIENT DIP_IMP_CUE_WALKER)( imp_image_handle *, imp_cue_handle *, void * );
 
 #define pick(r,n,p) typedef r (DIGENTRY *_DIPImp ## n) p;
 #include "_dipimp.h"
 #undef pick
+
+#define pick(r,n,p) extern r DIPIMPENTRY( n ) p;
+#include "_dipimp.h"
+#undef pick
+
+extern dip_status   DIPIMPENTRY( Startup )( void );
+
+extern const char   DIPImp( Name )[];
+
+#include "digpck.h"
 
 struct dip_imp_routines {
     unsigned_8          major;
@@ -144,17 +154,6 @@ struct dip_imp_routines {
     _DIPImp( LookupSymEx );
 };
 
-
-extern const char       DIPImp( Name )[];
-
-#define DIPIMPENTRY(n)  DIGENTRY DIPImp( n )
-
-#define pick(r,n,p) extern r DIPIMPENTRY( n ) p;
-#include "_dipimp.h"
-#undef pick
-
-extern dip_status   DIPIMPENTRY( Startup )( void );
-
 typedef struct dip_client_routines {
     unsigned_8          major;
     unsigned_8          minor;
@@ -197,12 +196,14 @@ DIG_DLLEXPORT dip_init_func DIPLOAD;
 DIG_DLLEXPORT dip_fini_func DIPUNLOAD;
 #endif
 
-#define pick(r,n,p) extern r DC ## n p;
+#define DC(n)       DC ## n
+
+#define pick(r,n,p) extern r DC( n ) p;
 #include "_digcli.h"
 #include "_dipcli.h"
 #undef pick
 
-extern void         *DCAllocZ( size_t amount );
-extern dip_status   DCReadAt( dig_fhandle dfh, void *b, size_t s, unsigned long p );
+extern void         *DC( AllocZ )( size_t amount );
+extern dip_status   DC( ReadAt )( dig_fhandle dfh, void *b, size_t s, unsigned long p );
 
 #endif

@@ -597,7 +597,7 @@ static dip_status ScopeFindNext( imp_image_handle *ii, scope_info *scope )
 
 
 static walk_result ScopeOneSymbol( imp_image_handle *ii, cv_directory_entry *cde,
-                    scope_info *scope, IMP_SYM_WKR *wk, void *d,
+                    scope_info *scope, DIP_IMP_SYM_WALKER *wk, void *d,
                     virt_mem *currp )
 {
     scope_info          new;
@@ -663,7 +663,7 @@ static walk_result ScopeOneSymbol( imp_image_handle *ii, cv_directory_entry *cde
 }
 
 static walk_result ScopeWalkOne( imp_image_handle *ii, scope_info *scope,
-                                IMP_SYM_WKR *wk, void *d )
+                                DIP_IMP_SYM_WALKER *wk, void *d )
 {
     walk_result         wr;
     s_all               *p;
@@ -689,7 +689,7 @@ static walk_result ScopeWalkOne( imp_image_handle *ii, scope_info *scope,
 }
 
 static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
-                                IMP_SYM_WKR *wk, void *d )
+                                DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
     imp_type_handle     it;
@@ -713,7 +713,7 @@ static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
 }
 
 static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
-                        address addr, IMP_SYM_WKR *wk, void *d )
+                        address addr, DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
     walk_result         wr;
@@ -748,7 +748,7 @@ static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
 }
 
 static walk_result ScopeWalkFile( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_SYM_WKR *wk, void *d )
+                        DIP_IMP_SYM_WALKER *wk, void *d )
 {
     cv_directory_entry  *cde;
     virt_mem            curr;
@@ -1024,7 +1024,7 @@ dip_status SymFindMatchingSym( imp_image_handle *ii,
 }
 
 static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
-                        IMP_SYM_WKR *wk, void *d, unsigned tbl_type )
+                        DIP_IMP_SYM_WALKER *wk, void *d, unsigned tbl_type )
 {
     cv_directory_entry          *cde;
     cv_sst_global_pub_header    *hdr;
@@ -1088,7 +1088,7 @@ static walk_result TableWalkSym( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 struct glue_info {
-    IMP_SYM_WKR         *wk;
+    DIP_IMP_SYM_WALKER  *wk;
     void                *d;
     imp_sym_handle      *is;
 };
@@ -1113,7 +1113,7 @@ static walk_result WalkAModule( imp_image_handle *ii,
 }
 
 static walk_result DoWalkSymList( imp_image_handle *ii,
-                symbol_source ss, void *source, IMP_SYM_WKR *wk,
+                symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
     struct glue_info    glue;
@@ -1186,14 +1186,14 @@ static walk_result DoWalkSymList( imp_image_handle *ii,
 }
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
-                symbol_source ss, void *source, IMP_SYM_WKR *wk,
+                symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
-                void *source, IMP_SYM_WKR *wk, imp_sym_handle *is,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
     lc=lc;

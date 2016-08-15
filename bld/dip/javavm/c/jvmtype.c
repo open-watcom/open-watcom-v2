@@ -36,7 +36,7 @@
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
+                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it,
                     void *d )
 {
     it->sig = ii->cc + offsetof( ClassClass, name );

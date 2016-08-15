@@ -141,7 +141,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
  * Use 'sst' to limit the callbacks to one specific type. A 'sst' of 0
  * means everything.
  */
-walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIR_WALKER *wk, void *d )
+walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;

@@ -35,7 +35,14 @@
 
 #include "madcli.h"
 
-#include "digpck.h"
+#define MAD_MAJOR       1
+#define MAD_MINOR_OLD   1
+#define MAD_MINOR       2
+
+#define MADImp(n)       MADImp ## n
+#define _MADImp(n)      _MADImp ## n n
+
+#define MADIMPENTRY(n)  DIGENTRY MADImp( n )
 
 typedef struct imp_mad_state_data       imp_mad_state_data;
 
@@ -44,16 +51,15 @@ typedef         walk_result (DIGCLIENT MI_REG_SET_WALKER)( const mad_reg_set_dat
 typedef         walk_result (DIGCLIENT MI_REG_WALKER)( const mad_reg_info *, int has_sublist, void * );
 typedef         walk_result (DIGCLIENT MI_MEMREF_WALKER)( address, mad_type_handle, mad_memref_kind write, void * );
 
-#define MAD_MAJOR       1
-#define MAD_MINOR_OLD   1
-#define MAD_MINOR       2
-
-#define MADImp(n)       MADImp ## n
-#define _MADImp(n)      _MADImp ## n n
-
 #define pick(r,n,p) typedef r (DIGENTRY *_MADImp ## n) p;
 #include "_madimp.h"
 #undef pick
+
+#define pick(r,n,p) extern r MADIMPENTRY( n ) p;
+#include "_madimp.h"
+#undef pick
+
+#include "digpck.h"
 
 typedef struct mad_imp_routines {
     unsigned_8          major;
@@ -139,12 +145,6 @@ typedef struct mad_imp_routines {
     _MADImp( CallUpStackLevel );
 } mad_imp_routines;
 
-#define MADIMPENTRY(n)  DIGENTRY MADImp( n )
-
-#define pick(r,n,p) extern r MADIMPENTRY( n ) p;
-#include "_madimp.h"
-#undef pick
-
 typedef struct mad_client_routines {
     unsigned_8          major;
     unsigned_8          minor;
@@ -183,6 +183,8 @@ typedef struct mad_client_routines {
     _MADCli( TypeToString );
 } mad_client_routines;
 
+#include "digunpck.h"
+
 typedef mad_imp_routines * DIGENTRY mad_init_func( mad_status *status, mad_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY mad_fini_func( void );
@@ -193,13 +195,13 @@ DIG_DLLEXPORT mad_init_func MADLOAD;
 DIG_DLLEXPORT mad_fini_func MADUNLOAD;
 #endif
 
-#define pick(r,n,p) extern r MC ## n p;
+#define MC(n)       MC ## n
+
+#define pick(r,n,p) extern r MC( n ) p;
 #include "_digcli.h"
 #include "_madcli.h"
 #undef pick
 
-void            MCStatus( mad_status );
-
-#include "digunpck.h"
+extern void         MC( Status )( mad_status );
 
 #endif

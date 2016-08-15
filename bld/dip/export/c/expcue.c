@@ -37,7 +37,7 @@
 */
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
                     void *d )
 {
     ii = ii; im = im; wk = wk; ic = ic; d = d;

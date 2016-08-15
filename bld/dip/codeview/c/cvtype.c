@@ -276,10 +276,10 @@ struct pending_type_list {
     unsigned            code;
 };
 
-typedef walk_result (LEAF_WALKER)( imp_image_handle *, sym_walk_info, pending_type_list *, lf_all *, void * );
+typedef walk_result (DIP_LEAF_WALKER)( imp_image_handle *, sym_walk_info, pending_type_list *, lf_all *, void * );
 
 static walk_result TypeListWalk( imp_image_handle *ii, virt_mem head,
-                        virt_mem containing_type, LEAF_WALKER *wk, void *d )
+                        virt_mem containing_type, DIP_LEAF_WALKER *wk, void *d )
 {
     lf_all              *p;
     unsigned_16         *len_p;
@@ -1067,7 +1067,7 @@ dip_status TypeSymGetInfo( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 struct walk_glue {
-    IMP_SYM_WKR         *wk;
+    DIP_IMP_SYM_WALKER  *wk;
     void                *d;
     imp_sym_handle      *is;
 };
@@ -1143,7 +1143,7 @@ static walk_result WalkGlue( imp_image_handle *ii, sym_walk_info swi,
 }
 
 walk_result TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it,
-                IMP_SYM_WKR* wk, imp_sym_handle *is, void *d )
+                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     struct walk_glue    glue;
     lf_all              *p;
@@ -1400,7 +1400,7 @@ search_result TypeSearchNestedSym( imp_image_handle *ii, imp_type_handle *it,
 
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
+                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it,
                     void *d )
 {
     unsigned long       count;

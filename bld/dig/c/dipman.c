@@ -554,7 +554,7 @@ unsigned DIPImagePriority( mod_handle mh )
 /*
  *      Information Walkers
  */
-walk_result WalkImageList( IMAGE_WALKER *iw, void *d )
+walk_result DIPWalkImageList( DIP_IMAGE_WALKER *iw, void *d )
 {
     walk_result         wr;
     image_handle        *ih;
@@ -573,10 +573,10 @@ walk_result WalkImageList( IMAGE_WALKER *iw, void *d )
 
 typedef struct {
     union {
-        MOD_WALKER      *m;
-        TYPE_WALKER     *t;
-        SYM_WALKER      *s;
-        CUE_WALKER      *c;
+        DIP_MOD_WALKER      *m;
+        DIP_TYPE_WALKER     *t;
+        DIP_SYM_WALKER      *s;
+        DIP_CUE_WALKER      *c;
     }           walk;
     void                *d;
     location_context    *lc;
@@ -602,7 +602,7 @@ static walk_result WalkOneModList( mod_handle mh, void *d )
     return( ih->dip->WalkModList( IH2IIH( ih ), ModGlue, d ) );
 }
 
-walk_result WalkModList( mod_handle mh, MOD_WALKER *mw, void *d )
+walk_result DIPWalkModList( mod_handle mh, DIP_MOD_WALKER *mw, void *d )
 {
     walk_glue           glue;
 
@@ -614,7 +614,7 @@ walk_result WalkModList( mod_handle mh, MOD_WALKER *mw, void *d )
     glue.d = d;
     glue.lc = NULL;
     if( mh == NO_MOD ) {
-        return( WalkImageList( WalkOneModList, &glue ) );
+        return( DIPWalkImageList( WalkOneModList, &glue ) );
     } else {
         return( WalkOneModList( mh, &glue ) );
     }
@@ -629,7 +629,7 @@ static walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
     return( wd->walk.t( ITH2TH( ith ), wd->d ) );
 }
 
-walk_result WalkTypeList( mod_handle mh, TYPE_WALKER *tw, void *d )
+walk_result DIPWalkTypeList( mod_handle mh, DIP_TYPE_WALKER *tw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
@@ -683,14 +683,14 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     case SS_MODULE:
         mh = *(mod_handle *)start;
         if( mh == NO_MOD ) {
-            return( WalkImageList( GblSymWalk, wd ) );
+            return( DIPWalkImageList( GblSymWalk, wd ) );
         }
         ii = MH_IMAGE( mh );
         imh = MH2IMH( mh );
         start = &imh;
         break;
     case SS_SCOPED:
-        if( AddrMod( *(address *)start, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( *(address *)start, &mh ) == SR_NONE ) {
             return( WR_CONTINUE );
         }
         ii = MH_IMAGE( mh );
@@ -703,7 +703,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
         ii = it->ii;
         break;
     case SS_BLOCK:
-        if( AddrMod( ((scope_block *)start)->start, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( ((scope_block *)start)->start, &mh ) == SR_NONE ) {
             return( WR_CONTINUE );
         }
         ii = MH_IMAGE( mh );
@@ -729,7 +729,7 @@ static walk_result DoWalkSymList( symbol_source ss, void *start, walk_glue *wd )
     return( wr );
 }
 
-walk_result WalkSymListEx( symbol_source ss, void *start, SYM_WALKER *sw,
+walk_result DIPWalkSymListEx( symbol_source ss, void *start, DIP_SYM_WALKER *sw,
                            location_context *lc, void *d )
 {
     walk_glue   glue;
@@ -740,9 +740,9 @@ walk_result WalkSymListEx( symbol_source ss, void *start, SYM_WALKER *sw,
     return( DoWalkSymList( ss, start, &glue ) );
 }
 
-walk_result WalkSymList( symbol_source ss, void *start, SYM_WALKER *sw, void *d )
+walk_result DIPWalkSymList( symbol_source ss, void *start, DIP_SYM_WALKER *sw, void *d )
 {
-    return( WalkSymListEx( ss, start, sw, NULL, d ) );
+    return( DIPWalkSymListEx( ss, start, sw, NULL, d ) );
 }
 
 static walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
@@ -754,7 +754,7 @@ static walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
     return( wd->walk.c( ICH2CH( ich ), wd->d ) );
 }
 
-walk_result WalkFileList( mod_handle mh, CUE_WALKER *cw, void *d )
+walk_result DIPWalkFileList( mod_handle mh, DIP_CUE_WALKER *cw, void *d )
 {
     image_handle        *ih;
     walk_glue           glue;
@@ -774,7 +774,7 @@ walk_result WalkFileList( mod_handle mh, CUE_WALKER *cw, void *d )
 /*
  * Image Information
  */
-void *ImageExtra( mod_handle mh )
+void *DIPImageExtra( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -782,7 +782,7 @@ void *ImageExtra( mod_handle mh )
     return( ih == NULL ? NULL : ih->extra );
 }
 
-const char *ImageDIP( mod_handle mh )
+const char *DIPImageName( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -793,7 +793,7 @@ const char *ImageDIP( mod_handle mh )
 /*
  * Module Information
  */
-size_t ModName( mod_handle mh, char *buff, size_t buff_size )
+size_t DIPModName( mod_handle mh, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
@@ -803,7 +803,7 @@ size_t ModName( mod_handle mh, char *buff, size_t buff_size )
     return( ih->dip->ModName( IH2IIH( ih ), MH2IMH( mh ), buff, buff_size ) );
 }
 
-char *ModSrcLang( mod_handle mh )
+char *DIPModSrcLang( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -813,7 +813,7 @@ char *ModSrcLang( mod_handle mh )
     return( ih->dip->ModSrcLang( IH2IIH( ih ), MH2IMH( mh ) ) );
 }
 
-dip_status ModHasInfo( mod_handle mh, handle_kind hk )
+dip_status DIPModHasInfo( mod_handle mh, handle_kind hk )
 {
     image_handle        *ih;
 
@@ -823,7 +823,7 @@ dip_status ModHasInfo( mod_handle mh, handle_kind hk )
     return( ih->dip->ModInfo( IH2IIH( ih ), MH2IMH( mh ), hk ) );
 }
 
-dip_status ModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
+dip_status DIPModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
 {
     image_handle        *ih;
 
@@ -833,7 +833,7 @@ dip_status ModDefault( mod_handle mh, default_kind dk, dip_type_info *ti )
     return( ih->dip->ModDefault( IH2IIH( ih ), MH2IMH( mh ), dk, ti ) );
 }
 
-address ModAddr( mod_handle mh )
+address DIPModAddr( mod_handle mh )
 {
     image_handle        *ih;
 
@@ -846,7 +846,7 @@ address ModAddr( mod_handle mh )
 /*
  * Type Information
  */
-mod_handle TypeMod( type_handle *th )
+mod_handle DIPTypeMod( type_handle *th )
 {
     image_handle        *ih;
 
@@ -854,7 +854,7 @@ mod_handle TypeMod( type_handle *th )
     return( MK_MH( ih->ii, ih->dip->TypeMod( IH2IIH( ih ), TH2ITH( th ) ) ) );
 }
 
-dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
+dip_status DIPTypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
 {
     image_handle        *ih;
 
@@ -886,13 +886,13 @@ dip_status TypeInfo( type_handle *th, location_context *lc, dip_type_info *ti )
     return( ih->dip->TypeInfo( IH2IIH( ih ), TH2ITH( th ), lc, ti ) );
 }
 
-void TypeInit( type_handle *th, mod_handle mh )
+void DIPTypeInit( type_handle *th, mod_handle mh )
 {
     th->ii = MH_IMAGE( mh );
     th->ap = 0;
 }
 
-dip_status TypePointer( type_handle *base_th, type_modifier tm, unsigned size,
+dip_status DIPTypePointer( type_handle *base_th, type_modifier tm, unsigned size,
                         type_handle *ptr_th )
 {
     if( base_th->ap & AP_FULL )
@@ -915,7 +915,7 @@ dip_status TypePointer( type_handle *base_th, type_modifier tm, unsigned size,
     return( DS_OK );
 }
 
-dip_status TypeBase( type_handle *th, type_handle *base_th, location_context *lc, location_list *ll )
+dip_status DIPTypeBase( type_handle *th, type_handle *base_th, location_context *lc, location_list *ll )
 {
     image_handle        *ih;
 
@@ -938,7 +938,7 @@ dip_status TypeBase( type_handle *th, type_handle *base_th, location_context *lc
     }
 }
 
-dip_status TypeAddRef( type_handle *th )
+dip_status DIPTypeAddRef( type_handle *th )
 /**************************************/
 {
     image_handle        *ih;
@@ -953,7 +953,7 @@ dip_status TypeAddRef( type_handle *th )
     }
 }
 
-dip_status TypeRelease( type_handle *th )
+dip_status DIPTypeRelease( type_handle *th )
 /**************************************/
 {
     image_handle        *ih;
@@ -968,7 +968,7 @@ dip_status TypeRelease( type_handle *th )
     }
 }
 
-dip_status TypeFreeAll( void )
+dip_status DIPTypeFreeAll( void )
 /****************************/
 {
     image_handle        *ih;
@@ -983,7 +983,7 @@ dip_status TypeFreeAll( void )
     return( DS_OK );
 }
 
-dip_status TypeArrayInfo( type_handle *th, location_context *lc,
+dip_status DIPTypeArrayInfo( type_handle *th, location_context *lc,
                         array_info *ai, type_handle *index_th )
 {
     image_handle        *ih;
@@ -1004,7 +1004,7 @@ dip_status TypeArrayInfo( type_handle *th, location_context *lc,
     return( ih->dip->TypeArrayInfo( IH2IIH( ih ), TH2ITH( th ), lc, ai, ith ) );
 }
 
-dip_status TypeProcInfo( type_handle *th, type_handle *parm_th, unsigned num )
+dip_status DIPTypeProcInfo( type_handle *th, type_handle *parm_th, unsigned num )
 {
     image_handle        *ih;
 
@@ -1019,7 +1019,7 @@ dip_status TypeProcInfo( type_handle *th, type_handle *parm_th, unsigned num )
         TH2ITH( th ), TH2ITH( parm_th ), num ) );
 }
 
-dip_status TypePtrAddrSpace( type_handle *th, location_context *lc, address *a )
+dip_status DIPTypePtrAddrSpace( type_handle *th, location_context *lc, address *a )
 {
     image_handle        *ih;
 
@@ -1031,7 +1031,7 @@ dip_status TypePtrAddrSpace( type_handle *th, location_context *lc, address *a )
     return( ih->dip->TypePtrAddrSpace( IH2IIH( ih ), TH2ITH( th ), lc, a ) );
 }
 
-dip_status TypeThunkAdjust( type_handle *oth, type_handle *mth,
+dip_status DIPTypeThunkAdjust( type_handle *oth, type_handle *mth,
                         location_context *lc, address *a )
 {
     image_handle        *ih;
@@ -1047,7 +1047,7 @@ dip_status TypeThunkAdjust( type_handle *oth, type_handle *mth,
         TH2ITH( oth ), TH2ITH( mth ), lc, a ) );
 }
 
-int TypeCmp( type_handle *th1, type_handle *th2 )
+int DIPTypeCmp( type_handle *th1, type_handle *th2 )
 {
     image_handle        *ih;
 
@@ -1059,7 +1059,7 @@ int TypeCmp( type_handle *th1, type_handle *th2 )
     return( ih->dip->TypeCmp( IH2IIH( ih ), TH2ITH( th1 ), TH2ITH( th2 ) ) );
 }
 
-size_t TypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, size_t buff_size )
+size_t DIPTypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
@@ -1072,7 +1072,7 @@ size_t TypeName( type_handle *th, unsigned num, symbol_type *tag, char *buff, si
 /*
  * Symbol Information
  */
-mod_handle SymMod( sym_handle *sh )
+mod_handle DIPSymMod( sym_handle *sh )
 {
     image_handle        *ih;
 
@@ -1081,7 +1081,7 @@ mod_handle SymMod( sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-size_t SymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff, size_t buff_size )
+size_t DIPSymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
@@ -1091,7 +1091,7 @@ size_t SymName( sym_handle *sh, location_context *lc, symbol_name sn, char *buff
     return( ih->dip->SymName( IH2IIH( ih ), SH2ISH( sh ), lc, sn, buff, buff_size ) );
 }
 
-dip_status SymType( sym_handle *sh, type_handle *th )
+dip_status DIPSymType( sym_handle *sh, type_handle *th )
 {
     image_handle        *ih;
 
@@ -1103,7 +1103,7 @@ dip_status SymType( sym_handle *sh, type_handle *th )
     return( ih->dip->SymType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ) ) );
 }
 
-dip_status SymLocation( sym_handle *sh, location_context *lc, location_list *ll )
+dip_status DIPSymLocation( sym_handle *sh, location_context *lc, location_list *ll )
 {
     image_handle        *ih;
 
@@ -1113,7 +1113,7 @@ dip_status SymLocation( sym_handle *sh, location_context *lc, location_list *ll 
     return( ih->dip->SymLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
 }
 
-dip_status SymValue( sym_handle *sh, location_context *lc, void *value )
+dip_status DIPSymValue( sym_handle *sh, location_context *lc, void *value )
 {
     image_handle        *ih;
 
@@ -1123,7 +1123,7 @@ dip_status SymValue( sym_handle *sh, location_context *lc, void *value )
     return( ih->dip->SymValue( IH2IIH( ih ), SH2ISH( sh ), lc, value ) );
 }
 
-dip_status SymInfo( sym_handle *sh, location_context *lc, sym_info *si )
+dip_status DIPSymInfo( sym_handle *sh, location_context *lc, sym_info *si )
 {
     image_handle        *ih;
 
@@ -1133,7 +1133,7 @@ dip_status SymInfo( sym_handle *sh, location_context *lc, sym_info *si )
     return( ih->dip->SymInfo( IH2IIH( ih ), SH2ISH( sh ), lc, si ) );
 }
 
-void SymInit( sym_handle *sh, image_handle *ih )
+void DIPSymInit( sym_handle *sh, image_handle *ih )
 {
     if( ih != NULL ) {
         sh->ii = ih->ii;
@@ -1142,7 +1142,7 @@ void SymInit( sym_handle *sh, image_handle *ih )
     }
 }
 
-dip_status SymParmLocation( sym_handle *sh, location_context *lc,
+dip_status DIPSymParmLocation( sym_handle *sh, location_context *lc,
                         location_list *ll, unsigned parm )
 {
     image_handle        *ih;
@@ -1153,7 +1153,7 @@ dip_status SymParmLocation( sym_handle *sh, location_context *lc,
     return( ih->dip->SymParmLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll, parm ) );
 }
 
-dip_status SymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
+dip_status DIPSymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
 {
     image_handle        *ih;
 
@@ -1165,7 +1165,7 @@ dip_status SymObjType( sym_handle *sh, type_handle *th, dip_type_info *ti )
     return( ih->dip->SymObjType( IH2IIH( ih ), SH2ISH( sh ), TH2ITH( th ), ti ) );
 }
 
-dip_status SymObjLocation( sym_handle *sh, location_context *lc,
+dip_status DIPSymObjLocation( sym_handle *sh, location_context *lc,
                         location_list *ll )
 {
     image_handle        *ih;
@@ -1176,7 +1176,7 @@ dip_status SymObjLocation( sym_handle *sh, location_context *lc,
     return( ih->dip->SymObjLocation( IH2IIH( ih ), SH2ISH( sh ), lc, ll ) );
 }
 
-int SymCmp( sym_handle *sh1, sym_handle *sh2 )
+int DIPSymCmp( sym_handle *sh1, sym_handle *sh2 )
 {
     image_handle        *ih;
 
@@ -1188,7 +1188,7 @@ int SymCmp( sym_handle *sh1, sym_handle *sh2 )
     return( ih->dip->SymCmp( IH2IIH( ih ), SH2ISH( sh1 ), SH2ISH( sh2 ) ) );
 }
 
-dip_status SymAddRef( sym_handle *sh )
+dip_status DIPSymAddRef( sym_handle *sh )
 /**************************************/
 {
     image_handle        *ih;
@@ -1203,7 +1203,7 @@ dip_status SymAddRef( sym_handle *sh )
     }
 }
 
-dip_status SymRelease( sym_handle *sh )
+dip_status DIPSymRelease( sym_handle *sh )
 /**************************************/
 {
     image_handle        *ih;
@@ -1218,7 +1218,7 @@ dip_status SymRelease( sym_handle *sh )
     }
 }
 
-dip_status SymFreeAll( void )
+dip_status DIPSymFreeAll( void )
 /***************************/
 {
     image_handle        *ih;
@@ -1236,7 +1236,7 @@ dip_status SymFreeAll( void )
 /*
  * Source Cue Information
  */
-mod_handle CueMod( cue_handle *ch )
+mod_handle DIPCueMod( cue_handle *ch )
 {
     image_handle        *ih;
 
@@ -1244,7 +1244,7 @@ mod_handle CueMod( cue_handle *ch )
     return( MK_MH( ih->ii, ih->dip->CueMod( IH2IIH( ih ), CH2ICH( ch ) ) ) );
 }
 
-size_t CueFile( cue_handle *ch, char *buff, size_t buff_size )
+size_t DIPCueFile( cue_handle *ch, char *buff, size_t buff_size )
 {
     image_handle        *ih;
 
@@ -1254,7 +1254,7 @@ size_t CueFile( cue_handle *ch, char *buff, size_t buff_size )
     return( ih->dip->CueFile( IH2IIH( ih ), CH2ICH( ch ), buff, buff_size ) );
 }
 
-cue_fileid CueFileId( cue_handle *ch )
+cue_fileid DIPCueFileId( cue_handle *ch )
 {
     image_handle        *ih;
 
@@ -1262,7 +1262,7 @@ cue_fileid CueFileId( cue_handle *ch )
     return( ih->dip->CueFileId( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
-dip_status CueAdjust( cue_handle *ch, int adj, cue_handle *ach )
+dip_status DIPCueAdjust( cue_handle *ch, int adj, cue_handle *ach )
 {
     image_handle        *ih;
 
@@ -1273,7 +1273,7 @@ dip_status CueAdjust( cue_handle *ch, int adj, cue_handle *ach )
     return( ih->dip->CueAdjust( IH2IIH( ih ), CH2ICH( ch ), adj, CH2ICH( ach ) ) );
 }
 
-unsigned long CueLine( cue_handle *ch )
+unsigned long DIPCueLine( cue_handle *ch )
 {
     image_handle        *ih;
 
@@ -1283,7 +1283,7 @@ unsigned long CueLine( cue_handle *ch )
     return( ih->dip->CueLine( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
-unsigned CueColumn( cue_handle *ch )
+unsigned DIPCueColumn( cue_handle *ch )
 {
     image_handle        *ih;
 
@@ -1293,7 +1293,7 @@ unsigned CueColumn( cue_handle *ch )
     return( ih->dip->CueColumn( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
-address CueAddr( cue_handle *ch )
+address DIPCueAddr( cue_handle *ch )
 {
     image_handle        *ih;
 
@@ -1303,7 +1303,7 @@ address CueAddr( cue_handle *ch )
     return( ih->dip->CueAddr( IH2IIH( ih ), CH2ICH( ch ) ) );
 }
 
-search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
+search_result DIPLineCue( mod_handle mh, cue_fileid id, unsigned long line,
                         unsigned column, cue_handle *ch )
 {
     image_handle        *ih;
@@ -1319,12 +1319,12 @@ search_result LineCue( mod_handle mh, cue_fileid id, unsigned long line,
     return( ih->dip->LineCue( IH2IIH( ih ), MH2IMH( mh ), id, line, column, CH2ICH( ch ) ) );
 }
 
-search_result AddrCue( mod_handle mh, address addr, cue_handle *ch )
+search_result DIPAddrCue( mod_handle mh, address addr, cue_handle *ch )
 {
     image_handle        *ih;
 
     if( mh == NO_MOD ) {
-        if( AddrMod( addr, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( addr, &mh ) == SR_NONE ) {
             return( SR_NONE );
         }
     }
@@ -1335,7 +1335,7 @@ search_result AddrCue( mod_handle mh, address addr, cue_handle *ch )
     return( ih->dip->AddrCue( IH2IIH( ih ), MH2IMH( mh ), addr, CH2ICH( ch ) ) );
 }
 
-int CueCmp( cue_handle *ch1, cue_handle *ch2 )
+int DIPCueCmp( cue_handle *ch1, cue_handle *ch2 )
 {
     image_handle        *ih;
 
@@ -1350,7 +1350,7 @@ int CueCmp( cue_handle *ch1, cue_handle *ch2 )
 /*
  * Lookup Routines
  */
-search_result AddrMod( address a, mod_handle *mh )
+search_result DIPAddrMod( address a, mod_handle *mh )
 {
     image_handle        *ih;
     search_result       sr;
@@ -1385,12 +1385,12 @@ search_result AddrMod( address a, mod_handle *mh )
     return( SR_NONE );
 }
 
-search_result AddrSym( mod_handle mh, address a, sym_handle *sh )
+search_result DIPAddrSym( mod_handle mh, address a, sym_handle *sh )
 {
     image_handle        *ih;
 
     if( mh == NO_MOD ) {
-        if( AddrMod( a, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( a, &mh ) == SR_NONE ) {
             return( SR_NONE );
         }
     }
@@ -1402,7 +1402,7 @@ search_result AddrSym( mod_handle mh, address a, sym_handle *sh )
 }
 
 //NYI: needs to do something for expression names
-search_result LookupSymEx( symbol_source ss, void *source,
+search_result DIPLookupSymEx( symbol_source ss, void *source,
                         lookup_item *li, location_context *lc, void *d )
 {
     image_handle        *ih;
@@ -1427,7 +1427,7 @@ search_result LookupSymEx( symbol_source ss, void *source,
         source = &imh;
         break;
     case SS_SCOPED:
-        AddrMod( *(address *)source, &curr_mod );
+        DIPAddrMod( *(address *)source, &curr_mod );
         break;
     case SS_TYPE:
         th = (type_handle *)source;
@@ -1480,18 +1480,18 @@ search_result LookupSymEx( symbol_source ss, void *source,
     return( sr );
 }
 
-search_result LookupSym( symbol_source ss, void *source,
+search_result DIPLookupSym( symbol_source ss, void *source,
                         lookup_item *li, void *d )
 {
-    return( LookupSymEx( ss, source, li, NULL, d ) );
+    return( DIPLookupSymEx( ss, source, li, NULL, d ) );
 }
 
-search_result AddrScope( mod_handle mh, address addr, scope_block *scope )
+search_result DIPAddrScope( mod_handle mh, address addr, scope_block *scope )
 {
     image_handle        *ih;
 
     if( mh == NO_MOD ) {
-        if( AddrMod( addr, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( addr, &mh ) == SR_NONE ) {
             return( SR_NONE );
         }
     }
@@ -1501,12 +1501,12 @@ search_result AddrScope( mod_handle mh, address addr, scope_block *scope )
     return( ih->dip->AddrScope( IH2IIH( ih ), MH2IMH( mh ), addr, scope ) );
 }
 
-search_result ScopeOuter( mod_handle mh, scope_block *in, scope_block *out )
+search_result DIPScopeOuter( mod_handle mh, scope_block *in, scope_block *out )
 {
     image_handle        *ih;
 
     if( mh == NO_MOD ) {
-        if( AddrMod( in->start, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( in->start, &mh ) == SR_NONE ) {
             return( SR_NONE );
         }
     }

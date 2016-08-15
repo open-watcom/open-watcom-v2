@@ -595,7 +595,7 @@ type_kind GblTypeClassify( unsigned kind )
 
 
 walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                        DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     section_info        *inf;
     info_block          *blk;

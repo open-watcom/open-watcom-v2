@@ -267,7 +267,7 @@ typedef struct {
     drmem_hdl           stmts;
     imp_image_handle    *ii;
     imp_mod_handle      im;
-    IMP_CUE_WKR         *wk;
+    DIP_IMP_CUE_WALKER  *wk;
     imp_cue_handle      *ic;
     void                *d;
     walk_result         wr;
@@ -302,7 +302,7 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
                     void *d )
 /*************************************************************************/
 {

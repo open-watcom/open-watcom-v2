@@ -120,7 +120,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 dip_status DIPIMPENTRY( Startup )(void)
 {
 /*
-        Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?
+        Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
         constant if something went wrong.
 */
     Cleaners = NULL;

@@ -680,7 +680,7 @@ search_result SearchTypeName( imp_image_handle *ii, imp_mod_handle im,
 }
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_TYPE_WKR *wk, imp_type_handle *it, void *d )
+                        DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it, void *d )
 {
     const char  *p;
     byte        kind;
@@ -1722,7 +1722,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
 }
 
 walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                 IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     const char                  *p;
     unsigned                    count;

@@ -241,7 +241,7 @@ image_entry *ImageEntry( mod_handle mh )
 {
     image_entry         **image_ptr;
 
-    image_ptr = ImageExtra( mh );
+    image_ptr = DIPImageExtra( mh );
     return( (image_ptr == NULL) ? NULL : *image_ptr );
 }
 
@@ -512,7 +512,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
             return( false );
         }
     }
-    *(image_entry **)ImageExtra( image->dip_handle ) = image;
+    *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
     return( true );
 }
 
@@ -698,9 +698,9 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
         if( bp->cue_diff != 0 ) {
             if( DeAliasAddrCue( mod, addr, ch ) != SR_EXACT )
                 return( REMAP_ERROR );
-            if( LineCue( mod, CueFileId( ch ), CueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
+            if( DIPLineCue( mod, DIPCueFileId( ch ), DIPCueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
                 return( REMAP_ERROR );
-            addr = CueAddr( ch2 );
+            addr = DIPCueAddr( ch2 );
         }
         if( bp->addr_diff != 0 ) {
             addr.mach.offset += bp->addr_diff;

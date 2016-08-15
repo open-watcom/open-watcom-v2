@@ -64,89 +64,89 @@ unsigned        DIPImagePriority( mod_handle );
 /*
  *      Information Walkers
  */
-typedef         walk_result (IMAGE_WALKER)( mod_handle, void * );
-typedef         walk_result (MOD_WALKER)( mod_handle, void * );
-typedef         walk_result (TYPE_WALKER)( type_handle *, void * );
-typedef         walk_result (SYM_WALKER)( sym_walk_info, sym_handle *, void * );
-typedef         walk_result (CUE_WALKER)( cue_handle *, void * );
+typedef         walk_result (DIP_IMAGE_WALKER)( mod_handle, void * );
+typedef         walk_result (DIP_MOD_WALKER)( mod_handle, void * );
+typedef         walk_result (DIP_TYPE_WALKER)( type_handle *, void * );
+typedef         walk_result (DIP_SYM_WALKER)( sym_walk_info, sym_handle *, void * );
+typedef         walk_result (DIP_CUE_WALKER)( cue_handle *, void * );
 
-walk_result     WalkImageList( IMAGE_WALKER *, void * );
-walk_result     WalkModList( mod_handle, MOD_WALKER *, void * );
-walk_result     WalkTypeList( mod_handle, TYPE_WALKER *, void * );
-walk_result     WalkSymList( symbol_source, void *, SYM_WALKER *, void * );
-walk_result     WalkSymListEx( symbol_source, void *, SYM_WALKER *, location_context *, void * );
-walk_result     WalkFileList( mod_handle, CUE_WALKER *, void * );
+walk_result     DIPWalkImageList( DIP_IMAGE_WALKER *, void * );
+walk_result     DIPWalkModList( mod_handle, DIP_MOD_WALKER *, void * );
+walk_result     DIPWalkTypeList( mod_handle, DIP_TYPE_WALKER *, void * );
+walk_result     DIPWalkSymList( symbol_source, void *, DIP_SYM_WALKER *, void * );
+walk_result     DIPWalkSymListEx( symbol_source, void *, DIP_SYM_WALKER *, location_context *, void * );
+walk_result     DIPWalkFileList( mod_handle, DIP_CUE_WALKER *, void * );
 
 /*
  * Image Information
  */
-void            *ImageExtra( mod_handle );
-const char      *ImageDIP( mod_handle );
+void            *DIPImageExtra( mod_handle );
+const char      *DIPImageName( mod_handle );
 
 /*
  * Module Information
  */
-size_t          ModName( mod_handle, char *buff, size_t buff_size );
-char            *ModSrcLang( mod_handle );
-dip_status      ModHasInfo( mod_handle, handle_kind );
-search_result   AddrMod( address, mod_handle * );
-address         ModAddr( mod_handle );
-dip_status      ModDefault( mod_handle, default_kind, dip_type_info * );
+size_t          DIPModName( mod_handle, char *buff, size_t buff_size );
+char            *DIPModSrcLang( mod_handle );
+dip_status      DIPModHasInfo( mod_handle, handle_kind );
+search_result   DIPAddrMod( address, mod_handle * );
+address         DIPModAddr( mod_handle );
+dip_status      DIPModDefault( mod_handle, default_kind, dip_type_info * );
 
 /*
  * Type Information
  */
-mod_handle      TypeMod( type_handle * );
-dip_status      TypeInfo( type_handle *, location_context *lc, dip_type_info * );
-dip_status      TypeBase( type_handle *t, type_handle *b, location_context *lc, location_list * );
-dip_status      TypeArrayInfo( type_handle *, location_context *, array_info *, type_handle * );
-dip_status      TypeProcInfo( type_handle *t, type_handle *r, unsigned p );
-dip_status      TypePtrAddrSpace( type_handle *, location_context *, address * );
-dip_status      TypeThunkAdjust( type_handle *, type_handle *, location_context *, address * );
-dip_status      TypePointer( type_handle *, type_modifier, unsigned, type_handle * );
-void            TypeInit( type_handle *, mod_handle );
-int             TypeCmp( type_handle *, type_handle * );
-size_t          TypeName( type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size );
-dip_status      TypeAddRef( type_handle * );
-dip_status      TypeRelease( type_handle * );
-dip_status      TypeFreeAll( void );
+mod_handle      DIPTypeMod( type_handle * );
+dip_status      DIPTypeInfo( type_handle *, location_context *lc, dip_type_info * );
+dip_status      DIPTypeBase( type_handle *t, type_handle *b, location_context *lc, location_list * );
+dip_status      DIPTypeArrayInfo( type_handle *, location_context *, array_info *, type_handle * );
+dip_status      DIPTypeProcInfo( type_handle *t, type_handle *r, unsigned p );
+dip_status      DIPTypePtrAddrSpace( type_handle *, location_context *, address * );
+dip_status      DIPTypeThunkAdjust( type_handle *, type_handle *, location_context *, address * );
+dip_status      DIPTypePointer( type_handle *, type_modifier, unsigned, type_handle * );
+void            DIPTypeInit( type_handle *, mod_handle );
+int             DIPTypeCmp( type_handle *, type_handle * );
+size_t          DIPTypeName( type_handle *, unsigned, symbol_type *, char *buff, size_t buff_size );
+dip_status      DIPTypeAddRef( type_handle * );
+dip_status      DIPTypeRelease( type_handle * );
+dip_status      DIPTypeFreeAll( void );
 
 /*
  * Symbol Information
  */
-mod_handle      SymMod( sym_handle * );
-size_t          SymName( sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size );
-dip_status      SymType( sym_handle *, type_handle * );
-dip_status      SymLocation( sym_handle *, location_context *, location_list * );
-dip_status      SymValue( sym_handle *, location_context *, void * );
-dip_status      SymInfo( sym_handle *, location_context *, sym_info * );
-void            SymInit( sym_handle *sh, image_handle *ih );
-dip_status      SymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
-dip_status      SymObjType( sym_handle *, type_handle *, dip_type_info * );
-dip_status      SymObjLocation( sym_handle *, location_context *, location_list * );
-search_result   AddrSym( mod_handle, address, sym_handle * );
-search_result   LookupSym( symbol_source, void *, lookup_item *, void * );
-search_result   LookupSymEx( symbol_source, void *, lookup_item *, location_context *, void * );
-search_result   AddrScope( mod_handle, address, scope_block * );
-search_result   ScopeOuter( mod_handle, scope_block *, scope_block * );
-int             SymCmp( sym_handle *, sym_handle * );
-dip_status      SymAddRef( sym_handle * );
-dip_status      SymRelease( sym_handle * );
-dip_status      SymFreeAll( void );
+mod_handle      DIPSymMod( sym_handle * );
+size_t          DIPSymName( sym_handle *, location_context *, symbol_name, char *buff, size_t buff_size );
+dip_status      DIPSymType( sym_handle *, type_handle * );
+dip_status      DIPSymLocation( sym_handle *, location_context *, location_list * );
+dip_status      DIPSymValue( sym_handle *, location_context *, void * );
+dip_status      DIPSymInfo( sym_handle *, location_context *, sym_info * );
+void            DIPSymInit( sym_handle *sh, image_handle *ih );
+dip_status      DIPSymParmLocation( sym_handle *, location_context *, location_list *, unsigned p );
+dip_status      DIPSymObjType( sym_handle *, type_handle *, dip_type_info * );
+dip_status      DIPSymObjLocation( sym_handle *, location_context *, location_list * );
+search_result   DIPAddrSym( mod_handle, address, sym_handle * );
+search_result   DIPLookupSym( symbol_source, void *, lookup_item *, void * );
+search_result   DIPLookupSymEx( symbol_source, void *, lookup_item *, location_context *, void * );
+search_result   DIPAddrScope( mod_handle, address, scope_block * );
+search_result   DIPScopeOuter( mod_handle, scope_block *, scope_block * );
+int             DIPSymCmp( sym_handle *, sym_handle * );
+dip_status      DIPSymAddRef( sym_handle * );
+dip_status      DIPSymRelease( sym_handle * );
+dip_status      DIPSymFreeAll( void );
 
 
 /*
  * Source Cue Information
  */
-mod_handle      CueMod( cue_handle * );
-size_t          CueFile( cue_handle *, char *buff, size_t buff_size );
-cue_fileid      CueFileId( cue_handle * );
-dip_status      CueAdjust( cue_handle *, int adj, cue_handle * );
-unsigned long   CueLine( cue_handle * );
-unsigned        CueColumn( cue_handle * );
-address         CueAddr( cue_handle * );
-search_result   LineCue( mod_handle, cue_fileid, unsigned long line, unsigned column, cue_handle * );
-search_result   AddrCue( mod_handle, address, cue_handle * );
-int             CueCmp( cue_handle *, cue_handle * );
+mod_handle      DIPCueMod( cue_handle * );
+size_t          DIPCueFile( cue_handle *, char *buff, size_t buff_size );
+cue_fileid      DIPCueFileId( cue_handle * );
+dip_status      DIPCueAdjust( cue_handle *, int adj, cue_handle * );
+unsigned long   DIPCueLine( cue_handle * );
+unsigned        DIPCueColumn( cue_handle * );
+address         DIPCueAddr( cue_handle * );
+search_result   DIPLineCue( mod_handle, cue_fileid, unsigned long line, unsigned column, cue_handle * );
+search_result   DIPAddrCue( mod_handle, address, cue_handle * );
+int             DIPCueCmp( cue_handle *, cue_handle * );
 
 #endif

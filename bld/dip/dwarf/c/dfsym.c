@@ -1079,7 +1079,7 @@ typedef struct {
 typedef struct {
     blk_wlk_com         com;
     walk_result         wr;
-    IMP_SYM_WKR         *wk;
+    DIP_IMP_SYM_WALKER  *wk;
     imp_sym_handle      *is;
 } blk_wlk_wlk;
 
@@ -1416,11 +1416,11 @@ static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void 
 
 
 static walk_result DFWalkSymList( imp_image_handle *ii,
-                         symbol_source     ss,
-                         void             *source,
-                         IMP_SYM_WKR      *wk,
-                         imp_sym_handle   *is,
-                         void             *d )
+                         symbol_source      ss,
+                         void               *source,
+                         DIP_IMP_SYM_WALKER *wk,
+                         imp_sym_handle     *is,
+                         void               *d )
 /******************************************************/
 {
     imp_mod_handle      im;
@@ -1472,26 +1472,26 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
 }
 
 
-walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
-                                        symbol_source     ss,
-                                        void             *source,
-                                        IMP_SYM_WKR      *wk,
-                                        imp_sym_handle   *is,
-                                        void              *d )
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle    *ii,
+                                        symbol_source       ss,
+                                        void                *source,
+                                        DIP_IMP_SYM_WALKER  *wk,
+                                        imp_sym_handle      *is,
+                                        void                *d )
 /***************************************************************/
 {
     return( DFWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
 
-walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii,
-                                          symbol_source     ss,
-                                          void             *source,
-                                          IMP_SYM_WKR      *wk,
-                                          imp_sym_handle   *is,
-                                          location_context *lc,
-                                           void             *d )
-/*****************************************************************/
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle      *ii,
+                                          symbol_source         ss,
+                                          void                  *source,
+                                          DIP_IMP_SYM_WALKER    *wk,
+                                          imp_sym_handle        *is,
+                                          location_context      *lc,
+                                           void                 *d )
+/******************************************************************/
 {
     lc = lc;
     return( DFWalkSymList( ii, ss, source, wk, is, d ) );

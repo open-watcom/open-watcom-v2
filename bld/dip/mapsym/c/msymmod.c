@@ -32,7 +32,7 @@
 #include "msym.h"
 
 walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
-                        IMP_MOD_WKR *wk, void *d )
+                        DIP_IMP_MOD_WALKER *wk, void *d )
 {
     return( wk( ii, IMH_MAP, d ) );
 }

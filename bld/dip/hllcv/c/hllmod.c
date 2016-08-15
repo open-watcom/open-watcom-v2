@@ -34,7 +34,7 @@
 
 /* Arguments passed to GlueModWalk. */
 struct glue_mod_walk {
-    IMP_MOD_WKR         *wk;
+    DIP_IMP_MOD_WALKER  *wk;
     void                *d;
     imp_mod_handle      im;
 };
@@ -52,7 +52,7 @@ static walk_result GlueModWalk( imp_image_handle *ii, hll_dir_entry *hdd,
 /*
  * Walk modules.
  */
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk,
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk,
                                         void *d )
 {
     struct glue_mod_walk    md;

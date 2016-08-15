@@ -228,7 +228,7 @@ extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
         DIPStatus = DS_OK;
         dip_module = DIPLoadInfo( dfh, image_size, prio );
         if( dip_module != NO_MOD ) {
-            *(void **)ImageExtra( dip_module ) = image;
+            *(void **)DIPImageExtra( dip_module ) = image;
             DIPMapInfo( dip_module, image );
             break;
         }

@@ -115,16 +115,17 @@ extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
     wpsrc_file = ProfCAlloc( sizeof( wp_srcfile ) );
     wpsrc_file->src_file = src_file;
     curr_sio->src_file = wpsrc_file;
-    if( SymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
+    if( DIPSymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
         ch = alloca( DIPHandleSize( HK_CUE, false ) );
-        AddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
-        wpsrc_file->rtn_line = CueLine( ch );
+        DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, ch );
+        wpsrc_file->rtn_line = DIPCueLine( ch );
     }
     setSrcLineData( wpsrc_file, curr_sio, curr_mod, curr_file, curr_rtn );
     line = 1;
     for( ;; ) {
         WPSourceGetLine( curr_sio->sample_window, line );
-        if( wpsrc_file->src_eof ) break;
+        if( wpsrc_file->src_eof )
+            break;
         line++;
     }
     wpsrc_file->src_rows = line - 1;
@@ -197,9 +198,9 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
         }
         while( count2-- > 0 ) {
             samp_data = WPGetMassgdSampData( curr_sio, click_index );
-            if( AddrCue( curr_mod->mh, *samp_data->raw, ch ) != SR_NONE ) {
-                if( CueFileId( ch ) == curr_file->fid ) {
-                    new_line = CueLine( ch );
+            if( DIPAddrCue( curr_mod->mh, *samp_data->raw, ch ) != SR_NONE ) {
+                if( DIPCueFileId( ch ) == curr_file->fid ) {
+                    new_line = DIPCueLine( ch );
                 }
             }
             if( last_srcline != new_line || line_index == -1 ) {

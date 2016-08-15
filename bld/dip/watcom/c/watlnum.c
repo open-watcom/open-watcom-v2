@@ -447,7 +447,7 @@ address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 
 
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
-            IMP_CUE_WKR *wk, imp_cue_handle *ic, void *d )
+            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
 {
     line_info           *curr;
     line_segment        *ptr;

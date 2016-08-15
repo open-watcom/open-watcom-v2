@@ -84,7 +84,7 @@ static imp_sym_handle *DoSymCreate( imp_image_handle *iih, sym_list **sl_head )
     sym_list        *new_sl;
 
     _ChkAlloc( new_sl, sizeof( sym_list ) - sizeof( byte ) + sym_SIZE, LIT_ENG( ERR_NO_MEMORY_FOR_DEBUG ) );
-    SymInit( SL2SH( new_sl ), IIH2IH( iih ) );
+    DIPSymInit( SL2SH( new_sl ), IIH2IH( iih ) );
     new_sl->next = *sl_head;
     *sl_head = new_sl;
     return( SL2ISH( new_sl ) );
@@ -150,11 +150,11 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context *lc, context_item ci,
             lc->maybe_have_frame = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
-            } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
+            } else if( DIPSymInfo( sh, NULL, &info ) != DS_OK ) {
                 /* nothing to do */
             } else if( info.kind != SK_PROCEDURE ) {
                 /* nothing to do */
-            } else if( SymLocation( sh, NULL, ll ) != DS_OK ) {
+            } else if( DIPSymLocation( sh, NULL, ll ) != DS_OK ) {
                 /* nothing to do */
             } else if( lc->execution.mach.offset
                  < ll->e[0].u.addr.mach.offset + info.prolog_size ) {
@@ -188,11 +188,11 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context *lc, context_item ci,
             lc->maybe_have_object = false;
             if( DeAliasAddrSym( NO_MOD, lc->execution, sh ) == SR_NONE ) {
                 /* nothing to do */
-            } else if( SymInfo( sh, NULL, &info ) != DS_OK ) {
+            } else if( DIPSymInfo( sh, NULL, &info ) != DS_OK ) {
                 /* nothing to do */
             } else if( info.kind != SK_PROCEDURE ) {
                 /* nothing to do */
-            } else if( SymObjLocation( sh, lc, &lc->object ) == DS_OK ) {
+            } else if( DIPSymObjLocation( sh, lc, &lc->object ) == DS_OK ) {
                 lc->have_object = true;
             }
         }
@@ -246,25 +246,25 @@ dig_mad DIPCLIENTRY( CurrMAD )( void )
 search_result DeAliasAddrMod( address a, mod_handle *mh )
 {
     DeAlias( &a.mach );
-    return( AddrMod( a, mh ) );
+    return( DIPAddrMod( a, mh ) );
 }
 
 search_result DeAliasAddrSym( mod_handle mh, address a, sym_handle *sh )
 {
     DeAlias( &a.mach );
-    return( AddrSym( mh, a, sh ) );
+    return( DIPAddrSym( mh, a, sh ) );
 }
 
 search_result DeAliasAddrScope( mod_handle mh, address a, scope_block *sb )
 {
     DeAlias( &a.mach );
-    return( AddrScope( mh, a, sb ) );
+    return( DIPAddrScope( mh, a, sb ) );
 }
 
 search_result DeAliasAddrCue( mod_handle mh, address a, cue_handle *ch )
 {
     DeAlias( &a.mach );
-    return( AddrCue( mh, a, ch ) );
+    return( DIPAddrCue( mh, a, ch ) );
 }
 
 /*
@@ -321,7 +321,7 @@ static void WVIMPENTRY( UnloadInfo )( imp_image_handle *ii )
     ii = ii;
 }
 
-static walk_result WVIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+static walk_result WVIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     return( wk( ii, WV_INT_MH, d ) );
 }
@@ -382,7 +382,7 @@ static address WVIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
 
 
 static walk_result WVIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_TYPE_WKR *wk, imp_type_handle *it, void *d )
+                        DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it, void *d )
 {
     ii = ii; im = im; wk = wk, it=it, d = d;
     return( WR_CONTINUE );
@@ -458,14 +458,14 @@ static dip_status WVIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii, imp_type_
 }
 
 static walk_result WVIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
-                    void *src, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                    void *src, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     ii = ii; ss = ss; src = src; wk = wk; is = is; d = d;
     return( WR_CONTINUE );
 }
 
 static walk_result WVIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
-                    void *src, IMP_SYM_WKR *wk, imp_sym_handle *is,
+                    void *src, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                     location_context *lc, void *d )
 {
     ii = ii; ss = ss; src = src; wk = wk; is = is; lc = lc; d = d;
@@ -680,7 +680,7 @@ static search_result WVIMPENTRY( ScopeOuter )( imp_image_handle *ii, imp_mod_han
 
 
 static walk_result WVIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im,
-            IMP_CUE_WKR *wk, imp_cue_handle *ic, void *d )
+            DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
 {
     ii = ii; im = im; wk = wk; ic = ic; d = d;
     return( WR_CONTINUE );
@@ -1008,7 +1008,7 @@ void FiniDbgInfo( void )
 
 bool IsInternalMod( mod_handle mod )
 {
-    return( ImageDIP( mod ) == WVImp( Name ) );
+    return( DIPImageName( mod ) == WVImp( Name ) );
 }
 
 bool IsInternalModName( const char *start, size_t len )

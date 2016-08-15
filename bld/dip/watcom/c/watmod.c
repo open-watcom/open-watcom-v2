@@ -358,7 +358,7 @@ word ModOff2Idx( section_info *inf, word off )
  * DIPImpWalkModList - walk the module list
  */
 
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -385,7 +385,7 @@ walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     return( WR_CONTINUE );
 }
 
-walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk, void *d )
+walk_result MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;

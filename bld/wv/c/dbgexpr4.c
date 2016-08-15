@@ -448,7 +448,7 @@ void DoAddr( void )
         ExprSetAddrInfo( ExprSP, false );
         if( ExprSP->th != NULL ) {
             GetMADTypeDefaultAt( ExprSP->v.addr, MTK_ADDRESS, &mti );
-            TypePointer( ExprSP->th, TM_FAR, BITS2BYTES( mti.b.bits ), ExprSP->th );
+            DIPTypePointer( ExprSP->th, TM_FAR, BITS2BYTES( mti.b.bits ), ExprSP->th );
             ExprSP->info.kind = TK_POINTER;
         } else {
             ExprSP->info.kind = TK_ADDRESS;
@@ -486,7 +486,7 @@ void DoAPoints( stack_entry *stk, type_kind def )
     case TK_ADDRESS:
         if( stk->th != NULL ) {
             LocationCreate( &stk->v.loc, LT_ADDR, &stk->v.addr );
-            TypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
+            DIPTypeBase( stk->th, stk->th, stk->lc, &stk->v.loc );
             ClassifyEntry( stk, &stk->info );
             if( stk->info.kind == TK_VOID ) {
                 Error( ERR_NONE, LIT_ENG( ERR_VOID_BASE ) );
@@ -543,14 +543,14 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
         goto no_adjust;
     if( AddrComp( object->v.addr, NilAddr ) == 0 )
         goto no_adjust;
-    TypeBase( obj_th, obj_th, NULL, NULL );
+    DIPTypeBase( obj_th, obj_th, NULL, NULL );
     ClassifyType( object->lc, obj_th, &obj_type );
     if( obj_type.kind != TK_STRUCT )
         goto no_adjust;
     ClassifyEntry( new, &new_type );
     if( new_type.kind != TK_POINTER )
         goto no_adjust;
-    TypeBase( new->th, new_th, NULL, NULL );
+    DIPTypeBase( new->th, new_th, NULL, NULL );
     ClassifyType( object->lc, new_th, &new_type );
     if( new_type.kind != TK_STRUCT )
         goto no_adjust;
@@ -561,7 +561,7 @@ static void ConvertGiven( stack_entry *object, stack_entry *new )
      * type of the old. If it is, we have to adjust the pointer by the
      * correct amount.
      */
-     TypeThunkAdjust( obj_th, new_th, object->lc, &object->v.addr );
+     DIPTypeThunkAdjust( obj_th, new_th, object->lc, &object->v.addr );
      /*
         NYI: C++ actually allows us to go the other way (convert a base
         type to a derived type) if the thunk adjust does not have to go
@@ -742,7 +742,7 @@ void DoField( void )
         if( DeAliasAddrSym( NO_MOD, object->v.addr, sh ) == SR_NONE ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
         }
-        if( SymLocation( sh, object->lc, &ll ) != DS_OK
+        if( DIPSymLocation( sh, object->lc, &ll ) != DS_OK
           || ll.num != 1 || ll.e[0].type != LT_ADDR ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), object->v.addr );
         }
@@ -952,7 +952,7 @@ static type_modifier DerefType( type_handle *th )
 {
     dip_type_info   ti;
 
-    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
+    if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( TM_NONE );
     if( ti.kind != TK_POINTER )
         return( TM_NONE );
@@ -965,7 +965,7 @@ static item_type DerefToSCB( type_handle *th )
 {
     dip_type_info   ti;
 
-    if( TypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
+    if( DIPTypeInfo( th, ExprSP->lc, &ti ) != DS_OK )
         return( IT_NIL );
     if( ti.kind != TK_POINTER )
         return( IT_NIL );
@@ -1022,7 +1022,7 @@ static void Addressable( bool build_scb, type_handle *parm_type )
         if( ExprSP->info.kind == TK_STRING ) {
             src = ExprSP->v.string.loc;
         } else {
-            TypeBase( parm_type, th, NULL, NULL );
+            DIPTypeBase( parm_type, th, NULL, NULL );
             PushType( th );
             SwapStack( 1 );
             DoConvert();
@@ -1109,18 +1109,18 @@ void DoCall( int num_parms, bool build_scbs )
         AddrFix( &addr );
         Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), addr );
     }
-    SymInfo( rtn_sh, rtn_entry->lc, &rtn_si );
+    DIPSymInfo( rtn_sh, rtn_entry->lc, &rtn_si );
     if( rtn_si.kind != SK_PROCEDURE ) {
         Error( ERR_NONE, LIT_ENG( ERR_NO_ROUTINE ), addr );
     }
-    SymType( rtn_sh, rtn_th );
-    TypeProcInfo( rtn_th, ret_th, 0 );
+    DIPSymType( rtn_sh, rtn_th );
+    DIPTypeProcInfo( rtn_th, ret_th, 0 );
     /* check if it is Fortran function returning CHARACTER blocks */
     ret_kind = RET_NORMAL;
     if( DerefType( ret_th ) != TM_NONE ) {
         ret_kind = RET_REFERENCE;
-        TypeBase( ret_th, th, NULL, NULL );
-        TypeInfo( th, rtn_entry->lc, &ti );
+        DIPTypeBase( ret_th, th, NULL, NULL );
+        DIPTypeInfo( th, rtn_entry->lc, &ti );
         if( ti.kind == TK_STRING ) {
             ret_kind = RET_SCB;
             if( ti.size == 0 ) {
@@ -1135,7 +1135,7 @@ void DoCall( int num_parms, bool build_scbs )
             ++num_parms;
         }
     }
-    SymObjType( rtn_sh, obj_th, &this_ti );
+    DIPSymObjType( rtn_sh, obj_th, &this_ti );
     if( this_ti.kind == TK_POINTER ) {
         if( !rtn_entry->lc->have_object ) {
             Error( ERR_NONE, LIT_ENG( ERR_NO_OBJECT_FOR_CALL ) );
@@ -1145,7 +1145,7 @@ void DoCall( int num_parms, bool build_scbs )
         parm_loc_adjust = 0;
     }
     for( parm = num_parms; parm > 0; --parm ) {
-        ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ll, parm + parm_loc_adjust );
+        ds = DIPSymParmLocation( rtn_sh, rtn_entry->lc, &ll, parm + parm_loc_adjust );
         if( ds & DS_ERR ) {
             Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
         }
@@ -1154,7 +1154,7 @@ void DoCall( int num_parms, bool build_scbs )
         }
         PushLocation( &ll, &StkEntry( parm )->info );
         MoveSP( 2 );
-        if( TypeProcInfo( rtn_th, parm_th, parm ) == DS_OK ) {
+        if( DIPTypeProcInfo( rtn_th, parm_th, parm ) == DS_OK ) {
             PushType( parm_th );
             MoveSP( -1 );
             if( DerefType( parm_th ) != TM_NONE ) {
@@ -1165,11 +1165,11 @@ void DoCall( int num_parms, bool build_scbs )
         }
     }
     if( this_ti.kind == TK_POINTER ) {
-        TypeInfo( obj_th, rtn_entry->lc, &ti );
+        DIPTypeInfo( obj_th, rtn_entry->lc, &ti );
         PushLocation( &rtn_entry->lc->object, &ti );
         Addressable( false, obj_th );
         ConvertTo( ExprSP, this_ti.kind, this_ti.modifier, this_ti.size );
-        ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ll, 1 );
+        ds = DIPSymParmLocation( rtn_sh, rtn_entry->lc, &ll, 1 );
         if( ds & DS_ERR ) {
             Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
         }
@@ -1182,8 +1182,8 @@ void DoCall( int num_parms, bool build_scbs )
     }
     MoveSP( -2 * num_parms );
     FreezeRegs();
-    TypeInfo( ret_th, rtn_entry->lc, &ret_ti );
-    ds = SymParmLocation( rtn_sh, rtn_entry->lc, &ret_ll, 0 );
+    DIPTypeInfo( ret_th, rtn_entry->lc, &ret_ti );
+    ds = DIPSymParmLocation( rtn_sh, rtn_entry->lc, &ret_ll, 0 );
     if( ds & DS_ERR ) {
         Error( ERR_NONE, LIT_ENG( ERR_CALL_NOT_ALLOWED ) );
     }

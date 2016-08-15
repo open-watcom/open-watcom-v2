@@ -774,15 +774,15 @@ void AddSubscript( void )
     save_imp = array->flags & SF_IMP_ADDR;
     switch( array->info.kind ) {
     case TK_ARRAY:
-        TypeArrayInfo( array->th, array->lc, &ai, th );
+        DIPTypeArrayInfo( array->th, array->lc, &ai, th );
         PushType( th );
         SwapStack( 1 );
         DoConvert();
         break;
     case TK_POINTER:
         save_imp = 0;
-        TypeBase( array->th, th, NULL, NULL );
-        TypeInfo( th, array->lc, &ti );
+        DIPTypeBase( array->th, th, NULL, NULL );
+        DIPTypeInfo( th, array->lc, &ti );
         ai.stride = ti.size;
         ai.low_bound = 0;
         RValue( ExprSP );

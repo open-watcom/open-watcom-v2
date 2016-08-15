@@ -69,7 +69,7 @@ STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
         if( curr_image->dip_handle == NO_MOD ) {
             fprintf( df, "  has no dip information\n" );
         } else {
-            fprintf( df, "  is using the '%s' DIP\n", ImageDIP( curr_image->dip_handle ) );
+            fprintf( df, "  is using the '%s' DIP\n", DIPImageName( curr_image->dip_handle ) );
         }
         if( curr_image->agg_count > 0 ) {
             fprintf( df, "  tick count = %lu\n", curr_image->agg_count );
@@ -80,7 +80,7 @@ STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
             if( (all_info && curr_mod->mh != 0)
              || curr_mod->agg_count != 0) {
                 fprintf( df, "  module name '%s'   (%s language)\n", curr_mod->name,
-                        ModSrcLang( curr_mod->mh ) );
+                        DIPModSrcLang( curr_mod->mh ) );
                 if( curr_mod->agg_count > 0 ) {
                     fprintf( df, "    tick count = %lu\n", curr_mod->agg_count );
                 }
@@ -100,7 +100,7 @@ STATIC void dumpSampleImages( bool all_info, sio_data * curr_sio )
                      || curr_rtn->tick_count != 0 ) {
                         fprintf( df, "      symbol '%s'\n", curr_rtn->name );
                         if( curr_rtn->sh != NULL
-                         && SymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
+                         && DIPSymLocation( curr_rtn->sh, NULL, &ll ) == DS_OK ) {
                             if( ll.e[0].type == LT_ADDR ) {
                                 FormatAddr( ll.e[0].u.addr, buff, sizeof( buff ) );
                                 fprintf( df, "          address = [%d]%s\n",

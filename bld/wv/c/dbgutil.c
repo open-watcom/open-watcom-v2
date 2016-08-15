@@ -61,7 +61,7 @@ unsigned DefaultSize( default_kind dk )
     dip_type_info       info;
     mad_type_info       mti;
 
-    if( ModDefault( CodeAddrMod, dk, &info ) != 0 ) {
+    if( DIPModDefault( CodeAddrMod, dk, &info ) != 0 ) {
         info.kind = TK_NONE;
         info.size = 0;
     }
@@ -171,12 +171,12 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
     size_t      rc;
     sym_info    sinfo;
 
-    SymInfo( sh, NULL, &sinfo );
+    DIPSymInfo( sh, NULL, &sinfo );
     if( sinfo.is_global ) {
         len = 0;
     } else {
-        mod = SymMod( sh );
-        name_len = ModName( mod, name, max );
+        mod = DIPSymMod( sh );
+        name_len = DIPModName( mod, name, max );
         if( name_len < max ) {
             if( name != NULL ) {
                 name += name_len;
@@ -186,13 +186,13 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len = name_len + 1;
     }
-    if( uniq && SymName( sh, NULL, SN_DEMANGLED, NULL, 0 ) != 0 ) {
+    if( uniq && DIPSymName( sh, NULL, SN_DEMANGLED, NULL, 0 ) != 0 ) {
         if( name != NULL ) {
             *name++ = '`';
             max--;
         }
         len++;
-        name_len = SymName( sh, NULL, SN_OBJECT, name, max );
+        name_len = DIPSymName( sh, NULL, SN_OBJECT, name, max );
         len += name_len;
         if( name != NULL ) {
             name += name_len;
@@ -202,9 +202,9 @@ size_t QualifiedSymName( sym_handle *sh, char *name, size_t max, bool uniq )
         }
         len++;
     } else {
-        rc = SymName( sh, NULL, SN_SCOPED, name, max );
+        rc = DIPSymName( sh, NULL, SN_SCOPED, name, max );
         if( rc == 0 ) {
-            rc = SymName( sh, NULL, SN_SOURCE, name, max );
+            rc = DIPSymName( sh, NULL, SN_SOURCE, name, max );
         }
         len += rc;
     }
@@ -234,7 +234,7 @@ char *CnvAddr( address addr, cnvaddr_option cao, bool uniq,
     case SR_CLOSEST:
         if( cao == CAO_NO_PLUS )
             return( NULL );
-        SymLocation( sym, NULL, &ll );
+        DIPSymLocation( sym, NULL, &ll );
         sym_offset = addr.mach.offset - ll.e[0].u.addr.mach.offset;
         if( cao == CAO_NORMAL_PLUS ) {
             char    *prfx;
@@ -325,9 +325,9 @@ char *LineAddr( address  *addr, char *buff, size_t buff_len )
     if( DeAliasAddrCue( mod, *addr, line ) == SR_NONE )
         return( NULL );
     end = buff + buff_len;
-    buff += ModName( mod, buff, buff_len - 1 );
+    buff += DIPModName( mod, buff, buff_len - 1 );
     *buff++ = '@';
-    buff = CnvULongDec( CueLine( line ), buff, end - buff );
+    buff = CnvULongDec( DIPCueLine( line ), buff, end - buff );
     *buff = NULLCHAR;
     return( buff );
 }

@@ -34,10 +34,8 @@
 #ifndef PILLCLI_H_INCLUDED
 #define PILLCLI_H_INCLUDED
 
-#include "diptypes.h"
+#include "piltypes.h"
 #include "digcli.h"
-
-#include "digpck.h"
 
 #define LinkCli(n)      LinkCli ## n
 #define _LinkCli(n)     _LinkCli ## n n
@@ -51,7 +49,5 @@
 #define pick(r,n,p) extern r LINKCLIENTRY( n ) p;
 #include "_pillcli.h"
 #undef
-
-#include "digunpck.h"
 
 #endif

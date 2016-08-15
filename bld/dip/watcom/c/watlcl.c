@@ -825,7 +825,7 @@ static const char *FindBlockScope( const char *ptr, lcl_defn *blk, address *addr
 }
 
 static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn *blk,
-                    IMP_SYM_WKR *wk, imp_sym_handle *is, void *d, lclinfo *local )
+                    DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d, lclinfo *local )
 {
     imp_type_handle             it;
     const char                  *next;
@@ -865,7 +865,7 @@ static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn
     return( WR_CONTINUE );
 }
 
-walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR *wk,
+walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, DIP_IMP_SYM_WALKER *wk,
                         imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
@@ -897,7 +897,7 @@ walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR 
     return( wr );
 }
 
-walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_WKR *wk,
+walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, DIP_IMP_SYM_WALKER *wk,
                         imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
@@ -926,7 +926,7 @@ walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_
 }
 
 dip_status WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_SYM_WKR *wk, imp_sym_handle *is, void *d,
+                        DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d,
                         walk_result *last )
 {
     const char          *curr;

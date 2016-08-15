@@ -156,8 +156,8 @@ static walk_result WalkAllScopes( imp_image_handle *ii, unsigned mb_idx,
 }
 
 struct walk_data {
-    IMP_SYM_WKR *wk;
-    void        *d;
+    DIP_IMP_SYM_WALKER  *wk;
+    void                *d;
 };
 
 static walk_result WalkSymGlue( imp_image_handle *ii, sym_walk_info swi,
@@ -170,7 +170,7 @@ static walk_result WalkSymGlue( imp_image_handle *ii, sym_walk_info swi,
 
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
-                symbol_source ss, void *source, IMP_SYM_WKR *wk,
+                symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
     scope_block         *scope;

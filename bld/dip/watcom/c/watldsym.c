@@ -175,16 +175,16 @@ static dip_status GetNumSect( dig_fhandle dfh, unsigned long curr, unsigned long
  * that section numbers are contiguous
  */
 
-static dip_status ProcSectionInfo( imp_image_handle *ctl, unsigned long pos )
+static dip_status ProcSectionInfo( imp_image_handle *ii, unsigned long pos )
 {
     section_dbg_header  header;
     section_info        *new;
     dip_status          status;
 
-    DCRead( ctl->sym_file, &header, sizeof( header ) );
-    new = ctl->sect + header.section_id;
+    DCRead( ii->sym_file, &header, sizeof( header ) );
+    new = ii->sect + header.section_id;
     new->sect_id = header.section_id;
-    new->ctl = ctl;
+    new->ctl = ii;
     new->mod_info = NULL;
     new->addr_info = NULL;
     new->gbl = NULL;
@@ -215,9 +215,9 @@ static dip_status ProcSectionInfo( imp_image_handle *ctl, unsigned long pos )
             return( status );
         }
     }
-    ctl->num_sects++;
+    ii->num_sects++;
     pos += header.section_size;
-    if( DCSeek( ctl->sym_file, pos, DIG_ORG ) != pos ) {
+    if( DCSeek( ii->sym_file, pos, DIG_ORG ) != pos ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }

@@ -141,9 +141,9 @@ extern dip_status       SymHdl2LclInfo( imp_image_handle *ii, imp_sym_handle *is
 extern dip_status       SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, location_list *ll, unsigned parm );
 extern walk_result      WalkScopedSymList( imp_image_handle *ii, address *addr,
-                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern walk_result      WalkBlockSymList( imp_image_handle *ii, scope_block *scope,
-                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern dip_status       WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
-                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d,
+                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d,
                                 walk_result *last );

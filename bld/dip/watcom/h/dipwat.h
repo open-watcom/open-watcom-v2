@@ -142,11 +142,11 @@ typedef enum {
     EMPTY_EXPR          = 0x04
 } location_info;
 
-typedef walk_result (INT_MOD_WKR)( imp_image_handle *, imp_mod_handle, void * );
+typedef walk_result (DIP_INT_MOD_WALKER)( imp_image_handle *, imp_mod_handle, void * );
 
 extern address          NilAddr;
 extern dip_imp_routines ImpInterface;
 
-extern walk_result     	MyWalkModList( imp_image_handle *, INT_MOD_WKR *, void * );
+extern walk_result      MyWalkModList( imp_image_handle *, DIP_INT_MOD_WALKER *, void * );
 
 #endif

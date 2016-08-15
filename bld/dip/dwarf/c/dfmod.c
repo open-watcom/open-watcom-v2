@@ -274,7 +274,7 @@ imp_mod_handle   CuTag2Mod( imp_image_handle *ii, drmem_hdl cu_tag )
     return( IMH_NOMOD );
 }
 
-walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
+walk_result DFWalkModList( imp_image_handle *ii, DIP_IMP_MOD_WALKER wk, void *d )
 {
     im_idx          i;
     walk_result     ret;
@@ -292,7 +292,7 @@ walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
     return( ret );
 }
 
-walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, void *d )
+walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, DIP_IMP_MOD_WALKER wk, void *d )
 {
     im_idx          i;
     walk_result     ret;
@@ -315,7 +315,7 @@ walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, vo
     return( ret );
 }
 
-walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     im_idx          i;
     walk_result     ret;

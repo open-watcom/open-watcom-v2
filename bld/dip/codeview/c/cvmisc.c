@@ -107,7 +107,7 @@ cv_directory_entry *FindDirEntry( imp_image_handle *ii, imp_mod_handle im,
     return( NULL );
 }
 
-walk_result WalkDirList( imp_image_handle *ii, DIR_WALKER *wk, void *d )
+walk_result WalkDirList( imp_image_handle *ii, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;

@@ -179,10 +179,10 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     dipaddr.indirect = FALSE;
     dipaddr.mach.offset = addr->offset;
     dipaddr.mach.segment = addr->seg;
-    sr = AddrSym( NO_MOD, dipaddr, symhdl );
+    sr = DIPAddrSym( NO_MOD, dipaddr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:
-        SymLocation( symhdl, NULL, &ll );
+        DIPSymLocation( symhdl, NULL, &ll );
         si->symoff = addr->offset - ll.e[0].u.addr.mach.offset;
         break;
     case SR_EXACT:
@@ -193,16 +193,16 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         break;
     }
     if( sr != SR_NONE ) {
-        SymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
-//      SymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
+        DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
+//      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
             cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
-            if( AddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
+            if( DIPAddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
                 MemFree( cue );
                 ret = FALSE;
             } else {
-                CueFile( cue, si->filename, MAX_FILE_NAME );
-                si->linenum = CueLine( cue );
+                DIPCueFile( cue, si->filename, MAX_FILE_NAME );
+                si->linenum = DIPCueLine( cue );
                 MemFree( cue );
                 ret = TRUE;
             }

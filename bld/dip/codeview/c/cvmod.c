@@ -33,7 +33,7 @@
 
 
 struct find_mod {
-    IMP_MOD_WKR         *wk;
+    DIP_IMP_MOD_WALKER  *wk;
     void                *d;
     imp_mod_handle      im;
 };
@@ -48,7 +48,7 @@ static walk_result FindMods( imp_image_handle *ii,
 }
 
 walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
-                        IMP_MOD_WKR *wk, void *d )
+                        DIP_IMP_MOD_WALKER *wk, void *d )
 {
     struct find_mod     find;
     walk_result         wr;

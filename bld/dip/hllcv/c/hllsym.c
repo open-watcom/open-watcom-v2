@@ -758,7 +758,7 @@ static dip_status ScopeFindNext( imp_image_handle *ii, scope_info *scope )
  * If 'scope' is a non-zero, symbols starting a scope will be skipped.
  */
 static walk_result hllScopeOneModSymbol( imp_image_handle *ii, hll_dir_entry *hde,
-                                         scope_info *scope, IMP_SYM_WKR *wk,
+                                         scope_info *scope, DIP_IMP_SYM_WALKER *wk,
                                          void *d, unsigned_32 *posp,
                                          unsigned_16 *depthp, unsigned_16 *segp )
 {
@@ -852,7 +852,7 @@ static walk_result hllScopeOneModSymbol( imp_image_handle *ii, hll_dir_entry *hd
 
 #if 0
 static walk_result ScopeWalkOne( imp_image_handle *ii, scope_info *scope,
-                                IMP_SYM_WKR *wk, void *d )
+                                DIP_IMP_SYM_WALKER *wk, void *d )
 {
     walk_result         wr;
     s_all               *p;
@@ -873,7 +873,7 @@ static walk_result ScopeWalkOne( imp_image_handle *ii, scope_info *scope,
 }
 
 static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
-                                IMP_SYM_WKR *wk, void *d )
+                                DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
     imp_type_handle     it;
@@ -892,7 +892,7 @@ static walk_result ScopeWalkClass( imp_image_handle *ii, scope_info *scope,
 }
 
 static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
-                        address addr, IMP_SYM_WKR *wk, void *d )
+                        address addr, DIP_IMP_SYM_WALKER *wk, void *d )
 {
     dip_status          ds;
     walk_result         wr;
@@ -922,7 +922,7 @@ static walk_result ScopeWalkAll( imp_image_handle *ii, imp_mod_handle im,
 
 static walk_result hllScopeWalkFile( imp_image_handle *ii,
                                      hll_dir_entry *hde,
-                                     IMP_SYM_WKR *wk, void *d )
+                                     DIP_IMP_SYM_WALKER *wk, void *d )
 {
     unsigned_32     pos = 0;
     unsigned_16     seg = 0;
@@ -1178,7 +1178,7 @@ dip_status hllSymFindMatchingSym( imp_image_handle *ii,
  * Walks the publics subsection for a module.
  */
 static walk_result hllWalkModulePublics( imp_image_handle *ii,
-                                         hll_dir_entry *hde,  IMP_SYM_WKR *wk,
+                                         hll_dir_entry *hde, DIP_IMP_SYM_WALKER *wk,
                                          imp_sym_handle *is, void *d)
 {
     unsigned        off_name_len;
@@ -1227,7 +1227,7 @@ static walk_result hllWalkModulePublics( imp_image_handle *ii,
 }
 
 struct glue_info {
-    IMP_SYM_WKR         *wk;
+    DIP_IMP_SYM_WALKER  *wk;
     void                *d;
     imp_sym_handle      *is;
 };
@@ -1339,7 +1339,7 @@ static walk_result hllWalkModuleGlobals( imp_image_handle *ii,
  *  }
  */
 walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
-                            void *source, IMP_SYM_WKR *wk,
+                            void *source, DIP_IMP_SYM_WALKER *wk,
                             imp_sym_handle *is, void *d )
 {
     struct glue_info    glue;
@@ -1415,7 +1415,7 @@ walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
  * Walk a symbol list.
  */
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
-                                        void *source, IMP_SYM_WKR *wk,
+                                        void *source, DIP_IMP_SYM_WALKER *wk,
                                         imp_sym_handle *is, void *d )
 {
     return( hllWalkSymList( ii, ss, source, wk, is, d ) );
@@ -1426,7 +1426,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
  */
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii,
                                           symbol_source ss, void *source,
-                                          IMP_SYM_WKR *wk, imp_sym_handle *is,
+                                          DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                                           location_context *lc, void *d )
 {
     lc=lc;

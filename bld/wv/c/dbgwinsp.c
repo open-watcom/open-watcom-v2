@@ -102,9 +102,9 @@ static walk_result CheckFirstFile( cue_handle *ch, void *_d )
     char        *buff;
     unsigned    len;
 
-    len = CueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( ch, NULL, 0 ) + 1;
     _AllocA( buff, len );
-    CueFile( ch, buff, len );
+    DIPCueFile( ch, buff, len );
     if( stricmp( buff, d->file ) == 0 ) {
         d->found = true;
     }
@@ -115,8 +115,8 @@ static walk_result CheckOneMod( mod_handle mh, void *_d )
 {
     cue_mod     *d = _d;
     d->mod = mh;
-    if( ModHasInfo( mh, HK_CUE ) == DS_OK ) {
-        WalkFileList( mh, CheckFirstFile, d );
+    if( DIPModHasInfo( mh, HK_CUE ) == DS_OK ) {
+        DIPWalkFileList( mh, CheckFirstFile, d );
     }
     return( d->found ? WR_STOP : WR_CONTINUE );
 }
@@ -128,7 +128,7 @@ static mod_handle       FindFileMod( const char *file )
 
     d.found = false;
     d.file = file;
-    WalkModList( NO_MOD, CheckOneMod, &d );
+    DIPWalkModList( NO_MOD, CheckOneMod, &d );
     return( d.found ? d.mod : NO_MOD );
 }
 
@@ -307,7 +307,7 @@ extern  a_window        *WndModInspect( mod_handle mod )
     DIPHDL( cue, ch );
 
     wnd = WndFindExisting( WND_SOURCE );
-    if( wnd == NULL && LineCue( mod, 0, 0, 0, ch ) != SR_NONE ) {
+    if( wnd == NULL && DIPLineCue( mod, 0, 0, 0, ch ) != SR_NONE ) {
         wnd = DoWndSrcOpen( ch, true );
     }
     if( wnd != NULL ) {

@@ -205,10 +205,10 @@ void *OpenSrcFile( cue_handle *ch )
     unsigned    len;
     char        *buff;
 
-    len = CueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( ch, NULL, 0 ) + 1;
     _AllocA( buff, len );
-    CueFile( ch, buff, len );
-    hndl = FOpenSource( buff, CueMod( ch ), CueFileId( ch ) );
+    DIPCueFile( ch, buff, len );
+    hndl = FOpenSource( buff, DIPCueMod( ch ), DIPCueFileId( ch ) );
     if( hndl != NULL )
         return( hndl );
     for( path = SrcSpec; path != NULL; path = path->next ) {
@@ -217,7 +217,7 @@ void *OpenSrcFile( cue_handle *ch )
         for( p = path->name; *p != NULLCHAR; ++p ) {
             if( *p == '*' ) {
                 used_star = true;
-                d += ModName( CueMod( ch ), d, TXT_LEN );
+                d += DIPModName( DIPCueMod( ch ), d, TXT_LEN );
             } else {
                 *d++ = *p;
             }
@@ -238,7 +238,7 @@ void *OpenSrcFile( cue_handle *ch )
             d = AppendPathDelim( TxtBuff, 0 );
             if( !IsAbsolutePath( buff ) ) {
                 StrCopy( buff, d );
-                hndl = FOpenSource( TxtBuff, CueMod( ch ), CueFileId( ch ) );
+                hndl = FOpenSource( TxtBuff, DIPCueMod( ch ), DIPCueFileId( ch ) );
                 if( hndl != NULL ) {
                     return( hndl );
                 }
@@ -259,7 +259,7 @@ void *OpenSrcFile( cue_handle *ch )
             d = StrCopy( p, d );
             *d = NULLCHAR;
         }
-        hndl = FOpenSource( TxtBuff, CueMod( ch ), CueFileId( ch ) );
+        hndl = FOpenSource( TxtBuff, DIPCueMod( ch ), DIPCueFileId( ch ) );
         if( hndl != NULL ) {
             return( hndl );
         }

@@ -162,7 +162,7 @@ char *FmtStr( char *buff, const char *fmt, va_list args )
                 break;
             case 'S':
                 sym = va_arg( args, sym_handle * );
-                buff += SymName( sym, NULL, SN_SOURCE, buff, TXT_LEN );
+                buff += DIPSymName( sym, NULL, SN_SOURCE, buff, TXT_LEN );
                 break;
             }
         }

@@ -60,7 +60,7 @@ static void SetKey( a_symbol *sym )
     b[1] = 0;
     b[2] = 0;
     b[3] = 0;
-    SymName( ASymHdl( sym ), NULL, SN_SOURCE, (char *)b, sizeof( b ) );
+    DIPSymName( ASymHdl( sym ), NULL, SN_SOURCE, (char *)b, sizeof( b ) );
     sym->key = ((unsigned long)tolower(b[0])<<24)+
                ((unsigned long)tolower(b[1])<<16)+
                               (tolower(b[2])<< 8)+
@@ -82,8 +82,8 @@ OVL_EXTERN int SymCompare( void *pa, void *pb )
     if( a->key < b->key )
         return( -1 );
     cmpa = TxtBuff;
-    cmpb = cmpa + SymName( ASymHdl( a ), NULL, SN_SOURCE, cmpa, TXT_LEN/2 ) + 1;
-    SymName( ASymHdl( b ), NULL, SN_SOURCE, cmpb, TXT_LEN/2-1 );
+    cmpb = cmpa + DIPSymName( ASymHdl( a ), NULL, SN_SOURCE, cmpa, TXT_LEN/2 ) + 1;
+    DIPSymName( ASymHdl( b ), NULL, SN_SOURCE, cmpb, TXT_LEN/2-1 );
     return( stricmp( cmpa, cmpb ) );
 }
 
@@ -93,14 +93,14 @@ static bool CheckType( sym_handle *sym, name_list *name )
     mod_handle  mod;
 
     if( name->d2_only ) {
-        mod = SymMod( sym );
+        mod = DIPSymMod( sym );
         if( mod == NO_MOD )
             return( false );
-        if( ModHasInfo( mod, HK_TYPE ) != DS_OK ) {
+        if( DIPModHasInfo( mod, HK_TYPE ) != DS_OK ) {
             return( false );
         }
     }
-    SymInfo( sym, NULL, &sinfo );
+    DIPSymInfo( sym, NULL, &sinfo );
     switch( sinfo.kind ) {
     case SK_CODE:
     case SK_PROCEDURE:
@@ -120,7 +120,6 @@ static bool CheckType( sym_handle *sym, name_list *name )
 }
 
 
-static SYM_WALKER StickEmIn;
 static walk_result StickEmIn( sym_walk_info swi, sym_handle *sym, void *_name )
 {
     name_list   *name = _name;
@@ -148,7 +147,7 @@ static address NameSymAddr( a_symbol *s )
 {
     location_list       ll;
 
-    if( SymLocation( ASymHdl( s ), NULL, &ll ) != DS_OK ) {
+    if( DIPSymLocation( ASymHdl( s ), NULL, &ll ) != DS_OK ) {
         return( NilAddr );
     }
     return( ll.e[0].u.addr );
@@ -203,7 +202,7 @@ void NameListAddModules( name_list *name, mod_handle mod, bool d2_only, bool dup
     name->numrows = 0;
     name->list = NULL;
     name->d2_only = d2_only;
-    WalkSymList( SS_MODULE, &mod, StickEmIn, name );
+    DIPWalkSymList( SS_MODULE, &mod, StickEmIn, name );
     name->list = SortLinkedList( name->list, offsetof( a_symbol, next ),
                                  SymCompare, DbgAlloc, DbgFree );
     UniqList( name, dup_ok );
@@ -266,7 +265,7 @@ unsigned NameListName( name_list *name, int i, char *buff, symbol_name type )
     } else if( type == SN_QUALIFIED ) {
         rc = QualifiedSymName( sh, buff, TXT_LEN, false );
     } else {
-        rc = SymName( sh, NULL, type, buff, TXT_LEN );
+        rc = DIPSymName( sh, NULL, type, buff, TXT_LEN );
     }
     return( rc );
 }

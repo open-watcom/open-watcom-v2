@@ -168,7 +168,7 @@ typedef enum {
 } hll_style;
 
 
-typedef walk_result (DIR_WALKER)( imp_image_handle *, hll_dir_entry *, void * );
+typedef walk_result (DIP_DIR_WALKER)( imp_image_handle *, hll_dir_entry *, void * );
 
 extern address  NilAddr;
 
@@ -193,7 +193,7 @@ extern void                *VMSsRecord( imp_image_handle *ii, hll_dir_entry *hde
                                          unsigned_32 *next_rec, unsigned_16 *sizep );
 extern unsigned             VMShrink(void);
 
-extern walk_result          hllWalkDirList( imp_image_handle *, hll_sst, DIR_WALKER *, void * );
+extern walk_result          hllWalkDirList( imp_image_handle *, hll_sst, DIP_DIR_WALKER *, void * );
 extern hll_dir_entry       *hllFindDirEntry( imp_image_handle *, imp_mod_handle, hll_sst );
 
 extern void                 hllLocationCreate( location_list *, location_type, void * );
@@ -217,7 +217,7 @@ extern dip_status           hllTypeSymGetInfo( imp_image_handle *, imp_sym_handl
 #ifdef _CVREG  /* FIXME */
 extern dip_status           hllTypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
 #endif
-extern walk_result          hllTypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, IMP_SYM_WKR* wk, imp_sym_handle *is, void *d );
+extern walk_result          hllTypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, DIP_IMP_SYM_WALKER* wk, imp_sym_handle *is, void *d );
 extern dip_status           hllTypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result        hllTypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result        hllTypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

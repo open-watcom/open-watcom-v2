@@ -197,7 +197,7 @@ static void *hllGetSortedLinnums( imp_image_handle *ii, imp_cue_handle *ic )
  * Walk the list of source files of a module.
  */
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
-                                         imp_mod_handle im, IMP_CUE_WKR *wk,
+                                         imp_mod_handle im, DIP_IMP_CUE_WALKER *wk,
                                          imp_cue_handle *ic, void *d )
 {
     hll_dir_entry                       *hde;

@@ -39,7 +39,7 @@
 
 
 walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
-                symbol_source ss, void *source, IMP_SYM_WKR *wk,
+                symbol_source ss, void *source, DIP_IMP_SYM_WALKER *wk,
                 imp_sym_handle *is, void *d )
 {
     //TODO:
@@ -117,7 +117,7 @@ walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii,
 
 
 walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
-                void *source, IMP_SYM_WKR *wk, imp_sym_handle *is,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
     /*

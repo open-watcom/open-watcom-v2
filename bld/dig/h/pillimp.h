@@ -34,18 +34,24 @@
 #ifndef PILLIMP_H_INCLUDED
 #define PILLIMP_H_INCLUDED
 
-#include "digpck.h"
 #include "piltypes.h"
-#include "digpck.h"
 
 #define PILL_VERSION    0
 
 #define LinkImp(n)      LinkImp ## n
 #define _LinkImp(n)     _LinkImp ## n n
 
+#define LINKIMPENTRY(n) DIGENTRY LinkImp( n )
+
 #define pick(r,n,p) typedef r (DIGENTRY *_LinkImp ## n) p;
 #include "_pillimp.h"
 #undef pick
+
+#define pick(r,n,p) extern r LINKIMPENTRY( n ) p;
+#include "_pillimp.h"
+#undef pick
+
+#include "digpck.h"
 
 struct pill_imp_routines {
     unsigned_16         version;
@@ -62,10 +68,6 @@ struct pill_imp_routines {
     _LinkImp( Message );
     _LinkImp( Private );
 };
-
-#define pick(r,n,p) extern r DIGENTRY LinkImp( n ) p;
-#include "_pillimp.h"
-#undef pick
 
 typedef struct pill_client_routines {
     unsigned_16         version;
@@ -88,16 +90,18 @@ typedef struct pill_client_routines {
     _LinkCli( State );
 } pill_client_routines;
 
+#include "digunpck.h"
+
 typedef pill_imp_routines * DIGENTRY pill_init_func( pill_status *status, pill_client_routines *client );
 #ifdef __WINDOWS__
 typedef void DIGENTRY pill_fini_func( void );
 #endif
 
-#define pick(r,n,p) extern r LC ## n p;
+#define LC(n)       LC ## n
+
+#define pick(r,n,p) extern r LC( n ) p;
 #include "_digcli.h"
 #include "_pillcli.h"
 #undef pick
-
-#include "digunpck.h"
 
 #endif

@@ -90,7 +90,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
         *paddr = ExprSP->v.addr;
         PopEntry();
         return( INSP_CODE );
-    } else if( (ExprSP->flags & SF_LOCATION) && ExprSP->th != NULL && !IsInternalMod( TypeMod( ExprSP->th ) ) ) {
+    } else if( (ExprSP->flags & SF_LOCATION) && ExprSP->th != NULL && !IsInternalMod( DIPTypeMod( ExprSP->th ) ) ) {
         if( ExprSP->v.loc.num == 1 && ExprSP->v.loc.e[0].type == LT_ADDR ) {
             *paddr = ExprSP->v.loc.e[0].u.addr;
         }
@@ -106,7 +106,7 @@ inspect_type WndGetExprSPInspectType( address *paddr )
         if( !IS_NIL_ADDR( *paddr ) ) {
             AddrFloat( paddr );
             if( DeAliasAddrSym( NO_MOD, *paddr, sh ) != SR_NONE ) {
-                SymInfo( sh, ExprSP->lc, &info );
+                DIPSymInfo( sh, ExprSP->lc, &info );
                 PopEntry();
                 switch( info.kind ) {
                 case SK_CODE:

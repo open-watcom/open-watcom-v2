@@ -55,7 +55,7 @@ static bool ProcPending( void )
             if( InpStack->type & INP_NEW_LANG ) {
                 InpStack->type &= ~INP_NEW_LANG;
                 if( (CodeAddrMod != NO_MOD) && !IsInternalMod( CodeAddrMod ) ) {
-                    NewLang( ModSrcLang( CodeAddrMod ) );
+                    NewLang( DIPModSrcLang( CodeAddrMod ) );
                 }
             }
             if( InpStack->type & INP_STOP_PURGE ) return( false );

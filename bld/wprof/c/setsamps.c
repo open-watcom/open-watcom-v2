@@ -101,7 +101,7 @@ STATIC rtn_info *findCurrRtn( mod_info *curr_mod, sym_handle *sh )
         rtn_count = 0;
         while( rtn_count < curr_file->rtn_count ) {
             curr_rtn = curr_file->routine[rtn_count];
-            if( curr_rtn->sh != NULL && SymCmp( curr_rtn->sh, sh ) == 0 ) {
+            if( curr_rtn->sh != NULL && DIPSymCmp( curr_rtn->sh, sh ) == 0 ) {
                 return( curr_rtn );
             }
             rtn_count++;
@@ -205,20 +205,20 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym,
     if( swi != SWI_SYMBOL ) {
         return( WR_CONTINUE );
     }
-    SymInfo( sym, NULL, &sinfo );
+    DIPSymInfo( sym, NULL, &sinfo );
     if( sinfo.kind != SK_CODE && sinfo.kind != SK_PROCEDURE ) {
         return( WR_CONTINUE );
     }
     sym_file = loadFileInfo( new_mod, sym );
-    name_len = SymName( sym, NULL, SN_DEMANGLED, NULL, 0 );
+    name_len = DIPSymName( sym, NULL, SN_DEMANGLED, NULL, 0 );
     if( name_len == 0 ) {
-        name_len = SymName( sym, NULL, SN_SOURCE, NULL, 0 );
+        name_len = DIPSymName( sym, NULL, SN_SOURCE, NULL, 0 );
         demangle_type = SN_SOURCE;
     } else {
         demangle_type = SN_DEMANGLED;
     }
     new_rtn = ProfCAlloc( sizeof( rtn_info ) + name_len );
-    SymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
+    DIPSymName( sym, NULL, demangle_type, new_rtn->name, name_len + 1 );
     sym_size = DIPHandleSize( HK_SYM, false );
     new_rtn->sh = ProfAlloc( sym_size );
     memcpy( new_rtn->sh, sym, sym_size );
@@ -239,9 +239,9 @@ STATIC walk_result loadModuleInfo( mod_handle mh, void *_curr_image )
     int             mod_count;
     int             name_len;
 
-    name_len = ModName( mh, NULL, 0 );
+    name_len = DIPModName( mh, NULL, 0 );
     new_mod = ProfCAlloc( sizeof( mod_info ) + name_len );
-    ModName( mh, new_mod->name, name_len + 1 );
+    DIPModName( mh, new_mod->name, name_len + 1 );
     new_mod->mh = mh;
     mod_count = curr_image->mod_count;
     curr_image->mod_count++;
@@ -249,7 +249,7 @@ STATIC walk_result loadModuleInfo( mod_handle mh, void *_curr_image )
                                       curr_image->mod_count * sizeof( pointer ) );
     curr_image->module[mod_count] = new_mod;
     initFileInfo( new_mod );
-    WalkSymList( SS_MODULE, &mh, &loadRoutineInfo, new_mod );
+    DIPWalkSymList( SS_MODULE, &mh, &loadRoutineInfo, new_mod );
     return( WR_CONTINUE );
 }
 
@@ -265,16 +265,16 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     int             count;
     location_list   ll;
 
-    if( SymLocation( sym, NULL, &ll ) != DS_OK ) {
+    if( DIPSymLocation( sym, NULL, &ll ) != DS_OK ) {
         return( curr_mod->mod_file[0] );
     }
     ch = alloca( DIPHandleSize( HK_CUE, false ) );
-    switch( AddrCue( curr_mod->mh, ll.e[0].u.addr, ch ) ) {
-    case    SR_NONE:
-    case    SR_FAIL:
+    switch( DIPAddrCue( curr_mod->mh, ll.e[0].u.addr, ch ) ) {
+    case SR_NONE:
+    case SR_FAIL:
         return( curr_mod->mod_file[0] );
     }
-    fid = CueFileId( ch );
+    fid = DIPCueFileId( ch );
     file_count = curr_mod->file_count;
     count = 0;
     while( count < file_count ) {
@@ -287,10 +287,10 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     curr_mod->file_count++;
     curr_mod->mod_file = ProfRealloc( curr_mod->mod_file,
                              curr_mod->file_count * sizeof( pointer ) );
-    count = CueFile( ch, NULL, 0 ) + 1;
+    count = DIPCueFile( ch, NULL, 0 ) + 1;
     sym_file = ProfCAlloc( sizeof( file_info ) + count );
     sym_file->fid = fid;
-    CueFile( ch, sym_file->name, count );
+    DIPCueFile( ch, sym_file->name, count );
     initRoutineInfo( sym_file );
     curr_mod->mod_file[file_count] = sym_file;
     return( sym_file );
@@ -541,7 +541,7 @@ STATIC void resolveImageSamples( void )
             index2 = 0;
         }
         addr = massgd_data[index][index2].raw;
-        if( AddrMod( *addr, &mh ) == SR_NONE ) {
+        if( DIPAddrMod( *addr, &mh ) == SR_NONE ) {
             curr_image = AddrImage( addr );
             if( curr_image == NULL ) {
                 curr_image = CurrSIOData->images[0];
@@ -549,9 +549,9 @@ STATIC void resolveImageSamples( void )
             curr_mod = curr_image->module[0];
             curr_rtn = curr_mod->mod_file[0]->routine[0];
         } else {
-            curr_image = *(image_info **)ImageExtra( mh );
+            curr_image = *(image_info **)DIPImageExtra( mh );
             curr_mod = findCurrMod( curr_image, mh );
-            if( AddrSym( mh, *addr, sh ) == SR_NONE ) {
+            if( DIPAddrSym( mh, *addr, sh ) == SR_NONE ) {
                 curr_rtn = curr_mod->mod_file[0]->routine[0];
             } else {
                 curr_rtn = findCurrRtn( curr_mod, sh );
@@ -707,7 +707,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     }
     initModuleInfo( curr_image );
     if( curr_image->dip_handle != NO_MOD ) {
-        WalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
+        DIPWalkModList( curr_image->dip_handle, &loadModuleInfo, curr_image );
     }
 }
 

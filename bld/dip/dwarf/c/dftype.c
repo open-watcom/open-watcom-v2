@@ -312,7 +312,7 @@ static void InitTypeHandle( imp_image_handle *ii,
 struct mod_type{
     imp_image_handle    *ii;
     imp_mod_handle      im;
-    IMP_TYPE_WKR        *wk;
+    DIP_IMP_TYPE_WALKER *wk;
     imp_type_handle     *it;
     void                *d;
     walk_result         wr;
@@ -342,7 +342,7 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
 }
 
 walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_TYPE_WKR *wk, imp_type_handle *it,
+                    imp_mod_handle im, DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it,
                     void *d )
 {
     drmem_hdl       cu_tag;
@@ -842,10 +842,10 @@ typedef struct {
 
 
 typedef struct {
-    type_wlk_com     com;
-    IMP_SYM_WKR      *wk;
-    imp_sym_handle   *is;
-    walk_result      wr;
+    type_wlk_com        com;
+    DIP_IMP_SYM_WALKER  *wk;
+    imp_sym_handle      *is;
+    walk_result         wr;
 }type_wlk_wlk;
 
 typedef struct {
@@ -1130,7 +1130,7 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
 }
 
 extern walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                 IMP_SYM_WKR *wk, imp_sym_handle *is, void *d ){
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d ){
     drmem_hdl       btype;
     type_wlk_wlk    df;
     df_cleaner      cleanup;

@@ -151,6 +151,6 @@ extern dip_status       SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is
 extern search_result    SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                                 lookup_item *li, void *d );
 extern walk_result      WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern const char       *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im,
                                 const char **base );
