@@ -116,11 +116,13 @@ verrc_dll = $(dllname)
 
 $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags_gen) $(comp_objs_drv) $(dllname).lib $(ldflags_gen)
 !else
     @%write drv.lnk $(lflags)
     @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
     @%append drv.lnk lib $(dllname).lib
+    @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
     @%make bind_version_res_exe
@@ -129,11 +131,13 @@ $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(
 
 $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
     @%write exe.lnk $(lflags)
     @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
     @for %i in ($(libs)) do @%append exe.lnk lib %i
+    @%make echo_link
     $(linker) name $@ @exe.lnk
 !endif
     @%make bind_version_res_exe
@@ -143,11 +147,13 @@ $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe
 
 $(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
     @%write dll.lnk $(lflags_dll)
     @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
     @for %i in ($(libs)) do @%append dll.lnk lib %i
+    @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
     @%make bind_version_res_dll
@@ -157,6 +163,7 @@ $(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$
 # auxiliary rules
 
 wlink.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
+    @%make echo_rc
     $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
 
 rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)

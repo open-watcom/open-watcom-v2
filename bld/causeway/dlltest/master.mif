@@ -20,15 +20,19 @@ lflags_dll_dos_386 = sys causeway dll opt stub=$(causeway_dir)/cw32/dosi86/cwdst
 all: dlltst1s.exe dlltst1r.exe
 
 dlltst1s.exe : dlltst1s.obj dlls.dll ../../cw32/dosi86/cwstub.exe $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file $[@
 
 dlltst1r.exe : dlltst1r.obj dllr.dll ../../cw32/dosi86/cwstub.exe $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file $[@
 
 dlls.dll : dlls.obj $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags_dll) op modname=DLLS file $[@ libfile $(clib_dir)/startup/library/msdos.386/ms_s/dllstart.obj
 
 dllr.dll : dllr.obj $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags_dll) op modname=DLLR file $[@ libfile $(clib_dir)/startup/library/msdos.386/ms_r/dllstart.obj
 
 dlls.obj : dll.c $(dlltest_autodepends)

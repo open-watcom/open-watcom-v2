@@ -29,4 +29,5 @@ inc_dirs = -I"../h" -I"$(trap_dir)/h" -I"$(dig_dir)/h"
 .c: ../c
 
 wdsplice.dll : $(objs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) file {$(objs)}

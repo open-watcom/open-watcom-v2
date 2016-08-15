@@ -10,9 +10,9 @@ builder_autodepends = .autodepend
 all_commands_dos = diff.exe
 all_commands_nt  = diff.exe
 all_commands_os2 = diff.exe
-all_commands	= sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe $(all_commands_$(host_os))
+all_commands    = sweep.exe wsplice.exe comstrip.exe genverrc.exe crlf.exe $(all_commands_$(host_os))
 !ifndef bootstrap
-all_commands	+= builder.exe
+all_commands    += builder.exe
 !endif
 
 !ifndef __WATCOM_TOOLS__
@@ -55,6 +55,7 @@ diff.exe :    $(diff_objs)
 cdsay.exe :   $(cdsay_objs)
 
 builder.exe : $(builder_objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(builder_objs) $(ldflags)
 !else

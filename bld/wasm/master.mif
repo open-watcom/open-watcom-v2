@@ -109,55 +109,58 @@ version_res_exe_nt_x64 = exever.res
 
 $(name).exe : $(depend_objs) $(objs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        @%write  $^&.lnk $(lflags)
-        @%append $^&.lnk file { $(objs) }
-        $(linker) name $(lname) @$^&.lnk
-        @%make bind_osildr
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk file { $(objs) }
+    @%make echo_link
+    $(linker) name $(lname) @$^&.lnk
+    @%make bind_osildr
 !endif
-        @%make bind_version_res_exe
-        $(wstrip) -a -r -q $@ . $(name).res
+    @%make bind_version_res_exe
+    $(wstrip) -a -r -q $@ . $(name).res
 
 ###################################################################
 # resource stuff
 
 $(name).res : ../h/$(proj_name).rc usage.gh usagej.gh msg.gh wasmmsg.gh wmpmsg.gh $(__MAKEFILES__)
-        $(rc_aui) -D_STANDALONE_ $[@ -fo=$@
+    @%make echo_rc
+    $(rc_aui) -D_STANDALONE_ $[@ -fo=$@
 
 msg.gh : ../h/asmshare.msg $(__MAKEFILES__)
-        *awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    *awk -v base=MSG_SHARE_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wasmmsg.gh : ../h/wasm.msg $(__MAKEFILES__)
-        *awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    *awk -v base=MSG_WASM_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 wmpmsg.gh : ../h/womp.msg $(__MAKEFILES__)
-        *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    *awk -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 end.tmp :
-        %write $@ "." 
+    %write $@ "." 
 
 usage.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
-        optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
-        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp end.tmp $@
+    optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
+    *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp end.tmp $@
 
 usagej.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
-        optencod -l 1 -q $[@ . . $^&.tmp any
-        *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp end.tmp $@
+    optencod -l 1 -q $[@ . . $^&.tmp any
+    *wsplice -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp end.tmp $@
 
 usage.u : ../h/options.gml $(__MAKEFILES__)
-        optencod -q -u $@ $[@ . . . any
+    optencod -q -u $@ $[@ . . . any
 
 ###################################################################
 
 ./mkopcod1.exe: ../mkopcod1.c ../mkopcode.h $(__MAKEFILES__)
-        $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
-        $< $@
+    $< $@
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(__MAKEFILES__)
-        $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
-        $< $@
+    $< $@

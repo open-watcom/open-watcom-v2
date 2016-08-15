@@ -675,15 +675,15 @@ rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 ##############################
 # GLOBAL MACROS SETINGS
 ######
-cc              = $(cc_$(host_cpu))
-cl              = $(cl_$(host_cpu))
-cxx             = $(cxx_$(host_cpu))
-linker          = $(linker_$(host_cpu))
-librarian       = $(librarian_$(host_cpu))
-as              = $(as_$(host_cpu))
+cc              = $(noecho)$(cc_$(host_cpu))
+cl              = $(noecho)$(cl_$(host_cpu))
+cxx             = $(noecho)$(cxx_$(host_cpu))
+linker          = $(noecho)$(linker_$(host_cpu))
+librarian       = $(noecho)$(librarian_$(host_cpu))
+as              = $(noecho)$(as_$(host_cpu))
 
-rc              = *bwrc
-rcaui           = *bwrc
+rc              = $(noecho)*bwrc
+rcaui           = $(noecho)*bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)

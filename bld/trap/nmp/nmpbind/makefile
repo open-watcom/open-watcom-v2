@@ -33,9 +33,11 @@ w : nmpbind.exe .symbolic
 d : dnmpbind.exe .symbolic
 
 nmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file { $objs }
 
 dnmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file { $objs }
 
 .c: ../c

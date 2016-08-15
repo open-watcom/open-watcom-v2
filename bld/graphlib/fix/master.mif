@@ -22,6 +22,7 @@ tmp.lib : ../../dosi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../dosi86/du
     @%append tmp.lbc  +../../dosi86/dummy.obj
     @%append tmp.lbc  +../../dosi86/fsmath.obj
     @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp.lbc
 
 tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86/dummy.obj ../../dosi86/fsmath.obj $(__MAKEFILES__)
@@ -29,6 +30,7 @@ tmp2.lib : ../../dosi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../dosi86
     @%append tmp2.lbc  +../../dosi86/dummy.obj
     @%append tmp2.lbc  +../../dosi86/fsmath.obj
     @%append tmp2.lbc  +../../pgchart/dosi86/chart2.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp2.lbc
 
 !else
@@ -51,6 +53,7 @@ tmp.lib : ../../dos386s/graphi.lib ../../dos386r/graphi.lib ../../pgchart/dos386
     @%append tmp.lbc  +../../dos386r/fsmath.obj
     @%append tmp.lbc  +../../pgchart/dos386r/chart.lib
     @%append tmp.lbc  +../../pgchart/dos386s/chart.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp.lbc
 
 tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos386r/chart2.lib ../../pgchart/dos386s/chart2.lib ../../dos386r/dummy.obj ../../dos386r/fsmath.obj $(__MAKEFILES__)
@@ -71,6 +74,7 @@ tmp2.lib : ../../dos386s/graphi2.lib ../../dos386r/graphi2.lib ../../pgchart/dos
     @%append tmp2.lbc  +../../dos386r/fsmath.obj
     @%append tmp2.lbc  +../../pgchart/dos386r/chart2.lib
     @%append tmp2.lbc  +../../pgchart/dos386s/chart2.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp2.lbc
 
 !endif
@@ -86,6 +90,7 @@ tmp.lib : ../../qnxi86/graphi.lib ../../pgchart/dosi86/chart.lib ../../qnxi86/du
     @%append tmp.lbc  +../../qnxi86/dummy.obj
     @%append tmp.lbc  +../../qnxi86/fsmath.obj
     @%append tmp.lbc  +../../pgchart/dosi86/chart.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp.lbc
 
 tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86/dummy.obj ../../qnxi86/fsmath.obj $(__MAKEFILES__)
@@ -93,6 +98,7 @@ tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86
     @%append tmp2.lbc  +../../qnxi86/dummy.obj
     @%append tmp2.lbc  +../../qnxi86/fsmath.obj
     @%append tmp2.lbc  +../../pgchart/dosi86/chart2.lib
+    @%make echo_lib
     $(librarian) $(libflags) @tmp2.lbc
 
 !else
@@ -100,15 +106,19 @@ tmp2.lib : ../../qnxi86/graphi2.lib ../../pgchart/dosi86/chart2.lib ../../qnxi86
 all: graph3r.lib graph3s.lib graph23r.lib graph23s.lib
 
 graph3r.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386r/chart.lib $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +../../qnx386r/graphi.lib +../../pgchart/dos386r/chart.lib
 
 graph3s.lib : ../../qnx386r/graphi.lib ../../pgchart/dos386s/chart.lib $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +../../qnx386s/graphi.lib +../../pgchart/dos386s/chart.lib
 
 graph23r.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386r/chart2.lib $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +../../qnx386r/graphi2.lib +../../pgchart/dos386r/chart2.lib
 
 graph23s.lib : ../../qnx386r/graphi2.lib ../../pgchart/dos386s/chart2.lib $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +../../qnx386s/graphi2.lib +../../pgchart/dos386s/chart2.lib
 
 !endif
@@ -163,6 +173,7 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
   # put all modules together into new library
     @%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
 
 graph2.lib : $(clibdir) tmp2.lib
@@ -213,4 +224,5 @@ graph2.lib : $(clibdir) tmp2.lib
   # put all modules together into new library
     @%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc

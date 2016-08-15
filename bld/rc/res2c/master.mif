@@ -15,4 +15,5 @@ objs =  resdump.obj  &
         loadtype.obj
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
-        $(linker) name $^@ $(lflags) file {$(objs)}
+    @%make echo_link
+    $(linker) name $^@ $(lflags) file {$(objs)}

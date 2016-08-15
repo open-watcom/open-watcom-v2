@@ -59,12 +59,14 @@ libs : .symbolic $(target_lib) $(target_lib_x) $(files)
 $(target_lib) : $(target_objs) $(__MAKEFILES__)
     %create $^&.lbc
     @for %i in ($(target_objs)) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) $(lib_flags) $^@ @$^&.lbc
 
 !ifdef target_lib_x
 $(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
     %create $^&.lbc
     @for %i in ($(target_xobjs)) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) $(lib_flags) $^@ @$^&.lbc
 !endif
 

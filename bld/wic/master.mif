@@ -58,6 +58,7 @@ $(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
 ##############################################################################
 
 wic.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
+    @%make echo_rc
     $(rc_aui) $[@ -fo=$^@
 
 usagee.gh:  ../res/usage.sp

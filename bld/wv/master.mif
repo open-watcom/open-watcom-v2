@@ -240,10 +240,12 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
     @%make bind_version_res_exe
     $(wstrip) -q -a -r $^@ . $(resfile)
 !else
+    @%make echo_bindrc
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
 wd.lib : litdef.gh $(engine_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(engine_objs)
 !else
@@ -432,21 +434,27 @@ rcfiles = &
     $(wv_dialogs)
 
 wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvuidll.res : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 ####################

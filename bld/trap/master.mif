@@ -158,19 +158,19 @@ extra_deps += nversion.tmp
 !endif
 
 all : .SYMBOLIC $(trperr_h) #$(jtrperr_h)
-        @%make $(target)
+    @%make $(target)
 
 $(trperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
-        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" $[@ -o$@
 
 $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
-        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
+    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" $[@ -o$@
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
-        $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
-        $[@ $^@
+    $[@ $^@
 
 !ifndef extra_dobjs
 extra_dobjs = $(extra_objs)
@@ -182,9 +182,9 @@ dbg_libs = dbgstr.lib
 
 !ifdef remote_link
 remote_objs = &
-        $($(which)_remote_objs) &
-        packet.obj &
-        $(srv)link.obj &
+    $($(which)_remote_objs) &
+    packet.obj &
+    $(srv)link.obj &
 !endif
 
 !ifeq release 1
@@ -197,30 +197,34 @@ libs = $(extra_libs) $(dbg_libs)
 
 $(target) : $(extra_link_res_$(host_os)) $(objs) $(libs) $(resource_file) $(extra_deps) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        %create $^&.lnk
-        @%append $^&.lnk $(mode_lflags)
-        @%append $^&.lnk op map, elim
-        @%append $^&.lnk name $^@
-        @%append $^&.lnk $(sys_$(target_cpu)_$(target_os))
+    %create $^&.lnk
+    @%append $^&.lnk $(mode_lflags)
+    @%append $^&.lnk op map, elim
+    @%append $^&.lnk name $^@
+    @%append $^&.lnk $(sys_$(target_cpu)_$(target_os))
 !ifeq which TRAP
-        @%append $^&.lnk op dosseg
+    @%append $^&.lnk op dosseg
 !endif
-        @for %i in ($(objs)) do @%append $^&.lnk file %i
-        @for %i in ($(libs)) do @%append $^&.lnk library %i
-        @%append $^&.lnk $(extra_linker)
-        $(linker) @$^&.lnk
+    @for %i in ($(objs)) do @%append $^&.lnk file %i
+    @for %i in ($(libs)) do @%append $^&.lnk library %i
+    @%append $^&.lnk $(extra_linker)
+    @%make echo_link
+    $(linker) @$^&.lnk
 !endif
 !ifdef resource_file
-        $(rc) $(resource_file) $^@
+    @%make echo_bindrc
+    $(rc) $(resource_file) $^@
 !endif
 !ifdef extra_cmds
-        $(extra_cmds)
+    $(extra_cmds)
 !endif
 
 dbgstr.lib : dbgstr.obj $(__MAKEFILES__)
-        $(librarian) $(libflags) +$[@
+    @%make echo_lib
+    $(librarian) $(libflags) +$[@
 
 inc_dirs += -I. -I"../h" -I"$(dig_dir)/h" -I"$(trap_dir)/common/$(target_os)"
 inc_dirs += -I"$(trap_dir)/common" -I"$(trap_dir)/h"
@@ -239,7 +243,8 @@ rc_inc_dirs = -I"$(trap_dir)/common"
 # implicit rules
 #################
 .rc.res: $(__MAKEFILES__) .AUTODEPEND
-        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 usage.u : ../$(srv).sp $(__MAKEFILES__)
-        *wsplice -u $< $@
+    *wsplice -u $< $@

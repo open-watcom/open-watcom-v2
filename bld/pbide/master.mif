@@ -11,8 +11,11 @@ pbide_autodepends = .AUTODEPEND
 extra_c_flags_win =-zW
 
 dlldbg.exe : dlldbg.obj dlldbg.res $(__MAKEFILES__)
-        $(linker) name $^@ $(lflags) file {dlldbg.obj}
-        $(rc) -k dlldbg.res $^@
+    @%make echo_link
+    $(linker) name $^@ $(lflags) file {dlldbg.obj}
+    @%make echo_bindrc
+    $(rc) -k dlldbg.res $^@
 
 dlldbg.res : ../dlldbg.rc ../debugger.ico $(__MAKEFILES__)
-        $(rc) $(rc_flags) $[@ -fo=$@
+    @%make echo_rc
+    $(rc) $(rc_flags) $[@ -fo=$@

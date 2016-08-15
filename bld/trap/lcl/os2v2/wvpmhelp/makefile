@@ -34,6 +34,7 @@ wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
     @%append $(tmplnk) file pmhook.obj
     @%append $(tmplnk) library os2386.lib
     @%append $(tmplnk) export SendMsgHookProc.1,SetHmqDebugee.2
+    @%make echo_link
     $(linker) @$(tmplnk)
 
 wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res $(__MAKEFILES__)
@@ -45,16 +46,19 @@ wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res $(__MAKEFILES__)
     @%append $(tmplnk) file pmhelp.obj
     @%append $(tmplnk) option modname=wdpmhelp
     @%append $(tmplnk) option description $(description)
+    @%make echo_link
     $(linker) @$(tmplnk)
+    @%make echo_rc
     $(rc) pmhelp.res $^@
 
 .c: ../c
 
 pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
-        $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
+    @%make echo_rc
+    $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@
+    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@

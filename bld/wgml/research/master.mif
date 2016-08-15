@@ -125,4 +125,5 @@ wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
     *awk -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<
 
 wgml.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+    @%make echo_rc
     $(rc_aui) $[@ -fo=$@

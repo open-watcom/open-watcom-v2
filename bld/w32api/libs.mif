@@ -163,35 +163,37 @@ all : $(dirs) $(libs) .SYMBOLIC
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 .obj.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
 
 {ddk}.lbc{ddk}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 {ddk}.obj{ddk}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 {directx}.c{directx}.lib: $(w32api_autodepends)
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
 
 {directx}.def{directx}.lbc:
     *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
 
 {directx}.lbc{directx}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 {directx}.obj{directx}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
@@ -212,36 +214,20 @@ directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
 
 ddk/wdmguid.obj: ddk/wdmguid.c
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
 
 directx/dinpstat.obj: directx/dinpstat.c
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
 
 directx/dxguid.obj: directx/dxguid.c
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
 
 $(dirs):
     @if not exist $@ @mkdir $@

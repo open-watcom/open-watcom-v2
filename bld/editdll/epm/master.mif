@@ -28,15 +28,19 @@ all: epmlink.dll wedit.dll .SYMBOLIC
 epmlink.dll: epmlink.obj $(__MAKEFILES__)
     @%write  $^&.lnk $(lflags)
     @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
+    @%make echo_link
     $(linker) name $@ @$^&.lnk file {$[@}
 
 wedit.dll: epmlink.obj $(__MAKEFILES__)
     @%write  $^&.lnk $(lflags)
     @%append $^&.lnk option description 'Open Watcom Editor DLL for EPM'
+    @%make echo_link
     $(linker) name $@ op implib @$^&.lnk file {$[@}
     
 epmtest.exe : epmtest.obj wedit.lib $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ sys os2v2_pm debug all op st=32k file {epmtest.obj} lib {wedit.lib}
 
 epmspy.exe : epmspy.obj $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ sys os2v2_pm file {epmspy.obj}

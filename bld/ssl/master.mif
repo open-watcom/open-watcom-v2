@@ -11,22 +11,23 @@ inc_dirs = -I"../h" $(cpp_inc_dirs)
 
 .c: ../c;$(cpp_c_dirs);$(watcom_dir)/c
 
-objs =                  &
-        ssl.obj         &
-        ssldecl.obj     &
-        sslrule.obj     &
-        sslsym.obj      &
-        sslgen.obj      &
-        preproc.obj     &
-        ppexpr.obj      &
-        ppmacro.obj     &
-        ppmem.obj       &
-        ppenv.obj       &
-        pathlist.obj
+objs =              &
+    ssl.obj         &
+    ssldecl.obj     &
+    sslrule.obj     &
+    sslsym.obj      &
+    sslgen.obj      &
+    preproc.obj     &
+    ppexpr.obj      &
+    ppmacro.obj     &
+    ppmem.obj       &
+    ppenv.obj       &
+    pathlist.obj
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif

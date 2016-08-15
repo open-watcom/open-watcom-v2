@@ -48,6 +48,7 @@ inc_dirs = -I. -I"../h" $(wclass_inc_dirs) -I"$(lib_misc_dir)/h"
 .cpp : ../cpp
 
 $(name).lib : $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

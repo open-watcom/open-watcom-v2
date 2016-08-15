@@ -191,6 +191,7 @@ all : virgin.exe csetup.exe f77setup.exe .SYMBOLIC
 !ifeq host_os win
 
 virgin.exe: $(gendeps) dosstub.exe $(__MAKEFILES__)
+    @%make echo_link
 !ifdef win386
     $(linker) name $(lname) @setup.lnk
     $(wbind) -q -n $(lname)
@@ -201,6 +202,7 @@ virgin.exe: $(gendeps) dosstub.exe $(__MAKEFILES__)
 !else
 
 virgin.exe: $(gendeps) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -212,6 +214,7 @@ virgin.exe: $(gendeps) $(__MAKEFILES__)
 !else ifneq host_os win
 
 setup.exe: $(gendeps) setupui.res $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
@@ -260,21 +263,27 @@ setup.lnk : ../setup.mif $(__MAKEFILES__)
 nonibm.obj : $(clib_dir)/startup/c/nonibm.c $(__MAKEFILES__)
 
 setupui.res : setupui.rc $(dep_res1) $(__MAKEFILES__)
+    @%make echo_rc
     $(rc_aui) $(gui_inc_dirs) $[@ -fo=setupui.res
 
 csetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+    @%make echo_rc
     $(rc) $(rc_flags) -DCSETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jcsetup.res : setup.rc $(dep_res1) ../res/wcc.bmp $(__MAKEFILES__)
+    @%make echo_rc
     $(rc) $(rc_flags) -DJCSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 f77setup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+    @%make echo_rc
     $(rc) $(rc_flags) -DF77SETUP $(res_inc_dirs) $[@ -fo=$^@
 
 jfsetup.res : setup.rc $(dep_res1) ../res/f77.bmp $(__MAKEFILES__)
+    @%make echo_rc
     $(rc) $(rc_flags) -DJFSETUP -DJAPANESE -zk0 $(res_inc_dirs) $[@ -fo=$^@
 
 setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
+    @%make echo_rc
     $(rc) $(rc_flags) $(res_inc_dirs) $[@ -fo=$^@
 
 dosstub.exe : dosstub.c $(__MAKEFILES__)
@@ -288,4 +297,5 @@ jfsetup.exe  : jfsetup.res
 csetup.exe f77setup.exe jcsetup.exe jfsetup.exe : $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
     cp virgin.exe $^@
     cp virgin.sym $^&.sym
+    @%make echo_bindrc
     $(rc_out) $[@ $^@ $(bind_version_res_exe_add)

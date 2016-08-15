@@ -48,23 +48,16 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     @%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
+    @%make echo_lib
     $(librarian) $(lib_flags) $^@ @$(libname).lbc
 
 .c.obj : .autodepend $(__MAKEFILES__)
-!ifeq verbose 1
+    @%make echo_cc
     $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
-!else
-    @echo flib_cc $@
-    @$(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
-!endif
 
 .asm.obj : .autodepend $(__MAKEFILES__)
-!ifeq verbose 1
+    @%make echo_as
     $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
-!else
-    @echo flib_as $@
-    @$(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
-!endif
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r
@@ -73,4 +66,5 @@ jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ jo r
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

@@ -32,20 +32,24 @@ all: weditviw.dll wedit.dll .SYMBOLIC
 
 wedit.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
 !else
-        @%write $^&.lnk $(lflags)
-        @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
-        $(linker) name $^@ op implib @$^&.lnk file $[@
+    @%write $^&.lnk $(lflags)
+    @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
+    @%make echo_link
+    $(linker) name $^@ op implib @$^&.lnk file $[@
 !endif
-        @%make bind_version_res_dll
+    @%make bind_version_res_dll
 
 weditviw.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $[@ $(cl_extra_objs) $(ldflags)
 !else
-        @%write $^&.lnk $(lflags)
-        @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
-        $(linker) name $^@ @$^&.lnk file $[@
+    @%write $^&.lnk $(lflags)
+    @%append $^&.lnk option description 'Open Watcom Editor DLL for VIW'
+    @%make echo_link
+    $(linker) name $^@ @$^&.lnk file $[@
 !endif
-        @%make bind_version_res_dll
+    @%make bind_version_res_dll

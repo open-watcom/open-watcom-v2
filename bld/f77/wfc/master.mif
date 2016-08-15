@@ -64,11 +64,13 @@ verrc_exe = $(target_exe)
 
 $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
 !else
     %create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk lib %i
+    @%make echo_link
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
 !endif
@@ -107,4 +109,5 @@ jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ $(jerrsrc_opt_$(target_cpu))
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

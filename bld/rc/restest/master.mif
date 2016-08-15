@@ -14,19 +14,19 @@ inc_dirs = -I..
 .rc: ..
 
 ntobjs = msgtbl.nbj
-			  
+                          
 objs =              &
         restest.obj &
         resproc.obj &
         verinfo.obj &
         string.obj  &
-	menu.obj    &
-	dialog.obj  &
-	data.obj    &
-	cursor.obj  &
-	icon.obj    &
-	accel.obj   &
-	bitmap.obj
+        menu.obj    &
+        dialog.obj  &
+        data.obj    &
+        cursor.obj  &
+        icon.obj    &
+        accel.obj   &
+        bitmap.obj
 
 !ifeq host_os nt
 objs += msgtbl.obj
@@ -38,12 +38,15 @@ win_libs = ver.lib
 extra_l_flags = opt map
 
 $(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(win_libs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(win_libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
+    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
 !endif
-	$(rc) $(proj_name).res
+    @%make echo_bindrc
+    $(rc) $(proj_name).res
 
 $(proj_name).res : $(proj_name).rc $(__MAKEFILES__)
-        $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@
+    @%make echo_rc
+    $(rc) $(inc_dirs) $(inc_dirs_sys) -bt=$(host_os) -r $[@ -fo=$@

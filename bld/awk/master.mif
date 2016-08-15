@@ -31,8 +31,8 @@ extra_c_flags_ytab = -wcd=118 -wcd=202
 !include exetarg.mif
 
 proctab.c : ./maketab.exe ../h/ytab.h
-        copy $]@ ytab.h
-        $[@ > proctab.c
+    copy $]@ ytab.h
+    $[@ > proctab.c
 
 ./maketab.exe : ../c/maketab.c
-        $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
+    $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)

@@ -18,6 +18,7 @@ all : cwstub.exe $(proj_name).exe .symbolic
 !endif
 
 $(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else

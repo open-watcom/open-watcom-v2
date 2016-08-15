@@ -1,15 +1,7 @@
 .c.obj : $(__MAKEFILES__) .autodepend
-!ifeq verbose 1
-    *$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
-!else
-    @echo mlib_cc $@
-    @*$(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
-!endif
+    @%make echo_cc
+    $(cc) $[@ $(include_c_path) $(build_target) $(c_flags) $(c_dbg_flags) $($^&_flags)
 
 .asm.obj : $(__MAKEFILES__) .autodepend
-!ifeq verbose 1
-    *$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
-!else
-    @echo mlib_as $@
-    @*$(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)
-!endif
+    @%make echo_as $@
+    $(as) $[@ $(include_a_path) $(build_target) $(a_flags) $(a_dbg_flags) $($^&_flags)

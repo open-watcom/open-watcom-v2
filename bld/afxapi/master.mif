@@ -318,9 +318,11 @@ afx.h: afx.mh
     @rm tmp.h
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs) $(static_objs)
 
 $(intname).lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) -z=tmp.def $(libflags) $(objs)
     sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
     sort < tmp2.def > tmp3.def
@@ -349,9 +351,11 @@ $(dllname).dll: $(intname).lib owf.res $(version_res_dll_$(host_os)_$(host_cpu))
     $(rc) -k owf.res $^@ $(bind_version_res_dll_add)
 
 $(dllname).lib: $(dllname).dll $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +$(dllname).dll
 
 $(statname).lib: $(static_objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(static_objs)
 
 owf.res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND

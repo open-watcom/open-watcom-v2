@@ -103,6 +103,7 @@ objs = &
 all : $(dlgfiles) aui.lib .SYMBOLIC
 
 aui.lib : auistr.gh $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

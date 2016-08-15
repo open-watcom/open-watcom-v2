@@ -11,6 +11,7 @@ all : $(objfiles) $(libname).lib .symbolic
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @rm -f export.tmp
     @rm -f export.def
+    @%make echo_lib
     $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
     sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def

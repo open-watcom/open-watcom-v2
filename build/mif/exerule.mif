@@ -1,15 +1,7 @@
 .obj.exe :
-!ifeq verbose 1
-! ifndef __WATCOM_TOOLS__
+    @%make echo_link
+!ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $< $(ldflags)
-! else
-    $(linker) name $@ $(lflags) file {$<}
-! endif
 !else
-    @echo link $@
-! ifndef __WATCOM_TOOLS__
-    @$(cl) $(clflags) $< $(ldflags)
-! else
-    @$(linker) name $@ $(lflags) file {$<}
-! endif
+    $(linker) name $@ $(lflags) file {$<}
 !endif

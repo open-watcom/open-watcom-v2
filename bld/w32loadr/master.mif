@@ -42,29 +42,35 @@ extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -zl -fo=$@
 all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
 
 dpmi_ldr.exe : $(dpmildr_objs) $(__MAKEFILES__)
-  $(linker) name $^@ system dos option map file {$(dpmildr_objs)}
+    @%make echo_link
+    $(linker) name $^@ system dos option map file {$(dpmildr_objs)}
 
 # we don't need to link w386run with wstub.exe
 # this will make it about 14k smaller
 d4grun.exe : $(d4grun_objs) $(__MAKEFILES__)
 # NB: DOS4GOPTIONS export is disabled due to incompatibility with DOS/4G 2.x
 #  $(linker) name w386run.exe system dos4g option stack=32k,map export DOS4GOPTIONS=_DOS4GOPTIONS file d4grun.obj,cmain32.obj,int21dos.obj
-  $(linker) name w386run.exe system dos4g option stack=32k,map file {$(d4grun_objs)} lib {clib3r.lib}
-  $(rsi_root)\bin\4gbind $(rsi_root)\bin\dos4g.exe w386run.exe $^@ -V
+    @%make echo_link
+    $(linker) name w386run.exe system dos4g option stack=32k,map file {$(d4grun_objs)} lib {clib3r.lib}
+    $(rsi_root)\bin\4gbind $(rsi_root)\bin\dos4g.exe w386run.exe $^@ -V
 
 dbgrun.exe : $(d4grun_objs) $(__MAKEFILES__)
-  $(linker) name $^@ debug all system dos4g option stack=32k,map file {$(d4grun_objs)}
+    @%make echo_link
+    $(linker) name $^@ debug all system dos4g option stack=32k,map file {$(d4grun_objs)}
 
 cwsrun.exe : $(cwsrun_objs) $(__MAKEFILES__)
-  $(linker) name $^@ system causeway option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe file {$(cwsrun_objs)} lib {clib3r.lib}
+    @%make echo_link
+    $(linker) name $^@ system causeway option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe file {$(cwsrun_objs)} lib {clib3r.lib}
 
 tntrun.exe : $(tntrun_objs) $(__MAKEFILES__)
-  $(linker) name $^&.exp system pharlap ext option stack=32k,map file {$(tntrun_objs)} lib {clib3r.lib}
-  $(tntdir)\bin\rebind $(tntdir)\bin\rtk\tntb.exe $^&.exp -exe $^@
+    @%make echo_link
+    $(linker) name $^&.exp system pharlap ext option stack=32k,map file {$(tntrun_objs)} lib {clib3r.lib}
+    $(tntdir)\bin\rebind $(tntdir)\bin\rtk\tntb.exe $^&.exp -exe $^@
 
 x32run.exe : $(x32run_objs) $(__MAKEFILES__)
-  $(linker) name $^@ system x32r option map,dosseg file {$(x32run_objs)} lib {clib3r.lib}
-  x32fix $^@
+    @%make echo_link
+    $(linker) name $^@ system x32r option map,dosseg file {$(x32run_objs)} lib {clib3r.lib}
+    x32fix $^@
 
 # Probably should use default build rules?
 tntrun.obj : loader.c $(__MAKEFILES__) #../loader.h
@@ -81,7 +87,8 @@ dginfo.gh : $(rsi_root)/bin/dos4g.exe
   -mkdginfo
 
 dpmi.exe : $(dpmi_objs) $(__MAKEFILES__)
-  $(linker) name $^@ system dos option map,stack=8k file {$(dpmi_objs)}
+    @%make echo_link
+    $(linker) name $^@ system dos option map,stack=8k file {$(dpmi_objs)}
 
 !else ifeq host_os nt
 
@@ -91,14 +98,16 @@ extra_c_flags_int21nt = -s
 all : w32run.exe
 
 w32run.exe : $(ntldr_objs) ntstub.exe $(__MAKEFILES__)
-  %create $^&.lnk
-  @%append $^&.lnk $(lflags)
-  @%append $^&.lnk file {$(ntldr_objs)}
-  @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe
-  $(linker) name $^@ @$^&.lnk
+    %create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk file {$(ntldr_objs)}
+    @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe
+    @%make echo_link
+    $(linker) name $^@ @$^&.lnk
 
 ntstub.exe : ntstub.obj $(__MAKEFILES__)
-  $(linker) name $^@ system dos option map file {ntstub.obj}
+    @%make echo_link
+    $(linker) name $^@ system dos option map file {ntstub.obj}
 
 !else ifeq host_os os2
 
@@ -107,9 +116,11 @@ all: .symbolic
 extra_c_flags_loader = -D__OS2 -D__CALL21__
 
 os2ldr.exe : $(os2ldr_objs) os2stub.exe $(__MAKEFILES__)
-  $(linker) name $^@ system os2v2 pmc opt map,stack=32k,stub=os2stub.exe file {$(os2ldr_objs)} lib {os2386.lib}
+    @%make echo_link
+    $(linker) name $^@ system os2v2 pmc opt map,stack=32k,stub=os2stub.exe file {$(os2ldr_objs)} lib {os2386.lib}
 
 os2stub.exe : $(os2stub_objs) $(__MAKEFILES__)
-  $(linker) name $^@ system dos option map file {$(os2stub_objs)}
+    @%make echo_link
+    $(linker) name $^@ system dos option map file {$(os2stub_objs)}
 
 !endif

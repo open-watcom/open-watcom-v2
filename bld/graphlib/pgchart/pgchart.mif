@@ -84,18 +84,20 @@ extra_c_flags_win = -zW
 all : pgchart.gh chart.lib chart2.lib .symbolic
 
 chart.lib : graph.gh pgchart.lbc $(__MAKEFILES__)
-        $(librarian) $(libflags) @pgchart.lbc
+    @%make echo_lib
+    $(librarian) $(libflags) @pgchart.lbc
 
 chart2.lib : graph2.gh pgchart2.lbc $(__MAKEFILES__)
-        $(librarian) $(libflags) @pgchart2.lbc
+    @%make echo_lib
+    $(librarian) $(libflags) @pgchart2.lbc
 
 pgchart.lbc : $(objs) $(__MAKEFILES__)
-        %create $@
-        @for %i in ($(objs)) do @%append $@ +%i
+    %create $@
+    @for %i in ($(objs)) do @%append $@ +%i
 
 pgchart2.lbc : $(v2_objs) $(__MAKEFILES__)
-        %create $@
-        @for %i in ($(v2_objs)) do @%append $@ +%i
+    %create $@
+    @for %i in ($(v2_objs)) do @%append $@ +%i
 
 wsplice_options_dos = -kDOS
 wsplice_options_os2 = -kDOS
@@ -103,19 +105,15 @@ wsplice_options_qnx = -kQNX -u
 wsplice_options_win = -kDOS
 
 pgchart.gh: $(hdr_dir)/watcom/pgchart.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
-        *wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+    *wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
 
 graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
-        *wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+    *wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
 
 graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
-        *wsplice -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_options_$(host_os)) common.sp $[@ $^@
+    *wsplice -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_options_$(host_os)) common.sp $[@ $^@
 
 .c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
     @if not exist $(v2subdir) mkdir $(v2subdir)
-!ifeq verbose 1
-        $(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo cc $@
-        @$(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@

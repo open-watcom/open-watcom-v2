@@ -34,10 +34,12 @@ verrc_dll = weditcw
 all: weditcw.dll wedit.dll .SYMBOLIC
 
 weditcw.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ @dll.lnk file $[@
     @%make bind_version_res_dll
 
 wedit.dll : weditcw.obj dll.lnk $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ op implib @dll.lnk file $[@
     @%make bind_version_res_dll
 

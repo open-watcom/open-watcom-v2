@@ -43,6 +43,7 @@ $(target_lib) : $(libs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.def
+    @%make echo_lib
     $(librarian) $(lib_flags) $(exp_lib_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
     sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
@@ -54,6 +55,7 @@ $(target_lib_x) : $(libsx) $(__MAKEFILES__)
     @for %i in ($(libsx)) do @%append $^&.lbc +%i
     @rm -f exportx.tmp
     @rm -f exportx.def
+    @%make echo_lib
     $(librarian) $(lib_flags) $(exp_libx_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
     sed -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def

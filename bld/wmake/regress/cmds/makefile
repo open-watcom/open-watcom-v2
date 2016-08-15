@@ -7,13 +7,20 @@ proj_name = wmake_regress_cmds
 !include defrule.mif
 !include deftarg.mif
 
-commands = mkerr envarg ifeq
-
 !ifdef __UNIX__
-commands += rem
+exe=
+c_dir=../c/
 !else
-commands += prntdir
+exe=.exe
+c_dir=..\c\
+!endif
+
+commands = mkerr$(exe) envarg$(exe) ifeq$(exe)
+!ifdef __UNIX__
+commands += rem$(exe)
+!else
+commands += prntdir$(exe)
 !endif
 
 $(commands) : .symbolic
-        $(bld_cl) ../c/$@.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)
+        $(bld_cl) $(c_dir)$^&.c -I"../../../watcom/h" $(bld_clflags) $(bld_ldflags)

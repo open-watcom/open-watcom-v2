@@ -92,6 +92,7 @@ inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 .asm: ../asm
 
 $(name).lib : uistr.gh $(objs) $(libs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs) $(libs)
 !else

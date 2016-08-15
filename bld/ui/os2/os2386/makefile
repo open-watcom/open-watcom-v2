@@ -13,4 +13,5 @@ sample2.exe : sample.obj sampdial.obj ui.lib $(__MAKEFILES__)
     @%append sample.lnk  file sample
     @%append sample.lnk  file sampdial
     @%append sample.lnk  library ui
+    @%make echo_link
     $(linker) @sample.lnk

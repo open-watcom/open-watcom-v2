@@ -69,11 +69,13 @@ start_test : .symbolic
 
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib
+    @%make echo_lib
     $(librarian) $^@ $?
     @%make set_old_path
 
 er03.lib : er03b.obj er03c.obj
     @%make set_path_wlib
+    @%make echo_lib
     $(librarian) $^@ +er03b.obj +er03c.obj
     @%make set_old_path
 

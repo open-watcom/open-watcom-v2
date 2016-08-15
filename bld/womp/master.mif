@@ -69,6 +69,7 @@ wmpmsg.gh : $(womp_dir)/womp.msg
     *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(proj_name).res :  usage.grc ../h/$(proj_name).rc
+    @%make echo_rc
     $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 usage.grc : ../usage.sp

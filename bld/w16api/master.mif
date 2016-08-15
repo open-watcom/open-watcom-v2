@@ -86,6 +86,7 @@ all : $(headers) $(libs) .SYMBOLIC
     *awk -f ../def16lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 .mh.h:
@@ -98,6 +99,7 @@ windows.lbc : $(winlibs)
     @for %i in ($(winlibs)) do @%append $^@ @ %i
 
 windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@ profc.obj
 
 !include ../deps.mif

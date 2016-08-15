@@ -14,6 +14,51 @@ bas        += -q
 blink      += op q
 blib       += -q
 
+echo_as : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo as $@
+!endif
+
+echo_cc : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo cc $@
+!endif
+
+echo_cxx : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo c++ $@
+!endif
+
+echo_xcxx : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo xc++ $@
+!endif
+
+echo_cl : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo cl $@
+!endif
+
+echo_link : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo link $@
+!endif
+
+echo_lib : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo lib $@
+!endif
+
+echo_rc : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo rc $@
+!endif
+
+echo_bindrc : .PROCEDURE .EXPLICIT
+!ifneq verbose 1
+    @echo bind rc $@
+!endif
+
 # use native tools for x64 cpu
 # skip build for unsupported platforms
 !ifeq host_cpu x64
@@ -150,12 +195,12 @@ cl_extra_libs = $(cl_extra_libs_gen)
 bcc  = icl -nologo -c
 bcxx = icl -nologo -c
 bcl  = icl -nologo
-blib = xilib -nologo
+blib = $(noecho)xilib -nologo
 !else
 bcc  = cl -nologo -c
 bcxx = cl -nologo -c
 bcl  = cl -nologo
-blib = lib -nologo
+blib = $(noecho)lib -nologo
 !endif
 
 bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
@@ -186,15 +231,13 @@ bld_libflags = -out:$^@
 # standard settings
 ############################
 !ifdef __INTEL_TOOLS__
-cc  = icl -nologo -c
-cxx = icl -nologo -c
-cl  = icl -nologo
-
+cc  = $(noecho)icl -nologo -c
+cxx = $(noecho)icl -nologo -c
+cl  = $(noecho)icl -nologo
 !else
-cc   = cl -nologo -c
-cxx  = cl -nologo -c
-cl   = cl -nologo
-
+cc   = $(noecho)cl -nologo -c
+cxx  = $(noecho)cl -nologo -c
+cl   = $(noecho)cl -nologo
 !endif
 
 cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
@@ -364,7 +407,7 @@ bcxx = g++ -pipe -c
 bcl  = gcc -pipe
 !endif
 
-blib      = ar
+blib = $(noecho)ar
 
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
@@ -407,13 +450,13 @@ bld_libflags = crs $^@
 # standard settings
 ############################
 !ifdef __CLANG_TOOLS__
-cc   = clang -pipe -c
-cxx  = clang++ -pipe -c
-cl   = clang -pipe
+cc   = $(noecho)clang -pipe -c
+cxx  = $(noecho)clang++ -pipe -c
+cl   = $(noecho)clang -pipe
 !else
-cc   = gcc -pipe -c
-cxx  = g++ -pipe -c
-cl   = gcc -pipe
+cc   = $(noecho)gcc -pipe -c
+cxx  = $(noecho)g++ -pipe -c
+cl   = $(noecho)gcc -pipe
 !endif
 
 cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)

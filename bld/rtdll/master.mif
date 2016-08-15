@@ -77,6 +77,7 @@ extra_lib_flags += -s-t-zld
 !endif
 
 $(target_lib) : $(dllname).lbc $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)

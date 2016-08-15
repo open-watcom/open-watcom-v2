@@ -15,6 +15,7 @@ cg$(target_name).dll : cgdmain.obj $(libs) $(__MAKEFILES__)
     $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
 cgdllcli.lib : $(cg_client_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(cg_client_objs)
 !else
@@ -35,6 +36,7 @@ debug_objs = $(cg_dump_objs)
 !endif
 
 cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs)
 !else
@@ -42,6 +44,7 @@ cg$(target_name).lib : $(target_objs) $(mem_objs) $(cg_client_objs) $(debug_objs
 !endif
 
 $(hostcglibname) : $($(host_os)_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $($(host_os)_objs)
 !else

@@ -35,6 +35,7 @@ objs = &
 
 cwdll.lib : $(objs) $(__MAKEFILES__)
     @%make cwapi.lbc
+    @%make echo_lib
     $(librarian) $(libflags) $(objs) @cwapi.lbc
 
 cwapi.lbc : .procedure

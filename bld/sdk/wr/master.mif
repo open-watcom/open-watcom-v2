@@ -84,12 +84,14 @@ version_res_dll_nt_x64 = version.res
 !include verrc.mif
 
 $(name).dll: $(win_yacc_file).h rcmsg.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+    $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
-        $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
+    @%make echo_bindrc
+    $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 #---------- TEST
 test_system_win_i86= windows
@@ -101,17 +103,19 @@ test_lflags = system $(test_system) name test debug all libpath $(watcom_dir)/li
 test_lflags += option quiet, map, elim, v, static
 
 test.exe: $(name).lib $(TESTLNK) test.obj $(__MAKEFILES__)
-        $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
+    @%make echo_link
+    $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
 rcmsg.gh: wrmsg.gh $(__MAKEFILES__)
-        *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 wrmsg.gh: ../res/master.msg $(msgfiles) $(__MAKEFILES__)
-        $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
+    $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
 
 $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
-        $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
-        @rm -f $(win_yacc_file).c # C code isn't used
+    $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
+    @rm -f $(win_yacc_file).c # C code isn't used
 
 $(name).res: ../res/wr.rc $(__MAKEFILES__) .AUTODEPEND
-        $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@

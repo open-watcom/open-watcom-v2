@@ -185,6 +185,7 @@ all_as += $(name).exe
 all : $(all_as) .symbolic
 
 $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
 !else
@@ -195,9 +196,11 @@ $(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)
     $(wstrip) -q -a -r $@ . $(name).res
 
 $(name).res : $(as_dir)/h/as.rc msg.gh $(__MAKEFILES__)
+    @%make echo_rc
     $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 
 asinline.lib : asi_msg.gh $(asi_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(asi_objs)
 !else
@@ -248,9 +251,5 @@ $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
 
 .c{$(stand_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @if not exist $(stand_subdir) mkdir $(stand_subdir)
-!ifeq verbose 1
-    $(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-    @echo cc $@
+    @%make echo_cc
     @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif

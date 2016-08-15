@@ -93,6 +93,7 @@ objs = &
 objs += $(trmem_objs) $($(ui_os))
 
 $(name).lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

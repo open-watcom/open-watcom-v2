@@ -135,7 +135,9 @@ verrc_exe = $(name)
 all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
 
 $(name).exe : $(objs) $(libs) $(res_file) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
+    @%make echo_rc
     $(rc) $(rc2_flags_$(host_os)) $(res_file) $^@ $(bind_version_res_exe_add)
 !ifdef gen_browse_file
     @%create browser.wbr
@@ -143,6 +145,7 @@ $(name).exe : $(objs) $(libs) $(res_file) $(version_res_exe_$(host_os)_$(host_cp
 !endif
 
 .gpp.obj: .AUTODEPEND
+    @%make echo_cxx
     $(cxx) $(cflags) $(extra_cxx_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 dmem.obj : mem.cpp
@@ -156,4 +159,5 @@ curr_dir=$+$(%__CWD__)$-
 !endif
 
 .rc.res:
+    @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@

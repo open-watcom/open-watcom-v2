@@ -31,6 +31,7 @@ extra_c_flags_qnx = -oais-w3 -I"$(new_qnx_h)"
 objs = emu387.obj 386inite.obj
 
 emu387.lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs)
 
 !else ifeq host_os qnx
@@ -50,6 +51,7 @@ usage.u : ../../usage.sp
 objs = 386stub.obj
 
 emu387.lib noemu387.lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs)
 
 !endif

@@ -123,9 +123,11 @@ dovldata.obj : ovldata.asm $($(proj_name)_autodepends)
 makedbglib: .procedure
     %create $^&.lbc
     @for %i in ($<) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) -b-n $(extra_lib_flags) $@ @$^&.lbc
 
 makelib: .procedure
     %create $^&.lbc
     @for %i in ($<) do @%append $^&.lbc +%i
+    @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc

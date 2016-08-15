@@ -21,7 +21,9 @@ libs = clibext.lib clibexts.lib
 all: $(libs) .symbolic
 
 clibext.lib : $(objs)
+    @%make echo_lib
     $(bld_lib) $<
 
 clibexts.lib : $(dll_objs)
+    @%make echo_lib
     $(bld_lib) $<

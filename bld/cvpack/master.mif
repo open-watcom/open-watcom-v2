@@ -19,4 +19,5 @@ objs += typemap.obj typearay.obj typercrd.obj common.obj
 .hpp : ../hpp
 
 cvpack.exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) FILE { $(objs) }

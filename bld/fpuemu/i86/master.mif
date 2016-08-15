@@ -79,6 +79,7 @@ usage.u : ../../usage.sp
 objs = emustub.obj
 
 noemu87.lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs)
 
 !else
@@ -86,6 +87,7 @@ noemu87.lib: $(objs) $(__MAKEFILES__)
 objs = $(objs_$(host_os))
 
 emu87.lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs)
 
 !endif

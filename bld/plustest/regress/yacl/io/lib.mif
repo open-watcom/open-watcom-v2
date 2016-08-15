@@ -2,5 +2,6 @@ io_lib_objs =  binfile.obj bytstore.obj dskbtree.obj slotfile.obj
 
 io.lib : $(io_lib_objs) .EXPLICIT
     @%make set_path_wlib
+    @%make echo_lib
     $(librarian) $@ $(io_lib_objs)
     @%make set_old_path

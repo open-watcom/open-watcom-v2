@@ -9,8 +9,9 @@ errsrc_autodepends = .autodepend
 .c: ../c
 
 errsrc.exe : errsrc.obj $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) errsrc.obj $(ldflags)
+    $(cl) $(clflags) errsrc.obj $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {errsrc.obj}
+    $(linker) name $@ $(lflags) file {errsrc.obj}
 !endif

@@ -13,13 +13,14 @@ idebatch_autodepend = .AUTODEPEND
 all: batserv.exe tst.exe .symbolic
 
 batserv.exe : batserv.obj $(__MAKEFILES__)
-        $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
+    @%make echo_link
+    $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
 
 batcli.obj : batcli.c
-        $(cc_i86) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
+    $(cc_i86) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
 
 tst.exe : tst.c batcli.obj
-        $(cl_i86) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
+    $(cl_i86) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
 
 !else ifeq host_os nt
 
@@ -30,17 +31,19 @@ all: batserv.exe tst.exe .symbolic
 inc_dirs = -I"../h"
 
 batserv.exe : batserv.obj batpipe.obj $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
+    $(cl) $(clflags) batserv.obj batpipe.obj $(ldflags)
 !else
-        $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
+    $(linker) name $@ $(lflags) op stack=32K file {batserv.obj batpipe.obj}
 !endif
 
 tst.exe : tst.obj batcli.obj batpipe.obj $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
+    $(cl) $(clflags) tst.obj batcli.obj batpipe.obj $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {tst.obj batcli.obj batpipe.obj}
+    $(linker) name $@ $(lflags) file {tst.obj batcli.obj batpipe.obj}
 !endif
 
 !else ifeq host_os dos
@@ -53,7 +56,8 @@ name = int
 objs = $(name).obj link.obj int21.obj
 
 $(name).exe : $(objs) $(__MAKEFILES__)
-       $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
+    @%make echo_link
+    $(linker) name $@ $(lflags) op stack=1500 file {$(objs)}
 
 !else ifeq host_os win
 
@@ -75,14 +79,19 @@ all : $(name).exe $(name)e.exe .SYMBOLIC
     @%null
 
 $(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
+    @%make echo_bindrc
     $(rc) $(name).res $^@
 
 $(name)e.exe : $(objse) $(lnk) $(name).res $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
+    @%make echo_bindrc
     $(rc) $(name).res $^@
 
 $(name).res : ../$(name).rc
+    @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
 
 $(lnk) : makefile

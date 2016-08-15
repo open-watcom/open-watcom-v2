@@ -82,4 +82,5 @@ inc_dirs = -I"../inc"
 wattcpl.lib: $(objs) $(__MAKEFILES__)
     @%create $^&.lbc
     @for %f in ($(objs)) do @%append $^&.lbc +- %f
+    @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc

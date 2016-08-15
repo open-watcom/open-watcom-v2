@@ -19,7 +19,7 @@ bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-blib            = $(blibrarian_$(bld_cpu))
+blib            = $(noecho)$(blibrarian_$(bld_cpu))
 bcc             = $(bcc_$(bld_cpu))
 bcl             = $(bcl_$(bld_cpu))
 bas             = $(bas_$(bld_cpu))

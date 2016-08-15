@@ -17,6 +17,11 @@ dll_subdir   = dllobjs
 
 verbose      = $+$(%OWVERBOSE)$-
 
+noecho = @
+!ifeq verbose 1
+noecho =
+!endif
+
 # don't ask, just nuke the files
 .ERASE
 
