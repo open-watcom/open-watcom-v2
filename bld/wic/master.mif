@@ -43,7 +43,7 @@ inc_dirs = -I"../h"
 ##############################################################################
 
 $(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk option quiet
     @%append $^&.lnk debug all
 !ifeq release 1
@@ -51,8 +51,10 @@ $(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
 !endif
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(objs)) do @@%append $^&.lnk file %i
+    @%make echo_link
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
+    @%make echo_bindres
     $(wstrip) -a -r -q $@ . wic.res
 
 ##############################################################################
@@ -62,7 +64,9 @@ wic.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     $(rc_aui) $[@ -fo=$^@
 
 usagee.gh:  ../res/usage.sp
-    *wsplice -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
+    @%make echo_wsplice
+    $(wsplice) -kENGLISH -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"%s\", \"\")" $< $^@
 
 usagej.gh:  ../res/usage.sp
-    *wsplice -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@
+    @%make echo_wsplice
+    $(wsplice) -kJAPANESE -t8 -f "pick(%+(MSG_USAGE_BASE+%$#-1), \"\", \"%s\")" $< $^@

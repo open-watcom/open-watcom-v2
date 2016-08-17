@@ -22,8 +22,9 @@ inc_dirs = -I"../../h"
 objs = wbind.obj
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(ldflags)
 !else
-        $(linker) name $@ $(lflags) file {$(objs)}
+    $(linker) name $@ $(lflags) file {$(objs)}
 !endif

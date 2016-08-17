@@ -31,8 +31,9 @@ extra_c_flags_trmem    = $(trmem_cflags)
 extra_l_flags_os2 = op stack=8k
 
 ms2wlink.exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file {$(objs)}
+    $(linker) name $^@ $(lflags) file {$(objs)}
 !endif

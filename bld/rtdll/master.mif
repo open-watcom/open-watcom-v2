@@ -81,7 +81,8 @@ $(target_lib) : $(dllname).lbc $(__MAKEFILES__)
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
-    *awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
+    @%make echo_awk
+    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
     @for %i in ($(static_objs)) do @%append $@ +%i
 
 !ifeq system winnt
@@ -96,11 +97,12 @@ lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 !endif
 
 $(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dll_def) $(__MAKEFILE__)
-    %create $(dllname).lnk
+    $(noecho)%create $(dllname).lnk
     @%append $(dllname).lnk $(lflags_dll)
     @for %i in ($(dll_objs)) do @%append $(dllname).lnk file %i
     @for %i in ($(dll_def)) do @%append $(dllname).lnk export { @%i }
     @for %i in ($(dll_libs) $(extra_libs)) do @%append $(dllname).lnk lib %i
     @%append $(dllname).lnk $(lnk_alias)
+    @%make echo_link
     $(linker) name $(dllname).dll @$(dllname).lnk
     @%make bind_version_res_dll

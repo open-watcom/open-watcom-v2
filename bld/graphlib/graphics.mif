@@ -214,25 +214,25 @@ extra_a_flags_qnx = -D_QNX
 all: graphi.lib graphi2.lib .symbolic
 
 graphi.lib : graph.gh $(special_objs) $(objs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(objs)) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
 
 graphi2.lib : graph2.gh $(special_objs) $(v2_objs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(v2_objs)) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
 
-wsplice_options_dos = -kDOS
-wsplice_options_qnx = -kQNX -u
+wsplice_opts_dos = -kDOS
+wsplice_opts_qnx = -kQNX -u
 
 graph.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
-    *wsplice -i$(hdr_dir) -kINTERNAL $(wsplice_options_$(host_os)) common.sp $[@ $^@
+    $(wsplice) -i$(hdr_dir) -kINTERNAL $(wsplice_opts_$(host_os)) common.sp $[@ $^@
 
 graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl.sp $(hdr_dir)/poppack.sp
-    *wsplice -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_options_$(host_os)) common.sp $[@ $^@
+    $(wsplice) -i$(hdr_dir) -kINTERNAL -kVERSION2 $(wsplice_opts_$(host_os)) common.sp $[@ $^@
 
 .c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
     @if not exist $(v2subdir) mkdir $(v2subdir)

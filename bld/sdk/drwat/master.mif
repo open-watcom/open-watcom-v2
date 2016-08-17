@@ -98,7 +98,7 @@ xlibs = $(commonui_lib)
 $(exc_name) : rcstr.gh $(dis_prereq) $(link_name) $(proj_name).res $(proj_obj) $(xlibs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
     $(linker) @$(link_name)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(proj_name).res $^@ $(bind_version_res_exe_add)
 
 $(link_name) : $(__MAKEFILES__)
@@ -117,7 +117,9 @@ $(proj_name).res : ../res/$(host_os)/drnt.rc .AUTODEPEND
 !endif
 
 rcstr.gh : rcstrmsg.gh
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/$(host_os)/drwatcom.msg
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) $(cppflags) -I"$(dig_dir)/h" $(commonui_inc_dirs) -o$^@ $[@

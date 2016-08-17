@@ -7,7 +7,7 @@ os2api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-splice = *wsplice -i"$(hdr_dir)" $[@ $^@
+wsplice_opts = -i"$(hdr_dir)" $[@ $^@
 
 .EXTENSIONS : .lbc .def
 
@@ -93,7 +93,8 @@ all : $(libs) .SYMBOLIC
 .def .asm: ../../$(libdir)
 
 .def.lbc: $(__MAKEFILES__)
-    sed -f ../../def2lbc.sed ../../$(libdir)/$[. > $@
+    @%make echo_sed
+    $(sed) -f ../../def2lbc.sed ../../$(libdir)/$[. > $@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -108,7 +109,7 @@ os2.lib: lib286.lbc msgseg.obj $(__MAKEFILES__)
     $(librarian) $(libflags) @$[@ +msgseg.obj
 
 lib286.lbc: $(components286) $(__MAKEFILES__)
-    %create $@
+    $(noecho)%create $@
     @for %l in ($(components286)) do @%append $@ @%l
 
 os2386.lib: lib386.lbc msgseg32.obj $(__MAKEFILES__)
@@ -116,7 +117,7 @@ os2386.lib: lib386.lbc msgseg32.obj $(__MAKEFILES__)
     $(librarian) $(libflags) @$[@ +msgseg32.obj
 
 lib386.lbc: $(components386) $(__MAKEFILES__)
-    %create $@
+    $(noecho)%create $@
     @for %l in ($(components386)) do @%append $@ @%l
 
 rexx.lib: rexxall.lbc $(__MAKEFILES__)
@@ -124,7 +125,7 @@ rexx.lib: rexxall.lbc $(__MAKEFILES__)
     $(librarian) $(libflags) @$[@
 
 rexxall.lbc: $(componentsrexx) $(__MAKEFILES__)
-    %create $@
+    $(noecho)%create $@
     @for %l in ($(componentsrexx)) do @%append $@ @%l
 
 mmpm2.lib: mmpm2all.lbc $(__MAKEFILES__)
@@ -132,7 +133,7 @@ mmpm2.lib: mmpm2all.lbc $(__MAKEFILES__)
     $(librarian) $(libflags) @$[@
 
 mmpm2all.lbc: $(componentsmmpm2) $(__MAKEFILES__)
-    %create $@
+    $(noecho)%create $@
     @for %l in ($(componentsmmpm2)) do @%append $@ @%l
 
 libuls.lib: libuni.lbc $(__MAKEFILES__)

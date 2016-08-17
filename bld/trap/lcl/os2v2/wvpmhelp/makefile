@@ -58,7 +58,9 @@ pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@

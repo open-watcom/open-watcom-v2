@@ -160,7 +160,8 @@ all : $(dirs) $(libs) .SYMBOLIC
 .c: ../lib
 
 .def.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -171,7 +172,8 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
 
 {ddk}.lbc{ddk}.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -186,7 +188,8 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 {directx}.def{directx}.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
 
 {directx}.lbc{directx}.lib: $(__MAKEFILES__)
     @%make echo_lib
@@ -197,20 +200,23 @@ all : $(dirs) $(libs) .SYMBOLIC
     $(librarian) $(libflags) $[@
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
-    @%create $@
+    $(noecho)%create $@
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
     @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c

@@ -30,7 +30,8 @@ ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 all : w32bind.exe
 
 w32bind.exe : w32bind.c
-  $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 !else ifeq host_os dos
 
@@ -98,7 +99,7 @@ extra_c_flags_int21nt = -s
 all : w32run.exe
 
 w32run.exe : $(ntldr_objs) ntstub.exe $(__MAKEFILES__)
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk file {$(ntldr_objs)}
     @%append $^&.lnk opt map,stack=64k,stub=ntstub.exe

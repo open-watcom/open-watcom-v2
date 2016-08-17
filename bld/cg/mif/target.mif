@@ -12,6 +12,7 @@ target : $(pre_obj_deps) cg$(target_name).dll cgdllcli.lib .SYMBOLIC
     @%null
 
 cg$(target_name).dll : cgdmain.obj $(libs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) file {$[@} lib {$(libs)}
 
 cgdllcli.lib : $(cg_client_objs) $(__MAKEFILES__)

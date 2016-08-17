@@ -9,15 +9,15 @@ all : $(libname).lib .symbolic
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
-    %create tmp.lbc
-    @for %i in ($(libs)) do @%append tmp.lbc +%i
-    @for %i in ($(objs)) do @%append tmp.lbc +%i
+    $(noecho)%create $^&.lbc
+    @for %i in ($(libs)) do @%append $^&.lbc +%i
+    @for %i in ($(objs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.def
     @%make echo_lib
-    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @tmp.lbc
+    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif
 
 !include ../../deps.mif

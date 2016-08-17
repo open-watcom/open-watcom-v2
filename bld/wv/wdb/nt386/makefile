@@ -13,5 +13,7 @@ all : wdb.exe .SYMBOLIC
 !include ../../master.mif
 
 wdb.exe : $(resfile) wdbstub.obj wd.lib $(__MAKEFILES__)
-        $(linker) name $^@ sys nt debug all op symf,map file wdbstub.obj lib wd.lib
-        $(rc) -k $(resfile) wdb.exe
+    @%make echo_link
+    $(linker) name $^@ sys nt debug all op symf,map file wdbstub.obj lib wd.lib
+    @%make echo_bindres
+    $(rc) -k $(resfile) wdb.exe

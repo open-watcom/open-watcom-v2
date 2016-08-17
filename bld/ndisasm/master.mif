@@ -83,12 +83,14 @@ $(exe_name) : msg.gh $(dis_prereq) $(objs) $(libs) $(proj_name).res $(version_re
     @%make bind_osildr
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . $^&.res
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
     $[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
+    @%make echo_bldcl
     $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
 $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
@@ -96,9 +98,11 @@ $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
     $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
 msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
-    *awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 optencod_opt_qnx = -u $(extra_link_res_qnx) 
+
 optencod_targ_bsd   = bsd
 optencod_targ_haiku = haiku
 optencod_targ_linux = linux
@@ -106,11 +110,19 @@ optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
 
 usage.gh : ../stand/options.gml $(__MAKEFILES__)
-    optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
-    %append usage.tmp "."
-    *awk -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
+!ifeq verbose 0
+    @echo optencod $^&
+!endif
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
+    @%append usage.tmp "."
+    @%make echo_awk
+    $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
 
 usagej.gh : ../stand/options.gml $(__MAKEFILES__)
-    optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
-    %append usagej.tmp "."
-    *awk -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
+!ifeq verbose 0
+    @echo optencod $^&
+!endif
+    $(noecho)optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
+    @%append usagej.tmp "."
+    @%make echo_awk
+    $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp

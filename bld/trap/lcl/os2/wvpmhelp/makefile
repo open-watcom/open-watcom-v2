@@ -65,4 +65,5 @@ pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@

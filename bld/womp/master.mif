@@ -62,18 +62,23 @@ extra_c_flags_memory += -dTRACK -of+
 !endif
 
 $(proj_name).exe : wmpmsg.gh $(proj_name).res $(objs) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $^@ $(lflags) file { $(objs) } lib $(wres_lib)
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . $(proj_name).res
 
 wmpmsg.gh : $(womp_dir)/womp.msg
-    *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 $(proj_name).res :  usage.grc ../h/$(proj_name).rc
     @%make echo_rc
     $(rc_aui) $(extra_rc_flags) -I"$(wrc_dir)/h" $]@ -fo=$^@
 
 usage.grc : ../usage.sp
-    *wsplice -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kIS_RC -kENGLISH -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
 
 usagej.grc : ../usage.sp
-    *wsplice -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kIS_RC -kJAPANESE -t8 -f "%+(MSG_USE_BASE+%$#-1), \"%s\""$[@ $@

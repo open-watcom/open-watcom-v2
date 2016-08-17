@@ -45,7 +45,9 @@ dnmpbind.exe : _err.gh _jerr.gh $(objs) $(__MAKEFILES__)
 inc_dirs = -I. -I"../h" -I"$(trap_dir)/h"
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
+    @%make echo_cpp
+    $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@
 
 _jerr.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
-        $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@
+    @%make echo_cpp
+    $(cpp) $(rc_aui_flags) -DJAPANESE -I"$(trap_dir)/h" -o$@ $[@

@@ -48,6 +48,7 @@ wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
 !else
     $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wgml.res
 
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
@@ -57,7 +58,9 @@ $(name).res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES_
     $(rc_aui) $[@ -fo=$@
 
 wgmlmsgs.gh : $(msgfiles) $(__MAKEFILES__)
-    *awk -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
+    @%make echo_awk
+    $(awk) -v base=000 -f ../makemdef.awk -v OUTFILE=$^. $(msgfiles)
 
 wgmlmsge.gh : $(msgfiles) $(__MAKEFILES__)
-    *awk -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)
+    @%make echo_awk
+    $(awk) -v base=000 -f ../msgtoenm.awk -v OUTFILE=$^. $(msgfiles)

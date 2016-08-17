@@ -67,7 +67,7 @@ $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(
     @%make echo_link
     $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk lib %i
     @%make echo_link
@@ -75,24 +75,28 @@ $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(
     @%make bind_osildr
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . errmsg.res
 
 option.obj : option.c optinfo.h
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
 
 msg.gh : $(wasm_dir)/h/asmshare.msg
-    *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 errsrc_opt_i86 = eoic
 errsrc_opt_386 = eo3c

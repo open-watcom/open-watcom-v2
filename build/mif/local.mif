@@ -14,51 +14,6 @@ bas        += -q
 blink      += op q
 blib       += -q
 
-echo_as : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo as $@
-!endif
-
-echo_cc : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo cc $@
-!endif
-
-echo_cxx : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo c++ $@
-!endif
-
-echo_xcxx : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo xc++ $@
-!endif
-
-echo_cl : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo cl $@
-!endif
-
-echo_link : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo link $@
-!endif
-
-echo_lib : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo lib $@
-!endif
-
-echo_rc : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo rc $@
-!endif
-
-echo_bindrc : .PROCEDURE .EXPLICIT
-!ifneq verbose 1
-    @echo bind rc $@
-!endif
-
 # use native tools for x64 cpu
 # skip build for unsupported platforms
 !ifeq host_cpu x64
@@ -194,12 +149,12 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __INTEL_TOOLS__
 bcc  = icl -nologo -c
 bcxx = icl -nologo -c
-bcl  = icl -nologo
+bcl  = $(noecho)icl -nologo
 blib = $(noecho)xilib -nologo
 !else
 bcc  = cl -nologo -c
 bcxx = cl -nologo -c
-bcl  = cl -nologo
+bcl  = $(noecho)cl -nologo
 blib = $(noecho)lib -nologo
 !endif
 
@@ -275,12 +230,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -Fe$@ $(ldflags1)
 clflags_dll  = $(bld_cl_sys) $(common_flags) $(common_clflags_lib_shared) -Fe$@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset =
-
-# options for preprocessing source code
-preproc_opts  = -E
 
 # options for include source code file
 incl_file_opts = -FI
@@ -400,11 +349,11 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __CLANG_TOOLS__
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
-bcl  = clang -pipe
+bcl  = $(noecho)clang -pipe
 !else
 bcc  = gcc -pipe -c
 bcxx = g++ -pipe -c
-bcl  = gcc -pipe
+bcl  = $(noecho)gcc -pipe
 !endif
 
 blib = $(noecho)ar
@@ -500,12 +449,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset = -finput-charset=CP932
-
-# options for preprocessing source code
-preproc_opts  = -x c -E
 
 # options for include source code file
 incl_file_opts = -include

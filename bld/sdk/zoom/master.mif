@@ -40,18 +40,20 @@ $(name).exe : rcstr.gh $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
 $(name)j.exe : $(name).exe $(name)j.res $(__MAKEFILES__)
     cp $(name).exe $^@
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name)j.res $^@
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/wzoom.msg $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 $(name).res : ../res/wzoom.rc $(__MAKEFILES__) .AUTODEPEND

@@ -56,8 +56,9 @@ objs += inthdlrs.obj
 .asm: ..;../$(host_os)i86
 
 rfx.exe : $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $^@ $(lflags) file { $(objs) }
+    $(linker) name $^@ $(lflags) file { $(objs) }
 !endif

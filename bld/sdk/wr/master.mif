@@ -90,7 +90,7 @@ $(name).dll: $(win_yacc_file).h rcmsg.gh $(objs) $(libs) $(name).res $(version_r
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 #---------- TEST
@@ -107,12 +107,15 @@ test.exe: $(name).lib $(TESTLNK) test.obj $(__MAKEFILES__)
     $(linker) name $^@ $(test_lflags) file {test.obj} library {$(name).lib}
 
 rcmsg.gh: wrmsg.gh $(__MAKEFILES__)
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 wrmsg.gh: ../res/master.msg $(msgfiles) $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"../res" -I"$(wrc_dir)/h" -o$^@ $[@
 
 $(win_yacc_file).h : $(wrc_dir)/y/rcwin.y $(wrc_dir)/y/yydrivrw.c $(wrc_dir)/h/rcmem.h $(__MAKEFILES__)
+    @%make echo_yacc
     $(yacc) -b $(win_yacc_prefix) -d -db -dd $[@ $(wrc_dir)/y/yydrivrw.c >$(nulldevice)
     @rm -f $(win_yacc_file).c # C code isn't used
 

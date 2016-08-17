@@ -136,9 +136,9 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     objfind -i=ref.tmp $(clibdir) >modc.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    *awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
+    $(awk) -v host=unix -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
 !else
-    *awk -v host= -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
+    $(awk) -v host= -f ../fix1.awk -v OUTFILE=clibget.lbc modc.tmp
 !endif
     $(librarian) -b $(clibdir) @clibget.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
@@ -161,9 +161,9 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
   # extract all modules from graph.lib library, use alias for 8.3 format
     objlist tmp.lib >modg.tmp
 !ifdef __UNIX__
-    *awk -v host=unix -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
+    $(awk) -v host=unix -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
 !else
-    *awk -v host= -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
+    $(awk) -v host= -f ../fix2.awk -v OUTFILE=extract.lbc modg.tmp
 !endif
     $(librarian) -b tmp.lib @extract.lbc
   # modify modules as needed
@@ -171,7 +171,7 @@ graph.lib : $(clibdir) tmp.lib $(__MAKEFILES__)
     objchg -m=_GR* -s=stb.tmp *.obj
 !endif
   # put all modules together into new library
-    @%create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc
@@ -187,9 +187,9 @@ graph2.lib : $(clibdir) tmp2.lib
     objfind -i=ref2.tmp $(clibdir) >modc2.tmp
   # extract all modules from clib which are referenced from graph.lib
 !ifdef __UNIX__
-    *awk -v host=unix -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
+    $(awk) -v host=unix -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
 !else
-    *awk -v host= -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
+    $(awk) -v host= -f ../fix1.awk -v OUTFILE=clibget2.lbc modc2.tmp
 !endif
     $(librarian) -b $(clibdir) @clibget2.lbc
   # get all public symbols in extracted modules from clib, fsmath and dummy
@@ -212,9 +212,9 @@ graph2.lib : $(clibdir) tmp2.lib
   # extract all modules from graph.lib library, use alias for 8.3 format
     objlist tmp2.lib >modg2.tmp
 !ifdef __UNIX__
-    *awk -v host=unix -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
+    $(awk) -v host=unix -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
 !else
-    *awk -v host= -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
+    $(awk) -v host= -f ../fix2.awk -v OUTFILE=extract2.lbc modg2.tmp
 !endif
     $(librarian) -b tmp2.lib @extract2.lbc
   # modify modules as needed
@@ -222,7 +222,7 @@ graph2.lib : $(clibdir) tmp2.lib
     objchg -m=_GR* -s=stb2.tmp *.obj
 !endif
   # put all modules together into new library
-    @%create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in (*.obj) do @%append $^&.lbc +%i
     @%make echo_lib
     $(librarian) $(libflags) @$^&.lbc

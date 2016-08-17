@@ -107,6 +107,7 @@ $(xname).exe :: usage.gh usagej.gh $(objs) $(libs) wmake.res $(version_res_exe_$
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $(xname).exe . wmake.res
 
 wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
@@ -114,10 +115,12 @@ wmake.res : ../h/wmake.rc mrcmsg.h usage.gh usagej.gh $(__MAKEFILES__)
     $(rc_aui) $[@ -fo=$@
 
 usage.gh : ../h/usage.sp $(__MAKEFILES__)
-    *wsplice -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kIS_RC -kENGLISH -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : ../h/usage.sp $(__MAKEFILES__)
-    *wsplice -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kIS_RC -kJAPANESE -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
 ##############################################################################
 # special case targets
@@ -126,6 +129,7 @@ isarray.gh : ./cretype.exe $(__MAKEFILES__)
     $[@ > $@
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 # dependencies on .h files
@@ -144,6 +148,7 @@ chkmsg :
     rm chkmsg.?
 
 strip : .symbolic
+    @%make echo_bindres
     $(wstrip) /q wmk.exe wmks.exe >nul
     ls -l *.exe
 

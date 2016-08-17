@@ -43,6 +43,7 @@ dwarfw.lib : dwabenum.gh $(objs) $(__MAKEFILES__)
 extra_c_flags = -s
 
 ./dwmakeab.exe : dwmakeab.c
+    @%make echo_bldcl
     $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
@@ -54,4 +55,5 @@ test_objs = testcli.obj testtest.obj testdump.obj
 test_libs = dwarfw.lib
 
 testcli.exe : $(test_objs) $(test_lib) $(__MAKEFILES__)
+    @%make echo_link
     $(linker) name $@ $(lflags) file {$(test_objs)} lib {$(test_libs)}

@@ -72,14 +72,14 @@ $(name).dll: rcstr.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$
     @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-    @%create tmp.lnk
-    @%append tmp.lnk $(lflags)
-    @for %i in ($(objs)) do @%append tmp.lnk file %i
-    @for %i in ($(libs)) do @%append tmp.lnk lib %i
+    $(noecho)%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @for %i in ($(objs)) do @%append $^&.lnk file %i
+    @for %i in ($(libs)) do @%append $^&.lnk lib %i
     @%make echo_link
-    $(linker) name $^@ @tmp.lnk
+    $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
@@ -87,7 +87,9 @@ $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh: rcstrmsg.gh $(__MAKEFILES__)
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh: ../res/$(name).msg $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"../../res" -o$^@ $[@

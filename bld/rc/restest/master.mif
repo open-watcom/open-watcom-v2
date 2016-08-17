@@ -44,7 +44,7 @@ $(proj_name).exe : $(objs) $(proj_name).res $(__MAKEFILES__)
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(win_libs)}
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) $(proj_name).res
 
 $(proj_name).res : $(proj_name).rc $(__MAKEFILES__)

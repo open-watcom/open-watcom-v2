@@ -46,26 +46,33 @@ resfile = appui.res
 libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 
 app.exe : $(objs) $(libs) $(resfile)
-        $(linker) name $^@ $(lflags) op un file { $(objs) } lib { $(libs) }
+    @%make echo_link
+    $(linker) name $^@ $(lflags) op un file { $(objs) } lib { $(libs) }
+    @%make echo_bindres
 !ifeq sys_windowed 1
-        $(rc) -k $(resfile) $^@
+    $(rc) -k $(resfile) $^@
 !else
-        $(wstrip) -q -a -r $^@ . $(resfile)
+    $(wstrip) -q -a -r $^@ . $(resfile)
 !endif
 
 rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
 
 app.res : ../res/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appj.res : ../res/app.rc $(rcfiles)
-        $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    @%make echo_rc
+    $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
 appui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
-        $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    @%make echo_rc
+    $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
 appuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
-        $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+    @%make echo_rc
+    $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
 apppm.res apppmj.res : ../res/apppm.rc ../res/app.rc $(rcfiles)
-        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

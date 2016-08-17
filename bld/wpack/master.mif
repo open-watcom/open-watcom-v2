@@ -28,9 +28,11 @@ objs += wildargv.obj
 !endif
 
 $(proj_name).exe : $(objs) $(__MAKEFILES__)
-        $(linker) name $^@ $(lflags) file { $(objs) }
+    @%make echo_link
+    $(linker) name $^@ $(lflags) file { $(objs) }
 
 dtparse.obj : msg.gh
 
 msg.gh : $(wtouch_dir)/wtouch.msg
-        *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

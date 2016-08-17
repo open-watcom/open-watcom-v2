@@ -74,14 +74,14 @@ $(name).exe : rcstr.gh $(dllname).dll $(objs) $(libs) $(name).res $(version_res_
     @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk file { $(objs) }
     @%append $^&.lnk lib { $(libs) }
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 
 $(dllname).dll : $(dll_objs) $(__MAKEFILES__)
@@ -93,9 +93,11 @@ $(dllname).dll : $(dll_objs) $(__MAKEFILES__)
 !endif
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : ../res/spy.msg $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND

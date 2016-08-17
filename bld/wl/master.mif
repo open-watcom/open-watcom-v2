@@ -141,6 +141,7 @@ $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe
     $(linker) name $@ @exe.lnk
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wlink.res
 
 !endif
@@ -157,6 +158,7 @@ $(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$
     $(linker) name $@ @dll.lnk
 !endif
     @%make bind_version_res_dll
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wlink.res
 
 #################
@@ -167,10 +169,13 @@ wlink.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.
     $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
 
 rcmsg.gh : wrcmsg.gh $(__MAKEFILES__)
-    *awk -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v rcbase=800 -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 wrcmsg.gh : $(wrc_dir)/h/rc.msg $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
-    *wsplice -u $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -u $[@ $@

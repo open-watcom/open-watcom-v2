@@ -20,10 +20,10 @@ inc_dirs = -I. -I..
 objs = ytab.obj main.obj scan.obj error.obj semantic.obj output.obj
 
 $(xname) : ytab.h ytab.c $(objs) $(__MAKEFILES__)
-        $(cl) $(clflags) $(objs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(ldflags)
 
 .c: ..
 
 ytab.c ytab.h: ../yydriver.c ../defgen.y
-        $(yacc) -d -dd $]@ $[@
-
+    @%make echo_yacc
+    $(yacc) -d -dd $]@ $[@

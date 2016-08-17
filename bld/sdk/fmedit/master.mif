@@ -76,7 +76,7 @@ $(name).dll: $(objs) verimp.obj $(library_files) $(name).res $(version_res_dll_$
 !else
     $(linker) name $^@ $(lflags) file {$(objs) verimp.obj}
 !endif
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(name).res $(name).dll $(bind_version_res_dll_add)
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND

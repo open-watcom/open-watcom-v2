@@ -47,6 +47,7 @@ $(target_exe).exe : errgrp.gc $(files) $(wres_lib) errmsg.res $(version_res_exe_
     $(linker) name $^@ $(lflags) file { $(files) } lib $(wres_lib)
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . errmsg.res
 
 errsrc_opt_i86 = elic

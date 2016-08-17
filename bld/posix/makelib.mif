@@ -34,10 +34,10 @@ posix.lib : $(objs)
     @%make echo_lib
     $(blib) $(bld_libflags) $(objs)
 !else if defined( bootstrap ) && ( $(watcom_ver) < 1300 )
-    @%create posix.lbc
-    @for %o in ($(objs)) do @%append posix.lbc %o
+    $(noecho)%create $^&.lbc
+    @for %o in ($(objs)) do @%append $^&.lbc %o
     @%make echo_lib
-    $(bld_lib) @posix.lbc
+    $(bld_lib) @$^&.lbc
 !else
     @%make echo_lib
     $(librarian) $(libflags) $(objs)

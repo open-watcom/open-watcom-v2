@@ -222,24 +222,31 @@ xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
     *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
-    msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+    $(noecho)msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
+    @%make echo_bldcl
     $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
     $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
     $[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
@@ -262,4 +269,7 @@ optencod_targ_dbg = dbg
 !endif
 
 usage.gh usage01.int : ../../gml/options.gml
-    optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))

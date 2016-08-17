@@ -39,25 +39,25 @@ libs : .symbolic $(target_lib) $(target_lib_x)
     @%null
 
 $(target_lib) : $(libs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.def
     @%make echo_lib
     $(librarian) $(lib_flags) $(exp_lib_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif
 
 !ifdef target_lib_x
 $(target_lib_x) : $(libsx) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(libsx)) do @%append $^&.lbc +%i
     @rm -f exportx.tmp
     @rm -f exportx.def
     @%make echo_lib
     $(librarian) $(lib_flags) $(exp_libx_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def
 !endif
 !endif

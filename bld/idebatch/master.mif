@@ -81,13 +81,13 @@ all : $(name).exe $(name)e.exe .SYMBOLIC
 $(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) $(name).res $^@
 
 $(name)e.exe : $(objse) $(lnk) $(name).res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) $(name).res $^@
 
 $(name).res : ../$(name).rc
@@ -95,7 +95,7 @@ $(name).res : ../$(name).rc
     $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
 
 $(lnk) : makefile
-    %create $(lnk)
+    $(noecho)%create $(lnk)
     @%append $(lnk) font mem
     @%append $(lnk) option stack=10k
     @%append $(lnk) segment CLASS 'CODE' PRELOAD FIXED

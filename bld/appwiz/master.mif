@@ -22,18 +22,22 @@ inc_dirs = -I. -I"../h" $(gui_inc_dirs)
 all : appwiz.exe .SYMBOLIC
 
 appwiz.exe: $(gendeps)
+    @%make echo_link
     $(linker) name $^@ @appwiz.lnk
+    @%make echo_bindres
     $(rc) -k appwiz.res $^@
 
 appwiz.lnk : makefile ../master.mif
-    %create appwiz.lnk
+    $(noecho)%create appwiz.lnk
     @%append appwiz.lnk $(lflags)
     @%append appwiz.lnk option verbose
     @for %i in ( $(objs) ) do @%append appwiz.lnk file %i
     @for %i in ( $(libs) ) do @%append appwiz.lnk lib %i
 
 rcstr.gh : ../h/appwiz.msg
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 appwiz.res : ../h/appwiz.rc .AUTODEPEND
+    @%make echo_rc
     $(rc) $(rc_flags) -ad -I"../h" $(inc_dirs_sys_$(host_os)) $]@ -fo=$^@

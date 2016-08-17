@@ -174,7 +174,9 @@ $(xname).nlm : $(xname).res $(objs) $(libs) nversion.tmp $(__MAKEFILES__)
     @%append tmp.lnk import @$(nwoss_dir)/common/imp/owclib.imp
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     @%append tmp.lnk module clib
+    @%make echo_link
     $(linker) @tmp.lnk
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . $(xname).res
 
 !else ifeq target pls
@@ -196,7 +198,9 @@ $(xname).exp : $(objs) $(xname).res $(libs) $(__MAKEFILES__)
     @%append tmp.lnk file $(plsdir)/dilglue.obj
     @for %i in ($(objs)) do @%append tmp.lnk file %i
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
+    @%make echo_link
     $(linker) @tmp.lnk
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . $(xname).res
 
 !else
@@ -215,24 +219,29 @@ libs += $(windbg_lib)
 
 $(xname).exe : $(objs) $(libs) $(xname).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     @%write tmp.lnk $(lflags)
     @for %i in ($(objs)) do @%append tmp.lnk file %i
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
+    @%make echo_link
     $(linker) name $^@ @tmp.lnk
 !endif
+!ifneq host_os win
+    @%make bind_version_res_exe
+!endif
+    @%make echo_bindres
 !ifeq host_os win
-    @%make echo_bindrc
     $(rc) $(xname).res $^@
 !else
-    @%make bind_version_res_exe
     $(wstrip) -q -a -r $^@ . $(xname).res
 !endif
 
 !endif
 
 ./mknver.exe: $(watcom_dir)/c/mknver.c $(watcom_dir)/h/banner.h $(__MAKEFILES__)
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)

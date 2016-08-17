@@ -55,7 +55,7 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host
     @%make echo_link
     $(cl) $(clflags) $(wcpatch_objs) $(wres_lib) $(ldflags)
 !else
-    @%create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(wcpatch_objs)) do @%append $^&.lnk file %i
@@ -63,6 +63,7 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host
     $(linker) name $^@ @$^&.lnk
 !endif
     @%make bind_manifest
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
@@ -87,7 +88,7 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%make echo_link
     $(cl) $(clflags) $(wpatch_objs) $(wres_lib) $(ldflags)
 !else
-    @%create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(wpatch_objs)) do @%append $^&.lnk file %i
@@ -95,6 +96,7 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     $(linker) name $^@ @$^&.lnk
 !endif
     @%make bind_manifest
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
@@ -119,7 +121,7 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%make echo_link
     $(cl) $(clflags) $(bpatch_objs) $(wres_lib) $(ldflags)
 !else
-    @%create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bpatch_objs)) do @%append $^&.lnk file %i
@@ -127,6 +129,7 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     $(linker) name $^@ @$^&.lnk
 !endif
     @%make bind_manifest
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . bpatch.res
 
 #
@@ -150,13 +153,14 @@ bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
     @%make echo_link
     $(cl) $(clflags) $(bdump_objs) $(wres_lib) $(ldflags)
 !else
-    @%create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bdump_objs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . bdump.res
 
 #
@@ -185,13 +189,14 @@ bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
     @%make echo_link
     $(cl) $(clflags) $(bdiff_objs) $(wres_lib) $(ldflags)
 !else
-    @%create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
     @%append $^&.lnk lib $(wres_lib)
     @for %i in ($(bdiff_objs)) do @%append $^&.lnk file %i
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . bdiff.res
 
 #
@@ -235,13 +240,16 @@ bplevel.exe : $(bplevel_objs) $(__MAKEFILES__)
 # resources
 ############
 pusage.gh : ../usage.sp
-    *wsplice -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kBPATCH -kENGLISH -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
 pusagej.gh : ../usage.sp
-    *wsplice -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kBPATCH -kJAPANESE -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"\", \"%s\")" $[@ $@
 
 dusage.gh : ../usage.sp
-    *wsplice -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kBDIFF -kENGLISH -k$(_OS) -t8 -f "pick(MSG_USAGE_FIRST+%$#%+, \"%s\", \"\")" $[@ $@
 
 bpatch.res : ../bpatch.rc ../h/bpatch.h pusage.gh pusagej.gh
     @%make echo_rc
@@ -261,6 +269,6 @@ ntmanif.res: ../ntmanif.rc
 
 bind_manifest: .PROCEDURE
 !ifdef manifest_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
 !endif

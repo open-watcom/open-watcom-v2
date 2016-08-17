@@ -26,7 +26,7 @@ $(name).lib: ..\owindll\$(name).dll
         cp $[@
 
 $(dlnk) : makefile
-        %create $(dlnk)
+        $(noecho)%create $(dlnk)
         @%append $(dlnk) debug all
         @%append $(dlnk) sys windows
         @%append $(dlnk) op map

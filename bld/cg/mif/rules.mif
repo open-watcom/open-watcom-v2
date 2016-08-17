@@ -18,6 +18,7 @@ inc_dirs = -I. $(inc_dirs_targ) -I"$(cg_dir)/h" $(cfloat_inc_dirs) $(dwarfw_inc_
 .asm: $(asm_path)
 
 ./bitset.exe : $(watcom_dir)/c/bitset.c
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 gbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
@@ -30,7 +31,9 @@ dbit.gh : ./bitset.exe $(cg_dir)/mif/cg.mif
     $[@ $(dbit_size) _DBit dom_bit_set $@
 
 cgprotos.gh : $(cg_dir)/h/cgapicvr.h $(cg_dir)/h/cgfuntab.h
+    @%make echo_cpp
     $(cpp) -I"$(cg_dir)/h" -o$@ $[@
 
 feprotos.gh : $(cg_dir)/h/cgfecvr.h $(cg_dir)/h/cgfertns.h
+    @%make echo_cpp
     $(cpp) -I"$(cg_dir)/h" -o$@ $[@

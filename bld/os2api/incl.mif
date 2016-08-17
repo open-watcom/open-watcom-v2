@@ -13,7 +13,7 @@ hdr_cpu = $(host_cpu)
 !include cproj.mif
 !include defrule.mif
 
-splice = *wsplice -i"$(hdr_dir)" $[@ $^@
+wsplice_opts = -i"$(hdr_dir)" $[@ $^@
 
 .EXTENSIONS : .mh
 
@@ -155,34 +155,42 @@ all : $(dirs$(hdr_cpu)) $(headers$(hdr_cpu)) .SYMBOLIC
 .mh: ../../$(incl$(hdr_cpu))
 
 .mh.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {arpa}.mh{arpa}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {GL}.mh{GL}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {machine}.mh{machine}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {net}.mh{net}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {netinet}.mh{netinet}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {protocol}.mh{protocol}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {sys}.mh{sys}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 !ifdef dirs$(hdr_cpu)
 $(dirs$(hdr_cpu)):
-        @if not exist $@ mkdir $@
+    @if not exist $@ mkdir $@
 !endif
 
 clean : .SYMBOLIC
-        rm -f *.h
-        rm -rf $(dirs$(hdr_cpu))
+    rm -f *.h
+    rm -rf $(dirs$(hdr_cpu))

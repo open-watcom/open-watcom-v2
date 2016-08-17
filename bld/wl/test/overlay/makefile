@@ -22,6 +22,7 @@ dmain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
+    @%make echo_link
     $(linker) n $@ $(lflags) op dynamic begin autosection file { $(OBJS) } end
 
 lmain.exe : .always
@@ -31,6 +32,7 @@ lmain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
+    @%make echo_link
     $(linker) n $@ $(lflags) sort global op standard begin autosection file { $(OBJS) } end
 
 smain.exe : .always
@@ -40,4 +42,5 @@ smain.exe : .always
     %make ovl1.obj
     %make ovl2.obj
     %make ovl3.obj
+    @%make echo_link
     $(linker) n $@ $(lflags) sort global op small begin autosection file { $(OBJS) } end

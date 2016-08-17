@@ -6,7 +6,7 @@ w16api_distrib_lib = 1
 !include cproj.mif
 !include defrule.mif
 
-splice = *wsplice -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
+wsplice_opts = -i".." -i"$(hdr_dir)" -i"../include" $[@ $^@
 
 .EXTENSIONS : .lbc .def .mh
 
@@ -83,19 +83,21 @@ all : $(headers) $(libs) .SYMBOLIC
 .mh: ../include
 
 .def.lbc:
-    *awk -f ../def16lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f ../def16lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 .mh.h:
-    $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 $(libs):
 
 windows.lbc : $(winlibs)
-    @%create $^@
+    $(noecho)%create $^@
     @for %i in ($(winlibs)) do @%append $^@ @ %i
 
 windows.lib: windows.lbc profc.obj $(__MAKEFILES__)

@@ -26,60 +26,61 @@ libs = $(libdir)/posix.lib
 #       define the main target
 #
 $(name).exe: $(objs) $(libs) $(__MAKEFILES__)
-    @%make echo_link
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(objs) $(libs:$(to_os_path)) $(ldflags)
 !else
-    @%create $(name).lnk
-    @%append $(name).lnk name $@
-    @%append $(name).lnk debug all option quiet,map
+    $(noecho)%create $^&.lnk
+    @%append $^&.lnk name $@
+    @%append $^&.lnk debug all option quiet,map
 !ifeq release 0 
-    @%append $(name).lnk option symfile
+    @%append $^&.lnk option symfile
 !endif
-    @%append $(name).lnk lib $(libs:$(to_os_path))
+    @%append $^&.lnk lib $(libs:$(to_os_path))
 !ifeq host_os os2
 !  ifeq host_cpu i86
-    @%append $(name).lnk system os2 pmc
-    @%append $(name).lnk option heapsize=8k,newfiles
-    @%append $(name).lnk option stack=8k
-    @%append $(name).lnk lib $(doscalls)
+    @%append $^&.lnk system os2 pmc
+    @%append $^&.lnk option heapsize=8k,newfiles
+    @%append $^&.lnk option stack=8k
+    @%append $^&.lnk lib $(doscalls)
 !  else ifeq host_cpu 386
-    @%append $(name).lnk system os2v2 pmc
+    @%append $^&.lnk system os2v2 pmc
 !  endif
 !else ifeq host_os dos
 !  ifeq host_cpu i86
-    @%append $(name).lnk system dos
+    @%append $^&.lnk system dos
 !  else ifeq host_cpu 386
-    @%append $(name).lnk name $(name).exp
-    @%append $(name).lnk system pharlap
-    @%append $(name).lnk option stack=4096
-    @%append $(name).lnk option offset=16384
+    @%append $^&.lnk name $(name).exp
+    @%append $^&.lnk system pharlap
+    @%append $^&.lnk option stack=4096
+    @%append $^&.lnk option offset=16384
 !  endif
 !else ifeq host_os nt
 !  ifeq host_cpu 386
-    @%append $(name).lnk system nt
+    @%append $^&.lnk system nt
 !  else ifeq host_cpu axp
-    @%append $(name).lnk system ntaxp
+    @%append $^&.lnk system ntaxp
 !  endif
 !else ifeq host_os qnx
 !  ifeq host_cpu i86
-    @%append $(name).lnk system qnx
+    @%append $^&.lnk system qnx
 !  else ifeq host_cpu 386
-    @%append $(name).lnk system qnx386
+    @%append $^&.lnk system qnx386
 !  endif
 !endif
-    @for %i in ($(objs)) do @%append $(name).lnk file %i
+    @for %i in ($(objs)) do @%append $^&.lnk file %i
 !ifdef extra_lnk
     @%make $(extra_lnk)
 !endif
-    $(linker) @$(name).lnk
+    @%make echo_link
+    $(linker) @$^&.lnk
 !endif
 !ifeq host_os os2
 !ifeq host_cpu i86
-    $(binder)\bind $(name).exe $(apilib) $(doscalls)
+    $(binder)\bind $@ $(apilib) $(doscalls)
 !endif
 !else ifeq host_os dos
 !ifeq host_cpu 386
-    $(pharlap)bind386 $(pharlap)run386b $(name).exp
+    $(pharlap)bind386 $(pharlap)run386b $^&.exp
 !endif
 !endif

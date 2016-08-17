@@ -81,7 +81,7 @@ extra_a_flags_dllthunk = -DDLL32
 # linker flags stuff
 ###############
 importlink : .PROCEDURE
-    %create imports.lnk
+    $(noecho)%create imports.lnk
     @%append imports.lnk import CONVERTOUTLINEFONTFILE GDI.312
     @%append imports.lnk import COPYCURSOR USER.369
     @%append imports.lnk import COPYICON USER.368
@@ -131,7 +131,7 @@ dllentryset = 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 &
     120 121 122 123 124 125 126 127 128
 
 exportlink : .PROCEDURE
-    %create exports.lnk
+    $(noecho)%create exports.lnk
     @for %n in ( $(dllentryset) ) do @%append exports.lnk export DLL%n
     @%append exports.lnk export WEP.129 RESIDENT
     @%append exports.lnk export Win386LibEntry.130 RESIDENT
@@ -139,7 +139,7 @@ exportlink : .PROCEDURE
 LNK = $^&.lnk
 
 vxdlink : .PROCEDURE
-    %create $(LNK)
+    $(noecho)%create $(LNK)
     @%append $(LNK) system win_vxd
     @%append $(LNK) name $^&.386
     @%append $(LNK) option desc 'Win386 $($^&_name) Device (Version 1.1 Open Watcom)'
@@ -158,7 +158,7 @@ vxdlink : .PROCEDURE
 dllexelink : .PROCEDURE
     @%make importlink
     @%make exportlink
-    %create $(LNK)
+    $(noecho)%create $(LNK)
     @%append $(LNK) debug all
     @%append $(LNK) name $^&.ext
     @%append $(LNK) library clibs
@@ -191,16 +191,20 @@ dllexelink : .PROCEDURE
 #################
 wdebug.386: $(objs_vxd) $(__MAKEFILES__)
     @%make vxdlink
+    @%make echo_link
     $(linker) @$(LNK)
 
 wemu387.386: $(objs_vxd) $(__MAKEFILES__)
     @%make vxdlink
+    @%make echo_link
     $(linker) @$(LNK)
 
 w386dll.ext : $(objs_dll) $(__MAKEFILES__)
     @%make dllexelink
+    @%make echo_link
     $(linker) @$(LNK)
 
 win386.ext : $(objs_exe) $(__MAKEFILES__)
     @%make dllexelink
+    @%make echo_link
     $(linker) @$(LNK)

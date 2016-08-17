@@ -23,7 +23,7 @@ ddk_dir = $(w32api_dir)/nt386/ddk
 .c : ../c
 
 dbgport.sys : dbgport.obj $(__MAKEFILES__)
-    %create dbgport.lnk
+    $(noecho)%create dbgport.lnk
     @%append dbgport.lnk system nt_dll
     @%append dbgport.lnk runtime native=4.0
     @%append dbgport.lnk option osversion=4.0
