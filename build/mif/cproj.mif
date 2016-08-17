@@ -703,15 +703,6 @@ clflags = $(clflags_gen)
 lflags  = $(lflags_gen)
 !endif
 
-# simple C preprocessing
-cpp             = *wcpp
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset = -zk0
-
-# options for preprocessing source code
-preproc_opts    = -p
-
 # options for include source code file
 incl_file_opts  = -fi
 
