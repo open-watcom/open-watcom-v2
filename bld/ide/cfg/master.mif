@@ -8,7 +8,9 @@ skip_build: .symbolic
 !endif
 !endif
 
-cfg_list = &
+!include cproj.mif
+
+objs = &
     ide.cfg      &
     idex.cfg     &
     idedos.cfg   &
@@ -27,7 +29,7 @@ cfg_list = &
 
 .sp : ..
 
-all: $(cfg_list) .symbolic
+all: $(objs) .symbolic
 
 wsplice_opts_linux = -k FOR_LINUX
 wsplice_opts_nt    = -k FOR_NT
@@ -37,7 +39,8 @@ wsplice_opts_win   = -k FOR_WIN
 wsplice_opts_axp   = -k FOR_AXP
 
 .sp.cfg:
-    *wsplice $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_$(host_os)) $(wsplice_opts_$(host_cpu)) $[@ $^@
 
 clean : .symbolic
     rm -f *.cfg

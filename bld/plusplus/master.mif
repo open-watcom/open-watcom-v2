@@ -264,6 +264,7 @@ yacc_options = -d -db -dd -df -dt -du -de
 #yacc_options = -d -db -dd -df -dp -ds -dt -du -de
 
 ytab.c ytab.h : ../../y/plusplus.y ../../c/yydriver.c
+    @%make echo_yacc
     $(yacc) $(yacc_options) $[@ $]@ >y.out
 # comment out the next line during testing of grammar changes
     diff y.out ../../y/plusplus.chk
