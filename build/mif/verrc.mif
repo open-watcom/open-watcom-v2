@@ -143,7 +143,7 @@ bind_version_res_exe_add = -fr=$(version_res_exe_$(host_os)_$(host_cpu))
 
 bind_version_res_exe: .PROCEDURE .EXPLICIT
 !ifdef version_res_exe_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(version_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
@@ -153,30 +153,30 @@ bind_version_res_dll_add = -fr=$(version_res_dll_$(host_os)_$(host_cpu))
 
 bind_version_res_dll: .PROCEDURE .EXPLICIT
 !ifdef version_res_dll_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(version_res_dll_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_ver386_res_exe: .PROCEDURE .EXPLICIT
 !ifdef ver386_res_exe_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_verx64_res_exe: .PROCEDURE .EXPLICIT
 !ifdef verx64_res_exe_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(verx64_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_veraxp_res_exe: .PROCEDURE .EXPLICIT
 !ifdef veraxp_res_exe_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(veraxp_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_verppc_res_exe: .PROCEDURE .EXPLICIT
 !ifdef verppc_res_exe_$(host_os)_$(host_cpu)
-    @%make echo_bindrc
+    @%make echo_bindres
     $(rc) -k $(verppc_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
