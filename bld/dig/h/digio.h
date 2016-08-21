@@ -29,6 +29,10 @@
 ****************************************************************************/
 
 
-extern dig_fhandle  DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
-extern unsigned     DIGPathClose( dig_fhandle dfh );
-extern long         DIGGetSystemHandle( dig_fhandle dfh );
+typedef int             dig_lhandle;
+#define DIG_NIL_LHANDLE ((dig_lhandle)-1)
+
+extern dig_lhandle  DIGLoadOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
+extern int          DIGLoadClose( dig_lhandle lfh );
+extern int          DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len );
+extern int          DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where );

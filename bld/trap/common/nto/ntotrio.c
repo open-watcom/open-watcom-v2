@@ -109,8 +109,23 @@ static char *StrCopy( const char *src, char *dst )
     return( dst );
 }
 
-static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name,
-                         char *result )
+int WantUsage( const char *ptr )
+{
+    /*
+        This is a really stupid place to put this, but it's the first
+        system dependant code that the servers run. This code sets the
+        effective GID and UID back to the real ones so that the server
+        can be made set UID root without being a security hole. That allows
+        use to run at ring 1 for the parallel server/trap file.
+     */
+    setegid( getgid() );
+    seteuid( getuid() );
+    if( *ptr == '?' )
+        return( TRUE );
+    return( FALSE );
+}
+
+static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name, char *result )
 {
     char        *end;
     char        *ptr;
@@ -171,59 +186,16 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/usr/watcom/wd", &tmp, name, result ) );
 }
 
-unsigned FullPathOpen( char const *name, char *ext, char *result, unsigned max_result )
-{
-    bool                has_ext;
-    bool                has_path;
-    const char          *ptr;
-    const char          *endptr;
-    char                trpfile[256];
-    unsigned            filehndl;
-    int                 name_len = strlen(name);
-
-    has_ext = FALSE;
-    has_path = FALSE;
-    endptr = name + name_len;
-    for( ptr = name; ptr != endptr; ++ptr ) {
-        switch( *ptr ) {
-        case '.':
-            has_ext = TRUE;
-            break;
-        case '/':
-            has_ext = FALSE;
-            has_path = TRUE;
-            /* fall through */
-            break;
-        }
-    }
-    memcpy( trpfile, name, name_len );
-    if( has_ext ) {
-        trpfile[name_len] = '\0';
-    } else {
-        trpfile[ name_len++ ] = '.';
-        memcpy( trpfile + name_len, ext, strlen( ext ) + 1 );
-    }
-    if( has_path ) {
-        filehndl = open( trpfile, O_RDONLY );
-    } else {
-        if( FindFilePath( trpfile, result ) == 0 ) {
-            filehndl = -1;
-        } else {
-            filehndl = open( result, O_RDONLY );
-        }
-    }
-    return( filehndl );
-}
-
-unsigned PathOpen( char *name, unsigned name_len, char *exts )
+dig_lhandle DIGLoadOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
 {
     bool                has_ext;
     bool                has_path;
     char                *ptr;
     char                *endptr;
     char                trpfile[256];
-    unsigned            filehndl;
+    int                 fh;
 
+    result = result; max_result = max_result;
     has_ext = FALSE;
     has_path = FALSE;
     endptr = name + name_len;
@@ -240,74 +212,43 @@ unsigned PathOpen( char *name, unsigned name_len, char *exts )
         }
     }
     memcpy( trpfile, name, name_len );
-    if( has_ext ) {
-        trpfile[name_len] = '\0';
-    } else {
-        trpfile[ name_len++ ] = '.';
-        memcpy( (char near *)&trpfile[ name_len ], exts, strlen( exts ) + 1 );
+    trpfile[name_len] = '\0';
+    if( !has_ext ) {
+        trpfile[name_len++] = '.';
+        memcpy( trpfile + name_len, exts, strlen( exts ) + 1 );
     }
+    fh = -1;
     if( has_path ) {
-        filehndl = open( trpfile, O_RDONLY );
-    } else {
-        if( FindFilePath( trpfile, RWBuff ) == 0 ) {
-            filehndl = -1;
-        } else {
-            filehndl = open( RWBuff, O_RDONLY );
-        }
+        fh = open( trpfile, O_RDONLY );
+    } else if( FindFilePath( trpfile, RWBuff ) ) {
+        fh = open( RWBuff, O_RDONLY );
     }
-    return( filehndl );
+    if( fh == -1 )
+        return( DIG_NIL_LHANDLE );
+    return( fh );
 }
 
-long GetSystemHandle( int h )
+int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
 {
-    return( h );
+    return( read( lfh, buff, len ) != len );
 }
 
-unsigned FileClose( int h )
+int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
 {
-    close( h );
-    return( 0 );
+    return( lseek( lfh, offs, where ) == -1L );
 }
 
-int WantUsage( const char *ptr )
+int DIGLoadClose( dig_lhandle lfh )
 {
-    /*
-        This is a really stupid place to put this, but it's the first
-        system dependant code that the servers run. This code sets the
-        effective GID and UID back to the real ones so that the server
-        can be made set UID root without being a security hole. That allows
-        use to run at ring 1 for the parallel server/trap file.
-     */
-    setegid( getgid() );
-    seteuid( getuid() );
-    if( *ptr == '?' )
-        return( TRUE );
-    return( FALSE );
+    return( close( lfh ) );
 }
 
-
-
-void *DIGCLIENTRY( Alloc )( unsigned amount )
+void *DIGCLIENTRY( Alloc )( size_t amount )
 {
     return( malloc( amount ) );
 }
 
 void DIGCLIENTRY( Free )( void *p )
 {
-   free( p );
-}
-
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
-{
-    return( lseek( (int)dfh, p, k ) );
-}
-
-size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
-{
-    return( read( (int)dfh, b, s ) );
-}
-
-void DIGCLIENTRY( Close )( dig_fhandle dfh )
-{
-    close( (int)dfh );
+    free( p );
 }

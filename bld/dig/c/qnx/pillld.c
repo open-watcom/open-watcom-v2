@@ -44,20 +44,20 @@
 int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    dig_fhandle                 dfh;
+    dig_lhandle                 lfh;
     supp_header                 *pill;
     pill_init_func              *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
-    dfh = DIGPathOpen( path, strlen( path ), "pil", NULL, 0 );
-    if( dfh == DIG_NIL_HANDLE ) {
+    lfh = DIGLoadOpen( path, strlen( path ), "pil", NULL, 0 );
+    if( lfh == DIG_NIL_LHANDLE ) {
         msg->data.code = errno;
         return( 0 );
     }
     SuppSegs = NULL;
-    pill = ReadSupp( dfh );
-    DIGPathClose( dfh );
+    pill = ReadSupp( lfh );
+    DIGLoadClose( lfh );
     lh->sys = SuppSegs;
 #ifdef __WATCOMC__
     if( pill == NULL || pill->sig != PILLSIG ) {

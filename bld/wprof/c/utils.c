@@ -135,13 +135,13 @@ char *FindFile( char *fullname, char *name, char *path_list )
     return( NULL );
 }
 
-#if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
-dig_fhandle DIGPathOpen( const char *name, size_t name_len,
-                const char *ext, char *result, size_t max_result )
-/****************************************************************/
+#if defined( __UNIX__ ) || defined( __DOS__ )
+dig_lhandle DIGLoadOpen( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
-    char *      filename;
+    char        *filename;
+    int         fh;
 
     max_result = max_result;
     memcpy( realname, name, name_len );
@@ -154,16 +154,27 @@ dig_fhandle DIGPathOpen( const char *name, size_t name_len,
     if( filename == NULL ) {
         filename = FindFile( result, realname, DipExePathList );
     }
-    if( filename == NULL ) {
-        return( DIG_NIL_HANDLE );
-    }
-    return( DIGCli( Open )( filename, DIG_READ ) );
+    fh = -1;
+    if( filename != NULL )
+        fh = open( filename, DIG_READ );
+    if( fh == -1 )
+        return( DIG_NIL_LHANDLE );
+    return( fh );
 }
 
-unsigned DIGPathClose( dig_fhandle dfh )
+int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
 {
-    DIGCli( Close )( dfh );
-    return( 0 );
+    return( read( fh, buff, len ) != len );
+}
+
+int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
+{
+    return( lseek( fh, offs, where ) == -1L );
+}
+
+int DIGLoadClose( dig_lhandle lfh )
+{
+    return( close( lfh ) );
 }
 #endif
 

@@ -91,7 +91,7 @@ int WantUsage( const char *ptr )
     return( *ptr == '?' );
 }
 
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
+dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *exts, char *result, unsigned max_result )
 {
     bool        has_ext;
     bool        has_path;
@@ -129,22 +129,36 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *exts, 
         dst += name_len;
     }
     *dst = '\0';
-    if( has_path ) {
-        rc = TinyOpen( trpfile, TIO_READ );
-    } else {
+    src = trpfile;
+    if( !has_path ) {
         _searchenv( trpfile, "PATH", RWBuff );
-        rc = TinyOpen( RWBuff, TIO_READ );
+        src = RWBuff;
     }
-    return( TINY_ERROR( rc ) ? DIG_NIL_HANDLE : (dig_fhandle)TINY_INFO( rc ) );
+    rc = TinyOpen( src, TIO_READ );
+    if( TINY_ERROR( rc ) )
+        return( DIG_NIL_LHANDLE );
+    return( TINY_INFO( rc ) );
 }
 
-unsigned DIGPathClose( dig_fhandle dfh )
+int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
 {
-    TinyClose( (tiny_handle_t)dfh );
+    tiny_ret_t  rc;
+
+    rc = TinyFarRead( fh, buff, len );
+    return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
+}
+
+int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
+{
+    return( TINY_ERROR( TinySeek( fh, offs, where ) ) );
+}
+
+int DIGLoadClose( dig_lhandle lfh )
+{
+    tiny_ret_t  rc;
+
+    rc = TinyClose( lfh );
+    if( TINY_ERROR( rc ) )
+        return( -1 );
     return( 0 );
-}
-
-long DIGGetSystemHandle( dig_fhandle dfh )
-{
-    return( (long)dfh );
 }

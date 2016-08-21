@@ -125,14 +125,18 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     char        *end;
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         if( *path == '\0' || *path == ':' ) {
-            if( ptr != result ) *ptr++ = '/';
+            if( ptr != result )
+                *ptr++ = '/';
             end = StrCopy( name, ptr );
-            if( stat( result, tmp ) == 0 ) return( end - result );
-            if( *path == '\0' ) return( 0 );
+            if( stat( result, tmp ) == 0 )
+                return( end - result );
+            if( *path == '\0' )
+                return( 0 );
             ++path;
             ptr = result;
         }
@@ -155,30 +159,35 @@ static unsigned FindFilePath( const char *name, char *result )
         return( end - result );
     }
     len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     if( _cmdname( cmd ) != NULL ) {
         end = strrchr( cmd, '/' );
         if( end != NULL ) {
             *end = '\0';
             /* look in the executable's directory */
             len = TryOnePath( cmd, &tmp, name, result );
-            if( len != 0 ) return( len );
+            if( len != 0 )
+                return( len );
             end = strrchr( cmd, '/' );
             if( end != NULL ) {
                 /* look in the wd sibling directory of where the command
                    came from */
                 StrCopy( "wd", end + 1 );
                 len = TryOnePath( cmd, &tmp, name, result );
-                if( len != 0 ) return( len );
+                if( len != 0 ) {
+                    return( len );
+                }
             }
         }
     }
     return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
     bool                has_ext;
     bool                has_path;
@@ -217,24 +226,27 @@ dig_fhandle DIGPathOpen( const char *name, unsigned name_len, const char *ext, c
     fh = -1;
     if( has_path ) {
         fh = open( trpfile, O_RDONLY );
-    } else {
-        if( FindFilePath( trpfile, result ) ) {
-            fh = open( result, O_RDONLY );
-        }
+    } else if( FindFilePath( trpfile, result ) ) {
+        fh = open( result, O_RDONLY );
     }
     if( fh == -1 )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)fh );
+    return( fh );
 }
 
-unsigned DIGPathClose( dig_fhandle dfh )
+#if 0
+int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
 {
-    close( (int)dfh );
-    return( 0 );
+    return( read( fh, buff, len ) != len );
 }
 
-
-long DIGGetSystemHandle( dig_fhandle dfh )
+int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
 {
-    return( (long)dfh );
+    return( lseek( fh, offs, where ) == -1L );
+}
+#endif
+
+int DIGLoadClose( dig_lhandle lfh )
+{
+    return( close( lfh ) );
 }
