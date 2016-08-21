@@ -44,9 +44,9 @@
 int PILLSysLoad( const char *path, const pill_client_routines *cli,
                 link_handle *lh, link_message *msg )
 {
-    dig_lhandle                 lfh;
-    supp_header                 *pill;
-    pill_init_func              *init_func;
+    dig_lhandle         lfh;
+    supp_header         *pill;
+    pill_init_func      *init_func;
 
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;

@@ -45,7 +45,6 @@
 #include "trpcore.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "tinyio.h"
 #include "tcerr.h"
 #include "digio.h"
 #include "envlkup.h"
@@ -438,8 +437,7 @@ static char *ReadInTrap( dig_lhandle lfh )
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset )
-                += TrapMem.segm.rm;
+        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
     }
     return( NULL );
 }

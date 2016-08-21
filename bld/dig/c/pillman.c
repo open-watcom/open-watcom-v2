@@ -88,7 +88,9 @@ link_handle     *LinkLoad( const char *name, link_message *msg )
 
     //NYI: who should add the "pil" prefix to the name?
     for( lh = PILLList; lh != NULL; lh = lh->next ) {
-        if( strcmp( lh->name, name ) == 0 ) return( lh );
+        if( strcmp( lh->name, name ) == 0 ) {
+            return( lh );
+        }
     }
     len = strlen( name );
 
@@ -143,7 +145,8 @@ link_instance   *LinkInit( link_handle *lh, void *cookie, link_trigger *tp, cons
 {
     link_instance       *li;
 
-    if( parm == NULL ) parm = "";
+    if( parm == NULL )
+        parm = "";
     li = DIGCli( Alloc )( sizeof( *li ) );
     li->h = lh;
     li->cookie = cookie;
@@ -219,7 +222,9 @@ unsigned        LinkKicker( void )
     for( lh = PILLList; lh != NULL; lh = lh->next ) {
         for( li = lh->inst; li != NULL; li = li->next ) {
             curr = lh->rtns->Kicker( li );
-            if( curr < wait ) wait = curr;
+            if( curr < wait ) {
+                wait = curr;
+            }
         }
     }
     return( wait );
@@ -233,8 +238,10 @@ static void KillInstance( link_instance *li )
     owner = &li->h->inst;
     for( ;; ) {
         curr = *owner;
-        if( curr == NULL ) return;
-        if( curr == li ) break;
+        if( curr == NULL )
+            return;
+        if( curr == li )
+            break;
         owner = &curr->next;
     }
     *owner = li->next;
@@ -263,12 +270,14 @@ unsigned        LinkMessage( const link_message *msg, pil_language pl, unsigned 
 {
     unsigned    len;
 
-    if( msg->source == NULL ) return( 0 );
+    if( msg->source == NULL )
+        return( 0 );
     len = msg->source->rtns->Message( msg, pl, max, buff );
     if( msg->source->inst == NULL ) {
         /* message when no instance active - something must have gone wrong
-           with the load */
-           LinkUnload( msg->source );
+         * with the load
+         */
+        LinkUnload( msg->source );
     }
     return( len );
 }
@@ -278,7 +287,8 @@ pill_private_func       *LinkPrivate( link_handle *lh, const char *string )
     pill_private_func   *rtn;
 
     rtn = lh->rtns->Private( string );
-    if( rtn != NULL ) rtn = PILLSysFixFunc( lh, rtn );
+    if( rtn != NULL )
+        rtn = PILLSysFixFunc( lh, rtn );
     return( rtn );
 }
 
@@ -296,12 +306,10 @@ void            LinkUnload( link_handle *lh )
     if( lh->sys != NULL ) {
         PILLSysUnload( lh );
     }
-    owner = &PILLList;
-    for( ;; ) {
-        curr = *owner;
-        if( curr == NULL ) return;
-        if( curr == lh ) break;
-        owner = &curr->next;
+    for( owner = &PILLList; (curr = *owner) != NULL; owner = &curr->next ) {
+        if( curr == lh ) {
+            break;
+        }
     }
     *owner = lh->next;
     DIGCli( Free )( lh );

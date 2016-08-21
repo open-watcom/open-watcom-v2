@@ -105,9 +105,9 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
     lfh = DIGLoadOpen( buff, p - trap_name, "so", trap_name, sizeof( trap_name ) );
-#else
+  #else
     lfh = DIGLoadOpen( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
-#endif
+  #endif
     if( lfh == DIG_NIL_LHANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );

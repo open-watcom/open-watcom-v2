@@ -57,11 +57,17 @@
     #define DIG_DLLEXPORT
 #endif
 
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(sh)  (dig_fhandle)(pointer_int)((sh) + 1)
+#define DFH2PH(dfh) ((int)(pointer_int)(dfh) - 1)
+
 #define DIG_SEEK_POSBACK(x) ((unsigned long)-(long)(x))
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
-
-#define DIG_NIL_HANDLE      ((dig_fhandle)-1)
 
 typedef unsigned_8 search_result; enum {
     SR_NONE,
@@ -414,6 +420,7 @@ typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;
 
 typedef int             dig_fhandle;
+#define DIG_NIL_HANDLE  ((dig_fhandle)-1)
 
 typedef unsigned_16     dig_size_bits;
 

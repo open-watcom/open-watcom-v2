@@ -52,49 +52,51 @@ union any_rec {
     struct _lmf_eof         eof;
 };
 
-#define get( where, size ) if( DIGCli( Read )( fd, &where, sizeof( struct size ) ) \
-                 != sizeof( struct size ) ) return( NULL );
-
-static int ProcDefn( struct _lmf_definition *defn, unsigned long *seg,
-                        unsigned count )
+static int ProcDefn( struct _lmf_definition *defn, unsigned long *seg, unsigned count )
 {
     unsigned    i;
 
-    if( defn->version_no != 400 ) return( EINVAL );
+    if( defn->version_no != 400 )
+        return( EINVAL );
     SuppSegs = DIGCli( Alloc )( sizeof( *SuppSegs ) * (count+1));
-    if( SuppSegs == NULL ) return( ENOMEM );
+    if( SuppSegs == NULL )
+        return( ENOMEM );
     for( i = 0; i < count; ++i ) {
         SuppSegs[i] = qnx_segment_alloc( seg[i] & 0xfffffff );
-        if( SuppSegs[i] == -1 ) return( ENOMEM );
+        if( SuppSegs[i] == -1 ) {
+            return( ENOMEM );
+        }
     }
     SuppSegs[i] = -1;
     return( EOK );
 }
 
-static int ProcData( int fd, struct _lmf_data *data, unsigned nbytes )
+static int ProcData( dig_lhandle lfh, struct _lmf_data *data, unsigned nbytes )
 {
     void        *pos;
 
-    pos = MK_FP( SuppSegs[ data->segment_index ], data->offset );
+    pos = MK_FP( SuppSegs[data->segment_index], data->offset );
     nbytes -= sizeof( struct _lmf_data );
-    if( DIGCli( Read )( fd, pos, nbytes ) != nbytes ) return( EIO );
+    if( DIGLoadRead( lfh, pos, nbytes ) )
+        return( EIO );
     return( EOK );
 }
 
-static int ProcFixup( int fd, int size )
+static int ProcFixup( dig_lhandle lfh, int size )
 {
     struct fixups   a_fix;
     unsigned short  *fix;
 
     for( ; size > 0; size -= sizeof( a_fix ) ) {
-        if( DIGCli( Read )( fd, &a_fix, sizeof(a_fix) ) != sizeof(a_fix) ) return(EIO);
-        fix = MK_FP( SuppSegs[ a_fix.fixup_seg_index ], a_fix.fixup_offset );
-        *fix = SuppSegs[ *fix >> 3 ];
+        if( DIGLoadRead( lfh, &a_fix, sizeof( a_fix ) ) )
+            return( EIO );
+        fix = MK_FP( SuppSegs[a_fix.fixup_seg_index], a_fix.fixup_offset );
+        *fix = SuppSegs[*fix >> 3];
     }
     return( EOK );
 }
 
-static supp_header *ReadSupp( int fd )
+static supp_header *ReadSupp( dig_lhandle lfh )
 {
     struct _lmf_header  head;
     unsigned            count;
@@ -103,34 +105,45 @@ static supp_header *ReadSupp( int fd )
     unsigned long       segs[10];
     union  any_rec      rec;
 
-    get( head, _lmf_header );
-    if( head.rec_type != _LMF_DEFINITION_REC ) return( NULL );
-    if( head.data_nbytes <= sizeof( struct _lmf_definition ) ) return( NULL );
-    get( rec, _lmf_definition );
+    if( DIGLoadRead( lfh, &head, sizeof( head ) ) )
+        return( NULL );
+    if( head.rec_type != _LMF_DEFINITION_REC )
+        return( NULL );
+    if( head.data_nbytes <= sizeof( struct _lmf_definition ) )
+        return( NULL );
+    if( DIGLoadRead( lfh, &rec, sizeof( rec.defn ) ) )
+        return( NULL );
     size = head.data_nbytes - sizeof( struct _lmf_definition );
-    if( size > sizeof( segs ) ) return( NULL );
-    if( DIGCli( Read )( fd, segs, size ) != size ) return( NULL );
+    if( size > sizeof( segs ) )
+        return( NULL );
+    if( DIGLoadRead( lfh, segs, size ) )
+        return( NULL );
     count = size / sizeof( unsigned long );
-    if( ProcDefn( &rec.defn, segs, count ) != EOK ) return( NULL );
+    if( ProcDefn( &rec.defn, segs, count ) != EOK )
+        return( NULL );
     for( ;; ) {
-        get( head, _lmf_header );
+        if( DIGLoadRead( lfh, &head, sizeof( head ) ) )
+            return( NULL );
         switch( head.rec_type ) {
         case _LMF_COMMENT_REC:
         case _LMF_RESOURCE_REC:
         case _LMF_ENDDATA_REC:
         case _LMF_FIXUP_80X87_REC:
-            DIGCli( Seek )( fd, head.data_nbytes, DIG_CUR );
+            DIGLoadSeek( lfh, head.data_nbytes, DIG_CUR );
             break;
         case _LMF_DATA_REC:
-            get( rec, _lmf_data );
-            if( ProcData( fd, &rec.data, head.data_nbytes ) != EOK ) return( NULL );
+            if( DIGLoadRead( lfh, &rec, sizeof( rec.data ) ) )
+                return( NULL );
+            if( ProcData( lfh, &rec.data, head.data_nbytes ) != EOK )
+                return( NULL );
             break;
         case _LMF_FIXUP_SEG_REC:
-            if( ProcFixup( fd, head.data_nbytes ) != EOK ) return( NULL );
+            if( ProcFixup( lfh, head.data_nbytes ) != EOK )
+                return( NULL );
             break;
         case _LMF_EOF_REC:
             for( i = 0; i < count; ++i ) {
-                if( (segs[i] & 0xf0000000)==((unsigned long)_LMF_CODE << 28) ) {
+                if( (segs[i] & 0xf0000000) == ((unsigned long)_LMF_CODE << 28) ) {
                     if( qnx_segment_flags( SuppSegs[i], _PMF_CODE_RX|_PMF_MODIFY ) == -1 ) {
                         return( NULL );
                     }
