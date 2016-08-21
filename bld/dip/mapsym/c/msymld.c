@@ -144,7 +144,7 @@ static void *HunkAlloc( imp_image_handle *ii, size_t size )
         hunk->left = alloc;
     }
     hunk->left -= size;
-    return( &hunk->data[ hunk->left ] );
+    return( &hunk->data[hunk->left] );
 }
 
 static void ImpUnloadInfo( imp_image_handle *ii )
@@ -180,9 +180,7 @@ static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
 
     end = NULL;
     start = name;
-    for( ;; ) {
-        if( len == 0 )
-            break;
+    for( ; len > 0; --len ) {
         switch( *name ) {
         case ':':
         case '\\':
@@ -195,7 +193,6 @@ static dip_status AddName( imp_image_handle *ii, unsigned len, char *name )
             break;
         }
         ++name;
-        --len;
     }
     if( end == NULL )
         end = name;
@@ -268,8 +265,7 @@ static dip_status CheckSymFile( dig_fhandle dfh )
      * been seen. Version 5.1 seems to be identical to 4.0 with added
      * support for 32-bit symbols.
      */
-    if( (end_map.major_ver < 3) || (end_map.major_ver > 6)
-        || (end_map.minor_ver > 11) ) {
+    if( (end_map.major_ver < 3) || (end_map.major_ver > 6) || (end_map.minor_ver > 11) ) {
         return( DS_FAIL );
     }
 
@@ -338,8 +334,9 @@ static dip_status LoadSymTable( dig_fhandle dfh, imp_image_handle *ii, unsigned 
             if( ds != DS_OK )
                 goto done;
             ds = AddSymbol( ii, seg, sym_32.offset, name_len, name );
-            if( ds != DS_OK )
+            if( ds != DS_OK ) {
                 goto done;
+            }
         } else {
             if( BRead( dfh, &sym, SYM_SYMDEF_FIXSIZE ) != SYM_SYMDEF_FIXSIZE ) {
                 ds = DS_ERR | DS_FREAD_FAILED;
@@ -349,8 +346,9 @@ static dip_status LoadSymTable( dig_fhandle dfh, imp_image_handle *ii, unsigned 
             if( ds != DS_OK )
                 goto done;
             ds = AddSymbol( ii, seg, sym.offset, name_len, name );
-            if( ds != DS_OK )
+            if( ds != DS_OK ) {
                 goto done;
+            }
         }
     }
 

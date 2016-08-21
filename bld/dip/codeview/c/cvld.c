@@ -58,7 +58,8 @@ static void Cleanup( imp_image_handle *ii )
     owner = &ImageList;
     for( ;; ) {
         curr = *owner;
-        if( curr == ii ) break;
+        if( curr == ii )
+            break;
         owner = &curr->next_image;
     }
     *owner = ii->next_image;
@@ -113,10 +114,10 @@ static dip_status TryFindPE( dig_fhandle dfh, unsigned long *offp,
     if( hdr.pe.signature != PE_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.table[ PE_TBL_DEBUG ].rva == 0 ) {
+    if( hdr.pe.table[PE_TBL_DEBUG].rva == 0 ) {
         return( DS_FAIL );
     }
-    debug_rva = (hdr.pe.table[ PE_TBL_DEBUG ].rva / hdr.pe.object_align)*
+    debug_rva = (hdr.pe.table[PE_TBL_DEBUG].rva / hdr.pe.object_align)*
                                 hdr.pe.object_align;
 
     section_off = nh_off + offsetof( pe_header, flags ) +
@@ -125,13 +126,13 @@ static dip_status TryFindPE( dig_fhandle dfh, unsigned long *offp,
     if( DCSeek( dfh, section_off, DIG_ORG ) != section_off ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    for( i=0; i < hdr.pe.num_objects; i++ ) {
+    for( i = 0; i < hdr.pe.num_objects; i++ ) {
         if( DCRead( dfh, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
-                            hdr.pe.table[ PE_TBL_DEBUG ].rva - debug_rva;
+                            hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
             if( DCSeek( dfh, debug_rva, DIG_ORG ) != debug_rva ) {
                 return( DS_ERR|DS_FSEEK_FAILED );
             }
@@ -176,10 +177,13 @@ static dip_status FindCV( dig_fhandle dfh, unsigned long *offp,
     dip_status  ds;
 
     ds = TryFindPE( dfh, offp, sizep );
-    if( ds & DS_ERR ) return( ds );
+    if( ds & DS_ERR )
+        return( ds );
     if( ds != DS_OK ) {
         ds = TryFindTrailer( dfh, offp, sizep );
-        if( ds != DS_OK ) return( ds );
+        if( ds != DS_OK ) {
+            return( ds );
+        }
     }
     if( DCSeek( dfh, *offp, DIG_ORG ) != *offp ) {
         return( DS_ERR|DS_FSEEK_FAILED );
@@ -216,7 +220,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( dir_header.cbDirHeader != sizeof( dir_header )
-     || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
+      || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
         return( DS_ERR|DS_INFO_INVALID );
     }
     ii->dir_count = dir_header.cDir;
@@ -230,7 +234,8 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     left = ii->dir_count;
     for( ;; ) {
         num = left;
-        if( num > DIRECTORY_BLOCK_ENTRIES ) num = DIRECTORY_BLOCK_ENTRIES;
+        if( num > DIRECTORY_BLOCK_ENTRIES )
+            num = DIRECTORY_BLOCK_ENTRIES;
         block_size = num * sizeof( cv_directory_entry );
         ii->directory[i] = DCAlloc( block_size );
         if( ii->directory[i] == NULL ) {
@@ -241,7 +246,9 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
         }
         ++i;
         left -= num;
-        if( left == 0 ) break;
+        if( left == 0 ) {
+            break;
+        }
     }
     return( DS_OK );
 }
@@ -273,9 +280,11 @@ static walk_result FindCompUnit( imp_image_handle *ii,
 {
     cs_compile          **rec = d;
 
-    if( cde->subsection != sstModule ) return( WR_CONTINUE );
+    if( cde->subsection != sstModule )
+        return( WR_CONTINUE );
     *rec = GetCompInfo( ii, cde->iMod );
-    if( *rec == NULL ) return( WR_CONTINUE );
+    if( *rec == NULL )
+        return( WR_CONTINUE );
     return( WR_STOP );
 }
 
@@ -285,7 +294,8 @@ static dip_status SetMADType( imp_image_handle *ii )
     walk_result                 wr;
 
     wr = WalkDirList( ii, &FindCompUnit, &rec );
-    if( wr != WR_STOP ) return( DS_OK );
+    if( wr != WR_STOP )
+        return( DS_OK );
     switch( rec->machine & 0xf0 ) {
     case MACH_INTEL_8080:
         ii->mad = MAD_X86;
@@ -309,11 +319,13 @@ dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 
     memset( ii, 0, sizeof( *ii ) );
     ds = FindCV( dfh, &off, &size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ii->sym_file = dfh;
     ii->bias = off;
     ds = VMInit( ii, size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ii->next_image = ImageList;
     ImageList = ii;
     ds = LoadDirectory( ii, off + CV_SIG_SIZE );
