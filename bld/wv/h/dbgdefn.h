@@ -61,6 +61,8 @@ typedef struct machine_state    machine_state;
 
 /* Global Definitions */
 
+typedef unsigned                error_handle;
+
 typedef int                     file_handle;
 #define NIL_HANDLE              ((file_handle)-1)
 
