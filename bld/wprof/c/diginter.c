@@ -55,14 +55,11 @@
 
 extern sio_data         *CurrSIOData;
 
-
 void *DIGCLIENTRY( Alloc )( size_t amount )
 /*****************************************/
 {
     return( _MALLOC( amount ) );
 }
-
-
 
 void *DIGCLIENTRY( Realloc )( void * p, size_t amount )
 /*****************************************************/
@@ -70,15 +67,11 @@ void *DIGCLIENTRY( Realloc )( void * p, size_t amount )
     return( _REALLOC( p, amount ) );
 }
 
-
-
 void DIGCLIENTRY( Free )( void * p )
 /**********************************/
 {
     _FREE( p );
 }
-
-
 
 dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
 /*****************************************************************/
@@ -113,33 +106,69 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
     return( PH2DFH( fh ) );
 }
 
-
-
 unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 /*******************************************************************************/
 {
     return( lseek( DFH2PH( dfh ), p, k ) );
 }
 
-
-
 size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
 /****************************************************************/
 {
-    return( BigRead( DFH2PH( dfh ), b, s ) );
+#if defined( __QNX__ ) || defined( _WIN64 )
+/*
+    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
+    up any I/O larger than that.
+    _WIN64 has max size UINT_MAX
+*/
+    size_t      total;
+    unsigned    read_len;
+    unsigned    amount;
+
+#if defined( __QNX__ )
+    amount = 32U * 1024 - 512;
+#else
+    amount = INT_MAX;
+#endif
+    total = 0;
+    while( s > 0 ) {
+        if( amount > s )
+            amount = (unsigned)s;
+        read_len = read( DFH2PH( dfh ), b, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( DIG_RW_ERROR );
+        }
+        total += read_len;
+        if( read_len != amount ) {
+            return( total );
+        }
+        b = (char *)b + amount;
+        s -= amount;
+    }
+    return( total );
+#else
+    return( read( DFH2PH( dfh ), b, s ) );
+#endif
 }
-
-
 
 size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
 /**********************************************************************/
 {
-#ifdef _WIN64
+#if defined( __QNX__ ) || defined( _WIN64 )
+/*
+    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
+    up any I/O larger than that.
+    _WIN64 has max size UINT_MAX
+*/
     size_t      total;
     unsigned    write_len;
     unsigned    amount;
 
+#if defined( __QNX__ )
+    amount = 32U * 1024 - 512;
+#else
     amount = INT_MAX;
+#endif
     total = 0;
     while( s > 0 ) {
         if( amount > s )
@@ -161,15 +190,11 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
 #endif
 }
 
-
-
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 /******************************************/
 {
     close( DFH2PH( dfh ) );
 }
-
-
 
 void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
 /************************************************************/

@@ -104,7 +104,7 @@ dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
         flgs |= O_APPEND;
     /* (ignore the remaining flags) */
 
-    fd = open( name, flgs, 0777 );
+    fd = open( name, flgs, PMODE_RWX );
 
     dprintf(( "DIGCliOpen: returns %d\n", fd ));
     if( fd == -1 )

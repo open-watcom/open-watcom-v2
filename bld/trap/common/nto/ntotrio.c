@@ -42,7 +42,7 @@
 
 void Output( const char *str )
 {
-    write( 2, str, strlen( str ) );
+    write( STDERR_FILENO, str, strlen( str ) );
 }
 
 void SayGNiteGracey( int return_code )
