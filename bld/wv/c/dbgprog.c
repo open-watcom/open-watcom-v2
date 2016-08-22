@@ -484,8 +484,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
-                        unsigned start, unsigned end )
+static bool CheckLoadDebugInfo( image_entry *image, dig_fhandle dfh, unsigned start, unsigned end )
 {
     char        buff[TXT_LEN];
     char        *symfile;
@@ -498,7 +497,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
         if( prio == 0 || prio > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( FH2DFH( fh ), sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( dfh, sizeof( image_entry * ), prio );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -558,7 +557,7 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last ) ) {
+        if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_MIN, last ) ) {
             return( true );
         }
         FileClose( fh );
@@ -580,7 +579,7 @@ static bool ProcImgSymInfo( image_entry *image )
             fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
         }
         if( fh != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
+            if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
                 return( true );
             }
             FileClose( fh );
@@ -594,7 +593,7 @@ static bool ProcImgSymInfo( image_entry *image )
         } else {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+                if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
                     return( true );
                 }
                 FileClose( fh );

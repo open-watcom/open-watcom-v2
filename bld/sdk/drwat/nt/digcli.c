@@ -41,6 +41,7 @@
 #include "dipcli.h"
 #include "mem.h"
 
+
 /*
  * DIGCliAlloc
  */
@@ -75,15 +76,19 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
     OFSTRUCT            tmp;
 
     flags = 0;
-    if( mode & DIG_READ )  flags |= OF_READ;
-    if( mode & DIG_WRITE ) flags |= OF_WRITE;
-    if( mode & DIG_TRUNC ) flags |= OF_CREATE;
-    if( mode & DIG_CREATE ) flags |= OF_CREATE;
+    if( mode & DIG_READ )
+        flags |= OF_READ;
+    if( mode & DIG_WRITE )
+        flags |= OF_WRITE;
+    if( mode & DIG_TRUNC )
+        flags |= OF_CREATE;
+    if( mode & DIG_CREATE )
+        flags |= OF_CREATE;
     //NYI: should check for DIG_SEARCH
     ret = OpenFile( path, &tmp, flags );
     if( ret == HFILE_ERROR )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)ret );
+    return( H2DFH( ret ) );
 }
 
 /*
@@ -104,7 +109,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( dfh, offset, 0, mode ) );
+    return( SetFilePointer( DFH2H( dfh ), offset, 0, mode ) );
 }
 
 /*
@@ -114,7 +119,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( dfh, buf, size, &bytesread, NULL ) )
+    if( !ReadFile( DFH2H( dfh ), buf, size, &bytesread, NULL ) )
         return( DIG_RW_ERROR );
     return( bytesread );
 }
@@ -126,7 +131,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( dfh, buf, size, &byteswritten, NULL ) )
+    if( !WriteFile( DFH2H( dfh ), buf, size, &byteswritten, NULL ) )
         return( DIG_RW_ERROR );
     return( byteswritten );
 }
@@ -136,7 +141,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
  */
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    CloseHandle( dfh );
+    CloseHandle( DFH2H( dfh ) );
 }
 
 /*

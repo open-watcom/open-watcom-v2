@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include "drwatcom.h"
 #include "exepe.h"
+#include "digcli.h"
+
 
 #define EXE_PE  0x4550
 #define EXE_NE  0x454e
@@ -42,14 +44,12 @@
 /*
  * seekRead
  */
-static BOOL seekRead( HANDLE fhdl, DWORD offset, void *buf, DWORD size ) {
-
-    DWORD       lenread;
-
-    if( SetFilePointer( fhdl, offset, NULL, FILE_BEGIN ) == -1 ) {
+static BOOL seekRead( dig_fhandle dfh, DWORD offset, void *buf, DWORD size )
+{
+    if( DIGCli( Seek )( dfh, offset, DIG_ORG ) == -1L ) {
         return( FALSE );
     }
-    if( !ReadFile( fhdl, buf, size, &lenread, NULL )  || lenread != size ) {
+    if( DIGCli( Read )( dfh, buf, size ) != size ) {
         return( FALSE );
     }
     return( TRUE );
@@ -58,27 +58,27 @@ static BOOL seekRead( HANDLE fhdl, DWORD offset, void *buf, DWORD size ) {
 /*
  * getEXEHeader - verify that this is a PE executable and read the header
  */
-static BOOL getEXEHeader( HANDLE fhdl, pe_header *hdr ) {
-
+static BOOL getEXEHeader( dig_fhandle dfh, pe_header *hdr )
+{
     WORD        sig;
     DWORD       nh_offset;
 
-    if( !seekRead( fhdl, 0x00, &sig, sizeof( sig ) ) ) {
+    if( !seekRead( dfh, 0x00, &sig, sizeof( sig ) ) ) {
         return( FALSE );
     }
     if( sig != EXE_MZ ) {
         return( FALSE );
     }
 
-    if( !seekRead( fhdl, 0x3c, &nh_offset, sizeof( DWORD ) ) ) {
+    if( !seekRead( dfh, 0x3c, &nh_offset, sizeof( DWORD ) ) ) {
         return( FALSE );
     }
 
-    if( !seekRead( fhdl, nh_offset, &sig, sizeof( sig ) ) ) {
+    if( !seekRead( dfh, nh_offset, &sig, sizeof( sig ) ) ) {
         return( FALSE );
     }
     if( sig == EXE_PE ) {
-        if( !seekRead( fhdl, nh_offset, hdr, sizeof( pe_header ) ) ) {
+        if( !seekRead( dfh, nh_offset, hdr, sizeof( pe_header ) ) ) {
             return( FALSE );
         }
         return( TRUE );
@@ -89,20 +89,18 @@ static BOOL getEXEHeader( HANDLE fhdl, pe_header *hdr ) {
 /*
  * GetSegmentList
  */
-BOOL GetSegmentList( ModuleNode *node ) {
-
+BOOL GetSegmentList( ModuleNode *node )
+{
     pe_header           header;
     pe_object           obj;
     WORD                i;
-    DWORD               lenread;
 
-    if( !getEXEHeader( node->fhdl, &header ) ) return( FALSE );
-    node->syminfo = MemAlloc( sizeof( SymInfoNode )
-                              + header.num_objects * sizeof( SegInfo ) );
+    if( !getEXEHeader( node->dfh, &header ) )
+        return( FALSE );
+    node->syminfo = MemAlloc( sizeof( SymInfoNode ) + header.num_objects * sizeof( SegInfo ) );
     node->syminfo->segcnt = header.num_objects;
-    for( i=0; i < header.num_objects; i++ ) {
-        if( !ReadFile( node->fhdl, &obj, sizeof( obj ), &lenread, NULL )
-            || lenread != sizeof( obj ) ) {
+    for( i = 0; i < header.num_objects; i++ ) {
+        if( DIGCli( Read )( node->dfh, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( FALSE );
         }
         node->syminfo->seginfo[i].segoff = obj.rva + node->base;
@@ -118,34 +116,33 @@ BOOL GetSegmentList( ModuleNode *node ) {
 /*
  * GetModuleName - get the name of a module from its Export directory table
  */
-char *GetModuleName( HANDLE fhdl ) {
-
+char *GetModuleName( dig_fhandle dfh )
+{
     pe_header           header;
     pe_object           obj;
     pe_export_directory expdir;
-    DWORD               lenread;
     DWORD               export_rva;
     DWORD               i;
     char                buf[_MAX_PATH];
     char                *ret;
 
-    if( !getEXEHeader( fhdl, &header ) ) return( NULL );
+    if( !getEXEHeader( dfh, &header ) )
+        return( NULL );
     export_rva = header.table[ PE_TBL_EXPORT ].rva;
-    for( i=0; i < header.num_objects; i++ ) {
-        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL )
-            || lenread != sizeof( obj ) ) {
+    for( i = 0; i < header.num_objects; i++ ) {
+        if( DIGCli( Read )( dfh, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( NULL );
         }
         if( export_rva >= obj.rva && export_rva < obj.rva + obj.physical_size ) {
             break;
         }
     }
-    if( i == header.num_objects ) return( NULL );
-    if( !seekRead( fhdl, obj.physical_offset + export_rva - obj.rva , &expdir, sizeof( expdir ) ) ) {
+    if( i == header.num_objects )
+        return( NULL );
+    if( !seekRead( dfh, obj.physical_offset + export_rva - obj.rva , &expdir, sizeof( expdir ) ) ) {
         return( NULL );
     }
-    if( !seekRead( fhdl, obj.physical_offset + expdir.name_rva - obj.rva,
-                   buf, _MAX_PATH ) ) {
+    if( !seekRead( dfh, obj.physical_offset + expdir.name_rva - obj.rva, buf, _MAX_PATH ) ) {
         return( NULL );
     }
     ret = MemAlloc( strlen( buf ) + 1 );
@@ -153,28 +150,29 @@ char *GetModuleName( HANDLE fhdl ) {
     return( ret );
 }
 
-BOOL GetModuleSize( HANDLE fhdl, DWORD *size ) {
-
+BOOL GetModuleSize( dig_fhandle dfh, DWORD *size )
+{
     pe_header           header;
 
-    if( !getEXEHeader( fhdl, &header ) ) return( FALSE );
+    if( !getEXEHeader( dfh, &header ) )
+        return( FALSE );
     *size = header.image_size;
     return( TRUE );
 }
 
-ObjectInfo *GetModuleObjects( HANDLE fhdl, DWORD *num_objects ) {
-
+ObjectInfo *GetModuleObjects( dig_fhandle dfh, DWORD *num_objects )
+{
     pe_header           header;
     pe_object           obj;
     ObjectInfo          *ret;
     DWORD               i;
-    DWORD               lenread;
 
-    if( !getEXEHeader( fhdl, &header ) ) return( NULL );
+    if( !getEXEHeader( dfh, &header ) )
+        return( NULL );
     ret = MemAlloc( header.num_objects * sizeof( ObjectInfo ) );
-    for( i=0; i < header.num_objects; i++ ) {
-        if( !ReadFile( fhdl, &obj, sizeof( obj ), &lenread, NULL ) ) break;
-        if( lenread != sizeof( obj ) ) break;
+    for( i = 0; i < header.num_objects; i++ ) {
+        if( DIGCli( Read )( dfh, &obj, sizeof( obj ) ) != sizeof( obj ) )
+            break;
         ret[i].rva = obj.rva;
         strcpy( ret[i].name, obj.name );
     }

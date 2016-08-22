@@ -150,11 +150,11 @@ BOOL LoadDbgInfo( void )
         DEBUGOUT( "LoadDbgInfo Failed" );
         if( curFileHdl != DIG_NIL_HANDLE ) {
             DIGCli( Close )( curFileHdl );
+            curFileHdl = DIG_NIL_HANDLE;
         }
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
         curModHdl = NO_MOD;
-        curFileHdl = DIG_NIL_HANDLE;
         return( FALSE );
     }
     return( TRUE );
@@ -248,8 +248,8 @@ void SymFileClose( void )
     }
     if( curFileHdl != DIG_NIL_HANDLE ) {
         DIGCli( Close )( curFileHdl );
+        curFileHdl = DIG_NIL_HANDLE;
     }
     curProcess = NULL;
     curModHdl = NO_MOD;
-    curFileHdl = DIG_NIL_HANDLE;
 }

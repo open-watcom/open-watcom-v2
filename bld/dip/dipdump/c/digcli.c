@@ -42,6 +42,13 @@
 # define dprintf(a)     do {} while( 0 )
 #endif
 
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(sh)  (dig_fhandle)(pointer_int)((sh) + 1)
+#define DFH2PH(dfh) ((int)(pointer_int)(dfh) - 1)
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 {

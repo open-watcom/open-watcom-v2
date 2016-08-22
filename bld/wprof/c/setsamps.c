@@ -46,6 +46,8 @@
 #include "setsamps.h"
 #include "support.h"
 #include "utils.h"
+#include "dipinter.h"
+#include "digcli.h"
 
 #include "clibext.h"
 
@@ -54,10 +56,6 @@ extern void         ClearMassaged(sio_data *curr_sio);
 extern void         ClearModuleInfo(image_info *curr_image);
 extern void         ClearFileInfo(mod_info *curr_mod);
 extern void         ClearRoutineInfo(file_info *curr_file);
-extern process_info *WPDipProc(void);
-extern void         WPDipDestroyProc(process_info *dip_proc);
-extern void         WPDipSetProc(process_info *dip_proc);
-extern mod_handle   WPDipLoadInfo(dig_fhandle dfh,char *f_name,void *image,int image_size,unsigned int dip_start,unsigned int dip_end);
 
 extern sio_data     *SIOData;
 extern sio_data     *CurrSIOData;
@@ -74,13 +72,11 @@ STATIC mod_info *findCurrMod( image_info *curr_image, mod_handle mh )
     mod_info            *curr_mod;
     int                 mod_count;
 
-    mod_count = 0;
-    while( mod_count < curr_image->mod_count ) {
+    for( mod_count = 0; mod_count < curr_image->mod_count; ++mod_count ) {
         curr_mod = curr_image->module[mod_count];
         if( curr_mod->mh != 0 && curr_mod->mh == mh ) {
             return( curr_mod );
         }
-        mod_count++;
     }
     return( NULL );
 }
@@ -95,18 +91,14 @@ STATIC rtn_info *findCurrRtn( mod_info *curr_mod, sym_handle *sh )
     int                 file_count;
     int                 rtn_count;
 
-    file_count = 0;
-    while( file_count < curr_mod->file_count ) {
+    for( file_count = 0; file_count < curr_mod->file_count; ++file_count ) {
         curr_file = curr_mod->mod_file[file_count];
-        rtn_count = 0;
-        while( rtn_count < curr_file->rtn_count ) {
+        for( rtn_count = 0; rtn_count < curr_file->rtn_count; ++rtn_count ) {
             curr_rtn = curr_file->routine[rtn_count];
             if( curr_rtn->sh != NULL && DIPSymCmp( curr_rtn->sh, sh ) == 0 ) {
                 return( curr_rtn );
             }
-            rtn_count++;
         }
-        file_count++;
     }
     return( NULL );
 }
@@ -189,9 +181,8 @@ STATIC void initModuleInfo( image_info *curr_image )
 
 
 
-STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym,
-                                                      void *_new_mod )
-/*********************************************************************/
+STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_new_mod )
+/**************************************************************************************/
 {
     mod_info        *new_mod = _new_mod;
     sym_info        sinfo;
@@ -245,8 +236,7 @@ STATIC walk_result loadModuleInfo( mod_handle mh, void *_curr_image )
     new_mod->mh = mh;
     mod_count = curr_image->mod_count;
     curr_image->mod_count++;
-    curr_image->module = ProfRealloc( curr_image->module,
-                                      curr_image->mod_count * sizeof( pointer ) );
+    curr_image->module = ProfRealloc( curr_image->module, curr_image->mod_count * sizeof( pointer ) );
     curr_image->module[mod_count] = new_mod;
     initFileInfo( new_mod );
     DIPWalkSymList( SS_MODULE, &mh, &loadRoutineInfo, new_mod );
@@ -276,17 +266,14 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
     }
     fid = DIPCueFileId( ch );
     file_count = curr_mod->file_count;
-    count = 0;
-    while( count < file_count ) {
+    for( count = 0; count < file_count; ++count ) {
         sym_file = curr_mod->mod_file[count];
         if( sym_file->fid == fid ) {
             return( sym_file );
         }
-        count++;
     }
     curr_mod->file_count++;
-    curr_mod->mod_file = ProfRealloc( curr_mod->mod_file,
-                             curr_mod->file_count * sizeof( pointer ) );
+    curr_mod->mod_file = ProfRealloc( curr_mod->mod_file, curr_mod->file_count * sizeof( pointer ) );
     count = DIPCueFile( ch, NULL, 0 ) + 1;
     sym_file = ProfCAlloc( sizeof( file_info ) + count );
     sym_file->fid = fid;
@@ -301,8 +288,10 @@ STATIC file_info  *loadFileInfo( mod_info *curr_mod, sym_handle *sym )
 int AddrCmp( address *addr1, address *addr2 )
 /*******************************************/
 {
-    if( addr1->sect_id > addr2->sect_id ) return( +1 );
-    if( addr1->sect_id < addr2->sect_id ) return( -1 );
+    if( addr1->sect_id > addr2->sect_id )
+        return( +1 );
+    if( addr1->sect_id < addr2->sect_id )
+        return( -1 );
     return( MADAddrComp( addr1, addr2, MAF_FULL ) );
 }
 
@@ -332,22 +321,16 @@ void GatherSetAll( sio_data * curr_sio, bool gather_active )
     int                 count2;
     int                 count3;
 
-    count = 0;
-    while( count < curr_sio->image_count ) {
+    for( count = 0; count < curr_sio->image_count; ++count ) {
         curr_image = curr_sio->images[count];
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_mod->mod_file[count3]->gather_active = gather_active;
-                count3++;
             }
             curr_mod->gather_active = gather_active;
-            count2++;
         }
         curr_image->gather_active = gather_active;
-        count++;
     }
     curr_sio->gather_active = gather_active;
 }
@@ -365,28 +348,20 @@ void AbsSetAll( sio_data *curr_sio, bool abs_bar )
     int                 count3;
     int                 count4;
 
-    count = 0;
-    while( count < curr_sio->image_count ) {
+    for( count = 0; count < curr_sio->image_count; ++count ) {
         curr_image = curr_sio->images[count];
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_file = curr_mod->mod_file[count3];
-                count4 = 0;
-                while( count4 < curr_file->rtn_count ) {
+                for( count4 = 0; count4 < curr_file->rtn_count; ++count4 ) {
                     curr_file->routine[count4]->abs_bar = abs_bar;
-                    count4++;
                 }
                 curr_file->abs_bar = abs_bar;
-                count3++;
             }
             curr_mod->abs_bar = abs_bar;
-            count2++;
         }
         curr_image->abs_bar = abs_bar;
-        count++;
     }
     curr_sio->abs_bar = abs_bar;
     curr_sio->asm_src_info.abs_bar = abs_bar;
@@ -405,28 +380,20 @@ void RelSetAll( sio_data *curr_sio, bool rel_bar )
     int                 count3;
     int                 count4;
 
-    count = 0;
-    while( count < curr_sio->image_count ) {
+    for( count = 0; count < curr_sio->image_count; ++count ) {
         curr_image = curr_sio->images[count];
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_file = curr_mod->mod_file[count3];
-                count4 = 0;
-                while( count4 < curr_file->rtn_count ) {
+                for( count4 = 0; count4 < curr_file->rtn_count; ++count4 ) {
                     curr_file->routine[count4]->rel_bar = rel_bar;
-                    count4++;
                 }
                 curr_file->rel_bar = rel_bar;
-                count3++;
             }
             curr_mod->rel_bar = rel_bar;
-            count2++;
         }
         curr_image->rel_bar = rel_bar;
-        count++;
     }
     curr_sio->rel_bar = rel_bar;
     curr_sio->asm_src_info.rel_bar = rel_bar;
@@ -445,28 +412,20 @@ void StretchSetAll( sio_data *curr_sio, bool bar_max )
     int                 count3;
     int                 count4;
 
-    count = 0;
-    while( count < curr_sio->image_count ) {
+    for( count = 0; count < curr_sio->image_count; ++count ) {
         curr_image = curr_sio->images[count];
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_file = curr_mod->mod_file[count3];
-                count4 = 0;
-                while( count4 < curr_file->rtn_count ) {
+                for( count4 = 0; count4 < curr_file->rtn_count; ++count4 ) {
                     curr_file->routine[count4]->bar_max = bar_max;
-                    count4++;
                 }
                 curr_file->bar_max = bar_max;
-                count3++;
             }
             curr_mod->bar_max = bar_max;
-            count2++;
         }
         curr_image->bar_max = bar_max;
-        count++;
     }
     curr_sio->bar_max = bar_max;
     curr_sio->asm_src_info.bar_max = bar_max;
@@ -484,26 +443,20 @@ void SortSetAll( sio_data *curr_sio, int sort_type )
     int                 count2;
     int                 count3;
 
-    count = 0;
-    while( count < curr_sio->image_count ) {
+    for( count = 0; count < curr_sio->image_count; ++count ) {
         curr_image = curr_sio->images[count];
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_file = curr_mod->mod_file[count3];
                 curr_file->sort_type = sort_type;
                 curr_file->sort_needed = true;
-                count3++;
             }
             curr_mod->sort_type = sort_type;
             curr_mod->sort_needed = true;
-            count2++;
         }
         curr_image->sort_type = sort_type;
         curr_image->sort_needed = true;
-        count++;
     }
     curr_sio->sort_type = sort_type;
     curr_sio->sort_needed = true;
@@ -563,7 +516,7 @@ STATIC void resolveImageSamples( void )
             if( curr_rtn->first_tick_index == 0 ) {
                 curr_rtn->first_tick_index = tick_index;
                 if( curr_mod->first_tick_index == 0
-                 || curr_mod->first_tick_index > tick_index ) {
+                  || curr_mod->first_tick_index > tick_index ) {
                     curr_mod->first_tick_index = tick_index;
                 }
             }
@@ -572,16 +525,13 @@ STATIC void resolveImageSamples( void )
         tick_index++;
     }
     CurrSIOData->max_time = 0;
-    count = 0;
-    while( count < CurrSIOData->image_count ) {
+    for( count = 0; count < CurrSIOData->image_count; ++count ) {
         curr_image = CurrSIOData->images[count];
         curr_image->max_time = 0;
-        count2 = 0;
-        while( count2 < curr_image->mod_count ) {
+        for( count2 = 0; count2 < curr_image->mod_count; ++count2 ) {
             curr_mod = curr_image->module[count2];
             curr_mod->max_time = 0;
-            count3 = 0;
-            while( count3 < curr_mod->file_count ) {
+            for( count3 = 0; count3 < curr_mod->file_count; ++count3 ) {
                 curr_file = curr_mod->mod_file[count3];
                 curr_rtn = curr_file->routine[0];
                 if( curr_rtn->unknown_routine && curr_rtn->tick_count == 0 ) {
@@ -589,20 +539,17 @@ STATIC void resolveImageSamples( void )
                     curr_file->ignore_unknown_rtn = true;
                 }
                 curr_file->max_time = 0;
-                count4 = 0;
-                while( count4 < curr_file->rtn_count ) {
+                for( count4 = 0; count4 < curr_file->rtn_count; ++count4 ) {
                     curr_rtn = curr_file->routine[count4];
                     curr_file->agg_count += curr_rtn->tick_count;
                     if( curr_rtn->tick_count > curr_file->max_time ) {
                         curr_file->max_time = curr_rtn->tick_count;
                     }
-                    count4++;
                 }
                 curr_mod->agg_count += curr_file->agg_count;
                 if( curr_file->agg_count > curr_mod->max_time ) {
                     curr_mod->max_time = curr_file->agg_count;
                 }
-                count3++;
             }
             curr_file = curr_mod->mod_file[0];
             if( curr_file->unknown_file && curr_file->agg_count == 0 ) {
@@ -613,7 +560,6 @@ STATIC void resolveImageSamples( void )
             if( curr_mod->agg_count > curr_image->max_time ) {
                 curr_image->max_time = curr_mod->agg_count;
             }
-            count2++;
         }
         curr_mod = curr_image->module[0];
         if( curr_mod->unknown_module && curr_mod->agg_count == 0 ) {
@@ -623,7 +569,6 @@ STATIC void resolveImageSamples( void )
         if( curr_image->agg_count > CurrSIOData->max_time ) {
             CurrSIOData->max_time = curr_image->agg_count;
         }
-        count++;
     }
     curr_image = CurrSIOData->images[0];
     if( curr_image->unknown_image && curr_image->agg_count == 0 ) {
@@ -637,20 +582,19 @@ STATIC void loadImageInfo( image_info * curr_image )
 /**************************************************/
 {
     int             name_len;
-    int             object_file;
-    int             sym_file;
+    dig_fhandle     obj_dfh;
+    dig_fhandle     sym_dfh;
     struct stat     file_status;
 
-    sym_file = -1;
-    object_file = -1;
+    sym_dfh = DIG_NIL_HANDLE;
+    obj_dfh = DIG_NIL_HANDLE;
     curr_image->dip_handle = NO_MOD;
     if( curr_image->sym_deleted ) {
     } else if( curr_image->sym_name != NULL ) {
-        sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
-        if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( PH2DFH( sym_file ),
-                                       curr_image->sym_name, curr_image,
-                                       sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+        sym_dfh = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+        if( sym_dfh != DIG_NIL_HANDLE ) {
+            curr_image->dip_handle = WPDipLoadInfo( sym_dfh, curr_image->sym_name, curr_image,
+                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
     } else {
         name_len = strlen( curr_image->name ) + 1;
@@ -659,19 +603,18 @@ STATIC void loadImageInfo( image_info * curr_image )
         name_len = strlen( FNameBuff ) + 1;
         curr_image->sym_name = ProfAlloc( name_len );
         memcpy( curr_image->sym_name, FNameBuff, name_len );
-        sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
-        if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( PH2DFH( sym_file ),
-                                      curr_image->sym_name, curr_image,
-                                      sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+        sym_dfh = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+        if( sym_dfh != DIG_NIL_HANDLE ) {
+            curr_image->dip_handle = WPDipLoadInfo( sym_dfh, curr_image->sym_name, curr_image,
+                                      sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
         if( curr_image->dip_handle == NO_MOD ) {
             ProfFree( curr_image->sym_name );
             curr_image->sym_name = NULL;
         }
     }
-    object_file = open( curr_image->name, O_RDONLY|O_BINARY );
-    if( object_file == -1 ) {
+    obj_dfh = DIGCli( Open )( curr_image->name, DIG_READ );
+    if( obj_dfh == DIG_NIL_HANDLE ) {
         curr_image->exe_not_found = true;
         if( curr_image->main_load ) {
             ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
@@ -681,28 +624,28 @@ STATIC void loadImageInfo( image_info * curr_image )
            If sample timestamp is 0, the sampler couldn't figure out
            the right value. Assume it's OK.
         */
-    } else if( fstat( object_file, &file_status ) == 0 ) {
-        /* QNX creation dates and time stamps tend to be 1 */
-        /* unit different, so do not test for equality */
-        if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
-            curr_image->exe_changed = true;
-            if( curr_image->main_load ) {
-                ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+    } else {
+        if( fstat( DFH2PH( obj_dfh ), &file_status ) == 0 ) {
+            /* QNX creation dates and time stamps tend to be 1 */
+            /* unit different, so do not test for equality */
+            if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
+                curr_image->exe_changed = true;
+                if( curr_image->main_load ) {
+                    ErrorMsg( LIT( Exe_Has_Changed ), curr_image->name );
+                }
             }
         }
     }
-    if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted
-     && object_file != -1 ) {
-        curr_image->dip_handle = WPDipLoadInfo( PH2DFH( object_file ),
-                                   curr_image->name, curr_image,
-                                   sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
+    if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted && obj_dfh != DIG_NIL_HANDLE ) {
+        curr_image->dip_handle = WPDipLoadInfo( obj_dfh, curr_image->name, curr_image,
+                                   sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
     }
     if( curr_image->dip_handle == NO_MOD ) {
-        if( sym_file != -1 ) {
-            close( sym_file );
+        if( sym_dfh != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( sym_dfh );
         }
-        if( object_file != -1 ) {
-            close( object_file );
+        if( obj_dfh != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( obj_dfh );
         }
     }
     initModuleInfo( curr_image );
@@ -721,18 +664,17 @@ STATIC void loadSampleImages( void )
 
     CurrSIOData->dip_process = WPDipProc();
     WPDipSetProc( CurrSIOData->dip_process );
-    image_count = 0;
-    while( image_count < CurrSIOData->image_count ) {
-        if( CurrSIOData->images[image_count]->unknown_image ) break;
-        image_count++;
+    for( image_count = 0; image_count < CurrSIOData->image_count; ++image_count ) {
+        if( CurrSIOData->images[image_count]->unknown_image ) {
+            break;
+        }
     }
     if( image_count != 0 ) {
         curr_image = CurrSIOData->images[image_count];
         CurrSIOData->images[image_count] = CurrSIOData->images[0];
         CurrSIOData->images[0] = curr_image;
     }
-    image_count = 0;
-    while( image_count < CurrSIOData->image_count ) {
+    for( image_count = 0; image_count < CurrSIOData->image_count; ++image_count ) {
         curr_image = CurrSIOData->images[image_count];
         curr_image->agg_count = 0;
         if( curr_image->unknown_image ) {
@@ -740,7 +682,6 @@ STATIC void loadSampleImages( void )
         } else {
             loadImageInfo( curr_image );
         }
-        image_count++;
     }
 }
 
@@ -786,12 +727,11 @@ STATIC void calcAggregates( void )
     }
     /* skip over all the 0:0 samples */
     for( index = 0; index < buckets; ++index ) {
-        index2 = 0;
-        for( ;; ) {
-            if( index2 >= MAX_RAW_BUCKET_INDEX ) break;
-            if( !(sorted_vect[index][index2]->mach.segment == 0
-             && sorted_vect[index][index2]->mach.offset == 0) ) break;
-            ++index2;
+        for( index2 = 0; index2 < MAX_RAW_BUCKET_INDEX; ++index2 ) {
+            if( sorted_vect[index][index2]->mach.segment != 0
+              || sorted_vect[index][index2]->mach.offset != 0 ) {
+                break;
+            }
         }
         sorted_idx[index] = index2;
     }
@@ -805,13 +745,18 @@ STATIC void calcAggregates( void )
         best = -1U;
         for( index = 0; index < buckets; ++index ) {
             index2 = sorted_idx[index];
-            if( index2 >= MAX_RAW_BUCKET_INDEX ) continue;
-            if( best == -1U ) best = index;
+            if( index2 >= MAX_RAW_BUCKET_INDEX )
+                continue;
+            if( best == -1U )
+                best = index;
             cmp_result = AddrCmp( sorted_vect[index][index2],
                                   sorted_vect[best][sorted_idx[best]] );
-            if( cmp_result < 0 ) best = index;
+            if( cmp_result < 0 ) {
+                best = index;
+            }
         }
-        if( best == -1U ) break;
+        if( best == -1U )
+            break;
         if( curr == NULL || AddrCmp( sorted_vect[best][sorted_idx[best]], curr->raw ) != 0 ) {
             if( ++curr_midx >= MAX_MASSGD_BUCKET_INDEX ) {
                 ++curr_mbucket;

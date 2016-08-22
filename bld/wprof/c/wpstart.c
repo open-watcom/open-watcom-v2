@@ -49,10 +49,9 @@
 #include "madinter.h"
 #include "utils.h"
 #include "wphelp.h"
+#include "dipinter.h"
 
 
-extern void WPDipInit(void);
-extern void WPDipFini(void);
 extern void ReportSampleInfo(void);
 extern void ClearAllSamples( void );
 

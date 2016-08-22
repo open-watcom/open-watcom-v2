@@ -43,11 +43,11 @@
 #include "msg.h"
 #include "myassert.h"
 #include "support.h"
+#include "dipinter.h"
 
-//#include "dipinter.def"
+
 //#include "support.def"
 //#include "msg.def"
-
 
 extern char *           WProfDips;
 extern sio_data         *CurrSIOData;
@@ -155,8 +155,8 @@ dig_mad DIPCLIENTRY( CurrMAD )( void )
 
 
 
-extern void WPDipInit( void )
-/***************************/
+void WPDipInit( void )
+/********************/
 {
     char        *dip_name;
     unsigned    dip_count;
@@ -172,11 +172,10 @@ extern void WPDipInit( void )
     } else {
         dip_name = WProfDips;
     }
-    while( *dip_name != NULLCHAR ) {
+    for( ; *dip_name != NULLCHAR; dip_name += strlen( dip_name ) + 1 ) {
         if( loadDIP( dip_name, true, true ) ) {
             dip_count++;
         }
-        dip_name += strlen( dip_name ) + 1;
     }
     if( dip_count == 0 ) {
         DIPFini();
@@ -186,16 +185,16 @@ extern void WPDipInit( void )
 
 
 
-extern process_info *WPDipProc( void )
-/************************************/
+process_info *WPDipProc( void )
+/*****************************/
 {
     return( DIPCreateProcess() );
 }
 
 
 
-extern void WPDipDestroyProc( process_info *dip_proc )
-/****************************************************/
+void WPDipDestroyProc( process_info *dip_proc )
+/*********************************************/
 {
     if( dip_proc != NULL ) {
         DIPDestroyProcess( dip_proc );
@@ -204,16 +203,16 @@ extern void WPDipDestroyProc( process_info *dip_proc )
 
 
 
-extern void WPDipSetProc( process_info *dip_proc )
-/************************************************/
+void WPDipSetProc( process_info *dip_proc )
+/*****************************************/
 {
     DIPSetProcess( dip_proc );
 }
 
 
 
-extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
-                       int image_size, unsigned dip_start, unsigned dip_end )
+mod_handle WPDipLoadInfo( dig_fhandle dfh, const char *f_name, void *image,
+                   unsigned image_size, unsigned dip_start, unsigned dip_end )
 /****************************************************************************/
 {
     unsigned    prio;
@@ -241,8 +240,8 @@ extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
 
 
 
-extern void WPDipFini( void )
-/***************************/
+void WPDipFini( void )
+/********************/
 {
     DIPFini();
 }

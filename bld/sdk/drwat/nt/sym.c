@@ -111,7 +111,7 @@ BOOL LoadDbgInfo( ModuleNode *mod )
         priority = DIPPriority( priority );
         if( priority == 0 )
             break;
-        mod->syminfo->hdl = DIPLoadInfo( mod->fhdl, 0, priority );
+        mod->syminfo->hdl = DIPLoadInfo( mod->dfh, 0, priority );
         if( mod->syminfo->hdl != NO_MOD ) {
             break;
         }

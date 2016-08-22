@@ -55,10 +55,19 @@
 #include "rvalue.h"
 
 
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(ph)  (dig_fhandle)(pointer_int)((ph) + 1)
+#define DFH2PH(dfh) ((int)(pointer_int)(dfh) - 1)
+
 #define INT_PTR int
 
 #define MAX_SYM_NAME    128
 #define MAX_FILE_NAME   144
+
 typedef struct {
     WORD                segnum;
     DWORD               symoff;

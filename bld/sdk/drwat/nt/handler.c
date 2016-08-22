@@ -170,7 +170,7 @@ static void procCreateProcess( DEBUG_EVENT *dbinfo ) {
     GetProcName( dbinfo->dwProcessId, tmpname );
     name = MemAlloc( strlen( tmpname ) + 5 );
     sprintf( name, "%s.exe", tmpname );
-    AddModule( dbinfo->dwProcessId, dbinfo->u.CreateProcessInfo.hFile,
+    AddModule( dbinfo->dwProcessId, H2DFH( dbinfo->u.CreateProcessInfo.hFile ),
                 (DWORD)dbinfo->u.CreateProcessInfo.lpBaseOfImage, name );
     LBStrPrintf( MainLBox, headerBuf );
     LBPrintf( MainLBox, STR_PROC_CREATE_FMT_STR,
@@ -217,8 +217,8 @@ DWORD DebugEventHandler( DEBUG_EVENT *dbinfo ) {
         break;
     case LOAD_DLL_DEBUG_EVENT:
         makeHeader( STR_DLL_LOADED, dbinfo);
-        name = GetModuleName( dbinfo->u.LoadDll.hFile );
-        AddModule( dbinfo->dwProcessId, dbinfo->u.LoadDll.hFile,
+        name = GetModuleName( H2DFH( dbinfo->u.LoadDll.hFile ) );
+        AddModule( dbinfo->dwProcessId, H2DFH( dbinfo->u.LoadDll.hFile ),
                    (DWORD)dbinfo->u.LoadDll.lpBaseOfDll, name );
         if( name == NULL ) name = "???";
         LBStrPrintf( MainLBox, "%s", headerBuf );

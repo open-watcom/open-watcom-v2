@@ -45,17 +45,9 @@
 #include "dipimp.h"
 #include "dipcli.h"
 
+
 //#define DEBUGOUT( x ) LBPrintf( ListBox, x );
 #define DEBUGOUT( x )
-
-
-/*
- * dig_fhandle can be pointer to file structure or handle number
- * therefore 0/NULL is reserved for errors
- * if handle number is used then handle must be 1 based
- */
-#define PH2DFH(ph)  (dig_fhandle)(pointer_int)((ph) + 1)
-#define DFH2PH(dfh) ((file_handle)(pointer_int)(dfh) - 1)
 
 #if 0
 dig_fhandle PathOpen( char *name, unsigned len, char *ext )

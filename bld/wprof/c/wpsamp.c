@@ -48,6 +48,7 @@
 #include "wpgather.h"
 #include "wpsort.h"
 #include "wpsamp.h"
+#include "dipinter.h"
 
 
 extern image_info *SImageGetImage(a_window *wnd,int row);
@@ -66,7 +67,6 @@ extern gui_ord WPPixelTruncWidth(gui_ord width);
 extern gui_ord WPPixelWidth(a_window *wnd);
 extern void ClearSample(sio_data *curr_sio);
 extern void SortCurrent(sio_data *curr_sio);
-extern void WPDipSetProc(process_info *dip_proc);
 extern int SampleNumRows( a_window * wnd );
 
 
