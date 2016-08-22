@@ -140,17 +140,17 @@ dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *exts, 
     return( TINY_INFO( rc ) );
 }
 
-int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
+int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
 {
     tiny_ret_t  rc;
 
-    rc = TinyFarRead( fh, buff, len );
+    rc = TinyFarRead( lfh, buff, len );
     return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
 }
 
-int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
+int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
 {
-    return( TINY_ERROR( TinySeek( fh, offs, where ) ) );
+    return( TINY_ERROR( TinySeek( lfh, offs, where ) ) );
 }
 
 int DIGLoadClose( dig_lhandle lfh )

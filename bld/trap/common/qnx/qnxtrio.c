@@ -130,14 +130,18 @@ static unsigned TryOnePath( const char *path, struct stat *tmp, const char *name
     char        *end;
     char        *ptr;
 
-    if( path == NULL ) return( 0 );
+    if( path == NULL )
+        return( 0 );
     ptr = result;
     for( ;; ) {
         if( *path == '\0' || *path == ':' ) {
-            if( ptr != result ) *ptr++ = '/';
+            if( ptr != result )
+                *ptr++ = '/';
             end = StrCopy( name, ptr );
-            if( stat( result, tmp ) == 0 ) return( end - result );
-            if( *path == '\0' ) return( 0 );
+            if( stat( result, tmp ) == 0 )
+                return( end - result );
+            if( *path == '\0' )
+                return( 0 );
             ++path;
             ptr = result;
         }
@@ -160,9 +164,11 @@ static unsigned FindFilePath( const char *name, char *result )
         return( end - result );
     }
     len = TryOnePath( getenv( "WD_PATH" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     len = TryOnePath( getenv( "HOME" ), &tmp, name, result );
-    if( len != 0 ) return( len );
+    if( len != 0 )
+        return( len );
     if( _cmdname( cmd ) != NULL ) {
         end = strrchr( cmd, '/' );
         if( end != NULL ) {
@@ -173,7 +179,9 @@ static unsigned FindFilePath( const char *name, char *result )
                    came from */
                 StrCopy( "wd", end + 1 );
                 len = TryOnePath( cmd, &tmp, name, result );
-                if( len != 0 ) return( len );
+                if( len != 0 ) {
+                    return( len );
+                }
             }
         }
     }

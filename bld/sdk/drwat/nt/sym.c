@@ -38,8 +38,8 @@
 /*
  * InitDip
  */
-BOOL InitDip( void ) {
-
+BOOL InitDip( void )
+{
     if( DIPInit() & DS_ERR ) {
         RCMessageBox( NULL, STR_CANT_LOAD_DIP, AppName,
                     MB_OK | MB_ICONEXCLAMATION );
@@ -99,17 +99,22 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
 /*
  * LoadDbgInfo
  */
-BOOL LoadDbgInfo( ModuleNode *mod ) {
+BOOL LoadDbgInfo( ModuleNode *mod )
+{
     unsigned            priority;
 
-    if( !GetSegmentList( mod ) ) return( FALSE );
+    if( !GetSegmentList( mod ) )
+        return( FALSE );
     mod->syminfo->procinfo = DIPCreateProcess();
     priority = 0;
     for( ;; ) {
         priority = DIPPriority( priority );
-        if( priority == 0 ) break;
-        mod->syminfo->hdl = DIPLoadInfo( (dig_fhandle)mod->fhdl, 0, priority );
-        if( mod->syminfo->hdl != NO_MOD ) break;
+        if( priority == 0 )
+            break;
+        mod->syminfo->hdl = DIPLoadInfo( mod->fhdl, 0, priority );
+        if( mod->syminfo->hdl != NO_MOD ) {
+            break;
+        }
     }
     if( mod->syminfo->hdl != NO_MOD ) {
         DIPMapInfo( mod->syminfo->hdl, mod );
@@ -122,7 +127,8 @@ BOOL LoadDbgInfo( ModuleNode *mod ) {
 /*
  * UnloadDbgInfo
  */
-void UnloadDbgInfo( ModuleNode *mod ) {
+void UnloadDbgInfo( ModuleNode *mod )
+{
     if( mod->syminfo != NULL ) {
         DIPUnloadInfo( mod->syminfo->hdl );
         DIPDestroyProcess( mod->syminfo->procinfo );

@@ -230,19 +230,19 @@ dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *ext, c
         fh = open( result, O_RDONLY );
     }
     if( fh == -1 )
-        return( DIG_NIL_HANDLE );
+        return( DIG_NIL_LHANDLE );
     return( fh );
 }
 
 #if 0
-int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
+int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
 {
-    return( read( fh, buff, len ) != len );
+    return( read( lfh, buff, len ) != len );
 }
 
-int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
+int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( fh, offs, where ) == -1L );
+    return( lseek( lfh, offs, where ) == -1L );
 }
 #endif
 

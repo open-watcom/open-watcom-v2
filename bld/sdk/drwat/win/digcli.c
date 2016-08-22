@@ -49,6 +49,14 @@
 #define DEBUGOUT( x )
 
 
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(ph)  (dig_fhandle)(pointer_int)((ph) + 1)
+#define DFH2PH(dfh) ((file_handle)(pointer_int)(dfh) - 1)
+
 #if 0
 dig_fhandle PathOpen( char *name, unsigned len, char *ext )
 {
@@ -123,8 +131,8 @@ void DIGCLIENTRY( Free )( void *ptr )
  */
 dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
-    int                 ret;
-    int                 flags;
+    int         fh;
+    int         flags;
 
     flags = O_BINARY;
     if( mode & DIG_READ )  flags |= O_RDONLY;
@@ -132,13 +140,13 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
     if( mode & DIG_TRUNC ) flags |= O_TRUNC;
     if( mode & DIG_CREATE ) {
         flags |= O_CREAT;
-        ret = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
+        fh = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
     } else {
-        ret = sopen3( path, flags, SH_DENYWR );
+        fh = sopen3( path, flags, SH_DENYWR );
     }
-    if( ret == -1 )
+    if( fh == -1 )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)ret );
+    return( PH2DFH( fh ) );
 }
 
 /*
@@ -161,7 +169,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
         mode = SEEK_END;
         break;
     }
-    ret = lseek( (int)dfh, offset, mode );
+    ret = lseek( DFH2PH( dfh ), offset, mode );
     DEBUGOUT( "seek END" );
     return( ret );
 }
@@ -172,7 +180,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
 size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 {
     DEBUGOUT( "reading" );
-    return( read( (int)dfh, buf, size ) );
+    return( read( DFH2PH( dfh ), buf, size ) );
 }
 
 /*
@@ -180,7 +188,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
  */
 size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 {
-    return( write( (int)dfh, buf, size ) );
+    return( write( DFH2PH( dfh ), buf, size ) );
 }
 
 /*
@@ -188,7 +196,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
  */
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    close( (int)dfh );
+    close( DFH2PH( dfh ) );
 }
 
 /*

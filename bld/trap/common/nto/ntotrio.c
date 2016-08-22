@@ -179,7 +179,9 @@ static unsigned FindFilePath( const char *name, char *result )
                    came from */
                 StrCopy( "wd", end + 1 );
                 len = TryOnePath( cmd, &tmp, name, result );
-                if( len != 0 ) return( len );
+                if( len != 0 ) {
+                    return( len );
+                }
             }
         }
     }

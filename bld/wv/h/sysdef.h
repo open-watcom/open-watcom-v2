@@ -29,9 +29,10 @@
 *
 ****************************************************************************/
 
-typedef long            sys_handle;
-typedef unsigned long   sys_error;
 
+typedef long            sys_handle;
 #define NIL_SYS_HANDLE  ((sys_handle)-1)
+
+typedef unsigned long   sys_error;
 #define SYS_ERR_OK      ((sys_error)0)
 

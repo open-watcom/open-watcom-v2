@@ -110,7 +110,7 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
     fh = open( name, access );
     if( fh == -1 )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)fh );
+    return( PH2DFH( fh ) );
 }
 
 
@@ -118,7 +118,7 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
 unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 /*******************************************************************************/
 {
-    return( lseek( (int)dfh, p, k ) );
+    return( lseek( DFH2PH( dfh ), p, k ) );
 }
 
 
@@ -126,7 +126,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k 
 size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
 /****************************************************************/
 {
-    return( BigRead( (int)dfh, b, s ) );
+    return( BigRead( DFH2PH( dfh ), b, s ) );
 }
 
 
@@ -144,7 +144,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
     while( s > 0 ) {
         if( amount > s )
             amount = (unsigned)s;
-        write_len = write( (int)dfh, b, amount );
+        write_len = write( DFH2PH( dfh ), b, amount );
         if( write_len == (unsigned)-1 ) {
             return( DIG_RW_ERROR );
         }
@@ -157,7 +157,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
     }
     return( total );
 #else
-    return( write( (int)dfh, b, s ) );
+    return( write( DFH2PH( dfh ), b, s ) );
 #endif
 }
 
@@ -166,7 +166,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 /******************************************/
 {
-    close( (int)dfh );
+    close( DFH2PH( dfh ) );
 }
 
 

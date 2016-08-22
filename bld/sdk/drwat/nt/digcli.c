@@ -104,7 +104,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( (HANDLE)dfh, offset, 0, mode ) );
+    return( SetFilePointer( dfh, offset, 0, mode ) );
 }
 
 /*
@@ -114,7 +114,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( (HANDLE)dfh, buf, size, &bytesread, NULL ) )
+    if( !ReadFile( dfh, buf, size, &bytesread, NULL ) )
         return( DIG_RW_ERROR );
     return( bytesread );
 }
@@ -126,7 +126,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( (HANDLE)dfh, buf, size, &byteswritten, NULL ) )
+    if( !WriteFile( dfh, buf, size, &byteswritten, NULL ) )
         return( DIG_RW_ERROR );
     return( byteswritten );
 }
@@ -136,7 +136,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
  */
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    CloseHandle( (HANDLE)dfh );
+    CloseHandle( dfh );
 }
 
 /*

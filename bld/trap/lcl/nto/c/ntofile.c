@@ -70,8 +70,9 @@ trap_retval ReqFile_open( void )
     access = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
     if( acc->mode & TF_CREATE ) {
         mode |= O_CREAT | O_TRUNC;
-        if( acc->mode & TF_EXEC )
+        if( acc->mode & TF_EXEC ) {
             access |= S_IXUSR | S_IXGRP | S_IXOTH;
+        }
     }
     dbg_print(( "open: name '%s', mode %d/%d\n", name, acc->mode, mode ));
     handle = open( name, mode, access );

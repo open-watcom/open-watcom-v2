@@ -37,7 +37,7 @@ typedef unsigned_8 inv_flags; enum { AT_EOF = 0x1 };
 typedef struct invokes {
     char_ring           *prmlst;
     char                *redirect;
-    file_handle         inv_input;
+    file_handle         fh;
     size_t              buff_size;
     unsigned            number;
     unsigned            line;

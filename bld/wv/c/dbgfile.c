@@ -822,14 +822,14 @@ dig_lhandle DIGLoadOpen( const char *name, size_t name_len, const char *ext, cha
     return( fh );
 }
 
-int DIGLoadRead( dig_lhandle fh, void *buff, unsigned len )
+int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
 {
-    return( read( fh, buff, len ) != len );
+    return( read( lfh, buff, len ) != len );
 }
 
-int DIGLoadSeek( dig_lhandle fh, unsigned long offs, dig_seek where )
+int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( fh, offs, where ) == -1L );
+    return( lseek( lfh, offs, where ) == -1L );
 }
 
 int DIGLoadClose( dig_lhandle lfh )

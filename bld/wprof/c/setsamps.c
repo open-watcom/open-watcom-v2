@@ -648,7 +648,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     } else if( curr_image->sym_name != NULL ) {
         sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
         if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)sym_file,
+            curr_image->dip_handle = WPDipLoadInfo( PH2DFH( sym_file ),
                                        curr_image->sym_name, curr_image,
                                        sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
@@ -661,7 +661,7 @@ STATIC void loadImageInfo( image_info * curr_image )
         memcpy( curr_image->sym_name, FNameBuff, name_len );
         sym_file = open( curr_image->sym_name, O_RDONLY|O_BINARY );
         if( sym_file != -1 ) {
-            curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)sym_file,
+            curr_image->dip_handle = WPDipLoadInfo( PH2DFH( sym_file ),
                                       curr_image->sym_name, curr_image,
                                       sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
@@ -693,7 +693,7 @@ STATIC void loadImageInfo( image_info * curr_image )
     }
     if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted
      && object_file != -1 ) {
-        curr_image->dip_handle = WPDipLoadInfo( (dig_fhandle)object_file,
+        curr_image->dip_handle = WPDipLoadInfo( PH2DFH( object_file ),
                                    curr_image->name, curr_image,
                                    sizeof(image_info), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
     }

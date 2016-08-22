@@ -498,7 +498,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
         if( prio == 0 || prio > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( (dig_fhandle)fh, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( FH2DFH( fh ), sizeof( image_entry * ), prio );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {

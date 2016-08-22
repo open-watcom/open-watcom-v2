@@ -131,14 +131,17 @@ BOOL LoadDbgInfo( void )
         priority = 0;
         for( ;; ) {
             priority = DIPPriority( priority );
-            if( priority == 0 ) break;
+            if( priority == 0 )
+                break;
             curModHdl = DIPLoadInfo( curFileHdl, 0, priority );
-            if( curModHdl != NO_MOD ) break;
+            if( curModHdl != NO_MOD ) {
+                break;
+            }
         }
         if( curModHdl != NO_MOD ) {
-                DEBUGOUT( "debug info load OK" );
-                DIPMapInfo( curModHdl, NULL );
-                err = FALSE;
+            DEBUGOUT( "debug info load OK" );
+            DIPMapInfo( curModHdl, NULL );
+            err = FALSE;
         } else {
             DEBUGOUT( "curModHdl == NO_MOD" );
         }
