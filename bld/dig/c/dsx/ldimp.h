@@ -47,7 +47,7 @@ typedef struct {
 
 #define RELOC_BUFF_SIZE 64
 
-static imp_header *ReadInImp( dig_lhandle lfh )
+static imp_header *ReadInImp( dig_ldhandle ldfh )
 {
     simple_header       hdr;
     unsigned long       size;
@@ -60,7 +60,7 @@ static imp_header *ReadInImp( dig_lhandle lfh )
     unsigned long       buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
-    if( DIGLoadRead( lfh, &hdr, sizeof( hdr ) ) )
+    if( DIGLoader( Read )( ldfh, &hdr, sizeof( hdr ) ) )
         return( NULL );
     if( hdr.signature != REX_SIGNATURE )
         return( NULL );
@@ -70,18 +70,18 @@ static imp_header *ReadInImp( dig_lhandle lfh )
     imp_start = DIGCli( Alloc )( size + bss_size );
     if( imp_start == NULL )
         return( NULL );
-    DIGLoadSeek( lfh, hdr_size, DIG_ORG );
-    if( DIGLoadRead( lfh, imp_start, size ) ) {
+    DIGLoader( Seek )( ldfh, hdr_size, DIG_ORG );
+    if( DIGLoader( Read )( ldfh, imp_start, size ) ) {
         DIGCli( Free )( imp_start );
         return( NULL );
     }
-    DIGLoadSeek( lfh, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( ldfh, hdr.reloc_offset, DIG_ORG );
     while( hdr.num_relocs != 0 ) {
         bunch = hdr.num_relocs;
         if( bunch > RELOC_BUFF_SIZE )
             bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGLoadRead( lfh, buff, reloc_size ) ) {
+        if( DIGLoader( Read )( ldfh, buff, reloc_size ) ) {
             DIGCli( Free )( imp_start );
             return( NULL );
         }

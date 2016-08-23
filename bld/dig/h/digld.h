@@ -24,15 +24,17 @@
 *
 *  ========================================================================
 *
-* Description:  Debugger interface DIP/MAD/TRAP loader auxiliary functions.
+* Description:  DIG loader file I/O interface functions (used for DIP/MAD/TRAP)
 *
 ****************************************************************************/
 
 
-typedef int             dig_lhandle;
-#define DIG_NIL_LHANDLE ((dig_lhandle)-1)
+#define DIGLoader(n)        DIGLoader ## n
 
-extern dig_lhandle  DIGLoadOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
-extern int          DIGLoadClose( dig_lhandle lfh );
-extern int          DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len );
-extern int          DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where );
+typedef int                 dig_ldhandle;
+#define DIG_NIL_LDHANDLE    ((dig_ldhandle)-1)
+
+extern dig_ldhandle     DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
+extern int              DIGLoader( Close )( dig_ldhandle ldfh );
+extern int              DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len );
+extern int              DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where );

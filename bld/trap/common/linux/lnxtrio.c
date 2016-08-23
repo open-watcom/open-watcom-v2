@@ -187,7 +187,7 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
 }
 
-dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+dig_ldhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
     bool                has_ext;
     bool                has_path;
@@ -230,23 +230,23 @@ dig_lhandle DIGLoadOpen( const char *name, unsigned name_len, const char *ext, c
         fh = open( result, O_RDONLY );
     }
     if( fh == -1 )
-        return( DIG_NIL_LHANDLE );
+        return( DIG_NIL_LDHANDLE );
     return( fh );
 }
 
 #if 0
-int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( lfh, buff, len ) != len );
+    return( read( ldfh, buff, len ) != len );
 }
 
-int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( lfh, offs, where ) == -1L );
+    return( lseek( ldfh, offs, where ) == -1L );
 }
 #endif
 
-int DIGLoadClose( dig_lhandle lfh )
+int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( lfh ) );
+    return( close( ldfh ) );
 }

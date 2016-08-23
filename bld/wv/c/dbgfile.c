@@ -766,7 +766,7 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
     return( open( res, O_RDONLY ) );
 }
 
-dig_lhandle DIGLoadOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char            buffer[TXT_LEN];
     char            *p;
@@ -817,23 +817,23 @@ dig_lhandle DIGLoadOpen( const char *name, size_t name_len, const char *ext, cha
     }
     if( fh == -1 ) {
         strcpy( buff, buffer );
-        return( DIG_NIL_LHANDLE );
+        return( DIG_NIL_LDHANDLE );
     }
     return( fh );
 }
 
-int DIGLoadRead( dig_lhandle lfh, void *buff, unsigned len )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( lfh, buff, len ) != len );
+    return( read( ldfh, buff, len ) != len );
 }
 
-int DIGLoadSeek( dig_lhandle lfh, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( lfh, offs, where ) == -1L );
+    return( lseek( ldfh, offs, where ) == -1L );
 }
 
-int DIGLoadClose( dig_lhandle lfh )
+int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( lfh ) );
+    return( close( ldfh ) );
 }
 #endif

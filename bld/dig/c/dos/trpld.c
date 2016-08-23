@@ -56,7 +56,7 @@ typedef struct {
 static trap_header      __far *TrapCode = NULL;
 static trap_fini_func   *FiniFunc = NULL;
 
-static char *ReadInTrap( dig_lhandle lfh )
+static char *ReadInTrap( dig_ldhandle ldfh )
 {
     dos_exe_header      hdr;
     unsigned            size;
@@ -71,7 +71,7 @@ static char *ReadInTrap( dig_lhandle lfh )
     unsigned            relocs;
 
     hdr.signature = 0;
-    if( DIGLoadRead( lfh, &hdr, sizeof( hdr ) ) ) {
+    if( DIGLoader( Read )( ldfh, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_BAD_TRAP_FILE );
     }
     if( hdr.signature != DOS_SIGNATURE ) {
@@ -85,13 +85,13 @@ static char *ReadInTrap( dig_lhandle lfh )
     }
     start_seg = TINY_INFO( ret );
     TrapCode = MK_FP( start_seg, 0 );
-    DIGLoadSeek( lfh, hdr_size, DIG_ORG );
-    DIGLoadRead( lfh, TrapCode, size );
-    DIGLoadSeek( lfh, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( ldfh, hdr_size, DIG_ORG );
+    DIGLoader( Read )( ldfh, TrapCode, size );
+    DIGLoader( Seek )( ldfh, hdr.reloc_offset, DIG_ORG );
     p = &buff[NUM_BUFF_RELOCS];
     for( relocs = hdr.num_relocs; relocs != 0; --relocs ) {
         if( p >= &buff[ NUM_BUFF_RELOCS ] ) {
-            if( DIGLoadRead( lfh, buff, sizeof( buff ) ) ) {
+            if( DIGLoader( Read )( ldfh, buff, sizeof( buff ) ) ) {
                 return( TC_ERR_BAD_TRAP_FILE );
             }
             p = buff;
@@ -118,7 +118,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_lhandle     lfh;
+    dig_ldhandle    ldfh;
     const char      *ptr;
     trap_init_func  *init_func;
 #ifdef USE_FILENAME_VERSION
@@ -135,20 +135,20 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    lfh = DIGLoadOpen( filename, p - filename, "trp", NULL, 0 );
+    ldfh = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    lfh = DIGLoadOpen( parms, ptr - parms, "trp", NULL, 0 );
+    ldfh = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
 #endif
-    if( lfh == DIG_NIL_LHANDLE ) {
+    if( ldfh == DIG_NIL_LDHANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
     parms = ptr;
-    ptr = ReadInTrap( lfh );
-    DIGLoadClose( lfh );
+    ptr = ReadInTrap( ldfh );
+    DIGLoader( Close )( ldfh );
     if( ptr != NULL ) {
         strcpy( buff, ptr );
     } else {
