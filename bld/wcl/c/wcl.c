@@ -822,9 +822,7 @@ static int Parse( const char *cmd )
                     p = CC_Opts + strlen( CC_Opts );
                     *p++ = ' ';
                     *p++ = '-';
-                    len = end - cmd;
-                    memcpy( p, cmd, len );    /* keep original case */
-                    p[len] = '\0';
+                    strcpy( p, Word );      /* keep original case */
                 }
             }
             cmd = end;
