@@ -446,18 +446,22 @@ void FindPath( const char *name, char *buf )
 char *DoQuoted( char *buffer, const char *name, char quote_char )
 /***************************************************************/
 {
-    char *p = buffer;
+    char *p;
     int  quotes;
 
-    quotes = ( strchr( name, ' ' ) != NULL );
-    if( quotes )
-        *p++ = quote_char;
-    while( (*p = *name) != '\0' ) {
-        ++p;
-        ++name;
+    p = buffer;
+    if( name != NULL ) {
+        quotes = ( strchr( name, ' ' ) != NULL );
+        if( quotes )
+            *p++ = quote_char;
+        while( (*p = *name) != '\0' ) {
+            ++p;
+            ++name;
+        }
+        if( quotes ) {
+            *p++ = quote_char;
+        }
     }
-    if( quotes )
-        *p++ = quote_char;
     *p = '\0';
     return( buffer );
 }
