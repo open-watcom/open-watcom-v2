@@ -46,7 +46,7 @@
 #include "trpld.h"
 #include "trpsys.h"
 #include "tcerr.h"
-#include "digio.h"
+#include "digld.h"
 #include "envlkup.h"
 
 

@@ -39,7 +39,7 @@
 #include "dipsys.h"
 #include "ldimp.h"
 #include "dbgmod.h"
-#include "digio.h"
+#include "digld.h"
 
 #define DIPSIG  0x00504944UL    // "DIP"
 

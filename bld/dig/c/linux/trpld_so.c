@@ -36,7 +36,7 @@
 #include "trptypes.h"
 #include "trpld.h"
 #include "tcerr.h"
-#include "digio.h"
+#include "digld.h"
 
 #include "clibext.h"
 

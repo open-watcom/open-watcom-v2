@@ -44,7 +44,7 @@
 #include <process.h>
 #include "trpimp.h"
 #include "servio.h"
-#include "digio.h"
+#include "digld.h"
 
 
 void Output( const char *str )

@@ -35,7 +35,7 @@
 #include <sys/mman.h>
 #endif
 #include "exephar.h"
-#include "digio.h"
+#include "digld.h"
 
 typedef struct {
 #ifdef __WATCOMC__

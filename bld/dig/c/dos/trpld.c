@@ -39,7 +39,7 @@
 #include "trptypes.h"
 #include "trpld.h"
 #include "tcerr.h"
-#include "digio.h"
+#include "digld.h"
 
 
 #define TRAP_SIGNATURE          0xDEAF

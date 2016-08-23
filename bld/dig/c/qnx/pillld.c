@@ -35,7 +35,7 @@
 #include "pillink.h"
 #include "pillimp.h"
 #include "pillctrl.h"
-#include "digio.h"
+#include "digld.h"
 
 #define PILLSIG  0x4C4C4950UL    // "PILL"
 

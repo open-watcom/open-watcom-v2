@@ -62,7 +62,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "digcli.h"
-#include "digio.h"
+#include "digld.h"
 #include "utils.h"
 
 #include "clibext.h"

@@ -36,7 +36,7 @@
 #include "madcli.h"
 #include "madsys.h"
 #include "ldimp.h"
-#include "digio.h"
+#include "digld.h"
 
 #define MADSIG  0x0044414DUL    // "MAD"
 

@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include "tinyio.h"
 #include "trptypes.h"
-#include "digio.h"
+#include "digld.h"
 #include "servio.h"
 
 

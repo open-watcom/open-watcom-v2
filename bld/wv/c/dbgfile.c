@@ -44,7 +44,7 @@
 #endif
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "digio.h"
+#include "digld.h"
 #include "strutil.h"
 #include "filelcl.h"
 #include "filermt.h"

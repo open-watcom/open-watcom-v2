@@ -39,7 +39,7 @@
 #include "tcerr.h"
 #include "dipcli.h"
 #include "trpqimp.h"
-#include "digio.h"
+#include "digld.h"
 
 #include "../dsx/ldimp.h"
 
