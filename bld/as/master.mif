@@ -251,12 +251,19 @@ $(asi_lex_in).re : $(as_dir)/y/$(lex_src) $(__MAKEFILES__)
     $(sed) -e "s/ytab.h/asiytab.h/g" $(asi_lex_in).tmp > $@
 
 $(lex_out).c : $(lex_in).re $(__MAKEFILES__)
+    @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
 $(asi_lex_out).c : $(asi_lex_in).re $(__MAKEFILES__)
+    @%make echo_re2c
     $(re2c) $(lex_flags) $[@ > $@
 
 .c{$(stand_subdir)}.obj: $(__MAKEFILES__) $($(proj_name)_autodepends)
     @if not exist $(stand_subdir) mkdir $(stand_subdir)
     @%make echo_cc
     @$(cc) $(cflags) $(cppflags) -D_STANDALONE_ $(stand_pch_c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+
+echo_re2c : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo re2c $@
+!endif

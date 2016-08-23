@@ -57,7 +57,7 @@ cpp             = $(noecho)*wcpp
 cwc             = bcwc
 edbind          = bedbind
 ide2make        = bide2mak
-re2c            = re2c
+re2c            = $(noecho)re2c
 sed             = $(noecho)sed
 w32bind         = w32bind
 wbind           = bwbind
@@ -138,4 +138,9 @@ echo_wsplice : .PROCEDURE .EXPLICIT
 echo_yacc : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo yacc $@
+!endif
+
+echo_execute : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo $[@ $@
 !endif

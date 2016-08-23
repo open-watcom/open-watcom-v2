@@ -24,7 +24,8 @@ $(name).exe : $(dis_prereq) $(test_objs)
         $(bld_link) debug all name $@ option quiet, map file { $(test_objs) }
 
 distbls.gh : ./disbuild.exe
-    $[@
+    @%make echo_execute
+    $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
     @%make echo_bldcl

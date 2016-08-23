@@ -173,7 +173,8 @@ $(jtrperr_h) : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg $(__MAKEFILES__)
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 nversion.tmp: ./mknver.exe $(__MAKEFILES__)
-    $[@ $^@
+    @%make echo_execute
+    $(noecho)$[@ $^@
 
 !ifndef extra_dobjs
 extra_dobjs = $(extra_objs)

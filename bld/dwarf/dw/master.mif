@@ -47,7 +47,8 @@ extra_c_flags = -s
     $(bld_cl) $[@ -I"../h" $(bld_clflags) $(bld_ldflags)
 
 dwabenum.gh dwabinfo.gh : ./dwmakeab.exe
-    $[@
+    @%make echo_execute
+    $(noecho)$[@
 
 dwabbrev.obj : dwabbrev.c dwabinfo.gh
 

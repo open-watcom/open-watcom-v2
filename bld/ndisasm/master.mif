@@ -34,8 +34,8 @@ extra_link_res_qnx = usage.u
 
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
 
-inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" 
-inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" 
+inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h"
+inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
@@ -87,7 +87,8 @@ $(exe_name) : msg.gh $(dis_prereq) $(objs) $(libs) $(proj_name).res $(version_re
     $(wstrip) -q -a -r $@ . $^&.res
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
-    $[@
+    @%make echo_execute
+    $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
     @%make echo_bldcl
@@ -101,7 +102,7 @@ msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
     @%make echo_awk
     $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-optencod_opt_qnx = -u $(extra_link_res_qnx) 
+optencod_opt_qnx = -u $(extra_link_res_qnx)
 
 optencod_targ_bsd   = bsd
 optencod_targ_haiku = haiku
@@ -110,19 +111,20 @@ optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
 
 usage.gh : ../stand/options.gml $(__MAKEFILES__)
-!ifeq verbose 0
-    @echo optencod $^&
-!endif
+    @%make echo_optencod
     $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
     @%append usage.tmp "."
     @%make echo_awk
     $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
 
 usagej.gh : ../stand/options.gml $(__MAKEFILES__)
-!ifeq verbose 0
-    @echo optencod $^&
-!endif
+    @%make echo_optencod
     $(noecho)optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
     @%append usagej.tmp "."
     @%make echo_awk
     $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif

@@ -142,26 +142,20 @@ wmpmsg.gh : ../h/womp.msg $(__MAKEFILES__)
     $(awk) -v base=MSG_WOMP_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 end.tmp :
-    %write $@ "." 
+    $(noecho)%write $@ "."
 
 usage.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    @%make echo_optencod
     $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ . . $^&.tmp any
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), %s, \"\")" $^&.tmp end.tmp $@
 
 usagej.gh : ../h/options.gml end.tmp $(__MAKEFILES__)
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    @%make echo_optencod
     $(noecho)optencod -l 1 -q $[@ . . $^&.tmp any
     $(wsplice) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", %s)" $^&.tmp end.tmp $@
 
 usage.u : ../h/options.gml $(__MAKEFILES__)
-!ifeq verbose 0
-    @echo optencod $@
-!endif
+    @%make echo_optencod
     $(noecho)optencod -q -u $@ $[@ . . . any
 
 ###################################################################
@@ -171,11 +165,18 @@ usage.u : ../h/options.gml $(__MAKEFILES__)
     $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe ../fullops.tok ../inlnops.tok
-    $< $@
+    @%make echo_execute
+    $(noecho)$< $@
 
 ./mkopcode.exe: ../mkopcode.c ../mkopcode.h asmops.gh $(__MAKEFILES__)
     @%make echo_bldcl
     $(bld_cl) $[@ -D_STANDALONE_ -I. -I"../h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe ../fullops.tok ../inlnops.tok
-    $< $@
+    @%make echo_execute
+    $(noecho)$< $@
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif

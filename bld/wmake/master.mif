@@ -126,7 +126,8 @@ usagej.gh : ../h/usage.sp $(__MAKEFILES__)
 # special case targets
 
 isarray.gh : ./cretype.exe $(__MAKEFILES__)
-    $[@ > $@
+    @%make echo_execute
+    $(noecho)$[@ > $@
 
 ./cretype.exe : cretype.c $(__MAKEFILES__)
     @%make echo_bldcl

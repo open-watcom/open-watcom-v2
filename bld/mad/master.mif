@@ -109,7 +109,8 @@ $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__M
     @%make bind_version_res_dll
 
 distbls.gh : ./disbuild.exe
-    $[@
+    @%make echo_executable
+    $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
     @%make echo_bldcl
