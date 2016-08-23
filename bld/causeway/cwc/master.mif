@@ -37,7 +37,7 @@ copystub.gh : ./mkcode.exe copystub.tmp
     @%make echo_execute
     $(noecho)$[@ $]@ $@
 
-decstub.gh : decstub.asm ./mkcode.exe
+decstub.tmp : decstub.asm
     @%make echo_aslink
     $(noecho)*bwasm -zq -fo=$^&.obj $[@
     $(noecho)*bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
