@@ -59,7 +59,13 @@
 #define BPRFX   ""
 #endif
 
-#ifdef WCLAXP
+#if defined( WCLI86 )
+  #define WCLNAME       BPRFX "wcl"         /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wcc"         /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wpp"         /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
+  #define FC            BPRFX "wfc"         /* Open Watcom F77 compiler         */
+#elif defined( WCLAXP )
   #define WCLNAME       BPRFX "wclaxp"      /* Name of Compile and Link Utility */
   #define CC            BPRFX "wccaxp"      /* Open Watcom C compiler           */
   #define CPP           BPRFX "wppaxp"      /* Open Watcom C++ compiler         */
@@ -77,24 +83,22 @@
   #define CPP           BPRFX "wppmps"      /* Open Watcom C++ compiler         */
   #define AS            BPRFX "wasmps"      /* Open Watcom assembler            */
   #define FC            BPRFX "wfcmps"      /* Open Watcom F77 compiler         */
-#elif defined( WCL386 )
+#else
   #define WCLNAME       BPRFX "wcl386"      /* Name of Compile and Link Utility */
   #define CC            BPRFX "wcc386"      /* Open Watcom C compiler           */
   #define CPP           BPRFX "wpp386"      /* Open Watcom C++ compiler         */
   #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
   #define FC            BPRFX "wfc386"      /* Open Watcom F77 compiler         */
-#else
-  #define WCLNAME       BPRFX "wcl"         /* Name of Compile and Link Utility */
-  #define CC            BPRFX "wcc"         /* Open Watcom C compiler           */
-  #define CPP           BPRFX "wpp"         /* Open Watcom C++ compiler         */
-  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
-  #define FC            BPRFX "wfc"         /* Open Watcom F77 compiler         */
 #endif
 #define PACK                  "cvpack"      /* Open Watcom executable packer    */
 #define LINK            BPRFX "wlink"       /* Open Watcom linker               */
 #define DIS                   "wdis"        /* Open Watcom disassembler         */
 
-#ifdef WCLAXP
+#if defined( WCLI86 )
+  #define WCLENV        "WCL"               /* name of environment variable     */
+  #define STACKSIZE     "4096"              /* default stack size               */
+  #define _TARGET_      "x86 16-bit"
+#elif defined( WCLAXP )
   #define WCLENV        "WCLAXP"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "Alpha AXP"
@@ -106,14 +110,10 @@
   #define WCLENV        "WCLMPS"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "MIPS"
-#elif defined( WCL386 )
+#else
   #define WCLENV        "WCL386"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "x86 32-bit"
-#else
-  #define WCLENV        "WCL"               /* name of environment variable     */
-  #define STACKSIZE     "4096"              /* default stack size               */
-  #define _TARGET_      "x86 16-bit"
 #endif
 
 #define TEMPFILE        "__wcl__" LNK_EXT   /* temporary linker directive file  */
@@ -952,27 +952,7 @@ void BuildSystemLink( FILE *fp )
         fputs( "system ", fp );
         Fputnl( SystemName, fp );
     } else {
-#if defined( WCLAXP )
-        Fputnl( "system ntaxp", fp );
-#elif defined( WCLPPC )
-  #if defined( __LINUX__ )
-        Fputnl( "system linuxppc", fp );
-  #else
-        Fputnl( "system ntppc", fp );
-  #endif
-#elif defined( WCLMPS )
-        Fputnl( "system linuxmips", fp );
-#elif defined( WCL386 )
-  #if defined( __OS2__ )
-        Fputnl( "system os2v2", fp );
-  #elif defined( __NT__ )
-        Fputnl( "system nt", fp );
-  #elif defined( __LINUX__ )
-        Fputnl( "system linux", fp );
-  #else
-        Fputnl( "system dos4g", fp );
-  #endif
-#elif defined( WCLI86 )
+#if defined( WCLI86 )
         if( Flags.windows ) {
             Fputnl( "system windows", fp );
         } else if( Flags.tiny_model ) {
@@ -988,7 +968,26 @@ void BuildSystemLink( FILE *fp )
             Fputnl( "system dos", fp );
   #endif
         }
+#elif defined( WCLAXP )
+        Fputnl( "system ntaxp", fp );
+#elif defined( WCLPPC )
+  #if defined( __LINUX__ )
+        Fputnl( "system linuxppc", fp );
+  #else
+        Fputnl( "system ntppc", fp );
+  #endif
+#elif defined( WCLMPS )
+        Fputnl( "system linuxmips", fp );
 #else
+  #if defined( __OS2__ )
+        Fputnl( "system os2v2", fp );
+  #elif defined( __NT__ )
+        Fputnl( "system nt", fp );
+  #elif defined( __LINUX__ )
+        Fputnl( "system linux", fp );
+  #else
+        Fputnl( "system dos4g", fp );
+  #endif
 #endif
     }
 

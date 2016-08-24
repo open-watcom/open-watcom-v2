@@ -1333,22 +1333,9 @@ void BuildSystemLink( FILE *fp )
     if( Flags.link_for_sys ) {
         fputs( "system ", fp );
         Fputnl( SystemName, fp );
-  #if defined(_M_I86)
-    } else if( CPU_Arch == TARGET_ARCH_X86 ) {
-  #else
-    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_X86 ) {
-  #endif
-  #if defined(__OS2__)
-        Fputnl( "system os2v2", fp );
-  #elif defined(__NT__)
-        Fputnl( "system nt", fp );
-  #elif defined(__LINUX__)
-        Fputnl( "system linux", fp );
-        if( !Flags.strip_all )
-            Fputnl( "option exportall", fp );
-  #else
-        Fputnl( "system dos4g", fp );
-  #endif
+    /*
+     * Intel 16-bit Architecture specific
+     */
   #if defined(_M_I86)
     } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_I86 ) {
   #else
@@ -1358,6 +1345,10 @@ void BuildSystemLink( FILE *fp )
             Fputnl( "system windows", fp );
         } else if( Flags.tiny_model ) {
             Fputnl( "system com", fp );
+        } else if( Flags.link_for_dos ) {
+            Fputnl( "system dos", fp );
+        } else if( Flags.link_for_os2 ) {
+            Fputnl( "system os2", fp );
         } else {
 #if defined(__OS2__)
             Fputnl( "system os2", fp );
@@ -1365,6 +1356,67 @@ void BuildSystemLink( FILE *fp )
             Fputnl( "system dos", fp );
 #endif
         }
+    /*
+     * Intel 32-bit Architectures specific
+     */
+  #if defined(_M_X86) && !defined(_M_I86)
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_X86 ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_X86 ) {
+  #endif
+  #if defined(__OS2__)
+        Fputnl( "system os2v2", fp );
+  #elif defined(__NT__)
+        Fputnl( "system nt", fp );
+  #elif defined(__LINUX__)
+        Fputnl( "system linux", fp );
+        if( !Flags.strip_all ) {
+            Fputnl( "option exportall", fp );
+        }
+  #else
+        Fputnl( "system dos4g", fp );
+  #endif
+    /*
+     * Alpha Architecture specific
+     */
+  #if defined( __AXP__ )
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_AXP ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_AXP ) {
+  #endif
+  #if defined(__NT__)
+        Fputnl( "system ntaxp", fp );
+  #endif
+    /*
+     * MIPS Architecture specific
+     */
+  #if defined( __MIPS__ )
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_MIPS ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_MIPS ) {
+  #endif
+  #if defined(__LINUX__)
+        Fputnl( "system linuxmips", fp );
+        if( !Flags.strip_all ) {
+            Fputnl( "option exportall", fp );
+        }
+  #endif
+    /*
+     * PPC Architecture specific
+     */
+  #if defined( __PPC__ )
+    } else if( CPU_Arch == TARGET_ARCH_DEFAULT || CPU_Arch == TARGET_ARCH_PPC ) {
+  #else
+    } else if( CPU_Arch == TARGET_ARCH_PPC ) {
+  #endif
+  #if defined(__NT__)
+        Fputnl( "system ntppc", fp );
+  #elif defined(__LINUX__)
+        Fputnl( "system linuxppc", fp );
+        if( !Flags.strip_all ) {
+            Fputnl( "option exportall", fp );
+        }
+  #endif
     }
 }
 
