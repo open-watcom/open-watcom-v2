@@ -650,7 +650,7 @@ static int Parse( const char *cmd )
                     wcc_option = 0;
                     break;
                 case 'l':               /* link target option */
-                    opt = tolower( Word[1] );
+                    opt = (char)tolower( Word[1] );
                     if( opt == 'p' && Word[2] == '\0' ) {
                         Flags.link_for_dos = 0;
                         Flags.link_for_os2 = true;
@@ -732,7 +732,7 @@ static int Parse( const char *cmd )
                             break;
                         }
                     } else if( len == 3 ) {
-                        opt = tolower( Word[2 );
+                        opt = (char)tolower( Word[2] );
                         if( Word[1] == '1' && opt == '+' ) {
                             DebugFlag = DBG_ALL;
                         } else if( Word[1] == '2' && opt == 'i' ) {
