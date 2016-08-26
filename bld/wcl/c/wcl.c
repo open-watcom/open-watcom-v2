@@ -626,9 +626,9 @@ static int Parse( const char *cmd )
                         p = Word + 2;
                         if( *p == '=' || *p == '#' )
                             ++p;
-                        NormalizeFName( Word, MAX_CMD, p );
+                        NormalizeFName( p, MAX_CMD, p );
                         MemFree( Obj_Name );
-                        Obj_Name = MemStrDup( Word );
+                        Obj_Name = MemStrDup( p );
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
