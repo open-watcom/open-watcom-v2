@@ -161,7 +161,7 @@ const char FAR BuiltIns[] = {
 const char FAR SuffixList[] = {
     ".SUFFIXES: "
         ".exe .nlm .dsk .lan .exp "             /* executable extensions */
-        ".lib .obj "                            /* object file extensions */
+        ".lib .obj .o "                         /* object file extensions */
         ".i "                                   /* preprocessor output exts */
         ".asm .c .cpp .cxx .cc .for .pas .cob " /* source file extensions */
         ".h .hpp .hxx .hh .fi .mif .inc\n"      /* include file extensions */
@@ -169,18 +169,18 @@ const char FAR SuffixList[] = {
 
 const char FAR MSSuffixList[] = {
     ".SUFFIXES: "
-        ".exe .obj .asm .c .cpp .cxx .bas .cbl .for .f .f90 .pas .res .rc"
+        ".exe .obj .o .asm .c .cpp .cxx .bas .cbl .for .f .f90 .pas .res .rc"
 };
 
 
 const char FAR UNIXSuffixList[] = {
     ".SUFFIXES: "
-        ".exe .obj .c .y .l .f"
+        ".exe .obj .o .c .y .l .f"
 };
 
 const char FAR POSIXSuffixList[] = {
     ".SUFFIXES: "
-        ".o .c .y .l .a .sh .f"
+        ".o .obj .c .y .l .a .sh .f"
 };
 
 /*
