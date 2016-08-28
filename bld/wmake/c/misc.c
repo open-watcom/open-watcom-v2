@@ -108,7 +108,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
     char    *orgdst = dst;
     bool    string_open = false;
     size_t  pos = 0;
-    int     t;
+    char    t;
 
     assert( maxlen );
 
@@ -461,7 +461,7 @@ int PutEnvSafe( ENV_TRACKER *env )
     p = env->value;
                                 // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
-        *p = toupper( *p );
+        *p = (char)toupper( *p );
         ++p;
     }
     rc = putenv( env->value );  // put into environment

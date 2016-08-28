@@ -274,7 +274,7 @@ STATIC bool ifDef( void )
     }
 
     value = GetMacroValue( name );
-    ret = value != NULL;
+    ret = ( value != NULL );
     if( value != NULL ) {
         FreeSafe( value );
     }
@@ -1759,7 +1759,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                 switch( leftVal->type ) {
                 case OP_INTEGER:
                     leftVal->data.number =
-                        (leftVal->data.number == rightVal.data.number);
+                        ( leftVal->data.number == rightVal.data.number );
                     break;
                 case OP_STRING:
                     leftVal->data.number =
@@ -1780,7 +1780,7 @@ STATIC void equalExpr( DATAVALUE *leftVal )
                 switch( leftVal->type ) {
                 case OP_INTEGER:
                     leftVal->data.number =
-                        (leftVal->data.number != rightVal.data.number);
+                        ( leftVal->data.number != rightVal.data.number );
                     break;
                 case OP_STRING:
                     leftVal->data.number =
@@ -1816,36 +1816,32 @@ STATIC void relateExpr( DATAVALUE *leftVal )
             nextToken();
             shiftExpr( &rVal );
             if( rVal.type == OP_INTEGER ) {
-                leftVal->data.number = leftVal->data.number < rVal.data.number;
-            }
-            else {
+                leftVal->data.number = ( leftVal->data.number < rVal.data.number );
+            } else {
                 leftVal->type = OP_ERROR;
             }
         } else if( currentToken.type == OP_LESSEQU ) {
             nextToken();
             shiftExpr( &rVal );
             if( rVal.type == OP_INTEGER ) {
-                leftVal->data.number = leftVal->data.number <= rVal.data.number;
-            }
-            else {
+                leftVal->data.number = ( leftVal->data.number <= rVal.data.number );
+            } else {
                 leftVal->type = OP_ERROR;
             }
         } else if( currentToken.type == OP_GREATERTHAN ) {
             nextToken();
             shiftExpr( &rVal );
             if( rVal.type == OP_INTEGER ) {
-                leftVal->data.number = leftVal->data.number > rVal.data.number;
-            }
-            else {
+                leftVal->data.number = ( leftVal->data.number > rVal.data.number );
+            } else {
                 leftVal->type = OP_ERROR;
             }
         } else if( currentToken.type == OP_GREATEREQU ) {
             nextToken();
             shiftExpr( &rVal );
             if( rVal.type == OP_INTEGER ) {
-                leftVal->data.number = leftVal->data.number >= rVal.data.number;
-            }
-            else {
+                leftVal->data.number = ( leftVal->data.number >= rVal.data.number );
+            } else {
                 leftVal->type = OP_ERROR;
             }
         } else {
@@ -2008,7 +2004,7 @@ STATIC void unaryExpr( DATAVALUE *leftValue )
         nextToken();
         unaryExpr( leftValue );
         if( leftValue->type == OP_INTEGER ) {
-            leftValue->data.number = !(leftValue->data.number);
+            leftValue->data.number = ( leftValue->data.number == 0 );
         } else {
             leftValue->type = OP_ERROR;
         }
@@ -2017,10 +2013,7 @@ STATIC void unaryExpr( DATAVALUE *leftValue )
         nextToken();
         unaryExpr( leftValue );
         if( leftValue->type == OP_INTEGER ) {
-            unsigned_32 *leftNumber;
-
-            leftNumber = (void *)&leftValue->data.number;
-            *leftNumber = ~*leftNumber;
+            leftValue->data.number = (INT32)( ~(UINT32)leftValue->data.number );
         } else {
             leftValue->type = OP_ERROR;
         }

@@ -299,7 +299,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'C' :
-                ch = va_arg( args, int );
+                ch = (char)va_arg( args, int );
                 positnArg( args, (UINT16)sizeof( int ) );
                 if( isprint( ch ) ) {
                     *dest++ = ch;
@@ -335,7 +335,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 dest = strApp( dest, msgbuff );
                 break;
             case 'c' :
-                *dest++ = va_arg( args, int );
+                *dest++ = (char)va_arg( args, int );
                 positnArg( args, (UINT16)sizeof( int ) );
                 break;
             case 'd' :
@@ -389,7 +389,7 @@ size_t FmtStr( char *buff, const char *fmt, ... )
     return( len );
 }
 
-STATIC void writeOutput( unsigned class, int fh, const char *buff, size_t len )
+static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 /*****************************************************************************/
 {
     if( class != INF ) {
