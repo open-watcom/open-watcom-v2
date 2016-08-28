@@ -38,6 +38,7 @@
 #include <sys/wait.h>
 #include <stddef.h>
 #include <signal.h>
+#include "rterrno.h"
 #include "rtdata.h"
 
 #define SPAWN   0

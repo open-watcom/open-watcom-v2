@@ -41,7 +41,7 @@
  #define INCL_DOSFILEMGR
 #elif defined(__WINDOWS__) || defined(__NT__)
  #include <windows.h>
-#elif defined(__UNIX__)
+#elif defined(__UNIX__) && !defined(__QNX__)
  #include <sys/resource.h>
 #endif
 #include "rtdata.h"
@@ -232,46 +232,45 @@ void __set_handles( int num )
 _WCRTLINK int _grow_handles( int num )
 {
     if( num > __NHandles ) {
-        #if defined(__DOS__)
-            /* increase the number of file handles beyond 20 */
+    #if defined(__DOS__)
+        /* increase the number of file handles beyond 20 */
+        if( _RWD_osmajor > 3 || ( _RWD_osmajor == 3 && _RWD_osminor >= 30 ) ) {
+            tiny_ret_t  rc;
 
-            if( _RWD_osmajor > 3 || ( _RWD_osmajor == 3 && _RWD_osminor >= 30 ) ) {
-                tiny_ret_t  rc;
-
-                /* may allocate a segment of memory! */
-                num = __ROUND_UP_SIZE( num, 2 );    /* make even */
-                rc = TinySetMaxHandleCount( num );
-                if( TINY_ERROR( rc ) ) {
-                    __set_errno_dos( TINY_INFO( rc ) );
-                    num = __NHandles;
-                }
-            } else {
-                /* code for pre DOS 3.3 */
-                /* makes use of undocumented area of the psp */
-                char             *new_handles;
-                char _WCFAR * _WCFAR *psp_handles;
-                char        _WCFAR *psp_num_handles;
-
-                new_handles = (char *)lib_nmalloc( num );
-                if( new_handles == 0 ) {
-                    _RWD_errno = ENOMEM;
-                    num = __NHandles;
-                } else {
-                    _fmemset( new_handles, 0xff, num );
-
-                    psp_num_handles = MK_FP( _RWD_psp, 0x32 );
-                    psp_handles = MK_FP( _RWD_psp, 0x34 );
-                    _fmemcpy( new_handles, *psp_handles, *psp_num_handles );
-
-                    _disable();
-                    psp_handles = MK_FP( _RWD_psp, 0x34 );
-                    *psp_handles = new_handles;
-                    psp_num_handles = MK_FP( _RWD_psp, 0x32 );
-                    *psp_num_handles = num;
-                    _enable();
-                }
+            /* may allocate a segment of memory! */
+            num = __ROUND_UP_SIZE( num, 2 );    /* make even */
+            rc = TinySetMaxHandleCount( num );
+            if( TINY_ERROR( rc ) ) {
+                __set_errno_dos( TINY_INFO( rc ) );
+                num = __NHandles;
             }
-        #elif defined( __OS2_286__ )
+        } else {
+            /* code for pre DOS 3.3 */
+            /* makes use of undocumented area of the psp */
+            char             *new_handles;
+            char _WCFAR * _WCFAR *psp_handles;
+            char        _WCFAR *psp_num_handles;
+
+            new_handles = (char *)lib_nmalloc( num );
+            if( new_handles == 0 ) {
+                _RWD_errno = ENOMEM;
+                num = __NHandles;
+            } else {
+                _fmemset( new_handles, 0xff, num );
+
+                psp_num_handles = MK_FP( _RWD_psp, 0x32 );
+                psp_handles = MK_FP( _RWD_psp, 0x34 );
+                _fmemcpy( new_handles, *psp_handles, *psp_num_handles );
+
+                _disable();
+                psp_handles = MK_FP( _RWD_psp, 0x34 );
+                *psp_handles = new_handles;
+                psp_num_handles = MK_FP( _RWD_psp, 0x32 );
+                *psp_num_handles = num;
+                _enable();
+            }
+        }
+    #elif defined( __OS2_286__ )
         {
             int     rc;
 
@@ -298,7 +297,7 @@ _WCRTLINK int _grow_handles( int num )
                 }
             }
         }
-        #elif defined( __WARP__ )
+    #elif defined( __WARP__ )
         {
             LONG    req_count;
             ULONG   curr_max_fh;
@@ -308,24 +307,24 @@ _WCRTLINK int _grow_handles( int num )
             rc = DosSetRelMaxFH( &req_count, &curr_max_fh );
             num = curr_max_fh;
         }
-        #elif defined(__WINDOWS__)
+    #elif defined(__WINDOWS__)
         {
             num = SetHandleCount( num );
         }
-        #elif defined(__NT__)
+    #elif defined(__NT__)
         {
             num = __growPOSIXHandles( num );
         }
-        #elif defined(__NETWARE__)
+    #elif defined(__NETWARE__)
         {
             #error NO HANDLE MANAGER UNDER NETWARE
         }
-        #else
+    #else
         {
             // nothing to do
         }
-        #endif
-#if defined(__UNIX__)
+    #endif
+#if defined(__UNIX__) && !defined(__QNX__)
         {
             struct rlimit   rl;
             int             old_num;
