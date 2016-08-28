@@ -217,36 +217,36 @@ char *FixName( char *name )
 }
 
 
-int FNameCmp( const char *a, const char *b )
-/*************************************************/
+bool FNameEq( const char *a, const char *b )
+/******************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( stricmp( a, b ) );
+    return( stricmp( a, b ) == 0 );
 #else
-    return( strcmp( a, b ) );
+    return( strcmp( a, b ) == 0 );
 #endif
 }
 
 
-static int FNameCmpChr( char a, char b )
+static bool FNameEqChr( char a, char b )
 /**************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( tolower( a ) - tolower( b ) );
+    return( tolower( a ) == tolower( b ) );
 #else
-    return( a - b );
+    return( a == b );
 #endif
 }
 
 
 #ifdef USE_FAR
-int FarFNameCmp( const char FAR *a, const char FAR *b )
+bool FarFNameEq( const char FAR *a, const char FAR *b )
 /*****************************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( _fstricmp( a, b ) );
+    return( _fstricmp( a, b ) == 0 );
 #else
-    return( _fstrcmp( a, b ) );
+    return( _fstrcmp( a, b ) == 0 );
 #endif
 }
 #endif
@@ -256,7 +256,7 @@ int FarFNameCmp( const char FAR *a, const char FAR *b )
 
 static bool __fnmatch( const char *pattern, const char *string )
 /***************************************************************
- * OS specific compare function FNameCmpChr
+ * OS specific compare function FNameEqChr
  * must be used for file names
  */
 {
@@ -300,7 +300,7 @@ static bool __fnmatch( const char *pattern, const char *string )
             }
             len++;
         } else {
-            if( FNameCmpChr( *pattern, *string ) != 0 ) {
+            if( !FNameEqChr( *pattern, *string ) ) {
                 return( false );
             }
             string++;
@@ -317,9 +317,9 @@ static bool __fnmatch( const char *pattern, const char *string )
          * star pattern section, try locate exact match
          */
         while( *string != NULLCHAR ) {
-            if( FNameCmpChr( *p, *string ) == 0 ) {
+            if( FNameEqChr( *p, *string ) ) {
                 for( i = 1; i < len; i++ ) {
-                    if( FNameCmpChr( *(p + i), *(string + i) ) != 0 ) {
+                    if( !FNameEqChr( *(p + i), *(string + i) ) ) {
                         break;
                     }
                 }
@@ -423,7 +423,7 @@ const char *DoWildCard( const char *base )
 
 
 void DoWildCardClose( void )
-/*********************************/
+/**************************/
 {
     if( path != NULL ) {
         FreeSafe( path );

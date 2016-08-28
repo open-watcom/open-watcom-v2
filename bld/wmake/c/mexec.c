@@ -639,8 +639,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
      * the end of the string.  fn points to the name of the file to write to
      */
     FixName( fn );
-    if( type == WR_CREATE || currentFileName == NULL ||
-                             FNameCmp( currentFileName, fn ) != 0 ) {
+    if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
         currentFileName = StrDupSafe( fn );
         open_flags = O_WRONLY | O_CREAT | O_TEXT;
@@ -1883,7 +1882,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         if( ext[0] == '.' ) {
             FixName( ext );
             /* if extension specified let the shell handle it (26-apr-91) */
-            if( FNameCmp( ext, ".exe" ) != 0 && FNameCmp( ext, ".com" ) != 0 ) {
+            if( !FNameEq( ext, ".exe" ) && !FNameEq( ext, ".com" ) ) {
                 flags |= FLAG_SHELL; /* .bat and .cmd need the shell anyway */
             }
         }

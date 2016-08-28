@@ -1173,13 +1173,13 @@ char *PartDeMacro( bool forceDeMacro )
 }
 
 
-STATIC int CompareNMacroName( const char *name1, const char *name2, size_t len )
-/******************************************************************************/
+STATIC bool NMacroNameEq( const char *name1, const char *name2, size_t len )
+/**************************************************************************/
 {
     if( Glob.compat_nmake || Glob.compat_posix ) {
-        return( strncmp( name1, name2, len ) );
+        return( strncmp( name1, name2, len ) == 0 );
     } else {
-        return( strnicmp( name1, name2, len ) );
+        return( strnicmp( name1, name2, len ) == 0 );
     }
 }
 
@@ -1218,8 +1218,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
         case '(':               // Possible regular substitution
             current++;
             // bracket or colon (for string substitution) after matching name?
-            if( CompareNMacroName( current, name, len ) == 0
-                    && (current[len] == ')' || current[len] == ':') ) {
+            if( NMacroNameEq( current, name, len ) && (current[len] == ')' || current[len] == ':') ) {
                 lengthToClose = len;
                 while( current[lengthToClose] != ')' ) {
                     ++lengthToClose;
@@ -1237,7 +1236,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
             }
             break;
         default:                // Possible Microsoft name without parenthesis
-            if( len == 1 && CompareNMacroName( current, name, 1 ) == 0 ) {
+            if( len == 1 && NMacroNameEq( current, name, 1 ) ) {
                 CatNStrToVec( outtext, oldptr, current - 1 - oldptr );
                 if( (temp = GetMacroValue( name )) != NULL ) {
                     CatStrToVec( outtext, temp );

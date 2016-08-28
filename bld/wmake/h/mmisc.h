@@ -37,11 +37,11 @@ typedef struct EnvTracker {
 } ENV_TRACKER;
 
 extern char         *FixName( char *name );
-extern int          FNameCmp( const char *a, const char *b );
+extern bool         FNameEq( const char *a, const char *b );
 #ifdef USE_FAR
-extern int          FarFNameCmp( const char FAR *a, const char FAR *b );
+extern bool         FarFNameEq( const char FAR *a, const char FAR *b );
 #else
-#define FarFNameCmp FNameCmp
+#define FarFNameEq  FNameEq
 #endif
 extern char const   *DoWildCard( const char *base );
 extern void         DoWildCardClose( void );
