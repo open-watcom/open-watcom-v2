@@ -76,13 +76,13 @@
   #define MASK_ALL_ITEMS  "*.*"
 #endif
 
-enum {
+typedef enum {
     FLAG_SHELL      = 0x01,
     FLAG_SILENT     = 0x02,
     FLAG_ENV_ARGS   = 0x04,
     FLAG_IGNORE     = 0x08,
     FLAG_SHELL_RC   = 0x10
-};
+} shell_flags;
 
 typedef struct dd {
   struct dd     *next;
@@ -1830,8 +1830,8 @@ STATIC void killTmpEnv( UINT16 tmp )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC RET_T shellSpawn( char *cmd, int flags )
-/*********************************************/
+STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
+/*****************************************************/
 {
     bool        percent_cmd;        // is this a percent cmd?
     int         comnum;             // index into dosInternals
@@ -2010,9 +2010,9 @@ STATIC RET_T execLine( char *line )
  * is allowed to hack up line any way it feels
  */
 {
-    char    *p;
-    int     flags;
-    RET_T   rc;
+    char        *p;
+    shell_flags flags;
+    RET_T       rc;
 
     assert( line != NULL );
 
