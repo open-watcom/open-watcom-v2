@@ -391,7 +391,7 @@ bool    Errf( ftnfile *fcb ) {
 
 // Determine if an i/o error exists.
 
-    bool    err;
+    int     err;
 
     err = Errorf( fcb->fileptr );
     if( err == IO_EOF ) {
