@@ -690,7 +690,8 @@ bool Dmp_machlib_head( void )
 
     Wlseek( 0 );
     Wread( sig, LIBMAG_LEN );
-    if( memcmp( sig, LIBMAG, LIBMAG_LEN ) != 0 ) return 0;
+    if( memcmp( sig, LIBMAG, LIBMAG_LEN ) != 0 )
+        return( false );
     filesize = WFileSize();
     Elf_off = LIBMAG_LEN + LIB_CLASS_LEN + LIB_DATA_LEN;
     Wlseek( Elf_off );
@@ -719,7 +720,7 @@ bool Dmp_machlib_head( void )
         Elf_off += size;
         Wlseek( Elf_off );
     }
-    return 1;
+    return( true );
 }
 #endif
 
@@ -768,7 +769,7 @@ bool Dmp_macho_header( unsigned long start )
     
     Wread( &mhead, sizeof( mhead ) );
     if( (mhead.magic != MH_MAGIC) && (mhead.magic != MH_CIGAM) ) {
-        return( 0 );
+        return( false );
     }
     if( mhead.magic == MH_CIGAM ) {
         Byte_swap = true;
@@ -805,7 +806,7 @@ bool Dmp_macho_header( unsigned long start )
     Wdputslc( "\n" );
     dmp_cmd_list( start, mhead.ncmds );
     dmp_prog_sec( start );
-    return( 1 );
+    return( true );
 }
 
 

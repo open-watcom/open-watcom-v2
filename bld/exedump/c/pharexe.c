@@ -384,7 +384,7 @@ bool Dmp_phar_head( void )
             Dmp_seg_data( offset, Phar_head.mod_size + 512 *
                                     (Phar_head.file_size-1) - offset );
         }
-        return( 1 );
+        return( true );
     }
     Wlseek( New_exe_off );
     Wread( &Phar_ext_head, sizeof( Phar_ext_head.signature ) );
@@ -398,7 +398,7 @@ bool Dmp_phar_head( void )
         dmp_reloc_tbl();
         dmp_dts();
         dmp_tss();
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }

@@ -93,7 +93,8 @@ static void dmp_res_nonres_tab( unsigned_32 res_nam_tab , unsigned_32 tab_len )
     unsigned_32     tab_off;
     unsigned_32     entry_len;
 
-    if( res_nam_tab <= New_exe_off ) return;
+    if( res_nam_tab <= New_exe_off )
+        return;
     Wlseek( res_nam_tab );
     tab_off = 0;
     do {
@@ -548,7 +549,7 @@ bool Dmp_os2_exports( void )
     Wread( &Dos_head, sizeof( Dos_head ) );
     if( Dos_head.signature == DOS_SIGNATURE ) {
         if( Dos_head.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
-            return( 0 );
+            return( false );
         }
         Wlseek( OS2_NE_OFFSET );
         Wread( &New_exe_off, sizeof( New_exe_off ) );
@@ -571,7 +572,7 @@ bool Dmp_os2_exports( void )
         } else if( Os2_386_head.signature == OSF_FLAT_LX_SIGNATURE ) {
             Form = FORM_LX;
         } else {
-            return( 0 );
+            return( false );
         }
     }
 
@@ -580,12 +581,13 @@ bool Dmp_os2_exports( void )
     } else {
         res_nam_tab = New_exe_off + Os2_386_head.resname_off;
     }
-    if( res_nam_tab == 0 ) return( 0 );
+    if( res_nam_tab == 0 )
+        return( false );
 
     /* Read and print module name */
     Wlseek( res_nam_tab );
     if( read_res_nonres_nam( name, &ordinal ) == 0 ) {
-        return( 0 );
+        return( false );
     }
     Wdputs( "LIBRARY " );
     Wdputs( name );
@@ -601,12 +603,13 @@ bool Dmp_os2_exports( void )
     } else {
         res_nam_tab = Os2_386_head.nonres_off;
     }
-    if( res_nam_tab == 0 ) return( 1 );
+    if( res_nam_tab == 0 )
+        return( true );
     Wlseek( res_nam_tab );
 
     /* See if there is comment */
     if( read_res_nonres_nam( name, &ordinal ) == 0 ) {
-        return( 1 );
+        return( true );
     }
     if( ordinal != 0 ) {
         Wlseek( res_nam_tab );  /* No comment, seek back */
@@ -615,5 +618,5 @@ bool Dmp_os2_exports( void )
     /* Print exports in non-resident table */
     dump_exports();
 
-    return( 1 );
+    return( true );
 }

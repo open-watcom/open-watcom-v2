@@ -104,8 +104,8 @@ static void dmp_dos_head_info( void )
 /*
  * Dump the Dos Executable Header, if any.
  */
-bool Dmp_dos_head( void )
-/***********************/
+int Dmp_dos_head( void )
+/**********************/
 {
     Wread( &Dos_head, sizeof( Dos_head ) );
     if( Dos_head.signature != DOS_SIGNATURE ) {

@@ -287,7 +287,7 @@ bool Dmp_os2_head( void )
     Wlseek( New_exe_off );
     Wread( &Os2_head, sizeof( struct os2_exe_header ) );
     if( Os2_head.signature != OS2_SIGNATURE_WORD ) {
-        return( 0 );
+        return( false );
     }
     if( IS_OLD_NE( Os2_head ) || Os2_head.align == 0 ) {
         Os2_head.align = 9;
@@ -311,7 +311,7 @@ bool Dmp_os2_head( void )
     if( Int_seg_tab != NULL ) {
         free( Int_seg_tab );
     }
-    return( 1 );
+    return( true );
 }
 
 /*
@@ -476,7 +476,7 @@ bool Dmp_386_head( void )
         Form = FORM_LX;
         Banner( "Linear EXE Header (OS/2 V2.x) - LX" );
     } else {
-        return( 0 );
+        return( false );
     }
     Wlseek( New_exe_off );
     Wread( &Os2_386_head, sizeof( Os2_386_head ) );
@@ -489,5 +489,5 @@ bool Dmp_386_head( void )
     dmp_obj_table();
     Dmp_resrc2_tab();
     Dmp_le_lx_tbls();
-    return( 1 );
+    return( true );
 }

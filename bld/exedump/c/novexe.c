@@ -322,7 +322,7 @@ bool Dmp_nlm_head( void )
     Wlseek( 0 );
     Wread( &Nlm_head, sizeof( Nlm_head.signature ) );
     if( memcmp( Nlm_head.signature, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) ) {
-        return( 0 );
+        return( false );
     }
     Wread( (char *)&Nlm_head + sizeof( Nlm_head.signature ),
         sizeof( nlm_header ) - sizeof( Nlm_head.signature ) );
@@ -375,5 +375,5 @@ bool Dmp_nlm_head( void )
     if( extend ) {
         dmp_extended();
     }
-    return( 1 );
+    return( true );
 }

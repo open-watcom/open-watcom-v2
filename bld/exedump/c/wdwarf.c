@@ -184,21 +184,21 @@ bool Dmp_mdbg_head( void )
         mdh.obj_minor_ver <= OBJ_MINOR_VERSION ) {
         dmp_master( mdh );
         Dump_section();
-        return( 1 );
+        return( true );
     } else {
         Wlseek( 0 );
         // Handle ELF and NE/LX executables without TIS signature
         if( Dmp_elf_header( 0 ) || os2_debug() ) {
-            return( 1 );    // Don't dump debug data twice
+            return( true );    // Don't dump debug data twice
         }
         for( ;; ) {
             Wlseek( Curr_sectoff -(int)sizeof( debug_header ) );
             Wread( &dbg, sizeof( debug_header ) );
             if( memcmp( dbg.signature, signature, 4 ) != 0 ) {
                 if( cnt ) {
-                    return( 1 );
+                    return( true );
                 } else {
-                    return( 0 );
+                    return( false );
                 }
             }
             cnt++;
@@ -231,17 +231,17 @@ bool Dmp_dwarf( void )
     Wlseek( 0 );
     Wread( &signature, sizeof(unsigned_16) );
     if( signature != mbrHeaderSignature ){
-        return( 0 );
+        return( false );
     }
     Wread( buf, mbrHeaderStringLen );
     if( memcmp( buf, mbrHeaderString, mbrHeaderStringLen ) != 0 ) {
-        return( 0 );
+        return( false );
     }
     Wread( buf, sizeof(char) );
     if( buf[0] != mbrHeaderVersion ) {
-        return( 0 );
+        return( false );
     }
     set_sects();
     Dump_all_sections();
-    return( 1 );
+    return( true );
 }

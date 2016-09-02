@@ -604,7 +604,7 @@ bool Dmp_cv_head( void )
         Puthex( trailer.offset, 8 );
         Wdputslc( "H\n" );
         dump_cv4( dbg_off );
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 } /* Dmp_cv_head */

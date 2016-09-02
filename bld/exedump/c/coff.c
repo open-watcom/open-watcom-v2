@@ -191,7 +191,7 @@ bool Dmp_coff_head( void )
         && header.cpu_type != IMAGE_FILE_MACHINE_ALPHA
         && header.cpu_type != IMAGE_FILE_MACHINE_UNKNOWN
         && header.cpu_type != IMAGE_FILE_MACHINE_POWERPC ) {
-        return 0;
+        return( false );
     }
     Banner( "COFF object file" );
     Wdputs( "file offset = " );
@@ -205,7 +205,7 @@ bool Dmp_coff_head( void )
     dmp_objects( header.num_sections );
     unload_string_table();
     dmp_symtab( header.sym_table, header.num_symbols );
-    return 1;
+    return( true );
 }
 
 
@@ -219,7 +219,8 @@ bool Dmp_ar_head( void )
 
     Wlseek( 0 );
     Wread( sig, AR_IDENT_LEN );
-    if( memcmp( sig, AR_IDENT, AR_IDENT_LEN ) != 0 ) return 0;
+    if( memcmp( sig, AR_IDENT, AR_IDENT_LEN ) != 0 )
+        return( false );
     filesize = WFileSize();
     Coff_off = AR_IDENT_LEN;
     for(;;) {
@@ -250,5 +251,5 @@ bool Dmp_ar_head( void )
         Coff_off += size;
         Wlseek( Coff_off );
     }
-    return 1;
+    return( true );
 }
