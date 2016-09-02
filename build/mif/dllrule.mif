@@ -1,7 +1,7 @@
 .c{$(dll_subdir)}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @if not exist $(dll_subdir) mkdir $(dll_subdir)
     @%make echo_cc
-    $(cc) $(cflags_dll) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags_dll) $(c_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp{$(dll_subdir)}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @if not exist $(dll_subdir) mkdir $(dll_subdir)

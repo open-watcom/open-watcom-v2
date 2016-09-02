@@ -1,6 +1,6 @@
 .c.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @%make echo_cc
-    $(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @%make echo_cxx
