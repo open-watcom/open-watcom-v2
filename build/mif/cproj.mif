@@ -191,7 +191,7 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x
 mode_clflags += -x
 !endif
-!if ! defined( bootstrap ) || ( $(watcom_ver) > 1300 )
+!if !defined( bootstrap ) || ( $(watcom_ver) > 1300 )
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
@@ -360,7 +360,11 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
+!if !defined( bootstrap ) || ( $(watcom_ver) > 1290 )
+c_flags          = -za99
+!else
 c_flags          =
+!endif
 cxx_flags        = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))

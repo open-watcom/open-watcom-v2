@@ -29,9 +29,9 @@ bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 !ifeq release 0
-bld_gen_cflags  = -d2-w8-j-fo=.obj
+bld_gen_cflags  = -za99-d2-w8-j-fo=.obj
 !else
-bld_gen_cflags  = -ox-w8-j-fo=.obj
+bld_gen_cflags  = -za99-ox-w8-j-fo=.obj
 !endif
 !if $(watcom_ver) > 1300
 bld_gen_cflags  += -xx-zam

@@ -167,6 +167,7 @@ bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
+bld_c_flags   =
 bld_cxx_flags = -EHsc
 
 bld_ldflags1 = $(common_ldflags) -Fm
@@ -201,6 +202,7 @@ cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
 cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 
+c_flags   =
 cxx_flags = -EHsc
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -Fo$@
@@ -367,6 +369,7 @@ bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
+bld_c_flags   =
 bld_cxx_flags = -std=c++98
 
 # options for linking
@@ -420,6 +423,7 @@ cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 
+c_flags   =
 cxx_flags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
