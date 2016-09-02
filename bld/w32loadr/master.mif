@@ -75,13 +75,13 @@ x32run.exe : $(x32run_objs) $(__MAKEFILES__)
 
 # Probably should use default build rules?
 tntrun.obj : loader.c $(__MAKEFILES__) #../loader.h
-  $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+  $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 x32run.obj : loader.c $(__MAKEFILES__) #../loader.h
-  $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+  $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 d4grun.obj : loader.c $(__MAKEFILES__) #../loader.h dginfo.gh
-  $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+  $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 cwsrun.obj : loader.c $(__MAKEFILES__) #../loader.h
-  $(cc) $(cflags) $(extra_c_flags_$^&) $(inc_path) $[@
+  $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $(inc_path) $[@
 
 dginfo.gh : $(rsi_root)/bin/dos4g.exe
   @%write mkdginfo.bat $(rsi_root)\bin\dos4g $(rsi_root)\bin\dginfo >dginfo.gh

@@ -1,7 +1,7 @@
 .c.obj : $(__MAKEFILES__) .autodepend
     @%make echo_cc
-    $(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(c_flags) $($[&_postopts) $(c_dbg_flags)
+    $(cc) $[@ $(include_c_path) $(build_target) $($[&_opts) $(clib_c_flags) $($[&_postopts) $(c_dbg_flags)
 
 .asm.obj : $(__MAKEFILES__) .autodepend
     @%make echo_as
-    $(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(a_flags) $($[&_postopts) $(a_dbg_flags)
+    $(as) $[@ $(include_a_path) $(build_target) $($[&_opts) $(clib_a_flags) $($[&_postopts) $(a_dbg_flags)

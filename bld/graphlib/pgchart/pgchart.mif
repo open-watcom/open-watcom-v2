@@ -119,4 +119,4 @@ graph2.gh: $(hdr_dir)/watcom/graph.mh $(hdr_dir)/owrtlink.sp $(hdr_dir)/pshpackl
 .c{$(v2subdir)}.obj: $($(proj_name)_autodepends)
     @if not exist $(v2subdir) mkdir $(v2subdir)
     @%make echo_cc
-    $(cc) $(cflags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(cppflags) -DVERSION2 $(extra_c_flags_$[&) $(inc_path) $[@

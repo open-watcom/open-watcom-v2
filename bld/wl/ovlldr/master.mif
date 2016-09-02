@@ -84,37 +84,37 @@ dovlmt.lib : dmovlldr.obj $(mtobjs) $(commobjs) $(debugobjs)
 .inc : $(watcom_h)
 
 dsovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 sovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 dlovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 lovlldr.obj : ovlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 dnovlldr.obj : novlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 dmovlldr.obj : movlldr.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 dovlboth.obj : ovlboth.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 sovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 lovldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 novldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 movldbg.obj : ovldbg.c $($(proj_name)_autodepends)
-    $(cc) $(cflags) $(extra_c_flags_$^&) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$^&) $[@
 
 dovldata.obj : ovldata.asm $($(proj_name)_autodepends)
     $(as) $(aflags) $(extra_a_flags_$^&) $[@

@@ -161,37 +161,37 @@ sw_a_linux_386    = #-d__MT__
 sw_a_linux_387    = #-d__MT__
 
 #make bug
-!ifndef extra_c_flags
-extra_c_flags =
+!ifndef extra_flib_c_flags
+extra_flib_c_flags =
 !endif
-!ifndef extra_a_flags
-extra_a_flags =
+!ifndef extra_flib_a_flags
+extra_flib_a_flags =
 !endif
 
-c_flags =$(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model))
-c_flags += $(sw_c_$(processor)) $(sw_c_$(system)_$(processor))
-c_flags += $(extra_c_flags)
-a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
-a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
-a_flags += $(extra_a_flags)
+flib_c_flags =$(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model))
+flib_c_flags += $(sw_c_$(processor)) $(sw_c_$(system)_$(processor))
+flib_c_flags += $(extra_flib_c_flags)
+flib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
+flib_a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
+flib_a_flags += $(extra_flib_a_flags)
 
 # special case switches
 !ifdef overlay
-c_flags += -of
+flib_c_flags += -of
 !endif
 !ifdef dll16
-c_flags += -D__MT__ -bd #-bm
-a_flags += -d__MT__
+flib_c_flags += -D__MT__ -bd #-bm
+flib_a_flags += -d__MT__
 !endif
 !ifdef share
-c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
+flib_c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 !endif
 !ifdef debug
-c_flags += -en
+flib_c_flags += -en
 !endif
 !ifdef threading16
-c_flags += -D__MT__ #-bm
-a_flags += -d__MT__
+flib_c_flags += -D__MT__ #-bm
+flib_a_flags += -d__MT__
 !endif
 
 # debug flags need to be last to override optimization flags

@@ -6,4 +6,4 @@
 .cpp{$+$(__subdir__)$-}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
     @%make echo_cxx
-    $(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@

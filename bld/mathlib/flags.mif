@@ -1,4 +1,4 @@
-sw_c_common =-oax-w8-we-zl-x-xx-zam-za99
+sw_c_common =-za99-w8-we-x-xx-zam-oax-zl
 sw_a_common =-we
 
 !ifdef __UNIX__
@@ -134,11 +134,10 @@ sw_a_winnt_ppc    =
 sw_a_netware_386  =
 sw_a_netware_387  =
 
-c_flags = $(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model))
-c_flags += $(sw_c_$(processor)) $(sw_c_$(system)) $(extra_c_flags)
-a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model))
-a_flags += $(sw_a_$(processor)) $(sw_a_$(system)_$(processor))
-a_flags += $(extra_a_flags)
+mlib_c_flags = $(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model)) &
+    $(sw_c_$(processor)) $(sw_c_$(system)) $(extra_mlib_c_flags)
+mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model)) &
+    $(sw_a_$(processor)) $(sw_a_$(system)_$(processor)) $(extra_mlib_a_flags)
 
 # debug flags need to be last to override optimization flags
 !ifeq release 0

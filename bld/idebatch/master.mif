@@ -17,10 +17,10 @@ batserv.exe : batserv.obj $(__MAKEFILES__)
     $(linker) name $@ $(lflags) op stack=16k file {batserv.obj}
 
 batcli.obj : batcli.c
-    $(cc_i86) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
+    $(cc_i86) $(c_flags) -zq -w8-we -bt=dos -oaxt -fo=.obj -d1 $(inc_dirs_lang_osi) $<
 
 tst.exe : tst.c batcli.obj
-    $(cl_i86) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
+    $(cl_i86) $(c_flags) -zq -d2 -fm -bcl=dos $(inc_dirs_lang_osi) $<
 
 !else ifeq host_os nt
 
@@ -105,6 +105,6 @@ $(lnk) : makefile
     @%append $(lnk) segment CLASS 'BSS' PRELOAD FIXED
 
 $(name)e.obj : $(name).c $(__MAKEFILES__) .AUTODEPEND
-    $(cc) $(cflags) $(inc_path) -D__EDITOR__ -fo=$@ $[@
+    $(cc) $(cflags) $(c_flags) $(inc_path) -D__EDITOR__ -fo=$@ $[@
 
 !endif

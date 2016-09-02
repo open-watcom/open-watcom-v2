@@ -6,4 +6,4 @@
 .cpp{$(dll_subdir)}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @if not exist $(dll_subdir) mkdir $(dll_subdir)
     @%make echo_cxx
-    $(cxx) $(cflags_dll) $(cxxflags) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags_dll) $(cxx_flags) $(cppflags) $(extra_cpp_dll_flags) $(extra_c_flags_$[&) $(inc_path) $[@

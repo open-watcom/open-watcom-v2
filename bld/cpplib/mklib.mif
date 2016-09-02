@@ -117,8 +117,6 @@ extra_c_flags_386 += -r
 
 extra_c_flags_win = -zW
 
-comp_flags = $(cflags) $(cppflags)
-
 extra_a_flags  = -we
 !ifdef mthreaded
 extra_a_flags += -D__MT__

@@ -36,13 +36,13 @@ dllr.dll : dllr.obj $(__MAKEFILES__)
     $(linker) name $^@ $(lflags_dll) op modname=DLLR file $[@ libfile $(clib_dir)/startup/library/msdos.386/ms_r/dllstart.obj
 
 dlls.obj : dll.c $(dlltest_autodepends)
-    $(cc) -s -6s -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@
+    $(cc) $(c_flags) -s -6s -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@
 
 dllr.obj : dll.c $(dlltest_autodepends)
-    $(cc) -s -6r -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@
+    $(cc) $(c_flags) -s -6r -wx -d2 -bd -bt=dos $(inc_path) $< -fo=$@
 
 dlltst1s.obj : dlltest.c $(dlltest_autodepends)
-    $(cc) -s -6s -wx -d2 -bt=dos $(inc_path) $< -fo=$@
+    $(cc) $(c_flags) -s -6s -wx -d2 -bt=dos $(inc_path) $< -fo=$@
 
 dlltst1r.obj : dlltest.c $(dlltest_autodepends)
-    $(cc) -s -6r -wx -d2 -bt=dos $(inc_path) $< -fo=$@
+    $(cc) $(c_flags) -s -6r -wx -d2 -bt=dos $(inc_path) $< -fo=$@

@@ -4,7 +4,7 @@
 
 .cpp.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @%make echo_cxx
-    $(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .asm.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @%make echo_as

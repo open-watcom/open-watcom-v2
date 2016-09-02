@@ -53,11 +53,11 @@ $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
 
 .c.obj : .autodepend $(__MAKEFILES__)
     @%make echo_cc
-    $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
+    $(cc) $($[&_opts) $(flib_c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
 
 .asm.obj : .autodepend $(__MAKEFILES__)
     @%make echo_as
-    $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
+    $(as) $($[&_opts) $(flib_a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r

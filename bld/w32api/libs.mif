@@ -185,7 +185,7 @@ all : $(dirs) $(libs) .SYMBOLIC
 
 {directx}.c{directx}.lib: $(w32api_autodepends)
     @%make echo_cc
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 {directx}.def{directx}.lbc:
     @%make echo_awk
@@ -221,19 +221,19 @@ directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c
     @%make echo_cc
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 ddk/wdmguid.obj: ddk/wdmguid.c
     @%make echo_cc
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dinpstat.obj: directx/dinpstat.c
     @%make echo_cc
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dxguid.obj: directx/dxguid.c
     @%make echo_cc
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 $(dirs):
     @if not exist $@ @mkdir $@

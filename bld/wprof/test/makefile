@@ -18,7 +18,7 @@ cc = wcc
     set INCLUDE=$(lang_root)\h\os21x;$(%INCLUDE)
 
 .c.obj:
-    $(cc) $[@ /zq /d2 /od /ml /s /d_MARK_ON$(off)
+    $(cc) $(c_flags) $[@ /zq /d2 /od /ml /s /d_MARK_ON$(off)
 
 all : .SYMBOLIC pt.exe ptd.exe pt1.exe pt2.exe pt3.exe pt4.exe threaded.exe
     @%null

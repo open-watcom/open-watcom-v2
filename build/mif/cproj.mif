@@ -360,7 +360,8 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-cxxflags         = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+c_flags          =
+cxx_flags        = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
 cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
