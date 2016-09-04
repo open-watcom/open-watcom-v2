@@ -31,6 +31,4 @@ sqrt.obj &
 tan.obj &
 tanh.obj
 
-!include $(cpplib_dir)/mklibtgt.mif
-
-!undef target_lib_x
+!include $(cpplib_dir)/mklib.mif

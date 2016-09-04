@@ -165,4 +165,4 @@ pch_flags_x_rtdbgst = -fh=pch08x.pch
 prefix = $(plib_n)
 prefix_x = $(plib_x)
 
-!include $(cpplib_dir)/mklibtgt.mif
+!include $(cpplib_dir)/mklib.mif

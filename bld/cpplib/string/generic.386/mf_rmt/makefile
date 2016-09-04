@@ -8,5 +8,5 @@ model      = mf
 convention = register
 linkage    = static
 mthreaded  = 1
-define_library_include = $(cpplib_dir)/string/string.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/string/string.mif

@@ -7,5 +7,5 @@ system     = generic
 model      = ms
 convention = stack
 linkage    = static
-define_library_include = $(cpplib_dir)/iostream/iostream.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/iostream/iostream.mif

@@ -270,4 +270,4 @@ pch_flags_x_iofdefg = -fh=pch02x.pch
 prefix = $(iost_n)
 prefix_x = $(iost_x)
 
-!include $(cpplib_dir)/mklibtgt.mif
+!include $(cpplib_dir)/mklib.mif

@@ -38,7 +38,11 @@ fpu_flags_linux_386  =$(fp_option)
 !include cproj.mif
 !include deftarg.mif
 
-!include $(define_library_include)
+!include $(cpplib_dir)/mklibtgt.mif
+
+!ifeq prefix cplx
+!undef target_lib_x
+!endif
 
 !ifndef target_objs
 target_objs = $(objs)

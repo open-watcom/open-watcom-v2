@@ -8,5 +8,4 @@ model        =
 convention   =
 linkage      = static
 
-define_library_include = $(cpplib_dir)/contain/contain.mif
-!include $(cpplib_dir)/mklib.mif
+!include $(cpplib_dir)/contain/contain.mif
