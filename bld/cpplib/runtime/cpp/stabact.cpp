@@ -37,7 +37,7 @@
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(ctor_array)(      // CALL CONSTRUCTORS FOR ARRAY ELEMENTS
+void * CPPLIB( ctor_array )(    // CALL CONSTRUCTORS FOR ARRAY ELEMENTS
     void *array,                // - array
     unsigned count,             // - number of elements
     RT_TYPE_SIG sig )           // - signature of array

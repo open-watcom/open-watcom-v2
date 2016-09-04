@@ -37,7 +37,7 @@
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(assign_array)(        // CALL OPERATOR= FOR ARRAY
+void * CPPLIB( assign_array )(      // CALL OPERATOR= FOR ARRAY
     void *tgt_array,                // - target array
     void *src_array,                // - source array
     unsigned count,                 // - number of elements

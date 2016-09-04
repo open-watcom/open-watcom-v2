@@ -43,7 +43,7 @@
 
 extern "C"
 _WPRTLINK
-int CPPLIB(static_init)(            // CHECK STATIC INIT ONCE ONLY BIT
+int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
     unsigned char *bits,            // - bit field to check
     int mask )                      // - mask we are interested in
 {

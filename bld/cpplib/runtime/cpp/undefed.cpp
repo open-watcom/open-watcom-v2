@@ -35,8 +35,10 @@
 
 
 extern "C"
+_NORETURN
 void CPPLIB( undefed_cdtor )(   // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 {
-    CPPLIB(fatal_runtime_error)( RTMSG_UNDEFED_CDTOR, 1 );
+    CPPLIB( fatal_runtime_error )( RTMSG_UNDEFED_CDTOR, 1 );
+    // never return
 }

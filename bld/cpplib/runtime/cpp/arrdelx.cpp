@@ -34,16 +34,16 @@
 
 
 extern "C"
-void CPPLIB(dtor_del_array_x)(  // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
-    void *array,                // - array
-    RT_TYPE_SIG sig )           // - type signature for array type
+void CPPLIB( dtor_del_array_x )(    // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
+    void *array,                    // - array
+    RT_TYPE_SIG sig )               // - type signature for array type
 {
     ARRAY_STORAGE *base;
 
     if( array != 0 ) {
         base = ArrayStorageFromArray( array );
         try {
-            CPPLIB(dtor_array)( array, base->element_count, sig );
+            CPPLIB( dtor_array )( array, base->element_count, sig );
         } catch( ... ) {
             delete base;
             throw;

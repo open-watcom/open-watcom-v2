@@ -35,9 +35,11 @@
 
 
 extern "C"
+_NORETURN
 _WPRTLINK
 void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 {
-    CPPLIB(fatal_runtime_error)( RTMSG_UNDEFED_MEMBER, 1 );
+    CPPLIB( fatal_runtime_error )( RTMSG_UNDEFED_MEMBER, 1 );
+    // never return
 }

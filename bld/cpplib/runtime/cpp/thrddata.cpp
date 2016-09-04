@@ -37,7 +37,7 @@
 #pragma off( check_stack )
 
 extern "C"
-void CPPLIB(multi_thread_init)( // MULTI-THREAD INITIALIZATION
+void CPPLIB( multi_thread_init )( // MULTI-THREAD INITIALIZATION
     void )
 {
     _wint_thread_data_offset = __RegisterThreadDataSize( sizeof( THREAD_CTL ) );

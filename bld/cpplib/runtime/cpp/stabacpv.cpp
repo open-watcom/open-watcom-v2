@@ -37,7 +37,7 @@
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(copy_varray)(     // CALL COPY CONSTRUCTORS FOR ARRAY
+void * CPPLIB( copy_varray )(   // CALL COPY CONSTRUCTORS FOR ARRAY
     void *tgt_array,            // - target array
     void *src_array,            // - source array
     unsigned count,             // - number of elements
