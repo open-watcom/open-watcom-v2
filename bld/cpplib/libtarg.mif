@@ -1,6 +1,3 @@
-cflags_generic = -bt=generic
-aflags_generic = -bt=generic
-
 cpplib_host_cpu_086 = i86
 cpplib_host_cpu_087 = i86
 cpplib_host_cpu_286 = i86
@@ -18,25 +15,22 @@ cpplib_host_os_qnx     = qnx
 cpplib_host_os_netware = nov
 host_os = $(cpplib_host_os_$(system))
 
-mem_model_ms = s
-mem_model_mc = c
-mem_model_mm = m
-mem_model_ml = l
-mem_model_mh = h
-mem_model_mf = f
-
+suffix_ms       = s
+suffix_mc       = c
+suffix_mm       = m
+suffix_ml       = l
+suffix_mh       = h
+suffix_stack    = 3s
+suffix_register = 3r
+suffix_i86      = $(suffix_$(model))
+suffix_386      = $(suffix_$(convention))
 !ifdef mthreaded
-suffix = mt
+suffix = mt$(suffix_$(host_cpu))
 !else
-suffix =
+suffix = $(suffix_$(host_cpu))
 !endif
-!ifeq host_cpu i86
-suffix +=$(mem_model_$(model))
-!else ifeq host_cpu 386
-!ifeq convention stack
-suffix +=3s
-!else
-suffix +=3r
-!endif
-!else ifeq host_cpu axp
+
+plib_lib_flags = -b-c-n-pa
+!ifneq release 0
+plib_lib_flags += -s-t-zld
 !endif

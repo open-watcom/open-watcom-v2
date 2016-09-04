@@ -1,0 +1,188 @@
+# bt_(system)
+bt_generic    =-bt=generic
+bt_netware    =-bt=netware
+bt_windows    =-bt=windows
+bt_winnt      =-bt=nt
+bt_os2        =-bt=os2
+bt_qnx        =-bt=qnx
+build_target = $(bt_$(system))
+
+plib_arch_086 = 086
+plib_arch_087 = 086 
+plib_arch_286 = 286
+plib_arch_287 = 286
+plib_arch_386 = 386
+plib_arch_387 = 386
+plib_arch_axp = axp
+plib_arch_mps = mps
+plib_arch_ppc = ppc
+
+##########################
+# C/C++ COMPILERS SETINGS
+######
+sw_c_common =-we-w8-zl-x-xx-zam-j-fhwe
+
+# -xr has to be on in case the user uses -xr
+sw_c_common +=-xr
+
+!ifdef mthreaded
+sw_c_common += -bm
+!endif
+!ifdef profile
+sw_c_common += -etp
+!endif
+
+!ifeq release 1
+sw_c_common += -oaxt -d1
+!else
+sw_c_common += -od -d2
+!endif
+
+# sw_c_(processor)_(model)
+sw_c_register = -3r
+sw_c_stack    = -3s
+sw_c_bigcode  =
+sw_c_bigdata  = -zu
+
+# -zv has to be on in case the user uses -zv
+# temporary fix until AXP targets support -zv properly
+sw_c_intel    = -zv
+
+sw_c_086 = $(sw_c_intel)-0-fpc
+sw_c_087 = $(sw_c_intel)-0-fpi
+sw_c_286 = $(sw_c_intel)-2-fpc
+sw_c_287 = $(sw_c_intel)-2-fpi
+sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-fpc
+sw_c_387 = $(sw_c_intel)$(sw_c_$(convention))-fpi
+sw_c_axp =
+sw_c_ppc =
+sw_c_mps =
+
+sw_c_386_ms_generic = -r
+sw_c_386_ms_qnx     = -r
+
+sw_c_086_ms = -ms
+sw_c_086_mm = -mm$(sw_c_bigcode)
+sw_c_086_mc = -mc$(sw_c_bigdata)
+sw_c_086_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_086_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_286_ms = -ms
+sw_c_286_mm = -mm$(sw_c_bigcode)
+sw_c_286_mc = -mc$(sw_c_bigdata)
+sw_c_286_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
+sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
+sw_c_386_mf = -mf
+sw_c_axp_   =
+sw_c_ppc_   =
+
+# sw_c_(system)
+sw_c_generic      =
+sw_c_netware      =
+sw_c_os2          =
+sw_c_qnx          =
+sw_c_windows      = -zW
+sw_c_winnt        =
+
+#####################
+# ASSEMBLERS SETINGS
+######
+sw_a_common =-we
+!ifeq release 0
+sw_a_common += -d2
+!else
+sw_a_common += -d1 -DNDEBUG
+!endif
+
+!ifdef mthreaded
+sw_a_common += -D__MT__
+!endif
+
+# sw_a_(processor)_(model)
+sw_a_register = -3r
+sw_a_stack    = -3s
+sw_a_intel    = -w8
+
+sw_a_086 = $(sw_a_intel)-0-fpc
+sw_a_087 = $(sw_a_intel)-0-fpi
+sw_a_286 = $(sw_a_intel)-2-fpc
+sw_a_287 = $(sw_a_intel)-2-fpi
+sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))-fpc
+sw_a_387 = $(sw_a_intel)$(sw_a_$(convention))-fpi
+sw_a_axp =
+sw_a_mps =
+sw_a_ppc =
+
+sw_a_086_ms = -ms
+sw_a_086_mm = -mm
+sw_a_086_mc = -mc
+sw_a_086_ml = -ml
+sw_a_086_mh = -mh
+sw_a_286_ms = -ms
+sw_a_286_mm = -mm
+sw_a_286_mc = -mc
+sw_a_286_ml = -ml
+sw_a_286_mh = -mh
+sw_a_386_ms = -ms
+sw_a_386_mf = -mf
+sw_a_axp_   =
+sw_a_mps_   =
+sw_a_ppc_   =
+
+#######################
+# PREPROCESSOR SETINGS
+######
+# Include system headers in dependency lists
+plib_cppflags=-D_ENABLE_AUTODEPEND -D__OBSCURE_STREAM_INTERNALS
+!ifdef mthreaded
+plib_cppflags += -D__MT__
+!endif
+!ifdef fs_registration
+plib_cppflags += -D__USE_FS
+!else ifdef pd_registration
+plib_cppflags += -D__USE_PD
+!else ifdef sysind_registration
+plib_cppflags += -D__USE_RW
+!endif
+!ifeq system windows
+plib_cppflags += -DSTRICT
+!else ifeq system winnt
+plib_cppflags += $(win32ver)
+!ifeq processor axp
+plib_cppflags += -DWIN32 -D_WIN32
+!else ifeq processor ppc
+plib_cppflags += -DWIN32 -D_WIN32
+!endif
+!endif
+!ifeq release 1
+plib_cppflags += -DNDEBUG
+!endif
+
+##########################
+# C/C++ COMPILERS SETINGS
+######
+!ifeq linkage dynamic
+!ifdef export_only
+br_flags_=-D__MAKE_DLL_WRTLIB
+!else
+br_flags_=-D__MAKE_DLL_CPPLIB
+!endif
+br_flags_yes=-br
+!else
+br_flags_=
+!endif
+
+plib_cflags =$(sw_c_common) $(sw_c_$(plib_arch_$(processor))_$(model)) $(sw_c_$(processor)) $(sw_c_$(system))
+plib_aflags =$(sw_a_common) $(sw_a_$(plib_arch_$(processor))_$(model)) $(sw_a_$(processor)) $(sw_a_$(system))
+
+plib_c_inc_dirs_generic =-I"$(hdr_dir)/dos"
+plib_c_inc_dirs_netware =-I"$(hdr_dir)/dos"
+plib_c_inc_dirs_windows =-I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"
+plib_c_inc_dirs_os2_086 =-I"$(os2api_dir)/os2286/h"
+plib_c_inc_dirs_os2_286 =-I"$(os2api_dir)/os2286/h"
+plib_c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
+plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_arch_$(processor)))
+plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
+plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
+
+plib_inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(plib_c_inc_dirs_$(system)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
