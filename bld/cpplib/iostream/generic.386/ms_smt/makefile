@@ -4,7 +4,7 @@
 #
 processor  = 386
 system     = generic
-model      = mf
+model      = ms
 convention = stack
 linkage    = static
 mthreaded  = 1

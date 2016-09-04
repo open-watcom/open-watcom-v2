@@ -4,7 +4,7 @@
 #
 processor  = 386
 system     = generic
-model      = mf
+model      = ms
 convention = stack
 linkage    = static
 define_library_include = $(cpplib_dir)/string/string.mif
