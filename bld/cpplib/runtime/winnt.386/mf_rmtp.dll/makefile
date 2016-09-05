@@ -11,4 +11,4 @@ mthreaded  = 1
 fs_registration = yes
 profile = 1
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif

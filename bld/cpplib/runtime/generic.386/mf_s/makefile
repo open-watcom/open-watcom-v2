@@ -8,4 +8,4 @@ model      = mf
 convention = stack
 linkage    = static
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif

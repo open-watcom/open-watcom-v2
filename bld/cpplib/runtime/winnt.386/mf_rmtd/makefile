@@ -12,4 +12,4 @@ fs_registration = yes
 
 cpplib_release = 0
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif

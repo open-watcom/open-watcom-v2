@@ -7,4 +7,4 @@ system     = generic
 model      = mh
 linkage    = static
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif

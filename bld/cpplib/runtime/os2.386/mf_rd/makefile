@@ -10,4 +10,4 @@ linkage    = static
 cpplib_release  = 0
 fs_registration = yes
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif

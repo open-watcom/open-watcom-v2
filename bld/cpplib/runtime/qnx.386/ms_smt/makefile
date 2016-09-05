@@ -9,4 +9,4 @@ convention = stack
 linkage    = static
 mthreaded  = 1
 
-!include $(cpplib_dir)/runtime/plib.mif
+!include $(cpplib_dir)/runtime/runtime.mif
