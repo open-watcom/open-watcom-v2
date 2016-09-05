@@ -1,30 +1,25 @@
-# bt_(system)
-bt_generic    =-bt=generic
-bt_netware    =-bt=netware
-bt_windows    =-bt=windows
-bt_winnt      =-bt=nt
-bt_os2        =-bt=os2
-bt_qnx        =-bt=qnx
-build_target = $(bt_$(system))
-
-plib_arch_086 = 086
-plib_arch_087 = 086 
-plib_arch_286 = 286
-plib_arch_287 = 286
-plib_arch_386 = 386
-plib_arch_387 = 386
-plib_arch_axp = axp
-plib_arch_mps = mps
-plib_arch_ppc = ppc
+# remap fpu to processor
+plib_086 = 086
+plib_087 = 086 
+plib_286 = 286
+plib_287 = 286
+plib_386 = 386
+plib_387 = 386
+plib_axp = axp
+plib_mps = mps
+plib_ppc = ppc
 
 ##########################
 # C/C++ COMPILERS SETINGS
 ######
 sw_c_common =-we-w8-zl-x-xx-zam-j-fhwe
-
 # -xr has to be on in case the user uses -xr
-sw_c_common +=-xr
-
+sw_c_common += -xr
+!ifeq release 0
+sw_c_common += -od
+!else
+sw_c_common += -oaxt
+!endif
 !ifdef mthreaded
 sw_c_common += -bm
 !endif
@@ -32,22 +27,15 @@ sw_c_common += -bm
 sw_c_common += -etp
 !endif
 
-!ifeq release 1
-sw_c_common += -oaxt -d1
-!else
-sw_c_common += -od -d2
-!endif
-
-# sw_c_(processor)_(model)
+# -zv has to be on in case the user uses -zv
+# temporary fix until AXP targets support -zv properly
+sw_c_intel    = -zv
 sw_c_register = -3r
 sw_c_stack    = -3s
 sw_c_bigcode  =
 sw_c_bigdata  = -zu
 
-# -zv has to be on in case the user uses -zv
-# temporary fix until AXP targets support -zv properly
-sw_c_intel    = -zv
-
+# sw_c_(processor)
 sw_c_086 = $(sw_c_intel)-0-fpc
 sw_c_087 = $(sw_c_intel)-0-fpi
 sw_c_286 = $(sw_c_intel)-2-fpc
@@ -61,6 +49,7 @@ sw_c_mps =
 sw_c_386_ms_generic = -r
 sw_c_386_ms_qnx     = -r
 
+# sw_c_(processor)_(model)
 sw_c_086_ms = -ms
 sw_c_086_mm = -mm$(sw_c_bigcode)
 sw_c_086_mc = -mc$(sw_c_bigdata)
@@ -77,32 +66,29 @@ sw_c_axp_   =
 sw_c_ppc_   =
 
 # sw_c_(system)
-sw_c_generic      =
-sw_c_netware      =
-sw_c_os2          =
-sw_c_qnx          =
-sw_c_windows      = -zW
-sw_c_winnt        =
+sw_c_generic = -bt=generic
+sw_c_netware = -bt=netware
+sw_c_windows = -bt=windows -zW
+sw_c_winnt   = -bt=nt
+sw_c_os2     = -bt=os2
+sw_c_qnx     = -bt=qnx
 
 #####################
 # ASSEMBLERS SETINGS
 ######
 sw_a_common =-we
-!ifeq release 0
-sw_a_common += -d2
-!else
-sw_a_common += -d1 -DNDEBUG
+!ifdef __UNIX__
+sw_a_common += -fo=.obj
 !endif
-
 !ifdef mthreaded
 sw_a_common += -D__MT__
 !endif
 
-# sw_a_(processor)_(model)
+sw_a_intel    = -w8-e
 sw_a_register = -3r
 sw_a_stack    = -3s
-sw_a_intel    = -w8
 
+# sw_a_(processor)
 sw_a_086 = $(sw_a_intel)-0-fpc
 sw_a_087 = $(sw_a_intel)-0-fpi
 sw_a_286 = $(sw_a_intel)-2-fpc
@@ -113,6 +99,7 @@ sw_a_axp =
 sw_a_mps =
 sw_a_ppc =
 
+# sw_a_(processor)_(model)
 sw_a_086_ms = -ms
 sw_a_086_mm = -mm
 sw_a_086_mc = -mc
@@ -129,37 +116,44 @@ sw_a_axp_   =
 sw_a_mps_   =
 sw_a_ppc_   =
 
+# sw_a_(system)
+sw_a_generic = -bt=generic
+sw_a_netware = -bt=netware
+sw_a_windows = -bt=windows
+sw_a_winnt   = -bt=nt
+sw_a_os2     = -bt=os2
+sw_a_qnx     = -bt=qnx
+
 #######################
+# C/C++ COMPILERS
 # PREPROCESSOR SETINGS
 ######
 # Include system headers in dependency lists
-plib_cppflags=-D_ENABLE_AUTODEPEND -D__OBSCURE_STREAM_INTERNALS
+plib_cpp_flags=-D_ENABLE_AUTODEPEND -D__OBSCURE_STREAM_INTERNALS
 !ifdef mthreaded
-plib_cppflags += -D__MT__
+plib_cpp_flags += -D__MT__
 !endif
 !ifdef fs_registration
-plib_cppflags += -D__USE_FS
+plib_cpp_flags += -D__USE_FS
 !else ifdef pd_registration
-plib_cppflags += -D__USE_PD
+plib_cpp_flags += -D__USE_PD
 !else ifdef sysind_registration
-plib_cppflags += -D__USE_RW
+plib_cpp_flags += -D__USE_RW
 !endif
 !ifeq system windows
-plib_cppflags += -DSTRICT
+plib_cpp_flags += -DSTRICT
 !else ifeq system winnt
-plib_cppflags += $(win32ver)
+plib_cpp_flags += $(win32ver)
 !ifeq processor axp
-plib_cppflags += -DWIN32 -D_WIN32
+plib_cpp_flags += -DWIN32 -D_WIN32
 !else ifeq processor ppc
-plib_cppflags += -DWIN32 -D_WIN32
+plib_cpp_flags += -DWIN32 -D_WIN32
 !endif
-!endif
-!ifeq release 1
-plib_cppflags += -DNDEBUG
 !endif
 
 ##########################
-# C/C++ COMPILERS SETINGS
+# C/C++ COMPILERS
+# LINKAGE SETINGS
 ######
 !ifeq linkage dynamic
 !ifdef export_only
@@ -172,8 +166,22 @@ br_flags_yes=-br
 br_flags_=
 !endif
 
-plib_cflags =$(sw_c_common) $(sw_c_$(plib_arch_$(processor))_$(model)) $(sw_c_$(processor)) $(sw_c_$(system))
-plib_aflags =$(sw_a_common) $(sw_a_$(plib_arch_$(processor))_$(model)) $(sw_a_$(processor)) $(sw_a_$(system))
+!ifdef __UNIX__
+plib_cxx_flags = -fo=.obj
+!endif
+plibx_cxx_flags = -xs -fo=$@
+
+plib_c_flags =$(sw_c_common) $(sw_c_$(plib_$(processor))_$(model)) $(sw_c_$(processor)) $(sw_c_$(system))
+plib_a_flags =$(sw_a_common) $(sw_a_$(plib_$(processor))_$(model)) $(sw_a_$(processor)) $(sw_a_$(system))
+
+# debug flags need to be last to override optimization flags
+!ifeq release 0
+c_dbg_flags = -d2
+a_dbg_flags = -d2
+!else
+c_dbg_flags = -d1 -DNDEBUG
+a_dbg_flags = -d1 -DNDEBUG
+!endif
 
 plib_c_inc_dirs_generic =-I"$(hdr_dir)/dos"
 plib_c_inc_dirs_netware =-I"$(hdr_dir)/dos"
@@ -181,7 +189,7 @@ plib_c_inc_dirs_windows =-I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"
 plib_c_inc_dirs_os2_086 =-I"$(os2api_dir)/os2286/h"
 plib_c_inc_dirs_os2_286 =-I"$(os2api_dir)/os2286/h"
 plib_c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
-plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_arch_$(processor)))
+plib_c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(plib_c_inc_dirs_os2_$(plib_$(processor)))
 plib_c_inc_dirs_winnt   =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
 plib_c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
 

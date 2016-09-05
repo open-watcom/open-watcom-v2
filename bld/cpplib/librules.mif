@@ -1,12 +1,12 @@
 .cpp.obj : $(__MAKEFILES__) .autodepend
     @%make echo_cxx
-    $(cxx) $(build_target) $(plib_cflags) $(plib_cppflags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) -fo=$@ $[@
+    $(cxx) $[@ $(plib_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $(c_dbg_flags)
 
 .cpp{$(x_subdir)}.obj : $(__MAKEFILES__) .autodepend
     @if not exist $(x_subdir) mkdir $(x_subdir)
     @%make echo_xcxx
-    $(cxx) -xs $(build_target) $(plib_cflags) $(plib_cppflags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) -fo=$@ $[@
+    $(cxx) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $(c_dbg_flags)
 
 .asm.obj : $(__MAKEFILES__) .autodepend
     @%make echo_as
-    $(as) $(build_target) $(plib_aflags) -fo=$@ $[@
+    $(as) $[@ $(plib_a_flags) $(a_dbg_flags)
