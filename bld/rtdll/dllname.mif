@@ -1,29 +1,26 @@
-dllname_version    =$(bld_ver)
-dllname_register   =r
-dllname_stack      =s
-dllname_           =
+dllname_version  = $(bld_ver)
+dllname_register = r
+dllname_stack    = s
 !ifdef profile
-dllname_profile    =p
-!else
-dllname_profile    =
+dllname_profile  = p
 !endif
-dllname_clib_386   =clb
-dllname_clib_387   =clb
-dllname_clib_axp   =clb
-dllname_mathlib_386=mth
-dllname_mathlib_387=mt7
-dllname_mathlib_axp=mth
-dllname_cpplib_386 =plb
-dllname_cpplib_387 =plb
-dllname_cpplib_axp =plb
-dllname_wrtlib_386 =wrt
-dllname_wrtlib_387 =wr7
-dllname_wrtlib_axp =wrt
+dllname_clib_386 = clb
+dllname_clib_387 = clb
+dllname_clib_axp = clb
+dllname_mlib_386 = mth
+dllname_mlib_387 = mt7
+dllname_mlib_axp = mth
+dllname_plib_386 = plb
+dllname_plib_387 = plb
+dllname_plib_axp = plb
+dllname_wlib_386 = wrt
+dllname_wlib_387 = wr7
+dllname_wlib_axp = wrt
 dllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(dllname_version)$(dllname_profile)
-libdllname_profile =dll
+libdllname_profile = dll
 !ifdef profile
-!ifeq component cpplib
-libdllname_profile =dl
+!ifeq component plib
+libdllname_profile = dl
 !endif
 !endif
 libdllname =$(dllname_$(component)_$(processor))$(dllname_$(convention))$(libdllname_profile)$(dllname_profile)

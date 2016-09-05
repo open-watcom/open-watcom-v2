@@ -41,7 +41,7 @@ verrc_dll      = $(dllname)
 !include verrc.mif
 
 target_lib = $(libdllname).lib
-!ifeq component cpplib
+!ifeq component plib
 target_lib += $(libdllname)x.lib
 !endif
 
@@ -53,7 +53,7 @@ rtdll_nosymfile = 1
 
 !ifeq component clib
 br_suffix=1
-!else ifeq component wrtlib
+!else ifeq component wlib
 br_suffix=1
 !else
 br_suffix=0
@@ -88,7 +88,7 @@ $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
 !ifeq system winnt
 extra_libs = kernel32.lib user32.lib advapi32.lib
 !endif
-!ifeq component wrtlib
+!ifeq component wlib
 !ifeq convention stack
 lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !else

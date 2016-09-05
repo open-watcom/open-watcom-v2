@@ -1,5 +1,6 @@
 #pmake: build flat register 32bit inline os2 iX86 rtdll os_os2 cpu_386
-component  = wrtlib
+
+component  = wlib
 processor  = 387
 model      = mf
 subdir     = mf_r
