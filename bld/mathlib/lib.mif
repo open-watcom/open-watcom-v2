@@ -25,7 +25,7 @@ subdir_suffix_dynamic = .dll
 !endif
 subdir_suffix_286_dynamic = $(subdir_suffix_dynamic)
 subdir_suffix_386_dynamic = $(subdir_suffix_dynamic)
-subdir_suffix = $(subdir_suffix_$(mlib_$(processor))_$(linkage))
+mlib_subdir = $(subdir)$(subdir_suffix_$(mlib_$(processor))_$(linkage))
 
 mlib_linkage_flags_286_static  = -z
 mlib_linkage_flags_286_dynamic = -z=export.tmp
