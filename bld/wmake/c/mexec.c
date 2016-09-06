@@ -1868,6 +1868,10 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 
     memcpy( cmdname, cmd, arg - cmd );  /* copy command */
     cmdname[arg - cmd] = NULLCHAR;      /* null terminate it */
+    if( *cmdname == NULLCHAR ) {
+        // handle blank command by shell
+        flags |= FLAG_SHELL;
+    }
 
     /* skip whitespace between the command and the argument */
     while( isws( *arg ) ) {

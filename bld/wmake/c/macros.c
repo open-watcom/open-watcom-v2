@@ -447,7 +447,7 @@ char *GetMacroValue( const char *name )
                     afterSub = NULL;
                     PrtMsg( ERR | LOC | INVALID_STRING_SUBSTITUTE );
                 }
-                if( line ) {
+                if( line != NULL ) {
                     FreeSafe( line );
                 }
             }
