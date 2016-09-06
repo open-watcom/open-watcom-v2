@@ -2,9 +2,7 @@ proj_name=clib
 
 clib_host_cpu_086=i86
 clib_host_cpu_286=i86
-clib_host_cpu_287=i86
 clib_host_cpu_386=386
-clib_host_cpu_387=386
 clib_host_cpu_axp=axp
 clib_host_cpu_ppc=ppc
 clib_host_cpu_mps=mps

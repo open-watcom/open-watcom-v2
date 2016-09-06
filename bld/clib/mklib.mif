@@ -10,6 +10,6 @@ all : $(objfiles) $(libname).lib .symbolic
 
 $(libname).lib : $(objs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(lib_flags) $^@ $(objs)
+    $(librarian) $(clib_lib_flags) $^@ $(objs)
 
 !include $(clib_dir)/clean.mif

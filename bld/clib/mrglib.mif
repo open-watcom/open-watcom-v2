@@ -15,7 +15,7 @@ $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @rm -f export.tmp
     @rm -f export.def
     @%make echo_lib
-    $(librarian) $(lib_flags) $(lib_flags_linkage) $^@ @$^&.lbc
+    $(librarian) $(clib_lib_flags) $(clib_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
     $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif

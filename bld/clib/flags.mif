@@ -25,27 +25,10 @@ sw_c_common += -D__RUNTIME_HANDLE_CHECKS__
 sw_c_static  =
 sw_c_dynamic = -D__MAKE_DLL_CLIB
 
-sw_c_intel    = -fpc
-sw_c_register = -5r
-sw_c_stack    = -5s
+# sw_c_(processor)_(model)
 sw_c_bigcode  = -nt=_TEXT
 sw_c_bigdata  = -zu
-!ifdef profile
-sw_c_profile  = -hd-etp
-!endif
-!ifeq release 0
-sw_c_fi_nonx86 = -finonx86.h
-!endif
 
-# sw_c_(processor)_(model)
-sw_c_086 = $(sw_c_intel)-0
-sw_c_286 = $(sw_c_intel)-2
-sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-zc$(sw_c_profile)
-sw_c_axp = $(sw_c_fi_nonx86)
-sw_c_ppc =
-sw_c_mps =
-
-# sw_c_(processor)_(model)
 sw_c_386_ms_generic = -r
 sw_c_386_ms_msdos   = -r
 sw_c_386_ms_qnx     = -r
@@ -67,6 +50,24 @@ sw_c_386_mc = -mc$(sw_c_386_mc_$(system))
 sw_c_axp_   =
 sw_c_ppc_   =
 sw_c_mps_   =
+
+# sw_c_(processor)
+sw_c_intel    = -fpc
+sw_c_register = -5r
+sw_c_stack    = -5s
+!ifdef profile
+sw_c_profile  = -hd-etp
+!endif
+!ifeq release 0
+sw_c_fi_nonx86 = -finonx86.h
+!endif
+
+sw_c_086 = $(sw_c_intel)-0
+sw_c_286 = $(sw_c_intel)-2
+sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-zc$(sw_c_profile)
+sw_c_axp = $(sw_c_fi_nonx86)
+sw_c_ppc =
+sw_c_mps =
 
 # sw_c_(system)_(processor)
 sw_c_generic_086  = -oax
@@ -121,23 +122,9 @@ sw_a_common += -fo=.obj
 sw_a_static  =
 sw_a_dynamic = -D__MAKE_DLL_CLIB -D_EXPORT
 
-sw_a_intel    = -fpc-w8-e
-sw_a_register = -5r
-sw_a_stack    = -5s
-sw_a_bigcode  = -nt=_TEXT
-!ifdef profile
-sw_a_profile  = -D_PROFILE
-!endif
-
-# sw_a_(processor)
-sw_a_086 = $(sw_a_intel)-0
-sw_a_286 = $(sw_a_intel)-2
-sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))$(sw_a_profile)
-sw_a_axp =
-sw_a_ppc =
-sw_a_mps =
-
 # sw_a_(processor)_(model)
+sw_a_bigcode  = -nt=_TEXT
+
 sw_a_086_ms = -ms
 sw_a_286_ms = -ms
 sw_a_086_mm = -mm$(sw_a_bigcode)
@@ -151,10 +138,24 @@ sw_a_286_mh = -mh$(sw_a_bigcode)
 sw_a_386_ms = -ms
 sw_a_386_mf = -mf
 sw_a_386_mc = -mc
-sw_a_386_   =
 sw_a_axp_   =
 sw_a_ppc_   =
 sw_a_mps_   =
+
+# sw_a_(processor)
+sw_a_intel    = -fpc-w8-e
+sw_a_register = -5r
+sw_a_stack    = -5s
+!ifdef profile
+sw_a_profile  = -D_PROFILE
+!endif
+
+sw_a_086 = $(sw_a_intel)-0
+sw_a_286 = $(sw_a_intel)-2
+sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))$(sw_a_profile)
+sw_a_axp =
+sw_a_ppc =
+sw_a_mps =
 
 # sw_a_(system)_(processor)
 sw_a_generic_086  =
@@ -240,10 +241,10 @@ clib_a_flags += -D__MT__
 # debug flags need to be last to override optimization flags
 !ifeq release 0
 c_dbg_flags = -d2
-a_dbg_flags = -d2
+a_dbg_flags = -d1
 !else
-c_dbg_flags = -d1 -DNDEBUG
-a_dbg_flags = -d1 -DNDEBUG
+c_dbg_flags = -DNDEBUG
+a_dbg_flags = -DNDEBUG
 !endif
 
 !include $(clib_dir)/include.mif
