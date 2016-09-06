@@ -122,7 +122,7 @@ STATIC void getStats( TARGET *targ )
 {
     if( targ->executed ) {
         targ->executed = false;
-        if( targ->touched ) {           /* used with symbolic, -t, -n, -q */
+        if( targ->touched ) {       /* used with symbolic, -t, -n, -q */
             targ->date = YOUNGEST_DATE;
             targ->existing = true;
         } else if( targ->attr.symbolic ) {
@@ -158,7 +158,7 @@ STATIC bool targExists( TARGET *targ )
 
     if( TrySufPath( buffer, targ->node.name, NULL, false ) == RET_SUCCESS ) {
         RenameTarget( targ, buffer );
-        targ->executed = true;              /* force get date */
+        targ->executed = true;      /* force get date */
         getStats( targ );
         assert( targ->existing );
         return( true );
@@ -352,7 +352,7 @@ STATIC RET_T perform( TARGET *targ, DEPEND *dep, DEPEND *impldep, time_t max_tim
                 targ->cmds_done = true;
                 return( RET_SUCCESS );
             }
-            if( targ->attr.symbolic != false ) {    /* 13-Dec-90 DJG */
+            if( targ->attr.symbolic != false ) {
                 targ->cmds_done = true;
                 return( RET_SUCCESS );
             }
@@ -542,7 +542,7 @@ STATIC RET_T implyMaybePerform( TARGET *targ, TARGET *imptarg, TARGET *cretarg, 
             return( RET_ERROR );
         }
 
-        if( Glob.noexec || Glob.query ) {               /* 29-oct-90 */
+        if( Glob.noexec || Glob.query ) {
             targ->executed = true;
             targ->touched = true;
         }
@@ -603,10 +603,8 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
 
         UseDefaultSList = true;
         /* find path in SLIST */
-        for( slistCount = 0, curslist = cur->slist;
-            curslist != NULL && ret != RET_SUCCESS;
-            ++slistCount, curslist = curslist->next )
-        {
+        slistCount = 0;
+        for( curslist = cur->slist; curslist != NULL && ret != RET_SUCCESS; curslist = curslist->next ) {
             _makepath( buf, drive, dir, NULL, NULL );
             FixName( buf );
             /*
@@ -620,11 +618,11 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
                 ret = TrySufPath( buf, buf, &imptarg, false );
                 if( ret == RET_SUCCESS ) {
                     slist = curslist;
-                /* later on we need to check if implied target does not */
-                /* exist we need to create it on the first directory we */
-                /* see on the SLIST since                               */
-                /* the first on the list is the one that was defined    */
-                /* last in the makefile                                 */
+                    /* later on we need to check if implied target does not */
+                    /* exist we need to create it on the first directory we */
+                    /* see on the SLIST since                               */
+                    /* the first on the list is the one that was defined    */
+                    /* last in the makefile                                 */
                 } else if( slistDef == NULL ) {
                     slistDef = curslist;
                 }
@@ -636,6 +634,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             if( slistCount > 0 && slistEmptyTargDepPath != NULL ) {
                 UseDefaultSList = false;
             }
+            ++slistCount;
         }
 
         if( UseDefaultSList && slist == NULL && !Glob.compat_nmake ) {
@@ -686,7 +685,7 @@ STATIC RET_T imply( TARGET *targ, const char *drive, const char *dir,
             }
             if( startcount != cListCount && (Glob.noexec || Glob.query) ) {
                 imptarg->touched = true;
-                imptarg->executed = true;       /* 29-oct-90 */
+                imptarg->executed = true;
             }
             imptarg->updated = true;
             imptarg->busy = false;
@@ -807,8 +806,8 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
     ExpandWildCards( targ, depend );
 
     if( depend->targs == NULL ) {
-        /* 10-oct-90 AFS make the target if it doesn't exist or it's symbolic */
-        /* 30-oct-90 AFS a "::" target with no dependents must be made */
+        /* make the target if it doesn't exist or it's symbolic */
+        /* a "::" target with no dependents must be made */
         exec_cmds = false;
         if( !targ->scolon || !targ->existing ) {
             exec_cmds = true;
@@ -816,7 +815,7 @@ STATIC RET_T resolve( TARGET *targ, DEPEND *depend )
         if( targ->attr.symbolic || targ->attr.always ) {
             exec_cmds = true;
         }
-        /* 11-sep-92 AFS if all targets must be made, so should this one */
+        /* if all targets must be made, so should this one */
         if( Glob.all ) {
             exec_cmds = true;
         }
@@ -898,9 +897,8 @@ RET_T Update( TARGET *targ )
     targExists( targ );     /* find file using sufpath */
     startcount = cListCount;
 
-    if( targ->depend == NULL ||
-        (targ->depend->clist == NULL && targ->depend->targs == NULL) ) {
-                    /* has no depend/explicit rules */
+    if( targ->depend == NULL || (targ->depend->clist == NULL && targ->depend->targs == NULL) ) {
+        /* has no depend/explicit rules */
         PrtMsg( DBG | INF | M_EXPLICIT_RULE, M_NO );
         ret = tryImply( targ, false );
         if( ret == RET_ERROR ) {
@@ -913,7 +911,8 @@ RET_T Update( TARGET *targ )
                 targ->cmds_done = true;
             }
         }
-    } else if( !targ->scolon ) {        /* double colon */
+    } else if( !targ->scolon ) {
+        /* double colon */
         PrtMsg( DBG | INF | M_EXPLICIT_RULE, M_DCOLON );
         for( curdep = targ->depend; curdep != NULL; curdep = curdep->next ) {
             if( resolve( targ, curdep ) != RET_SUCCESS ) {
@@ -946,7 +945,7 @@ RET_T Update( TARGET *targ )
         targ->date = YOUNGEST_DATE;
     }
 
-    target_exists = targExists( targ );                         /* 18-nov-91 */
+    target_exists = targExists( targ );
     if( target_exists || targ->attr.symbolic || Glob.ignore ) {
         // Target exists or it is symbolic or we're ignoring errors,
         // therefore everyone's happy and we can charge forward
@@ -1014,7 +1013,7 @@ static struct exStack exGetCurVars( void )
         if( buf.targ == NULL ) {
             curtarg = exStack[walk].targ;
             if( curtarg != NULL && ! curtarg->attr.symbolic ) {
-                /* we want non-NULL and non-SYMBOLIC! (30-jan-92 AFS) */
+                /* we want non-NULL and non-SYMBOLIC! */
                 buf.targ = curtarg;
             }
         }
