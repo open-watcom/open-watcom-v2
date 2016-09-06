@@ -9,8 +9,3 @@
 .asm.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
     @%make echo_as
     $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
-
-!ifdef preproc_rule
-.c.lan: $($(proj_name)_autodepends) $(__MAKEFILES__)
-    $(cc) -p$(preproc_flags) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) -fo=.lan $[@
-!endif
