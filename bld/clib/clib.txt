@@ -233,7 +233,7 @@ Previously Implemented Changes:
         rdos.386\
             mf_r mf_s
         rdosdev.386\
-            ms_r
+            mc_r
 
 8.  The makefile systems is organized around a tree structure.
 

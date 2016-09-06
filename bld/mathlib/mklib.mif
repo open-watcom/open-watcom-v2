@@ -10,7 +10,7 @@ all : $(objfiles) $(libname).lib .symbolic
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_lib
-    $(librarian) $(lib_flags) $^@ $(objs) $(libs)
+    $(librarian) $(mlib_lib_flags) $^@ $(objs) $(libs)
 
 !include ../../../deps.mif
 

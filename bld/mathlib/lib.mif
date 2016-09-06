@@ -1,54 +1,34 @@
-libname_pfx = math
-# libname_(model)
-libname_ms = s
-libname_mm = m
-libname_mc = c
-libname_ml = l
-libname_mh = h
-libname_mf = f
-!ifeq processor 286
-processor_ =
-!else ifeq processor 287
-processor_ = 87
-!else ifeq processor 386
-processor_ = 3
+# libname_(processor)
+mlib_suffix_ms = s
+mlib_suffix_mm = m
+mlib_suffix_mc = c
+mlib_suffix_ml = l
+mlib_suffix_mh = h
+mlib_suffix_stack = s
+mlib_suffix_register = r
+libname_286 = $(mlib_suffix_$(model))
+libname_287 = 87$(mlib_suffix_$(model))
+libname_386 = 3$(mlib_suffix_$(convention))
+libname_387 = 387$(mlib_suffix_$(convention))
+libname = math$(libname_$(processor))
+
+!ifeq release 0
+mlib_lib_flags = -b-c-n-pa
 !else
-processor_ =$(processor)
-!endif
-libname_stack    = s
-libname_register = r
-libname_ =
-!ifdef convention
-libname = $(libname_pfx)$(processor_)$(libname_$(convention))
-!else
-libname = $(libname_pfx)$(processor_)$(libname_$(model))
+mlib_lib_flags = -b-c-n-pa-s-t-zld
 !endif
 
-lib_flags = -b-c-n-pa
-!ifeq release 1
-lib_flags += -s-t-zld
-!endif
-
-!ifeq processor axp
-lib_linkage_flags_static  =
-lib_linkage_flags_dynamic =
-!else ifeq processor ppc
-lib_linkage_flags_static  =
-lib_linkage_flags_dynamic =
-!else ifeq processor mps
-lib_linkage_flags_static  =
-lib_linkage_flags_dynamic =
-!else
-lib_linkage_flags_static  = -z
-lib_linkage_flags_dynamic = -z=export.tmp
 !ifdef export_only
 subdir_suffix_dynamic = .wdl
 !else
 subdir_suffix_dynamic = .dll
 !endif
-!endif
-lib_flags_linkage = $(lib_linkage_flags_$(linkage))
+subdir_suffix_286_dynamic = $(subdir_suffix_dynamic)
+subdir_suffix_386_dynamic = $(subdir_suffix_dynamic)
+subdir_suffix = $(subdir_suffix_$(mlib_$(processor))_$(linkage))
 
-!ifdef subdir_suffix_$(linkage)
-subdir_suffix = $(subdir_suffix_$(linkage))
-!endif
+mlib_linkage_flags_286_static  = -z
+mlib_linkage_flags_286_dynamic = -z=export.tmp
+mlib_linkage_flags_386_static  = -z
+mlib_linkage_flags_386_dynamic = -z=export.tmp
+mlib_linkage_flags = $(mlib_linkage_flags_$(mlib_$(processor))_$(linkage))

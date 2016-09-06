@@ -34,6 +34,8 @@ sw_c_386_ms_msdos   = -r
 sw_c_386_ms_qnx     = -r
 sw_c_386_ms_osi     = -r
 
+sw_c_386_mc_rdosdev = -zdp-zff-zgf
+
 sw_c_086_ms = -ms
 sw_c_286_ms = -ms
 sw_c_086_mm = -mm$(sw_c_bigcode)
@@ -46,7 +48,7 @@ sw_c_086_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
 sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
 sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
 sw_c_386_mf = -mf
-sw_c_386_mc = -mc$(sw_c_386_mc_$(system))
+sw_c_386_mc = -mc$(sw_c_bigdata)$(sw_c_386_mc_$(system))
 sw_c_axp_   =
 sw_c_ppc_   =
 sw_c_mps_   =
@@ -77,7 +79,7 @@ sw_c_msdos_086    = -oax
 sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
 sw_c_rdos_386     = -oaxt
-sw_c_rdosdev_386  = -oaxt -zu-zdp-zff-zgf
+sw_c_rdosdev_386  = -oaxt
 sw_c_nw_clib_386  = -oaxt
 sw_c_nw_clibl_386 = -oaxt
 sw_c_nw_libc_386  = -oaxt

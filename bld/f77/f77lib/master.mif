@@ -6,15 +6,23 @@ flib_autodepends = .AUTODEPEND
 
 additional_cleanup = *.gc
 
+# remap fpu to processor
+flib_086 = 086
+flib_087 = 086 
+flib_286 = 286
+flib_287 = 286
+flib_386 = 386
+flib_387 = 386
+flib_axp = axp
+flib_mps = mps
+flib_ppc = ppc
+
 flib_host_cpu_086 = i86
-flib_host_cpu_087 = i86
 flib_host_cpu_286 = i86
-flib_host_cpu_287 = i86
 flib_host_cpu_386 = 386
-flib_host_cpu_387 = 386
 flib_host_cpu_axp = axp
 flib_host_cpu_ppc = ppc
-host_cpu = $(flib_host_cpu_$(processor))
+host_cpu = $(flib_host_cpu_$(flib_$(processor)))
 
 flib_host_os_msdos   = dos
 flib_host_os_winnt   = nt
@@ -30,6 +38,7 @@ host_os = $(flib_host_os_$(system))
 
 !include ../../flags.mif
 !include ../../objects.mif
+!include ../../librules.mif
 
 #-------------------------------------------------------------------------------
 
@@ -43,21 +52,12 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 .c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
 
 #-------------------------------------------------------------------------------
-#cc = wcl -c -cc++
 
 $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
     $(noecho)%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
     @%make echo_lib
-    $(librarian) $(lib_flags) $^@ @$(libname).lbc
-
-.c.obj : .autodepend $(__MAKEFILES__)
-    @%make echo_cc
-    $(cc) $($[&_opts) $(flib_c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
-
-.asm.obj : .autodepend $(__MAKEFILES__)
-    @%make echo_as
-    $(as) $($[&_opts) $(flib_a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
+    $(librarian) $(flib_lib_flags) $^@ @$(libname).lbc
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r

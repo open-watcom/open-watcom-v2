@@ -1,18 +1,7 @@
-sw_c_common =-za99-w8-we-x-xx-zam-oax-zl
-sw_a_common =-we
-
+sw_c_common = -za99-w8-we-x-xx-zam-oax-zl
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
-sw_a_common += -fo=.obj
 !endif
-
-!ifeq release 0
-!ifdef debug
-sw_c_common += -D$(debug)
-sw_a_common += -D$(debug)
-!endif
-!endif
-
 # Include system headers in dependency lists
 sw_c_common += -D_ENABLE_AUTODEPEND
 
@@ -23,61 +12,54 @@ sw_c_dynamic = -D__MAKE_DLL_WRTLIB
 sw_c_dynamic = -D__MAKE_DLL_MATHLIB
 !endif
 
-sw_c_intel    = -of
-sw_c_calls    = -fpc
-sw_c_register = -6r
-sw_c_stack    = -6s
+# sw_c_(processor)_(model)
 sw_c_bigcode  = -nt=_TEXT
 sw_c_bigdata  = -zu
 
-sw_c_286 =$(sw_c_intel)$(sw_c_calls)
-sw_c_386 =$(sw_c_intel)$(sw_c_calls)-zc-fpd
-sw_c_287 =$(sw_c_intel)-fpi
-sw_c_387 =$(sw_c_intel)-zc-fpd-fpi87
-sw_c_axp =
-sw_c_ppc =
-sw_c_mps =
-
-!ifdef profile
-sw_c_386 += -d1-hd-etp
-sw_c_387 += -d1-hd-etp
-!endif
-
-sw_c_386_ms_msdos    = -r
-sw_c_386_ms_os2      =
-sw_c_386_ms_windows  =
-sw_c_386_ms_winnt    =
-sw_c_386_ms_linux    =
-sw_c_386_ms_netware  =
-sw_c_386_ms_qnx      = -r
+sw_c_386_ms_msdos = -r
+sw_c_386_ms_qnx   = -r
 
 sw_c_286_ms = -ms
-sw_c_287_ms = -ms
 sw_c_286_mm = -mm$(sw_c_bigcode)
-sw_c_287_mm = -mm$(sw_c_bigcode)
 sw_c_286_mc = -mc$(sw_c_bigdata)
-sw_c_287_mc = -mc$(sw_c_bigdata)
 sw_c_286_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
-sw_c_287_ml = -ml$(sw_c_bigdata)$(sw_c_bigcode)
 sw_c_286_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
-sw_c_287_mh = -mh$(sw_c_bigdata)$(sw_c_bigcode)
-sw_c_386_ms = -ms$(sw_c_$(convention))$(sw_c_386_ms_$(system))
-sw_c_387_ms = -ms$(sw_c_$(convention))$(sw_c_386_ms_$(system))
-sw_c_386_mf = -mf$(sw_c_$(convention))
-sw_c_387_mf = -mf$(sw_c_$(convention))
+sw_c_386_ms = -ms$(sw_c_386_ms_$(system))
+sw_c_386_mf = -mf
 sw_c_axp_   =
 sw_c_ppc_   =
 sw_c_mps_   =
 
-sw_c_msdos    =
-sw_c_os2      =
-sw_c_windows  =
-sw_c_winnt    =
-sw_c_linux    =
-sw_c_netware  =
-sw_c_qnx      =
+# sw_c_(processor)
+sw_c_intel    = -of
+sw_c_register = -6r
+sw_c_stack    = -6s
+!ifdef profile
+sw_c_profile  = -hd-etp
+!endif
 
-sw_a_intel   = -w8 -e -DPDIV -of
+sw_c_286 =$(sw_c_intel)-fpc
+sw_c_287 =$(sw_c_intel)-fpi
+sw_c_386 =$(sw_c_intel)$(sw_c_$(convention))-fpc-zc-fpd$(sw_c_profile)
+sw_c_387 =$(sw_c_intel)$(sw_c_$(convention))-fpi87-zc-fpd$(sw_c_profile)
+sw_c_axp =
+sw_c_ppc =
+sw_c_mps =
+
+# sw_c_(system)
+sw_c_msdos    = -bt=dos
+sw_c_os2      = -bt=os2
+sw_c_windows  = -bt=windows -DSTRICT
+sw_c_winnt    = -bt=nt $(win32ver)
+sw_c_linux    = -bt=linux
+sw_c_netware  = -bt=netware
+sw_c_qnx      = -bt=qnx
+
+sw_a_common = -we
+!ifdef __UNIX__
+sw_a_common += -fo=.obj
+!endif
+
 sw_a_static  =
 !ifdef export_only
 sw_a_dynamic = -D__MAKE_DLL_WRTLIB -D_EXPORT
@@ -85,69 +67,60 @@ sw_a_dynamic = -D__MAKE_DLL_WRTLIB -D_EXPORT
 sw_a_dynamic = -D__MAKE_DLL_MATHLIB -D_EXPORT
 !endif
 
-sw_a_calls    =-fpc
-sw_a_16bit    =-0
-sw_a_register =-5r
-sw_a_stack    =-5s
+# sw_a_(processor)_(model)
+sw_a_bigcode  = -nt=_TEXT
 
-sw_a_286 = $(sw_a_intel) $(sw_a_calls) -D_BUILDING_MATHLIB
-sw_a_386 = $(sw_a_intel) $(sw_a_calls) -D_BUILDING_MATHLIB
-sw_a_287 = $(sw_a_intel) -fpi -fp0
-sw_a_387 = $(sw_a_intel) -fpi87 -fp5
-sw_a_axp =
-sw_a_ppc =
-sw_a_mps =
-
-sw_a_286_ms = -ms$(sw_a_16bit)
-sw_a_287_ms = -ms$(sw_a_16bit)
-sw_a_286_mm = -mm$(sw_a_16bit)-nt=_TEXT
-sw_a_287_mm = -mm$(sw_a_16bit)-nt=_TEXT
-sw_a_286_mc = -mc$(sw_a_16bit)
-sw_a_287_mc = -mc$(sw_a_16bit)
-sw_a_286_ml = -ml$(sw_a_16bit)-nt=_TEXT
-sw_a_287_ml = -ml$(sw_a_16bit)-nt=_TEXT
-sw_a_286_mh = -mh$(sw_a_16bit)-nt=_TEXT
-sw_a_287_mh = -mh$(sw_a_16bit)-nt=_TEXT
-sw_a_386_ms = -ms$(sw_a_$(convention))
-sw_a_387_ms = -ms$(sw_a_$(convention))
-sw_a_386_mf = -mf$(sw_a_$(convention))
-sw_a_387_mf = -mf$(sw_a_$(convention))
+sw_a_286_ms = -ms
+sw_a_286_mm = -mm$(sw_a_bigcode)
+sw_a_286_mc = -mc
+sw_a_286_ml = -ml$(sw_a_bigcode)
+sw_a_286_mh = -mh$(sw_a_bigcode)
+sw_a_386_ms = -ms
+sw_a_386_mf = -mf
 sw_a_axp_   =
 sw_a_ppc_   =
 sw_a_mps_   =
 
-sw_a_msdos_286    =
-sw_a_msdos_287    =
-sw_a_msdos_386    =
-sw_a_msdos_387    =
-sw_a_os2_386      =
-sw_a_os2_387      =
-sw_a_os2_ppc      =
-sw_a_windows_286  =
-sw_a_windows_287  =
-sw_a_windows_386  =
-sw_a_windows_387  =
-sw_a_winnt_386    =
-sw_a_winnt_387    =
-sw_a_winnt_axp    =
-sw_a_winnt_ppc    =
-sw_a_netware_386  =
-sw_a_netware_387  =
+# sw_a_(processor)
+sw_a_intel    = -w8-e-DPDIV
+sw_a_16bit    = -0
+sw_a_register = -5r
+sw_a_stack    = -5s
 
-mlib_c_flags = $(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model)) &
+sw_a_286 = $(sw_a_intel)$(sw_a_16bit) -fpc -D_BUILDING_MATHLIB
+sw_a_287 = $(sw_a_intel)$(sw_a_16bit) -fpi -fp0
+sw_a_386 = $(sw_a_intel)$(sw_a_$(convention)) -fpc -D_BUILDING_MATHLIB
+sw_a_387 = $(sw_a_intel)$(sw_a_$(convention)) -fpi87 -fp5
+sw_a_axp =
+sw_a_ppc =
+sw_a_mps =
+
+# sw_a_(system)
+sw_a_msdos    = -bt=dos
+sw_a_os2      = -bt=os2
+sw_a_windows  = -bt=windows
+sw_a_winnt    = -bt=nt $(win32ver)
+sw_a_linux    = -bt=linux
+sw_a_netware  = -bt=netware
+sw_a_qnx      = -bt=qnx
+
+mlib_c_flags = $(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(mlib_$(processor))_$(model)) &
     $(sw_c_$(processor)) $(sw_c_$(system)) $(extra_mlib_c_flags)
-mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model)) &
-    $(sw_a_$(processor)) $(sw_a_$(system)_$(processor)) $(extra_mlib_a_flags)
+mlib_a_flags = $(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(mlib_$(processor))_$(model)) &
+    $(sw_a_$(processor)) $(sw_a_$(system)) $(extra_mlib_a_flags)
 
 # debug flags need to be last to override optimization flags
 !ifeq release 0
 c_dbg_flags = -d2
 a_dbg_flags = -d1
+!ifdef debug
+c_dbg_flags += -D$(debug)
+a_dbg_flags += -D$(debug)
+!endif
 !else
 c_dbg_flags = -DNDEBUG
 a_dbg_flags = -DNDEBUG
 !endif
 
 !include $(mathlib_dir)/include.mif
-!include $(mathlib_dir)/bt.mif
 !include $(mathlib_dir)/lib.mif

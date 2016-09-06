@@ -17,32 +17,23 @@ _subdir_ =
 objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
 files = $+ $(static_objs) $-
 
-cpp_dirs = ../../cpp
-asm_dirs = ../../a;../../inc
+.cpp : ../../cpp
+
+.asm : ../../a;../../inc
 
 !include $(cpplib_dir)/libtarg.mif
-
-!ifeq processor 087
-target_lib = $(prefix)7$(suffix).lib
-!else ifeq processor 387
-target_lib = $(prefix)7$(suffix).lib
-!else
-target_lib = $(prefix)$(suffix).lib
-!endif
-!ifneq prefix cmplx
-!ifeq processor 087
-target_lib_x = $(prefix_x)7$(suffix).lib
-!else ifeq processor 387
-target_lib_x = $(prefix_x)7$(suffix).lib
-!else
-target_lib_x = $(prefix_x)$(suffix).lib
-!endif
-!endif
 
 !include cproj.mif
 !include deftarg.mif
 
 !include $(cpplib_dir)/flags.mif
+
+!include $(cpplib_dir)/librules.mif
+
+target_lib = $(prefix)$(suffix).lib
+!ifdef prefix_x
+target_lib_x = $(prefix_x)$(suffix).lib
+!endif
 
 !ifndef target_objs
 target_objs = $(objs)
@@ -68,9 +59,3 @@ $(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $^@ @$^&.lbc
 !endif
-
-.cpp : $(cpp_dirs)
-
-.asm : $(asm_dirs)
-
-!include $(cpplib_dir)/librules.mif
