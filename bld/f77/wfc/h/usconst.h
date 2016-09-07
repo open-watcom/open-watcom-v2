@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void     ConstCat( int size );
+extern void     ConstCat( uint size );

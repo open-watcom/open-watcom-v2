@@ -49,7 +49,7 @@
 #include "declare.h"
 
 
-sym_id  GStartCat( int num_args, int size ) {
+sym_id  GStartCat( uint num_args, uint size ) {
 //===========================================
 
 // Start cconcatenation into a temporary.
@@ -72,7 +72,7 @@ sym_id  GTempString( uint size ) {
 }
 
 
-void    GStopCat( int num_args, sym_id result ) {
+void    GStopCat( uint num_args, sym_id result ) {
 //===============================================
 
 // Finish concatenation into a temporary.
@@ -90,7 +90,7 @@ void    GStopCat( int num_args, sym_id result ) {
     // was indexed as WORD(I:J).
     PushOpn( CITNode );
     EmitOp( FC_CAT );
-    OutU16( num_args | 0x8000 ); // indicate concatenating into a static temp
+    OutU16( num_args | CAT_TEMP ); // indicate concatenating into a static temp
 }
 
 
@@ -149,7 +149,7 @@ void    AsgnChar( void ) {
 // Perform character assignment.
 
     itnode      *save_cit;
-    int         num_args;
+    uint        num_args;
     int         i;
     int         j;
 

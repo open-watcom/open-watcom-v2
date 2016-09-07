@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-extern sym_id  GStartCat( int num_args, int size );
+extern sym_id  GStartCat( uint num_args, uint size );
 extern sym_id  GTempString( uint size );
-extern void    GStopCat( int num_args, sym_id result );
+extern void    GStopCat( uint num_args, sym_id result );
 extern void    GCatArg( itnode *itptr );
 extern void    AsgnChar( void );

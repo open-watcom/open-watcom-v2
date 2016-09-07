@@ -40,13 +40,13 @@
 #include <string.h>
 
 
-void    Cat( int num_args, string *dest, ... ) {
+void    Cat( uint num_args, string *dest, ... ) {
 //==============================================
 
 // Perform character concatenation.
 
-    int         dest_len;
-    int         src_len;
+    uint        dest_len;
+    uint        src_len;
     char        *dest_ptr;
     string      *src;
     va_list     parminfo;
@@ -54,21 +54,17 @@ void    Cat( int num_args, string *dest, ... ) {
     dest_len = dest->len;
     dest_ptr = dest->strptr;
     va_start( parminfo, dest );
-    for( ;; ) {
-        if( dest_len == 0 ) break;
-        if( num_args == 0 ) {
-            memset( dest_ptr, ' ', dest_len );
-            break;
-        }
+    for( ; dest_len > 0 && num_args > 0; --num_args ) {
         src = va_arg( parminfo, string * );
         src_len = src->len;
-        if( dest_len < src_len ) {
+        if( src_len > dest_len ) {
             src_len = dest_len;
         }
         memcpy( dest_ptr, src->strptr, src_len );
         dest_len -= src_len;
         dest_ptr += src_len;
-        --num_args;
     }
+    if( dest_len > 0 )
+        memset( dest_ptr, ' ', dest_len );
     va_end( parminfo );
 }

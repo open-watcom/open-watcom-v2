@@ -40,13 +40,13 @@
 #include <string.h>
 
 
-void    TCat( int num_args, string *dest, ... ) {
+void    TCat( uint num_args, string *dest, ... ) {
 //===============================================
 
 // Perform character concatenation.
 
-    int         dest_len;
-    int         src_len;
+    uint        dest_len;
+    uint        src_len;
     char        *dest_ptr;
     string      *src;
     va_list     parminfo;
@@ -54,14 +54,12 @@ void    TCat( int num_args, string *dest, ... ) {
     dest_len = 0;
     dest_ptr = dest->strptr;
     va_start( parminfo, dest );
-    for( ;; ) {
-        if( num_args == 0 ) break;
+    for( ; num_args > 0; --num_args ) {
         src = va_arg( parminfo, string * );
         src_len = src->len;
         memcpy( dest_ptr, src->strptr, src_len );
         dest_len += src_len;
         dest_ptr += src_len;
-        --num_args;
     }
     dest->len = dest_len;
     va_end( parminfo );

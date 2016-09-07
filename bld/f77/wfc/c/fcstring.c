@@ -58,9 +58,6 @@
 #include "cgprotos.h"
 
 
-#define CAT_TEMP        0x8000
-
-
 cg_name SCBPtrAddr( cg_name scb ) {
 //=================================
 
@@ -111,7 +108,7 @@ cg_name Concat( uint num_args, cg_name dest ) {
 
 // Do concatenation operation.
 
-    int         count;
+    uint        count;
     call_handle call;
     cg_name     dest_1;
     cg_name     dest_2;
@@ -124,10 +121,8 @@ cg_name Concat( uint num_args, cg_name dest ) {
     } else {
         call = InitCall( RT_CAT );
     }
-    count = num_args;
-    while( count > 0 ) {
+    for( count = num_args; count > 0; --count ) {
         CGAddParm( call, StkElement( count ), TY_LOCAL_POINTER );
-        --count;
     }
     PopStkElements( num_args );
     CloneCGName( dest, &dest_1, &dest_2 );

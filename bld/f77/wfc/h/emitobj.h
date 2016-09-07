@@ -34,6 +34,9 @@
 #include "itdefn.h"
 #include "fcodes.h"
 
+
+#define CAT_TEMP        0x8000
+
 // emit.c
 extern  void            EmitOp(FCODE);
 // gtypes.c
