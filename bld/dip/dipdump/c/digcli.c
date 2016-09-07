@@ -156,7 +156,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
         s -= amount;
     }
 #else
-    rc = read( (int)h, b, s );
+    rc = read( DFH2PH( dfh ), b, s );
 #endif
 
     dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", DFH2PH( dfh ), b, (unsigned)s, (unsigned)rc ));
