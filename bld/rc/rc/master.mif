@@ -291,6 +291,6 @@ $(misc_objs):
     cat ../$@ >$@
 
 echo_findhash: .PROCEDURE .EXPLICIT
-!ifneq verbose 0
-    $echo findhash $@
+!ifeq verbose 0
+    @echo findhash $@
 !endif
