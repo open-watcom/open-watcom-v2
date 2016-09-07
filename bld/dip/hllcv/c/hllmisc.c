@@ -282,36 +282,6 @@ void hllConfused()
 {
     volatile int a = 0;
     volatile int b = 0;
-    DCWrite( 2, "\a\a\a\a\a\a\a", 8 );
+
     a /= b; /* cause a fault */
 }
-
-#ifdef HLL_LOG_ENABLED
-# include <stdio.h>
-# include <stdarg.h>
-
-/*
- * Debug logging.
- */
-void hllLog(const char *fmt, ...)
-{
-    /*
-     * Open the file on the first call.
-     */
-    static FILE *file = NULL;
-    if( file == NULL ) {
-        file = fopen( "hllcv.log", "w" );
-    }
-
-    /*
-     * Write to the file if open succeeded.
-     */
-    if( file != NULL) {
-        va_list va;
-        va_start( va, fmt );
-        fprintf( file, fmt, va );
-        va_end( va );
-        fflush( file );
-    }
-}
-#endif

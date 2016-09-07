@@ -237,7 +237,7 @@ void NYI( void )
 {
     volatile int a = 0;
     volatile int b = 0;
-    DCWrite( (dig_fhandle)2, "\a\a\a\a\a\a\a", 8 );
+
     a /= b; /* cause a fault */
 }
 
