@@ -60,9 +60,9 @@ static  void    VariableDims( sym_id arr );
 static  void    ConstDims( sym_id arr );
 static  void    Index( sym_id arr, cg_name offset );
     
-cg_name GetAdv( sym_id arr ) {
-//============================
-
+cg_name GetAdv( sym_id arr )
+//==========================
+{
     act_dim_list        *dim_ptr;
 
     dim_ptr = arr->u.ns.si.va.u.dim_ext;
@@ -75,11 +75,10 @@ cg_name GetAdv( sym_id arr ) {
 }
 
 
-cg_name ArrayEltSize( sym_id arr ) {
-//==================================
-
+cg_name ArrayEltSize( sym_id arr )
+//================================
 // Get element size of an array.
-
+{
     cg_name     elt_size;
     uint        size;
 
@@ -93,11 +92,10 @@ cg_name ArrayEltSize( sym_id arr ) {
 }
 
 
-void    FCSubscript( void ) {
-//=====================
-
+void    FCSubscript( void )
+//=========================
 // Do a subscript operation.
-
+{
     sym_id      arr;
 
     arr = GetPtr();
@@ -116,11 +114,10 @@ void    FCSubscript( void ) {
 }
 
 
-void    MakeSCB( sym_id scb, cg_name len ) {
-//==========================================
-
+void    MakeSCB( sym_id scb, cg_name len )
+//========================================
 // Make an SCB.
-
+{
     CGTrash( CGAssign( SCBLenAddr( CGFEName( scb, TY_CHAR ) ), len, TY_INTEGER ) );
     // assumption is that the pointer in the SCB is the first field in
     // the SCB so that when we push the cg_name returned by CGAssign()
@@ -138,8 +135,7 @@ static  cg_name HiBound( sym_id arr, int dim_no )
 {
     int     ss_offset;
 
-    ss_offset = BETypeLength( TY_ADV_LO ) * ( dim_no + 1 ) +
-                BETypeLength( TY_ADV_HI ) * dim_no;
+    ss_offset = BETypeLength( TY_ADV_LO ) * ( dim_no + 1 ) + BETypeLength( TY_ADV_HI ) * dim_no;
     return( CGUnary( O_POINTS, StructRef( GetAdv( arr ), ss_offset ), TY_ADV_HI ) );
 
 }
@@ -147,7 +143,6 @@ static  cg_name HiBound( sym_id arr, int dim_no )
 
 static  cg_name Multiplier( sym_id arr, int dim_no )
 //==================================================
-
 // Compute mulitplier.
 {
     cg_name     multiplier;
@@ -160,11 +155,10 @@ static  cg_name Multiplier( sym_id arr, int dim_no )
 }
 
 
-cg_name ArrayNumElts( sym_id arr ) {
+cg_name ArrayNumElts( sym_id arr )
 //==================================
-
 // Get number of elements in an array.
-
+{
     cg_name             num_elts;
     act_dim_list        *dim;
 
@@ -178,18 +172,17 @@ cg_name ArrayNumElts( sym_id arr ) {
 }
 
 
-cg_name FieldArrayNumElts( sym_id arr ) {
-//=======================================
-
+cg_name FieldArrayNumElts( sym_id arr )
+//=====================================
 // Get number of elements in an array.
-
+{
     return( CGInteger( arr->u.fd.dim_ext->num_elts, TY_INT_4 ) );
 }
 
 
-cg_name ConstArrayOffset( act_dim_list *dims ) {
-//==============================================
-
+cg_name ConstArrayOffset( act_dim_list *dims )
+//============================================
+{
     int                 dim_cnt;
     cg_name             hi_off;
     intstar4            multiplier;
@@ -208,8 +201,8 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
 
         // offset += ( ss - lo ) * multiplier;
         //              or
-        // hi_off += ss*multiplier
-        // lo_off -= lo*multiplier
+        // hi_off += ss * multiplier
+        // lo_off -= lo * multiplier
 
         hi_off = CGBinary( O_PLUS,
                            hi_off,
@@ -227,30 +220,27 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
 }
 
 
-static  void    ConstDims( sym_id arr ) {
-//=======================================
-
+static  void    ConstDims( sym_id arr )
+//=====================================
 // Subscript an array that has a constant array declarator.
-
+{
     Index( arr, ConstArrayOffset( arr->u.ns.si.va.u.dim_ext ) );
 }
 
 
-static  void    Index( sym_id arr, cg_name offset ) {
-//===================================================
-
+static  void    Index( sym_id arr, cg_name offset )
+//=================================================
 // Perform indexing operation.
-
+{
     offset = CGBinary( O_TIMES, offset, ArrayEltSize( arr ), TY_INT_4 );
     XPush( SymIndex( arr, offset ) );
 }
 
 
-static  cg_name LoBound( sym_id arr, int dim_no ) {
-//====================================================
-
+static  cg_name LoBound( sym_id arr, int dim_no )
+//===============================================
 // Get lo bound from ADV.
-
+{
     cg_name             lo_bound;
     act_dim_list        *dim_ptr;
 
@@ -264,11 +254,10 @@ static  cg_name LoBound( sym_id arr, int dim_no ) {
 }
 
 
-static  void    VariableDims( sym_id arr ) {
-//==========================================
-
+static  void    VariableDims( sym_id arr )
+//========================================
 // Subscript an array that has a variable array declarator.
-
+{
     act_dim_list        *dim_ptr;
     int                 dim_cnt;
     int                 dim_no;
@@ -305,11 +294,10 @@ static  void    VariableDims( sym_id arr ) {
 }
 
 
-static  void    DbSubscript( sym_id arr ) {
-//=========================================
-
+static  void    DbSubscript( sym_id arr )
+//=======================================
 // Generate call to debugging subscript routine.
-
+{
     act_dim_list        *dim_ptr;
     int                 dim_cnt;
     int                 dim_no;
@@ -333,11 +321,10 @@ static  void    DbSubscript( sym_id arr ) {
 }
 
 
-void    FCAdvFillLo( void ) {
-//=====================
-
+void    FCAdvFillLo( void )
+//=========================
 // Fill lo bound of a dimension.
-
+{
     sym_id              arr;
     int                 lo_offset;
     cg_name             adv;
@@ -353,11 +340,10 @@ void    FCAdvFillLo( void ) {
 }
 
 
-void    FCAdvFillHi( void ) {
-//=====================
-
+void    FCAdvFillHi( void )
+//=========================
 // Fill hi bound of a dimension (actually computes # of elements in dimension).
-
+{
     sym_id              arr;
     act_dim_list        *dim_ptr;
     int                 lo_size;
@@ -403,11 +389,10 @@ void    FCAdvFillHi( void ) {
 }
 
 
-void    FCAdvFillHiLo1( void ) {
-//========================
-
+void    FCAdvFillHiLo1( void )
+//============================
 // Fill hi and lo=1 bound of a dimension.
-
+{
     sym_id              arr;
     cg_name             lo;
     cg_name             hi;
