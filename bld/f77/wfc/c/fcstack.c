@@ -237,7 +237,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
     data_reference = true;
     if( ( sym->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
         if( ( sym->u.ns.flags & SY_SUBPROG_TYPE ) == SY_STMT_FUNC ) {
-            addr = CGFEName( sym, F772CGType( sym ) );
+            addr = CGFEName( sym, F77ToCGType( sym ) );
         } else {
             addr = CGFEName( sym, TY_CODE_PTR );
             if( sym->u.ns.flags & SY_SUB_PARM ) {
@@ -250,13 +250,13 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         if( CommonEntry == NULL ) {
             if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                 if( Options & OPT_DESCRIPTOR ) {
-                    addr = CGFEName( ReturnValue, F772CGType( sym ) );
+                    addr = CGFEName( ReturnValue, F77ToCGType( sym ) );
                     addr = CGUnary( O_POINTS, addr, TY_POINTER );
                 } else {
                     addr = SubAltSCB( sym->u.ns.si.ms.sym );
                 }
             } else {
-                addr = CGFEName( ReturnValue, F772CGType( sym ) );
+                addr = CGFEName( ReturnValue, F77ToCGType( sym ) );
             }
         } else {
             if( (sym->u.ns.u1.s.typ == FT_CHAR) && (Options & OPT_DESCRIPTOR) == 0 ) {
@@ -289,7 +289,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                     addr = CGUnary( O_POINTS, CGFEName( sym, p_type ), p_type );
                 }
             } else if( sym->u.ns.flags & SY_VALUE_PARM ) {
-                p_type = F772CGType( sym );
+                p_type = F77ToCGType( sym );
                 if( TypeCmplx( sym->u.ns.u1.s.typ ) ) {
                     p_type = CmplxBaseType( p_type );
                     addr = CGFEName( sym, p_type );
@@ -314,7 +314,7 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         }
         if( leader->u.ns.si.va.vi.ec_ext->ec_flags & MEMBER_IN_COMMON ) {
             addr = CGFEName( leader->u.ns.si.va.vi.ec_ext->com_blk,
-                             F772CGType( sym ) );
+                             F77ToCGType( sym ) );
             offset += leader->u.ns.si.va.vi.ec_ext->offset;
         } else {
             sym_id      shadow;
@@ -325,9 +325,9 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
                 offset -= leader->u.ns.si.va.vi.ec_ext->low;
             } else if( (leader->u.ns.u1.s.typ == FT_CHAR) &&
                        (leader->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
-                addr = CGBackName( leader->u.ns.si.va.u.bck_hdl, F772CGType( sym ) );
+                addr = CGBackName( leader->u.ns.si.va.u.bck_hdl, F77ToCGType( sym ) );
             } else {
-                addr = CGFEName( leader, F772CGType( sym ) );
+                addr = CGFEName( leader, F77ToCGType( sym ) );
             }
         }
         if( i != NULL ) {
@@ -339,13 +339,13 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) {
             // tell code generator where storage pointed to by SCB is located
             addr = CGBinary( O_COMMA, addr,
-                             CGFEName( sym, F772CGType( sym ) ), TY_DEFAULT );
+                             CGFEName( sym, F77ToCGType( sym ) ), TY_DEFAULT );
         }
         i = NULL;
     } else if( ( sym->u.ns.u1.s.typ == FT_CHAR ) &&
                ( ( sym->u.ns.flags & SY_SUBSCRIPTED ) == 0 ) ) {
         // character variable, address of scb
-        addr = CGFEName( sym, F772CGType( sym ) );
+        addr = CGFEName( sym, F77ToCGType( sym ) );
     } else if( sym->u.ns.flags & SY_IN_COMMON ) {
         ce_ext = sym->u.ns.si.va.vi.ec_ext;
         if( i != NULL ) {
@@ -354,11 +354,11 @@ cg_name SymIndex( sym_id sym, cg_name i ) {
         } else {
             i = CGInteger( ce_ext->offset, TY_INT_4 );
         }
-        addr = CGBinary( O_PLUS, CGFEName( ce_ext->com_blk, F772CGType( sym ) ),
+        addr = CGBinary( O_PLUS, CGFEName( ce_ext->com_blk, F77ToCGType( sym ) ),
                          i, SymPtrType( sym ) );
         i = NULL;
     } else {
-        addr = CGFEName( sym, F772CGType( sym ) );
+        addr = CGFEName( sym, F77ToCGType( sym ) );
         if( ( sym->u.ns.flags & SY_SUBSCRIPTED ) && _Allocatable( sym ) ) {
             addr = CGUnary( O_POINTS, addr, ArrayPtrType( sym ) );
         }
@@ -404,7 +404,7 @@ cg_name SymValue( sym_id sym ) {
 
 // Generate value of a symbol.
 
-    return( CGUnary( O_POINTS, SymAddr( sym ), F772CGType( sym ) ) );
+    return( CGUnary( O_POINTS, SymAddr( sym ), F77ToCGType( sym ) ) );
 }
 
 

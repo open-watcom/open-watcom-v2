@@ -107,7 +107,7 @@ call_handle     InitCall( RTCODE rtn_id ) {
         sym->u.ns.si.sp.u.imp_segid = AllocImpSegId();
         rt_entry->sym_ptr = sym;
     }
-    typ = F772CGType( sym );
+    typ = F77ToCGType( sym );
     return( CGInitCall( CGFEName( sym, typ ), typ, rt_entry->sym_ptr ) );
 }
 

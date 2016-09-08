@@ -89,7 +89,7 @@ cg_type SPType( sym_id sym ) {
     if( (sym->u.ns.flags & SY_SUBPROG_TYPE) == SY_SUBROUTINE ) return( TY_INTEGER );
     // must be a function
     if( sym->u.ns.u1.s.typ == FT_CHAR ) return( TY_INTEGER );
-    return( F772CGType( sym ) );
+    return( F77ToCGType( sym ) );
 }
 
 
@@ -379,7 +379,7 @@ static  void    PassCommonArgs( call_handle call, entry_pt *ep_called ) {
                 } else if( arg->id->u.ns.u1.s.typ == FT_CHAR ) {
                     arg_type = TY_POINTER;
                 } else if( ( arg_aux != NULL ) && ( arg_aux->info & PASS_BY_VALUE ) ) {
-                    arg_type = F772CGType( arg->id );
+                    arg_type = F77ToCGType( arg->id );
                 } else {
                     arg_type = TY_POINTER;
                 }

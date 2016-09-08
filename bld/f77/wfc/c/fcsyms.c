@@ -68,7 +68,6 @@
 #include <string.h>
 
 
-extern  cg_type         F772CGType( sym_id );
 extern  cg_name         SubAltSCB( sym_id );
 
 extern  segment_id      CurrCodeSegId;
@@ -480,7 +479,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
                 }
             } else if( typ == FT_STRUCTURE ) {
                 if( !ForceStatic( flags ) && (Options & OPT_AUTOMATIC) ) {
-                    cgtyp = F772CGType( sym );
+                    cgtyp = F77ToCGType( sym );
                     CheckAutoSize( sym, cgtyp );
                     CGAutoDecl( sym, cgtyp );
                 } else {
@@ -496,7 +495,7 @@ static  unsigned_32     DumpVariable( sym_id sym, unsigned_32 g_offset ) {
             } else if( ForceStatic( flags ) || (Options & OPT_SAVE) ) {
                 LocalData( sym, size );
             } else {
-                cgtyp = F772CGType( sym );
+                cgtyp = F77ToCGType( sym );
                 CheckAutoSize( sym, cgtyp );
                 CGAutoDecl( sym, cgtyp );
             }
@@ -557,7 +556,7 @@ void    GenLocalSyms( void ) {
                 if( sym->u.ns.u1.s.typ == FT_CHAR ) {
                     CGAutoDecl( sym, TY_CHAR );
                 } else {
-                    cgtyp = F772CGType( sym );
+                    cgtyp = F77ToCGType( sym );
                     CheckAutoSize( sym, cgtyp );
                     CGAutoDecl( sym, cgtyp );
                 }
@@ -631,7 +630,7 @@ void    GenLocalSyms( void ) {
             } else {
                 // check for shadow argument for character argument length
                 if( (sym->u.ns.flags & SY_VALUE_PARM) == 0 ) {
-                    cgtyp = F772CGType( sym );
+                    cgtyp = F77ToCGType( sym );
                     CheckAutoSize( sym, cgtyp );
                     CGAutoDecl( sym, cgtyp );
                 }
@@ -760,7 +759,7 @@ void    GenLocalDbgInfo( void ) {
                 loc = CGFEName( ReturnValue, TY_POINTER );
                 loc = CGUnary( O_POINTS, loc, TY_POINTER );
             } else {
-                loc = CGFEName( ReturnValue, F772CGType( sym ) );
+                loc = CGFEName( ReturnValue, F77ToCGType( sym ) );
             }
             CGDone( CGAssign( CGFEName( sym, TY_POINTER ), loc, TY_POINTER ) );
             DbgVarInfo( sym );
@@ -1387,7 +1386,7 @@ void    DefineEntryPoint( entry_pt *ep ) {
             CGParmDecl( ReturnValue, TY_POINTER );
         }
     } else {
-        cgtyp = F772CGType( sp );
+        cgtyp = F77ToCGType( sp );
         CheckAutoSize( sp, cgtyp );
         CGAutoDecl( ReturnValue, cgtyp );
     }
@@ -1494,7 +1493,7 @@ static  void    DeclareArg( parameter *arg, pass_by *arg_aux ) {
         } else {
             if( arg_aux != NULL ) {
                 if( arg_aux->info & PASS_BY_VALUE ) {
-                    arg_type = F772CGType( arg_id );
+                    arg_type = F77ToCGType( arg_id );
                     arg_id->u.ns.flags |= SY_VALUE_PARM;
                     if( TypeCmplx( arg_id->u.ns.u1.s.typ ) ) {
                         arg_type = CmplxBaseType( arg_type );

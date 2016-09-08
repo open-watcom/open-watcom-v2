@@ -433,7 +433,7 @@ void    FCSFCall( void ) {
         if( sf_arg->u.ns.u1.s.typ == FT_CHAR ) {
             value = Concat( 1, CGFEName( sf_arg, TY_CHAR ) );
         } else {
-            sf_type = F772CGType( sf_arg );
+            sf_type = F77ToCGType( sf_arg );
             if( TypeCmplx( sf_arg->u.ns.u1.s.typ ) ) {
                 XPopCmplx( &z, sf_type );
                 sf_type = CmplxBaseType( sf_type );
@@ -463,7 +463,7 @@ void    FCSFCall( void ) {
         }
         value = CGFEName( tmp, TY_CHAR );
     } else {
-        sf_type = F772CGType( sf );
+        sf_type = F77ToCGType( sf );
         if( (OZOpts & OZOPT_O_INLINE) == 0 ) {
             value = CGUnary( O_POINTS, CGFEName( sf, sf_type ), sf_type );
         }
