@@ -998,11 +998,11 @@ static void AssignName2Adv( sym_id sym ) {
     dim_cnt = _DimCount( dim_ptr->dim_flags );
     if( dim_ptr->adv == NULL ) {
         // ADV is allocated on the stack
-        adv = CGFEName( FindAdvShadow( sym ), ( TY_ADV_ENTRY + dim_cnt ) );
+        adv = CGFEName( FindAdvShadow( sym ), TY_ADV_ENTRY + dim_cnt );
     } else {
-        adv = CGBackName( dim_ptr->adv, ( TY_ADV_ENTRY + dim_cnt ) );
+        adv = CGBackName( dim_ptr->adv, TY_ADV_ENTRY + dim_cnt );
     }
-    adv = StructRef( adv, ( BETypeLength( TY_ADV_ENTRY ) * dim_cnt ) );
+    adv = StructRef( adv, BETypeLength( TY_ADV_ENTRY ) * dim_cnt );
     data = BENewBack( NULL );
     DGLabel( data );
     DumpSymName( sym );
@@ -1031,9 +1031,8 @@ static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
     dim_cnt = _DimCount( dim_ptr->dim_flags );
     dim_no = dim_cnt;
     bounds = &dim_ptr->subs_1_lo;
-    entry = 1;
     CGAutoDecl( shadow, ( TY_ADV_ENTRY + dim_cnt ) );
-    for( ;; ) {
+    for( entry = 1; ; ++entry ) {
         lo = *bounds++;
         hi = *bounds++;
         adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
@@ -1047,15 +1046,14 @@ static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
         adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
         CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_HI ),
                 CGInteger( hi, TY_ADV_HI ), TY_ADV_HI ) );
-        if( --dim_no == 0 )
+        if( --dim_no == 0 ) {
             break;
-        entry++;
+        }
     }
     if( CGOpts & CGOPT_DI_CV ) {
-        entry = 1;
         dim_no = dim_cnt;
         bounds = &dim_ptr->subs_1_lo;
-        for( ;; ) {
+        for( entry = 1; ; ++entry ) {
             lo = *bounds++;
             hi = *bounds++;
             adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
@@ -1067,9 +1065,9 @@ static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
             adv = CGFEName( shadow, ( TY_ADV_ENTRY + dim_no ) );
             CGDone( CGAssign( CVAdvEntryAddr( adv, dim_cnt, entry, TY_ADV_HI_CV ),
                     CGInteger( hi, TY_ADV_HI_CV ), TY_ADV_HI_CV ) );
-            if( --dim_no == 0 )
+            if( --dim_no == 0 ) {
                 break;
-            entry++;
+            }
         }
     }
 }
@@ -1082,23 +1080,25 @@ static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
 
     act_dim_list        *dim_ptr;
     int                 dim_cnt;
+    int                 dim_no;
     intstar4            *bounds;
     intstar4            lo;
     intstar4            hi;
 
     dim_ptr = sym->u.ns.si.va.u.dim_ext;
     dim_cnt = _DimCount( dim_ptr->dim_flags );
+    dim_no = dim_cnt;
     bounds = &dim_ptr->subs_1_lo;
     for( ;; ) {
         lo = *bounds++;
         hi = *bounds++;
         DGInteger( lo, TY_ADV_LO );
-        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_cnt == 1 ) ) {
+        if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
             DGInteger( 0, TY_ADV_HI );
         } else {
             DGInteger( hi - lo + 1, TY_ADV_HI );
         }
-        if( --dim_cnt == 0 ) {
+        if( --dim_no == 0 ) {
             break;
         }
     }
@@ -1106,18 +1106,18 @@ static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
         DGInteger( 0, TY_POINTER );
     }
     if( CGOpts & CGOPT_DI_CV ) {
-        dim_cnt = _DimCount( dim_ptr->dim_flags );
+        dim_no = dim_cnt;
         bounds = &dim_ptr->subs_1_lo;
         for( ;; ) {
             lo = *bounds++;
             hi = *bounds++;
             DGInteger( lo, TY_ADV_LO );
-            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_cnt == 1 ) ) {
+            if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( dim_no == 1 ) ) {
                 DGInteger( 0, TY_ADV_HI_CV );
             } else {
                 DGInteger( hi, TY_ADV_HI_CV );
             }
-            if( --dim_cnt == 0 ) {
+            if( --dim_no == 0 ) {
                 break;
             }
         }

@@ -449,10 +449,9 @@ void    ArrayDecl( sym_id sym ) {
     }
     bounds = &dim_list.subs_1_lo;
     num_elts = 1;
-    ss = 0;
     assumed = false;
     var_dim = false;
-    for( ;; ) {
+    for( ss = 0; ss < MAX_DIM; ) {
         ss++;
         pvd_ok = false;
         hi_bound = 0;
@@ -551,7 +550,7 @@ void    ArrayDecl( sym_id sym ) {
         *bounds++ = lo_bound;
         *bounds++ = hi_bound;
         AdvanceITPtr();
-        if( !RecComma() || assumed || ( ss == MAX_DIM ) ) {
+        if( !RecComma() || assumed ) {
             break;
         }
     }
