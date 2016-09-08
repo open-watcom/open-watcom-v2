@@ -61,8 +61,8 @@ static  bool    ReqChar( void ) {
 
 // Recognize one character operand.
 
-    if( RecName() && (CITNode->opnd_size == 1) &&
-        !CharSetInfo.is_foreign( *CITNode->opnd ) ) return( true );
+    if( RecName() && (CITNode->opnd_size == 1) && !CharSetInfo.is_foreign( *CITNode->opnd ) )
+        return( true );
     Error( IM_ILLEGAL_RANGE );
     return( false );
 }
@@ -71,15 +71,22 @@ static  bool    ReqChar( void ) {
 static  bool            StarStar( TYPE typ ) {
 //============================================
 
-    if( typ != FT_CHAR ) return( false );
-    if( !RecNOpn() ) return( false );
-    if( !RecNextOpr( OPR_LBR ) ) return( false );
+    if( typ != FT_CHAR )
+        return( false );
+    if( !RecNOpn() )
+        return( false );
+    if( !RecNextOpr( OPR_LBR ) )
+        return( false );
     AdvanceITPtr();
-    if( !RecNOpn() ) return( false );
-    if( !RecNextOpr( OPR_MUL ) ) return( false );
+    if( !RecNOpn() )
+        return( false );
+    if( !RecNextOpr( OPR_MUL ) )
+        return( false );
     AdvanceITPtr();
-    if( !RecNOpn() ) return( false );
-    if( !RecNextOpr( OPR_RBR ) ) return( false );
+    if( !RecNOpn() )
+        return( false );
+    if( !RecNextOpr( OPR_RBR ) )
+        return( false );
     return( true );
 }
 
@@ -92,8 +99,7 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
 
     itnode      *temp;
 
-    if( (typ == FT_DOUBLE) || (typ == FT_DCOMPLEX) ||
-        (typ == FT_EXTENDED) || (typ == FT_XCOMPLEX) ) {
+    if( (typ == FT_DOUBLE) || (typ == FT_DCOMPLEX) || (typ == FT_EXTENDED) || (typ == FT_XCOMPLEX) ) {
         temp = CITNode;
         CITNode = start; // get the caret in proper place
         TypeErr( TY_NOT_DBL_PREC, typ );
@@ -101,25 +107,44 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
         return( false );
     }
     if( typ == FT_LOGICAL ) {
-        if( size == sizeof( logstar1 ) ) return( true );
-        if( size == sizeof( logstar4 ) ) return( true );
+        if( size == sizeof( logstar1 ) )
+            return( true );
+        if( size == sizeof( logstar4 ) ) {
+            return( true );
+        }
     } else if( typ == FT_INTEGER ) {
-        if( size == sizeof( intstar1 ) ) return( true );
-        if( size == sizeof( intstar2 ) ) return( true );
-        if( size == sizeof( intstar4 ) ) return( true );
+        if( size == sizeof( intstar1 ) )
+            return( true );
+        if( size == sizeof( intstar2 ) )
+            return( true );
+        if( size == sizeof( intstar4 ) ) {
+            return( true );
+        }
     } else if( typ == FT_REAL ) {
-        if( size == sizeof( single ) ) return( true );
-        if( size == sizeof( double ) ) return( true );
-        if( size == sizeof( extended ) ) return( true );
+        if( size == sizeof( single ) )
+            return( true );
+        if( size == sizeof( double ) )
+            return( true );
+        if( size == sizeof( extended ) ) {
+            return( true );
+        }
     } else if( typ == FT_COMPLEX ) {
-        if( size == sizeof( scomplex ) ) return( true );
-        if( size == sizeof( dcomplex ) ) return( true );
-        if( size == sizeof( xcomplex ) ) return( true );
+        if( size == sizeof( scomplex ) )
+            return( true );
+        if( size == sizeof( dcomplex ) )
+            return( true );
+        if( size == sizeof( xcomplex ) ) {
+            return( true );
+        }
     } else if( typ == FT_CHAR ) {
 #if _CPU == 8086
-        if( (size > 0) && (size <= USHRT_MAX) ) return( true );
+        if( (size > 0) && (size <= USHRT_MAX) ) {
+            return( true );
+        }
 #else
-        if( size > 0 ) return( true );
+        if( size > 0 ) {
+            return( true );
+        }
 #endif
     }
     temp = CITNode;
@@ -234,14 +259,14 @@ void    CpImplicit( void ) {
         }
         SgmtSw |= SG_IMPLICIT_NONE;
     } else {
-        for(;;) {
+        for( ;; ) {
             typ = RecTypeKW();
             AdvanceITPtr();
             if( ( typ != FT_NO_TYPE ) && !LenSpec( typ, &size ) ) {
                 size = StorageSize( typ );
             }
             ReqOpenParen();
-            for(;;) {
+            for( ;; ) {
                 valid_range = ReqChar();
                 chr1 = *CITNode->opnd;
                 AdvanceITPtr();
@@ -263,12 +288,16 @@ void    CpImplicit( void ) {
                         Error( IM_PREV_IMPLICIT );
                     }
                 }
-                if( !RecComma() ) break;
+                if( !RecComma() ) {
+                    break;
+                }
             }
             ReqCloseParen();
             ReqNOpn();
             AdvanceITPtr();
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         if( SgmtSw & SG_IMPLICIT_NONE ) {
             Error( IM_NONE_USED );

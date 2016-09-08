@@ -217,11 +217,11 @@ static void CaseHandler( void )
             } else {
                 kase = CSHead->cs_info.cases;
                 while( kase->link != NULL ) {
-                    if( kase->link->low > high ) break;
+                    if( kase->link->low > high )
+                        break;
                     kase = kase->link;
                 }
-                if( ( kase != CSHead->cs_info.cases ) &&
-                    ( kase->high >= low ) ) {
+                if( ( kase != CSHead->cs_info.cases ) && ( kase->high >= low ) ) {
                     Error( SP_CASE_OVERLAP );
                 } else {
                     link = kase->link;
@@ -236,7 +236,9 @@ static void CaseHandler( void )
                 }
             }
         }
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqCloseParen();
     ReqNOpn();

@@ -58,15 +58,18 @@ void    ScanExpr(void) {
     int         level;
 
     level = 0;
-    for(;;) {
+    for( ;; ) {
         if( RecOpenParen() ) {
             level++;
         } else if( RecCloseParen() ) {
             level--;
         }
-        if( ( RecComma() || RecColon() ) && ( level == 0 ) ) break;
-        if( level < 0  ) break;
-        if( RecTrmOpr() ) break;
+        if( ( RecComma() || RecColon() ) && ( level == 0 ) )
+            break;
+        if( level < 0  )
+            break;
+        if( RecTrmOpr() )
+            break;
         AdvanceITPtr();
     }
 }

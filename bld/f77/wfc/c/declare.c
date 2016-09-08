@@ -76,15 +76,20 @@ bool    IsFunctionDefn( void ) {
 
 // Check to see if type declaration is a function definition.
 
-    if( !RecName() ) return( false );
-    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) ) return( false );
+    if( !RecName() )
+        return( false );
+    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) )
+        return( false );
     // allow INTEGER FUNCTION(10)
-    if( CITNode->opnd_size == 8 ) return( false );
+    if( CITNode->opnd_size == 8 )
+        return( false );
     // allow "INTEGER FUNCTIONA"
-    if( RecNextOpr( OPR_TRM ) ) return( false );
+    if( RecNextOpr( OPR_TRM ) )
+        return( false );
     // We now have INTEGER[*lenspec] FUNCTION name ...
     // allow INTEGER FUNCTIONA,
-    if( StmtSw & SS_COMMA_FOUND ) return( false );
+    if( StmtSw & SS_COMMA_FOUND )
+        return( false );
     RemKeyword( CITNode, 8 );
     return( true );
 }
@@ -164,31 +169,42 @@ TYPE    MapTypes( TYPE typ, uint size ) {
 
     if( typ == FT_REAL ) {
         switch( size ) {
-        case( sizeof( double ) ):       return( FT_DOUBLE );
+        case( sizeof( double ) ):
+            return( FT_DOUBLE );
         // kludge until long doubles are implemented.
-        case( 16 ):                     return( FT_EXTENDED );
-        default:        return( typ );
+        case( 16 ):
+            return( FT_EXTENDED );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_COMPLEX ) {
         switch( size ) {
-        case( sizeof( dcomplex ) ):     return( FT_DCOMPLEX );
+        case( sizeof( dcomplex ) ):
+            return( FT_DCOMPLEX );
         // cludge until long doubles are implemented.
-        case( 32 ):                     return( FT_XCOMPLEX );
-        default:        return( typ );
+        case( 32 ):
+            return( FT_XCOMPLEX );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_INTEGER ) {
         switch( size ) {
-        case( sizeof( intstar2 ) ):     return( FT_INTEGER_2 );
-        case( sizeof( intstar1 ) ):     return( FT_INTEGER_1 );
-        default:        return( typ );
+        case( sizeof( intstar2 ) ):
+            return( FT_INTEGER_2 );
+        case( sizeof( intstar1 ) ):
+            return( FT_INTEGER_1 );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_LOGICAL ) {
         switch( size ) {
-        case( sizeof( logstar1 ) ):     return( FT_LOGICAL_1 );
-        default:        return( typ );
+        case( sizeof( logstar1 ) ):
+            return( FT_LOGICAL_1 );
+        default:
+            return( typ );
         }
     }
     return( typ );
@@ -235,7 +251,7 @@ static  void    TypeDecl( TYPE typ ) {
                 ReqComma();
             }
         }
-        for(;;) {
+        for( ;; ) {
             size = SIZE_UNDEF;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
@@ -277,7 +293,9 @@ static  void    TypeDecl( TYPE typ ) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         ReqEOS();
     }
@@ -373,7 +391,7 @@ void    CpDimension( void ) {
 
     sym_id    sym;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
             AdvanceITPtr();
@@ -383,7 +401,9 @@ void    CpDimension( void ) {
         } else {
             AdvanceITPtr();
         }
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }
@@ -432,7 +452,7 @@ void    ArrayDecl( sym_id sym ) {
     dim_cnt = 0;
     assumed = false;
     var_dim = false;
-    for(;;) {
+    for( ;; ) {
         dim_cnt++;
         pvd_ok = false;
         hi_bound = 0;
@@ -531,7 +551,9 @@ void    ArrayDecl( sym_id sym ) {
         *bounds++ = lo_bound;
         *bounds++ = hi_bound;
         AdvanceITPtr();
-        if( !RecComma() || assumed || ( dim_cnt == MAX_DIM ) ) break;
+        if( !RecComma() || assumed || ( dim_cnt == MAX_DIM ) ) {
+            break;
+        }
     }
     _SetDimCount( dim_list.dim_flags, dim_cnt );
     ReqCloseParen();

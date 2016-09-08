@@ -60,7 +60,7 @@ void    CpNameList( void ) {
     StmtExtension( SP_STRUCTURED_EXT );
     ReqNOpn();
     AdvanceITPtr();
-    for(;;) {
+    for( ;; ) {
         ReqDiv();
         if( ReqName( NAME_GROUP ) ) {
             name_list = LkNameList();
@@ -69,7 +69,7 @@ void    CpNameList( void ) {
         }
         AdvanceITPtr();
         ReqDiv();
-        for(;;) {
+        for( ;; ) {
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym = LkSym();
             } else {
@@ -82,11 +82,12 @@ void    CpNameList( void ) {
                 if( last == NULL ) {    // if empty name list
                     name_list->u.nl.group_list = ge;
                 } else {
-                    for(;;) {
+                    for( ;; ) {
                         if( last->sym == sym ) {
                             NameErr( VA_SAME_NAMELIST, sym );
                         }
-                        if( last->link == NULL ) break;
+                        if( last->link == NULL )
+                            break;
                         last = last->link;
                     }
                     last->link = ge;
@@ -96,9 +97,13 @@ void    CpNameList( void ) {
             if( RecComma() && RecNOpn() ) {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
-        if( !RecDiv() ) break;
+        if( !RecDiv() ) {
+            break;
+        }
     }
     ReqEOS();
 }

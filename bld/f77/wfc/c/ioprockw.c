@@ -80,7 +80,7 @@ static  void    NextComma( void ) {
 
     AdvanceITPtr();
     level = 0;
-    for(;;) {
+    for( ;; ) {
         if( RecOpenParen() ) {
             level++;
         } else if( RecCloseParen() ) {
@@ -209,7 +209,8 @@ void    ChkAssumed( void ) {
 
     sym_id      sym;
 
-    if( CITNode->opn.us & USOPN_FLD ) return;
+    if( CITNode->opn.us & USOPN_FLD )
+        return;
     sym = CITNode->sym_ptr;
     if( sym->u.ns.si.va.u.dim_ext->dim_flags & DIM_ASSUMED ) {
         NameErr( SV_CANT_USE_ASSUMED, sym );
@@ -431,9 +432,11 @@ void    KeywordList( void ) {
         morelist = RecComma();
     }
     if( morelist ) {
-        for(;;) {
+        for( ;; ) {
             GetItem();
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
     }
     CheckList();               // check that list had necessities ( unit )

@@ -292,9 +292,11 @@ static void CkRemBlock( void )
     csnode      *csptr;
 
     csptr = CSHead;
-    for(;;) {
-        if( csptr->typ == CS_EMPTY_LIST ) return;
-        if( csptr->typ == CS_REMOTEBLOCK ) break;
+    for( ;; ) {
+        if( csptr->typ == CS_EMPTY_LIST )
+            return;
+        if( csptr->typ == CS_REMOTEBLOCK )
+            break;
         csptr = csptr->link;
     }
     Error( SP_RET_IN_REMOTE );
@@ -422,7 +424,7 @@ static void ParmList( bool star_ok, entry_pt *entry )
         // consider name()
         AdvanceITPtr();
     } else {
-        for(;;) {       // process parm list
+        for( ;; ) {     // process parm list
             if( star_ok && RecNOpn() ) {
                 AdvanceITPtr();
                 if( ReqMul() && ReqNOpn() ) {
@@ -437,7 +439,9 @@ static void ParmList( bool star_ok, entry_pt *entry )
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
     }
 }
@@ -450,11 +454,15 @@ static void DoWarps( void )
     sym_id      sym;
 
     for( parm = ArgList->parms; parm != NULL; parm = parm->link ) {
-        if( parm->flags & ARG_STMTNO ) continue;
+        if( parm->flags & ARG_STMTNO )
+            continue;
         sym = parm->id;
-        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE ) continue;
-        if( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 ) continue;
-        if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) == 0 ) continue;
+        if( (sym->u.ns.flags & SY_CLASS) != SY_VARIABLE )
+            continue;
+        if( (sym->u.ns.flags & SY_SUBSCRIPTED) == 0 )
+            continue;
+        if( _AdvRequired( sym->u.ns.si.va.u.dim_ext ) == 0 )
+            continue;
         GWarp( sym );
     }
 }

@@ -100,7 +100,7 @@ void    CpEquivalence(void) {
             eq_set = eq_set->next_eq_set;
         }
     }
-    for(;;) {
+    for( ;; ) {
         if( RecNOpn() ) {
             AdvanceITPtr();
         }
@@ -108,7 +108,7 @@ void    CpEquivalence(void) {
         eqv_entry = NULL;
         eq_head = NULL;
         num_equived = 0;
-        for(;;) {
+        for( ;; ) {
             AError = false;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 num_equived++;
@@ -141,7 +141,7 @@ void    CpEquivalence(void) {
                 if( RecOpenParen() ) {
                     if( !RecNOpn() || !RecNextOpr( OPR_COL ) ) {
                         sub_strung = false;
-                        for(;;) {
+                        for( ;; ) {
                             CIntExpr();
                             *subscripts = ITIntValue( CITNode );
                             AdvanceITPtr();
@@ -151,8 +151,11 @@ void    CpEquivalence(void) {
                             }
                             subscripts++;
                             equiv.subs_no++;
-                            if( equiv.subs_no == MAX_DIM ) break;
-                            if( !RecComma() ) break;
+                            if( equiv.subs_no == MAX_DIM )
+                                break;
+                            if( !RecComma() ) {
+                                break;
+                            }
                         }
                         if( !sub_strung ) {
                             ReqCloseParen();
@@ -204,7 +207,9 @@ void    CpEquivalence(void) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         if( num_equived < 2 ) {
             Error( EV_EQUIV_LIST );
@@ -219,7 +224,9 @@ void    CpEquivalence(void) {
         ReqCloseParen();
         ReqNOpn();
         AdvanceITPtr();
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }
@@ -236,11 +243,13 @@ void    EqPurge(void) {
     while( EquivSets != NULL ) {
         eq_set = EquivSets;
         EquivSets = eq_set->next_eq_set;
-        for(;;) {
+        for( ;; ) {
             old = eq_set;
             eq_set = old->next_eq_entry;
             FMemFree( old );
-            if( eq_set == NULL ) break;
+            if( eq_set == NULL ) {
+                break;
+            }
         }
     }
 }

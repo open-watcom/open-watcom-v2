@@ -144,7 +144,7 @@ void    CpRecord( void ) {
         SubProgId->u.ns.xt.sym_record = sd;
     } else {
         MustBeTypeDecl();
-        for(;;) {
+        for( ;; ) {
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
                 if( SgmtSw & SG_DEFINING_STRUCTURE ) {
@@ -167,7 +167,9 @@ void    CpRecord( void ) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         ReqEOS();
     }
@@ -182,7 +184,8 @@ void    StructResolve( void ) {
     sym_id      sd;
 
     for( sd = RList; sd != NULL; sd = sd->u.sd.link ) {
-        if( sd->u.sd.name_len == 0 ) continue; // NULL structure
+        if( sd->u.sd.name_len == 0 )
+            continue; // NULL structure
         if( sd->u.sd.fl.fields != NULL ) {
             if( CalcStructSize( sd ) ) {
                 StructErr( SP_STRUCT_RECURSION, sd );
