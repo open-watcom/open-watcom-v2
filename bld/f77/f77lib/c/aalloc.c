@@ -110,7 +110,7 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
     void PGM * PGM *    item;
     struct string PGM * scb;
     adv_entry PGM *     adv_ent;
-    uint                dims;
+    int                 dim_cnt;
     unsigned_32         size;
     va_list             args;
     intstar4 PGM *      stat;
@@ -140,16 +140,16 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
     if( stat != NULL ) {
         *stat = STAT_OK;
     }
-    while( num != 0 ) {
+    while( num-- > 0 ) {
         alloc_flags = va_arg( args, unsigned_16 );
         item = va_arg( args, void PGM * PGM * );
         if( alloc_flags & ALLOC_STRING ) {
             scb = (string *)item;
-            dims = 1;
+            dim_cnt = 1;
             elt_size = 1;
         } else {
             adv_ent = va_arg( args, adv_entry * );
-            dims = va_arg( args, uint );
+            dim_cnt = va_arg( args, int );
             elt_size = va_arg( args, unsigned_32 );
         }
         if( Allocated( item, alloc_flags ) && (alloc_flags & ALLOC_LOC) == 0 ) {
@@ -183,13 +183,12 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
         } else {
             if( alloc_flags & ALLOC_STRING ) {
                 size = scb->len;
-                dims = 0;
+                dim_cnt = 0;
             } else {
                 size = 1;
-                while( dims != 0 ) {
+                while( dim_cnt-- > 0 ) {
                     size *= adv_ent->num_elts;
                     ++adv_ent;
-                    --dims;
                 }
             }
 #if defined( _M_I86 )
@@ -227,7 +226,6 @@ void    Alloc( unsigned_16 alloc_type, uint num, ... ) {
         }
         turnOffFlags( item, alloc_flags, ALLOC_MASK );
         turnOnFlags( item, alloc_flags, alloc_type );
-        --num;
     }
     va_end( args );
 }
@@ -243,7 +241,7 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
 
     istat = STAT_OK;
     va_start( args, num );
-    while( num != 0 ) {
+    while( num-- > 0 ) {
         alloc_flags = va_arg( args, unsigned_16 );
         item = va_arg( args, void PGM * PGM * );
         if( !Allocated( item, alloc_flags ) ) {
@@ -283,7 +281,6 @@ void    DeAlloc( intstar4 PGM *stat, uint num, ... ) {
             }
             turnOffFlags( item, alloc_flags, ALLOC_MASK );
         }
-        --num;
     }
     va_end( args );
     if( ( istat != STAT_OK ) && ( stat == NULL ) ) {

@@ -81,7 +81,7 @@ void    CpAllocate( void )
     }
     ReqOpenParen();
     GBegAllocate();
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {
@@ -144,12 +144,12 @@ void    DimArray( sym_id sym )
 // Called by GAllocate() so that system dependent code
 // can control the order in which code gets generated.
 
-    int         subs;
+    int         ss;
     int         dim_cnt;
 
     dim_cnt = _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags );
-    for( subs = 0; subs < dim_cnt; ) {
-        subs++;
+    for( ss = 0; ss < dim_cnt; ) {
+        ss++;
         IntegerExpr();
         // Consider:
         //
@@ -168,16 +168,16 @@ void    DimArray( sym_id sym )
         // if SAM is called more than once).
         if( RecNextOpr( OPR_COL ) ) {
             if( !AError ) {
-                GSLoBound( subs, sym );
+                GSLoBound( ss, sym );
             }
             AdvanceITPtr();
             IntegerExpr();
             if( !AError ) {
-                GSHiBound( subs, sym );
+                GSHiBound( ss, sym );
             }
         } else {
             if( !AError ) {
-                GSHiBoundLo1( subs, sym );
+                GSHiBoundLo1( ss, sym );
             }
         }
         AdvanceITPtr();
@@ -216,7 +216,7 @@ void    CpDeAllocate( void )
     }
     ReqOpenParen();
     GBegDeAllocate();
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & SY_CLASS) == SY_VARIABLE ) {

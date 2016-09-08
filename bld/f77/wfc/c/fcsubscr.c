@@ -132,30 +132,29 @@ void    MakeSCB( sym_id scb, cg_name len ) {
 }
 
 
-static  cg_name HiBound( sym_id arr, int ss_offset ) {
-//====================================================
-
+static  cg_name HiBound( sym_id arr, int dim_no )
+//===============================================
 // Get hi bound from ADV.
+{
+    int     ss_offset;
 
-    ss_offset = BETypeLength( TY_ADV_LO ) * ( ss_offset + 1 ) +
-                BETypeLength( TY_ADV_HI ) * ss_offset;
+    ss_offset = BETypeLength( TY_ADV_LO ) * ( dim_no + 1 ) +
+                BETypeLength( TY_ADV_HI ) * dim_no;
     return( CGUnary( O_POINTS, StructRef( GetAdv( arr ), ss_offset ), TY_ADV_HI ) );
 
 }
 
 
-static  cg_name Multiplier( sym_id arr, int subs_no ) {
-//=====================================================
+static  cg_name Multiplier( sym_id arr, int dim_no )
+//==================================================
 
 // Compute mulitplier.
-
+{
     cg_name     multiplier;
 
     multiplier = CGInteger( 1, TY_INT_4 );
-    while( subs_no != 0 ) {
-        multiplier = CGBinary( O_TIMES, multiplier,
-                               HiBound( arr, subs_no - 1 ), TY_INT_4 );
-        subs_no--;
+    while( dim_no-- > 0 ) {
+        multiplier = CGBinary( O_TIMES, multiplier, HiBound( arr, dim_no ), TY_INT_4 );
     }
     return( multiplier );
 }
@@ -201,10 +200,9 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
 
     dim_cnt = _DimCount( dims->dim_flags );
     bounds = &dims->subs_1_lo;
-    multiplier = 1;
     hi_off = CGInteger( 0, TY_INT_4 );
     lo_off = 0;
-    for(;;) {
+    for( multiplier = 1; ; multiplier *= ( hi - lo + 1 ) ) {
         lo = *bounds++;
         hi = *bounds++;
 
@@ -221,10 +219,9 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
                                      TY_INT_4 ),
                            TY_INT_4 );
         lo_off -= lo * multiplier;
-        if( --dim_cnt == 0 )
+        if( --dim_cnt == 0 ) {
             break;
-
-        multiplier *= ( hi - lo + 1 );
+        }
     }
     return( CGBinary( O_PLUS, CGInteger( lo_off, TY_INT_4 ), hi_off, TY_INT_4 ) );
 }
@@ -249,7 +246,7 @@ static  void    Index( sym_id arr, cg_name offset ) {
 }
 
 
-static  cg_name LoBound( sym_id arr, int ss_offset ) {
+static  cg_name LoBound( sym_id arr, int dim_no ) {
 //====================================================
 
 // Get lo bound from ADV.
@@ -258,12 +255,10 @@ static  cg_name LoBound( sym_id arr, int ss_offset ) {
     act_dim_list        *dim_ptr;
 
     dim_ptr = arr->u.ns.si.va.u.dim_ext;
-    if( _LoConstBound( dim_ptr->dim_flags, ss_offset + 1 ) ) {
-        lo_bound = CGInteger( ((intstar4 *)&dim_ptr->subs_1_lo)[2 * ss_offset], TY_INT_4 );
+    if( _LoConstBound( dim_ptr->dim_flags, dim_no + 1 ) ) {
+        lo_bound = CGInteger( ((intstar4 *)&dim_ptr->subs_1_lo)[2 * dim_no], TY_INT_4 );
     } else {
-        lo_bound = CGUnary( O_POINTS,
-                            StructRef( GetAdv( arr ), ss_offset * BETypeLength( TY_ADV_ENTRY ) ),
-                            TY_ADV_LO );
+        lo_bound = CGUnary( O_POINTS, StructRef( GetAdv( arr ), dim_no * BETypeLength( TY_ADV_ENTRY ) ), TY_ADV_LO );
     }
     return( lo_bound );
 }
@@ -288,8 +283,8 @@ static  void    VariableDims( sym_id arr ) {
 
         // offset += ( ss - lo ) * multiplier;
         //              or
-        // offset   += ss*multiplier
-        // c_offset -= lo*multiplier
+        // offset   += ss * multiplier
+        // c_offset -= lo * multiplier
 
         offset = CGBinary( O_PLUS,
                            offset,
@@ -347,7 +342,7 @@ void    FCAdvFillLo( void ) {
     int                 lo_offset;
     cg_name             adv;
     cg_name             lo;
-    unsigned            ss;
+    int                 ss;
 
     arr = GetPtr();
     adv = GetAdv( arr );
@@ -365,8 +360,8 @@ void    FCAdvFillHi( void ) {
 
     sym_id              arr;
     act_dim_list        *dim_ptr;
-    uint                lo_size;
-    uint                hi_size;
+    int                 lo_size;
+    int                 hi_size;
     int                 hi_offset;
     int                 ss;
     cg_name             num_elts;
@@ -393,7 +388,7 @@ void    FCAdvFillHi( void ) {
     if( Options & OPT_BOUNDS ) {
         call = InitCall( RT_ADV_FILL_HI );
         CGAddParm( call, hi, TY_INT_4 );
-        CGAddParm( call, CGInteger( ss, TY_UNSIGNED ), TY_UNSIGNED );
+        CGAddParm( call, CGInteger( ss, TY_INTEGER ), TY_INTEGER );
         CGAddParm( call, adv, TY_LOCAL_POINTER );
         CGDone( CGUnary( O_POINTS, CGCall( call ), TY_INT_4 ) );
     } else {
@@ -417,9 +412,9 @@ void    FCAdvFillHiLo1( void ) {
     cg_name             lo;
     cg_name             hi;
     cg_name             adv;
-    unsigned            ss;
-    uint                lo_size;
-    uint                hi_size;
+    int                 ss;
+    int                 lo_size;
+    int                 hi_size;
     int                 lo_offset;
     int                 hi_offset;
     call_handle         call;
@@ -436,7 +431,7 @@ void    FCAdvFillHiLo1( void ) {
     if( Options & OPT_BOUNDS ) {
         call = InitCall( RT_ADV_FILL_HI_LO1 );
         CGAddParm( call, hi, TY_INT_4 );
-        CGAddParm( call, CGInteger( ss, TY_UNSIGNED ), TY_UNSIGNED );
+        CGAddParm( call, CGInteger( ss, TY_INTEGER ), TY_INTEGER );
         CGAddParm( call, adv, TY_LOCAL_POINTER );
         CGDone( CGUnary( O_POINTS, CGCall( call ), TY_INT_4 ) );
     } else {
@@ -449,4 +444,3 @@ void    FCAdvFillHiLo1( void ) {
         CGDone( CGAssign( StructRef( adv, lo_offset ), lo, TY_ADV_LO ) );
     }
 }
-

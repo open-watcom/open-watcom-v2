@@ -327,6 +327,6 @@ extern void     TCat( uint num_args, string *dest, ... );
 extern void     Move( string *dst, string *src );
 extern void     Substring( string *src, intstar4 start, intstar4 end, string *dst );
 extern intstar4 Subscript( int dims, adv_entry *adv, ... );
-extern void     ADVFillHi( adv_entry *adv, unsigned ss, intstar4 hi );
-extern void     ADVFillHiLo1( adv_entry *adv, unsigned ss, intstar4 hi );
+extern void     ADVFillHi( adv_entry *adv, int ss, intstar4 hi );
+extern void     ADVFillHiLo1( adv_entry *adv, int ss, intstar4 hi );
 extern int      LexCmp( string PGM *str1, string PGM *str2 );

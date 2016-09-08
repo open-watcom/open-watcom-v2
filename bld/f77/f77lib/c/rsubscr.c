@@ -57,20 +57,21 @@ intstar4        Subscript( int dims, adv_entry *adv, ... ) {
     offset = 0;
     i = 0;
     va_start( args, adv );
-    for(;;) {
+    for( ;; ) {
         ss = va_arg( args, intstar4 );
         // 0 elements in a dimension implies assumed-size dimension
         if( adv->num_elts != 0 ) {
             if( ( ss < adv->lo_bound ) ||
                 ( ss > adv->lo_bound + (signed_32)(adv->num_elts) - 1 ) ) {
                 va_start( args, adv );
-                SubscriptError( dims, args, *((char **)&adv[ dims - i ]) );
+                SubscriptError( dims, args, *((char **)&adv[dims - i]) );
             }
         }
         offset += ( ss - adv->lo_bound ) * multiplier;
         multiplier *= adv->num_elts;
         ++i;
-        if( i == dims ) break;
+        if( i == dims )
+            break;
         ++adv;
     }
     va_end( args );
@@ -90,29 +91,26 @@ static  void    SubscriptError( int dims, va_list args, char *name ) {
     ++name;
     memcpy( buff, name, len );
     ptr += len;
-    *ptr = '(';
-    ++ptr;
-    for(;;) {
+    *ptr++ = '(';
+    for( ;; ) {
         ltoa( va_arg( args, intstar4 ), ptr, 10 );
         ptr += strlen( ptr );
-        --dims;
-        if( dims == 0 ) break;
-        *ptr = ',';
-        ++ptr;
+        if( --dims == 0 )
+            break;
+        *ptr++ = ',';
     }
-    *ptr = ')';
-    ++ptr;
+    *ptr++ = ')';
     *ptr = NULLCHAR;
     RTErr( SS_SSCR_RANGE, buff );
 }
 
 
-void    ADVFillHi( adv_entry *adv, unsigned ss, intstar4 hi ) {
-//=============================================================
-
+void    ADVFillHi( adv_entry *adv, int ss, intstar4 hi )
+//======================================================
+{
     intstar4    lo;
 
-    lo = adv[ss-1].lo_bound;
+    lo = adv[ss - 1].lo_bound;
 #if defined( _M_I86 )
     if( hi - lo + 1 > 65535 ) {
         RTErr( SV_DIMENSION_LIMIT );
@@ -121,17 +119,17 @@ void    ADVFillHi( adv_entry *adv, unsigned ss, intstar4 hi ) {
     if( lo > hi ) {
         RTErr( SV_BAD_SSCR );
     }
-    adv[ss-1].num_elts = hi - lo + 1;
+    adv[ss - 1].num_elts = hi - lo + 1;
 }
 
 
-void    ADVFillHiLo1( adv_entry *adv, unsigned ss, intstar4 hi ) {
-//================================================================
-
+void    ADVFillHiLo1( adv_entry *adv, int ss, intstar4 hi )
+//=========================================================
+{
 #if defined( _M_I86 )
     if( hi > 65535 ) {
         RTErr( SV_DIMENSION_LIMIT );
     }
 #endif
-    adv[ss-1].num_elts = hi;
+    adv[ss - 1].num_elts = hi;
 }

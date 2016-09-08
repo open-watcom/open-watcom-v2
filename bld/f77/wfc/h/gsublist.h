@@ -31,9 +31,9 @@
 
 extern void             GWarp( sym_id sym );
 extern warp_label       GBegSList( void );
-extern void             GSLoBound( int dim_no, sym_id sym );
-extern void             GForceHiBound( int dim_no, sym_id sym );
-extern void             GSHiBound( int dim_no, sym_id sym );
-extern void             GSHiBoundLo1( int dim_no, sym_id sym );
+extern void             GSLoBound( int ss, sym_id sym );
+extern void             GForceHiBound( int ss, sym_id sym );
+extern void             GSHiBound( int ss, sym_id sym );
+extern void             GSHiBoundLo1( int ss, sym_id sym );
 extern void             GEndSList( sym_id sym );
 extern void             FreeWarpLabel( warp_label warp );

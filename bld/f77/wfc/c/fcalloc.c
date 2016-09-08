@@ -90,11 +90,8 @@ void            FCAllocate( void ) {
     cg_name             fl;
     label_handle        label;
 
-    num = 0;
     SymPush( NULL );
-    for(;;) {
-        arr = GetPtr();
-        if( arr == NULL ) break;
+    for( num = 0; (arr = GetPtr()) != NULL; ++num ) {
         // check if array is already allocated before filling in ADV
         label = BENewLabel();
         fl = getFlags( arr );
@@ -105,7 +102,6 @@ void            FCAllocate( void ) {
         CGControl( O_LABEL, NULL, label );
         BEFiniLabel( label );
         SymPush( arr );
-        ++num;
     }
     alloc_flags = GetU16();
     if( alloc_flags & ALLOC_NONE ) {
@@ -126,9 +122,7 @@ void            FCAllocate( void ) {
         }
     }
     handle = InitCall( RT_ALLOCATE );
-    for(;;) {
-        arr = SymPop();
-        if( arr == NULL ) break;
+    for( ; (arr = SymPop()) != NULL; ) {
         if( arr->u.ns.flags & SY_SUBSCRIPTED ) {
             dim = arr->u.ns.si.va.u.dim_ext;
             CGAddParm( handle, CGInteger( _SymSize( arr ), TY_INT_4 ), TY_INT_4 );
@@ -148,7 +142,7 @@ void            FCAllocate( void ) {
             CGAddParm( handle, expr_stat, TY_POINTER );
         }
     }
-    CGAddParm( handle, CGInteger( num, TY_INTEGER ), TY_INTEGER );
+    CGAddParm( handle, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
     CGAddParm( handle, CGInteger( alloc_flags, TY_UINT_2 ), FLAG_PARM_TYPE );
     CGDone( CGCall( handle ) );
 }
@@ -161,16 +155,12 @@ void            FCDeAllocate( void ) {
     sym_id              arr;
     uint                num;
 
-    num = 0;
     handle = InitCall( RT_DEALLOCATE );
-    for(;;) {
-        arr = GetPtr();
-        if( arr == NULL ) break;
+    for( num = 0; (arr = GetPtr()) != NULL; ++num ) {
         CGAddParm( handle, CGFEName( arr, TY_POINTER ), TY_POINTER );
         CGAddParm( handle, getFlags( arr ), FLAG_PARM_TYPE );
-        ++num;
     }
-    CGAddParm( handle, CGInteger( num, TY_INTEGER ), TY_INTEGER );
+    CGAddParm( handle, CGInteger( num, TY_UNSIGNED ), TY_UNSIGNED );
     if( GetU16() & ALLOC_STAT ) {
         FCodeSequence();
         CGAddParm( handle, XPop(), TY_POINTER );

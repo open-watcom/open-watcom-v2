@@ -44,7 +44,6 @@
 
 static  obj_ptr         WarpLabel;
 
-
 void            GWarp( sym_id sym ) {
 //===================================
 
@@ -67,7 +66,7 @@ warp_label              GBegSList( void ) {
 }
 
 
-void            GSLoBound( int dim_no, sym_id sym ) {
+void            GSLoBound( int ss, sym_id sym ) {
 //===================================================
 
 // Generate code to fill in ADV subscript element (lo bound).
@@ -75,12 +74,12 @@ void            GSLoBound( int dim_no, sym_id sym ) {
     PushOpn( CITNode );
     EmitOp( FC_ADV_FILL_LO );
     OutPtr( sym );
-    OutU16( dim_no );
+    OutU16( (uint_16)ss );
     GenType( CITNode );
 }
 
 
-void            GForceHiBound( int dim_no, sym_id sym ) {
+void            GForceHiBound( int ss, sym_id sym ) {
 //=======================================================
 
 // Generate code to fill in ADV subscript element (hi bound).
@@ -102,12 +101,12 @@ void            GForceHiBound( int dim_no, sym_id sym ) {
     PushOpn( CITNode );
     EmitOp( FC_ADV_FILL_HI );
     OutPtr( sym );
-    OutU16( dim_no );
+    OutU16( (uint_16)ss );
     GenType( CITNode );
 }
 
 
-void            GSHiBound( int dim_no, sym_id sym ) {
+void            GSHiBound( int ss, sym_id sym ) {
 //===================================================
 
 // Generate code to fill in ADV subscript element (hi bound).
@@ -115,12 +114,12 @@ void            GSHiBound( int dim_no, sym_id sym ) {
     PushOpn( CITNode );
     EmitOp( FC_ADV_FILL_HI );
     OutPtr( sym );
-    OutU16( dim_no );
+    OutU16( (uint_16)ss );
     GenType( CITNode );
 }
 
 
-void            GSHiBoundLo1( int dim_no, sym_id sym ) {
+void            GSHiBoundLo1( int ss, sym_id sym ) {
 //======================================================
 
 // Generate code to fill in ADV subscript element (hi bound).
@@ -131,7 +130,7 @@ void            GSHiBoundLo1( int dim_no, sym_id sym ) {
     EmitOp( FC_ADV_FILL_HI_LO_1 );
     // general information
     OutPtr( sym );
-    OutU16( dim_no );
+    OutU16( (uint_16)ss );
     GenType( CITNode );
 }
 
