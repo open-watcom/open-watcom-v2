@@ -51,7 +51,7 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
     bounds = &dims->subs_1_lo;
     multiplier = 1;
     offset = 0;
-    for(;;) {
+    for( ;; ) {
         ss = *subscrs++;
         lo = *bounds++;
         hi = *bounds++;

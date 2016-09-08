@@ -113,7 +113,7 @@ static  intstar4        CheckSubStr( act_eq_entry *eqv_entry ) {
     intstar4    last;
 
     sym = eqv_entry->name_equived;
-    substr = &eqv_entry->subscrs[ eqv_entry->subs_no ];
+    substr = &eqv_entry->subscrs[eqv_entry->subs_no];
     if( sym->u.ns.u1.s.typ != FT_CHAR ) {
         NameTypeErr( EV_ONLY_IF_CHAR, sym );
         offset = 0;
@@ -224,10 +224,10 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
 
     /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         b->name_equived->u.ns.flags |= sym_flags;
     } else if( ForceStatic( b->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         a->name_equived->u.ns.flags |= sym_flags;
     }
 

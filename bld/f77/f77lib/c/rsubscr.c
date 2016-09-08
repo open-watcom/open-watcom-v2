@@ -40,9 +40,9 @@
 
 
 /* Forward declarations */
-static  void    SubscriptError( int dims, va_list args, char *name );
+static  void    SubscriptError( int dim_cnt, va_list args, const char *name );
 
-intstar4        Subscript( int dims, adv_entry *adv, ... ) {
+intstar4        Subscript( int dim_cnt, adv_entry *adv, ... ) {
 //==========================================================
 
 // Perform subscript.
@@ -51,26 +51,26 @@ intstar4        Subscript( int dims, adv_entry *adv, ... ) {
     intstar4    multiplier;
     intstar4    ss;
     va_list     args;
-    int         i;
+    int         dim_no;
 
     multiplier = 1;
     offset = 0;
-    i = 0;
+    dim_no = 0;
     va_start( args, adv );
     for( ;; ) {
         ss = va_arg( args, intstar4 );
         // 0 elements in a dimension implies assumed-size dimension
         if( adv->num_elts != 0 ) {
             if( ( ss < adv->lo_bound ) ||
-                ( ss > adv->lo_bound + (signed_32)(adv->num_elts) - 1 ) ) {
+                ( ss > adv->lo_bound + (int_32)(adv->num_elts) - 1 ) ) {
                 va_start( args, adv );
-                SubscriptError( dims, args, *((char **)&adv[dims - i]) );
+                SubscriptError( dim_cnt, args, *((char **)&adv[dim_cnt - dim_no]) );
             }
         }
         offset += ( ss - adv->lo_bound ) * multiplier;
         multiplier *= adv->num_elts;
-        ++i;
-        if( i == dims )
+        ++dim_no;
+        if( dim_no == dim_cnt )
             break;
         ++adv;
     }
@@ -79,23 +79,22 @@ intstar4        Subscript( int dims, adv_entry *adv, ... ) {
 }
 
 
-static  void    SubscriptError( int dims, va_list args, char *name ) {
-//====================================================================
-
+static  void    SubscriptError( int dim_cnt, va_list args, const char *name )
+//===========================================================================
+{
     char        *ptr;
-    char        buff[1+MAX_DIM*(MAX_INT_SIZE+1)+1];
-    int         len;
+    char        buff[1 + MAX_DIM * ( MAX_INT_SIZE + 1 ) + 1];
+    byte        len;
 
     ptr = buff;
-    len = *name;
-    ++name;
+    len = *name++;
     memcpy( buff, name, len );
     ptr += len;
     *ptr++ = '(';
     for( ;; ) {
         ltoa( va_arg( args, intstar4 ), ptr, 10 );
         ptr += strlen( ptr );
-        if( --dims == 0 )
+        if( --dim_cnt == 0 )
             break;
         *ptr++ = ',';
     }

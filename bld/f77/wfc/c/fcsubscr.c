@@ -275,15 +275,13 @@ static  void    VariableDims( sym_id arr )
         // offset   += ss * multiplier
         // c_offset -= lo * multiplier
 
-        offset = CGBinary( O_PLUS,
-                           offset,
+        offset = CGBinary( O_PLUS, offset,
                            CGBinary( O_TIMES,
                                      GetTypedValue(),
                                      Multiplier( arr, dim_no ),
                                      TY_INT_4 ),
                            TY_INT_4 );
-        c_offset = CGBinary( O_MINUS,
-                             c_offset,
+        c_offset = CGBinary( O_MINUS, c_offset,
                              CGBinary( O_TIMES,
                                        LoBound( arr, dim_no ),
                                        Multiplier( arr, dim_no ),

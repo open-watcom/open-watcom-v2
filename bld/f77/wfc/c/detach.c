@@ -114,7 +114,7 @@ void    DetSubList(void) {
 //====================
 
     itnode      *cit;
-    int         count;
+    int         dim_no;
     int         dim_cnt;
     itnode      *save_cit;
     uint        ch_size;
@@ -124,17 +124,16 @@ void    DetSubList(void) {
     } else {
         dim_cnt = _DimCount( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     }
-    count = 0;
     cit = CITNode;
     AdvanceITPtr();
-    while( RecComma() || RecFBr() ) {
+    for( dim_no = 0; RecComma() || RecFBr(); ++dim_no ) {
         if( CheckColon() ) {
-            if( count == 0 ) {
+            if( dim_no == 0 ) {
                 save_cit = CITNode;
                 CITNode = cit;
                 OpndErr( SV_TRIED_SSTR );
                 CITNode = save_cit;
-            } else if( count != dim_cnt ) {
+            } else if( dim_no != dim_cnt ) {
                 Error( SV_INV_SSCR );
             }
             SubStrArgs( cit );
@@ -145,14 +144,13 @@ void    DetSubList(void) {
         }
         if( RecNOpn() )
             break;
-        ++count;
         CkScrStr();
         AdvanceITPtr();
     }
     if( !RecCloseParen() ) {
         Error( PC_NO_CLOSEPAREN );
     }
-    if( count != dim_cnt ) {
+    if( dim_no != dim_cnt ) {
         Error( SV_INV_SSCR );
     }
     // we must make sure the array isn't substrung before we can set OPN_SS1

@@ -84,7 +84,7 @@ void            FCAllocate( void ) {
     sym_id              arr;
     act_dim_list        *dim;
     uint                num;
-    unsigned_16         alloc_flags;
+    uint_16             alloc_flags;
     cg_name             expr_stat;
     cg_name             expr_loc;
     cg_name             fl;
@@ -96,8 +96,7 @@ void            FCAllocate( void ) {
         label = BENewLabel();
         fl = getFlags( arr );
         fl = CGBinary( O_AND, fl, CGInteger( ALLOC_MEM, TY_UINT_2 ), TY_UINT_2 );
-        CGControl( O_IF_TRUE, CGCompare( O_NE, fl,
-                                CGInteger( 0, TY_UINT_2 ), TY_UINT_2 ), label );
+        CGControl( O_IF_TRUE, CGCompare( O_NE, fl, CGInteger( 0, TY_UINT_2 ), TY_UINT_2 ), label );
         FCodeSequence(); // fill in the ADV, SCB or RCB
         CGControl( O_LABEL, NULL, label );
         BEFiniLabel( label );
