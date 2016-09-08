@@ -1032,13 +1032,10 @@ static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
     dims = subs_no;
     bounds = &dim_ptr->subs_1_lo;
     entry = 1;
-
     CGAutoDecl( shadow, ( TY_ADV_ENTRY + subs_no ) );
     for(;;) {
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
+        lo = *bounds++;
+        hi = *bounds++;
         adv = CGFEName( shadow, ( TY_ADV_ENTRY + subs_no ) );
         CGDone( CGAssign( AdvEntryAddr( adv, entry, TY_ADV_LO ),
                 CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
@@ -1058,10 +1055,8 @@ static  void    DumpAutoAdv( sym_id sym, sym_id shadow ) {
         subs_no = _DimCount( dim_ptr->dim_flags );
         bounds = &dim_ptr->subs_1_lo;
         for(;;) {
-            lo = *bounds;
-            bounds++;
-            hi = *bounds;
-            bounds++;
+            lo = *bounds++;
+            hi = *bounds++;
             adv = CGFEName( shadow, ( TY_ADV_ENTRY + subs_no ) );
             CGDone( CGAssign( CVAdvEntryAddr( adv, dims, entry, TY_ADV_LO ),
                     CGInteger( lo, TY_ADV_LO ), TY_ADV_LO ) );
@@ -1093,10 +1088,8 @@ static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
     subs_no = _DimCount( dim_ptr->dim_flags );
     bounds = &dim_ptr->subs_1_lo;
     for(;;) {
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
+        lo = *bounds++;
+        hi = *bounds++;
         DGInteger( lo, TY_ADV_LO );
         if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( subs_no == 1 ) ) {
             DGInteger( 0, TY_ADV_HI );
@@ -1112,10 +1105,8 @@ static  void    DumpStaticAdv( sym_id sym, bool dmp_nam_ptr ) {
         subs_no = _DimCount( dim_ptr->dim_flags );
         bounds = &dim_ptr->subs_1_lo;
         for(;;) {
-            lo = *bounds;
-            bounds++;
-            hi = *bounds;
-            bounds++;
+            lo = *bounds++;
+            hi = *bounds++;
             DGInteger( lo, TY_ADV_LO );
             if( (dim_ptr->dim_flags & DIM_ASSUMED) && ( subs_no == 1 ) ) {
                 DGInteger( 0, TY_ADV_HI_CV );

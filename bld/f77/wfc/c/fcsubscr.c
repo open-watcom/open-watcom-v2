@@ -205,10 +205,8 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
     hi_off = CGInteger( 0, TY_INT_4 );
     lo_off = 0;
     for(;;) {
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
+        lo = *bounds++;
+        hi = *bounds++;
 
         // offset += ( ss - lo ) * multiplier;
         //              or
@@ -260,12 +258,10 @@ static  cg_name LoBound( sym_id arr, int ss_offset ) {
 
     dim_ptr = arr->u.ns.si.va.u.dim_ext;
     if( _LoConstBound( dim_ptr->dim_flags, ss_offset + 1 ) ) {
-        lo_bound = CGInteger( ((intstar4 *)(&dim_ptr->subs_1_lo))[2*ss_offset],
-                              TY_INT_4 );
+        lo_bound = CGInteger( ((intstar4 *)&dim_ptr->subs_1_lo)[2 * ss_offset], TY_INT_4 );
     } else {
         lo_bound = CGUnary( O_POINTS,
-                            StructRef( GetAdv( arr ),
-                                       ss_offset*BETypeLength( TY_ADV_ENTRY ) ),
+                            StructRef( GetAdv( arr ), ss_offset * BETypeLength( TY_ADV_ENTRY ) ),
                             TY_ADV_LO );
     }
     return( lo_bound );

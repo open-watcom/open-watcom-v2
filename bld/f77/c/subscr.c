@@ -52,12 +52,9 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
     multiplier = 1;
     offset = 0;
     for(;;) {
-        ss = *subscrs;
-        subscrs++;
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
+        ss = *subscrs++;
+        lo = *bounds++;
+        hi = *bounds++;
         if( ss < lo )
             return( false );
         if( ss > hi )

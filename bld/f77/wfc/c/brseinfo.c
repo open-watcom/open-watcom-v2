@@ -803,16 +803,16 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
     int         dim = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     int         x = 0;
     dw_dim_info data;
-    intstar4    *sub;
+    intstar4    *bounds;
     dw_handle   ret;
 
     data.index_type = BIGetBaseType( FT_INTEGER );
-    sub = &( ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo );
+    bounds = &ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo;
 
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
     for( x = 0; x < dim; x++ ) {
-        data.lo_data = *sub++;
-        data.hi_data = *sub++;
+        data.lo_data = *bounds++;
+        data.hi_data = *bounds++;
         DWArrayDimension( cBIId, &data );
     }
     DWDeclPos( cBIId, CurrFile->rec, 0 );

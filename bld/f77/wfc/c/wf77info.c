@@ -1510,10 +1510,8 @@ static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
     bounds = &dim_ptr->subs_1_lo;
     db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
     while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
-        lo = *bounds;
-        ++bounds;
-        hi = *bounds;
-        ++bounds;
+        lo = *bounds++;
+        hi = *bounds++;
         DBDimCon( db_arr, DBGTypes[PT_INT_4], lo, hi );
         ++dims;
     }

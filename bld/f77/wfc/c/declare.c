@@ -394,7 +394,7 @@ void    ArrayDecl( sym_id sym ) {
 
 // Process an array declarator.
 
-    intstar4            *subs_ptr;
+    intstar4            *bounds;
     intstar4            lo_bound;
     intstar4            hi_bound;
     signed_32           num_elts;
@@ -427,7 +427,7 @@ void    ArrayDecl( sym_id sym ) {
             dim_list.l.init_label = GBegSList();
         }
     }
-    subs_ptr = &dim_list.subs_1_lo;
+    bounds = &dim_list.subs_1_lo;
     num_elts = 1;
     num_subs = 0;
     assumed = false;
@@ -528,10 +528,8 @@ void    ArrayDecl( sym_id sym ) {
             AdvanceITPtr();
             ReqNOpn();
         }
-        *subs_ptr = lo_bound;
-        subs_ptr++;
-        *subs_ptr = hi_bound;
-        subs_ptr++;
+        *bounds++ = lo_bound;
+        *bounds++ = hi_bound;
         AdvanceITPtr();
         if( !RecComma() || assumed || ( num_subs == MAX_DIM ) ) break;
     }

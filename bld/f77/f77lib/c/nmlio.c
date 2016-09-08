@@ -147,7 +147,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
 
     signed_32           ss[MAX_DIM];
     act_dim_list        dim_list;
-    intstar4 PGM        *dim_ptr;
+    intstar4 PGM        *bounds;
     signed_32 PGM       *ss_ptr;
     intstar4            lo;
     intstar4            offset;
@@ -156,7 +156,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
     dim_list.dim_flags = 0;
     _SetDimCount( dim_list.dim_flags, _GetNMLSubScrs( info ) );
     dim_list.num_elts = 1;
-    dim_ptr = &dim_list.subs_1_lo;
+    bounds = &dim_list.subs_1_lo;
     num_ss = _GetNMLSubScrs( info );
     ss_ptr = ss;
     for(;;) {
@@ -166,10 +166,8 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
         lo = *(intstar4 PGM *)adv_ss_ptr;
         adv_ss_ptr += sizeof( intstar4 );
         dim_list.num_elts *= *(uint PGM *)adv_ss_ptr;
-        *dim_ptr = lo;
-        ++dim_ptr;
-        *dim_ptr = lo + *(uint PGM *)adv_ss_ptr - 1;
-        ++dim_ptr;
+        *bounds++ = lo;
+        *bounds++ = lo + *(uint PGM *)adv_ss_ptr - 1;
         adv_ss_ptr += sizeof( uint );
         --num_ss;
         if( num_ss == 0 )
