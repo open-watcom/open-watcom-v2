@@ -1365,11 +1365,7 @@ void    DtFieldSubscript( void ) {
     base = DXPop();
     fd = GetPtr();
     if( CSubscript( fd->u.fd.dim_ext, &offset ) ) {
-        if( fd->u.fd.typ == FT_STRUCTURE ) {
-            offset *= fd->u.fd.xt.record->size;
-        } else {
-            offset *= fd->u.fd.xt.size;
-        }
+        offset *= _FieldSize( fd );
         DXPush( base + offset );
     } else {
         STFieldName( fd, name );

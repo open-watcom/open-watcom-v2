@@ -1633,12 +1633,11 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
             STFieldName( field, field_name );
             if( field->u.fd.typ == FT_STRUCTURE ) {
                 DefDbgStruct( field->u.fd.xt.sym_record );
-                size = field->u.fd.xt.record->size;
                 db_type = field->u.fd.xt.record->dbi;
             } else {
-                size = field->u.fd.xt.size;
                 db_type = BaseDbgType( field->u.fd.typ, field->u.fd.xt.size );
             }
+            size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
                 size *= field->u.fd.dim_ext->num_elts;
                 db_type = ArrayDbgType( field->u.fd.dim_ext, db_type );

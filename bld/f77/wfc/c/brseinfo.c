@@ -738,8 +738,7 @@ static dw_handle BIGetSPType( sym_id ste_ptr ) {
     case( SY_PROGRAM ) :
     case( SY_STMT_FUNC ) :
     case( SY_FN_OR_SUB ) :
-        if( ( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) &&
-            !( ste_ptr->u.ns.xt.record ) ) {
+        if( ste_ptr->u.ns.u1.s.typ == FT_STRUCTURE && ste_ptr->u.ns.xt.record == NULL ) {
             return( BIStartStructType( ste_ptr, true ) );
         }
         return( BIGetType( ste_ptr ) );
@@ -901,21 +900,17 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
     char                buff[12];
 
     ret = DWStruct( cBIId, DW_ST_UNION );
-    fs = ste_ptr->u.ns.xt.record;
     // find the largest size of map
-    while( fs ) {
+    for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
         if( fs->size > max ) {
             max = fs->size;
         }
-        fs = &fs->link->u.sd;
     }
-
     // Start the union declaration
     DWDeclPos( cBIId, CurrFile->rec, 0 );
     DWBeginStruct( cBIId, ret, max, ste_ptr->u.ns.name, 0, 0 );
-    fs = ste_ptr->u.ns.xt.record;
     data.u.ns.xt.record = FMemAlloc( sizeof( fstruct) );
-    while( fs ) {
+    for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
         memset( data.u.ns.xt.record, 0, sizeof( fstruct ) );
         memcpy( data.u.ns.xt.record, fs, sizeof( fmap ) );
         data.u.ns.si.va.u.dim_ext = NULL;
@@ -927,7 +922,6 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
         data.u.ns.xt.record->name_len = data.u.ns.u2.name_len;
         map++;
         DWAddField( cBIId, BIGetType( &data ), justJunk, data.u.ns.name, 0 );
-        fs = &fs->link->u.sd;
     }
     FMemFree( data.u.ns.xt.record );
     DWEndStruct( cBIId );
