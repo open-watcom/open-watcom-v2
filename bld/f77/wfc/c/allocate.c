@@ -144,10 +144,11 @@ void    DimArray( sym_id sym )
 // Called by GAllocate() so that system dependent code
 // can control the order in which code gets generated.
 
-    uint                subs;
+    int         subs;
+    int         dim_cnt;
 
-    subs = 0;
-    for(;;) {
+    dim_cnt = _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags );
+    for( subs = 0; subs < dim_cnt; ) {
         subs++;
         IntegerExpr();
         // Consider:
@@ -180,8 +181,9 @@ void    DimArray( sym_id sym )
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ||
-            ( subs == _DimCount( sym->u.ns.si.va.u.dim_ext->dim_flags ) ) ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqCloseParen();
     ReqNOpn();

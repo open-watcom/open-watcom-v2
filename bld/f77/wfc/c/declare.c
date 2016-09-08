@@ -399,7 +399,7 @@ void    ArrayDecl( sym_id sym ) {
     intstar4            hi_bound;
     signed_32           num_elts;
     unsigned_32         dim_elts;
-    uint                num_subs;
+    int                 dim_cnt;
     bool                var_dim;
     bool                const_lo;
     bool                assumed;
@@ -429,11 +429,11 @@ void    ArrayDecl( sym_id sym ) {
     }
     bounds = &dim_list.subs_1_lo;
     num_elts = 1;
-    num_subs = 0;
+    dim_cnt = 0;
     assumed = false;
     var_dim = false;
     for(;;) {
-        num_subs++;
+        dim_cnt++;
         pvd_ok = false;
         hi_bound = 0;
         lo_bound = 1;
@@ -456,9 +456,9 @@ void    ArrayDecl( sym_id sym ) {
             }
             if( RecNextOpr( OPR_COL ) ) {
                 if( const_lo == SSB_CONSTANT ) {
-                    _SetLoConstBound( dim_list.dim_flags, num_subs );
+                    _SetLoConstBound( dim_list.dim_flags, dim_cnt );
                 } else if( const_lo == SSB_NOT_CONSTANT ) {
-                    GSLoBound( num_subs, sym );
+                    GSLoBound( dim_cnt, sym );
                     var_dim = true;
                 }
                 AdvanceITPtr();
@@ -473,7 +473,7 @@ void    ArrayDecl( sym_id sym ) {
                             hi_bound = ITIntValue( CITNode );
                             if( const_lo == SSB_NOT_CONSTANT ) {
                                 lo_bound = hi_bound + 1;
-                                GForceHiBound( num_subs, sym );
+                                GForceHiBound( dim_cnt, sym );
                             } else if( const_lo == SSB_CONSTANT ) {
                                 if( lo_bound <= hi_bound ) {
                                     dim_elts = hi_bound - lo_bound + 1;
@@ -494,15 +494,15 @@ void    ArrayDecl( sym_id sym ) {
                             if( const_lo == SSB_CONSTANT ) {
                                 hi_bound = lo_bound - 1;
                             }
-                            GSHiBound( num_subs, sym );
+                            GSHiBound( dim_cnt, sym );
                             var_dim = true;
                         }
                     }
                 }
             } else {
-                _SetLoConstBound( dim_list.dim_flags, num_subs );
+                _SetLoConstBound( dim_list.dim_flags, dim_cnt );
                 if( const_lo == SSB_NOT_CONSTANT ) {
-                    GSHiBound( num_subs, sym );
+                    GSHiBound( dim_cnt, sym );
                     var_dim = true;
                 } else if( const_lo == SSB_CONSTANT ) {
                     pvd_ok = ( lo_bound == 1 );
@@ -524,16 +524,16 @@ void    ArrayDecl( sym_id sym ) {
                 }
             }
         } else {
-            _SetLoConstBound( dim_list.dim_flags, num_subs );
+            _SetLoConstBound( dim_list.dim_flags, dim_cnt );
             AdvanceITPtr();
             ReqNOpn();
         }
         *bounds++ = lo_bound;
         *bounds++ = hi_bound;
         AdvanceITPtr();
-        if( !RecComma() || assumed || ( num_subs == MAX_DIM ) ) break;
+        if( !RecComma() || assumed || ( dim_cnt == MAX_DIM ) ) break;
     }
-    _SetDimCount( dim_list.dim_flags, num_subs );
+    _SetDimCount( dim_list.dim_flags, dim_cnt );
     ReqCloseParen();
     ReqNOpn();
     AdvanceITPtr();

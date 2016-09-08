@@ -1500,20 +1500,19 @@ static  dbg_type        GetDbgType( sym_id sym ) {
 static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 //=======================================================================
 
-    int         dims;
+    int         dim_cnt;
     intstar4    *bounds;
     intstar4    lo;
     intstar4    hi;
     dbg_array   db_arr;
 
-    dims = 1;
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     bounds = &dim_ptr->subs_1_lo;
     db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
-    while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
+    while( dim_cnt-- > 0 ) {
         lo = *bounds++;
         hi = *bounds++;
         DBDimCon( db_arr, DBGTypes[PT_INT_4], lo, hi );
-        ++dims;
     }
     return( DBEndArray( db_arr ) );
 }
@@ -1737,39 +1736,36 @@ dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
 static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 //=========================================================================
 
-    int         dims;
+    int         dim_cnt;
+    int         dim_no;
     int         len;
-    int         idx;
     dbg_array   db_arr;
 
-    idx = 0;
-    dims = _DimCount( dim_ptr->dim_flags );
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
     if( dim_ptr->adv == NULL ) {
         // ADV allocated on the stack (debugging API's can't support this)
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
         // an allocated array, until we get a decent db_loc system.
-        while( idx < dims ) {
+        while( dim_cnt-- > 0 ) {
             DBDimCon( db_arr, DBGTypes[PT_INT_4], 1, 1 );
-            idx++;
         }
         return( DBEndArray( db_arr ) );
     }
-    len = dims * BETypeLength( TY_ADV_ENTRY );
+    len = dim_cnt * BETypeLength( TY_ADV_ENTRY );
     if( Options & OPT_BOUNDS ) {
         len += BETypeLength( TY_POINTER );
     }
-    while( idx < dims ) {
+    for( dim_no = 0; dim_no < dim_cnt; ++dim_no ) {
         if( CGOpts & CGOPT_DI_CV ) {
             DBDimVar( db_arr, dim_ptr->adv,
-                      ( len + ( idx * BETypeLength( TY_ADV_ENTRY_CV ) ) ),
+                      len + dim_no * BETypeLength( TY_ADV_ENTRY_CV ),
                       TY_ADV_LO, TY_ADV_HI_CV );
         } else {
             DBDimVar( db_arr, dim_ptr->adv,
-                      idx * BETypeLength( TY_ADV_ENTRY ),
+                      dim_no * BETypeLength( TY_ADV_ENTRY ),
                       TY_ADV_LO, TY_ADV_HI );
         }
-        ++idx;
     }
     return( DBEndArray( db_arr ) );
 }

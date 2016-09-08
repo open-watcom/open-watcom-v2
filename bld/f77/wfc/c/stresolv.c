@@ -74,20 +74,20 @@ static  intstar4        CheckSubscr( act_eq_entry *eqv_entry ) {
 
     sym_id              sym;
     act_dim_list        *dims;
-    int                 dims_no;
+    int                 dim_cnt;
     intstar4            offset;
 
     sym = eqv_entry->name_equived;
-    dims_no = 0;
+    dim_cnt = 0;
     dims = NULL;
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         dims = sym->u.ns.si.va.u.dim_ext;
-        dims_no = _DimCount( dims->dim_flags );
+        dim_cnt = _DimCount( dims->dim_flags );
         dims->dim_flags &= ~DIM_PVD;
     }
     if( eqv_entry->subs_no == 0 ) {
         offset = 0;
-    } else if( dims_no != eqv_entry->subs_no ) {
+    } else if( dim_cnt != eqv_entry->subs_no ) {
         if( eqv_entry->subs_no == 1 ) {
             offset = eqv_entry->subscrs[0] - 1;
         } else {

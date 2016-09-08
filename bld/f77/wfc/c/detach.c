@@ -115,14 +115,14 @@ void    DetSubList(void) {
 
     itnode      *cit;
     int         count;
-    byte        no_subs;
+    int         dim_cnt;
     itnode      *save_cit;
     uint        ch_size;
 
     if( CITNode->opn.us & USOPN_FLD ) {
-        no_subs = _DimCount( CITNode->sym_ptr->u.fd.dim_ext->dim_flags );
+        dim_cnt = _DimCount( CITNode->sym_ptr->u.fd.dim_ext->dim_flags );
     } else {
-        no_subs = _DimCount( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
+        dim_cnt = _DimCount( CITNode->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     }
     count = 0;
     cit = CITNode;
@@ -134,7 +134,7 @@ void    DetSubList(void) {
                 CITNode = cit;
                 OpndErr( SV_TRIED_SSTR );
                 CITNode = save_cit;
-            } else if( count != no_subs ) {
+            } else if( count != dim_cnt ) {
                 Error( SV_INV_SSCR );
             }
             SubStrArgs( cit );
@@ -143,7 +143,8 @@ void    DetSubList(void) {
             Detach( cit );
             return;
         }
-        if( RecNOpn() ) break;
+        if( RecNOpn() )
+            break;
         ++count;
         CkScrStr();
         AdvanceITPtr();
@@ -151,7 +152,7 @@ void    DetSubList(void) {
     if( !RecCloseParen() ) {
         Error( PC_NO_CLOSEPAREN );
     }
-    if( count != no_subs ) {
+    if( count != dim_cnt ) {
         Error( SV_INV_SSCR );
     }
     // we must make sure the array isn't substrung before we can set OPN_SS1

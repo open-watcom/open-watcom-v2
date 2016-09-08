@@ -1291,14 +1291,14 @@ static  bool    CSubscript( act_dim_list *dim, intstar4 *offset ) {
 
 // Data initialize an array element.
 
-    int         dims_no;
+    int         dim_no;
+    int         dim_cnt;
     intstar4    subscrs[MAX_DIM];
 
-    dims_no = 0;
-    while( dims_no < _DimCount( dim->dim_flags ) ) {
-        subscrs[ dims_no ] = DXPop();
+    dim_cnt = _DimCount( dim->dim_flags );
+    for( dim_no = 0; dim_no < dim_cnt; ++dim_no ) {
+        subscrs[dim_no] = DXPop();
         GetU16();       // skip typing information
-        dims_no++;
     }
     return( DoSubscript( dim, subscrs, offset ) );
 }

@@ -67,23 +67,22 @@ void    GEndSubScr( itnode *arr ) {
 // Finish off a subscripting operation.
 
     itnode      *arg;
-    int         dims;
+    int         dim_cnt;
 
     if( arr->opn.us & USOPN_FLD ) {
         PushOpn( arr );
         EmitOp( FC_FIELD_SUBSCRIPT );
         OutPtr( arr->sym_ptr );
-        dims = _DimCount( arr->sym_ptr->u.fd.dim_ext->dim_flags );
+        dim_cnt = _DimCount( arr->sym_ptr->u.fd.dim_ext->dim_flags );
     } else {
         EmitOp( FC_SUBSCRIPT );
         OutPtr( arr->sym_ptr );
-        dims = _DimCount( arr->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
+        dim_cnt = _DimCount( arr->sym_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     }
     arg = arr->list;
-    while( dims != 0 ) {
+    while( dim_cnt-- > 0 ) {
         GenType( arg );
         arg = arg->link;
-        --dims;
     }
     if( ( arr->opn.us & USOPN_FLD ) == 0 ) {
         if( ( StmtSw & SS_DATA_INIT ) == 0 ) {

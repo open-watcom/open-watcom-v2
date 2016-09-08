@@ -151,13 +151,13 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
     signed_32 PGM       *ss_ptr;
     intstar4            lo;
     intstar4            offset;
-    int                 num_ss;
+    int                 dim_cnt;
 
     dim_list.dim_flags = 0;
-    _SetDimCount( dim_list.dim_flags, _GetNMLSubScrs( info ) );
+    dim_cnt = _GetNMLSubScrs( info );
+    _SetDimCount( dim_list.dim_flags, dim_cnt );
     dim_list.num_elts = 1;
     bounds = &dim_list.subs_1_lo;
-    num_ss = _GetNMLSubScrs( info );
     ss_ptr = ss;
     for(;;) {
         if( !ScanSNum( ss_ptr ) )
@@ -169,8 +169,7 @@ static  intstar4        SubScr( int info, char PGM *adv_ss_ptr, int size ) {
         *bounds++ = lo;
         *bounds++ = lo + *(uint PGM *)adv_ss_ptr - 1;
         adv_ss_ptr += sizeof( uint );
-        --num_ss;
-        if( num_ss == 0 )
+        if( --dim_cnt == 0 )
             break;
         if( !ScanChar( ',' ) ) {
             break;

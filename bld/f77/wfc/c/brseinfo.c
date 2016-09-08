@@ -800,17 +800,16 @@ static dw_handle BIGetArrayType( sym_id ste_ptr ) {
 
 // Get An array type of a named symbol
 
-    int         dim = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
-    int         x = 0;
+    int         dim_cnt;
     dw_dim_info data;
     intstar4    *bounds;
     dw_handle   ret;
 
+    dim_cnt = _DimCount( ste_ptr->u.ns.si.va.u.dim_ext->dim_flags );
     data.index_type = BIGetBaseType( FT_INTEGER );
     bounds = &ste_ptr->u.ns.si.va.u.dim_ext->subs_1_lo;
-
     ret = DWBeginArray( cBIId, BIGetType( ste_ptr ), 0, NULL, 0, 0 );
-    for( x = 0; x < dim; x++ ) {
+    while( dim_cnt-- > 0 ) {
         data.lo_data = *bounds++;
         data.hi_data = *bounds++;
         DWArrayDimension( cBIId, &data );

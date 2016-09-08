@@ -191,7 +191,7 @@ cg_name FieldArrayNumElts( sym_id arr ) {
 cg_name ConstArrayOffset( act_dim_list *dims ) {
 //==============================================
 
-    int                 dims_no;
+    int                 dim_cnt;
     cg_name             hi_off;
     intstar4            multiplier;
     intstar4            hi;
@@ -199,7 +199,7 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
     intstar4            *bounds;
     intstar4            lo_off;
 
-    dims_no = _DimCount( dims->dim_flags );
+    dim_cnt = _DimCount( dims->dim_flags );
     bounds = &dims->subs_1_lo;
     multiplier = 1;
     hi_off = CGInteger( 0, TY_INT_4 );
@@ -221,7 +221,8 @@ cg_name ConstArrayOffset( act_dim_list *dims ) {
                                      TY_INT_4 ),
                            TY_INT_4 );
         lo_off -= lo * multiplier;
-        if( --dims_no == 0 ) break;
+        if( --dim_cnt == 0 )
+            break;
 
         multiplier *= ( hi - lo + 1 );
     }
@@ -274,17 +275,16 @@ static  void    VariableDims( sym_id arr ) {
 // Subscript an array that has a variable array declarator.
 
     act_dim_list        *dim_ptr;
-    int                 dims_no;
-    int                 ss_offset;
+    int                 dim_cnt;
+    int                 dim_no;
     cg_name             offset;
     cg_name             c_offset;
 
     dim_ptr = arr->u.ns.si.va.u.dim_ext;
-    dims_no = _DimCount( dim_ptr->dim_flags );
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     offset = CGInteger( 0, TY_INT_4 );
     c_offset = CGInteger( 0, TY_INT_4 );
-    ss_offset = 0;
-    while( ss_offset < dims_no ) {
+    for( dim_no = 0; dim_no < dim_cnt; ++dim_no ) {
 
         // offset += ( ss - lo ) * multiplier;
         //              or
@@ -295,17 +295,16 @@ static  void    VariableDims( sym_id arr ) {
                            offset,
                            CGBinary( O_TIMES,
                                      GetTypedValue(),
-                                     Multiplier( arr, ss_offset ),
+                                     Multiplier( arr, dim_no ),
                                      TY_INT_4 ),
                            TY_INT_4 );
         c_offset = CGBinary( O_MINUS,
                              c_offset,
                              CGBinary( O_TIMES,
-                                       LoBound( arr, ss_offset ),
-                                       Multiplier( arr, ss_offset ),
+                                       LoBound( arr, dim_no ),
+                                       Multiplier( arr, dim_no ),
                                        TY_INT_4 ),
                              TY_INT_4 );
-        ss_offset++;
     }
     Index( arr, CGBinary( O_PLUS, c_offset, offset, TY_INT_4 ) );
 }
@@ -317,23 +316,23 @@ static  void    DbSubscript( sym_id arr ) {
 // Generate call to debugging subscript routine.
 
     act_dim_list        *dim_ptr;
-    int                 dims_no;
-    int                 i;
+    int                 dim_cnt;
+    int                 dim_no;
     call_handle         call;
     cg_name             offset;
     cg_name             subscripts[MAX_DIM];
 
     dim_ptr = arr->u.ns.si.va.u.dim_ext;
-    dims_no = _DimCount( dim_ptr->dim_flags );
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     call = InitCall( RT_SUBSCRIPT );
-    for( i = 0; i < dims_no; ++i ) {
-        subscripts[ i ] = GetTypedValue();
+    for( dim_no = 0; dim_no < dim_cnt; ++dim_no ) {
+        subscripts[dim_no] = GetTypedValue();
     }
-    for( i = 1; i <= dims_no; ++i ) {
-        CGAddParm( call, subscripts[ dims_no - i ], TY_INT_4 );
+    for( dim_no = 1; dim_no <= dim_cnt; ++dim_no ) {
+        CGAddParm( call, subscripts[dim_cnt - dim_no], TY_INT_4 );
     }
     CGAddParm( call, GetAdv( arr ), TY_LOCAL_POINTER );
-    CGAddParm( call, CGInteger( _DimCount( dim_ptr->dim_flags ), TY_INTEGER ), TY_INTEGER );
+    CGAddParm( call, CGInteger( dim_cnt, TY_INTEGER ), TY_INTEGER );
     offset = CGUnary( O_POINTS, CGCall( call ), TY_INT_4 );
     Index( arr, offset );
 }
