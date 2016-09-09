@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -29,7 +29,4 @@
 ****************************************************************************/
 
 
-#include "variety.h"
-#include "_xtoa.h"
-
-const char __based(__segname("_CONST")) __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+extern const char __based(__segname("_CONST")) __Alphabet[];

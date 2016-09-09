@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include "watcom.h"
 #include "clibi64.h"
+#include "_xtoa.h"
 
 
 #define TO_WIDE(c)  ((CHAR_TYPE)(c))
@@ -182,8 +183,6 @@ unsigned long long __ulldiv( unsigned long long, uint_stk_ptr );
         parm [ax bx cx dx] [si] modify [di] value [ax bx cx dx];
 #endif
 #endif
-
-extern const char __based(__segname("_CONST")) __Alphabet[];
 
 _WCRTLINK CHAR_TYPE *__F_NAME(ulltoa,_ulltow)(
         unsigned long long int value,
