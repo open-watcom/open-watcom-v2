@@ -36,6 +36,8 @@
 #include <ctype.h>
 #include <dos.h>
 #include "drwatcom.h"
+#include "watcom.h"
+#include "memwnd.h"
 #include "sdkasm.h"
 
 #define MAX_BUFF        256
@@ -50,7 +52,6 @@ static int              MinAddrSpaces = 20;
 #endif
 static ADDRESS          currentAddr;
 static char             disasmBuf[MAX_BUFF];
-static char             hexTable[] = "0123456789ABCDEF";
 static DisAsmRtns       disasmInfo;
 
 
@@ -59,17 +60,17 @@ static DisAsmRtns       disasmInfo;
  */
 static int LongToHex( char *str, DWORD value, int len )
 {
-   int i;
+    int i;
 
-    for( i=len-1; i>=0; i-- ) {
-        str[ i ] = hexTable[ value & 0xf ];
+    for( i = len - 1; i >= 0; i-- ) {
+        str[i] = MkHexDigit( value );
         value >>= 4;
     }
     if( !isdigit( *str ) ) {
-        memmove( str + 1, str, ++len );
+        memmove( str + 1, str, len++ );
         *str = '0';
     }
-    str[ len ] = 0;
+    str[len] = '\0';
     return( len );
 
 } /* LongToHex */
@@ -111,10 +112,10 @@ static char * ConvertAddress( ADDRESS *addr, char *buff, int blen, int neartest 
     }
     len = strlen( buff );
     if( len < MinAddrSpaces ) {
-        for( i=0; i<MinAddrSpaces-len; i++ ) {
-            buff[len+i] = ' ';
+        for( i = 0; i < MinAddrSpaces - len; i++ ) {
+            buff[len + i] = ' ';
         }
-        buff[len+i] = 0;
+        buff[len + i] = '\0';
         len += i;
     }
     return( buff+len );
@@ -178,10 +179,10 @@ static char *DrWatToBrStr( DWORD value, DWORD  off )
 
     off = off;
 
-    disasmBuf[ 0 ] = '[';
-    len = LongToHex( &disasmBuf[ 1 ], value, 4 );
-    disasmBuf[ len + 1 ] = ']';
-    disasmBuf[ len + 2 ] = 0;
+    disasmBuf[0] = '[';
+    len = LongToHex( &disasmBuf[1], value, 4 );
+    disasmBuf[len + 1] = ']';
+    disasmBuf[len + 2] = 0;
     return( disasmBuf );
 
 } /* DrWatToBrString */
@@ -219,8 +220,8 @@ static short DrWatGetNextByte( void )
 {
     char        byte;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte,
-                        sizeof( char ), NULL ) ) return( byte );
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte, sizeof( char ), NULL ) )
+        return( byte );
     return( UNREADABLE );
 } /* DrWatGetNextByte */
 
@@ -228,8 +229,7 @@ static short DrWatGetDataByte( void )
 {
     char        byte;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte,
-                        sizeof( char ), NULL ) ) {
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte, sizeof( char ), NULL ) ) {
         currentAddr.offset++;
         return( byte );
     }
@@ -241,8 +241,7 @@ static short DrWatGetNextWord( void )
 {
     WORD        word;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &word,
-                        sizeof( WORD ), NULL ) ) {
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &word, sizeof( WORD ), NULL ) ) {
         return( word );
     }
     return( UNREADABLE );
@@ -254,8 +253,7 @@ static short DrWatGetDataWord( void )
 {
     WORD        word;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &word,
-                        sizeof( WORD ), NULL ) ) {
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &word, sizeof( WORD ), NULL ) ) {
         currentAddr.offset += 2;
         return( word );
     }
@@ -268,8 +266,7 @@ static long DrWatGetNextLong( void )
 {
     DWORD       dword;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &dword,
-                        sizeof( DWORD ), NULL ) ) {
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &dword, sizeof( DWORD ), NULL ) ) {
         return( dword );
     }
     return( UNREADABLE );
@@ -280,8 +277,7 @@ static long DrWatGetDataLong( void )
 {
     DWORD       dword;
 
-    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &dword,
-                        sizeof( DWORD ), NULL ) ) {
+    if( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &dword, sizeof( DWORD ), NULL ) ) {
         currentAddr.offset += 4;
         return( dword );
     }
@@ -295,18 +291,20 @@ static bool DrWatEndOfSegment( void )
     return( ReadProcessMemory( processHandle, (LPVOID)currentAddr.offset, &byte, sizeof( char ), NULL ) == 0 );
 } /* DrWatEndOfSegment */
 
-void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod ) {
+void SetDisasmInfo( HANDLE prochdl, ModuleNode *mod )
+{
     processHandle = prochdl;
     curModule = mod;
 }
 
-static bool IsSeg32( WORD seg ) {
+static bool IsSeg32( WORD seg )
+{
     seg = seg;
     return( true );
 }
 
-static BOOL FindSymbol( ADDRESS *addr, syminfo *si ) {
-
+static BOOL FindSymbol( ADDRESS *addr, syminfo *si )
+{
     DWORD       symoff;
 
     si->segnum = -1;
@@ -326,13 +324,13 @@ RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     DWORD       symoff;
     DWORD       line;
     BOOL        ret;
+
     if( !GetSymbolName( curModule, addr->offset, si->name, &symoff ) ) {
         return( NOT_FOUND );
     }
     si->symoff = symoff;
     if( getsrcinfo ) {
-        ret = GetLineNum( curModule, addr->offset, si->filename,
-                          MAX_FILE_NAME, &line );
+        ret = GetLineNum( curModule, addr->offset, si->filename, MAX_FILE_NAME, &line );
         if( !ret ) return( NOT_FOUND );
         si->linenum = line;
     }
@@ -420,11 +418,13 @@ static DWORD DrWatGetOffset( void )
 
 } /* DrWatGetOffset */
 
-static char *DrWatGetWtkInsName( uint_16 ins ) {
+static char *DrWatGetWtkInsName( uint_16 ins )
+{
     ins = ins; return( "" );
 }
 
-static void DrWatDoWtk( void ) {
+static void DrWatDoWtk( void )
+{
 }
 
 static bool DrWatIsWtk( void )
@@ -509,7 +509,7 @@ void InstructionBackup( int cnt, ADDRESS *addr )
     ADDRESS     taddr;
     int         i;
 
-    for( i=0;i<cnt;i++ ) {
+    for( i = 0; i < cnt; i++ ) {
         taddr = *addr;
         PreviousInstruction( addr );
         if( addr->seg == NULL ) {
@@ -541,7 +541,7 @@ void PreviousInstruction( ADDRESS *addr )
         addr->offset = 0;
     }
 
-    for( start=addr->offset; start<curr_off; start++ ) {
+    for( start = addr->offset; start < curr_off; start++ ) {
         addr->offset = start;
         while( 1 ) {
             next_off = addr->offset + GetInsSize( addr );
@@ -592,11 +592,11 @@ unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes )
     if( addbytes ) {
         char    bytebuff[30];
         char    tmp[5];
-        int     i,j;
+        int     i;
+        int     j;
 
 #ifdef __NT__
-        ReadProcessMemory( processHandle, (LPVOID)tmpaddr.offset, bytebuff,
-                            ins.ins_size, NULL );
+        ReadProcessMemory( processHandle, (LPVOID)tmpaddr.offset, bytebuff, ins.ins_size, NULL );
 #else
         ReadMem( tmpaddr.seg, tmpaddr.offset, bytebuff, ins.ins_size );
 #endif
@@ -608,9 +608,9 @@ unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes )
         if( ins.ins_size > j ) {
             j = ins.ins_size;
         }
-        for( i=0;i<j; i++ ) {
+        for( i = 0; i < j; i++ ) {
             if( i < ins.ins_size ) {
-                sprintf( tmp,"%02x", (WORD) bytebuff[i] );
+                sprintf( tmp,"%02x", (WORD)bytebuff[i] );
                 *p++ = tmp[0];
                 *p++ = tmp[1];
             } else {

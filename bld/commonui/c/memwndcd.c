@@ -139,7 +139,7 @@ char *MemWndToStr( uint_32 value, uint_16 len, uint_32 addr )
 
     addr = addr;
     for( i = len - 1; i >= 0; i-- ) {
-        StatBuf[i] = MkHexDigit( value & 0xf );
+        StatBuf[i] = MkHexDigit( value );
         value >>= 4;
     }
     StatBuf[len] = '\0';

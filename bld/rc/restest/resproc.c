@@ -38,7 +38,8 @@
 #include "res.h"
 
 
-void Error( char *heading, char *msg ) {
+void Error( char *heading, char *msg )
+{
     MessageBox( NULL, msg, heading, MB_OK );
 }
 
@@ -56,13 +57,16 @@ void LBPrintf( HWND lb, char *str, ... )
     va_end( al );
 } /* LBPrintf */
 
-static char mkHexDigit( char ch ) {
-    if( ch < 0xA ) return( '0' + ch );
+static char mkHexDigit( char ch )
+{
+    if( (ch &= 0xF) < 0xA )
+    	return( '0' + ch );
     return( 'A' + ch - 0xA );
-} /* MkHexDigit */
+}
 
 #define WIDTH           16
-void LBDump( HWND hwnd, char *str, WORD len ) {
+void LBDump( HWND hwnd, char *str, WORD len )
+{
     char        buf[128];
     char        *cur;
     WORD        digit;
@@ -73,19 +77,19 @@ void LBDump( HWND hwnd, char *str, WORD len ) {
     digit = 0;
     memset( buf, ' ', sizeof( buf ) );
     while( cnt < len ) {
-        buf[ 3 * digit ] = mkHexDigit( *cur >> 4 );
-        buf[ 3 * digit + 1 ]  = mkHexDigit( *cur & 0xF );
-        buf[ 3 * digit + 2 ]  = ' ';
+        buf[3 * digit] = mkHexDigit( *cur >> 4 );
+        buf[3 * digit + 1]  = mkHexDigit( *cur );
+        buf[3 * digit + 2]  = ' ';
         if( isprint( *cur ) ) {
-            buf[ 3 * WIDTH + 1 + digit ] = *cur;
+            buf[3 * WIDTH + 1 + digit] = *cur;
         } else {
-            buf[ 3 * WIDTH + 1 + digit ] = '.';
+            buf[3 * WIDTH + 1 + digit] = '.';
         }
         digit ++;
         cur ++;
         cnt ++;
         if( digit == WIDTH || cnt == len ) {
-            buf[ 4 * WIDTH + 1 ] = '\0';
+            buf[4 * WIDTH + 1] = '\0';
             SendMessage( hwnd, LB_ADDSTRING, 0, (LPARAM)(LPCSTR) buf );
             memset( buf, ' ', sizeof( buf ) );
             digit = 0;
