@@ -571,6 +571,42 @@ static int Parse( const char *cmd )
                 } else {
                     ListAppend( &Files_List, new_item );
                 }
+            } else if( opt == '@' ) {
+                if( len > 0 ) {
+                    char const  *env;
+
+                    env = getenv( Word );
+                    if( env != NULL ) {
+                        if( handle_environment_variable( env ) ) {
+                            return( 1 );          // Recursive call failed
+                        }
+                        via_environment = true;
+                        cmd = end;
+                        continue;
+                    }
+                    end = ScanFName( end, Word + len );
+                    NormalizeFName( Word, MAX_CMD, Word );
+                    MakeName( Word, LNK_EXT );
+                    errno = 0;
+                    if( (atfp = fopen( Word, "r" )) == NULL ) {
+                        PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
+                        return( 1 );
+                    }
+                    while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
+                        p = strchr( buffer, '\n' );
+                        if( p != NULL )
+                            *p = '\0';
+                        if( strnicmp( buffer, "file ", 5 ) == 0 ) {
+                            /* look for names separated by ','s */
+                            AddNameObj( buffer + 5 );
+                            Flags.do_link = true;
+                        } else {
+                            AddDirective( buffer );
+                        }
+                    }
+                    fclose( atfp );
+                }
+                wcc_option = 0;
             } else {                    /* otherwise, do option */
                 wcc_option = 1;         /* assume it's a wcc option */
                 switch( tolower( Word[0] ) ) {
@@ -664,43 +700,6 @@ static int Parse( const char *cmd )
                             ++p;
                         MemFree( SystemName );
                         SystemName = MemStrDup( p );
-                    }
-                    wcc_option = 0;
-                    break;
-                case '@':
-                    if( len > 0 ) {
-                        char const  *env;
-
-                        env = getenv( Word );
-                        if( env != NULL ) {
-                            if( handle_environment_variable( env ) ) {
-                                return( 1 );          // Recursive call failed
-                            }
-                            via_environment = true;
-                            cmd = end;
-                            continue;
-                        }
-                        end = ScanFName( end, Word + len );
-                        NormalizeFName( Word, MAX_CMD, Word );
-                        MakeName( Word, LNK_EXT );
-                        errno = 0;
-                        if( (atfp = fopen( Word, "r" )) == NULL ) {
-                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
-                            return( 1 );
-                        }
-                        while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
-                            p = strchr( buffer, '\n' );
-                            if( p != NULL )
-                                *p = '\0';
-                            if( strnicmp( buffer, "file ", 5 ) == 0 ) {
-                                /* look for names separated by ','s */
-                                AddNameObj( buffer + 5 );
-                                Flags.do_link = true;
-                            } else {
-                                AddDirective( buffer );
-                            }
-                        }
-                        fclose( atfp );
                     }
                     wcc_option = 0;
                     break;
