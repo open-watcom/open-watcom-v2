@@ -61,31 +61,31 @@ static SYMBOL existingThunk(    // GET EXISTING THUNK SYMBOL FOR NAME
 }
 
 
-static unsigned classifyThunk(  // GET CLASSIFICATION OF THUNK
+static specname classifyThunk(  // GET CLASSIFICATION OF THUNK
     SYMBOL sym )                // - original symbol
 {
-    unsigned classification;    // - classification of thunk
+    specname classification;    // - classification of thunk
 
     DbgAssert( ! SymIsThunk( sym ) );
     if( SymIsDtor( sym ) ) {
-        classification = SPECIAL_DTOR_THUNK;
+        classification = SPECIAL_NAME_DTOR_THUNK;
     } else if( SymIsOpDel( sym ) ) {
-        classification = SPECIAL_OP_DEL_THUNK;
+        classification = SPECIAL_NAME_OP_DEL_THUNK;
     } else if( SymIsOpDelar( sym ) ) {
-        classification = SPECIAL_OP_DELAR_THUNK;
+        classification = SPECIAL_NAME_OP_DELAR_THUNK;
     } else if( TypeHasNumArgs( sym->sym_type, 1 ) ) {
         DbgAssert( SymIsCtor( sym ) );
-        classification = SPECIAL_COPY_THUNK;
+        classification = SPECIAL_NAME_COPY_THUNK;
     } else {
         DbgAssert( SymIsCtor( sym ) );
-        classification = SPECIAL_CTOR_THUNK;
+        classification = SPECIAL_NAME_CTOR_THUNK;
     }
     return classification;
 }
 
 
 static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
-    unsigned classification,    // - classification of thunk
+    specname classification,    // - classification of thunk
     SYMBOL sym )                // - original symbol
 {
     TYPE thunk_type;            // - type of new symbol
@@ -96,13 +96,13 @@ static SYMBOL addrThunkSymbol(  // GET THUNK SYMBOL FROM ORIGINAL
 
     thunk_class = SC_NULL;
     switch( classification ) {
-    case SPECIAL_OP_DEL_THUNK :
-    case SPECIAL_OP_DELAR_THUNK :
+    case SPECIAL_NAME_OP_DEL_THUNK :
+    case SPECIAL_NAME_OP_DELAR_THUNK :
         thunk_class = SC_STATIC;
         break;
-    case SPECIAL_DTOR_THUNK :
-    case SPECIAL_COPY_THUNK :
-    case SPECIAL_CTOR_THUNK :
+    case SPECIAL_NAME_DTOR_THUNK :
+    case SPECIAL_NAME_COPY_THUNK :
+    case SPECIAL_NAME_CTOR_THUNK :
         thunk_class = SC_MEMBER;
         break;
     DbgDefault( "addrThunkSymbol -- bad classification" );
@@ -192,7 +192,7 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
     OMR arg_model;              // - argument calling convention model
     TYPE arg_type;              // - unmodified argument type from symbol
 
-    ret_name = CppSpecialName( SPECIAL_RETURN_VALUE );
+    ret_name = CppSpecialName( SPECIAL_NAME_RETURN_VALUE );
     stopper = ScopeOrderedStart( scope );
     sym = NULL;
     list = NULL;
@@ -219,13 +219,12 @@ SYMBOL ClassFunMakeAddressable( // MAKE SURE THE FUNCTION CAN BE ADDRESSED
     SYMBOL orig_sym )           // - original symbol
 {
     SYMBOL thunk_sym;           // - thunk symbol
-    unsigned classification;    // - classification of thunk
+    specname classification;    // - classification of thunk
 
     if( orig_sym == NULL ) {
         return orig_sym;
     }
-    if( ( orig_sym->id != SC_DEFAULT )
-      &&( ! TypeHasPragma( orig_sym->sym_type ) ) ) {
+    if( ( orig_sym->id != SC_DEFAULT ) && !TypeHasPragma( orig_sym->sym_type ) ) {
         type_flag flags;
         TypeModFlags( orig_sym->sym_type, &flags );
         if( (flags & TF1_DLLIMPORT) == 0 ) {
@@ -260,7 +259,7 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     PTREE extra_arg;            // - Ctor/Dtor extra argument
     PTREE user_args;            // - user arguments for function
     PTREE this_arg;             // - "this" argument
-    unsigned classification;    // - classification of thunk
+    specname classification;    // - classification of thunk
     CGFILE* cgfile;             // - CGFILE for thunk
     symbol_flag orig_ref;       // - keep original SF_REFERENCED setting
 
@@ -320,8 +319,8 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
     cgfile->u.s.thunk = true;
     if( ( SymIsInitialized( orig_sym ) )
       ||( SymIsDefArg( orig_sym ) )
-      ||( classification == SPECIAL_OP_DEL_THUNK )
-      ||( classification == SPECIAL_OP_DELAR_THUNK ) ) {
+      ||( classification == SPECIAL_NAME_OP_DEL_THUNK )
+      ||( classification == SPECIAL_NAME_OP_DELAR_THUNK ) ) {
         CgioThunkMarkGen( cgfile );
     }
 }

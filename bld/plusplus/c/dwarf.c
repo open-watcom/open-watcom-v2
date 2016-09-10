@@ -1253,7 +1253,7 @@ static void dwarf_define_parm( SYMBOL sym )
 static bool dwarfValidateSymbol( SYMBOL sym )
 /*******************************************/
 {
-    unsigned    junk;
+    specname    junk;
 
     if( !SymIsAnonymous( sym ) ) {
         if( IsCppSpecialName( sym->name->name, &junk ) ) {

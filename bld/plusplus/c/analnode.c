@@ -41,7 +41,6 @@
 #include "objmodel.h"
 #include "typesig.h"
 #include "conpool.h"
-#include "utility.h"
 
 
 static PTREE set_meaningful_side_effects(   // SET MEANINGFUL, SIDE_EFFECTS

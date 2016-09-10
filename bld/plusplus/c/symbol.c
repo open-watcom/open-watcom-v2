@@ -548,7 +548,7 @@ SYMBOL SymFunctionReturn(       // GET SYMBOL FOR RETURN
     SCOPE fun_scope;            // - scope for current function
 
     result = ScopeFindNaked( GetCurrScope()
-                           , CppSpecialName( SPECIAL_RETURN_VALUE ) );
+                           , CppSpecialName( SPECIAL_NAME_RETURN_VALUE ) );
     if( result == NULL ) {
         retn = NULL;
     } else {
@@ -573,7 +573,7 @@ SYMBOL SymAllocReturn(          // ALLOCATE A RETURN SYMBOL
     return SymCreate( type
                     , SC_AUTO
                     , SF_REFERENCED
-                    , CppSpecialName( SPECIAL_RETURN_VALUE )
+                    , CppSpecialName( SPECIAL_NAME_RETURN_VALUE )
                     , scope );
 }
 
@@ -892,21 +892,21 @@ bool SymIsUDC(                  // TEST IF SYMBOL IS USER-DEFINED CONVERSION
 bool SymIsThunkDtor(            // TEST IF DTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_DTOR_THUNK ) );
+    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_DTOR_THUNK ) );
 }
 
 
 bool SymIsThunkCtorDflt(        // TEST IF DEFAULT CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_CTOR_THUNK ) );
+    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_CTOR_THUNK ) );
 }
 
 
 bool SymIsThunkCtorCopy(        // TEST IF COPY CTOR ADDRESSABILITY THUNK
     SYMBOL sym )                // - function symbol
 {
-    return symHasFuncName( sym, CppSpecialName( SPECIAL_COPY_THUNK ) );
+    return symHasFuncName( sym, CppSpecialName( SPECIAL_NAME_COPY_THUNK ) );
 }
 
 
@@ -1075,11 +1075,11 @@ bool SymIsThunk(                // DETERMINE IF FUNCTION IS THUNK
     if( func != NULL ) {
         if( ( func->name != NULL ) && ( func->name->name != NULL ) ) {
             name = func->name->name;
-            if( ( name == CppSpecialName( SPECIAL_DTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_CTOR_THUNK     ) )
-              ||( name == CppSpecialName( SPECIAL_OP_DEL_THUNK   ) )
-              ||( name == CppSpecialName( SPECIAL_OP_DELAR_THUNK ) )
-              ||( name == CppSpecialName( SPECIAL_COPY_THUNK     ) )
+            if( ( name == CppSpecialName( SPECIAL_NAME_DTOR_THUNK     ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_CTOR_THUNK     ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_OP_DEL_THUNK   ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_OP_DELAR_THUNK ) )
+              ||( name == CppSpecialName( SPECIAL_NAME_COPY_THUNK     ) )
               ) {
                 retb = true;
             }

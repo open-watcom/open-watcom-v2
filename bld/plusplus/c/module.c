@@ -199,7 +199,7 @@ void ModuleInitInit(            // START MODULE-INITIALIZATION FUNCTION
     module_init = SymCreateFileScope( fn_type
                                     , SC_STATIC
                                     , 0
-                                    , CppSpecialName( SPECIAL_INIT_FUNCTION ) );
+                                    , CppSpecialName( SPECIAL_NAME_INIT_FUNCTION ) );
     module_init_func = module_init;
     SetCurrScope(GetFileScope());
     ScopeBeginFunction( module_init );
@@ -314,7 +314,7 @@ void ModuleInitConnect(         // CODE GENERATION FOR MODULE-INIT. CONNECTION
 {
     genInitFiniReference( module_init_func
                         , CompInfo.init_priority
-                        , CppSpecialName( SPECIAL_MODULE_INIT )
+                        , CppSpecialName( SPECIAL_NAME_MODULE_INIT )
                         , SEG_INIT_REF );
 }
 

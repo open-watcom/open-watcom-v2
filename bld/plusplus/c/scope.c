@@ -675,7 +675,7 @@ static void injectChipBug( void )
     NAME name;
     SYMBOL sym;
 
-    name = CppSpecialName( SPECIAL_CHIPBUG );
+    name = CppSpecialName( SPECIAL_NAME_CHIPBUG );
     type = GetBasicType( TYP_UINT );
     type = MakeModifiedType( type, TF1_NEAR );
     sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
@@ -701,7 +701,7 @@ static void injectDwarfAbbrev( void )
     NAME name;
     SYMBOL sym;
 
-    name = CppSpecialName( SPECIAL_DWARF_ABBREV );
+    name = CppSpecialName( SPECIAL_NAME_DWARF_ABBREV );
     type = GetBasicType( TYP_CHAR );
     sym = SymCreateFileScope( type, SC_EXTERN, 0, name );
     LinkageSet( sym, "C" );

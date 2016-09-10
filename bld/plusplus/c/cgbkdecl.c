@@ -145,7 +145,7 @@ void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     fn_type = FunctionDeclarationType( fctl->func->sym_type );
     VstkOpen( &sym_stack, sizeof( SYMBOL ), 16 );
     stop = ScopeOrderedStart( scope );
-    ret_name = CppSpecialName( SPECIAL_RETURN_VALUE );
+    ret_name = CppSpecialName( SPECIAL_NAME_RETURN_VALUE );
     ret_sym = NULL;
     curr = NULL;
     for(;;) {
@@ -194,7 +194,7 @@ SYMBOL CgDeclHiddenParm(        // DECLARE HIDDEN ARG (THIS, CDTOR)
     SCOPE scope,                // - function parameters scope
     TYPE type,                  // - symbol type
     SYMBOL symbol_model,        // - model for symbol
-    unsigned specname_index )   // - special name index
+    specname specname_index )   // - special name index
 {
     SYMBOL_NAME name;           // - new symbol name
     SYMBOL sym;                 // - new symbol

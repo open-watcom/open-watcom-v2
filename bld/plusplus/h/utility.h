@@ -100,7 +100,7 @@ NAME CppOperatorName(           // GET C++ OPERATOR NAME
     CGOP op )                   // - operator number
 ;
 NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
-    unsigned index )            // - index of special name
+    specname index )            // - index of special name
 ;
 NAME CppStaticInitName(         // CREATE NAME FOR INITIALIZING AUTO AGGREGATES
     SYMBOL sym )                // - variable to be initialized
@@ -151,7 +151,7 @@ bool IsCppMembPtrOffsetName(    // TEST IF NAME IS MEMBER-PTR OFFSET FUNCTION
 ;
 bool IsCppSpecialName(          // TEST IF NAME IS SPECIAL NAME
     NAME name,                  // - name to find
-    unsigned *idx )             // - index found
+    specname *idx )             // - index found
 ;
 bool IsVftName(                 // TEST IF SYMBOL IS VFT NAME
     NAME name )                 // - name to be tested

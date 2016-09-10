@@ -1006,7 +1006,7 @@ SYMBOL DeclCheck( SYMBOL_NAME sym_name, SYMBOL sym, decl_check *control )
                 } else if( DefaultIntType( retn_type ) ) {
                     CErr2p( ERR_FUNCTION_BAD_RETURN, sym_name->name );
                 }
-            } else if ( ( sym_name->name != CppSpecialName( SPECIAL_RETURN_VALUE ) )
+            } else if ( ( sym_name->name != CppSpecialName( SPECIAL_NAME_RETURN_VALUE ) )
                      && DefaultIntType( sym->sym_type ) ) {
                 CErr2p( ERR_MISSING_DECL_SPECS, sym_name->name );
             }

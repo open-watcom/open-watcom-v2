@@ -42,7 +42,6 @@
 #include "class.h"
 #include "ppops.h"
 #include "vbuf.h"
-#include "specname.h"
 #include "name.h"
 #include "toggle.h"
 #include "cgfront.h"
@@ -83,10 +82,10 @@ static CGOP const operatorSameAs[] = {
 };
 
 static const char *specialNamesStr[] = {
-    #define SPECNAME_DEFINE
-    #include "specname.h"
+    #define pick(e,s)    s,
+    #include "_specnam.h"
+    #undef pick
 };
-#define MAX_SPECIAL_NAMES ARRAY_SIZE( specialNamesStr )
 
 static VBUF mangled_name;       // buffer for working on name
 static char *objNameBuff;
@@ -826,16 +825,16 @@ NAME CppConstructorName(        // CREATE NAME OF CONSTRUCTOR
 }
 
 NAME CppSpecialName(            // CREATE NAME OF SPECIAL INTERNAL ID
-    unsigned index )            // - index of special name
+    specname index )            // - index of special name
 {
     return( specialNames[index] );
 }
 
 bool IsCppSpecialName(          // TEST IF NAME IS SPECIAL NAME
     NAME name,                  // - name to find
-    unsigned *idx )             // - index found
+    specname *idx )             // - index found
 {
-    unsigned index;
+    specname index;
 
     for( index = 0; index < MAX_SPECIAL_NAMES; index++ ) {
         if( specialNames[index] == name ) {
@@ -1137,7 +1136,7 @@ bool IsCppNameInterestingDebug( // CHECK FOR INTERNAL NAMES
         return( false );
     }
     if( NameStr( name )[0] == NAME_OPERATOR_OR_DUMMY_PREFIX1 ) {
-        if( name == specialNames[ SPECIAL_RETURN_VALUE ] ) {
+        if( name == specialNames[SPECIAL_NAME_RETURN_VALUE] ) {
             // special case for ".return"
             return( true );
         }
@@ -1351,9 +1350,7 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
             }
         }
     }
-    for( cp = specialNamesStr, tp = specialNames
-       ; cp < &specialNamesStr[MAX_SPECIAL_NAMES]
-       ; ++cp, ++tp ) {
+    for( cp = specialNamesStr, tp = specialNames; cp < &specialNamesStr[MAX_SPECIAL_NAMES]; ++cp, ++tp ) {
         *tp = NameCreateNoLen( *cp );
     }
     VbufInit( &mangled_name );

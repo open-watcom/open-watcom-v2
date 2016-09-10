@@ -30,9 +30,24 @@
 ****************************************************************************/
 
 
-typedef enum {
-    #define pick( e, s )         e ,
-    #include "_specnam.h"
-    #undef pick
-    MAX_SPECIAL_NAMES
-} specname;
+// ".#" prefix is reserved for NameDummy names
+// ".@" prefix is reserved for operator names (precedes mangled name for op)
+
+pick( SPECIAL_NAME_THIS,          "this" )
+pick( SPECIAL_NAME_RETURN_VALUE,  ".return" )
+pick( SPECIAL_NAME_COPY_ARG,      ".copy_arg" )
+pick( SPECIAL_NAME_MODULE_INIT,   ".mod_init" )
+pick( SPECIAL_NAME_INIT_FUNCTION, ".fn_init" )
+pick( SPECIAL_NAME_CDTOR_EXTRA,   ".cdtor" )
+pick( SPECIAL_NAME_CTOR_THUNK,    ".tdctor" )
+pick( SPECIAL_NAME_COPY_THUNK,    ".tcctor" )
+pick( SPECIAL_NAME_DTOR_THUNK,    ".tdtor" )
+pick( SPECIAL_NAME_OP_DEL_THUNK,  ".tdopdel" )
+pick( SPECIAL_NAME_OP_DELAR_THUNK,".tdopdelarr" )
+pick( SPECIAL_NAME_SETJMP_VALUE,  ".sj_val" )
+pick( SPECIAL_NAME_CHIPBUG,       "__chipbug" )
+pick( SPECIAL_NAME_DWARF_ABBREV,  "__DFABBREV" )
+pick( SPECIAL_NAME_TYPE_INFO,     "type_info" )
+pick( SPECIAL_NAME_BEGINTHREAD,   "_beginthread" )
+pick( SPECIAL_NAME_BEGINTHREADEX, "_beginthreadex" )
+pick( SPECIAL_NAME_STD,           "std" )

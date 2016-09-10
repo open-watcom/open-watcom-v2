@@ -34,7 +34,6 @@
 #include "cgfront.h"
 #include "memmgr.h"
 #include "ptree.h"
-#include "specname.h"
 #include "template.h"
 #include "class.h"
 #include "rtfuns.h"
@@ -51,7 +50,7 @@ static TYPE type_infoGetType( PTREE expr )
         return( type_info );
     }
     expr = PTreeExtractLocn( expr, &locn );
-    type_info = ClassPreDefined( CppSpecialName( SPECIAL_TYPE_INFO ), &locn );
+    type_info = ClassPreDefined( CppSpecialName( SPECIAL_NAME_TYPE_INFO ), &locn );
     if( ! TypeDefined( type_info ) ) {
         PTreeSetErrLoc( expr );
         CErr2p( WARN_USER_WARNING_MSG, "<typeinfo> not included" );
