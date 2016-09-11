@@ -65,6 +65,8 @@
 #include "digld.h"
 #include "utils.h"
 
+#include "clibext.h"
+
 
 #if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"
