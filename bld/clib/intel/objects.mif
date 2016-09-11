@@ -36,18 +36,15 @@
 
 !include ../../../../objlist.mif
 
-086_fpi87_postopts=-fpi87
-286_fpi87_postopts=-fpi87
-386_fpi87_postopts=-fpi87
-axp_fpi87_postopts=
-ppc_fpi87_postopts=
-fpi87_postopts=$($(processor)_fpi87_postopts)
+086_option_fpi87 =-fpi87
+286_option_fpi87 =-fpi87
+386_option_fpi87 =-fpi87
 
-chipbug_postopts=$(fpi87_postopts)
+profilog_opts =-of
+p5prof2_opts  =-of
+dp5prof2_opts =-of
 
-profilog_opts=-of
-p5prof2_opts=-of
-dp5prof2_opts=-of
+chipbug_postopts =$($(processor)_option_fpi87)
 
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc ncl nvl nll o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 #==========================================================================================================
