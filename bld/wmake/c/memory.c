@@ -37,6 +37,8 @@
     #include <malloc.h>
 #endif
 
+#include "clibext.h"
+
 
 #ifdef USE_FAR
 STATIC bool     largeNearSeg;    /* have we done a _nheapgrow() ? */
@@ -81,8 +83,8 @@ STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
 STATIC int          trkfile = -1;     /* file handle we'll write() to */
 
-STATIC void printLine( void *h, const char *buf, unsigned size )
-/**************************************************************/
+STATIC void printLine( void *h, const char *buf, size_t size )
+/************************************************************/
 {
     h = h;
     if( trkfile == -1 ) {

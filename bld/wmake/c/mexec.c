@@ -1526,7 +1526,7 @@ static bool doRM( const char *f, const rm_flags *flags )
     len = strlen( f );
     for( i = len; i > 0; --i ) {
         char ch = f[i - 1];
-        if( ch == '/' || ch == '\\' || ch == ':' ) {
+        if( cisdirc( ch ) ) {
             break;
         }
     }

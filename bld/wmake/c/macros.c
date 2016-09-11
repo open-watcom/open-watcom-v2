@@ -634,12 +634,12 @@ char *DeMacroSpecial( const char *InString )
             pos = 0;
             UnGetCH( STRM_MAGIC );
             buffer[pos++] = *(current++);
-            if( ismsspecial( *current ) && !ismsmodifier( *(current + 1) ) ) {
+            if( cismsspecial( *current ) && !cismsmodifier( *(current + 1) ) ) {
                 buffer[pos++] = *(current++);
             } else {
-                assert( ismsspecial( *current ) );
+                assert( cismsspecial( *current ) );
                 buffer[pos++] = *(current++);
-                if( ismsmodifier( *current ) ) {
+                if( cismsmodifier( *current ) ) {
                     buffer[pos++] = *(current++);
                 }
             }
@@ -749,7 +749,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
         } else {
             pos = 0;
             s = PreGetCH();
-            if( ismsspecial( s ) ) {
+            if( sismsspecial( s ) ) {
                 UnGetCH( s );
                 // This is to invoke LexDollar
                 t = LexToken( LEX_MS_MAC );
@@ -969,7 +969,7 @@ STATIC char *deMacroText( int depth, TOKEN_T end1, TOKEN_T end2 )
 #if 0
             case SPECIAL_TMP_DOL_C:
                   if( Glob.compat_nmake ) {
-                       if( ismsspecial( *(p + 1) ) ) {
+                       if( cismsspecial( *(p + 1) ) ) {
                           *p = DOLLAR;
                        }
                   }

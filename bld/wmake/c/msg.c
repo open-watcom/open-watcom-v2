@@ -39,6 +39,8 @@
 #include "msg.h"
 #include "mstream.h"
 
+#include "clibext.h"
+
 
 STATIC const char   *logName;
 STATIC int          logFH;
@@ -395,18 +397,10 @@ static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 {
     if( class != INF ) {
         if( logFH != -1 ) {
-#ifdef _WIN64
-            write( logFH, buff, (unsigned)len );
-#else
             write( logFH, buff, len );
-#endif
         }
     }
-#ifdef _WIN64
-    write( fh, buff, (unsigned)len );
-#else
     write( fh, buff, len );
-#endif
 }
 
 #ifdef __WATCOMC__

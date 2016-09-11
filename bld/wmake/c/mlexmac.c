@@ -118,7 +118,7 @@ STATIC char *CatModifier( char *inString, bool destroy )
 
     s = PreGetCH();
 
-    if( ismsmodifier( s ) ) {
+    if( sismsmodifier( s ) ) {
         buffer[0] = s;
         buffer[1] = NULLCHAR;
         output = StartVec();
@@ -148,7 +148,7 @@ TOKEN_T LexMSDollar( STRM_T s )
 {
     char    temp[8];
 
-    assert( ismsspecial( s ) );
+    assert( sismsspecial( s ) );
 
     if( IsPartDeMacro || !DoingUpdate ) {
         /* we need to use SPECIAL_TMP_DOL_C to prevent recursion
@@ -214,7 +214,7 @@ STATIC TOKEN_T lexDollar( void )
 
     s = PreGetCH();
 
-    if( (Glob.compat_nmake || Glob.compat_posix) && ismsspecial( s ) ) {
+    if( (Glob.compat_nmake || Glob.compat_posix) && sismsspecial( s ) ) {
         t = LexMSDollar( s );
         GetModifier();
         return( t );
