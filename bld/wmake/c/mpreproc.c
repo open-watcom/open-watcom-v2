@@ -801,28 +801,28 @@ STATIC char *formatLongFileName( char *text )
 /*******************************************/
 {
     char    *ret;
-    char    *currentRet;
-    char    *currentTxt;
+    char    *pRet;
+    char    *pTxt;
 
     assert( text != NULL );
     ret = StrDupSafe( text );
-    currentRet = ret;
-    currentTxt = text;
+    pRet = ret;
+    pTxt = text;
 
-    if( currentTxt[0] == DOUBLEQUOTE ) {
-        ++currentTxt;
+    if( pTxt[0] == DOUBLEQUOTE ) {
+        ++pTxt;
     }
-    while( *currentTxt != NULLCHAR && *currentTxt != DOUBLEQUOTE ) {
-        if( *currentTxt == '\\' ) {
-            if( *(currentTxt + 1) == DOUBLEQUOTE ) {
-                ++currentTxt;
+    while( *pTxt != NULLCHAR && *pTxt != DOUBLEQUOTE ) {
+        if( *pTxt == '\\' ) {
+            if( *(pTxt + 1) == DOUBLEQUOTE ) {
+                ++pTxt;
             }
         }
-        *(currentRet++) = *(currentTxt++);
+        *(pRet++) = *(pTxt++);
     }
-    *currentRet = NULLCHAR;
-    if( *currentTxt == DOUBLEQUOTE ) {
-        if( *(currentTxt + 1) != NULLCHAR ) {
+    *pRet = NULLCHAR;
+    if( *pTxt == DOUBLEQUOTE ) {
+        if( *(pTxt + 1) != NULLCHAR ) {
             PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
             FreeSafe( ret );
             return( NULL );
@@ -843,7 +843,7 @@ STATIC void bangInclude( void )
     char    *text;
     char    *temp = NULL;
 #ifdef __WATCOMC__
-    char    *current;
+    char    *p;
     char    full_path[_MAX_PATH];
     RET_T   ret;
 #endif
@@ -857,12 +857,12 @@ STATIC void bangInclude( void )
 
 #ifdef __WATCOMC__
     if( *text == LESSTHAN ) {
-        current = text;
-        while( *current != GREATERTHAN && *current != NULLCHAR ) {
-            ++current;
+        p = text;
+        while( *p != GREATERTHAN && *p != NULLCHAR ) {
+            ++p;
         }
-        if( *current == GREATERTHAN ) {
-            *current = NULLCHAR;
+        if( *p == GREATERTHAN ) {
+            *p = NULLCHAR;
             temp = text;
             text = formatLongFileName( temp + 1 );
             if( text == NULL ) {
@@ -870,7 +870,7 @@ STATIC void bangInclude( void )
                 return;
             }
             for( ;; ) {
-                if( *current == NULLCHAR ) {
+                if( *p == NULLCHAR ) {
                     _searchenv( text, INCLUDE, full_path );
                     ret = RET_ERROR;
                     if( *full_path != NULLCHAR ) {
@@ -883,11 +883,11 @@ STATIC void bangInclude( void )
                 }
                 // check if there are any trailing characters if there are
                 // then error
-                if( !cisws( *current ) ) {
+                if( !cisws( *p ) ) {
                     PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     break;
                 }
-                ++current;
+                ++p;
             }
         } else {
               PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
@@ -1219,12 +1219,12 @@ STATIC INT32 makeHexNumber( const char *inString, int *stringLength )
 {
     INT32       value;
     char        c;
-    const char  *currentChar;
+    const char  *pChar;
 
     value = 0;
-    currentChar = inString;
+    pChar = inString;
     for( ;; ) {
-        c = currentChar[0];
+        c = pChar[0];
         if( c >= '0' && c <= '9' ) {
             c = c - '0';
         } else if( c >= 'a' && c <= 'f' ) {
@@ -1235,9 +1235,9 @@ STATIC INT32 makeHexNumber( const char *inString, int *stringLength )
             break;
         }
         value = value * 16 + c;
-        ++currentChar;
+        ++pChar;
     }
-    *stringLength = (int)( currentChar - inString );
+    *stringLength = (int)( pChar - inString );
     return( value );
 }
 
@@ -1246,39 +1246,39 @@ STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, int *ind
 /**********************************************************************************/
 {
     INT32       value;
-    const char  *currentChar;
+    const char  *pChar;
     char        c;
     int         hexLength;
 
-    currentChar = inString;
+    pChar = inString;
     value       = 0;
     *index      = 0;
-    c = currentChar[0];
+    c = pChar[0];
     if( c == '0' ) {                            // octal or hex number
-        ++currentChar;
-        c = currentChar[0];
+        ++pChar;
+        c = pChar[0];
         if( c == 'x'  ||  c == 'X' ) {          // hex number
-            ++currentChar;
-            value = makeHexNumber( currentChar, &hexLength );
-            currentChar += hexLength;
+            ++pChar;
+            value = makeHexNumber( pChar, &hexLength );
+            pChar += hexLength;
         } else {                                // octal number
             while( c >= '0'  &&  c <= '7' ) {
                 value = value * 8 + c - '0';
-                ++currentChar;
-                c = currentChar[0];
+                ++pChar;
+                c = pChar[0];
             }
         }
     } else {                                    // decimal number
         while( c >= '0'  &&  c <= '9' ) {
             value = value * 10 + c - '0';
-            ++currentChar;
-            c = currentChar[0];
+            ++pChar;
+            c = pChar[0];
         }
     }
     current->data.number = value;
     current->type = OP_INTEGER;
 
-    *index = (int)( currentChar - inString );
+    *index = (int)( pChar - inString );
 }
 
 
@@ -1474,15 +1474,15 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, int *index 
 STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLength )
 /**********************************************************************************/
 {
-    const char  *currentString;
+    const char  *pString;
     int         index = 0;
 
-    currentString = SkipWS( inString );
+    pString = SkipWS( inString );
 
-    if( currentString[index] != EOL ||
-        currentString[index] != NULLCHAR ||
-        currentString[index] != COMMENT ) {
-        switch( currentString[index] ) {
+    if( pString[index] != EOL ||
+        pString[index] != NULLCHAR ||
+        pString[index] != COMMENT ) {
+        switch( pString[index] ) {
         case COMPLEMENT:
             makeToken( OP_COMPLEMENT, current, &index );
             break;
@@ -1511,7 +1511,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             makeToken( OP_PAREN_RIGHT, current, &index );
             break;
         case LOG_NEGATION:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case EQUAL:
                 makeToken( OP_INEQU, current, &index );
                 break;
@@ -1521,7 +1521,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case BIT_AND:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case BIT_AND:
                 makeToken( OP_LOG_AND, current, &index );
                 break;
@@ -1531,7 +1531,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case BIT_OR:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case BIT_OR:
                 makeToken( OP_LOG_OR, current, &index );
                 break;
@@ -1541,7 +1541,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case LESSTHAN:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case LESSTHAN:
                 makeToken( OP_SHIFT_LEFT, current, &index );
                 break;
@@ -1554,7 +1554,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case GREATERTHAN:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case GREATERTHAN:
                 makeToken( OP_SHIFT_RIGHT, current, &index );
                 break;
@@ -1567,7 +1567,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case EQUAL:
-            switch( currentString[index + 1] ) {
+            switch( pString[index + 1] ) {
             case EQUAL:
                 makeToken( OP_EQUAL, current, &index );
                 break;
@@ -1578,16 +1578,16 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             }
             break;
         case DOUBLEQUOTE:
-            makeStringToken( currentString, current, &index );
+            makeStringToken( pString, current, &index );
             break;
         case BRACKET_LEFT:
-            makeCmdToken( currentString, current, &index );
+            makeCmdToken( pString, current, &index );
             break;
         default:
-            if( currentString[index] >= '0' && currentString[index] <= '9') {
-                makeNumberToken( currentString, current, &index );
+            if( pString[index] >= '0' && pString[index] <= '9') {
+                makeNumberToken( pString, current, &index );
             } else {
-                makeFuncToken( currentString, current, &index );
+                makeFuncToken( pString, current, &index );
             }
             break;
         }
@@ -1595,7 +1595,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
         makeToken( OP_ENDOFSTRING, current, &index );
     }
 
-    *tokenLength = index + (int)( currentString - inString );
+    *tokenLength = index + (int)( pString - inString );
 }
 
 

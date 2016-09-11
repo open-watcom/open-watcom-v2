@@ -191,7 +191,7 @@ STATIC bool fillBuffer( void )
  *          false if buffer is empty (EOF)
  */
 {
-    int     max;
+    ssize_t max;
     SENT    *tmp;   /* just to make sure optimizer will registerize this */
 
     assert( headSent != NULL && headSent->type == SENT_FILE );
@@ -205,15 +205,15 @@ STATIC bool fillBuffer( void )
     tmp->data.file.cur = tmp->data.file.buf;
 
     max = read( tmp->data.file.fh, tmp->data.file.buf, FILE_BUFFER_SIZE - 1 );
-    if( max < 0 ) {     /* 31-jul-91 DJG */
+    if( max == - 1 ) {
         PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
         max = 0;
     } else if( max > 0 && tmp->data.file.buf[max - 1] == '\r' ) {
         /* read one more character if it ends in \r (possibly CRLF) */
-        int     max2;
+        ssize_t max2;
 
         max2 = read( tmp->data.file.fh, &tmp->data.file.buf[max], 1 );
-        if( max2 < 0 ) {     /* 13-sep-03 BEO */
+        if( max2 == -1 ) {
             PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
             max2 = 0;
         }
@@ -325,7 +325,7 @@ STRM_T GetCHR( void )
  */
 {
     SENT    *head;  /* this is just here for optimizing purposes */
-    STRM_T  result;
+    STRM_T  s;
 
     flagEOF = false;
     for( ;; ) {
@@ -348,39 +348,39 @@ STRM_T GetCHR( void )
                     return( EOL );
                 }
             }
-            result = *(head->data.file.cur++);
-            if( sisbarf( result ) ) {
+            s = *(head->data.file.cur++);
+            if( sisbarf( s ) ) {
                 /* ignore \r in \r\n */
-                if( result == '\r' && head->data.file.cur[0] == EOL ) {
-                    result = *(head->data.file.cur++);
-                } else if( Glob.compat_nmake && result == 0x1a ) {
+                if( s == '\r' && head->data.file.cur[0] == EOL ) {
+                    s = *(head->data.file.cur++);
+                } else if( Glob.compat_nmake && s == 0x1a ) {
                     /* embedded ^Z terminates stream in MS mode */
-                    result = EOL;
+                    s = EOL;
                     popSENT();
                     flagEOF = true;
                 } else {
-                    PrtMsg( FTL | LOC | BARF_CHARACTER, result );
+                    PrtMsg( FTL | LOC | BARF_CHARACTER, s );
                     ExitFatal();
                 }
             }
-            if( result == '\f' ) {
-                result = EOL;
+            if( s == '\f' ) {
+                s = EOL;
             }
-            if( result == EOL ) {
+            if( s == EOL ) {
                 head->data.file.line++;
             }
-            return( result );
+            return( s );
         case SENT_STR:
-            result = *(head->data.str.cur++);
-            if( result == NULLCHAR ) {
+            s = *(head->data.str.cur++);
+            if( s == NULLCHAR ) {
                 popSENT();
                 continue;   /* try again */
             }
-            return( result );
+            return( s );
         case SENT_CHAR:
-            result = head->data.s;
+            s = head->data.s;
             popSENT();
-            return( result );
+            return( s );
         }
         assert( false );    /* should never get here */
     }

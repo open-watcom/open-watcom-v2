@@ -259,7 +259,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( (int)bytes != write( handle, DeMacroBody, (unsigned)bytes ) ) {
+                if( bytes != write( handle, DeMacroBody, bytes ) ) {
                     ret = RET_ERROR;
                 }
                 if( 1 != write( handle, "\n", 1 ) ) {
@@ -306,16 +306,16 @@ STATIC char *RemoveBackSlash( const char *inString )
  */
 {
     char    buffer[_MAX_PATH];
-    char    *current;
+    char    *p;
     int     pos;
     char    c;
 
     assert( inString != NULL );
 
-    for( pos = 0, current = (char *)inString; (c = *current++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
+    for( pos = 0, p = (char *)inString; (c = *p++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
         if( c == BACKSLASH ) {
-            if( *current == DOUBLEQUOTE ) {
-                c = *current++;
+            if( *p == DOUBLEQUOTE ) {
+                c = *p++;
             }
         }
         buffer[pos++] = c;
@@ -661,7 +661,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( write( currentFileHandle, text, (unsigned)len ) != (int)len ) {
+        if( write( currentFileHandle, text, len ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );

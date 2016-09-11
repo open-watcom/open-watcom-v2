@@ -307,18 +307,18 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 continue;
             }
             if( p[3] == NULLCHAR ) {
-                if( option == 'm'  && ctolower( p[2] ) == 's' ) {
+                if( option == 'm' && ctolower( p[2] ) == 's' ) {
                     Glob.compat_nmake = true;
                     Glob.nocheck   = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 's'  && ctolower( p[2] ) == 'n' ) {
+                if( option == 's' && ctolower( p[2] ) == 'n' ) {
                     Glob.silentno  = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 'u'  && ctolower( p[2] ) == 'x' ) {
+                if( option == 'u' && ctolower( p[2] ) == 'x' ) {
                     /* POSIX compatibility */
                     Glob.compat_posix = true;
                     Glob.compat_unix = true;

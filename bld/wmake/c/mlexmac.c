@@ -220,18 +220,18 @@ STATIC TOKEN_T lexDollar( void )
         return( t );
     }
     switch( s ) {
-    case DOLLAR:                        return( MAC_DOLLAR );
-    case COMMENT:                       return( MAC_COMMENT );
-    case '(':                           return( MAC_OPEN );
-    case '+':                           return( MAC_EXPAND_ON );
-    case '-':                           return( MAC_EXPAND_OFF );
-    case '^':                           return( lexFormQualifier( MAC_CUR ) );
-    case '[':                           return( lexFormQualifier( MAC_FIRST ) );
-    case ']':                           return( lexFormQualifier( MAC_LAST ) );
-    case '@': CurAttr.u.form = FORM_FULL;  return( MAC_CUR );       /* UNIX */
-    case '*': CurAttr.u.form = FORM_NOEXT; return( MAC_CUR );       /* UNIX */
-    case '<': CurAttr.u.form = FORM_FULL;  return( MAC_ALL_DEP );   /* UNIX */
-    case '?': CurAttr.u.form = FORM_FULL;  return( MAC_YOUNG_DEP ); /* UNIX */
+    case DOLLAR:                            return( MAC_DOLLAR );
+    case COMMENT:                           return( MAC_COMMENT );
+    case '(':                               return( MAC_OPEN );
+    case '+':                               return( MAC_EXPAND_ON );
+    case '-':                               return( MAC_EXPAND_OFF );
+    case '^':                               return( lexFormQualifier( MAC_CUR ) );
+    case '[':                               return( lexFormQualifier( MAC_FIRST ) );
+    case ']':                               return( lexFormQualifier( MAC_LAST ) );
+    case '@': CurAttr.u.form = FORM_FULL;   return( MAC_CUR );       /* UNIX */
+    case '*': CurAttr.u.form = FORM_NOEXT;  return( MAC_CUR );       /* UNIX */
+    case '<': CurAttr.u.form = FORM_FULL;   return( MAC_ALL_DEP );   /* UNIX */
+    case '?': CurAttr.u.form = FORM_FULL;   return( MAC_YOUNG_DEP ); /* UNIX */
     default:
         UnGetCH( s );
         return( MAC_START );

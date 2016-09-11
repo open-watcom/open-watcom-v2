@@ -82,8 +82,8 @@ extern char *dep_path;    /* Current sufsuf dependent path */
                             || (__c) == 'R'\
                             || (__c) == 'r' )
 
-#define cismsspecial(__c)   sismsspecial((byte)__c)
-#define cismsmodifier(__c)  sismsmodifier((byte)__c)
+#define cismsspecial(__c)   sismsspecial((byte)(__c))
+#define cismsmodifier(__c)  sismsmodifier((byte)(__c))
 
 /*
  * The tokens which Scan() will use

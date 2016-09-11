@@ -134,7 +134,7 @@ const char *procPath( const char *fullpath )
  */
 {
     PGROUP  pg;
-    char    *current;
+    char    *p;
 
     if( fullpath == NULL ) {
         return( NULL );
@@ -168,12 +168,12 @@ const char *procPath( const char *fullpath )
                 dirBuf[0] = '.';
                 dirBuf[1] = NULLCHAR;
             } else {
-                current = dirBuf;
-                while( *current != NULLCHAR ) {
-                    ++current;
+                p = dirBuf;
+                while( *p != NULLCHAR ) {
+                    ++p;
                 }
-                if( *(current - 1) == '\\' ) {
-                    *(current - 1) = NULLCHAR;
+                if( *(p - 1) == '\\' ) {
+                    *(p - 1) = NULLCHAR;
                 }
             }
         }
@@ -290,7 +290,7 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
  */
 {
     VECSTR      output;
-    char const  *current;
+    char const  *p;
     char const  *start;
     size_t      old_len;
 
@@ -300,12 +300,12 @@ STATIC char *doStringSubstitute( const char *name, const char *oldString, const 
     assert( name != NULL && oldString != NULL && newString != NULL );
 
     old_len = strlen( oldString );
-    for( start = current = name; *current != NULLCHAR; current++ ) {
-        if( strncmp( current, oldString, old_len ) == 0 ) {
-            CatNStrToVec( output, start, current - start );
+    for( start = p = name; *p != NULLCHAR; p++ ) {
+        if( strncmp( p, oldString, old_len ) == 0 ) {
+            CatNStrToVec( output, start, p - start );
             CatStrToVec( output, newString );
-            start   = current + old_len;
-            current = start - 1;
+            start   = p + old_len;
+            p = start - 1;
         }
     }
     CatStrToVec( output, start );
@@ -409,15 +409,15 @@ char *GetMacroValue( const char *name )
     char        *InName;
     const char  *beforeSub;
     char        *afterSub;
-    char        *current;
+    char        *p;
     const char  *new;
     const char  *old;
     char        *line;
 
     InName = StrDupSafe( name );
-    current = strchr( InName, COLON );
+    p = strchr( InName, COLON );
 
-    if( current == NULL ) {
+    if( p == NULL ) {
         beforeSub = GetMacroValueProcess( InName );
         if( beforeSub == NULL ) {
             afterSub = NULL;
@@ -425,7 +425,7 @@ char *GetMacroValue( const char *name )
             afterSub  = StrDupSafe( beforeSub );
         }
     } else {
-        *current++ = NULLCHAR;
+        *p++ = NULLCHAR;
         beforeSub = GetMacroValueProcess( InName );
 
         if( beforeSub == NULL ) {
@@ -442,7 +442,7 @@ char *GetMacroValue( const char *name )
             if( beforeSub == NULL ) {
                 afterSub = NULL;
             } else {
-                if( getOldNewString( current, &old, &new ) == RET_SUCCESS ) {
+                if( getOldNewString( p, &old, &new ) == RET_SUCCESS ) {
                     afterSub = doStringSubstitute( beforeSub, old, new );
                 } else {
                     afterSub = NULL;
@@ -531,17 +531,17 @@ bool IsMacroName( const char *inName )
  * an error message
  */
 {
-    char const  *current = inName;
+    char const  *p = inName;
     int         pos = 0;
 
     assert( inName != NULL );
 
-    while( pos < MAX_MAC_NAME && *current != NULLCHAR && *current != COLON ) {
-        if( !cismacc( *current ) ) {
+    while( pos < MAX_MAC_NAME && *p != NULLCHAR && *p != COLON ) {
+        if( !cismacc( *p ) ) {
             PrtMsg( ERR | LOC | INVALID_MACRO_NAME, inName );
             return( false );
         }
-        pos++, current++;
+        pos++, p++;
     }
     if( pos == 0 ) {
         PrtMsg( ERR | LOC | INVALID_MACRO_NAME, inName );
@@ -617,7 +617,7 @@ char *DeMacroSpecial( const char *InString )
  */
 {
     const char  *old;
-    const char  *current;
+    const char  *p;
     VECSTR      outString;
     char        *tempString;
     char        buffer[6];
@@ -628,22 +628,22 @@ char *DeMacroSpecial( const char *InString )
 
     outString = StartVec();
 
-    for( current = InString; *current != NULLCHAR; ++current ) {
-        if( *current == SPECIAL_TMP_DOL_C ) {
-            CatNStrToVec( outString, old, current - old );
+    for( p = InString; *p != NULLCHAR; ++p ) {
+        if( *p == SPECIAL_TMP_DOL_C ) {
+            CatNStrToVec( outString, old, p - old );
             pos = 0;
             UnGetCH( STRM_MAGIC );
-            buffer[pos++] = *(current++);
-            if( cismsspecial( *current ) && !cismsmodifier( *(current + 1) ) ) {
-                buffer[pos++] = *(current++);
+            buffer[pos++] = *(p++);
+            if( cismsspecial( *p ) && !cismsmodifier( *(p + 1) ) ) {
+                buffer[pos++] = *(p++);
             } else {
-                assert( cismsspecial( *current ) );
-                buffer[pos++] = *(current++);
-                if( cismsmodifier( *current ) ) {
-                    buffer[pos++] = *(current++);
+                assert( cismsspecial( *p ) );
+                buffer[pos++] = *(p++);
+                if( cismsmodifier( *p ) ) {
+                    buffer[pos++] = *(p++);
                 }
             }
-            old = current;
+            old = p;
             buffer[pos] = NULLCHAR;
             InsString( buffer, false );
             tempString = DeMacro( TOK_MAGIC );
@@ -652,7 +652,7 @@ char *DeMacroSpecial( const char *InString )
             FreeSafe( tempString);
         }
     }
-    CatNStrToVec( outString, old, current - old + 1 );
+    CatNStrToVec( outString, old, p - old + 1 );
     return( FinishVec( outString ) );
 }
 
@@ -1001,32 +1001,32 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     char    leadingSpace[MAX_COMMANDLINE];
     char    *TrailSpace;
     char    *DeMacroStr;
-    char    *current;
-    char    *current_max;
+    char    *p;
+    char    *p_max;
     STRM_T  s;
     char    *result;
 
     // Set leadingSpace - leave t set to first non-whitespace byte
-    current = leadingSpace;
-    current_max = current + MAX_COMMANDLINE - 1;
-    for( ; sisws( s = PreGetCH() ) && current < current_max; ++current ) {
-        *current = s;
+    p = leadingSpace;
+    p_max = p + MAX_COMMANDLINE - 1;
+    for( ; sisws( s = PreGetCH() ) && p < p_max; ++p ) {
+        *p = s;
     }
-    *current = NULLCHAR;
+    *p = NULLCHAR;
 
     // set text to non-whitespace string and TrailSpace to next character.
-    current_max = text + MAX_COMMANDLINE - 1;
-    for( TrailSpace = current = text; current < current_max; ++current ) {
+    p_max = text + MAX_COMMANDLINE - 1;
+    for( TrailSpace = p = text; p < p_max; ++p ) {
         if( s == STRM_END || s == STRM_MAGIC || s == EOL ) {
             break;
         }
         if( !sisws( s ) ) {
-            TrailSpace = current + 1;
+            TrailSpace = p + 1;
         }
-        *current = s;
+        *p = s;
         s = PreGetCH();
     }
-    *current = NULLCHAR;
+    *p = NULLCHAR;
     UnGetCH( s );                           // Put back last byte read
 
     DeMacroText = StartVec();
@@ -1196,7 +1196,7 @@ STATIC char *DeMacroName( const char *text, const char *name )
  * $HELLO is synonymous to $(HELLO)
  */
 {
-    char const  *current;
+    char const  *p;
     char const  *oldptr;
     char        *temp;
     char        *macronameStr;
@@ -1208,42 +1208,42 @@ STATIC char *DeMacroName( const char *text, const char *name )
     assert( name != NULL && text != NULL );
 
     len = strlen( name );
-    oldptr = current = text;
+    oldptr = p = text;
 
     outtext = StartVec();
-    while( (current = strchr( current, DOLLAR )) != NULL ) {
-        switch( *++current ) {  // Swallow that DOLLAR
+    while( (p = strchr( p, DOLLAR )) != NULL ) {
+        switch( *++p ) {  // Swallow that DOLLAR
         case '$':               // Swallow literal DOLLAR.
-            current++;
+            p++;
             break;
         case '(':               // Possible regular substitution
-            current++;
+            p++;
             // bracket or colon (for string substitution) after matching name?
-            if( NMacroNameEq( current, name, len ) && (current[len] == ')' || current[len] == ':') ) {
+            if( NMacroNameEq( p, name, len ) && (p[len] == ')' || p[len] == ':') ) {
                 lengthToClose = len;
-                while( current[lengthToClose] != ')' ) {
+                while( p[lengthToClose] != ')' ) {
                     ++lengthToClose;
                 }
-                CatNStrToVec( outtext, oldptr, current - 2 - oldptr );
+                CatNStrToVec( outtext, oldptr, p - 2 - oldptr );
                 macroname = StartVec();
-                CatNStrToVec( macroname, current, lengthToClose );
+                CatNStrToVec( macroname, p, lengthToClose );
                 macronameStr = FinishVec( macroname );
                 if( (temp = GetMacroValue( macronameStr )) != NULL ) {
                     CatStrToVec( outtext, temp );
                     FreeSafe( temp );
                 }
                 FreeSafe( macronameStr );
-                current = oldptr = current + 1 + lengthToClose;
+                p = oldptr = p + 1 + lengthToClose;
             }
             break;
-        default:                // Possible Microsoft name without parenthesis
-            if( len == 1 && NMacroNameEq( current, name, 1 ) ) {
-                CatNStrToVec( outtext, oldptr, current - 1 - oldptr );
+        default:    // Possible Microsoft name without parenthesis
+            if( len == 1 && NMacroNameEq( p, name, 1 ) ) {
+                CatNStrToVec( outtext, oldptr, p - 1 - oldptr );
                 if( (temp = GetMacroValue( name )) != NULL ) {
                     CatStrToVec( outtext, temp );
                     FreeSafe( temp );
                 }
-                current = oldptr = current + 1;
+                p = oldptr = p + 1;
             }
             break;
         }
@@ -1361,14 +1361,14 @@ void PrintMacros( void )
 STATIC void restoreEnvironment( void )
 /************************************/
 {
-    ELIST   *current;
+    ELIST   *p;
     VECSTR  EnvString;
 
-    for( current = OldEnvValues; current != NULL; current = current->next ) {
+    for( p = OldEnvValues; p != NULL; p = p->next ) {
         EnvString = StartVec();
-        WriteVec( EnvString, current->envVarName );
+        WriteVec( EnvString, p->envVarName );
         WriteVec( EnvString, "=" );
-        WriteVec( EnvString, current->envOldVal );
+        WriteVec( EnvString, p->envOldVal );
         putenv( FinishVec( EnvString ) );
     }
 }
