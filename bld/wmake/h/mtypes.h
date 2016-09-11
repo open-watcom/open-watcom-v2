@@ -50,6 +50,8 @@ typedef uint_16         UINT16;
 typedef int_8           INT8;
 typedef uint_8          UINT8;
 
+typedef uint_8          byte;
+
 typedef unsigned        BIT;        /* for bit fields in structures */
 
 typedef struct Node {
@@ -74,25 +76,29 @@ enum {
     IS_BARF     =   0x80
 };
 
-#define isascii(__c)    ((__c) >= CHAR_MIN && (__c) <= CHAR_MAX)
+#define sisascii(__s)       ((__s) >= CHAR_MIN && (__s) <= CHAR_MAX)
 
 extern const UINT8 IsArray[258];
 
-#define isws(__c)           (IsArray[(__c)+2] & IS_WS)
-#define isprint(__c)        (IsArray[(__c)+2] & IS_PRINT)
-#define isalpha(__c)        (IsArray[(__c)+2] & IS_ALPHA)
-#define isextc(__c)         (IsArray[(__c)+2] & IS_EXTC)
-#define isdirc(__c)         (IsArray[(__c)+2] & IS_DIRC)
-#define isfilec(__c)        (IsArray[(__c)+2] & IS_FILEC)
-#define ismacc(__c)         (IsArray[(__c)+2] & IS_MACC)
-#define isbarf(__c)         (IsArray[(__c)+2] & IS_BARF)
+#define sisws(__s)          (IsArray[(__s)+2] & IS_WS)
+#define sisprint(__s)       (IsArray[(__s)+2] & IS_PRINT)
+#define sisalpha(__s)       (IsArray[(__s)+2] & IS_ALPHA)
+#define sisextc(__s)        (IsArray[(__s)+2] & IS_EXTC)
+#define sisdirc(__s)        (IsArray[(__s)+2] & IS_DIRC)
+#define sisfilec(__s)       (IsArray[(__s)+2] & IS_FILEC)
+#define sismacc(__s)        (IsArray[(__s)+2] & IS_MACC)
+#define sisbarf(__s)        (IsArray[(__s)+2] & IS_BARF)
 
-/*
- * Since we have redefined a bunch of things from ctype.h, we can't
- * include ctype.h for toupper() and tolower().  BUT... this is ANSI
- * so we SHOULD be able to do this...
- */
-extern int  tolower( int );
-extern int  toupper( int );
+#define cisws(__c)          sisws((byte)(__c))
+#define cisprint(__c)       sisprint((byte)(__c))
+#define cisalpha(__c)       sisalpha((byte)(__c))
+#define cisextc(__c)        sisextc((byte)(__c))
+#define cisdirc(__c)        sisdirc((byte)(__c))
+#define cisfilec(__c)       sisfilec((byte)(__c))
+#define cismacc(__c)        sismacc((byte)(__c))
+#define cisbarf(__c)        sisbarf((byte)(__c))
+
+#define ctolower(__c)       tolower((byte)(__c))
+#define ctoupper(__c)       toupper((byte)(__c))
 
 #endif  /* !_MTYPES_H */

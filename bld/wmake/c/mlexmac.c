@@ -251,13 +251,13 @@ STATIC TOKEN_T lexSubString( STRM_T s )
     bool        done;                   /* are we done collecting ?         */
     VECSTR      vec;                    /* build string here                */
 
-    assert( isascii( s ) );
+    assert( sisascii( s ) );
 
     vec = StartVec();
 
-    if( ismacc( s ) ) {
+    if( sismacc( s ) ) {
         state = MAC_NAME;
-    } else if( isws( s ) ) {
+    } else if( sisws( s ) ) {
         state = MAC_WS;
     } else {
         state = MAC_PUNC;
@@ -284,9 +284,9 @@ STATIC TOKEN_T lexSubString( STRM_T s )
             break;
         default:
             switch( state ) {
-            case MAC_NAME:  done = !ismacc( s );                break;
-            case MAC_WS:    done = !isws( s );                  break;
-            case MAC_PUNC:  done = ismacc( s ) || isws( s );    break;
+            case MAC_NAME:  done = !sismacc( s );               break;
+            case MAC_WS:    done = !sisws( s );                 break;
+            case MAC_PUNC:  done = sismacc( s ) || sisws( s );  break;
             }
         }
     }
@@ -347,7 +347,7 @@ TOKEN_T LexMacDef( STRM_T s )
         return( TOK_EOL );
     }
 
-    assert( isascii( s ) );
+    assert( sisascii( s ) );
 
     cur = text;
 
@@ -359,7 +359,7 @@ TOKEN_T LexMacDef( STRM_T s )
         }
     }
 
-    onlyws = isws( s );
+    onlyws = sisws( s );
 
     while( cur - text < MAX_TOK_SIZE - 1 ) {
         *cur++ = s;
@@ -370,8 +370,8 @@ TOKEN_T LexMacDef( STRM_T s )
             || s == STRM_MAGIC
             || s == EOL
             || s == DOLLAR
-            || (onlyws && !isws( s ))
-            || (!onlyws && isws( s )) ) {
+            || (onlyws && !sisws( s ))
+            || (!onlyws && sisws( s )) ) {
             break;
         }
     }

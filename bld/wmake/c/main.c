@@ -35,6 +35,7 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif
+#include <ctype.h>
 #include "make.h"
 #include "mtarget.h"
 #include "macros.h"
@@ -181,7 +182,7 @@ STATIC void handleMacroDefn( const char *buf )
         /* Approximately so. we cater for foo meaning FOO but not FoO W.Briscoe 20031114 */
         /* This is no problem! In make, foo=bar only sets foo and FOO W.Briscoe 20041014 */
         while( --p >= q ) {
-            *p = toupper( *p );
+            *p = ctoupper( *p );
         }
 
         InsString( q, false );     /* put arg into stream */
@@ -208,7 +209,7 @@ STATIC void checkCtrl( const char *p )
 {
     // p != NULL is checked by caller
     while( *p != NULLCHAR ) {       // scan for control characters
-        if( !isprint( *p ) ) {
+        if( !cisprint( *p ) ) {
             PrtMsg( FTL | CTRL_CHAR_IN_CMD, *p );
             ExitFatal();
         }
@@ -245,7 +246,7 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
     while( (p = *++argv) != NULL ) {
         checkCtrl( p );
         select = p[0];
-        option = (char)tolower( p[1] );
+        option = (char)ctolower( p[1] );
         if( select == '-' || select == Glob.swchar ) {
             if( option != NULLCHAR && p[2] == NULLCHAR ) {
                 switch( option ) {
@@ -306,18 +307,18 @@ STATIC char *procFlags( char const * const *argv, const char **log_name )
                 continue;
             }
             if( p[3] == NULLCHAR ) {
-                if( option == 'm'  && tolower( p[2] ) == 's' ) {
+                if( option == 'm'  && ctolower( p[2] ) == 's' ) {
                     Glob.compat_nmake = true;
                     Glob.nocheck   = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 's'  && tolower( p[2] ) == 'n' ) {
+                if( option == 's'  && ctolower( p[2] ) == 'n' ) {
                     Glob.silentno  = true;
                     SET_OPTION( option );
                     continue;
                 }
-                if( option == 'u'  && tolower( p[2] ) == 'x' ) {
+                if( option == 'u'  && ctolower( p[2] ) == 'x' ) {
                     /* POSIX compatibility */
                     Glob.compat_posix = true;
                     Glob.compat_unix = true;
@@ -409,7 +410,7 @@ STATIC const char *procLogName( const char * const *argv )
     while( *++argv != NULL ) {
         p = *argv;
         if( ((p[0] == '-') || (p[0] == Glob.swchar)) &&
-                (tolower( p[1] ) == 'l') && (p[2] == NULLCHAR) ) {
+                (ctolower( p[1] ) == 'l') && (p[2] == NULLCHAR) ) {
             return( ((p = *++argv) == NULL || (p[0] == '-')
                 || (p[0] == Glob.swchar)) ? NULL : p );
         }

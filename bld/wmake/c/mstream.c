@@ -312,7 +312,7 @@ void UnGetCH( STRM_T s )
 {
     SENT    *tmp;
 
-    assert( isascii( s ) || s == STRM_END || s == STRM_MAGIC || s == STRM_TMP_EOL || s == STRM_TMP_LEX_START);
+    assert( sisascii( s ) || s == STRM_END || s == STRM_MAGIC || s == STRM_TMP_EOL || s == STRM_TMP_LEX_START);
 
     tmp = getSENT( SENT_CHAR );
     tmp->data.s = s;
@@ -349,7 +349,7 @@ STRM_T GetCHR( void )
                 }
             }
             result = *(head->data.file.cur++);
-            if( isbarf( result ) ) {
+            if( sisbarf( result ) ) {
                 /* ignore \r in \r\n */
                 if( result == '\r' && head->data.file.cur[0] == EOL ) {
                     result = *(head->data.file.cur++);

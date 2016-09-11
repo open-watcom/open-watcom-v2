@@ -36,6 +36,7 @@
     #include <sys/types.h>  // Implicitly included by <direct.h>
 #endif
 #include <stdlib.h>
+#include <ctype.h>
 #include "make.h"
 #include "mstream.h"
 #include "mlex.h"
@@ -222,7 +223,7 @@ STATIC void makeMacroName( char *buffer, const char *name )
     if( Glob.compat_nmake || Glob.compat_posix ) {
         strcpy( buffer, name );
     } else {
-        while( (*buffer = toupper( *name )) != NULLCHAR ) {
+        while( (*buffer = ctoupper( *name )) != NULLCHAR ) {
             ++buffer, ++name;
         }
     }
@@ -381,7 +382,7 @@ STATIC const char *GetMacroValueProcess( const char *name )
         // Check if macro is all caps in NMAKE mode
         if( Glob.compat_nmake ) {
             for( pos = 0; macro[pos] != NULLCHAR; ++pos ) {
-                if( macro[pos] != toupper( macro[pos] ) ) {
+                if( macro[pos] != ctoupper( macro[pos] ) ) {
                     return( NULL );
                 }
             }
@@ -469,7 +470,7 @@ STATIC char *trimMacroValue( char *v )
     space = false;
     t = v;
     for( p = v; *p != NULLCHAR; ++p ) {
-        if( !isws( *p ) ) {
+        if( !cisws( *p ) ) {
             if( space ) {
                 *t++ = ' ';
             }
@@ -536,7 +537,7 @@ bool IsMacroName( const char *inName )
     assert( inName != NULL );
 
     while( pos < MAX_MAC_NAME && *current != NULLCHAR && *current != COLON ) {
-        if( !ismacc( *current ) ) {
+        if( !cismacc( *current ) ) {
             PrtMsg( ERR | LOC | INVALID_MACRO_NAME, inName );
             return( false );
         }
@@ -707,7 +708,7 @@ STATIC char *ProcessToken( int depth, TOKEN_T end1, TOKEN_T end2, TOKEN_T t )
             p = deMacroText( depth + 1, end1, MAC_PUNC );
         } else {
             s = PreGetCH ();
-            if( ismacc( s ) ) {
+            if( sismacc( s ) ) {
                 temp_str[1] = NULLCHAR;
                 temp_str[0] = s;
                 p = StrDupSafe( temp_str );
@@ -1008,7 +1009,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
     // Set leadingSpace - leave t set to first non-whitespace byte
     current = leadingSpace;
     current_max = current + MAX_COMMANDLINE - 1;
-    for( ; isws( s = PreGetCH() ) && current < current_max; ++current ) {
+    for( ; sisws( s = PreGetCH() ) && current < current_max; ++current ) {
         *current = s;
     }
     *current = NULLCHAR;
@@ -1019,7 +1020,7 @@ char *ignoreWSDeMacro( bool partDeMacro, bool forceDeMacro )
         if( s == STRM_END || s == STRM_MAGIC || s == EOL ) {
             break;
         }
-        if( !isws( s ) ) {
+        if( !sisws( s ) ) {
             TrailSpace = current + 1;
         }
         *current = s;
@@ -1155,7 +1156,7 @@ char *PartDeMacro( bool forceDeMacro )
     }
     if( forceDeMacro ) {
         //remove white spaces at the beginning
-        while( isws( s = PreGetCH() ) ) {
+        while( sisws( s = PreGetCH() ) ) {
         }
         UnGetCH( s );
         temp = DeMacro( TOK_EOL );

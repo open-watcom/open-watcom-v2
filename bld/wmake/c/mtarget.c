@@ -474,7 +474,7 @@ STATIC TARGET *findOrNewTarget( const char *tname, bool mentioned )
     targ = FindTarget( FixName( strcpy( name, tname ) ) );
     if( targ == NULL ) {
         targ = NewTarget( name );
-        if( name[0] == DOT && isextc( name[1] ) ) {
+        if( name[0] == DOT && cisextc( name[1] ) ) {
             targ->special = true;
             if( stricmp( name + 1, BEFORE_S ) == 0 ||
                 stricmp( name + 1, AFTER_S )  == 0 ) {

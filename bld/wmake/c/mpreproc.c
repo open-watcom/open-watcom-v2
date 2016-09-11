@@ -164,7 +164,7 @@ STATIC STRM_T eatWhite( void )
     STRM_T  s;
 
     s = PreGetCH();
-    while( isws( s ) ) {
+    while( sisws( s ) ) {
         s = PreGetCH();
     }
 
@@ -215,7 +215,7 @@ STATIC directiveTok getPreTok( void )
     }
 
     pos = 0;
-    while( isalpha( s ) && ( pos < MAX_PRE_TOK - 1 ) ) {
+    while( sisalpha( s ) && ( pos < MAX_PRE_TOK - 1 ) ) {
         tok[pos++] = s;
         s = PreGetCH();
         // MS Compatability ELSE IFEQ can also be defined as ELSEIFEQ
@@ -298,7 +298,7 @@ STATIC void chopTrailWS( char *str )
 {
     char    *p;
 
-    for( p = str + strlen( str ) - 1; p >= str && isws( *p ); --p ) {
+    for( p = str + strlen( str ) - 1; p >= str && cisws( *p ); --p ) {
         *p = NULLCHAR;
     }
 }
@@ -645,7 +645,7 @@ STATIC void bangDefine( void )
 static char *skipUntilWS( char *p )
 /*********************************/
 {
-    while( *p != NULLCHAR && !isws( *p ) ) {
+    while( *p != NULLCHAR && !cisws( *p ) ) {
         ++p;
     }
     return( p );
@@ -883,7 +883,7 @@ STATIC void bangInclude( void )
                 }
                 // check if there are any trailing characters if there are
                 // then error
-                if( !isws( *current ) ) {
+                if( !cisws( *current ) ) {
                     PrtMsg( ERR | LOC | UNABLE_TO_INCLUDE, text );
                     break;
                 }
@@ -1337,7 +1337,7 @@ STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, int *inde
 
     // Note that in this case we are looking at a string that has no quotations
     // nmake gives expected error with exists(a(b) but also with exists("a(b")
-    while( *r != PAREN_RIGHT && *r != PAREN_LEFT && !isws( *r ) ) {
+    while( *r != PAREN_RIGHT && *r != PAREN_LEFT && !cisws( *r ) ) {
         if( pwrite >= pwritelast ) {
             // VC++ 6 nmake allows 512 or more bytes here. We limit to 255.
             current->type = OP_ENDOFSTRING; // This truncates.
@@ -1609,7 +1609,7 @@ STATIC void nextToken( void )
     if( *currentPtr != NULLCHAR ) {
         ScanToken( currentPtr, &currentToken, &tokenLength );
         currentPtr += tokenLength;
-        while( isws( *currentPtr ) ) {
+        while( cisws( *currentPtr ) ) {
             ++currentPtr;
         }
     } else {

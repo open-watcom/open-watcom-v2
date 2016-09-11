@@ -704,7 +704,7 @@ STATIC char *getFileName( const char *intext, size_t *offset )
     for( ;; ) {
         if( intext[*offset] == NULLCHAR ) {
             break;
-        } else if( (isws( intext[*offset] )        ||
+        } else if( (cisws( intext[*offset] )        ||
                     intext[*offset]== LESSTHAN     ||
                     intext[*offset]== GREATERTHAN) &&
                     !doubleQuote ) {
@@ -785,7 +785,7 @@ STATIC void getBody( FLIST *head )
                      * two characters are <<
                      */
                      currChar = temp + 2;
-                     while( *currChar != NULLCHAR && isws( *currChar ) ) {
+                     while( *currChar != NULLCHAR && cisws( *currChar ) ) {
                          ++currChar;
                      }
                      if( *currChar == NULLCHAR ) {
