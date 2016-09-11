@@ -228,7 +228,7 @@ bool FNameEq( const char *a, const char *b )
 }
 
 
-static bool FNameEqChr( char a, char b )
+static bool FNameChrEq( char a, char b )
 /**************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
@@ -256,7 +256,7 @@ bool FarFNameEq( const char FAR *a, const char FAR *b )
 
 static bool __fnmatch( const char *pattern, const char *string )
 /***************************************************************
- * OS specific compare function FNameEqChr
+ * OS specific compare function FNameChrEq
  * must be used for file names
  */
 {
@@ -300,7 +300,7 @@ static bool __fnmatch( const char *pattern, const char *string )
             }
             len++;
         } else {
-            if( !FNameEqChr( *pattern, *string ) ) {
+            if( !FNameChrEq( *pattern, *string ) ) {
                 return( false );
             }
             string++;
@@ -317,9 +317,9 @@ static bool __fnmatch( const char *pattern, const char *string )
          * star pattern section, try locate exact match
          */
         while( *string != NULLCHAR ) {
-            if( FNameEqChr( *p, *string ) ) {
+            if( FNameChrEq( *p, *string ) ) {
                 for( i = 1; i < len; i++ ) {
-                    if( !FNameEqChr( *(p + i), *(string + i) ) ) {
+                    if( !FNameChrEq( *(p + i), *(string + i) ) ) {
                         break;
                     }
                 }
