@@ -188,6 +188,14 @@ extern int    optopt;
 extern int fnmatch( const char *__pattern, const char *__string, int __flags );
 extern int mkstemp( char *__template );
 
+#ifdef _WIN64
+extern ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte );
+extern ssize_t  _w64_write( int fildes, void const *buffer, size_t nbyte );
+
+#define read(a,b,c)     _w64_read(a,b,c)
+#define write(a,b,c)    _w64_write(a,b,c)
+#endif
+
 #endif
 
 extern int    _vbprintf( char *s, size_t bufsize, const char *format, __va_list arg );

@@ -65,8 +65,6 @@
 #include "digld.h"
 #include "utils.h"
 
-#include "clibext.h"
-
 
 #if defined( __UNIX__ )
  #define PATH_NAME  "WD_PATH"
@@ -246,21 +244,18 @@ void InitPaths( void )
 #endif
 }
 
-size_t BigRead( int fh, void *buffer, size_t size )
-/*************************************************/
+#if defined( __QNX__ )
+
+#define MAX_OS_TRANSFER (32U*1024 - 512)
+
+ssize_t BigRead( int fh, void *buffer, size_t size )
+/**************************************************/
 {
-#if defined( __QNX__ ) || defined( _WIN64 )
 
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
-    _WIN64 has max size UINT_MAX
 */
-#if defined( __QNX__ )
-#define MAX_OS_TRANSFER (32U*1024 - 512)
-#else
-#define MAX_OS_TRANSFER INT_MAX
-#endif
     size_t      total;
     unsigned    read_len;
     unsigned    amount;
@@ -272,7 +267,7 @@ size_t BigRead( int fh, void *buffer, size_t size )
             amount = (unsigned)size;
         read_len = read( fh, buffer, amount );
         if( read_len == (unsigned)-1 ) {
-            return( DIG_RW_ERROR );
+            return( -1 );
         }
         total += read_len;
         if( read_len != amount ) {
@@ -282,10 +277,38 @@ size_t BigRead( int fh, void *buffer, size_t size )
         size -= amount;
     }
     return( total );
-#else
-    return( read( fh, buffer, size ) );
-#endif
 }
+
+ssize_t BigWrite( int fh, const void *buffer, size_t size )
+/*********************************************************/
+{
+/*
+    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
+    up any I/O larger than that.
+*/
+    size_t      total;
+    unsigned    write_len;
+    unsigned    amount;
+
+    amount = MAX_OS_TRANSFER;
+    total = 0;
+    while( size > 0 ) {
+        if( amount > size )
+            amount = (unsigned)size;
+        write_len = write( DFH2PH( dfh ), buffer, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( -1 );
+        }
+        total += write_len;
+        if( write_len != amount ) {
+            return( total );
+        }
+        buffer = (char *)buffer + amount;
+        size -= amount;
+    }
+    return( total );
+}
+#endif
 
 #if defined( __DOS__ )
 extern void DoRingBell( void );

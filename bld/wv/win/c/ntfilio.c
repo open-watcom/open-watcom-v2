@@ -46,6 +46,9 @@
 #include "strutil.h"
 #include "filelcl.h"
 
+#include "clibext.h"
+
+
 file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
 char                    LclPathSep = { ';' };
 
@@ -84,56 +87,26 @@ sys_handle LocalOpen( const char *name, open_access access )
 
 size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
-    int         ret;
-    size_t      total;
-    unsigned    piece_len;
-    unsigned    read_len;
+    ssize_t ret;
 
-    piece_len = INT_MAX;
-    total = 0;
-    while( len > 0 ) {
-        if( piece_len > len )
-            piece_len = (unsigned)len;
-        ret = read( filehndl, ptr, piece_len );
-        if( ret < 0 ) {
-            StashErrCode( errno, OP_LOCAL );
-            return( ERR_RETURN );
-        }
-        read_len = (unsigned)ret;
-        total += read_len;
-        if( read_len != piece_len )
-            break;
-        ptr = (char *)ptr + read_len;
-        len -= read_len;
+    ret = read( filehndl, ptr, len );
+    if( ret < 0 ) {
+        StashErrCode( errno, OP_LOCAL );
+        return( ERR_RETURN );
     }
-    return( total );
+    return( ret );
 }
 
 size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
-    int         ret;
-    size_t      total;
-    unsigned    piece_len;
-    unsigned    write_len;
+    ssize_t ret;
 
-    piece_len = INT_MAX;
-    total = 0;
-    while( len > 0 ) {
-        if( piece_len > len )
-            piece_len = (unsigned)len;
-        ret = write( filehndl, ptr, piece_len );
-        if( ret < 0 ) {
-            StashErrCode( errno, OP_LOCAL );
-            return( ERR_RETURN );
-        }
-        write_len = (unsigned)ret;
-        total += write_len;
-        if( write_len != piece_len )
-            break;
-        ptr = (char *)ptr + write_len;
-        len -= write_len;
+    ret = write( filehndl, ptr, len );
+    if( ret < 0 ) {
+        StashErrCode( errno, OP_LOCAL );
+        return( ERR_RETURN );
     }
-    return( total );
+    return( ret );
 }
 
 unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )

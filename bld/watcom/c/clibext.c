@@ -1449,6 +1449,66 @@ char *(getcmd)( char *buffer )
 
 #endif
 
+
+/****************************************************************************
+*
+* Description:  Implementation of POSIX read/write for 64-bit Windows.
+*
+****************************************************************************/
+
+#if defined( _MSC_VER ) && defined( _WIN64 )
+ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte )
+{
+    unsigned    read_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        read_len = _read( fildes, buffer, amount );
+        if( read_len == (unsigned)-1 ) {
+            return( (ssize_t)-1L );
+        }
+        size += read_len;
+        if( read_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+
+ssize_t  _w64_write( int fildes, void const *buffer, size_t nbyte )
+{
+    unsigned    write_len;
+    unsigned    amount;
+    size_t      size;
+
+    amount = INT_MAX;
+    size = 0;
+    while( nbyte > 0 ) {
+        if( amount > nbyte )
+            amount = (unsigned)nbyte;
+        write_len = _write( fildes, buffer, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( (size_t)-1L );
+        }
+        size += write_len;
+        if( write_len != amount ) {
+            break;
+        }
+        buffer = (char *)buffer + amount;
+        nbyte -= amount;
+    }
+    return( size );
+}
+#endif
+
+
 /****************************************************************************
 *
 * Description:  Implementation of spawn.. functions for Unix.

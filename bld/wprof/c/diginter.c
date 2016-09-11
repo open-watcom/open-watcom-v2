@@ -52,6 +52,8 @@
 #include "mad.h"
 #include "madregs.h"
 
+#include "clibext.h"
+
 
 extern sio_data         *CurrSIOData;
 
@@ -115,37 +117,8 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k 
 size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
 /****************************************************************/
 {
-#if defined( __QNX__ ) || defined( _WIN64 )
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-    _WIN64 has max size UINT_MAX
-*/
-    size_t      total;
-    unsigned    read_len;
-    unsigned    amount;
-
 #if defined( __QNX__ )
-    amount = 32U * 1024 - 512;
-#else
-    amount = INT_MAX;
-#endif
-    total = 0;
-    while( s > 0 ) {
-        if( amount > s )
-            amount = (unsigned)s;
-        read_len = read( DFH2PH( dfh ), b, amount );
-        if( read_len == (unsigned)-1 ) {
-            return( DIG_RW_ERROR );
-        }
-        total += read_len;
-        if( read_len != amount ) {
-            return( total );
-        }
-        b = (char *)b + amount;
-        s -= amount;
-    }
-    return( total );
+    return( BigRead( DFH2PH( dfh ), b, s ) );
 #else
     return( read( DFH2PH( dfh ), b, s ) );
 #endif
@@ -154,37 +127,8 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
 size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
 /**********************************************************************/
 {
-#if defined( __QNX__ ) || defined( _WIN64 )
-/*
-    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
-    up any I/O larger than that.
-    _WIN64 has max size UINT_MAX
-*/
-    size_t      total;
-    unsigned    write_len;
-    unsigned    amount;
-
 #if defined( __QNX__ )
-    amount = 32U * 1024 - 512;
-#else
-    amount = INT_MAX;
-#endif
-    total = 0;
-    while( s > 0 ) {
-        if( amount > s )
-            amount = (unsigned)s;
-        write_len = write( DFH2PH( dfh ), b, amount );
-        if( write_len == (unsigned)-1 ) {
-            return( DIG_RW_ERROR );
-        }
-        total += write_len;
-        if( write_len != amount ) {
-            return( total );
-        }
-        b = (char *)b + amount;
-        s -= amount;
-    }
-    return( total );
+    return( BigWrite( DFH2PH( dfh ), b, s ) );
 #else
     return( write( DFH2PH( dfh ), b, s ) );
 #endif
