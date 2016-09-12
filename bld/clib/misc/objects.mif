@@ -47,16 +47,14 @@
 
 !include ../../../../objlist.mif
 
-!ifneq processor axp
-!ifneq processor ppc
-!ifneq processor mps
-demangl_opts =-zc
-!endif
-!endif
-!endif
+086_option_zc =-zc
+286_option_zc =-zc
+386_option_zc =-zc
+
+demangl_opts  =$($(processor)_option_zc)
 fullpath_opts =-I"$(clib_dir)/direct/h"
 ufulpath_opts =-I"$(clib_dir)/direct/h"
-umkpath_opts =-os
-usplit2_opts =-os
-uspltpat_opts=-os
-uassert_opts =-os
+umkpath_opts  =-os
+usplit2_opts  =-os
+uspltpat_opts =-os
+uassert_opts  =-os
