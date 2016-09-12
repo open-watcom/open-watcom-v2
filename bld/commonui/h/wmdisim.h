@@ -39,12 +39,12 @@ typedef struct {
     HWND        container;
     DWORD       reg_style;
     DWORD       max_style;
-    UINT        data_off;
     char        *main_name;
     void        (*start_max_restore)( HWND );
     void        (*end_max_restore)( HWND );
     void        (*set_window_title)( HWND );
     void        (*set_style)( HWND, bool );
+    UINT        data_off;
     WPI_INST    hinstance;
 } mdi_info;
 

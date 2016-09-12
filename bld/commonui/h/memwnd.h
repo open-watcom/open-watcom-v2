@@ -65,9 +65,10 @@
 #define MEMWND_MAX_FNAME        _MAX_PATH
 
 typedef struct asminfo{
-    bool        big;
     DWORD       increment;
     WORD        usage_cnt;
+    bool        big;
+    bool        dummy;
     DWORD       data[1];        /* dynamic array */
 } AsmInfo;
 
@@ -76,15 +77,15 @@ typedef struct memdata {
     uint_32         limit;                  /* limit of this selector */
     uint_32         base;                   /* base offset */
     unsigned        lastline;
-    unsigned        disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
-    unsigned char   bytesdisp;
+    int             width;
+    ctl_id          disp_type;              /* BYTE, WORD, DWORD or CODE (menu item value) */
     uint_32         ins_cnt;
     AsmInfo         *asm;
     uint_32         offset;
     HWND            scrlbar;                /* handle of scroll bar */
     HWND            parent;                 /* parent of this window */
     HWND            dialog;                 /* handle of mem info wnd */
-    int             width;
+    unsigned char   bytesdisp;
     bool            isdpmi      : 1;        /* is this a dpmi item */
     bool            maximized   : 1;        /* is window maximized */
     bool            autopos     : 1;        /* is memory info window auto positioned */
@@ -104,20 +105,16 @@ typedef struct memconfig {
     int         ypos;                   /* y coordinate of mem window */
     int         xsize;                  /* width of mem window */
     int         ysize;                  /* height of mem window */
-    unsigned    data_type;              /* display bytes, words, dwords (menu item value) */
-    unsigned    code_type;              /* display 16 or 32 bit code (menu item value) */
+    ctl_id      data_type;              /* display bytes, words, dwords (menu item value) */
+    ctl_id      code_type;              /* display 16 or 32 bit code (menu item value) */
+    char        *appname;               /* name of calling application */
     MultWnd     allowmult;              /* what to do when the user tries to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
-    char        *appname;               /* name of calling application */
     bool        init            : 1;    /* for internal use only */
     bool        maximized       : 1;    /* is mem window maximized */
     bool        disp_info       : 1;    /* display memory info by default */
-    bool        autopos_info    : 1;    /* keep the memory info window
-                                         * adjacent to the memory display
-                                         * window */
-    bool        forget_pos      : 1;    /* don't update the position and
-                                         * size of the memory display
-                                         * window */
+    bool        autopos_info    : 1;    /* keep the memory info window adjacent to the memory display window */
+    bool        forget_pos      : 1;    /* don't update the position and size of the memory display window */
 } MemWndConfig;
 
 

@@ -45,11 +45,11 @@
     (sizeof( BITMAPCOREINFO ) + sizeof( RGBTRIPLE ) * ((1 << (bc)) - 1))
 
 typedef struct {
-    bool                is_core;
     union {
         BITMAPCOREINFO  *bm_core;
         BITMAPINFO      *bm_info;
     } u;
+    bool                is_core;
 } bitmap_info;
 
 extern HBITMAP  ReadBitmapFile( HWND, char *, bitmap_info * );

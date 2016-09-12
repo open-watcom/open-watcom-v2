@@ -69,9 +69,9 @@ typedef struct TOOLITEMINFO {
         HBITMAP bmp;            /* handle to bitmap to display */
         WORD    blank_space;    /* space if item is blank */
     } u;
+    HBITMAP     depressed;      /* bitmap to show when button is depressed */
     ctl_id      id;             /* should be unique for each item */
     WORD        flags;          /* see list of flags above */
-    HBITMAP     depressed;      /* bitmap to show when button is depressed */
     char        tip[MAX_TIP];   /* tool tip string */
 } TOOLITEMINFO;
 
@@ -81,11 +81,11 @@ typedef struct tool {
         HBITMAP bitmap;
         WORD    blank_space;
     } u;
+    WPI_RECT    area;
     HBITMAP     depressed;
     ctl_id      id;
     UINT        flags;
     WORD        state;
-    WPI_RECT    area;
 #ifdef __NT__
     char        tip[MAX_TIP];
 #endif
