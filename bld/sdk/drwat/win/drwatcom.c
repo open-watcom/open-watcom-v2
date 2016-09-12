@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <string.h>
 #include <i86.h>
 #include "drwatcom.h"

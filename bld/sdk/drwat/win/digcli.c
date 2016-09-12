@@ -31,7 +31,6 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -78,12 +77,12 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
 
 /*##########################################################################
   #
-  # CLIENT routines for the DIP
+  # CLIENT routines for the DIG
   #
   ##########################################################################*/
 
 /*
- * DIPCliAlloc
+ * DIGCliAlloc
  */
 void *DIGCLIENTRY( Alloc )( size_t size )
 {
@@ -96,7 +95,7 @@ void *DIGCLIENTRY( Alloc )( size_t size )
 }
 
 /*
- * DIPCliRealloc
+ * DIGCliRealloc
  */
 void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 {
@@ -109,7 +108,7 @@ void *DIGCLIENTRY( Realloc )( void *ptr, size_t size )
 }
 
 /*
- * DIPCliFree
+ * DIGCliFree
  */
 void DIGCLIENTRY( Free )( void *ptr )
 {
@@ -119,7 +118,7 @@ void DIGCLIENTRY( Free )( void *ptr )
 }
 
 /*
- * DIPCliOpen
+ * DIGCliOpen
  */
 dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
 {
@@ -127,9 +126,12 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
     int         flags;
 
     flags = O_BINARY;
-    if( mode & DIG_READ )  flags |= O_RDONLY;
-    if( mode & DIG_WRITE ) flags |= O_WRONLY;
-    if( mode & DIG_TRUNC ) flags |= O_TRUNC;
+    if( mode & DIG_READ )
+        flags |= O_RDONLY;
+    if( mode & DIG_WRITE )
+        flags |= O_WRONLY;
+    if( mode & DIG_TRUNC )
+        flags |= O_TRUNC;
     if( mode & DIG_CREATE ) {
         flags |= O_CREAT;
         fh = sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
@@ -142,7 +144,7 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
 }
 
 /*
- * DIPCliSeek
+ * DIGCliSeek
  */
 unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_seek dipmode )
 {
@@ -167,7 +169,7 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
 }
 
 /*
- * DIPCliRead
+ * DIGCliRead
  */
 size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 {
@@ -176,7 +178,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 }
 
 /*
- * DIPCliWrite
+ * DIGCliWrite
  */
 size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 {
@@ -184,7 +186,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 }
 
 /*
- * DIPCliClose
+ * DIGCliClose
  */
 void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
@@ -192,7 +194,7 @@ void DIGCLIENTRY( Close )( dig_fhandle dfh )
 }
 
 /*
- * DIPCliRemove
+ * DIGCliRemove
  */
 void DIGCLIENTRY( Remove )( const char *path, dig_open mode )
 {

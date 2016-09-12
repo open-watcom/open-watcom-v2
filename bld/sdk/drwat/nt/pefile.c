@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <stdlib.h>
 #include "drwatcom.h"
 #include "exepe.h"
 #include "digcli.h"
