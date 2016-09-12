@@ -46,16 +46,18 @@
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 #define MAX_LINE_LEN    1024
-#define COPY_SIZE       0x8000 - 512
+#define COPY_SIZE       0x8000 - 512    /* QNX read/write size limitation */
 #define MAX_DATA_FILES  255
+#define MAX_BIND_DATA   65000
+#define FILE_BUFF_SIZE  32000
 
-char    *dats[MAX_DATA_FILES];
+char        *dats[MAX_DATA_FILES];
 
-short   FileCount;
-bool    sflag = false;
-bool    qflag = false;
-char    _bf[] = "edbind.dat";
-char    *bindfile = _bf;
+bind_size   FileCount;
+bool        sflag = false;
+bool        qflag = false;
+char        _bf[] = "edbind.dat";
+char        *bindfile = _bf;
 
 static void Banner( void )
 {
@@ -102,12 +104,11 @@ static void MyPrintf( char *str, ... )
 /*
  * AddDataToEXE - tack data to end of an EXE
  */
-static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long tocopy )
+static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned long tocopy )
 {
-    int                 h, i, newh;
+    int                 h, newh;
     char                buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
-    long                shift;
-    unsigned            taillen;
+    unsigned            size;
     char                *copy;
     char                foo[128];
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
@@ -133,12 +134,10 @@ static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long t
     /*
      * get trailer
      */
-    i = lseek( h, -((long)sizeof( buff )), SEEK_END );
-    if( i == -1 ) {
+    if( lseek( h, - (long)sizeof( buff ), SEEK_END ) == -1 ) {
         Abort( "Initial seek error on \"%s\"", exe );
     }
-    i = read( h, buff, sizeof( buff ) );
-    if( i == -1 ) {
+    if( read( h, buff, sizeof( buff ) ) != sizeof( buff ) ) {
         Abort( "Read error on \"%s\"", exe );
     }
 
@@ -146,45 +145,31 @@ static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long t
      * if trailer is one of ours, then set back to overwrite data;
      * else just set to write at end of file
      */
-    if( strcmp( buff, MAGIC_COOKIE ) ) {
+    if( memcmp( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) ) ) {
         if( sflag ) {
             Abort( "\"%s\" does not contain configuration data!", exe );
         }
     } else {
-        taillen = *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )]));
-        shift = (long)-((long)taillen + (long)sizeof( buff ));
-        tocopy += shift;
+        tocopy -= sizeof( buff ) + *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) ));
     }
-    i = lseek( h, 0, SEEK_SET );
-    if( i ) {
+    if( lseek( h, 0, SEEK_SET ) != 0 ) {
         Abort( "Seek error on \"%s\"", exe );
     }
 
     /*
      * copy crap
      */
+    size = COPY_SIZE;
     while( tocopy > 0 ) {
-        if( tocopy > (unsigned long)COPY_SIZE ) {
-            i = read( h, copy, COPY_SIZE );
-            if( i != COPY_SIZE ) {
-                Abort( "Read error on \"%s\"", exe );
-            }
-            i = write( newh, copy, COPY_SIZE );
-            if( i != COPY_SIZE ) {
-                Abort( "Write error on \"%s\"", foo );
-            }
-            tocopy -= (unsigned long)COPY_SIZE;
-        } else {
-            i = read( h, copy, (unsigned int)tocopy );
-            if( i != (int)tocopy ) {
-                Abort( "Read error on \"%s\"", exe );
-            }
-            i = write( newh, copy, (unsigned int)tocopy );
-            if( i != (int)tocopy ) {
-                Abort( "Write error on \"%s\"", foo );
-            }
-            tocopy = 0;
+        if( size > tocopy )
+            size = (unsigned)tocopy;
+        if( read( h, copy, size ) != size ) {
+            Abort( "Read error on \"%s\"", exe );
         }
+        if( write( newh, copy, size ) != size ) {
+            Abort( "Write error on \"%s\"", foo );
+        }
+        tocopy -= size;
     }
     free( copy );
     close( h );
@@ -193,14 +178,12 @@ static void AddDataToEXE( char *exe, char *buffer, unsigned len, unsigned long t
      * write out data and new trailer
      */
     if( !sflag ) {
-        i = write( newh, buffer, len );
-        if( i != (int)len ) {
+        if( write( newh, data, data_len ) != data_len ) {
             Abort( "write 1 error on \"%s\"", exe );
         }
-        strcpy( buff, MAGIC_COOKIE );
-        *((bind_size *)&(buff[sizeof( MAGIC_COOKIE )])) = len;
-        i = write( newh, buff, sizeof( buff ) );
-        if( i != sizeof( buff ) ) {
+        memcpy( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) );
+        *((bind_size *)( buff + sizeof( MAGIC_COOKIE ) )) = data_len;
+        if( write( newh, buff, sizeof( buff ) ) != sizeof( buff ) ) {
             Abort( "write 2 error on \"%s\"", exe );
         }
     }
@@ -292,11 +275,13 @@ static void *MyAlloc( size_t size )
 
 int main( int argc, char *argv[] )
 {
-    char                *buff = NULL;
+    char                *data = NULL;
     char                *buff2, *buff3;
     char                *buffn, *buffs;
     char                *ptr;
-    int                 i, bytes, j, k, sl;
+    int                 j, k;
+    size_t              len, sl;
+    bind_size           fi;
     FILE                *f;
     struct stat         fs;
     char                drive[_MAX_DRIVE], dir[_MAX_DIR];
@@ -304,21 +289,24 @@ int main( int argc, char *argv[] )
     char                path[_MAX_PATH];
     char                tmppath[_MAX_PATH];
     char                tmpfname[_MAX_FNAME], tmpext[_MAX_EXT];
-    unsigned            cnt;
-    unsigned            lines;
+    bind_size           data_len;
+    bind_size           len1;
+    bind_size           lines;
     bind_size           *index;
     bind_size           *entries;
 
     for( j = argc - 1; j > 0; --j ) {
         if( argv[j][0] == '/' || argv[j][0] == '-' ) {
             sl = strlen( argv[j] );
-            for( i = 1; i < sl; i++ ) {
-                switch( argv[j][i] ) {
-                case 's': sflag = true; break;
-                case 'q': qflag = true; break;
+            for( len = 1; len < sl; len++ ) {
+                switch( argv[j][len] ) {
+                case 's': sflag = true;
+                    break;
+                case 'q': qflag = true;
+                    break;
                 case 'd':
-                    bindfile = &argv[j][i + 1];
-                    i = sl;
+                    bindfile = &argv[j][len + 1];
+                    len = sl;
                     break;
                 case '?':
                     Banner();
@@ -328,8 +316,8 @@ int main( int argc, char *argv[] )
                     Usage( "Invalid option" );
                 }
             }
-            for( i = j; i < argc; i++ ) {
-                argv[i]= argv[i + 1];
+            for( k = j; k < argc; k++ ) {
+                argv[k]= argv[k + 1];
             }
             argc--;
         }
@@ -352,11 +340,10 @@ int main( int argc, char *argv[] )
         Abort( "Could not find executable \"%s\"", path );
     }
 
-    cnt = 0;
+    data_len = 0;
     if( !sflag ) {
 
-        buff = MyAlloc( 65000 );
-        buff2 = MyAlloc( 32000 );
+        data = MyAlloc( MAX_BIND_DATA );
         buff3 = MyAlloc( MAX_LINE_LEN );
 
         /*
@@ -369,8 +356,8 @@ int main( int argc, char *argv[] )
             Abort( "Could not open %s", bindfile );
         }
         while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
-            for( i = strlen( ptr ); i && isWSorCtrlZ( ptr[i - 1] ); --i ) {
-                ptr[i - 1] = '\0';
+            for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len ) {
+                ptr[len - 1] = '\0';
             }
             if( ptr[0] == '\0' ) {
                 continue;
@@ -387,49 +374,46 @@ int main( int argc, char *argv[] )
             }
         }
         fclose( f );
-        index = MyAlloc( FileCount * sizeof( bind_size ) );
-        entries = MyAlloc( FileCount * sizeof( bind_size ) );
 
-        buffn = buff;
+        buffn = data;
 
         *(bind_size *)buffn = FileCount;
         buffn += sizeof( bind_size );
-        cnt += sizeof( bind_size );
+        data_len += sizeof( bind_size );
         buffs = buffn;
         buffn += sizeof( bind_size );
-        cnt += sizeof( bind_size );
-        k = 0;
-        for( i = 0; i < FileCount; i++ ) {
-//          j = strlen( dats[i] ) + 1;
-//          memcpy( buffn, dats[i], j );
-            _splitpath( dats[i], NULL, NULL, tmpfname, tmpext );
+        data_len += sizeof( bind_size );
+        len1 = 1;
+        for( fi = 0; fi < FileCount; fi++ ) {
+            _splitpath( dats[fi], NULL, NULL, tmpfname, tmpext );
             _makepath( tmppath, NULL, NULL, tmpfname, tmpext );
-            j = strlen( tmppath ) + 1;
-            memcpy( buffn, tmppath, j );
-            buffn += j;
-            cnt += j;
-            k += j;
+            len = strlen( tmppath ) + 1;
+            memcpy( buffn, tmppath, len );
+            buffn += len;
+            len1 += (bind_size)len;
         }
-        *(bind_size *)buffs = k + 1;  /* size of token list */
-        *buffn = 0;                             /* trailing zero */
-        buffn++;
-        cnt++;
-        buffs = buffn;
-        buffn += FileCount * ( sizeof( bind_size ) + sizeof( bind_size ) );
-        cnt += FileCount * ( sizeof( bind_size ) + sizeof( bind_size ) );
+        *buffn++ = '\0';                /* trailing zero */
+        *(bind_size *)buffs = len1;     /* size of token list */
+        data_len += len1;
+        index = (bind_size *)buffn;
+        buffn += FileCount * sizeof( bind_size );
+        entries = (bind_size *)buffn;
+        buffn += FileCount * sizeof( bind_size );
+        data_len += FileCount * ( sizeof( bind_size ) + sizeof( bind_size ) );
 
-        for( j = 0; j < FileCount; j++ ) {
+        buff2 = MyAlloc( FILE_BUFF_SIZE );
+        for( fi = 0; fi < FileCount; fi++ ) {
             MyPrintf( "Loading" );
-            f = GetFromEnvAndOpen( dats[j] );
+            f = GetFromEnvAndOpen( dats[fi] );
             if( f == NULL ) {
-                Abort( "\nLoad of %s failed!", dats[j] );
+                Abort( "\nLoad of %s failed!", dats[fi] );
             }
-            setvbuf( f, buff2, _IOFBF, 32000 );
-            bytes = lines = 0;
-            index[j] = cnt;
+            free( dats[fi] );
+            setvbuf( f, buff2, _IOFBF, FILE_BUFF_SIZE );
+            index[fi] = data_len;
+            lines = 0;
+            len1 = 0;
             while( (ptr = fgets( buff3, MAX_LINE_LEN, f )) != NULL ) {
-                unsigned    len;
-
                 for( len = strlen( ptr ); len && isWSorCtrlZ( ptr[len - 1] ); --len )
                     ptr[len - 1] = '\0';
                 if( ptr[0] == '\0' ) {
@@ -440,29 +424,33 @@ int main( int argc, char *argv[] )
                     continue;
                 }
                 len = strlen( ptr );
-                *buffn = (char)len;
-                buffn++;
+                if( len > 255 )
+                    len = 255;
+                *buffn++ = (char)len;
                 memcpy( buffn, ptr, len );
                 buffn += len;
-                cnt += len + 1;
+                len1 += (bind_size)( len + 1 );
                 lines++;
-                bytes += len;
             }
             fclose( f );
-            entries[j] = lines;
-            MyPrintf( "Added %d lines (%d bytes)\n", lines, bytes );
+            data_len += len1;
+            entries[fi] = lines;
+            MyPrintf( "Added %d lines (%d bytes)\n", lines, len1 );
         }
-        memcpy( buffs, index, FileCount * sizeof( bind_size ) );
-        buffs += FileCount * sizeof( bind_size );
-        memcpy( buffs, entries, FileCount * sizeof( bind_size ) );
+        free( buff2 );
+        free( buff3 );
+
+        AddDataToEXE( path, data, data_len, fs.st_size );
+
+        free( data );
     }
 
-    AddDataToEXE( path, buff, cnt, fs.st_size );
     if( !sflag ) {
-        MyPrintf( "Added %d bytes to \"%s\"\n", cnt, path );
+        MyPrintf( "Added %d bytes to \"%s\"\n", data_len, path );
     } else {
         MyPrintf( "\"%s\" has been stripped of configuration information\n", path );
     }
     return( 0 );
 
 } /* main */
+

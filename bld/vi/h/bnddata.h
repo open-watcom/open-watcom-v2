@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#define MAGIC_COOKIE    "CGEXXX"
+#define MAGIC_COOKIE    "CGEXXX\0"
 
 #define SEEK_POSBACK(p) (-(long)(p))
 
