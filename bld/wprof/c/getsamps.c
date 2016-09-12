@@ -39,12 +39,13 @@
 #include "msg.h"
 #include "sampinfo.h"
 #include "memutil.h"
-#include "clibext.h"
 #include "getsamps.h"
 #include "madinter.h"
 #include "setsamps.h"
 #include "support.h"
 #include "utils.h"
+
+#include "clibext.h"
 
 
 extern void ClearSample(sio_data *curr_sio);
@@ -415,7 +416,11 @@ STATIC bool readSampleFile( void )
             buff_len = size;
         }
         /* reads data & next prefix */
+#if defined( __QNX__ )
         if( BigRead( fh, buff, size ) != size ) {
+#else
+        if( read( fh, buff, size ) != size ) {
+#endif
             ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );
             ProfFree( buff );
             return( false );
@@ -431,7 +436,11 @@ STATIC bool readSampleFile( void )
 //                         next_prefix->kind == SAMP_CALLGRAPH ) {
 //            size = next_prefix->length;
 //            /* reads callgraph data & next prefix   */
+//#if defined( __QNX__ )
 //            if( BigRead( fh, next_prefix, size ) != size ) {
+//#else
+//            if( read( fh, next_prefix, size ) != size ) {
+//#endif
 //                errorIO();
 //                ProfFree( buff );
 //                ErrorMsg( LIT( Smp_File_IO_Err ), CurrSIOData->samp_file_name );

@@ -45,8 +45,8 @@ static dip_status GetMethodBlock( imp_cue_handle *ic, struct methodblock *mb )
     return( GetData( mbp + ic->mb_idx * sizeof( *mb ), mb, sizeof( *mb ) ) );
 }
 
-walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
                     void *d )
 {
     //NYI: handle native methods at the front
@@ -56,13 +56,13 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     return( wk( ii, ic, d ) );
 }
 
-imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 {
      return( IMH_JAVA );
 }
 
-size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, size_t buff_size )
 {
     ji_ptr      name;
@@ -83,7 +83,7 @@ size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     return( NameCopy( buff, NameBuff, buff_size, len + class_len ) );
 }
 
-cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     return( 1 );
@@ -112,7 +112,7 @@ static unsigned GetNumMethods( imp_cue_handle *ic )
     return( GetU16( ic->cc + offsetof( ClassClass, methods_count ) ) );
 }
 
-dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
     unsigned            mb_idx;
@@ -167,7 +167,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     }
 }
 
-unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     struct methodblock  mb;
@@ -178,12 +178,12 @@ unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
                 + offsetof( struct lineno, line_number ) ) );
 }
 
-unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     return( 0 );
 }
 
-address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     ji_ptr              ln_tbl;
@@ -202,7 +202,7 @@ address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
 
 #define LN_CACHE_SIZE   100
 
-search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
@@ -265,7 +265,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
 }
 
 
-search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
 #if 0
@@ -322,7 +322,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     return( ret.ret );
 }
 
-int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     if( ic1->cc     < ic2->cc     ) return( -1 );

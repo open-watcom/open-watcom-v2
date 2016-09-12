@@ -38,7 +38,7 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
 // Do subscript operation for EQUIVALENCE or DATA statements and
 // NAMELIST-directed i/o at run-time.
 {
-    int         dims_no;
+    int         dim_cnt;
     intstar4    offset;
     intstar4    multiplier;
     intstar4    ss;
@@ -47,17 +47,14 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
     intstar4    *bounds;
 
     *res = 0;
-    dims_no = _DimCount( dims->dim_flags );
+    dim_cnt = _DimCount( dims->dim_flags );
     bounds = &dims->subs_1_lo;
     multiplier = 1;
     offset = 0;
-    for(;;) {
-        ss = *subscrs;
-        subscrs++;
-        lo = *bounds;
-        bounds++;
-        hi = *bounds;
-        bounds++;
+    for( ;; ) {
+        ss = *subscrs++;
+        lo = *bounds++;
+        hi = *bounds++;
         if( ss < lo )
             return( false );
         if( ss > hi )
@@ -67,8 +64,7 @@ bool    DoSubscript( act_dim_list *dims, intstar4 *subscrs, intstar4 *res )
             return( false );
         if( offset > dims->num_elts )
             return( false );
-        dims_no--;
-        if( dims_no == 0 )
+        if( --dim_cnt == 0 )
             break;
         multiplier *= ( hi - lo + 1 );
     }

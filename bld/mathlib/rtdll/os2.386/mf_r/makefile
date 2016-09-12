@@ -1,6 +1,6 @@
 #pmake/150: build flat register 32bit calls os2 iX86 rtdll os_os2 cpu_386
 
-component  = mathlib
+component  = mlib
 processor  = 386
 model      = mf
 subdir     = mf_r

@@ -40,12 +40,14 @@ verrc_exe = $(target_exe)
 !include verrc.mif
 
 $(target_exe).exe : errgrp.gc $(files) $(wres_lib) errmsg.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(files) $(wres_lib) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file { $(files) } lib $(wres_lib)
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $^@ . errmsg.res
 
 errsrc_opt_i86 = elic
@@ -63,4 +65,5 @@ jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ $(jerrsrc_opt_$(target_cpu))
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $[@ -fo=$^@ -I"$(comp_cfg_dir)/h"

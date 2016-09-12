@@ -48,9 +48,12 @@
 
 extern  bool            ModHasSourceInfo( mod_handle handle )
 {
-    if( ModHasInfo( handle, HK_CUE ) == DS_OK ) return( true );
-    if( ModHasInfo( handle, HK_TYPE ) == DS_OK ) return( true );
-    if( ModHasInfo( handle, HK_SYM ) == DS_OK ) return( true );
+    if( DIPModHasInfo( handle, HK_CUE ) == DS_OK )
+        return( true );
+    if( DIPModHasInfo( handle, HK_TYPE ) == DS_OK )
+        return( true );
+    if( DIPModHasInfo( handle, HK_SYM ) == DS_OK )
+        return( true );
     return( false );
 }
 
@@ -64,7 +67,7 @@ OVL_EXTERN walk_result CheckAnyMod( mod_handle mh, void *d )
         list->sort[list->numrows] = mh;
     }
     if( list->prefix != NULL && list->sort != NULL ) {
-        ModName( mh, TxtBuff, TXT_LEN );
+        DIPModName( mh, TxtBuff, TXT_LEN );
         if( strnicmp( list->prefix, TxtBuff, list->pref_len ) != 0 ) {
             return( WR_CONTINUE );
         }
@@ -88,8 +91,8 @@ int ModCompare( mod_handle const *a, mod_handle const *b )
     namea = TxtBuff;
     nameb = TxtBuff + TXT_LEN / 2;
     namea[0] = nameb[0] = NULLCHAR;
-    ModName( *a, namea, TXT_LEN/2 );
-    ModName( *b, nameb, TXT_LEN/2 );
+    DIPModName( *a, namea, TXT_LEN/2 );
+    DIPModName( *b, nameb, TXT_LEN/2 );
     return( stricmp( namea, nameb ) );
 }
 
@@ -100,11 +103,16 @@ static int ModOrder( const void *ap, const void *bp )
 
     ia = ImageEntry( *(mod_handle const *)ap );
     ib = ImageEntry( *(mod_handle const *)bp );
-    if( ia == ib ) return( ModCompare( ap, bp ) );
-    if( ia == ImagePrimary() ) return( -1 );
-    if( ib == ImagePrimary() ) return( +1 );
-    if( ia->dip_handle < ib->dip_handle ) return( -1 );
-    if( ia->dip_handle > ib->dip_handle ) return( +1 );
+    if( ia == ib )
+        return( ModCompare( ap, bp ) );
+    if( ia == ImagePrimary() )
+        return( -1 );
+    if( ib == ImagePrimary() )
+        return( +1 );
+    if( ia->dip_handle < ib->dip_handle )
+        return( -1 );
+    if( ia->dip_handle > ib->dip_handle )
+        return( +1 );
     return( 0 );
 }
 
@@ -117,15 +125,17 @@ void ModListAddModules( module_list *list, mod_handle mod, bool any )
     list->numrows = 0;
     list->sort = NULL;
     /* get number of rows */
-    WalkModList( mod, rtn, list );
+    DIPWalkModList( mod, rtn, list );
     if( list->numrows == 0 ) {
         rtn = CheckAnyMod;
-        WalkModList( mod, rtn, list );
-        if( list->numrows == 0 ) return;
+        DIPWalkModList( mod, rtn, list );
+        if( list->numrows == 0 ) {
+            return;
+        }
     }
     list->sort = DbgMustAlloc( list->numrows * sizeof( mod_handle ) );
     list->numrows = 0;
-    WalkModList( mod, rtn, list );
+    DIPWalkModList( mod, rtn, list );
     qsort( list->sort, list->numrows, sizeof( mod_handle ), ModOrder );
 }
 
@@ -170,7 +180,7 @@ void ModListName( const module_list *list, int i, char *buff )
     buff[0] = NULLCHAR;
     if( list->sort == NULL || i >= list->numrows )
         return;
-    ModName( list->sort[i], buff, TXT_LEN );
+    DIPModName( list->sort[i], buff, TXT_LEN );
 }
 
 address ModFirstAddr( mod_handle mod )
@@ -179,12 +189,12 @@ address ModFirstAddr( mod_handle mod )
     DIPHDL( cue, ch );
 
     if( FindFirstCue( mod, ch ) ) {
-        addr = CueAddr( ch );
+        addr = DIPCueAddr( ch );
     } else {
         addr = NilAddr;
     }
     if( IS_NIL_ADDR( addr ) ) {
-        addr = ModAddr( mod );
+        addr = DIPModAddr( mod );
     }
     return( addr );
 }

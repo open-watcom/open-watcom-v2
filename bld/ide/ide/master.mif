@@ -91,24 +91,28 @@ all: $(ide_h_$(host_os)) $(proj_name).exe
 
 $(proj_name).exe : $(objs) $(libs) ide.res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        %create $^&.lnk
-        @%append $^&.lnk $(lflags)
-        @%append $^&.lnk op de $(description)
-        @%append $^&.lnk f {$(objs)}
-        @%append $^&.lnk lib {$(libs)}   
-        $(linker) name $^& @$^&.lnk
+    $(noecho)%create $^&.lnk
+    @%append $^&.lnk $(lflags)
+    @%append $^&.lnk op de $(description)
+    @%append $^&.lnk f {$(objs)}
+    @%append $^&.lnk lib {$(libs)}   
+    @%make echo_link
+    $(linker) name $^& @$^&.lnk
 !endif
-        $(rc) -k ide.res $^@ $(bind_version_res_exe_add)
+    @%make echo_bindres
+    $(rc) -k ide.res $^@ $(bind_version_res_exe_add)
 
 ide.res : ide.rc $(gui_dir)/h/gui.rc
-        $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$^@
 
 !ifdef ide_h_$(host_os)
 $(ide_h_$(host_os)): .ALWAYS
 curr_dir=$+$(%__CWD__)$-
-        @cd $(doc_path_$(host_os):$(to_os_path))
-        @wmake -h hbook=ide header=1
-        @cd $(curr_dir)
+    @cd $(doc_path_$(host_os):$(to_os_path))
+    @wmake -h hbook=ide header=1
+    @cd $(curr_dir)
 !endif

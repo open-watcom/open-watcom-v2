@@ -1,24 +1,12 @@
 .cpp.obj : $(__MAKEFILES__) .autodepend
-!ifeq verbose 1
-    $(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
-!else
-    @echo c++ $@
-    @$(cxx) $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $[@
-!endif
+    @%make echo_cxx
+    $(cxx) $[@ $(plib_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags) $(pch_flags_$[&) $(c_dbg_flags)
 
 .cpp{$(x_subdir)}.obj : $(__MAKEFILES__) .autodepend
     @if not exist $(x_subdir) mkdir $(x_subdir)
-!ifeq verbose 1
-    $(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
-!else
-    @echo xc++ $@
-    @$(cxx) -xs $(comp_flags) $(br_flags_$(sw_br_$[&)) $(inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $[@
-!endif
+    @%make echo_xcxx
+    $(cxx) $[@ $(plibx_cxx_flags) $(plib_c_flags) $(plib_cpp_flags) $(br_flags_$(sw_br_$[&)) $(plib_inc_dirs) -nm=$[& $(pch_flags_x) $(pch_flags_x_$[&) $(c_dbg_flags)
 
 .asm.obj : $(__MAKEFILES__) .autodepend
-!ifeq verbose 1
-    $(as) $(aflags) $[@
-!else
-    @echo as $@
-    @$(as) $(aflags) $[@
-!endif
+    @%make echo_as
+    $(as) $[@ $(plib_a_flags) $(a_dbg_flags)

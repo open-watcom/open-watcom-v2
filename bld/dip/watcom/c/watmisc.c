@@ -40,9 +40,9 @@
 #include "watgbl.h"
 
 
-const char DIPImpName[] = "WATCOM";
+const char DIPImp( Name )[] = "WATCOM";
 
-unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    ih,
@@ -53,42 +53,42 @@ unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status DIGENTRY DIPImpStartup( void )
+dip_status DIPIMPENTRY( Startup )( void )
 {
     return( DS_OK );
 }
 
-void DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
     FiniDemand();
 }
 
-void DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
     KillLclLoadStack();
     KillTypeLoadStack();
     InfoUnlock();
 }
 
-dip_status DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     size = size;
     return( InfoRelease() );
 }
 
-imp_mod_handle DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii = ii;
     return( is->im );
 }
 
-search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii, imp_mod_handle im,
                         address addr, imp_sym_handle *is )
 {
     search_result       sr;
 
     if( im == IMH_NOMOD ) {
-        if( ImpInterface.addr_mod( ii, addr, &is->im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( ii, addr, &is->im ) == SR_NONE ) {
             return( SR_NONE );
         }
     } else {
@@ -102,7 +102,7 @@ search_result DIGENTRY DIPImpAddrSym( imp_image_handle *ii, imp_mod_handle im,
 
 #define SH_ESCAPE       0xf0
 
-size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc,
                                 symbol_name sn, char *buff, size_t buff_size )
 {
@@ -144,11 +144,11 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
             *ep++ = '\0';
         return( len );
     case SN_DEMANGLED:
-        len = ImpInterface.sym_name( ii, is, lc, SN_OBJECT, NULL, 0 );
+        len = ImpInterface.SymName( ii, is, lc, SN_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
         mangled_name = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
+        ImpInterface.SymName( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
         return( __demangle_l( mangled_name, len, buff, buff_size ) );
@@ -159,11 +159,11 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii, imp_sym_handle *is,
                 break;
             return( SymHdl2ObjGblName( ii, &gbl_is, buff, buff_size ) );
         case SH_MBR:
-            if( ImpInterface.sym_location( ii, is, lc, &ll ) != DS_OK )
+            if( ImpInterface.SymLocation( ii, is, lc, &ll ) != DS_OK )
                 break;
             if( ll.num != 1 || ll.e[0].type != LT_ADDR )
                 break;
-            if( ImpInterface.addr_mod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
+            if( ImpInterface.AddrMod( ii, ll.e[0].u.addr, &gbl_is.im ) == SR_NONE )
                 break;
             if( LookupGblAddr(ii,ll.e[0].u.addr,&gbl_is) != SR_EXACT )
                 break;
@@ -254,9 +254,9 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( ss == SS_SCOPESYM ) {
         char    *scope_name;
         scope_is = source;
-        len = ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
+        len = ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
         scope_name = __alloca( len + 1 );
-        ImpInterface.sym_name( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
+        ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
         ss = SS_MODULE;
@@ -292,7 +292,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     im = IMH_NOMOD;
     switch( ss ) {
     case SS_SCOPED:
-        if( ImpInterface.addr_mod( ii, *(address *)source, &im ) == SR_NONE ) {
+        if( ImpInterface.AddrMod( ii, *(address *)source, &im ) == SR_NONE ) {
             im = MH2IMH( sym_li.mod );
         } else if( MH2IMH( sym_li.mod ) == IMH_NOMOD || MH2IMH( sym_li.mod ) == im ) {
             if( !sym_li.file_scope && sym_li.type == ST_NONE ) {
@@ -336,19 +336,19 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     return( sr );
 }
 
-search_result DIGENTRY DIPImpLookupSym( imp_image_handle *ii, symbol_source ss,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii, symbol_source ss,
                          void *source, lookup_item *li, void *d )
 {
     return( DoLookupSym( ii, ss, source, li, NULL, d ) );
 }
 
-search_result DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii, symbol_source ss,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii, symbol_source ss,
                          void *source, lookup_item *li, location_context *lc, void *d )
 {
     return( DoLookupSym( ii, ss, source, li, lc, d ) );
 }
 
-dip_status DIGENTRY DIPImpSymLocation( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, location_list *ll )
 {
     switch( is->type ) {
@@ -363,7 +363,7 @@ dip_status DIGENTRY DIPImpSymLocation( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 
-dip_status DIGENTRY DIPImpSymValue( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, void *value )
 {
     lc = lc;
@@ -375,7 +375,7 @@ dip_status DIGENTRY DIPImpSymValue( imp_image_handle *ii, imp_sym_handle *is,
 }
 
 
-dip_status DIGENTRY DIPImpSymType( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii, imp_sym_handle *is,
                                 imp_type_handle *it )
 {
     switch( is->type ) {
@@ -393,7 +393,7 @@ dip_status DIGENTRY DIPImpSymType( imp_image_handle *ii, imp_sym_handle *is,
     return( DS_ERR|DS_BAD_PARM );
 }
 
-dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, sym_info *si )
 {
     memset( si, 0, sizeof( *si ) );
@@ -417,7 +417,7 @@ dip_status DIGENTRY DIPImpSymInfo( imp_image_handle *ii, imp_sym_handle *is,
 
 }
 
-dip_status DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
     imp_sym_handle *is, location_context *lc, location_list *ll, unsigned parm )
 {
     if( is->type != SH_LCL )
@@ -426,7 +426,7 @@ dip_status DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 typedef struct {
-    IMP_SYM_WKR         *walk;
+    DIP_IMP_SYM_WALKER  *walk;
     imp_sym_handle      *is;
     void                *d;
 } sym_glue;
@@ -442,7 +442,7 @@ static walk_result WalkMySyms( imp_image_handle *ii,
 }
 
 static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
-                void *t, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                void *t, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
     sym_glue            glue;
@@ -476,21 +476,21 @@ static walk_result DoWalkSymList( imp_image_handle *ii, symbol_source ss,
     return( wr );
 }
 
-walk_result DIGENTRY DIPImpWalkSymList( imp_image_handle *ii, symbol_source ss,
-                void *source, IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle *ii, symbol_source ss,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
-walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii, symbol_source ss,
-                void *source, IMP_SYM_WKR *wk, imp_sym_handle *is,
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss,
+                void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
     lc=lc;
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
-dip_status DIGENTRY DIPImpModDefault( imp_image_handle *ii, imp_mod_handle im,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
                         default_kind dk, dip_type_info *ti )
 {
     ii = ii; im = im; dk = dk; ti = ti;
@@ -513,7 +513,7 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
 #endif
 }
 
-int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
     ii = ii;
@@ -562,21 +562,21 @@ int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
     return( 0 );
 }
 
-dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 {
     ii=ii;
     is=is;
     return(DS_OK);
 }
 
-dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

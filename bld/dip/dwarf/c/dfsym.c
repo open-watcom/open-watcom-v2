@@ -45,7 +45,7 @@
 #include "clibext.h"
 
 
-imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is )
+imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 /*******************************************************************************/
 {
     /* Return the module that the implementation symbol handle comes from. */
@@ -54,7 +54,7 @@ imp_mod_handle  DIGENTRY DIPImpSymMod( imp_image_handle *ii, imp_sym_handle *is 
 }
 
 
-size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
+size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     symbol_name sn, char *buff, size_t buff_size )
 /****************************************************************/
@@ -145,7 +145,7 @@ size_t DIGENTRY DIPImpSymName( imp_image_handle *ii,
 }
 
 
-dip_status      DIGENTRY DIPImpSymType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymType )( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it )
 /***********************************************************/
 {
@@ -317,7 +317,7 @@ static  addr_seg GetCodeSeg( imp_image_handle *ii )
 }
 
 
-dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, location_list *ll )
 /***************************************************************************/
 {
@@ -418,7 +418,7 @@ dip_status      DIGENTRY DIPImpSymLocation( imp_image_handle *ii,
 }
 
 
-dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *ic, void *buff )
 /********************************************************************/
 {
@@ -452,7 +452,7 @@ dip_status      DIGENTRY DIPImpSymValue( imp_image_handle *ii,
 }
 
 
-dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
                 imp_sym_handle *is, location_context *lc, sym_info *si )
 /**********************************************************************/
 {
@@ -567,7 +567,7 @@ dip_status      DIGENTRY DIPImpSymInfo( imp_image_handle *ii,
 }
 
 
-#define SYMBOL_dot_return	".return"
+#define SYMBOL_dot_return       ".return"
 
 static bool ARet( drmem_hdl var, int index, void *_var_ptr )
 /**********************************************************/
@@ -606,7 +606,7 @@ extern drmem_hdl GetRet( imp_image_handle *ii, drmem_hdl proc )
 }
 
 
-dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 /*******************************************************************/
@@ -640,7 +640,7 @@ dip_status      DIGENTRY DIPImpSymParmLocation( imp_image_handle *ii,
 }
 
 
-#define SYMBOL_this	"this"
+#define SYMBOL_this     "this"
 
 static bool AThis( drmem_hdl var, int index, void *_var_ptr )
 /***********************************************************/
@@ -677,7 +677,7 @@ static drmem_hdl GetThis( imp_image_handle *ii, drmem_hdl proc )
 }
 
 
-dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 /******************************************************************************/
 {
@@ -715,7 +715,7 @@ dip_status      DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
 }
 
 
-dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                 location_list *ll )
 /***********************************************************************/
@@ -800,7 +800,7 @@ dip_status      DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
 }
 
 
-search_result   DIGENTRY DIPImpAddrSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
                         imp_mod_handle im, address a, imp_sym_handle *is )
 /************************************************************************/
 {
@@ -922,7 +922,7 @@ static search_result  DFAddrScope( imp_image_handle *ii,
 }
 
 
-search_result   DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, scope_block *scope )
 /*******************************************************************/
 {
@@ -1024,7 +1024,7 @@ static drmem_hdl GetContainingClass( drmem_hdl curr )
 }
 
 
-search_result   DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
                 imp_mod_handle im, scope_block *in, scope_block *out )
 /********************************************************************/
 {
@@ -1079,7 +1079,7 @@ typedef struct {
 typedef struct {
     blk_wlk_com         com;
     walk_result         wr;
-    IMP_SYM_WKR         *wk;
+    DIP_IMP_SYM_WALKER  *wk;
     imp_sym_handle      *is;
 } blk_wlk_wlk;
 
@@ -1416,11 +1416,11 @@ static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void 
 
 
 static walk_result DFWalkSymList( imp_image_handle *ii,
-                         symbol_source     ss,
-                         void             *source,
-                         IMP_SYM_WKR      *wk,
-                         imp_sym_handle   *is,
-                         void             *d )
+                         symbol_source      ss,
+                         void               *source,
+                         DIP_IMP_SYM_WALKER *wk,
+                         imp_sym_handle     *is,
+                         void               *d )
 /******************************************************/
 {
     imp_mod_handle      im;
@@ -1472,26 +1472,26 @@ static walk_result DFWalkSymList( imp_image_handle *ii,
 }
 
 
-walk_result DIGENTRY DIPImpWalkSymList( imp_image_handle *ii,
-                                        symbol_source     ss,
-                                        void             *source,
-                                        IMP_SYM_WKR      *wk,
-                                        imp_sym_handle   *is,
-                                        void              *d )
+walk_result DIPIMPENTRY( WalkSymList )( imp_image_handle    *ii,
+                                        symbol_source       ss,
+                                        void                *source,
+                                        DIP_IMP_SYM_WALKER  *wk,
+                                        imp_sym_handle      *is,
+                                        void                *d )
 /***************************************************************/
 {
     return( DFWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
 
-walk_result DIGENTRY DIPImpWalkSymListEx( imp_image_handle *ii,
-                                          symbol_source     ss,
-                                          void             *source,
-                                          IMP_SYM_WKR      *wk,
-                                          imp_sym_handle   *is,
-                                          location_context *lc,
-                                           void             *d )
-/*****************************************************************/
+walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle      *ii,
+                                          symbol_source         ss,
+                                          void                  *source,
+                                          DIP_IMP_SYM_WALKER    *wk,
+                                          imp_sym_handle        *is,
+                                          location_context      *lc,
+                                           void                 *d )
+/******************************************************************/
 {
     lc = lc;
     return( DFWalkSymList( ii, ss, source, wk, is, d ) );
@@ -1742,7 +1742,7 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
 /************************************************************************/
 {
@@ -1750,7 +1750,7 @@ extern search_result   DIGENTRY DIPImpLookupSym( imp_image_handle *ii,
 }
 
 
-extern search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
+search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 /**********************************************************************/
@@ -1759,7 +1759,7 @@ extern search_result   DIGENTRY DIPImpLookupSymEx( imp_image_handle *ii,
 }
 
 
-int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
+int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 /*******************************************************************/
 {
@@ -1781,7 +1781,7 @@ int DIGENTRY DIPImpSymCmp( imp_image_handle *ii, imp_sym_handle *is1,
 }
 
 
-dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 /*****************************************************************************/
 {
     ii = ii;
@@ -1790,7 +1790,7 @@ dip_status DIGENTRY DIPImpSymAddRef( imp_image_handle *ii, imp_sym_handle *is )
 }
 
 
-dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
+dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 /******************************************************************************/
 {
     ii = ii;
@@ -1799,7 +1799,7 @@ dip_status DIGENTRY DIPImpSymRelease( imp_image_handle *ii, imp_sym_handle *is )
 }
 
 
-dip_status DIGENTRY DIPImpSymFreeAll( imp_image_handle *ii )
+dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 /**********************************************************/
 {
     ii = ii;

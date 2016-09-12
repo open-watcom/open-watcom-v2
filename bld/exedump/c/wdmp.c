@@ -50,7 +50,7 @@ char  Fname[ _MAX_FNAME ];
 static void dmp_exe( void )
 /*************************/
 {
-    bool            dos_dmp;
+    int             dos_dmp;
     unsigned long   len;
 
     Form = FORM_NE;
@@ -151,8 +151,8 @@ static void dmp_exe( void )
     }
 }
 
-static int find_file( char * file_path )
-/**************************************/
+static bool find_file( char * file_path )
+/***************************************/
 {
     int     access_rc;
     char    drive[ _MAX_DRIVE ];
@@ -269,8 +269,8 @@ static void debug_opts( char ch )
     }
 }
 
-static int parse_options( int argc, char * const *argv )
-/******************************************************/
+static bool parse_options( int argc, char * const *argv )
+/*******************************************************/
 {
     int     c;
     char    *arg;
@@ -355,15 +355,15 @@ static int parse_options( int argc, char * const *argv )
                 Wdputs( "wdump: option requires argument: -" );
                 Wdputc( optopt );
                 Wdputslc( "\n" );
-                return( 1 );
+                return( true );
             case '?':
                 usage();
-                return( 1 );
+                return( true );
             default:
                 Wdputs( "wdump: invalid option: -" );
                 Wdputc( c );
                 Wdputslc( "\n" );
-                return( 1 );
+                return( true );
             }
         }
         if( optind < argc ) {
@@ -371,13 +371,13 @@ static int parse_options( int argc, char * const *argv )
                 Name = argv[optind++];
             } else {
                 Wdputs( "wdump: multiple pathnames not accepted\n" );
-                return( 1 );
+                return( true );
             }
         } else {
             break;
         }
     }
-    return( 0 );
+    return( false );
 }
 
 /*
@@ -388,7 +388,7 @@ static int parse_options( int argc, char * const *argv )
 int main( int argc, char * const *argv )
 /**************************************/
 {
-    int     found_file;
+    bool    found_file;
 
     WSize = 0;
     Write_buff[WSize] = '\0';

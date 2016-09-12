@@ -151,42 +151,6 @@ extern dip_status       SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is
 extern search_result    SearchMbr( imp_image_handle *ii, imp_type_handle *it,
                                 lookup_item *li, void *d );
 extern walk_result      WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                                IMP_SYM_WKR *wk, imp_sym_handle *is, void *d );
+                                DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern const char       *FindSpecCueTable( imp_image_handle *ii, imp_mod_handle im,
                                 const char **base );
-
-
-extern walk_result DIGENTRY     DIPImpWalkTypeList( imp_image_handle *ii,
-                                    imp_mod_handle im, IMP_TYPE_WKR *wk,
-                                    imp_type_handle *it, void *d );
-extern dip_status DIGENTRY      DIPImpTypeInfo(imp_image_handle *ii,
-                                    imp_type_handle *it, location_context *lc,
-                                    dip_type_info *ti );
-extern dip_status DIGENTRY      DIPImpTypeBase(imp_image_handle *ii,
-                                    imp_type_handle *it, imp_type_handle *base,
-                                    location_context *lc, location_list *ll );
-extern dip_status DIGENTRY      DIPImpTypeArrayInfo(imp_image_handle *ii,
-                                    imp_type_handle *it, location_context *lc,
-                                    array_info *ai, imp_type_handle *index );
-extern dip_status DIGENTRY      DIPImpTypeProcInfo(imp_image_handle *ii,
-                                    imp_type_handle *it, imp_type_handle *parm,
-                                    unsigned num );
-extern dip_status DIGENTRY      DIPImpTypePtrAddrSpace( imp_image_handle *ii,
-                                    imp_type_handle *it, location_context *lc,
-                                    address *addr );
-extern dip_status DIGENTRY      DIPImpTypeThunkAdjust( imp_image_handle *ii,
-                                    imp_type_handle *oit, imp_type_handle *mit,
-                                    location_context *lc, address *addr );
-extern imp_mod_handle DIGENTRY  DIPImpTypeMod( imp_image_handle *ii,
-                                    imp_type_handle *it );
-extern int DIGENTRY             DIPImpTypeCmp( imp_image_handle *ii,
-                                    imp_type_handle *it1, imp_type_handle *it2 );
-extern size_t DIGENTRY          DIPImpTypeName( imp_image_handle *ii,
-                                    imp_type_handle *it, unsigned num,
-                                    symbol_type *tag, char *buff,
-                                    size_t buff_size );
-extern dip_status DIGENTRY      DIPImpTypeAddRef( imp_image_handle *ii,
-                                    imp_type_handle *it );
-extern dip_status DIGENTRY      DIPImpTypeRelease( imp_image_handle *ii,
-                                    imp_type_handle *it );
-extern dip_status DIGENTRY      DIPImpTypeFreeAll( imp_image_handle *ii );

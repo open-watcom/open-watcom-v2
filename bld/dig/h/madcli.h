@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,22 +36,17 @@
 #include "madtypes.h"
 #include "digcli.h"
 
-size_t          DIGCLIENT MADCliReadMem( address, size_t size, void *buff );
-size_t          DIGCLIENT MADCliWriteMem( address, size_t size, const void *buff );
+#define MADCli(n)       MADCli ## n
+#define _MADCli(n)      _MADCli ## n n
 
-size_t          DIGCLIENT MADCliString( mad_string, char *buff, size_t buff_size );
-mad_status      DIGCLIENT MADCliAddString( mad_string, const char * );
-size_t          DIGCLIENT MADCliRadixPrefix( mad_radix radix, char *buff, size_t buff_size );
+#define MADCLIENTRY(n)  DIGCLIENT MADCli( n )
 
-void            DIGCLIENT MADCliNotify( mad_notify_type, const void * );
+#define pick(r,n,p) typedef r (DIGCLIENT *_MADCli ## n) p;
+#include "_madcli.h"
+#undef pick
 
-
-mad_status      DIGCLIENT MADCliAddrToString( address, mad_type_handle, mad_label_kind, char *buff, size_t buff_size );
-mad_status      DIGCLIENT MADCliMemExpr( const char *expr, mad_radix radix, address * );
-
-void            DIGCLIENT MADCliAddrSection( address * );
-mad_status      DIGCLIENT MADCliAddrOvlReturn( address * );
-
-system_config   *DIGCLIENT MADCliSystemConfig( void );
+#define pick(r,n,p) extern r MADCLIENTRY( n ) p;
+#include "_madcli.h"
+#undef pick
 
 #endif

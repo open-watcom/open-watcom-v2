@@ -60,10 +60,12 @@ extra_c_flags_win = -zW
 extra_l_flags_dll_win = op rwr export WEP RESIDENT
 
 $(xname) : ytab.h $(objs) $(__MAKEFILES__)
-        @%create $(lnk)
-        @for %i in ($(libs)) do @@%append $(lnk) library %i
-        @for %i in ($(objs)) do @@%append $(lnk) file %i
-        $(linker) name $^@ $(lflags) @$(lnk)
+    $(noecho)%create $(lnk)
+    @for %i in ($(libs)) do @@%append $(lnk) library %i
+    @for %i in ($(objs)) do @@%append $(lnk) file %i
+    @%make echo_link
+    $(linker) name $^@ $(lflags) @$(lnk)
 
 ytab.c ytab.h: sruparse.y ../c/yydriver.c
-        $(yacc) -d $[@ ../c/yydriver.c > $(nulldevice)
+    @%make echo_yacc
+    $(yacc) -d $[@ ../c/yydriver.c > $(nulldevice)

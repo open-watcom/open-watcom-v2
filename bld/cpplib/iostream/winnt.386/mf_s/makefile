@@ -8,5 +8,5 @@ model      = mf
 convention = stack
 linkage    = static
 fs_registration = yes
-define_library_include = $(cpplib_dir)/iostream/iostream.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/iostream/iostream.mif

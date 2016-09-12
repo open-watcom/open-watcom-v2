@@ -150,7 +150,7 @@ static address GetRowAddr( file_window *file, wnd_row row, bool exact )
 
     if( file->mod == NO_MOD || row < 0 )
         return( NilAddr );
-    switch( LineCue( file->mod, file->file_id, row + 1, 0, ch ) ) {
+    switch( DIPLineCue( file->mod, file->file_id, row + 1, 0, ch ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:
@@ -158,7 +158,7 @@ static address GetRowAddr( file_window *file, wnd_row row, bool exact )
             return( NilAddr );
         break;
     }
-    return( CueAddr( ch ) );
+    return( DIPCueAddr( ch ) );
 }
 
 
@@ -429,7 +429,7 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
     DIPHDL( cue, ch );
 
     line->text = LIT_ENG( Empty );
-    if( file->viewhndl == NULL && ModHasInfo( file->mod, HK_CUE ) != DS_OK ) {
+    if( file->viewhndl == NULL && DIPModHasInfo( file->mod, HK_CUE ) != DS_OK ) {
         return( false );
     }
     curr = ( row == file->active && ContextMod == file->mod );
@@ -459,9 +459,9 @@ static  bool    FileGetLine( a_window *wnd, int row, int piece,
         }
         if( file->viewhndl == NULL ) {
             Format( TxtBuff, LIT_DUI( No_Source_Line ), row + 1 );
-            if( LineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
-                if( (CueAdjust( ch, -1, ch ) & DS_ERR) ) {
-                    file->eof = CueLine( ch );
+            if( DIPLineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
+                if( (DIPCueAdjust( ch, -1, ch ) & DS_ERR) ) {
+                    file->eof = DIPCueLine( ch );
                 }
             }
             return( true );
@@ -506,7 +506,7 @@ static unsigned ActiveLine( void )
 
     if( DeAliasAddrCue( ContextMod, Context.execution, ch ) == SR_NONE )
         return( 0 );
-    return( CueLine( ch ) - 1 );
+    return( DIPCueLine( ch ) - 1 );
 }
 
 
@@ -534,7 +534,7 @@ static void FileSetTitle( a_window *wnd, mod_handle mod )
     if( file->viewhndl != NULL ) {
         p = StrCopy( SkipPathInfo( FGetName( file->viewhndl ), 0 ), p );
     } else if( file->mod != NO_MOD ) {
-        p += ModName( file->mod, p, TXT_LEN );
+        p += DIPModName( file->mod, p, TXT_LEN );
     }
     image_name = ModImageName( mod );
     if( image_name[0] != NULLCHAR ) {
@@ -559,8 +559,8 @@ static void FileTrack( a_window *wnd, cue_handle *ch )
         mod = NO_MOD;
         id = 0;
     } else {
-        mod = CueMod( ch );
-        id = CueFileId( ch );
+        mod = DIPCueMod( ch );
+        id = DIPCueFileId( ch );
     }
     if( file->viewhndl == NULL
       || file->mod != mod
@@ -635,12 +635,12 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     }
     DeAliasAddrMod( addr, &mod );
     if( DeAliasAddrCue( mod, addr, ch ) == SR_NONE ) {
-        if( LineCue( mod, 0, 0, 0, ch ) == SR_NONE ) {
+        if( DIPLineCue( mod, 0, 0, 0, ch ) == SR_NONE ) {
             return( false );
         }
     }
-    line = CueLine( ch );
-    if( mod != file->mod || CueFileId( ch ) != file->file_id ) {
+    line = DIPCueLine( ch );
+    if( mod != file->mod || DIPCueFileId( ch ) != file->file_id ) {
         if( !file->track )
             return( false );
         FileTrack( wnd, ch );
@@ -649,7 +649,7 @@ extern  bool    SrcMoveDot( a_window *wnd, address addr )
     WndScrollAbs( wnd, line ); //
     WndMoveCurrent( wnd, line, PIECE_SOURCE );
     FileSetDotAddr( wnd, addr );
-    FileSetTitle( wnd, CueMod( ch ) );
+    FileSetTitle( wnd, DIPCueMod( ch ) );
     return( true );
 }
 
@@ -751,7 +751,7 @@ static void FileRefresh( a_window *wnd )
     }
     if( (UpdateFlags & (UP_NEW_SRC|UP_SYM_CHANGE)) && (file->mod != NO_MOD) ) {
         ClearSrcFile( file );
-        if( LineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
+        if( DIPLineCue( file->mod, file->file_id, 0, 0, ch ) != SR_NONE ) {
             dotaddr = file->dotaddr;
             FileTrack( wnd, ch );
             SrcMoveDot( wnd, dotaddr );
@@ -839,9 +839,9 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
         file->file_id = 0;
         line = 0;
     } else {
-        file->mod = CueMod( ch );
-        file->file_id = CueFileId( ch );
-        line = CueLine( ch );
+        file->mod = DIPCueMod( ch );
+        file->file_id = DIPCueFileId( ch );
+        line = DIPCueLine( ch );
     }
     file->track = false;
     file->erase = erase;
@@ -853,7 +853,7 @@ a_window        *DoWndFileOpen( const char *name, void *viewhndl,
     if( wnd == NULL )
         return( wnd );
     if( ch != NULL ) {
-        FileSetDotAddr( wnd, CueAddr( ch ) );
+        FileSetDotAddr( wnd, DIPCueAddr( ch ) );
         FileSetTitle( wnd, file->mod );
     } else {
         FileSetDotAddr( wnd, NilAddr );
@@ -904,7 +904,7 @@ static  a_window        *SrcFileOpen( cue_handle *ch,
 
 extern a_window *DoWndSrcOpen( cue_handle *ch, bool track )
 {
-    return( SrcFileOpen( ch, track, false, ch == NULL ? NO_MOD : CueMod( ch ) ) );
+    return( SrcFileOpen( ch, track, false, ch == NULL ? NO_MOD : DIPCueMod( ch ) ) );
 }
 
 

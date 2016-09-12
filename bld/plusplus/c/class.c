@@ -873,7 +873,7 @@ TYPE ClassPreDefined( NAME name, TOKEN_LOCN *locn )
     id = NULL;
     ClassPush( &data );
     ClassInitState( TF1_NULL, CLINIT_NULL, NULL );
-    std_sym_name = ScopeYYMember( GetFileScope(), CppSpecialName( SPECIAL_STD ) );
+    std_sym_name = ScopeYYMember( GetFileScope(), CppSpecialName( SPECIAL_NAME_STD ) );
     std_sym = ( std_sym_name != NULL ) ? std_sym_name->name_type : NULL;
     if( ( std_sym != NULL ) && ( std_sym->id == SC_NAMESPACE ) ) {
         sym_name = ScopeYYMember( std_sym->u.ns->scope, name );

@@ -52,36 +52,31 @@
 #include "mad.h"
 #include "madregs.h"
 
+#include "clibext.h"
+
 
 extern sio_data         *CurrSIOData;
 
-
-void * DIGCLIENT DIGCliAlloc( size_t amount )
-/*******************************************/
+void *DIGCLIENTRY( Alloc )( size_t amount )
+/*****************************************/
 {
     return( _MALLOC( amount ) );
 }
 
-
-
-void * DIGCLIENT DIGCliRealloc( void * p, size_t amount )
-/*******************************************************/
+void *DIGCLIENTRY( Realloc )( void * p, size_t amount )
+/*****************************************************/
 {
     return( _REALLOC( p, amount ) );
 }
 
-
-
-void DIGCLIENT DIGCliFree( void * p )
-/***********************************/
+void DIGCLIENTRY( Free )( void * p )
+/**********************************/
 {
     _FREE( p );
 }
 
-
-
-dig_fhandle DIGCLIENT DIGCliOpen( const char * name, dig_open mode )
-/******************************************************************/
+dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
+/*****************************************************************/
 {
     int             fh;
     int             access;
@@ -110,77 +105,52 @@ dig_fhandle DIGCLIENT DIGCliOpen( const char * name, dig_open mode )
     fh = open( name, access );
     if( fh == -1 )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)fh );
+    return( PH2DFH( fh ) );
 }
 
-
-
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
-/********************************************************************************/
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
+/*******************************************************************************/
 {
-    return( lseek( (int)dfh, p, k ) );
+    return( lseek( DFH2PH( dfh ), p, k ) );
 }
 
-
-
-size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void * b , size_t s )
-/*****************************************************************/
+size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
+/****************************************************************/
 {
-    return( BigRead( (int)dfh, b, s ) );
-}
-
-
-
-size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void * b, size_t s )
-/***********************************************************************/
-{
-#ifdef _WIN64
-    size_t      total;
-    unsigned    write_len;
-    unsigned    amount;
-
-    amount = INT_MAX;
-    total = 0;
-    while( s > 0 ) {
-        if( amount > s )
-            amount = (unsigned)s;
-        write_len = write( (int)dfh, b, amount );
-        if( write_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
-        }
-        total += write_len;
-        if( write_len != amount ) {
-            return( total );
-        }
-        b = (char *)b + amount;
-        s -= amount;
-    }
-    return( total );
+#if defined( __QNX__ )
+    return( BigRead( DFH2PH( dfh ), b, s ) );
 #else
-    return( write( (int)dfh, b, s ) );
+    return( read( DFH2PH( dfh ), b, s ) );
 #endif
 }
 
-
-
-void DIGCLIENT DIGCliClose( dig_fhandle dfh )
-/*******************************************/
+size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
+/**********************************************************************/
 {
-    close( (int)dfh );
+#if defined( __QNX__ )
+    return( BigWrite( DFH2PH( dfh ), b, s ) );
+#else
+    return( write( DFH2PH( dfh ), b, s ) );
+#endif
 }
 
+void DIGCLIENTRY( Close )( dig_fhandle dfh )
+/******************************************/
+{
+    close( DFH2PH( dfh ) );
+}
 
-
-void DIGCLIENT DIGCliRemove( const char * name, dig_open mode )
-/*************************************************************/
+void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
+/************************************************************/
 {
     mode=mode;
     remove( name );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, unsigned info_type,
+unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
+/********************************************************************/
 {
     enum x86_addr_characteristics       *d;
 

@@ -32,6 +32,7 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdlib.h>
+#include "_xtoa.h"
 
 
 #define TO_WIDE(c)  ((CHAR_TYPE)(c))
@@ -88,8 +89,6 @@ unsigned long __uldiv( unsigned long, uint_stk_ptr );
         modify exact [ax cx dx] \
         value [ax dx];
 #endif
-
-extern const char __based(__segname("_CONST")) __Alphabet[];
 
 _WCRTLINK CHAR_TYPE *__F_NAME(ultoa,_ultow)( unsigned long value, CHAR_TYPE *buffer, int radix )
 {

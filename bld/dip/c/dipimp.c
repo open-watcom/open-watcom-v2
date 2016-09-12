@@ -54,82 +54,80 @@
 address                 NilAddr;
 dip_client_routines     *DIPClient;
 
-dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base );
-
 dip_imp_routines        ImpInterface = {
     DIP_MAJOR,
     DIP_MINOR,
     DIP_PRIORITY,
-    DIPImpName,
+    DIPImp( Name ),
 
-    DIPImpQueryHandleSize,
-    DIPImpMoreMem,
-    DIPImpShutdown,
-    DIPImpCancel,
+    DIPImp( HandleSize ),
+    DIPImp( MoreMem ),
+    DIPImp( Shutdown ),
+    DIPImp( Cancel ),
 
-    DIPImpLoadInfo,
-    DIPImpMapInfo,
-    DIPImpUnloadInfo,
+    DIPImp( LoadInfo ),
+    DIPImp( MapInfo ),
+    DIPImp( UnloadInfo ),
 
-    DIPImpWalkModList,
-    DIPImpModName,
-    DIPImpModSrcLang,
-    DIPImpModInfo,
-    DIPImpModDefault,
-    DIPImpAddrMod,
-    DIPImpModAddr,
+    DIPImp( WalkModList ),
+    DIPImp( ModName ),
+    DIPImp( ModSrcLang ),
+    DIPImp( ModInfo ),
+    DIPImp( ModDefault ),
+    DIPImp( AddrMod ),
+    DIPImp( ModAddr ),
 
-    DIPImpWalkTypeList,
-    DIPImpTypeMod,
-    DIPImpTypeInfo,
-    DIPImpOldTypeBase,
-    DIPImpTypeArrayInfo,
-    DIPImpTypeProcInfo,
-    DIPImpTypePtrAddrSpace,
-    DIPImpTypeThunkAdjust,
-    DIPImpTypeCmp,
-    DIPImpTypeName,
+    DIPImp( WalkTypeList ),
+    DIPImp( TypeMod ),
+    DIPImp( TypeInfo ),
+    DIPImp( OldTypeBase ),
+    DIPImp( TypeArrayInfo ),
+    DIPImp( TypeProcInfo ),
+    DIPImp( TypePtrAddrSpace ),
+    DIPImp( TypeThunkAdjust ),
+    DIPImp( TypeCmp ),
+    DIPImp( TypeName ),
 
-    DIPImpWalkSymList,
-    DIPImpSymMod,
-    DIPImpSymName,
-    DIPImpSymType,
-    DIPImpSymLocation,
-    DIPImpSymValue,
-    DIPImpSymInfo,
-    DIPImpSymParmLocation,
-    DIPImpSymObjType,
-    DIPImpSymObjLocation,
-    DIPImpAddrSym,
-    DIPImpLookupSym,
-    DIPImpAddrScope,
-    DIPImpScopeOuter,
-    DIPImpSymCmp,
+    DIPImp( WalkSymList ),
+    DIPImp( SymMod ),
+    DIPImp( SymName ),
+    DIPImp( SymType ),
+    DIPImp( SymLocation ),
+    DIPImp( SymValue ),
+    DIPImp( SymInfo ),
+    DIPImp( SymParmLocation ),
+    DIPImp( SymObjType ),
+    DIPImp( SymObjLocation ),
+    DIPImp( AddrSym ),
+    DIPImp( LookupSym ),
+    DIPImp( AddrScope ),
+    DIPImp( ScopeOuter ),
+    DIPImp( SymCmp ),
 
-    DIPImpWalkFileList,
-    DIPImpCueMod,
-    DIPImpCueFile,
-    DIPImpCueFileId,
-    DIPImpCueAdjust,
-    DIPImpCueLine,
-    DIPImpCueColumn,
-    DIPImpCueAddr,
-    DIPImpLineCue,
-    DIPImpAddrCue,
-    DIPImpCueCmp,
+    DIPImp( WalkFileList ),
+    DIPImp( CueMod ),
+    DIPImp( CueFile ),
+    DIPImp( CueFileId ),
+    DIPImp( CueAdjust ),
+    DIPImp( CueLine ),
+    DIPImp( CueColumn ),
+    DIPImp( CueAddr ),
+    DIPImp( LineCue ),
+    DIPImp( AddrCue ),
+    DIPImp( CueCmp ),
 
-    DIPImpTypeBase,
+    DIPImp( TypeBase ),
 
-    DIPImpTypeAddRef,
-    DIPImpTypeRelease,
-    DIPImpTypeFreeAll,
+    DIPImp( TypeAddRef ),
+    DIPImp( TypeRelease ),
+    DIPImp( TypeFreeAll ),
 
-    DIPImpSymAddRef,
-    DIPImpSymRelease,
-    DIPImpSymFreeAll,
+    DIPImp( SymAddRef ),
+    DIPImp( SymRelease ),
+    DIPImp( SymFreeAll ),
 
-    DIPImpWalkSymListEx,
-    DIPImpLookupSymEx,
+    DIPImp( WalkSymListEx ),
+    DIPImp( LookupSymEx ),
 };
 
 #if defined( __WINDOWS__ )
@@ -148,12 +146,12 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
     {
         FARPROC start;
 
-        start = MakeProcInstance( (FARPROC)DIPImpStartup, ThisInst );
+        start = MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
         *status = ((dip_status(DIGENTRY*)(void)) start)();
         FreeProcInstance( start );
     }
 #else
-    *status = DIPImpStartup();
+    *status = DIPImp( Startup )();
 #endif
     if( *status & DS_ERR )
         return( NULL );
@@ -219,35 +217,35 @@ dig_fhandle DCOpen( const char *path, dig_open flags )
     return( DIPClient->Open( path, flags ) );
 }
 
-unsigned long DCSeek( dig_fhandle h, unsigned long p, dig_seek w )
+unsigned long DCSeek( dig_fhandle dfh, unsigned long p, dig_seek w )
 {
-    return( DIPClient->Seek( h, p, w ) );
+    return( DIPClient->Seek( dfh, p, w ) );
 }
 
-size_t DCRead( dig_fhandle h, void *b, size_t s )
+size_t DCRead( dig_fhandle dfh, void *b, size_t s )
 {
-    return( DIPClient->Read( h, b, s ) );
+    return( DIPClient->Read( dfh, b, s ) );
 }
 
-dip_status DCReadAt( dig_fhandle h, void *b, size_t s, unsigned long p )
+dip_status DCReadAt( dig_fhandle dfh, void *b, size_t s, unsigned long p )
 {
-    if( DIPClient->Seek( h, p, DIG_ORG ) != p ) {
+    if( DIPClient->Seek( dfh, p, DIG_ORG ) != p ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DIPClient->Read( h, b, s ) != s ) {
+    if( DIPClient->Read( dfh, b, s ) != s ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     return( DS_OK );
 }
 
-size_t DCWrite( dig_fhandle h, void *b, size_t s )
+size_t DCWrite( dig_fhandle dfh, const void *b, size_t s )
 {
-    return( DIPClient->Write( h, b, s ) );
+    return( DIPClient->Write( dfh, b, s ) );
 }
 
-void DCClose( dig_fhandle h )
+void DCClose( dig_fhandle dfh )
 {
-    DIPClient->Close( h );
+    DIPClient->Close( dfh );
 }
 
 void DCRemove( const char *path, dig_open flags )
@@ -269,7 +267,7 @@ dig_mad DCCurrMAD( void )
 }
 
 unsigned        DCMachineData( address a, dig_info_type info_type,
-                                dig_elen in_size,  void *in,
+                                dig_elen in_size,  const void *in,
                                 dig_elen out_size, void *out )
 {
     if( DIPClient->sizeof_struct < offsetof(dip_client_routines,MachineData) )
@@ -277,9 +275,9 @@ unsigned        DCMachineData( address a, dig_info_type info_type,
     return( DIPClient->MachineData( a, info_type, in_size, in, out_size, out ) );
 }
 
-dip_status DIGENTRY DIPImpOldTypeBase(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
+dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it, imp_type_handle *base )
 {
-    return( ImpInterface.type_base( ii, it, base, NULL, NULL ) );
+    return( ImpInterface.TypeBase( ii, it, base, NULL, NULL ) );
 }
 
 #if defined( __WINDOWS__ )
@@ -323,8 +321,8 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.handle_size;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, handle_size ) ) / sizeof( INTER_FUNC * );
+    func = (INTER_FUNC **)&ImpInterface.HandleSize;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTER_FUNC * );
     while( count != 0 ) {
         *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;

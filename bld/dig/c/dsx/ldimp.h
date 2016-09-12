@@ -31,10 +31,11 @@
 
 
 #include <string.h>
-#include "exephar.h"
 #ifdef __LINUX__
 #include <sys/mman.h>
 #endif
+#include "exephar.h"
+#include "digld.h"
 
 typedef struct {
 #ifdef __WATCOMC__
@@ -46,7 +47,7 @@ typedef struct {
 
 #define RELOC_BUFF_SIZE 64
 
-static imp_header *ReadInImp( dig_fhandle dfh )
+static imp_header *ReadInImp( dig_ldhandle ldfh )
 {
     simple_header       hdr;
     unsigned long       size;
@@ -59,29 +60,29 @@ static imp_header *ReadInImp( dig_fhandle dfh )
     unsigned long       buff[RELOC_BUFF_SIZE];
     unsigned_8          *imp_start;
 
-    if( DIGCliRead( dfh, &hdr, sizeof( hdr ) ) != sizeof( hdr ) )
+    if( DIGLoader( Read )( ldfh, &hdr, sizeof( hdr ) ) )
         return( NULL );
     if( hdr.signature != REX_SIGNATURE )
         return( NULL );
     hdr_size = hdr.hdr_size * 16;
     size = (hdr.file_size * 0x200) - (-hdr.mod_size & 0x1ff) - hdr_size;
     bss_size = hdr.min_data * 4096;
-    imp_start = DIGCliAlloc( size + bss_size );
+    imp_start = DIGCli( Alloc )( size + bss_size );
     if( imp_start == NULL )
         return( NULL );
-    DIGCliSeek( dfh, hdr_size, DIG_ORG );
-    if( DIGCliRead( dfh, imp_start, size ) != size ) {
-        DIGCliFree( imp_start );
+    DIGLoader( Seek )( ldfh, hdr_size, DIG_ORG );
+    if( DIGLoader( Read )( ldfh, imp_start, size ) ) {
+        DIGCli( Free )( imp_start );
         return( NULL );
     }
-    DIGCliSeek( dfh, hdr.reloc_offset, DIG_ORG );
+    DIGLoader( Seek )( ldfh, hdr.reloc_offset, DIG_ORG );
     while( hdr.num_relocs != 0 ) {
         bunch = hdr.num_relocs;
         if( bunch > RELOC_BUFF_SIZE )
             bunch = RELOC_BUFF_SIZE;
         reloc_size = bunch * sizeof( buff[0] );
-        if( DIGCliRead( dfh, buff, reloc_size ) != reloc_size ) {
-            DIGCliFree( imp_start );
+        if( DIGLoader( Read )( ldfh, buff, reloc_size ) ) {
+            DIGCli( Free )( imp_start );
             return( NULL );
         }
         for( i = 0; i < bunch; ++i ) {

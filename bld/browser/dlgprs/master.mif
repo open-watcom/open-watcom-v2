@@ -44,6 +44,7 @@ extra_c_flags_mempool = -I"$(browse_dir)/h"
 inc_dirs = -I. -I"../h"
 
 dlgprs.exe : $(dlg_yacc_file).h $(bnd_yacc_file).h $(c_objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(c_objs) $(ldflags)
 !else
@@ -54,11 +55,13 @@ bnd_yacc_options = -b $(bnd_yacc_prefix) -d -db
 dlg_yacc_options = -b $(dlg_yacc_prefix) -d -db
 
 $(dlg_yacc_file).h $(dlg_yacc_file).cpp : ../y/prsdlg.y ../cpp/yydriver.cpp
+    @%make echo_yacc
     $(yacc) $(dlg_yacc_options) $[@ $]@ >$(nulldevice)
-    @sed -f ../static.sed $(dlg_yacc_file).c >$(dlg_yacc_file).cpp
+    $(sed) -f ../static.sed $(dlg_yacc_file).c >$(dlg_yacc_file).cpp
     @rm -f $(dlg_yacc_file).c
 
 $(bnd_yacc_file).h $(bnd_yacc_file).cpp : ../y/prsbnd.y ../cpp/yydriver.cpp
+    @%make echo_yacc
     $(yacc) $(bnd_yacc_options) $[@ $]@ >$(nulldevice)
-    @sed -f ../static.sed $(bnd_yacc_file).c >$(bnd_yacc_file).cpp
+    $(sed) -f ../static.sed $(bnd_yacc_file).c >$(bnd_yacc_file).cpp
     @rm -f $(bnd_yacc_file).c

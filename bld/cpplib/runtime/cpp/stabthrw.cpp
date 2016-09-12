@@ -73,11 +73,12 @@ static void fneDispatch(        // DISPATCH "unexpected"
             unexpected();
             marker._state = EXCSTATE_TERMINATE;
             CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
+            // never return
         }
         DISPATCH_EXC *cand = srch->dispatch;
         if( NULL != cand
-         && dispatch->rw        == cand->rw
-         && dispatch->state_var == cand->state_var ) {
+          && dispatch->rw        == cand->rw
+          && dispatch->state_var == cand->state_var ) {
             if( srch->state == EXCSTATE_UNEXPECTED ) {
                 // throw/rethrow did not get through fn-exc
                 exc->state = EXCSTATE_BAD_EXC;
@@ -94,14 +95,17 @@ static void fneDispatch(        // DISPATCH "unexpected"
                                    , EXCSTATE_TERMINATE
                                    , dispatch->rethrow ? 0 :exc );
                 CPPLIB( call_terminate )( RTMSG_FNEXC, ctl );
+                // never return
             }
             if( srch != exc ) {
                 CPPLIB( corrupted_stack )();
+                // never return
             }
         }
         srch = srch->prev;
         if( exc == srch ) {
             CPPLIB( corrupted_stack )();
+            // never return
         }
     }
 }
@@ -133,35 +137,35 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
         src = cnv_offset + (char*)active->data;
         tgt = (char*)blk + cmd->try_cmd.offset;
         switch( sig->hdr.type ) {
-          case THROBJ_PTR_CLASS :
+        case THROBJ_PTR_CLASS :
             if( dispatch->zero ) {
                 *(void**)tgt = NULL;
             } else {
                 *(void**)tgt = *(char**)active->data + cnv_offset;
             }
             break;
-          case THROBJ_VOID_STAR :
-          case THROBJ_PTR_SCALAR :
-          case THROBJ_PTR_FUN :
+        case THROBJ_VOID_STAR :
+        case THROBJ_PTR_SCALAR :
+        case THROBJ_PTR_FUN :
             if( dispatch->zero ) {
                 memset( tgt, 0, sig->scalar.size );
                 break;
             }
-          case THROBJ_SCALAR :
+        case THROBJ_SCALAR :
             memcpy( tgt, src, sig->scalar.size );
             break;
-          case THROBJ_CLASS :
+        case THROBJ_CLASS :
             sig = throwCnvSig( dispatch );
             (*sig->clss.copyctor)( tgt, src );
             break;
-          case THROBJ_CLASS_VIRT :
+        case THROBJ_CLASS_VIRT :
             sig = throwCnvSig( dispatch );
             (*sig->clss_v.copyctor)( tgt, CTOR_NULL, src );
             break;
-          case THROBJ_REFERENCE :
+        case THROBJ_REFERENCE :
             sig = CPPLIB( ts_refed )( sig );
             switch( sig->hdr.type ) {
-              case THROBJ_PTR_CLASS :
+            case THROBJ_PTR_CLASS :
                 if( dispatch->zero ) {
                     active->extra_object = NULL;
                 } else {
@@ -169,21 +173,21 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
                 }
                 *(void**)tgt = &active->extra_object;
                 break;
-              case THROBJ_PTR_SCALAR :
-              case THROBJ_PTR_FUN :
-              case THROBJ_VOID_STAR :
+            case THROBJ_PTR_SCALAR :
+            case THROBJ_PTR_FUN :
+            case THROBJ_VOID_STAR :
                 if( dispatch->zero ) {
                     active->extra_object = NULL;
                     src = &active->extra_object;
                 }
-              case THROBJ_SCALAR :
-              case THROBJ_CLASS :
-              case THROBJ_CLASS_VIRT :
+            case THROBJ_SCALAR :
+            case THROBJ_CLASS :
+            case THROBJ_CLASS_VIRT :
                 *(void**)tgt = src;
                 break;
             }
             break;
-          default :
+        default :
             GOOF_EXC( "unexpected exception type" );
         }
     }
@@ -212,28 +216,33 @@ static void processThrow(       // PROCESS A THROW
     if( exc == NULL ) {
         if( rt_ctl.thr->flags.terminated ) {
             CPPLIB( fatal_runtime_error )( RTMSG_THROW_TERMIN, 1 );
+            // never return
         }
     } else {
         switch( exc->state ) {
-          case EXCSTATE_DISPATCH :
-          case EXCSTATE_UNEXPECTED :
-          case EXCSTATE_BAD_EXC :
+        case EXCSTATE_DISPATCH :
+        case EXCSTATE_UNEXPECTED :
+        case EXCSTATE_BAD_EXC :
             break;
-          case EXCSTATE_UNWIND :
-          { CPPLIB( free_exc )( &rt_ctl, exc );
+        case EXCSTATE_UNWIND :
+        {   CPPLIB( free_exc )( &rt_ctl, exc );
             _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
             CPPLIB( call_terminate )( RTMSG_THROW_DTOR, rt_ctl.thr );
-          }
-          case EXCSTATE_TERMINATE :
+            // never return
+        }
+        case EXCSTATE_TERMINATE :
             CPPLIB( free_exc )( &rt_ctl, exc );
             CPPLIB( fatal_runtime_error )( RTMSG_THROW_TERMIN, 1 );
-          case EXCSTATE_CTOR :
+            // never return
+        case EXCSTATE_CTOR :
             CPPLIB( free_exc )( &rt_ctl, exc );
             CPPLIB( fatal_runtime_error )( RTMSG_THROW_CTOR, 1 );
-          case EXCSTATE_DTOR :
+            // never return
+        case EXCSTATE_DTOR :
             CPPLIB( free_exc )( &rt_ctl, exc );
             CPPLIB( fatal_runtime_error )( RTMSG_EXC_DTOR, 1 );
-          default:
+            // never return
+        default:
             GOOF_EXC( "getActiveExc: unexpected exception state" );
         }
     }
@@ -266,25 +275,29 @@ static void processThrow(       // PROCESS A THROW
 //  unwound == 1 : after unwinding
 //
     switch( dispatch.type ) {
-      case DISPATCHABLE_STOP :
+    case DISPATCHABLE_STOP :
         if( NULL == dispatch.srch_ctl ) {
             GOOF_EXC( "DISPATCHABLE_STOP: no srch_ctl" );
         }
         switch( dispatch.srch_ctl->_state ) {
-          case EXCSTATE_UNWIND :
-          { _EXC_PR_FREE marker( &rt_ctl
+        case EXCSTATE_UNWIND :
+        {   _EXC_PR_FREE marker( &rt_ctl
                                , 0
                                , EXCSTATE_TERMINATE
                                , dispatch.rethrow ? 0 : rt_ctl.thr->excepts );
             CPPLIB( call_terminate )( RTMSG_THROW_DTOR, rt_ctl.thr );
-          }
-          case EXCSTATE_TERMINATE :
+            // never return
+        }
+        case EXCSTATE_TERMINATE :
             CPPLIB( fatal_runtime_error )( RTMSG_THROW_TERMIN, 1 );
-          case EXCSTATE_CTOR :
+            // never return
+        case EXCSTATE_CTOR :
             CPPLIB( fatal_runtime_error )( RTMSG_THROW_CTOR, 1 );
-          case EXCSTATE_DTOR :
+            // never return
+        case EXCSTATE_DTOR :
             CPPLIB( fatal_runtime_error )( RTMSG_EXC_DTOR, 1 );
-          default:
+            // never return
+        default:
             GOOF_EXC( "DISPATCHABLE_STOP: unexpected exception state" );
         }
       case DISPATCHABLE_FNEXC :
@@ -332,28 +345,31 @@ static void processThrow(       // PROCESS A THROW
 // dispatch the exception
 //
     switch( dispatch.type ) {
-      case DISPATCHABLE_FNEXC :
+    case DISPATCHABLE_FNEXC :
         fneDispatch( &dispatch );
-      case DISPATCHABLE_CATCH :
+    case DISPATCHABLE_CATCH :
         catchDispatch( &dispatch );
-      case DISPATCHABLE_NO_CATCH :
+    case DISPATCHABLE_NO_CATCH :
         if( dispatch.rethrow ) {
             CPPLIB( fatal_runtime_error )( RTMSG_RETHROW, 1 );
+            // never return
         } else {
           { _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
             CPPLIB( call_terminate )( RTMSG_NO_HANDLER, rt_ctl.thr );
+            // never return
           }
         }
 #if 0 // not now
-      case DISPATCHABLE_SYS_EXC :
-      {
+    case DISPATCHABLE_SYS_EXC :
+    {
         char buffer[ sizeof( RTMSG_SYS_EXC ) ];
         ::memcpy( buffer, RTMSG_SYS_EXC, sizeof( buffer ) );
         ltoa( dispatch.system_exc, buffer + sizeof( buffer) - 9, 16 );
         CPPLIB( fatal_runtime_error )( buffer, 1 );
-      }
+        // never return
+    }
 #endif
-      default :
+    default :
         GOOF_EXC( "throw: invalid DISPATCHABLE" );
     }
 }

@@ -42,20 +42,20 @@ size_t CPPLIB( ts_size )(       // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
 
     sig = CPPLIB( ts_refed )( sig );
     switch( sig->hdr.type ) {
-      case THROBJ_SCALAR :
-      case THROBJ_PTR_FUN :
+    case THROBJ_SCALAR :
+    case THROBJ_PTR_FUN :
         size = sig->scalar.size;
         break;
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
         size = sig->clss.size;
         break;
-      case THROBJ_VOID_STAR :
-      case THROBJ_PTR_SCALAR :
-      case THROBJ_PTR_CLASS :
+    case THROBJ_VOID_STAR :
+    case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_CLASS :
         size = sizeof( void* );
         break;
-      default:
+    default:
         GOOF_EXC( "unexpected type signature" );
     }
     return size;

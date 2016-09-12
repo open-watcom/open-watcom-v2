@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,11 +24,19 @@
 *
 *  ========================================================================
 *
-* Description:  Debugger interface DIP/MAD/TRAP loader auxiliary functions.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-extern dig_fhandle  DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
-extern unsigned     DIGPathClose( dig_fhandle handle );
-extern long         DIGGetSystemHandle( dig_fhandle handle );
+pick( int,                  Load,       ( link_handle *, link_message * ) )
+pick( void,                 Unload,     ( link_handle * ) )
+pick( int,                  Init,       ( link_instance *, const char * ) )
+pick( unsigned,             MaxSize,    ( link_instance *, unsigned ) )
+pick( link_status,          Put,        ( link_instance *, link_buffer * ) )
+pick( unsigned,             Kicker,     ( link_instance * ) )
+pick( link_status,          Abort,      ( link_instance * ) )
+pick( link_status,          Fini,       ( link_instance * ) )
+pick( unsigned,             Message,    ( const link_message *, pil_language, unsigned, char * ) )
+pick( pill_private_func *,  Private,    ( const char * ) )

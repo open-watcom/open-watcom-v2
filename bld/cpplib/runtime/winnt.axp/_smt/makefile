@@ -9,5 +9,5 @@ convention   =
 linkage      = static
 mthreaded    = 1
 pd_registration = yes
-define_library_include = $(cpplib_dir)/runtime/plib.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/runtime/runtime.mif

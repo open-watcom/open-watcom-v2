@@ -105,7 +105,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     ch2 = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;
     curr_mod = curr_sio->curr_mod;
-    if( curr_file->fid == 0 || LineCue( curr_mod->mh, curr_sio->curr_file->fid,
+    if( curr_file->fid == 0 || DIPLineCue( curr_mod->mh, curr_sio->curr_file->fid,
                                         src_row, 0, ch2 ) == SR_NONE ) {
         ch2 = NULL;
     }
@@ -121,7 +121,7 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     SetNumBytes( 0 );
     SetExeFile( fh, false );
     wpasm_file->fh = fh;
-    addr = ModAddr( curr_mod->mh );
+    addr = DIPModAddr( curr_mod->mh );
     SetExeOffset( addr );
     wpasm_file->max_time = 0;
     addr_tick_index = curr_mod->first_tick_index - 1;
@@ -132,20 +132,20 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     rows = 0;
     for( ;; ) {
         mh = curr_mod->mh;
-        if( EndOfSegment()
-            || AddrMod( addr, &mh ) == SR_NONE || mh != curr_mod->mh ) break;
-        cue_find = (AddrCue( curr_mod->mh, addr, ch ) == SR_EXACT);
-        if( ch2 != NULL && CueCmp( ch, ch2 ) == 0 ) {
+        if( EndOfSegment() || DIPAddrMod( addr, &mh ) == SR_NONE || mh != curr_mod->mh )
+            break;
+        cue_find = (DIPAddrCue( curr_mod->mh, addr, ch ) == SR_EXACT);
+        if( ch2 != NULL && DIPCueCmp( ch, ch2 ) == 0 ) {
             wpasm_file->entry_line = rows;
             ch2 = NULL;
         }
         asm_line = WPGetAsmLoc( wpasm_file, rows, &asm_group, &asm_row );
         if( cue_find ) {
             asm_line->source_line = true;
-            asm_line->u.src.line = CueLine( ch );
+            asm_line->u.src.line = DIPCueLine( ch );
             asm_line->u.src.src_file = NULL;
             if( !curr_file->unknown_file ) {
-                fid = CueFileId( ch );
+                fid = DIPCueFileId( ch );
                 file_index = 0;
                 while( file_index < curr_mod->file_count ) {
                     curr_file = curr_mod->mod_file[file_index];

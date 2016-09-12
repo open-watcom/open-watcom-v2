@@ -57,14 +57,13 @@ static unsigned         dipCnt;
 extern HINSTANCE        DIPLastHandle;
 #endif
 
-static void initDipMsgs( void ) {
+static void initDipMsgs( void )
+{
     char        *ptr;
 
-    ptr = DIPDefaults;
     dipCnt = 0;
-    while( *ptr != '\0' ) {
+    for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
         dipCnt++;
-        ptr += strlen( ptr ) + 1;
     }
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
@@ -77,7 +76,7 @@ BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     lparam = lparam;
     switch( msg ) {
     case WM_INITDIALOG:
-        for( i=0; i < dipCnt; i++ ) {
+        for( i = 0; i < dipCnt; i++ ) {
             SetDlgMonoFont( hwnd, DIPLD_LIST );
             SetDlgMonoFont( hwnd, DIPLD_HEADER );
             SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0,
@@ -101,8 +100,8 @@ BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     return( TRUE );
 }
 
-void ShowDIPStatus( HWND hwnd ) {
-
+void ShowDIPStatus( HWND hwnd )
+{
     FARPROC     fp;
 
     fp = MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
@@ -110,8 +109,8 @@ void ShowDIPStatus( HWND hwnd ) {
     FreeProcInstance( fp );
 }
 
-BOOL LoadTheDips( void ) {
-
+BOOL LoadTheDips( void )
+{
     int         rc;
     unsigned    i;
     char        *ptr;
@@ -120,10 +119,9 @@ BOOL LoadTheDips( void ) {
     BOOL        diploaded;
 
     diploaded = FALSE;
-    i = 0;
     initDipMsgs();
-    ptr = DIPDefaults;
-    while( *ptr != '\0' ) {
+    i = 0;
+    for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
         rc = DIPLoad( ptr );
         if( rc & DS_ERR ) {
             rc &= ~DS_ERR;
@@ -157,12 +155,10 @@ BOOL LoadTheDips( void ) {
         }
 #endif
         strcpy( theLoadInfo[i].loadmsg, buf );
-        ptr += strlen( ptr ) + 1;
         i++;
     }
     if( !diploaded ) {
-        RCMessageBox( NULL, STR_NO_DIPS_LOADED, AppName,
-                      MB_OK | MB_ICONEXCLAMATION );
+        RCMessageBox( NULL, STR_NO_DIPS_LOADED, AppName, MB_OK | MB_ICONEXCLAMATION );
         ShowDIPStatus( NULL );
         DIPFini();
         return( FALSE );
@@ -170,21 +166,23 @@ BOOL LoadTheDips( void ) {
     return( TRUE );
 }
 
-void FiniDipMsgs( void ) {
+void FiniDipMsgs( void )
+{
     WORD        i;
 
-    for( i=0; i < dipCnt; i++ ) {
+    for( i = 0; i < dipCnt; i++ ) {
         MemFree( theLoadInfo[i].loadmsg );
     }
 }
 
 #ifdef __WINDOWS__
-BOOL IsDip( HINSTANCE hinst ) {
+BOOL IsDip( HINSTANCE hinst )
+{
     WORD        i;
 
-    for( i=0; i < dipCnt; i++ ) {
-        if( theLoadInfo[i].loaded ) {
-            if( theLoadInfo[i].hinst == hinst ) return( TRUE );
+    for( i = 0; i < dipCnt; i++ ) {
+        if( theLoadInfo[i].loaded && theLoadInfo[i].hinst == hinst ) {
+            return( TRUE );
         }
     }
     return( FALSE );

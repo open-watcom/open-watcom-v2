@@ -1,12 +1,8 @@
 #pmake: build guitool os_win cpu_i86
 
-all : pbidex.cfg pbide.cfg .symbolic
+host_os = win
+host_cpu = i86
 
-pbidex.cfg : $(idecfg_dir)/idex.sp
-    *wsplice -k C_FOR_PB -k FOR_WIN $[@ $^@
+wsplice_opts = -k FOR_WIN
 
-pbide.cfg : $(idecfg_dir)/ide.sp
-    *wsplice -k C_FOR_PB -k FOR_WIN $[@ $^@
-
-clean : .symbolic
-    rm -f *.cfg
+!include ../master.mif

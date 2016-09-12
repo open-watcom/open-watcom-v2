@@ -35,6 +35,7 @@
 #include <sys/dev_msg.h>
 #include <sys/kernel.h>
 #include <termios.h>
+#include "rterrno.h"
 #include "rtdata.h"
 
 _WCRTLINK int (kbhit)( void )
@@ -46,7 +47,7 @@ _WCRTLINK int (kbhit)( void )
     struct termios  old, new;
     int     error;
 
-    if( _RDW_cbyte != 0 )
+    if( _RWD_cbyte != 0 )
         return( 1 );
     tcgetattr( STDIN_FILENO, &old );
     new = old;

@@ -9,5 +9,5 @@ convention = stack
 linkage    = dynamic
 mthreaded  = 1
 fs_registration = yes
-define_library_include = $(cpplib_dir)/contain/contain.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/contain/contain.mif

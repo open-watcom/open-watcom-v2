@@ -45,8 +45,8 @@ void    Move( string *dst, string *src ) {
 
 // Perform character move.
 
-    int         dst_len;
-    int         src_len;
+    uint        dst_len;
+    uint        src_len;
 
     src_len = src->len;
     dst_len = dst->len;

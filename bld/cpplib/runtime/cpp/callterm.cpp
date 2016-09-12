@@ -37,14 +37,17 @@
 
 
 extern "C"
+_NORETURN
 void CPPLIB( corrupted_stack )( // TERMINATE, WITH CORRUPTED STACK MSG
     void )
 {
     CPPLIB( call_terminate )( RTMSG_CORRUPT_STK, PgmThread() );
+    // never return
 }
 
 
 extern "C"
+_NORETURN
 void CPPLIB( call_terminate )(  // CALL "terminate" SET BY "set_terminate"
     char* abort_msg,            // - abortion message
     THREAD_CTL *thr )           // - thread-specific data
@@ -58,5 +61,7 @@ void CPPLIB( call_terminate )(  // CALL "terminate" SET BY "set_terminate"
     }
     thr->flags.terminated = true;
     std::terminate();
-    CPPLIB(fatal_runtime_error)( RTMSG_RET_TERMIN, 1 );
+    // never return
+//    CPPLIB( fatal_runtime_error )( RTMSG_RET_TERMIN, 1 );
+    // never return
 }

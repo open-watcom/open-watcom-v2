@@ -103,7 +103,8 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
     for( owner = &__EXC_AREA.freed; ; owner = &fr->next ) {
         fr = *owner;
         if( fr == NULL ) {
-            CPPLIB(fatal_runtime_error)( RTMSG_EXC_NO_SPACE, 1 );
+            CPPLIB( fatal_runtime_error )( RTMSG_EXC_NO_SPACE, 1 );
+            // never return
         }
         for( ;; ) { // coalesce
             next = fr->next;

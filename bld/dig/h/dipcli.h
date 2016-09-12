@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,17 +36,17 @@
 #include "diptypes.h"
 #include "digcli.h"
 
-void            DIGCLIENT DIPCliImageUnload( mod_handle );
+#define DIPCli(n)       DIPCli ## n
+#define _DIPCli(n)      _DIPCli ## n n
 
-void            DIGCLIENT DIPCliMapAddr( addr_ptr *, void * );
-imp_sym_handle  *DIGCLIENT DIPCliSymCreate( imp_image_handle *, void * );
-dip_status      DIGCLIENT DIPCliItemLocation( location_context *, context_item, location_list * );
-dip_status      DIGCLIENT DIPCliAssignLocation( location_list *, location_list *, unsigned long );
-dip_status      DIGCLIENT DIPCliSameAddrSpace( address, address );
-void            DIGCLIENT DIPCliAddrSection( address * );
+#define DIPCLIENTRY(n)  DIGCLIENT DIPCli(n)
 
-void            DIGCLIENT DIPCliStatus( dip_status );
+#define pick(r,n,p) typedef r (DIGCLIENT *_DIPCli ## n) p;
+#include "_dipcli.h"
+#undef pick
 
-dig_mad         DIGCLIENT DIPCliCurrMAD(void);
+#define pick(r,n,p) extern r DIPCLIENTRY( n ) p;
+#include "_dipcli.h"
+#undef pick
 
 #endif

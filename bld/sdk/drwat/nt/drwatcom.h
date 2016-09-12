@@ -30,6 +30,12 @@
 ****************************************************************************/
 
 
+#if defined( _M_IX86 )
+#define MD_x86
+#elif defined __AXP__
+#define MD_axp
+#endif
+
 #include <stdlib.h>
 #include "commonui.h"
 #include "bool.h"
@@ -68,6 +74,14 @@
 #define CHILD_R_CLICK           ( WM_USER + 27 )
 #define STAT_FOREGROUND         ( WM_USER + 28 )
 #define STAT_MAD_NOTIFY         ( WM_USER + 29 )
+
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define H2DFH(h)    ((dig_fhandle)(h))
+#define DFH2H(dfh)  ((HANDLE)(dfh))
 
 
 #define MAX_SYM_NAME    128
@@ -188,7 +202,7 @@ void RemoveProcess( DWORD process );
 void DisplayProcList( void );
 void AddProcessName( DWORD procid, char *name );
 ProcNode *GetNextOwnedProc( ProcNode *cur );
-void AddModule( DWORD procid, HANDLE fhdl, DWORD base, char *name );
+void AddModule( DWORD procid, dig_fhandle dfh, DWORD base, char *name );
 void RemoveModule( DWORD procid, DWORD base );
 //void MapAddress( addr_ptr *addr, ModuleNode *mod );
 ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr );
@@ -272,9 +286,9 @@ void FreeMemList( MemListData *info );
 
 /* pefile.c */
 BOOL GetSegmentList( ModuleNode *node );
-char *GetModuleName( HANDLE fhdl );
-BOOL GetModuleSize( HANDLE fhdl, DWORD *size );
-ObjectInfo *GetModuleObjects( HANDLE fhdl, DWORD *num_objects );
+char *GetModuleName( dig_fhandle dfh );
+BOOL GetModuleSize( dig_fhandle dfh, DWORD *size );
+ObjectInfo *GetModuleObjects( dig_fhandle dfh, DWORD *num_objects );
 
 /* disasm.c */
 RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );

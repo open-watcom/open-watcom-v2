@@ -79,7 +79,7 @@ void    FCDoBegin( void ) {
     e1 = GetTypedValue();
     top = GetLabel( GetU16() );
     bottom = GetLabel( GetU16() );
-    do_type = F772CGType( do_var );
+    do_type = F77ToCGType( do_var );
     CGTrash( CGAssign( SymAddr( do_var ), e1, do_type ) );
     if( increment == NULL ) {  // INTEGER DO variable/constant increment
         if( incr_value < 0 ) {
@@ -136,7 +136,7 @@ void    FCDoEnd( void ) {
         iteration = GetPtr();
     }
     top = GetLabel( GetU16() );
-    do_type = F772CGType( do_var );
+    do_type = F77ToCGType( do_var );
     if( increment == NULL ) {  // INTEGER DO variable with constant increment
         CGDone( CGAssign( SymAddr( do_var ),
                           CGBinary( O_PLUS, SymValue( do_var ),

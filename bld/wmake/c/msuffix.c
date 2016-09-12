@@ -580,7 +580,7 @@ RET_T TrySufPath( char *buffer, const char *filename, TARGET **chktarg, bool try
     /* split up filename */
     _splitpath2( filename, pg.buffer, &pg.drive, &pg.dir, &pg.fname, &pg.ext );
 
-    if( pg.drive[0] != NULLCHAR || isdirc( pg.dir[0] ) ) {
+    if( pg.drive[0] != NULLCHAR || cisdirc( pg.dir[0] ) ) {
         /* is an absolute path name */
         return( RET_ERROR );
     }

@@ -4,9 +4,9 @@
 #
 processor  = 386
 system     = generic
-model      = mf
+model      = ms
 convention = stack
 linkage    = static
 mthreaded  = 1
-define_library_include = $(cpplib_dir)/string/string.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/string/string.mif

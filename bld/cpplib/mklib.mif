@@ -1,44 +1,39 @@
 proj_name = cpplib
 
-suppress_zc = 1
-
 x_subdir = xobjs
 
 additional_cleanup_subdir = $(x_subdir)
 
+# make targets for libraries
+#
+# source-dependent targets are found in macros:
+#   objs_asm:       assembler
+#   objs_c:         C
+#   objs_cpp:       C++
+#
+_subdir_ = $(x_subdir)/
+xobjs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+_subdir_ =
+objs = $+ $(objs_asm) $(objs_c) $(objs_cpp) $-
+files = $+ $(static_objs) $-
+
+.cpp : ../../cpp
+
+.asm : ../../a;../../inc
+
 !include $(cpplib_dir)/libtarg.mif
-
-!ifdef mem_model_$(model)
-memory_model_i86 = $(mem_model_$(model))
-memory_model_386 = $(mem_model_$(model))
-!endif
-
-fp_option_086 = -fpc
-fp_option_087 = -fpi
-fp_option_286 = -fpc
-fp_option_287 = -fpi
-fp_option_386 = -fpc
-fp_option_387 = -fpi
-fp_option = $(fp_option_$(processor))
-
-fpu_flags_dos_i86    =$(fp_option)
-fpu_flags_dos_386    =$(fp_option)
-fpu_flags_os2_i86    =$(fp_option)
-fpu_flags_os2_386    =$(fp_option)
-fpu_flags_win_i86    =$(fp_option)
-fpu_flags_win_386    =$(fp_option)
-fpu_flags_qnx_i86    =$(fp_option)
-fpu_flags_qnx_386    =$(fp_option)
-fpu_flags_nov_386    =$(fp_option)
-fpu_flags_generic_i86=$(fp_option)
-fpu_flags_generic_386=$(fp_option)
-fpu_flags_nt_386     =$(fp_option)
-fpu_flags_linux_386  =$(fp_option)
 
 !include cproj.mif
 !include deftarg.mif
 
-!include $(define_library_include)
+!include $(cpplib_dir)/flags.mif
+
+!include $(cpplib_dir)/librules.mif
+
+target_lib = $(prefix)$(suffix).lib
+!ifdef prefix_x
+target_lib_x = $(prefix_x)$(suffix).lib
+!endif
 
 !ifndef target_objs
 target_objs = $(objs)
@@ -48,114 +43,19 @@ target_objs = $(objs)
 target_xobjs = $(xobjs)
 !endif
 
-lib_flags = -b-c-n-pa
-!ifneq release 0
-lib_flags += -s-t-zld
-!endif
-
 libs : .symbolic $(target_lib) $(target_lib_x) $(files)
     @%null
 
 $(target_lib) : $(target_objs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(target_objs)) do @%append $^&.lbc +%i
-    $(librarian) $(lib_flags) $^@ @$^&.lbc
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) $^@ @$^&.lbc
 
 !ifdef target_lib_x
 $(target_lib_x) : $(target_xobjs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(target_xobjs)) do @%append $^&.lbc +%i
-    $(librarian) $(lib_flags) $^@ @$^&.lbc
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) $^@ @$^&.lbc
 !endif
-
-# Include system headers in dependency lists
-extra_cpp_flags=-D_ENABLE_AUTODEPEND -D__OBSCURE_STREAM_INTERNALS
-!ifdef mthreaded
-extra_cpp_flags += -D__MT__
-!endif
-!ifdef fs_registration
-extra_cpp_flags += -D__USE_FS
-!else ifdef pd_registration
-extra_cpp_flags += -D__USE_PD
-!else ifdef sysind_registration
-extra_cpp_flags += -D__USE_RW
-!endif
-
-# -xr has to be on in case the user uses -xr
-extra_c_flags=-zl-xr-fhwe
-
-!ifdef mthreaded
-extra_c_flags +=-bm
-!endif
-!ifdef profile
-extra_c_flags +=-etp
-!endif
-
-# -zv has to be on in case the user uses -zv
-# temporary fix until AXP targets support -zv properly
-extra_c_flags_i86 = -zv
-!ifneq model mm
-!ifneq model ms
-extra_c_flags_i86 += -zu
-!endif
-!endif
-extra_c_flags_386 = -zv
-!ifeq convention stack
-extra_c_flags_386 += -3s
-!else
-extra_c_flags_386 += -3r
-!endif
-!ifeq model ms
-!ifeq host_os generic
-extra_c_flags_386 += -r
-!else ifeq host_os qnx
-extra_c_flags_386 += -r
-!endif
-!endif
-
-extra_c_flags_win = -zW
-
-comp_flags = $(cflags) $(cppflags)
-
-extra_a_flags  = -we
-!ifdef mthreaded
-extra_a_flags += -D__MT__
-!endif
-
-extra_a_flags_i86 = $(model_switch_i86)
-extra_a_flags_386 = $(model_switch_386)
-!ifeq convention stack
-extra_a_flags_386 += -3s
-!else
-extra_a_flags_386 += -3r
-!endif
-
-!ifeq linkage dynamic
-!ifdef export_only
-br_flags_=-D__MAKE_DLL_WRTLIB
-!else
-br_flags_=-D__MAKE_DLL_CPPLIB
-!endif
-br_flags_yes=-br
-!else
-br_flags_=
-!endif
-
-c_inc_dirs_generic =-I"$(hdr_dir)/dos"
-c_inc_dirs_dos     =-I"$(hdr_dir)/dos"
-c_inc_dirs_nov     =-I"$(hdr_dir)/dos"
-c_inc_dirs_win     =-I"$(hdr_dir)/dos" -I"$(w16api_dir)/wini86"
-c_inc_dirs_os2_i86 =-I"$(os2api_dir)/os2286/h"
-c_inc_dirs_os2_386 =-I"$(os2api_dir)/os2386/h"
-c_inc_dirs_os2     =-I"$(hdr_dir)/dos" $(c_inc_dirs_os2_$(host_cpu))
-c_inc_dirs_nt      =-I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
-c_inc_dirs_qnx     =-I"$(hdr_dir)/qnx"
-c_inc_dirs_linux   =-I"$(hdr_dir)/linux"
-
-inc_dirs = -I"$(lib_misc_dir)/h" -I"../../h" -I"$(plusplus_dir)/h" -I"$(cpplib_dir)/runtime/h" $(c_inc_dirs_$(host_os)) -I"$(watcom_dir)/h" -I"$(comp_cfg_dir)/h"
-
-.cpp : $(cpp_dirs)
-
-.asm : $(asm_dirs)
-
-!include $(cpplib_dir)/librules.mif

@@ -689,12 +689,14 @@ bool Dmp_lib_head( void )
 
     Wlseek( 0 );
     Wread( sig, LIBMAG_LEN );
-    if( memcmp( sig, LIBMAG, LIBMAG_LEN ) != 0 ) return 0;
+    if( memcmp( sig, LIBMAG, LIBMAG_LEN ) != 0 )
+        return( false );
     filesize = WFileSize();
     Elf_off = LIBMAG_LEN + LIB_CLASS_LEN + LIB_DATA_LEN;
     Wlseek( Elf_off );
     for( ;; ) {
-        if( Elf_off + LIB_HEADER_SIZE >= filesize ) break;
+        if( Elf_off + LIB_HEADER_SIZE >= filesize )
+            break;
         Wread( &hdr, LIB_HEADER_SIZE );
         Elf_off += LIB_HEADER_SIZE;
         hdr.lib_date[0]='\0';
@@ -718,7 +720,7 @@ bool Dmp_lib_head( void )
         Elf_off += size;
         Wlseek( Elf_off );
     }
-    return 1;
+    return( true );
 }
 
 /*
@@ -729,7 +731,7 @@ bool Dmp_elf_header( unsigned long start )
 {
     Wread( &Elf_head, sizeof( Elf32_Ehdr ) );
     if( memcmp( Elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) ) {
-        return( 0 );
+        return( false );
     }
     Banner( "ELF Header" );
     if( start != 0 ) {
@@ -770,7 +772,7 @@ bool Dmp_elf_header( unsigned long start )
     Dump_header( &Elf_head.e_type, elf_exe_msg );
     Wdputslc( "\n" );
     dmp_prog_sec( start );
-    return( 1 );
+    return( true );
 }
 
 

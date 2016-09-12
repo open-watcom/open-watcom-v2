@@ -19,9 +19,9 @@ bas_axp         = *wasaxp
 bas_ppc         = *wasppc
 bas_mps         = *wasmps
 
-blib            = $(blibrarian_$(bld_cpu))
+blib            = $(noecho)$(blibrarian_$(bld_cpu))
 bcc             = $(bcc_$(bld_cpu))
-bcl             = $(bcl_$(bld_cpu))
+bcl             = $(noecho)$(bcl_$(bld_cpu))
 bas             = $(bas_$(bld_cpu))
 bld_cc_sys      = $(cflags_$(bld_os))
 bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
@@ -29,9 +29,9 @@ bld_cl_sys      = $(clflags_$(bld_os)_$(bld_cpu))
 bld_incs        = $(bld_extra_incs) -I"$(watcom_dir)/h"
 
 !ifeq release 0
-bld_gen_cflags  = -d2-w8-j-fo=.obj
+bld_gen_cflags  = -za99-d2-w8-j-fo=.obj
 !else
-bld_gen_cflags  = -ox-w8-j-fo=.obj
+bld_gen_cflags  = -za99-ox-w8-j-fo=.obj
 !endif
 !if $(watcom_ver) > 1300
 bld_gen_cflags  += -xx-zam
@@ -52,11 +52,95 @@ bld_cc          = $(bcc) $(bld_cc_sys) $(bld_incs)
 bld_cl          = $(bcl) $(bld_cc_sys) $(bld_cl_sys) $(bld_incs)
 bld_lib         = $(blib) $(bld_libflags)
 
+awk             = $(noecho)*awk
+cpp             = $(noecho)*wcpp
 cwc             = bcwc
 edbind          = bedbind
 ide2make        = bide2mak
-re2c            = re2c
+re2c            = $(noecho)re2c
+sed             = $(noecho)sed
 w32bind         = w32bind
 wbind           = bwbind
-wstrip          = bwstrip
-yacc            = yacc
+wsplice         = $(noecho)*wsplice
+wstrip          = $(noecho)bwstrip
+yacc            = $(noecho)yacc
+
+echo_as : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo as $@
+!endif
+
+echo_cc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cc $@
+!endif
+
+echo_cxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo c++ $@
+!endif
+
+echo_xcxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo xc++ $@
+!endif
+
+echo_cl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cl $@
+!endif
+
+echo_bldcl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_cl $@
+!endif
+
+echo_link : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo link $@
+!endif
+
+echo_lib : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo lib $@
+!endif
+
+echo_cpp : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cpp $@
+!endif
+
+echo_awk : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo awk $@
+!endif
+
+echo_rc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo rc $@
+!endif
+
+echo_bindres : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+
+echo_sed : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo sed $@
+!endif
+
+echo_wsplice : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wsplice $@
+!endif
+
+echo_yacc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo yacc $@
+!endif
+
+echo_execute : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo $[@ $@
+!endif

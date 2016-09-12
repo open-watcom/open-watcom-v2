@@ -36,9 +36,9 @@
    Misc. stuff.
 */
 
-const char      DIPImpName[] = "Put the name of your DIP here";
+const char      DIPImp( Name )[] = "Put the name of your DIP here";
 
-unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     //TODO:
 /*
@@ -54,7 +54,7 @@ unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     //TODO:
 /*
@@ -64,7 +64,7 @@ dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
     return( DS_FAIL );
 }
 
-dip_status      DIGENTRY DIPImpStartup( void )
+dip_status DIPIMPENTRY( Startup )( void )
 {
     //TODO:
 /*
@@ -74,7 +74,7 @@ dip_status      DIGENTRY DIPImpStartup( void )
     return( DS_OK );
 }
 
-void            DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
     //TODO:
 /*
@@ -82,7 +82,7 @@ void            DIGENTRY DIPImpShutdown( void )
 */
 }
 
-void            DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
     //TODO:
 /*

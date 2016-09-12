@@ -212,7 +212,7 @@ genall : genall.pcd .symbolic
 
 gencop : .procedure
 !ifeq use_dosemu dosemu
-        %create $(gendev_tmp_batchfile)
+        $(noecho)%create $(gendev_tmp_batchfile)
         @%append $(gendev_tmp_batchfile) lredir w: linux\fs$(docs_dir)
         @%append $(gendev_tmp_batchfile) set GMLLIB=..\testlib
         @%append $(gendev_tmp_batchfile) set GMLINC=..\testsrc
@@ -221,7 +221,7 @@ gencop : .procedure
         @crlf -d $(gendev_tmp_batchfile) $(dosemu_gendev_batch)
         $(GENDEVCMD)
 !else ifeq use_dosemu dosbox
-        %create $(dosemu_gendev_batch)
+        $(noecho)%create $(dosemu_gendev_batch)
         @%append $(dosemu_gendev_batch) d:
         @%append $(dosemu_gendev_batch) set GMLLIB=e:\testlib
         @%append $(dosemu_gendev_batch) set GMLINC=e:\testsrc

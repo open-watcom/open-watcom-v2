@@ -36,12 +36,12 @@
 #define OP_2 1
 #define OP_3 2
 
-mad_string              DIGENTRY MICallStackGrowsUp( void )
+mad_string MADIMPENTRY( CallStackGrowsUp )( void )
 {
     return( MS_FAIL );
 }
 
-const mad_string        *DIGENTRY MICallTypeList( void )
+const mad_string *MADIMPENTRY( CallTypeList )( void )
 {
     static const mad_string list[] = { MAD_MSTR_NEAR, MAD_MSTR_FAR, MAD_MSTR_INTERRUPT, MAD_MSTR_NIL };
 
@@ -49,7 +49,7 @@ const mad_string        *DIGENTRY MICallTypeList( void )
 }
 
 
-mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address rtn, const mad_registers *in, mad_registers *out )
+mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address rtn, const mad_registers *in, mad_registers *out )
 {
     unsigned    dec;
     unsigned_32 value;
@@ -84,7 +84,7 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
     return( MS_OK );
 }
 
-const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn )
+const mad_reg_info *MADIMPENTRY( CallReturnReg )( mad_string call, address rtn )
 {
     call = call;
     if( BIG_SEG( rtn ) ) {
@@ -94,7 +94,7 @@ const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn 
     }
 }
 
-const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address rtn )
+const mad_reg_info **MADIMPENTRY( CallParmRegList )( mad_string call, address rtn )
 {
     static const mad_reg_info *list32[] =
         { &CPU_eax.info, &CPU_edx.info, &CPU_ebx.info, &CPU_ecx.info, NULL };
@@ -558,19 +558,19 @@ static int BPTraceBack( address *execution, address *frame,
     return( 1 );
 }
 
-unsigned        DIGENTRY MICallUpStackSize( void )
+unsigned MADIMPENTRY( CallUpStackSize )( void )
 {
     return( sizeof( mad_call_up_data ) );
 }
 
-mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
+mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
     cud = cud;
     mr = mr;
     return( MS_OK );
 }
 
-mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
+mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
                                 const address *startp,
                                 unsigned rtn_characteristics,
                                 long return_disp,

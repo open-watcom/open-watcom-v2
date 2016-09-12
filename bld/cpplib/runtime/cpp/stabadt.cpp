@@ -81,13 +81,13 @@ _RTARCTOR::_RTARCTOR            // COPY CTOR FOR R/T AR-CTOR
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(dtor_array)(      // CALL DESTRUCTORS FOR ARRAY ELEMENTS
+void * CPPLIB( dtor_array )(    // CALL DESTRUCTORS FOR ARRAY ELEMENTS
     void *array,                // - array
     unsigned count,             // - number of elements
     RT_TYPE_SIG sig )           // - signature of array
 {
-    _RTARCTOR ar_ctor           // - array-ctor control
-        ( count, sig, array );
+    // - array-ctor control
+    _RTARCTOR ar_ctor( count, sig, array );
 
     dtor_the_array( &ar_ctor );
     return array;

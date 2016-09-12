@@ -9,4 +9,5 @@ run_autodepends = .AUTODEPEND
 .c: ..
 
 run.exe : run.obj $(__MAKEFILES__)
-        $(linker) name $@ $(lflags) file {$[@}
+    @%make echo_link
+    $(linker) name $@ $(lflags) file {$[@}

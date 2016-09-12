@@ -111,8 +111,8 @@ extern void                     *VMBlock( imp_image_handle *, virt_mem, size_t )
 extern void                     *VMRecord( imp_image_handle *, virt_mem );
 extern unsigned                 VMShrink(void);
 
-typedef                         walk_result (DIR_WALKER)( imp_image_handle *, cv_directory_entry *, void * );
-extern walk_result              WalkDirList( imp_image_handle *, DIR_WALKER *, void * );
+typedef                         walk_result (DIP_DIR_WALKER)( imp_image_handle *, cv_directory_entry *, void * );
+extern walk_result              WalkDirList( imp_image_handle *, DIP_DIR_WALKER *, void * );
 extern cv_directory_entry       *FindDirEntry( imp_image_handle *, imp_mod_handle, unsigned );
 
 extern void                     LocationCreate( location_list *, location_type, void * );
@@ -134,7 +134,7 @@ extern dip_status               TypeSymGetAddr( imp_image_handle *, imp_sym_hand
 extern dip_status               TypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status               TypeSymGetInfo( imp_image_handle *, imp_sym_handle *, location_context *, sym_info * );
 extern dip_status               TypeCallInfo( imp_image_handle *, unsigned, cv_calls *, unsigned * );
-extern walk_result              TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, IMP_SYM_WKR* wk, imp_sym_handle *is, void *d );
+extern walk_result              TypeSymWalkList( imp_image_handle *ii, imp_type_handle *it, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d );
 extern dip_status               TypeIndexFillIn( imp_image_handle *, unsigned, imp_type_handle * );
 extern search_result            TypeSearchTagName( imp_image_handle *, lookup_item *, void * );
 extern search_result            TypeSearchNestedSym( imp_image_handle *, imp_type_handle *, lookup_item *, void * );

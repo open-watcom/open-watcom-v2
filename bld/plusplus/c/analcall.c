@@ -809,9 +809,9 @@ static void outputCallTriggeredWarning( PTREE expr, SYMBOL sym )
 
     msg = ERR_NULL;
     name = sym->name->name;
-    if( name == CppSpecialName( SPECIAL_BEGINTHREAD ) ) {
+    if( name == CppSpecialName( SPECIAL_NAME_BEGINTHREAD ) ) {
         msg = WARN_MUST_BE_MULTITHREADED;
-    } else if( name == CppSpecialName( SPECIAL_BEGINTHREADEX ) ) {
+    } else if( name == CppSpecialName( SPECIAL_NAME_BEGINTHREADEX ) ) {
         msg = WARN_MUST_BE_MULTITHREADED;
     }
     if( msg != ERR_NULL ) {

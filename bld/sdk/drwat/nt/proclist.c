@@ -39,6 +39,7 @@
 #include "jdlg.h"
 #include "madrtn.h"
 #include "madsys1.h"
+#include "digcli.h"
 
 
 /* Local Window callback functions prototypes */
@@ -54,20 +55,20 @@ typedef struct {
 static ProcNode         *procList;
 static HWND             procDlg;
 
-ProcNode *FindProcess( DWORD process ) {
-
+ProcNode *FindProcess( DWORD process )
+{
     ProcNode    *cur;
 
-    cur = procList;
-    while( cur != NULL ) {
-        if( cur->procid == process ) break;
-        cur = cur->next;
+    for( cur = procList; cur != NULL; cur = cur->next ) {
+        if( cur->procid == process ) {
+            break;
+        }
     }
     return( cur );
 }
 
-void GetProcName( DWORD process, char *name ) {
-
+void GetProcName( DWORD process, char *name )
+{
     ProcNode    *cur;
 
     cur = FindProcess( process );
@@ -94,8 +95,8 @@ static DWORD getStackPtr( HANDLE threadhdl )
  * AddThread
  */
 
-void AddThread( DWORD procid, DWORD threadid, HANDLE threadhdl ) {
-
+void AddThread( DWORD procid, DWORD threadid, HANDLE threadhdl )
+{
     ProcNode    *process;
     ThreadNode  *new;
 
@@ -175,7 +176,8 @@ void AddProcess( DWORD procid, HANDLE prochdl, DWORD threadid,
  * freeModuleNode
  */
 
-static void freeModuleNode( ModuleNode *node ) {
+static void freeModuleNode( ModuleNode *node )
+{
     if( node != NULL ) {
         if( node->syminfo != NULL ) {
             MemFree( node->syminfo );
@@ -186,8 +188,9 @@ static void freeModuleNode( ModuleNode *node ) {
         if( node->objects != NULL ) {
             MemFree( node->objects );
         }
-        if( node->fhdl != NULL ) {
-            CloseHandle( node->fhdl );
+        if( node->dfh != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( node->dfh );
+            node->dfh = DIG_NIL_HANDLE;
         }
         MemFree( node );
     }
@@ -196,24 +199,28 @@ static void freeModuleNode( ModuleNode *node ) {
 /*
  * GetFirstModule
  */
-ModuleNode *GetFirstModule( ProcNode *procinfo ) {
-    if( procinfo == NULL ) return( NULL );
+ModuleNode *GetFirstModule( ProcNode *procinfo )
+{
+    if( procinfo == NULL )
+        return( NULL );
     return( procinfo->module );
 }
 
 /*
  * GetNextModule
  */
-ModuleNode *GetNextModule( ModuleNode *modinfo ) {
-    if( modinfo == NULL ) return( NULL );
+ModuleNode *GetNextModule( ModuleNode *modinfo )
+{
+    if( modinfo == NULL )
+        return( NULL );
     return( modinfo->next );
 }
 
 /*
  * AddModule
  */
-void AddModule( DWORD procid, HANDLE fhdl, DWORD base, char *name ) {
-
+void AddModule( DWORD procid, dig_fhandle dfh, DWORD base, char *name )
+{
     ProcNode    *process;
     ModuleNode  *new;
     ModuleNode  **cur;
@@ -222,8 +229,10 @@ void AddModule( DWORD procid, HANDLE fhdl, DWORD base, char *name ) {
     if( process != NULL ) {
         cur = &process->module;
         for( ;; ) {
-            if( (*cur) == NULL ) break;
-            if( (*cur)->base > base ) break;
+            if( (*cur) == NULL )
+                break;
+            if( (*cur)->base > base )
+                break;
             cur = &(*cur)->next;
         }
         new = MemAlloc( sizeof( ModuleNode ) );
@@ -231,39 +240,40 @@ void AddModule( DWORD procid, HANDLE fhdl, DWORD base, char *name ) {
         (*cur) = new;
         new->syminfo = NULL;
         new->base = base;
-        new->fhdl = fhdl;
+        new->dfh = dfh;
         new->name = name;
         new->procnode = process;
-        if( !GetModuleSize( fhdl, &new->size ) ) {
+        if( !GetModuleSize( dfh, &new->size ) ) {
             new->size = -1;
         }
-        new->objects = GetModuleObjects( fhdl, &new->num_objects );
+        new->objects = GetModuleObjects( dfh, &new->num_objects );
     }
 }
 
 /*
  * ModuleFromAddr
  */
-ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr ) {
-
+ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr )
+{
     ModuleNode  *cur;
 
     if( proc == NULL ) {
         return( NULL );
     }
-    cur = proc->module;
-    for( ;; ) {
-        if( cur == NULL ) break;
+    for( cur = proc->module; cur != NULL; cur = cur->next ) {
         if( cur->base > (DWORD)addr ) {
             cur = NULL;
             break;
         }
         if( cur->size == -1 ) {
-            if( cur->next == NULL || (DWORD)addr < cur->next->base ) break;
+            if( cur->next == NULL || (DWORD)addr < cur->next->base ) {
+                break;
+            }
         } else {
-            if( (DWORD)addr < cur->base + cur->size ) break;
+            if( (DWORD)addr < cur->base + cur->size ) {
+                break;
+            }
         }
-        cur = cur->next;
     }
     return( cur );
 }
@@ -271,23 +281,21 @@ ModuleNode *ModuleFromAddr( ProcNode *proc, void *addr ) {
 /*
  * RemoveModule
  */
-void RemoveModule( DWORD procid, DWORD base ) {
-
+void RemoveModule( DWORD procid, DWORD base )
+{
     ProcNode    *process;
     ModuleNode  **cur;
     ModuleNode  *toremove;
 
     process = FindProcess( procid );
     if( process != NULL ) {
-        cur = &process->module;
-        while( *cur != NULL ) {
+        for( cur = &process->module; *cur != NULL; cur = &(*cur)->next ) {
             if( (*cur)->base == base ) {
                 toremove = *cur;
                 *cur = (*cur)->next;
                 freeModuleNode( toremove );
                 break;
             }
-            cur = &(*cur)->next;
         }
     }
 }
@@ -296,17 +304,17 @@ void RemoveModule( DWORD procid, DWORD base ) {
  * FindThread
  */
 
-ThreadNode *FindThread( ProcNode *procnode, DWORD threadid ) {
-
+ThreadNode *FindThread( ProcNode *procnode, DWORD threadid )
+{
     ThreadNode          *thread;
 
     if( procnode == NULL ) {
         thread = NULL;
     } else {
-        thread = procnode->thread;
-        while( thread != NULL ) {
-            if( thread->threadid == threadid ) break;
-            thread = thread->next;
+        for( thread = procnode->thread; thread != NULL; thread = thread->next ) {
+            if( thread->threadid == threadid ) {
+                break;
+            }
         }
     }
     return( thread );
@@ -315,8 +323,8 @@ ThreadNode *FindThread( ProcNode *procnode, DWORD threadid ) {
 /*
  * freeThreadNode
  */
-static void freeThreadNode( ThreadNode *node ) {
-
+static void freeThreadNode( ThreadNode *node )
+{
     if( node == NULL ) {
         CloseHandle( node->threadhdl );
         MemFree( node );
@@ -326,23 +334,21 @@ static void freeThreadNode( ThreadNode *node ) {
 /*
  * RemoveThread
  */
-void RemoveThread( DWORD processid, DWORD threadid ) {
-
+void RemoveThread( DWORD processid, DWORD threadid )
+{
     ProcNode    *process;
     ThreadNode  **cur;
     ThreadNode  *tmp;
 
     process = FindProcess( processid );
     if( process != NULL ) {
-        cur = &process->thread;
-        while( *cur != NULL ) {
+        for( cur = &process->thread; *cur != NULL; cur = &tmp->next ) {
             tmp = *cur;
             if( tmp->threadid == threadid ) {
                 *cur = tmp->next;
                 freeThreadNode( tmp );
                 break;
             }
-            cur = &tmp->next;
         }
         if( process->thread == NULL ) {
             RemoveProcess( processid );
@@ -356,8 +362,8 @@ void RemoveThread( DWORD processid, DWORD threadid ) {
 /*
  * freeProcNode
  */
-static void freeProcNode( ProcNode *node ) {
-
+static void freeProcNode( ProcNode *node )
+{
     ModuleNode  *mod;
 
     if( node != NULL ) {
@@ -375,28 +381,24 @@ static void freeProcNode( ProcNode *node ) {
 /*
  * RemoveProcess
  */
-void RemoveProcess( DWORD process ) {
-
+void RemoveProcess( DWORD process )
+{
     ProcNode    **proc;
     ProcNode    *tmp;
     ThreadNode  *thread;
-    ThreadNode  *tofree;
+    ThreadNode  *next_thread;
 
-    proc = &procList;
-    while( *proc != NULL ) {
+    for( proc = &procList; *proc != NULL; proc = &tmp->next ) {
         tmp = *proc;
         if( tmp->procid == process ) {
             *proc = tmp->next;
             break;
         }
-        proc = &tmp->next;
     }
     if( tmp != NULL ) {
-        thread  = tmp->thread;
-        while( thread != NULL ) {
-            tofree = thread;
-            thread = thread->next;
-            freeThreadNode( tofree );
+        for( thread  = tmp->thread; thread != NULL; thread = next_thread ) {
+            next_thread = thread->next;
+            freeThreadNode( thread );
         }
         freeProcNode( tmp );
         if( procDlg != NULL ) {
@@ -408,7 +410,8 @@ void RemoveProcess( DWORD process ) {
 /*
  * GetNextOwnedProc
  */
-ProcNode *GetNextOwnedProc( ProcNode *cur ) {
+ProcNode *GetNextOwnedProc( ProcNode *cur )
+{
     if( cur == NULL ) {
         return( procList );
     } else {
@@ -419,7 +422,8 @@ ProcNode *GetNextOwnedProc( ProcNode *cur ) {
 /*
  * enableProcChoices
  */
-static void enableProcChoices( HWND hwnd, BOOL enable ) {
+static void enableProcChoices( HWND hwnd, BOOL enable )
+{
     EnableWindow( GetDlgItem( hwnd, PROCCTL_KILL ), enable );
     EnableWindow( GetDlgItem( hwnd, PROCCTL_THREAD ), enable );
     EnableWindow( GetDlgItem( hwnd, PROCCTL_VIEWMEM ), enable );
@@ -438,8 +442,8 @@ static void enableProcChoices( HWND hwnd, BOOL enable ) {
 /*
  * getProcId
  */
-static DWORD getProcId( HWND hwnd, DWORD id, DWORD index ) {
-
+static DWORD getProcId( HWND hwnd, DWORD id, DWORD index )
+{
     DWORD       ret;
 
     ret = SendDlgItemMessage( hwnd, id, LB_GETITEMDATA, index, 0 );
@@ -449,8 +453,8 @@ static DWORD getProcId( HWND hwnd, DWORD id, DWORD index ) {
 /*
  * fillProcInfo
  */
-static void fillProcInfo( HWND hwnd, char *buf ) {
-
+static void fillProcInfo( HWND hwnd, char *buf )
+{
     DWORD       procid;
     ProcNode    *proc;
     ProcStats   stats;
@@ -467,7 +471,9 @@ static void fillProcInfo( HWND hwnd, char *buf ) {
         sprintf( buf, "Pid: %08lX", procid );
         SetDlgItemText( hwnd, PROCCTL_PID, buf );
         proc = FindProcess( procid );
-        if( !GetProcessInfo( procid, &stats ) ) error = TRUE;
+        if( !GetProcessInfo( procid, &stats ) ) {
+            error = TRUE;
+        }
     }
     if( !error ) {
         RCsprintf( buf, STR_PRIORITY_X, stats.priority );
@@ -483,8 +489,8 @@ static void fillProcInfo( HWND hwnd, char *buf ) {
 /*
  * fillTaskListBox
  */
-static void fillTaskListBox( HWND hwnd, char *buf ) {
-
+static void fillTaskListBox( HWND hwnd, char *buf )
+{
     HWND                lb;
     BOOL                rc;
     LRESULT             curproc;
@@ -619,8 +625,7 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
          switch( cmd ) {
          case IDOK:
              if( info->hdl == NULL ) {
-                 hdl = OpenProcess( PROCESS_SET_INFORMATION, FALSE,
-                                    info->procid );
+                 hdl = OpenProcess( PROCESS_SET_INFORMATION, FALSE, info->procid );
              } else {
                  hdl = info->hdl;
              }
@@ -661,8 +666,8 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 /*
  * AddRunningErrMsg
  */
-static void AddRunningErrMsg( void *_info ) {
-
+static void AddRunningErrMsg( void *_info )
+{
     ProcAttatchInfo   *info = _info;
     char        buf[100];
     ProcStats   stats;
@@ -672,8 +677,7 @@ static void AddRunningErrMsg( void *_info ) {
     } else {
         RCsprintf( buf, STR_CANT_ADD_PROCESS, info->info.pid, "" );
     }
-    MessageBox( MainHwnd, buf, AppName,
-                MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND );
+    MessageBox( MainHwnd, buf, AppName, MB_OK | MB_ICONEXCLAMATION | MB_SETFOREGROUND );
 }
 
 #define ACTION_BUFSIZE          50
@@ -720,8 +724,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
             index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
             if( index == LB_ERR ) {
-                RCMessageBox( hwnd, STR_NO_SELECTED_PROCESS, AppName,
-                            MB_OK | MB_ICONEXCLAMATION );
+                RCMessageBox( hwnd, STR_NO_SELECTED_PROCESS, AppName, MB_OK | MB_ICONEXCLAMATION );
                 break;
             }
             procid = getProcId( hwnd, PROCCTL_TASKLIST, index );
@@ -746,8 +749,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 if( FindProcess( procid ) != NULL ) {
                     RCsprintf( buf, STR_ALREADY_WATCHING, AppName, procid );
                     CopyRCString( STR_WATCH_PROCESS, action, ACTION_BUFSIZE );
-                    MessageBox( hwnd, buf, action,
-                                MB_ICONEXCLAMATION | MB_OK );
+                    MessageBox( hwnd, buf, action, MB_ICONEXCLAMATION | MB_OK );
                     break;
                 }
                 CallProcCtl( MENU_ADD_RUNNING, &procid, AddRunningErrMsg );
@@ -774,8 +776,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 if( !TerminateProcess( hdl, rc ) ) {
                     RCsprintf( buf, STR_CANT_KILL_PROCESS, procid );
                     CopyRCString( STR_KILL_PROCESS, action, ACTION_BUFSIZE );
-                    MessageBox( hwnd, buf, action,
-                                MB_OK | MB_ICONEXCLAMATION );
+                    MessageBox( hwnd, buf, action, MB_OK | MB_ICONEXCLAMATION );
                 } else {
                     /* wait awhile so the registry is updated and the
                        process is properly removed from the list box
@@ -791,8 +792,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         case PROCCTL_VIEWMEM:
             procinfo = FindProcess( procid );
             if( procinfo == NULL ) {
-                hdl = OpenProcess( PROCESS_VM_READ | PROCESS_QUERY_INFORMATION,
-                                   FALSE, procid );
+                hdl = OpenProcess( PROCESS_VM_READ | PROCESS_QUERY_INFORMATION, FALSE, procid );
             } else {
                 DuplicateHandle(
                                 GetCurrentProcess(),
@@ -841,8 +841,8 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 /*
  * DisplayProcList
  */
-void DisplayProcList( void ) {
-
+void DisplayProcList( void )
+{
     RefreshInfo();
     JDialogBox( Instance, "PROCCTL", MainHwnd, ProcListProc );
 }

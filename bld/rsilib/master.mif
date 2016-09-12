@@ -44,4 +44,5 @@ extra_a_flags = $(model_switch_$(host_cpu))
 inc_dirs = -I"$(d16api_dir)/include" -I"../h"
 
 rsilib$(memory_model_i86).lib : $(rsilib_objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(rsilib_objs)

@@ -55,7 +55,7 @@ sym_list *Disambiguate( sym_list *sym, location_context *lc )
     ambig.lc = lc;
     count = 0;
     for( curr = sym; curr != NULL; curr = curr->next ) {
-        if( SymLocation( SL2SH( curr ), lc, &curr->loc ) != DS_OK ||
+        if( DIPSymLocation( SL2SH( curr ), lc, &curr->loc ) != DS_OK ||
             curr->loc.num != 1 || curr->loc.e[0].type != LT_ADDR ) {
             curr->loc.num = 0;
         }

@@ -34,7 +34,7 @@
 
 #define JAVA_SIG        "JAVA"
 
-dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 {
     struct {
         char    sig[sizeof( JAVA_SIG ) - 1];
@@ -43,11 +43,14 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     unsigned    mb_size;
     dip_status  ds;
 
-    if( DCCurrMAD() != MAD_JVM ) return( DS_FAIL );
-    DCSeek( h, 0, DIG_ORG );
-    if( DCRead( h, &jcf, sizeof( jcf ) ) != sizeof( jcf ) ) return( DS_FAIL );
-    if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 ) return( DS_FAIL );
-    DCClose( h );
+    if( DCCurrMAD() != MAD_JVM )
+        return( DS_FAIL );
+    DCSeek( dfh, 0, DIG_ORG );
+    if( DCRead( dfh, &jcf, sizeof( jcf ) ) != sizeof( jcf ) )
+        return( DS_FAIL );
+    if( memcmp( jcf.sig, JAVA_SIG, sizeof( jcf.sig ) ) != 0 )
+        return( DS_FAIL );
+    DCClose( dfh );
     ii->cc = jcf.cc;
     if( GetU16( ii->cc + offsetof( ClassClass, major_version ) ) != JAVA_VERSION ) {
         return( DS_INFO_BAD_VERSION );
@@ -65,14 +68,16 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     ii->mb = GetPointer( ii->cc + offsetof( ClassClass, methods ) );
     if( mb_size != 0 ) {
         ds = GetData( ii->mb, ii->methods, mb_size );
-        if( ds != DS_OK ) DCFree( ii->methods );
+        if( ds != DS_OK ) {
+            DCFree( ii->methods );
+        }
     }
     ii->last_method = 0;
     ii->object_class = 0;
     return( ds );
 }
 
-void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     DefCodeAddr = NilAddr;
     DefCodeAddr.mach.segment = MAP_FLAT_CODE_SELECTOR;
@@ -82,7 +87,7 @@ void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
     DCMapAddr( &DefDataAddr.mach, d );
 }
 
-void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     DCFree( ii->methods );
 }

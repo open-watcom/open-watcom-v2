@@ -74,7 +74,7 @@ static void UnloadInfo( imp_image_handle *ii )
     DCFree( ii->lang );
 }
 
-void DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     InfoClear( ii );
     DCClose( ii->sym_file );
@@ -134,13 +134,13 @@ static dip_status GetBlockInfo( section_info *new, unsigned long off,
  * GetNumSect - find the number of sections for this load
  */
 
-static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr, unsigned long end, unsigned *count )
+static dip_status GetNumSect( dig_fhandle dfh, unsigned long curr, unsigned long end, unsigned *count )
 {
     section_dbg_header  header;
 
     *count = 0;
     while( curr < end ) {
-        if( DCRead( sym_file, &header, sizeof( header ) ) != sizeof( header ) ) {
+        if( DCRead( dfh, &header, sizeof( header ) ) != sizeof( header ) ) {
             DCStatus( DS_ERR|DS_INFO_INVALID );
             return( DS_ERR|DS_INFO_INVALID );
         }
@@ -161,7 +161,7 @@ static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr, unsigned
             }
         }
         (*count)++;
-        curr = DCSeek( sym_file, DIG_SEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
+        curr = DCSeek( dfh, DIG_SEEK_POSBACK( sizeof( header ) ) + header.section_size, DIG_CUR );
     }
     if( curr > end ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
@@ -175,16 +175,16 @@ static dip_status GetNumSect( dig_fhandle sym_file, unsigned long curr, unsigned
  * that section numbers are contiguous
  */
 
-static dip_status ProcSectionInfo( imp_image_handle *ctl, unsigned long pos )
+static dip_status ProcSectionInfo( imp_image_handle *ii, unsigned long pos )
 {
     section_dbg_header  header;
     section_info        *new;
     dip_status          status;
 
-    DCRead( ctl->sym_file, &header, sizeof( header ) );
-    new = ctl->sect + header.section_id;
+    DCRead( ii->sym_file, &header, sizeof( header ) );
+    new = ii->sect + header.section_id;
     new->sect_id = header.section_id;
-    new->ctl = ctl;
+    new->ctl = ii;
     new->mod_info = NULL;
     new->addr_info = NULL;
     new->gbl = NULL;
@@ -215,9 +215,9 @@ static dip_status ProcSectionInfo( imp_image_handle *ctl, unsigned long pos )
             return( status );
         }
     }
-    ctl->num_sects++;
+    ii->num_sects++;
     pos += header.section_size;
-    if( DCSeek( ctl->sym_file, pos, DIG_ORG ) != pos ) {
+    if( DCSeek( ii->sym_file, pos, DIG_ORG ) != pos ) {
         DCStatus( DS_ERR|DS_INFO_INVALID );
         return( DS_ERR|DS_INFO_INVALID );
     }
@@ -321,15 +321,15 @@ static dip_status DoPermInfo( imp_image_handle *ii )
 /*
  * DIPImpLoadInfo -- process symbol table info on end of .exe file
  */
-dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 {
     dip_status          ret;
 
-    if( file == DIG_NIL_HANDLE ) {
+    if( dfh == DIG_NIL_HANDLE ) {
         DCStatus( DS_ERR|DS_FOPEN_FAILED );
         return( DS_ERR|DS_FOPEN_FAILED );
     }
-    ii->sym_file = file;
+    ii->sym_file = dfh;
     ii->sect = NULL;
     ii->lang = NULL;
     ret = DoPermInfo( ii );
@@ -345,14 +345,14 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle file, imp_image_handle *ii )
 
 dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void *buff )
 {
-    dig_fhandle  sym_file;
+    dig_fhandle  dfh;
 
-    sym_file = inf->ctl->sym_file;
-    if( DCSeek( sym_file, offset, DIG_ORG ) != offset ) {
+    dfh = inf->ctl->sym_file;
+    if( DCSeek( dfh, offset, DIG_ORG ) != offset ) {
         DCStatus( DS_ERR|DS_FSEEK_FAILED );
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( sym_file, buff, size ) != size ) {
+    if( DCRead( dfh, buff, size ) != size ) {
         DCStatus( DS_ERR|DS_FREAD_FAILED );
         return( DS_ERR|DS_FREAD_FAILED );
     }
@@ -366,7 +366,7 @@ dip_status InfoRead( section_info *inf, unsigned long offset, size_t size, void 
  */
 
 
-void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     unsigned        i;
 

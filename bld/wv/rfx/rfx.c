@@ -558,20 +558,20 @@ long FreeSpace( char drive, object_loc loc )
     }
 }
 
-static void SameDate( file_handle fhsrc, object_loc src_loc, file_handle fhdst, object_loc dst_loc )
-/**************************************************************************************************/
+static void SameDate( file_handle fh_src, object_loc src_loc, file_handle fh_dst, object_loc dst_loc )
+/****************************************************************************************************/
 {
     int     time, date;
 
     if( src_loc == LOC_REMOTE ) {
-        RemoteDateTime( GetSystemHandle( fhsrc ), &time, &date, 0 );
+        RemoteDateTime( GetSystemHandle( fh_src ), &time, &date, 0 );
     } else {
-        LocalDateTime( GetSystemHandle( fhsrc ), &time, &date, 0 );
+        LocalDateTime( GetSystemHandle( fh_src ), &time, &date, 0 );
     }
     if( dst_loc == LOC_REMOTE ) {
-        RemoteDateTime( GetSystemHandle( fhdst ), &time, &date, 1 );
+        RemoteDateTime( GetSystemHandle( fh_dst ), &time, &date, 1 );
     } else {
-        LocalDateTime( GetSystemHandle( fhdst ), &time, &date, 1 );
+        LocalDateTime( GetSystemHandle( fh_dst ), &time, &date, 1 );
     }
 }
 
@@ -1018,12 +1018,12 @@ static void WrtCopy( const char *src, const char *dst, object_loc src_loc, objec
     }
 }
 
-static void FiniCopy( file_handle fh_in, const char *src_name, object_loc src_loc,
-               file_handle fh_out, const char *dst_name, object_loc dst_loc )
+static void FiniCopy( file_handle fh_src, const char *src_name, object_loc src_loc,
+               file_handle fh_dst, const char *dst_name, object_loc dst_loc )
 {
-    SameDate( fh_in, src_loc, fh_out, dst_loc );
-    FileClose( fh_in );
-    FileClose( fh_out );
+    SameDate( fh_src, src_loc, fh_dst, dst_loc );
+    FileClose( fh_src );
+    FileClose( fh_dst );
     if( dst_loc == LOC_LOCAL ) {
         LocalSetFileAttr( dst_name, GetAttrs( src_name, src_loc ) );
     }
@@ -1031,49 +1031,49 @@ static void FiniCopy( file_handle fh_in, const char *src_name, object_loc src_lo
 }
 
 
-static error_handle DoCopy( const char *src, const char *dst, object_loc src_loc, object_loc dst_loc )
+static error_handle DoCopy( const char *src_name, const char *dst_name, object_loc src_loc, object_loc dst_loc )
 {
-    file_handle     fh_in, fh_out;
+    file_handle     fh_src, fh_dst;
     size_t          read_len;
     size_t          write_len;
     error_handle    errh;
 
-    WrtCopy( src, dst, src_loc, dst_loc );
-    fh_in = FileOpen( src, OP_READ | RFX2Acc( src_loc ) );
-    if( fh_in == NIL_HANDLE )
+    WrtCopy( src_name, dst_name, src_loc, dst_loc );
+    fh_src = FileOpen( src_name, OP_READ | RFX2Acc( src_loc ) );
+    if( fh_src == NIL_HANDLE )
         return( StashErrCode( IO_FILE_NOT_FOUND, OP_LOCAL ) );
-    fh_out = FileOpen( dst, OP_WRITE | OP_CREATE | RFX2Acc( dst_loc ) );
-    if( fh_out == NIL_HANDLE ) {
-        FileClose( fh_in );
+    fh_dst = FileOpen( dst_name, OP_WRITE | OP_CREATE | RFX2Acc( dst_loc ) );
+    if( fh_dst == NIL_HANDLE ) {
+        FileClose( fh_src );
         return( StashErrCode( IO_NO_ACCESS, OP_LOCAL ) );
     }
     for( ;; ) {
         if( CtrlCHit() ) {
-            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
+            FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( StashErrCode( IO_INTERRUPT, OP_LOCAL ) );
         }
-        read_len = ReadStream( fh_in, Buff, BUFF_LEN );
+        read_len = ReadStream( fh_src, Buff, BUFF_LEN );
         if( read_len == ERR_RETURN ) {
             errh = GetLastErr();
-            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
+            FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );
         }
         if( read_len == 0 )
             break;
-        write_len = WriteStream( fh_out, Buff, read_len );
+        write_len = WriteStream( fh_dst, Buff, read_len );
         if( write_len == ERR_RETURN ) {
             errh = GetLastErr();
-            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
+            FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( errh );
         }
         if( write_len != read_len ) {
             if( ( write_len == ( read_len - 1 ) ) && ( Buff[write_len] == 0x1A ) )
                 break;
-            FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
+            FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
             return( StashErrCode( IO_DISK_FULL, OP_LOCAL ) );
         }
     }
-    FiniCopy( fh_in, src, src_loc, fh_out, dst, dst_loc );
+    FiniCopy( fh_src, src_name, src_loc, fh_dst, dst_name, dst_loc );
     return( StashErrCode( IO_OK, OP_LOCAL ) );
 }
 
@@ -1230,35 +1230,35 @@ void ProcCopy( int argc, char **argv )
 {
     int         recursive;
     object_loc  src_loc, dst_loc;
-    const char  *src, *dst;
+    const char  *src_name, *dst_name;
     int         i;
     char        name[80];
     char        *endp;
 
     recursive = false;
-    dst = NULL;
-    src = NULL;
+    dst_name = NULL;
+    src_name = NULL;
     FilesCopied = 0;
     DirectoriesMade = 0;
     for( i = 0; i < argc; ++i ) {
         if( Option( argv[i], 's' ) ) {
             recursive = true;
-        } else if( src == NULL ) {
-            src = argv[i];
-        } else if( dst == NULL ) {
-            dst = argv[i];
+        } else if( src_name == NULL ) {
+            src_name = argv[i];
+        } else if( dst_name == NULL ) {
+            dst_name = argv[i];
         } else {
             WhatDidYouSay();
             return;
         }
     }
-    if( src == NULL ) {
+    if( src_name == NULL ) {
         WhatDidYouSay();
         return;
     }
-    src = RealName( src, &src_loc );
-    if( dst == NULL ) {
-        dst = ".";
+    src_name = RealName( src_name, &src_loc );
+    if( dst_name == NULL ) {
+        dst_name = ".";
         if( src_loc == LOC_LOCAL ) {
             dst_loc = LOC_REMOTE;
         } else if( src_loc == LOC_REMOTE ) {
@@ -1267,30 +1267,30 @@ void ProcCopy( int argc, char **argv )
             dst_loc = LOC_DEFAULT;
         }
     } else {
-        dst = RealName( dst, &dst_loc );
+        dst_name = RealName( dst_name, &dst_loc );
     }
-    if( src != NULL && dst != NULL ) {
-        strcpy( name, dst );
-        dst = name;
+    if( src_name != NULL && dst_name != NULL ) {
+        strcpy( name, dst_name );
+        dst_name = name;
         endp = name + strlen( name );
         if( endp[-1] == ':' || endp[-1] == '\\' ) {
             *endp = '.';
             *++endp = NULLCHAR;
         }
-        if( !HasWildCards( dst ) ) {
+        if( !HasWildCards( dst_name ) ) {
             i = 0;
-            if( HasWildCards( src ) || IsDir( src, src_loc ) ) {
-                if( !IsDir( dst, dst_loc ) ) {
-                    MakeDir( dst, dst_loc );
+            if( HasWildCards( src_name ) || IsDir( src_name, src_loc ) ) {
+                if( !IsDir( dst_name, dst_loc ) ) {
+                    MakeDir( dst_name, dst_loc );
                     i = 1;
                 }
-                if( IsDir( dst, dst_loc ) ) {
+                if( IsDir( dst_name, dst_loc ) ) {
                     DirectoriesMade += i;
                     strcpy( endp, "\\*.*" );
                 }
             }
         }
-        AddCopySpec( src, dst, src_loc, dst_loc );
+        AddCopySpec( src_name, dst_name, src_loc, dst_loc );
         WildCopy( recursive );
 #define CPYMSG "        x Files copied        x Directories created"
         strcpy( Buff, CPYMSG );
@@ -1785,22 +1785,22 @@ void ProcDelDir( int argc, char **argv )
 
 bool ProcDrive( int argc, char **argv )
 {
-    const char  *src;
+    const char  *src_name;
     object_loc  src_loc;
     size_t      len;
 
     if( argc != 1 )
         return( false );
-    src = argv[0];
-    src = RealName( src, &src_loc );
-    len = strlen( src ) - 1;
-    if( src[len] != ':' )
+    src_name = argv[0];
+    src_name = RealName( src_name, &src_loc );
+    len = strlen( src_name ) - 1;
+    if( src_name[len] != ':' )
         return( false );
     if( len == 0 ) {
         DefaultLocation = src_loc;
         return( true );
     } else if( len == 1 ) {
-        SetDrv( *src, src_loc );
+        SetDrv( *src_name, src_loc );
         DefaultLocation = src_loc;
         return( true );
     }
@@ -1811,10 +1811,10 @@ bool ProcDrive( int argc, char **argv )
 /* FILE NAME PARSING                                                      */
 /**************************************************************************/
 
-static char    *CopyMax( const char *src, char *buff, unsigned src_len, unsigned buff_len )
+static char    *CopyMax( const char *src_name, char *buff, unsigned src_len, unsigned buff_len )
 {
     while( src_len > 0 && buff_len > 0 ) {
-        *buff++ = *src++;
+        *buff++ = *src_name++;
         --src_len; --buff_len;
     }
     return( buff );
@@ -1903,13 +1903,13 @@ void    CopyStrMax( const char *src, char *dst, size_t max_len )
     }
 }
 
-void    Replace( const char *frum, const char *to, char *into )
+void    Replace( const char *from, const char *to, char *into )
 {
     while( *to != NULLCHAR ) {
         switch( *to ) {
         case '?':
-            if( *frum != '?' && *frum != '*' && *frum != NULLCHAR ) {
-                *into++ = *frum;
+            if( *from != '?' && *from != '*' && *from != NULLCHAR ) {
+                *into++ = *from;
             } else if( *into != NULLCHAR ) {
                 into++;
             }
@@ -1925,8 +1925,8 @@ void    Replace( const char *frum, const char *to, char *into )
             break;
         }
         ++to;
-        if( *frum != NULLCHAR ) {
-            ++frum;
+        if( *from != NULLCHAR ) {
+            ++from;
         }
     }
     *into = NULLCHAR;

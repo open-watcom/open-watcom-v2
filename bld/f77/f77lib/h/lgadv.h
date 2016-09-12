@@ -34,19 +34,19 @@
 #define LGADV_H_INCLUDED
 
 typedef struct lg_adv {
-    void        PGM *origin;    // pointer to array storage
-    struct adv  PGM *adv_link;  // ADV link (chains all ADV's)
-    int         elt_size;       // element size
-    unsigned_32 num_elts;       // number of elements
-    unsigned_16 num_ss;         // number of subscripts
-    adv_entry   subscrs[ 7 ];   // bounds & elements in each dimension
+    void        PGM *origin;        // pointer to array storage
+    struct adv  PGM *adv_link;      // ADV link (chains all ADV's)
+    int         elt_size;           // element size
+    unsigned_32 num_elts;           // number of elements
+    unsigned_16 num_ss;             // number of subscripts
+    adv_entry   subscrs[MAX_DIM];   // bounds & elements in each dimension
 } lg_adv;
 
-#define ADV_ALLOC_LOC   0x2000  // ADV was allocated with location=
-#define ADV_NOT_INIT    0x4000  // ADV has not been initialized
-#define ADV_NO_SCALE    0x8000  // element size if not a power of 2
-#define ADV_SUBSCRS     0x0007  // number of subscripts field
-#define ADV_FIELD       0x0080  // ADV is part of a structure defn
+#define ADV_ALLOC_LOC   0x2000      // ADV was allocated with location=
+#define ADV_NOT_INIT    0x4000      // ADV has not been initialized
+#define ADV_NO_SCALE    0x8000      // element size if not a power of 2
+#define ADV_SUBSCRS     0x0007      // number of subscripts field
+#define ADV_FIELD       0x0080      // ADV is part of a structure defn
 
 #define ADV_BASE_SIZE   offsetof( lg_adv, subscrs )
 #define ADV_DIM_SIZE    sizeof( adv_entry )

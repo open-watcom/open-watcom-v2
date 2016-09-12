@@ -276,13 +276,13 @@
 
 typedef struct traceback traceback;
 
-extern void     Alloc( unsigned_16 alloc_type, uint num, ... );
+extern void     Alloc( uint_16 alloc_type, uint num, ... );
 extern void     DeAlloc( intstar4 PGM *stat, uint num, ... );
 extern void     SetRecType( string PGM *recfmptr );
 extern void     SetFmt( void PGM *ptr );
 extern void     SetNml( void PGM *nml, ... );
 extern void     SetUnit( intstar4 unitid );
-extern void     SetIntl( string PGM *internal, unsigned_32 elmts );
+extern void     SetIntl( string PGM *internal, uint_32 elmts );
 extern void     SetErr( void );
 extern void     SetEnd( void );
 extern void     SetRec( intstar4 rec );
@@ -322,11 +322,11 @@ extern void     FmtScan( string *fmt, uint extend_format );
 extern void     FmtAScan( char PGM *array, long int num_elts, int elt_size, uint extend_format );
 extern void     Stop( string PGM *ptr );
 extern void     Pause( string PGM *ptr );
-extern void     Cat( int num_args, string *dest, ... );
-extern void     TCat( int num_args, string *dest, ... );
+extern void     Cat( uint num_args, string *dest, ... );
+extern void     TCat( uint num_args, string *dest, ... );
 extern void     Move( string *dst, string *src );
 extern void     Substring( string *src, intstar4 start, intstar4 end, string *dst );
-extern intstar4 Subscript( int dims, adv_entry *adv, ... );
-extern void     ADVFillHi( adv_entry *adv, unsigned ss, intstar4 hi );
-extern void     ADVFillHiLo1( adv_entry *adv, unsigned ss, intstar4 hi );
+extern intstar4 Subscript( int dim_cnt, adv_entry *adv, ... );
+extern void     ADVFillHi( adv_entry *adv, int ss, intstar4 hi );
+extern void     ADVFillHiLo1( adv_entry *adv, int ss, intstar4 hi );
 extern int      LexCmp( string PGM *str1, string PGM *str2 );

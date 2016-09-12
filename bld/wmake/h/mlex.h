@@ -69,18 +69,21 @@ extern char *dep_path;    /* Current sufsuf dependent path */
  * $<
  * as well as modifiers D,B,F,R
  */
-#define ismsspecial(__c)   ((__c) == '@'\
-                         || (__c) == '*'\
-                         || (__c) == '?'\
-                         || (__c) == '<')
-#define ismsmodifier(__c)  ((__c) == 'D'\
-                         || (__c) == 'd'\
-                         || (__c) == 'B'\
-                         || (__c) == 'b'\
-                         || (__c) == 'F'\
-                         || (__c) == 'f'\
-                         || (__c) == 'R'\
-                         || (__c) == 'r' )
+#define sismsspecial(__c)     ((__c) == '@'\
+                            || (__c) == '*'\
+                            || (__c) == '?'\
+                            || (__c) == '<')
+#define sismsmodifier(__c)    ((__c) == 'D'\
+                            || (__c) == 'd'\
+                            || (__c) == 'B'\
+                            || (__c) == 'b'\
+                            || (__c) == 'F'\
+                            || (__c) == 'f'\
+                            || (__c) == 'R'\
+                            || (__c) == 'r' )
+
+#define cismsspecial(__c)   sismsspecial((byte)(__c))
+#define cismsmodifier(__c)  sismsmodifier((byte)(__c))
 
 /*
  * The tokens which Scan() will use

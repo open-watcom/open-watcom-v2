@@ -191,7 +191,7 @@ mode_clflags   += -"op nored"
 mode_cflags  += -x
 mode_clflags += -x
 !endif
-!if ! defined( bootstrap ) || ( $(watcom_ver) > 1300 )
+!if !defined( bootstrap ) || ( $(watcom_ver) > 1300 )
 mode_cflags  += -xx -zam
 mode_clflags += -xx -zam
 !endif
@@ -360,7 +360,12 @@ cflags_dll_win  = -bd
 cflags_dll_os2  = -bd
 !endif
 
-cxxflags         = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
+!if !defined( bootstrap ) || ( $(watcom_ver) > 1290 )
+c_flags          = -za99
+!else
+c_flags          =
+!endif
+cxx_flags        = $(extra_cxx_flags) $(extra_cxx_flags_$(host_cpu)) $(extra_cxx_flags_$(host_os))
 
 proj_cpp_flags   = $(extra_cpp_flags) $(extra_cpp_flags_$(host_cpu)) $(extra_cpp_flags_$(host_os)) $(extra_cpp_flags_$(host_os)_$(host_cpu))
 cppflags         = $(cppflags_all) $(cppflags_$(host_cpu)) $(cppflags_$(host_os)) $(proj_cpp_flags)
@@ -675,15 +680,15 @@ rc_inc_path     = $(rc_inc_dirs) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 ##############################
 # GLOBAL MACROS SETINGS
 ######
-cc              = $(cc_$(host_cpu))
-cl              = $(cl_$(host_cpu))
-cxx             = $(cxx_$(host_cpu))
-linker          = $(linker_$(host_cpu))
-librarian       = $(librarian_$(host_cpu))
-as              = $(as_$(host_cpu))
+cc              = $(noecho)$(cc_$(host_cpu))
+cl              = $(noecho)$(cl_$(host_cpu))
+cxx             = $(noecho)$(cxx_$(host_cpu))
+linker          = $(noecho)$(linker_$(host_cpu))
+librarian       = $(noecho)$(librarian_$(host_cpu))
+as              = $(noecho)$(as_$(host_cpu))
 
-rc              = *bwrc
-rcaui           = *bwrc
+rc              = $(noecho)*bwrc
+rcaui           = $(noecho)*bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
 rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
@@ -702,15 +707,6 @@ cflags  = $(cflags_gen)
 clflags = $(clflags_gen)
 lflags  = $(lflags_gen)
 !endif
-
-# simple C preprocessing
-cpp             = *wcpp
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset = -zk0
-
-# options for preprocessing source code
-preproc_opts    = -p
 
 # options for include source code file
 incl_file_opts  = -fi

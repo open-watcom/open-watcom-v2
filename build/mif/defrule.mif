@@ -1,28 +1,11 @@
 .c.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
-!ifeq verbose 1
-        $(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo cc $@
-        @$(cc) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
-!ifeq verbose 1
-        $(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo c++ $@
-        @$(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @%make echo_cxx
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .asm.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
-!ifeq verbose 1
-        $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
-!else
-        @echo as $@
-        @$(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@
-!endif
-
-!ifdef preproc_rule
-.c.lan: $($(proj_name)_autodepends) $(__MAKEFILES__)
-        $(cc) -p$(preproc_flags) $(cflags) $(cppflags) $(extra_c_flags_$[&) $(inc_path) -fo=.lan $[@
-!endif
+    @%make echo_as
+    $(as) $(aflags) $(extra_a_flags_$[&) $(inc_path) $[@

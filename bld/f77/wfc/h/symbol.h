@@ -106,7 +106,7 @@ typedef struct p_constant {
 typedef struct subprog {
     union {
         label_id        entry;          // entry label
-        signed          imp_segid;      // segment id for external subprograms
+        segment_id      imp_segid;      // segment id for external subprograms
     } u;
     void                *alt_scb;       // SCB for character*(*) functions
 } subprog;
@@ -118,7 +118,7 @@ typedef struct i_function {
     IFF                 index;          // intrinsic function index
     union {
         int             num_args;       // number of arguments
-        signed          imp_segid;      // segment id for intrinsic function
+        segment_id      imp_segid;      // segment id for intrinsic function
     } u;
 } i_function;
 

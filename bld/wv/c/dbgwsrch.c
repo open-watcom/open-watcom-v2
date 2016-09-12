@@ -108,10 +108,10 @@ OVL_EXTERN walk_result AddSrcFile( cue_handle *ch, void *d )
     srch_window *srch = d;
     int         len;
 
-    len = CueFile( ch, NULL, 0 ) + 1;
+    len = DIPCueFile( ch, NULL, 0 ) + 1;
     file = WndMustAlloc( sizeof( a_cue ) + cue_SIZE + len );
     file->ch = (cue_handle*)((char*)file + sizeof( a_cue ) + len  );
-    CueFile( ch, file->name, len );
+    DIPCueFile( ch, file->name, len );
     HDLAssign( cue, file->ch, ch );
     file->next = srch->file_list;
     srch->file_list = file;
@@ -129,7 +129,7 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL )
         return( WR_CONTINUE );
-    CueFile( ch, TxtBuff, TXT_LEN );
+    DIPCueFile( ch, TxtBuff, TXT_LEN );
     WndStatusText( TxtBuff );
     for( i = 1; (len = FReadLine( viewhndl, i, 0, TxtBuff, TXT_LEN )) >= 0; ++i ) {
         TxtBuff[len] = NULLCHAR;
@@ -140,12 +140,12 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
             if( found == NULL )
                 break;
             srch->found = found;
-            found[srch->num_rows].mod = CueMod( ch );
-            found[srch->num_rows].file_id = CueFileId( ch );
+            found[srch->num_rows].mod = DIPCueMod( ch );
+            found[srch->num_rows].file_id = DIPCueFileId( ch );
             found[srch->num_rows].open = false;
             found[srch->num_rows].source_line = DupStr( TxtBuff );
             srch->num_rows++;
-            len = ModName( CueMod( ch ), NULL, 0 );
+            len = DIPModName( DIPCueMod( ch ), NULL, 0 );
             if( srch->max_mod_name < len )
                 srch->max_mod_name = len;
             break;
@@ -157,8 +157,8 @@ OVL_EXTERN walk_result SearchSrcFile( srch_window *srch, cue_handle *ch )
 
 OVL_EXTERN walk_result BuildFileList( mod_handle mh, void *d )
 {
-    if( ModHasInfo( mh, HK_CUE ) == DS_OK ) {
-        WalkFileList( mh, AddSrcFile, d );
+    if( DIPModHasInfo( mh, HK_CUE ) == DS_OK ) {
+        DIPWalkFileList( mh, AddSrcFile, d );
     }
     return( WR_CONTINUE );
 }
@@ -173,7 +173,7 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
 {
     a_cue       *file,*next;
 
-    WalkModList( NO_MOD, BuildFileList, srch );
+    DIPWalkModList( NO_MOD, BuildFileList, srch );
     srch->file_list = SortLinkedList( srch->file_list,
                 offsetof( a_cue, next ), CueCompare, WndAlloc, WndFree );
     for( file = srch->file_list; file != NULL; file = file->next ) {
@@ -268,7 +268,7 @@ static  bool    SrchGetLine( a_window *wnd, int row, int piece,
         found->open = OpenGadget( wnd, line, found->mod, true );
         return( true );
     case PIECE_MODULE:
-        ModName( found->mod, TxtBuff, TXT_LEN );
+        DIPModName( found->mod, TxtBuff, TXT_LEN );
         line->text = TxtBuff;
         line->indent = MaxGadgetLength;
         line->extent = WND_MAX_EXTEND;

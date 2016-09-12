@@ -36,8 +36,10 @@ win31_16.def &
 all : ./conv.exe win386.lib
 
 ./conv.exe : conv.c makefile
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 win386.lib : ./conv.exe $(def_files) ../def/win386 fldenv.obj _call16.obj $(__MAKEFILES__)
     $[@ ../def/win386 ../def -l -s -q
+    @%make echo_lib
     $(librarian) $(libflags) +fldenv.obj +_call16.obj @winobjs.lbc

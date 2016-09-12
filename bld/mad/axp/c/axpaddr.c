@@ -32,14 +32,14 @@
 
 #include "axp.h"
 
-void            DIGENTRY MIAddrAdd( address *a, long b, mad_address_format af )
+void MADIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
 {
     af = af;
 
     a->mach.offset += b;
 }
 
-int             DIGENTRY MIAddrComp( const address *ap, const address *bp, mad_address_format af )
+int MADIMPENTRY( AddrComp )( const address *ap, const address *bp, mad_address_format af )
 {
     af = af;
 
@@ -48,7 +48,7 @@ int             DIGENTRY MIAddrComp( const address *ap, const address *bp, mad_a
                                              return( -1 );
 }
 
-long            DIGENTRY MIAddrDiff( const address *a, const address *b, mad_address_format af )
+long MADIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )
 {
     long        diff;
 
@@ -58,21 +58,21 @@ long            DIGENTRY MIAddrDiff( const address *a, const address *b, mad_add
     return( diff );
 }
 
-mad_status      DIGENTRY MIAddrMap( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
+mad_status MADIMPENTRY( AddrMap )( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
 {
     a = a; map = map; real = real; mr = mr;
 
     return( MS_FAIL );
 }
 
-mad_status      DIGENTRY MIAddrFlat( const mad_registers *mr )
+mad_status MADIMPENTRY( AddrFlat )( const mad_registers *mr )
 {
     mr = mr;
 
     return( MS_FAIL );
 }
 
-mad_status      DIGENTRY MIAddrInterrupt( const addr_ptr *a, unsigned size, const mad_registers *mr )
+mad_status MADIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const mad_registers *mr )
 {
     a = a; size = size; mr = mr;
 

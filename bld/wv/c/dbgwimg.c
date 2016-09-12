@@ -230,7 +230,7 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
             if( img->dip_handle == NO_MOD ) {
                 line->text = " ";
             } else {
-                line->text = (char *)ImageDIP( img->dip_handle );
+                line->text = DIPImageName( img->dip_handle );
             }
             return( true );
         }

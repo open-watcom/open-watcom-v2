@@ -1,17 +1,18 @@
 proj_name=hdr
 
+!include cproj.mif
 !include ../hfiles.mif
 
 dos_options   = -kDOS -kUNICODE
 linux_options = -kLINUX -u
 qnx_options   = -kQNX -t8 -u
 
-splice = *wsplice -i.. $($(system)_options) ../common.sp $[@ $^@
-psplice = *wsplice -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
-csplice = *wsplice -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
+wsplice_opts = -i.. $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_p = -i.. $($(system)_options) $(options_$^&) ../common.sp $[@ $^@
+wsplice_opts_c = -i.. $($(system)_options) $(options_c_$^&) ../common.sp $[@ $^@
 
-splice_i386 = *wsplice -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
-splice_mips = *wsplice -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_i386 = -i.. -kARCHI386 $($(system)_options) ../common.sp $[@ $^@
+wsplice_opts_mips = -i.. -kARCHMIPS $($(system)_options) ../common.sp $[@ $^@
 
 # order of directories is important for DOS
 # multi level tree must be created from top to bottom
@@ -35,52 +36,67 @@ all : $($(system)_dirs) $($(system)_files) .symbolic
 .mhp: $($(system)_path);../watcom
 
 .mhp.hpp:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 .mh.h:
-        $(csplice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_c)
 
 {dos}.mh.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {linux}.mh.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {sys}.mh{sys}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {dos/sys}.mh{sys}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {linux/sys}.mh{sys}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {linux/arpa}.mh{arpa}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {linux/netinet}.mh{netinet}.h:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 {linux/arch/i386}.mh{arch/i386}.h:
-        $(splice_i386)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_i386)
 
 {linux/arch/i386/sys}.mh{arch/i386/sys}.h:
-        $(splice_i386)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_i386)
 
 {linux/arch/mips}.mh{arch/mips}.h:
-        $(splice_mips)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_mips)
 
 {linux/arch/mips/sys}.mh{arch/mips/sys}.h:
-        $(splice_mips)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_mips)
 
 .mh.cnv:
-        $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 #
 # Handle C++ and cname style headers (files without extension)
 #
 .mh.:
-        $(psplice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts_p)
 
 #
 # Special case for cname style headers

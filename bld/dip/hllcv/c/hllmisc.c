@@ -43,12 +43,12 @@ enum {
 CV_LAST_REG
 };
 
-const char      DIPImpName[] = "HLL/CV";
+const char      DIPImp( Name )[] = "HLL/CV";
 
 /*
  * Get the size of a handle.
  */
-unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    ih,
@@ -62,7 +62,7 @@ unsigned DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
 /*
  * Free memory.
  */
-dip_status DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
@@ -71,7 +71,7 @@ dip_status DIGENTRY DIPImpMoreMem( unsigned size )
 /*
  * Module startup.
  */
-dip_status DIGENTRY DIPImpStartup(void)
+dip_status DIPIMPENTRY( Startup )(void)
 {
     return( DS_OK );
 }
@@ -79,14 +79,14 @@ dip_status DIGENTRY DIPImpStartup(void)
 /*
  * Module shutdown.
  */
-void DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
 }
 
 /*
  * ?
  */
-void DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
 }
 
@@ -141,7 +141,7 @@ hll_dir_entry *hllFindDirEntry( imp_image_handle *ii, imp_mod_handle im, hll_sst
  * Use 'sst' to limit the callbacks to one specific type. A 'sst' of 0
  * means everything.
  */
-walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIR_WALKER *wk, void *d )
+walk_result hllWalkDirList( imp_image_handle *ii, hll_sst sst, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;
@@ -282,36 +282,6 @@ void hllConfused()
 {
     volatile int a = 0;
     volatile int b = 0;
-    DCWrite( 2, "\a\a\a\a\a\a\a", 8 );
+
     a /= b; /* cause a fault */
 }
-
-#ifdef HLL_LOG_ENABLED
-# include <stdio.h>
-# include <stdarg.h>
-
-/*
- * Debug logging.
- */
-void hllLog(const char *fmt, ...)
-{
-    /*
-     * Open the file on the first call.
-     */
-    static FILE *file = NULL;
-    if( file == NULL ) {
-        file = fopen( "hllcv.log", "w" );
-    }
-
-    /*
-     * Write to the file if open succeeded.
-     */
-    if( file != NULL) {
-        va_list va;
-        va_start( va, fmt );
-        fprintf( file, fmt, va );
-        va_end( va );
-        fflush( file );
-    }
-}
-#endif

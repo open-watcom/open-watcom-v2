@@ -521,7 +521,7 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         start = 0;
         switch( ExprSP->info.kind ) {
         case TK_ARRAY:
-            TypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
+            DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
             start = ainfo.low_bound;
             varx.start = start;
             varx.end = varx.start + ainfo.num_elts - 1;

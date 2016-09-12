@@ -146,11 +146,7 @@ bool Msg_Fini( void )
 
 static void Outs( bool nl, const char *s )
 {
-#ifdef _WIN64
-    write( STDOUT_FILENO, s, (unsigned)strlen( s ) );
-#else
     write( STDOUT_FILENO, s, strlen( s ) );
-#endif
     if( nl ) {
         write( STDOUT_FILENO, "\r\n", 2 );
     }

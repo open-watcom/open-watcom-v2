@@ -123,7 +123,9 @@ void    CpParameter( void ) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqCloseParen();
     if( ReqNOpn() ) {

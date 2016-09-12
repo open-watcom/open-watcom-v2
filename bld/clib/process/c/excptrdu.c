@@ -42,6 +42,8 @@
 #include "excptrdu.h"
 #include "thread.h"
 #include "initsig.h"
+#include "_xtoa.h"
+
 
 int __ReportException( EXCEPTION_POINTERS *rec );
 int __cdecl __ExceptionFilter( EXCEPTION_RECORD *ex,
@@ -56,7 +58,6 @@ unsigned char   __ReportInvoked;
 
 static void fmt_hex( char *buf, char *fmt, void *hex ) {
 
-    static char alpha[] = "0123456789abcdef";
     char *ptr = NULL;
     unsigned long value;
 
@@ -87,7 +88,7 @@ static void fmt_hex( char *buf, char *fmt, void *hex ) {
     if( ptr != NULL ) {
         value = (unsigned long)hex;
         while( value ) {
-            *ptr = alpha[ value & 0xf ];
+            *ptr = __Alphabet[value & 0xf];
             value = value >> 4;
             ptr--;
         }

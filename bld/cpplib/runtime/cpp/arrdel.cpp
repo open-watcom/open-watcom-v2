@@ -34,7 +34,7 @@
 
 
 extern "C"
-void CPPLIB(dtor_del_array)(        // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
+void CPPLIB( dtor_del_array )(      // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
     void *array,                    // - array
     RT_TYPE_SIG sig )               // - type signature for array type
 {

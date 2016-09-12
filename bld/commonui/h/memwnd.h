@@ -137,29 +137,29 @@ typedef struct memconfig {
  *                      3. Call SetMemWndConfig
  */
 
-bool    RegMemWndClass( HANDLE instance );
-void    SetDefMemConfig( void );
-void    SetMemWndConfig( MemWndConfig *cfg );
-void    GetMemWndConfig( MemWndConfig *cfg );
-void    GetMemWndDefault( MemWndConfig *cfg );
-HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi );
+extern bool    RegMemWndClass( HANDLE instance );
+extern void    SetDefMemConfig( void );
+extern void    SetMemWndConfig( MemWndConfig *cfg );
+extern void    GetMemWndConfig( MemWndConfig *cfg );
+extern void    GetMemWndDefault( MemWndConfig *cfg );
+extern HWND    DispMem( HANDLE instance, HWND parent, WORD seg, bool isdpmi );
 #ifdef __NT__
-HWND    DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title );
+extern HWND    DispNTMem( HWND parent, HANDLE instance, HANDLE prochdl, DWORD offset, DWORD limit, char *title );
 #endif
 
 /************************************************************************
  * ALL FUNCTIONS PROTOTYPED BELOW THIS POINT ARE FOR INTERNAL USE ONLY
  ************************************************************************/
 
-char    MkHexDigit( char ch );
+extern char    MkHexDigit( char ch );
 
 /* memwndcd.c */
-void    RedrawAsCode( HDC dc, MemWndInfo *info );
-void    ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info );
-bool    NeedScrollBar( MemWndInfo *info );
-void    SetFuzzyOffset( MemWndInfo *info, uint_32 offset );
-void    DumpMemAsm( MemWndInfo *info, int hdl );
-void    RegDisasmRtns( void );
-uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset );
+extern void    RedrawAsCode( HDC dc, MemWndInfo *info );
+extern void    ScrollAsm( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info );
+extern bool    NeedScrollBar( MemWndInfo *info );
+extern void    SetFuzzyOffset( MemWndInfo *info, uint_32 offset );
+extern void    DumpMemAsm( MemWndInfo *info, int hdl );
+extern void    RegDisasmRtns( void );
+extern uint_32 GetInsCnt( MemWndInfo *info, uint_32 offset );
 
 #endif /* _MEMWND_H_INCLUDED */

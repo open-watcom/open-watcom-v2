@@ -38,9 +38,10 @@
 
 namespace std {
 
-  _WPRTLINK
-  void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
-  {
+_NORETURN
+_WPRTLINK
+void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
+{
     PFV handler;                    // - current handler
     _RTCTL rt_ctl;                  // - run/time control
 
@@ -48,9 +49,11 @@ namespace std {
     if( NULL == handler ) {
         _EXC_PR exc_control( &rt_ctl, 0, EXCSTATE_TERMINATE );
         terminate();
+        // never return
     }
     (*handler)();
-    CPPLIB(fatal_runtime_error)( RTMSG_RET_UNEXPECT, 1 );
-  }
+    CPPLIB( fatal_runtime_error )( RTMSG_RET_UNEXPECT, 1 );
+    // never return
+}
 
 }

@@ -51,8 +51,6 @@ typedef unsigned_8 open_access; enum {
     OP_SEARCH       = 0x80
 };
 
-#define NIL_HANDLE      ((file_handle)-1)
-
 #define ERR_RETURN      ((size_t)-1)
 #define ERR_SEEK        ((unsigned long)-1L)
 

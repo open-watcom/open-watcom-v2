@@ -51,12 +51,12 @@ static struct {
     unsigned_8          data[0x80];
 } Cache;
 
-unsigned DIGENTRY MIDisasmDataSize( void )
+unsigned MADIMPENTRY( DisasmDataSize )( void )
 {
     return( sizeof( mad_disasm_data ) );
 }
 
-unsigned DIGENTRY MIDisasmNameMax( void )
+unsigned MADIMPENTRY( DisasmNameMax )( void )
 {
     return( DisInsNameMax( &DH ) );
 }
@@ -118,7 +118,7 @@ mad_status GetDisasmPrev( address *a )
     return( MS_FAIL );
 }
 
-mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
+mad_status MADIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
     mad_status  ms;
 
@@ -136,7 +136,7 @@ mad_status DIGENTRY MIDisasm( mad_disasm_data *dd, address *a, int adj )
     return( MS_OK );
 }
 
-size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
+size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
     char                nbuff[20];
     char                obuff[256];
@@ -194,12 +194,12 @@ size_t DIGENTRY MIDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_ra
     return( len );
 }
 
-unsigned DIGENTRY MIDisasmInsSize( mad_disasm_data *dd )
+unsigned MADIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
     return( dd->ins.size );
 }
 
-mad_status DIGENTRY MIDisasmInsUndoable( mad_disasm_data *dd )
+mad_status MADIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
 {
     switch( dd->ins.type ) {
     case DI_X86_bound:
@@ -350,7 +350,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, const mad_registers *mr )
     return( MDC_OPER | MDC_TAKEN_NOT );
 }
 
-mad_disasm_control DIGENTRY MIDisasmControl( mad_disasm_data *dd, const mad_registers *mr )
+mad_disasm_control MADIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_registers *mr )
 {
     return( DisasmControl( dd, mr ) );
 }
@@ -363,7 +363,7 @@ static walk_result FindCallTarget( address a, mad_type_handle th, mad_memref_kin
     return( WR_STOP );
 }
 
-mad_status DIGENTRY MIDisasmInsNext( mad_disasm_data *dd, const mad_registers *mr, address *next )
+mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_registers *mr, address *next )
 {
     mad_disasm_control  dc;
 
@@ -665,7 +665,7 @@ static walk_result MemRefGlue( address a, mad_type_handle th, mad_memref_kind mk
     return( gd->wk( a, th, mk, gd->d ) );
 }
 
-walk_result DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
+walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
     struct memref_glue  glue;
 
@@ -674,7 +674,7 @@ walk_result DIGENTRY MIDisasmMemRefWalk( mad_disasm_data *dd, MI_MEMREF_WALKER *
     return( DoDisasmMemRefWalk( dd, MemRefGlue, mr, &glue ) );
 }
 
-const mad_toggle_strings *DIGENTRY MIDisasmToggleList( void )
+const mad_toggle_strings *MADIMPENTRY( DisasmToggleList )( void )
 {
     static const mad_toggle_strings list[] = {
         { MAD_MSTR_MUPPER, MAD_MSTR_UPPER, MAD_MSTR_LOWER },
@@ -684,7 +684,7 @@ const mad_toggle_strings *DIGENTRY MIDisasmToggleList( void )
     return( list );
 }
 
-unsigned DIGENTRY MIDisasmToggle( unsigned on, unsigned off )
+unsigned MADIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
 {
     unsigned    toggle;
 
@@ -720,7 +720,7 @@ static char *StrCopy( const char *s, char *d )
     return( d );
 }
 
-mad_status DIGENTRY MIDisasmInspectAddr( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
+mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;

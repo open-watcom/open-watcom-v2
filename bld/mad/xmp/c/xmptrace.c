@@ -36,7 +36,7 @@
 /*
         Return the size of the trace control structure.
 */
-unsigned        DIGENTRY MITraceSize( void )
+unsigned MADIMPENTRY( TraceSize )( void )
 {
     return( sizeof( mad_trace_data ) );
 }
@@ -44,7 +44,7 @@ unsigned        DIGENTRY MITraceSize( void )
 /*
         Initialize for tracing.
 */
-void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *mr )
+void MADIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 {
     //NYI:
 }
@@ -53,7 +53,7 @@ void            DIGENTRY MITraceInit( mad_trace_data *td, const mad_registers *m
         Return MS_OK if we have recursively entered a routine, based on
         the value of 'watch_stack'. Return MS_FAIL if not.
 */
-mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_registers *mr )
+mad_status MADIMPENTRY( TraceHaveRecursed )( address watch_stack, const mad_registers *mr )
 {
     //NYI:
     return( MS_FAIL );
@@ -79,7 +79,7 @@ mad_status      DIGENTRY MITraceHaveRecursed( address watch_stack, const mad_reg
             MTRK_NEXT           - Stop at the next sequential instruction
 
 */
-mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
+mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *brk )
 {
     //NYI:
     return( MTRH_STOP );
@@ -92,7 +92,7 @@ mad_trace_how   DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, ma
         error status if something goes wrong. Return MS_UNSUPPORTED if this
         code can't handle simulating this instruction.
 */
-mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
+mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
     //NYI:
     return( MS_UNSUPPORTED );
@@ -101,7 +101,7 @@ mad_status      DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *d
 /*
         Finalize tracing.
 */
-void            DIGENTRY MITraceFini( mad_trace_data *td )
+void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
     //NYI:
 }
@@ -116,7 +116,7 @@ void            DIGENTRY MITraceFini( mad_trace_data *td )
         to the true length of the message, even if the message did not all
         fit into the buffer provided.
 */
-mad_status              DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, unsigned *buff_size_p )
+mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, unsigned *buff_size_p )
 {
     //NYI:
     return( MS_FAIL );

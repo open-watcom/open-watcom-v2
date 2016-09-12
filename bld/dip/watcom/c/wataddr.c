@@ -321,7 +321,7 @@ void AddrInfoFini( section_info *inf )
  * DIPImpAddrMod -- return the mod_handle for the given address
  */
 
-search_result DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address addr, imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address addr, imp_mod_handle *im )
 {
     mem_block       code;
 
@@ -341,7 +341,7 @@ search_result DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address addr, imp_mo
     return( SR_NONE );
 }
 
-address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
 {
     return( FindModBase( ii, im ) );
 }

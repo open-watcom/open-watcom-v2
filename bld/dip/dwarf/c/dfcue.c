@@ -84,7 +84,7 @@ extern bool FiniImpCueInfo( imp_image_handle *ii )
 }
 
 
-imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 /**********************************************************/
 {
@@ -173,7 +173,7 @@ static bool IsRelPathname( const char *name )
 }
 
 
-size_t DIGENTRY DIPImpCueFile( imp_image_handle *ii, imp_cue_handle *ic,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii, imp_cue_handle *ic,
                                           char *buff, size_t buff_size )
 /************************************************************************/
 {
@@ -267,7 +267,7 @@ typedef struct {
     drmem_hdl           stmts;
     imp_image_handle    *ii;
     imp_mod_handle      im;
-    IMP_CUE_WKR         *wk;
+    DIP_IMP_CUE_WALKER  *wk;
     imp_cue_handle      *ic;
     void                *d;
     walk_result         wr;
@@ -301,8 +301,8 @@ static bool ACueFileNum( void *_fc, dr_line_file *curr )
 }
 
 
-walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
                     void *d )
 /*************************************************************************/
 {
@@ -327,7 +327,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
 }
 
 
-cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /*************************************************************/
 {
@@ -386,7 +386,7 @@ static void LoadCueMap( drmem_hdl stmts, address *addr, cue_list *list )
     DCStatus be called in this case). Otherwise DS_OK should be returned
     unless an error occurred.
 */
-dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 /*****************************************************************/
 {
@@ -449,7 +449,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
 }
 
 
-unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /***********************************************************/
 {
@@ -458,7 +458,7 @@ unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
 }
 
 
-unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 /**********************************************************************************/
 {
     /* Return the column number of source cue. Return zero if there
@@ -471,7 +471,7 @@ unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *
 }
 
 
-address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic )
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 /********************************************************************************/
 {
     address     ret;
@@ -485,7 +485,7 @@ address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii, imp_cue_handle *ic
 }
 
 
-search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 /*******************************************************************/
 {
@@ -553,7 +553,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
 }
 
 
-search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 /**********************************************************************/
@@ -619,7 +619,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
 }
 
 
-int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 /*******************************************************************/
 {

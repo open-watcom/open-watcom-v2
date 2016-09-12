@@ -59,7 +59,7 @@ void    CpVolatile( void ) {
 
     sym_id      sym;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_VAR_OR_ARR ) ) {
             sym = LkSym();
             if( (sym->u.ns.flags & ~ERR_MASK ) != SY_VARIABLE ) {
@@ -69,7 +69,9 @@ void    CpVolatile( void ) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }

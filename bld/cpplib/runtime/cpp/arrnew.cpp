@@ -42,7 +42,7 @@
 
 
 extern "C"
-void * CPPLIB(new_array)(           // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
+void * CPPLIB( new_array )(         // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - type signature for array type
@@ -54,7 +54,7 @@ void * CPPLIB(new_array)(           // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
     } else {
         new_alloc->element_count = count;
         retn = new_alloc->apparent_address;
-        retn = CPPLIB(ctor_array)( retn, count, sig );
+        retn = CPPLIB( ctor_array )( retn, count, sig );
     }
     return( retn );
 }

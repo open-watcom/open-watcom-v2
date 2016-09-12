@@ -58,6 +58,7 @@ test_cflags_386 += -we -w0 -zq -fh -D_CONSOLE $(inc_dirs_sys) -I"../nt"
     rm $[@
 
 ./chk_exec.exe : chk_exec.c
+    @%make echo_bldcl
     $(bld_cl) $(bld_clflags) $[@ $(bld_ldflags)
 
 test : .symbolic start_test $(test_exes) ./chk_exec.exe

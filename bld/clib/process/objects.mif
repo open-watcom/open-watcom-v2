@@ -15,13 +15,13 @@
 !inject doexec.obj   d16
 !inject doexerdu.obj                                                                                rdu
 !inject dospnos2.obj                                        o16 o32
-!inject dospnwnt.obj                     nt nta ntp
 !inject dospnrdu.obj                                                                                rdu
+!inject dospnwnt.obj                     nt nta ntp
 !inject exaddos2.obj                                        o16 o32
-!inject exaddwnt.obj                     nt nta ntp
 !inject exaddrdu.obj                                                                                rdu
-!inject excptwnt.obj                     nt nta ntp
+!inject exaddwnt.obj                     nt nta ntp
 !inject excptrdu.obj                                                                                rdu
+!inject excptwnt.obj                     nt nta ntp
 !inject execaddr.obj d16 d32
 !inject exl.obj      d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu
 !inject exle.obj     d16                 nt nta ntp         o16 o32                     l32 lpc lmp rdu

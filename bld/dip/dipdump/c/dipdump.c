@@ -599,7 +599,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
                 "\n",
                 *idx );
         i = 0;
-        walkres = WalkFileList( mh, File2Callback, &i );
+        walkres = DIPWalkFileList( mh, File2Callback, &i );
         printf( "\n"
                 "\n" );
         need_trailing_newline = 1;
@@ -616,7 +616,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
                 "---------------------------------------\n",
                 *idx);
         i = 0;
-        walkres = WalkTypeList( mh, Type2Callback, &i );
+        walkres = DIPWalkTypeList( mh, Type2Callback, &i );
         printf( "\n"
                 "\n" );
         need_trailing_newline = 1;
@@ -632,7 +632,7 @@ static walk_result Mod2Callback( mod_handle mh, void *_idx )
                 "\n",
                 *idx );
         i = 0;
-        walkres = WalkSymList( SS_MODULE, &mh, Sym2Callback, &i );
+        walkres = DIPWalkSymList( SS_MODULE, &mh, Sym2Callback, &i );
         printf( "\n"
                 "\n" );
         need_trailing_newline = 1;
@@ -803,7 +803,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
         strftime( buff, sizeof( buff ), "%Y-%m-%d %H:%M:%S UCT", ts );
         printf( "timestamp   = %s\n", buff );
     }
-    printf( "DIP         = %s\n", ImageDIP( mh ) );
+    printf( "DIP         = %s\n", DIPImageName( mh ) );
 
 #if 0 /* crashes codeview, nothing on dwarf. */
     buff[0] = '\0';
@@ -828,7 +828,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
                 "index   seg:offset    info  lang  name\n"
                 "---------------------------------------\n");
         i = 0;
-        walkres = WalkModList( mh, ModCallback, &i );
+        walkres = DIPWalkModList( mh, ModCallback, &i );
         printf( "\n"
                 "\n" );
     }
@@ -845,7 +845,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
                 "index   seg:offset    info  lang  name\n"
                 "---------------------------------------\n");
         i = 0;
-        walkres = WalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
+        walkres = DIPWalkTypeList( /*mh*/ IMH_GBL, TypeCallback, &i );
         printf( "\n"
                 "\n" );
     }
@@ -861,7 +861,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
                 "index  kind   seg:offset    info  lng name\n"
                 "------------------------------------------\n");
         i = 0;
-        walkres = WalkSymList( SS_MODULE, &mh, SymCallback, &i );
+        walkres = DIPWalkSymList( SS_MODULE, &mh, SymCallback, &i );
         printf( "\n"
                 "\n" );
     }
@@ -872,7 +872,7 @@ static int DumpIt( const char *file, mod_handle mh, process_info *proc )
      */
     if( 1 ) {
         i = 0;
-        walkres = WalkModList( mh, Mod2Callback, &i );
+        walkres = DIPWalkModList( mh, Mod2Callback, &i );
     }
 
     printf("\n");
@@ -949,13 +949,13 @@ static void TermDIP( void )
 static int DumpFile( const char *file, char **dips )
 {
     int             rc = 1;
-    dig_fhandle     fh;
+    dig_fhandle     dfh;
 
     /*
      * Open the file
      */
-    fh = DIGCliOpen( file, DIG_READ );
-    if( fh == DIG_NIL_HANDLE ) {
+    dfh = DIGCli( Open )( file, DIG_READ );
+    if( dfh == DIG_NIL_HANDLE ) {
         return( ErrorMsg( "Failed to open '%s'\n", file ) );
     }
 
@@ -970,8 +970,8 @@ static int DumpFile( const char *file, char **dips )
             mod_handle  mh = 0;
 
             for( prty = DIPPriority( 0 ); prty != 0; prty = DIPPriority( prty ) ) {
-                DIGCliSeek( fh, 0, DIG_ORG );
-                mh = DIPLoadInfo( fh, 0, prty );
+                DIGCli( Seek )( dfh, 0, DIG_ORG );
+                mh = DIPLoadInfo( dfh, 0, prty );
                 if( mh != NO_MOD ) {
                     break;
                 }
@@ -996,7 +996,7 @@ static int DumpFile( const char *file, char **dips )
         }
         TermDIP();
     }
-    DIGCliClose( fh );
+    DIGCli( Close )( dfh );
     return( rc );
 }
 

@@ -57,7 +57,7 @@
 
 /* Forward declarations */
 static void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar );
-static void    InLineMulCC( unsigned_16 typ_info );
+static void    InLineMulCC( uint_16 typ_info );
 
 
 cg_name ImagPtr( cg_name dest, cg_type typ ) {
@@ -76,8 +76,10 @@ cg_name ImagPtr( cg_name dest, cg_type typ ) {
 cg_type         CmplxBaseType( cg_type typ ) {
 //============================================
 
-    if( typ == TY_COMPLEX ) return( TY_SINGLE );
-    if( typ == TY_DCOMPLEX ) return( TY_DOUBLE );
+    if( typ == TY_COMPLEX )
+        return( TY_SINGLE );
+    if( typ == TY_DCOMPLEX )
+        return( TY_DOUBLE );
     return( TY_LONGDOUBLE );
 }
 
@@ -150,7 +152,7 @@ static void    XCmplxOp( RTCODE rtn_id ) {
 // runtime routines.
 // ( a, b ) OP ( c, d ).
 
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     cg_cmplx    x;
     cg_cmplx    y;
 
@@ -166,7 +168,7 @@ static  void    XCmplx( int op ) {
 
 // Binary operator F-Code processor for complex addition and subtraction.
 
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     int         typ1;
     int         typ2;
     cg_cmplx    x;
@@ -192,7 +194,7 @@ static void    XMixed( int op, bool cmplx_scalar ) {
 
     cg_cmplx    z;
     cg_name     x;
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     cg_type     z_typ;
     cg_type     x_typ;
 
@@ -223,7 +225,7 @@ static void    XMixed( int op, bool cmplx_scalar ) {
 }
 
 
-static void    XMulDivMix( int op, bool cmplx_scalar, unsigned_16 typ_info ) {
+static void    XMulDivMix( int op, bool cmplx_scalar, uint_16 typ_info ) {
 //=====================================================================
 
 // Binary F-Code processor for mixed multiplication and division.
@@ -451,7 +453,7 @@ void    FCMulCmplx( void ) {
 }
 
 
-static void    InLineMulCC( unsigned_16 typ_info ) {
+static void    InLineMulCC( uint_16 typ_info ) {
 //===========================================
 
 // Do complex multiplication in-line.
@@ -572,7 +574,7 @@ static void    XCmplxMixOp( RTCODE rtn_id, bool cmplx_scalar ) {
 // runtime routines.
 // x / (c,d) or (c,d) / x
 
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     cg_type     s_typ;
     cg_type     x_typ;
     cg_name     s;
@@ -633,7 +635,7 @@ static void    CCCompare( int op ) {
 
     cg_cmplx    x;
     cg_cmplx    y;
-    unsigned_16 typ_info;
+    uint_16     typ_info;
 
     typ_info = GetU16();
     XPopCmplx( &x, GetType1( typ_info ) );
@@ -649,7 +651,7 @@ static void    XCCompare( int op ) {
 
     cg_name     x;
     cg_cmplx    z;
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     cg_type     typ1;
 
     typ_info = GetU16();
@@ -667,7 +669,7 @@ static  void    CXCompare( int op ) {
 
     cg_name     x;
     cg_cmplx    z;
-    unsigned_16 typ_info;
+    uint_16     typ_info;
     cg_type     typ2;
 
     typ_info = GetU16();
@@ -777,7 +779,7 @@ void            CmplxAssign( sym_id sym, cg_type dst_typ, cg_type src_typ ) {
     cg_name     dest_1;
     cg_name     dest_2;
     cg_cmplx    z;
-    unsigned_16 flags;
+    uint_16     flags;
     temp_handle tr;
     temp_handle ti;
 

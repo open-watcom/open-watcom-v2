@@ -595,7 +595,7 @@ static walk_result FindCompUnit( imp_image_handle *ii,
 /*
  * Load debug info if it's in the HLL/CV format.
  */
-dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 
 {
     dip_status      rc;
@@ -603,7 +603,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     /* Init the module handle. */
     memset( ii, 0, sizeof( *ii ) );
     ii->mad = MAD_X86;                  /* No known non-x86 support */
-    ii->sym_file = h;
+    ii->sym_file = dfh;
     ii->is_32bit = 1;
     ii->format_lvl = HLL_LVL_NB04;
     ii->next_image = ImageList;
@@ -660,7 +660,7 @@ dip_status DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
 /*
  * Lets the DIP user setup segment mappings.
  */
-void DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     unsigned    i;
 
@@ -698,7 +698,7 @@ void hllMapLogical( imp_image_handle *ii, address *a )
 /*
  * Free the image.
  */
-void DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     Cleanup( ii );
     DCClose( ii->sym_file );

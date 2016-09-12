@@ -3,7 +3,10 @@
 
 ../objs.mif : aliases.dat
     rm -f ../objs.mif ../a/*.asm
-    aliasgen aliases.dat ../a/ ../objs.mif
+!ifeq verbose 0
+    @echo aliasgen aliases.dat
+!endif
+    $(noecho)aliasgen aliases.dat ../a/ ../objs.mif
 
 clean : .symbolic
     rm -f *.obj *.err ../a/*.asm ../objs.mif

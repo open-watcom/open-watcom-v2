@@ -74,20 +74,20 @@ static  intstar4        CheckSubscr( act_eq_entry *eqv_entry ) {
 
     sym_id              sym;
     act_dim_list        *dims;
-    int                 dims_no;
+    int                 dim_cnt;
     intstar4            offset;
 
     sym = eqv_entry->name_equived;
-    dims_no = 0;
+    dim_cnt = 0;
     dims = NULL;
     if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
         dims = sym->u.ns.si.va.u.dim_ext;
-        dims_no = _DimCount( dims->dim_flags );
+        dim_cnt = _DimCount( dims->dim_flags );
         dims->dim_flags &= ~DIM_PVD;
     }
     if( eqv_entry->subs_no == 0 ) {
         offset = 0;
-    } else if( dims_no != eqv_entry->subs_no ) {
+    } else if( dim_cnt != eqv_entry->subs_no ) {
         if( eqv_entry->subs_no == 1 ) {
             offset = eqv_entry->subscrs[0] - 1;
         } else {
@@ -113,7 +113,7 @@ static  intstar4        CheckSubStr( act_eq_entry *eqv_entry ) {
     intstar4    last;
 
     sym = eqv_entry->name_equived;
-    substr = &eqv_entry->subscrs[ eqv_entry->subs_no ];
+    substr = &eqv_entry->subscrs[eqv_entry->subs_no];
     if( sym->u.ns.u1.s.typ != FT_CHAR ) {
         NameTypeErr( EV_ONLY_IF_CHAR, sym );
         offset = 0;
@@ -224,10 +224,10 @@ static  void    GenEquivSet( act_eq_entry *a, act_eq_entry *b,
 
     /* if an entry is marked static, then b must be too */
     if( ForceStatic( a->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = a->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         b->name_equived->u.ns.flags |= sym_flags;
     } else if( ForceStatic( b->name_equived->u.ns.flags ) ) {
-        unsigned_16     sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
+        uint_16 sym_flags = b->name_equived->u.ns.flags & (SY_DATA_INIT | SY_SAVED);
         a->name_equived->u.ns.flags |= sym_flags;
     }
 

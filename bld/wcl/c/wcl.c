@@ -59,7 +59,13 @@
 #define BPRFX   ""
 #endif
 
-#ifdef WCLAXP
+#if defined( WCLI86 )
+  #define WCLNAME       BPRFX "wcl"         /* Name of Compile and Link Utility */
+  #define CC            BPRFX "wcc"         /* Open Watcom C compiler           */
+  #define CPP           BPRFX "wpp"         /* Open Watcom C++ compiler         */
+  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
+  #define FC            BPRFX "wfc"         /* Open Watcom F77 compiler         */
+#elif defined( WCLAXP )
   #define WCLNAME       BPRFX "wclaxp"      /* Name of Compile and Link Utility */
   #define CC            BPRFX "wccaxp"      /* Open Watcom C compiler           */
   #define CPP           BPRFX "wppaxp"      /* Open Watcom C++ compiler         */
@@ -77,24 +83,22 @@
   #define CPP           BPRFX "wppmps"      /* Open Watcom C++ compiler         */
   #define AS            BPRFX "wasmps"      /* Open Watcom assembler            */
   #define FC            BPRFX "wfcmps"      /* Open Watcom F77 compiler         */
-#elif defined( WCL386 )
+#else
   #define WCLNAME       BPRFX "wcl386"      /* Name of Compile and Link Utility */
   #define CC            BPRFX "wcc386"      /* Open Watcom C compiler           */
   #define CPP           BPRFX "wpp386"      /* Open Watcom C++ compiler         */
   #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
   #define FC            BPRFX "wfc386"      /* Open Watcom F77 compiler         */
-#else
-  #define WCLNAME       BPRFX "wcl"         /* Name of Compile and Link Utility */
-  #define CC            BPRFX "wcc"         /* Open Watcom C compiler           */
-  #define CPP           BPRFX "wpp"         /* Open Watcom C++ compiler         */
-  #define AS            BPRFX "wasm"        /* Open Watcom assembler            */
-  #define FC            BPRFX "wfc"         /* Open Watcom F77 compiler         */
 #endif
 #define PACK                  "cvpack"      /* Open Watcom executable packer    */
 #define LINK            BPRFX "wlink"       /* Open Watcom linker               */
 #define DIS                   "wdis"        /* Open Watcom disassembler         */
 
-#ifdef WCLAXP
+#if defined( WCLI86 )
+  #define WCLENV        "WCL"               /* name of environment variable     */
+  #define STACKSIZE     "4096"              /* default stack size               */
+  #define _TARGET_      "x86 16-bit"
+#elif defined( WCLAXP )
   #define WCLENV        "WCLAXP"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "Alpha AXP"
@@ -106,14 +110,10 @@
   #define WCLENV        "WCLMPS"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "MIPS"
-#elif defined( WCL386 )
+#else
   #define WCLENV        "WCL386"            /* name of environment variable     */
   #define STACKSIZE     "8192"              /* default stack size               */
   #define _TARGET_      "x86 32-bit"
-#else
-  #define WCLENV        "WCL"               /* name of environment variable     */
-  #define STACKSIZE     "4096"              /* default stack size               */
-  #define _TARGET_      "x86 16-bit"
 #endif
 
 #define TEMPFILE        "__wcl__" LNK_EXT   /* temporary linker directive file  */
@@ -386,7 +386,7 @@ static void  Usage( void )
 }
 
 
-static const char *ScanFName( const char *end, size_t len )
+static const char *ScanFName( const char *end, char *buff )
 /*********************************************************/
 /* Allow switch chars in unquoted filename */
 {
@@ -394,9 +394,9 @@ static const char *ScanFName( const char *end, size_t len )
         for( ; *end != '\0'; ) {
             if( IS_WS( *end ) )
                 break;
-            Word[len++] = *end++;
+            *buff++ = *end++;
         }
-        Word[len] = '\0';
+        *buff = '\0';
     }
     return( end );
 }
@@ -559,7 +559,7 @@ static int Parse( const char *cmd )
             memcpy( Word, cmd, len );
             Word[len] = '\0';
             if( opt == ' ' ) {          /* if filename, add to list */
-                end = ScanFName( end, len );
+                end = ScanFName( end, Word + len );
                 NormalizeFName( Word, MAX_CMD, Word );
                 new_item = MemAlloc( sizeof( list ) );
                 new_item->next = NULL;
@@ -571,21 +571,56 @@ static int Parse( const char *cmd )
                 } else {
                     ListAppend( &Files_List, new_item );
                 }
+            } else if( opt == '@' ) {
+                if( len > 0 ) {
+                    char const  *env;
+
+                    env = getenv( Word );
+                    if( env != NULL ) {
+                        if( handle_environment_variable( env ) ) {
+                            return( 1 );          // Recursive call failed
+                        }
+                        via_environment = true;
+                        cmd = end;
+                        continue;
+                    }
+                    end = ScanFName( end, Word + len );
+                    NormalizeFName( Word, MAX_CMD, Word );
+                    MakeName( Word, LNK_EXT );
+                    errno = 0;
+                    if( (atfp = fopen( Word, "r" )) == NULL ) {
+                        PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
+                        return( 1 );
+                    }
+                    while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
+                        p = strchr( buffer, '\n' );
+                        if( p != NULL )
+                            *p = '\0';
+                        if( strnicmp( buffer, "file ", 5 ) == 0 ) {
+                            /* look for names separated by ','s */
+                            AddNameObj( buffer + 5 );
+                            Flags.do_link = true;
+                        } else {
+                            AddDirective( buffer );
+                        }
+                    }
+                    fclose( atfp );
+                }
+                wcc_option = 0;
             } else {                    /* otherwise, do option */
                 wcc_option = 1;         /* assume it's a wcc option */
                 switch( tolower( Word[0] ) ) {
                 case 'b':               /* possibly -bcl */
                     if( strnicmp( Word + 1, "cl=", 3 ) == 0 ) {
-                        strcat( CC_Opts, " -bt=" );
-                        strcat( CC_Opts, Word + 4 );
                         Flags.link_for_sys = true;
                         MemFree( SystemName );
                         SystemName = MemStrDup( Word + 4 );
-                        wcc_option = 0;
+                        strcpy( Word, "bt=" );
+                        strcpy( Word + 3, SystemName );
                     }
                     break;
                 case 'f':               /* files option */
-                    file_end = ScanFName( end, len );
+                    file_end = ScanFName( end, Word + len );
                     switch( tolower( Word[1] ) ) {
                     case 'd':           /* name of linker directive file */
                         if( Word[2] == '=' || Word[2] == '#' ) {
@@ -627,9 +662,9 @@ static int Parse( const char *cmd )
                         p = Word + 2;
                         if( *p == '=' || *p == '#' )
                             ++p;
-                        NormalizeFName( Word, MAX_CMD, p );
+                        NormalizeFName( p, MAX_CMD, p );
                         MemFree( Obj_Name );
-                        Obj_Name = MemStrDup( Word );
+                        Obj_Name = MemStrDup( p );
                         break;
 #if defined( WCLI86 ) || defined( WCL386 )
                     case 'p':           /* floating-point option */
@@ -651,60 +686,20 @@ static int Parse( const char *cmd )
                     wcc_option = 0;
                     break;
                 case 'l':               /* link target option */
-                    p = Word + 1;
-                    switch( (p[1] << 8) | tolower( p[0] ) ) {
-                    case 'p':
+                    opt = (char)tolower( Word[1] );
+                    if( opt == 'p' && Word[2] == '\0' ) {
                         Flags.link_for_dos = 0;
                         Flags.link_for_os2 = true;
-                        break;
-                    case 'r':
+                    } else if( opt == 'r' && Word[2] == '\0' ) {
                         Flags.link_for_dos = true;
                         Flags.link_for_os2 = 0;
-                        break;
-                    default:
+                    } else {
                         Flags.link_for_sys = true;
-                        if( *p == '=' || *p == '#' )
+                        p = Word + 1;
+                        if( opt == '=' || opt == '#' )
                             ++p;
                         MemFree( SystemName );
                         SystemName = MemStrDup( p );
-                        break;
-                    }
-                    wcc_option = 0;
-                    break;
-                case '@':
-                    if( len > 0 ) {
-                        char const  *env;
-
-                        env = getenv( Word );
-                        if( env != NULL ) {
-                            if( handle_environment_variable( env ) ) {
-                                return( 1 );          // Recursive call failed
-                            }
-                            via_environment = true;
-                            cmd = end;
-                            continue;
-                        }
-                        end = ScanFName( end, len );
-                        NormalizeFName( Word, MAX_CMD, Word );
-                        MakeName( Word, LNK_EXT );
-                        errno = 0;
-                        if( (atfp = fopen( Word, "r" )) == NULL ) {
-                            PrintMsg( WclMsgs[UNABLE_TO_OPEN_DIRECTIVE_FILE], Word, strerror(  errno ) );
-                            return( 1 );
-                        }
-                        while( fgets( buffer, sizeof( buffer ), atfp ) != NULL ) {
-                            p = strchr( buffer, '\n' );
-                            if( p != NULL )
-                                *p = '\0';
-                            if( strnicmp( buffer, "file ", 5 ) == 0 ) {
-                                /* look for names separated by ','s */
-                                AddNameObj( buffer + 5 );
-                                Flags.do_link = true;
-                            } else {
-                                AddDirective( buffer );
-                            }
-                        }
-                        fclose( atfp );
                     }
                     wcc_option = 0;
                     break;
@@ -718,52 +713,63 @@ static int Parse( const char *cmd )
                     break;
 #endif
                 case 'd':
-                    p = Word + 1;
                     if( len == 2 ) {
-                        if( p[0] == '0' ) {
+                        switch( Word[1] ) {
+                        case '0':
                             DebugFlag = DBG_NONE;
-                        } else if( p[0] == '1' ) {
+                            break;
+                        case '1':
                             DebugFlag = DBG_LINES;
-                        } else if( p[0] == '2' ) {
+                            break;
+                        case '2':
                             DebugFlag = DBG_ALL;
-                        } else if( p[0] == '3' ) {
+                            break;
+                        case '3':
                             DebugFlag = DBG_ALL;
+                            break;
+                        default:
+                            break;
                         }
                     } else if( len == 3 ) {
-                        if( p[0] == '1' && p[1] == '+' ) {
+                        opt = (char)tolower( Word[2] );
+                        if( Word[1] == '1' && opt == '+' ) {
                             DebugFlag = DBG_ALL;
-                        } else if( p[0] == '2' && p[1] == 'i' ) {
+                        } else if( Word[1] == '2' && opt == 'i' ) {
                             DebugFlag = DBG_ALL;
-                        } else if( p[0] == '2' && p[1] == 's' ) {
+                        } else if( Word[1] == '2' && opt == 's' ) {
                             DebugFlag = DBG_ALL;
-                        } else if( p[0] == '3' && p[1] == 'i' ) {
+                        } else if( Word[1] == '3' && opt == 'i' ) {
                             DebugFlag = DBG_ALL;
-                        } else if( p[0] == '3' && p[1] == 's' ) {
+                        } else if( Word[1] == '3' && opt == 's' ) {
                             DebugFlag = DBG_ALL;
                         }
                     }
                     break;
                 case 'h':
                     if( len == 2 ) {
-                        p = Word + 1;
-                        if( *p == 'w' ) {
+                        switch( tolower( Word[1] ) ) {
+                        case 'w':
                             DebugFormat = DBG_FMT_WATCOM;
-                        } else if( *p == 'c' ) {
+                            break;
+                        case 'c':
                             Flags.do_cvpack = 1;
                             DebugFormat = DBG_FMT_CODEVIEW;
-                        } else if( *p == 'd' ) {
+                            break;
+                        case 'd':
                             DebugFormat = DBG_FMT_DWARF;
+                            break;
+                        default:
+                            break;
                         }
                     }
                     break;
                 case 'i':           /* include file path */
-                    end = ScanFName( end, len );
+                    end = ScanFName( end, Word + len );
                     break;
                 case 'c':           /* compile only */
-                    p = Word + 1;
-                    if( len == 2 && tolower( *p ) == 'c' ) {
+                    if( tolower( Word[1] ) == 'c' && Word[2] == '\0' ) {
                         Flags.force_c = true;
-                    } else if( stricmp( p, "c++" ) == 0 ) {
+                    } else if( stricmp( Word + 1, "c++" ) == 0 ) {
                         Flags.force_c_plus = true;
                     } else {
                         Flags.no_link = true;
@@ -775,7 +781,7 @@ static int Parse( const char *cmd )
 #if defined( WCLI86 ) || defined( WCL386 )
                 case 'm':           /* memory model */
                     /* if tiny model specified then change to small for compilers */
-                    if( len == 2 && ( Word[1] == 't' || Word[1] == 'T' ) ) {
+                    if( tolower( Word[1] ) == 't' && Word[2] == '\0' ) {
                         Word[1] = 's';
                         Flags.tiny_model = true;
                     }
@@ -801,6 +807,8 @@ static int Parse( const char *cmd )
                             Flags.windows = true;
                             break;
 #endif
+                        default:
+                            break;
                         }
                     }
                     break;
@@ -822,9 +830,7 @@ static int Parse( const char *cmd )
                     p = CC_Opts + strlen( CC_Opts );
                     *p++ = ' ';
                     *p++ = '-';
-                    len = end - cmd;
-                    memcpy( p, cmd, len );    /* keep original case */
-                    p[len] = '\0';
+                    strcpy( p, Word );      /* keep original case */
                 }
             }
             cmd = end;
@@ -945,27 +951,7 @@ void BuildSystemLink( FILE *fp )
         fputs( "system ", fp );
         Fputnl( SystemName, fp );
     } else {
-#if defined( WCLAXP )
-        Fputnl( "system ntaxp", fp );
-#elif defined( WCLPPC )
-  #if defined( __LINUX__ )
-        Fputnl( "system linuxppc", fp );
-  #else
-        Fputnl( "system ntppc", fp );
-  #endif
-#elif defined( WCLMPS )
-        Fputnl( "system linuxmips", fp );
-#elif defined( WCL386 )
-  #if defined( __OS2__ )
-        Fputnl( "system os2v2", fp );
-  #elif defined( __NT__ )
-        Fputnl( "system nt", fp );
-  #elif defined( __LINUX__ )
-        Fputnl( "system linux", fp );
-  #else
-        Fputnl( "system dos4g", fp );
-  #endif
-#else
+#if defined( WCLI86 )
         if( Flags.windows ) {
             Fputnl( "system windows", fp );
         } else if( Flags.tiny_model ) {
@@ -975,12 +961,32 @@ void BuildSystemLink( FILE *fp )
         } else if( Flags.link_for_os2 ) {
             Fputnl( "system os2", fp );
         } else {
-#if defined( __OS2__ )
+  #if defined( __OS2__ )
             Fputnl( "system os2", fp );
-#else
+  #else
             Fputnl( "system dos", fp );
-#endif
+  #endif
         }
+#elif defined( WCLAXP )
+        Fputnl( "system ntaxp", fp );
+#elif defined( WCLPPC )
+  #if defined( __LINUX__ )
+        Fputnl( "system linuxppc", fp );
+  #else
+        Fputnl( "system ntppc", fp );
+  #endif
+#elif defined( WCLMPS )
+        Fputnl( "system linuxmips", fp );
+#else
+  #if defined( __OS2__ )
+        Fputnl( "system os2v2", fp );
+  #elif defined( __NT__ )
+        Fputnl( "system nt", fp );
+  #elif defined( __LINUX__ )
+        Fputnl( "system linux", fp );
+  #else
+        Fputnl( "system dos4g", fp );
+  #endif
 #endif
     }
 

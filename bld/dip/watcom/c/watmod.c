@@ -358,7 +358,7 @@ word ModOff2Idx( section_info *inf, word off )
  * DIPImpWalkModList - walk the module list
  */
 
-walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -385,7 +385,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     return( WR_CONTINUE );
 }
 
-walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk, void *d )
+walk_result MyWalkModList( imp_image_handle *ii, DIP_INT_MOD_WALKER *wk, void *d )
 {
     info_block          *blk;
     mod_table           *tbl;
@@ -417,7 +417,7 @@ walk_result MyWalkModList( imp_image_handle *ii, INT_MOD_WKR *wk, void *d )
  * ModSrcLang -- return pointer to name of source language of the module
  */
 
-char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     return( ii->lang + ModPointer( ii, im )->language );
 }
@@ -426,7 +426,7 @@ char *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
  * DIPImpModInfo - does a module have a particular brand of info
  */
 
-dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im, handle_kind hk )
 {
     mod_info    *mod;
     static unsigned DmndType[MAX_HK] = {
@@ -451,7 +451,7 @@ dip_status DIGENTRY DIPImpModInfo( imp_image_handle *ii, imp_mod_handle im, hand
  * DIPImpModName -- return the module name
  */
 
-size_t DIGENTRY DIPImpModName( imp_image_handle *ii, imp_mod_handle im,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
                                 char *buff, size_t buff_size )
 {
     char        *name;

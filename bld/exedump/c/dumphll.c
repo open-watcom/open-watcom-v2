@@ -827,7 +827,7 @@ bool Dmp_hll_head( void )
         Puthex( trailer.offset, 8 );
         Wdputslc( "H\n\n" );
         dump_hll( dbg_off );
-        return( 1 );
+        return( true );
     } else if( memcmp( trailer.sig, HLL_NB02, HLL_SIG_SIZE ) == 0 ) {
         Banner( "CodeView NB02 debugging information" );
         Wdputs( "debugging information base  = " );
@@ -837,7 +837,7 @@ bool Dmp_hll_head( void )
         Puthex( trailer.offset, 8 );
         Wdputslc( "H\n\n" );
         dump_cv( dbg_off );
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 } /* Dmp_hll_head */

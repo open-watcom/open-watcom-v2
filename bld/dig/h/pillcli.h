@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,15 +32,22 @@
 
 
 #ifndef PILLCLI_H_INCLUDED
-#include "digpck.h"
-#include "diptypes.h"
+#define PILLCLI_H_INCLUDED
+
+#include "piltypes.h"
 #include "digcli.h"
 
-link_buffer     *DIGCLIENT LinkCliBufferGet( void *cookie, unsigned size );
-void            DIGCLIENT LinkCliBufferRel( void *cookie, link_buffer *buffer );
-void            DIGCLIENT LinkCliReceived( void *cookie, link_buffer *data );
-void            DIGCLIENT LinkCliState( void *cookie, link_status ls, const link_message *msg );
+#define LinkCli(n)      LinkCli ## n
+#define _LinkCli(n)     _LinkCli ## n n
 
-#define PILLCLI_H_INCLUDED
-#include "digunpck.h"
+#define LINKCLIENTRY(n) DIGCLIENT LinkCli(n)
+
+#define pick(r,n,p) typedef r (DIGCLIENT *_LinkCli ## n) p;
+#include "_pillcli.h"
+#undef
+
+#define pick(r,n,p) extern r LINKCLIENTRY( n ) p;
+#include "_pillcli.h"
+#undef
+
 #endif

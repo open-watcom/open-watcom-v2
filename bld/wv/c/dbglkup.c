@@ -305,7 +305,7 @@ OVL_EXTERN walk_result CheckModName( mod_handle mh, void *d )
     char                name[NAM_LEN];
     unsigned            len;
 
-    len = ModName( mh, name, sizeof( name ) );
+    len = DIPModName( mh, name, sizeof( name ) );
     if( len != md->len )
         return( WR_CONTINUE );
     if( memicmp( name, md->start, len ) != 0 )
@@ -330,7 +330,7 @@ mod_handle LookupModName( mod_handle search, const char *start, unsigned len )
     d.start = start;
     d.len = len;
     d.mh = NO_MOD;
-    WalkModList( search, &CheckModName, &d );
+    DIPWalkModList( search, &CheckModName, &d );
     if( CacheIntMod == NO_MOD && IsInternalMod( d.mh ) ) {
         CacheIntMod = d.mh;
     }
@@ -365,7 +365,7 @@ mod_handle LookupImageName( const char *start, unsigned len )
     d.start = start;
     d.len = len;
     d.mh = NO_MOD;
-    WalkImageList( &CheckImageName, &d );
+    DIPWalkImageList( &CheckImageName, &d );
     return( d.mh );
 }
 
@@ -420,11 +420,11 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
     if( DefLookup == NULL || source_only ) {
         li->source = li->name;
         if( check_codeaddr_mod ) {
-            if(LookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
+            if(DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
                 return( SymListHead );
             }
         }
-        LookupSym( ss, d, li, &SymListHead );
+        DIPLookupSym( ss, d, li, &SymListHead );
         if( DIPStatus == (DS_ERR|DS_INVALID_OPERATOR) ) {
             Error( ERR_NONE, LIT_ENG( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
         }
@@ -440,11 +440,11 @@ sym_list *LookupSymList( symbol_source ss, void *d, bool source_only,
         li->source.len   = len;
         li->name.len = strsubst( TxtBuff, curr->data, &li->source ) - TxtBuff;
         if( check_codeaddr_mod ) {
-            if(LookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
+            if(DIPLookupSym( SS_MODULE, &CodeAddrMod, li, &SymListHead )!=SR_NONE) {
                 break;
             }
         }
-        if( LookupSym( ss, d, li, &SymListHead ) != SR_NONE )
+        if( DIPLookupSym( ss, d, li, &SymListHead ) != SR_NONE )
             break;
         if( DIPStatus == (DS_ERR|DS_INVALID_OPERATOR) ) {
             Error( ERR_NONE, LIT_ENG( ERR_INVALID_OPERATOR ), li->name.start, li->name.len );
@@ -498,12 +498,12 @@ static bool GetSymAddr( char *name, mod_handle mh, address *addr )
     li.file_scope = true;
     li.case_sensitive = true;
     li.type = ST_NONE;
-    switch( LookupSym( SS_MODULE, &mh, &li, &SymListHead ) ) {
+    switch( DIPLookupSym( SS_MODULE, &mh, &li, &SymListHead ) ) {
     case SR_NONE:
     case SR_FAIL:
         return( false );
     }
-    ret = SymLocation( SL2SH( SymListHead ), NULL, &ll );
+    ret = DIPSymLocation( SL2SH( SymListHead ), NULL, &ll );
     PurgeSymHandles();
     if( ret != DS_OK )
         return( false );

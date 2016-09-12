@@ -7,4 +7,5 @@ _WCRTLINK extern int          brk( void *endds );
 :segment QNX
 #endif
 :endsegment
+_WCRTLINK extern void _WCNEAR *__brk( unsigned __new_brk_value );
 _WCRTLINK extern void _WCNEAR *sbrk( int __increment );

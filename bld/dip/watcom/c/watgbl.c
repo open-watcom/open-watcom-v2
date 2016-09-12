@@ -595,7 +595,7 @@ type_kind GblTypeClassify( unsigned kind )
 
 
 walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                        DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     section_info        *inf;
     info_block          *blk;
@@ -614,7 +614,7 @@ walk_result WalkGblModSymList( imp_image_handle *ii, imp_mod_handle im,
             for( ptr = blk->info; ptr < end; ptr += GBL_SIZE( (gbl_info *)ptr ) ) {
                 is->im = GBL_MOD( (gbl_info *)ptr );
                 if( im == IMH_NOMOD ) {
-                    if( ImpInterface.mod_info( ii, is->im, HK_SYM ) != DS_OK ) {
+                    if( ImpInterface.ModInfo( ii, is->im, HK_SYM ) != DS_OK ) {
                         GblCreate( is, (gbl_info *)ptr );
                         wr = wk( ii, SWI_SYMBOL, is, d );
                         if( wr != WR_CONTINUE ) {

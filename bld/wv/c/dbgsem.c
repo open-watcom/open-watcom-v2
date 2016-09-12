@@ -233,7 +233,7 @@ static void FillInDefaults( dip_type_info *info )
         if( info->modifier == TM_NONE )
             info->modifier = TM_SIGNED;
         if( info->size == 0 ) {
-            if( ModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
+            if( DIPModDefault( CodeAddrMod, DK_INT, info ) != DS_OK ) {
                 GetMADTypeDefault( MTK_INTEGER, &mti );
                 info->size = BITS2BYTES( mti.b.bits );
             }
@@ -243,7 +243,7 @@ static void FillInDefaults( dip_type_info *info )
     case TK_CODE:
     case TK_DATA:
         if( info->modifier == TM_NONE ) {
-            if( ModDefault( CodeAddrMod, (info->kind == TK_CODE) ? DK_CODE_PTR : DK_DATA_PTR, info ) != DS_OK ) {
+            if( DIPModDefault( CodeAddrMod, (info->kind == TK_CODE) ? DK_CODE_PTR : DK_DATA_PTR, info ) != DS_OK ) {
                 info->modifier = TM_NONE;
                 info->size = 0;
             }
@@ -458,7 +458,7 @@ static bool UserType( type_handle *th )
         return( false );
     if( ExprSP->th == NULL )
         return( false );
-    SymInfo( ExprSP->v.sh, ExprSP->lc, &info );
+    DIPSymInfo( ExprSP->v.sh, ExprSP->lc, &info );
     if( info.kind != SK_TYPE )
         return( false );
     HDLAssign( type, th, ExprSP->th );
@@ -470,8 +470,8 @@ static void PushBaseSize( void )
     DIPHDL( type, th );
     dip_type_info   ti;
 
-    TypeBase( ExprSP->th, th, NULL, NULL );
-    TypeInfo( th, ExprSP->lc, &ti );
+    DIPTypeBase( ExprSP->th, th, NULL, NULL );
+    DIPTypeInfo( th, ExprSP->lc, &ti );
     PushNum( ti.size );
 }
 
@@ -625,7 +625,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         PushNum( size );
         break;
     case 21:
-        TypeBase( ExprSP->th, th, NULL, NULL );
+        DIPTypeBase( ExprSP->th, th, NULL, NULL );
         PopEntry();
         PushType( th );
         break;
@@ -634,9 +634,9 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         size = BITS2BYTES( mti.b.bits - mti.a.seg.bits );
         if( parm ) {
             size += sizeof( addr_seg );
-            TypePointer( ExprSP->th, TM_FAR, size, th );
+            DIPTypePointer( ExprSP->th, TM_FAR, size, th );
         } else {
-            TypePointer( ExprSP->th, TM_NEAR, size, th );
+            DIPTypePointer( ExprSP->th, TM_NEAR, size, th );
         }
         PopEntry();
         PushType( th );
@@ -671,7 +671,7 @@ static ssl_value MechDo( unsigned select, ssl_value parm )
         info.size = TI_SIZE_EXTRACT( parm );
         info.modifier = TI_MOD_EXTRACT( parm );
         FillInDefaults( &info );
-        TypePointer( ExprSP->th, info.modifier, info.size, th );
+        DIPTypePointer( ExprSP->th, info.modifier, info.size, th );
         PopEntry();
         PushType( th );
         break;
@@ -712,8 +712,8 @@ static void BasicType( unsigned basic_type )
     dip_type_info               info;
     DIPHDL( type, th );
 
-    WalkModList( NO_MOD, FindInternalMod, &mod_srch );
-    TypeInit( th, mod_srch.mh );
+    DIPWalkModList( NO_MOD, FindInternalMod, &mod_srch );
+    DIPTypeInit( th, mod_srch.mh );
     info.kind = TI_KIND_EXTRACT( basic_type );
     info.modifier = TI_MOD_EXTRACT( basic_type );
     info.size = TI_SIZE_EXTRACT( basic_type );
@@ -844,7 +844,7 @@ static ssl_value MechStack( unsigned select, ssl_value parm )
         entry = StkEntry( SSL2INT( parm ) );
         NameResolve( entry, false );
         if( entry->flags & SF_SYM ) {
-            SymInfo( entry->v.sh, entry->lc, &info );
+            DIPSymInfo( entry->v.sh, entry->lc, &info );
             result = info.kind;
         } else {
             result = SK_NONE;
@@ -938,7 +938,7 @@ static walk_result FindCue( cue_handle *ch, void *d )
     unsigned    match;
 
 
-    len = CueFile( ch, file, sizeof( file ) );
+    len = DIPCueFile( ch, file, sizeof( file ) );
     if( len < cd->len )
         return( WR_CONTINUE );
     if( memcmp( &file[len - cd->len], cd->name, cd->len ) == 0 ) {
@@ -950,7 +950,7 @@ static walk_result FindCue( cue_handle *ch, void *d )
     }
     if( match > cd->match ) {
         cd->match = match;
-        cd->id = CueFileId( ch );
+        cd->id = DIPCueFileId( ch );
         cd->ambig = false;
     } else if( match == cd->match ) {
         cd->ambig = true;
@@ -968,7 +968,7 @@ static walk_result FindModCue( mod_handle mod, void *d )
     fd->ambig = false;
     fd->match = CMP_NONE;
     if( mod != NO_MOD && fd->len != 0 ) {
-        WalkFileList( mod, FindCue, fd );
+        DIPWalkFileList( mod, FindCue, fd );
         if( fd->id == 0 )
             return( WR_CONTINUE );
         if( fd->ambig ) {
@@ -976,13 +976,13 @@ static walk_result FindModCue( mod_handle mod, void *d )
         }
     }
     fd->found_a_file = true;
-    switch( LineCue( mod, fd->id, CurrGet.li.name.len, 0, ch ) ) {
+    switch( DIPLineCue( mod, fd->id, CurrGet.li.name.len, 0, ch ) ) {
     case SR_EXACT:
         HDLAssign( cue, fd->best_ch, ch );
         fd->best_line = CurrGet.li.name.len;
         return( WR_STOP );
     case SR_CLOSEST:
-        curr_line = CueLine( ch );
+        curr_line = DIPCueLine( ch );
         if( curr_line < CurrGet.li.name.len && curr_line > fd->best_line ) {
             HDLAssign( cue, fd->best_ch, ch );
             fd->best_line = CurrGet.li.name.len;
@@ -1008,7 +1008,7 @@ static search_result FindACue( cue_handle *ch )
         if( data.len == 0 ) {
             Error( ERR_NONE, LIT_ENG( ERR_WANT_MODULE ) );
         }
-        if( WalkModList( CurrGet.li.mod, FindModCue, &data ) == WR_FAIL ) {
+        if( DIPWalkModList( CurrGet.li.mod, FindModCue, &data ) == WR_FAIL ) {
             return( SR_FAIL );
         }
     } else {
@@ -1076,7 +1076,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
             default:
                 Error( ERR_NONE, LIT_ENG( ERR_NO_CODE ), CurrGet.li.name.len );
             }
-            PushAddr( CueAddr( ch ) );
+            PushAddr( DIPCueAddr( ch ) );
             break;
         }
         break;

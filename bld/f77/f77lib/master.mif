@@ -6,15 +6,23 @@ flib_autodepends = .AUTODEPEND
 
 additional_cleanup = *.gc
 
+# remap fpu to processor
+flib_086 = 086
+flib_087 = 086 
+flib_286 = 286
+flib_287 = 286
+flib_386 = 386
+flib_387 = 386
+flib_axp = axp
+flib_mps = mps
+flib_ppc = ppc
+
 flib_host_cpu_086 = i86
-flib_host_cpu_087 = i86
 flib_host_cpu_286 = i86
-flib_host_cpu_287 = i86
 flib_host_cpu_386 = 386
-flib_host_cpu_387 = 386
 flib_host_cpu_axp = axp
 flib_host_cpu_ppc = ppc
-host_cpu = $(flib_host_cpu_$(processor))
+host_cpu = $(flib_host_cpu_$(flib_$(processor)))
 
 flib_host_os_msdos   = dos
 flib_host_os_winnt   = nt
@@ -30,6 +38,7 @@ host_os = $(flib_host_os_$(system))
 
 !include ../../flags.mif
 !include ../../objects.mif
+!include ../../librules.mif
 
 #-------------------------------------------------------------------------------
 
@@ -43,28 +52,12 @@ asm_src_ppc = ../../asmppc;../../../asmppc
 .c: ../../c;../../../c;../../c/math;../../c/ifns;../../c/ufns
 
 #-------------------------------------------------------------------------------
-#cc = wcl -c -cc++
 
 $(libname).lib : errcod.gh $(files) $(__MAKEFILES__)
-    @%create $(libname).lbc
+    $(noecho)%create $(libname).lbc
     @for %%f in ($(files)) do @%append $(libname).lbc +%%f
-    $(librarian) $(lib_flags) $^@ @$(libname).lbc
-
-.c.obj : .autodepend $(__MAKEFILES__)
-!ifeq verbose 1
-    $(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
-!else
-    @echo flib_cc $@
-    @$(cc) $($[&_opts) $(c_flags) $(build_target) $($[&_postopts) $(c_dbg_flags) $(include_c_path) $[@
-!endif
-
-.asm.obj : .autodepend $(__MAKEFILES__)
-!ifeq verbose 1
-    $(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
-!else
-    @echo flib_as $@
-    @$(as) $($[&_opts) $(a_flags) $(build_target) $($[&_postopts) $(a_dbg_flags) $(include_a_path) $[@
-!endif
+    @%make echo_lib
+    $(librarian) $(flib_lib_flags) $^@ @$(libname).lbc
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
     errsrc $[@ eo r
@@ -73,4 +66,5 @@ jerrmsg.grc:  ../../../h/error.msg
     errsrc $[@ jo r
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

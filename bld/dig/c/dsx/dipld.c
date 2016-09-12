@@ -39,31 +39,31 @@
 #include "dipsys.h"
 #include "ldimp.h"
 #include "dbgmod.h"
-#include "digio.h"
+#include "digld.h"
 
 #define DIPSIG  0x00504944UL    // "DIP"
 
 void DIPSysUnload( dip_sys_handle *sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
-    DIGCliFree( (void *)*sys_hdl );
+    DIGCli( Free )( (void *)*sys_hdl );
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    dig_fhandle         h;
+    dig_ldhandle        ldfh;
     imp_header          *dip;
     dip_init_func       *init_func;
     dip_status          status;
     char                dip_name[_MAX_PATH];
 
-    h = DIGPathOpen( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
-    if( h == DIG_NIL_HANDLE ) {
-        return( DS_ERR|DS_FOPEN_FAILED );
+    ldfh = DIGLoader( Open )( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
+    if( ldfh == DIG_NIL_LDHANDLE ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    dip = ReadInImp( h );
-    DIGPathClose( h );
-    status = DS_ERR|DS_INVALID_DIP;
+    dip = ReadInImp( ldfh );
+    DIGLoader( Close )( ldfh );
+    status = DS_ERR | DS_INVALID_DIP;
     if( dip != NULL ) {
 #ifdef __WATCOMC__
         if( dip->sig == DIPSIG ) {
@@ -84,7 +84,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCliFree( (void *)dip );
+        DIGCli( Free )( (void *)dip );
     }
     return( status );
 }

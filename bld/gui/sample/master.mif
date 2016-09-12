@@ -43,7 +43,7 @@ objs =  dlgstat.obj     &
         sample.obj
 
 ###############
-sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res
+sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
         $(cl) $(clflags) $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(ldflags)
 !else
@@ -90,12 +90,12 @@ sample.exe : $(objs) $(gui_lib) $(ui_lib) $(wres_lib) $(rcname).res
 !endif
 
 ################
-pmsample.exe : pmsample.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK)
+pmsample.exe : pmsample.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK) $(__MAKEFILES__)
         @%append $(LNK) file pmsample.obj
         $(linker) @$(LNK)
 
 ################
-samp2.exe : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK)
+samp2.exe : samp2.obj $(gui_lib) $(ui_lib) $(wres_lib) $(LNK) $(__MAKEFILES__)
         @%append $(LNK) file samp2.obj
         $(linker) @$(LNK)
 

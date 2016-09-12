@@ -8,7 +8,9 @@ skip_build: .symbolic
 !endif
 !endif
 
-dbg_list = &
+!include cproj.mif
+
+objs = &
     addsrc.dbg &
     ads.dbg &
     animate.dbg &
@@ -42,10 +44,11 @@ dbg_list = &
 
 .sp : ..
 
-all: $(dbg_list) .symbolic
+all: $(objs) .symbolic
 
 .sp.dbg:
-    *wsplice $< $@
+    @%make echo_wsplice
+    $(wsplice) $< $@
 
 clean : .symbolic
     rm -f *.dbg

@@ -241,7 +241,7 @@ image_entry *ImageEntry( mod_handle mh )
 {
     image_entry         **image_ptr;
 
-    image_ptr = ImageExtra( mh );
+    image_ptr = DIPImageExtra( mh );
     return( (image_ptr == NULL) ? NULL : *image_ptr );
 }
 
@@ -484,8 +484,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     return( image );
 }
 
-static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
-                        unsigned start, unsigned end )
+static bool CheckLoadDebugInfo( image_entry *image, dig_fhandle dfh, unsigned start, unsigned end )
 {
     char        buff[TXT_LEN];
     char        *symfile;
@@ -498,7 +497,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
         if( prio == 0 || prio > end )
             return( false );
         DIPStatus = DS_OK;
-        image->dip_handle = DIPLoadInfo( (dig_fhandle)fh, sizeof( image_entry * ), prio );
+        image->dip_handle = DIPLoadInfo( dfh, sizeof( image_entry * ), prio );
         if( image->dip_handle != NO_MOD )
             break;
         if( DIPStatus & DS_ERR ) {
@@ -512,7 +511,7 @@ static bool CheckLoadDebugInfo( image_entry *image, file_handle fh,
             return( false );
         }
     }
-    *(image_entry **)ImageExtra( image->dip_handle ) = image;
+    *(image_entry **)DIPImageExtra( image->dip_handle ) = image;
     return( true );
 }
 
@@ -558,7 +557,7 @@ static bool ProcImgSymInfo( image_entry *image )
         }
     }
     if( fh != NIL_HANDLE ) {
-        if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, last ) ) {
+        if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_MIN, last ) ) {
             return( true );
         }
         FileClose( fh );
@@ -580,7 +579,7 @@ static bool ProcImgSymInfo( image_entry *image )
             fh = PathOpen( image->symfile_name, strlen( image->symfile_name ), "" );
         }
         if( fh != NIL_HANDLE ) {
-            if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
+            if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_MIN, DIP_PRIOR_MAX ) ) {
                 return( true );
             }
             FileClose( fh );
@@ -594,7 +593,7 @@ static bool ProcImgSymInfo( image_entry *image )
         } else {
             fh = FileOpen( image->image_name, OP_READ | OP_REMOTE );
             if( fh != NIL_HANDLE ) {
-                if( CheckLoadDebugInfo( image, fh, DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
+                if( CheckLoadDebugInfo( image, FH2DFH( fh ), DIP_PRIOR_EXPORTS - 1, DIP_PRIOR_MAX ) ) {
                     return( true );
                 }
                 FileClose( fh );
@@ -698,9 +697,9 @@ static remap_return ReMapOnePoint( brkp *bp, image_entry *image )
         if( bp->cue_diff != 0 ) {
             if( DeAliasAddrCue( mod, addr, ch ) != SR_EXACT )
                 return( REMAP_ERROR );
-            if( LineCue( mod, CueFileId( ch ), CueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
+            if( DIPLineCue( mod, DIPCueFileId( ch ), DIPCueLine( ch ) + bp->cue_diff, 0, ch2 ) != SR_EXACT )
                 return( REMAP_ERROR );
-            addr = CueAddr( ch2 );
+            addr = DIPCueAddr( ch2 );
         }
         if( bp->addr_diff != 0 ) {
             addr.mach.offset += bp->addr_diff;

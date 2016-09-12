@@ -37,7 +37,7 @@
         Return MS_OK if a stack push increments the stack pointer, MS_FAIL
         if it decrements it.
 */
-mad_string              DIGENTRY MICallStackGrowsUp( void )
+mad_string MADIMPENTRY( CallStackGrowsUp )( void )
 {
     return( MS_FAIL );
 }
@@ -47,7 +47,7 @@ mad_string              DIGENTRY MICallStackGrowsUp( void )
         lists out the different types of calls the architecture supports
         (e.g. near/far/interrupt).
 */
-const mad_string        *DIGENTRY MICallTypeList( void )
+const mad_string *MADIMPENTRY( CallTypeList )( void )
 {
     static const mad_string list[] = { MAD_MSTR_NIL };
 
@@ -62,7 +62,7 @@ const mad_string        *DIGENTRY MICallTypeList( void )
         the MICallTypeList). Return MS_OK if the call frame was build,
         otherwise return the error condition.
 */
-mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address rtn, const mad_registers *in, mad_registers *out )
+mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address rtn, const mad_registers *in, mad_registers *out )
 {
     //NYI:
     return( MS_FAIL );
@@ -72,7 +72,7 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
     Return a pointer to mad_reg_info describing the return register for a
     routine.
 */
-const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn )
+const mad_reg_info *MADIMPENTRY( CallReturnReg )( mad_string call, address rtn )
 {
     //NYI:
     return( NULL );
@@ -83,7 +83,7 @@ const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn 
         the registers used to pass parameters to a routine. The list is
         terminated by a NULL entry.
 */
-const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address rtn )
+const mad_reg_info **MADIMPENTRY( CallParmRegList )( mad_string call, address rtn )
 {
     //NYI:
     static const mad_reg_info *list[] = {
@@ -95,7 +95,7 @@ const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address r
 /*
         Return the size of the data structure for walking up the call stack.
 */
-unsigned        DIGENTRY MICallUpStackSize( void )
+unsigned MADIMPENTRY( CallUpStackSize )( void )
 {
     return( sizeof( mad_call_up_data ) );
 }
@@ -103,7 +103,7 @@ unsigned        DIGENTRY MICallUpStackSize( void )
 /*
         Initialize the stack walker data structure.
 */
-mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
+mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
     //NYI:
 
@@ -116,7 +116,7 @@ mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_reg
 /*
         Walk up one level in the stack frame.
 */
-mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
+mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
                                 const address *start,
                                 unsigned rtn_characteristics,
                                 long return_disp,

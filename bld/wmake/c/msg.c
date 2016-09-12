@@ -32,11 +32,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/stat.h>
 #include "make.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
+
+#include "clibext.h"
 
 
 STATIC const char   *logName;
@@ -258,7 +261,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
  * assumptions - format string does not end in '%'
  *             - only use of '%' is as follows:
  *  %D  : decimal with leading 0 modulo 100 ie: %02d
- *  %C  : 'safe' character ie: if(!isprint) then do %x
+ *  %C  : 'safe' character ie: if(!cisprint) then do %x
  *  %E  : envoloped string ie: "(%s)"
  *  %F  : far string
  *  %L  : long string ( the process exits here to let another function to
@@ -299,9 +302,9 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 positnArg( args, (UINT16)sizeof( UINT16 ) );
                 break;
             case 'C' :
-                ch = va_arg( args, int );
+                ch = (char)va_arg( args, int );
                 positnArg( args, (UINT16)sizeof( int ) );
-                if( isprint( ch ) ) {
+                if( cisprint( ch ) ) {
                     *dest++ = ch;
                 } else {
                     dest = strHex( strApp( dest, "0x" ), (UINT16)ch );
@@ -335,7 +338,7 @@ STATIC size_t doFmtStr( char *buff, const char FAR *src, va_list args )
                 dest = strApp( dest, msgbuff );
                 break;
             case 'c' :
-                *dest++ = va_arg( args, int );
+                *dest++ = (char)va_arg( args, int );
                 positnArg( args, (UINT16)sizeof( int ) );
                 break;
             case 'd' :
@@ -389,23 +392,15 @@ size_t FmtStr( char *buff, const char *fmt, ... )
     return( len );
 }
 
-STATIC void writeOutput( unsigned class, int fh, const char *buff, size_t len )
+static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 /*****************************************************************************/
 {
     if( class != INF ) {
         if( logFH != -1 ) {
-#ifdef _WIN64
-            write( logFH, buff, (unsigned)len );
-#else
             write( logFH, buff, len );
-#endif
         }
     }
-#ifdef _WIN64
-    write( fh, buff, (unsigned)len );
-#else
     write( fh, buff, len );
-#endif
 }
 
 #ifdef __WATCOMC__
@@ -554,7 +549,7 @@ bool GetYes( enum MsgClass querymsg )
         return( false );
     }
 
-    return( toupper( buf[0] ) == YES_CHAR );
+    return( ctoupper( buf[0] ) == YES_CHAR );
 }
 #ifdef __WATCOMC__
 #pragma off(check_stack);

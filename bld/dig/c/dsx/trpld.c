@@ -45,9 +45,8 @@
 #include "trpcore.h"
 #include "trpld.h"
 #include "trpsys.h"
-#include "tinyio.h"
 #include "tcerr.h"
-#include "digio.h"
+#include "digld.h"
 #include "envlkup.h"
 
 
@@ -391,17 +390,17 @@ static bool CallTrapInit( const char *parms, char *errmsg, trap_version *trap_ve
     return( *errmsg == '\0' );
 }
 
-static char *ReadInTrap( tiny_handle_t fh )
+static char *ReadInTrap( dig_ldhandle ldfh )
 {
     dos_exe_header      hdr;
     memptr              relocbuff[NUM_BUFF_RELOCS];
     unsigned            relocnb;
     unsigned            imagesize;
     unsigned            hdrsize;
-    rm_call_struct      read;
+    rm_call_struct      rm_dos_read;
     unsigned            offset;
 
-    if( TINY_ERROR( TinyRead( fh, &hdr, sizeof( hdr ) ) ) ) {
+    if( DIGLoader( Read )( ldfh, &hdr, sizeof( hdr ) ) ) {
         return( TC_ERR_CANT_LOAD_TRAP );
     }
     if( hdr.signature != DOS_SIGNATURE ) {
@@ -414,39 +413,32 @@ static char *ReadInTrap( tiny_handle_t fh )
     if( TrapMem.segm.pm == 0 ) {
         return( TC_ERR_OUT_OF_DOS_MEMORY );
     }
-    TinySeek( fh, hdrsize, TIO_SEEK_SET );
+    DIGLoader( Seek )( ldfh, hdrsize, DIG_ORG );
 
-    memset( &read, 0, sizeof( read ) );
-    for( offset = 0; offset < imagesize; offset += (unsigned_16)read.eax ) {
-        read.ss = RMData.segm.rm;
-        read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
-        read.edx = offset;
-        read.ebx = fh;
-        read.ds = TrapMem.segm.rm;
-        read.ecx = imagesize - offset;
-        read.eax = 0x3f00;
-#if 1
-        relocnb = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &read );
-        if( (read.flags & 1) || (unsigned_16)read.eax == 0 ) {
+    // DPMI file read to real mode memory
+    memset( &rm_dos_read, 0, sizeof( rm_dos_read ) );
+    for( offset = 0; offset < imagesize; offset += (unsigned_16)rm_dos_read.eax ) {
+        rm_dos_read.ss = RMData.segm.rm;
+        rm_dos_read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
+        rm_dos_read.edx = offset;
+        rm_dos_read.ebx = ldfh;
+        rm_dos_read.ds = TrapMem.segm.rm;
+        rm_dos_read.ecx = imagesize - offset;
+        rm_dos_read.eax = 0x3f00;
+        relocnb = DPMISimulateRealModeInterrupt( 0x21, 0, 0, &rm_dos_read );
+        if( (rm_dos_read.flags & 1) || (unsigned_16)rm_dos_read.eax == 0 ) {
             return( TC_ERR_CANT_LOAD_TRAP );
         }
-#else
-        read.eax = TinyRead( fh, (void *)((TrapMem.segm.rm << 4) + offset), imagesize - offset );
-        if( (signed_32)read.eax < 0 ) {
-            return( TC_ERR_CANT_LOAD_TRAP );
-        }
-#endif
     }
-    TinySeek( fh, hdr.reloc_offset, TIO_SEEK_SET );
+    DIGLoader( Seek )( ldfh, hdr.reloc_offset, DIG_ORG );
     for( relocnb = NUM_BUFF_RELOCS; hdr.num_relocs > 0; --hdr.num_relocs, ++relocnb ) {
         if( relocnb >= NUM_BUFF_RELOCS ) {
-            if( TINY_ERROR( TinyRead( fh, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) ) {
+            if( DIGLoader( Read )( ldfh, relocbuff, sizeof( memptr ) * NUM_BUFF_RELOCS ) ) {
                 return( TC_ERR_CANT_LOAD_TRAP );
             }
             relocnb = 0;
         }
-        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset )
-                += TrapMem.segm.rm;
+        *(addr_seg __far *)MK_PM( TrapMem.segm.rm + relocbuff[relocnb].s.segment, relocbuff[relocnb].s.offset ) += TrapMem.segm.rm;
     }
     return( NULL );
 }
@@ -514,7 +506,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
     char                *err;
     const char          *ptr;
-    dig_fhandle         dh;
+    dig_ldhandle        ldfh;
     trap_file_header    __far *head;
 #ifdef USE_FILENAME_VERSION
     char                filename[256];
@@ -531,19 +523,19 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    dh = DIGPathOpen( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
+    ldfh = DIGLoader( Open )( filename, p - filename, DEFAULT_TRP_EXT, NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    dh = DIGPathOpen( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
+    ldfh = DIGLoader( Open )( parms, ptr - parms, DEFAULT_TRP_EXT, NULL, 0 );
 #endif
-    if( dh == DIG_NIL_HANDLE ) {
+    if( ldfh == DIG_NIL_LDHANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
-    err = ReadInTrap( DIGGetSystemHandle( dh ) );
-    DIGPathClose( dh );
+    err = ReadInTrap( ldfh );
+    DIGLoader( Close )( ldfh );
     sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
     if( err == NULL ) {
         if( (err = SetTrapHandler()) != NULL || (err = CopyEnv()) != NULL ) {

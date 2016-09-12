@@ -6,5 +6,5 @@ processor  = 087
 system     = generic
 model      = ms
 linkage    = static
-define_library_include = $(cpplib_dir)/complex/complex.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/complex/complex.mif

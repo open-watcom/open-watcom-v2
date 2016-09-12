@@ -32,7 +32,7 @@ statname = owfs$(bld_ver)
 
 inc_path += -I"../$(host_os)" -I"../h"
 
-splice = *wsplice -i"$(hdr_dir)" $[@ $^@
+wsplice_opts = -i"$(hdr_dir)" $[@ $^@
 
 headers =               &
         afx.h           &
@@ -304,25 +304,32 @@ all : $($(what_to_build)) .SYMBOLIC
 .cpp: ../cpp
 
 .mh.h:
-    $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 .mnl.inl:
-    $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 .mrc.rc:
-    $(splice)
+    @%make echo_wsplice
+    $(wsplice) $(wsplice_opts)
 
 afx.h: afx.mh
-    *wsplice -i"$(hdr_dir)" $[@ tmp.h
-    *awk -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
+    @%make echo_wsplice
+    $(wsplice) -i"$(hdr_dir)" $[@ tmp.h
+    @%make echo_awk
+    $(awk) -f ../dobldver.awk -v bld_ver=$(bld_ver) -v OUTFILE=afx.h tmp.h
     @rm tmp.h
 
 $(libname).lib: $(objs) $(static_objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(objs) $(static_objs)
 
 $(intname).lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) -z=tmp.def $(libflags) $(objs)
-    sed -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed tmp.def > tmp2.def
     sort < tmp2.def > tmp3.def
     uniq tmp3.def > export.def
     @rm tmp.def
@@ -338,21 +345,27 @@ verrc_dll = $(dllname)
 
 $(dllname).dll: $(intname).lib owf.res $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(intname).lib $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags_dll)
     @%append $^&.lnk file $(intname).lib
     @%append $^&.lnk export @export.def
+    @%make echo_link
     $(linker) name $(dllname).dll @$^&.lnk
 !endif
+    @%make echo_bindres
     $(rc) -k owf.res $^@ $(bind_version_res_dll_add)
 
 $(dllname).lib: $(dllname).dll $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) +$(dllname).dll
 
 $(statname).lib: $(static_objs) $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $(static_objs)
 
 owf.res: ../h/owf.rc $(__MAKEFILES__) .AUTODEPEND
+    @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(inc_path) -I"../include" $[@ -fo=$^@

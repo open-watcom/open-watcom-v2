@@ -80,8 +80,9 @@ trap_retval ReqFile_open( void )
     access = S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH;
     if( acc->mode & TF_CREATE ) {
         mode |= O_CREAT | O_TRUNC;
-        if( acc->mode & TF_EXEC )
+        if( acc->mode & TF_EXEC ) {
             access |= S_IXUSR | S_IXGRP | S_IXOTH;
+        }
     }
     handle = open( name, mode, access );
     if( handle != -1 ) {

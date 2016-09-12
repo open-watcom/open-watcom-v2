@@ -42,8 +42,15 @@
 # define dprintf(a)     do {} while( 0 )
 #endif
 
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(sh)  (dig_fhandle)(pointer_int)((sh) + 1)
+#define DFH2PH(dfh) ((int)(pointer_int)(dfh) - 1)
 
-void *DIGCLIENT DIGCliAlloc( size_t amount )
+void *DIGCLIENTRY( Alloc )( size_t amount )
 {
     void    *ptr = malloc( amount );
 
@@ -51,7 +58,7 @@ void *DIGCLIENT DIGCliAlloc( size_t amount )
     return( ptr );
 }
 
-void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
+void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 {
     void    *ptr = realloc( p, amount);
 
@@ -59,13 +66,13 @@ void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
     return( ptr );
 }
 
-void DIGCLIENT DIGCliFree( void *p )
+void DIGCLIENTRY( Free )( void *p )
 {
     dprintf(( "DIGCliFree: p=%p\n", p ));
     free( p );
 }
 
-dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
+dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     int     fd;
     int     flgs;
@@ -74,18 +81,17 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
 
     /* convert flags. */
     switch( mode & (DIG_READ | DIG_WRITE) ) {
-        case DIG_READ:
-            flgs = O_RDONLY;
-            break;
-        case DIG_WRITE:
-            flgs = O_WRONLY;
-            break;
-        case DIG_WRITE | DIG_READ:
-            flgs = O_RDWR;
-            break;
-        default:
-            return DIG_NIL_HANDLE;
-
+    case DIG_READ:
+        flgs = O_RDONLY;
+        break;
+    case DIG_WRITE:
+        flgs = O_WRONLY;
+        break;
+    case DIG_WRITE | DIG_READ:
+        flgs = O_RDWR;
+        break;
+    default:
+        return( DIG_NIL_HANDLE );
     }
 #ifdef O_BINARY
     flgs |= O_BINARY;
@@ -98,110 +104,67 @@ dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
         flgs |= O_APPEND;
     /* (ignore the remaining flags) */
 
-    fd = open( name, flgs, 0777 );
+    fd = open( name, flgs, PMODE_RWX );
 
     dprintf(( "DIGCliOpen: returns %d\n", fd ));
-    return( fd );
+    if( fd == -1 )
+        return( DIG_NIL_HANDLE );
+    return( PH2DFH( fd ) );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle h, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
     int     whence;
     long    off;
 
     switch( k ) {
-        case DIG_ORG:   whence = SEEK_SET; break;
-        case DIG_CUR:   whence = SEEK_CUR; break;
-        case DIG_END:   whence = SEEK_END; break;
-        default:
-            dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", h, p, k ));
-            return( DIG_SEEK_ERROR );
+    case DIG_ORG:   whence = SEEK_SET; break;
+    case DIG_CUR:   whence = SEEK_CUR; break;
+    case DIG_END:   whence = SEEK_END; break;
+    default:
+        dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> -1\n", DFH2PH( dfh ), p, k ));
+        return( DIG_SEEK_ERROR );
     }
 
-    off = lseek( h, p, whence );
-    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", h, p, k, off ));
+    off = lseek( DFH2PH( dfh ), p, whence );
+    dprintf(( "DIGCliSeek: h=%d p=%ld k=%d -> %ld\n", DFH2PH( dfh ), p, k, off ));
     return( off );
 }
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle h, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
 {
     size_t      rc;
-#ifdef _WIN64
-    unsigned    read_len;
-    unsigned    amount;
 
-    amount = INT_MAX;
-    rc = 0;
-    while( s > 0 ) {
-        if( amount > s )
-            amount = (unsigned)s;
-        read_len = read( h, b, amount );
-        if( read_len == (unsigned)-1 ) {
-            rc = (size_t)-1;
-            break;
-        }
-        rc += read_len;
-        if( read_len != amount ) {
-            break;
-        }
-        buffer = (char *)b + amount;
-        s -= amount;
-    }
-#else
-    rc = read( h, b, s );
-#endif
-
-    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+    rc = read( DFH2PH( dfh ), b, s );
+    dprintf(( "DIGCliRead: h=%d b=%p s=%d -> %d\n", DFH2PH( dfh ), b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle h, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *b, size_t s )
 {
     size_t      rc;
-#ifdef _WIN64
-    unsigned    write_len;
-    unsigned    amount;
 
-    amount = INT_MAX;
-    rc = 0;
-    while( s > 0 ) {
-        if( amount > s )
-            amount = (unsigned)s;
-        write_len = write( h, b, amount );
-        if( write_len == (unsigned)-1 ) {
-            rc = (size_t)-1;
-            break;
-        }
-        rc += write_len;
-        if( write_len != amount ) {
-            break;
-        }
-        buffer = (char *)b + amount;
-        s -= amount;
-    }
-#else
-    rc = write( h, b, s );
-#endif
-
-    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", h, b, (unsigned)s, (unsigned)rc ));
+    rc = write( DFH2PH( dfh ), b, s );
+    dprintf(( "DIGCliWrite: h=%d b=%p s=%d -> %d\n", DFH2PH( dfh ), b, (unsigned)s, (unsigned)rc ));
     return( rc );
 }
 
-void DIGCLIENT DIGCliClose( dig_fhandle h )
+void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    dprintf(( "DIGCliClose: h=%d\n", h ));
-    if( close( h ) )
-        dprintf(( "DIGCliClose: h=%d failed!!\n", h ));
+    dprintf(( "DIGCliClose: h=%d\n", DFH2PH( dfh ) ));
+    if( close( DFH2PH( dfh ) ) ) {
+        dprintf(( "DIGCliClose: h=%d failed!!\n", DFH2PH( dfh ) ));
+    }
 }
 
-void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
+void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
 {
     dprintf(( "DIGCliRemove: name=%p:{%s} mode=%#x\n", name, name, mode ));
     unlink( name );
     mode = mode;
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {

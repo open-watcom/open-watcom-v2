@@ -338,7 +338,7 @@ bool Dmp_qnx_head( void )
     if( qnx_rec.rec_type == LMF_HEADER_REC ) {
         Wread( &Qnx_head, sizeof( lmf_header ) );
         if( Qnx_head.version != QNX_VERSION ) {
-            return( 0 );
+            return( false );
         }
         Banner( "QNX EXE Header" );
         Dump_header( (char *)&Qnx_head.version, qnx_def_msg );
@@ -356,7 +356,7 @@ bool Dmp_qnx_head( void )
             get_rec_type( qnx_rec.rec_type, qnx_rec.data_nbytes, offset );
             offset += qnx_rec.data_nbytes;
         }
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }

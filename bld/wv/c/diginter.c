@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include "dbgdefn.h"
 #include "dbgmem.h"
 #include "dbgio.h"
@@ -39,7 +40,7 @@
 #include "remcore.h"
 
 
-void *DIGCLIENT DIGCliAlloc( size_t amount )
+void *DIGCLIENTRY( Alloc )( size_t amount )
 {
     void        *p;
 
@@ -47,53 +48,85 @@ void *DIGCLIENT DIGCliAlloc( size_t amount )
     return( p );
 }
 
-void *DIGCLIENT DIGCliRealloc( void *p, size_t amount )
+void *DIGCLIENTRY( Realloc )( void *p, size_t amount )
 {
     _Realloc( p, amount );
     return( p );
 }
 
-void DIGCLIENT DIGCliFree( void *p )
+void DIGCLIENTRY( Free )( void *p )
 {
     _Free( p );
 }
 
-dig_fhandle DIGCLIENT DIGCliOpen( char const *name, dig_open mode )
+static open_access DIG2WVOpenMode( dig_open mode )
+{
+    open_access loc;
+
+    loc = 0;
+    if( mode & DIG_READ ) {
+        loc |= OP_READ;
+    }
+    if( mode & DIG_WRITE ) {
+        loc |= OP_WRITE;
+    }
+    if( mode & DIG_CREATE ) {
+        loc |= OP_CREATE;
+    }
+    if( mode & DIG_TRUNC ) {
+        loc |= OP_TRUNC;
+    }
+    if( mode & DIG_APPEND ) {
+        loc |= OP_APPEND;
+    }
+    if( mode & DIG_REMOTE ) {
+        loc |= OP_REMOTE;
+    }
+    if( mode & DIG_LOCAL ) {
+        loc |= OP_LOCAL;
+    }
+    if( mode & DIG_SEARCH ) {
+        loc |= OP_SEARCH;
+    }
+    return( loc );
+}
+
+dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
 {
     file_handle fh;
 
-    fh = FileOpen( name, mode );
+    fh = FileOpen( name, DIG2WVOpenMode( mode ) );
     if( fh == NIL_HANDLE )
         return( DIG_NIL_HANDLE );
-    return( (dig_fhandle)fh );
+    return( FH2DFH( fh ) );
 }
 
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle dfh, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
 {
-    return( SeekStream( (file_handle)dfh, p, k ) );
+    return( SeekStream( DFH2FH( dfh ), p, k ) );
 }
 
-size_t DIGCLIENT DIGCliRead( dig_fhandle dfh, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
 {
-    return( ReadStream( (file_handle)dfh, b, s ) );
+    return( ReadStream( DFH2FH( dfh ), b, s ) );
 }
 
-size_t DIGCLIENT DIGCliWrite( dig_fhandle dfh, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *b, size_t s )
 {
-    return( WriteStream( (file_handle)dfh, b, s ) );
+    return( WriteStream( DFH2FH( dfh ), b, s ) );
 }
 
-void DIGCLIENT DIGCliClose( dig_fhandle dfh )
+void DIGCLIENTRY( Close )( dig_fhandle dfh )
 {
-    FileClose( (file_handle)dfh );
+    FileClose( DFH2FH( dfh ) );
 }
 
-void DIGCLIENT DIGCliRemove( char const *name, dig_open mode )
+void DIGCLIENTRY( Remove )( char const *name, dig_open mode )
 {
-    FileRemove( name, mode );
+    FileRemove( name, DIG2WVOpenMode( mode ) );
 }
 
-unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
+unsigned DIGCLIENTRY( MachineData )( address addr, dig_info_type info_type,
                         dig_elen in_size,  const void *in,
                         dig_elen out_size, void *out )
 {

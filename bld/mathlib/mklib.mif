@@ -1,6 +1,7 @@
-!include ../../../objects.mif
 !include $(mathlib_dir)/master.mif
 !include $(mathlib_dir)/librules.mif
+
+!include ../../../objects.mif
 
 .c   : ../../../c
 .asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
@@ -9,7 +10,8 @@ all : $(objfiles) $(libname).lib .symbolic
     @%null
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
-    $(librarian) $(lib_flags) $^@ $(objs) $(libs)
+    @%make echo_lib
+    $(librarian) $(mlib_lib_flags) $^@ $(objs) $(libs)
 
 !include ../../../deps.mif
 

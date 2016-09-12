@@ -1275,7 +1275,7 @@ bool CnvAddr( address addr, char *buff, size_t buff_len )
 
     sym = alloca( DIPHandleSize( HK_SYM, false ) );
 //    MapAddressToActual( exeImage, &addr.mach );
-    sr = AddrSym( NO_MOD, addr, sym );
+    sr = DIPAddrSym( NO_MOD, addr, sym );
     switch( sr ) {
     case SR_EXACT:
     //case SR_CLOSEST: /* add in if we have symbol+offset */
@@ -1283,9 +1283,9 @@ bool CnvAddr( address addr, char *buff, size_t buff_len )
     default:
         return( false );
     }
-    name_len = SymName( sym, NULL, SN_DEMANGLED, buff, buff_len );
+    name_len = DIPSymName( sym, NULL, SN_DEMANGLED, buff, buff_len );
     if( name_len == 0 ) {
-        SymName( sym, NULL, SN_SOURCE, buff, buff_len );
+        DIPSymName( sym, NULL, SN_SOURCE, buff, buff_len );
     }
     return( true );
 }

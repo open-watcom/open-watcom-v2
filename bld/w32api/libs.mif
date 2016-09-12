@@ -160,88 +160,80 @@ all : $(dirs) $(libs) .SYMBOLIC
 .c: ../lib
 
 .def.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 .obj.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 {ddk}.def{ddk}.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=ddk/$^. $[@
 
 {ddk}.lbc{ddk}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 {ddk}.obj{ddk}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 {directx}.c{directx}.lib: $(w32api_autodepends)
-!ifeq verbose 1
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 {directx}.def{directx}.lbc:
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
 
 {directx}.lbc{directx}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$[@
 
 {directx}.obj{directx}.lib: $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) $[@
 
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
-    @%create $@
+    $(noecho)%create $@
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
 
 ws2_32.lbc: ws2_32.def ws2_cons.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $[@
     @%append $@ +ws2_cons.obj
 
 directx/dinput.lbc: directx/dinput.def directx/dinpstat.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 directx/dinput8.lbc: directx/dinput8.def directx/dinpstat.obj
-    *awk -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
+    @%make echo_awk
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=directx/$^. $[@
     @%append $@ +directx/dinpstat.obj
 
 ddk/rtlver.obj: ddk/rtlver.c
-!ifeq verbose 1
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 ddk/wdmguid.obj: ddk/wdmguid.c
-!ifeq verbose 1
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dinpstat.obj: directx/dinpstat.c
-!ifeq verbose 1
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 directx/dxguid.obj: directx/dxguid.c
-!ifeq verbose 1
-    $(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!else
-    @echo cc $@
-    @$(cc) $(cflags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
-!endif
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(extra_c_flags_$[&) $(inc_path) -fo=$@ $[@
 
 $(dirs):
     @if not exist $@ @mkdir $@

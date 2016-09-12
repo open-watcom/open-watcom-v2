@@ -64,6 +64,15 @@ typedef struct machine_state    machine_state;
 typedef unsigned                error_handle;
 
 typedef int                     file_handle;
+#define NIL_HANDLE              ((file_handle)-1)
+
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define FH2DFH(fh)  (dig_fhandle)(pointer_int)((fh) + 1)
+#define DFH2FH(dfh) ((file_handle)(pointer_int)(dfh) - 1)
 
 typedef unsigned_8 debug_level; enum {
     #define pick( a,b ) a,

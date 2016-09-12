@@ -1,3 +1,6 @@
+# don't ask, just nuke the files
+.ERASE
+
 bld_ver      = $+$(%OWBLDVER)$-
 bld_ver_str  = $+$(%OWBLDVERSTR)$-
 patch_level  = 0
@@ -15,10 +18,16 @@ dll_subdir   = $+$(%OWDLLOBJDIR)$-
 dll_subdir   = dllobjs
 !endif
 
+!ifdef %OWVERBOSE
 verbose      = $+$(%OWVERBOSE)$-
+!else
+verbose      = 0
+!endif
 
-# don't ask, just nuke the files
-.ERASE
+noecho = @
+!ifneq verbose 0
+noecho =
+!endif
 
 mif_path     = $(build_dir)/mif
 

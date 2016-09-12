@@ -39,19 +39,19 @@
  */
 
 
-mad_string              DIGENTRY MICallStackGrowsUp( void )
+mad_string MADIMPENTRY( CallStackGrowsUp )( void )
 {
     return( MS_FAIL );
 }
 
-const mad_string        *DIGENTRY MICallTypeList( void )
+const mad_string *MADIMPENTRY( CallTypeList )( void )
 {
     static const mad_string list[] = { MAD_MSTR_NIL };
 
     return( list );
 }
 
-mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address rtn, mad_registers const *in, mad_registers *out )
+mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address rtn, mad_registers const *in, mad_registers *out )
 {
     call = call;
     out->mips = in->mips;
@@ -61,14 +61,14 @@ mad_status      DIGENTRY MICallBuildFrame( mad_string call, address ret, address
     return( MS_OK );
 }
 
-const mad_reg_info      *DIGENTRY MICallReturnReg( mad_string call, address rtn )
+const mad_reg_info *MADIMPENTRY( CallReturnReg )( mad_string call, address rtn )
 {
     call = call; rtn = rtn;
 
     return( &RegList[IDX_r3].info );
 }
 
-const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address rtn )
+const mad_reg_info **MADIMPENTRY( CallParmRegList )( mad_string call, address rtn )
 {
     static const mad_reg_info *list[] = {
         &RegList[IDX_r3].info, &RegList[IDX_r4].info, &RegList[IDX_r5].info,
@@ -83,12 +83,12 @@ const mad_reg_info      **DIGENTRY MICallParmRegList( mad_string call, address r
 
 #define NO_OFF  (~(addr_off)0)
 
-unsigned        DIGENTRY MICallUpStackSize( void )
+unsigned MADIMPENTRY( CallUpStackSize )( void )
 {
     return( sizeof( mad_call_up_data ) );
 }
 
-mad_status      DIGENTRY MICallUpStackInit( mad_call_up_data *cud, const mad_registers *mr )
+mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
     cud->ra = mr->mips.u31.ra.u._32[I64LO32];
     cud->sp = mr->mips.u29.sp.u._32[I64LO32];
@@ -162,7 +162,7 @@ static int GetAnOffset( addr_off in, addr_off *off )
  *   have serious trouble figuring out what the return address is.
  */
 
-mad_status      DIGENTRY MICallUpStackLevel( mad_call_up_data *cud,
+mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
                                 const address *start,
                                 unsigned rtn_characteristics,
                                 long return_disp,

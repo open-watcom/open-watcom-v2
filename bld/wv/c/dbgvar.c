@@ -345,7 +345,7 @@ static type_display *VarDisplayAddStructType( type_handle *th )
     symbol_type         tag;
     int                 len;
 
-    len = TypeName( th, 0, &tag, TxtBuff, TXT_LEN );
+    len = DIPTypeName( th, 0, &tag, TxtBuff, TXT_LEN );
     if( len == 0 ) {
         return( NULL );
     }
@@ -377,7 +377,7 @@ static type_display *VarDisplayAddFieldSym( type_display *parent, sym_handle *fi
 {
     int         len;
 
-    len = SymName( field, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    len = DIPSymName( field, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
     if( len == 0 )
         return( NULL );
     return( VarDisplayAddField( parent, TxtBuff ) );
@@ -431,7 +431,7 @@ char *VarDisplayType( var_node *v, char *buff, size_t buff_len )
             return( NULL );
         }
     }
-    if( !v->have_type || ( len = TypeName( v->th, 0, &tag, buff, buff_len ) ) == 0 ) {
+    if( !v->have_type || ( len = DIPTypeName( v->th, 0, &tag, buff, buff_len ) ) == 0 ) {
         StrCopy( LIT_ENG( Unknown_type ), buff );
         return( NULL );
     }
@@ -580,7 +580,7 @@ static void VarNodeSetBits( sym_handle *sh, var_node *v )
 {
     sym_info    sinfo;
 
-    SymInfo( sh, NULL, &sinfo );
+    DIPSymInfo( sh, NULL, &sinfo );
     v->bits = 0;
     if( sinfo.kind == SK_CODE || sinfo.kind == SK_PROCEDURE )
         v->bits |= VARNODE_CODE;
@@ -604,7 +604,7 @@ typedef struct {
 } find_field_info;
 
 extern int              TargRow;
-static SYM_WALKER CheckOneField;
+
 static walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     find_field_info *d = _d;
@@ -630,7 +630,6 @@ static walk_result CheckOneField( sym_walk_info swi, sym_handle *sh, void *_d )
     return( WR_CONTINUE );
 }
 
-OVL_EXTERN SYM_WALKER DoPushFirstField;
 OVL_EXTERN walk_result DoPushFirstField( sym_walk_info swi, sym_handle *sh, void *pdone )
 {
     if( swi == SWI_SYMBOL ) {
@@ -646,7 +645,7 @@ static void     PushFirstField( void *th )
     bool        done;
 
     done = false;
-    WalkSymList( SS_TYPE, th, DoPushFirstField, &done );
+    DIPWalkSymList( SS_TYPE, th, DoPushFirstField, &done );
     if( !done ) {
         Suicide();
     }
@@ -657,14 +656,13 @@ typedef struct {
     char        *name;
 } dot_named_field_info;
 
-OVL_EXTERN SYM_WALKER DoDotNamedField;
 OVL_EXTERN walk_result DoDotNamedField( sym_walk_info swi, sym_handle *sh, void *_info )
 {
     dot_named_field_info *info = _info;
 
     if( swi != SWI_SYMBOL )
         return( WR_CONTINUE );
-    SymName( sh, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+    DIPSymName( sh, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
     if( strcmp( TxtBuff, info->name ) != 0 )
         return( WR_CONTINUE );
     DoGivenField( sh );
@@ -680,7 +678,7 @@ static void     DotNamedField( void *th, void *name )
 
     info.done = false;
     info.name = name;
-    WalkSymList( SS_TYPE, th, DoDotNamedField, &info );
+    DIPWalkSymList( SS_TYPE, th, DoDotNamedField, &info );
     if( !info.done ) {
         Suicide();
     }
@@ -740,7 +738,7 @@ static type_kind        TypeKind( type_handle *th )
 {
     dip_type_info   tinfo;
 
-    TypeInfo( th, NULL, &tinfo );
+    DIPTypeInfo( th, NULL, &tinfo );
     return( tinfo.kind );
 }
 
@@ -768,7 +766,7 @@ static bool             FindField( sym_handle *field, var_node *vfield )
     d.vfield = vfield;
     d.field = field;
     d.ok = false;
-    WalkSymList( SS_TYPE, vstruct->th, &CheckOneField, &d );
+    DIPWalkSymList( SS_TYPE, vstruct->th, &CheckOneField, &d );
     return( d.ok );
 }
 
@@ -857,7 +855,6 @@ typedef struct {
     var_node    *inherit;
 } alloc_field_info;
 
-static SYM_WALKER AllocOneField;
 static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
 {
     var_node            *new;
@@ -880,8 +877,8 @@ static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
         break;
     case SWI_INHERIT_START:
         len = 0;
-        if( sh != NULL && SymType( sh, th ) == DS_OK ) {
-            len = TypeName( th, 0, &tag, NULL, 0 );
+        if( sh != NULL && DIPSymType( sh, th ) == DS_OK ) {
+            len = DIPTypeName( th, 0, &tag, NULL, 0 );
         }
         new = NewNode( d->i, len );
         if( new == NULL )
@@ -892,7 +889,7 @@ static walk_result AllocOneField( sym_walk_info swi, sym_handle *sh, void *_d )
         new->node_type = NODE_INHERIT;
         new->display |= VARDISP_INHERIT_CLOSED;
         if( len != 0 ) {
-            TypeName( th, 0, &tag, VarNodeExpr( new ), len+1 );
+            DIPTypeName( th, 0, &tag, VarNodeExpr( new ), len+1 );
         }
         new->parent = d->v;
         new->s = d->v->s;
@@ -919,7 +916,7 @@ static bool PointerToChar( void )
     switch( ExprSP->info.kind ) {
     case TK_POINTER:
     case TK_ARRAY:
-        TypeBase( ExprSP->th, type, NULL, NULL );
+        DIPTypeBase( ExprSP->th, type, NULL, NULL );
         if( TypeKind( type ) == TK_CHAR )
             return( true );
         break;
@@ -1001,7 +998,7 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
                     d.owner = &new->expand;
                     d.v = new;
                     d.i = i;
-                    WalkSymList( SS_TYPE, ExprSP->th, &AllocOneField, &d );
+                    DIPWalkSymList( SS_TYPE, ExprSP->th, &AllocOneField, &d );
                 }
             }
         } else {
@@ -1015,11 +1012,11 @@ bool    VarExpand( var_info *i, var_node *v, long start, long end )
         d.owner = &v->expand;
         d.v = v;
         d.i = i;
-        WalkSymList( SS_TYPE, ExprSP->th, &AllocOneField, &d );
+        DIPWalkSymList( SS_TYPE, ExprSP->th, &AllocOneField, &d );
         break;
     case TK_ARRAY:
         if( end < start ) {
-            TypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
+            DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ainfo, NULL );
             elts = ainfo.num_elts;
         } else {
             elts = end - start + 1;
@@ -1037,11 +1034,11 @@ static void ArrayParms( var_node *v, array_info *ainfo )
     dip_type_info   tinfo;
 
     if( TypeKind( v->th ) == TK_ARRAY ) {
-        TypeArrayInfo( v->th, ExprSP->lc, ainfo, NULL );
+        DIPTypeArrayInfo( v->th, ExprSP->lc, ainfo, NULL );
     } else {
-        TypeBase( v->th, th, NULL, NULL );
+        DIPTypeBase( v->th, th, NULL, NULL );
         ainfo->low_bound = 0;
-        TypeInfo( th, ExprSP->lc, &tinfo );
+        DIPTypeInfo( th, ExprSP->lc, &tinfo );
         ainfo->stride = tinfo.size;
     }
 }
@@ -1527,9 +1524,9 @@ void VarBaseName( var_node *v )
 {
     TxtBuff[0] = NULLCHAR;
     if( v->is_sym_handle ) {
-        if( SymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) )
+        if( DIPSymName( VarNodeHdl( v ), NULL, SN_SCOPED, TxtBuff, TXT_LEN ) )
             return;
-        SymName( VarNodeHdl( v ), NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+        DIPSymName( VarNodeHdl( v ), NULL, SN_SOURCE, TxtBuff, TXT_LEN );
     } else {
         strcpy( TxtBuff, VarNodeExpr( v ) );
     }
@@ -1581,9 +1578,9 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
                 name = LIT_ENG( field );
                 len = strlen( LIT_ENG( field ) );
             } else {
-                len = SymName( field, NULL, SN_SOURCE, NULL, 0 );
+                len = DIPSymName( field, NULL, SN_SOURCE, NULL, 0 );
                 _AllocA( name, len+1 );
-                SymName( field, NULL, SN_SOURCE, name, len+1 );
+                DIPSymName( field, NULL, SN_SOURCE, name, len+1 );
             }
             if( delay_indirect ) {
                 prio = AddToName( T_SSL_SPEC_POINTER_FIELD, name, len, prio );
@@ -2283,7 +2280,6 @@ typedef struct add_new_var_info {
     var_info    *i;
 } add_new_var_info;
 
-static SYM_WALKER AddNewVar;
 static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
 {
     add_new_var_info    *d = _d;
@@ -2292,10 +2288,10 @@ static walk_result AddNewVar( sym_walk_info swi, sym_handle *sym, void *_d )
 
     switch( swi ) {
     case SWI_SYMBOL:
-        SymInfo( sym, NULL, &sinfo );
+        DIPSymInfo( sym, NULL, &sinfo );
         if( !sinfo.is_member && sinfo.kind != SK_TYPE ) {
             if( d->v == NULL ) {
-                SymName( sym, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
+                DIPSymName( sym, NULL, SN_SOURCE, TxtBuff, TXT_LEN );
                 // nyi - use SymInfo when Brian implements the "this" indicator
                 if( stricmp( TxtBuff, "this" ) == 0 ) {
                     new = VarAdd1( d->i, sym, sym_SIZE, d->i->members, true );
@@ -2341,9 +2337,9 @@ static scope_state *NewScope( var_info *i, scope_block *scope, mod_handle mod, b
         info.i = i;
         info.v = NULL;
         if( mod == NO_MOD ) {
-            WalkSymList( SS_BLOCK, scope, AddNewVar, &info );
+            DIPWalkSymList( SS_BLOCK, scope, AddNewVar, &info );
         } else {
-            WalkSymList( SS_MODULE, &mod, AddNewVar, &info );
+            DIPWalkSymList( SS_MODULE, &mod, AddNewVar, &info );
         }
         s->scope_timestamp = ++ScopeTimeStamp;
         s->scope.addr = scope->start;
@@ -2461,7 +2457,7 @@ bool VarReMap( var_info *i, void *image )
             scope.start = s->scope.addr;
             scope.len = s->scope_len;
             scope.unique = s->scope_unique;
-            WalkSymList( SS_BLOCK, &scope, AddNewVar, &info );
+            DIPWalkSymList( SS_BLOCK, &scope, AddNewVar, &info );
             s->unmapped = false;
             break;
         case REMAP_ERROR:
@@ -2543,7 +2539,7 @@ bool VarInfoRefresh( var_type vtype, var_info *i, address *addr, void *wnd_handl
             if( havescope ) {
                 for( ;; ) {
                     _AllocA( new, sizeof( *new ) );
-                    if( ScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE )
+                    if( DIPScopeOuter( ContextMod, &nested->scope, &new->scope ) == SR_NONE )
                         break;
                     new->next = nested;
                     nested = new;
@@ -2758,7 +2754,7 @@ bool VarParentIsArray( var_node * v )
     if( ( vparent == v ) || ( NULL == vparent ) )
         return( false );
 
-    TypeInfo( vparent->th, NULL, &tinfo );
+    DIPTypeInfo( vparent->th, NULL, &tinfo );
 
     return( tinfo.kind == TK_ARRAY || vparent->fake_array );
 }

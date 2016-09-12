@@ -134,7 +134,7 @@ $(LNK): $(__makefiles__)
 !endif
 
 ###############
-sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
+sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK) $(__MAKEFILES__)
         $(linker) @$(LNK)
 !ifeq type win
 !ifeq os w386
@@ -159,12 +159,12 @@ sample.$(ext) : $(objs) $(guilib) $(uilib) $(sysdep) $(LNK)
 !endif
 
 ################
-pmsample.$(ext) : pmsample.obj $(guilib) $(uilib) $(LNK)
+pmsample.$(ext) : pmsample.obj $(guilib) $(uilib) $(LNK) $(__MAKEFILES__)
         @%append $(LNK) file pmsample.obj
         $(linker) @$(LNK)
 
 ################
-samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK)
+samp2.$(ext) : samp2.obj $(guilib) $(uilib) $(LNK) $(__MAKEFILES__)
         @%append $(LNK) file samp2.obj
         $(linker) @$(LNK)
 

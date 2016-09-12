@@ -99,7 +99,7 @@ static bool DefaultTypeInfo( dip_type_info *info )
 
 bool ClassifyType( location_context *lc, type_handle *th, dip_type_info *info )
 {
-    TypeInfo( th, lc, info );
+    DIPTypeInfo( th, lc, info );
     return( DefaultTypeInfo( info ) );
 }
 
@@ -169,7 +169,8 @@ sym_list *ExprGetSymList( stack_entry *entry, bool source_only )
 void ExprSymbol( stack_entry *entry, sym_handle *sh )
 {
     SET_TH( entry );
-    if( SymType( sh, entry->th ) != DS_OK ) entry->th = NULL;
+    if( DIPSymType( sh, entry->th ) != DS_OK )
+        entry->th = NULL;
     ClassifyEntry( entry, &entry->info );
     SET_SH( entry );
     HDLAssign( sym, entry->v.sh, sh );
@@ -203,7 +204,7 @@ void SymResolve( stack_entry *entry )
     if( entry->flags & SF_SYM ) {
         sh = entry->v.sh;
         entry->flags &= ~SF_FORM_MASK;
-        if( SymLocation( sh, entry->lc, &entry->v.loc ) == DS_OK ) {
+        if( DIPSymLocation( sh, entry->lc, &entry->v.loc ) == DS_OK ) {
             entry->flags |= SF_LOCATION;
             if( entry->v.loc.e[0].type == LT_ADDR ) {
                 entry->flags |= SF_IMP_ADDR;
@@ -215,11 +216,11 @@ void SymResolve( stack_entry *entry )
                             LIT_ENG( ERR_NO_MEMORY_FOR_EXPR ) );
                 LocationCreate( &entry->v.string.loc, LT_INTERNAL,
                             entry->v.string.allocated );
-                if( SymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
+                if( DIPSymValue( sh, entry->lc, entry->v.string.allocated ) != DS_OK ) {
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
             } else {
-                if( SymValue( sh, entry->lc, &tmp ) != DS_OK ) {
+                if( DIPSymValue( sh, entry->lc, &tmp ) != DS_OK ) {
                     Error( ERR_NONE, LIT_ENG( ERR_NO_ACCESS ) );
                 }
                 FromItem( &tmp, entry );
@@ -347,9 +348,12 @@ static bool IsCodePointer( stack_entry *entry )
     DIPHDL( type, base_th );
     dip_type_info   ti;
 
-    if( entry->th == NULL ) return( false );
-    if( TypeBase( entry->th, base_th, NULL, NULL ) != DS_OK ) return( false );
-    if( TypeInfo( base_th, entry->lc, &ti ) != DS_OK ) return( false );
+    if( entry->th == NULL )
+        return( false );
+    if( DIPTypeBase( entry->th, base_th, NULL, NULL ) != DS_OK )
+        return( false );
+    if( DIPTypeInfo( base_th, entry->lc, &ti ) != DS_OK )
+        return( false );
     switch( ti.kind ) {
     case TK_CODE:
     case TK_FUNCTION:
@@ -364,13 +368,13 @@ static void NearToFar( stack_entry *entry )
 
     near_off = entry->v.addr.mach.offset;
     if( entry->th == NULL
-      || TypePtrAddrSpace( entry->th, entry->lc, &entry->v.addr ) != DS_OK ) {
+      || DIPTypePtrAddrSpace( entry->th, entry->lc, &entry->v.addr ) != DS_OK ) {
         if( near_off == 0 ) {
             entry->v.addr = NilAddr;
         } else if( IsCodePointer( entry ) ) {
             entry->v.addr = Context.execution;
         } else if( entry->th != NULL ) {
-            entry->v.addr = DefAddrSpaceForMod( TypeMod( entry->th ) );
+            entry->v.addr = DefAddrSpaceForMod( DIPTypeMod( entry->th ) );
         } else {
             entry->v.addr = DefAddrSpaceForAddr( Context.execution );
         }
@@ -409,9 +413,9 @@ void LRValue( stack_entry *entry )
                 if( entry->th != NULL ) {
                     /* change typing from "array of..." to "pointer to..." */
                     GetMADTypeDefaultAt( entry->v.addr, MTK_ADDRESS, &mti );
-                    TypeBase( entry->th, th, NULL, NULL );
-                    TypePointer( th, TM_FAR, BITS2BYTES( mti.b.bits ), entry->th );
-                    TypeInfo( entry->th, entry->lc, &entry->info );
+                    DIPTypeBase( entry->th, th, NULL, NULL );
+                    DIPTypePointer( th, TM_FAR, BITS2BYTES( mti.b.bits ), entry->th );
+                    DIPTypeInfo( entry->th, entry->lc, &entry->info );
                 } else {
                     ExprSetAddrInfo( entry, false );
                 }

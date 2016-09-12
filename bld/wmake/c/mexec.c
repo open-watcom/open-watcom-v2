@@ -48,6 +48,7 @@
     #include <sys/wait.h>
 #endif
 #include <stdio.h>
+#include <ctype.h>
 #include <time.h>
 #ifdef DLLS_IMPLEMENTED
     #include "idedrv.h"
@@ -76,13 +77,13 @@
   #define MASK_ALL_ITEMS  "*.*"
 #endif
 
-enum {
+typedef enum {
     FLAG_SHELL      = 0x01,
     FLAG_SILENT     = 0x02,
     FLAG_ENV_ARGS   = 0x04,
     FLAG_IGNORE     = 0x08,
     FLAG_SHELL_RC   = 0x10
-};
+} shell_flags;
 
 typedef struct dd {
   struct dd     *next;
@@ -258,7 +259,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( (int)bytes != write( handle, DeMacroBody, (unsigned)bytes ) ) {
+                if( bytes != write( handle, DeMacroBody, bytes ) ) {
                     ret = RET_ERROR;
                 }
                 if( 1 != write( handle, "\n", 1 ) ) {
@@ -305,16 +306,16 @@ STATIC char *RemoveBackSlash( const char *inString )
  */
 {
     char    buffer[_MAX_PATH];
-    char    *current;
+    char    *p;
     int     pos;
     char    c;
 
     assert( inString != NULL );
 
-    for( pos = 0, current = (char *)inString; (c = *current++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
+    for( pos = 0, p = (char *)inString; (c = *p++) != NULLCHAR && pos < _MAX_PATH - 1; ) {
         if( c == BACKSLASH ) {
-            if( *current == DOUBLEQUOTE ) {
-                c = *current++;
+            if( *p == DOUBLEQUOTE ) {
+                c = *p++;
             }
         }
         buffer[pos++] = c;
@@ -481,7 +482,7 @@ STATIC int findInternal( const char *cmd )
 
     assert( cmd != NULL );
     /* test if of form x: */
-    if( isalpha( *cmd ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
+    if( cisalpha( *cmd ) && cmd[1] == ':' && cmd[2] == NULLCHAR ) {
         return( CNUM );
     }
     while( (key = bsearch( &cmd, dosInternals, CNUM, sizeof( char * ), KWCompare )) == NULL ) {
@@ -524,7 +525,7 @@ STATIC RET_T percentMake( char *arg )
         }
         more_targets = false;
         for( finish = start; *finish != NULLCHAR; ++finish ) {
-            if( isws( *finish ) ) {
+            if( cisws( *finish ) ) {
                 more_targets = true;
                 *finish = NULLCHAR;
                 break;
@@ -593,7 +594,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     fn = p;
 
     if( *p != DOUBLEQUOTE ) {
-        while( isfilec( *p ) ) {
+        while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
@@ -608,7 +609,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     }
 
     if( *p != NULLCHAR ) {
-        if( !isws( *p ) ) {
+        if( !cisws( *p ) ) {
             switch( type ) {
             case WR_APPEND:
                 cmd_name = percentCmds[PER_APPEND];
@@ -639,8 +640,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
      * the end of the string.  fn points to the name of the file to write to
      */
     FixName( fn );
-    if( type == WR_CREATE || currentFileName == NULL ||
-                             FNameCmp( currentFileName, fn ) != 0 ) {
+    if( type == WR_CREATE || currentFileName == NULL || !FNameEq( currentFileName, fn ) ) {
         closeCurrentFile();
         currentFileName = StrDupSafe( fn );
         open_flags = O_WRONLY | O_CREAT | O_TEXT;
@@ -661,7 +661,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( write( currentFileHandle, text, (unsigned)len ) != (int)len ) {
+        if( write( currentFileHandle, text, len ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );
@@ -699,7 +699,7 @@ STATIC RET_T percentRename( char *arg )
     p = SkipWS( arg );
     fn1 = p;
     if( *p != DOUBLEQUOTE ) {
-        while( isfilec( *p ) ) {
+        while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
@@ -713,7 +713,7 @@ STATIC RET_T percentRename( char *arg )
         }
     }
 
-    if( *p == NULLCHAR || !isws( *p ) ) {
+    if( *p == NULLCHAR || !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         PrtMsg( INF | PRNTSTR, "First file" );
         PrtMsg( INF | PRNTSTR, p );
@@ -725,7 +725,7 @@ STATIC RET_T percentRename( char *arg )
     p = SkipWS( p );
     fn2 = p;
     if( *p != DOUBLEQUOTE ) {
-        while( isfilec( *p ) ) {
+        while( cisfilec( *p ) ) {
             ++p;
         }
     } else {
@@ -739,7 +739,7 @@ STATIC RET_T percentRename( char *arg )
         }
     }
 
-    if( *p != NULLCHAR && !isws( *p ) ) {
+    if( *p != NULLCHAR && !cisws( *p ) ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, percentCmds[PER_RENAME] );
         return( RET_ERROR );
     }
@@ -926,7 +926,7 @@ STATIC RET_T handleSet( char *cmd )
 
     /* anything goes in a dos set name... even punctuation! */
     name = p;
-    while( *p != NULLCHAR && !isws( *p ) && *p != '=' ) {
+    while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) {
         ++p;
     }
     endname = p;
@@ -1012,7 +1012,7 @@ STATIC RET_T handleIf( char *cmd )
     }
 
     tmp1 = p;                   /* find first word after IF */
-    while( !isws( *p ) && *p != NULLCHAR && *p != '=' ) {
+    while( !cisws( *p ) && *p != NULLCHAR && *p != '=' ) {
         ++p;
     }
     if( *p == NULLCHAR ) {
@@ -1027,7 +1027,7 @@ STATIC RET_T handleIf( char *cmd )
 
     if( not ) {             /* discard the "NOT" get next word */
         tmp1 = p = SkipWS( p );
-        while( !isws( *p ) && *p != NULLCHAR && *p != '=' ) {
+        while( !cisws( *p ) && *p != NULLCHAR && *p != '=' ) {
             ++p;
         }
         if( *p == NULLCHAR ) {
@@ -1044,7 +1044,7 @@ STATIC RET_T handleIf( char *cmd )
         return( RET_ERROR );
     }
 
-    //while( !isws( *p ) && *p != NULLCHAR ) ++p;
+    //while( !cisws( *p ) && *p != NULLCHAR ) ++p;
     p = FindNextWS( p );
 
     if( *p == NULLCHAR ) {
@@ -1085,7 +1085,7 @@ STATIC RET_T handleIf( char *cmd )
         }
                             /* we have found "==", get <str2> */
         tmp2 = p = SkipWS( p + 2 );
-        while( !isws( *p ) && *p != NULLCHAR ) {
+        while( !cisws( *p ) && *p != NULLCHAR ) {
             ++p;
         }
         if( *p == NULLCHAR ) {
@@ -1134,14 +1134,14 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
     if( p[0] != '%' ) {
         return( handleForSyntaxError() );
     }
-    if( ( p[1] == '%' && !isalpha( p[2] ) ) ||
-        ( p[1] != '%' && !isalpha( p[1] ) ) ) {
+    if( ( p[1] == '%' && !cisalpha( p[2] ) ) ||
+        ( p[1] != '%' && !cisalpha( p[1] ) ) ) {
         return( handleForSyntaxError() );
     }
     *pvar = (const char *)p;
 
                             /* move to end of <var> */
-    while( isalpha( *p ) || *p == '%' ) {
+    while( cisalpha( *p ) || *p == '%' ) {
         ++p;
     }
 
@@ -1153,7 +1153,7 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
 
     p = SkipWS( p + 1 );    /* move to "in" */
 
-    if( toupper( p[0] ) != 'I' || toupper( p[1] ) != 'N' || !isws( p[2] ) ) {
+    if( ctoupper( p[0] ) != 'I' || ctoupper( p[1] ) != 'N' || !cisws( p[2] ) ) {
         return( handleForSyntaxError() );
     }
 
@@ -1176,7 +1176,7 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
 
     p = SkipWS( p + 1 );    /* move to "do" */
 
-    if( toupper( p[0] ) != 'D' || toupper( p[1] ) != 'O' || !isws( p[2] ) ) {
+    if( ctoupper( p[0] ) != 'D' || ctoupper( p[1] ) != 'O' || !cisws( p[2] ) ) {
         return( handleForSyntaxError() );
     }
 
@@ -1348,7 +1348,7 @@ STATIC RET_T handleCD( char *cmd )
 
     closeCurrentFile();
     p = cmd;
-    while( isalpha( *p ) ) {
+    while( cisalpha( *p ) ) {
         ++p;     /* advance past command name */
     }
 
@@ -1387,7 +1387,7 @@ STATIC RET_T handleChangeDrive( const char *cmd )
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[CNUM] );
 #endif
 
-    drive_index = (unsigned)(toupper( *cmd ) - 'A' + 1);
+    drive_index = (unsigned)(ctoupper( *cmd ) - 'A' + 1);
     if( drive_index == 0 || drive_index > 26 ) {
         return( RET_ERROR );
     }
@@ -1427,8 +1427,8 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
                                 /* is it a switch? */
         while( p[0] == '-' ) {
             p++;
-            while( isalpha( p[0] ) ) {
-                switch( tolower( p[0] ) ) {
+            while( cisalpha( p[0] ) ) {
+                switch( ctolower( p[0] ) ) {
                 case 'f':
                     flags->bForce = true;
                     break;
@@ -1526,7 +1526,7 @@ static bool doRM( const char *f, const rm_flags *flags )
     len = strlen( f );
     for( i = len; i > 0; --i ) {
         char ch = f[i - 1];
-        if( ch == '/' || ch == '\\' || ch == ':' ) {
+        if( cisdirc( ch ) ) {
             break;
         }
     }
@@ -1751,7 +1751,7 @@ static void dumpCommand( char *cmd )
     // trim trailing white space before printing
     z = cmd;
     for( p = cmd; *p != NULLCHAR; ++p ) {
-        if( !isws( *p ) ) {
+        if( !cisws( *p ) ) {
             z = p;
         }
     }
@@ -1831,8 +1831,8 @@ STATIC void killTmpEnv( UINT16 tmp )
 #ifdef __WATCOMC__
 #pragma on (check_stack);
 #endif
-STATIC RET_T shellSpawn( char *cmd, int flags )
-/*********************************************/
+STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
+/*****************************************************/
 {
     bool        percent_cmd;        // is this a percent cmd?
     int         comnum;             // index into dosInternals
@@ -1850,7 +1850,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
     arg = cmd + (percent_cmd ? 1 : 0);      /* split cmd name from args */
 
     quote = 0;                              /* no quotes yet */
-    while( !((isws( *arg ) || *arg == Glob.swchar || *arg == '+' ||
+    while( !((cisws( *arg ) || *arg == Glob.swchar || *arg == '+' ||
         *arg == '=' ) && !quote) && *arg != NULLCHAR ) {
         if( *arg == '\"' ) {
             quote = !quote;  /* found a quote */
@@ -1869,9 +1869,13 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
 
     memcpy( cmdname, cmd, arg - cmd );  /* copy command */
     cmdname[arg - cmd] = NULLCHAR;      /* null terminate it */
+    if( *cmdname == NULLCHAR ) {
+        // handle blank command by shell
+        flags |= FLAG_SHELL;
+    }
 
     /* skip whitespace between the command and the argument */
-    while( isws( *arg ) ) {
+    while( cisws( *arg ) ) {
         arg++;
     }
 
@@ -1883,7 +1887,7 @@ STATIC RET_T shellSpawn( char *cmd, int flags )
         if( ext[0] == '.' ) {
             FixName( ext );
             /* if extension specified let the shell handle it (26-apr-91) */
-            if( FNameCmp( ext, ".exe" ) != 0 && FNameCmp( ext, ".com" ) != 0 ) {
+            if( !FNameEq( ext, ".exe" ) && !FNameEq( ext, ".com" ) ) {
                 flags |= FLAG_SHELL; /* .bat and .cmd need the shell anyway */
             }
         }
@@ -2011,9 +2015,9 @@ STATIC RET_T execLine( char *line )
  * is allowed to hack up line any way it feels
  */
 {
-    char    *p;
-    int     flags;
-    RET_T   rc;
+    char        *p;
+    shell_flags flags;
+    RET_T       rc;
 
     assert( line != NULL );
 
@@ -2043,7 +2047,7 @@ STATIC RET_T execLine( char *line )
         ++p;
     }
 
-    assert( !isws( *p ) );
+    assert( !cisws( *p ) );
 
     // NMAKE quietly ignores empty commands
     if( Glob.compat_nmake && *p == NULLCHAR ) {
@@ -2074,7 +2078,7 @@ INT32 ExecCommand( char *line )
 
     CheckForBreak();
     p = SkipWS( line );
-    assert( !isws( *p ) );
+    assert( !cisws( *p ) );
 
     // NMAKE quietly ignores empty commands here; should we as well?
     if( Glob.compat_nmake && *p == NULLCHAR ) {

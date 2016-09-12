@@ -43,6 +43,9 @@
 #include "clibext.h"
 
 
+#define FH2PH( fh )     ((int)(pointer_int)(void *)(fh))
+#define PH2FH( ph )     ((void *)(pointer_int)(int)(ph))
+
 typedef struct orl_info {
     int                 handle;
     orl_file_handle     file;
@@ -86,7 +89,6 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-
 static void *orlRead( void *file_handle, size_t bytes )
 /*****************************************************/
 {
@@ -94,10 +96,10 @@ static void *orlRead( void *file_handle, size_t bytes )
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = fileSize( (int)(pointer_int)file_handle );
+        orlFileSize = fileSize( FH2PH( file_handle ) );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = read( (int)(pointer_int)file_handle, orlBuffer, orlFileSize );
+        n = read( FH2PH( file_handle ), orlBuffer, orlFileSize );
         if( n != orlFileSize ) {
             return( NULL );
         }
@@ -109,7 +111,6 @@ static void *orlRead( void *file_handle, size_t bytes )
     }
     return( NULL );
 }
-
 
 static size_t orlSeek( void *file_handle, size_t offset, int mode )
 /*****************************************************************/
@@ -184,11 +185,11 @@ static handle AutoORLFileInit( const char *name )
     file_handle = open( name, O_RDONLY | O_BINARY );
     if( file_handle != -1 ) {
         orlInfo.handle = file_handle;
-        type = ORLFileIdentify( orlHandle, (void *)(pointer_int)file_handle );
+        type = ORLFileIdentify( orlHandle, PH2FH( file_handle ) );
         switch( type ) {
         case ORL_COFF:
         case ORL_ELF:
-            file = ORLFileInit( orlHandle, (void *)(pointer_int)file_handle, type );
+            file = ORLFileInit( orlHandle, PH2FH( file_handle ), type );
             if( file != NULL ) {
                 orlInfo.file = file;
                 buffer = orlGetDependsInfo( file );

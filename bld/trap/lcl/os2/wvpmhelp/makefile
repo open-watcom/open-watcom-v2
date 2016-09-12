@@ -27,6 +27,7 @@ wdpmhook.dll: pmhook.obj loadstd.obj $(__MAKEFILES__)
     @%append $^&.lnk export SENDMSGHOOKPROC.1,SETHMQDEBUGEE.2
     @%append $^&.lnk segment class 'DATA' shared
     @%append $^&.lnk segment class 'BSS' shared
+    @%make echo_link
     $(linker) @$^&.lnk
 
 wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
@@ -42,7 +43,9 @@ wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
     @%append $^&.lnk option stack=4096
     @%append $^&.lnk option heapsize=1024
     @%append $^&.lnk option protmode
+    @%make echo_link
     $(linker) @$^&.lnk
+    @%make echo_rc
     $(rc) pmhelp.res wdpmhelp.exe
 
 .c: ../c
@@ -58,7 +61,9 @@ inc_dirs = -I. -I"../h" -I"$(trap_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api
 extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
 pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+    @%make echo_rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(trap_dir)/h" -o$@ $[@

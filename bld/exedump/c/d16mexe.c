@@ -311,11 +311,11 @@ bool Dmp_d16m_head( void )
     dos16m_exe_header   dos16m_head;
     bool                retval;
 
-    retval = 0;
+    retval = false;
     Wlseek( New_exe_off );
     Wread( &dos16m_head, sizeof( dos16m_head ) );
     for( ; dos16m_head.signature == DOS16M_SIGNATURE; ) {
-        retval = 1;
+        retval = true;
         Banner( "DOS/16M EXE Header - BW" );
         Wdputs( "file offset = " );
         Puthex( New_exe_off, 8 );

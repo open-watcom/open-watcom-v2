@@ -132,7 +132,7 @@ static bool ExactCueAt( asm_window *asw, address addr, cue_handle *ch )
         return( false );
     if( DeAliasAddrCue( NO_MOD, addr, ch ) == SR_NONE )
         return( false );
-    if( AddrComp( CueAddr( ch ), addr ) )
+    if( AddrComp( DIPCueAddr( ch ), addr ) )
         return( false );
     return( true );
 }
@@ -171,7 +171,7 @@ static void AsmSetFirst( a_window *wnd, address addr, bool use_first_source )
         if( ExactCueAt( asw, addr, ch ) ) {
             if( row != 0 || use_first_source ) {
                 asw->ins[row].addr = addr;
-                asw->ins[row].line = CueLine( ch );
+                asw->ins[row].line = DIPCueLine( ch );
                 ++row;
                 if( row >= rows ) {
                     break;
@@ -279,7 +279,7 @@ static void AsmSetTitle( a_window *wnd )
 
     asw = WndAsm( wnd );
     p = StrCopy( ": ", StrCopy( LIT_DUI( WindowAssembly ), TxtBuff ) );
-    p += ModName( asw->mod, p, TXT_LEN );
+    p += DIPModName( asw->mod, p, TXT_LEN );
     image_name = ModImageName( asw->mod );
     if( image_name[0] != NULLCHAR ) {
         p = StrCopy( "(", StrCopy( " ", p ) );
@@ -325,9 +325,9 @@ void    AsmMoveDot( a_window *wnd, address addr )
     asw = WndAsm( wnd );
     if( DeAliasAddrCue( asw->mod, addr, ch1 ) != SR_NONE &&
         DeAliasAddrCue( asw->mod, asw->dotaddr, ch2 ) != SR_NONE ) {
-        if( CueMod( ch1 )    == CueMod( ch2 ) &&
-            CueFileId( ch1 ) == CueFileId( ch2 ) &&
-            CueLine( ch1 )   == CueLine( ch2 ) ) {
+        if( DIPCueMod( ch1 )    == DIPCueMod( ch2 ) &&
+            DIPCueFileId( ch1 ) == DIPCueFileId( ch2 ) &&
+            DIPCueLine( ch1 )   == DIPCueLine( ch2 ) ) {
             return;
         }
     }
@@ -646,8 +646,8 @@ static void AsmNewSource( asm_window *asw, cue_handle *ch )
     if( ch != NULL ) {
         asw->viewhndl = OpenSrcFile( ch );
         if( asw->viewhndl != NULL ) {
-            asw->src_list.mod = CueMod( ch );
-            asw->src_list.file_id = CueFileId( ch );
+            asw->src_list.mod = DIPCueMod( ch );
+            asw->src_list.file_id = DIPCueFileId( ch );
         }
     } else {
         asw->src_list.mod = NO_MOD;
@@ -733,8 +733,8 @@ static  bool    AsmGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
         if( src_line != 0 ) {
             line->text = TxtBuff;
             if( DeAliasAddrCue( NO_MOD, addr, ch ) != SR_NONE ) {
-                if( CueMod( ch ) != asw->src_list.mod
-                 || CueFileId( ch ) != asw->src_list.file_id ) {
+                if( DIPCueMod( ch ) != asw->src_list.mod
+                 || DIPCueFileId( ch ) != asw->src_list.file_id ) {
                     AsmNewSource( asw, ch );
                 }
                 Format( TxtBuff, LIT_DUI( No_Source_Line ), src_line );

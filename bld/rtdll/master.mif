@@ -41,7 +41,7 @@ verrc_dll      = $(dllname)
 !include verrc.mif
 
 target_lib = $(libdllname).lib
-!ifeq component cpplib
+!ifeq component plib
 target_lib += $(libdllname)x.lib
 !endif
 
@@ -53,7 +53,7 @@ rtdll_nosymfile = 1
 
 !ifeq component clib
 br_suffix=1
-!else ifeq component wrtlib
+!else ifeq component wlib
 br_suffix=1
 !else
 br_suffix=0
@@ -77,16 +77,18 @@ extra_lib_flags += -s-t-zld
 !endif
 
 $(target_lib) : $(dllname).lbc $(__MAKEFILES__)
+    @%make echo_lib
     $(librarian) $(libflags) @$(dllname).lbc
 
 $(dllname).lbc : $(dllname).dll $(rtdll_dir)/proclbc.awk $(static_objs)
-    *awk -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
+    @%make echo_awk
+    $(awk) -f $(rtdll_dir)/proclbc.awk -v OS=$(host_os) -v BR=$(br_suffix) -v "LSTFILE=$(rtdll_dir:\=/)/brfunc.dat" -v OUTFILE=$^. $(dllname).ilb
     @for %i in ($(static_objs)) do @%append $@ +%i
 
 !ifeq system winnt
 extra_libs = kernel32.lib user32.lib advapi32.lib
 !endif
-!ifeq component wrtlib
+!ifeq component wlib
 !ifeq convention stack
 lnk_alias = alias _HugeValue_br=_HugeValue, _IsTable_br=_IsTable
 !else
@@ -95,11 +97,12 @@ lnk_alias = alias __HugeValue_br=__HugeValue, __IsTable_br=__IsTable
 !endif
 
 $(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_libs) $(dll_def) $(__MAKEFILE__)
-    %create $(dllname).lnk
+    $(noecho)%create $(dllname).lnk
     @%append $(dllname).lnk $(lflags_dll)
     @for %i in ($(dll_objs)) do @%append $(dllname).lnk file %i
     @for %i in ($(dll_def)) do @%append $(dllname).lnk export { @%i }
     @for %i in ($(dll_libs) $(extra_libs)) do @%append $(dllname).lnk lib %i
     @%append $(dllname).lnk $(lnk_alias)
+    @%make echo_link
     $(linker) name $(dllname).dll @$(dllname).lnk
     @%make bind_version_res_dll

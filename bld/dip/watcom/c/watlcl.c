@@ -730,7 +730,7 @@ dip_status SymHdl2LclParmLoc( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-dip_status DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                 imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
     lcl_defn    defn;
@@ -779,7 +779,7 @@ dip_status DIGENTRY DIPImpSymObjType( imp_image_handle *ii,
     return( FindTypeHandle( ii, is->im, defn.i.type_index, it ) );
 }
 
-dip_status DIGENTRY DIPImpSymObjLocation( imp_image_handle *ii,
+dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
         imp_sym_handle *is, location_context *lc, location_list *ll )
 {
     lcl_defn    defn;
@@ -825,7 +825,7 @@ static const char *FindBlockScope( const char *ptr, lcl_defn *blk, address *addr
 }
 
 static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn *blk,
-                    IMP_SYM_WKR *wk, imp_sym_handle *is, void *d, lclinfo *local )
+                    DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d, lclinfo *local )
 {
     imp_type_handle             it;
     const char                  *next;
@@ -865,7 +865,7 @@ static walk_result WalkOneBlock( imp_image_handle *ii, const char *ptr, lcl_defn
     return( WR_CONTINUE );
 }
 
-walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR *wk,
+walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, DIP_IMP_SYM_WALKER *wk,
                         imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
@@ -876,7 +876,7 @@ walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR 
     walk_result         wr;
 
     wr = WR_CONTINUE;
-    if( ImpInterface.addr_mod( ii, *addr, &im ) != SR_NONE ) {
+    if( ImpInterface.AddrMod( ii, *addr, &im ) != SR_NONE ) {
         if( LoadLocalSyms( ii, im, &lclld ) == DS_OK ) {
             ptr = FindBlockScope( local->start, &blk, addr, local );
             if( ptr != NULL ) {
@@ -897,7 +897,7 @@ walk_result WalkScopedSymList( imp_image_handle *ii, address *addr, IMP_SYM_WKR 
     return( wr );
 }
 
-walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_WKR *wk,
+walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, DIP_IMP_SYM_WALKER *wk,
                         imp_sym_handle *is, void *d )
 {
     imp_mod_handle      im;
@@ -909,7 +909,7 @@ walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_
     walk_result         wr;
 
     wr = WR_CONTINUE;
-    if( ImpInterface.addr_mod( ii, scope->start, &im ) != SR_NONE ) {
+    if( ImpInterface.AddrMod( ii, scope->start, &im ) != SR_NONE ) {
         if( LoadLocalSyms( ii, im, &lclld ) == DS_OK ) {
             base = scope->unique >> 16;
             local->base_off = base;
@@ -926,7 +926,7 @@ walk_result WalkBlockSymList( imp_image_handle *ii, scope_block *scope, IMP_SYM_
 }
 
 dip_status WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_SYM_WKR *wk, imp_sym_handle *is, void *d,
+                        DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d,
                         walk_result *last )
 {
     const char          *curr;
@@ -957,7 +957,7 @@ dip_status WalkLclModSymList( imp_image_handle *ii, imp_mod_handle im,
 }
 
 
-search_result DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
                         imp_mod_handle im, address addr, scope_block *scope )
 {
     lcl_defn            blk;
@@ -980,7 +980,7 @@ search_result DIGENTRY DIPImpAddrScope( imp_image_handle *ii,
 }
 
 
-search_result DIGENTRY DIPImpScopeOuter( imp_image_handle *ii,
+search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
                         imp_mod_handle im, scope_block *in, scope_block *out )
 {
     lcl_defn            blk;

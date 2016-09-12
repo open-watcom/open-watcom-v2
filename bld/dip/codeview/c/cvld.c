@@ -58,7 +58,8 @@ static void Cleanup( imp_image_handle *ii )
     owner = &ImageList;
     for( ;; ) {
         curr = *owner;
-        if( curr == ii ) break;
+        if( curr == ii )
+            break;
         owner = &curr->next_image;
     }
     *owner = ii->next_image;
@@ -75,7 +76,7 @@ static void Cleanup( imp_image_handle *ii )
     VMFini( ii );
 }
 
-static dip_status TryFindPE( dig_fhandle h, unsigned long *offp,
+static dip_status TryFindPE( dig_fhandle dfh, unsigned long *offp,
                                 unsigned long *sizep )
 {
     union {
@@ -89,53 +90,53 @@ static dip_status TryFindPE( dig_fhandle h, unsigned long *offp,
     unsigned_32         debug_rva;
     debug_directory     dir;
 
-    if( DCSeek( h, 0, DIG_ORG ) != 0 ) {
+    if( DCSeek( dfh, 0, DIG_ORG ) != 0 ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( h, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
+    if( DCRead( dfh, &hdr.dos, sizeof( hdr.dos ) ) != sizeof( hdr.dos ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( hdr.dos.signature != DOS_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( DCSeek( h, NH_OFFSET, DIG_ORG ) != NH_OFFSET ) {
+    if( DCSeek( dfh, NH_OFFSET, DIG_ORG ) != NH_OFFSET ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( h, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
+    if( DCRead( dfh, &nh_off, sizeof( nh_off ) ) != sizeof( nh_off ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
-    if( DCSeek( h, nh_off, DIG_ORG ) != nh_off ) {
+    if( DCSeek( dfh, nh_off, DIG_ORG ) != nh_off ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( h, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
+    if( DCRead( dfh, &hdr.pe, sizeof( hdr.pe ) ) != sizeof( hdr.pe ) ) {
         return( DS_FAIL );
     }
     if( hdr.pe.signature != PE_SIGNATURE ) {
         return( DS_FAIL );
     }
-    if( hdr.pe.table[ PE_TBL_DEBUG ].rva == 0 ) {
+    if( hdr.pe.table[PE_TBL_DEBUG].rva == 0 ) {
         return( DS_FAIL );
     }
-    debug_rva = (hdr.pe.table[ PE_TBL_DEBUG ].rva / hdr.pe.object_align)*
+    debug_rva = (hdr.pe.table[PE_TBL_DEBUG].rva / hdr.pe.object_align)*
                                 hdr.pe.object_align;
 
     section_off = nh_off + offsetof( pe_header, flags ) +
                         sizeof( hdr.pe.flags ) + hdr.pe.nt_hdr_size;
 
-    if( DCSeek( h, section_off, DIG_ORG ) != section_off ) {
+    if( DCSeek( dfh, section_off, DIG_ORG ) != section_off ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    for( i=0; i < hdr.pe.num_objects; i++ ) {
-        if( DCRead( h, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
+    for( i = 0; i < hdr.pe.num_objects; i++ ) {
+        if( DCRead( dfh, &obj, sizeof( obj ) ) != sizeof( obj ) ) {
             return( DS_ERR|DS_FREAD_FAILED );
         }
         if( obj.rva == debug_rva ) {
             debug_rva = obj.physical_offset +
-                            hdr.pe.table[ PE_TBL_DEBUG ].rva - debug_rva;
-            if( DCSeek( h, debug_rva, DIG_ORG ) != debug_rva ) {
+                            hdr.pe.table[PE_TBL_DEBUG].rva - debug_rva;
+            if( DCSeek( dfh, debug_rva, DIG_ORG ) != debug_rva ) {
                 return( DS_ERR|DS_FSEEK_FAILED );
             }
-            if( DCRead( h, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
+            if( DCRead( dfh, &dir, sizeof( dir ) ) != sizeof( dir ) ) {
                 return( DS_ERR|DS_FREAD_FAILED );
             }
             if( dir.debug_type != DEBUG_TYPE_CODEVIEW ) {
@@ -148,17 +149,17 @@ static dip_status TryFindPE( dig_fhandle h, unsigned long *offp,
     return( DS_FAIL );
 }
 
-static dip_status TryFindTrailer( dig_fhandle h, unsigned long *offp,
+static dip_status TryFindTrailer( dig_fhandle dfh, unsigned long *offp,
                                         unsigned long *sizep )
 {
     cv_trailer          sig;
     unsigned long       pos;
 
-    pos = DCSeek( h, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
+    pos = DCSeek( dfh, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
     if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( h, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    if( DCRead( dfh, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( memcmp( sig.sig, CV4_NB09, sizeof( sig.sig ) ) != 0 ) {
@@ -169,22 +170,25 @@ static dip_status TryFindTrailer( dig_fhandle h, unsigned long *offp,
     return( DS_OK );
 }
 
-static dip_status FindCV( dig_fhandle h, unsigned long *offp,
+static dip_status FindCV( dig_fhandle dfh, unsigned long *offp,
                                 unsigned long *sizep )
 {
     char        sig[CV_SIG_SIZE];
     dip_status  ds;
 
-    ds = TryFindPE( h, offp, sizep );
-    if( ds & DS_ERR ) return( ds );
+    ds = TryFindPE( dfh, offp, sizep );
+    if( ds & DS_ERR )
+        return( ds );
     if( ds != DS_OK ) {
-        ds = TryFindTrailer( h, offp, sizep );
-        if( ds != DS_OK ) return( ds );
+        ds = TryFindTrailer( dfh, offp, sizep );
+        if( ds != DS_OK ) {
+            return( ds );
+        }
     }
-    if( DCSeek( h, *offp, DIG_ORG ) != *offp ) {
+    if( DCSeek( dfh, *offp, DIG_ORG ) != *offp ) {
         return( DS_ERR|DS_FSEEK_FAILED );
     }
-    if( DCRead( h, sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    if( DCRead( dfh, sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( memcmp( sig, CV4_NB09, sizeof( sig ) ) != 0 ) {
@@ -216,7 +220,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
         return( DS_ERR|DS_FREAD_FAILED );
     }
     if( dir_header.cbDirHeader != sizeof( dir_header )
-     || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
+      || dir_header.cbDirEntry  != sizeof( cv_directory_entry ) ) {
         return( DS_ERR|DS_INFO_INVALID );
     }
     ii->dir_count = dir_header.cDir;
@@ -230,7 +234,8 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
     left = ii->dir_count;
     for( ;; ) {
         num = left;
-        if( num > DIRECTORY_BLOCK_ENTRIES ) num = DIRECTORY_BLOCK_ENTRIES;
+        if( num > DIRECTORY_BLOCK_ENTRIES )
+            num = DIRECTORY_BLOCK_ENTRIES;
         block_size = num * sizeof( cv_directory_entry );
         ii->directory[i] = DCAlloc( block_size );
         if( ii->directory[i] == NULL ) {
@@ -241,7 +246,9 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long off )
         }
         ++i;
         left -= num;
-        if( left == 0 ) break;
+        if( left == 0 ) {
+            break;
+        }
     }
     return( DS_OK );
 }
@@ -273,9 +280,11 @@ static walk_result FindCompUnit( imp_image_handle *ii,
 {
     cs_compile          **rec = d;
 
-    if( cde->subsection != sstModule ) return( WR_CONTINUE );
+    if( cde->subsection != sstModule )
+        return( WR_CONTINUE );
     *rec = GetCompInfo( ii, cde->iMod );
-    if( *rec == NULL ) return( WR_CONTINUE );
+    if( *rec == NULL )
+        return( WR_CONTINUE );
     return( WR_STOP );
 }
 
@@ -285,7 +294,8 @@ static dip_status SetMADType( imp_image_handle *ii )
     walk_result                 wr;
 
     wr = WalkDirList( ii, &FindCompUnit, &rec );
-    if( wr != WR_STOP ) return( DS_OK );
+    if( wr != WR_STOP )
+        return( DS_OK );
     switch( rec->machine & 0xf0 ) {
     case MACH_INTEL_8080:
         ii->mad = MAD_X86;
@@ -299,7 +309,7 @@ static dip_status SetMADType( imp_image_handle *ii )
     return( DS_OK );
 }
 
-dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
 {
     dip_status                  ds;
     unsigned long               off;
@@ -308,12 +318,14 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     cv_sst_global_types_header  *hdr;
 
     memset( ii, 0, sizeof( *ii ) );
-    ds = FindCV( h, &off, &size );
-    if( ds != DS_OK ) return( ds );
-    ii->sym_file = h;
+    ds = FindCV( dfh, &off, &size );
+    if( ds != DS_OK )
+        return( ds );
+    ii->sym_file = dfh;
     ii->bias = off;
     ds = VMInit( ii, size );
-    if( ds != DS_OK ) return( ds );
+    if( ds != DS_OK )
+        return( ds );
     ii->next_image = ImageList;
     ImageList = ii;
     ds = LoadDirectory( ii, off + CV_SIG_SIZE );
@@ -348,7 +360,7 @@ dip_status      DIGENTRY DIPImpLoadInfo( dig_fhandle h, imp_image_handle *ii )
     return( DS_OK );
 }
 
-void            DIGENTRY DIPImpMapInfo( imp_image_handle *ii, void *d )
+void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
 {
     unsigned    i;
     addr_ptr    addr;
@@ -381,7 +393,7 @@ void MapLogical( imp_image_handle *ii, address *a )
     a->indirect = 1;
 }
 
-void            DIGENTRY DIPImpUnloadInfo( imp_image_handle *ii )
+void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     Cleanup( ii );
     DCClose( ii->sym_file );

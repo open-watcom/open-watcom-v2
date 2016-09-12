@@ -43,11 +43,11 @@
 #include "msg.h"
 #include "myassert.h"
 #include "support.h"
+#include "dipinter.h"
 
-//#include "dipinter.def"
+
 //#include "support.def"
 //#include "msg.def"
-
 
 extern char *           WProfDips;
 extern sio_data         *CurrSIOData;
@@ -59,24 +59,24 @@ STATIC dip_status   DIPStatus;
 
 
 
-void DIGCLIENT DIPCliImageUnload( mod_handle mh )
-/***********************************************/
+void DIPCLIENTRY( ImageUnload )( mod_handle mh )
+/**********************************************/
 {
     mh=mh;
 }
 
 
 
-void DIGCLIENT DIPCliMapAddr( addr_ptr * addr, void * d )
-/*******************************************************/
+void DIPCLIENTRY( MapAddr )( addr_ptr * addr, void * d )
+/******************************************************/
 {
     MapAddressToActual( (image_info *)d, addr );
 }
 
 
 
-imp_sym_handle * DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
-/*************************************************************************/
+imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
+/***********************************************************************/
 {
     ih=ih;
     d=d;
@@ -85,7 +85,7 @@ imp_sym_handle * DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
 
 
 
-dip_status DIGCLIENT DIPCliItemLocation( location_context * lc,
+dip_status DIPCLIENTRY( ItemLocation )( location_context * lc,
                             context_item ci, location_list * ll )
 /***************************************************************/
 {
@@ -97,7 +97,7 @@ dip_status DIGCLIENT DIPCliItemLocation( location_context * lc,
 
 
 
-dip_status DIGCLIENT DIPCliAssignLocation( location_list * dst,
+dip_status DIPCLIENTRY( AssignLocation )( location_list * dst,
                         location_list * src, unsigned long size )
 /***************************************************************/
 {
@@ -109,8 +109,8 @@ dip_status DIGCLIENT DIPCliAssignLocation( location_list * dst,
 
 
 
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
-/**************************************************************/
+dip_status DIPCLIENTRY( SameAddrSpace )( address a, address b )
+/*************************************************************/
 {
     if( a.sect_id == 0 ) {
         a.sect_id = b.sect_id;
@@ -126,22 +126,22 @@ dip_status DIGCLIENT DIPCliSameAddrSpace( address a, address b )
 
 
 
-void DIGCLIENT DIPCliAddrSection( address * addr )
-/************************************************/
+void DIPCLIENTRY( AddrSection )( address * addr )
+/***********************************************/
 {
     MapAddressIntoSection( addr );
 }
 
 
 
-void DIGCLIENT DIPCliStatus( dip_status status )
-/**********************************************/
+void DIPCLIENTRY( Status )( dip_status status )
+/*********************************************/
 {
     DIPStatus = status;
 }
 
-dig_mad DIGCLIENT DIPCliCurrMAD( void )
-/*************************************/
+dig_mad DIPCLIENTRY( CurrMAD )( void )
+/************************************/
 {
     return( CurrSIOData->config.mad );
 }
@@ -155,8 +155,8 @@ dig_mad DIGCLIENT DIPCliCurrMAD( void )
 
 
 
-extern void WPDipInit( void )
-/***************************/
+void WPDipInit( void )
+/********************/
 {
     char        *dip_name;
     unsigned    dip_count;
@@ -172,11 +172,10 @@ extern void WPDipInit( void )
     } else {
         dip_name = WProfDips;
     }
-    while( *dip_name != NULLCHAR ) {
+    for( ; *dip_name != NULLCHAR; dip_name += strlen( dip_name ) + 1 ) {
         if( loadDIP( dip_name, true, true ) ) {
             dip_count++;
         }
-        dip_name += strlen( dip_name ) + 1;
     }
     if( dip_count == 0 ) {
         DIPFini();
@@ -186,16 +185,16 @@ extern void WPDipInit( void )
 
 
 
-extern process_info *WPDipProc( void )
-/************************************/
+process_info *WPDipProc( void )
+/*****************************/
 {
     return( DIPCreateProcess() );
 }
 
 
 
-extern void WPDipDestroyProc( process_info *dip_proc )
-/****************************************************/
+void WPDipDestroyProc( process_info *dip_proc )
+/*********************************************/
 {
     if( dip_proc != NULL ) {
         DIPDestroyProcess( dip_proc );
@@ -204,16 +203,16 @@ extern void WPDipDestroyProc( process_info *dip_proc )
 
 
 
-extern void WPDipSetProc( process_info *dip_proc )
-/************************************************/
+void WPDipSetProc( process_info *dip_proc )
+/*****************************************/
 {
     DIPSetProcess( dip_proc );
 }
 
 
 
-extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
-                       int image_size, unsigned dip_start, unsigned dip_end )
+mod_handle WPDipLoadInfo( dig_fhandle dfh, const char *f_name, void *image,
+                   unsigned image_size, unsigned dip_start, unsigned dip_end )
 /****************************************************************************/
 {
     unsigned    prio;
@@ -228,7 +227,7 @@ extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
         DIPStatus = DS_OK;
         dip_module = DIPLoadInfo( dfh, image_size, prio );
         if( dip_module != NO_MOD ) {
-            *(void **)ImageExtra( dip_module ) = image;
+            *(void **)DIPImageExtra( dip_module ) = image;
             DIPMapInfo( dip_module, image );
             break;
         }
@@ -241,8 +240,8 @@ extern mod_handle WPDipLoadInfo( dig_fhandle dfh, char * f_name, void * image,
 
 
 
-extern void WPDipFini( void )
-/***************************/
+void WPDipFini( void )
+/********************/
 {
     DIPFini();
 }

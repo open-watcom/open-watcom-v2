@@ -113,7 +113,7 @@ static bool getOMFCommentRecord( omf_info *info )
     obj_record  header;
     obj_comment comment;
     int         hdl;
-    unsigned    len;
+    size_t      len;
 
     hdl = info->handle;
     while( read( hdl, &header, sizeof( header ) ) == sizeof( header ) ) {
@@ -138,7 +138,7 @@ static bool getOMFCommentRecord( omf_info *info )
         }
         // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( (unsigned)read( hdl, nameBuffer, len ) != len ) {
+        if( read( hdl, nameBuffer, len ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;

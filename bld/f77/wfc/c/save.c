@@ -57,8 +57,7 @@ static  void    Save( sym_id sym_ptr ) {
 
 // Check that item has not been saved twice.
 
-    if( ( ( sym_ptr->u.ns.flags & SY_SAVED ) == 0 ) &&
-        ( ( SgmtSw & SG_BIG_SAVE ) == 0 ) ) {
+    if( ( (sym_ptr->u.ns.flags & SY_SAVED) == 0 ) && ( (SgmtSw & SG_BIG_SAVE) == 0 ) ) {
         sym_ptr->u.ns.flags |= SY_SAVED;
         SgmtSw |= SG_LITTLE_SAVE;
     } else {
@@ -78,13 +77,12 @@ void    CpSave( void ) {
     sym_id      sym_ptr;
 
     if( RecNOpn() && RecNextOpr( OPR_TRM ) ) {
-        if( ( ( SgmtSw & SG_LITTLE_SAVE ) != 0 ) ||
-            ( ( SgmtSw & SG_BIG_SAVE ) != 0 ) ) {
+        if( ( (SgmtSw & SG_LITTLE_SAVE) != 0 ) || ( (SgmtSw & SG_BIG_SAVE) != 0 ) ) {
             Error( SA_SAVED );
         }
         SgmtSw |= SG_BIG_SAVE;
     } else {
-        for(;;) {
+        for( ;; ) {
             if( RecNOpn() && RecNextOpr( OPR_DIV ) ) {
                 AdvanceITPtr();
                 if( ReqName( NAME_COMMON ) ) {
@@ -106,7 +104,9 @@ void    CpSave( void ) {
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         ReqEOS();
     }

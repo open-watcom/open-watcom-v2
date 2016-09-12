@@ -185,6 +185,7 @@ DISPATCHABLE CPPLIB( dispatchable )(// TEST IF R/W BLOCK IS DISPATCHABLE
     // check if r/w on stack
     if( rw == 0 ) {
         CPPLIB( corrupted_stack )();
+        // never return
     }
 
     dispatch->rw = rw;
@@ -193,6 +194,7 @@ DISPATCHABLE CPPLIB( dispatchable )(// TEST IF R/W BLOCK IS DISPATCHABLE
     switch( ro->base.reg_type ) {
       default :
         CPPLIB( corrupted_stack )();
+        // never return
       case DTRG_FUN :
         dispatch_type = dispatchable( dispatch, rw );
         break;
@@ -256,6 +258,7 @@ DISPATCHABLE CPPLIB( catch_any )// TEST IF R/W BLOCK IS DISPATCHABLE FOR ...
     // check if r/w on stack
     if( rw == 0 ) {
         CPPLIB( corrupted_stack )();
+        // never return
     }
 
     CPPLIB( dispatch_dummy )( &dispatch, &rt_ctl );
@@ -265,6 +268,7 @@ DISPATCHABLE CPPLIB( catch_any )// TEST IF R/W BLOCK IS DISPATCHABLE FOR ...
     switch( ro->base.reg_type ) {
       default :
         CPPLIB( corrupted_stack )();
+        // never return
       case DTRG_FUN :
         dispatch_type = catch_any( &dispatch, rw );
         break;

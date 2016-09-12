@@ -157,24 +157,17 @@ ULONG_PTR ReadMem( WORD sel, ULONG_PTR off, void *buff, ULONG_PTR size )
 static void createAccessString( char *ptr, descriptor *desc )
 {
     if( desc->type == 2 )  {
-        *ptr =  'R';
-        ptr++;
+        *ptr++ =  'R';
         if( desc->writeable_or_readable ) {
-            *ptr = '/';
-            ptr++;
-            *ptr = 'W';
-            ptr++;
+            *ptr++ = '/';
+            *ptr++ = 'W';
         }
     } else {
-        *ptr = 'E';
-        ptr++;
-        *ptr = 'x';
-        ptr++;
+        *ptr++ = 'E';
+        *ptr++ = 'x';
         if( desc->writeable_or_readable ) {
-            *ptr = '/';
-            ptr++;
-            *ptr = 'R';
-            ptr++;
+            *ptr++ = '/';
+            *ptr++ = 'R';
         }
     }
     *ptr = '\0';
@@ -389,7 +382,7 @@ void SetDefMemConfig( void )
  */
 char MkHexDigit( char ch )
 {
-    if( ch < 0xA ) {
+    if( (ch &= 0xF) < 0xA ) {
         return( '0' + ch );
     }
     return( 'A' + ch - 0xA );
@@ -401,10 +394,8 @@ char MkHexDigit( char ch )
  */
 static char *genByte( char ch, char *ptr )
 {
-    *ptr = MkHexDigit( ch >> 4 );
-    ptr++;
-    *ptr = MkHexDigit( ch & 0xF );
-    ptr++;
+    *ptr++ = MkHexDigit( ch >> 4 );
+    *ptr++ = MkHexDigit( ch );
     return( ptr );
 
 } /* genByte */
@@ -421,6 +412,7 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
     char        data[MAX_BYTES];
     size_t      len;
     unsigned    i;
+
 #ifdef __NT__
     if( ReadMem( sel, offset, data, digits ) == 0 ) {
         return( false );
@@ -437,15 +429,12 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
     case MEMINFO_BYTE:
         for( i = 0; i < digits; i++ ) {
             if( offset + i >= limit ) {
-               *ptr = pad_char;
-               ptr++;
-               *ptr = pad_char;
-               ptr++;
+               *ptr++ = pad_char;
+               *ptr++ = pad_char;
             } else {
                 ptr = genByte( data[i], ptr );
             }
-            *ptr = ' ';
-            ptr++;
+            *ptr++ = ' ';
         }
 //      if( i < digits ) {
 //          len = ( digits - i ) * 3;
@@ -466,8 +455,7 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
             }
             ptr = genByte( data[i + 1], ptr );
             ptr = genByte( data[i], ptr );
-            *ptr = ' ';
-            ptr++;
+            *ptr++ = ' ';
         }
         if( i < digits ) {
             len = ((digits - i) / 2) * 5;
@@ -481,8 +469,7 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
                 len = 0;
                 for( ; offset + i < limit; i++ ) {
                     ptr = genByte( data[i], ptr );
-                    *ptr = ' ';
-                    ptr++;
+                    *ptr++ = ' ';
                     len += 3;
                 }
                 memset( ptr, ' ', 9 - len );
@@ -496,8 +483,7 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
             ptr = genByte( data[i + 2], ptr );
             ptr = genByte( data[i + 1], ptr );
             ptr = genByte( data[i], ptr );
-            *ptr = ' ';
-            ptr++;
+            *ptr++ = ' ';
         }
         if( i < digits ) {
             len = ((digits - i) / 4) * 9;
@@ -506,20 +492,21 @@ static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
         }
         break;
     }
-    *ptr = ' ';
-    ptr++;
+    *ptr++ = ' ';
     for( i = 0; i < digits; i++ ) {
+        unsigned char    c;
+
         if( offset + i >= limit ) {
             memset( ptr, ' ', digits - i );
             ptr += digits - i;
             break;
         }
-        if( isalnum( data[i] ) || ispunct( data[i] ) ) {
-            *ptr = data[i];
+        c = data[i];
+        if( isalnum( c ) || ispunct( c ) ) {
+            *ptr++ = c;
         } else {
-            *ptr = '.';
+            *ptr++ = '.';
         }
-        ptr++;
     }
     *ptr = '\0';
     return( true );

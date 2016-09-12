@@ -274,7 +274,7 @@ imp_mod_handle   CuTag2Mod( imp_image_handle *ii, drmem_hdl cu_tag )
     return( IMH_NOMOD );
 }
 
-walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
+walk_result DFWalkModList( imp_image_handle *ii, DIP_IMP_MOD_WALKER wk, void *d )
 {
     im_idx          i;
     walk_result     ret;
@@ -292,7 +292,7 @@ walk_result DFWalkModList( imp_image_handle *ii, IMP_MOD_WKR wk, void *d )
     return( ret );
 }
 
-walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, void *d )
+walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, DIP_IMP_MOD_WALKER wk, void *d )
 {
     im_idx          i;
     walk_result     ret;
@@ -315,7 +315,7 @@ walk_result DFWalkModListSrc( imp_image_handle *ii, bool src, IMP_MOD_WKR wk, vo
     return( ret );
 }
 
-walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii, DIP_IMP_MOD_WALKER *wk, void *d )
 {
     im_idx          i;
     walk_result     ret;
@@ -333,7 +333,7 @@ walk_result DIGENTRY DIPImpWalkModList( imp_image_handle *ii, IMP_MOD_WKR *wk, v
     return( ret );
 }
 
-size_t      DIGENTRY DIPImpModName( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, size_t buff_size )
 {
     char        *name;
@@ -347,7 +347,7 @@ size_t      DIGENTRY DIPImpModName( imp_image_handle *ii,
     return( len );
 }
 
-char    *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     char       *ret = NULL;
 
@@ -405,7 +405,7 @@ search_result DFAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
     return( SR_NONE );
 }
 
-search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a, imp_mod_handle *im )
 {
     imp_mod_handle  cim;
     search_result   ret;
@@ -462,7 +462,7 @@ static bool ALineCue( void *_info, dr_line_data *curr )
     return( ret );
 }
 
-address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
+address DIPIMPENTRY( ModAddr )( imp_image_handle *ii, imp_mod_handle im )
 {
     l_walk_info walk;
     address     a;
@@ -482,7 +482,7 @@ address DIGENTRY DIPImpModAddr( imp_image_handle *ii, imp_mod_handle im )
     return( NilAddr );
 }
 
-dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     /*
@@ -533,7 +533,7 @@ dip_status  DIGENTRY DIPImpModInfo( imp_image_handle *ii,
     return( ret );
 }
 
-dip_status  DIGENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
     /*

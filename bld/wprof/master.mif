@@ -102,6 +102,7 @@ version_res_exe_nt_x64 = exever.res
 $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) $(libs) $(sys_libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @rm -f finger.obj
     @%make finger.obj
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(sys_objs) $(dip_objs) $(mad_objs) finger.obj $(libs) $(sys_libs) $(ldflags)
 !else
@@ -109,16 +110,22 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs
 !endif
 !ifneq sys_windowed 1
     @%make bind_version_res_exe
+!endif
+    @%make echo_bindres
+!ifneq sys_windowed 1
     $(wstrip) -q -a -r  $^@ . $(resfile)
 !else
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
 wprofgui.res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wprofui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
+    @%make echo_rc
     $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
 
 usage.u : ../h/usage.sp $(__MAKEFILES__)
-    *wsplice -u $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -u $[@ $@

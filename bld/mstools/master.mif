@@ -68,4 +68,7 @@ optencod_opts_axp = axp
 optencod_opts_ppc = ppc
 
 cmdlnprs.gc cmdlnprs.gh : ../../gml/ms.gml .EXPLICIT
-        optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_opts_$(target_cpu))
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+    $(noecho)optencod -n -q $]@ cmdlnprs.gh cmdlnprs.gc usagemsg.gh $(optencod_opts_$(target_cpu))

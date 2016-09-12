@@ -43,6 +43,8 @@
 #include "clearfpe.h"
 #include "ntconio.h"
 #include "thread.h"
+#include "_xtoa.h"
+
 
 LONG WINAPI __ReportException( EXCEPTION_POINTERS *rec );
 int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
@@ -73,7 +75,6 @@ static int _my_GetActiveWindow( void ) {
 
 static void fmt_hex( char *buf, char *fmt, void *hex ) {
 
-    static char alpha[] = "0123456789abcdef";
     char *ptr = NULL;
     unsigned long value;
 
@@ -104,7 +105,7 @@ static void fmt_hex( char *buf, char *fmt, void *hex ) {
     if( ptr != NULL ) {
         value = (unsigned long)hex;
         while( value ) {
-            *ptr = alpha[ value & 0xf ];
+            *ptr = __Alphabet[value & 0xf];
             value = value >> 4;
             ptr--;
         }

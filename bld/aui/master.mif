@@ -103,6 +103,7 @@ objs = &
 all : $(dlgfiles) aui.lib .SYMBOLIC
 
 aui.lib : auistr.gh $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else
@@ -132,4 +133,5 @@ japsrcha.gdl : ../res/dlgs/japsrcha.dlg
     $(dlgj_command)
 
 auistr.gh : ../res/aui.msg
-    *awk -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=AUI_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@

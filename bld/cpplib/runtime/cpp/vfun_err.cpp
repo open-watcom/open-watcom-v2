@@ -45,12 +45,13 @@
 
 extern "C"
 _WPRTLINK
-void CPPLIB(undef_vfun)(        // TRAP STRIPPED VIRTUAL CALLS
+void CPPLIB( undef_vfun )(      // TRAP STRIPPED VIRTUAL CALLS
     void )
 {
     if( !_RWD_UndefVfunFlag ) {
         _RWD_UndefVfunFlag = 1;
-        CPPLIB(fatal_runtime_error)( RTMSG_UNDEFED_VFUN, 1 );
+        CPPLIB( fatal_runtime_error )( RTMSG_UNDEFED_VFUN, 1 );
+        // never return
     }
 }
 

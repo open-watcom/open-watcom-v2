@@ -158,7 +158,7 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         break;
     case MENU_MODULES_SOURCE:
         if( IS_NIL_ADDR( addr ) ) {
-            ModName( handle, TxtBuff, TXT_LEN );
+            DIPModName( handle, TxtBuff, TXT_LEN );
             WndFileInspect( TxtBuff, false );
         } else {
             WndSrcInspect( addr );

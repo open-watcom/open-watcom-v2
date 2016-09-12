@@ -77,14 +77,15 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
     levels = 0;
     for( ;; ) {
         if( DeAliasAddrSym( NO_MOD, entry.lc.execution, rtn ) != SR_NONE &&
-            SymLocation( rtn, NULL, &ll ) == DS_OK ) {
+            DIPSymLocation( rtn, NULL, &ll ) == DS_OK ) {
             entry.start = ll.e[0].u.addr;
             have_sym = true;
         } else {
             entry.start = entry.lc.execution;
             have_sym = false;
         }
-        if( !walk( &entry, info ) ) break;
+        if( !walk( &entry, info ) )
+            break;
         if( have_sym && entry.start.mach.offset == entry.lc.execution.mach.offset ) {
             /* at start of routine */
             entry.lc.maybe_have_frame = true;
@@ -95,7 +96,8 @@ bool WalkCallChain( CALL_CHAIN_RTN *walk, void *info )
         }
         ++levels;
         if( have_sym ) {
-            if( SymInfo( rtn, NULL, &sinfo ) != DS_OK ) break;
+            if( DIPSymInfo( rtn, NULL, &sinfo ) != DS_OK )
+                break;
             if( sinfo.kind != SK_PROCEDURE ) {
                 sinfo.ret_addr_offset = (addr_off)-1L;
                 sinfo.rtn_far = 0;

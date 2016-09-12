@@ -30,41 +30,9 @@
 ****************************************************************************/
 
 
-#ifdef SPECNAME_DEFINE
-#define special( e, s )         s ,
-#elif defined(_SPECNAME_H)
-#define special( e, s )
-#else
-#define special( e, s )         e ,
-enum {
-#endif
-
-// ".#" prefix is reserved for NameDummy names
-// ".@" prefix is reserved for operator names (precedes mangled name for op)
-
-special( SPECIAL_THIS,          "this" )
-special( SPECIAL_RETURN_VALUE,  ".return" )
-special( SPECIAL_COPY_ARG,      ".copy_arg" )
-special( SPECIAL_MODULE_INIT,   ".mod_init" )
-special( SPECIAL_INIT_FUNCTION, ".fn_init" )
-special( SPECIAL_CDTOR_EXTRA,   ".cdtor" )
-special( SPECIAL_CTOR_THUNK,    ".tdctor" )
-special( SPECIAL_COPY_THUNK,    ".tcctor" )
-special( SPECIAL_DTOR_THUNK,    ".tdtor" )
-special( SPECIAL_OP_DEL_THUNK,  ".tdopdel" )
-special( SPECIAL_OP_DELAR_THUNK,".tdopdelarr" )
-special( SPECIAL_SETJMP_VALUE,  ".sj_val" )
-special( SPECIAL_CHIPBUG,       "__chipbug" )
-special( SPECIAL_DWARF_ABBREV,  "__DFABBREV" )
-special( SPECIAL_TYPE_INFO,     "type_info" )
-special( SPECIAL_BEGINTHREAD,   "_beginthread" )
-special( SPECIAL_BEGINTHREADEX, "_beginthreadex" )
-special( SPECIAL_STD,           "std" )
-
-#undef special
-#ifdef SPECNAME_DEFINE
-#undef SPECNAME_DEFINE
-#elif !defined(_SPECNAME_H)
-};
-#define _SPECNAME_H
-#endif
+typedef enum {
+    #define pick( e, s )         e ,
+    #include "_specnam.h"
+    #undef pick
+    MAX_SPECIAL_NAMES
+} specname;

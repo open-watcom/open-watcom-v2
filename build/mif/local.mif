@@ -149,13 +149,13 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __INTEL_TOOLS__
 bcc  = icl -nologo -c
 bcxx = icl -nologo -c
-bcl  = icl -nologo
-blib = xilib -nologo
+bcl  = $(noecho)icl -nologo
+blib = $(noecho)xilib -nologo
 !else
 bcc  = cl -nologo -c
 bcxx = cl -nologo -c
-bcl  = cl -nologo
-blib = lib -nologo
+bcl  = $(noecho)cl -nologo
+blib = $(noecho)lib -nologo
 !endif
 
 bld_cc_sys = -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS
@@ -167,7 +167,8 @@ bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags
 
 bld_cflags   = $(common_cflags) $(common_flags) -Fo$@
 
-bld_cxxflags = -EHsc
+bld_c_flags   =
+bld_cxx_flags = -EHsc
 
 bld_ldflags1 = $(common_ldflags) -Fm
 
@@ -186,15 +187,13 @@ bld_libflags = -out:$^@
 # standard settings
 ############################
 !ifdef __INTEL_TOOLS__
-cc  = icl -nologo -c
-cxx = icl -nologo -c
-cl  = icl -nologo
-
+cc  = $(noecho)icl -nologo -c
+cxx = $(noecho)icl -nologo -c
+cl  = $(noecho)icl -nologo
 !else
-cc   = cl -nologo -c
-cxx  = cl -nologo -c
-cl   = cl -nologo
-
+cc   = $(noecho)cl -nologo -c
+cxx  = $(noecho)cl -nologo -c
+cl   = $(noecho)cl -nologo
 !endif
 
 cppflags_nt  = $(common_cppflags) $(common_cppflags_nt)
@@ -203,7 +202,8 @@ cppflags_osi = $(common_cppflags) $(common_cppflags_$(host_os))
 cppflags_386 = $(common_cppflags_386) $(common_cppflags_$(host_os)_386)
 cppflags_x64 = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 
-cxxflags = -EHsc
+c_flags   =
+cxx_flags = -EHsc
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -Fo$@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -Fo$@
@@ -232,12 +232,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -Fe$@ $(ldflags1)
 clflags_dll  = $(bld_cl_sys) $(common_flags) $(common_clflags_lib_shared) -Fe$@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset =
-
-# options for preprocessing source code
-preproc_opts  = -E
 
 # options for include source code file
 incl_file_opts = -FI
@@ -357,14 +351,14 @@ cl_extra_libs = $(cl_extra_libs_gen)
 !ifdef __CLANG_TOOLS__
 bcc  = clang -pipe -c
 bcxx = clang++ -pipe -c
-bcl  = clang -pipe
+bcl  = $(noecho)clang -pipe
 !else
 bcc  = gcc -pipe -c
 bcxx = g++ -pipe -c
-bcl  = gcc -pipe
+bcl  = $(noecho)gcc -pipe
 !endif
 
-blib      = ar
+blib = $(noecho)ar
 
 bld_cc_sys = -fno-asm -fno-common -fsigned-char
 bld_cl_sys =
@@ -375,7 +369,8 @@ bld_cppflags = $(common_cppflags) $(common_cppflags_$(bld_os)) $(common_cppflags
 
 bld_cflags   = $(common_cflags) $(common_flags) -o $@
 
-bld_cxxflags = -std=c++98
+bld_c_flags   =
+bld_cxx_flags = -std=c++98
 
 # options for linking
 !ifdef __OSX__
@@ -407,13 +402,13 @@ bld_libflags = crs $^@
 # standard settings
 ############################
 !ifdef __CLANG_TOOLS__
-cc   = clang -pipe -c
-cxx  = clang++ -pipe -c
-cl   = clang -pipe
+cc   = $(noecho)clang -pipe -c
+cxx  = $(noecho)clang++ -pipe -c
+cl   = $(noecho)clang -pipe
 !else
-cc   = gcc -pipe -c
-cxx  = g++ -pipe -c
-cl   = gcc -pipe
+cc   = $(noecho)gcc -pipe -c
+cxx  = $(noecho)g++ -pipe -c
+cl   = $(noecho)gcc -pipe
 !endif
 
 cppflags_linux  = $(common_cppflags) $(common_cppflags_linux)
@@ -428,7 +423,8 @@ cppflags_mps    = $(common_cppflags_mps) $(common_cppflags_$(host_os)_mps)
 cppflags_x64    = $(common_cppflags_x64) $(common_cppflags_$(host_os)_x64)
 cppflags_arm    = $(common_cppflags_arm) $(common_cppflags_$(host_os)_arm)
 
-cxxflags = -std=c++98
+c_flags   =
+cxx_flags = -std=c++98
 
 cflags_gen  = $(bld_cc_sys) $(common_cflags) $(common_flags) -o $@
 cflags_dll  = $(bld_cc_sys) $(common_cflags) $(common_flags) $(common_cflags_lib_shared) -o $@
@@ -457,12 +453,6 @@ ldflags = $(ldflags_gen)
 clflags_gen  = $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_dll  = $(common_clflags_lib_shared) $(bld_cl_sys) $(common_flags) -o $@ $(ldflags1)
 clflags_wind = $(clflags_gen)
-
-# options used for setup source code Japanese DBCS character set
-c_japan_charset = -finput-charset=CP932
-
-# options for preprocessing source code
-preproc_opts  = -x c -E
 
 # options for include source code file
 incl_file_opts = -include

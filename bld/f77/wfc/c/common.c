@@ -72,7 +72,7 @@ void    CpCommon(void) {
             }
         }
     }
-    for(;;) {
+    for( ;; ) {
         if( RecDiv() ) {
             if( ReqName( NAME_COMMON ) ) {
                 com = LkCommon();
@@ -84,7 +84,7 @@ void    CpCommon(void) {
         } else {
             com = LkBCommon();
         }
-        for(;;) {
+        for( ;; ) {
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 sym = LkSym();
                 flags = sym->u.ns.flags;
@@ -128,9 +128,10 @@ void    CpCommon(void) {
                     if( last == NULL ) {    // if empty common block
                         com->u.ns.si.cb.first = sym;
                     } else {
-                        for(;;) {
+                        for( ;; ) {
                             com_ext = last->u.ns.si.va.vi.ec_ext;
-                            if( com_ext->link_com == NULL ) break;
+                            if( com_ext->link_com == NULL )
+                                break;
                             last = com_ext->link_com;
                         }
                         com_ext->link_com = sym;
@@ -141,9 +142,13 @@ void    CpCommon(void) {
             if( RecComma() && RecNOpn() ) {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
-        if( !RecDiv() && !RecCat() ) break;
+        if( !RecDiv() && !RecCat() ) {
+            break;
+        }
     }
     ReqEOS();
 }

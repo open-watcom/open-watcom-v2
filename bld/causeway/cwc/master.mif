@@ -18,6 +18,7 @@ all : cwstub.exe $(proj_name).exe .symbolic
 !endif
 
 $(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
@@ -27,15 +28,30 @@ $(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
 cwstub.exe : ../../cw32/dosi86/cwstub.exe
     cp $[@ $@
 
-copystub.gh : copystub.asm ./mkcode.exe
-    *bwasm -zq -fo=$^&.obj $[@
-    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
-    $]@ $^&.tmp $@
+copystub.tmp : copystub.asm
+    @%make echo_aslink
+    $(noecho)*bwasm -zq -fo=$^&.obj $[@
+    $(noecho)*bwlink format dos com op quiet, nodefault file $^&.obj name $@ disable 1023,1080
 
-decstub.gh : decstub.asm ./mkcode.exe
-    *bwasm -zq -fo=$^&.obj $[@
-    *bwlink format dos com op quiet, nodefault file $^&.obj name $^&.tmp disable 1023,1080
-    $]@ $^&.tmp $@
+copystub.gh : ./mkcode.exe copystub.tmp
+    @%make echo_execute
+    $(noecho)$[@ $]@ $@
+
+decstub.tmp : decstub.asm
+    @%make echo_aslink
+    $(noecho)*bwasm -zq -fo=$^&.obj $[@
+    $(noecho)*bwlink format dos com op quiet, nodefault file $^&.obj name $@ disable 1023,1080
+
+decstub.gh : ./mkcode.exe decstub.tmp
+    @%make echo_execute
+    $(noecho)$[@ $]@ $@
 
 ./mkcode.exe: mkcode.c
+    @%make echo_bldcl
     $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $^&.obj
+    @echo bld_link $^&.tmp
+!endif

@@ -274,7 +274,7 @@ STATIC DHEADPTR findDir( const char *path )
 
     dlast = NULL;
     for( dcur = cacheHead; dcur != NULL; dcur = dcur->dh_next ) {
-        if( *path == *dcur->dh_name && FarFNameCmp( dcur->dh_name, path ) == 0 ) {
+        if( *path == *dcur->dh_name && FarFNameEq( dcur->dh_name, path ) ) {
             break;
         }
         dlast = dcur;
@@ -302,7 +302,7 @@ STATIC CENTRYPTR findFile( DHEADPTR dir, const char *name )
     h = Hash( name, HASH_PRIME );
 
     for( ccur = dir->dh_table[h]; ccur != NULL; ccur = ccur->ce_next ) {
-        if( FarFNameCmp( ccur->ce_name, name ) == 0 ) {
+        if( FarFNameEq( ccur->ce_name, name ) ) {
             return( ccur );
         }
     }

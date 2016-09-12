@@ -42,7 +42,7 @@
    Misc. stuff.
 */
 
-char const  DIPImpName[] = "DWARF";
+char const  DIPImp( Name )[] = "DWARF";
 
 df_cleaner       *Cleaners;
 
@@ -56,7 +56,7 @@ static void CallCleaners( void )
     }
 }
 
-unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
 /*
         Return the sizes of the individual handle types. This version
@@ -91,7 +91,7 @@ void DFFreeImage( imp_image_handle *ii )
     }
 }
 
-dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
 /*
         Return DS_OK if you could release some memory, DS_FAIL if you
@@ -117,10 +117,10 @@ dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
     return( ret );
 }
 
-dip_status      DIGENTRY DIPImpStartup(void)
+dip_status DIPIMPENTRY( Startup )(void)
 {
 /*
-        Return DS_OK if startup initialization when OK, or a DS_ERR|DS_?
+        Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
         constant if something went wrong.
 */
     Cleaners = NULL;
@@ -129,7 +129,7 @@ dip_status      DIGENTRY DIPImpStartup(void)
     return( DS_OK );
 }
 
-void            DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
 /*
         Shutting down and unloading. Last chance to free up stuff.
@@ -138,7 +138,7 @@ void            DIGENTRY DIPImpShutdown( void )
         DRFini();
 }
 
-void            DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
 /*
         The client is about to longjmp, and may bypass

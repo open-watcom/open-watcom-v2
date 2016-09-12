@@ -486,7 +486,7 @@ PTREE PTreeThis( void )
 {
     PTREE node;                 // - new node
 
-    node = PTreeId( CppSpecialName( SPECIAL_THIS ) );
+    node = PTreeId( CppSpecialName( SPECIAL_NAME_THIS ) );
     node->cgop = CO_NAME_THIS;
     return node;
 }
@@ -496,7 +496,7 @@ PTREE PTreeCDtorExtra( void )
 {
     PTREE node;                 // - new node
 
-    node = PTreeId( CppSpecialName( SPECIAL_CDTOR_EXTRA ) );
+    node = PTreeId( CppSpecialName( SPECIAL_NAME_CDTOR_EXTRA ) );
     node->cgop = CO_NAME_CDTOR_EXTRA;
     return node;
 }

@@ -109,7 +109,7 @@ cg_type         GetType2( unsigned_16 typ_info ) {
 }
 
 
-cg_type         F772CGType( sym_id sym ) {
+cg_type         F77ToCGType( sym_id sym ) {
 //========================================
 
 // Map a WATFOR-77 type to a CG type.

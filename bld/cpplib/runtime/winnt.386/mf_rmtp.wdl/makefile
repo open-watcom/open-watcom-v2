@@ -11,5 +11,5 @@ export_only=1
 mthreaded  = 1
 fs_registration = yes
 profile = 1
-define_library_include = $(cpplib_dir)/runtime/plib.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/runtime/runtime.mif

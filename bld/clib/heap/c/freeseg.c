@@ -33,29 +33,34 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stddef.h>
-#include "rtdata.h"
-#include "crwd.h"
 #if defined(__QNX__)
     #include <sys/seginfo.h>
 #elif defined(__OS2__)
     #include <dos.h>
     #define INCL_DOSMEMMGR
     #include <wos2.h>
-    #if defined(__BIG_DATA__)
-        #define MODIFIES ds es
-    #else
-        #define MODIFIES es
-    #endif
 #elif defined(__WINDOWS__)
     #include <dos.h>
     #include <windows.h>
-    #define MODIFIES es
 #else
     #include <dos.h>
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
+#include "crwd.h"
 #include "heap.h"
 #include "seterrno.h"
+
+
+#if defined(__OS2__)
+  #if defined(__BIG_DATA__)
+    #define MODIFIES ds es
+  #else
+    #define MODIFIES es
+  #endif
+#elif defined(__WINDOWS__)
+    #define MODIFIES es
+#endif
 
 #if defined(__WINDOWS__) || defined(__OS2__)
 

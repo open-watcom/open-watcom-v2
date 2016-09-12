@@ -64,33 +64,41 @@ verrc_exe = $(target_exe)
 
 $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @for %i in ($(fobjs)) do @%append $^&.lnk file %i
     @for %i in ($(libs)) do @%append $^&.lnk lib %i
+    @%make echo_link
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
 !endif
     @%make bind_version_res_exe
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . errmsg.res
 
 option.obj : option.c optinfo.h
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
-    $[@ $(wasm_dir)/inlnops.tok $@
+    @%make echo_execute
+    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
+    @%make echo_bldcl
     $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
-    $[@ $(wasm_dir)/inlnops.tok $@
+    @%make echo_execute
+    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
 msg.gh : $(wasm_dir)/h/asmshare.msg
-    *awk -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=MSG_RC_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
 errsrc_opt_i86 = eoic
 errsrc_opt_386 = eo3c
@@ -101,10 +109,11 @@ jerrsrc_opt_386 = jo3c
 jerrsrc_opt_axp = jorc
 
 errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
-    errsrc $[@ $(errsrc_opt_$(target_cpu))
+    $(noecho)errsrc $[@ $(errsrc_opt_$(target_cpu)) >$(nulldevice)
 
 jerrmsg.grc:  ../../../h/error.msg
-    errsrc $[@ $(jerrsrc_opt_$(target_cpu))
+    $(noecho)errsrc $[@ $(jerrsrc_opt_$(target_cpu)) >$(nulldevice)
 
 errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+    @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

@@ -188,8 +188,6 @@ extern int              __HeapManager_expand( __segment seg, unsigned offset,
 extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
 #endif
 
-extern void             _WCNEAR *__brk( unsigned );
-
 #if defined(_M_IX86)
  #define _DGroup()      FP_SEG((&__nheapbeg))
 #else

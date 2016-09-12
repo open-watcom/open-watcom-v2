@@ -100,15 +100,18 @@ xname = $(xname_basename)$(ext_lib_shared)
 !endif
 
 $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
+    $(cl) $(clflags_dll) $(objs) $(ldflags_dll)
 !else
-        $(linker) name $^@ $(lflags_dll) file {$(objs)}
+    $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif
-        @%make bind_version_res_dll
+    @%make bind_version_res_dll
 
 distbls.gh : ./disbuild.exe
-    $[@
+    @%make echo_execute
+    $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers)
+    @%make echo_bldcl
     $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)

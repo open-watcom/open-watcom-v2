@@ -48,19 +48,19 @@
  * (since we simulate them anyway) but it's a problem when stepping over calls.
  */
 
-unsigned DIGENTRY MITraceSize( void )
+unsigned MADIMPENTRY( TraceSize )( void )
 {
     return( sizeof( mad_trace_data ) );
 }
 
-void DIGENTRY MITraceInit( mad_trace_data *td, mad_registers const *mr )
+void MADIMPENTRY( TraceInit )( mad_trace_data *td, mad_registers const *mr )
 {
     td = td; mr = mr;
 
     /* nothing to do */
 }
 
-mad_status DIGENTRY MITraceHaveRecursed( address watch_stack, mad_registers const *mr )
+mad_status MADIMPENTRY( TraceHaveRecursed )( address watch_stack, mad_registers const *mr )
 {
     if( mr->mips.u29.sp.u._32[I64LO32] < watch_stack.mach.offset ) {
         return( MS_OK );
@@ -68,7 +68,7 @@ mad_status DIGENTRY MITraceHaveRecursed( address watch_stack, mad_registers cons
     return( MS_FAIL );
 }
 
-mad_trace_how DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, mad_registers const *mr, address *brk )
+mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, mad_registers const *mr, address *brk )
 {
     mad_disasm_control  dc;
     addr_off            ra;
@@ -109,7 +109,7 @@ mad_trace_how DIGENTRY MITraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_
 }
 
 /* This had better be consistent with DisasmControl() in mipsdisas.c */
-mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, mad_registers const *in, mad_registers *out )
+mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, mad_registers const *in, mad_registers *out )
 {
     mad_disasm_control  dc;
     unsigned_64         *reg;
@@ -167,7 +167,7 @@ mad_status DIGENTRY MITraceSimulate( mad_trace_data *td, mad_disasm_data *dd, ma
     return( MS_UNSUPPORTED );
 }
 
-void DIGENTRY MITraceFini( mad_trace_data *td )
+void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
     td = td;
 
@@ -178,7 +178,7 @@ void DIGENTRY MITraceFini( mad_trace_data *td )
 #define BRK_POINT       0x0000000D      // 'break' (with code of 0)
 
 
-mad_status DIGENTRY MIUnexpectedBreak( mad_registers *mr, char *buff, size_t *buff_size_p )
+mad_status MADIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
     address     a;
     struct {

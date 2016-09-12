@@ -34,9 +34,11 @@
 #include <except.h>
 
 extern "C"
+_NORETURN
 void CPPLIB( call_unexpected )( // CALL "unexpected" SET BY "set_unexpected"
     void )
 {
-  std::unexpected();
+    std::unexpected();
+    // never return
 }
 

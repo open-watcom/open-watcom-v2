@@ -177,7 +177,7 @@ bool HookPendingPush( void )
        from a region with no source information to one with or
        vis-versa.
     */
-    have_src_info = ( ModHasInfo( ContextMod, HK_CUE ) == DS_OK );
+    have_src_info = ( DIPModHasInfo( ContextMod, HK_CUE ) == DS_OK );
     if( have_src_info != HadSrcInfo ) {
         HadSrcInfo = have_src_info;
         if( have_src_info ) {

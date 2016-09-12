@@ -73,9 +73,9 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
     }
     _searchenv( realname, "PATH", path );
     if( *path == '\0' ) {
-        return( -1 );
+        return( DIG_NIL_HANDLE );
     } else {
-        return( DIGCliOpen( path, DIG_READ ) );
+        return( DIGCli( Open )( path, DIG_READ ) );
     }
 }
 #endif
@@ -125,20 +125,23 @@ BOOL LoadDbgInfo( void )
     DEBUGOUT( "Enter LoadDbgInfo" );
     err = TRUE;
     curProcess = DIPCreateProcess();
-    curFileHdl = DIGCliOpen( DTModuleEntry.szExePath , DIG_READ );
+    curFileHdl = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
     if( curFileHdl != DIG_NIL_HANDLE ) {
         DEBUGOUT( "File open OK" );
         priority = 0;
         for( ;; ) {
             priority = DIPPriority( priority );
-            if( priority == 0 ) break;
+            if( priority == 0 )
+                break;
             curModHdl = DIPLoadInfo( curFileHdl, 0, priority );
-            if( curModHdl != NO_MOD ) break;
+            if( curModHdl != NO_MOD ) {
+                break;
+            }
         }
         if( curModHdl != NO_MOD ) {
-                DEBUGOUT( "debug info load OK" );
-                DIPMapInfo( curModHdl, NULL );
-                err = FALSE;
+            DEBUGOUT( "debug info load OK" );
+            DIPMapInfo( curModHdl, NULL );
+            err = FALSE;
         } else {
             DEBUGOUT( "curModHdl == NO_MOD" );
         }
@@ -146,12 +149,12 @@ BOOL LoadDbgInfo( void )
     if( err ) {
         DEBUGOUT( "LoadDbgInfo Failed" );
         if( curFileHdl != DIG_NIL_HANDLE ) {
-            DIGCliClose( curFileHdl );
+            DIGCli( Close )( curFileHdl );
+            curFileHdl = DIG_NIL_HANDLE;
         }
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
         curModHdl = NO_MOD;
-        curFileHdl = DIG_NIL_HANDLE;
         return( FALSE );
     }
     return( TRUE );
@@ -179,10 +182,10 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
     dipaddr.indirect = FALSE;
     dipaddr.mach.offset = addr->offset;
     dipaddr.mach.segment = addr->seg;
-    sr = AddrSym( NO_MOD, dipaddr, symhdl );
+    sr = DIPAddrSym( NO_MOD, dipaddr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:
-        SymLocation( symhdl, NULL, &ll );
+        DIPSymLocation( symhdl, NULL, &ll );
         si->symoff = addr->offset - ll.e[0].u.addr.mach.offset;
         break;
     case SR_EXACT:
@@ -193,16 +196,16 @@ static BOOL doFindSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
         break;
     }
     if( sr != SR_NONE ) {
-        SymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
-//      SymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
+        DIPSymName( symhdl, NULL, SN_OBJECT, si->name, MAX_SYM_NAME );
+//      DIPSymName( symhdl, NULL, SN_SOURCE, si->name, MAX_SYM_NAME );
         if( getsrcinfo ) {
             cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
-            if( AddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
+            if( DIPAddrCue( NO_MOD, dipaddr, cue ) == SR_NONE ) {
                 MemFree( cue );
                 ret = FALSE;
             } else {
-                CueFile( cue, si->filename, MAX_FILE_NAME );
-                si->linenum = CueLine( cue );
+                DIPCueFile( cue, si->filename, MAX_FILE_NAME );
+                si->linenum = DIPCueLine( cue );
                 MemFree( cue );
                 ret = TRUE;
             }
@@ -244,318 +247,9 @@ void SymFileClose( void )
         DIPDestroyProcess( curProcess );
     }
     if( curFileHdl != DIG_NIL_HANDLE ) {
-        DIGCliClose( curFileHdl );
+        DIGCli( Close )( curFileHdl );
+        curFileHdl = DIG_NIL_HANDLE;
     }
     curProcess = NULL;
     curModHdl = NO_MOD;
-    curFileHdl = DIG_NIL_HANDLE;
-}
-
-
-/*##########################################################################
-  #
-  # CLIENT routines for the DIP
-  #
-  ##########################################################################*/
-
-/*
- * DIPCliImageUnload
- */
-void DIGCLIENT DIPCliImageUnload( mod_handle hdl )
-{
-    hdl = hdl;
-    DEBUGOUT( "ImageUnload" );
-    //
-    // do nothing - we don't have anything to clean up
-    //
-}
-
-/*
- * DIPCliAlloc
- */
-void *DIGCLIENT DIGCliAlloc( size_t size )
-{
-    void        *ret;
-
-    DEBUGOUT( "alloc BEGIN" );
-    ret = MemAlloc( size );
-    DEBUGOUT( "alloc END" );
-    return( ret );
-}
-
-/*
- * DIPCliRealloc
- */
-void *DIGCLIENT DIGCliRealloc( void *ptr, size_t size )
-{
-    void        *ret;
-
-    DEBUGOUT( "realloc BEGIN" );
-    ret = MemReAlloc( ptr, size );
-    DEBUGOUT( "realloc END" );
-    return( ret );
-}
-
-/*
- * DIPCliFree
- */
-void DIGCLIENT DIGCliFree( void *ptr )
-{
-    DEBUGOUT( "free BEGIN" );
-    MemFree( ptr );
-    DEBUGOUT( "free END" );
-}
-
-/*
- * horkyFindSegment - runs and tries to find a segment.  It does this by
- * finding the module entry in the global heap for this task.  The module
- * entry is a lot like an NE header, except that instead of segment numbers,
- * it has the selector values themselves.  For the format of the module entry
- * see p 319 of Undocumented Windows
- */
-static WORD horkyFindSegment( HMODULE mod, WORD seg )
-{
-    WORD        sel;
-    WORD        offset;
-    GLOBALENTRY ge;
-
-    if( !GlobalFirst( &ge, GLOBAL_ALL ) ) {
-        return( 0 );
-    }
-    do {
-        if( ge.hOwner == mod && ge.wType == GT_MODULE ) {
-            ReadMem( (WORD)ge.hBlock, 0x22, &offset, sizeof( offset ) );
-            offset += 8 + ( 10 * seg );
-            ReadMem( (WORD)ge.hBlock, offset, &sel, sizeof( sel ) );
-            return( sel );
-        }
-    } while( GlobalNext( &ge, GLOBAL_ALL ) );
-    return( 0 );
-}
-
-/*
- * DIPCliMapAddr
- * Possibilites:
- *  1) We are mapping segments for a 32-bit extended app.  In this case,
- *     we return the segment:offset returned by CheckIsModuleWin32App
- *  2) We are mapping a segment for a 16-bit app that is NOT a load
- *     on call segment.  In this case, GlobalEntryModule works and
- *     we return the value we obtain from it
- *  3) We are mapping a segment for a 16-bit app that IS a load
- *     on call segment.  In this case, GlobalEntryModule FAILS (stupid
- *     f*cking Windows) and so we have to go find it ourselves using
- *     horkyFindSegment.
- */
-void DIGCLIENT DIPCliMapAddr( addr_ptr *addr, void *info )
-{
-    GLOBALENTRY ge;
-    LPVOID      ptr;
-    WORD        sel;
-    WORD        cs,ds;
-    DWORD       off;
-
-    DEBUGOUT( "mapaddr" );
-    info = info;
-    if( CheckIsModuleWin32App( DTModuleEntry.hModule, &ds, &cs, &off ) ) {
-        addr->segment = cs;
-        addr->offset = off;
-    } else {
-        ge.dwSize = sizeof( ge );
-        if( !GlobalEntryModule( &ge, DTModuleEntry.hModule, addr->segment ) )
-        {
-            addr->segment = horkyFindSegment( DTModuleEntry.hModule,
-                                              addr->segment );
-        }
-        ptr = GlobalLock( ge.hBlock );
-        GlobalUnlock( ge.hBlock );
-        sel = FP_SEG( ptr );
-        if( sel == NULL ) {
-            sel = (WORD)ge.hBlock + 1;
-        }
-        addr->segment = sel;
-        addr->offset = 0;
-    }
-}
-
-/*
- * DIPCliSymCreate
- */
-imp_sym_handle *DIGCLIENT DIPCliSymCreate( imp_image_handle *ih, void *d )
-{
-    ih=ih;
-    d=d;
-    return( NULL );
-}
-
-#if 0
-/*
- * DIPCliSectLoaded
- */
-dip_status DIGCLIENT DIPCliSectLoaded( unsigned sect )
-{
-    //
-    // there are no overlays in Windows so just return TRUE
-    //
-    sect = sect;
-    return( DS_OK );
-}
-#endif
-
-/*
- * DIPCliItemLocation
- */
-dip_status DIGCLIENT DIPCliItemLocation( location_context *context,
-                                      context_item item, location_list *loc )
-{
-    context = context;
-    item = item;
-    loc = loc;
-    return( DS_FAIL );
-}
-
-/*
- * DIPCliAssignLocation
- */
-dip_status DIGCLIENT DIPCliAssignLocation( location_list *loc1,
-                                    location_list *loc2, unsigned long item )
-{
-    loc1 = loc1;
-    loc2 = loc2;
-    item = item;
-    return( DS_FAIL );
-}
-
-/*
- * DIPCliSameAddrSpace
- */
-dip_status DIGCLIENT DIPCliSameAddrSpace( address a1, address a2 )
-{
-    if( a1.mach.segment == a2.mach.segment ) {
-        return( DS_OK );
-    } else {
-        return( DS_FAIL );
-    }
-}
-
-/*
- * DIPCliAddrSection
- */
-void DIGCLIENT DIPCliAddrSection( address *addr )
-{
-    addr->sect_id = 0;
-}
-
-
-/*
- * DIPCliOpen
- */
-dig_fhandle DIGCLIENT DIGCliOpen( const char *path, dig_open mode )
-{
-    dig_fhandle         ret;
-    int                 flags;
-
-    flags = O_BINARY;
-    if( mode & DIG_READ )  flags |= O_RDONLY;
-    if( mode & DIG_WRITE ) flags |= O_WRONLY;
-    if( mode & DIG_TRUNC ) flags |= O_TRUNC;
-    if( mode & DIG_CREATE ) {
-        flags |= O_CREAT;
-        ret = (dig_fhandle)sopen4( path, flags, SH_DENYWR, S_IRWXU | S_IRWXG | S_IRWXO );
-    } else {
-        ret = (dig_fhandle)sopen3( path, flags, SH_DENYWR );
-    }
-    return( ret );
-}
-
-/*
- * DIPCliSeek
- */
-unsigned long DIGCLIENT DIGCliSeek( dig_fhandle hdl, unsigned long offset, dig_seek dipmode )
-{
-    int                 mode;
-    unsigned long       ret;
-
-    DEBUGOUT( "seek BEGIN" );
-    switch( dipmode ) {
-    case DIG_ORG:
-        mode = SEEK_SET;
-        break;
-    case DIG_CUR:
-        mode = SEEK_CUR;
-        break;
-    case DIG_END:
-        mode = SEEK_END;
-        break;
-    }
-    ret = lseek( (int)hdl, offset, mode );
-    DEBUGOUT( "seek END" );
-    return( ret );
-}
-
-/*
- * DIPCliRead
- */
-size_t DIGCLIENT DIGCliRead( dig_fhandle hdl, void *buf, size_t size )
-{
-    DEBUGOUT( "reading" );
-    return( read( (int)hdl, buf, size ) );
-}
-
-/*
- * DIPCliWrite
- */
-size_t DIGCLIENT DIGCliWrite( dig_fhandle hdl, const void *buf, size_t size )
-{
-    return( write( (int)hdl, buf, size ) );
-}
-
-/*
- * DIPCliClose
- */
-void DIGCLIENT DIGCliClose( dig_fhandle hdl )
-{
-    close( (int)hdl );
-}
-
-/*
- * DIPCliRemove
- */
-void DIGCLIENT DIGCliRemove( const char *path, dig_open mode )
-{
-    mode = mode;
-    remove( path );
-}
-
-
-/*
- * DIPCliStatus
- */
-void DIGCLIENT DIPCliStatus( dip_status stat )
-{
-    stat = stat;
-}
-
-/*
- * DIPCliCurrMAD
- */
-dig_mad DIGCLIENT DIPCliCurrMAD( void )
-/*************************************/
-{
-    return( MAD_X86 );
-}
-
-/*
- * DIGCliMachineData
- */
-unsigned DIGCLIENT DIGCliMachineData( address addr, dig_info_type info_type,
-                        dig_elen in_size,  const void *in,
-                        dig_elen out_size, void *out )
-{
-    addr = addr;
-    info_type = info_type;
-    in_size = in_size;
-    in = in;
-    out_size = out_size;
-    out = out;
-    return( 0 );
 }

@@ -7,5 +7,5 @@ system     = netware
 model      = ms
 convention = stack
 linkage    = static
-define_library_include = $(cpplib_dir)/complex/complex.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/complex/complex.mif

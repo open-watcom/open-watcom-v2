@@ -105,64 +105,34 @@ patch_level = 0
 verrc_inc_path = $(extra_verrc_inc_path) $(inc_dirs_sys) -I"$(watcom_dir)/h"
 
 $(verrc_exe_out): $(verrc_exe_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrc_exe_int) $$ $(verrc_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_exe_int) -fo=$^@
 
 $(verrc386_exe_out): $(verrc386_exe_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrc386_exe_int) $$ $(verrc386_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc386_exe_int) -fo=$^@
 
 $(verrcx64_exe_out): $(verrcx64_exe_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrcx64_exe_int) $$ $(verrcx64_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcx64_exe_int) -fo=$^@
 
 $(verrcaxp_exe_out): $(verrcaxp_exe_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrcaxp_exe_int) $$ $(verrcaxp_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcaxp_exe_int) -fo=$^@
 
 $(verrcppc_exe_out): $(verrcppc_exe_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrcppc_exe_int) $$ $(verrcppc_exe) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrcppc_exe_int) -fo=$^@
 
 $(verrc_dll_out): $(verrc_dll_skel) .EXPLICIT
-!ifeq verbose 1
-        genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
-        $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$^@
-!else
-        @genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
-        @echo rc $@
-        @$(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$^@
-!endif
+    $(noecho)genverrc $]@ $(verrc_dll_int) $$ $(verrc_dll) $(patch_level)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(verrc_inc_path) $(verrc_dll_int) -fo=$^@
 
 #
 # Macros to bind version resource (for PE images)
@@ -173,12 +143,8 @@ bind_version_res_exe_add = -fr=$(version_res_exe_$(host_os)_$(host_cpu))
 
 bind_version_res_exe: .PROCEDURE .EXPLICIT
 !ifdef version_res_exe_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(version_res_exe_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(version_res_exe_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(version_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 !ifdef version_res_dll_$(host_os)_$(host_cpu)
@@ -187,50 +153,30 @@ bind_version_res_dll_add = -fr=$(version_res_dll_$(host_os)_$(host_cpu))
 
 bind_version_res_dll: .PROCEDURE .EXPLICIT
 !ifdef version_res_dll_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(version_res_dll_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(version_res_dll_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(version_res_dll_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_ver386_res_exe: .PROCEDURE .EXPLICIT
 !ifdef ver386_res_exe_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(ver386_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_verx64_res_exe: .PROCEDURE .EXPLICIT
 !ifdef verx64_res_exe_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(verx64_res_exe_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(verx64_res_exe_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(verx64_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_veraxp_res_exe: .PROCEDURE .EXPLICIT
 !ifdef veraxp_res_exe_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(veraxp_res_exe_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(veraxp_res_exe_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(veraxp_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif
 
 bind_verppc_res_exe: .PROCEDURE .EXPLICIT
 !ifdef verppc_res_exe_$(host_os)_$(host_cpu)
-!ifeq verbose 1
-        $(rc) -k $(verppc_res_exe_$(host_os)_$(host_cpu)) $^@
-!else
-        @echo bind rc $@
-        @$(rc) -k $(verppc_res_exe_$(host_os)_$(host_cpu)) $^@
-!endif
+    @%make echo_bindres
+    $(rc) -k $(verppc_res_exe_$(host_os)_$(host_cpu)) $^@
 !endif

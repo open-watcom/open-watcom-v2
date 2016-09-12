@@ -66,11 +66,11 @@ static const char *SymPickText( const void *data_handle, int item )
     while( --item >= 0 ) {
         sym = sym->next;
     }
-    len = SymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
+    len = DIPSymName( SL2SH( sym ), ambig->lc, SN_DEMANGLED, TxtBuff, TXT_LEN );
     if( len == 0 ) {
-        len = SymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
+        len = DIPSymName( SL2SH( sym ), ambig->lc, SN_SOURCE, TxtBuff, TXT_LEN );
     }
-    image_name = ModImageName( SymMod( SL2SH( sym ) ) );
+    image_name = ModImageName( DIPSymMod( SL2SH( sym ) ) );
     if( *image_name != NULLCHAR ) {
         Format( &TxtBuff[len], " [%s]", image_name );
     }

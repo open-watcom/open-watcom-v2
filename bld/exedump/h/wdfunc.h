@@ -166,7 +166,7 @@ extern int_16  get_s16( int_16 *src );
 /*
  * dosexe.c
  */
-extern bool Dmp_dos_head( void );
+extern int Dmp_dos_head( void );
 
 /*
  * d16mexe.c

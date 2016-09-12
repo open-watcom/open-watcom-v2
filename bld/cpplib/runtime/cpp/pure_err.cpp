@@ -41,11 +41,12 @@
 
 extern "C"
 _WPRTLINK
-void CPPLIB(pure_error)(        // TRAP NON-OVERRIDDEN PURE VIRTUAL CALLS
+void CPPLIB( pure_error )(        // TRAP NON-OVERRIDDEN PURE VIRTUAL CALLS
     void )
 {
     if( !_RWD_PureErrorFlag ) {
         _RWD_PureErrorFlag = 1;
-        CPPLIB(fatal_runtime_error)( RTMSG_PURE_ERR, 1 );
+        CPPLIB( fatal_runtime_error )( RTMSG_PURE_ERR, 1 );
+        // never return
     }
 }

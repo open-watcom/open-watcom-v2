@@ -1,17 +1,9 @@
 .c{$+$(__subdir__)$-}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
-        @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
-!ifeq verbose 1
-        $(cc) $(cflags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo cc $@
-        @$(cc) $(cflags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
+    @%make echo_cc
+    $(cc) $(cflags) $(c_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
 
 .cpp{$+$(__subdir__)$-}.obj: $($(proj_name)_autodepends) $(__MAKEFILES__)
-        @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
-!ifeq verbose 1
-        $(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!else
-        @echo c++ $@
-        @$(cxx) $(cflags) $(cxxflags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@
-!endif
+    @if not exist $+$(__subdir__)$- mkdir $+$(__subdir__)$-
+    @%make echo_cxx
+    $(cxx) $(cflags) $(cxx_flags) $(cppflags) $(extra_cpp_$+$(__subdir__)$-_flags) $(extra_c_flags_$[&) $(inc_path) $[@

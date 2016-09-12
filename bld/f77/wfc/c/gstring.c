@@ -49,7 +49,7 @@
 #include "declare.h"
 
 
-sym_id  GStartCat( int num_args, int size ) {
+sym_id  GStartCat( uint num_args, uint size ) {
 //===========================================
 
 // Start cconcatenation into a temporary.
@@ -72,7 +72,7 @@ sym_id  GTempString( uint size ) {
 }
 
 
-void    GStopCat( int num_args, sym_id result ) {
+void    GStopCat( uint num_args, sym_id result ) {
 //===============================================
 
 // Finish concatenation into a temporary.
@@ -90,7 +90,7 @@ void    GStopCat( int num_args, sym_id result ) {
     // was indexed as WORD(I:J).
     PushOpn( CITNode );
     EmitOp( FC_CAT );
-    OutU16( num_args | 0x8000 ); // indicate concatenating into a static temp
+    OutU16( (uint_16)( num_args | CAT_TEMP ) ); // indicate concatenating into a static temp
 }
 
 
@@ -106,7 +106,8 @@ void    GCatArg( itnode *itptr ) {
 static  uint    SrcChar( itnode *op ) {
 //=====================================
 
-    if( op->opn.us & USOPN_SS1 ) return( op->value.st.ss_size );
+    if( op->opn.us & USOPN_SS1 )
+        return( op->value.st.ss_size );
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_CON ) { // character constant
         return( op->sym_ptr->u.lt.length );
     }
@@ -149,9 +150,9 @@ void    AsgnChar( void ) {
 // Perform character assignment.
 
     itnode      *save_cit;
-    int         num_args;
-    int         i;
-    int         j;
+    uint        num_args;
+    uint        i;
+    uint        j;
 
     save_cit = CITNode;
     AdvanceITPtr();
@@ -183,7 +184,7 @@ void    AsgnChar( void ) {
             CITNode = save_cit;
             PushOpn( CITNode );
             EmitOp( FC_CAT );
-            OutU16( num_args );
+            OutU16( (uint_16)num_args );
 #endif
         }
     } else {
@@ -191,6 +192,6 @@ void    AsgnChar( void ) {
         CITNode = save_cit;
         PushOpn( CITNode );
         EmitOp( FC_CAT );
-        OutU16( num_args );
+        OutU16( (uint_16)num_args );
     }
 }

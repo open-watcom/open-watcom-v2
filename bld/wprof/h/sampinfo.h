@@ -34,6 +34,15 @@
 #include <limits.h>
 #include "sample.h"
 
+
+/*
+ * dig_fhandle can be pointer to file structure or handle number
+ * therefore 0/NULL is reserved for errors
+ * if handle number is used then handle must be 1 based
+ */
+#define PH2DFH(sh)  (dig_fhandle)(pointer_int)((sh) + 1)
+#define DFH2PH(dfh) ((int)(pointer_int)(dfh) - 1)
+
 typedef uint_16                 thread_id;
 typedef uint_16                 section_id;
 typedef unsigned long           clicks_t;

@@ -324,11 +324,16 @@ brkp *FindBreakByLine( mod_handle mod, cue_fileid id, unsigned line )
 
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        if( DeAliasAddrMod( bp->loc.addr, &brk_mod ) == SR_NONE )continue;
-        if( brk_mod != mod )continue;
-        if( DeAliasAddrCue( brk_mod, bp->loc.addr, ch ) == SR_NONE ) continue;
-        if( CueFileId( ch ) != id ) continue;
-        if( CueLine( ch ) != line ) continue;
+        if( DeAliasAddrMod( bp->loc.addr, &brk_mod ) == SR_NONE )
+            continue;
+        if( brk_mod != mod )
+            continue;
+        if( DeAliasAddrCue( brk_mod, bp->loc.addr, ch ) == SR_NONE )
+            continue;
+        if( DIPCueFileId( ch ) != id )
+            continue;
+        if( DIPCueLine( ch ) != line )
+            continue;
         return( bp );
     }
     return( NULL );
@@ -1016,7 +1021,7 @@ void SetPointAddr( brkp *bp, address addr )
         image = ImageEntry( mod );
         if( image == NULL )
             return;
-        ModName( mod, TxtBuff, TXT_LEN );
+        DIPModName( mod, TxtBuff, TXT_LEN );
         bp->mod_name = DupStr( TxtBuff );
         if( image->image_name != NULL ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
@@ -1027,14 +1032,14 @@ void SetPointAddr( brkp *bp, address addr )
         switch( DeAliasAddrCue( NO_MOD, addr, ch ) ) {
         case SR_EXACT:
             bp->source_line = CopySourceLine( ch );
-            Format( TxtBuff, "%d", CueLine( ch ) );
+            Format( TxtBuff, "%d", DIPCueLine( ch ) );
             bp->sym_name = DupStr( TxtBuff );
             ok = GetBPSymAddr( bp, &addr );
             break;
         case SR_CLOSEST:
-            Format( TxtBuff, "%d", CueLine( ch ) );
+            Format( TxtBuff, "%d", DIPCueLine( ch ) );
             bp->sym_name = DupStr( TxtBuff );
-            bp->addr_diff = addr.mach.offset - CueAddr( ch ).mach.offset;
+            bp->addr_diff = addr.mach.offset - DIPCueAddr( ch ).mach.offset;
             ok = GetBPSymAddr( bp, &addr );
             break;
         default:
@@ -1831,7 +1836,7 @@ bool    FindFirstCue( mod_handle mod, cue_handle *ch )
     if( mod != NO_MOD ) {
         d.dest = ch;
         d.found = false;
-        WalkFileList( mod, FindCue, &d );
+        DIPWalkFileList( mod, FindCue, &d );
     }
     return( d.found );
 }
@@ -1851,11 +1856,11 @@ void BreakAllModEntries( mod_handle handle )
     have_mod_cue = FindFirstCue( handle, ch_mod );
     for( i = 0; i < NameListNumRows( &list ); ++i ) {
         addr = NameListAddr( &list, i );
-        SymInfo( NameListHandle( &list, i ), NULL, &sinfo );
+        DIPSymInfo( NameListHandle( &list, i ), NULL, &sinfo );
         if( !sinfo.is_global && !sinfo.is_public )
             continue;
         if( have_mod_cue && DeAliasAddrCue( handle, addr, ch ) != SR_NONE ) {
-            if( CueFileId( ch ) != CueFileId( ch_mod ) ) {
+            if( DIPCueFileId( ch ) != DIPCueFileId( ch_mod ) ) {
                 continue;
             }
         }
@@ -1887,7 +1892,7 @@ address GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool ex
 
     if( mod == NO_MOD || row < 0 )
         return( NilAddr );
-    switch( LineCue( mod, file_id, row + 1, 0, ch ) ) {
+    switch( DIPLineCue( mod, file_id, row + 1, 0, ch ) ) {
     case SR_NONE:
         return( NilAddr );
     case SR_CLOSEST:
@@ -1895,7 +1900,7 @@ address GetRowAddrDirectly( mod_handle mod, cue_fileid file_id, int row, bool ex
             return( NilAddr );
         break;
     }
-    return( CueAddr( ch ) );
+    return( DIPCueAddr( ch ) );
 }
 
 brkp *GetBPAtIndex( int index )

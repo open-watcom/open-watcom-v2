@@ -34,6 +34,7 @@
 #else
     #include <direct.h>
 #endif
+#include <ctype.h>
 #include <sys/types.h>
 #include "make.h"
 #include "mmemory.h"
@@ -53,7 +54,7 @@ char *SkipWS( const char *p )
  * p is not const because the return value is usually used to write data.
  */
 {
-    while( isws( *p ) ) {
+    while( cisws( *p ) ) {
         ++p;
     }
     return( (char *)p );
@@ -73,7 +74,7 @@ char *FindNextWS( char *str )
         if( *str == BACKSLASH ) {
             str++;
             if( *str != NULLCHAR ) {
-                if( !string_open && isws ( *str ) ) {
+                if( !string_open && cisws ( *str ) ) {
                     break;
                 }
                 str++;
@@ -86,7 +87,7 @@ char *FindNextWS( char *str )
                 if( string_open ) {
                     str++;
                 } else {
-                    if( isws( *str ) ) {
+                    if( cisws( *str ) ) {
                         break;
                     }
                     str++;
@@ -108,7 +109,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
     char    *orgdst = dst;
     bool    string_open = false;
     size_t  pos = 0;
-    int     t;
+    char    t;
 
     assert( maxlen );
 
@@ -144,7 +145,7 @@ char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
                 if( string_open ) {
                     *dst++ = t;
                     pos++;
-                } else if( isws( t ) ) {
+                } else if( cisws( t ) ) {
                     break;
                 } else {
                     *dst++ = t;
@@ -173,7 +174,7 @@ char *FixName( char *name )
     for( ptr = name; (hold = *ptr) != NULLCHAR; hold = *++ptr ) {
         if( hold == '/' ) {
             *ptr = '\\';
-        } else if( isalpha( hold ) && hold < 'a') {
+        } else if( cisalpha( hold ) && hold < 'a') {
             *ptr = hold - 'A' + 'a';
         }
         hold = *++ptr;
@@ -182,7 +183,7 @@ char *FixName( char *name )
         }
         if( hold == '/' ) {
             *ptr = '\\';
-        } else if( isalpha( hold ) && hold < 'a') {
+        } else if( cisalpha( hold ) && hold < 'a') {
             *ptr = hold - 'A' + 'a';
         }
     }
@@ -217,36 +218,36 @@ char *FixName( char *name )
 }
 
 
-int FNameCmp( const char *a, const char *b )
-/*************************************************/
+bool FNameEq( const char *a, const char *b )
+/******************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( stricmp( a, b ) );
+    return( stricmp( a, b ) == 0 );
 #else
-    return( strcmp( a, b ) );
+    return( strcmp( a, b ) == 0 );
 #endif
 }
 
 
-static int FNameCmpChr( char a, char b )
+static bool FNameChrEq( char a, char b )
 /**************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( tolower( a ) - tolower( b ) );
+    return( ctolower( a ) == ctolower( b ) );
 #else
-    return( a - b );
+    return( a == b );
 #endif
 }
 
 
 #ifdef USE_FAR
-int FarFNameCmp( const char FAR *a, const char FAR *b )
+bool FarFNameEq( const char FAR *a, const char FAR *b )
 /*****************************************************/
 {
 #if defined( __OS2__ ) || defined( __NT__ ) || defined( __DOS__ )
-    return( _fstricmp( a, b ) );
+    return( _fstricmp( a, b ) == 0 );
 #else
-    return( _fstrcmp( a, b ) );
+    return( _fstrcmp( a, b ) == 0 );
 #endif
 }
 #endif
@@ -256,7 +257,7 @@ int FarFNameCmp( const char FAR *a, const char FAR *b )
 
 static bool __fnmatch( const char *pattern, const char *string )
 /***************************************************************
- * OS specific compare function FNameCmpChr
+ * OS specific compare function FNameChrEq
  * must be used for file names
  */
 {
@@ -300,7 +301,7 @@ static bool __fnmatch( const char *pattern, const char *string )
             }
             len++;
         } else {
-            if( FNameCmpChr( *pattern, *string ) != 0 ) {
+            if( !FNameChrEq( *pattern, *string ) ) {
                 return( false );
             }
             string++;
@@ -317,9 +318,9 @@ static bool __fnmatch( const char *pattern, const char *string )
          * star pattern section, try locate exact match
          */
         while( *string != NULLCHAR ) {
-            if( FNameCmpChr( *p, *string ) == 0 ) {
+            if( FNameChrEq( *p, *string ) ) {
                 for( i = 1; i < len; i++ ) {
-                    if( FNameCmpChr( *(p + i), *(string + i) ) != 0 ) {
+                    if( !FNameChrEq( *(p + i), *(string + i) ) ) {
                         break;
                     }
                 }
@@ -423,7 +424,7 @@ const char *DoWildCard( const char *base )
 
 
 void DoWildCardClose( void )
-/*********************************/
+/**************************/
 {
     if( path != NULL ) {
         FreeSafe( path );
@@ -461,7 +462,7 @@ int PutEnvSafe( ENV_TRACKER *env )
     p = env->value;
                                 // upper case the name
     while( *p != '=' && *p != NULLCHAR ) {
-        *p = toupper( *p );
+        *p = (char)ctoupper( *p );
         ++p;
     }
     rc = putenv( env->value );  // put into environment

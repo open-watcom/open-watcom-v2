@@ -108,6 +108,7 @@ extra_objlib_os2_386    = $(win_objs) $(ndos_objs) wddeobj.obj
 objs += $(extra_objlib_$(host_os)_$(host_cpu))
 
 $(name).lib : $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

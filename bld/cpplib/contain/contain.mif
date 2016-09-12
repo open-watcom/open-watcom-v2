@@ -14,4 +14,4 @@ pch_flags_x = -fh=pch01x.pch
 prefix = $(cont_n)
 prefix_x = $(cont_x)
 
-!include $(cpplib_dir)/mklibtgt.mif
+!include $(cpplib_dir)/mklib.mif

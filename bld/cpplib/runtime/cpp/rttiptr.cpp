@@ -41,7 +41,7 @@
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(dcptr)( void *p, unsigned delta, type_info const *from, type_info const *to ) {
+void * CPPLIB( dcptr )( void *p, unsigned delta, type_info const *from, type_info const *to ) {
     rtti_exec data;
 
     if( p == NULL ) {

@@ -45,6 +45,7 @@ version_res_dll_nt_x64 = version.res
 !ifdef sys_dll
 
 rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(ldflags)
 !else
@@ -55,6 +56,7 @@ rcsdll.dll : $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !else
 
 rcsdll.lib: $(objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(objs)
 !else

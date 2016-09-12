@@ -216,7 +216,7 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
 !ifdef ovl_dos
     @%append $^&.lnk option verbose,nocache
 !endif
@@ -227,23 +227,29 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
     @%append $^&.lnk begin autosection
 !endif
     @for %i in ($(objs)) do @%append $^&.lnk file %i
+    @%make echo_link
     $(linker) name $^@ $(lflags) @$^&.lnk $(endsect)
 !if 0
 !ifdef ovl_dos
     copy $^&.map $(lnk2)
     vi -d -q -s ..\mapfix.vi $(lnk2)
+    @%make echo_link
     $(linker) name $^@ $(lflags) @$(lnk) @$(lnk2) $(endsect)
 !endif
 !endif
 !endif
 !ifneq sys_windowed 1
     @%make bind_version_res_exe
+!endif
+    @%make echo_bindres
+!ifneq sys_windowed 1
     $(wstrip) -q -a -r $^@ . $(resfile)
 !else
     $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
 !endif
 
 wd.lib : litdef.gh $(engine_objs) $(__MAKEFILES__)
+    @%make echo_lib
 !ifndef __WATCOM_TOOLS__
     $(blib) $(bld_libflags) $(engine_objs)
 !else
@@ -432,21 +438,27 @@ rcfiles = &
     $(wv_dialogs)
 
 wvui.res : $(rdir)/wvui.rc $(rcfiles) usage.gh usagej.gh $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc_aui) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvuidll.res : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
 wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
     $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
 
 ####################
@@ -461,19 +473,23 @@ wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
 .str: h;$(rdir)/strings
 
 litdefm.tmp : menu.str $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$@ $[@
 
 litdefs1.tmp : wdeng.str $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
 litdefs2.tmp : wddui.str $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
     @%create $^@ 
-    *awk -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
-    *awk -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
-    *awk -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
+    @%make echo_awk
+    $(awk) -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
+    $(awk) -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
+    $(awk) -v prefix=DBG_DUI_MENU_ -v base=DBG_MENU_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefm.tmp
 
 !ifeq release 0
 wsplice_keys = -kIS_RC -k$(host_os) -kHIDDEN
@@ -482,10 +498,13 @@ wsplice_keys = -kIS_RC -k$(host_os)
 !endif
 
 usage.gh : $(hdir)/usage.sp $(__MAKEFILES__)
-    *wsplice -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kENGLISH $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"%s\", \"\")" $[@ $@
 
 usagej.gh : $(hdir)/usage.sp $(__MAKEFILES__)
-    *wsplice -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -kJAPANESE $(wsplice_keys) -t8 -f "pick((MSG_USAGE_BASE+%$#%+), \"\", \"%s\")" $[@ $@
 
 usage.u : $(hdir)/usage.sp $(__MAKEFILES__)
-    *wsplice -u -kENGLISH -k$(host_os) -klinkres $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -u -kENGLISH -k$(host_os) -klinkres $[@ $@

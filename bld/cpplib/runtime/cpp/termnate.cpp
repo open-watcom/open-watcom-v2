@@ -35,14 +35,15 @@
 #include "rtexcept.h"
 #include <except.h>
 #include "rtmsgs.h"
-#include "exitwmsg.h"
+#include "exitwmsg.h" 
 
 
 namespace std {
 
-  _WPRTLINK
-  void terminate( void )          // HANDLE TERMINATE
-  {
+_NORETURN
+_WPRTLINK
+void terminate( void )          // HANDLE TERMINATE
+{
     PFV handler;                // - NULL or handler set by "set_terminate"
     THREAD_CTL *thr;            // - thread ptr
     char* msg;                  // - error message
@@ -59,7 +60,8 @@ namespace std {
         (*handler)();
         msg = RTMSG_RET_TERMIN;
     }
-    CPPLIB(fatal_runtime_error)( msg, 1 );
-  }
+    CPPLIB( fatal_runtime_error )( msg, 1 );
+    // never return
+}
 
 }

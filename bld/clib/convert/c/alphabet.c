@@ -30,5 +30,6 @@
 
 
 #include "variety.h"
+#include "_xtoa.h"
 
 const char __based(__segname("_CONST")) __Alphabet[] = "0123456789abcdefghijklmnopqrstuvwxyz";

@@ -76,15 +76,20 @@ bool    IsFunctionDefn( void ) {
 
 // Check to see if type declaration is a function definition.
 
-    if( !RecName() ) return( false );
-    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) ) return( false );
+    if( !RecName() )
+        return( false );
+    if( memcmp( StmtKeywords[ PR_FUNC ], CITNode->opnd, 8 ) )
+        return( false );
     // allow INTEGER FUNCTION(10)
-    if( CITNode->opnd_size == 8 ) return( false );
+    if( CITNode->opnd_size == 8 )
+        return( false );
     // allow "INTEGER FUNCTIONA"
-    if( RecNextOpr( OPR_TRM ) ) return( false );
+    if( RecNextOpr( OPR_TRM ) )
+        return( false );
     // We now have INTEGER[*lenspec] FUNCTION name ...
     // allow INTEGER FUNCTIONA,
-    if( StmtSw & SS_COMMA_FOUND ) return( false );
+    if( StmtSw & SS_COMMA_FOUND )
+        return( false );
     RemKeyword( CITNode, 8 );
     return( true );
 }
@@ -164,31 +169,42 @@ TYPE    MapTypes( TYPE typ, uint size ) {
 
     if( typ == FT_REAL ) {
         switch( size ) {
-        case( sizeof( double ) ):       return( FT_DOUBLE );
+        case( sizeof( double ) ):
+            return( FT_DOUBLE );
         // kludge until long doubles are implemented.
-        case( 16 ):                     return( FT_EXTENDED );
-        default:        return( typ );
+        case( 16 ):
+            return( FT_EXTENDED );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_COMPLEX ) {
         switch( size ) {
-        case( sizeof( dcomplex ) ):     return( FT_DCOMPLEX );
+        case( sizeof( dcomplex ) ):
+            return( FT_DCOMPLEX );
         // cludge until long doubles are implemented.
-        case( 32 ):                     return( FT_XCOMPLEX );
-        default:        return( typ );
+        case( 32 ):
+            return( FT_XCOMPLEX );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_INTEGER ) {
         switch( size ) {
-        case( sizeof( intstar2 ) ):     return( FT_INTEGER_2 );
-        case( sizeof( intstar1 ) ):     return( FT_INTEGER_1 );
-        default:        return( typ );
+        case( sizeof( intstar2 ) ):
+            return( FT_INTEGER_2 );
+        case( sizeof( intstar1 ) ):
+            return( FT_INTEGER_1 );
+        default:
+            return( typ );
         }
     }
     if( typ == FT_LOGICAL ) {
         switch( size ) {
-        case( sizeof( logstar1 ) ):     return( FT_LOGICAL_1 );
-        default:        return( typ );
+        case( sizeof( logstar1 ) ):
+            return( FT_LOGICAL_1 );
+        default:
+            return( typ );
         }
     }
     return( typ );
@@ -235,7 +251,7 @@ static  void    TypeDecl( TYPE typ ) {
                 ReqComma();
             }
         }
-        for(;;) {
+        for( ;; ) {
             size = SIZE_UNDEF;
             if( ReqName( NAME_VAR_OR_ARR ) ) {
                 var_node = CITNode;
@@ -277,7 +293,9 @@ static  void    TypeDecl( TYPE typ ) {
             } else {
                 AdvanceITPtr();
             }
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
         ReqEOS();
     }
@@ -373,7 +391,7 @@ void    CpDimension( void ) {
 
     sym_id    sym;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_ARRAY ) ) {
             sym = LkSym();
             AdvanceITPtr();
@@ -383,7 +401,9 @@ void    CpDimension( void ) {
         } else {
             AdvanceITPtr();
         }
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }
@@ -394,12 +414,12 @@ void    ArrayDecl( sym_id sym ) {
 
 // Process an array declarator.
 
-    intstar4            *subs_ptr;
+    intstar4            *bounds;
     intstar4            lo_bound;
     intstar4            hi_bound;
     signed_32           num_elts;
     unsigned_32         dim_elts;
-    uint                num_subs;
+    int                 ss;
     bool                var_dim;
     bool                const_lo;
     bool                assumed;
@@ -427,13 +447,12 @@ void    ArrayDecl( sym_id sym ) {
             dim_list.l.init_label = GBegSList();
         }
     }
-    subs_ptr = &dim_list.subs_1_lo;
+    bounds = &dim_list.subs_1_lo;
     num_elts = 1;
-    num_subs = 0;
     assumed = false;
     var_dim = false;
-    for(;;) {
-        num_subs++;
+    for( ss = 0; ss < MAX_DIM; ) {
+        ss++;
         pvd_ok = false;
         hi_bound = 0;
         lo_bound = 1;
@@ -456,9 +475,9 @@ void    ArrayDecl( sym_id sym ) {
             }
             if( RecNextOpr( OPR_COL ) ) {
                 if( const_lo == SSB_CONSTANT ) {
-                    _SetLoConstBound( dim_list.dim_flags, num_subs );
+                    _SetLoConstBound( dim_list.dim_flags, ss );
                 } else if( const_lo == SSB_NOT_CONSTANT ) {
-                    GSLoBound( num_subs, sym );
+                    GSLoBound( ss, sym );
                     var_dim = true;
                 }
                 AdvanceITPtr();
@@ -473,7 +492,7 @@ void    ArrayDecl( sym_id sym ) {
                             hi_bound = ITIntValue( CITNode );
                             if( const_lo == SSB_NOT_CONSTANT ) {
                                 lo_bound = hi_bound + 1;
-                                GForceHiBound( num_subs, sym );
+                                GForceHiBound( ss, sym );
                             } else if( const_lo == SSB_CONSTANT ) {
                                 if( lo_bound <= hi_bound ) {
                                     dim_elts = hi_bound - lo_bound + 1;
@@ -494,15 +513,15 @@ void    ArrayDecl( sym_id sym ) {
                             if( const_lo == SSB_CONSTANT ) {
                                 hi_bound = lo_bound - 1;
                             }
-                            GSHiBound( num_subs, sym );
+                            GSHiBound( ss, sym );
                             var_dim = true;
                         }
                     }
                 }
             } else {
-                _SetLoConstBound( dim_list.dim_flags, num_subs );
+                _SetLoConstBound( dim_list.dim_flags, ss );
                 if( const_lo == SSB_NOT_CONSTANT ) {
-                    GSHiBound( num_subs, sym );
+                    GSHiBound( ss, sym );
                     var_dim = true;
                 } else if( const_lo == SSB_CONSTANT ) {
                     pvd_ok = ( lo_bound == 1 );
@@ -524,18 +543,18 @@ void    ArrayDecl( sym_id sym ) {
                 }
             }
         } else {
-            _SetLoConstBound( dim_list.dim_flags, num_subs );
+            _SetLoConstBound( dim_list.dim_flags, ss );
             AdvanceITPtr();
             ReqNOpn();
         }
-        *subs_ptr = lo_bound;
-        subs_ptr++;
-        *subs_ptr = hi_bound;
-        subs_ptr++;
+        *bounds++ = lo_bound;
+        *bounds++ = hi_bound;
         AdvanceITPtr();
-        if( !RecComma() || assumed || ( num_subs == MAX_DIM ) ) break;
+        if( !RecComma() || assumed ) {
+            break;
+        }
     }
-    _SetDimCount( dim_list.dim_flags, num_subs );
+    _SetDimCount( dim_list.dim_flags, ss );
     ReqCloseParen();
     ReqNOpn();
     AdvanceITPtr();

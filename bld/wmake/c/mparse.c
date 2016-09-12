@@ -324,7 +324,7 @@ STATIC void checkFirstTarget( void )
     TLIST  *current;
     TLIST  *okayList;    /* List containing the still valid initial targets */
     TLIST  *notOkayList; /* Tlist of targets not valid anymore */
-    TLIST  *temp;
+    TLIST  *next;
 
     okayList = NULL;
     notOkayList = NULL;
@@ -332,31 +332,27 @@ STATIC void checkFirstTarget( void )
     head = firstTarget;
     if( head != NULL ) {
         /* Go through all the targets to see check if still OK */
-        current = head;
-        while( current != NULL ) {
+        for( current = head; current != NULL; current = next ) {
+            next = current->next;
             if( !current->target->attr.explicit && !current->target->special ) {
                 /* still valid targets */
-                temp = okayList;
+                current->next = okayList;
                 okayList = current;
-                current = current->next;
-                okayList->next = temp;
             } else {
                 /* probably a '::' rule that changed to .explicit */
-                temp = notOkayList;
+                current->next = notOkayList;
                 notOkayList = current;
-                current = current->next;
-                notOkayList->next = temp;
             }
         }
         FreeTList( notOkayList );
-        head = NULL;
 
         /* Reverse the list back */
+        head = NULL;
         while( okayList != NULL ) {
-             temp = head;
-             head = okayList;
-             okayList = okayList->next;
-             head->next = temp;
+            next = head;
+            head = okayList;
+            okayList = okayList->next;
+            head->next = next;
         }
         firstTarget = head;
     }
@@ -708,7 +704,7 @@ STATIC char *getFileName( const char *intext, size_t *offset )
     for( ;; ) {
         if( intext[*offset] == NULLCHAR ) {
             break;
-        } else if( (isws( intext[*offset] )        ||
+        } else if( (cisws( intext[*offset] )        ||
                     intext[*offset]== LESSTHAN     ||
                     intext[*offset]== GREATERTHAN) &&
                     !doubleQuote ) {
@@ -789,7 +785,7 @@ STATIC void getBody( FLIST *head )
                      * two characters are <<
                      */
                      currChar = temp + 2;
-                     while( *currChar != NULLCHAR && isws( *currChar ) ) {
+                     while( *currChar != NULLCHAR && cisws( *currChar ) ) {
                          ++currChar;
                      }
                      if( *currChar == NULLCHAR ) {

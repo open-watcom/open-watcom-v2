@@ -130,6 +130,7 @@ static  const logstar1 __FAR    CmpValue[] = {
 static void    BadEqual( TYPE typ1, TYPE typ2, OPTR op ) {
 //========================================================
 
+    typ1=typ1;typ2=typ2;op=op;
     Error( EQ_BAD_TARGET );
 }
 
@@ -178,7 +179,7 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
 
     typ2 = typ2;
     op -= OPTR_FIRST_ARITHOP;
-    index = ResultType - FT_INTEGER_1;
+    index = (byte)( ResultType - FT_INTEGER_1 );
     if( typ1 != FT_NO_TYPE ) {
         Convert();
         XArithTab[ index * AR_TAB_COLS + op ]
@@ -206,13 +207,13 @@ static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
 }
 
 
-void    ConstCat( int size ) {
+void    ConstCat( uint size ) {
 //============================
 
     itnode      *last_node;
     byte        *dest;
-    int         opn_size;
-    int         size_left;
+    uint        opn_size;
+    uint        size_left;
     byte        *string;
     itnode      *link_node;
 
@@ -220,11 +221,12 @@ void    ConstCat( int size ) {
     string = FMemAlloc( size );
     size_left = size;
     dest = string;
-    for(;;) {
+    for( ;; ) {
         opn_size = last_node->value.cstring.len;
         memcpy( dest, last_node->value.cstring.strptr, opn_size );
         size_left -= opn_size;
-        if( size_left == 0 ) break;
+        if( size_left == 0 )
+            break;
         last_node = last_node->link;
         dest += opn_size;
     }

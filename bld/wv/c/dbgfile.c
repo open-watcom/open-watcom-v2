@@ -33,6 +33,7 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
 #include <process.h>
 #endif
+#include "wio.h"
 #include "dbgdefn.h"
 #if !defined( BUILD_RFX )
 #include "dbgdata.h"
@@ -43,7 +44,7 @@
 #endif
 #include "dbgmem.h"
 #include "dbgio.h"
-#include "digio.h"
+#include "digld.h"
 #include "strutil.h"
 #include "filelcl.h"
 #include "filermt.h"
@@ -728,27 +729,111 @@ void PathInit( void )
 #endif
 }
 
-#if defined( __DOS__ ) || defined( __LINUX__ )
-dig_fhandle DIGPathOpen( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+#if defined( __DOS__ ) || defined( __UNIX__ )
+static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen, char *res, size_t rlen )
 {
-    char        dummy[TXT_LEN];
-    file_handle fh;
+    char        *p;
+    size_t      len;
+
+    if( rlen < 2 ) {
+        if( rlen == 1 )
+            *res = NULLCHAR;
+        return( -1 );
+    }
+    p = res;
+    --rlen;     // save space for terminator
+    len = 0;
+    if( path != NULL ) {
+        len = strlen( path );
+        if( len > rlen )
+            len = rlen;
+        memcpy( p, path, len );
+        p += len;
+        if( !CHECK_PATH_SEP( p[-1], &LclFile ) ) {
+            if( len < rlen ) {
+                *p++ = LclFile.path_separator[0];
+                ++len;
+            }
+        }
+    }
+    if( nlen > 0 && len < rlen ) {
+        if( len + nlen > rlen )
+            nlen = rlen - len;
+        memcpy( p, name, nlen );
+        p += nlen;
+    }
+    *p = NULLCHAR;
+    return( open( res, O_RDONLY ) );
+}
+
+dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+{
+    char            buffer[TXT_LEN];
+    char            *p;
+    bool            have_ext;
+    bool            have_path;
+    char            c;
+    char            dummy[TXT_LEN];
+    int             fh;
+    char_ring       *curr;
 
     if( buff == NULL ) {
         buff = dummy;
         buff_size = sizeof( dummy );
     }
-    fh = FullPathOpenInternal( name, name_len, ext, buff, buff_size, false );
-    return( ( fh == NIL_HANDLE ) ? DIG_NIL_HANDLE : (dig_fhandle)fh );
+    have_ext = false;
+    have_path = false;
+    p = buffer;
+    while( name_len-- > 0 ) {
+        c = *name++;
+        *p++ = c;
+        if( CHECK_PATH_SEP( c, &LclFile ) ) {
+            have_ext = false;
+            have_path = true;
+        } else if( c == LclFile.ext_separator ) {
+            have_ext = true;
+        }
+    }
+    if( !have_ext ) {
+        *p++ = LclFile.ext_separator;
+        p = StrCopy( ext, p );
+    }
+    *p = NULLCHAR;
+    if( have_path ) {
+        StrCopy( buffer, buff );
+        fh = open( buffer, O_RDONLY );
+    } else {
+        // check open file in current directory or in full path
+        fh = MakeNameWithPathOpen( NULL, name, name_len, buff, buff_size );
+        if( fh == -1 ) {
+            // check open file in debugger directory list
+            for( curr = LclPath; curr != NULL; curr = curr->next ) {
+                fh = MakeNameWithPathOpen( curr->name, name, name_len, buff, buff_size );
+                if( fh != -1 ) {
+                    break;
+                }
+            }
+        }
+    }
+    if( fh == -1 ) {
+        strcpy( buff, buffer );
+        return( DIG_NIL_LDHANDLE );
+    }
+    return( fh );
 }
 
-unsigned DIGPathClose( dig_fhandle dfh )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( FileClose( (file_handle)dfh ) );
+    return( read( ldfh, buff, len ) != len );
 }
 
-long DIGGetSystemHandle( dig_fhandle dfh )
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( SYSHANDLE( (file_handle)dfh ) );
+    return( lseek( ldfh, offs, where ) == -1L );
+}
+
+int DIGLoader( Close )( dig_ldhandle ldfh )
+{
+    return( close( ldfh ) );
 }
 #endif

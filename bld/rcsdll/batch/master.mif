@@ -16,9 +16,13 @@ skip_build: .symbolic
 skip_build: .symbolic
 !endif
 
+!include cproj.mif
+
 .EXTENSIONS: .bat .cmd .sp
 
 .sp : ..
+
+ext_objs = $(ext_objs_$(host_os))
 
 template_objs = &
     gen_co.$(ext_objs) &
@@ -30,16 +34,17 @@ template_objs = &
     pvcs_co.$(ext_objs) &
     pvcs_ci.$(ext_objs)
 
-ext_objs = $(ext_objs_$(host_os))
-misc_objs = $+$(template_objs)$-
+objs = $+$(template_objs)$-
 
-all: $(misc_objs) .symbolic
+all: $(objs) .symbolic
 
 .sp.bat :
-    *wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -k $(host_os) -k $(host_cpu) $[@ $@
 
 .sp.cmd :
-    *wsplice -k $(host_os) -k $(host_cpu) $[@ $@
+    @%make echo_wsplice
+    $(wsplice) -k $(host_os) -k $(host_cpu) $[@ $@
 
 clean: .symbolic
     rm -f *.bat *.cmd

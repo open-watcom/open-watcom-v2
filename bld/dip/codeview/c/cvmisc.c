@@ -35,9 +35,9 @@
    Misc. stuff.
 */
 
-const char      DIPImpName[] = "CodeView";
+const char      DIPImp( Name )[] = "CodeView";
 
-unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
+unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 {
     static unsigned_8 Sizes[] = {
         #define pick(e,h,ih,wih)    ih,
@@ -48,22 +48,22 @@ unsigned        DIGENTRY DIPImpQueryHandleSize( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status      DIGENTRY DIPImpMoreMem( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
 }
 
-dip_status      DIGENTRY DIPImpStartup(void)
+dip_status DIPIMPENTRY( Startup )( void )
 {
     return( DS_OK );
 }
 
-void            DIGENTRY DIPImpShutdown( void )
+void DIPIMPENTRY( Shutdown )( void )
 {
 }
 
-void            DIGENTRY DIPImpCancel( void )
+void DIPIMPENTRY( Cancel )( void )
 {
 }
 
@@ -107,7 +107,7 @@ cv_directory_entry *FindDirEntry( imp_image_handle *ii, imp_mod_handle im,
     return( NULL );
 }
 
-walk_result WalkDirList( imp_image_handle *ii, DIR_WALKER *wk, void *d )
+walk_result WalkDirList( imp_image_handle *ii, DIP_DIR_WALKER *wk, void *d )
 {
     unsigned            i;
     unsigned            block;
@@ -237,7 +237,7 @@ void NYI( void )
 {
     volatile int a = 0;
     volatile int b = 0;
-    DCWrite( (dig_fhandle)2, "\a\a\a\a\a\a\a", 8 );
+
     a /= b; /* cause a fault */
 }
 

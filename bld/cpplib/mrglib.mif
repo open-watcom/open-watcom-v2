@@ -7,55 +7,66 @@ additional_cleanup = *.def
 !include cproj.mif
 !include deftarg.mif
 
-lib_flags = -b-c-n-pa
-!ifneq release 0
-lib_flags += -s-t-zld
-!endif
+!include $(cpplib_dir)/plibname.mif
 
-!ifeq host_cpu axp
-exp_lib_flags =
-exp_libx_flags =
-!else ifeq host_cpu ppc
-exp_lib_flags =
-exp_libx_flags =
-!else ifeq host_cpu mps
-exp_lib_flags =
-exp_libx_flags =
-!else
-exp_lib_flags = -z=export.tmp
-exp_libx_flags = -z=exportx.tmp
-!ifeq linkage dynamic
 !ifdef export_only
-subdir_suffix = .wdl
+subdir_suffix_dynamic = .wdl
 !else
-subdir_suffix = .dll
+subdir_suffix_dynamic = .dll
 !endif
-!endif
-!endif
+subdir_suffix_086_dynamic = $(subdir_suffix_dynamic)
+subdir_suffix_286_dynamic = $(subdir_suffix_dynamic)
+subdir_suffix_386_dynamic = $(subdir_suffix_dynamic)
+plib_subdir = $(subdir)$(subdir_suffix_$(processor)_$(linkage))
 
-!include $(cpplib_dir)/pliblibs.mif
+prefix = $(plib_n)
+
+libs = $(cpplib_dir)/runtime/$(system).$(processor)/$(plib_subdir)/$(plib_n)$(suffix).lib &
+	$(cpplib_dir)/iostream/$(system).$(processor)/$(plib_subdir)/$(iost_n)$(suffix).lib &
+	$(cpplib_dir)/string/$(system).$(processor)/$(plib_subdir)/$(strg_n)$(suffix).lib &
+	$(cpplib_dir)/contain/$(system).$(processor)/$(plib_subdir)/$(cont_n)$(suffix).lib
+
+prefix_x = $(plib_x)
+
+libsx = $(cpplib_dir)/runtime/$(system).$(processor)/$(plib_subdir)/$(plib_x)$(suffix).lib &
+	$(cpplib_dir)/iostream/$(system).$(processor)/$(plib_subdir)/$(iost_x)$(suffix).lib &
+	$(cpplib_dir)/string/$(system).$(processor)/$(plib_subdir)/$(strg_x)$(suffix).lib &
+	$(cpplib_dir)/contain/$(system).$(processor)/$(plib_subdir)/$(cont_x)$(suffix).lib
+
+target_lib = $(prefix)$(suffix).lib
+target_lib_x = $(prefix_x)$(suffix).lib
+
+plib_linkage_flags_086 = -z=export.tmp
+plib_linkage_flags_286 = -z=export.tmp
+plib_linkage_flags_386 = -z=export.tmp
+plib_linkage_flags = $(plib_linkage_flags_$(processor))
+
+plibx_linkage_flags_086 = -z=exportx.tmp
+plibx_linkage_flags_286 = -z=exportx.tmp
+plibx_linkage_flags_386 = -z=exportx.tmp
+plibx_linkage_flags = $(plibx_linkage_flags_$(processor))
 
 libs : .symbolic $(target_lib) $(target_lib_x)
     @%null
 
 $(target_lib) : $(libs) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
     @rm -f export.def
-    $(librarian) $(lib_flags) $(exp_lib_flags) $^@ @$^&.lbc
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) $(plib_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
 !endif
 
-!ifdef target_lib_x
 $(target_lib_x) : $(libsx) $(__MAKEFILES__)
-    %create $^&.lbc
+    $(noecho)%create $^&.lbc
     @for %i in ($(libsx)) do @%append $^&.lbc +%i
     @rm -f exportx.tmp
     @rm -f exportx.def
-    $(librarian) $(lib_flags) $(exp_libx_flags) $^@ @$^&.lbc
+    @%make echo_lib
+    $(librarian) $(plib_lib_flags) $(plibx_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    sed -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def
-!endif
+    $(sed) -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def
 !endif

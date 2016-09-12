@@ -29,8 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( _WSTD_H_INCLUDED )
-
+#ifndef _WSTD_H_INCLUDED
 #define _WSTD_H_INCLUDED
 
 #include "watcom.h"
@@ -65,6 +64,8 @@ typedef unsigned_8      sbit;
 #define OS_DECUNIX              0
 #define OS_LINUX                0
 #define OS_BSD                  0
+#define OS_HAIKU                0
+#define OS_OSX                  0
 
 #if defined( __DOS__ )
     #undef  OS_DOS
@@ -87,7 +88,7 @@ typedef unsigned_8      sbit;
     #define OS_HAIKU            1
 #elif defined( __BSD__ )
     #undef OS_BSD
-    #define OS_BSD              1           
+    #define OS_BSD              1
 #elif defined( __OS2__ )
     #undef  OS_OS2
     #define OS_OS2              1
@@ -135,7 +136,7 @@ typedef unsigned_8      sbit;
 #elif defined(__DECC) || defined(__DECCXX)
     #if defined(__unix__)
         #undef OS_DECUNIX
-        #define OS_DECUNIX 1
+        #define OS_DECUNIX      1
     #elif
         #error OS_xxx macro not enabled.
     #endif

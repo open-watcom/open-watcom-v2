@@ -52,7 +52,7 @@ static void referenceBadCast( void )
 
 extern "C"
 _WPRTLINK
-void * CPPLIB(dcref)( void *p, unsigned delta, type_info const *from, type_info const *to ) {
+void * CPPLIB( dcref )( void *p, unsigned delta, type_info const *from, type_info const *to ) {
     rtti_exec data;
 
     if( p == NULL ) {

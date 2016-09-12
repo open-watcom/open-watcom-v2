@@ -57,7 +57,7 @@ void    CpExternal(void) {
     sym_id      sym;
     unsigned_16 flags;
 
-    for(;;) {
+    for( ;; ) {
         if( ReqName( NAME_EXT_PROC ) ) {
             sym = LkSym();
             flags = sym->u.ns.flags;
@@ -81,7 +81,9 @@ void    CpExternal(void) {
             }
         }
         AdvanceITPtr();
-        if( !RecComma() ) break;
+        if( !RecComma() ) {
+            break;
+        }
     }
     ReqEOS();
 }

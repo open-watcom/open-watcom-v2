@@ -36,8 +36,8 @@
         Stuff for source line cues
 */
 
-walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
-                    imp_mod_handle im, IMP_CUE_WKR *wk, imp_cue_handle *ic,
+walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
+                    imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic,
                     void *d )
 {
     //TODO:
@@ -54,7 +54,7 @@ walk_result     DIGENTRY DIPImpWalkFileList( imp_image_handle *ii,
     return( WR_CONTINUE );
 }
 
-imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 {
     //TODO:
@@ -64,7 +64,7 @@ imp_mod_handle  DIGENTRY DIPImpCueMod( imp_image_handle *ii,
      return( IMH_NOMOD );
 }
 
-size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
+size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, size_t buff_size )
 {
     /*
@@ -81,7 +81,7 @@ size_t          DIGENTRY DIPImpCueFile( imp_image_handle *ii,
     return( 0 );
 }
 
-cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
+cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
@@ -96,7 +96,7 @@ cue_fileid  DIGENTRY DIPImpCueFileId( imp_image_handle *ii,
     return( 0 );
 }
 
-dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
+dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
     //TODO:
@@ -119,7 +119,7 @@ dip_status      DIGENTRY DIPImpCueAdjust( imp_image_handle *ii,
     return( DS_ERR|DS_FAIL );
 }
 
-unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
+unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
@@ -131,7 +131,7 @@ unsigned long   DIGENTRY DIPImpCueLine( imp_image_handle *ii,
     return( 0 );
 }
 
-unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *ic )
+unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
     //TODO:
     /*
@@ -142,7 +142,7 @@ unsigned        DIGENTRY DIPImpCueColumn( imp_image_handle *ii, imp_cue_handle *
     return( 0 );
 }
 
-address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
+address DIPIMPENTRY( CueAddr )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
     //TODO:
@@ -154,7 +154,7 @@ address         DIGENTRY DIPImpCueAddr( imp_image_handle *ii,
     return( NilAddr );
 }
 
-search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
@@ -174,7 +174,7 @@ search_result   DIGENTRY DIPImpLineCue( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
+search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
     //TODO:
@@ -187,7 +187,7 @@ search_result   DIGENTRY DIPImpAddrCue( imp_image_handle *ii,
     return( SR_NONE );
 }
 
-int DIGENTRY DIPImpCueCmp( imp_image_handle *ii, imp_cue_handle *ic1,
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
     //TODO:

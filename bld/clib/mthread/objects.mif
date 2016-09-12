@@ -3,7 +3,7 @@
 !inject declthrd.obj                        nta ntp
 !inject declwnt.obj                      nt
 !inject declrdu.obj                                                                                         rdu
-!inject maxthrds.obj                                nvc ncl         o16 o32     q32
+!inject maxthrds.obj                                nvc ncl         o16 o32     q32             l32 lpc lmp
 !inject mthread.obj                      nt nta ntp nvc ncl nvl nll o16 o32     q32                         rdu rdk
 !inject mthrdini.obj                     nt nta ntp nvc ncl nvl nll     o32     q32                         rdu rdk
 !inject regdata.obj                      nt nta ntp nvc ncl nvl nll     o32     q32                         rdu rdk
@@ -12,7 +12,7 @@
 !inject semapsx.obj                                                             q32             l32 lpc lmp
 !inject snglthrd.obj                     nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
 !inject tdhdlwnt.obj                     nt nta ntp
-!inject thrdmax.obj                                 nvc ncl         o16 o32     q32
+!inject thrdmax.obj                                 nvc ncl         o16 o32     q32             l32 lpc lmp
 !inject thrednov.obj                                nvc ncl
 !inject thnwlibc.obj                                        nvl nll
 !inject thredo16.obj                                                o16

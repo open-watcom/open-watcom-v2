@@ -37,7 +37,7 @@
 
 
 extern "C"
-void * CPPLIB(new_darray)(          // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
+void * CPPLIB( new_darray )(        // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
     unsigned count )                // - number of elements
 {

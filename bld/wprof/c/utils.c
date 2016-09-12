@@ -62,7 +62,7 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "digcli.h"
-#include "digio.h"
+#include "digld.h"
 #include "utils.h"
 
 #include "clibext.h"
@@ -135,13 +135,13 @@ char *FindFile( char *fullname, char *name, char *path_list )
     return( NULL );
 }
 
-#if defined( __QNX__ ) || defined( __LINUX__ ) || defined( __DOS__ )
-dig_fhandle DIGPathOpen( const char *name, size_t name_len,
-                const char *ext, char *result, size_t max_result )
-/****************************************************************/
+#if defined( __UNIX__ ) || defined( __DOS__ )
+dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
-    char *      filename;
+    char        *filename;
+    int         fh;
 
     max_result = max_result;
     memcpy( realname, name, name_len );
@@ -154,16 +154,27 @@ dig_fhandle DIGPathOpen( const char *name, size_t name_len,
     if( filename == NULL ) {
         filename = FindFile( result, realname, DipExePathList );
     }
-    if( filename == NULL ) {
-        return( DIG_NIL_HANDLE );
-    }
-    return( DIGCliOpen( filename, DIG_READ ) );
+    fh = -1;
+    if( filename != NULL )
+        fh = open( filename, O_RDONLY );
+    if( fh == -1 )
+        return( DIG_NIL_LDHANDLE );
+    return( fh );
 }
 
-unsigned DIGPathClose( dig_fhandle dfh )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    DIGCliClose( dfh );
-    return( 0 );
+    return( read( ldfh, buff, len ) != len );
+}
+
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
+{
+    return( lseek( ldfh, offs, where ) == -1L );
+}
+
+int DIGLoader( Close )( dig_ldhandle ldfh )
+{
+    return( close( ldfh ) );
 }
 #endif
 
@@ -235,21 +246,18 @@ void InitPaths( void )
 #endif
 }
 
-size_t BigRead( int fh, void *buffer, size_t size )
-/*************************************************/
+#if defined( __QNX__ )
+
+#define MAX_OS_TRANSFER (32U*1024 - 512)
+
+ssize_t BigRead( int fh, void *buffer, size_t size )
+/**************************************************/
 {
-#if defined( __QNX__ ) || defined( _WIN64 )
 
 /*
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
-    _WIN64 has max size UINT_MAX
 */
-#if defined( __QNX__ )
-#define MAX_OS_TRANSFER (32U*1024 - 512)
-#else
-#define MAX_OS_TRANSFER INT_MAX
-#endif
     size_t      total;
     unsigned    read_len;
     unsigned    amount;
@@ -261,7 +269,7 @@ size_t BigRead( int fh, void *buffer, size_t size )
             amount = (unsigned)size;
         read_len = read( fh, buffer, amount );
         if( read_len == (unsigned)-1 ) {
-            return( (size_t)-1 );
+            return( -1 );
         }
         total += read_len;
         if( read_len != amount ) {
@@ -271,10 +279,38 @@ size_t BigRead( int fh, void *buffer, size_t size )
         size -= amount;
     }
     return( total );
-#else
-    return( read( fh, buffer, size ) );
-#endif
 }
+
+ssize_t BigWrite( int fh, const void *buffer, size_t size )
+/*********************************************************/
+{
+/*
+    QNX only allows 32K-1 bytes to be read/written at any one time, so bust
+    up any I/O larger than that.
+*/
+    size_t      total;
+    unsigned    write_len;
+    unsigned    amount;
+
+    amount = MAX_OS_TRANSFER;
+    total = 0;
+    while( size > 0 ) {
+        if( amount > size )
+            amount = (unsigned)size;
+        write_len = write( DFH2PH( dfh ), buffer, amount );
+        if( write_len == (unsigned)-1 ) {
+            return( -1 );
+        }
+        total += write_len;
+        if( write_len != amount ) {
+            return( total );
+        }
+        buffer = (char *)buffer + amount;
+        size -= amount;
+    }
+    return( total );
+}
+#endif
 
 #if defined( __DOS__ )
 extern void DoRingBell( void );
@@ -314,7 +350,7 @@ void AssertionFailed( char * file, unsigned line )
     memcpy( buff, fname, size );
     buff[size] = ' ';                                   /*   1 */
     utoa( line, &buff[size + 1], 10 );                  /*  10 */
-                                                /* '\0'    + 1 */
+                                                        /* '\0' + 1 */
                                                         /* --- */
                                                         /*  12+_MAX_FNAME */
     fatal( LIT( Assertion_Failed ), buff );

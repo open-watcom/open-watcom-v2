@@ -246,7 +246,7 @@ static void CreateRegListMenu( RegListData *data )
     AppendMenu( data->menu, MF_SEPARATOR, 2, "" );
 
     for( i = 0 ; mts[ i ].menu != MAD_MSTR_NIL; i++ ) {
-        MADCliString( mts[ i ].menu, buff, sizeof( buff ) );
+        MADCli( String )( mts[ i ].menu, buff, sizeof( buff ) );
         if( init_value & ( 1 << i ) ) {
             AppendMenu( data->menu, MF_STRING | MF_CHECKED, i + MAD_MENU_FIRST_ITEM, buff );
         } else {

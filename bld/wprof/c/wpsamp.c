@@ -48,6 +48,7 @@
 #include "wpgather.h"
 #include "wpsort.h"
 #include "wpsamp.h"
+#include "dipinter.h"
 
 
 extern image_info *SImageGetImage(a_window *wnd,int row);
@@ -66,7 +67,6 @@ extern gui_ord WPPixelTruncWidth(gui_ord width);
 extern gui_ord WPPixelWidth(a_window *wnd);
 extern void ClearSample(sio_data *curr_sio);
 extern void SortCurrent(sio_data *curr_sio);
-extern void WPDipSetProc(process_info *dip_proc);
 extern int SampleNumRows( a_window * wnd );
 
 
@@ -1031,19 +1031,18 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     ch = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
-    if( LineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
-        if( LineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) {
+    if( DIPLineCue( mh, curr_sio->curr_file->fid, row, 0, ch ) == SR_NONE ) {
+        if( DIPLineCue( mh, curr_sio->curr_file->fid, 0, 0, ch ) == SR_NONE ) {
             return;
         }
     }
     sh = alloca( DIPHandleSize( HK_SYM, false ) );
-    addr = CueAddr( ch );
-    if( AddrSym( mh, addr, sh ) == SR_NONE )
+    addr = DIPCueAddr( ch );
+    if( DIPAddrSym( mh, addr, sh ) == SR_NONE )
         return;
     while( index < curr_file->rtn_count ) {
         curr_rtn = curr_file->routine[index];
-        if( curr_rtn->sh != NULL
-          && SymCmp( curr_rtn->sh, sh ) == 0 ) {
+        if( curr_rtn->sh != NULL && DIPSymCmp( curr_rtn->sh, sh ) == 0 ) {
             curr_sio->curr_rtn = curr_rtn;
             break;
         }

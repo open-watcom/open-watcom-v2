@@ -288,55 +288,57 @@ extern __lock               _wint_static_init_sema;
 // PROTOTYPES
 //************************************************************************
 
+_NORETURN
 void CPPLIB( call_terminate )(      // CALL "terminate" SET BY "set_terminate"
     char* abort_msg,                // - abortion message
     THREAD_CTL *thr )               // - thread-specific data
 ;
+_NORETURN
 void CPPLIB( call_unexpected )(     // CALL "unexpected" SET BY "set_unexpected"
     void )
 ;
 _WPRTLINK
-void * CPPLIB(copy_array)(          // CALL COPY CONSTRUCTORS FOR ARRAY
+void * CPPLIB( copy_array )(        // CALL COPY CONSTRUCTORS FOR ARRAY
     void *tgt_array,                // - target array (element w/o virtual base)
     void *src_array,                // - source array
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - signature of array
 ;
 _WPRTLINK
-void * CPPLIB(copy_varray)(         // CALL COPY CONSTRUCTORS FOR ARRAY
+void * CPPLIB( copy_varray )(       // CALL COPY CONSTRUCTORS FOR ARRAY
     void *tgt_array,                // - target array (element has virtal base)
     void *src_array,                // - source array
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - signature of array
 ;
 _WPRTLINK
-void * CPPLIB(ctor_array)(          // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
+void * CPPLIB( ctor_array )(        // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
     void *array,                    // - array
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - signature of array
 ;
 _WPRTLINK
-void * CPPLIB(ctor_varray)(         // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
+void * CPPLIB( ctor_varray )(       // CALL CONSTRUCTORS FOR NEW ARRAY ELEMENTS
     void *array,                    // - array
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - signature of array
 ;
 _WPRTLINK
-void * CPPLIB(dtor_array)(          // CALL DESTRUCTORS FOR ARRAY ELEMENTS
+void * CPPLIB( dtor_array )(        // CALL DESTRUCTORS FOR ARRAY ELEMENTS
     void *array,                    // - array
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - signature of array
 ;
 _WPRTLINK
-ARRAY_STORAGE* CPPLIB(dtor_array_store)(  // CALL DTORS FOR ARRAY_STORAGE
+ARRAY_STORAGE * CPPLIB( dtor_array_store )(  // CALL DTORS FOR ARRAY_STORAGE
     void *array,                    // - array
     RT_TYPE_SIG sig )               // - type signature for array type
 ;
-void CPPLIB(dtor_del_array)(        // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
+void CPPLIB( dtor_del_array )(      // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
     void *array,                    // - array
     RT_TYPE_SIG sig )               // - type signature for array type
 ;
-void CPPLIB(dtor_del_array_x)(      // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
+void CPPLIB( dtor_del_array_x )(    // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
     void *array,                    // - array
     RT_TYPE_SIG sig )               // - type signature for array type
 ;
@@ -344,34 +346,35 @@ _WPRTLINK
 pFUNVOIDVOID CPPLIB( lj_handler )   // GET ADDRESS OF longjmp HANDLER
     ( void )
 ;
-void CPPLIB(module_dtor)            // DTOR STATICS FOR PROGRAM
+void CPPLIB( module_dtor )          // DTOR STATICS FOR PROGRAM
     ( void )
 ;
-void CPPLIB(multi_thread_init)      // INITIALIZER FOR MULTI-THREAD DATA
+void CPPLIB( multi_thread_init )    // INITIALIZER FOR MULTI-THREAD DATA
     ( void )
 ;
 void* CPPLIB( new_allocator )(      // DEFAULT ALLOCATOR FOR NEW, NEW[]
     size_t size )                   // - size required
 ;
-void * CPPLIB(new_array)(           // CALL NEW AND CTORS FOR ARRAY ELEMENTS
+void * CPPLIB( new_array )(         // CALL NEW AND CTORS FOR ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - type signature for array type
 ;
-void * CPPLIB(new_varray)(          // CALL NEW AND CTORS FOR ARRAY ELEMENTS
+void * CPPLIB( new_varray )(        // CALL NEW AND CTORS FOR ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
     unsigned count,                 // - number of elements
     RT_TYPE_SIG sig )               // - type signature for array type
 ;
-void * CPPLIB(new_darray)(          // CALL NEW AND CTORS FOR ARRAY ELEMENTS
+void * CPPLIB( new_darray )(        // CALL NEW AND CTORS FOR ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
     unsigned count )                // - number of elements
 ;
 _WPRTLINK
-void CPPLIB(pure_error)(            // TRAP NON-OVERRIDDEN PURE VIRTUAL CALLS
+void CPPLIB( pure_error )(          // TRAP NON-OVERRIDDEN PURE VIRTUAL CALLS
     void )
 ;
-void CPPLIB(fatal_runtime_error)(   // FATAL RUNTIME ERROR
+_NORETURN
+void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 ;
@@ -389,6 +392,7 @@ RT_TYPE_SIG CPPLIB( ts_refed )(     // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
 size_t CPPLIB( ts_size )(           // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
     RT_TYPE_SIG sig )               // - type signature
 ;
+_NORETURN
 _WPRTLINK
 void CPPLIB( undefed_cdtor )(       // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
@@ -399,7 +403,7 @@ void CPPLIB( unmark_bitvect )(      // UNMARK LAST BIT IN BIT-VECTOR
 ;
 
 #ifndef NDEBUG
-    #define GOOF( msg ) CPPLIB(fatal_runtime_error)( "*** GOOF **" msg, 1 )
+    #define GOOF( msg ) CPPLIB( fatal_runtime_error )( "*** GOOF **" msg, 1 )
 #else
     #define GOOF( msg )
 #endif

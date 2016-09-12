@@ -43,7 +43,7 @@ version_res_exe_nt_x64 = exever.res
 
 vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
-    %create edbind.tmp
+    $(noecho)%create edbind.tmp
     @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
     $(edbind) -dedbind.tmp -q $(name).exe
     cp $(name).exe vi.exe
@@ -53,9 +53,10 @@ vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
 
 $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videps) $(mifdep) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
+    @%make echo_link
     $(cl) $(clflags) $(objsroot) $(start_flags) $(objinit) $(more_flags) $(objs) $(libs) $(final_flags) $(rcsdll) $(ldflags)
 !else
-    %create $^&.lnk
+    $(noecho)%create $^&.lnk
     @for %o in ($(objsroot)) do @%append $^&.lnk file %o
     @%append $^&.lnk $(start_flags)
     @for %o in ($(objinit)) do @%append $^&.lnk file %o
@@ -63,11 +64,13 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
     @for %o in ($(objs)) do @%append $^&.lnk file %o
     @%append $^&.lnk $(final_flags)
     @for %l in ($(libs)) do @%append $^&.lnk lib %l
+    @%make echo_link
     $(linker) name $(lname) $(lflags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
     %make bind_win386
 !ifndef win386
+    @%make echo_bindres
     $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
 !endif
 !else
@@ -95,12 +98,15 @@ setfs.dh setgen.dh: $(__MAKEFILES__)
     parsedyn $[@ $@ Dyn_$^&
 
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)
+    @%make echo_rc
     $(rc) $(rc_flags) -ad -zk0 $(rc_inc_path) $[@ -fo=$^@
 
 rcstr.gh : rcstrmsg.gh $(__MAKEFILES__)
-    *awk -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -f $(build_dir)/msgtoh.awk -v OUTFILE=$^. $[@
 
 rcstrmsg.gh : $(vi_dir)/res/vi.msg $(vi_dir)/res/tooltips.msg ../h/langdef.h $(msgfiles) $(__MAKEFILES__)
+    @%make echo_cpp
     $(cpp) $(rc_aui_flags) -o$^@ $[@
 
 !ifeq host_os win

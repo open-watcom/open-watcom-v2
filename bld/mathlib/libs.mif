@@ -1,7 +1,7 @@
 !include $(mathlib_dir)/lib.mif
 
 pfx__ =../../..
-__sfx =$(system).$(processor)/$(subdir)$(subdir_suffix)/$(libname).lib
+__sfx =$(system).$(processor)/$(mlib_subdir)/$(libname).lib
 
 libs = $+ &
     $(pfx__)/alias/library/$(__sfx) &

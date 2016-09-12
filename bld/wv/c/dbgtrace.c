@@ -298,9 +298,9 @@ static bool CheckTraceSourceStop( bool *have_source )
     TraceState.in_thunk = false;
     sr = DeAliasAddrSym( NO_MOD, TraceState.curraddr, sym );
     if( sr != SR_NONE
-     && SymInfo( sym, NULL, &info ) == DS_OK
-     && info.kind == SK_PROCEDURE
-     && info.compiler ) {
+      && DIPSymInfo( sym, NULL, &info ) == DS_OK
+      && info.kind == SK_PROCEDURE
+      && info.compiler ) {
         /* in a thunk */
         TraceState.in_thunk = true;
         return( false );
@@ -310,13 +310,13 @@ static bool CheckTraceSourceStop( bool *have_source )
     if( *have_source && _IsOn( SW_CHECK_SOURCE_EXISTS ) &&
         ( viewhndl = OpenSrcFile( line ) ) != NULL ) {
         if( viewhndl != NULL ) FDoneSource( viewhndl );
-        line_addr = CueAddr( line );
+        line_addr = DIPCueAddr( line );
         if( AddrComp( TraceState.oldaddr, line_addr ) != 0 ) {
             if( DeAliasAddrCue( NO_MOD, TraceState.oldaddr, oldline ) != SR_NONE
-                && CueLine( line ) == CueLine( oldline )
-                && CueColumn( line ) == CueColumn( oldline )
-                && CueFileId( line ) == CueFileId( oldline )
-                && CueMod( line ) == CueMod( oldline ) ) {
+                && DIPCueLine( line ) == DIPCueLine( oldline )
+                && DIPCueColumn( line ) == DIPCueColumn( oldline )
+                && DIPCueFileId( line ) == DIPCueFileId( oldline )
+                && DIPCueMod( line ) == DIPCueMod( oldline ) ) {
                 /*
                     We've moved to a different starting address for the
                     cue, but all the source information is the same, so
@@ -473,16 +473,16 @@ static char DoTrace( debug_level curr_level )
     if( curr_level == SOURCE ) {
         if( TraceState.type == TRACE_NEXT ) {
             if( DeAliasAddrCue( NO_MOD, GetCodeDot(), line ) == SR_NONE
-              || CueAdjust( line, 1, line ) != DS_OK ) {
+              || DIPCueAdjust( line, 1, line ) != DS_OK ) {
                 Warn( LIT_ENG( WARN_No_Nxt_Src_Ln ) );
                 return( STOP );
             }
-            DbgTmpBrk.loc.addr = CueAddr( line );
+            DbgTmpBrk.loc.addr = DIPCueAddr( line );
             DbgTmpBrk.status.b.active = true;
         }
         if( TraceState.state == TS_ACTIVE ) {
             DeAliasAddrCue( NO_MOD, GetCodeDot(), line );
-            TraceState.oldaddr = CueAddr( line );
+            TraceState.oldaddr = DIPCueAddr( line );
             TraceState.stop_on_call = false;
             TraceState.stop_now = false;
         }
@@ -589,8 +589,10 @@ bool HasLineInfo( address addr )
 {
     mod_handle  mod;
 
-    if( DeAliasAddrMod( addr, &mod ) == SR_NONE ) return( false );
-    if( ModHasInfo( mod, HK_CUE ) != DS_OK ) return( false );
+    if( DeAliasAddrMod( addr, &mod ) == SR_NONE )
+        return( false );
+    if( DIPModHasInfo( mod, HK_CUE ) != DS_OK )
+        return( false );
     return( true );
 }
 

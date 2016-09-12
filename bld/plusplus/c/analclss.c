@@ -325,7 +325,7 @@ static void initClassFunction(  // START GENERATION OF CLASS FUNCTION
             // special case of compiler-generated copy constructors
             // (this is the only case in a constructor where copy ctors are used
             //  for all of the base classes instead of normal constructors)
-            arg = ScopeInsert( GetCurrScope(), arg, CppSpecialName( SPECIAL_COPY_ARG ) );
+            arg = ScopeInsert( GetCurrScope(), arg, CppSpecialName( SPECIAL_NAME_COPY_ARG ) );
         }
     }
     FunctionBodyStartup( fun, fn_data, FUNC_NULL );
@@ -2062,7 +2062,7 @@ static void checkForGenCopy( ctor_prologue *data )
 {
     SEARCH_RESULT *result;
 
-    result = ScopeFindNaked( GetCurrScope(), CppSpecialName( SPECIAL_COPY_ARG ) );
+    result = ScopeFindNaked( GetCurrScope(), CppSpecialName( SPECIAL_NAME_COPY_ARG ) );
     if( result != NULL ) {
         data->gen_copy = true;
         ScopeFreeResult( result );

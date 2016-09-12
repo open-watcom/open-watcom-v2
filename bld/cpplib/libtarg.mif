@@ -1,14 +1,19 @@
-cflags_generic = -bt=generic
-aflags_generic = -bt=generic
+# remap fpu to processor
+plib_086 = 086
+plib_087 = 086 
+plib_286 = 286
+plib_287 = 286
+plib_386 = 386
+plib_387 = 386
+plib_axp = axp
+plib_mps = mps
+plib_ppc = ppc
 
 cpplib_host_cpu_086 = i86
-cpplib_host_cpu_087 = i86
 cpplib_host_cpu_286 = i86
-cpplib_host_cpu_287 = i86
 cpplib_host_cpu_386 = 386
-cpplib_host_cpu_387 = 386
 cpplib_host_cpu_axp = axp
-host_cpu = $(cpplib_host_cpu_$(processor))
+host_cpu = $(cpplib_host_cpu_$(plib_$(processor)))
 
 cpplib_host_os_generic = generic
 cpplib_host_os_winnt   = nt
@@ -18,25 +23,27 @@ cpplib_host_os_qnx     = qnx
 cpplib_host_os_netware = nov
 host_os = $(cpplib_host_os_$(system))
 
-mem_model_ms = s
-mem_model_mc = c
-mem_model_mm = m
-mem_model_ml = l
-mem_model_mh = h
-mem_model_mf = f
-
+suffix_ms       = s
+suffix_mc       = c
+suffix_mm       = m
+suffix_ml       = l
+suffix_mh       = h
+suffix_stack    = 3s
+suffix_register = 3r
+suffix_086      = $(suffix_$(model))
+suffix_087      = 7$(suffix_$(model))
+suffix_286      = $(suffix_$(model))
+suffix_287      = 7$(suffix_$(model))
+suffix_386      = $(suffix_$(convention))
+suffix_387      = 7$(suffix_$(convention))
 !ifdef mthreaded
-suffix = mt
+suffix = mt$(suffix_$(processor))
 !else
-suffix =
+suffix = $(suffix_$(processor))
 !endif
-!ifeq host_cpu i86
-suffix +=$(mem_model_$(model))
-!else ifeq host_cpu 386
-!ifeq convention stack
-suffix +=3s
+
+!ifeq release 0
+plib_lib_flags = -b-c-n-pa
 !else
-suffix +=3r
-!endif
-!else ifeq host_cpu axp
+plib_lib_flags = -b-c-n-pa-s-t-zld
 !endif

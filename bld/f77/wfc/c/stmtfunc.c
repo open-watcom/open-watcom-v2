@@ -79,7 +79,7 @@ void    SFPrologue( void ) {
     if( RecNOpn() ) {
         AdvanceITPtr();
     } else {
-        for(;;) {
+        for( ;; ) {
             if( ReqName( NAME_SF_DUMMY ) ) {
                 sym = LkSym();
                 sym->u.ns.u1.s.xflags |= SY_DEFINED;
@@ -103,7 +103,9 @@ void    SFPrologue( void ) {
                 }
             }
             AdvanceITPtr();
-            if( !RecComma() ) break;
+            if( !RecComma() ) {
+                break;
+            }
         }
     }
     ReqCloseParen();

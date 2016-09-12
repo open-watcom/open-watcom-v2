@@ -34,8 +34,8 @@ extra_link_res_qnx = usage.u
 
 extra_l_flags_qnx = op res=$(extra_link_res_qnx), off=8k
 
-inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h" 
-inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h" 
+inc_dirs  = -I. $(dis_includes) -I"$(disasm_dir)/stand/h"
+inc_dirs += -I"$(disasm_dir)/h" -I"$(orl_dir)/h" -I"$(lib_misc_dir)/h"
 inc_dirs += -I"$(comp_cfg_dir)/h"
 
 .c: .;$(trmem_dir);$(disasm_dir)/stand/c;$(dis_srcs);$(lib_misc_dir)/c;$(watcom_dir)/c
@@ -75,40 +75,56 @@ version_res_exe_nt_x64 = exever.res
 !include verrc.mif
 
 $(exe_name) : msg.gh $(dis_prereq) $(objs) $(libs) $(proj_name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(objs) $(libs) $(ldflags)
+    $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
-        $(linker) name $(lname) $(lflags) file {$(objs)} lib {$(libs)}
-        @%make bind_osildr
+    $(linker) name $(lname) $(lflags) file {$(objs)} lib {$(libs)}
+    @%make bind_osildr
 !endif
-        @%make bind_version_res_exe
-        $(wstrip) -q -a -r $@ . $^&.res
+    @%make bind_version_res_exe
+    @%make echo_bindres
+    $(wstrip) -q -a -r $@ . $^&.res
 
 distbls.gh : ./disbuild.exe $(__MAKEFILES__)
-        $[@
+    @%make echo_execute
+    $(noecho)$[@
 
 ./disbuild.exe : $(disasm_dir)/core/c/disbuild.c $(disbuild_headers) $(__MAKEFILES__)
-        $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -DNDIS_$(target_cpu) -I"../h" $(dis_includes) $(bld_clflags) $(bld_ldflags)
 
 $(proj_name).res : wdis.rc usage.gh usagej.gh msg.gh $(__MAKEFILES__)
-        $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
+    @%make echo_rc
+    $(rc_aui) $[@ -I"../stand/h" -I"../stand" -fo=$@
 
 msg.gh : ../stand/wdis.msg $(__MAKEFILES__)
-        *awk -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
+    @%make echo_awk
+    $(awk) -v base=WDIS_LITERAL_BASE -f $(build_dir)/makemsg.awk -v OUTFILE=$^. $[@
 
-optencod_opt_qnx = -u $(extra_link_res_qnx) 
+optencod_opt_qnx = -u $(extra_link_res_qnx)
+
 optencod_targ_bsd   = bsd
 optencod_targ_haiku = haiku
 optencod_targ_linux = linux
 optencod_targ_osx   = osx
 optencod_targ_qnx   = qnx
- 
+
 usage.gh : ../stand/options.gml $(__MAKEFILES__)
-        optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
-        %append usage.tmp "."
-        *awk -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
+    @%make echo_optencod
+    $(noecho)optencod -q $(optencod_opt_$(host_os)) $[@ $(nulldevice) $(nulldevice) usage.tmp $(optencod_targ_$(host_os))
+    @%append usage.tmp "."
+    @%make echo_awk
+    $(awk) -v base=MSG_USAGE_BASE -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usage.tmp
 
 usagej.gh : ../stand/options.gml $(__MAKEFILES__)
-        optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
-        %append usagej.tmp "."
-        *awk -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
+    @%make echo_optencod
+    $(noecho)optencod -l 1 -q $[@ $(nulldevice) $(nulldevice) usagej.tmp $(optencod_targ_$(host_os))
+    @%append usagej.tmp "."
+    @%make echo_awk
+    $(awk) -v base=MSG_USAGE_BASE -v lang=1 -f $(build_dir)/makemsg1.awk -v OUTFILE=$^. usagej.tmp
+
+echo_optencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo optencod $@
+!endif

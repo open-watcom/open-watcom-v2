@@ -83,4 +83,4 @@ pch_flags_x_strsrch = -fh=pch02x.pch
 prefix = $(strg_n)
 prefix_x = $(strg_x)
 
-!include $(cpplib_dir)/mklibtgt.mif
+!include $(cpplib_dir)/mklib.mif

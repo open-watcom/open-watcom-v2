@@ -35,9 +35,9 @@
 
 extern "C"
 _WPRTLINK
-ARRAY_STORAGE* CPPLIB(dtor_array_store)(  // CALL DTORS FOR ARRAY_STORAGE
-    void *array,                    // - array
-    RT_TYPE_SIG sig )               // - type signature for array type
+ARRAY_STORAGE * CPPLIB( dtor_array_store )( // CALL DTORS FOR ARRAY_STORAGE
+    void *array,                            // - array
+    RT_TYPE_SIG sig )                       // - type signature for array type
 {
     ARRAY_STORAGE *base;
 

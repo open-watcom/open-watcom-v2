@@ -88,7 +88,7 @@ static int InvRead( invokes *inv, size_t *save_point )
         }
         left = inv->in_size - *save_point;
         memmove( inv->in_buff, inv->in_buff + *save_point, left );
-        size = ReadText( inv->inv_input, inv->in_buff + left, IN_BUFF_SIZE - left );
+        size = ReadText( inv->fh, inv->in_buff + left, IN_BUFF_SIZE - left );
         if( size == ERR_RETURN || size == 0 )
             break;
         inv->in_size = size + left;
@@ -207,8 +207,8 @@ static bool GetInvkCmd( invokes *inv )
 
 static void Conclude( invokes *inv )
 {
-    if( inv->inv_input != NIL_HANDLE ) {
-        FileClose( inv->inv_input );
+    if( inv->fh != NIL_HANDLE ) {
+        FileClose( inv->fh );
     }
     FreeRing( inv->prmlst );
     _Free( inv->buff );
@@ -261,7 +261,7 @@ static void DoInvoke( file_handle fh, const char *name, char_ring *parmlist )
     inv->in_off = 0;
     inv->flags = 0;
     inv->redirect = NULL;
-    inv->inv_input = fh;
+    inv->fh = fh;
     inv->prmlst = parmlist;
     inv->number = InvCount++;
     inv->line = 0;

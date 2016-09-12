@@ -134,7 +134,7 @@ static  char * DBGNames[] = {
 
 
 /* Forward declarations */
-static  void    SegBytes( unsigned_32 size );
+static  void    SegBytes( uint_32 size );
 static  void    DefineGlobalSeg( global_seg *seg );
 static  void    DefineGlobalSegs( void );
 static  void    DefineCommonSegs( void );
@@ -170,11 +170,11 @@ static char                     MangleSymBuff[MAX_SYMLEN+4+SYM_MANGLE_LEN];
 #endif
 
 
-static  unsigned        MangleCommonBlockName( sym_id sym, char *buffer,
+static uint     MangleCommonBlockName( sym_id sym, char *buffer,
                                                bool class ) {
 //===========================================================
 
-    unsigned    cb_len;
+    uint        cb_len;
 
     cb_len = sym->u.ns.u2.name_len;
     if( CGOpts & CGOPT_MANGLE ) {
@@ -249,7 +249,8 @@ void    FiniSegs( void ) {
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+        if( (sym->u.ns.flags & SY_CLASS) != SY_COMMON )
+            continue;
         BEFreeBack( sym->u.ns.u3.address );
     }
 }
@@ -329,7 +330,7 @@ static  void    DefineCommonSegs( void ) {
 
 // Define segments for a common blocks.
 
-    unsigned_32 com_size;
+    uint_32     com_size;
     int         seg_count;
     sym_id      sym;
     int         cb_len;
@@ -345,7 +346,8 @@ static  void    DefineCommonSegs( void ) {
     }
 #endif
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+            continue;
 #if _CPU == _AXP || _CPU == _PPC
         if( sym->u.ns.flags & SY_COMMON_INIT ) {
             private = INIT | COMDAT;
@@ -361,12 +363,9 @@ static  void    DefineCommonSegs( void ) {
         } else {
             BEDefSeg( sym->u.ns.si.cb.seg_id, COMMON | private, cb_name, ALIGN_BYTE );
         }
-        seg_count = 0;
         cb_name[cb_len] = '@';
-        com_size = GetComBlkSize( sym );
-        for(;;) {
-            if( com_size <= MaxSegSize ) break;
-            com_size -= MaxSegSize;
+        seg_count = 0;
+        for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
             seg_count++;
             sprintf( &cb_name[cb_len + 1], "%d", seg_count );
             if( CGOpts & CGOPT_ALIGN ) {
@@ -387,7 +386,8 @@ static  void    AllocCommonSegs( void ) {
     sym_id      sym;
 
     for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
-        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON ) continue;
+        if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
+            continue;
         AllocComBlk( sym );
     }
 }
@@ -399,7 +399,7 @@ static  void    AllocComBlk( sym_id cb ) {
 // Allocate a common block.
 
     segment_id  segment;
-    unsigned_32 size;
+    uint_32     size;
 
     segment = cb->u.ns.si.cb.seg_id;
     BESetSeg( segment );
@@ -417,9 +417,9 @@ static  void    AllocComBlk( sym_id cb ) {
 }
 
 
-static  void    SegBytes( unsigned_32 size ) {
-//============================================
-
+static  void    SegBytes( uint_32 size )
+//======================================
+{
 #if _CPU == 386
     DGUBytes( size );
 #else
@@ -498,20 +498,17 @@ static  void    AllocGlobalSegs( void ) {
 }
 
 
-static  global_seg      *GSegDesc( unsigned_32 g_offset ) {
+static  global_seg      *GSegDesc( uint_32 g_offset ) {
 //=========================================================
 
 // Find global segment descriptor for given offset.
 
     global_seg  *g_seg;
-    unsigned_32 g_size;
+    uint_32     g_size;
 
-    g_seg = GlobalSeg;
     g_size = 0;
-    for(;;) {
-        if( g_size + g_seg->size > g_offset ) break;
+    for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
         g_size += g_seg->size;
-        g_seg = g_seg->link;
     }
     return( g_seg );
 }
@@ -522,7 +519,7 @@ void    DtInit( segment_id seg, seg_offset offset ) {
 
 // Set to do DATA initialization.
 
-    if( DtOffset >= MaxSegSize - offset ) {
+    if( offset + DtOffset >= MaxSegSize ) {
         seg++;
         DtSegOffset = DtOffset - (MaxSegSize - offset);
         while( DtSegOffset >= MaxSegSize ) {
@@ -696,7 +693,7 @@ void    DtFiniSequence( void ) {
 }
 
 
-segment_id      GetComSeg( sym_id sym, unsigned_32 offset ) {
+segment_id      GetComSeg( sym_id sym, uint_32 offset ) {
 //===========================================================
 
 // Get segment id of common block for variable in common.
@@ -719,14 +716,15 @@ segment_id      GetDataSegId( sym_id sym ) {
 // Get segment containing data for given variable.
 
     segment_id  id;
-    unsigned_32 offset;
+    uint_32     offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
-        for(;;) {
+        for( ;; ) {
             ce_ext = sym->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             sym = ce_ext->link_eqv;
         }
@@ -752,26 +750,23 @@ segment_id      GetDataSegId( sym_id sym ) {
 }
 
 
-seg_offset      GetGlobalOffset( unsigned_32 g_offset ) {
+seg_offset      GetGlobalOffset( uint_32 g_offset ) {
 //=======================================================
 
 // Find offset in the global segment containing data at given offset.
 
     global_seg  *g_seg;
-    unsigned_32 g_size;
+    uint_32     g_size;
 
-    g_seg = GlobalSeg;
     g_size = 0;
-    for(;;) {
-        if( g_size + g_seg->size > g_offset ) break;
+    for( g_seg = GlobalSeg; g_size + g_seg->size <= g_offset; g_seg = g_seg->link ) {
         g_size += g_seg->size;
-        g_seg = g_seg->link;
     }
     return( g_offset - g_size );
 }
 
 
-seg_offset      GetComOffset( unsigned_32 offset ) {
+seg_offset      GetComOffset( uint_32 offset ) {
 //==================================================
 
 // Get segment offset in common block for variable in common.
@@ -805,14 +800,15 @@ seg_offset      GetDataOffset( sym_id sym ) {
 // Get offset in segment containing data for given variable.
 
     seg_offset  seg_offset;
-    unsigned_32 offset;
+    uint_32     offset;
     com_eq      *ce_ext;
 
     if( sym->u.ns.flags & SY_IN_EQUIV ) {
         offset = 0;
-        for(;;) {
+        for( ;; ) {
             ce_ext = sym->u.ns.si.va.vi.ec_ext;
-            if( ce_ext->ec_flags & LEADER ) break;
+            if( ce_ext->ec_flags & LEADER )
+                break;
             offset += ce_ext->offset;
             sym = ce_ext->link_eqv;
         }
@@ -834,7 +830,7 @@ seg_offset      GetDataOffset( sym_id sym ) {
 }
 
 
-segment_id  GetGlobalSeg( unsigned_32 g_offset ) {
+segment_id  GetGlobalSeg( uint_32 g_offset ) {
 //================================================
 
 // Find global segment containing data at given offset.
@@ -935,22 +931,29 @@ void    DefStructs( void ) {
     }
     if( Options & OPT_AUTOMATIC ) {
         for( sym = NList; sym != NULL; sym = sym->u.ns.link ) {
-            if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE ) continue;
-            if( sym->u.ns.flags & (SY_SUB_PARM | SY_IN_COMMON) ) continue;
-            if( ForceStatic( sym->u.ns.flags ) ) continue;
+            if( ( sym->u.ns.flags & SY_CLASS ) != SY_VARIABLE )
+                continue;
+            if( sym->u.ns.flags & (SY_SUB_PARM | SY_IN_COMMON) )
+                continue;
+            if( ForceStatic( sym->u.ns.flags ) )
+                continue;
             if( sym->u.ns.flags & SY_IN_EQUIV ) {
                 com_eq  *ce_ext;
                 sym_id  eqv_set;
                 ce_ext = sym->u.ns.si.va.vi.ec_ext;
-                if( (ce_ext->ec_flags & LEADER) == 0 ) continue;
-                if( ce_ext->ec_flags & MEMBER_IN_COMMON ) continue;
-                if( ce_ext->ec_flags & MEMBER_INITIALIZED ) continue;
+                if( (ce_ext->ec_flags & LEADER) == 0 )
+                    continue;
+                if( ce_ext->ec_flags & MEMBER_IN_COMMON )
+                    continue;
+                if( ce_ext->ec_flags & MEMBER_INITIALIZED )
+                    continue;
                 eqv_set = STEqSetShadow( sym );
                 BEDefType( UserType, ALIGN_DWORD, ce_ext->high - ce_ext->low );
                 eqv_set->u.ns.si.ms.u.cg_typ = UserType;
                 ++UserType;
             } else if( sym->u.ns.flags & SY_SUBSCRIPTED ) {
-                if( _Allocatable( sym ) ) continue;
+                if( _Allocatable( sym ) )
+                    continue;
                 BEDefType( UserType, SymAlign( sym ),
                    _SymSize( sym ) * sym->u.ns.si.va.u.dim_ext->num_elts );
                 sym->u.ns.si.va.u.dim_ext->l.cg_typ = UserType;
@@ -962,7 +965,8 @@ void    DefStructs( void ) {
             }
         }
         for( sym = MList; sym != NULL; sym = sym->u.ns.link ) {
-            if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) ) continue;
+            if( sym->u.ns.flags & (SY_IN_EQUIV | SY_SUBSCRIPTED) )
+                continue;
             if( (sym->u.ns.u1.s.typ == FT_CHAR) && (sym->u.ns.xt.size != 0) ) {
                 BEDefType( UserType, ALIGN_BYTE, sym->u.ns.xt.size );
                 sym->u.ns.si.ms.u.cg_typ = UserType;
@@ -1001,12 +1005,13 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 // FE_VISIBLE:  variable can be modified by a call even though
 //              it's not global
 
-    unsigned_16 flags;
+    uint_16     flags;
     fe_attr     attr;
     sym_id      sym = _sym;
 
     _UnShadow( sym );
-    if( ( sym == EPValue ) || ( sym == ReturnValue ) ) return( 0 );
+    if( ( sym == EPValue ) || ( sym == ReturnValue ) )
+        return( 0 );
     attr = 0;
     flags = sym->u.ns.flags;
     if( ( flags & SY_CLASS ) == SY_VARIABLE ) {
@@ -1025,9 +1030,10 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
                     // equivalence set
                     if( !_MgcIsMagic( sym ) ) {
                         com_eq  *ce_ext;
-                        for(;;) {
+                        for( ;; ) {
                             ce_ext = sym->u.ns.si.va.vi.ec_ext;
-                            if( ce_ext->ec_flags & LEADER ) break;
+                            if( ce_ext->ec_flags & LEADER )
+                                break;
                             sym = ce_ext->link_eqv;
                         }
                         if( ce_ext->ec_flags & (MEMBER_IN_COMMON | MEMBER_INITIALIZED) ) {
@@ -1092,8 +1098,8 @@ segment_id      FESegID( cg_sym_handle _sym ) {
 // Return identifier of the segment that the given symbol is defined in.
 
     segment_id  id;
-    unsigned_16 flags;
-    unsigned_16 sp_type;
+    uint_16     flags;
+    uint_16     sp_type;
     sym_id      sym = _sym;
 
     _UnShadow( sym );
@@ -1183,9 +1189,9 @@ static const char *GetNamePattern( sym_id sym )
     return( aux->objname );
 }
 
-static unsigned GetParmsSize( sym_id sym )
+static uint GetParmsSize( sym_id sym )
 {
-    unsigned    args_size;
+    uint        args_size;
     pass_by     *arg;
     aux_info    *aux;
 
@@ -1300,7 +1306,7 @@ cg_type FEParmType( cg_sym_handle _fn, cg_sym_handle parm, cg_type tipe ) {
 }
 
 
-int     FEMoreMem( unsigned size ) {
+int     FEMoreMem( uint size ) {
 //==================================
 
 // We can't free any memory for use by the back end.
@@ -1396,12 +1402,14 @@ void    FEMessage( int msg, pointer x ) {
     case MSG_REGALLOC_DIED :
     case MSG_SCOREBOARD_DIED :
     case MSG_SCHEDULER_DIED :
-        if( CGFlags & CG_MEM_LOW_ISSUED ) break;
+        if( CGFlags & CG_MEM_LOW_ISSUED )
+            break;
         Warning( CP_LOW_ON_MEMORY, FEName( x ) );
         CGFlags |= CG_MEM_LOW_ISSUED;
         break;
     case MSG_PEEPHOLE_FLUSHED :
-        if( CGFlags & CG_MEM_LOW_ISSUED ) break;
+        if( CGFlags & CG_MEM_LOW_ISSUED )
+            break;
         STGetName( SubProgId, name );
         Warning( CP_LOW_ON_MEMORY, name );
         CGFlags |= CG_MEM_LOW_ISSUED;
@@ -1500,22 +1508,19 @@ static  dbg_type        GetDbgType( sym_id sym ) {
 static dbg_type ArrayDbgType( act_dim_list *dim_ptr, dbg_type db_type ) {
 //=======================================================================
 
-    int         dims;
+    int         dim_cnt;
     intstar4    *bounds;
     intstar4    lo;
     intstar4    hi;
     dbg_array   db_arr;
 
-    dims = 1;
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     bounds = &dim_ptr->subs_1_lo;
     db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
-    while( dims <= _DimCount( dim_ptr->dim_flags ) ) {
-        lo = *bounds;
-        ++bounds;
-        hi = *bounds;
-        ++bounds;
+    while( dim_cnt-- > 0 ) {
+        lo = *bounds++;
+        hi = *bounds++;
         DBDimCon( db_arr, DBGTypes[PT_INT_4], lo, hi );
-        ++dims;
     }
     return( DBEndArray( db_arr ) );
 }
@@ -1578,9 +1583,11 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
     }
     db_proc = DBBegProc( TY_CODE_PTR, db_type );
     for( ep = Entries; ep != NULL; ep = ep->link ) {
-        if( ep->id != sym ) continue;
+        if( ep->id != sym )
+            continue;
         for( arg = ep->parms; arg != NULL; arg = arg->link ) {
-            if( arg->flags & ARG_STMTNO ) continue;
+            if( arg->flags & ARG_STMTNO )
+                continue;
             arg_type = GetDbgType( arg->id );
             if( ( arg->id->u.ns.flags & SY_CLASS ) == SY_SUBPROGRAM ) {
                 arg_type = DBDereference( TY_CODE_PTR,
@@ -1608,12 +1615,12 @@ static  dbg_type        DefDbgSubprogram( sym_id sym, dbg_type db_type ) {
 }
 
 
-static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
+static  void    DefDbgFields( sym_id sd, dbg_struct db, uint_32 f_offset ) {
 //==============================================================================
 
     sym_id      map;
     sym_id      field;
-    unsigned_32 size;
+    uint_32     size;
     dbg_type    db_type;
     char        field_name[MAX_SYMLEN+1];
 
@@ -1633,12 +1640,11 @@ static  void    DefDbgFields( sym_id sd, dbg_struct db, unsigned_32 f_offset ) {
             STFieldName( field, field_name );
             if( field->u.fd.typ == FT_STRUCTURE ) {
                 DefDbgStruct( field->u.fd.xt.sym_record );
-                size = field->u.fd.xt.record->size;
                 db_type = field->u.fd.xt.record->dbi;
             } else {
-                size = field->u.fd.xt.size;
                 db_type = BaseDbgType( field->u.fd.typ, field->u.fd.xt.size );
             }
+            size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
                 size *= field->u.fd.dim_ext->num_elts;
                 db_type = ArrayDbgType( field->u.fd.dim_ext, db_type );
@@ -1658,7 +1664,8 @@ static  void    DefDbgStruct( sym_id sym ) {
 
     dbg_struct  db;
 
-    if( sym->u.sd.dbi != DBG_NIL_TYPE ) return;
+    if( sym->u.sd.dbi != DBG_NIL_TYPE )
+        return;
     db = DBBegStruct( sym->u.sd.cg_typ, true );
     DefDbgFields( sym, db, 0 );
     sym->u.sd.dbi = DBEndStruct( db );
@@ -1671,8 +1678,8 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
 // Define debugging information for a COMMON block.
 
     dbg_struct  db;
-    unsigned_32 com_offset;
-    unsigned_32 size;
+    uint_32     com_offset;
+    uint_32     size;
     char        field_name[MAX_SYMLEN+1];
     dbg_type    db_type;
     com_eq      *com_ext;
@@ -1681,7 +1688,7 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
     db = DBBegNameStruct( "COMMON BLOCK", UserType, true );
     com_offset = 0;
     sym = sym->u.ns.si.cb.first;
-    for(;;) {
+    for( ;; ) {
         com_ext = sym->u.ns.si.va.vi.ec_ext;
         STGetName( sym, field_name );
         if( sym->u.ns.u1.s.typ == FT_STRUCTURE ) {
@@ -1696,7 +1703,8 @@ static  dbg_type        DefCommonStruct( sym_id sym ) {
         } else {
             DBAddField( db, com_offset, field_name, db_type );
         }
-        if( com_ext->ec_flags & LAST_IN_COMMON ) break;
+        if( com_ext->ec_flags & LAST_IN_COMMON )
+            break;
         com_offset += size;
         sym = com_ext->link_com;
     }
@@ -1740,39 +1748,36 @@ dbg_type        FEDbgRetType( cg_sym_handle _sym ) {
 static  dbg_type        DbgADV( act_dim_list *dim_ptr, dbg_type db_type ) {
 //=========================================================================
 
-    int         dims;
+    int         dim_cnt;
+    int         dim_no;
     int         len;
-    int         idx;
     dbg_array   db_arr;
 
-    idx = 0;
-    dims = _DimCount( dim_ptr->dim_flags );
+    dim_cnt = _DimCount( dim_ptr->dim_flags );
     db_arr = DBBegArray( db_type, TY_UNKNOWN, true );
     if( dim_ptr->adv == NULL ) {
         // ADV allocated on the stack (debugging API's can't support this)
         // Create a 1x1x1x..1 array of appropriate dimension to approximate
         // an allocated array, until we get a decent db_loc system.
-        while( idx < dims ) {
+        while( dim_cnt-- > 0 ) {
             DBDimCon( db_arr, DBGTypes[PT_INT_4], 1, 1 );
-            idx++;
         }
         return( DBEndArray( db_arr ) );
     }
-    len = dims * BETypeLength( TY_ADV_ENTRY );
+    len = dim_cnt * BETypeLength( TY_ADV_ENTRY );
     if( Options & OPT_BOUNDS ) {
         len += BETypeLength( TY_POINTER );
     }
-    while( idx < dims ) {
+    for( dim_no = 0; dim_no < dim_cnt; ++dim_no ) {
         if( CGOpts & CGOPT_DI_CV ) {
             DBDimVar( db_arr, dim_ptr->adv,
-                      ( len + ( idx * BETypeLength( TY_ADV_ENTRY_CV ) ) ),
+                      len + dim_no * BETypeLength( TY_ADV_ENTRY_CV ),
                       TY_ADV_LO, TY_ADV_HI_CV );
         } else {
             DBDimVar( db_arr, dim_ptr->adv,
-                      idx * BETypeLength( TY_ADV_ENTRY ),
+                      dim_no * BETypeLength( TY_ADV_ENTRY ),
                       TY_ADV_LO, TY_ADV_HI );
         }
-        ++idx;
     }
     return( DBEndArray( db_arr ) );
 }
@@ -1905,10 +1910,10 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
 
 // Return specified auxiliary information for given auxiliary entry.
 
-    unsigned_16 flags;
+    uint_16     flags;
 #if _CPU == 8086 || _CPU == 386
     int         idx;
-    unsigned_32 com_size;
+    uint_32     com_size;
 #endif
     sym_id      sym;
     char        *fn;
@@ -1993,17 +1998,15 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
         } else {
             ImpSym = ImpSym->u.ns.link;
         }
-        for(;;) {
-            if( ImpSym == NULL )
-                return( NULL );
+        for( ; ImpSym != NULL; ImpSym = ImpSym->u.ns.link ) {
             flags = ImpSym->u.ns.flags;
             if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
               && ( flags & SY_EXTERNAL )
-              && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 ))
-                break;
-            ImpSym = ImpSym->u.ns.link;
+              && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 )) {
+                return( (pointer)1 );
+            }
         }
-        return( (pointer)1 );
+        return( NULL );
     case IMPORT_NAME :
         switch( (int)(pointer_int)req_handle ) {
         case 1:
@@ -2085,11 +2088,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
             if( ( sym->u.ns.flags & SY_CLASS ) != SY_COMMON )
                 continue;
             idx = 0;
-            com_size = GetComBlkSize( sym );
-            for(;;) {
-                if( com_size <= MaxSegSize )
-                    break;
-                com_size -= MaxSegSize;
+            for( com_size = GetComBlkSize( sym ); com_size > MaxSegSize; com_size -= MaxSegSize ) {
                 idx++;
             }
             if(( (segment_id)(pointer_int)req_handle >= sym->u.ns.si.cb.seg_id )
@@ -2111,7 +2110,8 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
     case STACK_SIZE_8087 :
         // return the number of floating-point registers
         // that are NOT used as cache
-        if( CPUOpts & CPUOPT_FPR ) return( (pointer)4 );
+        if( CPUOpts & CPUOPT_FPR )
+            return( (pointer)4 );
         return( (pointer)8 );
     case CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );

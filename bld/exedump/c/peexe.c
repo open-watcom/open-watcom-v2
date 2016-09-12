@@ -175,7 +175,7 @@ bool Dmp_pe_head( void )
         Banner( "PharLap TNT DosStyle Header" );
         break;
     default:
-        return( 0 );
+        return( false );
     }
     Wlseek( New_exe_off );
     Wread( &Pe_head, sizeof( pe_header ) );
@@ -209,7 +209,7 @@ bool Dmp_pe_head( void )
     if( Fix_off != 0 ) {
         Dmp_fixups();
     }
-    return( 1 );
+    return( true );
 }
 
 static void DumpSection( pe_object *hdr )
@@ -310,7 +310,8 @@ extern void dmp_objects( unsigned num_objects )
     pe_object * start;
     char        save;
 
-    if( num_objects == 0 ) return;
+    if( num_objects == 0 )
+        return;
     Banner( "Section Table" );
     pe_obj = Wmalloc( num_objects * sizeof(pe_object) );
     Wread( pe_obj, num_objects * sizeof(pe_object) );
@@ -367,10 +368,10 @@ bool Dmp_pe_tab( void )
 
     Wread( &Dos_head, sizeof( Dos_head ) );
     if( Dos_head.signature != DOS_SIGNATURE ) {
-        return( 0 );
+        return( false );
     }
     if( Dos_head.reloc_offset != OS2_EXE_HEADER_FOLLOWS ) {
-        return( 0 );
+        return( false );
     }
     Wlseek( OS2_NE_OFFSET );
     Wread( &New_exe_off, sizeof( New_exe_off ) );
@@ -381,7 +382,7 @@ bool Dmp_pe_tab( void )
     case PL_SIGNATURE:
         break;
     default:
-        return( 0 );
+        return( false );
     }
     Exp_off = 0;
     cur_pos = New_exe_off  + sizeof( Pe_head );
@@ -400,5 +401,5 @@ bool Dmp_pe_tab( void )
     } else {
         Wdputslc( "no export table\n" );
     }
-    return( 1 );
+    return( true );
 }

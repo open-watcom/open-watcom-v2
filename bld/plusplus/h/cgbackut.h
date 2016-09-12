@@ -722,7 +722,7 @@ SYMBOL CgDeclHiddenParm(        // DECLARE HIDDEN ARG (THIS, CDTOR)
     SCOPE scope,                // - function parameters scope
     TYPE type,                  // - symbol type
     SYMBOL symbol_model,        // - model for symbol
-    unsigned specname_index )   // - special name index
+    specname specname_index )   // - special name index
 ;
 void CgDeclParms(               // DEFINE ARGS FOR CURRENT FN IN CORRECT ORDER
     FN_CTL *fctl,               // - current function control pointer

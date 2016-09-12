@@ -38,8 +38,8 @@
 /*
  * InitDip
  */
-BOOL InitDip( void ) {
-
+BOOL InitDip( void )
+{
     if( DIPInit() & DS_ERR ) {
         RCMessageBox( NULL, STR_CANT_LOAD_DIP, AppName,
                     MB_OK | MB_ICONEXCLAMATION );
@@ -56,12 +56,12 @@ BOOL GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
     cue_handle  *cue;
 
     cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
-    if( AddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
+    if( DIPAddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
         MemFree( cue );
         return( FALSE );
     }
-    CueFile( cue, fname, bufsize );
-    *line = CueLine( cue );
+    DIPCueFile( cue, fname, bufsize );
+    *line = DIPCueLine( cue );
     MemFree( cue );
     return( TRUE );
 }
@@ -78,10 +78,10 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
     location_list       ll;
 
     symhdl = MemAlloc( DIPHandleSize( HK_SYM, false ) );
-    sr = AddrSym( NO_MOD, *addr, symhdl );
+    sr = DIPAddrSym( NO_MOD, *addr, symhdl );
     switch( sr ) {
     case SR_CLOSEST:
-        SymLocation( symhdl, NULL, &ll );
+        DIPSymLocation( symhdl, NULL, &ll );
         *symoff = MADAddrDiff(addr,&(ll.e[0].u.addr),MAF_FULL);
         break;
     case SR_EXACT:
@@ -91,7 +91,7 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
         MemFree( symhdl );
         return( FALSE );
     }
-    SymName( symhdl, NULL, SN_OBJECT, name, MAX_SYM_NAME );
+    DIPSymName( symhdl, NULL, SN_OBJECT, name, MAX_SYM_NAME );
     MemFree( symhdl );
     return( TRUE );
 }
@@ -99,17 +99,22 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
 /*
  * LoadDbgInfo
  */
-BOOL LoadDbgInfo( ModuleNode *mod ) {
+BOOL LoadDbgInfo( ModuleNode *mod )
+{
     unsigned            priority;
 
-    if( !GetSegmentList( mod ) ) return( FALSE );
+    if( !GetSegmentList( mod ) )
+        return( FALSE );
     mod->syminfo->procinfo = DIPCreateProcess();
     priority = 0;
     for( ;; ) {
         priority = DIPPriority( priority );
-        if( priority == 0 ) break;
-        mod->syminfo->hdl = DIPLoadInfo( (dig_fhandle)mod->fhdl, 0, priority );
-        if( mod->syminfo->hdl != NO_MOD ) break;
+        if( priority == 0 )
+            break;
+        mod->syminfo->hdl = DIPLoadInfo( mod->dfh, 0, priority );
+        if( mod->syminfo->hdl != NO_MOD ) {
+            break;
+        }
     }
     if( mod->syminfo->hdl != NO_MOD ) {
         DIPMapInfo( mod->syminfo->hdl, mod );
@@ -122,7 +127,8 @@ BOOL LoadDbgInfo( ModuleNode *mod ) {
 /*
  * UnloadDbgInfo
  */
-void UnloadDbgInfo( ModuleNode *mod ) {
+void UnloadDbgInfo( ModuleNode *mod )
+{
     if( mod->syminfo != NULL ) {
         DIPUnloadInfo( mod->syminfo->hdl );
         DIPDestroyProcess( mod->syminfo->procinfo );

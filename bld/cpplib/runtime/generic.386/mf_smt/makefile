@@ -8,5 +8,5 @@ model      = mf
 convention = stack
 linkage    = static
 mthreaded  = 1
-define_library_include = $(cpplib_dir)/runtime/plib.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/runtime/runtime.mif

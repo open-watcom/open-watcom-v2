@@ -74,6 +74,7 @@ nwgml : wgmlmsge.gh wgmlmsgs.gh wgml.res cfcheck.exe cfparse.exe copparse.exe &
         devldchk.exe findfunc.exe outcheck.exe .SYMBOLIC
 
 cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(cfc_objs) $(ldflags)
 !else
@@ -81,6 +82,7 @@ cfcheck.exe : $(cfc_objs) $(__MAKEFILES__)
 !endif
 
 cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(cfp_objs) $(ldflags)
 !else
@@ -88,22 +90,27 @@ cfparse.exe : $(cfp_objs) $(__MAKEFILES__)
 !endif
 
 copparse.exe : $(copp_objs) $(wgml_libs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(copp_objs) $(wgml_libs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(copp_objs) }
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wgml.res
 
 devldchk.exe : $(devld_objs) $(wgml_libs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(devld_objs) $(wgml_libs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(devld_objs) }
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wgml.res
 
 findfunc.exe : $(ff_objs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(ff_objs) $(ldflags)
 !else
@@ -111,18 +118,23 @@ findfunc.exe : $(ff_objs) $(__MAKEFILES__)
 !endif
 
 outcheck.exe : wgml.res $(outc_objs) $(wgml_libs) $(__MAKEFILES__)
+    @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(outc_objs) $(wgml_libs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) lib { $(wgml_libs) } file { $(outc_objs) }
 !endif
+    @%make echo_bindres
     $(wstrip) -q -a -r $@ . wgml.res
 
 wgmlmsgs.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
-    *awk -v base=000 -f ../../makemdef.awk -v OUTFILE=$^. $<
+    @%make echo_awk
+    $(awk) -v base=000 -f ../../makemdef.awk -v OUTFILE=$^. $<
 
 wgmlmsge.gh : ../../h/wgmlerr.msg ../../h/wgml.msg $(__MAKEFILES__)
-    *awk -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<
+    @%make echo_awk
+    $(awk) -v rcbase=000 -f ../../msgtoenm.awk -v OUTFILE=$^. $<
 
 wgml.res : ../../h/wgml.rc wgmlmsgs.gh ../../h/wgml.msg ../../h/wgmlmsg.h ../../h/wgmlerr.msg
+    @%make echo_rc
     $(rc_aui) $[@ -fo=$@

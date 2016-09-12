@@ -251,7 +251,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
                 len = sizeof( s );
                 MADTypeToString( radix, &mti, data->m_list[i].data, s, &len );
             } else {
-                MADCliString( data->m_list[i].name, s, sizeof( s ) );
+                MADCli( String )( data->m_list[i].name, s, sizeof( s ) );
             }
             if( max_len < strlen( s ) )
                 max_len = strlen( s );

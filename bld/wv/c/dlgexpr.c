@@ -171,7 +171,7 @@ bool    DlgModName( const char *title, mod_handle *mod )
     if( *mod == NO_MOD ) {
         new[0] = NULLCHAR;
     } else {
-        ModName( *mod, new, EXPR_LEN );
+        DIPModName( *mod, new, EXPR_LEN );
     }
     return( DlgGetItemWithRtn( new, EXPR_LEN, title, mod, DlgScanModName, DlgNewWithMod ) );
 }

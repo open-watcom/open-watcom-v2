@@ -187,11 +187,7 @@ sym_id  LkField( sym_id sd ) {
                        &CITNode->value.intstar4 );
     if( sym != NULL ) {
         CITNode->typ = sym->u.fd.typ;
-        if( CITNode->typ == FT_STRUCTURE ) {
-            CITNode->size = sym->u.fd.xt.record->size;
-        } else {
-            CITNode->size = sym->u.fd.xt.size;
-        }
+        CITNode->size = _FieldSize( sym );
         CITNode->flags = SY_VARIABLE;
         if( sym->u.fd.dim_ext != NULL ) {
             CITNode->flags |= SY_SUBSCRIPTED;

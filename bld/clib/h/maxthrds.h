@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( _NETWARE_CLIB ) )
+#if !defined( __DOS__ ) && !defined( __WINDOWS__ )
 
 _WCRTLINK extern unsigned   __GetMaxThreads( void );
 #pragma aux __GetMaxThreads "^"

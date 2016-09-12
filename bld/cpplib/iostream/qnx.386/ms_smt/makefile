@@ -8,5 +8,5 @@ model      = ms
 convention = stack
 linkage    = static
 mthreaded  = 1
-define_library_include = $(cpplib_dir)/iostream/iostream.mif
-!include $(cpplib_dir)/mklib.mif
+
+!include $(cpplib_dir)/iostream/iostream.mif

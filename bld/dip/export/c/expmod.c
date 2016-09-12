@@ -35,13 +35,13 @@
 /*
         Stuff dealing with module handles
 */
-walk_result     DIGENTRY DIPImpWalkModList( imp_image_handle *ii,
-                        IMP_MOD_WKR *wk, void *d )
+walk_result DIPIMPENTRY( WalkModList )( imp_image_handle *ii,
+                        DIP_IMP_MOD_WALKER *wk, void *d )
 {
     return( wk( ii, IMH_EXPORT, d ) );
 }
 
-size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
+size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, size_t buff_size )
 {
 
@@ -56,20 +56,20 @@ size_t DIGENTRY DIPImpModName( imp_image_handle *ii,
     return( ii->len );
 }
 
-char            *DIGENTRY DIPImpModSrcLang( imp_image_handle *ii, imp_mod_handle im )
+char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
     ii = ii; im = im;
     return( "c" );
 }
 
-dip_status      DIGENTRY DIPImpModInfo( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
                                 imp_mod_handle im, handle_kind hk )
 {
     ii = ii; im = im; hk = hk;
     return( DS_FAIL );
 }
 
-search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
                 imp_mod_handle *im )
 {
     ii = ii; a = a;
@@ -80,7 +80,7 @@ search_result   DIGENTRY DIPImpAddrMod( imp_image_handle *ii, address a,
     return( SR_NONE );
 }
 
-address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
+address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
                                 imp_mod_handle im )
 {
     address     addr;
@@ -97,7 +97,7 @@ address         DIGENTRY DIPImpModAddr( imp_image_handle *ii,
     return( NilAddr );
 }
 
-dip_status      DIGENTRY DIPImpModDefault( imp_image_handle *ii,
+dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
      ii = ii; im = im; dk = dk; ti = ti;

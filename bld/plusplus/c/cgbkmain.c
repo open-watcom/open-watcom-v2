@@ -2153,14 +2153,14 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                     = CgDeclHiddenParm( ins_value.pvalue
                                       , ftype
                                       , thisSym
-                                      , SPECIAL_THIS );
+                                      , SPECIAL_NAME_THIS );
             }
             if( SymCDtorExtraParm( fctl->func ) ) {
                 fctl->cdtor_sym
                     = CgDeclHiddenParm( ins_value.pvalue
                                       , MakeCDtorExtraArgType()
                                       , cdtorSym
-                                      , SPECIAL_CDTOR_EXTRA );
+                                      , SPECIAL_NAME_CDTOR_EXTRA );
             }
             CgDeclParms( fctl, ins_value.pvalue );
             funcDebugInfo( fctl );

@@ -65,7 +65,8 @@ static  void    FoldCatSequence( itnode *cit ) {
     num = 0;
     size = 0;
     for(;;) {
-        if( CITNode->opn.us != USOPN_CON ) break;
+        if( CITNode->opn.us != USOPN_CON )
+            break;
         num++;
         if( CITNode->typ != FT_CHAR ) {
             TypeErr( MD_ILL_OPR, CITNode->typ );
@@ -73,7 +74,9 @@ static  void    FoldCatSequence( itnode *cit ) {
             size += CITNode->value.cstring.len;
         }
         AdvanceITPtr();
-        if( CITNode->opr != OPR_CAT ) break;
+        if( CITNode->opr != OPR_CAT ) {
+            break;
+        }
     }
     if( !AError ) {
         CITNode = cit;
@@ -125,7 +128,7 @@ void            CatOpn( void ) {
     BackTrack();
 }
 
-static  int     ScanCat( int *size_ptr ) {
+static  uint    ScanCat( uint *size_ptr ) {
 //========================================
 
 // Scan for strings to be concatenated.
@@ -137,7 +140,7 @@ static  int     ScanCat( int *size_ptr ) {
     itptr = CITNode;
     cat_size = 0;
     num_cats = 0;
-    for(;;) {
+    for( ;; ) {
         if( CITNode->opn.ds == DSOPN_PHI ) {
             // no operand (A = B // // C)
             TypeErr( SX_WRONG_TYPE, FT_CHAR );
@@ -152,7 +155,9 @@ static  int     ScanCat( int *size_ptr ) {
         }
         CITNode = CITNode->link;
         num_cats++;
-        if( CITNode->opr != OPR_CAT ) break;
+        if( CITNode->opr != OPR_CAT ) {
+            break;
+        }
     }
     CITNode = itptr;
     if( size_ptr != NULL ) {
@@ -167,15 +172,17 @@ void            FiniCat( void ) {
 
 // Finish concatenation.
 
-    int         num;
+    uint        num;
     sym_id      result;
-    int         size;
+    uint        size;
 
     // Make sure we don't PushOpn() a constant expression
     // in case it's for a PARAMETER constant
     if( CITNode->opn.us == USOPN_CON ) {
         FoldCatSequence( CITNode );
-        if( AError ) return;
+        if( AError ) {
+            return;
+        }
     } else {
         GenCatOpn();
     }
@@ -190,7 +197,7 @@ void            FiniCat( void ) {
 }
 
 
-int             AsgnCat( void ) {
+uint        AsgnCat( void ) {
 //=========================
 
 // Get character operand to assign.
@@ -379,24 +386,24 @@ void            ChkCatOpn( void ) {
 }
 
 
-void            CatArgs( int num ) {
+void            CatArgs( uint num ) {
 //==================================
 
 // Generate code for concatenation arguments.
 
     itnode      *itptr;
     itnode      *junk;
-    int         count;
 
     itptr = CITNode;
-    count = num;
-    for(;;) {
+    for( ;; ) {
         // Don't call CatArg() if no operand or not of type character.
         // This covers the case where invalid operands are specified.
         if( ( itptr->opn.ds != DSOPN_PHI ) && ( itptr->typ == FT_CHAR ) ) {
             GCatArg( itptr );
         }
-        if( --count <= 0 ) break;
+        if( num-- < 2 ) {
+            break;
+        }
         itptr = itptr->link;
     }
     if( CITNode != itptr ) {

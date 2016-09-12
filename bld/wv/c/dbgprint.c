@@ -691,9 +691,9 @@ static walk_result PrintDlgField( sym_walk_info swi, sym_handle *member_hdl, voi
         }
         d->first_time = false;
         DupStack();
-        len = SymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
+        len = DIPSymName( member_hdl, NULL, SN_SOURCE, NULL, 0 );
         _AllocA( name, len + 1 );
-        len = SymName( member_hdl, NULL, SN_SOURCE, name, len + 1 );
+        len = DIPSymName( member_hdl, NULL, SN_SOURCE, name, len + 1 );
         PrtStr( name, len );
         PrtChar( '=' );
         DoGivenField( member_hdl );
@@ -710,7 +710,7 @@ static void PrintStruct( void )
 
     d.first_time = true;
     PrtChar( '{' );
-    WalkSymList( SS_TYPE, ExprSP->th, PrintDlgField, &d );
+    DIPWalkSymList( SS_TYPE, ExprSP->th, PrintDlgField, &d );
     PrtChar( '}' );
 }
 
@@ -725,7 +725,7 @@ static void PrintArray( void )
 
     first_time = true;
     PrtChar( '{' );
-    TypeArrayInfo( ExprSP->th, ExprSP->lc, &ai, NULL );
+    DIPTypeArrayInfo( ExprSP->th, ExprSP->lc, &ai, NULL );
     while( ai.num_elts != 0 ) {
         ChkBreak();
         if( !first_time ) {
@@ -768,10 +768,13 @@ OVL_EXTERN walk_result ExactMatch( sym_walk_info swi, sym_handle *sh, void *d )
     struct val2name     *vd = d;
     unsigned_64         val;
 
-    if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
+    if( swi != SWI_SYMBOL )
+        return( WR_CONTINUE );
     U64Clear( val );
-    if( SymValue( sh, ExprSP->lc, &val ) != DS_OK ) return( WR_STOP );
-    if( U64Cmp( &val, &vd->value ) != 0 ) return( WR_CONTINUE );
+    if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
+        return( WR_STOP );
+    if( U64Cmp( &val, &vd->value ) != 0 )
+        return( WR_CONTINUE );
     HDLAssign( sym, vd->sh, sh );
     vd->found = true;
     return( WR_STOP );
@@ -783,10 +786,13 @@ OVL_EXTERN walk_result BestMatch( sym_walk_info swi, sym_handle *sh, void *d )
     unsigned_64         val;
     unsigned_64         tmp;
 
-    if( swi != SWI_SYMBOL ) return( WR_CONTINUE );
+    if( swi != SWI_SYMBOL )
+        return( WR_CONTINUE );
     U64Clear( val );
-    if( SymValue( sh, ExprSP->lc, &val ) != DS_OK ) return( WR_STOP );
-    if( U64Test( &val ) == 0 ) return( WR_CONTINUE );
+    if( DIPSymValue( sh, ExprSP->lc, &val ) != DS_OK )
+        return( WR_STOP );
+    if( U64Test( &val ) == 0 )
+        return( WR_CONTINUE );
     U64And( &val, &vd->value, &tmp );
     if( U64Cmp( &tmp, &val ) == 0 ) {
         if( !vd->found || U64Cmp( &val, &vd->best_value ) > 0 ) {
@@ -809,14 +815,14 @@ static unsigned ValueToName( char *buff, unsigned len )
     d.sh = sh;
     d.found = false;
     d.value = ExprSP->v.uint;
-    WalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
+    DIPWalkSymList( SS_TYPE, ExprSP->th, ExactMatch, &d );
     if( d.found ) {
-        return( SymName( sh, NULL, SN_SOURCE, buff, len ) );
+        return( DIPSymName( sh, NULL, SN_SOURCE, buff, len ) );
     }
     p = buff;
     while( U64Test( &d.value ) != 0 ) {
         d.found = false;
-        WalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
+        DIPWalkSymList( SS_TYPE, ExprSP->th, BestMatch, &d );
         if( !d.found )
             return( 0 );
         U64Not( &d.best_value, &d.best_value );
@@ -827,7 +833,7 @@ static unsigned ValueToName( char *buff, unsigned len )
             *p++ = '+';
             --len;
         }
-        name_len = SymName( sh, NULL, SN_SOURCE, p, len );
+        name_len = DIPSymName( sh, NULL, SN_SOURCE, p, len );
         if( name_len > len )
             return( 0 );
         p += name_len;

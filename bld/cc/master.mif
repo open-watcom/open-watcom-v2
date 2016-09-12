@@ -141,44 +141,50 @@ inc_dirs  = -I. -I.. -I"../../h" $(cg_inc_dirs) $(asminline_inc_dirs) $(dwarfw_i
 
 $(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_objs_drv) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_prefix)$(dllname).lib $(ldflags_gen)
+    @%make echo_link
+    $(cl) $(clflags_gen) $(comp_objs_drv) $(bin_prefix)$(dllname).lib $(ldflags_gen)
 !else
-        @%write drv.lnk $(lflags)
-        @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
-        @%append drv.lnk lib $(bin_prefix)$(dllname).lib
+    @%write drv.lnk $(lflags)
+    @for %i in ($(comp_objs_drv)) do @%append drv.lnk file %i
+    @%append drv.lnk lib $(bin_prefix)$(dllname).lib
 !ifeq host_os dos
-        @%append drv.lnk lib cwdll.lib
+    @%append drv.lnk lib cwdll.lib
 !endif
-        $(linker) name $@ @drv.lnk
+    @%make echo_link
+    $(linker) name $@ @drv.lnk
 !endif
-        @%make bind_version_res_exe
+    @%make bind_version_res_exe
 
 !else
 
 $(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
+    @%make echo_link
+    $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
 !else
-        @%write exe.lnk $(lflags)
-        @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
-        @for %i in ($(libs)) do @%append exe.lnk lib %i
-        $(linker) name $(lname) @exe.lnk
-        @%make bind_osildr
+    @%write exe.lnk $(lflags)
+    @for %i in ($(comp_objs_exe)) do @%append exe.lnk file %i
+    @for %i in ($(libs)) do @%append exe.lnk lib %i
+    @%make echo_link
+    $(linker) name $(lname) @exe.lnk
+    @%make bind_osildr
 !endif
-        @%make bind_version_res_exe
+    @%make bind_version_res_exe
 
 !endif
 
 $(bin_prefix)$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
-        $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
+    @%make echo_link
+    $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
 !else
-        @%write dll.lnk $(lflags_dll)
-        @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
-        @for %i in ($(libs)) do @%append dll.lnk lib %i
-        $(linker) name $@ @dll.lnk
+    @%write dll.lnk $(lflags_dll)
+    @for %i in ($(comp_objs_dll)) do @%append dll.lnk file %i
+    @for %i in ($(libs)) do @%append dll.lnk lib %i
+    @%make echo_link
+    $(linker) name $@ @dll.lnk
 !endif
-        @%make bind_version_res_dll
+    @%make bind_version_res_dll
 
 #
 # done
@@ -187,22 +193,23 @@ $(bin_prefix)$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_
 !ifeq target_cpu axp
 
 codeaxp.gh :
-        echo // Dummy file > $@
+    echo // Dummy file > $@
 
 !else ifeq target_cpu ppc
 
 codeppc.gh :
-        echo // Dummy file > $@
+    echo // Dummy file > $@
 
 !else ifeq target_cpu mps
 
 codemps.gh :
-        echo // Dummy file > $@
+    echo // Dummy file > $@
 
 !else  # Intel i86 or 386
 
-code$(target_cpu).gh : xcode$(target_cpu).tmp ./mkcode.exe
-        $]@ $[@ $@
+code$(target_cpu).gh : ./mkcode.exe xcode$(target_cpu).tmp
+    @%make echo_execute
+    $(noecho)$[@ $]@ $@
 !endif
 
 target_as_axp   = bwasaxp -zq -w8
@@ -212,37 +219,46 @@ target_as_ppc   = bwasppc -zq -w8
 target_as_mps   = bwasmps -zq -w8
 
 xcode$(target_cpu).tmp: ../../a/code$(target_cpu).asm
-        *$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
-        *bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
+    @%make echo_aslink
+    $(noecho)*$(target_as_$(target_cpu)) -I"$(watcom_dir)/h" -fo=.obj $[@
+    $(noecho)*bwlink format dos com op quiet, nodefault file code$(target_cpu).obj name $@ disable 1023,1080
 
 ./mkcode.exe: ../../a/mkcode.c
-        $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
 
 msgtxt.gh msgdefs.gh msgattr.gh errors01.int : ../../gml/cerrs.gml
-        msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
+    @%make echo_msgencod
+    $(noecho)msgencod -s -i -ip -q -g ../../gml/cerrs.gml msgtxt.gh msgdefs.gh msgattr.gh
 
 ./intlbin.exe: $(fe_misc_dir)/c/intlbin.c
-        $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -I"$(fe_misc_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 $(intname)01.int : ./intlbin.exe errors01.int usage01.int
-        $[@ $(intname)
+    $[@ $(intname)
 
 ./mkopcod1.exe: $(wasm_dir)/mkopcod1.c $(wasm_dir)/mkopcode.h
-        $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmops.gh: ./mkopcod1.exe $(wasm_dir)/inlnops.tok
-        $[@ $(wasm_dir)/inlnops.tok $@
+    @%make echo_execute
+    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
 ./mkopcode.exe: $(wasm_dir)/mkopcode.c $(wasm_dir)/mkopcode.h asmops.gh
-        $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
+    @%make echo_bldcl
+    $(bld_cl) $[@ -I. -I"$(wasm_dir)/h" $(bld_clflags) $(bld_ldflags)
 
 asmopsd.gh: ./mkopcode.exe $(wasm_dir)/inlnops.tok
-        $[@ $(wasm_dir)/inlnops.tok $@
+    @%make echo_execute
+    $(noecho)$[@ $(wasm_dir)/inlnops.tok $@
 
 key_objs = ../../h/c.key ../../h/pc.key ../../h/seh.key
 
 weights.gh keywords.gh : $(key_objs)
-        findhash -q -e ",OPR_NOP" $(key_objs)
+    @%make echo_findhash
+    $(noecho)findhash -q -e ",OPR_NOP" $(key_objs)
 
 # optencod options and targets for various hosts
 optencod_opt_qnx = -u $(extra_link_res_$(host_os))
@@ -256,4 +272,23 @@ optencod_targ_dbg = dbg
 !endif
 
 usage.gh usage01.int : ../../gml/options.gml
-        optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+!ifeq verbose 0
+    @echo optencod $@
+!endif
+    $(noecho)optencod -i -n -q $(optencod_opt_$(host_os)) $]@ . . usage.gh $(target_cpu) $(optencod_targ_dbg) $(optencod_targ_$(host_os))
+
+echo_msgencod : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo msgencod $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
+!endif
+
+echo_aslink : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_as $[&.obj
+    @echo bld_link $@
+!endif

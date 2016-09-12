@@ -527,7 +527,7 @@ address SetBreakPointInFile( char *filename,int line_num )
             mod_address = ModFirstAddr( ModListMod ( &list, row ) );
             if( DeAliasAddrCue( ModListMod ( &list, row ), mod_address, ch ) == SR_NONE ) {
             } else {
-                bp_address = GetRowAddrDirectly( CueMod( ch ), CueFileId( ch ), line_num, false );
+                bp_address = GetRowAddrDirectly( DIPCueMod( ch ), DIPCueFileId( ch ), line_num, false );
                 if( !IS_NIL_ADDR( bp_address ) ) {
                     bp = AddBreak( bp_address );
                     bp_handled = true;
@@ -1943,7 +1943,7 @@ bool DUIGetSourceLine( cue_handle *ch, char *buff, unsigned len )
 
     viewhndl = OpenSrcFile( ch );
     if( viewhndl == NULL ) return( false );
-    buff[FReadLine( viewhndl, CueLine( ch ), 0, buff, len )] = NULLCHAR;
+    buff[FReadLine( viewhndl, DIPCueLine( ch ), 0, buff, len )] = NULLCHAR;
     FDoneSource( viewhndl );
     return( true );
 }

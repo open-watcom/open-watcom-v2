@@ -243,11 +243,7 @@ static  sym_id  LookupField( sym_id field, char *name, uint len,
                     return( field );
                 }
             }
-            if( field->u.fd.typ == FT_STRUCTURE ) {
-                size = field->u.fd.xt.record->size;
-            } else {
-                size = field->u.fd.xt.size;
-            }
+            size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
                 size *= field->u.fd.dim_ext->num_elts;
             }
@@ -314,10 +310,8 @@ bool    CalcStructSize( sym_id sd ) {
                     sd->u.sd.link = saved_link;
                     return( true );             // recursion detected
                 }
-                size = field->u.fd.xt.record->size;
-            } else {
-                size = field->u.fd.xt.size;
             }
+            size = _FieldSize( field );
             if( field->u.fd.dim_ext != NULL ) {
                 size *= field->u.fd.dim_ext->num_elts;
             }

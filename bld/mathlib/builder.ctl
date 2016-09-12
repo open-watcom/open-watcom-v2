@@ -41,7 +41,7 @@ set PROJDIR=<CWD>
     <CCCMD> library/msdos.386/ms_s/math3s.lib       <OWRELROOT>/lib386/netware/math3s.lib
     <CCCMD> library/msdos.387/ms_s/math387s.lib     <OWRELROOT>/lib386/netware/math387s.lib
 
-    <CCCMD> library/winnt.axp/_s/mathaxp.lib        <OWRELROOT>/libaxp/nt/math.lib
+    <CCCMD> library/winnt.axp/_s/math.lib           <OWRELROOT>/libaxp/nt/math.lib
 
     <CCCMD> library/msdos.386/mf_r/math3r.lib       <OWRELROOT>/lib386/math3r.lib
     <CCCMD> library/msdos.386/mf_rd/math3r.lib      <OWRELROOT>/lib386/math3rd.lib

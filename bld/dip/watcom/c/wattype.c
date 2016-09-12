@@ -445,7 +445,7 @@ static dip_status DoFindTypeHandle( imp_image_handle *ii, imp_mod_handle im,
     case NO_TYPE:
         return( DS_FAIL );
     case ARRAY_TYPE:
-        if( stricmp( ImpInterface.mod_src_lang( ii, im ), "fortran" ) == 0 ) {
+        if( stricmp( ImpInterface.ModSrcLang( ii, im ), "fortran" ) == 0 ) {
             it->f.s.col_major = 1;
             it->f.s.array_ss = 0;
             base = *it;
@@ -679,8 +679,8 @@ search_result SearchTypeName( imp_image_handle *ii, imp_mod_handle im,
     return( SearchEnumTypeName( ii, im, li, d, ET_TYPE ) );
 }
 
-walk_result DIGENTRY DIPImpWalkTypeList( imp_image_handle *ii, imp_mod_handle im,
-                        IMP_TYPE_WKR *wk, imp_type_handle *it, void *d )
+walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii, imp_mod_handle im,
+                        DIP_IMP_TYPE_WALKER *wk, imp_type_handle *it, void *d )
 {
     const char  *p;
     byte        kind;
@@ -814,8 +814,8 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
             FreeLoad();
             save_major = it->f.s.col_major;
             it->f.s.col_major = 0;
-            ImpInterface.type_array_info( ii, it, lc, &info, NULL );
-            ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
+            ImpInterface.TypeArrayInfo( ii, it, lc, &info, NULL );
+            ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
             GetTypeInfo( ii, &tmp, lc, ti, ndims );
             it->f.s.col_major = save_major;
             if( ndims != NULL )
@@ -826,8 +826,8 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
             Type->start = NULL;
             break;
         case SUBRANGE_TYPE:
-            ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
-            ImpInterface.tipe_info( ii, &tmp, lc, ti );
+            ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
+            ImpInterface.TypeInfo( ii, &tmp, lc, ti );
             break;
         case POINTER_TYPE:
             {
@@ -942,13 +942,13 @@ static dip_status GetTypeInfo(imp_image_handle *ii, imp_type_handle *it,
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpTypeInfo(imp_image_handle *ii, imp_type_handle *it,
+dip_status DIPIMPENTRY( TypeInfo )(imp_image_handle *ii, imp_type_handle *it,
                         location_context *lc, dip_type_info *ti )
 {
     return( GetTypeInfo( ii, it, lc, ti, NULL ) );
 }
 
-dip_status DIGENTRY DIPImpTypeBase(imp_image_handle *ii, imp_type_handle *it,
+dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *ii, imp_type_handle *it,
                  imp_type_handle *base,
                  location_context *lc, location_list *ll )
 {
@@ -994,7 +994,7 @@ dip_status DIGENTRY DIPImpTypeBase(imp_image_handle *ii, imp_type_handle *it,
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *it,
+dip_status DIPIMPENTRY( TypeArrayInfo )(imp_image_handle *ii, imp_type_handle *it,
              location_context *lc, array_info *ai, imp_type_handle *index )
 {
     const char          *p;
@@ -1013,9 +1013,9 @@ dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
         tmp = *it;
         tmp.f.s.col_major = 0;
         for( count = tmp.f.s.array_ss-1; count != 0; --count ) {
-            ImpInterface.type_base( ii, &tmp, &tmp, NULL, NULL );
+            ImpInterface.TypeBase( ii, &tmp, &tmp, NULL, NULL );
         }
-        ImpInterface.type_array_info( ii, &tmp, lc, ai, index );
+        ImpInterface.TypeArrayInfo( ii, &tmp, lc, ai, index );
         ai->num_dims = tmp.f.s.array_ss - ai->num_dims + 1;
         ai->column_major = 1;
         return( DS_OK );
@@ -1084,7 +1084,7 @@ dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
         break;
     }
     PopLoad();
-    ImpInterface.type_base( ii, it, &tmp, NULL, NULL );
+    ImpInterface.TypeBase( ii, it, &tmp, NULL, NULL );
     ai->num_dims = 1;
     ret = GetTypeInfo( ii, &tmp, lc, &info, &ai->num_dims );
     if( ret != DS_OK )
@@ -1104,7 +1104,7 @@ dip_status DIGENTRY DIPImpTypeArrayInfo(imp_image_handle *ii, imp_type_handle *i
     return( DS_OK );
 }
 
-dip_status DIGENTRY DIPImpTypeProcInfo(imp_image_handle *ii, imp_type_handle *it,
+dip_status DIPIMPENTRY( TypeProcInfo )(imp_image_handle *ii, imp_type_handle *it,
                  imp_type_handle *parm, unsigned num )
 {
     const char  *p;
@@ -1146,7 +1146,7 @@ dip_status DIGENTRY DIPImpTypeProcInfo(imp_image_handle *ii, imp_type_handle *it
     return( FindTypeHandle( ii, it->im, index, parm ) );
 }
 
-dip_status DIGENTRY DIPImpTypePtrAddrSpace( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypePtrAddrSpace )( imp_image_handle *ii,
                     imp_type_handle *it, location_context *lc, address *addr )
 {
     const char          *p;
@@ -1547,7 +1547,7 @@ dip_status SymHdl2MbrInfo( imp_image_handle *ii, imp_sym_handle *is,
     return( ret );
 }
 
-dip_status DIGENTRY DIPImpTypeThunkAdjust( imp_image_handle *ii,
+dip_status DIPIMPENTRY( TypeThunkAdjust )( imp_image_handle *ii,
                     imp_type_handle *oit, imp_type_handle *mit,
                     location_context *lc, address *addr )
 {
@@ -1722,7 +1722,7 @@ search_result SearchMbr( imp_image_handle *ii, imp_type_handle *it,
 }
 
 walk_result WalkTypeSymList( imp_image_handle *ii, imp_type_handle *it,
-                 IMP_SYM_WKR *wk, imp_sym_handle *is, void *d )
+                 DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is, void *d )
 {
     const char                  *p;
     unsigned                    count;
@@ -1824,7 +1824,7 @@ do_walk:
     return( wr );
 }
 
-imp_mod_handle DIGENTRY DIPImpTypeMod( imp_image_handle *ii,
+imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
     ii = ii;
@@ -1870,7 +1870,7 @@ missing:
     return( NULL );
 }
 
-int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
+int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
                         imp_type_handle *it2 )
 {
     ii = ii;
@@ -1882,7 +1882,7 @@ int DIGENTRY DIPImpTypeCmp( imp_image_handle *ii, imp_type_handle *it1,
 }
 
 
-size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
+size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
     //NYI: stub implementation
@@ -1890,21 +1890,21 @@ size_t DIGENTRY DIPImpTypeName( imp_image_handle *ii, imp_type_handle *it,
     return( 0 );
 }
 
-dip_status DIGENTRY DIPImpTypeAddRef( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIGENTRY DIPImpTypeRelease( imp_image_handle *ii, imp_type_handle *it )
+dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
 {
     ii=ii;
     it=it;
     return(DS_OK);
 }
 
-dip_status DIGENTRY DIPImpTypeFreeAll( imp_image_handle *ii )
+dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
 {
     ii=ii;
     return(DS_OK);

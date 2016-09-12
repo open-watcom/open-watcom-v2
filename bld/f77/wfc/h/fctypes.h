@@ -33,7 +33,7 @@ extern  cg_type         MkCGType( PTYPE typ );
 extern  cg_type         GetType( unsigned_16 typ_info );
 extern  cg_type         GetType1( unsigned_16 typ_info );
 extern  cg_type         GetType2( unsigned_16 typ_info );
-extern  cg_type         F772CGType( sym_id sym );
+extern  cg_type         F77ToCGType( sym_id sym );
 extern  cg_type         ResCGType( cg_type typ1, cg_type typ2 );
 extern  bool            DataPointer( cg_type typ );
 extern  bool            TypeCGInteger( cg_type typ );

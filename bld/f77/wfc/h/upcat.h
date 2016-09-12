@@ -31,10 +31,10 @@
 
 extern void     CatOpn( void );
 extern void     FiniCat( void );
-extern int      AsgnCat( void );
+extern uint     AsgnCat( void );
 extern void     CatBack( void );
 extern void     CatAxeParens( void );
 extern void     ParenCat( void );
 extern void     CatParen( void );
 extern void     ChkCatOpn( void );
-extern void     CatArgs( int num );
+extern void     CatArgs( uint num );

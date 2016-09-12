@@ -1,15 +1,21 @@
 proj_name = mathlib
 
+# remap fpu to processor
+mlib_286 = 286
+mlib_287 = 286
+mlib_386 = 386
+mlib_387 = 386
+mlib_axp = axp
+mlib_mps = mps
+mlib_ppc = ppc
+
 clib_host_cpu_086 = i86
-clib_host_cpu_087 = i86
 clib_host_cpu_286 = i86
-clib_host_cpu_287 = i86
 clib_host_cpu_386 = 386
-clib_host_cpu_387 = 386
 clib_host_cpu_axp = axp
 clib_host_cpu_ppc = ppc
 clib_host_cpu_mps = mps
-host_cpu = $(clib_host_cpu_$(processor))
+host_cpu = $(clib_host_cpu_$(mlib_$(processor)))
 
 clib_host_os_generic = dos
 clib_host_os_msdos   = dos
