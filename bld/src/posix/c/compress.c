@@ -77,38 +77,38 @@ static const char *usage_text[] = {
 
 /* Setup for 16-bit machines */
 #if !(INT_MAX > 65536L)
-    #define BITS            12
+    #define BITSIZE         12
     #define IO_BUF_SIZE     4096
 #endif
 
-#ifndef BITS
-    #define BITS 16
+#ifndef BITSIZE
+    #define BITSIZE 16
 #endif
 
 #ifndef IO_BUF_SIZE
     #define IO_BUF_SIZE     65536
 #endif
 
-#if BITS == 16
+#if BITSIZE == 16
   #define HSIZE 69001       /* 95% occupancy */
 #endif
-#if BITS == 15
+#if BITSIZE == 15
   #define HSIZE 35023       /* 94% occupancy */
 #endif
-#if BITS == 14
+#if BITSIZE == 14
   #define HSIZE 18013       /* 91% occupancy */
 #endif
-#if BITS == 13
+#if BITSIZE == 13
   #define HSIZE 9001        /* 91% occupancy */
 #endif
-#if BITS <= 12
+#if BITSIZE <= 12
   #define HSIZE 5003        /* 80% occupancy */
 #endif
 
 /*
- * a code_int must be able to hold 2**BITS values of type int, and also -1
+ * a code_int must be able to hold 2**BITSIZE values of type int, and also -1
  */
-#if BITS > 15
+#if BITSIZE > 15
 typedef long int        code_int;
 #else
 typedef int             code_int;
@@ -125,14 +125,14 @@ typedef unsigned char   char_type;
  * a fourth header byte (for expansion).
  */
 
-#define INIT_BITS   9                   /* initial number of bits/code */
+#define INIT_BITS   9                       /* initial number of bits/code */
 
 static char_type    magic_header[] = { "\037\235" };    /* 1F 9D */
-static int n_bits;                      /* number of bits/code */
-static int maxbits = BITS;              /* user settable max # bits/code */
-static code_int maxcode;                /* maximum code, given n_bits */
-static code_int maxmaxcode = 1 << BITS; /* should NEVER generate this code */
-static code_int free_ent = 0;           /* first unused entry */
+static int n_bits;                          /* number of bits/code */
+static int maxbits = BITSIZE;               /* user settable max # bits/code */
+static code_int maxcode;                    /* maximum code, given n_bits */
+static code_int maxmaxcode = 1 << BITSIZE;  /* should NEVER generate this code */
+static code_int free_ent = 0;               /* first unused entry */
 static int exit_stat = 0;
 static int nomagic = 0;     /* use a 3-byte magic number header, unless old file */
 static int zcat_flg = 0;    /* write output on stdout, suppress messages */
@@ -154,7 +154,7 @@ static count_int        fsize;
 /*
  * To save much memory, we overlay the table used by compress() with those
  * used by decompress().  The tab_prefix table is the same size and type
- * as the codetab.  The tab_suffix table needs 2**BITS characters.  We
+ * as the codetab.  The tab_suffix table needs 2**BITSIZE characters.  We
  * get this from the beginning of htab.  The output stack uses the rest
  * of htab, and contains characters.  There is plenty of room for any
  * possible stack (stack used to be 8000 characters).
@@ -162,7 +162,7 @@ static count_int        fsize;
 
 #define tab_prefixof(i) codetabof(i)
 #define tab_suffixof(i) ((char_type *)(htab))[i]
-#define de_stack        ((char_type *)&tab_suffixof(1<<BITS))
+#define de_stack        ((char_type *)&tab_suffixof(1<<BITSIZE))
 
 /*
  * block compression parameters -- after all codes are used up,
@@ -173,7 +173,7 @@ static int          clear_flg = 0;
 static long int     ratio = 0;
 
 /* ratio check interval */
-#if BITS == 16
+#if BITSIZE == 16
     #define CHECK_GAP 50000 
 #else
     #define CHECK_GAP 10000 /* ratio check interval */
@@ -198,7 +198,7 @@ static long     in_count = 1;       /* length of input */
 static long     bytes_out;          /* length of compressed output */
 static long     out_count = 0;      /* # of codes output (for debugging) */
 
-static char buf[BITS];
+static char buf[BITSIZE];
 
 static char_type lmask[9] = { 0xff, 0xfe, 0xfc, 0xf8, 0xf0, 0xe0, 0xc0, 0x80, 0x00 };
 static char_type rmask[9] = { 0x00, 0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff };
@@ -276,7 +276,7 @@ static void print_ratio( FILE *stream, long num, long den )
  * Assumptions:
  *  Chars are 8 bits long.
  * Algorithm:
- *  Maintain a BITS character long buffer (so that 8 codes will
+ *  Maintain a BITSIZE character long buffer (so that 8 codes will
  *  fit in it exactly). When the buffer fills up empty it and start over.
  */
 
@@ -509,7 +509,7 @@ static code_int getcode( void )
 {
     code_int            code;
     static int          offset = 0, size = 0;
-    static char_type    buf[BITS];
+    static char_type    buf[BITSIZE];
     int                 r_off, bits;
     char_type           *bp = buf;
 
@@ -754,10 +754,10 @@ static void compress_file( char **fileptr )
                 block_compress = maxbits & BLOCK_MASK;
                 maxbits &= BIT_MASK;
                 maxmaxcode = 1 << maxbits;
-                if( maxbits > BITS ) {
+                if( maxbits > BITSIZE ) {
                     fprintf( stderr,
                          "%s: compressed with %d bits, can only handle %d bits\n",
-                         tempname, maxbits, BITS );
+                         tempname, maxbits, BITSIZE );
                     return;
                 }
             }
@@ -951,8 +951,8 @@ int main( int argc, char **argv )
 
     if( maxbits < INIT_BITS )
         maxbits = INIT_BITS;
-    if( maxbits > BITS )
-        maxbits = BITS;
+    if( maxbits > BITSIZE )
+        maxbits = BITSIZE;
     maxmaxcode = 1 << maxbits;
 
     if( *argv != NULL ) {
@@ -981,10 +981,10 @@ int main( int argc, char **argv )
                 maxbits &= BIT_MASK;
                 maxmaxcode = 1 << maxbits;
                 fsize = 100000;     /* assume stdin large for USERMEM */
-                if( maxbits > BITS ) {
+                if( maxbits > BITSIZE ) {
                     fprintf( stderr,
                         "stdin: compressed with %d bits, can only handle %d bits\n",
-                        maxbits, BITS );
+                        maxbits, BITSIZE );
                     return( 1 );
                 }
             }
