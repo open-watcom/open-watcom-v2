@@ -9,15 +9,12 @@
 
 !include ../../../../objlist.mif
 
-086_sub_opt =-of
-286_sub_opt =-of
-386_sub_opt =
-axp_sub_opt =
-ppc_sub_opt =
-mps_sub_opt =
-bsearch_opts=$($(processor)_sub_opt)
-lfind_opts  =$($(processor)_sub_opt)
-lsearch_opts=$($(processor)_sub_opt)
-qsort_opts  =$($(processor)_sub_opt)
-bsrch_s_opts=$($(processor)_sub_opt)
-qsort_s_opts=$($(processor)_sub_opt)
+086_option_of =-of
+286_option_of =-of
+
+bsearch_opts =$($(processor)_option_of)
+lfind_opts   =$($(processor)_option_of)
+lsearch_opts =$($(processor)_option_of)
+qsort_opts   =$($(processor)_option_of)
+bsrch_s_opts =$($(processor)_option_of)
+qsort_s_opts =$($(processor)_option_of)

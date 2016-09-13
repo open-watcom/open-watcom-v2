@@ -72,12 +72,10 @@
 
 !include ../../../../objlist.mif
 
-086_ac_opts=-zdp
-286_ac_opts=-zdp
-386_ac_opts=
-axp_ac_opts=
-mem_opts = -ol+t $($(processor)_ac_opts)
+086_option_zdp =-zdp
+286_option_zdp =-zdp
 
+mem_opts      = -ol+t $($(processor)_option_zdp)
 grownear_opts = -I"$(win386_dir)/h"
 nheapmin_opts = -I"$(win386_dir)/h"
 sbrk_opts     = -I"$(win386_dir)/h"

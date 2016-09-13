@@ -224,57 +224,41 @@ objsuffix=files
 !include ../../../../objlist.mif
 objsuffix=
 
-086_ac_opts=-zdp
-286_ac_opts=-zdp
-386_ac_opts=
-axp_ac_opts=
-ppc_ac_opts=
-mps_ac_opts=
+086_option_zdp =-zdp
+286_option_zdp =-zdp
 
-086_sub_opts=-of
-286_sub_opts=-of
-386_sub_opts=
-axp_sub_opts=
-ppc_sub_opts=
-mps_sub_opts=
+086_option_of =-of
+286_option_of =-of
 
-086_xd_opts=
-286_xd_opts=
-386_xd_opts=
-axp_xd_opts=-xd
-ppc_xd_opts=
-mps_xd_opts=
+axp_option_xd =-xd
 
-atexit_opts   =$($(processor)_sub_opts)
-cmain086_opts =$($(processor)_sub_opts)
-cmain386_opts =$($(processor)_sub_opts)
-cmainosi_opts =$($(processor)_sub_opts)
-cmainqnx_opts =$($(processor)_sub_opts)
+atexit_opts   =$($(processor)_option_of)
+cmain086_opts =$($(processor)_option_of)
+cmain386_opts =$($(processor)_option_of)
+cmainosi_opts =$($(processor)_option_of)
+cmainqnx_opts =$($(processor)_option_of)
 fltused_opts  =-I"$(clib_dir)/streamio/h"
 fltuse80_opts =-I"$(clib_dir)/streamio/h"
 imthread_opts =-I"$(clib_dir)/mthread/h"
-initargv_opts =$($(processor)_sub_opts)
-initrtns_opts =$($(processor)_ac_opts)
+initargv_opts =$($(processor)_option_of)
+initrtns_opts =$($(processor)_option_zdp)
 ioexit_opts   =-I"$(clib_dir)/streamio/h"
 libcstrt_opts =-I"$(clib_dir)/mthread/h"
-main2wnt_opts =$($(processor)_xd_opts)
-main4wnt_opts =$($(processor)_xd_opts)
+main2wnt_opts =$($(processor)_option_xd)
+main4wnt_opts =$($(processor)_option_xd)
 maino32_opts  =-I"$(clib_dir)/mthread/h"
 
 # these options override C lib standard options
 ################################################
 
-086_fpi87_postopts=-fpi87
-286_fpi87_postopts=-fpi87
-386_fpi87_postopts=-fpi87
-axp_fpi87_postopts=
-ppc_fpi87_postopts=
-mps_fpi87_postopts=
+086_option_fpi87 =-fpi87
+286_option_fpi87 =-fpi87
+386_option_fpi87 =-fpi87
 
-adifstrt_postopts =$($(processor)_fpi87_postopts)
-adsstart_postopts =$($(processor)_fpi87_postopts)
+adifstrt_postopts =$($(processor)_option_fpi87)
+adsstart_postopts =$($(processor)_option_fpi87)
 atexit_postopts   =-os
-chk8087_postopts  =$($(processor)_fpi87_postopts)
+chk8087_postopts  =$($(processor)_option_fpi87)
 commode_postopts  =-zld
 cstrtiny_postopts =-zld-mt
 d16msels_postopts =-zld
