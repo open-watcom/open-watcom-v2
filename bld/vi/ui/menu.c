@@ -70,12 +70,7 @@ static int      menuCnt;
 
 static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
-static menu     *floatMenus[MAX_FLOAT_MENUS] = {
-    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false }
-};
+static menu     *floatMenus[MAX_FLOAT_MENUS];
 
 /*
  * getMenuName - get name of menu, including '&' character
