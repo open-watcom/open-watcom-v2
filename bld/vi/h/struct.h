@@ -549,8 +549,8 @@ typedef struct info {
     mark                *MarkList;
     int                 VirtualColumnDesired;
     select_rgn          SelRgn;
-    bool                IsColumnRegion;
-    bool                linenumflag;
+    BITB                IsColumnRegion :1;
+    BITB                linenumflag :1;
     window_id           curr_num_window_id;
     window_id           current_window_id;
     vi_ushort           DuplicateID;
