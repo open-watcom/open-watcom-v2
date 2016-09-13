@@ -58,7 +58,7 @@ typedef struct {
     char        *source_line;
     mod_handle  mod;
     cue_fileid  file_id;
-    bool        open : 1;
+    BITB        open : 1;
 } found_item;
 
 typedef struct srch_window      srch_window;
@@ -81,8 +81,8 @@ typedef struct srch_window {
     SRCH_WALKER *walk;
     void        *cookie;
     a_cue       *file_list;
-    bool        ignore_case : 1;
-    bool        use_rx      : 1;
+    BITB        ignore_case : 1;
+    BITB        use_rx      : 1;
 } srch_window;
 
 #define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )

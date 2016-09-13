@@ -61,8 +61,8 @@ enum {
 };
 
 typedef struct {
-    bool        open   : 1;
-    bool        source : 1;
+    BITB        open   : 1;
+    BITB        source : 1;
 } modinfo;
 
 typedef struct {
@@ -70,7 +70,7 @@ typedef struct {
     mod_handle  handle;
     modinfo     *info;
     gui_ord     max_modlen;
-    bool        all_modules : 1;
+    BITB        all_modules : 1;
 } mod_window;
 
 #define WndMod( wnd ) ( (mod_window*)WndExtra( wnd ) )

@@ -59,9 +59,9 @@ typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
     gui_ord             max_name;
-    bool                is_global     : 1;
-    bool                toggled_break : 1;
-    bool                d2_only       : 1;
+    BITB                is_global     : 1;
+    BITB                toggled_break : 1;
+    BITB                d2_only       : 1;
 } func_window;
 
 #define WndFunc( wnd ) ( (func_window*)WndExtra( wnd ) )

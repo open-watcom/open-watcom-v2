@@ -35,28 +35,28 @@
 
 typedef struct
 {
-    bool    active              : 1;
-    bool    resume              : 1;
-    bool    silent              : 1;
-    bool    hit                 : 1;
+    BITB    active              : 1;
+    BITB    resume              : 1;
+    BITB    silent              : 1;
+    BITB    hit                 : 1;
 
-    bool    in_place            : 1;
-    bool    has_value           : 1;
-    bool    has_address         : 1;
-    bool    unmapped            : 1;
+    BITB    in_place            : 1;
+    BITB    has_value           : 1;
+    BITB    has_address         : 1;
+    BITB    unmapped            : 1;
 
-    bool    cmds_pushed         : 1;
-    bool    expr_true           : 1;
-    bool    expr_error          : 1;
-    bool    cmd_error           : 1;
+    BITB    cmds_pushed         : 1;
+    BITB    expr_true           : 1;
+    BITB    expr_error          : 1;
+    BITB    cmd_error           : 1;
 
-    bool    source_open         : 1;
-    bool    activate_on_remap   : 1;
-    bool    autodestruct        : 1;
-    bool    use_countdown       : 1;
+    BITB    source_open         : 1;
+    BITB    activate_on_remap   : 1;
+    BITB    autodestruct        : 1;
+    BITB    use_countdown       : 1;
 
-    bool    use_cmds            : 1;
-    bool    use_condition       : 1;
+    BITB    use_cmds            : 1;
+    BITB    use_condition       : 1;
 } brk_status;
 
 #define NullStatus( b ) memset( &((b)->status), 0, sizeof( (b)->status ) )

@@ -52,11 +52,11 @@ typedef struct {
     brkp            *bp;
     brkp            tmpbp;
     gui_ctl_id      last_edit;
-    bool            brand_new       : 1;
-    bool            cancel          : 1;
-    bool            clear           : 1;
-    bool            cmd_error       : 1;
-    bool            cond_error      : 1;
+    BITB            brand_new       : 1;
+    BITB            cancel          : 1;
+    BITB            clear           : 1;
+    BITB            cmd_error       : 1;
+    BITB            cond_error      : 1;
 } dlg_brk;
 
 extern void             SymComplete( gui_window *gui, gui_ctl_id id );

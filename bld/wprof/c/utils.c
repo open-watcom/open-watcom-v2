@@ -248,7 +248,7 @@ void InitPaths( void )
 
 #if defined( __QNX__ )
 
-#define MAX_OS_TRANSFER (32U*1024 - 512)
+#define MAX_QNX_TRANSFER (0x8000 - 512)
 
 ssize_t BigRead( int fh, void *buffer, size_t size )
 /**************************************************/
@@ -262,7 +262,7 @@ ssize_t BigRead( int fh, void *buffer, size_t size )
     unsigned    read_len;
     unsigned    amount;
 
-    amount = MAX_OS_TRANSFER;
+    amount = MAX_QNX_TRANSFER;
     total = 0;
     while( size > 0 ) {
         if( amount > size )
@@ -292,7 +292,7 @@ ssize_t BigWrite( int fh, const void *buffer, size_t size )
     unsigned    write_len;
     unsigned    amount;
 
-    amount = MAX_OS_TRANSFER;
+    amount = MAX_QNX_TRANSFER;
     total = 0;
     while( size > 0 ) {
         if( amount > size )

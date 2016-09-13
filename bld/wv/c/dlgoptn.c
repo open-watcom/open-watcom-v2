@@ -42,7 +42,7 @@
 
 
 typedef struct dlg_window_set {
-    bool            cancel : 1;
+    BITB            cancel : 1;
 } dlg_window_set;
 
 static void GetDlgStatus( gui_window *gui )

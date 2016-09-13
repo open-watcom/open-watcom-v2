@@ -136,9 +136,9 @@ typedef struct {
     uint_32             start_loc;      // starting offset of current ledata or lidata
     uint_8              align       :4; // align field (enum segdef_align_values)
     uint_8              combine     :4; // combine field (values in pcobj.h)
-    bool                readonly    :1; // if the segment is readonly
-    bool                ignore      :1; // ignore this if the seg is redefined
-    bool                use_32      :1; // 32-bit segment
+    BITB                readonly    :1; // if the segment is readonly
+    BITB                ignore      :1; // ignore this if the seg is redefined
+    BITB                use_32      :1; // 32-bit segment
     seg_type            iscode;         // segment is belonging to "CODE" or 'DATA' class
     uint_32             current_loc;    // current offset in current ledata or lidata
     uint_32             length;         // segment length
@@ -148,23 +148,23 @@ typedef struct {
 
 typedef struct {
     direct_idx          idx;            // external definition index
-    bool                use32       :1;
-    bool                comm        :1;
-    bool                global      :1;
+    BITB                use32       :1;
+    BITB                comm        :1;
+    BITB                global      :1;
 } ext_info;
 
 typedef struct {
     direct_idx          idx;            // external definition index
-    bool                use32       :1;
-    bool                comm        :1;
+    BITB                use32       :1;
+    BITB                comm        :1;
     unsigned long       size;
     uint                distance;
 } comm_info;
 
 typedef struct {
-    bool                predef      :1; // whether it is predefined symbol
-    bool                redefine    :1; // whether it is redefinable or not
-    bool                expand_early:1; // if true expand before parsing
+    BITB                predef      :1; // whether it is predefined symbol
+    BITB                redefine    :1; // whether it is redefinable or not
+    BITB                expand_early:1; // if true expand before parsing
     token_idx           count;          // number of tokens
     asm_tok             *data;          // array of asm_tok's to replace symbol
 } const_info;
@@ -183,7 +183,7 @@ typedef struct label_list {
     int                 factor;         // for local var only
     bool                is_register;    // for arguments only
     union {
-        bool            is_vararg   :1; // if it is a vararg
+        BITB            is_vararg   :1; // if it is a vararg
         token_idx       count;          // number of element in this label
     } u;
 } label_list;
@@ -196,9 +196,9 @@ typedef struct {
     unsigned long       parasize;       // total no. of bytes used by parameters
     unsigned long       localsize;      // total no. of bytes used by local variables
     memtype             mem_type;       // distance of procedure: near or far
-    bool                is_vararg   :1; // if it has a vararg
-    bool                pe_type     :1; // prolog/epilog code type 0:8086/186 1:286 and above
-    bool                export      :1; // EXPORT procedure
+    BITB                is_vararg   :1; // if it has a vararg
+    BITB                pe_type     :1; // prolog/epilog code type 0:8086/186 1:286 and above
+    BITB                export      :1; // EXPORT procedure
 } proc_info;
 
 typedef struct parm_list {

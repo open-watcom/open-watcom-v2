@@ -402,8 +402,8 @@ const char *RemoteLink( const char *parms, bool server )
     }
   #elif defined(PHARLAP)
     {
-        CONFIG_INF          config;
-        static char         buff[256];
+        CONFIG_INF              config;
+        static unsigned char    buff[256];
 
         _dx_config_inf(&config, buff );
         XVersion = config.c_major;

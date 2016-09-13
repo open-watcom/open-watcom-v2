@@ -31,8 +31,8 @@
 
 #ifdef DEBUG_TRAP
 
-#include <watcom.h>
 #include <string.h>
+#include "watcom.h"
 
 #define DBG_STDOUT_H                    1
 #define DBG_PAGESIZE                    24      /* counting from 0 */

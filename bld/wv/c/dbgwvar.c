@@ -69,8 +69,8 @@ typedef struct {
     gui_ord             last_width;     // how wide were we last resize?
     gui_ord             name_end;       // the length of the longest name
     var_type            vtype;          // type of window : locals, expression, etc
-    bool                initialized : 1;        // is it just opened
-    bool                show_whole_expr : 1;// show foo->bar versus just .bar
+    BITB                initialized : 1;        // is it just opened
+    BITB                show_whole_expr : 1;// show foo->bar versus just .bar
 } var_window;
 
 #define scroll( s ) s->wnd_data[0]

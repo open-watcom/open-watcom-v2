@@ -91,9 +91,9 @@ typedef struct {
     unsigned            size;
     gui_menu_struct     *menu;
     wnd_macro           *mac;
-    bool                press_key : 1;
-    bool                creating  : 1;
-    bool                changing  : 1;
+    BITB                press_key : 1;
+    BITB                creating  : 1;
+    BITB                changing  : 1;
 } mac_window;
 #define WndMac( wnd ) ( (mac_window *)WndExtra( wnd ) )
 

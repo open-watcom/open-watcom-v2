@@ -43,7 +43,7 @@ typedef struct {
     void                **skip;
     int                 sort_size;
     walk_find           type;
-    bool                d2_only : 1;
+    BITB                d2_only : 1;
 } name_list;
 
 #define SN_QUALIFIED SN_LAST

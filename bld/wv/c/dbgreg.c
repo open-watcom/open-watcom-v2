@@ -75,16 +75,16 @@ typedef struct memory_delta {
     struct memory_delta *next;
     address             addr;
     mem_delta_size      size;
-    bool                after_set       : 1;
-    bool                _volatile       : 1;
+    BITB                after_set       : 1;
+    BITB                _volatile       : 1;
     unsigned_8          data[1]; /* variable sized, two copies before/after */
 } memory_delta;
 
 typedef struct save_state {
     struct save_state   *prev;
     struct save_state   *next;
-    bool                valid           : 1;
-    bool                lost_mem_state  : 1;
+    BITB                valid           : 1;
+    BITB                lost_mem_state  : 1;
     memory_delta        *mem;
     int                 action;
     machine_state       s;      /* variable sized */

@@ -53,7 +53,7 @@ gui_menu_struct GlobMenu[] = {
 typedef struct {
     name_list           ___n;           // don't reference directly!
     mod_handle          mod;
-    bool                d2_only : 1;
+    BITB                d2_only : 1;
 } glob_window;
 
 #define WndGlob( wnd ) ( (glob_window*)WndExtra( wnd ) )

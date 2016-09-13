@@ -126,7 +126,7 @@ typedef struct scope_state {
     var_node            *v;                 // the variable nodes
     long                scope_timestamp;    // LRU timestamp used for garbage collection
     int                 wnd_data[3];        // window can save stuff here
-    bool                unmapped        : 1;// is this scope unmapped (are we in the process of restarting the program)
+    BITB                unmapped        : 1;// is this scope unmapped (are we in the process of restarting the program)
 } scope_state;
 
 typedef struct {
@@ -136,10 +136,10 @@ typedef struct {
     scope_state         *s;             // the current scope for this window
 //  var_type_bits       hide;
     int                 name_end_row;
-    bool                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
-    bool                exprsp_cache_is_error   : 1;    // was the last thing the expression processor gave us an error?
-    bool                mem_lock                : 1;    // don't garbage collect from this window. We're using it's data structures
-    bool                members                 : 1;    // show members without this->?
+    BITB                ok_to_cache_exprsp      : 1;    // should we leave ExprSP around?
+    BITB                exprsp_cache_is_error   : 1;    // was the last thing the expression processor gave us an error?
+    BITB                mem_lock                : 1;    // don't garbage collect from this window. We're using it's data structures
+    BITB                members                 : 1;    // show members without this->?
 } var_info;
 
 #define VAR_NO_ROW -1
@@ -160,12 +160,12 @@ typedef struct type_display {
     struct type_display         *alias;             // pointer to a list of same types
     var_display_bits            display;            // how to display this field
     var_type_bits               hide;               // what to hide
-    bool                        autoexpand  : 1;    // automatically expand this type?
-    bool                        on_top      : 1;    // show as the unexpanded value
-    bool                        has_top     : 1;    // has a subfields to show as unexpanded value
-    bool                        is_struct   : 1;    // is this field a struct
-    bool                        is_field    : 1;    // is this field a struct
-    bool                        dirty       : 1;    // is this field dirty
+    BITB                        autoexpand  : 1;    // automatically expand this type?
+    BITB                        on_top      : 1;    // show as the unexpanded value
+    BITB                        has_top     : 1;    // has a subfields to show as unexpanded value
+    BITB                        is_struct   : 1;    // is this field a struct
+    BITB                        is_field    : 1;    // is this field a struct
+    BITB                        dirty       : 1;    // is this field dirty
     char                        name[1];            // MUST BE LAST FIELD
 } type_display;
 

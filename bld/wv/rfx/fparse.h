@@ -42,6 +42,6 @@ typedef struct file_parse {
     char            path[MAX_PATH + 1];
     char            name[MAX_NAME + 1];
     char            ext[MAX_EXT + 1];
-    bool            slash   : 1;
-    bool            device  : 1;
+    BITB            slash   : 1;
+    BITB            device  : 1;
 } file_parse;
