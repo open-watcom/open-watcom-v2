@@ -86,8 +86,8 @@ typedef bool (*statushook)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 typedef struct {
     section_size    separator_width;            /* in pixels */
     section_size    width;                      /* width of block area */
-    bool            width_is_percent    : 1;
-    bool            width_is_pixels     : 1;
+    BITB            width_is_percent    : 1;
+    BITB            width_is_pixels     : 1;
 } status_block_desc;
 
 typedef struct statwnd statwnd;

@@ -48,8 +48,8 @@ typedef struct TOOLDISPLAYINFO {
     helphook_fn helphook;           /* function called when help text is needed */
     HBITMAP     background;         /* background of depressed button (0 == default) */
     HBRUSH      foreground;         /* color of mono bitmap when depressed (0 == default) */
-    bool        is_fixed    : 1;    /* is toolbar fixed or floating? */
-    bool        use_tips    : 1;    /* use tool tips? */
+    BITB        is_fixed    : 1;    /* is toolbar fixed or floating? */
+    BITB        use_tips    : 1;    /* use tool tips? */
 } TOOLDISPLAYINFO;
 
 /* Button states for use with ITEM_STICKY flag below */
