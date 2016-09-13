@@ -489,7 +489,7 @@ static long _NEAR cExpr5( void )
     return( value );
 }
 
-static long doCompare( long val1, long (_NEAR *fn)( void ) )
+static int doCompare( long val1, long (_NEAR *fn)( void ) )
 {
     char        tmp1[TBUFF_SIZE];
     char        tmp2[TBUFF_SIZE];
@@ -532,9 +532,9 @@ static long _NEAR cExpr6( void )
     value = cExpr7();
     for( ;; ) {
         if( currToken == T_EQ ) {
-            value = doCompare( value, cExpr7 ) == 0;
+            value = ( doCompare( value, cExpr7 ) == 0 );
         } else if( currToken == T_NE ) {
-            value = doCompare( value, cExpr7 ) != 0;
+            value = ( doCompare( value, cExpr7 ) != 0 );
         } else {
             break;
         }
@@ -549,13 +549,13 @@ static long _NEAR cExpr7( void )
     value = cExpr8();
     for( ;; ) {
         if( currToken == T_LT ) {
-            value = doCompare( value, cExpr8 ) < 0;
+            value = ( doCompare( value, cExpr8 ) < 0 );
         } else if( currToken == T_LE ) {
-            value = doCompare( value, cExpr8 ) <= 0;
+            value = ( doCompare( value, cExpr8 ) <= 0 );
         } else if( currToken == T_GT ) {
-            value = doCompare( value, cExpr8 ) > 0;
+            value = ( doCompare( value, cExpr8 ) > 0 );
         } else if( currToken == T_GE ) {
-            value = doCompare( value, cExpr8 ) >= 0;
+            value = ( doCompare( value, cExpr8 ) >= 0 );
         } else {
             break;
         }
