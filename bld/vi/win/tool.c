@@ -43,11 +43,10 @@ typedef struct tool_item {
     ss                  tool_head;
     int                 id;
     HBITMAP             bmp;
-    bool                is_blank    : 1;
-    bool                dont_save   : 1;
-//    bool                spare       : 6;
     char                *name;
     char                *help;
+    BITB                is_blank    : 1;
+    BITB                dont_save   : 1;
     char                cmd[1];
 } tool_item;
 

@@ -41,9 +41,9 @@
 
 typedef struct menu_item {
     struct menu_item    *next, *prev;
+    char                *cmd;
     hilst               hi;
     unsigned char       slen;
-    char                *cmd;
     char                str[1];
 } menu_item;
 
@@ -54,12 +54,12 @@ typedef struct menu {
     int             orig_itemcnt;
     char            **list;
     hilst           *hilist;
-    bool            has_file_list   : 1;
-    bool            need_hook       : 1;
-    bool            has_last_files  : 1;
+    hilst           hi;
+    BITB            has_file_list   : 1;
+    BITB            need_hook       : 1;
+    BITB            has_last_files  : 1;
     unsigned char   maxwidth;
     unsigned char   orig_maxwidth;
-    hilst           hi;
     unsigned char   slen;
     char            str[1];
 } menu;
@@ -70,7 +70,12 @@ static int      menuCnt;
 
 static menu     *menuHead, *menuTail, *currMenu;
 static menu     *windowGadgetMenu;
-static menu     *floatMenus[MAX_FLOAT_MENUS] = { NULL, NULL, NULL, NULL };
+static menu     *floatMenus[MAX_FLOAT_MENUS] = {
+    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, NULL, NULL, 0, false, false, false }
+};
 
 /*
  * getMenuName - get name of menu, including '&' character

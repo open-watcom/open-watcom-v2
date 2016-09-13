@@ -40,9 +40,9 @@ typedef enum {
 } lang_t;
 
 typedef struct tag_hash_entry {
-    bool                    real;
     char                    *keyword;
     struct tag_hash_entry   *next;
+    bool                    real;
 } hash_entry;
 
 typedef struct tag_lang_info {

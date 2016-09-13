@@ -63,10 +63,10 @@ typedef struct {
     bool        WriteCRLF;
     bool        EightBits;
     int         TabAmount;
-    bool        RealTabs;
     int         HardTab;
-    bool        AutoIndent;
     int         ShiftWidth;
+    bool        RealTabs;
+    bool        AutoIndent;
     char        TagFileName[TAGFILENAMEWIDTH];
     bool        IgnoreTagCase;
     bool        TagPrompt;

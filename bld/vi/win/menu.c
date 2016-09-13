@@ -47,9 +47,9 @@ typedef struct item {
     int             menuid;
     char            *name;
     char            *help;
-    bool            in_menu     : 1;
-    bool            is_active   : 1;
-    bool            is_checked  : 1;
+    BITB            in_menu     : 1;
+    BITB            is_active   : 1;
+    BITB            is_checked  : 1;
     char            cmd[1];
 } item;
 
@@ -60,13 +60,13 @@ typedef struct menu {
     int             orig_num_items;
     HMENU           menu_handle;
     char            *help;
-    bool            has_file_list   : 1;
-    bool            need_hook       : 1;
-    bool            has_last_files  : 1;
+    BITB            has_file_list   : 1;
+    BITB            need_hook       : 1;
+    BITB            has_last_files  : 1;
     char            name[1];
 } menu;
 
-static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0 };
+static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
 static menu     *rootMenu = &mainMenu;
 static menu     *currMenu = NULL;
 
@@ -155,17 +155,15 @@ static vi_rc handleMenuCommand( menu *m, int menuid )
 
 /* special menu crap - for floaters and that guy at the corner of a window */
 
-#define MAX_FLOAT_MENUS     4
-
 static menu floatMenus[MAX_FLOAT_MENUS] = {
-    { NULL, NULL, NULL, NULL, 0, 0, 0 },
-    { NULL, NULL, NULL, NULL, 0, 0, 0 },
-    { NULL, NULL, NULL, NULL, 0, 0, 0 },
-    { NULL, NULL, NULL, NULL, 0, 0, 0 }
+    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
+    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false }
 };
 
 static menu windowGadgetMenu =
-    { NULL, NULL, NULL, NULL, 0, 0, 0 };
+    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
 
 typedef struct special_menu {
     char        *name;
