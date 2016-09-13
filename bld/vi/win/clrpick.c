@@ -66,7 +66,8 @@ extern HWND hColorbar;
 int         Width;
 int         Height;
 
-static int              cursx = 0, cursy = 0;
+static int              cursx = 0;
+static int              cursy = 0;
 static COLORREF         RGBValues[NUM_COLOURS];
 static bool             haveCapture = false;
 static window_id        mod_wid = NO_WINDOW;

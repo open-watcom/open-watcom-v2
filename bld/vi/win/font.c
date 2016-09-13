@@ -406,7 +406,7 @@ vi_rc SetFont( const char *data )
     while( isspace( *data ) ) {
         data++;
     }
-    if( *data == 0 ) {
+    if( *data == '\0' ) {
         if( !userPickFont( &l, root_window_id ) ) {
             return( ERR_NO_ERR );
         }

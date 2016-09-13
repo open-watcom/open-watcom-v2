@@ -35,7 +35,7 @@
 #include <fcntl.h>
 
 #ifndef __NT__
-static int lockFileRegion( int handle )
+static bool lockFileRegion( int handle )
 {
     union REGS  r;
 
@@ -47,9 +47,9 @@ static int lockFileRegion( int handle )
     r.w.di = 1;
     intdos( &r, &r );
     if( r.w.cflag ) {
-        return( 0 );
+        return( false );
     }
-    return( 1 );
+    return( true );
 
 } /* lockFileRegion */
 
@@ -70,20 +70,20 @@ static void unlockFileRegion( int handle )
 /*
  * HasShare - check if share is running
  */
-int HasShare( void )
+bool HasShare( void )
 {
     char        buff[FILENAME_MAX];
     int         handle;
-    int         has_share;
+    bool        has_share;
 
     GetModuleFileName( InstanceHandle, buff, sizeof( buff ) );
     if( _dos_open( buff, O_RDONLY, &handle ) ) {
-        return( 0 );
+        return( false );
     }
-    has_share = 0;
+    has_share = false;
     if( lockFileRegion( handle ) ) {
         unlockFileRegion( handle );
-        has_share = 1;
+        has_share = true;
     }
     _dos_close( handle );
     return( has_share );

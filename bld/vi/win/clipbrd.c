@@ -240,7 +240,7 @@ int AddFcbsToClipboard( fcb_list *fcblist )
         }
     }
     // the last CR,LF is omitted
-    *ptr = 0;
+    *ptr = '\0';
     GlobalUnlock( hglob );
     SetClipboardData( CF_TEXT, hglob );
     CloseClipboard();
@@ -332,7 +332,7 @@ int GetClipboardSavebuf( savebuf *clip )
          */
         if( !is_flushed && !has_lf ) {
             clip->type = SAVEBUF_LINE;
-            ReadBuffer[i] = 0;
+            ReadBuffer[i] = '\0';
             clip->u.data = MemAlloc( i + 1 );
             strcpy( clip->u.data, ReadBuffer );
             record_done = true;

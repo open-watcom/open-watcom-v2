@@ -94,6 +94,7 @@ bool StatusBarFini( void )
 static int setCursor( int x )
 {
     int     i;
+
     for( i = 0; i < EditVars.NumStatusSections; i++ ) {
         if( abs( x - EditVars.StatusSections[i] ) < MOUSE_ALLOWANCE ) {
             CursorOp( COP_STATMOVE );

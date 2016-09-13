@@ -352,7 +352,7 @@ vi_rc DeleteFromToolBar( const char *data )
             }
             p = p->next;
         }
-        if( p ) {
+        if( p != NULL ) {
             tool_item *item = (tool_item *)p;
             ToolBarDeleteItem( toolBar, item->id );
             DeleteLLItem( &toolBarHead, &toolBarTail, p );
