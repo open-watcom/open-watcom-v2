@@ -54,24 +54,24 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM
 
 typedef struct {
     int         Language;
-    bool        PPKeywordOnly;
-    bool        CMode;
-    bool        ReadEntireFile;
-    bool        ReadOnlyCheck;
-    bool        IgnoreCtrlZ;
-    bool        CRLFAutoDetect;
-    bool        WriteCRLF;
-    bool        EightBits;
     int         TabAmount;
     int         HardTab;
     int         ShiftWidth;
-    bool        RealTabs;
-    bool        AutoIndent;
+    BITB        PPKeywordOnly :1;
+    BITB        CMode :1;
+    BITB        ReadEntireFile :1;
+    BITB        ReadOnlyCheck :1;
+    BITB        IgnoreCtrlZ :1;
+    BITB        CRLFAutoDetect :1;
+    BITB        WriteCRLF :1;
+    BITB        EightBits :1;
+    BITB        RealTabs :1;
+    BITB        AutoIndent :1;
+    BITB        IgnoreTagCase :1;
+    BITB        TagPrompt :1;
+    BITB        ShowMatch :1;
     char        TagFileName[TAGFILENAMEWIDTH];
-    bool        IgnoreTagCase;
-    bool        TagPrompt;
     char        GrepDefault[GREPDEFAULTWIDTH];
-    bool        ShowMatch;
 } dlg_data;
 
 static dlg_data     *dlgDataArray = NULL;
@@ -132,6 +132,132 @@ static bool dynIsCRLFAutoDetect( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
         return( true );
     }
     return( false );
+}
+
+static void fs_get( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETFS_LANGUAGESELECT:
+        *(int *)data = ((dlg_data *)dlg)->Language;
+        break;
+    case SETFS_TABAMOUNT:
+        *(int *)data = ((dlg_data *)dlg)->TabAmount;
+        break;
+    case SETFS_HARDTAB:
+        *(int *)data = ((dlg_data *)dlg)->HardTab;
+        break;
+    case SETFS_SHIFTWIDTH:
+        *(int *)data = ((dlg_data *)dlg)->ShiftWidth;
+        break;
+    case SETFS_PPKEYWORDONLY:
+        *(bool *)data = ((dlg_data *)dlg)->PPKeywordOnly;
+        break;
+    case SETFS_CMODE:
+        *(bool *)data = ((dlg_data *)dlg)->CMode;
+        break;
+    case SETFS_READENTIREFILE:
+        *(bool *)data = ((dlg_data *)dlg)->ReadEntireFile;
+        break;
+    case SETFS_READONLYCHECK:
+        *(bool *)data = ((dlg_data *)dlg)->ReadOnlyCheck;
+        break;
+    case SETFS_IGNORECTRLZ:
+        *(bool *)data = ((dlg_data *)dlg)->IgnoreCtrlZ;
+        break;
+    case SETFS_CRLFAUTODETECT:
+        *(bool *)data = ((dlg_data *)dlg)->CRLFAutoDetect;
+        break;
+    case SETFS_WRITECRLF:
+        *(bool *)data = ((dlg_data *)dlg)->WriteCRLF;
+        break;
+    case SETFS_EIGHTBITS:
+        *(bool *)data = ((dlg_data *)dlg)->EightBits;
+        break;
+    case SETFS_REALTABS:
+        *(bool *)data = ((dlg_data *)dlg)->RealTabs;
+        break;
+    case SETFS_AUTOINDENT:
+        *(bool *)data = ((dlg_data *)dlg)->AutoIndent;
+        break;
+    case SETFS_IGNORETAGCASE:
+        *(bool *)data = ((dlg_data *)dlg)->IgnoreTagCase;
+        break;
+    case SETFS_TAGPROMPT:
+        *(bool *)data = ((dlg_data *)dlg)->TagPrompt;
+        break;
+    case SETFS_SHOWMATCH:
+        *(bool *)data = ((dlg_data *)dlg)->ShowMatch;
+        break;
+    case SETFS_TAGFILENAME:
+        *(char **)data = ((dlg_data *)dlg)->TagFileName;
+        break;
+    case SETFS_GREPDEFAULT:
+        *(char **)data = ((dlg_data *)dlg)->GrepDefault;
+        break;
+    }
+}
+
+static void fs_set( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETFS_LANGUAGESELECT:
+        ((dlg_data *)dlg)->Language = *(int *)data;
+        break;
+    case SETFS_TABAMOUNT:
+        ((dlg_data *)dlg)->TabAmount = *(int *)data;
+        break;
+    case SETFS_HARDTAB:
+        ((dlg_data *)dlg)->HardTab = *(int *)data;
+        break;
+    case SETFS_SHIFTWIDTH:
+        ((dlg_data *)dlg)->ShiftWidth = *(int *)data;
+        break;
+    case SETFS_PPKEYWORDONLY:
+        ((dlg_data *)dlg)->PPKeywordOnly = *(bool *)data;
+        break;
+    case SETFS_CMODE:
+        ((dlg_data *)dlg)->CMode = *(bool *)data;
+        break;
+    case SETFS_READENTIREFILE:
+        ((dlg_data *)dlg)->ReadEntireFile = *(bool *)data;
+        break;
+    case SETFS_READONLYCHECK:
+        ((dlg_data *)dlg)->ReadOnlyCheck = *(bool *)data;
+        break;
+    case SETFS_IGNORECTRLZ:
+        ((dlg_data *)dlg)->IgnoreCtrlZ = *(bool *)data;
+        break;
+    case SETFS_CRLFAUTODETECT:
+        ((dlg_data *)dlg)->CRLFAutoDetect = *(bool *)data;
+        break;
+    case SETFS_WRITECRLF:
+        ((dlg_data *)dlg)->WriteCRLF = *(bool *)data;
+        break;
+    case SETFS_EIGHTBITS:
+        ((dlg_data *)dlg)->EightBits = *(bool *)data;
+        break;
+    case SETFS_REALTABS:
+        ((dlg_data *)dlg)->RealTabs = *(bool *)data;
+        break;
+    case SETFS_AUTOINDENT:
+        ((dlg_data *)dlg)->AutoIndent = *(bool *)data;
+        break;
+    case SETFS_IGNORETAGCASE:
+        ((dlg_data *)dlg)->IgnoreTagCase = *(bool *)data;
+        break;
+    case SETFS_TAGPROMPT:
+        ((dlg_data *)dlg)->TagPrompt = *(bool *)data;
+        break;
+    case SETFS_SHOWMATCH:
+        ((dlg_data *)dlg)->ShowMatch = *(bool *)data;
+        break;
+    case SETFS_TAGFILENAME:
+        *(char **)data = ((dlg_data *)dlg)->TagFileName;
+        break;
+    case SETFS_GREPDEFAULT:
+        *(char **)data = ((dlg_data *)dlg)->GrepDefault;
+        break;
+    }
 }
 
 #include "setfs.dh"

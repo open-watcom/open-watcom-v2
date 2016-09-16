@@ -49,21 +49,21 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
 #define HISTORYFILEWIDTH        129
 
 typedef struct {
+    int         AutoSaveInterval;
+    // int         MaxLineLen;
+    BITB        Undo :1;
+    BITB        AutoSave :1;
+    BITB        LastEOL :1;
+    BITB        SaveConfig :1;
+    BITB        SaveOnBuild :1;
+    BITB        BeepFlag :1;
+    BITB        QuitMovesForward :1;
+    BITB        SameFileCheck :1;
+    BITB        Modal :1;
+    BITB        CaseIgnore :1;
+    BITB        SearchWrap :1;
     char        Word[WORDWIDTH];
     char        WordAlt[WORDWIDTH];
-    bool        Undo;
-    bool        AutoSave;
-    int         AutoSaveInterval;
-    bool        LastEOL;
-    // int         MaxLineLen;
-    bool        SaveConfig;
-    bool        SaveOnBuild;
-    bool        BeepFlag;
-    bool        QuitMovesForward;
-    bool        SameFileCheck;
-    bool        Modal;
-    bool        CaseIgnore;
-    bool        SearchWrap;
     char        TmpDir[TMPDIRWIDTH];
     char        HistoryFile[HISTORYFILEWIDTH];
 } dlg_data;
@@ -96,6 +96,114 @@ static bool dynIsAutoSave( WPARAM wparam, LPARAM lparam, HWND hwndDlg )
         return( true );
     }
     return( false );
+}
+
+static void gen_get( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETGEN_AUTOSAVEINTERVAL:
+        *(int *)data = ((dlg_data *)dlg)->AutoSaveInterval;
+        break;
+    case SETGEN_UNDO:
+        *(bool *)data = ((dlg_data *)dlg)->Undo;
+        break;
+    case SETGEN_AUTOSAVE:
+        *(bool *)data = ((dlg_data *)dlg)->AutoSave;
+        break;
+    case SETGEN_LASTEOL:
+        *(bool *)data = ((dlg_data *)dlg)->LastEOL;
+        break;
+    case SETGEN_SAVECONFIG:
+        *(bool *)data = ((dlg_data *)dlg)->SaveConfig;
+        break;
+    case SETGEN_SAVEONBUILD:
+        *(bool *)data = ((dlg_data *)dlg)->SaveOnBuild;
+        break;
+    case SETGEN_BEEPFLAG:
+        *(bool *)data = ((dlg_data *)dlg)->BeepFlag;
+        break;
+    case SETGEN_QUITMOVESFORWARD:
+        *(bool *)data = ((dlg_data *)dlg)->QuitMovesForward;
+        break;
+    case SETGEN_SAMEFILECHECK:
+        *(bool *)data = ((dlg_data *)dlg)->SameFileCheck;
+        break;
+    case SETGEN_MODAL:
+        *(bool *)data = ((dlg_data *)dlg)->Modal;
+        break;
+    case SETGEN_CASEIGNORE:
+        *(bool *)data = ((dlg_data *)dlg)->CaseIgnore;
+        break;
+    case SETGEN_SEARCHWRAP:
+        *(bool *)data = ((dlg_data *)dlg)->SearchWrap;
+        break;
+    case SETGEN_WORD:
+        *(char **)data = ((dlg_data *)dlg)->Word;
+        break;
+    case SETGEN_WORDALT:
+        *(char **)data = ((dlg_data *)dlg)->WordAlt;
+        break;
+    case SETGEN_TMPDIR:
+        *(char **)data = ((dlg_data *)dlg)->TmpDir;
+        break;
+    case SETGEN_HISTORYFILE:
+        *(char **)data = ((dlg_data *)dlg)->HistoryFile;
+        break;
+    }
+}
+
+static void gen_set( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETGEN_AUTOSAVEINTERVAL:
+        ((dlg_data *)dlg)->AutoSaveInterval = *(int *)data;
+        break;
+    case SETGEN_UNDO:
+        ((dlg_data *)dlg)->Undo = *(bool *)data;
+        break;
+    case SETGEN_AUTOSAVE:
+        ((dlg_data *)dlg)->AutoSave = *(bool *)data;
+        break;
+    case SETGEN_LASTEOL:
+        ((dlg_data *)dlg)->LastEOL = *(bool *)data;
+        break;
+    case SETGEN_SAVECONFIG:
+        ((dlg_data *)dlg)->SaveConfig = *(bool *)data;
+        break;
+    case SETGEN_SAVEONBUILD:
+        ((dlg_data *)dlg)->SaveOnBuild = *(bool *)data;
+        break;
+    case SETGEN_BEEPFLAG:
+        ((dlg_data *)dlg)->BeepFlag = *(bool *)data;
+        break;
+    case SETGEN_QUITMOVESFORWARD:
+        ((dlg_data *)dlg)->QuitMovesForward = *(bool *)data;
+        break;
+    case SETGEN_SAMEFILECHECK:
+        ((dlg_data *)dlg)->SameFileCheck = *(bool *)data;
+        break;
+    case SETGEN_MODAL:
+        ((dlg_data *)dlg)->Modal = *(bool *)data;
+        break;
+    case SETGEN_CASEIGNORE:
+        ((dlg_data *)dlg)->CaseIgnore = *(bool *)data;
+        break;
+    case SETGEN_SEARCHWRAP:
+        ((dlg_data *)dlg)->SearchWrap = *(bool *)data;
+        break;
+    case SETGEN_WORD:
+        *(char **)data = ((dlg_data *)dlg)->Word;
+        break;
+    case SETGEN_WORDALT:
+        *(char **)data = ((dlg_data *)dlg)->WordAlt;
+        break;
+    case SETGEN_TMPDIR:
+        *(char **)data = ((dlg_data *)dlg)->TmpDir;
+        break;
+    case SETGEN_HISTORYFILE:
+        *(char **)data = ((dlg_data *)dlg)->HistoryFile;
+        break;
+    }
 }
 
 #include "setgen.dh"

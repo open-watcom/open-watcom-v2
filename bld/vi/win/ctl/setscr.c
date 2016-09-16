@@ -45,15 +45,63 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
 #define FILEENDSTRINGWIDTH      200
 
 typedef struct {
-    bool        JumpyScroll;
-    bool        LineBased;
     int         PageLinesExposed;
+    BITB        JumpyScroll :1;
+    BITB        LineBased :1;
+    BITB        SavePosition :1;
+    BITB        AutoMessageClear :1;
     char        FileEndString[FILEENDSTRINGWIDTH];
-    bool        SavePosition;
-    bool        AutoMessageClear;
 } dlg_data;
 
 static  dlg_data    dlgData;
+
+static void scrn_get( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETSCR_PAGELINESEXPOSED:
+        *(int *)data = ((dlg_data *)dlg)->PageLinesExposed;
+        break;
+    case SETSCR_JUMPYSCROLL:
+        *(bool *)data = ((dlg_data *)dlg)->JumpyScroll;
+        break;
+    case SETSCR_LINEBASED:
+        *(bool *)data = ((dlg_data *)dlg)->LineBased;
+        break;
+    case SETSCR_SAVEPOSITION:
+        *(bool *)data = ((dlg_data *)dlg)->SavePosition;
+        break;
+    case SETSCR_AUTOMESSAGECLEAR:
+        *(bool *)data = ((dlg_data *)dlg)->AutoMessageClear;
+        break;
+    case SETSCR_FILEENDSTRING:
+        *(char **)data = ((dlg_data *)dlg)->FileEndString;
+        break;
+    }
+}
+
+static void scrn_set( void *dlg, ctl_elt *ctl, void *data )
+{
+    switch( ctl->control ) {
+    case SETSCR_PAGELINESEXPOSED:
+        ((dlg_data *)dlg)->PageLinesExposed = *(int *)data;
+        break;
+    case SETSCR_JUMPYSCROLL:
+        ((dlg_data *)dlg)->JumpyScroll = *(bool *)data;
+        break;
+    case SETSCR_LINEBASED:
+        ((dlg_data *)dlg)->LineBased = *(bool *)data;
+        break;
+    case SETSCR_SAVEPOSITION:
+        ((dlg_data *)dlg)->SavePosition = *(bool *)data;
+        break;
+    case SETSCR_AUTOMESSAGECLEAR:
+        ((dlg_data *)dlg)->AutoMessageClear = *(bool *)data;
+        break;
+    case SETSCR_FILEENDSTRING:
+        *(char **)data = ((dlg_data *)dlg)->FileEndString;
+        break;
+    }
+}
 
 #include "setscr.ch"
 

@@ -81,7 +81,11 @@ enum {
 #define MAX_STYLES      4
 #define MAX_SIZES       16
 
-char    Style[MAX_STYLES];
+struct {
+    BITB    bold :1;
+    BITB    italic :1;
+}       Style[MAX_STYLES];
+
 int     NStyles, NSizes;
 /* value of 96 taken from Petzold pg 512
 */
@@ -227,11 +231,15 @@ static void fillStyleBox( void )
     SendMessage( hwndStyle, LB_INSERTSTRING, 1, (LPARAM)"Italic" );
     SendMessage( hwndStyle, LB_INSERTSTRING, 2, (LPARAM)"Bold" );
     SendMessage( hwndStyle, LB_INSERTSTRING, 3, (LPARAM)"Bold Italic" );
-    Style[0] = STYLE_REGULAR;
-    Style[1] = STYLE_ITALIC;
-    Style[2] = STYLE_BOLD;
-    Style[3] = STYLE_ITALIC | STYLE_BOLD;
-    NStyles = 4;
+    Style[0].bold = false;
+    Style[0].italic = false;
+    Style[1].bold = false;
+    Style[1].italic = true;
+    Style[2].bold = true;
+    Style[2].italic = false;
+    Style[3].bold = true;
+    Style[3].italic = true;
+    NStyles = MAX_STYLES;
 }
 
 static void fillInfoBoxes( HWND hwnd )
@@ -394,8 +402,8 @@ static int setCurLogfont( int overrideSize )
     index = (int)SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR )
         return( 0 );
-    CurLogfont.lfWeight = ( Style[index] & STYLE_BOLD ) ? FW_BOLD : FW_NORMAL;
-    CurLogfont.lfItalic = ( Style[index] & STYLE_ITALIC ) ? 1 : 0;
+    CurLogfont.lfWeight = ( Style[index].bold ) ? FW_BOLD : FW_NORMAL;
+    CurLogfont.lfItalic = Style[index].italic;
     CurLogfont.lfUnderline = 0;
     CurLogfont.lfStrikeOut = 0;
     /* use defaults set below by SetupFontData */

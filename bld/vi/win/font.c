@@ -56,10 +56,10 @@ typedef struct font {
 } font;
 
 LOGFONT Helvetica6 = {
-    -5, 0,      /* height and weight - we want a short, normal width font */
-    0, 0,       /* Escapement and Orientation - who cares? */
-    350,        /* we want a slightly lighter font - 400 is average */
-    0, 0, 0,    /* nothing special */
+    -5, 0,          /* height and weight - we want a short, normal width font */
+    0, 0,           /* Escapement and Orientation - who cares? */
+    FW_NORMAL - 50, /* we want a slightly lighter font - 400 is average */
+    0, 0, 0,        /* nothing special */
     DEFAULT_CHARSET,
     OUT_DEFAULT_PRECIS,
     CLIP_DEFAULT_PRECIS,
@@ -69,10 +69,10 @@ LOGFONT Helvetica6 = {
 };
 
 LOGFONT Arial10 = {
-    -14, 0,     /* Nice big, readable font */
-    0, 0,       /* Escapement and Orientation - who cares? */
-    FW_NORMAL,        /* strictly average */
-    0, 0, 0,    /* nothing special */
+    -14, 0,         /* Nice big, readable font */
+    0, 0,           /* Escapement and Orientation - who cares? */
+    FW_NORMAL,      /* strictly average */
+    0, 0, 0,        /* nothing special */
     DEFAULT_CHARSET,
     OUT_DEFAULT_PRECIS,
     CLIP_DEFAULT_PRECIS,
@@ -82,10 +82,10 @@ LOGFONT Arial10 = {
 };
 
 LOGFONT ArialBold10 = {
-    -14, 0,     /* Nice big, readable font */
-    0, 0,       /* Escapement and Orientation - who cares? */
-    FW_BOLD,    /* bold */
-    0, 0, 0,    /* nothing special */
+    -14, 0,         /* Nice big, readable font */
+    0, 0,           /* Escapement and Orientation - who cares? */
+    FW_BOLD,        /* bold */
+    0, 0, 0,        /* nothing special */
     DEFAULT_CHARSET,
     OUT_DEFAULT_PRECIS,
     CLIP_DEFAULT_PRECIS,
@@ -97,7 +97,7 @@ LOGFONT ArialBold10 = {
 LOGFONT Fixed10 = {
     -12, 0,
     0, 0,
-    400,
+    FW_NORMAL,      /* strictly average */
     0, 0, 0,
     DEFAULT_CHARSET,
     OUT_DEFAULT_PRECIS,
@@ -110,7 +110,7 @@ LOGFONT Fixed10 = {
 LOGFONT SansSerif = {
     -16, 0,
     0, 0,
-    400,
+    FW_NORMAL,      /* strictly average */
     0, 0, 0,
     DEFAULT_CHARSET,
     OUT_DEFAULT_PRECIS,
@@ -235,23 +235,23 @@ static void customFont( font *f, LOGFONT *lf )
 /*
  * EnsureUniformFonts - fonts between start & end get similar characteristics
  */
-void EnsureUniformFonts( font_type start, font_type end, LOGFONT *givenLF, bool totally )
+void EnsureUniformFonts( font_type start, font_type end, LOGFONT *given_lf, bool totally )
 {
-    LOGFONT     newLF;
+    LOGFONT     new_lf;
     font        *f;
     font_type   i;
 
     for( i = start; i <= end; i++ ) {
         f = &Fonts[i];
-        memcpy( &newLF, givenLF, sizeof( LOGFONT ) );
+        memcpy( &new_lf, given_lf, sizeof( LOGFONT ) );
 
         if( !totally ) {
             // preserve old weight & italic settings
-            newLF.lfWeight = f->lf.lfWeight;
-            newLF.lfItalic = f->lf.lfItalic;
+            new_lf.lfWeight = f->lf.lfWeight;
+            new_lf.lfItalic = f->lf.lfItalic;
         }
 
-        customFont( f, &newLF );
+        customFont( f, &new_lf );
     }
 }
 
@@ -298,25 +298,25 @@ static bool getByte( BYTE *dest, const char **data )
     return( true );
 }
 
-static bool getLogFont( LOGFONT *l, const char **data )
+static bool getLogFont( LOGFONT *lf, const char **data )
 {
-    return( getInt( &l->lfHeight, data ) &&
-            getInt( &l->lfWidth, data ) &&
-            getInt( &l->lfEscapement, data ) &&
-            getInt( &l->lfOrientation, data ) &&
-            getInt( &l->lfWeight, data ) &&
-            getByte( &l->lfItalic, data ) &&
-            getByte( &l->lfUnderline, data ) &&
-            getByte( &l->lfStrikeOut, data ) &&
-            getByte( &l->lfCharSet, data ) &&
-            getByte( &l->lfOutPrecision, data ) &&
-            getByte( &l->lfClipPrecision, data ) &&
-            getByte( &l->lfQuality, data ) &&
-            getByte( &l->lfPitchAndFamily, data ) &&
-            GetStringWithPossibleQuote( data, &l->lfFaceName[0] ) == ERR_NO_ERR );
+    return( getInt( &lf->lfHeight, data ) &&
+            getInt( &lf->lfWidth, data ) &&
+            getInt( &lf->lfEscapement, data ) &&
+            getInt( &lf->lfOrientation, data ) &&
+            getInt( &lf->lfWeight, data ) &&
+            getByte( &lf->lfItalic, data ) &&
+            getByte( &lf->lfUnderline, data ) &&
+            getByte( &lf->lfStrikeOut, data ) &&
+            getByte( &lf->lfCharSet, data ) &&
+            getByte( &lf->lfOutPrecision, data ) &&
+            getByte( &lf->lfClipPrecision, data ) &&
+            getByte( &lf->lfQuality, data ) &&
+            getByte( &lf->lfPitchAndFamily, data ) &&
+            GetStringWithPossibleQuote( data, &lf->lfFaceName[0] ) == ERR_NO_ERR );
 }
 
-static bool userPickFont( LOGFONT *l, HWND parent )
+static bool userPickFont( LOGFONT *lf, HWND parent )
 {
     CHOOSEFONT  cf;
 
@@ -324,7 +324,7 @@ static bool userPickFont( LOGFONT *l, HWND parent )
 
     cf.lStructSize = sizeof( CHOOSEFONT );
     cf.hwndOwner = parent;
-    cf.lpLogFont = l;
+    cf.lpLogFont = lf;
     cf.Flags = CF_SCREENFONTS | CF_INITTOLOGFONTSTRUCT;
     cf.rgbColors = RGB( 0, 0, 0 );
     cf.nFontType = SCREEN_FONTTYPE;
@@ -336,14 +336,14 @@ static bool userPickFont( LOGFONT *l, HWND parent )
 /*
  * SetUpFont - set up a font, once it has been selected
  */
-void SetUpFont( LOGFONT *l, font_type index )
+void SetUpFont( LOGFONT *lf, font_type index )
 {
     info        *cinfo;
     font        *f;
 
     f = &Fonts[index];
 
-    customFont( f, l );
+    customFont( f, lf );
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         DCResize( cinfo );
     }
@@ -358,12 +358,12 @@ void SetUpFont( LOGFONT *l, font_type index )
 /*
  * initFont - init for font selection
  */
-static void initFont( font_type index, LOGFONT *l )
+static void initFont( font_type index, LOGFONT *lf )
 {
     if( Fonts[index].used ) {
-        memcpy( l, &Fonts[index].lf, sizeof( LOGFONT ) );
+        memcpy( lf, &Fonts[index].lf, sizeof( LOGFONT ) );
     } else {
-        memset( l, 0, sizeof( LOGFONT ) );
+        memset( lf, 0, sizeof( LOGFONT ) );
     }
 
 } /* initFont */
@@ -373,13 +373,13 @@ static void initFont( font_type index, LOGFONT *l )
  */
 void PickFont( font_type index, HWND parent )
 {
-    LOGFONT     l;
+    LOGFONT     lf;
 
-    initFont( index, &l );
-    if( !userPickFont( &l, parent ) ) {
+    initFont( index, &lf );
+    if( !userPickFont( &lf, parent ) ) {
         return;
     }
-    SetUpFont( &l, index );
+    SetUpFont( &lf, index );
 
 } /* PickFont */
 
@@ -388,7 +388,7 @@ void PickFont( font_type index, HWND parent )
  */
 vi_rc SetFont( const char *data )
 {
-    LOGFONT     l;
+    LOGFONT     lf;
     STUPIDNTINT index;
 
     if( !getInt( &index, &data ) ) {
@@ -397,7 +397,7 @@ vi_rc SetFont( const char *data )
     if( index >= MAX_FONTS || index < 0 ) {
         return( ERR_INVALID_FONT );
     }
-    initFont( index, &l );
+    initFont( index, &lf );
     /*
      * Either the user can specify 'setfont x' and choose a font
      * using the common dialog - or he/she can do the full
@@ -407,15 +407,15 @@ vi_rc SetFont( const char *data )
         data++;
     }
     if( *data == '\0' ) {
-        if( !userPickFont( &l, root_window_id ) ) {
+        if( !userPickFont( &lf, root_window_id ) ) {
             return( ERR_NO_ERR );
         }
     } else {
-        if( !getLogFont( &l, &data ) ) {
+        if( !getLogFont( &lf, &data ) ) {
             return( ERR_INVALID_FONT );
         }
     }
-    SetUpFont( &l, index );
+    SetUpFont( &lf, index );
     return( ERR_NO_ERR );
 
 } /* SetFont */
@@ -424,20 +424,20 @@ void BarfFontData( FILE *file )
 {
     font_type   i;
     font        *f;
-    LOGFONT     *l;
+    LOGFONT     *lf;
 
     f = &Fonts[0];
     for( i = 0; i < MAX_FONTS; i++, f++ ) {
         if( f->used ) {
-            l = &f->lf;
+            lf = &f->lf;
             /* ick... */
             MyFprintf( file,
                        "setfont %d %d %d %d %d %d %d %d %d %d %d %d %d %d \"%s\"\n", i,
-                       l->lfHeight, l->lfWidth, l->lfEscapement, l->lfOrientation,
-                       l->lfWeight, (int)l->lfItalic, (int)l->lfUnderline,
-                       (int)l->lfStrikeOut, (int)l->lfCharSet, (int)l->lfOutPrecision,
-                       (int)l->lfClipPrecision, (int)l->lfQuality,
-                       (int)l->lfPitchAndFamily, &l->lfFaceName[0] );
+                       lf->lfHeight, lf->lfWidth, lf->lfEscapement, lf->lfOrientation,
+                       lf->lfWeight, (int)lf->lfItalic, (int)lf->lfUnderline,
+                       (int)lf->lfStrikeOut, (int)lf->lfCharSet, (int)lf->lfOutPrecision,
+                       (int)lf->lfClipPrecision, (int)lf->lfQuality,
+                       (int)lf->lfPitchAndFamily, &lf->lfFaceName[0] );
         }
     }
 }
