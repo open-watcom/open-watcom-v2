@@ -35,7 +35,7 @@ struct lname {
     struct lname        *next;
     bool                local;
     unsigned char       len;
-    char                name[ 1 ];
+    char                name[1];
 };
 
 typedef struct COMMON_BLK {
@@ -66,7 +66,7 @@ static unsigned_8       *RecPtr;
 static unsigned_8       *RecEnd;
 static common_blk       *CurrCommonBlk;
 static unsigned short   SegDefCount;
-static char             NameBuff[ 257 ];
+static char             NameBuff[257];
 
 static OmfRecord        *omfRec;
 static unsigned         omfRecLen;
@@ -195,7 +195,7 @@ static void GetName( void )
     num_char = (int)*RecPtr++;
     memcpy( NameBuff, RecPtr, num_char );
     RecPtr += num_char;
-    NameBuff[ num_char ] = '\0';
+    NameBuff[num_char] = '\0';
 }
 
 /*
@@ -279,7 +279,7 @@ static void getcomdat( void )
     if( ln->local )
         return;
     memcpy( NameBuff, ln->name, ln->len );
-    NameBuff[ ln->len ] = '\0';
+    NameBuff[ln->len] = '\0';
     AddOMFSymbol( S_COMDAT );
 }
 
@@ -338,9 +338,9 @@ static void CalcOmfRecordCheckSum( OmfRecord *rec )
 
     sum = 0;
     for( i = 0; i < GET_LE_16( rec->basic.len ) + 2; ++i ) {
-        sum += rec->chkcalc[ i ];
+        sum += rec->chkcalc[i];
     }
-    rec->chkcalc[ i ] = -sum;
+    rec->chkcalc[i] = -sum;
 }
 
 static void SetOmfBuffer( int len )
@@ -389,9 +389,9 @@ static void trimOmfHeader( void )
     int     len;
 
     len = GET_LE_16( omfRec->basic.len );
-    omfRec->basic.contents[ len - 1 ] = '\0';
+    omfRec->basic.contents[len - 1] = '\0';
     len = strlen( TrimPath( (char *)omfRec->basic.contents + 1 ) );
-    omfRec->basic.contents[ 0 ] = len;
+    omfRec->basic.contents[0] = len;
     omfRec->basic.len = GET_LE_16( len + 2 );
     CalcOmfRecordCheckSum( omfRec );
 }
@@ -494,7 +494,7 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 }
                 break;
             case CMD_COMENT:
-                switch( omfRec->basic.contents[ 1 ] ) {
+                switch( omfRec->basic.contents[1] ) {
                 case CMT_LINKER_DIRECTIVE:
                     if( omfRec->time.subclass == LDIR_OBJ_TIMESTAMP ) {
                         time_stamp = true;
@@ -504,19 +504,19 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                     }
                     break;
                 case CMT_DLL_ENTRY:
-                    if( omfRec->basic.contents[ 2 ] == DLL_EXPDEF ) {
+                    if( omfRec->basic.contents[2] == DLL_EXPDEF ) {
                         if( oper == OMF_COPY ) {
                             if( ExportListFile != NULL ) {
-                                LibWrite( ExportListFile, omfRec->basic.contents + 5, omfRec->basic.contents[ 4 ] );
+                                LibWrite( ExportListFile, omfRec->basic.contents + 5, omfRec->basic.contents[4] );
                                 LibWrite( ExportListFile, new_line, sizeof( new_line ) );
                             }
                         }
                         if( Options.strip_expdef ) {
                             continue;
                         }
-                    } else if( omfRec->basic.contents[ 2 ] == DLL_IMPDEF ) {
+                    } else if( omfRec->basic.contents[2] == DLL_IMPDEF ) {
                         if( oper == OMF_SYMS ) {
-                            omfRec->basic.contents[ 5 + omfRec->basic.contents[ 4 ] ] = '\0';
+                            omfRec->basic.contents[5 + omfRec->basic.contents[4]] = '\0';
                             AddSym( (char *)( omfRec->basic.contents + 5 ), SYM_STRONG, 0 );
                         }
                     }
@@ -616,11 +616,11 @@ void OmfWriteImport( sym_file *sfile )
     sym_len = strlen( sfile->import->u.sym.symName );
 #ifdef IMP_MODULENAME_DLL
     contents = SetOmfRecBuffer( CMD_THEADR, file_len + 2 );
-    contents[ 0 ] = file_len;
+    contents[0] = file_len;
     memcpy( contents + 1, sfile->import->DLLName, file_len );
 #else
     contents = SetOmfRecBuffer( CMD_THEADR, sym_len + 2 );
-    contents[ 0 ] = sym_len;
+    contents[0] = sym_len;
     memcpy( contents + 1, sfile->import->u.sym.symName, sym_len );
 #endif
     WriteOmfRecord( omfRec );
@@ -635,31 +635,31 @@ void OmfWriteImport( sym_file *sfile )
         len += exp_len + 1;
     }
     contents = SetOmfRecBuffer( CMD_COMENT, len );
-    contents[ 0 ] = CMT_TNP;
-    contents[ 1 ] = CMT_DLL_ENTRY;
-    contents[ 2 ] = MOMF_IMPDEF;
+    contents[0] = CMT_TNP;
+    contents[1] = CMT_DLL_ENTRY;
+    contents[2] = MOMF_IMPDEF;
     if( sfile->import->type == ORDINAL ) {
-        contents[ 3 ] = 1;
+        contents[3] = 1;
     } else {
-        contents[ 3 ] = 0;
+        contents[3] = 0;
     }
-    contents[ 4 ] = sym_len;
+    contents[4] = sym_len;
     memcpy( contents + 5, sfile->import->u.sym.symName, sym_len );
-    contents[ 5 + sym_len ] = file_len;
+    contents[5 + sym_len] = file_len;
     memcpy( contents + 6 + sym_len, sfile->import->DLLName, file_len );
     file_len += sym_len + 6;
     if( sfile->import->type == ORDINAL ) {
         *(unsigned_16 *)( contents + file_len ) = (unsigned_16)sfile->import->u.sym.ordinal;
     } else if( sfile->import->u.sym.exportedName == NULL ) {
-        contents[ file_len ] = 0;
+        contents[file_len] = 0;
     } else {
-        contents[ file_len ] = exp_len;
+        contents[file_len] = exp_len;
         memcpy( contents + file_len + 1, sfile->import->u.sym.exportedName, exp_len );
     }
     WriteOmfRecord( omfRec );
     WriteTimeStamp( sfile );
     contents = SetOmfRecBuffer( CMD_MODEND, 2 );
-    contents[ 0 ] = 0;
+    contents[0] = 0;
     WriteOmfRecord( omfRec );
 }
 

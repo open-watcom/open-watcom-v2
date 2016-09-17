@@ -75,7 +75,7 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
         }
         GetARHeaderValues( &ar, &arch );
         pos = LibTell( io );
-        if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == ' ' && ar.name[ 2 ] == ' ' ) {
+        if( ar.name[0] == '/' && ar.name[1] == ' ' && ar.name[2] == ' ' ) {
             // Ignore symbol table.
 /*
             dict_count++;
@@ -86,9 +86,9 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
                 updateNewArchive( &arch );
             }
 */
-        } else if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == '/' && ar.name[ 2 ] == ' ' ) {
+        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == ' ' ) {
             AllocFNameTab( name, io, &arch );
-        } else if( ar.name[ 0 ] == '/' && ar.name[ 1 ] == '/' && ar.name[ 2 ] == '/' ) {
+        } else if( ar.name[0] == '/' && ar.name[1] == '/' && ar.name[2] == '/' ) {
             AllocFFNameTab( name, io, &arch );
         } else {
             arch.name = GetARName( io, &ar, &arch );
@@ -111,7 +111,7 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
     long            pagelen;
     long            offset;
     arch_header     arch;
-    char            buff[ MAX_IMPORT_STRING ];
+    char            buff[MAX_IMPORT_STRING];
     int             len;
     unsigned_16     rec_len;
     unsigned_8      type;
@@ -135,7 +135,7 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
         len = type;
         if( LibRead( io, buff, len ) != len )
             break;
-        buff[ len ] = '\0';
+        buff[len] = '\0';
         arch.name = buff;
         LibSeek( io, offset, SEEK_SET );
         rtn( &arch, io );

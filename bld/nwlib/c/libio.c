@@ -42,16 +42,15 @@ void InitLibIo( void )
     fileList = NULL;
 }
 
-void ResetLibIo( void )
+void FiniLibIo( void )
 {
     libfile lio;
 
-    while( fileList ) {
-        lio = fileList->next;
-        fclose( fileList->io );
-        MemFreeGlobal( fileList->name );
-        MemFreeGlobal( fileList );
-        fileList = lio;
+    while( (lio = fileList) != NULL ) {
+        fileList = lio->next;
+        fclose( lio->io );
+        MemFreeGlobal( lio->name );
+        MemFreeGlobal( lio );
     }
 }
 
@@ -83,7 +82,7 @@ libfile LibOpen( char *name, bool write_to )
     }
     lio->next = fileList;
     lio->prev = NULL;
-    if( fileList ) {
+    if( fileList != NULL ) {
         fileList->prev = lio;
     }
     fileList = lio;
@@ -206,10 +205,10 @@ void LibClose( libfile lio )
     if( fileList == lio ) {
         fileList = fileList->next;
     }
-    if( lio->next ) {
+    if( lio->next != NULL ) {
         lio->next->prev = lio->prev;
     }
-    if( lio->prev ) {
+    if( lio->prev != NULL ) {
         lio->prev->next = lio->next;
     }
     MemFreeGlobal( lio->name );

@@ -66,13 +66,13 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 
 IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fatalerr )
 {
-    char        *argv[ 3 ];
+    char        *argv[3];
 
     hdl = hdl;
     *fatalerr = false;
-    argv[ 0 ] = "";
-    argv[ 1 ] = (char *)opts;
-    argv[ 2 ] = NULL;
+    argv[0] = "";
+    argv[1] = (char *)opts;
+    argv[2] = NULL;
     return( WlibMainLine( argv ) != 0 );
 }
 
@@ -80,7 +80,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     IDEDllHdl hdl,              // - handle for this instantiation
     int argc,                   // - # of arguments
     char **argv,                // - argument vector
-    IDEBool* fatal_error )      // - addr[ fatality indication ]
+    IDEBool* fatal_error )      // - addr[fatality indication]
 {
     hdl = hdl; argc = argc;
     *fatal_error = false;
@@ -139,8 +139,8 @@ void FatalResError( void )
 void FatalError( int str, ... )
 {
     va_list             arglist;
-    char                buff[ MAX_ERROR_SIZE ];
-    char                msg[ 512 ];
+    char                buff[MAX_ERROR_SIZE];
+    char                msg[512];
     IDEMsgInfo          msg_info;
 
     va_start( arglist, str );
@@ -157,8 +157,8 @@ void FatalError( int str, ... )
 void Warning( int str, ... )
 {
     va_list             arglist;
-    char                buff[ MAX_ERROR_SIZE ];
-    char                msg[ 512 ];
+    char                buff[MAX_ERROR_SIZE];
+    char                msg[512];
     IDEMsgInfo          msg_info;
 
     if( Options.quiet )
@@ -176,7 +176,7 @@ void Warning( int str, ... )
 void Message( char *buff, ... )
 {
     va_list             arglist;
-    char                msg[ 512 ];
+    char                msg[512];
     IDEMsgInfo          msg_info;
 
     if( Options.quiet )
@@ -203,7 +203,7 @@ static bool Wait_for_return( void )
 void Usage( void )
 /****************/
 {
-    char                buff[ MAX_ERROR_SIZE ];
+    char                buff[MAX_ERROR_SIZE];
     int                 str;
     int                 str_first;
     int                 str_last;
@@ -226,7 +226,7 @@ void Usage( void )
         for( str = str_first; str <= str_last; ++str ) {
             MsgGet( str, buff );
             if( ideInfo && ideInfo->ver > 2 && ideInfo->console_output &&
-                ( count > 20 && buff[ 0 ] == '\0' || count == 24 ) ) {
+                ( count > 20 && buff[0] == '\0' || count == 24 ) ) {
                 msg_info.msg = "    (Press Return to continue)" ;
                 IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
                 if( Wait_for_return() )
@@ -235,7 +235,7 @@ void Usage( void )
                 msg_info.msg = buff;
             }
             ++count;
-            if( buff[ 0 ] == '\0' ) {
+            if( buff[0] == '\0' ) {
                 continue;
             }
             IdeCbs->PrintWithInfo( IdeHdl, &msg_info );

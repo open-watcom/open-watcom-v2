@@ -44,8 +44,8 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
     if( binding == ORL_SYM_BINDING_GLOBAL || binding == ORL_SYM_BINDING_WEAK ) {
         type = ORLSymbolGetType( orl_sym_hnd );
         info = ORLSymbolGetRawInfo( orl_sym_hnd );
-        if( !( type & ORL_SYM_TYPE_UNDEFINED ) ) {
-            if( type & ORL_SYM_CDAT_MASK || binding == ORL_SYM_BINDING_WEAK ) {
+        if( (type & ORL_SYM_TYPE_UNDEFINED) == 0 ) {
+            if( (type & ORL_SYM_CDAT_MASK) || binding == ORL_SYM_BINDING_WEAK ) {
                 AddSym( name, SYM_WEAK, info );
             } else {
                 AddSym( name,  SYM_STRONG, info );

@@ -60,7 +60,7 @@ static unsigned long ARstrlen( char * str )
     char *c;
 
     for( c=str; *c!='\0'; c++ ) {
-        if( (c[ 0 ]=='/') && (c[ 1 ]=='\n') ) {
+        if( (c[0]=='/') && (c[1]=='\n') ) {
             break;
         }
     }
@@ -70,19 +70,19 @@ static unsigned long ARstrlen( char * str )
 char *GetARName( libfile io, ar_header *header, arch_header *arch )
 /*****************************************************************/
 {
-    char        buffer[ AR_NAME_LEN + 1 ];
+    char        buffer[AR_NAME_LEN + 1];
     char *      buf;
     char *      name;
     file_offset len;
 
-    if( header->name[ 0 ] == '/' ) {
-        len = GetARNumeric( &header->name[ 1 ], AR_NAME_LEN - 1, AR_ELEMENT_BASE );
+    if( header->name[0] == '/' ) {
+        len = GetARNumeric( &header->name[1], AR_NAME_LEN - 1, AR_ELEMENT_BASE );
         buf = arch->fnametab + len;
-    } else if( header->name[ 0 ] == '#' && header->name[ 1 ] == '1' && header->name[ 2 ] == '/') {
-        len = GetARNumeric( &header->name[ 3 ], AR_NAME_LEN - 3, AR_ELEMENT_BASE );
+    } else if( header->name[0] == '#' && header->name[1] == '1' && header->name[2] == '/') {
+        len = GetARNumeric( &header->name[3], AR_NAME_LEN - 3, AR_ELEMENT_BASE );
         name = (char *) MemAlloc( len + 1 );
         LibRead( io, name, len );
-        name[ len ] = '\0';
+        name[len] = '\0';
         return( name );
     } else {
         GetARValue( header->name, AR_NAME_LEN, AR_NAME_END_CHAR, buffer );
@@ -91,7 +91,7 @@ char *GetARName( libfile io, ar_header *header, arch_header *arch )
     len = ARstrlen(buf);
     name = (char *) MemAlloc( len + 1 );
     memcpy( name, buf, len );
-    name[ len ] = '\0';
+    name[len] = '\0';
     return( name );
 }
 
@@ -105,7 +105,7 @@ char *GetFFName( arch_header *arch )
         name = (char *) MemAlloc( len + 1 );
         memcpy( name, arch->nextffname, len + 1 );
         arch->nextffname += len + 1;
-        if( arch->nextffname >= arch->lastffname || (arch->nextffname[ 0 ]=='\n'
+        if( arch->nextffname >= arch->lastffname || (arch->nextffname[0]=='\n'
                 && arch->nextffname+1 >= arch->lastffname) ) {
             arch->nextffname = NULL;
         }
@@ -119,14 +119,14 @@ static void GetARValue( char *element, ar_len len, char delimiter, char *buffer 
 // that it is null-terminated rather than blank-padded
 {
     for( ; len > 0; --len ) {
-        if( element[ len - 1 ] != ' ' && element[ len - 1 ] != delimiter ) {
+        if( element[len - 1] != ' ' && element[len - 1] != delimiter ) {
             break;
         }
     }
     if( len > 0 ) {
         strncpy( buffer, element, len );
     }
-    buffer[ len ] = '\0';
+    buffer[len] = '\0';
 }
 
 void GetARHeaderValues( ar_header *header, arch_header * arch )
@@ -143,7 +143,7 @@ static void PutARPadding( char * element, ar_len current_len, ar_len desired_len
     ar_len      loop;
 
     for( loop = current_len; loop < desired_len; loop++ ) {
-        element[ loop ] = AR_VALUE_END_CHAR;
+        element[loop] = AR_VALUE_END_CHAR;
     }
 }
 

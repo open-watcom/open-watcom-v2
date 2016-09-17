@@ -88,7 +88,7 @@ static void ProcessOneObject( arch_header *arch, libfile io )
         if( SameName( arch->name, cmd->name ) ) {
 
             if( !Options.explode ) {
-                if( ( cmd->ops & OP_EXTRACT ) && !( cmd->ops & OP_EXTRACTED ) ) {
+                if( (cmd->ops & OP_EXTRACT) && (cmd->ops & OP_EXTRACTED) == 0 ) {
                     if( cmd->fname != NULL ) {
                         ExtractObj( io, cmd->name, arch, cmd->fname );
                     } else {
@@ -134,7 +134,7 @@ typedef enum {
 static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_header *arch, libfile io ) )
 {
     libfile     io;
-    unsigned char   buff[ AR_IDENT_LEN ];
+    unsigned char   buff[AR_IDENT_LEN];
     arch_header arch;
 
     NewArchHeader( &arch, name );
@@ -164,9 +164,9 @@ static void ProcessLibOrObj( char *name, objproc obj, void (*process)( arch_head
         }
     } else if( AddImport( &arch, io ) ) {
         LibClose( io );
-    } else if( buff[ 0 ] == LIB_HEADER_REC && buff[ 1 ] != 0x01 ) {
+    } else if( buff[0] == LIB_HEADER_REC && buff[1] != 0x01 ) {
         /*
-          The buff[ 1 ] != 1 bit above is a bad hack to get around
+          The buff[1] != 1 bit above is a bad hack to get around
           the fact that the coff cpu_type for PPC object files is
           0x1f0.  Really, we should be reading in the first object
           record and doing the checksum and seeing if it is actually
@@ -201,10 +201,10 @@ static void WalkInputLib( void )
 static void AddModules( void )
 {
     lib_cmd     *cmd;
-    char        buff[ MAX_IMPORT_STRING ];
+    char        buff[MAX_IMPORT_STRING];
 
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( !( cmd->ops & OP_ADD ) )
+        if( (cmd->ops & OP_ADD) == 0 )
             continue;
         strcpy( buff, cmd->name );
         if( cmd->ops & OP_IMPORT ) {
@@ -228,10 +228,10 @@ static void AddModules( void )
 static void DelModules( void )
 {
     lib_cmd     *cmd;
-    char        buff[ MAX_IMPORT_STRING ];
+    char        buff[MAX_IMPORT_STRING];
 
     for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
-        if( !( cmd->ops & OP_DELETE ) )
+        if( (cmd->ops & OP_DELETE) == 0 )
             continue;
         strcpy( buff, cmd->name );
         DefaultExtension( buff, EXT_OBJ );
@@ -239,9 +239,9 @@ static void DelModules( void )
             ProcessLibOrObj( buff, OBJ_SKIP, DelOneObject );
             cmd->ops |= OP_DELETED;
         }
-        if( !( cmd->ops & OP_DELETED ) && !( cmd->ops & OP_ADD ) ) {
-                Warning( ERR_CANT_DELETE, cmd->name );
-        } else if( ( cmd->ops & OP_DELETED ) && !( cmd->ops & OP_ADD ) && Options.ar && Options.verbose ) {
+        if( (cmd->ops & OP_DELETED) == 0 && (cmd->ops & OP_ADD) == 0 ) {
+            Warning( ERR_CANT_DELETE, cmd->name );
+        } else if( (cmd->ops & OP_DELETED) && (cmd->ops & OP_ADD) == 0 && Options.ar && Options.verbose ) {
             Message( "-d %s", cmd->name );
         }
     }

@@ -46,7 +46,6 @@ extern void *MemAllocGlobal( size_t size );
 extern void MemFreeGlobal( void *ptr );
 
 extern void MemPrtList( void );
-extern void ResetMem( void );
 extern void FiniMem( void );
 extern char *DupStr( char* );
 extern char *DupStrGlobal( char* ); //uses MemAllocGlobal

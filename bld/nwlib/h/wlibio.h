@@ -44,14 +44,14 @@ struct io_struct {
     bool            write_to;
     unsigned_16     buf_size;
     unsigned_16     buf_pos;
-    char            buffer[ 1 ];
+    char            buffer[1];
 };
 
 #define LIBOPEN_READ    false
 #define LIBOPEN_WRITE   true
 
 extern void         InitLibIo( void  );
-extern void         ResetLibIo( void );
+extern void         FiniLibIo( void );
 extern libfile      LibOpen( char *name, bool write_to );
 extern file_offset  LibRead( libfile io, void *buff, file_offset len );
 extern void         LibWrite( libfile io, void *buff, file_offset len );

@@ -79,9 +79,9 @@ int main                        // MAIN-LINE FOR DLL DRIVER
     cmd_line = malloc( len );
     _bgetcmd( cmd_line, len );
     /* Turn on 'ar' mode by setting WLIB$AR env var */
-    p = strrchr( argv[ 0 ], '\\' );
+    p = strrchr( argv[0], '\\' );
     if( p == NULL ) {
-        p = argv[ 0 ];
+        p = argv[0];
     } else {
         ++p;
     }

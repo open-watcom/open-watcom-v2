@@ -60,7 +60,7 @@ void FiniOmfUtil( void )
 
 static void CheckForOverflow(file_offset current)
 {
-    char buffer[ 10 ];
+    char buffer[10];
 
     if( current / Options.page_size > (unsigned long)USHRT_MAX ) {
         sprintf(buffer, "%u", Options.page_size);
@@ -187,10 +187,10 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
 #endif
         }
         str_len = strlen( fname );
-        fname[ str_len ] ='!';
+        fname[str_len] ='!';
         ret = InsertOmfDict( lib_block, num_blocks, fname,
             str_len + 1, sfile->new_offset );
-        fname[ str_len ] = 0;
+        fname[str_len] = 0;
         if( !ret ) {
             return( ret );
         }
@@ -231,13 +231,13 @@ unsigned WriteOmfDict( sym_file *first_sfile )
         lib_block = MemRealloc( lib_block, dict_size );
         memset( lib_block, 0, dict_size );
         for( i = 0; i < num_blocks; i++ ) {
-            lib_block[ i ].fflag = ( NUM_BUCKETS + 1 ) / 2;
+            lib_block[i].fflag = ( NUM_BUCKETS + 1 ) / 2;
         }
         done = HashOmfSymbols( lib_block, num_blocks, first_sfile );
     } while( !done );
     for( i = 0; i < num_blocks; i++ ) {
         for( j = 0; j < NUM_BUCKETS; j++ ) {
-           if( lib_block[ i ].htab[ j ] == 0 ) {
+           if( lib_block[i].htab[j] == 0 ) {
                break;
            }
         }

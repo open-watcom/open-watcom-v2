@@ -54,8 +54,8 @@ void InitFileTab( void )
     FileTable.first = NULL;
     FileTable.add_to = &FileTable.first;
     SortedSymbols = NULL;
-    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[ 0 ] ) );
-    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[ 0 ] ) );
+    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[0] ) );
+    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[0] ) );
 }
 
 static void FiniSymFile( sym_file *sfile )
@@ -132,27 +132,22 @@ void CleanFileTab( void )
 }
 
 
-void ResetFileTab( void )
-/***********************/
-{
-    sym_file    *sfile;
-    sym_file    *next_sfile;
-
-    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[ 0 ] ) );
-    for( sfile = FileTable.first; sfile != NULL; sfile = next_sfile ) {
-        next_sfile = sfile->next;
-        FiniSymFile( sfile );
-    }
-    FileTable.first = NULL;
-    FileTable.add_to = &FileTable.first;
-    MemFreeGlobal( SortedSymbols );
-    SortedSymbols = NULL;
-}
-
 void FiniFileTab( void )
 /***********************/
 {
+    sym_file    *sfile;
+
+    while( (sfile = FileTable.first) != NULL ) {
+        FileTable.first = sfile->next;
+        FiniSymFile( sfile );
+    }
+    FileTable.add_to = &FileTable.first;
+    if( SortedSymbols != NULL ) {
+        MemFreeGlobal( SortedSymbols );
+        SortedSymbols = NULL;
+    }
     MemFreeGlobal( HashTable );
+    HashTable = NULL;
 }
 
 
@@ -165,10 +160,10 @@ static void RemoveFromHashTable( sym_entry *sym )
     unsigned        len;
 
     hval = Hash( sym->name, &len );
-    hash = HashTable[ hval ];
+    hash = HashTable[hval];
 
     if( hash == sym ) {
-        HashTable[ hval ] = sym->hash;
+        HashTable[hval] = sym->hash;
     } else if( hash ) {
         prev = hash;
 
@@ -314,7 +309,7 @@ static void SortSymbols( void )
         SortedSymbols = NULL;
         Warning( ERR_NO_SYMBOLS );
     } else {
-        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[ 0 ] ) );
+        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[0] ) );
     }
 
     sym_curr = SortedSymbols;
@@ -334,7 +329,7 @@ static void SortSymbols( void )
     }
 
     for( i = NumSymbols - 1; i >= 0; --i ) {
-        sym = SortedSymbols[ i ];
+        sym = SortedSymbols[i];
         sym->next = sym->file->first;
         sym->file->first = sym;
     }
@@ -598,20 +593,20 @@ static void WriteArMlibFileTable( void )
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian16( SortedSymbols[ i ]->file->index );
+                WriteLittleEndian16( SortedSymbols[i]->file->index );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian32( SortedSymbols[ i ]->file->index );
+                WriteLittleEndian32( SortedSymbols[i]->file->index );
             }
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteNew( &(SortedSymbols[ i ]->info), 1 );
+                WriteNew( &(SortedSymbols[i]->info), 1 );
             }
             break;
         }
         for( i = 0; i < NumSymbols; ++i ) {
-            WriteNew( SortedSymbols[ i ]->name, SortedSymbols[ i ]->len + 1 );
+            WriteNew( SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
         }
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
@@ -672,7 +667,7 @@ static void WriteArMlibFileTable( void )
     }
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        char        buff[ AR_NAME_LEN + 1 ];
+        char        buff[AR_NAME_LEN + 1];
         bool        append_name;
 
         append_name = false;
@@ -692,12 +687,12 @@ static void WriteArMlibFileTable( void )
                 }
             } else {        // COFF, GNU
                 strcpy( buff, sfile->arch.name );
-                buff[ sfile->name_length ] = AR_NAME_END_CHAR;
-                buff[ sfile->name_length + 1 ] = '\0';
+                buff[sfile->name_length] = AR_NAME_END_CHAR;
+                buff[sfile->name_length + 1] = '\0';
                 arch.name = buff;
             }
         } else {
-            buff[ 0 ] = '/';
+            buff[0] = '/';
             itoa( sfile->name_offset, buff+1, 10 );
             arch.name = buff;
         }
@@ -743,7 +738,7 @@ static int Hash( char *string, unsigned *plen )
     *plen = 0;
     while( *string != 0 ) {
         h = ( h << 4 ) + *string;
-        if( (g = h & 0xf0000000) != 0 ) {
+        if( (g = (h & 0xf0000000)) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
@@ -761,7 +756,7 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
     unsigned    name_len;
 
     hash = Hash( name, &name_len );
-    for( sym = HashTable[ hash ]; sym != NULL; sym = sym->hash ) {
+    for( sym = HashTable[hash]; sym != NULL; sym = sym->hash ) {
         if( sym->len != name_len )
             continue;
         if( SymbolNameCmp( sym->name, name ) == 0 ) {
@@ -771,7 +766,7 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
                     owner = &(*owner)->next;
                 }
                 *owner = sym->next;
-                owner = &HashTable[ hash ];
+                owner = &HashTable[hash];
                 while( *owner != sym ) {
                     owner = &(*owner)->hash;
                 }
@@ -794,8 +789,8 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
     sym->next = CurrFile->first;
     CurrFile->first = sym;
     sym->file = CurrFile;
-    sym->hash = HashTable[ hash ];
-    HashTable[ hash ] = sym;
+    sym->hash = HashTable[hash];
+    HashTable[hash] = sym;
 }
 
 
@@ -822,7 +817,7 @@ void DumpFileTable( void )
 
             hval = Hash( entry->name, &len );
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
-                    (HashTable[ hval ] ? HashTable[ hval ]->name : "(NULL)") );
+                    (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
             for( hash = entry->hash; hash; hash = hash->hash ) {
                 printf( " -> \"%s\"", hash->name );
@@ -851,8 +846,8 @@ void DumpHashTable( void )
     for( i = 0; i < HASH_SIZE; ++i ) {
         length = 0;
 
-        if( HashTable[ i ] ) {
-            for( hash = HashTable[ i ]; hash; hash = hash->next ) {
+        if( HashTable[i] ) {
+            for( hash = HashTable[i]; hash; hash = hash->next ) {
                 ++length;
             }
         }
@@ -1032,11 +1027,11 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     temp = &(CurrFile->import->u.elf.symlist);
 
     for( i = 0; i < export_size; i++ ) {
-        if( export_table[ i ].exp_symbol ) {
+        if( export_table[i].exp_symbol ) {
             imp_sym = MemAllocGlobal( sizeof( elf_import_sym ) );
-            imp_sym->name = DupStrGlobal( &(strings[ sym_table[ export_table[ i ].exp_symbol ].st_name ]) );
+            imp_sym->name = DupStrGlobal( &(strings[sym_table[export_table[i].exp_symbol].st_name]) );
             imp_sym->len = strlen( imp_sym->name );
-            imp_sym->ordinal = export_table[ i ].exp_ordinal;
+            imp_sym->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
                 AddSym( imp_sym->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
@@ -1053,7 +1048,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
 }
 
 #define MAX_MESSAGE_LEN 511
-static char             listMsg[ MAX_MESSAGE_LEN + 1 ];
+static char             listMsg[MAX_MESSAGE_LEN + 1];
 static unsigned         msgLength = 0;
 
 static void listPrint( FILE *fp, char *str, ... )
@@ -1074,8 +1069,8 @@ static void listNewLine( FILE *fp )
         Message( listMsg );
     }
     msgLength = 0;
-    listMsg[ 0 ] = ' ';
-    listMsg[ 1 ] = '\0';
+    listMsg[0] = ' ';
+    listMsg[1] = '\0';
 }
 
 #define LINE_WIDTH 79
@@ -1089,70 +1084,70 @@ static void fpadch( FILE *fp, char ch, int len )
             len = MAX_MESSAGE_LEN - msgLength;
         memset( listMsg + msgLength, ch, len );
         msgLength += len;
-        listMsg[ msgLength ] = '\0';
+        listMsg[msgLength] = '\0';
     }
 }
 
 static void printVerboseTableEntry( arch_header *arch )
 {
-    char        member_mode[ 11 ];
-    char        date[ 128 ];
+    char        member_mode[11];
+    char        date[128];
     time_t      t;
 
-    member_mode[ 10 ] = '\0';
-    member_mode[ 9 ] = ' ';
+    member_mode[10] = '\0';
+    member_mode[9] = ' ';
     if( arch->mode & AR_S_IRUSR ) {
-        member_mode[ 0 ] = 'r';
+        member_mode[0] = 'r';
     } else {
-        member_mode[ 0 ] = '-';
+        member_mode[0] = '-';
     }
     if( arch->mode & AR_S_IWUSR ) {
-        member_mode[ 1 ] = 'w';
+        member_mode[1] = 'w';
     } else {
-        member_mode[ 1 ] = '-';
+        member_mode[1] = '-';
     }
-    if( !( arch->mode & AR_S_IXUSR ) && (arch->mode & AR_S_ISUID ) ) {
-        member_mode[ 2 ] = 'S';
-    } else if( ( arch->mode & AR_S_IXUSR ) && ( arch->mode & AR_S_ISUID ) ) {
-        member_mode[ 2 ] = 's';
+    if( (arch->mode & AR_S_IXUSR) == 0 && (arch->mode & AR_S_ISUID) ) {
+        member_mode[2] = 'S';
+    } else if( (arch->mode & AR_S_IXUSR) && (arch->mode & AR_S_ISUID) ) {
+        member_mode[2] = 's';
     } else if( arch->mode & AR_S_IXUSR ) {
-        member_mode[ 2 ] = 'x';
+        member_mode[2] = 'x';
     } else {
-        member_mode[ 2 ] = '-';
+        member_mode[2] = '-';
     }
     if( arch->mode & AR_S_IRGRP ) {
-        member_mode[ 3 ] = 'r';
+        member_mode[3] = 'r';
     } else {
-        member_mode[ 3 ] = '-';
+        member_mode[3] = '-';
     }
     if( arch->mode & AR_S_IWGRP ) {
-        member_mode[ 4 ] = 'w';
+        member_mode[4] = 'w';
     } else {
-        member_mode[ 4 ] = '-';
+        member_mode[4] = '-';
     }
-    if( !( arch->mode & AR_S_IXGRP ) && (arch->mode & AR_S_ISGID ) ) {
-        member_mode[ 5 ] = 'S';
-    } else if( ( arch->mode & AR_S_IXGRP ) && ( arch->mode & AR_S_ISGID ) ) {
-        member_mode[ 5 ] = 's';
+    if( (arch->mode & AR_S_IXGRP) == 0 && (arch->mode & AR_S_ISGID) ) {
+        member_mode[5] = 'S';
+    } else if( (arch->mode & AR_S_IXGRP) && (arch->mode & AR_S_ISGID) ) {
+        member_mode[5] = 's';
     } else if( arch->mode & AR_S_IXGRP ) {
-        member_mode[ 5 ] = 'x';
+        member_mode[5] = 'x';
     } else {
-        member_mode[ 5 ] = '-';
+        member_mode[5] = '-';
     }
     if( arch->mode & AR_S_IROTH ) {
-        member_mode[ 6 ] = 'r';
+        member_mode[6] = 'r';
     } else {
-        member_mode[ 6 ] = '-';
+        member_mode[6] = '-';
     }
     if( arch->mode & AR_S_IWOTH ) {
-        member_mode[ 7 ] = 'w';
+        member_mode[7] = 'w';
     } else {
-        member_mode[ 7 ] = '-';
+        member_mode[7] = '-';
     }
     if( arch->mode & AR_S_IXOTH ) {
-        member_mode[ 8 ] = 'x';
+        member_mode[8] = 'x';
     } else {
-        member_mode[ 8 ] = '-';
+        member_mode[8] = '-';
     }
     t = (time_t) arch->date;
     strftime( date, 127, "%b %d %H:%M %Y", localtime( &t ) );
@@ -1168,7 +1163,7 @@ void ListContents( void )
     lib_cmd     *cmd;
 
     if( Options.ar ) {
-        if( CmdList ) {
+        if( CmdList != NULL ) {
             for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
                 if( cmd->ops & OP_FOUND ) {
                     if( Options.verbose ) {
@@ -1208,7 +1203,7 @@ void ListContents( void )
         if( Options.terse_listing ) {
             SortSymbols();
             for( i = 0; i < NumSymbols; ++i ) {
-                sym = SortedSymbols[ i ];
+                sym = SortedSymbols[i];
                 name = FormSym( sym->name );
                 name_len = strlen( name );
                 Message(name);
@@ -1219,7 +1214,7 @@ void ListContents( void )
         if( Options.list_file == NULL ) {
             Options.list_file = DupStr( MakeListName() );
         }
-        if( Options.list_file[ 0 ] != 0 ) {
+        if( Options.list_file[0] != 0 ) {
             fp = fopen( Options.list_file, "w" );
             if( fp == NULL ) {
                 FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
@@ -1230,7 +1225,7 @@ void ListContents( void )
         SortSymbols();
 
         for( i = 0; i < NumSymbols; ++i ) {
-            sym = SortedSymbols[ i ];
+            sym = SortedSymbols[i];
             name = FormSym( sym->name );
             name_len = strlen( name );
             listPrint( fp, "%s..", name );

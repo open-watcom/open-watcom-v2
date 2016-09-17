@@ -68,32 +68,32 @@ typedef struct {
     char            *export_list_file;
     char            *explode_ext;
     unsigned short  page_size;
-    unsigned        no_backup        :1;
-    unsigned        respect_case     :1;
-    unsigned        list_contents    :1;
-    unsigned        mangled          :1;
-    unsigned        quiet            :1;
-    unsigned        explode          :1;
-    unsigned        trim_path        :1;
-    unsigned        new_library      :1;
-    unsigned        nr_ordinal       :1; //do non residant table using ordinals
-    unsigned        r_ordinal        :1; //do residant table using ordinals
-    unsigned        strip_line       :1;
-    unsigned        strip_expdef     :1;
-    unsigned        strip_dependency :1;
-    unsigned        strip_library    :1;
-    unsigned        verbose          :1;
-    unsigned        update           :1; //update older files only
-    unsigned        no_c_warn        :1; //no create lib warning
-    unsigned        ar               :1;
-    unsigned        coff_import_long :1; // generate old long format of coff import library
+    BITB            no_backup        :1;
+    BITB            respect_case     :1;
+    BITB            list_contents    :1;
+    BITB            mangled          :1;
+    BITB            quiet            :1;
+    BITB            explode          :1;
+    BITB            trim_path        :1;
+    BITB            new_library      :1;
+    BITB            nr_ordinal       :1; //do non residant table using ordinals
+    BITB            r_ordinal        :1; //do residant table using ordinals
+    BITB            strip_line       :1;
+    BITB            strip_expdef     :1;
+    BITB            strip_dependency :1;
+    BITB            strip_library    :1;
+    BITB            verbose          :1;
+    BITB            update           :1; //update older files only
+    BITB            no_c_warn        :1; //no create lib warning
+    BITB            ar               :1;
+    BITB            coff_import_long :1; // generate old long format of coff import library
     // flags
-    unsigned        modified         :1;
-    unsigned        omf_found        :1; // if omf objects found
-    unsigned        coff_found       :1; // if coff objects found
-    unsigned        elf_found        :1; // if elf objects found
+    BITB            modified         :1;
+    BITB            omf_found        :1; // if omf objects found
+    BITB            coff_found       :1; // if coff objects found
+    BITB            elf_found        :1; // if elf objects found
     // internal options
-    unsigned        terse_listing    :1; // -tl switch
+    BITB            terse_listing    :1; // -tl switch
 
     processor_type  processor;
     file_type       filetype;

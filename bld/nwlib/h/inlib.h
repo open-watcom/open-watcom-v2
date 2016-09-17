@@ -32,12 +32,12 @@
 typedef struct input_lib {
     struct      input_lib *next;
     libfile     io;
-    char        name[ 1 ];
+    char        name[1];
 } input_lib;
 
 extern void AddInputLib( libfile io, char *name );
 extern void CloseOneInputLib( void );
-extern void ResetInputLibs( void );
+extern void FiniInputLibs( void );
 extern void InitInputLibs( void );
 extern libfile InLibHandle( input_lib * );
 extern input_lib *FindInLib( libfile io );

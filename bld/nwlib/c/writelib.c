@@ -49,7 +49,7 @@ void WriteNew( void *buff, file_offset len )
 
 void WriteNewLib( void )
 {
-    char tmp[ _MAX_PATH + 1 ];
+    char tmp[_MAX_PATH + 1];
     char *bak,*lib,*out;
 
     lib = Options.input_name;
@@ -58,7 +58,7 @@ void WriteNewLib( void )
     } else {
         out = MakeTmpName( tmp );
     }
-    if( Options.export_list_file ) {
+    if( Options.export_list_file != NULL ) {
         ExportListFile = LibOpen( Options.export_list_file, LIBOPEN_WRITE );
     } else {
         ExportListFile = NULL;
@@ -76,7 +76,6 @@ void WriteNewLib( void )
     if( ExportListFile != NULL ) {
         LibClose( ExportListFile );
     }
-    ResetInputLibs();//closes all input libs
     if( out == tmp ) {
         bak = MakeBakName();
         if( access( bak, F_OK ) == 0 && remove( bak ) != 0 ) {
