@@ -126,6 +126,3 @@ extern void AddSym( char *name, symbol_strength strength, unsigned char info );
 extern void DumpFileTable( void );
 extern void DumpHashTable( void );
 #endif
-
-#define RoundWord( x ) ( ( (x) + 1 ) & ~1 )
-#define NeedsRounding( x ) ( ( (x) & 1 ) != 0 )

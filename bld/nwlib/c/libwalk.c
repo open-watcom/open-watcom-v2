@@ -140,7 +140,7 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
         LibSeek( io, offset, SEEK_SET );
         rtn( &arch, io );
         offset = LibTell( io );
-        offset = ( offset + pagelen - 1 ) & ~( pagelen - 1 );
+        offset = Round( offset, pagelen );
         LibSeek( io, offset, SEEK_SET );
     }
 }

@@ -71,3 +71,5 @@
 #include "exeflat.h"
 #include "exepe.h"
 #include "exenov.h"
+
+#define Round(x,s)  (((x) + (s) - 1) & ~((s) - 1))
