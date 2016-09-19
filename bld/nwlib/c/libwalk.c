@@ -108,7 +108,7 @@ void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
 void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) )
 /*************************************************************************************/
 {
-    long            pagelen;
+    unsigned_16     pagelen;
     long            offset;
     arch_header     arch;
     char            buff[MAX_IMPORT_STRING];
@@ -120,8 +120,9 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
         return; // nyi - FALSE?
     if( LibRead( io, &rec_len, 2 ) != 2 )
         return;
-    offset = GET_LE_16( rec_len );
-    pagelen = offset + 3;
+    pagelen = GET_LE_16( rec_len );
+    offset = pagelen;
+    pagelen += 3;
     if( Options.page_size == 0 ) {
         Options.page_size = pagelen;
     }

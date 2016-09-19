@@ -401,13 +401,13 @@ static void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size )
     WriteNew( &lib_header, sizeof( lib_header ) );
 }
 
-static unsigned OptimalPageSize( void )
-/*************************************/
+static unsigned_16 OptimalPageSize( void )
+/****************************************/
 {
     unsigned    i;
     sym_file    *sfile;
     file_offset offset;
-    unsigned    page_size;
+    unsigned_16 page_size;
 
     page_size = 0;
     for( i = 4; i < 16; i++ ) {
@@ -434,7 +434,7 @@ static void WriteOmfFileTable( void )
 
     if( Options.page_size == 0 ) {
         Options.page_size = DEFAULT_PAGE_SIZE;
-    } else if( Options.page_size == (unsigned short)-1 ) {
+    } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
     PadOmf( true );

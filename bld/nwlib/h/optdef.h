@@ -67,7 +67,7 @@ typedef struct {
     char            *output_name;
     char            *export_list_file;
     char            *explode_ext;
-    unsigned short  page_size;
+    unsigned_16     page_size;
     BITB            no_backup        :1;
     BITB            respect_case     :1;
     BITB            list_contents    :1;

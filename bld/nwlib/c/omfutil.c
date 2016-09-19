@@ -58,13 +58,13 @@ void FiniOmfUtil( void )
     FiniOmfRec();
 }
 
-static void CheckForOverflow(file_offset current)
+static void CheckForOverflow( file_offset current )
 {
     char buffer[10];
 
     if( current / Options.page_size > (unsigned long)USHRT_MAX ) {
-        sprintf(buffer, "%u", Options.page_size);
-        FatalError(ERR_LIB_TOO_LARGE, buffer);
+        sprintf( buffer, "%u", Options.page_size );
+        FatalError( ERR_LIB_TOO_LARGE, buffer );
     }
 }
 
@@ -76,7 +76,7 @@ void PadOmf( bool force )
     // page size is always a power of 2
     // therefor x % Options.page_size == x & ( Options.page_size - 1 )
 
-    padding = Options.page_size -( LibTell( NewLibrary ) & ( Options.page_size - 1 ) );
+    padding = Options.page_size - ( LibTell( NewLibrary ) & ( Options.page_size - 1 ) );
     if( padding != Options.page_size || force ) {
         tmpbuf = MemAlloc( padding );
         memset( tmpbuf, 0, padding );

@@ -109,7 +109,7 @@ static char *GetEqual( char *c, char *buff, char *ext, char **ret )
     return( c );
 }
 
-static void SetPageSize( unsigned short new_size )
+static void SetPageSize( unsigned_16 new_size )
 {
     unsigned int i;
 
@@ -366,7 +366,7 @@ static char *ParseOption( char *c, char *buff )
             if( Options.page_size ) {
                 DuplicateOption( start );
             }
-            Options.page_size = (unsigned short)-1;
+            Options.page_size = (unsigned_16)-1;
         } else {
             if( Options.page_size ) {
                 DuplicateOption( start );
@@ -380,7 +380,7 @@ static char *ParseOption( char *c, char *buff )
                 FatalError( ERR_PAGE_RANGE );
             }
             MemFree( page );
-            SetPageSize( (unsigned short)page_size );
+            SetPageSize( (unsigned_16)page_size );
         }
         break;
     case 'n': //                       (always create a new library)
