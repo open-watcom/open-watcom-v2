@@ -100,7 +100,7 @@ char *GetFFName( arch_header *arch )
     char        *name = NULL;
     size_t      len;
 
-    if( arch->ffnametab && arch->nextffname ) {
+    if( arch->ffnametab != NULL && arch->nextffname != NULL ) {
         len = strlen( arch->nextffname );
         name = MemAlloc( len + 1 );
         memcpy( name, arch->nextffname, len + 1 );

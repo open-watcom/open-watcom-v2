@@ -164,10 +164,10 @@ static void RemoveFromHashTable( sym_entry *sym )
 
     if( hash == sym ) {
         HashTable[hval] = sym->hash;
-    } else if( hash ) {
+    } else if( hash != NULL ) {
         prev = hash;
 
-        for( hash = hash->hash; hash; hash = hash->hash ) {
+        for( hash = hash->hash; hash != NULL; hash = hash->hash ) {
             if( hash == sym ) {
                 prev->hash = hash->hash;
                 break;
@@ -195,7 +195,7 @@ static void NewSymFile( arch_header *arch )
     if( Options.trim_path )
         TrimPath( sfile->arch.name );
     sfile->name_length = strlen( sfile->arch.name );
-    if( sfile->arch.ffname ) {
+    if( sfile->arch.ffname != NULL ) {
         sfile->arch.ffname = DupStrGlobal( sfile->arch.ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
@@ -258,7 +258,7 @@ static void SortSymbols( void )
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             // Always using "full" filename for AR
-            if( sfile->arch.ffname ) {
+            if( sfile->arch.ffname != NULL ) {
                 name_length = sfile->ffname_length;
             } else {
                 sfile->ffname_length = 0;
@@ -644,7 +644,7 @@ static void WriteArMlibFileTable( void )
             if( sfile->name_offset == -1 )
                 continue;
             // Always write the "full" filename for AR
-            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname ) {
+            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname != NULL ) {
                 WriteNew( sfile->arch.ffname, sfile->ffname_length );
             } else {
                 WriteNew( sfile->arch.name, sfile->name_length );
@@ -819,7 +819,7 @@ void DumpFileTable( void )
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
                     (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
-            for( hash = entry->hash; hash; hash = hash->hash ) {
+            for( hash = entry->hash; hash != NULL; hash = hash->hash ) {
                 printf( " -> \"%s\"", hash->name );
                 fflush( stdout );
             }
@@ -847,7 +847,7 @@ void DumpHashTable( void )
         length = 0;
 
         if( HashTable[i] ) {
-            for( hash = HashTable[i]; hash; hash = hash->next ) {
+            for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
                 ++length;
             }
         }
@@ -1237,7 +1237,7 @@ void ListContents( void )
         listNewLine( fp );
 
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            if( sfile->arch.ffname ) {
+            if( sfile->arch.ffname != NULL ) {
                 listPrint( fp, "%s ", sfile->arch.ffname );
             } else {
                 listPrint( fp, "%s ", sfile->arch.name );
@@ -1252,7 +1252,7 @@ void ListContents( void )
             listNewLine( fp );
         }
 
-        if( fp ) {
+        if( fp != NULL ) {
             fclose( fp );
         }
     }
