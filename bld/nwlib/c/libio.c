@@ -107,8 +107,8 @@ void LibWriteError( libfile lio )
     FatalError( ERR_CANT_WRITE, lio->name, strerror( errno ) );
 }
 
-void BadLibrary( char *name )
-/***************************/
+void BadLibrary( const char *name )
+/*********************************/
 {
     FatalError( ERR_BAD_LIBRARY, name );
 }

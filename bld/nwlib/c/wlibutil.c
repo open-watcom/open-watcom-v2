@@ -45,7 +45,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
 }
 
 
-void GetFileContents( char *name, libfile io, arch_header *arch, char **contents )
+void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents )
 {
     file_offset     size;
     file_offset     bytes_read;
@@ -59,7 +59,7 @@ void GetFileContents( char *name, libfile io, arch_header *arch, char **contents
     if( size % 2 == 1 ) {
         size++;
     }
-    *contents = (char *)MemAlloc( size );
+    *contents = MemAlloc( size );
     bytes_read = LibRead( io, *contents, size );
     if( bytes_read != size ) {
         BadLibrary( name );

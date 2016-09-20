@@ -37,15 +37,15 @@
 #include "clibext.h"
 
 
-static void AllocFNameTab( char *name, libfile io, arch_header *arch )
-/********************************************************************/
+static void AllocFNameTab( const char *name, libfile io, arch_header *arch )
+/**************************************************************************/
 {
     MemFree( arch->fnametab );
     GetFileContents( name, io, arch, &arch->fnametab );
 }
 
-static void AllocFFNameTab( char *name, libfile io, arch_header *arch )
-/*********************************************************************/
+static void AllocFFNameTab( const char *name, libfile io, arch_header *arch )
+/***************************************************************************/
 {
     MemFree( arch->ffnametab );
     GetFileContents( name, io, arch, &arch->ffnametab );
@@ -54,8 +54,8 @@ static void AllocFFNameTab( char *name, libfile io, arch_header *arch )
 }
 
 
-void LibWalk( libfile io, char *name, void (*rtn)( arch_header *, libfile io ) )
-/******************************************************************************/
+void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile io ) )
+/************************************************************************************/
 {
     ar_header           ar;
     arch_header         arch;

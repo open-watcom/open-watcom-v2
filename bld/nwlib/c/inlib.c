@@ -37,7 +37,7 @@
 
 static input_lib *InputLibs;
 
-void AddInputLib( libfile io, char *name )
+void AddInputLib( libfile io, const char *name )
 {
     input_lib   *new;
 
