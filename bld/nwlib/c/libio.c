@@ -54,7 +54,7 @@ void FiniLibIo( void )
     }
 }
 
-libfile LibOpen( char *name, bool write_to )
+libfile LibOpen( const char *name, bool write_to )
 {
     FILE    *io;
     libfile lio;

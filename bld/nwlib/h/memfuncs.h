@@ -47,5 +47,5 @@ extern void MemFreeGlobal( void *ptr );
 
 extern void MemPrtList( void );
 extern void FiniMem( void );
-extern char *DupStr( char* );
-extern char *DupStrGlobal( char* ); //uses MemAllocGlobal
+extern char *DupStr( const char * );
+extern char *DupStrGlobal( const char * ); //uses MemAllocGlobal

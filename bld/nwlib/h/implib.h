@@ -98,9 +98,9 @@ typedef unsigned_16 Coff32_EOrd;
 
 extern bool AddImport( arch_header *arch, libfile io );
 extern void CoffAddImportSymbols( arch_header *, short, long, short *, long, long *, long, char * );
-extern void OmfMKImport( arch_header *, importType, long, char *, char *, char *, processor_type );
-extern void CoffMKImport( arch_header *, importType, long, char *, char *, char *, processor_type );
-extern void ElfMKImport( arch_header *, importType, long, char *, char *, Elf32_Export *, Elf32_Sym *, processor_type );
+extern void OmfMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
+extern void CoffMKImport( arch_header *, importType, long, const char *, const char *, char *, processor_type );
+extern void ElfMKImport( arch_header *, importType, long, const char *, const char *, Elf32_Export *, Elf32_Sym *, processor_type );
 extern int  CoffImportSize( import_sym * );
 extern int  ElfImportSize( import_sym * );
 extern void CoffWriteImport( libfile, sym_file *, int );

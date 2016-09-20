@@ -109,7 +109,7 @@ void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
     FiniSubSystems();
 }
 
-char *WlibGetEnv( char *name )
+char *WlibGetEnv( const char *name )
 {
     char *env;
 

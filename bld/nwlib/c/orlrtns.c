@@ -104,8 +104,8 @@ void InitObj( void )
 }
 
 
-static obj_file *DoOpenObjFile( char *name, libfile hdl, long offset )
-/********************************************************************/
+static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
+/**************************************************************************/
 {
     obj_file            *ofile;
     orl_file_format     format;
@@ -136,8 +136,8 @@ static obj_file *DoOpenObjFile( char *name, libfile hdl, long offset )
     return( ofile );
 }
 
-obj_file *OpenObjFile( char *name )
-/*********************************/
+obj_file *OpenObjFile( const char *name )
+/***************************************/
 {
     libfile     hdl;
 
@@ -145,8 +145,8 @@ obj_file *OpenObjFile( char *name )
     return( DoOpenObjFile( name, hdl, 0 ) );
 }
 
-obj_file *OpenLibFile( char *name, libfile hdl )
-/**********************************************/
+obj_file *OpenLibFile( const char *name, libfile hdl )
+/****************************************************/
 {
     return( DoOpenObjFile( name, hdl, LibTell( hdl ) ) );
 }

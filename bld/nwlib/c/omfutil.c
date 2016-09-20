@@ -150,9 +150,9 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
                 loc -= NUM_BUCKETS + 1;
                 lib_block[h.block].name[loc] = len;
                 loc++;
-                memcpy( &(lib_block[h.block].name[loc]), sym, len );
+                memcpy( lib_block[h.block].name + loc, sym, len );
                 loc += len;
-                *( (unsigned_16 *)&(lib_block[h.block].name[loc]) ) = offset;
+                *(unsigned_16 *)( lib_block[h.block].name + loc ) = offset;
                 return( true );
             }
             h.bucket += h.bucketd;

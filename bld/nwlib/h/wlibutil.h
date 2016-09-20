@@ -31,19 +31,19 @@
 
 extern void GetFileContents( char *name, libfile io, arch_header *arch, char **contents );
 extern void Copy( libfile source, libfile dest, file_offset size );
-extern char *MakeObjOutputName( char *src, char *new );
+extern char *MakeObjOutputName( const char *src, const char *new );
 extern char *MakeListName( void );
 extern char *MakeFName( const char *a );
 extern char *MakeBakName( void );
-extern bool SameName( char *a, char *b );
+extern bool SameName( const char *a, const char *b );
 extern int  SymbolNameCmp( const char *s1, const char *s2);
-extern bool IsExt( char *a, char *b );
+extern bool IsExt( const char *a, const char *b );
 extern void NewArchHeader( arch_header *arch, char *name );
-extern void DefaultExtension( char *name, char *def_ext );
+extern void DefaultExtension( char *name, const char *def_ext );
 extern char *TrimPath( char * );
-extern bool SameFile( char *a, char *b );
-extern char *FormSym(char*);
-extern char *WlibGetEnv( char *name);
+extern bool SameFile( const char *a, const char *b );
+extern char *FormSym( const char * );
+extern char *WlibGetEnv( const char *name );
 extern void Banner( void );
 extern char *LibFormat( void );
 extern char *MakeTmpName( char *buffer );

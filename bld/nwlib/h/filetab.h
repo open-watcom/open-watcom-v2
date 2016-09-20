@@ -120,7 +120,7 @@ extern bool RemoveObjectSymbols( char *name );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );
-extern void AddSym( char *name, symbol_strength strength, unsigned char info );
+extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
 
 #ifndef NDEBUG
 extern void DumpFileTable( void );

@@ -54,7 +54,7 @@ lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
-static char *GetString( char *c, char *buff, bool singlequote, bool ignoreSpaceInQuotes )
+static const char *GetString( const char *c, char *buff, bool singlequote, bool ignoreSpaceInQuotes )
 {
     char    quote;
 
@@ -86,9 +86,9 @@ static char *GetString( char *c, char *buff, bool singlequote, bool ignoreSpaceI
     return( c );
 }
 
-static char *GetEqual( char *c, char *buff, char *ext, char **ret )
+static const char *GetEqual( const char *c, char *buff, const char *ext, char **ret )
 {
-    char    *start = c;
+    const char  *start = c;
 
     eatwhite( c );
     if( *c == '=' ) {
@@ -124,15 +124,15 @@ static void SetPageSize( unsigned_16 new_size )
     }
 }
 
-static void DuplicateOption( char *c )
+static void DuplicateOption( const char *c )
 {
     FatalError( ERR_DUPLICATE_OPTION, c );
 }
 
-static char *ParseOption( char *c, char *buff )
+static const char *ParseOption( const char *c, char *buff )
 {
     unsigned long   page_size;
-    char            *start;
+    const char      *start;
     char            *page;
     char            *endptr;
     ar_format       libformat;
@@ -396,7 +396,7 @@ static char *ParseOption( char *c, char *buff )
     return( c );
 }
 
-static void AddCommand( operation ops, char *name )
+static void AddCommand( operation ops, const char *name )
 {
     lib_cmd         *new;
 
@@ -429,11 +429,11 @@ static void FreeCommands( void )
     CmdListEnd = &CmdList;
 }
 
-static char *ParseCommand( char *c )
+static const char *ParseCommand( const char *c )
 {
     bool            doquotes = true;
     bool            ignoreSpacesInQuotes = false;
-    char            *start;
+    const char      *start;
     operation       ops = 0;
     //char        buff[_MAX_PATH];
     char            buff[MAX_IMPORT_STRING];
@@ -499,10 +499,10 @@ static char *ParseCommand( char *c )
 
 #define MAX_CMDLINE     (10*1024)
 
-static void ParseOneLine( char *c )
+static void ParseOneLine( const char *c )
 {
     char        *buff;
-    char        *start;
+    const char  *start;
 
     buff = MemAlloc( MAX_CMDLINE );
     for( ;; ) {
@@ -536,11 +536,11 @@ static void ParseOneLine( char *c )
             ++c;
             c = GetString( c, buff, true, false );
             {
-                char *env = WlibGetEnv( buff );
+                const char *env = WlibGetEnv( buff );
 
 
                 if( env != NULL ) {
-                    ParseOneLine(env);
+                    ParseOneLine( env );
                 } else {
                     FILE    *io;
                     DefaultExtension( buff, EXT_CMD );
@@ -577,9 +577,9 @@ static void ParseOneLine( char *c )
     }
 }
 
-static char *ParseArOption( char *c, operation *ar_mode )
+static const char *ParseArOption( const char *c, operation *ar_mode )
 {
-    char    *start = c;
+    const char  *start = c;
 
     while( notwhite( *c ) ) {
         switch( my_tolower( *c ) ) {
@@ -643,7 +643,7 @@ static char *ParseArOption( char *c, operation *ar_mode )
     return( c );
 }
 
-static void ParseOneArLine( char *c, operation *ar_mode )
+static void ParseOneArLine( const char *c, operation *ar_mode )
 {
     char        *buff;
     bool        done_options;
@@ -691,7 +691,7 @@ static void ParseOneArLine( char *c, operation *ar_mode )
 void ProcessCmdLine( char *argv[] )
 {
     char        *parse;
-    char        *env;
+    const char  *env;
     lib_cmd     *cmd;
     char        *fname;
     char        buffer[PATH_MAX];

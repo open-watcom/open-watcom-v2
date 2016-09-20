@@ -114,7 +114,7 @@ static char     dir[_MAX_DIR];
 static char     fname[_MAX_FNAME];
 static char     fext[_MAX_EXT];
 
-bool SameFile( char *a, char *b )
+bool SameFile( const char *a, const char *b )
 {
     char fulla[_MAX_PATH];
 
@@ -123,7 +123,7 @@ bool SameFile( char *a, char *b )
     return( FNCMP( fulla, path ) == 0 );
 }
 
-bool SameName( char *a, char *b )
+bool SameName( const char *a, const char *b )
 {
     _splitpath( a, NULL, NULL, path, fext );
     _splitpath( b, NULL, NULL, fname, fext );
@@ -136,13 +136,13 @@ char *MakeFName( const char *a )
     return( fname );
 }
 
-bool IsExt( char *a, char *b )
+bool IsExt( const char *a, const char *b )
 {
     _splitpath( a, NULL, NULL, NULL, fext );
     return( FNCMP( fext, b ) == 0 );
 }
 
-void DefaultExtension( char *name, char *def_ext )
+void DefaultExtension( char *name, const char *def_ext )
 {
     _splitpath( name, drive, dir, fname, fext );
     if( fext[0] == '\0' ) {
@@ -150,7 +150,7 @@ void DefaultExtension( char *name, char *def_ext )
     }
 }
 
-char *MakeObjOutputName( char *src, char *new )
+char *MakeObjOutputName( const char *src, const char *new )
 {
     if( new != NULL ) {
         _splitpath( new, NULL, NULL, fname, fext );
@@ -215,7 +215,7 @@ char *TrimPath( char *name )
 }
 
 
-char    *FormSym( char *name )
+char    *FormSym( const char *name )
 {
     static      char    buff[128];
 

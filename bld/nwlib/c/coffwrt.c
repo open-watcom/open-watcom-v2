@@ -103,7 +103,7 @@ static void FiniCoffLibFile( coff_lib_file *c_file )
     MemFree( c_file->string_table );
 }
 
-static void AddCoffString( coff_lib_file  *c_file, char *name, int len )
+static void AddCoffString( coff_lib_file  *c_file, const char *name, int len )
 {
     len++;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
@@ -114,7 +114,7 @@ static void AddCoffString( coff_lib_file  *c_file, char *name, int len )
     c_file->string_table_size += len;
 }
 
-static void AddCoffSection( coff_lib_file *c_file, char *name, unsigned_32 size,
+static void AddCoffSection( coff_lib_file *c_file, const char *name, unsigned_32 size,
     unsigned_16 num_relocs, unsigned_32 flags )
 {
     coff_section_header     *section;
@@ -136,7 +136,7 @@ static void AddCoffSection( coff_lib_file *c_file, char *name, unsigned_32 size,
     c_file->header.num_sections++;
 }
 
-static void AddCoffSymbol( coff_lib_file *c_file, char *name, unsigned_32 value,
+static void AddCoffSymbol( coff_lib_file *c_file, const char *name, unsigned_32 value,
     signed_16 sec_num,  unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
 {
     coff_symbol _WCUNALIGNED    *sym;

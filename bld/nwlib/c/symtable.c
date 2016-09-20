@@ -46,7 +46,7 @@ static int              padding_string_len;
 
 #define HASH_SIZE       256
 
-static int Hash( char *string, unsigned *plen );
+static int Hash( const char *string, unsigned *plen );
 
 void InitFileTab( void )
 /**********************/
@@ -728,8 +728,8 @@ void WriteFileTable( void )
     }
 }
 
-static int Hash( char *string, unsigned *plen )
-/*********************************************/
+static int Hash( const char *string, unsigned *plen )
+/***************************************************/
 {
     unsigned long       g;
     unsigned long       h;
@@ -748,8 +748,8 @@ static int Hash( char *string, unsigned *plen )
     return( h % HASH_SIZE );
 }
 
-void AddSym( char *name, symbol_strength strength, unsigned char info )
-/*********************************************************************/
+void AddSym( const char *name, symbol_strength strength, unsigned char info )
+/***************************************************************************/
 {
     sym_entry   *sym,**owner;
     int         hash;
@@ -766,7 +766,7 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
                     owner = &(*owner)->next;
                 }
                 *owner = sym->next;
-                owner = &HashTable[hash];
+                owner = HashTable + hash;
                 while( *owner != sym ) {
                     owner = &(*owner)->hash;
                 }
@@ -937,7 +937,7 @@ void AddObjectSymbols( arch_header *arch, libfile io, long offset )
 }
 
 void OmfMKImport( arch_header *arch, importType type,
-                  long ordinal, char *DLLname, char *symName,
+                  long ordinal, const char *DLLname, const char *symName,
                   char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -966,7 +966,7 @@ void OmfMKImport( arch_header *arch, importType type,
 }
 
 void CoffMKImport( arch_header *arch, importType type,
-                   long ordinal, char *DLLname, char *symName,
+                   long ordinal, const char *DLLname, const char *symName,
                    char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -1004,7 +1004,7 @@ void CoffMKImport( arch_header *arch, importType type,
 }
 
 void ElfMKImport( arch_header *arch, importType type, long export_size,
-                  char *DLLname, char *strings, Elf32_Export *export_table,
+                  const char *DLLname, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {
     int                 i;
@@ -1029,7 +1029,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     for( i = 0; i < export_size; i++ ) {
         if( export_table[i].exp_symbol ) {
             imp_sym = MemAllocGlobal( sizeof( elf_import_sym ) );
-            imp_sym->name = DupStrGlobal( &(strings[sym_table[export_table[i].exp_symbol].st_name]) );
+            imp_sym->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
             imp_sym->len = strlen( imp_sym->name );
             imp_sym->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
@@ -1157,7 +1157,7 @@ static void printVerboseTableEntry( arch_header *arch )
 
 
 void ListContents( void )
-/******************************/
+/***********************/
 {
     sym_file    *sfile;
     lib_cmd     *cmd;

@@ -211,22 +211,22 @@ void FiniMem( void )
 #endif
 }
 
-char *DupStr( char *str )
-/***********************/
-{
-    char *ptr;
-
-    ptr = MemAlloc( strlen( str ) +1 );
-    strcpy( ptr, str );
-    return( ptr );
-}
-
-char *DupStrGlobal( char *str )
+char *DupStr( const char *str )
 /*****************************/
 {
     char *ptr;
 
-    ptr = MemAllocGlobal( strlen( str ) +1 );
+    ptr = MemAlloc( strlen( str ) + 1 );
+    strcpy( ptr, str );
+    return( ptr );
+}
+
+char *DupStrGlobal( const char *str )
+/***********************************/
+{
+    char *ptr;
+
+    ptr = MemAllocGlobal( strlen( str ) + 1 );
     strcpy( ptr, str );
     return( ptr );
 }

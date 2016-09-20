@@ -52,7 +52,7 @@ struct io_struct {
 
 extern void         InitLibIo( void  );
 extern void         FiniLibIo( void );
-extern libfile      LibOpen( char *name, bool write_to );
+extern libfile      LibOpen( const char *name, bool write_to );
 extern file_offset  LibRead( libfile io, void *buff, file_offset len );
 extern void         LibWrite( libfile io, void *buff, file_offset len );
 extern void         LibClose( libfile io );
