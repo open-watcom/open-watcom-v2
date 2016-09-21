@@ -259,7 +259,7 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( bytes != write( handle, DeMacroBody, bytes ) ) {
+                if( bytes != (size_t)write( handle, DeMacroBody, bytes ) ) {
                     ret = RET_ERROR;
                 }
                 if( 1 != write( handle, "\n", 1 ) ) {
@@ -661,7 +661,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( write( currentFileHandle, text, len ) != len ) {
+        if( (size_t)write( currentFileHandle, text, len ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );

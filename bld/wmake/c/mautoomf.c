@@ -138,7 +138,7 @@ static bool getOMFCommentRecord( omf_info *info )
         }
         // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( read( hdl, nameBuffer, len ) != len ) {
+        if( (size_t)read( hdl, nameBuffer, len ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
