@@ -1469,7 +1469,7 @@ static bool scope( output_desc *data, state_desc *state, size_t *symbol_length )
         new_state.suffix = data->count - state->prefix - *symbol_length;
         return( template_name( data, &new_state ) );
     } else {
-        int rc = sym_name( data, state );
+        bool rc = sym_name( data, state );
         *symbol_length = data->index - state->prefix - 1;
         return( rc );
     }
