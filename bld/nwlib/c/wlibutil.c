@@ -47,8 +47,7 @@ int SymbolNameCmp( const char *s1, const char *s2)
 
 void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents )
 {
-    file_offset     size;
-    file_offset     bytes_read;
+    size_t  size;
 
     size = arch->size;
     if( size == 0 ) {
@@ -60,8 +59,7 @@ void GetFileContents( const char *name, libfile io, arch_header *arch, char **co
         size++;
     }
     *contents = MemAlloc( size );
-    bytes_read = LibRead( io, *contents, size );
-    if( bytes_read != size ) {
+    if( LibRead( io, *contents, size ) != size ) {
         BadLibrary( name );
     }
 }
@@ -81,12 +79,10 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->mode = buf.st_mode;
     arch->size = buf.st_size;
 }
-static void CopyBytes( char *buffer, libfile source, libfile dest, file_offset len )
-{
-    file_offset bytes;
 
-    bytes = LibRead( source, buffer, len );
-    if( bytes == len ) {
+static void CopyBytes( char *buffer, libfile source, libfile dest, size_t len )
+{
+    if( LibRead( source, buffer, len ) == len ) {
         LibWrite( dest, buffer, len );
     } else {
         LibReadError( source );

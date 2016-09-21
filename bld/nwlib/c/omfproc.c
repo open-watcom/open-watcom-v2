@@ -69,7 +69,7 @@ static unsigned short   SegDefCount;
 static char             NameBuff[257];
 
 static OmfRecord        *omfRec;
-static unsigned         omfRecLen;
+static size_t           omfRecLen;
 
 void InitOmfRec( void )
 /*********************/
@@ -343,8 +343,8 @@ static void CalcOmfRecordCheckSum( OmfRecord *rec )
     rec->chkcalc[i] = -sum;
 }
 
-static void SetOmfBuffer( int len )
-/*********************************/
+static void SetOmfBuffer( unsigned_16 len )
+/*****************************************/
 {
     if( len + 3 > omfRecLen ) {
         OmfRecord *new;
@@ -357,8 +357,8 @@ static void SetOmfBuffer( int len )
     }
 }
 
-static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, int len )
-/************************************************************/
+static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, unsigned_16 len )
+/********************************************************************/
 {
     omfRec->basic.type = type;
     omfRec->basic.len = GET_LE_16( len );
@@ -367,9 +367,9 @@ static unsigned_8 *SetOmfRecBuffer( unsigned_8 type, int len )
 }
 
 static bool ReadOmfRecord( libfile io )
-/*******************************************/
+/*************************************/
 {
-    int     len;
+    unsigned_16 len;
 
     if( LibRead( io, omfRec, 3 ) != 3 )
         return( false );
@@ -386,7 +386,7 @@ static bool ReadOmfRecord( libfile io )
 static void trimOmfHeader( void )
 /*******************************/
 {
-    int     len;
+    unsigned_16 len;
 
     len = GET_LE_16( omfRec->basic.len );
     omfRec->basic.contents[len - 1] = '\0';

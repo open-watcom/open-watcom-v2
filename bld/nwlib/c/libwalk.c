@@ -59,7 +59,7 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
 {
     ar_header           ar;
     arch_header         arch;
-    file_offset         bytes_read;
+    size_t              bytes_read;
 //    int                 dict_count;
     file_offset         pos;
 
@@ -112,13 +112,13 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
     long            offset;
     arch_header     arch;
     char            buff[MAX_IMPORT_STRING];
-    int             len;
+    unsigned_8      len;
     unsigned_16     rec_len;
     unsigned_8      type;
 
-    if( LibRead( io, &type, 1 ) != 1 )
+    if( LibRead( io, &type, sizeof( type ) ) != sizeof( type ) )
         return; // nyi - FALSE?
-    if( LibRead( io, &rec_len, 2 ) != 2 )
+    if( LibRead( io, &rec_len, sizeof( rec_len ) ) != sizeof( rec_len ) )
         return;
     pagelen = GET_LE_16( rec_len );
     offset = pagelen;
@@ -129,11 +129,10 @@ void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile
     LibSeek( io, offset, SEEK_CUR );
     NewArchHeader( &arch, name );
     offset = LibTell( io );
-    while( LibRead( io, &type, 1 ) == 1 && ( type == CMD_THEADR ) ) {
+    while( LibRead( io, &type, sizeof( type ) ) == sizeof( type ) && ( type == CMD_THEADR ) ) {
         LibSeek( io, 2, SEEK_CUR );
-        if( LibRead( io, &type, 1 ) != 1 )
+        if( LibRead( io, &len, sizeof( len ) ) != sizeof( len ) )
             break;
-        len = type;
         if( LibRead( io, buff, len ) != len )
             break;
         buff[len] = '\0';

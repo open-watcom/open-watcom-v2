@@ -123,10 +123,10 @@ static void LibFlush( libfile lio )
     }
 }
 
-file_offset LibRead( libfile lio, void *buff, file_offset len )
+size_t LibRead( libfile lio, void *buff, size_t len )
 {
     size_t      ret;
-    file_offset b_read;
+    size_t      b_read;
 
     if( len > READ_FILE_BUFFER_SIZE ) {
         b_read = lio->buf_size - lio->buf_pos;
@@ -170,9 +170,9 @@ file_offset LibRead( libfile lio, void *buff, file_offset len )
     return( b_read );
 }
 
-void LibWrite( libfile lio, void *buff, file_offset len )
+void LibWrite( libfile lio, void *buff, size_t len )
 {
-    file_offset num;
+    size_t  num;
 
     if( len > WRITE_FILE_BUFFER_SIZE ) {
         LibFlush( lio );

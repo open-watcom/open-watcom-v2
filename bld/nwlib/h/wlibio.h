@@ -42,8 +42,8 @@ struct io_struct {
     FILE            *io;
     long            endpos;
     bool            write_to;
-    unsigned_16     buf_size;
-    unsigned_16     buf_pos;
+    size_t          buf_size;
+    size_t          buf_pos;
     char            buffer[1];
 };
 
@@ -53,8 +53,8 @@ struct io_struct {
 extern void         InitLibIo( void  );
 extern void         FiniLibIo( void );
 extern libfile      LibOpen( const char *name, bool write_to );
-extern file_offset  LibRead( libfile io, void *buff, file_offset len );
-extern void         LibWrite( libfile io, void *buff, file_offset len );
+extern size_t       LibRead( libfile io, void *buff, size_t len );
+extern void         LibWrite( libfile io, void *buff, size_t len );
 extern void         LibClose( libfile io );
 extern void         LibSeek( libfile io, long where, int whence );
 extern file_offset  LibTell( libfile io );
