@@ -40,7 +40,7 @@
 
 
 typedef struct name_len {
-    unsigned    len;
+    size_t      len;
     char        *name;
 } name_len;
 
@@ -72,8 +72,9 @@ static void InitCoffFile( coff_lib_file *c_file )
     c_file->max_string_table_size = INIT_MAX_SIZE_COFF_STRING_TABLE;
 
 }
+
 static void SetCoffFile( coff_lib_file *c_file, processor_type processor,
-     unsigned_32 time_stamp, unsigned_16 opt_hdr_size)
+     unsigned_32 time_stamp, size_t opt_hdr_size )
 {
     switch( processor ) {
     case WL_PROC_PPC:
@@ -93,7 +94,7 @@ static void SetCoffFile( coff_lib_file *c_file, processor_type processor,
     c_file->header.num_sections = 0;
     c_file->header.time_stamp = time_stamp;
     c_file->header.num_symbols = 0;
-    c_file->header.opt_hdr_size = opt_hdr_size;
+    c_file->header.opt_hdr_size = (unsigned_16)opt_hdr_size;
     c_file->header.flags = IMAGE_FILE_32BIT_MACHINE;
     c_file->string_table_size = 0;
 }
@@ -103,7 +104,7 @@ static void FiniCoffLibFile( coff_lib_file *c_file )
     MemFree( c_file->string_table );
 }
 
-static void AddCoffString( coff_lib_file  *c_file, const char *name, int len )
+static void AddCoffString( coff_lib_file  *c_file, const char *name, size_t len )
 {
     len++;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
@@ -118,7 +119,7 @@ static void AddCoffSection( coff_lib_file *c_file, const char *name, unsigned_32
     unsigned_16 num_relocs, unsigned_32 flags )
 {
     coff_section_header     *section;
-    int                     len;
+    size_t                  len;
 
     section = c_file->section + c_file->header.num_sections;
     len = strlen( name );
@@ -140,7 +141,7 @@ static void AddCoffSymbol( coff_lib_file *c_file, const char *name, unsigned_32 
     signed_16 sec_num,  unsigned_16 type, unsigned_8 class, unsigned_8 num_aux )
 {
     coff_symbol _WCUNALIGNED    *sym;
-    int                         len;
+    size_t                      len;
 
     sym = c_file->symbol + c_file->header.num_symbols;
     len = strlen( name );
@@ -231,7 +232,7 @@ static void WriteCoffStringTable( libfile io, coff_lib_file *c_file )
     LibWrite( io, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-static int GetSizeCoffOptHeader( sym_file *sfile, int long_format )
+static size_t GetSizeCoffOptHeader( sym_file *sfile, bool long_format )
 {
     if( long_format ) {
         if( sfile->import->processor == WL_PROC_X64 ) {
@@ -305,7 +306,7 @@ static void WriteCoffOptHeader( libfile io, sym_file *sfile )
     }
 }
 
-static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_file, name_len *modName, name_len *dllName, int opt_header_size )
+static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_file, name_len *modName, name_len *dllName, size_t opt_header_size )
 {
     unsigned_16     type;
     char            *buffer;
@@ -406,7 +407,7 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file c_fil
     WriteCoffStringTable( io, &c_file );
 }
 
-void CoffWriteImport( libfile io, sym_file *sfile, int long_format )
+void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
 {
     unsigned_16                 type;
     coff_lib_file               c_file;
