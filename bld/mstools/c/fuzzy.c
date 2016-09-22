@@ -438,7 +438,7 @@ void InitFuzzy( const char *objs[], const char *libs[],
     orl_handle          o_hnd;
     int                 rc = 1;
     DllToolCallbacks    dllcallbacks;
-    OrlSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
+    static OrlSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
 
     /*** Create a hash table ***/
     hashtable = InitHash( HASH_TABLE_SIZE, hash_symbol_name, hash_compare );
@@ -498,7 +498,8 @@ void InitFuzzy( const char *objs[], const char *libs[],
 void FiniFuzzy( void )
 /********************/
 {
-    if( hashtable == NULL )  Zoinks();
+    if( hashtable == NULL )
+        Zoinks();
     FiniHash( hashtable, 1 );
     hashtable = NULL;
 }
@@ -518,42 +519,44 @@ static int matching_callback( const void *name_, void *info_ )
     ListElem *          newelem;
     ListElem *          nextelem;
 
-    if( name == NULL )  Zoinks();
-    if( strlen(info->basename)+2 > MAX_SYMBOL_LEN )  Zoinks();
+    if( name == NULL )
+        Zoinks();
+    if( strlen(info->basename)+2 > MAX_SYMBOL_LEN )
+        Zoinks();
 
     /*** Try to match this symbol ***/
     switch( info->findmode ) {
-        case MATCH_MODE_EXACT:
-            if( !strcmp( name, info->basename ) ) {
+    case MATCH_MODE_EXACT:
+        if( !strcmp( name, info->basename ) ) {
+            addit = true;
+        }
+        break;
+    case MATCH_MODE_UNDERBAR_SYMBOL:
+        sprintf( matchstr, "_%s", info->basename );
+        if( !strcmp( name, matchstr ) ) {
+            addit = true;
+        }
+        break;
+    case MATCH_MODE_SYMBOL_UNDERBAR:
+        sprintf( matchstr, "%s_", info->basename );
+        if( !strcmp( name, matchstr ) ) {
+            addit = true;
+        }
+        break;
+    case MATCH_MODE_UNDERBAR_SYMBOL_AT_NUMBER:
+        sprintf( matchstr, "_%s@", info->basename );
+        if( strstr( name, matchstr ) == name ) {
+            p = name + strlen( matchstr );
+            while( isdigit( *p ) ) {
+                p++;
+            }
+            if( *p == '\0' ) {
                 addit = true;
             }
-            break;
-        case MATCH_MODE_UNDERBAR_SYMBOL:
-            sprintf( matchstr, "_%s", info->basename );
-            if( !strcmp( name, matchstr ) ) {
-                addit = true;
-            }
-            break;
-        case MATCH_MODE_SYMBOL_UNDERBAR:
-            sprintf( matchstr, "%s_", info->basename );
-            if( !strcmp( name, matchstr ) ) {
-                addit = true;
-            }
-            break;
-        case MATCH_MODE_UNDERBAR_SYMBOL_AT_NUMBER:
-            sprintf( matchstr, "_%s@", info->basename );
-            if( strstr( name, matchstr ) == name ) {
-                p = name + strlen( matchstr );
-                while( isdigit( *p ) ) {
-                    p++;
-                }
-                if( *p == '\0' ) {
-                    addit = true;
-                }
-            }
-            break;
-        default:
-            Zoinks();
+        }
+        break;
+    default:
+        Zoinks();
     }
 
     /*** If it matches, add it to the found list ***/

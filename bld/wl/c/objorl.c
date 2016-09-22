@@ -71,8 +71,6 @@ static orl_handle       ORLHandle;
 static long             ORLFilePos;
 static long             ORLPos;
 
-static long             ORLSeek( void *, long, int );
-static void             *ORLRead( void *, size_t );
 static void             ClearCachedData( file_list *list );
 
 static orl_reloc        SavedReloc;
@@ -84,11 +82,42 @@ static unsigned_32      ImpOrdinal;
 
 static readcache   *ReadCacheList;
 
-static OrlSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
+static void *ORLRead( void *_list, size_t len )
+/**********************************************/
+{
+    file_list   *list = _list;
+    void        *result;
+    readcache   *cache;
+
+    result = CachePermRead( list, ORLFilePos + ORLPos, len );
+    ORLPos += len;
+    _ChkAlloc( cache, sizeof( readcache ) );
+    cache->next = ReadCacheList;
+    ReadCacheList = cache;
+    cache->data = result;
+    return( result );
+}
+
+static long ORLSeek( void *_list, long pos, int where )
+/*****************************************************/
+{
+    file_list *list = _list;
+
+    if( where == SEEK_SET ) {
+        ORLPos = pos;
+    } else if( where == SEEK_CUR ) {
+        ORLPos += pos;
+    } else {
+        ORLPos = list->file->len - ORLFilePos - pos;
+    }
+    return( ORLPos );
+}
 
 void InitObjORL( void )
 /****************************/
 {
+    static OrlSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
+
     ORLHandle = ORLInit( &orl_cli_funcs );
     ReadCacheList = NULL;
 }
@@ -113,37 +142,6 @@ static long ORLFileSeek( void *_list, long pos, int where )
         ORLFilePos = list->file->len - pos;
     }
     return( ORLFilePos + ORLPos );
-}
-
-static long ORLSeek( void *_list, long pos, int where )
-/*****************************************************/
-{
-    file_list *list = _list;
-
-    if( where == SEEK_SET ) {
-        ORLPos = pos;
-    } else if( where == SEEK_CUR ) {
-        ORLPos += pos;
-    } else {
-        ORLPos = list->file->len - ORLFilePos - pos;
-    }
-    return( ORLPos );
-}
-
-static void *ORLRead( void *_list, size_t len )
-/**********************************************/
-{
-    file_list   *list = _list;
-    void        *result;
-    readcache   *cache;
-
-    result = CachePermRead( list, ORLFilePos + ORLPos, len );
-    ORLPos += len;
-    _ChkAlloc( cache, sizeof( readcache ) );
-    cache->next = ReadCacheList;
-    ReadCacheList = cache;
-    cache->data = result;
-    return( result );
 }
 
 bool IsORL( file_list *list, unsigned long loc )

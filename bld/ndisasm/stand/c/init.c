@@ -613,8 +613,6 @@ unsigned_64 FileU64toHostU64(unsigned_64 value)
     return value;
 }
 
-static OrlSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
-
 static return_val initORL( void )
 {
     orl_file_flags      flags;
@@ -622,6 +620,7 @@ static return_val initORL( void )
     orl_return          o_error = ORL_OKAY;
     orl_file_format     type;
     bool                byte_swap;
+    static OrlSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd ) {
