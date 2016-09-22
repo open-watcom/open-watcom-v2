@@ -41,13 +41,13 @@ static char *procname[5] = { "", "AXP", "PPC", "X86","" };
 
 static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_type processor );
 
-static void fillInShort( unsigned_16 value, char *out )
+static void fillInU16( unsigned_16 value, char *out )
 {
     out[0] = value & 255;
     out[1] = ( value >> 8 ) & 255;
 }
 
-static void fillInLong( unsigned_32 value, char *out )
+static void fillInU32( unsigned_32 value, char *out )
 {
     out[0] = value & 255;
     out[1] = ( value >> 8 ) & 255;
@@ -908,10 +908,10 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     }
     padding = ( (strtabsize & 1) != 0 );
     Round2var( strtabsize );
-    fillInShort( ElfProcessors[import->processor], &(ElfBase[0x12]) );
-    fillInLong( strtabsize, &(ElfBase[0x74]) );
-    fillInLong( strtabsize + 0x100, &(ElfBase[0x98]) );
-    fillInLong( strtabsize + 0x118, &(ElfBase[0xc0]) );
+    fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
+    fillInU32( strtabsize, &(ElfBase[0x74]) );
+    fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
+    fillInU32( strtabsize + 0x118, &(ElfBase[0xc0]) );
     switch( import->type ) {
     case ELF:
         numsyms = import->u.elf.numsyms;
@@ -923,9 +923,9 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         numsyms = 0;
         break;
     }
-    fillInLong( 0x10 * (numsyms + 1), &(ElfBase[0xc4]) );
-    fillInLong( strtabsize + 0x128 + 0x10*numsyms, &(ElfBase[0xe8]) );
-    fillInLong( 0x10 * numsyms, &(ElfBase[0xec]) );
+    fillInU32( 0x10 * (numsyms + 1), &(ElfBase[0xc4]) );
+    fillInU32( strtabsize + 0x128 + 0x10*numsyms, &(ElfBase[0xe8]) );
+    fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
     LibWrite( io, &ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
     for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
