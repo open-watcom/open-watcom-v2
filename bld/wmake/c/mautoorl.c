@@ -64,10 +64,10 @@ static size_t           orlFileSize;
 static const char       *dependSectionName = ".depend";
 
 
-static size_t fileSize( int file_descriptor )
+static unsigned long fileSize( int file_descriptor )
 {
-    long    old;
-    size_t  size;
+    unsigned long   old;
+    unsigned long   size;
 
     old = tell( file_descriptor );
     lseek( file_descriptor, 0, SEEK_END );
@@ -96,7 +96,7 @@ static void *orlRead( void *file_handle, size_t bytes )
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = fileSize( FH2PH( file_handle ) );
+        orlFileSize = (size_t)fileSize( FH2PH( file_handle ) );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
         n = read( FH2PH( file_handle ), orlBuffer, orlFileSize );
@@ -112,8 +112,8 @@ static void *orlRead( void *file_handle, size_t bytes )
     return( NULL );
 }
 
-static size_t orlSeek( void *file_handle, size_t offset, int mode )
-/*****************************************************************/
+static long orlSeek( void *file_handle, long offset, int mode )
+/*************************************************************/
 {
     (void)file_handle; // Unused
     switch( mode ) {
