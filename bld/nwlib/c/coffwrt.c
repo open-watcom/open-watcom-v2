@@ -188,6 +188,13 @@ static void AddCoffSymSec( coff_lib_file *c_file, unsigned_8 selection )
     c_file->header.num_symbols++;
 }
 
+static void WriteStringPadding( libfile io, const char *name, size_t len )
+{
+    LibWrite( io, name, len );
+    if( len & 1 ) {
+        LibWrite( io, "\0", 1 );
+    }
+}
 
 
 static void WriteCoffFileHeader( libfile io, coff_lib_file *c_file )
@@ -334,7 +341,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_
     assert( modName->len != 0 );
     if( modName->len == 0 )
         FatalError( ERR_CANT_DO_IMPORT, "AR", "NO DLL NAME" );
-    AddCoffSection( &c_file, ".idata$6", ( dllName->len | 1 ) + 1, 0, IMAGE_SCN_ALIGN_2BYTES
+    AddCoffSection( &c_file, ".idata$6", Round2( dllName->len + 1 ), 0, IMAGE_SCN_ALIGN_2BYTES
         | IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE );
     memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
     memcpy( buffer + 20, modName->name, modName->len + 1 );
@@ -358,10 +365,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_
     WriteCoffReloc( io, 0xc, 2, type );
     WriteCoffReloc( io, 0x0, 3, type );
     WriteCoffReloc( io, 0x10, 4, type );
-    LibWrite( io, dllName->name, dllName->len + 1 );
-    if( ( dllName->len + 1 ) & 1 ) {
-        LibWrite( io, "\0", 1 );
-    }
+    WriteStringPadding( io, dllName->name, dllName->len + 1 );
     WriteCoffSymbols( io, &c_file );
     WriteCoffStringTable( io, &c_file );
 }
@@ -552,7 +556,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 | IMAGE_SCN_MEM_READ |  IMAGE_SCN_MEM_WRITE );
             AddCoffSymSec( &c_file, IMAGE_COMDAT_SELECT_ASSOCIATIVE );
             if( sfile->import->type == NAMED ) {
-                AddCoffSection( &c_file, ".idata$6", ( ( exportedName.len | 1 ) + 1 ) + 2,
+                AddCoffSection( &c_file, ".idata$6", Round2( exportedName.len + 1 ) + 2,
                     0, IMAGE_SCN_ALIGN_2BYTES | IMAGE_SCN_LNK_COMDAT
                     | IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ
                     | IMAGE_SCN_MEM_WRITE );
@@ -613,10 +617,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 LibWrite( io, buffer, 4 );
                 WriteCoffReloc( io, 0, sym_idx, type );
                 LibWrite( io, &ordinal, sizeof( ordinal ) );
-                LibWrite( io, exportedName.name, exportedName.len + 1 );
-                if( ( exportedName.len + 1 ) & 1 ) {
-                    LibWrite( io, "\0", 1 );
-                }
+                WriteStringPadding( io, exportedName.name, exportedName.len + 1 );
             } else {
                 sym_idx = ordinal | 0x80000000L;
                 LibWrite( io, &sym_idx, 4 );

@@ -135,8 +135,9 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
     hash_entry      h;
 
     omflib_hash( sym, len, &h, num_blocks );
-    
-    entry_len = (len | 1) + 3;
+
+    /* + length byte */
+    entry_len = Round2( len + 1 ) + 2;
     for( i = 0; i < num_blocks; i++ ) {
         loc = lib_block[h.block].fflag * 2;
         for( j = 0; j < NUM_BUCKETS; j++ ) {
@@ -188,15 +189,13 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
         }
         str_len = strlen( fname );
         fname[str_len] ='!';
-        ret = InsertOmfDict( lib_block, num_blocks, fname,
-            str_len + 1, sfile->new_offset );
+        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->new_offset );
         fname[str_len] = 0;
         if( !ret ) {
             return( ret );
         }
         for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-            ret = InsertOmfDict( lib_block, num_blocks, sym->name,
-                sym->len, sfile->new_offset );
+            ret = InsertOmfDict( lib_block, num_blocks, sym->name, sym->len, sfile->new_offset );
             if( !ret ) {
                 return( ret );
             }
@@ -251,28 +250,32 @@ void WriteOmfFile( sym_file *sfile )
 {
     sym_entry   *sym;
     file_offset current;
+    const char  *fname;
 
     ++symCount;
-    //add one for ! after name and make sure odd so whole name record will
-    //be word aligned
-    current = LibTell(NewLibrary);
-    CheckForOverflow(current);
+    // add one for ! after name and make sure odd so whole name record will
+    // be word aligned
+    current = LibTell( NewLibrary );
+    CheckForOverflow( current );
     sfile->new_offset = current / Options.page_size;
     if( sfile->import == NULL ) {
-        charCount += ( strlen( MakeFName( sfile->full_name ) ) + 1 ) | 1;
+        fname = MakeFName( sfile->full_name );
         // Options.page_size is always a power of 2 so someone should optimize
-        //this sometime. maybe store page_size as a log
+        // this sometime. maybe store page_size as a log
     } else {
 #ifdef IMP_MODULENAME_DLL
-        charCount += ( strlen( sfile->import->DLLName ) + 1 ) | 1;
+        fname = sfile->import->DLLName;
 #else
-        charCount += ( strlen( sfile->import->u.sym.symName ) + 1 ) | 1;
+        fname = sfile->import->u.sym.symName;
 #endif
     }
+    /* + '!' character and length byte */
+    charCount += Round2( strlen( fname ) + 2 );
     WriteFileBody( sfile );
     PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
-        charCount += sym->len | 1;
+        /* + length byte */
+        charCount += Round2( sym->len + 1 );
     }
 }

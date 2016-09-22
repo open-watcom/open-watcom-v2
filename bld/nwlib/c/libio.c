@@ -170,7 +170,7 @@ size_t LibRead( libfile lio, void *buff, size_t len )
     return( b_read );
 }
 
-void LibWrite( libfile lio, void *buff, size_t len )
+void LibWrite( libfile lio, const void *buff, size_t len )
 {
     size_t  num;
 

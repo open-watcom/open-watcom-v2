@@ -97,8 +97,7 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
             MemFree( arch.name );
             MemFree( arch.ffname );
         }
-        if( arch.size & 1 )
-            ++arch.size;
+        Round2var( arch.size );
         LibSeek( io, pos + arch.size, SEEK_SET );
     }
     MemFree( arch.fnametab );

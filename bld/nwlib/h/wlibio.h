@@ -54,7 +54,7 @@ extern void         InitLibIo( void  );
 extern void         FiniLibIo( void );
 extern libfile      LibOpen( const char *name, bool write_to );
 extern size_t       LibRead( libfile io, void *buff, size_t len );
-extern void         LibWrite( libfile io, void *buff, size_t len );
+extern void         LibWrite( libfile io, const void *buff, size_t len );
 extern void         LibClose( libfile io );
 extern void         LibSeek( libfile io, long where, int whence );
 extern file_offset  LibTell( libfile io );

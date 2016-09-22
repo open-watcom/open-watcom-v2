@@ -749,15 +749,11 @@ int ElfImportSize( import_sym *import )
         for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             len += temp->len;
         }
-        if( len & 1 ) {
-            len++;
-        }
+        Round2var( len );
         break;
     case ELFRENAMED:
         len += 0x22 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
-        if( len & 1 ) {
-            len++;
-        }
+        Round2var( len );
         break;
     default:
         break;
@@ -799,7 +795,7 @@ int CoffImportSize( import_sym *import )
             + opt_hdr_len                               // optional header
             + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
             + 0x14 + 3 * COFF_RELOC_SIZE                // section data
-            + (dll_len | 1) + 1                         // section data
+            + Round2( dll_len + 1 )                     // section data
             + 7 * COFF_SYM_SIZE                         // symbol table
             + 4 + mod_len + 21 + 25 + mod_len + 18 );   // string table
     case NULL_IMPORT_DESCRIPTOR:
@@ -828,7 +824,7 @@ int CoffImportSize( import_sym *import )
                     + 4 * COFF_SECTION_HEADER_SIZE
                     + 4 + COFF_RELOC_SIZE       // idata$5
                     + 4 + COFF_RELOC_SIZE       // idata$4
-                    + ( exp_len | 1 ) + 1 + 2   // idata$6
+                    + 2 + Round2( exp_len + 1 ) // idata$6
                     + 11 * COFF_SYM_SIZE
                     + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
             } else {
@@ -900,8 +896,8 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     elf_import_sym  *temp;
     import_sym      *import;
     long            strtabsize;
-    long            numsyms = 0;
-    long            parity;
+    long            numsyms;
+    bool            padding;
     long            offset;
     long            more;
 
@@ -910,10 +906,8 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     for( temp=import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         strtabsize += temp->len + 1;
     }
-    parity = strtabsize & 1;
-    if( parity ) {
-        strtabsize++;
-    }
+    padding = ( (strtabsize & 1) != 0 );
+    Round2var( strtabsize );
     fillInShort( ElfProcessors[import->processor], &(ElfBase[0x12]) );
     fillInLong( strtabsize, &(ElfBase[0x74]) );
     fillInLong( strtabsize + 0x100, &(ElfBase[0x98]) );
@@ -926,6 +920,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         numsyms = 1;
         break;
     default:
+        numsyms = 0;
         break;
     }
     fillInLong( 0x10 * (numsyms + 1), &(ElfBase[0xc4]) );
@@ -936,7 +931,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
     for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, temp->name, temp->len + 1 );
     }
-    if( parity ) {
+    if( padding ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
     }
     LibWrite( io, &ElfOSInfo, ElfOSInfo_SIZE );

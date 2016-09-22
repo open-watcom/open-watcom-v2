@@ -42,7 +42,7 @@ static sym_entry        **HashTable;
 static sym_entry        **SortedSymbols;
 
 static char             *padding_string;
-static int              padding_string_len;
+static unsigned         padding_string_len;
 
 #define HASH_SIZE       256
 
@@ -225,8 +225,8 @@ static void WriteFileHeader( arch_header *arch )
     WriteNew( &ar, AR_HEADER_SIZE );
 }
 
-static void WritePad( file_offset size )
-/**************************************/
+static void WritePadding( file_offset size )
+/******************************************/
 {
     if( size & 1 ) {
         WriteNew( padding_string, padding_string_len );
@@ -246,7 +246,7 @@ static void SortSymbols( void )
     sym_entry   *sym;
     sym_entry   **sym_curr;
     int         i;
-    int         name_length = 0;
+    unsigned    name_length = 0;
 
     NumFiles = 0;
     NumSymbols = 0;
@@ -470,11 +470,9 @@ static void WriteArMlibFileTable( void )
 
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32)
-                    + Round( TotalSymbolLength, 2 );
+        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32) + Round2( TotalSymbolLength );
 
-        header_size = AR_IDENT_LEN
-                    + AR_HEADER_SIZE + dict1_size;
+        header_size = AR_IDENT_LEN + AR_HEADER_SIZE + dict1_size;
 
         switch( Options.ar_libformat ) {
         case AR_FMT_BSD:
@@ -487,7 +485,7 @@ static void WriteArMlibFileTable( void )
             dict2_size = 0;
 
             if( TotalNameLength > 0 ) {
-                header_size += AR_HEADER_SIZE + Round( TotalNameLength, 2 );
+                header_size += AR_HEADER_SIZE + Round2( TotalNameLength );
             }
 
             padding_string     = "\0";
@@ -496,12 +494,12 @@ static void WriteArMlibFileTable( void )
         default:
             dict2_size = ( NumFiles + 1 ) * sizeof( unsigned_32 )
                         + sizeof( unsigned_32 ) + NumSymbols * sizeof( unsigned_16 )
-                        + Round( TotalSymbolLength, 2 );
+                        + Round2( TotalSymbolLength );
 
             header_size += AR_HEADER_SIZE + dict2_size;
 
             if( TotalNameLength > 0 ) {
-                header_size += AR_HEADER_SIZE + Round( TotalNameLength, 2 );
+                header_size += AR_HEADER_SIZE + Round2( TotalNameLength );
             }
 
             padding_string     = AR_FILE_PADDING_STRING;
@@ -516,9 +514,9 @@ static void WriteArMlibFileTable( void )
                     + TotalSymbolLength;
 
         header_size = LIBMAG_LEN + LIB_CLASS_LEN + LIB_DATA_LEN
-                    + LIB_HEADER_SIZE + Round( dict2_size, 2 )
-                    + LIB_HEADER_SIZE + Round( TotalNameLength, 2 )
-                    + LIB_HEADER_SIZE + Round( TotalFFNameLength, 2 );
+                    + LIB_HEADER_SIZE + Round2( dict2_size )
+                    + LIB_HEADER_SIZE + Round2( TotalNameLength )
+                    + LIB_HEADER_SIZE + Round2( TotalFFNameLength );
 
         padding_string     = LIB_FILE_PADDING_STRING;
         padding_string_len = LIB_FILE_PADDING_STRING_LEN;
@@ -534,9 +532,9 @@ static void WriteArMlibFileTable( void )
         sfile->new_offset = obj_offset + header_size;
         sfile->index = ++index;
         if( isBSD && ( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
-            obj_offset += Round( sfile->arch.size + sfile->name_length, 2 ) + AR_HEADER_SIZE;
+            obj_offset += Round2( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
         } else {
-            obj_offset += Round( sfile->arch.size, 2 ) + AR_HEADER_SIZE;
+            obj_offset += Round2( sfile->arch.size ) + AR_HEADER_SIZE;
         }
     }
 
@@ -569,10 +567,10 @@ static void WriteArMlibFileTable( void )
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteNew( sym->name, sym->len+1 );
+                WriteNew( sym->name, sym->len + 1 );
             }
         }
-        WritePad( TotalSymbolLength );
+        WritePadding( TotalSymbolLength );
     }
 
     // write the useful dictionary
@@ -610,10 +608,10 @@ static void WriteArMlibFileTable( void )
         }
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            WritePad( TotalSymbolLength );
+            WritePadding( TotalSymbolLength );
             break;
         case WL_LTYPE_MLIB:
-            WritePad( dict2_size );
+            WritePadding( dict2_size );
             break;
         }
     }
@@ -651,7 +649,7 @@ static void WriteArMlibFileTable( void )
             }
             WriteNew( stringpad, stringpadlen );
         }
-        WritePad( TotalNameLength );
+        WritePadding( TotalNameLength );
     }
 
     // write the full filename table
@@ -663,7 +661,7 @@ static void WriteArMlibFileTable( void )
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             WriteNew( sfile->arch.ffname, sfile->ffname_length + 1 );
         }
-        WritePad( TotalFFNameLength );
+        WritePadding( TotalFFNameLength );
     }
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -701,7 +699,7 @@ static void WriteArMlibFileTable( void )
             WriteNew( sfile->arch.name, sfile->name_length );
         }
         WriteFileBody( sfile );
-        WritePad( arch.size );
+        WritePadding( arch.size );
     }
 }
 
@@ -1076,7 +1074,7 @@ static void listNewLine( FILE *fp )
 #define LINE_WIDTH 79
 #define OFF_COLUMN 40
 
-static void fpadch( FILE *fp, char ch, int len )
+static void fpadch( FILE *fp, char ch, unsigned len )
 {
     fp = fp;
     if( len > 0 ) {

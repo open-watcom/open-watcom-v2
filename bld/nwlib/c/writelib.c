@@ -42,7 +42,7 @@ libfile NewLibrary;
 
 char *MakeTmpName( char * );
 
-void WriteNew( void *buff, file_offset len )
+void WriteNew( const void *buff, size_t len )
 {
     LibWrite( NewLibrary, buff, len );
 }

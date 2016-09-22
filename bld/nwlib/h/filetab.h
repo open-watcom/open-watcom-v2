@@ -88,8 +88,8 @@ struct sym_file_struct {
     arch_header arch;
     int         index;
     long        name_offset;
-    int         name_length;
-    int         ffname_length;
+    unsigned    name_length;
+    unsigned    ffname_length;
     char        *full_name;
     import_sym  *import;
     file_type   obj_type;
@@ -104,7 +104,7 @@ struct sym_entry_struct {
     sym_entry           *next;
     sym_file            *file;
     sym_entry           *hash;
-    short               len;
+    unsigned short      len;
     unsigned char       info;
     symbol_strength     strength;
     char                name[1];
