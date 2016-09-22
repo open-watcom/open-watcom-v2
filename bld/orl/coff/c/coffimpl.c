@@ -561,4 +561,4 @@ int convert_import_library(coff_file_handle coff_file_hnd)
     return( CoffCreateImport( coff_file_hnd, &sym ) );
 }
 
-orl_funcs ImportLibData = {ImportLibRead, ImportLibSeek, NULL, NULL};
+OrlSetFuncs( ImportLibData, ImportLibRead, ImportLibSeek, NULL, NULL );

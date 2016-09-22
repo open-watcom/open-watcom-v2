@@ -60,6 +60,13 @@
 #include "clibext.h"
 
 
+typedef struct readcache READCACHE;
+
+typedef struct readcache {
+    READCACHE   *next;
+    void        *data;
+} readcache;
+
 static orl_handle       ORLHandle;
 static long             ORLFilePos;
 static long             ORLPos;
@@ -68,7 +75,6 @@ static long             ORLSeek( void *, long, int );
 static void             *ORLRead( void *, size_t );
 static void             ClearCachedData( file_list *list );
 
-static orl_funcs        ORLFuncs = { ORLRead, ORLSeek, ChkLAlloc, LFree };
 static orl_reloc        SavedReloc;
 static char             *ImpExternalName;
 static char             *ImpModName;
@@ -76,20 +82,14 @@ static char             *FirstCodeSymName;
 static char             *FirstDataSymName;
 static unsigned_32      ImpOrdinal;
 
-
-typedef struct readcache READCACHE;
-
-typedef struct readcache {
-    READCACHE   *next;
-    void        *data;
-} readcache;
-
 static readcache   *ReadCacheList;
+
+static OrlSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
 
 void InitObjORL( void )
 /****************************/
 {
-    ORLHandle = ORLInit( &ORLFuncs );
+    ORLHandle = ORLInit( &orl_cli_funcs );
     ReadCacheList = NULL;
 }
 

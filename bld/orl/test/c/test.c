@@ -453,7 +453,6 @@ int main( int argc, char *argv[] )
 {
     orl_handle                  o_hnd;
     orl_file_handle             o_fhnd;
-    orl_funcs                   funcs;
     int                         file;
     orl_file_flags              file_flags;
     orl_machine_type            machine_type;
@@ -463,6 +462,7 @@ int main( int argc, char *argv[] )
     int                         sep;
     char                        *secs[MAX_SECS];
     int                         num_secs = 0;
+    OrlSetFuncs( orl_cli_funcs, objRead, objSeek, TRMemAlloc, TRMemFree );
 
     if( argc < 2 ) {
         printf( "Usage:  objread [-ahrsSx] [-o<section>] <objfile>\n" );
@@ -519,11 +519,7 @@ int main( int argc, char *argv[] )
         return( 2 );
     }
     TRMemOpen();
-    funcs.read = &objRead;
-    funcs.seek = &objSeek;
-    funcs.alloc = &TRMemAlloc;
-    funcs.free = &TRMemFree;
-    o_hnd = ORLInit( &funcs );
+    o_hnd = ORLInit( &orl_cli_funcs );
     if( o_hnd == NULL ) {
         printf( "Got NULL orl_handle.\n" );
         return( 2 );

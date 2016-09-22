@@ -36,10 +36,15 @@
 
 #define ORLENTRY
 
-#define ORL_FUNCS_READ(x,a,b)   (x)->funcs->read(a,b)
-#define ORL_FUNCS_SEEK(x,a,b,c) (x)->funcs->seek(a,b,c)
-#define ORL_FUNCS_ALLOC(x,a)    (x)->funcs->alloc(a)
-#define ORL_FUNCS_FREE(x,a)     (x)->funcs->free(a)
+#define ORL_CLI_READ(x,a,b)             (x)->cli_read(a,b)
+#define ORL_CLI_SEEK(x,a,b,c)           (x)->cli_seek(a,b,c)
+#define ORL_CLI_ALLOC(x,a)              (x)->cli_alloc(a)
+#define ORL_CLI_FREE(x,a)               (x)->cli_free(a)
+
+#define ORL_FUNCS_READ(x,a,b)           ORL_CLI_READ((x)->funcs,a,b)
+#define ORL_FUNCS_SEEK(x,a,b,c)         ORL_CLI_SEEK((x)->funcs,a,b,c)
+#define ORL_FUNCS_ALLOC(x,a)            ORL_CLI_ALLOC((x)->funcs,a)
+#define ORL_FUNCS_FREE(x,a)             ORL_CLI_FREE((x)->funcs,a)
 
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
@@ -79,12 +84,15 @@ typedef struct {
 } orl_linnum;
 #include <poppck.h>
 
-typedef struct {
-    void *      (*read)( void *, size_t );
-    long int    (*seek)( void *, long int, int );
-    void *      (*alloc)( size_t );
-    void        (*free)( void * );
+typedef struct orl_funcs {
+    void *      (*cli_read)( void *, size_t );
+    long int    (*cli_seek)( void *, long int, int );
+    void *      (*cli_alloc)( size_t );
+    void        (*cli_free)( void * );
 } orl_funcs;
+
+#define OrlSetFuncs( __name, __read, __seek, __alloc, __free ) \
+    orl_funcs __name = { __read, __seek, __alloc, __free }
 
 typedef enum {
     ORL_MACHINE_TYPE_NONE,      // not machine specific.

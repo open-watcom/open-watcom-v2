@@ -36,8 +36,8 @@
 #include "orllevel.h"
 #include "orlhash.h"
 
-#define _HashAlloc( a, b ) a->funcs->alloc( b )
-#define _HashFree( a, b ) a->funcs->free( b )
+#define _HashAlloc( a, b )  ORL_CLI_ALLOC( a->funcs, b )
+#define _HashFree( a, b )   ORL_CLI_FREE( a->funcs, b )
 #define _HashCompare( a, b, c ) a->compare( b, c )
 
 int ORLNumberCmp( orl_hash_data n1, orl_hash_data n2 )
@@ -137,12 +137,12 @@ orl_hash_table ORLHashTableCreate( orl_funcs * funcs, orl_hash_table_size size, 
     orl_hash_table      hash_table;
     int                 loop;
 
-    hash_table = (orl_hash_table) funcs->alloc( sizeof( orl_hash_table_struct ) );
+    hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( orl_hash_table_struct ) );
     if( !hash_table)
         return( NULL );
-    hash_table->table = (orl_hash_struct **) funcs->alloc( size * sizeof( orl_hash_struct * ) );
+    hash_table->table = (orl_hash_struct **)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_struct * ) );
     if( !(hash_table->table) ) {
-        funcs->free( hash_table );
+        ORL_CLI_FREE( funcs, hash_table );
         return( NULL );
     }
     hash_table->size = size;
@@ -163,8 +163,7 @@ void ORLHashTableFree( orl_hash_table hash_table )
     orl_hash_data_struct *      data_ptr;
     orl_hash_data_struct *      last_data_ptr;
 
-    for( loop = 0; loop < hash_table->size; loop ++ )
-    {
+    for( loop = 0; loop < hash_table->size; loop++ ) {
         hash_ptr = hash_table->table[loop];
         while( hash_ptr != NULL ) {
             data_ptr = hash_ptr->data_struct;

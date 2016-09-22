@@ -127,7 +127,6 @@ static char *intelSkipRefList[] = { "FIWRQQ", // boundary relocs
 static orl_sec_handle           symbolTable;
 static orl_sec_handle           dynSymTable;
 static orl_sec_handle           drectveSection;
-static orl_funcs                oFuncs;
 static section_list_struct      relocSections;
 static char *                   objFileBuf;
 static long                     objFilePos;
@@ -614,6 +613,8 @@ unsigned_64 FileU64toHostU64(unsigned_64 value)
     return value;
 }
 
+static OrlSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
+
 static return_val initORL( void )
 {
     orl_file_flags      flags;
@@ -622,11 +623,7 @@ static return_val initORL( void )
     orl_file_format     type;
     bool                byte_swap;
 
-    oFuncs.alloc = &MemAlloc;
-    oFuncs.free = &MemFree;
-    oFuncs.read = &objRead;
-    oFuncs.seek = &objSeek;
-    ORLHnd = ORLInit( &oFuncs );
+    ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd ) {
         type = ORLFileIdentify( ORLHnd, NULL );
         if( type == ORL_UNRECOGNIZED_FORMAT ) {

@@ -49,8 +49,9 @@ omf_handle OMFENTRY OmfInit( orl_funcs * funcs )
 
     assert( funcs );
 
-    oh = funcs->alloc( sizeof( omf_handle_struct ) );
-    if( !oh ) return( NULL );
+    oh = ORL_CLI_ALLOC( funcs, sizeof( omf_handle_struct ) );
+    if( !oh )
+        return( NULL );
     oh->funcs = funcs;
     oh->first_file_hnd = NULL;
     return( oh );

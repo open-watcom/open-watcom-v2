@@ -43,24 +43,24 @@ orl_handle ORLENTRY ORLInit( orl_funcs * funcs )
 {
     orli_handle                 orli_hnd;
 
-    orli_hnd = (orli_handle)funcs->alloc( sizeof( struct orli_handle_struct ) );
+    orli_hnd = (orli_handle)ORL_CLI_ALLOC( funcs, sizeof( struct orli_handle_struct ) );
     if( orli_hnd == NULL )
         return( NULL );
     orli_hnd->error = ORL_OKAY;
     orli_hnd->funcs = funcs;
     orli_hnd->elf_hnd = ElfInit( funcs );
     if( orli_hnd->elf_hnd == NULL ) {
-        funcs->free( orli_hnd );
+        ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
     }
     orli_hnd->coff_hnd = CoffInit( funcs );
     if( orli_hnd->coff_hnd == NULL ) {
-        funcs->free( orli_hnd );
+        ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
     }
     orli_hnd->omf_hnd = OmfInit( funcs );
     if( orli_hnd->omf_hnd == NULL ) {
-        funcs->free( orli_hnd );
+        ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
     }
     orli_hnd->first_file_hnd = NULL;

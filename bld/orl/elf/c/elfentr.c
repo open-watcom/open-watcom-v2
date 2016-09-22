@@ -41,8 +41,9 @@ elf_handle ELFENTRY ElfInit( orl_funcs * funcs )
 {
     elf_handle                                  elf_hnd;
 
-    elf_hnd = (elf_handle) funcs->alloc( sizeof( elf_handle_struct ) );
-    if( !elf_hnd ) return( NULL );
+    elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, sizeof( elf_handle_struct ) );
+    if( !elf_hnd )
+        return( NULL );
     elf_hnd->funcs = funcs;
     elf_hnd->first_file_hnd = NULL;
     return( elf_hnd );
@@ -54,7 +55,9 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
 
     while( elf_hnd->first_file_hnd != NULL ) {
         error = ElfRemoveFileLinks( elf_hnd->first_file_hnd );
-        if( error != ORL_OKAY ) return( error );
+        if( error != ORL_OKAY ) {
+            return( error );
+        }
     }
     ORL_FUNCS_FREE( elf_hnd, elf_hnd );
     return( ORL_OKAY );

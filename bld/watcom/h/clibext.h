@@ -192,8 +192,10 @@ extern int mkstemp( char *__template );
 extern ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte );
 extern ssize_t  _w64_write( int fildes, void const *buffer, size_t nbyte );
 
+#ifndef __cplusplus
 #define read(a,b,c)     _w64_read(a,b,c)
 #define write(a,b,c)    _w64_write(a,b,c)
+#endif
 #endif
 
 #endif

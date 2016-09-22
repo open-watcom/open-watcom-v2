@@ -38,15 +38,14 @@
 #include "cofftype.h"
 #include "coffimpl.h"
 
-#define _ClientRead( a, b )             (((a)->implib_data != NULL) ? ImportLibData.read( a, b ) : (a)->coff_hnd->funcs->read( a->file, b ))
-#define _ClientSeek( a, b, c )          (((a)->implib_data != NULL) ? ImportLibData.seek( a, b, c ) : (a)->coff_hnd->funcs->seek( a->file, b, c ))
-#define _ClientAlloc( a, b )            ((a)->coff_hnd->funcs->alloc( b ))
-#define _ClientFree( a, b )             ((a)->coff_hnd->funcs->free( b ))
-#define _ClientReAlloc( a, b, c )       ((a)->coff_hnd->funcs->realloc( b, c ))
+#define _ClientRead( a, b )             (((a)->implib_data != NULL) ? ORL_CLI_READ( &ImportLibData, a, b ) : ORL_CLI_READ((a)->coff_hnd->funcs, a->file, b ))
+#define _ClientSeek( a, b, c )          (((a)->implib_data != NULL) ? ORL_CLI_SEEK( &ImportLibData, a, b, c ) : ORL_CLI_SEEK((a)->coff_hnd->funcs, a->file, b, c ))
+#define _ClientAlloc( a, b )            ORL_CLI_ALLOC((a)->coff_hnd->funcs, b )
+#define _ClientFree( a, b )             ORL_CLI_FREE((a)->coff_hnd->funcs, b )
 
-#define _ClientSecRead( a, b )          ((a)->coff_file_hnd->coff_hnd->funcs->read( a->coff_file_hnd->file, b ))
-#define _ClientSecSeek( a, b, c )       ((a)->coff_file_hnd->coff_hnd->funcs->seek( a->coff_file_hnd->file, b, c ))
-#define _ClientSecAlloc( a, b )         ((a)->coff_file_hnd->coff_hnd->funcs->alloc( b ))
-#define _ClientSecFree( a, b )          ((a)->coff_file_hnd->coff_hnd->funcs->free( b ))
+#define _ClientSecRead( a, b )          ORL_CLI_READ((a)->coff_file_hnd->coff_hnd->funcs, a->coff_file_hnd->file, b )
+#define _ClientSecSeek( a, b, c )       ORL_CLI_SEEK((a)->coff_file_hnd->coff_hnd->funcs, a->coff_file_hnd->file, b, c )
+#define _ClientSecAlloc( a, b )         ORL_CLI_ALLOC((a)->coff_file_hnd->coff_hnd->funcs, b )
+#define _ClientSecFree( a, b )          ORL_CLI_FREE((a)->coff_file_hnd->coff_hnd->funcs, b )
 
 #endif

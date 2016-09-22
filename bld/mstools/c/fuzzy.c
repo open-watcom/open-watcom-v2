@@ -435,10 +435,10 @@ void InitFuzzy( const char *objs[], const char *libs[],
 /******************************************************************/
 {
     unsigned            count;
-    orl_funcs           o_funcs;
     orl_handle          o_hnd;
     int                 rc = 1;
     DllToolCallbacks    dllcallbacks;
+    OrlSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
 
     /*** Create a hash table ***/
     hashtable = InitHash( HASH_TABLE_SIZE, hash_symbol_name, hash_compare );
@@ -446,11 +446,7 @@ void InitFuzzy( const char *objs[], const char *libs[],
     /*** Collect all external symbols from the specified object files ***/
     if( objs != NULL ) {
         /*** Initialize ORL ***/
-        o_funcs.read = &obj_read;
-        o_funcs.seek = &obj_seek;
-        o_funcs.alloc = &AllocMem;
-        o_funcs.free = &FreeMem;
-        o_hnd = ORLInit( &o_funcs );
+        o_hnd = ORLInit( &orl_cli_funcs );
         if( o_hnd == NULL ) {
             FatalError( "Got NULL orl_handle." );
         }

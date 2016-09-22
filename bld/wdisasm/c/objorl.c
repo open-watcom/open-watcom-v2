@@ -81,7 +81,6 @@ hash_table              SymbolToExportTable;
 // Translation table from an orl_sec_handle to its correspinding segment.
 hash_table              SectionToSegmentTable;
 
-static orl_funcs        oFuncs;
 static buffer_info      fileBuff;
 static orl_sec_handle   symbolTable;
 static section_list     relocSections;
@@ -159,6 +158,8 @@ static void destroyHashTables( void )
     if( SectionToSegmentTable ) HashTableFree( SectionToSegmentTable );
 }
 
+static OrlSetFuncs( orl_cli_funcs, buffRead, buffSeek, AllocMem, FreeMem );
+
 bool InitORL( void )
 //******************
 // Try and see if we will use ORL. Returns true if we'll use it.
@@ -168,11 +169,7 @@ bool InitORL( void )
     orl_machine_type    o_machine_type;
 
     ORLFileHnd = NULL;
-    oFuncs.alloc = AllocMem;
-    oFuncs.free = FreeMem;
-    oFuncs.read = (void * (*) ( void *, int ))buffRead;
-    oFuncs.seek = (long int (*) ( void *, long int, int ))buffSeek;
-    ORLHnd = ORLInit( &oFuncs );
+    ORLHnd = ORLInit( &orl_cli_funcs );
     if( !ORLHnd ) {
         SysError( ERR_OUT_OF_MEM, false );
     }

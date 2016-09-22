@@ -35,7 +35,6 @@
 
 
 static orl_handle       ORLHnd;
-static orl_funcs        OrlFuncs;
 
 static void * ObjRead( void *fil, size_t len )
 /********************************************/
@@ -89,20 +88,17 @@ void FiniObj( void )
     ORLFini( ORLHnd );
 }
 
+static OrlSetFuncs( orl_cli_funcs, ObjRead, ObjSeek, ObjAlloc, ObjFree );
+
 void InitObj( void )
 /******************/
 {
 
-    OrlFuncs.read = &ObjRead;
-    OrlFuncs.seek = &ObjSeek;
-    OrlFuncs.alloc = &ObjAlloc;
-    OrlFuncs.free = &ObjFree;
-    ORLHnd = ORLInit( &OrlFuncs );
+    ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd == NULL ) {
         longjmp( Env , 1 );
     }
 }
-
 
 static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
 /**************************************************************************/
