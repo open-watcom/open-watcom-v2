@@ -32,6 +32,9 @@
 #ifndef PCOBJ_H
 #define PCOBJ_H
 
+
+#define IS_2_BYTES      0x80        /* bit set indicating 2 byte value */
+
 #include "pushpck1.h"
 /*
  * Library stuff
@@ -50,10 +53,7 @@ enum {
     LIB_TRAILER_REC     = 0xf1
 };
 
-enum {
-    DIC_REC_SIZE        = 512U,     /* record size of dictionary entry */
-    IS_2_BYTES          = 0x80      /* bit set indicating 2 byte value */
-};
+#define DIC_REC_SIZE    512U        /* record size of dictionary entry */
 
 /*
  *  INTEL Segment Alignment Specifiers - A field
