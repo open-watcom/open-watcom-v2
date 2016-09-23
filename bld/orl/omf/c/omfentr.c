@@ -106,12 +106,11 @@ orl_return OMFENTRY OmfFileFini( omf_file_handle ofh )
 }
 
 
-orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
-                                 orl_sec_return_func func )
+orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_sec_return_func func )
 {
     orl_hash_data_struct                *ds;
     omf_sec_handle                      sh;
-    omf_symbol_handle                   sym;
+    const omf_symbol_handle_struct      *sym;
     orl_return                          err;
 
     assert( ofh );
@@ -125,7 +124,9 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
             // the user code
             if( sh->type != ORL_SEC_TYPE_STR_TABLE ) {
                 err = func( (orl_sec_handle)sh );
-                if( err != ORL_OKAY ) return( err );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
             sh = sh->next;
         }
@@ -137,7 +138,9 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) &&
                !( sym->flags & OMF_SYM_FLAGS_GRPDEF ) ) {
                 err = func( (orl_sec_handle) sym->section );
-                if( err != ORL_OKAY ) return( err );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
             ds = ds->next;
         }

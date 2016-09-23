@@ -40,7 +40,7 @@ typedef enum {
 
 typedef uint_32     orl_hash_value;
 typedef uint_32     orl_hash_table_size;
-typedef void        *orl_hash_data;
+typedef const void  *orl_hash_data;
 
 typedef int         (*orl_hash_comparison_func)( orl_hash_data, orl_hash_data );
 

@@ -118,12 +118,12 @@ static void *checkArraySize( omf_file_handle ofh, void *old_arr, long num, long 
 }
 
 
-static omf_symbol_handle findExtDefSym( omf_file_handle ofh, omf_idx ext )
+static const omf_symbol_handle_struct *findExtDefSym( omf_file_handle ofh, omf_idx ext )
 {
-    omf_sec_handle              sh;
-    omf_string_struct           *extname;
-    orl_hash_data_struct        *hd;
-    omf_symbol_handle           sym;
+    omf_sec_handle                  sh;
+    omf_string_struct               *extname;
+    orl_hash_data_struct            *hd;
+    const omf_symbol_handle_struct  *sym;
 
     assert( ofh );
 
@@ -138,7 +138,7 @@ static omf_symbol_handle findExtDefSym( omf_file_handle ofh, omf_idx ext )
         return( NULL );
 
     for( hd = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, extname->string ); hd != NULL; hd = hd->next ) {
-        sym = (omf_symbol_handle)( hd->data );
+        sym = hd->data;
         if( sym != NULL ) {
             if( sym->typ & ( ORL_SYM_TYPE_UNDEFINED | ORL_SYM_TYPE_COMMON ) ) {
                 return( sym );

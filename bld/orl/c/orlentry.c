@@ -279,7 +279,7 @@ unsigned long ORLENTRY ORLExportTableRVA( orl_file_handle orl_file_hnd )
     return rva;
 }
 
-orl_return ORLENTRY ORLFileScan( orl_file_handle orl_file_hnd, char *desired, orl_sec_return_func return_func )
+orl_return ORLENTRY ORLFileScan( orl_file_handle orl_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
     switch( ORL_FILE_TYPE( orl_file_hnd ) ) {
     case( ORL_ELF ):

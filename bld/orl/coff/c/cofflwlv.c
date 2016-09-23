@@ -53,7 +53,8 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         return( ORL_OKAY );
     }
     file_hnd->symbol_handles = (coff_symbol_handle) _ClientAlloc( file_hnd, sizeof( coff_symbol_handle_struct ) * file_hnd->num_symbols );
-    if( !(file_hnd->symbol_handles) ) return( ORL_OUT_OF_MEMORY );
+    if( !(file_hnd->symbol_handles) )
+        return( ORL_OUT_OF_MEMORY );
     prev = 0;
     for( loop = 0; loop < file_hnd->num_symbols; loop++ ) {
         current = &(file_hnd->symbol_handles[loop]);
@@ -205,7 +206,9 @@ orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
     }
     for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
         error = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
-        if( error != ORL_OKAY ) return( error );
+        if( error != ORL_OKAY ) {
+            return( error );
+        }
     }
     return( ORL_OKAY );
 }
@@ -370,12 +373,15 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
 
     if( reloc_sec->coff_file_hnd->symbol_handles == NULL ) {
         return_val = CoffCreateSymbolHandles( reloc_sec->coff_file_hnd );
-        if( return_val != ORL_OKAY ) return( return_val );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
+        }
     }
     num_relocs = reloc_sec->size / sizeof( coff_reloc );
     reloc_sec->assoc.reloc.num_relocs = num_relocs;
     reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
-    if( reloc_sec->assoc.reloc.relocs == NULL ) return( ORL_OUT_OF_MEMORY );
+    if( reloc_sec->assoc.reloc.relocs == NULL )
+        return( ORL_OUT_OF_MEMORY );
     rel = (coff_reloc *) reloc_sec->contents;
     o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
     for( loop = 0; loop < num_relocs; loop++ ) {
@@ -417,12 +423,15 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
 
     fhdl = hdl->coff_file_hnd;
     if( fhdl->symbol_handles == NULL ) {
-        if( CoffCreateSymbolHandles( fhdl ) != ORL_OKAY ) return NULL;
+        if( CoffCreateSymbolHandles( fhdl ) != ORL_OKAY ) {
+            return( NULL );
+        }
     }
     coffline = (coff_line_num *) (hdl->hdr->lineno_ptr - fhdl->initial_size
                                     + fhdl->rest_of_file_buffer);
     currline = (orl_linnum *) coffline;
-    if( hdl->relocs_done ) return (orl_linnum *)currline;
+    if( hdl->relocs_done )
+        return( (orl_linnum *)currline );
     linestart = currline;
     linebase = 0;
     while( numlines > 0 ) {
@@ -442,36 +451,40 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         numlines--;
     }
     hdl->relocs_done = COFF_TRUE;
-    return (orl_linnum *) linestart;
+    return( (orl_linnum *)linestart );
 }
 
-static size_t strncspn( char *s, char *charset, int len) {
-    char chartable[32];
-    int i;
-    unsigned char ch;
+static size_t strncspn( const char *s, const char *charset, int len )
+{
+    char            chartable[32];
+    int             i;
+    unsigned char   ch;
 
-    memset(chartable, 0, sizeof chartable);
+    memset( chartable, 0, sizeof( chartable ) );
     for( ; *charset != 0; charset++ ) {
         ch = *charset;
-        chartable[ch / 8] |= 1 << ch % 8;
+        chartable[ch / 8] |= 1 << ( ch % 8 );
     }
-    for (i = 0; i < len; i++) {
+    for( i = 0; i < len; i++ ) {
         ch = s[i];
-        if( chartable[ch/8] & (1 << ch % 8) ) {
+        if( chartable[ch / 8] & ( 1 << ( ch % 8 ) ) ) {
             break;
         }
     }
-    return i;
+    return( i );
 }
 
-static char *pstrncspn( char *s, char *charset, int *len ) {
-    int l = strncspn(s, charset, *len);
+static const char *pstrncspn( const char *s, const char *charset, int *len )
+{
+    int     l;
+
+    l = strncspn( s, charset, *len );
     *len -= l;
-    return s + l;
+    return( s + l );
 }
 
-static void EatWhite( char **contents, int *len )
-/***********************************************/
+static void EatWhite( const char **contents, int *len )
+/*****************************************************/
 {
     char ch = **contents;
 
@@ -482,7 +495,7 @@ static void EatWhite( char **contents, int *len )
     }
 }
 
-static orl_return ParseExport( char **contents, int *len,
+static orl_return ParseExport( const char **contents, int *len,
                                 orl_note_callbacks *cb, void *cookie )
 /********************************************************************/
 {
@@ -494,11 +507,11 @@ static orl_return ParseExport( char **contents, int *len,
     memcpy(arg, *contents, l); arg[l] = 0;
     *len -= l;
     *contents += l;
-    return cb->export_fn( arg, cookie );
+    return( cb->export_fn( arg, cookie ) );
 }
 
 
-static orl_return ParseDefLibEntry( char **contents, int *len,
+static orl_return ParseDefLibEntry( const char **contents, int *len,
     orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
 /************************************************************************/
 {
@@ -507,7 +520,6 @@ static orl_return ParseDefLibEntry( char **contents, int *len,
     orl_return  retval;
 
     for(;;) {
-
         l = strncspn( *contents, ", \t", *len );
         arg = alloca(l+1);
         memcpy(arg, *contents, l); arg[l] = 0;
@@ -515,34 +527,41 @@ static orl_return ParseDefLibEntry( char **contents, int *len,
         *contents += l;
 
         retval = deflibentry_fn( arg, cookie );
-        if( retval != ORL_OKAY || **contents != ',' ) break;
+        if( retval != ORL_OKAY || **contents != ',' )
+            break;
         (*contents)++;
     }
-    return retval;
+    return( retval );
 }
 
-orl_return CoffParseDrectve( char *contents, int len, orl_note_callbacks *cb,
+orl_return CoffParseDrectve( const char *contents, int len, orl_note_callbacks *cb,
                              void *cookie)
 /*******************************************************************/
 {
-    char *      cmd;
+    const char  *cmd;
 
     EatWhite( &contents, &len );
     while( len > 0 ) {
-        if( *contents != '-' ) break;   // - should be start of token
+        if( *contents != '-' )
+            break;   // - should be start of token
         contents++; len--;
         cmd = contents;
         contents = pstrncspn( contents, ":", &len);
-        if( contents == NULL ) break;
+        if( contents == NULL )
+            break;
         contents++; len--;
         if( memicmp( cmd, "export", 6 ) == 0 ) {
-            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY ) break;
+            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY ) {
+                break;
+            }
         } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie )
-                != ORL_OKAY ) break;
+            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie ) != ORL_OKAY ) {
+                break;
+            }
         } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie )
-                != ORL_OKAY ) break;
+            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie ) != ORL_OKAY ) {
+                break;
+            }
         }
         EatWhite( &contents, &len );
     }

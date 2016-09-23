@@ -92,27 +92,32 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
     return( CoffRemoveFileLinks( coff_file_hnd ) );
 }
 
-orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, char *desired, orl_sec_return_func return_func )
+orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct *              data_struct;
     int                                 loop;
     orl_return                          error;
 
-    if( !desired ) {
+    if( desired == NULL ) {
         /* global request */
         for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
             error = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[loop] );
-            if( error != ORL_OKAY ) return( error );
+            if( error != ORL_OKAY ) {
+                return( error );
+            }
         }
     } else {
         if( !(coff_file_hnd->sec_name_hash_table) ) {
             error = CoffBuildSecNameHashTable( coff_file_hnd );
-            if( error != ORL_OKAY ) return( error );
+            if( error != ORL_OKAY ) {
+                return( error );
+            }
         }
         data_struct = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired );
         while( data_struct != NULL ) {
             error = return_func( (orl_sec_handle)data_struct->data );
-            if( error != ORL_OKAY ) return( error );
+            if( error != ORL_OKAY )
+                return( error );
             data_struct = data_struct->next;
         }
     }

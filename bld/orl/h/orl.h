@@ -50,7 +50,7 @@ orl_return              ORLENTRY ORLFini( orl_handle );
 orl_file_format         ORLENTRY ORLFileIdentify( orl_handle, void * );
 orl_file_handle         ORLENTRY ORLFileInit( orl_handle, void *, orl_file_format );
 orl_return              ORLENTRY ORLFileFini( orl_file_handle );
-orl_return              ORLENTRY ORLFileScan( orl_file_handle, char *, orl_sec_return_func );
+orl_return              ORLENTRY ORLFileScan( orl_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        ORLENTRY ORLFileGetMachineType( orl_file_handle );
 orl_file_flags          ORLENTRY ORLFileGetFlags( orl_file_handle );
 orl_file_type           ORLENTRY ORLFileGetType( orl_file_handle );

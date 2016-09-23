@@ -40,6 +40,8 @@
 #define _HashFree( a, b )   ORL_CLI_FREE( a->funcs, b )
 #define _HashCompare( a, b, c ) a->compare( b, c )
 
+#define orlNumberEncode( k )    ((orl_hash_value)(pointer_int)(k))
+
 int ORLNumberCmp( orl_hash_data n1, orl_hash_data n2 )
 {
     return( (orl_hash_value)(pointer_int)n1 - (orl_hash_value)(pointer_int)n2 );
@@ -52,7 +54,7 @@ static orl_hash_value orlStringEncode( const char *string )
     orl_hash_value  h;
 
     h = 0;
-    for( p = (const char *) string; *p; p++ ) {
+    for( p = string; *p != '\0'; p++ ) {
         h = ( h << 4 ) + *p;
         if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ ( g >> 24 );
@@ -85,7 +87,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
             hash_value = orlHash( hash_table, orlStringEncode( key ) );
             break;
         case ORL_HASH_NUMBER:
-            hash_value = orlHash( hash_table, (orl_hash_value)(pointer_int)key );
+            hash_value = orlHash( hash_table, orlNumberEncode( key ) );
             break;
     }
     hash_ptr = hash_table->table[hash_value];
@@ -120,7 +122,7 @@ orl_hash_data_struct *ORLHashTableQuery( orl_hash_table hash_table, orl_hash_dat
             hash_value = orlHash( hash_table, orlStringEncode( key ) );
             break;
         case ORL_HASH_NUMBER:
-            hash_value = orlHash( hash_table, (orl_hash_value)(pointer_int)key );
+            hash_value = orlHash( hash_table, orlNumberEncode( key ) );
             break;
     }
     hash_ptr = hash_table->table[hash_value];

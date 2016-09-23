@@ -549,7 +549,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     return( ORL_OKAY );
 }
 
-static size_t strncspn( char *s, char *charset, orl_sec_size len )
+static size_t strncspn( const char *s, const char *charset, orl_sec_size len )
 {
     char            chartable[32];
     orl_sec_size    i;
@@ -558,27 +558,28 @@ static size_t strncspn( char *s, char *charset, orl_sec_size len )
     memset( chartable, 0, sizeof( chartable ) );
     for( ; *charset != 0; charset++ ) {
         ch = *charset;
-        chartable[ch / 8] |= 1 << ch % 8;
+        chartable[ch / 8] |= 1 << ( ch % 8 );
     }
     for (i = 0; i < len; i++) {
         ch = s[i];
-        if( chartable[ch / 8] & (1 << ch % 8) ) {
+        if( chartable[ch / 8] & ( 1 << ( ch % 8 ) ) ) {
             break;
         }
     }
     return( i );
 }
 
-static char *pstrncspn( char *s, char *charset, orl_sec_size *len )
+static const char *pstrncspn( const char *s, const char *charset, orl_sec_size *len )
 {
-    int     l = strncspn( s, charset, *len );
+    int     l;
 
+    l = strncspn( s, charset, *len );
     *len -= l;
     return( s + l );
 }
 
-static void EatWhite( char **contents, orl_sec_size *len )
-/********************************************************/
+static void EatWhite( const char **contents, orl_sec_size *len )
+/**************************************************************/
 {
     char    ch = **contents;
 
@@ -589,15 +590,15 @@ static void EatWhite( char **contents, orl_sec_size *len )
     }
 }
 
-static orl_return ParseExport( char **contents, orl_sec_size *len, orl_note_callbacks *cb, void *cookie )
-/*******************************************************************************************************/
+static orl_return ParseExport( const char **contents, orl_sec_size *len, orl_note_callbacks *cb, void *cookie )
+/*************************************************************************************************************/
 {
     char        *arg;
     int         l;
 
     l = strncspn( *contents, ", \t", *len );
     arg = alloca( l + 1 );
-    memcpy(arg, *contents, l);
+    memcpy( arg, *contents, l );
     arg[l] = 0;
     *len -= l;
     *contents += l;
@@ -605,7 +606,7 @@ static orl_return ParseExport( char **contents, orl_sec_size *len, orl_note_call
 }
 
 
-static orl_return ParseDefLibEntry( char **contents, orl_sec_size *len,
+static orl_return ParseDefLibEntry( const char **contents, orl_sec_size *len,
     orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
 /*****************************************************************/
 {
@@ -629,10 +630,10 @@ static orl_return ParseDefLibEntry( char **contents, orl_sec_size *len,
     return( retval );
 }
 
-orl_return ElfParseDrectve( char *contents, orl_sec_size len, orl_note_callbacks *cb, void *cookie )
-/**************************************************************************************************/
+orl_return ElfParseDrectve( const char *contents, orl_sec_size len, orl_note_callbacks *cb, void *cookie )
+/********************************************************************************************************/
 {
-    char        *cmd;
+    const char      *cmd;
 
     EatWhite( &contents, &len );
     while( len > 0 ) {
@@ -645,14 +646,17 @@ orl_return ElfParseDrectve( char *contents, orl_sec_size len, orl_note_callbacks
             break;
         contents++; len--;
         if( memicmp( cmd, "export", 6 ) == 0 ) {
-            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY )
+            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY ) {
                 break;
+            }
         } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie )
-                != ORL_OKAY ) break;
+            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie ) != ORL_OKAY ) {
+                break;
+            }
         } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie )
-                != ORL_OKAY ) break;
+            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie ) != ORL_OKAY ) {
+                break;
+            }
         }
         EatWhite( &contents, &len );
     }

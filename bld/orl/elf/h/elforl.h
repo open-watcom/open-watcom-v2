@@ -40,7 +40,7 @@ orl_return              ELFENTRY ElfFini( elf_handle );
 
 orl_return              ELFENTRY ElfFileInit( elf_handle, void *, elf_file_handle * );
 orl_return              ELFENTRY ElfFileFini( elf_file_handle );
-orl_return              ELFENTRY ElfFileScan( elf_file_handle, char *, orl_sec_return_func );
+orl_return              ELFENTRY ElfFileScan( elf_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        ELFENTRY ElfFileGetMachineType( elf_file_handle );
 orl_file_flags          ELFENTRY ElfFileGetFlags( elf_file_handle );
 orl_file_type           ELFENTRY ElfFileGetType( elf_file_handle );
