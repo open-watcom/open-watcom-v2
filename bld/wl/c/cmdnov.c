@@ -443,8 +443,7 @@ bool ProcCopyright( void )
     unsigned        year;
     char            *copy_year;
 
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT )
-                && !GetToken( SEP_NO, TOK_INCLUDE_DOT) ) {
+    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) && !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( FmtData.u.nov.copyright != NULL ) {
             _LnkFree( FmtData.u.nov.copyright );  // assume second is correct.
         }
@@ -476,15 +475,14 @@ bool ProcNovell( void )
     if( !ProcOne( NovModels, SEP_NO, false ) ) {  // get file type
         int     nType = 0;
 
-        if((nType = atoi(Token.this)) > 0)
-        {
-            GetToken( SEP_NO, TOK_INCLUDE_DOT);
-            ProcModuleTypeN(nType);
-        }
-        else
+        if( (nType = atoi( Token.this )) > 0 ) {
+            GetToken( SEP_NO, TOK_INCLUDE_DOT );
+            ProcModuleTypeN( nType );
+        } else {
             ProcNLM();
+        }
     }
-    if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT )  ) {    // get description
+    if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {    // get description
         FmtData.u.nov.description = NULL;
         return( true );
     }

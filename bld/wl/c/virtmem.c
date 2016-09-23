@@ -552,7 +552,8 @@ static bool SaveInfo( void * info, spilladdr loc, unsigned off, unsigned len, bo
 /****************************************************************************************/
 /* copy data at info to the memory or spillfile referenced by node & off */
 {
-    if( len == 0 ) return true;
+    if( len == 0 )
+        return true;
     DEBUG((DBG_VIRTMEM, "saving %d bytes (offset %x) to %d.%h", len, off, inmem, loc.spill ));
     if( inmem ) {
         memcpy( (char *)loc.addr + off, info, len );

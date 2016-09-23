@@ -121,7 +121,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
     dest = buff;
     for(;;) {
         ch = *src++;
-        if( ch == '\0' || len == 1 ) break;
+        if( ch == '\0' || len == 1 )
+            break;
         if( ch != '%' ) {
             *dest++ = ch;
             len--;
@@ -137,11 +138,13 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 }
                 if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
-                    if( size > (len-1) ) size = len - 1;
+                    if( size > ( len - 1 ) )
+                        size = len - 1;
                     CurrSymName = dest;
                 } else {
                     size = strlen( str );
-                    if( size > len ) size = len;
+                    if( size > len )
+                        size = len;
                     memcpy( dest, str, size );
                     CurrSymName = str;
                 }
@@ -156,7 +159,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     str = va_arg( *args, char * );
                 }
                 size = strlen( str );
-                if( size > len ) size = len;
+                if( size > len )
+                    size = len;
                 memcpy( dest, str, size );
                 len -= size;
                 dest += size;
@@ -186,7 +190,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     num = va_arg( *args, unsigned int );
                 }
-                if( len < 4 ) return( dest - buff );    //NOTE: premature return
+                if( len < 4 )
+                    return( dest - buff );    //NOTE: premature return
                 dest += 4;
                 len -= 4;
                 str = dest;
@@ -197,7 +202,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 break;
             case 'h' :
                 num2 = va_arg( *args, unsigned_32 );
-                if( len < 8) return( dest - buff );     //NOTE: premature return
+                if( len < 8 )
+                    return( dest - buff );     //NOTE: premature return
                 dest += 8;
                 len -= 8;
                 str = dest;
@@ -207,7 +213,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 }
                 break;
             case 'd' :
-                if( len < 5 ) return( dest - buff );    // NOTE: premature return
+                if( len < 5 )
+                    return( dest - buff );    // NOTE: premature return
                 if( UseArgInfo() ) {
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
@@ -220,7 +227,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 len -= size;
                 break;
             case 'l' :
-                if( len < 10 ) return( dest - buff );   //NOTE: premature return
+                if( len < 10 )
+                    return( dest - buff );   //NOTE: premature return
                 if( UseArgInfo() ) {
                     num2 = MsgArgInfo.arg[MsgArgInfo.index].int_32;
                     IncremIndex();
@@ -288,7 +296,8 @@ static unsigned MakeExeName( char * buff, unsigned max )
     char *      str;
     unsigned    num;
 
-    if( max <= 3 ) return( 0 );
+    if( max <= 3 )
+        return( 0 );
     len = 1;
     *buff++ = 'a';
     if( FmtData.osname != NULL ) {
@@ -298,8 +307,9 @@ static unsigned MakeExeName( char * buff, unsigned max )
         for( ;; ) {
             num = blog_32( format );
             format &= ~(1 << num);
-            if( format == 0 )
+            if( format == 0 ) {
                 break;
+            }
         }
         Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
         str = rc_buff;
@@ -311,7 +321,8 @@ static unsigned MakeExeName( char * buff, unsigned max )
     *buff++ = ' ';
     num = strlen(str);
     len += num + 2;
-    if( len > max ) return( len - (num + 2) );
+    if( len > max )
+        return( len - (num + 2) );
     memcpy( buff, str, num );
     buff += num;
     *buff++ = ' ';
@@ -324,7 +335,8 @@ static unsigned MakeExeName( char * buff, unsigned max )
     }
     num = strlen( str );
     len += num;
-    if( len > max ) return( len - num );
+    if( len > max )
+        return( len - num );
     memcpy( buff, str, num + 1 );       /* +1 for the nullchar */
     return( len );
 }
@@ -593,12 +605,14 @@ void WLPrtBanner( void )
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( sym->info & SYM_STATIC && (MapFlags & MAP_STATICS) == 0 ) return true;
+    if( sym->info & SYM_STATIC && (MapFlags & MAP_STATICS) == 0 )
+        return true;
 #if defined(__WATCOMC__)
-    { int art;
+    {
+        int art;
 
-    art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
-    return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
+        art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
+        return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
     }
 #else
     return false;
@@ -629,7 +643,9 @@ int SymAlphaCompare( const void *a, const void *b )
     }
     if( leftsize < rightsize ) {
         result = memicmp( leftname, rightname, leftsize );
-        if( result == 0 ) result = -1;  // since leftsize < rightsize;
+        if( result == 0 ) {
+            result = -1;  // since leftsize < rightsize;
+        }
     } else {
         result = memicmp( leftname, rightname, rightsize );
         if( result == 0 ) {

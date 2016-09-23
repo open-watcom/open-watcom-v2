@@ -371,8 +371,8 @@ static void Help( void )
 static void DoCmdParse( void )
 /****************************/
 {
-    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
-        if( ProcOne( Directives, SEP_NO, true ) == false ) {
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !ProcOne( Directives, SEP_NO, true ) ) {
             Syntax();
         }
         RestoreParser();
@@ -910,8 +910,8 @@ void ExecSystem( char *name )
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
         sys->name = NULL;
-        while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
-            if( ProcOne( SysDirectives, SEP_NO, false ) == false ) {
+        while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+            if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;

@@ -263,8 +263,8 @@ extern tok              Token;
 
 void ParseDirectives( void )
 {
-    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == FALSE ) {
-        if( ProcOne( Directives, SEP_NO, FALSE ) == FALSE ) {
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !ProcOne( Directives, SEP_NO, FALSE ) ) {
             /* a directive error happened. deal with it? */
             break;
         }

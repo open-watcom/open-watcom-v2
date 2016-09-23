@@ -100,7 +100,7 @@ static bool AddOption( void )
 /***************************/
 {
     Token.thumb = REJECT;
-    if( ProcOne( MainOptions, SEP_NO, false ) == false )
+    if( !ProcOne( MainOptions, SEP_NO, false ) )
         return( false );
     return( true );
 }
@@ -122,7 +122,9 @@ bool ProcDebug( void )
     gotmod = ProcOne( DbgMods, SEP_NO, false );
     DBIFlag &= ~DBI_MASK;
     if( ProcOne( PosDbgMods, SEP_NO, false ) ) {
-        while( ProcOne( PosDbgMods, SEP_COMMA, false ) != false ); /*null loop*/
+        while( ProcOne( PosDbgMods, SEP_COMMA, false ) ) {
+            ; /*null loop*/
+        }
     } else {
         DBIFlag |= DBI_ALL; //DBI_MASK;
         if( !gotmod ) {
@@ -290,7 +292,7 @@ bool ProcMaxErrors( void )
 bool ProcSymFile( void )
 /*****************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) != false ) {
+    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         if( SymFileName != NULL ) {
             _LnkFree( SymFileName );
         }
@@ -559,13 +561,11 @@ bool ProcPath( void )
 /**************************/
 /* process PATH option */
 {
-    bool            ret;
     path_entry      *new_path;
     char            *p;
     char            *end;
 
-    ret = GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME  );
-    if( ret != false ) {
+    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
         end = Token.this + Token.len;
         p = new_path->name;
@@ -579,7 +579,7 @@ bool ProcPath( void )
         ObjPath = new_path;
         DEBUG(( DBG_BASE, "path: %s", new_path->name ));
     }
-    return( ret );
+    return( false );
 }
 
 bool ProcMap( void )
@@ -1307,7 +1307,7 @@ bool ProcOutput( void )
    FmtData.output_hshift = false;
    FmtData.output_start = false;
    ret = false;
-   while( ProcOne( OutputOpts, SEP_NO, false )) {
+   while( ProcOne( OutputOpts, SEP_NO, false ) ) {
        ret = true;
    }
    return( ret );
@@ -1425,7 +1425,7 @@ bool ProcOrder( void )
     if( CurrOClass != NULL) {
         LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
     }
-    while( ProcOne( OrderOpts, SEP_NO, false )) {
+    while( ProcOne( OrderOpts, SEP_NO, false ) ) {
         ret = true;
     }
     return( ret );
@@ -1455,7 +1455,7 @@ bool ProcOrdClass( void )
     CurrOClass->FixedAddr = false;
     CurrOClass->Copy = false;
     CurrOClass->NoEmit = false;
-    while( ProcOne( OrderClassOpts, SEP_NO, false) )
+    while( ProcOne( OrderClassOpts, SEP_NO, false ) )
         {};
     return( true );
 }
@@ -1532,7 +1532,7 @@ bool ProcOrdSeg( void )
     CurrOSeg->Name = tostring();
     CurrOSeg->FixedAddr = false;
     CurrOSeg->NoEmit = false;
-    while( ProcOne( OrderSegOpts, SEP_NO, false) )
+    while( ProcOne( OrderSegOpts, SEP_NO, false ) )
         {};
     return( true );
 }

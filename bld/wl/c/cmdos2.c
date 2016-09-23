@@ -256,7 +256,9 @@ static bool getexport( void )
     }
     exp->next = FmtData.u.os2.exports;    // put in the front of the list for
     FmtData.u.os2.exports = exp;          // now so ProcResidant can get to it.
-    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {}  // handle misc options
+    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {
+        // handle misc options
+    }
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
     if( (FmtData.type & (MK_WINDOWS|MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -397,8 +399,7 @@ static bool AddCommit( void )
 /***************************/
 {
     Token.thumb = REJECT;
-    if( ProcOne( CommitKeywords, SEP_NO, false ) == false ) return( false );
-    return( true );
+    return( ProcOne( CommitKeywords, SEP_NO, false ) );
 }
 
 bool ProcCommit( void )
@@ -470,7 +471,9 @@ bool ProcOS2( void )
 //
 {
     Extension = E_LOAD;
-    while( ProcOne( SubFormats, SEP_NO, false ) ) {} // NOTE NULL loop
+    while( ProcOne( SubFormats, SEP_NO, false ) ) {
+        // NOTE NULL loop
+    }
     if( FmtData.type & MK_WINDOWS ) {
         if( ProcOne( WindowsFormatKeywords, SEP_NO, false ) ) {
             ProcOne( WindowsFormatKeywords, SEP_NO, false );
@@ -737,7 +740,8 @@ static bool getsegflags( void )
         }
         entry->name = tostring();
     }
-    while( ProcOne( SegModel, SEP_NO, false ) ) {}
+    while( ProcOne( SegModel, SEP_NO, false ) ) {
+    }
     return( true );
 }
 

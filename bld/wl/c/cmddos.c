@@ -156,7 +156,9 @@ bool ProcBegin( void )
         CurrFList = &sect->files;
     }
     OvlLevel++;
-    while( ProcOne( Sections, SEP_NO, false ) != false ) {}  // NULL LOOP
+    while( ProcOne( Sections, SEP_NO, false ) ) {
+        // NULL LOOP
+    }
     if( ( OvlLevel == 0 ) || !FmtData.u.dos.dynamic ) {
         CurrFList = oldflist;
         CurrSect = oldsect;
@@ -168,16 +170,12 @@ bool ProcInto( void )
 /**************************/
 // Process the into keyword.
 {
-    bool ret;
-
-    ret = GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME );
-    if( ret ) {
-        CurrSect->outfile = NewOutFile( FileName( Token.this,Token.len,
-                                                          E_OVL, false ) );
-    } else {
-        LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
+    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+        CurrSect->outfile = NewOutFile( FileName( Token.this,Token.len, E_OVL, false ) );
+        return( true );
     }
-    return( ret );
+    LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );
+    return( false );
 }
 
 static void NewArea( section *sect )
@@ -251,7 +249,7 @@ bool ProcSection( void )
     } else {
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO, false );      // check for INTO
-        while( ProcOne( Directives, SEP_NO, false ) != false ) {
+        while( ProcOne( Directives, SEP_NO, false ) ) {
             RestoreParser();
         }
     }
@@ -334,7 +332,8 @@ bool ProcAutoSection( void )
         MakeNewSection();
         ProcOne( SectOptions, SEP_NO, false );      // check for INTO
         CmdFlags |= CF_AUTOSECTION | CF_SECTION_THERE;
-        while( ProcOne( Directives, SEP_NO, false ) != false ) {}
+        while( ProcOne( Directives, SEP_NO, false ) ) {
+        }
         CmdFlags &= ~CF_AUTOSECTION;
     }
     return( true );
