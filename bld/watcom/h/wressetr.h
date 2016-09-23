@@ -37,7 +37,11 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-#if !defined( __WATCOMC__ ) && defined( __UNIX__ )
+#if defined( _WIN64 )
+#define WResFileSSize   __int64
+#define WResFileSize    unsigned __int64
+#define WResFileOffset  long
+#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
 #define WResFileSSize   ssize_t
 #define WResFileSize    size_t
 #define WResFileOffset  off_t
