@@ -35,11 +35,11 @@
 
 extern struct WDRRoutines DWRRtns;
 
-#define DWRREAD         DWRRtns.read
-#define DWRSEEK         DWRRtns.seek
-#define DWRALLOC        DWRRtns.alloc
-#define DWRREALLOC      DWRRtns.realloc
-#define DWRFREE         DWRRtns.free
-#define DWREXCEPT       DWRRtns.except
+#define DWRREAD         DWRRtns.cli_read
+#define DWRSEEK         DWRRtns.cli_seek
+#define DWRALLOC        DWRRtns.cli_alloc
+#define DWRREALLOC      DWRRtns.cli_realloc
+#define DWRFREE         DWRRtns.cli_free
+#define DWREXCEPT       DWRRtns.cli_except
 
 #endif

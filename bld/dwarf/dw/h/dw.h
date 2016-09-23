@@ -212,14 +212,23 @@ enum {
 
 /* the client supplied functions */
 typedef struct {
-    void                (*reloc)( dw_sectnum, dw_relocs, ... );
-    void                (*write)( dw_sectnum, const void *, size_t );
-    void                (*seek)( dw_sectnum, long, uint );
-    long                (*tell)( dw_sectnum );
-    void *              (*alloc)( size_t );
-    void                (*free)( void * );
+    void                (*cli_reloc)( dw_sectnum, dw_relocs, ... );
+    void                (*cli_write)( dw_sectnum, const void *, size_t );
+    void                (*cli_seek)( dw_sectnum, long, uint );
+    long                (*cli_tell)( dw_sectnum );
+    void *              (*cli_alloc)( size_t );
+    void                (*cli_free)( void * );
 } dw_funcs;
 
+#define DWSetRtns( __name, __reloc, __write, __seek, __tell, __alloc, __free ) \
+    struct dw_funcs __name = {  \
+        __reloc,                \
+        __write,                \
+        __seek,                 \
+        __tell,                 \
+        __alloc,                \
+        __free                  \
+    }
 
 /* for the compiler_options field */
 typedef enum {
