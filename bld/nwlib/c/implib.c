@@ -56,6 +56,7 @@ static void fillInU32( unsigned_32 value, char *out )
 }
 
 static orl_sec_handle found_sec_handle;
+
 static orl_return FindHelper( orl_sec_handle sec )
 {
     if( found_sec_handle == 0 ) {
@@ -66,6 +67,7 @@ static orl_return FindHelper( orl_sec_handle sec )
 
 
 static unsigned long  export_table_rva;
+
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
     if( found_sec_handle == 0 ) {
@@ -332,13 +334,13 @@ static void peAddImport( arch_header *arch, libfile io )
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
     Coff32_EOrd     *ord_table;
-    int             i;
+    unsigned        i;
     long            ordinal_base;
     processor_type  processor = WL_PROC_NONE;
     importType      type;
     bool            coff_obj;
     long            adjust;
-    int             sym_len;
+    unsigned        sym_len;
 
     LibSeek( io, 0x00, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -421,7 +423,7 @@ static void peAddImport( arch_header *arch, libfile io )
             memcpy( buffer + 2, currname, sym_len );
             AddSym( buffer, SYM_WEAK, 0 );
         }
-        MemFree( buffer ); // dispose symbol name.
+        MemFree( buffer );  // dispose symbol name.
     }
     MemFree( DLLName );
 
@@ -475,7 +477,7 @@ void ProcessImport( char *name )
     Elf32_Export    export_table[2];
     Elf32_Sym       sym_table[3];
     char            *namecopy;
-    int             sym_len;
+    unsigned        sym_len;
 
     namecopy = DupStr( name );
 
@@ -737,9 +739,9 @@ static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_t
     MemFree( buffer );
 }
 
-int ElfImportSize( import_sym *import )
+unsigned ElfImportSize( import_sym *import )
 {
-    int             len;
+    unsigned        len;
     elf_import_sym  *temp;
 
     len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
@@ -761,14 +763,14 @@ int ElfImportSize( import_sym *import )
     return( len );
 }
 
-int CoffImportSize( import_sym *import )
+unsigned CoffImportSize( import_sym *import )
 {
-    int dll_len;
-    int mod_len;
-    int ret;
-    int sym_len;
-    int exp_len;
-    int opt_hdr_len;
+    unsigned dll_len;
+    unsigned mod_len;
+    unsigned ret;
+    unsigned sym_len;
+    unsigned exp_len;
+    unsigned opt_hdr_len;
 
     dll_len = strlen( import->DLLName );
     mod_len = strlen( MakeFName( import->DLLName ) );
@@ -895,11 +897,11 @@ void ElfWriteImport( libfile io, sym_file *sfile )
 {
     elf_import_sym  *temp;
     import_sym      *import;
-    long            strtabsize;
-    long            numsyms;
+    unsigned long   strtabsize;
+    unsigned long   numsyms;
     bool            padding;
-    long            offset;
-    long            more;
+    unsigned long   offset;
+    unsigned long   more;
 
     import = sfile->import;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;

@@ -34,6 +34,6 @@ extern void         FiniOmfRec( void );
 extern file_offset  OmfCopy( libfile io, sym_file *sfile );
 extern file_offset  OmfSkipObject( libfile io );
 extern void         OmfExtract( libfile io, libfile out );
-extern int          OmfImportSize( import_sym *import );
+extern unsigned     OmfImportSize( import_sym *import );
 extern void         OmfWriteImport( sym_file *sfile );
 extern void         OMFWalkSymList( obj_file *ofile, sym_file *sfile );

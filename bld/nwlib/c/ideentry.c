@@ -259,13 +259,13 @@ void Banner( void )
         banner3a,
         NULL
     };
-    static int alreadyDone=0;
+    static bool alreadyDone = false;
     char **text;
 
     if( Options.quiet || alreadyDone || Options.terse_listing )
         return;
 
-    alreadyDone = 1;
+    alreadyDone = true;
     if( IdeCbs != NULL ) {
         msg_info.severity = IDEMSGSEV_BANNER;
         msg_info.flags = 0;

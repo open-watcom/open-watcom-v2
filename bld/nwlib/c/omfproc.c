@@ -190,12 +190,12 @@ static void AddOMFSymbol( sym_type type )
 static void GetName( void )
 /*************************/
 {
-    int        num_char;
+    unsigned_8  len;
 
-    num_char = (int)*RecPtr++;
-    memcpy( NameBuff, RecPtr, num_char );
-    RecPtr += num_char;
-    NameBuff[num_char] = '\0';
+    len = *RecPtr++;
+    memcpy( NameBuff, RecPtr, len );
+    RecPtr += len;
+    NameBuff[len] = '\0';
 }
 
 /*
@@ -272,9 +272,9 @@ static void getcomdat( void )
     if( alloc == COMDAT_EXPLICIT ) {
         GetIdx();
     }
-    idx = GetIndex() - 1;
-    for( ln = LName_Head; idx != 0; --idx, ln = ln->next ) {
-        /* nothing to do */
+    ln = LName_Head;
+    for( idx = GetIndex() - 1; idx != 0; --idx ) {
+        ln = ln->next;
     }
     if( ln->local )
         return;
@@ -289,12 +289,12 @@ static void getcomdat( void )
 static void getlname( bool local )
 /********************************/
 {
-    unsigned            len;
+    unsigned_8          len;
     struct lname        *ln;
 
     while( RecPtr < RecEnd ) {
         len = *RecPtr++;
-        ln = MemAlloc( (sizeof( struct lname ) - 1) + len );
+        ln = MemAlloc( sizeof( struct lname ) - 1 + len );
         ln->local = local;
         ln->len = len;
         memcpy( ln->name, RecPtr, len );
@@ -572,12 +572,12 @@ void OmfExtract( libfile io, libfile out )
     } while( omfRec->basic.type != CMD_MODEND && omfRec->basic.type != CMD_MODE32 );
 }
 
-int OmfImportSize( import_sym *import )
-/*************************************/
+unsigned OmfImportSize( import_sym *import )
+/******************************************/
 {
-    int             len;
-    int             dll_len;
-    int             sym_len;
+    unsigned        len;
+    unsigned        dll_len;
+    unsigned        sym_len;
 
     dll_len = strlen( import->DLLName ) + 1;
     sym_len = strlen( import->u.sym.symName ) + 1;
@@ -606,33 +606,33 @@ int OmfImportSize( import_sym *import )
 void OmfWriteImport( sym_file *sfile )
 /************************************/
 {
-    int         sym_len;
-    int         file_len;
-    int         exp_len;
-    int         len;
+    unsigned    sym_len;
+    unsigned    file_len;
+    unsigned    exp_len;
+    unsigned    len;
     unsigned_8  *contents;
 
     file_len = strlen( sfile->import->DLLName );
     sym_len = strlen( sfile->import->u.sym.symName );
 #ifdef IMP_MODULENAME_DLL
-    contents = SetOmfRecBuffer( CMD_THEADR, file_len + 2 );
+    contents = SetOmfRecBuffer( CMD_THEADR, file_len + 1 + 1 );
     contents[0] = file_len;
     memcpy( contents + 1, sfile->import->DLLName, file_len );
 #else
-    contents = SetOmfRecBuffer( CMD_THEADR, sym_len + 2 );
+    contents = SetOmfRecBuffer( CMD_THEADR, sym_len + 1 + 1 );
     contents[0] = sym_len;
     memcpy( contents + 1, sfile->import->u.sym.symName, sym_len );
 #endif
     WriteOmfRecord( omfRec );
     exp_len = 0;
-    len = 2 + 2 + ( 1 + file_len ) + ( 1 + sym_len ) + 1;
+    len = 2 + 2 + ( 1 + file_len ) + ( 1 + sym_len );
     if( sfile->import->type == ORDINAL ) {
-        len += 2;
+        len += 2 + 1;
     } else if( sfile->import->u.sym.exportedName == NULL ) {
-        len += 1;
+        len += 1 + 1;
     } else {
         exp_len = strlen( sfile->import->u.sym.exportedName );
-        len += exp_len + 1;
+        len += exp_len + 1 + 1;
     }
     contents = SetOmfRecBuffer( CMD_COMENT, len );
     contents[0] = CMT_TNP;
@@ -664,7 +664,7 @@ void OmfWriteImport( sym_file *sfile )
 }
 
 void OMFWalkSymList( obj_file *ofile, sym_file *sfile )
-/************************************************/
+/*****************************************************/
 {
     SegDefCount = 0;    // just for FORTRAN 77 common block
     CurrSegRef = 0;
