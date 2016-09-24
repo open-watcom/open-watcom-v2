@@ -148,7 +148,7 @@ void main( void )
     dw_init_info        info;
     dw_loc_handle       seg;
     dw_cu_info          cuinfo;
-    static DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
+    DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
     info.language = DW_LANG_C89;
     info.compiler_options = DW_CM_BROWSER;

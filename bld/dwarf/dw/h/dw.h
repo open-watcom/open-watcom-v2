@@ -221,14 +221,7 @@ typedef struct {
 } dw_funcs;
 
 #define DWSetRtns( __name, __reloc, __write, __seek, __tell, __alloc, __free ) \
-    struct dw_funcs __name = {  \
-        __reloc,                \
-        __write,                \
-        __seek,                 \
-        __tell,                 \
-        __alloc,                \
-        __free                  \
-    }
+    dw_funcs __name = { __reloc, __write, __seek, __tell, __alloc, __free }
 
 /* for the compiler_options field */
 typedef enum {
