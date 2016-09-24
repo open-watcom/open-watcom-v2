@@ -133,7 +133,7 @@ static long orlSeek( void *file_handle, long offset, int mode )
 static void AutoORLInit( void )
 /*****************************/
 {
-    static OrlSetFuncs( orl_cli_funcs, orlRead, orlSeek, MallocSafe, FreeSafe );
+    ORLSetFuncs( orl_cli_funcs, orlRead, orlSeek, MallocSafe, FreeSafe );
 
     orlHandle = ORLInit( &orl_cli_funcs );
 }
