@@ -130,21 +130,21 @@ static void Suicide( void )
 }
 
 
-static int QOpen( char *filename, int access, int permission )
-/************************************************************/
+static int QOpen( const char *filename, int access, int permission )
+/******************************************************************/
 {
     int result;
 
     result = open( filename, access, permission );
-    if( result == ERROR ) {
+    if( result == -1 ) {
         IOError( "problem opening file" );
     }
     return( result );
 }
 
 
-static void QRemove( char *filename )
-/***********************************/
+static void QRemove( const char *filename )
+/*****************************************/
 {
     if( remove( filename ) != 0 ) {
         IOError( "problem removing file" );
@@ -186,8 +186,8 @@ int main(int argc, char **argv )
     return( retval );
 }
 
-static void ProcList( bool (*fn)(char *,int), char ***argv )
-/**********************************************************/
+static void ProcList( bool (*fn)(const char *,size_t), char ***argv )
+/*******************************************************************/
 // this processes a list of comma-separated strings, being as forgiving about
 // spaces as possible.
 {
@@ -224,8 +224,8 @@ static void ProcList( bool (*fn)(char *,int), char ***argv )
     }
 }
 
-static void MakeListItem( name_list **list, char *item, int len )
-/***************************************************************/
+static void MakeListItem( name_list **list, const char *item, size_t len )
+/************************************************************************/
 {
     name_list * entry;
 
@@ -237,8 +237,8 @@ static void MakeListItem( name_list **list, char *item, int len )
     LinkList( (void **)list, entry );
 }
 
-static bool ProcClass( char *item, int len )
-/******************************************/
+static bool ProcClass( const char *item, size_t len )
+/***************************************************/
 {
     if( NewOption ) {
         FreeList( ClassList );
@@ -249,8 +249,8 @@ static bool ProcClass( char *item, int len )
     return( true );     // true == check for a list separator
 }
 
-static bool ProcSeg( char *item, int len )
-/****************************************/
+static bool ProcSeg( const char *item, size_t len )
+/*************************************************/
 {
     if( NewOption ) {
         FreeList( SegList );
@@ -261,8 +261,8 @@ static bool ProcSeg( char *item, int len )
     return( true );     // true == check for a list separator
 }
 
-static bool ProcExclude( char *item, int len )
-/********************************************/
+static bool ProcExclude( const char *item, size_t len )
+/*****************************************************/
 {
     char *  endptr;
 
@@ -474,10 +474,10 @@ static void ProcFile( char * fname )
     FileCleanup();
 }
 
-int CopyFile( char * file1, char * file2 )
-/****************************************/
+int CopyFile( const char * file1, const char * file2 )
+/****************************************************/
 {
-    int len;
+    size_t                      len;
     auto struct stat            statblk;
     auto struct utimbuf         utimebuf;
 
@@ -485,9 +485,7 @@ int CopyFile( char * file1, char * file2 )
     OutFile = NOFILE;
     InFile = QOpen( file1, O_RDONLY | O_BINARY, 0 );
     OutFile = QOpen( file2, O_WRONLY|O_TRUNC|O_CREAT|O_BINARY, 0 );
-    for( ;; ) {
-        len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE );
-        if( len == 0 ) break;
+    while( (len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE )) != 0 ) {
         QWrite( OutFile, InputBuffer, len );
     }
     CloseFiles();
@@ -505,8 +503,8 @@ void put( const char * str )
     write( STDOUT_HANDLE, str, strlen( str ) );
 }
 
-void putlen( const char *str, unsigned len )
-/******************************************/
+void putlen( const char *str, size_t len )
+/****************************************/
 {
     write( STDOUT_HANDLE, str, len );
 }
@@ -542,16 +540,16 @@ void FreeList( void *list )
     }
 }
 
-void Warning( char * msg )
-/************************/
+void Warning( const char *msg )
+/*****************************/
 {
     put( "warning: " );
     put( msg );
     put( "\n" );
 }
 
-void Error( char * msg )
-/**********************/
+void Error( const char *msg )
+/***************************/
 {
     put( "Error: " );
     put( msg );
@@ -559,8 +557,8 @@ void Error( char * msg )
     Suicide();
 }
 
-void IOError( char *msg )
-/***********************/
+void IOError( const char *msg )
+/*****************************/
 {
     put( msg );
     put( ": " );
@@ -571,25 +569,25 @@ void IOError( char *msg )
 
 // these are the file i/o routines for tdcvt.
 
-int QRead( int handle, void *buffer, int len )
-/********************************************/
+size_t QRead( int handle, void *buffer, size_t len )
+/**************************************************/
 {
-    int result;
+    size_t result;
 
     result = read( handle, buffer, len );
-    if( result == ERROR ) {
+    if( result == -1 ) {
         IOError( "problem reading file" );
     }
     return( result );
 }
 
-int QWrite( int handle, void *buffer, int len )
-/*********************************************/
+size_t QWrite( int handle, const void *buffer, size_t len )
+/*********************************************************/
 {
-    int result;
+    size_t result;
 
     result = write( handle, buffer, len );
-    if( result == ERROR ) {
+    if( result == -1 ) {
         IOError( "problem writing file" );
     } else if( result != len ) {
         Error( "disk full" );
@@ -603,7 +601,7 @@ long int QSeek( int handle, long offset, int origin )
     long int result;
 
     result = lseek( handle, offset, origin );
-    if( result == ERROR ) {
+    if( result == -1L ) {
         IOError( "problem during seek" );
     }
     return( result );

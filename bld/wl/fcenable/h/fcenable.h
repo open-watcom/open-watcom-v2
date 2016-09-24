@@ -69,7 +69,7 @@ typedef struct exclude_list {
     char            name[1];
 } exclude_list;
 
-extern int          PageLen;
+extern long         PageLen;
 extern int          InFile;
 extern int          OutFile;
 extern name_list    *ClassList;
@@ -77,16 +77,16 @@ extern name_list    *SegList;
 extern exclude_list *ExcludeList;
 
 // fcenable.c
-extern int      CopyFile( char *, char * );
+extern int      CopyFile( const char *, const char * );
 extern void     put( const char * );
-extern void     putlen( const char *, unsigned );
+extern void     putlen( const char *, size_t );
 extern void     LinkList( void **, void * );
 extern void     FreeList( void * );
-extern void     Warning( char * );
-extern void     Error( char * );
-extern void     IOError( char * );
-extern int      QRead( int, void *, int );
-extern int      QWrite( int, void *, int );
+extern void     Warning( const char * );
+extern void     Error( const char * );
+extern void     IOError( const char * );
+extern size_t   QRead( int, void *, size_t );
+extern size_t   QWrite( int, const void *, size_t );
 extern long     QSeek( int, long, int );
 
 // mem.c
@@ -101,8 +101,8 @@ extern void     FileCleanup( void );
 extern void     CleanRecStuff( void );
 extern void     FinalCleanup( void );
 extern void     ProcessRec( void );
-extern unsigned GetIndex( byte ** );
+extern unsigned GetIndex( const byte ** );
 extern int      ReadRec( void );
-extern void     BuildRecord( void *, unsigned );
+extern void     BuildRecord( const void *, size_t );
 extern void     FlushBuffer( void );
 extern void     IndexRecord( unsigned );
