@@ -37,7 +37,7 @@
 #include "elforl.h"
 #include "orlhash.h"
 
-elf_handle ELFENTRY ElfInit( orl_funcs * funcs )
+elf_handle ELFENTRY ElfInit( orl_funcs *funcs )
 {
     elf_handle                                  elf_hnd;
 
@@ -59,7 +59,7 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
             return( error );
         }
     }
-    ORL_FUNCS_FREE( elf_hnd, elf_hnd );
+    ORL_PTR_FREE( elf_hnd, elf_hnd );
     return( ORL_OKAY );
 }
 
@@ -68,7 +68,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, void *file, elf_file_handle
     elf_file_handle     elf_file_hnd;
     orl_return          error;
 
-    elf_file_hnd = (elf_file_handle)ORL_FUNCS_ALLOC( elf_hnd, sizeof( elf_file_handle_struct ) );
+    elf_file_hnd = (elf_file_handle)ORL_PTR_ALLOC( elf_hnd, sizeof( elf_file_handle_struct ) );
     if( elf_file_hnd == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
@@ -230,24 +230,30 @@ orl_return ELFENTRY ElfSecGetContents( elf_sec_handle elf_sec_hnd, unsigned char
 
 orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset sec_offset, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     elf_sec_handle                              reloc_sec_hnd;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
 
-    if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS ) return( ORL_ERROR );
+    if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
+        return( ORL_ERROR );
     reloc_sec_hnd = elf_sec_hnd->assoc.normal.reloc_sec;
-    if( reloc_sec_hnd == NULL ) return( ORL_FALSE );
+    if( reloc_sec_hnd == NULL )
+        return( ORL_FALSE );
     if( reloc_sec_hnd->assoc.reloc.relocs == NULL ) {
         return_val = ElfCreateRelocs( elf_sec_hnd, reloc_sec_hnd );
-        if( return_val != ORL_OKAY ) return( return_val );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
+        }
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
     for( index = 0; index < reloc_sec_hnd->size; index += reloc_sec_hnd->entsize ) {
         if( reloc->offset == sec_offset ) {
             return_val = return_func( reloc );
-            if( return_val != ORL_OKAY ) return( return_val );
+            if( return_val != ORL_OKAY ) {
+                return( return_val );
+            }
         }
         reloc++;
     }
@@ -256,7 +262,7 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
 
 orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     elf_sec_handle                              reloc_sec_hnd;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
@@ -316,7 +322,7 @@ elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl,
 
 orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
 
@@ -337,7 +343,7 @@ orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_retur
 
 orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     orl_return                                  error;
     elf_symbol_handle                           elf_symbol_hnd;
 

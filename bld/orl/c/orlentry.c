@@ -38,8 +38,8 @@
 #include "orlflhnd.h"
 #include "pcobj.h"
 
-orl_handle ORLENTRY ORLInit( orl_funcs * funcs )
-/**********************************************/
+orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
+/*********************************************/
 {
     orli_handle                 orli_hnd;
 
@@ -47,18 +47,18 @@ orl_handle ORLENTRY ORLInit( orl_funcs * funcs )
     if( orli_hnd == NULL )
         return( NULL );
     orli_hnd->error = ORL_OKAY;
-    orli_hnd->funcs = funcs;
-    orli_hnd->elf_hnd = ElfInit( funcs );
+    orli_hnd->funcs = *funcs;
+    orli_hnd->elf_hnd = ElfInit( &orli_hnd->funcs );
     if( orli_hnd->elf_hnd == NULL ) {
         ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
     }
-    orli_hnd->coff_hnd = CoffInit( funcs );
+    orli_hnd->coff_hnd = CoffInit( &orli_hnd->funcs );
     if( orli_hnd->coff_hnd == NULL ) {
         ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
     }
-    orli_hnd->omf_hnd = OmfInit( funcs );
+    orli_hnd->omf_hnd = OmfInit( &orli_hnd->funcs );
     if( orli_hnd->omf_hnd == NULL ) {
         ORL_CLI_FREE( funcs, orli_hnd );
         return( NULL );
@@ -79,12 +79,17 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
     orl_return      error;
     orli_handle     orli_hnd = (orli_handle)orl_hnd;
 
-    if( ( error = ElfFini( orli_hnd->elf_hnd ) ) != ORL_OKAY ) return( error );
-    if( ( error = CoffFini( orli_hnd->coff_hnd ) ) != ORL_OKAY ) return( error );
-    if( ( error = OmfFini( orli_hnd->omf_hnd ) ) != ORL_OKAY ) return( error );
+    if( ( error = ElfFini( orli_hnd->elf_hnd ) ) != ORL_OKAY )
+        return( error );
+    if( ( error = CoffFini( orli_hnd->coff_hnd ) ) != ORL_OKAY )
+        return( error );
+    if( ( error = OmfFini( orli_hnd->omf_hnd ) ) != ORL_OKAY )
+        return( error );
     while( orli_hnd->first_file_hnd ) {
         error = ORLRemoveFileLinks( orli_hnd->first_file_hnd );
-        if( error != ORL_OKAY ) return( error );
+        if( error != ORL_OKAY ) {
+            return( error );
+        }
     }
     ORL_FUNCS_FREE( orli_hnd, orli_hnd );
     return( ORL_OKAY );

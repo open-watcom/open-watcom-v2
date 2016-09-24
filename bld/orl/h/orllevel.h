@@ -47,7 +47,7 @@
 /* NB _handle = a type, _hnd = a variable */
 
 typedef struct orli_handle_struct {
-    orl_funcs *                         funcs;
+    orl_funcs                           funcs;
     elf_handle                          elf_hnd;
     coff_handle                         coff_hnd;
     omf_handle                          omf_hnd;

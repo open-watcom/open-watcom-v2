@@ -37,15 +37,15 @@
 #include "orlintnl.h"
 #include "omftype.h"
 
-#define _ClientRead( a, b )             ORL_CLI_READ((a)->omf_hnd->funcs, (a)->file, b )
-#define _ClientSeek( a, b, c )          ORL_CLI_SEEK((a)->omf_hnd->funcs, (a)->file, b, c )
-#define _ClientAlloc( a, b )            ORL_CLI_ALLOC((a)->omf_hnd->funcs, b )
-#define _ClientFree( a, b )             ORL_CLI_FREE((a)->omf_hnd->funcs, b )
+#define _ClientRead( a, b )             ORL_PTR_READ((a)->omf_hnd, (a)->file, b )
+#define _ClientSeek( a, b, c )          ORL_PTR_SEEK((a)->omf_hnd, (a)->file, b, c )
+#define _ClientAlloc( a, b )            ORL_PTR_ALLOC((a)->omf_hnd, b )
+#define _ClientFree( a, b )             ORL_PTR_FREE((a)->omf_hnd, b )
 
-#define _ClientSecRead( a, b, c )       ORL_CLI_READ((a)->omf_file_hnd->omf_hnd->funcs, (a)->omf_file_hnd->file, b, c )
-#define _ClientSecSeek( a, b, c )       ORL_CLI_SEEK((a)->omf_file_hnd->omf_hnd->funcs, (a)->omf_file_hnd->file, b, c )
-#define _ClientSecAlloc( a, b )         ORL_CLI_ALLOC((a)->omf_file_hnd->omf_hnd->funcs, b )
-#define _ClientSecFree( a, b )          ORL_CLI_FREE((a)->omf_file_hnd->omf_hnd->funcs, b )
+#define _ClientSecRead( a, b, c )       ORL_PTR_READ((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->file, b, c )
+#define _ClientSecSeek( a, b, c )       ORL_PTR_SEEK((a)->omf_file_hnd->omf_hnd, (a)->omf_file_hnd->file, b, c )
+#define _ClientSecAlloc( a, b )         ORL_PTR_ALLOC((a)->omf_file_hnd->omf_hnd, b )
+#define _ClientSecFree( a, b )          ORL_PTR_FREE((a)->omf_file_hnd->omf_hnd, b )
 
 #define ORL_FILE_WORD_SIZE_MASK         ( ORL_FILE_FLAG_16BIT_MACHINE | \
                                           ORL_FILE_FLAG_32BIT_MACHINE | \

@@ -240,7 +240,7 @@ int main( int argc, char *argv[] )
     int                         c;
     char                        *secs[MAX_SECS];
     int                         num_secs = 0;
-    OrlSetFuncs( orl_cli_funcs, objRead, objSeek, TRMemAlloc, TRMemFree );
+    ORLSetFuncs( orl_cli_funcs, objRead, objSeek, TRMemAlloc, TRMemFree );
 
     if( argc < 2 ) {
         printf( "Usage:  dwdump <file>\n" );

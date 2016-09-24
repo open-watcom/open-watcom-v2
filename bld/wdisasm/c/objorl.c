@@ -165,7 +165,7 @@ bool InitORL( void )
     orl_file_flags      o_flags;
     orl_file_format     o_format;
     orl_machine_type    o_machine_type;
-    static OrlSetFuncs( orl_cli_funcs, buffRead, buffSeek, AllocMem, FreeMem );
+    ORLSetFuncs( orl_cli_funcs, buffRead, buffSeek, AllocMem, FreeMem );
 
     ORLFileHnd = NULL;
     ORLHnd = ORLInit( &orl_cli_funcs );

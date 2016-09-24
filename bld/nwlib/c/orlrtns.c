@@ -91,7 +91,7 @@ void FiniObj( void )
 void InitObj( void )
 /******************/
 {
-    static OrlSetFuncs( orl_cli_funcs, ObjRead, ObjSeek, ObjAlloc, ObjFree );
+    ORLSetFuncs( orl_cli_funcs, ObjRead, ObjSeek, ObjAlloc, ObjFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd == NULL ) {

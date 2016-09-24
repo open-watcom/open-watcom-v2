@@ -116,7 +116,7 @@ static long ORLSeek( void *_list, long pos, int where )
 void InitObjORL( void )
 /****************************/
 {
-    static OrlSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
+    ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
 
     ORLHandle = ORLInit( &orl_cli_funcs );
     ReadCacheList = NULL;
@@ -315,7 +315,7 @@ static orl_return DeflibCallback( char *name, void *dummy )
 /*********************************************************/
 {
     dummy = dummy;
-    AddCommentLib( name, strlen(name), LIB_PRIORITY_MAX - 2 );
+    AddCommentLib( name, strlen( name ), LIB_PRIORITY_MAX - 2 );
     return( ORL_OKAY );
 }
 
@@ -501,7 +501,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     }
     numlines = ORLSecGetNumLines( sec );
     if( numlines > 0 ) {
-        numlines *= sizeof(orl_linnum);
+        numlines *= sizeof( orl_linnum );
         DBIAddLines( sdata, ORLSecGetLines( sec ), numlines, true );
     }
     return( ORL_OKAY );
@@ -522,7 +522,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
     }
 }
 
-#define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
+#define PREFIX_LEN (sizeof( ImportSymPrefix ) - 1)
 
 static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
                            size_t namelen )
@@ -829,12 +829,12 @@ static void HandleImportSymbol( char *name )
     length_name extname;
 
     intname.name = name;
-    intname.len = strlen(name);
+    intname.len = strlen( name );
     if( ImpModName == NULL ) {
-        ImpModName = FileName( CurrMod->name,strlen(CurrMod->name),E_DLL,false);
+        ImpModName = FileName( CurrMod->name, strlen( CurrMod->name ), E_DLL, false );
     }
     modname.name = ImpModName;
-    modname.len = strlen(ImpModName);
+    modname.len = strlen( ImpModName );
     if( ImpExternalName == NULL ) {
         if( ImpOrdinal == 0 ) {
             ImpOrdinal = NOT_IMP_BY_ORDINAL;
@@ -844,7 +844,7 @@ static void HandleImportSymbol( char *name )
         HandleImport( &intname, &modname, &intname, ImpOrdinal );
     } else {
         extname.name = ImpExternalName;
-        extname.len = strlen(ImpExternalName);
+        extname.len = strlen( ImpExternalName );
         HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
     }
     _LnkFree( ImpModName );

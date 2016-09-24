@@ -438,7 +438,7 @@ void InitFuzzy( const char *objs[], const char *libs[],
     orl_handle          o_hnd;
     int                 rc = 1;
     DllToolCallbacks    dllcallbacks;
-    static OrlSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
+    ORLSetFuncs( orl_cli_funcs, obj_read, obj_seek, AllocMem, FreeMem );
 
     /*** Create a hash table ***/
     hashtable = InitHash( HASH_TABLE_SIZE, hash_symbol_name, hash_compare );

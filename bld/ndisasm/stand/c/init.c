@@ -620,7 +620,7 @@ static return_val initORL( void )
     orl_return          o_error = ORL_OKAY;
     orl_file_format     type;
     bool                byte_swap;
-    static OrlSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
+    ORLSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
     if( ORLHnd ) {

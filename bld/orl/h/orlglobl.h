@@ -41,10 +41,15 @@
 #define ORL_CLI_ALLOC(x,a)              (x)->cli_alloc(a)
 #define ORL_CLI_FREE(x,a)               (x)->cli_free(a)
 
-#define ORL_FUNCS_READ(x,a,b)           ORL_CLI_READ((x)->funcs,a,b)
-#define ORL_FUNCS_SEEK(x,a,b,c)         ORL_CLI_SEEK((x)->funcs,a,b,c)
-#define ORL_FUNCS_ALLOC(x,a)            ORL_CLI_ALLOC((x)->funcs,a)
-#define ORL_FUNCS_FREE(x,a)             ORL_CLI_FREE((x)->funcs,a)
+#define ORL_FUNCS_READ(x,a,b)           (x)->funcs.cli_read(a,b)
+#define ORL_FUNCS_SEEK(x,a,b,c)         (x)->funcs.cli_seek(a,b,c)
+#define ORL_FUNCS_ALLOC(x,a)            (x)->funcs.cli_alloc(a)
+#define ORL_FUNCS_FREE(x,a)             (x)->funcs.cli_free(a)
+
+#define ORL_PTR_READ(x,a,b)             (x)->funcs->cli_read(a,b)
+#define ORL_PTR_SEEK(x,a,b,c)           (x)->funcs->cli_seek(a,b,c)
+#define ORL_PTR_ALLOC(x,a)              (x)->funcs->cli_alloc(a)
+#define ORL_PTR_FREE(x,a)               (x)->funcs->cli_free(a)
 
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
@@ -91,7 +96,7 @@ typedef struct orl_funcs {
     void        (*cli_free)( void * );
 } orl_funcs;
 
-#define OrlSetFuncs( __name, __read, __seek, __alloc, __free ) \
+#define ORLSetFuncs( __name, __read, __seek, __alloc, __free ) \
     orl_funcs __name = { __read, __seek, __alloc, __free }
 
 typedef enum {

@@ -37,7 +37,7 @@
 #include "cofforl.h"
 #include "orlhash.h"
 
-coff_handle COFFENTRY CoffInit( orl_funcs * funcs )
+coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
 {
     coff_handle                                 coff_hnd;
 
@@ -59,7 +59,7 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
             return( error );
         }
     }
-    ORL_FUNCS_FREE( coff_hnd, coff_hnd );
+    ORL_PTR_FREE( coff_hnd, coff_hnd );
     return( ORL_OKAY );
 }
 
@@ -68,7 +68,7 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file, coff_file_h
     coff_file_handle    coff_file_hnd;
     orl_return          error;
 
-    coff_file_hnd = (coff_file_handle)ORL_FUNCS_ALLOC( coff_hnd, sizeof( coff_file_handle_struct ) );
+    coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( coff_file_handle_struct ) );
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
     coff_file_hnd->coff_sec_hnd = NULL;

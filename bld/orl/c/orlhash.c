@@ -36,8 +36,8 @@
 #include "orllevel.h"
 #include "orlhash.h"
 
-#define _HashAlloc( a, b )  ORL_CLI_ALLOC( a->funcs, b )
-#define _HashFree( a, b )   ORL_CLI_FREE( a->funcs, b )
+#define _HashAlloc( a, b )  ORL_PTR_ALLOC( a, b )
+#define _HashFree( a, b )   ORL_PTR_FREE( a, b )
 #define _HashCompare( a, b, c ) a->compare( b, c )
 
 #define orlNumberEncode( k )    ((orl_hash_value)(pointer_int)(k))
@@ -77,7 +77,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
     orl_hash_data_struct *      last;
     orl_hash_data_struct *      new_data_element;
 
-    new_data_element = (orl_hash_data_struct *) _HashAlloc( hash_table, sizeof( orl_hash_data_struct ) );
+    new_data_element = (orl_hash_data_struct *)_HashAlloc( hash_table, sizeof( orl_hash_data_struct ) );
     if( !new_data_element )
         return( ORL_OUT_OF_MEMORY );
     new_data_element->data = data;
@@ -102,7 +102,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
         }
         hash_ptr = hash_ptr->next;
     }
-    new_element = (orl_hash_struct *) _HashAlloc( hash_table, sizeof( orl_hash_struct ) );
+    new_element = (orl_hash_struct *)_HashAlloc( hash_table, sizeof( orl_hash_struct ) );
     if( !new_element )
         return( ORL_OUT_OF_MEMORY );
     new_element->key = key;
@@ -134,16 +134,16 @@ orl_hash_data_struct *ORLHashTableQuery( orl_hash_table hash_table, orl_hash_dat
     return( NULL );
 }
 
-orl_hash_table ORLHashTableCreate( orl_funcs * funcs, orl_hash_table_size size, orl_hash_table_type type, orl_hash_comparison_func compare )
+orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_table_size size, orl_hash_table_type type, orl_hash_comparison_func compare )
 {
     orl_hash_table      hash_table;
-    int                 loop;
+    unsigned            loop;
 
     hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( orl_hash_table_struct ) );
-    if( !hash_table)
+    if( hash_table == NULL )
         return( NULL );
     hash_table->table = (orl_hash_struct **)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_struct * ) );
-    if( !(hash_table->table) ) {
+    if( hash_table->table == NULL ) {
         ORL_CLI_FREE( funcs, hash_table );
         return( NULL );
     }
@@ -159,7 +159,7 @@ orl_hash_table ORLHashTableCreate( orl_funcs * funcs, orl_hash_table_size size, 
 
 void ORLHashTableFree( orl_hash_table hash_table )
 {
-    int                         loop;
+    unsigned                    loop;
     orl_hash_struct *           hash_ptr;
     orl_hash_struct *           last_hash_ptr;
     orl_hash_data_struct *      data_ptr;

@@ -145,7 +145,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
     int                 st_name;
 
     num_syms = elf_sec_hnd->size / elf_sec_hnd->entsize;
-    elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle) _ClientSecAlloc( elf_sec_hnd, sizeof( elf_symbol_handle_struct ) * num_syms );
+    elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, sizeof( elf_symbol_handle_struct ) * num_syms );
     if( !(elf_sec_hnd->assoc.sym.symbols) )
         return( ORL_OUT_OF_MEMORY );
     current = elf_sec_hnd->assoc.sym.symbols;
