@@ -37,7 +37,9 @@
 #endif
 #include "wresall.h"
 #include "util.h"
+
 #include "clibext.h"
+
 
 static int wresMemicmp( const void *p1, const void *p2, unsigned len )
 /********************************************************

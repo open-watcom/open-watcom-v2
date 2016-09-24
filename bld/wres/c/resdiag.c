@@ -40,7 +40,9 @@
 #include "reserr.h"
 #include "wresdefn.h"
 #include "wresrtns.h"
+
 #include "clibext.h"
+
 
 static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes );
 static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text, uint_16 extra_bytes, WResFileID handle );
