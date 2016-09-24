@@ -69,10 +69,8 @@ orl_group_handle        OMFENTRY OmfSecGetGroup( omf_sec_handle );
 orl_table_index         OMFENTRY OmfSecGetNumLines( omf_sec_handle );
 orl_linnum *            OMFENTRY OmfSecGetLines( omf_sec_handle );
 
-
 orl_table_index         OMFENTRY OmfCvtSecHdlToIdx( omf_sec_handle );
-omf_sec_handle          OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle,
-                                                     orl_table_index );
+omf_sec_handle          OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle, orl_table_index );
 
 orl_return              OMFENTRY OmfRelocSecScan( omf_sec_handle, orl_reloc_return_func );
 orl_return              OMFENTRY OmfSymbolSecScan( omf_sec_handle, orl_symbol_return_func );
@@ -84,14 +82,11 @@ orl_symbol_type         OMFENTRY OmfSymbolGetType( omf_symbol_handle );
 unsigned char           OMFENTRY OmfSymbolGetRawInfo( omf_symbol_handle );
 omf_sec_handle          OMFENTRY OmfSymbolGetSecHandle( omf_symbol_handle );
 
-orl_return              OMFENTRY OmfNoteSecScan( omf_sec_handle,
-                                                 orl_note_callbacks *, void * );
+orl_return              OMFENTRY OmfNoteSecScan( omf_sec_handle, orl_note_callbacks *, void * );
 
-orl_return              OMFENTRY OmfGroupsScan( omf_file_handle,
-                                                orl_group_return_func );
+orl_return              OMFENTRY OmfGroupsScan( omf_file_handle, orl_group_return_func );
 orl_table_index         OMFENTRY OmfGroupSize( omf_grp_handle );
 char *                  OMFENTRY OmfGroupName( omf_grp_handle );
-char *                  OMFENTRY OmfGroupMember( omf_grp_handle,
-                                                 orl_table_index );
+char *                  OMFENTRY OmfGroupMember( omf_grp_handle, orl_table_index );
 
 #endif

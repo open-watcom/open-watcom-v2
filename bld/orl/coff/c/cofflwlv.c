@@ -57,10 +57,10 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         return( ORL_OUT_OF_MEMORY );
     prev = 0;
     for( loop = 0; loop < file_hnd->num_symbols; loop++ ) {
-        current = &(file_hnd->symbol_handles[loop]);
+        current = file_hnd->symbol_handles + loop;
         current->file_format = ORL_COFF;
         current->coff_file_hnd = file_hnd;
-        current->symbol = (coff_symbol *) &(file_hnd->symbol_table->contents[sizeof( coff_symbol ) * loop]);
+        current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * loop );
         if( current->symbol->name.non_name.zeros == 0 ) {
             current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = COFF_FALSE;
@@ -122,7 +122,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
                         && current->symbol->sec_num == IMAGE_SYM_UNDEFINED
                         && current->symbol->value == 0
                         && current->symbol->num_aux == 1 ) {
-                    weak = (coff_sym_weak *) (current->symbol + 1);
+                    weak = (coff_sym_weak *)( current->symbol + 1 );
                     switch( weak->characteristics ) {
                     case IMAGE_WEAK_EXTERN_SEARCH_NOLIBRARY:
                         current->binding = ORL_SYM_BINDING_WEAK;
@@ -379,13 +379,13 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     }
     num_relocs = reloc_sec->size / sizeof( coff_reloc );
     reloc_sec->assoc.reloc.num_relocs = num_relocs;
-    reloc_sec->assoc.reloc.relocs = (orl_reloc *) _ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+    reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
     if( reloc_sec->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
-    rel = (coff_reloc *) reloc_sec->contents;
-    o_rel = (orl_reloc *) reloc_sec->assoc.reloc.relocs;
+    rel = (coff_reloc *)reloc_sec->contents;
+    o_rel = (orl_reloc *)reloc_sec->assoc.reloc.relocs;
     for( loop = 0; loop < num_relocs; loop++ ) {
-        o_rel->section = (orl_sec_handle) orig_sec;
+        o_rel->section = (orl_sec_handle)orig_sec;
         if( reloc_sec->coff_file_hnd->machine_type == ORL_MACHINE_TYPE_ALPHA
             && rel->type == IMAGE_REL_ALPHA_MATCH ) {
             o_rel->type = ORL_RELOC_TYPE_HALF_LO;
@@ -397,7 +397,7 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
             if( o_rel->type == ORL_RELOC_TYPE_PAIR ) {
                 o_rel->symbol = NULL;
             } else {
-                o_rel->symbol = (orl_symbol_handle) &(reloc_sec->coff_file_hnd->symbol_handles[rel->sym_tab_index]);
+                o_rel->symbol = (orl_symbol_handle)( reloc_sec->coff_file_hnd->symbol_handles + rel->sym_tab_index );
             }
             o_rel->offset = rel->offset - orig_sec->hdr->offset;
         }
@@ -427,9 +427,8 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
             return( NULL );
         }
     }
-    coffline = (coff_line_num *) (hdl->hdr->lineno_ptr - fhdl->initial_size
-                                    + fhdl->rest_of_file_buffer);
-    currline = (orl_linnum *) coffline;
+    coffline = (coff_line_num *)( hdl->hdr->lineno_ptr - fhdl->initial_size + fhdl->rest_of_file_buffer );
+    currline = (orl_linnum *)coffline;
     if( hdl->relocs_done )
         return( (orl_linnum *)currline );
     linestart = currline;

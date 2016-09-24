@@ -65,16 +65,21 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cb,
             }
             break;
         case( CMT_DISASM_DIRECTIVE ):
-            if( !cb->scantab_fn ) continue;
+            if( !cb->scantab_fn )
+                continue;
             err = OmfParseScanTab( comment->data, comment->len, &st );
-            if( err != ORL_OKAY ) continue;
+            if( err != ORL_OKAY )
+                continue;
 
             csh = OmfFindSegOrComdat( sh->omf_file_hnd, st.seg, st.lname );
-            if( !csh ) continue;
+            if( !csh )
+                continue;
 
             err = cb->scantab_fn((orl_sec_handle)csh, st.start, st.end, cookie);
         }
-        if( err != ORL_OKAY ) break;
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
 
     return( err );

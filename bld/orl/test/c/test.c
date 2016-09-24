@@ -284,68 +284,85 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         sec_flags = ORLSecGetFlags( o_shnd );
         printf( "ORL_flags=0x%x\n", sec_flags );
         sep = 0;
-        if( sec_flags ) printf( " " );
+        if( sec_flags )
+            printf( " " );
         if( sec_flags & ORL_SEC_FLAG_EXEC ) {
             printf( "executable code" );
             sep++;
         }
         if( sec_flags & ORL_SEC_FLAG_INITIALIZED_DATA ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "initialized data" );
         }
         if( sec_flags & ORL_SEC_FLAG_UNINITIALIZED_DATA ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "uninitialized data" );
         }
         if( sec_flags & ORL_SEC_FLAG_GROUPED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "grouped section" );
         }
         if( sec_flags & ORL_SEC_FLAG_NO_PADDING ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "no padding to next boundary" );
         }
         if( sec_flags & ORL_SEC_FLAG_OVERLAY ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "contains an overlay" );
         }
         if( sec_flags & ORL_SEC_FLAG_REMOVE ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "remove at link-time" );
         }
         if( sec_flags & ORL_SEC_FLAG_COMDAT ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "communal data" );
         }
         if( sec_flags & ORL_SEC_FLAG_DISCARDABLE ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "discardable" );
         }
         if( sec_flags & ORL_SEC_FLAG_NOT_CACHED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "cannot be cached" );
         }
         if( sec_flags & ORL_SEC_FLAG_NOT_PAGEABLE) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "not pageable" );
         }
         if( sec_flags & ORL_SEC_FLAG_SHARED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "shared in memory" );
         }
         if( sec_flags & ORL_SEC_FLAG_EXECUTE_PERMISSION ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "execute permission" );
         }
         if( sec_flags & ORL_SEC_FLAG_READ_PERMISSION ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "read permission" );
         }
         if( sec_flags & ORL_SEC_FLAG_WRITE_PERMISSION) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "write permission" );
         }
-        if( sep ) printf( "\n" );
+        if( sep ) {
+            printf( "\n" );
+        }
     }
     if( dump.sec_contents ) {
         if( ORLSecGetContents( o_shnd, (unsigned_8 **)&buf ) == ORL_OKAY ) {
@@ -590,42 +607,53 @@ int main( int argc, char *argv[] )
             sep = 1;
         }
         if( file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "relocs stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "local symbols stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "debug info stripped" );
         }
         if( file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "for 16-bit machine" );
         }
         if( file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "for 32-bit machine" );
         }
         if( file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "for 64-bit machine" );
         }
         if( file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "little-endian byte order" );
         }
         if( file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "big-endian byte order" );
         }
         if( file_flags & ORL_FILE_FLAG_SYSTEM ) {
-            if( sep++ ) printf( ", " );
+            if( sep++ )
+                printf( ", " );
             printf( "system file" );
         }
-        if( sep ) printf( "\n" );
+        if( sep ) {
+            printf( "\n" );
+        }
     }
     if( num_secs ) {
         for( c = 0; c < num_secs; c++ ) {

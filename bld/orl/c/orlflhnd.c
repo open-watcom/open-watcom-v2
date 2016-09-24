@@ -48,7 +48,7 @@ void ORLAddFileLinks( orli_handle orli_hnd, orli_file_handle orli_file_hnd )
 orl_return ORLRemoveFileLinks( orli_file_handle orli_file_hnd )
 {
     orli_handle                         orli_hnd;
-    orli_file_handle                     current;
+    orli_file_handle                    current;
 
     orli_hnd = orli_file_hnd->orli_hnd;
 

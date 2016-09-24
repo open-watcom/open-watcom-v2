@@ -36,21 +36,6 @@
 
 #define ORLENTRY
 
-#define ORL_CLI_READ(x,a,b)             (x)->cli_read(a,b)
-#define ORL_CLI_SEEK(x,a,b,c)           (x)->cli_seek(a,b,c)
-#define ORL_CLI_ALLOC(x,a)              (x)->cli_alloc(a)
-#define ORL_CLI_FREE(x,a)               (x)->cli_free(a)
-
-#define ORL_FUNCS_READ(x,a,b)           (x)->funcs.cli_read(a,b)
-#define ORL_FUNCS_SEEK(x,a,b,c)         (x)->funcs.cli_seek(a,b,c)
-#define ORL_FUNCS_ALLOC(x,a)            (x)->funcs.cli_alloc(a)
-#define ORL_FUNCS_FREE(x,a)             (x)->funcs.cli_free(a)
-
-#define ORL_PTR_READ(x,a,b)             (x)->funcs->cli_read(a,b)
-#define ORL_PTR_SEEK(x,a,b,c)           (x)->funcs->cli_seek(a,b,c)
-#define ORL_PTR_ALLOC(x,a)              (x)->funcs->cli_alloc(a)
-#define ORL_PTR_FREE(x,a)               (x)->funcs->cli_free(a)
-
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
 

@@ -45,13 +45,29 @@
 #define ORLUNALIGNED
 #endif
 
+#define ORL_CLI_READ(x,a,b)             (x)->cli_read(a,b)
+#define ORL_CLI_SEEK(x,a,b,c)           (x)->cli_seek(a,b,c)
+#define ORL_CLI_ALLOC(x,a)              (x)->cli_alloc(a)
+#define ORL_CLI_FREE(x,a)               (x)->cli_free(a)
+
+#define ORL_FUNCS_READ(x,a,b)           (x)->funcs.cli_read(a,b)
+#define ORL_FUNCS_SEEK(x,a,b,c)         (x)->funcs.cli_seek(a,b,c)
+#define ORL_FUNCS_ALLOC(x,a)            (x)->funcs.cli_alloc(a)
+#define ORL_FUNCS_FREE(x,a)             (x)->funcs.cli_free(a)
+
+#define ORL_PTR_READ(x,a,b)             (x)->funcs->cli_read(a,b)
+#define ORL_PTR_SEEK(x,a,b,c)           (x)->funcs->cli_seek(a,b,c)
+#define ORL_PTR_ALLOC(x,a)              (x)->funcs->cli_alloc(a)
+#define ORL_PTR_FREE(x,a)               (x)->funcs->cli_free(a)
+
+
 /* NB The following are sort of fake.  We are hiding the contents of
    the file-specific section and symbol handles from the ORL
    level, allowing it only to check their type. */
 
-#define ORL_SEC_TYPE(x)     (((orli_sec_handle)x)->type)
-#define ORL_SYMBOL_TYPE(x)  (((orli_symbol_handle)x)->type)
-#define ORL_GROUP_TYPE(x)   (((orli_group_handle)x)->type)
+#define ORLI_SEC_HND        ((orli_sec_handle)orl_sec_hnd)
+#define ORLI_SYMBOL_HND     ((orli_symbol_handle)orl_symbol_hnd)
+#define ORLI_GROUP_HND      ((orli_group_handle)orl_group_hnd)
 
 typedef struct orli_sec_handle_struct {
     orl_file_format                     type;

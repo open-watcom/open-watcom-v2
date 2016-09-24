@@ -429,7 +429,8 @@ static orl_return       doMODEND( omf_file_handle ofh, omf_rectyp typ )
     assert( ofh );
 
     err = loadRecord( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
     ofh->status |= OMF_STATUS_FILE_LOADED;
     return( OmfModEnd( ofh ) );
 }
@@ -1235,10 +1236,12 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
 
     setInitialData( ofh );
     typ = _ClientRead( ofh, 1 );
-    if( !typ || ( *typ != CMD_THEADR ) ) return( ORL_ERROR );
+    if( !typ || ( *typ != CMD_THEADR ) )
+        return( ORL_ERROR );
     ofh->last_rec = *typ;
     err = doTHEADR( ofh );
-    if( err != ORL_OKAY ) return( err );
+    if( err != ORL_OKAY )
+        return( err );
 
     for( ;; ) {
         typ = _ClientRead( ofh, 1 );
@@ -1248,8 +1251,11 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
         }
         ofh->last_rec = *typ;
         err = procRecord( ofh, *typ );
-        if( err != ORL_OKAY ) break;
-        if( ( *typ == CMD_MODEND ) || ( *typ == CMD_MODEND32 ) ) break;
+        if( err != ORL_OKAY )
+            break;
+        if( ( *typ == CMD_MODEND ) || ( *typ == CMD_MODEND32 ) ) {
+            break;
+        }
     }
 
     return( err );
@@ -1276,15 +1282,20 @@ orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len,
     len--;
     buffer++;
 
-    if( len < ( 2 * wordsize + 1 ) ) return( ORL_ERROR );
+    if( len < ( 2 * wordsize + 1 ) )
+        return( ORL_ERROR );
     entry->seg = loadIndex( &buffer, &len );
     if( !entry->seg ) {
-        if( len < ( 2 * wordsize + 1 ) ) return( ORL_ERROR );
+        if( len < ( 2 * wordsize + 1 ) )
+            return( ORL_ERROR );
         entry->lname = loadIndex( &buffer, &len );
-        if( !entry->lname ) return( ORL_ERROR );
+        if( !entry->lname ) {
+            return( ORL_ERROR );
+        }
     }
 
-    if( len < ( 2 * wordsize ) ) return( ORL_ERROR );
+    if( len < ( 2 * wordsize ) )
+        return( ORL_ERROR );
     entry->start = getUWord( buffer, wordsize );
     buffer += wordsize;
     entry->end = getUWord( buffer, wordsize );

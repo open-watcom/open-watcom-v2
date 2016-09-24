@@ -66,7 +66,9 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 
     while( oh->first_file_hnd != NULL ) {
         err = OmfRemoveFileLinks( oh->first_file_hnd );
-        if( err != ORL_OKAY ) return( err );
+        if( err != ORL_OKAY ) {
+            return( err );
+        }
     }
     ORL_PTR_FREE( oh, oh );
     return( ORL_OKAY );
@@ -137,7 +139,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_s
             sym = ds->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) &&
                !( sym->flags & OMF_SYM_FLAGS_GRPDEF ) ) {
-                err = func( (orl_sec_handle) sym->section );
+                err = func( (orl_sec_handle)sym->section );
                 if( err != ORL_OKAY ) {
                     return( err );
                 }
@@ -353,7 +355,8 @@ orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 
     if( ( sh->contents != NULL ) || ( sh->type == ORL_SEC_TYPE_PROG_BITS ) ) {
         err = OmfExportSegmentContents( sh );
-        if( err != ORL_OKAY ) return( err );
+        if( err != ORL_OKAY )
+            return( err );
         *buffer = sh->contents;
         return( ORL_OKAY );
     }
@@ -375,7 +378,8 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
     assert( sh->omf_file_hnd );
     assert( func );
 
-    if( !sh->omf_file_hnd->relocs ) return( ORL_FALSE );
+    if( !sh->omf_file_hnd->relocs )
+        return( ORL_FALSE );
     relocs = sh->omf_file_hnd->relocs->assoc.reloc.relocs;
     num = sh->omf_file_hnd->relocs->assoc.reloc.num;
     if( num ) {
@@ -390,7 +394,9 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
         if( global || ( sh->index == rsh->index ) ) {
             if( !check || ( relocs[x]->offset == offset ) ) {
                 err = func( relocs[x] );
-                if( err != ORL_OKAY ) return( err );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
         }
     }
@@ -404,7 +410,8 @@ orl_return OMFENTRY OmfSecQueryReloc( omf_sec_handle sh, omf_sec_offset offset,
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_PROG_BITS ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_PROG_BITS )
+        return( ORL_ERROR );
     return( relocScan( sh, offset, func, 1 ) );
 }
 
@@ -415,7 +422,8 @@ orl_return OMFENTRY OmfSecScanReloc( omf_sec_handle sh,
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_PROG_BITS ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_PROG_BITS )
+        return( ORL_ERROR );
     return( relocScan( sh, 0, func, 0 ) );
 }
 
@@ -568,7 +576,7 @@ orl_return OMFENTRY OmfNoteSecScan( omf_sec_handle hnd, orl_note_callbacks *cb,
     assert( cb );
 
     if( hnd->type != ORL_SEC_TYPE_NOTE )
-        return ORL_ERROR;
+        return( ORL_ERROR );
     return( OmfParseComments( hnd, cb, cookie ) );
 }
 

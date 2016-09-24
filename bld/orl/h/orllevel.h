@@ -39,12 +39,11 @@
 #include "elforl.h"
 #include "omforl.h"
 
-#define ORL_FILE_TYPE(x)    (((orli_file_handle)x)->type)
-#define ORL_FILE_HND_ELF(x) (((orli_file_handle)x)->file_hnd.elf)
-#define ORL_FILE_HND_OMF(x) (((orli_file_handle)x)->file_hnd.omf)
-#define ORL_FILE_HND_COFF(x)(((orli_file_handle)x)->file_hnd.coff)
 
 /* NB _handle = a type, _hnd = a variable */
+
+#define ORLI_HND                        ((orli_handle)orl_hnd)
+#define ORLI_FILE_HND                   ((orli_file_handle)orl_file_hnd)
 
 typedef struct orli_handle_struct {
     orl_funcs                           funcs;
