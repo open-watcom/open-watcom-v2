@@ -85,8 +85,8 @@ typedef enum {
 // structures used in MS2WLINK files.
 
 typedef struct cmdentry {
-    struct cmdentry *   next;
-    char *              command;
+    struct cmdentry     *next;
+    char                *command;
     bool                asis;       // true iff entry should be printed "as is".
 } cmdentry;
 
@@ -96,11 +96,10 @@ extern extra_type   FmtInfo;
 extern bool         DebugInfo;
 
 extern cmdentry     *Commands[];
-extern char         *PromptText[];
+extern const char   *PromptText[];
 extern bool         HaveDefFile;
 
 extern format_type  FmtType;
-extern cmdentry     *Commands[];
 extern bool         MapOption;
 
 // mem.c
@@ -111,15 +110,16 @@ extern void     *MemAlloc( size_t );
 
 // fileio.h
 extern f_handle QOpenR( const char *name );
-extern unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name );
-extern unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name );
+extern size_t   QRead( f_handle file, void *buffer, size_t len, const char *name );
+extern size_t   QWrite( f_handle file, const void *buffer, size_t len, const char *name );
 extern void     QWriteNL( f_handle file, const char *name );
 extern void     QClose( f_handle file, const char *name );
 extern unsigned long QFileSize( f_handle file );
-extern bool     QReadStr( f_handle file, char *dest, unsigned size, const char *name );
+extern bool     QReadStr( f_handle file, char *dest, size_t size, const char *name );
 extern bool     QIsConIn( f_handle file );
-extern void     Error( char * msg );
-extern void     CommandOut( char *command );
+extern void     ErrorOut( const char *msg );
+extern void     ErrorExit( const char *msg );
+extern void     CommandOut( const char *command );
 extern void     QSetBinary( f_handle file );
 
 // keyword.c
@@ -143,12 +143,12 @@ extern void     ParseMicrosoft( void );
 // utils.c
 extern void     UtilsInit( void );
 extern void     ImplyFormat( format_type typ );
-extern char     *FileName( char *buff, int len, int etype, bool force );
+extern char     *FileName( const char *buff, int etype, bool force );
 extern void     AddCommand( char *msg, int prompt, bool verbatim );
-extern void     Warning( char *msg, int prompt );
-extern void     AddOption( char *msg );
-extern void     AddNumOption( char *msg, unsigned value );
-extern void     AddStringOption( char *msg, char *string, int len );
+extern void     Warning( const char *msg, int prompt );
+extern void     AddOption( const char *msg );
+extern void     AddNumOption( const char *msg, unsigned value );
+extern void     AddStringOption( const char *msg, const char *string, size_t len );
 extern void     NotSupported( const char *msg );
 extern void     NotNecessary( const char *msg );
 extern void     NotRecognized( const char *msg );

@@ -54,16 +54,16 @@ typedef enum {
 } sep_type;
 
 typedef struct cmdfilelist {
-    struct cmdfilelist *next;       // the next file in the list.
-    char *          buffer;     // the data in the file.
-    char *          current;    // current location in the data.
-    char *          token;      // token start;
-    int             len;        // token length;
+    struct cmdfilelist *next;   // the next file in the list.
+    char            *buffer;    // the data in the file.
+    char            *current;   // current location in the data.
+    char            *token;     // token start;
+    size_t          len;        // token length;
     how_type        how;        // as above
     how_type        oldhow;     // also as above.
     where_type      where;
     f_handle        file;
-    char *          name;
+    char            *name;
 } cmdfilelist;
 
 extern cmdfilelist  *CmdFile;

@@ -37,7 +37,8 @@
 
 #include "clibext.h"
 
-char *PromptText[] = {
+
+const char *PromptText[] = {
     "Object Modules ",
     "Run File ",
     "List File ",
@@ -45,7 +46,7 @@ char *PromptText[] = {
     "Definitions File "
 };
 
-static char *DefExt[] = {
+static const char *DefExt[] = {
     ".obj",
     ".exe",
     ".map",
@@ -58,7 +59,7 @@ static char *DefExt[] = {
 static bool     WritePrompt;
 
 
-extern void UtilsInit( void )
+void UtilsInit( void )
 /***************************/
 // check to see if STDIN is the console. if not, don't write prompt.
 {
@@ -72,24 +73,28 @@ void ImplyFormat( format_type typ )
     if( FmtType == FMT_DEFAULT ) FmtType = typ;
 }
 
-extern char *FileName( char *buff, int len, int etype, bool force )
-/*****************************************************************/
+char *FileName( const char *buff, int etype, bool force )
+/*******************************************************/
 {
-    char                *namptr;
-    char                *ptr;
-    int                 cnt;
+    const char      *namptr;
+    char            *ptr;
+    size_t          cnt;
+    size_t          len;
 
+    len = strlen( buff );
     namptr = buff + len;
     for( cnt = 0; cnt < len; ++cnt ) {
         --namptr;
-        if( *namptr == '\\' || *namptr == '/' ) break;
+        if( *namptr == '\\' || *namptr == '/' ) {
+            break;
+        }
     }
     if( *namptr == '\\' || *namptr == '/' ) {
         namptr++;
     }
     cnt = len - ( namptr - buff );
     for( namptr = buff + len; *namptr != '.'; --namptr ) {
-        if( --cnt <= 0 ) {
+        if( cnt-- < 2 ) {
             break;
         }
     }
@@ -97,18 +102,18 @@ extern char *FileName( char *buff, int len, int etype, bool force )
         if( cnt != 0 ) {
             len = cnt;
         }
-        ptr = MemAlloc( len + strlen( DefExt[ etype ] ) + 1 );
+        ptr = MemAlloc( len + strlen( DefExt[etype] ) + 1 );
         memcpy( ptr, buff, len );
-        strcpy( ptr + len, DefExt[ etype ] );
+        strcpy( ptr + len, DefExt[etype] );
     } else {
         ptr = MemAlloc( len + 1 );
         memcpy( ptr, buff, len );
-        ptr[ len ] = '\0';
+        ptr[len] = '\0';
     }
     return( ptr );
 }
 
-extern void AddCommand( char *msg, int prompt, bool verbatim )
+void AddCommand( char *msg, int prompt, bool verbatim )
 /************************************************************/
 {
     cmdentry *  cmd;
@@ -118,9 +123,9 @@ extern void AddCommand( char *msg, int prompt, bool verbatim )
     cmd->command = msg;
     cmd->asis = verbatim;
     cmd->next = NULL;
-    list = Commands[ prompt ];
+    list = Commands[prompt];
     if( list == NULL ) {
-        Commands[ prompt ] = cmd;
+        Commands[prompt] = cmd;
     } else {                         // always add at the end of the list.
         while( list->next != NULL ) {
             list = list->next;
@@ -129,24 +134,24 @@ extern void AddCommand( char *msg, int prompt, bool verbatim )
     }
 }
 
-extern void Warning( char *msg, int prompt )
+void Warning( const char *msg, int prompt )
 /******************************************/
 // print a warning to the linker command file in the form of a linker comment.
 {
     AddCommand( Msg2Splice( "# ", msg ), prompt, true );
 }
 
-extern void AddOption( char *msg )
+void AddOption( const char *msg )
 /********************************/
 {
     AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, true );
 }
 
-extern void AddNumOption( char *msg, unsigned value )
+void AddNumOption( const char *msg, unsigned value )
 /****************************************************/
 {
-    char    buffer[ 7 ];
-    char *  msg2;
+    char    buffer[7];
+    char    *msg2;
 
     ultoa( value, buffer, 10 );
     msg2 = Msg3Splice( msg, "=", buffer );
@@ -154,12 +159,12 @@ extern void AddNumOption( char *msg, unsigned value )
     MemFree( msg2 );
 }
 
-extern void AddStringOption( char *msg, char *string, int len )
-/*************************************************************/
+void AddStringOption( const char *msg, const char *string, size_t len )
+/*********************************************************************/
 {
-    char *  cmd;
-    int     msglen;
-    char *  tmp;
+    char    *cmd;
+    size_t  msglen;
+    char    *tmp;
 
     msglen = strlen( msg );
     cmd = alloca( len + msglen + 2 );
@@ -172,7 +177,7 @@ extern void AddStringOption( char *msg, char *string, int len )
     AddOption( cmd );
 }
 
-extern void NotSupported( const char *msg )
+void NotSupported( const char *msg )
 /*****************************************/
 {
     char    *msg2;
@@ -182,7 +187,7 @@ extern void NotSupported( const char *msg )
     MemFree( msg2 );
 }
 
-extern void NotNecessary( const char *msg )
+void NotNecessary( const char *msg )
 /*****************************************/
 {
     char    *msg2;
@@ -192,7 +197,7 @@ extern void NotNecessary( const char *msg )
     MemFree( msg2 );
 }
 
-extern void NotRecognized( const char *msg )
+void NotRecognized( const char *msg )
 /******************************************/
 {
     char    *msg2;
@@ -202,43 +207,43 @@ extern void NotRecognized( const char *msg )
     MemFree( msg2 );
 }
 
-extern char *Msg2Splice( const char *msg1, const char *msg2 )
+char *Msg2Splice( const char *msg1, const char *msg2 )
 /***********************************************************/
 // splice 2 messages together
 {
-    int     len1;
-    int     len2;
-    char *  both;
+    size_t  len1;
+    size_t  len2;
+    char    *both;
 
     len1 = strlen( msg1 );
     len2 = strlen( msg2 );
     both = MemAlloc( len1 + len2 + 1 );
     memcpy( both, msg1, len1 );
-    memcpy( both+len1, msg2, len2 );
+    memcpy( both + len1, msg2, len2 );
     *(both + len1 + len2) = '\0';
     return( both );
 }
 
-extern char *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 )
+char *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 )
 /*****************************************************************************/
 {
-    int     len1;
-    int     len2;
-    int     len3;
-    char *  all;
+    size_t  len1;
+    size_t  len2;
+    size_t  len3;
+    char    *all;
 
     len1 = strlen( msg1 );
     len2 = strlen( msg2 );
     len3 = strlen( msg3 );
     all = MemAlloc( len1 + len2 + len3 + 1 );
     memcpy( all, msg1, len1 );
-    memcpy( all+len1, msg2, len2 );
-    memcpy( all+len1+len2, msg3, len3 );
-    *(all+len1+len2+len3) = '\0';
+    memcpy( all + len1, msg2, len2 );
+    memcpy( all + len1 + len2, msg3, len3 );
+    *(all + len1 + len2 + len3) = '\0';
     return( all );
 }
 
-extern char * FindNotAsIs( int slot )
+char *FindNotAsIs( int slot )
 /***********************************/
 // search through the given slot for a command which isn't marked "asis"
 // since comments are "asis", this can be used to determine if a filename is
@@ -246,7 +251,7 @@ extern char * FindNotAsIs( int slot )
 {
     cmdentry *  cmd;
 
-    for( cmd = Commands[ slot ]; cmd != NULL; cmd = cmd->next ) {
+    for( cmd = Commands[slot]; cmd != NULL; cmd = cmd->next ) {
         if( !cmd->asis ) {
             return( cmd->command );
         }
@@ -254,7 +259,7 @@ extern char * FindNotAsIs( int slot )
     return( NULL );
 }
 
-extern char *FindObjectName( void )
+char *FindObjectName( void )
 /*********************************/
 {
     char *  msg;
@@ -263,18 +268,18 @@ extern char *FindObjectName( void )
     if( msg == NULL ) {
         msg = FindNotAsIs( OVERLAY_SLOT );
         if( msg == NULL ) {
-            Error( "no object files specified" );
+            ErrorExit( "no object files specified" );
         }
     }
     return( msg );
 }
 
-static void PromptStart( char * msg, int prompt )
-/***********************************************/
+static void PromptStart( const char *msg, int prompt )
+/****************************************************/
 {
-    char *  text;
+    const char  *text;
 
-    text = PromptText[ prompt ];
+    text = PromptText[prompt];
     QWrite( STDERR_HANDLE, text, strlen( text ), "console" );
     QWrite( STDERR_HANDLE, "[", 1, "console" );
     if( msg != NULL ) {
@@ -282,17 +287,17 @@ static void PromptStart( char * msg, int prompt )
     }
 }
 
-extern void OutPutPrompt( int prompt )
+void OutPutPrompt( int prompt )
 /************************************/
 {
-    char *  msg;
+    char    *msg;
 
-    if( !WritePrompt ) return;
+    if( !WritePrompt )
+        return;
     msg = NULL;
     switch( prompt ) {
     case RUN_SLOT:
-        msg = FindObjectName();
-        msg = FileName( msg, strlen( msg ), E_LOAD, true );
+        msg = FileName( FindObjectName(), E_LOAD, true );
         PromptStart( msg, prompt );
         MemFree( msg );
         break;
@@ -302,7 +307,7 @@ extern void OutPutPrompt( int prompt )
             if( msg == NULL ) {
                 msg = FindObjectName();
             }
-            msg = FileName( msg, strlen( msg ), E_MAP, true );
+            msg = FileName( msg, E_MAP, true );
             PromptStart( msg, prompt );
             MemFree( msg );
             break;
@@ -311,7 +316,7 @@ extern void OutPutPrompt( int prompt )
         msg = "nul";
     default:         // note the fall through
         PromptStart( msg, prompt );
-        QWrite( STDERR_HANDLE, DefExt[ prompt ], 4, "console" );
+        QWrite( STDERR_HANDLE, DefExt[prompt], 4, "console" );
     }
     QWrite( STDERR_HANDLE, "]: ", 3, "console" );
 }
@@ -320,12 +325,12 @@ extern void OutPutPrompt( int prompt )
 
 static void *SpawnStack;
 
-extern int Spawn( void (*fn)( void ) )
+int Spawn( void (*fn)( void ) )
 /************************************/
 {
-    void *save_env;
+    void    *save_env;
     jmp_buf env;
-    int status;
+    int     status;
 
     save_env = SpawnStack;
     SpawnStack = env;
@@ -338,7 +343,7 @@ extern int Spawn( void (*fn)( void ) )
 }
 
 
-extern void Suicide( void )
+void Suicide( void )
 /*************************/
 {
     if( SpawnStack != NULL ) {
