@@ -273,7 +273,7 @@ static void getcomdat( void )
         GetIdx();
     }
     ln = LName_Head;
-    for( idx = GetIndex() - 1; idx != 0; --idx ) {
+    for( idx = GetIndex() - 1; idx > 0; --idx ) {
         ln = ln->next;
     }
     if( ln->local )
