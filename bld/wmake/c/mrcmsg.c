@@ -40,6 +40,7 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
+#include "mposix.h"
 
 #include "clibext.h"
 
@@ -105,7 +106,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 }
 
 
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
 
 #endif
 
@@ -126,7 +127,7 @@ bool MsgInit( void )
         }
         MsgFini();
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = true;
     return( false );
 #else

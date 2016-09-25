@@ -39,6 +39,7 @@
 #include "mautodep.h"
 #include "orl.h"
 #include "autodep.h"
+#include "mposix.h"
 
 #include "clibext.h"
 
@@ -99,7 +100,7 @@ static void *orlRead( void *file_handle, size_t bytes )
         orlFileSize = (size_t)fileSize( FH2PH( file_handle ) );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = read( FH2PH( file_handle ), orlBuffer, orlFileSize );
+        n = posix_read( FH2PH( file_handle ), orlBuffer, orlFileSize );
         if( n != orlFileSize ) {
             return( NULL );
         }

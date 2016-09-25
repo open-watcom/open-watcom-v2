@@ -67,6 +67,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "mposix.h"
 
 #include "clibext.h"
 
@@ -259,10 +260,10 @@ STATIC RET_T processInlineFile( int handle, const char *body,
             if( writeToFile ) {
                 size_t bytes = strlen( DeMacroBody );
 
-                if( bytes != (size_t)write( handle, DeMacroBody, bytes ) ) {
+                if( bytes != (size_t)posix_write( handle, DeMacroBody, bytes ) ) {
                     ret = RET_ERROR;
                 }
-                if( 1 != write( handle, "\n", 1 ) ) {
+                if( 1 != posix_write( handle, "\n", 1 ) ) {
                     ret = RET_ERROR;
                 }
             } else {
@@ -661,7 +662,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
     if( type != WR_CREATE ) {
         *p = '\n';          /* replace null terminator with newline */
         len = ( p - text ) + 1;
-        if( (size_t)write( currentFileHandle, text, len ) != len ) {
+        if( (size_t)posix_write( currentFileHandle, text, len ) != len ) {
             PrtMsg( ERR | DOING_THE_WRITE );
             closeCurrentFile();
             return( RET_ERROR );
@@ -1689,10 +1690,10 @@ STATIC RET_T handleRM( char *cmd )
 
     if( Glob.noexec )
         return RET_SUCCESS;
-        
-    for( rt = getRMArgs( cmd, &flags, &pfname ); 
+
+    for( rt = getRMArgs( cmd, &flags, &pfname );
         rt == RET_SUCCESS;
-        rt = getRMArgs( NULL, NULL, &pfname ) ) 
+        rt = getRMArgs( NULL, NULL, &pfname ) )
     {
         RemoveDoubleQuotes( (char *)pfname, strlen( pfname ) + 1, pfname );
         if( !processRM( pfname, &flags ) ) {

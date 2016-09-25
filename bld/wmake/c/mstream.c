@@ -40,6 +40,7 @@
 #include "msuffix.h"
 #include "mmemory.h"
 #include "mpreproc.h"
+#include "mposix.h"
 
 #include "clibext.h"
 
@@ -204,7 +205,7 @@ STATIC bool fillBuffer( void )
 
     tmp->data.file.cur = tmp->data.file.buf;
 
-    max = read( tmp->data.file.fh, tmp->data.file.buf, FILE_BUFFER_SIZE - 1 );
+    max = posix_read( tmp->data.file.fh, tmp->data.file.buf, FILE_BUFFER_SIZE - 1 );
     if( max == - 1 ) {
         PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
         max = 0;
@@ -212,7 +213,7 @@ STATIC bool fillBuffer( void )
         /* read one more character if it ends in \r (possibly CRLF) */
         ssize_t max2;
 
-        max2 = read( tmp->data.file.fh, &tmp->data.file.buf[max], 1 );
+        max2 = posix_read( tmp->data.file.fh, &tmp->data.file.buf[max], 1 );
         if( max2 == -1 ) {
             PrtMsg( ERR | READ_ERROR, tmp->data.file.name );
             max2 = 0;

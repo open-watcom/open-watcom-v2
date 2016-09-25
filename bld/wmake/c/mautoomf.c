@@ -38,8 +38,10 @@
 #include "mautodep.h"
 #include "autodept.h"
 #include "pcobj.h"
+#include "mposix.h"
 
 #include "clibext.h"
+
 
 typedef struct {
     int     handle;         // file handle of open obj file
@@ -71,7 +73,7 @@ static bool verifyObjFile( int fh )
     if( lseek( fh, 0, SEEK_SET ) < 0 ) {
         return( false );
     }
-    if( read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
+    if( posix_read( fh, &theadr, sizeof( theadr ) ) != sizeof( theadr ) ) {
         return( false );
     }
     if( theadr.header.command != CMD_THEADR ) {
@@ -116,7 +118,7 @@ static bool getOMFCommentRecord( omf_info *info )
     size_t      len;
 
     hdl = info->handle;
-    while( read( hdl, &header, sizeof( header ) ) == sizeof( header ) ) {
+    while( posix_read( hdl, &header, sizeof( header ) ) == sizeof( header ) ) {
         if( header.command != CMD_COMENT ) {
             // first LNAMES record means objfile has no dependency info
             if( header.command == CMD_LNAMES ) {
@@ -125,7 +127,7 @@ static bool getOMFCommentRecord( omf_info *info )
             lseek( hdl, header.length, SEEK_CUR );
             continue;
         }
-        if( read( hdl, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
+        if( posix_read( hdl, &comment, sizeof( comment ) ) != sizeof( comment ) ) {
             break;
         }
         if( comment.type != CMT_DEPENDENCY ) {
@@ -138,7 +140,7 @@ static bool getOMFCommentRecord( omf_info *info )
         }
         // we have a dependency comment! hooray!
         len = comment.name_len + 1;
-        if( (size_t)read( hdl, nameBuffer, len ) != len ) {
+        if( (size_t)posix_read( hdl, nameBuffer, len ) != len ) {
             break;  // darn, it's broke
         }
         nameBuffer[len - 1] = NULLCHAR;
