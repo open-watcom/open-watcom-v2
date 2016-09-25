@@ -549,10 +549,10 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     return( ORL_OKAY );
 }
 
-static size_t strncspn( const char *s, const char *charset, orl_sec_size len )
+static size_t strncspn( const char *s, const char *charset, size_t len )
 {
-    char            chartable[32];
-    orl_sec_size    i;
+    unsigned char   chartable[32];
+    size_t          i;
     unsigned char   ch;
 
     memset( chartable, 0, sizeof( chartable ) );
@@ -560,7 +560,7 @@ static size_t strncspn( const char *s, const char *charset, orl_sec_size len )
         ch = *charset;
         chartable[ch / 8] |= 1 << ( ch % 8 );
     }
-    for (i = 0; i < len; i++) {
+    for( i = 0; i < len; i++ ) {
         ch = s[i];
         if( chartable[ch / 8] & ( 1 << ( ch % 8 ) ) ) {
             break;
@@ -569,20 +569,21 @@ static size_t strncspn( const char *s, const char *charset, orl_sec_size len )
     return( i );
 }
 
-static const char *pstrncspn( const char *s, const char *charset, orl_sec_size *len )
+static const char *pstrncspn( const char *s, const char *charset, size_t *len )
 {
-    int     l;
+    size_t  l;
 
     l = strncspn( s, charset, *len );
     *len -= l;
     return( s + l );
 }
 
-static void EatWhite( const char **contents, orl_sec_size *len )
-/**************************************************************/
+static void EatWhite( const char **contents, size_t *len )
+/********************************************************/
 {
-    char    ch = **contents;
+    char    ch;
 
+    ch = **contents;
     while( (ch == ' ' || ch == '\t' || ch == '=' || ch == ',') && *len > 0 ) {
         (*len)--;
         *contents += 1;
@@ -590,11 +591,11 @@ static void EatWhite( const char **contents, orl_sec_size *len )
     }
 }
 
-static orl_return ParseExport( const char **contents, orl_sec_size *len, orl_note_callbacks *cb, void *cookie )
-/*************************************************************************************************************/
+static orl_return ParseExport( const char **contents, size_t *len, orl_note_callbacks *cb, void *cookie )
+/*******************************************************************************************************/
 {
     char        *arg;
-    int         l;
+    size_t      l;
 
     l = strncspn( *contents, ", \t", *len );
     arg = alloca( l + 1 );
@@ -606,18 +607,18 @@ static orl_return ParseExport( const char **contents, orl_sec_size *len, orl_not
 }
 
 
-static orl_return ParseDefLibEntry( const char **contents, orl_sec_size *len,
+static orl_return ParseDefLibEntry( const char **contents, size_t *len,
     orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
 /*****************************************************************/
 {
-    char        *arg;
-    int         l;
-    orl_return  retval;
+    char            *arg;
+    size_t          l;
+    orl_return      retval;
 
     for( ;; ) {
         l = strncspn( *contents, ", \t", *len );
         arg = alloca( l + 1 );
-        memcpy(arg, *contents, l);
+        memcpy( arg, *contents, l );
         arg[l] = 0;
         *len -= l;
         *contents += l;
@@ -630,8 +631,8 @@ static orl_return ParseDefLibEntry( const char **contents, orl_sec_size *len,
     return( retval );
 }
 
-orl_return ElfParseDrectve( const char *contents, orl_sec_size len, orl_note_callbacks *cb, void *cookie )
-/********************************************************************************************************/
+orl_return ElfParseDrectve( const char *contents, size_t len, orl_note_callbacks *cb, void *cookie )
+/**************************************************************************************************/
 {
     const char      *cmd;
 
@@ -641,7 +642,7 @@ orl_return ElfParseDrectve( const char *contents, orl_sec_size len, orl_note_cal
             break;              // - should be start of token
         contents++; len--;
         cmd = contents;
-        contents = pstrncspn( contents, ":", &len);
+        contents = pstrncspn( contents, ":", &len );
         if( contents == NULL )
             break;
         contents++; len--;

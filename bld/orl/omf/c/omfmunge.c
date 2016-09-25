@@ -466,7 +466,7 @@ static orl_return       addReloc( omf_file_handle ofh, omf_reloc_handle orh )
 }
 
 
-static omf_tmp_fixup    findMatchingFixup( omf_tmp_fixup tf, int lo, int hi )
+static omf_tmp_fixup    findMatchingFixup( omf_tmp_fixup tf, orl_sec_offset lo, orl_sec_offset hi )
 {
     if( hi < lo ) {
         hi = lo;
@@ -485,13 +485,13 @@ static omf_tmp_fixup    findMatchingFixup( omf_tmp_fixup tf, int lo, int hi )
 static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh, omf_bytes buffer )
 {
     int                 wordsize;
-    long                tmp;
+    omf_rec_size        tmp;
     uint_32             repeat;
     long                block;
-    int                 size;
-    int                 used;
-    int                 hi;
-    int                 lo;
+    omf_rec_size        size;
+    orl_sec_offset      used;
+    orl_sec_offset      hi;
+    orl_sec_offset      lo;
     omf_bytes           ptr;
     orl_return          err = ORL_OKAY;
     omf_tmp_fixup       ftr;
@@ -704,11 +704,11 @@ static orl_return       applyBakpats( omf_file_handle ofh )
         switch( tbf->reltype ) {
         case ORL_RELOC_TYPE_WORD_8:
             pfix8 = sh->contents + tbf->offset;
-            *pfix8 += tbf->disp;
+            *pfix8 += (uint_8)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_16:
             pfix16 = (uint_16 *)(sh->contents + tbf->offset);
-            *pfix16 += tbf->disp;
+            *pfix16 += (uint_16)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_32:
             pfix32 = (uint_32 *)(sh->contents + tbf->offset);
@@ -842,7 +842,7 @@ static int strNUpper( char *str, omf_string_struct *name )
     assert( str );
 
     for( i = 0; i < name->len; ++i ) {
-        *str++ = toupper( name->string[i] );
+        *str++ = (char)toupper( (unsigned char)name->string[i] );
     }
     *str = '\0';
     return( i );
@@ -1356,7 +1356,7 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
     omf_sec_handle      sh;
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
-    long                size;
+    orl_sec_offset      size;
     omf_string_struct   *comname;
 
     typ = typ;
@@ -1477,7 +1477,7 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
     }
 
     size = offset + len;
-    if( size > sh->size ) {
+    if( sh->size < size ) {
         sh->size = size;
     }
 

@@ -36,7 +36,7 @@
 
 static void free_coff_file_hnd( coff_file_handle coff_file_hnd )
 {
-    int                 loop;
+    unsigned            loop;
     coff_sec_handle     coff_sec_hnd;
 
     if( coff_file_hnd->coff_sec_hnd ) {

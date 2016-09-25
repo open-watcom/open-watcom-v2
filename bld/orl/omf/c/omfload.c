@@ -135,13 +135,13 @@ static orl_return       loadRecord( omf_file_handle ofh )
     assert( ofh );
 
     buff = _ClientRead( ofh, 2 );
-    if( !buff )
+    if( buff == NULL )
         return( ORL_ERROR );
-    len = getUWord( buff, 2 );
+    len = (unsigned short)getUWord( buff, 2 );
     if( len == 0 )
         return( ORL_ERROR );
     ofh->parsebuf = _ClientRead( ofh, len );
-    if( !ofh->parsebuf )
+    if( ofh->parsebuf == NULL )
         return( ORL_ERROR );
     ofh->parselen = len - 1;
 
@@ -192,13 +192,13 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32, omf
 {
     omf_bytes           buf;
     omf_rec_size        len;
-    int                 m;
+    uint_8              m;
     int                 location;
     int                 offset;
-    int                 fmethod;
+    uint_8              fmethod;
     omf_idx             fidx = 0;
-    int                 thred;
-    int                 tmethod;
+    uint_8              thred;
+    uint_8              tmethod;
     omf_idx             tidx;
     uint_8              datum;
     omf_rec_size        wordsize;
@@ -217,9 +217,9 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32, omf
     len = *cur;
 
     datum = buf[0];
-    m = ( datum & 0x40 ) != 0;
+    m = ( (datum & 0x40) != 0 );
     location = ( datum >> 2 ) & 0x0f;
-    offset = ( ( datum & 0x03 ) << 8 ) | buf[1];
+    offset = ( (datum & 0x03) << 8 ) | buf[1];
     datum = buf[2];
     buf += 3;
     len -= 3;
@@ -263,7 +263,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, int is32, omf
     if( datum & 0x04 ) {
         displacement = 0;
     } else {
-        displacement = getUWord( buf, wordsize );
+        displacement = (orl_sec_offset)getUWord( buf, wordsize );
         buf += wordsize;
         len -= wordsize;
     }
@@ -278,9 +278,9 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
 {
     omf_bytes           buf;
     omf_rec_size        len;
-    int                 d;
-    int                 method;
-    int                 thred;
+    uint_8              d;
+    uint_8              method;
+    uint_8              thred;
     uint_8              datum;
     omf_thred_fixup     *thredp;
 
@@ -289,13 +289,13 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     assert( *buffer );
     assert( cur );
     assert( *cur > 0 );
-    assert( !( **buffer & 0x80 ) );
+    assert( (**buffer & 0x80) == 0 );
 
     buf = *buffer;
     len = *cur;
 
     datum = buf[0];
-    d = ( datum & 0x40 ) != 0;
+    d = ( (datum & 0x40) != 0 );
     method = ( datum >> 2 ) & 0x07;
     thred = datum & 0x03;
     buf++;
@@ -366,7 +366,7 @@ static orl_return       doCOMENT( omf_file_handle ofh )
     case( CMT_MS_PROC_MODEL ):
         /* Determine CPU
          */
-        if( !len )
+        if( len == 0 )
             break;
         switch( *buffer ) {
         case( '2' ):
@@ -391,7 +391,7 @@ static orl_return       doCOMENT( omf_file_handle ofh )
         /* Pharlap Sucks!!!!
          * Their weird object files forces us to do this crap
          */
-        if( ( flags == CMT_TNP ) && !memcmp( buffer, EASY_OMF_SIGNATURE, 5 ) ) {
+        if( ( flags == CMT_TNP ) && memcmp( buffer, EASY_OMF_SIGNATURE, 5 ) == 0 ) {
             ofh->status |= OMF_STATUS_EASY_OMF;
             ofh->machine_type = ORL_MACHINE_TYPE_I386;
             _SetWordSize( ofh->flags, ORL_FILE_FLAG_32BIT_MACHINE );
@@ -406,11 +406,11 @@ static orl_return       doCOMENT( omf_file_handle ofh )
          * by IBM's compilers. Note that we default to CodeView (MS) style
          * but we might encounter a COMENT record setting some unknown style.
          */
-         if (*buffer)
+         if( *buffer )
              buffer++;
-         if( ( len == 0 ) || !memcmp( buffer, "CV", 2 ) ) {
+         if( ( len == 0 ) || memcmp( buffer, "CV", 2 ) == 0 ) {
              ofh->debug_style = OMF_DBG_STYLE_CODEVIEW;
-         } else if( !memcmp( buffer, "HL", 2 ) ) {
+         } else if( memcmp( buffer, "HL", 2 ) == 0 ) {
              ofh->debug_style = OMF_DBG_STYLE_HLL;
          } else {
              ofh->debug_style = OMF_DBG_STYLE_UNKNOWN;
@@ -603,7 +603,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
         buffer++;
         len--;
         name = loadIndex( &buffer, &len );
-        if( !name )
+        if( name == 0 )
             return( ORL_ERROR );
         seg = 0;
         break;
@@ -614,7 +614,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
             // We have MS style line numbers.
             loadIndex( &buffer, &len );
             seg = loadIndex( &buffer, &len );
-            if( !seg )
+            if( seg == 0 )
                 return( ORL_OKAY );
             break;
         case( OMF_DBG_STYLE_HLL ):
@@ -631,7 +631,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     }
 
     sh = OmfFindSegOrComdat( ofh, seg, name );
-    if( !sh )
+    if( sh == 0 )
         return( ORL_ERROR );
 
     wordsize = OmfGetWordSize( check32Bit( ofh, typ ) );
@@ -639,7 +639,7 @@ static orl_return       doLINNUM( omf_file_handle ofh, omf_rectyp typ )
     while( len ) {
         if( len < ( wordsize + 2 ) )
             return( ORL_ERROR );
-        line = getUWord( buffer, 2 );
+        line = (unsigned_16)getUWord( buffer, 2 );
         buffer += 2;
         len -= 2;
         offset = getUWord( buffer, wordsize );
@@ -685,10 +685,10 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     group = loadIndex( &buffer, &len );
     seg = loadIndex( &buffer, &len );
 
-    if( !seg ) {
+    if( seg == 0 ) {
         if( len < 2 )
             return( ORL_ERROR );
-        frame = getUWord( buffer, 2 );
+        frame = (omf_frame)getUWord( buffer, 2 );
         buffer += 2;
         len -= 2;
     }
@@ -783,9 +783,9 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
             // FIXME !!! it looks bugy, frame should be 16-bit and offset ? 
             // I can not found any information about it
-            frame = getUWord( buffer, 2 );
+            frame = (orl_sec_frame)getUWord( buffer, 2 );
         } else {
-            frame = getUWord( buffer, 2 );
+            frame = (orl_sec_frame)getUWord( buffer, 2 );
         }
         buffer += 3;
         len -= 3;
@@ -799,7 +799,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     if( datum & 0x02 ) {
         max = 1;
     }
-    size = getUWord( buffer, wordsize );
+    size = (orl_sec_size)getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
 
@@ -817,13 +817,13 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         use32 = 1;
         if( len >= 1 ) {
             datum = buffer[0];
-            if( !(datum & EASY_USE32_FIELD ) ) {
+            if( (datum & EASY_USE32_FIELD) == 0 ) {
                 use32 = 0;
             }
         }
     }
 
-    if( use32 && !( ofh->status & OMF_STATUS_ARCH_SET ) ) {
+    if( use32 && (ofh->status & OMF_STATUS_ARCH_SET) == 0 ) {
         ofh->machine_type = ORL_MACHINE_TYPE_I386;
         _SetWordSize( ofh->flags, ORL_FILE_FLAG_32BIT_MACHINE );
         ofh->status |= OMF_STATUS_ARCH_SET;
@@ -849,7 +849,7 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
         return( err );
     len = ofh->parselen;
     buffer = ofh->parsebuf;
-    if( ( len < 1 ) || !( len & 1 ) )
+    if( ( len < 1 ) || (len & 1) == 0 )
         return( ORL_ERROR );
     name = loadIndex( &buffer, &len );
 
@@ -860,7 +860,7 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
         return( ORL_ERROR );
     size = ( ( len / 2 ) + 1 ) * sizeof( omf_idx );
     segs = _ClientAlloc( ofh, size );
-    if( !segs )
+    if( segs == NULL )
         return( ORL_OUT_OF_MEMORY );
     memset( segs, 0, size );
 
@@ -955,7 +955,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
     if( typ == CMD_BAKPAT || typ == CMD_BAKPAT32 ) {
         /* Segment index first, then location type. */
         segidx = loadIndex( &buffer, &len );
-        if( !segidx )
+        if( segidx == 0 )
             return( ORL_ERROR );
 
         loctype = *buffer++;
@@ -966,17 +966,17 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
         loctype = *buffer++;
         --len;
         symidx = loadIndex( &buffer, &len );
-        if( !symidx ) {
+        if( symidx == 0 ) {
             return( ORL_ERROR );
         }
     }
 
     while( len ) {
         /* Read the offset and displacement (always the same size). */
-        offset = getUWord( buffer, wordsize );
+        offset = (orl_sec_offset)getUWord( buffer, wordsize );
         buffer += wordsize;
         len -= wordsize;
-        displacement = getUWord( buffer, wordsize );
+        displacement = (orl_sec_offset)getUWord( buffer, wordsize );
         buffer += wordsize;
         len -= wordsize;
 
@@ -1012,9 +1012,9 @@ static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
         return( ORL_ERROR );
 
     seg = loadIndex( &buffer, &len );
-    if( !seg )
+    if( seg == 0 )
         return( ORL_ERROR );
-    offset = getUWord( buffer, wordsize );
+    offset = (orl_sec_offset)getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
     if( len < 0 )
@@ -1047,9 +1047,9 @@ static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
         return( ORL_ERROR );
 
     seg = loadIndex( &buffer, &len );
-    if( !seg )
+    if( seg == 0 )
         return( ORL_ERROR );
-    offset = getUWord( buffer, wordsize );
+    offset = (orl_sec_offset)getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
     if( len < 0 )
@@ -1103,7 +1103,7 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     buffer += 3;
     len -= 3;
 
-    offset = getUWord( buffer, wordsize );
+    offset = (orl_sec_offset)getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
 
@@ -1112,8 +1112,8 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     if( ( attr & COMDAT_ALLOC_MASK ) == COMDAT_EXPLICIT ) {
         group = loadIndex( &buffer, &len );
         seg = loadIndex( &buffer, &len );
-        if( !seg && !group ) {
-            frame = getUWord( buffer, 2 );
+        if( seg == 0 && group == 0 ) {
+            frame = (omf_frame)getUWord( buffer, 2 );
             buffer += 2;
             len -= 2;
         }
@@ -1236,7 +1236,7 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
 
     setInitialData( ofh );
     typ = _ClientRead( ofh, 1 );
-    if( !typ || ( *typ != CMD_THEADR ) )
+    if( typ == NULL || ( *typ != CMD_THEADR ) )
         return( ORL_ERROR );
     ofh->last_rec = *typ;
     err = doTHEADR( ofh );
@@ -1245,7 +1245,7 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
 
     for( ;; ) {
         typ = _ClientRead( ofh, 1 );
-        if( !typ ) {
+        if( typ == NULL ) {
             err = ORL_ERROR;
             break;
         }
@@ -1285,11 +1285,11 @@ orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len,
     if( len < ( 2 * wordsize + 1 ) )
         return( ORL_ERROR );
     entry->seg = loadIndex( &buffer, &len );
-    if( !entry->seg ) {
+    if( entry->seg == 0 ) {
         if( len < ( 2 * wordsize + 1 ) )
             return( ORL_ERROR );
         entry->lname = loadIndex( &buffer, &len );
-        if( !entry->lname ) {
+        if( entry->lname == 0 ) {
             return( ORL_ERROR );
         }
     }

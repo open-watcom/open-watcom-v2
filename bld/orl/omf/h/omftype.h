@@ -196,7 +196,7 @@ struct omf_file_handle_struct {
 
     omf_sec_handle      first_sec;
     omf_sec_handle      last_sec;
-    orl_table_index     next_idx;
+    omf_quantity        next_idx;
 
     omf_sec_handle      *segs;
     omf_idx             num_segs;
@@ -293,7 +293,7 @@ struct omf_sec_handle_struct {
     orl_sec_type        type;
     orl_sec_flags       flags;
     omf_bytes           contents;
-    omf_quantity        index;
+    orl_table_index     index;
     // assoc - things associated with the section
     union {
         struct omf_seg_assoc_struct     seg;
@@ -324,7 +324,7 @@ struct omf_grp_handle_struct {
     omf_file_handle     omf_file_hnd;
     omf_idx             name;
     omf_idx             id;
-    omf_quantity        size;
+    orl_table_index     size;
     omf_idx             *segs;
     omf_symbol_handle   sym;
 };

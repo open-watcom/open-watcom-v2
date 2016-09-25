@@ -95,7 +95,7 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
 orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct *              data_struct;
-    int                                 loop;
+    unsigned                            loop;
     orl_return                          error;
 
     if( desired == NULL ) {
@@ -241,7 +241,7 @@ orl_return COFFENTRY CoffSecGetContents( coff_sec_handle coff_sec_hnd, unsigned 
 
 orl_return COFFENTRY CoffSecQueryReloc( coff_sec_handle coff_sec_hnd, coff_sec_offset sec_offset, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     coff_sec_handle                             reloc_sec_hnd;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
@@ -298,7 +298,7 @@ coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl,
 
 orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     coff_sec_handle                             reloc_sec_hnd;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
@@ -327,7 +327,7 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 
 orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     orl_reloc *                                 reloc;
     orl_return                                  return_val;
 
@@ -352,7 +352,7 @@ orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_r
 
 orl_return COFFENTRY CoffSymbolSecScan( coff_sec_handle coff_sec_hnd, orl_symbol_return_func return_func )
 {
-    int                                         index;
+    unsigned                                    index;
     orl_return                                  error;
     coff_symbol_handle                          coff_symbol_hnd;
 
