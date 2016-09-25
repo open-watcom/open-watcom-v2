@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>

@@ -32,6 +32,7 @@
 #ifndef _MAKE_H
 #define _MAKE_H     1
 
+#include <stdio.h>
 #include <string.h>
 #include "watcom.h"
 #include "mtypes.h"

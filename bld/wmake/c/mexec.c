@@ -47,7 +47,6 @@
 #ifdef __UNIX__
     #include <sys/wait.h>
 #endif
-#include <stdio.h>
 #include <ctype.h>
 #include <time.h>
 #ifdef DLLS_IMPLEMENTED
