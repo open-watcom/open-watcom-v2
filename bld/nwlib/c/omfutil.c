@@ -58,7 +58,7 @@ void FiniOmfUtil( void )
     FiniOmfRec();
 }
 
-static void CheckForOverflow( file_offset current )
+static void CheckForOverflow( unsigned long current )
 {
     char buffer[10];
 
@@ -70,17 +70,17 @@ static void CheckForOverflow( file_offset current )
 
 void PadOmf( bool force )
 {
-    unsigned    padding;
+    size_t      padding_size;
     char        *tmpbuf;
 
     // page size is always a power of 2
     // therefor x % Options.page_size == x & ( Options.page_size - 1 )
 
-    padding = Options.page_size - ( LibTell( NewLibrary ) & ( Options.page_size - 1 ) );
-    if( padding != Options.page_size || force ) {
-        tmpbuf = MemAlloc( padding );
-        memset( tmpbuf, 0, padding );
-        WriteNew( tmpbuf, padding );
+    padding_size = Options.page_size - (LibTell( NewLibrary ) & ( Options.page_size - 1 ));
+    if( padding_size != Options.page_size || force ) {
+        tmpbuf = MemAlloc( padding_size );
+        memset( tmpbuf, 0, padding_size );
+        WriteNew( tmpbuf, padding_size );
         MemFree( tmpbuf);
     }
 }
@@ -90,18 +90,14 @@ static int isPrime( unsigned num )
     unsigned *test_p;
     unsigned p;
 
-    for( test_p = PrimeNos;; ++test_p ) {
-        if( *test_p == 0 ) {
-            return( -1 );
-        }
-        p = *test_p;
+    for( test_p = PrimeNos; (p = *test_p) != 0; ++test_p ) {
         if( ( p * p ) > num )
-            break;
+            return( 1 );
         if( ( num % p ) == 0 ) {
             return( 0 );
         }
     }
-    return( 1 );
+    return( -1 );
 }
 
 
@@ -210,7 +206,7 @@ unsigned WriteOmfDict( sym_file *first_sfile )
     bool        done;
     unsigned    num_blocks;
     OmfLibBlock *lib_block;
-    unsigned    dict_size;
+    size_t      dict_size;
     unsigned    int i;
     unsigned    int j;
 
@@ -248,9 +244,9 @@ unsigned WriteOmfDict( sym_file *first_sfile )
 
 void WriteOmfFile( sym_file *sfile )
 {
-    sym_entry   *sym;
-    file_offset current;
-    const char  *fname;
+    sym_entry       *sym;
+    unsigned long   current;
+    const char      *fname;
 
     ++symCount;
     // add one for ! after name and make sure odd so whole name record will

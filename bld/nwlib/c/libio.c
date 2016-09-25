@@ -238,7 +238,7 @@ void LibSeek( libfile lio, long where, int whence )
     lio->buf_pos = 0;
 }
 
-file_offset LibTell( libfile lio )
+long LibTell( libfile lio )
 {
     if( lio->write_to ) {
         return( ftell( lio->io ) + lio->buf_size );

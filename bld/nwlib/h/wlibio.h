@@ -57,7 +57,7 @@ extern size_t       LibRead( libfile io, void *buff, size_t len );
 extern void         LibWrite( libfile io, const void *buff, size_t len );
 extern void         LibClose( libfile io );
 extern void         LibSeek( libfile io, long where, int whence );
-extern file_offset  LibTell( libfile io );
+extern long         LibTell( libfile io );
 extern void         LibReadError( libfile io );
 extern void         LibWriteError( libfile io );
 extern void         BadLibrary( const char *name );

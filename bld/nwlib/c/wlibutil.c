@@ -54,10 +54,7 @@ void GetFileContents( const char *name, libfile io, arch_header *arch, char **co
         *contents = NULL;
         return;
     }
-
-    if( size % 2 == 1 ) {
-        size++;
-    }
+    Round2var( size );
     *contents = MemAlloc( size );
     if( LibRead( io, *contents, size ) != size ) {
         BadLibrary( name );

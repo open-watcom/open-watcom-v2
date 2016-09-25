@@ -318,7 +318,7 @@ static void WriteImportDescriptor( libfile io, sym_file *sfile, coff_lib_file c_
     unsigned_16     type;
     char            *buffer;
 
-    buffer = alloca( modName->len + 21 );
+    buffer = alloca( modName->len + 1 + 20 );
     switch( sfile->import->processor ) {
     case WL_PROC_PPC:
         type = IMAGE_REL_PPC_IFGLUE;
@@ -390,7 +390,7 @@ static void WriteNullThunkData( libfile io, sym_file *sfile, coff_lib_file c_fil
 {
     char    *buffer;
 
-    buffer = alloca( modName->len + 18 );
+    buffer = alloca( 1 + modName->len + 17 );
     SetCoffFile( &c_file, sfile->import->processor, sfile->arch.date, 0 );
     AddCoffSection( &c_file, ".idata$5", 0x4, 0, section_align
         | IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ | IMAGE_SCN_MEM_WRITE );
@@ -556,7 +556,7 @@ void CoffWriteImport( libfile io, sym_file *sfile, bool long_format )
                 | IMAGE_SCN_MEM_READ |  IMAGE_SCN_MEM_WRITE );
             AddCoffSymSec( &c_file, IMAGE_COMDAT_SELECT_ASSOCIATIVE );
             if( sfile->import->type == NAMED ) {
-                AddCoffSection( &c_file, ".idata$6", Round2( exportedName.len + 1 ) + 2,
+                AddCoffSection( &c_file, ".idata$6", sizeof( ordinal ) + Round2( exportedName.len + 1 ),
                     0, IMAGE_SCN_ALIGN_2BYTES | IMAGE_SCN_LNK_COMDAT
                     | IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_READ
                     | IMAGE_SCN_MEM_WRITE );

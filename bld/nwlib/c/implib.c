@@ -739,9 +739,9 @@ static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_t
     MemFree( buffer );
 }
 
-unsigned ElfImportSize( import_sym *import )
+size_t ElfImportSize( import_sym *import )
 {
-    unsigned        len;
+    size_t          len;
     elf_import_sym  *temp;
 
     len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
@@ -754,7 +754,7 @@ unsigned ElfImportSize( import_sym *import )
         Round2var( len );
         break;
     case ELFRENAMED:
-        len += 0x22 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
+        len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
         Round2var( len );
         break;
     default:
@@ -763,14 +763,14 @@ unsigned ElfImportSize( import_sym *import )
     return( len );
 }
 
-unsigned CoffImportSize( import_sym *import )
+size_t CoffImportSize( import_sym *import )
 {
-    unsigned dll_len;
-    unsigned mod_len;
-    unsigned ret;
-    unsigned sym_len;
-    unsigned exp_len;
-    unsigned opt_hdr_len;
+    size_t  dll_len;
+    size_t  mod_len;
+    size_t  ret;
+    size_t  sym_len;
+    size_t  exp_len;
+    size_t  opt_hdr_len;
 
     dll_len = strlen( import->DLLName );
     mod_len = strlen( MakeFName( import->DLLName ) );
@@ -905,7 +905,7 @@ void ElfWriteImport( libfile io, sym_file *sfile )
 
     import = sfile->import;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp=import->u.elf.symlist; temp != NULL; temp = temp->next ) {
+    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         strtabsize += temp->len + 1;
     }
     padding = ( (strtabsize & 1) != 0 );
@@ -925,8 +925,8 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         numsyms = 0;
         break;
     }
-    fillInU32( 0x10 * (numsyms + 1), &(ElfBase[0xc4]) );
-    fillInU32( strtabsize + 0x128 + 0x10*numsyms, &(ElfBase[0xe8]) );
+    fillInU32( 0x10 * ( numsyms + 1 ), &(ElfBase[0xc4]) );
+    fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
     fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
     LibWrite( io, &ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);

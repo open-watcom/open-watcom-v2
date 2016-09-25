@@ -42,7 +42,7 @@ static sym_entry        **HashTable;
 static sym_entry        **SortedSymbols;
 
 static char             *padding_string;
-static unsigned         padding_string_len;
+static size_t           padding_string_len;
 
 #define HASH_SIZE       256
 
@@ -233,8 +233,8 @@ static void WritePadding( file_offset size )
     }
 }
 
-static long             NumFiles;
-static long             NumSymbols;
+static unsigned long    NumFiles;
+static size_t           NumSymbols;
 static file_offset      TotalNameLength;
 static file_offset      TotalFFNameLength;
 static file_offset      TotalSymbolLength;
@@ -245,8 +245,8 @@ static void SortSymbols( void )
     sym_file    *sfile;
     sym_entry   *sym;
     sym_entry   **sym_curr;
-    int         i;
-    unsigned    name_length = 0;
+    size_t      i;
+    size_t      name_length = 0;
 
     NumFiles = 0;
     NumSymbols = 0;
@@ -320,7 +320,7 @@ static void SortSymbols( void )
         }
     }
 
-    qsort( SortedSymbols, NumSymbols, sizeof(sym_entry *), CompSyms );
+    qsort( SortedSymbols, NumSymbols, sizeof( sym_entry * ), CompSyms );
 
     // re-hook symbols onto files in sorted order
 
@@ -328,7 +328,7 @@ static void SortSymbols( void )
         sfile->first = NULL;
     }
 
-    for( i = NumSymbols - 1; i >= 0; --i ) {
+    for( i = NumSymbols; i-- > 0; ) {
         sym = SortedSymbols[i];
         sym->next = sym->file->first;
         sym->file->first = sym;
@@ -373,9 +373,9 @@ void WriteFileBody( sym_file *sfile )
 static void WriteOmfLibTrailer( void )
 {
     OmfRecord   *rec;
-    unsigned    size;
+    size_t      size;
 
-    size = DIC_REC_SIZE - LibTell( NewLibrary ) % DIC_REC_SIZE;
+    size = DIC_REC_SIZE - (unsigned long)LibTell( NewLibrary ) % DIC_REC_SIZE;
     rec = MemAlloc( size );
     rec->basic.type = LIB_TRAILER_REC;
     rec->basic.len = GET_LE_16( size - 3 );
@@ -430,7 +430,7 @@ static void WriteOmfFileTable( void )
 {
     sym_file    *sfile;
     unsigned    num_blocks;
-    unsigned    dict_offset;
+    long        dict_offset;
 
     if( Options.page_size == 0 ) {
         Options.page_size = DEFAULT_PAGE_SIZE;
@@ -457,7 +457,7 @@ static void WriteArMlibFileTable( void )
     file_offset     dict1_size = 0;
     file_offset     dict2_size = 0;
     file_offset     header_size = 0;
-    int             i;
+    size_t          i;
     time_t          currenttime = time( NULL );
     file_offset     obj_offset;
     int             index;
@@ -620,7 +620,7 @@ static void WriteArMlibFileTable( void )
 
     if( TotalNameLength > 0 ) {
         char    *stringpad;
-        int     stringpadlen;
+        size_t  stringpadlen;
 
         if( Options.libtype == WL_LTYPE_MLIB ) {
             stringpad    = LIB_LONG_NAME_END_STRING;
@@ -691,7 +691,7 @@ static void WriteArMlibFileTable( void )
             }
         } else {
             buff[0] = '/';
-            itoa( sfile->name_offset, buff+1, 10 );
+            itoa( sfile->name_offset, buff + 1, 10 );
             arch.name = buff;
         }
         WriteFileHeader( &arch );
@@ -1047,7 +1047,7 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
 
 #define MAX_MESSAGE_LEN 511
 static char             listMsg[MAX_MESSAGE_LEN + 1];
-static unsigned         msgLength = 0;
+static size_t           msgLength = 0;
 
 static void listPrint( FILE *fp, char *str, ... )
 {
@@ -1074,7 +1074,7 @@ static void listNewLine( FILE *fp )
 #define LINE_WIDTH 79
 #define OFF_COLUMN 40
 
-static void fpadch( FILE *fp, char ch, unsigned len )
+static void fpadch( FILE *fp, char ch, size_t len )
 {
     fp = fp;
     if( len > 0 ) {
@@ -1196,7 +1196,7 @@ void ListContents( void )
         int             i;
         FILE            *fp;
         char            *name;
-        unsigned        name_len;
+        size_t          name_len;
 
         if( Options.terse_listing ) {
             SortSymbols();
@@ -1204,7 +1204,7 @@ void ListContents( void )
                 sym = SortedSymbols[i];
                 name = FormSym( sym->name );
                 name_len = strlen( name );
-                Message(name);
+                Message( name );
             }
             return;
         }

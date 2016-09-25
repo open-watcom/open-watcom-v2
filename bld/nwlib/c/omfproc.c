@@ -390,7 +390,7 @@ static void trimOmfHeader( void )
 
     len = GET_LE_16( omfRec->basic.len );
     omfRec->basic.contents[len - 1] = '\0';
-    len = strlen( TrimPath( (char *)omfRec->basic.contents + 1 ) );
+    len = (unsigned_16)strlen( TrimPath( (char *)omfRec->basic.contents + 1 ) );
     omfRec->basic.contents[0] = len;
     omfRec->basic.len = GET_LE_16( len + 2 );
     CalcOmfRecordCheckSum( omfRec );
@@ -572,12 +572,12 @@ void OmfExtract( libfile io, libfile out )
     } while( omfRec->basic.type != CMD_MODEND && omfRec->basic.type != CMD_MODE32 );
 }
 
-unsigned OmfImportSize( import_sym *import )
-/******************************************/
+size_t OmfImportSize( import_sym *import )
+/****************************************/
 {
-    unsigned        len;
-    unsigned        dll_len;
-    unsigned        sym_len;
+    size_t      len;
+    size_t      dll_len;
+    size_t      sym_len;
 
     dll_len = strlen( import->DLLName ) + 1;
     sym_len = strlen( import->u.sym.symName ) + 1;
@@ -625,7 +625,7 @@ void OmfWriteImport( sym_file *sfile )
 #endif
     WriteOmfRecord( omfRec );
     exp_len = 0;
-    len = 2 + 2 + ( 1 + file_len ) + ( 1 + sym_len );
+    len = 4 + ( 1 + file_len ) + ( 1 + sym_len );
     if( sfile->import->type == ORDINAL ) {
         len += 2 + 1;
     } else if( sfile->import->u.sym.exportedName == NULL ) {
@@ -658,7 +658,7 @@ void OmfWriteImport( sym_file *sfile )
     }
     WriteOmfRecord( omfRec );
     WriteTimeStamp( sfile );
-    contents = SetOmfRecBuffer( CMD_MODEND, 2 );
+    contents = SetOmfRecBuffer( CMD_MODEND, 1 + 1 );
     contents[0] = 0;
     WriteOmfRecord( omfRec );
 }

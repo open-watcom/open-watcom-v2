@@ -53,8 +53,8 @@ static void CopyObj( libfile io, libfile out, arch_header *arch )
 
 static void ExtractObj( libfile io, char *name, arch_header *arch, char *newname )
 {
-    file_offset  pos;
-    libfile      out;
+    long        pos;
+    libfile     out;
     char        *obj_name;
 
     obj_name = MakeObjOutputName( name, newname );

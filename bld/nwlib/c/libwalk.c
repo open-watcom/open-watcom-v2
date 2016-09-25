@@ -61,7 +61,7 @@ void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *, libfile 
     arch_header         arch;
     size_t              bytes_read;
 //    int                 dict_count;
-    file_offset         pos;
+    long                pos;
 
 //    dict_count = 0;
     arch.fnametab = NULL;
