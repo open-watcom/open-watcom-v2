@@ -116,7 +116,7 @@ extern void ResetFileTab( void );
 extern void CleanFileTab( void );
 extern void ListContents( void );
 extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
-extern bool RemoveObjectSymbols( char *name );
+extern bool RemoveObjectSymbols( const char *name );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );

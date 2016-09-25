@@ -857,8 +857,8 @@ void DumpHashTable( void )
 #endif // !NDEBUG
 
 
-bool RemoveObjectSymbols( char *name )
-/************************************/
+bool RemoveObjectSymbols( const char *name )
+/******************************************/
 {
     sym_file    *sfile;
     sym_file    *prev_sfile;

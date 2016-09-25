@@ -45,7 +45,7 @@ typedef struct {
     coff_file_header    header;
     coff_section_header section[MAX_NUM_COFF_LIB_SECTIONS];
     coff_symbol         symbol[MAX_NUM_COFF_LIB_SYMBOLS];
-    unsigned_32         string_table_size;
-    unsigned_32         max_string_table_size;
+    size_t              string_table_size;
+    size_t              max_string_table_size;
     char                *string_table;
 } coff_lib_file;

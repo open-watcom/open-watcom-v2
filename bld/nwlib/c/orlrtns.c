@@ -111,22 +111,22 @@ static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
     ofile->offset = offset;
     format = ORLFileIdentify( ORLHnd, ofile );
     switch( format ) {
-        case ORL_COFF:
-        case ORL_ELF:
-            ofile->orl = ORLFileInit( ORLHnd, ofile, format );
-            if( Options.libtype == WL_LTYPE_MLIB ) {
-                if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
-                    FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );
-                }
+    case ORL_COFF:
+    case ORL_ELF:
+        ofile->orl = ORLFileInit( ORLHnd, ofile, format );
+        if( Options.libtype == WL_LTYPE_MLIB ) {
+            if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
+                FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );
             }
-            if( ofile->orl == NULL ) {
-                FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
-            }
-            break;
+        }
+        if( ofile->orl == NULL ) {
+            FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
+        }
+        break;
 
-        default: // case ORL_UNRECOGNIZED_FORMAT:
-            ofile->orl = NULL;
-            break;
+    default: // case ORL_UNRECOGNIZED_FORMAT:
+        ofile->orl = NULL;
+        break;
     }
     return( ofile );
 }
@@ -149,7 +149,8 @@ obj_file *OpenLibFile( const char *name, libfile hdl )
 static void DoCloseObjFile( obj_file *ofile )
 /*******************************************/
 {
-    buf_list    *list,*next;
+    buf_list    *list;
+    buf_list    *next;
 
     if( ofile->orl != NULL ) {
         ORLFileFini( ofile->orl );

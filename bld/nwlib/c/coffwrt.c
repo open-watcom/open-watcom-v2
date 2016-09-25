@@ -109,7 +109,7 @@ static void AddCoffString( coff_lib_file  *c_file, const char *name, size_t len 
     len++;
     if( ( c_file->string_table_size + len ) >= c_file->max_string_table_size ) {
         c_file->max_string_table_size *= 2;
-        c_file->string_table = (char *)MemRealloc( c_file->string_table, c_file->max_string_table_size );
+        c_file->string_table = MemRealloc( c_file->string_table, c_file->max_string_table_size );
     }
     memcpy( c_file->string_table + c_file->string_table_size, name, len );
     c_file->string_table_size += len;

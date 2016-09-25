@@ -51,7 +51,7 @@ static void CopyObj( libfile io, libfile out, arch_header *arch )
     }
 }
 
-static void ExtractObj( libfile io, char *name, arch_header *arch, char *newname )
+static void ExtractObj( libfile io, const char *name, arch_header *arch, const char *newname )
 {
     long        pos;
     libfile     out;

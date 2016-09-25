@@ -39,8 +39,6 @@
 // must correspond to defines in implib.h
 static char *procname[5] = { "", "AXP", "PPC", "X86","" };
 
-static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_type processor );
-
 static void fillInU16( unsigned_16 value, char *out )
 {
     out[0] = value & 255;
@@ -248,6 +246,26 @@ static void os2AddImport( arch_header *arch, libfile io )
         getOs2Symbol( io, junk, &ordinal, &bytes_read );
         importOs2Table( io, arch, dll_name, false, type, os2_header.nonres_size - bytes_read );
     }
+}
+
+static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
+{
+    char *buffer;
+
+    buffer = MemAlloc( 100 );
+
+    memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
+    _splitpath( DLLName, NULL, NULL, buffer + 20, NULL );
+    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
+
+    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
+
+    buffer[0] = 0x7f;
+    _splitpath( DLLName, NULL, NULL, buffer + 1, NULL );
+    strcat( buffer, "_NULL_THUNK_DATA" );
+    CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
+
+    MemFree( buffer );
 }
 
 static void os2FlatAddImport( arch_header *arch, libfile io )
@@ -717,26 +735,6 @@ void ProcessImport( char *name )
     }
     MemFree( arch->name );
     MemFree( arch );
-}
-
-static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_type processor )
-{
-    char *buffer;
-
-    buffer = MemAlloc( 100 );
-
-    memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
-    _splitpath( DLLName, NULL, NULL, buffer + 20, NULL );
-    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
-
-    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
-
-    buffer[0] = 0x7f;
-    _splitpath( DLLName, NULL, NULL, buffer + 1, NULL );
-    strcat( buffer, "_NULL_THUNK_DATA" );
-    CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
-
-    MemFree( buffer );
 }
 
 size_t ElfImportSize( import_sym *import )
