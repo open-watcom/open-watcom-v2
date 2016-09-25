@@ -42,9 +42,9 @@
 #include "mlex.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 static ENV_TRACKER  *envList;

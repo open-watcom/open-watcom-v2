@@ -43,10 +43,10 @@
 #include "autodept.h"
 #include "mrcmsg.h"
 #include "msg.h"
+#include "pathgrp.h"
 #include "mcache.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 #if defined( __WATCOMC__ ) && !defined( __UNIX__ )

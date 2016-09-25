@@ -41,9 +41,9 @@
 #include "iopath.h"
 #include "pathlist.h"
 #include "standalo.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 #endif
 

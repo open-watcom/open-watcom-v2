@@ -42,9 +42,9 @@
 #include <assert.h>
 #include "watcom.h"
 #include "misc.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 #ifdef __UNIX__

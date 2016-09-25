@@ -59,9 +59,9 @@
 #include "showopts.h"
 #include "inout.h"
 #include "errutil.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 #if _CPU == 8086
