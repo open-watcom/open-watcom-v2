@@ -67,7 +67,11 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 {
     size_t  ret;
 
+#ifdef _WIN64
+    ret = __w64_read( file, buffer, len );
+#else
     ret = read( file, buffer, len );
+#endif
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
@@ -83,7 +87,11 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
     if( len == 0 )
         return( 0 );
 
+#ifdef _WIN64
+    ret = __w64_write( file, buffer, len );
+#else
     ret = write( file, buffer, len );
+#endif
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }

@@ -116,8 +116,8 @@ char *FileName( const char *buff, int etype, bool force )
 void AddCommand( char *msg, int prompt, bool verbatim )
 /************************************************************/
 {
-    cmdentry *  cmd;
-    cmdentry *  list;
+    cmdentry    *cmd;
+    cmdentry    *list;
 
     cmd = MemAlloc( sizeof( cmdentry ) );
     cmd->command = msg;
@@ -249,7 +249,7 @@ char *FindNotAsIs( int slot )
 // since comments are "asis", this can be used to determine if a filename is
 // specified, and what that filename is.
 {
-    cmdentry *  cmd;
+    cmdentry    *cmd;
 
     for( cmd = Commands[slot]; cmd != NULL; cmd = cmd->next ) {
         if( !cmd->asis ) {
@@ -260,9 +260,9 @@ char *FindNotAsIs( int slot )
 }
 
 char *FindObjectName( void )
-/*********************************/
+/**************************/
 {
-    char *  msg;
+    char    *msg;
 
     msg = FindNotAsIs( OBJECT_SLOT );
     if( msg == NULL ) {
@@ -288,7 +288,7 @@ static void PromptStart( const char *msg, int prompt )
 }
 
 void OutPutPrompt( int prompt )
-/************************************/
+/*****************************/
 {
     char    *msg;
 
@@ -311,12 +311,15 @@ void OutPutPrompt( int prompt )
             PromptStart( msg, prompt );
             MemFree( msg );
             break;
-        }         // note the possible fall through.
+        }
+        // note: fall down
     case DEF_SLOT:
         msg = "nul";
-    default:         // note the fall through
+        // note: fall down
+    default:
         PromptStart( msg, prompt );
         QWrite( STDERR_HANDLE, DefExt[prompt], 4, "console" );
+        break;
     }
     QWrite( STDERR_HANDLE, "]: ", 3, "console" );
 }

@@ -238,7 +238,7 @@ void DirectiveError( void )
 }
 
 bool MakeToken( sep_type separator, bool include_fn )
-/**********************************************************/
+/***************************************************/
 // include_fn == true if '.' and ':' are allowed to be part of the token
 // (include filename).
 {
@@ -347,7 +347,7 @@ bool MakeToken( sep_type separator, bool include_fn )
     return( true );
 }
 
-char * ToString( void )
+char *ToString( void )
 /****************************/
 {
     char            *src;
