@@ -57,10 +57,10 @@ enum msg_num {
     #undef pick
 };
 
-extern unsigned FmtStr( char *, unsigned, char *, ... );
-extern unsigned DoFmtStr( char *, unsigned, char *, va_list * );
-extern void     LnkMsg( unsigned, char *, ... );
-extern void     Locator( char *, char *, unsigned );
+extern unsigned FmtStr( char *, unsigned, const char *, ... );
+extern unsigned DoFmtStr( char *, unsigned, const char *, va_list * );
+extern void     LnkMsg( unsigned, const char *, ... );
+extern void     Locator( const char *, const char *, unsigned );
 extern void     WLPrtBanner( void );
 extern bool     SkipSymbol( symbol * );
 extern int      SymAlphaCompare( const void *, const void * );

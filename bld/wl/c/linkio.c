@@ -94,8 +94,8 @@ void CheckBreak( void )
     }
 }
 
-static tiny_ret_t DoOpen( char *name, bool create, unsigned mode )
-/****************************************************************/
+static tiny_ret_t DoOpen( const char *name, bool create, unsigned mode )
+/**********************************************************************/
 {
     tiny_ret_t       h;
 
@@ -126,25 +126,27 @@ static char *QErrMsg( unsigned status )
 }
 
 
-f_handle QOpenR( char *name )
-/**********************************/
+f_handle QOpenR( const char *name )
+/*********************************/
 {
     tiny_ret_t h;
 
     h = DoOpen( name, false, TIO_READ );
-    if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
 }
 
 
-f_handle QOpenRW( char *name )
+f_handle QOpenRW( const char *name )
 /***********************************/
 {
     tiny_ret_t h;
 
     h = DoOpen( name, true, TIO_NORMAL );
-    if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
 }
@@ -275,12 +277,13 @@ unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-void QDelete( char *name )
-/*******************************/
+void QDelete( const char *name )
+/******************************/
 {
     tiny_ret_t   h;
 
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     h = TinyDelete( name );
     if( TINY_ERROR( h ) ) {
         if( TINY_INFO( h ) != 2 ) {  /* file not found is OK */
@@ -312,7 +315,7 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
 }
 
 bool QIsDevice( f_handle file )
-/************************************/
+/*****************************/
 {
     if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
         return( true );
@@ -321,42 +324,44 @@ bool QIsDevice( f_handle file )
     }
 }
 
-f_handle ExeCreate( char *name )
-/*************************************/
+f_handle ExeCreate( const char *name )
+/************************************/
 {
     tiny_ret_t      h;
 
     h = DoOpen( name, true, TIO_NORMAL );
     LastResult = TINY_INFO( h );
-    if( TINY_OK( h ) ) return( TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
 }
 
-static f_handle NSOpen( char *name, unsigned mode )
-/*************************************************/
+static f_handle NSOpen( const char *name, unsigned mode )
+/*******************************************************/
 {
     tiny_ret_t       h;
 
     h = DoOpen( name, false, mode );
     LastResult = TINY_INFO( h );
-    if( TINY_OK( h ) ) return( TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeOpen( char *name )
-/***********************************/
+f_handle ExeOpen( const char *name )
+/**********************************/
 {
     return( NSOpen( name, TIO_READ_WRITE ) );
 }
 
-f_handle QObjOpen( char *name )
-/************************************/
+f_handle QObjOpen( const char *name )
+/***********************************/
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-f_handle TempFileOpen( char *name )
-/****************************************/
+f_handle TempFileOpen( const char *name )
+/***************************************/
 // open without suiciding. Don't create the file
 {
     return( NSOpen( name, TIO_READ ) );
@@ -368,8 +373,8 @@ bool QSysHelp( char **cmd_ptr )
     return( false );
 }
 
-bool QModTime( char *name, time_t *time )
-/**********************************************/
+bool QModTime( const char *name, time_t *time )
+/*********************************************/
 {
     int         result;
     struct stat buf;

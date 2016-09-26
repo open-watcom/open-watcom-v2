@@ -518,8 +518,8 @@ void FiniEnvVars( void )
     }
 }
 
-f_handle FindPath( char *name )
-/*****************************/
+f_handle FindPath( const char *name )
+/***********************************/
 {
     char        *path_list;
     f_handle    file;

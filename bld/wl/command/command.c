@@ -44,7 +44,7 @@
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
 extern void             InitCmdFile( void );
-extern f_handle         FindPath( char * );
+extern f_handle         FindPath( const char * );
 extern int              Spawn(void (*)() );
 extern void             BurnSystemList( void );
 extern void             Burn( void );

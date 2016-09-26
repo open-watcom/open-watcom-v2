@@ -51,8 +51,8 @@ char *MsgStrings[] = {
     #undef pick
 };
 
-static  char *          LocFile;
-static  char *          LocMem;
+static  const char      *LocFile;
+static  const char      *LocMem;
 static  int             LocRec;
 static  MSG_ARG_LIST    MsgArgInfo;
 static  char *          CurrSymName;
@@ -80,8 +80,8 @@ void ResetMsg( void )
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
 }
 
-unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
-/****************************************************************/
+unsigned FmtStr( char *buff, unsigned len, const char *fmt, ... )
+/***************************************************************/
 {
     va_list args;
 
@@ -89,8 +89,8 @@ unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
     return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
-unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
-/****************************************************************************/
+unsigned DoFmtStr( char *buff, unsigned len, const char *src, va_list *args )
+/***************************************************************************/
 /* quick vsprintf routine                                           */
 /* assumptions - format string does not end in '%'                  */
 /*             - only use of '%' is as follows                      */
@@ -353,8 +353,8 @@ static void IncremIndex( void )
     MsgArgInfo.index++;
 }
 
-void Locator( char *filename, char *mem, unsigned rec )
-/************************************************************/
+void Locator( const char *filename, const char *mem, unsigned rec )
+/*****************************************************************/
 {
     LocFile = filename;
     LocMem = mem;
@@ -457,7 +457,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
 
 void LnkMsg(
     unsigned    num,    // A message number + control flags
-    char        *types, // Conversion qualifiers
+    const char  *types, // Conversion qualifiers
     ... )               // Arguments to interpolate into message
 /**************************************************
  * report a linker message

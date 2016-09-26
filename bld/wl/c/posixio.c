@@ -70,8 +70,8 @@ void PrintIOError( unsigned msg, char *types, char *name )
     LnkMsg( msg, types, name, strerror( errno ) );
 }
 
-static int DoOpen( char *name, unsigned mode, bool isexe )
-/********************************************************/
+static int DoOpen( const char *name, unsigned mode, bool isexe )
+/**************************************************************/
 {
     int         h;
     int         pmode;
@@ -107,46 +107,50 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     return( h );
 }
 
-f_handle QOpenR( char *name )
-/**********************************/
+f_handle QOpenR( const char *name )
+/*********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDONLY, false );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
     return( NIL_FHANDLE );
 }
 
-f_handle QOpenRW( char *name )
-/***********************************/
+f_handle QOpenRW( const char *name )
+/**********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, false );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeCreate( char *name )
-/**************************************/
+f_handle ExeCreate( const char *name )
+/************************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, true );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeOpen( char *name )
-/***********************************/
+f_handle ExeOpen( const char *name )
+/**********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR, true );
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
@@ -302,12 +306,13 @@ unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-void QDelete( char *name )
-/*******************************/
+void QDelete( const char *name )
+/******************************/
 {
     int   h;
 
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     h = remove( name );
     if( h == -1 && errno != ENOENT ) { /* file not found is OK */
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
@@ -339,29 +344,31 @@ bool QIsDevice( f_handle file )
 /************************************/
 {
     struct stat     st;
-    if( fstat( file, &st ) != 0 ) return( false );
+    if( fstat( file, &st ) != 0 )
+        return( false );
     return( S_ISCHR( st.st_mode ) != 0 );
 }
 
-static f_handle NSOpen( char *name, unsigned mode )
-/*************************************************/
+static f_handle NSOpen( const char *name, unsigned mode )
+/*******************************************************/
 {
     int         h;
 
     h = DoOpen( name, mode, false );
     LastResult = h;
-    if( h != -1 ) return( h );
+    if( h != -1 )
+        return( h );
     return( NIL_FHANDLE );
 }
 
-f_handle QObjOpen( char *name )
-/************************************/
+f_handle QObjOpen( const char *name )
+/***********************************/
 {
     return( NSOpen( name, O_RDONLY ) );
 }
 
-f_handle TempFileOpen( char *name )
-/****************************************/
+f_handle TempFileOpen( const char *name )
+/***************************************/
 {
     return( NSOpen( name, O_RDWR ) );
 }
@@ -383,8 +390,8 @@ bool QSysHelp( char **cmd_ptr )
 #endif
 }
 
-bool QModTime( char *name, time_t *time )
-/**********************************************/
+bool QModTime( const char *name, time_t *time )
+/*********************************************/
 {
     int         result;
     struct stat buf;

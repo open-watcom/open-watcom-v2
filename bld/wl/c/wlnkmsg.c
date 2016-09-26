@@ -116,8 +116,7 @@ bool Msg_Get( int resourceid, char *buffer )
     return( true );
 }
 
-void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
-                        char *types, ... )
+void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types, ... )
 {
     va_list     args;
 
@@ -130,7 +129,7 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
 void Msg_Put_Args(
     char                message[],      // Contains %s, etc. or %digit specifiers
     MSG_ARG_LIST        *arg_info,      // Arguments found
-    char                *types,         // message conversion specifier types
+    const char          *types,         // message conversion specifier types
                                         // NULL or strlen <= 3 ( arg_info->arg elements)
     va_list             *args )         // Initialized va_list
 {

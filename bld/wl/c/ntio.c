@@ -103,8 +103,8 @@ void PrintIOError( unsigned msg, char *types, char *name )
     LnkMsg( msg, types, name, strerror( errno ) );
 }
 
-static int DoOpen( char *name, unsigned mode, bool isexe )
-/********************************************************/
+static int DoOpen( const char *name, unsigned mode, bool isexe )
+/**************************************************************/
 {
     int     h;
     int     perm;
@@ -131,8 +131,8 @@ static int DoOpen( char *name, unsigned mode, bool isexe )
     return( h );
 }
 
-f_handle QOpenR( char *name )
-/***************************/
+f_handle QOpenR( const char *name )
+/*********************************/
 {
     int     h;
 
@@ -143,8 +143,8 @@ f_handle QOpenR( char *name )
     return( NIL_FHANDLE );
 }
 
-f_handle QOpenRW( char *name )
-/****************************/
+f_handle QOpenRW( const char *name )
+/**********************************/
 {
     int     h;
 
@@ -155,8 +155,8 @@ f_handle QOpenRW( char *name )
     return( NIL_FHANDLE );
 }
 
-f_handle ExeCreate( char *name )
-/*******************************/
+f_handle ExeCreate( const char *name )
+/************************************/
 {
     int     h;
 
@@ -167,8 +167,8 @@ f_handle ExeCreate( char *name )
     return( NIL_FHANDLE );
 }
 
-f_handle ExeOpen( char *name )
-/****************************/
+f_handle ExeOpen( const char *name )
+/**********************************/
 {
     int     h;
 
@@ -290,8 +290,8 @@ unsigned long QFileSize( f_handle file )
     return( result );
 }
 
-void QDelete( char *name )
-/************************/
+void QDelete( const char *name )
+/******************************/
 {
     int   h;
 
@@ -332,8 +332,8 @@ bool QIsDevice( f_handle file )
     return( isatty( file ) != 0 );
 }
 
-static f_handle NSOpen( char *name, unsigned mode )
-/*************************************************/
+static f_handle NSOpen( const char *name, unsigned mode )
+/*******************************************************/
 {
     int         h;
 
@@ -344,14 +344,14 @@ static f_handle NSOpen( char *name, unsigned mode )
     return( NIL_FHANDLE );
 }
 
-f_handle QObjOpen( char *name )
-/*****************************/
+f_handle QObjOpen( const char *name )
+/***********************************/
 {
     return( NSOpen( name, O_RDONLY ) );
 }
 
-f_handle TempFileOpen( char *name )
-/*********************************/
+f_handle TempFileOpen( const char *name )
+/***************************************/
 {
     return( NSOpen( name, O_RDWR ) );
 }
@@ -362,8 +362,8 @@ bool QSysHelp( char **cmd_ptr )
     return( false );
 }
 
-bool QModTime( char *name, time_t *time )
-/***************************************/
+bool QModTime( const char *name, time_t *time )
+/*********************************************/
 {
     int         result;
     struct stat buf;
