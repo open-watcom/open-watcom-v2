@@ -53,3 +53,6 @@ extern  void    DumpULongLen( unsigned_32, int );
 extern  void    Dump8h( unsigned_32 );
 extern  void    DumpByte( byte n );
 extern  void    DumpId( unsigned );
+
+extern  void    DumpRedirect( void );
+extern  void    DumpUnredirect( void );
