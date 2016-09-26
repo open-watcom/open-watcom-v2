@@ -97,16 +97,86 @@ typedef struct  {
 
 static implibinfo       ImpLib;
 
-static void OpenOutFiles( void );
-static void CloseOutFiles( void );
-static void SetupImpLib( void );
-static void DoCVPack( void );
-static void FlushImpBuffer( void );
-static void ExecWlib( void );
-static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
-                         void *(*rtn)(void *, const void *, size_t) );
-static void BufImpWrite( char *buffer, unsigned len );
-static void FlushBuffFile( outfilelist *outfile );
+static void SetupImpLib( void )
+/*****************************/
+{
+    char        *fname;
+    unsigned    namelen;
+
+    ImpLib.bufsize = 0;
+    ImpLib.handle = NIL_FHANDLE;
+    ImpLib.buffer = NULL;
+    ImpLib.dllname = NULL;
+    ImpLib.didone = false;
+    if( FmtData.make_implib ) {
+        _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
+        if( FmtData.make_impfile ) {
+            ImpLib.fname = ChkStrDup( FmtData.implibname );
+            ImpLib.handle = QOpenRW( ImpLib.fname );
+        } else {
+            ImpLib.handle = OpenTempFile( &ImpLib.fname );
+        }
+        /* RemovePath results in the filename only   *
+         * it trims both the path, and the extension */
+        fname = RemovePath( Root->outfile->fname, &namelen );
+        ImpLib.dlllen = namelen;
+        /* increase length to restore full extension if not OS2    *
+         * sometimes the extension of the output name is important */
+        ImpLib.dlllen += strlen( fname + namelen );
+        _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
+        memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
+    }
+}
+
+#if defined( __UNIX__ )
+#define CVPACK_EXE "cvpack"
+#else
+#define CVPACK_EXE "cvpack.exe"
+#endif
+
+static void DoCVPack( void )
+/**************************/
+{
+#if !defined( __UNIX__ ) || defined(__WATCOMC__)
+    int         retval;
+    char        *name;
+
+    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
+        if( SymFileName != NULL ) {
+            name = SymFileName;
+        } else {
+            name = Root->outfile->fname;
+        }
+        retval = (int)spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
+                          name, NULL );
+        if( retval == -1 ) {
+            PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
+        }
+    }
+#endif
+}
+
+static void OpenOutFiles( void )
+/******************************/
+{
+    outfilelist   *fnode;
+
+    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
+        OpenBuffFile( fnode );
+    }
+}
+
+static void CloseOutFiles( void )
+/*******************************/
+{
+    outfilelist     *fnode;
+
+    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
+        if( fnode->handle != NIL_FHANDLE ) {
+            CloseBuffFile( fnode );
+        }
+    }
+}
 
 void ResetLoadFile( void )
 /*******************************/
@@ -190,34 +260,6 @@ void FiniLoadFile( void )
     MapSizes();
     CloseOutFiles();
     DoCVPack();
-}
-
-#if defined( __UNIX__ )
-#define CVPACK_EXE "cvpack"
-#else
-#define CVPACK_EXE "cvpack.exe"
-#endif
-
-static void DoCVPack( void )
-/**************************/
-{
-#if !defined( __UNIX__ ) || defined(__WATCOMC__)
-    int         retval;
-    char        *name;
-
-    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
-        if( SymFileName != NULL ) {
-            name = SymFileName;
-        } else {
-            name = Root->outfile->fname;
-        }
-        retval = (int)spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
-                          name, NULL );
-        if( retval == -1 ) {
-            PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
-        }
-    }
-#endif
 }
 
 static seg_leader *FindStack( section *sect )
@@ -682,59 +724,6 @@ unsigned_32 AppendToLoadFile( char *name )
     return( wrote );
 }
 
-static void SetupImpLib( void )
-/*****************************/
-{
-    char        *fname;
-    unsigned    namelen;
-
-    ImpLib.bufsize = 0;
-    ImpLib.handle = NIL_FHANDLE;
-    ImpLib.buffer = NULL;
-    ImpLib.dllname = NULL;
-    ImpLib.didone = false;
-    if( FmtData.make_implib ) {
-        _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
-        if( FmtData.make_impfile ) {
-            ImpLib.fname = ChkStrDup( FmtData.implibname );
-            ImpLib.handle = QOpenRW( ImpLib.fname );
-        } else {
-            ImpLib.handle = OpenTempFile( &ImpLib.fname );
-        }
-        /* RemovePath results in the filename only   *
-         * it trims both the path, and the extension */
-        fname = RemovePath( Root->outfile->fname, &namelen );
-        ImpLib.dlllen = namelen;
-        /* increase length to restore full extension if not OS2    *
-         * sometimes the extension of the output name is important */
-        ImpLib.dlllen += strlen( fname + namelen );
-        _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
-        memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
-    }
-}
-
-void BuildImpLib( void )
-/*****************************/
-{
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
-                                || !FmtData.make_implib )
-        return;
-    if( ImpLib.bufsize > 0 ) {
-        FlushImpBuffer();
-    }
-    QClose( ImpLib.handle, ImpLib.fname );
-    if( !FmtData.make_impfile ) {
-        if( ImpLib.didone ) {
-            ExecWlib();
-        }
-        QDelete( ImpLib.fname );
-    }
-    _LnkFree( FmtData.implibname );
-    _LnkFree( ImpLib.fname );
-    _LnkFree( ImpLib.buffer );
-    _LnkFree( ImpLib.dllname );
-}
-
 #ifdef BOOTSTRAP
 #define WLIB_NAME   "bwlib"
 #else
@@ -816,6 +805,54 @@ static void ExecWlib( void )
 #endif
 }
 
+static void FlushImpBuffer( void )
+/********************************/
+{
+    QWrite( ImpLib.handle, ImpLib.buffer, ImpLib.bufsize, ImpLib.fname );
+}
+
+void BuildImpLib( void )
+/*****************************/
+{
+    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
+                                || !FmtData.make_implib )
+        return;
+    if( ImpLib.bufsize > 0 ) {
+        FlushImpBuffer();
+    }
+    QClose( ImpLib.handle, ImpLib.fname );
+    if( !FmtData.make_impfile ) {
+        if( ImpLib.didone ) {
+            ExecWlib();
+        }
+        QDelete( ImpLib.fname );
+    }
+    _LnkFree( FmtData.implibname );
+    _LnkFree( ImpLib.fname );
+    _LnkFree( ImpLib.buffer );
+    _LnkFree( ImpLib.dllname );
+}
+
+static void BufImpWrite( char *buffer, unsigned len )
+/***************************************************/
+{
+    unsigned    diff;
+
+    if( ImpLib.bufsize + len >= IMPLIB_BUFSIZE ) {
+        diff = ImpLib.bufsize + len - IMPLIB_BUFSIZE;
+        memcpy( ImpLib.buffer + ImpLib.bufsize , buffer, IMPLIB_BUFSIZE - ImpLib.bufsize );
+        ImpLib.bufsize = IMPLIB_BUFSIZE;
+        FlushImpBuffer();
+        ImpLib.bufsize = diff;
+        if( diff > 0 ) {
+            memcpy( ImpLib.buffer, buffer + len - diff, diff );
+        }
+    } else {
+        memcpy( ImpLib.buffer + ImpLib.bufsize, buffer, len );
+        ImpLib.bufsize += len;
+    }
+}
+
 void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
 /**************************************************************************/
 {
@@ -862,32 +899,6 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
 #endif
     *currpos = '\n';
     BufImpWrite( buff, currpos - buff + 1 );
-}
-
-static void FlushImpBuffer( void )
-/********************************/
-{
-    QWrite( ImpLib.handle, ImpLib.buffer, ImpLib.bufsize, ImpLib.fname );
-}
-
-static void BufImpWrite( char *buffer, unsigned len )
-/***************************************************/
-{
-    unsigned    diff;
-
-    if( ImpLib.bufsize + len >= IMPLIB_BUFSIZE ) {
-        diff = ImpLib.bufsize + len - IMPLIB_BUFSIZE;
-        memcpy( ImpLib.buffer + ImpLib.bufsize , buffer, IMPLIB_BUFSIZE - ImpLib.bufsize );
-        ImpLib.bufsize = IMPLIB_BUFSIZE;
-        FlushImpBuffer();
-        ImpLib.bufsize = diff;
-        if( diff > 0 ) {
-            memcpy( ImpLib.buffer, buffer + len - diff, diff );
-        }
-    } else {
-        memcpy( ImpLib.buffer + ImpLib.bufsize, buffer, len );
-        ImpLib.bufsize += len;
-    }
 }
 
 void WriteLoad3( void* dummy, char *buff, unsigned size )
@@ -1057,28 +1068,6 @@ offset  WriteGroupLoad( group_entry *group )
     return( WriteDOSGroupLoad( group, false ) );
 }
 
-static void OpenOutFiles( void )
-/******************************/
-{
-    outfilelist   *fnode;
-
-    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        OpenBuffFile( fnode );
-    }
-}
-
-static void CloseOutFiles( void )
-/*******************************/
-{
-    outfilelist     *fnode;
-
-    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        if( fnode->handle != NIL_FHANDLE ) {
-            CloseBuffFile( fnode );
-        }
-    }
-}
-
 void FreeOutFiles( void )
 /******************************/
 {
@@ -1100,6 +1089,51 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
 {
     memset( dest, FmtData.FillChar, size );
     return( (void *)dummy );
+}
+
+#define BUFF_BLOCK_SIZE (16*1024)
+
+static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
+                         void *(*rtn)(void *, const void *, size_t) )
+/***************************************************************************/
+{
+    unsigned modpos;
+    unsigned adjust;
+
+    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
+    outfile->bufpos += len;
+    while( modpos + len >= BUFF_BLOCK_SIZE ) {
+        adjust = BUFF_BLOCK_SIZE - modpos;
+        rtn( outfile->buffer + modpos, info, adjust );
+        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
+        info += adjust;
+        len -= adjust;
+        modpos = 0;
+    }
+    if( len > 0 ) {
+        rtn( outfile->buffer + modpos, info, len );
+    }
+}
+
+static void SeekBuffer( unsigned long len, outfilelist *outfile,
+                         void *(*rtn)(void *, const void *, size_t) )
+/***************************************************************************/
+{
+    unsigned modpos;
+    unsigned adjust;
+
+    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
+    outfile->bufpos += len;
+    while( modpos + len >= BUFF_BLOCK_SIZE ) {
+        adjust = BUFF_BLOCK_SIZE - modpos;
+        rtn( outfile->buffer + modpos, NULL, adjust );
+        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
+        len -= adjust;
+        modpos = 0;
+    }
+    if( len > 0 ) {
+        rtn( outfile->buffer + modpos, NULL, len );
+    }
 }
 
 void PadLoad( unsigned long size )
@@ -1145,6 +1179,19 @@ void WriteLoad( void *buff, unsigned long size )
     }
 }
 
+static void FlushBuffFile( outfilelist *outfile )
+/***********************************************/
+{
+    unsigned    modpos;
+
+    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
+    if( modpos != 0 ) {
+        QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
+    }
+    _LnkFree( outfile->buffer );
+    outfile->buffer = NULL;
+}
+
 static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 /*********************************************************************/
 {
@@ -1159,13 +1206,14 @@ void SeekLoad( unsigned long offset )
     outfilelist         *outfile;
 
     outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL && offset + outfile->origin < outfile->bufpos ) {
+    if( outfile->buffer != NULL && ( offset + outfile->origin ) < outfile->bufpos ) {
         FlushBuffFile( outfile );
     }
     if( outfile->buffer == NULL ) {
         QSeek( outfile->handle, offset + outfile->origin, outfile->fname );
     } else {
-        WriteBuffer( NULL, offset + outfile->origin - outfile->bufpos, outfile, NullBuffFunc );
+//        SeekBuffer( offset + outfile->origin - outfile->bufpos, outfile, NullBuffFunc );
+        SeekBuffer( offset + outfile->origin - outfile->bufpos, outfile, SetToFillChar );
     }
 }
 
@@ -1192,8 +1240,6 @@ unsigned long PosLoad( void )
         return( QPos( CurrSect->outfile->handle ) - CurrSect->outfile->origin );
     }
 }
-
-#define BUFF_BLOCK_SIZE (16*1024)
 
 void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
 /*******************************************************************************/
@@ -1227,19 +1273,6 @@ void OpenBuffFile( outfilelist *outfile )
     _ChkAlloc( outfile->buffer, BUFF_BLOCK_SIZE );
 }
 
-static void FlushBuffFile( outfilelist *outfile )
-/***********************************************/
-{
-    unsigned    modpos;
-
-    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
-    if( modpos != 0 ) {
-        QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
-    }
-    _LnkFree( outfile->buffer );
-    outfile->buffer = NULL;
-}
-
 void CloseBuffFile( outfilelist *outfile )
 /***********************************************/
 {
@@ -1248,26 +1281,4 @@ void CloseBuffFile( outfilelist *outfile )
     }
     QClose( outfile->handle, outfile->fname );
     outfile->handle = NIL_FHANDLE;
-}
-
-static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
-                         void *(*rtn)(void *, const void *, size_t) )
-/***************************************************************************/
-{
-    unsigned modpos;
-    unsigned adjust;
-
-    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
-    outfile->bufpos += len;
-    while( modpos + len >= BUFF_BLOCK_SIZE ) {
-        adjust = BUFF_BLOCK_SIZE - modpos;
-        rtn( outfile->buffer + modpos, info, adjust );
-        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
-        info += adjust;
-        len -= adjust;
-        modpos = 0;
-    }
-    if( len > 0 ) {
-        rtn( outfile->buffer + modpos, info, len );
-    }
 }
