@@ -1192,6 +1192,7 @@ static void FlushBuffFile( outfilelist *outfile )
     outfile->buffer = NULL;
 }
 
+#if 0
 static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 /*********************************************************************/
 {
@@ -1199,6 +1200,7 @@ static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
     size = size;
     return( dest );
 }
+#endif
 
 void SeekLoad( unsigned long offset )
 /******************************************/
@@ -1206,14 +1208,14 @@ void SeekLoad( unsigned long offset )
     outfilelist         *outfile;
 
     outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL && ( offset + outfile->origin ) < outfile->bufpos ) {
+    if( outfile->buffer != NULL && ( outfile->origin + offset ) < outfile->bufpos ) {
         FlushBuffFile( outfile );
     }
     if( outfile->buffer == NULL ) {
-        QSeek( outfile->handle, offset + outfile->origin, outfile->fname );
+        QSeek( outfile->handle, outfile->origin + offset, outfile->fname );
     } else {
-//        SeekBuffer( offset + outfile->origin - outfile->bufpos, outfile, NullBuffFunc );
-        SeekBuffer( offset + outfile->origin - outfile->bufpos, outfile, SetToFillChar );
+//        SeekBuffer( outfile->origin + offset - outfile->bufpos, outfile, NullBuffFunc );
+        SeekBuffer( outfile->origin + offset - outfile->bufpos, outfile, SetToFillChar );
     }
 }
 
@@ -1263,10 +1265,11 @@ void SetOriginLoad( unsigned long origin )
 void OpenBuffFile( outfilelist *outfile )
 /**********************************************/
 {
-    if( outfile->is_exe )
+    if( outfile->is_exe ) {
         outfile->handle = ExeCreate( outfile->fname );
-    else
+    } else {
         outfile->handle = QOpenRW( outfile->fname );
+    }
     if( outfile->handle == NIL_FHANDLE ) {
         PrintIOError( FTL+MSG_CANT_OPEN_NO_REASON, "s", outfile->fname );
     }
