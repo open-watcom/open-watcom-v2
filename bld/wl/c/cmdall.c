@@ -355,7 +355,7 @@ static void *AddObjFile( char *name, char *member, file_list **filelist )
     return( new_entry );
 }
 
-file_list *AddObjLib( char *name, lib_priority priority )
+file_list *AddObjLib( const char *name, lib_priority priority )
 /***************************************************************/
 
  {

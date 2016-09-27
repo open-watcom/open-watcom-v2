@@ -726,7 +726,7 @@ void DwarfAddrSectStart( section *sect )
     }
 }
 
-static void FillHeader( Elf32_Shdr *hdr, char *name, stringtable *strtab,
+static void FillHeader( Elf32_Shdr *hdr, const char *name, stringtable *strtab,
                         unsigned_32 curr_off )
 /***********************************************************************/
 {

@@ -163,16 +163,17 @@ void AddToExportList( entry_export *exp )
     *place = exp;
 }
 
-static unsigned CheckStdCall( char *name, unsigned len )
-/******************************************************/
+static unsigned CheckStdCall( const char *name, unsigned len )
+/************************************************************/
 // check to see if a name is in the stdcall _name@xx format
 // this returns the total number of characters to be removed from the name
 // including the beginning _
 {
-    char *      teststr;
+    const char  *teststr;
     unsigned    chop;
 
-    if( len <= 3 ) return 0;
+    if( len <= 3 )
+        return 0;
     chop = 0;
     teststr = name + len - 1;
     if( *name == '_' && isdigit(*teststr) ) {
@@ -189,8 +190,8 @@ static unsigned CheckStdCall( char *name, unsigned len )
     return chop;
 }
 
-entry_export * AllocExport( char *name, unsigned len )
-/***********************************************************/
+entry_export *AllocExport( const char *name, unsigned len )
+/*********************************************************/
 {
     entry_export *  exp;
     unsigned        chop;

@@ -302,7 +302,7 @@ static orl_return ExportCallback( char *name, void *dummy )
 }
 
 static orl_return EntryCallback( char *name, void *dummy )
-/*********************************************************/
+/**************************************************************/
 {
     dummy = dummy;
     if( !StartInfo.user_specd ) {

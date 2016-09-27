@@ -331,8 +331,8 @@ static class_entry *LocateBSSClass( void )
     return( NULL );
 }
 
-static void DefABSSSym( char *name )
-/**********************************/
+static void DefABSSSym( const char *name )
+/****************************************/
 {
    symbol          *sym;
 
@@ -488,8 +488,8 @@ void ClearStartAddr( void )
     memset( &StartInfo, 0, sizeof( startinfo ) );
 }
 
-void SetStartSym( char *name )
-/***********************************/
+void SetStartSym( const char *name )
+/**********************************/
 {
     size_t      namelen;
 

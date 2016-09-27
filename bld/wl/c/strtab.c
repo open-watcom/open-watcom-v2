@@ -93,8 +93,8 @@ void ReserveStringTable( stringtable *strtab, unsigned len )
     }
 }
 
-static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bool addnullchar )
-/**********************************************************************************************/
+static char *AddToStringTable( stringtable *strtab, const void *data, unsigned len, bool addnullchar )
+/****************************************************************************************************/
 {
     stringblock *blk;
     unsigned    diff;
@@ -134,20 +134,20 @@ void AddCharStringTable( stringtable *strtab, char data )
     AddToStringTable( strtab, &data, sizeof( char ), false );
 }
 
-char *AddStringStringTable( stringtable *strtab, char *data )
-/***********************************************************/
+char *AddStringStringTable( stringtable *strtab, const char *data )
+/*****************************************************************/
 {
     return( AddToStringTable( strtab, data, strlen( data ) + 1, false ) );
 }
 
-char *AddBufferStringTable( stringtable *strtab, void *data, unsigned len )
-/**************************************************************************/
+char *AddBufferStringTable( stringtable *strtab, const void *data, unsigned len )
+/*******************************************************************************/
 {
     return( AddToStringTable( strtab, data, len, false ) );
 }
 
-char *AddSymbolStringTable( stringtable *strtab, char *data, unsigned len )
-/**************************************************************************/
+char *AddSymbolStringTable( stringtable *strtab, const char *data, unsigned len )
+/*******************************************************************************/
 {
     return( AddToStringTable( strtab, data, len, true ) );
 }

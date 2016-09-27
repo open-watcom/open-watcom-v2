@@ -563,7 +563,7 @@ static void ProcAlias( void )
         targetlen = *ObjBuff++;
         sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
         if( !sym || (sym->info & SYM_DEFINED) == 0 ) {
-            MakeSymAlias( alias, aliaslen, (char *)ObjBuff, targetlen );
+            MakeSymAlias( alias, aliaslen, (const char *)ObjBuff, targetlen );
         }
     }
 }

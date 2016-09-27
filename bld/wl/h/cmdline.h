@@ -60,5 +60,5 @@ extern void             BurnSystemList( void );
 extern void             AddLibPaths( char *, unsigned, bool );
 extern void             AddLibPathsToEnd( char * );
 extern void             AddLibPathsToEndList( const char *list );
-extern file_list        *AddObjLib( char *, lib_priority );
+extern file_list        *AddObjLib( const char *, lib_priority );
 extern int              DoBuffCmdParse( char *cmd );

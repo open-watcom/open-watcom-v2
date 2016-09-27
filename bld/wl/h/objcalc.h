@@ -34,7 +34,7 @@ extern int          NumGroups;
 /* in autogrp.c */
 
 extern void             AutoGroup( void );
-extern group_entry      *AllocGroup( char *, group_entry ** );
+extern group_entry      *AllocGroup( const char *, group_entry ** );
 
 /* in salloc.c */
 
@@ -50,9 +50,9 @@ extern void     NewSegment( seg_leader * );
 /* in objcalc.c */
 
 extern void     CheckClassOrder( void );
-extern bool     IsCodeClass( char *, unsigned );
-extern bool     IsConstClass( char *, unsigned );
-extern bool     IsStackClass( char *, unsigned );
+extern bool     IsCodeClass( const char *, unsigned );
+extern bool     IsConstClass( const char *, unsigned );
+extern bool     IsStackClass( const char *, unsigned );
 extern void     CalcAddresses( void );
 extern void     AllocClasses( section * );
 extern void     CombineSeg( seg_leader *, signed_32 *, offset, byte, byte );

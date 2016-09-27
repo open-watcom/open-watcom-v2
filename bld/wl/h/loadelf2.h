@@ -74,4 +74,4 @@ extern void             WriteElfSymTable( ElfSymTable *tab,
                                           int symtabidx,
                                           int strtabidx );
 extern void             ZapElfSymTable( ElfSymTable *tab);
-extern void             AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name );
+extern void             AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, const char *name );

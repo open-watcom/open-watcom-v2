@@ -542,8 +542,8 @@ class_entry *DuplicateClass( class_entry *old )
     return( new );
 }
 
-class_entry *FindClass( section *sect, char *name, bool is32bit, bool iscode )
-/****************************************************************************/
+class_entry *FindClass( section *sect, const char *name, bool is32bit, bool iscode )
+/**********************************************************************************/
 {
     class_entry     *currclass;
     class_entry     *lastclass;
@@ -647,8 +647,8 @@ static seg_leader *FindALeader( segdata *sdata, class_entry *class, unsigned_16 
     return( leader );
 }
 
-seg_leader *InitLeader( char *segname )
-/*************************************/
+seg_leader *InitLeader( const char *segname )
+/*******************************************/
 {
     seg_leader  *seg;
 
@@ -1180,8 +1180,8 @@ void DefineReference( symbol *sym )
     }
 }
 
-group_entry *GetGroup( char *name )
-/*****************************************/
+group_entry *GetGroup( const char *name )
+/***************************************/
 /* Get group of specified name. */
 {
     group_entry     *grp;
@@ -1193,7 +1193,7 @@ group_entry *GetGroup( char *name )
     return( grp );
 }
 
-group_entry *SearchGroups( char *name )
+group_entry *SearchGroups( const char *name )
 /*********************************************/
 /* Find group of specified name. */
 {

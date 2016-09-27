@@ -70,7 +70,7 @@ extern unsigned_32      MemorySize( void );
 extern unsigned_32      AppendToLoadFile( char * );
 extern void             AddImpLibEntry( char *, char *, unsigned );
 extern void             BuildImpLib( void );
-extern void             SetStartSym( char * );
+extern void             SetStartSym( const char * );
 extern offset           CalcGroupSize( group_entry * );
 extern offset           CalcSplitSize( void );
 

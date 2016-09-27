@@ -951,8 +951,8 @@ static void CheckNumRelocs( void )
     LinkState &= ~MAKE_RELOCS;
 }
 
-static seg_leader *SetLeaderTable( char *name, pe_hdr_table_entry *entry )
-/*************************************************************************/
+static seg_leader *SetLeaderTable( const char *name, pe_hdr_table_entry *entry )
+/******************************************************************************/
 {
     seg_leader *leader;
 

@@ -74,8 +74,8 @@ static  symbol  *SymList = NULL;
 static symbol   **GlobalSymPtrs;
 static symbol   **StaticSymPtrs;
 
-static unsigned GlobalHashFn( char *, unsigned );
-static unsigned StaticHashFn( char *, unsigned );
+static unsigned GlobalHashFn( const char *, unsigned );
+static unsigned StaticHashFn( const char *, unsigned );
 static void     SetSymAlias( symbol *sym, char *target, unsigned targetlen );
 
 static const unsigned ScatterTable[] = {
@@ -828,8 +828,8 @@ void ClearSymUnion( symbol * sym )
     }
 }
 
-symbol *RefISymbol( char *name )
-/******************************/
+symbol *RefISymbol( const char *name )
+/************************************/
 {
     return( SymOp( ST_CREATE | ST_REFERENCE, name, strlen( name ) ) );
 }
@@ -847,14 +847,14 @@ symbol *DefISymbol( char * name )
     return sym;
 }
 
-symbol *FindISymbol( char *name )
-/*******************************/
+symbol *FindISymbol( const char *name )
+/*************************************/
 {
     return( SymOp( ST_FIND | ST_REFERENCE, name, strlen( name ) ) );
 }
 
-symbol *SymOpNWPfx( sym_flags op, char *name, unsigned length, char * prefix, unsigned prefixLen )
-/************************************************************************************************/
+symbol *SymOpNWPfx( sym_flags op, const char *name, unsigned length, const char * prefix, unsigned prefixLen )
+/************************************************************************************************************/
 {
     symbol  *retsym = SymOp( op, name, length );
 
@@ -884,8 +884,8 @@ symbol *SymOpNWPfx( sym_flags op, char *name, unsigned length, char * prefix, un
     return( retsym );
 }
 
-void MakeSymAlias( char *name, unsigned namelen, char *target, unsigned targetlen )
-/*********************************************************************************/
+void MakeSymAlias( const char *name, unsigned namelen, const char *target, unsigned targetlen )
+/*********************************************************************************************/
 /* make a symbol table alias */
 {
     symbol      *sym;
@@ -937,8 +937,8 @@ static void SetSymAlias( symbol *sym, char *target, unsigned targetlen )
     sym->info &= ~SYM_WAS_LAZY;
 }
 
-static symbol *GlobalSearchSym( char *symname, unsigned hash, unsigned len )
-/**************************************************************************/
+static symbol *GlobalSearchSym( const char *symname, unsigned hash, unsigned len )
+/*********************************************************************************/
 /* search through the given chain for the given name */
 {
     symbol      *sym;
@@ -951,8 +951,8 @@ static symbol *GlobalSearchSym( char *symname, unsigned hash, unsigned len )
     return( sym );
 }
 
-static symbol *StaticSearchSym( char *symname, unsigned hash, unsigned len )
-/**************************************************************************/
+static symbol *StaticSearchSym( const char *symname, unsigned hash, unsigned len )
+/********************************************************************************/
 /* search through the given chain for the given name */
 {
     symbol      *sym;
@@ -967,8 +967,8 @@ static symbol *StaticSearchSym( char *symname, unsigned hash, unsigned len )
     return( sym );
 }
 
-static symbol *DoSymOp( sym_flags op, char *symname, unsigned length )
-/********************************************************************/
+static symbol *DoSymOp( sym_flags op, const char *symname, unsigned length )
+/**************************************************************************/
 {
     unsigned    hash;
     symbol      *sym;
@@ -990,10 +990,11 @@ static symbol *DoSymOp( sym_flags op, char *symname, unsigned length )
         hash = StaticHashFn( symname, searchlen );
         /* If symbol isn't unique, don't look for duplicates. */
         if( (op & (ST_CREATE | ST_STATIC | ST_NONUNIQUE)) ==
-                  (ST_CREATE | ST_STATIC | ST_NONUNIQUE) )
+                  (ST_CREATE | ST_STATIC | ST_NONUNIQUE) ) {
             sym = NULL;
-        else
+        } else {
             sym = StaticSearchSym( symname, hash, searchlen );
+        }
     } else {
         hash = GlobalHashFn( symname, searchlen );
         sym = GlobalSearchSym( symname, hash, searchlen );
@@ -1036,8 +1037,8 @@ symbol *UnaliasSym( sym_flags op, symbol *sym )
     return( sym );
 }
 
-symbol *SymOp( sym_flags op, char *symname, unsigned length )
-/**************************************************************/
+symbol *SymOp( sym_flags op, const char *symname, unsigned length )
+/*****************************************************************/
 /* search for symbols, handling aliases */
 {
     symbol *    sym;
@@ -1061,8 +1062,8 @@ symbol *SymOp( sym_flags op, char *symname, unsigned length )
     return( sym );
 }
 
-static unsigned StaticHashFn( char *name, unsigned len )
-/******************************************************/
+static unsigned StaticHashFn( const char *name, unsigned len )
+/************************************************************/
 {
     unsigned    value;
     unsigned    modval;
@@ -1078,8 +1079,8 @@ static unsigned StaticHashFn( char *name, unsigned len )
     return( value % STATIC_TABSIZE );
 }
 
-static unsigned GlobalHashFn( char *name, unsigned len )
-/******************************************************/
+static unsigned GlobalHashFn( const char *name, unsigned len )
+/************************************************************/
 {
     unsigned    value;
 

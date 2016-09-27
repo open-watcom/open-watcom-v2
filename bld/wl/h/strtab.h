@@ -42,13 +42,12 @@ typedef struct {
 
 extern void     InitStringTable( stringtable *, bool );
 extern void     ReserveStringTable( stringtable *, unsigned );
-extern char     *AddBufferStringTable( stringtable *, void *, unsigned );
-extern char     *AddSymbolStringTable( stringtable *, char *, unsigned );
-extern char     *AddStringStringTable( stringtable *, char * );
+extern char     *AddBufferStringTable( stringtable *, const void *, unsigned );
+extern char     *AddSymbolStringTable( stringtable *, const char *, unsigned );
+extern char     *AddStringStringTable( stringtable *, const char * );
 extern void     AddCharStringTable( stringtable *, char );
 extern void     ZeroStringTable( stringtable *, unsigned );
-extern void     WriteStringTable( stringtable *,
-                                  void (*)(void *, char *,unsigned), void * );
+extern void     WriteStringTable( stringtable *, void (*)(void *, char *,unsigned), void * );
 extern void     FiniStringTable( stringtable * );
 extern unsigned GetStringTableSize( stringtable * );
 

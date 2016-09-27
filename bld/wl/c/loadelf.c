@@ -86,8 +86,8 @@ static ElfSymTable *    ElfSymTab;
 
 #define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & DWARF_DBI_FLAG) )
 
-static void AddSecIdxName( ElfHdr *hdr, int idx, char *name )
-/***********************************************************/
+static void AddSecIdxName( ElfHdr *hdr, int idx, const char *name )
+/*****************************************************************/
 {
     if( idx == 0 )
         return;
@@ -200,7 +200,7 @@ unsigned GetElfHeaderSize( void )
     return ROUND_UP( size, 0x100 );
 }
 
-void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
+void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, const char *name )
 /***************************************************************/
 {
     sh->sh_name = GetStringTableSize( &hdr->secstrtab );
@@ -315,8 +315,8 @@ static void WriteELFGroups( ElfHdr *hdr )
 
 #define RELA_NAME_SIZE sizeof(RelASecName)
 
-static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, char *secname )
-/************************************************************************/
+static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, const char *secname )
+/******************************************************************************/
 {
     size_t      len;
     char        *name;

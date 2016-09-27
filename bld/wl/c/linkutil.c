@@ -86,8 +86,8 @@ void CheckStop( void )
     }
 }
 
-void LnkFatal( char *msg )
-/********************************/
+void LnkFatal( const char *msg )
+/******************************/
 {
     LnkMsg( FTL+MSG_INTERNAL, "s", msg );
 }
@@ -115,8 +115,8 @@ void ClearBit( byte *array, unsigned num )
     *array &= ~mask;
 }
 
-char *ChkStrDup( char *str )
-/**************************/
+char *ChkStrDup( const char *str )
+/********************************/
 {
     size_t      len;
     char        *copy;
@@ -127,14 +127,14 @@ char *ChkStrDup( char *str )
     return( copy );
 }
 
-char *ChkToString( void *mem, unsigned len )
-/******************************************/
+char *ChkToString( const void *mem, size_t len )
+/**********************************************/
 {
     char        *str;
 
     _ChkAlloc( str, len + 1 );
     memcpy( str, mem, len );
-    str[ len ] = '\0';
+    str[len] = '\0';
     return( str );
 }
 
@@ -184,8 +184,8 @@ void WalkLeaders( void (*rtn)( seg_leader * ) )
     ParmWalkAllSects( SectWalkClass, (void *)rtn );
 }
 
-seg_leader *FindSegment( section *sect, char *name )
-/***************************************************/
+seg_leader *FindSegment( section *sect, const char *name )
+/********************************************************/
 /* NOTE: this doesn't work for overlays!
  *
  * sect != NULL then it works as FindFirstSegment
@@ -237,8 +237,8 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( char *name, unsigned len, bool is_mod, name_list **owner )
-/*********************************************************************************/
+name_list *AddNameTable( const char *name, unsigned len, bool is_mod, name_list **owner )
+/***************************************************************************************/
 {
     name_list   *imp;
     unsigned_32 off;
