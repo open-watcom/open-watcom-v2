@@ -67,9 +67,9 @@ static edgelist * AllocEdge( void )
         edge = FreedEdges;
         FreedEdges = edge->next;
     } else {
-        _Pass1Alloc( edge, sizeof(edgelist) );
+        _Pass1Alloc( edge, sizeof( edgelist ) );
     }
-    memset(edge, 0, sizeof *edge);
+    memset( edge, 0, sizeof( *edge ) );
     return( edge );
 }
 
@@ -87,7 +87,8 @@ static void FreeEdgeList( edgelist * edge )
 {
     edgelist *  listend;
 
-    if( edge == NULL ) return;
+    if( edge == NULL )
+        return;
     for( listend = edge; listend->next != NULL; ) {
         listend = listend->next;
     }
@@ -123,12 +124,13 @@ void RefSeg( segdata * seg )
     edgelist *  edge;
     edgelist *  next;
 
-    if( seg->isrefd || seg->visited) return;
+    if( seg->isrefd || seg->visited )
+        return;
 //  if( !seg->iscode ) return;
     seg->isrefd = true;
     seg->visited = true;
     for( edge = seg->a.refs; edge != NULL; edge = next ) {
-        DbgAssert(edge->issym==0);
+        DbgAssert( edge->issym == 0 );
         next = edge->next;
         RefSeg( edge->u.seg );
         FreeEdge( edge );

@@ -97,12 +97,12 @@ ElfSymTable *CreateElfSymTable( int maxElems, stringtable *strtab )
     tab->numBuckets = FindClosestPrime( maxElems / 2 );
     tab->maxElems = maxElems+1; // element 0 is NIL
     tab->numElems = 1;
-    _ChkAlloc( tab->table, (tab->maxElems) * sizeof tab->table[0] );
-    memset( tab->table, 0, (tab->maxElems) * sizeof tab->table[0] );
-    _ChkAlloc( tab->buckets, tab->numBuckets * sizeof(Elf32_Word) );
-    memset( tab->buckets, 0, tab->numBuckets * sizeof(unsigned_32) );
-    _ChkAlloc( tab->chains, (tab->maxElems) * sizeof(unsigned_32) );
-    memset( tab->chains, 0, (tab->maxElems) * sizeof(unsigned_32) );
+    _ChkAlloc( tab->table, (tab->maxElems) * sizeof( tab->table[0] ) );
+    memset( tab->table, 0, (tab->maxElems) * sizeof( tab->table[0] ) );
+    _ChkAlloc( tab->buckets, tab->numBuckets * sizeof( Elf32_Word ) );
+    memset( tab->buckets, 0, tab->numBuckets * sizeof( unsigned_32 ) );
+    _ChkAlloc( tab->chains, (tab->maxElems) * sizeof( unsigned_32 ) );
+    memset( tab->chains, 0, (tab->maxElems) * sizeof( unsigned_32 ) );
     tab->strtab = strtab;
     if( GetStringTableSize( tab->strtab ) == 0 ) {
         AddCharStringTable( tab->strtab, '\0' );
@@ -210,9 +210,9 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
 
     // write symbol section:
     tableSH->sh_info = 0;
-    memset(&elfsym, 0, sizeof elfsym);
+    memset( &elfsym, 0, sizeof( elfsym ) );
     elfsym.st_shndx = SHN_UNDEF;
-    WriteLoad(&elfsym, sizeof elfsym);
+    WriteLoad( &elfsym, sizeof( elfsym ) );
     off = GetStringTableSize( tab->strtab );
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
@@ -226,10 +226,10 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
         SetElfSym( hdr, &elfsym, sym );
         WriteLoad( &elfsym, sizeof(elfsym) );
     }
-    len = tab->numElems * sizeof elfsym;
+    len = tab->numElems * sizeof( elfsym );
     tableSH->sh_offset = hdr->curr_off;
     tableSH->sh_size = len;
-    tableSH->sh_entsize = sizeof elfsym;
+    tableSH->sh_entsize = sizeof( elfsym );
     hdr->curr_off += len;
 
     // write hash section:

@@ -193,17 +193,19 @@ static void OneLineDumpByte(unsigned char *p, int size) {
     WriteStdOut(buf);
 }
 
-static void OneLineDumpDWord(unsigned_32 *p, int byte_size) {
-    int size = byte_size / sizeof p[0];
+static void OneLineDumpDWord( unsigned_32 *p, int byte_size ) {
+    int size = byte_size / sizeof( p[0] );
     enum { max = 80 };
-    char buf[max+10];
+    char buf[max + 10];
     int len;
     int i;
 
-    len = FmtStr(buf, max, "%h: ", p);
-    for (i = 0; i < size; i++) {
-        len += FmtStr(buf+len, max-len, " %h", p[i]);
-        if (len > max) break;
+    len = FmtStr( buf, max, "%h: ", p );
+    for( i = 0; i < size; i++ ) {
+        len += FmtStr( buf + len, max - len, " %h", p[i] );
+        if( len > max ) {
+            break;
+        }
     }
     buf[len++] = '\n';
     buf[len] = 0;

@@ -42,9 +42,9 @@ pHTable CreateHTable( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
 {
     pHTable table;
 
-    table = allocFunc( sizeof *table );
-    table->tbl = allocFunc( sizeof table[0] * size );
-    memset( table->tbl, 0, sizeof table[0] * size );
+    table = allocFunc( sizeof( *table ) );
+    table->tbl = allocFunc( sizeof( table[0] ) * size );
+    memset( table->tbl, 0, sizeof( table[0] ) * size );
 
     table->size = size;
     table->hashFunc = hashFunc;
@@ -92,7 +92,7 @@ void* AddHTableElem( pHTable table, void *elem ) {
         }
     }
 
-    tblElem = table->allocFunc( sizeof *tblElem );
+    tblElem = table->allocFunc( sizeof( *tblElem ) );
     tblElem->userData = elem;
     tblElem->next = table->tbl[key];
     table->tbl[key] = tblElem;
@@ -292,19 +292,21 @@ unsigned DataHashFunc( void *data, unsigned n, unsigned size) {
 }
 
 /* ----------------------------------------------------------------------- */
-unsigned PtrHashFunc(void *p, unsigned size) {
-    return DataHashFunc(&p, sizeof p, size);
+unsigned PtrHashFunc( void *p, unsigned size )
+{
+    return DataHashFunc( &p, sizeof( p ), size );
 }
 
 /* ----------------------------------------------------------------------- */
-void CollectHTableDistribution(pHTable table, unsigned *stat) {
-    int i,n;
+void CollectHTableDistribution( pHTable table, unsigned *stat )
+{
+    int i, n;
     pHTElem *tblPtr = table->tbl;
     pHTElem tblElem;
 
-    for (i = 0; i < table->size; i++) {
+    for( i = 0; i < table->size; i++ ) {
         n = 0;
-        for (tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next) {
+        for( tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next ) {
             n++;
         }
         stat[i] = n;

@@ -102,7 +102,7 @@ static void InitSections( ElfHdr *hdr)
     group_entry *group;
 
     num = 1;
-    memset( &hdr->i, 0, sizeof hdr->i );
+    memset( &hdr->i, 0, sizeof( hdr->i ) );
     hdr->i.secstr = num++;
     hdr->eh.e_shstrndx = hdr->i.secstr;
     hdr->i.grpbase = num;

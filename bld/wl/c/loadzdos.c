@@ -63,15 +63,15 @@ extern void FiniZdosLoadFile( void )
     _HostU32toTarg( StackAddr.off, header.ESP );
     checksum += StackAddr.off;
     _HostU32toTarg( sizeof( zdos_exe_header ), header.hdr_size );
-    checksum += sizeof ( zdos_exe_header );
+    checksum += sizeof( zdos_exe_header );
     _HostU32toTarg( Root->relocs, header.num_relocs );
     checksum += Root->relocs;
     _HostU32toTarg( sizeof( zdos_exe_header ), header.reloc_offset );
-    checksum += sizeof ( zdos_exe_header );
+    checksum += sizeof( zdos_exe_header );
     _HostU32toTarg( FmtData.base, header.reloc_base );
     checksum += FmtData.base;
-    SeekLoad( sizeof (zdos_exe_header) );
-    position = sizeof ( zdos_exe_header ) + WriteZdosRelocs();
+    SeekLoad( sizeof(zdos_exe_header) );
+    position = sizeof( zdos_exe_header ) + WriteZdosRelocs();
     _HostU32toTarg( position, header.image_offset );
     checksum += position;
     size = WriteZdosData( position );
@@ -86,7 +86,7 @@ extern void FiniZdosLoadFile( void )
     _HostU32toTarg( size, header.chk_sum );
     DBIWrite();
     SeekLoad( 0 );
-    WriteLoad( &header, sizeof ( zdos_exe_header ) );
+    WriteLoad( &header, sizeof( zdos_exe_header ) );
 }
 
 static unsigned_32 WriteZdosData( unsigned file_pos )

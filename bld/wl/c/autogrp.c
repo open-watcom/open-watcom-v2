@@ -275,7 +275,7 @@ group_entry *AllocGroup( char *name, group_entry ** grp_list )
 
     group = CarveAlloc( CarveGroup );
     group->leaders = NULL;
-    _PermAlloc( sym, sizeof *sym  ); // second class slave citizen
+    _PermAlloc( sym, sizeof( *sym ) ); // second class slave citizen
     BasicInitSym( sym );
     sym->namelen_cmp = strlen( name );
     sym->name = AddBufferStringTable( &PermStrings, name, sym->namelen_cmp + 1 );
