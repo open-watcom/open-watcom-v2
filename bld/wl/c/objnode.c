@@ -40,7 +40,6 @@
 #include "alloc.h"
 #include "msg.h"
 #include "wlnkmsg.h"
-#include "linkutil.h"
 #include "distrib.h"
 #include "wcomdef.h"
 #include "strtab.h"

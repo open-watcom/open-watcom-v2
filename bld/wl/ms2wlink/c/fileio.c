@@ -39,11 +39,11 @@
 
 
 #ifdef _WIN64
-#define posix_read  __w64_read
-#define posix_read  __w64_write
+#define posix_read      __w64_read
+#define posix_write     __w64_write
 #else
-#define posix_read  read
-#define posix_read  write
+#define posix_read      read
+#define posix_write     write
 #endif
 
 // file io routines

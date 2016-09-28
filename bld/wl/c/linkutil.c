@@ -40,7 +40,6 @@
 #include "alloc.h"
 #include "msg.h"
 #include "wlnkmsg.h"
-#include "linkutil.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "ring.h"
