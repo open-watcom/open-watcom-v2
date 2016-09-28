@@ -151,8 +151,8 @@ f_handle QOpenRW( const char *name )
     return( NIL_FHANDLE );
 }
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
-/****************************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 /* read into far memory */
 {
     tiny_ret_t   h;
@@ -170,20 +170,21 @@ unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
 
 }
 
-static unsigned TestWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/**************************************************************************************/
+static size_t TestWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/****************************************************************************************/
 {
     tiny_ret_t  h;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
     CheckBreak();
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
 
     h = TinyWrite( file, buffer, len );
     if( name != NULL ) {
         if( TINY_ERROR( h ) ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
-            return( ~0 );
+            return( -1 );
         } else if( TINY_INFO( h ) != len ) {
             if( name != NULL ) {
                 Msg_Get( MSG_IOERRLIST_7, rc_buff );
@@ -196,8 +197,8 @@ static unsigned TestWrite( f_handle file, const void *buffer, unsigned len, cons
 
 #define QWRITE_BLOCK_SIZE   (16*1024)
 
-unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/*****************************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 {
     for( ; len > QWRITE_BLOCK_SIZE; len -= QWRITE_BLOCK_SIZE ) {
         if( TestWrite( file, buffer, QWRITE_BLOCK_SIZE, name ) != QWRITE_BLOCK_SIZE )
@@ -293,8 +294,8 @@ void QDelete( const char *name )
 }
 
 
-bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
-/**************************************************************************/
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+/***********************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;

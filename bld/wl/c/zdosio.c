@@ -132,8 +132,8 @@ f_handle QOpenRW( const char *name )
     return( NIL_FHANDLE );
 }
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
-/*********************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 {
 /* read into far memory */
     int h;
@@ -150,8 +150,8 @@ unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
     return( h );
 }
 
-static unsigned TestWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/*****************************************************************************/
+static size_t TestWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/****************************************************************************************/
 {
     int     h;
     char    rc_buff[RESOURCE_MAX_SIZE];
@@ -175,8 +175,8 @@ static unsigned TestWrite( f_handle file, const void *buffer, unsigned len, cons
 
 #define QWRITE_BLOCK_SIZE  (16*1024)
 
-unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/**********************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 {
     for( ; len > QWRITE_BLOCK_SIZE; len -= QWRITE_BLOCK_SIZE ) {
         if( TestWrite( file, buffer, QWRITE_BLOCK_SIZE, name ) != QWRITE_BLOCK_SIZE )
@@ -189,13 +189,13 @@ unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *na
 char    NLSeq[] = { "\r\n" };
 
 void QWriteNL( f_handle file, const char *name )
-/****************************************/
+/**********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
 void QClose( f_handle file, const char *name )
-/**************************************/
+/********************************************/
 {
 /* file close */
     int h;

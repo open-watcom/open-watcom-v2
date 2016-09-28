@@ -181,21 +181,24 @@ static unsigned doread( int file, void *buffer, unsigned len )
     }
 }
 
-static unsigned dowrite( int file, void *buffer, unsigned len )
+static size_t dowrite( int file, const void *buffer, size_t len )
 {
-    unsigned    total;
+    size_t      total;
     int         h;
     int         amount;
 
     total = 0;
     for( ;; ) {
-        if( len == 0 ) return( total );
+        if( len == 0 )
+            return( total );
         amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
         h = write( file, buffer, amount );
-        if( h < 0 ) return( h );
+        if( h == -1 )
+            return( -1 );
         total += h;
-        if( h != amount ) return( total );
-        buffer = (char *)buffer + amount;
+        if( h != amount )
+            return( total );
+        buffer = (const char *)buffer + amount;
         len -= amount;
     }
 }
@@ -205,10 +208,10 @@ static unsigned dowrite( int file, void *buffer, unsigned len )
 #endif
 
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
-/****************************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 {
-    int     h;
+    ssize_t h;
 
     CheckBreak();
     h = doread( file, buffer, len );
@@ -218,17 +221,17 @@ unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
     return( h );
 }
 
-unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/*****************************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 {
-    int     h;
+    size_t  h;
     char    rc_buff[RESOURCE_MAX_SIZE];
 
     if( len == 0 )
         return( 0 );
     CheckBreak();
     h = dowrite( file, buffer, len );
-    if( h < 0 ) {
+    if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     } else if( h != len ) {
         if( name != NULL ) {
@@ -319,7 +322,7 @@ void QDelete( const char *name )
     }
 }
 
-bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
 /**************************************************************************/
 /* quick read string (for reading directive file) */
 {

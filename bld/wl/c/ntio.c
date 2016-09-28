@@ -179,14 +179,19 @@ f_handle ExeOpen( const char *name )
     return( NIL_FHANDLE );
 }
 
+#ifdef _WIN64
+    #define doread( f, b, l )  __w64_read( f, b, l )
+    #define dowrite( f, b, l ) __w64_write( f, b, l )
+#else
     #define doread( f, b, l )  read( f, b, l )
     #define dowrite( f, b, l ) write( f, b, l )
+#endif
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
-/*********************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 /* read into far memory */
 {
-    int     h;
+    ssize_t     h;
 
     CheckBreak();
     h = doread( file, buffer, len );
@@ -196,12 +201,12 @@ unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
     return( h );
 }
 
-unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/**********************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 /* write from far memory */
 {
-    int     h;
-    char    rc_buff[RESOURCE_MAX_SIZE];
+    ssize_t     h;
+    char        rc_buff[RESOURCE_MAX_SIZE];
 
     if( len == 0 )
         return( 0 );
