@@ -214,7 +214,7 @@ extern void             RestoreParser( void );
 extern void             NewCommandSource( char *, char *, method );
 extern void             SetCommandFile( f_handle, char * );
 extern void             EatWhite( void );
-extern char             *FileName( char *, size_t, file_defext, bool );
+extern char             *FileName( const char *, size_t, file_defext, bool );
 extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );

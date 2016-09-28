@@ -1062,17 +1062,15 @@ unsigned_32 GetStubSize( void )
     unsigned_32     read_len;
     unsigned_32     reloc_size;
     unsigned_32     code_start;
-    char            *name;
 
     if( FmtData.u.os2.no_stub ) {
         return( 0 );
     }
-    name = FmtData.u.os2.stub_file_name;
     stub_len = sizeof( DosStub ) + DoExeName();
-    if( name != NULL && stricmp( name, Root->outfile->fname ) != 0 ) {
-        the_file = FindPath( name );
+    if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
+        the_file = FindPath( FmtData.u.os2.stub_file_name );
         if( the_file != NIL_FHANDLE ) {
-            QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
+            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
             if( dosheader.signature == DOS_SIGNATURE ) {
                 if( dosheader.mod_size == 0 ) {
                     read_len = 512;
@@ -1086,7 +1084,7 @@ unsigned_32 GetStubSize( void )
                 dosheader.hdr_size = 4 + reloc_size/16;
                 stub_len = read_len + dosheader.hdr_size * 16ul;
             }
-            QClose( the_file, name );
+            QClose( the_file, FmtData.u.os2.stub_file_name );
         }
     }
     return( stub_len );
@@ -1122,23 +1120,21 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
     unsigned_16     num_relocs;
     unsigned_32     the_reloc;
     unsigned_32     code_start;
-    char            *name;
 
-    name = FmtData.u.os2.stub_file_name;
     if( FmtData.u.os2.no_stub ) {
         stub_len = 0;
-    } else if( name == NULL ) {
+    } else if( FmtData.u.os2.stub_file_name == NULL ) {
         stub_len = WriteDefStub( stub_align );
-    } else if( stricmp( name, Root->outfile->fname ) == 0 ) {
+    } else if( stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) == 0 ) {
         LnkMsg( ERR+MSG_STUB_SAME_AS_LOAD, NULL );
         stub_len = WriteDefStub( stub_align );
     } else {
-        the_file = FindPath( name );
+        the_file = FindPath( FmtData.u.os2.stub_file_name );
         if( the_file == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
             return( WriteDefStub( stub_align ) );   // NOTE: <== a return here.
         }
-        QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
+        QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
         if( dosheader.signature != DOS_SIGNATURE ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
             stub_len = WriteDefStub( stub_align );
@@ -1148,7 +1144,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             } else {
                 read_len = dosheader.mod_size;
             }
-            QSeek( the_file, dosheader.reloc_offset, name );
+            QSeek( the_file, dosheader.reloc_offset, FmtData.u.os2.stub_file_name );
             dosheader.reloc_offset = 0x40;
             code_start = dosheader.hdr_size * 16ul;
             read_len += (dosheader.file_size - 1) * 512ul - code_start;
@@ -1163,27 +1159,27 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             stub_len = ROUND_UP( stub_len, stub_align );
             WriteLoad( &stub_len, sizeof( unsigned_32 ) );
             for(num_relocs = dosheader.num_relocs;num_relocs > 0;num_relocs--) {
-                QRead( the_file, &the_reloc, sizeof( unsigned_32 ), name );
+                QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2.stub_file_name );
                 WriteLoad( &the_reloc, sizeof( unsigned_32 ) );
                 reloc_size -= sizeof( unsigned_32 );
             }
             if( reloc_size != 0 ) {    // need padding
                 PadLoad( reloc_size );
             }
-            QSeek( the_file, code_start, name );
+            QSeek( the_file, code_start, FmtData.u.os2.stub_file_name );
             for( ; read_len > 0; read_len -= amount ) {
                 if( read_len < TokSize ) {
                     amount = read_len;
                 } else {
                     amount = TokSize;
                 }
-                QRead( the_file, TokBuff, amount, name );
+                QRead( the_file, TokBuff, amount, FmtData.u.os2.stub_file_name );
                 WriteLoad( TokBuff, amount );
             }
             stub_len = NullAlign( stub_align );
         }
-        QClose( the_file, name );
-        _LnkFree( name );
+        QClose( the_file, FmtData.u.os2.stub_file_name );
+        _LnkFree( FmtData.u.os2.stub_file_name );
         FmtData.u.os2.stub_file_name = NULL;
     }
     return( stub_len );

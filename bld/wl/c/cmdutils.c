@@ -1005,11 +1005,11 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 }
 
 
-char *FileName( char *buff, size_t len, file_defext etype, bool force )
-/*********************************************************************/
+char *FileName( const char *buff, size_t len, file_defext etype, bool force )
+/***************************************************************************/
 {
-    char        *namptr;
-    char        *namstart;
+    const char  *namptr;
+    const char  *namstart;
     char        *ptr;
     size_t      cnt;
     size_t      namelen;

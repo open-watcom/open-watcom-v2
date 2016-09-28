@@ -585,7 +585,7 @@ void ODBIP2Start( section *sect )
             WriteBogusAddrInfo( dptr );
         } else {
             dptr->dump_addr = dptr->addr.curr.u.vm_ptr;
-            SectWalkClass( sect, (void *)ODBIGenAddrInfo );
+            SectWalkClass( sect, ODBIGenAddrInfo );
         }
         dptr->dump_addr = dptr->line.curr.u.vm_ptr;
         dptr->modnum = 0;

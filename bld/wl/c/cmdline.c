@@ -138,6 +138,8 @@ static sysblock         *PrevCommand;
 #endif
 #define INIT_FILE_ENV   "WLINK_LNK"
 
+#define HELP_FILE_NAME  "wlink.hlp"
+
 void InitCmdFile( void )
 /******************************/
 {
@@ -183,7 +185,7 @@ void DoCmdFile( char *fname )
     f_handle    file;
     size_t      namelen;
     file_defext extension;
-    char        *namelnk;
+    const char  *namelnk;
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
@@ -335,14 +337,14 @@ static void Crash( bool check_file )
     f_handle    fp;
 
     if( check_file ) {
-        fp = FindPath( "wlink.hlp" );
+        fp = FindPath( HELP_FILE_NAME );
         if( fp != NIL_FHANDLE ) {
             WLPrtBanner();
-            for( ; (len = QRead( fp, buff, 80, "wlink.hlp" )) != 0; ) {
+            for( ; (len = QRead( fp, buff, 80, HELP_FILE_NAME )) != 0; ) {
                 buff[len] = '\0';
                 WriteStdOut( buff );
             }
-            QClose( fp, "wlink.hlp" );
+            QClose( fp, HELP_FILE_NAME );
             Ignite();
             Suicide();
         }

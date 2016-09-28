@@ -54,6 +54,11 @@
 
 #include "clibext.h"
 
+
+typedef struct {
+    line_walk_fn *cbfn;
+} line_walk_data;
+
 char            *SymFileName;
 group_entry     *DBIGroups;
 
@@ -448,19 +453,22 @@ unsigned DBICalcLineQty( lineinfo *info )
     return( size );
 }
 
-static bool DoLineWalk( void *info, void *cbfn )
-/***********************************************/
+static bool DoLineWalk( void *info, void *line_walk_cb )
+/******************************************************/
 {
     if( !((lineinfo *)info)->seg->isdead ) {
-        ((void(*)(lineinfo *))cbfn)( (lineinfo *)info );
+        ((line_walk_data *)line_walk_cb)->cbfn( (lineinfo *)info );
     }
     return( false );
 }
 
-void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
-/*************************************************************/
+void DBILineWalk( lineinfo *lines, line_walk_fn *cbfn )
+/*****************************************************/
 {
-    RingLookup( lines, DoLineWalk, (void *)cbfn );
+    line_walk_data  line_walk_cb;
+
+    line_walk_cb.cbfn = cbfn;
+    RingLookup( lines, DoLineWalk, &line_walk_cb );
 }
 
 virt_mem DBIAlloc( virt_mem_size size )
@@ -473,7 +481,7 @@ virt_mem DBIAlloc( virt_mem_size size )
 }
 
 void DBIAddrStart( void )
-/******************************/
+/***********************/
 // called after address calculation is done.
 {
 #ifdef _NOVELL
@@ -488,7 +496,7 @@ void DBIAddrStart( void )
 }
 
 void DBIAddrSectStart( section *sect )
-/********************************************/
+/************************************/
 // called for each section after address calculation is done.
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -499,20 +507,20 @@ void DBIAddrSectStart( section *sect )
 }
 
 void DBIP2Start( section *sect )
-/*************************************/
+/******************************/
 // called for each section just before pass 2 starts
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
         ODBIP2Start( sect );
     } else if( LinkFlags & DWARF_DBI_FLAG ) {
-        SectWalkClass( sect, (void *)DwarfGenAddrInfo );
+        SectWalkClass( sect, DwarfGenAddrInfo );
     } else if( LinkFlags & CV_DBI_FLAG ) {
-        SectWalkClass( sect, (void *)CVGenAddrInfo );
+        SectWalkClass( sect, CVGenAddrInfo );
     }
 }
 
 void DBIFini( section *sect )
-/**********************************/
+/***************************/
 // called after pass 2 is finished, but before load file generation
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -523,7 +531,7 @@ void DBIFini( section *sect )
 }
 
 void DBISectCleanup( section *sect )
-/*****************************************/
+/**********************************/
 // called when burning down the house
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -532,14 +540,14 @@ void DBISectCleanup( section *sect )
 }
 
 void DBICleanup( void )
-/****************************/
+/*********************/
 // called when burning down the house
 {
     FreeGroups( DBIGroups );
 }
 
 void DBIWrite( void )
-/**************************/
+/*******************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {

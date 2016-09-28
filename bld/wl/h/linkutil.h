@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+typedef void class_walk_fn(seg_leader *);
+typedef void mods_walk_fn(mod_entry *);
+
 extern void             CheckErr( void );
 extern void             CheckStop( void );
 extern void             LnkFatal( const char * );
@@ -40,9 +43,9 @@ extern seg_leader       *FindSegment( section *, const char * );
 extern group_entry      *FindGroup( segment );
 extern offset           FindLinearAddr( targ_addr * );
 extern offset           FindLinearAddr2( targ_addr * );
-extern void             WalkLeaders( void (*rtn)( seg_leader * ) );
-extern void             SectWalkClass( section *sect, void * );
-extern void             WalkMods( void (*rtn)( mod_entry * ) );
+extern void             WalkLeaders( class_walk_fn *rtn );
+extern void             SectWalkClass( section *sect, class_walk_fn * );
+extern void             WalkMods( mods_walk_fn *rtn );
 extern void             LinkList( void *, void * );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );

@@ -295,8 +295,8 @@ static void ProcessInfo( void )
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME );
     if( file == NIL_HANDLE ) return;   /* NO WLINK.LNK */
-    _ChkAlloc( fname, sizeof(INIT_FILE_NAME));
-    memcpy( fname, INIT_FILE_NAME, sizeof(INIT_FILE_NAME) );
+    _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
+    memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
     SetCommandFile( file, fname );
     ParseDirectives();
     Burn();   /* clean up everything but the system list */

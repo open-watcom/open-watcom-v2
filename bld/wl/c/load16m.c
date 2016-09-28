@@ -257,18 +257,16 @@ static unsigned_32 WriteStubProg( void )
 {
     unsigned_32 size;
     f_handle    fhandle;
-    char        *name;
 
-    name = FmtData.u.d16m.stub;
-    if( name == NULL ) {
+    if( FmtData.u.d16m.stub == NULL ) {
         size = 0;
     } else {
-        fhandle = FindPath( name );
+        fhandle = FindPath( FmtData.u.d16m.stub );
         if( fhandle == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
             size = 0;
         } else {
-            size = CopyToLoad( fhandle, name );
+            size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
         }
     }
     SetOriginLoad( size );

@@ -54,6 +54,16 @@
 #include "clibext.h"
 
 
+typedef void ring_walk_fn( void *);
+
+typedef struct {
+    mods_walk_fn   *cbfn;
+} mods_walk_data;
+
+typedef struct {
+    class_walk_fn   *cbfn;
+} class_walk_data;
+
 void WriteNulls( f_handle file, unsigned_32 len, char *name )
 /*******************************************************************/
 /* copy nulls for uninitialized data */
@@ -137,50 +147,67 @@ char *ChkToString( const void *mem, size_t len )
     return( str );
 }
 
-static void WalkList( node *list, void (*fn)( void * ) )
-/******************************************************/
+static void WalkModsList( mod_entry *list, mods_walk_fn *cbfn )
+/***********************************************************/
 {
-    for( ; list != NULL; list = list->next ) {
-        fn( list );
+    for( ; list != NULL; list = list->n.next_mod ) {
+        cbfn( list );
     }
 }
 
-static void WalkModList( section *sect, void *rtn )
-/*************************************************/
+static void WalkSectModsList( section *sect, void *mods_walk_cb )
+/***************************************************************/
 {
     CurrSect = sect;
-    WalkList( (node *)sect->mods, (void (*)(void *))rtn );
+    WalkModsList( sect->mods, ((mods_walk_data *)mods_walk_cb)->cbfn );
 }
 
-void WalkMods( void (*rtn)( mod_entry * ) )
-/************************************************/
+void WalkMods( mods_walk_fn *cbfn )
+/********************************/
 {
-    ParmWalkAllSects( WalkModList, (void *)rtn );
+    mods_walk_data      mods_walk_cb;
+
+    mods_walk_cb.cbfn = cbfn;
+    ParmWalkAllSects( WalkSectModsList, &mods_walk_cb );
     CurrSect = Root;
-    WalkList( (node *)LibModules, (void (*)(void *))rtn );
+    WalkModsList( LibModules, cbfn );
 }
 
-static void WalkClass( class_entry *class, void (*rtn)( seg_leader * ) )
-/********************************************************************/
+static void WalkClass( class_entry *class, class_walk_fn *cbfn )
+/*************************************************************/
 {
-    RingWalk( class->segs, (void (*)(void *))rtn );
+    RingWalk( class->segs, (ring_walk_fn *)cbfn );
 }
 
-void SectWalkClass( section *sect, void *rtn )
-/***************************************************/
+void SectWalkClass( section *sect, class_walk_fn *cbfn )
+/*****************************************************/
 {
     class_entry         *class;
 
     CurrSect = sect;
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        WalkClass( class, (void (*)(seg_leader *))rtn );
+        WalkClass( class, cbfn );
     }
 }
 
-void WalkLeaders( void (*rtn)( seg_leader * ) )
-/****************************************************/
+static void _SectWalkClass( section *sect, void *class_walk_cb )
+/**************************************************************/
 {
-    ParmWalkAllSects( SectWalkClass, (void *)rtn );
+    class_entry     *class;
+
+    CurrSect = sect;
+    for( class = sect->classlist; class != NULL; class = class->next_class ) {
+        WalkClass( class, ((class_walk_data *)class_walk_cb)->cbfn );
+    }
+}
+
+void WalkLeaders( class_walk_fn *cbfn )
+/************************************/
+{
+    class_walk_data     class_walk_cb;
+
+    class_walk_cb.cbfn = cbfn;
+    ParmWalkAllSects( _SectWalkClass, &class_walk_cb );
 }
 
 seg_leader *FindSegment( section *sect, const char *name )
