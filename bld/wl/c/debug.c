@@ -94,11 +94,11 @@ void _Debug( unsigned int mask, char *str, ... )
     char        buff[128];
     unsigned    len;
 
-    if( Debug & mask || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
+    if( (Debug & mask) || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
         va_start( arglist, str );
         len = DoFmtStr( buff, 128, str, &arglist );
         WriteStdOut( buff );
-        if( !(mask & DBG_NOCRLF) ) {
+        if( (mask & DBG_NOCRLF) == 0 ) {
             WriteStdOutNL();
         }
     }

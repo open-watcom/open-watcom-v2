@@ -318,7 +318,7 @@ bool ProcObjAlign( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > (256*1024UL*1024) || (value & (value-1)) ) {
+    if( value < 16 || value > (256 * 1024UL * 1024) || (value & (value - 1)) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "objalign" );
         value = 64*1024;
     }
@@ -536,8 +536,7 @@ void ChkBase( offset align )
     if( FmtData.objalign != NO_BASE_SPEC && FmtData.objalign > align ) {
         align = FmtData.objalign;
     }
-    if( FmtData.base != NO_BASE_SPEC &&
-                (FmtData.base & (align-1)) != 0 ) {
+    if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
         FmtData.base = ROUND_UP( FmtData.base, align );
     }
@@ -547,7 +546,8 @@ void SetOS2Fmt( void )
 /*********************/
 // set up the structures needed to be able to process something in OS/2 mode.
 {
-    if( LinkState & FMT_INITIALIZED ) return;
+    if( LinkState & FMT_INITIALIZED )
+        return;
     LinkState |= FMT_INITIALIZED;
     FmtData.u.os2.flags = MULTIPLE_AUTO_DATA;
     FmtData.u.os2.heapsize = 0;

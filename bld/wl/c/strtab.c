@@ -82,7 +82,7 @@ void ReserveStringTable( stringtable *strtab, unsigned len )
     unsigned    diff;
 
     blk = RingLast( strtab->data );
-    if( blk->size + len > STR_BLOCK_SIZE && strtab->currbase & 1 ) {
+    if( blk->size + len > STR_BLOCK_SIZE && (strtab->currbase & 1) ) {
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
             memset( &blk->data[blk->size], 0, diff );
@@ -102,7 +102,7 @@ static char *AddToStringTable( stringtable *strtab, const void *data, unsigned l
 
     if( addnullchar )
         ++len;
-    if( strtab->currbase & 1 && len > STR_BLOCK_SIZE ) {
+    if( (strtab->currbase & 1) && len > STR_BLOCK_SIZE ) {
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
         len = STR_BLOCK_SIZE;
     }

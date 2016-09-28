@@ -38,6 +38,14 @@
 #include "clibext.h"
 
 
+#ifdef _WIN64
+#define posix_read  __w64_read
+#define posix_read  __w64_write
+#else
+#define posix_read  read
+#define posix_read  write
+#endif
+
 // file io routines
 
 static void IOError( char *msgstart, const char *name )
@@ -67,11 +75,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 {
     size_t  ret;
 
-#ifdef _WIN64
-    ret = __w64_read( file, buffer, len );
-#else
-    ret = read( file, buffer, len );
-#endif
+    ret = posix_read( file, buffer, len );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
@@ -87,11 +91,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
     if( len == 0 )
         return( 0 );
 
-#ifdef _WIN64
-    ret = __w64_write( file, buffer, len );
-#else
-    ret = write( file, buffer, len );
-#endif
+    ret = posix_write( file, buffer, len );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }

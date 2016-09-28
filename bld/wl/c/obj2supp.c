@@ -704,7 +704,7 @@ static void DumpReloc( base_reloc *curr )
         WriteReloc( CurrRec.seg->u.leader->group, curr->fix_off,
                     &curr->item, curr->rel_size );
         if( FmtData.type & MK_OS2_FLAT ) {
-            if( OSF_PAGE_SIZE - ( curr->fix_off & OSF_PAGE_MASK ) < curr->fix_size ) {
+            if( ( OSF_PAGE_SIZE - (curr->fix_off & OSF_PAGE_MASK) ) < curr->fix_size ) {
                 /* stupid relocation has been split across two
                     pages, have to duplicate the entry */
                 curr->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
@@ -1347,8 +1347,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
 
     if( fix->done )
         return;
-    if( (fix->type & FIX_ABS) && (FmtData.type & (MK_QNX | MK_DOS16M)) == 0
-        && !fix->imported )
+    if( (fix->type & FIX_ABS) && (FmtData.type & (MK_QNX | MK_DOS16M)) == 0 && !fix->imported )
         return;
     ftype = fix->type & (FIX_OFFSET_MASK | FIX_BASE);
     if( (FmtData.type & (MK_PHAR_SIMPLE | MK_PHAR_FLAT))

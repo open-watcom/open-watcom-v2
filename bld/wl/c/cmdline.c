@@ -666,7 +666,7 @@ void SetFormat( void )
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
-        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED);
+        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );

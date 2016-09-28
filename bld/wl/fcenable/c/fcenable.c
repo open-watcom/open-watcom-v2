@@ -53,6 +53,14 @@
 #define NOFILE -1
 #define STDOUT_HANDLE 1
 
+#ifdef _WIN64
+#define posix_read  __w64_read
+#define posix_read  __w64_write
+#else
+#define posix_read  read
+#define posix_read  write
+#endif
+
 typedef enum {
     EX_NONE,
     EX_GOT_SEG,
@@ -500,13 +508,13 @@ int CopyFile( const char * file1, const char * file2 )
 void put( const char * str )
 /**************************/
 {
-    write( STDOUT_HANDLE, str, strlen( str ) );
+    posix_write( STDOUT_HANDLE, str, strlen( str ) );
 }
 
 void putlen( const char *str, size_t len )
 /****************************************/
 {
-    write( STDOUT_HANDLE, str, len );
+    posix_write( STDOUT_HANDLE, str, len );
 }
 
 // these are utility routines used frequently in TDCVT.
@@ -574,7 +582,7 @@ size_t QRead( int handle, void *buffer, size_t len )
 {
     size_t result;
 
-    result = read( handle, buffer, len );
+    result = posix_read( handle, buffer, len );
     if( result == -1 ) {
         IOError( "problem reading file" );
     }
@@ -586,7 +594,7 @@ size_t QWrite( int handle, const void *buffer, size_t len )
 {
     size_t result;
 
-    result = write( handle, buffer, len );
+    result = posix_write( handle, buffer, len );
     if( result == -1 ) {
         IOError( "problem writing file" );
     } else if( result != len ) {

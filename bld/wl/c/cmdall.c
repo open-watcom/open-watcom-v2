@@ -429,7 +429,7 @@ bool ProcLibFile( void )
 /*****************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG |OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0 ) {
+    if( (LinkFlags & (DWARF_DBI_FLAG |OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     if( LastLibFile == NULL ) {
@@ -485,7 +485,7 @@ bool ProcFiles( void )
 /***************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0 ) {
+    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     return( ProcArgList( &AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
@@ -527,7 +527,7 @@ bool ProcLibrary( void )
 /*****************************/
 /* process LIB command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0
+    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }

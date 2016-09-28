@@ -463,7 +463,7 @@ void DwarfDefClass( class_entry *cl, unsigned_32 size )
 // all of them.
 {
     size = size;        // to avoid a warning
-    if( ( cl->flags & CLASS_DEBUG_INFO ) != CLASS_DWARF )
+    if( (cl->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
         return;
     DBIClass = cl;
     RingWalk( cl->segs, DefAClass );
@@ -517,7 +517,7 @@ void DwarfGenGlobal( symbol *sym, section *sect )
         }
         vmem_addr = CurrMod->d.d->pubsym.u.vm_ptr;
         die.off = sym->addr.off;
-        if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
+        if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
             die.off += GetLinearGroupOffset( sym->p.seg->u.leader->group );
         }
         die.isexternal = ( (sym->info & SYM_STATIC) == 0 );
@@ -570,7 +570,7 @@ void DwarfGenLines( lineinfo *info )
         *( (unsigned_16 *)&buff[3] ) = seg->a.delta + seg->u.leader->seg_addr.off;
     } else {
         off = seg->a.delta + seg->u.leader->seg_addr.off;
-        if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
+        if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
             off += GetLinearGroupOffset( seg->u.leader->group );
         }
         *( (unsigned_32 *)&buff[3] ) = off;
@@ -649,7 +649,7 @@ static offset GetNewAddrOffset( segdata *sdata, offset delta )
     offset      off;
 
     off = sdata->u.leader->seg_addr.off + delta;
-    if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
+    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
         off += GetLinearGroupOffset( sdata->u.leader->group );
     }
     return( off );

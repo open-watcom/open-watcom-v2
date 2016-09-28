@@ -562,7 +562,7 @@ static void ProcAlias( void )
         ObjBuff += aliaslen;
         targetlen = *ObjBuff++;
         sym = SymOp( ST_FIND | ST_NOALIAS, alias, aliaslen );
-        if( !sym || (sym->info & SYM_DEFINED) == 0 ) {
+        if( sym == NULL || (sym->info & SYM_DEFINED) == 0 ) {
             MakeSymAlias( alias, aliaslen, (const char *)ObjBuff, targetlen );
         }
     }
@@ -676,7 +676,7 @@ static void ProcSegDef( void )
         break;
     case ALIGN_LTRELOC:
 // in 32 bit object files, ALIGN_LTRELOC is actually ALIGN_4KPAGE
-        if( ( ObjFormat & FMT_32BIT_REC ) || ( FmtData.type & MK_RAW ) )
+        if( (ObjFormat & FMT_32BIT_REC) || (FmtData.type & MK_RAW) )
             break;
         sdata->align = OMFAlignTab[ALIGN_PARA];
         ObjBuff += 5;   /*  step over ltldat, max_seg_len, grp_offs fields */

@@ -85,7 +85,7 @@ static int DoOpen( const char *name, unsigned mode, bool isexe )
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        if ( ( mode & O_CREAT ) && !stat( name, &st) )
+        if ( (mode & O_CREAT) && !stat( name, &st) )
             unlink( name );
         h = open( name, mode, pmode );
         if( h != -1 ) {
@@ -162,28 +162,31 @@ f_handle ExeOpen( const char *name )
 */
 #define MAX_OS_TRANSFER (32U*1024 - 512)
 
-static unsigned doread( int file, void *buffer, unsigned len )
+static ssize_t posix_read( int file, void *buffer, size_t len )
 {
-    unsigned    total;
+    ssize_t     total;
     int         h;
     int         amount;
 
     total = 0;
     for( ;; ) {
-        if( len == 0 ) return( total );
+        if( len == 0 )
+            return( total );
         amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
         h = read( file, buffer, amount );
-        if( h < 0 ) return( h );
+        if( h < 0 )
+            return( -1 );
         total += h;
-        if( h != amount ) return( total );
+        if( h != amount )
+            return( total );
         buffer = (char *)buffer + amount;
         len -= amount;
     }
 }
 
-static size_t dowrite( int file, const void *buffer, size_t len )
+static ssize_t posix_write( int file, const void *buffer, size_t len )
 {
-    size_t      total;
+    ssize_t     total;
     int         h;
     int         amount;
 
@@ -193,7 +196,7 @@ static size_t dowrite( int file, const void *buffer, size_t len )
             return( total );
         amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
         h = write( file, buffer, amount );
-        if( h == -1 )
+        if( h < 0 )
             return( -1 );
         total += h;
         if( h != amount )
@@ -203,8 +206,8 @@ static size_t dowrite( int file, const void *buffer, size_t len )
     }
 }
 #else
-    #define doread( f, b, l )  read( f, b, l )
-    #define dowrite( f, b, l ) write( f, b, l )
+#define posix_read( f, b, l )  read( f, b, l )
+#define posix_write( f, b, l ) write( f, b, l )
 #endif
 
 
@@ -214,7 +217,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     ssize_t h;
 
     CheckBreak();
-    h = doread( file, buffer, len );
+    h = posix_read( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
@@ -230,7 +233,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
     if( len == 0 )
         return( 0 );
     CheckBreak();
-    h = dowrite( file, buffer, len );
+    h = posix_write( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     } else if( h != len ) {
@@ -259,7 +262,8 @@ void QClose( f_handle file, const char *name )
     CheckBreak();
     h = close( file );
     OpenFiles--;
-    if( h != -1 ) return;
+    if( h != -1 )
+        return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
 }
 
@@ -337,7 +341,9 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );
@@ -347,6 +353,7 @@ bool QIsDevice( f_handle file )
 /************************************/
 {
     struct stat     st;
+
     if( fstat( file, &st ) != 0 )
         return( false );
     return( S_ISCHR( st.st_mode ) != 0 );

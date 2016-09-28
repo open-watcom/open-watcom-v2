@@ -149,7 +149,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
         len = export->len;
         sym = SymOp( ST_FIND, export->name, len );
-        if( ( sym == NULL ) || ( sym->info & SYM_DEFINED ) == 0 ) {
+        if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
         } else if( !IS_SYM_IMPORTED(sym) ) {
 
@@ -238,7 +238,7 @@ void NovDBIGenGlobal( symbol *sym )
 
     if( ( DbgInfoLen != 0 )
         && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0
-        || ( sym->info & SYM_REFERENCED ) ) ) {
+        || (sym->info & SYM_REFERENCED) ) ) {
         DbgInfoCount++;
         if( sym->addr.seg == DATA_SEGMENT ) {
             info.type = DBG_DATA;
@@ -700,7 +700,7 @@ void FindExportedSyms( void )
     debug_info *    dinfo;
 
     dinfo = CurrSect->dbg_info;
-    if( ( FmtData.u.nov.flags & DO_WATCOM_EXPORTS ) && ( dinfo != NULL ) ) {
+    if( (FmtData.u.nov.flags & DO_WATCOM_EXPORTS) && ( dinfo != NULL ) ) {
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {

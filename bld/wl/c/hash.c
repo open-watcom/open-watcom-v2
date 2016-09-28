@@ -55,20 +55,22 @@ pHTable CreateHTable( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
     table->stats.longestChainLen = 0;
     table->allowDoubles = 0;
 
-    return table;
+    return( table );
 }
 
 pHTable CreateHTableDouble( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
-         pAllocFunc allocFunc, pFreeFunc freeFunc ) {
+         pAllocFunc allocFunc, pFreeFunc freeFunc )
+{
     pHTable table = CreateHTable(size, hashFunc, compareFunc, allocFunc, freeFunc);
     if (table != NULL) {
         table->allowDoubles = 1;
     }
-    return table;
+    return( table );
 }
 
 /* ----------------------------------------------------------------------- */
-void* AddHTableElem( pHTable table, void *elem ) {
+void *AddHTableElem( pHTable table, void *elem )
+{
     unsigned key;
     int chainLen = 0;
     pHTElem tblElem;
@@ -76,18 +78,16 @@ void* AddHTableElem( pHTable table, void *elem ) {
 
     key = table->hashFunc( elem, table->size );
 
-    if (table->allowDoubles) {
-        for (tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next)
-        {
+    if( table->allowDoubles ) {
+        for( tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next ) {
             chainLen++;
         }
     } else {
-        for (tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next)
-        {
+        for( tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next ) {
             chainLen++;
 
-            if (!cmp( elem, tblElem->userData )) {
-                return tblElem->userData;
+            if( cmp( elem, tblElem->userData ) == 0 ) {
+                return( tblElem->userData );
             }
         }
     }
@@ -100,88 +100,92 @@ void* AddHTableElem( pHTable table, void *elem ) {
 
     table->stats.numElems++;
 
-    if (chainLen > table->stats.longestChainLen) {
+    if( chainLen > table->stats.longestChainLen ) {
         table->stats.longestChainLen = chainLen;
-        #ifdef _INT_DEBUG
-            if (chainLen > 20) {
-                LPrint("Hash Warning: max chain len = %d getting long!\n");
-            }
-        #endif
+#ifdef _INT_DEBUG
+        if( chainLen > 20 ) {
+            LPrint( "Hash Warning: max chain len = %d getting long!\n" );
+        }
+#endif
     }
 
-    return elem;
+    return( elem );
 }
 
 /* ----------------------------------------------------------------------- */
-void* FindHTableElem( pHTable table, void *elem ) {
+void *FindHTableElem( pHTable table, void *elem )
+{
     int key;
     pHTElem tblElem;
     pHashElemCmp cmp = table->compareFunc;
 
     key = table->hashFunc( elem, table->size );
 
-    for (tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next)
-    {
-        if (!cmp( elem, tblElem->userData )) {
-            return tblElem->userData;
+    for( tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next ) {
+        if( cmp( elem, tblElem->userData ) == 0 ) {
+            return( tblElem->userData );
         }
     }
 
-    return NULL;
+    return( NULL );
 }
 
 /* ----------------------------------------------------------------------- */
-int WalkHTableElem( pHTable table, void *elem, void (*action)( void * ) ) {
+int WalkHTableElem( pHTable table, void *elem, void (*action)( void * ) )
+{
     pHTElem tblElem;
     int numElem = 0;
     int key = table->hashFunc( elem, table->size );
     pHashElemCmp cmp = table->compareFunc;
-    for( tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next){
-        if( !cmp( elem, tblElem->userData ) ) {
-            action(tblElem->userData);
+
+    for( tblElem = table->tbl[key]; tblElem != NULL; tblElem = tblElem->next ) {
+        if( cmp( elem, tblElem->userData ) == 0 ) {
+            action( tblElem->userData );
             numElem++;
         }
     }
-    return numElem;
+    return( numElem );
 }
 
 /* ----------------------------------------------------------------------- */
-void WalkHTableCookie( pHTable table, void (*action)( void *, void *),
-                       void* cookie ) {
+void WalkHTableCookie( pHTable table, void (*action)( void *, void *), void *cookie )
+{
     int i;
     pHTElem *tblPtr = table->tbl;
     pHTElem tblElem;
 
-    if (action == NULL) {
+    if( action == NULL ) {
         return;
     }
 
-    for (i = 0; i < table->size; i++) {
-        for (tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next) {
+    for( i = 0; i < table->size; i++ ) {
+        for( tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next ) {
             action( tblElem->userData, cookie );
         }
     }
 }
 
-void WalkHTable( pHTable table, void (*action)( void * ) ) {
+void WalkHTable( pHTable table, void (*action)( void * ) )
+{
     /* For speed, do not use WalkHTableCookie */
     int i;
     pHTElem *tblPtr = table->tbl;
     pHTElem tblElem;
 
-    if (action == NULL) {
+    if( action == NULL ) {
         return;
     }
 
-    for (i = 0; i < table->size; i++) {
-        for (tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next) {
+    for( i = 0; i < table->size; i++ ) {
+        for( tblElem = tblPtr[i]; tblElem != NULL; tblElem = tblElem->next ) {
             action( tblElem->userData );
         }
     }
 }
 
 /* ----------------------------------------------------------------------- */
-void RehashHTable( pHTable table ) {
+void RehashHTable( pHTable table )
+{
     int i;
     pHTElem *tbl;
     pHTElem elem, *pelem;
@@ -191,13 +195,14 @@ void RehashHTable( pHTable table ) {
     for( i = 0; i < table->size; i++ ) {
         for( pelem = &tbl[i]; *pelem != NULL; ) {
             elem = *pelem;
-            hash = table->hashFunc(elem->userData, table->size);
-            if( i != hash ){
+            hash = table->hashFunc( elem->userData, table->size );
+            if( i != hash ) {
                 *pelem = elem->next;
                 elem->next = tbl[hash];
                 tbl[hash] = elem;
             } else {
-                if( *pelem == NULL ) break;
+                if( *pelem == NULL )
+                    break;
                 pelem = &((*pelem)->next);
             }
         }
@@ -205,22 +210,23 @@ void RehashHTable( pHTable table ) {
 }
 
 /* ----------------------------------------------------------------------- */
-void ZapHTable( pHTable table, void (*zapElemAction)( void * ) ) {
+void ZapHTable( pHTable table, void (*zapElemAction)( void * ) )
+{
     int i;
     pHTElem *tblPtr;
     pHTElem tblElem, temp;
     pFreeFunc free;
 
-    if (table == NULL) {
+    if( table == NULL ) {
         return;
     }
 
     tblPtr = table->tbl;
     free = table->freeFunc;
 
-    for (i = 0; i < table->size; i++) {
-        for (tblElem = tblPtr[i]; tblElem != NULL; tblElem = temp) {
-            if (zapElemAction != NULL) {
+    for( i = 0; i < table->size; i++ ) {
+        for( tblElem = tblPtr[i]; tblElem != NULL; tblElem = temp ) {
+            if( zapElemAction != NULL ) {
                 zapElemAction( tblElem->userData );
             }
             temp = tblElem->next;
@@ -233,68 +239,73 @@ void ZapHTable( pHTable table, void (*zapElemAction)( void * ) ) {
 }
 
 /* ----------------------------------------------------------------------- */
-void GetHTableStats( pHTable table, int *numElems, int *longestChainLen ) {
+void GetHTableStats( pHTable table, int *numElems, int *longestChainLen )
+{
     *numElems = table->stats.numElems;
     *longestChainLen = table->stats.longestChainLen;
 }
 
-long GetHTableNumOfElems(pHTable table) {
-    return table->stats.numElems;
+long GetHTableNumOfElems(pHTable table)
+{
+    return( table->stats.numElems );
 }
 
 /* ----------------------------------------------------------------------- */
-unsigned StringHashFunc( char *s, unsigned size ) {
+unsigned StringHashFunc( char *s, unsigned size )
+{
     enum { b = 101 };
     unsigned long key = 0;
     int i;
 
-    for (i = 0; s[i] != 0; i++) {
+    for( i = 0; s[i] != 0; i++ ) {
         key += s[i];
         key *= b;
     }
 
-    key = key & (size-1);
+    key = key & (size - 1);
 
-    return key;
+    return( key );
 }
 
 /* ----------------------------------------------------------------------- */
-unsigned StringiHashFunc( void *_s, unsigned size ) {
+unsigned StringiHashFunc( void *_s, unsigned size )
+{
     char *s = _s;
     enum { b = 101 };
     unsigned long key = 0;
     int i;
 
-    for (i = 0; s[i] != 0; i++) {
+    for( i = 0; s[i] != 0; i++ ) {
         key += toupper( s[i] );
         key *= b;
     }
 
-    key = key & (size-1);
+    key = key & (size - 1);
 
-    return key;
+    return( key );
 }
 
 /* ----------------------------------------------------------------------- */
-unsigned DataHashFunc( void *data, unsigned n, unsigned size) {
+unsigned DataHashFunc( void *data, unsigned n, unsigned size )
+{
     enum { b = 101 };
     unsigned long key = 0;
     int i;
 
-    for (i = 0; i < n; i++) {
+    for( i = 0; i < n; i++ ) {
         key += ((char*)data)[i];
         key *= b;
     }
 
-    key = key & (size-1);
+    key = key & (size - 1);
 
-    return key;
+    return( key );
 }
 
 /* ----------------------------------------------------------------------- */
 unsigned PtrHashFunc( void *p, unsigned size )
 {
-    return DataHashFunc( &p, sizeof( p ), size );
+    return( DataHashFunc( &p, sizeof( p ), size ) );
 }
 
 /* ----------------------------------------------------------------------- */

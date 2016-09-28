@@ -442,7 +442,7 @@ void MakeDos16PM( void )
      * remap dos16m kernel selectors reference
      */
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( ( class->flags & CLASS_DEBUG_INFO ) == 0 ) {
+        if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
             RingWalk( class->segs, RemapAliasSels );
         }
     }

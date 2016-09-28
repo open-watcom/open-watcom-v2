@@ -46,6 +46,14 @@
 #include "clibext.h"
 
 
+#ifdef _WIN64
+#define posix_read( f, b, l )  __w64_read( f, b, l )
+#define posix_write( f, b, l ) __w64_write( f, b, l )
+#else
+#define posix_read( f, b, l )  read( f, b, l )
+#define posix_write( f, b, l ) write( f, b, l )
+#endif
+
 #ifdef __OSI__
 //If or when OSI builds are re-enabled, we need to find the header for this
 //extern  char    *_BreakFlagPtr;
@@ -179,14 +187,6 @@ f_handle ExeOpen( const char *name )
     return( NIL_FHANDLE );
 }
 
-#ifdef _WIN64
-    #define doread( f, b, l )  __w64_read( f, b, l )
-    #define dowrite( f, b, l ) __w64_write( f, b, l )
-#else
-    #define doread( f, b, l )  read( f, b, l )
-    #define dowrite( f, b, l ) write( f, b, l )
-#endif
-
 size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 /***********************************************************************/
 /* read into far memory */
@@ -194,7 +194,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     size_t      h;
 
     CheckBreak();
-    h = doread( file, buffer, len );
+    h = posix_read( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
@@ -223,7 +223,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 #endif
 
     CheckBreak();
-    h = dowrite( file, buffer, len );
+    h = posix_write( file, buffer, len );
     if( name != NULL ) {
         if( h == -1 ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );

@@ -142,12 +142,12 @@ static void DoWriteReloc( void *lst, void *reloc, unsigned size )
         info->next = NULL;
         *list = info;
     }
-    if( ( info->sizeleft & SIZELEFT_MASK ) < size ) {     /* if no space */
+    if( (info->sizeleft & SIZELEFT_MASK) < size ) {     /* if no space */
         info = AllocRelocInfo();
         info->next = *list;
         *list = info;
     }
-    offset = RELOC_PAGE_SIZE - ( info->sizeleft & SIZELEFT_MASK );
+    offset = RELOC_PAGE_SIZE - (info->sizeleft & SIZELEFT_MASK);
     if( info->sizeleft & RELOC_SPILLED ) {
         SpillWrite( info->loc.spill, offset, reloc, size );
     } else {
@@ -198,7 +198,7 @@ void WriteReloc( group_entry *group, offset off, void *reloc,
             break;
         }
         DoWriteReloc( header, reloc, size );
-    } else if( FmtData.type & ( MK_OS2_16BIT | MK_ELF ) ) {
+    } else if( FmtData.type & (MK_OS2_16BIT | MK_ELF) ) {
         DoWriteReloc( &group->g.grp_relocs, reloc, size );
     } else {
         DoWriteReloc( &group->section->reloclist, reloc, size );
@@ -288,7 +288,7 @@ static void FreeGroupRelocs( group_entry *group )
 
     if( (LinkState & MAKE_RELOCS) == 0 )
         return;
-    if( FmtData.type & ( MK_OS2_FLAT | MK_PE ) ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         TraverseOS2RelocList( group, FreeRelocList );
         reloclist = group->g.grp_relocs;
         if( reloclist != NULL ) {
@@ -302,7 +302,7 @@ static void FreeGroupRelocs( group_entry *group )
                 reloclist++;
             }
         }
-    } else if( FmtData.type & ( MK_ELF | MK_OS2_16BIT | MK_QNX ) ) {
+    } else if( FmtData.type & (MK_ELF | MK_OS2_16BIT | MK_QNX) ) {
         FreeRelocList( group->g.grp_relocs );
     }
 }
@@ -315,7 +315,7 @@ void FreeRelocInfo( void )
 
     if( (LinkState & MAKE_RELOCS) == 0 )
         return;
-    if( FmtData.type & ( MK_ELF | MK_OS2_FLAT | MK_PE | MK_OS2_16BIT | MK_QNX ) ) {
+    if( FmtData.type & (MK_ELF | MK_OS2_FLAT | MK_PE | MK_OS2_16BIT | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             FreeGroupRelocs( group );
         }
@@ -336,7 +336,7 @@ unsigned_32 RelocSize( reloc_info *list )
 
     size = 0;
     for( ; list != NULL; list = list->next ) {
-        size += RELOC_PAGE_SIZE - ( list->sizeleft & SIZELEFT_MASK );
+        size += RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
     }
     return( size );
 }
@@ -354,7 +354,7 @@ unsigned_32 DumpMaxRelocList( reloc_info **head, unsigned_32 max )
     for( ;; ) {
         if( list == NULL )
             break;
-        size = RELOC_PAGE_SIZE - ( list->sizeleft & SIZELEFT_MASK );
+        size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
         if( ( max != 0 ) && ( total != 0 ) && ( ( total + size ) >= max ) )
             break;
         if( size != 0 ) {
@@ -393,7 +393,7 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_3
     for( ;; ) {
         if( (list == NULL) || quit )
             break;
-        size = RELOC_PAGE_SIZE - ( list->sizeleft & SIZELEFT_MASK );
+        size = RELOC_PAGE_SIZE - (list->sizeleft & SIZELEFT_MASK);
         if( size != 0 ) {
             if( list->sizeleft & RELOC_SPILLED ) {
                 SpillRead( list->loc.spill, 0, TokBuff, size );
@@ -487,13 +487,13 @@ bool SwapOutRelocs( void )
 
     if( (LinkState & FMT_DECIDED) == 0 )
         return( false );
-    if( FmtData.type & ( MK_OS2_FLAT | MK_PE ) ) {
+    if( FmtData.type & (MK_OS2_FLAT | MK_PE) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( TraverseOS2RelocList( group, SpillRelocList ) ) {
                 return( true );
             }
         }
-    } else if( FmtData.type & ( MK_OS2_16BIT | MK_QNX ) ) {
+    } else if( FmtData.type & (MK_OS2_16BIT | MK_QNX) ) {
         for( group = Groups; group != NULL; group = group->next_group ) {
             if( SpillRelocList( group->g.grp_relocs ) ) {
                 return( true );

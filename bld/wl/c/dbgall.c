@@ -183,8 +183,8 @@ static bool MSSkip( void )
     if( (ObjFormat & FMT_OMF) == 0 ) {
         return( LinkFlags & DWARF_DBI_FLAG );
     } else {
-        iscv = (LinkFlags & CV_DBI_FLAG) != 0;
-        seencmt = (ObjFormat & FMT_DEBUG_COMENT) != 0;
+        iscv = ( (LinkFlags & CV_DBI_FLAG) != 0 );
+        seencmt = ( (ObjFormat & FMT_DEBUG_COMENT) != 0 );
         return( (iscv ^ seencmt) == 0 || (LinkFlags & DWARF_DBI_FLAG) );
     }
 }
@@ -262,8 +262,7 @@ void DBIAddrInfoScan( seg_leader *seg,
 
     if( IS_DBG_INFO( seg ) )
         return;
-    if( ( seg->class->flags & ( CLASS_STACK | CLASS_IDATA ) )
-        && ( FmtData.dll || ( FmtData.type & MK_PE ) ) )
+    if( (seg->class->flags & (CLASS_STACK | CLASS_IDATA)) && ( FmtData.dll || (FmtData.type & MK_PE) ) )
         return;
     prev = RingStep( seg->pieces, NULL );
     for( ; ; ) {
@@ -414,8 +413,7 @@ void DBIGenGlobal( symbol *sym, section *sect )
         CVGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
-    if( ( (sym->info & SYM_STATIC) == 0 )
-        && ( LinkFlags & NOVELL_DBI_FLAG ) ) {
+    if( ( (sym->info & SYM_STATIC) == 0 ) && (LinkFlags & NOVELL_DBI_FLAG) ) {
         NovDBIGenGlobal( sym );
     }
 #endif

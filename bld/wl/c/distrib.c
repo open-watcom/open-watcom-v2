@@ -225,7 +225,7 @@ void SetSegments( void )
     }
     FixGroupProblems();
     FindRedefs();
-    if( ( FmtData.type & MK_OVERLAYS ) && FmtData.u.dos.distribute ) {
+    if( (FmtData.type & MK_OVERLAYS) && FmtData.u.dos.distribute ) {
         _LnkFree( SectOvlTab );
         SectOvlTab = NULL;
     }
@@ -373,7 +373,7 @@ void RefDistribSym( symbol * sym )
                     AddArc( arc );
                 }
             }
-        } else if( ( sym->u.d.ovlstate & OVL_VEC_MASK ) == OVL_UNDECIDED ) {
+        } else if( (sym->u.d.ovlstate & OVL_VEC_MASK) == OVL_UNDECIDED ) {
             if( NotAnArc( arc ) ) {
                 AddArc( arc );
             }
@@ -391,7 +391,7 @@ static bool NewRefVector( symbol *sym, unsigned_16 ovlnum,
  * this case.*/
 {
     if( ( sym->p.seg == NULL )
-        || ( ( sym->u.d.ovlstate & OVL_VEC_MASK ) != OVL_UNDECIDED ) ) {
+        || ( (sym->u.d.ovlstate & OVL_VEC_MASK) != OVL_UNDECIDED ) ) {
         return( true );
     }
 /*
@@ -417,8 +417,8 @@ static void DoRefGraph( unsigned_16 ovlnum, mod_entry * mod )
 /*
  * this next line is necessary to break cycles in the graph.
 */
-    if( ( mod->modinfo & MOD_VISITED ) && ( ovlnum == arcs->ovlref )
-        || ( mod->modinfo & MOD_FIXED ) )
+    if( (mod->modinfo & MOD_VISITED) && ( ovlnum == arcs->ovlref )
+        || (mod->modinfo & MOD_FIXED) )
         return;
     if( arcs->ovlref == NO_ARCS_YET ) {
         arcs->ovlref = 0;

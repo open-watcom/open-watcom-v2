@@ -432,7 +432,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
         if( (LinkFlags & QUIET_FLAG) == 0 ) {
             WLPrtBanner();
             WriteStdOutInfo( buff, num, CurrSymName );
-        } else if( class != (INF & CLASS_MSK)) {
+        } else if( class != (INF & CLASS_MSK) ) {
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
@@ -605,7 +605,7 @@ void WLPrtBanner( void )
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( sym->info & SYM_STATIC && (MapFlags & MAP_STATICS) == 0 )
+    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
         return true;
 #if defined(__WATCOMC__)
     {
