@@ -98,7 +98,7 @@ void LnkFilesInit( void )
 }
 
 void PrintIOError( unsigned msg, const char *types, const char *name )
-/********************************************************/
+/********************************************************************/
 {
     LnkMsg( msg, types, name, strerror( errno ) );
 }
@@ -191,7 +191,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 /***********************************************************************/
 /* read into far memory */
 {
-    ssize_t     h;
+    size_t      h;
 
     CheckBreak();
     h = doread( file, buffer, len );
@@ -205,7 +205,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/
 /* write from far memory */
 {
-    ssize_t     h;
+    size_t      h;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
     if( len == 0 )
@@ -238,7 +238,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 char NLSeq[] = { "\r\n" };
 
 void QWriteNL( f_handle file, const char *name )
-/****************************************/
+/**********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
@@ -258,7 +258,7 @@ void QClose( f_handle file, const char *name )
 }
 
 long QLSeek( f_handle file, long position, int start, const char *name )
-/****************************************************************/
+/**********************************************************************/
 {
     long int    h;
 
@@ -271,7 +271,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 }
 
 void QSeek( f_handle file, unsigned long position, const char *name )
-/*************************************************************/
+/*******************************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
@@ -308,8 +308,8 @@ void QDelete( const char *name )
     }
 }
 
-bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
-/*******************************************************************/
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+/***********************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
