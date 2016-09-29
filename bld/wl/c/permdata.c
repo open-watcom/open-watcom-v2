@@ -81,10 +81,6 @@ static char             *IncStrTab;
 #define SDATA_CARVE_SIZE        (16*1024)
 #define SYM_CARVE_SIZE          (32*1024)
 
-static void BufWritePermFile( perm_write_info *info, void *data, unsigned len );
-static void U32WritePermFile( perm_write_info *info, unsigned_32 data );
-static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem );
-
 void ResetPermData( void )
 /******************************/
 {
@@ -150,6 +146,53 @@ static void *GetString( perm_write_info *info, char *str )
     idx = GetStringTableSize( &info->strtab );
     AddStringStringTable( &info->strtab, str );
     return( (void *)(pointer_int)idx );
+}
+
+static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
+/*****************************************************************************************/
+{
+    unsigned modpos;
+    unsigned adjust;
+
+    modpos = info->currpos % MAX_HEADROOM;
+    info->currpos += len;
+    while( modpos + len >= MAX_HEADROOM ) {
+        adjust = MAX_HEADROOM - modpos;
+        if( !isvmem ) {
+            memcpy( TokBuff + modpos, data, adjust );
+        } else {
+            ReadInfo( (virt_mem) data, TokBuff + modpos, adjust );
+        }
+        QWrite( info->incfhdl, TokBuff, MAX_HEADROOM, IncFileName );
+        data += adjust;
+        len -= adjust;
+        modpos = 0;
+    }
+    if( len > 0 ) {
+        if( !isvmem ) {
+            memcpy( TokBuff + modpos, data, len );
+        } else {
+            ReadInfo( (virt_mem) data, TokBuff + modpos, len );
+        }
+    }
+}
+
+static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
+/*********************************************************************************/
+{
+    DoWritePermFile( info, (void *)data, len, true );
+}
+
+static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
+/*********************************************************************/
+{
+    DoWritePermFile( info, (char *)&data, sizeof( data ), false );
+}
+
+static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
+/*****************************************************************************/
+{
+    DoWritePermFile( info, data, len, false );
 }
 
 static bool WriteLeaderName( void *_leader, void *info )
@@ -356,53 +399,6 @@ static void PrepClasses( perm_write_info *info )
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
         class->name = GetString( info, class->name );
         RingLookup( class->segs, PrepLeaders, info );
-    }
-}
-
-static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
-/*********************************************************************************/
-{
-    DoWritePermFile( info, (void *)data, len, true );
-}
-
-static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
-/*********************************************************************/
-{
-    DoWritePermFile( info, (char *)&data, sizeof( data ), false );
-}
-
-static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
-/*****************************************************************************/
-{
-    DoWritePermFile( info, data, len, false );
-}
-
-static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
-/*****************************************************************************************/
-{
-    unsigned modpos;
-    unsigned adjust;
-
-    modpos = info->currpos % MAX_HEADROOM;
-    info->currpos += len;
-    while( modpos + len >= MAX_HEADROOM ) {
-        adjust = MAX_HEADROOM - modpos;
-        if( !isvmem ) {
-            memcpy( TokBuff + modpos, data, adjust );
-        } else {
-            ReadInfo( (virt_mem) data, TokBuff + modpos, adjust );
-        }
-        QWrite( info->incfhdl, TokBuff, MAX_HEADROOM, IncFileName );
-        data += adjust;
-        len -= adjust;
-        modpos = 0;
-    }
-    if( len > 0 ) {
-        if( !isvmem ) {
-            memcpy( TokBuff + modpos, data, len );
-        } else {
-            ReadInfo( (virt_mem) data, TokBuff + modpos, len );
-        }
     }
 }
 
