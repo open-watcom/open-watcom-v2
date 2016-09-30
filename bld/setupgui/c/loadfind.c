@@ -84,7 +84,7 @@ typedef struct {
 #define FOX_SIGNATURE2  0x8301
 #define WAT_RES_SIG     0x8302
 
-WResFileOffset          FileShift = 0;
+WResFileOffset          WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
 bool FindResources( PHANDLE_INFO hInstance )
@@ -97,7 +97,7 @@ bool FindResources( PHANDLE_INFO hInstance )
     bool            notfound;
 
     notfound = true;
-    FileShift = 0;
+    WResFileShift = 0;
     offset = sizeof( dbgheader );
 
     /* Look for a PKZIP header and skip archive if present */
@@ -119,7 +119,7 @@ bool FindResources( PHANDLE_INFO hInstance )
         WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = false;
-            FileShift = currpos - header.debug_size + sizeof( dbgheader );
+            WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
             break;
         } else if( header.signature == VALID_SIGNATURE ||
                    header.signature == FOX_SIGNATURE1 ||

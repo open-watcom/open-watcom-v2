@@ -65,7 +65,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
  * starts at offset 0 */
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position + FileShift, where ) - FileShift );
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
@@ -83,7 +83,7 @@ bool GUILoadStrInit( const char *fname )
     hInstance.handle = NIL_HANDLE;
     if( !OpenResFile( &hInstance, fname ) ) {
         // if we are using an external resource file then we don't have to search
-        FileShift = 0;
+        WResFileShift = 0;
         if( GUIGetExtName() != NULL || !FindResources( &hInstance ) ) {
             if( !InitResources( &hInstance ) ) {
                 GUIMsgInitFlag = true;

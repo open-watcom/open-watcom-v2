@@ -58,7 +58,7 @@ static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int w
  * starts at offset 0 */
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position + FileShift, where ) - FileShift );
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
     } else {
         return( lseek( handle, position, where ) );
     }

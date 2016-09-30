@@ -98,7 +98,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
  */
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position + FileShift, where ) - FileShift );
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
