@@ -782,25 +782,22 @@ WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
 
 WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
 {
-    long    old_pos;
-
     DbgAssert( pos != SEEK_END );
     DbgAssert( !(pos == SEEK_CUR && off < 0) );
 
-    old_pos = PosLoad();
     if( hdl == Root->outfile->handle ) {
         if( pos == SEEK_CUR ) {
+            unsigned long   old_pos;
+
+            old_pos = PosLoad();
             PadLoad( off );
+            return( old_pos + off );
         } else {
             SeekLoad( off );
+            return( off );
         }
     } else {
-        QLSeek( hdl, off, pos, "resource file" );
-    }
-    if( pos == SEEK_CUR ) {
-        return( old_pos + off );
-    } else {
-        return( off );
+        return( QLSeek( hdl, off, pos, "resource file" ) );
     }
 }
 
