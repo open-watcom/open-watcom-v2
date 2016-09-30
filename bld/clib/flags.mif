@@ -95,7 +95,7 @@ sw_c_windows_386  = -oaxt -D__CALL21__
 sw_c_winnt_386    = -oaxt
 sw_c_winnt_axp    = -oaxt -DWIN32 -D_WIN32
 sw_c_winnt_ppc    = -oaxt -DWIN32 -D_WIN32
-sw_c_linux_386    = -oaxt-D__MT_
+sw_c_linux_386    = -oaxt-D__MT__
 sw_c_linux_ppc    = -oaxt
 sw_c_linux_mps    = -oaxt -eoe
 
