@@ -149,7 +149,7 @@ orl_file_format GetFormat( void )
     return( ORLFileGetFormat( ObjFileHnd ) );
 }
 
-static orl_return nopCallBack( char *str, void *cookie  )
+static orl_return nopCallBack( const char *str, void *cookie  )
 {
     str = str;
     cookie = cookie;

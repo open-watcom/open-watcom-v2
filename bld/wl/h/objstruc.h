@@ -554,7 +554,7 @@ typedef struct lobject_data {
 
 typedef struct {
     size_t              len;
-    char                *name;
+    const char          *name;
 } length_name;
 
 typedef struct order_class {

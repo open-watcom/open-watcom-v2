@@ -45,23 +45,21 @@ typedef struct {
     orl_symbol_handle                   frame; // used in OMF should be NULL otherwise
 } orl_reloc;
 
-typedef
-    orl_return          (*orl_sec_return_func)( orl_sec_handle );
+typedef orl_return (*orl_sec_return_func)( orl_sec_handle );
+typedef orl_return (*orl_reloc_return_func)( orl_reloc * );
+typedef orl_return (*orl_symbol_return_func)( orl_symbol_handle );
+typedef orl_return (*orl_group_return_func)( orl_group_handle );
 
-typedef
-    orl_return          (*orl_reloc_return_func)( orl_reloc * );
-
-typedef
-    orl_return          (*orl_symbol_return_func)( orl_symbol_handle );
-
-typedef
-    orl_return          (*orl_group_return_func)( orl_group_handle );
+typedef orl_return callback_export_fn( const char *, void * );
+typedef orl_return callback_deflib_fn( const char *, void * );
+typedef orl_return callback_entry_fn( const char *, void * );
+typedef orl_return callback_scantab_fn( orl_sec_handle, orl_sec_offset, orl_sec_offset, void * );
 
 typedef struct {
-    orl_return  (*export_fn)( char *, void * );
-    orl_return  (*deflib_fn)( char *, void * );
-    orl_return  (*entry_fn)( char *, void * );
-    orl_return  (*scantab_fn)( orl_sec_handle, orl_sec_offset, orl_sec_offset, void * );
+    callback_export_fn  *export_fn;
+    callback_deflib_fn  *deflib_fn;
+    callback_entry_fn   *entry_fn;
+    callback_scantab_fn *scantab_fn;
 } orl_note_callbacks;
 
 #endif

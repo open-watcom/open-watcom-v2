@@ -53,7 +53,7 @@ extern void             AddFmtLibPaths( void );
 extern bool             HintFormat( exe_format );
 extern void             DecideFormat( void );
 extern void             FreeFormatStuff( void );
-extern void             AddCommentLib( char *, unsigned, lib_priority );
+extern void             AddCommentLib( const char *, unsigned, lib_priority );
 extern void             ExecSystem( char * );
 extern void             PruneSystemList( void );
 extern void             BurnSystemList( void );

@@ -289,8 +289,8 @@ static orl_return NullFunc( orl_sec_handle dummy )
     return( ORL_OKAY );
 }
 
-static orl_return ExportCallback( char *name, void *dummy )
-/*********************************************************/
+static orl_return ExportCallback( const char *name, void *dummy )
+/***************************************************************/
 {
     length_name lname;
 
@@ -301,7 +301,7 @@ static orl_return ExportCallback( char *name, void *dummy )
     return( ORL_OKAY );
 }
 
-static orl_return EntryCallback( char *name, void *dummy )
+static orl_return EntryCallback( const char *name, void *dummy )
 /**************************************************************/
 {
     dummy = dummy;
@@ -311,8 +311,8 @@ static orl_return EntryCallback( char *name, void *dummy )
     return( ORL_OKAY );
 }
 
-static orl_return DeflibCallback( char *name, void *dummy )
-/*********************************************************/
+static orl_return DeflibCallback( const char *name, void *dummy )
+/***************************************************************/
 {
     dummy = dummy;
     AddCommentLib( name, strlen( name ), LIB_PRIORITY_MAX - 2 );

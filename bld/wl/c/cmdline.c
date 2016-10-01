@@ -827,15 +827,16 @@ void FreeFormatStuff( void )
     }
 }
 
-void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
-/*********************************************************************/
+void AddCommentLib( const char *comment, unsigned len, lib_priority priority )
+/****************************************************************************/
 //  Add a library from a comment record.
 {
     file_list   *result;
+    char        *ptr;
 
     if( CmdFlags & CF_NO_DEF_LIBS )
         return;
-    ptr = FileName( ptr, len, E_LIBRARY, false );
+    ptr = FileName( comment, len, E_LIBRARY, false );
     result = AddObjLib( ptr, priority );
     CheckLibTrace( result );
     DEBUG(( DBG_BASE, "library: %s", ptr ));

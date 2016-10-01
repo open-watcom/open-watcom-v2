@@ -608,8 +608,8 @@ static orl_return ParseExport( const char **contents, size_t *len, orl_note_call
 
 
 static orl_return ParseDefLibEntry( const char **contents, size_t *len,
-    orl_return  (*deflibentry_fn)( char *, void * ), void *cookie )
-/*****************************************************************/
+                    callback_deflib_fn *deflibentry_fn, void *cookie )
+/*********************************************************************/
 {
     char            *arg;
     size_t          l;
