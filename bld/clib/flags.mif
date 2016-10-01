@@ -199,7 +199,7 @@ sw_a_osi        = -bt=dos -D__CALL21__ -D__OSI__
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows -DSTRICT
 sw_a_winnt      = -bt=nt -D__MT__ $(win32ver)
-sw_a_linux      = -bt=linux
+sw_a_linux      = -bt=linux -D__MT__
 sw_a_rdos       = -bt=rdos -D__MT__
 sw_a_rdosdev    = -bt=rdosdev -D__MT__
 
