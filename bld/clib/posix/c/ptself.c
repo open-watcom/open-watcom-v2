@@ -32,6 +32,7 @@
 
 #include "variety.h"
 #include <pthread.h>
+#include <process.h>
 #include "_ptint.h"
 
 _WCRTLINK pthread_t pthread_self( )
