@@ -39,27 +39,23 @@ typedef int         f_handle;
 #define STDERR_HANDLE   STDERR_FILENO
 
 #define MAX_LINE (256)
-#define FNMAX  80             // maximum file name length.
+#define FNMAX  80                   /* maximum file name length. */
 
-/*  File Extension formats */
-// see DefExt array in utils.c
-enum {
-    E_OBJECT = 0,
-    E_LOAD,
-    E_MAP,
-    E_LIBRARY,
-    E_DEF,
-    E_COMMAND
-};
+/* Slot related data definition */
+/*           slot enum      prompt text    default file extension */
+#define SLOT_DEFS \
+    SLOTDEF( OBJECT_SLOT,  "Object Modules ",   ".obj" ) \
+    SLOTDEF( RUN_SLOT,     "Run File ",         ".exe" ) \
+    SLOTDEF( MAP_SLOT,     "List File ",        ".map" ) \
+    SLOTDEF( LIBRARY_SLOT, "Libraries ",        ".lib" ) \
+    SLOTDEF( DEF_SLOT,     "Definitions File ", ".def" ) \
+    SLOTDEF( OPTION_SLOT,  "",                  ".lnk" ) \
+    SLOTDEF( OVERLAY_SLOT, "",                  ".obj" )     /* for overlay object files. */
 
 typedef enum {
-    OBJECT_SLOT = 0,
-    RUN_SLOT,
-    MAP_SLOT,
-    LIBRARY_SLOT,
-    DEF_SLOT,
-    OPTION_SLOT,
-    OVERLAY_SLOT
+    #define SLOTDEF( e, pt, et )  e,
+    SLOT_DEFS
+    #undef SLOTDEF
 } prompt_slot;
 
 typedef enum {
@@ -96,7 +92,6 @@ extern extra_type   FmtInfo;
 extern bool         DebugInfo;
 
 extern cmdentry     *Commands[];
-extern const char   *PromptText[];
 extern bool         HaveDefFile;
 
 extern format_type  FmtType;
@@ -143,9 +138,9 @@ extern void     ParseMicrosoft( void );
 // utils.c
 extern void     UtilsInit( void );
 extern void     ImplyFormat( format_type typ );
-extern char     *FileName( const char *buff, int etype, bool force );
-extern void     AddCommand( char *msg, int prompt, bool verbatim );
-extern void     Warning( const char *msg, int prompt );
+extern char     *FileName( const char *buff, prompt_slot slot, bool force );
+extern void     AddCommand( char *msg, prompt_slot slot, bool verbatim );
+extern void     Warning( const char *msg, prompt_slot slot );
 extern void     AddOption( const char *msg );
 extern void     AddNumOption( const char *msg, unsigned value );
 extern void     AddStringOption( const char *msg, const char *string, size_t len );
@@ -154,8 +149,8 @@ extern void     NotNecessary( const char *msg );
 extern void     NotRecognized( const char *msg );
 extern char     *Msg2Splice( const char *msg1, const char *msg2 );
 extern char     *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 );
-extern char     *FindNotAsIs( int slot );
+extern char     *FindNotAsIs( prompt_slot slot );
 extern char     *FindObjectName( void );
-extern void     OutPutPrompt( int prompt );
+extern void     OutPutPrompt( prompt_slot slot );
 extern int      Spawn( void (*fn)( void ) );
 extern void     Suicide( void );

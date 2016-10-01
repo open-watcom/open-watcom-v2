@@ -385,7 +385,7 @@ static void CheckNum( const char *arg )
     unsigned long       value;
 
     /* Check but ignore numeric argument. */
-    if( arg != NULL && !GetNumberStr( &value, arg , strlen( arg ) ) ) {
+    if( arg != NULL && !GetNumberStr( &value, arg, strlen( arg ) ) ) {
         Warning( "invalid numeric value", OPTION_SLOT );
     }
 }
@@ -1187,7 +1187,7 @@ static void ProcAlignment( const char *arg )
     unsigned long     value;
 
     value = 0;
-    success = ( arg != NULL && GetNumberStr( &value, arg , strlen( arg ) ) );
+    success = ( arg != NULL && GetNumberStr( &value, arg, strlen( arg ) ) );
     if( !success ) {
         Warning( "invalid alignment specification", OPTION_SLOT );
     } else {
@@ -1425,7 +1425,7 @@ static void ProcPackCode( const char *arg )
     unsigned long   value;
 
     value = 65535;
-    if( arg != NULL && !GetNumberStr( &value, arg , strlen( arg ) ) )
+    if( arg != NULL && !GetNumberStr( &value, arg, strlen( arg ) ) )
         Warning( "invalid numeric value", OPTION_SLOT );
     AddNumOption( "packcode", value );
 }
@@ -1502,7 +1502,7 @@ static void ProcStack( const char *arg )
     unsigned long       value;
 
     value = 0;
-    success = ( arg != NULL && GetNumberStr( &value, arg , strlen( arg ) ) );
+    success = ( arg != NULL && GetNumberStr( &value, arg, strlen( arg ) ) );
     if( !success ) {
         Warning( "stack argument not recognized", OPTION_SLOT );
     } else {

@@ -38,22 +38,16 @@
 #include "clibext.h"
 
 
-const char *PromptText[] = {
-    "Object Modules ",
-    "Run File ",
-    "List File ",
-    "Libraries ",
-    "Definitions File "
+static const char *PromptText[] = {
+    #define SLOTDEF( e, pt, et )  pt,
+    SLOT_DEFS
+    #undef SLOTDEF
 };
 
 static const char *DefExt[] = {
-    ".obj",
-    ".exe",
-    ".map",
-    ".lib",
-    ".def",
-    ".lnk",
-    ".obj"              // for overlay object files.
+    #define SLOTDEF( e, pt, et )  et,
+    SLOT_DEFS
+    #undef SLOTDEF
 };
 
 static bool     WritePrompt;
@@ -73,8 +67,8 @@ void ImplyFormat( format_type typ )
     if( FmtType == FMT_DEFAULT ) FmtType = typ;
 }
 
-char *FileName( const char *buff, int etype, bool force )
-/*******************************************************/
+char *FileName( const char *buff, prompt_slot slot, bool force )
+/**************************************************************/
 {
     const char      *namptr;
     char            *ptr;
@@ -102,9 +96,9 @@ char *FileName( const char *buff, int etype, bool force )
         if( cnt != 0 ) {
             len = cnt;
         }
-        ptr = MemAlloc( len + strlen( DefExt[etype] ) + 1 );
+        ptr = MemAlloc( len + strlen( DefExt[slot] ) + 1 );
         memcpy( ptr, buff, len );
-        strcpy( ptr + len, DefExt[etype] );
+        strcpy( ptr + len, DefExt[slot] );
     } else {
         ptr = MemAlloc( len + 1 );
         memcpy( ptr, buff, len );
@@ -113,8 +107,8 @@ char *FileName( const char *buff, int etype, bool force )
     return( ptr );
 }
 
-void AddCommand( char *msg, int prompt, bool verbatim )
-/************************************************************/
+void AddCommand( char *msg, prompt_slot slot, bool verbatim )
+/*************************************************************/
 {
     cmdentry    *cmd;
     cmdentry    *list;
@@ -123,9 +117,9 @@ void AddCommand( char *msg, int prompt, bool verbatim )
     cmd->command = msg;
     cmd->asis = verbatim;
     cmd->next = NULL;
-    list = Commands[prompt];
+    list = Commands[slot];
     if( list == NULL ) {
-        Commands[prompt] = cmd;
+        Commands[slot] = cmd;
     } else {                         // always add at the end of the list.
         while( list->next != NULL ) {
             list = list->next;
@@ -134,15 +128,15 @@ void AddCommand( char *msg, int prompt, bool verbatim )
     }
 }
 
-void Warning( const char *msg, int prompt )
-/******************************************/
+void Warning( const char *msg, prompt_slot slot )
+/*************************************************/
 // print a warning to the linker command file in the form of a linker comment.
 {
-    AddCommand( Msg2Splice( "# ", msg ), prompt, true );
+    AddCommand( Msg2Splice( "# ", msg ), slot, true );
 }
 
 void AddOption( const char *msg )
-/********************************/
+/*******************************/
 {
     AddCommand( Msg2Splice( "option ", msg ), OPTION_SLOT, true );
 }
@@ -243,7 +237,7 @@ char *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 )
     return( all );
 }
 
-char *FindNotAsIs( int slot )
+char *FindNotAsIs( prompt_slot slot )
 /***********************************/
 // search through the given slot for a command which isn't marked "asis"
 // since comments are "asis", this can be used to determine if a filename is
@@ -274,12 +268,12 @@ char *FindObjectName( void )
     return( msg );
 }
 
-static void PromptStart( const char *msg, int prompt )
-/****************************************************/
+static void PromptStart( const char *msg, prompt_slot slot )
+/**********************************************************/
 {
     const char  *text;
 
-    text = PromptText[prompt];
+    text = PromptText[slot];
     QWrite( STDERR_HANDLE, text, strlen( text ), "console" );
     QWrite( STDERR_HANDLE, "[", 1, "console" );
     if( msg != NULL ) {
@@ -287,18 +281,18 @@ static void PromptStart( const char *msg, int prompt )
     }
 }
 
-void OutPutPrompt( int prompt )
-/*****************************/
+void OutPutPrompt( prompt_slot slot )
+/***********************************/
 {
     char    *msg;
 
     if( !WritePrompt )
         return;
     msg = NULL;
-    switch( prompt ) {
+    switch( slot ) {
     case RUN_SLOT:
-        msg = FileName( FindObjectName(), E_LOAD, true );
-        PromptStart( msg, prompt );
+        msg = FileName( FindObjectName(), slot, true );
+        PromptStart( msg, slot );
         MemFree( msg );
         break;
     case MAP_SLOT:
@@ -307,8 +301,8 @@ void OutPutPrompt( int prompt )
             if( msg == NULL ) {
                 msg = FindObjectName();
             }
-            msg = FileName( msg, E_MAP, true );
-            PromptStart( msg, prompt );
+            msg = FileName( msg, slot, true );
+            PromptStart( msg, slot );
             MemFree( msg );
             break;
         }
@@ -317,8 +311,8 @@ void OutPutPrompt( int prompt )
         msg = "nul";
         // note: fall down
     default:
-        PromptStart( msg, prompt );
-        QWrite( STDERR_HANDLE, DefExt[prompt], 4, "console" );
+        PromptStart( msg, slot );
+        QWrite( STDERR_HANDLE, DefExt[slot], 4, "console" );
         break;
     }
     QWrite( STDERR_HANDLE, "]: ", 3, "console" );

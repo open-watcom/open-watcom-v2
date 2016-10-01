@@ -88,8 +88,8 @@ void FreeParserMem( void )
     }
 }
 
-static void GetNewLine( int prompt )
-/**********************************/
+static void GetNewLine( prompt_slot slot )
+/******************************************/
 {
     if( CmdFile->how == NONBUFFERED ) {
         if( QReadStr( CmdFile->file, CmdFile->buffer, MAX_LINE, CmdFile->name ) ) {
@@ -110,7 +110,7 @@ static void GetNewLine( int prompt )
     } else {
         CmdFile->how = INTERACTIVE;
         CmdFile->oldhow = INTERACTIVE;
-        OutPutPrompt( prompt );
+        OutPutPrompt( slot );
         if( QReadStr( STDIN_HANDLE, CmdFile->buffer, MAX_LINE, "console" ) ) {
             CmdFile->where = ENDOFCMD;
         } else {
@@ -218,7 +218,7 @@ static void ProcessDefFile( void )
     }
     HaveDefFile = 1;
     cmd = Commands[DEF_SLOT];
-    StartNewFile( FileName( cmd->command, E_DEF, false ));
+    StartNewFile( FileName( cmd->command, DEF_SLOT, false ) );
     ParseDefFile();
 }
 
@@ -376,8 +376,8 @@ static char     mask_spc_chr;
 
 #define LINE_BUF_SIZE   256
 
-static int ReadNextChar( prompt_slot prompt )
-/*******************************************/
+static int ReadNextChar( prompt_slot slot )
+/*****************************************/
 {
     int     c;
 
@@ -388,11 +388,11 @@ static int ReadNextChar( prompt_slot prompt )
             if( c == '\0' /*EOF*/ || c == '\x1a' )
                 break;  /* Quit if end of stream. */
             if( is_new_line ) {
-                if( prompt != OPTION_SLOT && !no_prompt )
-                    ; //OutPutPrompt( prompt );
+                if( slot != OPTION_SLOT && !no_prompt )
+                    ; //OutPutPrompt( slot );
                 is_new_line = false;
             }
-            if( prompt != OPTION_SLOT && !no_prompt ) {
+            if( slot != OPTION_SLOT && !no_prompt ) {
                 if( c == '\r' )
                     continue;
                 //@TODO: output 'c' here?
@@ -426,8 +426,8 @@ static int ReadNextChar( prompt_slot prompt )
     }
     for( ;; ) {
         if( is_new_line ) {
-            if( prompt != OPTION_SLOT && ((!is_redir && !no_prompt) || (!is_term && no_prompt)) )
-                GetNewLine( prompt );
+            if( slot != OPTION_SLOT && ((!is_redir && !no_prompt) || (!is_term && no_prompt)) )
+                GetNewLine( slot );
             is_new_line = false;
         }
         c = *CmdFile->current++;
@@ -456,12 +456,12 @@ static char *StrDup( const char *src )
     return( str );
 }
 
-static int GetNextInputChar( prompt_slot prompt )
-/***********************************************/
+static int GetNextInputChar( prompt_slot slot )
+/*********************************************/
 {
     int     c;
 
-    c = ReadNextChar( prompt );
+    c = ReadNextChar( slot );
     /* Redirect input to a response file; cannot be nested. */
     if( c == '@' && !is_quoting ) {
         if( CmdFile->how == COMMANDLINE || CmdFile->how == INTERACTIVE ) {
@@ -469,7 +469,7 @@ static int GetNextInputChar( prompt_slot prompt )
             int     oi;
 
             for( oi = 0; oi < sizeof( fname ) - 1; ) {
-                c = ReadNextChar( prompt );
+                c = ReadNextChar( slot );
                 if( c == '"' )
                     is_quoting ^= true;
                 /* Quit loop if not a valid filename character. */
@@ -486,14 +486,14 @@ static int GetNextInputChar( prompt_slot prompt )
 
             /* Open the response file and read next character. */
             StartNewFile( StrDup( fname ) );
-            c = ReadNextChar( prompt );
+            c = ReadNextChar( slot );
         }
     }
     return( c );
 }
 
-static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
-/*********************************************************************/
+static size_t GetLine( char *line, size_t buf_len, prompt_slot slot )
+/*******************************************************************/
 {
     bool        first = true;
     unsigned    oi;
@@ -512,7 +512,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
         is_quoting = false;
         /* Read a line from input stream. */
         for( oi = 0; oi < buf_len - 1; ) {
-            c = GetNextInputChar( prompt );
+            c = GetNextInputChar( slot );
             if( c == '"' )
                 is_quoting ^= true;
             if( c == '\n' || (!is_quoting && (c == ',' || c == ';')) ) {
@@ -535,7 +535,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
             }
         }
         /* Check for line buffer overflow. */
-        if( ( oi == buf_len - 1 ) && (c = GetNextInputChar( prompt )) != '\n' && c != ',' && c != ';' ) {
+        if( ( oi == buf_len - 1 ) && (c = GetNextInputChar( slot )) != '\n' && c != ',' && c != ';' ) {
             ErrorExit( "maximum line length exceeded" );
         }
         if( oi ) {  /* Index of the terminating null. */
@@ -709,14 +709,14 @@ static void DoOneLib( char *lib )
     }
 }
 
-static void GetNextInput( char *buf, size_t len, prompt_slot prompt )
-/*******************************************************************/
+static void GetNextInput( char *buf, size_t len, prompt_slot slot )
+/*****************************************************************/
 {
     if( !is_term ) {
-        GetLine( buf, len, prompt );
+        GetLine( buf, len, slot );
         DoOptions( buf );
         if( *buf != '\0' ) {
-            AddCommand( FileName( buf, prompt, false ), prompt, false );
+            AddCommand( FileName( buf, slot, false ), slot, false );
         }
     }
 }
