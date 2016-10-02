@@ -33,7 +33,9 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <pthread.h>
-#include <errno.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_once(pthread_once_t *__once_control, void (*__init_routine)(void))
 {

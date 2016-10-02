@@ -33,10 +33,11 @@
 #include "variety.h"
 #include <pthread.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sched.h>
+#include "rterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int pthread_attr_init(pthread_attr_t *__attr)

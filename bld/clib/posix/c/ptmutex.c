@@ -38,10 +38,12 @@
 #include "variety.h"
 #include <semaphore.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <process.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_mutex_init(pthread_mutex_t *__mutex, const pthread_mutexattr_t *__attr)
 {
@@ -49,11 +51,11 @@ _WCRTLINK int pthread_mutex_init(pthread_mutex_t *__mutex, const pthread_mutexat
         return( EINVAL );
 
     if(sem_init(&__mutex->access, 0, 1) != 0) {
-        return( errno );
+        return( _RWD_errno );
     }
     
     if(sem_init(&__mutex->mutex, 0, 1) != 0) {
-        return( errno );
+        return( _RWD_errno );
     }
     
     __mutex->status = MUTEX_STATUS_READY;
@@ -79,12 +81,12 @@ int res;
         return( res );
 
     if(sem_destroy(&__mutex->access) != 0)
-        return( errno );
+        return( _RWD_errno );
     
     /* Need to release the mutex semaphore now */
     sem_post(&__mutex->mutex);
     if(sem_destroy(&__mutex->mutex) != 0)
-        return( errno );
+        return( _RWD_errno );
         
     __mutex->status = MUTEX_STATUS_DESTROYED;
     return( 0 );

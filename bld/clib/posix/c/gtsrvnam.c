@@ -37,8 +37,9 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "rterrno.h"
+#include "thread.h"
+
 
 #define SAFE_SAME_STR(x, y)  (x != NULL && y != NULL && strcmp(x,y) == 0)
 

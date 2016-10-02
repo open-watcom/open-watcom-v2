@@ -34,8 +34,10 @@
 #include <sys/types.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <time.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_condattr_init(pthread_condattr_t *__attr)
 {

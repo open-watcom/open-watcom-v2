@@ -33,9 +33,11 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <pthread.h>
-#include <errno.h>
 #include <stdlib.h>
 #include "atomic.h"
+#include "rterrno.h"
+#include "thread.h"
+
 
 #define SL_LOCKED     0
 #define SL_UNLOCKED   1

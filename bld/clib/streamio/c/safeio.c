@@ -38,11 +38,11 @@
 #include <string.h>
 #include <malloc.h>
 #include <unistd.h>
-#include <errno.h>
-
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif
+#include "rterrno.h"
+#include "thread.h"
 
 #ifdef __UNIX__
     #define CONSOLE_OUT "/dev/tty"

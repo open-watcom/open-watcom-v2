@@ -31,12 +31,15 @@
 *
 ****************************************************************************/
 
+#include "variety.h"
 #include <semaphore.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <pthread.h>
 #include <time.h>
 #include <stdlib.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_cond_init(pthread_cond_t *__cond, const pthread_condattr_t *__attr)
 {

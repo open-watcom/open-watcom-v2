@@ -34,11 +34,12 @@
 #include <pthread.h>
 #include <process.h>
 #include <malloc.h>
-#include "rterrno.h"
-#include "_ptint.h"
 #include <sched.h>
-
 #include <string.h>
+#include "_ptint.h"
+#include "rterrno.h"
+#include "thread.h"
+
 
 /* By default, allow OpenWatcom's thread library
  * to handle this...

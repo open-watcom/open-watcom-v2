@@ -30,15 +30,18 @@
 *
 ****************************************************************************/
 
-#include "rterrno.h"
+#include "variety.h"
 #include <pthread.h>
 #include <process.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include "rterrno.h"
+#include "thread.h"
 
 #include "_ptint.h"
+
 
 /* Per-thread key lists */
 struct __ptkeys {

@@ -37,6 +37,7 @@
 
 #include "_ptint.h"
 
+
 _WCRTLINK void pthread_exit(void *value_ptr)
 {
 int waiters_local;

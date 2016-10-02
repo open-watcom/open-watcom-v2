@@ -34,7 +34,9 @@
 #include <sys/types.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <errno.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_mutexattr_init(pthread_mutexattr_t *__attr)
 {
