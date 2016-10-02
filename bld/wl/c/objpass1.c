@@ -1229,8 +1229,9 @@ bool SeenDLLRecord( void )
     }
 }
 
-void HandleImport( length_name *intname, length_name *modname, length_name *extname, ordinal_t ordinal )
-/******************************************************************************************************/
+void HandleImport( const length_name *intname, const length_name *modname,
+                            const length_name *extname, ordinal_t ordinal )
+/*************************************************************************/
 // handle the import coment record
 {
     symbol      *sym;
@@ -1255,8 +1256,8 @@ void HandleImport( length_name *intname, length_name *modname, length_name *extn
     }
 }
 
-static void ExportSymbol( length_name *expname )
-/**********************************************/
+static void ExportSymbol( const length_name *expname )
+/****************************************************/
 {
     symbol      *sym;
 
@@ -1265,8 +1266,9 @@ static void ExportSymbol( length_name *expname )
     AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
 }
 
-void HandleExport( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
-/************************************************************************************************/
+void HandleExport( const length_name *expname, const length_name *intname,
+                                        unsigned flags, ordinal_t ordinal )
+/*************************************************************************/
 {
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );

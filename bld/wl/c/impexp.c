@@ -224,8 +224,8 @@ entry_export *AllocExport( const char *name, unsigned len )
 #define EXPDEF_RESIDENT 0x40
 #define EXPDEF_IOPLMASK 0x1F
 
-void MSExportKeyword( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
-/***************************************************************************************************/
+void MSExportKeyword( const length_name *expname, const length_name *intname, unsigned flags, ordinal_t ordinal )
+/***************************************************************************************************************/
 // Process the Microsoft Export keyword.
 {
     entry_export *  exp;
@@ -289,8 +289,8 @@ static symbol * GetIATSym( symbol *sym )
     return( SymOp( ST_CREATE, iatname, prefixlen ) );
 }
 
-void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, ordinal_t ordinal )
-/************************************************************************************************/
+void MSImportKeyword( symbol *sym, const length_name *modname, const length_name *extname, ordinal_t ordinal )
+/************************************************************************************************************/
 /* process the MS import keyword definition */
 {
     dll_sym_info *      dll;
