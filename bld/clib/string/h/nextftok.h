@@ -31,7 +31,7 @@
 
 
 #define _INITNEXTFTOK
-#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) )
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __LINUX__ ) )
     #define _NEXTFTOK       (__THREADDATAPTR->__nextftokP)
 #else
     static char _WCFAR      *nextftok = NULL;
