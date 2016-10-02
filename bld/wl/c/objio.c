@@ -128,8 +128,8 @@ bool CleanCachedHandles( void )
     return( true );
 }
 
-char *MakePath( char *fullname, char **path_list )
-/************************************************/
+char *MakePath( char *fullname, const char **path_list )
+/******************************************************/
 {
     char        *p;
     char        c;
@@ -154,14 +154,14 @@ char *MakePath( char *fullname, char **path_list )
 char *MakeFileName( infilelist *file, char *fullname )
 /****************************************************/
 {
-    char    *path = file->prefix;
+    const char  *path = file->prefix;
 
     strcpy( MakePath( fullname, &path ), file->name );
-    return( path );
+    return( (char *)path );
 }
 
-bool MakeFileNameFromList( char **path_list, char *name, char *fullname )
-/***********************************************************************/
+bool MakeFileNameFromList( const char **path_list, char *name, char *fullname )
+/*****************************************************************************/
 {
     if( *path_list != NULL && **path_list != '\0' ) {
         strcpy( MakePath( fullname, path_list ), name );
@@ -172,8 +172,8 @@ bool MakeFileNameFromList( char **path_list, char *name, char *fullname )
 
 #define LIB_SEARCH (INSTAT_USE_LIBPATH | INSTAT_LIBRARY)
 
-static f_handle PathObjOpen( char *path_ptr, char *name, char *new_name, infilelist *file )
-/*****************************************************************************************/
+static f_handle PathObjOpen( const char *path_ptr, char *name, char *new_name, infilelist *file )
+/***********************************************************************************************/
 {
     f_handle    fp;
 
@@ -195,11 +195,11 @@ static f_handle PathObjOpen( char *path_ptr, char *name, char *new_name, infilel
 bool DoObjOpen( infilelist *file )
 /********************************/
 {
-    char *      name;
-    f_handle    fp;
-    unsigned    err;
-    char        new_name[ PATH_MAX ];
-    path_entry *searchpath;
+    char                *name;
+    f_handle            fp;
+    unsigned            err;
+    char                new_name[ PATH_MAX ];
+    const path_entry    *searchpath;
 
     name = file->name;
     if( file->handle != NIL_FHANDLE )

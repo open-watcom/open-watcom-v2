@@ -547,7 +547,7 @@ void FiniEnvVars( void )
 f_handle FindPath( const char *name )
 /***********************************/
 {
-    char        *path_list;
+    const char  *path_list;
     f_handle    file;
     char        fullpath[PATH_MAX];
 

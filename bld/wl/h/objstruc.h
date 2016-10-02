@@ -113,8 +113,8 @@ enum infile_flags {
 
 typedef struct infilelist {
     INFILELIST          *next;
-    PATH_ENTRY          *path_list;
-    char                *prefix;
+    const PATH_ENTRY    *path_list;
+    const char          *prefix;
     void                *cache;  // used when object file cached in mem
     unsigned long       len;     // length of the file.
     unsigned long       currpos; // current position of the file.
