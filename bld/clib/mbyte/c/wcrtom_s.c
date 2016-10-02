@@ -31,10 +31,11 @@
 
 #include "variety.h"
 #include "saferlib.h"
-#include <errno.h>
 #include <mbstring.h>
 #include <wchar.h>
 #include "farfunc.h"
+#include "rterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK errno_t _NEARFAR(wcrtomb_s,_fwcrtomb_s)( size_t _FFAR * __restrict retval,

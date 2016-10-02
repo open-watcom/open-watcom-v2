@@ -34,6 +34,7 @@
 #include <string.h>
 #include <pwd.h>
 #include "rterrno.h"
+#include "thread.h"
 
 _WCRTLINK struct passwd *getpwnam(const char *name)
 {

@@ -37,6 +37,8 @@
 #include <string.h>
 #include <process.h>
 #include "rterrno.h"
+#include "thread.h"
+
 
 /*
  * if program name empty then quit

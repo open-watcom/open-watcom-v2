@@ -32,7 +32,6 @@
 #define __STDC_WANT_LIB_EXT1__ 1       // Enable Safer C interfaces
 
 #include <wchar.h>
-#include <errno.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +39,8 @@
 #include <string.h>
 #include <time.h>
 #include <env.h>
-
+#include "rterrno.h"
+#include "thread.h"
 
 
 errno_t _wasctime_s( wchar_t *s, rsize_t maxsize, const struct tm *timeptr );

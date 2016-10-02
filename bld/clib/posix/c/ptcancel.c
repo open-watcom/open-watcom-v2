@@ -35,12 +35,14 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <signal.h>
-#include "_ptint.h"
-
 #ifdef __UNIX__
 #include <signal.h>
-#include <errno.h>
 #endif
+#include "rterrno.h"
+#include "thread.h"
+
+#include "_ptint.h"
+
 
 /* Internal flag for indicating defered cancellation */
 #define PTHREAD_CANCEL_SET  128
@@ -88,7 +90,7 @@ int ret;
         internal = __get_thread_id(__thread);
         ret = kill(internal, SIGCANCEL);
         if(ret != 0)
-            ret = errno;
+            ret = _RWD_errno;
     
 #else
         ret = ENOSYS;

@@ -32,10 +32,12 @@
 
 #include "variety.h"
 #include <sys/types.h>
-#include <errno.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int pthread_barrier_init( pthread_barrier_t *__barrier,
                                     const pthread_barrierattr_t *__attr, 

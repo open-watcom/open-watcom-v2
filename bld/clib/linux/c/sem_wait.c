@@ -33,9 +33,10 @@
 #include "variety.h"
 #include <semaphore.h>
 #include <time.h>
-#include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
+#include "rterrno.h"
+#include "thread.h"
 
 
 static int __decrement_if_positive( volatile int *dest )
