@@ -53,48 +53,52 @@ void InitSpillFile( void )
     SetBreak();
 }
 
-#define TEMPFNAME "WLK02112.xx`"        // "'" will be an "a" when processed.
-#define TEMPFNAME_SIZE 13
+#define TEMPFNAME       "WLK02112.xx`"          // "'" will be an "a" when processed.
+#define TEMPFNAME_SIZE  13
 
-static char * MakeTempName( char *name )
-/**************************************/
+static char *MakeTempName( char *name )
+/*************************************/
 {
-    memcpy( name, TEMPFNAME, sizeof(TEMPFNAME) );   // includes nullchar
-    return( name + sizeof(TEMPFNAME) - 2 );         // pointer to "a"
+    memcpy( name, TEMPFNAME, sizeof( TEMPFNAME ) );         // includes nullchar
+    return( name + sizeof( TEMPFNAME ) - 2 );   // pointer to "a"
 }
 
 f_handle OpenTempFile( char **fname )
-/******************************************/
+/***********************************/
 {
-    char *      ptr;
+    const char  *ptr;
     unsigned    tlen;
-    char *      tptr;
+    char        *tptr;
     f_handle    fhdl;
 
     ptr = GetEnvString( "WLINKTMP" );
-    if( ptr == NULL ) ptr = GetEnvString( "TMP" );
-    if( ptr == NULL ) ptr = GetEnvString( "TMPDIR" );
+    if( ptr == NULL )
+        ptr = GetEnvString( "TMP" );
+    if( ptr == NULL )
+        ptr = GetEnvString( "TMPDIR" );
     if( ptr == NULL ) {
-        _ChkAlloc( *fname, TEMPFNAME_SIZE );
-        tptr = *fname;
+        _ChkAlloc( tptr, TEMPFNAME_SIZE );
+        *fname = tptr;
     } else {
         tlen = strlen( ptr );
-        _ChkAlloc( *fname, tlen + 1 + TEMPFNAME_SIZE );
-        tptr = memcpy( *fname, ptr, tlen );
+        _ChkAlloc( tptr, tlen + 1 + TEMPFNAME_SIZE );
+        memcpy( tptr, ptr, tlen );
+        *fname = tptr;
         tptr += tlen;
         if( !IS_PATH_SEP( tptr[-1] ) ) {
             *tptr++ = DIR_SEP;
         }
     }
-    ptr = MakeTempName( tptr );
+    tptr = MakeTempName( tptr );
     tlen = 0;
     for( ;; ) {
         if( tlen >= 26 ) {
             LnkMsg( FTL+MSG_CANT_OPEN_SPILL, NULL );
         }
-        *ptr += 1;                          // change temp file extension
+        *tptr += 1;                     // change temp file extension
         fhdl = TempFileOpen( *fname );
-        if( fhdl == NIL_FHANDLE ) break;
+        if( fhdl == NIL_FHANDLE )
+            break;
         QClose( fhdl, *fname );
         ++tlen;
     }
@@ -117,29 +121,29 @@ virt_mem_size SpillAlloc( virt_mem_size amt )
     return( stg + 1 );  /* add 1 to prevent a NULL handle */
 }
 
-void SpillNull( virt_mem_size base, unsigned off, unsigned size )
-/***************************************************************/
+void SpillNull( virt_mem_size base, unsigned off, size_t size )
+/*************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     WriteNulls( TempFile, size, TFileName );
 }
 
-void SpillWrite( virt_mem_size base, unsigned off, void *mem, unsigned size )
-/***************************************************************************/
+void SpillWrite( virt_mem_size base, unsigned off, void *mem, size_t size )
+/*************************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     QWrite( TempFile, mem, size, TFileName );
 }
 
-void SpillRead( virt_mem_size base, unsigned off, void *mem, unsigned size )
-/**************************************************************************/
+void SpillRead( virt_mem_size base, unsigned off, void *mem, size_t size )
+/************************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     QRead( TempFile, mem, size, TFileName );
 }
 
 void CloseSpillFile( void )
-/********************************/
+/*************************/
 /*  Close temporary file.  */
 {
     if( TempFile != NIL_FHANDLE ) {
