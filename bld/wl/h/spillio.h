@@ -38,7 +38,7 @@ typedef union {
 extern void             InitSpillFile( void );
 extern virt_mem_size    SpillAlloc( virt_mem_size );
 extern void             SpillNull( virt_mem_size, unsigned, size_t  );
-extern void             SpillWrite( virt_mem_size, unsigned, void *, size_t );
+extern void             SpillWrite( virt_mem_size, unsigned, const void *, size_t );
 extern void             SpillRead( virt_mem_size, unsigned, void *, size_t );
 extern void             CloseSpillFile( void );
 extern f_handle         OpenTempFile( char **name );

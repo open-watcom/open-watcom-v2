@@ -128,8 +128,8 @@ void SpillNull( virt_mem_size base, unsigned off, size_t size )
     WriteNulls( TempFile, size, TFileName );
 }
 
-void SpillWrite( virt_mem_size base, unsigned off, void *mem, size_t size )
-/*************************************************************************/
+void SpillWrite( virt_mem_size base, unsigned off, const void *mem, size_t size )
+/*******************************************************************************/
 {
     QSeek( TempFile, base + off - 1, TFileName );
     QWrite( TempFile, mem, size, TFileName );

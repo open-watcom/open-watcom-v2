@@ -901,8 +901,8 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
     BufImpWrite( buff, currpos - buff + 1 );
 }
 
-void WriteLoad3( void* dummy, char *buff, unsigned size )
-/**************************************************************/
+void WriteLoad3( void* dummy, const char *buff, size_t size )
+/***********************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
     dummy = dummy;
@@ -910,7 +910,7 @@ void WriteLoad3( void* dummy, char *buff, unsigned size )
 }
 
 unsigned_32 CopyToLoad( f_handle handle, char *name )
-/***********************************************************/
+/***************************************************/
 {
     unsigned_32     amt_read;
     unsigned_32     wrote;
@@ -1093,7 +1093,7 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
 
 #define BUFF_BLOCK_SIZE (16*1024)
 
-static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
+static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile,
                          void *(*rtn)(void *, const void *, size_t) )
 /***************************************************************************/
 {
@@ -1104,14 +1104,14 @@ static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
     outfile->bufpos += len;
     while( modpos + len >= BUFF_BLOCK_SIZE ) {
         adjust = BUFF_BLOCK_SIZE - modpos;
-        rtn( outfile->buffer + modpos, info, adjust );
+        rtn( outfile->buffer + modpos, data, adjust );
         QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
-        info += adjust;
+        data += adjust;
         len -= adjust;
         modpos = 0;
     }
     if( len > 0 ) {
-        rtn( outfile->buffer + modpos, info, len );
+        rtn( outfile->buffer + modpos, data, len );
     }
 }
 
@@ -1136,22 +1136,6 @@ static void SeekBuffer( unsigned long len, outfilelist *outfile,
     }
 }
 
-void PadLoad( unsigned long size )
-/***************************************/
-/* pad out load file with zeros */
-{
-    outfilelist         *outfile;
-
-    if( size == 0 )
-        return;
-    outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL ) {
-        WriteBuffer( NULL, size, outfile, SetToFillChar );
-    } else {
-        WriteNulls( outfile->handle, size, outfile->fname );
-    }
-}
-
 void PadBuffFile( outfilelist *outfile, unsigned long size )
 /*****************************************************************/
 /* pad out load file with zeros */
@@ -1165,8 +1149,15 @@ void PadBuffFile( outfilelist *outfile, unsigned long size )
     }
 }
 
-void WriteLoad( void *buff, unsigned long size )
-/*****************************************************/
+void PadLoad( unsigned long size )
+/***************************************/
+/* pad out load file with zeros */
+{
+    PadBuffFile( CurrSect->outfile, size );
+}
+
+void WriteLoad( const void *buff, size_t size )
+/*********************************************/
 /* write a buffer out to the load file */
 {
     outfilelist         *outfile;

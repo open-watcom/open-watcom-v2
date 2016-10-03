@@ -1044,8 +1044,8 @@ bool ProcSystem( void )
     return( true );
 }
 
-static void CopyBlocks( void *copyp, char *data, unsigned size )
-/**************************************************************/
+static void CopyBlocks( void *copyp, const char *data, size_t size )
+/******************************************************************/
 {
     char    **copyptr = copyp;
 

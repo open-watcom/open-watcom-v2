@@ -164,11 +164,11 @@ void ZeroStringTable( stringtable *strtab, unsigned len )
 }
 
 typedef struct {
-    void (*fn)(void *, char *, unsigned);
-    void * info;
+    write_strtable_fn   *fn;
+    void                *info;
 } strblkparam;
 
-static bool WriteStringBlock( void *_blk, void *_param )
+static bool WriteStringData( void *_blk, void *_param )
 /******************************************************/
 {
     stringblock *blk = _blk;
@@ -177,15 +177,14 @@ static bool WriteStringBlock( void *_blk, void *_param )
     return false;
 }
 
-void WriteStringTable( stringtable *strtab,
-                              void (*fn)(void *, char *,unsigned), void *info )
+void WriteStringTable( stringtable *strtab, write_strtable_fn *fn, void *info )
 /*****************************************************************************/
 {
     strblkparam param;
 
     param.fn = fn;
     param.info = info;
-    RingLookup( strtab->data, WriteStringBlock, &param );
+    RingLookup( strtab->data, WriteStringData, &param );
 }
 
 void FiniStringTable( stringtable *strtab )

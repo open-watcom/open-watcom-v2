@@ -426,14 +426,14 @@ static void FlushPermBuf( perm_write_info *info )
     QWrite( info->incfhdl, TokBuff, modpos, IncFileName );
 }
 
-static void WriteStringBlock( void *info, char *data, unsigned size )
-/*******************************************************************/
+static void WriteStringBlock( void *info, const char *data, size_t size )
+/***********************************************************************/
 {
     QWrite( ((perm_write_info *)info)->incfhdl, data, size, IncFileName );
 }
 
 static void FiniStringBlock( stringtable *tab, unsigned *size, void *info,
-                             void (*writefn)(void *,char *,unsigned) )
+                                            write_strtable_fn *writefn )
 /************************************************************************/
 {
     unsigned    rawsize;
@@ -946,8 +946,8 @@ void PermSaveFixup( void *fix, unsigned size )
     }
 }
 
-static void SaveRelocData( void *_curr, char *data, unsigned size )
-/*****************************************************************/
+static void SaveRelocData( void *_curr, const char *data, size_t size )
+/*********************************************************************/
 {
     char **curr = _curr;
 
