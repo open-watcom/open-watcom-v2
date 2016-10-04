@@ -32,13 +32,16 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include "_ptint.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/types.h>
-#include <errno.h>
 #include <time.h>
+#include "rterrno.h"
+#include "thread.h"
+
+#include "_ptint.h"
+
 
 _WCRTLINK int pthread_rwlock_init( pthread_rwlock_t *__rwlock, 
                            const pthread_rwlockattr_t *__attr )

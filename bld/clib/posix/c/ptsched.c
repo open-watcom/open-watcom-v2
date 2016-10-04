@@ -34,7 +34,9 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <sched.h>
+
 #include "_ptint.h"
+
 
 _WCRTLINK int pthread_getschedparam(pthread_t __thr, int *__policy, struct sched_param *__param)
 {

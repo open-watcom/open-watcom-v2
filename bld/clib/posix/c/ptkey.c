@@ -33,7 +33,10 @@
 #include "variety.h"
 #include <sys/types.h>
 #include "rterrno.h"
+#include "thread.h"
+
 #include "_ptint.h"
+
 
 _WCRTLINK int pthread_key_create( pthread_key_t *__key, void (*__destructor)(void*) )
 {
@@ -42,7 +45,7 @@ pthread_key_t res;
 
     res = __register_pkey(__destructor);
     if(res < 0) 
-        ret = errno;
+        ret = _RWD_errno;
     else {
         ret = 0;
         *__key = res;

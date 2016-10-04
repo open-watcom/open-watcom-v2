@@ -32,7 +32,8 @@
 
 #include "variety.h"
 #include <pthread.h>
-#include <errno.h>
+#include "rterrno.h"
+
 #include "_ptint.h"
 
 _WCRTLINK int pthread_getconcurrency(void)

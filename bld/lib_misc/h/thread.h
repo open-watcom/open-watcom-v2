@@ -88,11 +88,13 @@ struct wcpp_thread_ctl {
 /* stack checking routine assumes "__stklowP" is first field */
 typedef struct thread_data {
     unsigned                    __stklowP;
-#if defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ ) || defined( __LINUX__ )
     int                         __errnoP;
+#endif
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
     int                         __doserrnoP;
 #endif
-#if defined(__OS2_286__)
+#if defined( __OS2_286__ )
     struct wcpp_thread_ctl      _wint_thread_data;
 #endif
     unsigned long int           __randnext;
