@@ -38,7 +38,7 @@
 #include "lock.h"
 #include "stfhdr.h"
 
-#ifdef __MT__
+#ifdef __SW_BM
 __lock *__get_next_streambuf_lock( void ) {
     #define         MAX_LOCKS   16
     static __lock   streambuf_lock[MAX_LOCKS];

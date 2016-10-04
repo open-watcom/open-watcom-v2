@@ -31,7 +31,7 @@
 
 
 #ifndef _LOCK_H_INCLUDED
-#ifdef __MT__
+#ifdef __SW_BM
 
 #include "sema4.h"
 

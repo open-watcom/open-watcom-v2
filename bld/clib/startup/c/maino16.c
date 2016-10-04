@@ -59,7 +59,7 @@
 #include "maxthrds.h"
 
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
 /* semaphore control for file handles */
 
@@ -87,12 +87,12 @@ int             _cbyte2;    /* used by getch */
 unsigned char   _WCDATA _osmajor;
 unsigned char   _WCDATA _osminor;
 unsigned char   _WCDATA _osmode;
-#if defined(__SW_BD)
+#ifdef __SW_BD
 #include <setjmp.h>
 jmp_buf         JmpBuff;
 int             RetCode;
 #endif
-#if !defined( __MT__ )
+#ifndef __SW_BM
 int             _nothread;
 #endif
 
@@ -163,7 +163,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     }
 #endif
 
-#if defined( __MT__ )
+#ifdef __SW_BM
     {
         SEL             globalseg;
         SEL             localseg;

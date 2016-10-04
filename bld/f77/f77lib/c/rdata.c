@@ -35,7 +35,7 @@
 #include "ftnio.h"
 #include "fmtdef.h"
 
-#if !defined( __MT__ )
+#ifndef __SW_BM
     struct traceback PGM *ExCurr;      // head of traceback list
 #endif
 

@@ -36,7 +36,7 @@
 // 93/03/95  -- Greg Bentz      -- integrated with front end
 // 95/06/14  -- Greg Bentz      -- dll linkage
 
-#ifdef __MT__
+#ifdef __SW_BM
 
 #include <cpplib.h>
 #include <new>

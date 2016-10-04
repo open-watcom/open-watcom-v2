@@ -44,7 +44,7 @@ struct free_area                // FREE_AREA -- freed area in exception area
     FREE_AREA *next;            // - next free block -- MUST BE FIRST FIELD
     size_t size;                // - size of free area
 #if 0   // removed since it is never used (AFS 12-19-97)
-#ifdef __MT__
+#ifdef __SW_BM
     __lock _semaphore;           // - semaphore for area
 #endif
 #endif
@@ -55,7 +55,7 @@ typedef struct exc_area EXC_AREA;
 struct exc_area                 // ENTIRE AREA
 {   size_t size;                // - size of area
     FREE_AREA *freed;           // - freed blocks - NULL only at start
-#ifdef __MT__
+#ifdef __SW_BM
     __lock semaphore;           // - semaphore for area
 #endif
 };
@@ -80,9 +80,9 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
     unsigned size;              // - size required
     THREAD_CTL *thr;            // - thread control
 
-    #ifdef __MT__
-        __EXC_AREA.semaphore.p();
-    #endif
+#ifdef __SW_BM
+    __EXC_AREA.semaphore.p();
+#endif
     if( __EXC_AREA.freed == NULL ) {
         fr = (FREE_AREA*)((char*)&__EXC_AREA + sizeof( EXC_AREA )); // initial free list entry
         fr->next = NULL;
@@ -122,9 +122,9 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
             break;
         }
     }
-    #ifdef __MT__
-        __EXC_AREA.semaphore.v();
-    #endif
+#ifdef __SW_BM
+    __EXC_AREA.semaphore.v();
+#endif
     *(size_t*)active = size;
     active = (ACTIVE_EXC*)( (char*)active + sizeof( size_t ) );
     active->exc_area = &__EXC_AREA;
@@ -181,9 +181,9 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
     for( pred = &thr->excepts; active != *pred; pred = &(*pred)->prev );
     *pred = active->prev;
     exc_area = (EXC_AREA*)active->exc_area;
-    #ifdef __MT__
-        exc_area->semaphore.p();
-    #endif
+#ifdef __SW_BM
+    exc_area->semaphore.p();
+#endif
     done = (FREE_AREA*)( (char*)active - sizeof( size_t ) );
     done->size = *(size_t*)done;
 #ifndef NDEBUG
@@ -199,9 +199,9 @@ void CPPLIB( free_exc )(        // FREE AN EXCEPTION
             break;
         }
     }
-    #ifdef __MT__
-        exc_area->semaphore.v();
-    #endif
+#ifdef __SW_BM
+    exc_area->semaphore.v();
+#endif
 }
 
 

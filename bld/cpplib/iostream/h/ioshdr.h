@@ -32,7 +32,7 @@
 #ifndef _IOSHDR_H_INCLUDED
 #define _IOSHDR_H_INCLUDED
 
-#ifdef __MT__
+#ifdef __SW_BM
         extern __lock *__get_next_ios_lock( void );
 #endif
 

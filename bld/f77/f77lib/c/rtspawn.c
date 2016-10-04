@@ -53,7 +53,7 @@
   #define __jmp_buf     jmp_buf
 #endif
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
 #define __SpawnStack    (*(__jmp_buf **)&(__FTHREADDATAPTR->__SpawnStack))
 

@@ -54,14 +54,14 @@ void CPPLIB( module_dtor )      // DTOR STATICS FOR PROGRAM
     thr = &_RWD_ThreadData;
 #endif
     for( ; ; ) {
-#ifdef __MT__
+#ifdef __SW_BM
         _RWD_StaticInitSema.p();
 #endif
         rw = _RWD_ModuleInit;
         if( rw != 0 ) {
             _RWD_ModuleInit = rw->base_st.prev;
         }
-#ifdef __MT__
+#ifdef __SW_BM
         _RWD_StaticInitSema.v();
 #endif
         if( rw == 0) break;
@@ -129,12 +129,12 @@ extern "C"
 void CPPLIB( mod_register )(    // REGISTRATION FOR MODULE INITIALIZED OBJECTS
     RW_DTREG* rw )              // - R/W block
 {
-#ifdef __MT__
+#ifdef __SW_BM
     _RWD_StaticInitSema.p();
 #endif
     rw->base_st.prev = _RWD_ModuleInit;
     _RWD_ModuleInit = rw;
-#ifdef __MT__
+#ifdef __SW_BM
     _RWD_StaticInitSema.v();
 #endif
 }

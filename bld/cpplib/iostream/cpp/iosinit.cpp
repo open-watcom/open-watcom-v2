@@ -44,11 +44,11 @@ namespace std {
 
   void ios::init( streambuf *sb ) {
 
-    #ifdef __MT__
-        __i_lock = __get_next_ios_lock();
-    #else
-        __i_lock = NULL;
-    #endif
+#ifdef __SW_BM
+    __i_lock = __get_next_ios_lock();
+#else
+    __i_lock = NULL;
+#endif
     __error_state = 0;
     __format_flags = 0;
     __enabled_exceptions = 0;

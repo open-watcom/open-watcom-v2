@@ -41,7 +41,7 @@ typedef struct traceback {
 #define TB_LG           (~(uint)0)
 #define TB_LG_DB        (~(uint)0-1)
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
     #define _EXCURR         (*(traceback **)&(__FTHREADDATAPTR->__ExCurr))
 

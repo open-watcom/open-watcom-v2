@@ -108,7 +108,7 @@ extern "C" {
 
 #include "prtdata.h"
 
-#if defined(__MT__)
+#ifdef __SW_BM
     #include "thread.h"
     #include <lock.h>
 #endif
@@ -249,7 +249,7 @@ struct THREAD_CTL               // THREAD_CTL -- control execution thread
 // Storage is allocated in in cppdata.obj for non multi-thread or
 // by the clib BeginThread() routine for multi-thread.
 //************************************************************************
-#if !defined(__MT__)
+#ifndef __SW_BM
 _WPRTLINK extern THREAD_CTL _wint_thread_data;
 #elif defined( _M_I86 )
 #else
@@ -260,7 +260,7 @@ _WPRTLINK extern unsigned   _wint_thread_data_offset;
 // If the _ThreadData macro changes for multi-thread, be sure to
 // update clib\h\thread.h
 //************************************************************************
-#if !defined(__MT__)
+#ifndef __SW_BM
   #define _ThreadData       _wint_thread_data
 #elif defined( _M_I86 )
   #define _ThreadData (*((THREAD_CTL*)&(__THREADDATAPTR->_wint_thread_data)))
@@ -279,7 +279,7 @@ extern RW_DTREG*            _wint_module_init;
 #define _UndefVfunFlag      _wint_undef_vfun_flag
 #define _ModuleInit         _wint_module_init
 
-#if defined(__MT__)
+#ifdef __SW_BM
 extern __lock               _wint_static_init_sema;
 #define _StaticInitSema     _wint_static_init_sema
 #endif

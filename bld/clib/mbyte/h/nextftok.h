@@ -31,7 +31,7 @@
 
 
 #define _INITNEXTMBFTOK
-#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) )
+#if defined( __SW_BM ) && ( defined( __OS2__ ) || defined( __NT__ ) )
     #define _NEXTMBFTOK         (__THREADDATAPTR->__nextmbftokP)
 #else
     static unsigned char _WCFAR *nextmbftok = NULL;

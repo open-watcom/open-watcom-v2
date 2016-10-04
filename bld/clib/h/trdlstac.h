@@ -33,7 +33,7 @@
 #ifndef _TDLSTACC_H_INCLUDED
 #define _TDLSTACC_H_INCLUDED
 
-#if defined( __MT__ )
+#ifdef __SW_BM
   #if !defined( _M_I86 )
     extern void (*_AccessTDList)( void );
     extern void (*_ReleaseTDList)( void );

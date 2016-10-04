@@ -32,7 +32,7 @@
 #ifndef _STFHDR_H_INCLUDED
 #define _STFHDR_H_INCLUDED
 
-#ifdef __MT__
+#ifdef __SW_BM
         extern __lock *__get_next_streambuf_lock( void );
 #endif
 

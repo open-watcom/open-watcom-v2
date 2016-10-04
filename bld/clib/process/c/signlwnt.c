@@ -255,7 +255,7 @@ _WCRTLINK int raise( int sig )
 
 static void __SigInit( void )
 {
-#if defined( __MT__ )
+#ifdef __SW_BM
     int         i;
 
     for( i = 1; i <= __SIGLAST; ++i ) {

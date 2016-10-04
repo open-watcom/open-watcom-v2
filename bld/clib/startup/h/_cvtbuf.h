@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined( __MT__ )
+#ifdef __SW_BM
     #define _CVTBUF         __THREADDATAPTR->__cvt_buffer
 #else
     #include "maxchtyp.h"

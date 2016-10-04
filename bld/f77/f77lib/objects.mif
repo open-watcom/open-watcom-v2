@@ -536,8 +536,8 @@ files = $(rt) $(both) $(dep_rt) $(dep_both) $(ifns) $(xfns) $(math) $(ufns) $(ob
 
 !ifeq system linux
 # this is temporary hack for Linux untill multi-threaded support will be implemented
-fthrdini_opts =-D__MT__
-fthread_opts  =-D__MT__
-initftrd_opts =-D__MT__
-thrdutil_opts =-D__MT__
+fthrdini_opts =-bm
+fthread_opts  =-bm
+initftrd_opts =-bm
+thrdutil_opts =-bm
 !endif

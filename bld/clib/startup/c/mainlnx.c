@@ -46,7 +46,7 @@
 #include "exitwmsg.h"
 
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 _WCRTLINK int *__threadid( void )
 {
     return( (int *)&(__THREADDATAPTR->thread_id) );
@@ -74,7 +74,7 @@ void __LinuxInit( struct thread_data *ptr )
 {
     unsigned    *tmp;
 
-#if defined( __MT__ )
+#ifdef __SW_BM
     __InitThreadData( ptr );
     __FirstThreadData = ptr;
 #endif

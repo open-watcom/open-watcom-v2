@@ -32,7 +32,7 @@
 #ifndef _MTHREAD_H_INCLUDED
 #define _MTHREAD_H_INCLUDED
 
-#if defined( __MT__ )
+#ifdef __SW_BM
     extern void         *__InitThreadProcessing( void );
     extern void         __FiniThreadProcessing( void );
 #if defined( _M_I86 )

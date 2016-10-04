@@ -30,7 +30,7 @@ sw_c_axp_   =
 sw_c_ppc_   =
 
 # sw_c_(processor)
-sw_c_intel    = -of	# overlay
+sw_c_intel    = -of # overlay
 sw_c_register = -5r
 sw_c_stack    = -5s
 
@@ -47,27 +47,27 @@ sw_c_ppc =
 sw_c_msdos_086    = -oax
 sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
-sw_c_netware_386  = -oaxt #-bm
+sw_c_netware_386  = -oaxt
 sw_c_os2_286      = -oax
-sw_c_os2_386      = -oaxt-D__MT__ #-bm
-sw_c_os2_ppc      = -oaxt-D__MT__ #-bm
+sw_c_os2_386      = -oaxt-bm
+sw_c_os2_ppc      = -oaxt-bm
 sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-D__MT__ #-bm
+sw_c_qnx_386      = -oaxt-bm
 sw_c_windows_086  = -oax
 sw_c_windows_386  = -oaxt -D__CALL21__
-sw_c_winnt_386    = -oaxt #-bm
-sw_c_winnt_axp    = -oaxt -DWIN32 -D_WIN32 #-bm
-sw_c_winnt_ppc    = -oaxt -DWIN32 -D_WIN32 #-bm
-sw_c_linux_386    = -oaxt #-D__MT__
+sw_c_winnt_386    = -oaxt
+sw_c_winnt_axp    = -oaxt -DWIN32 -D_WIN32
+sw_c_winnt_ppc    = -oaxt -DWIN32 -D_WIN32
+sw_c_linux_386    = -oaxt
 
 # sw_c_(system)
-sw_c_msdos  	= -bt=dos -D__WATCOM_LFN__
-sw_c_netware    = -bt=netware -D__MT__
+sw_c_msdos      = -bt=dos -D__WATCOM_LFN__
+sw_c_netware    = -bt=netware -bm
 sw_c_os2        = -bt=os2
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows -DSTRICT
-sw_c_winnt      = -bt=nt $(win32ver) -D__MT__
-sw_c_linux      = -bt=linux
+sw_c_winnt      = -bt=nt $(win32ver) -bm
+sw_c_linux      = -bt=linux #-bm
 
 sw_a_common = -we
 !ifdef __UNIX__
@@ -124,16 +124,16 @@ sw_a_windows_386  =
 sw_a_winnt_386    =
 sw_a_winnt_axp    = -dWIN32 -d_WIN32
 sw_a_winnt_ppc    = -oc -dWIN32 -d_WIN32
-sw_a_linux_386    = #-d__MT__
+sw_a_linux_386    =
 
 # sw_a_(system)
-sw_a_msdos  	= -bt=dos -D__WATCOM_LFN__
+sw_a_msdos      = -bt=dos -D__WATCOM_LFN__
 sw_a_netware    = -bt=netware -d__MT__
 sw_a_os2        = -bt=os2
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows
 sw_a_winnt      = -bt=nt $(win32ver) -d__MT__
-sw_a_linux      = -bt=linux
+sw_a_linux      = -bt=linux -d__MT__
 
 #make bug
 !ifndef extra_flib_c_flags
@@ -150,14 +150,14 @@ flib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(flib_$(processor))_$(mo
 
 # special case switches
 !ifdef dll16
-flib_c_flags += -D__MT__ -bd #-bm
+flib_c_flags += -bm-bd
 flib_a_flags += -d__MT__
 !endif
 !ifdef share
 flib_c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 !endif
 !ifdef threading16
-flib_c_flags += -D__MT__ #-bm
+flib_c_flags += -bm
 flib_a_flags += -d__MT__
 !endif
 

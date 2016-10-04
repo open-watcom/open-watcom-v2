@@ -54,7 +54,7 @@
 #define XF_IO_INTERRUPTED       0x0080  // user interrupt during I/O
 #define XF_IO_INTERRUPTABLE     0x0100  // allow interrupts in I/O system
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
     #define _XCPTFLAGS          (__FTHREADDATAPTR->__XceptionFlags)
 

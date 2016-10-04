@@ -85,11 +85,11 @@ sw_c_nw_clibl_386 = -oaxt
 sw_c_nw_libc_386  = -oaxt
 sw_c_nw_libcl_386 = -oaxt
 sw_c_os2_286      = -oax
-sw_c_os2_386      = -oaxt-bm-D__MT__
-sw_c_os2_ppc      = -oaxt-bm-D__MT__
+sw_c_os2_386      = -oaxt-bm
+sw_c_os2_ppc      = -oaxt-bm
 sw_c_osi_386      = -oaxt
 sw_c_qnx_286      = -oax
-sw_c_qnx_386      = -oaxt-bm-D__MT__
+sw_c_qnx_386      = -oaxt-bm
 sw_c_windows_086  = -oax
 sw_c_windows_386  = -oaxt -D__CALL21__
 sw_c_winnt_386    = -oaxt
@@ -102,18 +102,18 @@ sw_c_linux_mps    = -oaxt -eoe
 # sw_c_(system)
 sw_c_generic    = -bt=dos
 sw_c_msdos      = -bt=dos
-sw_c_nw_clib    = -bt=netware -bm-D__MT__ -D__far= -D__near= -D_NETWARE_CLIB
-sw_c_nw_clibl   = -bt=netware -bm-D__MT__ -D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
-sw_c_nw_libc    = -bt=netware5 -bm-D__MT__ -D__far= -D__near= -D_NETWARE_LIBC
-sw_c_nw_libcl   = -bt=netware5 -bm-D__MT__ -D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
+sw_c_nw_clib    = -bt=netware -bm-D__far= -D__near= -D_NETWARE_CLIB
+sw_c_nw_clibl   = -bt=netware -bm-D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
+sw_c_nw_libc    = -bt=netware5 -bm-D__far= -D__near= -D_NETWARE_LIBC
+sw_c_nw_libcl   = -bt=netware5 -bm-D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
 sw_c_os2        = -bt=os2 $(def_windowing)
 sw_c_osi        = -bt=dos -D__CALL21__ -D__OSI__
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows -DSTRICT $(def_windowing)
-sw_c_winnt      = -bt=nt -bm-D__MT__ $(win32ver) $(def_windowing)
+sw_c_winnt      = -bt=nt -bm $(win32ver) $(def_windowing)
 sw_c_linux      = -bt=linux
-sw_c_rdos       = -bt=rdos -bm-D__MT__
-sw_c_rdosdev    = -bt=rdosdev -bm-D__MT__
+sw_c_rdos       = -bt=rdos -bm
+sw_c_rdosdev    = -bt=rdosdev -bm
 
 sw_a_common = -we
 !ifdef __UNIX__
@@ -221,7 +221,7 @@ clib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model)) &
 clib_c_flags += -of
 !endif
 !ifdef dll16
-clib_c_flags += -bd-bm-D__MT__
+clib_c_flags += -bd-bm
 !endif
 !ifdef share
 clib_c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
@@ -230,7 +230,7 @@ clib_c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
 clib_c_flags += -en
 !endif
 !ifdef threading16
-clib_c_flags += -bm-D__MT__
+clib_c_flags += -bm
 !endif
 
 !ifdef dll16

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if defined( __MT__ ) && !defined( _M_I86 )
+#if defined( __SW_BM ) && !defined( _M_I86 )
 #include "cpplib.h"
 #include "rtinit.h"
 
