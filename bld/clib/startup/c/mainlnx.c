@@ -35,15 +35,14 @@
 #include "rtstack.h"
 #include "stacklow.h"
 #include "initfini.h"
-#include "linuxsys.h"
 #include "snglthrd.h"
-#include "thread.h"
-#include "mthread.h"
 #include "fileacc.h"
 #include "heapacc.h"
 #include "trdlstac.h"
-#include "cinit.h"
 #include "exitwmsg.h"
+#include "linuxsys.h"
+#include "cinit.h"
+#include "mthread.h"
 
 
 #if defined( __MT__ )

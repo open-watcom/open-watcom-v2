@@ -40,9 +40,10 @@
     #define INCL_DOSMISC
     #include <wos2.h>
 #endif
+#include "_process.h"
 #include "rtdata.h"
 #include "rterrno.h"
-#include "_process.h"
+#include "thread.h"
 
 
 _WCRTLINK int __F_NAME(system,_wsystem)( const CHAR_TYPE *cmd )

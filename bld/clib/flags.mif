@@ -111,7 +111,7 @@ sw_c_osi        = -bt=dos -D__CALL21__ -D__OSI__
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows -DSTRICT $(def_windowing)
 sw_c_winnt      = -bt=nt -bm-D__MT__ $(win32ver) $(def_windowing)
-sw_c_linux      = -bt=linux
+sw_c_linux      = -bt=linux -bm-D__MT__
 sw_c_rdos       = -bt=rdos -bm-D__MT__
 sw_c_rdosdev    = -bt=rdosdev -bm-D__MT__
 
@@ -199,7 +199,7 @@ sw_a_osi        = -bt=dos -D__CALL21__ -D__OSI__
 sw_a_qnx        = -bt=qnx
 sw_a_windows    = -bt=windows -DSTRICT
 sw_a_winnt      = -bt=nt -D__MT__ $(win32ver)
-sw_a_linux      = -bt=linux
+sw_a_linux      = -bt=linux -D__MT__
 sw_a_rdos       = -bt=rdos -D__MT__
 sw_a_rdosdev    = -bt=rdosdev -D__MT__
 
