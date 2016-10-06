@@ -104,17 +104,17 @@ static char         *HelpMsg =
 
 // forward declarations
 static void     ProcessFiles( char ** );
-static void     ProcFile( char * fname );
+static void     ProcFile( char *fname );
 
 
 // the spawn & suicide support.
 
 static void *SpawnStack;
 
-static int Spawn1( void (*fn)( char ** ), char **data1 )
-/******************************************************/
+static int Spawn1( void (*fn)(char **), char **data1 )
+/****************************************************/
 {
-    void *  save_env;
+    void    *save_env;
     jmp_buf env;
     int     status;
 
@@ -199,8 +199,8 @@ static void ProcList( bool (*fn)(const char *,size_t), char ***argv )
 // this processes a list of comma-separated strings, being as forgiving about
 // spaces as possible.
 {
-    char *  item;
-    char *  comma;
+    char    *item;
+    char    *comma;
     bool    checksep;   // true iff we should check for a separator.
 
     (**argv)++;        // skip the option character.
@@ -235,7 +235,7 @@ static void ProcList( bool (*fn)(const char *,size_t), char ***argv )
 static void MakeListItem( name_list **list, const char *item, size_t len )
 /************************************************************************/
 {
-    name_list * entry;
+    name_list *entry;
 
     entry = MemAlloc( sizeof( name_list ) + len );
     entry->next = NULL;
@@ -272,7 +272,7 @@ static bool ProcSeg( const char *item, size_t len )
 static bool ProcExclude( const char *item, size_t len )
 /*****************************************************/
 {
-    char *  endptr;
+    char *endptr;
 
     while( len > 0 ) {
         switch( ExcludeState ) {
@@ -321,7 +321,7 @@ static bool ProcExclude( const char *item, size_t len )
 static void ProcessOption( char ***argv )
 /***************************************/
 {
-    char *  item;
+    char    *item;
     char    option;
 
     NewOption = true;
@@ -353,7 +353,7 @@ static void ProcessOption( char ***argv )
 static void ProcessFiles( char **argv )
 /*************************************/
 {
-    char *  item;
+    char    *item;
 
     while( *argv != NULL ) {
         item = *argv;
@@ -382,14 +382,14 @@ static void CloseFiles( void )
     }
 }
 
-static void ReplaceExt( char * name, char * new_ext, bool force )
-/***************************************************************/
+static void ReplaceExt( char *name, char *new_ext, bool force )
+/*************************************************************/
 {
-    char        buff[ _MAX_PATH2 ];
-    char *      p;
-    char *      d;
-    char *      n;
-    char *      e;
+    char        buff[_MAX_PATH2];
+    char        *p;
+    char        *d;
+    char        *n;
+    char        *e;
 
     _splitpath2( name, buff, &d, &p, &n, &e );
     if( force || e[0] == '\0' ) {
@@ -420,22 +420,23 @@ static void DoReplace( void )
     }
 }
 
-static void ProcFile( char * fname )
-/**********************************/
+static void ProcFile( char *fname )
+/*********************************/
 {
     int         ftype;
-    char *      name;
+    char        *name;
     int         status;
     int         namelen;
-    char *      bak;
+    char        *bak;
 
     namelen = strlen( fname ) + 5;
     name = alloca( namelen );
-    if( name == NULL ) Suicide();           // null == no stack space left.
+    if( name == NULL )      // null == no stack space left.
+        Suicide();
     strcpy( name, fname );
     ReplaceExt( name, ".obj", false );
     InFile = QOpen( name, O_RDONLY | O_BINARY, 0 );
-    for(;;) {
+    for( ;; ) {
         CleanRecStuff();
         ftype = ReadRec();
         if( ftype == ENDLIBRARY || ftype == ENDFILE ) {
@@ -447,7 +448,7 @@ static void ProcFile( char * fname )
         } else if( ftype != OBJECT ) {
             Error( "file is not a standard OBJECT or LIBRARY file" );
         }
-        OutFile = QOpen( TEMP_OBJ_NAME, O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, 0 );
+        OutFile = QOpen( TEMP_OBJ_NAME, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0 );
         do {
             ProcessRec();
             status = ReadRec();
@@ -464,7 +465,8 @@ static void ProcFile( char * fname )
     CloseFiles();
     if( MakeBackup ) {
         bak = alloca( namelen );
-        if( bak == NULL ) Suicide();           // null == no stack space left.
+        if( bak == NULL )           // null == no stack space left.
+            Suicide();
         strcpy( bak, name );
         if( ftype == ENDLIBRARY ) {
             ReplaceExt( bak, ".bak", true );
@@ -485,14 +487,14 @@ static void ProcFile( char * fname )
 int CopyFile( const char * file1, const char * file2 )
 /****************************************************/
 {
-    size_t                      len;
-    auto struct stat            statblk;
-    auto struct utimbuf         utimebuf;
+    size_t                  len;
+    auto struct stat        statblk;
+    auto struct utimbuf     utimebuf;
 
     remove( file2 );
     OutFile = NOFILE;
     InFile = QOpen( file1, O_RDONLY | O_BINARY, 0 );
-    OutFile = QOpen( file2, O_WRONLY|O_TRUNC|O_CREAT|O_BINARY, 0 );
+    OutFile = QOpen( file2, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY, 0 );
     while( (len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE )) != 0 ) {
         QWrite( OutFile, InputBuffer, len );
     }
