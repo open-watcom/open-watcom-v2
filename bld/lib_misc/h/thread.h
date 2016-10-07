@@ -128,6 +128,8 @@ typedef struct thread_data {
 #if defined(__NT__) || defined(__OS2__)
     unsigned char               *__nextmbtokP;
     unsigned char _WCFAR        *__nextmbftokP;
+#endif
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __LINUX__ )
     wchar_t                     *__nextwtokP;
 #endif
     unsigned                    __data_size;
