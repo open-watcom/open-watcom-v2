@@ -110,10 +110,8 @@ using std::time;
 /* 1003.4/D12 Clocks and Timers */
 #ifndef __POSIX_TIMERS
 #define __POSIX_TIMERS
-struct timespec {
-    time_t tv_sec;
-    long tv_nsec;
-};
+
+:include timespec.sp
 
 struct itimerspec {
     struct timespec it_interval;

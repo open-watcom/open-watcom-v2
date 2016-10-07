@@ -32,8 +32,10 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include "rterrno.h"
 #include <termios.h>
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK speed_t cfgetispeed(const struct termios *tios)
 {

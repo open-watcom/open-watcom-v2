@@ -56,11 +56,11 @@
   #define TID                   pid_t
   #define GetCurrentThreadId()  (getpid())
 #elif defined( __LINUX__ )
-  // TODO: Include for Linux threading!
   #include <sys/types.h>
+  #include <process.h>
   #include <unistd.h>
-  #define TID                   size_t
-  #define GetCurrentThreadId()  (0)
+  #define TID                   pid_t
+  #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )
   #include <rdos.h>
   #define TID                   int
@@ -95,7 +95,7 @@
   #endif
 #endif
 
-#if !defined( __QNX__ ) && !defined(__LINUX__) && !defined(__RDOSDEV__)
+#if !defined( __QNX__ ) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
 
 // lookup thread data
