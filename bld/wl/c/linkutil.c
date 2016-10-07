@@ -487,7 +487,7 @@ void Suicide( void )
 void InitEnvVars( void )
 /**********************/
 {
-    char        *path_list;
+    const char  *path_list;
     size_t      len;
     char        *p;
 

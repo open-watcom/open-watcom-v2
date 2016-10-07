@@ -317,8 +317,8 @@ static file_list *AllocNewFile( member_list *member )
     return( new_entry );
 }
 
-static void *AddObjFile( char *name, char *member, file_list **filelist )
-/************************************************************************/
+static void *AddObjFile( const char *name, char *member, file_list **filelist )
+/*****************************************************************************/
 {
     file_list       *new_entry;
     member_list     *new_member;
@@ -769,7 +769,7 @@ bool ProcIncremental( void )
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         IncFileName = FileName( Token.this, Token.len, E_ILK, false );
     } else if( Name != NULL ) {
-        IncFileName = FileName( Name, strlen(Name), E_ILK, true );
+        IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
     } else {
         IncFileName = ChkStrDup( DEFAULT_INC_NAME );
     }

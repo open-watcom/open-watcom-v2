@@ -64,8 +64,8 @@ void ResetObjIO( void )
     CachedLibFiles = NULL;
 }
 
-static infilelist *AllocEntry( const char *name, path_entry *path )
-/*****************************************************************/
+static infilelist *AllocEntry( const char *name, const path_entry *path )
+/***********************************************************************/
 {
     infilelist  *entry;
 
@@ -80,8 +80,8 @@ static infilelist *AllocEntry( const char *name, path_entry *path )
     return entry;
 }
 
-infilelist *AllocFileEntry( const char *name, path_entry *path )
-/**************************************************************/
+infilelist *AllocFileEntry( const char *name, const path_entry *path )
+/********************************************************************/
 {
     infilelist  *entry;
 
@@ -91,8 +91,8 @@ infilelist *AllocFileEntry( const char *name, path_entry *path )
     return entry;
 }
 
-infilelist *AllocUniqueFileEntry( const char *name, path_entry *path )
-/********************************************************************/
+infilelist *AllocUniqueFileEntry( const char *name, const path_entry *path )
+/**************************************************************************/
 {
     infilelist  *entry;
 

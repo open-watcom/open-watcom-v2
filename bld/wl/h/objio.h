@@ -34,8 +34,8 @@ extern infilelist       *CachedFiles;
 extern infilelist       *CachedLibFiles;
 
 extern void             InitObjIO( void );
-extern infilelist       *AllocFileEntry( const char *, path_entry * );
-extern infilelist       *AllocUniqueFileEntry( const char *, path_entry * );
+extern infilelist       *AllocFileEntry( const char *, const path_entry * );
+extern infilelist       *AllocUniqueFileEntry( const char *, const path_entry * );
 extern bool             CleanCachedHandles( void );
 extern bool             DoObjOpen( infilelist * );
 extern unsigned_16      CalcAlign( unsigned_32, unsigned_16 );

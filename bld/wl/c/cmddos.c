@@ -171,7 +171,7 @@ bool ProcInto( void )
 // Process the into keyword.
 {
     if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        CurrSect->outfile = NewOutFile( FileName( Token.this,Token.len, E_OVL, false ) );
+        CurrSect->outfile = NewOutFile( FileName( Token.this, Token.len, E_OVL, false ) );
         return( true );
     }
     LnkMsg( LOC+LINE+WRN+MSG_DIRECTIVE_ERR, "s", "into" );

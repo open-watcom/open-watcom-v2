@@ -131,8 +131,8 @@ carve_t CarveCreate( unsigned elm_size, unsigned blk_size )
 }
 
 #ifndef NDEBUG
-void CarveVerifyAllGone( carve_t cv, char *node_name )
-/****************************************************/
+void CarveVerifyAllGone( carve_t cv, const char *node_name )
+/**********************************************************/
 {
     free_t *    check;
     blk_t *     block;

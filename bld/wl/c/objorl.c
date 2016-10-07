@@ -296,7 +296,7 @@ static orl_return ExportCallback( const char *name, void *dummy )
 
     dummy = dummy;
     lname.name = name;
-    lname.len = strlen(name);
+    lname.len = strlen( name );
     HandleExport( &lname, &lname, 0, 0 );
     return( ORL_OKAY );
 }

@@ -77,8 +77,7 @@ extern void             DefineVFTableRecord( symbol *, symbol *, bool, vflistrtn
 extern void             DefineVFReference( void *, symbol *, bool );
 extern void             DefineReference( symbol * );
 extern void             CheckComdatSym( symbol *, sym_info );
-extern void             DefineComdat( segdata *, symbol *, offset, sym_info,
-                                      unsigned_8 * );
+extern void             DefineComdat( segdata *, symbol *, offset, sym_info, unsigned_8 * );
 extern group_entry *    GetGroup( const char * );
 extern group_entry *    SearchGroups( const char * );
 extern bool             SeenDLLRecord( void );

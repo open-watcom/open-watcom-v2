@@ -64,7 +64,7 @@ unsigned_16     AddImpNameTab( char *a, unsigned b, bool c ) {
     return( 0 );
 }
 
-void            AddLibPaths( char *a, int b, bool c ) {}
+void            AddLibPaths( const char *a, int b, bool c ) {}
 void            AddToExportList( entry_export *a ) {}
 void            BufWrite(char *a, int b ) {}
 void            CheckLibTrace( file_list * lib ) {}

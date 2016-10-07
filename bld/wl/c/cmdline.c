@@ -843,13 +843,13 @@ void AddCommentLib( const char *comment, unsigned len, lib_priority priority )
     _LnkFree( ptr );
 }
 
-void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
-/******************************************************************/
+void AddLibPaths( const char *path_list, unsigned len, bool add_to_front )
+/************************************************************************/
 {
     path_entry      *newpath;
     file_list const *libfiles;
     char            *p;
-    char            *end;
+    const char      *end;
 
     _ChkAlloc( newpath, sizeof( path_entry ) + len );
     end = path_list + len;
@@ -878,8 +878,8 @@ void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
     }
 }
 
-void AddLibPathsToEnd( char *path_list )
-/**************************************/
+void AddLibPathsToEnd( const char *path_list )
+/********************************************/
 {
     if( path_list != NULL && *path_list != '\0' ) {
         AddLibPaths( path_list, strlen( path_list ), false );
