@@ -41,8 +41,6 @@
 #endif
 #if defined (_NETWARE_LIBC)
   #include "nw_libc.h"
-#elif defined( __QNX__ ) || defined( __LINUX__ )
-  #include "semapsx.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -57,6 +55,10 @@
 #include "fileacc.h"
 #include "trdlstac.h"
 #include "maxthrds.h"
+#if defined( __UNIX__ )
+  #include "semapsx.h"
+#endif
+
 
 #if !defined( _M_I86 )
   #if defined( __NT__ )
