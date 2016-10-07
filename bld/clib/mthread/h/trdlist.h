@@ -95,7 +95,7 @@
   #endif
 #endif
 
-#if !defined( __QNX__ ) && !defined(__LINUX__) && !defined(__RDOSDEV__)
+#if !defined( __QNX__ ) && !defined(__RDOSDEV__)
 // QNX and RDOS device-drivers doesn't maintain a list of allocated thread data blocks
 
 // lookup thread data
