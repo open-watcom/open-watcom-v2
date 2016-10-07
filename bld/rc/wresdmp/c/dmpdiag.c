@@ -111,7 +111,7 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
 /******************************************************************/
 {
     bool                error;
-    int                 prevpos;
+    WResFileOffset      prevpos;
     int                 itemnum;
     DialogBoxHeader     head;
     DialogBoxControl    control;

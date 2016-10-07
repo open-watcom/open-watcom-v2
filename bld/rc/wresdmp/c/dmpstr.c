@@ -39,7 +39,7 @@
 bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
 /******************************************************************/
 {
-    long                prevpos;
+    WResFileOffset      prevpos;
     unsigned            len;
     unsigned            numread;
     unsigned            cursor;

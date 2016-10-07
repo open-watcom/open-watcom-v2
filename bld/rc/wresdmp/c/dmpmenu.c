@@ -103,11 +103,11 @@ static void PrintHeader( MenuHeader * head )
 bool DumpMenu( uint_32 offset, uint_32 length, WResFileID handle )
 /****************************************************************/
 {
-    bool        error;
-    int         prevpos;
-    int         depth;  /* number of menu levels deep */
-    MenuItem *  item;
-    MenuHeader  head;
+    bool            error;
+    WResFileOffset  prevpos;
+    int             depth;  /* number of menu levels deep */
+    MenuItem        *item;
+    MenuHeader      head;
 
     length = length;
     prevpos = RCSEEK( handle, offset, SEEK_SET );
