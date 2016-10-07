@@ -122,6 +122,9 @@ _WCRTLINK int pthread_mutex_trylock(pthread_mutex_t *__mutex)
 {
 int ret;
 
+    if(__mutex == NULL)
+        return( EINVAL );
+
     sem_wait(&__mutex->access);
     if(__mutex->status == MUTEX_STATUS_READY) {
         sem_wait(&__mutex->mutex);
@@ -139,6 +142,9 @@ _WCRTLINK int pthread_mutex_lock(pthread_mutex_t *__mutex)
 {
 int ret;
 int res;
+    
+    if(__mutex == NULL)
+        return( EINVAL );
     
     ret = -1;
     
@@ -162,6 +168,9 @@ int res;
 _WCRTLINK int pthread_mutex_unlock(pthread_mutex_t *__mutex)
 {
 int ret;
+    
+    if(__mutex == NULL)
+        return( EINVAL );
     
     ret = -1;
     
@@ -188,6 +197,9 @@ int ret;
 _WCRTLINK int __pthread_mutex_mylock(pthread_mutex_t *__mutex)
 {
 int ret;
+
+    if(__mutex == NULL)
+        return( EINVAL );
 
     ret = -1;
     if(sem_wait(&__mutex->access) == 0) {
