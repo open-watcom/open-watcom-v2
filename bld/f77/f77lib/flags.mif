@@ -67,7 +67,7 @@ sw_c_os2        = -bt=os2
 sw_c_qnx        = -bt=qnx
 sw_c_windows    = -bt=windows -DSTRICT
 sw_c_winnt      = -bt=nt $(win32ver) -bm
-sw_c_linux      = -bt=linux #-bm
+sw_c_linux      = -bt=linux -bm
 
 sw_a_common = -we
 !ifdef __UNIX__
