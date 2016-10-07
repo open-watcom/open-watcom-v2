@@ -59,7 +59,7 @@
 #include "maxthrds.h"
 
 #if !defined( _M_I86 )
-  #if defined( __NT__ )
+  #if defined( __NT__ ) || defined( __LINUX__ )
     static semaphore_object FListSemaphore;
   #endif
     void static nullSema4Rtn( semaphore_object *p ) { p = p; }
@@ -408,7 +408,7 @@ void    __ReleaseTDList( void )
     __ReleaseSemaphore( &TDListSemaphore );
 }
 
-  #if defined( __NT__ )
+  #if defined( __NT__ ) || defined( __LINUX__ )
 
 static void    __AccessFList( void )
 /***************************/
@@ -874,7 +874,7 @@ void __InitMultipleThread( void )
         _ReleaseNHeap = &__ReleaseNHeap;
         _ReleaseFHeap = &__ReleaseFHeap;
     #endif
-    #if defined( __NT__ ) || defined( __LINUX__ )
+    #if defined( __NT__ )
         _AccessFList  = &__AccessFList;
         _ReleaseFList = &__ReleaseFList;
     #endif
