@@ -29,14 +29,17 @@
 ****************************************************************************/
 
 
-extern void *   ChkLAlloc( size_t );
-extern void *   LAlloc( size_t );
-extern void *   TryAlloc( size_t );
-extern void *   LnkReAlloc( void *, size_t );
+#define DUPBUF_STACK(p,s,l) {void *x=alloca(l);memcpy(x,s,l);p=x;}
+#define DUPSTR_STACK(p,s,l) {char *x=alloca(l+1);memcpy(x,s,l);x[l]='\0';p=x;}
+
+extern void     *ChkLAlloc( size_t );
+extern void     *LAlloc( size_t );
+extern void     *TryAlloc( size_t );
+extern void     *LnkReAlloc( void *, size_t );
 extern void     LFree( void * );
-extern void *   PermAlloc( size_t );
-extern void *   Pass1Alloc( size_t );
-extern void *   LnkExpand( void *, size_t );
+extern void     *PermAlloc( size_t );
+extern void     *Pass1Alloc( size_t );
+extern void     *LnkExpand( void *, size_t );
 
 extern void     LnkMemInit( void );
 extern void     LnkMemFini( void );

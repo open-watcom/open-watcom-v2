@@ -96,12 +96,8 @@ static entry_export *ProcWlibDLLImportEntry( void )
     entry_export    *exp;
     length_name     symname;
     length_name     internal;
-    char            *p;
 
-    p = alloca( Token.len + 1 );
-    memcpy( p, Token.this, Token.len );
-    p[Token.len] = '\0';
-    symname.name = p;
+    DUPSTR_STACK( symname.name, Token.this, Token.len );
     symname.len = Token.len;
     if( !GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
         return( NULL );
@@ -113,10 +109,7 @@ static entry_export *ProcWlibDLLImportEntry( void )
         if( getatoi( &ordinal ) != ST_IS_ORDINAL ) {
             if( Token.len > 0 ) {
                 internal = symname;
-                p = alloca( Token.len + 1 );
-                memcpy( p, Token.this, Token.len );
-                p[Token.len] = '\0';
-                symname.name = p;
+                DUPSTR_STACK( symname.name, Token.this, Token.len );
                 symname.len = Token.len;
             }
             if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
@@ -189,30 +182,20 @@ static bool getimport( void )
     length_name         extname;
     unsigned_16         ordinal;
     ord_state           state;
-    char                *p;
 
-    p = alloca( Token.len + 1 );
-    memcpy( p, Token.this, Token.len );
-    p[Token.len] = '\0';
-    intname.name = p;
+    DUPSTR_STACK( intname.name, Token.this, Token.len );
     intname.len = Token.len;
     if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
         return( false );
     }
-    p = alloca( Token.len + 1 );
-    memcpy( p, Token.this, Token.len );
-    p[Token.len] = '\0';
-    modname.name = p;
+    DUPSTR_STACK( modname.name, Token.this, Token.len );
     modname.len = Token.len;
     ordinal = 0;
     state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         state =  getatoi( &ordinal );
         if( state == ST_NOT_ORDINAL ) {
-            p = alloca( Token.len + 1 );
-            memcpy( p, Token.this, Token.len );
-            p[Token.len] = '\0';
-            extname.name = p;
+            DUPSTR_STACK( extname.name, Token.this, Token.len );
             extname.len = Token.len;
         } else if( state == ST_INVALID_ORDINAL ) {
             LnkMsg( LOC+LINE+MSG_IMPORT_ORD_INVALID + ERR, NULL );

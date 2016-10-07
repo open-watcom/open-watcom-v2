@@ -38,6 +38,9 @@
 
 #include "clibext.h"
 
+
+#define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);memcpy(x,s,l);p=x;}
+
 static void             (*MultiLine)( void ) = NULL;
 static char             *OptionBuffer;
 static size_t           BufferLeft;
@@ -724,24 +727,22 @@ static void GetExport( void )
         Warning( "invalid export name", OPTION_SLOT );
         return;
     }
-    name = alloca( CmdFile->len );        // store it temporarily
+    DUPBUF_STACK( name, CmdFile->token, CmdFile->len );            // store it temporarily
     toklen = namelen = CmdFile->len;
-    memcpy( name, CmdFile->token, namelen );
     internal = NULL;
     intlen = 0;
-    if( MakeToken( SEP_EQUALS, true ) ) {   // got an internal name.
-        internal = alloca( CmdFile->len );  // store it temporarily
+    if( MakeToken( SEP_EQUALS, true ) ) {                           // got an internal name.
+        DUPBUF_STACK( internal, CmdFile->token, CmdFile->len );    // store it temporarily
         intlen = CmdFile->len;
-        memcpy( internal, CmdFile->token, intlen );
-        toklen += intlen + 1;        // +1 for = sign.
+        toklen += intlen + 1;                                       // +1 for = sign.
     }
     value = 0xFFFFF; // arbitrary >64K.
-    if( MakeToken( SEP_AT, true ) ) {       // got an ordinal.
+    if( MakeToken( SEP_AT, true ) ) {                               // got an ordinal.
         if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
         } else {
-            toklen += 6;      // maximum integer length + dot
+            toklen += 6;                                            // maximum integer length + dot
         }
     }
     isresident = false;
@@ -865,15 +866,13 @@ static void GetImport( void )
         Warning( "import library name is invalid", OPTION_SLOT );
         return;
     }
+    DUPBUF_STACK( first, CmdFile->token, CmdFile->len );    // store it temporarily
     toklen = firstlen = CmdFile->len;
-    first = alloca( firstlen );
-    memcpy( first, CmdFile->token, firstlen );
     second = NULL;
     secondlen = 0;
     if( MakeToken( SEP_EQUALS, false ) ) {        // got an internal name.
+        DUPBUF_STACK( second, CmdFile->token, CmdFile->len );     // store it temporarily
         secondlen = CmdFile->len;
-        second = alloca( secondlen );
-        memcpy( second, CmdFile->token, secondlen );
         toklen += secondlen + 1;                        // name & = sign.
     }
     if( !MakeToken( SEP_PERIOD, true ) ) {
@@ -1094,9 +1093,8 @@ static void GetSegments( void )
 
     GotOvl = false;
     if( MakeToken( SEP_QUOTE, true ) || MakeToken( SEP_NO, true ) ) {
+        DUPBUF_STACK( segname, CmdFile->token, CmdFile->len );    // store it temporarily
         seglen = CmdFile->len;
-        segname = alloca( seglen );
-        memcpy( segname, CmdFile->token, seglen );
     } else {
         Warning( "segment argument not recognized", OPTION_SLOT );
         return;

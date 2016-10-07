@@ -1025,9 +1025,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     namstart = namptr;
     cnt = len - ( namptr - buff );
     if( cnt == 0 ) {
-        ptr = alloca( len + 1 );
-        memcpy( ptr, buff, len );
-        ptr[len] = '\0';
+        DUPSTR_STACK( ptr, buff, len );
         LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
     }
     namelen = cnt;
@@ -1196,9 +1194,8 @@ char *GetFileName( char **membname, bool setname )
     unsigned    memblen;
     char        ch;
 
+    DUPBUF_STACK( objname, Token.this, Token.len );
     namelen = Token.len;
-    objname = alloca( namelen );
-    memcpy( objname, Token.this, namelen );
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
         ch = Token.this[Token.len];
         Token.this[Token.len] = 0;

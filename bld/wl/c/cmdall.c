@@ -224,11 +224,10 @@ static bool AddAlias( void )
 /* add an individual alias */
 {
     char        *name;
-    unsigned    namelen;
+    size_t      namelen;
 
+    DUPBUF_STACK( name, Token.this, Token.len );
     namelen = Token.len;
-    name = alloca( namelen );
-    memcpy( name, Token.this, namelen );
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
@@ -895,9 +894,7 @@ bool ProcStart( void )
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) )
         return( false );
     StartInfo.user_specd = true;
-    name = alloca( Token.len + 1 );
-    memcpy( name, Token.this, Token.len );
-    name[ Token.len ] = '\0';
+    DUPSTR_STACK( name, Token.this, Token.len );
     SetStartSym( name );
     return( true );
 }
