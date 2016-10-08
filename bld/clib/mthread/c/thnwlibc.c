@@ -211,32 +211,28 @@ extern int __CBeginThread(
     begin_thread_data   data;
     int                 error;
 
-    if( __NXSlotID == NO_INDEX ){
+    if( __NXSlotID == NO_INDEX ) {
         __InitMultipleThread();
     }
 
     data.start_addr     = start_addr;
     data.stack_bottom   = stack_bottom;
     data.arglist        = arglist;
-    if(NULL == (data.semaphore = NXSemaAlloc(0, NULL)))
-        return -1;
+    if( NULL == (data.semaphore = NXSemaAlloc( 0, NULL )) )
+        return( -1 );
 
     /*
     //  We create the thread as detached (non-joinable) and
     //  to automatically clear context
     */
 
-    if (data.cx = NXContextAlloc((void (*)(void *)) &begin_thread_helper, &data,NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error))
-    {
-        error = NXThreadCreate(data.cx, NX_THR_DETACHED |NX_THR_BIND_CONTEXT, &data.nxtid);
+    if( data.cx = NXContextAlloc( (void (*)(void *))&begin_thread_helper, &data,NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error ) ) {
+        error = NXThreadCreate( data.cx, NX_THR_DETACHED |NX_THR_BIND_CONTEXT, &data.nxtid );
     }
 
-    if(0 == error)
-    {
+    if( 0 == error ) {
         NXSemaWait( data.semaphore );
-    }
-    else
-    {
+    } else {
         /* should we set errno here? */
         data.tid = -1;
     }
@@ -267,18 +263,18 @@ extern int __CreateFirstThreadData(void)
     thread_data * tdata = lib_calloc(1, __ThreadDataSize);
 
     if(NULL == tdata)
-        return 0;
+        return( 0 );
 
     tdata->__allocated = 1;
     tdata->__data_size = __ThreadDataSize;
     __FirstThreadData = tdata;
-    return 1;
+    return( 1 );
 }
 
 extern int __RegisterFirstThreadData(thread_data * tdata)
 {
     __FirstThreadData = tdata;
-    return 0;
+    return( 0 );
 }
 
 extern int __IsFirstThreadData(thread_data * tdata)
@@ -305,7 +301,7 @@ _WCRTLINK int *__threadid( void )
         if( tdata == NULL )
             return( &BadThreadId );
 #endif
-        return ( (int *)&(tdata->thread_id) );
+        return( (int *)&(tdata->thread_id) );
     }
     return( &BadThreadId );
 }

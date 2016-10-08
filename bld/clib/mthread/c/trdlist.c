@@ -77,7 +77,6 @@ thread_data *__GetThreadData( void )
         thread_data_list **pprev;
 
         _AccessTDList();
-        tdata = NULL;
         pprev = &__thread_data_list;
         for( tdl = *pprev; tdl != NULL; tdl = tdl->next ) {
             if( tdl->tid == tid ) {
@@ -99,12 +98,12 @@ thread_data *__GetThreadData( void )
             *pprev = tdl->next;
             tdl->next = __thread_data_list;
             __thread_data_list = tdl;
-            // check for need to resize thread data
-            if( tdata->__resize ) {
-                tdata = __ReallocThreadData();
-            }
         }
         _ReleaseTDList();
+        // check for need to resize thread data
+        if( tdata != NULL && tdata->__resize ) {
+            tdata = __ReallocThreadData();
+        }
     }
 #elif defined(__NT__)
     if( __NTAddThread( tdata ) ) {
@@ -185,7 +184,7 @@ thread_data *__ReallocThreadData( void )
         }
         if( tdl->allocated_entry ) {
 #if defined(_NETWARE_LIBC)
-            if( tdata = lib_malloc( __ThreadDataSize ) ) {
+            if( (tdata = lib_malloc( __ThreadDataSize )) != NULL ) {
                 memcpy(tdata, tdl->data, min(__ThreadDataSize, tdl->data->__data_size));
                 lib_free(tdl->data);
             }
@@ -213,8 +212,8 @@ thread_data *__ReallocThreadData( void )
     TlsSetValue( __TlsIndex, tdata );
 #endif
 #if defined(_NETWARE_LIBC)
-    if( 0 != NXKeySetValue( __NXSlotID, tdata ) ) {
-        lib_free(tdata);
+    if( NXKeySetValue( __NXSlotID, tdata ) ) {
+        lib_free( tdata );
         tdata = NULL;
     }
 #endif

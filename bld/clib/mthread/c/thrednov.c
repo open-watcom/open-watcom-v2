@@ -64,11 +64,11 @@ static int gettid( void *netid )
     int         j;
 
     for( j = 1; j <= __MaxThreads; ++j ) {
-        if( __ThreadIDs[ j ] == netid ) {
+        if( __ThreadIDs[j] == netid ) {
             return( j );
         }
     }
-    return( 0 );   /* __ThreadIDs[ 0 ] points to a thread data struct used
+    return( 0 );   /* __ThreadIDs[0] points to a thread data struct used
                       whenever we can't find a match */
 }
 
@@ -83,16 +83,16 @@ _WCRTLINK int *__threadid( void )
         id = gettid( NULL );
         if( id != 0 ) {
             void *ptr;
-            __ThreadIDs[ id ] = netid;
+            __ThreadIDs[id] = netid;
             ptr = lib_calloc( 1, __ThreadDataSize );
             if( ptr == NULL ) {
                 __fatal_runtime_error( "Unable to allocate thread-specific data", 1 );
             }
-            __ThreadData[ id ].data = ptr;
-            __ThreadData[ id ].allocated_entry = 1;
-            __ThreadData[ id ].data->__allocated = 1;
-            __ThreadData[ id ].data->__randnext = 1;
-            __ThreadData[ id ].data->__data_size = __ThreadDataSize;
+            __ThreadData[id].data = ptr;
+            __ThreadData[id].allocated_entry = 1;
+            __ThreadData[id].data->__allocated = 1;
+            __ThreadData[id].data->__randnext = 1;
+            __ThreadData[id].data->__data_size = __ThreadDataSize;
             if( __initthread( ptr ) ) {
                 lib_free( ptr );
                 __fatal_runtime_error( "Unable to initialize thread-specific data", 1 );
@@ -129,9 +129,9 @@ static void begin_thread_helper( void *the_arg )
         arglist = data->arglist;
         stack_bottom = data->stack_bottom;
         SignalLocalSemaphore( data->semaphore );
-        __ThreadIDs[ newtid ] = GetThreadID();
-        __ThreadData[ newtid ].data = tdata;
-        __ThreadData[ newtid ].allocated_entry = 0;
+        __ThreadIDs[newtid] = GetThreadID();
+        __ThreadData[newtid].data = tdata;
+        __ThreadData[newtid].allocated_entry = 0;
         memset( tdata, 0, __ThreadDataSize );
         // tdata->__allocated = 0;
         tdata->__data_size = __ThreadDataSize;
@@ -170,7 +170,7 @@ extern void __CEndThread( void )
 
     thrdid = *_threadid;
     // don't need to check for allocated indication since always on stack
-    __ThreadData[ thrdid ].data = NULL;
-    __ThreadIDs[ thrdid ] = NULL;
+    __ThreadData[thrdid].data = NULL;
+    __ThreadIDs[thrdid] = NULL;
     ExitThread( EXIT_THREAD, 0 );
 }

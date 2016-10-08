@@ -37,7 +37,7 @@
 #include "thread.h"
 #include "cthread.h"
 
-static int __CInitThread( void *p ) { p=p; return 0; }
+static int __CInitThread( void *p ) { p=p; return( 0 ); }
 
 static beginner     *__BeginThread      = __CBeginThread;
 static ender        *__EndThread        = __CEndThread;
@@ -45,7 +45,7 @@ static initializer  *__InitThread       = __CInitThread;
 
 int __initthread( void *p )
 {
-    return __InitThread( p );
+    return( __InitThread( p ) );
 }
 
 #if defined( __NT__ )

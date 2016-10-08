@@ -76,9 +76,9 @@ static void begin_thread_helper( void *param )
     thread_handle = td->thread_handle;
     RdosSetSignal( td->signal );
 
-    tdata = ( thread_data * )RdosAllocateMem( __ThreadDataSize );
+    tdata = (thread_data *)RdosAllocateMem( __ThreadDataSize );
 
-    if ( tdata ) {
+    if( tdata != NULL ) {
         memset( tdata, 0, __ThreadDataSize );
         tdata->__data_size = __ThreadDataSize;
 
@@ -91,7 +91,7 @@ static void begin_thread_helper( void *param )
     // now get the thread_data ptr the 'standard' way -- this may cause
     // a new thread_data structure to be allocated on heap:
     tdata = __THREADDATAPTR;
-    if ( !tdata ) {
+    if( tdata == NULL ) {
         // this is a library runtime error, should we print an error message ?
         return;
     }
@@ -101,7 +101,7 @@ static void begin_thread_helper( void *param )
     (*rtn)( arg );
     _endthread();
     RdosFreeMem(tdata);
-     return;
+    return;
 }
 
 int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
