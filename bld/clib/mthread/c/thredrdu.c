@@ -113,7 +113,8 @@ int __CBeginThread( thread_fn *start_addr, int prio, const char *thread_name,
     int         wait_handle;
 
     if( __TlsIndex == NO_INDEX ) {
-        if( !__RdosThreadInit() ) return( -1L );
+        if( !__RdosThreadInit() )
+            return( -1L );
         __InitMultipleThread();
     }
 

@@ -101,7 +101,8 @@ unsigned long __CBeginThreadEx(
     HANDLE      th;
 
     if( __TlsIndex == NO_INDEX ) {
-        if( !__NTThreadInit() )  return( 0 );
+        if( !__NTThreadInit() )
+            return( 0 );
         __InitMultipleThread();
     }
 

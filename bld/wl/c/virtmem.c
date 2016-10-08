@@ -542,7 +542,7 @@ static bool LoadInfo( void * info, spilladdr loc, unsigned off, unsigned len, bo
 }
 
 void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
-/***********************************************************/
+/*********************************************************/
 /* copy data into info from the memory or spillfile referenced by stg */
 {
     ScanNodes( stg, buf, len, LoadInfo );
@@ -570,8 +570,8 @@ void PutInfo( virt_mem stg, void * info, virt_mem_size len )
     ScanNodes( stg, info, len, SaveInfo );
 }
 
-void CopyInfo( virt_mem a, virt_mem b, unsigned len )
-/***************************************************/
+void CopyInfo( virt_mem a, virt_mem b, size_t len )
+/*************************************************/
 {
     void *      buf;
 

@@ -120,7 +120,8 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     stack_bottom = stack_bottom;    /* parameter not used for NT version */
 
     if( __TlsIndex == NO_INDEX ) {
-        if( !__NTThreadInit() ) return( -1L );
+        if( !__NTThreadInit() )
+            return( -1L );
         __InitMultipleThread();
     }
 
