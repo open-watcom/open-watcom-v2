@@ -46,9 +46,9 @@
 
 typedef struct thread_data_list {
     struct thread_data_list *next;
-    TID                      tid;
+    TID                     tid;
     thread_data             *data;
-    int                      allocated_entry;
+    int                     allocated_entry;
 } thread_data_list;
 
 static thread_data_list *__thread_data_list;
@@ -129,7 +129,7 @@ thread_data *__GetThreadData( void )
 // realloc thread data
 thread_data *__ReallocThreadData( void )
 {
-    TID tid;
+    TID         tid;
     thread_data *tdata;
 
     _AccessTDList();
@@ -224,8 +224,8 @@ thread_data *__ReallocThreadData( void )
 // add to list of thread data
 int __AddThreadData( TID tid, thread_data *tdata )
 {
-    int             retn = 1;
-    thread_data_list *tdl;
+    int                 retn = 1;
+    thread_data_list    *tdl;
 
     _AccessTDList();
     tdl = lib_calloc( 1, sizeof( *tdl ) );
@@ -262,7 +262,7 @@ void __RemoveThreadData( TID tid )
 
     _AccessTDList();
     pprev = &__thread_data_list;
-    for( tdl = *pprev; tdl != NULL ; tdl = tdl->next ) {
+    for( tdl = *pprev; tdl != NULL; tdl = tdl->next ) {
         if( tdl->tid == tid ) {
             if( tdl->allocated_entry ) {
                 lib_free( tdl->data );
@@ -286,12 +286,8 @@ void __RemoveAllThreadData( void )
     thread_data_list *next;
 
     _AccessTDList();
-
-    next = NULL;
-
-    for( tdl = __thread_data_list; tdl != NULL ; ) {
+    for( tdl = __thread_data_list; tdl != NULL; tdl = next ) {
         next = tdl->next;
-
         if( tdl->allocated_entry ) {
             lib_free( tdl->data );
     #ifdef __RUNTIME_CHECKS__
@@ -299,10 +295,7 @@ void __RemoveAllThreadData( void )
     #endif
         }
         lib_free( tdl );
-
-        tdl = next;
     }
-
     _ReleaseTDList();
 }
 #endif
@@ -315,12 +308,12 @@ void __ResizeThreadDataList( void )
     _AccessTDList();
 #ifdef __OS2__
     {
-        int i;
-        thread_data_vector *tdv;
+        int                 i;
+        thread_data_vector  *tdv;
 
         tdv = __ThreadData;
         if( tdv != NULL ) {
-            for( i = 0 ; i <= __MaxThreads ; i++ ) {
+            for( i = 0; i <= __MaxThreads; i++ ) {
                 if( tdv->data ) {
                     tdv->data->__resize = 1;
                 }
@@ -330,10 +323,8 @@ void __ResizeThreadDataList( void )
     }
 #endif
 
-    tdl = __thread_data_list;
-    while( tdl != NULL ) {
+    for( tdl = __thread_data_list; tdl != NULL; tdl = tdl->next ) {
         tdl->data->__resize = 1;
-        tdl = tdl->next;
     }
     _ReleaseTDList();
 }
@@ -345,14 +336,12 @@ void __FreeThreadDataList( void )
     thread_data_list *tdl;
     thread_data_list *next;
 
-    tdl = __thread_data_list;
-    while( tdl != NULL ) {
+    for( tdl = __thread_data_list; tdl != NULL; tdl = next ) {
         next = tdl->next;
         if( tdl->allocated_entry ) {
             lib_free( tdl->data );
         }
         lib_free( tdl );
-        tdl = next;
     }
 }
 
@@ -364,7 +353,7 @@ int __ActiveThreads( void )
     int threads;
 
     threads = 0;
-    for( tdl = __thread_data_list ; tdl != NULL ; tdl = tdl->next ) {
+    for( tdl = __thread_data_list; tdl != NULL; tdl = tdl->next ) {
         threads++;
     }
     return( threads );

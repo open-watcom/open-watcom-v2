@@ -98,10 +98,11 @@ static semaphore_object IOBSemaphore;
 #if defined( __NT__ )
 
 #define MAX_CRITICAL_SECTION 64
+
 static CRITICAL_SECTION critsect_cache[MAX_CRITICAL_SECTION];
-static int critsect_next;
+static int              critsect_next;
 static CRITICAL_SECTION **critsect_vector;
-static int critsect_vectornext;
+static int              critsect_vectornext;
 
 static CRITICAL_SECTION *__NTGetCriticalSection( void )
 {
@@ -126,15 +127,21 @@ static CRITICAL_SECTION *__NTGetCriticalSection( void )
     InitializeCriticalSection( ptr );
     return( ptr );
 }
-static void __NTDeleteCriticalSection( void ) {
+
+static void __NTDeleteCriticalSection( void )
+{
     int i;
-    for( i = 0 ; i < critsect_next ; i++ ) {
+
+    for( i = 0 ; i < critsect_next; i++ ) {
         DeleteCriticalSection( &(critsect_cache[i]) );
     }
 }
-static void __NTFreeCriticalSection( void ) {
+
+static void __NTFreeCriticalSection( void )
+{
     int i;
-    for( i = 0 ; i < critsect_vectornext ; i++ ) {
+
+    for( i = 0 ; i < critsect_vectornext; i++ ) {
         DeleteCriticalSection( critsect_vector[i] );
         lib_free( critsect_vector[i] );
     }
@@ -433,23 +440,23 @@ thread_data *__MultipleThread( void )
      * Preserve old error code -- important because this code can get
      * called from _STK.
      */
-    DWORD old = GetLastError();
-
+    DWORD       old = GetLastError();
     thread_data *tdata;
+
     tdata = (thread_data *)TlsGetValue( __TlsIndex );
     if( tdata == NULL ) {
         tdata = __GetThreadData();
     } else if( tdata->__resize ) {
         tdata = __ReallocThreadData();
     }
-    SetLastError(old);
+    SetLastError( old );
     return( tdata );
 #elif defined (_NETWARE_LIBC)
     /*
      * Preserve old error code -- important because this code can get
      * called from _STK.
      */
-    int old = GetLastError();
+    int         old = GetLastError();
     thread_data *tdata = NULL;
 
     if( NXKeyGetValue( __NXSlotID, (void **)&tdata ) )
@@ -460,12 +467,13 @@ thread_data *__MultipleThread( void )
     } else if( tdata->__resize ) {
         tdata = __ReallocThreadData();
     }
-    SetLastError(old);
+    SetLastError( old );
     return( tdata );
 #elif defined( __WARP__ )
     // 32 bit OS/2
-    TID tid;
+    TID         tid;
     thread_data *tdata = NULL;
+
     tid = GetCurrentThreadId();
     if( tid <= __MaxThreads ) {
         tdata = __ThreadData[tid].data;
@@ -480,7 +488,8 @@ thread_data *__MultipleThread( void )
     // 16 bit OS/2
     return( __ThreadData[GetCurrentThreadId()] );
 #elif defined( __QNX__ )
-    void *tdata;
+    void    *tdata;
+
     __getmagicvar( &tdata, _m_thread_data );
     if( tdata == NULL ) {
         tdata = __QNXAddThread( tdata );
@@ -491,6 +500,7 @@ thread_data *__MultipleThread( void )
     return( NULL );
 #elif defined( __RDOS__ )
     thread_data *tdata;
+
     tdata = (thread_data *)__tls_get_value( __TlsIndex );
     if( tdata == NULL )
         tdata = __GetThreadData();
@@ -565,7 +575,6 @@ int __NTAddThread( thread_data *tdata )
     if( __TlsIndex == NO_INDEX ) {
         return( FALSE );
     }
-
     tdata = __AllocInitThreadData( tdata );
     if( tdata == NULL ) {
         return( FALSE );
@@ -575,7 +584,6 @@ int __NTAddThread( thread_data *tdata )
         return( FALSE );
     }
     TlsSetValue( __TlsIndex, tdata );
-
     return( TRUE );
 }
 
@@ -644,7 +652,8 @@ int __OS2AddThread( TID tid, thread_data *tdata )
 void __OS2RemoveThread( void )
 /****************************/
 {
-    TID tid;
+    TID     tid;
+
     tid = *_threadid;
     if( tid <= __MaxThreads ) {
         if( __ThreadData[tid].allocated_entry ) {
@@ -661,7 +670,8 @@ void __OS2RemoveThread( void )
 thread_data *__QNXAddThread( thread_data *tdata )
 /***********************************************/
 {
-    void *tmp;
+    void    *tmp;
+
     tdata = __AllocInitThreadData( tdata );
     // if tdata is NULL it doesn't matter what we do with it
     tmp = (void *)tdata;
@@ -672,7 +682,7 @@ thread_data *__QNXAddThread( thread_data *tdata )
 void __QNXRemoveThread( void )
 /****************************/
 {
-    void *tmp;
+    void        *tmp;
     thread_data *tdata;
 
     __getmagicvar( &tmp, _m_thread_data );
