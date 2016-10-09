@@ -59,7 +59,7 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
     size_t buff_size )                          // - size of output buffer
 ;
 
-int __is_mangled(                               // IS NAME MANGLED ?
+size_t __is_mangled(                            // IS NAME MANGLED ?
     char const *name,                           // - C++ name
     size_t len )                                // - length of name
 ;
