@@ -348,6 +348,7 @@ static void SetOmfBuffer( unsigned_16 len )
 {
     if( len + 3 > omfRecLen ) {
         OmfRecord *new;
+
         omfRecLen = len + 3;
         new = MemAlloc( omfRecLen );
         new->basic.len = omfRec->basic.len;
@@ -441,7 +442,10 @@ static file_offset OmfProc( libfile io, sym_file *sfile, omf_oper oper )
                 /* check to see if this is an Easy OMF-386 object file */
                 /* Only need to check the first comment record */
                 if( ( omfRec->basic.type & ~1 ) == CMD_COMENT ) {
-                    if( GET_LE_16( omfRec->basic.len ) == 8 && memcmp( omfRec->basic.contents, "\x80\xAA" "80386", 7 ) == 0 ) {
+                    if( GET_LE_16( omfRec->basic.len ) == 8
+                      && omfRec->basic.contents[0] == CMT_TNP
+                      && omfRec->basic.contents[1] == CMT_EASY_OMF
+                      && memcmp( omfRec->basic.contents + 2, "80386", 5 ) == 0 ) {
                         EasyOMF = true;
                     }
                 }
