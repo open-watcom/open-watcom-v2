@@ -74,7 +74,7 @@ typedef struct {
     item_mach   value;
     address     addr;
     int         type;
-    BITB        value_known     : 1;
+    bool        value_known     : 1;
 } io_location;
 
 typedef struct {

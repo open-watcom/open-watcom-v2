@@ -86,10 +86,10 @@ typedef struct memdata {
     HWND            parent;                 /* parent of this window */
     HWND            dialog;                 /* handle of mem info wnd */
     unsigned char   bytesdisp;
-    BITB            isdpmi :1;              /* is this a dpmi item */
-    BITB            maximized :1;           /* is window maximized */
-    BITB            autopos :1;             /* is memory info window auto positioned */
-    BITB            curwnd :1;              /* was the single window flag set
+    bool            isdpmi :1;              /* is this a dpmi item */
+    bool            maximized :1;           /* is window maximized */
+    bool            autopos :1;             /* is memory info window auto positioned */
+    bool            curwnd :1;              /* was the single window flag set
                                                when this window was created */
 } MemWndInfo;
 
@@ -110,11 +110,11 @@ typedef struct memconfig {
     char        *appname;               /* name of calling application */
     MultWnd     allowmult;              /* what to do when the user tries to open more than one window */
     char        fname[MEMWND_MAX_FNAME];/* file name of saves */
-    BITB        init :1;                /* for internal use only */
-    BITB        maximized :1;           /* is mem window maximized */
-    BITB        disp_info :1;           /* display memory info by default */
-    BITB        autopos_info :1;        /* keep the memory info window adjacent to the memory display window */
-    BITB        forget_pos :1;          /* don't update the position and size of the memory display window */
+    bool        init :1;                /* for internal use only */
+    bool        maximized :1;           /* is mem window maximized */
+    bool        disp_info :1;           /* display memory info by default */
+    bool        autopos_info :1;        /* keep the memory info window adjacent to the memory display window */
+    bool        forget_pos :1;          /* don't update the position and size of the memory display window */
 } MemWndConfig;
 
 

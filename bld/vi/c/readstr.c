@@ -65,7 +65,7 @@ typedef struct input_buffer {
     int             left_column;
     int             line;
     type_style      style;
-    BITB            overstrike  : 1;
+    bool            overstrike  : 1;
 } input_buffer;
 
 /*

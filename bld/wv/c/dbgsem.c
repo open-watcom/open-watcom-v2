@@ -93,8 +93,8 @@ static int              Num;
 static bool             EvalSubstring;
 static struct {
     lookup_item         li;
-    BITB                multi_module    : 1;
-    BITB                any_image       : 1;
+    bool                multi_module    : 1;
+    bool                any_image       : 1;
     enum { GET_NAME, GET_OPERATOR, GET_LNUM }   kind;
 }                       CurrGet;
 
@@ -921,8 +921,8 @@ typedef struct cue_find {
     cue_fileid          id;
     const char          *name;
     unsigned            len;
-    BITB                ambig           : 1;
-    BITB                found_a_file    : 1;
+    bool                ambig           : 1;
+    bool                found_a_file    : 1;
     enum {
         CMP_NONE,
         CMP_INSENSITIVE,

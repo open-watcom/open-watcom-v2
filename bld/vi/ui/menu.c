@@ -55,9 +55,9 @@ typedef struct menu {
     char            **list;
     hilst           *hilist;
     hilst           hi;
-    BITB            has_file_list   : 1;
-    BITB            need_hook       : 1;
-    BITB            has_last_files  : 1;
+    bool            has_file_list   : 1;
+    bool            need_hook       : 1;
+    bool            has_last_files  : 1;
     unsigned char   maxwidth;
     unsigned char   orig_maxwidth;
     unsigned char   slen;

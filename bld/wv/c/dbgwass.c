@@ -119,10 +119,10 @@ typedef struct {
     gui_menu_struct *popup;
     mad_type_handle def_addr;
     unsigned        addr_len;
-    BITB            track           : 1;
-    BITB            toggled_break   : 1;
-    BITB            source          : 1;
-    BITB            hex             : 1;
+    bool            track           : 1;
+    bool            toggled_break   : 1;
+    bool            source          : 1;
+    bool            hex             : 1;
 } asm_window;
 #define WndAsm( wnd ) ( (asm_window *)WndExtra( wnd ) )
 

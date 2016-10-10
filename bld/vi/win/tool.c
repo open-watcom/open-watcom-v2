@@ -45,8 +45,8 @@ typedef struct tool_item {
     HBITMAP             bmp;
     char                *name;
     char                *help;
-    BITB                is_blank    : 1;
-    BITB                dont_save   : 1;
+    bool                is_blank    : 1;
+    bool                dont_save   : 1;
     char                cmd[1];
 } tool_item;
 

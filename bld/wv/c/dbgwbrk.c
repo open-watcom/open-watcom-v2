@@ -57,7 +57,7 @@ enum {
 typedef struct break_window {
     gui_ord     addr_indent;
     gui_ord     source_indent;
-    BITB        toggled_break   : 1;
+    bool        toggled_break   : 1;
 } break_window;
 #define WndBreak( wnd ) ( (break_window *)WndExtra( wnd ) )
 

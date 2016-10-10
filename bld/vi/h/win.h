@@ -79,12 +79,12 @@ typedef struct window {
     int         vert_scroll_pos;
     short       bordercol;
     window_id   id;
-    BITB        isswapped           : 1;
-    BITB        accessed            : 1;
-    BITB        has_border          : 1;
-    BITB        has_gadgets         : 1;
-    BITB        min_slot            : 1;
-    BITB        has_scroll_gadgets  : 1;
+    bool        isswapped           : 1;
+    bool        accessed            : 1;
+    bool        has_border          : 1;
+    bool        has_gadgets         : 1;
+    bool        min_slot            : 1;
+    bool        has_scroll_gadgets  : 1;
     signed char overcnt[1];
 } window;
 

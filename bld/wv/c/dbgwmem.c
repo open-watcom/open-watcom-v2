@@ -98,7 +98,7 @@ typedef struct mem_backout {
     unsigned            curr_offset;
     unsigned            total_size;
     char                *follow;
-    BITB                has_current : 1;
+    bool                has_current : 1;
 } mem_backout;
 
 typedef struct mem_window {
@@ -131,8 +131,8 @@ typedef struct mem_window {
     int         cursor_piece;
     int         shadow_piece;
     mad_type_handle init_type;      //MAD: what if active MAD changes?
-    BITB        file    : 1;
-    BITB        stack   : 1;
+    bool        file    : 1;
+    bool        stack   : 1;
 } mem_window;
 
 #define WndMem( wnd ) ( (mem_window *)WndExtra( wnd ) )

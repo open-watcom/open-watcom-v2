@@ -47,9 +47,9 @@ typedef struct item {
     int             menuid;
     char            *name;
     char            *help;
-    BITB            in_menu     : 1;
-    BITB            is_active   : 1;
-    BITB            is_checked  : 1;
+    bool            in_menu     : 1;
+    bool            is_active   : 1;
+    bool            is_checked  : 1;
     char            cmd[1];
 } item;
 
@@ -60,9 +60,9 @@ typedef struct menu {
     int             orig_num_items;
     HMENU           menu_handle;
     char            *help;
-    BITB            has_file_list   : 1;
-    BITB            need_hook       : 1;
-    BITB            has_last_files  : 1;
+    bool            has_file_list   : 1;
+    bool            need_hook       : 1;
+    bool            has_last_files  : 1;
     char            name[1];
 } menu;
 

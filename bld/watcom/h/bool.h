@@ -34,13 +34,11 @@
   #if !defined( __bool_true_false_are_defined )
     #if defined( __WATCOMC__ ) || __STDC_VERSION__ >= 199901L && defined( __UNIX__ ) || _MSC_VER >= 1900
         #include <stdbool.h>
-        #define BITB        bool
     #else
         #define bool        unsigned char
         #define true        1
         #define false       0
         #define __bool_true_false_are_defined 1
-        #define BITB        unsigned
     #endif
   #endif
 #endif

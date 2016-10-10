@@ -50,9 +50,9 @@ typedef struct font {
     UINT        avg_width;
     UINT        max_width;
     UINT        space_width;
-    BITB        used            : 1;
-    BITB        fixed           : 1;
-//    BITB        isFunnyItalic   : 1; ?
+    bool        used            : 1;
+    bool        fixed           : 1;
+//    bool        isFunnyItalic   : 1; ?
 } font;
 
 LOGFONT Helvetica6 = {

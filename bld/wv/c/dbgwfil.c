@@ -92,9 +92,9 @@ typedef struct {
     char                *name;
     a_window            *asw;
     int                 eof;
-    BITB                track           : 1;
-    BITB                erase           : 1;
-    BITB                toggled_break   : 1;
+    bool                track           : 1;
+    bool                erase           : 1;
+    bool                toggled_break   : 1;
 } file_window;
 #define WndFile( wnd ) ( (file_window *)WndExtra( wnd ) )
 

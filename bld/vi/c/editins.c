@@ -1088,8 +1088,8 @@ vi_rc InsertLikeLast( void )
 
 typedef struct mode {
     struct mode *prev;
-    BITB        wasinsert       : 1;
-    BITB        wasoverstrike   : 1;
+    bool        wasinsert       : 1;
+    bool        wasoverstrike   : 1;
 } mode;
 
 static mode     *modeTail;
