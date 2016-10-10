@@ -24,7 +24,7 @@ extern void             *__get_pkey_value( pthread_key_t id );
 /* Thread-specific cleanup bookkeeping */
 extern int              __push_pthread_cleaner( void (*__routine)(void *), void *__arg );
 extern int              __pop_pthread_cleaner( int __execute );
-extern int              __call_all_pthread_cleaners( );
+extern int              __call_all_pthread_cleaners( void );
 
 /* Accessing internal thread data */
 extern void             __set_thread_return_value( pthread_t thread, void *value );

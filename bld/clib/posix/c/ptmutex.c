@@ -44,6 +44,8 @@
 #include "rterrno.h"
 #include "thread.h"
 
+#include "_ptint.h"
+
 
 _WCRTLINK int pthread_mutex_init(pthread_mutex_t *__mutex, const pthread_mutexattr_t *__attr)
 {
@@ -194,9 +196,9 @@ int ret;
     return( ret );
 }
 
-_WCRTLINK int __pthread_mutex_mylock(pthread_mutex_t *__mutex)
+int __pthread_mutex_mylock(pthread_mutex_t *__mutex)
 {
-int ret;
+    int ret;
 
     if(__mutex == NULL)
         return( EINVAL );

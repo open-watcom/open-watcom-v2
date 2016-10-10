@@ -53,13 +53,13 @@ struct __thread_pass {
     sem_t      registered;
 };
 
-void __thread_start( void *data )
+static void __thread_start( void *data )
 {
-struct __thread_pass *passed;
-void *ret;
+    struct __thread_pass    *passed;
+    void                    *ret;
 
-void *(*start_routine)(void*);
-void *arg;
+    void                    *(*start_routine)(void*);
+    void                    *arg;
 
     passed = (struct __thread_pass *)data;
     
@@ -76,7 +76,7 @@ void *arg;
     /* Call the user routine */
     ret = start_routine(arg);
     
-    /* The pointer 'ret' must bo returned to any waiting
+    /* The pointer 'ret' must be returned to any waiting
      * "join" operations
      */
     pthread_exit(ret);

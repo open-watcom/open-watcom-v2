@@ -287,9 +287,9 @@ void *ret;
     return( ret );
 }
 
-void __call_pkey_destructor( pthread_key_t id, void *value )
+static void __call_pkey_destructor( pthread_key_t id, void *value )
 {
-struct __ptkeylist_struct *walker;
+    struct __ptkeylist_struct *walker;
     
     if(pthread_mutex_lock(__ptkeylist_mutex) == 0) {
         
@@ -306,11 +306,11 @@ struct __ptkeylist_struct *walker;
     }
 }
 
-int __call_all_pthread_cleaners( )
+int __call_all_pthread_cleaners( void )
 {
-struct __ptcatalog_struct *myself;
-struct __ptcleaners *cleaner_stack;
-struct __ptcleaners *previous;
+    struct __ptcatalog_struct   *myself;
+    struct __ptcleaners         *cleaner_stack;
+    struct __ptcleaners         *previous;
 
     cleaner_stack = NULL;
 

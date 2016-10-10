@@ -32,6 +32,8 @@
 
 #include "variety.h"
 #include <sys/types.h>
+#include <pthread.h>
+
 
 _WCRTLINK int pthread_detach(pthread_t __thr)
 {
