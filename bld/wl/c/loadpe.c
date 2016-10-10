@@ -598,7 +598,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
 {
     unsigned_32         size;
     pe_export_directory dir;
-    char                *name;
+    const char          *name;
     unsigned            namelen;
     entry_export        **sort;
     entry_export        *exp;
@@ -621,9 +621,9 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     if( FmtData.u.os2.res_module_name != NULL ) {
         name = FmtData.u.os2.res_module_name;
     } else {
-        name = RemovePath( Root->outfile->fname, &namelen );
+        name = GetBaseName( Root->outfile->fname, 0, &namelen );
     }
-    /* RemovePath strips the extension, which we actually need to keep!
+    /* GetBaseName strips the extension, which we actually need to keep!
      * Always recalculate the len including the extension.
      */
     namelen = strlen( name ) + 1;

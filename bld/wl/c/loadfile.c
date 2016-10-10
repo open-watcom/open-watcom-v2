@@ -100,7 +100,7 @@ static implibinfo       ImpLib;
 static void SetupImpLib( void )
 /*****************************/
 {
-    char        *fname;
+    const char  *fname;
     unsigned    namelen;
 
     ImpLib.bufsize = 0;
@@ -116,9 +116,9 @@ static void SetupImpLib( void )
         } else {
             ImpLib.handle = OpenTempFile( &ImpLib.fname );
         }
-        /* RemovePath results in the filename only   *
+        /* GetBaseName results in the filename only   *
          * it trims both the path, and the extension */
-        fname = RemovePath( Root->outfile->fname, &namelen );
+        fname = GetBaseName( Root->outfile->fname, 0, &namelen );
         ImpLib.dlllen = namelen;
         /* increase length to restore full extension if not OS2    *
          * sometimes the extension of the output name is important */

@@ -144,7 +144,7 @@ void DataRef( symbol * sym )
 /* symbol referenced from data, so make sure it is included */
 {
     if( (LinkState & HAVE_PPC_CODE) && (FmtData.type & MK_PE) ) {
-        unsigned    len = strlen( sym->name ) + 3;
+        size_t      len = strlen( sym->name ) + 3;
         char        *s = alloca( len );
 
         s[ 0 ] = s[ 1 ] = '.';

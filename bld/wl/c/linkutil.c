@@ -330,19 +330,24 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-char *RemovePath( char *namestart, unsigned *len )
-/**********************************************/
+const char *GetBaseName( const char *namestart, unsigned len, unsigned *lenp )
+/****************************************************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
  * the extension */
 {
-    char    *dotpoint;
-    char    *string;
-    char    ch;
+    const char  *dotpoint;
+    const char  *string;
+    const char  *end;
+    char        ch;
 
+    if( len == 0 )
+        len = strlen( namestart );
+    end = namestart + len;
     dotpoint = NULL;
     // ignore path & extension in module name.
-    for( string = namestart; (ch = *string) != '\0'; string++ ) {
+    for( string = namestart; string != end; string++ ) {
+        ch = *string;
         if( ch == '.' ) {
             dotpoint = string;
             continue;
@@ -353,9 +358,9 @@ char *RemovePath( char *namestart, unsigned *len )
         }
     }
     if( dotpoint != NULL ) {
-        *len = dotpoint - namestart;
+        *lenp = dotpoint - namestart;
     } else {
-        *len = string - namestart;
+        *lenp = string - namestart;
     }
     return( namestart );
 }

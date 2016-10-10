@@ -455,13 +455,13 @@ static unsigned long ModRefTable( void )
 }
 
 unsigned long ResNonResNameTable( bool dores )
-/***************************************************/
+/********************************************/
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
     entry_export    *exp;
     unsigned        namelen;
     unsigned long   size;
-    char            *name;
+    const char      *name;
 
     size = 0;
     if( dores ) {
@@ -469,7 +469,7 @@ unsigned long ResNonResNameTable( bool dores )
             name = FmtData.u.os2.res_module_name;
             namelen = strlen( name );
         } else {
-            name = RemovePath( Root->outfile->fname, &namelen );
+            name = GetBaseName( Root->outfile->fname, 0, &namelen );
         }
     } else {     /* in non-resident names table */
         if( FmtData.u.os2.description != NULL ) {
@@ -488,11 +488,11 @@ unsigned long ResNonResNameTable( bool dores )
         size += namelen + 3;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
-        _LnkFree( name );
+        _LnkFree( FmtData.u.os2.res_module_name );
         FmtData.u.os2.res_module_name = NULL;
     }
     if( !dores && FmtData.u.os2.description != NULL ) {
-        _LnkFree( name );
+        _LnkFree( FmtData.u.os2.description );
         FmtData.u.os2.description = NULL;
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {

@@ -552,8 +552,8 @@ static void ProcAlias( void )
 /* process a symbol alias directive */
 {
     char        *alias;
-    unsigned    aliaslen;
-    unsigned    targetlen;
+    size_t      aliaslen;
+    size_t      targetlen;
     symbol      *sym;
 
     for( ; ObjBuff < EOObjRec; ObjBuff += targetlen ) {
@@ -763,7 +763,7 @@ static void ProcPubdef( bool static_sym )
     char            *sym_name;
     segnode         *seg;
     offset          off;
-    unsigned        sym_len;
+    size_t          sym_len;
     unsigned_16     frame;
     unsigned_16     segidx;
 
@@ -911,7 +911,7 @@ static void UseSymbols( bool static_sym, bool iscextdef )
 /* Define all external references. */
 {
     list_of_names       *lnptr;
-    unsigned            sym_len;
+    size_t              sym_len;
     extnode             *newnode;
     symbol              *sym;
     sym_flags           flags;

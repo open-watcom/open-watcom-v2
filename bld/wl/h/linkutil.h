@@ -54,7 +54,7 @@ extern f_handle         FindPath( const char * );
 extern name_list        *AddNameTable( const char *, unsigned, bool, name_list ** );
 extern unsigned_16      binary_log( unsigned_16 );
 extern unsigned_16      blog_32( unsigned_32 );
-extern char             *RemovePath( char *, unsigned * );
+extern const char       *GetBaseName( const char *, unsigned, unsigned * );
 extern void             WriteNulls( f_handle, unsigned_32, char * );
 extern void             VMemQSort( virt_mem, unsigned, unsigned,
                                     void (*swapfn)(virt_mem, virt_mem),

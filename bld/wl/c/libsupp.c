@@ -119,9 +119,9 @@ bool ModNameCompare( char *tname, char *membname )
 {
     unsigned    lentheadr;
     unsigned    lenmember;
-    char        *namestart;
+    const char  *namestart;
 
-    namestart = RemovePath( tname, &lentheadr );
+    namestart = GetBaseName( tname, 0, &lentheadr );
     lenmember = strlen( membname );
     if( lentheadr == lenmember ) {
         if( memicmp( namestart, membname, lenmember ) == 0 ) {

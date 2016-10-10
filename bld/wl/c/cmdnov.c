@@ -193,8 +193,8 @@ static bool GetNovImport( void )
     symbol      *sym;
     char        *name = NULL;
     char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    size_t      namelen = 0;
+    size_t      prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context
@@ -250,8 +250,8 @@ static bool GetNovExport( void )
     symbol      *sym;
     char        *name = NULL;
     char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    size_t      namelen = 0;
+    size_t      prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context

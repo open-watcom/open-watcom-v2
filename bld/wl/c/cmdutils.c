@@ -1190,17 +1190,13 @@ char *GetFileName( char **membname, bool setname )
     char        *ptr;
     unsigned    namelen;
     char        *objname;
-    char        *fullmemb;
+    const char  *fullmemb;
     unsigned    memblen;
-    char        ch;
 
     DUPBUF_STACK( objname, Token.this, Token.len );
     namelen = Token.len;
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
-        ch = Token.this[Token.len];
-        Token.this[Token.len] = 0;
-        fullmemb = RemovePath( Token.this, &memblen );
-        Token.this[Token.len] = ch;
+        fullmemb = GetBaseName( Token.this, Token.len, &memblen );
         *membname = ChkToString( fullmemb, memblen );
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {

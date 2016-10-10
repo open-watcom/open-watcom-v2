@@ -745,7 +745,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
 /**************************************************************/
 // do the object file independent public symbol definition.
 {
-    unsigned        name_len;
+    size_t          name_len;
     bool            frame_ok;
     sym_info        sym_type;
 
@@ -949,7 +949,7 @@ void CheckComdatSym( symbol *sym, sym_info flags )
         }
     }
     if( symflags == SYM_CDAT_SEL_NODUP ) {
-        ReportMultiple( sym, sym->name, strlen(sym->name) );
+        ReportMultiple( sym, sym->name, strlen( sym->name ) );
     }
 }
 
