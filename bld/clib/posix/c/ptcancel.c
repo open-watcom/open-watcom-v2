@@ -59,6 +59,7 @@ static void __thread_handle_cancellation(int signal)
     pthread_exit(PTHREAD_CANCELED);
 }
 
+#if 0
 int __thread_enable_cancellation(int enable)
 {
 sighandler_t res;
@@ -70,6 +71,7 @@ sighandler_t res;
         
     return( res == __thread_handle_cancellation ? PTHREAD_CANCEL_ENABLE : PTHREAD_CANCEL_DISABLE );
 }
+#endif
 
 _WCRTLINK int pthread_cancel( pthread_t __thread )
 {
