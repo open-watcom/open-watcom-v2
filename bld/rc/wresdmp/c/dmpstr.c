@@ -36,6 +36,9 @@
 #include "dmpstr.h"
 #include "rcrtns.h"
 
+#include "clibext.h"
+
+
 bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
 /******************************************************************/
 {
