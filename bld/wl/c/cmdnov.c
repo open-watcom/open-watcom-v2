@@ -63,10 +63,10 @@ static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 #define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
-static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name, unsigned *namelen, char **prefix, unsigned *prefixlen )
+static bool NetWareSplitSymbol( const char *tokenThis, size_t tokenLen, const char **name, size_t *namelen, const char **prefix, size_t *prefixlen )
 {
-    char        *findAt = tokenThis;
-    unsigned    nLen;
+    const char  *findAt = tokenThis;
+    size_t      nLen;
 
     if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
         return( false );
@@ -105,7 +105,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     *prefix = tokenThis;
     *prefixlen = findAt - tokenThis;
 
-    *name = &findAt[ 1 ];
+    *name = findAt + 1;
     *namelen = nLen - 1;
 
     return( true );
@@ -191,8 +191,8 @@ static bool GetNovImport( void )
 /******************************/
 {
     symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
+    const char  *name = NULL;
+    const char  *prefix = NULL;
     size_t      namelen = 0;
     size_t      prefixlen = 0;
 
@@ -246,8 +246,8 @@ static bool GetNovExport( void )
 /******************************/
 {
     symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
+    const char  *name = NULL;
+    const char  *prefix = NULL;
     size_t      namelen = 0;
     size_t      prefixlen = 0;
 

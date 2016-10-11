@@ -227,7 +227,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 /******************************************************************************/
 {
-    size_t  h;
+    ssize_t h;
     char    rc_buff[RESOURCE_MAX_SIZE];
 
     if( len == 0 )
@@ -282,7 +282,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 }
 
 void QSeek( f_handle file, unsigned long position, const char *name )
-/*************************************************************/
+/*******************************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }

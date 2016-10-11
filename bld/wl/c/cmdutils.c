@@ -1015,7 +1015,7 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     size_t      namelen;
     char        c;
 
-    
+
     for( namptr = buff + len; namptr != buff; --namptr ) {
         c = namptr[-1];
         if( IS_PATH_SEP( c ) ) {
@@ -1188,10 +1188,10 @@ char *GetFileName( char **membname, bool setname )
 /********************************************************/
 {
     char        *ptr;
-    unsigned    namelen;
+    size_t      namelen;
     char        *objname;
     const char  *fullmemb;
-    unsigned    memblen;
+    size_t      memblen;
 
     DUPBUF_STACK( objname, Token.this, Token.len );
     namelen = Token.len;

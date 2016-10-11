@@ -113,12 +113,12 @@ bool LibFind( char *name, bool old_sym )
     return( false );
 }
 
-bool ModNameCompare( char *tname, char *membname )
-/*******************************************************/
+bool ModNameCompare( const char *tname, const char *membname )
+/************************************************************/
 // check if a THEADR record name is equal to a library member name
 {
-    unsigned    lentheadr;
-    unsigned    lenmember;
+    size_t      lentheadr;
+    size_t      lenmember;
     const char  *namestart;
 
     namestart = GetBaseName( tname, 0, &lentheadr );

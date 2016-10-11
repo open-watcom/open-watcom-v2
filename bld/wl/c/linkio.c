@@ -101,7 +101,8 @@ static tiny_ret_t DoOpen( const char *name, bool create, unsigned mode )
 
     CheckBreak();
     for( ;; ) {
-        if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if( OpenFiles >= MAX_OPEN_FILES )
+            CleanCachedHandles();
         if( create ) {
             h  = TinyCreate( name, mode );
         } else {
@@ -111,8 +112,11 @@ static tiny_ret_t DoOpen( const char *name, bool create, unsigned mode )
             OpenFiles++;
             break;
         }
-        if( TINY_INFO( h ) != TOOMANY ) break;
-        if( !CleanCachedHandles() ) break;
+        if( TINY_INFO( h ) != TOOMANY )
+            break;
+        if( !CleanCachedHandles() ) {
+            break;
+        }
     }
     return( h );
 }
@@ -246,7 +250,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 }
 
 void QSeek( f_handle file, unsigned long position, const char *name )
-/*************************************************************/
+/*******************************************************************/
 {
     QLSeek( file, position, TIO_SEEK_START, name );
 }
@@ -309,7 +313,9 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );

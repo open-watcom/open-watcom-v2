@@ -64,8 +64,8 @@ typedef struct {
     class_walk_fn   *cbfn;
 } class_walk_data;
 
-void WriteNulls( f_handle file, unsigned_32 len, char *name )
-/*******************************************************************/
+void WriteNulls( f_handle file, unsigned_32 len, const char *name )
+/*****************************************************************/
 /* copy nulls for uninitialized data */
 {
     static unsigned NullArray[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -148,7 +148,7 @@ char *ChkToString( const void *mem, size_t len )
 }
 
 static void WalkModsList( mod_entry *list, mods_walk_fn *cbfn )
-/***********************************************************/
+/*************************************************************/
 {
     for( ; list != NULL; list = list->n.next_mod ) {
         cbfn( list );
@@ -263,8 +263,8 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( const char *name, unsigned len, bool is_mod, name_list **owner )
-/***************************************************************************************/
+name_list *AddNameTable( const char *name, size_t len, bool is_mod, name_list **owner )
+/*************************************************************************************/
 {
     name_list   *imp;
     unsigned_32 off;
@@ -330,23 +330,21 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-const char *GetBaseName( const char *namestart, unsigned len, unsigned *lenp )
-/****************************************************************************/
+const char *GetBaseName( const char *namestart, size_t len, size_t *lenp )
+/************************************************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
  * the extension */
 {
     const char  *dotpoint;
     const char  *string;
-    const char  *end;
     char        ch;
 
     if( len == 0 )
         len = strlen( namestart );
-    end = namestart + len;
-    dotpoint = NULL;
     // ignore path & extension in module name.
-    for( string = namestart; string != end; string++ ) {
+    dotpoint = NULL;
+    for( string = namestart; len-- > 0; string++ ) {
         ch = *string;
         if( ch == '.' ) {
             dotpoint = string;
@@ -365,25 +363,25 @@ const char *GetBaseName( const char *namestart, unsigned len, unsigned *lenp )
     return( namestart );
 }
 
-#define MAXDEPTH        ( sizeof( unsigned ) * 8 )
+#define MAXDEPTH        ( sizeof( size_t ) * 8 )
 
-void VMemQSort( virt_mem base, unsigned n, unsigned width,
+void VMemQSort( virt_mem base, size_t n, size_t width,
                         void (*swapfn)( virt_mem, virt_mem ),
                         int (*cmpfn)( virt_mem, virt_mem ) )
 /***************************************************************/
 // qsort stolen from clib, and suitably modified since we need to be able
 // to swap parallel arrays.
 {
-    virt_mem    p1;
-    virt_mem    p2;
-    virt_mem    mid;
-    int         comparison;
-    int         last_non_equal_count;
-    unsigned    i;
-    unsigned    count;
-    unsigned    sp;
-    auto virt_mem base_stack[MAXDEPTH];
-    auto unsigned n_stack[MAXDEPTH];
+    virt_mem        p1;
+    virt_mem        p2;
+    virt_mem        mid;
+    int             comparison;
+    size_t          last_non_equal_count;
+    size_t          i;
+    size_t          count;
+    size_t          sp;
+    auto virt_mem   base_stack[MAXDEPTH];
+    auto size_t     n_stack[MAXDEPTH];
 
     sp = 0;
     for( ; ; ) {
@@ -416,7 +414,7 @@ void VMemQSort( virt_mem base, unsigned n, unsigned width,
                     p1 += width;
                 }
                 /* special check to see if all values compared are equal */
-                if( ( count == n-1 ) && ( last_non_equal_count == 0 ) )
+                if( ( count == n - 1 ) && ( last_non_equal_count == 0 ) )
                     break;
                 if( count != 0 ) {  /* store pivot in right spot */
                     swapfn( base, p2 );

@@ -68,7 +68,7 @@ extern void             OrderGroups( bool (*)(targ_addr *, targ_addr *) );
 extern bool             WriteDOSGroup( group_entry * );
 extern unsigned_32      MemorySize( void );
 extern unsigned_32      AppendToLoadFile( const char * );
-extern void             AddImpLibEntry( const char *, const char *, unsigned );
+extern void             AddImpLibEntry( const char *, const char *, unsigned ordinal );
 extern void             BuildImpLib( void );
 extern void             SetStartSym( const char * );
 extern offset           CalcGroupSize( group_entry * );

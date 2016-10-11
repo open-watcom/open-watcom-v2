@@ -269,7 +269,9 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
                             (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
                 && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
-                            exe_type_name->NumChars ) ) break;
+                            exe_type_name->NumChars ) ) {
+                break;
+            }
         } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
@@ -390,7 +392,8 @@ static unsigned long WriteTabList( name_list *val, unsigned long *count,
         ++i;
         WriteLoad( &(node->len), sizeof( unsigned char ) );  // NOTE:little endian
         if( upper ) {
-            for( j = node->len-1; j >= 0; --j ) {
+            j = node->len;
+            while( j-- > 0 ) {
                 node->name[j] = toupper( node->name[j] );
             }
         }
@@ -459,17 +462,18 @@ unsigned long ResNonResNameTable( bool dores )
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
     entry_export    *exp;
-    unsigned        namelen;
+    unsigned char   len_u8;
     unsigned long   size;
     const char      *name;
+    size_t          len;
 
     size = 0;
     if( dores ) {
         if( FmtData.u.os2.res_module_name != NULL ) {
             name = FmtData.u.os2.res_module_name;
-            namelen = strlen( name );
+            len = strlen( name );
         } else {
-            name = GetBaseName( Root->outfile->fname, 0, &namelen );
+            name = GetBaseName( Root->outfile->fname, 0, &len );
         }
     } else {     /* in non-resident names table */
         if( FmtData.u.os2.description != NULL ) {
@@ -479,13 +483,14 @@ unsigned long ResNonResNameTable( bool dores )
         } else {
             name = "";
         }
-        namelen = strlen( name );
+        len = strlen( name );
     }
-    if( dores || namelen > 0 ) {
-        WriteLoad( &namelen, 1 );
-        WriteLoad( name, namelen );
+    if( dores || len > 0 ) {
+        len_u8 = (unsigned char)len;
+        WriteLoad( &len_u8, 1 );
+        WriteLoad( name, len_u8 );
         PadLoad( 2 );
-        size += namelen + 3;
+        size += len_u8 + 1 + 2;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
         _LnkFree( FmtData.u.os2.res_module_name );
@@ -496,17 +501,20 @@ unsigned long ResNonResNameTable( bool dores )
         FmtData.u.os2.description = NULL;
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
-        if( !exp->isexported ) continue;
-        if( exp->isanonymous ) continue;
+        if( !exp->isexported )
+            continue;
+        if( exp->isanonymous )
+            continue;
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
             if( (LinkFlags & CASE_FLAG) == 0 ) {
                 strupr( exp->name );
             }
-            namelen = strlen( exp->name );
-            WriteLoad( &namelen, 1 );
-            WriteLoad( exp->name, namelen );
+            len = strlen( exp->name );
+            len_u8 = (unsigned char)len;
+            WriteLoad( &len_u8, 1 );
+            WriteLoad( exp->name, len_u8 );
             WriteLoad( &(exp->ordinal), 2 );
-            size += namelen + 3;
+            size += len_u8 + 3;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
                     AddImpLibEntry(exp->impname, exp->name, NOT_IMP_BY_ORDINAL);
@@ -562,7 +570,7 @@ static unsigned long DumpEntryTable( void )
                     WriteLoad( &prefix, sizeof( bundle_prefix ) );
                     size += 2;
                 }
-                prefix.number = (unsigned_8) gap;
+                prefix.number = (unsigned_8)gap;
                 WriteLoad( &prefix, sizeof( bundle_prefix ) );
                 size += 2;
             }
@@ -570,11 +578,16 @@ static unsigned long DumpEntryTable( void )
             entries = 1;
             prev = start = place;
             for( place = place->next; place != NULL; place = place->next ) {
-                if( entries >= 0xff ) break;
+                if( entries >= 0xff )
+                	break;
                 if( start->ismovable ) {
-                    if( !place->ismovable )break;
+                    if( !place->ismovable ) {
+                    	break;
+                    }
                 } else {
-                    if( place->addr.seg != start->addr.seg ) break;
+                    if( place->addr.seg != start->addr.seg ) {
+                        break;
+                    }
                 }
                 if( place->ordinal - prev->ordinal > 1 ) {
                     break;    // ordinal can't be put in this bundle.

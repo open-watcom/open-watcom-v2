@@ -127,12 +127,12 @@ extern void     ReadPermData( void );
 extern void     WritePermData( void );
 
 extern void     IncP2Start( void );
-extern void     PermSaveFixup( void *, unsigned );
+extern void     PermSaveFixup( void *, size_t );
 extern void     PermStartMod( mod_entry * );
 extern void     PermEndMod( mod_entry * );
-extern void     WritePermFile( perm_write_info *, void *, unsigned );
-extern void     ReadPermFile( perm_read_info *, void *, unsigned );
-extern void     IterateModRelocs( unsigned,unsigned,unsigned (*)(void *));
+extern void     WritePermFile( perm_write_info *, const void *data, size_t len );
+extern void     ReadPermFile( perm_read_info *, void *, size_t );
+extern void     IterateModRelocs( size_t, size_t, size_t (*)(void *) );
 extern void     *GetSegContents( segdata *, virt_mem_size );
 extern void     *GetAltdefContents( segdata * );
 extern void     FreeSavedRelocs( void );

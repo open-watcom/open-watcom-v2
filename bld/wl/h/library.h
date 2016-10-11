@@ -38,4 +38,4 @@ extern void             BurnLibs( void );
 extern char             *GetARName( ar_header *, file_list *, unsigned long * );
 extern unsigned long    GetARValue( char *, unsigned );
 extern bool             LibFind( char *, bool );
-extern bool             ModNameCompare( char *, char * );
+extern bool             ModNameCompare( const char *, const char * );

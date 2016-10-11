@@ -285,7 +285,7 @@ unsigned long IncPass1( void )
     segdata         *seg;
     symbol          *publist;
     virt_mem_size   dataoff;
-    unsigned        relocs;
+    size_t          relocs;
 
     seglist = CurrMod->segs;
     CurrMod->segs = NULL;

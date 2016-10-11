@@ -72,6 +72,7 @@
 
 #include "clibext.h"
 
+
 seg_leader      *StackSegPtr;
 startinfo       StartInfo;
 
@@ -81,18 +82,18 @@ typedef struct {
     f_handle    handle;
     char        *fname;
     char        *buffer;
-    unsigned    bufsize;
+    size_t      bufsize;
     char        *dllname;
     size_t      dlllen;
-    unsigned    didone : 1;
+    bool        didone : 1;
 } implibinfo;
 
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
     group_entry *lastgrp;  // used only for copy classes
-    unsigned    repos : 1;
-    unsigned    copy  : 1;
+    bool        repos : 1;
+    bool        copy  : 1;
 } grpwriteinfo;
 
 static implibinfo       ImpLib;
@@ -101,7 +102,7 @@ static void SetupImpLib( void )
 /*****************************/
 {
     const char  *fname;
-    unsigned    namelen;
+    size_t      namelen;
 
     ImpLib.bufsize = 0;
     ImpLib.handle = NIL_FHANDLE;
@@ -833,10 +834,10 @@ void BuildImpLib( void )
     _LnkFree( ImpLib.dllname );
 }
 
-static void BufImpWrite( char *buffer, unsigned len )
-/***************************************************/
+static void BufImpWrite( const char *buffer, size_t len )
+/*******************************************************/
 {
-    unsigned    diff;
+    size_t      diff;
 
     if( ImpLib.bufsize + len >= IMPLIB_BUFSIZE ) {
         diff = ImpLib.bufsize + len - IMPLIB_BUFSIZE;
@@ -953,8 +954,8 @@ static bool WriteSegData( void *_sdata, void *_info )
 {
     segdata         *sdata = _sdata;
     grpwriteinfo    *info = _info;
-    unsigned long       newpos;
-    unsigned long       oldpos;
+    unsigned long   newpos;
+    unsigned long   oldpos;
 
     if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
         newpos = info->seg_start + sdata->a.delta;
@@ -1082,7 +1083,7 @@ void FreeOutFiles( void )
 }
 
 static void *SetToFillChar( void *dest, const void *dummy, size_t size )
-/******************************************************************/
+/**********************************************************************/
 {
     memset( dest, FmtData.FillChar, size );
     return( (void *)dummy );
@@ -1094,8 +1095,8 @@ static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfi
                          void *(*rtn)(void *, const void *, size_t) )
 /***************************************************************************/
 {
-    unsigned modpos;
-    unsigned adjust;
+    size_t   modpos;
+    size_t   adjust;
 
     modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
     outfile->bufpos += len;
@@ -1114,10 +1115,10 @@ static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfi
 
 static void SeekBuffer( unsigned long len, outfilelist *outfile,
                          void *(*rtn)(void *, const void *, size_t) )
-/***************************************************************************/
+/*******************************************************************/
 {
-    unsigned modpos;
-    unsigned adjust;
+    size_t   modpos;
+    size_t   adjust;
 
     modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
     outfile->bufpos += len;
@@ -1134,7 +1135,7 @@ static void SeekBuffer( unsigned long len, outfilelist *outfile,
 }
 
 void PadBuffFile( outfilelist *outfile, unsigned long size )
-/*****************************************************************/
+/**********************************************************/
 /* pad out load file with zeros */
 {
     if( size == 0 )
@@ -1170,7 +1171,7 @@ void WriteLoad( const void *buff, size_t size )
 static void FlushBuffFile( outfilelist *outfile )
 /***********************************************/
 {
-    unsigned    modpos;
+    size_t  modpos;
 
     modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
     if( modpos != 0 ) {
