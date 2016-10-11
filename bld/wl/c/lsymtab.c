@@ -900,7 +900,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
     if( namelen == targetlen && (*CmpRtn)( name, target, namelen ) == 0 ) {
         char    *buff;
 
-        STRDUP_STACK( buff, target, targetlen );
+        DUPSTR_STACK( buff, target, targetlen );
         LnkMsg( WRN+MSG_CIRCULAR_ALIAS_FOUND, "s", buff );
         return;                 // <--------- NOTE: premature return!!!!
     }
@@ -1000,7 +1000,7 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
 #ifdef _INT_DEBUG
     char        *symname_dbg;
 
-    STRDUP_STACK( symname_dbg, symname, length );
+    DUPSTR_STACK( symname_dbg, symname, length );
 #endif
     DEBUG(( DBG_OLD, "SymOp( %d, %s, %d )", op, symname_dbg, length ));
     if( NameLen != 0 && NameLen < length ) {
@@ -1184,7 +1184,7 @@ void XWriteImports( void )
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
         if( IS_SYM_IMPORTED(sym) && sym->p.import != NULL ) {
-            if( (FmtData.type & MK_NOVELL) == 0 
+            if( (FmtData.type & MK_NOVELL) == 0
                    || sym->p.import != DUMMY_IMPORT_PTR  )
             {
                 if(sym->prefix && (strlen(sym->prefix) > 0))
