@@ -529,7 +529,7 @@ static void WriteArMlibFileTable( void )
     obj_offset = 0;
     isBSD = ( ( Options.libtype == WL_LTYPE_AR ) && ( Options.ar_libformat == AR_FMT_BSD ) );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        sfile->new_offset = obj_offset + header_size;
+        sfile->u.new_offset = obj_offset + header_size;
         sfile->index = ++index;
         if( isBSD && ( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
             obj_offset += Round2( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
@@ -562,7 +562,7 @@ static void WriteArMlibFileTable( void )
         WriteBigEndian32( NumSymbols );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteBigEndian32( sym->file->new_offset );
+                WriteBigEndian32( sym->file->u.new_offset );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
@@ -583,7 +583,7 @@ static void WriteArMlibFileTable( void )
         if( Options.libtype == WL_LTYPE_AR ) {
             WriteLittleEndian32( NumFiles );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                WriteLittleEndian32( sfile->new_offset );
+                WriteLittleEndian32( sfile->u.new_offset );
             }
         }
 

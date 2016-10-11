@@ -84,7 +84,10 @@ struct sym_file_struct {
     sym_entry   **add_to;
     input_lib   *inlib;
     file_offset inlib_offset;
-    file_offset new_offset;
+    union {
+        file_offset new_offset;
+        unsigned_16 new_offset_omf;
+    } u;
     arch_header arch;
     int         index;
     long        name_offset;

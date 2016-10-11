@@ -58,14 +58,16 @@ void FiniOmfUtil( void )
     FiniOmfRec();
 }
 
-static void CheckForOverflow( unsigned long current )
+static unsigned_16 CheckForOverflow( unsigned long current )
 {
     char buffer[10];
 
-    if( current / Options.page_size > (unsigned long)USHRT_MAX ) {
+    curr_offset /= Options.page_size;
+    if( curr_offset > (unsigned long)USHRT_MAX ) {
         sprintf( buffer, "%u", Options.page_size );
         FatalError( ERR_LIB_TOO_LARGE, buffer );
     }
+    return( (unsigned_16)curr_offset );
 }
 
 void PadOmf( bool force )
@@ -185,13 +187,13 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
         }
         str_len = strlen( fname );
         fname[str_len] ='!';
-        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->new_offset );
+        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->u.new_offset_omf );
         fname[str_len] = 0;
         if( !ret ) {
             return( ret );
         }
         for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-            ret = InsertOmfDict( lib_block, num_blocks, sym->name, sym->len, sfile->new_offset );
+            ret = InsertOmfDict( lib_block, num_blocks, sym->name, sym->len, sfile->u.new_offset_omf );
             if( !ret ) {
                 return( ret );
             }
@@ -244,16 +246,11 @@ unsigned WriteOmfDict( sym_file *first_sfile )
 
 void WriteOmfFile( sym_file *sfile )
 {
-    sym_entry       *sym;
-    unsigned long   current;
-    const char      *fname;
+    sym_entry   *sym;
+    const char  *fname;
 
     ++symCount;
-    // add one for ! after name and make sure odd so whole name record will
-    // be word aligned
-    current = LibTell( NewLibrary );
-    CheckForOverflow( current );
-    sfile->new_offset = current / Options.page_size;
+    sfile->u.new_offset_omf = CheckForOverflow( LibTell( NewLibrary ) );
     if( sfile->import == NULL ) {
         fname = MakeFName( sfile->full_name );
         // Options.page_size is always a power of 2 so someone should optimize
@@ -265,13 +262,17 @@ void WriteOmfFile( sym_file *sfile )
         fname = sfile->import->u.sym.symName;
 #endif
     }
-    /* + '!' character and length byte */
-    charCount += Round2( strlen( fname ) + 2 );
+    /*
+     * add one for ! after name and make sure odd so whole name record will
+     * be word aligned
+     * + '!' character and length byte
+     */
+    charCount += Round2( strlen( fname ) + 1 + 1 );
     WriteFileBody( sfile );
     PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
-        /* + length byte */
+        /* + length byte and word align */
         charCount += Round2( sym->len + 1 );
     }
 }
