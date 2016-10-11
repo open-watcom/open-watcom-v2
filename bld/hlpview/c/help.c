@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -284,12 +284,12 @@ static void addSearchButton( bool add )
 static char *helpGetString( char *buf, size_t size, HelpFp fp )
 {
     long int            pos;
-    int                 bytesread;
-    int                 cnt;
+    size_t              bytesread;
+    size_t              cnt;
 
     pos = HelpTell( fp );
     bytesread = HelpRead( fp, buf, size - 1 );
-    if( bytesread == 0 || bytesread == -1 )
+    if( bytesread != size - 1 )
         return( NULL );
     for( cnt = 0; cnt < bytesread; ++cnt ) {
         if( buf[cnt] == '\n' ) {

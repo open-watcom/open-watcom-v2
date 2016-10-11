@@ -264,7 +264,7 @@ unsigned long HelpFindTopicOffset( HelpHdl hdl, char *topic )
 HelpHdl InitHelpSearch( HelpFp fp )
 {
     HelpHdl     hdl;
-    unsigned    len;
+    size_t      len;
     char        *topic;
     char        *description;
     uint_16     str_cnt;

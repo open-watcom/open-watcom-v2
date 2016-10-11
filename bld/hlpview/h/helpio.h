@@ -57,8 +57,8 @@ typedef enum {
 #define HELP_ACCESS_EXEC        0x0004
 #define HELP_ACCESS_EXIST       0x0008
 
-extern HELPIO int       HelpRead( HelpFp fp, void *buf, int len );
-extern HELPIO int       HelpWrite( HelpFp fp, const char *buf, int len );
+extern HELPIO size_t    HelpRead( HelpFp fp, void *buf, size_t len );
+extern HELPIO size_t    HelpWrite( HelpFp fp, const char *buf, size_t len );
 extern HELPIO long int  HelpSeek( HelpFp fp, long int offset, HelpSeekType where );
 extern HELPIO long int  HelpTell( HelpFp fp );
 extern HELPIO HelpFp    HelpOpen( const char *path, unsigned long mode );
