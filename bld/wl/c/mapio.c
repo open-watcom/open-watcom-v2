@@ -78,10 +78,10 @@ typedef struct symrecinfo {
 
 static symrecinfo       *UndefList;
 static symrecinfo       *SymTraceList;
-static  int             MapCol;
-static  time_t          StartT;
-static  clock_t         ClockTicks;
-static  bool            Absolute_Seg;
+static size_t           MapCol;
+static time_t           StartT;
+static clock_t          ClockTicks;
+static bool             Absolute_Seg;
 static bool             Buffering;  // buffering on/off.
 static int              BufferSize;          // # of chars in buffer.
 
@@ -910,7 +910,7 @@ void EndTime( void )
 void WriteMapNL( unsigned count )
 /**************************************/
 {
-    unsigned    len;
+    size_t      len;
 
     if( MapFlags & MAP_FLAG ) {
         len = strlen( NLSeq );
@@ -921,19 +921,19 @@ void WriteMapNL( unsigned count )
     }
 }
 
-static unsigned MapPrint( char *str, va_list *args )
-/***************************************************/
+static size_t MapPrint( const char *str, va_list *args )
+/******************************************************/
 {
     char        buff[MAX_MSG_SIZE];
-    unsigned    len;
+    size_t      len;
 
     len = DoFmtStr( buff, MAX_MSG_SIZE, str, args );
     BufWrite( buff, len );
     return( len );
 }
 
-void DoWriteMap( char *format, va_list *arglist )
-/*******************************************************/
+void DoWriteMap( const char *format, va_list *arglist )
+/*****************************************************/
 {
     if( MapFlags & MAP_FLAG ) {
         MapPrint( format, arglist );
@@ -941,8 +941,8 @@ void DoWriteMap( char *format, va_list *arglist )
     }
 }
 
-void WriteMap( char *format, ... )
-/***************************************/
+void WriteMap( const char *format, ... )
+/**************************************/
 {
     va_list arglist;
 
@@ -950,11 +950,11 @@ void WriteMap( char *format, ... )
     DoWriteMap( format, &arglist );
 }
 
-void WriteFormat( int col, char *str, ... )
-/************************************************/
+void WriteFormat( size_t col, const char *str, ... )
+/****************************************************/
 {
     va_list         arglist;
-    int             num;
+    size_t          num;
     static  char    Blanks[]={"                                      "};
 
     if( MapFlags & MAP_FLAG ) {
@@ -971,15 +971,15 @@ void WriteFormat( int col, char *str, ... )
     }
 }
 
-void BufWrite( char *buffer, int len )
-/*******************************************/
+void BufWrite( const char *buffer, size_t len )
+/*********************************************/
 // write to the map file, buffering the write if buffering is on.
 {
-    int     diff;
+    size_t      diff;
 
     if( Buffering ) {
-        diff = BufferSize + len - TokSize;
-        if( diff >= 0 ) {
+        if( BufferSize + len >= TokSize ) {
+            diff = BufferSize + len - TokSize;
             memcpy( TokBuff+BufferSize, buffer, len - diff );
             QWrite( MapFile, TokBuff, TokSize, MapFName );
             BufferSize = diff;
@@ -987,7 +987,7 @@ void BufWrite( char *buffer, int len )
                 memcpy( TokBuff, buffer + len - diff, diff );
             }
         } else {
-            memcpy( TokBuff+BufferSize, buffer, len );
+            memcpy( TokBuff + BufferSize, buffer, len );
             BufferSize += len;
         }
     } else {

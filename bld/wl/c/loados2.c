@@ -1037,12 +1037,12 @@ void FreeImpNameTab( void )
     FmtData.u.os2.imp_tab_list = NULL;
 }
 
-static unsigned DoExeName( void )
-/*******************************/
+static size_t DoExeName( void )
+/*****************************/
 /* make up the "program is %f" string, and put it in tokbuff.*/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
-    unsigned    msgsize;
+    size_t      msgsize;
 
     Msg_Get( MSG_IS_A_EXE, rc_buff );
     msgsize = FmtStr( TokBuff, TokSize, rc_buff );
@@ -1094,7 +1094,7 @@ static unsigned WriteDefStub( unsigned_32 stub_align )
 /****************************************************/
 /* write the default stub to the executable file */
 {
-    unsigned            msgsize;
+    size_t              msgsize;
     unsigned            fullsize;
     unsigned_32         *stubend;
 

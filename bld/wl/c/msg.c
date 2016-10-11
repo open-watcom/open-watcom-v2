@@ -80,7 +80,7 @@ void ResetMsg( void )
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
 }
 
-unsigned FmtStr( char *buff, unsigned len, const char *fmt, ... )
+size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
 /***************************************************************/
 {
     va_list args;
@@ -89,8 +89,8 @@ unsigned FmtStr( char *buff, unsigned len, const char *fmt, ... )
     return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
-unsigned DoFmtStr( char *buff, unsigned len, const char *src, va_list *args )
-/***************************************************************************/
+size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
+/***********************************************************************/
 /* quick vsprintf routine                                           */
 /* assumptions - format string does not end in '%'                  */
 /*             - only use of '%' is as follows                      */
@@ -112,7 +112,7 @@ unsigned DoFmtStr( char *buff, unsigned len, const char *src, va_list *args )
     char            *str;
     unsigned_16     num;
     unsigned_32     num2;
-    unsigned        size;
+    size_t          size;
     targ_addr *     addr;
     unsigned int    i;
     static char     hexchar[] = "0123456789abcdef";
@@ -286,15 +286,15 @@ unsigned DoFmtStr( char *buff, unsigned len, const char *src, va_list *args )
 
 #define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
 
-static unsigned MakeExeName( char * buff, unsigned max )
-/******************************************************/
+static size_t MakeExeName( char *buff, size_t max )
+/*************************************************/
 /* make up the "an OS/2 executable" string. */
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
     exe_format  format;
-    unsigned    len;
-    char *      str;
-    unsigned    num;
+    size_t      len;
+    char        *str;
+    size_t      num;
 
     if( max <= 3 )
         return( 0 );
@@ -306,7 +306,7 @@ static unsigned MakeExeName( char * buff, unsigned max )
         format = FmtData.type;
         for( ;; ) {
             num = blog_32( format );
-            format &= ~(1 << num);
+            format &= ~( 1 << num );
             if( format == 0 ) {
                 break;
             }
@@ -319,10 +319,10 @@ static unsigned MakeExeName( char * buff, unsigned max )
         len++;
     }
     *buff++ = ' ';
-    num = strlen(str);
+    num = strlen( str );
     len += num + 2;
     if( len > max )
-        return( len - (num + 2) );
+        return( len - ( num + 2 ) );
     memcpy( buff, str, num );
     buff += num;
     *buff++ = ' ';
@@ -392,13 +392,13 @@ unsigned CalcMsgNum( unsigned num )
 
     class = (num & CLASS_MSK) >> NUM_SHIFT;
     class = (class + 1) / 2;
-    return class * 1000 + (num & NUM_MSK);
+    return( class * 1000 + (num & NUM_MSK) );
 }
 
-static unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
-/*****************************************************************/
+static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
+/********************************************************************/
 {
-    unsigned    prefixlen;
+    size_t      prefixlen;
     unsigned    class;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
@@ -416,10 +416,10 @@ static unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
     return( prefixlen );
 }
 
-static void MessageFini( unsigned num, char *buff, unsigned len )
-/***************************************************************/
+static void MessageFini( unsigned num, char *buff, size_t len )
+/*************************************************************/
 {
-    unsigned    prefixlen;
+    size_t      prefixlen;
     unsigned    class;
     char        prefix[ MAX_MSG_SIZE ];
 
@@ -468,7 +468,7 @@ void LnkMsg(
 {
     va_list     args;
     int         which_file = 0;
-    unsigned    len;
+    size_t      len;
     char        rc_buff[ RESOURCE_MAX_SIZE ];
     char        buff[ MAX_MSG_SIZE ];
 
@@ -522,7 +522,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
 /****************************************************/
 /* getting an error message from resource compiler code */
 {
-    unsigned    len;
+    size_t      len;
     char        rc_buff[RESOURCE_MAX_SIZE];
     char        buff[ MAX_MSG_SIZE ];
 
@@ -556,28 +556,27 @@ static void FileOrder( char rc_buff[], int which_file )
 /*****************************************************/
 {
     switch( which_file ) {
-        case 1:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
-            break;
-        case 2:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
-            break;
-        case 3:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
-            break;
-        case 4:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
-            break;
-        case 5:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
-            break;
-        case 6:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
-            break;
-        case 7:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem,
-                        LocRec );
-            break;
+    case 1:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
+        break;
+    case 2:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
+        break;
+    case 3:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
+        break;
+    case 4:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
+        break;
+    case 5:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
+        break;
+    case 6:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
+        break;
+    case 7:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem, LocRec );
+        break;
     }
 }
 
@@ -648,5 +647,5 @@ int SymAlphaCompare( const void *a, const void *b )
             }
         }
     }
-    return result;
+    return( result );
 }
