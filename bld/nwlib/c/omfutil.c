@@ -58,7 +58,7 @@ void FiniOmfUtil( void )
     FiniOmfRec();
 }
 
-static unsigned_16 CheckForOverflow( unsigned long current )
+static unsigned_16 CheckForOverflow( unsigned long curr_offset )
 {
     char buffer[10];
 
