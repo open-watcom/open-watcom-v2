@@ -605,18 +605,12 @@ void WLPrtBanner( void )
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
-        return true;
-#if defined(__WATCOMC__)
-    {
-        int art;
+    mangled_type art;
 
-        art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
-        return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
-    }
-#else
-    return false;
-#endif
+    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
+        return( true );
+    art = __is_mangled_internal( sym->name, strlen( sym->name ) );
+    return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
 }
 
 int SymAlphaCompare( const void *a, const void *b )
