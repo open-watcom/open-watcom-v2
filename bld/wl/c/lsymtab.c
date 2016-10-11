@@ -900,9 +900,7 @@ void MakeSymAlias( const char *name, size_t namelen, const char *target, size_t 
     if( namelen == targetlen && (*CmpRtn)( name, target, namelen ) == 0 ) {
         char    *buff;
 
-        buff = alloca( targetlen + 1 );
-        memcpy( buff, target, targetlen );
-        buff[ targetlen ] = '\0';
+        STRDUP_STACK( buff, target, targetlen );
         LnkMsg( WRN+MSG_CIRCULAR_ALIAS_FOUND, "s", buff );
         return;                 // <--------- NOTE: premature return!!!!
     }
@@ -1002,9 +1000,7 @@ static symbol *DoSymOp( sym_flags op, const char *symname, size_t length )
 #ifdef _INT_DEBUG
     char        *symname_dbg;
 
-    symname_dbg = alloca( length + 1 );
-    memcpy( symname_dbg, symname, length );
-    symname_dbg[ length ] = '\0';
+    STRDUP_STACK( symname_dbg, symname, length );
 #endif
     DEBUG(( DBG_OLD, "SymOp( %d, %s, %d )", op, symname_dbg, length ));
     if( NameLen != 0 && NameLen < length ) {

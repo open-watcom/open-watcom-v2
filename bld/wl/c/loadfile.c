@@ -121,8 +121,10 @@ static void SetupImpLib( void )
          * it trims both the path, and the extension */
         fname = GetBaseName( Root->outfile->fname, 0, &namelen );
         ImpLib.dlllen = namelen;
-        /* increase length to restore full extension if not OS2    *
-         * sometimes the extension of the output name is important */
+        /*
+         * increase length to restore full extension if not OS2
+         * sometimes the extension of the output name is important
+         */
         ImpLib.dlllen += strlen( fname + namelen );
         _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
         memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
