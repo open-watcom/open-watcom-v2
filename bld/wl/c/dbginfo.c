@@ -802,8 +802,8 @@ static void DBIWriteInfo( virt_mem stg, unsigned long len )
     WriteInfoLoad( stg, len );
 }
 
-static void DBIWriteLocal( void *buff, unsigned len )
-/***************************************************/
+static void DBIWriteLocal( void *buff, size_t len )
+/*************************************************/
 {
     if( len == 0 )
         return;

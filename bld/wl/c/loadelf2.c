@@ -93,16 +93,16 @@ ElfSymTable *CreateElfSymTable( int maxElems, stringtable *strtab )
 {
     ElfSymTable *tab;
 
-    _ChkAlloc( tab, sizeof(ElfSymTable) );
+    _ChkAlloc( tab, sizeof( ElfSymTable ) );
     tab->numBuckets = FindClosestPrime( maxElems / 2 );
     tab->maxElems = maxElems+1; // element 0 is NIL
     tab->numElems = 1;
-    _ChkAlloc( tab->table, (tab->maxElems) * sizeof( tab->table[0] ) );
-    memset( tab->table, 0, (tab->maxElems) * sizeof( tab->table[0] ) );
+    _ChkAlloc( tab->table, tab->maxElems * sizeof( tab->table[0] ) );
+    memset( tab->table, 0, tab->maxElems * sizeof( tab->table[0] ) );
     _ChkAlloc( tab->buckets, tab->numBuckets * sizeof( Elf32_Word ) );
     memset( tab->buckets, 0, tab->numBuckets * sizeof( unsigned_32 ) );
-    _ChkAlloc( tab->chains, (tab->maxElems) * sizeof( unsigned_32 ) );
-    memset( tab->chains, 0, (tab->maxElems) * sizeof( unsigned_32 ) );
+    _ChkAlloc( tab->chains, tab->maxElems * sizeof( unsigned_32 ) );
+    memset( tab->chains, 0, tab->maxElems * sizeof( unsigned_32 ) );
     tab->strtab = strtab;
     if( GetStringTableSize( tab->strtab ) == 0 ) {
         AddCharStringTable( tab->strtab, '\0' );
@@ -224,7 +224,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
             tableSH->sh_info = i;
         }
         SetElfSym( hdr, &elfsym, sym );
-        WriteLoad( &elfsym, sizeof(elfsym) );
+        WriteLoad( &elfsym, sizeof( elfsym ) );
     }
     len = tab->numElems * sizeof( elfsym );
     tableSH->sh_offset = hdr->curr_off;
@@ -233,13 +233,13 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     hdr->curr_off += len;
 
     // write hash section:
-    len = (1 + 1 + tab->numBuckets + tab->numElems) * sizeof(unsigned_32);
+    len = (1 + 1 + tab->numBuckets + tab->numElems) * sizeof( unsigned_32 );
     hashSH->sh_offset = hdr->curr_off;
     hashSH->sh_size = len;
-    WriteLoad( &tab->numBuckets, sizeof(unsigned_32 ) );
-    WriteLoad( &tab->numElems, sizeof(unsigned_32) );
-    WriteLoad( tab->buckets, tab->numBuckets * sizeof(unsigned_32) );
-    WriteLoad( tab->chains, tab->numElems * sizeof(unsigned_32) );
+    WriteLoad( &tab->numBuckets, sizeof( unsigned_32 ) );
+    WriteLoad( &tab->numElems, sizeof( unsigned_32 ) );
+    WriteLoad( tab->buckets, tab->numBuckets * sizeof( unsigned_32 ) );
+    WriteLoad( tab->chains, tab->numElems * sizeof( unsigned_32 ) );
     hdr->curr_off += len;
 
     // set section headers:

@@ -64,7 +64,7 @@
 #define GLOBAL_TABALLOC (1792 * sizeof(symbol *)) // 1st power of 128 > TABSIZE
 
 int             (*CmpRtn)( const void *, const void *, size_t );
-unsigned        NameLen;
+size_t          NameLen;
 symbol          *LastSym;
 
 static  symbol  *SymList = NULL;
@@ -73,10 +73,6 @@ static  symbol  *SymList = NULL;
 
 static symbol   **GlobalSymPtrs;
 static symbol   **StaticSymPtrs;
-
-//static unsigned GlobalHashFn( const char *, unsigned );
-//static unsigned StaticHashFn( const char *, unsigned );
-//static void     SetSymAlias( symbol *sym, char *target, unsigned targetlen );
 
 static const unsigned ScatterTable[] = {
 #ifdef __386__
@@ -1556,5 +1552,5 @@ bool SetCurrentPrefix( const char * pszPrefix, unsigned nLen )
         }
     }
 
-    return( 0 != strlen( newbuff ));
+    return( 0 != strlen( newbuff ) );
 }

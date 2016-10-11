@@ -204,15 +204,13 @@ static bool GetNovImport( void )
     */
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
-        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( false );
-
-        Token.skipToNext = DoWeNeedToSkipASeparator( false );
-
+        result = SetCurrentPrefix( Token.this, Token.len );
+        if( result ) {
+            Token.skipToNext = DoWeNeedToSkipASeparator( false );
 #ifndef NDEBUG
-        printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
+            printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
 #endif
-
+        }
         return( result );
     }
 
@@ -262,10 +260,9 @@ static bool GetNovExport( void )
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
 
-        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( false );
-
-        Token.skipToNext = DoWeNeedToSkipASeparator( false );
+        result = SetCurrentPrefix( Token.this, Token.len );
+        if( result )
+            Token.skipToNext = DoWeNeedToSkipASeparator( false );
         return( result );
     }
 

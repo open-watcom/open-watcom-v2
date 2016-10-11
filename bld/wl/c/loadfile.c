@@ -709,7 +709,7 @@ unsigned_32 MemorySize( void )
     }
 }
 
-unsigned_32 AppendToLoadFile( char *name )
+unsigned_32 AppendToLoadFile( const char *name )
 /************************************************/
 {
     f_handle        handle;
@@ -853,8 +853,8 @@ static void BufImpWrite( char *buffer, unsigned len )
     }
 }
 
-void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
-/**************************************************************************/
+void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal )
+/*******************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;
@@ -901,7 +901,7 @@ void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
     BufImpWrite( buff, currpos - buff + 1 );
 }
 
-void WriteLoad3( void* dummy, const char *buff, size_t size )
+void WriteLoad3( void *dummy, const char *buff, size_t size )
 /***********************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
@@ -909,17 +909,14 @@ void WriteLoad3( void* dummy, const char *buff, size_t size )
     WriteLoad( buff, size );
 }
 
-unsigned_32 CopyToLoad( f_handle handle, char *name )
-/***************************************************/
+unsigned_32 CopyToLoad( f_handle handle, const char *name )
+/*********************************************************/
 {
-    unsigned_32     amt_read;
+    size_t          amt_read;
     unsigned_32     wrote;
 
     wrote = 0;
-    for(;;) {
-        amt_read = QRead( handle, TokBuff, TokSize, name );
-        if( amt_read == 0 )
-            break;
+    while( (amt_read = QRead( handle, TokBuff, TokSize, name )) != 0 ) {
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
     }

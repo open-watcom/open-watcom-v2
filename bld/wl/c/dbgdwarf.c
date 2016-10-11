@@ -108,7 +108,7 @@ typedef struct {
 } symbol_die;
 
 typedef struct {
-    unsigned_8  len;
+    unsigned_8  len_u8;
     unsigned_8  loc_op;
     unsigned_16 seg;
 } symbol_seg;
@@ -524,7 +524,7 @@ void DwarfGenGlobal( symbol *sym, section *sect )
         PutInfo( vmem_addr, &die, sizeof( symbol_die ) );
         vmem_addr += sizeof( symbol_die );
         if( FmtData.type & MK_SEGMENTED ) {
-            symseg.len = 3;
+            symseg.len_u8 = 3;
             symseg.loc_op = DW_OP_const2u;
             symseg.seg = sym->addr.seg;
             PutInfo( vmem_addr, &symseg, sizeof( symbol_seg ) );

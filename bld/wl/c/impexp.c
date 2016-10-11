@@ -477,7 +477,7 @@ static void ReadNameTable( f_handle the_file )
 /********************************************/
 // Read a name table & set export ordinal value accordingly.
 {
-    unsigned_8      length;
+    unsigned_8      len_u8;
     unsigned_16     ordinal;
     int (*compare_rtn)(const char *,const char *);
     char *          fname;
@@ -489,14 +489,14 @@ static void ReadNameTable( f_handle the_file )
         compare_rtn = &stricmp;
     }                             // skip the module name & ordinal.
     for( ;; ) {
-        QRead( the_file, &length, sizeof( unsigned_8 ), fname );
-        if( length == 0 )
+        QRead( the_file, &len_u8, sizeof( unsigned_8 ), fname );
+        if( len_u8 == 0 )
             break;
-        QRead( the_file, TokBuff, length, fname );
+        QRead( the_file, TokBuff, len_u8, fname );
         QRead( the_file, &ordinal, sizeof( unsigned_16 ), fname );
         if( ordinal == 0 )
             continue;
-        TokBuff[ length ] = '\0';
+        TokBuff[len_u8] = '\0';
         CheckExport( TokBuff, ordinal, compare_rtn );
     }
 }

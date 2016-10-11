@@ -130,7 +130,7 @@ extern void LinkList( void **in_head, void *newnode )
     *owner = newnode;
 }
 
-void            MakeSymAlias( const char *a, int b, const char *c, int d ) {}
+void            MakeSymAlias( const char *a, size_t b, const char *c, size_t d ) {}
 void            NumberSections() {}
 
 static bool AddSymTrace( void )

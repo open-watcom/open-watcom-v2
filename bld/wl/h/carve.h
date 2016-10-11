@@ -60,7 +60,7 @@ typedef struct {
 extern carve_t CarveCreate( unsigned elm_size, unsigned how_many );
 extern void CarveRestart( carve_t cv, unsigned );
 extern void CarvePurge( carve_t cv );
-extern void CarveVerifyAllGone( carve_t cv, char * );
+extern void CarveVerifyAllGone( carve_t cv, const char * );
 extern void CarveDestroy( carve_t cv );
 
 extern void *CarveAlloc( carve_t cv );
