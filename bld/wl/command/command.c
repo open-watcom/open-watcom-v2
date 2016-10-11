@@ -45,7 +45,7 @@ extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
 extern void             InitCmdFile( void );
 extern f_handle         FindPath( const char * );
-extern int              Spawn(void (*)() );
+extern int              Spawn( void (*)() );
 extern void             BurnSystemList( void );
 extern void             Burn( void );
 extern void             FreeFormatStuff( void );
@@ -66,7 +66,7 @@ unsigned_16     AddImpNameTab( char *a, unsigned b, bool c ) {
 
 void            AddLibPaths( const char *a, int b, bool c ) {}
 void            AddToExportList( entry_export *a ) {}
-void            BufWrite(char *a, int b ) {}
+void            BufWrite( const char *a, size_t b ) {}
 void            CheckLibTrace( file_list * lib ) {}
 void            CheckTraces( void ) {}
 void            DBIInit( section *a, bool b ) {}
@@ -78,8 +78,8 @@ symbol *        DefImpSymbol( char *a, int b ) {
 }
 
 void            FillOutFilePtrs( void ) {}
-void            FreeImpNameTab(void) {}
-void            FreeExportList(void) {}
+void            FreeImpNameTab( void ) {}
+void            FreeExportList( void ) {}
 
 extern void FreeList( void *parm )
 /*******************************/

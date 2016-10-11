@@ -157,6 +157,7 @@ static seg_table        *NextSwap;      // next entry to swap out.
 static unsigned         TinyLeft;
 static virt_mem         TinyAddr;
 
+
 void VirtMemInit( void )
 /*****************************/
 // Allocate space for the branch pointers.
@@ -460,7 +461,7 @@ static void AllocHugeNode( huge_table *node )
 }
 
 static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
-                    bool (*rtn)( void *, spilladdr, unsigned, unsigned, bool))
+               bool (*rtn)( void *, spilladdr, unsigned, unsigned, bool))
 /*****************************************************************************/
 /* go through the virtual memory nodes, reading or writing data */
 {
@@ -527,7 +528,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
     return retval;
 }
 
-static bool LoadInfo( void * info, spilladdr loc, unsigned off, unsigned len, bool inmem )
+static bool LoadInfo( void *info, spilladdr loc, unsigned off, unsigned len, bool inmem )
 /****************************************************************************************/
 /* copy data to info from the memory or spillfile referenced by node & off */
 {
@@ -548,8 +549,8 @@ void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
     ScanNodes( stg, buf, len, LoadInfo );
 }
 
-static bool SaveInfo( void * info, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/****************************************************************************************/
+static bool SaveInfo( void *info, spilladdr loc, unsigned off, unsigned len, bool inmem )
+/***************************************************************************************/
 /* copy data at info to the memory or spillfile referenced by node & off */
 {
     if( len == 0 )
@@ -604,7 +605,7 @@ bool CompareInfo( virt_mem stg, void *info, virt_mem_size len )
     return ScanNodes( stg, info, len, CompareBlock );
 }
 
-static bool OutInfo( void * dummy, spilladdr loc, unsigned off, unsigned len, bool inmem )
+static bool OutInfo( void *dummy, spilladdr loc, unsigned off, unsigned len, bool inmem )
 /****************************************************************************************/
 /* copy data in memory or spillfile referenced by node & off to LoadFile */
 {

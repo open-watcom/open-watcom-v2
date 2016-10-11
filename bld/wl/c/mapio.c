@@ -82,8 +82,8 @@ static size_t           MapCol;
 static time_t           StartT;
 static clock_t          ClockTicks;
 static bool             Absolute_Seg;
-static bool             Buffering;  // buffering on/off.
-static int              BufferSize;          // # of chars in buffer.
+static bool             Buffering;      // buffering on/off.
+static size_t           BufferSize;     // # of chars in buffer.
 
 void ResetMapIO( void )
 /****************************/

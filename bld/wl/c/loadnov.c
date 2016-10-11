@@ -160,9 +160,9 @@ static unsigned_32 WriteNovExports( fixed_header *header )
 
                 char        full_name[255 + 1];
 
-                strcpy(full_name, sym->prefix);
-                strcat(full_name, "@");
-                strcat(full_name, sym->name);
+                strcpy( full_name, sym->prefix );
+                strcat( full_name, "@" );
+                strcat( full_name, sym->name );
                 AddImpLibEntry( sym->name, full_name, NOT_IMP_BY_ORDINAL );
 
                 len_u8 = strlen( full_name );
@@ -310,7 +310,7 @@ static unsigned_32 WriteMessages( extended_nlm_header * header )
             QClose( handle, FmtData.u.nov.messages );
         } else {
             QSeek( handle, LANGUAGE_ID_OFFSET, FmtData.u.nov.messages );
-            QRead( handle, buf, 2*sizeof( unsigned_32 ), FmtData.u.nov.messages );
+            QRead( handle, buf, 2 * sizeof( unsigned_32 ), FmtData.u.nov.messages );
             header->languageID = buf[0];
             header->messageCount = buf[1];
             QSeek( handle, 0, FmtData.u.nov.messages );

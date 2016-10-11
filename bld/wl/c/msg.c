@@ -53,7 +53,7 @@ const char *MsgStrings[] = {
 
 static  const char      *LocFile;
 static  const char      *LocMem;
-static  int             LocRec;
+static  unsigned        LocRec;
 static  MSG_ARG_LIST    MsgArgInfo;
 static  char *          CurrSymName;
 
@@ -145,7 +145,7 @@ static size_t MakeExeName( char *buff, size_t max )
 }
 
 size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
-/***************************************************************/
+/***********************************************************/
 {
     va_list args;
 
@@ -177,7 +177,7 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
     unsigned_16     num;
     unsigned_32     num2;
     size_t          size;
-    targ_addr *     addr;
+    targ_addr       *addr;
     unsigned int    i;
     static char     hexchar[] = "0123456789abcdef";
     int             temp;

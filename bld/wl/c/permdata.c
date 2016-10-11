@@ -148,8 +148,8 @@ static void *GetString( perm_write_info *info, const char *str )
     return( (void *)(pointer_int)idx );
 }
 
-static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
-/*****************************************************************************************/
+static void DoWritePermFile( perm_write_info *info, const char *data, unsigned len, bool isvmem )
+/***********************************************************************************************/
 {
     unsigned modpos;
     unsigned adjust;
@@ -161,7 +161,7 @@ static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bo
         if( !isvmem ) {
             memcpy( TokBuff + modpos, data, adjust );
         } else {
-            ReadInfo( (virt_mem) data, TokBuff + modpos, adjust );
+            ReadInfo( (virt_mem)data, TokBuff + modpos, adjust );
         }
         QWrite( info->incfhdl, TokBuff, MAX_HEADROOM, IncFileName );
         data += adjust;
@@ -172,7 +172,7 @@ static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bo
         if( !isvmem ) {
             memcpy( TokBuff + modpos, data, len );
         } else {
-            ReadInfo( (virt_mem) data, TokBuff + modpos, len );
+            ReadInfo( (virt_mem)data, TokBuff + modpos, len );
         }
     }
 }
