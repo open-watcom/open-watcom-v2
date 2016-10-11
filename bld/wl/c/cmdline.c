@@ -565,8 +565,28 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static void PressKey( void );
-static void WriteMsg( char msg_buffer[] );
+static void WriteMsg( const char *msg_buffer )
+/********************************************/
+{
+    WriteStdOut( msg_buffer );
+    WriteStdOutNL();
+}
+
+static void PressKey( void )
+/**************************/
+{
+    char        msg_buffer[RESOURCE_MAX_SIZE];
+    int         result;
+
+    Msg_Get( MSG_PRESS_KEY, msg_buffer );
+    WriteStdOut( msg_buffer );
+    result = WaitForKey();
+    WriteStdOutNL();
+    if( result == 'q' || result == 'Q' ) {
+        Ignite();
+        Suicide();
+    }
+}
 
 static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
 /***********************************************************************/
@@ -593,29 +613,6 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
             WriteMsg( msg_buffer );
         }
     }
-}
-
-static void PressKey( void )
-/**************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         result;
-
-    Msg_Get( MSG_PRESS_KEY, msg_buffer );
-    WriteStdOut( msg_buffer );
-    result = WaitForKey();
-    WriteStdOutNL();
-    if( result == 'q' || result == 'Q' ) {
-        Ignite();
-        Suicide();
-    }
-}
-
-static void WriteMsg( char msg_buffer[] )
-/***************************************/
-{
-    WriteStdOut( msg_buffer );
-    WriteStdOutNL();
 }
 
 void FreePaths( void )

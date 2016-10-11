@@ -45,7 +45,7 @@
 
 #include "clibext.h"
 
-char *MsgStrings[] = {
+const char *MsgStrings[] = {
     #define pick( name, string ) string,
     #include "wlbanner.h"
     #undef pick
@@ -57,11 +57,6 @@ static  int             LocRec;
 static  MSG_ARG_LIST    MsgArgInfo;
 static  char *          CurrSymName;
 
-static unsigned         MakeExeName( char *, unsigned );
-static void             IncremIndex( void );
-static void             FileOrder( char rc_buff[], int which_file );
-static int              UseArgInfo( void );
-
 #define MSG_ARRAY_SIZE ((MSG_MAX_ERR_MSG_NUM / 8) + 1)
 
 unsigned_32     MaxErrors;
@@ -69,6 +64,18 @@ bool            BannerPrinted;
 
 byte MsgFlags[ MSG_ARRAY_SIZE ];
 
+
+static int UseArgInfo( void )
+/***************************/
+{
+    return( MsgArgInfo.index >= 0 );
+}
+
+static void IncremIndex( void )
+/*****************************/
+{
+    MsgArgInfo.index++;
+}
 
 void ResetMsg( void )
 /**************************/
@@ -78,6 +85,63 @@ void ResetMsg( void )
     LocRec = 0;
     MsgArgInfo.index = -1;
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
+}
+
+#define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
+
+static size_t MakeExeName( char *buff, size_t max )
+/*************************************************/
+/* make up the "an OS/2 executable" string. */
+{
+    char        rc_buff[RESOURCE_MAX_SIZE];
+    exe_format  format;
+    size_t      len;
+    char        *str;
+    size_t      num;
+
+    if( max <= 3 )
+        return( 0 );
+    len = 1;
+    *buff++ = 'a';
+    if( FmtData.osname != NULL ) {
+        str = FmtData.osname;
+    } else {
+        format = FmtData.type;
+        for( ;; ) {
+            num = blog_32( format );
+            format &= ~( 1 << num );
+            if( format == 0 ) {
+                break;
+            }
+        }
+        Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
+        str = rc_buff;
+    }
+    if( IS_VOWEL( tolower(*str) ) ) {
+        *buff++ = 'n';
+        len++;
+    }
+    *buff++ = ' ';
+    num = strlen( str );
+    len += num + 2;
+    if( len > max )
+        return( len - ( num + 2 ) );
+    memcpy( buff, str, num );
+    buff += num;
+    *buff++ = ' ';
+    if( FmtData.dll ) {
+        Msg_Get( MSG_CREATE_TYPE_DLL, rc_buff );
+        str = rc_buff;
+    } else {
+        Msg_Get( MSG_CREATE_TYPE_EXE, rc_buff );
+        str = rc_buff;
+    }
+    num = strlen( str );
+    len += num;
+    if( len > max )
+        return( len - num );
+    memcpy( buff, str, num + 1 );       /* +1 for the nullchar */
+    return( len );
 }
 
 size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
@@ -284,75 +348,6 @@ size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
     return( dest - buff );
 }
 
-#define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
-
-static size_t MakeExeName( char *buff, size_t max )
-/*************************************************/
-/* make up the "an OS/2 executable" string. */
-{
-    char        rc_buff[RESOURCE_MAX_SIZE];
-    exe_format  format;
-    size_t      len;
-    char        *str;
-    size_t      num;
-
-    if( max <= 3 )
-        return( 0 );
-    len = 1;
-    *buff++ = 'a';
-    if( FmtData.osname != NULL ) {
-        str = FmtData.osname;
-    } else {
-        format = FmtData.type;
-        for( ;; ) {
-            num = blog_32( format );
-            format &= ~( 1 << num );
-            if( format == 0 ) {
-                break;
-            }
-        }
-        Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
-        str = rc_buff;
-    }
-    if( IS_VOWEL( tolower(*str) ) ) {
-        *buff++ = 'n';
-        len++;
-    }
-    *buff++ = ' ';
-    num = strlen( str );
-    len += num + 2;
-    if( len > max )
-        return( len - ( num + 2 ) );
-    memcpy( buff, str, num );
-    buff += num;
-    *buff++ = ' ';
-    if( FmtData.dll ) {
-        Msg_Get( MSG_CREATE_TYPE_DLL, rc_buff );
-        str = rc_buff;
-    } else {
-        Msg_Get( MSG_CREATE_TYPE_EXE, rc_buff );
-        str = rc_buff;
-    }
-    num = strlen( str );
-    len += num;
-    if( len > max )
-        return( len - num );
-    memcpy( buff, str, num + 1 );       /* +1 for the nullchar */
-    return( len );
-}
-
-static int UseArgInfo( void )
-/***************************/
-{
-    return( MsgArgInfo.index >= 0 );
-}
-
-static void IncremIndex( void )
-/*****************************/
-{
-    MsgArgInfo.index++;
-}
-
 void Locator( const char *filename, const char *mem, unsigned rec )
 /*****************************************************************/
 {
@@ -455,6 +450,34 @@ static void MessageFini( unsigned num, char *buff, size_t len )
     }
 }
 
+static void FileOrder( char rc_buff[], int which_file )
+/*****************************************************/
+{
+    switch( which_file ) {
+    case 1:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
+        break;
+    case 2:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
+        break;
+    case 3:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
+        break;
+    case 4:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
+        break;
+    case 5:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
+        break;
+    case 6:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
+        break;
+    case 7:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem, LocRec );
+        break;
+    }
+}
+
 void LnkMsg(
     unsigned    num,    // A message number + control flags
     const char  *types, // Conversion qualifiers
@@ -552,39 +575,11 @@ void RcError( unsigned num, ... )
     HandleRcMsg( num, &args );
 }
 
-static void FileOrder( char rc_buff[], int which_file )
-/*****************************************************/
-{
-    switch( which_file ) {
-    case 1:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
-        break;
-    case 2:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
-        break;
-    case 3:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
-        break;
-    case 4:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
-        break;
-    case 5:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
-        break;
-    case 6:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
-        break;
-    case 7:
-        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem, LocRec );
-        break;
-    }
-}
-
 void WLPrtBanner( void )
 /*****************************/
 // print the banner, if it hasn't already been printed.
 {
-    char *  msg;
+    const char  *msg;
 
     if( !BannerPrinted ) {
         msg = MsgStrings[ PRODUCT ];

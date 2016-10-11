@@ -134,7 +134,7 @@ void MapInit( void )
     char                dat[8 + 1];
     char                *ptr;
     struct tm           *localt;
-    char                *msg;
+    const char          *msg;
 
     Absolute_Seg = false;
     Buffering = false;  // buffering on/off.

@@ -71,4 +71,4 @@ extern unsigned CalcMsgNum( unsigned );
 extern unsigned_32      MaxErrors;
 extern byte             MsgFlags[];
 extern bool             BannerPrinted;
-extern char             *MsgStrings[];
+extern const char       *MsgStrings[];

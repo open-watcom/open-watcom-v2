@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern void     WriteStdOut( char * );
+extern void     WriteStdOut( const char * );
 extern void     WriteStdOutNL( void );
-extern void     WriteStdOutInfo( char *, unsigned, char * );
+extern void     WriteStdOutInfo( const char *, unsigned, const char * );
 extern char     *GetEnvString( char * );
 extern void     GetExtraCommands( void );
 extern bool     IsStdOutConsole( void );
