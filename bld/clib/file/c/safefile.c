@@ -37,10 +37,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <utime.h>
+#include <errno.h>
 #include <time.h>
-#include "rterrno.h"
-#include "thread.h"
-
 
 #define NUM_FILES       50
 #ifdef __SW_BW

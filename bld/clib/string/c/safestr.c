@@ -31,6 +31,7 @@
 
 #define __STDC_WANT_LIB_EXT1__ 1       // Enable Safer C interfaces
 
+#include <errno.h>
 #include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -40,9 +41,6 @@
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif
-#include "rterrno.h"
-#include "thread.h"
-
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\

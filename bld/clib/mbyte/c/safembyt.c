@@ -32,6 +32,7 @@
 
 #define __STDC_WANT_LIB_EXT1__ 1       // Enable Safer C interfaces
 
+#include <errno.h>
 #include <locale.h>
 #include <stdarg.h>
 #include <mbstring.h>
@@ -44,9 +45,6 @@
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif
-#include "rterrno.h"
-#include "thread.h"
-
 
 /* DUMMY_DBCS won't be needed now that Windows and DOS are fully supported */
 //#if !defined(__NT__) && !defined(__OS2__) && !defined(__WINDOWS__)
