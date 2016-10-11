@@ -85,25 +85,25 @@ static buffer_info      fileBuff;
 static orl_sec_handle   symbolTable;
 static section_list     relocSections;
 
-static void *buffRead( buffer_info *file, int len )
-//*************************************************
+static void *buffRead( void *file, size_t len )
+//*********************************************
 {
     buf_list    *buf;
 
-    buf = AllocMem( len + sizeof(buf_list) - 1 );
+    buf = AllocMem( len + sizeof( buf_list ) - 1 );
     if( fread( buf->buf, 1, len, file->hdl ) != len ) {
         FreeMem( buf );
         return NULL;
     }
-    buf->next = file->buflist;
-    file->buflist = buf;
+    buf->next = ((buffer_info *)file)->buflist;
+    ((buffer_info *)file)->buflist = buf;
     return( buf->buf );
 }
 
-static long buffSeek( buffer_info *file, long pos, int where )
+static long buffSeek( void *file, long pos, int where )
 //************************************************************
 {
-    return( fseek( file->hdl, pos, where ) );
+    return( fseek( ((buffer_info *)file)->hdl, pos, where ) );
 }
 
 static void initBuffer( buffer_info *file, file_handle hdl )
