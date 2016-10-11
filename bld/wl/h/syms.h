@@ -251,6 +251,6 @@ extern void             PurgeSymbols( void );
 extern offset           SymbolAbsAddr( symbol * );
 extern struct group_entry *SymbolGroup( symbol * );
 
-extern unsigned         NameLen;
+extern size_t           NameLen;
 extern int              (*CmpRtn)( const void *, const void *, size_t );
 extern symbol           *LastSym;
