@@ -78,7 +78,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
     orl_hash_data_struct *      new_data_element;
 
     new_data_element = (orl_hash_data_struct *)_HashAlloc( hash_table, sizeof( orl_hash_data_struct ) );
-    if( !new_data_element )
+    if( new_data_element == NULL )
         return( ORL_OUT_OF_MEMORY );
     new_data_element->data = data;
     new_data_element->next = NULL;
@@ -103,7 +103,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
         hash_ptr = hash_ptr->next;
     }
     new_element = (orl_hash_struct *)_HashAlloc( hash_table, sizeof( orl_hash_struct ) );
-    if( !new_element )
+    if( new_element == NULL )
         return( ORL_OUT_OF_MEMORY );
     new_element->key = key;
     new_element->data_struct = new_data_element;

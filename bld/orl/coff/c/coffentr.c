@@ -42,10 +42,10 @@ coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
     coff_handle                                 coff_hnd;
 
     coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, sizeof( coff_handle_struct ) );
-    if( !coff_hnd )
-        return( NULL );
-    coff_hnd->funcs = funcs;
-    coff_hnd->first_file_hnd = NULL;
+    if( coff_hnd != NULL ) {
+        coff_hnd->funcs = funcs;
+        coff_hnd->first_file_hnd = NULL;
+    }
     return( coff_hnd );
 }
 

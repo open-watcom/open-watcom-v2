@@ -441,10 +441,10 @@ omf_sec_handle OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle ofh, orl_table_index 
 
     for( sh = ofh->first_sec; sh != NULL; sh = sh->next ) {
         if( sh->index == idx ) {
-            return( sh );
+            break;
         }
     }
-    return( NULL );
+    return( sh );
 }
 
 

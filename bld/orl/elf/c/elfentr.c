@@ -42,10 +42,10 @@ elf_handle ELFENTRY ElfInit( orl_funcs *funcs )
     elf_handle                                  elf_hnd;
 
     elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, sizeof( elf_handle_struct ) );
-    if( !elf_hnd )
-        return( NULL );
-    elf_hnd->funcs = funcs;
-    elf_hnd->first_file_hnd = NULL;
+    if( elf_hnd != NULL ) {
+        elf_hnd->funcs = funcs;
+        elf_hnd->first_file_hnd = NULL;
+    }
     return( elf_hnd );
 }
 
