@@ -115,7 +115,7 @@ static const char *VarParmFuncs[] = {
 
 extern const alt_inline_funcs FlatAlternates[];
 
-static struct STRUCT_byte_seq( 1 ) FinallyCode = { 
+static struct STRUCT_BYTE_SEQ( 1 ) FinallyCode = { 
     1, false, { 0xc3 }   /* ret */
 };
 
@@ -124,7 +124,7 @@ static hw_reg_set TryFiniParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static struct STRUCT_byte_seq( 6 ) TryFiniCode = { 
+static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = { 
     6, false, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
