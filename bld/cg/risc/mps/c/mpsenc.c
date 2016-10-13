@@ -61,7 +61,7 @@ extern void DumpInsOnly( instruction * );
 extern void DumpGen( opcode_entry * );
 
 extern opcode_defs      FlipOpcode( opcode_defs );
-extern  void            GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
+extern void             GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
@@ -230,7 +230,7 @@ static  void EmitIns( mips_ins ins )
 }
 
 
-extern  void GenLOADS32( signed_32 value, uint_8 reg )
+void GenLOADS32( signed_32 value, uint_8 reg )
 /*****************************************************
  * Load a signed 32-bit constant 'value' into register 'reg'
  */
@@ -324,7 +324,7 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
 }
 
 
-extern  void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type )
+void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type )
 /**************************************************************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
@@ -332,7 +332,7 @@ extern  void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 disp
 }
 
 
-extern  void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
+void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
 /*********************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rt( a ) | _Rs( b ) | _SignedImmed( displacement );
@@ -340,7 +340,7 @@ extern  void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacemen
 }
 
 
-extern  void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
+void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
 /***************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
@@ -348,21 +348,21 @@ extern  void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
 }
 
 
-extern  void GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt )
+void GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt )
 /********************************************************************************/
 {
     ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
-extern  void GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa )
+void GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa )
 /******************************************************************/
 {
     ins_encoding = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
     EmitIns( ins_encoding );
 }
 
-extern  void GenJType( uint_8 opcode, pointer label )
+void GenJType( uint_8 opcode, pointer label )
 /***************************************************/
 {
     ins_encoding = _Opcode( opcode );
@@ -406,7 +406,7 @@ static  uint_8  BranchOpcodes[][2] = {
 #endif
 
 
-extern  void GenRET( void )
+void GenRET( void )
 /*************************/
 {
     any_oc      oc;

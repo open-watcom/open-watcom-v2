@@ -42,7 +42,6 @@
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
-#include "axpenc.h"
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
@@ -50,6 +49,7 @@
 #include "rgtbl.h"
 #include "rscobj.h"
 #include "utils.h"
+#include "axpenc.h"
 #include "feprotos.h"
 
 

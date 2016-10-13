@@ -61,11 +61,8 @@
 
 extern void         DumpInsOnly( instruction * );
 extern void         DumpGen( opcode_entry * );
-extern void         GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
 extern opcode_defs  FlipOpcode( opcode_defs );
-
-extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
