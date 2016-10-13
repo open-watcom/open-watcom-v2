@@ -65,7 +65,6 @@ extern hw_reg_set       DisplayReg( void );
 extern int              SizeDisplayReg( void );
 extern hw_reg_set       AllCacheRegs( void );
 extern hw_reg_set       *IdxRegs( void );
-extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       ParmRegConflicts(hw_reg_set);
 extern hw_reg_set       High48Reg( hw_reg_set regs );
 extern hw_reg_set       Low48Reg( hw_reg_set regs );
@@ -86,6 +85,7 @@ extern hw_reg_set       FrameReg( void );
 extern hw_reg_set       ScratchReg( void );
 extern void             SetArchIndex( name *new_r, hw_reg_set regs );
 extern byte             RegTrans( hw_reg_set reg );
+extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       *GPRegs( void );
 extern hw_reg_set       *FPRegs( void );
 #if _TARGET & _TARG_PPC
