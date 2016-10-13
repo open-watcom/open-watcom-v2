@@ -79,11 +79,11 @@ typedef enum {
 
 typedef unsigned    byte_seq_len;
 
-#define STRUCT_byte_seq( x ) \
+#define STRUCT_BYTE_SEQ( x ) \
 { \
     byte_seq_len    length; \
     bool            relocs; \
     byte            data[x]; \
 }
 
-typedef struct byte_seq STRUCT_byte_seq( 1 ) byte_seq;
+typedef struct byte_seq STRUCT_BYTE_SEQ( 1 ) byte_seq;
