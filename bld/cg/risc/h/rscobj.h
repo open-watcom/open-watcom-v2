@@ -67,6 +67,10 @@ extern void                 OutSegReloc( label_handle label, segment_id seg );
 extern void                 OutPDataRec( label_handle label, offset proc_size, offset pro_size );
 extern void                 ObjEmitSeq( byte_seq *code );
 extern byte_seq_reloc       *SortListReloc( byte_seq_reloc *relocs );
+extern void                 *InsRelocInit( void *ins );
+extern void                 EmitInsReloc( void *opcode, pointer sym, owl_reloc_type type );
+extern void                 *InsRelocNext( void *ins );
+extern void                 InsRelocAddSignedImmed( int disp );
 
 #if _TARGET & _TARG_PPC
 extern void                 OutTOCRec( label_handle label );

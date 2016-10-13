@@ -188,25 +188,45 @@ static  uint_8 FloatingSetOpcodes[] = {
 };
 
 
-static void EmitInsReloc( mips_ins ins, pointer sym, owl_reloc_type type )
-/************************************************************************/
+static mips_ins  ins_encoding = 0;
+
+void *InsRelocInit( void *ins )
+/*****************************/
+{
+    ins_encoding = *(mips_ins *)ins;
+    return( &ins_encoding );
+}
+
+void InsRelocAddSignedImmed( int disp )
+/*************************************/
+{
+    ins_encoding |= _SignedImmed( disp );
+}
+
+void *InsRelocNext( void *ins )
+/*****************************/
+{
+    return( (mips_ins *)ins + 1 );
+}
+
+void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
+/**************************************************************/
 {
     any_oc      oc;
 
     oc.oc_rins.hdr.class = OC_RCODE;
     oc.oc_rins.hdr.reclen = sizeof( oc_riscins );
     oc.oc_rins.hdr.objlen = 4;
-    oc.oc_rins.opcode = ins;
+    oc.oc_rins.opcode = *(mips_ins *)ins;
     oc.oc_rins.sym = sym;
     oc.oc_rins.reloc = type;
     InputOC( &oc );
 }
 
-
 static  void EmitIns( mips_ins ins )
 /**********************************/
 {
-    EmitInsReloc( ins, NULL, 0 );
+    EmitInsReloc( &ins, NULL, 0 );
 }
 
 
@@ -307,67 +327,55 @@ static  uint_8 FindFloatingOpcodes( instruction *ins )
 extern  void GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type )
 /**************************************************************************************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
-    EmitInsReloc( encoding, lbl, type );
+    ins_encoding = _Opcode( opcode ) | _Rt( rt ) | _Rs( rs ) | _SignedImmed( displacement );
+    EmitInsReloc( &ins_encoding, lbl, type );
 }
 
 
 extern  void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
 /*********************************************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( opcode ) | _Rt( a ) | _Rs( b ) | _SignedImmed( displacement );
-    EmitIns( encoding );
+    ins_encoding = _Opcode( opcode ) | _Rt( a ) | _Rs( b ) | _SignedImmed( displacement );
+    EmitIns( ins_encoding );
 }
 
 
 extern  void GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed )
 /***************************************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
-    EmitIns( encoding );
+    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Immed( immed );
+    EmitIns( ins_encoding );
 }
 
 
 extern  void GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, uint_8 rt )
 /********************************************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
-    EmitIns( encoding );
+    ins_encoding = _Opcode( opcode ) | _Rs( rs ) | _Rt( rt ) | _Rd( rd ) | _Function( fc );
+    EmitIns( ins_encoding );
 }
 
 extern  void GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa )
 /******************************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
-    EmitIns( encoding );
+    ins_encoding = _Opcode( 0 ) | _Rs( 0 ) | _Rt( rt ) | _Rd( rd ) | _Shift( sa ) | _Function( fc );
+    EmitIns( ins_encoding );
 }
 
 extern  void GenJType( uint_8 opcode, pointer label )
 /***************************************************/
 {
-    mips_ins            encoding;
-
-    encoding = _Opcode( opcode );
-    EmitInsReloc( encoding, label, OWL_RELOC_JUMP_ABS );
+    ins_encoding = _Opcode( opcode );
+    EmitInsReloc( &ins_encoding, label, OWL_RELOC_JUMP_ABS );
     // TODO: Handle delay slot better
-    EmitIns( MIPS_NOP );
+    ins_encoding = MIPS_NOP;
+    EmitIns( ins_encoding );
 }
 
 
 static  void GenFloatRType( type_class_def type, uint_8 fnc, uint_8 fd, uint_8 fs, uint_8 ft )
 /********************************************************************************************/
 {
-    mips_ins            ins;
     int                 fmt;
 
     // Select operand format
@@ -381,8 +389,8 @@ static  void GenFloatRType( type_class_def type, uint_8 fnc, uint_8 fd, uint_8 f
     }
 
     // Opcode is always COP1
-    ins = _Opcode( 0x11 ) | _FPFormat( fmt ) | _Ft( ft ) | _Fs( fs ) | _Fd( fd ) | _Function( fnc );
-    EmitIns( ins );
+    ins_encoding = _Opcode( 0x11 ) | _FPFormat( fmt ) | _Ft( ft ) | _Fs( fs ) | _Fd( fd ) | _Function( fnc );
+    EmitIns( ins_encoding );
 }
 
 
@@ -1062,45 +1070,4 @@ byte CondCode( instruction *ins )
 /*******************************/
 {
     return( ins->head.opcode );
-}
-
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
-{
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    mips_ins            *code_ptr;
-    mips_ins            opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
-
-    assert( code->length % 4 == 0 );
-    curr = SortListReloc( code->relocs );
-    code_ptr = (mips_ins *)code->data;
-    for( i = 0; i < code->length; i += 4 ) {
-        opcode = *code_ptr++;
-        reloc_type = 0;
-        reloc_sym = NULL;
-        while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
-            switch( curr->type ) {
-            case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
-                if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
-                }
-                opcode |= _SignedImmed( loc );
-                break;
-            case OWL_RELOC_PAIR:
-                break;
-            default:
-                reloc_type = curr->type;
-                reloc_sym = back->lbl;
-            }
-            curr = curr->next;
-        }
-        EmitInsReloc( opcode, reloc_sym, reloc_type );
-    }
 }

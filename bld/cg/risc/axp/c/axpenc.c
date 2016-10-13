@@ -59,13 +59,13 @@
 #include "feprotos.h"
 
 
-extern void DumpInsOnly( instruction * );
-extern void DumpGen( opcode_entry * );
-extern void GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
+extern void         DumpInsOnly( instruction * );
+extern void         DumpGen( opcode_entry * );
+extern void         GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
 
-extern  opcode_defs     FlipOpcode( opcode_defs );
+extern opcode_defs  FlipOpcode( opcode_defs );
 
-extern void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
+extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
@@ -193,56 +193,71 @@ static  uint_8  AlphaByteInsSizeBits[] = {
 // including an exhaustive table would have been too painful.
 static  uint_8  ScratchOpcodes[2];
 
-static void EmitInsReloc( axp_ins ins, pointer sym, owl_reloc_type type )
-/***********************************************************************/
+static axp_ins  ins_encoding = 0;
+
+void *InsRelocInit( void *ins )
+/*****************************/
+{
+    ins_encoding = *(axp_ins *)ins;
+    return( &ins_encoding );
+}
+
+void InsRelocAddSignedImmed( int disp )
+/*************************************/
+{
+    ins_encoding |= _SignedImmed( disp );
+}
+
+void *InsRelocNext( void *ins )
+/****************************/
+{
+    return( (axp_ins *)ins + 1 );
+}
+
+void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
+/**************************************************************/
 {
     any_oc          oc;
 
     oc.oc_rins.hdr.class = OC_RCODE;
     oc.oc_rins.hdr.reclen = sizeof( oc_riscins );
     oc.oc_rins.hdr.objlen = 4;
-    oc.oc_rins.opcode = ins;
+    oc.oc_rins.opcode = *(axp_ins *)ins;
     oc.oc_rins.sym = sym;
     oc.oc_rins.reloc = type;
     InputOC( &oc );
 }
 
-static  void EmitIns( axp_ins ins ) {
-/***********************************/
-
-    EmitInsReloc( ins, NULL, 0 );
+static  void EmitIns( axp_ins ins )
+/*********************************/
+{
+    EmitInsReloc( &ins, NULL, 0 );
 }
 
-static  void GenFPOPINS( uint_8 opcode, uint_16 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c ) {
-/****************************************************************************************************/
-
-    axp_ins             ins;
-
-    ins = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _FPFunction( function );
-    EmitIns( ins );
-}
-
-extern  void GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c ) {
-/*************************************************************************************************/
-
-    axp_ins             ins;
-
-    ins = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _Function( function );
-    EmitIns( ins );
-}
-
-static  void    GenOPIMM( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 imm, uint_8 reg_c ) {
+static  void GenFPOPINS( uint_8 opcode, uint_16 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
 /**************************************************************************************************/
-
-    axp_ins             ins;
-
-    ins = _Opcode( opcode ) | _A( reg_a ) | _LIT( imm ) | ( 1 << 12 ) | _C( reg_c ) | _Function( function );
-    EmitIns( ins );
+{
+    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _FPFunction( function );
+    EmitIns( ins_encoding );
 }
 
-extern  void    GenLOADS32( signed_32 value, uint_8 reg ) {
-/*********************************************************/
+void GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c )
+/***************************************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _B( reg_b ) | _C( reg_c ) | _Function( function );
+    EmitIns( ins_encoding );
+}
 
+static  void    GenOPIMM( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 imm, uint_8 reg_c )
+/************************************************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _A( reg_a ) | _LIT( imm ) | ( 1 << 12 ) | _C( reg_c ) | _Function( function );
+    EmitIns( ins_encoding );
+}
+
+void    GenLOADS32( signed_32 value, uint_8 reg )
+/***********************************************/
+{
     signed_16           high;
     signed_16           extra;
     signed_16           low;
@@ -312,21 +327,18 @@ static  uint_16 FindFloatingOpcodes( instruction *ins ) {
     return( opcode );
 }
 
-extern  void    GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type ) {
-/*****************************************************************************************************************************/
-
-    axp_ins             encoding;
-
-    encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
-    EmitInsReloc( encoding, lbl, type );
+void GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type )
+/****************************************************************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
+    EmitInsReloc( &ins_encoding, lbl, type );
 }
 
-extern  void    GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement ) {
-/**************************************************************************************/
-    axp_ins             encoding;
-
-    encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
-    EmitIns( encoding );
+void GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement )
+/*************************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _A( a ) | _B( b ) | _SignedImmed( displacement );
+    EmitIns( ins_encoding );
 }
 
 #if 0
@@ -340,47 +352,45 @@ static  uint_8  BranchOpcodes[][2] = {
 };
 #endif
 
-static  void    GenBRANCH( uint_8 opcode, uint_8 reg, pointer label ) {
-/*********************************************************************/
-
-    axp_ins             encoding;
-
-    encoding = _Opcode( opcode ) | _A( reg );
-    EmitInsReloc( encoding, label, OWL_RELOC_BRANCH_REL );
+static  void    GenBRANCH( uint_8 opcode, uint_8 reg, pointer label )
+/*******************************************************************/
+{
+    ins_encoding = _Opcode( opcode ) | _A( reg );
+    EmitInsReloc( &ins_encoding, label, OWL_RELOC_BRANCH_REL );
 }
 
 // move disp(Rs) -> Rd
 
-extern  void    GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement ) {
-/*********************************************************************************/
-
+void    GenLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
+/***********************************************************************/
+{
     GenMEMINS( 0x29, RegTrans( dst ), RegTrans( src ), displacement );
 }
 
-extern  void    GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement ) {
-/*********************************************************************************/
-
+void    GenFLOAD( hw_reg_set dst, hw_reg_set src, signed_16 displacement )
+/************************************************************************/
+{
     GenMEMINS( 0x23, RegTrans( dst ), RegTrans( src ), displacement );
 }
 
 // move Rs -> disp(Rd)
 
-extern  void    GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src ) {
-/**********************************************************************************/
-
+void    GenSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
+/************************************************************************/
+{
     GenMEMINS( 0x2d, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
 // move Fs -> disp(Rd)
 
-extern  void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src ) {
-/**********************************************************************************/
-
+void    GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_set src )
+/*************************************************************************/
+{
     GenMEMINS( 0x27, RegTrans( src ), RegTrans( dst ), displacement );
 }
 
-extern  void    GenRET( void )
-/****************************/
+void    GenRET( void )
+/********************/
 {
     any_oc      oc;
 
@@ -930,9 +940,9 @@ void    GenObjCode( instruction *ins )  {
 }
 
 #if 0
-extern  void    GenJumpIf( instruction *ins, pointer label ) {
-/************************************************************/
-
+void    GenJumpIf( instruction *ins, pointer label )
+/**************************************************/
+{
     GenBRANCH( BranchOpcodes[ins->head.opcode - FIRST_COMPARISON][_IsFloating( ins->type_class )],
                 _NameReg( ins->operands[0] ), label );
 #ifndef NDEBUG
@@ -962,45 +972,4 @@ byte    CondCode( instruction *ins )
 /**********************************/
 {
     return( ins->head.opcode );
-}
-
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
-{
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    axp_ins             *code_ptr;
-    axp_ins             opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
-
-    assert( code->length % 4 == 0 );
-    curr = SortListReloc( code->relocs );
-    code_ptr = (axp_ins *)code->data;
-    for( i = 0; i < code->length; i += 4 ) {
-        opcode = *code_ptr++;
-        reloc_type = 0;
-        reloc_sym = NULL;
-        while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
-            switch( curr->type ) {
-            case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
-                if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
-                }
-                opcode |= _SignedImmed( loc );
-                break;
-            case OWL_RELOC_PAIR:
-                break;
-            default:
-                reloc_type = curr->type;
-                reloc_sym = back->lbl;
-            }
-            curr = curr->next;
-        }
-        EmitInsReloc( opcode, reloc_sym, reloc_type );
-    }
 }

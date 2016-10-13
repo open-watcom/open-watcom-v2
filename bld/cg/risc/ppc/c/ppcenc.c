@@ -64,6 +64,7 @@ extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 #define _NameReg( op )                  ( (op)->r.arch_index )
 #define _IsSigned( type )               ( Unsigned[type] != type )
 #define _EmitIns( ins )                 ObjBytes( &(ins), sizeof( ppc_ins ) )
+#define _ObjEmitSeq( code )             ObjBytes( code->data, code->length )
 
 #define ZERO_SINK       0
 #define STACK_REG       1
@@ -143,6 +144,47 @@ static  gen_opcode  BinaryImmedOpcodes[] = {
 };
 
 
+static ppc_ins  ins_encoding = 0;
+
+void *InsRelocInit( void *ins )
+/*****************************/
+{
+    ins_encoding = *(ppc_ins *)ins;
+    return( &ins_encoding );
+}
+
+void InsRelocAddSignedImmed( int disp )
+/*************************************/
+{
+    ins_encoding |= _SignedImmed( disp );
+}
+
+void *InsRelocNext( void *ins )
+/*****************************/
+{
+    return( (ppc_ins *)ins + 1 );
+}
+
+void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
+/**************************************************************/
+{
+#if 0
+    // copy & paste from AXP cg
+    any_oc      oc;
+
+    oc.oc_rins.op.class = OC_RCODE;
+    oc.oc_rins.op.reclen = sizeof( oc_riscins );
+    oc.oc_rins.op.objlen = 4;
+    oc.oc_rins.opcode = *(ppc_ins *)ins;
+    oc.oc_rins.sym = sym;
+    oc.oc_rins.reloc = type;
+    InputOC( &oc );
+#else
+    ins = ins; sym = sym; type = type;
+    _Zoiks( ZOIKS_091 );
+#endif
+}
+
 static  gen_opcode  *FindOpcodes( instruction *ins )
 /**************************************************/
 {
@@ -173,98 +215,81 @@ static  gen_opcode  *FindImmedOpcodes( instruction *ins )
 static void    GenFPOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx c, reg_idx d )
 //******************************************************************************************
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Op2( op2 );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op1 ) | _A( a ) | _C( c ) | _D( d ) | _Op2( op2 );
+    _EmitIns( ins_encoding );
 }
 
 
 void    GenOPINS( gen_opcode op1, gen_opcode op2, reg_idx a, reg_idx b, reg_idx s )
 //*********************************************************************************
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Op2( op2 );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op1 ) | _A( a ) | _B( b ) | _S( s ) | _Op2( op2 );
+    _EmitIns( ins_encoding );
 }
 
 
 void    GenOPIMM( gen_opcode op1, reg_idx d, reg_idx a, signed_16 immed )
 //***********************************************************************
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op1 ) | _D( d ) | _A( a ) | _SignedImmed( immed );
+    _EmitIns( ins_encoding );
 }
 
 
 void    GenMTSPR( reg_idx d, uint_32 spr, bool from )
 //***************************************************
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( 31 ) | _Op2( 467 );
+    ins_encoding = _Op1( 31 ) | _Op2( 467 );
     if( from ) {
-        encoding = _Op1( 31 ) | _Op2( 339 );
+        ins_encoding = _Op1( 31 ) | _Op2( 339 );
     }
-    encoding |= _D( d ) | _SPR( spr );
-    _EmitIns( encoding );
+    ins_encoding |= _D( d ) | _SPR( spr );
+    _EmitIns( ins_encoding );
 }
 
 
 void    GenMEMINS( gen_opcode op, reg_idx d, reg_idx i, signed_16 displacement )
 /******************************************************************************/
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op ) | _D( d ) | _A( i ) | _SignedImmed( displacement );
+    _EmitIns( ins_encoding );
 }
 
 
 static void    GenBRANCH( gen_opcode op, pointer label, bool link, bool absolute )
 /********************************************************************************/
 {
-    ppc_ins             encoding;
     int_32              loc;
 
     loc = AskLocation();
-    encoding = _Op1( op ) | _AA( absolute ) | _LK( link ) | _BranchImmed( -loc );
+    ins_encoding = _Op1( op ) | _AA( absolute ) | _LK( link ) | _BranchImmed( -loc );
     OutReloc( label, PPC_RELOC_BRANCH, 0 );
-    _EmitIns( encoding );
+    _EmitIns( ins_encoding );
 }
 
 
 static void    GenCONDBR( gen_opcode op, gen_opcode bo, gen_opcode bi, pointer label )
 /************************************************************************************/
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op ) | _S( bo ) | _A( bi );
+    ins_encoding = _Op1( op ) | _S( bo ) | _A( bi );
     OutReloc( label, PPC_RELOC_BRANCH_COND, 0 );
-    _EmitIns( encoding );
+    _EmitIns( ins_encoding );
 }
 
 
 static void    GenCMP( gen_opcode op, gen_opcode op2, reg_idx a, reg_idx b )
 /**************************************************************************/
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op ) | _A( a ) | _B( b ) | _Op2( op2 );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op ) | _A( a ) | _B( b ) | _Op2( op2 );
+    _EmitIns( ins_encoding );
 }
 
 
 static void    GenCMPIMM( gen_opcode op, reg_idx a, signed_16 imm )
 /*****************************************************************/
 {
-    ppc_ins             encoding;
-
-    encoding = _Op1( op ) | _A( a ) | _SignedImmed( imm );
-    _EmitIns( encoding );
+    ins_encoding = _Op1( op ) | _A( a ) | _SignedImmed( imm );
+    _EmitIns( ins_encoding );
 }
 
 
@@ -321,13 +346,12 @@ static  void    doCall( instruction *ins )
 {
     cg_sym_handle   sym;
     byte_seq        *code;
-    ppc_ins         encoding;
     label_handle    lbl;
 
     sym = ins->operands[CALL_OP_ADDR]->v.symbol;
     code = FindAuxInfoSym( sym, CALL_BYTES );
     if( code != NULL ) {
-        ObjBytes( code->data, code->length );
+        _ObjEmitSeq( code );
         if( *(call_class *)FindAuxInfoSym( sym, CALL_CLASS ) & SUICIDAL ) {
             GenNoReturn();
         }
@@ -335,9 +359,9 @@ static  void    doCall( instruction *ins )
         lbl = symLabel( ins->operands[CALL_OP_ADDR] );
         lbl = GetWeirdPPCDotDotLabel( lbl );
         GenBRANCH( 18, lbl, true, false );
-        encoding = 0x60000000;  // ..znop for linker thunk
         OutReloc( lbl, PPC_RELOC_GLUE, 0 );
-        _EmitIns( encoding );
+        ins_encoding = 0x60000000;  // ..znop for linker thunk
+        _EmitIns( ins_encoding );
     }
 }
 
@@ -546,10 +570,8 @@ static  void    DbgBlkInfo( instruction *ins )
 void    GenRET( void )
 /********************/
 {
-   ppc_ins      encoding;
-
-   encoding = 0x4e800020;       // FIXME - need linkage docs
-   _EmitIns( encoding );
+   ins_encoding = 0x4e800020;       // FIXME - need linkage docs
+   _EmitIns( ins_encoding );
 }
 
 
@@ -962,68 +984,5 @@ void    GenCondJump( instruction *cond )
     blk = InsBlock( cond );
     if( dest_false != blk->next_block->label ) {
         GenJumpLabel( dest_false );
-    }
-}
-
-
-static void EmitInsReloc( ppc_ins ins, pointer sym, owl_reloc_type type )
-/***********************************************************************/
-{
-#if 0
-
-    // copy & paste from AXP cg
-    any_oc      oc;
-
-    oc.oc_rins.op.class = OC_RCODE;
-    oc.oc_rins.op.reclen = sizeof( oc_riscins );
-    oc.oc_rins.op.objlen = 4;
-    oc.oc_rins.opcode = ins;
-    oc.oc_rins.sym = sym;
-    oc.oc_rins.reloc = type;
-    InputOC( &oc );
-#else
-    ins = ins; sym = sym; type = type;
-    _Zoiks( ZOIKS_091 );
-#endif
-}
-
-void    ObjEmitSeq( byte_seq *code )
-/**********************************/
-{
-    byte_seq_reloc      *curr;
-    back_handle         back;
-    type_length         loc;
-    byte_seq_len        i;
-    ppc_ins             *code_ptr;
-    ppc_ins             opcode;
-    pointer             reloc_sym;
-    owl_reloc_type      reloc_type;
-
-    assert( code->length % 4 == 0 );
-    curr = SortListReloc( code->relocs );
-    code_ptr = (ppc_ins *)code->data;
-    for( i = 0; i < code->length; i += 4 ) {
-        opcode = *code_ptr++;
-        reloc_type = 0;
-        reloc_sym = NULL;
-        while( curr != NULL && curr->off == i ) {
-            back = SymBack( curr->sym );
-            switch( curr->type ) {
-            case OWL_RELOC_FP_OFFSET:
-                loc = TempLocation( (name *)back );
-                if( loc > 32767 ) {
-                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
-                }
-                opcode |= _SignedImmed( loc );
-                break;
-            case OWL_RELOC_PAIR:
-                break;
-            default:
-                reloc_type = curr->type;
-                reloc_sym = back->lbl;
-            }
-            curr = curr->next;
-        }
-        EmitInsReloc( opcode, reloc_sym, reloc_type );
     }
 }
