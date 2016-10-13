@@ -46,10 +46,10 @@
 #define isWSorCtrlZ(x)  (isspace( x ) || (x == 0x1A))
 
 #define MAX_LINE_LEN    1024
-#define COPY_SIZE       0x8000 - 512    /* QNX read/write size limitation */
+#define COPY_SIZE       (0x8000 - 512)  /* QNX read/write size limitation */
 #define MAX_DATA_FILES  255
 #define MAX_BIND_DATA   65000
-#define FILE_BUFF_SIZE  32000
+#define FILE_BUFF_SIZE  COPY_SIZE
 
 char        *dats[MAX_DATA_FILES];
 
@@ -116,10 +116,6 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     /*
      * get files
      */
-    copy = malloc( COPY_SIZE );
-    if( copy == NULL ) {
-        Abort( "Out of Memory" );
-    }
     h = open( exe, O_RDWR | O_BINARY );
     if( h == -1 ) {
         Abort( "Fatal error opening \"%s\"", exe );
@@ -159,14 +155,20 @@ static void AddDataToEXE( char *exe, char *data, bind_size data_len, unsigned lo
     /*
      * copy crap
      */
+    copy = malloc( COPY_SIZE );
+    if( copy == NULL ) {
+        Abort( "Out of Memory" );
+    }
     size = COPY_SIZE;
     while( tocopy > 0 ) {
         if( size > tocopy )
             size = (unsigned)tocopy;
         if( read( h, copy, size ) != size ) {
+            free( copy );
             Abort( "Read error on \"%s\"", exe );
         }
         if( write( newh, copy, size ) != size ) {
+            free( copy );
             Abort( "Write error on \"%s\"", foo );
         }
         tocopy -= size;

@@ -734,20 +734,22 @@ void SetCommandFile( f_handle file, char *fname )
 /******************************************************/
 /* read input from given file */
 {
-    unsigned long   size;
+    unsigned long   long_size;
     char            *buff;
 
     if( QIsDevice( file ) ) {
-        size = 0x10000;
+        long_size = 0x10000;
     } else {
-        size = QFileSize( file );
+        long_size = QFileSize( file );
     }
     buff = NULL;
-    if( size < 65510 ) {       // if can alloc a chunk big enough
+    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
+        size_t  size = (size_t)long_size;
+
         _LnkAlloc( buff, size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
-            *(buff + size) = '\0';
+            buff[size] = '\0';
             NewCommandSource( fname, buff, BUFFERED );
         }
     }

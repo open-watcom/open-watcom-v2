@@ -188,8 +188,8 @@ void StartNewFile( char *fname )
     CmdFile = newfile;
     newfile->file = QOpenR( newfile->name );
     long_size = QFileSize( newfile->file );
-    if( long_size < 65510 ) {       // if can alloc a chunk big enough
-        size_t  size = long_size;
+    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
+        size_t  size = (size_t)long_size;
 
         newfile->buffer = MemAlloc( size + 1 );
         if( newfile->buffer != NULL ) {

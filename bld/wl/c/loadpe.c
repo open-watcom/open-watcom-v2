@@ -1070,7 +1070,7 @@ static unsigned long CalcPEChecksum( unsigned long dwInitialCount, unsigned shor
 }
 
 void FiniPELoadFile( void )
-/********************************/
+/*************************/
 /* make a PE executable file */
 {
     exe_pe_header   h;
@@ -1404,7 +1404,7 @@ void FiniPELoadFile( void )
 
     if( FmtData.u.pe.checksumfile ) {
         unsigned_32     crc = 0L;
-        unsigned_32     buffsize;
+        size_t          buffsize;
         unsigned long   currpos = 0L;
         unsigned long   totalsize = 0L;
         outfilelist     *outfile;
@@ -1423,7 +1423,7 @@ void FiniPELoadFile( void )
 
         totalsize = QFileSize( outfile->handle );
 
-#define CRC_BUFF_SIZE   (16*1024)
+#define CRC_BUFF_SIZE   (16 * 1024)
         _ChkAlloc( buffer, CRC_BUFF_SIZE );
 
         if( buffer ) {
