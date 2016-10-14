@@ -48,6 +48,7 @@
 #include "rtcall.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "fixindex.h"
 
 
 extern  name            *GenFloat( name *, type_class_def );
@@ -56,7 +57,6 @@ extern  void            UpdateLive( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
 extern  conflict_node   *NameConflict( instruction *, name * );
-extern  int             NumOperands( instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
 
 /*

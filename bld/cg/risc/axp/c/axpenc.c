@@ -56,13 +56,13 @@
 #include "rscobj.h"
 #include "split.h"
 #include "namelist.h"
+#include "fixindex.h"
+#include "revcond.h"
 #include "feprotos.h"
 
 
 extern void         DumpInsOnly( instruction * );
 extern void         DumpGen( opcode_entry * );
-
-extern opcode_defs  FlipOpcode( opcode_defs );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 
@@ -710,7 +710,7 @@ static  void    Encode( instruction *ins ) {
     signed_16           extra;
     signed_16           low;
 
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_CALL:
         assert( ins->operands[CALL_OP_ADDR]->n.class == N_MEMORY );
         doCall( ins );

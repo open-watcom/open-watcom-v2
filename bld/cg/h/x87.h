@@ -60,3 +60,5 @@ extern  void            FPPostSched( block * );
 extern  void            FPPreSched( block * );
 extern  int             FPStackExit( block * );
 extern  int             FPStkOver( instruction *, int );
+
+extern  bool    DivIsADog( type_class_def class );

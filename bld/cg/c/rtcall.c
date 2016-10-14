@@ -42,18 +42,10 @@
 #include "rtcall.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "generate.h"
 
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            FixCallIns(instruction*);
-#if _TARGET & _TARG_370
-extern  hw_reg_set      RAReg( void );
-extern  hw_reg_set      LNReg( void );
-#endif
-#if _TARGET & _TARG_AXP
-extern  hw_reg_set      SavedRegs( void );
-#elif _TARGET & _TARG_80386
-#endif
 
 #if _TARGET & _TARG_AXP
     #define _ParmReg( x )       FirstReg( x )

@@ -42,9 +42,8 @@
 #include "insutil.h"
 #include "namelist.h"
 #include "unroll.h"
+#include "optimize.h"
 
-
-extern bool         SameThing(name *,name *);
 
 static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/

@@ -54,6 +54,8 @@
 #include "x86objd.h"
 #include "x86obj.h"
 #include "optab.h"
+#include "rgtbl.h"
+#include "x86base.h"
 #include "feprotos.h"
 
 
@@ -76,8 +78,6 @@ extern  void        GenRegAdd(hw_reg_set,type_length);
 extern  void        GenRegMove(hw_reg_set,hw_reg_set);
 extern  void        GenPushOffset(byte);
 extern  void        RelocParms( void );
-extern  type_length AdjustBase( void );
-extern  hw_reg_set  SaveRegs( void );
 extern  void        GenUnkPush(pointer);
 extern  void        GenPushC(signed_32);
 extern  void        GenUnkMov(hw_reg_set,pointer);

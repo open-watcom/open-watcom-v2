@@ -54,7 +54,6 @@ static    pointer       *AddrNameFrl;
 extern  name            *BGNewTemp(type_def*);
 extern  void            AllocALocal(name*);
 extern  void            BGDone(an);
-extern  cg_type         NamePtrType( name *op );
 
 static  void    CopyAddr( an src, an dst )
 /****************************************/

@@ -589,7 +589,7 @@ static  void    Encode( instruction *ins )
     reg_idx             mem_index;
 
 
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_MOVE_FP:
         assert( ins->result->n.class == N_REGISTER );
         assert( ins->operands[0]->n.class == N_REGISTER );
@@ -604,7 +604,7 @@ static  void    Encode( instruction *ins )
         break;
     case G_LOAD:
     case G_STORE:
-        doLoadStore( ins, ins->u.gen_table->generate == G_LOAD );
+        doLoadStore( ins, G( ins ) == G_LOAD );
         break;
     case G_CALL:
         doCall( ins );
@@ -676,7 +676,7 @@ static  void    Encode( instruction *ins )
         a = _NameReg( ins->operands[0] );
         b = _NameReg( ins->operands[1] );
         s = _NameReg( ins->result );
-        if( ins->head.opcode == OP_SUB && ins->u.gen_table->generate == G_BINARY ) {
+        if( ins->head.opcode == OP_SUB && G( ins ) == G_BINARY ) {
             /* someone sucks - it's not me */
             temp = a;
             a = b;
@@ -720,7 +720,7 @@ static  void    Encode( instruction *ins )
             break;
         default:
             ops = FindImmedOpcodes( ins );
-            if( ins->u.gen_table->generate == G_BINARYS_IMM ) {
+            if( G( ins ) == G_BINARYS_IMM ) {
                 s = _NameReg( ins->operands[0] );
                 a = _NameReg( ins->result );
             } else {
@@ -819,9 +819,9 @@ void    GenObjCode( instruction *ins )
 /************************************/
 {
     Encode( ins );
-    if( ins->u.gen_table->generate == G_CMP ||
-        ins->u.gen_table->generate == G_CMP_I ||
-        ins->u.gen_table->generate == G_CMP_FP ) {
+    if( G( ins ) == G_CMP ||
+        G( ins ) == G_CMP_I ||
+        G( ins ) == G_CMP_FP ) {
         GenCondJump( ins );
     }
 }

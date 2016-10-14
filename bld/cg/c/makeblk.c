@@ -50,7 +50,6 @@
 #include "feprotos.h"
 
 
-extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  void            SaveToTargProc(void);
 extern  void            RestoreFromTargProc(void);
 extern  void            InitTargProc(void);

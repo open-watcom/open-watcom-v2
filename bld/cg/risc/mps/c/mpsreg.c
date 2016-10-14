@@ -39,13 +39,15 @@
 #include "utils.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "makeblk.h"
+#include "bldcall.h"
 #include "feprotos.h"
 
 
 extern  void            UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux );
 
-extern hw_reg_set SavedRegs( void )
-/*********************************/
+hw_reg_set SavedRegs( void )
+/**************************/
 {
     hw_reg_set          saved;
 
@@ -75,8 +77,8 @@ extern hw_reg_set SavedRegs( void )
 }
 
 
-extern  type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
-/***********************************************************************************/
+type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
+/***************************************************************************/
 {
     type_class_def      class;
     uint                i;
@@ -157,24 +159,24 @@ extern  type_class_def CallState( aux_handle aux, type_def *tipe, call_state *st
 }
 
 
-extern  void UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/**************************************************************************************************/
+void UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
+/******************************************************************************************/
 {
     tipe = tipe;
     aux = aux;
     state->return_reg = ReturnReg( class );
 }
 
-
-extern  hw_reg_set RAReg( void )
-/******************************/
+#if 0
+hw_reg_set RAReg( void )
+/**********************/
 {
     return( HW_R31 );
 }
+#endif
 
-
-extern  hw_reg_set CallZap( call_state *state )
-/*********************************************/
+hw_reg_set CallZap( call_state *state )
+/*************************************/
 {
     hw_reg_set  zap;
     hw_reg_set  tmp;
@@ -191,8 +193,8 @@ extern  hw_reg_set CallZap( call_state *state )
 }
 
 
-extern  hw_reg_set MustSaveRegs( void )
-/*************************************/
+hw_reg_set MustSaveRegs( void )
+/*****************************/
 {
     hw_reg_set  save;
     hw_reg_set  tmp;
@@ -221,8 +223,8 @@ extern  hw_reg_set MustSaveRegs( void )
 }
 
 
-extern  hw_reg_set SaveRegs( void )
-/*********************************/
+hw_reg_set SaveRegs( void )
+/*************************/
 {
     hw_reg_set   save;
 
@@ -232,8 +234,8 @@ extern  hw_reg_set SaveRegs( void )
 }
 
 
-extern  bool IsStackReg( name *n )
-/********************************/
+bool IsStackReg( name *n )
+/************************/
 {
     if( n == NULL ) return( false );
     if( n->n.class != N_REGISTER ) return( false );
@@ -243,16 +245,16 @@ extern  bool IsStackReg( name *n )
 }
 
 
-extern  hw_reg_set HighOffsetReg( hw_reg_set regs )
-/*************************************************/
+hw_reg_set HighOffsetReg( hw_reg_set regs )
+/*****************************************/
 {
     regs = regs;
     return( HW_EMPTY );
 }
 
 
-extern  hw_reg_set LowOffsetReg( hw_reg_set regs )
-/************************************************/
+hw_reg_set LowOffsetReg( hw_reg_set regs )
+/****************************************/
 {
     regs = regs;
     return( HW_EMPTY );

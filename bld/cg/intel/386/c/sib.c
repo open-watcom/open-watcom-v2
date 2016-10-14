@@ -34,6 +34,8 @@
 #include "coderep.h"
 #include "data.h"
 #include "rgtbl.h"
+#include "sib.h"
+#include "generate.h"
 
 
 typedef enum {
@@ -60,7 +62,7 @@ static  bool    InsIsCandidate( instruction *ins )
 }
 
 
-extern  void    BuildIndex( void ) 
+void    BuildIndex( void ) 
 /********************************/
 {
     block       *blk;
@@ -163,7 +165,7 @@ static  mod_info        Modifies( instruction *next, name *reg,
 }
 
 
-extern  instruction     *SIBPossibleIndex( instruction *ins, name *reg,
+instruction     *SIBPossibleIndex( instruction *ins, name *reg,
                                            name **pindex,
                                            bool *pbase,
                                            hw_reg_set base_reg,

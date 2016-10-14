@@ -46,16 +46,15 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "fixindex.h"
+#include "revcond.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    DoNop[];
 
-extern  void            Opt8087( void );
-extern  int             NumOperands(instruction*);
 extern  int             Count87Regs(hw_reg_set);
 extern  void            AllocALocal(name*);
-extern  void            RevCond(instruction*);
 extern  void            InitFPStkReq( void );
 
 /* forward declarations */
@@ -815,7 +814,7 @@ static  void    Expand( void ) {
             if( DoesSomething( ins ) ) {
                 if( _OpIsCall( ins->head.opcode ) ) {
                     ins = ExpCall( ins );
-                } else if( ins->u.gen_table->generate == G_UNKNOWN ) {
+                } else if( G( ins ) == G_UNKNOWN ) {
                     ins = DoExpand( ins );
                 }
             }
@@ -1083,10 +1082,10 @@ extern  void    NoPopRBin( instruction *ins ) {
     that does not pop the stack. For example FMULP ST(1),ST  -> FMUL ST(1),ST
 */
 
-    if( ins->u.gen_table->generate == G_RRFBINP ) {
+    if( G( ins ) == G_RRFBINP ) {
         ins->u.gen_table = GenTab( ins, RRFBIND );
         ins->stk_exit++;
-    } else if( ins->u.gen_table->generate == G_RNFBINP ) {
+    } else if( G( ins ) == G_RNFBINP ) {
         ins->u.gen_table = GenTab( ins, RNFBIND );
         ins->stk_exit++;
     }
@@ -1099,14 +1098,14 @@ extern  void    NoPopBin( instruction *ins ) {
     that does not pop the stack. For example FMULP ST(1),ST  -> FMUL X
 */
 
-    if( ins->u.gen_table->generate == G_RRFBINP ) {
+    if( G( ins ) == G_RRFBINP ) {
         if( ins->operands[0]->n.class == N_REGISTER ) {
             ins->u.gen_table = GenTab( ins, RRFBIN );
         } else {
             ins->u.gen_table = GenTab( ins, MRFBIN );
         }
         ins->stk_exit++;
-    } else if( ins->u.gen_table->generate == G_RNFBINP ) {
+    } else if( G( ins ) == G_RNFBINP ) {
         if( ins->operands[0]->n.class == N_REGISTER ) {
             ins->u.gen_table = GenTab( ins, RNFBIN );
         } else {
@@ -1123,10 +1122,10 @@ extern  void    ToPopBin( instruction *ins ) {
     that pops the stack. For example FSUB ST,ST(1) -> FSUBRP ST(1),ST
 */
 
-    if( ins->u.gen_table->generate == G_RRFBIN ) {
+    if( G( ins ) == G_RRFBIN ) {
         ins->u.gen_table = GenTab( ins, RNFBINP );
         ins->stk_exit--;
-    } else if( ins->u.gen_table->generate == G_RNFBIN ) {
+    } else if( G( ins ) == G_RNFBIN ) {
         ins->u.gen_table = GenTab( ins, RRFBINP );
         ins->stk_exit--;
     }
@@ -1139,7 +1138,7 @@ extern  void    ReverseFPGen( instruction *ins ) {
     For example FSUB ST(1)  -> FSUBR ST(1)
 */
 
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_RRFBIN:
         ins->u.gen_table = GenTab( ins, RNFBIN );
         break;
@@ -1185,10 +1184,10 @@ extern  void    NoPop( instruction *ins ) {
     Turn an FSTP instruction into FST.
 */
 
-    if( ins->u.gen_table->generate == G_MFST ) {
+    if( G( ins ) == G_MFST ) {
         ins->u.gen_table = MFSTNP;
         ins->stk_exit++;
-    } else if( ins->u.gen_table->generate == G_RFST ) {
+    } else if( G( ins ) == G_RFST ) {
         ins->u.gen_table = RFSTNP;
         ins->stk_exit++;
     }
@@ -1199,9 +1198,9 @@ extern  void    NoMemBin( instruction *ins ) {
 /*********************************************
     FADD x  ==>  FADD ST(0) for example
 */
-    if( ins->u.gen_table->generate == G_MRFBIN ) {
+    if( G( ins ) == G_MRFBIN ) {
         ins->u.gen_table = GenTab( ins, RRFBIN );
-    } else if( ins->u.gen_table->generate == G_MNFBIN ) {
+    } else if( G( ins ) == G_MNFBIN ) {
         ins->u.gen_table = GenTab( ins, RNFBIN );
     }
 }

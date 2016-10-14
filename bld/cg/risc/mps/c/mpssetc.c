@@ -39,9 +39,10 @@
 #include "insutil.h"
 #include "split.h"
 #include "blktrim.h"
+#include "expand.h"
+#include "revcond.h"
 
 
-extern  void            FlipCond( instruction * );
 extern  void            RemoveBlock( block * );
 
 /* This code looks for a sequence like the following:

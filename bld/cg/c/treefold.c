@@ -320,7 +320,7 @@ static  tn      CFToType( float_handle cf, type_def *tipe )
 
 
 
-extern  int     GetLog2( unsigned_32 value )
+int     GetLog2( unsigned_32 value )
 /******************************************/
 {
     unsigned_32     count;
@@ -339,7 +339,7 @@ extern  int     GetLog2( unsigned_32 value )
 }
 
 
-extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
+tn      FoldTimes( tn left, tn rite, type_def *tipe )
 /***********************************************************/
 {
     tn              temp;
@@ -427,7 +427,7 @@ extern  tn      FoldTimes( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  float_handle OkToNegate( float_handle value, type_def *tipe )
+float_handle OkToNegate( float_handle value, type_def *tipe )
 /**********************************************************/
 /* make sure we don't negate an unsigned and get out of range */
 /* for example -MAX_LONG is no longer an integer type */
@@ -444,7 +444,7 @@ extern  float_handle OkToNegate( float_handle value, type_def *tipe )
     return( NULL );
 }
 
-extern  tn      FoldMinus( tn left, tn rite, type_def *tipe )
+tn      FoldMinus( tn left, tn rite, type_def *tipe )
 /***********************************************************/
 {
     tn              fold;
@@ -500,7 +500,7 @@ static type_def *FixAddType( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldPlus( tn left, tn rite, type_def *tipe )
+tn      FoldPlus( tn left, tn rite, type_def *tipe )
 /**********************************************************/
 {
     tn              fold;
@@ -578,7 +578,7 @@ static  tn      Halve( tn left, type_def *tipe )
     return( TGBinary( O_TIMES, left, TGConst( CFCnvSF( ONE_HALF ), tipe ), tipe ) );
 }
 
-extern  tn      FoldPow( tn left, tn rite, type_def *tipe )
+tn      FoldPow( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
     tn          fold;
@@ -600,7 +600,7 @@ extern  tn      FoldPow( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldAnd( tn left, tn rite, type_def *tipe )
+tn      FoldAnd( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -652,7 +652,7 @@ extern  tn      FoldAnd( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldOr( tn left, tn rite, type_def *tipe )
+tn      FoldOr( tn left, tn rite, type_def *tipe )
 /********************************************************/
 {
     tn              fold;
@@ -704,7 +704,7 @@ extern  tn      FoldOr( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldXor( tn left, tn rite, type_def *tipe )
+tn      FoldXor( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -758,7 +758,7 @@ extern  tn      FoldXor( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
+tn      FoldRShift( tn left, tn rite, type_def *tipe )
 /************************************************************/
 {
     tn              fold;
@@ -824,7 +824,7 @@ extern  tn      FoldRShift( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldLShift( tn left, tn rite, type_def *tipe )
+tn      FoldLShift( tn left, tn rite, type_def *tipe )
 /************************************************************/
 {
     tn              fold;
@@ -876,7 +876,7 @@ extern  tn      FoldLShift( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
+tn      FoldDiv( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -972,7 +972,7 @@ extern  tn      FoldDiv( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
+tn      FoldMod( tn left, tn rite, type_def *tipe )
 /*********************************************************/
 {
     tn              fold;
@@ -1080,7 +1080,7 @@ extern  tn      FoldMod( tn left, tn rite, type_def *tipe )
 }
 
 
-extern  tn      Fold1sComp( tn left, type_def *tipe )
+tn      Fold1sComp( tn left, type_def *tipe )
 /***************************************************/
 {
     tn              new;
@@ -1098,7 +1098,7 @@ extern  tn      Fold1sComp( tn left, type_def *tipe )
 }
 
 
-extern  tn      FoldUMinus( tn left, type_def *tipe )
+tn      FoldUMinus( tn left, type_def *tipe )
 /***************************************************/
 {
     tn              new;
@@ -1120,7 +1120,7 @@ extern  tn      FoldUMinus( tn left, type_def *tipe )
 }
 
 
-extern  tn      FoldSqrt( tn left, type_def *tipe )
+tn      FoldSqrt( tn left, type_def *tipe )
 /*************************************************/
 {
     tn          fold;
@@ -1137,7 +1137,7 @@ extern  tn      FoldSqrt( tn left, type_def *tipe )
 }
 
 
-extern  tn      FoldLog( cg_op op, tn left, type_def *tipe )
+tn      FoldLog( cg_op op, tn left, type_def *tipe )
 /**********************************************************/
 {
     tn          fold;
@@ -1159,7 +1159,7 @@ extern  tn      FoldLog( cg_op op, tn left, type_def *tipe )
 }
 
 
-extern  tn      FoldFlAnd( tn left, tn rite )
+tn      FoldFlAnd( tn left, tn rite )
 /*******************************************/
 {
     tn  fold;
@@ -1199,7 +1199,7 @@ extern  tn      FoldFlAnd( tn left, tn rite )
 }
 
 
-extern  tn      FoldFlOr( tn left, tn rite )
+tn      FoldFlOr( tn left, tn rite )
 /******************************************/
 {
     tn  fold;
@@ -1231,7 +1231,7 @@ extern  tn      FoldFlOr( tn left, tn rite )
 }
 
 
-extern  tn      FoldFlNot( tn left )
+tn      FoldFlNot( tn left )
 /**********************************/
 {
     tn          fold;
@@ -1251,7 +1251,7 @@ extern  tn      FoldFlNot( tn left )
     return( fold );
 }
 
-extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
+tn      FoldBitCompare( cg_op op, tn left, tn rite )
 /**********************************************************/
 {
     tn              fold;
@@ -1282,7 +1282,7 @@ extern  tn      FoldBitCompare( cg_op op, tn left, tn rite )
 }
 
 
-extern  float_handle CnvCFToType( float_handle cf, type_def *tipe )
+float_handle CnvCFToType( float_handle cf, type_def *tipe )
 /*****************************************************************/
 {
     if( ( tipe->attr & TYPE_FLOAT ) == EMPTY ) {
@@ -1349,7 +1349,7 @@ static bool IsObjectAddr( tn tree )
     return( false );
 }
 
-extern  tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
+tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /*******************************************************************/
 {
     int             compare;
@@ -1509,7 +1509,7 @@ static  bool    SimpleLeaf( tn tree )
 }
 
 
-extern  tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
+tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /*******************************************************************************/
 {
 //    tn              compare;
@@ -1598,7 +1598,7 @@ static  an Flip( an name, bool op_false, bool op_true )
 
 
 
-extern  an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
+an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 /**********************************************************************/
 {
     tn              temp;
@@ -1668,7 +1668,7 @@ extern  an FoldConsCompare( cg_op op, tn left, tn rite, type_def *tipe )
 }
 
 
-extern  bool    FoldIfTrue( tn left, label_handle lbl )
+bool    FoldIfTrue( tn left, label_handle lbl )
 /*****************************************************/
 {
     bool        folded;
@@ -1685,7 +1685,7 @@ extern  bool    FoldIfTrue( tn left, label_handle lbl )
 }
 
 
-extern  bool    FoldIfFalse( tn left, label_handle lbl )
+bool    FoldIfFalse( tn left, label_handle lbl )
 /******************************************************/
 {
     bool        folded;

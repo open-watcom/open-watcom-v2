@@ -32,6 +32,9 @@
 #include <limits.h>
 #include "pattern.h"
 
+
+#define G(x)    (x)->u.gen_table->generate
+
 /* aligned */
 typedef int                     instruction_id;
 #define MAX_INS_ID              INT_MAX

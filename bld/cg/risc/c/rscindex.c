@@ -40,6 +40,8 @@
 #include "namelist.h"
 #include "rgtbl.h"
 #include "insutil.h"
+#include "index.h"
+#include "fixindex.h"
 #include "feprotos.h"
 
 
@@ -47,10 +49,8 @@ extern  opcode_entry    String[];
 
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
 extern  conflict_node   *NameConflict(instruction*,name*);
-extern  name            *IndexToTemp( instruction *, name * );
-extern  name            *FindIndex( instruction * );
 
-extern  bool    IndexOkay( instruction *ins, name *index ) {
+bool    IndexOkay( instruction *ins, name *index ) {
 /**********************************************************/
 
     name                *name;
@@ -81,7 +81,7 @@ extern  bool    IndexOkay( instruction *ins, name *index ) {
 }
 
 
-extern  instruction     *NeedIndex( instruction *ins ) {
+instruction     *NeedIndex( instruction *ins ) {
 /******************************************************/
 
     name                *temp;
@@ -100,7 +100,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
 }
 
 
-extern  void    FixChoices( void )
+void    FixChoices( void )
 /********************************/
 {
 }
@@ -188,7 +188,7 @@ static  name    *MakeSimpleIndex( instruction *mem_ins, name *index, type_class_
     return( TruncImmediate( mem_ins, op ) );
 }
 
-extern  void    FixMemRefs() {
+void    FixMemRefs() {
 /****************************/
 
     block       *blk;

@@ -159,7 +159,7 @@ static  bool    Traverse( block *blk, name *zero )
             // we still want to kill off compare for this set instruction if
             // possible
             if( UselessCompare( ins, cc, zero ) ) {
-                if( ins->u.gen_table->generate != G_NO ) {
+                if( G( ins ) != G_NO ) {
                     change = true;
                     DoNothing( ins );
                     MarkUsedCC( blk );
@@ -197,7 +197,7 @@ static  bool    Traverse( block *blk, name *zero )
                     DoNothing( ins );
                     change = true;
                     MarkUsedCC( blk );
-                } else if( ins->u.gen_table->generate != G_NO ) {
+                } else if( G( ins ) != G_NO ) {
                     cc->state = CONDITIONS_SET;
                     cc->result_op = NULL;
                     cc->op_type = ins->type_class;

@@ -36,10 +36,12 @@
 #include "data.h"
 #include "namelist.h"
 #include "insutil.h"
+#include "generate.h"
 
 
 extern  void            FindReferences(void);
 
+#if 0
 static bool WorthAConversion( name *temp )
 /*****************************************
 
@@ -49,7 +51,6 @@ static bool WorthAConversion( name *temp )
     temp = temp;
     return( true );
 }
-
 
 static instruction *AndResult( instruction *ins, type_class_def class )
 /**********************************************************************
@@ -103,7 +104,6 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
     }
 }
 
-
 static bool ConvertInsToInt( instruction *ins, name *temp )
 /**********************************************************
 
@@ -142,7 +142,6 @@ static bool ConvertInsToInt( instruction *ins, name *temp )
     }
     return( false );
 }
-
 
 static void FixConverts( void )
 /******************************
@@ -192,7 +191,6 @@ static bool ConvertToInt( name *temp )
     return( change );
 }
 
-
 static bool ConvertIfPossible( name *temp )
 /******************************************
 
@@ -216,8 +214,7 @@ static bool ConvertIfPossible( name *temp )
     return( false );
 }
 
-
-extern bool CharsAndShortsToInts( void )
+bool CharsAndShortsToInts( void )
 /***************************************
 
     Convert char and short variables to integer.
@@ -236,3 +233,4 @@ extern bool CharsAndShortsToInts( void )
     }
     return( change );
 }
+#endif

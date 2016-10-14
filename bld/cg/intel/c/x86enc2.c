@@ -74,7 +74,6 @@ extern  void            ReFormat(oc_class);
 extern  void            Finalize( void );
 extern  void            AddByte(byte);
 extern  void            AddToTemp(byte);
-extern  void            FlipCond(instruction*);
 extern  void            EmitOffset(offset);
 
 static  void            JumpReg( instruction *ins, name *reg_name );
@@ -105,8 +104,8 @@ static byte SCondTable[] = {
         14,             /* OP_CMP_LESS_EQUAL */
         12,             /* OP_CMP_LESS */
         13 };           /* OP_CMP_GREATER_EQUAL */
-
-static byte RevCond[] = {
+       
+static byte rev_condition[] = {
 /************************
     reverse the sense of an 8086 jmp (ie: ja -> jbe)
 */
@@ -211,7 +210,7 @@ byte    ReverseCondition( byte cond ) {
     reverse the sense of a conditional jump (already encoded)
 */
 
-    return( RevCond[cond] );
+    return( rev_condition[cond] );
 }
 
 void    DoCall( label_handle lbl, bool imported, bool big, bool pop )

@@ -40,6 +40,8 @@
 #include "utils.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "makeblk.h"
+#include "bldcall.h"
 #include "feprotos.h"
 
 
@@ -48,8 +50,8 @@ extern  void            UpdateReturn( call_state *state, type_def *tipe, type_cl
 
 #define _NPX( x ) (((x) & ROUTINE_NO_8087_RETURNS) == 0)
 
-extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
-/****************************************************************************************/
+type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
+/****************************************************************************/
 {
     call_class          cclass;
     type_class_def      class;
@@ -198,8 +200,8 @@ extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *s
 }
 
 
-extern  void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*****************************************************************************************************/
+void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
+/*********************************************************************************************/
 {
     hw_reg_set  normal;
 
@@ -237,9 +239,9 @@ extern  void    UpdateReturn( call_state *state, type_def *tipe, type_class_def 
 }
 
 
-extern  hw_reg_set      CallZap( call_state *state ) {
-/****************************************************/
-
+hw_reg_set      CallZap( call_state *state )
+/******************************************/
+{
     hw_reg_set  zap;
     hw_reg_set  tmp;
 
@@ -256,9 +258,9 @@ extern  hw_reg_set      CallZap( call_state *state ) {
 
 
 
-extern  hw_reg_set      MustSaveRegs( void ) {
-/**************************************/
-
+hw_reg_set      MustSaveRegs( void )
+/**********************************/
+{
     hw_reg_set  save;
     hw_reg_set  tmp;
 
@@ -286,9 +288,9 @@ extern  hw_reg_set      MustSaveRegs( void ) {
     return( save );
 }
 
-extern  hw_reg_set      SaveRegs( void ) {
-/**********************************/
-
+hw_reg_set      SaveRegs( void )
+/******************************/
+{
    hw_reg_set   save;
     save = MustSaveRegs();
     HW_OnlyOn( save, CurrProc->state.used );

@@ -46,6 +46,7 @@
 #include "cgmem.h"
 #include "utils.h"
 #include "stubdata.h"
+#include "bckptr.h"
 #include "feprotos.h"
 
 extern  int             TempId;
@@ -270,12 +271,6 @@ extern  void    BEFiniPatch( void *hdl ) {
 //========================================
     Action( "BEFiniPatch( %p )%n", hdl );
 }
-
-#define FAKE_NULL               ((pointer)(pointer_int)1)
-#define PTR_INT( x )            (*(pointer_int*)&(x))
-#define IS_REAL_BACK( bck )     ((PTR_INT( bck ) & 1) == 0)
-#define TO_FAKE_BACK( bck )     ((b*)(PTR_INT( bck ) | 1))
-#define TO_REAL_BACK( bck )     ((b*)(PTR_INT( bck ) & ~((pointer_int)1)))
 
 static  pointer                 NewBackReturn = NULL;
 

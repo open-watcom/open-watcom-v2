@@ -36,7 +36,7 @@
 #include "namelist.h"
 
 
-extern  void    ScInitRegs( score *sc )
+void    ScInitRegs( score *sc )
 /**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
@@ -62,7 +62,7 @@ extern  void    ScInitRegs( score *sc )
 }
 
 
-extern  void    AddRegs( void )
+void    AddRegs( void )
 /******************************
     Add some registers to the N_REGISTER list, so that we can do
     scoreboarding on them
@@ -74,7 +74,7 @@ extern  void    AddRegs( void )
 }
 
 
-extern  void    ScoreSegments( score *sc )
+void    ScoreSegments( score *sc )
 /*****************************************
     Do special scoreboarding on segment registers.
 */
@@ -83,7 +83,7 @@ extern  void    ScoreSegments( score *sc )
 }
 
 
-extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
+bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 /**********************************************************
     Is it ok to say that "reg1" = "reg2"?  This is not ok for
     unalterable registers since there may be hidden modifications of
@@ -104,7 +104,7 @@ extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 }
 
 
-extern  bool    ScConvert( instruction *ins )
+bool    ScConvert( instruction *ins )
 /********************************************
     Get rid of instructions like CBW if the high part is not used in the
     next instruction.
@@ -115,7 +115,7 @@ extern  bool    ScConvert( instruction *ins )
 }
 
 
-extern  bool    CanReplace( instruction *ins )
+bool    CanReplace( instruction *ins )
 /*********************************************
     an 8086ism
 */
@@ -124,7 +124,7 @@ extern  bool    CanReplace( instruction *ins )
     return( true );
 }
 
-extern  bool    ScRealRegister( name *reg )
+bool    ScRealRegister( name *reg )
 /******************************************
     Return "true" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.

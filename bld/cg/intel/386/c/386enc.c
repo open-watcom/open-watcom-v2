@@ -56,6 +56,8 @@
 #include "namelist.h"
 #include "optab.h"
 #include "blktrim.h"
+#include "tree.h"
+#include "treefold.h"
 #include "feprotos.h"
 
 
@@ -75,7 +77,6 @@ extern  void            LayOpword( gen_opcode );
 extern  type_class_def  OpndSize( hw_reg_set );
 extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
-extern  int             GetLog2( unsigned_32 );
 extern  bool            BaseIsSP( name * );
 extern  segment_id      AskCode16Seg( void );
 extern  bool            GetEnvVar( char *, char *, int );

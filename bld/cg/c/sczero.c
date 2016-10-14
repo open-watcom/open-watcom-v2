@@ -39,6 +39,7 @@
 #include "zerobits.h"
 #include "makeins.h"
 #include "namelist.h"
+#include "regset.h"
 #include "expand.h"
 #include "split.h"
 #include "insutil.h"

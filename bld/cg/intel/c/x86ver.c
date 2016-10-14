@@ -35,9 +35,9 @@
 #include "cfloat.h"
 #include "data.h"
 #include "rgtbl.h"
+#include "fixindex.h"
 
 
-extern  int             NumOperands(instruction*);
 extern  bool            OtherVerify(vertype,instruction*,name*,name*,name*);
 
 //extern  hw_reg_set      Low16Reg( hw_reg_set );

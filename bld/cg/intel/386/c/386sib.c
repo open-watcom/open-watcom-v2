@@ -38,9 +38,9 @@
 #include "utils.h"
 #include "namelist.h"
 #include "rgtbl.h"
+#include "sib.h"
 
 
-extern  instruction     *SIBPossibleIndex( instruction *, name *, name **, bool *, hw_reg_set, hw_reg_set, bool *, bool * );
 extern  void            ReplaceOperand( instruction *, name *, name * );
 
 typedef struct sib_info {
@@ -54,8 +54,8 @@ typedef struct sib_info {
 } sib_info;
 
 
-extern bool FoldIntoIndex( instruction *ins )
-/*******************************************/
+bool FoldIntoIndex( instruction *ins )
+/************************************/
 {
     name        *cons;
     bool        is_base;

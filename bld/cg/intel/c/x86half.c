@@ -44,10 +44,10 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "optimize.h"
 
 
 extern  name            *IntEquivalent(name*);
-extern  bool            SameThing(name*,name*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *AddrConst(name*,int,constant_class);
 extern  name            *SegName(name*);

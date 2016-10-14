@@ -127,7 +127,7 @@ extern  bool    DumpFPUIns( instruction *ins ) {
     int         i;
 
     if( ins->u.gen_table == NULL || ins->table == NULL ) return( false );
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_RRFBIN:
     case G_MRFBIN:
         DumpOpcode( ins );

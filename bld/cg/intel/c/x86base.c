@@ -36,6 +36,7 @@
 #include "data.h"
 #include "cgsrtlst.h"
 #include "namelist.h"
+#include "x86base.h"
 
 
 #define MAX_SHORT_NEG   127
@@ -74,7 +75,7 @@ static  void    setTempLocations( void )
     }
 }
 
-extern  type_length     AdjustBase( void ) {
+type_length     AdjustBase( void ) {
 /*************************************
     Decide how far we should adjust BP away from SP, based on the number
     of short v.s.  long x[bp] references we would have.  It works like

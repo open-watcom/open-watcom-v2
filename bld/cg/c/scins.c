@@ -40,11 +40,9 @@
 #include "expand.h"
 #include "namelist.h"
 #include "split.h"
+#include "index.h"
+#include "fixindex.h"
 
-
-extern  int             NumOperands(instruction*);
-extern  bool            IndexOkay(instruction*,name*);
-extern  bool            CanReplace(instruction*);
 
 opcode_entry    *ResetGenEntry( instruction *ins )
 /************************************************/

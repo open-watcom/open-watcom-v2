@@ -53,12 +53,7 @@
 #include "feprotos.h"
 
 
-extern  hw_reg_set      SaveRegs( void );
-extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
-extern  void            GenOPINS( uint_8, uint_8, uint_8, uint_8, uint_8 );
-extern  void            GenRET( void );
 extern  void            EmitFuncStart( label_handle cg_linenum );
-extern  void            GenLOADS32( signed_32, uint_8 );
 
 static  void    calcUsedRegs( void )
 /**********************************/

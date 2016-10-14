@@ -47,13 +47,16 @@
 #include "redefby.h"
 #include "indvars.h"
 #include "loopopts.h"
-#include "feprotos.h"
 #include "rgtbl.h"
 #include "split.h"
 #include "insutil.h"
 #include "insdead.h"
 #include "typemap.h"
 #include "blktrim.h"
+#include "treefold.h"
+#include "fixindex.h"
+#include "generate.h"
+#include "feprotos.h"
 
 
 /* block flag usage                                                 */
@@ -77,13 +80,8 @@ typedef enum {
 } who_dies;
 
 extern float_handle     CnvCFToType(float_handle,type_def*);
-extern int              NumOperands(instruction*);
-extern bool             LoadAToMove(instruction*);
-extern bool             DivIsADog(type_class_def);
 extern void             MakeFlowGraph(void);
-extern int              GetLog2(unsigned_32);
 extern void             FindReferences(void);
-extern bool             IsTrickyPointerConv( instruction * );
 
 /* forward declarations */
 static void             TreeBits( block *root );

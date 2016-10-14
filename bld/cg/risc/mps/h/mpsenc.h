@@ -31,7 +31,6 @@
 
 
 extern void         GenCallLabelReg( pointer label, uint reg );
-#if 0
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
 extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 displacement, pointer lbl, owl_reloc_type type );
 extern void         GenMEMINS( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement );
@@ -40,4 +39,3 @@ extern void         GenRType( uint_8 opcode, uint_8 fc, uint_8 rd, uint_8 rs, ui
 extern void         GenIShift( uint_8 fc, uint_8 rd, uint_8 rt, uint_8 sa );
 extern void         GenJType( uint_8 opcode, pointer label );
 extern void         GenRET( void );
-#endif

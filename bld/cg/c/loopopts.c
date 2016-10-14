@@ -55,7 +55,11 @@
 #include "insdead.h"
 #include "blktrim.h"
 #include "unroll.h"
+#include "optimize.h"
+#include "tree.h"
+#include "treefold.h"
 #include "feprotos.h"
+#include "revcond.h"
 
 
 /* block flag usage                                                 */
@@ -73,11 +77,7 @@ typedef struct block_list {
     struct block_list       *next;
 } block_list;
 
-extern int              GetLog2(unsigned_32);
-extern bool             SameThing(name *,name *);
-extern void             RevCond(instruction *);
 extern bool             RepOp(name **,name *,name *);
-extern void             FlipCond(instruction *);
 extern void             ConstToTemp(block *,block *,block *(*)(block *));
 
 static int              NumIndVars;

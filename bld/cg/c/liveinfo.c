@@ -38,10 +38,10 @@
 #include "data.h"
 #include "redefby.h"
 #include "insutil.h"
+#include "fixindex.h"
 
 
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
-extern  int             NumOperands(instruction*);
 
 
 static  void            GlobalConflictsFirst( void )

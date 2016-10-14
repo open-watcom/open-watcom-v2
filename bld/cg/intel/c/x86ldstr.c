@@ -45,11 +45,12 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "optimize.h"
+#include "fixindex.h"
+#include "generate.h"
 
 
 extern  void            UpdateLive(instruction*,instruction*);
-extern  void            DeadInstructions(void);
-extern  int             NumOperands( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
 
 static  bool            PreferSize;

@@ -48,9 +48,9 @@
 #include "namelist.h"
 #include "optab.h"
 #include "blktrim.h"
+#include "generate.h"
 
 
-extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
 
 #define DEPS_IN_BLOCK    20
@@ -499,7 +499,7 @@ static  bool    InsUsesCC( instruction *ins )
         return( true );
     }
     if( _OpIsCondition( ins->head.opcode ) ) {
-        if( ins->u.gen_table->generate == G_NO ) {
+        if( G( ins ) == G_NO ) {
             /*
                 Any conditional whose gen table entry is pointing at a G_NO
                 is not going to generate a comparision operation, and is
