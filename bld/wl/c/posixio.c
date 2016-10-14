@@ -160,7 +160,7 @@ f_handle ExeOpen( const char *name )
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
 */
-#define MAX_OS_TRANSFER (32U*1024 - 512)
+#define MAX_OS_TRANSFER (0x8000 - 512)
 
 static ssize_t posix_read( int file, void *buffer, size_t len )
 {
@@ -214,7 +214,7 @@ static ssize_t posix_write( int file, const void *buffer, size_t len )
 size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 /***********************************************************************/
 {
-    ssize_t h;
+    size_t  h;
 
     CheckBreak();
     h = posix_read( file, buffer, len );
@@ -248,13 +248,13 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 char NLSeq[] = { "\n" };
 
 void QWriteNL( f_handle file, const char *name )
-/***********************************************/
+/**********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
 void QClose( f_handle file, const char *name )
-/*********************************************/
+/********************************************/
 /* file close */
 {
     int         h;
@@ -268,7 +268,7 @@ void QClose( f_handle file, const char *name )
 }
 
 long QLSeek( f_handle file, long position, int start, const char *name )
-/***********************************************************************/
+/**********************************************************************/
 /* do a seek from a particular point */
 {
     long int    h;
@@ -327,7 +327,7 @@ void QDelete( const char *name )
 }
 
 bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
-/**************************************************************************/
+/***********************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
@@ -384,7 +384,7 @@ f_handle TempFileOpen( const char *name )
 }
 
 bool QSysHelp( char **cmd_ptr )
-/************************************/
+/*****************************/
 {
 #if defined( __I86__ ) && defined( __QNX__ )
 //    extern  struct _proc_spawn *__cmd;
@@ -412,7 +412,7 @@ bool QModTime( const char *name, time_t *time )
 }
 
 time_t QFModTime( int handle )
-/***********************************/
+/****************************/
 {
     struct stat buf;
 
@@ -421,7 +421,7 @@ time_t QFModTime( int handle )
 }
 
 int WaitForKey( void )
-/****************************/
+/********************/
 {
     struct termios  old;
     struct termios  new;
@@ -439,13 +439,13 @@ int WaitForKey( void )
 }
 
 void GetCmdLine( char *buff )
-/**********************************/
+/***************************/
 {
     getcmd( buff );
 }
 
 void TrapBreak( int sig_num )
-/**********************************/
+/***************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
     CaughtBreak = true;

@@ -520,12 +520,12 @@ void LnkMsg(
             Msg_Get( MSG_FILE_REC_NAME_0 + which_file - 1, rc_buff );
         }
         FileOrder( rc_buff, which_file );
-        len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+        len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
         if( num & LINE ) {
             if( Token.how != SYSTEM && Token.how != ENVIRONMENT ) {
                 Msg_Get( MSG_LINE, rc_buff );
                 Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", Token.line );
-                len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+                len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
             }
         }
         LocFile = NULL;
@@ -537,7 +537,7 @@ void LnkMsg(
     Msg_Get( num & NUM_MSK, rc_buff );
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
     va_end( args );
-    len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+    len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
     MessageFini( num, buff, len );
 }
 
@@ -553,7 +553,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
     len = 0;
     CurrSymName = NULL;
     Msg_Get( num & NUM_MSK, rc_buff );
-    len += DoFmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff, args );
+    len += DoFmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff, args );
     MessageFini( num, buff, len );
 }
 

@@ -190,11 +190,11 @@ static unsigned CheckStdCall( const char *name, unsigned len )
     return chop;
 }
 
-entry_export *AllocExport( const char *name, unsigned len )
-/*********************************************************/
+entry_export *AllocExport( const char *name, size_t len )
+/*******************************************************/
 {
-    entry_export *  exp;
-    unsigned        chop;
+    entry_export    *exp;
+    size_t          chop;
 
     exp = CarveAlloc( CarveExportInfo );
     exp->isexported = true;
@@ -217,7 +217,7 @@ entry_export *AllocExport( const char *name, unsigned len )
     exp->impname = NULL;
     exp->iopl_words = 0;
     exp->ordinal = 0;
-    return exp;
+    return( exp );
 }
 
 #define EXPDEF_ORDINAL  0x80
@@ -444,8 +444,8 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char *,const char *) )
-/***********************************************************************************************/
+void CheckExport( char * name, ordinal_t ordinal, exportcompare_fn *rtn )
+/***********************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
@@ -455,7 +455,7 @@ void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char 
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
     prev = NULL;
     for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
-        if( compare_rtn( place->name, name ) == 0 ) {
+        if( rtn( place->name, name ) == 0 ) {
             if( place->ordinal == 0 ) {
                 place->ordinal = ordinal;
                 place = FindPlace( place );
@@ -477,19 +477,19 @@ static void ReadNameTable( f_handle the_file )
 /********************************************/
 // Read a name table & set export ordinal value accordingly.
 {
-    unsigned_8      len_u8;
-    unsigned_16     ordinal;
-    int (*compare_rtn)(const char *,const char *);
-    char *          fname;
+    unsigned_8          len_u8;
+    unsigned_16         ordinal;
+    exportcompare_fn    *rtn;
+    char                *fname;
 
     fname = FmtData.u.os2.old_lib_name;
     if( LinkFlags & CASE_FLAG ) {
-        compare_rtn = &strcmp;
+        rtn = strcmp;
     } else {
-        compare_rtn = &stricmp;
+        rtn = stricmp;
     }                             // skip the module name & ordinal.
     for( ;; ) {
-        QRead( the_file, &len_u8, sizeof( unsigned_8 ), fname );
+        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
         if( len_u8 == 0 )
             break;
         QRead( the_file, TokBuff, len_u8, fname );
@@ -497,7 +497,7 @@ static void ReadNameTable( f_handle the_file )
         if( ordinal == 0 )
             continue;
         TokBuff[len_u8] = '\0';
-        CheckExport( TokBuff, ordinal, compare_rtn );
+        CheckExport( TokBuff, ordinal, rtn );
     }
 }
 
@@ -556,4 +556,3 @@ bool IsSymElfImpExp( symbol *s )
 {
     return IsSymElfImported(s) || IsSymElfExported(s);
 }
-

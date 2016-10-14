@@ -38,7 +38,7 @@ typedef struct os2_reloc_item {
     unsigned_16     reloc_offset;       /* where to put addr in curr grp */
     union addr_to_put {                 /* where,how to get addr to put  */
         struct internalreference {      /*   in this module              */
-            signed_8        grp_num;    /*      group number             */
+            unsigned_8      grp_num;    /*      group number             */
             unsigned_8      rsrvd;      /*      == 0                     */
             unsigned_16     off;        /*      xtrnl offset in that grp */
         } internal;

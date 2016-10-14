@@ -755,7 +755,7 @@ static void RebuildSymbol( void *_sym, void *info )
 static void ReadBlockInfo( carve_t cv, void *blk, void *info )
 /************************************************************/
 {
-    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData(blk), CarveBlockSize(cv), IncFileName);
+    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData( blk ), CarveBlockSize( cv ), IncFileName );
 }
 
 static void SmallFreeCheck( void *data, void *_info )
@@ -768,7 +768,7 @@ static void SmallFreeCheck( void *data, void *_info )
         info->num--;
         freeblk = BufPeekU32( info );
         if( freeblk == CARVE_INVALID_INDEX ) {
-            info->currpos += sizeof(unsigned_32);
+            info->currpos += sizeof( unsigned_32 );
             CarveInsertFree( info->cv, data );
         } else {
             info->cbfn( data, info );
@@ -817,7 +817,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
 {
     char                *fname;
     f_handle            hdl;
-    unsigned long       size;
+    size_t              size;
 
     fname = MapString( (char *)(pointer_int)nameidx );
     hdl = QObjOpen( fname );
@@ -926,7 +926,7 @@ void ReadPermData( void )
 }
 
 void PermSaveFixup( void *fix, size_t size )
-/***************************************************/
+/******************************************/
 {
     AddBufferStringTable( &StoredRelocs, fix, size );
 }

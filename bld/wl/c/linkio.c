@@ -144,7 +144,7 @@ f_handle QOpenR( const char *name )
 
 
 f_handle QOpenRW( const char *name )
-/***********************************/
+/**********************************/
 {
     tiny_ret_t h;
 
@@ -215,13 +215,13 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 char    NLSeq[] = { "\r\n" };
 
 void QWriteNL( f_handle file, const char *name )
-/***********************************************/
+/**********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
 void QClose( f_handle file, const char *name )
-/*********************************************/
+/********************************************/
 /* file close */
 {
     tiny_ret_t h;
@@ -229,12 +229,13 @@ void QClose( f_handle file, const char *name )
     CheckBreak();
     h = TinyClose( file );
     OpenFiles--;
-    if( TINY_OK( h ) || name == NULL ) return;
+    if( TINY_OK( h ) || name == NULL )
+        return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
 }
 
 long QLSeek( f_handle file, long position, int start, const char *name )
-/***********************************************************************/
+/**********************************************************************/
 {
     tiny_ret_t  rc;
     long        pos;

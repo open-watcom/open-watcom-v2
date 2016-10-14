@@ -30,13 +30,15 @@
 ****************************************************************************/
 
 
+typedef void walksecs_fn( section * );
+typedef void parmwalksecs_fn( section *, void * );
+
 extern unsigned_16  AreaSize;
 
 /* in ovlsupp.c */
 
-extern void             WalkAreas( OVL_AREA *, void (*)( section * ) );
-extern void             ParmWalkAreas( OVL_AREA *, void (*)(section *,void *),
-                                        void * );
+extern void             WalkAreas( OVL_AREA *, walksecs_fn * );
+extern void             ParmWalkAreas( OVL_AREA *, parmwalksecs_fn *, void * );
 extern void             ProcOvlSectPubs( section * );
 extern void             ProcOvlPubs( void );
 extern void             FillOutPtr( section * );
@@ -60,10 +62,10 @@ extern void             SetOvlTableLoc( group_entry *, unsigned long );
 
 /* in overlays.c */
 
-extern void             WalkAllOvl( void (*)( section * ) );
-extern void             ParmWalkAllOvl( void (*)( section *, void * ), void * );
-extern void             WalkAllSects( void (*)( section * ) );
-extern void             ParmWalkAllSects( void (*)( section *, void * ), void * );
+extern void             WalkAllOvl( walksecs_fn * );
+extern void             ParmWalkAllOvl( parmwalksecs_fn *, void * );
+extern void             WalkAllSects( walksecs_fn * );
+extern void             ParmWalkAllSects( parmwalksecs_fn *, void * );
 extern void             NumberSections( void );
 extern void             FillOutFilePtrs( void );
 extern void             TryDefVector( symbol * );

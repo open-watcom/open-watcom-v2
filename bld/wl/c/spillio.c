@@ -67,7 +67,7 @@ f_handle OpenTempFile( char **fname )
 /***********************************/
 {
     const char  *ptr;
-    unsigned    tlen;
+    size_t      tlen;
     char        *tptr;
     f_handle    fhdl;
 
@@ -102,7 +102,7 @@ f_handle OpenTempFile( char **fname )
         QClose( fhdl, *fname );
         ++tlen;
     }
-    return QOpenRW( *fname );
+    return( QOpenRW( *fname ) );
 }
 
 virt_mem_size SpillAlloc( virt_mem_size amt )

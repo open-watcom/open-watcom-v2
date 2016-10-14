@@ -447,7 +447,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     size_t              len;
     orl_sec_flags       flags;
     orl_sec_type        type;
-    unsigned            numlines;
+    size_t              numlines;
     unsigned            segidx;
 
     type = ORLSecGetType( sec );

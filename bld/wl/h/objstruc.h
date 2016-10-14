@@ -234,7 +234,7 @@ typedef struct arcdata {
 
 typedef struct name_list {
     struct name_list    *next;
-    unsigned            len;
+    size_t              len;
     unsigned_32         num;
     char                *name;          // NYI: make this vbl length again.
 } name_list;
@@ -264,8 +264,8 @@ typedef struct mod_entry {
     symbol              *publist;
     SEGDATA             *segs;
     time_t              modtime;
-    unsigned            relocs;
-    unsigned            sizerelocs;
+    size_t              relocs;
+    size_t              sizerelocs;
     module_flags        modinfo;
     void                *lines;
     omf_dbg_type        omfdbg;

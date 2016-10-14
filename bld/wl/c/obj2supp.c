@@ -204,8 +204,8 @@ static unsigned CalcFixupSize( fix_type type )
     return( value );
 }
 
-static unsigned CalcAddendSize( fix_type fixtype )
-/************************************************/
+static size_t CalcAddendSize( fix_type fixtype )
+/**********************************************/
 {
     if( fixtype & FIX_ADDEND_ZERO ) {
         return( 0 );
@@ -1421,7 +1421,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
                 }
             }
             if( ( grp != NULL ) && (grp->segflags & SEG_MOVABLE) ) {
-                os2item->put.internal.grp_num = (signed char)MOVABLE_ENTRY_PNT;
+                os2item->put.internal.grp_num = MOVABLE_ENTRY_PNT;
                 os2item->put.internal.off = FindEntryOrdinal( target, grp );
             } else {
                 os2item->put.internal.grp_num = target.seg;

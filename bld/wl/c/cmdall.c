@@ -296,7 +296,6 @@ bool ProcSymFile( void )
             _LnkFree( SymFileName );
         }
         SymFileName = FileName( Token.this, Token.len, E_SYM, false );
-
     }
     return( true );
 }

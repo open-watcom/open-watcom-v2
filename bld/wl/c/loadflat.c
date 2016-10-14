@@ -100,10 +100,10 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
     unsigned_32     size;
     unsigned_32     start;
     unsigned_32     sizeleft;
-    group_entry *   group;
+    group_entry     *group;
     object_record   objrec;
-    unsigned        map_size;
-    seg_leader *    leader;
+    size_t          map_size;
+    seg_leader      *leader;
 
     header->objtab_off = loc;
     numpages = 0;
@@ -165,8 +165,7 @@ static unsigned_32 WriteObjectTables( os2_flat_header *header,unsigned long loc)
         if( group->segflags & SEG_INVALID ) {
             objrec.flags |= OBJ_HAS_INVALID;
         }
-        objrec.flags |= (group->segflags & SEG_RESIDENT_MASK)
-                                                 << SEG_RESIDENT_SHIFT;
+        objrec.flags |= (group->segflags & SEG_RESIDENT_MASK) << SEG_RESIDENT_SHIFT;
         objrec.mapidx = numpages + 1;
         objrec.mapsize = PAGE_COUNT( group->size );
         WriteLoad( &objrec, sizeof( object_record ) );
@@ -537,7 +536,7 @@ void FiniOS2FlatLoadFile( void )
     exe_head.num_inst_preload = 0;  /*NYI: should fill in correctly */
     exe_head.num_inst_demand = 0;   /*NYI: should fill in correctly */
     SeekLoad( stub_len );
-    WriteLoad( &exe_head, sizeof(os2_flat_header) );
+    WriteLoad( &exe_head, sizeof( os2_flat_header ) );
 }
 
 bool FindOS2ExportSym( symbol *sym, dll_sym_info ** dllhandle )

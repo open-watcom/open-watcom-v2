@@ -73,9 +73,6 @@
 #include "clibext.h"
 
 
-seg_leader      *StackSegPtr;
-startinfo       StartInfo;
-
 #define IMPLIB_BUFSIZE 4096
 
 typedef struct {
@@ -95,6 +92,11 @@ typedef struct  {
     bool        repos : 1;
     bool        copy  : 1;
 } grpwriteinfo;
+
+typedef void *writebuffer_fn(void *, const void *, size_t);
+
+seg_leader      *StackSegPtr;
+startinfo       StartInfo;
 
 static implibinfo       ImpLib;
 
@@ -182,18 +184,18 @@ static void CloseOutFiles( void )
 }
 
 void ResetLoadFile( void )
-/*******************************/
+/************************/
 {
     ClearStartAddr();
 }
 
 void CleanLoadFile( void )
-/*******************************/
+/************************/
 {
 }
 
 void InitLoadFile( void )
-/******************************/
+/***********************/
 /* open the file, and write out header info */
 {
     DEBUG(( DBG_OLD, "InitLoadFile()" ));
@@ -201,7 +203,7 @@ void InitLoadFile( void )
 }
 
 void FiniLoadFile( void )
-/******************************/
+/***********************/
 /* terminate writing of load file */
 {
     CurrSect = Root;
@@ -294,7 +296,7 @@ static seg_leader *StackSegment( void )
 }
 
 void GetStkAddr( void )
-/****************************/
+/*********************/
 /* Find the address of the stack */
 {
     if( (FmtData.type & MK_NOVELL) == 0 && !FmtData.dll ) {
@@ -320,7 +322,7 @@ void GetStkAddr( void )
 }
 
 static class_entry *LocateBSSClass( void )
-/*****************************************/
+/****************************************/
 {
     class_entry *currclass;
     section     *sect;
@@ -351,7 +353,7 @@ static void DefABSSSym( const char *name )
  }
 
 void DefBSSSyms( void )
-/****************************/
+/*********************/
 {
     DefABSSSym( BSSStartSym );
     DefABSSSym( BSS_StartSym );
@@ -366,7 +368,7 @@ static bool CompSymPtr( void *sym, void *chk )
 }
 
 static void CheckBSSInStart( symbol *sym, char *name )
-/******************************************************/
+/****************************************************/
 /* It's OK to define _edata if:
         1) the DOSSEG flag is not set
                 or
@@ -385,7 +387,7 @@ static void CheckBSSInStart( symbol *sym, char *name )
 }
 
 static void DefBSSStartSize( char *name, class_entry *class )
-/*************************************************************/
+/***********************************************************/
 /* set the value of an start symbol, and see if it has been defined */
 {
     symbol      *sym;
@@ -404,7 +406,7 @@ static void DefBSSStartSize( char *name, class_entry *class )
 }
 
 static void DefBSSEndSize( char *name, class_entry *class )
-/***********************************************************/
+/*********************************************************/
 /* set the value of an end symbol, and see if it has been defined */
 {
     symbol      *sym;
@@ -426,7 +428,7 @@ static void DefBSSEndSize( char *name, class_entry *class )
 }
 
 void GetBSSSize( void )
-/****************************/
+/*********************/
 /* Find size of BSS segment, and set the special symbols */
 {
     class_entry *class;
@@ -486,7 +488,7 @@ void SetStkSize( void )
 }
 
 void ClearStartAddr( void )
-/********************************/
+/*************************/
 {
     memset( &StartInfo, 0, sizeof( startinfo ) );
 }
@@ -517,7 +519,7 @@ void SetStartSym( const char *name )
 }
 
 void GetStartAddr( void )
-/******************************/
+/***********************/
 {
     bool        addoff;
     int         deltaseg;
@@ -566,7 +568,7 @@ void GetStartAddr( void )
 }
 
 offset CalcGroupSize( group_entry *group )
-/***********************************************/
+/****************************************/
 /* calculate the total memory size of a potentially split group */
 {
     offset size;
@@ -581,7 +583,7 @@ offset CalcGroupSize( group_entry *group )
 }
 
 offset CalcSplitSize( void )
-/*********************************/
+/**************************/
 /* calculate the size of the uninitialized portion of a group */
 {
     offset size;
@@ -598,19 +600,19 @@ offset CalcSplitSize( void )
 }
 
 bool CompareDosSegments( targ_addr *left, targ_addr *right )
-/*****************************************************************/
+/**********************************************************/
 {
     return( LESS_THAN_ADDR( *left, *right ) );
 }
 
 bool CompareOffsets( targ_addr *left, targ_addr *right )
-/*****************************************************************/
+/******************************************************/
 {
     return( left->off < right->off );
 }
 
 bool CompareProtSegments( targ_addr *left, targ_addr *right )
-/*****************************************************************/
+/***********************************************************/
 {
     if( left->seg == right->seg ) {
         return( left->off < right->off );
@@ -619,7 +621,7 @@ bool CompareProtSegments( targ_addr *left, targ_addr *right )
 }
 
 void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
-/*******************************************************************/
+/************************************************************/
 {
     group_entry     *group, *low_group, *firstgroup, **lastgroup;
     targ_addr       *low_addr;
@@ -651,7 +653,7 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
 }
 
 bool WriteDOSGroup( group_entry *group )
-/*********************************************/
+/**************************************/
 /* write the data for group to the loadfile */
 /* returns true if the file should be repositioned */
 {
@@ -686,7 +688,7 @@ bool WriteDOSGroup( group_entry *group )
 }
 
 unsigned_32 MemorySize( void )
-/***********************************/
+/****************************/
 /* Compute size of image when loaded into memory. */
 {
     unsigned_32         start;
@@ -713,7 +715,7 @@ unsigned_32 MemorySize( void )
 }
 
 unsigned_32 AppendToLoadFile( const char *name )
-/************************************************/
+/**********************************************/
 {
     f_handle        handle;
     unsigned_32     wrote;
@@ -928,7 +930,7 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
 }
 
 unsigned long NullAlign( unsigned align )
-/**********************************************/
+/***************************************/
 /* align loadfile -- assumed power of two alignment */
 {
     unsigned long       off;
@@ -941,7 +943,7 @@ unsigned long NullAlign( unsigned align )
 }
 
 unsigned long OffsetAlign( unsigned long off, unsigned long align )
-/************************************************************************/
+/*****************************************************************/
 /* align loadfile -- assumed power of two alignment */
 {
     unsigned long       pad;
@@ -986,7 +988,7 @@ static void DoWriteLeader( seg_leader *seg, grpwriteinfo *info )
 }
 
 void WriteLeaderLoad( void *seg )
-/**************************************/
+/*******************************/
 {
     grpwriteinfo    info;
 
@@ -1069,7 +1071,7 @@ offset  WriteGroupLoad( group_entry *group )
 }
 
 void FreeOutFiles( void )
-/******************************/
+/***********************/
 {
     outfilelist     *fnode;
 
@@ -1093,9 +1095,8 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
 
 #define BUFF_BLOCK_SIZE (16*1024)
 
-static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile,
-                         void *(*rtn)(void *, const void *, size_t) )
-/***************************************************************************/
+static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
+/*******************************************************************************************************/
 {
     size_t   modpos;
     size_t   adjust;
@@ -1115,9 +1116,8 @@ static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfi
     }
 }
 
-static void SeekBuffer( unsigned long len, outfilelist *outfile,
-                         void *(*rtn)(void *, const void *, size_t) )
-/*******************************************************************/
+static void SeekBuffer( unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
+/************************************************************************************/
 {
     size_t   modpos;
     size_t   adjust;
@@ -1194,7 +1194,7 @@ static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 #endif
 
 void SeekLoad( unsigned long offset )
-/******************************************/
+/***********************************/
 {
     outfilelist         *outfile;
 

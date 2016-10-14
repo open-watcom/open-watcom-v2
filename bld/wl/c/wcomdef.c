@@ -241,9 +241,9 @@ void ProcLinsym( void )
         BadObject();
         return;
     }
-    if( !IS_SYM_COMDAT(sym) )
+    if( !IS_SYM_COMDAT( sym ) )
         return;
-    is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
+    is32bit = ( (ObjFormat & FMT_32BIT_REC) != 0 );
     if( sym->mod == CurrMod && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
     }

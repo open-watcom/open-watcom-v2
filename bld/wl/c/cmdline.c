@@ -178,7 +178,7 @@ static void ResetCmdFile( void )
 }
 
 void DoCmdFile( char *fname )
-/**********************************/
+/***************************/
 /* start parsing the command */
 {
     exe_format  possible;
@@ -189,8 +189,8 @@ void DoCmdFile( char *fname )
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
-        _ChkAlloc( fname, (10*1024) );  // arbitrarily large buffer that won't
-        GetCmdLine( fname );            // be overflowed
+        _ChkAlloc( fname, (10 * 1024) );    // arbitrarily large buffer that won't
+        GetCmdLine( fname );                // be overflowed
         NewCommandSource( NULL, fname, COMMANDLINE );
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
@@ -333,7 +333,7 @@ static void Crash( bool check_file )
 /**********************************/
 {
     char        buff[81];
-    unsigned    len;
+    size_t      len;
     f_handle    fp;
 
     if( check_file ) {
@@ -465,8 +465,7 @@ static bool ProcWindowsHelp( void )
 /*********************************/
 {
     WriteGenHelp();
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
+    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, CmdFlags & CF_TO_STDOUT );
     return( true );
 }
 
@@ -474,8 +473,7 @@ static bool ProcWinVxdHelp( void )
 /*********************************/
 {
     WriteGenHelp();
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
+    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, CmdFlags & CF_TO_STDOUT );
     return( true );
 }
 
@@ -824,8 +822,8 @@ void FreeFormatStuff( void )
     }
 }
 
-void AddCommentLib( const char *comment, unsigned len, lib_priority priority )
-/****************************************************************************/
+void AddCommentLib( const char *comment, size_t len, lib_priority priority )
+/**************************************************************************/
 //  Add a library from a comment record.
 {
     file_list   *result;
@@ -840,8 +838,8 @@ void AddCommentLib( const char *comment, unsigned len, lib_priority priority )
     _LnkFree( ptr );
 }
 
-void AddLibPaths( const char *path_list, unsigned len, bool add_to_front )
-/************************************************************************/
+void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
+/**********************************************************************/
 {
     path_entry      *newpath;
     file_list const *libfiles;

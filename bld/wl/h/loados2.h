@@ -88,6 +88,8 @@ typedef struct os2_seg_flags {
 
 #include "exeos2.h"
 
+typedef int exportcompare_fn(const char *, const char *);
+
 /* in loadflat.c */
 
 extern void             FiniOS2FlatLoadFile( void );
@@ -97,7 +99,7 @@ extern bool             FindOS2ExportSym( symbol *, dll_sym_info ** );
 
 extern unsigned long    ImportProcTable( unsigned long * );
 extern unsigned long    ImportModTable( unsigned long * );
-extern void             CheckExport( char *, ordinal_t, int (*)(const char *,const char *));
+extern void             CheckExport( char *, ordinal_t, exportcompare_fn * );
 extern unsigned long    ResNonResNameTable( bool );
 extern void             ChkOS2Data( void );
 extern void             ChkOS2Exports( void );

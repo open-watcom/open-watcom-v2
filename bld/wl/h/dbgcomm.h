@@ -56,7 +56,7 @@ typedef union {
 typedef struct lineinfo {
     struct lineinfo *   next;
     segdata *           seg;
-    unsigned            size;
+    size_t              size;
     char                data[1];
 } lineinfo;
 

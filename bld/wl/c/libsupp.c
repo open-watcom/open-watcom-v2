@@ -49,8 +49,8 @@
 #include "clibext.h"
 
 
-static bool SearchAndProcLibFile( file_list *lib, char *name )
-/************************************************************/
+static bool SearchAndProcLibFile( file_list *lib, const char *name )
+/******************************************************************/
 {
     mod_entry       *lp;
     mod_entry       **prev;
@@ -88,7 +88,7 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
 
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
-bool LibFind( char *name, bool old_sym )
+bool LibFind( const char *name, bool old_sym )
 /*********************************************/
 /* Search for a file in a library */
 {

@@ -98,7 +98,7 @@ static unsigned long ProcObj( file_list *file, unsigned long loc, void (*procrtn
     RecNum = 0;
     do {
         ObjFormat &= ~FMT_MS_386;   // assume not a Microsoft 386 .obj file
-        rec = CacheRead( file, loc, sizeof(obj_record) );
+        rec = CacheRead( file, loc, sizeof( obj_record ) );
         if( rec == NULL ) {
             EarlyEOF();
             break;
@@ -305,7 +305,7 @@ bool IsOMF( file_list *list, unsigned long loc )
 {
     byte        *rec;
 
-    rec = CacheRead( list, loc, sizeof(unsigned_8) );
+    rec = CacheRead( list, loc, sizeof( unsigned_8 ) );
     return( rec != NULL && *rec == CMD_THEADR );
 }
 
@@ -316,7 +316,7 @@ char *GetOMFName( file_list *list, unsigned long *loc )
     char        *name;
     unsigned    len;
 
-    rec = CacheRead( list, *loc, sizeof(obj_record) );
+    rec = CacheRead( list, *loc, sizeof( obj_record ) );
     if( rec == NULL )
         return( NULL );
     *loc += sizeof( obj_record );
@@ -1014,7 +1014,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
 /***************************************************************************/
 /* Process logically iterated data blocks. */
 {
-    byte            len;
+    byte            len_u8;
     byte            *anchor;
     unsigned_16     count;
     unsigned_16     inner;
@@ -1026,13 +1026,13 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     _TargU16toHost( _GetU16UN( buffer ), count );
     buffer += sizeof( unsigned_16 );
     if( count == 0 ) {
-        len = *buffer;
+        len_u8 = *buffer;
         ++buffer;
         do {
-            PutInfo( *dest, buffer, len );
-            *dest += len;
+            PutInfo( *dest, buffer, len_u8 );
+            *dest += len_u8;
         } while( --iterate != 0 );
-        buffer += len;
+        buffer += len_u8;
     } else {
         anchor = buffer;
         if( ObjFormat & FMT_MS_386 ) {
@@ -1060,8 +1060,8 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     return( buffer );
 }
 
-static void DoLIData( virt_mem start, byte *data, unsigned size )
-/***************************************************************/
+static void DoLIData( virt_mem start, byte *data, size_t size )
+/*************************************************************/
 /* Expand logically iterated data. */
 {
     unsigned_32 rep;
@@ -1083,7 +1083,7 @@ static void GetObject( segdata *seg, unsigned_32 obj_offset, bool lidata )
 /*************************************************************************/
 /* Load object code. */
 {
-    unsigned    size;
+    size_t      size;
     virt_mem    start;
 
     if( seg->isdead || seg->isabs ) {   /* ignore dead or abs segments */

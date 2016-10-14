@@ -547,7 +547,7 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
 {
     class_entry     *currclass;
     class_entry     *lastclass;
-    unsigned        namelen;
+    size_t          namelen;
     class_status    cls_is32bit;
 
     cls_is32bit = ( is32bit ) ? CLASS_32BIT : 0;

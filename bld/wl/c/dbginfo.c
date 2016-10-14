@@ -105,8 +105,8 @@ struct {
 } TraceInfo;
 #endif
 
-static snamelist *LangAlloc( byte len, char *buff )
-/**************************************************/
+static snamelist *LangAlloc( size_t len, const char *buff )
+/*********************************************************/
 {
     snamelist *node;
 
@@ -151,8 +151,8 @@ static void DumpInfo( debug_info *dinfo, void *data, unsigned len )
     dinfo->dump_addr += len;
 }
 
-static bool FindMatch( byte len, void *buff, unsigned *offset )
-/*************************************************************/
+static bool FindMatch( size_t len, const void *buff, unsigned *offset )
+/*********************************************************************/
 // returns false if not found
 {
     snamelist   *node;
@@ -169,8 +169,8 @@ static bool FindMatch( byte len, void *buff, unsigned *offset )
     return( false );
 }
 
-void ODBIP1Source( byte major, byte minor, char *name, int len )
-/*********************************************************************/
+void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
+/***********************************************************************/
 {
     snamelist   *node;
 
@@ -432,18 +432,18 @@ void ODBIAddrSectStart( section *sect )
     AllocDBIClasses( sect->classlist );
 }
 
-static void DoName( char *cname, char *intelname, unsigned len )
-/**************************************************************/
+static void DoName( const char *cname, char *intelname, unsigned_8 len_u8 )
+/*************************************************************************/
 {
-    intelname[ 0 ] = len;
-    memcpy( &intelname[ 1 ], cname, len );
+    intelname[0] = len_u8;
+    memcpy( intelname + 1, cname, len_u8 );
 }
 
 void ODBIGenGlobal( symbol *sym, section *sect )
 /******************************************************/
 {
-    unsigned    len;
-    unsigned    entrylen;
+    size_t      len;
+    unsigned_8  len_u8;
     gblinfo     *data;
     char        *name;
     debug_info  *dptr;
@@ -454,11 +454,12 @@ void ODBIGenGlobal( symbol *sym, section *sect )
     if( ODBISymIsForGlobalDebugging( sym, CurrMod ) ) {
         name = sym->name;
         len = strlen( name );
-        if( len > 255 ) {
-            len = 255;
+        len_u8 = 255;
+        if( len < 255 ) {
+            len_u8 = len;
         }
-        entrylen = sizeof( gblinfo ) + len;
-        data = (gblinfo *) alloca( entrylen );
+        len = sizeof( gblinfo ) + len_u8;
+        data = (gblinfo *)alloca( len );
         _HostU32toTarg( sym->addr.off, data->off );
         _HostU16toTarg( sym->addr.seg, data->seg );
         _HostU16toTarg( dptr->modnum, data->mod_idx );
@@ -473,14 +474,14 @@ void ODBIGenGlobal( symbol *sym, section *sect )
                 data->flags |= DBG_GBL_DATA;
             }
         }
-        DoName( name, data->name, len );
-        DumpInfo( dptr, data, entrylen );
-        dptr->global.size += entrylen;
+        DoName( name, data->name, len_u8 );
+        DumpInfo( dptr, data, len );
+        dptr->global.size += len;
     }
 }
 
 void ODBIAddModule( mod_entry *obj, section *sect )
-/********************************************************/
+/*************************************************/
 {
     debug_info          *dptr;
 
@@ -568,7 +569,7 @@ static void WriteBogusAddrInfo( debug_info *dptr )
 }
 
 void ODBIP2Start( section *sect )
-/***************************************/
+/*******************************/
 /* initialize pointers for pass 2 processing */
 
 {
@@ -758,11 +759,12 @@ void ODBIFini( section *sect )
 }
 
 void ODBIGenModule( void )
-/*******************************/
+/************************/
 {
     odbimodinfo         *rec;
     modinfo             *info;
-    unsigned            len;
+    unsigned_8          len_u8;
+    size_t              len;
     char                *name;
     debug_info          *dptr;
 
@@ -772,17 +774,21 @@ void ODBIGenModule( void )
     rec = CurrMod->d.o;
     name = CurrMod->name;
     len = strlen( name );
-    info = (modinfo *) alloca( len + sizeof( modinfo ) );
+    len_u8 = 255;
+    if( len < 255 )
+        len_u8 = len;
+    len = sizeof( modinfo ) + len_u8;
+    info = (modinfo *)alloca( len );
     _HostU16toTarg( rec->types.num, info->types.len );
     _HostU32toTarg( rec->types.offset, info->types.off );
     _HostU16toTarg( rec->locals.num, info->locals.len );
     _HostU32toTarg( rec->locals.offset, info->locals.off );
     _HostU16toTarg( rec->lines.num, info->lines.len );
     _HostU32toTarg( rec->lines.offset, info->lines.off );
-    DoName( name, info->name, len );
+    DoName( name, info->name, len_u8 );
     info->language = rec->dbisourceoffset;
-    PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len + sizeof( modinfo ) );
-    dptr->mod.curr.u.vm_ptr += len + sizeof( modinfo );
+    PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len );
+    dptr->mod.curr.u.vm_ptr += len;
     dptr->modnum++;
 }
 

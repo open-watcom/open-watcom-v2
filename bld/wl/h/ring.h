@@ -43,6 +43,9 @@
 #define RINGHNAME( name ) Ring2##name
 #endif
 
+typedef void ringwalk_fn( void * );
+typedef bool ringcompare_fn( void *element, void *comparand );
+
 // PROTOTYPES:
 
 #include "carve.h"
@@ -85,9 +88,7 @@ void RINGHNAME(Insert) (        // INSERT ELEMENT INTO RING
 ;
 void *RINGHNAME(Lookup) (       // LOOKUP IN A RING (also used for walks)
     void *hdr,                  // - ring hdr
-    bool (*compare_rtn)         // - comparison routine
-        ( void *element,        // - - element
-          void *comparand ),    // - - comparand
+    ringcompare_fn *rtn,        // - comparison routine
     void *comparand )           // - comparand
 ;
 void *RINGHNAME(Pop) (          // PRUNE FIRST ELEMENT IN THE RING
@@ -118,8 +119,7 @@ void* RINGHNAME(Push) (         // INSERT ELEMENT AT START OF RING
 ;
 void RINGHNAME(Walk) (          // TRAVERSE RING
     void *hdr,                  // - ring header
-    void (*rtn)                 // - traversal routine
-        (void * curr) )         // - - passed current element
+    ringwalk_fn *rtn )          // - - passed current element
 ;
 void *RINGHNAME(Step) (         // STEP ALONG ELEMENTS (NULL -> e1 -> e2 -> NULL)
     void *hdr,                  // - ring header

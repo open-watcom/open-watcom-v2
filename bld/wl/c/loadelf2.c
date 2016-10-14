@@ -195,8 +195,8 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
 /***********************************************************************/
 {
     int         i;
-    long        off;
-    unsigned    len;
+    Elf32_Word  off;
+    size_t      len;
     Elf32_Sym   elfsym;
     Elf32_Shdr  *hashSH;
     Elf32_Shdr  *tableSH;
@@ -233,7 +233,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     hdr->curr_off += len;
 
     // write hash section:
-    len = (1 + 1 + tab->numBuckets + tab->numElems) * sizeof( unsigned_32 );
+    len = ( 1 + 1 + tab->numBuckets + tab->numElems ) * sizeof( unsigned_32 );
     hashSH->sh_offset = hdr->curr_off;
     hashSH->sh_size = len;
     WriteLoad( &tab->numBuckets, sizeof( unsigned_32 ) );

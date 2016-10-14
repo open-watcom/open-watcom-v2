@@ -32,10 +32,10 @@
 #include "ar.h"
 
 extern int              CheckLibraryType( file_list *, unsigned long *, bool );
-extern mod_entry        *SearchLib( file_list *, char * );
+extern mod_entry        *SearchLib( file_list *, const char * );
 extern bool             DiscardDicts( void );
 extern void             BurnLibs( void );
-extern char             *GetARName( ar_header *, file_list *, unsigned long * );
-extern unsigned long    GetARValue( char *, unsigned );
-extern bool             LibFind( char *, bool );
+extern char             *GetARName( const ar_header *, file_list *, unsigned long * );
+extern unsigned long    GetARValue( const char *, size_t );
+extern bool             LibFind( const char *, bool );
 extern bool             ModNameCompare( const char *, const char * );

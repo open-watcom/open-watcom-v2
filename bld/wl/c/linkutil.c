@@ -131,7 +131,7 @@ char *ChkStrDup( const char *str )
     char        *copy;
 
     len = strlen( str ) + 1;
-    _ChkAlloc( copy, len  );
+    _ChkAlloc( copy, len );
     memcpy( copy, str, len );
     return( copy );
 }
@@ -516,7 +516,7 @@ void InitEnvVars( void )
         }
     }
     if( LibPath == NULL ) {
-        path_list = GetEnvString("LIB");
+        path_list = GetEnvString( "LIB" );
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
             _ChkAlloc( LibPath, len + 1 );

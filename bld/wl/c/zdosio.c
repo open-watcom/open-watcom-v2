@@ -134,9 +134,9 @@ f_handle QOpenRW( const char *name )
 
 size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
 /***********************************************************************/
-{
 /* read into far memory */
-    int h;
+{
+    int     h;
 
     CheckBreak();
     h = DosReadFile( len, buffer, file );
@@ -164,7 +164,7 @@ static size_t TestWrite( f_handle file, const void *buffer, size_t len, const ch
     if( name != NULL ) {
         if( h < 0 ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( -h ) );
-            return( ~0 );
+            return( -1 );
         } else if( h != len ) {
             Msg_Get( MSG_IOERRLIST_7, rc_buff );
             LnkMsg( (FTL+MSG_IO_PROBLEM) & ~OUT_MAP, "12", name, rc_buff );
@@ -180,10 +180,10 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 {
     for( ; len > QWRITE_BLOCK_SIZE; len -= QWRITE_BLOCK_SIZE ) {
         if( TestWrite( file, buffer, QWRITE_BLOCK_SIZE, name ) != QWRITE_BLOCK_SIZE )
-            return 0;
+            return( 0 );
         buffer = (const char *)buffer + QWRITE_BLOCK_SIZE;
     }
-    return TestWrite( file, buffer, len, name );
+    return( TestWrite( file, buffer, len, name ) );
 }
 
 char    NLSeq[] = { "\r\n" };
@@ -203,13 +203,13 @@ void QClose( f_handle file, const char *name )
     CheckBreak();
     h = DosCloseFile( file );
     OpenFiles--;
-    if( h >= 0  || name == NULL )
+    if( h >= 0 || name == NULL )
         return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( -h ) );
 }
 
 long QLSeek( f_handle file, long position, int start, const char *name )
-/****************************************************************/
+/**********************************************************************/
 {
     int         h;
     unsigned    pos;
@@ -225,7 +225,7 @@ long QLSeek( f_handle file, long position, int start, const char *name )
 }
 
 void QSeek( f_handle file, long position, const char *name )
-/****************************************************/
+/**********************************************************/
 {
     QLSeek( file, position, SEEK_FROM_START, name );
 }
@@ -267,8 +267,8 @@ void QDelete( const char *name )
     }
 }
 
-bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
-/*******************************************************************/
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+/***********************************************************************/
 {
 /* quick read string (for reading directive file) */
     bool    eof;

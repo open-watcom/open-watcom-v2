@@ -856,7 +856,7 @@ void DwarfWrite( void )
     Elf32_Ehdr          elf_header;
     Elf32_Shdr *        sect_header;
     Elf32_Shdr *        sh;
-    unsigned            shdr_size;
+    size_t              shdr_size;
     unsigned_32         virt_off;
     stringtable         strtab;
     unsigned long       savepos;

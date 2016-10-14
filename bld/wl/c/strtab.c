@@ -56,7 +56,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
 {
     stringblock *blk;
 
-    _ChkAlloc( blk, sizeof(stringblock) );
+    _ChkAlloc( blk, sizeof( stringblock ) );
     blk->next = NULL;
     RingAppend( &strtab->data, blk );
     blk->size = 0;
@@ -85,7 +85,7 @@ void ReserveStringTable( stringtable *strtab, size_t len )
     if( blk->size + len > STR_BLOCK_SIZE && (strtab->currbase & 1) ) {
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
-            memset( &blk->data[blk->size], 0, diff );
+            memset( blk->data + blk->size, 0, diff );
         }
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
@@ -110,9 +110,9 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
             if( strtab->currbase & 1 ) {        // then don't split
-                memset( &blk->data[blk->size], 0, diff );
+                memset( blk->data + blk->size, 0, diff );
             } else {
-                memcpy( &blk->data[blk->size], data, diff );
+                memcpy( blk->data + blk->size, data, diff );
                 len -= diff;
                 data = (char *)data + diff;
             }
@@ -120,7 +120,7 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
     }
-    dest = &blk->data[blk->size];
+    dest = blk->data + blk->size;
     blk->size += len;
     if( addnullchar )
         dest[ --len ] = '\0';
@@ -159,7 +159,7 @@ void ZeroStringTable( stringtable *strtab, size_t len )
 
     blk = RingLast( strtab->data );
     DbgAssert( blk->size + len <= STR_BLOCK_SIZE );
-    memset( &blk->data[blk->size], 0, len );
+    memset( blk->data + blk->size, 0, len );
     blk->size += len;
 }
 
@@ -188,7 +188,7 @@ void WriteStringTable( stringtable *strtab, write_strtable_fn *fn, void *info )
 }
 
 void FiniStringTable( stringtable *strtab )
-/************************************************/
+/*****************************************/
 {
     RingFree( &strtab->data );
 }

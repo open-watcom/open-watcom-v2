@@ -53,7 +53,7 @@ extern void             MSExportKeyword( const length_name *, const length_name 
 extern void             MSImportKeyword( symbol *, const length_name *, const length_name *, ordinal_t );
 extern dll_sym_info *   AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
-extern entry_export *   AllocExport( const char *, unsigned );
+extern entry_export *   AllocExport( const char *, size_t );
 extern void             AssignOrdinals( void );
 extern char *           ImpModuleName( dll_sym_info * );
 extern bool             IsSymElfImported( symbol * );

@@ -87,7 +87,7 @@ typedef struct liblist {
 
 struct perm_read_info_struct {
     f_handle    incfhdl;
-    unsigned    currpos;
+    size_t      currpos;
     char        *buffer;
     unsigned    num;
     void        (*cbfn)(void *, struct perm_read_info_struct *);
@@ -98,7 +98,7 @@ typedef struct perm_read_info_struct perm_read_info;
 
 typedef struct {
     stringtable strtab;
-    unsigned    currpos;
+    size_t      currpos;
     f_handle    incfhdl;
     void        (*prepfn)( void *, void * );
 } perm_write_info;
