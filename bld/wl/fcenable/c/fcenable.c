@@ -103,16 +103,16 @@ static char         *HelpMsg =
 #define DEF_CLASS       "CODE"
 
 // forward declarations
-static void     ProcessFiles( char ** );
-static void     ProcFile( char *fname );
+static void     ProcessFiles( const char ** );
+static void     ProcFile( const char *fname );
 
 
 // the spawn & suicide support.
 
 static void *SpawnStack;
 
-static int Spawn1( void (*fn)(char **), char **data1 )
-/****************************************************/
+static int Spawn1( void (*fn)( const char ** ), char **data1 )
+/************************************************************/
 {
     void    *save_env;
     jmp_buf env;
@@ -122,7 +122,7 @@ static int Spawn1( void (*fn)(char **), char **data1 )
     SpawnStack = env;
     status = setjmp( env );
     if( status == 0 ) {
-        (*fn)( data1 );
+        (*fn)( (const char **)data1 );
     }
     SpawnStack = save_env;  /* unwind */
     return( status );
@@ -194,14 +194,14 @@ int main(int argc, char **argv )
     return( retval );
 }
 
-static void ProcList( bool (*fn)(const char *,size_t), char ***argv )
-/*******************************************************************/
+static void ProcList( bool (*fn)(const char *, size_t), const char ***argv )
+/*************************************************************************/
 // this processes a list of comma-separated strings, being as forgiving about
 // spaces as possible.
 {
-    char    *item;
-    char    *comma;
-    bool    checksep;   // true iff we should check for a separator.
+    const char  *item;
+    const char  *comma;
+    bool        checksep;   // true iff we should check for a separator.
 
     (**argv)++;        // skip the option character.
     checksep = false;
@@ -318,16 +318,16 @@ static bool ProcExclude( const char *item, size_t len )
     return( false );
 }
 
-static void ProcessOption( char ***argv )
-/***************************************/
+static void ProcessOption( const char ***argv )
+/*********************************************/
 {
-    char    *item;
-    char    option;
+    const char  *item;
+    char        option;
 
     NewOption = true;
     (**argv)++;        // skip the switch character.
     item = **argv;
-    option = tolower( *item );
+    option = (char)tolower( (unsigned char)*item );
     switch( option ) {
     case 'c':           // class list.
         ProcList( ProcClass, argv );
@@ -350,10 +350,10 @@ static void ProcessOption( char ***argv )
     }
 }
 
-static void ProcessFiles( char **argv )
-/*************************************/
+static void ProcessFiles( const char **argv )
+/*******************************************/
 {
-    char    *item;
+    const char  *item;
 
     while( *argv != NULL ) {
         item = *argv;
@@ -382,8 +382,8 @@ static void CloseFiles( void )
     }
 }
 
-static void ReplaceExt( char *name, char *new_ext, bool force )
-/*************************************************************/
+static void ReplaceExt( char *name, const char *new_ext, bool force )
+/*******************************************************************/
 {
     char        buff[_MAX_PATH2];
     char        *p;
@@ -420,13 +420,13 @@ static void DoReplace( void )
     }
 }
 
-static void ProcFile( char *fname )
-/*********************************/
+static void ProcFile( const char *fname )
+/***************************************/
 {
     int         ftype;
     char        *name;
     int         status;
-    int         namelen;
+    size_t      namelen;
     char        *bak;
 
     namelen = strlen( fname ) + 5;
