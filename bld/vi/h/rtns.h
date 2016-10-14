@@ -611,7 +611,7 @@ void    FiniMem( void );
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
 vi_rc   GetResponse( char *, char * );
-void    ExitWithVerify( void );
+bool    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );
 bool    PromptFilesForSave( void );
 bool    PromptThisFileForSave( const char * );
