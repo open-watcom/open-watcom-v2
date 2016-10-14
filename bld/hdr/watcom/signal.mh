@@ -243,10 +243,12 @@ _WCRTLINK extern int  sigismember( const sigset_t *__set, int __signo );
 _WCRTLINK extern int  sigpending( sigset_t *__set );
 _WCRTLINK extern int  sigprocmask( int __how, const sigset_t *__set, sigset_t *__oset );
 _WCRTLINK extern int  sigsuspend( const sigset_t *sigmask );
+:segment LINUX
 _WCRTLINK extern int  siginterrupt( int __signo, int __flag );
 _WCRTLINK extern int  sigwait( const sigset_t *__set, int *__sig );
 _WCRTLINK extern int  sigwaitinfo( const sigset_t *__set, siginfo_t *__info );
 _WCRTLINK extern int  sigtimedwait( const sigset_t *__set, siginfo_t *__info, const struct timespec *__timeout );
+:endsegment
 :include extepi.sp
 
 :endsegment
