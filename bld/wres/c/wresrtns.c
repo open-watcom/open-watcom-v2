@@ -36,4 +36,12 @@
 #include "clibext.h"
 
 
-WResSetRtns( open, close, read, write, lseek, tell, malloc, free );
+#ifdef _WIN64
+#define posix_read  __w64_read
+#define posix_write __w64_write
+#else
+#define posix_read  read
+#define posix_write write
+#endif
+
+WResSetRtns( open, close, posix_read, posix_write, lseek, tell, malloc, free );
