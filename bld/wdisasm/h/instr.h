@@ -91,9 +91,9 @@ typedef struct {
 typedef struct {
     prefix              pref;
     uint_16             opcode;
+    operand             op[ 3 ];
     uint_8              ins_size;
     uint_8              num_oper;
-    operand             op[ 3 ];
     mem_modifier        modifier;
     uint_8              mem_ref_op;             /* for VIDEO */
     processor_reg       seg_used;               /* for VIDEO */
