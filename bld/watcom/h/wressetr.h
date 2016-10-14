@@ -69,16 +69,7 @@ typedef struct WResRoutines {                                               /* d
 } WResRoutines;
 
 #define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __alloc, __free ) \
-    struct WResRoutines WResRtns = {    \
-        __open,                         \
-        __close,                        \
-        __read,                         \
-        __write,                        \
-        __seek,                         \
-        __tell,                         \
-        __alloc,                        \
-        __free                          \
-    }
+    WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __alloc, __free }
 
 /* This is a global variable exported by function FindResources */
 extern WResFileOffset   WResFileShift;
