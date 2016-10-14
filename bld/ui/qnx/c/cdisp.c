@@ -54,16 +54,16 @@
 #include "qnxuiext.h"
 #include "ctkeyb.h"
 
-static          MONITOR                 ui_data         =       {
-                25,
-                80,
-                M_CGA,
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                4,
-                1
+static MONITOR ui_data = {
+    25,
+    80,
+    M_CGA,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    4,
+    1
 };
 
 struct _console_ctrl *UIConCtrl = NULL;

@@ -37,16 +37,16 @@
 #include "biosui.h"
 #include "uidef.h"
 
-static          MONITOR                 ui_data         =       {
-                25,
-                80,
-                M_VGA,
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                4,
-                1
+static MONITOR ui_data = {
+    25,
+    80,
+    M_VGA,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    4,
+    1
 };
 
 extern char  _B000h[],_B800h[];

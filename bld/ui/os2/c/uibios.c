@@ -38,16 +38,16 @@
 #define HANDLE 0
 
 
-static          MONITOR                 ui_data         =       {
-                25,
-                80,
-                M_CGA,
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                4,
-                1
+static MONITOR ui_data = {
+    25,
+    80,
+    M_CGA,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    4,
+    1
 };
 
 #ifdef __386__

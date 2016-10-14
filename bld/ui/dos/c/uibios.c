@@ -50,16 +50,16 @@ typedef struct {
     long            real_edx;
 } PHARLAP_block;
 
-static          MONITOR                 ui_data         =       {
-                25,
-                80,
-                M_CGA,
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                4,
-                1
+static MONITOR ui_data = {
+    25,
+    80,
+    M_CGA,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    4,
+    1
 };
 
 

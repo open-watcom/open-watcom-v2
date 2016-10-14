@@ -720,7 +720,7 @@ static int TI_EXEC_PROG( char *pnam )
     return( true );
 }
 
-static MONITOR  ui_data = {
+static MONITOR ui_data = {
     25,
     80,
     M_CGA,

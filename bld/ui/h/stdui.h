@@ -605,7 +605,6 @@ enum {
     M_UNUSED,
     M_NEC_HIRES,
     M_FMR
-
 #if defined( __UNIX__ )
     ,M_TERMINFO_MONO
 #endif
