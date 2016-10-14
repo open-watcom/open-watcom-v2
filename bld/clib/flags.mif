@@ -1,29 +1,65 @@
+!ifeq system windows
+default_windowing = 1
+!endif
 !ifeq default_windowing 1
 def_windowing = -DDEFWIN
-!else ifeq system windows
-default_windowing = 1
-def_windowing = -DDEFWIN
-!else
-def_windowing =
 !endif
 
+#######################
+# C PREPROCESSOR SETINGS
+######
+# Include system headers in dependency lists
+clib_cpp_flags = -D_ENABLE_AUTODEPEND
 !ifeq release 0
+clib_cpp_flags += -D__RUNTIME_HANDLE_CHECKS__
+!endif
+!ifeq linkage dynamic
+clib_cpp_flags += -D__MAKE_DLL_CLIB
+!endif
+!ifdef share
+clib_cpp_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
+!endif
+
+clib_cpp_flags_windows     = -DSTRICT $(def_windowing)
+clib_cpp_flags_windows_386 = -D__CALL21__
+clib_cpp_flags_winnt       = $(win32ver) $(def_windowing)
+clib_cpp_flags_winnt_axp   = -DWIN32 -D_WIN32
+clib_cpp_flags_winnt_ppc   = -DWIN32 -D_WIN32
+clib_cpp_flags_osi         = -D__CALL21__ -D__OSI__
+clib_cpp_flags_os2         = $(def_windowing)
+clib_cpp_flags_nw_clib     = -D_NETWARE_CLIB
+clib_cpp_flags_nw_clibl    = -D_NETWARE_CLIB -D_THIN_LIB
+clib_cpp_flags_nw_libc     = -D_NETWARE_LIBC
+clib_cpp_flags_nw_libcl    = -D_NETWARE_LIBC -D_THIN_LIB
+
+clib_cpp_flags += $(clib_cpp_flags_$(system)) $(clib_cpp_flags_$(system)_$(processor))
+
+##########################
+# C COMPILER SETINGS
+######
 sw_c_common = -za99-w8-zl-x-xx-zam-j
+!ifeq release 0
 !else
-sw_c_common = -za99-we-w8-zl-x-xx-zam-j
+sw_c_common += -we
 !endif
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
 !endif
-# Include system headers in dependency lists
-sw_c_common += -D_ENABLE_AUTODEPEND
-!ifeq release 0
-sw_c_common += -D__RUNTIME_HANDLE_CHECKS__
+!ifdef profile
+sw_c_common += -hd-etp
 !endif
-
-# sw_c_(linkage)
-sw_c_static  =
-sw_c_dynamic = -D__MAKE_DLL_CLIB
+!ifdef overlay
+sw_c_common += -of
+!endif
+!ifdef dll16
+sw_c_common += -bd-bm
+!endif
+!ifdef debug
+sw_c_common += -en
+!endif
+!ifdef threading16
+sw_c_common += -bm
+!endif
 
 # sw_c_(processor)_(model)
 sw_c_bigcode  = -nt=_TEXT
@@ -57,19 +93,18 @@ sw_c_mps_   =
 sw_c_intel    = -fpc
 sw_c_register = -5r
 sw_c_stack    = -5s
-!ifdef profile
-sw_c_profile  = -hd-etp
-!endif
+
+# special case switches
 !ifeq release 0
 sw_c_fi_nonx86 = -finonx86.h
 !endif
 
 sw_c_086 = $(sw_c_intel)-0
 sw_c_286 = $(sw_c_intel)-2
-sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-zc$(sw_c_profile)
+sw_c_386 = $(sw_c_intel)$(sw_c_$(convention))-zc
 sw_c_axp = $(sw_c_fi_nonx86)
-sw_c_ppc =
-sw_c_mps =
+sw_c_ppc = $(sw_c_fi_nonx86)
+sw_c_mps = $(sw_c_fi_nonx86)
 
 # sw_c_(system)_(processor)
 sw_c_generic_086  = -oax
@@ -80,10 +115,10 @@ sw_c_msdos_286    = -oax
 sw_c_msdos_386    = -oaxt
 sw_c_rdos_386     = -oaxt
 sw_c_rdosdev_386  = -oaxt
-sw_c_nw_clib_386  = -oaxt
-sw_c_nw_clibl_386 = -oaxt
-sw_c_nw_libc_386  = -oaxt
-sw_c_nw_libcl_386 = -oaxt
+sw_c_nw_clib_386  = -oaxt-bm
+sw_c_nw_clibl_386 = -oaxt-bm
+sw_c_nw_libc_386  = -oaxt-bm
+sw_c_nw_libcl_386 = -oaxt-bm
 sw_c_os2_286      = -oax
 sw_c_os2_386      = -oaxt-bm
 sw_c_os2_ppc      = -oaxt-bm
@@ -91,10 +126,10 @@ sw_c_osi_386      = -oaxt
 sw_c_qnx_286      = -oax
 sw_c_qnx_386      = -oaxt-bm
 sw_c_windows_086  = -oax
-sw_c_windows_386  = -oaxt -D__CALL21__
+sw_c_windows_386  = -oaxt
 sw_c_winnt_386    = -oaxt
-sw_c_winnt_axp    = -oaxt -DWIN32 -D_WIN32
-sw_c_winnt_ppc    = -oaxt -DWIN32 -D_WIN32
+sw_c_winnt_axp    = -oaxt
+sw_c_winnt_ppc    = -oaxt
 sw_c_linux_386    = -oaxt
 sw_c_linux_ppc    = -oaxt
 sw_c_linux_mps    = -oaxt -eoe
@@ -102,27 +137,43 @@ sw_c_linux_mps    = -oaxt -eoe
 # sw_c_(system)
 sw_c_generic    = -bt=dos
 sw_c_msdos      = -bt=dos
-sw_c_nw_clib    = -bt=netware -bm-D__far= -D__near= -D_NETWARE_CLIB
-sw_c_nw_clibl   = -bt=netware -bm-D__far= -D__near= -D_NETWARE_CLIB -D_THIN_LIB
-sw_c_nw_libc    = -bt=netware5 -bm-D__far= -D__near= -D_NETWARE_LIBC
-sw_c_nw_libcl   = -bt=netware5 -bm-D__far= -D__near= -D_NETWARE_LIBC -D_THIN_LIB
-sw_c_os2        = -bt=os2 $(def_windowing)
-sw_c_osi        = -bt=dos -D__CALL21__ -D__OSI__
+sw_c_nw_clib    = -bt=netware
+sw_c_nw_clibl   = -bt=netware
+sw_c_nw_libc    = -bt=netware5
+sw_c_nw_libcl   = -bt=netware5
+sw_c_os2        = -bt=os2
+sw_c_osi        = -bt=dos
 sw_c_qnx        = -bt=qnx
-sw_c_windows    = -bt=windows -DSTRICT $(def_windowing)
-sw_c_winnt      = -bt=nt -bm $(win32ver) $(def_windowing)
+sw_c_windows    = -bt=windows
+sw_c_winnt      = -bt=nt -bm
 sw_c_linux      = -bt=linux -bm
 sw_c_rdos       = -bt=rdos -bm
 sw_c_rdosdev    = -bt=rdosdev -bm
 
+#make bug
+!ifndef extra_clib_c_flags
+extra_clib_c_flags =
+!endif
+
+#####################
+# ASSEMBLERS SETINGS
+######
 sw_a_common = -we
 !ifdef __UNIX__
 sw_a_common += -fo=.obj
 !endif
-
-# sw_a_(linkage)
-sw_a_static  =
-sw_a_dynamic = -D__MAKE_DLL_CLIB -D_EXPORT
+!ifdef dll16
+sw_a_common += -D__MT__
+!endif
+!ifdef threading16
+sw_a_common += -D__MT__
+!endif
+!ifdef profile
+sw_a_common += -D_PROFILE
+!endif
+!ifeq linkage dynamic
+sw_a_common += -D__MAKE_DLL_CLIB -D_EXPORT
+!endif
 
 # sw_a_(processor)_(model)
 sw_a_bigcode  = -nt=_TEXT
@@ -148,13 +199,10 @@ sw_a_mps_   =
 sw_a_intel    = -fpc-w8-e
 sw_a_register = -5r
 sw_a_stack    = -5s
-!ifdef profile
-sw_a_profile  = -D_PROFILE
-!endif
 
 sw_a_086 = $(sw_a_intel)-0
 sw_a_286 = $(sw_a_intel)-2
-sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))$(sw_a_profile)
+sw_a_386 = $(sw_a_intel)$(sw_a_$(convention))
 sw_a_axp =
 sw_a_ppc =
 sw_a_mps =
@@ -204,41 +252,14 @@ sw_a_rdos       = -bt=rdos -D__MT__
 sw_a_rdosdev    = -bt=rdosdev -D__MT__
 
 #make bug
-!ifndef extra_clib_c_flags
-extra_clib_c_flags =
-!endif
 !ifndef extra_clib_a_flags
 extra_clib_a_flags =
 !endif
 
-clib_c_flags =$(sw_c_common) $(sw_c_$(linkage)) $(sw_c_$(processor)_$(model)) &
-    $(sw_c_$(processor)) $(sw_c_$(system)_$(processor)) $(sw_c_$(system)) $(extra_clib_c_flags)
-clib_a_flags =$(sw_a_common) $(sw_a_$(linkage)) $(sw_a_$(processor)_$(model)) &
-    $(sw_a_$(processor)) $(sw_a_$(system)_$(processor)) $(sw_a_$(system)) $(extra_clib_a_flags)
-
-# special case switches
-!ifdef overlay
-clib_c_flags += -of
-!endif
-!ifdef dll16
-clib_c_flags += -bd-bm
-!endif
-!ifdef share
-clib_c_flags += -D__SHARE__ -DIN_SLIB -D_NO_SLIB
-!endif
-!ifdef debug
-clib_c_flags += -en
-!endif
-!ifdef threading16
-clib_c_flags += -bm
-!endif
-
-!ifdef dll16
-clib_a_flags += -D__MT__
-!endif
-!ifdef threading16
-clib_a_flags += -D__MT__
-!endif
+clib_c_flags =$(sw_c_common) $(sw_c_$(processor)_$(model)) $(sw_c_$(processor)) &
+    $(sw_c_$(system)_$(processor)) $(sw_c_$(system)) $(clib_cpp_flags) $(extra_clib_c_flags)
+clib_a_flags =$(sw_a_common) $(sw_a_$(processor)_$(model)) $(sw_a_$(processor)) &
+    $(sw_a_$(system)_$(processor)) $(sw_a_$(system)) $(extra_clib_a_flags)
 
 # debug flags need to be last to override optimization flags
 !ifeq release 0
