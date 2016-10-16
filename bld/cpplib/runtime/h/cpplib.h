@@ -392,14 +392,36 @@ RT_TYPE_SIG CPPLIB( ts_refed )(     // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
 size_t CPPLIB( ts_size )(           // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
     RT_TYPE_SIG sig )               // - type signature
 ;
-_NORETURN
 _WPRTLINK
+_NORETURN
 void CPPLIB( undefed_cdtor )(       // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 ;
 void CPPLIB( unmark_bitvect )(      // UNMARK LAST BIT IN BIT-VECTOR
     uint_8 *bit_vect,               // - bit vector
     size_t bit_count )              // - # bits in vector
+;
+_WPRTLINK
+int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
+    unsigned char *bits,            // - bit field to check
+    int mask )                      // - mask we are interested in
+;
+_WPRTLINK
+void *CPPLIB( assign_array )(       // CALL OPERATOR= FOR ARRAY
+    void *tgt_array,                // - target array
+    void *src_array,                // - source array
+    unsigned count,                 // - number of elements
+    unsigned size,                  // - size of one element
+    pFUNcopy opeq )                 // - operator= for an element
+;
+_WPRTLINK
+void CPPLIB( undef_vfun )(          // TRAP STRIPPED VIRTUAL CALLS
+    void )
+;
+_WPRTLINK
+_NORETURN
+void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
+    void )
 ;
 
 #ifndef NDEBUG

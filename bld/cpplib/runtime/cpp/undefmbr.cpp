@@ -35,8 +35,8 @@
 
 
 extern "C"
-_NORETURN
 _WPRTLINK
+_NORETURN
 void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 {

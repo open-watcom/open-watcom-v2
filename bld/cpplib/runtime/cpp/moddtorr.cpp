@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cpplib.h>
-#include <rtinit.h>
+#include "cpplib.h"
+#include "rtinit.h"
 
 extern "C" YI( CPPLIBDATA( module_dtor_ref ), CPPLIB( module_dtor ), DTOR_PRIORITY );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <stdlib.h>
 #include "exitwmsg.h"
 

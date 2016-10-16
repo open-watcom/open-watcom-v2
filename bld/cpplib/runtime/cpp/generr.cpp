@@ -34,7 +34,7 @@
 //
 // 93/09/22  -- A.F.Scian       -- defined
 //
-#include <cpplib.h>
+#include "cpplib.h"
 #include <generic.h>
 
 int genericerror( int x, char * )

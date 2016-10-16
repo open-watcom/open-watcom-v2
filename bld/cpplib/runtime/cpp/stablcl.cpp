@@ -77,6 +77,7 @@ extern "C" XI( CPPLIBDATA( stab_init_lcl ), init, INIT_PRIORITY_RUNTIME )
 #endif
 
 extern "C"
+_WPRTLINK
 void CPPLIB( lcl_register )(    // REGISTRATION OF LOCAL INITIALIZATION
     RW_DTREG RT_FAR *rw )       // - read/write block
 {

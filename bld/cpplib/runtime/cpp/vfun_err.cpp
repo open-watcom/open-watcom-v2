@@ -39,7 +39,7 @@
 // 94/12/12 -- J.W.Welch        -- moved to CPP
 // 95/06/14 -- Greg Bentz       -- dll linkage
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include "rtmsgs.h"
 
 

@@ -38,8 +38,9 @@
 // Note: _WPRTLINK is present here so that the entry point is
 //      exported, but it is not present in new.h so that
 //      the entry point can be replaced in the user code
-#include <cpplib.h>
+#include "cpplib.h"
 #include <stddef.h>
+
 
 _WPRTLINK void *operator new( size_t, void *p )
 {

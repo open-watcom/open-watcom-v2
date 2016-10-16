@@ -326,11 +326,7 @@ struct FsCtxRec {               // Context record
     uint_32 not_used;
 };
 
-typedef FSREGAPI unsigned FS_HANDLER
-                           ( FsExcRec*
-                           , RW_DTREG*
-                           , FsCtxRec*
-                           , unsigned );
+typedef FSREGAPI unsigned FS_HANDLER( FsExcRec *, RW_DTREG *, FsCtxRec *, unsigned );
 
 extern "C"
 FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS

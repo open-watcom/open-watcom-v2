@@ -38,7 +38,7 @@
 
 #ifdef __SW_BM
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <new>
 
 extern "C"

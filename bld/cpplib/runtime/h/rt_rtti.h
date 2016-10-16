@@ -60,6 +60,7 @@ struct rtti_adjust {
 // run-time support control object
 
 typedef void (*rtti_bad)( void );
+
 struct rtti_exec {
     void                *vfptr;         // vfptr addr point (in object)
     void                *md_addr;       // most-derived addr point (in object)
@@ -71,12 +72,6 @@ struct rtti_exec {
     unsigned            ok : 1;         // conversion is OK
 };
 
-extern "C" {
-    extern void *__CalcMostDerived( rtti_exec * );
-    extern rtti_leap const *__MakeSureTidIsPresent( rtti_exec *, type_info const *, rtti_leap * );
-    extern void *__DoDynamicCast( rtti_exec * );
-};
-
 #define _INIT_EXEC( d, p, f, t, te ) \
         d.vfptr = p; \
         d.from_tid = f; \
@@ -84,3 +79,38 @@ extern "C" {
         d.throw_except = te;
 
 #endif
+
+extern "C" {
+
+extern void *__CalcMostDerived( rtti_exec * );
+extern rtti_leap const *__MakeSureTidIsPresent( rtti_exec *, type_info const *, rtti_leap * );
+extern void *__DoDynamicCast( rtti_exec * );
+
+_WPRTLINK
+void * CPPLIB( dcptr )(
+    void *p,
+    unsigned delta,
+    type_info const *from,
+    type_info const *to )
+;
+_WPRTLINK
+void * CPPLIB( dcref )(
+    void *p,
+    unsigned delta,
+    type_info const *from,
+    type_info const *to )
+;
+_WPRTLINK
+void * CPPLIB( dcvoid )(
+    void *p,
+    unsigned delta,
+    type_info const *from )
+;
+_WPRTLINK
+void const * CPPLIB( gettid )(
+    void *p,
+    unsigned delta,
+    type_info const *from )
+;
+
+};
