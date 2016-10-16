@@ -34,8 +34,8 @@
 #include "wstring.hpp"
 
 extern "C" {
-        #include <stdio.h>
-        #include <stdarg.h>
+    #include <stdio.h>
+    #include <stdarg.h>
 }
 
 #define MAX_MESSAGE 500

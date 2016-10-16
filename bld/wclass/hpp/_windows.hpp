@@ -37,8 +37,8 @@ typedef unsigned long   DWORD;
 typedef unsigned short  WORD;
 
 extern "C" {
-        #include <gui.h>
-        #include <guikey.h>
+    #include <gui.h>
+    #include <guikey.h>
 }
 
 typedef res_name_or_id  WResourceNameOrId;
