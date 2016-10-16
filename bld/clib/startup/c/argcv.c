@@ -41,8 +41,8 @@ int         __F_NAME(__argc,__wargc);
 CHAR_TYPE** __F_NAME(__argv,__wargv);
 
 #if defined( _M_I86 )
-AXI( __F_NAME(__Init_Argv,__wInit_Argv), 1 )
-AYI( __F_NAME(__Fini_Argv,__wFini_Argv), 1 )
+AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_THREAD )
+AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_THREAD )
 #else
 AXI( __F_NAME(__Init_Argv,__wInit_Argv), INIT_PRIORITY_RUNTIME )
 AYI( __F_NAME(__Fini_Argv,__wFini_Argv), INIT_PRIORITY_LIBRARY )

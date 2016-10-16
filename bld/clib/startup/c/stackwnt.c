@@ -35,27 +35,9 @@
 #include "stacklow.h"
 #include "exitwmsg.h"
 #include "thread.h"
+#include "stkoverf.h"
+#include "rtinit.h"
 
-#if !defined( _M_IX86 )
-void _init_stk( void )
-{
-}
-
-_WCRTLINK unsigned __CHK( unsigned i )
-{
-    return( i );
-}
-
-_WCRTLINK void __GRO( unsigned i )
-{
-    i = i;
-}
-
-_WCRTLINK void __STKOVERFLOW( void )
-{
-    __fatal_runtime_error( "stack overflow", -1 );
-}
-#endif
 
 _WCRTLINK unsigned stackavail( void )
 {
@@ -68,3 +50,18 @@ _WCRTLINK unsigned stackavail( void )
     return( _SP - _RWD_stacklow );
 #endif
 }
+
+#if !defined( _M_IX86 )
+_WCRTLINK _NORETURN void __STKOVERFLOW( void )
+{
+    __fatal_runtime_error( "stack overflow", -1 );
+    // never return
+}
+
+static void _init_stk( void )
+{
+}
+
+AXI( _init_stk, INIT_PRIORITY_LIBRARY )
+#endif
+

@@ -96,9 +96,10 @@ endif
 
 __STKOVERFLOW:
         mov     dx,cs:dgroupp           ; set stk overflow msg
-        mov     ax, offset DGROUP:msg
-        mov     bx, 01h                 ; return error
+        mov     ax,offset DGROUP:msg
+        mov     bx,01h                  ; return error
         jmp     __fatal_runtime_error   ; arrrggg....
+        ; never return
         endproc __STK
 
         endmod

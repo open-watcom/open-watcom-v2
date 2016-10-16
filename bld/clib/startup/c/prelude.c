@@ -343,6 +343,9 @@ void __VersionEnforcement( void )
 _NORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
+/*
+ * Netware has own _exit procedure
+ */
     _exit( rc );
     // never return
 }

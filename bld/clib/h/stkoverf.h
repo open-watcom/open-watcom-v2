@@ -24,23 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Code generator support routines prototypes.
+* Description:  __STKOVERFLOW support routine prototype.
 *
 ****************************************************************************/
 
 
-#ifdef __NETWARE__
-extern unsigned short   _WCI86NEAR __GETDS( void );
-#else
-extern void             _WCI86NEAR __GETDS( void );
-#endif
-extern unsigned         _WCI86NEAR __CHK( unsigned );
-extern void             _WCI86NEAR __GRO( unsigned );
-extern void             _WCI86NEAR __STK( unsigned );
-
-#ifdef _M_IX86
-#pragma aux __GETDS "*"
-#pragma aux __CHK "*"
-#pragma aux __GRO "*"
-#pragma aux __STK "*"
-#endif
+extern _NORETURN void   __STKOVERFLOW( void );

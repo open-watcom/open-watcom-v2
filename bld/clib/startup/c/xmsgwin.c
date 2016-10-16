@@ -39,20 +39,20 @@
 _WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
 {
     char        tmp[128];
-    LPSTR       a,b;
+    LPSTR       a, b;
 
     a = msg;
     b = tmp;
-    while( *a && *a != '\r' && b < tmp+sizeof(tmp) )
+    while( *a != '\0' && *a != '\r' && b < tmp + sizeof( tmp ) )
         *b++ = *a++;
-    *b = 0;
+    *b = '\0';
 
     MessageBox( (HWND)NULL, tmp, "Open Watcom", MB_OK );
     _exit( retcode );
     // never return
 }
 
-_WCRTLINK void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         _exit( retcode );

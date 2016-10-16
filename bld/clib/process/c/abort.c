@@ -66,6 +66,7 @@ _WCRTLINK void abort( void )
     signal( SIGABRT, SIG_DFL );
     raise( SIGABRT );
     __terminate();
+    // never return
 }
 #else
 
@@ -75,6 +76,7 @@ _WCRTLINK void abort( void )
         (*_RWD_abort)();
     }
     __terminate();
+    // never return
 }
 
 #endif
@@ -82,4 +84,5 @@ _WCRTLINK void abort( void )
 void __terminate( void )
 {
     __fatal_runtime_error( "ABNORMAL TERMINATION", EXIT_FAILURE );
+    // never return
 }

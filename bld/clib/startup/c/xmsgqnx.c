@@ -39,9 +39,7 @@ _WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode 
 {
     char        c;
 
-    for( ;; ) {
-        c = *msg++;
-        if( c == '\0' ) break;
+    while( (c = *msg++) != '\0' ) {
         write( STDERR_FILENO, &c, 1 );
     }
     c = '\n';
@@ -51,7 +49,7 @@ _WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode 
 }
 
 
-_WCRTLINK void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         __qnx_exit( retcode );

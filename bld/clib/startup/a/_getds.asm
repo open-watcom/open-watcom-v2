@@ -24,7 +24,8 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Set up DGROUP access without needing relocs (for emulator).
+;* Description:  Set up DGROUP access without needing relocs
+;*               for 16-bit OS/2 (emulator)
 ;*
 ;*****************************************************************************
 

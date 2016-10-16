@@ -170,8 +170,10 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
 
         DosGetInfoSeg( &globalseg, &localseg );
         _threadid = MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
-        if( __InitThreadProcessing() == NULL )
+        if( __InitThreadProcessing() == NULL ) {
             __fatal_runtime_error( "Not enough memory", 1 );
+            // never return
+        }
     #if defined(__SW_BD)
         {
             unsigned    i;

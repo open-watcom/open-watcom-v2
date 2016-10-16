@@ -103,6 +103,7 @@ else
         mov     edx,1
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
+        ; never return
         endproc __STK
 
         endmod

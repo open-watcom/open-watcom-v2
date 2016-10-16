@@ -90,6 +90,7 @@ __STKOVERFLOW:
         mov     ax,offset msg           ; get msg
         mov     bx,1                    ; error code
         jmp     __fatal_runtime_error   ; display msg and exit
+        ; never return
         endproc __STK
 
 msg     db      "Stack Overflow!", 0

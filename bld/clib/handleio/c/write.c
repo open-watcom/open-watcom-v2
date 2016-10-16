@@ -50,6 +50,8 @@
 #include "defwin.h"
 #include "lseek.h"
 #include "thread.h"
+#include "stkoverf.h"
+
 
 #if defined(__NT__)
 #ifndef INVALID_SET_FILE_POINTER
@@ -70,8 +72,6 @@
       UINT uBytes   // number of bytes to write
     );
  */
-
-extern  void    __STKOVERFLOW( void );
 
 /*
     Win32 Note:
@@ -347,19 +347,21 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
             rc = os_write( handle, buffer, len, &len_written );
             /* end of binary mode part */
         } else {    /* text mode */
+            #define BUF_SHORT    0x0080
+            #define BUF_LONG     0x0200
+            #define STACK_MARGIN 0x0030
             i = stackavail();
-            if( i < 0x00b0 ) {
+            if( i < BUF_SHORT + STACK_MARGIN ) {
                 __STKOVERFLOW();    /* not enough stack space */
             }
-            buf_size = 512;
-            if( i < (512 + 48) ) {
-                buf_size = 128;
+            buf_size = BUF_LONG;
+            if( i < BUF_LONG + STACK_MARGIN ) {
+                buf_size = BUF_SHORT;
             }
-#if defined(__AXP__) || defined(__PPC__)
-            buf = alloca( buf_size );
-#else
             buf = __alloca( buf_size );
-#endif
+            #undef BUF_SHORT
+            #undef BUF_LONG
+            #undef STACK_MARGIN
             j = 0;
             for( i = 0; i < len; ) {
                 if( ((const char*)buffer)[i] == '\n' ) {

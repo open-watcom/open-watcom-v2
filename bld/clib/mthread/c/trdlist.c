@@ -122,6 +122,7 @@ thread_data *__GetThreadData( void )
 #endif
     if( tdata == NULL ) {
         __fatal_runtime_error( "Thread has no thread-specific data", 1 );
+        // never return
     }
     return( tdata );
 }
@@ -157,12 +158,14 @@ thread_data *__ReallocThreadData( void )
     #endif
             if( tdata == NULL ) {
                 __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
+                // never return
             }
             tdv->data = tdata;
         } else {
             tdata = lib_calloc( 1, __ThreadDataSize );
             if( tdata == NULL ) {
                 __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
+                // never return
             }
             memcpy( tdata, tdv->data, tdv->data->__data_size );
             tdv->allocated_entry = 1;
@@ -181,6 +184,7 @@ thread_data *__ReallocThreadData( void )
         }
         if( tdl == NULL ) {
             __fatal_runtime_error( "Thread has no thread-specific data", 1 );
+            // never return
         }
         if( tdl->allocated_entry ) {
 #if defined(_NETWARE_LIBC)
@@ -193,12 +197,14 @@ thread_data *__ReallocThreadData( void )
 #endif
             if( tdata == NULL ) {
                 __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
+                // never return
             }
             tdl->data = tdata;
         } else {
             tdata = lib_calloc( 1, __ThreadDataSize );
             if( tdata == NULL ) {
                 __fatal_runtime_error( "Unable to resize thread-specific data", 1 );
+                // never return
             }
             memcpy( tdata, tdl->data, tdl->data->__data_size );
             tdl->allocated_entry = 1;
