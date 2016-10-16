@@ -83,7 +83,6 @@ all : $(headers) $(libs) .SYMBOLIC
 .mh: ../include
 
 .def.lbc:
-    @%make echo_awk
     $(awk) -f ../def16lbc.awk -v OUTFILE=$^. $[@
 
 .lbc.lib: $(__MAKEFILES__)
@@ -97,7 +96,6 @@ all : $(headers) $(libs) .SYMBOLIC
 $(libs):
 
 windows.lbc : $(winlibs)
-    $(noecho)%create $^@
     @for %i in ($(winlibs)) do @%append $^@ @ %i
 
 windows.lib: windows.lbc profc.obj $(__MAKEFILES__)
