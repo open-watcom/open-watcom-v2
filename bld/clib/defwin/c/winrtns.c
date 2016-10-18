@@ -29,23 +29,25 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stdlib.h>
 #include "_defwin.h"
 
-LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { 0 };
-void (*_WindowsRemoveWindowedHandle)( int h ) = { 0 };
-unsigned (*_WindowsNewWindow)( char *s, ... ) = { 0 };
-int (*_WindowsCloseWindow)( LPWDATA lp ) = { 0 };
-int (*_WindowsSetAbout)( char *p1, char *p2 ) = { 0 };
-int (*_WindowsSetAppTitle)( char *p ) = { 0 };
-int (*_WindowsSetConTitle)( LPWDATA lp, char *s ) = { 0 };
-int (*_WindowsDestroyOnClose)( LPWDATA lp ) = { 0 };
-int (*_WindowsYieldControl)( void ) = { 0 };
-int (*_WindowsShutDown)( void ) = { 0 };
-unsigned (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { 0 };
-unsigned (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { 0 };
-unsigned (*_WindowsKbhit)( LPWDATA lp ) = { 0 };
-unsigned (*_WindowsGetch)( LPWDATA lp ) = { 0 };
-unsigned (*_WindowsGetche)( LPWDATA lp ) = { 0 };
-void (*_WindowsPutch)( LPWDATA lp, unsigned u ) = { 0 };
-void (*_WindowsExitRtn)( void ) = { 0 };
+
+LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { NULL };
+void (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
+unsigned (*_WindowsNewWindow)( char *s, ... ) = { NULL };
+int (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
+int (*_WindowsSetAbout)( char *p1, char *p2 ) = { NULL };
+int (*_WindowsSetAppTitle)( char *p ) = { NULL };
+int (*_WindowsSetConTitle)( LPWDATA lp, char *s ) = { NULL };
+int (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
+int (*_WindowsYieldControl)( void ) = { NULL };
+int (*_WindowsShutDown)( void ) = { NULL };
+unsigned (*_WindowsStdin)( LPWDATA lp, void *p, unsigned u ) = { NULL };
+unsigned (*_WindowsStdout)( LPWDATA lp, const void *p, unsigned u ) = { NULL };
+unsigned (*_WindowsKbhit)( LPWDATA lp ) = { NULL };
+unsigned (*_WindowsGetch)( LPWDATA lp ) = { NULL };
+unsigned (*_WindowsGetche)( LPWDATA lp ) = { NULL };
+void (*_WindowsPutch)( LPWDATA lp, unsigned u ) = { NULL };
+void (*_WindowsExitRtn)( void ) = { NULL };
 

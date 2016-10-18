@@ -50,7 +50,7 @@ _WCRTLINK int getche( void )
     _RWD_cbyte = 0;
     if( c == 0 ) {
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsGetche != 0 ) {
+        if( _WindowsGetche != NULL ) {
             LPWDATA     res;
             res = _WindowsIsWindowedHandle( STDOUT_FILENO );
             c = _WindowsGetche( res );

@@ -346,7 +346,7 @@ _WCRTLINK FILE *__F_NAME(freopen,_wfreopen)( const CHAR_TYPE *name,
     _AccessFileH( hdl );
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsRemoveWindowedHandle != 0 ) {
+    if( _WindowsRemoveWindowedHandle != NULL ) {
         _WindowsRemoveWindowedHandle( hdl );
     }
 #endif

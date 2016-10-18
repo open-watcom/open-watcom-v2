@@ -44,9 +44,7 @@
     #define INCL_DOSERRORS
     #define INCL_DOSMODULEMGR
     #define INCL_ORDINALS
-    #ifdef DEFAULT_WINDOWING
-        extern unsigned (*_WindowsStdout)();
-    #endif
+    #include "_defwin.h"
   #endif
 #endif
 #include "rterrno.h"
@@ -94,7 +92,7 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
     DosGetInfoBlocks( &ptib, &ppib );
     if( (ppib->pib_ultype == PT_PM) &&
     #ifdef DEFAULT_WINDOWING
-        (_WindowsStdout == 0) &&
+        (_WindowsStdout == NULL) &&
     #endif
         (DosLoadModule( NULL, 0, "PMWIN", &hmodPMWIN ) == NO_ERROR) &&
         (DosQueryProcAddr( hmodPMWIN, ORD_WIN32MESSAGEBOX, NULL, (PFN*)&pfnWinMessageBox ) == NO_ERROR)
@@ -109,8 +107,7 @@ void __F_NAME(__rterr_msg,__wrterr_msg)( const CHAR_TYPE *hdr, const CHAR_TYPE *
         const char  *outhdr = hdr;
         const char  *outmsg = msg;
     #endif
-        pfnWinMessageBox( HWND_DESKTOP, NULLHANDLE, outmsg, outhdr, 0,
-                          MB_SYSTEMMODAL | MB_OK );
+        pfnWinMessageBox( HWND_DESKTOP, NULLHANDLE, outmsg, outhdr, 0, MB_SYSTEMMODAL | MB_OK );
         DosFreeModule( hmodPMWIN );
     } else {
         __F_NAME(fputs,fputws)( hdr, stderr );

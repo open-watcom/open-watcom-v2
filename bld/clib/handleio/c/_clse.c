@@ -53,7 +53,7 @@ int __close( int handle )
     rc = TinyClose( handle );
     if( TINY_OK(rc) ) {
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsCloseWindow != 0 ) {
+        if( _WindowsCloseWindow != NULL ) {
             res = _WindowsIsWindowedHandle( handle );
             if( res != NULL ) {
                 _WindowsRemoveWindowedHandle( handle );

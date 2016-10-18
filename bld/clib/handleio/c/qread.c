@@ -93,7 +93,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
     __handle_check( handle, -1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdin != 0 ) {
+    if( _WindowsStdin != NULL ) {
         LPWDATA res;
 
         res = _WindowsIsWindowedHandle( handle );
