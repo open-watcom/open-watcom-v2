@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
 #endif

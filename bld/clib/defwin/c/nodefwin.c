@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 #include "_defwin.h"
-#include <stdlib.h>
+#include <stddef.h>
 
 
 #pragma aux __init_default_win "*";

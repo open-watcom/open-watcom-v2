@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "tinyio.h"

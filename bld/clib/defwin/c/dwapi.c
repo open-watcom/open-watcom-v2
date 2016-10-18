@@ -32,6 +32,7 @@
 
 #define __SW_BW
 #include "variety.h"
+#include <stddef.h>
 #include <wdefwin.h>
 #include "defwin.h"
 

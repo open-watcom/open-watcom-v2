@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include <stdlib.h>
+#include <stddef.h>
 #include "_defwin.h"
 
 

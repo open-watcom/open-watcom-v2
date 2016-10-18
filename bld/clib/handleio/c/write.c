@@ -223,7 +223,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
     rc = 0;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != 0 && (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
+    if( _WindowsStdout != NULL && (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
         *amt = _WindowsStdout( res, buffer, len );
     } else
 #endif
@@ -335,7 +335,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
     // Pad the file with zeros if necessary
     if( iomode_flags & _FILEEXT ) {
         // turn off file extended flag
-        __SetIOMode_nogrow( handle, iomode_flags&(~_FILEEXT) );
+        __SetIOMode_nogrow( handle, iomode_flags & (~_FILEEXT) );
 
         // It is not required to pad a file with zeroes on an NTFS file system;
         // unfortunately it is required on FAT (and probably FAT32). (JBS)
