@@ -65,6 +65,7 @@
 !inject qwrit.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject qwritunx.obj                                                        q16 q32             l32 lpc lmp
 !inject read.obj     d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
+!inject setbinmo.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             rdu rdk
 !inject setmd.obj    d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
 !inject setmdunx.obj                                                        q16 q32             l32 lpc lmp
 !inject stiomode.obj d16 d32             nt nta ntp                 o16 o32         w16 w32 osi             

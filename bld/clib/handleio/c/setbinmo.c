@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,48 +24,55 @@
 *
 *  ========================================================================
 *
-* Description:  prototypes and definitions for iomode array manipulation
+* Description:  Set handle to binary mode __set_binary function prototype
+*                (used by Fortran)
 *
 ****************************************************************************/
 
 
-#ifndef _IOMODE_H_INCLUDED
-#define _IOMODE_H_INCLUDED
+#include "variety.h"
+#include <stdio.h>
+#include "iomode.h"
 
-#if defined(__NT__)
+#if defined( __DOS__ )
 
-#include <windows.h>
+#include "tinyio.h"
+#include "seterrno.h"
 
-#define NULL_HANDLE  (HANDLE)-1
-#define DUMMY_HANDLE (HANDLE)-2
+int __set_binary( int handle )
+{
+    unsigned        iomode_flags;
 
-extern  void        __initPOSIXHandles( void );
-extern  unsigned    __growPOSIXHandles( unsigned num );
-extern  int         __allocPOSIXHandle( HANDLE hdl );
-extern  void        __freePOSIXHandle( int hid );
-extern  HANDLE      __getOSHandle( int hid );
-extern  int         __setOSHandle( unsigned hid, HANDLE hdl );
-extern  HANDLE      __NTGetFakeHandle( void );
+    __ChkTTYIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
+    iomode_flags |= _BINARY;
+    __SetIOMode( handle, iomode_flags );
+    if( iomode_flags & _ISTTY ) {
+        tiny_ret_t rc;
 
-extern  HANDLE      *__OSHandles;
+        rc = TinyGetDeviceInfo( handle );
+        if( TINY_ERROR( rc ) ) {
+            return( __set_errno_dos( TINY_INFO( rc ) ) );
+        }
+        rc = TinySetDeviceInfo( handle, TINY_INFO(rc) | TIO_CTL_RAW );
+        if( TINY_ERROR( rc ) ) {
+            return( __set_errno_dos( TINY_INFO( rc ) ) );
+        }
+    }
+    return( 0 );
+}
 
-#define NT_STDIN_FILENO  (GetStdHandle( STD_INPUT_HANDLE ))
-#define NT_STDOUT_FILENO (GetStdHandle( STD_OUTPUT_HANDLE ))
-#define NT_STDERR_FILENO (GetStdHandle( STD_ERROR_HANDLE ))
+#else
 
-#endif
+int __set_binary( int handle )
+{
+    unsigned        iomode_flags;
 
-#if !defined(__NETWARE__)
-
-extern  unsigned    __NHandles;
-extern  unsigned    __NFiles;              /* maximum # of files we can open */
-
-extern  unsigned    __GetIOMode( int __handle );
-extern  int         __SetIOMode( int __handle, unsigned __value );
-extern  void        __SetIOMode_nogrow( int __handle, unsigned __value );
-extern  void        __ChkTTYIOMode( int __handle );
-extern  int         __set_binary( int __handle );
-
-#endif
+    __ChkTTYIOMode( handle );
+    iomode_flags = __GetIOMode( handle );
+    iomode_flags |= _BINARY;
+    __SetIOMode( handle, iomode_flags );
+    return( 0 );
+}
 
 #endif

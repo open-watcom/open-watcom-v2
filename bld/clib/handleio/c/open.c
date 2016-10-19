@@ -207,34 +207,6 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode,
 }
 
 
-#if 0 /* couldn't find any user; please re-enable if it's necessary */
-#ifndef __WIDECHAR__                    /* compile one version only */
-int __set_binary( int handle )
-{
-    unsigned        iomode_flags;
-
-    __ChkTTYIOMode( handle );
-    iomode_flags = __GetIOMode( handle );
-    iomode_flags |= _BINARY;
-    __SetIOMode( handle, iomode_flags );
-    if( iomode_flags & _ISTTY ) {
-        tiny_ret_t rc;
-
-        rc = TinyGetDeviceInfo( handle );
-        if( TINY_ERROR( rc ) ) {
-            return( __set_errno_dos( TINY_INFO( rc ) ) );
-        }
-        rc = TinySetDeviceInfo( handle, TINY_INFO(rc) | TIO_CTL_RAW );
-        if( TINY_ERROR( rc ) ) {
-            return( __set_errno_dos( TINY_INFO( rc ) ) );
-        }
-    }
-    return( 0 );
-}
-#endif
-#endif
-
-
 _WCRTLINK int __F_NAME(open,_wopen)( const CHAR_TYPE *name, int mode, ... )
 {
     int         permission;
