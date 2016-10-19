@@ -40,23 +40,20 @@
 #include "thread.h"
 
 
-#define KEEP_FLAGS (_READ | _WRITE | _DYNAMIC)
-
-FILE *__allocfp( int handle )
+FILE *__allocfp( void )
 {
     FILE                *end;
     FILE                *fp;
     __stream_link       *link;
     unsigned            flags;
 
-    handle = handle;
     _AccessIOB();
     /* Try and take one off the recently closed list */
     link = _RWD_cstream;
     if( link != NULL ) {
         _RWD_cstream = link->next;
         fp = link->stream;
-        flags = fp->_flag & _DYNAMIC;
+        flags = fp->_flag;
         goto got_one;
     }
     /* See if there is a static FILE structure available. */

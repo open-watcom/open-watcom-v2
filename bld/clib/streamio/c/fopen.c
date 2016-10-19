@@ -266,8 +266,7 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
         return( NULL );
     }
 
-    /* specify dummy handle 0 */
-    fp = __allocfp( 0 );                    /* JBS 30-aug-91 */
+    fp = __allocfp();
     if( fp != NULL ) {
         fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
                                            file_flags, extflags,
@@ -302,7 +301,7 @@ static FILE *close_file( FILE *fp )
     */
     for( owner = &_RWD_cstream; (link = *owner) != NULL; owner = &link->next ) {
         if( link->stream == fp ) {
-            /* remove from closed list and put on open */
+            /* remove from closed list and put on open list */
             *owner = link->next;
             link->next = _RWD_ostream;
             _RWD_ostream = link;
