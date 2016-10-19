@@ -27,8 +27,9 @@ then all files that are open will be flushed.
 .return begin
 The
 .id &funcb.
-function returns non-zero if a write error occurs and zero
-otherwise.
+function returns
+.kw EOF
+if a write error occurs and zero otherwise.
 .im errnoref
 .return end
 .see begin
