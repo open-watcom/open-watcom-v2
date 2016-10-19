@@ -56,7 +56,7 @@ FILE *__allocfp( int handle )
     if( link != NULL ) {
         _RWD_cstream = link->next;
         fp = link->stream;
-        flags = (fp->_flag & KEEP_FLAGS) | (_READ | _WRITE);
+        flags = fp->_flag & _DYNAMIC;
         goto got_one;
     }
     /* See if there is a static FILE structure available. */
@@ -66,16 +66,16 @@ FILE *__allocfp( int handle )
             link = lib_malloc( sizeof( __stream_link ) );
             if( link == NULL )
                 goto no_mem;
-            flags = _READ | _WRITE;
+            flags = 0;
             goto got_one;
         }
     }
     /* Allocate a new dynamic structure */
-    flags = _DYNAMIC | _READ | _WRITE;
     link = lib_malloc( sizeof( __stream_link ) + sizeof( FILE ) );
     if( link == NULL )
         goto no_mem;
     fp = (FILE *)(link + 1);
+    flags = _DYNAMIC;
 got_one:
     memset( fp, 0, sizeof( *fp ) );
     fp->_flag = flags;

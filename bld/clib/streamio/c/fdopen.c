@@ -115,9 +115,8 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         return( NULL );
     }
 #endif
-    fp = __allocfp( handle );               /* JBS 30-aug-91 */
-    if( fp ) {
-        fp->_flag &= ~(_READ | _WRITE); /* 2-dec-90 */
+    fp = __allocfp( handle );
+    if( fp != NULL ) {
         fp->_flag |= flags;
         fp->_cnt = 0;
         _FP_BASE( fp ) = NULL;
