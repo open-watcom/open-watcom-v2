@@ -43,7 +43,7 @@
 #include "gtypes.h"
 
 
-static  int     CharLength( itnode *op ) {
+static  uint    CharLength( itnode *op ) {
 //========================================
 
     USOPN       opn;

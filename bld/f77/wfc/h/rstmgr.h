@@ -42,5 +42,5 @@ extern sym_id   FindEqSetShadow( sym_id sym );
 extern sym_id   STFnShadow( sym_id sym );
 extern sym_id   STShadow( sym_id sym );
 extern void     STUnShadow( sym_id sym );
-extern sym_id   STName( char *name, int length );
-extern sym_id   STCommon( char *name, int length );
+extern sym_id   STName( char *name, uint length );
+extern sym_id   STCommon( char *name, uint length );

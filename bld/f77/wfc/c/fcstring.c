@@ -213,11 +213,9 @@ static cg_name CharArrLength( sym_id sym ) {
     if( sym->u.ns.flags & SY_VALUE_PARM ) {
         return( CGInteger( 0, TY_INTEGER ) );
     } else if( Options & OPT_DESCRIPTOR ) {
-        return( SCBLength( CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ),
-                                    TY_POINTER ) ) );
+        return( SCBLength( CGUnary( O_POINTS, CGFEName( sym, TY_POINTER ), TY_POINTER ) ) );
     } else {
-        return( CGUnary( O_POINTS, CGFEName( FindArgShadow( sym ), TY_INTEGER ),
-                TY_INTEGER ) );
+        return( CGUnary( O_POINTS, CGFEName( FindArgShadow( sym ), TY_INTEGER ), TY_INTEGER ) );
     }
 }
 

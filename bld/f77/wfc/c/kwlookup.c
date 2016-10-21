@@ -44,14 +44,14 @@
 #include <string.h>
 
 
-int     KwLookUp( char **table, int high, char *id, int id_len, bool exact ) {
+int     KwLookUp( char **table, int high, char *id, uint id_len, bool exact ) {
 //============================================================================
 
     char        *key;
     char        *ident;
     int         mid;
     int         low;
-    int         kw_len;
+    uint        kw_len;
 
     // index 0 is reserved
     // each keyword table has blank first item

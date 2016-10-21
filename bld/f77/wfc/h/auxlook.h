@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern aux_info     *AuxLookupName( char *name, int name_len );
-extern aux_info     *AuxLookupAdd( char *name, int name_len );
+extern aux_info     *AuxLookupName( char *name, uint name_len );
+extern aux_info     *AuxLookupAdd( char *name, uint name_len );
 extern aux_info     *AuxLookup( sym_id sym );

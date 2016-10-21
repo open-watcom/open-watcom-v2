@@ -39,7 +39,7 @@
 #include <string.h>
 
 
-static  sym_id  AddNameList( char *name, int length ) {
+static  sym_id  AddNameList( char *name, uint length ) {
 //=====================================================
 
 // Add a symbol table entry to the symbol table. Return a pointer to the
@@ -56,7 +56,7 @@ static  sym_id  AddNameList( char *name, int length ) {
 }
 
 
-sym_id  FindNameList( char *name, int len ) {
+sym_id  FindNameList( char *name, uint len ) {
 //===========================================
 
 // Search symbol table for given name.
@@ -74,7 +74,7 @@ sym_id  FindNameList( char *name, int len ) {
 }
 
 
-sym_id  STNameList( char *name, int length ) {
+sym_id  STNameList( char *name, uint length ) {
 //============================================
 
 // Lookup the specified name list name in the symbol table.

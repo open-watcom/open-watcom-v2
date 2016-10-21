@@ -264,7 +264,7 @@ static  bool    HexConst(void) {
 // Check for a hexadecimal constant specifier.
 
     char        *hex_data;
-    int         hex_len;
+    uint        hex_len;
     sym_id      sym;
 
     hex_data = CITNode->opnd;
@@ -414,13 +414,13 @@ static  void    GetSConst( void ) {
 }
 
 
-int  MkHexConst( char *hex_data, char *dst, int hex_len ) {
+uint MkHexConst( char *hex_data, char *dst, uint hex_len ) {
 //====================================================================
 
     uint        len;
 
     len = HSToB( hex_data, hex_len, dst );
-    if( len != (hex_len+1)/2 )
+    if( len != ( hex_len + 1 ) / 2 )
         return( 0 );
     return( len );
 }

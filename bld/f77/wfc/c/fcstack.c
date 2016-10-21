@@ -584,7 +584,7 @@ sym_id          SymPop( void ) {
 
 
 cg_name IntegerConstant( ftn_type *value, uint size ) {
-//===================================================
+//=====================================================
 
     if( size == sizeof( intstar1 ) ) {
         return( CGInteger( value->intstar1, TY_INT_1 ) );

@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern csnode   *NewCSNode( int label_len );
+extern csnode   *NewCSNode( uint label_len );
 extern void     InitCSList( void );
 extern void     CSPurge( void );
 extern itnode   *GetBlockLabel( void );
