@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern  void            CnvTo(itnode *, TYPE, uint);
+extern  void            CnvTo( itnode *, TYPE, uint );

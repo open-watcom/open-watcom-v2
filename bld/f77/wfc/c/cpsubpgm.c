@@ -87,10 +87,9 @@ void CpProgram( void )
 }
 
 void DefProg( void )
-{
 // Define the program unit since no PROGRAM, SUBROUTINE, FUNCTION or
 // BLOCK DATA statements were specified.
-
+{
     SubProgId = LkProgram();
     StartProg();
 }
@@ -133,16 +132,15 @@ static entry_pt *AddEntryPt( sym_id sym_ptr )
 }
 
 
-static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags,
-                                uint def_size, bool len_spec )
-{
+static  entry_pt *SubProgName( TYPE typ, unsigned_16 flags, uint def_size, bool len_spec )
 // Process the symbolic name of a SUBROUTINE or FUNCTION.
-
+{
     entry_pt    *entry;
     itnode      *name_node;
     itnode      *next_node;
     sym_id      sym_ptr;
     uint        size;
+
     sym_ptr = LkSym();
     SubProgId = sym_ptr;
     GSegLabel();    // must be before DumpStatement() so that ISN code for
@@ -199,12 +197,11 @@ void CpSubroutine( void )
 
 
 void    Function( TYPE typ, uint size, bool len_spec )
-{
+//
 // Compile [type] [*len] FUNCTION NAME[*len] ([d,d,...])
 //            \                /
 //             Already scanned
-//
-
+{
     unsigned_16 flags;
     entry_pt    *entry;
 
@@ -237,7 +234,7 @@ void    Function( TYPE typ, uint size, bool len_spec )
 
 void CpFunction( void )
 {
-    Function( FT_NO_TYPE, -1, false );
+    Function( FT_NO_TYPE, SIZE_UNDEF, false );
 }
 
 void CpEntry( void )

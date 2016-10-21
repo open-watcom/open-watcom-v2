@@ -56,6 +56,7 @@
 #include "gsubprog.h"
 #include "auxlook.h"
 #include "gflow.h"
+#include "gtypes.h"
 
 
 /* Forward declarations */

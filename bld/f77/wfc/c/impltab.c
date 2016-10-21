@@ -112,9 +112,9 @@ void    InitImplTab( void ) {
     TYPE        typ;
     int         i;
 
-    for( i = 0; i <= IMPL_SIZE; ++i ) {
+    for( i = 0; i < IMPL_SIZE; ++i ) {
         typ = FT_REAL;
-        if( ( i >= 8 ) && ( i <= 13 ) ) {
+        if( ( i >= IMPL_I ) && ( i <= IMPL_N ) ) {
             typ = FT_INTEGER;
         }
         ImplicitTab[i].typ = typ;

@@ -48,6 +48,7 @@
 #include "gsubprog.h"
 #include "declare.h"
 #include "gflow.h"
+#include "gtypes.h"
 
 
 void    GStmtAddr( sym_id stmtno ) {
@@ -146,7 +147,7 @@ void    InitSelect( void ) {
                 DumpType( FT_INTEGER_1, 1 );
                 OutPtr( NULL );
             } else {
-                sel_expr = StaticAlloc( CITNode->size, MapTypes( FT_INTEGER, CITNode->size));
+                sel_expr = StaticAlloc( CITNode->size, MapTypes( FT_INTEGER, CITNode->size ) );
                 CSHead->cs_info.cases->sel_expr = sel_expr;
                 PushOpn( CITNode );
                 EmitOp( FC_POP );  // pop select expression into temporary

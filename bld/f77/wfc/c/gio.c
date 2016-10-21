@@ -50,6 +50,7 @@
 #include "gio.h"
 #include "gstring.h"
 #include "gflow.h"
+#include "gtypes.h"
 
 
 void    GSetIOCB( void ) {

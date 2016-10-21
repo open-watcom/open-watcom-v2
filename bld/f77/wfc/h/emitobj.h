@@ -39,11 +39,6 @@
 
 // emit.c
 extern  void            EmitOp(FCODE);
-// gtypes.c
-extern  void            GenType(itnode *);
-extern  void            GenTypes(itnode *,itnode *);
-extern  void            DumpType(TYPE,uint);
-extern  void            DumpTypes(TYPE,uint,TYPE,uint);
 // setopn.c
 extern  void            SetOpn(itnode *,USOPN);
 // stkops.c

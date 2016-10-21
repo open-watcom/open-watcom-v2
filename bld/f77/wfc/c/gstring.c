@@ -47,6 +47,7 @@
 #include "relops.h"
 #include "upcat.h"
 #include "declare.h"
+#include "gtypes.h"
 
 
 sym_id  GStartCat( uint num_args, uint size ) {
@@ -60,7 +61,7 @@ sym_id  GStartCat( uint num_args, uint size ) {
 
 
 sym_id  GTempString( uint size ) {
-//===============================
+//================================
 
 // Generate a static temporary string.
 
@@ -104,7 +105,7 @@ void    GCatArg( itnode *itptr ) {
 
 
 static  uint    SrcChar( itnode *op ) {
-//=====================================
+//====================================
 
     if( op->opn.us & USOPN_SS1 )
         return( op->value.st.ss_size );
@@ -123,9 +124,10 @@ static  uint    SrcChar( itnode *op ) {
 
 
 static  uint    TargChar( itnode *op ) {
-//======================================
+//=====================================
 
-    if( op->opn.us & USOPN_SS1 ) return( op->value.st.ss_size );
+    if( op->opn.us & USOPN_SS1 )
+        return( op->value.st.ss_size );
     if( ( op->opn.us & USOPN_WHAT ) == USOPN_NNL ) { // character variable
         if( op->sym_ptr->u.ns.u1.s.typ == FT_STRUCTURE ) {
             return( 0 );        // No mechanism exists for keeping the size.
@@ -145,7 +147,7 @@ static  uint    TargChar( itnode *op ) {
 
 
 void    AsgnChar( void ) {
-//==================
+//========================
 
 // Perform character assignment.
 
