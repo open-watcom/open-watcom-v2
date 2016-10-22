@@ -33,9 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-short PASCAL _Cover_DialogBoxParam( HANDLE inst, LPSTR temp,
-                              HWND wnd, DLGPROC p, LONG param )
+short PASCAL _Cover_DialogBoxParam( HANDLE inst, LPCSTR temp, HWND wnd, DLGPROC p, LONG param )
 {
-    return( DialogBoxParam( inst, temp, wnd,
-                SetProc( (FARPROC)p, GETPROC_CALLBACK ), param ) );
+    return( DialogBoxParam( inst, temp, wnd, SetProc( (FARPROC)p, GETPROC_CALLBACK ), param ) );
 }
