@@ -10,8 +10,15 @@ lname = $^&.rex
 lname = $^@
 !endif
 
+!ifeq verbose 0
+wbind_quiet = -q
+!endif
+
 bind_win386: .PROCEDURE .EXPLICIT
 !ifdef win386
-    $(wbind) $(lname) -s $(win386_dir)/ext/win386.ext -R -q $^&.res $^@
+!ifeq verbose 0
+    @echo wbind $(win386_dir)/ext/win386.ext $^&.res $@
+!endif
+    $(wbind) $(lname) $(wbind_quiet) -s $(win386_dir)/ext/win386.ext -R -q $^&.res $^@
     @rm -f $(lname)
 !endif
