@@ -42,8 +42,10 @@
 
 extern "C" {
 
-static void _no_support_loaded() {
+static void _no_support_loaded( void )
+{
     __fatal_runtime_error( "C++ floating-point support not loaded", 1 );
+    // never return
 }
 
 _type_EFG_cnvs2d  *__EFG_cnvs2d  = (_type_EFG_cnvs2d *)_no_support_loaded;

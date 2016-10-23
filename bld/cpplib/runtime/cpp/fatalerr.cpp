@@ -35,6 +35,7 @@
 #include "exitwmsg.h"
 
 
+// never return
 extern "C"
 _NORETURN
 void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR

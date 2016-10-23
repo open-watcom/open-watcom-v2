@@ -42,7 +42,7 @@ void CPPLIB( dtor_del_array )(      // CALL DTORS FOR ARRAY ELEMENTS AND DELETE
 
     if( array != 0 ) {
         base = ArrayStorageFromArray( array );
-        CPPLIB(dtor_array)( array, base->element_count, sig );
+        CPPLIB( dtor_array )( array, base->element_count, sig );
         delete base;
     }
 }

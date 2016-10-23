@@ -35,7 +35,7 @@
 #include "rtexcept.h"
 #include <except.h>
 #include "rtmsgs.h"
-#include "exitwmsg.h" 
+#include "exitwmsg.h"
 
 
 namespace std {

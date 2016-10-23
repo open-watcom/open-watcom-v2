@@ -68,6 +68,7 @@ _RTARCTOR::~_RTARCTOR           // DESTRUCTOR FOR R/T AR-CTOR
 #endif
 
 #ifndef NDEBUG
+// never return
 _RTARCTOR::_RTARCTOR            // COPY CTOR FOR R/T AR-CTOR
     ( _RTARCTOR const & )
     : _count( 0 )
@@ -75,6 +76,7 @@ _RTARCTOR::_RTARCTOR            // COPY CTOR FOR R/T AR-CTOR
     , _array( 0 )
 {
     GOOF_EXC( "Attempt to copy RTARCTOR" );
+    // never return
 }
 #endif
 

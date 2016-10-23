@@ -34,6 +34,7 @@
 #include "rtmsgs.h"
 
 
+// never return
 extern "C"
 _WPRTLINK
 _NORETURN

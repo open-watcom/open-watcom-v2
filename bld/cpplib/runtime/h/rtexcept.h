@@ -49,8 +49,10 @@ typedef enum                    // TYPES OF DISPATCHABILITIES
 
 
 #ifndef NDEBUG
-    #define GOOF_EXC( msg ) GOOF( msg )
+    // never return
+    #define GOOF_EXC( msg ) CPPLIB( fatal_runtime_error )( "*** GOOF **" msg, 1 )
 #else
+    // never return
     #define GOOF_EXC( msg ) CPPLIB( corrupted_stack )()
 #endif
 
@@ -600,7 +602,7 @@ void CPPLIB( stab_trav_init )   // INITIALIZE STATE-TABLE TRAVERSAL
     ( STAB_TRAVERSE* ctl        // - control for travsersal
     , _RTCTL* rtc )             // - R/T control
 ;
-RO_STATE* CPPLIB( stab_trav_move)( // MOVE TO NEXT ACTUAL POSITION
+RO_STATE* CPPLIB( stab_trav_move )( // MOVE TO NEXT ACTUAL POSITION
     STAB_TRAVERSE *traverse )   // - traversal control information
 ;
 RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY

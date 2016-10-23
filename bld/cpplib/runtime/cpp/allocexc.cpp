@@ -160,6 +160,7 @@ ACTIVE_EXC *CPPLIB( alloc_exc )(// ALLOCATE AN EXCEPTION
         break;
       default :
         GOOF_EXC( "ALLOCEXC: unexpected type signature" );
+        // never return
     }
     return active;
 }

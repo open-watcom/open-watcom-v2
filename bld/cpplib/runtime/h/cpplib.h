@@ -397,6 +397,16 @@ _NORETURN
 void CPPLIB( undefed_cdtor )(       // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 ;
+// never return
+_WPRTLINK
+void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
+    void )
+;
+_WPRTLINK
+int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
+    unsigned char *bits,            // - bit field to check
+    int mask )                      // - mask we are interested in
+;
 void CPPLIB( unmark_bitvect )(      // UNMARK LAST BIT IN BIT-VECTOR
     uint_8 *bit_vect,               // - bit vector
     size_t bit_count )              // - # bits in vector
