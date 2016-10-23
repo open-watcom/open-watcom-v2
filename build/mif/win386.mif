@@ -15,7 +15,7 @@ lname = $^@
 wbind_quiet = -q
 !endif
 
-bind_win386: .PROCEDURE .EXPLICIT
+bind_win386_add_res : .PROCEDURE .EXPLICIT
 !ifdef win386
 !ifeq verbose 0
     @echo wbind $(win386ldr) $@
