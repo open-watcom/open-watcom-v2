@@ -19,11 +19,12 @@ additional_cleanup = *.i *.rex setup.inf
 !include $(ui_dir)/client.mif
 
 !include wres.mif
-!include ntmanif.mif
 
 # systems where manifest file resource must be added to .EXE
 manifest_nt_386 = ntmanif.res
 #manifest_nt_x64 = ntmanif.res
+
+!include ntmanif.mif
 
 # objects
 ##########
