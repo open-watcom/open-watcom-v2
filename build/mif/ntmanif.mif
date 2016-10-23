@@ -1,0 +1,14 @@
+!ifdef manifest_$(host_os)_$(host_cpu)
+ntmanif.res: ../ntmanif.rc .EXPLICIT
+    @%make echo_rc
+    $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
+!endif
+
+bind_res_manifest: .PROCEDURE .EXPLICIT
+!ifdef manifest_$(host_os)_$(host_cpu)
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
+!endif
+
