@@ -153,7 +153,7 @@ $(bin_prefix)$(exename).exe : $(depends_drv) $(bin_prefix)$(dllname).dll $(comp_
     @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !else
 
@@ -169,7 +169,7 @@ $(bin_prefix)$(exename).exe: $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $
     $(linker) name $(lname) @exe.lnk
     @%make bind_osildr
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !endif
 
@@ -184,7 +184,7 @@ $(bin_prefix)$(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_
     @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
-    @%make bind_version_res_dll
+    @%make bind_res_version_dll
 
 #
 # done

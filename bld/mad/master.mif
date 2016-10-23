@@ -106,7 +106,7 @@ $(xname) : $(dis_prereq) $(objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__M
 !else
     $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif
-    @%make bind_version_res_dll
+    @%make bind_res_version_dll
 
 distbls.gh : ./disbuild.exe
     @%make echo_execute

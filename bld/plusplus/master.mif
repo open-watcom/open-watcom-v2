@@ -193,7 +193,7 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_ex
     @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !else
 
@@ -209,7 +209,7 @@ $(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res
     $(linker) name $(lname) @exe.lnk
     @%make bind_osildr
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !endif
 
@@ -224,7 +224,7 @@ $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(hos
     @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
-    @%make bind_version_res_dll
+    @%make bind_res_version_dll
 
 #
 # miscellaneous build rules

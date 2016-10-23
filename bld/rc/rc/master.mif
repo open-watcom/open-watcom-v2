@@ -211,7 +211,7 @@ $(exename).exe : $(misc_objs) $(depends_drv) $(dllname).dll $(objs_drv) $(versio
     @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !else
 
@@ -227,7 +227,7 @@ $(exename).exe : $(misc_objs) $(depends_exe) $(objs_exe) $(xlibs) $(res_exe) $(v
     $(linker) name $(lname) @exe.lnk
     @%make bind_osildr
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 !ifdef res_exe
     @%make echo_bindres
     $(wstrip) -q -a -r $@ . $(res_exe)
@@ -246,7 +246,7 @@ $(dllname).dll : $(depends_dll) $(objs_dll) $(xlibs) $(res_dll) $(version_res_dl
     @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
-    @%make bind_version_res_dll
+    @%make bind_res_version_dll
 !ifdef res_dll
     @%make echo_bindres
     $(wstrip) -q -a -r $@ . $(res_dll)

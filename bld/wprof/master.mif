@@ -74,7 +74,7 @@ extra_ldflags = -ldl
 # resources stuff
 ##################
 !ifeq sys_windowed 1
-resfile = wprofgui.res
+resfile = $(proj_name).res
 !else
 resfile = wprofui.res
 !endif
@@ -109,16 +109,16 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs
     $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(libs) $(sys_libs)}
 !endif
 !ifneq sys_windowed 1
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 !endif
     @%make echo_bindres
 !ifneq sys_windowed 1
     $(wstrip) -q -a -r  $^@ . $(resfile)
 !else
-    $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
+    @%make bind_res_add_version_exe
 !endif
 
-wprofgui.res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
+$(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 

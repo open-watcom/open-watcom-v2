@@ -70,11 +70,10 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 !ifeq sys_windowed 1
     %make bind_win386
 !ifndef win386
-    @%make echo_bindres
-    $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
+    @%make bind_res_add_version_exe
 !endif
 !else
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 !endif
 
 $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)

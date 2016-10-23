@@ -82,7 +82,7 @@ $(exe_name) : msg.gh $(dis_prereq) $(objs) $(libs) $(proj_name).res $(version_re
     $(linker) name $(lname) $(lflags) file {$(objs)} lib {$(libs)}
     @%make bind_osildr
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
     @%make echo_bindres
     $(wstrip) -q -a -r $@ . $^&.res
 

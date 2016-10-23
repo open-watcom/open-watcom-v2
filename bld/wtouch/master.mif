@@ -33,7 +33,7 @@ $(proj_name).exe : msg.gh $(objs) $(libs) $(proj_name).res $(version_res_exe_$(h
 !else
     $(linker) name $^@ $(lflags) file { $(objs) } lib {$(libs)}
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
     @%make echo_bindres
     $(wstrip) -q -a -r $(proj_name).exe . $(proj_name).res
 

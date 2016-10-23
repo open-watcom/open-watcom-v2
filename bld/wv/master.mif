@@ -159,22 +159,6 @@ extra_l_flags_rdos =
 
 # resources
 ############
-!ifeq sys_windowed 1
-resname_win     = wvwin
-resname_nt      = wvnt
-resname_os2     = wvpm
-!endif
-
-!ifdef resname_$(host_os)
-resname = $(resname_$(host_os))
-!else
-resname = wvui
-!endif
-!ifdef dll
-resname = wvuidll
-!endif
-resfile = $(resname).res
-
 wv_dialogs = &
     dlgayn.gdl &
     dlgbrk.gdl &
@@ -212,6 +196,14 @@ extra_ldflags = -ldl
 !endif
 !endif
 
+!ifeq sys_windowed 1
+resfile = $(name).res
+!else
+resfile = wvui.res
+!endif
+
+resfile_dll = wvuidll.res
+
 $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) fingmsg.obj $(libs) $(ldflags)
@@ -239,13 +231,13 @@ $(name).exe : $(extra_link_res_$(host_os)) litdef.gh $(objs) fingmsg.obj $(libs)
 !endif
 !endif
 !ifneq sys_windowed 1
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 !endif
     @%make echo_bindres
 !ifneq sys_windowed 1
     $(wstrip) -q -a -r $^@ . $(resfile)
 !else
-    $(rc) -k $(resfile) $^@ $(bind_version_res_exe_add)
+    @%make bind_res_add_version_exe
 !endif
 
 wd.lib : litdef.gh $(engine_objs) $(__MAKEFILES__)
@@ -445,21 +437,23 @@ wvuidll.res : $(rdir)/wvuidll.rc litdef.gh $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvwin.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+!ifeq host_os win
+$(name).res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+!else ifeq host_os nt
+$(name).res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+    @%make echo_rc
+    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
+!else ifeq host_os os2
+$(name).res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wvnt.res : $(rdir)/wvwin.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
-
-wvpm.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
-    @%make echo_rc
-    $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
-
-wvpmj.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
+$(name)j.res : $(rdir)/wvpm.rc $(bitmaps) $(rcfiles) $(__MAKEFILES__) .autodepend
     @%make echo_rc
     $(rc) $(rc_flags) -ad -DJAPANESE $(rc_inc_path) $[@ -fo=$^@
+!endif
 
 ####################
 .EXTENSIONS: .str
