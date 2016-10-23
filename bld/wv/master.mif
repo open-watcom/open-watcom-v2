@@ -477,7 +477,7 @@ litdefs2.tmp : wddui.str $(__MAKEFILES__)
     $(cpp) $(rc_aui_flags) -I"$(dig_dir)/h" -o$@ $[@
 
 litdef.gh : litdefs1.tmp litdefs2.tmp litdefm.tmp $(__MAKEFILES__)
-    @%create $^@ 
+    @%create $^@
     @%make echo_awk
     $(awk) -v prefix=DBG_ENG_LITERAL_ -v base=DBG_ENG_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs1.tmp
     $(awk) -v prefix=DBG_DUI_LITERAL_ -v base=DBG_DUI_BASE -f $(build_dir)/makemsg2.awk -v OUTFILE=$^. litdefs2.tmp
@@ -506,4 +506,3 @@ bind_res_dll : .PROCEDURE .EXPLICIT
     @echo bind res dll $@
 !endif
     $(rc) -k $(resfile_dll) $^@
-!endif
