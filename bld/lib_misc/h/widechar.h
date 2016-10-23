@@ -71,7 +71,7 @@
     #define IS_ASCII_CHAR(c)    (1)
 #endif
 
-#define IS_ASCII_INT(c)         (((c) & ~0xff) == 0)
+#define IS_ASCII_INT(c)         (c != (INTCHAR_TYPE)__F_NAME(EOF,WEOF) && ( c >= (INTCHAR_TYPE)-128 || c <= (INTCHAR_TYPE)255 ))
 #define TO_ASCII(c)             ((unsigned char)(c))
 #define CHARSIZE                (sizeof( CHAR_TYPE ))
 
