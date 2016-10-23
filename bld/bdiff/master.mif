@@ -16,6 +16,7 @@ additional_cleanup_subdir = $(all_execs:.exe=)
 !include deftarg.mif
 
 !include wres.mif
+!include ntmanif.mif
 
 # systems where manifest file resource must be added to .EXE
 manifest_nt_386 = ntmanif.res
@@ -257,18 +258,6 @@ bdiff.res : ../bpatch.rc dusage.gh ../h/bpatch.h
 bdump.res : ../bpatch.rc dusage.gh ../h/bpatch.h
     @%make echo_rc
     $(rc_aui) -I.. -DBDUMP $[@ -fo=$^@
-
-ntmanif.res: ../ntmanif.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
-
-bind_res_manifest: .PROCEDURE .EXPLICIT
-!ifdef manifest_$(host_os)_$(host_cpu)
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-    $(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
-!endif
 
 bind_res_bdiff: .PROCEDURE .EXPLICIT
 !ifeq verbose 0
