@@ -50,7 +50,7 @@
     for( ; n > 0; --n ) {
         c1 = *s;
         c2 = *t;
-        if( IS_ASCII( c1 ) && IS_ASCII( c2 ) ) {
+        if( IS_ASCII_CHAR( c1 ) && IS_ASCII_CHAR( c2 ) ) {
             if( c1 >= STRING( 'A' ) && c1 <= STRING( 'Z' ) )
                 c1 += STRING( 'a' ) - STRING( 'A' );
             if( c2 >= STRING( 'A' ) && c2 <= STRING( 'Z' ) ) {

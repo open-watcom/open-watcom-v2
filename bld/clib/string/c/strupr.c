@@ -45,7 +45,7 @@
     UCHAR_TYPE   c;
 
     for( p = str; (c = *p) != NULLCHAR; ++p ) {
-        if( IS_ASCII( c ) ) {
+        if( IS_ASCII_CHAR( c ) ) {
             c -= STRING( 'a' );
             if( c <= STRING( 'z' ) - STRING( 'a' ) ) {
                 c += STRING( 'A' );
