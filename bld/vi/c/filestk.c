@@ -59,7 +59,7 @@ void FiniFileStack( void )
 vi_rc PushFileStack( void )
 {
     file_stack  *fs;
-    int         len;
+    size_t      len;
     int         i;
 
     if( fStack == NULL ) {

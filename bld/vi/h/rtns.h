@@ -604,7 +604,7 @@ void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
 void    StaticFini( void );
-char    *MemStrDup( char * );
+char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
 

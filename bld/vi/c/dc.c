@@ -62,8 +62,9 @@ static void deinitDCLine( dc_line *dcline )
 
 void DCCreate( void )
 {
-    int     nlines, i;
-    dc_line *dcline;
+    unsigned    nlines;
+    unsigned    i;
+    dc_line     *dcline;
 
     assert( CurrentInfo );
     nlines = WindowAuxInfo( CurrentInfo->current_window_id, WIND_INFO_TEXT_LINES );
@@ -118,10 +119,10 @@ void DCScroll( int nlines )
     dc_line     *dcline;
     dc_line     *dcline_i;
     dc_line     *dcline_temp;
-    int         bit;
-    int         rest;
-    int         i;
-    int         a;
+    size_t      bit;
+    size_t      rest;
+    unsigned    i;
+    unsigned    a;
 
     assert( CurrentInfo );
     if( CurrentInfo->dc_size == 0 ) {
@@ -446,7 +447,7 @@ dc_line *DCFindLine( int c_line_no, window_id wid )
 
 void DCValidateLine( dc_line *dcline, int start_col, char *text )
 {
-    int     nlen;
+    size_t  nlen;
 
     // assumes ss has already been filled correctly
     dcline->start_col = start_col;

@@ -65,7 +65,7 @@ static char *FileNameList;
 
 WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    int                         len;
+    unsigned                    len;
 #ifdef __WINDOWS_386__
     static OPENFILENAME __far   *of;
 #else

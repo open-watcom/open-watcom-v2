@@ -525,7 +525,7 @@ typedef struct dc_line {
     ss_block            *ss;
     int                 start_col;
     char                *text;
-    int                 textlen;
+    size_t              textlen;
     ss_flags            flags;
     // Windows & text mode
     bool                display : 1;    // line needs to be redisplayed
