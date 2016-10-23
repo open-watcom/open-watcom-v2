@@ -55,12 +55,12 @@ bld_lib         = $(blib) $(bld_libflags)
 awk             = $(noecho)*awk
 cpp             = $(noecho)*wcpp
 cwc             = bcwc
-edbind          = bedbind
+edbind          = $(noecho)bedbind
 ide2make        = bide2mak
 re2c            = $(noecho)re2c
 sed             = $(noecho)sed
-w32bind         = w32bind
-wbind           = bwbind
+w32bind         = $(noecho)w32bind
+wbind           = $(noecho)bwbind
 wsplice         = $(noecho)*wsplice
 wstrip          = $(noecho)bwstrip
 yacc            = $(noecho)yacc
@@ -120,11 +120,6 @@ echo_rc : .PROCEDURE .EXPLICIT
     @echo rc $@
 !endif
 
-echo_bindres : .PROCEDURE .EXPLICIT
-!ifeq verbose 0
-    @echo bind res $@
-!endif
-
 echo_sed : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo sed $@
@@ -144,3 +139,15 @@ echo_execute : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo $[@ $@
 !endif
+
+bind_res_wresui : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind wresui $@
+!endif
+    $(wstrip) -q -a -r $@ . wresui.res
+
+bind_res : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(rc) -k $^&.res $^@

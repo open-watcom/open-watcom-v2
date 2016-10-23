@@ -42,7 +42,7 @@ inc_dirs = -I"../h"
 
 ##############################################################################
 
-$(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
+$(name).exe : $(objs) wresui.res $(wres_lib) $(osildr) $(__MAKEFILES__)
     $(noecho)%create $^&.lnk
     @%append $^&.lnk option quiet
     @%append $^&.lnk debug all
@@ -54,12 +54,11 @@ $(name).exe : $(objs) $(osildr) wic.res $(wres_lib) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
-    @%make echo_bindres
-    $(wstrip) -a -r -q $@ . wic.res
+    @%make bind_res_wresui
 
 ##############################################################################
 
-wic.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
+wresui.res: ../res/wic.rc usagee.gh usagej.gh #../res/messages.rc
     @%make echo_rc
     $(rc_aui) $[@ -fo=$^@
 
