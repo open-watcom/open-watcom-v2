@@ -76,7 +76,7 @@ extra_ldflags = -ldl
 !ifeq sys_windowed 1
 resfile = $(proj_name).res
 !else
-resfile = wprofui.res
+resfile = wresui.res
 !endif
 
 rcfiles = &
@@ -108,21 +108,18 @@ $(proj_name).$(exe) : $(extra_link_res_$(host_os)) $(resfile) $(objs) $(sys_objs
 !else
     $(linker) name $^@ $(lflags) file {$(objs) $(dip_objs) $(mad_objs) finger.obj} lib {$(libs) $(sys_libs)}
 !endif
-!ifneq sys_windowed 1
-    @%make bind_res_version_exe
-!endif
-    @%make echo_bindres
-!ifneq sys_windowed 1
-    $(wstrip) -q -a -r  $^@ . $(resfile)
-!else
+!ifeq sys_windowed 1
     @%make bind_res_add_version_exe
+!else
+    @%make bind_res_version_exe
+    @%make bind_res_wresui
 !endif
 
 $(proj_name).res : ../res/wprofgui.rc $(rcfiles) $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc) $(rc_flags) -ad $(rc_inc_path) $[@ -fo=$^@
 
-wprofui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
+wresui.res : ../res/wprofui.rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc
     $(rc_aui) -ad $(aui_rc_inc_dirs) $(gui_inc_dirs) $(inc_dirs_sys_$(host_os)) $[@ -fo=$^@
 

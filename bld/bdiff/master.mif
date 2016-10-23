@@ -62,9 +62,8 @@ wcpatch.exe : $(wcpatch_objs) $(wres_lib) bdiff.res $(manifest_$(host_os)_$(host
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make bind_manifest
-    @%make echo_bindres
-    $(wstrip) -q -a -r $^@ . bdiff.res
+    @%make bind_res_manifest
+    @%make bind_res_bdiff
 
 #
 # WPATCH. Apply patch.
@@ -95,9 +94,8 @@ wpatch.exe : $(wpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make bind_manifest
-    @%make echo_bindres
-    $(wstrip) -q -a -r $^@ . bpatch.res
+    @%make bind_res_manifest
+    @%make bind_res_bpatch
 
 #
 # BPATCH.
@@ -128,9 +126,8 @@ bpatch.exe : $(bpatch_objs) $(wres_lib) bpatch.res $(manifest_$(host_os)_$(host_
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make bind_manifest
-    @%make echo_bindres
-    $(wstrip) -q -a -r $^@ . bpatch.res
+    @%make bind_res_manifest
+    @%make bind_res_bpatch
 
 #
 # BDUMP.
@@ -160,8 +157,7 @@ bdump.exe : $(bdump_objs) $(wres_lib) bdump.res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindres
-    $(wstrip) -q -a -r $^@ . bdump.res
+    @%make bind_res_bdump
 
 #
 # BDIFF.
@@ -196,8 +192,7 @@ bdiff.exe : $(bdiff_objs) $(wres_lib) bdiff.res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindres
-    $(wstrip) -q -a -r $^@ . bdiff.res
+    @%make bind_res_bdiff
 
 #
 # BCMT
@@ -267,8 +262,28 @@ ntmanif.res: ../ntmanif.rc
     @%make echo_rc
     $(rc) $(rc_flags) -I.. $(inc_dirs_sys) -I"$(watcom_dir)/h" $< -fo=$^@
 
-bind_manifest: .PROCEDURE
+bind_res_manifest: .PROCEDURE .EXPLICIT
 !ifdef manifest_$(host_os)_$(host_cpu)
-    @%make echo_bindres
+!ifeq verbose 0
+    @echo bind res $@
+!endif
     $(rc) -k $(manifest_$(host_os)_$(host_cpu)) $^@
 !endif
+
+bind_res_bdiff: .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(wstrip) -q -a -r $^@ . bdiff.res
+
+bind_res_bpatch: .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(wstrip) -q -a -r $^@ . bpatch.res
+
+bind_res_bdump: .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bind res $@
+!endif
+    $(wstrip) -q -a -r $^@ . bdump.res

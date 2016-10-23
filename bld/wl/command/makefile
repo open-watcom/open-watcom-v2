@@ -26,7 +26,7 @@ compile = $(comp386) $[@ -ox-4-d1-w4-zq-i"$(watcom_h)"
 .c.obj :
         $(compile)
 
-command.exe : $(objs) wlink.res $(__MAKEFILES__)
+command.exe : $(objs) wresui.res $(__MAKEFILES__)
     $(noecho)%create tmp.lnk
     @for %i in ($(objs)) do @%append tmp.lnk file %i
     @%make echo_link
@@ -36,8 +36,7 @@ command.exe : $(objs) wlink.res $(__MAKEFILES__)
 !else
     copy /b $(pharlap)stub386.exe + $^&.exp $^@
 !endif
-    @%make echo_bindres
-    $(wstrip) -q -a -r command.exe . wlink.res
+    @%make bind_res_wresui
 
 trmem.obj : $(src_dir)/trmem/trmem.c
     $(compile) -i="$(src_dir)/trmem"

@@ -43,9 +43,7 @@ version_res_exe_nt_x64 = exever.res
 
 vi.exe: $(bind_files) $(name).exe $(__MAKEFILES__)
     @set edpath=../dat
-    $(noecho)%create edbind.tmp
-    @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
-    $(edbind) -dedbind.tmp -q $(name).exe
+    @%make edbind_data
     cp $(name).exe vi.exe
 !ifdef __WATCOM_TOOLS__
     cp $(name).sym vi.sym
@@ -68,7 +66,7 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
     $(linker) name $(lname) $(lflags) @$^&.lnk
 !endif
 !ifeq sys_windowed 1
-    %make bind_win386
+    @%make bind_win386
 !ifndef win386
     @%make bind_res_add_version_exe
 !endif
@@ -116,3 +114,11 @@ tags : ../win/tags .SYMBOLIC
     ctags @vi.tag -f$^@
 !endif
 !endif
+
+edbind_data : .PROCEDURE .EXPLICIT
+    $(noecho)%create edbind.tmp
+    @for %i in ($(bind_files:./=)) do @%append edbind.tmp %i
+!ifeq verbose 0
+    @echo edbind edbind.tmp $(name).exe
+!endif
+    $(edbind) -dedbind.tmp -q $(name).exe
