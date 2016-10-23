@@ -13,18 +13,25 @@
 
 inc_dirs = -I"../h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 
+rcfiles_os2 = ../res/appcomm2.rc ../res/dlgoptn2.dlg ../res/dui2.ico ../res/word2.ico
+rcfiles_win = ../res/appcomm.rc ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico
+rcfiles_nt  = ../res/appcomm.rc ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico
+
 rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(aui_dialogs) &
     ../../res/aui.rc &
     ../h/dlgoptn.h &
-    ../res/appcomm.rc &
-    ../res/dlgoptn.dlg &
     ../res/one.bmp &
     ../res/two.bmp &
     ../res/three.bmp &
     ../res/four.bmp &
-    ../res/five.bmp
+    ../res/five.bmp &
+    ../res/source1.bmp &
+    ../res/source2.bmp &
+    ../res/stop1.bmp &
+    ../res/stop2.bmp &
+    $(rcfiles_$(host_os))
 
 objs = app.obj util.obj window1.obj window2.obj window3.obj &
        window4.obj window5.obj window6.obj window7.obj window8.obj &
@@ -51,19 +58,11 @@ app.exe : $(objs) $(libs) $(resfile)
 
 rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
 
-!ifeq host_os os2
-app.res : ../res/apppm.rc ../res/app.rc $(rcfiles)
-!else
 app.res : ../res/app.rc $(rcfiles)
-!endif
     @%make echo_rc
     $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-!ifeq host_os os2
-appj.res : ../res/apppm.rc ../res/app.rc $(rcfiles)
-!else
 appj.res : ../res/app.rc $(rcfiles)
-!endif
     @%make echo_rc
     $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
