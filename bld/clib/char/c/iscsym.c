@@ -31,18 +31,18 @@
 
 #include "widechar.h"
 #include "variety.h"
+#include <stdio.h>
 #include <ctype.h>
 #ifdef __WIDECHAR__
  #include <wctype.h>
 #endif
 #include "istable.h"
+
+
 #undef  __iscsym
 
 _WCRTLINK int __F_NAME(__iscsym,__iswcsym)( INTCHAR_TYPE c )
 {
-    if( IS_ASCII( c ) ) {
-        return( (IsWhat( c ) & (_LOWER|_UPPER|_DIGIT)) || (c == STRING( '_' )) );
-    } else {
-        return( 0 );
-    }
+    return( IS_ASCII_INT( c )
+        && ( IsWhat( c, _LOWER | _UPPER | _DIGIT ) || ((unsigned char)c == '_') ) );
 }

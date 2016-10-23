@@ -52,6 +52,7 @@
     #define _AToUni(p1,p2)      _atouni(p1,p2)
     #define __F_NAME(n1,n2)     n2
     #define INTCHAR_EOF         WEOF
+    #define IS_ASCII_CHAR(c)    (((c) & ~0xff) == 0)
 #else
     #define DIR_TYPE            DIR
     #define DIRENT_TYPE         struct dirent
@@ -67,9 +68,10 @@
     #define _AToUni(p1,p2)      (p2)
     #define __F_NAME(n1,n2)     n1
     #define INTCHAR_EOF         EOF
+    #define IS_ASCII_CHAR(c)    (1)
 #endif
 
-#define IS_ASCII(c)             (((c) & ~0xff) == 0)
+#define IS_ASCII_INT(c)         (((c) & ~0xff) == 0)
 #define TO_ASCII(c)             ((unsigned char)(c))
 #define CHARSIZE                (sizeof( CHAR_TYPE ))
 
