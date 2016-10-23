@@ -22,9 +22,15 @@ trap_ext_qnx_386     = cli.qnx
 trap_ext_win_i86     = cliw.exe
 
 !ifdef trap_ext_$(host_os)_$(host_cpu)
-target = $(xname)$(trap_ext_$(host_os)_$(host_cpu))
+trap_basename = $(xname)
 !else
-target = $(xname)cli.exe
+trap_basename = $(xname)cli
+!endif
+
+!ifdef trap_ext_$(host_os)_$(host_cpu)
+target = $(trap_basename)$(trap_ext_$(host_os)_$(host_cpu))
+!else
+target = $(trap_basename).exe
 !endif
 
 TRAP_common_objs = testcli.obj
@@ -129,21 +135,21 @@ trap_ext_rdos        = .dll
 trap_ext_win         = .dll
 
 !ifdef %USE_FILENAME_VERSION
-target_basename = $(xname)$(bld_ver)
+trap_basename = $(xname)$(bld_ver)
 !else
-target_basename = $(xname)
+trap_basename = $(xname)
 !endif
 
 !ifdef trap_ext_$(host_os)_$(target_os)
-target = $(target_basename)$(trap_ext_$(host_os)_$(target_os))
+target = $(trap_basename)$(trap_ext_$(host_os)_$(target_os))
 !else ifdef trap_ext_$(host_os)
-target = $(target_basename)$(trap_ext_$(host_os))
+target = $(trap_basename)$(trap_ext_$(host_os))
 !else
-target = $(target_basename).trp
+target = $(trap_basename).trp
 !endif
 !ifndef __WATCOM_TOOLS__
 !ifdef ext_lib_shared
-target = $(target_basename)$(ext_lib_shared)
+target = $(trap_basename)$(ext_lib_shared)
 !endif
 !endif
 
