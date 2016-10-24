@@ -201,12 +201,12 @@ static bool TI_FillColourSet = false;
 #define TI_ULINE()      { TIAULine= 1; __putp( enter_underline_mode ); }
 #define TI_NOULINE()    { TIAULine= 0; __putp( exit_underline_mode ); }
 #define TI_ACS_ON()     { TIAACS= 1; __putp( enter_alt_charset_mode ); }
-#define TI_ACS_OFF()    { TIAACS= 0;                                    \
-                            if( _capable_of( exit_alt_charset_mode ) ) {\
-                                __putp( exit_alt_charset_mode );        \
-                            } else {                                    \
-                                TI_SETATTR();                           \
-                            }                                           \
+#define TI_ACS_OFF()    { TIAACS= 0;                                        \
+                            if( _capable_of( exit_alt_charset_mode ) ) {    \
+                                __putp( exit_alt_charset_mode );            \
+                            } else {                                        \
+                                TI_SETATTR();                               \
+                            }                                               \
                         }
 #define TI_WRAP()               if( _capable_of( enter_am_mode ) ) {    \
                                     __putp( enter_am_mode );            \
@@ -220,25 +220,24 @@ static bool TI_FillColourSet = false;
 #define TI_CA_DISABLE()         if( _capable_of( exit_ca_mode ) ) {     \
                                     __putp( exit_ca_mode );             \
                                 }
-#define TI_KP_ENABLE()          if( _capable_of( keypad_xmit ) ) {    \
-                                    __putp( keypad_xmit );            \
+#define TI_KP_ENABLE()          if( _capable_of( keypad_xmit ) ) {      \
+                                    __putp( keypad_xmit );              \
                                 }
 #define TI_KP_DISABLE()         if( _capable_of( keypad_local ) ) {     \
                                     __putp( keypad_local );             \
                                 }
 
-#define TI_RESTORE_ATTR()                               \
-{                                                       \
-    TIAACS= TIABold= TIABlink= TIAULine= 0;             \
-    __putp( exit_attribute_mode );                      \
+#define TI_RESTORE_ATTR()                       \
+{                                               \
+    TIAACS= TIABold= TIABlink= TIAULine= 0;     \
+    __putp( exit_attribute_mode );              \
 }
 
 #define TI_RESTORE_COLOUR()                     \
 {                                               \
     if( _capable_of( orig_pair ) ) {            \
         __putp( orig_pair );                    \
-    }                                           \
-    else if( _capable_of( orig_colors ) ) {     \
+    } else if( _capable_of( orig_colors ) ) {   \
         __putp( orig_colors );                  \
     }                                           \
 }
@@ -753,27 +752,40 @@ static MONITOR ui_data = {
 static  PIXEL _FAR *shadow;
 static  int   save_cursor_type;
 
-static bool setupscrnbuff( int rows, int cols )
-/*********************************************/
+static bool setupscrnbuff( int srows, int scols )
+/***********************************************/
 {
     PIXEL               *scrn;
     int                 num;
     int                 i;
     struct winsize      size;
+    int                 rows, cols;
 
-    // if either of the passed in rows or columns are 0 we can assume
-    // they're invalid and try to find out what it is ourself.
+    rows = 0;
+    cols = 0;
+    // trying to get current terminal size by ioctl
     if( isatty( UIConHandle ) ) {
-        if( ioctl( UIConHandle, TIOCGWINSZ, &size ) < 0 ) {
-            if( rows == 0 || cols == 0 ) {
-                return( false );
+        if( ioctl( UIConHandle, TIOCGWINSZ, &size ) != -1 ) {
+            // Under EMACS gdb, zero is returned for rows and cols
+            rows = size.ws_row;
+            cols = size.ws_col;
+        }
+    }
+    if( rows == 0 ) {
+        rows = srows;       // what was requested in function call
+        if( rows == 0 ) {
+            rows = lines;   // curses no of lines
+            if( rows == 0 ) {
+                rows = 25;
             }
-            // otherwise, use the defaults passed in
-        } else {
-            if( size.ws_row != 0 && size.ws_col != 0 ) {
-                // Under EMACS gdb, zero is returned for rows and cols
-                rows = size.ws_row;
-                cols = size.ws_col;
+        }
+    }
+    if( cols == 0 ) {
+        cols = scols;       // what was requested in function call
+        if( cols == 0 ) {
+            cols = columns; // curses no of columns
+            if( cols == 0 ) {
+                cols = 80;
             }
         }
     }
@@ -788,10 +800,11 @@ static bool setupscrnbuff( int rows, int cols )
 
     if( scrn == NULL )
         return( false );
-    if( (shadow = uirealloc( shadow, num )) == 0 ) {
+    if( (shadow = uirealloc( shadow, num )) == NULL ) {
         uifree( scrn );
         return( false );
     }
+
     save_cursor_type = -1; /* C_NORMAL; */
     num /= sizeof( PIXEL );
     for( i = 0; i < num; ++i ) {
@@ -822,7 +835,7 @@ static EVENT td_sizeevent( void )
         return( EV_NO_EVENT );
     if( !uiinlists( EV_BACKGROUND_RESIZE ) )
         return( EV_NO_EVENT );
-    if( !setupscrnbuff( 0, 0 ) )
+    if( !setupscrnbuff( UIData->height, UIData->width ) )
         return( EV_NO_EVENT );
     SizePending = 0;
     area.row = 0;
@@ -970,14 +983,14 @@ static int ti_init( void )
     }
 
     // Figure out the number of columns to use
-    cols = columns;
+    cols = columns;             // curses no of columns
     tmp = getenv( "COLUMNS" );
     if( tmp != NULL ) {
         cols = atoi( tmp );
     }
 
     // Figure out the number of rows to use
-    rows = lines;
+    rows = lines;               // curses no of lines
     tmp = getenv( "LINES" );
     if( tmp != NULL ) {
         rows = atoi( tmp );
