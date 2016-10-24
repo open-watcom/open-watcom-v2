@@ -241,6 +241,7 @@ errmsgs1.gh errmsgs2.gh errlevel.gh errors01.int : ../../gml/messages.gml
     $(noecho)msgencod -s -i -q ../../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
 
 keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
+    @%make echo_findhash
     $(noecho)findhash -q -e ",-1" ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
@@ -360,4 +361,9 @@ echo_optencod : .PROCEDURE .EXPLICIT
 echo_msgencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo msgencod $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
 !endif
