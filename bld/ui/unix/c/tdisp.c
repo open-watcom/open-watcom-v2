@@ -163,7 +163,7 @@ bool TInfCheck( void )
 
 
 // Whether to use code-changing optimizations in ti
-static bool OptimizeTerminfo= true;
+static bool OptimizeTerminfo = true;
 
 /* TermInfo terminal codes
 */
@@ -178,7 +178,7 @@ static bool TIARev=     0;      // inverted (reverse)
 static bool TIAACS=     0;      // alternate character set
 
 // True if clearing/filling operations will use the current back colour
-static bool TI_FillColourSet= false;
+static bool TI_FillColourSet = false;
 
 // Macros for various terminfo capabilities
 #define TI_CURSOR_OFF()         if( _capable_of( cursor_invisible ) ) { \
@@ -1392,8 +1392,8 @@ static int ti_refresh( int must )
     return( 0 );
 }
 
-static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
-/**************************************************************/
+static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
+/**********************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -1402,8 +1402,8 @@ static int td_getcur( ORD *row, ORD *col, int *type, int *attr )
     return( 0 );
 }
 
-static int td_setcur( ORD row, ORD col, int typ, int attr )
-/*********************************************************/
+static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+/*****************************************************************/
 {
     attr = attr;
 

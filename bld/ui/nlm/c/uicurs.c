@@ -37,10 +37,10 @@
 
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-static          BYTE                OldCursorAttr;
-static          WORD                OldCursorRow;
-static          WORD                OldCursorCol;
-static          BYTE                OldCursorType;
+static BYTE             OldCursorAttr;
+static WORD             OldCursorRow;
+static WORD             OldCursorCol;
+static CURSOR_TYPE      OldCursorType;
 
 /* NOTE:  Not sure about these constants.  Try and see! */
 
@@ -129,8 +129,8 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
     //NYI:  Read the attribute
 }
 
-void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
-/***********************************************************/
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+/*******************************************************************/
 {
     if( ( typ != UIData->cursor_type ) || ( row != UIData->cursor_row )  ||
         ( col != UIData->cursor_col )  || ( attr != UIData->cursor_attr ) ) {

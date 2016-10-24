@@ -313,8 +313,8 @@ static int cd_refresh(int must)
     return( 0 );
 }
 
-static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
-/**************************************************************/
+static int cd_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
+/**********************************************************************/
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -324,8 +324,8 @@ static int cd_getcur( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-static int cd_setcur( ORD row, ORD col, int typ, int attr )
-/*********************************************************/
+static int cd_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+/*****************************************************************/
 {
     attr = attr;
     if( ( typ != UIData->cursor_type ) ||
