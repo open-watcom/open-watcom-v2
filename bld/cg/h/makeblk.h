@@ -38,6 +38,7 @@ extern  void            AddIns( instruction *ins );
 extern  void            GenBlock( block_class class, int targets );
 extern  block           *ReGenBlock( block *blk, label_handle lbl );
 extern  type_class_def  InitCallState( type_def *tipe );
+extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state );
 extern  void            AddTarget( label_handle dest, bool dest_label_dies );
 extern  block           *FindBlockWithLbl( label_handle label );
 extern  void            FixEdges( void );

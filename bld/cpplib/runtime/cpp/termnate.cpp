@@ -35,13 +35,13 @@
 #include "rtexcept.h"
 #include <except.h>
 #include "rtmsgs.h"
-#include "exitwmsg.h" 
+#include "exitwmsg.h"
 
 
 namespace std {
 
-_NORETURN
 _WPRTLINK
+_NORETURN
 void terminate( void )          // HANDLE TERMINATE
 {
     PFV handler;                // - NULL or handler set by "set_terminate"

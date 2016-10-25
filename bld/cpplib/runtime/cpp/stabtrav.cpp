@@ -112,6 +112,7 @@ static RO_STATE* travPosn       // POSITION TO STATE ENTRY
             break;
           default :
             GOOF_EXC( "travPosn: bad DTC_" );
+            // never return
         }
         break;
     }
@@ -176,7 +177,7 @@ RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
 
 
 extern "C"
-RO_STATE* CPPLIB( stab_trav_move)( // MOVE TO NEXT ACTUAL POSITION
+RO_STATE* CPPLIB( stab_trav_move )( // MOVE TO NEXT ACTUAL POSITION
     STAB_TRAVERSE *traverse )   // - traversal control information
 {
     return travPosn( traverse, traverse->state_var );

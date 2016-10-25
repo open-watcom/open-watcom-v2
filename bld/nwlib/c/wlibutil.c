@@ -45,23 +45,18 @@ int SymbolNameCmp( const char *s1, const char *s2)
 }
 
 
-void GetFileContents( char *name, libfile io, arch_header *arch, char **contents )
+void GetFileContents( const char *name, libfile io, arch_header *arch, char **contents )
 {
-    file_offset     size;
-    file_offset     bytes_read;
+    size_t  size;
 
     size = arch->size;
     if( size == 0 ) {
         *contents = NULL;
         return;
     }
-
-    if( size % 2 == 1 ) {
-        size++;
-    }
-    *contents = (char *)MemAlloc( size );
-    bytes_read = LibRead( io, *contents, size );
-    if( bytes_read != size ) {
+    Round2var( size );
+    *contents = MemAlloc( size );
+    if( LibRead( io, *contents, size ) != size ) {
         BadLibrary( name );
     }
 }
@@ -81,12 +76,10 @@ void NewArchHeader( arch_header *arch, char *name )
     arch->mode = buf.st_mode;
     arch->size = buf.st_size;
 }
-static void CopyBytes( char *buffer, libfile source, libfile dest, file_offset len )
-{
-    file_offset bytes;
 
-    bytes = LibRead( source, buffer, len );
-    if( bytes == len ) {
+static void CopyBytes( char *buffer, libfile source, libfile dest, size_t len )
+{
+    if( LibRead( source, buffer, len ) == len ) {
         LibWrite( dest, buffer, len );
     } else {
         LibReadError( source );
@@ -95,7 +88,7 @@ static void CopyBytes( char *buffer, libfile source, libfile dest, file_offset l
 
 void Copy( libfile source, libfile dest, file_offset size )
 {
-    char        buffer[ 4096 ];
+    char        buffer[4096];
 
 
     while( size > sizeof( buffer ) ) {
@@ -107,23 +100,23 @@ void Copy( libfile source, libfile dest, file_offset size )
     }
 }
 
-static char     path[ _MAX_PATH ];
+static char     path[_MAX_PATH];
 
-static char     drive[ _MAX_DRIVE ];
-static char     dir[ _MAX_DIR ];
-static char     fname[ _MAX_FNAME ];
-static char     fext[ _MAX_EXT ];
+static char     drive[_MAX_DRIVE];
+static char     dir[_MAX_DIR];
+static char     fname[_MAX_FNAME];
+static char     fext[_MAX_EXT];
 
-bool SameFile( char *a, char *b )
+bool SameFile( const char *a, const char *b )
 {
-    char fulla[ _MAX_PATH ];
+    char fulla[_MAX_PATH];
 
     _fullpath( fulla, a, sizeof( fulla ) );
     _fullpath( path, b, sizeof( path ) );
     return( FNCMP( fulla, path ) == 0 );
 }
 
-bool SameName( char *a, char *b )
+bool SameName( const char *a, const char *b )
 {
     _splitpath( a, NULL, NULL, path, fext );
     _splitpath( b, NULL, NULL, fname, fext );
@@ -136,21 +129,21 @@ char *MakeFName( const char *a )
     return( fname );
 }
 
-bool IsExt( char *a, char *b )
+bool IsExt( const char *a, const char *b )
 {
     _splitpath( a, NULL, NULL, NULL, fext );
     return( FNCMP( fext, b ) == 0 );
 }
 
-void DefaultExtension( char *name, char *def_ext )
+void DefaultExtension( char *name, const char *def_ext )
 {
     _splitpath( name, drive, dir, fname, fext );
-    if( fext[ 0 ] == '\0' ) {
+    if( fext[0] == '\0' ) {
         _makepath( name, drive, dir, fname, def_ext );
     }
 }
 
-char *MakeObjOutputName( char *src, char *new )
+char *MakeObjOutputName( const char *src, const char *new )
 {
     if( new != NULL ) {
         _splitpath( new, NULL, NULL, fname, fext );
@@ -180,9 +173,9 @@ char *MakeBakName( void )
 
 char *MakeTmpName( char *buffer )
 {
-    char name[ 9 ];
-    long initial = time( NULL ) % 1000L;
-    long count   = ( initial + 1L ) % 1000L;
+    char name[9];
+    long initial;
+    long count;
 
     _splitpath( Options.input_name, drive, dir, fname, fext );
 
@@ -190,7 +183,8 @@ char *MakeTmpName( char *buffer )
      * For whatever it's worth, we'll only check 9999 files before
      * quitting ;-)
      */
-    for( ; count != initial; count = ( count + 1L ) % 1000L ) {
+    initial = time( NULL ) % 1000L;
+    for( count = ( initial + 1L ) % 1000L; count != initial; count = ( count + 1L ) % 1000L ) {
         sprintf( name, "_wlib%03ld", count );
         _makepath( buffer, drive, dir, name, "$$$" );
 
@@ -214,9 +208,9 @@ char *TrimPath( char *name )
 }
 
 
-char    *FormSym( char *name )
+char    *FormSym( const char *name )
 {
-    static      char    buff[ 128 ];
+    static      char    buff[128];
 
     if( Options.mangled ) {
         strcpy( buff, name );

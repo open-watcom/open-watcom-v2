@@ -659,7 +659,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 if( k <= 0 ) {
                     break;
                 }
-                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( unsigned short ) * (EditVars.NumStatusSections + 1) );
+                EditVars.StatusSections = MemReAlloc( EditVars.StatusSections, sizeof( unsigned short ) * ( EditVars.NumStatusSections + 1 ) );
                 EditVars.StatusSections[EditVars.NumStatusSections] = (unsigned short)k;
                 EditVars.NumStatusSections++;
                 value = GetNextWord2( value, fn, ',' );

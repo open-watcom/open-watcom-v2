@@ -60,3 +60,4 @@ extern  void    FixCodePtr( an addr );
 extern  bool    NeedPtrConvert( an addr, type_def *tipe );
 extern  name    *LoadAddress( name *op, name *suggest, type_def *type_ptr );
 extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe );
+extern  cg_type NamePtrType(name *op);

@@ -41,150 +41,162 @@
 #include "objout.h"
 #include "encode.h"
 #include "object.h"
+#include "index.h"
+#include "fixindex.h"
+#include "cgaux.h"
+#include "bgcall.h"
+#include "generate.h"
+#include "split.h"
+#include "makeaddr.h"
+#include "expand.h"
+#include "conflict.h"
+#include "regalloc.h"
 
 
 /* KLUDGEY crud for segment register */
 
-extern  void    OptSegs() {
+void    OptSegs() {
 /*************************/
 }
 
-extern void AddSegment( instruction *ins ) {
+void AddSegment( instruction *ins ) {
 /******************************************/
     ins = ins;
 }
 
-extern void MergeIndex() {
+void MergeIndex() {
 /**********************************************/
 }
 
 /* KLUDGEY crud for the 8087 */
 
 
-extern  bool            FPInsIntroduced( instruction *ins ) {
+bool            FPInsIntroduced( instruction *ins ) {
 /***********************************************************/
 
     ins = ins;
     return( false );
 }
 
-extern  bool            FPStackReg( name *n ) {
+bool            FPStackReg( name *n ) {
 /*********************************************/
 
     n = n;
     return( false );
 }
 
-extern  bool            FPStackIns( instruction *ins ) {
+bool            FPStackIns( instruction *ins ) {
 /******************************************************/
 
     ins = ins;
     return( false );
 }
 
-extern  bool            FPFreeIns( instruction *ins ) {
+bool            FPFreeIns( instruction *ins ) {
 /*****************************************************/
 
     ins = ins;
     return( false );
 }
 
-extern void             FPRegAlloc(void) {
+void             FPRegAlloc(void) {
 /****************************************/
 }
 
-extern void             FPParms(void) {
+void             FPParms(void) {
 /*************************************/
 }
 
-extern void             FPReloc(void) {
+#if 0
+void             FPReloc(void) {
 /*************************************/
 }
+#endif
 
-extern  bool    FPSideEffect( instruction *ins ) {
+bool    FPSideEffect( instruction *ins ) {
 /************************************************/
     ins = ins;
     return( false );
 }
 
-extern  void    FPSetStack( name *name ) {
+void    FPSetStack( name *name ) {
 /****************************************/
     name = name;
 }
 
-extern  type_class_def FPInsClass( instruction *ins ) {
+type_class_def FPInsClass( instruction *ins ) {
 /*****************************************************/
     ins = ins;
     return( XX );
 }
 
-extern  bool    FPIsConvert( instruction *ins ) {
+bool    FPIsConvert( instruction *ins ) {
 /***********************************************/
     ins = ins;
     return( false );
 }
 
-extern  void    FPNotStack( name *name ) {
+void    FPNotStack( name *name ) {
 /****************************************/
     name = name;
 }
 
-extern  bool    FPIsStack( name *name ) {
+bool    FPIsStack( name *name ) {
 /***************************************/
 
     name = name;
     return( false );
 }
 
-extern  bool    FPStackOp( name *name ) {
+bool    FPStackOp( name *name ) {
 /***************************************/
 
     name = name;
     return( false );
 }
 
-extern  int     FPStackExit( block *blk ) {
+int     FPStackExit( block *blk ) {
 /*****************************************/
     blk = blk;
     return( 0 );
 }
 
-extern  int     FPStkOver( instruction *ins, int depth ) {
+int     FPStkOver( instruction *ins, int depth ) {
 /********************************************************/
     ins = ins;
     depth = depth;
     return( 0 );
 }
 
-extern  void    FPCalcStk( instruction *ins, int *depth ) {
+void    FPCalcStk( instruction *ins, int *depth ) {
 /*********************************************************/
     ins = ins;
     *depth = 0;
 }
 
-extern  void    FPPreSched( block *blk ) {
+void    FPPreSched( block *blk ) {
 /****************************************/
     blk = blk;
 }
 
-extern  void    FPPostSched( block *blk ) {
+void    FPPostSched( block *blk ) {
 /*****************************************/
     blk = blk;
 }
 
-extern  void    FPExpand() {
+void    FPExpand() {
 /**************************/
 }
 
-extern  void    FPOptimize() {
+void    FPOptimize() {
 /****************************/
 }
 
-extern  void    InitFP() {
+void    InitFP() {
 /************************/
 }
 
-extern void     FPPushParms( pn parm, call_state *state ) {
+void     FPPushParms( pn parm, call_state *state ) {
 /*********************************************************/
     parm = parm;
     state = state;
@@ -202,131 +214,133 @@ void    FiniZeroPage( void )
 {
 }
 
-extern  void InitSegment() {
+void InitSegment() {
 /*****************************/
 }
 
 
-extern  void FiniSegment() {
+void FiniSegment() {
 /*****************************/
 }
 
 
-extern  cg_type NamePtrType( name *op ) {
+cg_type NamePtrType( name *op ) {
 /*************************************/
 
     op = op;
     return( TY_NEAR_POINTER );
 }
 
-
-extern  int     AdjustBase() {
+#if 0
+int     AdjustBase() {
 /****************************/
 
     return( 0 );
 }
 
-
-extern  void    ZeroMoves() {
+void    ZeroMoves() {
 /***************************/
 
 }
+#endif
 
 #if (_TARGET & _TARG_MIPS) == 0
 /* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
  * have own version as well. Not sure about PowerPC.
  */
-extern  bool    SetOnCondition() {
+bool    SetOnCondition() {
 /********************************/
 
     return( false );
 }
 
-extern  reg_set_index   SpecialPossible( instruction *ins ) {
+reg_set_index   SpecialPossible( instruction *ins ) {
 /***********************************************************/
     ins = ins;
     return( RL_ );
 }
 #endif
 
-extern  void    BuildIndex() {
-/****************************/
+void    BuildIndex() {
+
 }
 
-extern  void    LdStAlloc() {
-/***************************/
+bool    LdStAlloc( void )
+/***********************/
+{
+    return( false );
 }
 
-extern  void    LdStCompress() {
+void    LdStCompress( void ) {
 /******************************/
 }
 
-extern  bool    FreeObjCache() {
+bool    FreeObjCache() {
 /******************************/
 
     return( false );
 }
 
-extern  void    PreCall( cn call ) {
+void    PreCall( cn call ) {
 /**********************************/
     call = call;
 }
 
-extern  void    PostCall( cn call ) {
+void    PostCall( cn call ) {
 /***********************************/
     call = call;
 }
 
-extern  void    PushInSameBlock( instruction *ins ) {
+void    PushInSameBlock( instruction *ins ) {
 /***************************************************/
     ins = ins;
 }
 
-extern  void    CheckCC( instruction *ins, instruction *new_ins ) {
+void    CheckCC( instruction *ins, instruction *new_ins ) {
 /*****************************************************************/
     new_ins = new_ins;
     ins = ins;
 }
 
-extern  bool    DivIsADog( type_class_def class ) {
+bool    DivIsADog( type_class_def class ) {
 /*************************************************/
 
     return( _IsFloating( class ) );
 }
 
-extern  bool    AskSegNear( segment_id id ) {
+bool    AskSegNear( segment_id id ) {
 /*******************************************/
 
     id = id;
     return( true );
 }
 
-extern  void    MemtoBaseTemp() {
+void    MemtoBaseTemp() {
 /*******************************/
 }
 
-extern  void    FixSegments() {
+void    FixSegments() {
 /*****************************/
 }
 
-extern  void    FixMemBases() {
+void    FixMemBases() {
 /*****************************/
 }
 
-extern  void    FixFPConsts( instruction *ins ) {
+void    FixFPConsts( instruction *ins ) {
 /***********************************************/
 
     ins = ins;
 }
 
-extern  bool    LoadAToMove( instruction *ins ) {
+bool    LoadAToMove( instruction *ins ) {
 /***********************************************/
 
     ins = ins;
     return( false );
 }
 
-extern  void    FixCallIns( instruction *ins ) {
+void    FixCallIns( instruction *ins ) {
 /**********************************************/
 
     ins = ins;
@@ -339,8 +353,9 @@ void    GenSetCC( instruction *ins ) {
     _Zoiks( 102 );
 }
 
-extern  bool    IsUncacheableMemory( name *opnd ) {
-
+bool    IsUncacheableMemory( name *opnd )
+/***************************************/
+{
     opnd = opnd;
     return( false );
 }

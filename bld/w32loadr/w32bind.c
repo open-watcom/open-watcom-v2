@@ -69,6 +69,46 @@ int fileread( FILE * );
 void CompressFile( int handle, DWORD filesize );
 void CompressRelocs( DWORD relocsize );
 
+static void normalizeFName( char *dst, size_t maxlen, const char *src )
+/***********************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    char    string_open = 0;
+    size_t  pos = 0;
+    char    c;
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( (c = *src++) != '\0' && pos < maxlen ) {
+        if( c == '"' ) {
+            string_open = !string_open;
+            continue;
+        }
+        if( string_open && c == '\\' ) {
+            c = *src++;
+            if( c != '"' ) {
+                *dst++ = '\\';
+                pos++;
+                if( pos >= maxlen ) {
+                    break;
+                }
+            }
+        }
+#ifndef __UNIX__
+        if( c == '/' )
+            c = '\\';
+#endif
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
+}
+
 int CmpReloc( const void *_p, const void *_q )
 {
     DWORD       reloc1, const *p = _p;
@@ -202,6 +242,7 @@ int main( int argc, char *argv[] )
     }
 #endif
     ++argc;
+    normalizeFName( file, strlen( file ) + 1, file );
     handle = open( file, O_RDONLY | O_BINARY );
     if( handle == -1 ) {
         printf( "Error opening file '%s'\n", file );
@@ -295,6 +336,7 @@ int main( int argc, char *argv[] )
     CreateRelocs( relocs, RelocBuffer, relsize / sizeof(DWORD) );
 
     file = argv[argc++];
+    normalizeFName( file, strlen( file ) + 1, file );
     newfile = open( file, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC,
                         S_IREAD | S_IWRITE | S_IEXEC );
     if( newfile == -1 ) {
@@ -302,7 +344,11 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     file = argv[argc++];
-    if( file == NULL )  file = "os2ldr.exe";
+    if( file == NULL ) {
+        file = "os2ldr.exe";
+    } else {
+        normalizeFName( file, strlen( file ) + 1, file );
+    }
     loader_handle = open( file, O_RDONLY | O_BINARY );
     if( loader_handle == -1 ) {
         printf( "Error opening file '%s'\n", file );

@@ -47,7 +47,7 @@
 
 typedef struct stringblock {
     STRINGBLOCK *next;
-    unsigned    size;
+    size_t      size;
     char        data[STR_BLOCK_SIZE];
 } stringblock;
 
@@ -56,7 +56,7 @@ static stringblock * AllocNewBlock( stringtable *strtab )
 {
     stringblock *blk;
 
-    _ChkAlloc( blk, sizeof(stringblock) );
+    _ChkAlloc( blk, sizeof( stringblock ) );
     blk->next = NULL;
     RingAppend( &strtab->data, blk );
     blk->size = 0;
@@ -75,17 +75,17 @@ void InitStringTable( stringtable *strtab, bool dontsplit )
     AllocNewBlock( strtab );
 }
 
-void ReserveStringTable( stringtable *strtab, unsigned len )
-/*****************************************************************/
+void ReserveStringTable( stringtable *strtab, size_t len )
+/********************************************************/
 {
     stringblock *blk;
-    unsigned    diff;
+    size_t      diff;
 
     blk = RingLast( strtab->data );
-    if( blk->size + len > STR_BLOCK_SIZE && strtab->currbase & 1 ) {
+    if( blk->size + len > STR_BLOCK_SIZE && (strtab->currbase & 1) ) {
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
-            memset( &blk->data[blk->size], 0, diff );
+            memset( blk->data + blk->size, 0, diff );
         }
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
@@ -93,16 +93,16 @@ void ReserveStringTable( stringtable *strtab, unsigned len )
     }
 }
 
-static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bool addnullchar )
-/**********************************************************************************************/
+static char *AddToStringTable( stringtable *strtab, const void *data, size_t len, bool addnullchar )
+/**************************************************************************************************/
 {
     stringblock *blk;
-    unsigned    diff;
+    size_t      diff;
     char *      dest;
 
     if( addnullchar )
         ++len;
-    if( strtab->currbase & 1 && len > STR_BLOCK_SIZE ) {
+    if( (strtab->currbase & 1) && len > STR_BLOCK_SIZE ) {
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
         len = STR_BLOCK_SIZE;
     }
@@ -110,9 +110,9 @@ static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bo
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
             if( strtab->currbase & 1 ) {        // then don't split
-                memset( &blk->data[blk->size], 0, diff );
+                memset( blk->data + blk->size, 0, diff );
             } else {
-                memcpy( &blk->data[blk->size], data, diff );
+                memcpy( blk->data + blk->size, data, diff );
                 len -= diff;
                 data = (char *)data + diff;
             }
@@ -120,7 +120,7 @@ static char *AddToStringTable( stringtable *strtab, void *data, unsigned len, bo
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
     }
-    dest = &blk->data[blk->size];
+    dest = blk->data + blk->size;
     blk->size += len;
     if( addnullchar )
         dest[ --len ] = '\0';
@@ -134,41 +134,41 @@ void AddCharStringTable( stringtable *strtab, char data )
     AddToStringTable( strtab, &data, sizeof( char ), false );
 }
 
-char *AddStringStringTable( stringtable *strtab, char *data )
-/***********************************************************/
+char *AddStringStringTable( stringtable *strtab, const char *data )
+/*****************************************************************/
 {
     return( AddToStringTable( strtab, data, strlen( data ) + 1, false ) );
 }
 
-char *AddBufferStringTable( stringtable *strtab, void *data, unsigned len )
-/**************************************************************************/
+char *AddBufferStringTable( stringtable *strtab, const void *data, size_t len )
+/*****************************************************************************/
 {
     return( AddToStringTable( strtab, data, len, false ) );
 }
 
-char *AddSymbolStringTable( stringtable *strtab, char *data, unsigned len )
-/**************************************************************************/
+char *AddSymbolStringTable( stringtable *strtab, const char *data, size_t len )
+/*****************************************************************************/
 {
     return( AddToStringTable( strtab, data, len, true ) );
 }
 
-void ZeroStringTable( stringtable *strtab, unsigned len )
-/**************************************************************/
+void ZeroStringTable( stringtable *strtab, size_t len )
+/*****************************************************/
 {
     stringblock *blk;
 
     blk = RingLast( strtab->data );
     DbgAssert( blk->size + len <= STR_BLOCK_SIZE );
-    memset( &blk->data[blk->size], 0, len );
+    memset( blk->data + blk->size, 0, len );
     blk->size += len;
 }
 
 typedef struct {
-    void (*fn)(void *, char *, unsigned);
-    void * info;
+    write_strtable_fn   *fn;
+    void                *info;
 } strblkparam;
 
-static bool WriteStringBlock( void *_blk, void *_param )
+static bool WriteStringData( void *_blk, void *_param )
 /******************************************************/
 {
     stringblock *blk = _blk;
@@ -177,28 +177,27 @@ static bool WriteStringBlock( void *_blk, void *_param )
     return false;
 }
 
-void WriteStringTable( stringtable *strtab,
-                              void (*fn)(void *, char *,unsigned), void *info )
+void WriteStringTable( stringtable *strtab, write_strtable_fn *fn, void *info )
 /*****************************************************************************/
 {
     strblkparam param;
 
     param.fn = fn;
     param.info = info;
-    RingLookup( strtab->data, WriteStringBlock, &param );
+    RingLookup( strtab->data, WriteStringData, &param );
 }
 
 void FiniStringTable( stringtable *strtab )
-/************************************************/
+/*****************************************/
 {
     RingFree( &strtab->data );
 }
 
-unsigned GetStringTableSize( stringtable *strtab )
-/*******************************************************/
+size_t GetStringTableSize( stringtable *strtab )
+/**********************************************/
 {
     stringblock *blk;
 
     blk = RingLast( strtab->data );
-    return blk->size + (strtab->currbase & ~1);
+    return( blk->size + (strtab->currbase & ~1) );
 }

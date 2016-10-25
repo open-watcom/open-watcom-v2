@@ -41,9 +41,8 @@
 #include "data.h"
 #include "objout.h"
 #include "dumpio.h"
+#include "revcond.h"
 
-
-extern  void            FlipCond(instruction*);
 
 static  label_handle    LocateLabel( instruction *ins, int index )
 /*******************************************************************

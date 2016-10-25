@@ -20,4 +20,4 @@ typedef struct hash_entry {
     unsigned     bucketd;
 } hash_entry;
 
-extern void omflib_hash( char *name, unsigned len, hash_entry *hash, unsigned num_blocks );
+extern void omflib_hash( const char *name, size_t len, hash_entry *hash, unsigned num_blocks );

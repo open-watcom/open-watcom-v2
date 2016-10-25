@@ -47,7 +47,7 @@ _WCRTLINK int kbhit( void )
     INPUT_RECORD r;
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsKbhit != 0 ) {
+    if( _WindowsKbhit != NULL ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
         return( _WindowsKbhit( res ) );

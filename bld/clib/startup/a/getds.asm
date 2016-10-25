@@ -24,7 +24,7 @@
 ;*
 ;*  ========================================================================
 ;*
-;* Description:  Return DS selector for DGROUP data segment
+;* Description:  Return DS selector for DGROUP data segment for QNX and Linux
 ;*
 ;*****************************************************************************
 

@@ -30,11 +30,12 @@
 ****************************************************************************/
 
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <stdlib.h>
 #include "exitwmsg.h"
 
 
+// never return
 extern "C"
 _NORETURN
 void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR

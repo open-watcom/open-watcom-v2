@@ -105,7 +105,7 @@ void __FiniThreadProcessing( void )
         unsigned    i;
         thread_data *tdata;
     #ifdef __NETWARE__
-        lib_free( __ThreadData[ 0 ].data ); /* for Netware, this is always allocated */
+        lib_free( __ThreadData[0].data ); /* for Netware, this is always allocated */
     #endif
         for( i = 1 ; i <= __MaxThreads; i++ ) {
     #if defined( _M_I86 )

@@ -56,7 +56,7 @@ _WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
     // never return
 }
 
-_WCRTLINK void __fatal_runtime_error( char *msg, unsigned retcode )
+_WCRTLINK _NORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         __exit( retcode );

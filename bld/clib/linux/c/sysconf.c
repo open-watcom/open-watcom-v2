@@ -176,6 +176,21 @@ _WCRTLINK long sysconf( int name )
     case _SC_SOMAXCONN:
         ret = (long)__sysconf_somaxconn();
         break;
+    case _SC_THREAD_ATTR_STACKADDR:
+    case _SC_THREAD_ATTR_STACKSIZE:
+    case _SC_MONOTONIC_CLOCK:
+        ret = (long)1;
+        break;
+    case _SC_THREAD_STACK_MIN:
+        /* We don't actually have one, but we'll
+         * set the small, but acceptable, 1KB
+         */
+        ret = (long)1024;
+        break;
+    case _SC_THREAD_PRIORITY_SCHEDULING:
+    case _SC_THREAD_PROCESS_SHARED:
+        ret = (long)0;
+        break;
     default:
         _RWD_errno = EINVAL;
         break;

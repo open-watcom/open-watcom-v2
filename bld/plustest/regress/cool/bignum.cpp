@@ -75,7 +75,7 @@ CoolBignum_Init bignum_init2_s;         // Offset static/dynamic difference
 CoolBignum_Init::CoolBignum_Init() {
   if ((count++ == 0) ||                         // from bignum_init1_s
       (((double)(max_double_s)) == 0.0)) {              // from bignum_init2_s
-    data_bits_s   = BITS(Data);                 // This initializer creates
+    data_bits_s   = BITSIZE(Data);              // This initializer creates
     radix_s       = long(pow(2.0,data_bits_s)); // correct values for
     zero_s       = CoolBignum();                // above global objects,
     one_s        = CoolBignum(long(1));         // as soon as Bignum.h is

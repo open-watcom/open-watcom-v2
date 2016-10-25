@@ -38,6 +38,7 @@
 #include "rgtbl.h"
 #include "insdead.h"
 #include "optab.h"
+#include "generate.h"
 
 
 static opcode_entry LDSES[1] = {
@@ -250,10 +251,10 @@ static  bool    NotByteMove( instruction *ins )
 static  bool    IsLESDS( instruction *ins, instruction *next )
 /************************************************************/
 {
-    if( ins->u.gen_table->generate != G_RM1
-        && ins->u.gen_table->generate != G_MOVAM ) return( false );
+    if( G( ins ) != G_RM1
+        && G( ins ) != G_MOVAM ) return( false );
     if( ins->type_class != WD && ins->type_class != SW ) return( false );
-    if( next->u.gen_table->generate != G_SM1 ) return( false );
+    if( G( next ) != G_SM1 ) return( false );
     return( true );
 }
 

@@ -63,10 +63,10 @@ static bool IsNetWarePrefix( const char * pToken, unsigned nLen )
 #define IS_NUMBER(ptr)     ((*ptr >= '0') && (*ptr <= '9'))
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
-static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name, unsigned *namelen, char **prefix, unsigned *prefixlen )
+static bool NetWareSplitSymbol( const char *tokenThis, size_t tokenLen, const char **name, size_t *namelen, const char **prefix, size_t *prefixlen )
 {
-    char        *findAt = tokenThis;
-    unsigned    nLen;
+    const char  *findAt = tokenThis;
+    size_t      nLen;
 
     if( (NULL == tokenThis) || (0 == tokenLen) || (NULL == name) || (NULL == namelen) || (NULL == prefix) || (NULL == prefixlen) )
         return( false );
@@ -105,7 +105,7 @@ static bool NetWareSplitSymbol( char *tokenThis, unsigned tokenLen, char **name,
     *prefix = tokenThis;
     *prefixlen = findAt - tokenThis;
 
-    *name = &findAt[ 1 ];
+    *name = findAt + 1;
     *namelen = nLen - 1;
 
     return( true );
@@ -191,10 +191,10 @@ static bool GetNovImport( void )
 /******************************/
 {
     symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    const char  *name = NULL;
+    const char  *prefix = NULL;
+    size_t      namelen = 0;
+    size_t      prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context
@@ -204,15 +204,13 @@ static bool GetNovImport( void )
     */
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
-        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( false );
-
-        Token.skipToNext = DoWeNeedToSkipASeparator( false );
-
+        result = SetCurrentPrefix( Token.this, Token.len );
+        if( result ) {
+            Token.skipToNext = DoWeNeedToSkipASeparator( false );
 #ifndef NDEBUG
-        printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
+            printf( "Set new prefix. Skip = %d\n", Token.skipToNext );
 #endif
-
+        }
         return( result );
     }
 
@@ -248,10 +246,10 @@ static bool GetNovExport( void )
 /******************************/
 {
     symbol      *sym;
-    char        *name = NULL;
-    char        *prefix = NULL;
-    unsigned    namelen = 0;
-    unsigned    prefixlen = 0;
+    const char  *name = NULL;
+    const char  *prefix = NULL;
+    size_t      namelen = 0;
+    size_t      prefixlen = 0;
 
     /*
     //  we need to trap import/export prefixes here. Unfortunately the prefix context
@@ -262,10 +260,9 @@ static bool GetNovExport( void )
     if( IsNetWarePrefix( Token.this, Token.len ) ) {
         bool result;
 
-        if( false == (result = SetCurrentPrefix( Token.this, Token.len )) )
-            return( false );
-
-        Token.skipToNext = DoWeNeedToSkipASeparator( false );
+        result = SetCurrentPrefix( Token.this, Token.len );
+        if( result )
+            Token.skipToNext = DoWeNeedToSkipASeparator( false );
         return( result );
     }
 
@@ -443,8 +440,7 @@ bool ProcCopyright( void )
     unsigned        year;
     char            *copy_year;
 
-    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT )
-                && !GetToken( SEP_NO, TOK_INCLUDE_DOT) ) {
+    if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) && !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         if( FmtData.u.nov.copyright != NULL ) {
             _LnkFree( FmtData.u.nov.copyright );  // assume second is correct.
         }
@@ -476,15 +472,14 @@ bool ProcNovell( void )
     if( !ProcOne( NovModels, SEP_NO, false ) ) {  // get file type
         int     nType = 0;
 
-        if((nType = atoi(Token.this)) > 0)
-        {
-            GetToken( SEP_NO, TOK_INCLUDE_DOT);
-            ProcModuleTypeN(nType);
-        }
-        else
+        if( (nType = atoi( Token.this )) > 0 ) {
+            GetToken( SEP_NO, TOK_INCLUDE_DOT );
+            ProcModuleTypeN( nType );
+        } else {
             ProcNLM();
+        }
     }
-    if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT )  ) {    // get description
+    if( !GetToken( SEP_QUOTE, TOK_INCLUDE_DOT ) ) {    // get description
         FmtData.u.nov.description = NULL;
         return( true );
     }

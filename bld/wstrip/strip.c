@@ -61,6 +61,14 @@
 #define WRESMAGIC0      0xC3D4C1D7
 #define WRESMAGIC1      0xC3D2CDCF
 
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 #define SEEK_POSBACK(p) (-(long)(p))
 
 #include "pushpck1.h"
@@ -118,7 +126,6 @@ static bool nodebug_ok = false;
 static bool res = false;
 static size_t bufsize;
 
-
 static void FatalDelTmp( int reason, const char *insert )
 {
     Fatal( reason, insert );
@@ -132,13 +139,13 @@ static void CopyData( fdata *in, fdata *out, unsigned long max )
         if( max == 0 )
             break;
         size = ( max > (unsigned long)bufsize ) ? bufsize : max;
-        size = read( in->h, Buffer, size );
+        size = posix_read( in->h, Buffer, size );
         if( size == 0 )
             break;
         if( size == -1 ) {
             FatalDelTmp( MSG_READ_ERROR, in->name );
         }
-        if( size != write( out->h, Buffer, size ) ) {
+        if( size != (size_t)posix_write( out->h, Buffer, size ) ) {
             FatalDelTmp( MSG_WRITE_ERROR, out->name );
         }
         max -= (unsigned long)size;
@@ -152,7 +159,7 @@ static bool TryWATCOM( int h, info_info *info, bool resfile )
 
     end = lseek( h, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
     for( ;; ) {
-        if( read( h, (void *)&header, sizeof( header ) ) != sizeof( header ) )
+        if( posix_read( h, (void *)&header, sizeof( header ) ) != sizeof( header ) )
             return( false );
         if( header.signature != FOX_SIGNATURE1
           && header.signature != FOX_SIGNATURE2
@@ -181,7 +188,7 @@ static bool TryTIS( int h, info_info *info )
 
     end = lseek( h, SEEK_POSBACK( sizeof( head ) ), SEEK_END );
     for( ;; ) {
-        if( read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
+        if( posix_read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
             return( false );
         }
         if( head.signature != TIS_TRAILER_SIGNATURE ) {
@@ -204,7 +211,7 @@ static bool TryCV4( int h, info_info *info )
     unsigned long       pos;
 
     pos = lseek( h, SEEK_POSBACK( sizeof( head ) ), SEEK_END );
-    if( read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
+    if( posix_read( h, &head, sizeof( head ) ) != sizeof( head ) ) {
         return( false );
     }
     if( memcmp( head.sig, CV4_NB09, sizeof( head.sig ) ) != 0
@@ -240,9 +247,9 @@ static bool IsSymResFile( int handle, bool resfile )
     info_info           info;
 
     lseek( handle, SEEK_POSBACK( sizeof( header ) ), SEEK_END );
-    if( read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) )
+    if( posix_read( handle, (void *)&header, sizeof( header ) ) != sizeof( header ) )
         return( false );
-    if( header.signature == (resfile ? WAT_RES_SIG : VALID_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == header.debug_size )
+    if( header.signature == (resfile ? WAT_RES_SIG : VALID_SIGNATURE) && lseek( handle, 0L, SEEK_END ) == (long)header.debug_size )
         return( true );
     if( resfile )
         return( false );
@@ -257,7 +264,7 @@ static bool IsResMagic( int handle, bool resfile )
 
     if( resfile ) {
         lseek( handle, 0L, SEEK_SET );
-        if( read( handle, &wheader, sizeof( wheader ) ) != sizeof( wheader ) )
+        if( posix_read( handle, &wheader, sizeof( wheader ) ) != sizeof( wheader ) )
             return( false );
         if( (wheader.Magic[0] == WRESMAGIC0) || (wheader.Magic[0] == WRESMICRO0) ) {
             if( (wheader.Magic[1] == WRESMAGIC1) || (wheader.Magic[1] >> 16 == WRESMICRO1) ) {
@@ -315,11 +322,11 @@ static void AddInfo( void )
     /* add header (trailer), if required */
     if( res ) {
         info.len = lseek( finfo.h, SEEK_POSBACK( sizeof( header ) ), SEEK_END ) + sizeof( header );
-        read( finfo.h, (void *)&header, sizeof( header ) );
+        posix_read( finfo.h, (void *)&header, sizeof( header ) );
         if( header.signature != WAT_RES_SIG || header.debug_size != info.len ) {
             header.signature = WAT_RES_SIG;
             header.debug_size = info.len + sizeof( header );
-            if( write( fout.h, (void *)&header, sizeof( header ) ) != sizeof( header ) ) {
+            if( posix_write( fout.h, (void *)&header, sizeof( header ) ) != sizeof( header ) ) {
                 FatalDelTmp( MSG_ADD_HEADER_ERROR, NULL );
             }
         }
@@ -407,18 +414,20 @@ static bool Suffix( char *fname, const char *suff )
 int main( int argc, char *argv[] )
 {
     size_t              size;
-    int                 i,j;
-    int                 argvlen;
+    int                 i;
+    int                 j;
+    size_t              k;
+    size_t              argvlen;
     char                *drive;
     char                *dir;
     char                *name;
     char                *ext;
     const char          *ext1;
     int                 add_file;
-    struct stat         in_stat;
     struct stat         other_stat;
     struct utimbuf      uptime;
     bool                has_ext;
+    time_t              mtime;
 
 #ifndef __WATCOMC__
     _argv = argv;
@@ -439,8 +448,8 @@ int main( int argc, char *argv[] )
         if( argv[j][0] == '-' || argv[j][0] == '/' ) {
 #endif
             argvlen = strlen( argv[j] );
-            for( i = 1; i < argvlen; i++ ) {
-                switch( argv[j][i] ) {
+            for( k = 1; k < argvlen; k++ ) {
+                switch( argv[j][k] ) {
                 case 'q': quiet = true; break;
                 case 'n': nodebug_ok = true; break;
                 case 'a': add_file = true; break;
@@ -472,11 +481,16 @@ int main( int argc, char *argv[] )
         }
     }
     finfo.name[0] = '\0';
+    mtime = 0;
     for( i = 0; (ext1 = ExtLst[i]) != NULL; ++i ) {
+        struct stat     in_stat;
+
         strcpy( fin.name, argv[1] );
         has_ext = Suffix( fin.name, ext1 );
-        if( stat( fin.name, &in_stat ) == 0 )
+        if( stat( fin.name, &in_stat ) == 0 ) {
+            mtime = in_stat.st_mtime;
             break;
+        }
         if( has_ext ) {
             break;
         }
@@ -538,7 +552,7 @@ int main( int argc, char *argv[] )
     }
 
     uptime.actime = time( NULL );
-    uptime.modtime = in_stat.st_mtime;
+    uptime.modtime = mtime;
     utime( fout.name, &uptime );
 
     Msg_Fini();

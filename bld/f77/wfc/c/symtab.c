@@ -66,7 +66,7 @@ void    STInit( void ) {
 }
 
 
-sym_id  SymLookup( char *name, int length ) {
+sym_id  SymLookup( char *name, uint length ) {
 //===========================================
 
 // Lookup a symbol in the symbol table.
@@ -131,7 +131,7 @@ sym_id  LkBlkData( void ) {
 }
 
 
-sym_id  SymFind( char *name, int length ) {
+sym_id  SymFind( char *name, uint length ) {
 //=========================================
 
 // Determine if a symbol exists in the symbol table.
@@ -140,7 +140,7 @@ sym_id  SymFind( char *name, int length ) {
 }
 
 
-static  sym_id  ComLookup( char *name, int length ) {
+static  sym_id  ComLookup( char *name, uint length ) {
 //===================================================
 
 // Lookup a common block name.

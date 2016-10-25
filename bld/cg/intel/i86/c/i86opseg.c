@@ -34,6 +34,7 @@
 #include "zeropage.h"
 #include "data.h"
 #include "object.h"
+#include "fixindex.h"
 
 zero_page_scheme        ZPageType;
 
@@ -43,7 +44,6 @@ extern  void            GenRegXor( hw_reg_set, hw_reg_set );
 extern  void            GenRegNeg( hw_reg_set );
 extern  bool            SegIsSS( name * );
 extern  bool            CanZapBP( void );
-extern  int             NumOperands( instruction * );
 
 /* forward declarations */
 static  int     Overs( name *op );
@@ -140,7 +140,7 @@ static  int     CountSegOvers( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             if( NumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
-               || ( ins->u.gen_table->generate != G_MOVAM && ins->u.gen_table->generate != G_MOVMA ) ) ) {
+               || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
                 for( i = NumOperands( ins ); i-- > 0; ) {
                     overs += Overs( ins->operands[i] );
                 }

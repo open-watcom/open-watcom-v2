@@ -365,7 +365,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
     i = RcFindIndex( handle );
     if( i >= RC_MAX_FILES ) {
         if( handle == Instance.handle && where == SEEK_SET ) {
-            return( lseek( handle, amount + FileShift, where ) - FileShift );
+            return( lseek( handle, amount + WResFileShift, where ) - WResFileShift );
         } else {
             return( lseek( handle, amount, where ) );
         }

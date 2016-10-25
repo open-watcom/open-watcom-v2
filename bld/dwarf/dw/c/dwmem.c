@@ -42,7 +42,7 @@ char *StrDup(
     _Validate( cli != NULL && str != NULL );
 
     len = strlen( str ) + 1;
-    return( memcpy( CLIAlloc( len ), str, len ) );
+    return( memcpy( CLIAlloc( cli, len ), str, len ) );
 }
 
 
@@ -53,7 +53,7 @@ void *FreeLink(
     void *                      p;
 
     p = *(void **)node;
-    CLIFree( node );
+    CLIFree( cli, node );
     return( p );
 }
 
@@ -67,7 +67,7 @@ void FreeChain(
     while( list != NULL ) {
         cur = list;
         list = *(void **)list;
-        CLIFree( cur );
+        CLIFree( cli, cur );
     }
 }
 

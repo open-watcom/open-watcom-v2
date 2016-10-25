@@ -38,13 +38,13 @@
 
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-static          int                     OldCursorAttr;
-static          unsigned                OldCursorRow;
-static          unsigned                OldCursorCol;
-static          int                     OldCursorType;
-static          USHORT                  length;
-static          USHORT                  r;
-static          USHORT                  c;
+static int              OldCursorAttr;
+static unsigned         OldCursorRow;
+static unsigned         OldCursorCol;
+static CURSOR_TYPE      OldCursorType;
+static USHORT           length;
+static USHORT           r;
+static USHORT           c;
 
 
 void UIAPI uioffcursor( void )
@@ -166,8 +166,8 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
-/*****************************************************************/
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
+/************************************************************************/
 {
 
     USHORT              length;
@@ -194,8 +194,8 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
-/************************************************************/
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
+/*******************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

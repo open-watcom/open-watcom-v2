@@ -87,7 +87,7 @@ typedef struct liblist {
 
 struct perm_read_info_struct {
     f_handle    incfhdl;
-    unsigned    currpos;
+    size_t      currpos;
     char        *buffer;
     unsigned    num;
     void        (*cbfn)(void *, struct perm_read_info_struct *);
@@ -98,7 +98,7 @@ typedef struct perm_read_info_struct perm_read_info;
 
 typedef struct {
     stringtable strtab;
-    unsigned    currpos;
+    size_t      currpos;
     f_handle    incfhdl;
     void        (*prepfn)( void *, void * );
 } perm_write_info;
@@ -127,12 +127,12 @@ extern void     ReadPermData( void );
 extern void     WritePermData( void );
 
 extern void     IncP2Start( void );
-extern void     PermSaveFixup( void *, unsigned );
+extern void     PermSaveFixup( void *, size_t );
 extern void     PermStartMod( mod_entry * );
 extern void     PermEndMod( mod_entry * );
-extern void     WritePermFile( perm_write_info *, void *, unsigned );
-extern void     ReadPermFile( perm_read_info *, void *, unsigned );
-extern void     IterateModRelocs( unsigned,unsigned,unsigned (*)(void *));
+extern void     WritePermFile( perm_write_info *, const void *data, size_t len );
+extern void     ReadPermFile( perm_read_info *, void *, size_t );
+extern void     IterateModRelocs( size_t, size_t, size_t (*)(void *) );
 extern void     *GetSegContents( segdata *, virt_mem_size );
 extern void     *GetAltdefContents( segdata * );
 extern void     FreeSavedRelocs( void );

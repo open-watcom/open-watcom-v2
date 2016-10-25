@@ -37,6 +37,7 @@
 
 #include "clibext.h"
 
+
 #define SWAP_FILE_NAME  "swXXXXXX"
 
 static char     swapName[sizeof( SWAP_FILE_NAME )];

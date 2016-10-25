@@ -799,9 +799,9 @@ static  void    DoDataInit( PTYPE var_type ) {
 
 // Do data initialization.
 
-    int         const_size;
-    int         var_size;
-    int         size;
+    uint        const_size;
+    uint        var_size;
+    uint        size;
     byte        *const_ptr;
     segment_id  seg;
     seg_offset  offset;

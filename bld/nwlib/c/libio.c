@@ -42,20 +42,19 @@ void InitLibIo( void )
     fileList = NULL;
 }
 
-void ResetLibIo( void )
+void FiniLibIo( void )
 {
     libfile lio;
 
-    while( fileList ) {
-        lio = fileList->next;
-        fclose( fileList->io );
-        MemFreeGlobal( fileList->name );
-        MemFreeGlobal( fileList );
-        fileList = lio;
+    while( (lio = fileList) != NULL ) {
+        fileList = lio->next;
+        fclose( lio->io );
+        MemFreeGlobal( lio->name );
+        MemFreeGlobal( lio );
     }
 }
 
-libfile LibOpen( char *name, bool write_to )
+libfile LibOpen( const char *name, bool write_to )
 {
     FILE    *io;
     libfile lio;
@@ -83,7 +82,7 @@ libfile LibOpen( char *name, bool write_to )
     }
     lio->next = fileList;
     lio->prev = NULL;
-    if( fileList ) {
+    if( fileList != NULL ) {
         fileList->prev = lio;
     }
     fileList = lio;
@@ -108,8 +107,8 @@ void LibWriteError( libfile lio )
     FatalError( ERR_CANT_WRITE, lio->name, strerror( errno ) );
 }
 
-void BadLibrary( char *name )
-/***************************/
+void BadLibrary( const char *name )
+/*********************************/
 {
     FatalError( ERR_BAD_LIBRARY, name );
 }
@@ -124,10 +123,10 @@ static void LibFlush( libfile lio )
     }
 }
 
-file_offset LibRead( libfile lio, void *buff, file_offset len )
+size_t LibRead( libfile lio, void *buff, size_t len )
 {
     size_t      ret;
-    file_offset b_read;
+    size_t      b_read;
 
     if( len > READ_FILE_BUFFER_SIZE ) {
         b_read = lio->buf_size - lio->buf_pos;
@@ -171,9 +170,9 @@ file_offset LibRead( libfile lio, void *buff, file_offset len )
     return( b_read );
 }
 
-void LibWrite( libfile lio, void *buff, file_offset len )
+void LibWrite( libfile lio, const void *buff, size_t len )
 {
-    file_offset num;
+    size_t  num;
 
     if( len > WRITE_FILE_BUFFER_SIZE ) {
         LibFlush( lio );
@@ -206,10 +205,10 @@ void LibClose( libfile lio )
     if( fileList == lio ) {
         fileList = fileList->next;
     }
-    if( lio->next ) {
+    if( lio->next != NULL ) {
         lio->next->prev = lio->prev;
     }
-    if( lio->prev ) {
+    if( lio->prev != NULL ) {
         lio->prev->next = lio->next;
     }
     MemFreeGlobal( lio->name );
@@ -239,7 +238,7 @@ void LibSeek( libfile lio, long where, int whence )
     lio->buf_pos = 0;
 }
 
-file_offset LibTell( libfile lio )
+long LibTell( libfile lio )
 {
     if( lio->write_to ) {
         return( ftell( lio->io ) + lio->buf_size );

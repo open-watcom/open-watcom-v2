@@ -52,7 +52,7 @@ _WCRTLINK __int64 _lseeki64( int handle, __int64 offset, int origin )
     iomode_flags = __GetIOMode( handle );
 
     if( offset >= 0 && !( iomode_flags & _APPEND ) ) {
-        __SetIOMode( handle, iomode_flags | _FILEEXT );
+        __SetIOMode_nogrow( handle, iomode_flags | _FILEEXT );
     }
 #endif
     return( __lseeki64( handle, offset, origin ) );
@@ -71,7 +71,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
     iomode_flags = __GetIOMode( handle );
 
     if( offset > 0 && !(iomode_flags & _APPEND) )
-        __SetIOMode( handle, iomode_flags | _FILEEXT );
+        __SetIOMode_nogrow( handle, iomode_flags | _FILEEXT );
 
 #endif
     return( __lseek( handle, offset, origin ) );

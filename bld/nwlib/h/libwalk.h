@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern void LibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) );
+extern void LibWalk( libfile io, const char *name, void (*rtn)( arch_header *arch, libfile io ) );
 extern void OMFLibWalk( libfile io, char *name, void (*rtn)( arch_header *arch, libfile io ) );

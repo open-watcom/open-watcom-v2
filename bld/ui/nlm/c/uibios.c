@@ -40,15 +40,15 @@
 #include "uinlm.h"
 
 static MONITOR ui_data = {
-       25,
-       80,
-       M_CGA,
-       NULL,
-       NULL,
-       NULL,
-       NULL,
-       4,
-       1
+    25,
+    80,
+    M_CGA,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    4,
+    1
 };
 
 int     ScreenHandle;       // used by uikeyb.c and uicurs.c as well

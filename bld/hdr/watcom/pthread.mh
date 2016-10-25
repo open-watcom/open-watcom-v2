@@ -1,0 +1,204 @@
+/*
+ *  pthread.h   POSIX threads interface
+ *
+:include crwat.sp
+ */
+#ifndef _PTHREAD_H_INCLUDED
+#define _PTHREAD_H_INCLUDED
+
+:include readonly.sp
+
+:include owrtlink.sp
+
+:include cpluspro.sp
+
+:include systypes.sp
+
+#include <time.h>
+#include <sched.h>
+
+:include lnxkpack.sp
+
+#define PTHREAD_CANCEL_DISABLE      0
+#define PTHREAD_CANCEL_ENABLE       1
+#define PTHREAD_CANCEL_DEFERRED     2
+#define PTHREAD_CANCEL_ASYNCHRONOUS 4
+
+#define PTHREAD_CREATE_JOINABLE     0
+#define PTHREAD_CREATE_DETACHED     1
+
+#define PTHREAD_SCOPE_PROCESS       0
+#define PTHREAD_SCOPE_SYSTEM        1
+
+#define PTHREAD_PRIO_NONE           0
+#define PTHREAD_PRIO_INHERIT        1
+#define PTHREAD_PRIO_PROTECT        2
+
+#define PTHREAD_PROCESS_PRIVATE     0
+#define PTHREAD_PROCESS_SHARED      1
+
+#define PTHREAD_MUTEX_NORMAL        0
+#define PTHREAD_MUTEX_ERRORCHECK    1
+#define PTHREAD_MUTEX_RECURSIVE     2
+#define PTHREAD_MUTEX_DEFAULT       1
+
+#define PTHREAD_EXPLICIT_SCHED      0
+#define PTHREAD_INHERIT_SCHED       1
+
+#define PTHREAD_BARRIER_SERIAL_THREAD   (-1)
+
+#define PTHREAD_CANCELED            ((void *)1)
+
+/* Creation/destruction */
+_WCRTLINK extern int  pthread_create( pthread_t *__thread, const pthread_attr_t *__attr, void *(*__start_routine)(void*), void *__arg );
+_WCRTLINK extern void pthread_exit( void *__exit_val );
+
+/* Thread cleanup */
+_WCRTLINK extern void pthread_cleanup_push( void (*__routine)(void*), void *__arg );
+_WCRTLINK extern void pthread_cleanup_pop( int __execute );
+
+/* Mutexes */
+_WCRTLINK extern int pthread_mutex_init( pthread_mutex_t *__mutex, const pthread_mutexattr_t *__attr );
+_WCRTLINK extern int pthread_mutex_destroy( pthread_mutex_t *__mutex );
+_WCRTLINK extern int pthread_mutex_trylock( pthread_mutex_t *__mutex );
+_WCRTLINK extern int pthread_mutex_lock( pthread_mutex_t *__mutex );
+_WCRTLINK extern int pthread_mutex_unlock( pthread_mutex_t *__mutex );
+_WCRTLINK extern int pthread_mutex_setprioceiling( pthread_mutex_t *__mutex, int __prioceiling, int *__old_ceiling );
+_WCRTLINK extern int pthread_mutex_getprioceiling( const pthread_mutex_t *__mutex, int *__prioceiling );
+
+/* Thread joining */
+_WCRTLINK extern int pthread_join( pthread_t __thread, void **__value_ptr );
+
+/* Thread detach */
+_WCRTLINK extern int pthread_detach( pthread_t __thread );
+
+/* Self */
+_WCRTLINK extern pthread_t pthread_self( );
+
+/* Cancellation */
+_WCRTLINK extern int pthread_cancel( pthread_t __thread );
+_WCRTLINK extern int pthread_setcancelstate( int __state, int *__oldstate );
+_WCRTLINK extern int pthread_setcanceltype( int __type, int *__oldtype );
+_WCRTLINK extern void pthread_testcancel( );
+
+/* Equality */
+_WCRTLINK extern int pthread_equal( pthread_t __pt1, pthread_t __pt2 );
+
+/* Conditions */
+_WCRTLINK extern int pthread_cond_init( pthread_cond_t *__cond, const pthread_condattr_t *__attr );
+_WCRTLINK extern int pthread_cond_destroy( pthread_cond_t *__cond );
+_WCRTLINK extern int pthread_cond_signal( pthread_cond_t *__cond );
+_WCRTLINK extern int pthread_cond_broadcast( pthread_cond_t *__cond );
+_WCRTLINK extern int pthread_cond_wait( pthread_cond_t *__cond, pthread_mutex_t *__mutex );
+_WCRTLINK extern int pthread_cond_timedwait( pthread_cond_t *__cond, pthread_mutex_t *__mutex, const struct timespec *abstime );
+
+/* Thread-specific keys */
+_WCRTLINK extern int pthread_key_create( pthread_key_t *__key, void (*__destructor)(void*) );
+_WCRTLINK extern int pthread_key_delete(pthread_key_t __key);
+_WCRTLINK extern int pthread_setspecific(pthread_key_t __key, void *__value);
+_WCRTLINK extern void *pthread_getspecific(pthread_key_t __key);
+
+/* Read-Write locks */
+_WCRTLINK extern int pthread_rwlock_init( pthread_rwlock_t *__rwlock, const pthread_rwlockattr_t *__attr );
+_WCRTLINK extern int pthread_rwlock_destroy( pthread_rwlock_t *__rwlock );
+_WCRTLINK extern int pthread_rwlock_unlock( pthread_rwlock_t *__rwlock );
+_WCRTLINK extern int pthread_rwlock_tryrdlock( pthread_rwlock_t *__rwlock );
+_WCRTLINK extern int pthread_rwlock_rdlock( pthread_rwlock_t *__rwlock );
+_WCRTLINK extern int pthread_rwlock_trywrlock( pthread_rwlock_t *__rwlock );
+_WCRTLINK extern int pthread_rwlock_wrlock( pthread_rwlock_t *__rwlock );
+
+/* Barriers */
+_WCRTLINK extern int pthread_barrier_init( pthread_barrier_t *__barrier,
+                                           const pthread_barrierattr_t *__attr, 
+                                           unsigned __count );
+_WCRTLINK extern int pthread_barrier_destroy( pthread_barrier_t *__barrier );
+_WCRTLINK extern int pthread_barrier_wait( pthread_barrier_t *__barrier );
+
+/* Thread concurrency */
+_WCRTLINK extern int pthread_getconcurrency(void);
+_WCRTLINK extern int pthread_setconcurrency(int new_level);
+
+/* Scheduling */
+_WCRTLINK extern int pthread_getschedparam( pthread_t __thr, int *__policy, struct sched_param *__param );
+_WCRTLINK extern int pthread_setschedparam( pthread_t __thr, int __policy, const struct sched_param *__param );
+
+:segment LINUX
+/* Spin locks (Linux only due to use of atomic ops) */
+_WCRTLINK extern int pthread_spin_init( pthread_spinlock_t *__lock, int __ignored_pshared );
+_WCRTLINK extern int pthread_spin_destroy( pthread_spinlock_t *__lock );
+_WCRTLINK extern int pthread_spin_lock( pthread_spinlock_t *__lock );
+_WCRTLINK extern int pthread_spin_trylock( pthread_spinlock_t *__lock );
+_WCRTLINK extern int pthread_spin_unlock( pthread_spinlock_t *__lock );
+:endsegment
+
+/* Thread Attributes */
+_WCRTLINK extern int pthread_attr_init( pthread_attr_t *__attr );
+_WCRTLINK extern int pthread_attr_destroy( pthread_attr_t *__attr );
+_WCRTLINK extern int pthread_attr_setdetachstate( pthread_attr_t *__attr, int __detachstate );
+_WCRTLINK extern int pthread_attr_getdetachstate( const pthread_attr_t *__attr, int *__detachstate );
+_WCRTLINK extern int pthread_attr_getguardsize( const pthread_attr_t *__attr, size_t *__guardsize );
+_WCRTLINK extern int pthread_attr_setguardsize (pthread_attr_t *__attr, size_t __guardsize );
+_WCRTLINK extern int pthread_attr_setinheritsched( pthread_attr_t *__attr, int __inheritsched );
+_WCRTLINK extern int pthread_attr_getinheritsched( const pthread_attr_t *__attr, int *__inheritsched );
+_WCRTLINK extern int pthread_attr_setschedpolicy( pthread_attr_t *__attr, int __policy );
+_WCRTLINK extern int pthread_attr_getschedpolicy( const pthread_attr_t *__attr, int *__policy );
+_WCRTLINK extern int pthread_attr_setschedparam( pthread_attr_t *__attr, const struct sched_param *__params );
+_WCRTLINK extern int pthread_attr_getschedparam( const pthread_attr_t *__attr, struct sched_param *__params );
+_WCRTLINK extern int pthread_attr_setscope( pthread_attr_t *__attr, int __contentionscope );
+_WCRTLINK extern int pthread_attr_getscope( const pthread_attr_t *__attr, int *__contentionscope );
+_WCRTLINK extern int pthread_attr_setstackaddr( pthread_attr_t *__attr, void *__stackaddr );
+_WCRTLINK extern int pthread_attr_getstackaddr( const pthread_attr_t *__attr, void **__stackaddr );
+_WCRTLINK extern int pthread_attr_setstacksize( pthread_attr_t *attr, size_t __stacksize );
+_WCRTLINK extern int pthread_attr_getstacksize( const pthread_attr_t *attr, size_t *__stacksize );
+_WCRTLINK extern int pthread_attr_setstack( pthread_attr_t *__attr, void *__stackaddr, size_t __stacksize );
+_WCRTLINK extern int pthread_attr_getstack( const pthread_attr_t *__attr, void **__stackaddr, size_t *__stacksize );
+
+/* Mutex attributes */
+_WCRTLINK extern int pthread_mutexattr_init( pthread_mutexattr_t *__attr );
+_WCRTLINK extern int pthread_mutexattr_destroy( pthread_mutexattr_t *__attr );
+_WCRTLINK extern int pthread_mutexattr_setprioceiling( pthread_mutexattr_t *__attr, int __prioceiling );
+_WCRTLINK extern int pthread_mutexattr_getprioceiling( const pthread_mutexattr_t *__attr, int *__prioceiling );
+_WCRTLINK extern int pthread_mutexattr_setprotocol( pthread_mutexattr_t *__attr, int __protocol );
+_WCRTLINK extern int pthread_mutexattr_getprotocol( const pthread_mutexattr_t *__attr, int *__protocol );
+_WCRTLINK extern int pthread_mutexattr_getpshared( const pthread_mutexattr_t *__attr, int *__pshared );
+_WCRTLINK extern int pthread_mutexattr_setpshared( pthread_mutexattr_t *__attr, int __pshared );
+_WCRTLINK extern int pthread_mutexattr_gettype( const pthread_mutexattr_t *__attr, int *__type );
+_WCRTLINK extern int pthread_mutexattr_settype( pthread_mutexattr_t *__attr, int __type );
+
+/* Barrier attributes */
+_WCRTLINK extern int pthread_barrierattr_init( pthread_barrierattr_t *__attr );
+_WCRTLINK extern int pthread_barrierattr_destroy( pthread_barrierattr_t *__attr );
+_WCRTLINK extern int pthread_barrierattr_getpshared( const pthread_barrierattr_t *__attr, int *__pshared );
+_WCRTLINK extern int pthread_barrierattr_setpshared( pthread_barrierattr_t *__attr, int __pshared );
+
+/* Condition attributes */
+_WCRTLINK extern int pthread_condattr_init( pthread_condattr_t *__attr );
+_WCRTLINK extern int pthread_condattr_destroy( pthread_condattr_t *__attr );
+_WCRTLINK extern int pthread_condattr_getpshared( const pthread_condattr_t *__attr, int *__pshared );
+_WCRTLINK extern int pthread_condattr_setpshared( pthread_condattr_t *__attr, int __pshared );
+_WCRTLINK extern int pthread_condattr_getclock( pthread_condattr_t *__attr, clockid_t *__clk );
+_WCRTLINK extern int pthread_condattr_setclock( pthread_condattr_t *__attr, clockid_t __clk );
+
+/* Read-write lock attributes */
+_WCRTLINK extern int pthread_rwlockattr_init( pthread_rwlockattr_t *__attr );
+_WCRTLINK extern int pthread_rwlockattr_destroy( pthread_rwlockattr_t *__attr );
+_WCRTLINK extern int pthread_rwlockattr_getpshared( const pthread_rwlockattr_t *__attr, int *__pshared );
+_WCRTLINK extern int pthread_rwlockattr_setpshared( pthread_rwlockattr_t *__attr, int __pshared );
+
+/* Execute-once routine */
+_WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (*__init_routine)(void) );
+
+/* Initializers */
+/* NOTE: These utilize internal values and must be synced with
+ *       the definitions in sys/types.h
+ */
+#define PTHREAD_MUTEX_INITIALIZER   { { 1 }, { 1 }, 100, (pid_t)(-1), PTHREAD_MUTEX_DEFAULT }
+#define PTHREAD_COND_INITIALIZER    { { 1 }, PTHREAD_MUTEX_INITIALIZER, 0 }
+#define PTHREAD_RWLOCK_INITIALIZER  { PTHREAD_MUTEX_INITIALIZER, 0 }
+#define PTHREAD_ONCE_INIT           { PTHREAD_MUTEX_INITIALIZER, 0 }
+
+:include poppack.sp
+
+:include cplusepi.sp
+
+#endif /* !_PTHREAD_H_INCLUDED */

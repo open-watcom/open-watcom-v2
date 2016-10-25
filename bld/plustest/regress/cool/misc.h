@@ -14,7 +14,7 @@
 // out most header and source files.
 //
 // Updated: JAM 08/10/92 -- removed DOS definitions/specifics
-// Updated: JAM 08/11/92 -- added BITS definition
+// Updated: JAM 08/11/92 -- added BITSIZE definition
 // Updated: JAM 08/11/92 -- added <stdio.h> for printf() during error handling
 // Updated: JAM 08/12/92 -- made to use <limits.h> and <float.h> instead of
 //                          <values.h> for increased standards compliance
@@ -34,9 +34,7 @@
 #include <stdio.h>              // because temporarily using printf/abort for errors
 #include <stdlib.h>             // because temporarily using printf/abort for errors
 
-#ifndef BITS   // at least BC++'s <value.h> didn't have it
-#define BITS(type) (CHAR_BIT*(int)sizeof(type))
-#endif
+#define BITSIZE(type) (CHAR_BIT*(int)sizeof(type))
 
 #ifndef DEFSH
 #include <cool/defs.h>                          // Include the defs header

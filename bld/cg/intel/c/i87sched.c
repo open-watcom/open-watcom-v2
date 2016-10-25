@@ -45,6 +45,8 @@
 #include "i87data.h"
 #include "namelist.h"
 #include "optab.h"
+#include "fixindex.h"
+#include "revcond.h"
 
 
 extern  instruction     *PrefFXCH( instruction *ins, int i );
@@ -52,10 +54,8 @@ extern  instruction     *SuffFXCH( instruction *ins, int i );
 extern  instruction     *PrefFLDOp(instruction *,operand_type ,name *);
 extern  instruction     *SuffFSTPRes(instruction *,name *,result_type );
 extern  name            *ST(int);
-extern  int             NumOperands(instruction *);
 extern  int             FPRegNum(name *);
 extern  int             Count87Regs(hw_reg_set);
-extern  void            RevCond( instruction * );
 extern  int             FPStkReq( instruction * );
 extern  bool            InsOrderDependant( instruction *, instruction * );
 
@@ -139,13 +139,13 @@ extern  bool    FPFreeIns( instruction *ins ) {
 
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
-            if( ins->u.gen_table->generate == G_MFST &&
+            if( G( ins ) == G_MFST &&
                 temp->actual_op == ins->result ) {
                 return( true ); // will likely merge into the previous op
             }
         } else if( ins == temp->first && temp->defined ) {
             return( true );
-        } else if( ins == temp->last && ins->u.gen_table->generate == G_MFLD ) {
+        } else if( ins == temp->last && G( ins ) == G_MFLD ) {
             return( true );
         }
     }
@@ -232,11 +232,11 @@ static  fp_attr FPAttr( instruction *ins ) {
         if( !HW_COvlap( ins->result->r.reg, HW_FLTS ) ) return( POPS_ALL );
         return( PUSHES + POPS_ALL );
     }
-    if( ins->u.gen_table->generate == G_FCHOP ) return( NEEDS_ST0 );
-    if( !_GenIs8087( ins->u.gen_table->generate ) ) {
+    if( G( ins ) == G_FCHOP ) return( NEEDS_ST0 );
+    if( !_GenIs8087( G( ins ) ) ) {
         return( NEEDS_NOTHING );
     }
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_RRFBINP:
     case G_RNFBINP:
         return( NEEDS_ST0+POPS+SETS_ST1 );
@@ -283,7 +283,7 @@ static  fp_attr FPAttr( instruction *ins ) {
 static  opcode_entry    *RegAction( instruction *ins ) {
 /*****************************************************/
 
-    switch( ins->u.gen_table->generate ) {
+    switch( G( ins ) ) {
     case G_MFLD:
         return( RFLD );
     case G_MCOMP:
@@ -308,7 +308,7 @@ static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr ){
         attr &= ~POPS;
     } else {
         GetToTopOfStack( ins, VIRTUAL_0 );
-        if( ins->u.gen_table->generate == G_MFST ) {
+        if( G( ins ) == G_MFST ) {
             ins->u.gen_table = RFST;
         } else {
             ins->u.gen_table = RFSTNP;
@@ -354,7 +354,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
 /*****************************************************************************/
 
     if( ins == temp->last && !temp->whole_block ) {
-        switch( ins->u.gen_table->generate ) {
+        switch( G( ins ) ) {
         case G_MFLD:
             PushVirtualStack( ins );
             InsLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
@@ -379,7 +379,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             break;
         case G_MNFBIN:
         case G_MRFBIN:
-            if( ins->u.gen_table->generate == G_MRFBIN ) {
+            if( G( ins ) == G_MRFBIN ) {
                 ins->u.gen_table = RNFBINP;
             } else {
                 ins->u.gen_table = RRFBINP;
@@ -397,7 +397,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             PrefFLDOp( ins, OP_MEM, temp->actual_op );
             IncrementAll();
             temp->actual_locn = ACTUAL_0;
-            if( ins->u.gen_table->generate == G_MFLD ) {
+            if( G( ins ) == G_MFLD ) {
                 // PushStack( ins );
                 ins->operands[0] = ST( ACTUAL_0 );
             } else {
@@ -720,7 +720,7 @@ static  void    CheckTemp( instruction *ins, name *op, bool defined ) {
     }
     if( op->v.usage & USE_ADDRESS )
         return;
-    if( !_GenIs8087( ins->u.gen_table->generate ) ) {
+    if( !_GenIs8087( G( ins ) ) ) {
         KillTempEntry( op );
     } else {
         DefUseTemp( op, ins, defined );
@@ -884,7 +884,7 @@ static  void    CacheTemps( block *blk ) {
             temp->global = true;
         } else {
             if( !temp->defined ) continue; // I'm not sure if these save anything
-            if( temp->defined && temp->first->u.gen_table->generate != G_MFST ) continue;
+            if( temp->defined && G( temp->first ) != G_MFST ) continue;
             if( RegAction( temp->last ) == NULL ) continue;
             if( temp->first == temp->last ) continue;
         }

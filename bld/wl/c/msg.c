@@ -45,22 +45,17 @@
 
 #include "clibext.h"
 
-char *MsgStrings[] = {
+const char *MsgStrings[] = {
     #define pick( name, string ) string,
     #include "wlbanner.h"
     #undef pick
 };
 
-static  char *          LocFile;
-static  char *          LocMem;
-static  int             LocRec;
+static  const char      *LocFile;
+static  const char      *LocMem;
+static  unsigned        LocRec;
 static  MSG_ARG_LIST    MsgArgInfo;
 static  char *          CurrSymName;
-
-static unsigned         MakeExeName( char *, unsigned );
-static void             IncremIndex( void );
-static void             FileOrder( char rc_buff[], int which_file );
-static int              UseArgInfo( void );
 
 #define MSG_ARRAY_SIZE ((MSG_MAX_ERR_MSG_NUM / 8) + 1)
 
@@ -69,6 +64,18 @@ bool            BannerPrinted;
 
 byte MsgFlags[ MSG_ARRAY_SIZE ];
 
+
+static int UseArgInfo( void )
+/***************************/
+{
+    return( MsgArgInfo.index >= 0 );
+}
+
+static void IncremIndex( void )
+/*****************************/
+{
+    MsgArgInfo.index++;
+}
 
 void ResetMsg( void )
 /**************************/
@@ -80,8 +87,65 @@ void ResetMsg( void )
     memset( MsgFlags, 0xFF, MSG_ARRAY_SIZE );
 }
 
-unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
-/****************************************************************/
+#define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
+
+static size_t MakeExeName( char *buff, size_t max )
+/*************************************************/
+/* make up the "an OS/2 executable" string. */
+{
+    char        rc_buff[RESOURCE_MAX_SIZE];
+    exe_format  format;
+    size_t      len;
+    char        *str;
+    size_t      num;
+
+    if( max <= 3 )
+        return( 0 );
+    len = 1;
+    *buff++ = 'a';
+    if( FmtData.osname != NULL ) {
+        str = FmtData.osname;
+    } else {
+        format = FmtData.type;
+        for( ;; ) {
+            num = blog_32( format );
+            format &= ~( 1 << num );
+            if( format == 0 ) {
+                break;
+            }
+        }
+        Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
+        str = rc_buff;
+    }
+    if( IS_VOWEL( tolower(*str) ) ) {
+        *buff++ = 'n';
+        len++;
+    }
+    *buff++ = ' ';
+    num = strlen( str );
+    len += num + 2;
+    if( len > max )
+        return( len - ( num + 2 ) );
+    memcpy( buff, str, num );
+    buff += num;
+    *buff++ = ' ';
+    if( FmtData.dll ) {
+        Msg_Get( MSG_CREATE_TYPE_DLL, rc_buff );
+        str = rc_buff;
+    } else {
+        Msg_Get( MSG_CREATE_TYPE_EXE, rc_buff );
+        str = rc_buff;
+    }
+    num = strlen( str );
+    len += num;
+    if( len > max )
+        return( len - num );
+    memcpy( buff, str, num + 1 );       /* +1 for the nullchar */
+    return( len );
+}
+
+size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
+/***********************************************************/
 {
     va_list args;
 
@@ -89,8 +153,8 @@ unsigned FmtStr( char *buff, unsigned len, char *fmt, ... )
     return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
-unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
-/****************************************************************************/
+size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
+/***********************************************************************/
 /* quick vsprintf routine                                           */
 /* assumptions - format string does not end in '%'                  */
 /*             - only use of '%' is as follows                      */
@@ -112,8 +176,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
     char            *str;
     unsigned_16     num;
     unsigned_32     num2;
-    unsigned        size;
-    targ_addr *     addr;
+    size_t          size;
+    targ_addr       *addr;
     unsigned int    i;
     static char     hexchar[] = "0123456789abcdef";
     int             temp;
@@ -121,7 +185,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
     dest = buff;
     for(;;) {
         ch = *src++;
-        if( ch == '\0' || len == 1 ) break;
+        if( ch == '\0' || len == 1 )
+            break;
         if( ch != '%' ) {
             *dest++ = ch;
             len--;
@@ -137,11 +202,13 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 }
                 if( (LinkFlags & DONT_UNMANGLE) == 0 ) {
                     size = __demangle_l( str, 0, dest, len );
-                    if( size > (len-1) ) size = len - 1;
+                    if( size > ( len - 1 ) )
+                        size = len - 1;
                     CurrSymName = dest;
                 } else {
                     size = strlen( str );
-                    if( size > len ) size = len;
+                    if( size > len )
+                        size = len;
                     memcpy( dest, str, size );
                     CurrSymName = str;
                 }
@@ -156,7 +223,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                     str = va_arg( *args, char * );
                 }
                 size = strlen( str );
-                if( size > len ) size = len;
+                if( size > len )
+                    size = len;
                 memcpy( dest, str, size );
                 len -= size;
                 dest += size;
@@ -186,7 +254,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 } else {
                     num = va_arg( *args, unsigned int );
                 }
-                if( len < 4 ) return( dest - buff );    //NOTE: premature return
+                if( len < 4 )
+                    return( dest - buff );    //NOTE: premature return
                 dest += 4;
                 len -= 4;
                 str = dest;
@@ -197,7 +266,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 break;
             case 'h' :
                 num2 = va_arg( *args, unsigned_32 );
-                if( len < 8) return( dest - buff );     //NOTE: premature return
+                if( len < 8 )
+                    return( dest - buff );     //NOTE: premature return
                 dest += 8;
                 len -= 8;
                 str = dest;
@@ -207,7 +277,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 }
                 break;
             case 'd' :
-                if( len < 5 ) return( dest - buff );    // NOTE: premature return
+                if( len < 5 )
+                    return( dest - buff );    // NOTE: premature return
                 if( UseArgInfo() ) {
                     num = MsgArgInfo.arg[MsgArgInfo.index].int_16;
                     IncremIndex();
@@ -220,7 +291,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
                 len -= size;
                 break;
             case 'l' :
-                if( len < 10 ) return( dest - buff );   //NOTE: premature return
+                if( len < 10 )
+                    return( dest - buff );   //NOTE: premature return
                 if( UseArgInfo() ) {
                     num2 = MsgArgInfo.arg[MsgArgInfo.index].int_32;
                     IncremIndex();
@@ -276,73 +348,8 @@ unsigned DoFmtStr( char *buff, unsigned len, char *src, va_list *args )
     return( dest - buff );
 }
 
-#define IS_VOWEL(c) (((c)=='a')||((c)=='e')||((c)=='i')||((c)=='o')||((c)=='u'))
-
-static unsigned MakeExeName( char * buff, unsigned max )
-/******************************************************/
-/* make up the "an OS/2 executable" string. */
-{
-    char        rc_buff[RESOURCE_MAX_SIZE];
-    exe_format  format;
-    unsigned    len;
-    char *      str;
-    unsigned    num;
-
-    if( max <= 3 ) return( 0 );
-    len = 1;
-    *buff++ = 'a';
-    if( FmtData.osname != NULL ) {
-        str = FmtData.osname;
-    } else {
-        format = FmtData.type;
-        for( ;; ) {
-            num = blog_32( format );
-            format &= ~(1 << num);
-            if( format == 0 )
-                break;
-        }
-        Msg_Get( MSG_FILE_TYPES_0 + num, rc_buff );
-        str = rc_buff;
-    }
-    if( IS_VOWEL( tolower(*str) ) ) {
-        *buff++ = 'n';
-        len++;
-    }
-    *buff++ = ' ';
-    num = strlen(str);
-    len += num + 2;
-    if( len > max ) return( len - (num + 2) );
-    memcpy( buff, str, num );
-    buff += num;
-    *buff++ = ' ';
-    if( FmtData.dll ) {
-        Msg_Get( MSG_CREATE_TYPE_DLL, rc_buff );
-        str = rc_buff;
-    } else {
-        Msg_Get( MSG_CREATE_TYPE_EXE, rc_buff );
-        str = rc_buff;
-    }
-    num = strlen( str );
-    len += num;
-    if( len > max ) return( len - num );
-    memcpy( buff, str, num + 1 );       /* +1 for the nullchar */
-    return( len );
-}
-
-static int UseArgInfo( void )
-/***************************/
-{
-    return( MsgArgInfo.index >= 0 );
-}
-
-static void IncremIndex( void )
-/*****************************/
-{
-    MsgArgInfo.index++;
-}
-
-void Locator( char *filename, char *mem, unsigned rec )
-/************************************************************/
+void Locator( const char *filename, const char *mem, unsigned rec )
+/*****************************************************************/
 {
     LocFile = filename;
     LocMem = mem;
@@ -380,13 +387,13 @@ unsigned CalcMsgNum( unsigned num )
 
     class = (num & CLASS_MSK) >> NUM_SHIFT;
     class = (class + 1) / 2;
-    return class * 1000 + (num & NUM_MSK);
+    return( class * 1000 + (num & NUM_MSK) );
 }
 
-static unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
-/*****************************************************************/
+static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
+/********************************************************************/
 {
-    unsigned    prefixlen;
+    size_t      prefixlen;
     unsigned    class;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
@@ -404,10 +411,10 @@ static unsigned GetMsgPrefix( char *buff, unsigned max_len, unsigned num )
     return( prefixlen );
 }
 
-static void MessageFini( unsigned num, char *buff, unsigned len )
-/***************************************************************/
+static void MessageFini( unsigned num, char *buff, size_t len )
+/*************************************************************/
 {
-    unsigned    prefixlen;
+    size_t      prefixlen;
     unsigned    class;
     char        prefix[ MAX_MSG_SIZE ];
 
@@ -420,7 +427,7 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
         if( (LinkFlags & QUIET_FLAG) == 0 ) {
             WLPrtBanner();
             WriteStdOutInfo( buff, num, CurrSymName );
-        } else if( class != (INF & CLASS_MSK)) {
+        } else if( class != (INF & CLASS_MSK) ) {
             WriteStdOutInfo( buff, num, CurrSymName );
         }
     }
@@ -443,9 +450,37 @@ static void MessageFini( unsigned num, char *buff, unsigned len )
     }
 }
 
+static void FileOrder( char rc_buff[], int which_file )
+/*****************************************************/
+{
+    switch( which_file ) {
+    case 1:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
+        break;
+    case 2:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
+        break;
+    case 3:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
+        break;
+    case 4:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
+        break;
+    case 5:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
+        break;
+    case 6:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
+        break;
+    case 7:
+        Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem, LocRec );
+        break;
+    }
+}
+
 void LnkMsg(
     unsigned    num,    // A message number + control flags
-    char        *types, // Conversion qualifiers
+    const char  *types, // Conversion qualifiers
     ... )               // Arguments to interpolate into message
 /**************************************************
  * report a linker message
@@ -456,7 +491,7 @@ void LnkMsg(
 {
     va_list     args;
     int         which_file = 0;
-    unsigned    len;
+    size_t      len;
     char        rc_buff[ RESOURCE_MAX_SIZE ];
     char        buff[ MAX_MSG_SIZE ];
 
@@ -485,12 +520,12 @@ void LnkMsg(
             Msg_Get( MSG_FILE_REC_NAME_0 + which_file - 1, rc_buff );
         }
         FileOrder( rc_buff, which_file );
-        len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+        len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
         if( num & LINE ) {
             if( Token.how != SYSTEM && Token.how != ENVIRONMENT ) {
                 Msg_Get( MSG_LINE, rc_buff );
                 Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", Token.line );
-                len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+                len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
             }
         }
         LocFile = NULL;
@@ -502,7 +537,7 @@ void LnkMsg(
     Msg_Get( num & NUM_MSK, rc_buff );
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
     va_end( args );
-    len += FmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff );
+    len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
     MessageFini( num, buff, len );
 }
 
@@ -510,7 +545,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
 /****************************************************/
 /* getting an error message from resource compiler code */
 {
-    unsigned    len;
+    size_t      len;
     char        rc_buff[RESOURCE_MAX_SIZE];
     char        buff[ MAX_MSG_SIZE ];
 
@@ -518,7 +553,7 @@ static void HandleRcMsg( unsigned num, va_list *args )
     len = 0;
     CurrSymName = NULL;
     Msg_Get( num & NUM_MSK, rc_buff );
-    len += DoFmtStr( &buff[len], MAX_MSG_SIZE - len, rc_buff, args );
+    len += DoFmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff, args );
     MessageFini( num, buff, len );
 }
 
@@ -540,40 +575,11 @@ void RcError( unsigned num, ... )
     HandleRcMsg( num, &args );
 }
 
-static void FileOrder( char rc_buff[], int which_file )
-/*****************************************************/
-{
-    switch( which_file ) {
-        case 1:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocFile );
-            break;
-        case 2:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "s", LocMem );
-            break;
-        case 3:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12", LocFile, LocMem );
-            break;
-        case 4:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "d", LocRec );
-            break;
-        case 5:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocFile, LocRec );
-            break;
-        case 6:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "sd", LocMem, LocRec );
-            break;
-        case 7:
-            Msg_Do_Put_Args( rc_buff, &MsgArgInfo, "12d", LocFile, LocMem,
-                        LocRec );
-            break;
-    }
-}
-
 void WLPrtBanner( void )
 /*****************************/
 // print the banner, if it hasn't already been printed.
 {
-    char *  msg;
+    const char  *msg;
 
     if( !BannerPrinted ) {
         msg = MsgStrings[ PRODUCT ];
@@ -593,16 +599,12 @@ void WLPrtBanner( void )
 bool SkipSymbol( symbol * sym )
 /************************************/
 {
-    if( sym->info & SYM_STATIC && (MapFlags & MAP_STATICS) == 0 ) return true;
-#if defined(__WATCOMC__)
-    { int art;
+    mangled_type art;
 
-    art = __is_mangled_internal( sym->name, 0 ); // KLUDGE: it doesn't need len
+    if( (sym->info & SYM_STATIC) && (MapFlags & MAP_STATICS) == 0 )
+        return( true );
+    art = __is_mangled_internal( sym->name, strlen( sym->name ) );
     return( (MapFlags & MAP_ARTIFICIAL) == 0 && art == __MANGLED_INTERNAL );
-    }
-#else
-    return false;
-#endif
 }
 
 int SymAlphaCompare( const void *a, const void *b )
@@ -629,7 +631,9 @@ int SymAlphaCompare( const void *a, const void *b )
     }
     if( leftsize < rightsize ) {
         result = memicmp( leftname, rightname, leftsize );
-        if( result == 0 ) result = -1;  // since leftsize < rightsize;
+        if( result == 0 ) {
+            result = -1;  // since leftsize < rightsize;
+        }
     } else {
         result = memicmp( leftname, rightname, rightsize );
         if( result == 0 ) {
@@ -638,5 +642,5 @@ int SymAlphaCompare( const void *a, const void *b )
             }
         }
     }
-    return result;
+    return( result );
 }

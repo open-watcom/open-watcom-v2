@@ -127,6 +127,7 @@
 !inject ostream.h              hcpp
 !inject pgchart.h                   hdos      hqnx
 !inject process.h                   hdos hlnx hqnx
+!inject pthread.h                        hlnx hqnx
 !inject pwd.h                            hlnx hqnx
 !inject queue            noext hcpp
 !inject queue.h                               hqnx

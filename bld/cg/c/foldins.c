@@ -47,17 +47,16 @@
 #include "typemap.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "fixindex.h"
 #include "feprotos.h"
 
 
 extern name             *TGetName(tn);
 extern tn               TName(name*,type_def*);
-extern int              NumOperands(instruction*);
 extern bool             NeedConvert(type_def*,type_def*);
 extern void             SetCSEBits(instruction *,instruction *);
-extern float_handle     OkToNegate( float_handle, type_def * );
 
-extern bool     IsTrickyPointerConv( instruction *ins )
+bool     IsTrickyPointerConv( instruction *ins )
 /******************************************************
     Is "ins" a near (based) to far pointer conversion that has
     to be carefully converted with taking segments into account?
@@ -359,7 +358,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     return( NULL );
 }
 
-extern  instruction    *FoldIns( instruction *ins ) {
+instruction    *FoldIns( instruction *ins ) {
 /****************************************************
     See if we can do any constant folding on instruction "ins". This is
     done by building an expression tree to represent "ins", and then
@@ -399,7 +398,7 @@ extern  instruction    *FoldIns( instruction *ins ) {
 
 
 
-extern  bool    ConstFold( block *root ) {
+bool    ConstFold( block *root ) {
 /****************************************
     For each instruction in the program, see if we can do some constant
     folding that wasn't caught in the tree phase. This will come from

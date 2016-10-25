@@ -44,3 +44,4 @@ extern  void            ParmIns( pn parm, call_state *state );
 extern  void            BGZapBase( name *base, type_def *tipe );
 extern  void            BGReturn( an retval, type_def *tipe );
 extern  bool            AssgnParms( cn call, bool in_line );
+extern  hw_reg_set      CallZap( call_state *state );

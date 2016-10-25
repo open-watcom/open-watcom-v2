@@ -37,6 +37,7 @@
 
 #include "clibext.h"
 
+
 #define VARIABLE_SIZE 1
 #define MAJOR_OBJ_VERSION 1
 #define MINOR_OBJ_VERSION 1
@@ -118,7 +119,7 @@ typedef struct {
 #define         NEW_DBG_1       0xb4
 #define         NEW_DBG_2       0xb6
 
-int             PageLen;
+long            PageLen;
 
 static OBJECT_REC   *Rec1;
 static bool         Easy32;
@@ -127,7 +128,7 @@ static unsigned     NameIndex;
 static unsigned     SegIndex;
 static byte         SubTotal = 0;
 static byte         *OutputBuffer;
-static unsigned     InBuffer = 0;
+static size_t       InBuffer = 0;
 
 
 void *InitRecStuff( void )
@@ -268,7 +269,7 @@ static void procsegdef( bool is386 )
     byte            acbp;
     unsigned        segidx;
     unsigned        classidx;
-    byte            *dataloc;
+    const byte      *dataloc;
     byte            onebyte;
     unsigned long   fourbytes;
     exclude_list *  exclude;
@@ -314,7 +315,7 @@ static void ProcDataRec( bool is386 )
 /***********************************/
 {
     unsigned        segidx;
-    byte            *dataloc;
+    const byte      *dataloc;
     exclude_list    *exclude;
     unsigned long   offset;
     unsigned long   endoffset;
@@ -383,10 +384,10 @@ void ProcessRec( void )
     }
 }
 
-unsigned GetIndex( byte **rec )
-/*****************************/
+unsigned GetIndex( const byte **rec )
+/***********************************/
 {
-    byte        *ptr;
+    const byte  *ptr;
     ushort      index;
 
     ptr = *rec;
@@ -405,8 +406,8 @@ unsigned GetIndex( byte **rec )
 int ReadRec( void )
 /*****************/
 {
-    int     len;
-    int     to_read;
+    size_t  len;
+    size_t  to_read;
     long    offset;
 
     len = QRead( InFile, Rec1, sizeof( HEAD ) );
@@ -438,7 +439,8 @@ int ReadRec( void )
             if( PageLen != 0 ) {            // skip padding in the library.
                 offset = tell( InFile );
                 offset = PageLen - offset % PageLen;
-                if( offset == PageLen ) offset = 0;
+                if( offset == PageLen )
+                    offset = 0;
                 QSeek( InFile, offset, SEEK_CUR );
             }
             return( ENDMODULE );
@@ -447,10 +449,10 @@ int ReadRec( void )
     return( OK );
 }
 
-static void AddToSubTotal( void *buff, unsigned len )
-/***************************************************/
+static void AddToSubTotal( const void *buff, size_t len )
+/*******************************************************/
 {
-    byte   *data;
+    const byte  *data;
 
     data = buff;
     while( len-- > 0 ) {
@@ -458,21 +460,21 @@ static void AddToSubTotal( void *buff, unsigned len )
     }
 }
 
-void BuildRecord( void *info, unsigned len )
-/******************************************/
+void BuildRecord( const void *data, size_t len )
+/**********************************************/
 {
-    unsigned    wlen;
+    size_t      wlen;
 
-    AddToSubTotal( info, len );
+    AddToSubTotal( data, len );
     if( len + InBuffer > MAX_OBJECT_REC_SIZE ) {
         wlen = MAX_OBJECT_REC_SIZE - InBuffer;
-        memcpy( OutputBuffer + InBuffer, info, wlen );
+        memcpy( OutputBuffer + InBuffer, data, wlen );
         QWrite( OutFile, OutputBuffer, MAX_OBJECT_REC_SIZE );
-        info = (char *)info + wlen;
+        data = (const char *)data + wlen;
         len -= wlen;
         InBuffer = 0;
     }
-    memcpy( OutputBuffer + InBuffer, info, len );
+    memcpy( OutputBuffer + InBuffer, data, len );
     InBuffer += len;
 }
 

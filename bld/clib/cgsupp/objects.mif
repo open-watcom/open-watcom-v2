@@ -79,19 +79,16 @@
 
 !include ../../../../objlist.mif
 
-086_fpi87_postopts=-fpi87
-286_fpi87_postopts=-fpi87
-386_fpi87_postopts=-fpi87
-axp_fpi87_postopts=
-ppc_fpi87_postopts=
-fpi87_postopts=$($(processor)_fpi87_postopts)
+086_option_fpi87 =-fpi87
+286_option_fpi87 =-fpi87
+386_option_fpi87 =-fpi87
 
-7u8f086_postopts=$(fpi87_postopts)
-7u8f386_postopts=$(fpi87_postopts)
-7fu8086_postopts=$(fpi87_postopts)
-7fu8386_postopts=$(fpi87_postopts)
-fdmth086_postopts=$(fpi87_postopts)
-fdmth386_postopts=$(fpi87_postopts)
-fsmth086_postopts=$(fpi87_postopts)
-fsmth386_postopts=$(fpi87_postopts)
-div386_postopts=$(fpi87_postopts)
+7u8f086_postopts  =$($(processor)_option_fpi87)
+7u8f386_postopts  =$($(processor)_option_fpi87)
+7fu8086_postopts  =$($(processor)_option_fpi87)
+7fu8386_postopts  =$($(processor)_option_fpi87)
+fdmth086_postopts =$($(processor)_option_fpi87)
+fdmth386_postopts =$($(processor)_option_fpi87)
+fsmth086_postopts =$($(processor)_option_fpi87)
+fsmth386_postopts =$($(processor)_option_fpi87)
+div386_postopts   =$($(processor)_option_fpi87)

@@ -40,19 +40,19 @@
 #include "omfdrctv.h"
 #include "orlhash.h"
 
-#define _IsSegType( t )         ( ( t == ORL_SEC_TYPE_PROG_BITS ) || \
-                                  ( t == ORL_SEC_TYPE_NO_BITS ) )
+#define _IsSegType( t )     ( ( t == ORL_SEC_TYPE_PROG_BITS ) || ( t == ORL_SEC_TYPE_NO_BITS ) )
 
-omf_handle OMFENTRY OmfInit( orl_funcs * funcs )
+omf_handle OMFENTRY OmfInit( orl_funcs *funcs )
 {
-    omf_handle                                  oh;
+    omf_handle          oh;
 
     assert( funcs );
 
-    oh = funcs->alloc( sizeof( omf_handle_struct ) );
-    if( !oh ) return( NULL );
-    oh->funcs = funcs;
-    oh->first_file_hnd = NULL;
+    oh = ORL_CLI_ALLOC( funcs, sizeof( omf_handle_struct ) );
+    if( oh != NULL ) {
+        oh->funcs = funcs;
+        oh->first_file_hnd = NULL;
+    }
     return( oh );
 }
 
@@ -65,9 +65,11 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 
     while( oh->first_file_hnd != NULL ) {
         err = OmfRemoveFileLinks( oh->first_file_hnd );
-        if( err != ORL_OKAY ) return( err );
+        if( err != ORL_OKAY ) {
+            return( err );
+        }
     }
-    ORL_FUNCS_FREE( oh, oh );
+    ORL_PTR_FREE( oh, oh );
     return( ORL_OKAY );
 }
 
@@ -79,7 +81,7 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, void *file, omf_file_handle *pof
 
     assert( oh );
 
-    ofh = ORL_FUNCS_ALLOC( oh, sizeof( omf_file_handle_struct ) );
+    ofh = ORL_PTR_ALLOC( oh, sizeof( omf_file_handle_struct ) );
     if( ofh == NULL )
         return( ORL_OUT_OF_MEMORY );
 
@@ -105,12 +107,11 @@ orl_return OMFENTRY OmfFileFini( omf_file_handle ofh )
 }
 
 
-orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
-                                 orl_sec_return_func func )
+orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_sec_return_func func )
 {
     orl_hash_data_struct                *ds;
     omf_sec_handle                      sh;
-    omf_symbol_handle                   sym;
+    const omf_symbol_handle_struct      *sym;
     orl_return                          err;
 
     assert( ofh );
@@ -118,15 +119,15 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
 
     if( desired == NULL ) {
         /* global request */
-        sh = ofh->first_sec;
-        while( sh ) {
+        for( sh = ofh->first_sec; sh != NULL; sh = sh->next ) {
             // string tables are internal sections which are not seen by
             // the user code
             if( sh->type != ORL_SEC_TYPE_STR_TABLE ) {
                 err = func( (orl_sec_handle)sh );
-                if( err != ORL_OKAY ) return( err );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
-            sh = sh->next;
         }
     } else if( ofh->symbol_table ) {
         assert( ofh->symbol_table->assoc.sym.hash_tab );
@@ -135,8 +136,10 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, char *desired,
             sym = ds->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) &&
                !( sym->flags & OMF_SYM_FLAGS_GRPDEF ) ) {
-                err = func( (orl_sec_handle) sym->section );
-                if( err != ORL_OKAY ) return( err );
+                err = func( (orl_sec_handle)sym->section );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
             ds = ds->next;
         }
@@ -349,7 +352,8 @@ orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 
     if( ( sh->contents != NULL ) || ( sh->type == ORL_SEC_TYPE_PROG_BITS ) ) {
         err = OmfExportSegmentContents( sh );
-        if( err != ORL_OKAY ) return( err );
+        if( err != ORL_OKAY )
+            return( err );
         *buffer = sh->contents;
         return( ORL_OKAY );
     }
@@ -360,18 +364,19 @@ orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
                                       orl_reloc_return_func func, int check )
 {
-    uint_32                                     x;
-    uint_32                                     num;
-    orl_reloc                                   **relocs;
-    orl_return                                  err;
-    int                                         global;
-    omf_sec_handle                              rsh;
+    uint_32             x;
+    uint_32             num;
+    orl_reloc           **relocs;
+    orl_return          err;
+    int                 global;
+    omf_sec_handle      rsh;
 
     assert( sh );
     assert( sh->omf_file_hnd );
     assert( func );
 
-    if( !sh->omf_file_hnd->relocs ) return( ORL_FALSE );
+    if( !sh->omf_file_hnd->relocs )
+        return( ORL_FALSE );
     relocs = sh->omf_file_hnd->relocs->assoc.reloc.relocs;
     num = sh->omf_file_hnd->relocs->assoc.reloc.num;
     if( num ) {
@@ -379,14 +384,16 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
     } else {
         return( ORL_FALSE );
     }
-    global = sh->index == sh->omf_file_hnd->relocs->index;
+    global = ( sh->index == sh->omf_file_hnd->relocs->index );
 
     for( x = 0; x < num; x++ ) {
         rsh = (omf_sec_handle)(relocs[x]->section);
         if( global || ( sh->index == rsh->index ) ) {
             if( !check || ( relocs[x]->offset == offset ) ) {
                 err = func( relocs[x] );
-                if( err != ORL_OKAY ) return( err );
+                if( err != ORL_OKAY ) {
+                    return( err );
+                }
             }
         }
     }
@@ -394,24 +401,24 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
 }
 
 
-orl_return OMFENTRY OmfSecQueryReloc( omf_sec_handle sh, omf_sec_offset offset,
-                                      orl_reloc_return_func func )
+orl_return OMFENTRY OmfSecQueryReloc( omf_sec_handle sh, omf_sec_offset offset, orl_reloc_return_func func )
 {
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_PROG_BITS ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_PROG_BITS )
+        return( ORL_ERROR );
     return( relocScan( sh, offset, func, 1 ) );
 }
 
 
-orl_return OMFENTRY OmfSecScanReloc( omf_sec_handle sh,
-                                     orl_reloc_return_func func )
+orl_return OMFENTRY OmfSecScanReloc( omf_sec_handle sh, orl_reloc_return_func func )
 {
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_PROG_BITS ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_PROG_BITS )
+        return( ORL_ERROR );
     return( relocScan( sh, 0, func, 0 ) );
 }
 
@@ -426,19 +433,18 @@ orl_table_index OMFENTRY OmfCvtSecHdlToIdx( omf_sec_handle sh )
 }
 
 
-omf_sec_handle OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle ofh,
-                                           orl_table_index idx )
+omf_sec_handle OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle ofh, orl_table_index idx )
 {
     omf_sec_handle      sh;
 
     assert( ofh );
 
-    sh = ofh->first_sec;
-    while( sh ) {
-        if( sh->index == idx ) return( sh );
-        sh = sh->next;
+    for( sh = ofh->first_sec; sh != NULL; sh = sh->next ) {
+        if( sh->index == idx ) {
+            break;
+        }
     }
-    return( NULL );
+    return( sh );
 }
 
 
@@ -448,7 +454,8 @@ orl_return OMFENTRY OmfRelocSecScan( omf_sec_handle sh,
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_RELOCS ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_RELOCS )
+        return( ORL_ERROR );
     return( relocScan( sh, 0, func, 0 ) );
 }
 
@@ -463,13 +470,17 @@ orl_return OMFENTRY OmfSymbolSecScan( omf_sec_handle sh,
     assert( sh );
     assert( func );
 
-    if( sh->type != ORL_SEC_TYPE_SYM_TABLE ) return( ORL_ERROR );
+    if( sh->type != ORL_SEC_TYPE_SYM_TABLE )
+        return( ORL_ERROR );
     syms = sh->assoc.sym.syms;
-    if( !syms ) return( ORL_ERROR );
+    if( !syms )
+        return( ORL_ERROR );
 
     for( x = 0; x < sh->assoc.sym.num; x++ ) {
-        err = func( (orl_symbol_handle) syms[x] );
-        if( err != ORL_OKAY ) return( err );
+        err = func( (orl_symbol_handle)syms[x] );
+        if( err != ORL_OKAY ) {
+            return( err );
+        }
     }
     return( ORL_OKAY );
 }
@@ -551,19 +562,18 @@ omf_sec_handle OMFENTRY OmfSymbolGetSecHandle( omf_symbol_handle sym )
 }
 
 
-orl_return OMFENTRY OmfNoteSecScan( omf_sec_handle hnd, orl_note_callbacks *cb,
-                                     void *cookie )
+orl_return OMFENTRY OmfNoteSecScan( omf_sec_handle hnd, orl_note_callbacks *cb, void *cookie )
 {
     assert( hnd );
     assert( cb );
 
-    if( hnd->type != ORL_SEC_TYPE_NOTE ) return ORL_ERROR;
+    if( hnd->type != ORL_SEC_TYPE_NOTE )
+        return( ORL_ERROR );
     return( OmfParseComments( hnd, cb, cookie ) );
 }
 
 
-orl_return              OMFENTRY OmfGroupsScan( omf_file_handle hnd,
-                                                orl_group_return_func func )
+orl_return OMFENTRY OmfGroupsScan( omf_file_handle hnd, orl_group_return_func func )
 {
     orl_table_index     idx;
     orl_return          err;
@@ -575,14 +585,16 @@ orl_return              OMFENTRY OmfGroupsScan( omf_file_handle hnd,
     for( idx = 0; idx < hnd->num_groups; idx++ ) {
         assert( hnd->groups );
         err = func( (orl_group_handle)hnd->groups[idx] );
-        if( err != ORL_OKAY ) break;
+        if( err != ORL_OKAY ) {
+            break;
+        }
     }
 
     return( err );
 }
 
 
-char *                  OMFENTRY OmfGroupName( omf_grp_handle hnd )
+char * OMFENTRY OmfGroupName( omf_grp_handle hnd )
 {
     assert( hnd );
     assert( hnd->sym );
@@ -591,7 +603,7 @@ char *                  OMFENTRY OmfGroupName( omf_grp_handle hnd )
 }
 
 
-orl_table_index         OMFENTRY OmfGroupSize( omf_grp_handle hnd )
+orl_table_index OMFENTRY OmfGroupSize( omf_grp_handle hnd )
 {
     assert( hnd );
 
@@ -599,8 +611,7 @@ orl_table_index         OMFENTRY OmfGroupSize( omf_grp_handle hnd )
 }
 
 
-char *                  OMFENTRY OmfGroupMember( omf_grp_handle hnd,
-                                                 orl_table_index idx )
+char * OMFENTRY OmfGroupMember( omf_grp_handle hnd, orl_table_index idx )
 {
     omf_sec_handle      sh;
 

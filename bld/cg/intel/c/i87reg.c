@@ -43,12 +43,12 @@
 #include "insutil.h"
 #include "rgtbl.h"
 #include "inssegs.h"
+#include "fixindex.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
-extern  int             NumOperands(instruction *);
 extern  void            UpdateLive(instruction*,instruction*);
 
 /* forward declarations */

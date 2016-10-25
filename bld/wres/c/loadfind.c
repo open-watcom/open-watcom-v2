@@ -55,7 +55,7 @@ typedef struct dbgheader {
 } dbgheader;
 #include "poppck.h"
 
-WResFileOffset    FileShift = 0;
+WResFileOffset    WResFileShift = 0;
 
 bool FindResources( PHANDLE_INFO hInstance )
 /* look for the resource information in a debugger record at the end of file */
@@ -67,7 +67,7 @@ bool FindResources( PHANDLE_INFO hInstance )
     char            buffer[sizeof( PATCH_LEVEL )];
 
     notfound = true;
-    FileShift = 0;
+    WResFileShift = 0;
     offset = sizeof( dbgheader );
     if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
         if( WRESREAD( hInstance->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
@@ -82,7 +82,7 @@ bool FindResources( PHANDLE_INFO hInstance )
         WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
         if( header.signature == WAT_RES_SIG ) {
             notfound = false;
-            FileShift = currpos - header.debug_size + sizeof( dbgheader );
+            WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
             break;
         } else if( header.signature == VALID_SIGNATURE ||
                    header.signature == FOX_SIGNATURE1 ||

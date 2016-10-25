@@ -39,13 +39,13 @@
 
 void InfoReloc( dw_client cli, uint reloc_type )
 {
-    CLIReloc2( DW_DEBUG_INFO, reloc_type );
+    CLIReloc2( cli, DW_DEBUG_INFO, reloc_type );
 }
 
 
 void Info8( dw_client cli, uint_8 value )
 {
-    CLIWrite( DW_DEBUG_INFO, &value, sizeof( uint_8 ) );
+    CLIWrite( cli, DW_DEBUG_INFO, &value, sizeof( uint_8 ) );
 }
 
 
@@ -54,7 +54,7 @@ void Info16( dw_client cli, uint_16 value )
     char            buf[sizeof( uint_16 )];
 
     WriteU16( buf, value );
-    CLIWrite( DW_DEBUG_INFO, &buf, sizeof( buf ) );
+    CLIWrite( cli, DW_DEBUG_INFO, &buf, sizeof( buf ) );
 }
 
 
@@ -63,7 +63,7 @@ void Info32( dw_client cli, uint_32 value )
     char            buf[sizeof( uint_32 )];
 
     WriteU32( buf, value );
-    CLIWrite( DW_DEBUG_INFO, &buf, sizeof( buf ) );
+    CLIWrite( cli, DW_DEBUG_INFO, &buf, sizeof( buf ) );
 }
 
 
@@ -73,7 +73,7 @@ void InfoLEB128( dw_client cli, dw_sconst value )
     uint_8          *end;
 
     end = LEB128( buf, value );
-    CLIWrite( DW_DEBUG_INFO, buf, end - buf );
+    CLIWrite( cli, DW_DEBUG_INFO, buf, end - buf );
 }
 
 
@@ -83,13 +83,13 @@ void InfoULEB128( dw_client cli, dw_uconst value )
     uint_8          *end;
 
     end = ULEB128( buf, value );
-    CLIWrite( DW_DEBUG_INFO, buf, end - buf );
+    CLIWrite( cli, DW_DEBUG_INFO, buf, end - buf );
 }
 
 
 void InfoBytes( dw_client cli, const void *buf, size_t size )
 {
-    CLIWrite( DW_DEBUG_INFO, buf, size );
+    CLIWrite( cli, DW_DEBUG_INFO, buf, size );
 }
 
 
@@ -106,17 +106,17 @@ debug_ref InfoSkip( dw_client cli, long amt )
 {
     debug_ref       ret;
 
-    ret = CLITell( DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
-    CLISeek( DW_DEBUG_INFO, amt, DW_SEEK_CUR );
+    ret = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    CLISeek( cli, DW_DEBUG_INFO, amt, DW_SEEK_CUR );
     return( ret );
 }
 
 
 void InfoPatch( dw_client cli, debug_ref offs, const void *value, size_t len )
 {
-    CLISeek( DW_DEBUG_INFO, offs + cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
-    CLIWrite( DW_DEBUG_INFO, value, len );
-    CLISeek( DW_DEBUG_INFO, 0, DW_SEEK_END );
+    CLISeek( cli, DW_DEBUG_INFO, offs + cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
+    CLIWrite( cli, DW_DEBUG_INFO, value, len );
+    CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
 }
 
 
@@ -124,15 +124,15 @@ void InitDebugInfo( dw_client cli )
 {
 
     /* leave room for the length field */
-    CLISeek( DW_DEBUG_INFO, sizeof( uint_32 ), DW_SEEK_CUR );
+    CLISeek( cli, DW_DEBUG_INFO, sizeof( uint_32 ), DW_SEEK_CUR );
     Info16( cli, 2 );   /* dwarf version */
     /* abbrev start */
     if( cli->compiler_options & DW_CM_ABBREV_PRE ) {
-        CLIReloc4( DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
+        CLIReloc4( cli, DW_DEBUG_INFO, DW_W_EXT_REF, cli->abbrev_sym, 0 );
     } else {
-        CLISeek( DW_DEBUG_ABBREV, 0, DW_SEEK_SET );
-        CLIReloc3( DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_ABBREV );
-        CLISeek( DW_DEBUG_ABBREV, 0, DW_SEEK_END );
+        CLISeek( cli, DW_DEBUG_ABBREV, 0, DW_SEEK_SET );
+        CLIReloc3( cli, DW_DEBUG_INFO, DW_W_SECTION_POS, DW_DEBUG_ABBREV );
+        CLISeek( cli, DW_DEBUG_ABBREV, 0, DW_SEEK_END );
     }
     Info8( cli, cli->offset_size );
 }
@@ -144,11 +144,11 @@ void FiniDebugInfo( dw_client cli )
     long            size;
 
     /* patch in the length of the .debug_info section */
-    size = CLITell( DW_DEBUG_INFO );
+    size = CLITell( cli, DW_DEBUG_INFO );
     size -= sizeof( uint_32 );
     size -= cli->section_base[DW_DEBUG_INFO];
-    CLISeek( DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
+    CLISeek( cli, DW_DEBUG_INFO, cli->section_base[DW_DEBUG_INFO], DW_SEEK_SET );
     WriteU32( buf, size );
-    CLIWrite( DW_DEBUG_INFO, buf, sizeof( uint_32 ) );
-    CLISeek( DW_DEBUG_INFO, 0, DW_SEEK_END );
+    CLIWrite( cli, DW_DEBUG_INFO, buf, sizeof( uint_32 ) );
+    CLISeek( cli, DW_DEBUG_INFO, 0, DW_SEEK_END );
 }

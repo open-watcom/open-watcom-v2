@@ -4,8 +4,8 @@
 !inject declwnt.obj                      nt
 !inject declrdu.obj                                                                                         rdu
 !inject maxthrds.obj                                nvc ncl         o16 o32     q32             l32 lpc lmp
-!inject mthread.obj                      nt nta ntp nvc ncl nvl nll o16 o32     q32                         rdu rdk
-!inject mthrdini.obj                     nt nta ntp nvc ncl nvl nll     o32     q32                         rdu rdk
+!inject mthread.obj                      nt nta ntp nvc ncl nvl nll o16 o32     q32             l32 lpc lmp rdu rdk
+!inject mthrdini.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
 !inject regdata.obj                      nt nta ntp nvc ncl nvl nll     o32     q32                         rdu rdk
 !inject register.obj                     nt nta ntp nvc ncl nvl nll     o32     q32             l32 lpc lmp rdu rdk
 !inject registrx.obj                     nt nta ntp

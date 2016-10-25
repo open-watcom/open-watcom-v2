@@ -41,8 +41,7 @@ void CPPLIB( raise_exception )  // RAISE EXCEPTION
     THREAD_CTL *thr;            // - thread control
     thr = PgmThread();
     for( rw = thr->registered; ; rw = rw->base.prev ) {
-        auto FSREGAPI unsigned (*handler)
-            ( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
+        auto FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
         handler = rw->base.handler;
         unsigned retn = (*handler)( excrec, rw, NULL, 0 );
         if( retn != EXC_HAND_CONTINUE ) break;
@@ -61,8 +60,7 @@ void CPPLIB( unwind_global )    // GLOBAL UNWIND
     thr = PgmThread();
     excrec->flags |= EXC_TYPE_UNWIND_NORMAL;
     for( rw = thr->registered; rw != bound; rw = rw->base.prev ) {
-        auto FSREGAPI unsigned (*handler)
-            ( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
+        auto FSREGAPI unsigned (*handler)( FsExcRec*, RW_DTREG*, FsCtxRec*, unsigned );
         handler = rw->base.handler;
         unsigned retn = (*handler)( excrec, rw, NULL, 0 );
         if( retn != EXC_HAND_CONTINUE ) break;

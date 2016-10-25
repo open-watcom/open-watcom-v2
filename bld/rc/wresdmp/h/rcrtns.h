@@ -36,14 +36,22 @@
 #include "wio.h"
 #include "trmemcvr.h"
 
-#define RCOPEN        open
-#define RCCLOSE       close
-#define RCWRITE       write
-#define RCREAD        read
-#define RCSEEK        lseek
-#define RCTELL        tell
-#define RCALLOC       TRMemAlloc
-#define RCFREE        TRMemFree
-#define RCREALLOC     TRMemRealloc
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
+#define RCOPEN          open
+#define RCCLOSE         close
+#define RCWRITE         posix_write
+#define RCREAD          posix_read
+#define RCSEEK          lseek
+#define RCTELL          tell
+#define RCALLOC         TRMemAlloc
+#define RCFREE          TRMemFree
+#define RCREALLOC       TRMemRealloc
 
 #endif

@@ -40,7 +40,7 @@ unsigned                HashValue;
 hash_entry              HashTable[HASH_PRIME];
 
 
-sym_id        STSearch( char *name, int len, sym_id head ) {
+sym_id        STSearch( char *name, uint len, sym_id head ) {
 //==========================================================
 
 // Search symbol table for given name.
@@ -56,7 +56,7 @@ sym_id        STSearch( char *name, int len, sym_id head ) {
 }
 
 
-sym_id        STNameSearch( char *name, int len ) {
+sym_id        STNameSearch( char *name, uint len ) {
 //=================================================
 
 // Search symbol table for given name.

@@ -42,9 +42,11 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <errno.h>
 #include <netdb.h>
 #include "_resolve.h"
+#include "rterrno.h"
+#include "thread.h"
+
 
 /* Our send/receive buffer size */
 #define DNS_BUFFER_SIZE     0xFFFF

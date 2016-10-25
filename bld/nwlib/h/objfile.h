@@ -32,7 +32,7 @@
 
 typedef struct buf_list {
     struct buf_list *   next;
-    char                buf[ 1 ];
+    char                buf[1];
 } buf_list;
 
 typedef struct {

@@ -35,10 +35,10 @@
 
 #define QNX_VERSION 400
 
-#define QNX_MAX_REC_SIZE 0x7E00     // was 0xFFFF
-#define QNX_MAX_FIXUPS   0x7E00     // maximum fixup size that can be put
-                                    // into one record.
-                                    // was 65532
+#define QNX_MAX_REC_SIZE (0x8000 - 512) // was 0xFFFF
+#define QNX_MAX_FIXUPS   (0x8000 - 512) // maximum fixup size that can be put
+                                        // into one record.
+                                        // was 65532
 
 #define QNX_READ_WRITE  0
 #define QNX_READ_ONLY   1

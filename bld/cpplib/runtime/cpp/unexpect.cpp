@@ -38,8 +38,8 @@
 
 namespace std {
 
-_NORETURN
 _WPRTLINK
+_NORETURN
 void unexpected( void )             // HANDLE UNEXPECTED EXCEPTION
 {
     PFV handler;                    // - current handler

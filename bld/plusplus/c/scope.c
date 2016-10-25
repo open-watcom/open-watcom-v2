@@ -5539,7 +5539,7 @@ static walk_status collectVFTable( BASE_STACK *top, void *parm )
     table->amt_left = max_vfn;
     table->ambiguities = false;
     table->corrupted = false;
-    if( ! data->already_done ) {
+    if( !data->already_done ) {
         init = table->data;
         for( i = 0; i < max_vfn; ++i ) {
             initThunk( init );

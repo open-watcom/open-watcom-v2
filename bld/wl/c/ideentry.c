@@ -95,8 +95,8 @@ bool ExecDLLPgm( char *pname, char *cmdline )
 
 /* routines which are called by the linker core */
 
-void WriteStdOut( char *str )
-/**********************************/
+void WriteStdOut( const char *str )
+/*********************************/
 {
     CheckBreak();
     if( IdeCbs != NULL ) {
@@ -112,8 +112,8 @@ void WriteStdOutNL( void )
     }
 }
 
-void WriteStdOutInfo( char *str, unsigned level, char *symbol )
-/********************************************************************/
+void WriteStdOutInfo( const char *str, unsigned level, const char *symbol )
+/*************************************************************************/
 {
     IDEMsgInfo  info;
     unsigned    msgclass;

@@ -65,7 +65,7 @@ void            (* _ExceptionFini)( void ) = { &R_TrapFini };
 
 static  char            RTSysInitialized = { 0 };
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
 static  void    __NullFIOAccess( void ) {}
 
@@ -149,7 +149,7 @@ unsigned        RTSysInit( void ) {
 // unless stack checking must be turned off at all times.
 #pragma off (check_stack)
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 
 static  void    __InitThreadDataSize( void ) {
 //======================================

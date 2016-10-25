@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <dos.h>
 #include <conio.h>
 #include "rtdata.h"
@@ -48,7 +49,7 @@ _WCRTLINK int kbhit( void )
     if( _RWD_cbyte != 0 )
         return( 1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsKbhit != 0 ) {
+    if( _WindowsKbhit != NULL ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( STDIN_FILENO );
         return( _WindowsKbhit( res ) );

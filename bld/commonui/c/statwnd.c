@@ -50,13 +50,13 @@ WINEXPORT WPI_MRESULT CALLBACK StatusWndCallback( HWND hwnd, WPI_MSG msg, WPI_PA
  */
 typedef struct statwnd {
     HWND                win;
+    int                 wndHeight;
     int                 numSections;
-    status_block_desc   sectionDesc[MAX_SECTIONS];
     char                *sectionData[MAX_SECTIONS + 1];
+    status_block_desc   sectionDesc[MAX_SECTIONS];
     UINT                sectionDataFlags[MAX_SECTIONS + 1];
     WPI_FONT            sectionDataFont;
     WPI_RECT            statusRect;
-    int                 wndHeight;
 } statwnd;
 
 static char                     *className = "StatusWnd";

@@ -374,8 +374,7 @@ bool GUISetCursor( gui_window *wnd )
         if( GUI_WND_MINIMIZED( wnd ) ) {
             uinocursor( &wnd->screen );
         } else {
-            uicursor( &wnd->screen, wnd->screen.row, wnd->screen.col,
-                      wnd->screen.cursor );
+            uicursor( &wnd->screen, wnd->screen.row, wnd->screen.col, wnd->screen.cursor );
             return( true );
         }
     }

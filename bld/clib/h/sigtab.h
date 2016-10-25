@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#if !defined( __OS2_286__ ) && defined( __MT__ )
+#if !defined( __OS2_286__ ) && defined( __SW_BM )
     #define __SIGNALTABLE   (__THREADDATAPTR->signal_table)
 #else
     #include "sigdefn.h"

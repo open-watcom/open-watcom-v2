@@ -46,7 +46,7 @@ struct __TID_NAME {
     char        name[1];
 };
 
-#ifdef __MT__
+#ifdef __SW_BM
 static __lock semaphore;
 #endif
 static __TID_NAME *listNames;
@@ -56,7 +56,7 @@ namespace {
         ~__INITFINI() {
             __TID_NAME *p;
             __TID_NAME *n;
-#ifdef __MT__
+#ifdef __SW_BM
             __fn_lock lock( &semaphore );
 #endif
 
@@ -79,7 +79,7 @@ namespace std {
     const char *ret_name;
     unsigned len;
     __TID_NAME *name;
-#ifdef __MT__
+#ifdef __SW_BM
     __fn_lock lock( &semaphore );
 #endif
 

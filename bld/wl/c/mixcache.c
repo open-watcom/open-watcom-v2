@@ -156,8 +156,8 @@ void CacheClose( file_list *list, unsigned pass )
     }
 }
 
-void *CachePermRead( file_list *list, unsigned long pos, unsigned len )
-/*****************************************************************************/
+void *CachePermRead( file_list *list, unsigned long pos, size_t len )
+/*******************************************************************/
 {
     char        *buf;
     char        *result;
@@ -176,14 +176,14 @@ void *CachePermRead( file_list *list, unsigned long pos, unsigned len )
     return( result );
 }
 
-void *CacheRead( file_list *list, unsigned long pos, unsigned len )
-/**************************************************************************/
+void *CacheRead( file_list *list, unsigned long pos, size_t len )
+/***************************************************************/
 /* read len bytes out of the cache. */
 {
-    unsigned        bufnum;
-    unsigned        startnum;
-    unsigned        offset;
-    unsigned        amtread;
+    size_t          bufnum;
+    size_t          startnum;
+    size_t          offset;
+    size_t          amtread;
     char            *result;
     char            **cache;
     unsigned long   newpos;
@@ -202,14 +202,14 @@ void *CacheRead( file_list *list, unsigned long pos, unsigned len )
     bufnum = startnum;
     cache = file->cache;
     for( ;; ) {
-        if( cache[ bufnum ] == NULL ) {   // make sure page is in.
-            _ChkAlloc( cache[ bufnum ], CACHE_PAGE_SIZE );
+        if( cache[bufnum] == NULL ) {   // make sure page is in.
+            _ChkAlloc( cache[bufnum], CACHE_PAGE_SIZE );
             newpos = (unsigned long)bufnum * CACHE_PAGE_SIZE;
             if( file->currpos != newpos ) {
                 QSeek( file->handle, newpos, file->name );
             }
             file->currpos = newpos + CACHE_PAGE_SIZE;
-            QRead( file->handle, cache[ bufnum ], CACHE_PAGE_SIZE, file->name );
+            QRead( file->handle, cache[bufnum], CACHE_PAGE_SIZE, file->name );
         }
         if( amtread >= len )
             break;
@@ -218,23 +218,23 @@ void *CacheRead( file_list *list, unsigned long pos, unsigned len )
         Multipage = true;
     }
     if( !Multipage ) {
-        result = cache[ startnum ] + offset;
+        result = cache[startnum] + offset;
     } else {
         if( len > TokSize ) {
             TokSize = ROUND_UP( len, SECTOR_SIZE );
             _LnkReAlloc( TokBuff, TokBuff, TokSize );
         }
         amtread = CACHE_PAGE_SIZE - offset;
-        memcpy( TokBuff, cache[ startnum ] + offset, amtread );
+        memcpy( TokBuff, cache[startnum] + offset, amtread );
         len -= amtread;
         result = TokBuff + amtread;
         for( ;; ) {
             startnum++;
             if( len <= CACHE_PAGE_SIZE ) {
-                memcpy( result, cache[ startnum ], len );
+                memcpy( result, cache[startnum], len );
                 break;
             } else {
-                memcpy( result, cache[ startnum ], CACHE_PAGE_SIZE );
+                memcpy( result, cache[startnum], CACHE_PAGE_SIZE );
                 len -= CACHE_PAGE_SIZE;
                 result += CACHE_PAGE_SIZE;
             }
@@ -257,7 +257,7 @@ bool CacheEnd( file_list *list, unsigned long pos )
 }
 
 void CacheFini( void )
-/***************************/
+/********************/
 {
 }
 

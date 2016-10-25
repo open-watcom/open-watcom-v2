@@ -37,7 +37,7 @@
 #include "lock.h"
 #include "ioshdr.h"
 
-#ifdef __MT__
+#ifdef __SW_BM
 __lock *__get_next_ios_lock( void ) {
 
     #define         MAX_LOCKS   16

@@ -94,7 +94,8 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     thread_args td;
 
     if( __ThreadData == NULL ) {
-        if( __InitThreadProcessing() == NULL )  return( -1 );
+        if( __InitThreadProcessing() == NULL )
+            return( -1 );
         __InitMultipleThread();
     }
     stack_bottom = stack_bottom;

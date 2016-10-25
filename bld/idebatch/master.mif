@@ -81,16 +81,14 @@ all : $(name).exe $(name)e.exe .SYMBOLIC
 $(name).exe : $(objs) $(lnk) $(name).res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objs) }
-    @%make echo_bindres
-    $(rc) $(name).res $^@
+    @%make bind_res
 
-$(name)e.exe : $(objse) $(lnk) $(name).res $(__MAKEFILES__)
+$(name)e.exe : $(objse) $(lnk) $(name)e.res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) @$(lnk) file { $(objse) }
-    @%make echo_bindres
-    $(rc) $(name).res $^@
+    @%make bind_res
 
-$(name).res : ../$(name).rc
+$(name).res $(name)e.res : ../$(name).rc
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs) $[@ -fo=$^@
 

@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
@@ -38,6 +37,7 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
+#include "mposix.h"
 
 #include "clibext.h"
 
@@ -397,10 +397,10 @@ static void writeOutput( unsigned class, int fh, const char *buff, size_t len )
 {
     if( class != INF ) {
         if( logFH != -1 ) {
-            write( logFH, buff, len );
+            posix_write( logFH, buff, len );
         }
     }
-    write( fh, buff, len );
+    posix_write( fh, buff, len );
 }
 
 #ifdef __WATCOMC__
@@ -545,7 +545,7 @@ bool GetYes( enum MsgClass querymsg )
 
     PrtMsg( INF | NEOL | STRING_YES_NO, querymsg );
 
-    if( read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
+    if( posix_read( STDIN_FILENO, buf, LINE_BUFF ) == 0 ) {
         return( false );
     }
 

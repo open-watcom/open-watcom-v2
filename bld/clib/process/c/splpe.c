@@ -37,6 +37,8 @@
 #include <malloc.h>
 #include <memory.h>
 #include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK int __F_NAME(spawnlpe,_wspawnlpe)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {

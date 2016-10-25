@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <except.h>
 
 extern "C"

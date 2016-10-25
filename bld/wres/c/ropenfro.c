@@ -35,7 +35,9 @@
 #include "opcl.h"
 #include "reserr.h"
 #include "wresrtns.h"
+
 #include "clibext.h"
+
 
 WResFileID ResOpenFileRO( const char *filename )
 /**********************************************/

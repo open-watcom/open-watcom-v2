@@ -37,6 +37,8 @@
 #include <limits.h>
 #include <string.h>
 #include "rterrno.h"
+#include "thread.h"
+
 
 #define MAX_TTY_NAME    PATH_MAX   
 #define BASE_LINK       "/proc/self/fd/"

@@ -113,8 +113,8 @@ enum infile_flags {
 
 typedef struct infilelist {
     INFILELIST          *next;
-    PATH_ENTRY          *path_list;
-    char                *prefix;
+    const PATH_ENTRY    *path_list;
+    const char          *prefix;
     void                *cache;  // used when object file cached in mem
     unsigned long       len;     // length of the file.
     unsigned long       currpos; // current position of the file.
@@ -234,7 +234,7 @@ typedef struct arcdata {
 
 typedef struct name_list {
     struct name_list    *next;
-    unsigned            len;
+    size_t              len;
     unsigned_32         num;
     char                *name;          // NYI: make this vbl length again.
 } name_list;
@@ -264,8 +264,8 @@ typedef struct mod_entry {
     symbol              *publist;
     SEGDATA             *segs;
     time_t              modtime;
-    unsigned            relocs;
-    unsigned            sizerelocs;
+    size_t              relocs;
+    size_t              sizerelocs;
     module_flags        modinfo;
     void                *lines;
     omf_dbg_type        omfdbg;
@@ -554,7 +554,7 @@ typedef struct lobject_data {
 
 typedef struct {
     size_t              len;
-    char                *name;
+    const char          *name;
 } length_name;
 
 typedef struct order_class {

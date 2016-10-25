@@ -370,7 +370,7 @@ static int ProcOneCopy( const char *src, char *dst, bool cond_copy, char *copy_b
             return( 1 );
         }
     }
-    Log( false, "Copying '%s' to '%s'...\n", src, dst );
+    Log( Quiet, "Copying '%s' to '%s'...\n", src, dst );
     while( (len = fread( copy_buff, 1, COPY_BUFF_SIZE, sp )) != 0 ) {
         if( ferror( sp ) ) {
             Log( false, "Error reading '%s': %s\n", src, strerror( errno ) );

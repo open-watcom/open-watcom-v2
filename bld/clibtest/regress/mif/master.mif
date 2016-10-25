@@ -401,14 +401,14 @@ w386_3r.exe : $(srcfile)
     @%make set_path_wlink
     $(linker) SYSTEM win386 $(link_opts) $(link_x86) OPTION mindata=32K,maxdata=32K FILE $^*.obj
     @%make set_old_path
-    $(wbind_exe) -n -q -s $(wbind_ext) $^*
+    $(wbind) -n -q -s $(win386ldr) $^*
 
 w386_3s.exe : $(srcfile)
     $(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -zw $(defwin) -bt=windows $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
     $(linker) SYSTEM win386 $(link_opts) $(link_x86) OPTION mindata=32K,maxdata=32K FILE $^*.obj
     @%make set_old_path
-    $(wbind_exe) -n -q -s $(wbind_ext) $^*
+    $(wbind) -n -q -s $(win386ldr) $^*
 
 wnt_3r.exe : $(srcfile)
     $(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) $(extra_test_flags)

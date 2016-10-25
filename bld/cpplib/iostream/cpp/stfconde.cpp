@@ -43,11 +43,11 @@ namespace std {
 
   streambuf::streambuf() {
 
-    #ifdef __MT__
-        __b_lock = __get_next_streambuf_lock();
-    #else
-        __b_lock = NULL;
-    #endif
+#ifdef __SW_BM
+    __b_lock = __get_next_streambuf_lock();
+#else
+    __b_lock = NULL;
+#endif
     __reserve_base     = NULL;
     __reserve_end      = NULL;
     __get_base         = NULL;

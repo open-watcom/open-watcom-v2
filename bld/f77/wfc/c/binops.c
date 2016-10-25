@@ -39,6 +39,7 @@
 #include "types.h"
 #include "tcmplx.h"
 #include "binops.h"
+#include "gtypes.h"
 
 
 static bool UnaryMul( TYPE typ1, TYPE typ2 ) {

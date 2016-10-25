@@ -34,8 +34,9 @@
 #include "saferlib.h"
 #include <string.h>
 #include <wchar.h>
-#include <errno.h>
 #include "errstr.h"
+#include "rterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK errno_t __F_NAME(strerror_s,wcserror_s)( CHAR_TYPE *s,

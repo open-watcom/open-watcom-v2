@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <conio.h>
 #include "rtdata.h"
 #include "defwin.h"
@@ -49,7 +50,7 @@ _WCRTLINK int getch( void )
     _RWD_cbyte = 0;
     if( c == 0 )  {
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsGetch != 0 ) {
+        if( _WindowsGetch != NULL ) {
             LPWDATA     res;
             res = _WindowsIsWindowedHandle( STDIN_FILENO );
             c = _WindowsGetch( res );

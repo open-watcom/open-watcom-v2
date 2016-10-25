@@ -46,7 +46,7 @@ void DWENTRY DWPubname(
     const char *                name )
 {
     HandleReference( cli, hdl, DW_DEBUG_PUBNAMES );
-    CLIWrite( DW_DEBUG_PUBNAMES, name, strlen( name ) + 1 );
+    CLIWrite( cli, DW_DEBUG_PUBNAMES, name, strlen( name ) + 1 );
 }
 
 
@@ -56,10 +56,10 @@ void InitDebugPubnames(
     static uint_16  const version = 2;
 
     /* write the set header */
-    CLISeek( DW_DEBUG_PUBNAMES, sizeof( uint_32 ), DW_SEEK_CUR );
-    CLIWrite( DW_DEBUG_PUBNAMES, &version, sizeof( version ) );
-    CLIReloc3( DW_DEBUG_PUBNAMES, DW_W_SECTION_POS, DW_DEBUG_INFO );
-    CLIReloc2( DW_DEBUG_PUBNAMES, DW_W_UNIT_SIZE );
+    CLISeek( cli, DW_DEBUG_PUBNAMES, sizeof( uint_32 ), DW_SEEK_CUR );
+    CLIWrite( cli, DW_DEBUG_PUBNAMES, &version, sizeof( version ) );
+    CLIReloc3( cli, DW_DEBUG_PUBNAMES, DW_W_SECTION_POS, DW_DEBUG_INFO );
+    CLIReloc2( cli, DW_DEBUG_PUBNAMES, DW_W_UNIT_SIZE );
 }
 
 
@@ -71,12 +71,12 @@ void FiniDebugPubnames(
     debug_ref           offset;
 
     /* write the set terminator */
-    CLIWrite( DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
+    CLIWrite( cli, DW_DEBUG_PUBNAMES, zeros, sizeof( uint_32 ) );
 
     /* backpatch the section length */
-    offset = CLITell( DW_DEBUG_PUBNAMES ) - cli->section_base[DW_DEBUG_PUBNAMES] - sizeof( debug_ref );
+    offset = CLITell( cli, DW_DEBUG_PUBNAMES ) - cli->section_base[DW_DEBUG_PUBNAMES] - sizeof( debug_ref );
     WriteRef( buf, offset );
-    CLISeek( DW_DEBUG_PUBNAMES, cli->section_base[DW_DEBUG_PUBNAMES], DW_SEEK_SET );
-    CLIWrite( DW_DEBUG_PUBNAMES, buf, sizeof( debug_ref ) );
-    CLISeek( DW_DEBUG_PUBNAMES, 0, DW_SEEK_END );
+    CLISeek( cli, DW_DEBUG_PUBNAMES, cli->section_base[DW_DEBUG_PUBNAMES], DW_SEEK_SET );
+    CLIWrite( cli, DW_DEBUG_PUBNAMES, buf, sizeof( debug_ref ) );
+    CLISeek( cli, DW_DEBUG_PUBNAMES, 0, DW_SEEK_END );
 }

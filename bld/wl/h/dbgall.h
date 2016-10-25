@@ -50,7 +50,7 @@ extern void     DBIDefClass( class_entry *, unsigned_32 );
 extern void     DBIAddLocal( seg_leader *, offset );
 extern void     DBIAddGlobal( symbol * );
 extern void     DBIGenGlobal( symbol *, section * );
-extern void     DBIAddLines( segdata *, void *, unsigned, bool );
+extern void     DBIAddLines( segdata *, void *, size_t, bool );
 extern void     DBIAddrStart( void );
 extern void     DBIAddrSectStart( section * );
 extern void     DBIP2Start( section * );

@@ -60,13 +60,13 @@ static void emitDelayed( dw_client cli )
     for( cur = ReverseChain( cli->references.delayed ); cur != NULL; cur = CarveFreeLink( cli->references.delay_carver, cur ) ) {
         buf[0] = REF_BEGIN_SCOPE;
         WriteRef( buf + 1, cur->offset );
-        CLIWrite( DW_DEBUG_REF, buf, 1 + sizeof( debug_ref ) );
+        CLIWrite( cli, DW_DEBUG_REF, buf, 1 + sizeof( debug_ref ) );
     }
     cli->references.delayed = 0;
     if( cli->references.delayed_file ) {
         buf[0] = REF_SET_FILE;
         end = ULEB128( buf + 1, cli->references.delayed_file );
-        CLIWrite( DW_DEBUG_REF, buf, end - buf );
+        CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
         cli->references.delayed_file = 0;
     }
 }
@@ -83,7 +83,7 @@ void StartRef( dw_client cli )
     new = CarveAlloc( cli, cli->references.delay_carver );
     new->next = cli->references.delayed;
     cli->references.delayed = new;
-    new->offset = CLITell( DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    new->offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
     new->scope = cli->references.scope;
     ++cli->references.scope;
 }
@@ -104,7 +104,7 @@ void EndRef( dw_client cli )
         cli->references.delayed = CarveFreeLink( cli->references.delay_carver, this );
     } else {
         buf[0] = REF_END_SCOPE;
-        CLIWrite( DW_DEBUG_REF, buf, sizeof( buf ) );
+        CLIWrite( cli, DW_DEBUG_REF, buf, sizeof( buf ) );
     }
 }
 
@@ -128,7 +128,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     if( line_delta < 0 || line_delta >= ( 255 - REF_CODE_BASE ) / REF_COLUMN_RANGE ) {
         buf[0] = REF_ADD_LINE;
         end = LEB128( buf + 1, line_delta );
-        CLIWrite( DW_DEBUG_REF, buf, end - buf );
+        CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
         cli->references.column = 0;
         line_delta = 0;
     } else if( line_delta != 0 ) {
@@ -139,7 +139,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
     if( column_delta < 0 || column_delta >= REF_COLUMN_RANGE ) {
         buf[0] = REF_ADD_COLUMN;
         end = LEB128( buf + 1, column_delta );
-        CLIWrite( DW_DEBUG_REF, buf, end - buf );
+        CLIWrite( cli, DW_DEBUG_REF, buf, end - buf );
         column_delta = 0;
     }
     _Assert( line_delta >= 0
@@ -147,7 +147,7 @@ void DWENTRY DWReference( dw_client cli, dw_linenum line, dw_column column, dw_h
         && column_delta >= 0
         && column_delta < REF_COLUMN_RANGE );
     buf[0] = REF_CODE_BASE + line_delta * REF_COLUMN_RANGE + column_delta;
-    CLIWrite( DW_DEBUG_REF, buf, 1 );
+    CLIWrite( cli, DW_DEBUG_REF, buf, 1 );
     HandleReference( cli, dependant, DW_DEBUG_REF );
 }
 
@@ -167,7 +167,7 @@ void InitReferences( dw_client cli )
     cli->references.scope = 0;
     cli->references.delayed_file = 0;
 
-    CLISeek( DW_DEBUG_REF, sizeof( uint_32 ), DW_SEEK_CUR );
+    CLISeek( cli, DW_DEBUG_REF, sizeof( uint_32 ), DW_SEEK_CUR );
 }
 
 
@@ -176,11 +176,11 @@ void FiniReferences( dw_client cli )
     char                        buf[sizeof( uint_32 )];
     long                        size;
 
-    size = CLITell( DW_DEBUG_REF ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_REF];
+    size = CLITell( cli, DW_DEBUG_REF ) - sizeof( uint_32 ) - cli->section_base[DW_DEBUG_REF];
     WriteU32( buf, size );
-    CLISeek( DW_DEBUG_REF, cli->section_base[DW_DEBUG_REF], DW_SEEK_SET );
-    CLIWrite( DW_DEBUG_REF, buf, sizeof( buf ) );
-    CLISeek( DW_DEBUG_REF, 0, DW_SEEK_END );
+    CLISeek( cli, DW_DEBUG_REF, cli->section_base[DW_DEBUG_REF], DW_SEEK_SET );
+    CLIWrite( cli, DW_DEBUG_REF, buf, sizeof( buf ) );
+    CLISeek( cli, DW_DEBUG_REF, 0, DW_SEEK_END );
 
     CarveDestroy( cli, cli->references.delay_carver );
 }

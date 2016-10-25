@@ -54,10 +54,10 @@ STATIC handle RESInitFile( const char *name )
     WResFileOffset  old_shift;
 
     ret_val = NULL;
-    old_shift = FileShift;
-    FileShift = 0;
+    old_shift = WResFileShift;
+    WResFileShift = 0;
     depends = WResGetAutoDep( (char *)name );
-    FileShift = old_shift;
+    WResFileShift = old_shift;
     if( depends != NULL ) {
         ResInfo.first = depends;
         ResInfo.curr = depends;

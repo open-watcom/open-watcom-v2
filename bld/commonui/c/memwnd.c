@@ -105,7 +105,7 @@ static DWORD Disp_Types[] = {
 static void calcTextDimensions( HWND hwnd, HDC dc, MemWndInfo *info );
 static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info );
 static void positionSegInfo( HWND hwnd );
-static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type, WORD sel, char *buf, DWORD offset );
+static bool genLine( unsigned char digits, DWORD limit, ctl_id disp_type, WORD sel, char *buf, DWORD offset );
 
 typedef enum {
     MT_FREE,
@@ -404,7 +404,7 @@ static char *genByte( char ch, char *ptr )
  * genLine - create a line for output of the form:
 XXXXXXXX  dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd dd  cccccccccccccccc
  */
-static bool genLine( unsigned char digits, DWORD limit, unsigned disp_type,
+static bool genLine( unsigned char digits, DWORD limit, ctl_id disp_type,
                      WORD sel, char *buf, DWORD offset )
 {
     char        *ptr;
@@ -598,7 +598,7 @@ static void redrawMemWnd( HWND hwnd, HDC dc, MemWndInfo *info )
 /*
  * bytesToDisplay
  */
-static unsigned char bytesToDisplay( int width, unsigned disp_type )
+static unsigned char bytesToDisplay( int width, ctl_id disp_type )
 {
     int     bytes;
 

@@ -109,7 +109,7 @@ int     IOMain( void (*io_rtn)( void ) ) {
             ClearEOF();
         }
     }
-#if defined( __MT__ ) && !defined( _SA_LIBRARY )
+#if defined( __SW_BM ) && !defined( _SA_LIBRARY )
     // we cannot release the i/o system for READ/WRITE statements since
     // co-routines are not done yet
     if( (io_stmt != IO_READ) && (io_stmt != IO_WRITE) )

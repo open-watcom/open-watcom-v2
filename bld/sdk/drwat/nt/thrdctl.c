@@ -31,10 +31,9 @@
 ****************************************************************************/
 
 
-#include "drwatcom.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
+#include "drwatcom.h"
 #include "mem.h"
 #include "thrdctl.h"
 #include "srchmsg.h"

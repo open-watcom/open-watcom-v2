@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#if defined( __MT__ ) && defined( __NETWARE__ )
+#if defined( __SW_BM ) && defined( __NETWARE__ )
     #define _TMPNAMBUF      (__THREADDATAPTR->__tmpnambuf)
 #else
     static CHAR_TYPE        _tmpname[L_tmpnam];

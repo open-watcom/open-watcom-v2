@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <conio.h>
 #include "defwin.h"
 
@@ -41,15 +42,15 @@
 #endif
 
 _WCRTLINK int putch( int c )
-    {
-        #ifdef DEFAULT_WINDOWING
-            if( _WindowsPutch != 0 ) {
-                LPWDATA res;
-                res = _WindowsIsWindowedHandle( STDOUT_FILENO );
-                _WindowsPutch( res, c );
-            }
-        #else
-            _dos( 6, c );
-        #endif
-        return( c );
+{
+#ifdef DEFAULT_WINDOWING
+    if( _WindowsPutch != NULL ) {
+        LPWDATA res;
+        res = _WindowsIsWindowedHandle( STDOUT_FILENO );
+        _WindowsPutch( res, c );
     }
+#else
+    _dos( 6, c );
+#endif
+    return( c );
+}

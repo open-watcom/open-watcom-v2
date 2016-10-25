@@ -42,11 +42,11 @@ static sym_entry        **HashTable;
 static sym_entry        **SortedSymbols;
 
 static char             *padding_string;
-static int              padding_string_len;
+static size_t           padding_string_len;
 
 #define HASH_SIZE       256
 
-static int Hash( char *string, unsigned *plen );
+static int Hash( const char *string, unsigned *plen );
 
 void InitFileTab( void )
 /**********************/
@@ -54,8 +54,8 @@ void InitFileTab( void )
     FileTable.first = NULL;
     FileTable.add_to = &FileTable.first;
     SortedSymbols = NULL;
-    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[ 0 ] ) );
-    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[ 0 ] ) );
+    HashTable = MemAllocGlobal( HASH_SIZE * sizeof( HashTable[0] ) );
+    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[0] ) );
 }
 
 static void FiniSymFile( sym_file *sfile )
@@ -132,27 +132,22 @@ void CleanFileTab( void )
 }
 
 
-void ResetFileTab( void )
-/***********************/
-{
-    sym_file    *sfile;
-    sym_file    *next_sfile;
-
-    memset( HashTable, 0, HASH_SIZE * sizeof( HashTable[ 0 ] ) );
-    for( sfile = FileTable.first; sfile != NULL; sfile = next_sfile ) {
-        next_sfile = sfile->next;
-        FiniSymFile( sfile );
-    }
-    FileTable.first = NULL;
-    FileTable.add_to = &FileTable.first;
-    MemFreeGlobal( SortedSymbols );
-    SortedSymbols = NULL;
-}
-
 void FiniFileTab( void )
 /***********************/
 {
+    sym_file    *sfile;
+
+    while( (sfile = FileTable.first) != NULL ) {
+        FileTable.first = sfile->next;
+        FiniSymFile( sfile );
+    }
+    FileTable.add_to = &FileTable.first;
+    if( SortedSymbols != NULL ) {
+        MemFreeGlobal( SortedSymbols );
+        SortedSymbols = NULL;
+    }
     MemFreeGlobal( HashTable );
+    HashTable = NULL;
 }
 
 
@@ -165,14 +160,14 @@ static void RemoveFromHashTable( sym_entry *sym )
     unsigned        len;
 
     hval = Hash( sym->name, &len );
-    hash = HashTable[ hval ];
+    hash = HashTable[hval];
 
     if( hash == sym ) {
-        HashTable[ hval ] = sym->hash;
-    } else if( hash ) {
+        HashTable[hval] = sym->hash;
+    } else if( hash != NULL ) {
         prev = hash;
 
-        for( hash = hash->hash; hash; hash = hash->hash ) {
+        for( hash = hash->hash; hash != NULL; hash = hash->hash ) {
             if( hash == sym ) {
                 prev->hash = hash->hash;
                 break;
@@ -200,7 +195,7 @@ static void NewSymFile( arch_header *arch )
     if( Options.trim_path )
         TrimPath( sfile->arch.name );
     sfile->name_length = strlen( sfile->arch.name );
-    if( sfile->arch.ffname ) {
+    if( sfile->arch.ffname != NULL ) {
         sfile->arch.ffname = DupStrGlobal( sfile->arch.ffname );
         sfile->ffname_length = strlen( sfile->arch.ffname );
     } else {
@@ -230,16 +225,16 @@ static void WriteFileHeader( arch_header *arch )
     WriteNew( &ar, AR_HEADER_SIZE );
 }
 
-static void WritePad( file_offset size )
-/**************************************/
+static void WritePadding( file_offset size )
+/******************************************/
 {
-    if( NeedsRounding( size ) ) {
+    if( size & 1 ) {
         WriteNew( padding_string, padding_string_len );
     }
 }
 
-static long             NumFiles;
-static long             NumSymbols;
+static unsigned long    NumFiles;
+static size_t           NumSymbols;
 static file_offset      TotalNameLength;
 static file_offset      TotalFFNameLength;
 static file_offset      TotalSymbolLength;
@@ -250,8 +245,8 @@ static void SortSymbols( void )
     sym_file    *sfile;
     sym_entry   *sym;
     sym_entry   **sym_curr;
-    int         i;
-    int         name_length = 0;
+    size_t      i;
+    size_t      name_length = 0;
 
     NumFiles = 0;
     NumSymbols = 0;
@@ -263,7 +258,7 @@ static void SortSymbols( void )
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             // Always using "full" filename for AR
-            if( sfile->arch.ffname ) {
+            if( sfile->arch.ffname != NULL ) {
                 name_length = sfile->ffname_length;
             } else {
                 sfile->ffname_length = 0;
@@ -314,7 +309,7 @@ static void SortSymbols( void )
         SortedSymbols = NULL;
         Warning( ERR_NO_SYMBOLS );
     } else {
-        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[ 0 ] ) );
+        SortedSymbols = MemAllocGlobal( NumSymbols * sizeof( SortedSymbols[0] ) );
     }
 
     sym_curr = SortedSymbols;
@@ -325,7 +320,7 @@ static void SortSymbols( void )
         }
     }
 
-    qsort( SortedSymbols, NumSymbols, sizeof(sym_entry *), CompSyms );
+    qsort( SortedSymbols, NumSymbols, sizeof( sym_entry * ), CompSyms );
 
     // re-hook symbols onto files in sorted order
 
@@ -333,8 +328,8 @@ static void SortSymbols( void )
         sfile->first = NULL;
     }
 
-    for( i = NumSymbols - 1; i >= 0; --i ) {
-        sym = SortedSymbols[ i ];
+    for( i = NumSymbols; i-- > 0; ) {
+        sym = SortedSymbols[i];
         sym->next = sym->file->first;
         sym->file->first = sym;
     }
@@ -378,9 +373,9 @@ void WriteFileBody( sym_file *sfile )
 static void WriteOmfLibTrailer( void )
 {
     OmfRecord   *rec;
-    unsigned    size;
+    size_t      size;
 
-    size = DIC_REC_SIZE - LibTell( NewLibrary ) % DIC_REC_SIZE;
+    size = DIC_REC_SIZE - (unsigned long)LibTell( NewLibrary ) % DIC_REC_SIZE;
     rec = MemAlloc( size );
     rec->basic.type = LIB_TRAILER_REC;
     rec->basic.len = GET_LE_16( size - 3 );
@@ -406,13 +401,13 @@ static void WriteOmfLibHeader( unsigned_32 dict_offset, unsigned_16 dict_size )
     WriteNew( &lib_header, sizeof( lib_header ) );
 }
 
-static unsigned OptimalPageSize( void )
-/*************************************/
+static unsigned_16 OptimalPageSize( void )
+/****************************************/
 {
     unsigned    i;
     sym_file    *sfile;
     file_offset offset;
-    unsigned    page_size;
+    unsigned_16 page_size;
 
     page_size = 0;
     for( i = 4; i < 16; i++ ) {
@@ -421,7 +416,7 @@ static unsigned OptimalPageSize( void )
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             if( offset / page_size > (unsigned long)USHRT_MAX )
                 break;
-            offset += ( sfile->arch.size + page_size - 1 ) & ~( page_size - 1 );
+            offset += Round( sfile->arch.size, page_size );
         }
         if( sfile == NULL ) {
             break;
@@ -435,11 +430,11 @@ static void WriteOmfFileTable( void )
 {
     sym_file    *sfile;
     unsigned    num_blocks;
-    unsigned    dict_offset;
+    long        dict_offset;
 
     if( Options.page_size == 0 ) {
         Options.page_size = DEFAULT_PAGE_SIZE;
-    } else if( Options.page_size == (unsigned short)-1 ) {
+    } else if( Options.page_size == (unsigned_16)-1 ) {
         Options.page_size = OptimalPageSize();
     }
     PadOmf( true );
@@ -462,7 +457,7 @@ static void WriteArMlibFileTable( void )
     file_offset     dict1_size = 0;
     file_offset     dict2_size = 0;
     file_offset     header_size = 0;
-    int             i;
+    size_t          i;
     time_t          currenttime = time( NULL );
     file_offset     obj_offset;
     int             index;
@@ -475,11 +470,9 @@ static void WriteArMlibFileTable( void )
 
     switch( Options.libtype ) {
     case WL_LTYPE_AR:
-        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32)
-                    + RoundWord( TotalSymbolLength );
+        dict1_size = ( NumSymbols + 1 ) * sizeof(unsigned_32) + Round2( TotalSymbolLength );
 
-        header_size = AR_IDENT_LEN
-                    + AR_HEADER_SIZE + dict1_size;
+        header_size = AR_IDENT_LEN + AR_HEADER_SIZE + dict1_size;
 
         switch( Options.ar_libformat ) {
         case AR_FMT_BSD:
@@ -492,7 +485,7 @@ static void WriteArMlibFileTable( void )
             dict2_size = 0;
 
             if( TotalNameLength > 0 ) {
-                header_size += AR_HEADER_SIZE + RoundWord( TotalNameLength );
+                header_size += AR_HEADER_SIZE + Round2( TotalNameLength );
             }
 
             padding_string     = "\0";
@@ -501,12 +494,12 @@ static void WriteArMlibFileTable( void )
         default:
             dict2_size = ( NumFiles + 1 ) * sizeof( unsigned_32 )
                         + sizeof( unsigned_32 ) + NumSymbols * sizeof( unsigned_16 )
-                        + RoundWord( TotalSymbolLength );
+                        + Round2( TotalSymbolLength );
 
             header_size += AR_HEADER_SIZE + dict2_size;
 
             if( TotalNameLength > 0 ) {
-                header_size += AR_HEADER_SIZE + RoundWord( TotalNameLength );
+                header_size += AR_HEADER_SIZE + Round2( TotalNameLength );
             }
 
             padding_string     = AR_FILE_PADDING_STRING;
@@ -521,9 +514,9 @@ static void WriteArMlibFileTable( void )
                     + TotalSymbolLength;
 
         header_size = LIBMAG_LEN + LIB_CLASS_LEN + LIB_DATA_LEN
-                    + LIB_HEADER_SIZE + RoundWord( dict2_size )
-                    + LIB_HEADER_SIZE + RoundWord( TotalNameLength )
-                    + LIB_HEADER_SIZE + RoundWord( TotalFFNameLength );
+                    + LIB_HEADER_SIZE + Round2( dict2_size )
+                    + LIB_HEADER_SIZE + Round2( TotalNameLength )
+                    + LIB_HEADER_SIZE + Round2( TotalFFNameLength );
 
         padding_string     = LIB_FILE_PADDING_STRING;
         padding_string_len = LIB_FILE_PADDING_STRING_LEN;
@@ -536,12 +529,12 @@ static void WriteArMlibFileTable( void )
     obj_offset = 0;
     isBSD = ( ( Options.libtype == WL_LTYPE_AR ) && ( Options.ar_libformat == AR_FMT_BSD ) );
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        sfile->new_offset = obj_offset + header_size;
+        sfile->u.new_offset = obj_offset + header_size;
         sfile->index = ++index;
         if( isBSD && ( sfile->name_length > AR_NAME_LEN || strchr( sfile->arch.name, ' ' ) != NULL ) ) {
-            obj_offset += RoundWord( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
+            obj_offset += Round2( sfile->arch.size + sfile->name_length ) + AR_HEADER_SIZE;
         } else {
-            obj_offset += RoundWord( sfile->arch.size ) + AR_HEADER_SIZE;
+            obj_offset += Round2( sfile->arch.size ) + AR_HEADER_SIZE;
         }
     }
 
@@ -569,15 +562,15 @@ static void WriteArMlibFileTable( void )
         WriteBigEndian32( NumSymbols );
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteBigEndian32( sym->file->new_offset );
+                WriteBigEndian32( sym->file->u.new_offset );
             }
         }
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-                WriteNew( sym->name, sym->len+1 );
+                WriteNew( sym->name, sym->len + 1 );
             }
         }
-        WritePad( TotalSymbolLength );
+        WritePadding( TotalSymbolLength );
     }
 
     // write the useful dictionary
@@ -590,7 +583,7 @@ static void WriteArMlibFileTable( void )
         if( Options.libtype == WL_LTYPE_AR ) {
             WriteLittleEndian32( NumFiles );
             for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-                WriteLittleEndian32( sfile->new_offset );
+                WriteLittleEndian32( sfile->u.new_offset );
             }
         }
 
@@ -598,27 +591,27 @@ static void WriteArMlibFileTable( void )
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian16( SortedSymbols[ i ]->file->index );
+                WriteLittleEndian16( SortedSymbols[i]->file->index );
             }
             break;
         case WL_LTYPE_MLIB:
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteLittleEndian32( SortedSymbols[ i ]->file->index );
+                WriteLittleEndian32( SortedSymbols[i]->file->index );
             }
             for( i = 0; i < NumSymbols; ++i ) {
-                WriteNew( &(SortedSymbols[ i ]->info), 1 );
+                WriteNew( &(SortedSymbols[i]->info), 1 );
             }
             break;
         }
         for( i = 0; i < NumSymbols; ++i ) {
-            WriteNew( SortedSymbols[ i ]->name, SortedSymbols[ i ]->len + 1 );
+            WriteNew( SortedSymbols[i]->name, SortedSymbols[i]->len + 1 );
         }
         switch( Options.libtype ) {
         case WL_LTYPE_AR:
-            WritePad( TotalSymbolLength );
+            WritePadding( TotalSymbolLength );
             break;
         case WL_LTYPE_MLIB:
-            WritePad( dict2_size );
+            WritePadding( dict2_size );
             break;
         }
     }
@@ -627,7 +620,7 @@ static void WriteArMlibFileTable( void )
 
     if( TotalNameLength > 0 ) {
         char    *stringpad;
-        int     stringpadlen;
+        size_t  stringpadlen;
 
         if( Options.libtype == WL_LTYPE_MLIB ) {
             stringpad    = LIB_LONG_NAME_END_STRING;
@@ -649,14 +642,14 @@ static void WriteArMlibFileTable( void )
             if( sfile->name_offset == -1 )
                 continue;
             // Always write the "full" filename for AR
-            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname ) {
+            if( Options.libtype == WL_LTYPE_AR && sfile->arch.ffname != NULL ) {
                 WriteNew( sfile->arch.ffname, sfile->ffname_length );
             } else {
                 WriteNew( sfile->arch.name, sfile->name_length );
             }
             WriteNew( stringpad, stringpadlen );
         }
-        WritePad( TotalNameLength );
+        WritePadding( TotalNameLength );
     }
 
     // write the full filename table
@@ -668,11 +661,11 @@ static void WriteArMlibFileTable( void )
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
             WriteNew( sfile->arch.ffname, sfile->ffname_length + 1 );
         }
-        WritePad( TotalFFNameLength );
+        WritePadding( TotalFFNameLength );
     }
 
     for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-        char        buff[ AR_NAME_LEN + 1 ];
+        char        buff[AR_NAME_LEN + 1];
         bool        append_name;
 
         append_name = false;
@@ -692,13 +685,13 @@ static void WriteArMlibFileTable( void )
                 }
             } else {        // COFF, GNU
                 strcpy( buff, sfile->arch.name );
-                buff[ sfile->name_length ] = AR_NAME_END_CHAR;
-                buff[ sfile->name_length + 1 ] = '\0';
+                buff[sfile->name_length] = AR_NAME_END_CHAR;
+                buff[sfile->name_length + 1] = '\0';
                 arch.name = buff;
             }
         } else {
-            buff[ 0 ] = '/';
-            itoa( sfile->name_offset, buff+1, 10 );
+            buff[0] = '/';
+            itoa( sfile->name_offset, buff + 1, 10 );
             arch.name = buff;
         }
         WriteFileHeader( &arch );
@@ -706,7 +699,7 @@ static void WriteArMlibFileTable( void )
             WriteNew( sfile->arch.name, sfile->name_length );
         }
         WriteFileBody( sfile );
-        WritePad( arch.size );
+        WritePadding( arch.size );
     }
 }
 
@@ -733,8 +726,8 @@ void WriteFileTable( void )
     }
 }
 
-static int Hash( char *string, unsigned *plen )
-/*********************************************/
+static int Hash( const char *string, unsigned *plen )
+/***************************************************/
 {
     unsigned long       g;
     unsigned long       h;
@@ -743,7 +736,7 @@ static int Hash( char *string, unsigned *plen )
     *plen = 0;
     while( *string != 0 ) {
         h = ( h << 4 ) + *string;
-        if( (g = h & 0xf0000000) != 0 ) {
+        if( (g = (h & 0xf0000000)) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
@@ -753,15 +746,15 @@ static int Hash( char *string, unsigned *plen )
     return( h % HASH_SIZE );
 }
 
-void AddSym( char *name, symbol_strength strength, unsigned char info )
-/*********************************************************************/
+void AddSym( const char *name, symbol_strength strength, unsigned char info )
+/***************************************************************************/
 {
     sym_entry   *sym,**owner;
     int         hash;
     unsigned    name_len;
 
     hash = Hash( name, &name_len );
-    for( sym = HashTable[ hash ]; sym != NULL; sym = sym->hash ) {
+    for( sym = HashTable[hash]; sym != NULL; sym = sym->hash ) {
         if( sym->len != name_len )
             continue;
         if( SymbolNameCmp( sym->name, name ) == 0 ) {
@@ -771,7 +764,7 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
                     owner = &(*owner)->next;
                 }
                 *owner = sym->next;
-                owner = &HashTable[ hash ];
+                owner = HashTable + hash;
                 while( *owner != sym ) {
                     owner = &(*owner)->hash;
                 }
@@ -794,8 +787,8 @@ void AddSym( char *name, symbol_strength strength, unsigned char info )
     sym->next = CurrFile->first;
     CurrFile->first = sym;
     sym->file = CurrFile;
-    sym->hash = HashTable[ hash ];
-    HashTable[ hash ] = sym;
+    sym->hash = HashTable[hash];
+    HashTable[hash] = sym;
 }
 
 
@@ -822,9 +815,9 @@ void DumpFileTable( void )
 
             hval = Hash( entry->name, &len );
             printf( "\t\"%s\" (%d, %u, \"%s\")", entry->name, hval, len,
-                    (HashTable[ hval ] ? HashTable[ hval ]->name : "(NULL)") );
+                    (HashTable[hval] ? HashTable[hval]->name : "(NULL)") );
 
-            for( hash = entry->hash; hash; hash = hash->hash ) {
+            for( hash = entry->hash; hash != NULL; hash = hash->hash ) {
                 printf( " -> \"%s\"", hash->name );
                 fflush( stdout );
             }
@@ -851,8 +844,8 @@ void DumpHashTable( void )
     for( i = 0; i < HASH_SIZE; ++i ) {
         length = 0;
 
-        if( HashTable[ i ] ) {
-            for( hash = HashTable[ i ]; hash; hash = hash->next ) {
+        if( HashTable[i] ) {
+            for( hash = HashTable[i]; hash != NULL; hash = hash->next ) {
                 ++length;
             }
         }
@@ -864,8 +857,8 @@ void DumpHashTable( void )
 #endif // !NDEBUG
 
 
-bool RemoveObjectSymbols( char *name )
-/************************************/
+bool RemoveObjectSymbols( const char *name )
+/******************************************/
 {
     sym_file    *sfile;
     sym_file    *prev_sfile;
@@ -942,7 +935,7 @@ void AddObjectSymbols( arch_header *arch, libfile io, long offset )
 }
 
 void OmfMKImport( arch_header *arch, importType type,
-                  long ordinal, char *DLLname, char *symName,
+                  long ordinal, const char *DLLname, const char *symName,
                   char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -971,7 +964,7 @@ void OmfMKImport( arch_header *arch, importType type,
 }
 
 void CoffMKImport( arch_header *arch, importType type,
-                   long ordinal, char *DLLname, char *symName,
+                   long ordinal, const char *DLLname, const char *symName,
                    char *exportedName, processor_type processor )
 {
     if( Options.elf_found ) {
@@ -1009,7 +1002,7 @@ void CoffMKImport( arch_header *arch, importType type,
 }
 
 void ElfMKImport( arch_header *arch, importType type, long export_size,
-                  char *DLLname, char *strings, Elf32_Export *export_table,
+                  const char *DLLname, const char *strings, Elf32_Export *export_table,
                   Elf32_Sym *sym_table, processor_type processor )
 {
     int                 i;
@@ -1032,11 +1025,11 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
     temp = &(CurrFile->import->u.elf.symlist);
 
     for( i = 0; i < export_size; i++ ) {
-        if( export_table[ i ].exp_symbol ) {
+        if( export_table[i].exp_symbol ) {
             imp_sym = MemAllocGlobal( sizeof( elf_import_sym ) );
-            imp_sym->name = DupStrGlobal( &(strings[ sym_table[ export_table[ i ].exp_symbol ].st_name ]) );
+            imp_sym->name = DupStrGlobal( strings + sym_table[export_table[i].exp_symbol].st_name );
             imp_sym->len = strlen( imp_sym->name );
-            imp_sym->ordinal = export_table[ i ].exp_ordinal;
+            imp_sym->ordinal = export_table[i].exp_ordinal;
             if( type == ELF ) {
                 AddSym( imp_sym->name, SYM_STRONG, ELF_IMPORT_SYM_INFO );
             }
@@ -1053,8 +1046,8 @@ void ElfMKImport( arch_header *arch, importType type, long export_size,
 }
 
 #define MAX_MESSAGE_LEN 511
-static char             listMsg[ MAX_MESSAGE_LEN + 1 ];
-static unsigned         msgLength = 0;
+static char             listMsg[MAX_MESSAGE_LEN + 1];
+static size_t           msgLength = 0;
 
 static void listPrint( FILE *fp, char *str, ... )
 {
@@ -1074,14 +1067,14 @@ static void listNewLine( FILE *fp )
         Message( listMsg );
     }
     msgLength = 0;
-    listMsg[ 0 ] = ' ';
-    listMsg[ 1 ] = '\0';
+    listMsg[0] = ' ';
+    listMsg[1] = '\0';
 }
 
 #define LINE_WIDTH 79
 #define OFF_COLUMN 40
 
-static void fpadch( FILE *fp, char ch, int len )
+static void fpadch( FILE *fp, char ch, size_t len )
 {
     fp = fp;
     if( len > 0 ) {
@@ -1089,70 +1082,70 @@ static void fpadch( FILE *fp, char ch, int len )
             len = MAX_MESSAGE_LEN - msgLength;
         memset( listMsg + msgLength, ch, len );
         msgLength += len;
-        listMsg[ msgLength ] = '\0';
+        listMsg[msgLength] = '\0';
     }
 }
 
 static void printVerboseTableEntry( arch_header *arch )
 {
-    char        member_mode[ 11 ];
-    char        date[ 128 ];
+    char        member_mode[11];
+    char        date[128];
     time_t      t;
 
-    member_mode[ 10 ] = '\0';
-    member_mode[ 9 ] = ' ';
+    member_mode[10] = '\0';
+    member_mode[9] = ' ';
     if( arch->mode & AR_S_IRUSR ) {
-        member_mode[ 0 ] = 'r';
+        member_mode[0] = 'r';
     } else {
-        member_mode[ 0 ] = '-';
+        member_mode[0] = '-';
     }
     if( arch->mode & AR_S_IWUSR ) {
-        member_mode[ 1 ] = 'w';
+        member_mode[1] = 'w';
     } else {
-        member_mode[ 1 ] = '-';
+        member_mode[1] = '-';
     }
-    if( !( arch->mode & AR_S_IXUSR ) && (arch->mode & AR_S_ISUID ) ) {
-        member_mode[ 2 ] = 'S';
-    } else if( ( arch->mode & AR_S_IXUSR ) && ( arch->mode & AR_S_ISUID ) ) {
-        member_mode[ 2 ] = 's';
+    if( (arch->mode & AR_S_IXUSR) == 0 && (arch->mode & AR_S_ISUID) ) {
+        member_mode[2] = 'S';
+    } else if( (arch->mode & AR_S_IXUSR) && (arch->mode & AR_S_ISUID) ) {
+        member_mode[2] = 's';
     } else if( arch->mode & AR_S_IXUSR ) {
-        member_mode[ 2 ] = 'x';
+        member_mode[2] = 'x';
     } else {
-        member_mode[ 2 ] = '-';
+        member_mode[2] = '-';
     }
     if( arch->mode & AR_S_IRGRP ) {
-        member_mode[ 3 ] = 'r';
+        member_mode[3] = 'r';
     } else {
-        member_mode[ 3 ] = '-';
+        member_mode[3] = '-';
     }
     if( arch->mode & AR_S_IWGRP ) {
-        member_mode[ 4 ] = 'w';
+        member_mode[4] = 'w';
     } else {
-        member_mode[ 4 ] = '-';
+        member_mode[4] = '-';
     }
-    if( !( arch->mode & AR_S_IXGRP ) && (arch->mode & AR_S_ISGID ) ) {
-        member_mode[ 5 ] = 'S';
-    } else if( ( arch->mode & AR_S_IXGRP ) && ( arch->mode & AR_S_ISGID ) ) {
-        member_mode[ 5 ] = 's';
+    if( (arch->mode & AR_S_IXGRP) == 0 && (arch->mode & AR_S_ISGID) ) {
+        member_mode[5] = 'S';
+    } else if( (arch->mode & AR_S_IXGRP) && (arch->mode & AR_S_ISGID) ) {
+        member_mode[5] = 's';
     } else if( arch->mode & AR_S_IXGRP ) {
-        member_mode[ 5 ] = 'x';
+        member_mode[5] = 'x';
     } else {
-        member_mode[ 5 ] = '-';
+        member_mode[5] = '-';
     }
     if( arch->mode & AR_S_IROTH ) {
-        member_mode[ 6 ] = 'r';
+        member_mode[6] = 'r';
     } else {
-        member_mode[ 6 ] = '-';
+        member_mode[6] = '-';
     }
     if( arch->mode & AR_S_IWOTH ) {
-        member_mode[ 7 ] = 'w';
+        member_mode[7] = 'w';
     } else {
-        member_mode[ 7 ] = '-';
+        member_mode[7] = '-';
     }
     if( arch->mode & AR_S_IXOTH ) {
-        member_mode[ 8 ] = 'x';
+        member_mode[8] = 'x';
     } else {
-        member_mode[ 8 ] = '-';
+        member_mode[8] = '-';
     }
     t = (time_t) arch->date;
     strftime( date, 127, "%b %d %H:%M %Y", localtime( &t ) );
@@ -1162,13 +1155,13 @@ static void printVerboseTableEntry( arch_header *arch )
 
 
 void ListContents( void )
-/******************************/
+/***********************/
 {
     sym_file    *sfile;
     lib_cmd     *cmd;
 
     if( Options.ar ) {
-        if( CmdList ) {
+        if( CmdList != NULL ) {
             for( cmd = CmdList; cmd != NULL; cmd = cmd->next ) {
                 if( cmd->ops & OP_FOUND ) {
                     if( Options.verbose ) {
@@ -1203,15 +1196,15 @@ void ListContents( void )
         int             i;
         FILE            *fp;
         char            *name;
-        unsigned        name_len;
+        size_t          name_len;
 
         if( Options.terse_listing ) {
             SortSymbols();
             for( i = 0; i < NumSymbols; ++i ) {
-                sym = SortedSymbols[ i ];
+                sym = SortedSymbols[i];
                 name = FormSym( sym->name );
                 name_len = strlen( name );
-                Message(name);
+                Message( name );
             }
             return;
         }
@@ -1219,7 +1212,7 @@ void ListContents( void )
         if( Options.list_file == NULL ) {
             Options.list_file = DupStr( MakeListName() );
         }
-        if( Options.list_file[ 0 ] != 0 ) {
+        if( Options.list_file[0] != 0 ) {
             fp = fopen( Options.list_file, "w" );
             if( fp == NULL ) {
                 FatalError( ERR_CANT_OPEN, Options.list_file, strerror( errno ) );
@@ -1230,7 +1223,7 @@ void ListContents( void )
         SortSymbols();
 
         for( i = 0; i < NumSymbols; ++i ) {
-            sym = SortedSymbols[ i ];
+            sym = SortedSymbols[i];
             name = FormSym( sym->name );
             name_len = strlen( name );
             listPrint( fp, "%s..", name );
@@ -1242,7 +1235,7 @@ void ListContents( void )
         listNewLine( fp );
 
         for( sfile = FileTable.first; sfile != NULL; sfile = sfile->next ) {
-            if( sfile->arch.ffname ) {
+            if( sfile->arch.ffname != NULL ) {
                 listPrint( fp, "%s ", sfile->arch.ffname );
             } else {
                 listPrint( fp, "%s ", sfile->arch.name );
@@ -1257,7 +1250,7 @@ void ListContents( void )
             listNewLine( fp );
         }
 
-        if( fp ) {
+        if( fp != NULL ) {
             fclose( fp );
         }
     }

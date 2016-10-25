@@ -49,19 +49,19 @@
 typedef struct logconfig {
     char                name[LOG_MAX_FNAME];
     char                curname[LOG_MAX_FNAME];
-    bool                logging;
-    bool                paused;
     int                 type;
     int                 def_action;
+    bool                logging;
+    bool                paused;
     bool                query_for_name;
 } LogConfig;
 
 typedef struct loginfo {
     LogConfig           config;
-    bool                init;
     void                (*writefn)( FILE * );
     HANDLE              instance;
     HWND                hwnd;
+    bool                init;
 } LogInfo;
 
 #define NO_BUF_LINES                    100

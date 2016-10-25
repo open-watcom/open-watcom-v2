@@ -268,7 +268,7 @@ void    HashInsert( hash_entry *hash_table, unsigned hash_value,
 }
 
 
-sym_id  STName( char *name, int length ) {
+sym_id  STName( char *name, uint length ) {
 //========================================
 
 // Lookup the specified name in the symbol table.
@@ -292,7 +292,7 @@ sym_id  STName( char *name, int length ) {
 }
 
 
-sym_id  STCommon( char *name, int length ) {
+sym_id  STCommon( char *name, uint length ) {
 //==========================================
 
 // Lookup the specified name in the common list.

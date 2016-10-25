@@ -46,7 +46,7 @@
     _WCRTDATA extern int    errno;
     #define _RWD_errno      errno
   #endif
-#elif defined( __MT__ ) && !defined( __RDOSDEV__ ) && !defined( __LINUX__ )
+#elif defined( __SW_BM ) && !defined( __RDOSDEV__ )
     #define _ERRNO          (__THREADDATAPTR->__errnoP)
     #define _RWD_errno      _ERRNO
 #else
@@ -57,7 +57,7 @@
 #undef _doserrno
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-  #if defined( __MT__ ) && !defined( __RDOSDEV__ )
+  #if defined( __SW_BM ) && !defined( __RDOSDEV__ )
     #define _RWD_doserrno   (__THREADDATAPTR->__doserrnoP)
   #else
     extern int              _doserrno;

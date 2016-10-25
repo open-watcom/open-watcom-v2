@@ -49,35 +49,29 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "bldcall.h"
+#include "fixindex.h"
 
 
-extern  int             FPRegNum(name*);
-extern  void            BGDone(an);
-extern  name            *BGNewTemp(type_def*);
-extern  void            ToRFld(instruction*);
-extern  void            ToRFstp(instruction*);
-extern  void            NoPop(instruction*);
-extern  void            NoPopBin(instruction*);
-extern  void            NoPopRBin(instruction*);
-extern  void            ToPopBin(instruction*);
-extern  void            NoMemBin(instruction*);
-extern  name*           ST(int);
-extern int              NumOperands(instruction*);
-extern  void            UpdateLive(instruction*,instruction*);
-extern  void            PrefFXCH(instruction*,int);
-extern  void            Wait8087( void );
-extern  void            ReverseFPGen(instruction*);
-extern  bool            InsOrderDependant(instruction*,instruction*);
-extern  int             FPStkReq(instruction*);
-extern  bool            FPResultNotNeeded(instruction*);
+extern int          FPRegNum(name*);
+extern void         BGDone(an);
+extern name         *BGNewTemp(type_def*);
+extern void         ToRFld(instruction*);
+extern void         ToRFstp(instruction*);
+extern void         NoPop(instruction*);
+extern void         NoPopBin(instruction*);
+extern void         NoPopRBin(instruction*);
+extern void         ToPopBin(instruction*);
+extern void         NoMemBin(instruction*);
+extern name         *ST(int);
+extern void         UpdateLive(instruction*,instruction*);
+extern void         PrefFXCH(instruction*,int);
+extern void         Wait8087( void );
+extern void         ReverseFPGen(instruction*);
+extern bool         InsOrderDependant(instruction*,instruction*);
+extern int          FPStkReq(instruction*);
+extern bool         FPResultNotNeeded(instruction*);
 
-/* forward declarations */
-static  void            MoveThrough( name *from, name *to, instruction *from_ins,
-                                     instruction *to_ins, name *reg,
-                                     type_class_def class );
-extern  void            Opt8087( void );
-
-extern  void    FPParms( void ) {
+void    FPParms( void )
 /**************************
     Find sequences like
              PARM_DEF         => ST(0),
@@ -86,7 +80,7 @@ extern  void    FPParms( void ) {
     to end up in Parm8087, so that the code to deal with the parameters
     can be folded into the prolog sequence.
 */
-
+{
     instruction *ins;
     instruction *next;
     int         i;
@@ -150,7 +144,6 @@ static  bool    CanPushImmed( pn parm, int *num_parms ) {
     }
     return( true );
 }
-
 
 
 static  void    Pushes( instruction *ins ) {
@@ -345,7 +338,7 @@ static  int     FPPushDelay( pn parm, call_state *state ) {
     return( parms );
 }
 
-extern  void    FPPushParms( pn parm, call_state *state ) {
+void    FPPushParms( pn parm, call_state *state )
 /**********************************************************
     "push" parameters onto the 8087 stack.  If parameters can be pushed
     as soon as they are calculated, do that (FPPushImmed), otherwise we
@@ -353,8 +346,7 @@ extern  void    FPPushParms( pn parm, call_state *state ) {
     (FPPushDelay). For each parameter there is an address_node (an) of
     type NF_INS, which not had the result field filled in yet.
 */
-
-
+{
     int parms;
 
     if( _FPULevel( FPU_87 ) ) {
@@ -374,25 +366,6 @@ extern  void    FPPushParms( pn parm, call_state *state ) {
         }
     }
 }
-
-
-
-extern  void    FPOptimize( void ) {
-/*****************************
-
-    Fix up the 8087 instructions.  The instructions so far
-*/
-
-    if( _FPULevel( FPU_87 ) ) {
-        if( _IsntModel( NO_OPTIMIZATION ) ) {
-            Opt8087();
-        }
-        Wait8087();
-    }
-}
-
-
-#define G(x)    (x)->u.gen_table->generate
 
 static  opcode_entry    FSINCOS[] = {
 /*           op1   op2   res   eq      verify          reg           gen             fu  */
@@ -467,7 +440,6 @@ static  bool    FSinCos( instruction *ins1 ) {
     return( true );
 }
 
-
 static  instruction     *Next87Ins( instruction *ins ) {
 /******************************************************/
 
@@ -481,31 +453,6 @@ static  instruction     *Next87Ins( instruction *ins ) {
     return( ins );
 }
 
-static  bool    RedundantStore( instruction *ins ) {
-/***************************************************
-*/
-
-    instruction         *next;
-
-    for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
-        if( next->result == ins->result ) {
-            if( G( next ) == G_MFSTNP || G( next ) == G_MFST ) {
-                return( true );
-            }
-        }
-        if( InsOrderDependant( ins, next ) ) return( false );
-    }
-    return( false );
-}
-
-
-static  void    AdjustST( name **p, int adjust )
-/**********************************************/
-{
-    *p = ST( FPRegNum( *p ) + adjust );
-}
-
-
 static  instruction     *BackUpAndFree( instruction *ins, instruction *junk1,
                                         instruction *junk2 ) {
 /*************************************************************
@@ -517,6 +464,33 @@ static  instruction     *BackUpAndFree( instruction *ins, instruction *junk1,
     if( junk2 != NULL ) FreeIns( junk2 );
     if( ret->head.opcode == OP_BLOCK ) ret = ret->head.next;
     return( ret );
+}
+
+static  void    AdjustST( name **p, int adjust )
+/**********************************************/
+{
+    *p = ST( FPRegNum( *p ) + adjust );
+}
+
+static  void    MoveThrough( name *from, name *to, instruction *from_ins,
+                             instruction *to_ins, name *reg,
+                             type_class_def class ) {
+/****************************************************
+    Move from "from" to "to" using register name "reg". Segments if
+    any should be taken from "from_ins" and "to_ins".
+*/
+
+    bool        dummy;
+    instruction *new;
+
+    new = MakeMove( from, reg, class );
+    new->u.gen_table = FindGenEntry( new, &dummy );
+    DupSeg( from_ins, new );
+    PrefixIns( to_ins, new );
+    new = MakeMove( reg, to, class );
+    DupSeg( to_ins, new );
+    new->u.gen_table = FindGenEntry( new, &dummy );
+    PrefixIns( to_ins, new );
 }
 
 #if _TARGET & _TARG_IAPX86
@@ -576,6 +550,24 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
 #endif
     }
     return( BackUpAndFree( ins, ins, next ) );
+}
+
+
+static  bool    RedundantStore( instruction *ins ) {
+/***************************************************
+*/
+
+    instruction         *next;
+
+    for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
+        if( next->result == ins->result ) {
+            if( G( next ) == G_MFSTNP || G( next ) == G_MFST ) {
+                return( true );
+            }
+        }
+        if( InsOrderDependant( ins, next ) ) return( false );
+    }
+    return( false );
 }
 
 
@@ -782,40 +774,11 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
     return( ret );
 }
 
-
-static  void    MoveThrough( name *from, name *to, instruction *from_ins,
-                             instruction *to_ins, name *reg,
-                             type_class_def class ) {
-/****************************************************
-    Move from "from" to "to" using register name "reg". Segments if
-    any should be taken from "from_ins" and "to_ins".
-*/
-
-    bool        dummy;
-    instruction *new;
-
-    new = MakeMove( from, reg, class );
-    new->u.gen_table = FindGenEntry( new, &dummy );
-    DupSeg( from_ins, new );
-    PrefixIns( to_ins, new );
-    new = MakeMove( reg, to, class );
-    DupSeg( to_ins, new );
-    new->u.gen_table = FindGenEntry( new, &dummy );
-    PrefixIns( to_ins, new );
-}
-
-extern  bool    DivIsADog( type_class_def class )
-/***********************************************/
-{
-
-    return( _FPULevel( FPU_87 ) && _IsFloating( class ) );
-}
-
-extern  void    Opt8087( void ) {
+static void    Opt8087( void )
 /**************************
     Look for silly 8087 sequences and change them into better ones.
 */
-
+{
     block       *blk;
     instruction *ins;
     int         i;
@@ -830,7 +793,7 @@ extern  void    Opt8087( void ) {
         again = false;
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
-            if( _GenIs8087( ins->u.gen_table->generate ) ) {
+            if( _GenIs8087( G( ins ) ) ) {
                 if( !FSinCos( ins ) ) {
                     next = Opt87Sequence( ins, &again );
                 }
@@ -848,9 +811,32 @@ extern  void    Opt8087( void ) {
     }
 }
 
-extern  void    FixP5Divs( void ) {
-/*********************************/
 
+void    FPOptimize( void )
+/*****************************
+
+    Fix up the 8087 instructions.  The instructions so far
+*/
+{
+    if( _FPULevel( FPU_87 ) ) {
+        if( _IsntModel( NO_OPTIMIZATION ) ) {
+            Opt8087();
+        }
+        Wait8087();
+    }
+}
+
+bool    DivIsADog( type_class_def class )
+/***************************************/
+{
+
+    return( _FPULevel( FPU_87 ) && _IsFloating( class ) );
+}
+
+#if 0
+void    FixP5Divs( void )
+/***********************/
+{
     block       *blk;
     instruction *ins;
 
@@ -868,3 +854,4 @@ extern  void    FixP5Divs( void ) {
         }
     }
 }
+#endif

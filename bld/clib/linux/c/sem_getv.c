@@ -33,9 +33,10 @@
 #include "variety.h"
 #include <semaphore.h>
 #include <stddef.h>
-#include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
+#include "rterrno.h"
+#include "thread.h"
 
 
 _WCRTLINK int sem_getvalue( sem_t *sem, int *value ) 

@@ -98,7 +98,7 @@ static int __iomode( int handle, int amode )
 
 _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_mode )
 {
-    unsigned        flags;
+    int             file_flags;
     FILE            *fp;
     int             extflags;
 
@@ -106,19 +106,19 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         _RWD_errno = EBADF;
         return( NULL );
     }
-    flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );
-    if( flags == 0 ) return( NULL );
+    file_flags = __F_NAME(__open_flags,__wopen_flags)( access_mode, &extflags );
+    if( file_flags == 0 )
+        return( NULL );
 
 #ifndef __NETWARE__
     /* make sure the handle has the same text/binary mode */
-    if( __iomode( handle, flags ) == -1 ) {
+    if( __iomode( handle, file_flags ) == -1 ) {
         return( NULL );
     }
 #endif
-    fp = __allocfp( handle );               /* JBS 30-aug-91 */
-    if( fp ) {
-        fp->_flag &= ~(_READ | _WRITE); /* 2-dec-90 */
-        fp->_flag |= flags;
+    fp = __allocfp();
+    if( fp != NULL ) {
+        fp->_flag |= file_flags;
         fp->_cnt = 0;
         _FP_BASE( fp ) = NULL;
         fp->_bufsize = 0;                   /* was BUFSIZ JBS 91/05/31 */
@@ -135,7 +135,7 @@ _WCRTLINK FILE *__F_NAME(fdopen,_wfdopen)( int handle, const CHAR_TYPE *access_m
         }
         __chktty( fp );                     /* JBS 31-may-91 */
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        __SetIOMode( handle, flags );
+        __SetIOMode( handle, file_flags );
 #endif
     }
     return( fp );

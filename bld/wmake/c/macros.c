@@ -49,9 +49,9 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 /* arbitrarily set the length of the command line */

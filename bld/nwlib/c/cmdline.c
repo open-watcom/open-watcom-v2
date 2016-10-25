@@ -44,7 +44,7 @@
 #define AR_MODE_ENV  "WLIB$AR"
 #define AR_MODE_ENV2 "WLIB_AR"
 
-#define eatwhite( c ) while( *(c) && isspace( *(unsigned char *)(c) ) ) ++(c);
+#define eatwhite( c ) while( *(c) != '\0' && isspace( *(unsigned char *)(c) ) ) ++(c);
 #define notwhite( c ) ( (c) != '\0' && !isspace( (unsigned char)(c) ) )
 
 #define my_tolower( c ) tolower( (unsigned char)(c) )
@@ -54,7 +54,7 @@ lib_cmd         *CmdList;
 
 static lib_cmd  **CmdListEnd;
 
-static char *GetString( char *c, char *buff, bool singlequote, bool ignoreSpaceInQuotes )
+static const char *GetString( const char *c, char *buff, bool singlequote, bool ignoreSpaceInQuotes )
 {
     char    quote;
 
@@ -86,9 +86,9 @@ static char *GetString( char *c, char *buff, bool singlequote, bool ignoreSpaceI
     return( c );
 }
 
-static char *GetEqual( char *c, char *buff, char *ext, char **ret )
+static const char *GetEqual( const char *c, char *buff, const char *ext, char **ret )
 {
-    char    *start = c;
+    const char  *start = c;
 
     eatwhite( c );
     if( *c == '=' ) {
@@ -109,7 +109,7 @@ static char *GetEqual( char *c, char *buff, char *ext, char **ret )
     return( c );
 }
 
-static void SetPageSize( unsigned short new_size )
+static void SetPageSize( unsigned_16 new_size )
 {
     unsigned int i;
 
@@ -124,15 +124,15 @@ static void SetPageSize( unsigned short new_size )
     }
 }
 
-static void DuplicateOption( char *c )
+static void DuplicateOption( const char *c )
 {
     FatalError( ERR_DUPLICATE_OPTION, c );
 }
 
-static char *ParseOption( char *c, char *buff )
+static const char *ParseOption( const char *c, char *buff )
 {
     unsigned long   page_size;
-    char            *start;
+    const char      *start;
     char            *page;
     char            *endptr;
     ar_format       libformat;
@@ -151,7 +151,7 @@ static char *ParseOption( char *c, char *buff )
         Options.respect_case = true;
         break;
     case 'd': // = <object_output_directory>
-        if( Options.output_directory ) {
+        if( Options.output_directory != NULL ) {
             DuplicateOption( start );
         }
         c = GetEqual( c, buff, NULL, &Options.output_directory );
@@ -253,7 +253,7 @@ static char *ParseOption( char *c, char *buff )
         Options.mangled = true;
         break;
     case 'o': // = <out_library_name>
-        if( Options.output_name ) {
+        if( Options.output_name != NULL ) {
             DuplicateOption( start );
         }
         c = GetEqual( c, buff, EXT_LIB, &Options.output_name );
@@ -268,7 +268,7 @@ static char *ParseOption( char *c, char *buff )
         Options.explode = true;
 #ifndef NDEBUG
         Options.explode_count = 0;
-        if( ( my_tolower( *c ) == 'n' ) ) {
+        if( my_tolower( *c ) == 'n' ) {
             Options.explode_count = 1;
             ++c;
         }
@@ -366,7 +366,7 @@ static char *ParseOption( char *c, char *buff )
             if( Options.page_size ) {
                 DuplicateOption( start );
             }
-            Options.page_size = (unsigned short)-1;
+            Options.page_size = (unsigned_16)-1;
         } else {
             if( Options.page_size ) {
                 DuplicateOption( start );
@@ -380,7 +380,7 @@ static char *ParseOption( char *c, char *buff )
                 FatalError( ERR_PAGE_RANGE );
             }
             MemFree( page );
-            SetPageSize( (unsigned short)page_size );
+            SetPageSize( (unsigned_16)page_size );
         }
         break;
     case 'n': //                       (always create a new library)
@@ -396,7 +396,7 @@ static char *ParseOption( char *c, char *buff )
     return( c );
 }
 
-static void AddCommand( operation ops, char *name )
+static void AddCommand( operation ops, const char *name )
 {
     lib_cmd         *new;
 
@@ -420,22 +420,23 @@ static void AddCommand( operation ops, char *name )
 
 static void FreeCommands( void )
 {
-    lib_cmd     *cmd, *next;
+    lib_cmd     *cmd;
 
-    for( cmd = CmdList; cmd != NULL; cmd = next ) {
-        next = cmd->next;
+    while( (cmd = CmdList) != NULL ) {
+        CmdList = cmd->next;
         MemFreeGlobal( cmd );
     }
+    CmdListEnd = &CmdList;
 }
 
-static char *ParseCommand( char *c )
+static const char *ParseCommand( const char *c )
 {
     bool            doquotes = true;
     bool            ignoreSpacesInQuotes = false;
-    char            *start;
+    const char      *start;
     operation       ops = 0;
     //char        buff[_MAX_PATH];
-    char            buff[ MAX_IMPORT_STRING ];
+    char            buff[MAX_IMPORT_STRING];
 
     start = c;
     eatwhite( c );
@@ -498,10 +499,10 @@ static char *ParseCommand( char *c )
 
 #define MAX_CMDLINE     (10*1024)
 
-static void ParseOneLine( char *c )
+static void ParseOneLine( const char *c )
 {
     char        *buff;
-    char        *start;
+    const char  *start;
 
     buff = MemAlloc( MAX_CMDLINE );
     for( ;; ) {
@@ -512,7 +513,7 @@ static void ParseOneLine( char *c )
         case '/':
             c = ParseOption( c, buff );
             if( c == start )
-                FatalError( ERR_BAD_OPTION, c[ 1 ] );
+                FatalError( ERR_BAD_OPTION, c[1] );
             break;
 #endif
 
@@ -535,11 +536,11 @@ static void ParseOneLine( char *c )
             ++c;
             c = GetString( c, buff, true, false );
             {
-                char *env = WlibGetEnv( buff );
+                const char *env = WlibGetEnv( buff );
 
 
                 if( env != NULL ) {
-                    ParseOneLine(env);
+                    ParseOneLine( env );
                 } else {
                     FILE    *io;
                     DefaultExtension( buff, EXT_CMD );
@@ -565,7 +566,7 @@ static void ParseOneLine( char *c )
                 Banner();
                 Usage();
             }
-            if( Options.input_name ) {
+            if( Options.input_name != NULL ) {
                 AddCommand( OP_ADD|OP_DELETE, buff );
             } else {
                 DefaultExtension( buff, EXT_LIB );
@@ -576,9 +577,9 @@ static void ParseOneLine( char *c )
     }
 }
 
-static char *ParseArOption( char *c, operation *ar_mode )
+static const char *ParseArOption( const char *c, operation *ar_mode )
 {
-    char    *start = c;
+    const char  *start = c;
 
     while( notwhite( *c ) ) {
         switch( my_tolower( *c ) ) {
@@ -594,7 +595,7 @@ static char *ParseArOption( char *c, operation *ar_mode )
             break;
         case 'd':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[ 0 ] );
+                FatalError( ERR_BAD_OPTION, c[0] );
             }
             *ar_mode = OP_DELETE;
             break;
@@ -603,13 +604,13 @@ static char *ParseArOption( char *c, operation *ar_mode )
             break;
         case 'r':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[ 0 ] );
+                FatalError( ERR_BAD_OPTION, c[0] );
             }
             *ar_mode = OP_ADD | OP_DELETE;
             break;
         case 't':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[ 0 ] );
+                FatalError( ERR_BAD_OPTION, c[0] );
             }
             *ar_mode = OP_TABLE;
             Options.list_contents = true;
@@ -628,21 +629,21 @@ static char *ParseArOption( char *c, operation *ar_mode )
             break;
         case 'x':
             if( *ar_mode != OP_NONE ) {
-                FatalError( ERR_BAD_OPTION, c[ 0 ] );
+                FatalError( ERR_BAD_OPTION, c[0] );
             }
             *ar_mode = OP_EXTRACT;
             break;
         case '-':
             break;
         default:
-            FatalError( ERR_BAD_OPTION, c[ 0 ] );
+            FatalError( ERR_BAD_OPTION, c[0] );
         }
         c++;
     }
     return( c );
 }
 
-static void ParseOneArLine( char *c, operation *ar_mode )
+static void ParseOneArLine( const char *c, operation *ar_mode )
 {
     char        *buff;
     bool        done_options;
@@ -675,7 +676,7 @@ static void ParseOneArLine( char *c, operation *ar_mode )
                 break;
             }
             c = GetString( c, buff, true, false );
-            if( Options.input_name ) {
+            if( Options.input_name != NULL ) {
                 AddCommand( *ar_mode, buff );
                 break;
             } else {
@@ -690,10 +691,10 @@ static void ParseOneArLine( char *c, operation *ar_mode )
 void ProcessCmdLine( char *argv[] )
 {
     char        *parse;
-    char        *env;
+    const char  *env;
     lib_cmd     *cmd;
     char        *fname;
-    char        buffer[ PATH_MAX ];
+    char        buffer[PATH_MAX];
     operation   ar_mode;
 
     fname = MakeFName( _cmdname( buffer ) );
@@ -736,8 +737,7 @@ void ProcessCmdLine( char *argv[] )
     }
     if( Options.ar && CmdList != NULL && Options.explode ) {
         Options.explode = false;
-    } else if( CmdList == NULL && !(Options.list_contents) && !(Options.explode)
-            && !(Options.new_library) ) {
+    } else if( CmdList == NULL && !Options.list_contents && !Options.explode && !Options.new_library ) {
         /* Default action: List the input lib */
         if( Options.output_name == NULL ) {
             Options.list_contents = true;
@@ -782,12 +782,23 @@ void InitCmdLine( void )
 #endif
 }
 
-void ResetCmdLine( void )
+void FiniCmdLine( void )
 {
-    MemFree( Options.output_directory );
-    MemFree( Options.list_file );
-    MemFree( Options.output_name );
-    MemFree( Options.input_name );
+    if( Options.output_directory != NULL ) {
+        MemFree( Options.output_directory );
+        Options.output_directory = NULL;
+    }
+    if( Options.list_file != NULL ) {
+        MemFree( Options.list_file );
+        Options.list_file = NULL;
+    }
+    if( Options.output_name != NULL ) {
+        MemFree( Options.output_name );
+        Options.output_name = NULL;
+    }
+    if( Options.input_name != NULL ) {
+        MemFree( Options.input_name );
+        Options.input_name = NULL;
+    }
     FreeCommands();
-    InitCmdLine();
 }

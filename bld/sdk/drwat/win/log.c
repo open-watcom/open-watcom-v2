@@ -33,7 +33,6 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <dos.h>

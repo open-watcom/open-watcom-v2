@@ -1053,20 +1053,22 @@ void FiniScreen( void )
 \*****************************************************************************/
 
 
-static char OldRow, OldCol, OldTyp;
+static char         OldRow, OldCol;
+static CURSOR_TYPE  OldTyp;
 
 void uiinitcursor( void )
 {
 }
 
-void uisetcursor( ORD row, ORD col, int typ, int attr )
+void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 {
     unsigned    bios_cur_pos;
 
     if( typ == C_OFF ) {
         uioffcursor();
     } else if( (ScrnState & DBG_SCRN_ACTIVE) && ( VIDPort != NULL ) ) {
-        if( row == OldRow && col == OldCol && typ == OldTyp ) return;
+        if( row == OldRow && col == OldCol && typ == OldTyp )
+            return;
         OldTyp = typ;
         OldRow = row;
         OldCol = col;

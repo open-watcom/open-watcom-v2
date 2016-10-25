@@ -35,10 +35,10 @@
 #include "data.h"
 #include "insutil.h"
 #include "optab.h"
+#include "optimize.h"
 
 
 extern  instruction     *MakeWait(void);
-extern  bool            SameThing(name*,name*);
 
 static  bool    OpsCollide( name *op_87, name *op_86 ) {
 /****************************************************/
@@ -123,7 +123,7 @@ extern  void    Wait8087( void ) {
         for( ins = blk->ins.hd.next; ; ins = ins->head.next ) {
             for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 if( _OpIsCall( ins->head.opcode ) ) break;
-                gen = ins->u.gen_table->generate;
+                gen = G( ins );
                 if( _GenIs8087( gen ) ) {
                     last_non_fpins = NULL;
                     switch( gen ) {

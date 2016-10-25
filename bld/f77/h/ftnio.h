@@ -31,7 +31,7 @@
 #ifndef _F77_FTNIO_H
 #define _F77_FTNIO_H 1
 
-#ifdef __MT__
+#ifdef __SW_BM
     extern      void    (*_AccessFIO)( void );
     extern      void    (*_ReleaseFIO)( void );
     extern      void    (*_PartialReleaseFIO)( void );

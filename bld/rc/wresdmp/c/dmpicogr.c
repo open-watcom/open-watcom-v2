@@ -54,7 +54,7 @@ bool DumpIconGroup( uint_32 offset, uint_32 length, WResFileID handle )
 {
     IconCurDirHeader    head;
     IconDirEntry        entry;
-    long                prevpos;
+    WResFileOffset      prevpos;
     bool                error;
     int                 currentry;
 

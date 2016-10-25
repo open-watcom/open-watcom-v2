@@ -52,7 +52,7 @@ _WCRTLINK char *cgets( char *buff )
     INPUT_RECORD r;
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdin != 0 ) {  // Default windowing...
+    if( _WindowsStdin != NULL ) {   // Default windowing...
         __qread( STDIN_FILENO, buff + 2, *buff - 1 );
         p = buff + 2;
         len = *buff;

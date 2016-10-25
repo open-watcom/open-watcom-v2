@@ -30,8 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-
 #include "drwatcom.h"
 #include "mad.h"
 #include "madcli.h"

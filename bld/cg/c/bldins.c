@@ -50,10 +50,9 @@
 #include "encode.h"
 #include "rgtbl.h"
 #include "typemap.h"
+#include "generate.h"
 #include "feprotos.h"
 
-
-extern  void            Generate(bool);
 
 static  type_def        *LastCmpType;
 static  unsigned_32     UnrollValue = 0;

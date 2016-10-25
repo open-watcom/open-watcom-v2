@@ -40,7 +40,7 @@ sysobjs = guixscal.obj &
           guitimer.obj &
           guixwind.obj &
           guixmain.obj &
-	  guidrain.obj &
+          guidrain.obj &
           guixtent.obj &
           guicheck.obj &
           guigetx.obj  &

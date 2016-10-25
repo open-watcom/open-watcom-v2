@@ -30,4 +30,4 @@
 
 
 extern void     DataInit( itnode *var_node );
-extern int      MkHexConst( char *hex_data, char *dst, int hex_len );
+extern uint     MkHexConst( char *hex_data, char *dst, uint hex_len );

@@ -38,6 +38,7 @@
 static void _no_support_loaded( void )
 {
     __fatal_runtime_error( "Floating-point support not loaded", 1 );
+    // never return
 }
 
 _type_EFG_printf __EFG_printf = (_type_EFG_printf)_no_support_loaded;

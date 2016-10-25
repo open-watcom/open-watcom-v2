@@ -58,6 +58,8 @@
 #include "opttell.h"
 #include "typemap.h"
 #include "bldcall.h"
+#include "generate.h"
+#include "bckptr.h"
 #include "feprotos.h"
 #include "cgprotos.h"
 
@@ -69,10 +71,7 @@
 extern  void            InitWeights(uint);
 extern  void            CGMemInit(void);
 extern  void            TInit(void);
-extern  void            InitCG(void);
 extern  void            SillyMemLimit(void);
-extern  void            FiniCG(void);
-extern  void            AbortCG(void);
 extern  void            TFini(void);
 extern  void            CGMemFini(void);
 extern  void            BGFiniLabel(label_handle);
@@ -428,12 +427,6 @@ extern  void _CGAPI     BEFiniPatch( patch_handle hdl )
 /*%   Back Handles                               %%*/
 /*%                                              %%*/
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
-#define FAKE_NULL               ((pointer)(pointer_int)1)
-#define PTR_INT( x )            (*(pointer_int*)&(x))
-#define IS_REAL_BACK( bck )     ((PTR_INT( bck ) & 1) == 0)
-#define TO_REAL_BACK( bck )     ((pointer)(PTR_INT( bck ) & ~((pointer_int)1)))
-#define TO_FAKE_BACK( bck )     ((pointer)(PTR_INT( bck ) | 1))
 
 static  pointer                 NewBackReturn = NULL;
 

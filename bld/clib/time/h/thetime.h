@@ -31,7 +31,7 @@
 
 
 #define _INITTHETIME
-#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) || defined( __RDOS__ ) )
+#ifdef __SW_BM
     #define _THE_TIME       (__THREADDATAPTR->__The_timeP)
 #else
     static struct tm        The_time;

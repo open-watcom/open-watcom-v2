@@ -74,7 +74,7 @@ enddata
         push    eax
         push    offset msg
         jmp     __fatal_runtime_error   ; display msg and exit
-        ; never return        
+        ; never return
         endproc __STK
 
         endmod

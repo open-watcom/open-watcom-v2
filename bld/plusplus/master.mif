@@ -193,11 +193,11 @@ $(exename).exe : $(depends_drv) $(dllname).dll $(comp_objs_drv) $(version_res_ex
     @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !else
 
-$(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
@@ -209,7 +209,7 @@ $(exename).exe : $(depends_exe) $(comp_objs_exe) $(libs) $(osildr) $(version_res
     $(linker) name $(lname) @exe.lnk
     @%make bind_osildr
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !endif
 
@@ -224,7 +224,7 @@ $(dllname).dll : $(depends_dll) $(comp_objs_dll) $(libs) $(version_res_dll_$(hos
     @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
-    @%make bind_version_res_dll
+    @%make bind_res_version_dll
 
 #
 # miscellaneous build rules
@@ -241,6 +241,7 @@ errmsgs1.gh errmsgs2.gh errlevel.gh errors01.int : ../../gml/messages.gml
     $(noecho)msgencod -s -i -q ../../gml/messages.gml errmsgs1.gh errmsgs2.gh errlevel.gh
 
 keywords.gh weights.gh : ../../hash/plusplus.key ../../hash/pc.key
+    @%make echo_findhash
     $(noecho)findhash -q -e ",-1" ../../hash/plusplus.key ../../hash/pc.key
 
 ./umktable.exe: ../../c/umktable.c xlat.gh
@@ -360,4 +361,9 @@ echo_optencod : .PROCEDURE .EXPLICIT
 echo_msgencod : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo msgencod $@
+!endif
+
+echo_findhash : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo findhash $@
 !endif

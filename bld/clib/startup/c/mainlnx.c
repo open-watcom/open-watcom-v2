@@ -35,18 +35,17 @@
 #include "rtstack.h"
 #include "stacklow.h"
 #include "initfini.h"
-#include "linuxsys.h"
 #include "snglthrd.h"
-#include "thread.h"
-#include "mthread.h"
 #include "fileacc.h"
 #include "heapacc.h"
 #include "trdlstac.h"
-#include "cinit.h"
 #include "exitwmsg.h"
+#include "linuxsys.h"
+#include "cinit.h"
+#include "mthread.h"
 
 
-#if defined( __MT__ )
+#ifdef __SW_BM
 _WCRTLINK int *__threadid( void )
 {
     return( (int *)&(__THREADDATAPTR->thread_id) );
@@ -74,7 +73,7 @@ void __LinuxInit( struct thread_data *ptr )
 {
     unsigned    *tmp;
 
-#if defined( __MT__ )
+#ifdef __SW_BM
     __InitThreadData( ptr );
     __FirstThreadData = ptr;
 #endif

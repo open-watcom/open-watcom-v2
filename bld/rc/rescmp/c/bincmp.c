@@ -39,74 +39,65 @@
 
 #define BUFFER_SIZE  1024
 
-static char     Buffer1[ BUFFER_SIZE ];
-static char     Buffer2[ BUFFER_SIZE ];
+static char     Buffer1[BUFFER_SIZE];
+static char     Buffer2[BUFFER_SIZE];
 
-int BinaryCompare( int handle1, uint_32 offset1, int handle2, uint_32 offset2,
-                     uint_32 length )
-/****************************************************************************/
+int BinaryCompare( int handle1, uint_32 offset1, int handle2, uint_32 offset2, uint_32 length )
+/*********************************************************************************************/
 {
-    int     numread;
-    uint_32 currpos1;
-    uint_32 currpos2;
+    int             numread;
+    WResFileOffset  currpos1;
+    WResFileOffset  currpos2;
+    int             rc;
 
     /* seek to the start of the places to compare */
     currpos1 = RCSEEK( handle1, offset1, SEEK_SET );
-    if (currpos1 == -1) {
+    if( currpos1 == -1 ) {
         return( -1 );
     }
     currpos2 = RCSEEK( handle2, offset2, SEEK_SET );
-    if (currpos2 == -1) {
+    if( currpos2 == -1 ) {
         RCSEEK( handle1, currpos1, SEEK_SET );
         return( -1 );
     }
 
     /* compare the parts that fill the buffer */
-    while (length >= BUFFER_SIZE) {
+    rc = 0;
+    while( length >= BUFFER_SIZE ) {
         numread = RCREAD( handle1, Buffer1, BUFFER_SIZE );
-        if (numread != BUFFER_SIZE) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( -1 );
+        if( numread != BUFFER_SIZE ) {
+            rc = -1;
+            break;
         }
         numread = RCREAD( handle2, Buffer2, BUFFER_SIZE );
-        if (numread != BUFFER_SIZE) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( -1 );
+        if( numread != BUFFER_SIZE ) {
+            rc = -1;
+            break;
         }
-
-        if (memcmp( Buffer1, Buffer2, BUFFER_SIZE ) != 0) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( 1 );
+        if( memcmp( Buffer1, Buffer2, BUFFER_SIZE ) != 0 ) {
+            rc = 1;
+            break;
         }
-
         length -= BUFFER_SIZE;
     }
 
-    if (length > 0) {
+    if( rc == 0 && length > 0 ) {
         numread = RCREAD( handle1, Buffer1, length );
-        if (numread != length) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( -1 );
-        }
-        numread = RCREAD( handle2, Buffer2, length );
-        if (numread != length) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( -1 );
-        }
-
-        if (memcmp( Buffer1, Buffer2, length ) != 0) {
-            RCSEEK( handle2, currpos2, SEEK_SET );
-            RCSEEK( handle1, currpos1, SEEK_SET );
-            return( 1 );
+        if( numread != length ) {
+            rc = -1;
+        } else {
+            numread = RCREAD( handle2, Buffer2, length );
+            if( numread != length ) {
+                rc = -1;
+            } else {
+                if( memcmp( Buffer1, Buffer2, length ) != 0 ) {
+                    rc = 1;
+                }
+            }
         }
     }
 
     RCSEEK( handle2, currpos2, SEEK_SET );
     RCSEEK( handle1, currpos1, SEEK_SET );
-    return( 0 );
+    return( rc );
 }

@@ -34,10 +34,6 @@
 #ifndef _SEMA_POSIX_H_INCLUDED
 #define _SEMA_POSIX_H_INCLUDED
 
-#ifdef __LINUX__
-#include <semaphore.h>
-#endif
-
 extern int __posix_sem_destroy( sem_t *p );
 extern int __posix_sem_init( sem_t *p, int i, unsigned j );
 extern int __posix_sem_wait( sem_t *p );
