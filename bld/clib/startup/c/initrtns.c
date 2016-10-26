@@ -34,7 +34,6 @@
 #include "rtinit.h"
 #include "getds.h"
 
-
 #define PNEAR ((__type_rtp)0)
 #define PFAR  ((__type_rtp)1)
 #define PDONE ((__type_rtp)2)

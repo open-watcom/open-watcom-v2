@@ -41,8 +41,6 @@
 #include "regalloc.h"
 #include "insutil.h"
 #include "insdead.h"
-#include "score.h"
-#include "optimize.h"
 
 
 extern  bool            PropagateMoves(void);
@@ -51,6 +49,7 @@ extern  void            FreeConflicts(void);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
+extern  void            FreeJunk(block*);
 
 typedef enum {
     MOVEABLE        = 0x01,
@@ -166,7 +165,7 @@ static  void    PushInsForward( block *blk ) {
 }
 
 
-bool    SameThing( name *x, name *y )
+extern  bool    SameThing( name *x, name *y )
 /********************************************
     returns true if "x" and "y" are the same thing. IE: N_MEMORY
     names which are associated with the same front end symbol or
@@ -191,7 +190,7 @@ bool    SameThing( name *x, name *y )
 }
 
 
-void    DeadTemps( void )
+extern  void    DeadTemps( void )
 /********************************
     Using the information contained in each N_TEMP, delete any instruction
     whose result is a temporary that isnt used again. This is only a very
@@ -252,7 +251,7 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
 }
 
 
-void    AxeDeadCode( void )
+extern  void    AxeDeadCode( void )
 /******************************
     This is like DeadTemps, but it uses the live information in order
     to discover whether an instruction is assigning to a variable that
@@ -310,7 +309,7 @@ void    AxeDeadCode( void )
 }
 
 
-void    DeadInstructions( void )
+extern  void    DeadInstructions( void )
 /***********************************
     This is called after register allocation. It frees up any
     instructions whose generate table says G_NO (don't generate me).
@@ -324,7 +323,7 @@ void    DeadInstructions( void )
 }
 
 
-void    PushPostOps( void )
+extern  void    PushPostOps( void )
 /**********************************
     This routine tries to push add and subtract instructions
     forward in the basic block. The reason for this is that

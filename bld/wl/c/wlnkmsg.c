@@ -65,21 +65,13 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 /*************************************************************************************/
 {
     if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
 }
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, RCALLOC, RCFREE );
+WResSetRtns( open, close, read, write, res_seek, tell, RCALLOC, RCFREE );
 
 bool InitMsg( void )
 {
@@ -124,7 +116,8 @@ bool Msg_Get( int resourceid, char *buffer )
     return( true );
 }
 
-void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types, ... )
+void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info,
+                        char *types, ... )
 {
     va_list     args;
 
@@ -137,7 +130,7 @@ void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, const char *types,
 void Msg_Put_Args(
     char                message[],      // Contains %s, etc. or %digit specifiers
     MSG_ARG_LIST        *arg_info,      // Arguments found
-    const char          *types,         // message conversion specifier types
+    char                *types,         // message conversion specifier types
                                         // NULL or strlen <= 3 ( arg_info->arg elements)
     va_list             *args )         // Initialized va_list
 {

@@ -79,7 +79,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     security.bInheritHandle = mode&O_NOINHERIT ? FALSE : TRUE;
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsNewWindow != NULL && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
+    if( _WindowsNewWindow != 0 && !__F_NAME(stricmp,_wcsicmp)( name, CHAR_CONST( "con" ) ) )
     {
         handle = (HANDLE) __NTGetFakeHandle();
 

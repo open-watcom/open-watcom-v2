@@ -29,6 +29,6 @@
 ****************************************************************************/
 
 
-extern sym_id  FindNameList( char *name, uint len );
-extern sym_id  STNameList( char *name, uint length );
+extern sym_id  FindNameList( char *name, int len );
+extern sym_id  STNameList( char *name, int length );
 extern char    *STNmListName( sym_id sym, char *buff );

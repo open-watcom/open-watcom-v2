@@ -1,23 +1,23 @@
 ctl_check SETSCR_JUMPYSCROLL
-    scrn_get, scrn_set
+    offsetof( dlg_data, JumpyScroll )
     *
     
 ctl_check SETSCR_LINEBASED
-    scrn_get, scrn_set
+    offsetof( dlg_data, LineBased )
     *
     
 ctl_check SETSCR_SAVEPOSITION
-    scrn_get, scrn_set
+    offsetof( dlg_data, SavePosition )
     *
     
 ctl_check SETSCR_AUTOMESSAGECLEAR
-    scrn_get, scrn_set
+    offsetof( dlg_data, AutoMessageClear )
     *
     
 ctl_rint SETSCR_PAGELINESEXPOSED
-    scrn_get, scrn_set
+    offsetof( dlg_data, PageLinesExposed )
     0, -1
     
 ctl_text SETSCR_FILEENDSTRING
-    scrn_get, scrn_set
+    offsetof( dlg_data, FileEndString )
     FILEENDSTRINGWIDTH

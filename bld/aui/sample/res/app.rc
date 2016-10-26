@@ -1,40 +1,15 @@
-#ifdef __OS2__
-
-#include <os2.h>
-#include "appcomm2.rc"
-
-#define RC_ITEM(a,b,c) a b c
-
-#else
-
 #include "windows.h"
 #include "appcomm.rc"
-
-#define RC_ITEM(a,b,c) b a c
-
-#endif
-
 #include "rcdefs.h"
-
-#ifdef __OS2__
-RC_ITEM( ICON,      1,              "dui2.ico" )
-#else
-RC_ITEM( ICON,      ApplIcon,       "dui.ico" )
-#endif
-
-RC_ITEM( BITMAP,    BITMAP_ONE,     "one.bmp" )
-RC_ITEM( BITMAP,    BITMAP_TWO,     "two.bmp" )
-RC_ITEM( BITMAP,    BITMAP_THREE,   "three.bmp" )
-RC_ITEM( BITMAP,    BITMAP_FOUR,    "four.bmp" )
-RC_ITEM( BITMAP,    BITMAP_FIVE,    "five.bmp" )
-RC_ITEM( BITMAP,    BITMAP_SOURCE1, "source1.bmp" )
-RC_ITEM( BITMAP,    BITMAP_SOURCE2, "source2.bmp" )
-RC_ITEM( BITMAP,    BITMAP_STOP1,   "stop1.bmp" )
-RC_ITEM( BITMAP,    BITMAP_STOP2,   "stop2.bmp" )
-#ifdef __OS2__
-RC_ITEM( ICON,      ICON_MAIN,      "dui2.ico" )
-RC_ITEM( ICON,      ICON_WORDS,     "word2.ico" )
-#else
-RC_ITEM( ICON,      ICON_MAIN,      "dui.ico" )
-RC_ITEM( ICON,      ICON_WORDS,     "words.ico" )
-#endif
+BITMAP_ONE BITMAP "one.bmp"
+BITMAP_TWO BITMAP "two.bmp"
+BITMAP_THREE BITMAP "three.bmp"
+BITMAP_FOUR BITMAP "four.bmp"
+BITMAP_FIVE BITMAP "five.bmp"
+BITMAP_SOURCE1 BITMAP "source1.bmp"
+BITMAP_SOURCE2 BITMAP "source2.bmp"
+BITMAP_STOP1 BITMAP "stop1.bmp"
+BITMAP_STOP2 BITMAP "stop2.bmp"
+ICON_MAIN ICON "dui.ico"
+ApplIcon ICON "dui.ico"
+ICON_WORDS ICON "words.ico"

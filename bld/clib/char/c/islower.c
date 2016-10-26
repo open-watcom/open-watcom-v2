@@ -31,18 +31,18 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <stdio.h>
 #include <ctype.h>
 #ifdef __WIDECHAR__
  #include <wctype.h>
 #endif
 #include "istable.h"
-
-
 #undef  islower
 
 _WCRTLINK int __F_NAME(islower,iswlower)( INTCHAR_TYPE c )
 {
-    return( IS_ASCII_INT( c )
-        && IsWhat( c, _LOWER ) );
+    if( IS_ASCII( c ) ) {
+        return( IsWhat( c ) & _LOWER );
+    } else {
+        return( 0 );
+    }
 }

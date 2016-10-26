@@ -229,21 +229,19 @@ void ProcLinsym( void )
     list_of_names *     symname;
     symbol *            sym;
     bool                is32bit;
-    size_t              sym_len;
+    unsigned            sym_len;
 
     ObjBuff++;          /* skip flags */
     symname = FindName( GetIdx() );
     sym_len = strlen( symname->name );
     sym = SymOp( ST_FIND | ST_STATIC, symname->name, sym_len );
-    if( sym == NULL )
-        sym = SymOp( ST_FIND, symname->name, sym_len );
+    if( sym == NULL ) sym = SymOp( ST_FIND, symname->name, sym_len );
     if( sym == NULL ) {
         BadObject();
         return;
     }
-    if( !IS_SYM_COMDAT( sym ) )
-        return;
-    is32bit = ( (ObjFormat & FMT_32BIT_REC) != 0 );
+    if( !IS_SYM_COMDAT(sym) ) return;
+    is32bit = (ObjFormat & FMT_32BIT_REC) != 0;
     if( sym->mod == CurrMod && (sym->info & SYM_DEAD) == 0 ) {
         DBIAddLines( sym->p.seg, ObjBuff, EOObjRec - ObjBuff, is32bit );
     }
@@ -414,7 +412,7 @@ void ProcComdat( void )
     segnode *           seg;
     list_of_names *     symname;
     symbol *            sym;
-    size_t              namelen;
+    unsigned            namelen;
     unsigned            attr;
     unsigned            flags;
     unsigned            align;

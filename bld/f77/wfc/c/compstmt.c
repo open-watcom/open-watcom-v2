@@ -468,11 +468,11 @@ static void FiniDo( void )
     }
 }
 
-void RemKeyword( itnode *itptr, uint remove_len )
+void RemKeyword( itnode *itptr, int remove_len )
 {
     char        *curr_char;
     itnode      *new_it_node;
-    uint        curr_size;
+    int         curr_size;
 
     itptr->oprpos += remove_len;
     itptr->opnpos = itptr->oprpos;
@@ -501,9 +501,9 @@ void RemKeyword( itnode *itptr, uint remove_len )
         }
         if( curr_char != itptr->opnd ) {
             itptr->opn.ds = DSOPN_INT;
-            if( (uint)( curr_char - itptr->opnd ) != curr_size ) {
-                remove_len = curr_size - (uint)( curr_char - itptr->opnd );
-                itptr->opnd_size = (uint)( curr_char - itptr->opnd );
+            if( curr_char - itptr->opnd != curr_size ) {
+                remove_len = curr_size - ( curr_char - itptr->opnd );
+                itptr->opnd_size = ( curr_char - itptr->opnd );
                 new_it_node = FrlAlloc( &ITPool, sizeof( itnode ) );
                 new_it_node->opnd_size = remove_len;
                 new_it_node->opnd = itptr->opnd + itptr->opnd_size;

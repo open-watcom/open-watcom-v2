@@ -11,26 +11,25 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
 #include "omfhash.h"
 
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
 #define _rotr( a, b )   ( ( a << ( 16 - b ) ) | ( a  >> b ) )
 
-void omflib_hash( const char *name, size_t len, hash_entry *hash, unsigned num_blocks )
+void omflib_hash( char *name, unsigned len, hash_entry *hash, unsigned num_blocks )
 {
-    const unsigned char *leftptr;
-    const unsigned char *rightptr;
-    unsigned short      curr;
-    unsigned short      block;
-    unsigned short      bucket;
-    unsigned short      blockd;
-    unsigned short      bucketd;
-    unsigned short      count;
+    unsigned char   *leftptr;
+    unsigned char   *rightptr;
+    unsigned short  curr;
+    unsigned short  block;
+    unsigned short  bucket;
+    unsigned short  blockd;
+    unsigned short  bucketd;
+    unsigned        count;
 
-    count = (unsigned short)len;
-    leftptr = (const unsigned char *)name;
+    count = len;
+    leftptr = (unsigned char *)name;
     rightptr = leftptr + count;
     block = count | 0x20;
     blockd = 0;

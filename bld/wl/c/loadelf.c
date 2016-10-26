@@ -86,8 +86,8 @@ static ElfSymTable *    ElfSymTab;
 
 #define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & DWARF_DBI_FLAG) )
 
-static void AddSecIdxName( ElfHdr *hdr, int idx, const char *name )
-/*****************************************************************/
+static void AddSecIdxName( ElfHdr *hdr, int idx, char *name )
+/***********************************************************/
 {
     if( idx == 0 )
         return;
@@ -102,7 +102,7 @@ static void InitSections( ElfHdr *hdr)
     group_entry *group;
 
     num = 1;
-    memset( &hdr->i, 0, sizeof( hdr->i ) );
+    memset( &hdr->i, 0, sizeof hdr->i );
     hdr->i.secstr = num++;
     hdr->eh.e_shstrndx = hdr->i.secstr;
     hdr->i.grpbase = num;
@@ -200,7 +200,7 @@ unsigned GetElfHeaderSize( void )
     return ROUND_UP( size, 0x100 );
 }
 
-void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, const char *name )
+void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, char *name )
 /***************************************************************/
 {
     sh->sh_name = GetStringTableSize( &hdr->secstrtab );
@@ -315,8 +315,8 @@ static void WriteELFGroups( ElfHdr *hdr )
 
 #define RELA_NAME_SIZE sizeof(RelASecName)
 
-static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, const char *secname )
-/******************************************************************************/
+static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, char *secname )
+/************************************************************************/
 {
     size_t      len;
     char        *name;

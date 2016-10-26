@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <dos.h>
 #include "drwatcom.h"
 #include "watcom.h"

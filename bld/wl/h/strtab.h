@@ -37,20 +37,19 @@ typedef struct stringblock STRINGBLOCK;
 
 typedef struct {
     STRINGBLOCK *data;
-    size_t      currbase;
+    unsigned    currbase;
 } stringtable;
 
-typedef void    write_strtable_fn( void *, const char *, size_t );
-
 extern void     InitStringTable( stringtable *, bool );
-extern void     ReserveStringTable( stringtable *, size_t );
-extern char     *AddBufferStringTable( stringtable *, const void *, size_t );
-extern char     *AddSymbolStringTable( stringtable *, const char *, size_t );
-extern char     *AddStringStringTable( stringtable *, const char * );
+extern void     ReserveStringTable( stringtable *, unsigned );
+extern char     *AddBufferStringTable( stringtable *, void *, unsigned );
+extern char     *AddSymbolStringTable( stringtable *, char *, unsigned );
+extern char     *AddStringStringTable( stringtable *, char * );
 extern void     AddCharStringTable( stringtable *, char );
-extern void     ZeroStringTable( stringtable *, size_t );
-extern void     WriteStringTable( stringtable *, write_strtable_fn *, void * );
+extern void     ZeroStringTable( stringtable *, unsigned );
+extern void     WriteStringTable( stringtable *,
+                                  void (*)(void *, char *,unsigned), void * );
 extern void     FiniStringTable( stringtable * );
-extern size_t   GetStringTableSize( stringtable * );
+extern unsigned GetStringTableSize( stringtable * );
 
 #endif

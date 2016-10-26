@@ -39,8 +39,8 @@
 
 static _trmem_hdl TrHdl;
 
-static void PrintLine( void *handle, const char *buff, size_t len )
-/*****************************************************************/
+static void PrintLine( void *handle, const char *buff, unsigned len )
+/*******************************************************************/
 {
     handle = handle;
     putlen( buff, len );

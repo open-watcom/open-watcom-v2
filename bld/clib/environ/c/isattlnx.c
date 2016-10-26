@@ -33,8 +33,6 @@
 #include <unistd.h>
 #include <termios.h>
 #include "rterrno.h"
-#include "thread.h"
-
 
 _WCRTLINK int isatty( int __fildes )
 {

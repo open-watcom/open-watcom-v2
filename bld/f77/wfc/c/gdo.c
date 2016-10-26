@@ -46,7 +46,6 @@
 #include "utility.h"
 #include "cgmagic.h"
 #include "gdo.h"
-#include "gtypes.h"
 
 
 /* Forward declarations */

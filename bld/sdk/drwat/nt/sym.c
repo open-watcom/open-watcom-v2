@@ -31,19 +31,18 @@
 
 
 #include <io.h>
-#include <malloc.h>
 #include "drwatcom.h"
 #include "mem.h"
 #include "mad.h"
-
-
+#include <malloc.h>
 /*
  * InitDip
  */
 BOOL InitDip( void )
 {
     if( DIPInit() & DS_ERR ) {
-        RCMessageBox( NULL, STR_CANT_LOAD_DIP, AppName, MB_OK | MB_ICONEXCLAMATION );
+        RCMessageBox( NULL, STR_CANT_LOAD_DIP, AppName,
+                    MB_OK | MB_ICONEXCLAMATION );
         return( FALSE );
     }
     return( LoadTheDips() );
@@ -83,7 +82,7 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
     switch( sr ) {
     case SR_CLOSEST:
         DIPSymLocation( symhdl, NULL, &ll );
-        *symoff = MADAddrDiff( addr,&(ll.e[0].u.addr), MAF_FULL );
+        *symoff = MADAddrDiff(addr,&(ll.e[0].u.addr),MAF_FULL);
         break;
     case SR_EXACT:
         *symoff = 0;
@@ -117,9 +116,11 @@ BOOL LoadDbgInfo( ModuleNode *mod )
             break;
         }
     }
-    if( mod->syminfo->hdl == NO_MOD )
+    if( mod->syminfo->hdl != NO_MOD ) {
+        DIPMapInfo( mod->syminfo->hdl, mod );
+    } else {
         return( FALSE );
-    DIPMapInfo( mod->syminfo->hdl, mod );
+    }
     return( TRUE );
 }
 
@@ -135,3 +136,4 @@ void UnloadDbgInfo( ModuleNode *mod )
         mod->syminfo = NULL;
     }
 }
+

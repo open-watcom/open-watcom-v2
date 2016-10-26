@@ -34,9 +34,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#include "clibext.h"
-
-
 static int      extraDataSize;
 static void     *extraData = NULL;
 

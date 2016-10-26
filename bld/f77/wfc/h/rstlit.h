@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern sym_id  STLit( byte *string, uint len );
+extern sym_id  STLit( byte *string, int len );

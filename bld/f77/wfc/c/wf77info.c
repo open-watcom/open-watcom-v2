@@ -604,13 +604,13 @@ void    DtIBytes( byte data, int size ) {
     if( (DtSegment == CurrDt.seg) &&
         (DtSegOffset == CurrDt.offset + CurrDt.size) &&
         (data == CurrDt.byte_value) &&
-        (MaxSegSize >= (CurrDt.offset + CurrDt.size + size)) ) {
+        ((MaxSegSize - (CurrDt.offset + CurrDt.size)) >= size ) ) {
         // We are continuing where we left off
         CurrDt.size += size;
         DtSegOffset += size;
     } else {
         FlushCurrDt();
-        if( MaxSegSize > DtSegOffset + size ) {
+        if( MaxSegSize - DtSegOffset > size ) {
             CurrDt.seg = DtSegment;
             CurrDt.offset = DtSegOffset;
             CurrDt.byte_value = data;
@@ -641,7 +641,7 @@ void    DtStreamBytes( byte *data, int size ) {
     InitCurrDt();
     BESetSeg( DtSegment );
     DGSeek( DtSegOffset );
-    if( MaxSegSize > DtSegOffset + size ) {
+    if( MaxSegSize - DtSegOffset > size ) {
         UndefBytes( size, data );
         DtSegOffset += size;
     } else {
@@ -1882,12 +1882,12 @@ static uint_32 *makeDOSTimeStamp( time_t ts ) {
     static uint_32      dos_stamp;
 
     ltime = localtime( &ts );
-    dos_date = (uint_16)((( ltime->tm_year - 80 ) << DATE_YEAR_B )
+    dos_date = (( ltime->tm_year - 80 ) << DATE_YEAR_B )
              | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B ));
-    dos_time = (uint_16)((( ltime->tm_hour ) << TIME_HOUR_B )
+             | (( ltime->tm_mday ) << DATE_DAY_B );
+    dos_time = (( ltime->tm_hour ) << TIME_HOUR_B )
              | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B ));
+             | (( ltime->tm_sec / 2 ) << TIME_SEC_B );
     dos_stamp = dos_time | ( dos_date << 16 );
     return( &dos_stamp );
 }
@@ -1951,43 +1951,43 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
         switch( (int)(pointer_int)req_handle ) {
         case 0:
             if( CGFlags & CG_HAS_PROGRAM )
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)1 );
 #if _CPU == 386 || _CPU == _AXP || _CPU == _PPC
             if( CGOpts & CGOPT_BD )
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)1 );
 #endif
         case 1:
 #if _CPU == 386 || _CPU == 8086
             if(( CGFlags & CG_FP_MODEL_80x87 )
               && ( CGFlags & CG_USED_80x87 ))
-                return( (pointer)(pointer_int)2 );
+                return( (pointer)2 );
         case 2:
 #if _CPU == 386
             if( CPUOpts & CPUOPT_FPI )
-                return( (pointer)(pointer_int)3 );
+                return( (pointer)3 );
         case 3:
             if( CGOpts & CGOPT_BW )
-                return( (pointer)(pointer_int)4 );
+                return( (pointer)4 );
         case 4:
 #endif
 #endif
-            return( (pointer)(pointer_int)5 );
+            return( (pointer)5 );
         case 5:
-            return( (pointer)(pointer_int)6 );
+            return( (pointer)6 );
         case 6:
             if( Options & OPT_UNIT_6_CC )
-                return( (pointer)(pointer_int)7 );
+                return( (pointer)7 );
         case 7:
             if( Options & OPT_LF_WITH_FF )
-                return( (pointer)(pointer_int)8 );
+                return( (pointer)8 );
         case 8:
 #if _CPU == 386 || _CPU == _PPC || _CPU == _AXP
             if( CGOpts & ( CGOPT_BM | CGOPT_BD ) )
-                return( (pointer)(pointer_int)9 );
+                return( (pointer)9 );
         case 9:
 #endif
             if( Options & OPT_COMMA_SEP )
-                return( (pointer)(pointer_int)10 );
+                return( (pointer)10 );
         default:
             break;
         }
@@ -2003,7 +2003,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
             if(( ( flags & SY_CLASS ) == SY_SUBPROGRAM )
               && ( flags & SY_EXTERNAL )
               && ( ( flags & ( SY_SUB_PARM | SY_REFERENCED | SY_RELAX_EXTERN ) ) == 0 )) {
-                return( (pointer)(pointer_int)1 );
+                return( (pointer)1 );
             }
         }
         return( NULL );
@@ -2081,7 +2081,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
     case FREE_SEGMENT :
         return( NULL );
     case REVISION_NUMBER :
-        return( (pointer)(pointer_int)II_REVISION );
+        return( (pointer)II_REVISION );
 #if _CPU == 8086 || _CPU == 386
     case CLASS_NAME :
         for( sym = GList; sym != NULL; sym = sym->u.ns.link ) {
@@ -2111,13 +2111,13 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
         // return the number of floating-point registers
         // that are NOT used as cache
         if( CPUOpts & CPUOPT_FPR )
-            return( (pointer)(pointer_int)4 );
-        return( (pointer)(pointer_int)8 );
+            return( (pointer)4 );
+        return( (pointer)8 );
     case CODE_LABEL_ALIGNMENT :
         return( AlignmentSeq() );
 #endif
     case TEMP_LOC_NAME :
-        return( (pointer)(pointer_int)TEMP_LOC_QUIT );
+        return( (pointer)TEMP_LOC_QUIT );
     case TEMP_LOC_TELL :
         return( NULL );
     case NEXT_DEPENDENCY :

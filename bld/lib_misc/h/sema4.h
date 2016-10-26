@@ -6,7 +6,9 @@
 extern "C" {
 #endif
 
-#if defined(__UNIX__)
+#if defined(__QNX__)
+#include "semaphor.h"
+#elif defined(__LINUX__)
 #include <semaphore.h>
 #elif defined(__RDOSDEV__)
 #include "rdosdev.h"
@@ -19,7 +21,7 @@ extern "C" {
 typedef struct  semaphore_object {
   #if defined(__NT__)
         void            *semaphore;
-  #elif defined(__UNIX__)
+  #elif defined(__QNX__) || defined(__LINUX__)
         sem_t           semaphore;
   #elif defined(__RDOS__)
         int             semaphore; // RDOS only have critical sections, which should work

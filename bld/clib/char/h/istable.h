@@ -32,6 +32,37 @@
 #ifndef _ISTABLE_H_INCLUDED
 #define _ISTABLE_H_INCLUDED
 
-#define IsWhat(c,m)     (_IsTable[(unsigned char)(c) + 1] & (m))
+#if defined(__386__)
+extern int IsWhat( int );
+#pragma aux IsWhat = \
+        "and eax,0xff" \
+        "mov al,_IsTable+0x1[eax]" \
+        parm loadds [eax]
+#elif defined(_M_I86HM)
+extern int IsWhat( int );
+#pragma aux IsWhat = \
+        "push bx" \
+        "mov bx,seg _IsTable" \
+        "mov ds,bx" \
+        "and ax,0xff" \
+        "mov bx,ax" \
+        "mov al,_IsTable+0x1[bx]" \
+        "pop bx" \
+        parm [ax] modify [ds]
+#elif defined(__I86__)
+extern int IsWhat( int );
+#pragma aux IsWhat = \
+        "push bx" \
+        "and ax,0xff" \
+        "mov bx,ax" \
+        "mov al,_IsTable+0x1[bx]" \
+        "pop bx" \
+        parm loadds [ax]
+#else
+static int IsWhat( int c )
+{
+    return( _IsTable[TO_ASCII( c )+1] );
+}
+#endif
 
 #endif

@@ -15,7 +15,9 @@
 #include <time.h>
 #include <sys/types.h>
 
-:include schedp.sp
+struct sched_param {
+    int sched_priority;
+};
 
 /* Scheduling policies per the Linux kernel */
 #define SCHED_NORMAL            0

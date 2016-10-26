@@ -39,10 +39,8 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 #include <netdb.h>
+#include <errno.h>
 #include <string.h>
-#include "rterrno.h"
-#include "thread.h"
-
 
 #define DNSRESOLV   "/etc/resolv.conf"
 

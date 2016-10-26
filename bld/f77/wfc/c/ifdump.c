@@ -41,7 +41,6 @@
 #include "types.h"
 #include "utility.h"
 #include "ifdump.h"
-#include "gtypes.h"
 
 
 static  void    MakeComplex( TYPE if_type ) {

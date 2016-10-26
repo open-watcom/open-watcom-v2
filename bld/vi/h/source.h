@@ -93,24 +93,24 @@ typedef struct cs_entry {
     label               top;
     label               alt;
     label               end;
-    srcline             sline;
     cstype              type;
+    srcline             sline;
 } cs_entry;
 
 struct sfile;
 
 typedef struct labels {
+    short           cnt;
     char            **name;
     struct sfile    **pos;
-    short           cnt;
 } labels;
 
 typedef unsigned short  var_len;
 
 typedef struct vars {
     struct vars *next, *prev;
-    char        *value;
     var_len     len;
+    char        *value;
     char        name[1];
 } vars;
 
@@ -125,6 +125,7 @@ typedef enum {
 } ftype;
 
 typedef struct files {
+    ftype       ft[MAX_SRC_FILES];
     union {
         FILE *f[MAX_SRC_FILES];
         struct {
@@ -132,7 +133,6 @@ typedef struct files {
             linenum     line;
         } buffer[MAX_SRC_FILES];
     } u;
-    ftype       ft[MAX_SRC_FILES];
 } files;
 
 typedef enum branch_cond {
@@ -147,22 +147,22 @@ typedef struct sfile {
     char            *arg1;
     char            *arg2;
     int             token;
-    char            *data;
-    srcline         sline;
     branch_cond     branchcond;
     union {
         branch_cond branchres;
         expr_oper   oper;
     } u;
     bool            hasvar;
+    srcline         sline;
+    char            *data;
 } sfile;
 
 typedef struct resident {
     struct resident *next;
+    bool            scriptcomp;
     char            *fn;
     sfile           *sf;
     labels          lab;
-    bool            scriptcomp;
 } resident;
 
 /*

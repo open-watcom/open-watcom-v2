@@ -36,7 +36,7 @@
 #include "mthread.h"
 
 #if defined(__OS2_286__) || defined(__NETWARE__)
-    #ifdef __SW_BM
+    #if defined( __MT__ )
         int __imthread;
     #endif
 #else

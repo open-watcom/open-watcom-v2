@@ -1,63 +1,63 @@
 ctl_check SETGEN_UNDO
-    gen_get, gen_set
+    offsetof( dlg_data, Undo )
     *
     
 ctl_check SETGEN_AUTOSAVE
-    gen_get, gen_set
+    offsetof( dlg_data, AutoSave )
     *
     
 ctl_check SETGEN_LASTEOL
-    gen_get, gen_set
+    offsetof( dlg_data, LastEOL )
     *
     
 ctl_check SETGEN_SAVECONFIG
-    gen_get, gen_set
+    offsetof( dlg_data, SaveConfig )
     *
     
 ctl_check SETGEN_SAVEONBUILD
-    gen_get, gen_set
+    offsetof( dlg_data, SaveOnBuild )
     *
     
 ctl_check SETGEN_BEEPFLAG
-    gen_get, gen_set
+    offsetof( dlg_data, BeepFlag )
     *
     
 ctl_check SETGEN_QUITMOVESFORWARD
-    gen_get, gen_set
+    offsetof( dlg_data, QuitMovesForward )
     *
     
 ctl_check SETGEN_SAMEFILECHECK
-    gen_get, gen_set
+    offsetof( dlg_data, SameFileCheck )
     *
     
 ctl_check SETGEN_MODAL
-    gen_get, gen_set
+    offsetof( dlg_data, Modal )
     *
     
 ctl_check SETGEN_CASEIGNORE
-    gen_get, gen_set
+    offsetof( dlg_data, CaseIgnore )
     *
     
 ctl_check SETGEN_SEARCHWRAP
-    gen_get, gen_set
+    offsetof( dlg_data, SearchWrap )
     *
     
 ctl_text SETGEN_WORD
-    gen_get, gen_set
+    offsetof( dlg_data, Word )
     WORDWIDTH
     
 ctl_text SETGEN_WORDALT
-    gen_get, gen_set
+    offsetof( dlg_data, WordAlt )
     WORDWIDTH
     
 ctl_rint SETGEN_AUTOSAVEINTERVAL
-    gen_get, gen_set
+    offsetof( dlg_data, AutoSaveInterval )
     1, -1
     
 ctl_text SETGEN_TMPDIR
-    gen_get, gen_set
+    offsetof( dlg_data, TmpDir )
     TMPDIRWIDTH
     
 ctl_text SETGEN_HISTORYFILE
-    gen_get, gen_set
+    offsetof( dlg_data, HistoryFile )
     HISTORYFILEWIDTH 

@@ -41,7 +41,6 @@
 #include "emitobj.h"
 #include "allocate.h"
 #include "galloc.h"
-#include "gtypes.h"
 
 
 static  unsigned_16     allocFlags;

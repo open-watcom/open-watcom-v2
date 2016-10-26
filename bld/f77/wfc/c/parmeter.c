@@ -60,7 +60,7 @@ void    CpParameter( void ) {
     uint        parm_size;
     byte        *lit;
     byte        *string;
-    uint        lit_len;
+    int         lit_len;
     sym_id      sym;
     sym_id      value_id;
     TYPE        typ;
@@ -98,7 +98,7 @@ void    CpParameter( void ) {
             if( !AError && assign_val ) {
                 if( typ == FT_CHAR ) {
                     string = (byte *)CITNode->value.cstring.strptr;
-                    if( parm_size > CITNode->size ) {
+                    if( CITNode->size < parm_size ) {
                         lit = FMemAlloc( parm_size );
                         lit_len = CITNode->size;
                         memcpy( lit, string, lit_len );

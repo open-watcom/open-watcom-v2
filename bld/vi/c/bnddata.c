@@ -35,8 +35,6 @@
 #include "bnddata.h"
 #include "specio.h"
 
-#include "clibext.h"
-
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
@@ -51,9 +49,10 @@ static long         dataStart;
 void BoundDataInit( void )
 {
     int         h;
-    size_t      size;
+    unsigned    i;
     char        buff[sizeof( MAGIC_COOKIE ) + sizeof( bind_size )];
     char        *tmp;
+    unsigned    taillen;
     unsigned    dataFcnt;
 
     /*
@@ -63,25 +62,25 @@ void BoundDataInit( void )
     if( h == -1 ) {
         return;
     }
-    lseek( h, - (long)sizeof( buff ), SEEK_END );
+    lseek( h, SEEK_POSBACK( sizeof( buff ) ), SEEK_END );
     read( h, buff, sizeof( buff ) );
 
     /*
      * seek to start of data
      */
-    if( memcmp( buff, MAGIC_COOKIE, sizeof( MAGIC_COOKIE ) ) ) {
+    if( strcmp( buff, MAGIC_COOKIE ) ) {
         close( h );
         return;
     }
-    size = *(bind_size *)( buff + sizeof( MAGIC_COOKIE ) );
-    dataStart = -(long)( size + sizeof( buff ) );
+    taillen = *(bind_size *)( buff + sizeof( MAGIC_COOKIE ) );
+    dataStart = SEEK_POSBACK( taillen + sizeof( buff ) );
     lseek( h, dataStart, SEEK_END );
 
     /*
      * get everything
      */
-    BndMemory = MemAlloc( size );
-    read( h, BndMemory, size );
+    BndMemory = MemAlloc( taillen + sizeof( bind_size ) + sizeof( bind_size ) );
+    read( h, BndMemory, taillen + sizeof( bind_size ) + sizeof( bind_size ) );
     close( h );
 
     /*
@@ -95,19 +94,19 @@ void BoundDataInit( void )
      * get file names
      */
     tmp = BndMemory + sizeof( bind_size );
-    size = *(bind_size *)tmp;
+    i = *(bind_size *)tmp;
     tmp += sizeof( bind_size );
-    dataFnames = MemAlloc( size );
-    memcpy( dataFnames, tmp, size );
-    tmp += size;
+    dataFnames = MemAlloc( i );
+    memcpy( dataFnames, tmp, i );
+    tmp += i;
 
     /*
      * copy over file offset and linenumber data
      */
-    size = dataFcnt * sizeof( bind_size );
-    memcpy( dataOffsets, tmp, size );
-    tmp += size;
-    memcpy( entryCounts, tmp, size );
+    i = dataFcnt * sizeof( bind_size );
+    memcpy( dataOffsets, tmp, i );
+    tmp += i;
+    memcpy( entryCounts, tmp, dataFcnt * sizeof( bind_size ) );
 
     BoundData = true;
 
@@ -132,7 +131,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
 {
     long            shift = 0;
     int             h, i;
-    unsigned char   len;
+    unsigned char   a;
     vi_rc           rc;
 
     /*
@@ -158,17 +157,17 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
                 }
 
                 lseek( h, shift, SEEK_END );
-                read( h, &len, 1 );
+                read( h, &a, 1 );
                 gf->data.handle = h;
             } else {
                 shift -= dataStart;
-                gf->data.pos = BndMemory + shift;
-                len = gf->data.pos[0];
+                gf->data.pos = &BndMemory[shift];
+                a = gf->data.pos[0];
                 gf->data.pos++;
             }
             gf->gf.a.currline = 0;
             gf->gf.a.maxlines = entryCounts[i];
-            gf->gf.a.length = len;
+            gf->gf.a.length = a;
             return( true );
 
         }
@@ -218,7 +217,7 @@ void SpecialFclose( GENERIC_FILE *gf )
  */
 bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
 {
-    size_t      len;
+    size_t      i;
     vi_rc       rc;
 
     switch( gf->type ) {
@@ -226,8 +225,8 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
         if( fgets( buff, max, gf->data.f ) == NULL ) {
             return( true );
         }
-        for( len = strlen( buff ); len > 0 && isWSorCtrlZ( buff[len - 1] ); --len ) {
-            buff[len - 1] = '\0';
+        for( i = strlen( buff ); i > 0 && isWSorCtrlZ( buff[i - 1] ); --i ) {
+            buff[i - 1] = '\0';
         }
         break;
     case GF_BOUND:
@@ -241,9 +240,9 @@ bool SpecialFgets( char *buff, int max, GENERIC_FILE *gf )
             memcpy( buff, gf->data.pos, gf->gf.a.length + 1 );
             gf->data.pos += gf->gf.a.length + 1;
         }
-        len = gf->gf.a.length;
-        gf->gf.a.length = (unsigned char)buff[len];
-        buff[len] = '\0';
+        i = gf->gf.a.length;
+        gf->gf.a.length = (unsigned char)buff[i];
+        buff[i] = '\0';
         break;
     default:
         if( gf->data.cfile == NULL ) {

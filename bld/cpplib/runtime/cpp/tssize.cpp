@@ -57,7 +57,6 @@ size_t CPPLIB( ts_size )(       // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
         break;
     default:
         GOOF_EXC( "unexpected type signature" );
-        // never return
     }
     return size;
 }

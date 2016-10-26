@@ -16,7 +16,8 @@
 
 :include cpluspro.sp
 
-#if defined( __WINDOWS__ ) || defined( __NT__ ) || defined( __OS2__ ) && !defined( _M_I86 )
+#if ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) ) || defined(__NT__) || \
+    defined(__WINDOWS_386__) || defined(__WINDOWS__)
 _WCRTLINK extern int _dwDeleteOnClose( int handle );
 _WCRTLINK extern int _dwSetAboutDlg( const char *title, const char *text );
 _WCRTLINK extern int _dwSetAppTitle( const char *title );

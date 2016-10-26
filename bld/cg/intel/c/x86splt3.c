@@ -34,8 +34,9 @@
 #include "coderep.h"
 #include "zoiks.h"
 #include "inssegs.h"
-#include "fixindex.h"
 
+
+extern  int             NumOperands(instruction*);
 
 static bool SegMemLoc( name *op )
 /*******************************/

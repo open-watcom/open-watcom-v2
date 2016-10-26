@@ -35,8 +35,6 @@
 #ifdef __WIDECHAR__
  #include <wctype.h>
 #endif
-
-
 #undef  isascii
 
 _WCRTLINK int __F_NAME(isascii,iswascii)( INTCHAR_TYPE c )

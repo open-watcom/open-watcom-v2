@@ -133,9 +133,6 @@ typedef unsigned_8      sbit;
 #elif defined( _AIX )
     #undef OS_AIX
     #define OS_AIX              1
-#elif defined( __OSX__ )
-    #undef OS_OSX
-    #define OS_OSX              1
 #elif defined(__DECC) || defined(__DECCXX)
     #if defined(__unix__)
         #undef OS_DECUNIX

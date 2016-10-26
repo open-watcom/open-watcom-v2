@@ -84,7 +84,7 @@
 
     buf->st_mode = 0;                           /* 12-apr-94 */
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
+    if( _WindowsIsWindowedHandle != 0 ) {
         if( _WindowsIsWindowedHandle( hid ) != 0 ) {
             buf->st_mode |= S_IFCHR;        /* it's a console */
         }

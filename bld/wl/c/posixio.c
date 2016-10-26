@@ -64,14 +64,14 @@ void LnkFilesInit( void )
     OpenFiles = 0;
 }
 
-void PrintIOError( unsigned msg, const char *types, const char *name )
+void PrintIOError( unsigned msg, char *types, char *name )
 /***************************************************************/
 {
     LnkMsg( msg, types, name, strerror( errno ) );
 }
 
-static int DoOpen( const char *name, unsigned mode, bool isexe )
-/**************************************************************/
+static int DoOpen( char *name, unsigned mode, bool isexe )
+/********************************************************/
 {
     int         h;
     int         pmode;
@@ -85,7 +85,7 @@ static int DoOpen( const char *name, unsigned mode, bool isexe )
     for( ;; ) {
         if( OpenFiles >= MAX_OPEN_FILES )
             CleanCachedHandles();
-        if ( (mode & O_CREAT) && !stat( name, &st) )
+        if ( ( mode & O_CREAT ) && !stat( name, &st) )
             unlink( name );
         h = open( name, mode, pmode );
         if( h != -1 ) {
@@ -107,50 +107,46 @@ static int DoOpen( const char *name, unsigned mode, bool isexe )
     return( h );
 }
 
-f_handle QOpenR( const char *name )
-/*********************************/
+f_handle QOpenR( char *name )
+/**********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDONLY, false );
-    if( h != -1 )
-        return( h );
+    if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno )  );
     return( NIL_FHANDLE );
 }
 
-f_handle QOpenRW( const char *name )
-/**********************************/
+f_handle QOpenRW( char *name )
+/***********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, false );
-    if( h != -1 )
-        return( h );
+    if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeCreate( const char *name )
-/************************************/
+f_handle ExeCreate( char *name )
+/**************************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR | O_CREAT | O_TRUNC, true );
-    if( h != -1 )
-        return( h );
+    if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeOpen( const char *name )
-/**********************************/
+f_handle ExeOpen( char *name )
+/***********************************/
 {
     int     h;
 
     h = DoOpen( name, O_RDWR, true );
-    if( h != -1 )
-        return( h );
+    if( h != -1 ) return( h );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, strerror( errno ) );
     return( NIL_FHANDLE );
 }
@@ -160,81 +156,75 @@ f_handle ExeOpen( const char *name )
     QNX only allows 32K-1 bytes to be read/written at any one time, so bust
     up any I/O larger than that.
 */
-#define MAX_OS_TRANSFER (0x8000 - 512)
+#define MAX_OS_TRANSFER (32U*1024 - 512)
 
-static ssize_t posix_read( int file, void *buffer, size_t len )
+static unsigned doread( int file, void *buffer, unsigned len )
 {
-    ssize_t     total;
+    unsigned    total;
     int         h;
     int         amount;
 
     total = 0;
     for( ;; ) {
-        if( len == 0 )
-            return( total );
+        if( len == 0 ) return( total );
         amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
         h = read( file, buffer, amount );
-        if( h < 0 )
-            return( -1 );
+        if( h < 0 ) return( h );
         total += h;
-        if( h != amount )
-            return( total );
+        if( h != amount ) return( total );
         buffer = (char *)buffer + amount;
         len -= amount;
     }
 }
 
-static ssize_t posix_write( int file, const void *buffer, size_t len )
+static unsigned dowrite( int file, void *buffer, unsigned len )
 {
-    ssize_t     total;
+    unsigned    total;
     int         h;
     int         amount;
 
     total = 0;
     for( ;; ) {
-        if( len == 0 )
-            return( total );
+        if( len == 0 ) return( total );
         amount = (len > MAX_OS_TRANSFER) ? MAX_OS_TRANSFER : len;
         h = write( file, buffer, amount );
-        if( h < 0 )
-            return( -1 );
+        if( h < 0 ) return( h );
         total += h;
-        if( h != amount )
-            return( total );
-        buffer = (const char *)buffer + amount;
+        if( h != amount ) return( total );
+        buffer = (char *)buffer + amount;
         len -= amount;
     }
 }
 #else
-#define posix_read( f, b, l )  read( f, b, l )
-#define posix_write( f, b, l ) write( f, b, l )
+    #define doread( f, b, l )  read( f, b, l )
+    #define dowrite( f, b, l ) write( f, b, l )
 #endif
 
 
-size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
-/***********************************************************************/
+unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
+/****************************************************************************/
 {
-    size_t  h;
+    int     h;
 
     CheckBreak();
-    h = posix_read( file, buffer, len );
+    h = doread( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
     return( h );
 }
 
-size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
-/******************************************************************************/
+unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
+/*****************************************************************************/
 {
-    ssize_t h;
+    int     h;
     char    rc_buff[RESOURCE_MAX_SIZE];
 
     if( len == 0 )
         return( 0 );
     CheckBreak();
-    h = posix_write( file, buffer, len );
-    if( h == -1 ) {
+    h = dowrite( file, buffer, len );
+    if( h < 0 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     } else if( h != len ) {
         if( name != NULL ) {
@@ -247,14 +237,14 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
 
 char NLSeq[] = { "\n" };
 
-void QWriteNL( f_handle file, const char *name )
-/**********************************************/
+void QWriteNL( f_handle file, char *name )
+/***********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-void QClose( f_handle file, const char *name )
-/********************************************/
+void QClose( f_handle file, char *name )
+/*********************************************/
 /* file close */
 {
     int         h;
@@ -262,13 +252,12 @@ void QClose( f_handle file, const char *name )
     CheckBreak();
     h = close( file );
     OpenFiles--;
-    if( h != -1 )
-        return;
+    if( h != -1 ) return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
 }
 
-long QLSeek( f_handle file, long position, int start, const char *name )
-/**********************************************************************/
+long QLSeek( f_handle file, long position, int start, char *name )
+/***********************************************************************/
 /* do a seek from a particular point */
 {
     long int    h;
@@ -281,8 +270,8 @@ long QLSeek( f_handle file, long position, int start, const char *name )
     return( h );
 }
 
-void QSeek( f_handle file, unsigned long position, const char *name )
-/*******************************************************************/
+void QSeek( f_handle file, unsigned long position, char *name )
+/*************************************************************/
 {
     QLSeek( file, position, SEEK_SET, name );
 }
@@ -313,21 +302,20 @@ unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-void QDelete( const char *name )
-/******************************/
+void QDelete( char *name )
+/*******************************/
 {
     int   h;
 
-    if( name == NULL )
-        return;
+    if( name == NULL ) return;
     h = remove( name );
     if( h == -1 && errno != ENOENT ) { /* file not found is OK */
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
 }
 
-bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
-/***********************************************************************/
+bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
+/**************************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
@@ -341,9 +329,7 @@ bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) {
-            break;
-        }
+        if( ch == '\n' ) break;
     }
     *dest = '\0';
     return( eof );
@@ -353,38 +339,35 @@ bool QIsDevice( f_handle file )
 /************************************/
 {
     struct stat     st;
-
-    if( fstat( file, &st ) != 0 )
-        return( false );
+    if( fstat( file, &st ) != 0 ) return( false );
     return( S_ISCHR( st.st_mode ) != 0 );
 }
 
-static f_handle NSOpen( const char *name, unsigned mode )
-/*******************************************************/
+static f_handle NSOpen( char *name, unsigned mode )
+/*************************************************/
 {
     int         h;
 
     h = DoOpen( name, mode, false );
     LastResult = h;
-    if( h != -1 )
-        return( h );
+    if( h != -1 ) return( h );
     return( NIL_FHANDLE );
 }
 
-f_handle QObjOpen( const char *name )
-/***********************************/
+f_handle QObjOpen( char *name )
+/************************************/
 {
     return( NSOpen( name, O_RDONLY ) );
 }
 
-f_handle TempFileOpen( const char *name )
-/***************************************/
+f_handle TempFileOpen( char *name )
+/****************************************/
 {
     return( NSOpen( name, O_RDWR ) );
 }
 
 bool QSysHelp( char **cmd_ptr )
-/*****************************/
+/************************************/
 {
 #if defined( __I86__ ) && defined( __QNX__ )
 //    extern  struct _proc_spawn *__cmd;
@@ -400,8 +383,8 @@ bool QSysHelp( char **cmd_ptr )
 #endif
 }
 
-bool QModTime( const char *name, time_t *time )
-/*********************************************/
+bool QModTime( char *name, time_t *time )
+/**********************************************/
 {
     int         result;
     struct stat buf;
@@ -412,7 +395,7 @@ bool QModTime( const char *name, time_t *time )
 }
 
 time_t QFModTime( int handle )
-/****************************/
+/***********************************/
 {
     struct stat buf;
 
@@ -421,7 +404,7 @@ time_t QFModTime( int handle )
 }
 
 int WaitForKey( void )
-/********************/
+/****************************/
 {
     struct termios  old;
     struct termios  new;
@@ -439,13 +422,13 @@ int WaitForKey( void )
 }
 
 void GetCmdLine( char *buff )
-/***************************/
+/**********************************/
 {
     getcmd( buff );
 }
 
 void TrapBreak( int sig_num )
-/***************************/
+/**********************************/
 {
     sig_num = sig_num;          // to avoid a warning, will be optimized out.
     CaughtBreak = true;

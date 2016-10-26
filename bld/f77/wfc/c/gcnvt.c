@@ -40,13 +40,13 @@
 #include "types.h"
 #include "emitobj.h"
 #include "gcnvt.h"
-#include "gtypes.h"
 
 
-static  void    GCnvTo( TYPE typ, uint size )
-//===========================================
+static  void    GCnvTo( TYPE typ, uint size ) {
+//=============================================
+
 // Convert operand.
-{
+
     EmitOp( FC_CONVERT );
     DumpTypes( CITNode->typ, CITNode->size, typ, size );
     CITNode->typ = typ;
@@ -54,16 +54,17 @@ static  void    GCnvTo( TYPE typ, uint size )
 }
 
 
-void    GILCnvTo( TYPE typ, uint size )
-//=====================================
+void    GILCnvTo( TYPE typ, uint size ) {
+//=======================================
+
 // Convert operand to given type.
-{
+
     GCnvTo( typ, size );
 }
 
 
-void    GIChar( void )
-//====================
-{
+void    GIChar( void ) {
+//================
+
     EmitOp( FC_ICHAR );
 }

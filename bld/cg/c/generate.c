@@ -65,16 +65,13 @@
 #include "namelist.h"
 #include "typemap.h"
 #include "blktrim.h"
-#include "optimize.h"
-#include "index.h"
-#include "fixindex.h"
-#include "generate.h"
 #include "feprotos.h"
 
 
 extern  void            AssignTemps( void );
 extern  void            AssgnMoreTemps( block_num );
 extern  bool            CommonSex( bool );
+extern  bool            SetOnCondition( void );
 extern  void            MakeFlowGraph( void );
 extern  void            FindReferences( void );
 extern  void            FreeConflicts( void );
@@ -82,6 +79,12 @@ extern  bool            SplitConflicts( void );
 extern  void            FreeAConflict( conflict_node * );
 extern  void            RegTreeInit( void );
 extern  void            InitConflict( void );
+extern  void            InitSegment( void );
+extern  void            FiniSegment( void );
+extern  void            PushPostOps( void );
+extern  void            DeadTemps( void );
+extern  void            AxeDeadCode( void );
+extern  void            OptSegs( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
 extern  void            MakeConflicts( void );
@@ -98,21 +101,29 @@ extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
 extern  void            FiniStackMap( void );
+extern  void            ProcMessage( msg_class );
 extern  void            SplitVars( void );
 extern  void            AssignOtherLocals( void );
+extern  void            BuildIndex( void );
 extern  bool            CreateBreak( void );
 extern  void            FixBreak( void );
 extern  void            RemoveBreak( void );
 extern  instruction     *NeedIndex( instruction * );
+extern  void            DeadInstructions( void );
+extern  bool            CharsAndShortsToInts( void );
 extern  void            SetInOut( block * );
+extern  bool            LdStAlloc( void );
+extern  void            LdStCompress( void );
+extern  void            MemtoBaseTemp( void );
+extern  void            FixMemBases( void );
 extern  bool            BGInInline( void );
 extern  void            MulToShiftAdd( void );
 extern  bool            TailRecursion( void );
 
 static  bool            abortCG;
 
-void    InitCG( void )
-/********************/
+extern  void    InitCG( void )
+/****************************/
 {
     InOptimizer = 0;
     InsId = 0;
@@ -138,15 +149,15 @@ void    InitCG( void )
 }
 
 
-void    AbortCG( void )
-/*********************/
+extern  void    AbortCG( void )
+/*****************************/
 {
     abortCG = true;
 }
 
 
-void    FiniCG( void )
-/********************/
+extern  void    FiniCG( void )
+/****************************/
 {
     FiniQueue();
     FiniSegment();
@@ -633,8 +644,8 @@ static  void            GenPartialRoutine( bool routine_done )
 }
 
 
-void    ProcMessage( msg_class msg )
-/**********************************/
+extern  void    ProcMessage( msg_class msg )
+/******************************************/
 {
     static proc_def *lastproc = NULL;
 
@@ -645,8 +656,8 @@ void    ProcMessage( msg_class msg )
 }
 
 
-void    Generate( bool routine_done )
-/***********************************/
+extern  void    Generate( bool routine_done )
+/*******************************************/
 /* The big one - here's where most of code generation happens.
  * Follow this routine to see the transformation of code unfold.
  */

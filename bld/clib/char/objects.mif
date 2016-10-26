@@ -43,24 +43,6 @@
 
 !include ../../../../objlist.mif
 
-isalnum_postopts=-os
-isalpha_postopts=-os
-isascii_postopts=-os
-iscntrl_postopts=-os
-iscsym_postopts =-os
-iscsymf_postopts=-os
-isdigit_postopts=-os
-isgraph_postopts=-os
-islower_postopts=-os
-isprint_postopts=-os
-ispunct_postopts=-os
-isspace_postopts=-os
-isupper_postopts=-os
-isxdig_postopts =-os
-tolower_postopts=-os
-toupper_postopts=-os
-
-uisalnum_postopts=-os
 uisalpha_postopts=-os
 uisascii_postopts=-os
 uiscntrl_postopts=-os
@@ -76,3 +58,4 @@ uisupper_postopts=-os
 uisxdig_postopts =-os
 utolower_postopts=-os
 utoupper_postopts=-os
+uisalnum_postopts=-os

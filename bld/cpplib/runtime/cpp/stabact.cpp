@@ -44,8 +44,8 @@ void * CPPLIB( ctor_array )(    // CALL CONSTRUCTORS FOR ARRAY ELEMENTS
 {
     unsigned size;              // - size of one element
     pFUNctor ctor;              // - constructor for an element
-                                // - array-ctor control
-    _RTARCTOR ar_ctor( 0, sig, array );
+    _RTARCTOR ar_ctor           // - array-ctor control
+        ( 0, sig, array );
 
     ctor = sig->clss.ctor;
     size = sig->clss.size;

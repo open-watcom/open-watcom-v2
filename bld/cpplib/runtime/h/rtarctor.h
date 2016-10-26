@@ -68,8 +68,9 @@ struct _RTARCTOR
     ;
 #endif
 #ifndef NDEBUG
-                                // - copy ctor
-    _RTARCTOR( _RTARCTOR const & );
+    _RTARCTOR                   // - copy ctor
+        ( _RTARCTOR const & )
+    ;
 #endif
 
     void operator++             // - used to increment # elements

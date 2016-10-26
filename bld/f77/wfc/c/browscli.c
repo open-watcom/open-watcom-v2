@@ -263,11 +263,14 @@ void CLIInit( dw_funcs *cfuncs, int is_type ) {
 /**********************************************/
 
     unsigned_32         x = 0;
-    DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
-    if( cfuncs == NULL )
-        return;
-    *cfuncs = dw_cli_funcs;
+    if( !cfuncs ) return;
+    cfuncs->reloc = CLIReloc;
+    cfuncs->write = CLIWrite;
+    cfuncs->seek = CLISeek;
+    cfuncs->tell = CLITell;
+    cfuncs->alloc = CLIAlloc;
+    cfuncs->free = CLIFree;
     initial_section_type = is_type;
     for( x = 0; x < DW_DEBUG_MAX; x++ ) {
         Sections[x].sec_number = x;

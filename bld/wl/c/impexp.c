@@ -163,17 +163,16 @@ void AddToExportList( entry_export *exp )
     *place = exp;
 }
 
-static unsigned CheckStdCall( const char *name, unsigned len )
-/************************************************************/
+static unsigned CheckStdCall( char *name, unsigned len )
+/******************************************************/
 // check to see if a name is in the stdcall _name@xx format
 // this returns the total number of characters to be removed from the name
 // including the beginning _
 {
-    const char  *teststr;
+    char *      teststr;
     unsigned    chop;
 
-    if( len <= 3 )
-        return 0;
+    if( len <= 3 ) return 0;
     chop = 0;
     teststr = name + len - 1;
     if( *name == '_' && isdigit(*teststr) ) {
@@ -190,11 +189,11 @@ static unsigned CheckStdCall( const char *name, unsigned len )
     return chop;
 }
 
-entry_export *AllocExport( const char *name, size_t len )
-/*******************************************************/
+entry_export * AllocExport( char *name, unsigned len )
+/***********************************************************/
 {
-    entry_export    *exp;
-    size_t          chop;
+    entry_export *  exp;
+    unsigned        chop;
 
     exp = CarveAlloc( CarveExportInfo );
     exp->isexported = true;
@@ -217,15 +216,15 @@ entry_export *AllocExport( const char *name, size_t len )
     exp->impname = NULL;
     exp->iopl_words = 0;
     exp->ordinal = 0;
-    return( exp );
+    return exp;
 }
 
 #define EXPDEF_ORDINAL  0x80
 #define EXPDEF_RESIDENT 0x40
 #define EXPDEF_IOPLMASK 0x1F
 
-void MSExportKeyword( const length_name *expname, const length_name *intname, unsigned flags, ordinal_t ordinal )
-/***************************************************************************************************************/
+void MSExportKeyword( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
+/***************************************************************************************************/
 // Process the Microsoft Export keyword.
 {
     entry_export *  exp;
@@ -289,8 +288,8 @@ static symbol * GetIATSym( symbol *sym )
     return( SymOp( ST_CREATE, iatname, prefixlen ) );
 }
 
-void MSImportKeyword( symbol *sym, const length_name *modname, const length_name *extname, ordinal_t ordinal )
-/************************************************************************************************************/
+void MSImportKeyword( symbol *sym, length_name *modname, length_name *extname, ordinal_t ordinal )
+/************************************************************************************************/
 /* process the MS import keyword definition */
 {
     dll_sym_info *      dll;
@@ -444,8 +443,8 @@ static void ReadOldLib( void )
     FmtData.u.os2.old_lib_name = NULL;
 }
 
-void CheckExport( char * name, ordinal_t ordinal, exportcompare_fn *rtn )
-/***********************************************************************/
+void CheckExport( char * name, ordinal_t ordinal, int (*compare_rtn)(const char *,const char *) )
+/***********************************************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
  * give it the specified value */
 {
@@ -455,7 +454,7 @@ void CheckExport( char * name, ordinal_t ordinal, exportcompare_fn *rtn )
     DEBUG(( DBG_OLD, "Oldlib export %s ordinal %l", name, ordinal ));
     prev = NULL;
     for( place = FmtData.u.os2.exports; place != NULL; place = place->next ) {
-        if( rtn( place->name, name ) == 0 ) {
+        if( compare_rtn( place->name, name ) == 0 ) {
             if( place->ordinal == 0 ) {
                 place->ordinal = ordinal;
                 place = FindPlace( place );
@@ -477,27 +476,27 @@ static void ReadNameTable( f_handle the_file )
 /********************************************/
 // Read a name table & set export ordinal value accordingly.
 {
-    unsigned_8          len_u8;
-    unsigned_16         ordinal;
-    exportcompare_fn    *rtn;
-    char                *fname;
+    unsigned_8      length;
+    unsigned_16     ordinal;
+    int (*compare_rtn)(const char *,const char *);
+    char *          fname;
 
     fname = FmtData.u.os2.old_lib_name;
     if( LinkFlags & CASE_FLAG ) {
-        rtn = strcmp;
+        compare_rtn = &strcmp;
     } else {
-        rtn = stricmp;
+        compare_rtn = &stricmp;
     }                             // skip the module name & ordinal.
     for( ;; ) {
-        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
-        if( len_u8 == 0 )
+        QRead( the_file, &length, sizeof( unsigned_8 ), fname );
+        if( length == 0 )
             break;
-        QRead( the_file, TokBuff, len_u8, fname );
+        QRead( the_file, TokBuff, length, fname );
         QRead( the_file, &ordinal, sizeof( unsigned_16 ), fname );
         if( ordinal == 0 )
             continue;
-        TokBuff[len_u8] = '\0';
-        CheckExport( TokBuff, ordinal, rtn );
+        TokBuff[ length ] = '\0';
+        CheckExport( TokBuff, ordinal, compare_rtn );
     }
 }
 
@@ -556,3 +555,4 @@ bool IsSymElfImpExp( symbol *s )
 {
     return IsSymElfImported(s) || IsSymElfExported(s);
 }
+

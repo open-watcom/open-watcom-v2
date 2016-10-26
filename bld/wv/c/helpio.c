@@ -47,12 +47,12 @@ HELPIO long int HelpFileLen( HelpFp fp )
     return( len );
 }
 
-HELPIO size_t HelpRead( HelpFp fp, void *buf, size_t len )
+HELPIO int HelpRead( HelpFp fp, void *buf, int len )
 {
     return( ReadStream( (file_handle)fp, buf, len ) );
 }
 
-HELPIO size_t HelpWrite( HelpFp fp, const char *buf, size_t len )
+HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
 {
     return( WriteStream( (file_handle)fp, buf, len ) );
 }

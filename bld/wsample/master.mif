@@ -159,7 +159,7 @@ libs = $(wres_lib)
 
 libs += $(clib_dir)/library/nw_clib.386/ms_s/clib3s.lib
 
-$(xname).nlm : wresui.res $(objs) $(libs) nversion.tmp $(__MAKEFILES__)
+$(xname).nlm : $(xname).res $(objs) $(libs) nversion.tmp $(__MAKEFILES__)
     @%write $(%debug) tmp.lnk name $^@
     @%append tmp.lnk option osname='Novell NLM'
     @%append tmp.lnk format novell nlm 'Open Watcom Sampler'
@@ -176,7 +176,8 @@ $(xname).nlm : wresui.res $(objs) $(libs) nversion.tmp $(__MAKEFILES__)
     @%append tmp.lnk module clib
     @%make echo_link
     $(linker) @tmp.lnk
-    @%make bind_res_wresui
+    @%make echo_bindres
+    $(wstrip) -q -a -r $^@ . $(xname).res
 
 !else ifeq target pls
 
@@ -185,7 +186,7 @@ libs += $(plsdir)/wdos32.lib &
     $(clib_dir)/library/msdos.386/ms_r/clib3r.lib &
     $(mathlib_dir)/library/msdos.386/ms_r/math3r.lib
 
-$(xname).exp : $(objs) wresui.res $(libs) $(__MAKEFILES__)
+$(xname).exp : $(objs) $(xname).res $(libs) $(__MAKEFILES__)
     @%write tmp.lnk format phar ext
     @%append tmp.lnk name $^@
     @%append tmp.lnk option map, nodefaultlibs
@@ -199,7 +200,8 @@ $(xname).exp : $(objs) wresui.res $(libs) $(__MAKEFILES__)
     @for %i in ($(libs)) do @%append tmp.lnk lib %i
     @%make echo_link
     $(linker) @tmp.lnk
-    @%make bind_res_wresui
+    @%make echo_bindres
+    $(wstrip) -q -a -r $^@ . $(xname).res
 
 !else
 
@@ -215,13 +217,7 @@ libs += $(windbg_lib)
 
 !endif
 
-!ifeq host_os win
-resfile = $(xname).res
-!else
-resfile = wresui.res
-!endif
-
-$(xname).exe : $(objs) $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(xname).exe : $(objs) $(libs) $(xname).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
@@ -232,11 +228,14 @@ $(xname).exe : $(objs) $(libs) $(resfile) $(version_res_exe_$(host_os)_$(host_cp
     @%make echo_link
     $(linker) name $^@ @tmp.lnk
 !endif
+!ifneq host_os win
+    @%make bind_version_res_exe
+!endif
+    @%make echo_bindres
 !ifeq host_os win
-    @%make bind_res
+    $(rc) $(xname).res $^@
 !else
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
+    $(wstrip) -q -a -r $^@ . $(xname).res
 !endif
 
 !endif
@@ -249,10 +248,12 @@ nversion.tmp: ./mknver.exe $(__MAKEFILES__)
     @%make echo_execute
     $(noecho)$[@ $^@
 
+!ifeq host_os win
 $(xname).res : ../h/wsamplew.rc ../h/wsampres.rc ../h/wsamplew.ico ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) -30 $(inc_dirs_sys_win) -I"../h" $[@ -fo=$^@
-
-wresui.res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
+!else
+$(xname).res : ../h/wsample.rc ../h/wmsg.h ../h/wsample.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $[@ -fo=$^@
+!endif

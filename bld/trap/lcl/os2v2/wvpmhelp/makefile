@@ -37,7 +37,7 @@ wdpmhook.dll: pmhook.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) @$(tmplnk)
 
-wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
+wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj pmhelp.res $(__MAKEFILES__)
     @%write  $(tmplnk) name $^@ system os2v2 pm
     @%append $(tmplnk) debug all op symf
     @%append $(tmplnk) option map
@@ -48,13 +48,14 @@ wdpmhelp.exe: _err.gh _jerr.gh pmhelp.obj wdpmhelp.res $(__MAKEFILES__)
     @%append $(tmplnk) option description $(description)
     @%make echo_link
     $(linker) @$(tmplnk)
-    @%make bind_res
+    @%make echo_rc
+    $(rc) pmhelp.res $^@
 
 .c: ../c
 
-wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=$@ $[@
+    $(rc) $(rc_flags) $(inc_dirs_sys_os2) -fo=./pmhelp.res $[@
 
 _err.gh : $(trap_dir)/h/trapmsg.h $(trap_dir)/h/trap.msg
     @%make echo_cpp

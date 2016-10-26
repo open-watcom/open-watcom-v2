@@ -1,75 +1,75 @@
 ctl_combo SETFS_LANGUAGESELECT
-    fs_get, fs_set
+    offsetof( dlg_data, Language )
     0, VI_LANG_FIRST, VI_LANG_LAST
 
 ctl_check SETFS_PPKEYWORDONLY
-    fs_get, fs_set
+    offsetof( dlg_data, PPKeywordOnly )
     *
     
 ctl_check SETFS_CMODE
-    fs_get, fs_set
+    offsetof( dlg_data, CMode )
     *
     
 ctl_check SETFS_READENTIREFILE
-    fs_get, fs_set
+    offsetof( dlg_data, ReadEntireFile )
     *
     
 ctl_check SETFS_READONLYCHECK
-    fs_get, fs_set
+    offsetof( dlg_data, ReadOnlyCheck )
     *
     
 ctl_check SETFS_IGNORECTRLZ
-    fs_get, fs_set
+    offsetof( dlg_data, IgnoreCtrlZ )
     *
     
 ctl_check SETFS_CRLFAUTODETECT
-    fs_get, fs_set
+    offsetof( dlg_data, CRLFAutoDetect )
     *
     
 ctl_check SETFS_WRITECRLF
-    fs_get, fs_set
+    offsetof( dlg_data, WriteCRLF )
     *
    
 ctl_check SETFS_EIGHTBITS
-    fs_get, fs_set
+    offsetof( dlg_data, EightBits )
     *
     
 ctl_rint SETFS_TABAMOUNT
-    fs_get, fs_set
+    offsetof( dlg_data, TabAmount )
     0, -1
     
 ctl_check SETFS_REALTABS
-    fs_get, fs_set
+    offsetof( dlg_data, RealTabs )
     *
     
 ctl_rint SETFS_HARDTAB
-    fs_get, fs_set
+    offsetof( dlg_data, HardTab )
     0, -1
     
 ctl_check SETFS_AUTOINDENT
-    fs_get, fs_set
+    offsetof( dlg_data, AutoIndent )
     *
     
 ctl_rint SETFS_SHIFTWIDTH
-    fs_get, fs_set
+    offsetof( dlg_data, ShiftWidth )
     0, -1
    
 ctl_text SETFS_TAGFILENAME
-    fs_get, fs_set
+    offsetof( dlg_data, TagFileName )
     TAGFILENAMEWIDTH
     
 ctl_check SETFS_IGNORETAGCASE
-    fs_get, fs_set
+    offsetof( dlg_data, IgnoreTagCase )
     *
     
 ctl_check SETFS_TAGPROMPT
-    fs_get, fs_set
+    offsetof( dlg_data, TagPrompt )
     *
     
 ctl_text SETFS_GREPDEFAULT
-    fs_get, fs_set
+    offsetof( dlg_data, GrepDefault )
     GREPDEFAULTWIDTH
     
 ctl_check SETFS_SHOWMATCH
-    fs_get, fs_set
+    offsetof( dlg_data, ShowMatch )
     *

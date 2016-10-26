@@ -55,7 +55,7 @@ bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID handle )
 {
     IconCurDirHeader    head;
     CurDirEntry         entry;
-    WResFileOffset      prevpos;
+    long                prevpos;
     bool                error;
     int                 currentry;
 

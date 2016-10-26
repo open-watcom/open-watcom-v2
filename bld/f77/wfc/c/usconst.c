@@ -127,9 +127,9 @@ static  const logstar1 __FAR    CmpValue[] = {
            };
 
 
-static void    BadEqual( TYPE typ1, TYPE typ2, OPTR op )
-//======================================================
-{
+static void    BadEqual( TYPE typ1, TYPE typ2, OPTR op ) {
+//========================================================
+
     typ1=typ1;typ2=typ2;op=op;
     Error( EQ_BAD_TARGET );
 }

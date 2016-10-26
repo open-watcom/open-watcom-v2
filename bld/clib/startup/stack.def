@@ -2,12 +2,15 @@ _cbyte
 _cbyte2
 _curbrk
 _Envptr
+#_Envseg
 _LpCmdLine
 _LpPgmName
 _LpwCmdLine
 _LpwPgmName
 _osmajor
 _osminor
+#_pgmptr
+#_wpgmptr
 _STACKLOW
 _STACKTOP
 __STKOVERFLOW

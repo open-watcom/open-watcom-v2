@@ -39,7 +39,7 @@
 
 #pragma initialize 21;
 
-#ifndef __SW_BM
+#ifndef __MT__
 namespace std {
   __lock        *ios::__x_lock = NULL;
 }

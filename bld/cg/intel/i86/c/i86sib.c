@@ -29,14 +29,7 @@
 ****************************************************************************/
 
 
-#include "bool.h"
-#include "watcom.h"
-#include "cgstd.h"
-#include "coderep.h"
-#include "regset.h"
-#include "generate.h"
-
-void    BuildIndex( void )
-/************************/
+extern  void    BuildIndex( void )
+/********************************/
 {
 }

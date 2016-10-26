@@ -39,17 +39,15 @@
  */
 vi_rc WindowTile( int maxx, int maxy )
 {
-    int         cnt, max, xdiv, ydiv, tc, i;
-    int         xstart, xend, ystart, yend;
+    int         cnt = 0, max = maxx * maxy, xdiv, ydiv, tc = 0, i;
+    int         xstart = editw_info.area.x1;
+    int         xend = editw_info.area.x2;
+    int         ystart = editw_info.area.y1;
+    int         yend = editw_info.area.y2;
     int         ystep, xstep, x, y, xextra, yextra, xx, yy, sxextra;
     info        *cinfo, *cwinfo;
     vi_rc       rc;
 
-    max = maxx * maxy;
-    xstart = editw_info.area.x1;
-    xend = editw_info.area.x2;
-    ystart = editw_info.area.y1;
-    yend = editw_info.area.y2;
     /*
      * "untile" cmd
      */
@@ -135,7 +133,7 @@ vi_rc WindowTile( int maxx, int maxy )
              */
             BringUpFile( cinfo, false );
             if( EditVars.TileColors != NULL ) {
-                for( i = 0, tc = 0; i < EditVars.MaxTileColors; i++, tc++ ) {
+                for( i = 0; i < EditVars.MaxTileColors; i++, tc++ ) {
                     if( tc > EditVars.MaxTileColors )
                         tc = 0;
                     if( EditVars.TileColors[tc].foreground != -1 && EditVars.TileColors[tc].background != -1 ) {
@@ -143,12 +141,14 @@ vi_rc WindowTile( int maxx, int maxy )
                         WindowAuxUpdate( current_window_id, WIND_INFO_BACKGROUND_COLOR, EditVars.TileColors[tc].background );
                         /* tile fonts? Nah... sounds real stupid... */
                         WindowAuxUpdate( current_window_id, WIND_INFO_BORDER_COLOR2, EditVars.TileColors[tc].background );
+                        tc++;
                         break;
                     }
                 }
             }
 
-            rc = ResizeCurrentWindow( xstart, ystart, xstart + xx + xstep - 1, ystart + yy + ystep - 1 );
+            rc = ResizeCurrentWindow( xstart, ystart, xstart + xx + xstep - 1,
+                                     ystart + yy + ystep - 1 );
             if( rc != ERR_NO_ERR ) {
                 return( rc );
             }

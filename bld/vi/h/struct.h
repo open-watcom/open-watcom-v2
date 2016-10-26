@@ -375,8 +375,8 @@ typedef fcb_list undo_delete;
 typedef struct {
     i_mark              p;
     linenum             top;
-    long                time_stamp;
     short               depth;
+    long                time_stamp;
 } undo_start;
 
 typedef union {
@@ -512,21 +512,21 @@ typedef enum syntax_element {
 } syntax_element;
 
 typedef struct ss_block {
+    syntax_element      type;
     short               end;
     short               len;
 #ifdef __WIN__
     // offset of start of following block
     int                 offset;
 #endif
-    syntax_element      type;
 } ss_block;
 
 typedef struct dc_line {
     ss_block            *ss;
+    ss_flags            flags;
     int                 start_col;
     char                *text;
-    size_t              textlen;
-    ss_flags            flags;
+    int                 textlen;
     // Windows & text mode
     bool                display : 1;    // line needs to be redisplayed
     // Windows only
@@ -546,13 +546,13 @@ typedef struct info {
     undo_stack          *UndoUndoStack;
     int                 CurrentUndoItem;
     int                 CurrentUndoUndoItem;
+    window_id           curr_num_window_id;
     mark                *MarkList;
+    bool                linenumflag;
+    window_id           current_window_id;
     int                 VirtualColumnDesired;
     select_rgn          SelRgn;
-    bool                IsColumnRegion :1;
-    bool                linenumflag :1;
-    window_id           curr_num_window_id;
-    window_id           current_window_id;
+    bool                IsColumnRegion;
     vi_ushort           DuplicateID;
     dc_line             *dclines;
     int                 dc_size;
@@ -567,11 +567,11 @@ typedef struct info {
  * save buffer (for yanking/moving text)
  */
 typedef struct savebuf {
+    char                type;
     union {
         char            *data;
         fcb_list        fcbs;
     } u;
-    char                type;
 } savebuf;
 #define SAVEBUF_SIZE sizeof( savebuf )
 
@@ -590,8 +590,8 @@ typedef struct {
 typedef unsigned short  viattr_t;
 
 typedef struct {
-    int                 _offs;
     char                _char;
+    int                 _offs;
 } hilst;
 
 /*
@@ -640,9 +640,9 @@ typedef struct {
  * special file (used to process bound data)
  */
 typedef struct {
+    unsigned            length;
     unsigned            maxlines;
     unsigned            currline;
-    unsigned char       length;
 } gfa;
 
 typedef struct {

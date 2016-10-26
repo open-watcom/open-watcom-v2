@@ -36,7 +36,6 @@
 #include "optr.h"
 #include "emitobj.h"
 #include "logops.h"
-#include "gtypes.h"
 
 
 void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {

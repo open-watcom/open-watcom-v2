@@ -97,8 +97,10 @@ static entry_export *ProcWlibDLLImportEntry( void )
     length_name     symname;
     length_name     internal;
 
-    DUPSTR_STACK( symname.name, Token.this, Token.len );
     symname.len = Token.len;
+    symname.name = alloca( Token.len + 1 );
+    memcpy( symname.name, Token.this, Token.len );
+    symname.name[ Token.len ] = '\0';
     if( !GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
         return( NULL );
     }
@@ -109,8 +111,10 @@ static entry_export *ProcWlibDLLImportEntry( void )
         if( getatoi( &ordinal ) != ST_IS_ORDINAL ) {
             if( Token.len > 0 ) {
                 internal = symname;
-                DUPSTR_STACK( symname.name, Token.this, Token.len );
                 symname.len = Token.len;
+                symname.name = alloca( Token.len + 1 );
+                memcpy( symname.name, Token.this, Token.len );
+                symname.name[ Token.len ] = '\0';
             }
             if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) && getatoi( &ordinal ) != ST_IS_ORDINAL ) {
                 if( GetToken( SEP_DOT_EXT, TOK_NORMAL ) ) {
@@ -183,19 +187,25 @@ static bool getimport( void )
     unsigned_16         ordinal;
     ord_state           state;
 
-    DUPSTR_STACK( intname.name, Token.this, Token.len );
+    intname.name = alloca( Token.len + 1 );
+    memcpy( intname.name, Token.this, Token.len );
+    intname.name[ Token.len ] = '\0';
     intname.len = Token.len;
     if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
         return( false );
     }
-    DUPSTR_STACK( modname.name, Token.this, Token.len );
+    modname.name = alloca( Token.len + 1 );
+    memcpy( modname.name, Token.this, Token.len );
+    modname.name[ Token.len ] = '\0';
     modname.len = Token.len;
     ordinal = 0;
     state = ST_INVALID_ORDINAL;   // assume to extname or ordinal.
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         state =  getatoi( &ordinal );
         if( state == ST_NOT_ORDINAL ) {
-            DUPSTR_STACK( extname.name, Token.this, Token.len );
+            extname.name = alloca( Token.len + 1 );
+            memcpy( extname.name, Token.this, Token.len );
+            extname.name[ Token.len ] = '\0';
             extname.len = Token.len;
         } else if( state == ST_INVALID_ORDINAL ) {
             LnkMsg( LOC+LINE+MSG_IMPORT_ORD_INVALID + ERR, NULL );
@@ -246,9 +256,7 @@ static bool getexport( void )
     }
     exp->next = FmtData.u.os2.exports;    // put in the front of the list for
     FmtData.u.os2.exports = exp;          // now so ProcResidant can get to it.
-    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {
-        // handle misc options
-    }
+    while( ProcOne( Exp_Keywords, SEP_NO, false ) ) {}  // handle misc options
     FmtData.u.os2.exports = exp->next;       // take it off the list
     exp->iopl_words = 0;
     if( (FmtData.type & (MK_WINDOWS|MK_PE)) == 0 && GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
@@ -308,7 +316,7 @@ bool ProcObjAlign( void )
     if( ret != ST_IS_ORDINAL || value == 0 ) {
         return( false );
     }                                            /* value not a power of 2 */
-    if( value < 16 || value > (256 * 1024UL * 1024) || (value & (value - 1)) ) {
+    if( value < 16 || value > (256*1024UL*1024) || (value & (value-1)) ) {
         LnkMsg( LOC+LINE+WRN+MSG_VALUE_INCORRECT, "s", "objalign" );
         value = 64*1024;
     }
@@ -389,7 +397,8 @@ static bool AddCommit( void )
 /***************************/
 {
     Token.thumb = REJECT;
-    return( ProcOne( CommitKeywords, SEP_NO, false ) );
+    if( ProcOne( CommitKeywords, SEP_NO, false ) == false ) return( false );
+    return( true );
 }
 
 bool ProcCommit( void )
@@ -461,9 +470,7 @@ bool ProcOS2( void )
 //
 {
     Extension = E_LOAD;
-    while( ProcOne( SubFormats, SEP_NO, false ) ) {
-        // NOTE NULL loop
-    }
+    while( ProcOne( SubFormats, SEP_NO, false ) ) {} // NOTE NULL loop
     if( FmtData.type & MK_WINDOWS ) {
         if( ProcOne( WindowsFormatKeywords, SEP_NO, false ) ) {
             ProcOne( WindowsFormatKeywords, SEP_NO, false );
@@ -526,7 +533,8 @@ void ChkBase( offset align )
     if( FmtData.objalign != NO_BASE_SPEC && FmtData.objalign > align ) {
         align = FmtData.objalign;
     }
-    if( FmtData.base != NO_BASE_SPEC && (FmtData.base & (align - 1)) != 0 ) {
+    if( FmtData.base != NO_BASE_SPEC &&
+                (FmtData.base & (align-1)) != 0 ) {
         LnkMsg( LOC+LINE+WRN+MSG_OFFSET_MUST_BE_ALIGNED, "l", align );
         FmtData.base = ROUND_UP( FmtData.base, align );
     }
@@ -536,8 +544,7 @@ void SetOS2Fmt( void )
 /*********************/
 // set up the structures needed to be able to process something in OS/2 mode.
 {
-    if( LinkState & FMT_INITIALIZED )
-        return;
+    if( LinkState & FMT_INITIALIZED ) return;
     LinkState |= FMT_INITIALIZED;
     FmtData.u.os2.flags = MULTIPLE_AUTO_DATA;
     FmtData.u.os2.heapsize = 0;
@@ -730,8 +737,7 @@ static bool getsegflags( void )
         }
         entry->name = tostring();
     }
-    while( ProcOne( SegModel, SEP_NO, false ) ) {
-    }
+    while( ProcOne( SegModel, SEP_NO, false ) ) {}
     return( true );
 }
 

@@ -101,7 +101,7 @@ bool GUIGetCursorType( gui_window *wnd, gui_char_cursor *cursor )
 
 bool GUISetCursorType( gui_window *wnd, gui_char_cursor cursor )
 {
-    CURSOR_TYPE type;
+    int type;
 
     switch( cursor ) {
     case GUI_NO_CURSOR :

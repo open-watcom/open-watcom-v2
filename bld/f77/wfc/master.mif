@@ -29,7 +29,7 @@ target_exe  = $(exename_$(target_cpu))
 wfc_trmem = 1
 !endif
 
-inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs) -I"$(clib_dir)/h" -I"$(lib_misc_dir)/h"
+inc_dirs= -I. -I.. -I"../../h" -I"../../../h" $(cg_inc_dirs) $(dwarfw_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $(asminline_inc_dirs) -I"$(lib_misc_dir)/h"
 
 # define _USE_RESOURCES_ so that WASM error messages come from resources
 extra_cpp_flags = -D_USE_RESOURCES_
@@ -62,7 +62,7 @@ version_res_exe_nt_x64 = exever.res
 verrc_exe = $(target_exe)
 !include verrc.mif
 
-$(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) wresui.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
+$(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) errmsg.res $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(fobjs) $(libs) $(ldflags)
@@ -74,8 +74,9 @@ $(target_exe).exe : $(asminline_deps) errgrp.gc errcod.gh $(fobjs) wresui.res $(
     $(linker) name $(lname) $(lflags) @$^&.lnk
     @%make bind_osildr
 !endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
+    @%make bind_version_res_exe
+    @%make echo_bindres
+    $(wstrip) -q -a -r $@ . errmsg.res
 
 option.obj : option.c optinfo.h
 
@@ -113,6 +114,6 @@ errmsg.grc errgrp.gc errcod.gh: ../../../h/error.msg
 jerrmsg.grc:  ../../../h/error.msg
     $(noecho)errsrc $[@ $(jerrsrc_opt_$(target_cpu)) >$(nulldevice)
 
-wresui.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
+errmsg.res : ../../c/errmsg.rc errmsg.grc jerrmsg.grc ../../../h/errcod.h errcod.gh
     @%make echo_rc
     $(rc_aui) -I. -I.. -I"../../h" -I"../../../h" $(asminline_inc_dirs) -I"$(comp_cfg_dir)/h" -I"$(fe_misc_dir)/h" $[@ -fo=$^@

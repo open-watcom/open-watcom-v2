@@ -103,13 +103,13 @@ typedef char            *drmem_hdl;
 
 struct WDRRoutines {                                        /* defaults */
 /* I/O routines */
-    void   (*cli_read)( void *, dr_section, void *, size_t );   // read
-    void   (*cli_seek)( void *, dr_section, long );             // lseek
+    void   (*read)( void *, dr_section, void *, size_t );   // read
+    void   (*seek)( void *, dr_section, long );             // lseek
 /* memory routines */
-    void * (*cli_alloc)( size_t );                              // malloc
-    void * (*cli_realloc)( void *, size_t );                    // realloc
-    void   (*cli_free)( void * );                               // free
-    void   (*cli_except)( dr_except );                          // fatal error handler
+    void * (*alloc)( size_t );                              // malloc
+    void * (*realloc)( void *, size_t );                    // realloc
+    void   (*free)( void * );                               // free
+    void   (*except)( dr_except );                          // fatal error handler
 };
 
 typedef struct COMPUNIT_INFO    *dr_cu_handle;
@@ -117,14 +117,14 @@ typedef struct dr_dbg_info      *dr_dbg_handle;
 
 typedef unsigned                dr_fileidx;
 
-#define DWRSetRtns( __read, __seek, __alloc, __realloc, __free, __except ) \
+#define DWRSetRtns( read, seek, alloc, realloc, free, except ) \
     struct WDRRoutines DWRRtns = { \
-        __read,       \
-        __seek,       \
-        __alloc,      \
-        __realloc,    \
-        __free,       \
-        __except      \
+        read,       \
+        seek,       \
+        alloc,      \
+        realloc,    \
+        free,       \
+        except      \
     };
 
 typedef bool    (*DRWLKBLK)( drmem_hdl, int index, void * );

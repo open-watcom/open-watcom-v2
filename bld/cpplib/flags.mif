@@ -120,6 +120,9 @@ plib_cpp_flags=-D_ENABLE_AUTODEPEND
 !ifeq release 1
 plib_cpp_flags += -D__OBSCURE_STREAM_INTERNALS
 !endif
+!ifdef mthreaded
+plib_cpp_flags += -D__MT__
+!endif
 !ifdef fs_registration
 plib_cpp_flags += -D__USE_FS
 !else ifdef pd_registration

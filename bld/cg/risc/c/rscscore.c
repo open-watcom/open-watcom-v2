@@ -37,64 +37,57 @@
 #include "namelist.h"
 
 
-#if 0
-bool    MultiIns( instruction *ins )
-/**********************************/
-{
+extern  bool    MultiIns( instruction *ins ) {
+/********************************************/
     ins = ins;
     return( false );
 }
-#endif
 
-void    ScInitRegs( score *sc )
-/*****************************/
-{
+
+extern  void    ScInitRegs( score *sc ) {
+/***************************************/
     sc = sc;
 }
 
 
-void    AddRegs( void )
-/*********************/
-{
+extern  void    AddRegs() {
+/*************************/
+
 }
 
 
-void    ScoreSegments( score *sc )
-/********************************/
-{
+extern  void    ScoreSegments( score *sc ) {
+/******************************************/
     sc = sc;
 }
 
 
-bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
-/*************************************************/
-{
+extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 ) {
+/***********************************************************/
     reg1 = reg1;
     reg2 = reg2;
     return( true );
 }
 
 
-bool    ScConvert( instruction *ins )
-/***********************************/
-{
+extern  bool    ScConvert( instruction *ins ) {
+/*********************************************/
     ins = ins;
     return( false );
 }
 
 
-bool    CanReplace( instruction *ins )
-/************************************/
-{
+extern  bool    CanReplace( instruction *ins ) {
+/**********************************************/
     ins = ins;
     return( true );
 }
 
-bool    ScRealRegister( name *reg )
+extern  bool    ScRealRegister( name *reg ) {
 /********************************************
     Return "true" if "reg" is a real machine register and not some
     monstrosity like R1:R0:R2 used for calls.
 */
-{
+
     return( reg->n.name_class != XX );
 }

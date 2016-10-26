@@ -257,16 +257,18 @@ static unsigned_32 WriteStubProg( void )
 {
     unsigned_32 size;
     f_handle    fhandle;
+    char        *name;
 
-    if( FmtData.u.d16m.stub == NULL ) {
+    name = FmtData.u.d16m.stub;
+    if( name == NULL ) {
         size = 0;
     } else {
-        fhandle = FindPath( FmtData.u.d16m.stub );
+        fhandle = FindPath( name );
         if( fhandle == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
             size = 0;
         } else {
-            size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
+            size = CopyToLoad( fhandle, name );
         }
     }
     SetOriginLoad( size );
@@ -440,7 +442,7 @@ void MakeDos16PM( void )
      * remap dos16m kernel selectors reference
      */
     for( class = Root->classlist; class != NULL; class = class->next_class ) {
-        if( (class->flags & CLASS_DEBUG_INFO) == 0 ) {
+        if( ( class->flags & CLASS_DEBUG_INFO ) == 0 ) {
             RingWalk( class->segs, RemapAliasSels );
         }
     }

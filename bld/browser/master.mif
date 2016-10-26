@@ -97,6 +97,15 @@ mem_flag = -of+
 extra_c_flags_dmem = $(mem_flag) -I"$(trmem_dir)"
 !endif
 
+rc2_flags_win = -k
+rc2_flags_nt  = -k
+rc2_flags_os2 = -p
+
+res_file_nt  = wbrw.res
+res_file_win = wbrw.res
+res_file_os2 = wbrwpm.res
+res_file     = $(res_file_$(host_os))
+
 #linker
 libs_dos = $(ui_lib)
 
@@ -125,10 +134,11 @@ verrc_exe = $(name)
 
 all: $(wbrw_h_$(host_os)) $(name).exe .SYMBOLIC
 
-$(name).exe : $(objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(name).exe : $(objs) $(libs) $(res_file) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
-    @%make bind_res_add_version_exe
+    @%make echo_rc
+    $(rc) $(rc2_flags_$(host_os)) $(res_file) $^@ $(bind_version_res_exe_add)
 !ifdef gen_browse_file
     $(noecho)%create browser.wbr
     @for %i in ($(mbr_files)) do @%append browser.wbr file %i
@@ -148,12 +158,6 @@ curr_dir=$+$(%__CWD__)$-
     @cd $(curr_dir)
 !endif
 
-!ifeq host_os os2
-$(name).res : wbrwpm.rc
+.rc.res:
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
-!else
-$(name).res : wbrw.rc
-    @%make echo_rc
-    $(rc) $(rc_flags) $(inc_dirs_sys) $< -fo=$@
-!endif

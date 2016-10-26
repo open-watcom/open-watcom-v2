@@ -42,17 +42,7 @@
 
 !include ../../../../objlist.mif
 
-086_option_zc =-zc
-286_option_zc =-zc
-386_option_zc =-zc
-
-gmtime_opts   =$($(processor)_option_zc)
-leapyear_opts =$($(processor)_option_zc)
-locmktim_opts =$($(processor)_option_zc)
-timeutil_opts =$($(processor)_option_zc)
-tzset_opts    =$($(processor)_option_zc)
-
-asctime_postopts =-os
+asctime_postopts=-os
 strftime_postopts=-os
 clocko16_postopts=-os
 clocko32_postopts=-os

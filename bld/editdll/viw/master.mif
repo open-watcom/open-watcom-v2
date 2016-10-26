@@ -40,7 +40,7 @@ wedit.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cp
     @%make echo_link
     $(linker) name $^@ op implib @$^&.lnk file $[@
 !endif
-    @%make bind_res_version_dll
+    @%make bind_version_res_dll
 
 weditviw.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
@@ -52,4 +52,4 @@ weditviw.dll : weditviw.obj $(cl_extra_objs) $(version_res_dll_$(host_os)_$(host
     @%make echo_link
     $(linker) name $^@ @$^&.lnk file $[@
 !endif
-    @%make bind_res_version_dll
+    @%make bind_version_res_dll

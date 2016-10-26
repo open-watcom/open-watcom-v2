@@ -472,7 +472,7 @@ bool IsTokenChar( char ch )
 int MyStricmp( char **buf, char *literal )
 {
     int     ret;
-    size_t  len;
+    int     len;
     char    *bufptr;
     char    save_ch;
 

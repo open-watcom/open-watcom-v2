@@ -112,7 +112,7 @@ static void BIRefSymbol( dw_handle handle );
 
 static  bool            BrInitialized;
 
-#if _CPU == 8086
+#if( _CPU == 8086 )
  #define ARCHITECTURE   sizeof( short )
 #else
  #define ARCHITECTURE   sizeof( long )
@@ -901,7 +901,7 @@ static dw_handle BIGetUnionType( sym_id ste_ptr ) {
     ret = DWStruct( cBIId, DW_ST_UNION );
     // find the largest size of map
     for( fs = ste_ptr->u.ns.xt.record; fs != NULL; fs = &fs->link->u.sd ) {
-        if( max < fs->size ) {
+        if( fs->size > max ) {
             max = fs->size;
         }
     }

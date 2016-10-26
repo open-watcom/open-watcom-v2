@@ -35,6 +35,7 @@
 
 
 static orl_handle       ORLHnd;
+static orl_funcs        OrlFuncs;
 
 static void * ObjRead( void *fil, size_t len )
 /********************************************/
@@ -91,16 +92,20 @@ void FiniObj( void )
 void InitObj( void )
 /******************/
 {
-    ORLSetFuncs( orl_cli_funcs, ObjRead, ObjSeek, ObjAlloc, ObjFree );
 
-    ORLHnd = ORLInit( &orl_cli_funcs );
+    OrlFuncs.read = &ObjRead;
+    OrlFuncs.seek = &ObjSeek;
+    OrlFuncs.alloc = &ObjAlloc;
+    OrlFuncs.free = &ObjFree;
+    ORLHnd = ORLInit( &OrlFuncs );
     if( ORLHnd == NULL ) {
         longjmp( Env , 1 );
     }
 }
 
-static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
-/**************************************************************************/
+
+static obj_file *DoOpenObjFile( char *name, libfile hdl, long offset )
+/********************************************************************/
 {
     obj_file            *ofile;
     orl_file_format     format;
@@ -111,28 +116,28 @@ static obj_file *DoOpenObjFile( const char *name, libfile hdl, long offset )
     ofile->offset = offset;
     format = ORLFileIdentify( ORLHnd, ofile );
     switch( format ) {
-    case ORL_COFF:
-    case ORL_ELF:
-        ofile->orl = ORLFileInit( ORLHnd, ofile, format );
-        if( Options.libtype == WL_LTYPE_MLIB ) {
-            if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
-                FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );
+        case ORL_COFF:
+        case ORL_ELF:
+            ofile->orl = ORLFileInit( ORLHnd, ofile, format );
+            if( Options.libtype == WL_LTYPE_MLIB ) {
+                if( (ORLFileGetFlags( ofile->orl ) & VALID_ORL_FLAGS) != VALID_ORL_FLAGS ) {
+                    FatalError( ERR_NOT_LIB, "64-bit or big-endian", LibFormat() );
+                }
             }
-        }
-        if( ofile->orl == NULL ) {
-            FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
-        }
-        break;
+            if( ofile->orl == NULL ) {
+                FatalError( ERR_CANT_OPEN, name, strerror( errno ) );
+            }
+            break;
 
-    default: // case ORL_UNRECOGNIZED_FORMAT:
-        ofile->orl = NULL;
-        break;
+        default: // case ORL_UNRECOGNIZED_FORMAT:
+            ofile->orl = NULL;
+            break;
     }
     return( ofile );
 }
 
-obj_file *OpenObjFile( const char *name )
-/***************************************/
+obj_file *OpenObjFile( char *name )
+/*********************************/
 {
     libfile     hdl;
 
@@ -140,8 +145,8 @@ obj_file *OpenObjFile( const char *name )
     return( DoOpenObjFile( name, hdl, 0 ) );
 }
 
-obj_file *OpenLibFile( const char *name, libfile hdl )
-/****************************************************/
+obj_file *OpenLibFile( char *name, libfile hdl )
+/**********************************************/
 {
     return( DoOpenObjFile( name, hdl, LibTell( hdl ) ) );
 }
@@ -149,8 +154,7 @@ obj_file *OpenLibFile( const char *name, libfile hdl )
 static void DoCloseObjFile( obj_file *ofile )
 /*******************************************/
 {
-    buf_list    *list;
-    buf_list    *next;
+    buf_list    *list,*next;
 
     if( ofile->orl != NULL ) {
         ORLFileFini( ofile->orl );

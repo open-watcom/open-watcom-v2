@@ -42,7 +42,6 @@
 #include "emitobj.h"
 #include "gstring.h"
 #include "gsubscr.h"
-#include "gtypes.h"
 
 
 void    GBegSubScr( itnode *array_node ) {

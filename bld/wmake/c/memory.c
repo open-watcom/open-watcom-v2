@@ -36,12 +36,6 @@
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <malloc.h>
 #endif
-#ifdef TRMEM
-#include <sys/types.h>
-#include "wio.h"
-#include "trmem.h"
-#include "mposix.h"
-#endif
 
 #include "clibext.h"
 
@@ -72,6 +66,12 @@ STATIC struct scarce {
 
 #ifdef TRMEM
 
+#include <sys/types.h>
+#include "wio.h"
+#include "trmem.h"
+
+#include "clibext.h"
+
 #define TRMEM_ENV_VAR   "TRMEM_CODE"
 
 enum {
@@ -81,7 +81,7 @@ enum {
 
 STATIC _trmem_hdl   Handle;
 STATIC int          trmemCode;
-STATIC int          trkfile = -1;     /* file handle we'll posix_write() to */
+STATIC int          trkfile = -1;     /* file handle we'll write() to */
 
 STATIC void printLine( void *h, const char *buf, size_t size )
 /************************************************************/
@@ -91,12 +91,12 @@ STATIC void printLine( void *h, const char *buf, size_t size )
         trkfile = open( "mem.trk", O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
     }
     if( trkfile != -1 ) {
-        posix_write( trkfile, buf, size );
-        posix_write( trkfile, "\n", 1 );
+        write( trkfile, buf, size );
+        write( trkfile, "\n", 1 );
     }
     if( (trmemCode & TRMEM_DO_NOT_PRINT) == 0 ) {
-        posix_write( STDOUT_FILENO, buf, size );
-        posix_write( STDOUT_FILENO, "\n", 1 );
+         write( STDOUT_FILENO, buf, size );
+         write( STDOUT_FILENO, "\n", 1 );
     }
 }
 

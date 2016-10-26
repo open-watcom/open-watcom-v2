@@ -31,6 +31,7 @@
 
 
 extern void         GenCallLabelReg( pointer label, uint reg );
+#if 0
 extern void         GenOPINS( uint_8 opcode, uint_8 function, uint_8 reg_a, uint_8 reg_b, uint_8 reg_c );
 extern void         GenLOADS32( signed_32 value, uint_8 reg );
 extern void         GenMEMINSRELOC( uint_8 opcode, uint_8 a, uint_8 b, signed_16 displacement, pointer lbl, owl_reloc_type type );
@@ -42,4 +43,7 @@ extern void         GenFSTORE( hw_reg_set dst, signed_16 displacement, hw_reg_se
 extern void         GenRET( void );
 #if 0
 extern void         GenJumpIf( instruction *ins, pointer label );
+#endif
+extern byte         ReverseCondition( byte cond );
+extern byte         CondCode( instruction *ins );
 #endif

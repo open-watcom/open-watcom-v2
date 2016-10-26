@@ -167,8 +167,11 @@ void uinocursor( VSCREEN *vs )
     vs->cursor = C_OFF;
 }
 
-void uicursor( VSCREEN *vs, ORD row, ORD col, CURSOR_TYPE type )
-/**************************************************************/
+void uicursor( VSCREEN *vs,
+               ORD      row,
+               ORD      col,
+               int      type )
+/****************************/
 {
     vs->cursor = type;
     vs->row = row;

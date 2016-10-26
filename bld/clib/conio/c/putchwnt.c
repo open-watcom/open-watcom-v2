@@ -54,7 +54,7 @@ _WCRTLINK int putch( int c )
 
     ch = c;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsPutch != NULL ) {
+    if( _WindowsPutch != 0 ) {
         LPWDATA res;
         res = _WindowsIsWindowedHandle( STDOUT_FILENO );
         _WindowsPutch( res, c );

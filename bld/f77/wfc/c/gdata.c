@@ -42,7 +42,6 @@
 #include "types.h"
 #include "rstconst.h"
 #include "gdata.h"
-#include "gtypes.h"
 
 
 label_id        GDataProlog( void ) {

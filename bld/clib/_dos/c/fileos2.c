@@ -70,18 +70,14 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *handle )
     }
     openmode = share + rwmode;
     rc = DosOpen( (PSZ)name, &fhandle, &actiontaken, 0ul,
-                    _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS, openmode, 0ul );
+        _A_NORMAL, OPENFLAG_OPEN_IF_EXISTS, openmode, 0ul );
     if( rc ) {
         return( __set_errno_dos_reterr( rc ) );
     }
     *handle = fhandle;
-    iomode_flags = 0;
-    if( rwmode == O_RDWR )
-        iomode_flags = _READ | _WRITE;
-    if( rwmode == O_RDONLY)
-        iomode_flags = _READ;
-    if( rwmode == O_WRONLY)
-        iomode_flags = _WRITE;
+    if( rwmode == O_RDWR ) iomode_flags = _READ | _WRITE;
+    if( rwmode == O_RDONLY) iomode_flags = _READ;
+    if( rwmode == O_WRONLY) iomode_flags = _WRITE;
     __SetIOMode( fhandle, iomode_flags );
     return( 0 );
 }

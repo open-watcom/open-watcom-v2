@@ -45,8 +45,7 @@ void    BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char
 
 void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
-    int             attr;
-    CURSOR_TYPE     type;
+    int             type, attr;
     unsigned char   oldrow, oldcol;
 
     page = page;
@@ -57,8 +56,7 @@ void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col 
 unsigned short BIOSGetCursor( unsigned char page )
 {
     unsigned char   row, col;
-    int             attr;
-    CURSOR_TYPE     type;
+    int             type, attr;
 
     page = page;
     _uigetcursor( &row, &col, &type, &attr );
@@ -228,8 +226,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
  */
 bool BIOSKeyboardHit( void )
 {
-    int             attr;
-    CURSOR_TYPE     type;
+    int             type, attr;
     unsigned char   row, col;
 
     _uigetcursor( &row, &col, &type, &attr );

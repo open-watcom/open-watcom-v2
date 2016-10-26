@@ -60,11 +60,10 @@ extern  HANDLE      *__OSHandles;
 extern  unsigned    __NHandles;
 extern  unsigned    __NFiles;              /* maximum # of files we can open */
 
-extern  unsigned    __GetIOMode( int handle );
-extern  int         __SetIOMode( int handle, unsigned value );
-extern  void        __SetIOMode_nogrow( int handle, unsigned value );
-extern  void        __ChkTTYIOMode( int handle );
-extern  int         __set_binary( int handle );
+extern  unsigned    __GetIOMode( int __handle );
+extern  int         __SetIOMode( int __handle, unsigned __value );
+extern  void        __SetIOMode_nogrow( int __handle, unsigned __value );
+extern  void        __ChkTTYIOMode( int __handle );
 
 #endif
 

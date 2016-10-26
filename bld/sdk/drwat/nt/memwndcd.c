@@ -36,7 +36,8 @@
  * capabilities in DR NT
  *========================================================================*/
 
-#include "drwatcom.h"
+#include <windows.h>
+#include "bool.h"
 #include "watcom.h"
 #include "memwnd.h"
 

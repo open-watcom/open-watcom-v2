@@ -98,17 +98,16 @@ typedef struct ResTable {
 
 
 static  uint_8          DosStub[] = {
-    0x4D, 0x5A, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00,
-    0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
-    0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
-    0x0E, 0x1F, 0xBA, 0x0E, 0x00, 0xB4, 0x09, 0xCD,
-    0x21, 0xB8, 0x01, 0x4C, 0xCD, 0x21
-};
+        0x4D, 0x5A, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00,
+        0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
+        0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
+        0x0E, 0x1F, 0xBA, 0x0E, 0x00, 0xB4, 0x09, 0xCD,
+        0x21, 0xB8, 0x01, 0x4C, 0xCD, 0x21 };
 
 static unsigned long WriteOS2Relocs( group_entry *group )
 /*******************************************************/
@@ -141,8 +140,7 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
 
     group_num = 0;
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 )
-            continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
         segrec.info = group->segflags;
         // write segment
         segrec.min = MAKE_EVEN( group->totalsize );
@@ -152,7 +150,7 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
             seg_addr = off >> FmtData.u.os2.segment_shift;
             if( seg_addr > 0xffff ) {
                 LnkMsg( ERR+MSG_ALIGN_TOO_SMALL, NULL );
-            }
+            };
             segrec.address = (unsigned_16)seg_addr;
             WriteGroupLoad( group );
             NullAlign( 2 );         // segment must be even length
@@ -160,13 +158,15 @@ static void WriteOS2Data( unsigned_32 stub_len, os2_exe_header *exe_head )
             if( relocsize != 0 ) {
                 segrec.info |= SEG_RELOC;
             }
+
         } else {
             segrec.address = 0;
         }
 
         // write to segment table
         off = PosLoad();
-        SeekLoad( exe_head->segment_off + stub_len + group_num * sizeof( segment_record ) );
+        SeekLoad( exe_head->segment_off + stub_len +
+                            group_num * sizeof( segment_record ) );
         WriteLoad( &segrec, sizeof( segment_record ) );
         SeekLoad( off );
         group_num++;
@@ -269,9 +269,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
                             (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
                 && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
-                            exe_type_name->NumChars ) ) {
-                break;
-            }
+                            exe_type_name->NumChars ) ) break;
         } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
@@ -310,14 +308,16 @@ static void WriteResTable( ResTable *restab )
 /*******************************************/
 {
     FullTypeRecord      *exe_type;
-    FullResourceRecord  *exe_res;
+    FullResourceRecord *exe_res;
     uint_16             zero;
 
     WriteLoad( &FmtData.u.os2.segment_shift, sizeof( uint_16 ) );
-    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL;
+                                        exe_type = exe_type->Next) {
         WriteLoad( &(exe_type->Info), sizeof( resource_type_record ) );
-        for( exe_res = exe_type->Head; exe_res != NULL; exe_res = exe_res->Next ) {
-            WriteLoad( &(exe_res->Info), sizeof( resource_record ) );
+        for( exe_res = exe_type->Head; exe_res != NULL;
+                                        exe_res = exe_res->Next ) {
+            WriteLoad( &(exe_res->Info) , sizeof( resource_record ));
         }
     }
     zero = 0;
@@ -325,17 +325,17 @@ static void WriteResTable( ResTable *restab )
     WriteLoad( restab->Str.StringBlock, restab->Str.StringBlockSize );
 }
 
-static void CopyResData( int resHandle, size_t len )
-/**************************************************/
+static void CopyResData( int resHandle, int len )
+/***********************************************/
 {
     char buff[512];
 
-    for( ; len > sizeof( buff ); len -= sizeof( buff ) ) {
-        QRead( resHandle, buff, sizeof( buff ), FmtData.resource );
-        WriteLoad( buff, sizeof( buff ) );
+    for( ;len > 512; len -= 512 ) {
+        QRead( resHandle, buff, 512, FmtData.resource );
+        WriteLoad( buff, 512 );
     }
     QRead( resHandle, buff, len, FmtData.resource );
-    WriteLoad( buff, len );
+    WriteLoad( buff, len);
 }
 
 static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
@@ -375,13 +375,14 @@ static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
 }
 
 
-static unsigned long WriteTabList( name_list *val, unsigned long *count, bool upper )
-/***********************************************************************************/
+static unsigned long WriteTabList( name_list *val, unsigned long *count,
+                                   bool upper)
+/***********************************************************************/
 {
     name_list           *node;
     unsigned long       off;
     unsigned long       i;
-    size_t              j;
+    int                 j;
 
     i = 0;
     off = 0;
@@ -389,8 +390,7 @@ static unsigned long WriteTabList( name_list *val, unsigned long *count, bool up
         ++i;
         WriteLoad( &(node->len), sizeof( unsigned char ) );  // NOTE:little endian
         if( upper ) {
-            j = node->len;
-            while( j-- > 0 ) {
+            for( j = node->len-1; j >= 0; --j ) {
                 node->name[j] = toupper( node->name[j] );
             }
         }
@@ -402,13 +402,14 @@ static unsigned long WriteTabList( name_list *val, unsigned long *count, bool up
 }
 
 unsigned long ImportProcTable( unsigned long *count )
-/***************************************************/
+/**********************************************************/
 {
-    return( WriteTabList( FmtData.u.os2.imp_tab_list, count, (LinkFlags & CASE_FLAG) == 0 ) );
+    return( WriteTabList( FmtData.u.os2.imp_tab_list, count,
+                          (LinkFlags & CASE_FLAG) == 0 ) );
 }
 
 unsigned long ImportModTable( unsigned long *count )
-/**************************************************/
+/*********************************************************/
 {
     return( WriteTabList( FmtData.u.os2.mod_ref_list, count, false ) );
 }
@@ -437,7 +438,8 @@ static unsigned long ModRefTable( void )
 
     if( FmtData.type & MK_OS2_16BIT ) {
         off = 1;
-        for( inode = FmtData.u.os2.imp_tab_list; inode != NULL; inode = inode->next ) {
+        for( inode = FmtData.u.os2.imp_tab_list; inode != NULL;
+                                                 inode = inode->next ) {
             off += inode->len + 1;
         }
     } else {
@@ -453,22 +455,21 @@ static unsigned long ModRefTable( void )
 }
 
 unsigned long ResNonResNameTable( bool dores )
-/********************************************/
+/***************************************************/
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
     entry_export    *exp;
-    unsigned char   len_u8;
+    unsigned        namelen;
     unsigned long   size;
-    const char      *name;
-    size_t          len;
+    char            *name;
 
     size = 0;
     if( dores ) {
         if( FmtData.u.os2.res_module_name != NULL ) {
             name = FmtData.u.os2.res_module_name;
-            len = strlen( name );
+            namelen = strlen( name );
         } else {
-            name = GetBaseName( Root->outfile->fname, 0, &len );
+            name = RemovePath( Root->outfile->fname, &namelen );
         }
     } else {     /* in non-resident names table */
         if( FmtData.u.os2.description != NULL ) {
@@ -478,45 +479,37 @@ unsigned long ResNonResNameTable( bool dores )
         } else {
             name = "";
         }
-        len = strlen( name );
+        namelen = strlen( name );
     }
-    if( dores || len > 0 ) {
-        len_u8 = 255;
-        if( len < 255 )
-            len_u8 = (unsigned char)len;
-        WriteLoad( &len_u8, 1 );
-        WriteLoad( name, len_u8 );
+    if( dores || namelen > 0 ) {
+        WriteLoad( &namelen, 1 );
+        WriteLoad( name, namelen );
         PadLoad( 2 );
-        size += len_u8 + 1 + 2;
+        size += namelen + 3;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
-        _LnkFree( FmtData.u.os2.res_module_name );
+        _LnkFree( name );
         FmtData.u.os2.res_module_name = NULL;
     }
     if( !dores && FmtData.u.os2.description != NULL ) {
-        _LnkFree( FmtData.u.os2.description );
+        _LnkFree( name );
         FmtData.u.os2.description = NULL;
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
-        if( !exp->isexported )
-            continue;
-        if( exp->isanonymous )
-            continue;
+        if( !exp->isexported ) continue;
+        if( exp->isanonymous ) continue;
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
             if( (LinkFlags & CASE_FLAG) == 0 ) {
                 strupr( exp->name );
             }
-            len = strlen( exp->name );
-            len_u8 = 255;
-            if( len < 255 )
-                len_u8 = (unsigned char)len;
-            WriteLoad( &len_u8, 1 );
-            WriteLoad( exp->name, len_u8 );
+            namelen = strlen( exp->name );
+            WriteLoad( &namelen, 1 );
+            WriteLoad( exp->name, namelen );
             WriteLoad( &(exp->ordinal), 2 );
-            size += len_u8 + 3;
+            size += namelen + 3;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, exp->name, NOT_IMP_BY_ORDINAL );
+                    AddImpLibEntry(exp->impname, exp->name, NOT_IMP_BY_ORDINAL);
                 } else {
                     AddImpLibEntry( exp->sym->name, NULL, exp->ordinal );
                 }
@@ -569,7 +562,7 @@ static unsigned long DumpEntryTable( void )
                     WriteLoad( &prefix, sizeof( bundle_prefix ) );
                     size += 2;
                 }
-                prefix.number = (unsigned_8)gap;
+                prefix.number = (unsigned_8) gap;
                 WriteLoad( &prefix, sizeof( bundle_prefix ) );
                 size += 2;
             }
@@ -577,16 +570,11 @@ static unsigned long DumpEntryTable( void )
             entries = 1;
             prev = start = place;
             for( place = place->next; place != NULL; place = place->next ) {
-                if( entries >= 0xff )
-                    break;
+                if( entries >= 0xff ) break;
                 if( start->ismovable ) {
-                    if( !place->ismovable ) {
-                        break;
-                    }
+                    if( !place->ismovable )break;
                 } else {
-                    if( place->addr.seg != start->addr.seg ) {
-                        break;
-                    }
+                    if( place->addr.seg != start->addr.seg ) break;
                 }
                 if( place->ordinal - prev->ordinal > 1 ) {
                     break;    // ordinal can't be put in this bundle.
@@ -603,7 +591,7 @@ static unsigned long DumpEntryTable( void )
                 size += entries * sizeof( fixed_record );
             }
             prevord = prev->ordinal;
-            prefix.number = (unsigned_8)entries;
+            prefix.number = (unsigned_8) entries;
             WriteLoad( &prefix, sizeof( bundle_prefix ) );
             size += 2;
             for( ; entries > 0; --entries ) {
@@ -669,8 +657,7 @@ static void SetGroupFlags( void )
     group_entry     *group;
 
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 )
-            continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
         group->segflags |= DEF_SEG_ON;
         Ring2Walk( group->leaders, CheckGrpFlags );
         /* for some insane reason, level 2 segments must be marked as
@@ -1050,12 +1037,12 @@ void FreeImpNameTab( void )
     FmtData.u.os2.imp_tab_list = NULL;
 }
 
-static size_t DoExeName( void )
-/*****************************/
+static unsigned DoExeName( void )
+/*******************************/
 /* make up the "program is %f" string, and put it in tokbuff.*/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
-    size_t      msgsize;
+    unsigned    msgsize;
 
     Msg_Get( MSG_IS_A_EXE, rc_buff );
     msgsize = FmtStr( TokBuff, TokSize, rc_buff );
@@ -1066,7 +1053,7 @@ static size_t DoExeName( void )
 }
 
 unsigned_32 GetStubSize( void )
-/*****************************/
+/************************************/
 /* return the size of the stub file (unaligned) */
 {
     unsigned_32     stub_len = 0;
@@ -1075,15 +1062,17 @@ unsigned_32 GetStubSize( void )
     unsigned_32     read_len;
     unsigned_32     reloc_size;
     unsigned_32     code_start;
+    char            *name;
 
     if( FmtData.u.os2.no_stub ) {
         return( 0 );
     }
+    name = FmtData.u.os2.stub_file_name;
     stub_len = sizeof( DosStub ) + DoExeName();
-    if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
-        the_file = FindPath( FmtData.u.os2.stub_file_name );
+    if( name != NULL && stricmp( name, Root->outfile->fname ) != 0 ) {
+        the_file = FindPath( name );
         if( the_file != NIL_FHANDLE ) {
-            QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
+            QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
             if( dosheader.signature == DOS_SIGNATURE ) {
                 if( dosheader.mod_size == 0 ) {
                     read_len = 512;
@@ -1097,18 +1086,18 @@ unsigned_32 GetStubSize( void )
                 dosheader.hdr_size = 4 + reloc_size/16;
                 stub_len = read_len + dosheader.hdr_size * 16ul;
             }
-            QClose( the_file, FmtData.u.os2.stub_file_name );
+            QClose( the_file, name );
         }
     }
     return( stub_len );
 }
 
-static unsigned_32 WriteDefStub( unsigned_32 stub_align )
-/*******************************************************/
+static unsigned WriteDefStub( unsigned_32 stub_align )
+/****************************************************/
 /* write the default stub to the executable file */
 {
-    size_t              msgsize;
-    unsigned_32         fullsize;
+    unsigned            msgsize;
+    unsigned            fullsize;
     unsigned_32         *stubend;
 
     msgsize = DoExeName();
@@ -1128,26 +1117,28 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
     f_handle        the_file;
     dos_exe_header  dosheader;
     unsigned_32     read_len;
-    size_t          amount;
+    unsigned        amount;
     unsigned_32     reloc_size;
     unsigned_16     num_relocs;
     unsigned_32     the_reloc;
     unsigned_32     code_start;
+    char            *name;
 
+    name = FmtData.u.os2.stub_file_name;
     if( FmtData.u.os2.no_stub ) {
         stub_len = 0;
-    } else if( FmtData.u.os2.stub_file_name == NULL ) {
+    } else if( name == NULL ) {
         stub_len = WriteDefStub( stub_align );
-    } else if( stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) == 0 ) {
+    } else if( stricmp( name, Root->outfile->fname ) == 0 ) {
         LnkMsg( ERR+MSG_STUB_SAME_AS_LOAD, NULL );
         stub_len = WriteDefStub( stub_align );
     } else {
-        the_file = FindPath( FmtData.u.os2.stub_file_name );
+        the_file = FindPath( name );
         if( the_file == NIL_FHANDLE ) {
-            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", name );
             return( WriteDefStub( stub_align ) );   // NOTE: <== a return here.
         }
-        QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
+        QRead( the_file, &dosheader, sizeof( dos_exe_header ), name );
         if( dosheader.signature != DOS_SIGNATURE ) {
             LnkMsg( ERR + MSG_INV_STUB_FILE, NULL );
             stub_len = WriteDefStub( stub_align );
@@ -1157,7 +1148,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             } else {
                 read_len = dosheader.mod_size;
             }
-            QSeek( the_file, dosheader.reloc_offset, FmtData.u.os2.stub_file_name );
+            QSeek( the_file, dosheader.reloc_offset, name );
             dosheader.reloc_offset = 0x40;
             code_start = dosheader.hdr_size * 16ul;
             read_len += (dosheader.file_size - 1) * 512ul - code_start;
@@ -1165,34 +1156,34 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
             dosheader.hdr_size = 4 + reloc_size/16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
-            dosheader.file_size = ( stub_len + 511 ) >> 9;  // round up.
+            dosheader.file_size = (stub_len + 511) >> 9;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
             PadLoad( 0x3c - sizeof( dos_exe_header ) );
             stub_len = ROUND_UP( stub_len, stub_align );
             WriteLoad( &stub_len, sizeof( unsigned_32 ) );
-            for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {
-                QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2.stub_file_name );
+            for(num_relocs = dosheader.num_relocs;num_relocs > 0;num_relocs--) {
+                QRead( the_file, &the_reloc, sizeof( unsigned_32 ), name );
                 WriteLoad( &the_reloc, sizeof( unsigned_32 ) );
                 reloc_size -= sizeof( unsigned_32 );
             }
             if( reloc_size != 0 ) {    // need padding
                 PadLoad( reloc_size );
             }
-            QSeek( the_file, code_start, FmtData.u.os2.stub_file_name );
+            QSeek( the_file, code_start, name );
             for( ; read_len > 0; read_len -= amount ) {
                 if( read_len < TokSize ) {
                     amount = read_len;
                 } else {
                     amount = TokSize;
                 }
-                QRead( the_file, TokBuff, amount, FmtData.u.os2.stub_file_name );
+                QRead( the_file, TokBuff, amount, name );
                 WriteLoad( TokBuff, amount );
             }
             stub_len = NullAlign( stub_align );
         }
-        QClose( the_file, FmtData.u.os2.stub_file_name );
-        _LnkFree( FmtData.u.os2.stub_file_name );
+        QClose( the_file, name );
+        _LnkFree( name );
         FmtData.u.os2.stub_file_name = NULL;
     }
     return( stub_len );

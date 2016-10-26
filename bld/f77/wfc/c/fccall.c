@@ -561,7 +561,7 @@ void    FCCall( void ) {
         }
     }
     idx = 0;
-    for( ; num_args != 0; --num_args ) {
+    while( num_args != 0 ) {
         arg_info = GetU16();
         arg_type = _GetTypeInfo2( arg_info );
         arg_code = _GetTypeInfo1( arg_info );
@@ -718,6 +718,7 @@ void    FCCall( void ) {
         if( (arg_aux != NULL) && (arg_aux->link != NULL) ) {
             arg_aux = arg_aux->link;
         }
+        --num_args;
     }
     if( arg_vec != NULL ) {
         arg_vec[idx] = NULL;

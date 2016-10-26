@@ -104,4 +104,4 @@ $(xname) : $(objs) $(imp_libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAK
     $(linker) name $^@ $(lflags_dll) file {$(objs)}
 !endif
 !endif
-    @%make bind_res_version_dll
+    @%make bind_version_res_dll

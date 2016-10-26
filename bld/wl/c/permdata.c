@@ -70,7 +70,7 @@ libnamelist             *SavedDefLibs;
 
 static stringtable      StoredRelocs;
 static char             *ReadRelocs;
-static size_t           SizeRelocs;
+static unsigned         SizeRelocs;
 static char             *OldExe;
 static char             *OldSymFile;
 static void             *AltDefData;
@@ -80,6 +80,10 @@ static char             *IncStrTab;
 #define MOD_CARVE_SIZE          (5*1024)
 #define SDATA_CARVE_SIZE        (16*1024)
 #define SYM_CARVE_SIZE          (32*1024)
+
+static void BufWritePermFile( perm_write_info *info, void *data, unsigned len );
+static void U32WritePermFile( perm_write_info *info, unsigned_32 data );
+static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem );
 
 void ResetPermData( void )
 /******************************/
@@ -138,61 +142,14 @@ static void MarkSymbol( void *sym )
     ((symbol *)sym)->info |= SYM_IS_FREE;
 }
 
-static void *GetString( perm_write_info *info, const char *str )
-/**************************************************************/
+static void *GetString( perm_write_info *info, char *str )
+/*********************************************************/
 {
-    size_t      idx;
+    unsigned    idx;
 
     idx = GetStringTableSize( &info->strtab );
     AddStringStringTable( &info->strtab, str );
     return( (void *)(pointer_int)idx );
-}
-
-static void DoWritePermFile( perm_write_info *info, const char *data, unsigned len, bool isvmem )
-/***********************************************************************************************/
-{
-    unsigned modpos;
-    unsigned adjust;
-
-    modpos = info->currpos % MAX_HEADROOM;
-    info->currpos += len;
-    while( modpos + len >= MAX_HEADROOM ) {
-        adjust = MAX_HEADROOM - modpos;
-        if( !isvmem ) {
-            memcpy( TokBuff + modpos, data, adjust );
-        } else {
-            ReadInfo( (virt_mem)data, TokBuff + modpos, adjust );
-        }
-        QWrite( info->incfhdl, TokBuff, MAX_HEADROOM, IncFileName );
-        data += adjust;
-        len -= adjust;
-        modpos = 0;
-    }
-    if( len > 0 ) {
-        if( !isvmem ) {
-            memcpy( TokBuff + modpos, data, len );
-        } else {
-            ReadInfo( (virt_mem)data, TokBuff + modpos, len );
-        }
-    }
-}
-
-static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
-/*********************************************************************************/
-{
-    DoWritePermFile( info, (void *)data, len, true );
-}
-
-static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
-/*********************************************************************/
-{
-    DoWritePermFile( info, (char *)&data, sizeof( data ), false );
-}
-
-static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
-/*****************************************************************************/
-{
-    DoWritePermFile( info, data, len, false );
 }
 
 static bool WriteLeaderName( void *_leader, void *info )
@@ -210,6 +167,7 @@ static unsigned WriteGroups( perm_write_info *info )
 {
     group_entry *group;
     unsigned    num;
+//    unsigned_32 count;
 
     num = 0;
     for( group = Groups; group != NULL; group = group->next_group ) {
@@ -243,7 +201,7 @@ static void WriteDLLInfo( void *_dll, void *info )
         if( !dll->isordinal ) {
             dll->u.entname = dll->u.entry->name;
         }
-        BufWritePermFile( info, dll, offsetof( dll_sym_info, iatsym ) );
+        BufWritePermFile( info, dll, offsetof(dll_sym_info, iatsym) );
     }
 }
 
@@ -257,7 +215,7 @@ static void WriteExportInfo( void *_exp, void *info )
         if( exp->name != NULL ) {
             exp->name = GetString( info, exp->name );
         }
-        BufWritePermFile( info, exp, offsetof( entry_export, sym ) );
+        BufWritePermFile( info, exp, offsetof(entry_export, sym) );
     }
 }
 
@@ -401,8 +359,55 @@ static void PrepClasses( perm_write_info *info )
     }
 }
 
-void WritePermFile( perm_write_info *info, const void *data, size_t len )
-/***********************************************************************/
+static void VMemWritePermFile( perm_write_info *info, virt_mem data, unsigned len )
+/*********************************************************************************/
+{
+    DoWritePermFile( info, (void *)data, len, true );
+}
+
+static void U32WritePermFile( perm_write_info *info, unsigned_32 data )
+/*********************************************************************/
+{
+    DoWritePermFile( info, (char *)&data, sizeof( data ), false );
+}
+
+static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
+/*****************************************************************************/
+{
+    DoWritePermFile( info, data, len, false );
+}
+
+static void DoWritePermFile( perm_write_info *info, char *data, unsigned len, bool isvmem )
+/*****************************************************************************************/
+{
+    unsigned modpos;
+    unsigned adjust;
+
+    modpos = info->currpos % MAX_HEADROOM;
+    info->currpos += len;
+    while( modpos + len >= MAX_HEADROOM ) {
+        adjust = MAX_HEADROOM - modpos;
+        if( !isvmem ) {
+            memcpy( TokBuff + modpos, data, adjust );
+        } else {
+            ReadInfo( (virt_mem) data, TokBuff + modpos, adjust );
+        }
+        QWrite( info->incfhdl, TokBuff, MAX_HEADROOM, IncFileName );
+        data += adjust;
+        len -= adjust;
+        modpos = 0;
+    }
+    if( len > 0 ) {
+        if( !isvmem ) {
+            memcpy( TokBuff + modpos, data, len );
+        } else {
+            ReadInfo( (virt_mem) data, TokBuff + modpos, len );
+        }
+    }
+}
+
+void WritePermFile( perm_write_info *info, void *data, unsigned len )
+/**************************************************************************/
 {
     QWrite( info->incfhdl, data, len, IncFileName );
 }
@@ -410,8 +415,8 @@ void WritePermFile( perm_write_info *info, const void *data, size_t len )
 static void FlushPermBuf( perm_write_info *info )
 /***********************************************/
 {
-    size_t      modpos;
-    size_t      adjust;
+    unsigned    modpos;
+    unsigned    adjust;
 
     modpos = info->currpos % MAX_HEADROOM;
     if( modpos == 0 )
@@ -425,17 +430,17 @@ static void FlushPermBuf( perm_write_info *info )
     QWrite( info->incfhdl, TokBuff, modpos, IncFileName );
 }
 
-static void WriteStringBlock( void *info, const char *data, size_t size )
-/***********************************************************************/
+static void WriteStringBlock( void *info, char *data, unsigned size )
+/*******************************************************************/
 {
     QWrite( ((perm_write_info *)info)->incfhdl, data, size, IncFileName );
 }
 
-static void FiniStringBlock( stringtable *tab, size_t *size, void *info,
-                                            write_strtable_fn *writefn )
+static void FiniStringBlock( stringtable *tab, unsigned *size, void *info,
+                             void (*writefn)(void *,char *,unsigned) )
 /************************************************************************/
 {
-    size_t      rawsize;
+    unsigned    rawsize;
 
     rawsize = GetStringTableSize( tab );
     *size = ROUND_UP( rawsize, SECTOR_SIZE );
@@ -450,7 +455,7 @@ static void DumpBlock( carve_t carver, void *block, void *_info )
 /***************************************************************/
 {
     perm_write_info *info = _info;
-    size_t          size;
+    unsigned    size;
 
     size = CarveBlockSize( carver );
     CarveBlockScan( carver, block, info->prepfn, info );
@@ -498,7 +503,7 @@ static void WriteAltData( perm_write_info *info )
 /***********************************************/
 {
     symbol      *sym;
-    size_t      savepos;
+    unsigned    savepos;
 
     info->currpos = 0;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
@@ -533,7 +538,7 @@ void WritePermData( void )
 {
     inc_file_header     hdr;
     perm_write_info     info;
-    size_t              strsize;
+    unsigned            strsize;
 
     if( (LinkFlags & INC_LINK_FLAG) == 0 || (LinkState & LINK_ERROR) )
         return;
@@ -550,7 +555,7 @@ void WritePermData( void )
         hdr.symname = 0;
     }
     info.currpos = 0;
-    BufWritePermFile( &info, &hdr, sizeof( inc_file_header ) ); // reserve space
+    BufWritePermFile( &info, &hdr, sizeof(inc_file_header) ); // reserve space
     PrepClasses( &info );
     hdr.numgroups = WriteGroups( &info );
     hdr.numuserlibs = WriteLibList( &info, true );
@@ -584,12 +589,12 @@ void WritePermData( void )
     hdr.relocsize = SizeRelocs;
     PrepStartValue( &hdr );
     QSeek( info.incfhdl, 0, IncFileName );
-    QWrite( info.incfhdl, &hdr, sizeof( inc_file_header ), IncFileName );
+    QWrite( info.incfhdl, &hdr, sizeof(inc_file_header), IncFileName );
     QClose( info.incfhdl, IncFileName );
 }
 
-void ReadPermFile( perm_read_info *info, void *data, size_t len )
-/***************************************************************/
+void ReadPermFile( perm_read_info *info, void *data, unsigned len )
+/************************************************************************/
 {
     QRead( info->incfhdl, data, len, IncFileName );
 }
@@ -610,8 +615,8 @@ static unsigned_32 BufReadU32( perm_read_info *info )
     return( retval );
 }
 
-static void BufRead( perm_read_info *info, void *data, size_t len )
-/*****************************************************************/
+static void BufRead( perm_read_info *info, void *data, unsigned len )
+/*******************************************************************/
 {
     memcpy( data, info->buffer + info->currpos, len );
     info->currpos += len;
@@ -755,7 +760,7 @@ static void RebuildSymbol( void *_sym, void *info )
 static void ReadBlockInfo( carve_t cv, void *blk, void *info )
 /************************************************************/
 {
-    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData( blk ), CarveBlockSize( cv ), IncFileName );
+    QRead( ((perm_read_info *)info)->incfhdl, CarveBlockData(blk), CarveBlockSize(cv), IncFileName);
 }
 
 static void SmallFreeCheck( void *data, void *_info )
@@ -768,7 +773,7 @@ static void SmallFreeCheck( void *data, void *_info )
         info->num--;
         freeblk = BufPeekU32( info );
         if( freeblk == CARVE_INVALID_INDEX ) {
-            info->currpos += sizeof( unsigned_32 );
+            info->currpos += sizeof(unsigned_32);
             CarveInsertFree( info->cv, data );
         } else {
             info->cbfn( data, info );
@@ -817,7 +822,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
 {
     char                *fname;
     f_handle            hdl;
-    size_t              size;
+    unsigned long       size;
 
     fname = MapString( (char *)(pointer_int)nameidx );
     hdl = QObjOpen( fname );
@@ -925,17 +930,18 @@ void ReadPermData( void )
     _LnkFree( info.buffer );
 }
 
-void PermSaveFixup( void *fix, size_t size )
-/******************************************/
+void PermSaveFixup( void *fix, unsigned size )
+/***************************************************/
 {
     AddBufferStringTable( &StoredRelocs, fix, size );
 }
 
-void IterateModRelocs( size_t offset, size_t sizeleft, size_t (*fn)(void *) )
-/***************************************************************************/
+ void IterateModRelocs( unsigned offset, unsigned sizeleft,
+                              unsigned (*fn)(void *) )
+/***************************************************************/
 {
     char        *fixoff;
-    size_t      size;
+    unsigned    size;
 
     fixoff = ReadRelocs + offset;
     for( ; sizeleft > 0; sizeleft -= size ) {
@@ -944,8 +950,8 @@ void IterateModRelocs( size_t offset, size_t sizeleft, size_t (*fn)(void *) )
     }
 }
 
-static void SaveRelocData( void *_curr, const char *data, size_t size )
-/*********************************************************************/
+static void SaveRelocData( void *_curr, char *data, unsigned size )
+/*****************************************************************/
 {
     char **curr = _curr;
 

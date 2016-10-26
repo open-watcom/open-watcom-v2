@@ -99,7 +99,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
     vars        *new, *curr, *head;
     bool        glob;
     var_len     len;
-    size_t      name_len;
+    int         name_len;
 
     /*
      * get local/global setting

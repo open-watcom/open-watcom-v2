@@ -49,17 +49,8 @@
 
 #include "clibext.h"
 
-
 #define NOFILE -1
 #define STDOUT_HANDLE 1
-
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
 
 typedef enum {
     EX_NONE,
@@ -103,18 +94,18 @@ static char         *HelpMsg =
 #define DEF_CLASS       "CODE"
 
 // forward declarations
-static void     ProcessFiles( const char ** );
-static void     ProcFile( const char *fname );
+static void     ProcessFiles( char ** );
+static void     ProcFile( char * fname );
 
 
 // the spawn & suicide support.
 
 static void *SpawnStack;
 
-static int Spawn1( void (*fn)( const char ** ), char **data1 )
-/************************************************************/
+static int Spawn1( void (*fn)( char ** ), char **data1 )
+/******************************************************/
 {
-    void    *save_env;
+    void *  save_env;
     jmp_buf env;
     int     status;
 
@@ -122,7 +113,7 @@ static int Spawn1( void (*fn)( const char ** ), char **data1 )
     SpawnStack = env;
     status = setjmp( env );
     if( status == 0 ) {
-        (*fn)( (const char **)data1 );
+        (*fn)( data1 );
     }
     SpawnStack = save_env;  /* unwind */
     return( status );
@@ -138,21 +129,21 @@ static void Suicide( void )
 }
 
 
-static int QOpen( const char *filename, int access, int permission )
-/******************************************************************/
+static int QOpen( char *filename, int access, int permission )
+/************************************************************/
 {
     int result;
 
     result = open( filename, access, permission );
-    if( result == -1 ) {
+    if( result == ERROR ) {
         IOError( "problem opening file" );
     }
     return( result );
 }
 
 
-static void QRemove( const char *filename )
-/*****************************************/
+static void QRemove( char *filename )
+/***********************************/
 {
     if( remove( filename ) != 0 ) {
         IOError( "problem removing file" );
@@ -194,14 +185,14 @@ int main(int argc, char **argv )
     return( retval );
 }
 
-static void ProcList( bool (*fn)(const char *, size_t), const char ***argv )
-/*************************************************************************/
+static void ProcList( bool (*fn)(char *,int), char ***argv )
+/**********************************************************/
 // this processes a list of comma-separated strings, being as forgiving about
 // spaces as possible.
 {
-    const char  *item;
-    const char  *comma;
-    bool        checksep;   // true iff we should check for a separator.
+    char *  item;
+    char *  comma;
+    bool    checksep;   // true iff we should check for a separator.
 
     (**argv)++;        // skip the option character.
     checksep = false;
@@ -232,10 +223,10 @@ static void ProcList( bool (*fn)(const char *, size_t), const char ***argv )
     }
 }
 
-static void MakeListItem( name_list **list, const char *item, size_t len )
-/************************************************************************/
+static void MakeListItem( name_list **list, char *item, int len )
+/***************************************************************/
 {
-    name_list *entry;
+    name_list * entry;
 
     entry = MemAlloc( sizeof( name_list ) + len );
     entry->next = NULL;
@@ -245,8 +236,8 @@ static void MakeListItem( name_list **list, const char *item, size_t len )
     LinkList( (void **)list, entry );
 }
 
-static bool ProcClass( const char *item, size_t len )
-/***************************************************/
+static bool ProcClass( char *item, int len )
+/******************************************/
 {
     if( NewOption ) {
         FreeList( ClassList );
@@ -257,8 +248,8 @@ static bool ProcClass( const char *item, size_t len )
     return( true );     // true == check for a list separator
 }
 
-static bool ProcSeg( const char *item, size_t len )
-/*************************************************/
+static bool ProcSeg( char *item, int len )
+/****************************************/
 {
     if( NewOption ) {
         FreeList( SegList );
@@ -269,10 +260,10 @@ static bool ProcSeg( const char *item, size_t len )
     return( true );     // true == check for a list separator
 }
 
-static bool ProcExclude( const char *item, size_t len )
-/*****************************************************/
+static bool ProcExclude( char *item, int len )
+/********************************************/
 {
-    char *endptr;
+    char *  endptr;
 
     while( len > 0 ) {
         switch( ExcludeState ) {
@@ -318,16 +309,16 @@ static bool ProcExclude( const char *item, size_t len )
     return( false );
 }
 
-static void ProcessOption( const char ***argv )
-/*********************************************/
+static void ProcessOption( char ***argv )
+/***************************************/
 {
-    const char  *item;
-    char        option;
+    char *  item;
+    char    option;
 
     NewOption = true;
     (**argv)++;        // skip the switch character.
     item = **argv;
-    option = (char)tolower( (unsigned char)*item );
+    option = tolower( *item );
     switch( option ) {
     case 'c':           // class list.
         ProcList( ProcClass, argv );
@@ -350,10 +341,10 @@ static void ProcessOption( const char ***argv )
     }
 }
 
-static void ProcessFiles( const char **argv )
-/*******************************************/
+static void ProcessFiles( char **argv )
+/*************************************/
 {
-    const char  *item;
+    char *  item;
 
     while( *argv != NULL ) {
         item = *argv;
@@ -382,14 +373,14 @@ static void CloseFiles( void )
     }
 }
 
-static void ReplaceExt( char *name, const char *new_ext, bool force )
-/*******************************************************************/
+static void ReplaceExt( char * name, char * new_ext, bool force )
+/***************************************************************/
 {
-    char        buff[_MAX_PATH2];
-    char        *p;
-    char        *d;
-    char        *n;
-    char        *e;
+    char        buff[ _MAX_PATH2 ];
+    char *      p;
+    char *      d;
+    char *      n;
+    char *      e;
 
     _splitpath2( name, buff, &d, &p, &n, &e );
     if( force || e[0] == '\0' ) {
@@ -420,23 +411,22 @@ static void DoReplace( void )
     }
 }
 
-static void ProcFile( const char *fname )
-/***************************************/
+static void ProcFile( char * fname )
+/**********************************/
 {
     int         ftype;
-    char        *name;
+    char *      name;
     int         status;
-    size_t      namelen;
-    char        *bak;
+    int         namelen;
+    char *      bak;
 
     namelen = strlen( fname ) + 5;
     name = alloca( namelen );
-    if( name == NULL )      // null == no stack space left.
-        Suicide();
+    if( name == NULL ) Suicide();           // null == no stack space left.
     strcpy( name, fname );
     ReplaceExt( name, ".obj", false );
     InFile = QOpen( name, O_RDONLY | O_BINARY, 0 );
-    for( ;; ) {
+    for(;;) {
         CleanRecStuff();
         ftype = ReadRec();
         if( ftype == ENDLIBRARY || ftype == ENDFILE ) {
@@ -448,7 +438,7 @@ static void ProcFile( const char *fname )
         } else if( ftype != OBJECT ) {
             Error( "file is not a standard OBJECT or LIBRARY file" );
         }
-        OutFile = QOpen( TEMP_OBJ_NAME, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0 );
+        OutFile = QOpen( TEMP_OBJ_NAME, O_WRONLY|O_CREAT|O_TRUNC|O_BINARY, 0 );
         do {
             ProcessRec();
             status = ReadRec();
@@ -465,8 +455,7 @@ static void ProcFile( const char *fname )
     CloseFiles();
     if( MakeBackup ) {
         bak = alloca( namelen );
-        if( bak == NULL )           // null == no stack space left.
-            Suicide();
+        if( bak == NULL ) Suicide();           // null == no stack space left.
         strcpy( bak, name );
         if( ftype == ENDLIBRARY ) {
             ReplaceExt( bak, ".bak", true );
@@ -484,18 +473,20 @@ static void ProcFile( const char *fname )
     FileCleanup();
 }
 
-int CopyFile( const char * file1, const char * file2 )
-/****************************************************/
+int CopyFile( char * file1, char * file2 )
+/****************************************/
 {
-    size_t                  len;
-    auto struct stat        statblk;
-    auto struct utimbuf     utimebuf;
+    int len;
+    auto struct stat            statblk;
+    auto struct utimbuf         utimebuf;
 
     remove( file2 );
     OutFile = NOFILE;
     InFile = QOpen( file1, O_RDONLY | O_BINARY, 0 );
-    OutFile = QOpen( file2, O_WRONLY | O_TRUNC | O_CREAT | O_BINARY, 0 );
-    while( (len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE )) != 0 ) {
+    OutFile = QOpen( file2, O_WRONLY|O_TRUNC|O_CREAT|O_BINARY, 0 );
+    for( ;; ) {
+        len = QRead( InFile, InputBuffer, MAX_OBJECT_REC_SIZE );
+        if( len == 0 ) break;
         QWrite( OutFile, InputBuffer, len );
     }
     CloseFiles();
@@ -510,13 +501,13 @@ int CopyFile( const char * file1, const char * file2 )
 void put( const char * str )
 /**************************/
 {
-    posix_write( STDOUT_HANDLE, str, strlen( str ) );
+    write( STDOUT_HANDLE, str, strlen( str ) );
 }
 
-void putlen( const char *str, size_t len )
-/****************************************/
+void putlen( const char *str, unsigned len )
+/******************************************/
 {
-    posix_write( STDOUT_HANDLE, str, len );
+    write( STDOUT_HANDLE, str, len );
 }
 
 // these are utility routines used frequently in TDCVT.
@@ -550,16 +541,16 @@ void FreeList( void *list )
     }
 }
 
-void Warning( const char *msg )
-/*****************************/
+void Warning( char * msg )
+/************************/
 {
     put( "warning: " );
     put( msg );
     put( "\n" );
 }
 
-void Error( const char *msg )
-/***************************/
+void Error( char * msg )
+/**********************/
 {
     put( "Error: " );
     put( msg );
@@ -567,8 +558,8 @@ void Error( const char *msg )
     Suicide();
 }
 
-void IOError( const char *msg )
-/*****************************/
+void IOError( char *msg )
+/***********************/
 {
     put( msg );
     put( ": " );
@@ -579,25 +570,25 @@ void IOError( const char *msg )
 
 // these are the file i/o routines for tdcvt.
 
-size_t QRead( int handle, void *buffer, size_t len )
-/**************************************************/
+int QRead( int handle, void *buffer, int len )
+/********************************************/
 {
-    size_t result;
+    int result;
 
-    result = posix_read( handle, buffer, len );
-    if( result == -1 ) {
+    result = read( handle, buffer, len );
+    if( result == ERROR ) {
         IOError( "problem reading file" );
     }
     return( result );
 }
 
-size_t QWrite( int handle, const void *buffer, size_t len )
-/*********************************************************/
+int QWrite( int handle, void *buffer, int len )
+/*********************************************/
 {
-    size_t result;
+    int result;
 
-    result = posix_write( handle, buffer, len );
-    if( result == -1 ) {
+    result = write( handle, buffer, len );
+    if( result == ERROR ) {
         IOError( "problem writing file" );
     } else if( result != len ) {
         Error( "disk full" );
@@ -611,7 +602,7 @@ long int QSeek( int handle, long offset, int origin )
     long int result;
 
     result = lseek( handle, offset, origin );
-    if( result == -1L ) {
+    if( result == ERROR ) {
         IOError( "problem during seek" );
     }
     return( result );

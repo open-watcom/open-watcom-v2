@@ -81,7 +81,7 @@ void *MemAlloc( size_t size )
     ptr = malloc( size );
 #endif
     if( ptr == NULL ) {
-        ErrorExit( "Dynamic Memory Exhausted!!!" );
+        Error( "Dynamic Memory Exhausted!!!" );
     }
     return( ptr );
 }

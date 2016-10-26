@@ -92,12 +92,9 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
         p = Token.this;
         for(;;) {               // check if wildcard
             /* end of parm: NULLCHAR or blank */
-            if( *p == '\'' )
-                break;     // don't wildcard a quoted string.
-            if( *p == '\0' )
-                break;
-            if( *p == ' ' )
-                break;
+            if( *p == '\'' ) break;     // don't wildcard a quoted string.
+            if( *p == '\0' ) break;
+            if( *p == ' ' ) break;
             if( *p == '?' || *p == '*' ) {
                 wildcrd = true;
                 break;
@@ -151,30 +148,30 @@ bool ProcArgListEx( bool (*rtn)( void ), tokcontrol ctrl ,cmdfilelist *resetpoin
 {
     bool bfilereset = false;    /* did we open a file and get reset ? */
 
-    if( GetTokenEx( SEP_LCURLY, ctrl, resetpoint, &bfilereset ) ) {
+    if( GetTokenEx( SEP_LCURLY, ctrl, resetpoint, &bfilereset) ) {
         for(;;) {
             if( !WildCard( rtn, ctrl ) ) {
                 return( false );
             }
             if( CheckFence() ) {
                 break;
-            } else if( !GetTokenEx( SEP_NO, ctrl ,resetpoint, &bfilereset ) ) {
+            } else if( !GetTokenEx( SEP_NO, ctrl ,resetpoint, &bfilereset) ) {
                 LnkMsg( LOC+LINE+ERR+MSG_BAD_CURLY_LIST, NULL );
                 break;
             }
         }
     } else {
-        if( resetpoint && bfilereset )
+        if(resetpoint && bfilereset)
             return( true );
-        if( !GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset ) )
+        if( GetTokenEx( SEP_NO, ctrl, resetpoint, &bfilereset) == false )
             return( false );
         do {
-            if( resetpoint && bfilereset )
+            if(resetpoint && bfilereset)
                 return( true );
             if( !WildCard( rtn, ctrl ) ) {
                 return( false );
             }
-        } while( GetTokenEx( SEP_COMMA, ctrl , resetpoint, &bfilereset ) );
+        } while( GetTokenEx( SEP_COMMA, ctrl , resetpoint, &bfilereset) );
     }
     return( true );
 }
@@ -191,9 +188,10 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
     bool                ret;
     char                keybuff[20];
 
-    if( !GetToken( req, TOK_INCLUDE_DOT ) )
-        return( false );
-    ret = true;
+    ret = GetToken( req, TOK_INCLUDE_DOT );
+    if( ret == false ) {
+        return( ret );
+    }
     for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = Token.this;
@@ -207,11 +205,11 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
                     strcpy( keybuff, entry->keyword );
                     strlwr( keybuff );
                     LnkMsg( LOC+LINE+WRN+MSG_FORMAT_BAD_OPTION, "s", keybuff );
+                    ret = true;
                 }
                 return( ret );
             }
-            if( *key == '\0' || tolower( *ptr ) != tolower( *key ) )
-                break;
+            if( *key == '\0' || tolower( *ptr ) != tolower( *key ) ) break;
             ptr++;
             key++;
             plen--;
@@ -345,7 +343,7 @@ ord_state getatol( unsigned_32 *pnt )
 bool HaveEquals( tokcontrol ctrl )
 /********************************/
 {
-    if( !GetToken( SEP_EQUALS, ctrl ) ) {
+    if( GetToken( SEP_EQUALS, ctrl ) == false ) {
         Token.this = Token.next;
         /* collect the token that caused the problem */
         GetToken( SEP_NO, ctrl );
@@ -360,8 +358,7 @@ bool GetLong( unsigned_32 *addr )
     unsigned_32     value;
     ord_state       ok;
 
-    if( !HaveEquals( TOK_NORMAL ) )
-        return( false );
+    if( !HaveEquals( TOK_NORMAL ) ) return( false );
     ok = getatol( &value );
     if( ok != ST_IS_ORDINAL ) {
         return( false );
@@ -429,8 +426,7 @@ static bool CheckFence( void )
 /* check for a "fence", and skip it if it is there */
 {
     if( Token.thumb == REJECT ) {
-        if( Token.quoted )
-            return( false );   /* no fence inside quotes */
+        if( Token.quoted ) return( false );   /* no fence inside quotes */
         if( *Token.this == '}' ) {
             Token.this++;
             return( true );
@@ -441,12 +437,12 @@ static bool CheckFence( void )
     return( false );
 }
 
-bool GetToken( sep_type req, tokcontrol ctrl )
+bool GetToken( sep_type req, tokcontrol ctrl)
 {
-    return( GetTokenEx( req, ctrl, NULL, NULL ) );
+    return(GetTokenEx(req, ctrl, NULL, NULL));
 }
 
-bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *pbreset )
+bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *pbreset)
 /***************************************************/
 /* return true if no problem */
 /* return false if problem   */
@@ -601,8 +597,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             GetNewLine();
             break;
         case ENDOFFILE:
-            if( Token.locked )
-                return( false );
+            if( Token.locked ) return( false );
             RestoreCmdLine();
             if( Token.thumb == REJECT ) {
                 Token.thumb = OK;
@@ -688,8 +683,7 @@ void RestoreParser( void )
 /*******************************/
 /* return the parser to the previous command state */
 {
-    if( CmdFile->next == NULL )
-        return;
+    if( CmdFile->next == NULL ) return;
     memcpy( &CmdFile->token, &Token, sizeof( tok ) );  /* save current state */
     CmdFile = CmdFile->next;
     memcpy( &Token, &CmdFile->token, sizeof( tok ) ); // restore old state.
@@ -734,22 +728,20 @@ void SetCommandFile( f_handle file, char *fname )
 /******************************************************/
 /* read input from given file */
 {
-    unsigned long   long_size;
+    unsigned long   size;
     char            *buff;
 
     if( QIsDevice( file ) ) {
-        long_size = 0x10000;
+        size = 0x10000;
     } else {
-        long_size = QFileSize( file );
+        size = QFileSize( file );
     }
     buff = NULL;
-    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
-        size_t  size = (size_t)long_size;
-
+    if( size < 65510 ) {       // if can alloc a chunk big enough
         _LnkAlloc( buff, size + 1 );
         if( buff != NULL ) {
             size = QRead( file, buff, size, fname );
-            buff[size] = '\0';
+            *(buff + size) = '\0';
             NewCommandSource( fname, buff, BUFFERED );
         }
     }
@@ -819,8 +811,7 @@ static int ParseNumber( char *str, int radix )
         } else {
             isvalid = ( isxdigit( ch ) != 0 );
         }
-        if( !isvalid )
-            break;
+        if( !isvalid ) break;
         value *= radix;
         if( isdig ) {
             value += ch - '0';
@@ -894,14 +885,10 @@ static unsigned MapDoubleByteChar( unsigned char c )
         }
         break;
     case CF_LANGUAGE_CHINESE:
-        if( c > 0xFC )
-            break;
-        // note the fall through
-    case CF_LANGUAGE_KOREAN:
-        if( c > 0xFD )
-            break;
-        if( c < 0x81 )
-            break;
+        if( c > 0xFC ) break;
+    case CF_LANGUAGE_KOREAN:            // note the fall through
+        if( c > 0xFD ) break;
+        if( c < 0x81 ) break;
         Token.next++;
         return( 1 );
     }
@@ -1007,17 +994,17 @@ static bool MakeToken( tokcontrol ctrl, sep_type separator )
 }
 
 
-char *FileName( const char *buff, size_t len, file_defext etype, bool force )
-/***************************************************************************/
+char *FileName( char *buff, size_t len, file_defext etype, bool force )
+/*********************************************************************/
 {
-    const char  *namptr;
-    const char  *namstart;
+    char        *namptr;
+    char        *namstart;
     char        *ptr;
     size_t      cnt;
     size_t      namelen;
     char        c;
 
-
+    
     for( namptr = buff + len; namptr != buff; --namptr ) {
         c = namptr[-1];
         if( IS_PATH_SEP( c ) ) {
@@ -1027,7 +1014,9 @@ char *FileName( const char *buff, size_t len, file_defext etype, bool force )
     namstart = namptr;
     cnt = len - ( namptr - buff );
     if( cnt == 0 ) {
-        DUPSTR_STACK( ptr, buff, len );
+        ptr = alloca( len + 1 );
+        memcpy( ptr, buff, len );
+        ptr[len] = '\0';
         LnkMsg( LOC+LINE+FTL+MSG_INV_FILENAME, "s", ptr );
     }
     namelen = cnt;
@@ -1092,13 +1081,10 @@ bool IsSystemBlock( void )
 {
     cmdfilelist     *temp;
 
-    if( Token.how == SYSTEM )
-        return( true );
+    if( Token.how == SYSTEM ) return( true );
 
     for( temp = CmdFile; temp != NULL; temp = temp->prev ) {
-        if( temp->token.how == SYSTEM ) {
-            return( true );
-        }
+        if( temp->token.how == SYSTEM ) return( true );
     }
     return( false );
 }
@@ -1190,15 +1176,20 @@ char *GetFileName( char **membname, bool setname )
 /********************************************************/
 {
     char        *ptr;
-    size_t      namelen;
+    unsigned    namelen;
     char        *objname;
-    const char  *fullmemb;
-    size_t      memblen;
+    char        *fullmemb;
+    unsigned    memblen;
+    char        ch;
 
-    DUPBUF_STACK( objname, Token.this, Token.len );
     namelen = Token.len;
+    objname = alloca( namelen );
+    memcpy( objname, Token.this, namelen );
     if( GetToken( SEP_PAREN, TOK_INCLUDE_DOT ) ) {   // got LIBNAME(LIB_MEMBER)
-        fullmemb = GetBaseName( Token.this, Token.len, &memblen );
+        ch = Token.this[Token.len];
+        Token.this[Token.len] = 0;
+        fullmemb = RemovePath( Token.this, &memblen );
+        Token.this[Token.len] = ch;
         *membname = ChkToString( fullmemb, memblen );
         ptr = FileName( objname, namelen, E_LIBRARY, false );
     } else {

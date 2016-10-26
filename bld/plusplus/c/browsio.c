@@ -372,7 +372,6 @@ extern dw_client DwarfInit( void )
     char            *inccurr;
     unsigned        incsize;
     dw_client       client;
-    DWSetRtns( dw_cli_funcs, dw_reloc, dw_write, dw_seek, dw_tell, dw_alloc, dw_free );
 
     DwioInit();
     for( i = 0 ; i < DW_DEBUG_MAX ; i++ ) {
@@ -396,7 +395,12 @@ extern dw_client DwarfInit( void )
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = DWARF_PRODUCER_ID " V1";
     memcpy( info.exception_handler, Environment, sizeof( jmp_buf ) );
-    info.funcs = dw_cli_funcs;
+    info.funcs.reloc = &dw_reloc;
+    info.funcs.write = &dw_write;
+    info.funcs.seek = &dw_seek;
+    info.funcs.tell = &dw_tell;
+    info.funcs.alloc = &dw_alloc;
+    info.funcs.free = &dw_free;
 
     client = DWInit( &info );
     if( client == NULL ) {

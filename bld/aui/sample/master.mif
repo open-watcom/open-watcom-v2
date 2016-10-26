@@ -13,36 +13,34 @@
 
 inc_dirs = -I"../h" $(aui_inc_dirs) $(gui_inc_dirs) $(ui_inc_dirs)
 
-rcfiles_os2 = ../res/appcomm2.rc ../res/dlgoptn2.dlg ../res/dui2.ico ../res/word2.ico
-rcfiles_win = ../res/appcomm.rc ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico
-rcfiles_nt  = ../res/appcomm.rc ../res/dlgoptn.dlg ../res/japoptn.dlg ../res/dui.ico ../res/words.ico
-
 rcfiles = &
     $(gui_dir)/h/gui.rc &
     $(aui_dialogs) &
     ../../res/aui.rc &
     ../h/dlgoptn.h &
+    ../res/appcomm.rc &
+    ../res/dlgoptn.dlg &
     ../res/one.bmp &
     ../res/two.bmp &
     ../res/three.bmp &
     ../res/four.bmp &
-    ../res/five.bmp &
-    ../res/source1.bmp &
-    ../res/source2.bmp &
-    ../res/stop1.bmp &
-    ../res/stop2.bmp &
-    $(rcfiles_$(host_os))
+    ../res/five.bmp
 
 objs = app.obj util.obj window1.obj window2.obj window3.obj &
        window4.obj window5.obj window6.obj window7.obj window8.obj &
        menus.obj appcolor.obj dlgcmd.obj dlgoptn.obj password.obj
 
 !ifeq sys_windowed 1
+!ifeq host_os os2
+resfile = apppm.res
+#resfile = apppmj.res
+!else
 resfile = app.res
 #resfile = appj.res
+!endif
 !else
-resfile = wresui.res
-#resfile = wresuij.res
+resfile = appui.res
+#resfile = appuij.res
 !endif
 
 libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
@@ -50,10 +48,11 @@ libs = $(aui_lib) $(gui_lib) $(ui_lib) $(wres_lib)
 app.exe : $(objs) $(libs) $(resfile)
     @%make echo_link
     $(linker) name $^@ $(lflags) op un file { $(objs) } lib { $(libs) }
+    @%make echo_bindres
 !ifeq sys_windowed 1
-    @%make bind_res
+    $(rc) -k $(resfile) $^@
 !else
-    @%make bind_res_wresui
+    $(wstrip) -q -a -r $^@ . $(resfile)
 !endif
 
 rc_inc_dirs = -I"../res" -I"../h" $(aui_rc_inc_dirs) $(gui_inc_dirs)
@@ -66,10 +65,14 @@ appj.res : ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rc) -DJAPANESE $(rc_flags) $(rc_inc_path) $[@ -fo=$@
 
-wresui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+appui.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rc_aui) $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
 
-wresuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
+appuij.res : ../res/appui.rc ../res/app.rc $(rcfiles)
     @%make echo_rc
     $(rc_aui) -DJAPANESE $(rc_inc_path) $(inc_dirs_sys_win) $[@ -fo=$@
+
+apppm.res apppmj.res : ../res/apppm.rc ../res/app.rc $(rcfiles)
+    @%make echo_rc
+    $(rc) $(rc_flags) $(rc_inc_path) $[@ -fo=$@

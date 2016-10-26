@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#if defined(__OS2__) || defined(__DOS__)
+   #include <stdio.h>
+#endif
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
 #endif

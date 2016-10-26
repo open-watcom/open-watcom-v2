@@ -229,7 +229,7 @@ static  unsigned_32     CheckThreshold( sym_id sym, unsigned_32 g_offset ) {
 }
 
 
-static  void    DumpSCB( back_handle scb, back_handle data, uint len,
+static  void    DumpSCB( back_handle scb, back_handle data, int len,
                          bool allocatable, signed_32 offset ) {
 //=============================================================
 
@@ -969,9 +969,9 @@ static cg_name AdvEntryAddr( cg_name adv, int entry, cg_type part ) {
 }
 
 
-static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type part )
+static cg_name CVAdvEntryAddr( cg_name adv, int dim_cnt, int entry, cg_type part ){
 //==============================================================================
-{
+
     int         offset;
 
     offset = ( BETypeLength( TY_ADV_ENTRY_CV ) * entry ) +

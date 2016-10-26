@@ -39,7 +39,6 @@
 #include "mautodep.h"
 #include "orl.h"
 #include "autodep.h"
-#include "mposix.h"
 
 #include "clibext.h"
 
@@ -65,10 +64,10 @@ static size_t           orlFileSize;
 static const char       *dependSectionName = ".depend";
 
 
-static unsigned long fileSize( int file_descriptor )
+static size_t fileSize( int file_descriptor )
 {
-    unsigned long   old;
-    unsigned long   size;
+    long    old;
+    size_t  size;
 
     old = tell( file_descriptor );
     lseek( file_descriptor, 0, SEEK_END );
@@ -97,10 +96,10 @@ static void *orlRead( void *file_handle, size_t bytes )
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = (size_t)fileSize( FH2PH( file_handle ) );
+        orlFileSize = fileSize( FH2PH( file_handle ) );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = posix_read( FH2PH( file_handle ), orlBuffer, orlFileSize );
+        n = read( FH2PH( file_handle ), orlBuffer, orlFileSize );
         if( n != orlFileSize ) {
             return( NULL );
         }
@@ -113,8 +112,8 @@ static void *orlRead( void *file_handle, size_t bytes )
     return( NULL );
 }
 
-static long orlSeek( void *file_handle, long offset, int mode )
-/*************************************************************/
+static size_t orlSeek( void *file_handle, size_t offset, int mode )
+/*****************************************************************/
 {
     (void)file_handle; // Unused
     switch( mode ) {
@@ -134,9 +133,14 @@ static long orlSeek( void *file_handle, long offset, int mode )
 static void AutoORLInit( void )
 /*****************************/
 {
-    ORLSetFuncs( orl_cli_funcs, orlRead, orlSeek, MallocSafe, FreeSafe );
+    static orl_funcs    funcs = {
+        orlRead,
+        (long (*)( void *, long, int ))orlSeek, // cast as specified externally
+        MallocSafe,
+        FreeSafe
+    };
 
-    orlHandle = ORLInit( &orl_cli_funcs );
+    orlHandle = ORLInit( &funcs );
 }
 
 

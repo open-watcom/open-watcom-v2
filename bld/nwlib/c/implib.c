@@ -37,24 +37,25 @@
 
 
 // must correspond to defines in implib.h
-static char *procname[5] = { "", "AXP", "PPC", "X86","" };
+static char *procname[ 5 ] = { "", "AXP", "PPC", "X86","" };
 
-static void fillInU16( unsigned_16 value, char *out )
+static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_type processor );
+
+static void fillInShort( unsigned_16 value, char *out )
 {
-    out[0] = value & 255;
-    out[1] = ( value >> 8 ) & 255;
+    out[ 0 ] = value & 255;
+    out[ 1 ] = ( value >> 8 ) & 255;
 }
 
-static void fillInU32( unsigned_32 value, char *out )
+static void fillInLong( unsigned_32 value, char *out )
 {
-    out[0] = value & 255;
-    out[1] = ( value >> 8 ) & 255;
-    out[2] = ( value >> 16 ) & 255;
-    out[3] = ( value >> 24 ) & 255;
+    out[ 0 ] = value & 255;
+    out[ 1 ] = ( value >> 8 ) & 255;
+    out[ 2 ] = ( value >> 16 ) & 255;
+    out[ 3 ] = ( value >> 24 ) & 255;
 }
 
 static orl_sec_handle found_sec_handle;
-
 static orl_return FindHelper( orl_sec_handle sec )
 {
     if( found_sec_handle == 0 ) {
@@ -65,7 +66,6 @@ static orl_return FindHelper( orl_sec_handle sec )
 
 
 static unsigned long  export_table_rva;
-
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
     if( found_sec_handle == 0 ) {
@@ -186,7 +186,7 @@ static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsign
     if( LibRead( io, symbol, name_len ) != name_len ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    symbol[name_len] = 0;
+    symbol[ name_len ] = 0;
     if( LibRead( io, ordinal, sizeof( unsigned_16 ) ) != sizeof( unsigned_16 ) ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
@@ -197,7 +197,7 @@ static bool getOs2Symbol( libfile io, char *symbol, unsigned_16 *ordinal, unsign
 static void importOs2Table( libfile io, arch_header *arch, char *dll_name, bool coff_obj, importType type, unsigned length )
 {
     unsigned_16 ordinal;
-    char        symbol[256];
+    char        symbol[ 256 ];
     unsigned    bytes_read;
     unsigned    total_read = 0;
 
@@ -225,8 +225,8 @@ static void os2AddImport( arch_header *arch, libfile io )
 {
     os2_exe_header  os2_header;
     unsigned_32     ne_offset;
-    char            dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char            junk[256];
+    char            dll_name[ _MAX_FNAME + _MAX_EXT + 1 ];
+    char            junk[ 256 ];
     unsigned_16     ordinal;
     importType      type;
     unsigned        bytes_read;
@@ -248,31 +248,11 @@ static void os2AddImport( arch_header *arch, libfile io )
     }
 }
 
-static void coffAddImportOverhead( arch_header *arch, const char *DLLName, processor_type processor )
-{
-    char *buffer;
-
-    buffer = MemAlloc( 100 );
-
-    memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
-    _splitpath( DLLName, NULL, NULL, buffer + 20, NULL );
-    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
-
-    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
-
-    buffer[0] = 0x7f;
-    _splitpath( DLLName, NULL, NULL, buffer + 1, NULL );
-    strcat( buffer, "_NULL_THUNK_DATA" );
-    CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
-
-    MemFree( buffer );
-}
-
 static void os2FlatAddImport( arch_header *arch, libfile io )
 {
     os2_flat_header os2_header;
     unsigned_32     ne_offset;
-    char            dll_name[256];
+    char            dll_name[ 256 ];
     unsigned_16     ordinal;
     bool            coff_obj;
     importType      type;
@@ -301,8 +281,8 @@ static bool nlmAddImport( arch_header *arch, libfile io )
 {
     nlm_header  nlm;
     unsigned_8  name_len;
-    char        dll_name[_MAX_FNAME + _MAX_EXT + 1];
-    char        symbol[256];
+    char        dll_name[ _MAX_FNAME + _MAX_EXT + 1 ];
+    char        symbol[ 256 ];
     unsigned_32 offset;
 
     LibSeek( io, 0x00, SEEK_SET );
@@ -320,7 +300,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
     if( LibRead( io, dll_name, name_len ) != name_len ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    symbol[name_len] = 0;
+    symbol[ name_len ] = 0;
     LibSeek( io, nlm.publicsOffset, SEEK_SET  );
     while( nlm.numberOfPublics > 0 ) {
         nlm.numberOfPublics--;
@@ -330,7 +310,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
         if( LibRead( io, symbol, name_len ) != name_len ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
-        symbol[name_len] = 0;
+        symbol[ name_len ] = 0;
         if( LibRead( io, &offset, sizeof( offset ) ) != sizeof( offset ) ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
@@ -352,13 +332,13 @@ static void peAddImport( arch_header *arch, libfile io )
     Coff32_Export   *export_header;
     Coff32_EName    *name_table;
     Coff32_EOrd     *ord_table;
-    unsigned        i;
+    int             i;
     long            ordinal_base;
     processor_type  processor = WL_PROC_NONE;
     importType      type;
     bool            coff_obj;
     long            adjust;
-    unsigned        sym_len;
+    int             sym_len;
 
     LibSeek( io, 0x00, SEEK_SET );
     if( Options.libtype == WL_LTYPE_MLIB ) {
@@ -419,19 +399,19 @@ static void peAddImport( arch_header *arch, libfile io )
         coffAddImportOverhead( arch, DLLName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
-        currname = &(edata[name_table[i] - export_base + adjust]);
+        currname = &(edata[ name_table[ i ] - export_base + adjust ]);
         // allocate the space for the current symbol name and
         // add enough room for the following strcpy/strcat pairs.
         sym_len = strlen( currname ) + 1;
         buffer = MemAlloc( sym_len + 6 );
         if( coff_obj ) {
-            CoffMKImport( arch, ORDINAL, ord_table[i] + ordinal_base, DLLName, currname, NULL, processor );
+            CoffMKImport( arch, ORDINAL, ord_table[ i ] + ordinal_base, DLLName, currname, NULL, processor );
             memcpy( buffer, "__imp_", 6 );
             memcpy( buffer + 6, currname, sym_len );
             AddSym( buffer, SYM_WEAK, 0 );
         } else {
             type = Options.r_ordinal ? ORDINAL : NAMED;
-            OmfMKImport( arch, type, ord_table[i] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
+            OmfMKImport( arch, type, ord_table[ i ] + ordinal_base, DLLName, currname, NULL, WL_PROC_X86 );
 //            memcpy( buffer, "__imp_", 6 );
 //            memcpy( buffer + 6, currname, sym_len );
 //            AddSym( buffer, SYM_WEAK, 0 );
@@ -441,7 +421,7 @@ static void peAddImport( arch_header *arch, libfile io )
             memcpy( buffer + 2, currname, sym_len );
             AddSym( buffer, SYM_WEAK, 0 );
         }
-        MemFree( buffer );  // dispose symbol name.
+        MemFree( buffer ); // dispose symbol name.
     }
     MemFree( DLLName );
 
@@ -492,10 +472,10 @@ void ProcessImport( char *name )
     long            ordinal = 0;
     arch_header     *arch;
     char            *buffer;
-    Elf32_Export    export_table[2];
-    Elf32_Sym       sym_table[3];
+    Elf32_Export    export_table[ 2 ];
+    Elf32_Sym       sym_table[ 3 ];
     char            *namecopy;
-    unsigned        sym_len;
+    int             sym_len;
 
     namecopy = DupStr( name );
 
@@ -602,7 +582,7 @@ void ProcessImport( char *name )
 #endif
             }
         }
-        Warning( ERR_NO_PROCESSOR, procname[Options.processor] );
+        Warning( ERR_NO_PROCESSOR, procname[ Options.processor ] );
     }
     if( Options.filetype == WL_FTYPE_NONE ) {
         switch( Options.libtype ) {
@@ -668,17 +648,17 @@ void ProcessImport( char *name )
     case WL_FTYPE_ELF:
         sym_len = strlen( symName ) + 1;
         if( ordinal == 0 ) {
-            export_table[0].exp_ordinal = -1;
-            export_table[1].exp_ordinal = -1;
+            export_table[ 0 ].exp_ordinal = -1;
+            export_table[ 1 ].exp_ordinal = -1;
         } else {
-            export_table[0].exp_ordinal = ordinal;
-            export_table[1].exp_ordinal = ordinal;
+            export_table[ 0 ].exp_ordinal = ordinal;
+            export_table[ 1 ].exp_ordinal = ordinal;
         }
-        export_table[0].exp_symbol = 1;
-        export_table[1].exp_symbol = 2;
+        export_table[ 0 ].exp_symbol = 1;
+        export_table[ 1 ].exp_symbol = 2;
 
-        sym_table[1].st_name = 0;
-        sym_table[2].st_name = sym_len;
+        sym_table[ 1 ].st_name = 0;
+        sym_table[ 2 ].st_name = sym_len;
 
         buffer = MemAlloc( sym_len + strlen( exportedName ) + 1 );
         memcpy( buffer, symName, sym_len );
@@ -737,9 +717,29 @@ void ProcessImport( char *name )
     MemFree( arch );
 }
 
-size_t ElfImportSize( import_sym *import )
+static void coffAddImportOverhead( arch_header *arch, char *DLLName, processor_type processor )
 {
-    size_t          len;
+    char *buffer;
+
+    buffer = MemAlloc( 100 );
+
+    memcpy( buffer, "__IMPORT_DESCRIPTOR_", 20 );
+    _splitpath( DLLName, NULL, NULL, buffer + 20, NULL );
+    CoffMKImport( arch, IMPORT_DESCRIPTOR, 0, DLLName, buffer, NULL, processor );
+
+    CoffMKImport( arch, NULL_IMPORT_DESCRIPTOR, 0, DLLName, "__NULL_IMPORT_DESCRIPTOR", NULL, processor );
+
+    buffer[ 0 ] = 0x7f;
+    _splitpath( DLLName, NULL, NULL, buffer + 1, NULL );
+    strcat( buffer, "_NULL_THUNK_DATA" );
+    CoffMKImport( arch, NULL_THUNK_DATA, 0, DLLName, buffer, NULL, processor );
+
+    MemFree( buffer );
+}
+
+int ElfImportSize( import_sym *import )
+{
+    int             len;
     elf_import_sym  *temp;
 
     len = ELFBASEIMPORTSIZE + strlen( import->DLLName ) + 1;
@@ -749,11 +749,15 @@ size_t ElfImportSize( import_sym *import )
         for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
             len += temp->len;
         }
-        Round2var( len );
+        if( len & 1 ) {
+            len++;
+        }
         break;
     case ELFRENAMED:
-        len += 0x21 + 1 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
-        Round2var( len );
+        len += 0x22 + import->u.elf.symlist->len + import->u.elf.symlist->next->len;
+        if( len & 1 ) {
+            len++;
+        }
         break;
     default:
         break;
@@ -761,14 +765,14 @@ size_t ElfImportSize( import_sym *import )
     return( len );
 }
 
-size_t CoffImportSize( import_sym *import )
+int CoffImportSize( import_sym *import )
 {
-    size_t  dll_len;
-    size_t  mod_len;
-    size_t  ret;
-    size_t  sym_len;
-    size_t  exp_len;
-    size_t  opt_hdr_len;
+    int dll_len;
+    int mod_len;
+    int ret;
+    int sym_len;
+    int exp_len;
+    int opt_hdr_len;
 
     dll_len = strlen( import->DLLName );
     mod_len = strlen( MakeFName( import->DLLName ) );
@@ -795,7 +799,7 @@ size_t CoffImportSize( import_sym *import )
             + opt_hdr_len                               // optional header
             + 2 * COFF_SECTION_HEADER_SIZE +            // section table (headers)
             + 0x14 + 3 * COFF_RELOC_SIZE                // section data
-            + Round2( dll_len + 1 )                     // section data
+            + (dll_len | 1) + 1                         // section data
             + 7 * COFF_SYM_SIZE                         // symbol table
             + 4 + mod_len + 21 + 25 + mod_len + 18 );   // string table
     case NULL_IMPORT_DESCRIPTOR:
@@ -824,7 +828,7 @@ size_t CoffImportSize( import_sym *import )
                     + 4 * COFF_SECTION_HEADER_SIZE
                     + 4 + COFF_RELOC_SIZE       // idata$5
                     + 4 + COFF_RELOC_SIZE       // idata$4
-                    + 2 + Round2( exp_len + 1 ) // idata$6
+                    + ( exp_len | 1 ) + 1 + 2   // idata$6
                     + 11 * COFF_SYM_SIZE
                     + 4 + mod_len + 21;         // 21 = strlen("__IMPORT_DESCRIPTOR_") + 1
             } else {
@@ -889,29 +893,31 @@ size_t CoffImportSize( import_sym *import )
     return( 0 );
 }
 
-static short    ElfProcessors[4] = { 0, EM_ALPHA, EM_PPC, 0 };
+static short    ElfProcessors[ 4 ] = { 0, EM_ALPHA, EM_PPC, 0 };
 
 void ElfWriteImport( libfile io, sym_file *sfile )
 {
     elf_import_sym  *temp;
     import_sym      *import;
-    unsigned long   strtabsize;
-    unsigned long   numsyms;
-    bool            padding;
-    unsigned long   offset;
-    unsigned long   more;
+    long            strtabsize;
+    long            numsyms = 0;
+    long            parity;
+    long            offset;
+    long            more;
 
     import = sfile->import;
     strtabsize = ELFBASESTRTABSIZE + strlen( import->DLLName ) + 1;
-    for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
+    for( temp=import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         strtabsize += temp->len + 1;
     }
-    padding = ( (strtabsize & 1) != 0 );
-    Round2var( strtabsize );
-    fillInU16( ElfProcessors[import->processor], &(ElfBase[0x12]) );
-    fillInU32( strtabsize, &(ElfBase[0x74]) );
-    fillInU32( strtabsize + 0x100, &(ElfBase[0x98]) );
-    fillInU32( strtabsize + 0x118, &(ElfBase[0xc0]) );
+    parity = strtabsize & 1;
+    if( parity ) {
+        strtabsize++;
+    }
+    fillInShort( ElfProcessors[ import->processor ], &(ElfBase[ 0x12 ]) );
+    fillInLong( strtabsize, &(ElfBase[ 0x74 ]) );
+    fillInLong( strtabsize + 0x100, &(ElfBase[ 0x98 ]) );
+    fillInLong( strtabsize + 0x118, &(ElfBase[ 0xc0 ]) );
     switch( import->type ) {
     case ELF:
         numsyms = import->u.elf.numsyms;
@@ -920,18 +926,17 @@ void ElfWriteImport( libfile io, sym_file *sfile )
         numsyms = 1;
         break;
     default:
-        numsyms = 0;
         break;
     }
-    fillInU32( 0x10 * ( numsyms + 1 ), &(ElfBase[0xc4]) );
-    fillInU32( strtabsize + 0x128 + 0x10 * numsyms, &(ElfBase[0xe8]) );
-    fillInU32( 0x10 * numsyms, &(ElfBase[0xec]) );
+    fillInLong( 0x10 * (numsyms + 1), &(ElfBase[ 0xc4 ]) );
+    fillInLong( strtabsize + 0x128 + 0x10*numsyms, &(ElfBase[ 0xe8 ]) );
+    fillInLong( 0x10 * numsyms, &(ElfBase[ 0xec ]) );
     LibWrite( io, &ElfBase, ElfBase_SIZE );
     LibWrite( io, import->DLLName, strlen( import->DLLName ) + 1);
     for( temp = import->u.elf.symlist; temp != NULL; temp = temp->next ) {
         LibWrite( io, temp->name, temp->len + 1 );
     }
-    if( padding ) {
+    if( parity ) {
         LibWrite( io, AR_FILE_PADDING_STRING, AR_FILE_PADDING_STRING_LEN );
     }
     LibWrite( io, &ElfOSInfo, ElfOSInfo_SIZE );

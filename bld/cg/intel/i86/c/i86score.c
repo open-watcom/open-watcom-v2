@@ -60,7 +60,7 @@ static  name    *ES;
 
 
 
-void    ScInitRegs( score *sc )
+extern  void    ScInitRegs( score *sc )
 /**************************************
     Add some register equality "truths" to the scoreboard "sc"
 */
@@ -91,7 +91,7 @@ static  name    *NewRegName( hw_reg_set reg )
 }
 
 
-void    AddRegs( void )
+extern  void    AddRegs( void )
 /******************************
     Add some registers to the N_REGISTER list, so that we can do
     scoreboarding on them
@@ -137,7 +137,7 @@ void    AddRegs( void )
 }
 
 
-void    ScoreSegments( score *sc )
+extern  void    ScoreSegments( score *sc )
 /*****************************************
     Do special scoreboarding on segment registers.  Given that BX = DI,
     for example, we know that SS:BX = SS:DI, and DS:BX = DS:DI.
@@ -176,7 +176,7 @@ void    ScoreSegments( score *sc )
 }
 
 
-bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
+extern  bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 /**********************************************************
     Is it ok to say that "reg1" = "reg2"?  This is not ok for
     unalterable registers since there may be hidden modifications of
@@ -197,7 +197,7 @@ bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 }
 
 
-bool    ScConvert( instruction *ins )
+extern  bool    ScConvert( instruction *ins )
 /********************************************
     Get rid of instructions like CBW if the high part is not used in the
     next instruction.
@@ -205,7 +205,7 @@ bool    ScConvert( instruction *ins )
 {
     hw_reg_set  tmp;
 
-    if( G( ins ) == G_SIGNEX ) {
+    if( ins->u.gen_table->generate == G_SIGNEX ) {
         tmp = HighReg( ins->result->r.reg );
         if( !HW_Ovlap( ins->head.next->head.live.regs, tmp ) ) {
             FreeIns( ins ); /* get rid of the pesky cwd or cbw instruction!*/
@@ -216,7 +216,7 @@ bool    ScConvert( instruction *ins )
 }
 
 
-bool    CanReplace( instruction *ins )
+extern  bool    CanReplace( instruction *ins )
 /*********************************************
     Are we allowed to replace any of the operands of "ins" with
     different registers?  For long shifts the answer is no since CX is a
@@ -231,7 +231,7 @@ bool    CanReplace( instruction *ins )
 }
 
 
-bool    ScRealRegister( name *reg )
+extern  bool    ScRealRegister( name *reg )
 /******************************************
     Return "true" if "reg" is a real machine register and not some
     monstrosity like AX:DX:BX used for calls.

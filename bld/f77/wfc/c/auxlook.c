@@ -48,7 +48,7 @@
 #include "clibext.h"
 
 
-aux_info    *AuxLookupName( char *name, uint name_len ) {
+aux_info    *AuxLookupName( char *name, int name_len ) {
 //======================================================
 
     aux_info    *aux;
@@ -65,7 +65,7 @@ aux_info    *AuxLookupName( char *name, uint name_len ) {
 }
 
 
-aux_info    *AuxLookupAdd( char *name, uint name_len ) {
+aux_info    *AuxLookupAdd( char *name, int name_len ) {
 //=====================================================
 
     aux_info    *aux;

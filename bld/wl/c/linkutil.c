@@ -40,6 +40,7 @@
 #include "alloc.h"
 #include "msg.h"
 #include "wlnkmsg.h"
+#include "linkutil.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "ring.h"
@@ -54,18 +55,8 @@
 #include "clibext.h"
 
 
-typedef void ring_walk_fn( void *);
-
-typedef struct {
-    mods_walk_fn   *cbfn;
-} mods_walk_data;
-
-typedef struct {
-    class_walk_fn   *cbfn;
-} class_walk_data;
-
-void WriteNulls( f_handle file, unsigned_32 len, const char *name )
-/*****************************************************************/
+void WriteNulls( f_handle file, unsigned_32 len, char *name )
+/*******************************************************************/
 /* copy nulls for uninitialized data */
 {
     static unsigned NullArray[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -95,8 +86,8 @@ void CheckStop( void )
     }
 }
 
-void LnkFatal( const char *msg )
-/******************************/
+void LnkFatal( char *msg )
+/********************************/
 {
     LnkMsg( FTL+MSG_INTERNAL, "s", msg );
 }
@@ -124,94 +115,77 @@ void ClearBit( byte *array, unsigned num )
     *array &= ~mask;
 }
 
-char *ChkStrDup( const char *str )
-/********************************/
+char *ChkStrDup( char *str )
+/**************************/
 {
     size_t      len;
     char        *copy;
 
     len = strlen( str ) + 1;
-    _ChkAlloc( copy, len );
+    _ChkAlloc( copy, len  );
     memcpy( copy, str, len );
     return( copy );
 }
 
-char *ChkToString( const void *mem, size_t len )
-/**********************************************/
+char *ChkToString( void *mem, unsigned len )
+/******************************************/
 {
     char        *str;
 
     _ChkAlloc( str, len + 1 );
     memcpy( str, mem, len );
-    str[len] = '\0';
+    str[ len ] = '\0';
     return( str );
 }
 
-static void WalkModsList( mod_entry *list, mods_walk_fn *cbfn )
-/*************************************************************/
+static void WalkList( node *list, void (*fn)( void * ) )
+/******************************************************/
 {
-    for( ; list != NULL; list = list->n.next_mod ) {
-        cbfn( list );
+    for( ; list != NULL; list = list->next ) {
+        fn( list );
     }
 }
 
-static void WalkSectModsList( section *sect, void *mods_walk_cb )
-/***************************************************************/
+static void WalkModList( section *sect, void *rtn )
+/*************************************************/
 {
     CurrSect = sect;
-    WalkModsList( sect->mods, ((mods_walk_data *)mods_walk_cb)->cbfn );
+    WalkList( (node *)sect->mods, (void (*)(void *))rtn );
 }
 
-void WalkMods( mods_walk_fn *cbfn )
-/********************************/
+void WalkMods( void (*rtn)( mod_entry * ) )
+/************************************************/
 {
-    mods_walk_data      mods_walk_cb;
-
-    mods_walk_cb.cbfn = cbfn;
-    ParmWalkAllSects( WalkSectModsList, &mods_walk_cb );
+    ParmWalkAllSects( WalkModList, (void *)rtn );
     CurrSect = Root;
-    WalkModsList( LibModules, cbfn );
+    WalkList( (node *)LibModules, (void (*)(void *))rtn );
 }
 
-static void WalkClass( class_entry *class, class_walk_fn *cbfn )
-/*************************************************************/
+static void WalkClass( class_entry *class, void (*rtn)( seg_leader * ) )
+/********************************************************************/
 {
-    RingWalk( class->segs, (ring_walk_fn *)cbfn );
+    RingWalk( class->segs, (void (*)(void *))rtn );
 }
 
-void SectWalkClass( section *sect, class_walk_fn *cbfn )
-/*****************************************************/
+void SectWalkClass( section *sect, void *rtn )
+/***************************************************/
 {
     class_entry         *class;
 
     CurrSect = sect;
     for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        WalkClass( class, cbfn );
+        WalkClass( class, (void (*)(seg_leader *))rtn );
     }
 }
 
-static void _SectWalkClass( section *sect, void *class_walk_cb )
-/**************************************************************/
+void WalkLeaders( void (*rtn)( seg_leader * ) )
+/****************************************************/
 {
-    class_entry     *class;
-
-    CurrSect = sect;
-    for( class = sect->classlist; class != NULL; class = class->next_class ) {
-        WalkClass( class, ((class_walk_data *)class_walk_cb)->cbfn );
-    }
+    ParmWalkAllSects( SectWalkClass, (void *)rtn );
 }
 
-void WalkLeaders( class_walk_fn *cbfn )
-/************************************/
-{
-    class_walk_data     class_walk_cb;
-
-    class_walk_cb.cbfn = cbfn;
-    ParmWalkAllSects( _SectWalkClass, &class_walk_cb );
-}
-
-seg_leader *FindSegment( section *sect, const char *name )
-/********************************************************/
+seg_leader *FindSegment( section *sect, char *name )
+/***************************************************/
 /* NOTE: this doesn't work for overlays!
  *
  * sect != NULL then it works as FindFirstSegment
@@ -263,8 +237,8 @@ void FreeList( void *_curr )
     }
 }
 
-name_list *AddNameTable( const char *name, size_t len, bool is_mod, name_list **owner )
-/*************************************************************************************/
+name_list *AddNameTable( char *name, unsigned len, bool is_mod, name_list **owner )
+/*********************************************************************************/
 {
     name_list   *imp;
     unsigned_32 off;
@@ -330,22 +304,19 @@ unsigned_16 blog_32( unsigned_32 value )
     return( log );
 }
 
-const char *GetBaseName( const char *namestart, size_t len, size_t *lenp )
-/************************************************************************/
+char *RemovePath( char *namestart, unsigned *len )
+/**********************************************/
 /* parse name as a filename, "removing" the path and the extension */
 /* returns a pointer to the "base" of the filename, and a length without
  * the extension */
 {
-    const char  *dotpoint;
-    const char  *string;
-    char        ch;
+    char    *dotpoint;
+    char    *string;
+    char    ch;
 
-    if( len == 0 )
-        len = strlen( namestart );
-    // ignore path & extension in module name.
     dotpoint = NULL;
-    for( string = namestart; len-- > 0; string++ ) {
-        ch = *string;
+    // ignore path & extension in module name.
+    for( string = namestart; (ch = *string) != '\0'; string++ ) {
         if( ch == '.' ) {
             dotpoint = string;
             continue;
@@ -356,32 +327,32 @@ const char *GetBaseName( const char *namestart, size_t len, size_t *lenp )
         }
     }
     if( dotpoint != NULL ) {
-        *lenp = dotpoint - namestart;
+        *len = dotpoint - namestart;
     } else {
-        *lenp = string - namestart;
+        *len = string - namestart;
     }
     return( namestart );
 }
 
-#define MAXDEPTH        ( sizeof( size_t ) * 8 )
+#define MAXDEPTH        ( sizeof( unsigned ) * 8 )
 
-void VMemQSort( virt_mem base, size_t n, size_t width,
+void VMemQSort( virt_mem base, unsigned n, unsigned width,
                         void (*swapfn)( virt_mem, virt_mem ),
                         int (*cmpfn)( virt_mem, virt_mem ) )
 /***************************************************************/
 // qsort stolen from clib, and suitably modified since we need to be able
 // to swap parallel arrays.
 {
-    virt_mem        p1;
-    virt_mem        p2;
-    virt_mem        mid;
-    int             comparison;
-    size_t          last_non_equal_count;
-    size_t          i;
-    size_t          count;
-    size_t          sp;
-    auto virt_mem   base_stack[MAXDEPTH];
-    auto size_t     n_stack[MAXDEPTH];
+    virt_mem    p1;
+    virt_mem    p2;
+    virt_mem    mid;
+    int         comparison;
+    int         last_non_equal_count;
+    unsigned    i;
+    unsigned    count;
+    unsigned    sp;
+    auto virt_mem base_stack[MAXDEPTH];
+    auto unsigned n_stack[MAXDEPTH];
 
     sp = 0;
     for( ; ; ) {
@@ -414,7 +385,7 @@ void VMemQSort( virt_mem base, size_t n, size_t width,
                     p1 += width;
                 }
                 /* special check to see if all values compared are equal */
-                if( ( count == n - 1 ) && ( last_non_equal_count == 0 ) )
+                if( ( count == n-1 ) && ( last_non_equal_count == 0 ) )
                     break;
                 if( count != 0 ) {  /* store pivot in right spot */
                     swapfn( base, p2 );
@@ -490,7 +461,7 @@ void Suicide( void )
 void InitEnvVars( void )
 /**********************/
 {
-    const char  *path_list;
+    char        *path_list;
     size_t      len;
     char        *p;
 
@@ -516,7 +487,7 @@ void InitEnvVars( void )
         }
     }
     if( LibPath == NULL ) {
-        path_list = GetEnvString( "LIB" );
+        path_list = GetEnvString("LIB");
         if( path_list != NULL && *path_list != '\0' ) {
             len = strlen( path_list );
             _ChkAlloc( LibPath, len + 1 );
@@ -547,10 +518,10 @@ void FiniEnvVars( void )
     }
 }
 
-f_handle FindPath( const char *name )
-/***********************************/
+f_handle FindPath( char *name )
+/*****************************/
 {
-    const char  *path_list;
+    char        *path_list;
     f_handle    file;
     char        fullpath[PATH_MAX];
 

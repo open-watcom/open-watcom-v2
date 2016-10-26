@@ -84,15 +84,12 @@ struct sym_file_struct {
     sym_entry   **add_to;
     input_lib   *inlib;
     file_offset inlib_offset;
-    union {
-        file_offset new_offset;
-        unsigned_16 new_offset_omf;
-    } u;
+    file_offset new_offset;
     arch_header arch;
     int         index;
     long        name_offset;
-    size_t      name_length;
-    size_t      ffname_length;
+    int         name_length;
+    int         ffname_length;
     char        *full_name;
     import_sym  *import;
     file_type   obj_type;
@@ -107,10 +104,10 @@ struct sym_entry_struct {
     sym_entry           *next;
     sym_file            *file;
     sym_entry           *hash;
-    unsigned short      len;
+    short               len;
     unsigned char       info;
     symbol_strength     strength;
-    char                name[1];
+    char                name[ 1 ];
 };
 
 extern void InitFileTab( void );
@@ -119,13 +116,16 @@ extern void ResetFileTab( void );
 extern void CleanFileTab( void );
 extern void ListContents( void );
 extern void AddObjectSymbols( arch_header *arch, libfile io, long offset );
-extern bool RemoveObjectSymbols( const char *name );
+extern bool RemoveObjectSymbols( char *name );
 extern void SymCalcNewOffsets( void );
 extern void WriteFileTable( void );
 extern void WriteFileBody( sym_file *sfile );
-extern void AddSym( const char *name, symbol_strength strength, unsigned char info );
+extern void AddSym( char *name, symbol_strength strength, unsigned char info );
 
 #ifndef NDEBUG
 extern void DumpFileTable( void );
 extern void DumpHashTable( void );
 #endif
+
+#define RoundWord( x ) ( ( (x) + 1 ) & ~1 )
+#define NeedsRounding( x ) ( ( (x) & 1 ) != 0 )

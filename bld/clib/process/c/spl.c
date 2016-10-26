@@ -36,10 +36,9 @@
 #include <process.h>
 #include <malloc.h>
 #include <memory.h>
-#include "_environ.h"
 #include "rtdata.h"
 #include "rterrno.h"
-#include "thread.h"
+#include "_environ.h"
 
 _WCRTLINK int __F_NAME(spawnl,_wspawnl)( int mode, const CHAR_TYPE *path, const CHAR_TYPE *arg0, ... )
 {

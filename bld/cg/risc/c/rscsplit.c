@@ -46,7 +46,6 @@
 #include "insutil.h"
 #include "rtcall.h"
 #include "optab.h"
-#include "optimize.h"
 
 
 extern  instruction     *rDOCVT(instruction*);
@@ -89,6 +88,8 @@ extern  instruction     *rSEX_4TO8( instruction * );
 extern  instruction     *rCLRHI_4( instruction * );
 extern  instruction     *rMOVELOW( instruction * );
 
+extern  hw_reg_set      SavedRegs( void );
+
 extern  name            *GenFloat( name *, type_class_def );
 
 extern  opcode_entry    *OpcodeTable( table_def );
@@ -96,6 +97,7 @@ extern  opcode_entry    *OpcodeTable( table_def );
 extern  void            UpdateLive( instruction *, instruction * );
 
 extern  name            *AddrConst( name *, int, constant_class );
+extern  bool            SameThing( name *, name * );
 
 instruction *(* ReduceTab[])() = {
     #define _R_( x, f )     f

@@ -56,11 +56,10 @@ typedef union {
 typedef struct lineinfo {
     struct lineinfo *   next;
     segdata *           seg;
-    size_t              size;
+    unsigned            size;
     char                data[1];
 } lineinfo;
 
-typedef void line_walk_fn( lineinfo * );
 
 extern virt_mem DBIAlloc( virt_mem_size );
 extern void     DBIModGlobal( void * );
@@ -68,7 +67,7 @@ extern void     DBIAddrInfoScan( seg_leader *,
                       void (*)(segdata *, void *),
                       void (*)(segdata *, offset, offset, void *, bool),
                       void * );
-extern void     DBILineWalk( lineinfo *, line_walk_fn * );
+extern void     DBILineWalk( lineinfo *, void (*)(lineinfo *) );
 extern unsigned DBICalcLineQty( lineinfo * );
 
 #define MOD_NOT_DEBUGGABLE(mod) ( ((mod)->modinfo & MOD_NEED_PASS_2) == 0 || \

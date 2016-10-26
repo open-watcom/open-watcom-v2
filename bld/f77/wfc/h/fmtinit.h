@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern void    FScan( uint fmt_length, char *fmt_string, cs_label fmt_label );
+extern void    FScan( int fmt_length, char *fmt_string, cs_label fmt_label );

@@ -48,8 +48,6 @@
 #include "insutil.h"
 #include "rtcall.h"
 #include "inssegs.h"
-#include "fixindex.h"
-#include "revcond.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
@@ -68,10 +66,12 @@ extern  instruction     *SplitCompare(instruction*);
 extern  instruction     *SplitMove(instruction*);
 extern  instruction     *SplitOp(instruction*);
 extern  instruction     *SplitFDPush(instruction*);
+extern  int             NumOperands(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *NearSegment(void);
 extern  name            *SegName(name*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
+extern  void            RevCond(instruction*);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );

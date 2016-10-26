@@ -108,7 +108,7 @@ typedef struct {
 } symbol_die;
 
 typedef struct {
-    unsigned_8  len_u8;
+    unsigned_8  len;
     unsigned_8  loc_op;
     unsigned_16 seg;
 } symbol_seg;
@@ -463,7 +463,7 @@ void DwarfDefClass( class_entry *cl, unsigned_32 size )
 // all of them.
 {
     size = size;        // to avoid a warning
-    if( (cl->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
+    if( ( cl->flags & CLASS_DEBUG_INFO ) != CLASS_DWARF )
         return;
     DBIClass = cl;
     RingWalk( cl->segs, DefAClass );
@@ -517,14 +517,14 @@ void DwarfGenGlobal( symbol *sym, section *sect )
         }
         vmem_addr = CurrMod->d.d->pubsym.u.vm_ptr;
         die.off = sym->addr.off;
-        if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
+        if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
             die.off += GetLinearGroupOffset( sym->p.seg->u.leader->group );
         }
         die.isexternal = ( (sym->info & SYM_STATIC) == 0 );
         PutInfo( vmem_addr, &die, sizeof( symbol_die ) );
         vmem_addr += sizeof( symbol_die );
         if( FmtData.type & MK_SEGMENTED ) {
-            symseg.len_u8 = 3;
+            symseg.len = 3;
             symseg.loc_op = DW_OP_const2u;
             symseg.seg = sym->addr.seg;
             PutInfo( vmem_addr, &symseg, sizeof( symbol_seg ) );
@@ -570,7 +570,7 @@ void DwarfGenLines( lineinfo *info )
         *( (unsigned_16 *)&buff[3] ) = seg->a.delta + seg->u.leader->seg_addr.off;
     } else {
         off = seg->a.delta + seg->u.leader->seg_addr.off;
-        if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
+        if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
             off += GetLinearGroupOffset( seg->u.leader->group );
         }
         *( (unsigned_32 *)&buff[3] ) = off;
@@ -649,7 +649,7 @@ static offset GetNewAddrOffset( segdata *sdata, offset delta )
     offset      off;
 
     off = sdata->u.leader->seg_addr.off + delta;
-    if( FmtData.type & (MK_PE | MK_QNX_FLAT | MK_ELF) ) {
+    if( FmtData.type & ( MK_PE | MK_QNX_FLAT | MK_ELF ) ) {
         off += GetLinearGroupOffset( sdata->u.leader->group );
     }
     return( off );
@@ -726,7 +726,7 @@ void DwarfAddrSectStart( section *sect )
     }
 }
 
-static void FillHeader( Elf32_Shdr *hdr, const char *name, stringtable *strtab,
+static void FillHeader( Elf32_Shdr *hdr, char *name, stringtable *strtab,
                         unsigned_32 curr_off )
 /***********************************************************************/
 {
@@ -856,7 +856,7 @@ void DwarfWrite( void )
     Elf32_Ehdr          elf_header;
     Elf32_Shdr *        sect_header;
     Elf32_Shdr *        sh;
-    size_t              shdr_size;
+    unsigned            shdr_size;
     unsigned_32         virt_off;
     stringtable         strtab;
     unsigned long       savepos;

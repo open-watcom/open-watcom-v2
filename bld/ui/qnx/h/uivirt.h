@@ -49,8 +49,8 @@ typedef struct Display {
         int   (*update)( SAREA *area ); /* change screen */
         int   (*refresh)( int noopt );  /* force redraw of screen */
         /*- cursor */
-        int   (*getcur)( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr );
-        int   (*setcur)( ORD row, ORD col, CURSOR_TYPE type, int attr );
+        int   (*getcur)( ORD *row, ORD *col, int *type, int *attr );
+        int   (*setcur)( ORD row, ORD col, int type, int attr );
         EVENT (*event)( void );
 } Display;
 

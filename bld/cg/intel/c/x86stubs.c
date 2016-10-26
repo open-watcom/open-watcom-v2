@@ -37,34 +37,30 @@
 #include "data.h"
 #include "targetin.h"
 #include "rgtbl.h"
-#include "generate.h"
 
 
-void MemtoBaseTemp( void )
+extern void MemtoBaseTemp( void )
 {
 }
 
-#if 0
-void CharsAndShortsToInts( void )
+extern void CharsAndShortsToInts( void )
 {
 }
-#endif
 
-void FixCallIns( instruction * ins )
+extern void FixCallIns( instruction * ins )
 {
     ins = ins;
 }
-
-void FixMemBases( void )
+extern void FixMemBases( void )
 {
 }
 
-hw_reg_set ScratchReg( void ) {
+extern hw_reg_set ScratchReg( void ) {
     _Zoiks( ZOIKS_091 );
     return( HW_SI );
 }
 
-hw_reg_set ParmRegConflicts( hw_reg_set r ) {
+extern hw_reg_set ParmRegConflicts( hw_reg_set r ) {
 
     return( r );
 }
@@ -74,7 +70,7 @@ type_length TempLocation( name *temp )
     return( temp->t.location + CurrProc->locals.size );
 }
 
-hw_reg_set      VarargsHomePtr( void ) {
+extern  hw_reg_set      VarargsHomePtr( void ) {
 
     _Zoiks( ZOIKS_078 );
     return( HW_EAX );

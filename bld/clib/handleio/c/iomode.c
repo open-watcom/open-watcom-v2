@@ -71,7 +71,7 @@ unsigned __GetIOMode( int handle )
 void __SetIOMode_nogrow( int handle, unsigned value )
 {
     if( handle < __NFiles ) {
-        __io_mode[handle] = value;
+        __io_mode[handle] = value;    /* we're closing it; smite _INITIALIZED */
     }
 }
 

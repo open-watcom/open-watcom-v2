@@ -54,9 +54,9 @@ extern  void            R_FDoSpec(void);
 extern  const FmtElements CFmtStruct;
 
 
-static  void    FInit( uint fmt_length, char *fmt_string ) 
-//========================================================
-{
+static  void    FInit( int fmt_length, char *fmt_string ) {
+//=========================================================
+
     Fmt_start = fmt_string;
     Fmt_end = fmt_string + fmt_length;
     Fmt_paren_level = 0;
@@ -66,9 +66,9 @@ static  void    FInit( uint fmt_length, char *fmt_string )
 }
 
 
-static  void    FFinish( void ) 
-//=============================
-{
+static  void    FFinish(void) {
+//=========================
+
     if( StmtProc == PR_FMT ) {
         for(;;) {
             if( *Fmt_charptr != ' ' ) break;
@@ -81,10 +81,12 @@ static  void    FFinish( void )
     }
 }
 
-void    FScan( uint fmt_length, char *fmt_string, cs_label fmt_label ) 
-//====================================================================
+void    FScan( int fmt_length, char *fmt_string, cs_label fmt_label ) {
+//=====================================================================
+
 // FORMAT statement parsing (only compile-time).
-{
+
+
     FInit( fmt_length, fmt_string );
     StartFmt( fmt_label );
     R_FDoSpec();

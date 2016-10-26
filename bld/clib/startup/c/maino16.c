@@ -59,7 +59,7 @@
 #include "maxthrds.h"
 
 
-#ifdef __SW_BM
+#if defined( __MT__ )
 
 /* semaphore control for file handles */
 
@@ -87,12 +87,12 @@ int             _cbyte2;    /* used by getch */
 unsigned char   _WCDATA _osmajor;
 unsigned char   _WCDATA _osminor;
 unsigned char   _WCDATA _osmode;
-#ifdef __SW_BD
+#if defined(__SW_BD)
 #include <setjmp.h>
 jmp_buf         JmpBuff;
 int             RetCode;
 #endif
-#ifndef __SW_BM
+#if !defined( __MT__ )
 int             _nothread;
 #endif
 
@@ -163,17 +163,15 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     }
 #endif
 
-#ifdef __SW_BM
+#if defined( __MT__ )
     {
         SEL             globalseg;
         SEL             localseg;
 
         DosGetInfoSeg( &globalseg, &localseg );
         _threadid = MK_FP( localseg, offsetof( LINFOSEG, tidCurrent ) );
-        if( __InitThreadProcessing() == NULL ) {
+        if( __InitThreadProcessing() == NULL )
             __fatal_runtime_error( "Not enough memory", 1 );
-            // never return
-        }
     #if defined(__SW_BD)
         {
             unsigned    i;

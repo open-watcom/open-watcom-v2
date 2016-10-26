@@ -38,10 +38,9 @@
 #include "namelist.h"
 #include "rtrtn.h"
 #include "insutil.h"
-#include "index.h"
-#include "fixindex.h"
 
 
+extern  bool            IndexOkay(instruction*,name*);
 extern  void            FixFPConsts(instruction*);
 
 static byte NumTab[LAST_OP - FIRST_OP + 1] = {
@@ -57,7 +56,7 @@ static byte NumTab[LAST_OP - FIRST_OP + 1] = {
 };
 
 
-int     NumOperands( instruction *ins ) {
+extern  int     NumOperands( instruction *ins ) {
 /************************************************
     see NumTab
 */
@@ -66,7 +65,7 @@ int     NumOperands( instruction *ins ) {
 }
 
 
-void     ReplaceOperand( instruction *ins, name *old, name *new ) {
+extern void     ReplaceOperand( instruction *ins, name *old, name *new ) {
 /*************************************************************************
     Replace all occurences of operand/result "old" with "new" in "ins".
 */
@@ -84,7 +83,7 @@ void     ReplaceOperand( instruction *ins, name *old, name *new ) {
 }
 
 
-name    *IndexToTemp( instruction * ins, name * index ) {
+extern  name    *IndexToTemp( instruction * ins, name * index ) {
 /****************************************************************
         change
                  OP      foo[x], ...
@@ -118,7 +117,7 @@ name    *IndexToTemp( instruction * ins, name * index ) {
 }
 
 
-name    *FindIndex( instruction *ins ) {
+extern  name    *FindIndex( instruction *ins ) {
 /***********************************************
     Find an N_INDEXED operand of "ins" that is not OK (Needs index
     to be split out into a temporary)
@@ -141,7 +140,7 @@ name    *FindIndex( instruction *ins ) {
 }
 
 
-void    NoMemIndex( instruction *ins ) {
+extern  void    NoMemIndex( instruction *ins ) {
 /***********************************************
     Make sure that we aren't using an N_MEMORY operand as the index
     of an N_INDEXED operand in "ins". If we are, call IndexToTemp.
@@ -245,7 +244,7 @@ static  instruction     *ResTemp( instruction *ins ) {
 }
 
 
-instruction     *OneMemRef( instruction *ins ) {
+extern  instruction     *OneMemRef( instruction *ins ) {
 /*******************************************************
     see FixIndex
 */
@@ -331,7 +330,7 @@ instruction     *OneMemRef( instruction *ins ) {
 }
 
 
-void    FixIndex( void ) {
+extern  void    FixIndex() {
 /***************************
     Make sure that there is only one memory reference per instruction.
     This is so that a segment override can tag along on the instruction

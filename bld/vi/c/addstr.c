@@ -48,7 +48,7 @@ void ReplaceString( char **where, const char *str )
  */
 char *DupString( const char *str )
 {
-    size_t  sl;
+    int     sl;
     char    *ptr;
 
     if( str == NULL )  {

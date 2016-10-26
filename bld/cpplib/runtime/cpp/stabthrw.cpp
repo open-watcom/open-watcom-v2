@@ -189,7 +189,6 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
             break;
         default :
             GOOF_EXC( "unexpected exception type" );
-            // never return
         }
     }
     longjmp( *env, dispatch->catch_no + 1 );
@@ -245,7 +244,6 @@ static void processThrow(       // PROCESS A THROW
             // never return
         default:
             GOOF_EXC( "getActiveExc: unexpected exception state" );
-            // never return
         }
     }
 #endif
@@ -280,7 +278,6 @@ static void processThrow(       // PROCESS A THROW
     case DISPATCHABLE_STOP :
         if( NULL == dispatch.srch_ctl ) {
             GOOF_EXC( "DISPATCHABLE_STOP: no srch_ctl" );
-            // never return
         }
         switch( dispatch.srch_ctl->_state ) {
         case EXCSTATE_UNWIND :
@@ -302,7 +299,6 @@ static void processThrow(       // PROCESS A THROW
             // never return
         default:
             GOOF_EXC( "DISPATCHABLE_STOP: unexpected exception state" );
-            // never return
         }
       case DISPATCHABLE_FNEXC :
       case DISPATCHABLE_CATCH :
@@ -375,7 +371,6 @@ static void processThrow(       // PROCESS A THROW
 #endif
     default :
         GOOF_EXC( "throw: invalid DISPATCHABLE" );
-        // never return
     }
 }
 

@@ -38,7 +38,7 @@
 #include <string.h>
 
 
-sym_id  STLit( byte *string, uint len ) {
+sym_id  STLit( byte *string, int len ) {
 //======================================
 
 // Search the symbol a literal. If the literal is not in the

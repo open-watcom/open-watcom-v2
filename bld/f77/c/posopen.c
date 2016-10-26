@@ -38,19 +38,18 @@
 #include "posput.h"
 #include "poserr.h"
 #include "posflush.h"
-#include "iomode.h"
 #if defined( __RT__ )
 #include "runmain.h"
 #include "rmemmgr.h"
 
-#define FMEM_ALLOC      RMemAlloc
-#define FMEM_FREE       RMemFree
+#define MEM_ALLOC       RMemAlloc
+#define MEM_FREE        RMemFree
 
 #else
 #include "fmemmgr.h"
 
-#define FMEM_ALLOC      FMemAlloc
-#define FMEM_FREE       FMemFree
+#define MEM_ALLOC       FMemAlloc
+#define MEM_FREE        FMemFree
 
 #endif
 
@@ -66,12 +65,18 @@ static  int     IOBufferSize = { IO_BUFFER };
 void    InitStd( void )
 {
 // Initialize standard i/o.
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ ) && defined( __WATCOMC__ )
+#if !defined( __UNIX__ ) && defined( __WATCOMC__ )
     // don't call setmode() since we don't want to affect higher level
     // i/o so that if C function gets called, printf() works ok
-    __set_binary( STDIN_FILENO );
-    __set_binary( STDOUT_FILENO );
-    __set_binary( STDERR_FILENO );
+// There is no __GetIOMode in the C runtime!
+#define __GetIOMode  __IOMode
+
+    extern      unsigned        __GetIOMode(int);
+    extern      void            __SetIOMode(int,unsigned);
+
+    __SetIOMode( STDIN_FILENO, __GetIOMode( STDIN_FILENO ) | _BINARY );
+    __SetIOMode( STDOUT_FILENO, __GetIOMode( STDOUT_FILENO ) | _BINARY );
+    __SetIOMode( STDERR_FILENO, __GetIOMode( STDERR_FILENO ) | _BINARY );
 #endif
 #if defined( __RT__ )
     ChkRedirection( FStdIn );
@@ -119,7 +124,7 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     }
     attrs &= ~CREATION_MASK;
     if( S_ISCHR( info.st_mode ) ) {
-        io = FMEM_ALLOC( sizeof( a_file ) );
+        io = MEM_ALLOC( sizeof( a_file ) );
         // Turn off truncate just in case we turned it on by accident due to
         // a buggy NT dos box.  We NEVER want to truncate a device.
         attrs &= ~TRUNC_ON_WRITE;
@@ -127,11 +132,11 @@ b_file  *_AllocFile( int h, f_attrs attrs, long int fpos )
     } else {
         attrs |= BUFFERED;
         buff_size = IOBufferSize;
-        io = FMEM_ALLOC( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
+        io = MEM_ALLOC( sizeof( b_file ) + IOBufferSize - MIN_BUFFER );
         if( ( io == NULL ) && ( IOBufferSize > MIN_BUFFER ) ) {
             // buffer is too big (low on memory) so use small buffer
             buff_size = MIN_BUFFER;
-            io = FMEM_ALLOC( sizeof( b_file ) );
+            io = MEM_ALLOC( sizeof( b_file ) );
         }
     }
     if( io == NULL ) {
@@ -220,6 +225,6 @@ void    Closef( b_file *io )
         FSetSysErr( io );
         return;
     }
-    FMEM_FREE( io );
+    MEM_FREE( io );
     IOOk( NULL );
 }

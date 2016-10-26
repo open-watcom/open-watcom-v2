@@ -202,12 +202,11 @@ typedef union {
 } ctl_info;
 #endif
 
-typedef struct ctl_elt {
+typedef struct {
     ctl_type            type;
     int                 control;
     bool                modified;
-    void                (* get)( void *ptr, struct ctl_elt *elt, void *data );
-    void                (* set)( void *ptr, struct ctl_elt *elt, void *data );
+    unsigned int        data_offset;
     ctl_info            info;
 } ctl_elt;
 
@@ -236,5 +235,12 @@ typedef struct {
     bool                (*finish)( ctl_elt *, WPI_INST, HWND, void *, finish_type );
     bool                (*modified)( ctl_elt *, WPI_PARAM1, WPI_PARAM2 );
 } ctl_action;
+
+// extract information
+#define _value_bool( ptr, elt )     *((bool *)((char *)(ptr) + elt->data_offset))
+#define _value_int( ptr, elt )      *((int *)((char *)(ptr) + elt->data_offset))
+#define _value_float( ptr, elt )    *((float *)((char *)(ptr) + elt->data_offset))
+#define _str_ptr( ptr, elt )        (char *)((char *)(ptr) + elt->data_offset)
+#define _str_ptr_ptr( ptr, elt )    (char **)((char *)(ptr) + elt->data_offset)
 
 #endif

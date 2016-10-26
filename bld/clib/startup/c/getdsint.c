@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  DS register manipulation routines for x86
-*                NT and OS/2 (32-bit)
+* Description:  DS register manipulation routines for x86.
 *
 ****************************************************************************/
 
@@ -34,7 +33,6 @@
 #include <i86.h>
 #include "rtinit.h"
 #include "getds.h"
-
 
 static unsigned short __saved_ds;
 

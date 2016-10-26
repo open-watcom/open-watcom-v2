@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Platform independent __freefp and __purgefp implementation.
+* Description:  Platform independent __allocfp() implementation.
 *
 ****************************************************************************/
 
@@ -49,26 +49,32 @@ void __freefp( FILE * fp )
     __stream_link       *link;
 
     _AccessIOB();
-    for( owner = &_RWD_ostream; (link = *owner) != NULL; owner = &link->next ) {
-        if( link->stream == fp ) {
-            (*owner) = link->next;
-            link->next = _RWD_cstream;
-            _RWD_cstream = link;
+    owner = &_RWD_ostream;
+    for( ;; ) {
+        link = *owner;
+        if( link == NULL )
+            return;
+        if( link->stream == fp )
             break;
-        }
+        owner = &link->next;
     }
+    fp->_flag |= _READ | _WRITE;
+    (*owner) = link->next;
+    link->next = _RWD_cstream;
+    _RWD_cstream = link;
     _ReleaseIOB();
 }
 
 
 void __purgefp( void )
 {
-    __stream_link       *curr;
+    __stream_link       *next;
 
     _AccessIOB();
-    while( (curr = _RWD_cstream) != NULL ) {
-        _RWD_cstream = _RWD_cstream->next;
-        lib_free( curr );
+    while( _RWD_cstream != NULL ) {
+        next = _RWD_cstream->next;
+        lib_free( _RWD_cstream );
+        _RWD_cstream = next;
     }
     _ReleaseIOB();
 }

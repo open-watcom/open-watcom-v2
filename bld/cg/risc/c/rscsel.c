@@ -38,7 +38,6 @@
 #include "types.h"
 #include "makeins.h"
 #include "bldselco.h"
-#include "procdef.h"
 #include "makeblk.h"
 
 

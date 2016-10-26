@@ -234,13 +234,13 @@ int main( int argc, char *argv[] )
 {
     orl_handle                  o_hnd;
     orl_file_handle             o_fhnd;
+    orl_funcs                   funcs;
     orl_file_format             type;
     orl_file_flags              o_flags;
     int                         file;
     int                         c;
     char                        *secs[MAX_SECS];
     int                         num_secs = 0;
-    ORLSetFuncs( orl_cli_funcs, objRead, objSeek, TRMemAlloc, TRMemFree );
 
     if( argc < 2 ) {
         printf( "Usage:  dwdump <file>\n" );
@@ -257,7 +257,11 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
     TRMemOpen();
-    o_hnd = ORLInit( &orl_cli_funcs );
+    funcs.read = &objRead;
+    funcs.seek = &objSeek;
+    funcs.alloc = &TRMemAlloc;
+    funcs.free = &TRMemFree;
+    o_hnd = ORLInit( &funcs );
     if( o_hnd == NULL ) {
         printf( "Got NULL orl_handle.\n" );
         return( EXIT_FAILURE );

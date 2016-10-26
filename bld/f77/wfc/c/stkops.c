@@ -42,7 +42,6 @@
 #include "emitobj.h"
 #include "types.h"
 #include "rstconst.h"
-#include "gtypes.h"
 
 
 void    PushOpn( itnode *itptr ) {

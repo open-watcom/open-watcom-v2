@@ -52,10 +52,11 @@
 #include "insutil.h"
 #include "blktrim.h"
 #include "unroll.h"
-#include "revcond.h"
 
 
 extern  void            RemoveBlock( block * );
+extern  void            FlipCond( instruction * );
+extern  void            RevCond( instruction * );
 
 extern block            *PreHead;
 extern block            *Head;

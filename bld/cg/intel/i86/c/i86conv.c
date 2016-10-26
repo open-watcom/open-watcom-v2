@@ -39,7 +39,9 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "inssegs.h"
-#include "foldins.h"
+
+
+extern  bool            IsTrickyPointerConv( instruction *ins );
 
 
 static  opcode_entry    ctable_C2TO1[] = {

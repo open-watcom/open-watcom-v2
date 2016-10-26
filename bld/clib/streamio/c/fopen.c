@@ -185,6 +185,8 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
     int p_mode;
 
     SetupTGCSandNCS( RETURN_ARG( FILE *, 0 ) );     /* for NW386 */
+    fp->_flag &= ~(_READ | _WRITE);
+    fp->_flag |= file_flags;
 
     /* we need the mode character to indicate if the original */
     /* intention is to open for read or for write */
@@ -234,7 +236,6 @@ static FILE *__F_NAME(__doopen,__wdoopen)( const CHAR_TYPE *name,
         __freefp( fp );
         return( NULL );
     }
-    fp->_flag |= file_flags;
     fp->_cnt = 0;
     fp->_bufsize = 0;                       /* was BUFSIZ JBS 31-may-91 */
 #ifndef __NETWARE__
@@ -266,7 +267,8 @@ _WCRTLINK FILE *__F_NAME(_fsopen,_wfsopen)( const CHAR_TYPE *name,
         return( NULL );
     }
 
-    fp = __allocfp();
+    /* specify dummy handle 0 */
+    fp = __allocfp( 0 );                    /* JBS 30-aug-91 */
     if( fp != NULL ) {
         fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
                                            file_flags, extflags,
@@ -288,26 +290,35 @@ static FILE *close_file( FILE *fp )
 
     _AccessIOB();
     /* See if the file pointer is a currently open file. */
-    for( link = _RWD_ostream; link != NULL; link = link->next ) {
+    link = _RWD_ostream;
+    for( ;; ) {
+        if( link == NULL ) break;
         if( link->stream == fp ) {
-            __doclose( fp, 1 );
+            if( fp->_flag & (_READ|_WRITE) ) {
+                __doclose( fp, 1 );
+            }
             _ReleaseIOB();
             return( fp );
         }
+        link = link->next;
     }
     /*
        It's not on the list of open files, so check the list of
        recently closed ones.
     */
-    for( owner = &_RWD_cstream; (link = *owner) != NULL; owner = &link->next ) {
+    owner = &_RWD_cstream;
+    for( ;; ) {
+        link = *owner;
+        if( link == NULL ) break;
         if( link->stream == fp ) {
-            /* remove from closed list and put on open list */
+            /* remove from closed list and put on open */
             *owner = link->next;
             link->next = _RWD_ostream;
             _RWD_ostream = link;
             _ReleaseIOB();
             return( fp );
         }
+        owner = &link->next;
     }
     /* We ain't seen that file pointer ever. Leave things be. */
     _RWD_errno = EBADF;
@@ -335,12 +346,13 @@ _WCRTLINK FILE *__F_NAME(freopen,_wfreopen)( const CHAR_TYPE *name,
     _AccessFileH( hdl );
 
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsRemoveWindowedHandle != NULL ) {
+    if( _WindowsRemoveWindowedHandle != 0 ) {
         _WindowsRemoveWindowedHandle( hdl );
     }
 #endif
     fp = close_file( fp );
     if( fp != NULL ) {
+        fp->_flag &= _DYNAMIC;                      /* 24-jul-92 */
         fp = __F_NAME(__doopen,__wdoopen)( name, *access_mode,
                                            file_flags, extflags,
                                            0, fp );

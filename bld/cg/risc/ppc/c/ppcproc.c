@@ -49,6 +49,9 @@
 #include "feprotos.h"
 
 
+extern  hw_reg_set      SaveRegs( void );
+
+
 static  void    CalcUsedRegs( void )
 /**********************************/
 {

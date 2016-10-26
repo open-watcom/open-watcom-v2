@@ -96,7 +96,7 @@ static void printUnixHeader( section_ptr sec )
     flags = ORLSecGetFlags( sec->shnd );
 
     ca = attributes;
-    if( (Options & METAWARE_COMPATIBLE) == 0 ) {
+    if( !(Options & METAWARE_COMPATIBLE) ) {
         if( (flags & ORL_SEC_FLAG_EXEC) || sec->type == SECTION_TYPE_TEXT ) {
             *ca++ = 'c';
         }
@@ -130,12 +130,12 @@ static void printUnixHeader( section_ptr sec )
         *ca++ = '0' + (char)alignment;
         *ca = '\0';
 
-        if( (DFormat & DFF_ASM) == 0 ){
+        if( !( DFormat & DFF_ASM ) ){
             BufferConcat("\t\t\t\t");
         }
         BufferStore(".new_section %s, \"%s\"", sec->name, attributes );
     } else {
-        if( (flags & ORL_SEC_FLAG_REMOVE) == 0 ) {
+        if( !(flags & ORL_SEC_FLAG_REMOVE ) ) {
             *ca++ = 'a';
         }
         if( flags & ORL_SEC_FLAG_EXEC ) {
@@ -145,12 +145,12 @@ static void printUnixHeader( section_ptr sec )
             *ca++ = 'w';
         }
         *ca++ = '\0';
-        if( (DFormat & DFF_ASM) == 0 ) {
+        if( !( DFormat & DFF_ASM ) ) {
             BufferConcat("\t\t\t\t");
         }
         BufferStore(".section %s, \"%s\"", sec->name, attributes );
         BufferConcatNL();
-        if( (DFormat & DFF_ASM) == 0 ) {
+        if( !( DFormat & DFF_ASM ) ) {
             BufferConcat("\t\t\t\t");
         }
         BufferStore(".align %d", (int)alignment );
@@ -257,7 +257,7 @@ static void printMasmHeader( section_ptr sec )
     char                *astr;
     orl_sec_handle      sh;
     orl_group_handle    grp = NULL;
-    char                comname[MAX_LINE_LEN];
+    char                comname[ MAX_LINE_LEN ];
 
     size = ORLSecGetSize( sec->shnd );
 
@@ -292,18 +292,13 @@ static void printMasmHeader( section_ptr sec )
     } else {
         if( flags & ORL_SEC_FLAG_COMDAT ) {
             if( Options & NODEMANGLE_NAMES ) {
-                size_t len;
-
-                len = strlen( name );
-                if( len > sizeof( comname ) - 1 )
-                    len = sizeof( comname ) - 1;
-                memcpy( comname, name, len );
-                comname[len] = '\0';
+                strncpy( comname, name, MAX_LINE_LEN );
             } else {
-                __demangle_l( name, 0, comname, sizeof( comname ) );
+                __demangle_l( name, 0, comname, MAX_LINE_LEN );
             }
             combine = ORLSecGetCombine( sec->shnd );
-            if( (combine & ORL_SEC_COMBINE_COMDAT_ALLOC_MASK) == ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC ) {
+            if( ( combine & ORL_SEC_COMBINE_COMDAT_ALLOC_MASK ) ==
+                                         ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC ) {
                 sh = ORLSecGetAssociated( sec->shnd );
                 grp = ORLSecGetGroup( sec->shnd );
                 astr = "SEGMENT";
@@ -362,7 +357,7 @@ void PrintAssumeHeader( section_ptr sec )
     orl_group_handle    grp;
     char                *name;
 
-    if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
+    if( IsMasmOutput() && ( DFormat & DFF_ASM ) ) {
         grp = ORLSecGetGroup( sec->shnd );
         if( grp ) {
             name = ORLGroupName( grp );
@@ -390,7 +385,7 @@ void PrintTail( section_ptr sec )
 {
     char        *name;
 
-    if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
+    if( IsMasmOutput() && ( DFormat & DFF_ASM ) ) {
         name = sec->name;
         if( !name ) {
             name = "";
@@ -479,7 +474,7 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
     } else {
         error = RC_OKAY;
         disassembly_errors = DoPass2( sec, contents, size, sec_label_list, sec_ref_list );
-        if( (DFormat & DFF_ASM) == 0 ) {
+        if( !(DFormat & DFF_ASM) ) {
             if( disassembly_errors > 0 ) {
                 BufferStore( "%d ", (int)disassembly_errors );
                 BufferMsg( DIS_ERRORS );
@@ -911,7 +906,7 @@ static orl_return       groupWalker( orl_group_handle grp )
     name = ORLGroupName( grp );
     size = ORLGroupSize( grp );
     if( !name || ( size < 1 ) ) return( ORL_OKAY );
-    DumpASMGroupName( name, (DFormat & DFF_ASM) );
+    DumpASMGroupName( name, ( DFormat & DFF_ASM ) != 0 );
     for( idx = 0; idx < size; idx++ ) {
         name = ORLGroupMember( grp, idx );
         if( name ) {
@@ -965,7 +960,7 @@ static void doPrologue( void )
 
     if( masm ) {
         ORLGroupsScan( ObjFileHnd, groupWalker );
-        if( (DFormat & DFF_ASM) == 0 ) {
+        if( !( DFormat & DFF_ASM ) ) {
             BufferConcatNL();
         }
     }

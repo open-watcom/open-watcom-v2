@@ -35,11 +35,13 @@
 #ifdef __WIDECHAR__
  #include <wctype.h>
 #endif
-
-
 #undef  isblank
 
 _WCRTLINK int __F_NAME(isblank,iswblank)( INTCHAR_TYPE c )
 {
-    return( (c == (INTCHAR_TYPE)' ') || (c == (INTCHAR_TYPE)'\t') );
+    if( IS_ASCII( c ) ) {
+        return( (c == STRING( ' ' )) || (c == STRING( '\t' )) );
+    } else {
+        return( 0 );
+    }
 }

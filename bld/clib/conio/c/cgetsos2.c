@@ -45,7 +45,7 @@ _WCRTLINK char *cgets( char *s )
         char    *p;
 
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsStdin != NULL ) {           // Default windowing
+        if( _WindowsStdin != 0 ) {              // Default windowing
             __qread( STDIN_FILENO, s + 2, *s - 1 );
             len = *s;
         } else {

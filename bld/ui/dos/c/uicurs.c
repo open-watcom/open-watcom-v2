@@ -42,10 +42,10 @@
 
 #define         BIOS_CURSOR_OFF         0x20
 
-static int              OldCursorAttr;
-static ORD              OldCursorRow;
-static ORD              OldCursorCol;
-static CURSOR_TYPE      OldCursorType;
+static          int                     OldCursorAttr;
+static          ORD                     OldCursorRow;
+static          ORD                     OldCursorCol;
+static          int                     OldCursorType;
 
 void UIDBG _uioffcursor( void )
 /******************************/
@@ -157,8 +157,8 @@ static void swapcursor( void )
 }
 
 
-void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
-/*************************************************************************/
+void UIDBG _uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+/*****************************************************************/
 {
     union REGS      r;
 
@@ -185,8 +185,8 @@ void UIDBG _uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 }
 
 
-void UIDBG _uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
-/********************************************************************/
+void UIDBG _uisetcursor( ORD row, ORD col, int typ, int attr )
+/************************************************************/
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

@@ -66,7 +66,7 @@ typedef struct menu {
     char            name[1];
 } menu;
 
-static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
+static menu     mainMenu = { NULL, NULL, NULL, NULL, 0, 0, 0 };
 static menu     *rootMenu = &mainMenu;
 static menu     *currMenu = NULL;
 
@@ -155,15 +155,17 @@ static vi_rc handleMenuCommand( menu *m, int menuid )
 
 /* special menu crap - for floaters and that guy at the corner of a window */
 
+#define MAX_FLOAT_MENUS     4
+
 static menu floatMenus[MAX_FLOAT_MENUS] = {
-    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false },
-    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false }
+    { NULL, NULL, NULL, NULL, 0, 0, 0 },
+    { NULL, NULL, NULL, NULL, 0, 0, 0 },
+    { NULL, NULL, NULL, NULL, 0, 0, 0 },
+    { NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 
 static menu windowGadgetMenu =
-    { NULL, NULL, NULL, NULL, 0, 0, 0, NULL, false, false, false };
+    { NULL, NULL, NULL, NULL, 0, 0, 0 };
 
 typedef struct special_menu {
     char        *name;

@@ -100,7 +100,7 @@ static bool AddOption( void )
 /***************************/
 {
     Token.thumb = REJECT;
-    if( !ProcOne( MainOptions, SEP_NO, false ) )
+    if( ProcOne( MainOptions, SEP_NO, false ) == false )
         return( false );
     return( true );
 }
@@ -122,9 +122,7 @@ bool ProcDebug( void )
     gotmod = ProcOne( DbgMods, SEP_NO, false );
     DBIFlag &= ~DBI_MASK;
     if( ProcOne( PosDbgMods, SEP_NO, false ) ) {
-        while( ProcOne( PosDbgMods, SEP_COMMA, false ) ) {
-            ; /*null loop*/
-        }
+        while( ProcOne( PosDbgMods, SEP_COMMA, false ) != false ); /*null loop*/
     } else {
         DBIFlag |= DBI_ALL; //DBI_MASK;
         if( !gotmod ) {
@@ -224,10 +222,11 @@ static bool AddAlias( void )
 /* add an individual alias */
 {
     char        *name;
-    size_t      namelen;
+    unsigned    namelen;
 
-    DUPBUF_STACK( name, Token.this, Token.len );
     namelen = Token.len;
+    name = alloca( namelen );
+    memcpy( name, Token.this, namelen );
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) ) {
         return( false );
     }
@@ -291,11 +290,12 @@ bool ProcMaxErrors( void )
 bool ProcSymFile( void )
 /*****************************/
 {
-    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) != false ) {
         if( SymFileName != NULL ) {
             _LnkFree( SymFileName );
         }
         SymFileName = FileName( Token.this, Token.len, E_SYM, false );
+
     }
     return( true );
 }
@@ -316,8 +316,8 @@ static file_list *AllocNewFile( member_list *member )
     return( new_entry );
 }
 
-static void *AddObjFile( const char *name, char *member, file_list **filelist )
-/*****************************************************************************/
+static void *AddObjFile( char *name, char *member, file_list **filelist )
+/************************************************************************/
 {
     file_list       *new_entry;
     member_list     *new_member;
@@ -353,7 +353,7 @@ static void *AddObjFile( const char *name, char *member, file_list **filelist )
     return( new_entry );
 }
 
-file_list *AddObjLib( const char *name, lib_priority priority )
+file_list *AddObjLib( char *name, lib_priority priority )
 /***************************************************************/
 
  {
@@ -427,7 +427,7 @@ bool ProcLibFile( void )
 /*****************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG |OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
+    if( (LinkFlags & (DWARF_DBI_FLAG |OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     if( LastLibFile == NULL ) {
@@ -483,7 +483,7 @@ bool ProcFiles( void )
 /***************************/
 /* process FILE command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0 ) {
+    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0 ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
     return( ProcArgList( &AddFile, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) );
@@ -525,7 +525,7 @@ bool ProcLibrary( void )
 /*****************************/
 /* process LIB command */
 {
-    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG)) == 0
+    if( (LinkFlags & (DWARF_DBI_FLAG|OLD_DBI_FLAG | NOVELL_DBI_FLAG) ) == 0
         && !IsSystemBlock() ) {
         CmdFlags |= CF_FILES_BEFORE_DBI;
     }
@@ -559,11 +559,13 @@ bool ProcPath( void )
 /**************************/
 /* process PATH option */
 {
+    bool            ret;
     path_entry      *new_path;
     char            *p;
     char            *end;
 
-    if( GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
+    ret = GetToken( SEP_NO, TOK_INCLUDE_DOT | TOK_IS_FILENAME  );
+    if( ret != false ) {
         _ChkAlloc( new_path, sizeof( path_entry ) + Token.len );
         end = Token.this + Token.len;
         p = new_path->name;
@@ -577,7 +579,7 @@ bool ProcPath( void )
         ObjPath = new_path;
         DEBUG(( DBG_BASE, "path: %s", new_path->name ));
     }
-    return( false );
+    return( ret );
 }
 
 bool ProcMap( void )
@@ -768,7 +770,7 @@ bool ProcIncremental( void )
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
         IncFileName = FileName( Token.this, Token.len, E_ILK, false );
     } else if( Name != NULL ) {
-        IncFileName = FileName( Name, strlen( Name ), E_ILK, true );
+        IncFileName = FileName( Name, strlen(Name), E_ILK, true );
     } else {
         IncFileName = ChkStrDup( DEFAULT_INC_NAME );
     }
@@ -893,7 +895,9 @@ bool ProcStart( void )
     if( !GetToken( SEP_EQUALS, TOK_INCLUDE_DOT ) )
         return( false );
     StartInfo.user_specd = true;
-    DUPSTR_STACK( name, Token.this, Token.len );
+    name = alloca( Token.len + 1 );
+    memcpy( name, Token.this, Token.len );
+    name[ Token.len ] = '\0';
     SetStartSym( name );
     return( true );
 }
@@ -1040,8 +1044,8 @@ bool ProcSystem( void )
     return( true );
 }
 
-static void CopyBlocks( void *copyp, const char *data, size_t size )
-/******************************************************************/
+static void CopyBlocks( void *copyp, char *data, unsigned size )
+/**************************************************************/
 {
     char    **copyptr = copyp;
 
@@ -1303,7 +1307,7 @@ bool ProcOutput( void )
    FmtData.output_hshift = false;
    FmtData.output_start = false;
    ret = false;
-   while( ProcOne( OutputOpts, SEP_NO, false ) ) {
+   while( ProcOne( OutputOpts, SEP_NO, false )) {
        ret = true;
    }
    return( ret );
@@ -1421,7 +1425,7 @@ bool ProcOrder( void )
     if( CurrOClass != NULL) {
         LnkMsg(LOC+LINE+WRN+MSG_DUP_DIRECTIVE, "s", "OPTION");
     }
-    while( ProcOne( OrderOpts, SEP_NO, false ) ) {
+    while( ProcOne( OrderOpts, SEP_NO, false )) {
         ret = true;
     }
     return( ret );
@@ -1451,7 +1455,7 @@ bool ProcOrdClass( void )
     CurrOClass->FixedAddr = false;
     CurrOClass->Copy = false;
     CurrOClass->NoEmit = false;
-    while( ProcOne( OrderClassOpts, SEP_NO, false ) )
+    while( ProcOne( OrderClassOpts, SEP_NO, false) )
         {};
     return( true );
 }
@@ -1528,7 +1532,7 @@ bool ProcOrdSeg( void )
     CurrOSeg->Name = tostring();
     CurrOSeg->FixedAddr = false;
     CurrOSeg->NoEmit = false;
-    while( ProcOne( OrderSegOpts, SEP_NO, false ) )
+    while( ProcOne( OrderSegOpts, SEP_NO, false) )
         {};
     return( true );
 }

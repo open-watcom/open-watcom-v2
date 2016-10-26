@@ -42,24 +42,20 @@
 #include "x86objd.h"
 #include "x86obj.h"
 #include "split.h"
-#include "generate.h"
-#include "makeaddr.h"
-#include "x86segs.h"
-#include "regalloc.h"
 #include "feprotos.h"
 
 
-void    InitSegment( void ) {
+extern  void    InitSegment( void ) {
 /*****************************/
 }
 
 
-void    FiniSegment( void ) {
+extern  void    FiniSegment( void ) {
 /*****************************/
 }
 
 
-hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
+extern  hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 /*********************************************************************/
 
     fe_attr     attr;
@@ -112,7 +108,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
 }
 
 
-name    *AddrConst( name *value, segment_id seg, constant_class class ) {
+extern  name    *AddrConst( name *value, segment_id seg, constant_class class ) {
 /************************************************************************/
 
     hw_reg_set  reg;
@@ -138,7 +134,7 @@ name    *AddrConst( name *value, segment_id seg, constant_class class ) {
     }
 }
 
-bool    SegIsCS( name *op ) {
+extern  bool    SegIsCS( name *op ) {
 /*************************************/
 
     hw_reg_set  segreg;
@@ -150,7 +146,7 @@ bool    SegIsCS( name *op ) {
 }
 
 
-bool    SegIsSS( name *op ) {
+extern  bool    SegIsSS( name *op ) {
 /*************************************/
 
     hw_reg_set  segreg;
@@ -164,7 +160,7 @@ bool    SegIsSS( name *op ) {
 }
 
 
-name    *GetSegment( name *op ) {
+extern  name    *GetSegment( name *op ) {
 /*****************************************/
 
     hw_reg_set  reg;
@@ -179,7 +175,7 @@ name    *GetSegment( name *op ) {
     return( AddrConst( op, seg, CONS_SEGMENT ) );
 }
 
-name    *NearSegment( void ) {
+extern  name    *NearSegment( void ) {
 /******************************/
 
     if( _IsntTargetModel( FLOATING_DS ) )
@@ -190,7 +186,7 @@ name    *NearSegment( void ) {
 }
 
 
-name    *SegName( name *op ) {
+extern  name    *SegName( name *op ) {
 /**************************************/
 
     name        *idx;
@@ -230,7 +226,7 @@ name    *SegName( name *op ) {
 }
 
 
-cg_type NamePtrType( name *op ) {
+extern  cg_type NamePtrType( name *op ) {
 /*************************************/
 
     cg_sym_handle sym;
@@ -281,7 +277,7 @@ cg_type NamePtrType( name *op ) {
 }
 
 
-  bool    SegOver( name *op ) {
+extern  bool    SegOver( name *op ) {
 /*************************************/
 
     segment_id  id;
@@ -320,7 +316,7 @@ cg_type NamePtrType( name *op ) {
 }
 
 
-bool    LoadAToMove( instruction *ins ) {
+extern  bool    LoadAToMove( instruction *ins ) {
 /***********************************************/
 
     segment_id  seg;
@@ -346,15 +342,15 @@ bool    LoadAToMove( instruction *ins ) {
     return( true );
 }
 
-bool                     IsUncacheableMemory( name *opnd )
-/*
+extern  bool                     IsUncacheableMemory( name *opnd ) {
+/*******************************************************************
     Return true if we don't want to cache the global piece of memory
     represented by opnd in a register - this could be dangerous if the
     variable is not in DGROUP or if DS is not pegged - we would need to
     load a segment register before and after every call and no one has
     necessarily reserved one.
 */
-{
+
     hw_reg_set          segreg;
 
     if( opnd->n.class != N_MEMORY )

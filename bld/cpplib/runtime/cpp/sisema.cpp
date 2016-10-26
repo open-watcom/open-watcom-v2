@@ -36,9 +36,9 @@
 // 93/03/95  -- Greg Bentz      -- integrated with front end
 // 95/06/14  -- Greg Bentz      -- dll linkage
 
-#ifdef __SW_BM
+#ifdef __MT__
 
-#include "cpplib.h"
+#include <cpplib.h>
 #include <new>
 
 extern "C"

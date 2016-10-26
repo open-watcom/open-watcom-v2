@@ -189,7 +189,6 @@ __exit  proc near
         mov     dx,cs                   ; . . .
         mov     sp,offset DGROUP:end_stk; set a good stack pointer
         jmp     __fatal_runtime_error   ; display msg and exit
-        ; never return
 
 L1:
         pop     ax                      ; restore return code

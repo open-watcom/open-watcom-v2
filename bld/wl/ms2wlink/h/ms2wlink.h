@@ -39,23 +39,27 @@ typedef int         f_handle;
 #define STDERR_HANDLE   STDERR_FILENO
 
 #define MAX_LINE (256)
-#define FNMAX  80                   /* maximum file name length. */
+#define FNMAX  80             // maximum file name length.
 
-/* Slot related data definition */
-/*           slot enum      prompt text    default file extension */
-#define SLOT_DEFS \
-    SLOTDEF( OBJECT_SLOT,  "Object Modules ",   ".obj" ) \
-    SLOTDEF( RUN_SLOT,     "Run File ",         ".exe" ) \
-    SLOTDEF( MAP_SLOT,     "List File ",        ".map" ) \
-    SLOTDEF( LIBRARY_SLOT, "Libraries ",        ".lib" ) \
-    SLOTDEF( DEF_SLOT,     "Definitions File ", ".def" ) \
-    SLOTDEF( OPTION_SLOT,  "",                  ".lnk" ) \
-    SLOTDEF( OVERLAY_SLOT, "",                  ".obj" )     /* for overlay object files. */
+/*  File Extension formats */
+// see DefExt array in utils.c
+enum {
+    E_OBJECT = 0,
+    E_LOAD,
+    E_MAP,
+    E_LIBRARY,
+    E_DEF,
+    E_COMMAND
+};
 
 typedef enum {
-    #define SLOTDEF( e, pt, et )  e,
-    SLOT_DEFS
-    #undef SLOTDEF
+    OBJECT_SLOT = 0,
+    RUN_SLOT,
+    MAP_SLOT,
+    LIBRARY_SLOT,
+    DEF_SLOT,
+    OPTION_SLOT,
+    OVERLAY_SLOT
 } prompt_slot;
 
 typedef enum {
@@ -81,8 +85,8 @@ typedef enum {
 // structures used in MS2WLINK files.
 
 typedef struct cmdentry {
-    struct cmdentry     *next;
-    char                *command;
+    struct cmdentry *   next;
+    char *              command;
     bool                asis;       // true iff entry should be printed "as is".
 } cmdentry;
 
@@ -92,9 +96,11 @@ extern extra_type   FmtInfo;
 extern bool         DebugInfo;
 
 extern cmdentry     *Commands[];
+extern char         *PromptText[];
 extern bool         HaveDefFile;
 
 extern format_type  FmtType;
+extern cmdentry     *Commands[];
 extern bool         MapOption;
 
 // mem.c
@@ -105,16 +111,15 @@ extern void     *MemAlloc( size_t );
 
 // fileio.h
 extern f_handle QOpenR( const char *name );
-extern size_t   QRead( f_handle file, void *buffer, size_t len, const char *name );
-extern size_t   QWrite( f_handle file, const void *buffer, size_t len, const char *name );
+extern unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name );
+extern unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name );
 extern void     QWriteNL( f_handle file, const char *name );
 extern void     QClose( f_handle file, const char *name );
 extern unsigned long QFileSize( f_handle file );
-extern bool     QReadStr( f_handle file, char *dest, size_t size, const char *name );
+extern bool     QReadStr( f_handle file, char *dest, unsigned size, const char *name );
 extern bool     QIsConIn( f_handle file );
-extern void     ErrorOut( const char *msg );
-extern void     ErrorExit( const char *msg );
-extern void     CommandOut( const char *command );
+extern void     Error( char * msg );
+extern void     CommandOut( char *command );
 extern void     QSetBinary( f_handle file );
 
 // keyword.c
@@ -138,19 +143,19 @@ extern void     ParseMicrosoft( void );
 // utils.c
 extern void     UtilsInit( void );
 extern void     ImplyFormat( format_type typ );
-extern char     *FileName( const char *buff, prompt_slot slot, bool force );
-extern void     AddCommand( char *msg, prompt_slot slot, bool verbatim );
-extern void     Warning( const char *msg, prompt_slot slot );
-extern void     AddOption( const char *msg );
-extern void     AddNumOption( const char *msg, unsigned value );
-extern void     AddStringOption( const char *msg, const char *string, size_t len );
+extern char     *FileName( char *buff, int len, int etype, bool force );
+extern void     AddCommand( char *msg, int prompt, bool verbatim );
+extern void     Warning( char *msg, int prompt );
+extern void     AddOption( char *msg );
+extern void     AddNumOption( char *msg, unsigned value );
+extern void     AddStringOption( char *msg, char *string, int len );
 extern void     NotSupported( const char *msg );
 extern void     NotNecessary( const char *msg );
 extern void     NotRecognized( const char *msg );
 extern char     *Msg2Splice( const char *msg1, const char *msg2 );
 extern char     *Msg3Splice( const char *msg1, const char *msg2, const char *msg3 );
-extern char     *FindNotAsIs( prompt_slot slot );
+extern char     *FindNotAsIs( int slot );
 extern char     *FindObjectName( void );
-extern void     OutPutPrompt( prompt_slot slot );
+extern void     OutPutPrompt( int prompt );
 extern int      Spawn( void (*fn)( void ) );
 extern void     Suicide( void );

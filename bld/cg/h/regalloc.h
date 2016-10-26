@@ -36,4 +36,3 @@ extern conflict_node    *InMemory( conflict_node *conf );
 extern conflict_node    *GiveRegister( conflict_node *conf, bool needs_one );
 extern void             ReConstFold( void );
 extern bool             RegAlloc( bool keep_on_truckin );
-extern bool             IsUncacheableMemory( name *opnd );

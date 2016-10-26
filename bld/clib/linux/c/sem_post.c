@@ -34,10 +34,9 @@
 #include <semaphore.h>
 #include <stddef.h>
 #include <stdio.h>
+#include "rterrno.h"
 #include "futex.h"
 #include "atomic.h"
-#include "rterrno.h"
-#include "thread.h"
 
 
 _WCRTLINK int sem_post( sem_t *sem ) 

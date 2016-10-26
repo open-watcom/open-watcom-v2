@@ -40,7 +40,6 @@
 #include "emitobj.h"
 #include "upscan.h"
 #include "gsublist.h"
-#include "gtypes.h"
 
 
 static  obj_ptr         WarpLabel;

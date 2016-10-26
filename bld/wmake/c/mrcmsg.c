@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include <sys/types.h>
 #if defined( __WATCOMC__ ) || !defined( __UNIX__ )
     #include <process.h>
@@ -39,7 +40,6 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#include "mposix.h"
 
 #include "clibext.h"
 
@@ -98,14 +98,14 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
  */
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
 }
 
 
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 #endif
 
@@ -126,7 +126,7 @@ bool MsgInit( void )
         }
         MsgFini();
     }
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = true;
     return( false );
 #else

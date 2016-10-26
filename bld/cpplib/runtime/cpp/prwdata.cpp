@@ -35,7 +35,7 @@
 #include "lock.h"
 
 extern "C" {
-#ifdef __SW_BM
+#ifdef __MT__
     char _wint_static_init_sema[ sizeof( __lock ) ] = {0};  // it is hack,
                        // to prevent to call constructor for static __lock
 #endif

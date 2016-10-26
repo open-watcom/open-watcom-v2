@@ -37,26 +37,24 @@
 static  char    *dumpFileName = "cgdump.tmp";
 static  FILE    *dumpFile;
 
-void    DumpRedirect( void )
-/**************************/
-{
-    if( dumpFile != NULL )
-        return;
+extern  void    DumpRedirect( void ) {
+/************************************/
+
+    if( dumpFile != NULL ) return;
     dumpFile = fopen( dumpFileName, "wt" );
 }
 
-void    DumpUnredirect( void )
-/****************************/
-{
-    if( dumpFile == NULL )
-        return;
+extern  void    DumpUnredirect( void ) {
+/**************************************/
+
+    if( dumpFile == NULL ) return;
     fclose( dumpFile );
     dumpFile = NULL;
 }
 
-void    DumpChar( char c )
-/************************/
-{
+extern  void    DumpChar( char c ) {
+/**********************************/
+
     if( dumpFile != NULL ) {
         fputc( c, dumpFile );
     } else {
@@ -64,9 +62,9 @@ void    DumpChar( char c )
     }
 }
 
-void    DumpNL( void )
-/********************/
-{
+extern  void    DumpNL( void ) {
+/******************************/
+
     FILE        *fp;
 
     fp = (dumpFile != NULL) ? dumpFile : stdout;
@@ -75,9 +73,9 @@ void    DumpNL( void )
     fflush( fp );
 }
 
-void    DumpPadString( const char *s, int i )
-/*******************************************/
-{
+extern  void    DumpPadString( const char *s, int i ) {
+/*****************************************************/
+
     while( *s != '\0' ) {
         DumpChar( *s );
         ++s;
@@ -89,9 +87,9 @@ void    DumpPadString( const char *s, int i )
 }
 
 
-void    DumpString( const char *s )
-/*********************************/
-{
+extern  void    DumpString( const char *s ) {
+/*******************************************/
+
     while( *s != '\0' ) {
         DumpChar( *s );
         s++;
@@ -99,16 +97,16 @@ void    DumpString( const char *s )
 }
 
 
-void    DumpXString( char const *s )
-/**********************************/
-{
+extern  void    DumpXString( char const *s ) {
+/********************************************/
+
     DumpString( s );
 }
 
 
-void    DumpByte( byte n )
-/************************/
-{
+extern  void    DumpByte( byte n ) {
+/**********************************/
+
     char        c;
 
     c = (n>>4) & 0x0f;
@@ -129,9 +127,9 @@ void    DumpByte( byte n )
     DumpChar( c );
 }
 
-void    Dump8h( unsigned_32 n )
-/*****************************/
-{
+extern  void    Dump8h( unsigned_32 n ) {
+/***************************************/
+
     DumpByte( n >> 24 );
     DumpByte( n >> 16 );
     DumpByte( n >> 8  );
@@ -139,9 +137,9 @@ void    Dump8h( unsigned_32 n )
 }
 
 
-static void _DumpLongLen( unsigned_32 n, int len, bool sign )
-/***********************************************************/
-{
+extern  void    DumpLLong(  signed_32 n,  int  len ) {
+/****************************************************/
+
     char        b[30];
     char        *bp;
     bool        neg;
@@ -149,9 +147,9 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
     bp = b;
     bp += 20;
     *--bp = NULLCHAR;
-    if( sign && (signed_32)n < 0 ) {
+    if( n < 0 ) {
         neg = true;
-        n = -(signed_32)n;
+        n = -n;
     } else {
         neg = false;
     }
@@ -166,7 +164,7 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
         *--bp = '0';
         --len;
     }
-    if( sign && neg ) {
+    if( neg ) {
         *--bp = '-';
         --len;
     }
@@ -176,52 +174,30 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
     DumpXString( bp );
 }
 
-void    DumpLongLen( signed_32 n, int len )
-/*****************************************/
-{
-    _DumpLongLen( n, len, true );
+extern  void    DumpLong( signed_32 n ) {
+/***************************************/
+
+    DumpLLong( n, 0 );
 }
 
-void    DumpLong( signed_32 n )
-/*****************************/
-{
-    _DumpLongLen( n, 0, true );
-}
+extern  void    DumpInt( int n ) {
+/********************************/
 
-void    DumpInt( int n )
-/**********************/
-{
     DumpLong( n );
 }
 
-void    DumpULongLen( unsigned_32 n, int len )
-/********************************************/
-{
-    _DumpLongLen( n, len, false );
-}
 
-void    DumpULong( unsigned_32 n )
-/********************************/
-{
-    _DumpLongLen( n, 0, false );
-}
+extern  void    DumpId( unsigned id ) {
+/*******************************************/
 
-void    DumpUInt( unsigned n )
-/****************************/
-{
-    DumpULong( n );
-}
 
-void    DumpId( unsigned id )
-/***************************/
-{
     DumpChar( '(' );
-    DumpLongLen( id, 8 );
+    DumpLLong( id, 8 );
     DumpChar( ')' );
 }
 
-void    DumpPtr( void *ptr )
-/**************************/
-{
+extern  void    DumpPtr( void *ptr ) {
+/************************************/
+
     Dump8h( (unsigned_32)(pointer_int)ptr );
 }

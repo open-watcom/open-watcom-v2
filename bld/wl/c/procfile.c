@@ -203,9 +203,9 @@ static libnamelist *CalcLibBlacklist( void )
 static void CheckBlacklist( file_list *list, libnamelist *blacklist )
 /*******************************************************************/
 {
-    size_t      length;
-    size_t      length_b;
-    size_t      delta;
+    unsigned    length;
+    unsigned    length_b;
+    unsigned    delta;
 
     if( list->status & STAT_HAS_CHANGED )
         return;

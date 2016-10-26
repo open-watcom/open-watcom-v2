@@ -34,7 +34,6 @@
 #include "linkstd.h"
 #include "pcobj.h"
 #include "msg.h"
-#include "walloca.h"
 #include "alloc.h"
 #include "wlnkmsg.h"
 #include "library.h"
@@ -70,8 +69,8 @@ typedef union dict_entry {
 
 #define PAGES_IN_CACHE      0x40U
 
-static  bool            OMFSearchExtLib( file_list *, const char *, unsigned long * );
-static  bool            ARSearchExtLib( file_list *, const char *, unsigned long * );
+static  bool            OMFSearchExtLib( file_list *, char *, unsigned long * );
+static  bool            ARSearchExtLib( file_list *, char *, unsigned long * );
 static  unsigned        OMFCompName( const char *, const unsigned_8 *, unsigned );
 static  void            **AllocDict( unsigned, unsigned );
 static  void            SetDict( file_list *, unsigned );
@@ -298,7 +297,7 @@ static void ReadARStringTable( file_list *list, unsigned long *loc, unsigned siz
 static bool ReadARDict( file_list *list, unsigned long *loc, bool makedict )
 /**************************************************************************/
 {
-    const ar_header *ar_hdr;
+    ar_header       *ar_hdr;
     unsigned long   size;
     int             numdicts;
 
@@ -368,7 +367,7 @@ int CheckLibraryType( file_list *list, unsigned long *loc, bool makedict )
     return( reclength );
 }
 
-mod_entry *SearchLib( file_list *lib, const char *name )
+mod_entry *SearchLib( file_list *lib, char *name )
 /********************************************************/
 /* Search the specified library file for the specified name & make a module */
 {
@@ -407,8 +406,8 @@ mod_entry *SearchLib( file_list *lib, const char *name )
 }
 
 
-static bool OMFSearchExtLib( file_list *lib, const char *name, unsigned long *off )
-/*********************************************************************************/
+static bool OMFSearchExtLib( file_list *lib, char *name, unsigned long *off )
+/***************************************************************************/
 /* Search library for specified member. */
 {
     unsigned        num_blocks;
@@ -589,7 +588,7 @@ static unsigned OMFCompName( const char *name, const unsigned_8 *buff, unsigned 
 /*************************************************************************************/
 /* Compare name. */
 {
-    size_t      len;
+    unsigned    len;
     unsigned    off;
     unsigned    returnval;
     int         result;
@@ -627,8 +626,8 @@ static int ARCompIName( const void *key, const void *vbase )
     return( stricmp( key, *base ) );
 }
 
-static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off )
-/********************************************************************************/
+static bool ARSearchExtLib( file_list *lib, char *name, unsigned long *off )
+/**************************************************************************/
 /* Search AR format library for specified member. */
 {
     char                **result;
@@ -653,10 +652,10 @@ static bool ARSearchExtLib( file_list *lib, const char *name, unsigned long *off
     return( false );
 }
 
-char *GetARName( const ar_header *header, file_list *list, unsigned long *loc )
-/*****************************************************************************/
+char *GetARName( ar_header *header, file_list *list, unsigned long *loc )
+/***********************************************************************/
 {
-    const char      *buf;
+    char            *buf;
     char            *name;
     unsigned long   val;
     size_t          len;
@@ -684,12 +683,16 @@ char *GetARName( const ar_header *header, file_list *list, unsigned long *loc )
     return( name );
 }
 
-unsigned long GetARValue( const char *str, size_t max )
-/*****************************************************/
+unsigned long GetARValue( char *str, unsigned max )
+/***************************************************/
 // get a numeric value from an ar_header
 {
-    char                *p;
+    char                save;
+    unsigned long       value;
 
-    DUPSTR_STACK( p, str, max );
-    return( strtoul( p, NULL, 10 ) );
+    save = *(str + max);
+    *(str + max) = '\0';
+    value = strtoul( str, NULL, 10 );
+    *(str + max) = save;
+    return( value );
 }

@@ -41,8 +41,8 @@
 #include "makeins.h"
 #include "namelist.h"
 #include "patch.h"
-#include "procdef.h"
 #include "makeblk.h"
+#include "procdef.h"
 #include "typemap.h"
 
 
@@ -60,8 +60,7 @@ patch *BGNewPatch( void )
     return( p );
 }
 
-extern  an      TNPatch( tn node )
-{
+extern  an      TNPatch( tn node ) {
     patch               *p;
     an                  addr;
     type_class_def      tipe;

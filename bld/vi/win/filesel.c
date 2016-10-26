@@ -65,7 +65,7 @@ static char *FileNameList;
 
 WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    unsigned                    len;
+    int                         len;
 #ifdef __WINDOWS_386__
     static OPENFILENAME __far   *of;
 #else
@@ -125,7 +125,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = root_window_id;
-    of.lpstrFilter = (LPSTR)filterList;
+    of.lpstrFilter = (LPSTR) filterList;
     of.lpstrDefExt = NULL;
     of.nFilterIndex = filemask;
     of.lpstrFile = *result;

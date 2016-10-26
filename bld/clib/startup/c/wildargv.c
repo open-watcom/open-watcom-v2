@@ -93,7 +93,6 @@ static void *_allocate( unsigned amount )
 #endif
     if( p == NULL ) {
         _Not_Enough_Memory();
-        // never return
     }
     return( p );
 }
@@ -188,7 +187,6 @@ static int _make_argv( TCHAR *p, TCHAR ***argv )
         *argv = (TCHAR **) realloc( *argv, (argc+2) * sizeof( TCHAR * ) );
         if( *argv == NULL ) {
             _Not_Enough_Memory();
-            // never return
         }
         (*argv)[ argc ] = start;
         ++argc;
@@ -215,7 +213,6 @@ static int _make_argv( TCHAR *p, TCHAR ***argv )
                     *argv = (TCHAR **) realloc( *argv, (argc+2) * sizeof( TCHAR * ) );
                     if( *argv == NULL ) {
                         _Not_Enough_Memory();
-                        // never return
                     }
                     new_arg = (TCHAR *)_allocate( (_tcslen( pathin ) + 1) * sizeof( TCHAR ) );
                     _tcscpy( new_arg, pathin );

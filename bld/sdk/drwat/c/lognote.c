@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
 #include "drwatcom.h"
 #include "notelog.h"
 #include "jdlg.h"

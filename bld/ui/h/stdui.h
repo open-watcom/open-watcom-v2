@@ -497,12 +497,6 @@ typedef char        __FAR *LP_STRING;
 typedef const char  __FAR *LPC_STRING;
 typedef void        __FAR *LP_VOID;
 
-typedef enum {
-    C_OFF,
-    C_NORMAL,
-    C_INSERT
-} CURSOR_TYPE;
-
 typedef struct buffer {
     LP_PIXEL    origin;
     int         increment;
@@ -544,7 +538,7 @@ typedef struct vscreen {
     unsigned int    flags;          /* dialogue, unframed, movable etc. */
     ORD             row;
     ORD             col;            /* position of cursor on the screen */
-    CURSOR_TYPE     cursor;         /* cursor type                      */
+    int             cursor;         /* cursor type                      */
     bool            open;           /* bool: init to false, set by ui   */
     bool            dynamic_title;  /* title is allocated dynamicaly    */
     UI_WINDOW       window;         /* used by the window manager       */
@@ -566,7 +560,7 @@ typedef struct monitor {
     int             cursor_attr;    /* cursor attribute                 */
     ORD             cursor_row;     /* cursor row                       */
     ORD             cursor_col;     /* cursor column                    */
-    CURSOR_TYPE     cursor_type;    /* cursor type                      */
+    int             cursor_type;    /* cursor type                      */
     unsigned char   old_shift;      /* status of shift keys             */
     bool            no_snow;        /* snow check flag                  */
     UI_WINDOW       blank;          /* blank window                     */
@@ -596,6 +590,12 @@ typedef struct monitor {
 #define         V_GUI_WINDOW            0x1000      /* reserved for use by gui project */
 
 enum {
+    C_OFF,
+    C_NORMAL,
+    C_INSERT
+};
+
+enum {
     M_MONO,
     M_CGA,
     M_EGA,
@@ -605,6 +605,7 @@ enum {
     M_UNUSED,
     M_NEC_HIRES,
     M_FMR
+
 #if defined( __UNIX__ )
     ,M_TERMINFO_MONO
 #endif
@@ -637,7 +638,7 @@ extern      void            uiblankattr( ATTR );
 extern      void            uiclose( VSCREEN _FARD * );
 extern      void            uicntrtext( VSCREEN _FARD *, SAREA *, ATTR, unsigned int, const char * );
 extern      bool            uiconfig( char *, char ** );
-extern      void            uicursor( VSCREEN _FARD *, ORD, ORD, CURSOR_TYPE );
+extern      void            uicursor( VSCREEN _FARD *, ORD, ORD, int );
 extern      EVENT           uidialogevent( VSCREEN _FARD * );
 extern      void            uidirty( SAREA );
 extern      void            uidrawbox( VSCREEN _FARD *, SAREA *area, ATTR attr, const char * );
@@ -653,7 +654,7 @@ extern      void            uiflushevent( void );
 extern      void            uifree( void * );
 extern      unsigned long   uiclock( void );
 extern      EVENT           uiget( void );
-extern      void            uigetcursor( ORD _FARD *, ORD _FARD *, CURSOR_TYPE _FARD *, int _FARD * );
+extern      void            uigetcursor( ORD _FARD *, ORD _FARD *, int _FARD *, int _FARD * );
 extern      EVENTLIST _FARD *uigetlist( void );
 extern      void            uigetmouse( ORD _FARD *, ORD _FARD *, bool _FARD * );
 extern      void            uiignorealt( void );
@@ -687,7 +688,7 @@ extern      void            uirefresh( void );
 extern      bool            uiremovebackground( void );
 extern      bool            uiset80col( void );
 extern      SAREA           *uisetarea( SAREA *,  VSCREEN _FARD * );
-extern      void            uisetcursor( ORD, ORD, CURSOR_TYPE, int );
+extern      void            uisetcursor( ORD, ORD, int, int );
 extern      void            uisetmouse( MOUSEORD, MOUSEORD );
 extern      void            uisetmouseposn( ORD, ORD );
 extern      SAREA           *uisetscreenarea( SAREA *, bool, bool );

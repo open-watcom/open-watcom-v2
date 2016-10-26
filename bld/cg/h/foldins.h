@@ -29,6 +29,5 @@
 ****************************************************************************/
 
 
-extern instruction      *FoldIns( instruction *ins );
-extern bool             ConstFold( block *root );
-extern bool             IsTrickyPointerConv( instruction *ins );
+extern  instruction     *FoldIns( instruction *ins );
+extern  bool            ConstFold( block *root );

@@ -142,19 +142,26 @@ void CLIFree( void *p ) {
 }
 
 
-void main( void )
-/***************/
-{
+void main( void ) {
+/*****************/
+
+    static const dw_funcs cli_funcs = {
+        CLIReloc,
+        CLIWrite,
+        CLISeek,
+        CLITell,
+        CLIAlloc,
+        CLIFree
+    };
     dw_init_info        info;
     dw_loc_handle       seg;
     dw_cu_info          cuinfo;
-    DWSetRtns( dw_cli_funcs, CLIReloc, CLIWrite, CLISeek, CLITell, CLIAlloc, CLIFree );
 
     info.language = DW_LANG_C89;
     info.compiler_options = DW_CM_BROWSER;
     info.producer_name = "testcli";
     if( setjmp( info.exception_handler ) == 0 ) {
-        info.funcs = dw_cli_funcs;
+        info.funcs = cli_funcs;
 
         RelocValues[DW_W_LOW_PC] = 0x135;
         RelocValues[DW_W_HIGH_PC] = 0x34561ul;

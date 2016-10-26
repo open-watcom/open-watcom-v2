@@ -22,7 +22,7 @@ before_script:
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
  - export OWVERBOSE=0
- - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
+ - export BUILDER_OPT=-q
  - . $OWROOT/cmnvars.sh
 
 

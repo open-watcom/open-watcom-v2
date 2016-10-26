@@ -48,6 +48,4 @@
     #include "sysmips.h"
 #endif
 
-#include "thread.h"
-
 #endif  /* _SYSLINUX_H_INCLUDED */

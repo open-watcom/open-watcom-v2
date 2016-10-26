@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <stddef.h>
 #if defined(__OS2__)
     #define INCL_DOSMEMMGR
 #endif
@@ -94,7 +93,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
     __handle_check( handle, -1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdin != NULL ) {
+    if( _WindowsStdin != 0 ) {
         LPWDATA res;
 
         res = _WindowsIsWindowedHandle( handle );

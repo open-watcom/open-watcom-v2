@@ -47,8 +47,6 @@
 #include "insdead.h"
 #include "optab.h"
 #include "inssegs.h"
-#include "optimize.h"
-#include "fixindex.h"
 
 
 enum allocation_state {
@@ -61,6 +59,7 @@ extern  void            NowDead(name *,conflict_node *,name_set *,block *);
 extern  void            BurnRegTree(reg_tree *);
 extern  conflict_node   *NameConflict(instruction *,name *);
 extern  void            BuildNameTree(conflict_node *);
+extern  void            AxeDeadCode(void);
 extern  void            BurnNameTree(reg_tree *);
 extern  bool            WorthProlog(conflict_node *,hw_reg_set);
 extern  void            FindReferences(void);
@@ -70,15 +69,20 @@ extern  void            FreeAConflict(conflict_node *);
 extern  void            LiveInfoUpdate(void);
 extern  void            MakeLiveInfo(void);
 extern  void            FreeConflicts(void);
+extern  void            FixChoices(void);
 extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction *);
+extern  int             NumOperands(instruction *);
 extern  void            CalcSavings(conflict_node *);
 extern  bool            PropagateMoves(void);
 extern  bool            PropRegsOne(void);
 extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
+extern  void            DeadInstructions(void);
 extern  bool            MoreConflicts(void);
 extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);
+extern  bool            IsUncacheableMemory( name * );
+extern  hw_reg_set      MustSaveRegs(void);
 extern  void            FreePossibleForAlias( conflict_node * );
 
 static  bool    ContainedIn( name *name1, name *name2 ) {
@@ -1130,7 +1134,7 @@ static  void    PutInMemory( conflict_node *conf ) {
 }
 
 
-conflict_node   *InMemory( conflict_node *conf ) {
+extern  conflict_node   *InMemory( conflict_node *conf ) {
 /*********************************************************
     Put conflict "conf" and all other conflicts associated with the same
     name as "conf" into memory.  Sorry charlie, no register.
@@ -1156,7 +1160,7 @@ conflict_node   *InMemory( conflict_node *conf ) {
 }
 
 
-conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
+extern  conflict_node   *GiveRegister( conflict_node *conf, bool needs_one ) {
 /*****************************************************************************
     Give a register to conflict "conf", if at all possible.  The
     NEEDS_INDEX and NEEDS_SEGMENT stuff is just saying that if we tried
@@ -1299,7 +1303,7 @@ static  enum allocation_state    AssignConflicts( void )
 }
 
 
-void    ReConstFold( void )
+extern  void    ReConstFold( void )
 /**********************************
     Call FoldIns on each instruction in case we propagated a constant
     into an instruction leaving something which looks like C op C -> T,
@@ -1320,7 +1324,7 @@ void    ReConstFold( void )
 }
 
 
-bool    RegAlloc( bool keep_on_truckin ) {
+extern  bool    RegAlloc( bool keep_on_truckin ) {
 /*************************************************
     Allocate registers to variables while expanding instructions.
     Instructions are expanded until they correspond 1 to 1 with machine

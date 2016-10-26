@@ -78,7 +78,7 @@ bool    DoesSomething( instruction *ins )
 {
     if( ins->u.gen_table == NULL )
         return( true );
-    if( G( ins ) != G_NO )
+    if( ins->u.gen_table->generate != G_NO )
         return( true );
     return( false );
 }

@@ -53,7 +53,7 @@ typedef struct itnode {
     uint                size;           // size of operand
     sym_id              sym_ptr;        // addr of data area (common block)
     ftn_type            value;          // value of constants, parameters
-    uint                opnd_size;      // size of operand field
+    int                 opnd_size;      // size of operand field
     char                *opnd;          // operand field
     TYPE                typ;            // type of symbol
     char                chsize : 4;     // size of character operand (OPN_SS1)

@@ -38,9 +38,6 @@
     #include "utils.h"
 #endif
 
-#include "clibext.h"
-
-
 static int fileHandle;
 
 /*

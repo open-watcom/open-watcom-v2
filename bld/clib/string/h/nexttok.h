@@ -31,7 +31,7 @@
 
 
 #define _INITNEXTTOK
-#ifdef __SW_BM
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) )
     #define _NEXTTOK    (__THREADDATAPTR->__nexttokP)
 #else
     static char         *nexttok = NULL;

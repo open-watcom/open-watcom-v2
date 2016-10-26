@@ -58,7 +58,7 @@ int __close( int hid )
     h = __getOSHandle( hid );
 
     #ifdef DEFAULT_WINDOWING
-        if( _WindowsCloseWindow != NULL ) {
+        if( _WindowsCloseWindow != 0 ) {
             res = _WindowsIsWindowedHandle( hid );
             if( res != NULL ) {
                 _WindowsRemoveWindowedHandle( hid );

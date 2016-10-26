@@ -271,7 +271,11 @@ typedef struct named_symbol {
       obj_addr          address;        // address of symbol
       db_handle         dbh;            // browse handle
     } u3;
-    ext_inf             xt;             // extended info
+    union {
+        uint            size;           // size of data type
+        struct fstruct  *record;        // pointer to structure definition
+        sym_id          sym_record;     // sym_id type pointer to definition
+    } xt;
     union {
         struct var          va;         // information for variables
         struct subprog      sp;         // information for subprograms

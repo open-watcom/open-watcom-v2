@@ -35,4 +35,4 @@ extern void     CompStatement( void );
 extern void     CkDefStmtNo( void );
 extern void     Recurse( void );
 extern void     ClearRem( void );
-extern void     RemKeyword( itnode *itptr, uint remove_len );
+extern void     RemKeyword( itnode *itptr, int remove_len );

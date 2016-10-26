@@ -184,7 +184,7 @@ all_as += $(name).exe
 
 all : $(all_as) .symbolic
 
-$(name).exe : msg.gh $(as_objs) $(libs) wresui.res $(version_res_exe_$(host_os)_$(host_cpu)) $(osildr) $(__MAKEFILES__)
+$(name).exe : msg.gh $(as_objs) $(libs) $(name).res $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(as_objs) $(libs) $(ldflags)
@@ -192,10 +192,11 @@ $(name).exe : msg.gh $(as_objs) $(libs) wresui.res $(version_res_exe_$(host_os)_
     $(linker) name $(lname) $(lflags) file {$(as_objs)} lib {$(libs)}
     @%make bind_osildr
 !endif
-    @%make bind_res_version_exe
-    @%make bind_res_wresui
+    @%make bind_version_res_exe
+    @%make echo_bindres
+    $(wstrip) -q -a -r $@ . $(name).res
 
-wresui.res : $(as_dir)/h/as.rc msg.gh $(__MAKEFILES__)
+$(name).res : $(as_dir)/h/as.rc msg.gh $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $(cppflags) -D_STANDALONE_ $[@ -fo=$^@
 

@@ -54,7 +54,7 @@ _WCRTLINK int getch( void )
         return( c );
     }
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsGetch != NULL ) {   // Default windowing
+    if( _WindowsGetch != 0 ) {      // Default windowing
         LPWDATA     res;
         res = _WindowsIsWindowedHandle( (int)STDIN_FILENO );
         return( _WindowsGetch( res ) );

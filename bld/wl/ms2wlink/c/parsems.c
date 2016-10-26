@@ -45,7 +45,7 @@ cmdfilelist         *CmdFile;
 
 static int          OverlayLevel = 0;
 
-void EatWhite( void )
+extern void EatWhite( void )
 /**************************/
 {
     while( *CmdFile->current == ' ' || *CmdFile->current == '\t' || *CmdFile->current == '\r' ) {
@@ -53,7 +53,7 @@ void EatWhite( void )
     }
 }
 
-bool InitParsing( void )
+extern bool InitParsing( void )
 /*****************************/
 // initialize the parsing stuff, and see if there is anything on the command
 // line.
@@ -72,27 +72,28 @@ bool InitParsing( void )
     return( true );
 }
 
-void FreeParserMem( void )
+extern void FreeParserMem( void )
 /*******************************/
 {
-    cmdfilelist     *curr;
+    cmdfilelist     *next;
 
-    while( (curr = CmdFile) != NULL ) {
-        CmdFile = CmdFile->next;
-        if( curr->file != NIL_HANDLE ) {
-            QClose( curr->file, curr->name );
+
+    for( ; CmdFile != NULL; CmdFile = next ) {
+        next = CmdFile->next;
+        if( CmdFile->file != NIL_HANDLE ) {
+            QClose( CmdFile->file, CmdFile->name );
         }
-        MemFree( curr->buffer );
-        MemFree( curr->name );
-        MemFree( curr );
+        MemFree( CmdFile->buffer );
+        MemFree( CmdFile->name );
+        MemFree( CmdFile );
     }
 }
 
-static void GetNewLine( prompt_slot slot )
-/******************************************/
+static void GetNewLine( int prompt )
+/**********************************/
 {
     if( CmdFile->how == NONBUFFERED ) {
-        if( QReadStr( CmdFile->file, CmdFile->buffer, MAX_LINE, CmdFile->name ) ) {
+        if( QReadStr( CmdFile->file, CmdFile->buffer, MAX_LINE,CmdFile->name )){
             CmdFile->where = ENDOFFILE;
         } else {
             CmdFile->where = MIDST;
@@ -110,7 +111,7 @@ static void GetNewLine( prompt_slot slot )
     } else {
         CmdFile->how = INTERACTIVE;
         CmdFile->oldhow = INTERACTIVE;
-        OutPutPrompt( slot );
+        OutPutPrompt( prompt );
         if( QReadStr( STDIN_HANDLE, CmdFile->buffer, MAX_LINE, "console" ) ) {
             CmdFile->where = ENDOFCMD;
         } else {
@@ -124,17 +125,17 @@ static void RestoreCmdLine( void )
 /********************************/
 // Restore a saved command line.
 {
-    cmdfilelist *temp;
+    void *  temp;
 
-    temp = CmdFile;
-    CmdFile = CmdFile->next;
-    QClose( temp->file, temp->name );
-    MemFree( temp->name );
-    MemFree( temp->buffer );
-    MemFree( temp );
+    QClose( CmdFile->file, CmdFile->name );
+    MemFree( CmdFile->name );
+    MemFree( CmdFile->buffer );
+    temp = CmdFile->next;
+    MemFree( CmdFile );
+    CmdFile = temp;
 }
 
-void ParseDefFile( void )
+extern void ParseDefFile( void )
 /******************************/
 // parse a .def file
 {
@@ -174,37 +175,35 @@ void ParseDefFile( void )
     RestoreCmdLine();
 }
 
-void StartNewFile( char *fname )
-/******************************/
+extern void StartNewFile( char *fname )
+/*************************************/
 {
-    cmdfilelist     *newfile;
-    unsigned long   long_size;
+    cmdfilelist *   newfile;
+    unsigned long   size;
 
     newfile = MemAlloc( sizeof( cmdfilelist ) );
     newfile->name = fname;
     newfile->file = NIL_HANDLE;
-    newfile->buffer = NULL;
     newfile->next = CmdFile;
     CmdFile = newfile;
+    CmdFile->buffer = NULL;
     newfile->file = QOpenR( newfile->name );
-    long_size = QFileSize( newfile->file );
-    if( long_size < 0x10000 - 16 - 1 ) {       // if can alloc a chunk big enough
-        size_t  size = (size_t)long_size;
-
-        newfile->buffer = MemAlloc( size + 1 );
-        if( newfile->buffer != NULL ) {
-            size = QRead( newfile->file, newfile->buffer, size, newfile->name );
-            *(newfile->buffer + size) = '\0';
-            newfile->where = MIDST;
-            newfile->how = BUFFERED;
-            newfile->current = newfile->buffer;
+    size = QFileSize( newfile->file );
+    if( size < 65510 ) {       // if can alloc a chunk big enough
+        CmdFile->buffer = MemAlloc( size + 1 );
+        if( CmdFile->buffer != NULL ) {
+            size = QRead( newfile->file, CmdFile->buffer, size, newfile->name );
+            *(CmdFile->buffer + size) = '\0';
+            CmdFile->where = MIDST;
+            CmdFile->how = BUFFERED;
+            CmdFile->current = CmdFile->buffer;
         }
     }
-    if( newfile->buffer == NULL ) {  // if couldn't buffer for some reason.
-        newfile->where = ENDOFLINE;
-        newfile->how = NONBUFFERED;
-        newfile->buffer = MemAlloc( MAX_LINE + 1 );// have to have at least this
-        newfile->current = newfile->buffer;        // much RAM or death ensues.
+    if( CmdFile->buffer == NULL ) {  // if couldn't buffer for some reason.
+        CmdFile->where = ENDOFLINE;
+        CmdFile->how = NONBUFFERED;
+        CmdFile->buffer = MemAlloc( MAX_LINE + 1 );// have to have at least this
+        CmdFile->current = CmdFile->buffer;        // much RAM or death ensues.
     }
 }
 
@@ -213,39 +212,39 @@ static void ProcessDefFile( void )
 {
     cmdentry *  cmd;
 
-    if( Commands[DEF_SLOT] == NULL ) {
+    if( Commands[ DEF_SLOT ] == NULL ) {
         return;
     }
     HaveDefFile = 1;
-    cmd = Commands[DEF_SLOT];
-    StartNewFile( FileName( cmd->command, DEF_SLOT, false ) );
+    cmd = Commands[ DEF_SLOT ];
+    StartNewFile( FileName( cmd->command, strlen( cmd->command ), E_DEF, false ));
     ParseDefFile();
 }
 
-void DirectiveError( void )
+extern void DirectiveError( void )
 /********************************/
 {
-    char    *msg;
-    size_t  len;
+    char *  msg;
+    int     offset;
 
-    len = 22 + CmdFile->len;
-    msg = alloca( len + 2 );
+    offset = 22 + CmdFile->len;
+    msg = alloca( offset + 2 );
     memcpy( msg, "directive error near '", 22 );
-    memcpy( msg + 22, CmdFile->token, CmdFile->len );
-    *( msg + len) = '\'';
-    *( msg + len + 1) = '\0';
-    ErrorExit( msg );
+    memcpy( msg+22, CmdFile->token, CmdFile->len );
+    *( msg + offset) = '\'';
+    *( msg + offset + 1) = '\0';
+    Error( msg );
 }
 
-bool MakeToken( sep_type separator, bool include_fn )
-/***************************************************/
+extern bool MakeToken( sep_type separator, bool include_fn )
+/**********************************************************/
 // include_fn == true if '.' and ':' are allowed to be part of the token
 // (include filename).
 {
-    bool    quit;
+    int     quit;
     char    hmm;
     char    matchchar;
-    size_t  len;
+    int     len;
     bool    forcematch;
     bool    hitmatch;
 
@@ -258,7 +257,7 @@ bool MakeToken( sep_type separator, bool include_fn )
     }
     matchchar = '\0';
     CmdFile->len = 1;                 // for error reporting.
-    switch( separator ) {
+    switch( separator ){
     case SEP_QUOTE:
         if( hmm != '\'' && hmm != '"' ) {
             return( false );
@@ -347,18 +346,18 @@ bool MakeToken( sep_type separator, bool include_fn )
     return( true );
 }
 
-char *ToString( void )
+extern char * ToString( void )
 /****************************/
 {
-    char            *src;
-    size_t          len;
-    char            *str;
+    char *          src;
+    int             len;
+    char *          str;
 
     src = CmdFile->token;
     len = CmdFile->len;
     str = MemAlloc( len + 1 );
     memcpy( str, src, len );
-    str[len] = '\0';
+    str[ len ] = '\0';
     return( str );
 }
 
@@ -376,8 +375,8 @@ static char     mask_spc_chr;
 
 #define LINE_BUF_SIZE   256
 
-static int ReadNextChar( prompt_slot slot )
-/*****************************************/
+static int ReadNextChar( prompt_slot prompt )
+/*******************************************/
 {
     int     c;
 
@@ -388,11 +387,11 @@ static int ReadNextChar( prompt_slot slot )
             if( c == '\0' /*EOF*/ || c == '\x1a' )
                 break;  /* Quit if end of stream. */
             if( is_new_line ) {
-                if( slot != OPTION_SLOT && !no_prompt )
-                    ; //OutPutPrompt( slot );
+                if( prompt != OPTION_SLOT && !no_prompt )
+                    ; //OutPutPrompt( prompt );
                 is_new_line = false;
             }
-            if( slot != OPTION_SLOT && !no_prompt ) {
+            if( prompt != OPTION_SLOT && !no_prompt ) {
                 if( c == '\r' )
                     continue;
                 //@TODO: output 'c' here?
@@ -419,49 +418,34 @@ static int ReadNextChar( prompt_slot slot )
             }
             c = *CmdFile->current++;
             //@TODO: escaped quotes?
-            if( c >= ' ' ) {
+            if( c >= ' ' )
                 return( c );
-            }
         }
     }
     for( ;; ) {
         if( is_new_line ) {
-            if( slot != OPTION_SLOT && ((!is_redir && !no_prompt) || (!is_term && no_prompt)) )
-                GetNewLine( slot );
+            if( prompt != OPTION_SLOT && ((!is_redir && !no_prompt) || (!is_term && no_prompt)) )
+                GetNewLine( prompt );
             is_new_line = false;
         }
         c = *CmdFile->current++;
-        if( c == '\0' /*EOF*/ ) {
+        if( c == '\0' /*EOF*/ )
             c = ';';    /* EOF to end-of-input marker. */
-        } else if( c == '\t' ) {
+        else if( c == '\t' )
             c = ' ';    /* Tabs to spaces. */
-        }
         if( c == '\n' )
             is_new_line = true;
-        if( c == '\n' || c >= ' ' ) {
+        if( c == '\n' || c >= ' ' )
             return( c );
-        }
     }
 }
 
-static char *StrDup( const char *src )
-{
-    size_t          len;
-    char            *str;
-
-    len = strlen( src );
-    str = MemAlloc( len + 1 );
-    memcpy( str, src, len );
-    str[len] = '\0';
-    return( str );
-}
-
-static int GetNextInputChar( prompt_slot slot )
-/*********************************************/
+static int GetNextInputChar( prompt_slot prompt )
+/***********************************************/
 {
     int     c;
 
-    c = ReadNextChar( slot );
+    c = ReadNextChar( prompt );
     /* Redirect input to a response file; cannot be nested. */
     if( c == '@' && !is_quoting ) {
         if( CmdFile->how == COMMANDLINE || CmdFile->how == INTERACTIVE ) {
@@ -469,7 +453,7 @@ static int GetNextInputChar( prompt_slot slot )
             int     oi;
 
             for( oi = 0; oi < sizeof( fname ) - 1; ) {
-                c = ReadNextChar( slot );
+                c = ReadNextChar( prompt );
                 if( c == '"' )
                     is_quoting ^= true;
                 /* Quit loop if not a valid filename character. */
@@ -485,15 +469,15 @@ static int GetNextInputChar( prompt_slot slot )
                 --CmdFile->current;
 
             /* Open the response file and read next character. */
-            StartNewFile( StrDup( fname ) );
-            c = ReadNextChar( slot );
+            StartNewFile( fname );
+            c = ReadNextChar( prompt );
         }
     }
     return( c );
 }
 
-static size_t GetLine( char *line, size_t buf_len, prompt_slot slot )
-/*******************************************************************/
+static size_t GetLine( char *line, size_t buf_len, prompt_slot prompt )
+/*********************************************************************/
 {
     bool        first = true;
     unsigned    oi;
@@ -512,7 +496,7 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot slot )
         is_quoting = false;
         /* Read a line from input stream. */
         for( oi = 0; oi < buf_len - 1; ) {
-            c = GetNextInputChar( slot );
+            c = GetNextInputChar( prompt );
             if( c == '"' )
                 is_quoting ^= true;
             if( c == '\n' || (!is_quoting && (c == ',' || c == ';')) ) {
@@ -535,8 +519,8 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot slot )
             }
         }
         /* Check for line buffer overflow. */
-        if( ( oi == buf_len - 1 ) && (c = GetNextInputChar( slot )) != '\n' && c != ',' && c != ';' ) {
-            ErrorExit( "maximum line length exceeded" );
+        if( ( oi == buf_len - 1 ) && (c = GetNextInputChar( prompt )) != '\n' && c != ',' && c != ';' ) {
+            Error( "maximum line length exceeded" );
         }
         if( oi ) {  /* Index of the terminating null. */
             /* Strip trailing spaces. */
@@ -549,15 +533,13 @@ static size_t GetLine( char *line, size_t buf_len, prompt_slot slot )
         idx1 = 0;
         for( idx2 = 0; idx2 < oi; ++idx2 ) {
             if( line[idx2] == '"' ) {
-                while( idx2 < oi && line[++idx2] != '"' ) {
+                while( idx2 < oi && line[++idx2] != '"' )
                     line[idx1++] = line[idx2];
-                }
             } else if( line[idx2] != ' ' || mask_spc_chr != 0 || is_quoting ) {
-                if( !is_quoting && line[idx2] == ' ' ) {
+                if( !is_quoting && line[idx2] == ' ' )
                     line[idx1] = mask_spc_chr;
-                } else {
+                else
                     line[idx1] = line[idx2];
-                }
                 ++idx1;
             }
         }
@@ -669,7 +651,7 @@ static void DoOneObject( char *obj )
     end = LastStringChar( obj );
     if( *end == ')' ) {
         if( r_paren )
-            ErrorExit( "nested right parentheses" );
+            Error( "nested right parentheses" );
         r_paren = true;
         *end-- = '\0';
     }
@@ -678,7 +660,7 @@ static void DoOneObject( char *obj )
         char    *sect;
 
         if( OverlayLevel )
-            ErrorExit( "nested left parentheses" );
+            Error( "nested left parentheses" );
 
         sect = MemAlloc( 8 );
         memcpy( sect, "section", 8 );
@@ -686,13 +668,16 @@ static void DoOneObject( char *obj )
         ++OverlayLevel;
     }
     /* If anything is left, add it to the list of object files. */
-    if( *obj != '\0' ) {
-        AddCommand( FileName( obj, OBJECT_SLOT, false ), ( OverlayLevel ? OVERLAY_SLOT : OBJECT_SLOT ), false );
+    if( *obj ) {
+        char    *name;
+
+        name = FileName( obj, strlen( obj ), OBJECT_SLOT, false );
+        AddCommand( name, OverlayLevel ? OVERLAY_SLOT : OBJECT_SLOT, false );
     }
     /* Conditionally close the current overlay. */
     if( r_paren ) {
         if( !OverlayLevel )
-            ErrorExit( "unmatched right parenthesis" );
+            Error( "unmatched right parenthesis" );
         --OverlayLevel;
     }
 }
@@ -704,24 +689,30 @@ static void DoOneLib( char *lib )
     DoOptions( lib );
 
     /* If anything is left, add it to the list of object files. */
-    if( *lib != '\0' ) {
-        AddCommand( FileName( lib, LIBRARY_SLOT, false ), LIBRARY_SLOT, false );
+    if( *lib ) {
+        char    *name;
+
+        name = FileName( lib, strlen( lib ), LIBRARY_SLOT, false );
+        AddCommand( name, LIBRARY_SLOT, false );
     }
 }
 
-static void GetNextInput( char *buf, size_t len, prompt_slot slot )
-/*****************************************************************/
+static void GetNextInput( char *buf, size_t len, prompt_slot prompt )
+/*******************************************************************/
 {
     if( !is_term ) {
-        GetLine( buf, len, slot );
+        GetLine( buf, len, prompt );
         DoOptions( buf );
-        if( *buf != '\0' ) {
-            AddCommand( FileName( buf, slot, false ), slot, false );
+        if( *buf ) {
+            char    *name;
+
+            name = FileName( buf, strlen( buf ), prompt, false );
+            AddCommand( name, prompt, false );
         }
     }
 }
 
-void ParseMicrosoft( void )
+extern void ParseMicrosoft( void )
 /********************************/
 // read in Microsoft linker commands
 {
@@ -735,7 +726,7 @@ void ParseMicrosoft( void )
 
     /* Start with object files. */
     mask_spc_chr = 0x1f;    /* Replace spaces with another character. */
-    more_cmdline = ( *CmdFile->current != '\0' );
+    more_cmdline = !!*CmdFile->current;
     first = more_cmdline;
     is_new_line = true;
     do {
@@ -758,7 +749,7 @@ void ParseMicrosoft( void )
 
     /* Check for possible error conditions. */
     if( OverlayLevel )
-        ErrorExit( "unmatched left parenthesis" );
+        Error( "unmatched left parenthesis" );
     FindObjectName();   /* This will report an error if no objects. */
 
     mask_spc_chr = 0;   /* Remove spaces in input. */

@@ -29,12 +29,6 @@
 ****************************************************************************/
 
 
-typedef union ext_inf {
-    uint                size;                   // size of field
-    struct fstruct      *record;                // pointer to structure
-    sym_id              sym_record;             // sym_id type pointer
-} ext_inf;
-
 typedef struct fstruct {
     sym_id              link;                   // next structure definition
     union {
@@ -60,7 +54,11 @@ typedef struct fmap {
 typedef struct field {
     sym_id              link;                   // next field
     byte                typ;                    // type of field
-    ext_inf             xt;                     // extended info
+    union {
+        uint            size;                   // size of field
+        struct fstruct  *record;                // pointer to structure
+        sym_id          sym_record;             // sym_id type pointer
+    } xt;
     struct act_dim_list *dim_ext;               // dimension information
     byte                name_len;               // length of name of field
     char                name[STD_SYMLEN];       // name of field

@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "commonui.h"
 #include "bool.h"
 #include "pmdbg.h"

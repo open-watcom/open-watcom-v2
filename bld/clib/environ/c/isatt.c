@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include <stddef.h>
 #include <unistd.h>
 #include "rtdata.h"
 #include "tinyio.h"
@@ -47,7 +46,7 @@ _WCRTLINK int isatty( int handle )
 
     __handle_check( handle, 0 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != NULL ) {
+    if( _WindowsIsWindowedHandle != 0 ) {
         if( _WindowsIsWindowedHandle( handle ) ) {
             return( 1 );
         }

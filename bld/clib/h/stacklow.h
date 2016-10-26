@@ -46,7 +46,7 @@
     extern void         __init_stack_limits( unsigned *stacklow, unsigned *stacktop );
 #endif
 
-#ifdef __SW_BM
+#if defined( __MT__ )
     #define _STACKLOW   (__THREADDATAPTR->__stklowP)
 #endif
 

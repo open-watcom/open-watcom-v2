@@ -38,28 +38,25 @@
 
 #include "clibext.h"
 
-
-#define DUPBUF_STACK(p,s,l)  {void *x=alloca(l);memcpy(x,s,l);p=x;}
-
 static void             (*MultiLine)( void ) = NULL;
-static char             *OptionBuffer;
-static size_t           BufferLeft;
+static char *           OptionBuffer;
+static int              BufferLeft;
 static bool             SegWarning = false;
 static bool             GotModName = false;
 static bool             GotOvl;
 
 /* An entry for parsing .def files. */
 typedef struct parse_entry {
-    const char          *keyword;
+    char                *keyword;
     void                (*rtn)( void );
-    unsigned char       minlen;
+    char                minlen;
 } parse_entry;
 
 /* An entry for parsing command line switches. */
 typedef struct switch_entry {
-    const char          *keyword;
+    char                *keyword;
     void                (*rtn)( const char *arg );
-    unsigned char       minlen;
+    char                minlen;
 } switch_entry;
 
 static void ProcAppLoader( void );
@@ -388,18 +385,17 @@ static void CheckNum( const char *arg )
     unsigned long       value;
 
     /* Check but ignore numeric argument. */
-    if( arg != NULL && !GetNumberStr( &value, arg, strlen( arg ) ) ) {
+    if( arg && !GetNumberStr( &value, arg , strlen( arg ) ) )
         Warning( "invalid numeric value", OPTION_SLOT );
-    }
 }
 
-static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len )
-/*******************************************************************************/
+static bool ProcessKeyList( parse_entry *entry, const char *arg, int arg_len )
+/****************************************************************************/
 {
     const char          *key;
     const char          *ptr;
-    size_t              len;
-    size_t              plen;
+    int                 len;
+    int                 plen;
 
     for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
@@ -412,8 +408,7 @@ static bool ProcessKeyList( parse_entry *entry, const char *arg, size_t arg_len 
                 (*entry->rtn)();
                 return( true );
             }
-            if( *key == '\0' || tolower( *ptr ) != *key )
-                break;
+            if( *key == '\0' || tolower( *ptr ) != *key ) break;
             ptr++;
             key++;
             len++;
@@ -503,8 +498,8 @@ static void ProcCode( void )
 /**************************/
 {
     char    buffer[ CODE_BUFFER_LEN ];
-    char    *result;
-    size_t  len;
+    char *  result;
+    int     len;
 
     memcpy( buffer, "segment type code", 17 );
     OptionBuffer = buffer + 17;
@@ -512,11 +507,10 @@ static void ProcCode( void )
     if( !ProcessKeyword( CodeAttributes ) ) {
         Warning( "argument for code statement not valid", OPTION_SLOT );
     } else {    // get the rest of the attributes.
-        while( ProcessKeyword( CodeAttributes ) )
-            {}     // NULL statement.
+        while( ProcessKeyword( CodeAttributes ) ) {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
+            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1);
             memcpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
@@ -529,8 +523,8 @@ static void ProcData( void )
 // NYI: serious copied code from ProcCode.  Should be united into one routine.
 {
     char    buffer[ CODE_BUFFER_LEN ];
-    char    *result;
-    size_t  len;
+    char *  result;
+    int     len;
 
     memcpy( buffer, "segment type data", 17 );
     OptionBuffer = buffer + 17;
@@ -538,11 +532,10 @@ static void ProcData( void )
     if( !ProcessKeyword( DataAttributes ) ) {
         Warning( "argument for data statement not valid", OPTION_SLOT );
     } else {    // get the rest of the attributes.
-        while( ProcessKeyword( DataAttributes ) )
-            {}     // NULL statement.
+        while( ProcessKeyword( DataAttributes ) ) {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN - 18 ) {      // attribute spec'd.
             len = CODE_BUFFER_LEN - BufferLeft - 1;
-            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1 );
+            result = MemAlloc( CODE_BUFFER_LEN - BufferLeft + 1);
             memcpy( result, buffer, len );
             *(result + len) = '\0';
             AddCommand( result, OPTION_SLOT, false );
@@ -550,10 +543,10 @@ static void ProcData( void )
     }
 }
 
-static void AddToBuffer( const char *cmd, size_t len )
-/****************************************************/
+static void AddToBuffer( char *cmd, int len )
+/*******************************************/
 {
-    if( BufferLeft < ( len + 1 ) ) {
+    if( BufferLeft - (len+1) < 0 ) {
         Warning( "too many code attributes", OPTION_SLOT );
     } else {
         BufferLeft -= len + 1;
@@ -689,10 +682,10 @@ static void ProcDescription( void )
     char        *msg;
 
     MakeToken( SEP_QUOTE, true );
-    msg = alloca( CmdFile->len + sizeof( PREFIX ) + 1 );
+    msg = alloca( CmdFile->len + (sizeof( PREFIX ) + 1 ) );
     memcpy( msg, PREFIX, sizeof( PREFIX ) );
-    memcpy( msg + sizeof( PREFIX ) - 1, CmdFile->token, CmdFile->len );
-    strcpy( msg + sizeof( PREFIX ) - 1 + CmdFile->len, "'" );
+    memcpy( msg + (sizeof( PREFIX )-1), CmdFile->token, CmdFile->len );
+    strcpy( msg + (sizeof( PREFIX )-1) + CmdFile->len, "'" );
     AddOption( msg );
 }
 
@@ -710,46 +703,48 @@ static void ProcExeType( void )
 static void GetExport( void )
 /***************************/
 {
-    char            *internal;
-    size_t          intlen;
-    char            *name;
-    size_t          namelen;
+    char *          internal;
+    int             intlen;
+    char *          name;
+    int             namelen;
     unsigned long   value;
     unsigned long   iopl;
     bool            isresident;
     bool            gottoken;
     bool            gotnodata;
-    size_t          toklen;
-    char            *command;
-    char            *currloc;
+    int             toklen;
+    char *          command;
+    char *          currloc;
 
     if( !MakeToken( SEP_NO, true ) ) {
         Warning( "invalid export name", OPTION_SLOT );
         return;
     }
-    DUPBUF_STACK( name, CmdFile->token, CmdFile->len );            // store it temporarily
+    name = alloca( CmdFile->len );        // store it temporarily
     toklen = namelen = CmdFile->len;
+    memcpy( name, CmdFile->token, namelen );
     internal = NULL;
     intlen = 0;
-    if( MakeToken( SEP_EQUALS, true ) ) {                           // got an internal name.
-        DUPBUF_STACK( internal, CmdFile->token, CmdFile->len );    // store it temporarily
+    if( MakeToken( SEP_EQUALS, true ) ) {   // got an internal name.
+        internal = alloca( CmdFile->len );  // store it temporarily
         intlen = CmdFile->len;
-        toklen += intlen + 1;                                       // +1 for = sign.
+        memcpy( internal, CmdFile->token, intlen );
+        toklen += intlen + 1;        // +1 for = sign.
     }
     value = 0xFFFFF; // arbitrary >64K.
-    if( MakeToken( SEP_AT, true ) ) {                               // got an ordinal.
+    if( MakeToken( SEP_AT, true ) ) {       // got an ordinal.
         if( !GetNumber( &value ) || value > (64 * 1024UL) ) {
             Warning( "export ordinal value is invalid", OPTION_SLOT );
             return;
         } else {
-            toklen += 6;                                            // maximum integer length + dot
+            toklen += 6;      // maximum integer length + dot
         }
     }
     isresident = false;
     EatWhite();
     gottoken = MakeToken( SEP_NO, true );
     if( gottoken ) {
-        if( CmdFile->len == 12 && memicmp( CmdFile->token, "residentname", 12 ) == 0 ) {
+        if( CmdFile->len == 12 && memicmp(CmdFile->token, "residentname", 12)==0){
             isresident = true;
             gottoken = MakeToken( SEP_NO, true );
             toklen += 9;           // length of resident + space.
@@ -853,26 +848,28 @@ static void ProcHeapsize( void )
 static void GetImport( void )
 /***************************/
 {
-    char            *first;
-    size_t          firstlen;
-    char            *second;
-    size_t          secondlen;
+    char *          first;
+    int             firstlen;
+    char *          second;
+    int             secondlen;
     unsigned long   value;
-    char            *result;
-    size_t          toklen;
-    char            *currloc;
+    char *          result;
+    int             toklen;
+    char *          currloc;
 
     if( !MakeToken( SEP_NO, false ) ) {
         Warning( "import library name is invalid", OPTION_SLOT );
         return;
     }
-    DUPBUF_STACK( first, CmdFile->token, CmdFile->len );    // store it temporarily
     toklen = firstlen = CmdFile->len;
+    first = alloca( firstlen );
+    memcpy( first, CmdFile->token, firstlen );
     second = NULL;
     secondlen = 0;
     if( MakeToken( SEP_EQUALS, false ) ) {        // got an internal name.
-        DUPBUF_STACK( second, CmdFile->token, CmdFile->len );     // store it temporarily
         secondlen = CmdFile->len;
+        second = alloca( secondlen );
+        memcpy( second, CmdFile->token, secondlen );
         toklen += secondlen + 1;                        // name & = sign.
     }
     if( !MakeToken( SEP_PERIOD, true ) ) {
@@ -882,7 +879,8 @@ static void GetImport( void )
     value = 0xFFFFF;      // arbitrary > 64k.
     if( GetNumber( &value ) ) {
         if( second == NULL ) {
-            Warning("must have an internal name when an ordinal is specified", OPTION_SLOT );
+            Warning("must have an internal name when an ordinal is specified",
+                                                                  OPTION_SLOT );
             return;
         } else if( value >= (64*1024UL) ) {
             Warning( "import ordinal out of range", OPTION_SLOT );
@@ -942,10 +940,11 @@ static void ProcInclude ( void )
 static bool IsInitType( void )
 /****************************/
 {
-    if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 ) == 0 ) {
+    if( CmdFile->len == 10 && memicmp( CmdFile->token, "initglobal", 10 )==0 ) {
         FmtInfo = DLL_INITGLOBAL;
         return( true );
-    } else if ( CmdFile->len == 12 && memicmp( CmdFile->token, "initinstance", 12 ) == 0 ) {
+    } else if ( CmdFile->len == 12
+                    && memicmp( CmdFile->token, "initinstance", 12 )==0 ) {
         FmtInfo = DLL_INITINSTANCE;
         return( true );
     }
@@ -1084,17 +1083,18 @@ static void ProcOvl( void )
 static void GetSegments( void )
 /*****************************/
 {
-    char    *segname;
-    size_t  seglen;
+    char *  segname;
+    int     seglen;
     char    buffer[ CODE_BUFFER_LEN ];
-    char    *result;
-    char    *currloc;
-    size_t  len;
+    char *  result;
+    char *  currloc;
+    int     len;
 
     GotOvl = false;
     if( MakeToken( SEP_QUOTE, true ) || MakeToken( SEP_NO, true ) ) {
-        DUPBUF_STACK( segname, CmdFile->token, CmdFile->len );    // store it temporarily
         seglen = CmdFile->len;
+        segname = alloca( seglen );
+        memcpy( segname, CmdFile->token, seglen );
     } else {
         Warning( "segment argument not recognized", OPTION_SLOT );
         return;
@@ -1107,11 +1107,10 @@ static void GetSegments( void )
     if( !ProcessKeyword( SegAttributes ) && !GotOvl ) {
         Warning( "no segment attributes specified", OPTION_SLOT );
     } else {    // get the rest of the attributes.
-        while( ProcessKeyword( SegAttributes ) )
-            {}     // NULL statement.
+        while( ProcessKeyword( SegAttributes ) ) {}     // NULL statement.
         if( BufferLeft != CODE_BUFFER_LEN && !GotOvl ) { // something spec'd.
             len = CODE_BUFFER_LEN - BufferLeft;
-            result = MemAlloc( len + seglen + 12 );
+            result = MemAlloc( len + seglen + 12);
             memcpy( result, "segment '", 9 );
             currloc = result + 9;
             memcpy( currloc, segname, seglen );
@@ -1185,7 +1184,7 @@ static void ProcAlignment( const char *arg )
     unsigned long     value;
 
     value = 0;
-    success = ( arg != NULL && GetNumberStr( &value, arg, strlen( arg ) ) );
+    success = ( arg && GetNumberStr( &value, arg , strlen( arg ) ) );
     if( !success ) {
         Warning( "invalid alignment specification", OPTION_SLOT );
     } else {
@@ -1270,9 +1269,8 @@ static void WriteOptions( switch_entry *entry )
             help_line[i++] = *kw;
         }
         if( i < 31 ) {  
-            while( i < 31 ) {   // pad to second column
+            while( i < 31 ) // pad to second column
                 help_line[i++] = ' ';
-            }
         } else {
             help_line[i] = '\0';
             i = 0;
@@ -1334,8 +1332,9 @@ static void ProcNoDefLibSearch( const char *arg )
 /***********************************************/
 {
     AddOption( "nodefaultlibs" );
-    if( arg != NULL ) {
-        Warning( "nodefaultlibrarysearch applies to all libraries in WLINK", OPTION_SLOT );
+    if( arg ) {
+        Warning( "nodefaultlibrarysearch applies to all libraries in WLINK",
+                                                                 OPTION_SLOT );
     }
 }
 
@@ -1423,7 +1422,7 @@ static void ProcPackCode( const char *arg )
     unsigned long   value;
 
     value = 65535;
-    if( arg != NULL && !GetNumberStr( &value, arg, strlen( arg ) ) )
+    if( arg && !GetNumberStr( &value, arg , strlen( arg ) ) )
         Warning( "invalid numeric value", OPTION_SLOT );
     AddNumOption( "packcode", value );
 }
@@ -1481,7 +1480,7 @@ static void ProcPMType( const char *arg )
         FmtType = FMT_OS2;
         break;
     }
-    if( arg == NULL || !ProcessKeyList( PMTypes, arg, strlen( arg ) ) ) {
+    if( !arg || !ProcessKeyList( PMTypes, arg, strlen( arg ) ) ) {
         Warning( "invalid argument for pmtype option", OPTION_SLOT );
     }
 }
@@ -1500,7 +1499,7 @@ static void ProcStack( const char *arg )
     unsigned long       value;
 
     value = 0;
-    success = ( arg != NULL && GetNumberStr( &value, arg, strlen( arg ) ) );
+    success = ( arg && GetNumberStr( &value, arg , strlen( arg ) ) );
     if( !success ) {
         Warning( "stack argument not recognized", OPTION_SLOT );
     } else {
@@ -1536,9 +1535,9 @@ extern void ProcessOption( const char *opt )
     const char          *key;
     const char          *ptr;
     const char          *arg;
-    size_t              len;
-    size_t              plen;
-    size_t              opt_len;
+    int                 len;
+    int                 plen;
+    int                 opt_len;
 
     entry = OptionsTable;
 
@@ -1546,12 +1545,12 @@ extern void ProcessOption( const char *opt )
      * are usually ignored by option processing routines.
      */
     arg = strchr( opt, ':' );
-    if( arg != NULL ) {
+    opt_len = arg - opt;
+    if( arg ) {
         opt_len = arg - opt;
         ++arg;  /* Point to the next character after ':'. */
-        if( *arg == '\0' ) {
+        if( *arg == '\0' )
             arg = NULL;     /* Empty argument is no argument. */
-        }
     } else {
         opt_len = strlen( opt );
     }

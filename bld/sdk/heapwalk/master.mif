@@ -42,7 +42,8 @@ objs = $(objs_$(host_os))
 $(name).exe : rcstr.gh $(dis_prereq) $(objs) $(dis_objs) $(xlibs) $(name).res $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ $(lflags) file {$(objs) $(dis_objs)} lib {$(xlibs)}
-    @%make bind_res
+    @%make echo_bindres
+    $(rc) -k $(name).res $^@
 
 rcstrmsg.gh : ../res/heapwalk.msg
     @%make echo_cpp

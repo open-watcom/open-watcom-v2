@@ -321,12 +321,10 @@ static bool ctl_check_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /*****************************************************************/
 /* start check field */
 {
-    bool    value;
-
     ___b=___b;
     inst = inst;
-    elt->get( ptr, elt, &value );
-    CheckDlgButton( dlg, elt->control, ( value ) ? BST_CHECKED : BST_UNCHECKED );
+
+    CheckDlgButton( dlg, elt->control, ( _value_bool( ptr, elt ) ) ? BST_CHECKED : BST_UNCHECKED );
 
     return( true );
 }
@@ -336,13 +334,10 @@ static bool ctl_check_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /******************************************************************/
 /* end check field */
 {
-    bool    value;
-
     ___f=___f;
     inst = inst;
 
-    value = IsDlgButtonChecked( dlg, elt->control ) != 0;
-    elt->set( ptr, elt, &value );
+    _value_bool( ptr, elt ) = IsDlgButtonChecked( dlg, elt->control ) != 0;
 
     return( true );
 }
@@ -385,8 +380,7 @@ static bool ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
 
     ___b=___b;
 
-    elt->get( ptr, elt, &choose );
-    choose -= elt->info.combo.origin;
+    choose = _value_int( ptr, elt ) - elt->info.combo.origin;
 
     if( choose < 0 ) {
         choose = 0;
@@ -403,9 +397,11 @@ static bool ctl_combo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
         if( len < 0 )
             len = 0;
         value[len] = '\0';
-        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ), 0, (LPARAM)value );
+        SendDlgItemMessage( dlg, elt->control, ctl_combo_add_msg( dlg, elt->control ),
+                            0, (LPARAM)value );
     }
-    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ), choose, 0 );
+    SendDlgItemMessage( dlg, elt->control, ctl_combo_sel_msg( dlg, elt->control ),
+                            choose, 0 );
 
     return( true );
 }
@@ -415,13 +411,10 @@ static bool ctl_combo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /******************************************************************/
 /* finish a combo list box */
 {
-    int value;
-
     ___f=___f;
     inst = inst;
 
-    value = elt->info.combo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
-    elt->set( ptr, elt, &value );
+    _value_int( ptr, elt ) = elt->info.combo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }
@@ -513,8 +506,7 @@ static bool ctl_dcombo_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___b=___b;
     inst = inst;
 
-    elt->get( ptr, elt, &value );
-    value -= elt->info.dcombo.origin;
+    value = _value_int( ptr, elt ) - elt->info.dcombo.origin;
 
     for( i = 0;; ++i ) {
         str = (elt->info.dcombo.fetch)( i );
@@ -539,13 +531,10 @@ static bool ctl_dcombo_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /*******************************************************************/
 /* finish a dynamic combo list box */
 {
-    int value;
-
     ___f=___f;
     inst = inst;
 
-    value = elt->info.dcombo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
-    elt->set( ptr, elt, &value );
+    _value_int( ptr, elt ) = elt->info.dcombo.origin + (int)SendDlgItemMessage( dlg, elt->control, ctl_combo_get_msg( dlg, elt->control ), 0, 0 );
 
     return( true );
 }
@@ -566,7 +555,7 @@ static bool ctl_float_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___b=___b;
     inst = inst;
 
-    elt->get( ptr, elt, &value );
+    value = _value_float( ptr, elt );
     sprintf( buf, "%f", value );
     for( str = buf + strlen( buf ) - 1; *str == '0'; --str );
     for( dec = 0; *str != '.'; --str, ++dec );
@@ -596,7 +585,7 @@ static bool ctl_float_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     str[49] = '\0';
 
     if( 1 == sscanf( str, "%f", &value ) ) {
-        elt->set( ptr, elt, &value );
+        _value_float( ptr, elt ) = value;
     } else {
         SetFocus( GetDlgItem( dlg, elt->control ) );
         MessageBox( dlg, "Invalid value: please re-enter it", NULL,
@@ -623,7 +612,7 @@ static bool ctl_rfloat_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
         return( false );
     }
 
-    elt->get( ptr, elt, &value );
+    value = _value_float( ptr, elt );
 
     any_max = ( elt->info.rfloat.max >= elt->info.rfloat.min );
     if( value < elt->info.rfloat.min || (any_max && value > elt->info.rfloat.max) ) {
@@ -651,13 +640,10 @@ static bool ctl_int_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, boo
 /**************************************************************************************/
 /* start an integer field */
 {
-    int value;
-
     ___b=___b;
     inst = inst;
 
-    elt->get( ptr, elt, &value );
-    SetDlgItemInt( dlg, elt->control, value, TRUE );
+    SetDlgItemInt( dlg, elt->control, _value_int( ptr, elt ), TRUE );
 
     return( true );
 }
@@ -668,13 +654,11 @@ static bool ctl_int_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /* end an int field */
 {
     BOOL                ok;
-    int                 value;
 
     ___f=___f;
     inst = inst;
 
-    value = GetDlgItemInt( dlg, elt->control, &ok, TRUE );
-    elt->set( ptr, elt, &value );
+    _value_int( ptr, elt ) = GetDlgItemInt( dlg, elt->control, &ok, TRUE );
 
     if( !ok ) {
         SetFocus( GetDlgItem( dlg, elt->control ) );
@@ -702,7 +686,7 @@ static bool ctl_rint_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
         return( false );
     }
 
-    elt->get( ptr, elt, &value );
+    value = _value_int( ptr, elt );
 
     any_max = ( elt->info.rint.max >= elt->info.rint.min );
     if( value < elt->info.rint.min || (any_max && value > elt->info.rint.max) ) {
@@ -736,11 +720,11 @@ static bool ctl_radio_start( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___b=___b;
     inst = inst;
 
-    elt->get( ptr, elt, &value );
+    value = _value_int( ptr, elt );
 
     if( value != 0 ) {
         CheckRadioButton( dlg, elt->control, elt->info.radio.end_control,
-                          elt->control + value - 1 );
+                          elt->control + _value_int( ptr, elt ) - 1 );
     }
 
     return( true );
@@ -752,15 +736,13 @@ static bool ctl_radio_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
 /* finish a radio button */
 {
     int                 control;
-    int                 value;
 
     ___f=___f;
     inst = inst;
 
     for( control = elt->info.radio.end_control; control >= elt->control; --control ) {
         if( IsDlgButtonChecked( dlg, control ) ) {
-            value = control - elt->control + 1;
-            elt->set( ptr, elt, &value );
+            _value_int( ptr, elt ) = control - elt->control + 1;
 
             break;
         }
@@ -795,13 +777,10 @@ static bool ctl_text_start( ctl_elt *elt, WPI_INST inst, HWND dlg, void *ptr, bo
 /***************************************************************************************/
 /* start a text field */
 {
-    char    *str;
-
     ___b=___b;
     inst = inst;
 
-    elt->get( ptr, elt, &str );
-    SetDlgItemText( dlg, elt->control, str );
+    SetDlgItemText( dlg, elt->control, _str_ptr( ptr, elt ) );
 
     return( true );
 }
@@ -816,11 +795,11 @@ static bool ctl_text_finish( ctl_elt *elt, WPI_INST inst, HWND dlg,
     ___f=___f;
     inst = inst;
 
-    elt->get( ptr, elt, &str );
+    str = _str_ptr( ptr, elt );
 
     GetDlgItemText( dlg, elt->control, str, elt->info.text.text_size );
 
-    str[elt->info.text.text_size - 1] = '\0'; // in case of overflow
+    str[elt->info.text.text_size - 1]= '\0'; // in case of overflow
 
     return( true );
 }

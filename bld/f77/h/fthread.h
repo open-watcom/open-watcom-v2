@@ -35,7 +35,7 @@
 
 #include "trcback.h"
 
-#ifdef __SW_BM
+#ifdef __MT__
 
 // Thread-specific data:
 // =====================

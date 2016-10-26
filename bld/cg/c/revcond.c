@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "revcond.h"
 
 static  opcode_defs     FlipBranch[] = {
 /**************************************/
@@ -60,20 +59,20 @@ static  opcode_defs     RevBranch[] = {
         OP_CMP_LESS_EQUAL };    /* OP_CMP_GREATER_EQUAL */
 
 
-void    RevCond( instruction *ins ) {
+extern  void    RevCond( instruction *ins ) {
 /*******************************************/
 /* what to do to a conditional if we reverse its operands */
 
     ins->head.opcode = RevBranch[ins->head.opcode - FIRST_CONDITION];
 }
 
-opcode_defs     FlipOpcode( opcode_defs opcode ) {
+extern  opcode_defs     FlipOpcode( opcode_defs opcode ) {
 /********************************************************/
 
     return( FlipBranch[opcode - FIRST_CONDITION] );
 }
 
-void    FlipCond( instruction *ins ) {
+extern  void    FlipCond( instruction *ins ) {
 /*******************************************/
 /* what to do to a conditional if we complement (!) it */
 

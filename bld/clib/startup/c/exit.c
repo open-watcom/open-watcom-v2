@@ -102,13 +102,7 @@ _WCRTLINK void _UnloadCLib( void )
 #endif
 
 
-#if defined( __NETWARE__ )
-
-/*
- * Netware has own _exit procedure
- */
-
-#else
+#ifndef __NETWARE__
 
 _WCRTLINK void _exit( int status )
 {

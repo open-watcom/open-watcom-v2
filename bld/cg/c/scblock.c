@@ -43,7 +43,7 @@
 extern  bool            UnChangeable(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 
-void    FreeJunk( block *blk )
+extern  void    FreeJunk( block *blk )
 /*************************************
     Free instructions which aren't going to be generated.
 
@@ -124,7 +124,7 @@ static  bool    RemDeadCode( block *blk )
     return( change );
 }
 
-bool    DoScore( block *blk )
+extern  bool    DoScore( block *blk )
 /************************************
     Do register scoreboarding on a basic block. Remember which
     registers contain which values as we run through the block and
@@ -237,7 +237,7 @@ bool    DoScore( block *blk )
 }
 
 
-byte    HasZero( score *sc, name *n )
+extern  byte    HasZero( score *sc, name *n )
 /********************************************
     given a scoreboard "sc", determine if name "n" is equal to
     zero or has any portions which are equal to zero. This is recursive

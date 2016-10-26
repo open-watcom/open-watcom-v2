@@ -24,7 +24,8 @@ all : appwiz.exe .SYMBOLIC
 appwiz.exe: $(gendeps)
     @%make echo_link
     $(linker) name $^@ @appwiz.lnk
-    @%make bind_res
+    @%make echo_bindres
+    $(rc) -k appwiz.res $^@
 
 appwiz.lnk : makefile ../master.mif
     $(noecho)%create appwiz.lnk

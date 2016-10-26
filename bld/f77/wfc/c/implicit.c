@@ -91,11 +91,12 @@ static  bool            StarStar( TYPE typ ) {
 }
 
 
-static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start )
-//=================================================================
+static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start ) {
+//===================================================================
+
 // Ensure that the length specification (SIZE) is valid for the
 // given data type (TYP).
-{
+
     itnode      *temp;
 
     if( (typ == FT_DOUBLE) || (typ == FT_DCOMPLEX) || (typ == FT_EXTENDED) || (typ == FT_XCOMPLEX) ) {
@@ -138,11 +139,13 @@ static  bool    CheckSize( TYPE typ, intstar4 size, itnode *start )
     } else if( typ == FT_CHAR ) {
 #if _CPU == 8086
         if( (size > 0) && (size <= USHRT_MAX) ) {
-#else
-        if( size > 0 ) {
-#endif
             return( true );
         }
+#else
+        if( size > 0 ) {
+            return( true );
+        }
+#endif
     }
     temp = CITNode;
     CITNode = start; // get the caret in proper place

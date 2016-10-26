@@ -105,4 +105,4 @@ $(dllname).dll : $(version_res_dll_$(host_os)_$(host_cpu)) $(dll_objs) $(dll_lib
     @%append $(dllname).lnk $(lnk_alias)
     @%make echo_link
     $(linker) name $(dllname).dll @$(dllname).lnk
-    @%make bind_res_version_dll
+    @%make bind_version_res_dll

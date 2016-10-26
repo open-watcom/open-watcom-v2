@@ -38,15 +38,16 @@
 #include <process.h>
 #include "rtdata.h"
 #include "liballoc.h"
+#include "thread.h"
 #include "extfunc.h"
-#include "linuxsys.h"
 #include "mthread.h"
 #include "cthread.h"
+#include "linuxsys.h"
 
 
 struct __lnx_thread {
-    thread_fn   *start_addr;
-    void        *args;
+    thread_fn *start_addr;
+    void *args;
 };
 
 static void __cloned_lnx_start_fn( void *thrvoiddata )
@@ -64,25 +65,15 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                     unsigned stack_size, void *arglist )
 /******************************************************/
 {
-    pid_t               pid;
+    pid_t pid;
     struct __lnx_thread *thrdata;
-    unsigned            flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND
-                            | CLONE_THREAD | CLONE_SYSVSEM 
-                            | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID | CLONE_DETACHED;
-    
-    if( stack_size == 0 && stack_bottom == NULL ) {
-        stack_size = 4 * 1024;  /* Docs and other platforms suggest this is
-                                 * the OpenWatcom default
-                                 */
-        stack_bottom = malloc( stack_size );
-    }
 
     if( start_addr == NULL || stack_bottom == NULL || stack_size == 0 ) {
         return( -1 );
     }
 
-    thrdata = (struct __lnx_thread *)malloc( sizeof( struct __lnx_thread ) );
-    if( thrdata == NULL ) {
+    thrdata = (struct __lnx_thread *)malloc(sizeof(struct __lnx_thread));
+    if(thrdata == NULL) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
@@ -90,8 +81,8 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     thrdata->args = arglist;
 
     pid = clone( (int(*)(void *))__cloned_lnx_start_fn,  
-                 (void *)( (int)stack_bottom + stack_size ),
-                 flags, 
+                 (void*)((int)stack_bottom + stack_size),
+                 CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | SIGCHLD, 
                  thrdata );
 
     return( (int)pid );

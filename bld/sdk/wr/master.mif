@@ -90,7 +90,8 @@ $(name).dll: $(win_yacc_file).h rcmsg.gh $(objs) $(libs) $(name).res $(version_r
 !else
     $(linker) name $^@ $(lflags) file {$(objs)} lib {$(libs)}
 !endif
-    @%make bind_res_add_version_dll
+    @%make echo_bindres
+    $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
 
 #---------- TEST
 test_system_win_i86= windows

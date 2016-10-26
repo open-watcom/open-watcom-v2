@@ -446,7 +446,7 @@ void StaticFini( void )
 /*
  * MemStrDup - Safe strdup()
  */
-char *MemStrDup( const char *string )
+char *MemStrDup( char *string )
 {
     char *rptr;
 

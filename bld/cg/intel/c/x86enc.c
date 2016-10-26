@@ -62,11 +62,11 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "namelist.h"
-#include "fixindex.h"
 #include "feprotos.h"
 
 
 extern  hw_reg_set      CalcSegment(cg_sym_handle,cg_class);
+extern  int             NumOperands(instruction*);
 extern  void            DoRepOp( instruction *ins );
 extern  void            Do4CXShift(instruction *,void (*)(instruction*) );
 extern  void            LayLeaOp(instruction*);
@@ -627,7 +627,7 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     reverse = false;
     pop = false;
     dest = false;
-    switch( G( ins ) ) {
+    switch( ins->u.gen_table->generate ) {
     case G_RRFBIN:
         reverse = true;
         break;
@@ -675,8 +675,8 @@ static  void    DoP5RegisterDivide( instruction *ins ) {
     GenJumpLabel( lbl_2 );
     CodeLabel( lbl, 0 );
     _Code;
-    LayInitial( ins, G( ins ) );
-    LayOpndSize( ins, G( ins ) );
+    LayInitial( ins, ins->u.gen_table->generate );
+    LayOpndSize( ins, ins->u.gen_table->generate );
     LayST( ins->operands[0] );
     _Emit;
     CodeLabel( lbl_2, 0 );
@@ -740,7 +740,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
         LayOpword( 0x30ff );
         LayModRM( ins->operands[0] );
 #endif
-        if( G( ins ) == G_MRFBIN ) {
+        if( ins->u.gen_table->generate == G_MRFBIN ) {
             rtindex = RT_FDIV_MEM32R;
         } else {
             rtindex = RT_FDIV_MEM32;
@@ -787,7 +787,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
         LayModRM( low );
         StackDepth -= WORD_SIZE;
 #endif
-        if( G( ins ) == G_MRFBIN ) {
+        if( ins->u.gen_table->generate == G_MRFBIN ) {
             rtindex = RT_FDIV_MEM64R;
         } else {
             rtindex = RT_FDIV_MEM64;
@@ -805,8 +805,8 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     if( seg != NULL ) {
         GenSeg( seg->r.reg );
     }
-    LayInitial( ins, G( ins ) );
-    LayOpndSize( ins, G( ins ) );
+    LayInitial( ins, ins->u.gen_table->generate );
+    LayOpndSize( ins, ins->u.gen_table->generate );
     LayMF( ins->operands[0] );
     LayModRM( ins->operands[0] );
     _Emit;
@@ -857,7 +857,7 @@ static  void    DoP5Divide( instruction *ins ) {
         AddByte( 0x1f );        // pop ds
         _Emit;
     }
-    switch( G( ins ) ) {
+    switch( ins->u.gen_table->generate ) {
     case G_RRFBIN:
     case G_RNFBIN:
     case G_RRFBIND:
@@ -1841,7 +1841,7 @@ void    GenObjCode( instruction *ins ) {
     int         i;
     bool        opnd_size;
 
-    gen = G( ins );
+    gen = ins->u.gen_table->generate;
     if( gen != G_NO ) {
 #if 1
         // fixme - should be _IsTargetModel

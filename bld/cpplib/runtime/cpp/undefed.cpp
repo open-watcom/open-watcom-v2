@@ -34,9 +34,7 @@
 #include "rtmsgs.h"
 
 
-// never return
 extern "C"
-_WPRTLINK
 _NORETURN
 void CPPLIB( undefed_cdtor )(   // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )

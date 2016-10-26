@@ -72,6 +72,8 @@
 
 #include "clibext.h"
 
+seg_leader      *StackSegPtr;
+startinfo       StartInfo;
 
 #define IMPLIB_BUFSIZE 4096
 
@@ -79,123 +81,46 @@ typedef struct {
     f_handle    handle;
     char        *fname;
     char        *buffer;
-    size_t      bufsize;
+    unsigned    bufsize;
     char        *dllname;
     size_t      dlllen;
-    bool        didone : 1;
+    unsigned    didone : 1;
 } implibinfo;
 
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
     group_entry *lastgrp;  // used only for copy classes
-    bool        repos : 1;
-    bool        copy  : 1;
+    unsigned    repos : 1;
+    unsigned    copy  : 1;
 } grpwriteinfo;
-
-typedef void *writebuffer_fn(void *, const void *, size_t);
-
-seg_leader      *StackSegPtr;
-startinfo       StartInfo;
 
 static implibinfo       ImpLib;
 
-static void SetupImpLib( void )
-/*****************************/
-{
-    const char  *fname;
-    size_t      namelen;
-
-    ImpLib.bufsize = 0;
-    ImpLib.handle = NIL_FHANDLE;
-    ImpLib.buffer = NULL;
-    ImpLib.dllname = NULL;
-    ImpLib.didone = false;
-    if( FmtData.make_implib ) {
-        _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
-        if( FmtData.make_impfile ) {
-            ImpLib.fname = ChkStrDup( FmtData.implibname );
-            ImpLib.handle = QOpenRW( ImpLib.fname );
-        } else {
-            ImpLib.handle = OpenTempFile( &ImpLib.fname );
-        }
-        /* GetBaseName results in the filename only   *
-         * it trims both the path, and the extension */
-        fname = GetBaseName( Root->outfile->fname, 0, &namelen );
-        ImpLib.dlllen = namelen;
-        /*
-         * increase length to restore full extension if not OS2
-         * sometimes the extension of the output name is important
-         */
-        ImpLib.dlllen += strlen( fname + namelen );
-        _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
-        memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
-    }
-}
-
-#if defined( __UNIX__ )
-#define CVPACK_EXE "cvpack"
-#else
-#define CVPACK_EXE "cvpack.exe"
-#endif
-
-static void DoCVPack( void )
-/**************************/
-{
-#if !defined( __UNIX__ ) || defined(__WATCOMC__)
-    int         retval;
-    char        *name;
-
-    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
-        if( SymFileName != NULL ) {
-            name = SymFileName;
-        } else {
-            name = Root->outfile->fname;
-        }
-        retval = (int)spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
-                          name, NULL );
-        if( retval == -1 ) {
-            PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
-        }
-    }
-#endif
-}
-
-static void OpenOutFiles( void )
-/******************************/
-{
-    outfilelist   *fnode;
-
-    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        OpenBuffFile( fnode );
-    }
-}
-
-static void CloseOutFiles( void )
-/*******************************/
-{
-    outfilelist     *fnode;
-
-    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
-        if( fnode->handle != NIL_FHANDLE ) {
-            CloseBuffFile( fnode );
-        }
-    }
-}
+static void OpenOutFiles( void );
+static void CloseOutFiles( void );
+static void SetupImpLib( void );
+static void DoCVPack( void );
+static void FlushImpBuffer( void );
+static void ExecWlib( void );
+static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
+                         void *(*rtn)(void *, const void *, size_t) );
+static void BufImpWrite( char *buffer, unsigned len );
+static void FlushBuffFile( outfilelist *outfile );
 
 void ResetLoadFile( void )
-/************************/
+/*******************************/
 {
     ClearStartAddr();
 }
 
 void CleanLoadFile( void )
-/************************/
+/*******************************/
 {
 }
 
 void InitLoadFile( void )
-/***********************/
+/******************************/
 /* open the file, and write out header info */
 {
     DEBUG(( DBG_OLD, "InitLoadFile()" ));
@@ -203,7 +128,7 @@ void InitLoadFile( void )
 }
 
 void FiniLoadFile( void )
-/***********************/
+/******************************/
 /* terminate writing of load file */
 {
     CurrSect = Root;
@@ -267,6 +192,34 @@ void FiniLoadFile( void )
     DoCVPack();
 }
 
+#if defined( __UNIX__ )
+#define CVPACK_EXE "cvpack"
+#else
+#define CVPACK_EXE "cvpack.exe"
+#endif
+
+static void DoCVPack( void )
+/**************************/
+{
+#if !defined( __UNIX__ ) || defined(__WATCOMC__)
+    int         retval;
+    char        *name;
+
+    if( (LinkFlags & CVPACK_FLAG) && (LinkState & LINK_ERROR) == 0 ) {
+        if( SymFileName != NULL ) {
+            name = SymFileName;
+        } else {
+            name = Root->outfile->fname;
+        }
+        retval = (int)spawnlp( P_WAIT, CVPACK_EXE, CVPACK_EXE, "/nologo",
+                          name, NULL );
+        if( retval == -1 ) {
+            PrintIOError( ERR+MSG_CANT_EXECUTE, "12", CVPACK_EXE );
+        }
+    }
+#endif
+}
+
 static seg_leader *FindStack( section *sect )
 /*******************************************/
 {
@@ -296,7 +249,7 @@ static seg_leader *StackSegment( void )
 }
 
 void GetStkAddr( void )
-/*********************/
+/****************************/
 /* Find the address of the stack */
 {
     if( (FmtData.type & MK_NOVELL) == 0 && !FmtData.dll ) {
@@ -322,7 +275,7 @@ void GetStkAddr( void )
 }
 
 static class_entry *LocateBSSClass( void )
-/****************************************/
+/*****************************************/
 {
     class_entry *currclass;
     section     *sect;
@@ -336,8 +289,8 @@ static class_entry *LocateBSSClass( void )
     return( NULL );
 }
 
-static void DefABSSSym( const char *name )
-/****************************************/
+static void DefABSSSym( char *name )
+/**********************************/
 {
    symbol          *sym;
 
@@ -353,7 +306,7 @@ static void DefABSSSym( const char *name )
  }
 
 void DefBSSSyms( void )
-/*********************/
+/****************************/
 {
     DefABSSSym( BSSStartSym );
     DefABSSSym( BSS_StartSym );
@@ -368,7 +321,7 @@ static bool CompSymPtr( void *sym, void *chk )
 }
 
 static void CheckBSSInStart( symbol *sym, char *name )
-/****************************************************/
+/******************************************************/
 /* It's OK to define _edata if:
         1) the DOSSEG flag is not set
                 or
@@ -387,7 +340,7 @@ static void CheckBSSInStart( symbol *sym, char *name )
 }
 
 static void DefBSSStartSize( char *name, class_entry *class )
-/***********************************************************/
+/*************************************************************/
 /* set the value of an start symbol, and see if it has been defined */
 {
     symbol      *sym;
@@ -406,7 +359,7 @@ static void DefBSSStartSize( char *name, class_entry *class )
 }
 
 static void DefBSSEndSize( char *name, class_entry *class )
-/*********************************************************/
+/***********************************************************/
 /* set the value of an end symbol, and see if it has been defined */
 {
     symbol      *sym;
@@ -428,7 +381,7 @@ static void DefBSSEndSize( char *name, class_entry *class )
 }
 
 void GetBSSSize( void )
-/*********************/
+/****************************/
 /* Find size of BSS segment, and set the special symbols */
 {
     class_entry *class;
@@ -488,13 +441,13 @@ void SetStkSize( void )
 }
 
 void ClearStartAddr( void )
-/*************************/
+/********************************/
 {
     memset( &StartInfo, 0, sizeof( startinfo ) );
 }
 
-void SetStartSym( const char *name )
-/**********************************/
+void SetStartSym( char *name )
+/***********************************/
 {
     size_t      namelen;
 
@@ -519,7 +472,7 @@ void SetStartSym( const char *name )
 }
 
 void GetStartAddr( void )
-/***********************/
+/******************************/
 {
     bool        addoff;
     int         deltaseg;
@@ -568,7 +521,7 @@ void GetStartAddr( void )
 }
 
 offset CalcGroupSize( group_entry *group )
-/****************************************/
+/***********************************************/
 /* calculate the total memory size of a potentially split group */
 {
     offset size;
@@ -583,7 +536,7 @@ offset CalcGroupSize( group_entry *group )
 }
 
 offset CalcSplitSize( void )
-/**************************/
+/*********************************/
 /* calculate the size of the uninitialized portion of a group */
 {
     offset size;
@@ -600,19 +553,19 @@ offset CalcSplitSize( void )
 }
 
 bool CompareDosSegments( targ_addr *left, targ_addr *right )
-/**********************************************************/
+/*****************************************************************/
 {
     return( LESS_THAN_ADDR( *left, *right ) );
 }
 
 bool CompareOffsets( targ_addr *left, targ_addr *right )
-/******************************************************/
+/*****************************************************************/
 {
     return( left->off < right->off );
 }
 
 bool CompareProtSegments( targ_addr *left, targ_addr *right )
-/***********************************************************/
+/*****************************************************************/
 {
     if( left->seg == right->seg ) {
         return( left->off < right->off );
@@ -621,7 +574,7 @@ bool CompareProtSegments( targ_addr *left, targ_addr *right )
 }
 
 void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
-/************************************************************/
+/*******************************************************************/
 {
     group_entry     *group, *low_group, *firstgroup, **lastgroup;
     targ_addr       *low_addr;
@@ -653,7 +606,7 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
 }
 
 bool WriteDOSGroup( group_entry *group )
-/**************************************/
+/*********************************************/
 /* write the data for group to the loadfile */
 /* returns true if the file should be repositioned */
 {
@@ -688,7 +641,7 @@ bool WriteDOSGroup( group_entry *group )
 }
 
 unsigned_32 MemorySize( void )
-/****************************/
+/***********************************/
 /* Compute size of image when loaded into memory. */
 {
     unsigned_32         start;
@@ -714,8 +667,8 @@ unsigned_32 MemorySize( void )
     }
 }
 
-unsigned_32 AppendToLoadFile( const char *name )
-/**********************************************/
+unsigned_32 AppendToLoadFile( char *name )
+/************************************************/
 {
     f_handle        handle;
     unsigned_32     wrote;
@@ -727,6 +680,59 @@ unsigned_32 AppendToLoadFile( const char *name )
         wrote = 0;
     }
     return( wrote );
+}
+
+static void SetupImpLib( void )
+/*****************************/
+{
+    char        *fname;
+    unsigned    namelen;
+
+    ImpLib.bufsize = 0;
+    ImpLib.handle = NIL_FHANDLE;
+    ImpLib.buffer = NULL;
+    ImpLib.dllname = NULL;
+    ImpLib.didone = false;
+    if( FmtData.make_implib ) {
+        _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
+        if( FmtData.make_impfile ) {
+            ImpLib.fname = ChkStrDup( FmtData.implibname );
+            ImpLib.handle = QOpenRW( ImpLib.fname );
+        } else {
+            ImpLib.handle = OpenTempFile( &ImpLib.fname );
+        }
+        /* RemovePath results in the filename only   *
+         * it trims both the path, and the extension */
+        fname = RemovePath( Root->outfile->fname, &namelen );
+        ImpLib.dlllen = namelen;
+        /* increase length to restore full extension if not OS2    *
+         * sometimes the extension of the output name is important */
+        ImpLib.dlllen += strlen( fname + namelen );
+        _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
+        memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
+    }
+}
+
+void BuildImpLib( void )
+/*****************************/
+{
+    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
+                                || !FmtData.make_implib )
+        return;
+    if( ImpLib.bufsize > 0 ) {
+        FlushImpBuffer();
+    }
+    QClose( ImpLib.handle, ImpLib.fname );
+    if( !FmtData.make_impfile ) {
+        if( ImpLib.didone ) {
+            ExecWlib();
+        }
+        QDelete( ImpLib.fname );
+    }
+    _LnkFree( FmtData.implibname );
+    _LnkFree( ImpLib.fname );
+    _LnkFree( ImpLib.buffer );
+    _LnkFree( ImpLib.dllname );
 }
 
 #ifdef BOOTSTRAP
@@ -810,56 +816,8 @@ static void ExecWlib( void )
 #endif
 }
 
-static void FlushImpBuffer( void )
-/********************************/
-{
-    QWrite( ImpLib.handle, ImpLib.buffer, ImpLib.bufsize, ImpLib.fname );
-}
-
-void BuildImpLib( void )
-/*****************************/
-{
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
-                                || !FmtData.make_implib )
-        return;
-    if( ImpLib.bufsize > 0 ) {
-        FlushImpBuffer();
-    }
-    QClose( ImpLib.handle, ImpLib.fname );
-    if( !FmtData.make_impfile ) {
-        if( ImpLib.didone ) {
-            ExecWlib();
-        }
-        QDelete( ImpLib.fname );
-    }
-    _LnkFree( FmtData.implibname );
-    _LnkFree( ImpLib.fname );
-    _LnkFree( ImpLib.buffer );
-    _LnkFree( ImpLib.dllname );
-}
-
-static void BufImpWrite( const char *buffer, size_t len )
-/*******************************************************/
-{
-    size_t      diff;
-
-    if( ImpLib.bufsize + len >= IMPLIB_BUFSIZE ) {
-        diff = ImpLib.bufsize + len - IMPLIB_BUFSIZE;
-        memcpy( ImpLib.buffer + ImpLib.bufsize , buffer, IMPLIB_BUFSIZE - ImpLib.bufsize );
-        ImpLib.bufsize = IMPLIB_BUFSIZE;
-        FlushImpBuffer();
-        ImpLib.bufsize = diff;
-        if( diff > 0 ) {
-            memcpy( ImpLib.buffer, buffer + len - diff, diff );
-        }
-    } else {
-        memcpy( ImpLib.buffer + ImpLib.bufsize, buffer, len );
-        ImpLib.bufsize += len;
-    }
-}
-
-void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal )
-/*******************************************************************************/
+void AddImpLibEntry( char *intname, char *extname, unsigned ordinal )
+/**************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;
@@ -906,22 +864,51 @@ void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal 
     BufImpWrite( buff, currpos - buff + 1 );
 }
 
-void WriteLoad3( void *dummy, const char *buff, size_t size )
-/***********************************************************/
+static void FlushImpBuffer( void )
+/********************************/
+{
+    QWrite( ImpLib.handle, ImpLib.buffer, ImpLib.bufsize, ImpLib.fname );
+}
+
+static void BufImpWrite( char *buffer, unsigned len )
+/***************************************************/
+{
+    unsigned    diff;
+
+    if( ImpLib.bufsize + len >= IMPLIB_BUFSIZE ) {
+        diff = ImpLib.bufsize + len - IMPLIB_BUFSIZE;
+        memcpy( ImpLib.buffer + ImpLib.bufsize , buffer, IMPLIB_BUFSIZE - ImpLib.bufsize );
+        ImpLib.bufsize = IMPLIB_BUFSIZE;
+        FlushImpBuffer();
+        ImpLib.bufsize = diff;
+        if( diff > 0 ) {
+            memcpy( ImpLib.buffer, buffer + len - diff, diff );
+        }
+    } else {
+        memcpy( ImpLib.buffer + ImpLib.bufsize, buffer, len );
+        ImpLib.bufsize += len;
+    }
+}
+
+void WriteLoad3( void* dummy, char *buff, unsigned size )
+/**************************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
     dummy = dummy;
     WriteLoad( buff, size );
 }
 
-unsigned_32 CopyToLoad( f_handle handle, const char *name )
-/*********************************************************/
+unsigned_32 CopyToLoad( f_handle handle, char *name )
+/***********************************************************/
 {
-    size_t          amt_read;
+    unsigned_32     amt_read;
     unsigned_32     wrote;
 
     wrote = 0;
-    while( (amt_read = QRead( handle, TokBuff, TokSize, name )) != 0 ) {
+    for(;;) {
+        amt_read = QRead( handle, TokBuff, TokSize, name );
+        if( amt_read == 0 )
+            break;
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
     }
@@ -930,7 +917,7 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
 }
 
 unsigned long NullAlign( unsigned align )
-/***************************************/
+/**********************************************/
 /* align loadfile -- assumed power of two alignment */
 {
     unsigned long       off;
@@ -943,7 +930,7 @@ unsigned long NullAlign( unsigned align )
 }
 
 unsigned long OffsetAlign( unsigned long off, unsigned long align )
-/*****************************************************************/
+/************************************************************************/
 /* align loadfile -- assumed power of two alignment */
 {
     unsigned long       pad;
@@ -958,8 +945,8 @@ static bool WriteSegData( void *_sdata, void *_info )
 {
     segdata         *sdata = _sdata;
     grpwriteinfo    *info = _info;
-    unsigned long   newpos;
-    unsigned long   oldpos;
+    unsigned long       newpos;
+    unsigned long       oldpos;
 
     if( !sdata->isuninit && !sdata->isdead && ( ( sdata->length > 0 ) || (FmtData.type & MK_END_PAD) ) ) {
         newpos = info->seg_start + sdata->a.delta;
@@ -988,7 +975,7 @@ static void DoWriteLeader( seg_leader *seg, grpwriteinfo *info )
 }
 
 void WriteLeaderLoad( void *seg )
-/*******************************/
+/**************************************/
 {
     grpwriteinfo    info;
 
@@ -1070,8 +1057,30 @@ offset  WriteGroupLoad( group_entry *group )
     return( WriteDOSGroupLoad( group, false ) );
 }
 
+static void OpenOutFiles( void )
+/******************************/
+{
+    outfilelist   *fnode;
+
+    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
+        OpenBuffFile( fnode );
+    }
+}
+
+static void CloseOutFiles( void )
+/*******************************/
+{
+    outfilelist     *fnode;
+
+    for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
+        if( fnode->handle != NIL_FHANDLE ) {
+            CloseBuffFile( fnode );
+        }
+    }
+}
+
 void FreeOutFiles( void )
-/***********************/
+/******************************/
 {
     outfilelist     *fnode;
 
@@ -1087,57 +1096,30 @@ void FreeOutFiles( void )
 }
 
 static void *SetToFillChar( void *dest, const void *dummy, size_t size )
-/**********************************************************************/
+/******************************************************************/
 {
     memset( dest, FmtData.FillChar, size );
     return( (void *)dummy );
 }
 
-#define BUFF_BLOCK_SIZE (16*1024)
-
-static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
-/*******************************************************************************************************/
+void PadLoad( unsigned long size )
+/***************************************/
+/* pad out load file with zeros */
 {
-    size_t   modpos;
-    size_t   adjust;
+    outfilelist         *outfile;
 
-    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
-    outfile->bufpos += len;
-    while( modpos + len >= BUFF_BLOCK_SIZE ) {
-        adjust = BUFF_BLOCK_SIZE - modpos;
-        rtn( outfile->buffer + modpos, data, adjust );
-        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
-        data += adjust;
-        len -= adjust;
-        modpos = 0;
-    }
-    if( len > 0 ) {
-        rtn( outfile->buffer + modpos, data, len );
-    }
-}
-
-static void SeekBuffer( unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
-/************************************************************************************/
-{
-    size_t   modpos;
-    size_t   adjust;
-
-    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
-    outfile->bufpos += len;
-    while( modpos + len >= BUFF_BLOCK_SIZE ) {
-        adjust = BUFF_BLOCK_SIZE - modpos;
-        rtn( outfile->buffer + modpos, NULL, adjust );
-        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
-        len -= adjust;
-        modpos = 0;
-    }
-    if( len > 0 ) {
-        rtn( outfile->buffer + modpos, NULL, len );
+    if( size == 0 )
+        return;
+    outfile = CurrSect->outfile;
+    if( outfile->buffer != NULL ) {
+        WriteBuffer( NULL, size, outfile, SetToFillChar );
+    } else {
+        WriteNulls( outfile->handle, size, outfile->fname );
     }
 }
 
 void PadBuffFile( outfilelist *outfile, unsigned long size )
-/**********************************************************/
+/*****************************************************************/
 /* pad out load file with zeros */
 {
     if( size == 0 )
@@ -1149,15 +1131,8 @@ void PadBuffFile( outfilelist *outfile, unsigned long size )
     }
 }
 
-void PadLoad( unsigned long size )
-/***************************************/
-/* pad out load file with zeros */
-{
-    PadBuffFile( CurrSect->outfile, size );
-}
-
-void WriteLoad( const void *buff, size_t size )
-/*********************************************/
+void WriteLoad( void *buff, unsigned long size )
+/*****************************************************/
 /* write a buffer out to the load file */
 {
     outfilelist         *outfile;
@@ -1170,20 +1145,6 @@ void WriteLoad( const void *buff, size_t size )
     }
 }
 
-static void FlushBuffFile( outfilelist *outfile )
-/***********************************************/
-{
-    size_t  modpos;
-
-    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
-    if( modpos != 0 ) {
-        QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
-    }
-    _LnkFree( outfile->buffer );
-    outfile->buffer = NULL;
-}
-
-#if 0
 static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
 /*********************************************************************/
 {
@@ -1191,22 +1152,20 @@ static void *NullBuffFunc( void *dest, const void *dummy, size_t size )
     size = size;
     return( dest );
 }
-#endif
 
 void SeekLoad( unsigned long offset )
-/***********************************/
+/******************************************/
 {
     outfilelist         *outfile;
 
     outfile = CurrSect->outfile;
-    if( outfile->buffer != NULL && ( outfile->origin + offset ) < outfile->bufpos ) {
+    if( outfile->buffer != NULL && offset + outfile->origin < outfile->bufpos ) {
         FlushBuffFile( outfile );
     }
     if( outfile->buffer == NULL ) {
-        QSeek( outfile->handle, outfile->origin + offset, outfile->fname );
+        QSeek( outfile->handle, offset + outfile->origin, outfile->fname );
     } else {
-//        SeekBuffer( outfile->origin + offset - outfile->bufpos, outfile, NullBuffFunc );
-        SeekBuffer( outfile->origin + offset - outfile->bufpos, outfile, SetToFillChar );
+        WriteBuffer( NULL, offset + outfile->origin - outfile->bufpos, outfile, NullBuffFunc );
     }
 }
 
@@ -1234,6 +1193,8 @@ unsigned long PosLoad( void )
     }
 }
 
+#define BUFF_BLOCK_SIZE (16*1024)
+
 void InitBuffFile( outfilelist *outfile, char *filename, bool executable )
 /*******************************************************************************/
 {
@@ -1256,15 +1217,27 @@ void SetOriginLoad( unsigned long origin )
 void OpenBuffFile( outfilelist *outfile )
 /**********************************************/
 {
-    if( outfile->is_exe ) {
+    if( outfile->is_exe )
         outfile->handle = ExeCreate( outfile->fname );
-    } else {
+    else
         outfile->handle = QOpenRW( outfile->fname );
-    }
     if( outfile->handle == NIL_FHANDLE ) {
         PrintIOError( FTL+MSG_CANT_OPEN_NO_REASON, "s", outfile->fname );
     }
     _ChkAlloc( outfile->buffer, BUFF_BLOCK_SIZE );
+}
+
+static void FlushBuffFile( outfilelist *outfile )
+/***********************************************/
+{
+    unsigned    modpos;
+
+    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
+    if( modpos != 0 ) {
+        QWrite( outfile->handle, outfile->buffer, modpos, outfile->fname );
+    }
+    _LnkFree( outfile->buffer );
+    outfile->buffer = NULL;
 }
 
 void CloseBuffFile( outfilelist *outfile )
@@ -1275,4 +1248,26 @@ void CloseBuffFile( outfilelist *outfile )
     }
     QClose( outfile->handle, outfile->fname );
     outfile->handle = NIL_FHANDLE;
+}
+
+static void WriteBuffer( char *info, unsigned long len, outfilelist *outfile,
+                         void *(*rtn)(void *, const void *, size_t) )
+/***************************************************************************/
+{
+    unsigned modpos;
+    unsigned adjust;
+
+    modpos = outfile->bufpos % BUFF_BLOCK_SIZE;
+    outfile->bufpos += len;
+    while( modpos + len >= BUFF_BLOCK_SIZE ) {
+        adjust = BUFF_BLOCK_SIZE - modpos;
+        rtn( outfile->buffer + modpos, info, adjust );
+        QWrite( outfile->handle, outfile->buffer, BUFF_BLOCK_SIZE, outfile->fname );
+        info += adjust;
+        len -= adjust;
+        modpos = 0;
+    }
+    if( len > 0 ) {
+        rtn( outfile->buffer + modpos, info, len );
+    }
 }

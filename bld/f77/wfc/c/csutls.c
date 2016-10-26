@@ -69,7 +69,7 @@ static  const STMT __FAR    CSWords[] = {
 };
 
 
-csnode  *NewCSNode( uint label_len )
+csnode  *NewCSNode( int label_len )
 {
 // Allocate a new "csnode".
 
@@ -124,7 +124,7 @@ void    AddCSNode( byte typ )
     csnode      *new_cs_node;
     itnode      *label;
     char        *label_ptr;
-    uint        label_len;
+    int         label_len;
 
     if( typ == CS_REMOTEBLOCK ) {
         label = CITNode;

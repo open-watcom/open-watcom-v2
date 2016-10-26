@@ -45,7 +45,6 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
-#include "optimize.h"
 
 
 typedef struct eight_byte_name {
@@ -56,6 +55,7 @@ typedef struct eight_byte_name {
 } eight_byte_name;
 
 extern  name            *IntEquivalent( name * );
+extern  bool            SameThing( name *, name * );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  name            *SegName( name * );

@@ -42,14 +42,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 #define RESOURCE_MAX_SIZE       128
 
 #if defined( INCL_MSGTEXT )
@@ -94,7 +86,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
  * starts at offset 0 */
 {
     if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+        return( lseek( handle, position + FileShift, where ) - FileShift );
     } else {
         return( lseek( handle, position, where ) );
     }
@@ -102,7 +94,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
 
 
 /* declare struct WResRoutines WResRtns {...} */
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
@@ -130,7 +122,7 @@ bool Msg_Init( void )
         CloseResFile( &hInstance );
         hInstance.handle = NIL_HANDLE;
     }
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = true;
     return( false );
 }
@@ -154,15 +146,15 @@ bool Msg_Fini( void )
 
 static void Outs( bool nl, const char *s )
 {
-    posix_write( STDOUT_FILENO, s, strlen( s ) );
+    write( STDOUT_FILENO, s, strlen( s ) );
     if( nl ) {
-        posix_write( STDOUT_FILENO, "\r\n", 2 );
+        write( STDOUT_FILENO, "\r\n", 2 );
     }
 }
 
 static void Outc( char c )
 {
-    posix_write( STDOUT_FILENO, &c, 1 );
+    write( STDOUT_FILENO, &c, 1 );
 }
 
 void Banner( void )

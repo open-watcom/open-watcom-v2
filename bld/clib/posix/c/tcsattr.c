@@ -33,8 +33,6 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "rterrno.h"
-#include "thread.h"
-
 
 _WCRTLINK int tcsetattr( int __fd, int __optional_actions, const struct termios *__termios_p )
 {

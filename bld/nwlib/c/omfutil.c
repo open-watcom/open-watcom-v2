@@ -58,31 +58,29 @@ void FiniOmfUtil( void )
     FiniOmfRec();
 }
 
-static unsigned_16 CheckForOverflow( unsigned long curr_offset )
+static void CheckForOverflow(file_offset current)
 {
-    char buffer[10];
+    char buffer[ 10 ];
 
-    curr_offset /= Options.page_size;
-    if( curr_offset > (unsigned long)USHRT_MAX ) {
-        sprintf( buffer, "%u", Options.page_size );
-        FatalError( ERR_LIB_TOO_LARGE, buffer );
+    if( current / Options.page_size > (unsigned long)USHRT_MAX ) {
+        sprintf(buffer, "%u", Options.page_size);
+        FatalError(ERR_LIB_TOO_LARGE, buffer);
     }
-    return( (unsigned_16)curr_offset );
 }
 
 void PadOmf( bool force )
 {
-    size_t      padding_size;
+    unsigned    padding;
     char        *tmpbuf;
 
     // page size is always a power of 2
     // therefor x % Options.page_size == x & ( Options.page_size - 1 )
 
-    padding_size = Options.page_size - (LibTell( NewLibrary ) & ( Options.page_size - 1 ));
-    if( padding_size != Options.page_size || force ) {
-        tmpbuf = MemAlloc( padding_size );
-        memset( tmpbuf, 0, padding_size );
-        WriteNew( tmpbuf, padding_size );
+    padding = Options.page_size -( LibTell( NewLibrary ) & ( Options.page_size - 1 ) );
+    if( padding != Options.page_size || force ) {
+        tmpbuf = MemAlloc( padding );
+        memset( tmpbuf, 0, padding );
+        WriteNew( tmpbuf, padding );
         MemFree( tmpbuf);
     }
 }
@@ -92,14 +90,18 @@ static int isPrime( unsigned num )
     unsigned *test_p;
     unsigned p;
 
-    for( test_p = PrimeNos; (p = *test_p) != 0; ++test_p ) {
+    for( test_p = PrimeNos;; ++test_p ) {
+        if( *test_p == 0 ) {
+            return( -1 );
+        }
+        p = *test_p;
         if( ( p * p ) > num )
-            return( 1 );
+            break;
         if( ( num % p ) == 0 ) {
             return( 0 );
         }
     }
-    return( -1 );
+    return( 1 );
 }
 
 
@@ -133,9 +135,8 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
     hash_entry      h;
 
     omflib_hash( sym, len, &h, num_blocks );
-
-    /* + length byte */
-    entry_len = Round2( len + 1 ) + 2;
+    
+    entry_len = (len | 1) + 3;
     for( i = 0; i < num_blocks; i++ ) {
         loc = lib_block[h.block].fflag * 2;
         for( j = 0; j < NUM_BUCKETS; j++ ) {
@@ -149,9 +150,9 @@ static bool InsertOmfDict( OmfLibBlock *lib_block, unsigned num_blocks, char *sy
                 loc -= NUM_BUCKETS + 1;
                 lib_block[h.block].name[loc] = len;
                 loc++;
-                memcpy( lib_block[h.block].name + loc, sym, len );
+                memcpy( &(lib_block[h.block].name[loc]), sym, len );
                 loc += len;
-                *(unsigned_16 *)( lib_block[h.block].name + loc ) = offset;
+                *( (unsigned_16 *)&(lib_block[h.block].name[loc]) ) = offset;
                 return( true );
             }
             h.bucket += h.bucketd;
@@ -186,14 +187,16 @@ static bool HashOmfSymbols( OmfLibBlock *lib_block, unsigned num_blocks, sym_fil
 #endif
         }
         str_len = strlen( fname );
-        fname[str_len] ='!';
-        ret = InsertOmfDict( lib_block, num_blocks, fname, str_len + 1, sfile->u.new_offset_omf );
-        fname[str_len] = 0;
+        fname[ str_len ] ='!';
+        ret = InsertOmfDict( lib_block, num_blocks, fname,
+            str_len + 1, sfile->new_offset );
+        fname[ str_len ] = 0;
         if( !ret ) {
             return( ret );
         }
         for( sym = sfile->first; sym != NULL; sym = sym->next ) {
-            ret = InsertOmfDict( lib_block, num_blocks, sym->name, sym->len, sfile->u.new_offset_omf );
+            ret = InsertOmfDict( lib_block, num_blocks, sym->name,
+                sym->len, sfile->new_offset );
             if( !ret ) {
                 return( ret );
             }
@@ -208,7 +211,7 @@ unsigned WriteOmfDict( sym_file *first_sfile )
     bool        done;
     unsigned    num_blocks;
     OmfLibBlock *lib_block;
-    size_t      dict_size;
+    unsigned    dict_size;
     unsigned    int i;
     unsigned    int j;
 
@@ -228,13 +231,13 @@ unsigned WriteOmfDict( sym_file *first_sfile )
         lib_block = MemRealloc( lib_block, dict_size );
         memset( lib_block, 0, dict_size );
         for( i = 0; i < num_blocks; i++ ) {
-            lib_block[i].fflag = ( NUM_BUCKETS + 1 ) / 2;
+            lib_block[ i ].fflag = ( NUM_BUCKETS + 1 ) / 2;
         }
         done = HashOmfSymbols( lib_block, num_blocks, first_sfile );
     } while( !done );
     for( i = 0; i < num_blocks; i++ ) {
         for( j = 0; j < NUM_BUCKETS; j++ ) {
-           if( lib_block[i].htab[j] == 0 ) {
+           if( lib_block[ i ].htab[ j ] == 0 ) {
                break;
            }
         }
@@ -247,32 +250,29 @@ unsigned WriteOmfDict( sym_file *first_sfile )
 void WriteOmfFile( sym_file *sfile )
 {
     sym_entry   *sym;
-    const char  *fname;
+    file_offset current;
 
     ++symCount;
-    sfile->u.new_offset_omf = CheckForOverflow( LibTell( NewLibrary ) );
+    //add one for ! after name and make sure odd so whole name record will
+    //be word aligned
+    current = LibTell(NewLibrary);
+    CheckForOverflow(current);
+    sfile->new_offset = current / Options.page_size;
     if( sfile->import == NULL ) {
-        fname = MakeFName( sfile->full_name );
+        charCount += ( strlen( MakeFName( sfile->full_name ) ) + 1 ) | 1;
         // Options.page_size is always a power of 2 so someone should optimize
-        // this sometime. maybe store page_size as a log
+        //this sometime. maybe store page_size as a log
     } else {
 #ifdef IMP_MODULENAME_DLL
-        fname = sfile->import->DLLName;
+        charCount += ( strlen( sfile->import->DLLName ) + 1 ) | 1;
 #else
-        fname = sfile->import->u.sym.symName;
+        charCount += ( strlen( sfile->import->u.sym.symName ) + 1 ) | 1;
 #endif
     }
-    /*
-     * add one for ! after name and make sure odd so whole name record will
-     * be word aligned
-     * + '!' character and length byte
-     */
-    charCount += Round2( strlen( fname ) + 1 + 1 );
     WriteFileBody( sfile );
     PadOmf( false );
     for( sym = sfile->first; sym != NULL; sym = sym->next ) {
         ++symCount;
-        /* + length byte and word align */
-        charCount += Round2( sym->len + 1 );
+        charCount += sym->len | 1;
     }
 }

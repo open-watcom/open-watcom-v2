@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-#ifdef _M_IX86
 #ifdef __NETWARE__
-extern unsigned short   __GETDS( void );
+extern unsigned short __GETDS( void );
 #else
-extern void             _WCI86NEAR __GETDS( void );
+extern void _WCI86NEAR __GETDS( void );
 #endif
+#ifdef _M_IX86
 #pragma aux __GETDS "*";
 #endif

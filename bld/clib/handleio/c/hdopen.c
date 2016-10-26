@@ -50,77 +50,70 @@
 
 #if !defined(__NETWARE__)
 
-static int check_mode( int handle, int mode )
-/*******************************************/
-{
-  #if defined(__UNIX__)
-    int     __errno;
-    int     flags;
+static int check_mode( int handle, int mode ) {
+/*********************************************/
 
-    if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
-        return( -1 );
-    }
-    __errno = EOK;
-    if( (flags & O_APPEND) && !(mode & _APPEND) ) {
-        __errno = EACCES;
-    }
-    if( (flags & O_ACCMODE) == O_RDONLY ) {
-        if( ( (mode & O_RDWR) && !(mode & O_RDONLY) ) || (mode & O_WRONLY) ) {
+    int flags;
+    int __errno;
+
+    handle=handle;mode=mode;flags=flags;
+    __errno = 0;
+    #if defined(__UNIX__)
+        if( (flags = fcntl( handle, F_GETFL )) == -1 ) {
+            return( -1 );
+        }
+
+        __errno = EOK;
+        if( (flags & O_APPEND) && !(mode & _APPEND) ) {
             __errno = EACCES;
         }
-    } else if( (flags & O_ACCMODE) == O_WRONLY ) {
-        if( ( (mode & O_RDWR) && !(mode & O_WRONLY) ) || (mode & O_RDONLY) ) {
-            __errno = EACCES;
+        if( (flags & O_ACCMODE) == O_RDONLY ) {
+            if( ( (mode&O_RDWR) && !(mode&O_RDONLY) ) || (mode&O_WRONLY) ) {
+                __errno = EACCES;
+            }
+        } else if( (flags & O_ACCMODE) == O_WRONLY ) {
+            if( ( (mode&O_RDWR) && !(mode&O_WRONLY) ) || (mode&O_RDONLY) ) {
+                __errno = EACCES;
+            }
         }
-    }
+    #elif defined(__WARP__)
+        {
+            ULONG   state;
+            int     rc;
+
+            rc = DosQueryFHState((HFILE)handle, &state);
+
+            if( rc == 0 ) {
+                if( (state&OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_RDONLY ) {
+                    if( ( (mode&O_RDWR) && !(mode&O_RDONLY) ) || (mode&O_WRONLY) ) {
+                        __errno = EACCES;
+                    }
+                }
+                if( (state&OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_WRONLY ) {
+                    if( ( (mode&O_RDWR) && !(mode&O_WRONLY) ) || (mode&O_RDONLY) ) {
+                        __errno = EACCES;
+                    }
+                }
+            } else {
+                __errno = EACCES;
+            }
+        }
+    #elif defined(__OS2_286__)
+        // there is support under OS/2 1.x, but Pharlap's run286 doesn't
+        // support the DosQFHandState() function
+    #elif defined(__NT__)
+        // there doesn't appear to be any support under NT for interrogating
+        // how a file handle was opened
+    #else
+        // other systems are MS-DOS and NETWARE...
+        // these systems have no support for interrogating how a file handle
+        // was opened.
+    #endif
     if( __errno == EACCES ) {
         _RWD_errno = __errno;
         return( -1 );
     }
-    return( 0 );
-  #elif defined(__WARP__)
-    int     __errno;
-    ULONG   state;
-    int     rc;
-
-    __errno = EZERO;
-    rc = DosQueryFHState( (HFILE)handle, &state );
-    if( rc == 0 ) {
-        if( (state & OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_RDONLY ) {
-            if( ( (mode & O_RDWR) && !(mode & O_RDONLY) ) || (mode & O_WRONLY) ) {
-                __errno = EACCES;
-            }
-        }
-        if( (state&OPENMODE_ACCESS_MASK) == OPENMODE_ACCESS_WRONLY ) {
-            if( ( (mode & O_RDWR) && !(mode & O_WRONLY) ) || (mode & O_RDONLY) ) {
-                __errno = EACCES;
-            }
-        }
-    } else {
-        __errno = EACCES;
-    }
-    if( __errno == EACCES ) {
-        _RWD_errno = __errno;
-        return( -1 );
-    }
-    return( 0 );
-  #elif defined(__OS2_286__)
-    // there is support under OS/2 1.x, but Pharlap's run286 doesn't
-    // support the DosQFHandState() function
-    handle=handle;mode=mode;
-    return( 0 );
-  #elif defined(__NT__)
-    // there doesn't appear to be any support under NT for interrogating
-    // how a file handle was opened
-    handle=handle;mode=mode;
-    return( 0 );
-  #else
-    // other systems are MS-DOS and NETWARE...
-    // these systems have no support for interrogating how a file handle
-    // was opened.
-    handle=handle;mode=mode;
-    return( 0 );
-  #endif
+    return(0);
 }
 
 #endif
@@ -132,45 +125,42 @@ _WCRTLINK int _open_osfhandle( long osfhandle, int flags )
 {
     int posix_handle;
 
-#if defined(__NT__)
-    // Under Win32, we get an OS handle argument
-    posix_handle = __allocPOSIXHandle( (HANDLE)osfhandle );
-    if( posix_handle == -1 )
-        return( -1 );
-#else
-    // Under everything else, we get a POSIX handle argument
-    posix_handle = osfhandle;
-#endif
-#if defined(__NETWARE__)
-    flags=flags;
-#else
-    if( check_mode( posix_handle, flags ) ) {
-        return( -1 );
-    }
-  #if !defined(__UNIX__)
-    {
-        int         rwmode;
-        unsigned    io_mode;
-
-        rwmode = flags & ( O_RDONLY | O_WRONLY | O_RDWR );
-        io_mode = __GetIOMode( posix_handle );
-        io_mode &= ~(_READ | _WRITE | _APPEND | _BINARY);
-        if( rwmode == O_RDWR )  io_mode |= _READ | _WRITE;
-        if( rwmode == O_RDONLY) io_mode |= _READ;
-        if( rwmode == O_WRONLY) io_mode |= _WRITE;
-        if( flags & O_APPEND )   io_mode |= _APPEND;
-        if( flags & O_BINARY ) {
-           io_mode |= _BINARY;
+    #if defined(__NT__)
+        // Under Win32, we get an OS handle argument
+        posix_handle = __allocPOSIXHandle( (HANDLE)osfhandle );
+        if( posix_handle == -1 ) return( -1 );
+    #else
+        // Under everything else, we get a POSIX handle argument
+        posix_handle = osfhandle;
+    #endif
+    #if !defined(__NETWARE__)
+        if( check_mode( posix_handle, flags ) ) {
+            return( -1 );
         }
-        __SetIOMode( posix_handle, io_mode );
-    }
-  #endif
-#endif
+        #if !defined(__UNIX__)
+        {
+            int         rwmode;
+            unsigned    io_mode;
+
+            rwmode = flags & ( O_RDONLY | O_WRONLY | O_RDWR );
+            io_mode = __GetIOMode( posix_handle );
+            io_mode &= ~(_READ|_WRITE|_APPEND|_BINARY);
+            if( rwmode == O_RDWR )  io_mode |= _READ | _WRITE;
+            if( rwmode == O_RDONLY) io_mode |= _READ;
+            if( rwmode == O_WRONLY) io_mode |= _WRITE;
+            if( flags & O_APPEND )   io_mode |= _APPEND;
+            if( flags & O_BINARY ) {
+               io_mode |= _BINARY;
+            }
+            __SetIOMode( posix_handle, io_mode );
+        }
+        #endif
+    #endif
 
     return( posix_handle );
 }
 
 _WCRTLINK int _hdopen( int os_handle, int mode )
 {
-    return( _open_osfhandle( (long)os_handle, mode ) );
+    return( _open_osfhandle( (long) os_handle, mode ) );
 }

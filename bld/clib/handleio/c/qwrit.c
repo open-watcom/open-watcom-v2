@@ -133,7 +133,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 #endif
     }
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL ) {
+    if( _WindowsStdout != 0 ) {
         LPWDATA res;
 
         res = _WindowsIsWindowedHandle( handle );

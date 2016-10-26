@@ -55,8 +55,7 @@ void    FCDbgLine( void ) {
     unsigned_16 line_num;
 
     line_num = GetU16();
-    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA )
-        return;
+    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA ) return;
     DBLineNum( line_num );
 }
 
@@ -70,8 +69,7 @@ void    FCSetLine( void ) {
     unsigned_16 line_num;
 
     line_num = GetU16();
-    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA )
-        return;
+    if( ( SubProgId->u.ns.flags & SY_SUBPROG_TYPE ) == SY_BLOCK_DATA ) return;
     handle = InitCall( RT_SET_LINE );
     CGAddParm( handle, CGInteger( line_num, TY_INTEGER ), TY_INTEGER );
     CGDone( CGCall( handle ) );

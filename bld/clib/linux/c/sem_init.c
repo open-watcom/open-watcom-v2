@@ -34,10 +34,9 @@
 #include <stdlib.h>
 #include <semaphore.h>
 #include <limits.h>
+#include "rterrno.h"
 #include "rtinit.h"
 #include "exitwmsg.h"
-#include "rterrno.h"
-#include "thread.h"
 
 
 #define SEM_VALUE_MAX   INT_MAX

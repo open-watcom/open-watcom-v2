@@ -34,11 +34,10 @@
 #include "coderep.h"
 #include "data.h"
 #include "savings.h"
-#include "rgtbl.h"
-
 
 extern  savings         Save;
 
+extern  hw_reg_set      MustSaveRegs( void );
 extern  void            SetCost(save_def*,save_def);
 extern  void            SetLoopCost(uint);
 extern  void            AdjTimeSize(uint*,uint*);

@@ -65,6 +65,7 @@ extern hw_reg_set       DisplayReg( void );
 extern int              SizeDisplayReg( void );
 extern hw_reg_set       AllCacheRegs( void );
 extern hw_reg_set       *IdxRegs( void );
+extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       ParmRegConflicts(hw_reg_set);
 extern hw_reg_set       High48Reg( hw_reg_set regs );
 extern hw_reg_set       Low48Reg( hw_reg_set regs );
@@ -73,9 +74,6 @@ extern hw_reg_set       Low64Reg( hw_reg_set regs );
 extern hw_reg_set       VarargsHomePtr( void );
 extern hw_reg_set       ReturnAddrReg( void );
 extern hw_reg_set       FirstReg( reg_set_index index );
-extern hw_reg_set       SaveRegs( void );
-extern hw_reg_set       MustSaveRegs( void );
-extern hw_reg_set       ScratchReg( void );
 
 #if _TARGET & _TARG_INTEL
 extern hw_reg_set       ReturnReg( type_class_def class, bool use_87 );
@@ -85,16 +83,11 @@ extern hw_reg_set       ReturnReg( type_class_def class );
 extern reg_set_index    UsualPossible( type_class_def class );
 extern hw_reg_set       FrameBaseReg( void );
 extern hw_reg_set       FrameReg( void );
+extern hw_reg_set       ScratchReg( void );
 extern void             SetArchIndex( name *new_r, hw_reg_set regs );
 extern byte             RegTrans( hw_reg_set reg );
-extern hw_reg_set       *ParmRegs( void );
 extern hw_reg_set       *GPRegs( void );
 extern hw_reg_set       *FPRegs( void );
-extern hw_reg_set       SavedRegs( void );
-#if _TARGET & _TARG_370
-extern  hw_reg_set      RAReg( void );
-extern  hw_reg_set      LNReg( void );
-#endif
 #if _TARGET & _TARG_PPC
 extern hw_reg_set       TocReg( void );
 #endif

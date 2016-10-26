@@ -37,20 +37,20 @@
 #include "defwin.h"
 
 _WCRTLINK int putch( int c )
-{
-    char    ch;
+    {
+        char    ch;
 
-    ch = c;
+        ch = c;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsPutch != NULL ) {      // Default windowing
-        LPWDATA     res;
-        res = _WindowsIsWindowedHandle( STDOUT_FILENO );
-        _WindowsPutch( res, c );
-    } else {
+        if( _WindowsPutch != 0 ) {      // Default windowing
+            LPWDATA     res;
+            res = _WindowsIsWindowedHandle( STDOUT_FILENO );
+            _WindowsPutch( res, c );
+        } else {
 #endif
-        VioWrtTTY( &ch, 1, 0 );
+            VioWrtTTY( &ch, 1, 0 );
 #ifdef DEFAULT_WINDOWING
+        }
+#endif
+        return( c );
     }
-#endif
-    return( c );
-}

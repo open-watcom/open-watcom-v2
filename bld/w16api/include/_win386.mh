@@ -325,36 +325,36 @@ int API     _16TranslateAccelerator( HWND, HANDLE, LPMSG );
 BOOL API    _16TranslateMessage( LPMSG );
 #endif /* NOMSG */
 #ifndef NOCTLMGR
-int API     _16DialogBox( HANDLE, LPCSTR, HWND, FARPROC );
+int API     _16DialogBox( HANDLE, LPSTR, HWND, FARPROC );
 int API     _16DialogBoxIndirect( HANDLE, HANDLE, HWND, FARPROC );
 int API     _16DialogBoxIndirectParam( HANDLE, HANDLE, HWND, FARPROC, LONG );
-int API     _16DialogBoxParam( HANDLE, LPCSTR, HWND, FARPROC, LONG );
+int API     _16DialogBoxParam( HANDLE, LPSTR, HWND, FARPROC, LONG );
 WORD API    _16GetDlgItemInt( HWND, int, BOOL *, BOOL );
 int API     _16GetDlgItemText( HWND, int, LPSTR, int );
 void API    _16SetDlgItemText( HWND, int, LPSTR );
-int API     _Cover_DialogBox( HANDLE, LPCSTR, HWND, DLGPROC );
+int API     _Cover_DialogBox( HANDLE, LPSTR, HWND, DLGPROC );
 int API     _Cover_DialogBoxIndirect( HANDLE, HANDLE, HWND, DLGPROC );
 int API     _Cover_DialogBoxIndirectParam( HANDLE, HANDLE, HWND, DLGPROC, LONG );
-int API     _Cover_DialogBoxParam( HANDLE, LPCSTR, HWND, DLGPROC, LONG );
+int API     _Cover_DialogBoxParam( HANDLE, LPSTR, HWND, DLGPROC, LONG );
 LONG API    _Cover_SendDlgItemMessage( HWND, int, WORD, WORD, LONG );
 #ifdef STRICT
-HWND API    _16CreateDialog( HANDLE, LPCSTR, HWND, DLGPROC );
-HWND API    _16CreateDialogIndirect( HANDLE, LPCSTR, HWND, DLGPROC );
-HWND API    _16CreateDialogIndirectParam( HANDLE, LPCSTR, HWND, DLGPROC, LONG );
-HWND API    _16CreateDialogParam( HANDLE, LPCSTR, HWND, DLGPROC, LONG );
-HWND API    _Cover_CreateDialog( HANDLE, LPCSTR, HWND, DLGPROC );
-HWND API    _Cover_CreateDialogIndirect( HANDLE, LPCSTR, HWND, DLGPROC );
-HWND API    _Cover_CreateDialogIndirectParam( HANDLE, LPCSTR, HWND, DLGPROC, LONG );
-HWND API    _Cover_CreateDialogParam( HANDLE, LPCSTR, HWND, DLGPROC, LONG );
+HWND API    _16CreateDialog( HANDLE, LPSTR, HWND, DLGPROC );
+HWND API    _16CreateDialogIndirect( HANDLE, LPSTR, HWND, DLGPROC );
+HWND API    _16CreateDialogIndirectParam( HANDLE, LPSTR, HWND, DLGPROC, LONG );
+HWND API    _16CreateDialogParam( HANDLE, LPSTR, HWND, DLGPROC, LONG );
+HWND API    _Cover_CreateDialog( HANDLE, LPSTR, HWND, DLGPROC );
+HWND API    _Cover_CreateDialogIndirect( HANDLE, LPSTR, HWND, DLGPROC );
+HWND API    _Cover_CreateDialogIndirectParam( HANDLE, LPSTR, HWND, DLGPROC, LONG );
+HWND API    _Cover_CreateDialogParam( HANDLE, LPSTR, HWND, DLGPROC, LONG );
 #else
-HWND API    _16CreateDialog( HANDLE, LPCSTR, HWND, FARPROC );
-HWND API    _16CreateDialogIndirect( HANDLE, LPCSTR, HWND, FARPROC );
-HWND API    _16CreateDialogParam( HANDLE, LPCSTR, HWND, FARPROC, LONG );
-HWND API    _16CreateDialogIndirectParam( HANDLE, LPCSTR, HWND, FARPROC, LONG );
-HWND API    _Cover_CreateDialog( HANDLE, LPCSTR, HWND, FARPROC );
-HWND API    _Cover_CreateDialogIndirect( HANDLE, LPCSTR, HWND, FARPROC );
-HWND API    _Cover_CreateDialogParam( HANDLE, LPCSTR, HWND, FARPROC, LONG );
-HWND API    _Cover_CreateDialogIndirectParam( HANDLE, LPCSTR, HWND, FARPROC, LONG );
+HWND API    _16CreateDialog( HANDLE, LPSTR, HWND, FARPROC );
+HWND API    _16CreateDialogIndirect( HANDLE, LPSTR, HWND, FARPROC );
+HWND API    _16CreateDialogParam( HANDLE, LPSTR, HWND, FARPROC, LONG );
+HWND API    _16CreateDialogIndirectParam( HANDLE, LPSTR, HWND, FARPROC, LONG );
+HWND API    _Cover_CreateDialog( HANDLE, LPSTR, HWND, FARPROC );
+HWND API    _Cover_CreateDialogIndirect( HANDLE, LPSTR, HWND, FARPROC );
+HWND API    _Cover_CreateDialogParam( HANDLE, LPSTR, HWND, FARPROC, LONG );
+HWND API    _Cover_CreateDialogIndirectParam( HANDLE, LPSTR, HWND, FARPROC, LONG );
 #endif
 #endif /* NOCTLMSG */
 #ifndef NOCLIPBOARD

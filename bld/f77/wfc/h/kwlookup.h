@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern int  KwLookUp( char **table, int high, char *id, uint id_len, bool exact );
+extern int  KwLookUp( char **table, int high, char *id, int id_len, bool exact );

@@ -59,13 +59,15 @@
 #include "typemap.h"
 #include "bldcall.h"
 #include "parmreg.h"
-#include "generate.h"
 #include "feprotos.h"
 
 
 extern  type_def        *QParmType(cg_sym_handle,cg_sym_handle,type_def*);
+extern  hw_reg_set      CallZap(call_state*);
 extern  type_length     ParmMem(type_length,type_length,call_state*);
+extern  type_class_def  CallState(aux_handle,type_def*,call_state*);
 extern  hw_reg_set      ParmInLineReg(parm_state*);
+extern  void            Generate(bool);
 extern  void            UpdateReturn(call_state*,type_def*,type_class_def,aux_handle);
 extern  name            *StReturn(an,type_def*,instruction**);
 extern  instruction     *PushOneParm(instruction*,name*,type_class_def,type_length,call_state*);
@@ -77,7 +79,7 @@ extern  bool            SegIsCS( name * );
 
 extern  bool            BlipsOn;
 
-type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
+extern  type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 /*********************************************************************
     create the initial basic block for routine "sym", and call some
     other initialization routines.
@@ -98,7 +100,7 @@ type_class_def  AddCallBlock( cg_sym_handle sym, type_def *tipe )
 }
 
 
-void    BGFiniCall( cn call )
+extern  void    BGFiniCall( cn call )
 /************************************
     free up a call node
 */
@@ -110,7 +112,7 @@ void    BGFiniCall( cn call )
 }
 
 
-cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
+extern  cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
 /******************************************************************
     initialize a call node for a call to routine "node", with type
     "tipe" and aux handle "aux". This also allocates the instruction
@@ -156,7 +158,7 @@ cn      BGInitCall(an node,type_def *tipe,aux_handle aux) {
 }
 
 
-void    BGAddParm( cn call, an parm ) {
+extern  void    BGAddParm( cn call, an parm ) {
 /**********************************************
     link a parm into the list of parms for a call node
 */
@@ -171,7 +173,7 @@ void    BGAddParm( cn call, an parm ) {
 }
 
 
-void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
+extern  void    BGAutoDecl( cg_sym_handle sym, type_def *tipe ) {
 /*************************************************************
     declare an automatic variable with name "sym" and type "tipe". This
     just creates the appropriate back end symbol table entry. (eg: N_TEMP)
@@ -271,7 +273,7 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
 }
 #endif
 
-name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
+extern  name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 /******************************************************************************
     Declare a parameter of type "tipe" for the current routine. This
     routine determines whether the parameter is coming in in a register
@@ -373,7 +375,7 @@ name    *DoParmDecl( cg_sym_handle sym, type_def *tipe, hw_reg_set reg ) {
 }
 
 
-void    BGParmDecl( cg_sym_handle sym, type_def *tipe ) {
+extern  void    BGParmDecl( cg_sym_handle sym, type_def *tipe ) {
 /************************************************************/
 
     hw_reg_set          reg;
@@ -402,7 +404,7 @@ static  void    LinkParms( instruction *call_ins, pn *owner ) {
     *owner = NULL;
 }
 
-void    AddCallIns( instruction *ins, cn call ) {
+extern  void    AddCallIns( instruction *ins, cn call ) {
 /********************************************************
     stick the call instruction into the current basic block
 */
@@ -458,7 +460,7 @@ void    AddCallIns( instruction *ins, cn call ) {
 }
 
 
-void    ReverseParmNodeList( pn *owner ) {
+extern  void    ReverseParmNodeList( pn *owner ) {
 /*************************************************
     reverse a linked list of parm_nodes.
 */
@@ -476,7 +478,7 @@ void    ReverseParmNodeList( pn *owner ) {
 }
 
 
-void            PushParms( pn parm, call_state *state ) {
+extern  void            PushParms( pn parm, call_state *state ) {
 /***************************************************************
     Run through the list of parameters, generating pushes
     for the ones that are being passed on the stack. Unhook them
@@ -518,7 +520,7 @@ void            PushParms( pn parm, call_state *state ) {
 }
 
 #if _TARGET & _TARG_80386
-void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
+extern  void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
 /**************************************************************************************
     grab len bytes off the stack - doesn't matter what goes in there
     as long as the space is allocated.  Guaranteed that len is a multiple
@@ -549,7 +551,7 @@ void    ReserveStack( call_state *state, instruction *prev, type_length len ) {
 }
 #endif
 
-void    ParmIns( pn parm, call_state *state ) {
+extern  void    ParmIns( pn parm, call_state *state ) {
 /******************************************************
     generate the move instructions for parameters that are passed in registers.
     This should be all that's left on the list by now. The rest have all
@@ -610,7 +612,7 @@ void    ParmIns( pn parm, call_state *state ) {
 }
 
 
-void    BGZapBase( name *base, type_def *tipe ) {
+extern  void    BGZapBase( name *base, type_def *tipe ) {
 /********************************************************
     for FORTRAN. Generate a NOP with result of base[temp], so that we
     know that a pass by reference argument can be modified by the
@@ -631,7 +633,7 @@ void    BGZapBase( name *base, type_def *tipe ) {
 }
 
 
-void    BGReturn( an retval, type_def *tipe ) {
+extern  void    BGReturn( an retval, type_def *tipe ) {
 /******************************************************
     generate the instructions to return the value 'retval', then
     go off and call generate to optimize the whole routine and
@@ -784,7 +786,7 @@ static void SplitStructParms( pn *parm_list, call_state *state )
 }
 #endif
 
-bool        AssgnParms( cn call, bool in_line ) {
+extern  bool        AssgnParms( cn call, bool in_line ) {
 /********************************************************
     Decide what registers the parms should go in.
     Assign registers to first parm first, etc. Also, assign a congolmeration

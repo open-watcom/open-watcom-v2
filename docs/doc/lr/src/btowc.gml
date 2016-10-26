@@ -17,11 +17,11 @@ is a valid single-byte character in the initial shift state.
 The
 .id &funcb.
 function returns
-.kw WEOF
+.mono WEOF
 if
 .arg c
 has the value
-.kw EOF
+.mono EOF
 or if
 .arg (unsigned char)c
 does not constitute a valid single-byte character in the initial

@@ -132,8 +132,7 @@ bool    CmpNode2Str( itnode *itptr, char *str ) {
     int         str_len;
 
     str_len = strlen( str );
-    if( itptr->opnd_size != str_len )
-        return( false );
+    if( itptr->opnd_size != str_len ) return( false );
     return( memcmp( itptr->opnd, str, str_len ) == 0 );
 }
 
@@ -363,8 +362,7 @@ static  void    EatNumb( int ast ) {
 
     ASType = ast;
     EatExpr();
-    if( AError )
-        return;
+    if( AError ) return;
     if( ( CITNode->typ < FT_INTEGER_1 ) || ( CITNode->typ > FT_EXTENDED ) ) {
         Error( SX_NOT_SIMPLE_NUMBER );
     }

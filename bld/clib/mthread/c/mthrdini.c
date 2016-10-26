@@ -66,7 +66,7 @@ void __InitThreadData( thread_data *tdata )
 #elif defined( __QNX__ )
         tdata->thread_id = GetCurrentThreadId();
 #elif defined( __LINUX__ )
-        tdata->thread_id = GetCurrentThreadId();
+        // TODO: Add thread id code for Linux!
 #elif defined( __RDOS__ )
         tdata->thread_id = GetCurrentThreadId();
 #endif

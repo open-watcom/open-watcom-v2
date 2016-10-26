@@ -160,9 +160,9 @@ int main( int argc, char *argv[] )
         *end = '\0';
         strcpy( type, line );
 
-        line = get_line( buf, in );     // skip over data
+        line = get_line( buf, in );     // skip over data_offset
         if( line == NULL ) {
-            printf( "No data at line %d\n", Line );
+            printf( "No data offset at line %d\n", Line );
             goto error;
         }
 
@@ -170,8 +170,7 @@ int main( int argc, char *argv[] )
         fputs( "        ctl_type      type;\n", out );
         fputs( "        int           control;\n", out );
         fputs( "        bool          modified;\n", out );
-        fputs( "        void (* get)( void *ptr, struct ctl_elt *elt, void *data );\n", out );
-        fputs( "        void (* set)( void *ptr, struct ctl_elt *elt, void *data );\n", out );
+        fputs( "        unsigned int  data_offset;\n", out );
         fputs( "        union {\n", out );
         line = get_line( buf, in );     // skip over data
         if( line == NULL ) {

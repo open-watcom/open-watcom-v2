@@ -31,7 +31,7 @@
 #include "ftnstd.h"
 #include "xfflags.h"
 
-#ifndef __SW_BM
+#if !defined( __MT__ )
 volatile unsigned short __XcptFlags;
 #endif
 byte                    IntOverFlow = { 0x04 };

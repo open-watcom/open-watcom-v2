@@ -44,10 +44,10 @@
 
 
 typedef struct input_win_info {
+    window_id       id;
+    type_style      style;
     int             width;
     int             line;       /* we don't support multi-line input yet */
-    type_style      style;
-    window_id       id;
 } input_win_info;
 
 typedef struct input_buffer {
@@ -61,10 +61,10 @@ typedef struct input_buffer {
     history_data    *history;
     int             curr_hist;
     input_win_info  window;
+    type_style      style;
     int             curr_pos;
     int             left_column;
     int             line;
-    type_style      style;
     bool            overstrike  : 1;
 } input_buffer;
 

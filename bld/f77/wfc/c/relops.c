@@ -40,10 +40,9 @@
 #include "upscan.h"
 #include "relops.h"
 #include "declare.h"
-#include "gtypes.h"
 
 
-static  uint    CharLength( itnode *op ) {
+static  int     CharLength( itnode *op ) {
 //========================================
 
     USOPN       opn;

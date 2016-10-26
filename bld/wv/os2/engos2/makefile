@@ -13,7 +13,8 @@ all : dve.exe .SYMBOLIC
 
 !include ../../master.mif
 
-dve.exe : $(resfile_dll) stubdb.obj wd.lib $(__MAKEFILES__)
+dve.exe : $(resfile) stubdb.obj wd.lib $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ sys os2v2 debug all op symf,map file stubdb.obj lib wd.lib
-    @%make bind_res_dll
+    @%make echo_bindres
+    $(rc) $(resfile) $@

@@ -53,14 +53,12 @@ int __doclose( FILE *fp, int close_handle )
 {
     int         ret;
 
-    if( (fp->_flag & (_READ | _WRITE)) == 0 ) {
+    if( fp->_flag == 0 ) {
         return( -1 );                       /* file already closed */
     }
     ret = 0;
     if( fp->_flag & _DIRTY ) {
-        if( __flush( fp ) ) {
-            ret = -1;
-        }
+        ret = __flush( fp );
     }
     _AccessFile( fp );
 /*
@@ -91,7 +89,6 @@ int __doclose( FILE *fp, int close_handle )
         __RmTmpFileFn( fp );
     }
 #endif
-    fp->_flag &= _DYNAMIC;
     _ReleaseFile( fp );
     return( ret );
 }
@@ -110,12 +107,15 @@ _WCRTLINK int fclose( FILE *fp )
     __stream_link       *link;
 
     _AccessIOB();
-    for( link = _RWD_ostream; link != NULL; link = link->next ) {
-        if( link->stream == fp ) {
+    link = _RWD_ostream;
+    for( ;; ) {
+        if( link == NULL ) {
             _ReleaseIOB();
-            return( __shutdown_stream( fp, 1 ) );
+            return( -1 );     /* file not open */
         }
+        if( link->stream == fp ) break;
+        link = link->next;
     }
     _ReleaseIOB();
-    return( -1 );     /* file not open */
+    return( __shutdown_stream( fp, 1 ) );
 }

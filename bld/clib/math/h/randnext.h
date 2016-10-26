@@ -31,7 +31,7 @@
 
 
 #define _INITRANDNEXT(p)
-#ifdef __SW_BM
+#if defined( __MT__ ) && ( defined( __OS2__ ) || defined( __NT__ ) || defined( __NETWARE__ ) )
     #define _RANDNEXT           (__THREADDATAPTR->__randnext)
 #else
     static unsigned long int    next = 1;

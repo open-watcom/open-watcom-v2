@@ -45,32 +45,30 @@ static int docloseall( unsigned dont_close )
     FILE            *bottom;
     FILE            *standards;
     int             close_handle;
-    int             rc;
 
     bottom = &_RWD_iob[dont_close];
     standards = &_RWD_iob[NUM_STD_STREAMS];
     number_of_files_closed = 0;
-    rc = 0;
     for( link = _RWD_ostream; link != NULL; link = next ) {
         next = link->next;
         fp = link->stream;
         close_handle = 1;
-        if ((fp->_flag & _DYNAMIC) || (fp->_flag & _TMPFIL)) {
-            rc |= __shutdown_stream( fp, close_handle );
+        if ((fp->_flag & _DYNAMIC) || (fp->_flag & _TMPFIL))
+        {
+            __shutdown_stream( fp, close_handle );
             ++number_of_files_closed;
-        } else if( fp >= bottom ) {
+        }
+        else if( fp >= bottom ) {
 #ifndef __NETWARE__
             /* close the file, but leave the handle open */
             if( fp < standards ) {
                 close_handle = 0;
             }
 #endif
-            rc |= __shutdown_stream( fp, close_handle );
+            __shutdown_stream( fp, close_handle );
             ++number_of_files_closed;
         }
     }
-    if( rc )
-        return( EOF );
     return( number_of_files_closed );
 }
 

@@ -598,8 +598,8 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
 {
     unsigned_32         size;
     pe_export_directory dir;
-    const char          *name;
-    size_t              namelen;
+    char                *name;
+    unsigned            namelen;
     entry_export        **sort;
     entry_export        *exp;
     unsigned            i;
@@ -621,9 +621,9 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     if( FmtData.u.os2.res_module_name != NULL ) {
         name = FmtData.u.os2.res_module_name;
     } else {
-        name = GetBaseName( Root->outfile->fname, 0, &namelen );
+        name = RemovePath( Root->outfile->fname, &namelen );
     }
-    /* GetBaseName strips the extension, which we actually need to keep!
+    /* RemovePath strips the extension, which we actually need to keep!
      * Always recalculate the len including the extension.
      */
     namelen = strlen( name ) + 1;
@@ -787,17 +787,17 @@ WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
 
     if( hdl == Root->outfile->handle ) {
         if( pos == SEEK_CUR ) {
-            unsigned long   old_pos;
-
-            old_pos = PosLoad();
-            PadLoad( off );
-            return( old_pos + off );
+            PadLoad( pos );
         } else {
             SeekLoad( off );
-            return( off );
         }
     } else {
-        return( QLSeek( hdl, off, pos, "resource file" ) );
+        QLSeek( hdl, off, pos, "resource file" );
+    }
+    if( pos == SEEK_CUR ) {
+        return( off + pos );
+    } else {
+        return( pos );
     }
 }
 
@@ -951,8 +951,8 @@ static void CheckNumRelocs( void )
     LinkState &= ~MAKE_RELOCS;
 }
 
-static seg_leader *SetLeaderTable( const char *name, pe_hdr_table_entry *entry )
-/******************************************************************************/
+static seg_leader *SetLeaderTable( char *name, pe_hdr_table_entry *entry )
+/*************************************************************************/
 {
     seg_leader *leader;
 
@@ -1070,7 +1070,7 @@ static unsigned long CalcPEChecksum( unsigned long dwInitialCount, unsigned shor
 }
 
 void FiniPELoadFile( void )
-/*************************/
+/********************************/
 /* make a PE executable file */
 {
     exe_pe_header   h;
@@ -1122,7 +1122,7 @@ void FiniPELoadFile( void )
                 PE64( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
-
+    
         if( FmtData.u.pe.lnk_specd ) {
             PE64( h ).lnk_major = FmtData.u.pe.linkmajor;
             PE64( h ).lnk_minor = FmtData.u.pe.linkminor;
@@ -1142,9 +1142,9 @@ void FiniPELoadFile( void )
             LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
             FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
         }
-
+    
         PE64( h ).file_align = file_align;
-
+    
         if( FmtData.u.pe.osv_specd ) {
             PE64( h ).os_major = FmtData.u.pe.osmajor;
             PE64( h ).os_minor = FmtData.u.pe.osminor;
@@ -1152,7 +1152,7 @@ void FiniPELoadFile( void )
             PE64( h ).os_major = PE_OS_MAJOR;
             PE64( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
         }
-
+    
         PE64( h ).user_major = FmtData.major;
         PE64( h ).user_minor = FmtData.minor;
         if( FmtData.u.pe.sub_specd ) {
@@ -1278,7 +1278,7 @@ void FiniPELoadFile( void )
                 PE32( h ).dll_flags |= PE_DLL_PERTHRD_TERM;
             }
         }
-
+    
         if( FmtData.u.pe.lnk_specd ) {
             PE32( h ).lnk_major = FmtData.u.pe.linkmajor;
             PE32( h ).lnk_minor = FmtData.u.pe.linkminor;
@@ -1297,10 +1297,10 @@ void FiniPELoadFile( void )
             LnkMsg( WRN+MSG_VALUE_INCORRECT, "s", "alignment" );
             FmtData.u.os2.segment_shift = DEFAULT_SEG_SHIFT;
         }
-
+    
         file_align = 1UL << FmtData.u.os2.segment_shift;
         PE32( h ).file_align = file_align;
-
+    
         if( FmtData.u.pe.osv_specd ) {
             PE32( h ).os_major = FmtData.u.pe.osmajor;
             PE32( h ).os_minor = FmtData.u.pe.osminor;
@@ -1308,7 +1308,7 @@ void FiniPELoadFile( void )
             PE32( h ).os_major = PE_OS_MAJOR;
             PE32( h ).os_minor = PE_OS_MINOR + 0xb;      // KLUDGE!
         }
-
+    
         PE32( h ).user_major = FmtData.major;
         PE32( h ).user_minor = FmtData.minor;
         if( FmtData.u.pe.sub_specd ) {
@@ -1404,7 +1404,7 @@ void FiniPELoadFile( void )
 
     if( FmtData.u.pe.checksumfile ) {
         unsigned_32     crc = 0L;
-        size_t          buffsize;
+        unsigned_32     buffsize;
         unsigned long   currpos = 0L;
         unsigned long   totalsize = 0L;
         outfilelist     *outfile;
@@ -1423,7 +1423,7 @@ void FiniPELoadFile( void )
 
         totalsize = QFileSize( outfile->handle );
 
-#define CRC_BUFF_SIZE   (16 * 1024)
+#define CRC_BUFF_SIZE   (16*1024)
         _ChkAlloc( buffer, CRC_BUFF_SIZE );
 
         if( buffer ) {
@@ -1484,7 +1484,7 @@ static void ReadExports( unsigned_32 namestart, unsigned_32 nameend,
     nameptr = TokBuff,
     ordptr = ordbuf;
     for( ; numords > 0; --numords ) {
-        CheckExport( nameptr, *ordptr + ord_base, strcmp );
+        CheckExport( nameptr, *ordptr + ord_base, &strcmp );
         while( *nameptr != '\0' )
             nameptr++;
         nameptr++;

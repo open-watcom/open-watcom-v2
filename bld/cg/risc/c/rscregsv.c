@@ -37,6 +37,7 @@
 
 extern  savings         Save;
 
+extern  hw_reg_set      MustSaveRegs();
 extern  void            SetCost(save_def*,save_def);
 extern  void            SetLoopCost(uint);
 extern  void            AdjTimeSize(uint*,uint*);

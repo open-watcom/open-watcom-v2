@@ -126,7 +126,6 @@ static DISPATCHABLE dispatchable( // DETERMINE WHERE CATCHABLE WITHIN FUNCTION
         exc = dispatch->exc;
         if( exc == NULL ) {
             GOOF_EXC( "dispatchable: missing caught exception" );
-            // never return
         }
         dispatch->ro = exc->throw_ro;
         dispatch->zero = exc->zero_thrown;

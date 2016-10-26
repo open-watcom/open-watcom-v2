@@ -47,14 +47,28 @@ extern _WCRTLINK _NORETURN void __exit( unsigned );
 
 // ASM interface
 // - always uses register calling convention
-// - this function is only called from the C implementation for DOS
+// - this function is only called from the C implementation
 //   of __exit_with_msg
-extern _NORETURN void __do_exit_with_msg( char _WCI86FAR *, unsigned );
-#if defined( _M_I86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [ax dx] [bx];
-#elif defined( _M_IX86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [eax] [edx];
+#undef _EWM_PARM1
+#undef _EWM_PARM2
+#if defined(__386__)
+    #define _EWM_PARM1  eax
+    #define _EWM_PARM2  edx
+#elif defined( _M_I86 )
+    #define _EWM_PARM1  ax dx
+    #define _EWM_PARM2  bx
+#else
+    #define _EWM_PARM1
+    #define _EWM_PARM2
 #endif
+
+extern _NORETURN void __do_exit_with_msg( char _WCI86FAR *, unsigned );
+#ifdef _M_IX86
+    #pragma aux __do_exit_with_msg "*__" parm caller [_EWM_PARM1] [_EWM_PARM2];
+#endif
+
+#undef _EWM_PARM1
+#undef _EWM_PARM2
 
 // WVIDEO interface
 

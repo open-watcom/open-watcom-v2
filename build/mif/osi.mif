@@ -1,15 +1,19 @@
 !ifeq host_os osi
 lname = $^&.rex
-osildr = $(src_dir)/w32loadr/os2ldr/os2ldr.exe
 !else
 lname = $^@
 !endif
 
+!ifeq host_os osi
+!ifdef __UNIX__
+osildr = $(src_dir)/w32loadr/os2ldr/os2ldr.exe
+!else
+osildr = $(src_dir)\w32loadr\os2ldr\os2ldr.exe
+!endif
+!endif
+
 bind_osildr: .PROCEDURE .EXPLICIT
 !ifeq host_os osi
-!ifeq verbose 0
-    @echo w32bind $(osildr) $@
-!endif
-    $(w32bind) $(lname) $^@ $(osildr)
-    @rm -f $(lname)
+        $(w32bind) $^&.rex $^@ $(osildr)
+        @rm -f $^&.rex
 !endif

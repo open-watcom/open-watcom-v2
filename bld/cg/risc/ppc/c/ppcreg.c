@@ -38,8 +38,6 @@
 #include "utils.h"
 #include "rgtbl.h"
 #include "typemap.h"
-#include "makeblk.h"
-#include "bldcall.h"
 #include "feprotos.h"
 
 
@@ -47,8 +45,8 @@ extern  void            InitPPCParmState( call_state * );
 extern  void            UpdateReturn( call_state *, type_def *, type_class_def, aux_handle );
 
 
-hw_reg_set SavedRegs( void )
-/**************************/
+extern hw_reg_set SavedRegs( void )
+/*********************************/
 {
     hw_reg_set          saved;
 
@@ -92,8 +90,8 @@ hw_reg_set SavedRegs( void )
     return( saved );
 }
 
-type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
-/****************************************************************************/
+extern  type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
+/************************************************************************************/
 {
     type_class_def      class;
     uint                i;
@@ -137,23 +135,21 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 }
 
 
-void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
-/*********************************************************************************************/
+extern  void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
+/*********************************************************************************************************/
 {
     tipe = tipe; aux = aux;
     state->return_reg = ReturnReg( class );
 }
 
-#if 0
-hw_reg_set      RAReg( void )
-/***************************/
+extern  hw_reg_set      RAReg( void )
+/***********************************/
 {
     return( HW_EMPTY );
 }
-#endif
 
-hw_reg_set      CallZap( call_state *state )
-/******************************************/
+extern  hw_reg_set      CallZap( call_state *state )
+/**************************************************/
 {
     hw_reg_set  zap;
     hw_reg_set  tmp;
@@ -169,8 +165,8 @@ hw_reg_set      CallZap( call_state *state )
     return( zap );
 }
 
-hw_reg_set      MustSaveRegs( void )
-/**********************************/
+extern  hw_reg_set      MustSaveRegs( void )
+/******************************************/
 {
     hw_reg_set  save;
     hw_reg_set  tmp;
@@ -198,8 +194,8 @@ hw_reg_set      MustSaveRegs( void )
     return( save );
 }
 
-hw_reg_set      SaveRegs( void )
-/******************************/
+extern  hw_reg_set      SaveRegs( void )
+/**************************************/
 {
     hw_reg_set   save;
 
@@ -208,8 +204,8 @@ hw_reg_set      SaveRegs( void )
     return( save );
 }
 
-bool            IsStackReg( name *n )
-/***********************************/
+extern  bool            IsStackReg( name *n )
+/*******************************************/
 {
     if( n == NULL ) return( false );
     if( n->n.class != N_REGISTER ) return( false );
@@ -218,15 +214,15 @@ bool            IsStackReg( name *n )
     return( true );
 }
 
-hw_reg_set      HighOffsetReg( hw_reg_set regs )
-/**********************************************/
+extern  hw_reg_set      HighOffsetReg( hw_reg_set regs )
+/******************************************************/
 {
     regs = regs;
     return( HW_EMPTY );
 }
 
-hw_reg_set      LowOffsetReg( hw_reg_set regs )
-/*********************************************/
+extern  hw_reg_set      LowOffsetReg( hw_reg_set regs )
+/*****************************************************/
 {
     regs = regs;
     return( HW_EMPTY );

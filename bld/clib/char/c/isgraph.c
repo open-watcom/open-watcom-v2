@@ -31,18 +31,18 @@
 
 #include "widechar.h"
 #include "variety.h"
-#include <stdio.h>
 #include <ctype.h>
 #ifdef __WIDECHAR__
  #include <wctype.h>
 #endif
 #include "istable.h"
-
-
 #undef  isgraph
 
 _WCRTLINK int __F_NAME(isgraph,iswgraph)( INTCHAR_TYPE c )
 {
-    return( IS_ASCII_INT( c )
-        && ( IsWhat( c, _PRINT | _SPACE ) == _PRINT ) );
+    if( IS_ASCII(c) ) {
+        return( (IsWhat( c ) & (_PRINT|_SPACE)) == _PRINT );
+    } else {
+        return( 0 );
+    }
 }
