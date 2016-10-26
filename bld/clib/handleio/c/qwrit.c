@@ -140,6 +140,9 @@ int __qwrite( int handle, const void *buffer, unsigned len )
         if( res ) {
             int rt;
             rt = _WindowsStdout( res, buffer, len );
+            if( atomic == 1 ) {
+                _ReleaseFileH( handle );
+            }
             return( rt );
         }
     }
