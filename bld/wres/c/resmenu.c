@@ -53,9 +53,6 @@ bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *headerdata )
 /**************************************************************************************/
 {
-    bool            error;
-    int             i;
-
     if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
