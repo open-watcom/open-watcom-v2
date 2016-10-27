@@ -78,11 +78,17 @@ int     __InitFThreadProcessing( void ) {
 #elif defined( __LINUX__ )
 // TODO: semaphore support for Linux!
 #endif
+#if defined( __LINUX__ )
+// TODO: temporary disabled until full multithreaded
+//    support will be in CRTL
+    return( 1 );
+#else
     _AccessFIO  = &__AccessFIO;
     _ReleaseFIO = &__ReleaseFIO;
     _PartialReleaseFIO = &__PartialReleaseFIO;
     __InitMultiThreadIO();
     return( 0 );
+#endif
 }
 
 void            __FiniFThreadProcessing( void ) {

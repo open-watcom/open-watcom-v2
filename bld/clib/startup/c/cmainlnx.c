@@ -40,6 +40,9 @@
 #include "initarg.h"
 #include "osmain.h"
 #include "linuxsys.h"
+#include "thread.h"
+#include "cinit.h"
+
 
 int     _argc;                      /* argument count  */
 char    **_argv;                    /* argument vector */
@@ -48,7 +51,7 @@ extern int main( int, char **, char ** );
 
 void __cdecl _LinuxMain( int argc, char **argv, char **arge )
 {
-//    thread_data *tdata;
+    thread_data *tdata;
 
     // Initialise the heap. To do this we call sbrk() with
     // a value of 0, which will return the current top of the
@@ -65,9 +68,11 @@ void __cdecl _LinuxMain( int argc, char **argv, char **arge )
     _LpPgmName          = argv[0];
 
     __InitRtns( INIT_PRIORITY_THREAD );
-//    tdata = __alloca( __ThreadDataSize );
-//    memset( tdata, 0, __ThreadDataSize );
-//    tdata->__data_size = __ThreadDataSize;
+    tdata = __alloca( __ThreadDataSize );
+    memset( tdata, 0, __ThreadDataSize );
+    // tdata->__allocated = 0;
+    tdata->__data_size = __ThreadDataSize;
+    __LinuxInit( tdata );
     __InitRtns( 255 );
 
     /* allocate alternate stack for F77 */
