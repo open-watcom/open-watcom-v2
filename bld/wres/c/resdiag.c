@@ -44,9 +44,6 @@
 #include "clibext.h"
 
 
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes );
-static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text, uint_16 extra_bytes, WResFileID handle );
-
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
 /**********************************************************************/
 {
@@ -74,6 +71,37 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
             error = ResWriteString( head->FontName, false, handle );
         }
     }
+    return( error );
+}
+
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes )
+/*****************************************************************************************************/
+{
+    bool    error;
+    size_t  len;
+    char    *newname;
+
+    if( add_quotes ) {
+        if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
+            len = strlen( head->MenuName->name );
+            newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
+            newname[0] = '"';
+            strcpy( newname + 1, head->MenuName->name );
+            newname[len + 1] = '"';
+            newname[len + 2] = '\0';
+            head->MenuName = ResStrToNameOrOrd( newname );
+            WRESFREE( newname );
+        }
+    }
+
+    error = ResWriteNameOrOrdinal( head->MenuName, true, handle );
+    if( !error ) {
+        error = ResWriteNameOrOrdinal( head->ClassName, true, handle );
+    }
+    if( !error ) {
+        error = ResWriteString( head->Caption, true, handle );
+    }
+
     return( error );
 }
 
@@ -157,37 +185,6 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
             error = ResPadDWord( handle );
         }
     }
-    return( error );
-}
-
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes )
-/*****************************************************************************************************/
-{
-    bool    error;
-    size_t  len;
-    char    *newname;
-
-    if( add_quotes ) {
-        if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
-            len = strlen( head->MenuName->name );
-            newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
-            newname[0] = '"';
-            strcpy( newname + 1, head->MenuName->name );
-            newname[len + 1] = '"';
-            newname[len + 2] = '\0';
-            head->MenuName = ResStrToNameOrOrd( newname );
-            WRESFREE( newname );
-        }
-    }
-
-    error = ResWriteNameOrOrdinal( head->MenuName, true, handle );
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, handle );
-    }
-    if( !error ) {
-        error = ResWriteString( head->Caption, true, handle );
-    }
-
     return( error );
 }
 
@@ -446,43 +443,6 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
     return( error );
 }
 
-bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
-/*******************************************************************************/
-{
-    bool            error;
-
-    /* write the fixed part of the structure */
-    /* the structure is fixed up to, but not including, ClassID */
-    error = ( WRESWRITE( handle, control, offsetof( DialogBoxControl32, ClassID ) ) != offsetof( DialogBoxControl32, ClassID ) );
-    if( error ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-    }
-    if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID,
-                                control->Text, control->ExtraBytes, handle );
-    }
-
-    return( error );
-}
-
-bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
-/********************************************************************************/
-{
-    bool            error;
-
-    /* write the fixed part of the structure */
-    /* the structure is fixed up to, but not including, ClassID */
-    error = ( WRESWRITE( handle, control, offsetof( DialogBoxExControl32, ClassID ) ) != offsetof( DialogBoxExControl32, ClassID ) );
-    if( error ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-    } else {
-        error = ResWriteDialogControlCommon32( control->ClassID,
-                                control->Text, control->ExtraBytes, handle );
-    }
-
-    return( error );
-}
-
 static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text,
                                                   uint_16 extra_bytes, WResFileID handle )
 /****************************************************************************************/
@@ -507,6 +467,41 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
 
     if( !error ) {
         error = ResWriteUint16( extra_bytes, handle );
+    }
+
+    return( error );
+}
+
+bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
+/*******************************************************************************/
+{
+    bool            error;
+
+    /* write the fixed part of the structure */
+    /* the structure is fixed up to, but not including, ClassID */
+    error = ( WRESWRITE( handle, control, offsetof( DialogBoxControl32, ClassID ) ) != offsetof( DialogBoxControl32, ClassID ) );
+    if( error ) {
+        WRES_ERROR( WRS_WRITE_FAILED );
+    }
+    if( !error ) {
+        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
+    }
+
+    return( error );
+}
+
+bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
+/********************************************************************************/
+{
+    bool            error;
+
+    /* write the fixed part of the structure */
+    /* the structure is fixed up to, but not including, ClassID */
+    error = ( WRESWRITE( handle, control, offsetof( DialogBoxExControl32, ClassID ) ) != offsetof( DialogBoxExControl32, ClassID ) );
+    if( error ) {
+        WRES_ERROR( WRS_WRITE_FAILED );
+    } else {
+        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
     }
 
     return( error );
