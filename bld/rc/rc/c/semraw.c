@@ -44,8 +44,6 @@
 void SemWriteRawDataItem( RawDataItem item )
 /******************************************/
 {
-    uint_16     num16;
-    uint_32     num32;
     bool        error;
 
     if( item.IsString ) {
@@ -75,11 +73,9 @@ void SemWriteRawDataItem( RawDataItem item )
         }
         if( !ErrorHasOccured ) {
             if( !item.LongItem ) {
-                num16 = item.Item.Num;
-                error = ResWriteUint16( &(num16), CurrResFile.handle );
+                error = ResWriteUint16( item.Item.Num, CurrResFile.handle );
             } else {
-                num32 = item.Item.Num;
-                error = ResWriteUint32( &(num32), CurrResFile.handle );
+                error = ResWriteUint32( item.Item.Num, CurrResFile.handle );
             }
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

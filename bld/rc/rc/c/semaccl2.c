@@ -200,13 +200,10 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
 {
     FullAccelEntryOS2   *currentry;
     bool                error;
-    uint_16             tmp;
 
-    tmp = SemOS2CountAccelTableEntries( acctable );
-    error = ResWriteUint16( &tmp, handle );
+    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), handle );
     if( !error ) {
-        tmp   = codepage;
-        error = ResWriteUint16( &tmp, handle );
+        error = ResWriteUint16( codepage, handle );
     }
     currentry = acctable->head;
     while( currentry != NULL && !error ) {

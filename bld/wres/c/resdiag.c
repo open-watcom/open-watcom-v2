@@ -51,7 +51,6 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
 /**********************************************************************/
 {
     bool            error;
-    uint_16         tmp16;
 
     /* write out the fixed size portion of the structure */
     /* the fixed portion is everything up to, but not including, MenuName */
@@ -70,8 +69,7 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        tmp16 = head->PointSize;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->PointSize, handle );
         if( !error ) {
             error = ResWriteString( head->FontName, false, handle );
         }
@@ -83,7 +81,6 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
 /**************************************************************************/
 {
     bool            error;
-    uint_16         tmp16;
 
     /* write out the fixed size portion of the structure */
     /* the fixed portion is everything up to, but not including, MenuName */
@@ -96,8 +93,7 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        tmp16 = head->PointSize;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->PointSize, handle );
         if( !error ) {
             error = ResWriteString( head->FontName, true, handle );
         }
@@ -111,30 +107,24 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
 /*******************************************************************************/
 {
     bool            error;
-    uint_16         miscbytes[2] = { 0x0001, 0xFFFF };
-    uint_16         tmp16;
-    uint_32         tmp32;
 
     /* Write out the miscellaneous two WORDs 01 00 FF FF */
 
-    error = ResWriteUint16( miscbytes, handle );
+    error = ResWriteUint16( 1, handle );
     if( !error ) {
-        error = ResWriteUint16( miscbytes + 1, handle );
+        error = ResWriteUint16( -1, handle );
     }
     if( !error ) {
-        error = ResWriteUint32( &(exhead->HelpId), handle );
+        error = ResWriteUint32( exhead->HelpId, handle );
     }
     if( !error ) {
-        tmp32 = head->ExtendedStyle;
-        error = ResWriteUint32( &tmp32, handle );
+        error = ResWriteUint32( head->ExtendedStyle, handle );
     }
     if( !error ) {
-        tmp32 = head->Style;
-        error = ResWriteUint32( &tmp32, handle );
+        error = ResWriteUint32( head->Style, handle );
     }
     if( !error ) {
-        tmp16 = head->NumOfItems;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->NumOfItems, handle );
     }
     if( !error ) {
         error = ( WRESWRITE( handle, &(head->Size), sizeof( DialogSizeInfo ) ) != sizeof( DialogSizeInfo ) );
@@ -150,16 +140,15 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
 //    }
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
-        tmp16 = head->PointSize;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->PointSize, handle );
         if( !error ) {
-            error = ResWriteUint16( &(exhead->FontWeight), handle );
+            error = ResWriteUint16( exhead->FontWeight, handle );
         }
         if( !error ) {
-            error = ResWriteUint8( &(exhead->FontItalic), handle );
+            error = ResWriteUint8( exhead->FontItalic, handle );
         }
         if( !error ) {
-            error = ResWriteUint8( &(exhead->FontExtra), handle );
+            error = ResWriteUint8( exhead->FontExtra, handle );
         }
         if( !error ) {
             error = ResWriteString( head->FontName, true, handle );
@@ -429,7 +418,6 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
 /***************************************************************************/
 {
     bool            error;
-    uint_8          tmp8;
 
     /* write the fixed part of the structure */
     /* the structure is fixed up to, but not including, ClassID */
@@ -442,7 +430,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
     /* otherwise it is a string */
     if( !error ) {
         if( control->ClassID->Class & 0x80 ) {
-            error = ResWriteUint8( &(control->ClassID->Class), handle );
+            error = ResWriteUint8( control->ClassID->Class, handle );
         } else {
             error = ResWriteString( control->ClassID->ClassName, false, handle);
         }
@@ -452,8 +440,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
         error = ResWriteNameOrOrdinal( control->Text, false, handle );
     }
     if( !error ) {
-        tmp8 = control->ExtraBytes;
-        error = ResWriteUint8( &tmp8, handle );
+        error = ResWriteUint8( control->ExtraBytes, handle );
     }
 
     return( error );
@@ -501,18 +488,15 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
 /****************************************************************************************/
 {
     bool      error;
-    uint_16   class_num;
 
     /* if the ClassID is one of the predefined ones write it out as a byte */
     /* otherwise it is a string */
     if( class_id->Class & 0x80 ) {
         /*the class number is prefixed by 0xFFFF to distinguish it
          * from a string */
-        class_num = 0xFFFF;
-        error = ResWriteUint16( &class_num, handle );
+        error = ResWriteUint16( -1, handle );
         if( !error ) {
-            class_num =  class_id->Class;
-            error = ResWriteUint16( &class_num, handle );
+            error = ResWriteUint16( class_id->Class, handle );
         }
     } else {
         error = ResWriteString( class_id->ClassName, true, handle );
@@ -522,7 +506,7 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
     }
 
     if( !error ) {
-        error = ResWriteUint16( &extra_bytes, handle );
+        error = ResWriteUint16( extra_bytes, handle );
     }
 
     return( error );

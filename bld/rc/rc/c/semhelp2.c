@@ -131,7 +131,6 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 * helptable,
 {
     FullHelpEntryOS2    *currentry;
     bool                error;
-    uint_16             tmp = 0;
 
     error = false;
     if( helptable != NULL ) {
@@ -142,7 +141,7 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 * helptable,
         }
     }
     if( !error )
-        error = ResWriteUint16( &tmp, handle ); // Closing zero
+        error = ResWriteUint16( 0, handle ); // Closing zero
 
     return( error );
 }
@@ -246,7 +245,6 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
 static bool SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int count )
 /************************************************************************************/
 {
-    uint_16           data;
     bool              error;
     int               i;
 
@@ -258,8 +256,7 @@ static bool SemOS2WriteHelpData( DataElemList *list, WResFileID handle, int coun
         return( true );
     }
     for( i = 0; i < count; i++ ) {
-        data = (uint_16)list->data[i].Item.Num;
-        error = ResWriteUint16( &data, handle );
+        error = ResWriteUint16( list->data[i].Item.Num, handle );
     }
     return( error );
 }
@@ -276,15 +273,13 @@ static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable,
         currentry = helptable->head;
         tmp = helptable->numWords;
     }
-    error = ResWriteUint16( &tmp, handle );
+    error = ResWriteUint16( tmp, handle );
     while( currentry != NULL && !error ) {
-        error = SemOS2WriteHelpData( currentry->dataListHead, handle,
-                                     helptable->numWords );
+        error = SemOS2WriteHelpData( currentry->dataListHead, handle, helptable->numWords );
         currentry = currentry->next;
     }
     if( !error ) {
-        tmp = 0;
-        error = ResWriteUint16( &tmp, handle ); // Closing zero
+        error = ResWriteUint16( 0, handle ); // Closing zero
     }
 
     return( error );

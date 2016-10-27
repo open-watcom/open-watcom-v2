@@ -45,33 +45,27 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
     int         stringid;
     bool        error;
     WResIDName  *name;
-    uint_16     tmp16;
-    uint_8      tmp8;
-    uint_8      tmpzero = 0;
 
     // Write string table codepage
-    tmp16 = codepage;
-    error = ResWriteUint16( &tmp16, handle );
+    error = ResWriteUint16( codepage, handle );
     if( error )
         return( error );
-
-    tmp16 = 1;
 
     error = false;
     for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
         name = currblock->String[stringid];
         if( name == NULL ) {
             // Write an empty string
-            error = ResWriteUint16( &tmp16, handle );
+            error = ResWriteUint16( 1, handle );
         } else {
             // The string can't be longer than 255 chars
-            tmp8  = (name->NumChars + 1) & 0xFF;
-            error = ResWriteUint8( &tmp8, handle );
+            error = ResWriteUint8( name->NumChars + 1, handle );
             if( !error )
-                error = ResWriteStringLen( name->Name, false, handle, tmp8 - 1 );
+                error = ResWriteStringLen( name->Name, false, handle, name->NumChars );
             // The terminating NULL is not stored in the table, need to add it now
-            if( !error )
-                error = ResWriteUint8( &tmpzero, handle );
+            if( !error ) {
+                error = ResWriteUint8( 0, handle );
+            }
         }
     }
 

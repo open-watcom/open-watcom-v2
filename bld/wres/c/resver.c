@@ -46,17 +46,13 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode,
 /* Writes the header, correcting it for 32 bit alligning */
 {
     bool        error;
-    uint_16     tmp16;
 
-    tmp16 = head->Size;
-    error = ResWriteUint16( &tmp16, handle );
+    error = ResWriteUint16( head->Size, handle );
     if( !error ) {
-        tmp16 = head->ValSize;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->ValSize, handle );
     }
     if( !error && os == WRES_OS_WIN32 ) {
-        tmp16 = head->Type;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( head->Type, handle );
     }
     if( !error ) {
         error = ResWriteString( head->Key, use_unicode, handle );
@@ -94,12 +90,10 @@ bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID hand
     bool            error;
     char            *convbuf;
     int             len;
-    uint_16         tmp16;
 
     error = false;
     if( item->IsNum ) {
-        tmp16 = item->Value.Num;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( item->Value.Num, handle );
     } else {
         if( item->strlen == VER_CALC_SIZE ) {
             error = ResWriteString( item->Value.String, use_unicode, handle );

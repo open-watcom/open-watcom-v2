@@ -59,10 +59,10 @@ static int DefaultConversion( int len, const char *str, char *buf )
 
 int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
 
-bool ResWriteUint8( const uint_8 *newint, WResFileID handle )
-/***********************************************************/
+bool ResWriteUint8( uint_8 newint, WResFileID handle )
+/****************************************************/
 {
-    if( WRESWRITE( handle, newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) ) {
+    if( WRESWRITE( handle, &newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -70,10 +70,10 @@ bool ResWriteUint8( const uint_8 *newint, WResFileID handle )
     }
 }
 
-bool ResWriteUint16( const uint_16 *newint, WResFileID handle )
-/*************************************************************/
+bool ResWriteUint16( uint_16 newint, WResFileID handle )
+/******************************************************/
 {
-    if( WRESWRITE( handle, newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+    if( WRESWRITE( handle, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -81,10 +81,10 @@ bool ResWriteUint16( const uint_16 *newint, WResFileID handle )
     }
 }
 
-bool ResWriteUint32( const uint_32 *newint, WResFileID handle )
-/*************************************************************/
+bool ResWriteUint32( uint_32 newint, WResFileID handle )
+/******************************************************/
 {
-    if( WRESWRITE( handle, newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
+    if( WRESWRITE( handle, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -97,7 +97,6 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
 {
     bool            error;
     uint_16         numchars;
-    uint_8          tmp;
     char            *ptr;
     bool            freebuf;
 
@@ -118,14 +117,12 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
             ptr = WRESALLOC( 2 * numchars );
         }
         numchars = (ConvToUnicode)( numchars, name->Name, ptr ) / 2;
-        error = ResWriteUint16( &numchars, handle );
+        error = ResWriteUint16( numchars, handle );
         numchars *= 2;
     } else {
-        numchars &= 0xFF;       /* in 16-bit the string can be no more than
-                                   256 characters*/
-        tmp = numchars;
+        numchars &= 0xFF;   /* in 16-bit the string can be no more than 256 characters */
         ptr = (char *)name->Name;
-        error = ResWriteUint8( &tmp, handle );
+        error = ResWriteUint8( numchars, handle );
     }
     if( !error && numchars > 0 ) {
         if( WRESWRITE( handle, ptr, numchars ) != numchars ) {
@@ -149,17 +146,13 @@ bool WResWriteWResID( const WResID *name, WResFileID handle )
 /***********************************************************/
 {
     bool        error;
-    uint_16     tmp16;
-    uint_8      tmp8;
 
-    tmp8 = name->IsName;
-    error = ResWriteUint8( &tmp8, handle );
+    error = ResWriteUint8( name->IsName, handle );
     if( !error ) {
         if( name->IsName ) {
             error = WResWriteWResIDName( &(name->ID.Name), handle );
         } else {
-            tmp16 = name->ID.Num;
-            error = ResWriteUint16( &tmp16, handle );
+            error = ResWriteUint16( name->ID.Num, handle );
         }
     }
 
@@ -305,24 +298,18 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
 /*****************************************************************************************/
 {
     bool        error;
-    uint_16     flag;
-    uint_16     tmp16;
-    uint_8      tmp8;
 
     if( name == NULL ) {
         error = ResWriteString( "", use_unicode, handle );
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                flag = 0xffff;
-                error = ResWriteUint16( &flag, handle );
+                error = ResWriteUint16( -1, handle );
             } else {
-                tmp8 = name->ord.fFlag;
-                error = ResWriteUint8( &tmp8, handle );
+                error = ResWriteUint8( name->ord.fFlag, handle );
             }
             if( !error ) {
-                tmp16 = name->ord.wOrdinalID;
-                error = ResWriteUint16( &tmp16, handle );
+                error = ResWriteUint16( name->ord.wOrdinalID, handle );
             }
         } else {
             error = ResWriteString( name->name, use_unicode, handle );
@@ -332,10 +319,10 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
     return( error );
 } /* ResWriteNameOrOrdinal */
 
-static long MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
-/***************************************************************************/
+static size_t MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
+/*****************************************************************************/
 {
-    long       size;
+    size_t  size;
 
     if( data->ord.fFlag == 0xff ) {
         size = 4;
@@ -350,15 +337,15 @@ static long MResFindNameOrOrdSize( ResNameOrOrdinal *data, bool use_unicode )
     return( size );
 }
 
-static int MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
-/***************************************************************************/
+static size_t MResFindHeaderSize( MResResourceHeader *header, bool use_unicode )
+/******************************************************************************/
 {
-    int     headersize;
-    long    namesize;
-    long    typesize;
-    long    padding;
+    size_t  headersize;
+    size_t  namesize;
+    size_t  typesize;
+    size_t  padding;
 
-    headersize = sizeof( MResResourceHeader ) - 2 * sizeof( ResNameOrOrdinal * ) + sizeof( uint_32 );
+    headersize = 2 * sizeof( uint_16 ) + 5 * sizeof( uint_32 );
     namesize = MResFindNameOrOrdSize( header->Name, use_unicode );
     typesize = MResFindNameOrOrdSize( header->Type, use_unicode );
     headersize += ( namesize + typesize );
@@ -371,9 +358,6 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, b
 /*******************************************************************************************/
 {
     bool        error;
-    uint_32     headersize;
-    uint_16     tmp16;
-    uint_32     tmp32;
 
     if( !iswin32 ) {
         error = ResWriteNameOrOrdinal( currhead->Type, false, handle );
@@ -381,19 +365,15 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, b
             error = ResWriteNameOrOrdinal( currhead->Name, false, handle );
         }
         if( !error ) {
-            tmp16 = currhead->MemoryFlags;
-            error = ResWriteUint16( &tmp16, handle );
+            error = ResWriteUint16( currhead->MemoryFlags, handle );
         }
         if( !error ) {
-            tmp32 = currhead->Size;
-            error = ResWriteUint32( &tmp32, handle );
+            error = ResWriteUint32( currhead->Size, handle );
         }
     } else {
-        tmp32 = currhead->Size;
-        error = ResWriteUint32( &tmp32, handle );
+        error = ResWriteUint32( currhead->Size, handle );
         if( !error ) {
-            headersize = MResFindHeaderSize( currhead, true );
-            error = ResWriteUint32( &headersize, handle  );
+            error = ResWriteUint32( MResFindHeaderSize( currhead, true ), handle  );
         }
         if( !error ) {
             error = ResWriteNameOrOrdinal( currhead->Type, true, handle );
@@ -405,24 +385,19 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, b
             error = ResPadDWord( handle );
         }
         if( !error ) {
-            tmp32 = currhead->DataVersion;
-            error = ResWriteUint32( &tmp32, handle );
+            error = ResWriteUint32( currhead->DataVersion, handle );
         }
         if( !error ) {
-            tmp16 = currhead->MemoryFlags;
-            error = ResWriteUint16( &tmp16, handle );
+            error = ResWriteUint16( currhead->MemoryFlags, handle );
         }
         if( !error ) {
-            tmp16 = currhead->LanguageId;
-            error = ResWriteUint16( &tmp16, handle );
+            error = ResWriteUint16( currhead->LanguageId, handle );
         }
         if( !error ) {
-            tmp32 = currhead->Version;
-            error = ResWriteUint32( &tmp32, handle );
+            error = ResWriteUint32( currhead->Version, handle );
         }
         if( !error ) {
-            tmp32 = currhead->Characteristics;
-            error = ResWriteUint32( &tmp32, handle );
+            error = ResWriteUint32( currhead->Characteristics, handle );
         }
     }
 
