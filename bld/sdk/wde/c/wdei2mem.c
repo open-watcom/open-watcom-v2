@@ -562,11 +562,11 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool 
         }
         memcpy( &dbc->Size.x, *data, sizeof( uint_16 ) );
         *data += sizeof( uint_16 );
-        memcpy( &dbc>Size.y, *data, sizeof( uint_16 ) );
+        memcpy( &dbc->Size.y, *data, sizeof( uint_16 ) );
         *data += sizeof( uint_16 );
-        memcpy( &dbc>Size.width, *data, sizeof( uint_16 ) );
+        memcpy( &dbc->Size.width, *data, sizeof( uint_16 ) );
         *data += sizeof( uint_16 );
-        memcpy( &dbc>Size.height, *data, sizeof( uint_16 ) );
+        memcpy( &dbc->Size.height, *data, sizeof( uint_16 ) );
         *data += sizeof( uint_16 );
         if( is32bitEx ) {
             memcpy( &dbc->ID, *data, sizeof( uint_32 ) );
