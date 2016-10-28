@@ -36,14 +36,12 @@
 #define VAR_STR_PART_SIZE 64
 typedef struct VarString {
     char                partString[VAR_STR_PART_SIZE];
-    int                 lastLoc;
+    size_t              len;
     struct VarString    *next;
 } VarString;
-/* lastLoc is the location of the last char of this part of the string or */
-/* -1 if this part is empty */
 
 extern VarString    *VarStringStart( void );
-extern void         VarStringAddChar( VarString * list, int newchar );
-extern char         *VarStringEnd( VarString * list, int * retlength );
+extern void         VarStringAddChar( VarString *list, char newchar );
+extern char         *VarStringEnd( VarString *list, size_t *retlength );
 
 #endif

@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-VarString * VarStringStart( void )
-/********************************/
+VarString *VarStringStart( void )
+/*******************************/
 {
     VarString *    newlist;
 
@@ -45,14 +45,14 @@ VarString * VarStringStart( void )
     if( newlist == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
-        newlist->lastLoc = -1;
+        newlist->len = 0;
         newlist->next = NULL;
     }
 
     return(newlist);
 } /* VarStringStart */
 
-void VarStringAddChar( VarString * list, int newchar )
+void VarStringAddChar( VarString *list, char newchar )
 /****************************************************/
 {
     if( list != NULL ) {
@@ -61,7 +61,7 @@ void VarStringAddChar( VarString * list, int newchar )
             list = list->next;
         }
         /* if the current part is full */
-        if( list->lastLoc == VAR_STR_PART_SIZE - 1 ) {
+        if( list->len == VAR_STR_PART_SIZE ) {
             list->next = VarStringStart();
             if( list->next == NULL ) {
                 return;
@@ -69,34 +69,34 @@ void VarStringAddChar( VarString * list, int newchar )
             list = list->next;
         }
         /* add the new char to the next spot */
-        list->lastLoc += 1;
-        list->partString[list->lastLoc] = newchar;
+        list->partString[list->len] = newchar;
+        list->len += 1;
     }
 } /* VarStringAddChar */
 
-static int ComputeVarStringLen( VarString * string )
+static size_t ComputeVarStringLen( VarString * string )
 {
-    int     length;
+    size_t  length;
 
     length = 0;
     while( string != NULL ) {
-        length += string->lastLoc + 1;
+        length += string->len;
         string = string->next;
     }
 
     return( length );
 } /* ComputeVarStringLen */
 
-char * VarStringEnd( VarString * list, int * retlength )
+char *VarStringEnd( VarString *list, size_t *retlength )
 /******************************************************/
 /* allocated a continous string for list, copies the string, and free's list */
 /* if retlength is not NULL the lenght of the string (excluding the '\0') is */
 /* returned there */
 {
-    VarString *     oldpart;
-    char *          newstring;
-    char *          stringpart;
-    int             length;
+    VarString       *oldpart;
+    char            *newstring;
+    char            *stringpart;
+    size_t          length;
 
     length = ComputeVarStringLen( list );
     /* +1 is for the '\0' */
@@ -108,8 +108,8 @@ char * VarStringEnd( VarString * list, int * retlength )
         stringpart = newstring;
         while( list != NULL ) {
             /* copy the current string part */
-            memcpy( stringpart, list->partString, list->lastLoc + 1 );
-            stringpart += list->lastLoc + 1;
+            memcpy( stringpart, list->partString, list->len );
+            stringpart += list->len;
 
             /* free the current string part */
             oldpart = list;
