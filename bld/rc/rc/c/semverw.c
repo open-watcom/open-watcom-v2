@@ -80,20 +80,6 @@ FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
     return( list );
 }
 
-static uint_16 CalcValListSize( FullVerValueList *list, bool use_unicode )
-/************************************************************************/
-{
-    uint_16     size;
-    int         curr_val;
-
-    size = 0;
-    for( curr_val = 0; curr_val < list->NumItems; curr_val++ ) {
-        size += ResSizeVerValueItem( list->Item + curr_val, use_unicode );
-    }
-
-    return( size );
-}
-
 static void FreeValItem( VerValueItem * item )
 /********************************************/
 {
@@ -186,12 +172,16 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
         os = WRES_OS_WIN16;
     }
     head_size = ResSizeVerBlockHeader( &block->Head, block->UseUnicode, os );
+    val_size = 0;
     if( block->Value == NULL ) {
-        val_size = 0;
         padding = 0;
     } else {
-        val_size = CalcValListSize( block->Value, block->UseUnicode );
-        padding = RES_PADDING( val_size, sizeof(uint_32) );
+        int i;
+
+        for( i = 0; i < block->Value->NumItems; i++ ) {
+            val_size += ResSizeVerValueItem( block->Value->Item + i, block->UseUnicode );
+        }
+        padding = RES_PADDING( val_size, sizeof( uint_32 ) );
     }
     if( block->Nest == NULL ) {
         nest_size = 0;

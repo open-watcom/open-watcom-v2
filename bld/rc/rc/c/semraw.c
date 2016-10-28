@@ -47,7 +47,7 @@ void SemWriteRawDataItem( RawDataItem item )
     bool        error;
 
     if( item.IsString ) {
-        int     len = item.StrLen;
+        size_t  len = item.StrLen;
 
         if( item.WriteNull ) {
             ++len;

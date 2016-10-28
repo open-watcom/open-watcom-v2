@@ -37,7 +37,7 @@
 
 typedef struct ScanString {
     bool        lstring;        /* was string prefixed by L like this L"bob" */
-    int         length;
+    size_t      length;
     char        *string;
 } ScanString;
 

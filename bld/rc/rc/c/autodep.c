@@ -117,7 +117,8 @@ static void writeOneNode( DepInfo *cur )
     /* write out file name */
     item.IsString = true;
     item.Item.String = cur->name;
-    item.StrLen = strlen( cur->name ) + 1;
+    item.StrLen = strlen( cur->name );
+    item.WriteNull = true;
     SemWriteRawDataItem( item );
 }
 

@@ -560,8 +560,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_STRING );
         } else {
-            stringFromFile = VarStringEnd( newstring,
-                                           &( value->string.length ) );
+            stringFromFile = VarStringEnd( newstring, &(value->string.length) );
             value->string.string = stringFromFile;
 #if 0
             //DRW - this code truncates trailing null chars in resources
@@ -726,8 +725,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring,
-                        &(value->string.length) );
+            value->string.string = VarStringEnd( newstring, &(value->string.length) );
             DEBUGPUTS( value->string.string )
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
@@ -748,8 +746,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring,
-                        &(value->string.length) );
+            value->string.string = VarStringEnd( newstring, &(value->string.length) );
             DEBUGPUTS( value->string.string )
             return( Y_DOS_FILENAME );
         }

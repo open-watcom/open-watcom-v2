@@ -58,10 +58,14 @@ static bool ResOS2WriteStringTableBlock( StringTableBlock *currblock,
             // Write an empty string
             error = ResWriteUint16( 1, handle );
         } else {
+            size_t  len;
             // The string can't be longer than 255 chars
-            error = ResWriteUint8( name->NumChars + 1, handle );
+            len = name->NumChars + 1;
+            if( len > 255 )
+                len = 255;
+            error = ResWriteUint8( len, handle );
             if( !error )
-                error = ResWriteStringLen( name->Name, false, handle, name->NumChars );
+                error = ResWriteStringLen( name->Name, false, handle, len - 1 );
             // The terminating NULL is not stored in the table, need to add it now
             if( !error ) {
                 error = ResWriteUint8( 0, handle );
