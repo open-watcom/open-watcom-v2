@@ -534,7 +534,6 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( uint_8 **data, bool is32bit, bool is
 WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool is32bitEx )
 {
     WdeDialogBoxControl         *dbc;
-    int                         fixedbytes;
     bool                        ok;
 
     dbc = NULL;
