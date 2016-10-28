@@ -64,15 +64,16 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode,
     return( error );
 }
 
-uint_16 ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os )
-/********************************************************************************/
+size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os )
+/*******************************************************************************/
 {
-    uint_16     key_size;
-    uint_16     padding;
-    uint_16     fixed_size;
+    size_t      key_size;
+    size_t      padding;
+    size_t      fixed_size;
 
     key_size = strlen( head->Key ) + 1;
-    if( use_unicode ) key_size *= 2;
+    if( use_unicode )
+        key_size *= 2;
     if( os == WRES_OS_WIN32 ) {
         /* the NT key field begins 2 bytes from a 32 bit boundary */
         padding = RES_PADDING( key_size + 2, sizeof( uint_32 ) );
@@ -85,11 +86,9 @@ uint_16 ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os
 }
 
 bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID handle )
-/************************************************************************************/
+/**********************************************************************************/
 {
     bool            error;
-    char            *convbuf;
-    int             len;
 
     error = false;
     if( item->IsNum ) {
@@ -98,28 +97,16 @@ bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID hand
         if( item->strlen == VER_CALC_SIZE ) {
             error = ResWriteString( item->Value.String, use_unicode, handle );
         } else {
-            if( use_unicode ) {
-                convbuf = WRESALLOC( 2 * item->strlen );
-                len = (ConvToUnicode)( item->strlen, item->Value.String,
-                                        convbuf );
-            } else {
-                len = item->strlen;
-                convbuf = item->Value.String;
-            }
-            if( WRESWRITE( handle, convbuf, len ) != len ) {
-                error = true;
-                WRES_ERROR( WRS_WRITE_FAILED );
-            }
-            if( use_unicode ) WRESFREE( convbuf );
+            error = ResWriteStringLen( item->Value.String, use_unicode, handle, item->strlen );
         }
     }
     return( error );
 }
 
-uint_16 ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
-/******************************************************************/
+size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
+/*****************************************************************/
 {
-    uint_16     size;
+    size_t  size;
 
     if( item->IsNum ) {
         size = sizeof( uint_16 );
@@ -127,10 +114,10 @@ uint_16 ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
         if( item->strlen == VER_CALC_SIZE ) {
             size = strlen( item->Value.String ) + 1;
         } else {
-            size = item->strlen;
+            size = item->strlen + 1;
         }
         if( use_unicode ) {
-            size = (*ConvToUnicode)( size, item->Value.String, NULL);
+            size = ConvToUnicode( size, item->Value.String, NULL);
         }
     }
     return( size );
@@ -141,7 +128,7 @@ bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
 {
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
-    fixed->FileDateLow = time( NULL );
+    fixed->FileDateLow = (uint_32)time( NULL );
     if( WRESWRITE( handle, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
