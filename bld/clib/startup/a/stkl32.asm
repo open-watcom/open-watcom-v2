@@ -2,6 +2,7 @@
 ;*
 ;*                            Open Watcom Project
 ;*
+;* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 ;*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 ;*
 ;*  ========================================================================
@@ -33,7 +34,11 @@ include mdef.inc
 include struct.inc
 include exitwmsg.inc
 
+ifdef __MT__
+        extrn   "C",__GetThreadPtr : dword
+else
         extrn   "C",_STACKLOW : dword
+endif
 
         modstart        stk
 
@@ -72,7 +77,17 @@ hextab  db      "0123456789ABCDEF"
           _quif ae                      ; - . . .
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
+ifdef __MT__
+          push  esi                     ; - save registers
+          push  eax                     ; - save eax
+          call  __GetThreadPtr          ; - get thread data address
+          mov   esi,eax                 ; - ...
+          pop   eax                     ; - restore new ESP value
+          cmp   eax,[esi]               ; - quit if too much
+          pop   esi                     ; - restore registers
+else
           cmp   eax,_STACKLOW           ; - quit if too much
+endif
           _quif be                      ; - . . .
           pop   eax                     ; - restore EAX
           ret   4                       ; - return
