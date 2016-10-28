@@ -42,7 +42,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle )
     ResNameOrOrdinal    newname;
     ResNameOrOrdinal *  newptr;
     bool                error;
-    int                 stringlen;
+    size_t              stringlen;
     char *              restofstr;
     uint_8              tmp8;
     uint_16             tmp16;
@@ -99,7 +99,7 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID handle )
     uint_16             ord;
     ResNameOrOrdinal *  newptr;
     bool                error;
-    int                 stringlen;
+    size_t              stringlen;
     char *              restofstr;
 
     restofstr = NULL;
