@@ -38,7 +38,6 @@
 typedef uint_32         DialogStyle;
 typedef uint_32         DialogExstyle;
 
-#include "pushpck1.h"
 typedef struct DialogSizeInfo {
     uint_16             x;
     uint_16             y;
@@ -55,10 +54,8 @@ typedef struct DialogBoxHeader {
     char                *Caption;       /* '\0' terminated */
     uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
     char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} _WCUNALIGNED DialogBoxHeader;
-#include "poppck.h"
+} DialogBoxHeader;
 
-#include "pushpck2.h"
 typedef struct DialogBoxHeader32 {
     DialogStyle         Style;
     DialogExstyle       ExtendedStyle;
@@ -69,7 +66,7 @@ typedef struct DialogBoxHeader32 {
     char                *Caption;       /* '\0' terminated */
     uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
     char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} _WCUNALIGNED DialogBoxHeader32;
+} DialogBoxHeader32;
 
 typedef struct DialogBoxExHeader32 {
     uint_16             Version;
@@ -87,7 +84,7 @@ typedef struct DialogBoxExHeader32 {
     uint_8              FontItalic;     /* only here if (Style & DS_SETFONT) */
     uint_8              FontCharset;    /* only here if (Style & DS_SETFONT) */
     char                *FontName;      /* only here if (Style & DS_SETFONT) */
-} _WCUNALIGNED DialogBoxExHeader32;
+} DialogBoxExHeader32;
 
 typedef struct DialogExHeader32 {
     uint_16             FontWeight;
@@ -98,9 +95,7 @@ typedef struct DialogExHeader32 {
     char                FontItalicDefined;
     char                FontCharsetDefined;
 } DialogExHeader32;
-#include "poppck.h"
 
-#include "pushpck1.h"
 typedef union ControlClass {
     uint_8              Class;          /* if (class & 0x80) */
     char                ClassName[1];   /* '\0' terminated */
@@ -113,10 +108,8 @@ typedef struct DialogBoxControl {
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
     uint_8              ExtraBytes;     /* should be 0 */
-} _WCUNALIGNED DialogBoxControl;
-#include "poppck.h"
+} DialogBoxControl;
 
-#include "pushpck2.h"
 typedef struct DialogBoxControl32 {
     uint_32             Style;
     uint_32             ExtendedStyle;
@@ -125,7 +118,7 @@ typedef struct DialogBoxControl32 {
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
     uint_16             ExtraBytes;   /* should be 0 */
-} _WCUNALIGNED DialogBoxControl32;
+} DialogBoxControl32;
 
 typedef struct DialogBoxExControl32 {
     uint_32             HelpId;
@@ -137,7 +130,6 @@ typedef struct DialogBoxExControl32 {
     ResNameOrOrdinal    *Text;
     uint_16             ExtraBytes;
 } DialogBoxExControl32;
-#include "poppck.h"
 
 /* predefined classes for controls */
 #define CLASS_BUTTON    0x80
@@ -148,16 +140,16 @@ typedef struct DialogBoxExControl32 {
 #define CLASS_COMBOBOX  0x85
 
 extern bool ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID handle );
-extern bool ResWriteDialogBoxHeader32( DialogBoxHeader32 * head, WResFileID handle );
+extern bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle );
 extern bool ResWriteDialogBoxControl( DialogBoxControl *, WResFileID handle );
-extern bool ResWriteDialogBoxControl32( DialogBoxControl32 * control, WResFileID handle );
-extern ControlClass * ResNameOrOrdToControlClass( const ResNameOrOrdinal *);
-extern ControlClass * ResNumToControlClass( uint_16 classnum );
-extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head );
-extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head );
+extern bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle );
+extern ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *);
+extern ControlClass *ResNumToControlClass( uint_16 classnum );
+extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
+extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
 extern bool ResIsDialogEx( WResFileID handle );
-extern bool ResReadDialogBoxHeader( DialogBoxHeader * head, WResFileID handle );
-extern bool ResReadDialogBoxHeader32( DialogBoxHeader32 * head, WResFileID handle );
+extern bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle );
+extern bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle );
 extern bool ResReadDialogExHeader32( DialogBoxHeader32 *, DialogExHeader32 *, WResFileID handle );
 extern bool ResReadDialogBoxControl( DialogBoxControl *, WResFileID handle );
 extern bool ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID handle );
