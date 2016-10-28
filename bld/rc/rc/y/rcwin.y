@@ -1382,7 +1382,7 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = 0;
             $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontCharset = 1;
+            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
             $$.Opt.Font.FontWeightDefined = false;
             $$.Opt.Font.FontItalicDefined = false;
             $$.Opt.Font.FontCharsetDefined = false;
@@ -1394,7 +1394,7 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontCharset = 1;
+            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = false;
             $$.Opt.Font.FontCharsetDefined = false;
@@ -1406,7 +1406,7 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontCharset = 1;
+            $$.Opt.Font.FontCharset = DEFAULT_CHARSET;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = true;
             $$.Opt.Font.FontCharsetDefined = false;

@@ -117,7 +117,7 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 
         newheader->u.Head32.ExHead.FontWeight = 0;
         newheader->u.Head32.ExHead.FontItalic = 0;
-        newheader->u.Head32.ExHead.FontCharset = 1;
+        newheader->u.Head32.ExHead.FontCharset = DEFAULT_CHARSET;
         newheader->u.Head32.ExHead.HelpId = 0L;
         newheader->u.Head32.ExHead.FontWeightDefined = false;
         newheader->u.Head32.ExHead.FontItalicDefined = false;
