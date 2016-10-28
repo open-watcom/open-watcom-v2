@@ -153,8 +153,14 @@ static int WdeDialogBoxHeaderToMem( WdeDialogBoxHeader *head, uint_8 *mem )
             memcpy( mem + pos, &head->NumOfItems, sizeof( uint_8 ) );
             pos += sizeof( uint_8 );
         }
-        memcpy( mem + pos, &head->Size, sizeof( DialogSizeInfo ) );
-        pos += sizeof( DialogSizeInfo );
+        memcpy( mem + pos, &head->Size.x, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &head->Size.y, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &head->Size.width, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &head->Size.height, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
     }
 
     if( ok ) {
@@ -224,8 +230,14 @@ static int WdeDialogBoxControlToMem( WdeDialogBoxControl *control,
             memcpy( mem + pos, &control->ExtendedStyle, sizeof( uint_32 ) );
             pos += sizeof( uint_32 );
         }
-        memcpy( mem + pos, &control->Size, sizeof( DialogSizeInfo ) );
-        pos += sizeof( DialogSizeInfo );
+        memcpy( mem + pos, &control->Size.x, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &control->Size.y, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &control->Size.width, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &control->Size.height, sizeof( uint_16 ) );
+        pos += sizeof( uint_16 );
         if( is32bitEx ) {
             memcpy( mem + pos, &control->ID, sizeof( uint_32 ) );
             pos += sizeof( uint_32 );
@@ -291,10 +303,10 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **mem, uint_32 *size )
     bool                is32bit;
     bool                is32bitEx;
 
+    ok = (info != NULL && mem != NULL && size != NULL);
+
     is32bit = info->dialog_header->is32bit;
     is32bitEx = info->dialog_header->is32bitEx;
-
-    ok = (info != NULL && mem != NULL && size != NULL);
 
     if( ok ) {
         *mem = NULL;
@@ -467,8 +479,14 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( uint_8 **data, bool is32bit, bool is
             memcpy( &dbh->NumOfItems, *data, sizeof( uint_8 ) );
             *data += sizeof( uint_8 );
         }
-        memcpy( &dbh->Size, *data, sizeof( DialogSizeInfo ) );
-        *data += sizeof( DialogSizeInfo );
+        memcpy( &dbh->Size.x, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbh->Size.y, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbh->Size.width, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbh->Size.height, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
 
         SETHDR_MENUNAME( dbh, WdeMem2NameOrOrdinal( data, is32bit ) );
         ok = (GETHDR_MENUNAME( dbh ) != NULL);
@@ -515,9 +533,6 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( uint_8 **data, bool is32bit, bool is
 
 WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool is32bitEx )
 {
-    DialogBoxControl            *c16;
-    DialogBoxControl32          *c32;
-    DialogBoxExControl32        *c32ex;
     WdeDialogBoxControl         *dbc;
     int                         fixedbytes;
     bool                        ok;
@@ -532,32 +547,38 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool 
     }
 
     if( ok ) {
-        if( is32bit ) {
-            if( is32bitEx ) {
-                fixedbytes = offsetof( DialogBoxExControl32, ClassID );
-                c32ex = (DialogBoxExControl32 *)*data;
-                dbc->HelpId = c32ex->HelpId;
-                dbc->Style = c32ex->Style;
-                dbc->ExtendedStyle = c32ex->ExtendedStyle;
-                dbc->Size = c32ex->Size;
-                dbc->ID = c32ex->ID;
-            } else {
-                fixedbytes = offsetof( DialogBoxControl32, ClassID );
-                c32 = (DialogBoxControl32 *)*data;
-                dbc->Style = c32->Style;
-                dbc->ExtendedStyle = c32->ExtendedStyle;
-                dbc->Size = c32->Size;
-                dbc->ID = c32->ID;
-            }
-        } else {
-            fixedbytes = offsetof( DialogBoxControl, ClassID );
-            c16 = (DialogBoxControl *)*data;
-            dbc->Size = c16->Size;
-            dbc->ID = c16->ID;
-            dbc->Style = c16->Style;
+        if( is32bitEx ) {
+            memcpy( &dbc->HelpId, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+            memcpy( &dbc->ExtendedStyle, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+            memcpy( &dbc->Style, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+        } else if( is32bit ) {
+            memcpy( &dbc->Style, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+            memcpy( &dbc->ExtendedStyle, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
         }
-
-        *data += fixedbytes;
+        memcpy( &dbc->Size.x, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbc>Size.y, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbc>Size.width, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        memcpy( &dbc>Size.height, *data, sizeof( uint_16 ) );
+        *data += sizeof( uint_16 );
+        if( is32bitEx ) {
+            memcpy( &dbc->ID, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+        } else {
+            memcpy( &dbc->ID, *data, sizeof( uint_16 ) );
+            *data += sizeof( uint_16 );
+        }
+        if( !is32bit ) {
+            memcpy( &dbc->Style, *data, sizeof( uint_32 ) );
+            *data += sizeof( uint_32 );
+        }
         SETCTL_CLASSID( dbc, WdeMem2ControlClass( data, is32bit ) );
         ok = (GETCTL_CLASSID( dbc ) != NULL);
     }
@@ -569,11 +590,7 @@ WdeDialogBoxControl *WdeMem2DialogBoxControl( uint_8 **data, bool is32bit, bool 
 
     if( ok ) {
         if( is32bit ) {
-            if( is32bitEx ) {
-                dbc->ExtraBytes = *(uint_16 *)*data;
-            } else {
-                dbc->ExtraBytes = *(uint_16 *)*data;
-            }
+            dbc->ExtraBytes = *(uint_16 *)*data;
             *data += sizeof( uint_16 );
         } else {
             dbc->ExtraBytes = (uint_8)((*data)[0]);
