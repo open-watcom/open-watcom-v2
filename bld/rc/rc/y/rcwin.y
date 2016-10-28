@@ -189,7 +189,7 @@
 %type <string>          file-name
 %type <resbyte>         fontitalic
 %type <ressizenum>      fontweight
-%type <resbyte>         fontextra
+%type <resbyte>         fontcharset
 %type <menuflags>       menu-item-options
 %type <token>           menu-item-option
 %type <menuptr>         menu-section
@@ -1382,9 +1382,10 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = 0;
             $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontExtra = 1;
+            $$.Opt.Font.FontCharset = 1;
             $$.Opt.Font.FontWeightDefined = false;
             $$.Opt.Font.FontItalicDefined = false;
+            $$.Opt.Font.FontCharsetDefined = false;
         }
     | Y_FONT point-size comma-opt typeface comma-opt fontweight
         {
@@ -1393,9 +1394,10 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = 0;
-            $$.Opt.Font.FontExtra = 1;
+            $$.Opt.Font.FontCharset = 1;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = false;
+            $$.Opt.Font.FontCharsetDefined = false;
         }
     | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt fontitalic
         {
@@ -1404,25 +1406,27 @@ font-stmt
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontExtra = 1;
+            $$.Opt.Font.FontCharset = 1;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = true;
+            $$.Opt.Font.FontCharsetDefined = false;
         }
     | Y_FONT point-size comma-opt typeface comma-opt fontweight comma-opt
-             fontitalic comma-opt fontextra
+             fontitalic comma-opt fontcharset
         {
             $$.token = Y_FONT;
             $$.Opt.Font.PointSize = $2;
             $$.Opt.Font.FontName = $4.string;
             $$.Opt.Font.FontWeight = $6;
             $$.Opt.Font.FontItalic = $8;
-            $$.Opt.Font.FontExtra = (uint_8)$10;
+            $$.Opt.Font.FontCharset = (uint_8)$10;
             $$.Opt.Font.FontWeightDefined = true;
             $$.Opt.Font.FontItalicDefined = true;
+            $$.Opt.Font.FontCharsetDefined = true;
         }
     ;
 
-fontextra
+fontcharset
     : constant-expression
       { $$ = $1.Value & 0xFF; }
     ;

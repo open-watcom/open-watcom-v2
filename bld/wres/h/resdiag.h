@@ -74,11 +74,11 @@ typedef struct DialogBoxHeader32 {
 typedef struct DialogExHeader32 {
     uint_16             FontWeight;
     uint_8              FontItalic;
-    uint_8              FontExtra;
+    uint_8              FontCharset;
     uint_32             HelpId;
     char                FontWeightDefined;
     char                FontItalicDefined;
-    char                FontExtraDefined;
+    char                FontCharsetDefined;
 } DialogExHeader32;
 #include "poppck.h"
 

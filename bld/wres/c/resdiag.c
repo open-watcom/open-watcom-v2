@@ -22,7 +22,7 @@
 *    NON-INFRINGEMENT. Please see the License for the specific language
 *    governing rights and limitations under the License.
 *
-* 
+*
 *  ========================================================================
 *
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
@@ -176,7 +176,7 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
             error = ResWriteUint8( exhead->FontItalic, handle );
         }
         if( !error ) {
-            error = ResWriteUint8( exhead->FontExtra, handle );
+            error = ResWriteUint8( exhead->FontCharset, handle );
         }
         if( !error ) {
             error = ResWriteString( head->FontName, true, handle );
@@ -397,7 +397,7 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
             error = ResReadUint8( &(exhead->FontItalic), handle );
         }
         if( !error ) {
-            error = ResReadUint8( &(exhead->FontExtra), handle );
+            error = ResReadUint8( &(exhead->FontCharset), handle );
         }
         if( !error ) {
             head->FontName = ResRead32String( handle, NULL );

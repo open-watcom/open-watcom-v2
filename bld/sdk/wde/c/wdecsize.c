@@ -130,7 +130,8 @@ static size_t WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
 
         if( header->is32bitEx ) {
             size += sizeof( uint_16 );  /* FontWeight */
-            size += sizeof( uint_16 );  /* FontItalic */
+            size += sizeof( uint_8 );   /* FontItalic */
+            size += sizeof( uint_8 );   /* FontCharset */
         }
 
         size += WdeCalcStrlen( GETHDR_FONTNAME( header ), header->is32bit );

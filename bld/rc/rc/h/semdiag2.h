@@ -40,6 +40,7 @@ typedef struct FullDialogOptions {
         DialogStyle         Style;
         DialogExstyle       Exstyle;
         WResLangType        lang;
+#if 0
         struct {
             uint_16         PointSize;
             char *          FontName;
@@ -51,6 +52,7 @@ typedef struct FullDialogOptions {
             bool            FontWeightDefined;
             bool            FontItalicDefined;
         } Font;
+#endif
     } Opt;
 } FullDialogOptions;
 

@@ -1151,9 +1151,11 @@ font-stmt
     : Y_FONT comma-opt
         {
             $$.token = Y_FONT;
+#if 0
             $$.Opt.Font.FontName = NULL;
             $$.Opt.Font.FontItalic = 0;
             $$.Opt.Font.FontExtra = 1;
+#endif
         }
     ;
 

@@ -117,10 +117,11 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
 
         newheader->u.Head32.ExHead.FontWeight = 0;
         newheader->u.Head32.ExHead.FontItalic = 0;
-        newheader->u.Head32.ExHead.FontExtra = 1;
+        newheader->u.Head32.ExHead.FontCharset = 1;
         newheader->u.Head32.ExHead.HelpId = 0L;
         newheader->u.Head32.ExHead.FontWeightDefined = false;
         newheader->u.Head32.ExHead.FontItalicDefined = false;
+        newheader->u.Head32.ExHead.FontCharsetDefined = false;
     }
 
     newheader->StyleGiven = false;
@@ -210,9 +211,10 @@ static void AddDiagOption32( DlgHeader32 *head,
         head->Head.FontName = opt->Opt.Font.FontName;
         head->ExHead.FontItalic = opt->Opt.Font.FontItalic;
         head->ExHead.FontWeight = opt->Opt.Font.FontWeight;
-        head->ExHead.FontExtra = opt->Opt.Font.FontExtra;
+        head->ExHead.FontCharset = opt->Opt.Font.FontCharset;
         head->ExHead.FontItalicDefined = opt->Opt.Font.FontItalicDefined;
         head->ExHead.FontWeightDefined = opt->Opt.Font.FontWeightDefined;
+        head->ExHead.FontCharsetDefined = opt->Opt.Font.FontCharsetDefined;
         break;
     case Y_CAPTION:
         head->Head.Style |= WS_CAPTION;
@@ -665,6 +667,9 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
             }
             if( head->u.Head32.ExHead.FontWeightDefined ) {
                 RcError( ERR_FONT_WEIGHT );
+            }
+            if( head->u.Head32.ExHead.FontCharsetDefined ) {
+                RcError( ERR_FONT_CHARSET );
             }
             for( travptr = ctrls->head; travptr != NULL; travptr = travptr->next ) {
                 if( travptr->u.ctrl32.HelpIdDefined ) {

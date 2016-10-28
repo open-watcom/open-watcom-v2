@@ -224,8 +224,11 @@ static int WdeDialogBoxExHeaderToMem( WdeDialogBoxHeader *dhd, uint_8 *mem )
         memcpy( mem + pos, &dhd->FontWeight, sizeof( uint_16 ) );
         pos += sizeof( uint_16 );
 
-        memcpy( mem + pos, &dhd->FontItalic, sizeof( uint_16 ) );
-        pos += sizeof( uint_16 );
+        memcpy( mem + pos, &dhd->FontItalic, sizeof( uint_8 ) );
+        pos += sizeof( uint_8 );
+
+        memcpy( mem + pos, &dhd->FontCharset, sizeof( uint_8 ) );
+        pos += sizeof( uint_8 );
 
         size = WdeStringToMem( dhd->FontName, dhd->is32bit, mem + pos );
         pos += size;
@@ -594,12 +597,15 @@ WdeDialogBoxHeader *WdeMem2DialogBoxExHeader( uint_8 **data )
         if( GETHDR_STYLE( dbh ) & DS_SETFONT ) {
             dbh->FontWeightDefined = TRUE;
             dbh->FontItalicDefined = TRUE;
+            dbh->FontCharsetDefined = TRUE;
             SETHDR_POINTSIZE( dbh, *(uint_16 *)*data );
             *data += sizeof( uint_16 );
             SETHDR_FONTWEIGHT( dbh, *(uint_16 *)*data );
             *data += sizeof( uint_16 );
-            SETHDR_FONTITALIC( dbh, *(uint_16 *)*data );
-            *data += sizeof( uint_16 );
+            SETHDR_FONTITALIC( dbh, *(uint_8 *)*data );
+            *data += sizeof( uint_8 );
+            SETHDR_FONTCHARSET( dbh, *(uint_8 *)*data );
+            *data += sizeof( uint_8 );
             SETHDR_FONTNAME( dbh, WdeMem2String( data, TRUE ) );
             ok = (GETHDR_FONTNAME( dbh ) != NULL);
         }

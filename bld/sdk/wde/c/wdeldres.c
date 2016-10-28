@@ -161,9 +161,11 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
             if( dlg_info->dialog_header->is32bitEx ) {
                 dlg_info->dialog_header->FontWeight = h32ex.FontWeight;
                 dlg_info->dialog_header->FontItalic = h32ex.FontItalic;
+                dlg_info->dialog_header->FontCharset = h32ex.FontCharset;
                 dlg_info->dialog_header->HelpId = h32ex.HelpId;
                 dlg_info->dialog_header->FontWeightDefined = (h32ex.FontWeightDefined != 0);
                 dlg_info->dialog_header->FontItalicDefined = (h32ex.FontItalicDefined != 0);
+                dlg_info->dialog_header->FontCharsetDefined = (h32ex.FontCharsetDefined != 0);
             }
             dlg_info->dialog_header->Style = h32.Style;
             dlg_info->dialog_header->ExtendedStyle = h32.ExtendedStyle;
