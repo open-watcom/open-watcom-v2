@@ -35,8 +35,8 @@
 
 #include "resnamor.h"
 
-typedef uint_32     DialogStyle;
-typedef uint_32     DialogExstyle;
+typedef uint_32         DialogStyle;
+typedef uint_32         DialogExstyle;
 
 #include "pushpck1.h"
 typedef struct DialogSizeInfo {
@@ -50,26 +50,44 @@ typedef struct DialogBoxHeader {
     DialogStyle         Style;
     uint_8              NumOfItems;
     DialogSizeInfo      Size;
-    ResNameOrOrdinal *  MenuName;
-    ResNameOrOrdinal *  ClassName;
-    char *              Caption;        /* '\0' terminated */
+    ResNameOrOrdinal    *MenuName;
+    ResNameOrOrdinal    *ClassName;
+    char                *Caption;       /* '\0' terminated */
     uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
-    char *              FontName;       /* only here if (Style & DS_SETFONT) */
+    char                *FontName;      /* only here if (Style & DS_SETFONT) */
 } _WCUNALIGNED DialogBoxHeader;
 #include "poppck.h"
 
 #include "pushpck2.h"
 typedef struct DialogBoxHeader32 {
-    DialogStyle           Style;
-    uint_32               ExtendedStyle;
-    uint_16               NumOfItems;
-    DialogSizeInfo        Size;
-    ResNameOrOrdinal     *MenuName;
-    ResNameOrOrdinal     *ClassName;
-    char                 *Caption;      /* '\0' terminated */
-    uint_16               PointSize;    /* only here if (Style & DS_SETFONT) */
-    char                 *FontName;     /* only here if (Style & DS_SETFONT) */
+    DialogStyle         Style;
+    DialogExstyle       ExtendedStyle;
+    uint_16             NumOfItems;
+    DialogSizeInfo      Size;
+    ResNameOrOrdinal    *MenuName;
+    ResNameOrOrdinal    *ClassName;
+    char                *Caption;       /* '\0' terminated */
+    uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
+    char                *FontName;      /* only here if (Style & DS_SETFONT) */
 } _WCUNALIGNED DialogBoxHeader32;
+
+typedef struct DialogBoxExHeader32 {
+    uint_16             Version;
+    uint_16             Signature;
+    uint_32             HelpId;
+    DialogExstyle       ExtendedStyle;
+    DialogStyle         Style;
+    uint_16             NumOfItems;
+    DialogSizeInfo      Size;
+    ResNameOrOrdinal    *MenuName;
+    ResNameOrOrdinal    *ClassName;
+    char                *Caption;       /* '\0' terminated */
+    uint_16             PointSize;      /* only here if (Style & DS_SETFONT) */
+    uint_16             FontWeight;     /* only here if (Style & DS_SETFONT) */
+    uint_8              FontItalic;     /* only here if (Style & DS_SETFONT) */
+    uint_8              FontCharset;    /* only here if (Style & DS_SETFONT) */
+    char                *FontName;      /* only here if (Style & DS_SETFONT) */
+} _WCUNALIGNED DialogBoxExHeader32;
 
 typedef struct DialogExHeader32 {
     uint_16             FontWeight;
@@ -92,32 +110,32 @@ typedef struct DialogBoxControl {
     DialogSizeInfo      Size;
     uint_16             ID;
     uint_32             Style;
-    ControlClass       *ClassID;
-    ResNameOrOrdinal   *Text;
-    uint_8              ExtraBytes;         /* should be 0 */
+    ControlClass        *ClassID;
+    ResNameOrOrdinal    *Text;
+    uint_8              ExtraBytes;     /* should be 0 */
 } _WCUNALIGNED DialogBoxControl;
 #include "poppck.h"
 
 #include "pushpck2.h"
 typedef struct DialogBoxControl32 {
-    uint_32               Style;
-    uint_32               ExtendedStyle;
-    DialogSizeInfo        Size;
-    uint_16               ID;
-    ControlClass         *ClassID;
-    ResNameOrOrdinal     *Text;
-    uint_16               ExtraBytes;       /* should be 0 */
+    uint_32             Style;
+    uint_32             ExtendedStyle;
+    DialogSizeInfo      Size;
+    uint_16             ID;
+    ControlClass        *ClassID;
+    ResNameOrOrdinal    *Text;
+    uint_16             ExtraBytes;   /* should be 0 */
 } _WCUNALIGNED DialogBoxControl32;
 
 typedef struct DialogBoxExControl32 {
-    uint_32               HelpId;
-    uint_32               ExtendedStyle;
-    uint_32               Style;
-    DialogSizeInfo        Size;
-    uint_32               ID;
-    ControlClass         *ClassID;
-    ResNameOrOrdinal     *Text;
-    uint_16               ExtraBytes;
+    uint_32             HelpId;
+    uint_32             ExtendedStyle;
+    uint_32             Style;
+    DialogSizeInfo      Size;
+    uint_32             ID;
+    ControlClass        *ClassID;
+    ResNameOrOrdinal    *Text;
+    uint_16             ExtraBytes;
 } DialogBoxExControl32;
 #include "poppck.h"
 
