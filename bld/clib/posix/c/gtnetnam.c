@@ -31,12 +31,14 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include "rtdata.h"
-#include "rterrno.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
+#include "rtdata.h"
+#include "rterrno.h"
+#include "thread.h"
+
 
 _WCRTLINK struct netent *getnetbyname(const char *name)
 {

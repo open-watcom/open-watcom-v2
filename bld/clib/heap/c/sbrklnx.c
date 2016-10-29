@@ -34,12 +34,10 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "linuxsys.h"
 #include "heapacc.h"
 #include "heap.h"
-#include "rterrno.h"
 #include "rtdata.h"
-#include "thread.h"
+#include "linuxsys.h"
 
 
 void _WCNEAR *__brk( unsigned brk_value )

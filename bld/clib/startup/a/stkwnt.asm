@@ -49,13 +49,16 @@ msg     db      "Stack Overflow!", 0
 
         assume  ds:DGROUP
 
+        xdefp   __CHK
+        xdefp   __STK
+        xdefp   __GRO
+        xdefp   "C",__STKOVERFLOW
+        xdefp   __alloca_probe
 
         defp    _init_stk
         ret                             ; return
         endproc _init_stk
 
-
-        xdefp   __CHK
         defpe   __CHK                   ; new style stack check
         xchg    eax,4[esp]              ; get parm in eax
         call    __STK                   ; call stack checker
@@ -63,7 +66,6 @@ msg     db      "Stack Overflow!", 0
         ret     4
         endproc __CHK
 
-        xdefp   __STK
         defpe   __STK
         push    eax                     ; save parm for __GRO routine
         _guess                          ; guess: no overflow
@@ -88,7 +90,6 @@ endif
         _endguess                       ; endguess
 
 __STKOVERFLOW:
-        xdefp   "C",__STKOVERFLOW
         pop     eax                     ; pop the stack
 ifdef __STACK__
         push    1                       ; exit code
@@ -98,9 +99,9 @@ else
         mov     edx,1                   ; exit code
 endif
         jmp     __fatal_runtime_error   ; display msg and exit
+        ; never return
         endproc __STK
 
-        xdefp   __GRO
         defpe   __GRO                   ; dummy function to resolve symbol
         push    eax                     ; save regs
         push    ebx                     ; ...
@@ -116,7 +117,6 @@ lup:                                    ; do {
         ret     4                       ; return to caller
         endproc __GRO
 
-        xdefp   __alloca_probe
         ; on entry eax is size of stack to grow
         ; on exit esp has been advanced to new size
         defpe   __alloca_probe          ; ms compatible function

@@ -138,6 +138,8 @@ static sysblock         *PrevCommand;
 #endif
 #define INIT_FILE_ENV   "WLINK_LNK"
 
+#define HELP_FILE_NAME  "wlink.hlp"
+
 void InitCmdFile( void )
 /******************************/
 {
@@ -176,19 +178,19 @@ static void ResetCmdFile( void )
 }
 
 void DoCmdFile( char *fname )
-/**********************************/
+/***************************/
 /* start parsing the command */
 {
     exe_format  possible;
     f_handle    file;
     size_t      namelen;
     file_defext extension;
-    char        *namelnk;
+    const char  *namelnk;
 
     ResetCmdFile();
     if( fname == NULL || *fname == '\0' ) {
-        _ChkAlloc( fname, (10*1024) );  // arbitrarily large buffer that won't
-        GetCmdLine( fname );            // be overflowed
+        _ChkAlloc( fname, (10 * 1024) );    // arbitrarily large buffer that won't
+        GetCmdLine( fname );                // be overflowed
         NewCommandSource( NULL, fname, COMMANDLINE );
     } else {
         NewCommandSource( NULL, fname, ENVIRONMENT );
@@ -331,18 +333,18 @@ static void Crash( bool check_file )
 /**********************************/
 {
     char        buff[81];
-    unsigned    len;
+    size_t      len;
     f_handle    fp;
 
     if( check_file ) {
-        fp = FindPath( "wlink.hlp" );
+        fp = FindPath( HELP_FILE_NAME );
         if( fp != NIL_FHANDLE ) {
             WLPrtBanner();
-            for( ; (len = QRead( fp, buff, 80, "wlink.hlp" )) != 0; ) {
+            for( ; (len = QRead( fp, buff, 80, HELP_FILE_NAME )) != 0; ) {
                 buff[len] = '\0';
                 WriteStdOut( buff );
             }
-            QClose( fp, "wlink.hlp" );
+            QClose( fp, HELP_FILE_NAME );
             Ignite();
             Suicide();
         }
@@ -371,8 +373,8 @@ static void Help( void )
 static void DoCmdParse( void )
 /****************************/
 {
-    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
-        if( ProcOne( Directives, SEP_NO, true ) == false ) {
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !ProcOne( Directives, SEP_NO, true ) ) {
             Syntax();
         }
         RestoreParser();
@@ -463,8 +465,7 @@ static bool ProcWindowsHelp( void )
 /*********************************/
 {
     WriteGenHelp();
-    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
+    WriteHelp( MSG_WINDOWS_HELP_0, MSG_WINDOWS_HELP_31, CmdFlags & CF_TO_STDOUT );
     return( true );
 }
 
@@ -472,8 +473,7 @@ static bool ProcWinVxdHelp( void )
 /*********************************/
 {
     WriteGenHelp();
-    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31,
-                                                CmdFlags & CF_TO_STDOUT );
+    WriteHelp( MSG_WIN_VXD_HELP_0, MSG_WIN_VXD_HELP_31, CmdFlags & CF_TO_STDOUT );
     return( true );
 }
 
@@ -563,8 +563,28 @@ static bool ProcRawHelp( void )
 }
 #endif
 
-static void PressKey( void );
-static void WriteMsg( char msg_buffer[] );
+static void WriteMsg( const char *msg_buffer )
+/********************************************/
+{
+    WriteStdOut( msg_buffer );
+    WriteStdOutNL();
+}
+
+static void PressKey( void )
+/**************************/
+{
+    char        msg_buffer[RESOURCE_MAX_SIZE];
+    int         result;
+
+    Msg_Get( MSG_PRESS_KEY, msg_buffer );
+    WriteStdOut( msg_buffer );
+    result = WaitForKey();
+    WriteStdOutNL();
+    if( result == 'q' || result == 'Q' ) {
+        Ignite();
+        Suicide();
+    }
+}
 
 static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
 /***********************************************************************/
@@ -591,29 +611,6 @@ static void WriteHelp( unsigned first_ln, unsigned last_ln, bool prompt )
             WriteMsg( msg_buffer );
         }
     }
-}
-
-static void PressKey( void )
-/**************************/
-{
-    char        msg_buffer[RESOURCE_MAX_SIZE];
-    int         result;
-
-    Msg_Get( MSG_PRESS_KEY, msg_buffer );
-    WriteStdOut( msg_buffer );
-    result = WaitForKey();
-    WriteStdOutNL();
-    if( result == 'q' || result == 'Q' ) {
-        Ignite();
-        Suicide();
-    }
-}
-
-static void WriteMsg( char msg_buffer[] )
-/***************************************/
-{
-    WriteStdOut( msg_buffer );
-    WriteStdOutNL();
 }
 
 void FreePaths( void )
@@ -666,7 +663,7 @@ void SetFormat( void )
         } else if( FmtData.output_raw ) {
             Extension = E_BIN;
         }
-        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED);
+        fname = FileName( Name, len, Extension, CmdFlags & CF_UNNAMED );
         _LnkFree( Name );
     }
     Root->outfile = NewOutFile( fname );
@@ -825,28 +822,29 @@ void FreeFormatStuff( void )
     }
 }
 
-void AddCommentLib( char *ptr, unsigned len, lib_priority priority )
-/*********************************************************************/
+void AddCommentLib( const char *comment, size_t len, lib_priority priority )
+/**************************************************************************/
 //  Add a library from a comment record.
 {
     file_list   *result;
+    char        *ptr;
 
     if( CmdFlags & CF_NO_DEF_LIBS )
         return;
-    ptr = FileName( ptr, len, E_LIBRARY, false );
+    ptr = FileName( comment, len, E_LIBRARY, false );
     result = AddObjLib( ptr, priority );
     CheckLibTrace( result );
     DEBUG(( DBG_BASE, "library: %s", ptr ));
     _LnkFree( ptr );
 }
 
-void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
-/******************************************************************/
+void AddLibPaths( const char *path_list, size_t len, bool add_to_front )
+/**********************************************************************/
 {
     path_entry      *newpath;
     file_list const *libfiles;
     char            *p;
-    char            *end;
+    const char      *end;
 
     _ChkAlloc( newpath, sizeof( path_entry ) + len );
     end = path_list + len;
@@ -875,8 +873,8 @@ void AddLibPaths( char *path_list, unsigned len, bool add_to_front )
     }
 }
 
-void AddLibPathsToEnd( char *path_list )
-/**************************************/
+void AddLibPathsToEnd( const char *path_list )
+/********************************************/
 {
     if( path_list != NULL && *path_list != '\0' ) {
         AddLibPaths( path_list, strlen( path_list ), false );
@@ -910,8 +908,8 @@ void ExecSystem( char *name )
         Token.where = ENDOFCMD;     // nothing on this command line
         NewCommandSource( sys->name, sys->commands, SYSTEM ); // input file
         sys->name = NULL;
-        while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == false ) {
-            if( ProcOne( SysDirectives, SEP_NO, false ) == false ) {
+        while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+            if( !ProcOne( SysDirectives, SEP_NO, false ) ) {
                 LnkMsg( LOC+LINE+WRN+MSG_ERROR_IN_SYSTEM_BLOCK, NULL );
                 RestoreCmdLine();
                 break;

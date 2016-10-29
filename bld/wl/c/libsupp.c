@@ -49,8 +49,8 @@
 #include "clibext.h"
 
 
-static bool SearchAndProcLibFile( file_list *lib, char *name )
-/************************************************************/
+static bool SearchAndProcLibFile( file_list *lib, const char *name )
+/******************************************************************/
 {
     mod_entry       *lp;
     mod_entry       **prev;
@@ -88,7 +88,7 @@ static bool SearchAndProcLibFile( file_list *lib, char *name )
 
 #define PREFIX_LEN (sizeof(ImportSymPrefix) - 1)
 
-bool LibFind( char *name, bool old_sym )
+bool LibFind( const char *name, bool old_sym )
 /*********************************************/
 /* Search for a file in a library */
 {
@@ -113,15 +113,15 @@ bool LibFind( char *name, bool old_sym )
     return( false );
 }
 
-bool ModNameCompare( char *tname, char *membname )
-/*******************************************************/
+bool ModNameCompare( const char *tname, const char *membname )
+/************************************************************/
 // check if a THEADR record name is equal to a library member name
 {
-    unsigned    lentheadr;
-    unsigned    lenmember;
-    char        *namestart;
+    size_t      lentheadr;
+    size_t      lenmember;
+    const char  *namestart;
 
-    namestart = RemovePath( tname, &lentheadr );
+    namestart = GetBaseName( tname, 0, &lentheadr );
     lenmember = strlen( membname );
     if( lentheadr == lenmember ) {
         if( memicmp( namestart, membname, lenmember ) == 0 ) {

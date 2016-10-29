@@ -29,5 +29,5 @@
 ****************************************************************************/
 
 
-extern sym_id       STSearch( char *name, int len, sym_id head );
-extern sym_id       STNameSearch( char *name, int len );
+extern sym_id       STSearch( char *name, uint len, sym_id head );
+extern sym_id       STNameSearch( char *name, uint len );

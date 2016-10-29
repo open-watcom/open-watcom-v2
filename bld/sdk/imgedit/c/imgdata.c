@@ -283,7 +283,7 @@ void DeleteList( void )
     img_node    *node;
     index_table *index;
 
-    if( !DoImagesExist ) {
+    if( !DoImagesExist() ) {
         return;
     }
 
@@ -313,7 +313,7 @@ int DoImagesExist( void )
     img_node    *node;
 
     if( imgHead == NULL ) {
-        return( FALSE );
+        return( 0 );
     }
 
     node = imgHead;

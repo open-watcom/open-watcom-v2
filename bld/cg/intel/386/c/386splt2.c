@@ -46,15 +46,15 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "optimize.h"
+#include "fixindex.h"
 
 
 extern  name            *IntEquivalent( name * );
-extern  bool            SameThing( name *, name * );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  name            *SegName( name * );
 extern  name            *OpAdjusted( name *, int, type_class_def );
-extern  int             NumOperands( instruction * );
 extern  bool            Overlaps( name *, name * );
 extern  void            CnvOpToInt( instruction *, int );
 extern  name            *Int64Equivalent( name * );

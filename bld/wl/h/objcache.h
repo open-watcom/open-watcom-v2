@@ -32,8 +32,8 @@
 
 extern bool     CacheOpen( file_list * );
 extern void     CacheClose( file_list *, unsigned );
-extern void     *CachePermRead( file_list *, unsigned long, unsigned );
-extern void     *CacheRead( file_list *, unsigned long, unsigned );
+extern void     *CachePermRead( file_list *, unsigned long, size_t );
+extern void     *CacheRead( file_list *, unsigned long, size_t );
 extern bool     CacheEnd( file_list *, unsigned long );
 extern bool     CacheIsPerm( void );
 extern void     CacheFini( void );

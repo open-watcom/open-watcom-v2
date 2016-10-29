@@ -114,7 +114,7 @@ void FiniHandles( dw_client cli )
     _Assert(  cli->handles.forward == 0 );
     for( cur = cli->handles.block_head[0]; cur != NULL; cur = next ) {
         next = cur->next[0];
-        CLIFree( cur );
+        CLIFree( cli, cur );
     }
     CarveDestroy( cli, cli->handles.extra_carver );
     CarveDestroy( cli, cli->handles.chain_carver );
@@ -138,7 +138,7 @@ static handle_blk *newBlock( dw_client cli )
         cli->handles.max_height = height;
 
     /* allocate the new node */
-    new = CLIAlloc( sizeof( handle_blk ) + ( height - 1 ) * sizeof( handle_blk * ) );
+    new = CLIAlloc( cli, sizeof( handle_blk ) + ( height - 1 ) * sizeof( handle_blk * ) );
     memset( new, 0, sizeof( handle_blk ) );
     new->height = height;
     new->index = cli->handles.num_handles / BLOCK_SIZE;
@@ -277,12 +277,12 @@ void HandleWriteOffset( dw_client cli, dw_handle hdl, uint section )
         offset = 0;
         chain = CarveAlloc( cli, cli->handles.chain_carver );
         chain->section = section;
-        chain->offset = CLITell( section );
+        chain->offset = CLITell( cli, section );
         chain->next = c->reloc.chain;
         c->reloc.chain = chain;
-//        CLISeek( section, sizeof( debug_ref ), DW_SEEK_CUR );
+//        CLISeek( cli, section, sizeof( debug_ref ), DW_SEEK_CUR );
     }
-    CLIWrite( section, &offset, sizeof( debug_ref ) );
+    CLIWrite( cli, section, &offset, sizeof( debug_ref ) );
 }
 
 
@@ -298,19 +298,19 @@ void SetHandleLocation( dw_client cli, dw_handle hdl )
     cur = c->reloc.chain;
     dbgDefineHandle( hdl );
     --cli->handles.forward;
-    offset = CLITell( DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
     WriteRef( &offset, offset );
     c->reloc.offset = RELOC_OFFSET | ( offset << RELOC_OFFSET_SHIFT );
     memset( used, 0, sizeof( used ) );
     while( cur != NULL ) {
         used[cur->section] = 1;
-        CLISeek( cur->section, cur->offset, DW_SEEK_SET );
-        CLIWrite( cur->section, &offset, sizeof( debug_ref ) );
+        CLISeek( cli, cur->section, cur->offset, DW_SEEK_SET );
+        CLIWrite( cli, cur->section, &offset, sizeof( debug_ref ) );
         cur = CarveFreeLink( cli->handles.chain_carver, cur );
     }
     for( u = 0; u < DW_DEBUG_MAX; ++u ) {
         if( used[u] ) {
-            CLISeek( u, 0, DW_SEEK_END );
+            CLISeek( cli, u, 0, DW_SEEK_END );
         }
     }
 }
@@ -337,7 +337,7 @@ dw_handle LabelNewHandle( dw_client cli )
 
     new = NewHandle( cli );
     c = GetCommon( cli, new );
-    offset = CLITell( DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
+    offset = CLITell( cli, DW_DEBUG_INFO ) - cli->section_base[DW_DEBUG_INFO];
     WriteRef( &offset, offset );
     c->reloc.offset = RELOC_OFFSET | ( offset << RELOC_OFFSET_SHIFT );
     dbgDefineHandle( new );

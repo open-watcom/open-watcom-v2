@@ -44,8 +44,8 @@
     typedef char                                        *m_char_arg;
 #else
     typedef double __based( __segname( "_STACK" ) )     *m_dbl_arg;
-    typedef int __based( __segname( "_STACK" ) )        *m_int_arg;
-    typedef char __based( __segname( "_STACK" ) )       *m_char_arg;
+    typedef int    __based( __segname( "_STACK" ) )     *m_int_arg;
+    typedef char   __based( __segname( "_STACK" ) )     *m_char_arg;
 #endif
 
 #if defined(_M_IX86)

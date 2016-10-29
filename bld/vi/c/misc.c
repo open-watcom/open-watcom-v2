@@ -519,18 +519,19 @@ bool ExitWithPrompt( bool do_quit, bool push_pop )
 /*
  * ExitWithVerify - try to exit, verifying first
  */
-void ExitWithVerify( void )
+bool ExitWithVerify( void )
 {
     int         num = 0;
     static bool entered = false;
     info        *cinfo;
     bool        modified;
+    bool        resp_yes;
 #ifndef __WIN__
     char        st[MAX_STR];
 #endif
 
     if( entered ) {
-        return;
+        return( true );
     }
     entered = true;
     modified = false;
@@ -538,27 +539,20 @@ void ExitWithVerify( void )
         modified |= cinfo->CurrentFile->modified;
         num++;
     }
+    resp_yes = false;
     if( modified ) {
 #ifdef __WIN__
         if( MessageBox( root_window_id, "Files are modified, really exit?",
                          EditorName, MB_YESNO | MB_TASKMODAL ) == IDYES ) {
-            BringUpFile( InfoHead, true );
-            EditFlags.QuitAtLastFileExit = true;
-            for( ;; ) {
-                NextFileDammit();
-            }
-        }
 #else
-        if( GetResponse( "Files are modified, really exit?", st )
-                                    == GOT_RESPONSE && st[0] == 'y' ) {
-            BringUpFile( InfoHead, true );
-            EditFlags.QuitAtLastFileExit = true;
-            for( ;; ) {
-                NextFileDammit();
-            }
-        }
+        if( GetResponse( "Files are modified, really exit?", st ) == GOT_RESPONSE && st[0] == 'y' ) {
 #endif
+            resp_yes = true;
+        }
     } else {
+        resp_yes = true;
+    }
+    if( resp_yes ) {
         BringUpFile( InfoHead, true );
         EditFlags.QuitAtLastFileExit = true;
         for( ;; ) {
@@ -566,6 +560,7 @@ void ExitWithVerify( void )
         }
     }
     entered = false;
+    return( resp_yes );
 
 } /* ExitWithVerify */
 
@@ -600,12 +595,13 @@ bool ExitWithPrompt( bool do_quit )
 /*
  * ExitWithVerify - try to exit, verifying first
  */
-void ExitWithVerify( void )
+bool ExitWithVerify( void )
 {
     int         i;
     static bool entered = false;
     info        *cinfo;
     bool        modified;
+    bool        resp_yes;
 #ifndef __WIN__
     char        st[MAX_STR];
 #endif
@@ -618,23 +614,26 @@ void ExitWithVerify( void )
     for( cinfo = InfoHead; cinfo != NULL; cinfo = cinfo->next ) {
         modified |= cinfo->CurrentFile->modified;
     }
+    resp_yes = false;
     if( modified ) {
 #ifdef __WIN__
         i = MessageBox( root_window_id, "Files are modified, really exit?",
                         EditorName, MB_YESNO | MB_TASKMODAL );
         if( i == IDYES ) {
-            QuitEditor( ERR_NO_ERR );
-        }
 #else
         i = GetResponse( "Files are modified, really exit?", st );
         if( i == GOT_RESPONSE && st[0] == 'y' ) {
-            QuitEditor( ERR_NO_ERR );
-        }
 #endif
+            resp_yes = true;
+        }
     } else {
+        resp_yes = true;
+    }
+    if( resp_yes ) {
         QuitEditor( ERR_NO_ERR );
     }
     entered = false;
+    return( resp_yes );
 
 } /* ExitWithVerify */
 #endif

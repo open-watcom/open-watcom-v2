@@ -41,8 +41,6 @@
 #endif
 #if defined (_NETWARE_LIBC)
   #include "nw_libc.h"
-#elif defined( __QNX__ ) || defined( __LINUX__ )
-  #include "semapsx.h"
 #endif
 #include "rterrno.h"
 #include "liballoc.h"
@@ -57,6 +55,10 @@
 #include "fileacc.h"
 #include "trdlstac.h"
 #include "maxthrds.h"
+#if defined( __UNIX__ )
+  #include "semapsx.h"
+#endif
+
 
 #if !defined( _M_I86 )
   #if defined( __NT__ )
@@ -79,7 +81,7 @@ extern  void            **__ThreadIDs;
 
 #define MAX_SEMAPHORE   16
 
-static semaphore_object FileSemaphores[ MAX_SEMAPHORE ];
+static semaphore_object FileSemaphores[MAX_SEMAPHORE];
 
 #if !defined( __NETWARE__ )
   static semaphore_object FHeapSemaphore;
@@ -96,10 +98,11 @@ static semaphore_object IOBSemaphore;
 #if defined( __NT__ )
 
 #define MAX_CRITICAL_SECTION 64
+
 static CRITICAL_SECTION critsect_cache[MAX_CRITICAL_SECTION];
-static int critsect_next;
+static int              critsect_next;
 static CRITICAL_SECTION **critsect_vector;
-static int critsect_vectornext;
+static int              critsect_vectornext;
 
 static CRITICAL_SECTION *__NTGetCriticalSection( void )
 {
@@ -111,14 +114,14 @@ static CRITICAL_SECTION *__NTGetCriticalSection( void )
     } else {
         ptr = lib_calloc( 1, sizeof( *ptr ) );
         if( ptr == NULL ) {
-            __fatal_runtime_error(
-                "Unable to allocate semaphore data", 1 );
+            __fatal_runtime_error( "Unable to allocate semaphore data", 1 );
+            // never return
         }
         critsect_vector = lib_realloc( critsect_vector,
-                (critsect_vectornext+1)*sizeof(CRITICAL_SECTION*));
+                ( critsect_vectornext + 1 ) * sizeof( CRITICAL_SECTION * ) );
         if( critsect_vector == NULL ) {
-            __fatal_runtime_error(
-                "Unable to allocate semaphore data", 1 );
+            __fatal_runtime_error( "Unable to allocate semaphore data", 1 );
+            // never return
         }
         critsect_vector[critsect_vectornext] = ptr;
         critsect_vectornext++;
@@ -126,15 +129,21 @@ static CRITICAL_SECTION *__NTGetCriticalSection( void )
     InitializeCriticalSection( ptr );
     return( ptr );
 }
-static void __NTDeleteCriticalSection( void ) {
+
+static void __NTDeleteCriticalSection( void )
+{
     int i;
-    for( i = 0 ; i < critsect_next ; i++ ) {
+
+    for( i = 0 ; i < critsect_next; i++ ) {
         DeleteCriticalSection( &(critsect_cache[i]) );
     }
 }
-static void __NTFreeCriticalSection( void ) {
+
+static void __NTFreeCriticalSection( void )
+{
     int i;
-    for( i = 0 ; i < critsect_vectornext ; i++ ) {
+
+    for( i = 0 ; i < critsect_vectornext; i++ ) {
         DeleteCriticalSection( critsect_vector[i] );
         lib_free( critsect_vector[i] );
     }
@@ -152,9 +161,11 @@ _WCRTLINK void __CloseSemaphore( semaphore_object *obj )
                 // JBS For every lock, there should be an unlock.
 //    if( obj->count >= 2 ) {
 //        __fatal_runtime_error( "Semaphore locked too many times", 1 );
+//        // never return
 //    }
     if( obj->count >= 1 ) {
         __fatal_runtime_error( "Semaphore not unlocked", 1 );
+        // never return
     }
 #endif
 #if !defined( __NT__ )
@@ -201,6 +212,7 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
     #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
             if( obj == &InitSemaphore ) {
                 __fatal_runtime_error( "Bad semaphore lock", 1 );
+                // never return
             }
     #endif
             __AccessSemaphore( &InitSemaphore );
@@ -263,6 +275,7 @@ _WCRTLINK void __ReleaseSemaphore( semaphore_object *obj )
     if( obj->count > 0 ) {
         if( obj->owner != tid ) {
             __fatal_runtime_error( "Semaphore unlocked by wrong owner", 1 );
+            // never return
         }
         if( --obj->count == 0 ) {
             obj->owner = 0;
@@ -304,14 +317,14 @@ void    __ReleaseIOB( void )
 void __AccessFileH( int handle )
 /******************************/
 {
-    __AccessSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+    __AccessSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
 
 void __ReleaseFileH( int handle )
 /*******************************/
 {
-    __ReleaseSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+    __ReleaseSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
 void    __AccessNHeap( void )
@@ -357,13 +370,13 @@ static void    __ReleaseIOB( void )
 static void __AccessFileH( int handle )
 /******************************/
 {
-    __AccessSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+    __AccessSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
 static void __ReleaseFileH( int handle )
 /*******************************/
 {
-    __ReleaseSemaphore( &FileSemaphores[ (unsigned)handle % MAX_SEMAPHORE ] );
+    __ReleaseSemaphore( &FileSemaphores[(unsigned)handle % MAX_SEMAPHORE] );
 }
 
   #endif
@@ -433,28 +446,26 @@ thread_data *__MultipleThread( void )
      * Preserve old error code -- important because this code can get
      * called from _STK.
      */
-    DWORD old = GetLastError();
-
+    DWORD       old = GetLastError();
     thread_data *tdata;
+
     tdata = (thread_data *)TlsGetValue( __TlsIndex );
     if( tdata == NULL ) {
         tdata = __GetThreadData();
     } else if( tdata->__resize ) {
         tdata = __ReallocThreadData();
     }
-    SetLastError(old);
+    SetLastError( old );
     return( tdata );
 #elif defined (_NETWARE_LIBC)
     /*
      * Preserve old error code -- important because this code can get
      * called from _STK.
      */
-    int old = GetLastError();
-    int ccode = 0;
-
+    int         old = GetLastError();
     thread_data *tdata = NULL;
 
-    if(0 != (ccode = NXKeyGetValue(__NXSlotID, (void **) &tdata)))
+    if( NXKeyGetValue( __NXSlotID, (void **)&tdata ) )
         tdata = NULL;
 
     if( tdata == NULL ) {
@@ -462,12 +473,13 @@ thread_data *__MultipleThread( void )
     } else if( tdata->__resize ) {
         tdata = __ReallocThreadData();
     }
-    SetLastError(old);
+    SetLastError( old );
     return( tdata );
 #elif defined( __WARP__ )
     // 32 bit OS/2
-    TID tid;
+    TID         tid;
     thread_data *tdata = NULL;
+
     tid = GetCurrentThreadId();
     if( tid <= __MaxThreads ) {
         tdata = __ThreadData[tid].data;
@@ -482,7 +494,8 @@ thread_data *__MultipleThread( void )
     // 16 bit OS/2
     return( __ThreadData[GetCurrentThreadId()] );
 #elif defined( __QNX__ )
-    void *tdata;
+    void    *tdata;
+
     __getmagicvar( &tdata, _m_thread_data );
     if( tdata == NULL ) {
         tdata = __QNXAddThread( tdata );
@@ -493,6 +506,7 @@ thread_data *__MultipleThread( void )
     return( NULL );
 #elif defined( __RDOS__ )
     thread_data *tdata;
+
     tdata = (thread_data *)__tls_get_value( __TlsIndex );
     if( tdata == NULL )
         tdata = __GetThreadData();
@@ -567,7 +581,6 @@ int __NTAddThread( thread_data *tdata )
     if( __TlsIndex == NO_INDEX ) {
         return( FALSE );
     }
-
     tdata = __AllocInitThreadData( tdata );
     if( tdata == NULL ) {
         return( FALSE );
@@ -577,7 +590,6 @@ int __NTAddThread( thread_data *tdata )
         return( FALSE );
     }
     TlsSetValue( __TlsIndex, tdata );
-
     return( TRUE );
 }
 
@@ -600,7 +612,7 @@ void __NTRemoveThread( int close_handle )
         thread_handle = tdata->thread_handle;
         __RemoveThreadData( tdata->thread_id );
     #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
-        TlsSetValue( __TlsIndex, (void*)2 );
+        TlsSetValue( __TlsIndex, (void *)2 );
     #else
         TlsSetValue( __TlsIndex, NULL );
     #endif
@@ -623,7 +635,8 @@ int __OS2AddThread( TID tid, thread_data *tdata )
 /***********************************************/
 {
     tdata = __AllocInitThreadData( tdata );
-    if( tdata == NULL ) return( 0 );
+    if( tdata == NULL )
+        return( 0 );
     if( tid <= __MaxThreads ) {
         if( __initthread( tdata ) ) {
             __FreeInitThreadData( tdata );
@@ -645,7 +658,8 @@ int __OS2AddThread( TID tid, thread_data *tdata )
 void __OS2RemoveThread( void )
 /****************************/
 {
-    TID tid;
+    TID     tid;
+
     tid = *_threadid;
     if( tid <= __MaxThreads ) {
         if( __ThreadData[tid].allocated_entry ) {
@@ -662,7 +676,8 @@ void __OS2RemoveThread( void )
 thread_data *__QNXAddThread( thread_data *tdata )
 /***********************************************/
 {
-    void *tmp;
+    void    *tmp;
+
     tdata = __AllocInitThreadData( tdata );
     // if tdata is NULL it doesn't matter what we do with it
     tmp = (void *)tdata;
@@ -673,7 +688,7 @@ thread_data *__QNXAddThread( thread_data *tdata )
 void __QNXRemoveThread( void )
 /****************************/
 {
-    void *tmp;
+    void        *tmp;
     thread_data *tdata;
 
     __getmagicvar( &tmp, _m_thread_data );
@@ -759,7 +774,8 @@ void __RdosRemoveThread( void )
 
     if( __TlsIndex != NO_INDEX ) {
         tdata = __tls_get_value( __TlsIndex );
-        if( tdata == NULL ) return;
+        if( tdata == NULL )
+            return;
         __RemoveThreadData( tdata->thread_id );
         __tls_set_value( __TlsIndex, NULL );
     }
@@ -773,41 +789,41 @@ void __InitMultipleThread( void )
     if( __GetThreadPtr != __MultipleThread ) {
   #if defined( _NETWARE_CLIB )
         {
-        /* __ThreadData[ 0 ] is used whenever GetThreadID() returns a pointer
+        /* __ThreadData[0] is used whenever GetThreadID() returns a pointer
            not in our __ThreadIDs list - ie. whenever it returns NULL, a
            pointer to a thread we didn't create, or an invalid pointer */
             void *ptr;
             ptr = lib_calloc( 1, __ThreadDataSize );
             if( ptr == NULL ) {
-                __fatal_runtime_error(
-                    "Unable to allocate thread-specific data", 1 );
+                __fatal_runtime_error( "Unable to allocate thread-specific data", 1 );
+                // never return
             }
-            __ThreadData[ 0 ].data = ptr;
-            __ThreadData[ 0 ].allocated_entry = 1;
-            __ThreadData[ 0 ].data->__allocated = 1;
-            __ThreadData[ 0 ].data->__randnext = 1;
-            __ThreadData[ 0 ].data->__data_size = __ThreadDataSize;
+            __ThreadData[0].data = ptr;
+            __ThreadData[0].allocated_entry = 1;
+            __ThreadData[0].data->__allocated = 1;
+            __ThreadData[0].data->__randnext = 1;
+            __ThreadData[0].data->__data_size = __ThreadDataSize;
             if( __initthread( ptr ) ) {
                 lib_free( ptr );
-                __fatal_runtime_error(
-                    "Unable to initialize thread-specific data", 1 );
+                __fatal_runtime_error( "Unable to initialize thread-specific data", 1 );
+                // never return
             }
             ptr = lib_calloc( 1, __ThreadDataSize );
             if( ptr == NULL ) {
-                __fatal_runtime_error(
-                    "Unable to allocate thread-specific data", 1 );
+                __fatal_runtime_error( "Unable to allocate thread-specific data", 1 );
+                // never return
             }
             __FirstThreadData = ptr;
             __FirstThreadData->__allocated = 1;
             __FirstThreadData->__randnext = 1;
             __FirstThreadData->__data_size = __ThreadDataSize;
-            __ThreadData[ 1 ].data = __FirstThreadData;
-            __ThreadData[ 1 ].allocated_entry = __FirstThreadData->__allocated;
-            __ThreadIDs[ 1 ] = GetThreadID();
+            __ThreadData[1].data = __FirstThreadData;
+            __ThreadData[1].allocated_entry = __FirstThreadData->__allocated;
+            __ThreadIDs[1] = GetThreadID();
             if( __initthread( ptr ) ) {
                 lib_free( ptr );
-                __fatal_runtime_error(
-                    "Unable to initialize thread-specific data", 1 );
+                __fatal_runtime_error( "Unable to initialize thread-specific data", 1 );
+                // never return
             }
         }
   #elif defined( _NETWARE_LIBC )
@@ -819,9 +835,9 @@ void __InitMultipleThread( void )
         __FirstThreadData->thread_id = GetCurrentThreadId();
 
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
-        if(0 != NXKeySetValue(__NXSlotID, __FirstThreadData)) {
-            __fatal_runtime_error(
-                "Unable to initialize thread-specific data", 1 );
+        if( NXKeySetValue( __NXSlotID, __FirstThreadData ) ) {
+            __fatal_runtime_error( "Unable to initialize thread-specific data", 1 );
+            // never return
         }
   #elif defined( __NT__ )
         InitSemaphore.semaphore = __NTGetCriticalSection();
@@ -891,7 +907,7 @@ static void __FiniSema4s( void )              // called from finalizer
 
     _CloseSemaphore( &IOBSemaphore );
     for( i = 0; i < MAX_SEMAPHORE; i++ ) {
-        _CloseSemaphore( &FileSemaphores[ i ] );
+        _CloseSemaphore( &FileSemaphores[i] );
     }
 #if defined( __NT__ )
     _CloseSemaphore( &FListSemaphore );

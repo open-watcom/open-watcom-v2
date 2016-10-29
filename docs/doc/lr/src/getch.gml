@@ -20,7 +20,7 @@ function can be used to determine if a keystroke is available.
 .desc end
 .return begin
 A value of
-.mono EOF
+.kw EOF
 is returned when an error is detected; otherwise
 the
 .id &funcb.

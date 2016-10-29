@@ -36,6 +36,7 @@
 #include "utils.h"
 #include "edge.h"
 #include "typedef.h"
+#include "procdef.h"
 #include "makeblk.h"
 #include "insutil.h"
 #include "unroll.h"

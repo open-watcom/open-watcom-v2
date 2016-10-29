@@ -29,10 +29,11 @@
 ****************************************************************************/
 
 
-extern void WriteNew( void *buff, file_offset len );
-extern void WriteNewLib( void );
-extern void WriteLittleEndian16( unsigned_16 num );
-extern void WriteBigEndian32( unsigned_32 num );
-extern void WriteLittleEndian32( unsigned_32 num );
-extern libfile NewLibrary;
-extern libfile ExportListFile;
+extern void     WriteNew( const void *buff, size_t len );
+extern void     WriteNewLib( void );
+extern void     WriteLittleEndian16( unsigned_16 num );
+extern void     WriteBigEndian32( unsigned_32 num );
+extern void     WriteLittleEndian32( unsigned_32 num );
+
+extern libfile  NewLibrary;
+extern libfile  ExportListFile;

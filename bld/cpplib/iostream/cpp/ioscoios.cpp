@@ -45,11 +45,11 @@ namespace std {
   ios::ios( const ios &is ) {
 
     __lock_it( is.__i_lock );
-    #ifdef __MT__
-        __i_lock =  __get_next_ios_lock();
-    #else
-        __i_lock = NULL;
-    #endif
+#ifdef __SW_BM
+    __i_lock =  __get_next_ios_lock();
+#else
+    __i_lock = NULL;
+#endif
     __error_state        = is.__error_state;
     __format_flags       = is.__format_flags;
     __enabled_exceptions = is.__enabled_exceptions;

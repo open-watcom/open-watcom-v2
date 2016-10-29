@@ -267,15 +267,15 @@ static void InitGroup( group_entry *group )
     group->g.grp_relocs = NULL;
 }
 
-group_entry *AllocGroup( char *name, group_entry ** grp_list )
-/********************************************************************/
+group_entry *AllocGroup( const char *name, group_entry ** grp_list )
+/******************************************************************/
 {
     group_entry *group;
     symbol      *sym;
 
     group = CarveAlloc( CarveGroup );
     group->leaders = NULL;
-    _PermAlloc( sym, sizeof *sym  ); // second class slave citizen
+    _PermAlloc( sym, sizeof( *sym ) ); // second class slave citizen
     BasicInitSym( sym );
     sym->namelen_cmp = strlen( name );
     sym->name = AddBufferStringTable( &PermStrings, name, sym->namelen_cmp + 1 );

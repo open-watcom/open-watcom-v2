@@ -33,7 +33,7 @@
 
 extern void ReadInfo( virt_mem, void *, virt_mem_size );
 extern void PutInfo( virt_mem, void *, virt_mem_size );
-extern void CopyInfo( virt_mem, virt_mem, unsigned );
+extern void CopyInfo( virt_mem, virt_mem, size_t );
 extern void WriteInfoLoad( virt_mem, virt_mem_size );
 extern void PutInfoNulls( virt_mem, virt_mem_size );
 extern bool CompareInfo( virt_mem, void *, virt_mem_size );

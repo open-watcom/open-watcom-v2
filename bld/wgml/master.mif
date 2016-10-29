@@ -26,7 +26,7 @@ wgml_trmem = 1
 
 inc_dirs = -I. -I"../h" $(wres_inc_dirs)
 
-res_depends = wgml.res wgmlmsgs.gh wgmlmsge.gh
+res_depends = wgmlmsgs.gh wgmlmsge.gh
 
 .c: ../c;../../watcom/c;$(trmem_dir)
 
@@ -41,19 +41,18 @@ extra_c_flags_trmem   = $(trmem_cflags)
 libs += $(wres_lib)
 
 
-wgml.exe: $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
+wgml.exe: wresui.res $(res_depends) $(objs) $(libs) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
 !else
     $(linker) name $^@ $(lflags) file { $(objs) } lib { $(libs) }
 !endif
-    @%make echo_bindres
-    $(wstrip) -q -a -r $@ . wgml.res
+    @%make bind_res_wresui
 
 msgfiles = ../h/wgmlerr.msg ../h/wgml.msg
 
-$(name).res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
+wresui.res : ../h/wgml.rc wgmlmsgs.gh ../h/wgmlmsg.h $(msgfiles) $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) $[@ -fo=$@
 

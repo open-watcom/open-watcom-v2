@@ -31,7 +31,7 @@
 #include "ftnstd.h"
 #include <stdlib.h>
 #ifdef __WINDOWS__
-  #include <win386.h>
+  #include <windows.h>
 #elif defined( __NT__ )
   // The mechanism used for mangling the runtime library conflicts with the
   // NT header files on one definition.  This should be avoided.

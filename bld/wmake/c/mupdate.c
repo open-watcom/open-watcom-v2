@@ -50,9 +50,9 @@
 #include "mupdate.h"
 #include "mvecstr.h"
 #include "mautodep.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 STATIC bool     checkForAutoDeps( TARGET *targ, char *name, time_t *max_time );

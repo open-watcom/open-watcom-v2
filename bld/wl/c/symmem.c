@@ -47,8 +47,8 @@
 #define SYM_BLOCK_MIN       32
 
 typedef struct sym_block {
-    struct sym_block *  next;       /* NOTE: this *must* be the first field */
-    unsigned            size;
+    struct sym_block    *next;       /* NOTE: this *must* be the first field */
+    size_t              size;
     char                block[ 1 ];
 } sym_block;
 
@@ -56,13 +56,13 @@ typedef struct sym_block {
 
 typedef struct block_data {
     sym_block *     list;
-    unsigned        currbrk;
+    size_t          currbrk;
 } block_data;
 
 static block_data Pass1Blocks;
 static block_data PermBlocks;
 
-static void * AllocBlock( unsigned, block_data * );
+static void *AllocBlock( size_t, block_data * );
 
 void GetSymBlock( void )
 /**********************/
@@ -129,10 +129,10 @@ void *PermAlloc( size_t size )
     return( AllocBlock( size, &PermBlocks ) );
 }
 
-static void GetNewBlock( block_data *block, unsigned size )
-/*********************************************************/
+static void GetNewBlock( block_data *block, size_t size )
+/*******************************************************/
 {
-    unsigned            try;
+    size_t              try;
     sym_block           *new;
 
     ShrinkBlock( block );
@@ -154,16 +154,16 @@ static void GetNewBlock( block_data *block, unsigned size )
     block->currbrk = 0;
 }
 
-static void * AllocBlock( unsigned size, block_data *block )
-/**********************************************************/
+static void *AllocBlock( size_t size, block_data *block )
+/*******************************************************/
 {
-    void *              ptr;
+    void                *ptr;
     unsigned long       newbrk;
 
 #define ROUND (sizeof(int)-1)
 
     size = (size + ROUND) & ~ROUND;
-    newbrk = (unsigned long) block->currbrk + size;
+    newbrk = (unsigned long)block->currbrk + size;
     if( block->list == NULL ) {
         GetNewBlock( block, size );
     } else if( newbrk > block->list->size ) {
@@ -211,9 +211,11 @@ symbol * AddSym( void )
 
     sym = CarveAlloc( CarveSymbol );
     BasicInitSym(sym);
-    if( LastSym != NULL ) LastSym->link = sym;
+    if( LastSym != NULL )
+        LastSym->link = sym;
     LastSym = sym;
-    if( HeadSym == NULL ) HeadSym = sym;
+    if( HeadSym == NULL )
+        HeadSym = sym;
     return( sym );
 }
 

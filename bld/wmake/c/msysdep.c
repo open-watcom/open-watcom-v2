@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "make.h"
 #include "mcache.h"
 #include "mmemory.h"

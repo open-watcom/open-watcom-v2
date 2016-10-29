@@ -433,7 +433,7 @@ call_handle     InitInlineCall( int rtn_id ) {
 #if _CPU == 386 || _CPU == 8086
     sym_id              sym;
     inline_rtn __FAR    *in_entry;
-    int                 name_len;
+    uint                name_len;
 
     if( !CreatedPragmas ) {
         InitInlinePragmas();

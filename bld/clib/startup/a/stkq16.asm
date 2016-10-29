@@ -117,7 +117,7 @@ endif                                   ; dx:ax points at retaddr
         mov     ax,bp                   ; exit code in bx
         mov     bx,1
         jmp     __fatal_runtime_error   ; display msg and exit
-
+        ; never return
         endproc __STK
 
 _putw proc near

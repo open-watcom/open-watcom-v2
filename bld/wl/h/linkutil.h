@@ -29,31 +29,34 @@
 ****************************************************************************/
 
 
+typedef void class_walk_fn(seg_leader *);
+typedef void mods_walk_fn(mod_entry *);
+
 extern void             CheckErr( void );
 extern void             CheckStop( void );
-extern void             LnkFatal( char * );
+extern void             LnkFatal( const char * );
 extern void             ClearBit( byte *, unsigned );
 extern bool             TestBit( byte *, unsigned );
-extern char             *ChkStrDup( char * );
-extern char             *ChkToString( void *, unsigned );
-extern seg_leader       *FindSegment( section *, char * );
+extern char             *ChkStrDup( const char * );
+extern char             *ChkToString( const void *, size_t );
+extern seg_leader       *FindSegment( section *, const char * );
 extern group_entry      *FindGroup( segment );
 extern offset           FindLinearAddr( targ_addr * );
 extern offset           FindLinearAddr2( targ_addr * );
-extern void             WalkLeaders( void (*rtn)( seg_leader * ) );
-extern void             SectWalkClass( section *sect, void * );
-extern void             WalkMods( void (*rtn)( mod_entry * ) );
+extern void             WalkLeaders( class_walk_fn *rtn );
+extern void             SectWalkClass( section *sect, class_walk_fn * );
+extern void             WalkMods( mods_walk_fn *rtn );
 extern void             LinkList( void *, void * );
 extern void             FreeList( void * );
 extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
-extern f_handle         FindPath( char * );
-extern name_list        *AddNameTable( char *, unsigned, bool, name_list ** );
+extern f_handle         FindPath( const char * );
+extern name_list        *AddNameTable( const char *, size_t, bool, name_list ** );
 extern unsigned_16      binary_log( unsigned_16 );
 extern unsigned_16      blog_32( unsigned_32 );
-extern char             *RemovePath( char *, unsigned * );
-extern void             WriteNulls( f_handle, unsigned_32, char * );
-extern void             VMemQSort( virt_mem, unsigned, unsigned,
+extern const char       *GetBaseName( const char *, size_t, size_t * );
+extern void             WriteNulls( f_handle, unsigned_32, const char * );
+extern void             VMemQSort( virt_mem, size_t, size_t,
                                     void (*swapfn)(virt_mem, virt_mem),
                                     int (*cmpfn)(virt_mem, virt_mem) );
 extern void             InitEnvVars( void );

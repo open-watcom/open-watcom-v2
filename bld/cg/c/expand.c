@@ -42,14 +42,14 @@
 #include "insdead.h"
 #include "rgtbl.h"
 #include "optab.h"
+#include "index.h"
+#include "fixindex.h"
+#include "generate.h"
 
 
-extern  int             NumOperands(instruction*);
-extern  instruction     *NeedIndex(instruction*);
 extern  bool            DoVerify(vertype,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MarkCallI(instruction);
-extern  reg_set_index   SpecialPossible(instruction*);
 extern  reg_set_index   CallIPossible(instruction*);
 
 static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_index )
@@ -320,7 +320,7 @@ void    FixGenEntry( instruction *ins )
 
     old = ins->u.gen_table;
     FindGenEntry( ins, &dummy );
-    if( ins->u.gen_table->generate >= FIRST_REDUCT ) {
+    if( G( ins ) >= FIRST_REDUCT ) {
         ins->u.gen_table = old;
     }
     ins->head.state = INS_NEEDS_WORK;

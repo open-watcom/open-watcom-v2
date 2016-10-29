@@ -32,6 +32,7 @@
 
 #define __SW_BW
 #include "variety.h"
+#include <stddef.h>
 #include <wdefwin.h>
 #include "defwin.h"
 
@@ -41,7 +42,7 @@ _WCRTLINK int   _dwDeleteOnClose( int handle ) {
 #ifdef DEFAULT_WINDOWING
     LPWDATA     res;
 
-    if( _WindowsDestroyOnClose != 0 ) {
+    if( _WindowsDestroyOnClose != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
         if( res ) {
             return( _WindowsDestroyOnClose( res ) );
@@ -59,7 +60,7 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text ) {
 
 #ifdef DEFAULT_WINDOWING
 
-    if( _WindowsSetAbout != 0 ) {
+    if( _WindowsSetAbout != NULL ) {
         return( _WindowsSetAbout( (char *)title, (char *)text ) );
     }
 #else
@@ -75,7 +76,7 @@ _WCRTLINK int   _dwSetAppTitle( const char *title ) {
 
 #ifdef DEFAULT_WINDOWING
 
-    if( _WindowsSetAppTitle != 0 ) {
+    if( _WindowsSetAppTitle != NULL ) {
         return( _WindowsSetAppTitle( (char *)title ) );
     }
 #else
@@ -92,7 +93,7 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
 
     LPWDATA     res;
 
-    if( _WindowsSetAppTitle != 0 ) {
+    if( _WindowsSetAppTitle != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
         if( res ) {
             return( _WindowsSetConTitle( res, (char *)title ) );
@@ -111,7 +112,7 @@ _WCRTLINK int   _dwYield( void ) {
 
 #ifdef DEFAULT_WINDOWING
 
-    if( _WindowsYieldControl != 0 ) {
+    if( _WindowsYieldControl != NULL ) {
         return( _WindowsYieldControl() );
     }
 #endif
@@ -124,7 +125,7 @@ _WCRTLINK int   _dwShutDown( void ) {
 
 #ifdef DEFAULT_WINDOWING
 
-    if( _WindowsShutDown != 0 ) {
+    if( _WindowsShutDown != NULL ) {
         return( _WindowsShutDown() );
     }
 #endif

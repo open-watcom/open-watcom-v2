@@ -80,10 +80,13 @@ _WCRTLINK unsigned _dos_open( const char *name, unsigned mode, int *posix_handle
     __setOSHandle( hid, handle );   // JBS 99/11/01
 
     *posix_handle = hid;
-
-    if( rwmode == O_RDWR )  iomode_flags = _READ | _WRITE;
-    if( rwmode == O_RDONLY) iomode_flags = _READ;
-    if( rwmode == O_WRONLY) iomode_flags = _WRITE;
+    iomode_flags = 0;
+    if( rwmode == O_RDWR )
+        iomode_flags = _READ | _WRITE;
+    if( rwmode == O_RDONLY )
+        iomode_flags = _READ;
+    if( rwmode == O_WRONLY )
+        iomode_flags = _WRITE;
     __SetIOMode( hid, iomode_flags );
     return( 0 );
 }

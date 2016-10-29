@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#ifdef __MT__
+#ifdef __SW_BM
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <string.h>
 #include <lock.h>
-#include <rtinit.h>
+#include "rtinit.h"
 
 __lock::__lock() {
 /*****************/

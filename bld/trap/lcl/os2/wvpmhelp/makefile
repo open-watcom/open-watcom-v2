@@ -30,7 +30,7 @@ wdpmhook.dll: pmhook.obj loadstd.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) @$^&.lnk
 
-wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
+wdpmhelp.exe: wdpmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
     @%write  $^&.lnk name $^@ system os2 pm
     @%append $^&.lnk debug all op symfile
     @%append $^&.lnk file pmhelp.obj
@@ -45,8 +45,7 @@ wdpmhelp.exe: pmhelp.res _err.gh pmhelp.obj $(__MAKEFILES__)
     @%append $^&.lnk option protmode
     @%make echo_link
     $(linker) @$^&.lnk
-    @%make echo_rc
-    $(rc) pmhelp.res wdpmhelp.exe
+    @%make bind_res
 
 .c: ../c
 .asm: ../asm
@@ -60,7 +59,7 @@ inc_dirs = -I. -I"../h" -I"$(trap_dir)/h" -I"$(os2api_dir)/os2286/h" -I"$(os2api
 
 extra_a_flags = -2 -bt=os2 -fo=.obj -mc
 
-pmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
+wdpmhelp.res: ../h/pmhelp.rc ../h/wdpmhelp.h
     @%make echo_rc
     $(rc) $(rc_flags) $(inc_path) $[@ -fo=$@
 

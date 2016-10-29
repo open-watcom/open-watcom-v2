@@ -81,30 +81,29 @@ hash_table              SymbolToExportTable;
 // Translation table from an orl_sec_handle to its correspinding segment.
 hash_table              SectionToSegmentTable;
 
-static orl_funcs        oFuncs;
 static buffer_info      fileBuff;
 static orl_sec_handle   symbolTable;
 static section_list     relocSections;
 
-static void *buffRead( buffer_info *file, int len )
-//*************************************************
+static void *buffRead( void *file, size_t len )
+//*********************************************
 {
     buf_list    *buf;
 
-    buf = AllocMem( len + sizeof(buf_list) - 1 );
+    buf = AllocMem( len + sizeof( buf_list ) - 1 );
     if( fread( buf->buf, 1, len, file->hdl ) != len ) {
         FreeMem( buf );
         return NULL;
     }
-    buf->next = file->buflist;
-    file->buflist = buf;
+    buf->next = ((buffer_info *)file)->buflist;
+    ((buffer_info *)file)->buflist = buf;
     return( buf->buf );
 }
 
-static long buffSeek( buffer_info *file, long pos, int where )
+static long buffSeek( void *file, long pos, int where )
 //************************************************************
 {
-    return( fseek( file->hdl, pos, where ) );
+    return( fseek( ((buffer_info *)file)->hdl, pos, where ) );
 }
 
 static void initBuffer( buffer_info *file, file_handle hdl )
@@ -166,13 +165,10 @@ bool InitORL( void )
     orl_file_flags      o_flags;
     orl_file_format     o_format;
     orl_machine_type    o_machine_type;
+    ORLSetFuncs( orl_cli_funcs, buffRead, buffSeek, AllocMem, FreeMem );
 
     ORLFileHnd = NULL;
-    oFuncs.alloc = AllocMem;
-    oFuncs.free = FreeMem;
-    oFuncs.read = (void * (*) ( void *, int ))buffRead;
-    oFuncs.seek = (long int (*) ( void *, long int, int ))buffSeek;
-    ORLHnd = ORLInit( &oFuncs );
+    ORLHnd = ORLInit( &orl_cli_funcs );
     if( !ORLHnd ) {
         SysError( ERR_OUT_OF_MEM, false );
     }

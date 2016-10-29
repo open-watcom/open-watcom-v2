@@ -32,7 +32,8 @@
 #include "variety.h"
 #include "exitwmsg.h"
 
-_WCRTLINK void _Not_Enough_Memory( void )
+_WCRTLINK _NORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
 }

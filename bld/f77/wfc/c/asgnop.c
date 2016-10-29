@@ -42,6 +42,7 @@
 #include "emitobj.h"
 #include "asgnop.h"
 #include "gstring.h"
+#include "gtypes.h"
 
 
 void    AsgnOp( TYPE typ1, TYPE typ2, OPTR opr ) {

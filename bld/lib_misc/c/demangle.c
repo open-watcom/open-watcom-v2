@@ -123,6 +123,7 @@ typedef void *(*realloc_fn_t)( void *, size_t );
 typedef void (*outfunPtr)(void **, dm_pts, pointer_int, char const *);
 
 #define MAX_REPLICATE   10
+
 typedef struct replicate_desc {
     char const      *ptr;
     size_t          len;
@@ -147,11 +148,11 @@ typedef struct output_desc {
     size_t          scope_len;
     int             suppress_output;
     unsigned        scope_index;
-    unsigned        ctdt_pending : 1;
-    unsigned        cv_pending : 1;
-    unsigned        scope_name : 1;
-    unsigned        base_name : 1;
-    unsigned        dllimport : 1;
+    bool            ctdt_pending : 1;
+    bool            cv_pending : 1;
+    bool            scope_name : 1;
+    bool            base_name : 1;
+    bool            dllimport : 1;
 } output_desc;
 
 // the simple demangler uses these to output & count chars in the output buffer
@@ -163,7 +164,7 @@ typedef struct output_desc {
 typedef struct state_desc {
     size_t          prefix;
     size_t          suffix;
-    char            right : 1;
+    bool            right : 1;
 } state_desc;
 
 static char const _WCI86FAR dtorChar = '~';
@@ -209,15 +210,15 @@ static table_t const _WCI86FAR translate_type_encoding[] = {
     /* 'C' */   { "char ",      CHAR_BASIC_TYPE },
     /* 'D' */   { "double ",    CHAR_BASIC_TYPE },
     /* 'E' */   { "... ",       CHAR_BASIC_TYPE },
-    /* 'F' */   { "far ",       CHAR_MODIFIER },
-    /* 'G' */   { "far16 ",     CHAR_MODIFIER },
-    /* 'H' */   { "huge ",      CHAR_MODIFIER },
+    /* 'F' */   { "__far ",     CHAR_MODIFIER },
+    /* 'G' */   { "__far16 ",   CHAR_MODIFIER },
+    /* 'H' */   { "__huge ",    CHAR_MODIFIER },
     /* 'I' */   { "int ",       CHAR_BASIC_TYPE },
     /* 'J' */   { "__based(",   CHAR_MODIFIER },
     /* 'K' */   { NULL,         CHAR_UNUSED },
     /* 'L' */   { "long ",      CHAR_BASIC_TYPE },
     /* 'M' */   { "::* ",       CHAR_POINTER },
-    /* 'N' */   { "near ",      CHAR_MODIFIER },
+    /* 'N' */   { "__near ",    CHAR_MODIFIER },
     /* 'O' */   { NULL,         CHAR_UNUSED },
     /* 'P' */   { "* ",         CHAR_POINTER },
     /* 'Q' */   { "bool ",      CHAR_BASIC_TYPE },
@@ -260,6 +261,7 @@ static char _WCI86FAR * const _WCI86FAR operatorFunction[] = {
     /* T */ "&&",
     /* U */ "||"
 };
+
 static char const _WCI86FAR * const _WCI86FAR relationalFunction[] = {
     /* A */ "==",
     /* B */ "!=",
@@ -268,6 +270,7 @@ static char const _WCI86FAR * const _WCI86FAR relationalFunction[] = {
     /* E */ ">",
     /* F */ ">="
 };
+
 static char const _WCI86FAR * const _WCI86FAR assignmentFunction[] = {
     /* A */ "=",
     /* B */ "*=",
@@ -356,9 +359,9 @@ static void zapSpace( output_desc *data )
 
 static void emitChar( output_desc *data, char c )
 {
-    size_t adjust_size;
-    size_t test_size;
-    char *test_realloc;
+    size_t  adjust_size;
+    size_t  test_size;
+    char    *test_realloc;
 
     if( data->suppress_output > SUPPRESS_LIMIT ) {
         return;
@@ -371,13 +374,14 @@ static void emitChar( output_desc *data, char c )
     if( data->count == ( data->size - 1 ) ) {
         if( user_realloc != NULL ) {
             adjust_size = START_ADJUST;
-            for(;;) {
+            for( ;; ) {
                 if( adjust_size == 0 ) {
                     return;
                 }
                 test_size = data->size + adjust_size;
                 test_realloc = user_realloc( data->output, test_size );
-                if( test_realloc != NULL ) break;
+                if( test_realloc != NULL )
+                    break;
                 adjust_size >>= 1;
             }
             data->output = test_realloc;
@@ -398,8 +402,8 @@ static void emitChar( output_desc *data, char c )
 
 static void emitStr( output_desc *data, const char _WCI86FAR *p )
 {
-    if( p ) {
-        while( *p ) {
+    if( p != NULL ) {
+        while( *p != NULL_CHAR ) {
             emitChar( data, *p );
             ++p;
         }
@@ -513,6 +517,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char cons
     case DM_INTEGER:
         {
             char buff[12];
+
             ltoa( (long)value, buff, 10 );
             emitStr( data, buff );
         }
@@ -520,6 +525,7 @@ static void demangleEmit( void **cookie, dm_pts dp, pointer_int value, char cons
     case DM_ARRAY_SIZE:
         if( value != 0 ) {
             char buff[12];
+
             ultoa( (unsigned long)value, buff, 10 );
             emitStr( data, buff );
         }
@@ -644,9 +650,10 @@ static bool typeChar( char c, int grouping )
     return( false );
 }
 
-static int check_recurse( void ) {
+static bool check_recurse( void )
+{
 #ifdef __NO_STACK_CHECKING__
-    return( 1 );
+    return( true );
 #else
     return( alloca( RECURSE_CHECK ) != NULL );
 #endif
@@ -665,17 +672,17 @@ static char currChar( output_desc *data )
     char c;
 
     c = *data->input;
-    if( data->input == data->end ) {
-        c = NULL_CHAR;
-    } else {
+    if( data->end == NULL || data->input < data->end ) {
         c = mytoupper( c );
+    } else {
+        c = NULL_CHAR;
     }
     return( c );
 }
 
 static void advanceChar( output_desc *data )
 {
-    if( data->input != data->end && *data->input ) {
+    if( ( data->end == NULL || data->input < data->end ) && *data->input != NULL_CHAR ) {
         data->input++;
     }
 }
@@ -691,9 +698,12 @@ static bool is_identifier( char c )
 
 static unsigned char_to_digit( char c )
 {
-    if( c >= '0' && c <= '9' ) return( c - '0' );
-    if( c >= 'A' && c <= 'Z' ) return( c - 'A' + 10 );
-    if( c >= 'a' && c <= 'z' ) return( c - 'a' + 10 );
+    if( c >= '0' && c <= '9' )
+        return( c - '0' );
+    if( c >= 'A' && c <= 'Z' )
+        return( c - 'A' + 10 );
+    if( c >= 'a' && c <= 'z' )
+        return( c - 'a' + 10 );
     return( (unsigned)-1 );
 }
 
@@ -844,7 +854,7 @@ static bool function( output_desc *data, state_desc *state )
 {
     auto state_desc new_state;
     size_t          conv_offset = 0;
-    int             first_arg = 0;
+    bool            first_arg;
 
     _output1( DM_FUNCTION );
     _output2( DM_RESET_INDEX, state->suffix );
@@ -864,6 +874,7 @@ static bool function( output_desc *data, state_desc *state )
     new_state = *state;
     _output1( DM_FUNCTION_PREFIX );
     setSuppression( data );
+    first_arg = false;
     while( currChar( data ) != FUNCTION_SUFFIX ) {
         if( first_arg ) {
             _output2( DM_RESET_INDEX, state->suffix );
@@ -874,7 +885,7 @@ static bool function( output_desc *data, state_desc *state )
         if( !type_encoding( data, &new_state ) ) {
             return( false );
         }
-        first_arg = 1;
+        first_arg = true;
     }
     advanceChar( data );
     _output2( DM_RESET_INDEX, state->suffix );
@@ -899,9 +910,9 @@ static bool function( output_desc *data, state_desc *state )
 
 static bool tq_function( output_desc *data, state_desc *state )
 {
-    char c;
-    char const *tq_ptr;
-    size_t tq_len;
+    char        c;
+    char const  *tq_ptr;
+    size_t      tq_len;
 
     _output1( DM_THIS_FUNCTION );
     tq_ptr = data->input;
@@ -1060,7 +1071,7 @@ static bool type_encoding( output_desc *data, state_desc *state )
     if( ret && data->dllimport ) {
         _output2( DM_SET_INDEX, state->prefix );
         _output1( DM_DECLSPEC_IMPORT );
-        data->dllimport = 0;
+        data->dllimport = false;
     }
 #endif
     return( ret );
@@ -1104,13 +1115,14 @@ static bool template_arg( output_desc *data, state_desc *state )
 static bool template_name( output_desc *data, state_desc *state )
 {
     auto state_desc new_state;
-    int             first_arg = 0;
+    bool            first_arg;
     char            c;
 
     _output1( DM_TEMPLATE_NAME );
     new_state = *state;
     _output2( DM_RESET_INDEX, state->suffix );
     _output1( DM_TEMPLATE_PREFIX );
+    first_arg = false;
     c = currChar( data );
     while( c == TEMPLATE_INT || c == TEMPLATE_TYPE || c == PREFIX_EMBEDDED ) {
         if( first_arg ) {
@@ -1122,7 +1134,7 @@ static bool template_name( output_desc *data, state_desc *state )
         if( !template_arg( data, &new_state ) ) {
             return( false );
         }
-        first_arg = 1;
+        first_arg = true;
         c = currChar( data );
     }
     _output2( DM_RESET_INDEX, state->suffix );
@@ -1151,7 +1163,7 @@ static bool watcom_object( output_desc *data, state_desc *state )
         advanceChar( data );
         srch.str[1] = currChar( data );
         advanceChar( data );
-        for( i = 1 ; i < MAX_WATCOM_OBJECT ; i++ ) {
+        for( i = 1; i < MAX_WATCOM_OBJECT; i++ ) {
             if( srch.val == watcomObject[i].u.val ) {
                 _output2( DM_SET_INDEX, state->prefix );
                 _output2( DM_WATCOM_OBJECT, i );
@@ -1469,7 +1481,7 @@ static bool scope( output_desc *data, state_desc *state, size_t *symbol_length )
         new_state.suffix = data->count - state->prefix - *symbol_length;
         return( template_name( data, &new_state ) );
     } else {
-        int rc = sym_name( data, state );
+        bool rc = sym_name( data, state );
         *symbol_length = data->index - state->prefix - 1;
         return( rc );
     }
@@ -1520,10 +1532,10 @@ static bool full_mangled_name( output_desc *data )
     unsigned advances;
 
     advances = 1;
-    if( ( data->end - data->input ) >= IMPORT_PREFIX_LEN ) {
+    if( data->end == NULL || ( data->end - data->input ) >= IMPORT_PREFIX_LEN ) {
         if( CHECK_IMPORT_PREFIX( data->input ) ) {
             data->input += IMPORT_PREFIX_LEN;
-            data->dllimport = 1;
+            data->dllimport = true;
         }
     }
     switch( currChar( data ) ) {
@@ -1618,11 +1630,11 @@ static void init_descriptor( output_desc *data,
     data->scope_len = 0;
     data->suppress_output = 1;
     data->scope_index = 0;
-    data->ctdt_pending = 0;
-    data->cv_pending = 0;
-    data->scope_name = 0;
-    data->base_name = 0;
-    data->dllimport = 0;
+    data->ctdt_pending = false;
+    data->cv_pending = false;
+    data->scope_name = false;
+    data->base_name = false;
+    data->dllimport = false;
 }
 
 static size_t terminateOutput( output_desc *data )
@@ -1638,7 +1650,7 @@ static size_t terminateOutput( output_desc *data )
         /* remove trailing space */
         if( outlen > 0 && data->output[outlen - 1] == ' ' )
             --outlen;
-        data->output[outlen] = '\0';
+        data->output[outlen] = NULL_CHAR;
     }
     /* size does not include '\0' */
     return( outlen );
@@ -1684,14 +1696,14 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
     char *buff,                                 // - output buffer for demangled C++ name
     size_t buff_size )                          // - size of output buffer
 {
-    int                 mangled;
     size_t              outlen;
     auto output_desc    data;
 
     init_globals( NULL );
-    mangled = __is_mangled( input, len );
+    if( len == 0 )
+        len = strlen( input );
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
-    if( mangled ) {
+    if( __is_mangled( input, len ) ) {
         do_demangle( &data );
     } else {
         do_copy( &data );
@@ -1701,63 +1713,67 @@ size_t __demangle_l(                            // DEMANGLE A C++ NAME
     return( outlen );
 }
 
-int __is_mangled( char const *name, size_t len )
+size_t __is_mangled( char const *name, size_t len )
 {
-    int offset;
+    size_t  offset;
 
-    len = len;
-    offset = 2;
-    if( CHECK_IMPORT_PREFIX( name ) ) {
-        name += IMPORT_PREFIX_LEN;
-        offset += IMPORT_PREFIX_LEN;
-    }
-    switch( name[0] ) {
-    case TRUNCATED_PREFIX1:
-        offset += TRUNCATED_HASH_LEN;
-        /* fall through */
-    case MANGLE_PREFIX1:
-        if( name[1] == MANGLE_PREFIX2 ) {
-            return( offset );
+    if( len > 2 ) {
+        len -= 2;
+        offset = 2;
+        if( len > IMPORT_PREFIX_LEN && CHECK_IMPORT_PREFIX( name ) ) {
+            len -= IMPORT_PREFIX_LEN;
+            name += IMPORT_PREFIX_LEN;
+            offset += IMPORT_PREFIX_LEN;
         }
-        break;
+        if( name[0] == MANGLE_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+            return( offset );
+        } else if( len > TRUNCATED_HASH_LEN && name[0] == TRUNCATED_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+            return( offset + TRUNCATED_HASH_LEN );
+        }
     }
     return( 0 );
 }
 
 #if !defined( __WLIB__ ) && !defined( __DISASM__ )
 
-static mangled_type checkInternal( char const *n )
+static mangled_type checkInternal( char const *p, size_t len )
 {
-    if( n[0] == '.' ) {
-        return( __MANGLED_INTERNAL );
+    mangled_type    type;
+
+    if( p[0] == '.' ) {
+        len--;
+        type = __MANGLED_INTERNAL;
+    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == WAT_FUN_PREFIX ) {
+        len -= 2;
+        type = __MANGLED_INTERNAL;
+    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == CTOR_PREFIX1 && mytoupper( p[2] ) == CTOR_PREFIX2 ) {
+        len -= 3;
+        type = __MANGLED_CTOR;
+    } else if( p[0] == OPNAME_PREFIX && mytoupper( p[1] ) == DTOR_PREFIX1 && mytoupper( p[2] ) == DTOR_PREFIX2 ) {
+        len -= 3;
+        type = __MANGLED_DTOR;
+    } else {
+        type = __MANGLED;
     }
-    if( n[0] == OPNAME_PREFIX && mytoupper( n[1] ) == WAT_FUN_PREFIX ) {
-        return( __MANGLED_INTERNAL );
-    }
-    if( n[0] == OPNAME_PREFIX && mytoupper( n[1] ) == CTOR_PREFIX1 && mytoupper( n[2] ) == CTOR_PREFIX2 ) {
-        return( __MANGLED_CTOR );
-    }
-    if( n[0] == OPNAME_PREFIX && mytoupper( n[1] ) == DTOR_PREFIX1 && mytoupper( n[2] ) == DTOR_PREFIX2 ) {
-        return( __MANGLED_DTOR );
-    }
-    return( __MANGLED );
+    if( len == 0 )
+        type = __NOT_MANGLED;
+    return( type );
 }
 
 mangled_type __is_mangled_internal( char const *name, size_t len )
 {
-    unsigned offset;
-    len = len;
+    size_t          offset;
 
-    offset = 2;
-    switch( name[0] ) {
-    case TRUNCATED_PREFIX1:
-        offset += TRUNCATED_HASH_LEN;
-        /* fall through */
-    case MANGLE_PREFIX1:
-        if( name[1] == MANGLE_PREFIX2 ) {
-            return( checkInternal( name + offset ) );
+    if( len > 2 ) {
+        len -= 2;
+        offset = 2;
+        if( name[0] == MANGLE_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+            return( checkInternal( name + offset, len ) );
+        } else if( len > TRUNCATED_HASH_LEN && name[0] == TRUNCATED_PREFIX1 && name[1] == MANGLE_PREFIX2 ) {
+            len -= TRUNCATED_HASH_LEN;
+            offset += TRUNCATED_HASH_LEN;
+            return( checkInternal( name + offset, len ) );
         }
-        break;
     }
     return( __NOT_MANGLED );
 }
@@ -1768,21 +1784,20 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
     char const **basep,                         // - location of C++ base name
     size_t *base_sizep )                        // - size of C++ base name
 {                                               // return true if name mangled
-    char const *end;
-    int   mangled;
-    size_t base_size;
+    char const  *end;
+    size_t      mangled_prefix_len;
+    size_t      base_size;
 
-    if( len == 0 ) {
+    if( len == 0 )
         len = strlen( name );
-    }
-    mangled = __is_mangled( name, len );
-    if( !mangled ) {
+    mangled_prefix_len = __is_mangled( name, len );
+    if( mangled_prefix_len == 0 ) {
         *basep = name;
         *base_sizep = len;
         return( false );
     }
     end = name + len;
-    name += mangled; // skip magic cookie
+    name += mangled_prefix_len; // skip magic cookie
     *basep = name;
     base_size = 0;
     if( *name == OPNAME_PREFIX ) {
@@ -1792,7 +1807,7 @@ bool __unmangled_name(                          // FIND UNMANGLED BASE NAME
             base_size++;
         }
     } else {
-        for( ; name != end ; ++name ) {
+        for( ; name != end; ++name ) {
             if( *name == SYMBOL_SUFFIX )
                 break;
             base_size++;
@@ -1815,9 +1830,9 @@ size_t __demangle_t(                            // DEMANGLE A C++ TYPE
     char *buff,                                 // - output buffer for demangled C++ type
     size_t buff_size )                          // - size of output buffer
 {
-    size_t outlen;
-    auto output_desc data;
-    auto state_desc new_state;
+    size_t              outlen;
+    auto output_desc    data;
+    auto state_desc     new_state;
 
     init_globals( NULL );
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
@@ -1839,19 +1854,19 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
     void * (*realloc)( void *, size_t ) )       // - size adjuster for output
 {
     char                *buff;
-    int                 mangled;
     size_t              outlen;
     auto output_desc    data;
 
     init_globals( realloc );
-    mangled = __is_mangled( input, len );
+    if( len == 0 )
+        len = strlen( input );
     buff = NULL;
     if( buffp != NULL ) {
         buff = *buffp;
     }
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
-    if( mangled ) {
+    if( __is_mangled( input, len ) ) {
         do_demangle( &data );
     } else {
         do_copy( &data );
@@ -1866,21 +1881,21 @@ size_t __demangle_r(                            // DEMANGLE A C++ NAME
 
 #endif // !__DIP__
 
-bool __scope_name(                               // EXTRACT A C++ SCOPE
+bool __scope_name(                              // EXTRACT A C++ SCOPE
     char const *input,                          // - mangled C++ name
     size_t len,                                 // - length of mangled name
     unsigned index,                             // - scope wanted
     char const **scopep,                        // - location of C++ scope name
     size_t *scope_sizep )                       // - size of C++ scope name
 {                                               // returns true on success
-    int                 mangled;
     auto output_desc    data;
 
     init_globals( NULL );
     *scopep = NULL;
     *scope_sizep = 0;
-    mangled = __is_mangled( input, len );
-    if( !mangled ) {
+    if( len == 0 )
+        len = strlen( input );
+    if( __is_mangled( input, len ) == 0 ) {
         return( false );
     }
     init_descriptor( &data, &demangleEmit, &data, input, len, NULL, 0 );
@@ -1901,16 +1916,16 @@ size_t __demangled_basename(                    // CREATE DEMANGLED BASE NAME
     char *buff,                                 // - output buffer for demangled C++ base name
     size_t buff_size )                          // - size of output buffer
 {                                               // return len of output
-    int                 mangled;
     size_t              outlen;
     auto output_desc    data;
 
     init_globals( NULL );
-    mangled = __is_mangled( input, len );
+    if( len == 0 )
+        len = strlen( input );
     init_descriptor( &data, &demangleEmit, &data, input, len, buff, buff_size );
     data.suppress_output = 0;
-    data.base_name = 1;
-    if( mangled ) {
+    data.base_name = true;
+    if( __is_mangled( input, len ) ) {
         do_demangle( &data );
     } else {
         do_copy( &data );
@@ -1932,7 +1947,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
         len = strlen( op );
     }
 
-    for( i = 0 ; i < num_elements( operatorFunction ) ; i++ ) {
+    for( i = 0; i < num_elements( operatorFunction ); i++ ) {
         if( STRNCMP( op, operatorFunction[i], len ) == 0 ) {
             if( operatorFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
@@ -1942,7 +1957,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
             }
         }
     }
-    for( i = 0 ; i < num_elements( relationalFunction ) ; i++ ) {
+    for( i = 0; i < num_elements( relationalFunction ); i++ ) {
         if( STRNCMP( op, relationalFunction[i], len ) == 0 ) {
             if( relationalFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
@@ -1952,7 +1967,7 @@ size_t __mangle_operator(                       // MANGLE OPERATOR NAME
             }
         }
     }
-    for( i = 0 ; i < num_elements( assignmentFunction ) ; i++ ) {
+    for( i = 0; i < num_elements( assignmentFunction ); i++ ) {
         if( STRNCMP( op, assignmentFunction[i], len ) == 0 ) {
             if( assignmentFunction[i][len] == NULL_CHAR ) {
                 *buff++ = OPNAME_PREFIX;
@@ -1977,14 +1992,14 @@ void __parse_mangled_name(                      // PARSE MANGLED NAME
     void *cookie,                               // - data to carry around
     outfunPtr ofn )                             // - function to invoke
 {
-    int                 mangled;
     auto output_desc    data;
 
     init_globals( NULL );
-    mangled = __is_mangled( input, len );
+    if( len == 0 )
+        len = strlen( input );
     init_descriptor( &data, ofn, cookie, input, len, NULL, 0 );
     data.suppress_output = 0;
-    if( mangled ) {
+    if( __is_mangled( input, len ) ) {
         do_demangle( &data );
     } else {
         do_copy( &data );
@@ -2007,7 +2022,7 @@ void dump( output_desc *data )
             data->count,
             data->index,
             data->suppress_output );
-    for( i = 0 ; i < next_replicate ; i++ ) {
+    for( i = 0; i < next_replicate; i++ ) {
         printf( "replicate#%d: ptr: [%x]>%s< len: %d\n",
                 i,
                 replicate[i].ptr,
@@ -2044,238 +2059,238 @@ typedef struct test_stream {
 test_stream testVector[] = {
 #if 1
     "W?foo$n(pn(uauaua)v)v",
-        "void near foo( void (near *)( char, char, char ))",
+        "void __near foo( void (__near *)( char, char, char ))",
         "foo",
         "foo",
     "W?a$ni",
-        "int near a",
+        "int __near a",
         "a",
         "a",
     "W?$CT:S$n()_",
-        "near S::S()",
+        "__near S::S()",
         "$CT",
         "S",
     "W?$DT:S$n()_",
-        "near S::~S()",
+        "__near S::~S()",
         "$DT",
         "~S",
     "W?$DLn(pv)v",
-        "void near operator delete( void * )",
+        "void __near operator delete( void * )",
         "$DL",
         "operator delete",
     "W?foo$n(iuipua)v",
-        "void near foo( int, int unsigned, char * )",
+        "void __near foo( int, int unsigned, char * )",
         "foo",
         "foo",
     "W?$CV:opCONV$n()i",
-        "near opCONV::operator int ()",
+        "__near opCONV::operator int ()",
         "$CV",
         "operator int",
     "W?foo$n(pn$opCONV$$)pn$opCONV$$",
-        "opCONV near * near foo( opCONV near * )",
+        "opCONV __near * __near foo( opCONV __near * )",
         "foo",
         "foo",
     "W?foo$n(pn$opCONV$$)pn$1$",
-        "opCONV near * near foo( opCONV near * )",
+        "opCONV __near * __near foo( opCONV __near * )",
         "foo",
         "foo",
     "W?$NWn(ui)pnv",
-        "void near * near operator new( int unsigned )",
+        "void __near * __near operator new( int unsigned )",
         "$NW",
         "operator new",
     "W?bar$n($opnew$$)$1$",
-        "opnew near bar( opnew )",
+        "opnew __near bar( opnew )",
         "bar",
         "bar",
     "W?foo$n(pn[2][3][4]ipn[6]ua)v",
-        "void near foo( int (near *)[2][3][4], char (near *)[6])",
+        "void __near foo( int (__near *)[2][3][4], char (__near *)[6])",
         "foo",
         "foo",
     "W?bar$n(pn(uab)ipn(pn(d)it)v)v",
-        "void near bar( int (near *)( char, float ), void (near *)( int (near *)( double ), long double ))",
+        "void __near bar( int (__near *)( char, float ), void (__near *)( int (__near *)( double ), long double ))",
         "bar",
         "bar",
     "W?pff$npn(db)ua",
-        "char (near * near pff)( double, float )",
+        "char (__near * __near pff)( double, float )",
         "pff",
         "pff",
     "W?goo$nm$Base$$ni",
-        "int near Base::* near goo",
+        "int __near Base::* __near goo",
         "goo",
         "goo",
     "W?goo$n(nm$Base$$ni)v",
-        "void near goo( int near Base::* near )",
+        "void __near goo( int __near Base::* __near )",
         "goo",
         "goo",
     "W?$Wvm07:H$$:E$$nx[]ui",
-        "int unsigned const near __vmtbl[]",
+        "int unsigned const __near __vmtbl[]",
         "$Wvm",
         "__vmtbl",
     "W?$Wvt0qset_v1:A$c$:A$set_v1$n(i)v$:V1$n(i)v",
-        "void near V1::__vfthunk( int )",
+        "void __near V1::__vfthunk( int )",
         "$Wvt",
         "__vfthunk",
     "W?foo$:S$n(ua)i",
-        "int near S::foo( char )",
+        "int __near S::foo( char )",
         "foo",
         "foo",
     "W?foo$:S$n.x(ua)i",
-        "int near S::foo( char ) const",
+        "int __near S::foo( char ) const",
         "foo",
         "foo",
     "W?$CV:S$n()i",
-        "near S::operator int ()",
+        "__near S::operator int ()",
         "$CV",
         "operator int",
     "W?$CV:S$n.x()i",
-        "near S::operator int () const",
+        "__near S::operator int () const",
         "$CV",
         "operator int",
     "W?$WAA19ios:$opDTOR$$istream:c$$istream:$$opDTOR$?n()$n()pnv",
-        "void near * near __internal()",
+        "void __near * __near __internal()",
         "$WAA",
         "__internal",
     "W?_trmem_open$n(pn(ui)pnvpn(pnv)vpn(pnvui)pnvpn(pnvui)pnvpnvpn(pnvpnxuaui)vui)pn$_trmem_internal$$",
-        "_trmem_internal near * near _trmem_open( void near * (near *)( int unsigned ), void (near *)( void near * ), void near * (near *)( void near "
-        "*, int unsigned ), void near * (near *)( void near *, int unsigned ), void near *, void (near *)( void near *, char const near *, int unsigned ), int unsigned )",
+        "_trmem_internal __near * __near _trmem_open( void __near * (__near *)( int unsigned ), void (__near *)( void __near * ), void __near * (__near *)( void __near "
+        "*, int unsigned ), void __near * (__near *)( void __near *, int unsigned ), void __near *, void (__near *)( void __near *, char const __near *, int unsigned ), int unsigned )",
         "_trmem_open",
         "_trmem_open",
     "W?s$n$Stack$::1ni0az?ok$n()v$",
-        "Stack<int near,10,void near ok()> near s",
+        "Stack<int __near,10,void __near ok()> __near s",
         "s",
         "s",
     "W?dummy$:Stack$::1ni0az?ok$n()vn()v",
-        "void near Stack<int near,10,void near ok()>::dummy()",
+        "void __near Stack<int __near,10,void __near ok()>::dummy()",
         "dummy",
         "dummy",
     "W?$CT:Stack$::1ni0ay?ok$n()vn()_",
-        "near Stack<int near,-10,void near ok()>::Stack()",
+        "__near Stack<int __near,-10,void __near ok()>::Stack()",
         "$CT",
         "Stack",
     "W?s$n$Inner$:Stack$::1ni0az?ok$n()v:xyz$$",
-        "xyz::Stack<int near,10,void near ok()>::Inner near s",
+        "xyz::Stack<int __near,10,void __near ok()>::Inner __near s",
         "s",
         "s",
     "W?s$n$Inner$:Stack$::1ni0az1n$xyz$::1ni$:abc$$",
-        "abc::Stack<int near,10,xyz<int near > near >::Inner near s",
+        "abc::Stack<int __near,10,xyz<int __near > __near >::Inner __near s",
         "s",
         "s",
     "W?dummy$:Stack$::1ni0az?ok$n()v:xyz$n()v",
-        "void near xyz::Stack<int near,10,void near ok()>::dummy()",
+        "void __near xyz::Stack<int __near,10,void __near ok()>::dummy()",
         "dummy",
         "dummy",
     "W?dummy$:Stack$::1ni0az?ok$n()v:xyz$::1nin()v",
-        "void near xyz<int near >::Stack<int near,10,void near ok()>::dummy()",
+        "void __near xyz<int __near >::Stack<int __near,10,void __near ok()>::dummy()",
         "dummy",
         "dummy",
     "W?a$:.1$:?foo$n()vn[]i",
-        "int near void near foo()::.1::a[]",
+        "int __near void __near foo()::.1::a[]",
         "a",
         "a",
     "W?cout$n$ostream$$",
-        "ostream near cout",
+        "ostream __near cout",
         "cout",
         "cout",
     "W?$OB:ostream$n(pnxua)rn$ostream$$",
-        "ostream near & near ostream::operator <<( char const near * )",
+        "ostream __near & __near ostream::operator <<( char const __near * )",
         "$OB",
         "operator <<",
     "W?endl$n(rn$ostream$$)rn$ostream$$",
-        "ostream near & near endl( ostream near & )",
+        "ostream __near & __near endl( ostream __near & )",
         "endl",
         "endl",
     "W?$OB:ostream$n(pn(rn$ostream$$)rn$ostream$$)rn$ostream$$",
-        "ostream near & near ostream::operator <<( ostream near & (near *)( ostream near & ))",
+        "ostream __near & __near ostream::operator <<( ostream __near & (__near *)( ostream __near & ))",
         "$OB",
         "operator <<",
     "W?m$n()pjvv",
-        "void __based(void) * near m()",
+        "void __based(void) * __near m()",
         "m",
         "m",
     "W?pv$npjvua",
-        "char __based(void) * near pv",
+        "char __based(void) * __near pv",
         "pv",
         "pv",
     "W?ps$npjsua",
-        "char __based(__self) * near ps",
+        "char __based(__self) * __near ps",
         "ps",
         "ps",
     "W?pn$npjl03FOOuc",
-        "char unsigned __based(\"FOO\") * near pn",
+        "char unsigned __based(\"FOO\") * __near pn",
         "pn",
         "pn",
     "W?pa$npjf$s$uc",
-        "char unsigned __based(s) * near pa",
+        "char unsigned __based(s) * __near pa",
         "pa",
         "pa",
     "W?pp$npja$b$ua",
-        "char __based(b) * near pp",
+        "char __based(b) * __near pp",
         "pp",
         "pp",
     "W?bar$n(uaua)v",
-        "void near bar( char, char )",
+        "void __near bar( char, char )",
         "bar",
         "bar",
     "W?bar$n(cc)v",
-        "void near bar( char signed, char signed )",
+        "void __near bar( char signed, char signed )",
         "bar",
         "bar",
     "W?bar$n(ucuc)v",
-        "void near bar( char unsigned, char unsigned )",
+        "void __near bar( char unsigned, char unsigned )",
         "bar",
         "bar",
     "W?mpa$nm$S$$nxi",
-        "int const near S::* near mpa",
+        "int const __near S::* __near mpa",
         "mpa",
         "mpa",
     "W?mpb$nm$S$$nyi",
-        "int volatile near S::* near mpb",
+        "int volatile __near S::* __near mpb",
         "mpb",
         "mpb",
     "W?$Wmp05a$nxi$:S$n()pnxi",
-        "int const near * near S::__mbrptrthunk()",
+        "int const __near * __near S::__mbrptrthunk()",
         "$Wmp",
         "__mbrptrthunk",
     "W?$Wmp05b$nyi$:S$n()pnyi",
-        "int volatile near * near S::__mbrptrthunk()",
+        "int volatile __near * __near S::__mbrptrthunk()",
         "$Wmp",
         "__mbrptrthunk",
     "W?y$n$E$$",
-        "E near y",
+        "E __near y",
         "y",
         "y",
     "W?y$n$$TE$$",
-        "__anonymous_enum near y",
+        "__anonymous_enum __near y",
         "y",
         "y",
     "W?setSymType$:KeySymbol$f($$TE$$)v",
-        "void far KeySymbol::setSymType( __anonymous_enum )",
+        "void __far KeySymbol::setSymType( __anonymous_enum )",
         "setSymType",
         "setSymType",
     "W?y$n$$TEextratext$$",
-        "__anonymous_enum near y",
+        "__anonymous_enum __near y",
         "y",
         "y",
     "W?setSymType$:KeySymbol$f($$TEextra_stuff$$)v",
-        "void far KeySymbol::setSymType( __anonymous_enum )",
+        "void __far KeySymbol::setSymType( __anonymous_enum )",
         "setSymType",
         "setSymType",
     "W?foo$n(pn$_123456789012345678901234567890_1$$pn$_123456789012345678901234567890_2$$pn$_123456789012345678901234567890_3$$pn$_1234567890123456789"
     "01234567890_4$$pn$_123456789012345678901234567890_5$$pn$_123456789012345678901234567890_6$$pn$_123456789012345678901234567890_7$$)v",
-        "void near foo( _123456789012345678901234567890_1 near *, _123456789012345678901234567890_2 near *, _123456789012345678901234567890_3 near *, "
-        "_123456789012345678901234567890_4 near *, _123456789012345678901234567890_5 near *, _123456789012345678901234567890_6 near *, _123456789012345678901234567890_7 near * )",
+        "void __near foo( _123456789012345678901234567890_1 __near *, _123456789012345678901234567890_2 __near *, _123456789012345678901234567890_3 __near *, "
+        "_123456789012345678901234567890_4 __near *, _123456789012345678901234567890_5 __near *, _123456789012345678901234567890_6 __near *, _123456789012345678901234567890_7 __near * )",
         "foo",
         "foo",
     "W?$nan(ui)pnv",
-        "void near * near operator new []( int unsigned )",
+        "void __near * __near operator new []( int unsigned )",
         "$na",
         "operator new []",
     "W?$dan(pnv)v",
-        "void near operator delete []( void near * )",
+        "void __near operator delete []( void __near * )",
         "$da",
         "operator delete []",
     "W?$Wcm012$nx[]uc",
-        "char unsigned const near __stattabcmd[]",
+        "char unsigned const __near __stattabcmd[]",
         "$Wcm",
         "__stattabcmd",
     "W?$Wqq012$i",
@@ -2283,36 +2298,36 @@ test_stream testVector[] = {
         "$Wqq",
         "__internal",
     "W?$Wdi0vnql0f8@f__dlang_h_win_windows_h$na",
-        "char near __debuginfo",
+        "char __near __debuginfo",
         "$Wdi",
         "__debuginfo",
     "W?e$nuz",
-        "__int64 unsigned near e",
+        "__int64 unsigned __near e",
         "e",
         "e",
     "__imp_W?foo$n(iiapn(aas)i)i",
-        "int near foo( int, int, char, int (near *)( char, char, short ))",
+        "int __near foo( int, int, char, int (__near *)( char, char, short ))",
         "foo",
         "foo",
     "W?x$:$Wun0f1_dr061n1l8koys$:A$ni",
-        "int near A::<unique>::x",
+        "int __near A::<unique>::x",
         "x",
         "x",
 #endif
     "W?exprNodeAnalysis$:$Wun0e2o_eo9stv6l5hj$n(pn$ExprNode$$pnv)pn$1$",
-        "ExprNode near * near <unique>::exprNodeAnalysis( ExprNode near *, void near * )",
+        "ExprNode __near * __near <unique>::exprNodeAnalysis( ExprNode __near *, void __near * )",
         "exprNodeAnalysis",
         "exprNodeAnalysis",
 #if 0 || defined( __INCLUDE_TRUNCATED_NAME )
     "T?hhhhfoo$n(pn$_123456789012345678901234567890_1$$pn$_123456789012345678901234567890_2$$pn$_123456789012345678901234567890_3$$pn$_123456789012345"
     "678901234567890_4$$pn$_123456789012345678901234567890_5$$pn$_123456789012345678901234567890_6$$pn$_12345678901",
-        "near foo( _123456789012345678901234567890_1 near *, _123456789012345678901234567890_2 near *, _123456789012345678901234567890_3 near *, _1234"
-        "56789012345678901234567890_4 near *, _123456789012345678901234567890_5 near *, _123456789012345678901234567890_6 near *, near * ",
+        "__near foo( _123456789012345678901234567890_1 __near *, _123456789012345678901234567890_2 __near *, _123456789012345678901234567890_3 __near *, _1234"
+        "56789012345678901234567890_4 __near *, _123456789012345678901234567890_5 __near *, _123456789012345678901234567890_6 __near *, __near * ",
         "foo",
         "foo",
     "T?hhhhxx$n$S$::?foo$n(pn$_123456789012345678901234567890_1$$pn$_123456789012345678901234567890_2$$pn$_123456789012345678901234567890_3$$pn$_12345"
     "6789012345678901234567890_4$$pn$_123456789012345678901234567890_5$$pn$_123456789012345678901234567890_6$$pn$_1",
-        "near foo( _123456789012345678901234567890_1 near *, _12345678901234567890123456>::S near xx",
+        "__near foo( _123456789012345678901234567890_1 __near *, _12345678901234567890123456>::S __near xx",
         "xx",
         "xx",
 #endif
@@ -2346,7 +2361,7 @@ void testEmit( void **cookie, dm_pts dp, size_t value, char const *ptr )
 
 static char *typeTestVector[] = {
     "$D$$", "D",
-    "pn$D$$", "D near *",
+    "pn$D$$", "D __near *",
     NULL, NULL,
 };
 
@@ -2364,18 +2379,18 @@ void main( int argc )
     printf( "Starting test...\n" );
     assert((( sizeof( typeTestVector ) / sizeof( typeTestVector[0] ) ) & 1 ) == 0 );
     errors = 0;
-    for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+    for( i = 0; testVector[i].mangle != NULL; ++i ) {
         len = __demangle_l( testVector[i].mangle, 0, NULL, 0 );
         if( argc > 1 ) {
             printf( "%s -> (%u)\n", testVector[i].mangle, len );
         }
     }
-    for( trunc_len = TRUNC_BUFFER ; trunc_len > 0 ; trunc_len-- ) {
-        for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
-            buff[0] = buff[trunc_len+1] = GUARD_CHAR;
-            len = __demangle_l( testVector[i].mangle, 0, buff+1, trunc_len );
+    for( trunc_len = TRUNC_BUFFER; trunc_len > 0; trunc_len-- ) {
+        for( i = 0; testVector[i].mangle != NULL; ++i ) {
+            buff[0] = buff[trunc_len + 1] = GUARD_CHAR;
+            len = __demangle_l( testVector[i].mangle, 0, buff + 1, trunc_len );
             if( argc > 1 ) {
-                printf( "%s -->%s<-- (%u)\n", testVector[i].mangle, buff+1, len );
+                printf( "%s -->%s<-- (%u)\n", testVector[i].mangle, buff + 1, len );
             }
             if( len > trunc_len ) {
                 ++errors;
@@ -2391,14 +2406,14 @@ void main( int argc )
             }
         }
         for( i = 0; typeTestVector[i] != NULL; i += 2 ) {
-            buff[0] = buff[trunc_len+1] = GUARD_CHAR;
-            len = __demangle_t( typeTestVector[i], 0, buff+1, trunc_len );
+            buff[0] = buff[trunc_len + 1] = GUARD_CHAR;
+            len = __demangle_t( typeTestVector[i], 0, buff + 1, trunc_len );
             if( argc > 1 ) {
-                printf( "%s -->%s<-- (%u)\n", typeTestVector[i], buff+1, len );
+                printf( "%s -->%s<-- (%u)\n", typeTestVector[i], buff + 1, len );
             }
             if( memcmp( buff+1, typeTestVector[i+1], len ) ) {
                 printf( "ERROR:\n%s\ndemangle should yield -->%s<--\n", typeTestVector[i], typeTestVector[i+1] );
-                printf(             "          but yielded -->%s<-- (%u)\n", buff+1, len );
+                printf(             "          but yielded -->%s<-- (%u)\n", buff + 1, len );
                 ++errors;
             }
             if( len > trunc_len ) {
@@ -2419,7 +2434,7 @@ void main( int argc )
         printf( "test failed!\n" );
         exit( 1 );
     }
-    for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+    for( i = 0; testVector[i].mangle != NULL; ++i ) {
         p = malloc( ALLOC_SIZE );
         len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, realloc );
         if( argc > 1 ) {
@@ -2427,7 +2442,7 @@ void main( int argc )
         }
         free( p );
     }
-    for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+    for( i = 0; testVector[i].mangle != NULL; ++i ) {
         if( __unmangled_name( testVector[i].mangle, 0, &q, &len ) ) {
             char buff[BUF_SIZE];
             memcpy( buff, q, len );
@@ -2441,13 +2456,13 @@ void main( int argc )
             }
         }
     }
-    for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+    for( i = 0; testVector[i].mangle != NULL; ++i ) {
         if( argc > 1 ) {
             printf( "parsing -->%s<--\n", testVector[i].mangle );
         }
         __parse_mangled_name( testVector[i].mangle, 0, &argc, &testEmit );
     }
-    for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+    for( i = 0; testVector[i].mangle != NULL; ++i ) {
         p = malloc( ALLOC_SIZE );
         len = __demangle_r( testVector[i].mangle, 0, &p, ALLOC_SIZE, realloc );
         if( strcmp( p, testVector[i].full_demangle ) ) {
@@ -2478,10 +2493,10 @@ void main( int argc )
         printf( "test failed!\n" );
         exit( 1 );
     }
-    for( trunc_len = TRUNC_BUFFER ; trunc_len > 0 ; trunc_len-- ) {
-        for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
-            buff[0] = buff[trunc_len+1] = GUARD_CHAR;
-            len = __demangle_l( testVector[i].mangle, 0, buff+1, trunc_len );
+    for( trunc_len = TRUNC_BUFFER; trunc_len > 0; trunc_len-- ) {
+        for( i = 0; testVector[i].mangle != NULL; ++i ) {
+            buff[0] = buff[trunc_len + 1] = GUARD_CHAR;
+            len = __demangle_l( testVector[i].mangle, 0, buff + 1, trunc_len );
             if( len > trunc_len ) {
                 printf( "ERROR: returned length exceeds truncate length\n" );
                 ++errors;
@@ -2503,14 +2518,14 @@ void main( int argc )
     if( argc > 1 ) {
         no_errors = 1;
         // test truncated names
-        for( i = 0 ; testVector[i].mangle != NULL ; ++i ) {
+        for( i = 0; testVector[i].mangle != NULL; ++i ) {
             char *p1;
             int j, max;
             max = strlen( testVector[i].mangle );
             p1 = malloc( max + 1 );
             memcpy( p1, testVector[i].mangle, max + 1 );
-            for( j = max ; j > 0 ; j-- ) {
-                p1[j] = '\0';
+            for( j = max; j > 0; j-- ) {
+                p1[j] = NULL_CHAR;
                 p = malloc( ALLOC_SIZE );
                 len = __demangle_r( p1, 0, &p, ALLOC_SIZE, realloc );
                 printf( "truncated demangle yielded -->%s<-- (%u)\n", p, len );
@@ -2536,7 +2551,7 @@ void main( int argc, char **argv )
         printf( "Usage: demangle <mangled name>\n" );
         return;
     }
-    __demangle_l( argv[1], strlen( argv[1] ), buffer, BUF_SIZE );
+    __demangle_l( argv[1], strlen( argv[1] ), buffer, sizeof( buffer ) );
     puts( buffer );
 }
 #endif

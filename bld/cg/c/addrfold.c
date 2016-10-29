@@ -49,7 +49,6 @@
 #include "typemap.h"
 
 
-extern  cg_type         NamePtrType(name*);
 extern  void            BGDone(an);
 
 static  void    LoadTempInt( an addr );

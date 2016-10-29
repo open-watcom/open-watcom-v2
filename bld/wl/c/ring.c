@@ -175,8 +175,7 @@ void RINGNAME(Insert) (         // INSERT ELEMENT INTO RING
 
 void RINGNAME(Walk) (           // TRAVERSE RING
     void *hdr,                  // - ring header
-    void (*rtn)                 // - traversal routine
-        (void * curr) )          // - - passed current element
+    ringwalk_fn *rtn )          // - traversal routine
 {
 #if 0
     RING *rhdr;                 // - ring header
@@ -327,10 +326,8 @@ void * RINGNAME(Pop) (          // PRUNE FIRST ELEMENT IN THE RING
 
 void * RINGNAME(Lookup) (       // LOOKUP IN A RING
     void *hdr,                  // - ring hdr
-    bool (*compare_rtn)         // - comparison routine
-        ( void *element,        // - - element
-          void *comparand ),    // - - comparand
-    void *comparand )       // - comparand
+    ringcompare_fn *rtn,        // - comparison routine
+    void *comparand )           // - comparand
 {
     RING *rhdr;                 // - ring hdr
     RING *curr;                 // - current element
@@ -342,7 +339,7 @@ void * RINGNAME(Lookup) (       // LOOKUP IN A RING
         curr = rhdr;
         for( ; ; ) {
             curr = curr->next;
-            if( (*compare_rtn)( curr, comparand ) ) break;
+            if( (*rtn)( curr, comparand ) ) break;
             if( curr == rhdr ) {
                 curr = NULL;
                 break;

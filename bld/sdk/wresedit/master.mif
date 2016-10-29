@@ -79,8 +79,7 @@ $(name).dll: rcstr.gh $(objs) $(libs) $(name).res $(version_res_dll_$(host_os)_$
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindres
-    $(rc) -k $(name).res $^@ $(bind_version_res_dll_add)
+    @%make bind_res_add_version_dll
 
 $(name).res: ../res/$(name).rc $(__MAKEFILES__) .AUTODEPEND
     @%make echo_rc

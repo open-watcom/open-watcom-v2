@@ -319,6 +319,7 @@ _Not_Enough_Memory_:
         mov     ax,offset NoMemory      ;
         mov     dx,cs                   ;
         jmp     __fatal_runtime_error   ; display msg and exit
+        ; never return
 
 around:
         mov     ax, 0FF00h              ; *RSI* see if DOS/16M really there

@@ -37,8 +37,6 @@
 #include "rtstack.h"
 #include "exitwmsg.h"
 #include "initfini.h"
-#include "thread.h"
-#include "linuxsys.h"
 #include "initarg.h"
 #include "osmain.h"
 #include "linuxsys.h"

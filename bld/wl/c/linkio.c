@@ -76,7 +76,7 @@ void LnkFilesInit( void )
     }
 }
 
-void PrintIOError( unsigned msg, char *types, char *name )
+void PrintIOError( unsigned msg, const char *types, const char *name )
 /***************************************************************/
 {
     char        rc_buff[RESOURCE_MAX_SIZE];
@@ -94,14 +94,15 @@ void CheckBreak( void )
     }
 }
 
-static tiny_ret_t DoOpen( char *name, bool create, unsigned mode )
-/****************************************************************/
+static tiny_ret_t DoOpen( const char *name, bool create, unsigned mode )
+/**********************************************************************/
 {
     tiny_ret_t       h;
 
     CheckBreak();
     for( ;; ) {
-        if( OpenFiles >= MAX_OPEN_FILES ) CleanCachedHandles();
+        if( OpenFiles >= MAX_OPEN_FILES )
+            CleanCachedHandles();
         if( create ) {
             h  = TinyCreate( name, mode );
         } else {
@@ -111,8 +112,11 @@ static tiny_ret_t DoOpen( char *name, bool create, unsigned mode )
             OpenFiles++;
             break;
         }
-        if( TINY_INFO( h ) != TOOMANY ) break;
-        if( !CleanCachedHandles() ) break;
+        if( TINY_INFO( h ) != TOOMANY )
+            break;
+        if( !CleanCachedHandles() ) {
+            break;
+        }
     }
     return( h );
 }
@@ -126,31 +130,33 @@ static char *QErrMsg( unsigned status )
 }
 
 
-f_handle QOpenR( char *name )
-/**********************************/
+f_handle QOpenR( const char *name )
+/*********************************/
 {
     tiny_ret_t h;
 
     h = DoOpen( name, false, TIO_READ );
-    if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
 }
 
 
-f_handle QOpenRW( char *name )
-/***********************************/
+f_handle QOpenRW( const char *name )
+/**********************************/
 {
     tiny_ret_t h;
 
     h = DoOpen( name, true, TIO_NORMAL );
-    if( TINY_OK( h ) ) return( (f_handle)TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( (f_handle)TINY_INFO( h ) );
     LnkMsg( FTL+MSG_CANT_OPEN, "12", name, QErrMsg( TINY_INFO( h ) ) );
     return( NIL_FHANDLE );
 }
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
-/****************************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 /* read into far memory */
 {
     tiny_ret_t   h;
@@ -168,20 +174,21 @@ unsigned QRead( f_handle file, void *buffer, unsigned len, char *name )
 
 }
 
-static unsigned TestWrite( f_handle file, void *buffer, unsigned len, char *name )
-/*****************************************************************************/
+static size_t TestWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/****************************************************************************************/
 {
     tiny_ret_t  h;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
     CheckBreak();
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
 
     h = TinyWrite( file, buffer, len );
     if( name != NULL ) {
         if( TINY_ERROR( h ) ) {
             LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
-            return( ~0 );
+            return( -1 );
         } else if( TINY_INFO( h ) != len ) {
             if( name != NULL ) {
                 Msg_Get( MSG_IOERRLIST_7, rc_buff );
@@ -194,27 +201,27 @@ static unsigned TestWrite( f_handle file, void *buffer, unsigned len, char *name
 
 #define QWRITE_BLOCK_SIZE   (16*1024)
 
-unsigned QWrite( f_handle file, void *buffer, unsigned len, char *name )
-/*****************************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 {
     for( ; len > QWRITE_BLOCK_SIZE; len -= QWRITE_BLOCK_SIZE ) {
         if( TestWrite( file, buffer, QWRITE_BLOCK_SIZE, name ) != QWRITE_BLOCK_SIZE )
             return( 0 );
-        buffer = (char *)buffer + QWRITE_BLOCK_SIZE;
+        buffer = (const char *)buffer + QWRITE_BLOCK_SIZE;
     }
     return( TestWrite( file, buffer, len, name ) );
 }
 
 char    NLSeq[] = { "\r\n" };
 
-void QWriteNL( f_handle file, char *name )
-/***********************************************/
+void QWriteNL( f_handle file, const char *name )
+/**********************************************/
 {
     QWrite( file, NLSeq, sizeof( NLSeq ) - 1, name );
 }
 
-void QClose( f_handle file, char *name )
-/*********************************************/
+void QClose( f_handle file, const char *name )
+/********************************************/
 /* file close */
 {
     tiny_ret_t h;
@@ -222,12 +229,13 @@ void QClose( f_handle file, char *name )
     CheckBreak();
     h = TinyClose( file );
     OpenFiles--;
-    if( TINY_OK( h ) || name == NULL ) return;
+    if( TINY_OK( h ) || name == NULL )
+        return;
     LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, QErrMsg( TINY_INFO( h ) ) );
 }
 
-long QLSeek( f_handle file, long position, int start, char *name )
-/***********************************************************************/
+long QLSeek( f_handle file, long position, int start, const char *name )
+/**********************************************************************/
 {
     tiny_ret_t  rc;
     long        pos;
@@ -242,8 +250,8 @@ long QLSeek( f_handle file, long position, int start, char *name )
     return( pos );
 }
 
-void QSeek( f_handle file, unsigned long position, char *name )
-/*************************************************************/
+void QSeek( f_handle file, unsigned long position, const char *name )
+/*******************************************************************/
 {
     QLSeek( file, position, TIO_SEEK_START, name );
 }
@@ -275,12 +283,13 @@ unsigned long QFileSize( f_handle file )
     return( size );
 }
 
-void QDelete( char *name )
-/*******************************/
+void QDelete( const char *name )
+/******************************/
 {
     tiny_ret_t   h;
 
-    if( name == NULL ) return;
+    if( name == NULL )
+        return;
     h = TinyDelete( name );
     if( TINY_ERROR( h ) ) {
         if( TINY_INFO( h ) != 2 ) {  /* file not found is OK */
@@ -290,8 +299,8 @@ void QDelete( char *name )
 }
 
 
-bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
-/**************************************************************************/
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+/***********************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
@@ -305,14 +314,16 @@ bool QReadStr( f_handle file, char *dest, unsigned size, char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );
 }
 
 bool QIsDevice( f_handle file )
-/************************************/
+/*****************************/
 {
     if( TinyGetDeviceInfo( file ) & TIO_CTL_DEVICE ) {
         return( true );
@@ -321,42 +332,44 @@ bool QIsDevice( f_handle file )
     }
 }
 
-f_handle ExeCreate( char *name )
-/*************************************/
+f_handle ExeCreate( const char *name )
+/************************************/
 {
     tiny_ret_t      h;
 
     h = DoOpen( name, true, TIO_NORMAL );
     LastResult = TINY_INFO( h );
-    if( TINY_OK( h ) ) return( TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
 }
 
-static f_handle NSOpen( char *name, unsigned mode )
-/*************************************************/
+static f_handle NSOpen( const char *name, unsigned mode )
+/*******************************************************/
 {
     tiny_ret_t       h;
 
     h = DoOpen( name, false, mode );
     LastResult = TINY_INFO( h );
-    if( TINY_OK( h ) ) return( TINY_INFO( h ) );
+    if( TINY_OK( h ) )
+        return( TINY_INFO( h ) );
     return( NIL_FHANDLE );
 }
 
-f_handle ExeOpen( char *name )
-/***********************************/
+f_handle ExeOpen( const char *name )
+/**********************************/
 {
     return( NSOpen( name, TIO_READ_WRITE ) );
 }
 
-f_handle QObjOpen( char *name )
-/************************************/
+f_handle QObjOpen( const char *name )
+/***********************************/
 {
     return( NSOpen( name, TIO_READ ) );
 }
 
-f_handle TempFileOpen( char *name )
-/****************************************/
+f_handle TempFileOpen( const char *name )
+/***************************************/
 // open without suiciding. Don't create the file
 {
     return( NSOpen( name, TIO_READ ) );
@@ -368,8 +381,8 @@ bool QSysHelp( char **cmd_ptr )
     return( false );
 }
 
-bool QModTime( char *name, time_t *time )
-/**********************************************/
+bool QModTime( const char *name, time_t *time )
+/*********************************************/
 {
     int         result;
     struct stat buf;

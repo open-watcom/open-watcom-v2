@@ -41,6 +41,14 @@
 #include "clibext.h"
 
 
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 #if defined(__NETWARE__)
     /* Symbolic constants for the access() function */
 
@@ -57,14 +65,14 @@ HELPIO long int HelpFileLen( HelpFp fp )
     return( filelength( (int)fp ) );
 }
 
-HELPIO int HelpRead( HelpFp fp, void *buf, int len )
+HELPIO size_t HelpRead( HelpFp fp, void *buf, size_t len )
 {
-    return( read( (int)fp, buf, len ) );
+    return( posix_read( (int)fp, buf, len ) );
 }
 
-HELPIO int HelpWrite( HelpFp fp, const char *buf, int len )
+HELPIO size_t HelpWrite( HelpFp fp, const char *buf, size_t len )
 {
-    return( write( (int)fp, buf, len ) );
+    return( posix_write( (int)fp, buf, len ) );
 }
 
 HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where )

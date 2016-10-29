@@ -31,6 +31,7 @@
 
 #include "optwif.h"
 #include "dumpio.h"
+#include "dmpinc.h"
 #include "typedef.h"
 #include "inslist.h"
 #include "rtrtn.h"
@@ -120,7 +121,7 @@ static  bool    LblName( label_handle lbl, bool no_prefix )
         DumpXString( AskRTName( SYM2RTIDX( lbl->lbl.sym ) ) );
     } else if( AskIfCommonLabel( lbl ) ) {
         DumpLiteral( "Common import => [" );
-        DumpInt( SYM2IMPHDL( lbl->lbl.sym ) );
+        DumpUInt( (unsigned)(pointer_int)lbl->lbl.sym );
         DumpLiteral( "] " );
     } else {
         DumpXString( FEName( lbl->lbl.sym ) );
@@ -397,39 +398,34 @@ extern  void    DumpLbl( label_handle lbl ) {
 }
 
 
-extern  void    DownOpt( ins_entry *instr, uint num ) {
-/*****************************************************/
-
+extern  void    DownOpt( ins_entry *instr, uint num )
+/***************************************************/
+{
     DumpLiteral( "--------<Queue>-------" );
     DumpNL();
-    for(;;) {
-        if( instr == NULL ) break;
-        if( num == 0 ) break;
+    for( ; instr != NULL && num > 0; instr = instr->ins.next, --num ) {
         DumpOc( instr );
-        --num;
-        instr = instr->ins.next;
     }
 }
 
 
-extern  void    UpOpt( ins_entry *ins, uint last ) {
-/**************************************************/
-
+extern  void    UpOpt( ins_entry *ins, uint last )
+/************************************************/
+{
     uint        size;
 
-    size = last;
-    for(;;) {
-        if( size == 0 ) break;
+    for( size = last; size > 0; --size ) {
         ins = ins->ins.prev;
-        if( ins == NULL ) break;
-        --size;
+        if( ins == NULL ) {
+            break;
+        }
     }
     DownOpt( ins, last + 1 );
 }
 
 
-extern  void    DumpOpt( void ) {
-/*******************************/
-
+void    DumpOpt( void )
+/*********************/
+{
     DownOpt( FirstIns, -1 );
 }

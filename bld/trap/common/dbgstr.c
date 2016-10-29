@@ -28,7 +28,7 @@
 *
 ****************************************************************************/
 
-#include <watcom.h>
+#include "watcom.h"
 
 char *DBG_ReqStrings[] = {
     "REQ_CONNECT",                        /* 00 */

@@ -37,9 +37,9 @@
 #include "data.h"
 #include "split.h"
 #include "namelist.h"
+#include "tree.h"
+#include "treefold.h"
 
-
-extern  int             GetLog2(unsigned_32);
 
 extern  opcode_entry    DoNop[];
 
@@ -70,7 +70,7 @@ static  bool    NextCmp( instruction *ins ) {
     if( !_OpIsCondition( next->head.opcode ) ) return( false );
     if( next->table == DoNop ) return( true );
     if( next->u.gen_table == NULL ) return( false );
-    if( next->u.gen_table->generate != G_NO ) return( false );
+    if( G( next ) != G_NO ) return( false );
     return( true );
 }
 

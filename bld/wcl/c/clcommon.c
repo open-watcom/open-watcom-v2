@@ -42,12 +42,12 @@
 #include "wio.h"
 #include "diskos.h"
 #include "clcommon.h"
+#include "pathgrp.h"
 #ifdef TRMEM
 #include "trmem.h"
 #endif
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 #ifndef __UNIX__

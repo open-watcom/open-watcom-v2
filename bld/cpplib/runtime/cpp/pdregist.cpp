@@ -97,6 +97,7 @@ static void* getProcFrame       // GET PROCEDURE FRAME
 #else
     if( dctx->pdata != pdata ) {
         GOOF_EXC( "getProcFram: dctx->pdata != pdata" );
+        // never return
     }
     // AFS: this function seems to change a lot and it very brittle;
     // is it possible to use 'sp' from the handler?
@@ -119,6 +120,7 @@ static void getProcInfo         // GET EXCEPTION INFO FOR PROCEDURE
     inf->rw = (RW_DTREG*)( (char*)frame + inf->ro->fun.rw_offset );
     if( inf->rw->base.ro != inf->ro ) {
         GOOF_EXC( "getProcInfo: rw->ro != ro" );
+        // never return
     }
 }
 

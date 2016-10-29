@@ -120,6 +120,8 @@ objsuffix=files
 !include ../../../../objlist.mif
 objprefix=
 
+abort_opts =-I"$(clib_dir)/startup/h"
+
 abort_postopts      =-os
 cenvarg_postopts    =-os
 exve_postopts       =-os

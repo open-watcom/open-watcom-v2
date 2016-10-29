@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-extern infilelist *     CachedFiles;
-extern infilelist *     CachedLibFiles;
+extern infilelist       *CachedFiles;
+extern infilelist       *CachedLibFiles;
 
 extern void             InitObjIO( void );
-extern infilelist *     AllocFileEntry( char *, path_entry * );
-extern infilelist *     AllocUniqueFileEntry( char *, path_entry * );
+extern infilelist       *AllocFileEntry( const char *, const path_entry * );
+extern infilelist       *AllocUniqueFileEntry( const char *, const path_entry * );
 extern bool             CleanCachedHandles( void );
 extern bool             DoObjOpen( infilelist * );
 extern unsigned_16      CalcAlign( unsigned_32, unsigned_16 );
@@ -44,6 +44,6 @@ extern void             FreeTokBuffs( void );
 extern void             BadObject( void );
 extern void             EarlyEOF( void );
 extern void             ResetObjIO( void );
-extern char             *MakePath( char *fullname, char **path_list );
+extern char             *MakePath( char *fullname, const char **path_list );
 extern char             *MakeFileName( infilelist *file, char *fullname );
-extern bool             MakeFileNameFromList( char **path_list, char *name, char *fullname );
+extern bool             MakeFileNameFromList( const char **path_list, char *name, char *fullname );

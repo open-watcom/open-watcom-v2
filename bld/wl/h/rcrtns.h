@@ -38,10 +38,16 @@
 #include "wressetr.h"
 #include "iortns.h"
 
+#ifdef _WIN64
+#define posix_read	  __w64_read
+#else
+#define posix_read	  read
+#endif
+
 #define RCOPEN        open
 #define RCCLOSE       close
 #define RCWRITE       RcWrite
-#define RCREAD        read
+#define RCREAD        posix_read
 #define RCSEEK        RcSeek
 #define RCTELL        RcTell
 #define RCALLOC       ChkLAlloc

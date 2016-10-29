@@ -37,21 +37,24 @@
 
 #include "clibext.h"
 
-static bool     DeleteMsg = false;
+
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
 
 // file io routines
 
 static void IOError( char *msgstart, const char *name )
 /*****************************************************/
 {
-    char *  tempmsg;
-    char *  realmsg;
-
-    DeleteMsg = true;
-    tempmsg = Msg3Splice( msgstart, name, ": " );
-    realmsg = Msg2Splice( tempmsg, strerror( errno ) );
-    MemFree( tempmsg );
-    Error( realmsg );
+    ErrorOut( msgstart );
+    ErrorOut( name );
+    ErrorOut( ": " );
+    ErrorExit( strerror( errno ) );
 }
 
 f_handle QOpenR( const char *name )
@@ -67,27 +70,28 @@ f_handle QOpenR( const char *name )
     return( NIL_HANDLE );
 }
 
-unsigned QRead( f_handle file, void *buffer, unsigned len, const char *name )
-/***************************************************************************/
+size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
+/***********************************************************************/
 {
-    int ret;
+    size_t  ret;
 
-    ret = read( file, buffer, len );
+    ret = posix_read( file, buffer, len );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
     return( ret );
 }
 
-unsigned QWrite( f_handle file, const void *buffer, unsigned len, const char *name )
-/**********************************************************************************/
+size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
+/******************************************************************************/
 /* write from far memory */
 {
-    int ret;
+    size_t  ret;
 
-    if( len == 0 ) return( 0 );
+    if( len == 0 )
+        return( 0 );
 
-    ret = write( file, buffer, len );
+    ret = posix_write( file, buffer, len );
     if( ret == -1 ) {
         IOError( "io error processing ", name );
     }
@@ -112,26 +116,20 @@ void QClose( f_handle file, const char *name )
     }
 }
 
-static unsigned long QPos( f_handle file )
-/****************************************/
-{
-    return( tell( file ) );
-}
-
 unsigned long QFileSize( f_handle file )
 /**************************************/
 {
     unsigned long   curpos;
     unsigned long   size;
 
-    curpos = QPos( file );
+    curpos = tell( file );
     size = lseek( file, 0L, SEEK_END );
     lseek( file, curpos, SEEK_SET );
     return( size );
 }
 
-bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
-/*************************************************************************/
+bool QReadStr( f_handle file, char *dest, size_t size, const char *name )
+/***********************************************************************/
 /* quick read string (for reading directive file) */
 {
     bool            eof;
@@ -145,7 +143,9 @@ bool QReadStr( f_handle file, char *dest, unsigned size, const char *name )
         } else if( ch != '\r' ) {
             *dest++ = ch;
         }
-        if( ch == '\n' ) break;
+        if( ch == '\n' ) {
+            break;
+        }
     }
     *dest = '\0';
     return( eof );
@@ -159,19 +159,22 @@ bool QIsConIn( f_handle file )
 
 // routines based on the "quick" file i/o routines.
 
-void Error( char * msg )
-/**********************/
+void ErrorOut( const char *msg )
+/******************************/
+{
+    QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
+}
+
+void ErrorExit( const char *msg )
+/*******************************/
 {
     QWrite( STDERR_HANDLE, msg, strlen( msg ), "console" );
     QWriteNL( STDERR_HANDLE, "console" );
-    if( DeleteMsg ) {
-        MemFree( msg );
-    }
     Suicide();
 }
 
-void CommandOut( char *command )
-/******************************/
+void CommandOut( const char *command )
+/************************************/
 {
     QWrite( STDOUT_HANDLE, command, strlen( command ), "console" );
     QWriteNL( STDOUT_HANDLE, "console" );

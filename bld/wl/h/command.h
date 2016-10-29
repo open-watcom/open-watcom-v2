@@ -74,7 +74,7 @@ typedef enum {
 
 typedef struct tok {
     char        *buff;
-    unsigned    len;
+    size_t      len;
     char        *next;
     char        *this;
     unsigned_16 line;
@@ -83,7 +83,7 @@ typedef struct tok {
     unsigned_16 thumb : 1;
     unsigned_16 locked : 1;
     unsigned_16 quoted : 1;     /* set true if token parsed as a quoted string*/
-   unsigned_16 skipToNext : 1;   /* set true if we need to skip to next token without a separator */
+    unsigned_16 skipToNext : 1; /* set true if we need to skip to next token without a separator */
 } tok;
 
 typedef enum commandflag {
@@ -214,7 +214,7 @@ extern void             RestoreParser( void );
 extern void             NewCommandSource( char *, char *, method );
 extern void             SetCommandFile( f_handle, char * );
 extern void             EatWhite( void );
-extern char             *FileName( char *, size_t, file_defext, bool );
+extern char             *FileName( const char *, size_t, file_defext, bool );
 extern void             RestoreCmdLine( void );
 extern bool             IsSystemBlock( void );
 extern void             BurnUtils( void );

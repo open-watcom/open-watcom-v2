@@ -37,7 +37,7 @@
 
 static input_lib *InputLibs;
 
-void AddInputLib( libfile io, char *name )
+void AddInputLib( libfile io, const char *name )
 {
     input_lib   *new;
 
@@ -66,18 +66,17 @@ void InitInputLibs( void )
     InputLibs = NULL;
 }
 
-void ResetInputLibs( void )
+void FiniInputLibs( void )
 {
-    input_lib   *curr, *next;
+    input_lib   *curr;
 
-    for( curr = InputLibs; curr != NULL; curr = next ) {
-        next = curr->next;
+    while( (curr = InputLibs) != NULL ) {
+        InputLibs = curr->next;
         if( curr->io != NULL ) {
             LibClose( curr->io );
         }
         MemFreeGlobal( curr );
     }
-    InputLibs = NULL;
 }
 
 input_lib *FindInLib( libfile io )

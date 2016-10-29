@@ -58,10 +58,12 @@ static void init( void )
         result = DPMIAllocateLDTDescriptors( 1 );
         if( result < 0 ) {
             __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
+            // never return
         }
         _ExtenderRealModeSelector = result & 0xffff;
         if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
             __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
+            // never return
         }
     } else {
         _ExtenderRealModeSelector = 0;
@@ -84,10 +86,12 @@ static void init( void )
     result = DPMIAllocateLDTDescriptors( 1 );
     if( result < 0 ) {
         __fatal_runtime_error( "Unable to allocate real mode selector", -1 );
+        // never return
     }
     _ExtenderRealModeSelector = result & 0xffff;
     if( DPMISetSegmentLimit( _ExtenderRealModeSelector, 0xfffff ) ) {
         __fatal_runtime_error( "Unable to set limit of real mode selector", -1 );
+        // never return
     }
 }
 

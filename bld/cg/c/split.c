@@ -43,12 +43,12 @@
 #include "insutil.h"
 #include "optab.h"
 #include "inssegs.h"
+#include "revcond.h"
 
 
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            CheckCC(instruction*,instruction*);
 extern  void            MarkPossible(instruction*,name*,reg_set_index);
-extern  void            RevCond(instruction*);
 
 type_class_def  HalfClass[] = {
     0,                  /* U1 */
@@ -197,7 +197,7 @@ extern  instruction     *Reduce( instruction *ins )
 /*************************************************/
 {
     ins->head.state = INS_NEEDS_WORK;
-    return( ReduceTab[ins->u.gen_table->generate - FIRST_REDUCT]( ins ) );
+    return( ReduceTab[G( ins ) - FIRST_REDUCT]( ins ) );
 }
 
 

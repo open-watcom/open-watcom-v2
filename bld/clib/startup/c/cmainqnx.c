@@ -85,9 +85,10 @@ _WCRTLINK void _WCI86FAR __null_FPE_rtn( int fpe_type )
     fpe_type = fpe_type;
 }
 
-void _Not_Enough_Memory( void )
+_NORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
 }
 
 #if defined( _M_I86 )
@@ -102,8 +103,10 @@ static void SetupArgs( struct _proc_spawn *cmd )
     argc = cmd->argc + 1;
     /* The argc + 1 provides for a NULL pointer at end */
     argv = cpp = (char **)malloc( (argc + 1) * sizeof( char * ) );
-    if( argv == NULL )
+    if( argv == NULL ) {
         _Not_Enough_Memory();
+        // never return
+    }
 
     cp = cmd->data;
     for( i = argc; i != 0; --i ) {
@@ -124,8 +127,10 @@ static void SetupArgs( struct _proc_spawn *cmd )
 
     environ = cpp = (char **)malloc( (envc + 1) * sizeof( char * ) +
                     envc * sizeof( char ) );
-    if( environ == NULL )
+    if( environ == NULL ) {
         _Not_Enough_Memory();
+        // never return
+    }
     __env_mask = mp = (char *)&cpp[ envc + 1 ];
     for( i = envc ; i != 0 ; --i ) {
         *mp++ = 0;  /* indicate environment string not alloc'd */
@@ -143,6 +148,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
         */
         if ( (__MAGIC.sptrs[3] = (char __FAR *)strdup( *cpp + 6 ) ) == NULL ) {
             _Not_Enough_Memory();
+            // never return
         }
     } else {
         ++cpp;      /* __CWD not passed, point to normal end of environment */
@@ -157,6 +163,7 @@ static void SetupArgs( struct _proc_spawn *cmd )
         */
         if ( (__MAGIC.sptrs[4] = (char __FAR *)strdup( *cpp + 6 ) ) == NULL ) {
             _Not_Enough_Memory();
+            // never return
         }
     } else {
         ++cpp;      /* __PFX not passed, point to normal end of environment */

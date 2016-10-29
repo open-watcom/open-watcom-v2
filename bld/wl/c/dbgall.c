@@ -54,6 +54,11 @@
 
 #include "clibext.h"
 
+
+typedef struct {
+    line_walk_fn *cbfn;
+} line_walk_data;
+
 char            *SymFileName;
 group_entry     *DBIGroups;
 
@@ -183,8 +188,8 @@ static bool MSSkip( void )
     if( (ObjFormat & FMT_OMF) == 0 ) {
         return( LinkFlags & DWARF_DBI_FLAG );
     } else {
-        iscv = (LinkFlags & CV_DBI_FLAG) != 0;
-        seencmt = (ObjFormat & FMT_DEBUG_COMENT) != 0;
+        iscv = ( (LinkFlags & CV_DBI_FLAG) != 0 );
+        seencmt = ( (ObjFormat & FMT_DEBUG_COMENT) != 0 );
         return( (iscv ^ seencmt) == 0 || (LinkFlags & DWARF_DBI_FLAG) );
     }
 }
@@ -262,8 +267,7 @@ void DBIAddrInfoScan( seg_leader *seg,
 
     if( IS_DBG_INFO( seg ) )
         return;
-    if( ( seg->class->flags & ( CLASS_STACK | CLASS_IDATA ) )
-        && ( FmtData.dll || ( FmtData.type & MK_PE ) ) )
+    if( (seg->class->flags & (CLASS_STACK | CLASS_IDATA)) && ( FmtData.dll || (FmtData.type & MK_PE) ) )
         return;
     prev = RingStep( seg->pieces, NULL );
     for( ; ; ) {
@@ -414,15 +418,14 @@ void DBIGenGlobal( symbol *sym, section *sect )
         CVGenGlobal( sym, sect );
     }
 #ifdef _NOVELL
-    if( ( (sym->info & SYM_STATIC) == 0 )
-        && ( LinkFlags & NOVELL_DBI_FLAG ) ) {
+    if( ( (sym->info & SYM_STATIC) == 0 ) && (LinkFlags & NOVELL_DBI_FLAG) ) {
         NovDBIGenGlobal( sym );
     }
 #endif
 }
 
-void DBIAddLines( segdata *seg, void *line, unsigned size, bool is32bit )
-/******************************************************************************/
+void DBIAddLines( segdata *seg, void *line, size_t size, bool is32bit )
+/*********************************************************************/
 // called during pass 1 linnum processing
 {
     lineinfo    *info;
@@ -450,19 +453,22 @@ unsigned DBICalcLineQty( lineinfo *info )
     return( size );
 }
 
-static bool DoLineWalk( void *info, void *cbfn )
-/***********************************************/
+static bool DoLineWalk( void *info, void *line_walk_cb )
+/******************************************************/
 {
     if( !((lineinfo *)info)->seg->isdead ) {
-        ((void(*)(lineinfo *))cbfn)( (lineinfo *)info );
+        ((line_walk_data *)line_walk_cb)->cbfn( (lineinfo *)info );
     }
     return( false );
 }
 
-void DBILineWalk( lineinfo *lines, void (*cbfn)( lineinfo * ) )
-/*************************************************************/
+void DBILineWalk( lineinfo *lines, line_walk_fn *cbfn )
+/*****************************************************/
 {
-    RingLookup( lines, DoLineWalk, (void *)cbfn );
+    line_walk_data  line_walk_cb;
+
+    line_walk_cb.cbfn = cbfn;
+    RingLookup( lines, DoLineWalk, &line_walk_cb );
 }
 
 virt_mem DBIAlloc( virt_mem_size size )
@@ -475,7 +481,7 @@ virt_mem DBIAlloc( virt_mem_size size )
 }
 
 void DBIAddrStart( void )
-/******************************/
+/***********************/
 // called after address calculation is done.
 {
 #ifdef _NOVELL
@@ -490,7 +496,7 @@ void DBIAddrStart( void )
 }
 
 void DBIAddrSectStart( section *sect )
-/********************************************/
+/************************************/
 // called for each section after address calculation is done.
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -501,20 +507,20 @@ void DBIAddrSectStart( section *sect )
 }
 
 void DBIP2Start( section *sect )
-/*************************************/
+/******************************/
 // called for each section just before pass 2 starts
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
         ODBIP2Start( sect );
     } else if( LinkFlags & DWARF_DBI_FLAG ) {
-        SectWalkClass( sect, (void *)DwarfGenAddrInfo );
+        SectWalkClass( sect, DwarfGenAddrInfo );
     } else if( LinkFlags & CV_DBI_FLAG ) {
-        SectWalkClass( sect, (void *)CVGenAddrInfo );
+        SectWalkClass( sect, CVGenAddrInfo );
     }
 }
 
 void DBIFini( section *sect )
-/**********************************/
+/***************************/
 // called after pass 2 is finished, but before load file generation
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -525,7 +531,7 @@ void DBIFini( section *sect )
 }
 
 void DBISectCleanup( section *sect )
-/*****************************************/
+/**********************************/
 // called when burning down the house
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -534,14 +540,14 @@ void DBISectCleanup( section *sect )
 }
 
 void DBICleanup( void )
-/****************************/
+/*********************/
 // called when burning down the house
 {
     FreeGroups( DBIGroups );
 }
 
 void DBIWrite( void )
-/**************************/
+/*******************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {

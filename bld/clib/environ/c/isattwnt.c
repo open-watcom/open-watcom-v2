@@ -48,7 +48,7 @@
 _WCRTLINK int isatty( int hid )
 {
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsIsWindowedHandle != 0 ) {
+    if( _WindowsIsWindowedHandle != NULL ) {
         if( _WindowsIsWindowedHandle( hid ) ) {
             return( 1 );
         }

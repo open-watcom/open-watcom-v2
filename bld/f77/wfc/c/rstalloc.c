@@ -81,7 +81,7 @@ act_dim_list    *STSubsList( act_dim_list *subs_ptr ) {
 
 // Allocate a dimension extension.
 
-    int             size;
+    uint            size;
     act_dim_list    *ste_ptr;
 
     size = sizeof( dim_list ) + ( 2 * sizeof( intstar4 ) ) * _DimCount( subs_ptr->dim_flags );

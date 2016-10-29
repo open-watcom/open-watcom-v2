@@ -194,6 +194,7 @@ static void _WCI86FAR __default_sigfpe_handler( int fpe_sig )
     msg[sizeof( msg ) - 4] += _bin_to_ascii_offs( fpe_sig >> 4 );
     msg[sizeof( msg ) - 3] += _bin_to_ascii_offs( fpe_sig );
     __fatal_runtime_error( msg, EXIT_FAILURE );
+    // never return
 }
 #endif
 

@@ -38,9 +38,9 @@
 
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 
-static ORD      OldCursorRow;
-static ORD      OldCursorCol;
-static int      OldCursorType;
+static ORD              OldCursorRow;
+static ORD              OldCursorCol;
+static CURSOR_TYPE      OldCursorType;
 
 extern HANDLE   OutputHandle;
 
@@ -98,7 +98,7 @@ static void swapcursor( void )
 }
 
 
-void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
+void UIAPI uigetcursor( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 {
     *row = UIData->cursor_row;
     *col = UIData->cursor_col;
@@ -107,7 +107,7 @@ void UIAPI uigetcursor( ORD *row, ORD *col, int *type, int *attr )
 }
 
 
-void UIAPI uisetcursor( ORD row, ORD col, int typ, int attr )
+void UIAPI uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 {
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

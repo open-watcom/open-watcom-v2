@@ -39,7 +39,7 @@
 //      exported, but it is not present in new.h so that
 //      the entry point can be replaced in the user code
 
-#include <cpplib.h>
+#include "cpplib.h"
 #include <stddef.h>
 
 

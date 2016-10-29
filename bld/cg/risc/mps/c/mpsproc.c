@@ -41,7 +41,6 @@
 #include "objout.h"
 #include "dbsyms.h"
 #include "object.h"
-#include "mpsenc.h"
 #include "targetin.h"
 #include "targetdb.h"
 #include "opttell.h"
@@ -49,15 +48,8 @@
 #include "rgtbl.h"
 #include "rscobj.h"
 #include "utils.h"
+#include "mpsenc.h"
 #include "feprotos.h"
-
-
-extern  hw_reg_set      SaveRegs( void );
-extern  void            GenMEMINS( uint_8, uint_8, uint_8, signed_16 );
-extern  void            GenIType( uint_8, uint_8, uint_8, signed_16 );
-extern  void            GenRType( uint_8, uint_8, uint_8, uint_8, uint_8 );
-extern  void            GenRET( void );
-extern  void            GenLOADS32( signed_32, uint_8 );
 
 
 static  void calcUsedRegs( void )

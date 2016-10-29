@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern const char __based(__segname("_CONST")) __Alphabet[];
+extern const char __Alphabet[];

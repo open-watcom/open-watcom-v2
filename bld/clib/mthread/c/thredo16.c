@@ -55,9 +55,9 @@ static  void            _WCFAR *Argument;
 static  void            _WCFAR *StackBottom;
 
 
-static void _WCFAR begin_thread_helper() {
-/**************************************/
-
+static void _WCFAR begin_thread_helper( void )
+/********************************************/
+{
     thread_fn   *_rtn;
     void        _WCFAR *_arg;
     thread_data my_thread_data;
@@ -79,9 +79,9 @@ static void _WCFAR begin_thread_helper() {
 _WCRTLINK int _WCFAR _beginthread( thread_fn *start_address,
                             void _WCFAR *stack_bottom,
                             unsigned stack_size,
-                            void _WCFAR *arglist ) {
+                            void _WCFAR *arglist )
 /*****************************************************/
-
+{
     TID         tid;
     APIRET      rc;
 
@@ -101,17 +101,19 @@ _WCRTLINK int _WCFAR _beginthread( thread_fn *start_address,
     return( tid );
 }
 
-_WCRTLINK void _WCFAR *__chkstack( void _WCFAR *ptr ) {
-/*****************************************************/
+_WCRTLINK void _WCFAR *__chkstack( void _WCFAR *ptr )
+/***************************************************/
+{
     if( FP_SEG( ptr ) != FP_SEG( &Routine ) ) {
         __fatal_runtime_error( "thread stack not in DGROUP", 1 );
+        // never return
     }
     return( ptr );
 }
 
-_WCRTLINK void _WCFAR _endthread() {
-/**********************/
-
+_WCRTLINK void _WCFAR _endthread( void )
+/**************************************/
+{
     __ThreadData[*_threadid] = NULL;
     DosExit( EXIT_THREAD, 0 );
 }

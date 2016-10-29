@@ -40,10 +40,10 @@
 #include "utils.h"
 #include "stack.h"
 #include "nullprop.h"
+#include "generate.h"
 
 
 extern  void            MakeLiveInfo(void);
-extern  void            ProcMessage(msg_class);
 extern  mem_out_action  SetMemOut(mem_out_action);
 extern  void            UpdateLive(instruction*,instruction*);
 

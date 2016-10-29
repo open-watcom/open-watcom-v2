@@ -1140,3 +1140,45 @@ byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )
 {
     return( SortList( relocs, offsetof( byte_seq_reloc, next ), relocBefore ) );
 }
+
+void    ObjEmitSeq( byte_seq *code )
+/**********************************/
+{
+    byte_seq_reloc      *curr;
+    back_handle         back;
+    type_length         loc;
+    byte_seq_len        i;
+    void                *code_ptr;
+    void                *ins_opcode;
+    pointer             reloc_sym;
+    owl_reloc_type      reloc_type;
+
+    assert( code->length % 4 == 0 );
+    curr = SortListReloc( code->relocs );
+    code_ptr = code->data;
+    for( i = 0; i < code->length; i += 4 ) {
+        reloc_type = 0;
+        reloc_sym = NULL;
+        ins_opcode = InsRelocInit( code_ptr );
+        while( curr != NULL && curr->off == i ) {
+            back = SymBack( curr->sym );
+            switch( curr->type ) {
+            case OWL_RELOC_FP_OFFSET:
+                loc = TempLocation( (name *)back );
+                if( loc > 32767 ) {
+                    FEMessage( MSG_ERROR, "auto variable out of range for reference within inline assembly sequence" );
+                }
+                InsRelocAddSignedImmed( loc );
+                break;
+            case OWL_RELOC_PAIR:
+                break;
+            default:
+                reloc_type = curr->type;
+                reloc_sym = back->lbl;
+            }
+            curr = curr->next;
+        }
+        EmitInsReloc( ins_opcode, reloc_sym, reloc_type );
+        code_ptr = InsRelocNext( code_ptr );
+    }
+}

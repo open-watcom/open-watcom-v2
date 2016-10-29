@@ -58,7 +58,7 @@ void StartChildren( dw_client cli )
     die_tree        *new;
 
     /* make a new entry in the tree */
-    new = CLIAlloc( sizeof( *new ) );
+    new = CLIAlloc( cli, sizeof( *new ) );
     new->parent = cli->die.tree;
     cli->die.tree = new;
 

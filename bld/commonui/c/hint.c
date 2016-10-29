@@ -38,10 +38,10 @@
 #include "font.h"
 
 typedef struct {
-    HWND                parent;
-    msg_id              curmsg;
-    WORD                hintlen;
     const MenuItemHint  *hints;
+    msg_id              curmsg;
+    HWND                parent;
+    WORD                hintlen;
 } HintWndInfo;
 
 #define HINT_PROP_ID    "info"

@@ -49,9 +49,9 @@
 #endif
 #include "directiv.h"
 #include "standalo.h"
+#include "pathgrp.h"
 
 #include "clibext.h"
-#include "pathgrp.h"
 
 
 extern void             Fatal( unsigned msg, ... );
@@ -209,7 +209,7 @@ static void SetCPUPMC( void )
             }
         } else if( *tmp == '"' ) {      // set default mangler
             char *dest;
-            
+
             tmp++;
             dest = strchr(tmp, '"');
             if( Options.default_name_mangler != NULL ) {

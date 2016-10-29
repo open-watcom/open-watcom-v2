@@ -32,10 +32,10 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include "linuxsys.h"
-#include "rterrno.h"
 #include <sys/ioctl.h>
 #include <termios.h>
+#include "linuxsys.h"
+
 
 _WCRTLINK int tcgetattr( int fd, struct termios *t )
 {

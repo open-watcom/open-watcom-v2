@@ -51,12 +51,14 @@ static RO_STATE* nextDtorPosn(  // POSITION TO NEXT DTOR
         case DTC_SET_SV :
         default :
             GOOF_EXC( "nextDtorPosn: bad DTC_" );
+            // never return
             break;
         case DTC_CATCH :
         case DTC_TRY :
         case DTC_FN_EXC :
 #ifndef RT_EXC_ENABLED
             GOOF_EXC( "nextDtorPosn: -xs code in -xd library" );
+            // never return
             break;
 #endif
         case DTC_ACTUAL_VBASE :
@@ -147,6 +149,7 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
             break;
         if( traversal.state_var < state_var ) {
             GOOF_EXC( "destruct_traverse: underflow sv" );
+            // never return
         }
         curr_state_var = traversal.state_var;
         curr_state = next_state;
@@ -159,6 +162,7 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
             switch( cmd->base.code ) {
             default :
                 GOOF_EXC( "destruct_traverse: invalid command" );
+                // never return
                 break;
             case DTC_ARRAY :
               { RT_ARRAY_INIT* array_init;
@@ -175,6 +179,7 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
                 dtorCaughtException( rtc, rw, cmd );
 #else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
+                // never return
 #endif
                 break;
             case DTC_FN_EXC :
@@ -182,11 +187,13 @@ static void destruct_traverse   // DESTRUCTION FOR BLK UNTIL STATE REACHED
                 dtorFnexcException( rtc, rw, cmd );
 #else
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
+                // never return
 #endif
                 break;
             case DTC_TRY :
 #ifndef RT_EXC_ENABLED
                 GOOF_EXC( "destruct_traverse: -xs code in -xd library" );
+                // never return
 #endif
                 break;
             case DTC_COMP_VBASE :

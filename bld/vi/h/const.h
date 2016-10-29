@@ -286,7 +286,7 @@ typedef enum {
  * Event type
  */
 #define VI_KEY( a )                 __VIKEY__##a
-#define BITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
+#define VIBITS( a, b, c, d, e, f, g ) { a, b, c, d, e, f, g }
 
 typedef enum vi_key {
     #define vi_pick( enum, modeless, insert, command, nm_bits, bits ) enum,

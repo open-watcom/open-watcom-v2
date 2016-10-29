@@ -40,6 +40,7 @@
 #include "symtypes.h"
 #include "types.h"
 #include "emitobj.h"
+#include "gtypes.h"
 
 
 void            DumpType( TYPE typ, uint size ) {

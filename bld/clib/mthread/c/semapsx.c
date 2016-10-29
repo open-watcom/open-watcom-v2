@@ -32,24 +32,26 @@
 
 
 #include "variety.h"
+#include <semaphore.h>
 #include "semapsx.h"
 
-#ifdef __LINUX__
-#include <semaphore.h>
-#endif
 
-int __posix_sem_destroy( sem_t *p ) {
-    return sem_destroy( p );
+int __posix_sem_destroy( sem_t *p )
+{
+    return( sem_destroy( p ) );
 }
 
-int __posix_sem_init( sem_t *p, int i, unsigned j ) {
-    return sem_init( p, i, j );
+int __posix_sem_init( sem_t *p, int i, unsigned j )
+{
+    return( sem_init( p, i, j ) );
 }
 
-int __posix_sem_wait( sem_t *p ) {
-    return sem_wait( p );
+int __posix_sem_wait( sem_t *p )
+{
+    return( sem_wait( p ) );
 }
 
-int __posix_sem_post( sem_t *p ) {
-    return sem_post( p );
+int __posix_sem_post( sem_t *p )
+{
+    return( sem_post( p ) );
 }

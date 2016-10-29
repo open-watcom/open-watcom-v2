@@ -34,6 +34,7 @@
 #include <unistd.h>
 #include <process.h>
 #include "rterrno.h"
+#include "thread.h"
 
 extern char **_argv;    /* argument vector */
 

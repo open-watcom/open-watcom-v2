@@ -97,8 +97,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
 #endif
     if( iomode_flags & _BINARY ) {       /* if binary mode */
 #ifdef DEFAULT_WINDOWING
-        if( _WindowsStdin != 0 &&
-                (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
+        if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
             total_len = _WindowsStdin( res, buffer, len );
             rc = 0;
         } else
@@ -131,8 +130,7 @@ _WCRTLINK int read( int handle, void *buf, unsigned len )
         read_len = len;
         do {
 #ifdef DEFAULT_WINDOWING
-            if( _WindowsStdin != 0 &&
-                    (res = _WindowsIsWindowedHandle( handle )) != 0L ) {
+            if( _WindowsStdin != NULL && (res = _WindowsIsWindowedHandle( handle )) != 0L ) {
                 amount_read = _WindowsStdin( res, buffer, read_len );
                 rc = 0;
             } else

@@ -164,7 +164,7 @@ static unsigned_16 GetCVSegment( seg_leader *seg )
     if( ( seg == NULL ) || ( seg->group == NULL ) ) {
         return( 0 );
     }
-    if( FmtData.type & ( MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT ) ) {
+    if( FmtData.type & (MK_REAL_MODE | MK_FLAT | MK_ID_SPLIT) ) {
         for( index = 1, group = Groups; group != NULL; group = group->next_group, ++index ) {
             if( group == seg->group ) {
                 return( index );
@@ -715,7 +715,7 @@ void CVFini( section *sect )
         } else {
             desc.u.b.fExecute = 0;
         }
-        if( ( group->segflags & ( SEG_DATA | SEG_READ_ONLY ) ) == SEG_DATA ) {
+        if( (group->segflags & (SEG_DATA | SEG_READ_ONLY)) == SEG_DATA ) {
             desc.u.b.fWrite = 1;
         } else {
             desc.u.b.fWrite = 0;

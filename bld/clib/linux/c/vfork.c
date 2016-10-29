@@ -31,8 +31,6 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "rterrno.h"
-#include "thread.h"
 #include "linuxsys.h"
 
 #if defined( __386__ )

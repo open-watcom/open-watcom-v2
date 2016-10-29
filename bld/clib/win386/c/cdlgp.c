@@ -33,9 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-HWND PASCAL _Cover_CreateDialogParam( HANDLE inst, LPSTR temp,
-                              HWND wnd, DLGPROC p, LONG param )
+HWND PASCAL _Cover_CreateDialogParam( HANDLE inst, LPCSTR temp, HWND wnd, DLGPROC p, LONG param )
 {
-    return( CreateDialogParam( inst, temp, wnd,
-                SetProc( (FARPROC)p, GETPROC_CALLBACK ), param ) );
+    return( CreateDialogParam( inst, temp, wnd, SetProc( (FARPROC)p, GETPROC_CALLBACK ), param ) );
 }

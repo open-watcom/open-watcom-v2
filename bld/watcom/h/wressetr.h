@@ -37,7 +37,11 @@
 /* of the file opening functions which will get it from the low level open */
 /* function */
 
-#if !defined( __WATCOMC__ ) && defined( __UNIX__ )
+#if defined( _WIN64 )
+#define WResFileSSize   __int64
+#define WResFileSize    unsigned __int64
+#define WResFileOffset  long
+#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
 #define WResFileSSize   ssize_t
 #define WResFileSize    size_t
 #define WResFileOffset  off_t
@@ -51,32 +55,23 @@ typedef int             WResFileID;
 
 #define NIL_HANDLE      ((WResFileID)-1)
 
-typedef struct WResRoutines {                                           /* defaults */
+typedef struct WResRoutines {                                               /* defaults */
     /* I/O routines */
-    WResFileID      (*open)(const char *, int, ...);                    /* open */
-    int             (*close)(WResFileID);                               /* close */
-    WResFileSSize   (*read)(WResFileID, void *, WResFileSize);          /* read */
-    WResFileSSize   (*write)(WResFileID, const void *, WResFileSize);   /* write */
-    WResFileOffset  (*seek)(WResFileID, WResFileOffset, int );          /* lseek */
-    WResFileOffset  (*tell)(WResFileID);                                /* tell */
+    WResFileID      (*cli_open)(const char *, int, ...);                    /* open */
+    int             (*cli_close)(WResFileID);                               /* close */
+    WResFileSSize   (*cli_read)(WResFileID, void *, WResFileSize);          /* read */
+    WResFileSSize   (*cli_write)(WResFileID, const void *, WResFileSize);   /* write */
+    WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );          /* lseek */
+    WResFileOffset  (*cli_tell)(WResFileID);                                /* tell */
     /* memory routines */
-    void            *(*alloc)(size_t);                                  /* malloc */
-    void            (*free)(void *);                                    /* free */
+    void            *(*cli_alloc)(size_t);                                  /* malloc */
+    void            (*cli_free)(void *);                                    /* free */
 } WResRoutines;
 
-#define WResSetRtns( open, close, read, write, seek, tell, alloc, free ) \
-    struct WResRoutines WResRtns = {    \
-        open,                           \
-        close,                          \
-        read,                           \
-        write,                          \
-        seek,                           \
-        tell,                           \
-        alloc,                          \
-        free                            \
-    }
+#define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __alloc, __free ) \
+    WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __alloc, __free }
 
 /* This is a global variable exported by function FindResources */
-extern WResFileOffset   FileShift;
+extern WResFileOffset   WResFileShift;
 
 #endif

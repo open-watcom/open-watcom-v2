@@ -76,11 +76,10 @@ static DWORD WINAPI begin_thread_helper( thread_args *td )
     if( !__Is_DLL ) {
         // allocate thread_data structure on stack
         tdata = __alloca( __ThreadDataSize );
-        if ( tdata ) {
+        if( tdata != NULL ) {
             memset( tdata, 0, __ThreadDataSize );
             // tdata->__allocated = 0;
             tdata->__data_size = __ThreadDataSize;
-
             // do further thread_data initialization and registration
             if( !__NTAddThread( tdata ) ) {
                 // print runtime error message now ?
@@ -95,7 +94,7 @@ static DWORD WINAPI begin_thread_helper( thread_args *td )
     // by __GetThreadPtr() ==> __MultipleThread(){ TlsGetValue(); if NULL ==>
     //    __GetThreadData() ==> __NTAddThread() ==> __AllocInitThreadData() }
     tdata = __THREADDATAPTR;
-    if ( !tdata ) {
+    if( tdata == NULL ) {
         // this is a library runtime error, should we print an error message ?
         CloseHandle( thread_handle );
         return( 0 );
@@ -120,7 +119,8 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     stack_bottom = stack_bottom;    /* parameter not used for NT version */
 
     if( __TlsIndex == NO_INDEX ) {
-        if( !__NTThreadInit() ) return( -1L );
+        if( !__NTThreadInit() )
+            return( -1L );
         __InitMultipleThread();
     }
 

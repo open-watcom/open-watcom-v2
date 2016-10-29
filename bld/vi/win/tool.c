@@ -43,11 +43,10 @@ typedef struct tool_item {
     ss                  tool_head;
     int                 id;
     HBITMAP             bmp;
-    bool                is_blank    : 1;
-    bool                dont_save   : 1;
-//    bool                spare       : 6;
     char                *name;
     char                *help;
+    bool                is_blank    : 1;
+    bool                dont_save   : 1;
     char                cmd[1];
 } tool_item;
 
@@ -353,7 +352,7 @@ vi_rc DeleteFromToolBar( const char *data )
             }
             p = p->next;
         }
-        if( p ) {
+        if( p != NULL ) {
             tool_item *item = (tool_item *)p;
             ToolBarDeleteItem( toolBar, item->id );
             DeleteLLItem( &toolBarHead, &toolBarTail, p );

@@ -285,7 +285,7 @@ unsigned long IncPass1( void )
     segdata         *seg;
     symbol          *publist;
     virt_mem_size   dataoff;
-    unsigned        relocs;
+    size_t          relocs;
 
     seglist = CurrMod->segs;
     CurrMod->segs = NULL;
@@ -542,12 +542,12 @@ class_entry *DuplicateClass( class_entry *old )
     return( new );
 }
 
-class_entry *FindClass( section *sect, char *name, bool is32bit, bool iscode )
-/****************************************************************************/
+class_entry *FindClass( section *sect, const char *name, bool is32bit, bool iscode )
+/**********************************************************************************/
 {
     class_entry     *currclass;
     class_entry     *lastclass;
-    unsigned        namelen;
+    size_t          namelen;
     class_status    cls_is32bit;
 
     cls_is32bit = ( is32bit ) ? CLASS_32BIT : 0;
@@ -647,8 +647,8 @@ static seg_leader *FindALeader( segdata *sdata, class_entry *class, unsigned_16 
     return( leader );
 }
 
-seg_leader *InitLeader( char *segname )
-/*************************************/
+seg_leader *InitLeader( const char *segname )
+/*******************************************/
 {
     seg_leader  *seg;
 
@@ -745,7 +745,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
 /**************************************************************/
 // do the object file independent public symbol definition.
 {
-    unsigned        name_len;
+    size_t          name_len;
     bool            frame_ok;
     sym_info        sym_type;
 
@@ -949,7 +949,7 @@ void CheckComdatSym( symbol *sym, sym_info flags )
         }
     }
     if( symflags == SYM_CDAT_SEL_NODUP ) {
-        ReportMultiple( sym, sym->name, strlen(sym->name) );
+        ReportMultiple( sym, sym->name, strlen( sym->name ) );
     }
 }
 
@@ -1180,8 +1180,8 @@ void DefineReference( symbol *sym )
     }
 }
 
-group_entry *GetGroup( char *name )
-/*****************************************/
+group_entry *GetGroup( const char *name )
+/***************************************/
 /* Get group of specified name. */
 {
     group_entry     *grp;
@@ -1193,7 +1193,7 @@ group_entry *GetGroup( char *name )
     return( grp );
 }
 
-group_entry *SearchGroups( char *name )
+group_entry *SearchGroups( const char *name )
 /*********************************************/
 /* Find group of specified name. */
 {
@@ -1229,8 +1229,9 @@ bool SeenDLLRecord( void )
     }
 }
 
-void HandleImport( length_name *intname, length_name *modname, length_name *extname, ordinal_t ordinal )
-/******************************************************************************************************/
+void HandleImport( const length_name *intname, const length_name *modname,
+                            const length_name *extname, ordinal_t ordinal )
+/*************************************************************************/
 // handle the import coment record
 {
     symbol      *sym;
@@ -1255,8 +1256,8 @@ void HandleImport( length_name *intname, length_name *modname, length_name *extn
     }
 }
 
-static void ExportSymbol( length_name *expname )
-/**********************************************/
+static void ExportSymbol( const length_name *expname )
+/****************************************************/
 {
     symbol      *sym;
 
@@ -1265,8 +1266,9 @@ static void ExportSymbol( length_name *expname )
     AddNameTable( expname->name, expname->len, true, &FmtData.u.nov.exp.export );
 }
 
-void HandleExport( length_name *expname, length_name *intname, unsigned flags, ordinal_t ordinal )
-/************************************************************************************************/
+void HandleExport( const length_name *expname, const length_name *intname,
+                                        unsigned flags, ordinal_t ordinal )
+/*************************************************************************/
 {
     if( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) {
         MSExportKeyword( expname, intname, flags, ordinal );

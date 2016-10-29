@@ -35,7 +35,7 @@
 // 92/05/18 -- A.F.Scian        -- defined
 // 92/10/11 -- J.W.Welch        -- Use RTMSGS.H
 // 94/12/12 -- J.W.Welch        -- moved to CPP
-#include <cpplib.h>
+#include "cpplib.h"
 #include "rtmsgs.h"
 
 

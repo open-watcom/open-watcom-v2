@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include <unistd.h>
-#include "linuxsys.h"
 #include "lseek.h"
+#include "linuxsys.h"
 
 off_t __lseek( int __fildes, off_t __offset, int __whence )
 {

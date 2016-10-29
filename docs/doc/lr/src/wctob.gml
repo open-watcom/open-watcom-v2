@@ -18,7 +18,7 @@ state.
 The
 .id &funcb.
 function returns
-.mono EOF
+.kw EOF
 if
 .arg wc
 does not correspond to a multibyte character with length one;

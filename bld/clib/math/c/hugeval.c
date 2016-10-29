@@ -30,4 +30,6 @@
 
 
 #include "variety.h"
+
+
 _WCRTDATA unsigned short const _HUGEDATA _HugeValue[] = { 0x0000, 0x0000, 0x0000, 0x7ff0 };

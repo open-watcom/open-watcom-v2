@@ -72,7 +72,7 @@ extra_l_flags        = op stack=16k
 extra_l_flags_nt_axp = op undefsok
 extra_l_flags_nt = $(extra_l_flags_nt_$(host_cpu))
 
-$(name).exe : $(objs) $(__MAKEFILES__)
+$(name).exe : $(objs) $(osildr) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $(lname) $(lflags) file {$(objs)}
     @%make bind_osildr

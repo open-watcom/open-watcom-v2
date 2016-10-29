@@ -42,6 +42,7 @@
 #include "emitobj.h"
 #include "gstring.h"
 #include "gsubstr.h"
+#include "gtypes.h"
 
 
 void    GBegSSStr( itnode *array_node ) {

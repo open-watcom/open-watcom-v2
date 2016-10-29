@@ -48,18 +48,21 @@
 #include <string.h>
 
 
-static  void    ExtIssued( void ) {
+static  void    ExtIssued( void )
 // An extension message has just been issued.
+{
     NumExtens++;
 }
 
-static  void    WrnIssued( void ) {
+static  void    WrnIssued( void )
 // A warning message has just been issued.
+{
     NumWarns++;
 }
 
-static  void    ErrIssued( void ) {
+static  void    ErrIssued( void )
 // An error message has just been issued.
+{
     if( (ProgSw & PS_SYMTAB_PROCESS) == 0 ) {
         CpError = true;
         AError = true;
@@ -68,8 +71,9 @@ static  void    ErrIssued( void ) {
     ProgSw |= PS_ERROR;
 }
 
-static  void    ErrHandler( char *err_type, int error, va_list args ) {
+static  void    ErrHandler( char *err_type, int error, va_list args )
 // Handle errors ANY time
+{
     int         column;
     int         contline;
     byte        caret;
@@ -165,8 +169,9 @@ static  void    ErrHandler( char *err_type, int error, va_list args ) {
     SetLst( save_list );
 }
 
-void    Error( int code, ... ) {
+void    Error( int code, ... )
 // Error message handler
+{
     va_list     args;
 
     va_start( args, code );
@@ -175,8 +180,9 @@ void    Error( int code, ... ) {
     ErrIssued();
 }
 
-void    Warning( int code, ... ) {
+void    Warning( int code, ... )
 // Warning message handler
+{
     va_list     args;
 
     if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
@@ -188,8 +194,9 @@ void    Warning( int code, ... ) {
     WrnIssued();
 }
 
-void    Extension( int code, ... ) {
+void    Extension( int code, ... )
 // Extension Message Handler
+{
     va_list     args;
 
     if( (ProgSw & PS_DONT_GENERATE) == 0 ) return;
@@ -201,8 +208,9 @@ void    Extension( int code, ... ) {
     ExtIssued();
 }
 
-void    InfoError( int code, ... ) {
+void    InfoError( int code, ... )
 // Informational error - should not affect compilation.
+{
     va_list     args;
 
     NumErrors++;

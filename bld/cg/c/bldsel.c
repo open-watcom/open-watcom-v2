@@ -45,9 +45,8 @@
 #include "bldselco.h"
 #include "makeblk.h"
 #include "cgsrtlst.h"
+#include "generate.h"
 
-
-extern  void            Generate(bool);
 
 /* forward declarations */
 extern  void    BGSelRange( sel_handle s_node, signed_32 lo, signed_32 hi, label_handle label );

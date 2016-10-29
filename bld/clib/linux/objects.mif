@@ -67,6 +67,7 @@
 !inject pipe.obj                                                                                l32 lpc
 !inject pipemps.obj                                                                                     lmp
 !inject ptrace.obj                                                                              l32 lpc lmp
+!inject ptspin.obj                                                                              l32 lpc lmp
 !inject read.obj                                                                                l32 lpc lmp
 !inject readlink.obj                                                                            l32 lpc lmp
 !inject rename.obj                                                                              l32 lpc lmp

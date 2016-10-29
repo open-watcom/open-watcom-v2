@@ -54,13 +54,6 @@
 #include "os2fil64.h"
 
 
-static int _set_binary( int handle )
-{
-    handle = handle;
-    return( 0 );
-}
-
-
 static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, unsigned share, va_list args )
 {
     OS_UINT     error, actiontaken;
@@ -136,7 +129,7 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
         _RWD_errno = ENOMEM;
         return( -1 );
     }
-
+    iomode_flags = 0;
     if( rwmode == O_RDWR )              iomode_flags  = _READ | _WRITE;
     if( rwmode == O_RDONLY)             iomode_flags  = _READ;
     if( rwmode == O_WRONLY)             iomode_flags  = _WRITE;
@@ -148,10 +141,9 @@ static int __F_NAME(__sopen,__wsopen)( const CHAR_TYPE *name, unsigned mode, uns
     }
     if( isatty( handle ) )              iomode_flags |= _ISTTY;
 
-    if( iomode_flags & _BINARY )  _set_binary( handle );
     __SetIOMode( handle, iomode_flags );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsNewWindow != 0 ) {
+    if( _WindowsNewWindow != NULL ) {
         if( ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "con" ) ) == 0 ) ||
             ( __F_NAME(stricmp,_wcsicmp)( name, STRING( "\\dev\\con" ) ) == 0 ) ) {
             _WindowsNewWindow( NULL, handle, -1 );

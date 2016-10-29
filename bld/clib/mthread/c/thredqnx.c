@@ -30,7 +30,6 @@
 
 
 #include "variety.h"
-#include <semaphor.h>
 #include <string.h>
 #include <signal.h>
 #include <float.h>
@@ -44,6 +43,7 @@
 #include "semapsx.h"
 #include "cthread.h"
 #include "rterrno.h"
+
 
 extern  void            __qnx_exit( int __status );
 

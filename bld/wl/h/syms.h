@@ -199,7 +199,7 @@ typedef struct symbol {
         dos_sym_data    d;
         struct symbol   *altdefs;   // for keeping track of comdat & comdef defs
         struct symbol   *datasym;   // altdef comdats: sym which has data def
-        unsigned        aliaslen;   // for aliases - length of name.
+        size_t          aliaslen;   // for aliases - length of name.
     } u;
     union {
         struct symbol   *mainsym;   // altdefs: main symbol definition
@@ -227,18 +227,18 @@ extern void             SymModEnd( void );
 extern void             ClearSymUnion( symbol * );
 extern void             ClearRefInfo( symbol * );
 extern void             TraceSymList( symbol * );
-extern void             MakeSymAlias( char *, unsigned, char *, unsigned );
-extern symbol           *MakeWeakExtdef( char *, symbol * );
+extern void             MakeSymAlias( const char *, size_t, const char *, size_t );
+extern symbol           *MakeWeakExtdef( const char *, symbol * );
 extern void             ConvertVFSym( symbol * );
 extern void             WeldSyms( symbol *, symbol * );
 extern symbol           *UnaliasSym( sym_flags, symbol * );
 extern void             ConvertLazyRefs( void );
-extern symbol           *RefISymbol( char * );
-extern symbol           *DefISymbol( char * );
-extern symbol           *FindISymbol( char * );
-extern symbol           *SymOpNWPfx( sym_flags, char *, unsigned, char * , unsigned );
-extern symbol           *SymOp( sym_flags , char *, unsigned );
-extern void             ReportMultiple( symbol *, char *, unsigned );
+extern symbol           *RefISymbol( const char * );
+extern symbol           *DefISymbol( const char * );
+extern symbol           *FindISymbol( const char * );
+extern symbol           *SymOpNWPfx( sym_flags, const char *, size_t, const char *, size_t );
+extern symbol           *SymOp( sym_flags, const char *, size_t );
+extern void             ReportMultiple( symbol *, const char *, size_t );
 extern void             ReportUndefined( void );
 extern void             ClearFloatBits( void );
 extern void             WriteCommunals( void );
@@ -251,6 +251,6 @@ extern void             PurgeSymbols( void );
 extern offset           SymbolAbsAddr( symbol * );
 extern struct group_entry *SymbolGroup( symbol * );
 
-extern unsigned         NameLen;
+extern size_t           NameLen;
 extern int              (*CmpRtn)( const void *, const void *, size_t );
 extern symbol           *LastSym;

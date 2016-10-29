@@ -39,9 +39,9 @@
 #include "namelist.h"
 #include "insutil.h"
 #include "blktrim.h"
+#include "expand.h"
+#include "revcond.h"
 
-
-extern  void            FlipCond(instruction*);
 
 static  instruction     *SetToConst( block *blk, signed_64 *pcons ) {
 /*******************************************************************/

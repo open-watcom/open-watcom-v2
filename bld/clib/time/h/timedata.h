@@ -49,7 +49,7 @@ extern int              __getctime( struct tm * );
 extern int              __read_tzfile( const char *tz );
 extern void             __check_tzfile( time_t t, struct tm *timep );
 
-extern short const __based(__segname("_CONST"))        __diyr[];  /* days in normal year array */
-extern short const __based(__segname("_CONST"))        __dilyr[]; /* days in leap year array */
+extern short const      __diyr[];  /* days in normal year array */
+extern short const      __dilyr[]; /* days in leap year array */
 
 #endif

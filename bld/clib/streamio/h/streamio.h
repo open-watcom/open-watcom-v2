@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern FILE *__allocfp( int handle );
+extern FILE *__allocfp( void );
 extern void __freefp( FILE * );
 extern void __purgefp( void );
 extern void __chktty( FILE *fp );

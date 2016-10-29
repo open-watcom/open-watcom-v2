@@ -38,4 +38,13 @@ typedef struct impl_entry {
     uint        size;           //  size of storage unit
 } impl_entry;
 
-#define IMPL_SIZE       27      //  1 for each letter + '0x' + '_'
+//  one entry for each letter + '$' + '_'
+
+#define IMPL_A          0
+#define IMPL_I          8
+#define IMPL_N          13
+#define IMPL_Z          25
+#define IMPL_DOLLAR     26
+#define IMPL_UNDERSCORE 27
+
+#define IMPL_SIZE       (IMPL_UNDERSCORE + 1)   

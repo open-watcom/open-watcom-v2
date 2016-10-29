@@ -37,7 +37,7 @@
   #elif defined(__LINUX__)
   #elif defined(__NETWARE__)
   #elif defined(__NT__) || defined(__OS2__) || defined(__RDOS__)
-    #if defined( __MT__ )
+    #ifdef __SW_BM
       #if defined(__NT__)
         #include "ntexc.h"
       #elif defined(__OS2__)

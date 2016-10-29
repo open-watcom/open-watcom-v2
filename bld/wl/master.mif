@@ -125,11 +125,11 @@ $(exename).exe : $(extra_link_res_$(host_os)) $(dllname).dll $(comp_objs_drv) $(
     @%make echo_link
     $(linker) name $@ @drv.lnk
 !endif
-    @%make bind_version_res_exe
+    @%make bind_res_version_exe
 
 !else
 
-$(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wresui.res $(comp_objs_exe) $(libs) $(version_res_exe_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags) $(comp_objs_exe) $(libs) $(ldflags)
@@ -140,13 +140,12 @@ $(exename).exe : $(extra_link_res_$(host_os)) rcmsg.gh wlink.res $(comp_objs_exe
     @%make echo_link
     $(linker) name $@ @exe.lnk
 !endif
-    @%make bind_version_res_exe
-    @%make echo_bindres
-    $(wstrip) -q -a -r $@ . wlink.res
+    @%make bind_res_version_exe
+    @%make bind_res_wresui
 
 !endif
 
-$(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
+$(dllname).dll : rcmsg.gh wresui.res $(comp_objs_dll) $(libs) $(version_res_dll_$(host_os)_$(host_cpu)) $(__MAKEFILES__)
 !ifndef __WATCOM_TOOLS__
     @%make echo_link
     $(cl) $(clflags_dll) $(comp_objs_dll) $(libs) $(ldflags_dll)
@@ -157,14 +156,13 @@ $(dllname).dll : rcmsg.gh wlink.res $(comp_objs_dll) $(libs) $(version_res_dll_$
     @%make echo_link
     $(linker) name $@ @dll.lnk
 !endif
-    @%make bind_version_res_dll
-    @%make echo_bindres
-    $(wstrip) -q -a -r $@ . wlink.res
+    @%make bind_res_version_dll
+    @%make bind_res_wresui
 
 #################
 # auxiliary rules
 
-wlink.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
+wresui.res : ../h/wlink.rc rcmsg.gh ../h/wlink.msg ../h/lnkerror.rc ../h/wlnkmsg.h ../h/lnkerror.msg $(__MAKEFILES__)
     @%make echo_rc
     $(rc_aui) -I"$(wrc_dir)/h" $[@ -fo=$^@
 

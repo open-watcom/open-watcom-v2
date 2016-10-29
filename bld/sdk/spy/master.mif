@@ -81,8 +81,7 @@ $(name).exe : rcstr.gh $(dllname).dll $(objs) $(libs) $(name).res $(version_res_
     @%make echo_link
     $(linker) name $^@ @$^&.lnk
 !endif
-    @%make echo_bindres
-    $(rc) -k $(name).res $^@ $(bind_version_res_exe_add)
+    @%make bind_res_add_version_exe
 
 $(dllname).dll : $(dll_objs) $(__MAKEFILES__)
     @%make echo_link

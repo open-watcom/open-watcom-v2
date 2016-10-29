@@ -151,7 +151,7 @@ extern gui_window_styles        WndStyle;
 static rm_call_struct           CallStruct;
 static uint_8                   OldRow;
 static uint_8                   OldCol;
-static uint_8                   OldTyp;
+static CURSOR_TYPE              OldTyp;
 static bool                     OnAlt;
 static screen_info              StartScrn;
 static screen_info              SaveScrn;
@@ -1256,7 +1256,7 @@ extern void uiinitcursor( void )
     }
 }
 
-void uisetcursor( ORD row, ORD col, int typ, int attr )
+void uisetcursor( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 {
     uint_16     bios_cur_pos;
 

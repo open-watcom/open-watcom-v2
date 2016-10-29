@@ -49,8 +49,10 @@ typedef enum                    // TYPES OF DISPATCHABILITIES
 
 
 #ifndef NDEBUG
-    #define GOOF_EXC( msg ) GOOF( msg )
+    // never return
+    #define GOOF_EXC( msg ) CPPLIB( fatal_runtime_error )( "*** GOOF **" msg, 1 )
 #else
+    // never return
     #define GOOF_EXC( msg ) CPPLIB( corrupted_stack )()
 #endif
 
@@ -564,6 +566,7 @@ void CPPLIB( fun_register )(    // REGISTRATION FOR FUNCTION
     RO_DTREG* ro )              // - R/O block
 ;
 #endif
+_WPRTLINK
 void CPPLIB( lcl_register )(    // REGISTRATION OF LOCAL INITIALIZATION
     RW_DTREG RT_FAR *rw )       // - read/write block
 ;
@@ -599,7 +602,7 @@ void CPPLIB( stab_trav_init )   // INITIALIZE STATE-TABLE TRAVERSAL
     ( STAB_TRAVERSE* ctl        // - control for travsersal
     , _RTCTL* rtc )             // - R/T control
 ;
-RO_STATE* CPPLIB( stab_trav_move)( // MOVE TO NEXT ACTUAL POSITION
+RO_STATE* CPPLIB( stab_trav_move )( // MOVE TO NEXT ACTUAL POSITION
     STAB_TRAVERSE *traverse )   // - traversal control information
 ;
 RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
@@ -686,7 +689,7 @@ void CPPLIB( unwind_global )    // GLOBAL UNWIND ROUTINE
             ( FsPush( (rw) )                    \
             , (thr) )
 
-#define PgmThread() CPPLIB(pgm_thread)()
+#define PgmThread() CPPLIB( pgm_thread )()
 
 THREAD_CTL* CPPLIB( pgm_thread )    // LOCATE THREAD_CTL FOR PROGRAM (.EXE)
     ( void )

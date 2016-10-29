@@ -604,14 +604,14 @@ void    *StaticAlloc( void );
 void    StaticFree( char * );
 void    StaticStart( void );
 void    StaticFini( void );
-char    *MemStrDup( char * );
+char    *MemStrDup( const char * );
 void    InitMem( void );
 void    FiniMem( void );
 
 /* misc.c */
 long    ExecCmd( const char *, const char *, const char * );
 vi_rc   GetResponse( char *, char * );
-void    ExitWithVerify( void );
+bool    ExitWithVerify( void );
 bool    ExitWithPrompt( bool, bool );
 bool    PromptFilesForSave( void );
 bool    PromptThisFileForSave( const char * );

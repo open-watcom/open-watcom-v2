@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         }
         p = Xptr(cb->burst);
         len = *p++;
-        fprintf( fp, "static struct STRUCT_byte_seq( %d ) %s = { %d, false, {\n    ", 
+        fprintf( fp, "static struct STRUCT_BYTE_SEQ( %d ) %s = { %d, false, {\n    ", 
             len, Xptr(cb->name), len );
         i = 0;
         for(;;) {

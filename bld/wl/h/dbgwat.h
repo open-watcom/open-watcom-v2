@@ -31,7 +31,7 @@
 
 extern void     ODBIInit( section * );
 extern void     ODBIInitModule( mod_entry * );
-extern void     ODBIP1Source( byte, byte, char *, int );
+extern void     ODBIP1Source( byte, byte, const char *, size_t );
 extern void     ODBIP1ModuleScanned( void );
 extern void     ODBIP1ModuleFinished( mod_entry * );
 extern void     ODBIAddModule( mod_entry *, section * );

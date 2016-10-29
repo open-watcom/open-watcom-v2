@@ -46,6 +46,8 @@
 #include "x86esc.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "tree.h"
+#include "treefold.h"
 
 
 extern  void            LayRegAC( hw_reg_set );
@@ -64,7 +66,6 @@ extern  void            AddToTemp( byte );
 extern  type_class_def  OpndSize( hw_reg_set );
 extern  void            LayReg( hw_reg_set );
 extern  void            GCondFwait( void );
-extern  int             GetLog2( unsigned_32 );
 
 /* forward declarations */
 extern  void            DoRelocConst( name *op, type_class_def kind );

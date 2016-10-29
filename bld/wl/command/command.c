@@ -44,8 +44,8 @@
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
 extern void             InitCmdFile( void );
-extern f_handle         FindPath( char * );
-extern int              Spawn(void (*)() );
+extern f_handle         FindPath( const char * );
+extern int              Spawn( void (*)() );
 extern void             BurnSystemList( void );
 extern void             Burn( void );
 extern void             FreeFormatStuff( void );
@@ -64,9 +64,9 @@ unsigned_16     AddImpNameTab( char *a, unsigned b, bool c ) {
     return( 0 );
 }
 
-void            AddLibPaths( char *a, int b, bool c ) {}
+void            AddLibPaths( const char *a, int b, bool c ) {}
 void            AddToExportList( entry_export *a ) {}
-void            BufWrite(char *a, int b ) {}
+void            BufWrite( const char *a, size_t b ) {}
 void            CheckLibTrace( file_list * lib ) {}
 void            CheckTraces( void ) {}
 void            DBIInit( section *a, bool b ) {}
@@ -78,8 +78,8 @@ symbol *        DefImpSymbol( char *a, int b ) {
 }
 
 void            FillOutFilePtrs( void ) {}
-void            FreeImpNameTab(void) {}
-void            FreeExportList(void) {}
+void            FreeImpNameTab( void ) {}
+void            FreeExportList( void ) {}
 
 extern void FreeList( void *parm )
 /*******************************/
@@ -130,7 +130,7 @@ extern void LinkList( void **in_head, void *newnode )
     *owner = newnode;
 }
 
-void            MakeSymAlias( char *a, int b, char *c, int d ) {}
+void            MakeSymAlias( const char *a, size_t b, const char *c, size_t d ) {}
 void            NumberSections() {}
 
 static bool AddSymTrace( void )
@@ -263,8 +263,8 @@ extern tok              Token;
 
 void ParseDirectives( void )
 {
-    while( GetToken( SEP_END, TOK_INCLUDE_DOT ) == FALSE ) {
-        if( ProcOne( Directives, SEP_NO, FALSE ) == FALSE ) {
+    while( !GetToken( SEP_END, TOK_INCLUDE_DOT ) ) {
+        if( !ProcOne( Directives, SEP_NO, FALSE ) ) {
             /* a directive error happened. deal with it? */
             break;
         }
@@ -295,8 +295,8 @@ static void ProcessInfo( void )
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME );
     if( file == NIL_HANDLE ) return;   /* NO WLINK.LNK */
-    _ChkAlloc( fname, sizeof(INIT_FILE_NAME));
-    memcpy( fname, INIT_FILE_NAME, sizeof(INIT_FILE_NAME) );
+    _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
+    memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
     SetCommandFile( file, fname );
     ParseDirectives();
     Burn();   /* clean up everything but the system list */

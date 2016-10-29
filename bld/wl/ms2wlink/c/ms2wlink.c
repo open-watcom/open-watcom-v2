@@ -43,8 +43,9 @@
 // 5 == linker options.
 // 6 == overlays.
 
-cmdentry *  Commands[ 7 ] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-char *      FormatNames[] = {
+cmdentry    *Commands[7] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+const char *FormatNames[] = {
     "",
     "dos",
     "com",
@@ -56,7 +57,7 @@ char *      FormatNames[] = {
     "nt "
 };
 
-char *      ExtraNames[] = {
+const char *ExtraNames[] = {
     "dll initglobal",
     "dll initinstance",
     "pmcompatible",
@@ -104,7 +105,7 @@ int main( void )
 static void PrefixWrite( cmdentry *cmdlist, char *prefix, int len )
 /*****************************************************************/
 {
-    char        buffer[ FNMAX + 14 ];
+    char        buffer[FNMAX + 14];
     char *      after;
 
     if( cmdlist != NULL ) {
@@ -125,7 +126,7 @@ static void ListWrite( cmdentry *cmdlist )
 /****************************************/
 // write out a list of commands without a prefix.
 {
-    for(;cmdlist != NULL ; cmdlist = cmdlist->next ) {
+    for( ; cmdlist != NULL; cmdlist = cmdlist->next ) {
         CommandOut( cmdlist->command );
     }
 }
@@ -142,33 +143,32 @@ static void BuildWATCOM( void )
     }
     ImplyFormat( HaveDefFile ? FMT_OS2 : FMT_DOS );
     if( FmtInfo != NO_EXTRA ) {
-        form = Msg3Splice( "system ", FormatNames[ FmtType ],
-                                                   ExtraNames[ FmtInfo - 1 ] );
+        form = Msg3Splice( "system ", FormatNames[FmtType], ExtraNames[FmtInfo - 1] );
     } else {
-        form = Msg2Splice( "system ", FormatNames[ FmtType ] );
+        form = Msg2Splice( "system ", FormatNames[FmtType] );
     }
     CommandOut( form );
     MemFree( form );
-    PrefixWrite( Commands[ OBJECT_SLOT ], "file ", 5 );
-    if( Commands[ OVERLAY_SLOT ] != NULL ) {
+    PrefixWrite( Commands[OBJECT_SLOT], "file ", 5 );
+    if( Commands[OVERLAY_SLOT] != NULL ) {
         CommandOut( "begin" );
-        PrefixWrite( Commands[ OVERLAY_SLOT ], "    file ", 9 );
+        PrefixWrite( Commands[OVERLAY_SLOT], "    file ", 9 );
         CommandOut( "end" );
     }
-    PrefixWrite( Commands[ RUN_SLOT ], "name ", 5 );
-    if( Commands[ MAP_SLOT ] != NULL ) {
-        PrefixWrite( Commands[ MAP_SLOT ], "option map=", 11 );
+    PrefixWrite( Commands[RUN_SLOT], "name ", 5 );
+    if( Commands[MAP_SLOT] != NULL ) {
+        PrefixWrite( Commands[MAP_SLOT], "option map=", 11 );
         MapOption = false;     // make sure it isn't generated a second time.
     }
-    PrefixWrite( Commands[ LIBRARY_SLOT ], "library ", 8 );
+    PrefixWrite( Commands[LIBRARY_SLOT], "library ", 8 );
     if( MapOption ) {
         CommandOut( "option map" );
     }
-    ListWrite( Commands[ OPTION_SLOT ] );
+    ListWrite( Commands[OPTION_SLOT] );
 }
 
 #define NL "\r\n"
-static char TheHelp[] = {
+static const char TheHelp[] = {
     banner1w1( "Microsoft to Watcom linker command translation utility" ) NL
     banner1w2( _MS2WLINK_VERSION_ ) NL
     banner2 NL

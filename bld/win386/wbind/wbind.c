@@ -61,6 +61,46 @@
 
 static bool quietFlag = false;
 
+static void normalizeFName( char *dst, size_t maxlen, const char *src )
+/***********************************************************************
+ * Removes doublequote characters from filename and copies other content
+ * from src to dst. Only maxlen number of characters are copied to dst
+ * including terminating NUL character. Returns value 1 when quotes was
+ * removed from orginal filename, 0 otherwise.
+ */
+{
+    char    string_open = 0;
+    size_t  pos = 0;
+    char    c;
+
+    // leave space for NUL terminator
+    maxlen--;
+
+    while( (c = *src++) != '\0' && pos < maxlen ) {
+        if( c == '"' ) {
+            string_open = !string_open;
+            continue;
+        }
+        if( string_open && c == '\\' ) {
+            c = *src++;
+            if( c != '"' ) {
+                *dst++ = '\\';
+                pos++;
+                if( pos >= maxlen ) {
+                    break;
+                }
+            }
+        }
+#ifndef __UNIX__
+        if( c == '/' )
+            c = '\\';
+#endif
+        *dst++ = c;
+        pos++;
+    }
+    *dst = '\0';
+}
+
 static void updateNHStuff( int handle, char *modname, char *desc )
 {
     dos_exe_header      dh;
@@ -320,6 +360,7 @@ int main( int argc, char *argv[] )
     /*
      * get files to use
      */
+    normalizeFName( path, strlen( path ) + 1, path );
     _splitpath( path, drive, dir, fname, ext );
     _makepath( rex, drive, dir, fname, ".rex" );
     if( dllflag ) {
@@ -365,7 +406,7 @@ int main( int argc, char *argv[] )
             FindExtender( "win386.ext", winext );
         }
     } else {
-        strcpy( winext, wext );
+        normalizeFName( winext, sizeof( winext ), wext );
     }
     if( dllflag ) {
         myPrintf("Loading 32-bit Windows DLL Supervisor \"%s\"\n",winext );

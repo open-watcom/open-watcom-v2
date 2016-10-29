@@ -34,7 +34,9 @@
 #include "opcl.h"
 #include "reserr.h"
 #include "wresrtns.h"
+
 #include "clibext.h"
+
 
 WResFileID MResOpenNewFile( const char * filename )
 /*************************************************/

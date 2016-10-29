@@ -39,7 +39,7 @@
 static orl_return       freeFileHandle( omf_file_handle ofh )
 {
     omf_sec_handle      sh;
-    uint_32             x;
+    omf_quantity        x;
     omf_tmp_fixup       tf;
 
     sh = ofh->first_sec;

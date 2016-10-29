@@ -45,10 +45,10 @@
 #include "peepopt.h"
 #include "redefby.h"
 #include "insdead.h"
+#include "optimize.h"
 
 
 extern  bool                    InsOrderDependant(instruction*,instruction*);
-extern  bool                    SameThing( name *, name * );
 
 #define OP2VAL( ins ) ( (ins)->operands[1]->c.lo.int_value )
 

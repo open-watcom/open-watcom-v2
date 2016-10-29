@@ -33,6 +33,8 @@
 #include "layer0.h"
 #include "rcrtns.h"
 
+#include "clibext.h"
+
 
 struct WResRoutines WResRtns = {
     RCOPEN,

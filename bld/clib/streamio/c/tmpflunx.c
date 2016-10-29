@@ -37,9 +37,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "tmpfname.h"
 #include "rtdata.h"
 #include "rterrno.h"
-#include "tmpfname.h"
+#include "thread.h"
+
 
 char    *__tmpdir( char * );
 

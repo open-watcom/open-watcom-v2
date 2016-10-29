@@ -52,7 +52,7 @@ _WCRTLINK int kbhit( void )
     if( _RWD_cbyte != 0 )
         return( 1 );
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsKbhit != 0 ) {      // Default windowing
+    if( _WindowsKbhit != NULL ) {   // Default windowing
         LPWDATA     res;
         res = _WindowsIsWindowedHandle( (int) STDIN_FILENO );
         return( _WindowsKbhit( res ) );

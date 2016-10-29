@@ -39,6 +39,8 @@
 #include "rgtbl.h"
 #include "split.h"
 #include "insutil.h"
+#include "index.h"
+#include "fixindex.h"
 #include "feprotos.h"
 
 
@@ -47,22 +49,18 @@ extern  opcode_entry    String[];
 extern  bool            SegOver(name*);
 extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *Addressable(name*,type_class_def);
-extern  name            *FindIndex(instruction*);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);
 extern  reg_set_index   MarkIndex(instruction*,name*,bool);
 extern  void            MarkSegment(instruction*,name*);
 extern  void            NoMemIndex(instruction*);
-extern  int             NumOperands(instruction*);
-extern  name            *IndexToTemp(instruction*,name*);
-extern  name            *FindIndex(instruction*);
 extern  bool            FPCInCode( void );
 extern  void            ExpandThreadDataRef(instruction*);
 
 static  void            Merge( name **pname, instruction *ins );
 static  void            PropSegments(void);
 
-extern  instruction     *NeedIndex( instruction *ins ) {
+instruction     *NeedIndex( instruction *ins ) {
 /*******************************************************
     Mark conflicts for any name used in instruction as as segment as
     NEEDS_SEGMENT, or split out the segment if it is marked as
@@ -111,7 +109,7 @@ extern  instruction     *NeedIndex( instruction *ins ) {
 }
 
 
-extern  bool    IndexOkay( instruction *ins, name *index ) {
+bool    IndexOkay( instruction *ins, name *index ) {
 /***********************************************************
     return true if "index" needs to be split out of instruction and a
     short lived temporary used instead.
@@ -213,7 +211,7 @@ static  name    *FindSegment( instruction *ins ) {
 }
 
 
-extern  void    AddSegment( instruction *ins ) {
+void    AddSegment( instruction *ins ) {
 /***********************************************
     Look at instruction "ins" and if any of its operands need a segment
     override, add it to the instruction as an extra operand.
@@ -280,7 +278,7 @@ extern  void    AddSegment( instruction *ins ) {
     }
 }
 
-extern  void    FixMemRefs( void ) {
+void    FixMemRefs( void ) {
 /*****************************
     Make sure that no N_MEMORY names are used as indecies.  This would
     cause problems since we might need a segment override for the INDEX
@@ -303,7 +301,7 @@ extern  void    FixMemRefs( void ) {
 }
 
 
-extern  void    FixSegments( void ) {
+void    FixSegments( void ) {
 /******************************
     Add segment overrides to any instruction in the routine that needs
     them.
@@ -351,7 +349,7 @@ static  type_class_def  FltClass( instruction *ins ) {
     return( XX );
 }
 
-extern  void    MergeIndex( void ) {
+void    MergeIndex( void ) {
 /*****************************
     Merge segment overrides back into the index registers.  This is
     called just before scoreboarding to simplify matters.  For example
@@ -409,7 +407,7 @@ static  void    Merge( name **pname, instruction *ins ) {
 }
 
 
-extern  void    FixChoices( void ) {
+void    FixChoices( void ) {
 /*****************************
     Run through the conflict list and make sure that no conflict is
     allowed to get cached in a segment register unless it was actually
@@ -486,7 +484,7 @@ static  void    PropSegments( void ) {
 }
 
 
-extern  void    FixFPConsts( instruction *ins ) {
+void    FixFPConsts( instruction *ins ) {
 /************************************************
     Fix floating point constants, by forcing them into memory if they
     are not going to be segment register addressable.  This is done so that

@@ -40,11 +40,7 @@ int InitSubSystems( void )
 {
     if( !setjmp( Env ) ) {
         InitMem();
-        InitLibIo();
-        InitInputLibs();
         InitMsg( );
-//      InitCmdLine();      // JBS 99/07/09 moved below
-        InitFileTab();
         InitObj();
         return( EXIT_SUCCESS );
     } else {
@@ -56,7 +52,10 @@ int WlibMainLine( char *argv[] )
 {
     int     retcode;
 
-    InitCmdLine();          // JBS 99/07/09 reset options for each use
+    InitLibIo();
+    InitInputLibs();
+    InitFileTab();
+    InitCmdLine();
     if( !setjmp( Env ) ) {
         ProcessCmdLine( argv );
         ProcessCommands();
@@ -64,22 +63,16 @@ int WlibMainLine( char *argv[] )
     } else {
         retcode = EXIT_FAILURE;
     }
-    if( !setjmp( Env ) ) {
-        ResetInputLibs();
-        ResetFileTab();
-        ResetCmdLine();
-        ResetLibIo();
-        ResetMem();
-    } else {
-        retcode = EXIT_FAILURE;
-    }
+    FiniCmdLine();
+    FiniFileTab();
+    FiniInputLibs();
+    FiniLibIo();
     return( retcode );
 }
 
 void FiniSubSystems( void )
 {
     if( !setjmp( Env ) ) {
-        FiniFileTab();
         FiniObj();
         FiniMsg();
         FiniMem();

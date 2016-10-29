@@ -43,6 +43,7 @@ extern hw_reg_set       ZapReg( instruction *ins );
 extern instruction      *MoveConst( unsigned_32 value, name *result, type_class_def class );
 extern instruction      *Reduce( instruction *ins );
 extern instruction      *SplitUnary( instruction *ins );
+extern void             CheckCC( instruction *ins, instruction *new_ins );
 
 extern void             HalfType( instruction *ins );
 extern void             ChangeType( instruction *ins, type_class_def class );

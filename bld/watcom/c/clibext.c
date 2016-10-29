@@ -1457,7 +1457,7 @@ char *(getcmd)( char *buffer )
 ****************************************************************************/
 
 #if defined( _MSC_VER ) && defined( _WIN64 )
-ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte )
+ssize_t  __w64_read( int fildes, void *buffer, size_t nbyte )
 {
     unsigned    read_len;
     unsigned    amount;
@@ -1470,7 +1470,7 @@ ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte )
             amount = (unsigned)nbyte;
         read_len = _read( fildes, buffer, amount );
         if( read_len == (unsigned)-1 ) {
-            return( (ssize_t)-1L );
+            return( (ssize_t)-1 );
         }
         size += read_len;
         if( read_len != amount ) {
@@ -1482,7 +1482,7 @@ ssize_t  _w64_read( int fildes, void *buffer, size_t nbyte )
     return( size );
 }
 
-ssize_t  _w64_write( int fildes, void const *buffer, size_t nbyte )
+ssize_t  __w64_write( int fildes, void const *buffer, size_t nbyte )
 {
     unsigned    write_len;
     unsigned    amount;
@@ -1495,7 +1495,7 @@ ssize_t  _w64_write( int fildes, void const *buffer, size_t nbyte )
             amount = (unsigned)nbyte;
         write_len = _write( fildes, buffer, amount );
         if( write_len == (unsigned)-1 ) {
-            return( (size_t)-1L );
+            return( (ssize_t)-1 );
         }
         size += write_len;
         if( write_len != amount ) {
