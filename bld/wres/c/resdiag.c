@@ -265,6 +265,23 @@ static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
     return( error );
 }
 
+static bool ResReadDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle )
+{
+    bool    error;
+
+    head->MenuName = ResRead32NameOrOrdinal( handle );
+    error = (head->MenuName == NULL);
+    if( !error ) {
+        head->ClassName = ResRead32NameOrOrdinal( handle );
+        error = (head->ClassName == NULL);
+    }
+    if( !error ) {
+        head->Caption = ResRead32String( handle, NULL );
+        error = (head->Caption == NULL);
+    }
+    return( error );
+}
+
 bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
 /*************************************************************************/
 {
@@ -286,16 +303,7 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
         error = ResReadDialogSizeInfo( &(head->Size), handle );
     }
     if( !error ) {
-        head->MenuName = ResRead32NameOrOrdinal( handle );
-        error = (head->MenuName == NULL);
-    }
-    if( !error ) {
-        head->ClassName = ResRead32NameOrOrdinal( handle );
-        error = (head->ClassName == NULL);
-    }
-    if( !error ) {
-        head->Caption = ResRead32String( handle, NULL );
-        error = (head->Caption == NULL);
+        error = ResReadDialogHeaderCommon32( head, handle );
     }
 
     /* if the font was set input the font name and point size */
@@ -415,16 +423,7 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
         error = ResReadDialogSizeInfo( &(head->Size), handle );
     }
     if( !error ) {
-        head->MenuName = ResRead32NameOrOrdinal( handle );
-        error = (head->MenuName == NULL);
-    }
-    if( !error ) {
-        head->ClassName = ResRead32NameOrOrdinal( handle );
-        error = (head->ClassName == NULL);
-    }
-    if( !error ) {
-        head->Caption = ResRead32String( handle, NULL );
-        error = (head->Caption == NULL);
+        error = ResReadDialogHeaderCommon32( head, handle );
     }
 
     /* not needed ???
@@ -502,7 +501,7 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
     if( class_id->Class & 0x80 ) {
         /*the class number is prefixed by 0xFFFF to distinguish it
          * from a string */
-        error = ResWriteUint16( -1, handle );
+        error = ResWriteUint16( (uint_16)-1, handle );
         if( !error ) {
             error = ResWriteUint16( class_id->Class, handle );
         }
