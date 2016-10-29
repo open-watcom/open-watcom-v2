@@ -104,26 +104,26 @@ typedef union ControlClass {
 typedef struct DialogBoxControl {
     DialogSizeInfo      Size;
     uint_16             ID;
-    uint_32             Style;
+    DialogStyle         Style;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
     uint_8              ExtraBytes;     /* should be 0 */
 } DialogBoxControl;
 
 typedef struct DialogBoxControl32 {
-    uint_32             Style;
-    uint_32             ExtendedStyle;
+    DialogStyle         Style;
+    DialogExstyle       ExtendedStyle;
     DialogSizeInfo      Size;
     uint_16             ID;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
-    uint_16             ExtraBytes;   /* should be 0 */
+    uint_16             ExtraBytes;     /* should be 0 */
 } DialogBoxControl32;
 
 typedef struct DialogBoxExControl32 {
     uint_32             HelpId;
-    uint_32             ExtendedStyle;
-    uint_32             Style;
+    DialogExstyle       ExtendedStyle;
+    DialogStyle         Style;
     DialogSizeInfo      Size;
     uint_32             ID;
     ControlClass        *ClassID;
@@ -155,8 +155,7 @@ extern bool ResReadDialogBoxControl( DialogBoxControl *, WResFileID handle );
 extern bool ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID handle );
 extern bool ResReadDialogExControl32( DialogBoxExControl32 *, WResFileID handle );
 
-extern bool ResWriteDialogExHeader32( DialogBoxHeader32 *head,
-                 DialogExHeader32 *exhead, WResFileID handle );
+extern bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID handle );
 extern bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle );
 
 #endif
