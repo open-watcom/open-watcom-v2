@@ -323,8 +323,8 @@ void WdeWriteInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        WdeWriteObjectDimensions( (int_16)is->size.x, (int_16)is->size.y,
-                                  (int_16)is->size.width, (int_16)is->size.height );
+        WdeWriteObjectDimensions( (int_16)is->dsize.x, (int_16)is->dsize.y,
+                                  (int_16)is->dsize.width, (int_16)is->dsize.height );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );

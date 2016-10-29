@@ -2023,7 +2023,10 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     is.obj_id = DIALOG_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.size = GETHDR_SIZE( obj->dialog_info );
+    is.dsize.x = GETHDR_SIZEX( obj->dialog_info );
+    is.dsize.y = GETHDR_SIZEY( obj->dialog_info );
+    is.dsize.width = GETHDR_SIZEW( obj->dialog_info );
+    is.dsize.height = GETHDR_SIZEH( obj->dialog_info );
     is.d.caption = GETHDR_CAPTION( obj->dialog_info );
     is.d.name = obj->name;
     is.symbol = WdeStrDup( obj->symbol );

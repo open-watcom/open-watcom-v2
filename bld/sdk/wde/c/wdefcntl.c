@@ -1169,7 +1169,10 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     is.obj_id = CONTROL_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.size = GETCTL_SIZE( obj->control_info );
+    is.dsize.x = GETCTL_SIZEX( obj->control_info );
+    is.dsize.y = GETCTL_SIZEY( obj->control_info );
+    is.dsize.width = GETCTL_SIZEW( obj->control_info );
+    is.dsize.height = GETCTL_SIZEH( obj->control_info );
     is.c.text = GETCTL_TEXT( obj->control_info );
     is.c.id = GETCTL_ID( obj->control_info );
     is.symbol = WdeStrDup( obj->symbol );
