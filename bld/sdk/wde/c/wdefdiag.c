@@ -414,7 +414,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
     dh = info->dialog_header;
     if( obj->dialog_info->is32bit ) {
         if( dh->HelpId != 0 || dh->ExtendedStyle != 0 ||
-            dh->FontWeightDefined || dh->FontItalicDefined ) {
+            dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
             is32bitEx = TRUE;
         }
     } else {
@@ -1112,7 +1112,7 @@ BOOL WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
             GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
             GETHDR_FONTNAME( obj->dialog_info ), GETHDR_FONTWEIGHT( obj->dialog_info ),
-            GETHDR_FONTITALIC( obj->dialog_info ) );
+            GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ) );
     } else {
         dialog_template = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),

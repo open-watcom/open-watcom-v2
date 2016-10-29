@@ -62,8 +62,8 @@ typedef struct ResLocation {
 typedef struct IntMask {
     uint_32     Mask;
     uint_32     Value;
-    unsigned    longVal         : 1;
-    unsigned    unsgVal         : 1;
+    bool        longVal :1;
+    bool        unsgVal :1;
 } IntMask;
 
 /**** include all the semantic structures and routine prototypes for each ****/

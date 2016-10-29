@@ -39,21 +39,19 @@
 bool ResWriteToolBarHeader( WResFileID handle, uint_16 item1, uint_16 item2, uint_16 cnt )
 /****************************************************************************************/
 {
-    uint_16     tmp;
     bool        ret;
 
     // don't know why but MS RC puts out a 1 at the start of the resourece
     // perhaps this is a version ????
-    tmp = 1;
-    ret =  ResWriteUint16( &tmp, handle );
+    ret =  ResWriteUint16( 1, handle );
     if( !ret ) {
-        ret =  ResWriteUint16( &item1, handle );
+        ret =  ResWriteUint16( item1, handle );
     }
     if( !ret ) {
-        ret =  ResWriteUint16( &item2, handle );
+        ret =  ResWriteUint16( item2, handle );
     }
     if( !ret ) {
-        ret =  ResWriteUint16( &cnt, handle );
+        ret =  ResWriteUint16( cnt, handle );
     }
     return( ret );
 }

@@ -35,7 +35,6 @@
 
 #include "resfmt.h"
 
-#include "pushpck1.h"
 typedef struct MResResourceHeader {
     ResNameOrOrdinal       *Type;
     ResNameOrOrdinal       *Name;
@@ -45,12 +44,11 @@ typedef struct MResResourceHeader {
     uint_32                 Version;
     uint_32                 DataVersion;
     uint_32                 Characteristics;
-} _WCUNALIGNED MResResourceHeader;
+} MResResourceHeader;
 
 typedef struct M32ResResourceHeader {
     MResResourceHeader      *head16;
     uint_32                  HeaderSize;
 } M32ResResourceHeader;
-#include "poppck.h"
 
 #endif

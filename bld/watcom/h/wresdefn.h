@@ -495,4 +495,8 @@
 
 #endif
 
+#ifndef DEFAULT_CHARSET
+#define DEFAULT_CHARSET         1
+#endif
+
 #endif

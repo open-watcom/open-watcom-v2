@@ -64,7 +64,8 @@ typedef struct {
 typedef struct {
     short       PointSize;
     short       weight;
-    short       bItalic;
+    char        bItalic;
+    char        bCharset;
 //  char        fontName[];
 } FONTEXINFO;
 
@@ -83,7 +84,7 @@ typedef struct {
     #include "poppck.h"
 #endif
 
-extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, short FontItalic );
+extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, char FontItalic, char FontCharset );
 extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, const char *class, const char *text, BYTE infolen, const char *infodata );
 
 #endif

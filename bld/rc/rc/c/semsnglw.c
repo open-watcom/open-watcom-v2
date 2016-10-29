@@ -1040,9 +1040,8 @@ void SemWINWriteFontDir( void )
 
     loc.start = SemStartResource();
 
-    error = ResWriteUint16( &(CurrResFile.FontDir->NumOfFonts),
-                        CurrResFile.handle );
-    if( error)
+    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.handle );
+    if( error )
         goto OUTPUT_WRITE_ERROR;
 
     for( currentry = CurrResFile.FontDir->Head; currentry != NULL;

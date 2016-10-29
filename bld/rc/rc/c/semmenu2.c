@@ -75,21 +75,18 @@ static bool ResOS2WriteMenuItemNormal( const MenuItemOS2 *curritem, WResFileID h
 /*****************************************************************************/
 {
     bool        error;
-    uint_16     tmp16;
 
-    tmp16 = curritem->ItemStyle;
-    error = ResWriteUint16( &tmp16, handle );
+    error = ResWriteUint16( curritem->ItemStyle, handle );
     if( !error ) {
-        tmp16 = curritem->ItemAttrs;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( curritem->ItemAttrs, handle );
     }
     if( !error ) {
-        tmp16 = curritem->ItemCmd;
-        error = ResWriteUint16( &tmp16, handle );
+        error = ResWriteUint16( curritem->ItemCmd, handle );
     }
     if( !error ) {
-        if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR) && curritem->ItemText != NULL )
+        if( !(curritem->ItemStyle & OS2_MIS_SEPARATOR) && curritem->ItemText != NULL ) {
             error = ResWriteString( curritem->ItemText, false, handle );
+        }
     }
 
     return( error );

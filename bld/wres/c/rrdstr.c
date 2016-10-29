@@ -35,8 +35,8 @@
 #include "read.h"
 #include "wresrtns.h"
 
-char *ResReadString( WResFileID handle, int *strlen )
-/***************************************************/
+char *ResReadString( WResFileID handle, size_t *strlen )
+/******************************************************/
 {
     VarString *         newstring;
     bool                error;
@@ -60,18 +60,18 @@ char *ResReadString( WResFileID handle, int *strlen )
     return( retstring );
 } /* ResReadString */
 
-char *ResRead32String( WResFileID handle, int *strlen )
-/*****************************************************/
+char *ResRead32String( WResFileID handle, size_t *strlen )
+/********************************************************/
 {
-    VarString *         newstring;
+    VarString           *newstring;
     bool                error;
     uint_16             nextchar;
-    char *              retstring;
+    char                *retstring;
 
     newstring = VarStringStart();
     error = ResReadUint16( &nextchar, handle );
     while( !error && nextchar != 0x0000 ) {
-        VarStringAddChar( newstring, (uint_8)(nextchar & 0x00ff) );
+        VarStringAddChar( newstring, (char)nextchar );
         error = ResReadUint16( &nextchar, handle );
     }
 

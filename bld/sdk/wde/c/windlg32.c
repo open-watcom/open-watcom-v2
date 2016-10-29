@@ -118,7 +118,7 @@ static char _ISFAR *copyMBString( char _ISFAR *mem, const char _ISFAR *str, int 
 GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
                                int dtx, int dty, int dtcx, int dtcy, const char *menuname,
                                const char *classname, const char *captiontext, short pointsize,
-                               const char *typeface, short FontWeight, short FontItalic )
+                               const char *typeface, short FontWeight, char FontItalic, char FontCharset )
 {
     GLOBALHANDLE        data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
@@ -188,6 +188,7 @@ GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
         fi->PointSize = pointsize;
         fi->weight = FontWeight;
         fi->bItalic = FontItalic;
+        fi->bCharset = FontCharset;
         dlgtypeface = (char _ISFAR *)(fi + 1);
         copyMBString( dlgtypeface, typeface, typefacelen );
         // copyMBString( fi->fontName, typeface, typefacelen );

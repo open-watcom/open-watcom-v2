@@ -55,6 +55,7 @@
 #define GETHDR_FONTNAME( ph )   ((ph)->FontName)
 #define GETHDR_FONTWEIGHT( ph ) ((ph)->FontWeight)
 #define GETHDR_FONTITALIC( ph ) ((ph)->FontItalic)
+#define GETHDR_FONTCHARSET( ph ) ((ph)->FontCharset)
 #define GETHDR_HELPID( ph )     ((ph)->HelpId)
 #define GETHDR_EXSTYLE( ph )    ((ph)->ExtendedStyle)
 
@@ -72,6 +73,7 @@
 #define SETHDR_FONTNAME( ph, s )    ((ph)->FontName = (s))
 #define SETHDR_FONTWEIGHT( ph, s )  ((ph)->FontWeight = (s))
 #define SETHDR_FONTITALIC( ph, s )  ((ph)->FontItalic = (s))
+#define SETHDR_FONTCHARSET( ph, s ) ((ph)->FontCharset = (s))
 #define SETHDR_HELPID( ph, s )      ((ph)->HelpId = (s))
 #define SETHDR_EXSTYLE( ph, s )     ((ph)->ExtendedStyle = (s))
 
@@ -137,7 +139,8 @@ typedef struct WdeDialogBoxHeader {
     char                *Caption;       // String
     uint_16             PointSize;      // only here if (Style & DS_SETFONT)
     uint_16             FontWeight;     // only here if (Style & DS_SETFONT)
-    uint_16             FontItalic;     // only here if (Style & DS_SETFONT)
+    uint_8              FontItalic;     // only here if (Style & DS_SETFONT)
+    uint_8              FontCharset;    // only here if (Style & DS_SETFONT)
     char                *FontName;      // only here if (Style & DS_SETFONT)
 
     char                *symbol;
@@ -145,6 +148,7 @@ typedef struct WdeDialogBoxHeader {
 
     bool                FontWeightDefined;
     bool                FontItalicDefined;
+    bool                FontCharsetDefined;
     bool                is32bit;
     bool                is32bitEx;
 } WdeDialogBoxHeader;

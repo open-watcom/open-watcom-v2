@@ -725,8 +725,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring,
-                        &(value->string.length) );
+            value->string.string = VarStringEnd( newstring, &(value->string.length) );
             DEBUGPUTS( value->string.string )
             token = LookupKeywordOS2( value->string );
             if( token != Y_NAME ) {
@@ -747,8 +746,7 @@ static YYTOKENTYPE scanDFA( ScanValue *value )
             VarStringAddChar( newstring, LookAhead );
             do_transition( S_DOS_FILENAME );
         } else {
-            value->string.string = VarStringEnd( newstring,
-                        &(value->string.length) );
+            value->string.string = VarStringEnd( newstring, &(value->string.length) );
             DEBUGPUTS( value->string.string )
             return( Y_DOS_FILENAME );
         }

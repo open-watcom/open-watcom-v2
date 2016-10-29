@@ -246,6 +246,9 @@ pick(   ERR_DIALOG_HELPID,
 pick(   ERR_FONT_ITALIC,
        "Font Italic setting not allowed for DIALOG.",
        "Font Italic setting not allowed for DIALOG." )
+pick(   ERR_FONT_CHARSET,
+       "Font charset setting not allowed for DIALOG.",
+       "Font charset setting not allowed for DIALOG." )
 pick(   ERR_FONT_WEIGHT,
        "Font Weight setting not allowed for DIALOG.",
        "Font Weight setting not allowed for DIALOG." )

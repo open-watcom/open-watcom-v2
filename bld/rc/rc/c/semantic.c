@@ -172,7 +172,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
                 ErrorHasOccured = true;
                 return;
             } else {
-                error = ResWriteUint8( &cur_byte, CurrResFile.handle );
+                error = ResWriteUint8( cur_byte, CurrResFile.handle );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                     ResCloseFile( tmp_handle );

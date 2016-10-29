@@ -41,11 +41,11 @@ typedef struct RawDataItem {
         char    *String;
         uint_32  Num;
     } Item;
-    uint_16     StrLen;
-    bool        IsString;
-    bool        LongItem;
-    bool        TmpStr;
-    bool        WriteNull;
+    size_t      StrLen;
+    bool        IsString  :1;
+    bool        LongItem  :1;
+    bool        TmpStr    :1;
+    bool        WriteNull :1;
 } RawDataItem;
 
 typedef struct DataElemList {

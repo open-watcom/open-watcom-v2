@@ -45,11 +45,12 @@ typedef struct FullDialogOptions {
             char *          FontName;
             uint_16         FontWeight;
             uint_8          FontItalic;
-            uint_8          FontExtra;  /* don't know what this is but
-                                         * MS rc accepts it and it appears in
-                                         * some samples */
+            uint_8          FontCharset;    /* don't know what this is but
+                                             * MS rc accepts it and it appears in
+                                             * some samples */
             bool            FontWeightDefined;
             bool            FontItalicDefined;
+            bool            FontCharsetDefined;
         } Font;
     } Opt;
 } FullDialogOptions;

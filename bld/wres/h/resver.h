@@ -33,25 +33,25 @@
 #ifndef RESVER_H_INCLUDED
 #define RESVER_H_INCLUDED
 
-#define VER_CALC_SIZE   0xFFFF
+#define VER_CALC_SIZE   (-1)
 
-#include "pushpck1.h"
 typedef struct VerBlockHeader {
     uint_16     Size;           // includes size of nested blocks
     uint_16     ValSize;        // size of the value array that follow header
     uint_16     Type;           // USED FOR NT ONLY 1 == string 0 == binary
     char *      Key;
-} _WCUNALIGNED VerBlockHeader;
+} VerBlockHeader;
 
 typedef struct VerValueItem {
-    uint_8      IsNum;
-    uint_16     strlen;
+    bool        IsNum;
+    size_t      strlen;
     union {
         uint_16 Num;
-        char *  String;
+        char    *String;
     } Value;
-} _WCUNALIGNED VerValueItem;
+} VerValueItem;
 
+#include "pushpck1.h"
 typedef struct VerFixedInfo {
     uint_32     Signature;
     uint_32     StructVer;
@@ -76,7 +76,7 @@ typedef struct VerFixedInfo {
 extern bool     ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, uint_8 os, WResFileID handle );
 extern bool     ResWriteVerValueItem( VerValueItem * item, bool use_unicode, WResFileID handle );
 extern bool     ResWriteVerFixedInfo( VerFixedInfo *, WResFileID handle );
-extern uint_16  ResSizeVerBlockHeader( VerBlockHeader *, bool use_unicode, uint_8 os );
-extern uint_16  ResSizeVerValueItem( VerValueItem * item, bool use_unicode );
+extern size_t   ResSizeVerBlockHeader( VerBlockHeader *, bool use_unicode, uint_8 os );
+extern size_t   ResSizeVerValueItem( VerValueItem * item, bool use_unicode );
 
 #endif
