@@ -699,6 +699,24 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle )
     return( error );
 }
 
+static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdinal **text, uint_16 *extra_bytes, WResFileID handle )
+{
+    bool            error;
+    uint_16         tmp16;
+
+    *class_id = Read32ControlClass( handle );
+    error = (*class_id == NULL);
+    if( !error ) {
+        *text = ResRead32NameOrOrdinal( handle );
+    }
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        *extra_bytes = tmp16;
+    }
+
+    return( error );
+}
+
 bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
 /******************************************************************************/
 {
@@ -724,15 +742,7 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
         control->ID = tmp16;
     }
     if( !error ) {
-        control->ClassID = Read32ControlClass( handle );
-        error = (control->ClassID == NULL);
-    }
-    if( !error ) {
-        control->Text = ResRead32NameOrOrdinal( handle );
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        control->ExtraBytes = tmp16;
+        error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), handle );
     }
 
     return( error );
@@ -743,7 +753,6 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle 
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
     error = ResPadDWord( handle );
 
@@ -763,18 +772,11 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle 
         error = ResReadDialogSizeInfo( &(control->Size), handle );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        control->ID = tmp16;
+        error = ResReadUint32( &tmp32, handle );
+        control->ID = tmp32;
     }
     if( !error ) {
-        control->ClassID = Read32ControlClass( handle );
-        error = (control->ClassID == NULL);
-    }
-    if( !error ) {
-        control->Text = ResRead32NameOrOrdinal( handle );
-    }
-    if( !error ) {
-        error = ResReadUint16( &(control->ExtraBytes), handle );
+        error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), handle );
     }
 
     return( error );
