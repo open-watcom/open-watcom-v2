@@ -43,7 +43,7 @@ typedef struct {
     char            *symbol;
     WdeResInfo      *res_info;
     void            *obj;
-    DialogSizeInfo  size;
+    DialogSizeInfo  dsize;
     union {
         struct {
             char                *caption;
