@@ -106,7 +106,7 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
 bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
 {
     WdeResizeRatio  r;
-    DialogSizeInfo  d;
+    DialogSizeInfo  dsize;
     RECT            new_size;
     POINT           *dim;
 
@@ -127,12 +127,12 @@ bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
         return( FALSE );
     }
 
-    d.x = 0;
-    d.y = 0;
-    d.width = dim->x;
-    d.height = dim->y;
+    dsize.x = 0;
+    dsize.y = 0;
+    dsize.width = dim->x;
+    dsize.height = dim->y;
 
-    if( !WdeDialogToScreen( NULL, &r, &d, &new_size ) ) {
+    if( !WdeDialogToScreen( NULL, &r, &dsize, &new_size ) ) {
         return( FALSE );
     }
 

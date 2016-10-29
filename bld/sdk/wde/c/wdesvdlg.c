@@ -981,7 +981,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control,
 
 bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 {
-    DialogSizeInfo      size;
+    DialogSizeInfo      dsize;
     DialogStyle         style;
     ResNameOrOrdinal    *rname;
     char                *name;
@@ -1013,7 +1013,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        size = GETHDR_SIZE( dhptr );
+        dsize = GETHDR_SIZE( dhptr );
         /* check if this is a 32 bit extended dialog */
         if( dhptr->is32bitEx ) {
             char *helpsymbol;
@@ -1032,12 +1032,12 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
             if( str != NULL ) {
                 fprintf( fp, "%s DIALOGEX %s %d, %d, %d, %d",
-                         name, str, size.x, size.y, size.width, size.height );
+                         name, str, dsize.x, dsize.y, dsize.width, dsize.height );
                 WRMemFree( str );
                 str = NULL;
             } else {
                 fprintf( fp, "%s DIALOGEX %d, %d, %d, %d",
-                         name, size.x, size.y, size.width, size.height );
+                         name, dsize.x, dsize.y, dsize.width, dsize.height );
             }
             if( *helpsymbol != '\0' ) {
                 fprintf( fp, ", %s", helpsymbol );
@@ -1051,12 +1051,12 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
             /* standard dialog */
             if( str != NULL ) {
                 fprintf( fp, "%s DIALOG %s %d, %d, %d, %d\n",
-                         name, str, size.x, size.y, size.width, size.height );
+                         name, str, dsize.x, dsize.y, dsize.width, dsize.height );
                 WRMemFree( str );
                 str = NULL;
             } else {
                 fprintf( fp, "%s DIALOG %d, %d, %d, %d\n",
-                         name, size.x, size.y, size.width, size.height );
+                         name, dsize.x, dsize.y, dsize.width, dsize.height );
             }
         }
         style = GETHDR_STYLE( ditem->dialog_info->dialog_header );
