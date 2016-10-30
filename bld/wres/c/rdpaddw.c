@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,6 +30,12 @@
 *               DESCRIBE IT HERE!
 *
 ****************************************************************************/
+
+
+#include "layer0.h"
+#include "wresrtns.h"
+#include "reserr.h"
+#include "read.h"
 
 
 bool ResReadPadDWord( WResFileID handle )
