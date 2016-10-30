@@ -36,8 +36,8 @@
 #include "resraw.h"
 #include "wresrtns.h"
 
-bool ResWrite( void *buffer, int len, WResFileID handle )
-/*******************************************************/
+bool ResWrite( void *buffer, WResFileSize len, WResFileID handle )
+/****************************************************************/
 {
     if( WRESWRITE( handle, buffer, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
