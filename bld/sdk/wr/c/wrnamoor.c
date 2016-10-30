@@ -57,10 +57,10 @@
 /****************************************************************************/
 
 // UNICODE strings are always compacted
-static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
+static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( const void *data )
 {
     ResNameOrOrdinal    *new;
-    uint_16             *data16;
+    const uint_16       *data16;
     char                *str;
     size_t              stringlen;
 
@@ -68,7 +68,7 @@ static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
         return( NULL );
     }
 
-    data16 = (uint_16 *)data;
+    data16 = (const uint_16 *)data;
 
     if( *data16 == 0xffff ) {
         new = (ResNameOrOrdinal *)MemAlloc( sizeof( ResNameOrOrdinal ) );
@@ -79,17 +79,17 @@ static ResNameOrOrdinal *WR32Mem2NameOrOrdinal( void *data )
         new->ord.wOrdinalID = data16[1];
     } else {
         str = NULL;
-        WRunicode2mbcs( (char *)data, &str, &stringlen );
+        WRunicode2mbcs( data, &str, &stringlen );
         new = (ResNameOrOrdinal *)str;
     }
 
     return( new );
 }
 
-static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
+static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( const void *data )
 {
     ResNameOrOrdinal    *new;
-    uint_8              *data8;
+    const uint_8        *data8;
     size_t              stringlen;
     size_t              len;
     size_t              len1;
@@ -98,13 +98,13 @@ static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( void *data )
         return( NULL );
     }
 
-    data8 = (uint_8 *)data;
+    data8 = (const uint_8 *)data;
 
     if( *data8 == 0xff ) {
         stringlen = 0;
         len = sizeof( ResNameOrOrdinal );
     } else {
-        stringlen = strlen( (char *)data );
+        stringlen = strlen( (const char *)data );
         len = stringlen + 1;
     }
 
@@ -188,7 +188,7 @@ static int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size 
     return( TRUE );
 }
 
-ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( void *data, bool is32bit )
+ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( const void *data, bool is32bit )
 {
     ResNameOrOrdinal    *n;
 

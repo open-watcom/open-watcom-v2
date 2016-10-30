@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern ResNameOrOrdinal *   WRAPI WRMem2NameOrOrdinal( void *data, bool is32bit );
+WRDLLENTRY extern ResNameOrOrdinal *   WRAPI WRMem2NameOrOrdinal( const void *data, bool is32bit );
 WRDLLENTRY extern int                  WRAPI WRNameOrOrd2Mem( ResNameOrOrdinal *name, bool is32bit, void **data, size_t *size );
 
 #endif
