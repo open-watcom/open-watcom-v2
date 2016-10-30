@@ -1367,7 +1367,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         redraw = WdeGenericDefine( &o_info );
     } else {
         WdeSetStatusText( NULL, "", FALSE );
-        WdeSetStatusByID( WDE_DEFININGDIALOG, -1 );
+        WdeSetStatusByID( WDE_DEFININGDIALOG, WDE_NONE );
 
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
                                   (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info ) != 0;
@@ -2672,7 +2672,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
         ok = (ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )));
         if( !ok ) {
             //WdeDisplayErrorMsg( WDE_UNDEFINEDCLASS );
-            WdeSetStatusByID( -1, WDE_UNDEFINEDCLASS );
+            WdeSetStatusByID( WDE_NONE, WDE_UNDEFINEDCLASS );
             WRMemFree( ClassName );
             ClassName = NULL;
             ok = true;

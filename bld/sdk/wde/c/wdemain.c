@@ -79,6 +79,17 @@
 #include "ldstr.h"
 #include "clibint.h"
 
+#include "clibext.h"
+
+
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 static void *_MemAlloc( size_t size )
 {
     return( WRMemAlloc( size ) );
@@ -90,7 +101,7 @@ static void _MemFree( void *p )
 }
 
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
+WResSetRtns( open, close, posix_read, posix_write, lseek, tell, _MemAlloc, _MemFree );
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -200,7 +211,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             if( IsDDE ) {
                 WdeDDEDumpConversation( hinstCurrent );
             }
-            return( FALSE );
+            return( 0 );
         }
 #ifndef __NT__
     }
@@ -208,7 +219,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     else if( IsDDE ) {
         WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         WdeDDEDumpConversation( hinstCurrent );
-        return( FALSE );
+        return( 0 );
     } else {
         win = FindWindow( WdeMainClass, NULL );
         if( win != NULL ) {
@@ -221,7 +232,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         } else {
             WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         }
-        return( FALSE );
+        return( 0 );
     }
 #endif
 #endif
@@ -231,7 +242,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         if( IsDDE ) {
             WdeDDEDumpConversation( hinstCurrent );
         }
-        return( FALSE );
+        return( 0 );
     }
 
     if( IsDDE ) {
@@ -287,7 +298,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 
     WRFini();
 
-    return( msg.wParam );
+    return( (int)msg.wParam );
 }
 
 /* Function to initialize the first instance of Wde */
@@ -631,7 +642,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     LRESULT     ret;
     bool        pass_to_def;
     WdeResInfo  *res_info;
-    int         wp;
+    WORD        wp;
     about_info  ai;
 
     if( WdeCleanupStarted ) {
@@ -652,7 +663,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         break;
 
     case WM_USER:
-        WdeSetStatusByID( -1, WDE_ONLYONEINSTANCE );
+        WdeSetStatusByID( WDE_NONE, WDE_ONLYONEINSTANCE );
         break;
 
     case WM_MENUSELECT:
@@ -908,7 +919,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_SELCUST2:
             if( !WdeSetCurrentCustControl( wp - IDM_SELCUST1 ) ) {
                 WdeWriteTrail( "WdeMainWndProc: WdeSetCurrentCustControl failed!" );
-                WdeSetStatusByID( -1, WDE_SETFAILED );
+                WdeSetStatusByID( WDE_NONE, WDE_SETFAILED );
             }
             pass_to_def = FALSE;
             break;
@@ -1090,11 +1101,8 @@ bool WdeSetDialogMode( WORD id )
     }
 
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
-        if( Forward( obj, SET_ORDER_MODE, &mode, NULL ) ) {
-            return( TRUE );
-        }
+        return( Forward( obj, SET_ORDER_MODE, &mode, NULL ) != 0 );
     }
-
     return( FALSE );
 }
 
@@ -1103,9 +1111,8 @@ bool WdeSaveCurrentDialog( WORD menu_id )
     OBJPTR  obj;
 
     if ( (obj = WdeGetCurrentDialog()) != NULL ) {
-        return( Forward( obj, SAVE_OBJECT, &menu_id, NULL ) );
+        return( Forward( obj, SAVE_OBJECT, &menu_id, NULL ) != 0 );
     }
-
     return( FALSE );
 }
 
@@ -1114,9 +1121,8 @@ bool WdeRestoreCurrentDialog( void )
     OBJPTR     obj;
 
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
-        return( Forward( obj, RESTORE_OBJECT, NULL, NULL ) );
+        return( Forward( obj, RESTORE_OBJECT, NULL, NULL ) != 0 );
     }
-
     return( FALSE );
 }
 
@@ -1128,7 +1134,7 @@ bool WdeHideCurrentDialog( void )
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
         user_action = FALSE;
         hide = TRUE;
-        return( Forward( obj, DESTROY, &user_action, &hide ) );
+        return( Forward( obj, DESTROY, &user_action, &hide ) != 0 );
     }
 
     return( FALSE );
@@ -1321,7 +1327,7 @@ bool WdeProcessArgs( char **argv, int argc )
     }
 
     if( !ok ) {
-        WdeSetStatusByID( -1, WDE_INPUTFILENOTFOUND );
+        WdeSetStatusByID( WDE_NONE, WDE_INPUTFILENOTFOUND );
     }
 
     return( ok );
@@ -1354,6 +1360,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
     static HBITMAP   logo;
     static HBRUSH    brush;
     static COLORREF  color;
+
+    wParam=wParam;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:

@@ -309,13 +309,13 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
         }
         if( info_list == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: There are no custom controls of this class!" );
-            WdeSetStatusByID( -1, WDE_NOCUSTOMFORCLASS );
+            WdeSetStatusByID( WDE_NONE, WDE_NOCUSTOMFORCLASS );
             return( NULL );
         }
         WdeChooseCustControlFromList( info_list, control, &cust_info, &cust_type );
         if( cust_info == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: No custom control fits this class & style!" );
-            WdeSetStatusByID( -1, WDE_CANTFINDCUSTOM );
+            WdeSetStatusByID( WDE_NONE, WDE_CANTFINDCUSTOM );
             return( NULL );
         }
     }
@@ -758,7 +758,7 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     dialog_owner = WdeGetMainWindowHandle();
 
     WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_DEFININGCUSTOM, -1 );
+    WdeSetStatusByID( WDE_DEFININGCUSTOM, WDE_NONE );
 
     if( obj->cust_info->ms_lib ) {
         ctl_size = sizeof( CTLSTYLE );

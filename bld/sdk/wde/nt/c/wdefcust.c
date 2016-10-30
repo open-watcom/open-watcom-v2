@@ -270,13 +270,13 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
             WRMemFree( class_name );
         }
         if( info_list == NULL ) {
-            WdeSetStatusByID( -1, WDE_NOCUSTOMFORCLASS );
+            WdeSetStatusByID( WDE_NONE, WDE_NOCUSTOMFORCLASS );
             return( NULL );
         }
         WdeChooseCustControlFromList( info_list, control, &cust_lib, &cust_index );
         if( cust_lib == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: No custom control fits this class & style!" );
-            WdeSetStatusByID( -1, WDE_CANTFINDCUSTOM );
+            WdeSetStatusByID( WDE_NONE, WDE_CANTFINDCUSTOM );
             return( NULL );
         }
     }
@@ -708,7 +708,7 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     dialog_owner = WdeGetMainWindowHandle();
 
     WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_DEFININGCUSTOM, -1 );
+    WdeSetStatusByID( WDE_DEFININGCUSTOM, WDE_NONE );
 
     lpcci = &obj->cust_lib->lpcci[obj->cust_index];
 

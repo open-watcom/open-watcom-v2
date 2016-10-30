@@ -130,7 +130,7 @@ bool WdeSetCurrentCustControl( int which )
     FARPROC   proc;
 
     if( WdeCustomLibList == NULL ) {
-        WdeSetStatusByID( -1, WDE_NOCUSTLOADED );
+        WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
         return( TRUE );
     }
 
@@ -198,7 +198,7 @@ bool WdeLoadCustomLib( bool nt_lib, bool load_only )
     lib->file_name = name;
 
     if( load_only ) {
-        WdeSetStatusByID( -1, WDE_LIBRARYLOADED );
+        WdeSetStatusByID( WDE_NONE, WDE_LIBRARYLOADED );
         ret = TRUE;
     } else {
         if( nt_lib ) {
@@ -234,7 +234,7 @@ BOOL WdeLoadMSCustomControls( WdeCustLib *lib )
         if( info_proc == NULL ) {
             WdeWriteTrail( "WdeLoadMSCustomControls: Info Proc not found!" );
         } else {
-            WdeSetStatusByID( -1, WDE_UNICUSTNOTSUPPORTED );
+            WdeSetStatusByID( WDE_NONE, WDE_UNICUSTNOTSUPPORTED );
         }
         return( FALSE );
     }

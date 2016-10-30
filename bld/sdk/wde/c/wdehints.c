@@ -238,7 +238,7 @@ void WdeDisplayHint( ctl_id id )
     if( id < WDE_MDI_FIRST ) {
         hint = WdeGetHintItem( id );
         if( hint != NULL ) {
-            WdeSetStatusByID( -1, hint->hint );
+            WdeSetStatusByID( WDE_NONE, hint->hint );
         }
     } else {
         mditext = WdeAllocRCString( WDE_HINT_MDIMSG );
@@ -307,7 +307,7 @@ void WdeHandlePopupHint( HMENU menu, HMENU popup )
     if( p != NULL ) {
         hint = WdeGetPopupHint( p, popup );
         if( hint != -1 ) {
-            WdeSetStatusByID( -1, hint );
+            WdeSetStatusByID( WDE_NONE, hint );
         }
     }
 

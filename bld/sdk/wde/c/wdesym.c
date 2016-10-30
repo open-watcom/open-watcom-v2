@@ -433,7 +433,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
 
     if( ok ) {
         WdeSetStatusText( NULL, " ", FALSE );
-        WdeSetStatusByID( WDE_LOADINGSYMBOLS, -1 );
+        WdeSetStatusByID( WDE_LOADINGSYMBOLS, WDE_NONE );
     }
 
     if( ok ) {
@@ -529,7 +529,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
     }
 
     WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_WRITINGSYMBOLS, -1 );
+    WdeSetStatusByID( WDE_WRITINGSYMBOLS, WDE_NONE );
 
     if( prompt || *file_name == '\0' ) {
         gf.file_name = *file_name;
