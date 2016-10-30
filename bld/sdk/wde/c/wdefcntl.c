@@ -1173,8 +1173,8 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     is.dsize.y = GETCTL_SIZEY( obj->control_info );
     is.dsize.width = GETCTL_SIZEW( obj->control_info );
     is.dsize.height = GETCTL_SIZEH( obj->control_info );
-    is.c.text = GETCTL_TEXT( obj->control_info );
-    is.c.id = GETCTL_ID( obj->control_info );
+    is.u.ctl.text = GETCTL_TEXT( obj->control_info );
+    is.u.ctl.id = GETCTL_ID( obj->control_info );
     is.symbol = WdeStrDup( obj->symbol );
 //  is.helpsymbol = WdeStrDup( obj->helpsymbol );
 
@@ -1779,11 +1779,11 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    if( in->c.text ) {
+    if( in->u.ctl.text ) {
         if( GETCTL_TEXT( obj->control_info ) ) {
             WRMemFree( GETCTL_TEXT( obj->control_info ) );
         }
-        SETCTL_TEXT( obj->control_info, in->c.text );
+        SETCTL_TEXT( obj->control_info, in->u.ctl.text );
         text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
         if( text != NULL ) {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)text );
@@ -1806,7 +1806,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
             SETCTL_ID( obj->control_info, entry->value );
         }
     } else {
-        SETCTL_ID( obj->control_info, in->c.id );
+        SETCTL_ID( obj->control_info, in->u.ctl.id );
     }
 
     WdeControlModified( obj );
