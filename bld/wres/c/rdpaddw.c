@@ -22,6 +22,7 @@
 *    NON-INFRINGEMENT. Please see the License for the specific language
 *    governing rights and limitations under the License.
 *
+*
 *  ========================================================================
 *
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
@@ -30,21 +31,24 @@
 ****************************************************************************/
 
 
-#include "layer0.h"
-#include "resutil.h"
-#include "read.h"
-#include "reserr.h"
-#include "wresrtns.h"
-
-WResFileOffset ResSeek( WResFileID handle, WResFileOffset offset, int origin )
-/****************************************************************************/
-/* cover function for seek */
+bool ResReadPadDWord( WResFileID handle )
+/***************************************/
+/* advances in the file to the next DWORD boundry */
 {
-    WResFileOffset  posn;
+    WResFileOffset  curr_pos;
+    WResFileOffset  padding;
+    bool            error;
 
-    posn = WRESSEEK( handle, offset, origin );
-    if( posn == -1 ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
+    curr_pos = WRESTELL( handle );
+    if( curr_pos == -1 ) {
+        WRES_ERROR( WRS_TELL_FAILED );
+        error = true;
+    } else {
+        padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
+        error = ( WRESSEEK( handle, padding, SEEK_CUR ) == -1 );
+        if( error ) {
+            WRES_ERROR( WRS_SEEK_FAILED );
+        }
     }
-    return( posn );
+    return( error );
 }

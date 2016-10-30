@@ -12,6 +12,7 @@ wres_core_objs = &
     rduint16.obj &
     rduint32.obj &
     rduint8.obj &
+    rdpaddw.obj &
     resseek.obj &
     ropenfro.obj &
     rrdstr.obj &

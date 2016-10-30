@@ -83,7 +83,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     bool            dup;
 
     if( is32bit ) {
-        if( ResPadDWord( dest ) ) {
+        if( ResWritePadDWord( dest ) ) {
             return( false );
         }
     }

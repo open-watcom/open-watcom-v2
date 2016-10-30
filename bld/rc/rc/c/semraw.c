@@ -236,7 +236,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     if( call_startend ) {
         if( CmdLineParms.MSResFormat
           && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            ResPadDWord( CurrResFile.handle );
+            ResWritePadDWord( CurrResFile.handle );
         }
         resLoc.len = SemEndResource( resLoc.start );
     }

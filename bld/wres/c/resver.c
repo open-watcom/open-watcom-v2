@@ -58,7 +58,7 @@ bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode,
         error = ResWriteString( head->Key, use_unicode, handle );
     }
     if( !error ) {
-        error = ResPadDWord( handle );
+        error = ResWritePadDWord( handle );
     }
 
     return( error );
