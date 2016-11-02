@@ -70,7 +70,7 @@ static COLORREF                 colorButtonFace;
 static COLORREF                 colorTextFace;
 static statushook               statusWndHookFunc;
 static int                      classWinExtra;
-static bool                     hasGDIObjects = true;
+static bool                     hasGDIObjects = false;
 static bool                     classRegistered;
 static WPI_INST                 classHandle;
 static statwnd                  *currentStatWnd;
