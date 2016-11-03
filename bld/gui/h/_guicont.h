@@ -29,43 +29,16 @@
 *
 ****************************************************************************/
 
-
-#ifndef _GUICONTR_H_
-#define _GUICONTR_H_
-
-typedef struct control_item {
-    bool                checked;
-    gui_ctl_id          id;
-    gui_control_class   control_class;
-    WPI_PROC            call_back;
-    HWND                hwnd;
-    const char          *text;
-    gui_control_styles  style;
-    struct control_item *next;
-} control_item;
-
-typedef struct {
-    char                *classname;
-    DWORD               style;
-#ifdef __NT__
-    DWORD               xstyle;
-#endif
-} controls_struct;
-
-extern control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id );
-extern control_item *GUIGetControlByHwnd( gui_window *parent, HWND control );
-extern control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
-                              HWND control, gui_control_info *ctl_info,
-                              WPI_PROC call_back );
-extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent );
-extern void GUIControlDelete( gui_window *wnd, gui_ctl_id id );
-extern void GUIControlDeleteAll( gui_window *wnd );
-extern void GUIChangeHWnd( HWND, HWND );
-extern gui_window *GUIGetParentWnd( HWND );
-extern bool GUIAddParent( HWND, gui_window * );
-extern WPI_PROC GUIDoSubClass( HWND, gui_control_class );
-extern bool GUIInsertCtrlWnd( gui_window *wnd );
-extern gui_window *GUIGetCtrlWnd( HWND hwnd );
-extern LONG GUISetControlStyle( gui_control_info *ctl_info );
-extern bool GUICheckRadioButton( gui_window *wnd, gui_ctl_id id );
-#endif // _GUICONTR_H_
+    /* uitype        classn         classn_os2  style               xstyle_nt                 gui_control_classs  */
+pick( FLD_HOT,      WC_BUTTON,        "#3",     PUSH_STYLE,           0 )                   /* GUI_PUSH_BUTTON    */
+pick( FLD_HOT,      WC_BUTTON,        "#3",     DEFPUSH_STYLE,        0 )                   /* GUI_DEFPUSH_BUTTON */
+pick( FLD_RADIO,    WC_BUTTON,        "#3",     RADIO_STYLE,          0 )                   /* GUI_RADIO_BUTTON   */
+pick( FLD_CHECK,    WC_BUTTON,        "#3",     CHECK_STYLE,          0 )                   /* GUI_CHECK_BOX      */
+pick( FLD_PULLDOWN, WC_COMBOBOX,      "#2",     COMBOBOX_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_COMBOBOX       */
+pick( FLD_EDIT,     WC_ENTRYFIELD,    "#6",     EDIT_STYLE,           WS_EX_CLIENTEDGE )    /* GUI_EDIT           */
+pick( FLD_LISTBOX,  WC_LISTBOX,       "#7",     LISTBOX_STYLE,        WS_EX_CLIENTEDGE )    /* GUI_LISTBOX        */
+pick( FLD_VOID,     WC_SCROLLBAR,     "#8",     SCROLLBAR_STYLE,      0 )                   /* GUI_SCROLLBAR      */
+pick( FLD_TEXT,     WC_STATIC,        "#5",     STATIC_STYLE,         0 )                   /* GUI_STATIC         */
+pick( FLD_FRAME,    WC_GROUPBOX,      "#5",     GROUPBOX_STYLE,       0 )                   /* GUI_GROUPBOX       */
+pick( FLD_COMBOBOX, WC_COMBOBOX,      "#2",     EDIT_COMBOBOX_STYLE,  WS_EX_CLIENTEDGE )    /* GUI_EDIT_COMBOBOX  */
+pick( FLD_EDIT_MLE, WC_MLE,           "#10",    EDIT_MLE_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_EDIT_MLE       */

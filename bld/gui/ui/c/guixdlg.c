@@ -69,18 +69,9 @@ static EVENT ControlEvents[] = {
 };
 
 static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
-    FLD_HOT,      /* GUI_PUSH_BUTTON    */
-    FLD_HOT,      /* GUI_DEFPUSH_BUTTON */
-    FLD_RADIO,    /* GUI_RADIO_BUTTON   */
-    FLD_CHECK,    /* GUI_CHECK_BOX      */
-    FLD_PULLDOWN, /* GUI_COMBOBOX       */
-    FLD_EDIT,     /* GUI_EDIT           */
-    FLD_LISTBOX,  /* GUI_LISTBOX        */
-    FLD_VOID,     /* GUI_SCROLLBAR      */
-    FLD_TEXT,     /* GUI_STATIC         */
-    FLD_FRAME,    /* GUI_GROUPBOX       */
-    FLD_COMBOBOX, /* GUI_EDIT_COMBOBOX  */
-    FLD_EDIT_MLE  /* GUI_EDIT_MLE       */
+    #define pick(uitype,classn,classn_os2,style,xstyle_nt) uitype,
+    #include "_guicont.h"
+    #undef pick
 };
 
 /* functions to find dialog boxes */
