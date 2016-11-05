@@ -33,31 +33,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "watcom.h"
-
-typedef unsigned short  WORD;
-typedef unsigned long   DWORD;
+#include "wio.h"
 #include "loader.h"
 
-#define BUFSIZE 4096
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
+#include "clibext.h"
 
+
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
+#define BUFSIZE         4096
+
+#define _RoundUp(x,a)   (((x)+((a)-1)) & ~((a)-1))
+
+#define Align4K(x)      _RoundUp((x),4096L)
 
 struct padded_hdr {
     rex_exe     hdr;
-    WORD        pad;
+    uint_16     pad;
 };
 
 typedef struct {
-    DWORD datastart;
-    DWORD stackstart;
+    uint_32     datastart;
+    uint_32     stackstart;
 } exe_data;
 
-DWORD   StackSize;
-DWORD   BaseAddr;
+uint_32 StackSize;
+uint_32 BaseAddr;
 char    *CompressedBuffer;
 char    *CompressedBufPtr;
 unsigned short  *RelocBuffer;
@@ -66,8 +73,8 @@ unsigned short  *RelocBuffer;
 /* Function prototypes */
 int lookup( unsigned char, unsigned char );
 int fileread( FILE * );
-void CompressFile( int handle, DWORD filesize );
-void CompressRelocs( DWORD relocsize );
+void CompressFile( int handle, uint_32 filesize );
+void CompressRelocs( uint_32 relocsize );
 
 static void normalizeFName( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
@@ -109,55 +116,55 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-int CmpReloc( const void *_p, const void *_q )
+int CmpReloc( const void *p, const void *q )
 {
-    DWORD       reloc1, const *p = _p;
-    DWORD       reloc2, const *q = _q;
+    uint_32     reloc1;
+    uint_32     reloc2;
 
-    reloc1 = *p & 0x7FFFFFFF;
-    reloc2 = *q & 0x7FFFFFFF;
-    if( reloc1 == reloc2 ) return( 0 ); // shouldn't happen
-    if( reloc1 < reloc2 )  return( -1 );
+    reloc1 = *(const uint_32 *)p & 0x7FFFFFFF;
+    reloc2 = *(const uint_32 *)q & 0x7FFFFFFF;
+    if( reloc1 == reloc2 )
+        return( 0 );        // shouldn't happen
+    if( reloc1 < reloc2 )
+        return( -1 );
     return( 1 );
 }
 
 
-int CopyRexFile( int handle, int newfile, DWORD filesize )
+int CopyRexFile( int handle, int newfile, uint_32 filesize )
 {
     char        *buf;
-    unsigned    amt1;
     unsigned    len;
 
-    buf = malloc( BUFSIZE );
+    len = BUFSIZE;
+    buf = malloc( len );
     if( buf == NULL ) {
         printf( "Out of memory\n" );
         return( -1 );
     }
-    for(;;) {
-        len = filesize;
-        if( len > BUFSIZE )  len = BUFSIZE;
-        amt1 = read( handle, buf, len );
-        if( amt1 != len ) {
+    while( filesize > 0 ) {
+        if( len > filesize )
+            len = filesize;
+        if( posix_read( handle, buf, len ) != len ) {
             printf( "Error reading REX file\n" );
             free( buf );
             return( -1 );
         }
-        if( write( newfile, buf, len ) != len ) {
+        if( posix_write( newfile, buf, len ) != len ) {
             printf( "Error writing file\n" );
             free( buf );
             return( -1 );
         }
         filesize -= len;
-        if( filesize == 0 ) break;
     }
     free( buf );
     return( 0 );
 }
 
-DWORD RelocSize( DWORD *relocs, unsigned n )
+uint_32 RelocSize( uint_32 *relocs, unsigned n )
 {
-    DWORD       size;
-    DWORD       page;
+    uint_32     size;
+    uint_32     page;
     unsigned    i;
 
     i = 0;
@@ -166,7 +173,8 @@ DWORD RelocSize( DWORD *relocs, unsigned n )
         size += 2 * sizeof(unsigned short);
         page = relocs[i] & 0x7FFF0000;
         while( i < n ) {
-            if( (relocs[i] & 0x7FFF0000) != page ) break;
+            if( (relocs[i] & 0x7FFF0000) != page )
+                break;
             i++;
             size += sizeof(unsigned short);
         }
@@ -175,9 +183,9 @@ DWORD RelocSize( DWORD *relocs, unsigned n )
     return( size );
 }
 
-int CreateRelocs( DWORD *relocs, unsigned short *newrelocs, unsigned n )
+int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n )
 {
-    DWORD       page;
+    uint_32     page;
     unsigned    i;
     unsigned    j;
     unsigned    k;
@@ -188,7 +196,8 @@ int CreateRelocs( DWORD *relocs, unsigned short *newrelocs, unsigned n )
         page = relocs[i] & 0x7FFF0000;
         j = i;
         while( j < n ) {
-            if( (relocs[j] & 0x7FFF0000) != page ) break;
+            if( (relocs[j] & 0x7FFF0000) != page )
+                break;
             j++;
         }
         //printf( "Page: %4.4x  Count: %u\n", page >> 16, j - i );
@@ -211,14 +220,13 @@ int main( int argc, char *argv[] )
     int                 loader_handle;
     int                 newfile;
     char                *file;
-    DWORD               size;
-    DWORD               codesize;
-    DWORD               relocsize;
-    DWORD               minmem,maxmem;
-    DWORD               relsize,exelen;
-    DWORD               *relocs;
-    DWORD               file_header_size;
-    unsigned            len;
+    uint_32             size;
+    uint_32             codesize;
+    uint_32             relocsize;
+    uint_32             minmem,maxmem;
+    uint_32             relsize,exelen;
+    uint_32             *relocs;
+    uint_32             file_header_size;
     char                *loader_code;
     dos_hdr             *dos_header;
     w32_hdr             *w32_header;
@@ -253,37 +261,37 @@ int main( int argc, char *argv[] )
     /*
      * validate header signature
      */
-    read( handle, &exehdr, sizeof( rex_exe ) );
+    posix_read( handle, &exehdr, sizeof( rex_exe ) );
     if( !(exehdr.hdr.sig[0] == 'M' && exehdr.hdr.sig[1] == 'Q') ) {
         printf( "Invalid EXE\n" );
         exit( 1 );
     }
-    file_header_size = (DWORD) exehdr.hdr.file_header * 16L;
+    file_header_size = (uint_32)exehdr.hdr.file_header * 16L;
     /*
      * exe.one is supposed to always contain a 1 for a .REX file.
      * However, to allow relocation tables bigger than 64K, the
      * we extended the linker to have the .one field contain the
      * number of full 64K chunks of relocations, minus 1.
      */
-    file_header_size += (exehdr.hdr.one-1)*0x10000L*16L;
+    file_header_size += ( exehdr.hdr.one - 1 ) * 0x10000L * 16L;
 
     /*
      * get file size
      */
-    size = (long) exehdr.hdr.file_size2 * 512L;
+    size = (long)exehdr.hdr.file_size2 * 512L;
     if( exehdr.hdr.file_size1 > 0 ) {
-        size += (long) exehdr.hdr.file_size1 - 512L;
+        size += (long)exehdr.hdr.file_size1 - 512L;
     }
 
     /*
      * get minimum/maximum amounts of heap, then add in exe size
      * to get total area
      */
-    minmem = (DWORD) exehdr.hdr.min_data *(DWORD) 4096L;
+    minmem = (uint_32)exehdr.hdr.min_data * 4096L;
     if( exehdr.hdr.max_data == (unsigned short)-1 ) {
         maxmem = 4096L;
     } else {
-        maxmem = (DWORD) exehdr.hdr.max_data*4096L;
+        maxmem = (uint_32)exehdr.hdr.max_data * 4096L;
     }
     minmem = Align4K( minmem + size );
     maxmem = Align4K( maxmem + size );
@@ -298,42 +306,42 @@ int main( int argc, char *argv[] )
     /*
      * get and apply relocation table
      */
-    relsize = sizeof( DWORD ) * (DWORD) exehdr.hdr.reloc_cnt;
+    relsize = sizeof( uint_32 ) * (uint_32)exehdr.hdr.reloc_cnt;
     {
-        DWORD   realsize;
-        WORD    kcnt;
+        uint_32 realsize;
+        uint_16 kcnt;
 
-        realsize = file_header_size - (DWORD) exehdr.hdr.first_reloc;
-        kcnt = realsize / (0x10000L*sizeof(DWORD));
-        relsize += kcnt * (0x10000L*sizeof(DWORD));
+        realsize = file_header_size - (uint_32)exehdr.hdr.first_reloc;
+        kcnt = realsize / ( 0x10000L * sizeof( uint_32 ) );
+        relsize += kcnt * ( 0x10000L * sizeof( uint_32 ) );
     }
     //printf( "relocation size = %lu", relsize );
-    //printf( " => %lu relocation entries\n", relsize / sizeof(DWORD) );
-    lseek( handle, exelen + (DWORD) exehdr.hdr.first_reloc, SEEK_SET );
+    //printf( " => %lu relocation entries\n", relsize / sizeof( uint_32 ) );
+    lseek( handle, exelen + (uint_32)exehdr.hdr.first_reloc, SEEK_SET );
+    relocs = NULL;
     if( relsize != 0 ) {
-        relocs = (DWORD *)malloc( relsize );
+        relocs = (uint_32 *)malloc( relsize );
         if( relocs == NULL ) {
             printf( "Out of memory\n" );
             return( -1 );
         }
-        len = read( handle, relocs, relsize );
-        if( len != relsize ) {
+        if( posix_read( handle, relocs, relsize ) != relsize ) {
             printf( "Error reading relocation information\n" );
             exit( 1 );
         }
-        qsort( relocs, relsize / sizeof(DWORD), sizeof(DWORD), CmpReloc );
+        qsort( relocs, relsize / sizeof( uint_32 ), sizeof( uint_32 ), CmpReloc );
         if( relocs[0] < 0x80000000 ) {
             printf( "REX file contains 16-bit relocations\n" );
             exit( 1 );
         }
     }
-    relocsize = RelocSize( relocs, relsize / sizeof(DWORD) );
+    relocsize = RelocSize( relocs, relsize / sizeof( uint_32 ) );
     RelocBuffer = (unsigned short *)malloc( relocsize );
     if( RelocBuffer == NULL ) {
         printf( "Out of memory\n" );
         exit( 1 );
     }
-    CreateRelocs( relocs, RelocBuffer, relsize / sizeof(DWORD) );
+    CreateRelocs( relocs, RelocBuffer, relsize / sizeof( uint_32 ) );
 
     file = argv[argc++];
     normalizeFName( file, strlen( file ) + 1, file );
@@ -355,23 +363,22 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     size = filelength( loader_handle );
-    loader_code = calloc( (size + 511) & -512L, 1 );
+    loader_code = calloc( _RoundUp( size, 512L ), 1 );
     if( loader_code == NULL ) {
         printf( "Out of memory\n" );
         return( -1 );
     }
-    len = read( loader_handle, loader_code, size );
-    close( loader_handle );
-    if( len != size ) {
+    if( posix_read( loader_handle, loader_code, size ) != size ) {
+        close( loader_handle );
         printf( "Error reading '%s'\n", file );
         exit( 1 );
     }
-    size = (size + 511) & -512L;        /* round up to multiple of 512 */
+    close( loader_handle );
+    size = _RoundUp( size, 512L );        /* round up to multiple of 512 */
 
     /* patch header in the loader */
     dos_header = (dos_hdr *)loader_code;
-    w32_header = (w32_hdr *)
-        (loader_code + dos_header->size_of_DOS_header_in_paras * 16);
+    w32_header = (w32_hdr *)( loader_code + dos_header->size_of_DOS_header_in_paras * 16 );
 
     w32_header->start_of_W32_file = size;
     w32_header->size_of_W32_file = codesize + relocsize;
@@ -394,23 +401,20 @@ int main( int argc, char *argv[] )
         close( handle );
         CompressRelocs( relocsize );
         w32_header->size_of_W32_file = CompressedBufPtr - CompressedBuffer;
-        len = write( newfile, loader_code, size );
-        if( len != size ) {
+        if( posix_write( newfile, loader_code, size ) != size ) {
             printf( "Error writing output file\n" );
             close( newfile );
             exit( 1 );
         }
         size = CompressedBufPtr - CompressedBuffer;
-        len = write( newfile, CompressedBuffer, size );
-        if( len != size ) {
+        if( posix_write( newfile, CompressedBuffer, size ) != size ) {
             printf( "Error writing output file\n" );
             close( newfile );
             exit( 1 );
         }
     } else {
         w32_header->sig = 'FC';
-        len = write( newfile, loader_code, size );
-        if( len != size ) {
+        if( posix_write( newfile, loader_code, size ) != size ) {
             printf( "Error writing output file\n" );
             close( newfile );
             close( handle );
@@ -419,8 +423,7 @@ int main( int argc, char *argv[] )
         lseek( handle, exelen + file_header_size, SEEK_SET );
         CopyRexFile( handle, newfile, codesize );
         close( handle );
-        len = write( newfile, RelocBuffer, relocsize );
-        if( len != relocsize ) {
+        if( posix_write( newfile, RelocBuffer, relocsize ) != relocsize ) {
             printf( "Error writing output file\n" );
             close( newfile );
             exit( 1 );
@@ -508,7 +511,9 @@ void HashBlock( int len )
             if( count[index] == (THRESHOLD-1) ) {
                 high_count[high_index++] = index;
             }
-            if( count[index] < 255 )  ++count[index];
+            if( count[index] < 255 ) {
+                ++count[index];
+            }
         }
 
         /* Use rightcode to flag data chars found */
@@ -538,13 +543,16 @@ void filewrite( void )
             len = 1;
             c++;
             while( len < 127  &&  c < 256  &&  c == leftcode[c] ) {
-                if( ! rightcode[c] )  ++unused;
+                if( ! rightcode[c] )
+                    ++unused;
                 len++;
                 c++;
             }
             W32Putc( len + 127 );
             len = 0;
-            if( c == 256 ) break;
+            if( c == 256 ) {
+                break;
+            }
         } else {                /* Else count run of pair codes */
             len = 0;
             c++;
@@ -607,11 +615,14 @@ void CompressBlock( void )
     for(;;) {
         /* Get next unsed char for pair code */
         for( code--; code >= 0; code-- ) {
-            if( code == leftcode[code]  &&  ! rightcode[code] ) break;
+            if( code == leftcode[code] && !rightcode[code] ) {
+                break;
+            }
         }
 
         /* Must quit if no unused chars left */
-        if( code < 0 )  break;
+        if( code < 0 )
+            break;
 
         /* Find most frequent pair of chars */
         best_index = 0;
@@ -635,7 +646,8 @@ void CompressBlock( void )
 #endif
 
         /* Done if no more compression possible */
-        if( best < THRESHOLD )  break;
+        if( best < THRESHOLD )
+            break;
 
         /* Replace pairs in data, adjust pair counts */
         leftch = left[best_index];
@@ -645,12 +657,14 @@ void CompressBlock( void )
             if( buffer[r] == leftch  &&  buffer[r+1] == rightch ) {
                 if( r > 0 ) {
                     index = lookup( buffer[w-1], leftch );
-                    if( count[index] > 1 )  --count[index];
+                    if( count[index] > 1 )
+                        --count[index];
                     inc_count( lookup( buffer[w-1], code ) );
                 }
                 if( r < oldsize - 1 ) {
                     index = lookup( rightch, buffer[r+2] );
-                    if( count[index] > 1 )  --count[index];
+                    if( count[index] > 1 )
+                        --count[index];
                     inc_count( lookup( code, buffer[r+2] ) );
                 }
                 buffer[w++] = code;
@@ -672,7 +686,7 @@ void CompressBlock( void )
     }
 }
 
-void CompressRelocs( DWORD relocsize )
+void CompressRelocs( uint_32 relocsize )
 {
     int         len;
     char        *p;
@@ -694,16 +708,17 @@ void CompressRelocs( DWORD relocsize )
 }
 
 /* Compress from input file to output file */
-void CompressFile( int handle, DWORD filesize )
+void CompressFile( int handle, uint_32 filesize )
 {
     int         len;
 
     /* Compress each data block until end of file */
     BlockSize = 2048;
-    while( filesize != 0 ) {
-        len = BlockSize;
-        if( len > filesize )  len = filesize;
-        if( read( handle, buffer, len ) != len ) {
+    len = BlockSize;
+    while( filesize > 0 ) {
+        if( len > filesize )
+            len = filesize;
+        if( posix_read( handle, buffer, len ) != len ) {
             printf( "Read error\n" );
             exit( 1 );
         }
