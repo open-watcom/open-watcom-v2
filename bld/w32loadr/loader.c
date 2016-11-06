@@ -212,23 +212,17 @@ void PrintMsg( char *fmt, ... )
     TinyWrite( MsgFileHandle, buf, len );
 }
 
-
-static void DoRelocations( unsigned short *rel )
+static void DoRelocations( uint_16 *rel )
 {
-    unsigned short      count;
-    unsigned long       addr;
-    unsigned long       base_addr;
+    uint_16         count;
+    char            *addr;
+    uint_32         base_addr;
 
     base_addr = CodeLoadAddr;
-    for( ;; ) {
-        count = *rel++;
-        if( count == 0 )
-            break;
-        addr = *rel++ << 16;
-        addr |= *rel++;
-        addr += base_addr;
+    for( ; (count = *rel++) != 0; ) {
+        addr = (char *)base_addr + ( *rel++ << 16 ) + *rel++;
         for( ;; ) {
-            *(unsigned long *)addr += base_addr;
+            *(uint_32 *)addr += base_addr;
             --count;
             if( count == 0 )
                 break;
@@ -312,13 +306,13 @@ void BPE_Expand( char *dst, char *src, char *srcend )
  */
 static int Init32BitTask( char *file )
 {
-    int         handle;
-    tiny_ret_t  rc;
-    char        *small_chunks;
-    uint_32     load_addr;
-    uint_32     total_size;
-    uint_32     read_size;
-    struct w32_hdr *w32_hdr;
+    int             handle;
+    tiny_ret_t      rc;
+    char            *small_chunks;
+    uint_32         load_addr;
+    uint_32         total_size;
+    uint_32         read_size;
+    struct w32_hdr  *w32_hdr;
     union {
         dos_hdr dos_header;
         char    header[512];
@@ -331,8 +325,8 @@ static int Init32BitTask( char *file )
     }
     handle = TINY_INFO( rc );
 
-    TinyRead( handle, &u.header, 512 );
-    w32_hdr = (struct w32_hdr *)&u.header[ u.dos_header.size_of_DOS_header_in_paras * 16 ];
+    TinyRead( handle, u.header, sizeof( u.header ) );
+    w32_hdr = (struct w32_hdr *)( u.header + u.dos_header.size_of_DOS_header_in_paras * 16 );
 #if COMPRESSION
     if( !IS_OSI_SIGN( w32_hdr ) && !IS_OSI_COMPR_SIGN( w32_hdr ) ) {
 #else
@@ -398,7 +392,7 @@ static int Init32BitTask( char *file )
         BPE_Expand( CodeLoadAddr, load_addr, load_addr + w32_hdr->size_of_W32_file );
     }
 #endif
-    DoRelocations( (unsigned short *)(w32_hdr->offset_to_relocs + CodeLoadAddr) );
+    DoRelocations( (uint_16 *)( w32_hdr->offset_to_relocs + CodeLoadAddr ) );
     return( LOADER_SUCCESS );
 } /* Init32BitTask */
 
@@ -577,7 +571,7 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
         parms.max_handle = 0;
         req_count = 0;
         DosSetRelMaxFH( &req_count, &parms.max_handle );
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
     DosUnsetExceptionHandler( (PEXCEPTIONREGISTRATIONRECORD)&RegRec );
@@ -824,7 +818,7 @@ void __NTMain( void )
         parms.breakflagaddr = &BreakFlag;
         parms.copyright = NULL;
         parms.max_handle = 0;
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
@@ -905,7 +899,7 @@ void __NTMain( void )
         parms.breakflagaddr = &BreakFlag;
         parms.copyright = NULL;
         parms.max_handle = 0;
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
@@ -954,9 +948,9 @@ extern unsigned short __get_ds( void );
 static int __checkIsDBCS( void )
 {
 #if defined(__TNT)
-    unsigned short __far    *leadBytes;
-    PHARLAP_block           pblock;
-    union REGPACK           regs;
+    uint_16             __far *leadBytes;
+    PHARLAP_block       pblock;
+    union REGPACK       regs;
 
     memset( &pblock, 0, sizeof( pblock ) );
     memset( &regs, 0, sizeof( regs ) );
@@ -976,7 +970,7 @@ static int __checkIsDBCS( void )
         }
     }
 #elif defined(__DOS4G) || defined(__CAUSEWAY)
-    unsigned short  *leadBytes;
+    uint_16         *leadBytes;
     rm_call_struct  dblock;
 
     memset( &dblock, 0, sizeof( dblock ) );
@@ -984,8 +978,7 @@ static int __checkIsDBCS( void )
     DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
     if( (dblock.flags & 1) == 0 ) {
         if( (dblock.ds | dblock.esi) != 0 ) {
-            leadBytes = (unsigned short *)
-                          ((((unsigned)dblock.ds)<<4) + (dblock.esi&0xFFFF));
+            leadBytes = (uint_16 *)((((uint_32)dblock.ds) << 4) + (dblock.esi & 0xFFFF));
             if( leadBytes[0] || leadBytes[1] ) {
                 return( 1 );
             }
@@ -993,7 +986,7 @@ static int __checkIsDBCS( void )
     }
 #elif defined(__X32)
     unsigned                esi;
-    unsigned short __far    *leadBytes;
+    uint_16                 __far *leadBytes;
     struct parms {
         unsigned short      interrupt_num;
         unsigned short      selector_ds;
@@ -1029,7 +1022,7 @@ static int __checkIsDBCS( void )
     esi = getLeadBytes( &parm_struct );
     if( (parm_struct.selector_ds | esi) != 0 ) {
         leadBytes = MK_FP( __x386_zero_base_selector,
-                        (parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
+                        ((uint_32)parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
         if( leadBytes[0] || leadBytes[1] ) {
             return( 1 );
         }
@@ -1081,8 +1074,7 @@ int main( void )
         parms.copyright = NULL;
     #endif
         parms.max_handle = 0;
-        rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end,
-                                (int (*)( void ))&__fInt21, &parms );
+        rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end, __fInt21, &parms );
     }
     return( rc );
 }
