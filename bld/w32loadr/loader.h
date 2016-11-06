@@ -63,7 +63,7 @@ typedef struct dos_hdr {
 } dos_hdr;
 
 typedef struct w32_hdr {
-    uint_32     sig;
+    char        sig[4];
     uint_32     start_of_W32_file;
     uint_32     size_of_W32_file;
     uint_32     offset_to_relocs;

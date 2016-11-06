@@ -55,6 +55,9 @@
 #define READSIZE        (0x8000)
 #define RELOC_NUM       1024
 
+#define IS_OSI_SIGN(x)        ((x)->sig[0]=='C'&&(x)->sig[1]=='F'&&(x)->sig[2]==0&&(x)->sig[3]==0)
+#define IS_OSI_COMPR_SIGN(x)  ((x)->sig[0]=='C'&&(x)->sig[1]=='C'&&(x)->sig[2]=='F'&&(x)->sig[3]==0)
+
 enum {
     #define pick(name,emsg,jmsg)  name,
     #include "ldrmsg.h"
@@ -331,9 +334,9 @@ static int Init32BitTask( char *file )
     TinyRead( handle, &u.header, 512 );
     w32_hdr = (struct w32_hdr *)&u.header[ u.dos_header.size_of_DOS_header_in_paras * 16 ];
 #if COMPRESSION
-    if( w32_hdr->sig != 'FC' && w32_hdr->sig != 'FCC' ) {
+    if( !IS_OSI_SIGN( w32_hdr ) && !IS_OSI_COMPR_SIGN( w32_hdr ) ) {
 #else
-    if( w32_hdr->sig != 'FC' ) {
+    if( !IS_OSI_SIGN( w32_hdr ) ) {
 #endif
         PrintMsg( PickMsg( LOADER_INVALID_EXE ) );
         return( LOADER_INVALID_EXE );
@@ -360,7 +363,8 @@ static int Init32BitTask( char *file )
     load_addr = CodeLoadAddr;
     CodeEntryPoint = w32_hdr->initial_EIP + CodeLoadAddr;
 #if COMPRESSION
-    if( w32_hdr->sig == 'FCC' ) {       /* if compressed file */
+    if( IS_OSI_COMPR_SIGN( w32_hdr ) ) {
+        /* if compressed file */
         /* read compressed file into top of memory range */
         load_addr += w32_hdr->memory_size - w32_hdr->size_of_W32_file;
     }
@@ -390,9 +394,8 @@ static int Init32BitTask( char *file )
     }
     TinyClose( handle );
 #if COMPRESSION
-    if( w32_hdr->sig == 'FCC' ) {       /* if compressed file */
-        BPE_Expand( CodeLoadAddr, load_addr,
-                        load_addr + w32_hdr->size_of_W32_file );
+    if( IS_OSI_COMPR_SIGN( w32_hdr ) ) {        /* if compressed file */
+        BPE_Expand( CodeLoadAddr, load_addr, load_addr + w32_hdr->size_of_W32_file );
     }
 #endif
     DoRelocations( (unsigned short *)(w32_hdr->offset_to_relocs + CodeLoadAddr) );
