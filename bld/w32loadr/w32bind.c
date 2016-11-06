@@ -56,6 +56,9 @@
 #define SET_OSI_SIGN(x)        (x)->sig[0]='C';(x)->sig[1]='F';(x)->sig[2]=0;(x)->sig[3]=0
 #define SET_OSI_COMPR_SIGN(x)  (x)->sig[0]='C';(x)->sig[1]='C';(x)->sig[2]='F';(x)->sig[3]=0
 
+#define W32PutByte(c)   *out_buffer_ptr++ = (char)(c)
+#define W32PutBuf(b,s)  memcpy(out_buffer_ptr,b,s);out_buffer_ptr+=s
+
 struct padded_hdr {
     rex_exe     hdr;
     uint_16     pad;
@@ -66,15 +69,13 @@ typedef struct {
     uint_32     stackstart;
 } exe_data;
 
-static char    *CompressedBuffer;
-static char    *CompressedBufPtr;
-static unsigned short  *RelocBuffer;
-#define W32Putc(c) *CompressedBufPtr++ = (c)
+static char             *RelocBuffer;
+
+static char             *out_buffer = NULL;
+static char             *out_buffer_ptr;
 
 /* Function prototypes */
 static int lookup( unsigned char, unsigned char );
-static uint_32 CompressFile( int handle, uint_32 filesize );
-static uint_32 CompressRelocs( uint_32 relocsize );
 
 static void normalizeFName( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
@@ -152,13 +153,15 @@ static uint_32 RelocSize( uint_32 *relocs, unsigned n )
     return( size );
 }
 
-static int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n )
+static int CreateRelocs( uint_32 *relocs, char *buf, unsigned n )
 {
-    uint_32     page;
-    unsigned    i;
-    unsigned    j;
-    unsigned    k;
+    uint_32         page;
+    unsigned        i;
+    unsigned        j;
+    unsigned        k;
+    unsigned short  *newrelocs;
 
+    newrelocs = (unsigned short *)buf;
     i = 0;
     k = 0;
     while( i < n ) {
@@ -175,7 +178,7 @@ static int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n 
         newrelocs[k++] = (unsigned short)relocs[i];
         i++;
         for( ; i < j; i++, k++ ) {
-            newrelocs[k] = (unsigned short)(relocs[i] - relocs[i-1]);
+            newrelocs[k] = (unsigned short)(relocs[i] - relocs[i - 1]);
         }
         i = j;
     }
@@ -209,7 +212,7 @@ static int     high_count[HASHSIZE];
 static int     high_index;             /* next index into high_count to fill in */
 static int     old_size;
 static int     chars_used;
-static int     BlockSize;
+//static int     BlockSize;
 
 /* Return index of character pair in hash table */
 /* Deleted nodes have count of 1 for hashing */
@@ -219,11 +222,11 @@ static int lookup( unsigned char a, unsigned char b )
     int         index;
 
     /* Compute hash key from both characters */
-    index = (a ^ (b << 5)) & (HASHSIZE-1);
+    index = (a ^ (b << 5)) & (HASHSIZE - 1);
 
     /* Search for pair or first empty slot */
-    while( (left[index] != a  ||  right[index] != b)  && count[index] != 0 ) {
-        index = (index + 1) & (HASHSIZE-1);
+    while( (left[index] != a || right[index] != b) && count[index] != 0 ) {
+        index = (index + 1) & (HASHSIZE - 1);
     }
 
     /* Store pair in table */
@@ -252,8 +255,8 @@ static size_t HashBlock( size_t len )
     for( size = 0; size < len; size++ ) {
         c = buffer[size];
         if( size > 0 ) {
-            index = lookup( buffer[size-1], c );
-            if( count[index] == (THRESHOLD-1) ) {
+            index = lookup( buffer[size - 1], c );
+            if( count[index] == (THRESHOLD - 1) ) {
                 high_count[high_index++] = index;
             }
             if( count[index] < 255 ) {
@@ -273,13 +276,16 @@ static size_t HashBlock( size_t len )
 }
 
 /* Write each pair table and data block to output */
-static size_t filewrite( size_t size )
+static size_t filewrite( int newfile, size_t inp_size )
 {
     int         i;
     int         len;
     int         unused = 0;
     int         missed;
     int         c = 0;
+    size_t      out_size;
+
+    out_buffer_ptr = out_buffer;
 
     /* For each character 0..255 */
     while( c < 256 ) {
@@ -294,7 +300,7 @@ static size_t filewrite( size_t size )
                 len++;
                 c++;
             }
-            W32Putc( len + 127 );
+            W32PutByte( len + 127 );
             len = 0;
             if( c == 256 ) {
                 break;
@@ -302,29 +308,34 @@ static size_t filewrite( size_t size )
         } else {                /* Else count run of pair codes */
             len = 0;
             c++;
-            while( len < 127  &&  c < 256  &&  c != leftcode[c]  ||
-                   len < 125  &&  c < 254  &&  c+1 != leftcode[c+1] ) {
+            while( len < 127 && c < 256 && c != leftcode[c] || len < 125 && c < 254 && ( c + 1 ) != leftcode[c + 1] ) {
                 len++;
                 c++;
             }
-            W32Putc( len );
+            W32PutByte( len );
             c -= len + 1;
         }
 
         /* Write range of pairs to output */
         for( i = 0; i <= len; i++ ) {
-            W32Putc( leftcode[c] );
+            W32PutByte( leftcode[c] );
             if( c != leftcode[c] ) {
-                W32Putc( rightcode[c] );
+                W32PutByte( rightcode[c] );
             }
             c++;
         }
     }
     /* Write size bytes and compressed data block */
-    W32Putc( size / 256 );
-    W32Putc( size % 256 );
-    memcpy( CompressedBufPtr, buffer, size );
-    CompressedBufPtr += size;
+    W32PutByte( inp_size / 256 );
+    W32PutByte( inp_size % 256 );
+    W32PutBuf( buffer, inp_size );
+    out_size = out_buffer_ptr - out_buffer;
+    if( out_size > 0 ) {
+        if( posix_write( newfile, out_buffer, out_size ) != out_size ) {
+            printf( "Error writing file\n" );
+            return( -1 );
+        }
+    }
     missed = 0;
     for( i = 0; i < high_index; i++ ) {
         c = high_count[i];
@@ -334,13 +345,13 @@ static size_t filewrite( size_t size )
     }
 //printf( "Data block: old_size=%u, new_size=%u, chars=%u, unused pairs=%u missed=%u\n",
 //            old_size, size, chars_used, unused, missed );
-    return( CompressedBufPtr - CompressedBuffer );
+    return( out_size );
 }
 
 static void inc_count( int index )
 {
     if( count[index] < 255 ) {
-        if( count[index] == (THRESHOLD-1) ) {
+        if( count[index] == (THRESHOLD - 1) ) {
             if( high_index < HASHSIZE ) {
                 high_count[high_index++] = index;
             }
@@ -349,14 +360,14 @@ static void inc_count( int index )
     }
 }
 
-static size_t CompressBlock( size_t size )
+static size_t CompressBlock( size_t inp_size )
 {
-    unsigned char       leftch;
-    unsigned char       rightch;
-    int         best;
-    int         code;
-    int         oldsize;
-    int         index, r, w, best_index;
+    unsigned char   leftch;
+    unsigned char   rightch;
+    unsigned char   best;
+    int             code;
+    int             oldsize;
+    int             index, r, w, best_index;
 
     code = 256;
     for(;;) {
@@ -399,24 +410,24 @@ static size_t CompressBlock( size_t size )
         /* Replace pairs in data, adjust pair counts */
         leftch = left[best_index];
         rightch = right[best_index];
-        oldsize = size - 1;
+        oldsize = inp_size - 1;
         for( w = 0, r = 0; r < oldsize; r++ ) {
-            if( buffer[r] == leftch  &&  buffer[r+1] == rightch ) {
+            if( buffer[r] == leftch  &&  buffer[r + 1] == rightch ) {
                 if( r > 0 ) {
-                    index = lookup( buffer[w-1], leftch );
+                    index = lookup( buffer[w - 1], leftch );
                     if( count[index] > 1 )
                         --count[index];
-                    inc_count( lookup( buffer[w-1], code ) );
+                    inc_count( lookup( buffer[w - 1], code ) );
                 }
                 if( r < oldsize - 1 ) {
-                    index = lookup( rightch, buffer[r+2] );
+                    index = lookup( rightch, buffer[r + 2] );
                     if( count[index] > 1 )
                         --count[index];
-                    inc_count( lookup( code, buffer[r+2] ) );
+                    inc_count( lookup( code, buffer[r + 2] ) );
                 }
                 buffer[w++] = code;
                 r++;
-                size--;
+                inp_size--;
             } else {
                 buffer[w++] = buffer[r];
             }
@@ -431,90 +442,78 @@ static size_t CompressBlock( size_t size )
 //          index = lookup( leftch, rightch );
         count[best_index] = 1;
     }
-    return( size );
+    return( inp_size );
 }
 
-static uint_32 CompressRelocs( uint_32 relocsize )
+static uint_32 WriteRelocs( int newfile, const char *buf, uint_32 inp_size, int compress )
 {
     size_t      len;
-    char        *p;
     size_t      size;
     uint_32     out_size;
 
+    len = 4096;
     out_size = 0;
-    p = (char *)RelocBuffer;
-    while( relocsize != 0 ) {
-        if( relocsize < BLOCKSIZE ) {
-            len = relocsize;
+    while( inp_size > 0 ) {
+        if( len > inp_size )
+            len = inp_size;
+        memcpy( buffer, buf, len );
+        buf += len;
+        if( compress ) {
+            size = HashBlock( len );
+            size = CompressBlock( size );
+            size = filewrite( newfile, size );
+            if( size == -1 ) {
+                printf( "Error writing output file\n" );
+                return( -1 );
+            }
+            out_size += size;
         } else {
-            len = 4096;
+            if( posix_write( newfile, buf, len ) != len ) {
+                printf( "Error writing output file\n" );
+                return( -1 );
+            }
+            out_size += len;
         }
-        memcpy( buffer, p, len );
-        p += len;
-        size = HashBlock( len );
-        size = CompressBlock( size );
-        size = filewrite( size );
-        out_size += size;
-        relocsize -= len;
+        inp_size -= len;
     }
     return( out_size );
 }
 
-/* Compress from input file to output file */
-static uint_32 CompressFile( int handle, uint_32 filesize )
+static uint_32 WriteCode( int handle, int newfile, uint_32 inp_size, int compress )
 {
     size_t      len;
     size_t      size;
     uint_32     out_size;
 
-    /* Compress each data block until end of file */
+    len = 2048;
     out_size = 0;
-    BlockSize = 2048;
-    len = BlockSize;
-    while( filesize > 0 ) {
-        if( len > filesize )
-            len = filesize;
+    while( inp_size > 0 ) {
+        if( len > inp_size )
+            len = inp_size;
         if( posix_read( handle, buffer, len ) != len ) {
-            printf( "Read error\n" );
-            exit( 1 );
+            printf( "Error reading REX file\n" );
+            return( -1 );
         }
-        size = HashBlock( len );
-        size = CompressBlock( size );
-        size = filewrite( size );
-        out_size += size;
-        filesize -= len;
+        if( compress ) {
+            /* Compress each data block until end of file */
+            size = HashBlock( len );
+            size = CompressBlock( size );
+            size = filewrite( newfile, size );
+            if( size == -1 ) {
+                printf( "Error writing output file\n" );
+                return( -1 );
+            }
+            out_size += size;
+        } else {
+            if( posix_write( newfile, buffer, len ) != len ) {
+                printf( "Error writing output file\n" );
+                return( -1 );
+            }
+            out_size += len;
+        }
+        inp_size -= len;
     }
     return( out_size );
-}
-
-static int CopyRexFile( int handle, int newfile, uint_32 filesize )
-{
-    char        *buf;
-    unsigned    len;
-
-    len = BUFSIZE;
-    buf = malloc( len );
-    if( buf == NULL ) {
-        printf( "Out of memory\n" );
-        return( -1 );
-    }
-    while( filesize > 0 ) {
-        if( len > filesize )
-            len = filesize;
-        if( posix_read( handle, buf, len ) != len ) {
-            printf( "Error reading REX file\n" );
-            free( buf );
-            return( -1 );
-        }
-        if( posix_write( newfile, buf, len ) != len ) {
-            printf( "Error writing file\n" );
-            free( buf );
-            return( -1 );
-        }
-        filesize -= len;
-    }
-    free( buf );
-    return( 0 );
 }
 
 int main( int argc, char *argv[] )
@@ -535,12 +534,15 @@ int main( int argc, char *argv[] )
     w32_hdr             *w32_header;
     struct padded_hdr   exehdr;
     char                compress;
+    size_t              loadersize_read;
+    size_t              loadersize;
+    uint_32             out_size;
 
     if( argc < 3 ) {
         printf( "Usage: w32bind REX_filename new_filename [os2ldr.exe]\n" );
         printf( "w32bind binds REX file with 32-bit loader\n" );
 //      printf( "-c   compresses the executable\n" );
-        exit( 1 );
+        return( 1 );
     }
     argc = 1;
     compress = 0;
@@ -557,7 +559,7 @@ int main( int argc, char *argv[] )
     handle = open( file, O_RDONLY | O_BINARY );
     if( handle == -1 ) {
         printf( "Error opening file '%s'\n", file );
-        exit( 1 );
+        return( 1 );
     }
 
     exelen = 0;
@@ -567,7 +569,7 @@ int main( int argc, char *argv[] )
     posix_read( handle, &exehdr, sizeof( rex_exe ) );
     if( !(exehdr.hdr.sig[0] == 'M' && exehdr.hdr.sig[1] == 'Q') ) {
         printf( "Invalid EXE\n" );
-        exit( 1 );
+        return( 1 );
     }
     file_header_size = (uint_32)exehdr.hdr.file_header * 16L;
     /*
@@ -630,19 +632,19 @@ int main( int argc, char *argv[] )
         }
         if( posix_read( handle, relocs, relsize ) != relsize ) {
             printf( "Error reading relocation information\n" );
-            exit( 1 );
+            return( 1 );
         }
         qsort( relocs, relsize / sizeof( uint_32 ), sizeof( uint_32 ), CmpReloc );
         if( relocs[0] < 0x80000000 ) {
             printf( "REX file contains 16-bit relocations\n" );
-            exit( 1 );
+            return( 1 );
         }
     }
     relocsize = RelocSize( relocs, relsize / sizeof( uint_32 ) );
-    RelocBuffer = (unsigned short *)malloc( relocsize );
+    RelocBuffer = (char *)malloc( relocsize );
     if( RelocBuffer == NULL ) {
         printf( "Out of memory\n" );
-        exit( 1 );
+        return( -1 );
     }
     CreateRelocs( relocs, RelocBuffer, relsize / sizeof( uint_32 ) );
 
@@ -652,7 +654,7 @@ int main( int argc, char *argv[] )
                         S_IREAD | S_IWRITE | S_IEXEC );
     if( newfile == -1 ) {
         printf( "Error opening file '%s'\n", file );
-        exit( 1 );
+        return( 1 );
     }
     file = argv[argc++];
     if( file == NULL ) {
@@ -663,18 +665,19 @@ int main( int argc, char *argv[] )
     loader_handle = open( file, O_RDONLY | O_BINARY );
     if( loader_handle == -1 ) {
         printf( "Error opening file '%s'\n", file );
-        exit( 1 );
+        return( 1 );
     }
-    size = filelength( loader_handle );
-    loader_code = calloc( _RoundUp( size, 512L ), 1 );
+    loadersize_read = filelength( loader_handle );
+    loadersize = _RoundUp( loadersize_read, 512L );
+    loader_code = calloc( loadersize, 1 );
     if( loader_code == NULL ) {
         printf( "Out of memory\n" );
         return( -1 );
     }
-    if( posix_read( loader_handle, loader_code, size ) != size ) {
+    if( posix_read( loader_handle, loader_code, loadersize_read ) != loadersize_read ) {
         close( loader_handle );
         printf( "Error reading '%s'\n", file );
-        exit( 1 );
+        return( 1 );
     }
     close( loader_handle );
     size = _RoundUp( size, 512L );        /* round up to multiple of 512 */
@@ -693,50 +696,49 @@ int main( int argc, char *argv[] )
     w32_header->initial_EIP = exehdr.hdr.initial_eip;
     if( compress ) {
         SET_OSI_COMPR_SIGN( w32_header );
-        CompressedBuffer = malloc( codesize + relocsize );
-        if( CompressedBuffer == NULL ) {
-            printf( "Out of memory\n" );
-            exit( 1 );
-        }
-        CompressedBufPtr = CompressedBuffer;
-        lseek( handle, exelen + file_header_size, SEEK_SET );
-        CompressFile( handle, codesize );
-        close( handle );
-        CompressRelocs( relocsize );
-        w32_header->size_of_W32_file = CompressedBufPtr - CompressedBuffer;
-        if( posix_write( newfile, loader_code, size ) != size ) {
-            printf( "Error writing output file\n" );
-            close( newfile );
-            exit( 1 );
-        }
-        size = CompressedBufPtr - CompressedBuffer;
-        if( posix_write( newfile, CompressedBuffer, size ) != size ) {
-            printf( "Error writing output file\n" );
-            close( newfile );
-            exit( 1 );
-        }
     } else {
         SET_OSI_SIGN( w32_header );
-        if( posix_write( newfile, loader_code, size ) != size ) {
-            printf( "Error writing output file\n" );
-            close( newfile );
-            close( handle );
-            exit( 1 );
-        }
-        lseek( handle, exelen + file_header_size, SEEK_SET );
-        CopyRexFile( handle, newfile, codesize );
+    }
+    if( (size_t)posix_write( newfile, loader_code, loadersize ) != loadersize ) {
+        printf( "Error writing output file\n" );
+        close( newfile );
         close( handle );
-        if( posix_write( newfile, RelocBuffer, relocsize ) != relocsize ) {
-            printf( "Error writing output file\n" );
-            close( newfile );
-            exit( 1 );
+        return( 1 );
+    }
+    lseek( handle, exelen + file_header_size, SEEK_SET );
+    if( compress ) {
+        out_buffer = malloc( 2 * 4096 );
+        if( out_buffer == NULL ) {
+            printf( "Out of memory\n" );
+            return( -1 );
         }
     }
+    out_size = WriteCode( handle, newfile, codesize, compress );
+    close( handle );
+    if( out_size == -1 ) {
+        return( 1 );
+    }
+    if( compress ) {
+        w32_header->size_of_W32_file = out_size ;
+    }
+    out_size = WriteRelocs( newfile, RelocBuffer, relocsize, compress );
+    if( out_size == -1 ) {
+        return( 1 );
+    }
+    if( compress ) {
+        w32_header->size_of_W32_file += out_size ;
+        lseek( newfile, dos_header->size_of_DOS_header_in_paras * 16, SEEK_SET );
+        if( (size_t)posix_write( newfile, w32_header, sizeof( *w32_header ) ) != sizeof( *w32_header ) ) {
+            close( newfile );
+            printf( "Error writing output file\n" );
+            return( 1 );
+        }
+        free( out_buffer );
+    }
+    close( newfile );
     if( relsize != 0 ) {
         free( relocs );
     }
-    free( CompressedBuffer );
     free( RelocBuffer );
-    close( newfile );
     return( 0 );
 }

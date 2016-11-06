@@ -25,13 +25,11 @@ x32run_objs  = x32run.obj cmain32.obj x32start.obj
 os2ldr_objs  = cstrtos2.obj loader.obj int21.obj int21os2.obj tnk.obj
 ntldr_objs   = cstrtwnt.obj loader.obj int21.obj int21nt.obj
 
+w32bind_objs = w32bind.obj
+
 !ifdef bootstrap
 
-all : w32bind.exe
-
-w32bind.exe : w32bind.c
-    @%make echo_bldcl
-    $(bld_cl) $[@ $(bld_clflags) $(bld_ldflags)
+all : w32bind.exe .SYMBOLIC
 
 !else ifeq host_os dos
 
@@ -41,6 +39,36 @@ extra_c_flags_d4grun = -D__DOS -D__CALL21__ -D__DOS4G -zl -fo=$@
 extra_c_flags_cwsrun = -D__DOS -D__CALL21__ -D__CAUSEWAY -zl -fo=$@
 
 all: .SYMBOLIC cwsrun.exe #d4grun.exe x32run.exe tntrun.exe
+
+!else ifeq host_os nt
+
+extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
+extra_c_flags_int21nt = -s
+
+all : w32run.exe .SYMBOLIC
+
+!else ifeq host_os os2
+
+all: .SYMBOLIC
+
+extra_c_flags_loader = -D__OS2 -D__CALL21__
+
+!else
+
+all: .SYMBOLIC
+
+!endif
+
+w32bind.exe : $(w32bind_objs)
+!ifndef __WATCOM_TOOLS__
+    @%make echo_link
+    $(cl) $(clflags) $(w32bind_objs) $(objs) $(libs) $(ldflags)
+!else
+    @%write  $^&.lnk $(lflags)
+    @%append $^&.lnk file { $(w32bind_objs) $(objs) }
+    @%make echo_link
+    $(linker) name $^@ @$^&.lnk
+!endif
 
 dpmi_ldr.exe : $(dpmildr_objs) $(__MAKEFILES__)
     @%make echo_link
@@ -91,13 +119,6 @@ dpmi.exe : $(dpmi_objs) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ system dos option map,stack=8k file {$(dpmi_objs)}
 
-!else ifeq host_os nt
-
-extra_c_flags_loader  = -D__NT -D__CALL21__ -DW32RUN -s
-extra_c_flags_int21nt = -s
-
-all : w32run.exe
-
 w32run.exe : $(ntldr_objs) ntstub.exe $(__MAKEFILES__)
     $(noecho)%create $^&.lnk
     @%append $^&.lnk $(lflags)
@@ -110,12 +131,6 @@ ntstub.exe : ntstub.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ system dos option map file {ntstub.obj}
 
-!else ifeq host_os os2
-
-all: .symbolic
-
-extra_c_flags_loader = -D__OS2 -D__CALL21__
-
 os2ldr.exe : $(os2ldr_objs) os2stub.exe $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ system os2v2 pmc opt map,stack=32k,stub=os2stub.exe file {$(os2ldr_objs)} lib {os2386.lib}
@@ -123,5 +138,3 @@ os2ldr.exe : $(os2ldr_objs) os2stub.exe $(__MAKEFILES__)
 os2stub.exe : $(os2stub_objs) $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $^@ system dos option map file {$(os2stub_objs)}
-
-!endif
