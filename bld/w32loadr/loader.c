@@ -55,15 +55,38 @@
 #define READSIZE        (0x8000)
 #define RELOC_NUM       1024
 
-#pragma aux _end "*"
+enum {
+    #define pick(name,emsg,jmsg)  name,
+    #include "ldrmsg.h"
+    #undef pick
+};
+
+struct  pgmparms {
+    char            *pgmname;       // program name (argv[0])
+    char            *cmdline;       // command line
+    char            *envptr;        // pointer to environment strings
+    char            *breakflagaddr; // pointer to breakflag
+    char            *copyright;     // pointer to possible copyright string
+    int             isDBCS;         // non-zero => DBCS
+    unsigned long   max_handle;     // OS2: max file handle count
+};
+
 extern  char    _end;
+#pragma aux _end "*"
 
 extern  int     __fInt21( void );
 #pragma aux __fInt21 "*"
 
-#if defined(__NT)
-extern HANDLE   __FileHandleIDs[];
-#endif
+extern  int _InvokePgm( char os, uint_32 baseaddr, uint_32 eip, uint_32 stacklow,
+                        int (*int21)( void ), struct pgmparms *parms );
+#pragma aux _InvokePgm = "push  cs"     \
+                         "mov   bx,cs"  \
+                         "call  esi"    \
+                         parm [ah] [ebx] [esi] [ecx] [edx] [edi] value [eax];
+
+extern  int _LaunchPgm( uint_32 baseaddr, uint_32 eip,
+                        int (*int21)( void ),  struct pgmparms *parms );
+#pragma aux _LaunchPgm parm [ebx] [esi] [edx] [edi] value [eax];
 
 static uint_32  BaseAddr;
 static uint_32  CodeLoadAddr;
@@ -78,52 +101,16 @@ static char     *ProgramArgs    = "";
 #endif
 static char     *ProgramEnv     = "\0";
 
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
-
-struct  pgmparms {
-    char            *pgmname;       // program name (argv[0])
-    char            *cmdline;       // command line
-    char            *envptr;        // pointer to environment strings
-    char            *breakflagaddr; // pointer to breakflag
-    char            *copyright;     // pointer to possible copyright string
-    int             isDBCS;         // non-zero => DBCS
-    unsigned long   max_handle;     // OS2: max file handle count
-};
-
-extern  int _InvokePgm( char os,
-                        uint_32 baseaddr,
-                        uint_32 eip,
-                        uint_32 stacklow,
-                        int (*int21)( void ),
-                        struct pgmparms *parms );
-#pragma aux _InvokePgm = "push  cs"     \
-                         "mov   bx,cs"  \
-                         "call  esi"    \
-                         parm [ah] [ebx] [esi] [ecx] [edx] [edi] value [eax];
-
-extern  int _LaunchPgm( uint_32 baseaddr,
-                        uint_32 eip,
-                        int (*int21)( void ),
-                        struct pgmparms *parms );
-#pragma aux _LaunchPgm parm [ebx] [esi] [edx] [edi] value [eax];
-
-#define pick(name,msg)  name
-#define E(msg) msg
-#define J(msg)
-enum {
- #include "ldrmsg.h"
-};
-#define pick(name,msg)  msg
-#define E(msg) msg
-#define J(msg)
 static char *EnglishMsgs[] = {
- #include "ldrmsg.h"
+    #define pick(name,emsg,jmsg)  emsg,
+    #include "ldrmsg.h"
+    #undef pick
 };
-#define pick(name,msg)  msg
-#define E(msg)
-#define J(msg) msg
+
 static char *JapaneseMsgs[] = {
- #include "ldrmsg.h"
+    #define pick(name,emsg,jmsg)  jmsg,
+    #include "ldrmsg.h"
+    #undef pick
 };
 
 char *getenv( const char *var )
@@ -131,25 +118,20 @@ char *getenv( const char *var )
     char        *p;
     const char  *v;
 
-    p = ProgramEnv;
-    for( ;; ) {
-        if( *p == '\0' )
-            break;
-        v = var;
-        for( ;; ) {
-            if( *v == '\0' ) {
-                if( *p == '=' )
-                    return( p + 1 );
-                break;
-            }
+    for( p = ProgramEnv; *p != '\0'; ++p ) {
+        for( v = var; *v != '\0'; ++v ) {
             if( (*p | ' ') != (*v | ' ') )
                 break;
             ++p;
-            ++v;
         }
-        while( *p != '\0' )
+        if( *v == '\0' ) {
+            if( *p == '=' ) {
+                return( p + 1 );
+            }
+        }
+        while( *p != '\0' ) {
             ++p;
-        ++p;
+        }
     }
     return( NULL );
 }
@@ -181,18 +163,12 @@ void PrintMsg( char *fmt, ... )
 
     va_start( args, fmt );
     len = 0;
-    for( ;; ) {
-        c = *fmt++;
-        if( c == '\0' )
-            break;
+    while( (c = *fmt++) != '\0' ) {
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
                 p = va_arg( args, char * );
-                for( ;; ) {
-                    c = *p++;
-                    if( c == '\0' )
-                        break;
+                while( (c = *p++) != '\0' ) {
                     buf[len++] = c;
                 }
             } else if( c == 'd' ) {
@@ -443,8 +419,8 @@ static void DumpEnvironment( void )
 //////////////////////////////////////////////////////////////////////
 #if defined(__OS2)
 
-#pragma aux __OS2Main "*" parm caller []
 extern int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+#pragma aux __OS2Main "*" parm caller []
 
 static char volatile NestedException = 0;
 
@@ -598,8 +574,7 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
         parms.max_handle = 0;
         req_count = 0;
         DosSetRelMaxFH( &req_count, &parms.max_handle );
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint,
-                        &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
     }
     DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
     DosUnsetExceptionHandler( (PEXCEPTIONREGISTRATIONRECORD)&RegRec );
@@ -611,25 +586,32 @@ void main( void ) {}
 //////////////////////////////////////////////////////////////////////
 #elif defined(__NT)
 
-#pragma aux __NTMain "*"
-extern  void    __InitInt21( void );
 
-extern uint_32 GetFromFS( uint_32 off );
-extern void PutToFS( uint_32 value, uint_32 off );
 #define UNWINDING       0x6
-
-#pragma aux GetFromFS = \
-        "mov    eax,fs:[eax]" \
-        parm[eax] value[eax];
-
-#pragma aux PutToFS = \
-        "mov    fs:[edx], eax" \
-        parm[eax] [edx];
 
 typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
     void                        *RegistrationRecordFilter;
 } REGISTRATION_RECORD;
+
+#ifdef W32RUN
+extern void __NTMain( void );
+#pragma aux __NTMain "*"
+#endif
+
+extern  void    __InitInt21( void );
+
+extern uint_32 GetFromFS( uint_32 off );
+#pragma aux GetFromFS = \
+        "mov    eax,fs:[eax]" \
+        parm[eax] value[eax];
+
+extern void PutToFS( uint_32 value, uint_32 off );
+#pragma aux PutToFS = \
+        "mov    fs:[edx], eax" \
+        parm[eax] [edx];
+
+extern HANDLE   __FileHandleIDs[];
 
 static void DumpContext( char *what, PCONTEXT p )
 {
@@ -779,7 +761,6 @@ static int __checkIsDBCS( void )
 }
 
 #ifdef W32RUN
-extern void __NTMain( void );
 
 /*
  * This routine is used for BINNT\W32RUN.EXE
@@ -898,14 +879,12 @@ void __NTMain( void )
     // PROGRAM command line arguments
     while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;
-    for( ;; ) {                         // skip over program name
-        if( *cmd == '\0' )
-            break;
+    for( ; *cmd != '\0'; ++cmd ) {                         // skip over program name
         if( *cmd == ' ' )
             break;
-        if( *cmd == '\t' )
+        if( *cmd == '\t' ) {
             break;
-        ++cmd;
+        }
     }
     while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;

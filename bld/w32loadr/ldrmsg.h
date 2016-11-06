@@ -31,24 +31,22 @@
 
 
 pick(   LOADER_SUCCESS = 0,
+        "",
         ""
-),
+)
 pick(   LOADER_CANT_OPEN_EXE,
-        E( "Can't open '%s'; rc=%d\r\n")
-        J( "オープンできません '%s'; rc=%d\r\n")
-),
+        "Can't open '%s'; rc=%d\r\n",
+        "オープンできません '%s'; rc=%d\r\n"
+)
 pick(   LOADER_INVALID_EXE,
-        E( "Invalid EXE\r\n" )
-        J( "不正な EXE\r\n" )
-),
+        "Invalid EXE\r\n",
+        "不正な EXE\r\n"
+)
 pick(   LOADER_READ_ERROR,
-        E( "Loader read error\r\n" )
-        J( "ローダー読み込みエラー\r\n" )
-),
+        "Loader read error\r\n",
+        "ローダー読み込みエラー\r\n"
+)
 pick(   LOADER_NOT_ENOUGH_MEMORY,
-        E( "Memory allocation failed\r\n" )
-        J( "メモリ割り付けが失敗しました\r\n" )
-),
-#undef  pick
-#undef  E
-#undef  J
+        "Memory allocation failed\r\n",
+        "メモリ割り付けが失敗しました\r\n"
+)
