@@ -63,18 +63,16 @@ typedef struct {
     uint_32     stackstart;
 } exe_data;
 
-uint_32 StackSize;
-uint_32 BaseAddr;
-char    *CompressedBuffer;
-char    *CompressedBufPtr;
-unsigned short  *RelocBuffer;
+static char    *CompressedBuffer;
+static char    *CompressedBufPtr;
+static unsigned short  *RelocBuffer;
 #define W32Putc(c) *CompressedBufPtr++ = (c)
 
 /* Function prototypes */
-int lookup( unsigned char, unsigned char );
-int fileread( FILE * );
-void CompressFile( int handle, uint_32 filesize );
-void CompressRelocs( uint_32 relocsize );
+static int lookup( unsigned char, unsigned char );
+static int fileread( FILE * );
+static void CompressFile( int handle, uint_32 filesize );
+static void CompressRelocs( uint_32 relocsize );
 
 static void normalizeFName( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
@@ -116,7 +114,7 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-int CmpReloc( const void *p, const void *q )
+static int CmpReloc( const void *p, const void *q )
 {
     uint_32     reloc1;
     uint_32     reloc2;
@@ -130,7 +128,7 @@ int CmpReloc( const void *p, const void *q )
     return( 1 );
 }
 
-uint_32 RelocSize( uint_32 *relocs, unsigned n )
+static uint_32 RelocSize( uint_32 *relocs, unsigned n )
 {
     uint_32     size;
     uint_32     page;
@@ -152,7 +150,7 @@ uint_32 RelocSize( uint_32 *relocs, unsigned n )
     return( size );
 }
 
-int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n )
+static int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n )
 {
     uint_32     page;
     unsigned    i;
@@ -190,32 +188,32 @@ int CreateRelocs( uint_32 *relocs, unsigned short *newrelocs, unsigned n )
 /* Program speeded up by F.W.Crigger by adding high_count array */
 
 
-int     MaxChars = 200;
-int     Threshold = 3;
+//static int     MaxChars = 200;
+static int     Threshold = 3;
 
 #define BLOCKSIZE  5000         /* Maximum block size */
 #define HASHSIZE   4096         /* Size of hash table */
-#define MAXCHARS   MaxChars     /* Char set per block */
+//#define MAXCHARS   MaxChars     /* Char set per block */
 #define THRESHOLD  Threshold    /* Minimum pair count */
 
-unsigned char buffer[BLOCKSIZE];        /* Data block */
-unsigned char leftcode[256];            /* Pair table */
-unsigned char rightcode[256];           /* Pair table */
-unsigned char left[HASHSIZE];           /* Hash table */
-unsigned char right[HASHSIZE];          /* Hash table */
-unsigned char count[HASHSIZE];          /* Pair count */
+static unsigned char buffer[BLOCKSIZE];        /* Data block */
+static unsigned char leftcode[256];            /* Pair table */
+static unsigned char rightcode[256];           /* Pair table */
+static unsigned char left[HASHSIZE];           /* Hash table */
+static unsigned char right[HASHSIZE];          /* Hash table */
+static unsigned char count[HASHSIZE];          /* Pair count */
 /* high_count contains indices into count[] where count[i] >= THRESHOLD */
-int     high_count[HASHSIZE];
-int     high_index;             /* next index into high_count to fill in */
-int     size;                   /* Size of current data block */
-int     old_size;
-int     chars_used;
-int     BlockSize;
+static int     high_count[HASHSIZE];
+static int     high_index;             /* next index into high_count to fill in */
+static int     size;                   /* Size of current data block */
+static int     old_size;
+static int     chars_used;
+static int     BlockSize;
 
 /* Return index of character pair in hash table */
 /* Deleted nodes have count of 1 for hashing */
 
-int lookup( unsigned char a, unsigned char b )
+static int lookup( unsigned char a, unsigned char b )
 {
     int         index;
 
@@ -233,7 +231,7 @@ int lookup( unsigned char a, unsigned char b )
     return( index );
 }
 
-void HashBlock( int len )
+static void HashBlock( int len )
 {
     int         c;
     int         index;
@@ -272,7 +270,7 @@ void HashBlock( int len )
 }
 
 /* Write each pair table and data block to output */
-void filewrite( void )
+static void filewrite( void )
 {
     int         i;
     int         len;
@@ -335,7 +333,7 @@ void filewrite( void )
   //            old_size, size, chars_used, unused, missed );
 }
 
-void inc_count( int index )
+static void inc_count( int index )
 {
     if( count[index] < 255 ) {
         if( count[index] == (THRESHOLD-1) ) {
@@ -347,7 +345,7 @@ void inc_count( int index )
     }
 }
 
-void CompressBlock( void )
+static void CompressBlock( void )
 {
     unsigned char       leftch;
     unsigned char       rightch;
@@ -431,7 +429,7 @@ void CompressBlock( void )
     }
 }
 
-void CompressRelocs( uint_32 relocsize )
+static void CompressRelocs( uint_32 relocsize )
 {
     int         len;
     char        *p;
@@ -453,7 +451,7 @@ void CompressRelocs( uint_32 relocsize )
 }
 
 /* Compress from input file to output file */
-void CompressFile( int handle, uint_32 filesize )
+static void CompressFile( int handle, uint_32 filesize )
 {
     int         len;
 
@@ -474,7 +472,7 @@ void CompressFile( int handle, uint_32 filesize )
     }
 }
 
-int CopyRexFile( int handle, int newfile, uint_32 filesize )
+static int CopyRexFile( int handle, int newfile, uint_32 filesize )
 {
     char        *buf;
     unsigned    len;
