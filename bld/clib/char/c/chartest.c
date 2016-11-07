@@ -48,8 +48,8 @@
                             NumErrors++;                                    \
                         }
 
-#define TEST_ARRAY_SIZE         256
-#define TEST_ARRAY_SIZE_WIDE    512
+#define TEST_ARRAY_SIZE         0x101
+#define TEST_ARRAY_SIZE_WIDE    0x201
 
 
 struct CtypeBits {
@@ -84,41 +84,43 @@ void TestClassifyMacro( void )
 /****************************/
 {
     int     i;
+    int     c;
 
     far_data++; // set ds outside DGROUP
 
-    MacroResults[0].alnum  = isalnum( EOF );
-    MacroResults[0].alpha  = isalpha( EOF );
-    MacroResults[0].blank  = isblank( EOF );
-    MacroResults[0].cntrl  = iscntrl( EOF );
-    MacroResults[0].digit  = isdigit( EOF );
-    MacroResults[0].graph  = isgraph( EOF );
-    MacroResults[0].lower  = islower( EOF );
-    MacroResults[0].print  = isprint( EOF );
-    MacroResults[0].punct  = ispunct( EOF );
-    MacroResults[0].space  = isspace( EOF );
-    MacroResults[0].upper  = isupper( EOF );
-    MacroResults[0].xdigit = isxdigit( EOF );
-    MacroResults[0].ascii  = isascii( EOF );
-    MacroResults[0].csym   = __iscsym( EOF );
-    MacroResults[0].csymf  = __iscsymf( EOF );
+    MacroResults[0].alnum  = isalnum( EOF ) != 0;
+    MacroResults[0].alpha  = isalpha( EOF ) != 0;
+    MacroResults[0].blank  = isblank( EOF ) != 0;
+    MacroResults[0].cntrl  = iscntrl( EOF ) != 0;
+    MacroResults[0].digit  = isdigit( EOF ) != 0;
+    MacroResults[0].graph  = isgraph( EOF ) != 0;
+    MacroResults[0].lower  = islower( EOF ) != 0;
+    MacroResults[0].print  = isprint( EOF ) != 0;
+    MacroResults[0].punct  = ispunct( EOF ) != 0;
+    MacroResults[0].space  = isspace( EOF ) != 0;
+    MacroResults[0].upper  = isupper( EOF ) != 0;
+    MacroResults[0].xdigit = isxdigit( EOF ) != 0;
+    MacroResults[0].ascii  = isascii( EOF ) != 0;
+    MacroResults[0].csym   = __iscsym( EOF ) != 0;
+    MacroResults[0].csymf  = __iscsymf( EOF ) != 0;
 
     for( i = 1; i < TEST_ARRAY_SIZE; i++ ) {
-        MacroResults[i].alnum  = isalnum( i );
-        MacroResults[i].alpha  = isalpha( i );
-        MacroResults[i].blank  = isblank( i );
-        MacroResults[i].cntrl  = iscntrl( i );
-        MacroResults[i].digit  = isdigit( i );
-        MacroResults[i].graph  = isgraph( i );
-        MacroResults[i].lower  = islower( i );
-        MacroResults[i].print  = isprint( i );
-        MacroResults[i].punct  = ispunct( i );
-        MacroResults[i].space  = isspace( i );
-        MacroResults[i].upper  = isupper( i );
-        MacroResults[i].xdigit = isxdigit( i );
-        MacroResults[i].ascii  = isascii( i );
-        MacroResults[i].csym   = __iscsym( i );
-        MacroResults[i].csymf  = __iscsymf( i );
+        c = i - 1;
+        MacroResults[i].alnum  = isalnum( c ) != 0;
+        MacroResults[i].alpha  = isalpha( c ) != 0;
+        MacroResults[i].blank  = isblank( c ) != 0;
+        MacroResults[i].cntrl  = iscntrl( c ) != 0;
+        MacroResults[i].digit  = isdigit( c ) != 0;
+        MacroResults[i].graph  = isgraph( c ) != 0;
+        MacroResults[i].lower  = islower( c ) != 0;
+        MacroResults[i].print  = isprint( c ) != 0;
+        MacroResults[i].punct  = ispunct( c ) != 0;
+        MacroResults[i].space  = isspace( c ) != 0;
+        MacroResults[i].upper  = isupper( c ) != 0;
+        MacroResults[i].xdigit = isxdigit( c ) != 0;
+        MacroResults[i].ascii  = isascii( c ) != 0;
+        MacroResults[i].csym   = __iscsym( c ) != 0;
+        MacroResults[i].csymf  = __iscsymf( c ) != 0;
     }
 }
 
@@ -126,41 +128,43 @@ void TestClassifyFunct( void )
 /****************************/
 {
     int     i;
+    int     c;
 
     far_data++; // set ds outside DGROUP
 
-    FunctResults[0].alnum  = (isalnum)( EOF );
-    FunctResults[0].alpha  = (isalpha)( EOF );
-    FunctResults[0].blank  = (isblank)( EOF );
-    FunctResults[0].cntrl  = (iscntrl)( EOF );
-    FunctResults[0].digit  = (isdigit)( EOF );
-    FunctResults[0].graph  = (isgraph)( EOF );
-    FunctResults[0].lower  = (islower)( EOF );
-    FunctResults[0].print  = (isprint)( EOF );
-    FunctResults[0].punct  = (ispunct)( EOF );
-    FunctResults[0].space  = (isspace)( EOF );
-    FunctResults[0].upper  = (isupper)( EOF );
-    FunctResults[0].xdigit = (isxdigit)( EOF );
-    FunctResults[0].ascii  = (isascii)( EOF );
-    FunctResults[0].csym   = (__iscsym)( EOF );
-    FunctResults[0].csymf  = (__iscsymf)( EOF );
+    FunctResults[0].alnum  = (isalnum)( EOF ) != 0;
+    FunctResults[0].alpha  = (isalpha)( EOF ) != 0;
+    FunctResults[0].blank  = (isblank)( EOF ) != 0;
+    FunctResults[0].cntrl  = (iscntrl)( EOF ) != 0;
+    FunctResults[0].digit  = (isdigit)( EOF ) != 0;
+    FunctResults[0].graph  = (isgraph)( EOF ) != 0;
+    FunctResults[0].lower  = (islower)( EOF ) != 0;
+    FunctResults[0].print  = (isprint)( EOF ) != 0;
+    FunctResults[0].punct  = (ispunct)( EOF ) != 0;
+    FunctResults[0].space  = (isspace)( EOF ) != 0;
+    FunctResults[0].upper  = (isupper)( EOF ) != 0;
+    FunctResults[0].xdigit = (isxdigit)( EOF ) != 0;
+    FunctResults[0].ascii  = (isascii)( EOF ) != 0;
+    FunctResults[0].csym   = (__iscsym)( EOF ) != 0;
+    FunctResults[0].csymf  = (__iscsymf)( EOF ) != 0;
 
     for( i = 1; i < TEST_ARRAY_SIZE; i++ ) {
-        FunctResults[i].alnum  = (isalnum)( i );
-        FunctResults[i].alpha  = (isalpha)( i );
-        FunctResults[i].blank  = (isblank)( i );
-        FunctResults[i].cntrl  = (iscntrl)( i );
-        FunctResults[i].digit  = (isdigit)( i );
-        FunctResults[i].graph  = (isgraph)( i );
-        FunctResults[i].lower  = (islower)( i );
-        FunctResults[i].print  = (isprint)( i );
-        FunctResults[i].punct  = (ispunct)( i );
-        FunctResults[i].space  = (isspace)( i );
-        FunctResults[i].upper  = (isupper)( i );
-        FunctResults[i].xdigit = (isxdigit)( i );
-        FunctResults[i].ascii  = (isascii)( i );
-        FunctResults[i].csym   = (__iscsym)( i );
-        FunctResults[i].csymf  = (__iscsymf)( i );
+        c = i - 1;
+        FunctResults[i].alnum  = (isalnum)( c ) != 0;
+        FunctResults[i].alpha  = (isalpha)( c ) != 0;
+        FunctResults[i].blank  = (isblank)( c ) != 0;
+        FunctResults[i].cntrl  = (iscntrl)( c ) != 0;
+        FunctResults[i].digit  = (isdigit)( c ) != 0;
+        FunctResults[i].graph  = (isgraph)( c ) != 0;
+        FunctResults[i].lower  = (islower)( c ) != 0;
+        FunctResults[i].print  = (isprint)( c ) != 0;
+        FunctResults[i].punct  = (ispunct)( c ) != 0;
+        FunctResults[i].space  = (isspace)( c ) != 0;
+        FunctResults[i].upper  = (isupper)( c ) != 0;
+        FunctResults[i].xdigit = (isxdigit)( c ) != 0;
+        FunctResults[i].ascii  = (isascii)( c ) != 0;
+        FunctResults[i].csym   = (__iscsym)( c ) != 0;
+        FunctResults[i].csymf  = (__iscsymf)( c ) != 0;
     }
 }
 
@@ -168,83 +172,87 @@ void TestClassifyWideMacro( void )
 /********************************/
 {
     int     i;
+    int     c;
 
     far_data++; // set ds outside DGROUP
 
-    WideMacroResults[0].alnum  = iswalnum( WEOF );
-    WideMacroResults[0].alpha  = iswalpha( WEOF );
-    WideMacroResults[0].blank  = iswblank( WEOF );
-    WideMacroResults[0].cntrl  = iswcntrl( WEOF );
-    WideMacroResults[0].digit  = iswdigit( WEOF );
-    WideMacroResults[0].graph  = iswgraph( WEOF );
-    WideMacroResults[0].lower  = iswlower( WEOF );
-    WideMacroResults[0].print  = iswprint( WEOF );
-    WideMacroResults[0].punct  = iswpunct( WEOF );
-    WideMacroResults[0].space  = iswspace( WEOF );
-    WideMacroResults[0].upper  = iswupper( WEOF );
-    WideMacroResults[0].xdigit = iswxdigit( WEOF );
-    WideMacroResults[0].ascii  = iswascii( WEOF );
-    WideMacroResults[0].csym   = __iswcsym( WEOF );
-    WideMacroResults[0].csymf  = __iswcsymf( WEOF );
+    WideMacroResults[0].alnum  = iswalnum( WEOF ) != 0;
+    WideMacroResults[0].alpha  = iswalpha( WEOF ) != 0;
+    WideMacroResults[0].blank  = iswblank( WEOF ) != 0;
+    WideMacroResults[0].cntrl  = iswcntrl( WEOF ) != 0;
+    WideMacroResults[0].digit  = iswdigit( WEOF ) != 0;
+    WideMacroResults[0].graph  = iswgraph( WEOF ) != 0;
+    WideMacroResults[0].lower  = iswlower( WEOF ) != 0;
+    WideMacroResults[0].print  = iswprint( WEOF ) != 0;
+    WideMacroResults[0].punct  = iswpunct( WEOF ) != 0;
+    WideMacroResults[0].space  = iswspace( WEOF ) != 0;
+    WideMacroResults[0].upper  = iswupper( WEOF ) != 0;
+    WideMacroResults[0].xdigit = iswxdigit( WEOF ) != 0;
+    WideMacroResults[0].ascii  = iswascii( WEOF ) != 0;
+    WideMacroResults[0].csym   = __iswcsym( WEOF ) != 0;
+    WideMacroResults[0].csymf  = __iswcsymf( WEOF ) != 0;
 
     for( i = 1; i < TEST_ARRAY_SIZE_WIDE; i++ ) {
-        WideMacroResults[i].alnum  = iswalnum( i );
-        WideMacroResults[i].alpha  = iswalpha( i );
-        WideMacroResults[i].blank  = iswblank( i );
-        WideMacroResults[i].cntrl  = iswcntrl( i );
-        WideMacroResults[i].digit  = iswdigit( i );
-        WideMacroResults[i].graph  = iswgraph( i );
-        WideMacroResults[i].lower  = iswlower( i );
-        WideMacroResults[i].print  = iswprint( i );
-        WideMacroResults[i].punct  = iswpunct( i );
-        WideMacroResults[i].space  = iswspace( i );
-        WideMacroResults[i].upper  = iswupper( i );
-        WideMacroResults[i].xdigit = iswxdigit( i );
-        WideMacroResults[i].ascii  = iswascii( i );
-        WideMacroResults[i].csym   = __iswcsym( i );
-        WideMacroResults[i].csymf  = __iswcsymf( i );
+        c = i - 1;
+        WideMacroResults[i].alnum  = iswalnum( c ) != 0;
+        WideMacroResults[i].alpha  = iswalpha( c ) != 0;
+        WideMacroResults[i].blank  = iswblank( c ) != 0;
+        WideMacroResults[i].cntrl  = iswcntrl( c ) != 0;
+        WideMacroResults[i].digit  = iswdigit( c ) != 0;
+        WideMacroResults[i].graph  = iswgraph( c ) != 0;
+        WideMacroResults[i].lower  = iswlower( c ) != 0;
+        WideMacroResults[i].print  = iswprint( c ) != 0;
+        WideMacroResults[i].punct  = iswpunct( c ) != 0;
+        WideMacroResults[i].space  = iswspace( c ) != 0;
+        WideMacroResults[i].upper  = iswupper( c ) != 0;
+        WideMacroResults[i].xdigit = iswxdigit( c ) != 0;
+        WideMacroResults[i].ascii  = iswascii( c ) != 0;
+        WideMacroResults[i].csym   = __iswcsym( c ) != 0;
+        WideMacroResults[i].csymf  = __iswcsymf( c ) != 0;
     }
 }
 
 void TestClassifyWideFunct( void )
 /********************************/
 {
-    int i;
+    int     i;
+    int     c;
 
     far_data++; // set ds outside DGROUP
 
-    WideFunctResults[0].alnum  = (iswalnum)( WEOF );
-    WideFunctResults[0].alpha  = (iswalpha)( WEOF );
-    WideFunctResults[0].blank  = (iswblank)( WEOF );
-    WideFunctResults[0].cntrl  = (iswcntrl)( WEOF );
-    WideFunctResults[0].digit  = (iswdigit)( WEOF );
-    WideFunctResults[0].graph  = (iswgraph)( WEOF );
-    WideFunctResults[0].lower  = (iswlower)( WEOF );
-    WideFunctResults[0].print  = (iswprint)( WEOF );
-    WideFunctResults[0].punct  = (iswpunct)( WEOF );
-    WideFunctResults[0].space  = (iswspace)( WEOF );
-    WideFunctResults[0].upper  = (iswupper)( WEOF );
-    WideFunctResults[0].xdigit = (iswxdigit)( WEOF );
-    WideFunctResults[0].ascii  = (iswascii)( WEOF );
-    WideFunctResults[0].csym   = (__iswcsym)( WEOF );
-    WideFunctResults[0].csymf  = (__iswcsymf)( WEOF );
+    WideFunctResults[0].alnum  = (iswalnum)( WEOF ) != 0;
+    WideFunctResults[0].alpha  = (iswalpha)( WEOF ) != 0;
+    WideFunctResults[0].blank  = (iswblank)( WEOF ) != 0;
+    WideFunctResults[0].cntrl  = (iswcntrl)( WEOF ) != 0;
+    WideFunctResults[0].digit  = (iswdigit)( WEOF ) != 0;
+    WideFunctResults[0].graph  = (iswgraph)( WEOF ) != 0;
+    WideFunctResults[0].lower  = (iswlower)( WEOF ) != 0;
+    WideFunctResults[0].print  = (iswprint)( WEOF ) != 0;
+    WideFunctResults[0].punct  = (iswpunct)( WEOF ) != 0;
+    WideFunctResults[0].space  = (iswspace)( WEOF ) != 0;
+    WideFunctResults[0].upper  = (iswupper)( WEOF ) != 0;
+    WideFunctResults[0].xdigit = (iswxdigit)( WEOF ) != 0;
+    WideFunctResults[0].ascii  = (iswascii)( WEOF ) != 0;
+    WideFunctResults[0].csym   = (__iswcsym)( WEOF ) != 0;
+    WideFunctResults[0].csymf  = (__iswcsymf)( WEOF ) != 0;
 
     for( i = 1; i < TEST_ARRAY_SIZE_WIDE; i++ ) {
-        WideFunctResults[i].alnum  = (iswalnum)( i );
-        WideFunctResults[i].alpha  = (iswalpha)( i );
-        WideFunctResults[i].blank  = (iswblank)( i );
-        WideFunctResults[i].cntrl  = (iswcntrl)( i );
-        WideFunctResults[i].digit  = (iswdigit)( i );
-        WideFunctResults[i].graph  = (iswgraph)( i );
-        WideFunctResults[i].lower  = (iswlower)( i );
-        WideFunctResults[i].print  = (iswprint)( i );
-        WideFunctResults[i].punct  = (iswpunct)( i );
-        WideFunctResults[i].space  = (iswspace)( i );
-        WideFunctResults[i].upper  = (iswupper)( i );
-        WideFunctResults[i].xdigit = (iswxdigit)( i );
-        WideFunctResults[i].ascii  = (iswascii)( i );
-        WideFunctResults[i].csym   = (__iswcsym)( i );
-        WideFunctResults[i].csymf  = (__iswcsymf)( i );
+        c = i - 1;
+        WideFunctResults[i].alnum  = (iswalnum)( c ) != 0;
+        WideFunctResults[i].alpha  = (iswalpha)( c ) != 0;
+        WideFunctResults[i].blank  = (iswblank)( c ) != 0;
+        WideFunctResults[i].cntrl  = (iswcntrl)( c ) != 0;
+        WideFunctResults[i].digit  = (iswdigit)( c ) != 0;
+        WideFunctResults[i].graph  = (iswgraph)( c ) != 0;
+        WideFunctResults[i].lower  = (iswlower)( c ) != 0;
+        WideFunctResults[i].print  = (iswprint)( c ) != 0;
+        WideFunctResults[i].punct  = (iswpunct)( c ) != 0;
+        WideFunctResults[i].space  = (iswspace)( c ) != 0;
+        WideFunctResults[i].upper  = (iswupper)( c ) != 0;
+        WideFunctResults[i].xdigit = (iswxdigit)( c ) != 0;
+        WideFunctResults[i].ascii  = (iswascii)( c ) != 0;
+        WideFunctResults[i].csym   = (__iswcsym)( c ) != 0;
+        WideFunctResults[i].csymf  = (__iswcsymf)( c ) != 0;
     }
 }
 
@@ -315,7 +323,7 @@ void TestConversion( void )
 
     far_data++; // set ds outside DGROUP
 
-    for( c = 0; c < 256; c++ ) {
+    for( c = 0; c < 0x100; c++ ) {
         c1 = tolower( c );
         c2 = toupper( c );
         if( isalpha( c ) ) {
@@ -336,7 +344,7 @@ void TestWideConversion( void )
 
     far_data++; // set ds outside DGROUP
 
-    for( c = 0; c < 1024; c++ ) {
+    for( c = 0; c < 0x400; c++ ) {
         c1 = towlower( c );
         c2 = towupper( c );
         if( iswalpha( c ) ) {
