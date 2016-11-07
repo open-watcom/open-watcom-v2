@@ -231,7 +231,8 @@ static void fillInputOutput( char *input, char *output )
     }
 }
 
-static void initDLLInfo( DLL_DATA *data ) {
+static void initDLLInfo( DLL_DATA *data )
+{
     data->print_str = NULL;
     data->print_chr = NULL;
     data->print_line = NULL;

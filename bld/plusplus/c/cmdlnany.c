@@ -51,6 +51,7 @@
 #include "pdefn2.h"
 #include "initdefs.h"
 #include "brinfo.h"
+#include "cbanner.h"
 #include "cmdlnprs.gh"
 #include "cmdlnprs.h"
 #include "cmdlnsys.h"

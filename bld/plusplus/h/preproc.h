@@ -128,9 +128,6 @@ void GetNextToken(              // GET THE NEXT TOKEN FOR PROCESSOR
 unsigned IfDepthInSrcFile(      // COMPUTE #IF DEPTH IN CURRENT SOURCE FILE
     void )
 ;
-void CBanner(                   // PRINT C++ BANNER
-    void )
-;
 void LookPastName(              // SCAN PAST ID (makes a name out of id)
     void )
 ;

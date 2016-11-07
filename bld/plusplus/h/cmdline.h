@@ -100,8 +100,4 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
 void SetDBChar(                 // SET ASIAN CHARACTERS
     int character_set );        // - character set
 
-//extern void CBanner();          // DEFINED IN WATCOM.C
-
-
-
 #endif
