@@ -89,7 +89,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
 
 void IDEAPI IDEStopRunning( void )
 {
-    if( !ideInfo || ideInfo->ver <= 2 || ideInfo->console_output ) {
+    if( ideInfo == NULL || ideInfo->ver <= 2 || ideInfo->console_output ) {
         exit( 1 );
     } else {
         longjmp( Env, 1 );
@@ -223,7 +223,7 @@ void Usage( void )
     count = Banner();
     if( IdeCbs != NULL ) {
         console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
-        if( console_tty ) {
+        if( console_tty && count ) {
             ConsoleMessage( "" );
             ++count;
         }

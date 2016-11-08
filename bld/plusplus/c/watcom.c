@@ -33,7 +33,6 @@
 #include <banner.h>
 #include "fingprnt.h"
 #include "cbanner.h"
-//#include "preproc.h"
 
 
 #if _CPU == 8086

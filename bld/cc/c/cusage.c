@@ -59,7 +59,7 @@ void CCusage( void )
 {
     char const  *page_text;
     char const  *p;
-    unsigned    count;
+    int         count;
 
     count = CBanner();
 #ifdef __OSI__
