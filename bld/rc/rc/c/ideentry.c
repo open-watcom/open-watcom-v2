@@ -247,7 +247,6 @@ static void RcIoPrintUsage( void )
     ConsoleMessage( "\n" );
     ++count;
     for( ++index; index <= USAGE_MSG_LAST; index++ ) {
-        GetRcMsg( index, buf, sizeof( buf ) );
         if( console_tty ) {
             if( count == NUM_ROWS - 2 ) {
                 if( Wait_for_return() )
@@ -256,6 +255,7 @@ static void RcIoPrintUsage( void )
             }
             ++count;
         }
+        GetRcMsg( index, buf, sizeof( buf ) );
         ConsoleMessage( "%s\n", buf );
     }
 }
