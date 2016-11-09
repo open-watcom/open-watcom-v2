@@ -74,9 +74,9 @@ static bool Wait_for_return( char const *page_text )
 void CCusage( void )
 /******************/
 {
-    char const *usage_text;
-    char const *page_text;
-    int        count;
+    char const  *usage_text;
+    char const  *page_text;
+    int         count;
 
     count = CBanner();
 #ifdef __OSI__
