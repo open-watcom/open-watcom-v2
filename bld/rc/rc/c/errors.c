@@ -149,7 +149,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
         sprintf( errBuffer, "%s", rcStrBuf );
         break;
     }
-    RcMsgFprintf( stdout, &errinfo, "%s\n", errBuffer );
+    RcMsgFprintf( &errinfo, "%s\n", errBuffer );
 }
 
 extern void RcWarning( unsigned errornum, ... )

@@ -50,5 +50,5 @@ typedef struct {
     unsigned             errid;
 } OutPutInfo;
 
-extern int      RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... );
+extern int      RcMsgFprintf( OutPutInfo *info, const char *format, ... );
 extern void     InitOutPutInfo( OutPutInfo *info );
