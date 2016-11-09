@@ -57,14 +57,13 @@ static void WRDisplayRCMsg( const char *msg )
     }
 }
 
-int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
+int RcMsgFprintf( OutPutInfo *info, const char *format, ... )
 {
     int         err;
     va_list     args;
     char        *fmt;
     char        *p;
 
-    fp = fp;
     p = buf;
     if( info->flags & OUTFLAG_FILE ) {
         err = sprintf( p, "%s(%d): ", info->file, info->lineno );
