@@ -89,7 +89,6 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
                          void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
-    bool            error;
     WResFileSSize   numread;
 
     if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
