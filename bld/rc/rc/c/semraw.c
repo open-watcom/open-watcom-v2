@@ -97,18 +97,15 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
         return( RS_READ_ERROR );
     }
 
-    numread = RCREAD( handle, buff, buffsize );
-    while( numread != 0 ) {
+    while( (numread = RCREAD( handle, buff, buffsize )) != 0 ) {
         if( RCIOERR( handle, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        error = ResWrite( buff, numread, CurrResFile.handle );
-        if( error ) {
-            *err_code = LastWresErr();
+        if( RCWRITE( CurrResFile.handle, buff, numread ) != numread ) {
+            *err_code = errno;
             return( RS_WRITE_ERROR );
         }
-        numread = RCREAD( handle, buff, buffsize );
     }
 
     return( RS_OK );

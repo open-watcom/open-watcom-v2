@@ -206,7 +206,7 @@ static bool FlushRcBuffer( WResFileID handle, RcBuffer *buff )
 
     error = false;
     if( buff->IsDirty ) {
-        error = ( posix_write( handle, buff->Buffer, buff->Count ) != buff->Count );
+        error = ( (size_t)posix_write( handle, buff->Buffer, buff->Count ) != buff->Count );
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
 

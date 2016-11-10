@@ -1540,7 +1540,7 @@ multiplicative-exp
 unary-exp
     : primary-exp
     | Y_MINUS unary-exp
-        { $$.Value = - $2.Value; $$.Mask = $2.Mask; }
+        { $$.Value = (uint_32)( -(int_32)$2.Value ); $$.Mask = $2.Mask; }
     | Y_BITNOT unary-exp
         { $$.Value = ~ $2.Value; $$.Mask = $2.Mask; }
     | Y_NOT unary-exp
