@@ -33,7 +33,7 @@
 #ifndef RESVER_H_INCLUDED
 #define RESVER_H_INCLUDED
 
-#define VER_CALC_SIZE   (-1)
+#define VER_CALC_SIZE   ((size_t)-1)
 
 typedef struct VerBlockHeader {
     uint_16     Size;           // includes size of nested blocks
