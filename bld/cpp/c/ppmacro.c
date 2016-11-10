@@ -292,7 +292,7 @@ void DumpNestedMacros( void )
 }
 
 
-static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, ppt_token token, char *data )
+static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, ppt_token token, const char *data )
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -506,18 +506,14 @@ static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     MACRO_TOKEN *mtok;
     size_t      len;
 
-    len = 0;
-    if( first != NULL )
-        len += strlen( first->data );
+    len = strlen( first->data );
     if( second != NULL )
         len += strlen( second->data );
     mtok = NewToken( first->token, len );
     if( mtok->token == PPT_SAVED_ID || mtok->token == PPT_UNEXPANDABLE_ID ) {
         mtok->token = PPT_ID;
     }
-    mtok->data[0] = '\0';
-    if( first != NULL )
-        strcpy( mtok->data, first->data );
+    strcpy( mtok->data, first->data );
     if( second != NULL )
         strcat( mtok->data, second->data );
     return( mtok );
