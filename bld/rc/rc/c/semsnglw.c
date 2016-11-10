@@ -249,7 +249,7 @@ static RcStatus readIcoFileDir( WResFileID handle, FullIconDir *dir, int *err_co
 
 
 static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID handle,
-                void *buffer, int buffer_size, BitmapInfoHeader *dibhead,
+                void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
 /**************************************************************************/
 /* NOTE: this routine fills in dibhead as it copies the data */
@@ -463,7 +463,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
 }
 
 static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID handle,
-                void *buffer, int buffer_size, BitmapInfoHeader *dibhead,
+                void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
 /*****************************************************************************/
 /* NOTE: this routine fills in dibhead as it copies the data */
@@ -898,19 +898,19 @@ static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
     structextra = devicelen + facelen;
 
     /* -1 for the 1 char in the struct already */
-    entry = RCALLOC( sizeof(FullFontDirEntry) + structextra - 1 );
+    entry = RCALLOC( sizeof( FullFontDirEntry ) - 1 + structextra );
     entry->Next = NULL;
     entry->Prev = NULL;
     /* -1 for the 1 char in the struct already */
-    entry->Entry.StructSize = sizeof(FontDirEntry) + structextra - 1;
+    entry->Entry.StructSize = (uint_16)( sizeof( FontDirEntry ) - 1 + structextra );
     entry->Entry.FontID = fontid->ID.Num;
     entry->Entry.Info = *info;
     memcpy( &(entry->Entry.DevAndFaceName[0]), devicename, devicelen );
     memcpy( &(entry->Entry.DevAndFaceName[devicelen]), facename, facelen );
     /* set dfDevice and dfFace to be the offset of the strings from the start */
     /* of the FontInfo structure (entry->Entry.Info) */
-    entry->Entry.Info.dfDevice = sizeof(FontInfo);
-    entry->Entry.Info.dfFace = sizeof(FontInfo) + devicelen;
+    entry->Entry.Info.dfDevice = sizeof( FontInfo );
+    entry->Entry.Info.dfFace = (uint_32)( sizeof( FontInfo ) + devicelen );
 
     return( entry );
 }

@@ -42,13 +42,24 @@
 #ifdef RC_USE_TRMEM
     #include "wio.h"
     #include "trmem.h"
+
+    #include "clibext.h"
+
+    #ifdef _WIN64
+    #define posix_read      __w64_read
+    #define posix_write     __w64_write
+    #else
+    #define posix_read      read
+    #define posix_write     write
+    #endif
+
     _trmem_hdl RcMemHandle = NULL;
 
     static void RcPutLine( void *dummy, const char *buf, size_t len )
     /***************************************************************/
     {
         dummy = dummy;
-        write( STDOUT_FILENO, buf, len );
+        posix_write( STDOUT_FILENO, buf, len );
     }
 #endif
 
