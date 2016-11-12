@@ -28,46 +28,49 @@
 *
 ****************************************************************************/
 
-#pragma pack(1)
+
+#include "watcom.h"
+
+#include "pushpck1.h"
 
 typedef struct {
-    DWORD off;
-    WORD seg;
+    uint_32     off;
+    uint_16     seg;
 } addr_48;
 
 typedef struct rex_hdr {
-    char    sig[2];
-    WORD    file_size1;
-    WORD    file_size2;
-    WORD    reloc_cnt;
-    WORD    file_header;
-    WORD    min_data;
-    WORD    max_data;
-    DWORD   initial_esp;
-    WORD    checksum;
-    DWORD   initial_eip;
-    WORD    first_reloc;
-    WORD    overlay_number;
-    WORD    one;
+    char        sig[2];
+    uint_16     file_size1;
+    uint_16     file_size2;
+    uint_16     reloc_cnt;
+    uint_16     file_header;
+    uint_16     min_data;
+    uint_16     max_data;
+    uint_32     initial_esp;
+    uint_16     checksum;
+    uint_32     initial_eip;
+    uint_16     first_reloc;
+    uint_16     overlay_number;
+    uint_16     one;
 } rex_exe;
 
 typedef struct dos_hdr {
-    WORD        sig;
-    WORD        len_of_load_mod;
-    WORD        x;
-    WORD        reloc_count;
-    WORD        size_of_DOS_header_in_paras;
+    uint_16     sig;
+    uint_16     len_of_load_mod;
+    uint_16     x;
+    uint_16     reloc_count;
+    uint_16     size_of_DOS_header_in_paras;
 } dos_hdr;
 
 typedef struct w32_hdr {
-    DWORD       sig;
-    DWORD       start_of_W32_file;
-    DWORD       size_of_W32_file;
-    DWORD       offset_to_relocs;
-    DWORD       memory_size;
-    DWORD       initial_EIP;
+    char        sig[4];
+    uint_32     start_of_W32_file;
+    uint_32     size_of_W32_file;
+    uint_32     offset_to_relocs;
+    uint_32     memory_size;
+    uint_32     initial_EIP;
 } w32_hdr;
 
-#pragma pack()
+#include "poppck.h"
 
 extern  void    PrintMsg( char *fmt,... );

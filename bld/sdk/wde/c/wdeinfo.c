@@ -323,8 +323,8 @@ void WdeWriteInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        WdeWriteObjectDimensions( (int_16)is->size.x, (int_16)is->size.y,
-                                  (int_16)is->size.width, (int_16)is->size.height );
+        WdeWriteObjectDimensions( (int_16)is->dsize.x, (int_16)is->dsize.y,
+                                  (int_16)is->dsize.width, (int_16)is->dsize.height );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
@@ -364,7 +364,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
     char          *str;
     WResID        *name;
 
-    str = WRConvertStringFrom( is->d.caption, "\t\n", "tn" );
+    str = WRConvertStringFrom( is->u.dlg.caption, "\t\n", "tn" );
     if( str == NULL ) {
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_CAPTION );
     } else {
@@ -372,7 +372,7 @@ void WdeDisplayDialogInfo( WdeInfoStruct *is )
         WRMemFree( str );
     }
 
-    name = is->d.name;
+    name = is->u.dlg.name;
     if( name->IsName ) {
         char    *str1, *str2;
         int     len;
@@ -414,7 +414,7 @@ void WdeDisplayControlInfo( WdeInfoStruct *is )
     char             *cp;
 
     str = NULL;
-    cp = WdeResNameOrOrdinalToStr( is->c.text, 10 );
+    cp = WdeResNameOrOrdinalToStr( is->u.ctl.text, 10 );
     if( cp != NULL ) {
         str = WRConvertStringFrom( cp, "\t\n", "tn" );
         WRMemFree( cp );
@@ -430,10 +430,10 @@ void WdeDisplayControlInfo( WdeInfoStruct *is )
     if( is->symbol ) {
         WdeSetComboWithStr( is->symbol, WdeInfoWindow, IDB_INFO_IDSTR );
     } else {
-        WdeSetEditWithSINT16( (int_16)is->c.id, 10, WdeInfoWindow, IDB_INFO_IDSTR );
+        WdeSetEditWithSINT16( (int_16)is->u.ctl.id, 10, WdeInfoWindow, IDB_INFO_IDSTR );
     }
 
-    WdeSetEditWithSINT16( (int_16)is->c.id, 10, WdeInfoWindow, IDB_INFO_IDNUM );
+    WdeSetEditWithSINT16( (int_16)is->u.ctl.id, 10, WdeInfoWindow, IDB_INFO_IDNUM );
 }
 
 void WdeChangeInfo( void )
@@ -464,12 +464,12 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
         str = WRConvertStringTo( cp, "\t\n", "tn" );
         WRMemFree( cp );
     }
-    c_is.d.caption = str;
+    c_is.u.dlg.caption = str;
 
     str = WdeGetStrFromCombo( WdeInfoWindow, IDB_INFO_IDSTR );
     if( str == NULL ) {
-        WRMemFree( c_is.d.caption );
-        c_is.d.caption = NULL;
+        WRMemFree( c_is.u.dlg.caption );
+        c_is.u.dlg.caption = NULL;
         return;
     }
 
@@ -495,8 +495,8 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
 
     if( str[0] == '\0' ) {
         WRMemFree( str );
-        WRMemFree( c_is.d.caption );
-        c_is.d.caption = NULL;
+        WRMemFree( c_is.u.dlg.caption );
+        c_is.u.dlg.caption = NULL;
         return;
     }
 
@@ -506,21 +506,21 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     c_is.symbol = NULL;
 
     if( quoted_str ) {
-        c_is.d.name = WResIDFromStr( str );
+        c_is.u.dlg.name = WResIDFromStr( str );
         WRMemFree( str );
     } else if( str_is_ordinal ) {
-        c_is.d.name = WResIDFromNum( ord );
+        c_is.u.dlg.name = WResIDFromNum( ord );
         WRMemFree( str );
     } else {
         if( !WdeIsValidSymbol( str ) ) {
             WRMemFree( str );
-            WRMemFree( c_is.d.caption );
-            c_is.d.caption = NULL;
+            WRMemFree( c_is.u.dlg.caption );
+            c_is.u.dlg.caption = NULL;
             return;
         }
         strupr( str );
         c_is.symbol = str;
-        c_is.d.name = NULL;
+        c_is.u.dlg.name = NULL;
     }
 
     Forward( is->obj, MODIFY_INFO, &c_is, NULL );
@@ -560,16 +560,16 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     }
 
     if( str != NULL ) {
-        c_is.c.text = ResStrToNameOrOrd( str );
+        c_is.u.ctl.text = ResStrToNameOrOrd( str );
         WRMemFree( str );
     } else {
-        c_is.c.text = NULL;
+        c_is.u.ctl.text = NULL;
     }
 
     str = WdeGetStrFromCombo( WdeInfoWindow, IDB_INFO_IDSTR );
     if( str == NULL ) {
-        WRMemFree( c_is.c.text );
-        c_is.c.text = NULL;
+        WRMemFree( c_is.u.ctl.text );
+        c_is.u.ctl.text = NULL;
         return;
     }
 
@@ -577,8 +577,8 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
 
     if( str[0] == '\0' ) {
         WRMemFree( str );
-        WRMemFree( c_is.c.text );
-        c_is.c.text = NULL;
+        WRMemFree( c_is.u.ctl.text );
+        c_is.u.ctl.text = NULL;
         return;
     }
 
@@ -588,13 +588,13 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     c_is.symbol = NULL;
 
     if( str_is_ordinal ) {
-        c_is.c.id = ord;
+        c_is.u.ctl.id = ord;
         WRMemFree( str );
     } else {
         if( !WdeIsValidSymbol( str ) ) {
             WRMemFree( str );
-            WRMemFree( c_is.c.text );
-            c_is.c.text = NULL;
+            WRMemFree( c_is.u.ctl.text );
+            c_is.u.ctl.text = NULL;
             return;
         }
         strupr( str );

@@ -47,7 +47,9 @@ typedef struct control_item {
 typedef struct {
     char                *classname;
     DWORD               style;
-    WPI_MRESULT (CALLBACK * call_back)( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
+#ifdef __NT__
+    DWORD               xstyle;
+#endif
 } controls_struct;
 
 extern control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id );

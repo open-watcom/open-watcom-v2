@@ -29,24 +29,16 @@
 *
 ****************************************************************************/
 
-
-pick(   LOADER_SUCCESS = 0,
-        "",
-        ""
-)
-pick(   LOADER_CANT_OPEN_EXE,
-        "Can't open '%s'; rc=%d\r\n",
-        "オープンできません '%s'; rc=%d\r\n"
-)
-pick(   LOADER_INVALID_EXE,
-        "Invalid EXE\r\n",
-        "不正な EXE\r\n"
-)
-pick(   LOADER_READ_ERROR,
-        "Loader read error\r\n",
-        "ローダー読み込みエラー\r\n"
-)
-pick(   LOADER_NOT_ENOUGH_MEMORY,
-        "Memory allocation failed\r\n",
-        "メモリ割り付けが失敗しました\r\n"
-)
+    /* uitype        classn         classn_os2  style               xstyle_nt                 gui_control_classs  */
+pick( FLD_HOT,      WC_BUTTON,        "#3",     PUSH_STYLE,           0 )                   /* GUI_PUSH_BUTTON    */
+pick( FLD_HOT,      WC_BUTTON,        "#3",     DEFPUSH_STYLE,        0 )                   /* GUI_DEFPUSH_BUTTON */
+pick( FLD_RADIO,    WC_BUTTON,        "#3",     RADIO_STYLE,          0 )                   /* GUI_RADIO_BUTTON   */
+pick( FLD_CHECK,    WC_BUTTON,        "#3",     CHECK_STYLE,          0 )                   /* GUI_CHECK_BOX      */
+pick( FLD_PULLDOWN, WC_COMBOBOX,      "#2",     COMBOBOX_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_COMBOBOX       */
+pick( FLD_EDIT,     WC_ENTRYFIELD,    "#6",     EDIT_STYLE,           WS_EX_CLIENTEDGE )    /* GUI_EDIT           */
+pick( FLD_LISTBOX,  WC_LISTBOX,       "#7",     LISTBOX_STYLE,        WS_EX_CLIENTEDGE )    /* GUI_LISTBOX        */
+pick( FLD_VOID,     WC_SCROLLBAR,     "#8",     SCROLLBAR_STYLE,      0 )                   /* GUI_SCROLLBAR      */
+pick( FLD_TEXT,     WC_STATIC,        "#5",     STATIC_STYLE,         0 )                   /* GUI_STATIC         */
+pick( FLD_FRAME,    WC_GROUPBOX,      "#5",     GROUPBOX_STYLE,       0 )                   /* GUI_GROUPBOX       */
+pick( FLD_COMBOBOX, WC_COMBOBOX,      "#2",     EDIT_COMBOBOX_STYLE,  WS_EX_CLIENTEDGE )    /* GUI_EDIT_COMBOBOX  */
+pick( FLD_EDIT_MLE, WC_MLE,           "#10",    EDIT_MLE_STYLE,       WS_EX_CLIENTEDGE )    /* GUI_EDIT_MLE       */

@@ -169,7 +169,7 @@ bool WdeSetCurrentCustControl( int which )
     FARPROC   proc;
 
     if( WdeCustomLibList == NULL ) {
-        WdeSetStatusByID( -1, WDE_NOCUSTLOADED );
+        WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
         return( TRUE );
     }
 
@@ -242,7 +242,7 @@ bool WdeLoadCustomLib( bool ms_lib, bool load_only )
     lib->file_name = name;
 
     if( load_only ) {
-        WdeSetStatusByID( -1, WDE_LIBRARYLOADED );
+        WdeSetStatusByID( WDE_NONE, WDE_LIBRARYLOADED );
         ret = TRUE;
     } else {
         if( ms_lib ) {

@@ -122,7 +122,7 @@ pick( USAGE_WLIB_30,        "                | -ie                      (generat
                 "                | -ie                      (ELFインポート･レコードを生成します)" )
 pick( USAGE_WLIB_31,        "                | -ic                      (generate COFF import records)" ,
                 "                | -ic                      (COFFｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します)" )
-pick( USAGE_WLIB_32,        "                | -icl                     (generate 'long' COFF import records)" ,
+pick( USAGE_WLIB_32,        "                | -icl                     (generate 'long' COFF imp. records)" ,
                 "                | -icl                     (COFFｲﾝﾎﾟｰﾄ･ﾚｺｰﾄﾞを生成します)" )
 pick( USAGE_WLIB_33,        "                | -io                      (generate OMF import records)" ,
                 "                | -io                      (OMFインポート･レコードを生成します)" )

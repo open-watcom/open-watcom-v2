@@ -106,7 +106,7 @@ bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPop
             error = ResWriteString( curritem->ItemText, use_unicode, handle );
         }
         if( !error ) {
-            error = ResPadDWord( handle );
+            error = ResWritePadDWord( handle );
         }
         if( !error ) {
             error = ResWriteUint32( exdata->HelpId, handle );
@@ -166,7 +166,7 @@ bool ResWriteMenuExItemNormal( const MenuItemNormal *curritem, const MenuExItemN
             error = ResWriteString( curritem->ItemText, use_unicode, handle );
         }
         if( !error ) {
-            error = ResPadDWord( handle );
+            error = ResWritePadDWord( handle );
         }
     }
 
@@ -286,7 +286,7 @@ bool ResReadMenuExItem( MenuExItem *curritem, WResFileID handle )
         curritem->Item.ExPopup.Popup.ItemText = ResRead32String( handle, NULL );
 
         // Careful! The string is DWORD aligned.
-        ResPadDWord( handle );
+        ResReadPadDWord( handle );
         error = ResReadUint32( &helpId, handle );
         curritem->Item.ExPopup.ExData.HelpId = helpId;
     } else {
@@ -296,7 +296,7 @@ bool ResReadMenuExItem( MenuExItem *curritem, WResFileID handle )
         curritem->Item.ExNormal.Normal.ItemText = ResRead32String( handle, NULL );
 
         // Careful! The string is DWORD aligned.
-        ResPadDWord( handle );
+        ResReadPadDWord( handle );
         curritem->Item.ExNormal.ExData.ItemType = type;
         curritem->Item.ExNormal.ExData.ItemState = state;
     }

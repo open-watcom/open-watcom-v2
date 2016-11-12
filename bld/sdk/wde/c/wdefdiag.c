@@ -1016,11 +1016,11 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    if( in->d.caption ) {
+    if( in->u.dlg.caption ) {
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
             WRMemFree( GETHDR_CAPTION( obj->dialog_info ) );
         }
-        SETHDR_CAPTION( obj->dialog_info, in->d.caption );
+        SETHDR_CAPTION( obj->dialog_info, in->u.dlg.caption );
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPSTR)GETHDR_CAPTION( obj->dialog_info ) );
         } else {
@@ -1037,15 +1037,15 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
         entry = WdeDefAddHashEntry( obj->res_info->hash_table, obj->symbol, &dup );
         if( entry != NULL ) {
             obj->name = WResIDFromNum( entry->value );
-            in->d.name = obj->name;
+            in->u.dlg.name = obj->name;
         } else {
             obj->name = old_name;
             obj->symbol = old_symbol;
             old_name = NULL;
             old_symbol = NULL;
         }
-    } else if( in->d.name ) {
-        obj->name = in->d.name;
+    } else if( in->u.dlg.name ) {
+        obj->name = in->u.dlg.name;
     }
 
     if( old_symbol != NULL ) {
@@ -1367,7 +1367,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         redraw = WdeGenericDefine( &o_info );
     } else {
         WdeSetStatusText( NULL, "", FALSE );
-        WdeSetStatusByID( WDE_DEFININGDIALOG, -1 );
+        WdeSetStatusByID( WDE_DEFININGDIALOG, WDE_NONE );
 
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
                                   (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info ) != 0;
@@ -2023,9 +2023,12 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     is.obj_id = DIALOG_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.size = GETHDR_SIZE( obj->dialog_info );
-    is.d.caption = GETHDR_CAPTION( obj->dialog_info );
-    is.d.name = obj->name;
+    is.dsize.x = GETHDR_SIZEX( obj->dialog_info );
+    is.dsize.y = GETHDR_SIZEY( obj->dialog_info );
+    is.dsize.width = GETHDR_SIZEW( obj->dialog_info );
+    is.dsize.height = GETHDR_SIZEH( obj->dialog_info );
+    is.u.dlg.caption = GETHDR_CAPTION( obj->dialog_info );
+    is.u.dlg.name = obj->name;
     is.symbol = WdeStrDup( obj->symbol );
 
     WdeWriteInfo( &is );
@@ -2669,7 +2672,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
         ok = (ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )));
         if( !ok ) {
             //WdeDisplayErrorMsg( WDE_UNDEFINEDCLASS );
-            WdeSetStatusByID( -1, WDE_UNDEFINEDCLASS );
+            WdeSetStatusByID( WDE_NONE, WDE_UNDEFINEDCLASS );
             WRMemFree( ClassName );
             ClassName = NULL;
             ok = true;

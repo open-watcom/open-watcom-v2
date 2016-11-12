@@ -442,7 +442,7 @@ bool WdeDisplayOptions( void )
     INT_PTR   modified;
 
     WdeSetStatusText( NULL, " ", FALSE );
-    WdeSetStatusByID( WDE_DISPLAYOPTIONS, -1 );
+    WdeSetStatusByID( WDE_DISPLAYOPTIONS, WDE_NONE );
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();

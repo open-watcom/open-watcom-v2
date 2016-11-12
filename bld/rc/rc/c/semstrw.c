@@ -276,7 +276,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
                             currblock->UseUnicode, CurrResFile.handle );
             if( !error && CmdLineParms.MSResFormat &&
                           CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-                error = ResPadDWord( CurrResFile.handle );
+                error = ResWritePadDWord( CurrResFile.handle );
             }
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

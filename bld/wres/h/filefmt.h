@@ -32,6 +32,18 @@
 #ifndef FILEFMT_INCLUDED
 #define FILEFMT_INCLUDED
 
+#define WRESMAGIC0  0xC3D4C1D7
+#define WRESMAGIC1  0xC3D2CDCF
+#define WRESVERSION 3           /* set to version number of the file format */
+
+enum {
+    WRES_OS_WIN16 = 1,
+    WRES_OS_WIN32,
+    WRES_OS_OS2
+};
+
+typedef uint_16 WResTargetOS;
+
 #include "pushpck1.h"
 typedef struct WResHeader {
     uint_32     Magic[2];       /* must be WRESMAGIC0 and WRESMAGIC1 */
@@ -41,22 +53,10 @@ typedef struct WResHeader {
     uint_16     WResVer;        /* WRESVERSION */
 } WResHeader;
 
-enum {
-    WRES_OS_WIN16 = 1,
-    WRES_OS_WIN32,
-    WRES_OS_OS2
-};
-typedef uint_16 WResTargetOS;
-
 typedef struct WResExtHeader {  /* Only present if WResVer >= 1 */
     WResTargetOS        TargetOS;
     uint_16             reserved[4];   /* reserved for future use */
 } WResExtHeader;
-
-#define WRESMAGIC0  0xC3D4C1D7
-#define WRESMAGIC1  0xC3D2CDCF
-#define WRESVERSION 3       /* set to version number of the file format */
-
 
 typedef struct WResIDName {             /* this is a "Pascal style" string */
     uint_16     NumChars;               /* length */
@@ -133,7 +133,7 @@ typedef struct WResResInfo {
 typedef struct WResLangType {
     uint_16     lang;
     uint_8      sublang;
-}WResLangType;
+} WResLangType;
 
 typedef struct WResLangInfo {
     WResLangType        lang;
@@ -142,16 +142,5 @@ typedef struct WResLangInfo {
     uint_32             Length; /* length in bytes of resource body */
 } _WCUNALIGNED WResLangInfo;
 #include "poppck.h"
-
-#if 0
-/* Wes uses this stuff in the resource editors - not really file formats, don't have to be packed */
-#define WRESMAXCHUNK  ( 31 * 1024 )
-
-typedef struct WResDataChunk {
-    uint_16              size;
-    void                 *data;
-    struct WResDataChunk *next;
-}WResDataChunk;
-#endif
 
 #endif

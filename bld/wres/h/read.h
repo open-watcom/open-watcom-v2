@@ -68,7 +68,7 @@ extern bool             ResReadUint16( uint_16 *newint, WResFileID handle );
 extern bool             ResReadUint8( uint_8 *newint, WResFileID handle );
 extern WResFileOffset   ResTell( WResFileID handle );
 extern WResFileOffset   ResSeek( WResFileID handle, WResFileOffset offset, int origin );
-extern bool             ResPadDWord( WResFileID handle );
+extern bool             ResReadPadDWord( WResFileID handle );
 extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle );
 
 #endif

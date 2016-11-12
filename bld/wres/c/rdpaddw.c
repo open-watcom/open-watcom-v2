@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -22,6 +23,7 @@
 *    NON-INFRINGEMENT. Please see the License for the specific language
 *    governing rights and limitations under the License.
 *
+*
 *  ========================================================================
 *
 * Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
@@ -30,23 +32,30 @@
 ****************************************************************************/
 
 
-pick(   LOADER_SUCCESS = 0,
-        "",
-        ""
-)
-pick(   LOADER_CANT_OPEN_EXE,
-        "Can't open '%s'; rc=%d\r\n",
-        "オープンできません '%s'; rc=%d\r\n"
-)
-pick(   LOADER_INVALID_EXE,
-        "Invalid EXE\r\n",
-        "不正な EXE\r\n"
-)
-pick(   LOADER_READ_ERROR,
-        "Loader read error\r\n",
-        "ローダー読み込みエラー\r\n"
-)
-pick(   LOADER_NOT_ENOUGH_MEMORY,
-        "Memory allocation failed\r\n",
-        "メモリ割り付けが失敗しました\r\n"
-)
+#include "layer0.h"
+#include "wresrtns.h"
+#include "reserr.h"
+#include "read.h"
+
+
+bool ResReadPadDWord( WResFileID handle )
+/***************************************/
+/* advances in the file to the next DWORD boundry */
+{
+    WResFileOffset  curr_pos;
+    WResFileOffset  padding;
+    bool            error;
+
+    curr_pos = WRESTELL( handle );
+    if( curr_pos == -1 ) {
+        WRES_ERROR( WRS_TELL_FAILED );
+        error = true;
+    } else {
+        padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
+        error = ( WRESSEEK( handle, padding, SEEK_CUR ) == -1 );
+        if( error ) {
+            WRES_ERROR( WRS_SEEK_FAILED );
+        }
+    }
+    return( error );
+}

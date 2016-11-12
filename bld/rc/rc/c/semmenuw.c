@@ -311,7 +311,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
             head.Version = RES_HEADER_VERSION;
             head.HeaderSize = RES_HEADER_SIZE;
             memset( headerdata, 0, head.HeaderSize );
-            ResPadDWord( CurrResFile.handle );
+            ResWritePadDWord( CurrResFile.handle );
             loc.start = SemStartResource();
             error = ResWriteMenuExHeader( &head, CurrResFile.handle, headerdata );
         } else {
@@ -324,7 +324,7 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         error = SemWriteSubMenu( menu, &err_code, tokentype );
         if( !error && CmdLineParms.MSResFormat &&
                       CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            error = ResPadDWord( CurrResFile.handle );
+            error = ResWritePadDWord( CurrResFile.handle );
         }
         if( error)
             goto OutputWriteError;

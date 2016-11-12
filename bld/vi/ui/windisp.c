@@ -52,8 +52,6 @@ static void WriteLongLineMarker( window_id wid, type_style *style, char_info *tx
     WRITE_SCREEN( *scr, info );
 }
 
-size_t strlen( const char *__s );
-
 /*
  * displayLineInWindowGeneric - takes an ss_block directly
  */

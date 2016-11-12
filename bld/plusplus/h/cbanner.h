@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,29 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Banner function prototype.
 *
 ****************************************************************************/
 
 
-pick(   LOADER_SUCCESS = 0,
-        "",
-        ""
-)
-pick(   LOADER_CANT_OPEN_EXE,
-        "Can't open '%s'; rc=%d\r\n",
-        "オープンできません '%s'; rc=%d\r\n"
-)
-pick(   LOADER_INVALID_EXE,
-        "Invalid EXE\r\n",
-        "不正な EXE\r\n"
-)
-pick(   LOADER_READ_ERROR,
-        "Loader read error\r\n",
-        "ローダー読み込みエラー\r\n"
-)
-pick(   LOADER_NOT_ENOUGH_MEMORY,
-        "Memory allocation failed\r\n",
-        "メモリ割り付けが失敗しました\r\n"
-)
+extern int CBanner( void );

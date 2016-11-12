@@ -30,11 +30,10 @@
 
 
 #include "plusplus.h"
-
 #include <banner.h>
-
 #include "fingprnt.h"
-#include "preproc.h"
+#include "cbanner.h"
+
 
 #if _CPU == 8086
 #define _TARGET_    "x86 16-bit"
@@ -46,24 +45,40 @@
 #error Unknown System
 #endif
 
-#define __puts( x )     MsgDisplayBanner( x )
-
-void CBanner( void )
-{
-    if( CompFlags.banner_printed ) return;
-    if( CompFlags.quiet_mode )     return;
-#if defined( _BETAVER )
-    __puts( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
-    __puts( banner1w2( _WPP_VERSION_ ) );
+#ifdef __OSI__
+#define ConsoleMessage(text)    puts(text)
 #else
-    __puts( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
+#define ConsoleMessage(text)    MsgDisplayLine( text )
 #endif
-    __puts( banner2 );
-    __puts( banner2a( "1989" ) );
-    __puts( banner3 );
-    __puts( banner3a );
-    if( Token[0] != '$' ) {             /* if finger print present */
-        __puts( Token );                /* - print it */
+
+int CBanner( void )
+{
+    int     count;
+
+    count = 0;
+    if( !CompFlags.banner_printed && !CompFlags.quiet_mode ) {
+#if defined( _BETAVER )
+        ConsoleMessage( banner1w1( "C++ " _TARGET_ " Optimizing Compiler" ) );
+        ++count;
+        ConsoleMessage( banner1w2( _WPP_VERSION_ ) );
+        ++count;
+#else
+        ConsoleMessage( banner1w( "C++ " _TARGET_ " Optimizing Compiler", _WPP_VERSION_ ) );
+        ++count;
+#endif
+        ConsoleMessage( banner2 );
+        ++count;
+        ConsoleMessage( banner2a( "1989" ) );
+        ++count;
+        ConsoleMessage( banner3 );
+        ++count;
+        ConsoleMessage( banner3a );
+        ++count;
+        if( Token[0] != '$' ) {             /* if finger print present */
+            ConsoleMessage( Token );                /* - print it */
+            ++count;
+        }
+        CompFlags.banner_printed = 1;
     }
-    CompFlags.banner_printed = 1;                       /* 13-mar-90 */
+    return( count );
 }

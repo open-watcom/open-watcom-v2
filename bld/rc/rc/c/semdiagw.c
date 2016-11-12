@@ -618,9 +618,6 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
                     SemFlushDataElemList( ctrl->dataListHead, false );
                 }
             }
-            if( !error ) {
-                error = ResPadDWord( CurrResFile.handle );
-            }
         } else {
             error = ResWriteDialogBoxControl( &(ctrl->u.ctrl), CurrResFile.handle );
         }
@@ -716,7 +713,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         head->u.Head32.Head.Size = size;
         /* pad the start of the resource so that padding within the resource */
         /* is easier */
-        error = ResPadDWord( CurrResFile.handle );
+        error = ResWritePadDWord( CurrResFile.handle );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
@@ -743,9 +740,6 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             } else if( tokentype == Y_DIALOG_EX ) {
                 error = ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.handle );
             }
-            if( !error ) {
-                error = ResPadDWord( CurrResFile.handle );
-            }
         } else {
             error = ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.handle );
         }
@@ -754,11 +748,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             goto OutputWriteError;
         }
 
-        if( ctrls->head == NULL ) {
-            if( head->Win32 ) {
-                error = ResPadDWord( CurrResFile.handle );
-            }
-        } else {
+        if( ctrls->head != NULL ) {
             error = SemWriteDiagCtrlList( ctrls, &err_code, tokentype );
         }
         if( error )

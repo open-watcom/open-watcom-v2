@@ -42,14 +42,22 @@
 #include "clibext.h"
 
 
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 #define MAX_OPEN_FILES          100
 
 #define RC_MAX_FILES            20
 #define RC_BUFFER_SIZE          0x4000   /* 16k */
 
 typedef struct RcBuffer {
-    int         Count;          /* number of characters in buffer */
-    unsigned    BytesRead;
+    size_t      Count;          /* number of characters in buffer */
+    size_t      BytesRead;
     char        *NextChar;
     bool        IsDirty;
     char        Buffer[RC_BUFFER_SIZE];
@@ -194,13 +202,11 @@ WResFileID RcOpen( const char * file_name, int access, ... )
 static bool FlushRcBuffer( WResFileID handle, RcBuffer *buff )
 /************************************************************/
 {
-    int     num_wrote;
     bool    error;
 
     error = false;
     if( buff->IsDirty ) {
-        num_wrote = write( handle, buff->Buffer, buff->Count );
-        error = ( num_wrote != buff->Count );
+        error = ( (size_t)posix_write( handle, buff->Buffer, buff->Count ) != buff->Count );
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
 
@@ -216,15 +222,13 @@ int RcClose( WResFileID handle )
 /******************************/
 {
     RcBuffer    *buff;
-    bool        error;
     int         i;
 
     i = RcFindIndex( handle );
     if( i < RC_MAX_FILES ) {
         buff = RcFileList[i].Buffer;
         if( buff->IsDirty ) {
-            error = FlushRcBuffer( handle, buff );
-            if( error ) {
+            if( FlushRcBuffer( handle, buff ) ) {
                 return( -1 );
             }
         }
@@ -242,22 +246,20 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
 /*********************************************************************************/
 {
     RcBuffer    *buff;
-    int         copy_bytes;
-    int         total_wrote;
-    bool        error;
+    size_t      copy_bytes;
+    size_t      total_wrote;
     int         i;
 
     i = RcFindIndex( handle );
     if( i >= RC_MAX_FILES ) {
-        return( write( handle, out_buff, size ) );
+        return( posix_write( handle, out_buff, size ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     /* this is in case we have just read from the file */
     if( !buff->IsDirty ) {
-        error = FlushRcBuffer( handle, buff );
-        if( error ) {
+        if( FlushRcBuffer( handle, buff ) ) {
             return( -1 );
         }
     }
@@ -277,8 +279,7 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
         total_wrote += copy_bytes;
 
         if( buff->Count == RC_BUFFER_SIZE ) {
-            error = FlushRcBuffer( handle, buff );
-            if( error ) {
+            if( FlushRcBuffer( handle, buff ) ) {
                 return( -1 );
             }
         }
@@ -287,12 +288,13 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
     return( total_wrote );
 } /* RcWrite */
 
-static int FillRcBuffer( WResFileID handle, RcBuffer * buff )
-/***********************************************************/
+static WResFileSSize FillRcBuffer( WResFileID handle, RcBuffer * buff )
+/*********************************************************************/
 {
-    buff->Count = read( handle, buff->Buffer, RC_BUFFER_SIZE );
+    buff->Count = posix_read( handle, buff->Buffer, RC_BUFFER_SIZE );
     if( buff->Count == -1 ) {
         buff->Count = 0;
+        buff->BytesRead = 0;
         return( -1 );
     }
     buff->BytesRead = buff->Count;
@@ -304,23 +306,21 @@ static int FillRcBuffer( WResFileID handle, RcBuffer * buff )
 WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
 /**************************************************************************/
 {
-    RcBuffer    *buff;
-    int         copy_bytes;
-    int         total_read;
-    bool        error;
-    int         i;
-    int         bytes_added;        /* return value of FillRcBuffer */
+    RcBuffer        *buff;
+    size_t          copy_bytes;
+    size_t          total_read;
+    int             i;
+    WResFileSSize   bytes_added;        /* return value of FillRcBuffer */
 
     i = RcFindIndex( handle );
     if( i >= RC_MAX_FILES ) {
-        return( read( handle, in_buff, size ) );
+        return( posix_read( handle, in_buff, size ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        error = FlushRcBuffer( handle, buff );
-        if( error ) {
+        if( FlushRcBuffer( handle, buff ) ) {
             return( -1 );
         }
     }
@@ -329,7 +329,7 @@ WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
     while( size > 0 ) {
         if( buff->Count == 0 ) {
             bytes_added = FillRcBuffer( handle, buff );
-            if( bytes_added < 0 ) {
+            if( bytes_added == -1 ) {
                 return( bytes_added );
             } else if( bytes_added == 0 ) {
                 return( total_read );
@@ -359,7 +359,6 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
     RcBuffer        *buff;
     WResFileOffset  currpos;
     int             diff;
-    bool            error;
     int             i;
 
     i = RcFindIndex( handle );
@@ -386,8 +385,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             /* end of the buffer */
             if( amount < currpos ||
                     amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
-                error = FlushRcBuffer( handle, buff );
-                if( error )
+                if( FlushRcBuffer( handle, buff ) )
                     return( -1 );
                 if( lseek( handle, amount, SEEK_SET ) == -1 ) {
                     return( -1 );
@@ -401,8 +399,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             }
             break;
         case SEEK_END:
-            error = FlushRcBuffer( handle, buff );
-            if( error )
+            if( FlushRcBuffer( handle, buff ) )
                 return( -1 );
             if( lseek( handle, amount, where ) == -1 )
                 return( -1 );
@@ -421,8 +418,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             /* if the new pos is outside the buffer */
             if( amount < currpos + buff->Count - buff->BytesRead ||
                     amount >= currpos + buff->Count ) {
-                error = FlushRcBuffer( handle, buff );
-                if( error )
+                if( FlushRcBuffer( handle, buff ) )
                     return( -1 );
                 if( lseek( handle, amount, SEEK_SET ) == -1 ) {
                     return( -1 );
@@ -436,8 +432,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             }
             break;
         case SEEK_END:
-            error = FlushRcBuffer( handle, buff );
-            if( error )
+            if( FlushRcBuffer( handle, buff ) )
                 return( -1 );
             if( lseek( handle, amount, SEEK_END ) == -1 )
                 return( -1 );
@@ -465,9 +460,9 @@ WResFileOffset RcTell( WResFileID handle )
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        return( tell( handle ) + buff->Count );
+        return( tell( handle ) + (WResFileOffset)buff->Count );
     } else {
-        return( tell( handle ) - buff->Count );
+        return( tell( handle ) - (WResFileOffset)buff->Count );
     }
 } /* RcTell */
 

@@ -141,7 +141,6 @@ static const char *ParseOption( const char *c, char *buff )
     eatwhite( c );
     switch( my_tolower( *c++ ) ) {
     case '?':
-        Banner();
         Usage();
         break;
     case 'b': //                       (don't create .bak file)
@@ -239,7 +238,6 @@ static const char *ParseOption( const char *c, char *buff )
         }
         break;
     case 'h':
-        Banner();
         Usage();
         break;
     case 'l': // [ = <list_file_name> ]
@@ -563,7 +561,6 @@ static void ParseOneLine( const char *c )
         default:
             c = GetString( c, buff, true, false );
             if( strcmp( buff, "?" ) == 0 ) {
-                Banner();
                 Usage();
             }
             if( Options.input_name != NULL ) {
@@ -584,7 +581,6 @@ static const char *ParseArOption( const char *c, operation *ar_mode )
     while( notwhite( *c ) ) {
         switch( my_tolower( *c ) ) {
         case '?':
-            Banner();
             Usage();
             break;
         case 'c':
@@ -698,7 +694,7 @@ void ProcessCmdLine( char *argv[] )
     operation   ar_mode;
 
     fname = MakeFName( _cmdname( buffer ) );
-    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL || 
+    if( FNCMP( fname, "ar" ) == 0 || WlibGetEnv( AR_MODE_ENV ) != NULL ||
         WlibGetEnv( AR_MODE_ENV2 ) != NULL ) {
         Options.ar = true;
     }
@@ -708,10 +704,9 @@ void ProcessCmdLine( char *argv[] )
         env = WlibGetEnv( "WLIB" );
     }
     if( ( env == NULL || *env == '\0' ) && ( argv[1] == NULL || *argv[1] == '\0' ) ) {
-        Banner();
         Usage();
     }
-    
+
     ar_mode = OP_NONE;
     if( env != NULL && *env != '\0' ) {
         parse = DupStr( env );

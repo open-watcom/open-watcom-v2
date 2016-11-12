@@ -48,12 +48,12 @@ typedef struct {
         struct {
             char                *caption;
             WResID              *name;
-        } d;
+        } dlg;
         struct {
             ResNameOrOrdinal    *text;
             uint_16             id;
-        } c;
-    };
+        } ctl;
+    } u;
 } WdeInfoStruct;
 
 /****************************************************************************/

@@ -62,6 +62,29 @@ static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
     return( error );
 }
 
+static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
+/********************************************************************************/
+{
+    bool        error;
+    uint_16     tmp16;
+
+    error = ResReadUint16( &tmp16, handle );
+    size->x = tmp16;
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        size->y = tmp16;
+    }
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        size->width = tmp16;
+    }
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        size->height = tmp16;
+    }
+    return( error );
+}
+
 bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
 /**********************************************************************/
 {
@@ -149,6 +172,11 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
             error = ResWriteString( head->FontName, true, handle );
         }
     }
+
+    if( !error ) {
+        /* padding full record to dword boundary if necessary */
+        error = ResWritePadDWord( handle );
+    }
     return( error );
 }
 
@@ -183,9 +211,6 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
     if( !error ) {
         error = ResWriteDialogHeaderCommon32( head, handle, true );
     }
-//    if( !error ) {                    //DRW - commented Sep 25/95
-//        error = ResPadDWord( handle );
-//    }
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
         error = ResWriteUint16( head->PointSize, handle );
@@ -201,115 +226,12 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
         if( !error ) {
             error = ResWriteString( head->FontName, true, handle );
         }
-        if( !error ) {
-            error = ResPadDWord( handle );
-        }
-    }
-    return( error );
-}
-
-void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )
-/*******************************************************/
-{
-    if( head->MenuName != NULL ) {
-        WRESFREE( head->MenuName );
-    }
-    if( head->ClassName != NULL ) {
-        WRESFREE( head->ClassName );
-    }
-    if( head->Caption != NULL ) {
-        WRESFREE( head->Caption );
-    }
-    if( head->FontName != NULL ) {
-        WRESFREE( head->FontName );
-    }
-}
-
-void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head )
-/***********************************************************/
-{
-    if( head->MenuName != NULL ) {
-        WRESFREE( head->MenuName );
-    }
-    if( head->ClassName != NULL ) {
-        WRESFREE( head->ClassName );
-    }
-    if( head->Caption != NULL ) {
-        WRESFREE( head->Caption );
-    }
-    if( head->FontName != NULL ) {
-        WRESFREE( head->FontName );
-    }
-}
-
-static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
-/********************************************************************************/
-{
-    bool        error;
-    uint_16     tmp16;
-
-    error = ResReadUint16( &tmp16, handle );
-    size->x = tmp16;
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        size->y = tmp16;
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        size->width = tmp16;
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        size->height = tmp16;
-    }
-    return( error );
-}
-
-bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
-/*************************************************************************/
-{
-    bool            error;
-    uint_32         tmp32;
-    uint_16         tmp16;
-
-    error = ResReadUint32( &tmp32, handle );
-    head->Style = tmp32;
-    if( !error ) {
-        error = ResReadUint32( &tmp32, handle );
-        head->ExtendedStyle = tmp32;
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        head->NumOfItems = tmp16;
-    }
-    if( !error ) {
-        error = ResReadDialogSizeInfo( &(head->Size), handle );
-    }
-    if( !error ) {
-        head->MenuName = ResRead32NameOrOrdinal( handle );
-        error = (head->MenuName == NULL);
-    }
-    if( !error ) {
-        head->ClassName = ResRead32NameOrOrdinal( handle );
-        error = (head->ClassName == NULL);
-    }
-    if( !error ) {
-        head->Caption = ResRead32String( handle, NULL );
-        error = (head->Caption == NULL);
     }
 
-    /* if the font was set input the font name and point size */
-    if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResReadUint16( &tmp16, handle );
-        head->PointSize = tmp16;
-        if( !error ) {
-            head->FontName = ResRead32String( handle, NULL );
-            error = (head->FontName == NULL);
-        }
-    } else {
-        head->FontName = NULL;
+    if( !error ) {
+        /* padding full record to dword boundary if necessary */
+        error = ResWritePadDWord( handle );
     }
-
     return( error );
 }
 
@@ -376,6 +298,66 @@ bool ResIsDialogEx( WResFileID handle )
     return( false );
 }
 
+static bool ResReadDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle )
+{
+    bool    error;
+
+    head->MenuName = ResRead32NameOrOrdinal( handle );
+    error = (head->MenuName == NULL);
+    if( !error ) {
+        head->ClassName = ResRead32NameOrOrdinal( handle );
+        error = (head->ClassName == NULL);
+    }
+    if( !error ) {
+        head->Caption = ResRead32String( handle, NULL );
+        error = (head->Caption == NULL);
+    }
+    return( error );
+}
+
+bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
+/*************************************************************************/
+{
+    bool            error;
+    uint_32         tmp32;
+    uint_16         tmp16;
+
+    error = ResReadUint32( &tmp32, handle );
+    head->Style = tmp32;
+    if( !error ) {
+        error = ResReadUint32( &tmp32, handle );
+        head->ExtendedStyle = tmp32;
+    }
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        head->NumOfItems = tmp16;
+    }
+    if( !error ) {
+        error = ResReadDialogSizeInfo( &(head->Size), handle );
+    }
+    if( !error ) {
+        error = ResReadDialogHeaderCommon32( head, handle );
+    }
+
+    /* if the font was set input the font name and point size */
+    if( !error && (head->Style & DS_SETFONT) ) {
+        error = ResReadUint16( &tmp16, handle );
+        head->PointSize = tmp16;
+        if( !error ) {
+            head->FontName = ResRead32String( handle, NULL );
+            error = (head->FontName == NULL);
+        }
+    } else {
+        head->FontName = NULL;
+    }
+
+    if( !error ) {
+        /* seek to dword boundary if necessary */
+        error = ResReadPadDWord( handle );
+    }
+    return( error );
+}
+
 bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
                                                              WResFileID handle )
 /******************************************************************************/
@@ -387,13 +369,13 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
     /* Read in the miscellaneous two WORDs 01 00 FF FF */
     error = ResReadUint16( &tmp16, handle );
     if( !error ) {
-        error = tmp16 != 1;
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-    }
-    if( !error ) {
-        error = tmp16 != (uint_16)-1;
+        error = ( tmp16 != 1 );
+        if( !error ) {
+            error = ResReadUint16( &tmp16, handle );
+            if( !error ) {
+                error = tmp16 != (uint_16)-1;
+            }
+        }
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
@@ -415,23 +397,8 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
         error = ResReadDialogSizeInfo( &(head->Size), handle );
     }
     if( !error ) {
-        head->MenuName = ResRead32NameOrOrdinal( handle );
-        error = (head->MenuName == NULL);
+        error = ResReadDialogHeaderCommon32( head, handle );
     }
-    if( !error ) {
-        head->ClassName = ResRead32NameOrOrdinal( handle );
-        error = (head->ClassName == NULL);
-    }
-    if( !error ) {
-        head->Caption = ResRead32String( handle, NULL );
-        error = (head->Caption == NULL);
-    }
-
-    /* not needed ???
-    if( !error ) {
-        error = ResPadDWord( handle );
-    }
-    */
 
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
@@ -450,11 +417,12 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
             head->FontName = ResRead32String( handle, NULL );
             error = (head->FontName == NULL);
         }
-        if( !error ) {
-            error = ResPadDWord( handle );
-        }
     }
 
+    if( !error ) {
+        /* seek to dword boundary if necessary */
+        error = ResReadPadDWord( handle );
+    }
     return( error );
 }
 
@@ -502,7 +470,7 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
     if( class_id->Class & 0x80 ) {
         /*the class number is prefixed by 0xFFFF to distinguish it
          * from a string */
-        error = ResWriteUint16( -1, handle );
+        error = ResWriteUint16( (uint_16)-1, handle );
         if( !error ) {
             error = ResWriteUint16( class_id->Class, handle );
         }
@@ -539,6 +507,10 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle 
         error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
     }
 
+    if( !error ) {
+        /* padding full record to dword boundary if necessary */
+        error = ResWritePadDWord( handle );
+    }
     return( error );
 }
 
@@ -564,6 +536,10 @@ bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle
         error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
     }
 
+    if( !error ) {
+        /* padding full record to dword boundary if necessary */
+        error = ResWritePadDWord( handle );
+    }
     return( error );
 }
 
@@ -700,6 +676,24 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, WResFileID handle )
     return( error );
 }
 
+static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdinal **text, uint_16 *extra_bytes, WResFileID handle )
+{
+    bool            error;
+    uint_16         tmp16;
+
+    *class_id = Read32ControlClass( handle );
+    error = (*class_id == NULL);
+    if( !error ) {
+        *text = ResRead32NameOrOrdinal( handle );
+    }
+    if( !error ) {
+        error = ResReadUint16( &tmp16, handle );
+        *extra_bytes = tmp16;
+    }
+
+    return( error );
+}
+
 bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
 /******************************************************************************/
 {
@@ -707,12 +701,8 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
     uint_32         tmp32;
     uint_16         tmp16;
 
-    error = ResPadDWord( handle );
-
-    if( !error ) {
-        error = ResReadUint32( &tmp32, handle );
-        control->Style = tmp32;
-    }
+    error = ResReadUint32( &tmp32, handle );
+    control->Style = tmp32;
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         control->ExtendedStyle = tmp32;
@@ -725,17 +715,13 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
         control->ID = tmp16;
     }
     if( !error ) {
-        control->ClassID = Read32ControlClass( handle );
-        error = (control->ClassID == NULL);
-    }
-    if( !error ) {
-        control->Text = ResRead32NameOrOrdinal( handle );
-    }
-    if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        control->ExtraBytes = tmp16;
+        error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), handle );
     }
 
+    if( !error ) {
+        /* seek to dword boundary if necessary */
+        error = ResReadPadDWord( handle );
+    }
     return( error );
 }
 
@@ -744,14 +730,9 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle 
 {
     bool            error;
     uint_32         tmp32;
-    uint_16         tmp16;
 
-    error = ResPadDWord( handle );
-
-    if( !error ) {
-        error = ResReadUint32( &tmp32, handle );
-        control->HelpId = tmp32;
-    }
+    error = ResReadUint32( &tmp32, handle );
+    control->HelpId = tmp32;
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         control->ExtendedStyle = tmp32;
@@ -764,20 +745,17 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle 
         error = ResReadDialogSizeInfo( &(control->Size), handle );
     }
     if( !error ) {
-        error = ResReadUint16( &tmp16, handle );
-        control->ID = tmp16;
+        error = ResReadUint32( &tmp32, handle );
+        control->ID = tmp32;
     }
     if( !error ) {
-        control->ClassID = Read32ControlClass( handle );
-        error = (control->ClassID == NULL);
-    }
-    if( !error ) {
-        control->Text = ResRead32NameOrOrdinal( handle );
-    }
-    if( !error ) {
-        error = ResReadUint16( &(control->ExtraBytes), handle );
+        error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), handle );
     }
 
+    if( !error ) {
+        /* seek to dword boundary if necessary */
+        error = ResReadPadDWord( handle );
+    }
     return( error );
 }
 
@@ -839,4 +817,38 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
         }
     }
     return( class );
+}
+
+void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )
+/*******************************************************/
+{
+    if( head->MenuName != NULL ) {
+        WRESFREE( head->MenuName );
+    }
+    if( head->ClassName != NULL ) {
+        WRESFREE( head->ClassName );
+    }
+    if( head->Caption != NULL ) {
+        WRESFREE( head->Caption );
+    }
+    if( head->FontName != NULL ) {
+        WRESFREE( head->FontName );
+    }
+}
+
+void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 * head )
+/***********************************************************/
+{
+    if( head->MenuName != NULL ) {
+        WRESFREE( head->MenuName );
+    }
+    if( head->ClassName != NULL ) {
+        WRESFREE( head->ClassName );
+    }
+    if( head->Caption != NULL ) {
+        WRESFREE( head->Caption );
+    }
+    if( head->FontName != NULL ) {
+        WRESFREE( head->FontName );
+    }
 }

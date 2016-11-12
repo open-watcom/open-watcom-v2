@@ -49,7 +49,7 @@
 static void PutScanString( const char *string )
 {
     if( CmdLineParms.DebugScanner && string != NULL ) {
-        RcMsgFprintf( stdout, NULL, "%s\n", string );
+        RcMsgFprintf( NULL, "%s\n", string );
     }
 } /* PutScanString */
 

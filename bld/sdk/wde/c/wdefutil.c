@@ -979,7 +979,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     }
 
     WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_DEFININGCONTROL, -1 );
+    WdeSetStatusByID( WDE_DEFININGCONTROL, WDE_NONE );
 
     app_inst = WdeGetAppInstance();
 

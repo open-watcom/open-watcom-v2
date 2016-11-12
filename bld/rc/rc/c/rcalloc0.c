@@ -131,13 +131,13 @@ extern void RCMemLayer0Free( void *mem, HeapHandle *heap )
 
 #ifdef RCMEM_DEBUG
     if( mem == NULL ) {
-        RcMsgFprintf( stderr, NULL, "Free NULL pointer\n" );
+        RcMsgFprintf( NULL, "Free NULL pointer\n" );
     }
 #endif
     freemem = (FreeListInfo *)( (char *)mem - offsetof( FreeListInfo, u.data ) );
 #ifdef RCMEM_DEBUG
     if( ((unsigned char *)mem)[freemem->dbg.size] != RCMEM_ENDBYTE ) {
-        RcMsgFprintf( stderr, NULL, "(%x) Memory Overrun\n", mem );
+        RcMsgFprintf( NULL, "(%x) Memory Overrun\n", mem );
     }
     freemem->dbg.startbyte = !RCMEM_STARTBYTE;
 #endif
@@ -154,7 +154,7 @@ static void RCMemLayer0CheckUnfreed( HeapHandle *heap, char *freelist )
 
     for( i = 0; i < heap->blocksize; i++ ) {
         if( freelist->dbg.startbyte == RCMEM_STARTBYTE ) {
-            RcMsgFprintf( stderr, NULL,
+            RcMsgFprintf( NULL,
                         "Unfreed Memory Detected (0x%x bytes at 0x%x)\n",
                         freelist->dbg.size, freelist->u.data );
             freelist->dbg.startbyte = !RCMEM_STARTBYTE;

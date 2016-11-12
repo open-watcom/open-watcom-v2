@@ -48,19 +48,30 @@
 
 char CompilerID[] = { "__WATCOMC__=" BANSTR( _BANVER ) };
 
-void CBanner( void )
+int CBanner( void )
 {
-    if( CompFlags.banner_printed ) return;
-    if( CompFlags.quiet_mode )     return;
+    int     count;
+
+    count = 0;
+    if( !CompFlags.banner_printed && !CompFlags.quiet_mode ) {
 #if defined( _BETAVER )
-    BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler" ) );
-    BannerMsg( banner1w2( _WCC_VERSION_ ) );
+        BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler" ) );
+        ++count;
+        BannerMsg( banner1w2( _WCC_VERSION_ ) );
+        ++count;
 #else
-    BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
+        BannerMsg( banner1w1( "C " _TARGET_ " Optimizing Compiler", _WCC_VERSION_ ) );
+        ++count;
 #endif
-    BannerMsg( banner2 );
-    BannerMsg( banner2a( "1984" ) );
-    BannerMsg( banner3 );
-    BannerMsg( banner3a );
-    CompFlags.banner_printed = 1;
+        BannerMsg( banner2 );
+        ++count;
+        BannerMsg( banner2a( "1984" ) );
+        ++count;
+        BannerMsg( banner3 );
+        ++count;
+        BannerMsg( banner3a );
+        ++count;
+        CompFlags.banner_printed = 1;
+    }
+    return( count );
 }

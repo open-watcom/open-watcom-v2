@@ -89,7 +89,7 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
 
 void IDEAPI IDEStopRunning( void )
 {
-    if( !ideInfo || ideInfo->ver <= 2 || ideInfo->console_output ) {
+    if( ideInfo == NULL || ideInfo->ver <= 2 || ideInfo->console_output ) {
         exit( 1 );
     } else {
         longjmp( Env, 1 );
@@ -190,12 +190,22 @@ void Message( char *buff, ... )
     va_end( arglist );
 }
 
+#define NUM_ROWS        24
+
+static void ConsoleMessage( const char *msg )
+{
+    static IDEMsgInfo   msg_info = { IDEMSGSEV_BANNER, 0, NULL, 0, NULL };
+    msg_info.msg = msg;
+    IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+}
+
 static bool Wait_for_return( void )
 /*********************************/
 // return true if we should stop printing
 {
-    int   c;
+    int         c;
 
+    ConsoleMessage( "    (Press Return to continue)" );
     c = getchar();
     return( c == 'q' || c == 'Q' );
 }
@@ -207,15 +217,16 @@ void Usage( void )
     int                 str;
     int                 str_first;
     int                 str_last;
-    IDEMsgInfo          msg_info;
     int                 count;
+    bool                console_tty;
+
+    count = Banner();
     if( IdeCbs != NULL ) {
-        msg_info.severity = IDEMSGSEV_BANNER;
-        count = 3;
-        msg_info.flags = 0;
-        msg_info.helpfile = NULL;
-        msg_info.helpid = 0;
-        msg_info.msg = buff;
+        console_tty = ( ideInfo != NULL && ideInfo->ver > 2 && ideInfo->console_output );
+        if( console_tty && count ) {
+            ConsoleMessage( "" );
+            ++count;
+        }
         if( Options.ar ) {
             str_first = USAGE_AR_FIRST;
             str_last = USAGE_AR_LAST;
@@ -224,29 +235,23 @@ void Usage( void )
             str_last = USAGE_WLIB_LAST;
         }
         for( str = str_first; str <= str_last; ++str ) {
+            if( console_tty ) {
+                if( count == NUM_ROWS - 2 ) {
+                    if( Wait_for_return() )
+                        break;
+                    count = 0;
+                }
+                ++count;
+            }
             MsgGet( str, buff );
-            if( ideInfo && ideInfo->ver > 2 && ideInfo->console_output &&
-                ( count > 20 && buff[0] == '\0' || count == 24 ) ) {
-                msg_info.msg = "    (Press Return to continue)" ;
-                IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
-                if( Wait_for_return() )
-                    break;
-                count = 0;
-                msg_info.msg = buff;
-            }
-            ++count;
-            if( buff[0] == '\0' ) {
-                continue;
-            }
-            IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+            ConsoleMessage( buff );
         }
     }
     longjmp( Env, 1 );
 }
 
-void Banner( void )
+int Banner( void )
 {
-    IDEMsgInfo          msg_info;
     static char *bannerText[] = {
 #ifndef NDEBUG
         banner1w( "Library Manager", _WLIB_VERSION_ ) " [Internal Development]",
@@ -260,21 +265,20 @@ void Banner( void )
         NULL
     };
     static bool alreadyDone = false;
-    char **text;
+    char        **text;
+    int         count;
+    char        *p;
 
-    if( Options.quiet || alreadyDone || Options.terse_listing )
-        return;
-
-    alreadyDone = true;
-    if( IdeCbs != NULL ) {
-        msg_info.severity = IDEMSGSEV_BANNER;
-        msg_info.flags = 0;
-        msg_info.helpfile = NULL;
-        msg_info.helpid = 0;
-        text = bannerText;
-        while( *text ) {
-            msg_info.msg = *text++;
-            IdeCbs->PrintWithInfo( IdeHdl, &msg_info );
+    count = 0;
+    if( !Options.quiet && !alreadyDone && !Options.terse_listing ) {
+        alreadyDone = true;
+        if( IdeCbs != NULL ) {
+            text = bannerText;
+            while( (p = *text++) != NULL ) {
+                ConsoleMessage( p );
+                ++count;
+            }
         }
     }
+    return( count );
 }

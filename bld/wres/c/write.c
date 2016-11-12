@@ -49,7 +49,7 @@ static int DefaultConversion( int len, const char *str, char *buf )
     int         i;
 
     if( buf != NULL ) {
-        for( i=0; i < len; i++ ) {
+        for( i = 0; i < len; i++ ) {
             buf[2 * i] = str[i];
             buf[2 * i + 1] = 0;
         }
@@ -90,6 +90,30 @@ bool ResWriteUint32( uint_32 newint, WResFileID handle )
     } else {
         return( false );
     }
+}
+
+bool ResWritePadDWord( WResFileID handle )
+/****************************************/
+{
+    WResFileOffset  curr_pos;
+    size_t          padding;
+    bool            error;
+    uint_32         zero = 0;
+
+    error = false;
+    curr_pos = WRESTELL( handle );
+    if( curr_pos == -1 ) {
+        WRES_ERROR( WRS_TELL_FAILED );
+        return( true );
+    }
+    padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
+    if( padding != 0 ) {
+        if( WRESWRITE( handle, &zero, padding ) != padding ) {
+            WRES_ERROR( WRS_WRITE_FAILED );
+            return( true );
+        }
+    }
+    return( false );
 }
 
 bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileID handle )
@@ -382,7 +406,7 @@ bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID handle, b
             error = ResWriteNameOrOrdinal( currhead->Name, true, handle );
         }
         if( !error ) {
-            error = ResPadDWord( handle );
+            error = ResWritePadDWord( handle );
         }
         if( !error ) {
             error = ResWriteUint32( currhead->DataVersion, handle );

@@ -192,7 +192,6 @@ static bool parseCmdLine(       // PARSE COMMAND LINE
     p = argv[0];
     while( isspace( *p ) ) ++p;
     if( *p == '?' || *p == '\0' ) {
-        CBanner();
         CCusage();
         display_only = true;
     } else {

@@ -53,12 +53,15 @@
 #include "macro.h"
 #include "intlload.h"
 #include "ideentry.h"
+#include "cbanner.h"
 #ifndef NDEBUG
 #include "enterdb.h"
 #endif
 
+
 #define RESERVE_MAX                 2048
 #define RESERVE_MIN                 256
+
 static unsigned reserveSize;
 static void *reserveMem;
 static unsigned reserveDepth;

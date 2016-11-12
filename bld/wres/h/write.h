@@ -40,6 +40,7 @@ extern int (*ConvToUnicode)( int, const char *, char * );
 extern bool ResWriteUint8( uint_8 newint, WResFileID handle );
 extern bool ResWriteUint16( uint_16 newint, WResFileID handle );
 extern bool ResWriteUint32( uint_32 newint, WResFileID handle );
+extern bool ResWritePadDWord( WResFileID handle );
 extern bool WResWriteLangRecord( const WResLangInfo *info, WResFileID handle );
 extern bool WResWriteResRecord( const WResResInfo *res, WResFileID fp );
 extern bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fp );

@@ -52,19 +52,13 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND, WPI_MSG, WPI_PARAM1, WPI_PARAM2 );
 
 controls_struct GUIControls[GUI_NUM_CONTROL_CLASSES] = {
-    /* classname           style              call_back         gui_control_classs  */
-    { WC_BUTTON,        PUSH_STYLE,             NULL             }, /* GUI_PUSH_BUTTON    */
-    { WC_BUTTON,        DEFPUSH_STYLE,          NULL             }, /* GUI_DEFPUSH_BUTTON */
-    { WC_BUTTON,        RADIO_STYLE,            NULL             }, /* GUI_RADIO_BUTTON   */
-    { WC_BUTTON,        CHECK_STYLE,            NULL             }, /* GUI_CHECK_BOX      */
-    { WC_COMBOBOX,      COMBOBOX_STYLE,         NULL             }, /* GUI_COMBOBOX       */
-    { WC_ENTRYFIELD,    EDIT_STYLE,             GUIEditFunc      }, /* GUI_EDIT           */
-    { WC_LISTBOX,       LISTBOX_STYLE,          NULL             }, /* GUI_LISTBOX        */
-    { WC_SCROLLBAR,     SCROLLBAR_STYLE,        NULL             }, /* GUI_SCROLLBAR      */
-    { WC_STATIC,        STATIC_STYLE,           NULL             }, /* GUI_STATIC         */
-    { WC_GROUPBOX,      GROUPBOX_STYLE,         GUIGroupBoxFunc  }, /* GUI_GROUPBOX   */
-    { WC_COMBOBOX,      EDIT_COMBOBOX_STYLE,    NULL             }, /* GUI_EDIT_COMBOBOX  */
-    { WC_MLE,           EDIT_MLE_STYLE,         GUIEditFunc      }  /* GUI_MLE            */
+#if defined( __NT__ ) && !defined( _WIN64 )
+    #define pick(uitype,classn,classn_os2,style,xstyle_nt) {classn,style,xstyle_nt},
+#else
+    #define pick(uitype,classn,classn_os2,style,xstyle_nt) {classn,style},
+#endif
+    #include "_guicont.h"
+    #undef pick
 };
 
 typedef struct dialog_wnd_node {
@@ -421,13 +415,17 @@ WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
     switch( control_class ) {
     case GUI_EDIT_COMBOBOX :
         return( GUISubClassEditCombobox( hwnd ) );
-    default :
-        if( GUIControls[control_class].call_back == NULL ) {
-            return( NULL );
-        }
-        new = _wpi_makeprocinstance( (WPI_PROC) GUIControls[control_class].call_back, GUIMainHInst );
+    case GUI_EDIT:
+    case GUI_EDIT_MLE:
+        new = _wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
+    case GUI_GROUPBOX:
+        new = _wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
+        old = _wpi_subclasswindow( hwnd, new );
+        return( old );
+    default :
+        return( NULL );
     }
 }
 
@@ -555,7 +553,6 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
 #endif
 #if defined(__NT__)
     DWORD       xstyle;
-    char        *classname;
 #endif
 
     pctldata = NULL;
@@ -588,22 +585,13 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
     }
 
 #if defined(__NT__)
-    xstyle = 0L;
     // We do this crud to get 3d edges on edit controls, listboxes, and
     // comboboxes -rnk 07/07/95
-
+    xstyle = 0L;
   #if !defined( _WIN64 )
-    if( LOBYTE(LOWORD(GetVersion())) >= 4) {
-  #endif
-        /* In W95 and later we don't want this crud any more... RR 2003.12.8 */
-
-        classname = GUIControls[ctl_info->control_class].classname;
-        if( lstrcmpi( classname, "Edit" ) == 0 ||
-            lstrcmpi( classname, "Listbox" ) == 0 ||
-            lstrcmpi( classname, "Combobox" ) == 0 ) {
-            xstyle = WS_EX_CLIENTEDGE;
-        }
-  #if !defined( _WIN64 )
+    /* In W95 and later we don't want this crud any more... RR 2003.12.8 */
+    if( LOBYTE(LOWORD(GetVersion())) < 4) {
+        xstyle = GUIControls[ctl_info->control_class].xstyle;
     }
   #endif
 

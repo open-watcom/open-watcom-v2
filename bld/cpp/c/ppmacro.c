@@ -61,12 +61,11 @@ MACRO_TOKEN  *NestedMacroExpansion( MACRO_ENTRY * );
 
 static void FreeTokenList( MACRO_TOKEN *head )
 {
-    MACRO_TOKEN *mtok;
+    MACRO_TOKEN *next;
 
-    for( ; head != NULL; ) {
-        mtok = head;
-        head = head->next;
-        PP_Free( mtok );
+    for( ; head != NULL; head = next ) {
+        next = head->next;
+        PP_Free( head );
     }
 }
 
@@ -88,7 +87,7 @@ void DeleteNestedMacro( void )
         if( i > 0 && macro_parms != NULL ) {
             do {
                 --i;
-                for( ; (mtok = macro_parms[i].arg) != NULL; ) {
+                while( (mtok = macro_parms[i].arg) != NULL ) {
                     macro_parms[i].arg = mtok->next;
                     PP_Free( mtok );
                 }
@@ -102,7 +101,7 @@ MACRO_TOKEN *PPNextToken( void )
 {
     MACRO_TOKEN *mtok;
 
-    for( ; (mtok = PPTokenList) != NULL; ) {
+    while( (mtok = PPTokenList) != NULL ) {
         PPTokenList = mtok->next;
         mtok->next = NULL;
         if( !IS_END_OF_MACRO( mtok ) ) {
@@ -251,11 +250,9 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
             macro_parms[parm_cnt].arg = PPTrimWhiteSpace( head );
             ++parm_cnt;
         } else {
-            mtok = head;
-            while( head != NULL ) {
+            for( ; head != NULL; head = mtok ) {
                 mtok = head->next;
                 PP_Free( head );
-                head = mtok;
             }
         }
 #if 0
@@ -265,9 +262,8 @@ static MACRO_ARG *PPCollectParms( MACRO_ENTRY *fmentry )
             CErr( ERR_TOO_MANY_MACRO_PARMS, fmentry->name );
         }
 #endif
-        for( ; parm_cnt < fmentry->parmcount - 1; ) {
+        for( ; parm_cnt < fmentry->parmcount - 1; ++parm_cnt ) {
             macro_parms[parm_cnt].arg = NULL;
-            ++parm_cnt;
         }
     }
     return( macro_parms );
@@ -292,7 +288,7 @@ void DumpNestedMacros( void )
 }
 
 
-static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, ppt_token token, char *data )
+static MACRO_TOKEN *AppendToken( MACRO_TOKEN *head, ppt_token token, const char *data )
 {
     MACRO_TOKEN *tail;
     MACRO_TOKEN *new;
@@ -332,7 +328,7 @@ static int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
         return( 1 );
     }
     if( me->parmcount == 0 ) { /* if () not expected */
-        if( macro_parm ) {                              /* 20-feb-93 */
+        if( macro_parm ) {
             if( MacroBeingExpanded( me ) ) {
                 return( 0 );
             }
@@ -349,7 +345,7 @@ static int Expandable( MACRO_ENTRY *me, MACRO_TOKEN *mtok, bool macro_parm )
             if( MacroDepth == 1 && !macro_parm )
                 return( 1 );
             lparen = 0;
-            for( ; (mtok = mtok->next) != NULL; ) {
+            while( (mtok = mtok->next) != NULL ) {
                 if( mtok->token == PPT_LEFT_PAREN ) {
                     ++lparen;
                 } else if( mtok->token == PPT_RIGHT_PAREN ) {
@@ -506,18 +502,14 @@ static MACRO_TOKEN *Glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
     MACRO_TOKEN *mtok;
     size_t      len;
 
-    len = 0;
-    if( first != NULL )
-        len += strlen( first->data );
+    len = strlen( first->data );
     if( second != NULL )
         len += strlen( second->data );
     mtok = NewToken( first->token, len );
     if( mtok->token == PPT_SAVED_ID || mtok->token == PPT_UNEXPANDABLE_ID ) {
         mtok->token = PPT_ID;
     }
-    mtok->data[0] = '\0';
-    if( first != NULL )
-        strcpy( mtok->data, first->data );
+    strcpy( mtok->data, first->data );
     if( second != NULL )
         strcat( mtok->data, second->data );
     return( mtok );
@@ -550,11 +542,10 @@ static MACRO_TOKEN *GlueTokens( MACRO_TOKEN *head )
                 } else {
                     prev->next = new;
                 }
-                while( new->next != NULL ) {
+                for( ; new->next != NULL; new = new->next ) {
                     prev = new;
-                    new = new->next;
                 }
-                if( next != NULL ) {                    /* 21-apr-93 */
+                if( next != NULL ) {
                     new->next = next->next;
                 }
                 do {
@@ -743,7 +734,7 @@ static MACRO_TOKEN *SubstituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
             if( prev_token != PPT_SHARP_SHARP && !SharpSharp( mtok->next ) ) {
                 list = ExpandNestedMacros( list, false );
             }
-            if( list == NULL ) {                        /* 21-apr-93 */
+            if( list == NULL ) {
                 list = mtok;
                 mtok = mtok->next;
                 PP_Free( list );
@@ -783,9 +774,6 @@ static MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
     ppt_token   token;
     char        buffer[200];
 
-    p = NULL;
-    token = PPT_NULL;
-
     switch( me->name[2] ) {
     case 'L':                           /* __LINE__ */
         sprintf( buffer, "%d", PPLineNumber );
@@ -816,6 +804,10 @@ static MACRO_TOKEN *BuildSpecialToken( MACRO_ENTRY *me )
     case 'S':                           /* __STDC__ */
         p = "1";
         token = PPT_NUMBER;
+        break;
+    default:
+        p = "";
+        token = PPT_NULL;
         break;
     }
     head = BuildAToken( token, p );

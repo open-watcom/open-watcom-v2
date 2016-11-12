@@ -38,10 +38,10 @@
 M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
 /*****************************************************************/
 {
-    M32ResResourceHeader     *newhead;
-    bool                      error;
-    uint_16                   tmp16;
-    uint_32                   tmp32;
+    M32ResResourceHeader    *newhead;
+    bool                    error;
+    uint_16                 tmp16;
+    uint_32                 tmp32;
 
     error = false;
     newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
@@ -57,14 +57,15 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
         }
     }
     if( !error ) {
-        error = ResPadDWord( handle );
+        error = ResReadPadDWord( handle );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         newhead->head16->Size = tmp32;
     }
     if( !error ) {
-        error = ResReadUint32( &(newhead->HeaderSize), handle );
+        error = ResReadUint32( &tmp32, handle );
+        newhead->HeaderSize = tmp32;
     }
     if( !error ) {
         newhead->head16->Type = ResRead32NameOrOrdinal( handle );
@@ -75,7 +76,7 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID handle )
         error = (newhead->head16->Name == NULL );
     }
     if( !error ) {
-        error = ResPadDWord( handle );
+        error = ResReadPadDWord( handle );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );

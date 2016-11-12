@@ -199,7 +199,6 @@ static bool ParseCmdLine( char **cmdline )
     while( *cmd == ' ' )
         ++cmd;
     if( *cmd == '?' || *cmd == '\0' ) {
-        CBanner();
         CCusage();
         return( false );
     }

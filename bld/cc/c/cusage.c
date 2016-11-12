@@ -31,6 +31,13 @@
 
 #include "cvars.h"
 
+
+#define NUM_ROWS    24
+
+#ifdef __OSI__
+    extern       char    *_Copyright;
+#endif
+
 static char const *nextUsage( char const *p )
 {
     while( *p != '\0' ) {
@@ -39,60 +46,43 @@ static char const *nextUsage( char const *p )
     return( p + 1 );
 }
 
-
-#if defined( __UNIX__ )
-
-void CCusage( void )
+static bool Wait_for_return( char const *press )
 {
-    char const  *p;
+    int     c;
 
-    p = UsageText();
-    while( *(p = nextUsage( p )) != '\0' ) {
-        ConsMsg( p );
-    }
+    ConsMsg( press );
+    c = getchar();
+    return( c == 'q' || c == 'Q' );
 }
-
-#else
-
-#include <conio.h>
-
-
-#ifdef __OSI__
-    extern       char    *_Copyright;
-#endif
-
-
-static void Wait_for_return( char const *press )
-{
-    if( ConTTY() ) {
-        ConsMsg( press );
-        getch();
-    }
-}
-
 
 void CCusage( void )
 {
     char const  *page_text;
     char const  *p;
-    unsigned    count;
+    int         count;
 
-    count = 2;
+    count = CBanner();
 #ifdef __OSI__
     if( _Copyright != NULL ) {
         ConsMsg( _Copyright );
-        count = 1;
+        ++count;
     }
 #endif
+    if( ConTTY() && count ) {
+        ConsMsg( "" );
+        ++count;
+    }
     p = UsageText();
     page_text = p;
     while( *(p = nextUsage( p )) != '\0' ) {
-        if( ++count > 21 ) {
-            Wait_for_return( page_text );
-            count = 0;
+        if( ConTTY() ) {
+            if( count == NUM_ROWS - 2 ) {
+                if( Wait_for_return( page_text ) )
+                    break;
+                count = 0;
+            }
+            ++count;
         }
         ConsMsg( p );
     }
 }
-
-#endif

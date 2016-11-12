@@ -35,18 +35,17 @@
 #include <ctype.h>
 #include <dosfunc.h>
 #include <direct.h>
-#define DOS_FULLPATH 0x60
 #include <fcntl.h>
 #include <share.h>
-#define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
 #include <string.h>
+#include <windows.h>
 #include "tinyio.h"
-
-typedef unsigned short  WORD;
-typedef unsigned long   DWORD;
 #include "loader.h"
 
-#include <windows.h>
+
+#define DOS_FULLPATH 0x60
+
+#define SH_MASK (SH_COMPAT | SH_DENYRW | SH_DENYWR | SH_DENYRD | SH_DENYNO)
 
 #define CARRY_CLEAR     0
 #define CARRY_SET       0x0100          /* carry bit in AH */

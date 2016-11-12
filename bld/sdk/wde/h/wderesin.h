@@ -112,20 +112,20 @@
     #pragma pack( 1 );
 #endif
 typedef struct WdeResInfoStruct {
-    WRInfo          *info;
-    char            *sym_name;
-    WResTypeNode    *dlg_entry;             /* type node for dialogs           */
-    LIST            *dlg_item_list;         /* list of WdeResDlgItem's         */
-    OBJPTR          next_current;
-    WdeHashTable    *hash_table;
-    HWND            res_win;
-    HWND            edit_win;
-    HWND            forms_win;
-    bool            modified;
-    bool            symbols_dirty;
-    bool            active;
-    bool            editting;
-    bool            is32bit;
+    WRInfo              *info;
+    char                *sym_name;
+    WResTypeNode        *dlg_entry;         /* type node for dialogs           */
+    LIST                *dlg_item_list;     /* list of WdeResDlgItem's         */
+    OBJPTR              next_current;
+    WdeHashTable        *hash_table;
+    HWND                res_win;
+    HWND                edit_win;
+    HWND                forms_win;
+    bool                modified;
+    bool                symbols_dirty;
+    bool                active;
+    bool                editting;
+    bool                is32bit;
 } WdeResInfo;
 
 typedef struct WdeDialogBoxHeader {
@@ -134,14 +134,14 @@ typedef struct WdeDialogBoxHeader {
     DialogStyle         Style;
     uint_16             NumOfItems;
     DialogSizeInfo      Size;
-    ResNameOrOrdinal    *MenuName;      // NameOrOrdinal
-    ResNameOrOrdinal    *ClassName;     // NameOrOrdinal
-    char                *Caption;       // String
-    uint_16             PointSize;      // only here if (Style & DS_SETFONT)
-    uint_16             FontWeight;     // only here if (Style & DS_SETFONT)
-    uint_8              FontItalic;     // only here if (Style & DS_SETFONT)
-    uint_8              FontCharset;    // only here if (Style & DS_SETFONT)
-    char                *FontName;      // only here if (Style & DS_SETFONT)
+    ResNameOrOrdinal    *MenuName;          // NameOrOrdinal
+    ResNameOrOrdinal    *ClassName;         // NameOrOrdinal
+    char                *Caption;           // String
+    uint_16             PointSize;          // only here if (Style & DS_SETFONT)
+    uint_16             FontWeight;         // only here if (Style & DS_SETFONT)
+    uint_8              FontItalic;         // only here if (Style & DS_SETFONT)
+    uint_8              FontCharset;        // only here if (Style & DS_SETFONT)
+    char                *FontName;          // only here if (Style & DS_SETFONT)
 
     char                *symbol;
     char                *helpsymbol;

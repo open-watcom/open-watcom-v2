@@ -32,101 +32,88 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <i86.h>
-#include "tinyio.h"
 #include <fcntl.h>
-#include "wreslang.h"
-
-#define COMPRESSION     0
-
 #if defined(__OS2)
  #define INCL_DOSMISC
  #define INCL_DOSEXCEPTIONS
  #define INCL_DOSNLS
  #include <os2.h>
-typedef unsigned short  WORD;
-typedef unsigned long   DWORD;
-
 #elif defined(__NT)
  #include <windows.h>
  #include <winnls.h>
  #include <excpt.h>
-
 #else
-typedef unsigned short  WORD;
-typedef unsigned long   DWORD;
 #endif
-
+#include "tinyio.h"
+#include "wreslang.h"
 #include "loader.h"
 #include "ostype.h"
+
+
+#define COMPRESSION     0
 
 #define READSIZE        (0x8000)
 #define RELOC_NUM       1024
 
-#pragma aux _end "*"
+#define IS_OSI_SIGN(x)        ((x)->sig[0]=='C'&&(x)->sig[1]=='F'&&(x)->sig[2]==0&&(x)->sig[3]==0)
+#define IS_OSI_COMPR_SIGN(x)  ((x)->sig[0]=='C'&&(x)->sig[1]=='C'&&(x)->sig[2]=='F'&&(x)->sig[3]==0)
+
+enum {
+    #define pick(name,emsg,jmsg)  name,
+    #include "ldrmsg.h"
+    #undef pick
+};
+
+struct  pgmparms {
+    char            *pgmname;       // program name (argv[0])
+    char            *cmdline;       // command line
+    char            *envptr;        // pointer to environment strings
+    char            *breakflagaddr; // pointer to breakflag
+    char            *copyright;     // pointer to possible copyright string
+    int             isDBCS;         // non-zero => DBCS
+    unsigned long   max_handle;     // OS2: max file handle count
+};
+
 extern  char    _end;
+#pragma aux _end "*"
 
 extern  int     __fInt21( void );
 #pragma aux __fInt21 "*"
 
-static DWORD   BaseAddr;
-static DWORD   CodeLoadAddr;
-static DWORD   CodeEntryPoint;
-static char    BreakFlag;
-
-static int     __IsDBCS = 0;
-static int     MsgFileHandle   = 1;
-#if defined(__OS2) || defined(__NT)
-static char    *ProgramName    = "";
-static char    *ProgramArgs    = "";
-#endif
-static char    *ProgramEnv     = "\0";
-
-#define Align4K( x ) (((x)+0xfffL) & ~0xfffL )
-
-struct  pgmparms {
-        char    *pgmname;       // program name (argv[0])
-        char    *cmdline;       // command line
-        char    *envptr;        // pointer to environment strings
-        char    *breakflagaddr; // pointer to breakflag
-        char    *copyright;     // pointer to possible copyright string
-        int     isDBCS;         // non-zero => DBCS
-        DWORD   max_handle;     // OS2: max file handle count
-};
-
-extern  int _InvokePgm( char os,
-                        DWORD baseaddr,
-                        DWORD eip,
-                        DWORD stacklow,
-                        int (*int21)( void ),
-                        struct pgmparms *parms );
+extern  int _InvokePgm( char os, uint_32 baseaddr, uint_32 eip, uint_32 stacklow,
+                        int (*int21)( void ), struct pgmparms *parms );
 #pragma aux _InvokePgm = "push  cs"     \
                          "mov   bx,cs"  \
                          "call  esi"    \
                          parm [ah] [ebx] [esi] [ecx] [edx] [edi] value [eax];
 
-extern  int _LaunchPgm( DWORD baseaddr,
-                        DWORD eip,
-                        int (*int21)( void ),
-                        struct pgmparms *parms );
+extern  int _LaunchPgm( uint_32 baseaddr, uint_32 eip,
+                        int (*int21)( void ),  struct pgmparms *parms );
 #pragma aux _LaunchPgm parm [ebx] [esi] [edx] [edi] value [eax];
 
-#define pick(name,msg)  name
-#define E(msg) msg
-#define J(msg)
-enum {
- #include "ldrmsg.h"
-};
-#define pick(name,msg)  msg
-#define E(msg) msg
-#define J(msg)
+static uint_32  BaseAddr;
+static uint_32  CodeLoadAddr;
+static uint_32  CodeEntryPoint;
+static char     BreakFlag;
+
+static int      __IsDBCS = 0;
+static int      MsgFileHandle   = 1;
+#if defined(__OS2) || defined(__NT)
+static char     *ProgramName    = "";
+static char     *ProgramArgs    = "";
+#endif
+static char     *ProgramEnv     = "\0";
+
 static char *EnglishMsgs[] = {
- #include "ldrmsg.h"
+    #define pick(name,emsg,jmsg)  emsg,
+    #include "ldrmsg.h"
+    #undef pick
 };
-#define pick(name,msg)  msg
-#define E(msg)
-#define J(msg) msg
+
 static char *JapaneseMsgs[] = {
- #include "ldrmsg.h"
+    #define pick(name,emsg,jmsg)  jmsg,
+    #include "ldrmsg.h"
+    #undef pick
 };
 
 char *getenv( const char *var )
@@ -134,25 +121,20 @@ char *getenv( const char *var )
     char        *p;
     const char  *v;
 
-    p = ProgramEnv;
-    for( ;; ) {
-        if( *p == '\0' )
-            break;
-        v = var;
-        for( ;; ) {
-            if( *v == '\0' ) {
-                if( *p == '=' )
-                    return( p + 1 );
-                break;
-            }
+    for( p = ProgramEnv; *p != '\0'; ++p ) {
+        for( v = var; *v != '\0'; ++v ) {
             if( (*p | ' ') != (*v | ' ') )
                 break;
             ++p;
-            ++v;
         }
-        while( *p != '\0' )
+        if( *v == '\0' ) {
+            if( *p == '=' ) {
+                return( p + 1 );
+            }
+        }
+        while( *p != '\0' ) {
             ++p;
-        ++p;
+        }
     }
     return( NULL );
 }
@@ -184,18 +166,12 @@ void PrintMsg( char *fmt, ... )
 
     va_start( args, fmt );
     len = 0;
-    for( ;; ) {
-        c = *fmt++;
-        if( c == '\0' )
-            break;
+    while( (c = *fmt++) != '\0' ) {
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
                 p = va_arg( args, char * );
-                for( ;; ) {
-                    c = *p++;
-                    if( c == '\0' )
-                        break;
+                while( (c = *p++) != '\0' ) {
                     buf[len++] = c;
                 }
             } else if( c == 'd' ) {
@@ -236,23 +212,17 @@ void PrintMsg( char *fmt, ... )
     TinyWrite( MsgFileHandle, buf, len );
 }
 
-
-static void DoRelocations( unsigned short *rel )
+static void DoRelocations( uint_16 *rel )
 {
-    unsigned short      count;
-    unsigned long       addr;
-    unsigned long       base_addr;
+    uint_16         count;
+    char            *addr;
+    uint_32         base_addr;
 
     base_addr = CodeLoadAddr;
-    for( ;; ) {
-        count = *rel++;
-        if( count == 0 )
-            break;
-        addr = *rel++ << 16;
-        addr |= *rel++;
-        addr += base_addr;
+    for( ; (count = *rel++) != 0; ) {
+        addr = (char *)base_addr + ( *rel++ << 16 ) + *rel++;
         for( ;; ) {
-            *(unsigned long *)addr += base_addr;
+            *(uint_32 *)addr += base_addr;
             --count;
             if( count == 0 )
                 break;
@@ -336,13 +306,13 @@ void BPE_Expand( char *dst, char *src, char *srcend )
  */
 static int Init32BitTask( char *file )
 {
-    int         handle;
-    tiny_ret_t  rc;
-    char        *small_chunks;
-    DWORD       load_addr;
-    DWORD       total_size;
-    DWORD       read_size;
-    struct w32_hdr *w32_hdr;
+    int             handle;
+    tiny_ret_t      rc;
+    char            *small_chunks;
+    uint_32         load_addr;
+    uint_32         total_size;
+    uint_32         read_size;
+    struct w32_hdr  *w32_hdr;
     union {
         dos_hdr dos_header;
         char    header[512];
@@ -355,14 +325,13 @@ static int Init32BitTask( char *file )
     }
     handle = TINY_INFO( rc );
 
-    TinyRead( handle, &u.header, 512 );
-    w32_hdr = (struct w32_hdr *)
-        &u.header[ u.dos_header.size_of_DOS_header_in_paras * 16 ];
-    if( w32_hdr->sig != 'FC'
+    TinyRead( handle, u.header, sizeof( u.header ) );
+    w32_hdr = (struct w32_hdr *)( u.header + u.dos_header.size_of_DOS_header_in_paras * 16 );
 #if COMPRESSION
-     && w32_hdr->sig != 'FCC'
+    if( !IS_OSI_SIGN( w32_hdr ) && !IS_OSI_COMPR_SIGN( w32_hdr ) ) {
+#else
+    if( !IS_OSI_SIGN( w32_hdr ) ) {
 #endif
-     ) {
         PrintMsg( PickMsg( LOADER_INVALID_EXE ) );
         return( LOADER_INVALID_EXE );
     }
@@ -371,23 +340,25 @@ static int Init32BitTask( char *file )
     /*
      * get memory to load file
      */
-    BaseAddr = (DWORD)TinyMemAlloc( w32_hdr->memory_size );
+    BaseAddr = (uint_32)TinyMemAlloc( w32_hdr->memory_size );
     if( BaseAddr == 0 ) {
         PrintMsg( PickMsg( LOADER_NOT_ENOUGH_MEMORY ) );
         return( LOADER_NOT_ENOUGH_MEMORY );
     }
-#ifdef __NT__
+#ifdef __NT
     {
-    DWORD   old_flags;
-    /* Adjust page protection to allow code execution. Required for DEP-enabled systems. */
-    VirtualProtect( (LPVOID)BaseAddr, w32_hdr->memory_size, PAGE_EXECUTE_READWRITE, &old_flags );
+        unsigned long   old_flags;
+
+        /* Adjust page protection to allow code execution. Required for DEP-enabled systems. */
+        VirtualProtect( (LPVOID)BaseAddr, w32_hdr->memory_size, PAGE_EXECUTE_READWRITE, &old_flags );
     }
 #endif
     CodeLoadAddr = BaseAddr;
     load_addr = CodeLoadAddr;
     CodeEntryPoint = w32_hdr->initial_EIP + CodeLoadAddr;
 #if COMPRESSION
-    if( w32_hdr->sig == 'FCC' ) {       /* if compressed file */
+    if( IS_OSI_COMPR_SIGN( w32_hdr ) ) {
+        /* if compressed file */
         /* read compressed file into top of memory range */
         load_addr += w32_hdr->memory_size - w32_hdr->size_of_W32_file;
     }
@@ -399,11 +370,12 @@ static int Init32BitTask( char *file )
     rc = TinyRead( handle, (void *)load_addr, w32_hdr->size_of_W32_file );
     if( TINY_LINFO(rc) != w32_hdr->size_of_W32_file ) {
         TinySeek( handle, w32_hdr->start_of_W32_file, TIO_SEEK_START );
-        small_chunks = (void*) load_addr;
+        small_chunks = (void *)load_addr;
         total_size = w32_hdr->size_of_W32_file;
         while( total_size != 0 ) {
             read_size = total_size;
-            if( read_size > READSIZE ) read_size = READSIZE;
+            if( read_size > READSIZE )
+                read_size = READSIZE;
             rc = TinyRead( handle, small_chunks, read_size );
             if( TINY_LINFO(rc) != read_size ) {
                 TinyClose( handle );
@@ -416,12 +388,11 @@ static int Init32BitTask( char *file )
     }
     TinyClose( handle );
 #if COMPRESSION
-    if( w32_hdr->sig == 'FCC' ) {       /* if compressed file */
-        BPE_Expand( CodeLoadAddr, load_addr,
-                        load_addr + w32_hdr->size_of_W32_file );
+    if( IS_OSI_COMPR_SIGN( w32_hdr ) ) {        /* if compressed file */
+        BPE_Expand( CodeLoadAddr, load_addr, load_addr + w32_hdr->size_of_W32_file );
     }
 #endif
-    DoRelocations( (unsigned short *)(w32_hdr->offset_to_relocs + CodeLoadAddr) );
+    DoRelocations( (uint_16 *)( w32_hdr->offset_to_relocs + CodeLoadAddr ) );
     return( LOADER_SUCCESS );
 } /* Init32BitTask */
 
@@ -445,8 +416,8 @@ static void DumpEnvironment( void )
 //////////////////////////////////////////////////////////////////////
 #if defined(__OS2)
 
-#pragma aux __OS2Main "*" parm caller []
 extern int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
+#pragma aux __OS2Main "*" parm caller []
 
 static char volatile NestedException = 0;
 
@@ -460,9 +431,9 @@ typedef struct SysERegRec {
 
 static void DumpContext( char *what, PCONTEXTRECORD p )
 {
-    int                 i;
-    unsigned __far      *stk;
-    char __far          *code;
+    int             i;
+    unsigned        __far *stk;
+    char            __far *code;
 
     PrintMsg( "**** %s ****\r\n", what );
     PrintMsg( "OS=OS/2 BaseAddr=%X CS:EIP=%x:%X SS:ESP=%x:%X\r\n",
@@ -477,7 +448,9 @@ static void DumpContext( char *what, PCONTEXTRECORD p )
     for( i = 0; i < 4 * 8; ) {
         PrintMsg( "%X ", *stk++ );
         i++;
-        if( (i & 7) == 0 )  PrintMsg( "\r\n" );
+        if( (i & 7) == 0 ) {
+            PrintMsg( "\r\n" );
+        }
     }
     PrintMsg( "CS:EIP -> " );
     code = MK_FP( p->ctx_SegCs, p->ctx_RegEip );
@@ -511,7 +484,8 @@ static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
                             PCONTEXTRECORD context,
                             PVOID other )
 {
-    if( NestedException )  DosExit( EXIT_PROCESS, 8 );
+    if( NestedException )
+        DosExit( EXIT_PROCESS, 8 );
     NestedException = 1;
     switch( report->ExceptionNum ) {
     case XCPT_ACCESS_VIOLATION:
@@ -553,7 +527,9 @@ static int __checkIsDBCS( void )
     countryInfo.country = 0;                /* default country */
     countryInfo.codepage = 0;               /* default code page */
     if( DosQueryDBCSEnv( 12, &countryInfo, leadBytes ) == 0 ) {
-        if( leadBytes[0] || leadBytes[1] )  return( 1 );
+        if( leadBytes[0] || leadBytes[1] ) {
+            return( 1 );
+        }
     }
     return( 0 );
 }
@@ -595,8 +571,7 @@ int __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd )
         parms.max_handle = 0;
         req_count = 0;
         DosSetRelMaxFH( &req_count, &parms.max_handle );
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint,
-                        &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     DosSetSignalExceptionFocus( SIG_UNSETFOCUS, &nesting );
     DosUnsetExceptionHandler( (PEXCEPTIONREGISTRATIONRECORD)&RegRec );
@@ -608,25 +583,32 @@ void main( void ) {}
 //////////////////////////////////////////////////////////////////////
 #elif defined(__NT)
 
-#pragma aux __NTMain "*"
-extern  void    __InitInt21( void );
 
-extern DWORD GetFromFS( DWORD off );
-extern void PutToFS( DWORD value, DWORD off );
 #define UNWINDING       0x6
-
-#pragma aux GetFromFS = \
-        "mov    eax,fs:[eax]" \
-        parm[eax] value[eax];
-
-#pragma aux PutToFS = \
-        "mov    fs:[edx], eax" \
-        parm[eax] [edx];
 
 typedef struct _REGISTRATION_RECORD {
     struct _REGISTRATION_RECORD *RegistrationRecordPrev;
     void                        *RegistrationRecordFilter;
 } REGISTRATION_RECORD;
+
+#ifdef W32RUN
+extern void __NTMain( void );
+#pragma aux __NTMain "*"
+#endif
+
+extern  void    __InitInt21( void );
+
+extern uint_32 GetFromFS( uint_32 off );
+#pragma aux GetFromFS = \
+        "mov    eax,fs:[eax]" \
+        parm[eax] value[eax];
+
+extern void PutToFS( uint_32 value, uint_32 off );
+#pragma aux PutToFS = \
+        "mov    fs:[edx], eax" \
+        parm[eax] [edx];
+
+extern HANDLE   __FileHandleIDs[];
 
 static void DumpContext( char *what, PCONTEXT p )
 {
@@ -647,7 +629,9 @@ static void DumpContext( char *what, PCONTEXT p )
     for( i = 0; i < 4 * 8; ) {
         PrintMsg( "%X ", *stk++ );
         i++;
-        if( (i & 7) == 0 )  PrintMsg( "\r\n" );
+        if( (i & 7) == 0 ) {
+            PrintMsg( "\r\n" );
+        }
     }
     PrintMsg( "CS:EIP -> " );
     code = MK_FP( p->SegCs, p->Eip );
@@ -721,24 +705,23 @@ static int __stdcall __ExceptionFilter( LPEXCEPTION_RECORD ex,
 
 static void __NewExceptionHandler( REGISTRATION_RECORD *rr )
 {
-    rr->RegistrationRecordPrev = (LPVOID) GetFromFS( 0 );
+    rr->RegistrationRecordPrev = (LPVOID)GetFromFS( 0 );
     rr->RegistrationRecordFilter = __ExceptionFilter;
-    PutToFS( (DWORD) rr, 0 );
+    PutToFS( (uint_32)rr, 0 );
 }
 
 static void __DoneExceptionHandler( REGISTRATION_RECORD *rr )
 {
-    PutToFS( (DWORD) rr->RegistrationRecordPrev, 0 );
+    PutToFS( (uint_32)rr->RegistrationRecordPrev, 0 );
 }
 
 static BOOL WINAPI CtrlCHandler( ULONG ctrl_type )
 {
-    DWORD       n;
-    HANDLE      h;
-    INPUT_RECORD r;
-    extern HANDLE __FileHandleIDs[];
+    unsigned long   n;
+    HANDLE          h;
+    INPUT_RECORD    r;
 
-    if( ctrl_type == CTRL_C_EVENT  ||  ctrl_type == CTRL_BREAK_EVENT ) {
+    if( ctrl_type == CTRL_C_EVENT || ctrl_type == CTRL_BREAK_EVENT ) {
         /*
          * If the BreakFlag is already set then the app is probably not
          * paying attention to it.  So, just die.
@@ -775,7 +758,6 @@ static int __checkIsDBCS( void )
 }
 
 #ifdef W32RUN
-extern void __NTMain( void );
 
 /*
  * This routine is used for BINNT\W32RUN.EXE
@@ -797,7 +779,7 @@ void __NTMain( void )
     ProgramEnv = cmd;
     pgm = NULL;
     for( ;; ) {
-        if( *cmd == '$'  &&  cmd[1] == '=' )
+        if( *cmd == '$' && cmd[1] == '=' )
             pgm = cmd + 2;
         while( *cmd )
             ++cmd;
@@ -814,14 +796,19 @@ void __NTMain( void )
         ExitProcess( LOADER_SUCCESS );
     }
     cmd = GetCommandLine();
-    while( *cmd == ' '  ||  *cmd == '\t' ) ++cmd;
+    while( *cmd == ' ' || *cmd == '\t' )
+        ++cmd;
     for( ;; ) {                 // skip program name (\path\w32run.exe)
-        if( *cmd == '\0' ) break;
-        if( *cmd == ' '  ) break;
-        if( *cmd == '\t' ) break;
+        if( *cmd == '\0' )
+            break;
+        if( *cmd == ' ' )
+            break;
+        if( *cmd == '\t' )
+            break;
         ++cmd;
     }
-    while( *cmd == ' '  ||  *cmd == '\t' ) ++cmd;
+    while( *cmd == ' ' || *cmd == '\t' )
+        ++cmd;
     parms.cmdline = cmd;
     ProgramArgs = cmd;
     ProgramName = pgm;
@@ -831,7 +818,7 @@ void __NTMain( void )
         parms.breakflagaddr = &BreakFlag;
         parms.copyright = NULL;
         parms.max_handle = 0;
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
@@ -848,8 +835,10 @@ void __ChgBINNT( char *fn )
     p = fn;
     for( ;; ) {
         for( ;; ) {
-            if( *p == '\0' ) break;
-            if( *p == '\\' ) break;
+            if( *p == '\0' )
+                break;
+            if( *p == '\\' )
+                break;
             ++p;
         }
         if( *p == '\0' )
@@ -885,15 +874,17 @@ void __NTMain( void )
     cmd = GetCommandLine();
     // cmd should look like:
     // PROGRAM command line arguments
-    while( *cmd == ' '  ||  *cmd == '\t' )
+    while( *cmd == ' ' || *cmd == '\t' )
         ++cmd;
-    for( ;; ) {                         // skip over program name
-        if( *cmd == '\0' ) break;
-        if( *cmd == ' '  ) break;
-        if( *cmd == '\t' ) break;
-        ++cmd;
+    for( ; *cmd != '\0'; ++cmd ) {                         // skip over program name
+        if( *cmd == ' ' )
+            break;
+        if( *cmd == '\t' ) {
+            break;
+        }
     }
-    while( *cmd == ' '  ||  *cmd == '\t' )  ++cmd;
+    while( *cmd == ' ' || *cmd == '\t' )
+        ++cmd;
     parms.cmdline = cmd;
     ProgramArgs = cmd;
     parms.envptr = GetEnvironmentStrings();
@@ -908,7 +899,7 @@ void __NTMain( void )
         parms.breakflagaddr = &BreakFlag;
         parms.copyright = NULL;
         parms.max_handle = 0;
-        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, &__fInt21, &parms );
+        rc = _LaunchPgm( BaseAddr, CodeEntryPoint, __fInt21, &parms );
     }
     __DoneExceptionHandler( &rr );
     ExitProcess( rc );
@@ -957,9 +948,9 @@ extern unsigned short __get_ds( void );
 static int __checkIsDBCS( void )
 {
 #if defined(__TNT)
-    unsigned short __far    *leadBytes;
-    PHARLAP_block           pblock;
-    union REGPACK           regs;
+    uint_16             __far *leadBytes;
+    PHARLAP_block       pblock;
+    union REGPACK       regs;
 
     memset( &pblock, 0, sizeof( pblock ) );
     memset( &regs, 0, sizeof( regs ) );
@@ -979,7 +970,7 @@ static int __checkIsDBCS( void )
         }
     }
 #elif defined(__DOS4G) || defined(__CAUSEWAY)
-    unsigned short  *leadBytes;
+    uint_16         *leadBytes;
     rm_call_struct  dblock;
 
     memset( &dblock, 0, sizeof( dblock ) );
@@ -987,8 +978,7 @@ static int __checkIsDBCS( void )
     DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
     if( (dblock.flags & 1) == 0 ) {
         if( (dblock.ds | dblock.esi) != 0 ) {
-            leadBytes = (unsigned short *)
-                          ((((unsigned)dblock.ds)<<4) + (dblock.esi&0xFFFF));
+            leadBytes = (uint_16 *)((((uint_32)dblock.ds) << 4) + (dblock.esi & 0xFFFF));
             if( leadBytes[0] || leadBytes[1] ) {
                 return( 1 );
             }
@@ -996,7 +986,7 @@ static int __checkIsDBCS( void )
     }
 #elif defined(__X32)
     unsigned                esi;
-    unsigned short __far    *leadBytes;
+    uint_16                 __far *leadBytes;
     struct parms {
         unsigned short      interrupt_num;
         unsigned short      selector_ds;
@@ -1032,7 +1022,7 @@ static int __checkIsDBCS( void )
     esi = getLeadBytes( &parm_struct );
     if( (parm_struct.selector_ds | esi) != 0 ) {
         leadBytes = MK_FP( __x386_zero_base_selector,
-                        (parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
+                        ((uint_32)parm_struct.selector_ds << 4) + (esi & 0xFFFF) );
         if( leadBytes[0] || leadBytes[1] ) {
             return( 1 );
         }
@@ -1051,14 +1041,15 @@ int main( void )
     __IsDBCS = __checkIsDBCS();
     parms.isDBCS = __IsDBCS;
     cmd = _LpCmdLine;
-    while( *cmd == ' '  ||  *cmd == '\t' ) ++cmd;
+    while( *cmd == ' ' || *cmd == '\t' )
+        ++cmd;
     parms.cmdline = cmd;
     parms.envptr = _Envptr;
     ProgramEnv = _Envptr;
     cmd = _Envptr;
     pgm = NULL;
     for( ;; ) {
-        if( *cmd == '$'  &&  cmd[1] == '=' )
+        if( *cmd == '$' && cmd[1] == '=' )
             pgm = cmd + 2;
         while( *cmd )
             ++cmd;
@@ -1077,15 +1068,13 @@ int main( void )
     rc = Init32BitTask( pgm );
     if( rc == LOADER_SUCCESS ) {
         parms.breakflagaddr = &BreakFlag;
-        #ifdef __DOS4G
-            parms.copyright = D32_SHORT_NAME " Version " D32_VERSION " "
-                              D32_COPYRIGHT;
-        #else
-            parms.copyright = NULL;
-        #endif
+    #ifdef __DOS4G
+        parms.copyright = D32_SHORT_NAME " Version " D32_VERSION " " D32_COPYRIGHT;
+    #else
+        parms.copyright = NULL;
+    #endif
         parms.max_handle = 0;
-        rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end,
-                                (int (*)( void ))&__fInt21, &parms );
+        rc = _InvokePgm( OS_DOS, BaseAddr, CodeEntryPoint, (unsigned)&_end, __fInt21, &parms );
     }
     return( rc );
 }

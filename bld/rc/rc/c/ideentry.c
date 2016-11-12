@@ -86,7 +86,7 @@ static void flushPrintf( void ) {
     if( curBufPos != formatBuffer ) {
         InitOutPutInfo( &info );
         info.severity = SEV_WARNING;
-        RcMsgFprintf( NULL, &info, "\n" );
+        RcMsgFprintf( &info, "\n" );
     }
 }
 
@@ -116,8 +116,8 @@ void InitOutPutInfo( OutPutInfo *info )
     info->flags = 0;
 }
 
-int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
-/*********************************************************************/
+int RcMsgFprintf( OutPutInfo *info, const char *format, ... )
+/***********************************************************/
 {
     int             err;
     va_list         args;
@@ -126,7 +126,6 @@ int RcMsgFprintf( FILE *fp, OutPutInfo *info, const char *format, ... )
     size_t          len;
     IDEMsgInfo      msginfo;
 
-    fp = fp;
     va_start( args, format );
     err = vsnprintf( curBufPos, PRINTF_BUF_SIZE - ( curBufPos - formatBuffer ), format, args );
     va_end( args );
@@ -175,43 +174,98 @@ static const char * BannerText =
     banner3a        "\n"
 ;
 
-static void RcIoPrintBanner( void )
-/*********************************/
+static void ConsoleMessage( const char *str, ... )
 {
     OutPutInfo          errinfo;
+    va_list             args;
+    char                *parm;
 
+    va_start( args, str );
+    parm = va_arg( args, char * );
     InitOutPutInfo( &errinfo );
     errinfo.severity = SEV_BANNER;
-    RcMsgFprintf( stderr, &errinfo, BannerText );
+    RcMsgFprintf( &errinfo, str, parm );
+    va_end( args );
 }
 
-static void RcIoPrintHelp( void )
-/*******************************/
+static int RcIoPrintBanner( void )
+/********************************/
+{
+    if( !CmdLineParms.Quiet ) {
+        ConsoleMessage( BannerText );
+#if defined( _BETAVER )
+        return( 6 );
+#else
+        return( 5 );
+#endif
+    }
+    return( 0 );
+}
+
+static bool Wait_for_return( void )
+/*********************************/
+// return true if we should stop printing
+{
+    int   c;
+
+    ConsoleMessage( "    (Press Return to continue)\n" );
+    c = getchar();
+    return( c == 'q' || c == 'Q' );
+}
+
+#define NUM_ROWS    24
+
+static bool console_tty = false;
+
+static void RcIoPrintUsage( void )
+/********************************/
 {
     char        progfname[_MAX_FNAME];
     int         index;
     char        buf[256];
-    OutPutInfo  errinfo;
     char        imageName[_MAX_PATH];
+    int         count;
 
+    count = RcIoPrintBanner();
     _cmdname( imageName );
-    InitOutPutInfo( &errinfo );
-    errinfo.severity = SEV_BANNER;
 #ifdef __OSI__
     if( _Copyright != NULL ) {
-        RcMsgFprintf( stdout, &errinfo, "%s\n", _Copyright );
+        ConsoleMessage( "%s\n", _Copyright );
+        ++count;
     }
 #endif
+    if( console_tty && count ) {
+        ConsoleMessage( "\n" );
+        ++count;
+    }
     _splitpath( imageName, NULL, NULL, progfname, NULL );
     strlwr( progfname );
 
     index = USAGE_MSG_FIRST;
     GetRcMsg( index, buf, sizeof( buf ) );
-    RcMsgFprintf( stdout, &errinfo, buf, progfname );
-    RcMsgFprintf( stdout, &errinfo, "\n" );
+    ConsoleMessage( buf, progfname );
+    ConsoleMessage( "\n" );
+    ++count;
     for( ++index; index <= USAGE_MSG_LAST; index++ ) {
+        if( console_tty ) {
+            if( count == NUM_ROWS - 2 ) {
+                if( Wait_for_return() )
+                    break;
+                count = 0;
+            }
+            ++count;
+        }
         GetRcMsg( index, buf, sizeof( buf ) );
-        RcMsgFprintf( stdout, &errinfo, "%s\n", buf );
+        ConsoleMessage( "%s\n", buf );
+    }
+}
+
+static void print_banner_usage( void )
+{
+    if( CmdLineParms.PrintHelp ) {
+        RcIoPrintUsage();
+    } else {
+        RcIoPrintBanner();
     }
 }
 
@@ -266,12 +320,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
         if( !ScanParams( argc, argv ) ) {
             rc = 1;
         }
-        if( !CmdLineParms.Quiet ) {
-            RcIoPrintBanner();
-        }
-        if( CmdLineParms.PrintHelp ) {
-            RcIoPrintHelp();
-        }
+        print_banner_usage();
         if( rc == 0 ) {
             rc = RCSpawn( RCmain );
         }
@@ -321,7 +370,7 @@ IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
     }
     if( info->ver >= 3 ) {
         if( info->console_output ) {
-//            CompFlags.ide_console_output = true;
+            console_tty = true;
         }
         if( info->ver >= 4 ) {
             if( info->progress_messages ) {

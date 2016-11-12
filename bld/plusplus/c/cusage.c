@@ -32,8 +32,18 @@
 
 #include "plusplus.h"
 #include "wio.h"
-
+#include "cbanner.h"
 #include "cusage.h"
+
+
+#define NUM_ROWS        24
+
+#ifdef __OSI__
+#define ConsoleMessage(text)    puts(text)
+extern  char                    *_Copyright;
+#else
+#define ConsoleMessage(text)    MsgDisplayLine( text )
+#endif
 
 static const char EUsage[] = {
     #include "cmdlnusg.gh"
@@ -42,98 +52,57 @@ static const char EUsage[] = {
 
 static char const *nextUsage( char const *p )
 {
-    while( *p ) {
+    while( *p != '\0' ) {
         ++p;
     }
     DbgAssert( *p == '\0' );
     return( p + 1 );
 }
 
-#if defined( __UNIX__ )
-
-void CCusage( void )
-/******************/
-{
-    char const *usage_text;
-
-    usage_text = IntlUsageText();
-    if( usage_text == NULL ) {
-        usage_text = EUsage;
-    }
-    while( *(usage_text = nextUsage( usage_text )) != '\0' ) {
-        MsgDisplayLine( usage_text );
-    }
-}
-
-#else
-
-#define NUM_ROWS        20
-
-#ifdef __OSI__
-#define output(text)    puts(text)
-extern  char            *_Copyright;
-#else
-#define output(text)    MsgDisplayLine( text )
-#endif
-
-typedef struct usage_data {
-    unsigned    count;
-    unsigned    nrows;
-    char const  *page_text;
-} usage_data;
-
 static bool Wait_for_return( char const *page_text )
 /**************************************************/
 // return true if we should stop printing
 {
-    if( CompFlags.ide_console_output ) {
-        int   c;
+    int   c;
 
-        output( page_text );
-        fflush( stdout );
-        c = getchar();
-        return( c == 'q' || c == 'Q' );
-    }
-    return false;
-}
-
-static bool willPrintALine( usage_data *info )
-{
-    bool     retval;
-
-    retval = false;
-    if( ++(info->count) > info->nrows ) {
-        retval = Wait_for_return( info->page_text );
-        info->count = 0;
-        info->nrows = NUM_ROWS;
-    }
-    return retval;
+    ConsoleMessage( page_text );
+//    fflush( stdout );
+    c = getchar();
+    return( c == 'q' || c == 'Q' );
 }
 
 void CCusage( void )
 /******************/
 {
-    char const *usage_text;
-    usage_data info;
+    char const  *usage_text;
+    char const  *page_text;
+    int         count;
 
-    info.nrows = NUM_ROWS-2;
-    info.count = 0;
+    count = CBanner();
 #ifdef __OSI__
     if( _Copyright != NULL ) {
-        output( _Copyright );
-        info.count = 1;
+        ConsoleMessage( _Copyright );
+        ++count;
     }
 #endif
+    if( CompFlags.ide_console_output && count ) {
+        ConsoleMessage( "" );
+        ++count;
+    }
     usage_text = IntlUsageText();
     if( usage_text == NULL ) {
         usage_text = EUsage;
     }
-    info.page_text = usage_text;
+    page_text = usage_text;
     while( *(usage_text = nextUsage( usage_text )) != '\0' ) {
-        if( willPrintALine( &info ) )
-            break;
-        output( usage_text );
+        if( CompFlags.ide_console_output ) {
+            if( count == NUM_ROWS - 2 ) {
+                if( Wait_for_return( page_text ) )
+                    break;
+                count = 0;
+            }
+            ++count;
+        }
+        ConsoleMessage( usage_text );
     }
 }
-
-#endif

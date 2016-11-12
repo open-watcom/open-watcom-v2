@@ -89,7 +89,6 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
                          void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
-    bool            error;
     WResFileSSize   numread;
 
     if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
@@ -97,18 +96,15 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
         return( RS_READ_ERROR );
     }
 
-    numread = RCREAD( handle, buff, buffsize );
-    while( numread != 0 ) {
+    while( (numread = RCREAD( handle, buff, buffsize )) != 0 ) {
         if( RCIOERR( handle, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        error = ResWrite( buff, numread, CurrResFile.handle );
-        if( error ) {
-            *err_code = LastWresErr();
+        if( RCWRITE( CurrResFile.handle, buff, numread ) != numread ) {
+            *err_code = errno;
             return( RS_WRITE_ERROR );
         }
-        numread = RCREAD( handle, buff, buffsize );
     }
 
     return( RS_OK );
@@ -236,7 +232,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     if( call_startend ) {
         if( CmdLineParms.MSResFormat
           && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            ResPadDWord( CurrResFile.handle );
+            ResWritePadDWord( CurrResFile.handle );
         }
         resLoc.len = SemEndResource( resLoc.start );
     }

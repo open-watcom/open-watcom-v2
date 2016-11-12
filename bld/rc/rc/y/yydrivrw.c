@@ -133,18 +133,18 @@ static void dump_rule( unsigned rule )
 
     if( CmdLineParms.DebugParser ) {
         for( p = yytoknames[yyplhstab[rule]]; *p; ++p ) {
-            RcMsgFprintf( stdout, NULL, "%c", *p );
+            RcMsgFprintf( NULL, "%c", *p );
         }
-        RcMsgFprintf( stdout, NULL, " <-" );
+        RcMsgFprintf( NULL, " <-" );
         tok = &yyrhstoks[yyrulebase[rule]];
         for( i = yyplentab[rule]; i != 0; --i ) {
-            RcMsgFprintf( stdout, NULL, " " );
+            RcMsgFprintf( NULL, " " );
             for( p = yytoknames[*tok]; *p; ++p ) {
-                RcMsgFprintf( stdout, NULL, "%c", *p );
+                RcMsgFprintf( NULL, "%c", *p );
             }
             ++tok;
         }
-        RcMsgFprintf( stdout, NULL, "\n" );
+        RcMsgFprintf( NULL, "\n" );
     }
 }
 static void puts_far( const char YYFAR *string )
@@ -153,9 +153,9 @@ static void puts_far( const char YYFAR *string )
 
     if( CmdLineParms.DebugParser ) {
         for( p = string; *p; ++p ) {
-            RcMsgFprintf( stdout, NULL, "%c", *p );
+            RcMsgFprintf( NULL, "%c", *p );
         }
-        RcMsgFprintf( stdout, NULL, "%c", '\n' );
+        RcMsgFprintf( NULL, "%c", '\n' );
     }
 }
 

@@ -218,7 +218,7 @@ static bool SemWriteVerBlock( FullVerBlock * block, WResFileID handle, int *err_
     if( !error && block->Value != NULL ) {
         error = semWriteVerValueList( block->Value, block->UseUnicode, handle, err_code );
         if( !error ) {
-            error = ResPadDWord( handle );
+            error = ResWritePadDWord( handle );
             *err_code = LastWresErr();
         }
     }
@@ -400,7 +400,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
                     + root.ValSize + padding + CalcNestSize( nest );
     /* pad the start of the resource so that padding within the resource */
     /* is easier */
-    error = ResPadDWord( CurrResFile.handle );
+    error = ResWritePadDWord( CurrResFile.handle );
     if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;
