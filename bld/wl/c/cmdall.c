@@ -1340,7 +1340,7 @@ bool ProcOutputOfs( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL << FmtData.SegShift || HintFormat( ~(MK_DOS | MK_SEGMENTED)))) {
+    if( retval == ST_IS_ORDINAL && (value <= ( 0xFFFFUL << FmtData.SegShift ) || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
         FmtData.output_offset = value;
         return( true );
     } else {
