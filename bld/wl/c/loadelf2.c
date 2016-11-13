@@ -247,7 +247,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     hashSH->sh_link = symtabidx;
     tableSH->sh_type = SHT_SYMTAB;
     tableSH->sh_link = strtabidx;
-    AddSecName(hdr, hashSH, ".hash");
+    hashSH->sh_name = AddSecName( hdr, ".hash" );
 }
 
 void ZapElfSymTable( ElfSymTable *tab )
