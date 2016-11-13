@@ -78,7 +78,7 @@ static char             *ImpExternalName;
 static char             *ImpModName;
 static char             *FirstCodeSymName;
 static char             *FirstDataSymName;
-static unsigned_32      ImpOrdinal;
+static ordinal_t        ImpOrdinal;
 
 static readcache   *ReadCacheList;
 

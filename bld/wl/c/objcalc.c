@@ -141,8 +141,8 @@ static void InsertPrevRing( seg_leader **list, seg_leader *curr, seg_leader *pre
 
 #define CODECL_SIZE ( sizeof( CodeClassName ) - 1 )
 
-bool IsCodeClass( const char *name, unsigned namelen )
-/*****************************************************/
+bool IsCodeClass( const char *name, size_t namelen )
+/**************************************************/
 {
     return( ( namelen >= CODECL_SIZE )
         && ( memicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
@@ -150,8 +150,8 @@ bool IsCodeClass( const char *name, unsigned namelen )
 
 #define CONSTCL_SIZE ( sizeof( ConstClassName ) - 1 )
 
-bool IsConstClass( const char *name, unsigned namelen )
-/******************************************************/
+bool IsConstClass( const char *name, size_t namelen )
+/***************************************************/
 {
     return( ( namelen >= CONSTCL_SIZE )
         && ( memicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
@@ -159,8 +159,8 @@ bool IsConstClass( const char *name, unsigned namelen )
 
 #define STACKCL_SIZE ( sizeof( StackClassName ) - 1 )
 
-bool IsStackClass( const char *name, unsigned namelen )
-/*****************************************************/
+bool IsStackClass( const char *name, size_t namelen )
+/***************************************************/
 {
     return( ( namelen >= STACKCL_SIZE )
         && ( stricmp( name, StackClassName ) == 0 ) );

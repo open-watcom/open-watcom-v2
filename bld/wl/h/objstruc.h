@@ -487,7 +487,7 @@ typedef struct node {
     void                *entry;
 } node;
 
-#define NOT_IMP_BY_ORDINAL (-1)
+#define NOT_IMP_BY_ORDINAL ((ordinal_t)-1)
 
 typedef signed_32       ordinal_t;
 
