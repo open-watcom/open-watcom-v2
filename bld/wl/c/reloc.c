@@ -45,7 +45,7 @@
 
 typedef struct reloc_info {
     struct reloc_info   *next;
-    unsigned            sizeleft;
+    size_t              sizeleft;
     spilladdr           loc;
 } reloc_info;
 
@@ -129,12 +129,12 @@ static void *PERelocInit( offset size )
     return( OS2PagedRelocInit( size, sizeof( reloc_info * ) ) );
 }
 
-static void DoWriteReloc( void *lst, const void *reloc, unsigned size )
-/*********************************************************************/
+static void DoWriteReloc( void *lst, const void *reloc, size_t size )
+/*******************************************************************/
 {
     reloc_info      **list = lst;
     reloc_info      *info;
-    unsigned        offset;
+    size_t          offset;
 
     info = *(reloc_info **)list;
     if( info == NULL ) {
@@ -156,9 +156,8 @@ static void DoWriteReloc( void *lst, const void *reloc, unsigned size )
     info->sizeleft -= size;
 }
 
-void WriteReloc( group_entry *group, offset off, void *reloc,
-                        unsigned size )
-/******************************************************************/
+void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
+/*************************************************************************/
 /* write the given relocation to virtual memory */
 {
     os2_reloc_header ** pagelist;

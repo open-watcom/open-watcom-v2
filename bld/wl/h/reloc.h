@@ -218,7 +218,7 @@ typedef struct base_reloc {
 
 typedef struct reloc_info RELOC_INFO;
 
-extern void             WriteReloc( group_entry *, offset, void *, unsigned );
+extern void             WriteReloc( group_entry *, offset, void *, size_t );
 extern void             FloatReloc( reloc_item * item );
 extern void             QNXLinearReloc( group_entry *, reloc_item * );
 extern bool             TraverseOS2RelocList( group_entry *,
