@@ -67,7 +67,7 @@ f_handle QOpenR( const char *name )
         return( h );
     }
     IOError( "can't open ", name );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 size_t QRead( f_handle file, void *buffer, size_t len, const char *name )

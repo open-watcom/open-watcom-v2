@@ -307,7 +307,6 @@ static unsigned_32 WriteMessages( extended_nlm_header * header )
         QRead( handle, TokBuff, MSG_FILE_SIGNATURE_LENGTH, FmtData.u.nov.messages );
         if( memcmp( TokBuff, MSG_FILE_SIGNATURE, MSG_FILE_SIGNATURE_LENGTH ) != 0 ) {
             LnkMsg( WRN+MSG_INV_MESSAGE_FILE, "s", FmtData.u.nov.messages );
-            QClose( handle, FmtData.u.nov.messages );
         } else {
             QSeek( handle, LANGUAGE_ID_OFFSET, FmtData.u.nov.messages );
             QRead( handle, buf, 2 * sizeof( unsigned_32 ), FmtData.u.nov.messages );
@@ -316,6 +315,7 @@ static unsigned_32 WriteMessages( extended_nlm_header * header )
             QSeek( handle, 0, FmtData.u.nov.messages );
             header->messageFileLength = CopyToLoad( handle, FmtData.u.nov.messages );
         }
+        QClose( handle, FmtData.u.nov.messages );
     }
     return( header->messageFileLength );
 }
@@ -325,13 +325,14 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header * header, unsigned_32 fil
 {
     f_handle            handle;
     fixed_header        *sharehdr;
+    unsigned_32         size;
 
+    size = 0;
     if( FmtData.u.nov.sharednlm != NULL ) {
         handle = QOpenR( FmtData.u.nov.sharednlm );
         QRead( handle, TokBuff, sizeof( fixed_header ), FmtData.u.nov.sharednlm );
         if( memcmp( TokBuff, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) != 0 ) {
             LnkMsg( WRN+MSG_INV_SHARED_NLM_FILE, "s", FmtData.u.nov.sharednlm );
-            QClose( handle, FmtData.u.nov.sharednlm );
         } else {
             sharehdr = (fixed_header *) TokBuff;
             header->sharedCodeOffset = sharehdr->codeImageOffset + file_size;
@@ -354,10 +355,11 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header * header, unsigned_32 fil
             header->sharedInitializationOffset = sharehdr->codeStartOffset;
             header->sharedExitProcedureOffset = sharehdr->exitProcedureOffset;
             QSeek( handle, 0, FmtData.u.nov.sharednlm );
-            return( CopyToLoad( handle, FmtData.u.nov.sharednlm ) );
+            size = CopyToLoad( handle, FmtData.u.nov.sharednlm );
         }
+        QClose( handle, FmtData.u.nov.sharednlm );
     }
-    return( 0 );
+    return( size );
 }
 
 static void GetProcOffsets( fixed_header *header )

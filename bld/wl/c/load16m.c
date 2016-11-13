@@ -258,15 +258,14 @@ static unsigned_32 WriteStubProg( void )
     unsigned_32 size;
     f_handle    fhandle;
 
-    if( FmtData.u.d16m.stub == NULL ) {
-        size = 0;
-    } else {
+    size = 0;
+    if( FmtData.u.d16m.stub != NULL ) {
         fhandle = FindPath( FmtData.u.d16m.stub );
         if( fhandle == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
-            size = 0;
         } else {
             size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
+            QClose( fhandle, FmtData.u.d16m.stub );
         }
     }
     SetOriginLoad( size );

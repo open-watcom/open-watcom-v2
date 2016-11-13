@@ -720,11 +720,11 @@ unsigned_32 AppendToLoadFile( const char *name )
     f_handle        handle;
     unsigned_32     wrote;
 
+    wrote = 0;
     if( name != NULL ) {
         handle = QOpenR( name );
         wrote = CopyToLoad( handle, name );
-    } else {
-        wrote = 0;
+        QClose( handle, name );
     }
     return( wrote );
 }
@@ -925,7 +925,6 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
     }
-    QClose( handle, name );
     return( wrote );
 }
 
