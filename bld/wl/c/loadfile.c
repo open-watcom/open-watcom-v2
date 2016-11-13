@@ -858,8 +858,8 @@ static void BufImpWrite( const char *buffer, size_t len )
     }
 }
 
-void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal )
-/*******************************************************************************/
+void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal )
+/********************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;

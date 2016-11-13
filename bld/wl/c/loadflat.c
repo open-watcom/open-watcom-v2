@@ -206,7 +206,7 @@ static unsigned long DumpFlatEntryTable( void )
     entry_export        *start;
     entry_export        *place;
     entry_export        *prev;
-    unsigned            prevord;
+    ordinal_t           prevord;
     unsigned long       size;
     unsigned            gap;
     unsigned            entries;

@@ -417,7 +417,7 @@ static void ProcExportKeyword( void )
     ObjBuff += intname.len;
     ordinal = 0;
     if( flags & EXPDEF_ORDINAL ) {
-        ordinal = GET_U16_UN(ObjBuff);
+        ordinal = GET_U16_UN( ObjBuff );
     }
     HandleExport( &expname, &intname, flags, ordinal );
 }
@@ -447,7 +447,7 @@ static void ProcImportKeyword( void )
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
     } else {
-        HandleImport(&intname, &modname, &extname, GET_U16_UN(ObjBuff) );
+        HandleImport(&intname, &modname, &extname, GET_U16_UN( ObjBuff ) );
     }
 }
 

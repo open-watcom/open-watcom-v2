@@ -141,7 +141,9 @@ void AddToExportList( entry_export *exp )
         }
         if( place == NULL ) {
             if( exp->ordinal == 0 ) {
-                if( curr->ordinal != 0 ) place = owner;
+                if( curr->ordinal != 0 ) {
+                    place = owner;
+                }
             } else if( curr->ordinal == exp->ordinal ) {
                 LnkMsg( WRN+MSG_DUP_EXP_ORDINAL, NULL );
                 exp->ordinal = 0;    // if duplicate, assign a new one later
@@ -310,10 +312,11 @@ void MSImportKeyword( symbol *sym, const length_name *modname, const length_name
             dll->iatsym->p.import = NULL;
         }
         dll->m.modnum = AddNameTable( modname->name, modname->len, true, &FmtData.u.os2.mod_ref_list );
-        dll->isordinal = ordinal != NOT_IMP_BY_ORDINAL;
-        if( !dll->isordinal ) {
+        if( ordinal == NOT_IMP_BY_ORDINAL ) {
+            dll->isordinal = false;
             dll->u.entry = AddNameTable( extname->name, extname->len, false, &FmtData.u.os2.imp_tab_list );
         } else {
+            dll->isordinal = true;
             dll->u.ordinal = ordinal;
         }
     }
