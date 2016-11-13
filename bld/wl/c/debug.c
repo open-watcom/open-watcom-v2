@@ -86,6 +86,7 @@ void LPrint( const char *str, ... )
 
     va_start( arglist, str );
     len = DoFmtStr( buff, 200, str, &arglist );
+    va_end( arglist );
     WriteStdOut( buff );
 }
 
@@ -102,6 +103,7 @@ void _Debug( unsigned int mask, const char *str, ... )
     if( (Debug & mask) || (mask & DBG_INFO_MASK) == DBG_ALWAYS ) {
         va_start( arglist, str );
         len = DoFmtStr( buff, 128, str, &arglist );
+        va_end( arglist );
         WriteStdOut( buff );
         if( (mask & DBG_NOCRLF) == 0 ) {
             WriteStdOutNL();
@@ -135,6 +137,7 @@ void Trec( const char *str, ... )
     TrecCount++;
     va_start( arglist, str );
     DoFmtStr( buff[currBuff], 128, str, &arglist );
+    va_end( arglist );
     currBuff = ( currBuff + 1 ) % max;
 
     TrecFailCondition();

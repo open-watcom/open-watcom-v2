@@ -148,9 +148,12 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
 /***********************************************************/
 {
     va_list args;
+    size_t  size;
 
     va_start( args, fmt );
-    return( DoFmtStr( buff, len, fmt, &args ) );
+    size = DoFmtStr( buff, len, fmt, &args );
+    va_end( args );
+    return( size );
 }
 
 size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
@@ -533,8 +536,8 @@ void LnkMsg(
         LocRec = 0;
     }
 
-    va_start( args, types );
     Msg_Get( num & NUM_MSK, rc_buff );
+    va_start( args, types );
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
     va_end( args );
     len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
@@ -564,6 +567,7 @@ void RcWarning( unsigned num, ... )
 
     va_start( args, num );
     HandleRcMsg( num, &args );
+    va_end( args );
 }
 
 void RcError( unsigned num, ... )
@@ -573,6 +577,7 @@ void RcError( unsigned num, ... )
 
     va_start( args, num );
     HandleRcMsg( num, &args );
+    va_end( args );
 }
 
 void WLPrtBanner( void )

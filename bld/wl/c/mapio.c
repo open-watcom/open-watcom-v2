@@ -948,6 +948,7 @@ void WriteMap( const char *format, ... )
 
     va_start( arglist, format );
     DoWriteMap( format, &arglist );
+    va_end( arglist );
 }
 
 void WriteFormat( size_t col, const char *str, ... )
@@ -968,6 +969,7 @@ void WriteFormat( size_t col, const char *str, ... )
         BufWrite( Blanks, num );
         va_start( arglist, str );
         MapCol += MapPrint( str, &arglist );
+        va_end( arglist );
     }
 }
 
