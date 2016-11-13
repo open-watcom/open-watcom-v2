@@ -47,6 +47,7 @@ extern void     ReserveStringTable( stringtable *, size_t );
 extern char     *AddBufferStringTable( stringtable *, const void *, size_t );
 extern char     *AddSymbolStringTable( stringtable *, const char *, size_t );
 extern char     *AddStringStringTable( stringtable *, const char * );
+extern size_t   AddStringStringTableOffs( stringtable *, const char * );
 extern void     AddCharStringTable( stringtable *, char );
 extern void     ZeroStringTable( stringtable *, size_t );
 extern void     WriteStringTable( stringtable *, write_strtable_fn *, void * );

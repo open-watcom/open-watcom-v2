@@ -730,8 +730,7 @@ static void FillHeader( Elf32_Shdr *hdr, const char *name, stringtable *strtab,
                         unsigned_32 curr_off )
 /***********************************************************************/
 {
-    hdr->sh_name = GetStringTableSize( strtab );
-    AddStringStringTable( strtab, name );
+    hdr->sh_name = AddStringStringTableOffs( strtab, name );
     hdr->sh_type = SHT_PROGBITS;
     hdr->sh_flags = 0;
     hdr->sh_addr = 0;

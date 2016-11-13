@@ -194,11 +194,7 @@ unsigned GetElfHeaderSize( void )
 size_t AddSecName( ElfHdr *hdr, const char *name )
 /************************************************/
 {
-    size_t  sh_name;
-
-    sh_name = GetStringTableSize( &hdr->secstrtab );
-    AddStringStringTable( &hdr->secstrtab, name );
-    return( sh_name );
+    return( AddStringStringTableOffs( &hdr->secstrtab, name ) );
 }
 
 
@@ -207,7 +203,7 @@ static void WriteSHStrings( ElfHdr *hdr, int str_idx, stringtable *strtab )
 {
     Elf32_Shdr *sh;
 
-    sh = hdr->sh+str_idx;
+    sh = hdr->sh + str_idx;
     sh->sh_name = AddSecName( hdr, ".shstrtab" );
     sh->sh_offset = hdr->curr_off;
     sh->sh_type = SHT_STRTAB;

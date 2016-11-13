@@ -141,11 +141,7 @@ static void MarkSymbol( void *sym )
 static void *GetString( perm_write_info *info, const char *str )
 /**************************************************************/
 {
-    size_t      idx;
-
-    idx = GetStringTableSize( &info->strtab );
-    AddStringStringTable( &info->strtab, str );
-    return( (void *)(pointer_int)idx );
+    return( (void *)(pointer_int)AddStringStringTableOffs( &info->strtab, str ) );
 }
 
 static void DoWritePermFile( perm_write_info *info, const char *data, unsigned len, bool isvmem )
@@ -360,12 +356,8 @@ static void PrepSymbol( void *_sym, void *info )
 static void PrepNameTable( name_list *list, perm_write_info *info )
 /*****************************************************************/
 {
-    char        *savename;
-
     for( ; list != NULL; list = list->next ) {
-        savename = list->name;
-        list->name = (char *)(pointer_int)GetStringTableSize( &info->strtab );
-        AddBufferStringTable( &info->strtab, savename, list->len + 1 );
+        list->name = (char *)(pointer_int)AddStringStringTableOffs( &info->strtab, list->name );
     }
 }
 

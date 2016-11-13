@@ -195,7 +195,6 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
 /***********************************************************************/
 {
     int         i;
-    Elf32_Word  off;
     size_t      len;
     Elf32_Sym   elfsym;
     Elf32_Shdr  *hashSH;
@@ -213,13 +212,9 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     memset( &elfsym, 0, sizeof( elfsym ) );
     elfsym.st_shndx = SHN_UNDEF;
     WriteLoad( &elfsym, sizeof( elfsym ) );
-    off = GetStringTableSize( tab->strtab );
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
-        len = strlen( sym->name ) + 1;
-        AddBufferStringTable( tab->strtab, sym->name, len );
-        elfsym.st_name = off;
-        off += len;
+        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name );
         if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }
