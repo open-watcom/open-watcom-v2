@@ -708,7 +708,7 @@ void FindExportedSyms( void )
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
             sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
-                dinfo->global.curr.u.vm_ptr += strlen( sym->name ) + sizeof( gblinfo );
+                dinfo->global.curr.u.vm_offs += sizeof( gblinfo ) + strlen( sym->name );
             }
         }
     }
