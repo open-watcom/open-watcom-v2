@@ -396,11 +396,11 @@ unsigned CalcMsgNum( unsigned num )
 static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
 /********************************************************************/
 {
-    size_t      prefixlen;
+    size_t      msgprefixlen;
     unsigned    class;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
-    prefixlen = 0;
+    msgprefixlen = 0;
     *buff = '\0';
     class = num & CLASS_MSK;
     if( class >= (WRN & CLASS_MSK) ) {
@@ -409,19 +409,19 @@ static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
         } else {
             Msg_Get( MSG_ERROR, rc_buff );
         }
-        prefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
+        msgprefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
     }
-    return( prefixlen );
+    return( msgprefixlen );
 }
 
 static void MessageFini( unsigned num, char *buff, size_t len )
 /*************************************************************/
 {
-    size_t      prefixlen;
+    size_t      msgprefixlen;
     unsigned    class;
-    char        prefix[ MAX_MSG_SIZE ];
+    char        msgprefix[ MAX_MSG_SIZE ];
 
-    prefixlen = 0;
+    msgprefixlen = 0;
     class = num & CLASS_MSK;
     if( class >= (ERR & CLASS_MSK) ) {
         LinkState |= LINK_ERROR;
@@ -435,8 +435,8 @@ static void MessageFini( unsigned num, char *buff, size_t len )
         }
     }
     if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
-        prefixlen = GetMsgPrefix( prefix, MAX_MSG_SIZE, num );
-        BufWrite( prefix, prefixlen );
+        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
+        BufWrite( msgprefix, msgprefixlen );
         BufWrite( buff, len );
         WriteMapNL( 1 );
     }

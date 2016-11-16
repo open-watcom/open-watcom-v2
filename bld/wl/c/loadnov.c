@@ -85,7 +85,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
 
     wrote = count = 0;
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( !( IS_SYM_IMPORTED( sym ) ) )
+        if( !IS_SYM_IMPORTED( sym ) )
             continue;
         /* so SymFini doesn't try to free it */
         if( sym->p.import == DUMMY_IMPORT_PTR )
@@ -100,7 +100,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
             /*
             // netware prefix support
             */
-            if( sym->prefix ) {
+            if( sym->prefix != NULL ) {
                 len_u8 += strlen( sym->prefix ) + 1;
                 WriteLoad( &len_u8, sizeof( len_u8 ) );
                 WriteLoad( sym->prefix, strlen( sym->prefix ) );
@@ -151,12 +151,12 @@ static unsigned_32 WriteNovExports( fixed_header *header )
         sym = SymOp( ST_FIND, export->name, len_u8 );
         if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
-        } else if( !IS_SYM_IMPORTED(sym) ) {
+        } else if( !IS_SYM_IMPORTED( sym ) ) {
 
             /*
             //    netware prefix support
             */
-            if( sym->prefix ) {
+            if( sym->prefix != NULL ) {
 
                 char        full_name[255 + 1];
 
@@ -166,7 +166,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
                 AddImpLibEntry( sym->name, full_name, NOT_IMP_BY_ORDINAL );
 
                 len_u8 = strlen( full_name );
-                
+
                 WriteLoad( &len_u8, sizeof( len_u8 ) );
                 WriteLoad( full_name, len_u8 );
             } else {
@@ -210,7 +210,7 @@ void NovDBIAddGlobal( void * _sym )
 /*********************************/
 {
     symbol *sym = _sym;
-        
+
     if( !IS_SYM_A_REF(sym)
             && !IS_SYM_ALIAS(sym)
             && ( sym->p.seg != NULL )

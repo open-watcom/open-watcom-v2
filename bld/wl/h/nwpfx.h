@@ -32,6 +32,6 @@
 #ifndef _NWPFX_H
 #define _NWPFX_H
 
-extern bool SetCurrentPrefix(const char *pszPrefix, unsigned nLen);
+extern bool SetCurrentPrefix( const char *str, size_t len );
 
 #endif

@@ -1072,9 +1072,10 @@ void RestoreCmdLine( void )
         }
         break;
     }
-    if( CmdFile->symprefix)
+    if( CmdFile->symprefix != NULL ) {
         _LnkFree( CmdFile->symprefix );
-    CmdFile->symprefix = NULL;
+        CmdFile->symprefix = NULL;
+    }
     _LnkFree( CmdFile->name );
     temp = CmdFile->prev;
     temp->next = CmdFile->next;
@@ -1117,9 +1118,10 @@ void BurnUtils( void )
         if( CmdFile->file > STDIN_HANDLE ) {
             QClose( CmdFile->file, CmdFile->name );
         }
-        if( CmdFile->symprefix)
+        if( CmdFile->symprefix != NULL ) {
             _LnkFree( CmdFile->symprefix );
-        CmdFile->symprefix = NULL;
+            CmdFile->symprefix = NULL;
+        }
         _LnkFree( CmdFile->name );
         switch( CmdFile->token.how ) {
         case ENVIRONMENT:
@@ -1145,7 +1147,7 @@ outfilelist *NewOutFile( char *filename )
             return( fnode );
         }
     }
-// file name not already in list, so add a list entry.
+    // file name not already in list, so add a list entry.
     _ChkAlloc( fnode, sizeof( outfilelist ) );
     InitBuffFile( fnode, filename, true );
     fnode->next = OutFiles;
@@ -1170,8 +1172,7 @@ section *NewSection( void )
     sect->orderlist = NULL;
     sect->areas = NULL;
     sect->files = NULL;
-    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper,
-                                        ChkLAlloc, LFree );
+    sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
     sect->mods = NULL;
     sect->reloclist = NULL;
     sect->sect_addr.off = 0;

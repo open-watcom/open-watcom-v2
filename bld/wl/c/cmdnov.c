@@ -102,8 +102,10 @@ static bool NetWareSplitSymbol( const char *tokenThis, size_t tokenLen, const ch
         return( true );
     }
 
-    *prefix = tokenThis;
-    *prefixlen = findAt - tokenThis;
+    if( findAt != tokenThis ) {
+        *prefix = tokenThis;
+        *prefixlen = findAt - tokenThis;
+    }
 
     *name = findAt + 1;
     *namelen = nLen - 1;
@@ -224,7 +226,7 @@ static bool GetNovImport( void )
     }
 
 #ifndef NDEBUG
-    printf( "imported %s from %s\n", sym->name, sym->prefix ? sym->prefix : "(NONE)" );
+    printf( "imported %s from %s\n", sym->name, ( sym->prefix != NULL ) ? sym->prefix : "(NONE)" );
 #endif
 
     SET_SYM_TYPE( sym, SYM_IMPORTED );
