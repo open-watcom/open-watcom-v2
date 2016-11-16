@@ -115,7 +115,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
     for( ; bin_size > 0; bin_size -= num_read ) {
         num_read  = (bin_size > BUF_SIZE) ? BUF_SIZE : bin_size;
 
-        if( !fread( buffer, num_read, 1, istream ) ) {
+        if( fread( buffer, num_read, 1, istream ) == 0 ) {
             free( buffer );
             return( ERR_READ );
         }
@@ -228,7 +228,7 @@ static dos_exe_header *get_header( FILE *stream )
 
     header = malloc( sizeof( dos_exe_header ) );
     if( header ) {
-        if( !fread( header, sizeof( dos_exe_header ), 1, stream ) ) {
+        if( fread( header, sizeof( dos_exe_header ), 1, stream ) == 0 ) {
             free( header );
             header = NULL;
         } else {
@@ -267,7 +267,7 @@ static reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
             reltab = NULL;
         } else {
             for( i = 0; i < rel_num; i++ ) {
-                if( !fread( &rel_off, sizeof( reloc_offset ), 1, stream ) ) {
+                if( fread( &rel_off, sizeof( reloc_offset ), 1, stream ) == 0 ) {
                     free( reltab );
                     reltab = NULL;
                     break;
