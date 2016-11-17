@@ -61,6 +61,9 @@
 #include "ring.h"
 #include "obj2supp.h"
 
+
+#define TOC_RESTORE_INSTRUCTION     0x804b0004
+
 typedef struct fix_relo_data {
     byte        *data;
     offset      value;      /* value at location being patched */
@@ -881,7 +884,7 @@ static void CheckPartialRange( fix_relo_data *fix, offset off,
     } else {
         temp += off;
     }
-    if( ( temp < -topbit ) || ( temp >= topbit ) ) {
+    if( ( temp < -(signed_32)topbit ) || ( temp >= (signed_32)topbit ) ) {
         LnkMsg( LOC+ERR+MSG_FIXUP_OFF_RANGE, "a", &fix->loc_addr );
     }
 }
@@ -939,7 +942,6 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
         return( true );
     } else if( special == FIX_IFGLUE ) {
         if( ( target->type == FIX_TARGET_EXT ) && IS_SYM_IMPORTED( target->u.sym ) ) {
-            enum { TOC_RESTORE_INSTRUCTION = 0x804b0004 };
             PUT_U32( fix->data, TOC_RESTORE_INSTRUCTION );
         }
         return( true );
@@ -976,7 +978,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
                 AddNovImpReloc( target->u.sym, fix->loc_addr.off, true,
                                 fix->loc_addr.seg == DATA_SEGMENT );
 // I don't know why the novell linker does this, but it does.
-                PatchOffset( fix, -4, true );
+                PatchOffset( fix, (offset)-4, true );
             }
         }
         return( true );

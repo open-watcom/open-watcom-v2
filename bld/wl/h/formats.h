@@ -228,7 +228,7 @@ struct fmt_rdos_data {
     char            mboot;
 };
 
-#define NO_BASE_SPEC    ((offset)-1UL)
+#define NO_BASE_SPEC    ((offset)-1L)
 
 struct fmt_data {
     union   fmt_spec_data {

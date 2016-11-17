@@ -659,11 +659,11 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
         imp->contents++;
         imp->num_relocs = imp->contents;
         imp->vm_ptr[0] = vmem_ptr;
-    } else {
+    } else {    // imp->contents > MAX_IMP_INTERNAL
         vblock = imp->num_relocs / IMP_NUM_VIRT;
         voff = imp->num_relocs % IMP_NUM_VIRT;
         if( voff == 0 ) {
-            if( vblock >= (imp->contents - MAX_IMP_INTERNAL) * MAX_IMP_VIRT ) {
+            if( vblock >= (unsigned)( imp->contents - MAX_IMP_INTERNAL ) * MAX_IMP_VIRT ) {
                 _ChkAlloc( new, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) * 2 );
                 memcpy( new, imp, sizeof( nov_import ) - sizeof( unsigned_32 ) + vblock * sizeof( unsigned_32 ) );
                 _LnkFree( imp );

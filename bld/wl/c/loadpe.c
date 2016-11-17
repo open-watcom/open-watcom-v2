@@ -597,12 +597,11 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     size_t              namelen;
     entry_export        **sort;
     entry_export        *exp;
-    unsigned            i;
-    unsigned_16         ordinal;
+    size_t              i;
     pe_va               eat;
     ordinal_t           next_ord;
     ordinal_t           high_ord = 0;
-    unsigned            num_entries;
+    size_t              num_entries;
 
     strncpy( object->name, ".edata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( file_align );
@@ -655,20 +654,19 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
             PadLoad( (exp->ordinal - next_ord) * sizeof( pe_va ) );
         }
         next_ord = exp->ordinal + 1;
-        WriteLoad( &eat, sizeof( eat ) );
+        WriteLoadU32( eat );
     }
     qsort( sort, num_entries, sizeof( entry_export * ), &namecmp_exp );
     /* write out the export name ptr table */
     eat = dir.ordinal_table_rva + num_entries * sizeof( unsigned_16 );
     for( i = 0; i < num_entries; ++i ) {
         exp = sort[i];
-        WriteLoad( &eat, sizeof( eat ) );
+        WriteLoadU32( eat );
         eat += strlen( exp->name ) + 1;
     }
     /* write out the export ordinal table */
     for( i = 0; i < num_entries; ++i ) {
-        ordinal = sort[i]->ordinal - dir.ordinal_base;
-        WriteLoad( &ordinal, sizeof( ordinal ) );
+        WriteLoadU16( sort[i]->ordinal - dir.ordinal_base );
     }
     /* write out the export name table */
     for( i = 0; i < num_entries; ++i ) {
@@ -701,8 +699,8 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
                 padme = true;
             }
             pagesize += 2 * sizeof( unsigned_32 );
-            WriteLoad( &pagerva, sizeof( unsigned_32 ) );
-            WriteLoad( &pagesize, sizeof( unsigned_32 ) );
+            WriteLoadU32( pagerva );
+            WriteLoadU32( pagesize );
             DumpRelocList( *reloclist );
             if( padme ) {
                 PadLoad( sizeof( pe_reloc_item ) );
@@ -771,7 +769,7 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
 WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
 {
     hdl = hdl;
-    WriteLoad( (void *) buf, len );
+    WriteLoad( buf, len );
     return( len );
 }
 
@@ -1092,7 +1090,7 @@ void FiniPELoadFile( void )
         }
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
-        PE64( h ).time_stamp = time( NULL );
+        PE64( h ).time_stamp = (unsigned_32)time( NULL );
         PE64( h ).nt_hdr_size = head_size - offsetof( pe_header64, flags ) - sizeof( PE64( h ).flags );
         PE64( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
         if( FmtData.u.pe.nolargeaddressaware ) {
@@ -1248,7 +1246,7 @@ void FiniPELoadFile( void )
             PE32( h ).cpu_type = PE_CPU_POWERPC;
         }
         PE32( h ).num_objects = num_objects;
-        PE32( h ).time_stamp = time( NULL );
+        PE32( h ).time_stamp = (unsigned_32)time( NULL );
         PE32( h ).nt_hdr_size = head_size - offsetof( pe_header, flags ) - sizeof( PE32( h ).flags );
         PE32( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
         if( FmtData.u.pe.largeaddressaware == 1 ) {

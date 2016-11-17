@@ -155,11 +155,11 @@ static void write_sel_reloc( unsigned_16 sel, reloc_addr *block_start, reloc_add
     unsigned_16     block_cnt;
 
     if( sel != 0 ) {
-        WriteLoad( &sel, sizeof( sel ) );
+        WriteLoadU16( sel );
         block_cnt = block_end - block_start;
-        WriteLoad( &block_cnt, sizeof( block_cnt ) );
+        WriteLoadU16( block_cnt );
         for( ; block_start < block_end; ++block_start ) {
-            WriteLoad( &block_start->off, sizeof( block_start->off ) );
+            WriteLoadU16( block_start->off );
         }
     }
 }
@@ -180,7 +180,7 @@ static unsigned GetRelocBlock( reloc_addr **reloc_data )
 /******************************************************************/
 {
     RELOC_INFO      *relocs;
-    unsigned        num_relocs;
+    size_t          num_relocs;
     context         info;
 
     *reloc_data = NULL;
@@ -221,7 +221,7 @@ static unsigned_32 Write16MRelocs( reloc_addr *reloc_data )
 {
     unsigned        num_relocs;
     unsigned_32     pos;
-    int             i;
+    unsigned        i;
     unsigned_16     sel;
     unsigned        block_start;
 
@@ -230,11 +230,11 @@ static unsigned_32 Write16MRelocs( reloc_addr *reloc_data )
     if( reloc_fmt == 1 ) {
         // RSI-1 reloc format
         for( i = 0; i < num_relocs; ++ i ) {
-            WriteLoad( &reloc_data[i].seg, sizeof( reloc_data[i].seg ) );
+            WriteLoadU16( reloc_data[i].seg );
         }
         NullAlign( 0x10 );
         for( i = 0; i < num_relocs; ++ i ) {
-            WriteLoad( &reloc_data[i].off, sizeof( reloc_data[i].off ) );
+            WriteLoadU16( reloc_data[i].off );
         }
     } else if( reloc_fmt == 2 ) {
         // RSI-2 reloc format

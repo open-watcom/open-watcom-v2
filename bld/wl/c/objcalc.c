@@ -637,8 +637,8 @@ void StartMapSort( void )
     NumMapSyms = 0;
 }
 
-static void WriteSymArray( symbol **symarray, unsigned num )
-/***********************************************************/
+static void WriteSymArray( symbol **symarray, size_t num )
+/********************************************************/
 {
     if( MapFlags & MAP_ALPHA ) {
         qsort( symarray, num, sizeof( symbol * ), SymAlphaCompare );
@@ -681,7 +681,7 @@ void FinishMapSort( void )
         if( !ok ) {
             LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
         } else {
-            WriteSymArray( symarray, (unsigned) NumMapSyms );
+            WriteSymArray( symarray, NumMapSyms );
             _LnkFree( symarray );
         }
     }

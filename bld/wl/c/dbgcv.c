@@ -148,11 +148,23 @@ void CVInitModule( mod_entry *obj )
     memset( obj->d.cv, 0, sizeof( cvmodinfo ) );
 }
 
-static void DumpInfo( sect_number sect, void *data, unsigned len )
-/****************************************************************/
+static void DumpInfo( sect_number sect, void *data, size_t len )
+/**************************************************************/
 {
     PutInfo( SectAddrs[sect].u.vm_ptr, data, len );
     SectAddrs[sect].u.vm_ptr += len;
+}
+
+static void DumpInfoU8( sect_number sect, unsigned_8 data )
+/**********************************************************/
+{
+    DumpInfo( sect, &data, sizeof( data ) );
+}
+
+static void DumpInfoU32( sect_number sect, unsigned_32 data )
+/************************************************************/
+{
+    DumpInfo( sect, &data, sizeof( data ) );
 }
 
 static unsigned_16 GetCVSegment( seg_leader *seg )
@@ -229,7 +241,7 @@ void CVP1ModuleFinished( mod_entry *obj )
 /**********************************************/
 // calculate size of the sstModule
 {
-    byte        namelen;
+    size_t      namelen;
     unsigned_32 temp;
     unsigned_32 size;
 
@@ -268,16 +280,14 @@ void CVAddModule( mod_entry *obj, section *sect )
 /******************************************************/
 // called just before publics have been assigned addresses between p1 & p2
 {
-    unsigned_32         sig;
     cv_sst_module       mod;
     unsigned_32         size;
-    byte                namelen;
+    size_t              namelen;
 
     sect = sect;
     if( obj->d.cv->pubsize > 0 ) {
         GenSubSection( sstPublicSym, obj->d.cv->pubsize );
-        sig = 1;
-        DumpInfo( CVSECT_MISC, &sig, sizeof( unsigned_32 ) );
+        DumpInfoU32( CVSECT_MISC, 1 );
     }
     namelen = strlen( obj->name );
     size = sizeof( cv_sst_module ) + namelen + 1 + ( obj->d.cv->numsegs - 1 ) * sizeof( cv_seginfo );
@@ -292,7 +302,7 @@ void CVAddModule( mod_entry *obj, section *sect )
     DumpInfo( CVSECT_MODULE, &mod, sizeof( cv_sst_module ) - sizeof( cv_seginfo ) );
     obj->d.cv->segloc = SectAddrs[CVSECT_MODULE].u.vm_ptr;
     SectAddrs[CVSECT_MODULE].u.vm_ptr += sizeof( cv_seginfo ) * obj->d.cv->numsegs;
-    DumpInfo( CVSECT_MODULE, &namelen, 1 );
+    DumpInfoU8( CVSECT_MODULE, namelen );
     DumpInfo( CVSECT_MODULE, obj->name, namelen );
 }
 
@@ -428,7 +438,7 @@ void CVGenGlobal( symbol * sym, section *sect )
     unsigned    size;
     unsigned    pad;
     unsigned_32 buf;
-    byte        namelen;
+    size_t      namelen;
 
     sect = sect;
     if( sym->info & SYM_STATIC )
@@ -459,7 +469,7 @@ void CVGenGlobal( symbol * sym, section *sect )
         pub16.f.type = 0;
         DumpInfo( CVSECT_MISC, &pub16, sizeof( s_pub16 ) );
     }
-    DumpInfo( CVSECT_MISC, &namelen, 1 );
+    DumpInfoU8( CVSECT_MISC, namelen );
     DumpInfo( CVSECT_MISC, sym->name, namelen );
     if( pad > 0 ) {
         buf = 0;
@@ -734,7 +744,7 @@ void CVWriteDebugTypeMisc( const char *filename )
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {
-    unsigned                namelen;
+    size_t                  namelen;
     unsigned                bufspace;
     debug_misc_dbgdata      dbg_exename;
 

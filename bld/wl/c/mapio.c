@@ -269,8 +269,8 @@ void WriteSegs( section *sect )
 /* write segment info into mapfile */
 {
     class_entry     *cl;
-    unsigned        count;
-    unsigned        i;
+    size_t          count;
+    size_t          i;
     seg_leader      *seg;
     seg_info        *segs;
 
@@ -292,7 +292,8 @@ void WriteSegs( section *sect )
                 seg = NULL;
                 while( (seg = RingStep( cl->segs, seg )) != NULL ) {
                     segs[count].idx = count;
-                    segs[count++].seg = seg;
+                    segs[count].seg = seg;
+                    count++;
                 }
             }
         }
@@ -533,6 +534,7 @@ void WriteMapLines( void )
     virt_mem_size               length;
     uint_8                      *p;
     int                         opcode_base;
+    int                         i;
     uint                        *opcode_lengths;
     uint                        u;
     uint_8                      *name;
@@ -583,8 +585,8 @@ void WriteMapLines( void )
         p += 1;
 
         _ChkAlloc( opcode_lengths, sizeof( uint ) * ( opcode_base - 1 ) );
-        for( u = 0; u < opcode_base - 1; ++u ) {
-            opcode_lengths[u] = *p++;
+        for( i = 0; i < opcode_base - 1; ++i ) {
+            opcode_lengths[i] = *p++;
         }
 
         if( p - input >= length ) {

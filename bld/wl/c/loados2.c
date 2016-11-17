@@ -565,11 +565,11 @@ static unsigned long DumpEntryTable( void )
                 prefix.type = 0x00;   // Null bundles.
                 for( ; gap > 0xFF; gap -= 0xFF ) {
                     WriteLoad( &prefix, sizeof( bundle_prefix ) );
-                    size += 2;
+                    size += sizeof( bundle_prefix );
                 }
                 prefix.number = (unsigned_8)gap;
                 WriteLoad( &prefix, sizeof( bundle_prefix ) );
-                size += 2;
+                size += sizeof( bundle_prefix );
             }
             // now get a bundle of ordinals.
             entries = 1;
@@ -603,7 +603,7 @@ static unsigned long DumpEntryTable( void )
             prevord = prev->ordinal;
             prefix.number = (unsigned_8)entries;
             WriteLoad( &prefix, sizeof( bundle_prefix ) );
-            size += 2;
+            size += sizeof( bundle_prefix );
             for( ; entries > 0; --entries ) {
                 bundle_item.f.info = (start->iopl_words << IOPL_WORD_SHIFT);
                 if( start->isexported ) {

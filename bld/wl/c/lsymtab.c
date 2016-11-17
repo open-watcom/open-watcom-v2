@@ -962,7 +962,7 @@ static unsigned StaticHashFn( const char *name, size_t len )
     unsigned    value;
     unsigned    modval;
 
-    modval = CurrMod->modtime;
+    modval = (unsigned)CurrMod->modtime;
     value = ScatterTable[ modval & 0xff ];
     modval >>= 8;
     value = value ^ ScatterTable[ modval & 0xff ];

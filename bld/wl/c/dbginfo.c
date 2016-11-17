@@ -144,8 +144,8 @@ void ODBIInitModule( mod_entry *mod )
     memset( mod->d.o, 0, sizeof( odbimodinfo ) );
 }
 
-static void DumpInfo( debug_info *dinfo, void *data, unsigned len )
-/*****************************************************************/
+static void DumpInfo( debug_info *dinfo, const void *data, size_t len )
+/*********************************************************************/
 {
     PutInfo( dinfo->dump_addr, data, len );
     dinfo->dump_addr += len;
@@ -617,19 +617,19 @@ static bool CheckFirst( void *_seg, void *_firstseg )
 void ODBIGenLines( lineinfo *info )
 /*********************************/
 {
-    unsigned            linelen;
+    size_t              linelen;
     ln_off_pair _WCUNALIGNED *pair;
     ln_off_386          tmp_ln;
     unsigned_32         temp;
-    unsigned            lineqty;
+    size_t              lineqty;
     debug_info          *dinfo;
     lineseg             lseg;
     segdata             *firstseg;
     unsigned_32         prevoff;
     offset              adjust;
     bool                needsort;
-    unsigned            size;
-    unsigned            item_size;
+    size_t              size;
+    size_t              item_size;
     segdata             *seg;
     int                 (*CmpLn)( const void *a, const void *b );
 

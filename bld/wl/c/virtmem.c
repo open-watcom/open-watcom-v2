@@ -564,11 +564,11 @@ static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool in
     return true;
 }
 
-void PutInfo( virt_mem stg, void * info, virt_mem_size len )
-/************************************************************/
+void PutInfo( virt_mem stg, const void *info, virt_mem_size len )
+/***************************************************************/
 /* copy data at info to the memory or spillfile referenced by stg */
 {
-    ScanNodes( stg, info, len, SaveInfo );
+    ScanNodes( stg, (void *)info, len, SaveInfo );
 }
 
 void CopyInfo( virt_mem a, virt_mem b, size_t len )
@@ -599,10 +599,10 @@ static bool CompareBlock( void * info, spilladdr loc, size_t off, size_t len, bo
     return memcmp( buf, info, len ) == 0;
 }
 
-bool CompareInfo( virt_mem stg, void *info, virt_mem_size len )
-/***************************************************************/
+bool CompareInfo( virt_mem stg, const void *info, virt_mem_size len )
+/*******************************************************************/
 {
-    return ScanNodes( stg, info, len, CompareBlock );
+    return ScanNodes( stg, (void *)info, len, CompareBlock );
 }
 
 static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )

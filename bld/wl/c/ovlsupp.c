@@ -210,7 +210,7 @@ static void AllocSections( section *first_sect )
                     LnkMsg( WRN+MSG_AREA_TOO_SMALL, "l", (unsigned long)min_size << FmtData.SegShift );
                 }
             }
-            result = CurrLoc.seg + (unsigned long) ( AreaSize - ovl_size );
+            result = CurrLoc.seg + (unsigned long)( AreaSize - ovl_size );
             if( result > 0xFFFF ) {
                 LnkMsg( WRN+MSG_CANT_RESERVE_SPACE, "l", (unsigned long)AreaSize << FmtData.SegShift );
             } else {

@@ -302,7 +302,7 @@ static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
         rptr = NULL;
     }
     for( ; limit > 0; --limit ) {
-        WriteLoad( &size, sizeof( unsigned_32 ) );
+        WriteLoadU32( size );
         if( rptr != NULL ) {
             /* first one for external fixups */
             size += RelocSize( *rptr++ );
@@ -343,7 +343,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
             size = WriteRelocSize( reloclist, size, lowidx );
         }
     }
-    WriteLoad( &size, sizeof( unsigned_32 ) );
+    WriteLoadU32( size );
     ++numentries;
     /* now that the page table is dumped, do the fixups. */
     header->fixrec_off = loc + numentries * sizeof( unsigned_32 );

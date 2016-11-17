@@ -231,8 +231,8 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     len = ( 1 + 1 + tab->numBuckets + tab->numElems ) * sizeof( unsigned_32 );
     hashSH->sh_offset = hdr->curr_off;
     hashSH->sh_size = len;
-    WriteLoad( &tab->numBuckets, sizeof( unsigned_32 ) );
-    WriteLoad( &tab->numElems, sizeof( unsigned_32 ) );
+    WriteLoadU32( tab->numBuckets );
+    WriteLoadU32( tab->numElems );
     WriteLoad( tab->buckets, tab->numBuckets * sizeof( unsigned_32 ) );
     WriteLoad( tab->chains, tab->numElems * sizeof( unsigned_32 ) );
     hdr->curr_off += len;

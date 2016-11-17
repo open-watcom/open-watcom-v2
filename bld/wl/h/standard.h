@@ -78,7 +78,7 @@
 #endif
 
 typedef unsigned char   byte;
-typedef unsigned        f_handle;
+typedef int             f_handle;
 
 #if defined( USE_VIRTMEM )
 typedef unsigned_32     virt_mem;

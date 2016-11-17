@@ -938,7 +938,7 @@ unsigned long ORLPass1( void )
     if( filehdl == NULL ) {
         LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
         CurrMod->f.source->file->flags |= INSTAT_IOERR;
-        return( -1 );
+        return( (unsigned long)-1 );
     }
     if( CheckFlags( filehdl ) ) {
         if( (LinkState & HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
