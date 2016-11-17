@@ -581,15 +581,10 @@ static void WriteImportInfo( void )
     }
 }
 
-static int namecmp( const void *pn1, const void *pn2 )
-/****************************************************/
+static int namecmp_exp( const void *pn1, const void *pn2 )
+/********************************************************/
 {
-    entry_export        *n1;
-    entry_export        *n2;
-
-    n1 = *(entry_export **)pn1;
-    n2 = *(entry_export **)pn2;
-    return( strcmp( n1->name, n2->name ) );
+    return( strcmp( (*(entry_export **)pn1)->name, (*(entry_export **)pn2)->name ) );
 }
 
 
@@ -662,7 +657,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         next_ord = exp->ordinal + 1;
         WriteLoad( &eat, sizeof( eat ) );
     }
-    qsort( sort, num_entries, sizeof( entry_export * ), &namecmp );
+    qsort( sort, num_entries, sizeof( entry_export * ), &namecmp_exp );
     /* write out the export name ptr table */
     eat = dir.ordinal_table_rva + num_entries * sizeof( unsigned_16 );
     for( i = 0; i < num_entries; ++i ) {

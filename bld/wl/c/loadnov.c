@@ -72,7 +72,7 @@ static unsigned_32 WriteNovRelocs( fixed_header *header )
 }
 
 static size_t create_sym_extname( symbol *sym, char *ext_name )
-/**************************************************************/
+/*************************************************************/
 {
     size_t  len;
     size_t  len1;
@@ -114,7 +114,6 @@ static unsigned_32 WriteNovImports( fixed_header *header )
         if( sym->p.import == DUMMY_IMPORT_PTR )
             sym->p.import = NULL;
         import = sym->p.import;
-
         if( import != NULL ) {
             char    ext_name[255 + 1];
 
@@ -209,7 +208,7 @@ void NovDBIAddGlobal( void * _sym )
             && !sym->p.seg->isabs
             && (sym->info & SYM_STATIC) == 0
             && (FmtData.u.nov.flags & DO_NOV_EXPORTS) == 0 ) {
-        DbgInfoLen += strlen( sym->name ) + sizeof( nov_dbg_info );
+        DbgInfoLen += sizeof( nov_dbg_info ) + strlen( sym->name );
     }
 }
 
@@ -226,10 +225,9 @@ void NovDBIGenGlobal( symbol *sym )
 /*********************************/
 {
     nov_dbg_info    info;
+    unsigned char   namelen;
 
-    if( ( DbgInfoLen != 0 )
-        && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0
-        || (sym->info & SYM_REFERENCED) ) ) {
+    if( ( DbgInfoLen != 0 ) && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0 || (sym->info & SYM_REFERENCED) ) ) {
         DbgInfoCount++;
         if( sym->addr.seg == DATA_SEGMENT ) {
             info.type = DBG_DATA;
@@ -237,11 +235,13 @@ void NovDBIGenGlobal( symbol *sym )
             info.type = DBG_CODE;
         }
         info.offset = sym->addr.off;
-        info.namelen = strlen( sym->name );
-        PutInfo( CurrDbgLoc, &info, sizeof( nov_dbg_info ) );
-        CurrDbgLoc += sizeof( nov_dbg_info );
-        PutInfo( CurrDbgLoc, sym->name, info.namelen );
-        CurrDbgLoc += info.namelen;
+        PutInfo( CurrDbgLoc, &info, offsetof( nov_dbg_info, namelen ) );
+        CurrDbgLoc += offsetof( nov_dbg_info, namelen );
+        namelen = strlen( sym->name );
+        PutInfo( CurrDbgLoc, &namelen, 1 );
+        CurrDbgLoc++;
+        PutInfo( CurrDbgLoc, sym->name, namelen );
+        CurrDbgLoc += namelen;
     }
 }
 

@@ -752,8 +752,8 @@ static void ExecWlib( void )
     size_t      namelen;
     size_t      impnamelen;
 
-    namelen = strlen(ImpLib.fname);
-    impnamelen = strlen(FmtData.implibname);
+    namelen = strlen( ImpLib.fname );
+    impnamelen = strlen( FmtData.implibname );
 /*
  * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
  *                  and +1 for nullchar
@@ -789,7 +789,7 @@ static void ExecWlib( void )
     int         retval;
     char        *libtype;
 
-    namelen = strlen(ImpLib.fname) + 1;
+    namelen = strlen( ImpLib.fname ) + 1;
     _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
@@ -872,7 +872,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     ImpLib.didone = true;
     intlen = strlen( intname );
     if( ordinal == NOT_IMP_BY_ORDINAL ) {
-        otherlen = strlen(extname);
+        otherlen = strlen( extname );
     } else {
         otherlen = 10;          // max length of a 32-bit int.
     }
