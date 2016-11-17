@@ -71,12 +71,35 @@ static unsigned_32 WriteNovRelocs( fixed_header *header )
     return( (unsigned_32)Root->relocs * sizeof( nov_reloc_item ) );
 }
 
+static size_t create_sym_fullname( symbol *sym, char *ext_name )
+/**************************************************************/
+{
+    size_t  len;
+    size_t  len1;
+
+    /*
+    //    netware prefix support
+    */
+    *ext_name = '\0';
+    if( sym->prefix != NULL ) {
+        strcpy( ext_name, sym->prefix );    // len < 255
+        strcat( ext_name, "@" );
+    }
+    len = strlen( sym->name );
+    len1 = strlen( ext_name );
+    if( len + len1 > 255 )
+        len = 255 - len1;
+    memcpy( ext_name + len1, sym->name, len );
+    len += len1;
+    ext_name[len] = '\0';
+    return( len );
+}
+
 static unsigned_32 WriteNovImports( fixed_header *header )
 /********************************************************/
 {
     nov_import      *import;
     unsigned_32     count;
-    const char      *name;
     unsigned_8      len_u8;
     unsigned_32     wrote;
     unsigned_32     refs;
@@ -93,25 +116,12 @@ static unsigned_32 WriteNovImports( fixed_header *header )
         import = sym->p.import;
 
         if( import != NULL ) {
-            count++;
-            name = sym->name;
-            len_u8 = strlen( name );
+            char    ext_name[255 + 1];
 
-            /*
-            // netware prefix support
-            */
-            if( sym->prefix != NULL ) {
-                len_u8 += strlen( sym->prefix ) + 1;
-                WriteLoad( &len_u8, sizeof( len_u8 ) );
-                WriteLoad( sym->prefix, strlen( sym->prefix ) );
-                WriteLoad( "@", 1 );
-                WriteLoad( name, strlen( sym->name ) );
-            } else {
-                WriteLoad( &len_u8, sizeof( len_u8 ) );
-                WriteLoad( name, len_u8 );
-            }
+            len_u8 = create_sym_fullname( sym, ext_name );
+            WriteLoad( &len_u8, sizeof( len_u8 ) );
+            WriteLoad( ext_name, len_u8 );
 
-            wrote += len_u8 + sizeof( unsigned_8 ) + sizeof( unsigned_32 );
             if( import->contents <= MAX_IMP_INTERNAL ) {
                 refs = import->contents;
                 WriteLoad( &refs, sizeof( refs ) );
@@ -128,7 +138,8 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 WriteInfoLoad( *vmem_array, refs * sizeof( refs ) );
                 refs = import->num_relocs * sizeof( refs );
             }
-            wrote += refs;
+            wrote += len_u8 + sizeof( unsigned_8 ) + sizeof( unsigned_32 ) + refs;
+            count++;
         }
     }
     header->numberOfExternalReferences = count;
@@ -152,36 +163,21 @@ static unsigned_32 WriteNovExports( fixed_header *header )
         if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
         } else if( !IS_SYM_IMPORTED( sym ) ) {
+            char    ext_name[255 + 1];
 
-            /*
-            //    netware prefix support
-            */
-            if( sym->prefix != NULL ) {
+            len_u8 = create_sym_fullname( sym, ext_name );
+            WriteLoad( &len_u8, sizeof( len_u8 ) );
+            WriteLoad( ext_name, len_u8 );
 
-                char        full_name[255 + 1];
-
-                strcpy( full_name, sym->prefix );
-                strcat( full_name, "@" );
-                strcat( full_name, sym->name );
-                AddImpLibEntry( sym->name, full_name, NOT_IMP_BY_ORDINAL );
-
-                len_u8 = strlen( full_name );
-
-                WriteLoad( &len_u8, sizeof( len_u8 ) );
-                WriteLoad( full_name, len_u8 );
-            } else {
-                AddImpLibEntry( sym->name, sym->name, NOT_IMP_BY_ORDINAL );
-                WriteLoad( &len_u8, sizeof( len_u8 ) );
-                WriteLoad( export->name, len_u8 );
-            }
-
-            count++;
             off = sym->addr.off;
             if( sym->addr.seg == CODE_SEGMENT ) {
                 off |= NOV_EXP_ISCODE;
             }
             WriteLoad( &off, sizeof( off ) );
-            wrote += sizeof( len_u8 ) + len_u8 + sizeof( off );
+            wrote += 1 + len_u8 + sizeof( off );
+            count++;
+
+            AddImpLibEntry( sym->name, ext_name, NOT_IMP_BY_ORDINAL );
         }
     }
     header->numberOfPublics = count;
