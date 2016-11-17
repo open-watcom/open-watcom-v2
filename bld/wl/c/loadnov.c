@@ -71,7 +71,7 @@ static unsigned_32 WriteNovRelocs( fixed_header *header )
     return( (unsigned_32)Root->relocs * sizeof( nov_reloc_item ) );
 }
 
-static size_t create_sym_fullname( symbol *sym, char *ext_name )
+static size_t create_sym_extname( symbol *sym, char *ext_name )
 /**************************************************************/
 {
     size_t  len;
@@ -99,8 +99,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
 /********************************************************/
 {
     nov_import      *import;
-    unsigned_32     count;
-    unsigned_8      len_u8;
+    size_t          len;
     unsigned_32     wrote;
     unsigned_32     refs;
     virt_mem        *vmem_array;
@@ -118,18 +117,17 @@ static unsigned_32 WriteNovImports( fixed_header *header )
         if( import != NULL ) {
             char    ext_name[255 + 1];
 
-            len_u8 = create_sym_fullname( sym, ext_name );
-            WriteLoad( &len_u8, sizeof( len_u8 ) );
-            WriteLoad( ext_name, len_u8 );
+            len = create_sym_extname( sym, ext_name );
+            len = WriteLoadU8Name( ext_name, len, false );
 
             if( import->contents <= MAX_IMP_INTERNAL ) {
                 refs = import->contents;
-                WriteLoad( &refs, sizeof( refs ) );
+                WriteLoadU32( refs );
                 refs *= sizeof( refs );
                 WriteLoad( &import->num_relocs, refs );
             } else {        // imports are in virtual memory.
                 refs = import->num_relocs;
-                WriteLoad( &refs, sizeof( refs ) );
+                WriteLoadU32( refs );
                 vmem_array = import->vm_ptr;
                 for( ; refs > IMP_NUM_VIRT; refs -= IMP_NUM_VIRT ) {
                     WriteInfoLoad( *vmem_array, IMP_VIRT_ALLOC_SIZE );
@@ -138,7 +136,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 WriteInfoLoad( *vmem_array, refs * sizeof( refs ) );
                 refs = import->num_relocs * sizeof( refs );
             }
-            wrote += len_u8 + sizeof( unsigned_8 ) + sizeof( unsigned_32 ) + refs;
+            wrote += 1 + len + sizeof( unsigned_32 ) + refs;
             count++;
         }
     }
@@ -154,27 +152,26 @@ static unsigned_32 WriteNovExports( fixed_header *header )
     unsigned_32 count;
     unsigned_32 wrote;
     unsigned_32 off;
-    unsigned_8  len_u8;
+    size_t      len;
 
     count = wrote = 0;
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-        len_u8 = export->len;
-        sym = SymOp( ST_FIND, export->name, len_u8 );
+        len_u8 = ;
+        sym = SymOp( ST_FIND, export->name, export->len );
         if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );
         } else if( !IS_SYM_IMPORTED( sym ) ) {
             char    ext_name[255 + 1];
 
-            len_u8 = create_sym_fullname( sym, ext_name );
-            WriteLoad( &len_u8, sizeof( len_u8 ) );
-            WriteLoad( ext_name, len_u8 );
+            len = create_sym_extname( sym, ext_name );
+            len = WriteLoadU8Name( ext_name, len, false );
 
             off = sym->addr.off;
             if( sym->addr.seg == CODE_SEGMENT ) {
                 off |= NOV_EXP_ISCODE;
             }
-            WriteLoad( &off, sizeof( off ) );
-            wrote += 1 + len_u8 + sizeof( off );
+            WriteLoadU32( off );
+            wrote += 1 + len + sizeof( unsigned_32 );
             count++;
 
             AddImpLibEntry( sym->name, ext_name, NOT_IMP_BY_ORDINAL );
@@ -193,10 +190,8 @@ static unsigned_32 WriteNovModules( fixed_header *header )
 
     count = wrote = 0;
     for( module = FmtData.u.nov.exp.module; module != NULL; module = module->next ) {
+        wrote += 1 + WriteLoadU8Name( module->name, module->len, false );
         count++;
-        WriteLoad( &module->len, sizeof( unsigned_8 ) );
-        WriteLoad( module->name, module->len );
-        wrote += sizeof( unsigned_8 ) + module->len;
     }
     header->numberOfModuleDependencies = count;
     return( wrote );
@@ -257,7 +252,6 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
     symbol *        sym;
     unsigned_32     count;
     unsigned_32     wrote;
-    unsigned_8      len_u8;
     nov_dbg_info    info;
 
     if( DbgInfoLen > 0 ) {
@@ -267,20 +261,17 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
     } else if( FmtData.u.nov.flags & DO_NOV_EXPORTS ) {
         count = wrote = 0;
         for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-            len_u8 = export->len;
-            sym = SymOp( ST_FIND, export->name, len_u8 );
+            sym = SymOp( ST_FIND, export->name, export->len );
             if( ( sym != NULL ) && !IS_SYM_IMPORTED( sym ) ) {
-                count++;
                 if( sym->addr.seg == DATA_SEGMENT ) {
                     info.type = DBG_DATA;
                 } else {
                     info.type = DBG_CODE;
                 }
                 info.offset = sym->addr.off;
-                info.namelen = len_u8;
-                WriteLoad( &info, sizeof( nov_dbg_info ) );
-                WriteLoad( export->name, len_u8 );
-                wrote += sizeof( nov_dbg_info ) + len_u8;
+                WriteLoad( &info, offsetof( nov_dbg_info, namelen ) );
+                wrote += offsetof( nov_dbg_info, namelen ) + 1 + WriteLoadU8Name( export->name, export->len, false );
+                count++;
             }
         }
         header->numberOfDebugRecords = count;
@@ -437,7 +428,7 @@ static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
     Root->u.file_loc = file_pos;
     Root->sect_addr.off = Groups->grp_addr.off;
     Root->sect_addr.seg = CODE_SEGMENT;
-    codesize = WriteNovImage( file_pos, true );       // true = do code.
+    codesize = WriteNovImage( file_pos, true );         // true = do code.
     header->codeImageSize = codesize;
     file_pos += codesize;
     header->dataImageOffset = file_pos;
@@ -445,7 +436,7 @@ static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
     Root->u.file_loc = file_pos;
     Root->sect_addr.off = Groups->grp_addr.off;
     Root->sect_addr.seg = DATA_SEGMENT;
-    header->dataImageSize = WriteNovImage( file_pos, false );  // do data.
+    header->dataImageSize = WriteNovImage( file_pos, false );   // do data.
     return( codesize + header->dataImageSize );
 }
 
@@ -454,16 +445,12 @@ static void NovNameWrite( const char *name )
 /******************************************/
 // write a name to the loadfile in the typical novell fashion
 {
-    unsigned_8  len_u8;
-
     if( name != NULL ) {
-        len_u8 = strlen( name );
+        WriteLoadU8Name( name, strlen( name ), false );
     } else {
-        len_u8 = 0;
-        name = (const char *)&len_u8;
+        WriteLoadU8( 0 );
     }
-    WriteLoad( &len_u8, sizeof( unsigned_8 ) );
-    WriteLoad( name, len_u8 + 1 );
+    WriteLoadU8( '\0' );    // terminating null character
 }
 
 void FiniNovellLoadFile( void )
@@ -479,8 +466,8 @@ void FiniNovellLoadFile( void )
     const char          *filename;
     const char          *startname;
     char                ch;
-    unsigned_8          len_u8;
-    unsigned_8          len1_u8;
+    size_t              len;
+    size_t              len1;
     struct tm           *currtime;
     time_t              thetime;
     const char          *pPeriod = NULL;
@@ -506,29 +493,29 @@ void FiniNovellLoadFile( void )
     */
     name_trunc = false;
     if( pPeriod != NULL ) {
-        len1_u8 = strlen( pPeriod );
-        if( len1_u8 > NOV_MAX_EXT_LEN + 1 ) {   /* +1 include period */
-            len1_u8 = NOV_MAX_EXT_LEN + 1;
+        len1 = strlen( pPeriod );
+        if( len1 > NOV_MAX_EXT_LEN + 1 ) {   /* +1 include period */
+            len1 = NOV_MAX_EXT_LEN + 1;
             name_trunc = true;
         }
-        len_u8 = pPeriod - startname;
-        if( len_u8 > NOV_MAX_NAME_LEN ) {
-            len_u8 = NOV_MAX_NAME_LEN;
+        len = pPeriod - startname;
+        if( len > NOV_MAX_NAME_LEN ) {
+            len = NOV_MAX_NAME_LEN;
             name_trunc = true;
         }
-        memcpy( module_name, startname, len_u8 );
-        memcpy( &module_name[len_u8], pPeriod, len1_u8 );   /* must include period */
-        len_u8 += len1_u8;
+        memcpy( module_name, startname, len );
+        memcpy( module_name + len, pPeriod, len1 );   /* must include period */
+        len += len1;
     } else {
         /* still only copy 8 chars else the module name will be too long */
-        len_u8 = strlen( startname );
-        if( len_u8 > NOV_MAX_NAME_LEN ) {
-            len_u8 = NOV_MAX_NAME_LEN;
+        len = strlen( startname );
+        if( len > NOV_MAX_NAME_LEN ) {
+            len = NOV_MAX_NAME_LEN;
             name_trunc = true;
         }
-        memcpy( module_name, startname, len_u8 );
+        memcpy( module_name, startname, len );
     }
-    module_name[len_u8] = '\0';
+    module_name[len] = '\0';
     strupr( module_name );
 
     if( name_trunc ) {
@@ -544,7 +531,7 @@ void FiniNovellLoadFile( void )
     if( FmtData.u.nov.threadname != NULL ) {
         file_size += strlen( FmtData.u.nov.threadname );
     } else {
-        file_size += len_u8;
+        file_size += len;
     }
     if( ( FmtData.major != 0 ) || ( FmtData.minor != 0 ) ) {
         file_size += sizeof( fixed_hdr_2 );
@@ -592,9 +579,9 @@ void FiniNovellLoadFile( void )
     DBIWrite();
     memcpy( nov_header.signature, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) );
     nov_header.version = NLM_VERSION;
-    nov_header.moduleName[0] = (char)len_u8;
-    memcpy( &nov_header.moduleName[1], module_name, len_u8 );
-    memset( &nov_header.moduleName[len_u8 + 1], 0, NOV_MAX_MODNAME_LEN - len_u8 ); // zero rest.
+    nov_header.moduleName[0] = (char)len;
+    memcpy( nov_header.moduleName + 1, module_name, len );
+    memset( nov_header.moduleName + 1 + len, 0, NOV_MAX_MODNAME_LEN - len ); // zero rest.
     nov_header.uninitializedDataSize = 0; // MemorySize() - image_size;
     GetProcOffsets( &nov_header );
     nov_header.moduleType = FmtData.u.nov.moduletype;
@@ -603,9 +590,8 @@ void FiniNovellLoadFile( void )
     SeekLoad( 0L );
     WriteLoad( &nov_header, sizeof( nov_header ) );
     WriteLoad( FmtData.u.nov.description, nov_header.descriptionLength + 1 );
-    WriteLoad( &StackSize, sizeof( unsigned_32 ) );
-    temp = 0;
-    WriteLoad( &temp, sizeof( unsigned_32 ) ); // reserved.
+    WriteLoadU32( StackSize );
+    WriteLoadU32( 0 );          // reserved.
     WriteLoad( DUMMY_THREAD_NAME, OLD_THREAD_NAME_LENGTH );
     NovNameWrite( FmtData.u.nov.screenname );
     if( FmtData.u.nov.threadname != NULL ) {

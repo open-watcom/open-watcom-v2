@@ -121,7 +121,7 @@ static unsigned long WriteOS2Relocs( group_entry *group )
     relocnum = relocsize / sizeof( os2_reloc_item );
     if( relocnum == 0 )
         return( 0 );
-    WriteLoad( &relocnum, 2 );
+    WriteLoadU16( relocnum );
     DumpRelocList( group->g.grp_relocs );
     return( relocsize );
 }
@@ -311,17 +311,15 @@ static void WriteResTable( ResTable *restab )
 {
     FullTypeRecord      *exe_type;
     FullResourceRecord  *exe_res;
-    uint_16             zero;
 
-    WriteLoad( &FmtData.u.os2.segment_shift, sizeof( uint_16 ) );
+    WriteLoadU16( FmtData.u.os2.segment_shift );
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
         WriteLoad( &(exe_type->Info), sizeof( resource_type_record ) );
         for( exe_res = exe_type->Head; exe_res != NULL; exe_res = exe_res->Next ) {
             WriteLoad( &(exe_res->Info), sizeof( resource_record ) );
         }
     }
-    zero = 0;
-    WriteLoad( &zero, sizeof( uint_16 ) );
+    WriteLoadU16( 0 );
     WriteLoad( restab->Str.StringBlock, restab->Str.StringBlockSize );
 }
 
@@ -375,29 +373,20 @@ static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
 }
 
 
-static unsigned long WriteTabList( name_list *val, unsigned long *count, bool upper )
-/***********************************************************************************/
+static unsigned long WriteTabList( name_list *val, unsigned long *pcount, bool upper )
+/************************************************************************************/
 {
     name_list           *node;
     unsigned long       off;
-    unsigned long       i;
-    size_t              j;
+    unsigned long       count;
 
-    i = 0;
+    count = 0;
     off = 0;
     for( node = val; node != NULL; node = node->next ) {
-        ++i;
-        WriteLoad( &(node->len), sizeof( unsigned char ) );  // NOTE:little endian
-        if( upper ) {
-            j = node->len;
-            while( j-- > 0 ) {
-                node->name[j] = toupper( node->name[j] );
-            }
-        }
-        WriteLoad( node->name, node->len );
-        off += node->len + 1;
+        off += 1 + WriteLoadU8Name( node->name, node->len, upper );
+        ++count;
     }
-    *count = i;
+    *pcount = count;
     return( off );
 }
 
@@ -445,11 +434,29 @@ static unsigned long ModRefTable( void )
     }
     nodenum = 0;
     for( node = FmtData.u.os2.mod_ref_list; node != NULL; node = node->next ) {
-        WriteLoad( &off, sizeof( unsigned_16 ) );
+        WriteLoadU16( off );
         off += node->len + 1;
         nodenum++;
     }
     return( nodenum );
+}
+
+static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase )
+{
+    size_t  len;
+
+    len = strlen( exp->name );
+    if( len > 255 )
+        len = 255;
+    if( ucase ) {
+        for( i = 0; i < len; ++i ) {
+            ext_name[i] = toupper( exp->name[i] );
+        }
+    } else {
+        memcpy( ext_name, exp->name, len );
+    }
+    ext_name[len] = '\0';
+    return( len );
 }
 
 unsigned long ResNonResNameTable( bool dores )
@@ -457,7 +464,6 @@ unsigned long ResNonResNameTable( bool dores )
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
     entry_export    *exp;
-    unsigned char   len_u8;
     unsigned long   size;
     const char      *name;
     size_t          len;
@@ -481,13 +487,9 @@ unsigned long ResNonResNameTable( bool dores )
         len = strlen( name );
     }
     if( dores || len > 0 ) {
-        len_u8 = 255;
-        if( len < 255 )
-            len_u8 = (unsigned char)len;
-        WriteLoad( &len_u8, 1 );
-        WriteLoad( name, len_u8 );
+        len = WriteLoadU8Name( name, len, false );
         PadLoad( 2 );
-        size += len_u8 + 1 + 2;
+        size += 1 + len + 2;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
         _LnkFree( FmtData.u.os2.res_module_name );
@@ -503,20 +505,15 @@ unsigned long ResNonResNameTable( bool dores )
         if( exp->isanonymous )
             continue;
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
-            if( (LinkFlags & CASE_FLAG) == 0 ) {
-                strupr( exp->name );
-            }
-            len = strlen( exp->name );
-            len_u8 = 255;
-            if( len < 255 )
-                len_u8 = (unsigned char)len;
-            WriteLoad( &len_u8, 1 );
-            WriteLoad( exp->name, len_u8 );
-            WriteLoad( &(exp->ordinal), 2 );
-            size += len_u8 + 3;
+            char    ext_name[255 + 1];
+
+            len = create_exp_extname( exp, ext_name, (LinkFlags & CASE_FLAG) == 0 );
+            len = WriteLoadU8Name( ext_name, len, false );
+            WriteLoadU16( exp->ordinal );
+            size += 1 + len + 2;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, exp->name, NOT_IMP_BY_ORDINAL );
+                    AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );
                 } else {
                     AddImpLibEntry( exp->sym->name, NULL, exp->ordinal );
                 }
@@ -1172,10 +1169,10 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
             PadLoad( 0x3c - sizeof( dos_exe_header ) );
             stub_len = ROUND_UP( stub_len, stub_align );
-            WriteLoad( &stub_len, sizeof( unsigned_32 ) );
+            WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {
                 QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2.stub_file_name );
-                WriteLoad( &the_reloc, sizeof( unsigned_32 ) );
+                WriteLoadU32( the_reloc );
                 reloc_size -= sizeof( unsigned_32 );
             }
             if( reloc_size != 0 ) {    // need padding

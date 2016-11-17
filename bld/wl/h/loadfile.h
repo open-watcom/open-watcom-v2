@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-
 enum {
     START_UNDEFED,
     START_IS_SYM,
@@ -38,18 +37,18 @@ enum {
 
 typedef struct {
     union {
-        symbol *        sym;
-        segdata *       sdata;
+        symbol          *sym;
+        segdata         *sdata;
     } targ;
     offset              off;
-    mod_entry *         mod;
+    mod_entry           *mod;
     targ_addr           addr;
     unsigned            type : 2;
     unsigned            user_specd : 1;
     unsigned            from_inc : 1;
 } startinfo;
 
-extern seg_leader *     StackSegPtr;
+extern seg_leader       *StackSegPtr;
 extern startinfo        StartInfo;
 
 extern void             InitLoadFile( void );
@@ -81,6 +80,10 @@ extern void             CloseBuffFile( outfilelist * );
 extern void             SetOriginLoad( unsigned long );
 extern void             WriteLoad3( void *, const char *, size_t );
 extern void             WriteLoad( const void *, size_t );
+extern void             WriteLoadU8( unsigned_8 data );
+extern void             WriteLoadU16( unsigned_16 data );
+extern void             WriteLoadU32( unsigned_32 data );
+extern size_t           WriteLoadU8Name( const char *data, size_t len, bool ucase );
 extern void             PadLoad( unsigned long );
 extern void             PadBuffFile( outfilelist *, unsigned long );
 extern void             SeekLoad( unsigned long );

@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "walloca.h"
 #include "linkstd.h"
 #if !defined( __UNIX__ ) || defined(__WATCOMC__)
@@ -1167,6 +1168,43 @@ void WriteLoad( const void *buff, size_t size )
     } else {
         QWrite( outfile->handle, buff, size, outfile->fname );
     }
+}
+
+void WriteLoadU8( unsigned_8 data )
+/*********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+void WriteLoadU16( unsigned_16 data )
+/***********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+void WriteLoadU32( unsigned_32 data )
+/***********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+size_t WriteLoadU8Name( const char *data, size_t len, bool ucase )
+/****************************************************************/
+{
+    char            buff[255];
+    size_t          i;
+
+    if( len > 255 )
+        len = 255;
+    WriteLoadU8( len );
+    if( ucase ) {
+        for( i = 0; i < len; ++i ) {
+            buff[i] = toupper( data[i] );
+        }
+        data = buff;
+    }
+    WriteLoad( data, len );
+    return( len );
 }
 
 static void FlushBuffFile( outfilelist *outfile )
