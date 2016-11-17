@@ -99,6 +99,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
 /********************************************************/
 {
     nov_import      *import;
+    unsigned_32     count;
     size_t          len;
     unsigned_32     wrote;
     unsigned_32     refs;
@@ -156,7 +157,6 @@ static unsigned_32 WriteNovExports( fixed_header *header )
 
     count = wrote = 0;
     for( export = FmtData.u.nov.exp.export; export != NULL; export = export->next ) {
-        len_u8 = ;
         sym = SymOp( ST_FIND, export->name, export->len );
         if( ( sym == NULL ) || (sym->info & SYM_DEFINED) == 0 ) {
             LnkMsg( WRN+MSG_EXP_SYM_NOT_FOUND, "s", export->name );

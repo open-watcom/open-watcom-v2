@@ -444,6 +444,7 @@ static unsigned long ModRefTable( void )
 static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase )
 {
     size_t  len;
+    size_t  i;
 
     len = strlen( exp->name );
     if( len > 255 )
