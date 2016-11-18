@@ -118,13 +118,13 @@ static void updateNHStuff( int handle, const char *modname, const char *desc )
     size_t              len;
 
     lseek( handle, 0, SEEK_SET );
-    read( handle, &dh, sizeof( dh ) );
+    posix_read( handle, &dh, sizeof( dh ) );
     off = ( dh.file_size - 1 ) * 512L + dh.mod_size;
     lseek( handle, off, SEEK_SET );
-    read( handle, &nh, sizeof( nh ) );
+    posix_read( handle, &nh, sizeof( nh ) );
     off += nh.resident_off + 1L;
     lseek( handle, off, SEEK_SET );
-    write( handle, modname, 8 );
+    posix_write( handle, modname, 8 );
 
     if( desc == NULL ) {
         desc = modname;
@@ -137,7 +137,7 @@ static void updateNHStuff( int handle, const char *modname, const char *desc )
     }
     off = nh.nonres_off + 1L;
     lseek( handle, off, SEEK_SET );
-    write( handle, desc, len );
+    posix_write( handle, desc, len );
 }
 
 
@@ -232,7 +232,7 @@ static long CopyFile( int in, int out, const char *infile, const char *outfile )
     bufsize = IO_BUFF;
     totalsize = 0L;
     for( ;; ) {
-        size = read( in, buff, bufsize );
+        size = posix_read( in, buff, bufsize );
         if( size == 0 ) {
             break;
         }
@@ -240,11 +240,11 @@ static long CopyFile( int in, int out, const char *infile, const char *outfile )
         if( size == -1 ) {
             doError( "Error reading file \"%s\"", infile );
         }
-        len = write( out, buff, size );
+        len = posix_write( out, buff, size );
         if( len != size ) {
             doError( "Error writing file \"%s\"", outfile );
         }
-        totalsize += len;
+        totalsize += (long)len;
         if( size != bufsize ) {
             break;
         }
@@ -393,9 +393,9 @@ int main( int argc, char *argv[] )
             doError( "Could not open %s", rex );
         }
         lseek( in, MAGIC_OFFSET, SEEK_SET );
-        read( in, &exelen, sizeof( exelen ) );
+        posix_read( in, &exelen, sizeof( exelen ) );
         lseek( in, exelen, SEEK_SET );
-        read( in, &re, sizeof( re ) );
+        posix_read( in, &re, sizeof( re ) );
         if( re.signature != ('M' & ('Q' << 8)) ) {
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
@@ -511,7 +511,7 @@ int main( int argc, char *argv[] )
      * use by the loader)
      */
     lseek( out, MAGIC_OFFSET, SEEK_SET );
-    write( out, &exelen, sizeof( exelen ) );
+    posix_write( out, &exelen, sizeof( exelen ) );
     len = strlen( fname );
     if( len < 8 ) {
         memset( &fname[len], ' ', 8 - len );
