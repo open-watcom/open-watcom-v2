@@ -31,3 +31,5 @@
 
 #define _BANVER     1300
 #define _BETAVER    1
+
+#define CURR_YEAR   "2016"
