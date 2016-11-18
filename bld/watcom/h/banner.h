@@ -32,17 +32,20 @@
 
 #include "bancfg.h"
 
-#define DOBANSTR( p )   #p
-#define BANSTR( p )     DOBANSTR( p )
+#define _BANEXTRA           __DATE__ " " __TIME__ STR_BITNESS
+#define _BANEXSHORT         __DATE__
+
+#define DOBANSTR( p )       #p
+#define BANSTR( p )         DOBANSTR( p )
 
 #ifndef _BETASTR_
-#define _BETASTR_       "beta"
+#define _BETASTR_           "beta"
 #endif
 
 #ifdef _BETAVER
-#define _BETA_          " " _BETASTR_ " " _BANEXTRA
+#define _BETA_              " " _BETASTR_ " " _BANEXTRA
 #else
-#define _BETA_          " " _BANEXSHORT
+#define _BETA_              " " _BANEXSHORT
 #endif
 
 #define CURR_YEAR           "2016"
