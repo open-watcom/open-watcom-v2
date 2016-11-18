@@ -47,10 +47,19 @@
 
 #include "clibext.h"
 
+
+#ifdef _WIN64
+#define posix_read  __w64_read
+#define posix_write __w64_write
+#else
+#define posix_read  read
+#define posix_write write
+#endif
+
 #undef _WBIND_VERSION_
 #define _WBIND_VERSION_ "2.3"
 
-#define IO_BUFF 64000
+#define IO_BUFF         64000
 #define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
 #ifdef BOOTSTRAP
@@ -101,7 +110,7 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static void updateNHStuff( int handle, char *modname, char *desc )
+static void updateNHStuff( int handle, const char *modname, const char *desc )
 {
     dos_exe_header      dh;
     os2_exe_header      nh;
@@ -110,10 +119,10 @@ static void updateNHStuff( int handle, char *modname, char *desc )
 
     lseek( handle, 0, SEEK_SET );
     read( handle, &dh, sizeof( dh ) );
-    off = (dh.file_size-1)*512L + dh.mod_size;
+    off = ( dh.file_size - 1 ) * 512L + dh.mod_size;
     lseek( handle, off, SEEK_SET );
     read( handle, &nh, sizeof( nh ) );
-    off += nh.resident_off+1L;
+    off += nh.resident_off + 1L;
     lseek( handle, off, SEEK_SET );
     write( handle, modname, 8 );
 
@@ -126,9 +135,9 @@ static void updateNHStuff( int handle, char *modname, char *desc )
             len = MAX_DESC;
         }
     }
-    off = nh.nonres_off+1L;
+    off = nh.nonres_off + 1L;
     lseek( handle, off, SEEK_SET );
-    write( handle, desc, (unsigned)len );
+    write( handle, desc, len );
 }
 
 
@@ -211,11 +220,11 @@ static void errPrintf( char *str, ... )
 
 } /* errPrintf */
 
-static long CopyFile( int in, int out, char *infile, char *outfile )
+static long CopyFile( int in, int out, const char *infile, const char *outfile )
 {
-    unsigned    size;
-    unsigned    len;
-    unsigned    bufsize;
+    size_t      size;
+    size_t      len;
+    size_t      bufsize;
     long        totalsize;
     void        *buff;
 
@@ -236,7 +245,7 @@ static long CopyFile( int in, int out, char *infile, char *outfile )
             doError( "Error writing file \"%s\"", outfile );
         }
         totalsize += len;
-        if( (unsigned) size != bufsize ) {
+        if( size != bufsize ) {
             break;
         }
     }
@@ -277,7 +286,7 @@ int main( int argc, char *argv[] )
     bool            uflag = false;
     bool            dllflag = false;
     char            *wext = NULL;
-    long            tsize = 0;
+    unsigned_32     exelen = 0;
     char            drive[_MAX_DRIVE], dir[_MAX_DIR], fname[_MAX_FNAME];
     char            ext[_MAX_EXT];
     char            rex[_MAX_PATH];
@@ -292,7 +301,6 @@ int main( int argc, char *argv[] )
     int             currarg;
     size_t          len;
     simple_header   re;
-    long            exelen;
     char            *desc = NULL;
 
     /*
@@ -304,21 +312,21 @@ int main( int argc, char *argv[] )
     currarg=1;
     while( currarg < argc ) {
 #ifdef __UNIX__
-        if( argv[ currarg ][0] == '-' ) {
+        if( argv[currarg][0] == '-' ) {
 #else
-        if( argv[ currarg ][0] == '/' || argv[ currarg ][0] == '-' ) {
+        if( argv[currarg][0] == '/' || argv[currarg][0] == '-' ) {
 #endif
-            len = strlen( argv[ currarg ] );
+            len = strlen( argv[currarg] );
             for( i = 1; i < len; i++ ) {
-                switch( argv[ currarg ][i] ) {
+                switch( argv[currarg][i] ) {
                 case '?': doUsage( NULL );
                 case 'D':
                     currarg++;
-                    desc = argv[ currarg ];
+                    desc = argv[currarg];
                     break;
                 case 's':
                     currarg++;
-                    wext = argv[ currarg ];
+                    wext = argv[currarg];
                     break;
                 case 'q':
                     quietFlag = true;
@@ -348,7 +356,7 @@ int main( int argc, char *argv[] )
             if( path != NULL ) {
                 doUsage( "Only one executable may be specified" );
             }
-            path = argv[ currarg ];
+            path = argv[currarg];
         }
         currarg++;
     }
@@ -385,7 +393,7 @@ int main( int argc, char *argv[] )
             doError( "Could not open %s", rex );
         }
         lseek( in, MAGIC_OFFSET, SEEK_SET );
-        read( in, &exelen, sizeof( unsigned_32 ) );
+        read( in, &exelen, sizeof( exelen ) );
         lseek( in, exelen, SEEK_SET );
         read( in, &re, sizeof( re ) );
         if( re.signature != ('M' & ('Q' << 8)) ) {
@@ -409,9 +417,9 @@ int main( int argc, char *argv[] )
         normalizeFName( winext, sizeof( winext ), wext );
     }
     if( dllflag ) {
-        myPrintf("Loading 32-bit Windows DLL Supervisor \"%s\"\n",winext );
+        myPrintf( "Loading 32-bit Windows DLL Supervisor \"%s\"\n", winext );
     } else {
-        myPrintf("Loading 32-bit Windows Supervisor \"%s\"\n",winext );
+        myPrintf( "Loading 32-bit Windows Supervisor \"%s\"\n", winext );
     }
 
     /*
@@ -440,7 +448,7 @@ int main( int argc, char *argv[] )
         myPrintf( "Invoking the resource compiler...\n" );
         if( Rflag ) {
             strcpy( rc, RC_STR );
-            arglist = myAlloc( sizeof(char *) *(argc-rcparm +3) );
+            arglist = myAlloc( sizeof( char * ) * ( argc - rcparm + 3 ) );
             pcnt = 1;
             for( i=rcparm;i<argc;i++ ) {
                 arglist[pcnt++] = argv[i];
@@ -449,7 +457,7 @@ int main( int argc, char *argv[] )
             }
         } else {
             sprintf( rc, RC_STR " %s", res );
-            arglist = myAlloc( sizeof(char *) * 3 );
+            arglist = myAlloc( sizeof( char * ) * 3 );
             arglist[1] = res;
             pcnt = 2;
         }
@@ -492,7 +500,7 @@ int main( int argc, char *argv[] )
         doError( "Could not open %s", exe );
     }
     lseek( out, 0, SEEK_END );
-    tsize = tell( out );
+    exelen = tell( out );
 
     totalsize = CopyFile( in, out, rex, exe );
     close( in );
@@ -503,7 +511,7 @@ int main( int argc, char *argv[] )
      * use by the loader)
      */
     lseek( out, MAGIC_OFFSET, SEEK_SET );
-    write( out, &tsize, sizeof( tsize ) );
+    write( out, &exelen, sizeof( exelen ) );
     len = strlen( fname );
     if( len < 8 ) {
         memset( &fname[len], ' ', 8 - len );
@@ -514,10 +522,10 @@ int main( int argc, char *argv[] )
         remove( dll );
         rename( exe, dll );
         myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", dll,
-                tsize, totalsize, tsize + totalsize );
+                exelen, totalsize, exelen + totalsize );
     } else {
         myPrintf( "Created \"%s\" (%ld + %ld = %ld bytes)\n", exe,
-                tsize, totalsize, tsize + totalsize );
+                exelen, totalsize, exelen + totalsize );
     }
 
     return( 0 );
