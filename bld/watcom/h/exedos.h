@@ -30,10 +30,12 @@
 
 
 #ifndef _EXEDOS_H
+#define _EXEDOS_H
 
 /* DOS EXE file header */
 /* =================== */
 
+#include "pushpck1.h"
 typedef struct dos_exe_header {
     unsigned_16         signature;      /* signature to mark valid EXE file */
     unsigned_16         mod_size;       /* length of image mod 512          */
@@ -50,9 +52,10 @@ typedef struct dos_exe_header {
     unsigned_16         reloc_offset;   /* offset to 1st relocation item    */
     unsigned_16         overlay_num;    /* overlay number (0 if resident)   */
 } dos_exe_header;
+#include "poppck.h"
 
 #define DOS_SIGNATURE   0x5a4d
+#define NH_MAGIC_REX    0x0038          /* used by wbind to save original REX size */
 #define NH_OFFSET       0x003c
 
-#define _EXEDOS_H
 #endif

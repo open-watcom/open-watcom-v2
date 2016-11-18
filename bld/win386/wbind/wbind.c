@@ -60,7 +60,6 @@
 #define _WBIND_VERSION_ "2.3"
 
 #define IO_BUFF         64000
-#define MAGIC_OFFSET    0x38L
 #define MAX_DESC        80
 #ifdef BOOTSTRAP
 #define RC_STR          "bwrc"
@@ -392,7 +391,7 @@ int main( int argc, char *argv[] )
         if( out < 0 ) {
             doError( "Could not open %s", rex );
         }
-        lseek( in, MAGIC_OFFSET, SEEK_SET );
+        lseek( in, NH_MAGIC_REX, SEEK_SET );
         posix_read( in, &exelen, sizeof( exelen ) );
         lseek( in, exelen, SEEK_SET );
         posix_read( in, &re, sizeof( re ) );
@@ -510,7 +509,7 @@ int main( int argc, char *argv[] )
      * write the file size into the old exe header (for
      * use by the loader)
      */
-    lseek( out, MAGIC_OFFSET, SEEK_SET );
+    lseek( out, NH_MAGIC_REX, SEEK_SET );
     posix_write( out, &exelen, sizeof( exelen ) );
     len = strlen( fname );
     if( len < 8 ) {
