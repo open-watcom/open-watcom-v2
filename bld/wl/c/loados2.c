@@ -383,7 +383,7 @@ static unsigned long WriteTabList( name_list *val, unsigned long *pcount, bool u
     count = 0;
     off = 0;
     for( node = val; node != NULL; node = node->next ) {
-        off += 1 + WriteLoadU8Name( node->name, node->len, upper );
+        off += WriteLoadU8Name( node->name, node->len, upper );
         ++count;
     }
     *pcount = count;
@@ -488,9 +488,9 @@ unsigned long ResNonResNameTable( bool dores )
         len = strlen( name );
     }
     if( dores || len > 0 ) {
-        len = WriteLoadU8Name( name, len, false );
-        PadLoad( 2 );
-        size += 1 + len + 2;
+        size += WriteLoadU8Name( name, len, false );
+        WriteLoadU16( 0 );
+        size += 2;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
         _LnkFree( FmtData.u.os2.res_module_name );
@@ -509,9 +509,9 @@ unsigned long ResNonResNameTable( bool dores )
             char    ext_name[255 + 1];
 
             len = create_exp_extname( exp, ext_name, (LinkFlags & CASE_FLAG) == 0 );
-            len = WriteLoadU8Name( ext_name, len, false );
+            size += WriteLoadU8Name( ext_name, len, false );
             WriteLoadU16( exp->ordinal );
-            size += 1 + len + 2;
+            size += 2;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
                     AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );

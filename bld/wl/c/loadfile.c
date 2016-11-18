@@ -1204,7 +1204,7 @@ size_t WriteLoadU8Name( const char *data, size_t len, bool ucase )
         data = buff;
     }
     WriteLoad( data, len );
-    return( len );
+    return( len + 1 );
 }
 
 static void FlushBuffFile( outfilelist *outfile )

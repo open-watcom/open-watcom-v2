@@ -118,7 +118,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
             char    ext_name[255 + 1];
 
             len = create_sym_extname( sym, ext_name );
-            len = WriteLoadU8Name( ext_name, len, false );
+            wrote += WriteLoadU8Name( ext_name, len, false );
 
             if( import->contents <= MAX_IMP_INTERNAL ) {
                 refs = import->contents;
@@ -136,7 +136,7 @@ static unsigned_32 WriteNovImports( fixed_header *header )
                 WriteInfoLoad( *vmem_array, refs * sizeof( refs ) );
                 refs = import->num_relocs * sizeof( refs );
             }
-            wrote += 1 + len + sizeof( unsigned_32 ) + refs;
+            wrote += sizeof( unsigned_32 ) + refs;
             count++;
         }
     }
@@ -163,14 +163,14 @@ static unsigned_32 WriteNovExports( fixed_header *header )
             char    ext_name[255 + 1];
 
             len = create_sym_extname( sym, ext_name );
-            len = WriteLoadU8Name( ext_name, len, false );
+            wrote += WriteLoadU8Name( ext_name, len, false );
 
             off = sym->addr.off;
             if( sym->addr.seg == CODE_SEGMENT ) {
                 off |= NOV_EXP_ISCODE;
             }
             WriteLoadU32( off );
-            wrote += 1 + len + sizeof( unsigned_32 );
+            wrote += sizeof( unsigned_32 );
             count++;
 
             AddImpLibEntry( sym->name, ext_name, NOT_IMP_BY_ORDINAL );
@@ -189,7 +189,7 @@ static unsigned_32 WriteNovModules( fixed_header *header )
 
     count = wrote = 0;
     for( module = FmtData.u.nov.exp.module; module != NULL; module = module->next ) {
-        wrote += 1 + WriteLoadU8Name( module->name, module->len, false );
+        wrote += WriteLoadU8Name( module->name, module->len, false );
         count++;
     }
     header->numberOfModuleDependencies = count;
@@ -270,7 +270,7 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
                 }
                 info.offset = sym->addr.off;
                 WriteLoad( &info, offsetof( nov_dbg_info, namelen ) );
-                wrote += offsetof( nov_dbg_info, namelen ) + 1 + WriteLoadU8Name( export->name, export->len, false );
+                wrote += offsetof( nov_dbg_info, namelen ) + WriteLoadU8Name( export->name, export->len, false );
                 count++;
             }
         }
