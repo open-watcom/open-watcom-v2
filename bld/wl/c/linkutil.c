@@ -64,8 +64,8 @@ typedef struct {
     class_walk_fn   *cbfn;
 } class_walk_data;
 
-void WriteNulls( f_handle file, unsigned_32 len, const char *name )
-/*****************************************************************/
+void WriteNulls( f_handle file, size_t len, const char *name )
+/************************************************************/
 /* copy nulls for uninitialized data */
 {
     static unsigned NullArray[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};

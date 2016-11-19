@@ -781,10 +781,16 @@ WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
     if( hdl == Root->outfile->handle ) {
         if( pos == SEEK_CUR ) {
             unsigned long   old_pos;
+            unsigned long   new_pos;
 
             old_pos = PosLoad();
-            PadLoad( off );
-            return( old_pos + off );
+            new_pos = old_pos + off;
+            if( new_pos > old_pos ) {
+                PadLoad( (size_t)off );
+            } else {
+                SeekLoad( new_pos );
+            }
+            return( new_pos );
         } else {
             SeekLoad( off );
             return( off );
@@ -802,7 +808,7 @@ WResFileOffset RcTell( WResFileID hdl )
     return( PosLoad() );
 }
 
-bool RcPadFile( int handle, long pad )
+bool RcPadFile( int handle, size_t pad )
 {
     DbgAssert( handle == Root->outfile->handle );
 

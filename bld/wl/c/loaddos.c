@@ -169,7 +169,7 @@ static bool WriteSegData( void *_sdata, void *_start )
     segdata         *sdata = _sdata;
     soffset         *start = _start;
     soffset         newpos;
-    soffset         pad;
+    size_t          pad;
 
     if( !sdata->isuninit && !sdata->isdead ) {
         newpos = *start + sdata->a.delta;

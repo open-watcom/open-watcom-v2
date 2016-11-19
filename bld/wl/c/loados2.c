@@ -1163,7 +1163,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             read_len += (dosheader.file_size - 1) * 512ul - code_start;
             // make sure reloc_size is a multiple of 16.
             reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
-            dosheader.hdr_size = 4 + reloc_size/16;
+            dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
             dosheader.file_size = ( stub_len + 511 ) >> 9;  // round up.
             dosheader.mod_size = stub_len % 512;

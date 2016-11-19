@@ -542,11 +542,11 @@ void FiniNovellLoadFile( void )
     SeekLoad( file_size );
     nov_header.codeImageOffset = file_size;
     image_size = WriteNovData( file_size, &nov_header );
-    temp = MemorySize() - image_size;
-    if( temp > 0 ) {       // write out BSS.
-        PadLoad( temp );
-        nov_header.dataImageSize += temp;
-        image_size += temp;
+    len1 = MemorySize() - image_size;
+    if( len1 > 0 ) {       // write out BSS.
+        PadLoad( len1 );
+        nov_header.dataImageSize += len1;
+        image_size += len1;
     }
     file_size += image_size;
     nov_header.relocationFixupOffset = file_size;

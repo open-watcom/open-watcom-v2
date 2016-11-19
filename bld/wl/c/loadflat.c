@@ -360,7 +360,7 @@ static unsigned WriteDataPages( unsigned long loc )
 {
     group_entry *group;
     unsigned    last_page;
-    unsigned    size;
+    size_t      size;
 
     last_page = 0;
     for( group = Groups; group != NULL; group = group->next_group) {
@@ -369,8 +369,7 @@ static unsigned WriteDataPages( unsigned long loc )
                 if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
-                    size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift)
-                             - last_page;
+                    size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift) - last_page;
                 }
                 PadLoad( size );
                 loc += size;
@@ -383,8 +382,7 @@ static unsigned WriteDataPages( unsigned long loc )
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
     } else if( (FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) == 0 ) {
-        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift )
-                             - last_page );
+        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift ) - last_page );
     }
     return( last_page );
 }

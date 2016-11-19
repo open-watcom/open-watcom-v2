@@ -478,9 +478,9 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
                 return( ret );
             }
             diff = ALIGN_VALUE( res_info->Length, sizeof(uint_32) );
-            if( diff != res_info->Length ) {
+            if( diff > res_info->Length ) {
                 /* add the padding */
-                if( RcPadFile( copy_info->to_handle, diff - res_info->Length ) ) {
+                if( RcPadFile( copy_info->to_handle, (size_t)( diff - res_info->Length ) ) ) {
                     return( RS_WRITE_ERROR );
                 }
             }
@@ -692,8 +692,8 @@ static void FreePEResDir( PEResDir * dir )
 }
 
 #ifndef INSIDE_WLINK
-extern bool RcPadFile( WResFileID handle, long pad )
-/**************************************************/
+extern bool RcPadFile( WResFileID handle, size_t pad )
+/****************************************************/
 {
     char        zero = 0;
 
@@ -723,7 +723,7 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
         return( true );
     pad = dir->ResOffset + size - pos;
     if( pad > 0 ) {
-        RcPadFile( tmp->Handle, pad );
+        RcPadFile( tmp->Handle, (size_t)pad );
     }
     CheckDebugOffset( tmp );
     return( false );

@@ -933,8 +933,8 @@ unsigned long NullAlign( unsigned align )
 /***************************************/
 /* align loadfile -- assumed power of two alignment */
 {
-    unsigned long       off;
-    unsigned long       pad;
+    unsigned long   off;
+    size_t          pad;
 
     off = PosLoad();
     pad = ROUND_UP( off, align ) - off;
@@ -946,7 +946,7 @@ unsigned long OffsetAlign( unsigned long off, unsigned long align )
 /*****************************************************************/
 /* align loadfile -- assumed power of two alignment */
 {
-    unsigned long       pad;
+    size_t          pad;
 
     pad = ROUND_UP( off, align ) - off;
     PadLoad( pad );
@@ -1095,8 +1095,8 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
 
 #define BUFF_BLOCK_SIZE (16*1024)
 
-static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
-/*******************************************************************************************************/
+static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
+/************************************************************************************************/
 {
     size_t   modpos;
     size_t   adjust;
@@ -1136,8 +1136,8 @@ static void SeekBuffer( unsigned long len, outfilelist *outfile, writebuffer_fn 
     }
 }
 
-void PadBuffFile( outfilelist *outfile, unsigned long size )
-/**********************************************************/
+void PadBuffFile( outfilelist *outfile, size_t size )
+/***************************************************/
 /* pad out load file with zeros */
 {
     if( size == 0 )
@@ -1149,8 +1149,8 @@ void PadBuffFile( outfilelist *outfile, unsigned long size )
     }
 }
 
-void PadLoad( unsigned long size )
-/***************************************/
+void PadLoad( size_t size )
+/*************************/
 /* pad out load file with zeros */
 {
     PadBuffFile( CurrSect->outfile, size );

@@ -789,7 +789,7 @@ void PadOvlFiles( void )
 // for the overlay loader to be able to correctly read it.
 {
     outfilelist     *fnode;
-    unsigned        pad;
+    size_t          pad;
 
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         pad = MAKE_PARA( fnode->file_loc ) - fnode->file_loc;
