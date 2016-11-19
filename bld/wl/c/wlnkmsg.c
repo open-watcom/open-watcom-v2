@@ -53,6 +53,15 @@
 
 #include "clibext.h"
 
+
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
 #define NO_RES_MESSAGE "could not open message resource file"
 
 static  HANDLE_INFO     hInstance = { 0 };
@@ -70,14 +79,6 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
         return( lseek( handle, position, where ) );
     }
 }
-
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
 
 WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, RCALLOC, RCFREE );
 
@@ -180,10 +181,10 @@ static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
         break;
     case 'x':
     case 'd':
-        arginfo->int_16 = va_arg( *args, unsigned int );
+        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
         break;
     case 'l':
-        arginfo->int_32 = va_arg( *args, unsigned long );
+        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
         break;
     case 'A':
     case 'a':
