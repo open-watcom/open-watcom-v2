@@ -423,9 +423,9 @@ static void DoReplace( void )
 static void ProcFile( const char *fname )
 /***************************************/
 {
-    int         ftype;
+    rec_status  ftype;
     char        *name;
-    int         status;
+    rec_status  status;
     size_t      namelen;
     char        *bak;
 
