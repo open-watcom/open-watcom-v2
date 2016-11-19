@@ -64,6 +64,12 @@
 
 #define TOC_RESTORE_INSTRUCTION     0x804b0004
 
+#define MAX_ADDEND_SIZE             ( 2 * sizeof( unsigned_32 ) )
+
+#define GET_S16( P )                (*(signed_16 *)(P))
+
+#define FIX_POINTER_MASK            (FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK)
+
 typedef struct fix_relo_data {
     byte        *data;
     offset      value;      /* value at location being patched */
@@ -103,6 +109,15 @@ typedef struct {
     } u;
 } save_fixup;
 
+typedef struct base_reloc {
+    unsigned            rel_size;       /* actual size of reloc item */
+    unsigned            fix_size;       /* size of field being fixed up */
+    offset              fix_off;        /* start addr of field being fixed */
+    unsigned            isfloat : 1;
+    unsigned            isqnxlinear : 1;
+    reloc_item          item;
+} base_reloc;
+
 static offset           LastOptimized;  // offset last optimized.
 static fix_type         LastOptType;
 static segdata          *LastSegData;
@@ -112,12 +127,6 @@ static unsigned         MapOS2FixType( fix_type type );
 static void             PatchOffset( fix_relo_data *fix, offset val, bool isdelta );
 static void             Relocate( offset off, fix_relo_data *fix, target_spec *target );
 
-
-#define MAX_ADDEND_SIZE ( 2 * sizeof( unsigned_32 ) )
-
-#define GET_S16( P )    (*(signed_16 *)(P))
-
-#define FIX_POINTER_MASK ( FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK )
 
 void ResetObj2Supp( void )
 /*******************************/

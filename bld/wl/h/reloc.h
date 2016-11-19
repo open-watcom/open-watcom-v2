@@ -188,15 +188,6 @@ typedef union {
     zdos_reloc_item     zdos;
 } reloc_item;
 
-typedef struct base_reloc {
-    unsigned            rel_size;       /* actual size of reloc item */
-    unsigned            fix_size;       /* size of field being fixed up */
-    offset              fix_off;        /* start addr of field being fixed */
-    unsigned            isfloat : 1;
-    unsigned            isqnxlinear : 1;
-    reloc_item          item;
-} base_reloc;
-
 #define OSF_RLIDX_MASK          0x3FF
 #define OSF_RLIDX_LOW(val)      (val & OSF_RLIDX_MASK)
 #define OSF_RLIDX_HIGH(val)     ((val & (~OSF_RLIDX_MASK)) >> 10)
