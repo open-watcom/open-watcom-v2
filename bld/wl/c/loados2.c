@@ -83,10 +83,10 @@ typedef struct FullTypeRecord {
 } FullTypeRecord;
 
 typedef struct ExeResDir {
-    uint_16             ResShiftCount;
-    uint_16             NumTypes;
-    uint_16             NumResources;
-    uint_16             TableSize;
+    unsigned_16         ResShiftCount;
+    unsigned_16         NumTypes;
+    unsigned_16         NumResources;
+    unsigned_16         TableSize;
     FullTypeRecord      *Head;
     FullTypeRecord      *Tail;
 } ExeResDir;
@@ -97,7 +97,7 @@ typedef struct ResTable {
 } ResTable;
 
 
-static  uint_8          DosStub[] = {
+static unsigned_8       DosStub[] = {
     0x4D, 0x5A, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00,
     0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
     0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -195,11 +195,11 @@ static void AddLLItemAtEnd( void *head, void *tail, void *item )
     }
 }
 
-static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
-/******************************************************************/
+static unsigned_16 findResOrTypeName( ResTable *restab, WResID *name )
+/********************************************************************/
 {
-    uint_16     name_id;
-    int_32      str_offset;
+    unsigned_16 name_id;
+    signed_32   str_offset;
 
     if( name->IsName ) {
         str_offset = StringBlockFind( &restab->Str, &name->ID.Name );
@@ -237,8 +237,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 }
 
 static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
-                            WResID *name, uint_16 mem_flags,
-                            uint_16 exe_offset, uint_16 exe_length )
+                            WResID *name, unsigned_16 mem_flags,
+                      unsigned_16 exe_offset, unsigned_16 exe_length )
 /********************************************************************/
 {
     FullResourceRecord          *exe_res;
@@ -347,8 +347,9 @@ static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
     WResResInfo         *res;
     WResLangInfo        *lang;
 
-    if( inRes == NULL ) return;
-    outRes_off = NullAlign(align) >> shift_count;
+    if( inRes == NULL )
+        return;
+    outRes_off = NullAlign( align ) >> shift_count;
     /* walk through the WRes directory */
     exe_type = NULL;
     wind = WResFirstResource( inRes );
@@ -767,8 +768,8 @@ static WResDir InitNEResources(int *resHandle, ResTable *outRes)
         outRes->Dir.NumResources = WResGetNumResources( inRes );
         outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
                             outRes->Dir.NumResources * sizeof( resource_record ) +
-                            2 * sizeof( uint_16 );
-        /* the 2 uint_16 are the resource shift count and the type 0 record */
+                            2 * sizeof( unsigned_16 );
+        /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
         outRes->Dir.Head = NULL;
         outRes->Dir.Tail = NULL;
         StringBlockBuild( &outRes->Str, inRes, false );
@@ -796,10 +797,10 @@ static void FiniNEResources( int resHandle, WResDir inRes, ResTable *outRes )
 }
 
 
-static uint_32 ComputeResourceSize( WResDir dir )
-/***********************************************/
+static unsigned_32 ComputeResourceSize( WResDir dir )
+/***************************************************/
 {
-    uint_32         length;
+    unsigned_32     length;
     WResDirWindow   wind;
     WResLangInfo    *res;
 

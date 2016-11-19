@@ -822,8 +822,8 @@ void CheckDebugOffset( ExeFileInfo *info )
     info = info;
 }
 
-RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
-/*****************************************************************/
+RcStatus CopyExeData( int inhandle, int outhandle, unsigned_32 length )
+/*********************************************************************/
 {
     outhandle = outhandle;
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
