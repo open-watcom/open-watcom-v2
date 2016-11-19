@@ -898,10 +898,10 @@ void FiniOS2LoadFile( void )
     if( FmtData.u.os2.segment_shift == 0 ) {
         imageguess += temp + (unsigned long)Root->relocs * sizeof( os2_reloc_item )
                      + stub_len + exe_head.segments * 3;
-        pad_len = binary_log( (imageguess >> 16) << 1 );
+        pad_len = blog_16( (imageguess >> 16) << 1 );
         imageguess += ((1 << pad_len) - 1) * exe_head.segments;
         imageguess += ComputeResourceSize( inRes ); // inRes may be 0
-        FmtData.u.os2.segment_shift = binary_log( (imageguess >> 16) << 1 );
+        FmtData.u.os2.segment_shift = blog_16( (imageguess >> 16) << 1 );
         if( FmtData.u.os2.segment_shift == 0 ) {
             FmtData.u.os2.segment_shift = 1;     // since microsoft thinks 0 == 9
         }

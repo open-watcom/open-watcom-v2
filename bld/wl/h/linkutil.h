@@ -52,7 +52,7 @@ extern int              Spawn( void (*)( void ) );
 extern void             Suicide( void );
 extern f_handle         FindPath( const char * );
 extern name_list        *AddNameTable( const char *, size_t, bool, name_list ** );
-extern unsigned_16      binary_log( unsigned_16 );
+extern unsigned_16      blog_16( unsigned_16 );
 extern unsigned_16      blog_32( unsigned_32 );
 extern const char       *GetBaseName( const char *, size_t, size_t * );
 extern void             WriteNulls( f_handle, size_t, const char * );
