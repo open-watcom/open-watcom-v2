@@ -1114,7 +1114,7 @@ static unsigned_32 WriteDefStub( unsigned_32 stub_align )
 
     msgsize = DoExeName();
     fullsize = ROUND_UP( msgsize + sizeof( DosStub ), stub_align );
-    stubend = (unsigned_32 *)(DosStub + 0x3c);
+    stubend = (unsigned_32 *)(DosStub + NH_OFFSET);
     *stubend = fullsize;
     WriteLoad( DosStub, sizeof( DosStub ) );
     WriteLoad( TokBuff, msgsize );
@@ -1169,7 +1169,7 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             dosheader.file_size = ( stub_len + 511 ) >> 9;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
-            PadLoad( 0x3c - sizeof( dos_exe_header ) );
+            PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
             stub_len = ROUND_UP( stub_len, stub_align );
             WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {

@@ -53,11 +53,9 @@
 
 #include "clibext.h"
 
-static void ReadOldLib( void );
-static void ReadNameTable( f_handle the_file );
 
-static entry_export * FindPlace( entry_export *exp )
-/**************************************************/
+static entry_export *FindPlace( entry_export *exp )
+/*************************************************/
 // finds the correct place to put exp to keep the export list sorted.
 {
     entry_export *  place;
@@ -104,7 +102,7 @@ static entry_export *FreeAnExport( entry_export *exp )
 }
 
 void FreeExportList( void )
-/********************************/
+/*************************/
 {
     entry_export *  exp;
 
@@ -115,7 +113,7 @@ void FreeExportList( void )
 }
 
 void AddToExportList( entry_export *exp )
-/**********************************************/
+/***************************************/
 {
     entry_export **     owner;
     entry_export **     place;
@@ -165,31 +163,31 @@ void AddToExportList( entry_export *exp )
     *place = exp;
 }
 
-static unsigned CheckStdCall( const char *name, unsigned len )
-/************************************************************/
+static size_t CheckStdCall( const char *name, size_t len )
+/********************************************************/
 // check to see if a name is in the stdcall _name@xx format
 // this returns the total number of characters to be removed from the name
 // including the beginning _
 {
     const char  *teststr;
-    unsigned    chop;
+    size_t      chop;
 
     if( len <= 3 )
-        return 0;
+        return( 0 );
     chop = 0;
     teststr = name + len - 1;
-    if( *name == '_' && isdigit(*teststr) ) {
+    if( *name == '_' && isdigit( *teststr ) ) {
         teststr--;
         if( *teststr == '@' ) {
             chop = 3;
-        } else if( isdigit(*teststr) ) {
+        } else if( isdigit( *teststr ) ) {
             teststr--;
             if( *teststr == '@' ) {
                 chop = 4;
             }
         }
     }
-    return chop;
+    return( chop );
 }
 
 entry_export *AllocExport( const char *name, size_t len )
@@ -235,11 +233,11 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     exp = AllocExport( expname->name, expname->len );
     exp->isanonymous = false;
     exp->iopl_words = flags & EXPDEF_IOPLMASK;
-    exp->isresident = (flags & EXPDEF_RESIDENT) != 0;
+    exp->isresident = ( (flags & EXPDEF_RESIDENT) != 0 );
     if( intname->len != 0 ) {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, intname->name, intname->len);
+        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, intname->name, intname->len );
     } else {
-        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len);
+        exp->sym = SymOp( ST_CREATE | ST_REFERENCE, expname->name, expname->len );
     }
     if( LinkFlags & STRIP_CODE ) {
         DataRef( exp->sym );    // make sure it isn't removed.
@@ -252,8 +250,8 @@ void MSExportKeyword( const length_name *expname, const length_name *intname, un
     AddToExportList( exp );
 }
 
-dll_sym_info * AllocDLLInfo( void )
-/****************************************/
+dll_sym_info *AllocDLLInfo( void )
+/********************************/
 {
     dll_sym_info * dll;
 
@@ -263,18 +261,18 @@ dll_sym_info * AllocDLLInfo( void )
 }
 
 void FreeImport( dll_sym_info * dll )
-/******************************************/
+/***********************************/
 {
     CarveFree( CarveDLLInfo, dll );
 }
 
-static symbol * GetIATSym( symbol *sym )
-/**************************************/
+static symbol *GetIATSym( symbol *sym )
+/*************************************/
 {
-    char *      iatname;
+    char        *iatname;
     size_t      prefixlen;
     size_t      namelen;
-    char *      name;
+    const char  *name;
 
     name = sym->name;
     if( LinkState & HAVE_PPC_CODE) {
@@ -331,6 +329,112 @@ void KillDependantSyms( symbol *sym )
     sym->info |= SYM_KILL;
 }
 
+static void ReadNameTable( f_handle the_file )
+/********************************************/
+// Read a name table & set export ordinal value accordingly.
+{
+    unsigned_8          len_u8;
+    unsigned_16         ordinal;
+    exportcompare_fn    *rtn;
+    const char          *fname;
+
+    fname = FmtData.u.os2.old_lib_name;
+    if( LinkFlags & CASE_FLAG ) {
+        rtn = strcmp;
+    } else {
+        rtn = stricmp;
+    }                             // skip the module name & ordinal.
+    for( ;; ) {
+        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
+        if( len_u8 == 0 )
+            break;
+        QRead( the_file, TokBuff, len_u8, fname );
+        QRead( the_file, &ordinal, sizeof( ordinal ), fname );
+        if( ordinal == 0 )
+            continue;
+        TokBuff[len_u8] = '\0';
+        CheckExport( TokBuff, ordinal, rtn );
+    }
+}
+
+static void ReadOldLib( void )
+/****************************/
+// Read an old DLL & match ordinals of exports in it with exports in this.
+{
+    f_handle    the_file;
+    long        filepos;
+    union {
+        dos_exe_header  dos;
+        os2_exe_header  os2;
+        os2_flat_header os2f;
+        exe_pe_header   pe;
+    }           head;
+    char        *fname;
+    pe_object   *objects;
+    pe_object   *currobj;
+    unsigned_32 val32;
+
+    fname = FmtData.u.os2.old_lib_name;
+    the_file = QOpenR( fname );
+    QRead( the_file, &head, sizeof( dos_exe_header ), fname );
+    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
+        LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
+    } else {
+        QSeek( the_file, NH_OFFSET, fname );
+        QRead( the_file, &val32, sizeof( val32 ), fname );
+        filepos = val32;
+        QSeek( the_file, filepos, fname );
+        QRead( the_file, &head, sizeof( head ), fname );
+        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
+            QSeek( the_file, filepos + head.os2.resident_off, fname );
+            ReadNameTable( the_file );
+            QSeek( the_file, head.os2.nonres_off, fname );
+            ReadNameTable( the_file );
+        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
+            if( head.os2f.resname_off != 0 ) {
+                QSeek( the_file, filepos + head.os2f.resname_off, fname );
+                ReadNameTable( the_file );
+            }
+            if( head.os2f.nonres_off != 0 ) {
+                QSeek( the_file, head.os2f.nonres_off, fname );
+                ReadNameTable( the_file );
+            }
+        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
+            unsigned            num_objects;
+            pe_hdr_table_entry  *table;
+
+            if( IS_PE64( head.pe ) ) {
+                num_objects = PE64( head.pe ).num_objects;
+                table = PE64( head.pe ).table;
+            } else {
+                num_objects = PE32( head.pe ).num_objects;
+                table = PE32( head.pe ).table;
+            }
+            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
+            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
+            currobj = objects;
+            for( ; num_objects > 0; --num_objects ) {
+                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
+                    QSeek( the_file, currobj->physical_offset, fname );
+                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
+                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
+                    break;
+                }
+                currobj++;
+            }
+            _LnkFree( objects );
+            if( num_objects == 0 ) {
+                LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
+            }
+        } else {
+            LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
+        }
+    }
+    QClose( the_file, fname );
+    _LnkFree( fname );
+    FmtData.u.os2.old_lib_name = NULL;
+}
+
 void AssignOrdinals( void )
 /********************************/
 /* assign ordinal values to entries in the export list */
@@ -371,82 +475,6 @@ void AssignOrdinals( void )
     }
 }
 
-static void ReadOldLib( void )
-/****************************/
-// Read an old DLL & match ordinals of exports in it with exports in this.
-{
-    f_handle    the_file;
-    long        filepos;
-    union {
-        dos_exe_header  dos;
-        os2_exe_header  os2;
-        os2_flat_header os2f;
-        exe_pe_header   pe;
-    }           head;
-    char *      fname;
-    pe_object * objects;
-    pe_object * currobj;
-
-    fname = FmtData.u.os2.old_lib_name;
-    the_file = QOpenR( fname );
-    QRead( the_file, &head, sizeof(dos_exe_header), fname );
-    if( head.dos.signature != DOS_SIGNATURE || head.dos.reloc_offset != 0x40 ) {
-        LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
-    } else {
-        QSeek( the_file, 0x3c, fname );
-        QRead( the_file, &filepos, sizeof( long ), fname );
-        QSeek( the_file, filepos, fname );
-        QRead( the_file, &head, sizeof(head), fname );
-        if( head.os2.signature == OS2_SIGNATURE_WORD ) {
-            QSeek( the_file, filepos + head.os2.resident_off, fname );
-            ReadNameTable( the_file );
-            QSeek( the_file, head.os2.nonres_off, fname );
-            ReadNameTable( the_file );
-        } else if( head.os2f.signature == OSF_FLAT_SIGNATURE || head.os2f.signature == OSF_FLAT_LX_SIGNATURE ) {
-            if( head.os2f.resname_off != 0 ) {
-                QSeek( the_file, filepos + head.os2f.resname_off, fname );
-                ReadNameTable( the_file );
-            }
-            if( head.os2f.nonres_off != 0 ) {
-                QSeek( the_file, head.os2f.nonres_off, fname );
-                ReadNameTable( the_file );
-            }
-        } else if( head.pe.pe32.signature == PE_SIGNATURE ) {
-            int                 num_objects;
-            pe_hdr_table_entry  *table;
-
-            if( IS_PE64( head.pe ) ) {
-                num_objects = PE64( head.pe ).num_objects;
-                table = PE64( head.pe ).table;
-            } else {
-                num_objects = PE32( head.pe ).num_objects;
-                table = PE32( head.pe ).table;
-            }
-            _ChkAlloc( objects, num_objects * sizeof( pe_object ) );
-            QRead( the_file, objects, num_objects * sizeof( pe_object ), fname );
-            currobj = objects;
-            for( ; num_objects > 0; --num_objects ) {
-                if( currobj->rva == table[PE_TBL_EXPORT].rva ) {
-                    QSeek( the_file, currobj->physical_offset, fname );
-                    table[PE_TBL_EXPORT].rva -= currobj->physical_offset;
-                    ReadPEExportTable( the_file, &table[PE_TBL_EXPORT]);
-                    break;
-                }
-                currobj++;
-            }
-            _LnkFree( objects );
-            if( num_objects == 0 ) {
-                LnkMsg( WRN + MSG_INV_OLD_DLL, NULL );
-            }
-        } else {
-            LnkMsg( WRN+MSG_INV_OLD_DLL, NULL );
-        }
-    }
-    QClose( the_file, fname );
-    _LnkFree( fname );
-    FmtData.u.os2.old_lib_name = NULL;
-}
-
 void CheckExport( char * name, ordinal_t ordinal, exportcompare_fn *rtn )
 /***********************************************************************/
 /* check if the name is exported and hasn't been assigned a value, and if so,
@@ -473,34 +501,6 @@ void CheckExport( char * name, ordinal_t ordinal, exportcompare_fn *rtn )
             break;
         }
         prev = place;
-    }
-}
-
-static void ReadNameTable( f_handle the_file )
-/********************************************/
-// Read a name table & set export ordinal value accordingly.
-{
-    unsigned_8          len_u8;
-    unsigned_16         ordinal;
-    exportcompare_fn    *rtn;
-    char                *fname;
-
-    fname = FmtData.u.os2.old_lib_name;
-    if( LinkFlags & CASE_FLAG ) {
-        rtn = strcmp;
-    } else {
-        rtn = stricmp;
-    }                             // skip the module name & ordinal.
-    for( ;; ) {
-        QRead( the_file, &len_u8, sizeof( len_u8 ), fname );
-        if( len_u8 == 0 )
-            break;
-        QRead( the_file, TokBuff, len_u8, fname );
-        QRead( the_file, &ordinal, sizeof( unsigned_16 ), fname );
-        if( ordinal == 0 )
-            continue;
-        TokBuff[len_u8] = '\0';
-        CheckExport( TokBuff, ordinal, rtn );
     }
 }
 
