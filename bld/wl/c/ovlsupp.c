@@ -214,7 +214,7 @@ static void AllocSections( section *first_sect )
             if( result > 0xFFFF ) {
                 LnkMsg( WRN+MSG_CANT_RESERVE_SPACE, "l", (unsigned long)AreaSize << FmtData.SegShift );
             } else {
-                CurrLoc.seg = result;
+                CurrLoc.seg = (segment)result;
             }
         }
         AreaSize = CurrLoc.seg - Stash.seg;
@@ -260,12 +260,12 @@ void CalcOvl( void )
     CurrSect = Root;
     /* record starting address of overlay table */
     Align( 2 ); // for overlay table speed.
-    XDefSymAddr( OverlayTable, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( OverlayTable, CurrLoc.off, CurrLoc.seg );
     DEBUG(( DBG_OLD, "Overlay table address %a", &CurrLoc ));
     OvltabAddr = CurrLoc;
     /* calculate size of overlay table proper */
     temp = sizeof( ovl_null_table ) + ( OvlNum - 1 ) * sizeof( ovltab_entry );
-    XDefSymAddr( OverlayTableEnd, CurrLoc.off + temp - sizeof( unsigned_16 ),
+    SET_SYM_ADDR( OverlayTableEnd, CurrLoc.off + temp - sizeof( unsigned_16 ),
                                                                  CurrLoc.seg );
     for( fnode = OutFiles; fnode != NULL; fnode = fnode->next ) {
         fnode->ovlfnoff = temp;
@@ -276,7 +276,7 @@ void CalcOvl( void )
     OvltabSize = temp;   /*  incl. NULLCHAR */
     CurrentSeg = NULL;
     AddSize( OvltabSize );
-    XDefSymAddr( OvlVecStart, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( OvlVecStart, CurrLoc.off, CurrLoc.seg );
     DEBUG(( DBG_OLD, "Overlay vector start %a", &CurrLoc ));
     OvlvecAddr = CurrLoc;
     /* calculate start of overlay area */
@@ -287,7 +287,7 @@ void CalcOvl( void )
     }
     AddSize( temp );
     OvltabSize += temp;
-    XDefSymAddr( OvlVecEnd, CurrLoc.off, CurrLoc.seg );
+    SET_SYM_ADDR( OvlVecEnd, CurrLoc.off, CurrLoc.seg );
     AddSize( 2 );       // reserve some space for the ovl. manager.
     Align( 4 );
     NormalizeAddr();

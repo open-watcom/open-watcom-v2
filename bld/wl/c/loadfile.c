@@ -348,8 +348,7 @@ static void DefABSSSym( const char *name )
         if( FmtData.type & MK_OVERLAYS ) {
             sym->u.d.ovlstate |= OVL_NO_VECTOR | OVL_FORCE;
         }
-        sym->addr.seg = UNDEFINED;
-        sym->addr.off = 0;
+        SET_ADDR_UNDEFINED( sym->addr );
     }
  }
 
@@ -395,7 +394,7 @@ static void DefBSSStartSize( char *name, class_entry *class )
     seg_leader *seg;
 
     sym = FindISymbol( name );
-    if( sym->addr.seg == UNDEFINED ) {
+    if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
         seg = (seg_leader *) RingFirst( class->segs );
         sym->p.seg = (segdata *) RingFirst( seg->pieces );
@@ -414,14 +413,13 @@ static void DefBSSEndSize( char *name, class_entry *class )
     seg_leader *seg;
 
     sym = FindISymbol( name );
-    if( sym->addr.seg == UNDEFINED ) {
+    if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
         /* find last segment in BSS class */
         seg = (seg_leader *) RingLast( class->segs );
         /* set end of BSS class */
         sym->p.seg = (segdata *) RingLast( seg->pieces );
-        sym->addr.seg = seg->seg_addr.seg;
-        sym->addr.off = seg->seg_addr.off + seg->size;
+        SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );

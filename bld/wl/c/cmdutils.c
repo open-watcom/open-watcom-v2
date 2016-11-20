@@ -1175,8 +1175,7 @@ section *NewSection( void )
     sect->modFilesHashed = CreateHTable( 256, StringiHashFunc, stricmp_wrapper, ChkLAlloc, LFree );
     sect->mods = NULL;
     sect->reloclist = NULL;
-    sect->sect_addr.off = 0;
-    sect->sect_addr.seg = UNDEFINED;
+    SET_ADDR_UNDEFINED( sect->sect_addr );
     sect->ovl_num = 0;
     sect->parent = NULL;
     sect->relocs = 0;

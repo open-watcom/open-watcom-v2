@@ -221,8 +221,7 @@ static void CalcImpOff( dll_sym_info *dll, offset *off )
 /********************************************************/
 {
     if( dll != NULL) { // if not end of mod marker
-        dll->iatsym->addr.off = *off;
-        dll->iatsym->addr.seg = 0;
+        SET_SYM_ADDR( dll->iatsym, *off, 0 );
     }
     *off += sizeof( pe_va );
 }
@@ -1712,15 +1711,13 @@ void AllocPETransferTable( void )
     // now calc addresses for imported local symbols
     for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
         off -= sizeof( pe_va );
-        loc_imp->iatsym->addr.off = off;
-        loc_imp->iatsym->addr.seg = seg;
+        SET_SYM_ADDR( loc_imp->iatsym, off, seg );
     }
     if( IDataGroup != NULL ) {
         glue_size = GetTransferGlueSize( LinkState );
         WALK_IMPORT_SYMBOLS( sym ) {
             off -= glue_size;
-            sym->addr.seg = seg;
-            sym->addr.off = off;
+            SET_SYM_ADDR( sym, off, seg );
             save = sym->p.seg;
             sym->p.seg = piece;
             DBIGenGlobal( sym, Root );

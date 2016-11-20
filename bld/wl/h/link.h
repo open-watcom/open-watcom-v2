@@ -158,14 +158,15 @@ typedef enum obj_format {
 /* Default File Extension Enumeration, see ldefext.h */
 
 typedef enum file_defext {
-#define pick1(enum,text) enum,
-#include "ldefext.h"
-#undef pick1
+    #define pick1(enum,text) enum,
+    #include "ldefext.h"
+    #undef pick1
 } file_defext;
 
 
 /*  Generic constants */
-enum {
-    MAX_REC             = 1024,
-    UNDEFINED           = 0xffff,   /* undefined segment */
-};
+#define MAX_REC             1024
+#define UNDEFINED           ((segment)0xffff)           /* undefined segment */
+
+#define SET_ADDR_UNDEFINED(a)   (a).seg=UNDEFINED;(a).off=0
+#define IS_ADDR_UNDEFINED(a)    ((a).seg==UNDEFINED)

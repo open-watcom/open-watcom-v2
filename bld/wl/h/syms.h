@@ -138,7 +138,11 @@ typedef enum {
 #define IS_SYM_WEAK_REF(sym) (((sym)->info & SYM_TYPE_MASK) >= SYM_WEAK_REF)
 #define IS_SYM_LINK_WEAK(sym)(((sym)->info & SYM_TYPE_MASK) ==SYM_LINK_WEAK_REF)
 #define IS_SYM_COMM32(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
-#define SET_SYM_TYPE(sym,type) ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
+
+#define SET_SYM_TYPE(sym,type)  ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
+
+#define SET_SYM_ADDR(sym,o,s)   (sym)->addr.seg=s;(sym)->addr.off=o
+
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 0 means tenatively no vector generated.
@@ -242,7 +246,6 @@ extern void             ReportMultiple( symbol *, const char *, size_t );
 extern void             ReportUndefined( void );
 extern void             ClearFloatBits( void );
 extern void             WriteCommunals( void );
-extern void             XDefSymAddr( symbol *, offset, unsigned_16 );
 extern void             XReportSymAddr( symbol * );
 extern void             XWriteImports( void );
 extern symbol           *AddAltDef( symbol *, sym_info );

@@ -255,8 +255,7 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
 static void InitGroup( group_entry *group )
 /*****************************************/
 {
-    group->grp_addr.seg = UNDEFINED;
-    group->grp_addr.off = 0;
+    SET_ADDR_UNDEFINED( group->grp_addr );
     group->totalsize = 0;
     group->size = 0;
     group->segflags = DEFAULT_GRP_FLAGS;

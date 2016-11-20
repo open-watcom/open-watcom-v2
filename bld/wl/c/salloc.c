@@ -62,7 +62,7 @@ void NormalizeAddr( void )
         if( new_seg > 0xFFFF ) {
             LnkMsg( ERR+MSG_APP_TOO_BIG_FOR_DOS, NULL );
         }
-        CurrLoc.seg = new_seg;
+        CurrLoc.seg = (segment)new_seg;
         CurrLoc.off &= FmtData.SegMask;
     }
 }

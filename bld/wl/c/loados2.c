@@ -970,7 +970,7 @@ void FiniOS2LoadFile( void )
     } else {
         exe_head.SP = 0;
         //exe_head.SP = StackAddr.off;
-        if( StackAddr.seg != UNDEFINED ) {
+        if( !IS_ADDR_UNDEFINED( StackAddr ) ) {
             exe_head.stacknum = StackAddr.seg;
         } else {
             exe_head.stacknum = 0;

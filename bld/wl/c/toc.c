@@ -238,9 +238,9 @@ void PrepareToc( void )
 void SetTocAddr( offset off, group_entry *group )
 /******************************************************/
 {
-    if( Toc == NULL || TocSym == NULL )
-        return;
-    XDefSymAddr( TocSym, off + TocShift, group->grp_addr.seg );
+    if( Toc != NULL && TocSym != NULL ) {
+        SET_SYM_ADDR( TocSym, off + TocShift, group->grp_addr.seg );
+    }
 }
 
 static offset OffFromToc( offset off )

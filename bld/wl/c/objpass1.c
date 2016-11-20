@@ -659,8 +659,7 @@ seg_leader *InitLeader( const char *segname )
     seg->class = NULL;
     seg->size = 0;
     seg->num = 0;
-    seg->seg_addr.off = 0;
-    seg->seg_addr.seg = UNDEFINED;
+    SET_ADDR_UNDEFINED( seg->seg_addr );
     seg->group = NULL;
     seg->info = 0;
     seg->segname = AddStringStringTable( &PermStrings, segname );
@@ -730,19 +729,17 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off,
-                         unsigned_16 frame )
-/*************************************************************************/
+void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
+/*******************************************************************************************/
 {
     sym->mod = mod;
     SET_SYM_TYPE( sym, type );
-    XDefSymAddr( sym, off, frame );
+    SET_SYM_ADDR( sym, off, frame );
     Ring2Append( &mod->publist, sym );
 }
 
-void DefineSymbol( symbol *sym, segnode *seg, offset off,
-                          unsigned_16 frame )
-/**************************************************************/
+void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
+/***************************************************************************/
 // do the object file independent public symbol definition.
 {
     size_t          name_len;
@@ -753,7 +750,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
         frame = 0;
     }
     name_len = strlen( sym->name );
-    if( sym->addr.seg != UNDEFINED && !IS_SYM_COMMUNAL( sym ) ) {
+    if( !IS_ADDR_UNDEFINED( sym->addr ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( seg != NULL && sym->p.seg != NULL ) {
             frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
             if( sym->p.seg->u.leader->combine != COMBINE_COMMON ) {
@@ -785,7 +782,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
         }
 
         ClearSymUnion( sym );
-        SetAddPubSym(sym, sym_type, CurrMod, off, frame);
+        SetAddPubSym( sym, sym_type, CurrMod, off, frame );
         sym->info &= ~SYM_DISTRIB;
         if( seg != NULL ) {
             if( LinkFlags & STRIP_CODE ) {

@@ -282,7 +282,7 @@ static void ReallocFileSegs( void )
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
         /*
-         * segment number is also set for zero length group to be 
+         * segment number is also set for zero length group to be
          * segments in map file sorted properly even if they are not emited
          * into load file
          */
@@ -695,8 +695,6 @@ static bool DefPubSym( void *_pub, void *_info )
     pubdefinfo  *info = _info;
     segdata     *seg;
     seg_leader  *leader;
-    offset      off;
-    unsigned_16 frame;
     offset      temp;
 
     if( pub->info & (SYM_DEAD | SYM_IS_ALTDEF) )
@@ -711,15 +709,12 @@ static bool DefPubSym( void *_pub, void *_info )
         /* address in symbol table is actually signed_32 offset
            from segdata zero */
         if( seg->isabs || IS_DBG_INFO( leader ) ) {
-            XDefSymAddr( pub, pub->addr.off + seg->a.delta
-                             + leader->seg_addr.off, leader->seg_addr.seg );
+            SET_SYM_ADDR( pub, pub->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
         } else {
             temp = pub->addr.off;
             temp += seg->a.delta;
             temp += SEG_GROUP_DELTA( leader );
-            frame = leader->group->grp_addr.seg;
-            off = temp + leader->group->grp_addr.off;
-            XDefSymAddr( pub, off, frame );
+            SET_SYM_ADDR( pub, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
             DBIGenGlobal( pub, info->sect );
         }
     }
@@ -954,13 +949,13 @@ void SetSegFlags( seg_flags *flag_list )
             FillTypeFlags( flag_list->flags, flag_list->type );
         }
     }
-    // process all class def'ns second.    
+    // process all class def'ns second.
     for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
         if( flag_list->type == SEGFLAG_CLASS ) {
             FillClassFlags( flag_list->name, flag_list->flags );
         }
     }
-    // now process individual segments   
+    // now process individual segments
     for( flag_list = start; flag_list != NULL; flag_list = next_one ) {
         if( flag_list->type == SEGFLAG_SEGMENT ) {
             leader = FindSegment( Root, flag_list->name );

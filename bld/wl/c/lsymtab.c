@@ -1130,14 +1130,6 @@ void ClearFloatBits( void )
     }
 }
 
-void XDefSymAddr( symbol *sym, offset off, unsigned_16 frame )
-/*******************************************************************/
-/* set symbol adddress in symbol table */
-{
-    sym->addr.seg = frame;
-    sym->addr.off = off;
-}
-
 static void WriteSym( symbol * sym, char star )
 /*********************************************/
 {
@@ -1292,8 +1284,7 @@ static void UndefSymbol( symbol *sym )
 /************************************/
 {
     ClearSymUnion( sym );
-    sym->addr.seg = UNDEFINED;
-    sym->addr.off = 0;
+    SET_ADDR_UNDEFINED( sym->addr );
     if( (sym->info & SYM_EXPORTED) == 0 && sym->e.def != NULL ) {
         sym->info = SYM_LAZY_REF | SYM_REFERENCED;
     } else {
