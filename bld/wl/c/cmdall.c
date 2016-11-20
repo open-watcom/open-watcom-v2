@@ -1175,8 +1175,8 @@ bool ProcVersion( void )
     }
     FmtData.major = value;
     FmtData.ver_specified = true;
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
-       return( true );                      /* that's OK */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a minor number */
+        return( true );                          /* that's OK */
     }
     retval = getatol( &value );
     if( retval != ST_IS_ORDINAL || value >= 100 ) {
@@ -1564,7 +1564,7 @@ bool ProcOrdSegOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED)))) {
+    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
         CurrOSeg->Base.off = value;
         CurrOSeg->FixedAddr = true;
         return( true );
@@ -1578,7 +1578,7 @@ bool ProcOrdSegOfsAdr( void )
 bool ProcOrdSegNoEmit( void )
 /*********************************/
 {
-   CurrOSeg->NoEmit = true;
-   return( true );
+    CurrOSeg->NoEmit = true;
+    return( true );
 }
 
