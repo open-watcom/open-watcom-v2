@@ -1119,17 +1119,6 @@ void ReportUndefined( void )
     }
 }
 
-void ClearFloatBits( void )
-/********************************/
-/* set all symbols to be not floating point */
-{
-    symbol *    sym;
-
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        SET_FFIX_VALUE( sym, FFIX_NOT_A_FLOAT );
-    }
-}
-
 static void WriteSym( symbol * sym, char star )
 /*********************************************/
 {

@@ -552,8 +552,7 @@ void GetStartAddr( void )
               - StartInfo.targ.sdata->u.leader->group->grp_addr.seg;
             if( (deltaseg > 0) && (deltaseg <= StartInfo.targ.sdata->u.leader->seg_addr.seg) ) {
                 StartInfo.addr.seg -= deltaseg;
-                StartInfo.addr.off += 16 * deltaseg
-                     - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
+                StartInfo.addr.off += 16 * deltaseg - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
             }
         }
         break;

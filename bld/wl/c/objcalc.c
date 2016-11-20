@@ -543,12 +543,13 @@ static void FindFloatSyms( void )
     int         index;
     symbol      *sym;
 
-    ClearFloatBits();
-    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) );
-            index++ ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+        SET_SYM_FFIX( sym, FFIX_NOT_A_FLOAT );
+    }
+    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
         sym = FindISymbol( FloatNames[index].name );
         if( sym != NULL ) {
-            SET_FFIX_VALUE( sym, FloatNames[index].idx );
+            SET_SYM_FFIX( sym, FloatNames[index].idx );
         }
     }
 }

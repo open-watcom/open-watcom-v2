@@ -113,8 +113,8 @@ typedef struct base_reloc {
     unsigned            rel_size;       /* actual size of reloc item */
     unsigned            fix_size;       /* size of field being fixed up */
     offset              fix_off;        /* start addr of field being fixed */
-    unsigned            isfloat : 1;
-    unsigned            isqnxlinear : 1;
+    bool                isfloat     : 1;
+    bool                isqnxlinear : 1;
     reloc_item          item;
 } base_reloc;
 
@@ -444,7 +444,7 @@ static void BuildReloc( save_fixup *save, target_spec *target, frame_spec *frame
             ProcUndefined( target->u.sym );
             return;
         }
-        fix.ffix = GET_FFIX_VALUE( target->u.sym );
+        fix.ffix = GET_SYM_FFIX( target->u.sym );
         if( IS_SYM_IMPORTED( target->u.sym ) ) {
             if( FRAME_HAS_DATA( frame->type ) && ( target->u.sym != frame->u.sym ) ) {
                 if( FmtData.type & (MK_NOVELL | MK_OS2_FLAT | MK_PE) ) {
@@ -837,8 +837,7 @@ static void MakeQNXFloatReloc( fix_relo_data *fix )
     if( FmtData.u.qnx.gen_seg_relocs ) {
         InitReloc( &new_reloc );
         new_reloc.isfloat = true;
-        new_reloc.item.qnx.reloc_offset = fix->loc_addr.off
-                               | ( (unsigned_32)fix->ffix << 28 );
+        new_reloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->ffix << 28 );
         new_reloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         DumpReloc( &new_reloc );
     }
@@ -863,8 +862,7 @@ static void MakeWindowsFloatReloc( fix_relo_data *fix )
     InitReloc( &new_reloc );
     os2item = &new_reloc.item.os2;
     os2item->addr_type = MapOS2FixType( fix->type );
-    os2item->reloc_offset = fix->loc_addr.off
-                        - CurrRec.seg->u.leader->group->grp_addr.off;
+    os2item->reloc_offset = fix->loc_addr.off - CurrRec.seg->u.leader->group->grp_addr.off;
     os2item->reloc_type = OSFIXUP | ADDITIVE;
     os2item->put.fltpt = WinFFixMap[fix->ffix];
     DumpReloc( &new_reloc );
@@ -917,8 +915,7 @@ static bool CheckSpecials( fix_relo_data *fix, target_spec *target )
             return( false );
 #endif
     }
-    if( (FmtData.type & (MK_QNX | MK_WINDOWS))
-        && ( fix->ffix != FFIX_NOT_A_FLOAT ) ) {
+    if( (FmtData.type & (MK_QNX | MK_WINDOWS)) && ( fix->ffix != FFIX_NOT_A_FLOAT ) ) {
         if( fix->ffix != FFIX_IGNORE ) {
             if( FmtData.type & MK_QNX ) {
                 MakeQNXFloatReloc( fix );

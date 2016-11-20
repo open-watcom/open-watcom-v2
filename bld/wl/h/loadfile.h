@@ -29,11 +29,11 @@
 ****************************************************************************/
 
 
-enum {
+typedef enum {
     START_UNDEFED,
     START_IS_SYM,
     START_IS_SDATA
-};
+} start_type;
 
 typedef struct {
     union {
@@ -43,9 +43,9 @@ typedef struct {
     offset              off;
     mod_entry           *mod;
     targ_addr           addr;
-    unsigned            type : 2;
-    unsigned            user_specd : 1;
-    unsigned            from_inc : 1;
+    start_type          type;
+    bool                user_specd  : 1;
+    bool                from_inc    : 1;
 } startinfo;
 
 extern seg_leader       *StackSegPtr;
