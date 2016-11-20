@@ -288,7 +288,7 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
     if( stricmp( name, DataGrpName ) == 0 ) {
         DataGroup = group;
     } else if( name == AutoGrpName ) {
-        group->isautogrp = 1;
+        group->isautogrp = true;
     }
     return( group );
 }

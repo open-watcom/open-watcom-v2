@@ -708,7 +708,7 @@ static void ProcSegDef( void )
             }
         }
     }
-    sdata->iscode = IsCodeClass( clname->name, strlen(clname->name) );
+    sdata->iscode = IsCodeClass( clname->name, strlen( clname->name ) );
     snode = AllocNode( SegNodes );
     snode->entry = sdata;
     AllocateSegment( snode, clname->name );

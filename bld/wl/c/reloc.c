@@ -378,11 +378,11 @@ bool DumpRelocList( reloc_info *list )
     return( false );            /* so traverse works */
 }
 
-unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_32 size, void *ctx ), void *ctx )
-/**************************************************************************************************************/
+unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx )
+/*********************************************************************************************************/
 /* walk the given reloc information list and call user fn for each reloc */
 {
-    unsigned_32         size;
+    size_t              size;
     unsigned_32         total;
     reloc_info          *list;
     bool                quit = false;
@@ -402,7 +402,7 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_3
             }
         }
         list = list->next;
-        total += size;
+        total += (unsigned_32)size;
     }
     *head = list;
     return( total );

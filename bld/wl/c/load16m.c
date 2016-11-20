@@ -139,8 +139,8 @@ static unsigned_32 Write16MData( unsigned hdr_size )
     return( PosLoad() );
 }
 
-static bool RelocWalkFn( void *data, unsigned_32 size, void *ctx )
-/****************************************************************/
+static bool RelocWalkFn( void *data, size_t size, void *ctx )
+/***********************************************************/
 {
     context     *info = ctx;
 

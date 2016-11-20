@@ -327,10 +327,10 @@ typedef struct group_entry {
         unsigned        miscflags;      // OS/2
         segment         dos_segment;    // DOS/16M: DOS segment value
     } u;
+    bool                isfree      : 1;
+    bool                isautogrp   : 1;
+    bool                isdup       : 1;
     unsigned            num;
-    unsigned            isfree : 1;
-    unsigned            isautogrp : 1;
-    unsigned            isdup : 1;
 } group_entry;
 
 // this is a bit in the segflags field. This is also defined in exeos2.h

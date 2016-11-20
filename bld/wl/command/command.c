@@ -106,12 +106,12 @@ extern void FreeSegFlags( seg_flags * curr )
     }
 }
 
-bool            IsCodeClass( char *a, unsigned b ) {
+bool IsCodeClass( char *a, size_t b ) {
 
     return( TRUE );
 }
 
-symbol *        LenFindISymbol( char *a, int b ) {
+symbol *LenFindISymbol( char *a, int b ) {
 
     return( NULL );
 }
