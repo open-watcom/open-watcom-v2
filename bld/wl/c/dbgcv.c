@@ -47,21 +47,20 @@
 #include "specials.h"
 
 typedef struct cvmodinfo {
-    unsigned_32 pubsize;
-    virt_mem    segloc;
-    unsigned_16 numlines;
-    unsigned_16 modidx;
-    unsigned_16 numsegs;
+    unsigned_32         pubsize;
+    virt_mem            segloc;
+    unsigned_16         numlines;
+    unsigned_16         modidx;
+    unsigned_16         numsegs;
 } cvmodinfo;
-
 
 #include "pushpck1.h"
 
 // Cheesy implementation of sstSrcModule structures.
 // Only allow one file and one segment.
 typedef struct {
-    unsigned_32 start;
-    unsigned_32 end;
+    unsigned_32         start;
+    unsigned_32         end;
 } offset_range;
 
 typedef struct {
@@ -99,7 +98,7 @@ typedef struct {
     offset_range        range;
     unsigned_32         prevaddr;
     unsigned_16         seg;
-    unsigned_8          needsort : 1;
+    bool                needsort    : 1;
 } cvlineinfo;
 
 // split codeview up into a number of different "sections" to keep track
@@ -117,7 +116,7 @@ typedef enum {
 // to collect sizes of different blocks.
 
 static struct {
-    virt_mem_ptr    u;
+    virt_mem_ptr        u;
 } SectAddrs[NUM_CV_SECTS];
 
 // the codeview information is just one big memory block.  This is the start
@@ -132,7 +131,7 @@ static cvlineinfo       LineInfo;
 
 
 void CVInit( void )
-/************************/
+/*****************/
 // called just after command file parsing
 {
     memset( SectAddrs, 0, sizeof( SectAddrs ) );
@@ -141,7 +140,7 @@ void CVInit( void )
 }
 
 void CVInitModule( mod_entry *obj )
-/****************************************/
+/*********************************/
 // called before pass 1 is done on the module
 {
     _PermAlloc( obj->d.cv, sizeof( cvmodinfo ) );
@@ -412,7 +411,7 @@ void CVAddGlobal( symbol *sym )
 /*****************************/
 // called during pass 1 symbol definition
 {
-    unsigned    size;
+    size_t  size;
 
     if( (sym->info & SYM_STATIC) == 0 ) {
         if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
@@ -652,12 +651,12 @@ void CVAddrStart( void )
 /**********************/
 {
     cv_subsection_directory dir;
-    int         index;
-    cv_trailer  start;
-    virt_mem    currpos;
-    unsigned_32 size;
-    unsigned_32 numentries;
-    group_entry *group;
+    int             index;
+    cv_trailer      start;
+    virt_mem        currpos;
+    unsigned_32     size;
+    unsigned_32     numentries;
+    group_entry     *group;
 
     AddSubSection( false );     // for sstSegMap
     numentries = ( SectAddrs[CVSECT_MODDIR].u.vm_offs + SectAddrs[CVSECT_DIRECTORY].u.vm_offs ) / sizeof( cv_directory_entry );
