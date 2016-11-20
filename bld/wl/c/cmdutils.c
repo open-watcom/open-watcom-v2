@@ -126,7 +126,7 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
                 Token.len = strlen( pathin );
                 if( !(*rtn)() ) {
                     Token.this = NULL;
-                    Token.thumb = OK;   // make _sure_ we don't use token.this
+                    Token.thumb = false;    // make _sure_ we don't use token.this
                     retval = false;
                     break;
                 }
@@ -222,7 +222,7 @@ bool ProcOne( parse_entry *entry, sep_type req, bool suicide )
     if( suicide ) {
         Syntax();
     } else {
-        Token.thumb = REJECT;       /*  try again later */
+        Token.thumb = true;         /*  try again later */
         ret = false;
     }
     return( ret );
@@ -382,7 +382,7 @@ char *totext( void )
 /********************/
 /* get a possiblly quoted string */
 {
-    Token.thumb = REJECT;
+    Token.thumb = true;
     if( !GetToken( SEP_NO, TOK_NORMAL ) ) {
         GetToken( SEP_NO, TOK_INCLUDE_DOT );
     }
@@ -428,7 +428,7 @@ static bool CheckFence( void )
 /****************************/
 /* check for a "fence", and skip it if it is there */
 {
-    if( Token.thumb == REJECT ) {
+    if( Token.thumb ) {
         if( Token.quoted )
             return( false );   /* no fence inside quotes */
         if( *Token.this == '}' ) {
@@ -455,9 +455,10 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
     bool    ret;
     bool    need_sep;
 
-    if( Token.thumb == REJECT ) {
-        Token.thumb = OK;
-        if( Token.quoted ) return( true );
+    if( Token.thumb ) {
+        Token.thumb = false;
+        if( Token.quoted )
+            return( true );
         Token.next = Token.this;        /* re-process last token */
     }
     need_sep = true;
@@ -481,8 +482,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
         //  prefix token(s) may also appear anywhere in the file.
         */
 
-        if( (Token.skipToNext) && (req == SEP_COMMA) ) {
-            Token.skipToNext = 0;
+        if( Token.skipToNext && (req == SEP_COMMA) ) {
+            Token.skipToNext = false;
             need_sep = false;
         }
 
@@ -548,36 +549,44 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                     Token.quoted = false;
                     switch( req ) {
                     case SEP_NO:
-                        if( hmm == ',' || hmm == '=' ) return( false );
+                        if( hmm == ',' || hmm == '=' )
+                            return( false );
                         break;
                     case SEP_COMMA:
-                        if(hmm != ',' ) return( false);
+                        if(hmm != ',' )
+                            return( false);
                         Token.next++;
                         break;
                     case SEP_EQUALS:
-                        if( hmm != '=' ) return( false );
+                        if( hmm != '=' )
+                            return( false );
                         Token.next++;
                         break;
                     case SEP_PERIOD:
                     case SEP_DOT_EXT:
-                        if( hmm != '.' ) return( false );
+                        if( hmm != '.' )
+                            return( false );
                         Token.next++;
                         break;
                     case SEP_PAREN:
-                        if( hmm != '(' ) return( false );
+                        if( hmm != '(' )
+                            return( false );
                         Token.next++;
                         break;
                     case SEP_LCURLY:
-                        if( hmm != '{' ) return( false );
+                        if( hmm != '{' )
+                            return( false );
                         Token.next++;
                         break;
                     case SEP_QUOTE:
-                        if( hmm != '\'' ) return( false );
+                        if( hmm != '\'' )
+                            return( false );
                         Token.next++;
                         Token.quoted = true;
                         break;
                     case SEP_RCURLY:
-                        if( hmm != '}' ) return( false );
+                        if( hmm != '}' )
+                            return( false );
                         Token.next++;
                         return( true );
                     case SEP_END:
@@ -604,8 +613,8 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             if( Token.locked )
                 return( false );
             RestoreCmdLine();
-            if( Token.thumb == REJECT ) {
-                Token.thumb = OK;
+            if( Token.thumb ) {
+                Token.thumb = false;
                 Token.next = Token.this;        /* re-process last token */
             }
             Token.quoted = false;
@@ -725,7 +734,7 @@ void NewCommandSource( char *name, char *buff, method how )
     Token.where = MIDST;
     Token.line = 1;
     Token.how = how;
-    Token.thumb = OK;
+    Token.thumb = false;
     Token.locked = false;
     Token.quoted = false;
 }
@@ -869,8 +878,16 @@ static void MapEscapeChar( void )
     case 'x':
         shift += ParseNumber( ++str, 16 );
         break;
-    case '0': case '1': case '2': case '3': case '4': case'5': case '6':
-    case '7': case '8': case '9':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
         shift += ParseNumber( str, 8 ) - 1;
         break;
     default:

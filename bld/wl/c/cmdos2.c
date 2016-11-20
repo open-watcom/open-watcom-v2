@@ -154,7 +154,7 @@ static bool GetWlibImports( void )
             Token.this += 2;
             Token.len -= 2;
             if( Token.this[0] == '\'' ) {
-                Token.thumb = REJECT;
+                Token.thumb = true;
                 if( !GetToken( SEP_QUOTE, TOK_NORMAL ) ) {
                     LnkMsg( LOC+LINE+ERR+MSG_BAD_WLIB_IMPORT, NULL );
                     RestoreCmdLine();   /* get rid of this file */
@@ -259,7 +259,7 @@ static bool getexport( void )
                 exp->iopl_words = val16;
             }
         } else {
-            Token.thumb = REJECT;    // reprocess the token.
+            Token.thumb = true;     // reprocess the token.
         }
     }
     AddToExportList( exp );
@@ -388,7 +388,7 @@ bool ProcCommitHeap( void )
 static bool AddCommit( void )
 /***************************/
 {
-    Token.thumb = REJECT;
+    Token.thumb = true;
     return( ProcOne( CommitKeywords, SEP_NO, false ) );
 }
 
@@ -713,7 +713,7 @@ static bool getsegflags( void )
 {
     os2_seg_flags   *entry;
 
-    Token.thumb = REJECT;
+    Token.thumb = true;
     _ChkAlloc( entry, sizeof( os2_seg_flags ) );
     entry->specified = 0;
     entry->flags = FmtData.def_seg_flags;    // default value.

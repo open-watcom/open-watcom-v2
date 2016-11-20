@@ -96,7 +96,7 @@ static bool GetQNXSegFlags( void )
     bool            isclass;
     qnx_seg_flags * entry;
 
-    Token.thumb = REJECT;
+    Token.thumb = true;
     isclass = ProcOne( QNXSegDesc, SEP_NO, false );
     if( !GetToken( SEP_NO, TOK_INCLUDE_DOT ) ){
         return( false );

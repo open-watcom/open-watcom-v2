@@ -99,7 +99,7 @@ bool ProcFormat( void )
 static bool AddOption( void )
 /***************************/
 {
-    Token.thumb = REJECT;
+    Token.thumb = true;
     if( !ProcOne( MainOptions, SEP_NO, false ) )
         return( false );
     return( true );
@@ -1016,7 +1016,7 @@ bool ProcSystem( void )
             return( false );
         }
     } else {
-        Token.thumb = OK;
+        Token.thumb = false;
     }
     sysname = tostring();
     sys = FindSystemBlock( sysname );
@@ -1059,7 +1059,7 @@ static void GetCommandBlock( sysblock **hdr, char *name, parse_entry *endtab )
     InitStringTable( &strtab, false );
     AddBufferStringTable( &strtab, &strtab, offsetof( sysblock, commands ) );
     while( !ProcOne( endtab, SEP_SPACE, false ) ) {
-        Token.thumb = OK;
+        Token.thumb = false;
         AddBufferStringTable( &strtab, Token.this, Token.len );
         AddCharStringTable( &strtab, ' ' );
         RestoreParser();
@@ -1089,7 +1089,7 @@ bool ProcSysBegin( void )
     if( sys != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sysname );
         while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
-            Token.thumb = OK;
+            Token.thumb = false;
             RestoreParser();
         }
     } else {
@@ -1227,7 +1227,7 @@ bool ProcImpFile( void )
 static bool AddRunTime( void )
 /****************************/
 {
-    Token.thumb = REJECT;       // reparse last token.
+    Token.thumb = true;         // reparse last token.
     return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
