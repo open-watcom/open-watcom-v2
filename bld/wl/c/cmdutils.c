@@ -277,7 +277,7 @@ ord_state getatoi( unsigned_16 *pnt )
 ord_state getatol( unsigned_32 *pnt )
 /***********************************/
 {
-    char            *p;
+    const char      *p;
     size_t          len;
     unsigned long   value;
     unsigned        radix;
@@ -303,7 +303,7 @@ ord_state getatol( unsigned_32 *pnt )
         }
     }
     for( ; len != 0; --len ) {
-        ch = tolower( *p++ );
+        ch = (char)tolower( (unsigned char)*p++ );
         if( ch == 'k' ) {         // constant of the form 64k
             if( len > 1 || !gotdigit ) {
                 return( ST_NOT_ORDINAL );
@@ -618,7 +618,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
             if( resetpoint && (CmdFile == resetpoint) ) {
                 if( *Token.next == ',' )
                     break;
-                if( pbreset )
+                if( pbreset != NULL )
                     *pbreset = true;            /* Show we have hit a file end-point for a directive */
                 return( false );
             }
@@ -629,7 +629,7 @@ bool GetTokenEx( sep_type req, tokcontrol ctrl, cmdfilelist *resetpoint, bool *p
                 break;
             }
             Token.quoted = false;
-            ret = ( req == SEP_END ) ? true : false;
+            ret = ( req == SEP_END );
             return( ret );
         }
     }
@@ -646,9 +646,7 @@ static void OutPutPrompt( const char *str )
 static void GetNewLine( void )
 /****************************/
 {
-    if( Token.how == BUFFERED
-     || Token.how == ENVIRONMENT
-     || Token.how == SYSTEM ) {
+    if( Token.how == BUFFERED || Token.how == ENVIRONMENT || Token.how == SYSTEM ) {
         Token.where = MIDST;
         //go until next line found;
         for( ; *Token.next != '\n'; Token.next++ ) {
@@ -691,7 +689,7 @@ static void BackupParser( void )
 }
 
 void RestoreParser( void )
-/*******************************/
+/************************/
 /* return the parser to the previous command state */
 {
     if( CmdFile->next == NULL )
@@ -798,7 +796,7 @@ static void StartNewFile( void )
 }
 
 void EatWhite( void )
-/**************************/
+/*******************/
 {
     while( IS_WHITESPACE( Token.next ) ) {
         Token.next++;
@@ -806,7 +804,7 @@ void EatWhite( void )
 }
 
 static int ParseNumber( char *str, int radix )
-/*********************************************/
+/********************************************/
 /* read a (possibly hexadecimal) number */
 {
     bool        isdig;
