@@ -156,13 +156,13 @@ static void DumpInfo( sect_number sect, void *data, size_t len )
 }
 
 static void DumpInfoU8( sect_number sect, unsigned_8 data )
-/**********************************************************/
+/*********************************************************/
 {
     DumpInfo( sect, &data, sizeof( data ) );
 }
 
 static void DumpInfoU32( sect_number sect, unsigned_32 data )
-/************************************************************/
+/***********************************************************/
 {
     DumpInfo( sect, &data, sizeof( data ) );
 }
@@ -226,7 +226,7 @@ static void GenSubSection( sst sect, unsigned_32 size )
 }
 
 void CVP1ModuleScanned( void )
-/***********************************/
+/****************************/
 {
 }
 
@@ -238,7 +238,7 @@ static void CVAddLines( lineinfo *info )
 }
 
 void CVP1ModuleFinished( mod_entry *obj )
-/**********************************************/
+/***************************************/
 // calculate size of the sstModule
 {
     size_t      namelen;
@@ -277,7 +277,7 @@ void CVP1ModuleFinished( mod_entry *obj )
 }
 
 void CVAddModule( mod_entry *obj, section *sect )
-/******************************************************/
+/***********************************************/
 // called just before publics have been assigned addresses between p1 & p2
 {
     cv_sst_module       mod;
@@ -389,7 +389,7 @@ static void GenSrcModHeader( void )
 }
 
 void CVGenModule( void )
-/*****************************/
+/**********************/
 // generate an sstSrcModule
 {
     if( LineInfo.needsort ) {
@@ -399,7 +399,7 @@ void CVGenModule( void )
 }
 
 void CVAddLocal( seg_leader *seg, offset length )
-/*******************************************************/
+/***********************************************/
 // called during pass 1 final segment processing.
 {
     length = length;
@@ -409,15 +409,13 @@ void CVAddLocal( seg_leader *seg, offset length )
 }
 
 void CVAddGlobal( symbol *sym )
-/************************************/
+/*****************************/
 // called during pass 1 symbol definition
 {
     unsigned    size;
 
     if( (sym->info & SYM_STATIC) == 0 ) {
-        if( ( sym->p.seg == NULL )
-            || IS_SYM_IMPORTED( sym )
-            || sym->p.seg->is32bit ) {
+        if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
             size = sizeof( s_pub32 );
         } else {
             size = sizeof( s_pub16 );
@@ -428,8 +426,8 @@ void CVAddGlobal( symbol *sym )
     }
 }
 
-void CVGenGlobal( symbol * sym, section *sect )
-/****************************************************/
+void CVGenGlobal( symbol *sym, section *sect )
+/********************************************/
 // called during symbol address calculation (between pass 1 & pass 2)
 // also called by loadpe between passes
 {
@@ -446,9 +444,7 @@ void CVGenGlobal( symbol * sym, section *sect )
     namelen = strlen( sym->name );
     size = namelen + 1;
 
-    if( ( sym->p.seg == NULL )
-        || IS_SYM_IMPORTED( sym )
-        || sym->p.seg->is32bit ) {
+    if( ( sym->p.seg == NULL ) || IS_SYM_IMPORTED( sym ) || sym->p.seg->is32bit ) {
         size += sizeof( s_pub32 );
         pub32.common.length = ROUND_UP( size, 4 );
         pad = pub32.common.length - size;
@@ -561,18 +557,18 @@ static void CVAddAddrAdd( segdata *sdata, offset delta, offset size, void *cooki
     delta = delta;
     size = size;
     cookie = cookie;
-    if( !isnewmod )
-        return;
-    sdata->o.mod->d.cv->numsegs++;
-    SectAddrs[CVSECT_MODULE].u.vm_offs += sizeof( cv_seginfo );
+    if( isnewmod ) {
+        sdata->o.mod->d.cv->numsegs++;
+        SectAddrs[CVSECT_MODULE].u.vm_offs += sizeof( cv_seginfo );
+    }
 }
 
 void CVAddAddrInfo( seg_leader *seg )
-/******************************************/
+/***********************************/
 {
-    if( (seg->info & SEG_CODE) == 0 )
-        return;
-    DBIAddrInfoScan( seg, CVAddAddrInit, CVAddAddrAdd, NULL );
+    if( seg->info & SEG_CODE ) {
+        DBIAddrInfoScan( seg, CVAddAddrInit, CVAddAddrAdd, NULL );
+    }
 }
 
 static void CVGenAddrInit( segdata *sdata, void *_info )
@@ -588,26 +584,26 @@ static void CVGenAddrAdd( segdata *sdata, offset delta, offset size, void *_info
 /***********************************************************************************************/
 {
     cv_seginfo *info = _info;
-    if( !isnewmod )
-        return;
-    info->cbSeg = size;
-    PutInfo( sdata->o.mod->d.cv->segloc, info, sizeof( cv_seginfo ) );
-    sdata->o.mod->d.cv->segloc += sizeof( cv_seginfo );
-    info->offset = sdata->u.leader->seg_addr.off + delta;
+    if( isnewmod ) {
+        info->cbSeg = size;
+        PutInfo( sdata->o.mod->d.cv->segloc, info, sizeof( cv_seginfo ) );
+        sdata->o.mod->d.cv->segloc += sizeof( cv_seginfo );
+        info->offset = sdata->u.leader->seg_addr.off + delta;
+    }
 }
 
 void CVGenAddrInfo( seg_leader *seg )
-/******************************************/
+/***********************************/
 {
     cv_seginfo          info;
 
-    if( (seg->info & SEG_CODE) == 0 )
-        return;
-    DBIAddrInfoScan( seg, CVGenAddrInit, CVGenAddrAdd, &info );
+    if( seg->info & SEG_CODE ) {
+        DBIAddrInfoScan( seg, CVGenAddrInit, CVGenAddrAdd, &info );
+    }
 }
 
 void CVDefClass( class_entry *class, unsigned_32 size )
-/************************************************************/
+/*****************************************************/
 {
     group_entry *group;
 
@@ -653,7 +649,7 @@ static bool DefLeader( void *_leader, void *group )
 }
 
 void CVAddrStart( void )
-/*****************************/
+/**********************/
 {
     cv_subsection_directory dir;
     int         index;
@@ -696,13 +692,13 @@ void CVAddrStart( void )
 }
 
 void CVFini( section *sect )
-/*********************************/
+/**************************/
 // called after pass 2 is finished, but before load file generation
 {
     cv_sst_seg_map      map;
     seg_desc            desc;
-    group_entry *       group;
-    seg_leader *        leader;
+    group_entry         *group;
+    seg_leader          *leader;
 
     if( sect != Root )
         return;
@@ -745,7 +741,7 @@ void CVWriteDebugTypeMisc( const char *filename )
 // positioned to the right spot.
 {
     size_t                  namelen;
-    unsigned                bufspace;
+    size_t                  bufspace;
     debug_misc_dbgdata      dbg_exename;
 
     memset( &dbg_exename, 0, sizeof( dbg_exename ) );
@@ -753,7 +749,7 @@ void CVWriteDebugTypeMisc( const char *filename )
     dbg_exename.length = sizeof( dbg_exename );
     dbg_exename.unicode = 0;
 
-    if( filename ) {
+    if( filename != NULL ) {
         namelen = strlen( filename ) + 1;
         bufspace = sizeof( dbg_exename.data ) - 4;
         if( bufspace >= namelen ) {
@@ -767,7 +763,7 @@ void CVWriteDebugTypeMisc( const char *filename )
 }
 
 void CVWrite( void )
-/****************************/
+/******************/
 // called during load file generation.  It is assumed that the loadfile is
 // positioned to the right spot.
 {

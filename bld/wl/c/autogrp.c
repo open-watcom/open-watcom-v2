@@ -322,7 +322,7 @@ static void SortGroupList( void )
         return;
 
     // first, set all of the links in the group list to NULL
-    for( group = Groups; group != NULL; group = Groups ) {
+    while( (group = Groups) != NULL ) {
         Groups = Groups->next_group;  // Take group out of original ring
         group->next_group = NULL;
         group->leaders = NULL;
