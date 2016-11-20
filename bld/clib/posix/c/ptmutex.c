@@ -182,6 +182,7 @@ int ret;
         else if(__mutex->owner == gettid()) {
             __mutex->status = MUTEX_STATUS_READY;
             __mutex->owner = (pid_t)-1;
+            ret = 0;
             sem_post(&__mutex->mutex);
         } else if(__mutex->status == MUTEX_STATUS_LOCKED)
             ret = EPERM;
