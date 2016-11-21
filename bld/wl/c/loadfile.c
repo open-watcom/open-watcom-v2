@@ -83,7 +83,7 @@ typedef struct {
     size_t      bufsize;
     char        *dllname;
     size_t      dlllen;
-    bool        didone : 1;
+    bool        didone  : 1;
 } implibinfo;
 
 typedef struct  {
@@ -310,7 +310,7 @@ void GetStkAddr( void )
                 PhoneyStack();
             } else {
 #endif
-                if( (FmtData.type & (MK_COM|MK_PE|MK_QNX|MK_ELF|MK_RDOS)) == 0 ) {
+                if( (FmtData.type & (MK_COM | MK_PE | MK_QNX | MK_ELF | MK_RDOS)) == 0 ) {
                     LnkMsg( WRN+MSG_STACK_NOT_FOUND, NULL );
                     StackAddr.seg = 0;
                     StackAddr.off = 0;
@@ -367,8 +367,8 @@ static bool CompSymPtr( void *sym, void *chk )
     return( chk == sym );
 }
 
-static void CheckBSSInStart( symbol *sym, char *name )
-/****************************************************/
+static void CheckBSSInStart( symbol *sym, const char *name )
+/**********************************************************/
 /* It's OK to define _edata if:
         1) the DOSSEG flag is not set
                 or
@@ -386,18 +386,18 @@ static void CheckBSSInStart( symbol *sym, char *name )
     }
 }
 
-static void DefBSSStartSize( char *name, class_entry *class )
-/***********************************************************/
+static void DefBSSStartSize( const char *name, class_entry *class )
+/*****************************************************************/
 /* set the value of an start symbol, and see if it has been defined */
 {
     symbol      *sym;
-    seg_leader *seg;
+    seg_leader  *seg;
 
     sym = FindISymbol( name );
     if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
-        seg = (seg_leader *) RingFirst( class->segs );
-        sym->p.seg = (segdata *) RingFirst( seg->pieces );
+        seg = (seg_leader *)RingFirst( class->segs );
+        sym->p.seg = (segdata *)RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
@@ -405,20 +405,20 @@ static void DefBSSStartSize( char *name, class_entry *class )
     }
 }
 
-static void DefBSSEndSize( char *name, class_entry *class )
-/*********************************************************/
+static void DefBSSEndSize( const char *name, class_entry *class )
+/***************************************************************/
 /* set the value of an end symbol, and see if it has been defined */
 {
     symbol      *sym;
-    seg_leader *seg;
+    seg_leader  *seg;
 
     sym = FindISymbol( name );
     if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
         /* find last segment in BSS class */
-        seg = (seg_leader *) RingLast( class->segs );
+        seg = (seg_leader *)RingLast( class->segs );
         /* set end of BSS class */
-        sym->p.seg = (segdata *) RingLast( seg->pieces );
+        sym->p.seg = (segdata *)RingLast( seg->pieces );
         SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
@@ -500,7 +500,7 @@ void SetStartSym( const char *name )
     if( StartInfo.type != START_UNDEFED ) {
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
-            if( namelen != strlen(StartInfo.targ.sym->name) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
+            if( namelen != strlen( StartInfo.targ.sym->name ) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
                 LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name, name );
             }
         } else {
@@ -630,8 +630,7 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     while( firstgroup != NULL ) {
         low_addr = &firstgroup->grp_addr;
         low_group = NULL;
-        for( group = firstgroup; group->next_group != NULL;
-                                 group = group->next_group ) {
+        for( group = firstgroup; group->next_group != NULL; group = group->next_group ) {
             grp_addr =  &group->next_group->grp_addr;
             if( lessthan( grp_addr, low_addr ) ) {
                 low_addr = grp_addr;
@@ -817,8 +816,7 @@ static void FlushImpBuffer( void )
 void BuildImpLib( void )
 /*****************************/
 {
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
-                                || !FmtData.make_implib )
+    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE || !FmtData.make_implib )
         return;
     if( ImpLib.bufsize > 0 ) {
         FlushImpBuffer();

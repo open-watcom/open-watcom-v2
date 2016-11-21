@@ -56,7 +56,7 @@ static virt_mem     NovDbgInfo;
 static virt_mem     CurrDbgLoc;
 
 void ResetLoadNov( void )
-/******************************/
+/***********************/
 {
     DbgInfoCount = 0;
     DbgInfoLen = 0;
@@ -183,7 +183,7 @@ static unsigned_32 WriteNovExports( fixed_header *header )
 static unsigned_32 WriteNovModules( fixed_header *header )
 /********************************************************/
 {
-    name_list * module;
+    name_list   *module;
     unsigned_32 count;
     unsigned_32 wrote;
 
@@ -196,8 +196,8 @@ static unsigned_32 WriteNovModules( fixed_header *header )
     return( wrote );
 }
 
-void NovDBIAddGlobal( void * _sym )
-/*********************************/
+void NovDBIAddGlobal( void *_sym )
+/********************************/
 {
     symbol *sym = _sym;
 
@@ -225,7 +225,8 @@ void NovDBIGenGlobal( symbol *sym )
 /*********************************/
 {
     nov_dbg_info    info;
-    unsigned char   namelen;
+    size_t          namelen;
+    unsigned char   val8;
 
     if( ( DbgInfoLen != 0 ) && ( (FmtData.u.nov.flags & DO_NOV_REF_ONLY) == 0 || (sym->info & SYM_REFERENCED) ) ) {
         DbgInfoCount++;
@@ -238,7 +239,10 @@ void NovDBIGenGlobal( symbol *sym )
         PutInfo( CurrDbgLoc, &info, offsetof( nov_dbg_info, namelen ) );
         CurrDbgLoc += offsetof( nov_dbg_info, namelen );
         namelen = strlen( sym->name );
-        PutInfo( CurrDbgLoc, &namelen, 1 );
+        if( namelen > 255 )
+            namelen = 255;
+        val8 = namelen;
+        PutInfo( CurrDbgLoc, &val8, 1 );
         CurrDbgLoc++;
         PutInfo( CurrDbgLoc, sym->name, namelen );
         CurrDbgLoc += namelen;
@@ -248,8 +252,8 @@ void NovDBIGenGlobal( symbol *sym )
 static unsigned_32 WriteNovDBI( fixed_header *header )
 /****************************************************/
 {
-    name_list *     export;
-    symbol *        sym;
+    name_list       *export;
+    symbol          *sym;
     unsigned_32     count;
     unsigned_32     wrote;
     nov_dbg_info    info;
@@ -281,8 +285,8 @@ static unsigned_32 WriteNovDBI( fixed_header *header )
     return( 0 );
 }
 
-static unsigned_32 WriteMessages( extended_nlm_header * header )
-/**************************************************************/
+static unsigned_32 WriteMessages( extended_nlm_header *header )
+/*************************************************************/
 /* write out the messages file */
 {
     f_handle    handle;
@@ -307,8 +311,8 @@ static unsigned_32 WriteMessages( extended_nlm_header * header )
     return( header->messageFileLength );
 }
 
-static unsigned_32 WriteSharedNLM( extended_nlm_header * header, unsigned_32 file_size )
-/**************************************************************************************/
+static unsigned_32 WriteSharedNLM( extended_nlm_header *header, unsigned_32 file_size )
+/*************************************************************************************/
 {
     f_handle            handle;
     fixed_header        *sharehdr;
@@ -321,7 +325,7 @@ static unsigned_32 WriteSharedNLM( extended_nlm_header * header, unsigned_32 fil
         if( memcmp( TokBuff, NLM_SIGNATURE, sizeof( NLM_SIGNATURE ) - 1 ) != 0 ) {
             LnkMsg( WRN+MSG_INV_SHARED_NLM_FILE, "s", FmtData.u.nov.sharednlm );
         } else {
-            sharehdr = (fixed_header *) TokBuff;
+            sharehdr = (fixed_header *)TokBuff;
             header->sharedCodeOffset = sharehdr->codeImageOffset + file_size;
             header->sharedCodeLength = sharehdr->codeImageSize;
             header->sharedDataOffset = sharehdr->dataImageOffset + file_size;
@@ -353,7 +357,7 @@ static void GetProcOffsets( fixed_header *header )
 /************************************************/
 {
     symbol      *sym;
-    char        *name;
+    const char  *name;
 
     header->checkUnloadProcedureOffset = 0;
     if( FmtData.u.nov.checkfn != NULL ) {
@@ -393,7 +397,7 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
 // Write a Novell image
 {
     group_entry         *group;
-    outfilelist *       fnode;
+    outfilelist         *fnode;
     bool                repos;
     bool                iscode;
 
@@ -415,8 +419,8 @@ static unsigned_32 WriteNovImage( unsigned_32 file_pos, bool docode )
     return( fnode->file_loc - file_pos );
 }
 
-static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header * header )
-/****************************************************************************/
+static unsigned_32 WriteNovData( unsigned_32 file_pos, fixed_header *header )
+/***************************************************************************/
 // write both the code image and the data image.
 {
     unsigned_32     codesize;
@@ -454,7 +458,7 @@ static void NovNameWrite( const char *name )
 }
 
 void FiniNovellLoadFile( void )
-/************************************/
+/*****************************/
 {
     unsigned_32         file_size;
     fixed_header        nov_header;
@@ -624,8 +628,8 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
 /**********************************************************************************/
 // add a relocation to the import record.
 {
-    nov_import *    imp;
-    nov_import *    new;
+    nov_import      *imp;
+    nov_import      *new;
     virt_mem        vmem_ptr;
     unsigned        vblock;     // which virt_mem block
     unsigned        voff;       // offset into a virt_mem block
@@ -679,11 +683,11 @@ void AddNovImpReloc( symbol *sym, unsigned_32 offset, bool isrelative, bool isda
 }
 
 void FindExportedSyms( void )
-/**********************************/
+/***************************/
 {
-    name_list *     export;
-    symbol *        sym;
-    debug_info *    dinfo;
+    name_list       *export;
+    symbol          *sym;
+    debug_info      *dinfo;
 
     dinfo = CurrSect->dbg_info;
     if( (FmtData.u.nov.flags & DO_WATCOM_EXPORTS) && ( dinfo != NULL ) ) {

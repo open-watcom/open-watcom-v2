@@ -179,7 +179,7 @@ static offset CalcIDataSize( void )
     if( 0 == iatsize ) {
         return( 0 );
     }
-    IData.ilt_off = (NumMods + 1) * sizeof( pe_import_directory );
+    IData.ilt_off = ( NumMods + 1 ) * sizeof( pe_import_directory );
     IData.eof_ilt_off = IData.ilt_off + iatsize;
     IData.iat_off = IData.eof_ilt_off + TocSize;
     IData.mod_name_off = IData.iat_off + iatsize;
@@ -202,7 +202,7 @@ static offset CalcIDataSize( void )
 }
 
 void ResetLoadPE( void )
-/*****************************/
+/**********************/
 {
     PEImpList = NULL;
     XFerSegData = NULL;
@@ -218,7 +218,7 @@ static offset CalcIATAbsOffset( void )
 }
 
 static void CalcImpOff( dll_sym_info *dll, offset *off )
-/********************************************************/
+/******************************************************/
 {
     if( dll != NULL) { // if not end of mod marker
         SET_SYM_ADDR( dll->iatsym, *off, 0 );
@@ -254,7 +254,7 @@ static int GetTransferGlueSize( int lnk_state )
 }
 
 static void *GetTransferGlueCode( int lnk_state )
-/************************************************/
+/***********************************************/
 {
     switch( lnk_state & HAVE_MACHTYPE_MASK ) {
     case HAVE_ALPHA_CODE:   return( &AlphaJump );
@@ -266,7 +266,7 @@ static void *GetTransferGlueCode( int lnk_state )
 }
 
 offset FindIATSymAbsOff( symbol *sym )
-/********************************************/
+/************************************/
 {
     dll_sym_info        *dll;
 
@@ -276,7 +276,7 @@ offset FindIATSymAbsOff( symbol *sym )
 }
 
 offset FindSymPosInTocv( symbol *sym )
-/***********************************************/
+/************************************/
 {
     return( FindIATSymAbsOff( sym ) - IDataGroup->linear - FmtData.base - TocShift - IData.eof_ilt_off );
 }
@@ -650,7 +650,7 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         sort[i++] = exp;
         eat = exp->addr.off;
         if( next_ord < exp->ordinal ) {
-            PadLoad( (exp->ordinal - next_ord) * sizeof( pe_va ) );
+            PadLoad( ( exp->ordinal - next_ord ) * sizeof( pe_va ) );
         }
         next_ord = exp->ordinal + 1;
         WriteLoadU32( eat );
@@ -1747,7 +1747,7 @@ void AddPEImportLocalSym( symbol *locsym, symbol *iatsym )
 bool ImportPELocalSym( symbol *iatsym )
 /*************************************/
 {
-    char            *name;
+    const char      *name;
     symbol          *locsym;
 
     name = iatsym->name;
