@@ -988,10 +988,11 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
         sym->addr.off += value;
         sdata->u1.vm_ptr = AllocStg( sdata->length );
 
-        if(NULL == data)
+        if( NULL == data ) {
             PutInfoNulls( sdata->u1.vm_ptr, sdata->length );
-        else
+        } else {
             PutInfo( sdata->u1.vm_ptr, data, sdata->length );
+        }
     }
 }
 
