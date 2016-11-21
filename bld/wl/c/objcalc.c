@@ -92,8 +92,8 @@ typedef struct {
 
 
 static struct {
-    char *name;
-    char idx;
+    char        *name;
+    ffix_type   idx;
 } FloatNames[] = {
     { "FIWRQQ", FFIX_WR_SYMBOL },
     { "FIDRQQ", FFIX_DR_SYMBOL },
@@ -1138,7 +1138,7 @@ static void SortClasses( section *sec )
         for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
             if( stricmp( currcl->name, MatchClass->Name ) == 0 ) { // search order list for name match
                 NewRing = &(MatchClass->Ring);   // if found save ptr to instance
-                if( MatchClass->FixedAddr) {     // and copy any flags or address from it
+                if( MatchClass->FixedAddr ) {    // and copy any flags or address from it
                     currcl->flags |= CLASS_FIXED;
                     currcl->BaseAddr = MatchClass->Base;
                     FmtData.base = 0;  // Otherwise PE will use default and blow up
@@ -1170,7 +1170,7 @@ static void SortClasses( section *sec )
 
                 for( ;; ) {
                     if( stricmp( currseg->segname, MatchSeg->Name ) == 0 ) {
-                        if( MatchSeg->FixedAddr) {     // and copy any flags or address from it
+                        if( MatchSeg->FixedAddr ) {    // and copy any flags or address from it
                             currseg->segflags |= SEG_FIXED;
                             currseg->seg_addr = MatchSeg->Base;
                         }

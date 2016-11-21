@@ -550,7 +550,9 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     size_t          namelen;
     class_status    cls_is32bit;
 
-    cls_is32bit = ( is32bit ) ? CLASS_32BIT : 0;
+    cls_is32bit = 0;
+    if( is32bit )
+        cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
     for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
         if( stricmp( currclass->name, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
@@ -560,10 +562,10 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     }
     namelen = strlen( name );
     currclass = CarveAlloc( CarveClass );
+    currclass->flags = 0;
     currclass->name = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     currclass->segs = NULL;
     currclass->section = sect;
-    currclass->flags = is32bit;
     currclass->next_class = NULL;
     if( lastclass == NULL ) {
         sect->classlist = currclass;
@@ -571,6 +573,9 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
         lastclass->next_class = currclass;
     }
     DBIColClass( currclass );
+    if( is32bit ) {
+        currclass->flags |= CLASS_32BIT;
+    }
     if( iscode ) {
         currclass->flags |= CLASS_CODE;
     }

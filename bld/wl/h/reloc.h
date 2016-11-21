@@ -46,13 +46,6 @@
 #define OSFIXUP                 0x0003
 #define ADDITIVE                0x0004
 
-#define WIN_FFIX_DS_OVERRIDE    1       // FIARQQ
-#define WIN_FFIX_SS_OVERRIDE    2       // FISRQQ
-#define WIN_FFIX_CS_OVERRIDE    3       // FICRQQ
-#define WIN_FFIX_ES_OVERRIDE    4       // FIERQQ
-#define WIN_FFIX_DR_SYMBOL      5       // FIDRQQ
-#define WIN_FFIX_WR_SYMBOL      6       // FIWRQQ
-
 #define NOV_OFFSET_CODE_RELOC   0x40000000
 #define NOV_TARGET_CODE_RELOC   0x80000000
 

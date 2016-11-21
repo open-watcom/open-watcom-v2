@@ -121,7 +121,7 @@ typedef enum {
 } sym_info;
 
 // values used to keep track of the special floating point symbols.
-enum {
+typedef enum {
     FFIX_NOT_A_FLOAT = 0,
     FFIX_WR_SYMBOL,
     FFIX_DR_SYMBOL,
@@ -130,7 +130,7 @@ enum {
     FFIX_SS_OVERRIDE,
     FFIX_DS_OVERRIDE,
     FFIX_IGNORE,          // an overlapping fixup symbol.
-};
+} ffix_type;
 
 // some handy macros for checking and setting symbol type bits
 

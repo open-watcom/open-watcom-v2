@@ -76,13 +76,13 @@ static char             *OldSymFile;
 static void             *AltDefData;
 static char             *IncStrTab;
 
-#define SEG_CARVE_SIZE          (2*1024)
-#define MOD_CARVE_SIZE          (5*1024)
-#define SDATA_CARVE_SIZE        (16*1024)
-#define SYM_CARVE_SIZE          (32*1024)
+#define SEG_CARVE_SIZE          (2 * 1024)
+#define MOD_CARVE_SIZE          (5 * 1024)
+#define SDATA_CARVE_SIZE        (16 * 1024)
+#define SYM_CARVE_SIZE          (32 * 1024)
 
 void ResetPermData( void )
-/******************************/
+/************************/
 {
     IncFileName = NULL;
     IncStrTab = NULL;
@@ -94,14 +94,14 @@ void ResetPermData( void )
     IncGroups = NULL;
     SavedUserLibs = NULL;
     SavedDefLibs = NULL;
-    CarveClass = CarveCreate( sizeof(class_entry), 20 * sizeof(class_entry) );
-    CarveGroup = CarveCreate( sizeof(group_entry), 20 * sizeof(group_entry) );
-    CarveDLLInfo = CarveCreate( sizeof(dll_sym_info), 100*sizeof(dll_sym_info));
-    CarveExportInfo = CarveCreate(sizeof(entry_export),20*sizeof(entry_export));
-    CarveLeader = CarveCreate( sizeof(seg_leader), SEG_CARVE_SIZE );
-    CarveModEntry = CarveCreate( sizeof(mod_entry), MOD_CARVE_SIZE );
-    CarveSegData = CarveCreate( sizeof(segdata), SDATA_CARVE_SIZE );
-    CarveSymbol = CarveCreate( sizeof(symbol), SYM_CARVE_SIZE );
+    CarveClass = CarveCreate( sizeof( class_entry ), 20 * sizeof( class_entry ) );
+    CarveGroup = CarveCreate( sizeof( group_entry ), 20 * sizeof( group_entry ) );
+    CarveDLLInfo = CarveCreate( sizeof( dll_sym_info ), 100 * sizeof( dll_sym_info ) );
+    CarveExportInfo = CarveCreate( sizeof( entry_export ), 20 * sizeof( entry_export ) );
+    CarveLeader = CarveCreate( sizeof( seg_leader ), SEG_CARVE_SIZE );
+    CarveModEntry = CarveCreate( sizeof( mod_entry ), MOD_CARVE_SIZE );
+    CarveSegData = CarveCreate( sizeof( segdata ), SDATA_CARVE_SIZE );
+    CarveSymbol = CarveCreate( sizeof( symbol ), SYM_CARVE_SIZE );
     InitStringTable( &PermStrings, true );
     InitStringTable( &PrefixStrings, true );
     InitStringTable( &StoredRelocs, false );
@@ -192,7 +192,7 @@ static void BufWritePermFile( perm_write_info *info, void *data, unsigned len )
 }
 
 static bool WriteLeaderName( void *_leader, void *info )
-/*****************************************************/
+/******************************************************/
 {
     seg_leader *leader = _leader;
 
@@ -234,7 +234,7 @@ static void WriteDLLInfo( void *_dll, void *info )
 {
     dll_sym_info *dll = _dll;
 
-    if( !CheckFree( ( dll->isfree != 0 ), info ) ) {
+    if( !CheckFree( dll->isfree, info ) ) {
         dll->m.modname = dll->m.modnum->name;
         if( !dll->isordinal ) {
             dll->u.entname = dll->u.entry->name;
@@ -248,7 +248,7 @@ static void WriteExportInfo( void *_exp, void *info )
 {
     entry_export *exp = _exp;
 
-    if( !CheckFree( ( exp->isfree != 0 ), info ) ) {
+    if( !CheckFree( exp->isfree, info ) ) {
         exp->next = CarveGetIndex( CarveExportInfo, exp->next );
         if( exp->name != NULL ) {
             exp->name = GetString( info, exp->name );
@@ -598,7 +598,7 @@ static unsigned_32 BufReadU32( perm_read_info *info )
     unsigned_32 retval;
 
     retval = *((unsigned_32 *)(info->buffer + info->currpos));
-    info->currpos += sizeof(unsigned_32);
+    info->currpos += sizeof( unsigned_32 );
     return( retval );
 }
 
@@ -626,7 +626,7 @@ static void ReadGroups( unsigned count, perm_read_info *info )
 
     while( count-- ) {
         size = BufReadU32( info );
-        _ChkAlloc( def, sizeof(incgroupdef) + (size - 1) * 2 * sizeof(char *) );
+        _ChkAlloc( def, sizeof( incgroupdef ) + (size - 1) * 2 * sizeof( char * ) );
         RingAppend( &IncGroupDefs, def );
         def->numsegs = size;
         def->grpname = MapString( (char *)(pointer_int)BufReadU32( info ) );
@@ -866,7 +866,7 @@ void ReadPermData( void )
         hdr = (inc_file_header *) info.buffer;  /* in case realloc moved it*/
         QRead( info.incfhdl, info.buffer + SECTOR_SIZE, hdr->hdrsize - SECTOR_SIZE, IncFileName );
     }
-    info.currpos = sizeof(inc_file_header);
+    info.currpos = sizeof( inc_file_header );
     CarveRestart( CarveModEntry, hdr->mods.num );
     CarveRestart( CarveSegData, hdr->segdatas.num );
     CarveRestart( CarveSymbol, hdr->symbols.num );

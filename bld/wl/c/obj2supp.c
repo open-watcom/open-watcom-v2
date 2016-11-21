@@ -71,34 +71,34 @@
 #define FIX_POINTER_MASK            (FIX_BASE | FIX_HIGH | FIX_OFFSET_MASK)
 
 typedef struct fix_relo_data {
-    byte        *data;
-    offset      value;      /* value at location being patched */
-    targ_addr   loc_addr;
-    targ_addr   tgt_addr;
-    fix_type    type;
-    unsigned    ffix        : 3;
-    unsigned    additive    : 1;
-    unsigned    done        : 1;
-    unsigned    imported    : 1;
-    unsigned    os2_selfrel : 1;
+    byte            *data;
+    offset          value;      /* value at location being patched */
+    targ_addr       loc_addr;
+    targ_addr       tgt_addr;
+    fix_type        type;
+    ffix_type       ffix;
+    bool            additive    : 1;
+    bool            done        : 1;
+    bool            imported    : 1;
+    bool            os2_selfrel : 1;
 } fix_relo_data;
 
 typedef struct {
-    fix_type    flags;
-    offset      off;
-    void        *target;
-    void        *frame;
+    fix_type        flags;
+    offset          off;
+    void            *target;
+    void            *frame;
 } fixupf_t;
 
 typedef struct {
-    fix_type    flags;
-    offset      off;
-    void        *target;
+    fix_type        flags;
+    offset          off;
+    void            *target;
 } fixup_t;
 
 typedef struct {
-    fix_type    flags;
-    segdata     *sdata;
+    fix_type        flags;
+    segdata         *sdata;
 } sdata_t;
 
 typedef struct {
@@ -110,13 +110,31 @@ typedef struct {
 } save_fixup;
 
 typedef struct base_reloc {
-    unsigned            rel_size;       /* actual size of reloc item */
-    unsigned            fix_size;       /* size of field being fixed up */
-    offset              fix_off;        /* start addr of field being fixed */
-    bool                isfloat     : 1;
-    bool                isqnxlinear : 1;
-    reloc_item          item;
+    unsigned        rel_size;       /* actual size of reloc item */
+    unsigned        fix_size;       /* size of field being fixed up */
+    offset          fix_off;        /* start addr of field being fixed */
+    bool            isfloat     : 1;
+    bool            isqnxlinear : 1;
+    reloc_item      item;
 } base_reloc;
+
+#define WIN_FFIX_DS_OVERRIDE    1       // FIARQQ
+#define WIN_FFIX_SS_OVERRIDE    2       // FISRQQ
+#define WIN_FFIX_CS_OVERRIDE    3       // FICRQQ
+#define WIN_FFIX_ES_OVERRIDE    4       // FIERQQ
+#define WIN_FFIX_DR_SYMBOL      5       // FIDRQQ
+#define WIN_FFIX_WR_SYMBOL      6       // FIWRQQ
+
+static byte WinFFixMap[] = {
+    0,                          // none
+    WIN_FFIX_WR_SYMBOL,         // FIWRQQ
+    WIN_FFIX_DR_SYMBOL,         // FIDRQQ
+    WIN_FFIX_ES_OVERRIDE,       // FIERQQ
+    WIN_FFIX_CS_OVERRIDE,       // FICRQQ
+    WIN_FFIX_SS_OVERRIDE,       // FISRQQ
+    WIN_FFIX_DS_OVERRIDE,       // FIARQQ
+    0                           // ignore
+};
 
 static offset           LastOptimized;  // offset last optimized.
 static fix_type         LastOptType;
@@ -705,35 +723,34 @@ size_t IncSaveRelocs( void *_save )
     return( fixsize );
 }
 
-static void DumpReloc( base_reloc *curr )
-/***************************************/
+static void DumpReloc( base_reloc *breloc )
+/*****************************************/
 {
-    if( curr->isfloat ) {
-        FloatReloc( &curr->item );
-    } else if( curr->isqnxlinear ) {
-        QNXLinearReloc( CurrRec.seg->u.leader->group, &curr->item );
+    if( breloc->isfloat ) {
+        FloatReloc( &breloc->item );
+    } else if( breloc->isqnxlinear ) {
+        QNXLinearReloc( CurrRec.seg->u.leader->group, &breloc->item );
     } else {
-        WriteReloc( CurrRec.seg->u.leader->group, curr->fix_off,
-                    &curr->item, curr->rel_size );
+        WriteReloc( CurrRec.seg->u.leader->group, breloc->fix_off,
+                    &breloc->item, breloc->rel_size );
         if( FmtData.type & MK_OS2_FLAT ) {
-            if( ( OSF_PAGE_SIZE - (curr->fix_off & OSF_PAGE_MASK) ) < curr->fix_size ) {
+            if( ( OSF_PAGE_SIZE - (breloc->fix_off & OSF_PAGE_MASK) ) < breloc->fix_size ) {
                 /* stupid relocation has been split across two
                     pages, have to duplicate the entry */
-                curr->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
+                breloc->item.os2f.fmt.r32_soff -= OSF_PAGE_SIZE;
                 WriteReloc( CurrRec.seg->u.leader->group,
-                            curr->fix_off + OSF_PAGE_SIZE, &curr->item,
-                            curr->rel_size );
+                            breloc->fix_off + OSF_PAGE_SIZE, &breloc->item, breloc->rel_size );
             }
         }
     }
 }
 
-static void InitReloc( base_reloc *reloc )
-/****************************************/
+static void InitReloc( base_reloc *breloc )
+/*****************************************/
 {
-    reloc->isfloat = false;
-    reloc->isqnxlinear = false;
-    reloc->rel_size = FmtRelocSize;
+    breloc->isfloat = false;
+    breloc->isqnxlinear = false;
+    breloc->rel_size = FmtRelocSize;
 }
 
 static unsigned FindGroupIdx( segment seg )
@@ -832,40 +849,30 @@ static void PatchOffset( fix_relo_data *fix, offset val, bool isdelta )
 static void MakeQNXFloatReloc( fix_relo_data *fix )
 /*************************************************/
 {
-    base_reloc  new_reloc;
+    base_reloc  breloc;
 
     if( FmtData.u.qnx.gen_seg_relocs ) {
-        InitReloc( &new_reloc );
-        new_reloc.isfloat = true;
-        new_reloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->ffix << 28 );
-        new_reloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
-        DumpReloc( &new_reloc );
+        InitReloc( &breloc );
+        breloc.isfloat = true;
+        breloc.item.qnx.reloc_offset = fix->loc_addr.off | ( (unsigned_32)fix->ffix << 28 );
+        breloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
+        DumpReloc( &breloc );
     }
 }
-
-static byte WinFFixMap[] = {
-    0,
-    WIN_FFIX_WR_SYMBOL,
-    WIN_FFIX_DR_SYMBOL,
-    WIN_FFIX_ES_OVERRIDE,
-    WIN_FFIX_CS_OVERRIDE,
-    WIN_FFIX_SS_OVERRIDE,
-    WIN_FFIX_DS_OVERRIDE
-};
 
 static void MakeWindowsFloatReloc( fix_relo_data *fix )
 /*****************************************************/
 {
-    base_reloc      new_reloc;
+    base_reloc      breloc;
     os2_reloc_item  *os2item;
 
-    InitReloc( &new_reloc );
-    os2item = &new_reloc.item.os2;
+    InitReloc( &breloc );
+    os2item = &breloc.item.os2;
     os2item->addr_type = MapOS2FixType( fix->type );
     os2item->reloc_offset = fix->loc_addr.off - CurrRec.seg->u.leader->group->grp_addr.off;
     os2item->reloc_type = OSFIXUP | ADDITIVE;
     os2item->put.fltpt = WinFFixMap[fix->ffix];
-    DumpReloc( &new_reloc );
+    DumpReloc( &breloc );
 }
 
 static offset GetSegOff( segdata *sdata )
@@ -1343,7 +1350,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
 /**************************************************************/
 {
     offset              off;
-    base_reloc          new_reloc;
+    base_reloc          breloc;
     targ_addr           target;
     group_entry         *grp;
     segdata             *seg;
@@ -1390,9 +1397,9 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
     }
     DEBUG(( DBG_OLD, "relocation record being output" ));
     save = true;                /* NOTE: copycat code in QNX section ! */
-    InitReloc( &new_reloc );
-    new_reloc.fix_size = CalcFixupSize( fix->type );
-    new_reloc.fix_off = fix->loc_addr.off;
+    InitReloc( &breloc );
+    breloc.fix_size = CalcFixupSize( fix->type );
+    breloc.fix_off = fix->loc_addr.off;
     off = fix->loc_addr.off;
     seg = CurrRec.seg;
     target = fix->tgt_addr;
@@ -1402,8 +1409,8 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         off += seg->u.leader->group->linear;
         if( fix->type & FIX_HIGH ) {
             reltype = PE_FIX_HIGHADJ;   // NYI: can be high when objalign ==
-            new_reloc.rel_size = sizeof( high_pe_reloc_item );    // 0x10000
-            new_reloc.item.hpe.low_off = (unsigned_16)target.off;
+            breloc.rel_size = sizeof( high_pe_reloc_item );    // 0x10000
+            breloc.item.hpe.low_off = (unsigned_16)target.off;
         } else if( ftype == FIX_OFFSET_16 ) {
             if( (FmtData.objalign & 0xFFFF) == 0 ) {
                 save = false;
@@ -1412,12 +1419,12 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         } else {
             reltype = PE_FIX_HIGHLOW;
         }
-        new_reloc.item.pe = ( off & OSF_PAGE_MASK ) | reltype;
+        breloc.item.pe = ( off & OSF_PAGE_MASK ) | reltype;
     } else if( FmtData.type & MK_OS2_16BIT ) {
         os2_reloc_item  *os2item;
 
         fixptr = fix->data;
-        os2item = &new_reloc.item.os2;
+        os2item = &breloc.item.os2;
         os2item->addr_type = MapOS2FixType( fix->type );
         os2item->reloc_offset = off - seg->u.leader->group->grp_addr.off;
         if( !fix->imported ) {
@@ -1457,7 +1464,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         byte    flags;
         byte    fixtype;
 
-        fixptr = new_reloc.item.os2f.buff;
+        fixptr = breloc.item.os2f.buff;
         freedll = false;
         dll = NULL;
         if( fix->type & FIX_REL ) {
@@ -1593,8 +1600,8 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         }
         if( freedll )
             _LnkFree( dll );
-        new_reloc.rel_size = fixptr - new_reloc.item.os2f.buff;
-        new_reloc.item.os2f.fmt.nr_flags = flags;
+        breloc.rel_size = fixptr - breloc.item.os2f.buff;
+        breloc.item.os2f.fmt.nr_flags = flags;
     } else if( FmtData.type & MK_NOVELL ) {
         if( fix->imported ) {
             save = false;
@@ -1607,7 +1614,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
             if( target.seg != DATA_SEGMENT ) {
                 off |= NOV_TARGET_CODE_RELOC;
             }
-            new_reloc.item.novell.reloc_offset = off;
+            breloc.item.novell.reloc_offset = off;
         }
     } else if( FmtData.type & MK_QNX ) {
         bool    done;
@@ -1615,20 +1622,20 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         done = false;
         if( ( ftype == FIX_OFFSET_32 ) || ( ftype == FIX_BASE_OFFSET_32 ) ) {
             if( FmtData.u.qnx.gen_linear_relocs ) {
-                new_reloc.isqnxlinear = true;
-                new_reloc.item.qnxl.reloc_offset = fix->loc_addr.off;
+                breloc.isqnxlinear = true;
+                breloc.item.qnxl.reloc_offset = fix->loc_addr.off;
                 seg = GetTargetSegData( tthread );
                 if( seg->iscode ) {
-                    new_reloc.item.qnxl.reloc_offset |= 0x80000000;
+                    breloc.item.qnxl.reloc_offset |= 0x80000000;
                 }
                 if( (fix->type & FIX_ABS) && (fix->type & FIX_REL) ) {
-                    new_reloc.item.qnxl.reloc_offset |= 0x40000000;
+                    breloc.item.qnxl.reloc_offset |= 0x40000000;
                 }
                 if( fix->type == FIX_BASE_OFFSET_32 ) {
-                    DumpReloc( &new_reloc );
-                    InitReloc( &new_reloc );
-                    new_reloc.fix_size = CalcFixupSize( fix->type );
-                    new_reloc.fix_off   = fix->loc_addr.off;
+                    DumpReloc( &breloc );
+                    InitReloc( &breloc );
+                    breloc.fix_size = CalcFixupSize( fix->type );
+                    breloc.fix_off = fix->loc_addr.off;
                 } else {
                     done = true;
                 }
@@ -1636,48 +1643,48 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         }
         if( !done ) {
             MakeBase( fix );
-            new_reloc.item.qnx.reloc_offset = fix->loc_addr.off;
-            new_reloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
+            breloc.item.qnx.reloc_offset = fix->loc_addr.off;
+            breloc.item.qnx.segment = ToQNXIndex( fix->loc_addr.seg );
         }
     } else if( FmtData.type & MK_ELF ) {
         symbol *sym;
 
         if( LinkState & HAVE_I86_CODE ) {
             if( fix->type & FIX_REL ) {
-                new_reloc.item.elf.info = R_386_PC32;
+                breloc.item.elf.info = R_386_PC32;
             } else {
-                new_reloc.item.elf.info = R_386_32;
+                breloc.item.elf.info = R_386_32;
             }
         } else if( LinkState & HAVE_X64_CODE ) {
             // TODO
         } else if( LinkState & HAVE_PPC_CODE ) {
             if( fix->type & FIX_HIGH ) {
-                new_reloc.item.elf.info = R_PPC_ADDR16_HI;
-                new_reloc.item.elf.addend = (unsigned_16)target.off;
+                breloc.item.elf.info = R_PPC_ADDR16_HI;
+                breloc.item.elf.addend = (unsigned_16)target.off;
             } else if( ftype == FIX_OFFSET_16 ) {
-                new_reloc.item.elf.info = R_PPC_ADDR16_LO;
+                breloc.item.elf.info = R_PPC_ADDR16_LO;
                 if( (FmtData.objalign & 0xFFFF) == 0 ) {
                     save = false;
                 }
             } else {
-                new_reloc.item.elf.info = R_PPC_REL32;
+                breloc.item.elf.info = R_PPC_REL32;
                 LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
             }
         } else if( LinkState & HAVE_MIPS_CODE ) {
             if( fix->type & FIX_HIGH ) {
-                new_reloc.item.elf.info = R_MIPS_HI16;
-                new_reloc.item.elf.addend = (unsigned_16)target.off;
+                breloc.item.elf.info = R_MIPS_HI16;
+                breloc.item.elf.addend = (unsigned_16)target.off;
             } else if( ftype == FIX_OFFSET_16 ) {
-                new_reloc.item.elf.info = R_MIPS_LO16;
+                breloc.item.elf.info = R_MIPS_LO16;
                 if( (FmtData.objalign & 0xFFFF) == 0 ) {
                     save = false;
                 }
             } else if( ftype == FIX_OFFSET_26 ) {
-                new_reloc.item.elf.info = R_MIPS_26;
+                breloc.item.elf.info = R_MIPS_26;
             } else if( ftype == FIX_OFFSET_32 ) {
-                new_reloc.item.elf.info = R_MIPS_REL32;
+                breloc.item.elf.info = R_MIPS_REL32;
             } else {
-                new_reloc.item.elf.info = R_MIPS_REL32;
+                breloc.item.elf.info = R_MIPS_REL32;
                 LnkMsg( LOC + ERR + MSG_INVALID_FLAT_RELOC, "a", &fix->loc_addr );
             }
         }
@@ -1685,7 +1692,7 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
         if( IS_SYM_ALIAS( sym ) && (sym->info & SYM_WAS_LAZY) ) {
             save = false;
         } else if( (tthread->type & FIX_FRAME_EXT) && IsSymElfImpExp( sym ) ) {
-            new_reloc.item.elf.addend = 0;
+            breloc.item.elf.addend = 0;
         } else {
             seg = GetTargetSegData( tthread );
             if( seg == NULL ) {
@@ -1693,39 +1700,39 @@ static void FmtReloc( fix_relo_data *fix, target_spec *tthread )
             } else {
                 grp = seg->u.leader->group;
                 sym = grp->sym;
-                new_reloc.item.elf.addend = target.off - grp->grp_addr.off;
+                breloc.item.elf.addend = target.off - grp->grp_addr.off;
             }
         }
         if( save ) {
-            new_reloc.item.elf.info |= FindElfSymIdx( sym ) << 8;
-            new_reloc.item.elf.reloc_offset = off;
+            breloc.item.elf.info |= FindElfSymIdx( sym ) << 8;
+            breloc.item.elf.reloc_offset = off;
         }
     } else if( FmtData.type & MK_PHAR_REX ) {
         if( ftype == FIX_OFFSET_32 ) {
             off |= 0x80000000;
         }
-        new_reloc.item.rex.reloc_offset = off;
+        breloc.item.rex.reloc_offset = off;
     } else if( FmtData.type & MK_ZDOS ) {
-        new_reloc.item.zdos.reloc_offset = off;
+        breloc.item.zdos.reloc_offset = off;
     } else if( FmtData.type & MK_COM ) {
         save = false;
         LnkMsg( LOC+WRN+MSG_SEG_RELOC_OUT, "a", &fix->loc_addr );
     } else if( FmtData.type & MK_PHAR_MULTISEG ) {
         MakeBase( fix );
-        new_reloc.item.pms.offset = fix->loc_addr.off;
+        breloc.item.pms.offset = fix->loc_addr.off;
         grp = seg->u.leader->group;
-        new_reloc.item.pms.segment = grp->grp_addr.seg;
+        breloc.item.pms.segment = grp->grp_addr.seg;
     } else {
         MakeBase( fix );
-        new_reloc.item.dos.addr.off = fix->loc_addr.off;
+        breloc.item.dos.addr.off = fix->loc_addr.off;
         grp = seg->u.leader->group;
-        new_reloc.item.dos.addr.seg = grp->grp_addr.seg;
+        breloc.item.dos.addr.seg = grp->grp_addr.seg;
         if( grp->section != Root ) {
-            new_reloc.item.dos.addr.seg -= grp->section->sect_addr.seg;
+            breloc.item.dos.addr.seg -= grp->section->sect_addr.seg;
         }
     }
     if( save ) {
-        DumpReloc( &new_reloc );
+        DumpReloc( &breloc );
     }
 }
 

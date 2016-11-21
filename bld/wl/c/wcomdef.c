@@ -515,7 +515,7 @@ void ProcComdat( void )
                 Ring2Append( &CurrMod->segs, sdata );
 #if 0
             } else {    /* add it to a linker defined segment */
-                sdata->iscode = alloc & 1;
+                sdata->iscode = ( (alloc & 1) != 0 );
                 sdata->alloc = --alloc;
                 AddToLinkerComdat( sym );
 #endif
