@@ -57,17 +57,17 @@
 #include "clibext.h"
 
 typedef struct {
-    unsigned_32                 address;
-    unsigned                    file;
-    unsigned_32                 line;
-    unsigned_32                 column;
-    unsigned_16                 segment;
-    unsigned_16                 col;
-    unsigned_8                  is_stmt : 1;
-    unsigned_8                  is_32 : 1;
-    unsigned_8                  has_seg : 1;
-    unsigned_8                  basic_block : 1;
-    unsigned_8                  end_sequence : 1;
+    unsigned_32         address;
+    unsigned            file;
+    unsigned_32         line;
+    unsigned_32         column;
+    unsigned_16         segment;
+    unsigned_16         col;
+    bool                is_stmt         : 1;
+    bool                is_32           : 1;
+    bool                has_seg         : 1;
+    bool                basic_block     : 1;
+    bool                end_sequence    : 1;
 } line_state_info;
 
 typedef struct symrecinfo {
@@ -438,7 +438,7 @@ void WriteModSegs( void )
     WalkMods( WriteVerbMod );
 }
 
-static void init_state( line_state_info *state, int default_is_stmt )
+static void init_state( line_state_info *state, bool default_is_stmt )
 {
     state->address = 0;
     state->segment = 0;
@@ -446,8 +446,8 @@ static void init_state( line_state_info *state, int default_is_stmt )
     state->line = 1;
     state->column = 0;
     state->is_stmt = default_is_stmt;
-    state->basic_block = 0;
-    state->end_sequence = 0;
+    state->basic_block = false;
+    state->end_sequence = false;
 }
 
 static void dump_state( line_state_info *state )
@@ -488,8 +488,9 @@ static unsigned_8 *DecodeULEB128( const unsigned_8 *input, unsigned_32 *value )
     shift = 0;
     for( ;; ) {
         byte = *input++;
-        result |= ( byte & 0x7f ) << shift;
-        if( ( byte & 0x80 ) == 0 ) break;
+        result |= (byte & 0x7f) << shift;
+        if( (byte & 0x80) == 0 )
+            break;
         shift += 7;
     }
     *value = result;
@@ -506,11 +507,13 @@ static unsigned_8 *DecodeSLEB128( const unsigned_8 *input, signed_32 *value )
     shift = 0;
     for( ;; ) {
         byte = *input++;
-        result |= ( byte & 0x7f ) << shift;
+        result |= (byte & 0x7f) << shift;
         shift += 7;
-        if( ( byte & 0x80 ) == 0 ) break;
+        if( (byte & 0x80) == 0 ) {
+            break;
+        }
     }
-    if( ( shift < 32 ) && ( byte & 0x40 ) ) {
+    if( ( shift < 32 ) && (byte & 0x40) ) {
         result |= - ( 1 << shift );
     }
     *value = result;
@@ -543,7 +546,7 @@ void WriteMapLines( void )
     signed_32                   itmp;
     int                         line_range;
     int                         line_base;
-    int                         default_is_stmt;
+    bool                        default_is_stmt;
     line_state_info             state;
     unsigned                    min_instr;
     unsigned_32                 unit_length;
@@ -561,8 +564,8 @@ void WriteMapLines( void )
 
     for( p = input; p - input < length; ) {
         state.col = 0;
-        state.is_32 = 0;
-        state.has_seg = 0;
+        state.is_32 = false;
+        state.has_seg = false;
         unit_length = GET_U32( p );
         p += sizeof( unsigned_32 );
         unit_base = p;
@@ -572,7 +575,7 @@ void WriteMapLines( void )
         min_instr = *p;
         p += 1;
 
-        default_is_stmt = *p;
+        default_is_stmt = ( *p != 0 );
         p += 1;
 
         line_base = GET_I8( p );
@@ -629,17 +632,17 @@ void WriteMapLines( void )
                 --op_len;
                 switch( value_lne ) {
                 case DW_LNE_end_sequence:
-                    state.end_sequence = 1;
+                    state.end_sequence = true;
                     init_state( &state, default_is_stmt );
                     p += op_len;
                     break;
                 case DW_LNE_set_address:
                     if( op_len == 4 ) {
                         tmp = GET_U32( p );
-                        state.is_32 = 1;
+                        state.is_32 = true;
                     } else if( op_len == 2 ) {
                         tmp = GET_U16( p );
-                        state.is_32 = 0;
+                        state.is_32 = false;
                     } else {
                         tmp = 0xffffffff;
                     }
@@ -648,7 +651,7 @@ void WriteMapLines( void )
                     break;
                 case DW_LNE_WATCOM_set_segment_OLD:
                 case DW_LNE_WATCOM_set_segment:
-                    state.has_seg = 1;
+                    state.has_seg = true;
                     if( op_len == 4 ) {
                         tmp = GET_U32( p );
                     } else if( op_len == 2 ) {
@@ -676,7 +679,7 @@ void WriteMapLines( void )
                 switch( value_lns ) {
                 case DW_LNS_copy:
                     dump_state( &state );
-                    state.basic_block = 0;
+                    state.basic_block = false;
                     break;
                 case DW_LNS_advance_pc:
                     p = DecodeULEB128( p, &tmp );
@@ -698,7 +701,7 @@ void WriteMapLines( void )
                     state.is_stmt = !state.is_stmt;
                     break;
                 case DW_LNS_set_basic_block:
-                    state.basic_block = 1;
+                    state.basic_block = true;
                     break;
                 case DW_LNS_const_add_pc:
                     value = 255 - opcode_base;
@@ -719,7 +722,7 @@ void WriteMapLines( void )
                 state.line += line_base + ( value % line_range );
                 state.address += ( value / line_range ) * min_instr;
                 dump_state( &state );
-                state.basic_block = 0;
+                state.basic_block = false;
             }
         }
         WriteMapNL( 1 );
