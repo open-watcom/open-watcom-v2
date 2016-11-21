@@ -1114,7 +1114,7 @@ static unsigned_32 WriteDefStub( unsigned_32 stub_align )
 
     msgsize = DoExeName();
     fullsize = ROUND_UP( msgsize + sizeof( DosStub ), stub_align );
-    stubend = (unsigned_32 *)(DosStub + NH_OFFSET);
+    stubend = (unsigned_32 *)( DosStub + NH_OFFSET );
     *stubend = fullsize;
     WriteLoad( DosStub, sizeof( DosStub ) );
     WriteLoad( TokBuff, msgsize );

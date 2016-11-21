@@ -1014,7 +1014,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
 /***************************************************************************/
 /* Process logically iterated data blocks. */
 {
-    byte            len_u8;
+    size_t          len;
     byte            *anchor;
     unsigned_16     count;
     unsigned_16     inner;
@@ -1026,13 +1026,13 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     _TargU16toHost( _GetU16UN( buffer ), count );
     buffer += sizeof( unsigned_16 );
     if( count == 0 ) {
-        len_u8 = *buffer;
+        len = *buffer;
         ++buffer;
         do {
-            PutInfo( *dest, buffer, len_u8 );
-            *dest += len_u8;
+            PutInfo( *dest, buffer, len );
+            *dest += len;
         } while( --iterate != 0 );
-        buffer += len_u8;
+        buffer += len;
     } else {
         anchor = buffer;
         if( ObjFormat & FMT_MS_386 ) {

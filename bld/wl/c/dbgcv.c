@@ -147,8 +147,8 @@ void CVInitModule( mod_entry *obj )
     memset( obj->d.cv, 0, sizeof( cvmodinfo ) );
 }
 
-static void DumpInfo( sect_number sect, void *data, size_t len )
-/**************************************************************/
+static void DumpInfo( sect_number sect, const void *data, size_t len )
+/********************************************************************/
 {
     PutInfo( SectAddrs[sect].u.vm_ptr, data, len );
     SectAddrs[sect].u.vm_ptr += len;

@@ -528,7 +528,7 @@ void FiniNovellLoadFile( void )
 
     file_size = strlen( FmtData.u.nov.description ) + sizeof( fixed_header )
                 + sizeof( extended_nlm_header ) + 2 * sizeof( unsigned_32 )
-                + 12 * sizeof( unsigned_8 );
+                + NOV_MAX_MODNAME_LEN;
     if( FmtData.u.nov.screenname != NULL ) {
         file_size += strlen( FmtData.u.nov.screenname );
     }
