@@ -269,17 +269,18 @@ static unsigned long DumpFlatEntryTable( void )
 
                     bundle_fwd.e32_flags = 0;
                     bundle_fwd.modord    = dll->m.modnum->num;
-                    if (dll->isordinal) {
+                    if( dll->isordinal ) {
                         bundle_fwd.e32_flags |= 1;
-                        bundle_fwd.value     = dll->u.ordinal;
+                        bundle_fwd.value = dll->u.ordinal;
                     } else {
-                        bundle_fwd.value     = dll->u.entry->num;
+                        bundle_fwd.value = dll->u.entry->num;
                     }
                     WriteLoad( &bundle_fwd, sizeof( flat_bundle_entryfwd ) );
                 } else {
                     // 32-bit entry
                     bundle_item.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
-                    if( start->isexported ) bundle_item.e32_flags |= ENTRY_EXPORTED;
+                    if( start->isexported )
+                        bundle_item.e32_flags |= ENTRY_EXPORTED;
                     bundle_item.e32_offset = start->addr.off;
                     WriteLoad( &bundle_item, sizeof( flat_bundle_entry32 ) );
                 }

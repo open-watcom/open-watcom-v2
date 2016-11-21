@@ -461,7 +461,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     snode = AllocNodeIdx( SegNodes, segidx );
     snode->entry = sdata;
     snode->handle = sec;
-    sdata->iscdat = (flags & ORL_SEC_FLAG_COMDAT) != 0;
+    sdata->iscdat = ( (flags & ORL_SEC_FLAG_COMDAT) != 0 );
     len = sizeof( CoffIDataSegName ) - 1;
     if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
         SeenDLLRecord();

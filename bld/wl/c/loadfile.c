@@ -89,9 +89,9 @@ typedef struct {
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
-    group_entry *lastgrp;  // used only for copy classes
-    bool        repos : 1;
-    bool        copy  : 1;
+    group_entry *lastgrp;       // used only for copy classes
+    bool        repos   : 1;
+    bool        copy    : 1;
 } grpwriteinfo;
 
 typedef void *writebuffer_fn(void *, const void *, size_t);
