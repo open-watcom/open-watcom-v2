@@ -795,7 +795,7 @@ bool ProcOpResource( void )
 /********************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        FmtData.res_name_only = 1;
+        FmtData.res_name_only = true;
         FmtData.resource = tostring();
     } else if( GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         FmtData.resource = tostring();

@@ -78,16 +78,16 @@ typedef struct  {
     offset      grp_addr;
     offset      end_addr;
     group_entry *currgrp;
-    group_entry *lastgrp;  // used only for copy classes
-    bool        first_time;
+    group_entry *lastgrp;       // used only for copy classes
+    bool        first_time  : 1;
 } grpaddrinfo;
 
 
 typedef struct {
     symbol      **symarray;
-    unsigned    num;
     section     *sect;
-    unsigned    first : 1;
+    size_t      num;
+    bool        first   : 1;
 } pubdefinfo;
 
 

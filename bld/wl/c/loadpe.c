@@ -1254,7 +1254,7 @@ void FiniPELoadFile( void )
         PE32( h ).time_stamp = (unsigned_32)time( NULL );
         PE32( h ).nt_hdr_size = head_size - offsetof( pe_header, flags ) - sizeof( PE32( h ).flags );
         PE32( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
-        if( FmtData.u.pe.largeaddressaware == 1 ) {
+        if( FmtData.u.pe.largeaddressaware ) {
             PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & MAKE_RELOCS) == 0 ) {

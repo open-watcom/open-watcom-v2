@@ -1243,7 +1243,7 @@ bool     ProcLinkVersion( void )
         return( false );    /* error has occurred */
     }
 
-    FmtData.u.pe.lnk_specd = 1;
+    FmtData.u.pe.lnk_specd = true;
     FmtData.u.pe.linkmajor = (result & major_valid) ? vb.major : 0;
     FmtData.u.pe.linkminor = (result & minor_valid) ? vb.minor : 0;
 
@@ -1260,7 +1260,7 @@ bool     ProcOsVersion( void )
         return( false );    /* error has occurred */
     }
 
-    FmtData.u.pe.osv_specd = 1;
+    FmtData.u.pe.osv_specd = true;
     FmtData.u.pe.osmajor = (result & major_valid) ? vb.major : 0;
     FmtData.u.pe.osminor = (result & minor_valid) ? vb.minor : 0;
 
@@ -1269,21 +1269,21 @@ bool     ProcOsVersion( void )
 
 bool     ProcChecksum( void )
 {
-    FmtData.u.pe.checksumfile = 1;
+    FmtData.u.pe.checksumfile = true;
     return( true );
 }
 
 bool ProcLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.pe.largeaddressaware = 1;
-    FmtData.u.pe.nolargeaddressaware = 0;
+    FmtData.u.pe.largeaddressaware = true;
+    FmtData.u.pe.nolargeaddressaware = false;
     return( true );
 }
 bool ProcNoLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.pe.nolargeaddressaware = 1;
-    FmtData.u.pe.largeaddressaware = 0;
+    FmtData.u.pe.nolargeaddressaware = true;
+    FmtData.u.pe.largeaddressaware = false;
     return( true );
 }

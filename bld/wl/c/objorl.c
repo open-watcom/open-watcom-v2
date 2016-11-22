@@ -943,7 +943,7 @@ unsigned long ORLPass1( void )
     if( CheckFlags( filehdl ) ) {
         if( (LinkState & HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
             InitToc();
-            FmtData.toc_initialized = 1;
+            FmtData.toc_initialized = true;
         }
         if( LinkFlags & DWARF_DBI_FLAG ) {
             CurrMod->modinfo |= MOD_FLATTEN_DBI;
