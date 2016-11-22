@@ -110,7 +110,7 @@ cdsay .
 #[ IFDEF <BLD_HOST> UNIX ]
 ##========================
 ## Build UNIX specific utilities using native tools.
-## 
+##
 ## Build our vi editor and the libs it requires
 #[ INCLUDE <OWSRCDIR>/ncurses/builder.ctl ]
 #[ INCLUDE <OWSRCDIR>/ui/builder.ctl ]
@@ -238,9 +238,12 @@ cdsay .
 # only test build for now
 [ INCLUDE <OWSRCDIR>/wgml/builder.ctl ]
 # Build documentation
+set OWTXTDOCBUILD=1
 [ IFDEF <OWDOCBUILD> 1 ]
-[ INCLUDE <OWDOCSDIR>/builder.ctl ]
+    set OWTXTDOCBUILD=
 [ ENDIF ]
+[ INCLUDE <OWDOCSDIR>/builder.ctl ]
+set OWTXTDOCBUILD=
 
 [ BLOCK <1> docs docsclean ]
 #===========================
