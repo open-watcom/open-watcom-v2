@@ -3,4 +3,4 @@
 host_os  = nt
 host_cpu = x64
 
-!include ../setup.mif
+!include ../master.mif
