@@ -43,6 +43,14 @@
 
 #include "clibext.h"
 
+#ifdef _WIN64
+#define posix_read	__w64_read
+#define posix_write	__w64_write
+#else
+#define posix_read	read
+#define posix_write	write
+#endif
+
 #else
 
 #define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - AS_MSG_BASE + 1)
@@ -84,7 +92,7 @@ static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int w
     }
 }
 
-WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
+WResSetRtns( open, close, posix_read, posix_write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
 bool AsMsgInit( void )
