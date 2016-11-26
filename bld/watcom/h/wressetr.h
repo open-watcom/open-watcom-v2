@@ -53,14 +53,14 @@
 
 #if defined( _WIN64 )
 #define WRES_FID2PH(fid)    (((int)(unsigned __int64)(fid)) - 1)
-#define WRES_PH2FID(ph)     ((void *)(unsigned __int64)((fid) + 1))
+#define WRES_PH2FID(ph)     ((void *)(unsigned __int64)((ph) + 1))
 #else
 #define WRES_FID2PH(fid)    (((int)(unsigned long)(fid)) - 1)
-#define WRES_PH2FID(ph)     ((void *)(unsigned long)((fid) + 1))
+#define WRES_PH2FID(ph)     ((void *)(unsigned long)((ph) + 1))
 #endif
 
 #define WRES_FID2FH(fid)    (fid)
-#define WRES_FH2FID(ph)     (ph)
+#define WRES_FH2FID(fh)     (fh)
 
 #define NIL_HANDLE      ((WResFileID)-1)
 
