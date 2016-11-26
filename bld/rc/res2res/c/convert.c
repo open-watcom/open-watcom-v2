@@ -49,12 +49,13 @@ static bool ConvertFileMResToWRes( WResFileID infile )
     WResFileID      tempfile;
     bool            error;
 
-    tempfile = WResOpenNewFile( TMP_FILENAME );
+    tempfile = ResOpenNewFile( TMP_FILENAME );
     if( tempfile == -1 ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
         return( true );
     }
+    WResFileInit( tempfile );
     /* put a message out if quiet option not selected */
     if (!CmdLineParms.Quiet) {
         puts( "Converting Microsoft .RES to Open Watcom .RES" );
@@ -72,7 +73,7 @@ static bool ConvertFileWResToMRes( WResFileID infile )
     WResFileID      tempfile;
     bool            error;
 
-    tempfile = MResOpenNewFile( TMP_FILENAME );
+    tempfile = ResOpenNewFile( TMP_FILENAME );
     if( tempfile == -1 ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );

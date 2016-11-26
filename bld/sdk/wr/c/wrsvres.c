@@ -362,10 +362,9 @@ static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name,
     is_wres = (save_type == WR_WIN16W_RES || save_type == WR_WINNTW_RES);
 
     if( ok ) {
-        if( is_wres ) {
-            ok = ((dest = WResOpenNewFile( save_name )) != -1);
-        } else {
-            ok = ((dest = MResOpenNewFile( save_name )) != -1);
+        ok = ((dest = ResOpenNewFile( save_name )) != -1);
+        if( ok && is_wres ) {
+            ok = !WResFileInit( dest );
         }
     }
 

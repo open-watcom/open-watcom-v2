@@ -46,14 +46,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read( f, b, l )  __w64_read( f, b, l )
-#define posix_write( f, b, l ) __w64_write( f, b, l )
-#else
-#define posix_read( f, b, l )  read( f, b, l )
-#define posix_write( f, b, l ) write( f, b, l )
-#endif
-
 #ifdef __OSI__
 //If or when OSI builds are re-enabled, we need to find the header for this
 //extern  char    *_BreakFlagPtr;

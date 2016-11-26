@@ -39,7 +39,6 @@
 #include "wressetr.h"
 #include "wresset2.h"
 #include "wreslang.h"
-#include "mposix.h"
 
 #include "clibext.h"
 

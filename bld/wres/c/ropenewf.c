@@ -33,22 +33,20 @@
 #include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
+#include "wres.h"
 #include "wresrtns.h"
 
 #include "clibext.h"
 
 
-WResFileID WResOpenNewFile( const char *filename )
-/************************************************/
+WResFileID ResOpenNewFile( const char *filename )
+/***********************************************/
 {
     WResFileID  newhandle;
 
     newhandle = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
     if( newhandle == NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
-    } else {
-        WResFileInit( newhandle );
     }
-
     return( newhandle );
 }

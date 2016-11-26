@@ -53,14 +53,6 @@
 #define NOFILE -1
 #define STDOUT_HANDLE 1
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 typedef enum {
     EX_NONE,
     EX_GOT_SEG,

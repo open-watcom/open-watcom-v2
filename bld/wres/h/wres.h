@@ -132,4 +132,7 @@ extern void             __FreeResList( WResTypeNode *currtype );
 extern void             __FreeLangList( WResResNode *curres );
 extern WResLangNode     *__FindLang( const WResLangType *lang, WResResNode *curres );
 
+/* function prototypes for WRes file initialization */
+extern bool             WResFileInit( WResFileID );
+
 #endif

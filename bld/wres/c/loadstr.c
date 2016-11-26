@@ -146,13 +146,6 @@ int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, i
     return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );
 }
 
-bool OpenResFile( PHANDLE_INFO hInstance, const char *filename )
-/**************************************************************/
-{
-    hInstance->handle = ResOpenFileRO( filename );
-    return( hInstance->handle == NIL_HANDLE );
-}
-
 bool InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 /*********************************************************/
 {
@@ -168,21 +161,20 @@ bool InitResources( PHANDLE_INFO hInstance )
     return( InitResources2( &MainDir, hInstance ) );
 }
 
-bool CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
-/*******************************************************/
-{
-    WResFreeDir( dir );
-    return( ResCloseFile( hInstance->handle ) );
-}
-
-bool CloseResFile( PHANDLE_INFO hInstance )
-/*****************************************/
-{
-    return( CloseResFile2( MainDir, hInstance ) );
-}
-
 void LoadstrInitStatics( void )
 /*****************************/
 {
     MainDir = NULL;
+}
+
+void InitResFile( PHANDLE_INFO hInstance, WResFileID f )
+/******************************************************/
+{
+    hInstance->handle = f;
+}
+
+void FiniResFile( PHANDLE_INFO hInstance )
+/****************************************/
+{
+    WResFreeDir( MainDir );
 }

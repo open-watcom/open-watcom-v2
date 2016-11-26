@@ -24,28 +24,39 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load string resources file open/close routines.
 *
 ****************************************************************************/
 
-#include "wio.h"
-#include "layer0.h"
+
+#include <stdio.h>
+#include "bool.h"
+#include "watcom.h"
+#include "filefmt.h"
+#include "wressetr.h"
+#include "wresset2.h"
+#include "wres.h"
 #include "opcl.h"
-#include "reserr.h"
-#include "wresrtns.h"
-
-#include "clibext.h"
 
 
-WResFileID MResOpenNewFile( const char * filename )
-/*************************************************/
+extern WResDir    MainDir;
+
+bool OpenResFile( PHANDLE_INFO hInstance, const char *filename )
+/**************************************************************/
 {
-    WResFileID  ret;
+    InitResFile( hInstance, ResOpenFileRO( filename ) );
+    return( hInstance->handle == NIL_HANDLE );
+}
 
-    ret = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
-    if( ret == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
-    return( ret );
+bool CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
+/*******************************************************/
+{
+    FiniResFile( hInstance );
+    return( ResCloseFile( hInstance->handle ) );
+}
+
+bool CloseResFile( PHANDLE_INFO hInstance )
+/*****************************************/
+{
+    return( CloseResFile2( MainDir, hInstance ) );
 }

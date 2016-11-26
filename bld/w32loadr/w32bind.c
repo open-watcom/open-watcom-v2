@@ -39,14 +39,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 #define BUFSIZE         4096
 
 #define _RoundUp(x,a)   (((x)+((a)-1)) & ~((a)-1))

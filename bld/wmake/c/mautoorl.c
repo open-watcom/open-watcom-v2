@@ -39,7 +39,6 @@
 #include "mautodep.h"
 #include "orl.h"
 #include "autodep.h"
-#include "mposix.h"
 
 #include "clibext.h"
 

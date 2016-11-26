@@ -65,7 +65,7 @@ SemOffset SemStartResource( void )
         save_name = CurrResFile.filename;
         /* open a temporary file and trade handles with the RES file */
         MSFormatTmpFile = RcTmpFileName();
-        CurrResFile.handle = MResOpenNewFile( MSFormatTmpFile );
+        CurrResFile.handle = ResOpenNewFile( MSFormatTmpFile );
         if( CurrResFile.handle == NIL_HANDLE ) {
             CurrResFile.handle = save_handle;
             ResCloseFile( save_handle );

@@ -62,6 +62,8 @@ extern "C" {
 
 extern bool             OpenResFile( PHANDLE_INFO hInstance, const char *filename );
 extern bool             CloseResFile( PHANDLE_INFO hInstance );
+extern void             InitResFile( PHANDLE_INFO hInstance, WResFileID handle );
+extern void             FiniResFile( PHANDLE_INFO hInstance );
 extern bool             FindResources( PHANDLE_INFO hInstance );
 extern bool             InitResources( PHANDLE_INFO hInstance );
 extern int              WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );

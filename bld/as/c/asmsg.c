@@ -43,14 +43,6 @@
 
 #include "clibext.h"
 
-#ifdef _WIN64
-#define posix_read	__w64_read
-#define posix_write	__w64_write
-#else
-#define posix_read	read
-#define posix_write	write
-#endif
-
 #else
 
 #define TXT_MSG_LANG_SPACING    (ABS_REF_NOT_ALLOWED - AS_MSG_BASE + 1)
@@ -60,7 +52,7 @@ static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    e_msg,
     #include "as.msg"
     #undef pick
-#if 0 
+#if 0
 //#if defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"

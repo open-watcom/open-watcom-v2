@@ -37,7 +37,6 @@
 #include "mrcmsg.h"
 #include "msg.h"
 #include "mstream.h"
-#include "mposix.h"
 
 #include "clibext.h"
 

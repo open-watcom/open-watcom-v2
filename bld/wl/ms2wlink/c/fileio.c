@@ -38,14 +38,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 // file io routines
 
 static void IOError( char *msgstart, const char *name )

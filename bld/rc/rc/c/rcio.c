@@ -109,11 +109,15 @@ static bool Pass1InitRes( void )
     }
 
     /* open the temporary file */
+    CurrResFile.handle = ResOpenNewFile( CurrResFile.filename );
+    if( CurrResFile.handle == NIL_HANDLE ) {
+        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
+        CurrResFile.IsOpen = false;
+        return( true );
+    }
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
-        CurrResFile.handle = MResOpenNewFile( CurrResFile.filename );
-
-    /* write null header here if it is win32 */
+        /* write null header here if it is win32 */
         if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 &&
                                      CmdLineParms.MSResFormat ) {
             null_loc.start = SemStartResource();
@@ -125,12 +129,7 @@ static bool Pass1InitRes( void )
         }
     } else {
         CurrResFile.IsWatcomRes = true;
-        CurrResFile.handle = WResOpenNewFile( CurrResFile.filename );
-    }
-    if( CurrResFile.handle == NIL_HANDLE ) {
-        RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
-        CurrResFile.IsOpen = false;
-        return( true );
+        WResFileInit( CurrResFile.handle );
     }
     RegisterTmpFile( CurrResFile.filename );
 
