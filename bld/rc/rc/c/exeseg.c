@@ -125,7 +125,7 @@ extern RcStatus AllocAndReadOS2SegTables( int *err_code )
     oldseg = &(Pass2Info.OldFile.u.NEInfo.Seg);
     oldhandle = Pass2Info.OldFile.Handle;
     tmpseg = &(Pass2Info.TmpFile.u.NEInfo.Seg);
-    newres = ComputeOS2ResSegCount( Pass2Info.ResFiles->Dir );
+    newres = ComputeOS2ResSegCount( Pass2Info.ResFile->Dir );
 
     head = &(Pass2Info.OldFile.u.NEInfo.WinHead);
     head_offset = Pass2Info.OldFile.WinHeadOffset;

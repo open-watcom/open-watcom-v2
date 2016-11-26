@@ -118,8 +118,7 @@ static bool Pass1InitRes( void )
     if( CmdLineParms.MSResFormat ) {
         CurrResFile.IsWatcomRes = false;
         /* write null header here if it is win32 */
-        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 &&
-                                     CmdLineParms.MSResFormat ) {
+        if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 && CmdLineParms.MSResFormat ) {
             null_loc.start = SemStartResource();
             null_loc.len = SemEndResource( null_loc.start );
             null_id.IsName = false;
@@ -446,11 +445,12 @@ static bool OpenResFileInfo( ExeType type )
     }
     Pass2Info.AllResFilesOpen = true;
     if( CmdLineParms.NoResFile ) {
-        Pass2Info.ResFiles = RCALLOC( sizeof( ResFileInfo ) );
-        Pass2Info.ResFiles->name = NULL;
-        Pass2Info.ResFiles->IsOpen = false;
-        Pass2Info.ResFiles->Handle = NIL_HANDLE;
-        Pass2Info.ResFiles->Dir = NULL;
+        Pass2Info.ResFile = RCALLOC( sizeof( ResFileInfo ) );
+        Pass2Info.ResFile->next = NULL;
+        Pass2Info.ResFile->name = NULL;
+        Pass2Info.ResFile->IsOpen = false;
+        Pass2Info.ResFile->Handle = NIL_HANDLE;
+        Pass2Info.ResFile->Dir = NULL;
         return( true );
     }
 
@@ -464,7 +464,7 @@ static bool OpenResFileInfo( ExeType type )
     CmdLineParms.ExtraResFiles = curfile;
     strcpy( curfile->name, name );
 
-    error = OpenResFiles( CmdLineParms.ExtraResFiles, &Pass2Info.ResFiles,
+    error = OpenResFiles( CmdLineParms.ExtraResFiles, &Pass2Info.ResFile,
                   &Pass2Info.AllResFilesOpen, type,
                   CmdLineParms.InExeFileName );
 
@@ -638,7 +638,7 @@ extern void ClosePass2FilesAndFreeMem( void )
     default: //EXE_TYPE_UNKNOWN
         break;
     }
-    CloseResFiles( Pass2Info.ResFiles );
+    CloseResFiles( Pass2Info.ResFile );
 } /* ClosePass2FilesAndFreeMem */
 
 extern bool RcPass2IoInit( void )

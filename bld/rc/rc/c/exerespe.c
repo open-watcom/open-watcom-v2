@@ -932,7 +932,7 @@ bool RcBuildPEResourceObject( void )
         }
         rva = GetNextObjRVA( &exe->u.PEInfo );
         offset = GetNextObjPhysOffset( &exe->u.PEInfo );
-        error = BuildPEResourceObject( exe, Pass2Info.ResFiles, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
+        error = BuildPEResourceObject( exe, Pass2Info.ResFile, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
 // use of CmdLineParms.WritableRes has been commented out in param.c
 // removed here too as it wasn't initialised anymore (Ernest ter Kuile 31 aug 2003)
 //        if( CmdLineParms.WritableRes ) {
