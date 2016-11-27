@@ -40,45 +40,45 @@
 /***** Private Types *****/
 
 typedef struct WResLangNode {
-    struct WResLangNode         *Next;
-    struct WResLangNode         *Prev;
-    void                        *data; /* pointer for use by resource editors */
-    WResLangInfo                Info;
-    void                        *fileInfo;
+    struct WResLangNode     *Next;
+    struct WResLangNode     *Prev;
+    void                    *data; /* pointer for use by resource editors */
+    WResLangInfo            Info;
+    void                    *fileInfo;
 } WResLangNode;
 
 typedef struct WResResNode {        /* linked list of WResResInfo's */
-    struct WResResNode *    Next;
-    struct WResResNode *    Prev;
-    WResLangNode *          Head;   /* list of resources of this type */
-    WResLangNode *          Tail;   /* and name */
+    struct WResResNode      *Next;
+    struct WResResNode      *Prev;
+    WResLangNode            *Head;  /* list of resources of this type */
+    WResLangNode            *Tail;  /* and name */
     WResResInfo             Info;
 } WResResNode;
 
 typedef struct WResTypeNode {       /* linked list of WResTypeInfo's */
-    struct WResTypeNode *   Next;
-    struct WResTypeNode *   Prev;
-    WResResNode *           Head;   /* list of resources of this type */
-    WResResNode *           Tail;
+    struct WResTypeNode     *Next;
+    struct WResTypeNode     *Prev;
+    WResResNode             *Head;   /* list of resources of this type */
+    WResResNode             *Tail;
     WResTypeInfo            Info;
 } WResTypeNode;
 
 typedef struct WResDirHead {        /* head of the directory */
     uint_16                 NumResources;
     uint_16                 NumTypes;
-    WResTypeNode *          Head;
-    WResTypeNode *          Tail;
+    WResTypeNode            *Head;
+    WResTypeNode            *Tail;
     WResTargetOS            TargetOS;
 } WResDirHead;
 
 /***** Exported types *****/
 typedef struct WResDirWindow {
-    struct WResResNode          *CurrRes;
-    struct WResTypeNode         *CurrType;
-    struct WResLangNode         *CurrLang;
+    struct WResResNode      *CurrRes;
+    struct WResTypeNode     *CurrType;
+    struct WResLangNode     *CurrLang;
 } WResDirWindow;
 
-typedef struct WResDirHead      *WResDir;
+typedef struct WResDirHead  *WResDir;
 
 /* macros to test condition for a WRes directory */
 #define WResDirInitError( s )           ((s) == NULL)
@@ -125,9 +125,9 @@ extern void             WResDelResource( WResDir currdir, const WResID *type, co
 
 /* hidden but exported routines */
 
-extern WResTypeNode     *__FindType( const WResID * __type, WResDir __currdir );
-extern WResResNode      *__FindRes( const WResID * __name, WResTypeNode * __currtype );
-extern void             __FreeTypeList( WResDirHead * __currdir );
+extern WResTypeNode     *__FindType( const WResID *__type, WResDir __currdir );
+extern WResResNode      *__FindRes( const WResID *__name, WResTypeNode *__currtype );
+extern void             __FreeTypeList( WResDirHead *__currdir );
 extern void             __FreeResList( WResTypeNode *currtype );
 extern void             __FreeLangList( WResResNode *curres );
 extern WResLangNode     *__FindLang( const WResLangType *lang, WResResNode *curres );
