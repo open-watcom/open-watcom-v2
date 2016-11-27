@@ -82,7 +82,7 @@ typedef struct RcBuffer {
 
 typedef struct RcFileEntry {
     bool        HasRcBuffer;
-    WResFileID  FileHandle;      // If NIL_HANDLE, entry is unused
+    WResFileID  FileHandle;      // If WRES_NIL_HANDLE, entry is unused
     RcBuffer    *Buffer;         // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
 
@@ -112,7 +112,7 @@ static void RegisterOpenFile( WResFileID handle )
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] == NIL_HANDLE ) {
+        if( openFileList[i] == WRES_NIL_HANDLE ) {
             openFileList[i] = handle;
             break;
         }
@@ -126,7 +126,7 @@ static void UnRegisterOpenFile( WResFileID handle )
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         if( openFileList[i] == handle ) {
-            openFileList[i] = NIL_HANDLE;
+            openFileList[i] = WRES_NIL_HANDLE;
             break;
         }
     }
@@ -153,7 +153,7 @@ void CloseAllFiles( void ) {
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] != NIL_HANDLE ) {
+        if( openFileList[i] != WRES_NIL_HANDLE ) {
             RcClose( openFileList[i] );
         }
     }
@@ -176,7 +176,7 @@ WResFileID RcOpen( const char * file_name, int access, ... )
     }
 
     handle = open( file_name, access, perms );
-    if( handle != NIL_HANDLE ) {
+    if( handle != WRES_NIL_HANDLE ) {
         RegisterOpenFile( handle );
         for( i = 0; i < RC_MAX_FILES; i++ ) {
             if( !RcFileList[i].HasRcBuffer ) {
@@ -226,7 +226,7 @@ int RcClose( WResFileID handle )
         }
         RcMemFree( buff );
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].FileHandle = NIL_HANDLE;
+        RcFileList[i].FileHandle = WRES_NIL_HANDLE;
         RcFileList[i].Buffer = NULL;
     }
     UnRegisterOpenFile( handle );
@@ -465,10 +465,10 @@ void Layer0InitStatics( void )
 
     for( i = 0; i < RC_MAX_FILES; i++ ) {
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].FileHandle = NIL_HANDLE;
+        RcFileList[i].FileHandle = WRES_NIL_HANDLE;
     }
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        openFileList[i] = NIL_HANDLE;
+        openFileList[i] = WRES_NIL_HANDLE;
     }
 }
 
@@ -476,14 +476,14 @@ bool RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
 /****************************************************************/
 {
     instance->handle = open( imagename, O_RDONLY | O_BINARY );
-    if( instance->handle != NIL_HANDLE ) {
+    if( instance->handle != WRES_NIL_HANDLE ) {
         RegisterOpenFile( instance->handle );
         if( !FindResources( instance ) && !InitResources( instance ) ) {
             return( false );
         }
         CloseResFile( instance );
         UnRegisterOpenFile( instance->handle );
-        instance->handle = NIL_HANDLE;
+        instance->handle = WRES_NIL_HANDLE;
     }
     return( true );
 }
@@ -491,9 +491,9 @@ bool RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
 void RCCloseResFile( HANDLE_INFO *instance )
 /******************************************/
 {
-    if( instance->handle != NIL_HANDLE ) {
+    if( instance->handle != WRES_NIL_HANDLE ) {
         CloseResFile( instance );
         UnRegisterOpenFile( instance->handle );
-        instance->handle = NIL_HANDLE;
+        instance->handle = WRES_NIL_HANDLE;
     }
 }

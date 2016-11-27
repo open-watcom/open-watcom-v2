@@ -70,7 +70,7 @@ bool MsgInit( void )
     char        name[_MAX_PATH];
     char        msgbuf[MAX_RESOURCE_SIZE];
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
         res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
@@ -127,9 +127,9 @@ void Message( int format, ... )
 
 void MsgFini( void )
 {
-    if( hInstance.handle != NIL_HANDLE ) {
+    if( hInstance.handle != WRES_NIL_HANDLE ) {
         CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
 }
 

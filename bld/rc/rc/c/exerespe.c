@@ -528,7 +528,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                 tmpopened = false;
             } else {
                 resfiles->Handle = ResOpenFileRO( resfiles->name );
-                if( resfiles->Handle == NIL_HANDLE ) {
+                if( resfiles->Handle == WRES_NIL_HANDLE ) {
                     ret = RS_OPEN_ERROR;
                     *errres = resfiles;
                     break;
@@ -539,7 +539,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
             ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
             if( tmpopened ) {
                 ResCloseFile( resfiles->Handle );
-                resfiles->Handle = NIL_HANDLE;
+                resfiles->Handle = WRES_NIL_HANDLE;
                 resfiles->IsOpen = false;
             }
             if( ret != RS_OK ) {

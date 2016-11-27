@@ -98,7 +98,7 @@ static bool CreatePreprocFile( void )
 
     error = false;
     handle = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
-    if( handle == NIL_HANDLE ) {
+    if( handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = true;
     } else {
@@ -112,7 +112,7 @@ static bool CreatePreprocFile( void )
             ch = RcIoGetChar();
         }
     }
-    if( handle != NIL_HANDLE )
+    if( handle != WRES_NIL_HANDLE )
         RcClose( handle );
     return( error );
 }
@@ -183,7 +183,7 @@ void RCmain( void )
     bool    noerror = true;
 
 #if defined( __WATCOMC__ )
-#if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL 
+#if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL
 #if !defined( __OSI__ ) /* _grow_handles doesn't work yet */
     _grow_handles( 100 );
 #endif

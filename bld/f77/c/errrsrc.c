@@ -86,7 +86,7 @@ static void BldErrMsg( unsigned int err, char *buffer, va_list args )
 
 static void ErrorInit( const char *pgm_name )
 {
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( OpenResFile( &hInstance, pgm_name ) )
         return;
     ResFlags |= RF_OPENED;

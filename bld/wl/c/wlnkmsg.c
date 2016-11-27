@@ -83,7 +83,7 @@ bool InitMsg( void )
     char        *imageName;
 #endif
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -101,7 +101,7 @@ bool InitMsg( void )
             }
         }
         CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
     WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
     res_failure = true;

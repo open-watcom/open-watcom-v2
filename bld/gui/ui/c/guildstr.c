@@ -80,7 +80,7 @@ bool GUIIsLoadStrInitialized( void )
 
 bool GUILoadStrInit( const char *fname )
 {
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( !OpenResFile( &hInstance, fname ) ) {
         // if we are using an external resource file then we don't have to search
         WResFileShift = 0;

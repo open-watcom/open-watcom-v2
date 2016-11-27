@@ -110,7 +110,7 @@ bool Msg_Init( void )
 {
     char        name[_MAX_PATH];
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
         res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
@@ -120,7 +120,7 @@ bool Msg_Init( void )
             }
         }
         CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
     posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     res_failure = true;
@@ -137,7 +137,7 @@ bool Msg_Fini( void )
             res_failure = true;
             retcode = false;
         }
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
     return( retcode );
 }

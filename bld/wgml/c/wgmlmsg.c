@@ -69,7 +69,7 @@ bool init_msgs( void )
 {
     char        fname[_MAX_PATH];
 
-    Instance.handle = NIL_HANDLE;
+    Instance.handle = WRES_NIL_HANDLE;
     if( _cmdname( fname ) != NULL && !OpenResFile( &Instance, fname ) ) {
         res_failure = false;
         if( !FindResources( &Instance ) && !InitResources( &Instance ) ) {
@@ -106,8 +106,8 @@ bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 
 void fini_msgs( void )
 {
-    if( Instance.handle != NIL_HANDLE ) {
+    if( Instance.handle != WRES_NIL_HANDLE ) {
         CloseResFile( &Instance );
-        Instance.handle = NIL_HANDLE;
+        Instance.handle = WRES_NIL_HANDLE;
     }
 }

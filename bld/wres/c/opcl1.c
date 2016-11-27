@@ -45,7 +45,7 @@ bool OpenResFile( PHANDLE_INFO hInstance, const char *filename )
 /**************************************************************/
 {
     InitResFile( hInstance, ResOpenFileRO( filename ) );
-    return( hInstance->handle == NIL_HANDLE );
+    return( hInstance->handle == WRES_NIL_HANDLE );
 }
 
 bool CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )

@@ -116,7 +116,7 @@ RcStatus OpenTable( char *fname, char *path )
     if( path[0] == '\0' )
         return( RS_FILE_NOT_FOUND );
     handle = RCOPEN( path, O_RDONLY | O_BINARY, PMODE_RW );
-    if( handle == NIL_HANDLE ) {
+    if( handle == WRES_NIL_HANDLE ) {
         ret = RS_OPEN_ERROR;
     }
     if( ret == RS_OK )

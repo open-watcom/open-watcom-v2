@@ -62,14 +62,14 @@ bool WRLoadBitmapFile( WRInfo *info )
     WResID              *name;
     WResLangType        def_lang;
 
-    file_handle = -1;
+    file_handle = WRES_NIL_HANDLE;
     def_lang.sublang = DEF_LANG;
     def_lang.lang = DEF_SUBLANG;
 
     ok = (info != NULL);
 
     if( ok ) {
-        ok = ((file_handle = ResOpenFileRO( info->file_name )) != -1);
+        ok = ((file_handle = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -98,7 +98,7 @@ bool WRLoadBitmapFile( WRInfo *info )
                                info->dir, &def_lang, NULL );
     }
 
-    if( file_handle != -1 ) {
+    if( file_handle != WRES_NIL_HANDLE ) {
         ResCloseFile( file_handle );
     }
 
@@ -133,7 +133,7 @@ bool WRLoadIconFile( WRInfo *info )
     data = NULL;
     rih = NULL;
     dup = false;
-    file = -1;
+    file = WRES_NIL_HANDLE;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
@@ -142,7 +142,7 @@ bool WRLoadIconFile( WRInfo *info )
     ok = (info != NULL && info->file_name != NULL);
 
     if( ok ) {
-        ok = ((file = ResOpenFileRO( info->file_name )) != -1);
+        ok = ((file = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -206,7 +206,7 @@ bool WRLoadIconFile( WRInfo *info )
         MemFree( rname );
     }
 
-    if( file != -1 ) {
+    if( file != WRES_NIL_HANDLE ) {
         ResCloseFile( file );
     }
 
@@ -233,7 +233,7 @@ bool WRLoadCursorFile( WRInfo *info )
     data = NULL;
     rch = NULL;
     dup = false;
-    file = NIL_HANDLE;
+    file = WRES_NIL_HANDLE;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
@@ -242,7 +242,7 @@ bool WRLoadCursorFile( WRInfo *info )
     ok = (info != NULL && info->file_name != NULL);
 
     if( ok ) {
-        ok = ((file = ResOpenFileRO( info->file_name )) != NIL_HANDLE);
+        ok = ((file = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -302,7 +302,7 @@ bool WRLoadCursorFile( WRInfo *info )
         MemFree( rname );
     }
 
-    if( file != -1 ) {
+    if( file != WRES_NIL_HANDLE ) {
         ResCloseFile( file );
     }
 
@@ -317,8 +317,8 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     bool                use_rename;
     WResLangNode        *lnode;
 
-    src = -1;
-    dest = -1;
+    src = WRES_NIL_HANDLE;
+    dest = WRES_NIL_HANDLE;
     lnode = NULL;
 
     ok = (info != NULL && tnode != NULL);
@@ -333,14 +333,14 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
 
     if( ok ) {
         if( info->file_name != NULL ) {
-            ok = ((src = ResOpenFileRO( info->tmp_file )) != -1);
+            ok = ((src = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE);
         }
     }
 
     if( ok ) {
         dest = open( info->save_name, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
                      S_IWRITE | S_IREAD );
-        ok = (dest != -1);
+        ok = (dest != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -359,16 +359,16 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
         }
     }
 
-    if( src != -1 ) {
+    if( src != WRES_NIL_HANDLE ) {
         ResCloseFile( src );
     }
 
-    if( dest != -1 ) {
+    if( dest != WRES_NIL_HANDLE ) {
         ResCloseFile( dest );
     }
 
     if( !ok ) {
-        if( dest != -1 ) {
+        if( dest != WRES_NIL_HANDLE ) {
             WRDeleteFile( info->save_name );
         }
     }

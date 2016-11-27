@@ -88,7 +88,7 @@ void InitMsg( void )
     char    *imageName;
 #endif
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -117,9 +117,9 @@ void MsgGet( int resourceid, char *buffer )
 
 void FiniMsg( void )
 {
-    if( hInstance.handle != NIL_HANDLE ) {
+    if( hInstance.handle != WRES_NIL_HANDLE ) {
         if( CloseResFile( &hInstance ) ) {
-            hInstance.handle = NIL_HANDLE;
+            hInstance.handle = WRES_NIL_HANDLE;
             res_failure = true;
             longjmp( Env, 1 );
         }

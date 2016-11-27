@@ -114,7 +114,7 @@ bool MsgInit( void )
 #ifndef BOOTSTRAP
     static char     name[_MAX_PATH]; // static because address passed outside.
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
         res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
@@ -176,9 +176,9 @@ void MsgFini( void )
 /*************************/
 {
 #ifndef BOOTSTRAP
-    if( hInstance.handle != NIL_HANDLE ) {
+    if( hInstance.handle != WRES_NIL_HANDLE ) {
         CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
 #endif
 }

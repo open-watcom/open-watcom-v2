@@ -93,7 +93,7 @@ bool AsMsgInit( void )
 #ifdef _STANDALONE_
     char        name[_MAX_PATH];
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
         res_failure = false;
         if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
@@ -134,9 +134,9 @@ void AsMsgFini( void ) {
 //**********************
 
 #ifdef _STANDALONE_
-    if( hInstance.handle != NIL_HANDLE ) {
+    if( hInstance.handle != WRES_NIL_HANDLE ) {
         CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+        hInstance.handle = WRES_NIL_HANDLE;
     }
 #endif
 }

@@ -114,7 +114,7 @@ bool MsgInit( void )
     char        fullpath[_MAX_PATH];
 #endif
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.handle = WRES_NIL_HANDLE;
     if( _cmdname( buffer ) != NULL ) {
 #if defined(_PLS)
         if( OpenResFile( &hInstance, buffer ) ) {
@@ -126,7 +126,7 @@ bool MsgInit( void )
             }
         }
 #endif
-        if( hInstance.handle != NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
+        if( hInstance.handle != WRES_NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
             if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
                 MsgReadErrArray();
                 CloseResFile( &hInstance );

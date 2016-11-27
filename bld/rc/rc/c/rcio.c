@@ -110,7 +110,7 @@ static bool Pass1InitRes( void )
 
     /* open the temporary file */
     CurrResFile.handle = ResOpenNewFile( CurrResFile.filename );
-    if( CurrResFile.handle == NIL_HANDLE ) {
+    if( CurrResFile.handle == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
         return( true );
@@ -449,7 +449,7 @@ static bool OpenResFileInfo( ExeType type )
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->IsOpen = false;
-        Pass2Info.ResFile->Handle = NIL_HANDLE;
+        Pass2Info.ResFile->Handle = WRES_NIL_HANDLE;
         Pass2Info.ResFile->Dir = NULL;
         return( true );
     }
@@ -480,7 +480,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
     exe_pe_header   *pehdr;
 
     info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY, PMODE_RW );
-    if( info->Handle == NIL_HANDLE ) {
+    if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
@@ -539,7 +539,7 @@ static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
     info->Handle = RCOPEN( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
-    if( info->Handle == NIL_HANDLE ) {
+    if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
     }
@@ -778,7 +778,7 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 {
     if( !phys->IsOpen ) {
         phys->Handle = RcIoOpenInput( phys->Filename, O_RDONLY | O_TEXT );
-        if( phys->Handle == NIL_HANDLE ) {
+        if( phys->Handle == WRES_NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -1076,12 +1076,12 @@ WResFileID RcIoOpenInput( const char * filename, int flags, ... )
 
     handle = RCOPEN( filename, flags, perms );
 
-    if( handle == NIL_HANDLE && errno == EMFILE ) {
+    if( handle == WRES_NIL_HANDLE && errno == EMFILE ) {
         /* set currfile to be the first (not before first) entry */
         currfile = InStack.Stack + 1;
         /* close open files except the current input file until able to open */
         /* don't close the current file because Offset isn't set */
-        while( currfile < InStack.Current && handle == NIL_HANDLE && errno == EMFILE ) {
+        while( currfile < InStack.Current && handle == WRES_NIL_HANDLE && errno == EMFILE ) {
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
                 handle = RCOPEN( filename, flags, perms );

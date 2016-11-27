@@ -44,7 +44,7 @@ WResFileID ResOpenFileRW( const char *filename )
     WResFileID  ret;
 
     ret = WRESOPEN( filename, O_CREAT | O_RDWR | O_BINARY, PMODE_RW );
-    if( ret == NIL_HANDLE ) {
+    if( ret == WRES_NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
     return( ret );

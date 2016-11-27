@@ -49,7 +49,7 @@ DepInfo *WResGetAutoDep( const char *fname )
 
     ret = NULL;
     handle = ResOpenFileRO( fname );
-    if( handle != NIL_HANDLE ) {
+    if( handle != WRES_NIL_HANDLE ) {
         if( WResIsWResFile( handle ) && (dir = WResInitDir()) != NULL ) {
             if( !WResReadDir( handle, dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );

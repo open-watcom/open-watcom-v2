@@ -62,7 +62,6 @@
 #define WRES_FID2FH(fid)    (fid)
 #define WRES_FH2FID(fh)     (fh)
 
-#define NIL_HANDLE          ((WResFileID)-1)
 #define WRES_NIL_HANDLE     ((WResFileID)-1)
 
 typedef int                 WResFileID;
