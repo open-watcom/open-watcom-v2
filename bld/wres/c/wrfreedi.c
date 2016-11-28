@@ -34,16 +34,14 @@
 #include "wres.h"
 #include "wresrtns.h"
 
-void __FreeLangList( WResResNode *curres ) {
-
-    WResLangNode        *oldnode;
+void __FreeLangList( WResResNode *curres )
+{
     WResLangNode        *currnode;
+    WResLangNode        *nextnode;
 
-    currnode = curres->Head;
-    while( currnode != NULL ) {
-        oldnode = currnode;
-        currnode = currnode->Next;
-        WRESFREE( oldnode );
+    for( currnode = curres->Head; currnode != NULL; currnode = nextnode ) {
+        nextnode = currnode->Next;
+        WRESFREE( currnode );
     }
     curres->Head = NULL;
     curres->Tail = NULL;
@@ -51,15 +49,13 @@ void __FreeLangList( WResResNode *curres ) {
 
 void __FreeResList( WResTypeNode *currtype )
 {
-    WResResNode         *oldnode;
     WResResNode         *currnode;
+    WResResNode         *nextnode;
 
-    currnode = currtype->Head;
-    while( currnode != NULL ) {
-        oldnode = currnode;
-        currnode = currnode->Next;
-        __FreeLangList( oldnode );
-        WRESFREE( oldnode );
+    for( currnode = currtype->Head; currnode != NULL; currnode = nextnode ) {
+        nextnode = currnode->Next;
+        __FreeLangList( currnode );
+        WRESFREE( currnode );
     }
 
     currtype->Head = NULL;
@@ -68,15 +64,13 @@ void __FreeResList( WResTypeNode *currtype )
 
 void __FreeTypeList( WResDirHead *currdir )
 {
-    WResTypeNode        *oldtype;
     WResTypeNode        *currtype;
+    WResTypeNode        *nexttype;
 
-    currtype = currdir->Head;
-    while( currtype != NULL ) {
-        oldtype = currtype;
-        currtype = currtype->Next;
-        __FreeResList( oldtype );
-        WRESFREE( oldtype );
+    for( currtype = currdir->Head; currtype != NULL; currtype = nexttype ) {
+        nexttype = currtype->Next;
+        __FreeResList( currtype );
+        WRESFREE( currtype );
     }
 
     currdir->Head = NULL;
@@ -88,7 +82,6 @@ void WResFreeDir( WResDir currdir )
 {
     if( currdir != NULL ) {
         __FreeTypeList( currdir );
-
         WRESFREE( currdir );
     }
 }
