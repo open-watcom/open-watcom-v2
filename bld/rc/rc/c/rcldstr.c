@@ -69,7 +69,7 @@ void FiniRcMsgs( void ) {}
 #include "rclayer0.h"
 #include "wreslang.h"
 
-extern HANDLE_INFO  Instance;
+extern HANDLE_INFO  hInstance;
 
 static unsigned MsgShift;
 
@@ -99,7 +99,7 @@ bool InitRcMsgs( void )
      * This makes it easier for layer0 to fool WRES into thinking
      * that the resource information starts at offset 0
      */
-    error = RCOpenResFile( &Instance, imageName );
+    error = RCOpenResFile( &hInstance, imageName );
     MsgShift = _WResLanguage() * MSG_LANG_SPACING;
     if( !error && !GetRcMsg( USAGE_MSG_FIRST, testbuf, sizeof( testbuf ) ) ) {
         error = true;
@@ -112,7 +112,7 @@ bool InitRcMsgs( void )
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    if( WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) <= 0 ) {
+    if( WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
@@ -121,7 +121,7 @@ bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 
 void FiniRcMsgs( void )
 {
-    RCCloseResFile( &Instance );
+    RCCloseResFile( &hInstance );
 }
 
 #endif

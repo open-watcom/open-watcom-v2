@@ -86,7 +86,7 @@ typedef struct RcFileEntry {
     RcBuffer    *Buffer;         // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
 
-HANDLE_INFO     Instance;
+HANDLE_INFO     hInstance;
 
 static WResFileID       openFileList[MAX_OPEN_FILES];
 static RcFileEntry      RcFileList[RC_MAX_FILES];
@@ -355,7 +355,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
 
     i = RcFindIndex( handle );
     if( i >= RC_MAX_FILES ) {
-        if( handle == Instance.handle && where == SEEK_SET ) {
+        if( handle == hInstance.handle && where == SEEK_SET ) {
             return( lseek( handle, amount + WResFileShift, where ) - WResFileShift );
         } else {
             return( lseek( handle, amount, where ) );

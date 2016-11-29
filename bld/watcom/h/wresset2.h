@@ -45,6 +45,7 @@
 
 typedef struct handle_info {
     WResFileID  handle;
+    int         status;
 #ifdef WIN_GUI
     HINSTANCE   inst;
 #endif

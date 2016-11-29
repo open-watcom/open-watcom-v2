@@ -49,7 +49,7 @@
 #include "rccore.h"
 
 
-extern HANDLE_INFO  Instance;
+extern HANDLE_INFO  hInstance;
 
 WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
 
@@ -61,7 +61,7 @@ void InitGlobs( void )
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
-    memset( &Instance, 0, sizeof( HANDLE_INFO ) );
+    memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
     TmpCtlInitStatics();
     Layer0InitStatics();
     SemanticInitStatics();
