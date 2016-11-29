@@ -30,7 +30,7 @@ die() {
 rm -f $OWBUILDER_BOOTX_OUTPUT || die "Failed to remove $OWBUILDER_BOOTX_OUTPUT"
 cd $OWSRCDIR/wmake || die "Failed to enter $OWSRCDIR/wmake"
 if [ ! -d $OWOBJDIR ]; then mkdir -p $OWOBJDIR || die "Failed to mkdir $OWOBJDIR"; fi
-cd $OWOBJDIR || doe "Failed to enter $OWOWBDIR"
+cd $OWOBJDIR || die "Failed to enter $OWOWBDIR"
 rm -f $OWBINDIR/wmake || die "Failed to remove $OWBINDIR/wmake"
 if [ "$OWTOOLS" = "WATCOM" ]; then
     output_redirect wmake -f ../wmake clean || die 'Failed to wmake wmake clean'
