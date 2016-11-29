@@ -49,7 +49,6 @@
 
 static int      _fileNum = 0;
 static unsigned MsgShift = 0;
-static bool     res_failure = true;
 
 static void reportBadHeap( int retval );
 
@@ -85,25 +84,19 @@ WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
 
 void initWicResources( char * fname )
 {
-    hInstance.filename = fname;
-    hInstance.handle = open( hInstance.filename, O_RDONLY | O_BINARY );
-    if( hInstance.handle != NIL_HANDLE ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            return;
-        }
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, fname ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        return;
     }
+    CloseResFile( &hInstance );
     fprintf( stderr, "Internal error: Cannot open resources" );
-    res_failure = true;
-    wicExit(-1);
+    wicExit( -1 );
 }
 
 bool getResStr( int resourceid, char *buffer )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = 0;
         return( false );
     }
@@ -112,16 +105,16 @@ bool getResStr( int resourceid, char *buffer )
 
 void zapWicResources(void)
 {
-    if( hInstance.handle != NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-    }
+    CloseResFile( &hInstance );
 }
 
 /*--------------------- Error reporting --------------------------*/
 
 static FILE* errorFile = NULL;
 static char errorFileName[_MAX_PATH];
-void initErrorFile(char *name) {
+
+void initErrorFile(char *name)
+{
     assert(errorFile == NULL);
     errorFile = wicFopen(setNewFileExt(errorFileName, name, "err"), "wt");
 }
