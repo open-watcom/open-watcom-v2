@@ -62,6 +62,7 @@ extern "C" {
 #endif
 
 extern bool             OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern bool             OpenResFileX( PHANDLE_INFO hInstance, const char *filename, bool res_file );
 extern bool             CloseResFile( PHANDLE_INFO hInstance );
 extern void             InitResFile( PHANDLE_INFO hInstance, WResFileID handle );
 extern void             FiniResFile( PHANDLE_INFO hInstance );
