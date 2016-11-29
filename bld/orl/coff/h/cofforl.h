@@ -38,7 +38,7 @@
 coff_handle             COFFENTRY CoffInit( orl_funcs * );
 orl_return              COFFENTRY CoffFini( coff_handle );
 
-orl_return              COFFENTRY CoffFileInit( coff_handle, void *, coff_file_handle * );
+orl_return              COFFENTRY CoffFileInit( coff_handle, orl_file_id, coff_file_handle * );
 orl_return              COFFENTRY CoffFileFini( coff_file_handle );
 orl_return              COFFENTRY CoffFileScan( coff_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        COFFENTRY CoffFileGetMachineType( coff_file_handle );

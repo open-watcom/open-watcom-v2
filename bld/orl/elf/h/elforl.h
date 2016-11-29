@@ -38,7 +38,7 @@
 elf_handle              ELFENTRY ElfInit( orl_funcs * );
 orl_return              ELFENTRY ElfFini( elf_handle );
 
-orl_return              ELFENTRY ElfFileInit( elf_handle, void *, elf_file_handle * );
+orl_return              ELFENTRY ElfFileInit( elf_handle, orl_file_id, elf_file_handle * );
 orl_return              ELFENTRY ElfFileFini( elf_file_handle );
 orl_return              ELFENTRY ElfFileScan( elf_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        ELFENTRY ElfFileGetMachineType( elf_file_handle );

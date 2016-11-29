@@ -242,16 +242,16 @@ static int AddDataImpLib( coff_file_handle coff_file_hnd, const void *buff, size
     return( ORL_OKAY );
 }
 
-static void *ImportLibRead( void * _coff_file_hnd, size_t len )
+static void *ImportLibRead( orl_file_id _coff_file_hnd, size_t len )
 {
-    coff_file_handle coff_file_hnd = _coff_file_hnd;
+    coff_file_handle coff_file_hnd = (coff_file_handle)_coff_file_hnd;
     IMPLIB_POS += (long)len;
     return( IMPLIB_DATA + IMPLIB_POS - len );
 }
 
-static long ImportLibSeek( void *_coff_file_hnd, long pos, int where )
+static long ImportLibSeek( orl_file_id _coff_file_hnd, long pos, int where )
 {
-    coff_file_handle coff_file_hnd = _coff_file_hnd;
+    coff_file_handle coff_file_hnd = (coff_file_handle)_coff_file_hnd;
     if( where == SEEK_SET ) {
         IMPLIB_POS = pos;
     } else if( where == SEEK_CUR ) {
@@ -324,7 +324,7 @@ I got following information from Microsoft about name type and name conversion.
     // __fastcall uses @ as prefix and @nn as suffix
 
     // this solution is stupid, probably it needs improvement
-    // there is no more information from Microsoft 
+    // there is no more information from Microsoft
 
     if( *src != 0 ) {
         switch( type ) {

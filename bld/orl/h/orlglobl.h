@@ -36,6 +36,21 @@
 
 #define ORLENTRY
 
+#if defined( _WIN64 )
+#define ORL_FID2PH( fid )   (((int)(unsigned __int64)(fid)) - 1)
+#define ORL_PH2FID( ph )    ((orl_file_id)(unsigned __int64)(ph + 1))
+#else
+#define ORL_FID2PH( fid )   (((int)(unsigned long)(fid)) - 1)
+#define ORL_PH2FID( ph )    ((orl_file_id)(unsigned long)(ph + 1))
+#endif
+
+#define ORL_FID2FH( fid )   (fid)
+#define ORL_FH2FID( fh )    (fh)
+
+#define ORL_NIL_HANDLE      ((orl_file_id)NULL)
+
+typedef long                            *orl_file_id;
+
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
 
@@ -75,8 +90,8 @@ typedef struct {
 #include <poppck.h>
 
 typedef struct orl_funcs {
-    void *      (*cli_read)( void *, size_t );
-    long int    (*cli_seek)( void *, long int, int );
+    void *      (*cli_read)( orl_file_id, size_t );
+    long int    (*cli_seek)( orl_file_id, long int, int );
     void *      (*cli_alloc)( size_t );
     void        (*cli_free)( void * );
 } orl_funcs;

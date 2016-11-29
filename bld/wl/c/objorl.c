@@ -60,6 +60,9 @@
 #include "clibext.h"
 
 
+#define ORL_FID2FL( fid )   ((file_list *)(fid))
+#define ORL_FL2FID( fl )    ((orl_file_id)(fl))
+
 typedef struct readcache READCACHE;
 
 typedef struct readcache {
@@ -82,10 +85,10 @@ static ordinal_t        ImpOrdinal;
 
 static readcache   *ReadCacheList;
 
-static void *ORLRead( void *_list, size_t len )
-/**********************************************/
+static void *ORLRead( orl_file_id fid, size_t len )
+/*************************************************/
 {
-    file_list   *list = _list;
+    file_list   *list = ORL_FID2FL( fid );
     void        *result;
     readcache   *cache;
 
@@ -98,10 +101,10 @@ static void *ORLRead( void *_list, size_t len )
     return( result );
 }
 
-static long ORLSeek( void *_list, long pos, int where )
-/*****************************************************/
+static long ORLSeek( orl_file_id fid, long pos, int where )
+/*********************************************************/
 {
-    file_list *list = _list;
+    file_list *list = ORL_FID2FL( fid );
 
     if( where == SEEK_SET ) {
         ORLPos = pos;
@@ -114,7 +117,7 @@ static long ORLSeek( void *_list, long pos, int where )
 }
 
 void InitObjORL( void )
-/****************************/
+/*********************/
 {
     ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
 
@@ -153,7 +156,7 @@ bool IsORL( file_list *list, unsigned long loc )
 
     isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, list );
+    type = ORLFileIdentify( ORLHandle, ORL_FL2FID( list ) );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
     } else if( type == ORL_COFF ) {
@@ -180,7 +183,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, CurrMod->f.source, type ) );
+    return( ORLFileInit( ORLHandle, ORL_FL2FID( CurrMod->f.source ), type ) );
 }
 
 static void ClearCachedData( file_list *list )

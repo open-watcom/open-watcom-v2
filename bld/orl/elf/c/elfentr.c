@@ -63,7 +63,7 @@ orl_return ELFENTRY ElfFini( elf_handle elf_hnd )
     return( ORL_OKAY );
 }
 
-orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, void *file, elf_file_handle *pefh )
+orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_file_id file, elf_file_handle *pefh )
 {
     elf_file_handle     elf_file_hnd;
     orl_return          error;

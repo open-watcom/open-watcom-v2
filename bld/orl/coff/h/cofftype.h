@@ -87,7 +87,7 @@ struct coff_file_handle_struct {
     coff_file_handle    next;
     coff_sec_handle     *coff_sec_hnd;
     coff_sec_handle     *orig_sec_hnd;
-    void                *file;
+    orl_file_id         file;
     coff_quantity       initial_size;
     coff_file_header    *f_hdr_buffer;
     char                *s_hdr_table_buffer;
