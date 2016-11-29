@@ -104,5 +104,5 @@ bool FindResourcesX( PHANDLE_INFO hInstance, bool res_file )
 
 bool FindResources( PHANDLE_INFO hInstance )
 {
-    return( FindResourcesX( PHANDLE_INFO hInstance, false ) );
+    return( FindResourcesX( hInstance, false ) );
 }
