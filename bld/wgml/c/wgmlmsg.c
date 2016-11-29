@@ -38,7 +38,7 @@
 
 #include "clibext.h"
 
-HANDLE_INFO Instance;
+HANDLE_INFO hInstance;
 
 static unsigned MsgShift;               // 0 = english, 1000 for japanese
 static bool     res_failure = true;
@@ -69,10 +69,10 @@ bool init_msgs( void )
 {
     char        fname[_MAX_PATH];
 
-    Instance.handle = WRES_NIL_HANDLE;
-    if( _cmdname( fname ) != NULL && !OpenResFile( &Instance, fname ) ) {
+    hInstance.handle = WRES_NIL_HANDLE;
+    if( _cmdname( fname ) != NULL && !OpenResFile( &hInstance, fname ) ) {
         res_failure = false;
-        if( !FindResources( &Instance ) && !InitResources( &Instance ) ) {
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
             MsgShift = _WResLanguage() * MSG_LANG_SPACING;
             if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
                 return( true );
@@ -93,7 +93,7 @@ bool init_msgs( void )
 
 bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
-    if( res_failure || WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
@@ -106,8 +106,8 @@ bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 
 void fini_msgs( void )
 {
-    if( Instance.handle != WRES_NIL_HANDLE ) {
-        CloseResFile( &Instance );
-        Instance.handle = WRES_NIL_HANDLE;
+    if( hInstance.handle != WRES_NIL_HANDLE ) {
+        CloseResFile( &hInstance );
+        hInstance.handle = WRES_NIL_HANDLE;
     }
 }
