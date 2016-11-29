@@ -49,7 +49,6 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
@@ -74,26 +73,22 @@ bool MsgInit( void )
     char        name[_MAX_PATH];
     char        dummy[MAX_RESOURCE_SIZE];
 
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( MsgGet( MSG_USAGE_BASE, dummy ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( MsgGet( MSG_USAGE_BASE, dummy ) ) {
+            return( true );
         }
-        MsgFini();
     }
+    CloseResFile( &hInstance );
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
     return( false );
 }
 
 bool MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -152,8 +147,5 @@ void MsgSubStr( int resourceid, char *buff, char *p )
 void MsgFini( void )
 /******************/
 {
-    if( hInstance.handle != WRES_NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = WRES_NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 }

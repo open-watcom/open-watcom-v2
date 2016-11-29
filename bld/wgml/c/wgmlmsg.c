@@ -41,7 +41,6 @@
 HANDLE_INFO hInstance;
 
 static unsigned MsgShift;               // 0 = english, 1000 for japanese
-static bool     res_failure = true;
 
 
 /***************************************************************************/
@@ -69,19 +68,15 @@ bool init_msgs( void )
 {
     char        fname[_MAX_PATH];
 
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( _cmdname( fname ) != NULL && !OpenResFile( &hInstance, fname ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( fname ) != NULL && OpenResFile( &hInstance, fname ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
+            return( true );
         }
-        fini_msgs();
     }
+    CloseResFile( &hInstance );
     out_msg( "Resources not found\n" );
-    res_failure = true;
     g_suicide();
     return( false );
 }
@@ -93,7 +88,7 @@ bool init_msgs( void )
 
 bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
-    if( res_failure || WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
@@ -106,8 +101,5 @@ bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 
 void fini_msgs( void )
 {
-    if( hInstance.handle != WRES_NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = WRES_NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 }

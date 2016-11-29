@@ -39,24 +39,53 @@
 #include "opcl.h"
 
 
-extern WResDir    MainDir;
+bool OpenResFileX( PHANDLE_INFO instance, const char *filename, bool res_file )
+/******************************************************************************/
+/* return true if file is open and resources are found and initialized */
+/* return false otherwise */
+{
+    instance->status = 0;
+    instance->handle = ResOpenFileRO( filename );
+    if( instance->handle == WRES_NIL_HANDLE ) {
+        return( false );
+    }
+    instance->status++;
+    if( FindResourcesX( instance, res_file ) )
+        return( false );
+    instance->status++;
+    if( InitResources( instance ) )
+        return( false );
+    instance->status++;
+    return( true );
+}
 
-bool OpenResFile( PHANDLE_INFO hInstance, const char *filename )
+bool OpenResFile( PHANDLE_INFO instance, const char *filename )
 /**************************************************************/
+/* return true if file is open and resources are found and initialized */
+/* return false otherwise */
 {
-    InitResFile( hInstance, ResOpenFileRO( filename ) );
-    return( hInstance->handle == WRES_NIL_HANDLE );
+    return( OpenResFileX( instance, filename, false ) );
 }
 
-bool CloseResFile2( WResDir dir, PHANDLE_INFO hInstance )
-/*******************************************************/
-{
-    FiniResFile( hInstance );
-    return( ResCloseFile( hInstance->handle ) );
-}
-
-bool CloseResFile( PHANDLE_INFO hInstance )
+bool CloseResFile( PHANDLE_INFO instance )
 /*****************************************/
+/* return true if file is succesfully closed
+ * and return false otherwise
+ */
 {
-    return( CloseResFile2( MainDir, hInstance ) );
+    bool    rc;
+
+    rc = true;
+    switch( instance->status ) {
+    default:
+        FiniResFile( instance );
+        /* fall throught */
+    case 1:
+        rc = !ResCloseFile( instance->handle );
+        instance->handle = WRES_NIL_HANDLE;
+        instance->status = 0;
+        /* fall throught */
+    case 0:
+        return( rc );
+    }
 }

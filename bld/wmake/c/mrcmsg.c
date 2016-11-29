@@ -84,7 +84,6 @@ static  TABLE_TYPE  PARA_TABLE[] = {
 
 static  HANDLE_INFO hInstance = { 0 };
 static  unsigned    MsgShift;
-static  bool        res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
@@ -114,19 +113,15 @@ bool MsgInit( void )
 #ifndef BOOTSTRAP
     static char     name[_MAX_PATH]; // static because address passed outside.
 
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( MsgGet( MSG_USAGE_BASE, name ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( MsgGet( MSG_USAGE_BASE, name ) ) {
+            return( true );
         }
-        MsgFini();
     }
+    CloseResFile( &hInstance );
     posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
     return( false );
 #else
     return( true );
@@ -149,7 +144,7 @@ bool MsgGet( int resourceid, char *buffer )
     }
     strcpy( buffer, s->s );
 #else
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = NULLCHAR;
         return( false );
     }
@@ -176,10 +171,7 @@ void MsgFini( void )
 /*************************/
 {
 #ifndef BOOTSTRAP
-    if( hInstance.handle != WRES_NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = WRES_NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 #endif
 }
 

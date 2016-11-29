@@ -65,7 +65,6 @@ void FiniMsg( void ) {}
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -88,7 +87,6 @@ void InitMsg( void )
     char    *imageName;
 #endif
 
-    hInstance.handle = WRES_NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -96,33 +94,26 @@ void InitMsg( void )
 #else
     imageName = _LpDllName;
 #endif
-    if( !OpenResFile( &hInstance, imageName ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            return;
-        }
-        CloseResFile( &hInstance );
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, imageName ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        return;
     }
-    res_failure = true;
+    CloseResFile( &hInstance );
     FatalResError();
 }
 
 void MsgGet( int resourceid, char *buffer )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_ERROR_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_ERROR_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }
 
 void FiniMsg( void )
 {
-    if( hInstance.handle != WRES_NIL_HANDLE ) {
-        if( CloseResFile( &hInstance ) ) {
-            hInstance.handle = WRES_NIL_HANDLE;
-            res_failure = true;
-            longjmp( Env, 1 );
-        }
+    if( !CloseResFile( &hInstance ) ) {
+        longjmp( Env, 1 );
     }
 }
 #endif

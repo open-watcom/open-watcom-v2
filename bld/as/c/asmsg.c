@@ -72,7 +72,6 @@ static unsigned         msgShift;
 #define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
 
 static HANDLE_INFO      hInstance = {0};
-static bool             res_failure = true;
 
 static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
 //************************************************************************************
@@ -93,19 +92,15 @@ bool AsMsgInit( void )
 #ifdef _STANDALONE_
     char        name[_MAX_PATH];
 
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            msgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        msgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
+            return( true );
         }
-        AsMsgFini();
     }
+    CloseResFile( &hInstance );
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
     return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
@@ -120,7 +115,7 @@ bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
 #ifdef _STANDALONE_
-    if( res_failure || WResLoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -134,9 +129,6 @@ void AsMsgFini( void ) {
 //**********************
 
 #ifdef _STANDALONE_
-    if( hInstance.handle != WRES_NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = WRES_NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 #endif
 }

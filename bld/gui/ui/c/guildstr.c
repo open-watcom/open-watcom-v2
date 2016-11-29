@@ -58,7 +58,6 @@
 #define NO_RES_MESSAGE_SUFFIX ")." _newline
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  bool            GUIMsgInitFlag = false;
 
 static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 /* fool the resource compiler into thinking that the resource information
@@ -75,45 +74,31 @@ WResSetRtns( open, close, read, write, res_seek, tell, GUIMemAlloc, GUIMemFree )
 
 bool GUIIsLoadStrInitialized( void )
 {
-    return( GUIMsgInitFlag );
+    return( hInstance.status != 0 );
 }
 
 bool GUILoadStrInit( const char *fname )
 {
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( !OpenResFile( &hInstance, fname ) ) {
+    hInstance.status = 0;
+    if( OpenResFileX( &hInstance, fname, GUIGetExtName() != NULL ) ) {
         // if we are using an external resource file then we don't have to search
-        if( !FindResourcesX( &hInstance, GUIGetExtName() != NULL ) ) {
-            if( !InitResources( &hInstance ) ) {
-                GUIMsgInitFlag = true;
-                return( true );
-            }
-        }
-        CloseResFile( &hInstance );
+        return( true );
     }
+    CloseResFile( &hInstance );
     write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
     write( fileno(stdout), fname,                 strlen( fname ) );
     write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
-    GUIMsgInitFlag = false;
     return( false );
 }
 
 bool GUILoadStrFini( void )
 {
-    if( GUIMsgInitFlag ) {
-        if( !CloseResFile( &hInstance ) ) {
-            GUIMsgInitFlag = false;
-        } else {
-            return( false );
-        }
-    }
-
-    return( true );
+    return( CloseResFile( &hInstance ) );
 }
 
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
-    if( GUIMsgInitFlag && buffer != NULL && buffer_length != 0 ) {
+    if( hInstance.status && buffer != NULL && buffer_length != 0 ) {
         if( WResLoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) > 0 ) {
             return( true );
         } else {
@@ -128,7 +113,7 @@ bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length 
 {
     bool                ok;
 
-    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
+    ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
         ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
@@ -142,7 +127,7 @@ bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length )
 {
     bool                ok;
 
-    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
+    ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
         ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_MENU ), menu_id,

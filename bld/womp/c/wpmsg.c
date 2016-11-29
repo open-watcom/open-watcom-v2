@@ -47,7 +47,6 @@
 #define STDOUT_FILENO   1
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  bool            res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
@@ -69,24 +68,19 @@ WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
 bool MsgInit( char *fname )
 /*************************/
 {
-    hInstance.handle = NIL_HANDLE;
-    if( !OpenResFile( &hInstance, fname ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            return( true );
-        }
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, fname ) ) {
+        return( true );
     }
+    CloseResFile( &hInstance );
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
     return( false );
 }
 
 void MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
     }
 }
@@ -94,13 +88,5 @@ void MsgGet( int resourceid, char *buffer )
 bool MsgFini( void )
 /******************/
 {
-    bool    retcode = true;
-
-    if( !res_failure ) {
-        if ( CloseResFile( &hInstance ) ) {
-            res_failure = true;
-            retcode = false;
-        }
-    }
-    return( retcode );
+    return( CloseResFile( &hInstance ) );
 }

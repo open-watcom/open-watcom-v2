@@ -58,7 +58,6 @@
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
@@ -83,7 +82,6 @@ bool InitMsg( void )
     char        *imageName;
 #endif
 
-    hInstance.handle = WRES_NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -92,25 +90,21 @@ bool InitMsg( void )
     imageName = _LpDllName;;
 #endif
     BannerPrinted = false;
-    if( !OpenResFile( &hInstance, imageName ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, imageName ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
+            return( true );
         }
-        CloseResFile( &hInstance );
-        hInstance.handle = WRES_NIL_HANDLE;
     }
+    CloseResFile( &hInstance );
     WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
-    res_failure = true;
     return( false );
 }
 
 bool Msg_Get( int resourceid, char *buffer )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -201,13 +195,5 @@ void Msg_Write_Map( int resourceid, ... )
 
 bool FiniMsg( void )
 {
-    bool    retcode = true;
-
-    if( !res_failure ) {
-        if( CloseResFile( &hInstance ) ) {
-            res_failure = true;
-            retcode = false;
-        }
-    }
-    return( retcode );
+    return( CloseResFile( &hInstance ) );
 }

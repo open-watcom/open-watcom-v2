@@ -113,28 +113,28 @@ bool MsgInit( void )
     char        *fname;
     char        fullpath[_MAX_PATH];
 #endif
+    bool        rc;
 
-    hInstance.handle = WRES_NIL_HANDLE;
+    hInstance.status = 0;
     if( _cmdname( buffer ) != NULL ) {
+        rc = OpenResFile( &hInstance, buffer );
 #if defined(_PLS)
-        if( OpenResFile( &hInstance, buffer ) ) {
+        if( !rc ) {
             _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
             _makepath( buffer, NULL, NULL, fname, ".exp" );
             _searchenv( buffer, "PATH", fullpath );
             if( fullpath[0] != '\0' ) {
-                OpenResFile( &hInstance, fullpath );
+                rc = OpenResFile( &hInstance, fullpath );
             }
         }
 #endif
-        if( hInstance.handle != WRES_NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
-            if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-                MsgReadErrArray();
-                CloseResFile( &hInstance );
-                return( true );
-            }
+        if( rc ) {
+            MsgReadErrArray();
             CloseResFile( &hInstance );
+            return( true );
         }
     }
+    CloseResFile( &hInstance );
     write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }

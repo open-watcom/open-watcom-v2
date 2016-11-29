@@ -45,11 +45,7 @@
 
 
 static  HANDLE_INFO     hInstance = { 0 };
-static  char            ResFlags = { 0 };
 static  unsigned        MsgShift;
-
-#define RF_OPENED       0x01            // Resource file opened
-#define RF_INITIALIZED  0x02            // Resource system initialized
 
 static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
 // Fool the resource compiler into thinking that the resource information
@@ -69,7 +65,7 @@ static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
 {
-    return( (ResFlags & RF_INITIALIZED) != 0
+    return( hInstance.status
             && WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
 }
 
@@ -86,23 +82,17 @@ static void BldErrMsg( unsigned int err, char *buffer, va_list args )
 
 static void ErrorInit( const char *pgm_name )
 {
-    hInstance.handle = WRES_NIL_HANDLE;
-    if( OpenResFile( &hInstance, pgm_name ) )
+    hInstance.status = 0;
+    if( OpenResFile( &hInstance, pgm_name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
         return;
-    ResFlags |= RF_OPENED;
-    if( FindResources( &hInstance ) )
-        return;
-    if( InitResources( &hInstance ) )
-        return;
-    MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-    ResFlags |= RF_INITIALIZED;
+    }
+    CloseResFile( &hInstance );
 }
 
 static void ErrorFini( void )
 {
-    if( ResFlags & RF_OPENED ) {
-        CloseResFile( &hInstance );
-    }
+    CloseResFile( &hInstance );
 }
 
 void __InitResource( void )
