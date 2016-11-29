@@ -83,8 +83,7 @@ bool GUILoadStrInit( const char *fname )
     hInstance.handle = WRES_NIL_HANDLE;
     if( !OpenResFile( &hInstance, fname ) ) {
         // if we are using an external resource file then we don't have to search
-        WResFileShift = 0;
-        if( GUIGetExtName() != NULL || !FindResources( &hInstance ) ) {
+        if( !FindResourcesX( &hInstance, GUIGetExtName() != NULL ) ) {
             if( !InitResources( &hInstance ) ) {
                 GUIMsgInitFlag = true;
                 return( true );
