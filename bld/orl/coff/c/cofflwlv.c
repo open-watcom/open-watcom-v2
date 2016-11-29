@@ -438,7 +438,7 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
             }
         }
         offset = coffline->ir.RVA;
-        currline->linnum = coffline->line_number + linebase;
+        currline->linnum = (unsigned_16)( coffline->line_number + linebase );
         currline->off = offset;
         coffline++;
         currline++;

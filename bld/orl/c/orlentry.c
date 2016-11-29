@@ -95,7 +95,7 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
 }
 
 orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
-/********************************************************************/
+/*********************************************************************/
 {
     unsigned char *     magic;
     uint_16             machine_type;

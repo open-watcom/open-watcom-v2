@@ -458,7 +458,7 @@ static void freeBuffList( void )
 {
     buff_list   next;
 
-    while( buffList ) {
+    while( buffList != NULL ) {
         next = buffList->next;
         TRMemFree( buffList );
         buffList = next;
