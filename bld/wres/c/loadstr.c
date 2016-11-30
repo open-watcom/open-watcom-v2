@@ -148,6 +148,7 @@ int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, i
 
 bool InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 /*********************************************************/
+/* return true if error */
 {
     *dir = WResInitDir();
     if( *dir == NULL )
@@ -157,24 +158,29 @@ bool InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
 
 bool InitResources( PHANDLE_INFO hInstance )
 /******************************************/
+/* return true if error */
 {
     return( InitResources2( &MainDir, hInstance ) );
+}
+
+bool FiniResources2( WResDir dir, PHANDLE_INFO instance )
+/*******************************************************/
+/* return true if error */
+{
+    instance=instance;
+    WResFreeDir( dir );
+    return( false );
+}
+
+bool FiniResources( PHANDLE_INFO instance )
+/*****************************************/
+/* return true if error */
+{
+    return( FiniResources2( MainDir, instance ) );
 }
 
 void LoadstrInitStatics( void )
 /*****************************/
 {
     MainDir = NULL;
-}
-
-void InitResFile( PHANDLE_INFO hInstance, WResFileID f )
-/******************************************************/
-{
-    hInstance->handle = f;
-}
-
-void FiniResFile( PHANDLE_INFO hInstance )
-/****************************************/
-{
-    WResFreeDir( MainDir );
 }

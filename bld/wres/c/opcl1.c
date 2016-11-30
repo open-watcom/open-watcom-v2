@@ -78,7 +78,7 @@ bool CloseResFile( PHANDLE_INFO instance )
     rc = true;
     switch( instance->status ) {
     default:
-        FiniResFile( instance );
+        FiniResources( instance );
         /* fall throught */
     case 1:
         rc = !ResCloseFile( instance->handle );

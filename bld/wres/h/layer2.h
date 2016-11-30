@@ -42,4 +42,4 @@ extern int WResLoadResource2( struct WResDirHead *,
                               WResID            *idResource,
                               LPSTR             *lpszBuffer,
                               int               *bufferSize );
-extern bool CloseResFile2( struct WResDirHead *, PHANDLE_INFO hInstance );
+extern bool FiniResources2( struct WResDirHead *, PHANDLE_INFO hInstance );
