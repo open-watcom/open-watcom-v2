@@ -30,16 +30,9 @@
 ****************************************************************************/
 
 
-extern bool InitResources2( struct WResDirHead **, PHANDLE_INFO hInstance );
-extern int WResLoadString2( struct WResDirHead *,
-                            PHANDLE_INFO hInstance,
-                            UINT idResource,
-                            LPSTR lpszBuffer,
-                            int nBufferMax );
-extern int WResLoadResource2( struct WResDirHead *,
-                              PHANDLE_INFO      hInstance,
-                              WResID            *idType,
-                              WResID            *idResource,
-                              LPSTR             *lpszBuffer,
-                              int               *bufferSize );
-extern bool FiniResources2( struct WResDirHead *, PHANDLE_INFO hInstance );
+extern bool InitResources2( struct WResDirHead **, PHANDLE_INFO hinfo );
+extern int  WResLoadString2( struct WResDirHead *, PHANDLE_INFO hinfo,
+                            UINT idResource, LPSTR lpszBuffer, int nBufferMax );
+extern int  WResLoadResource2( struct WResDirHead *, PHANDLE_INFO hinfo, WResID *idType,
+                              WResID *idResource, LPSTR *lpszBuffer, int *bufferSize );
+extern bool FiniResources2( struct WResDirHead *, PHANDLE_INFO hinfo );

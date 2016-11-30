@@ -45,16 +45,16 @@
 
 extern WResDir    MainDir;
 
-static int GetResource( WResLangInfo *res, PHANDLE_INFO hInstance, char *res_buffer )
+static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer )
 /***********************************************************************************/
 {
-    if( WRESSEEK( hInstance->handle, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hinfo->handle, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
-    WRESREAD( hInstance->handle, res_buffer, res->Length );
+    WRESREAD( hinfo->handle, res_buffer, res->Length );
     return( 0 );
 }
 
-int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, WResID *resource_type,
+int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
                        WResID *resource_id, LPSTR *lpszBuffer, int *bufferSize )
 /******************************************************************************/
 {
@@ -87,13 +87,13 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, WResID *resource_typ
             return( -1 );
         }
         *bufferSize = (int)res->Length;
-        retcode = GetResource( res, hInstance, res_buffer );
+        retcode = GetResource( res, hinfo, res_buffer );
     }
 
     return( retcode );
 }
 
-int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
+int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
                                         LPSTR *lpszBuffer, int *bufferSize )
 /**************************************************************************/
 {
@@ -103,10 +103,10 @@ int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
     WResInitIDFromNum( idResource, &resource_id );
     WResInitIDFromNum( idType, &resource_type );
 
-    return( WResLoadResource2( MainDir, hInstance, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
+    return( WResLoadResource2( MainDir, hinfo, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
 }
 
-int WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource,
+int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
                                     LPSTR *lpszBuffer, int *bufferSize )
 /*************************************************************************/
 {
@@ -140,7 +140,7 @@ int WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource,
         resource_type = WResIDFromStr( idType );
 #endif
     }
-    rc = WResLoadResource2( MainDir, hInstance, resource_type, resource_id, lpszBuffer, bufferSize );
+    rc = WResLoadResource2( MainDir, hinfo, resource_type, resource_id, lpszBuffer, bufferSize );
     WResIDFree( resource_type );
     WResIDFree( resource_id );
     return( rc );

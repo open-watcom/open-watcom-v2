@@ -46,7 +46,7 @@
 WResDir    MainDir;
 
 static int GetString(   WResLangInfo    *res,
-                        PHANDLE_INFO    hInstance,
+                        PHANDLE_INFO    hinfo,
                         UINT            idResource,
                         LPSTR           lpszBuffer,
                         int             nBufferMax )
@@ -59,7 +59,7 @@ static int GetString(   WResLangInfo    *res,
     int                 ix1, ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    if( WRESSEEK( hInstance->handle, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hinfo->handle, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;
@@ -77,8 +77,8 @@ static int GetString(   WResLangInfo    *res,
                 numread = length;
                 length = 0;
             }
-            numread = WRESREAD( hInstance->handle, stringbuff, numread );
-            if( WRESIOERR( hInstance->handle, numread ) )
+            numread = WRESREAD( hinfo->handle, stringbuff, numread );
+            if( WRESIOERR( hinfo->handle, numread ) )
                 return( -1 );
             if( numread == 0 )
                 return( -1 );
@@ -107,7 +107,7 @@ static int GetString(   WResLangInfo    *res,
     return( ix2 );
 }
 
-int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
+int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, UINT idResource,
                              LPSTR lpszBuffer, int nBufferMax )
 /************************************************************************/
 {
@@ -127,7 +127,7 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
     WResInitIDFromNum( RESOURCE2INT( RT_STRING ), &string_type );
 
     if( dir == NULL ) {
-        InitResources2( &dir, hInstance );
+        InitResources2( &dir, hinfo );
     }
     wind = WResFindResource( &string_type, &block_id, dir, &lang );
 
@@ -135,32 +135,32 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hInstance, UINT idResource,
         retcode = -1;
     } else {
         res = WResGetLangInfo( wind );
-        retcode = GetString( res, hInstance, idResource, lpszBuffer, nBufferMax );
+        retcode = GetString( res, hinfo, idResource, lpszBuffer, nBufferMax );
     }
     return( retcode );
 }
 
-int WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax )
+int WResLoadString( PHANDLE_INFO hinfo, UINT idResource, LPSTR lpszBuffer, int nBufferMax )
 /*********************************************************************************************/
 {
-    return( WResLoadString2( MainDir, hInstance, idResource, lpszBuffer, nBufferMax ) );
+    return( WResLoadString2( MainDir, hinfo, idResource, lpszBuffer, nBufferMax ) );
 }
 
-bool InitResources2( WResDir *dir, PHANDLE_INFO hInstance )
+bool InitResources2( WResDir *dir, PHANDLE_INFO hinfo )
 /*********************************************************/
 /* return true if error */
 {
     *dir = WResInitDir();
     if( *dir == NULL )
         return( true );
-    return( WResReadDir( hInstance->handle, *dir, NULL ) );
+    return( WResReadDir( hinfo->handle, *dir, NULL ) );
 }
 
-bool InitResources( PHANDLE_INFO hInstance )
+bool InitResources( PHANDLE_INFO hinfo )
 /******************************************/
 /* return true if error */
 {
-    return( InitResources2( &MainDir, hInstance ) );
+    return( InitResources2( &MainDir, hinfo ) );
 }
 
 bool FiniResources2( WResDir dir, PHANDLE_INFO instance )

@@ -57,7 +57,7 @@ typedef struct dbgheader {
 
 WResFileOffset    WResFileShift = 0;
 
-bool FindResourcesX( PHANDLE_INFO hInstance, bool res_file )
+bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 /*************************************************************
  * set position of resource info in the file (WResFileShift)
  * it is 0 if it is external resource file (GUI project)
@@ -74,17 +74,17 @@ bool FindResourcesX( PHANDLE_INFO hInstance, bool res_file )
     WResFileShift = 0;
     if( notfound ) {
         offset = sizeof( dbgheader );
-        if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
-            if( WRESREAD( hInstance->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+        if( WRESSEEK( hinfo->handle, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
+            if( WRESREAD( hinfo->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                     offset += sizeof( PATCH_LEVEL );
                 }
             }
         }
-        WRESSEEK( hInstance->handle, -offset, SEEK_END );
-        currpos = WRESTELL( hInstance->handle );
+        WRESSEEK( hinfo->handle, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->handle );
         for( ;; ) {
-            WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
+            WRESREAD( hinfo->handle, &header, sizeof( dbgheader ) );
             if( header.signature == WAT_RES_SIG ) {
                 notfound = false;
                 WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
@@ -93,7 +93,7 @@ bool FindResourcesX( PHANDLE_INFO hInstance, bool res_file )
                        header.signature == FOX_SIGNATURE1 ||
                        header.signature == FOX_SIGNATURE2 ) {
                 currpos -= header.debug_size;
-                WRESSEEK( hInstance->handle, currpos, SEEK_SET );
+                WRESSEEK( hinfo->handle, currpos, SEEK_SET );
             } else {        /* did not find the resource information */
                 break;
             }
@@ -102,7 +102,7 @@ bool FindResourcesX( PHANDLE_INFO hInstance, bool res_file )
     return( notfound );
 }
 
-bool FindResources( PHANDLE_INFO hInstance )
+bool FindResources( PHANDLE_INFO hinfo )
 {
-    return( FindResourcesX( hInstance, false ) );
+    return( FindResourcesX( hinfo, false ) );
 }
