@@ -218,7 +218,7 @@ static  char    *read_indirect_file( const char * filename )
     if( handle != -1 ) {
         len = filelength( handle );
         buf = mem_alloc( len + 1 );
-        read( handle, buf, len );
+        posix_read( handle, buf, len );
         buf[len] = '\0';
         close( handle );
         // zip through characters changing \r into ' '
