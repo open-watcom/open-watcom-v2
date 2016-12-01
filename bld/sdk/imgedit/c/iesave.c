@@ -224,13 +224,15 @@ BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug).
-#if defined( __NT__ )
+#ifndef _WIN64
+  #if defined( __NT__ )
         // Only do it if NOT new shell.
         if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
-#endif
+  #endif
            IECtl3dSubclassDlgAll( hwnd );
-#if defined( __NT__ )
+  #if defined( __NT__ )
         }
+  #endif
 #endif
         return( TRUE );
     }
@@ -249,18 +251,22 @@ static BOOL getSaveFName( char *fname, int imgtype )
     char                path[_MAX_PATH];
     BOOL                ret_val;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
+  #endif
 #endif
 
     fname[0] = '\0';
@@ -1133,18 +1139,22 @@ static BOOL getSavePalName( char *fname )
     char                szFileTitle[_MAX_PATH];
     int                 rc;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
+  #endif
 #endif
 
     fname[0] = '\0';
