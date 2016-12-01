@@ -65,7 +65,7 @@ static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int w
     }
 }
 
-WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, resSeek, tell, malloc, free );
 
 bool MsgInit( void )
 /******************/

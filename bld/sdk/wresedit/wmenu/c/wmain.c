@@ -71,6 +71,9 @@
 #include "aboutdlg.h"
 #include "ldstr.h"
 
+#include "clibext.h"
+
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -139,7 +142,7 @@ static void _MemFree( void *p )
 }
 
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
+WResSetRtns( open, close, posix_read, posix_write, lseek, tell, _MemAlloc, _MemFree );
 
 #ifdef __NT__
 

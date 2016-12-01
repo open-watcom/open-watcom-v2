@@ -45,6 +45,8 @@
 #include "wreslang.h"
 #include "disasm.h"
 
+#include "clibext.h"
+
 
 #define NIL_HANDLE      ((int)-1)
 
@@ -68,7 +70,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
     }
 }
 
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
 
 bool MsgInit( void )
 {

@@ -169,7 +169,7 @@ static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int 
     }
 }
 
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
 
 #endif
 

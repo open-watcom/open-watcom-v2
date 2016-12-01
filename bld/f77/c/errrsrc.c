@@ -59,7 +59,7 @@ static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int
 }
 
 // Client routines setup for wres library
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
 
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called

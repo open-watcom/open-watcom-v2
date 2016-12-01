@@ -37,6 +37,9 @@
 #include "iedde.h"
 #include "clibint.h"
 
+#include "clibext.h"
+
+
 #ifdef __WATCOMC__
 #ifdef __NT__
     #pragma library( "shell32.lib" )
@@ -64,7 +67,7 @@ BOOL FusionCalled = FALSE;
 BOOL NoTitleScreen = FALSE;
 
 /* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, MemAlloc, MemFree );
+WResSetRtns( open, close, posix_read, posix_write, lseek, tell, MemAlloc, MemFree );
 
 /*
  * imgEditInit - initialization

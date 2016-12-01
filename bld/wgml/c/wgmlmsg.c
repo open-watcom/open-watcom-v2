@@ -58,7 +58,7 @@ static long res_seeek( WResFileID handle, long position, int where )
     }
 }
 
-WResSetRtns( open, close, read, write, res_seeek, tell, mem_alloc, mem_free );
+WResSetRtns( open, close, posix_read, posix_write, res_seeek, tell, mem_alloc, mem_free );
 
 /***************************************************************************/
 /*  initialize messages from resource file                                 */
