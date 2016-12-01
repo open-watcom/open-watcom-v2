@@ -85,9 +85,9 @@ bool GUILoadStrInit( const char *fname )
         return( true );
     }
     CloseResFile( &hInstance );
-    write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
-    write( fileno(stdout), fname,                 strlen( fname ) );
-    write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    posix_write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
+    posix_write( fileno(stdout), fname,                 strlen( fname ) );
+    posix_write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
     return( false );
 }
 
