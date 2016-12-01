@@ -38,6 +38,9 @@
 #include "smpstuff.h"
 #include "sysio.h"
 
+#include "clibext.h"
+
+
 #ifndef O_BINARY
     #define O_BINARY 0
 #endif
@@ -50,7 +53,7 @@ int SysCreate( char *name )
 
 unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
 {
-    return( write( handle, buff, len ) );
+    return( posix_write( handle, buff, len ) );
 }
 
 unsigned long SysSeek( int handle, unsigned long loc )
