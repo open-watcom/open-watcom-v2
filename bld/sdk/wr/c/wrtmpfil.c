@@ -110,7 +110,7 @@ int WRAPI WRFileExists( const char *name )
     return( name != NULL && access( name, R_OK ) == 0 );
 }
 
-bool WRCopyBinFile( int dest, int src )
+static bool WRCopyBinFile( int dest, int src )
 {
     char        *buf;
     uint_32     file_size;
