@@ -338,9 +338,7 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     }
 
     if( ok ) {
-        dest = open( info->save_name, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
-                     S_IWRITE | S_IREAD );
-        ok = (dest != WRES_NIL_HANDLE);
+        ok = ((dest = ResOpenNewFile( info->save_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -354,8 +352,7 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
         if( lnode->data != NULL ) {
             ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dest );
         } else {
-            ok = WRCopyResFromFileToFile( src, lnode->Info.Offset,
-                                          lnode->Info.Length, dest );
+            ok = WRCopyResFromFileToFile( src, lnode->Info.Offset, lnode->Info.Length, dest );
         }
     }
 

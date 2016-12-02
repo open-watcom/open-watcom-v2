@@ -203,8 +203,7 @@ bool WRAPI WRSaveResDataToFile( const char *file_name, BYTE *data, uint_32 lengt
     ok = (file_name != NULL && data != NULL && length != 0);
 
     if( ok ) {
-        file = open( file_name, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
-                     S_IWRITE | S_IREAD );
+        file = ResOpenNewFile( file_name );
         ok = (file != -1);
     }
 
