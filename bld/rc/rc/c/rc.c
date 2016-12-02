@@ -85,7 +85,7 @@ void InitGlobs( void )
 void FiniGlobs( void )
 /********************/
 {
-    FiniTable();
+    FreeCharTable();
     ScanParamShutdown();
 }
 

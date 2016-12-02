@@ -809,7 +809,7 @@ static void getCodePage( void ) {
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         ConvToUnicode = UTF8StringToUnicode;
     } else if( CmdLineParms.CodePageFile != NULL ) {
-        ret = OpenTable( CmdLineParms.CodePageFile, path );
+        ret = LoadCharTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {
         case RS_FILE_NOT_FOUND:
             RcFatalError( ERR_CANT_FIND_CHAR_FILE, CmdLineParms.CodePageFile );
