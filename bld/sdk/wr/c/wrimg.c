@@ -497,7 +497,7 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        ok = WRSaveDataToFile( info->save_name, data, size );
+        ok = WRSaveResDataToFile( info->save_name, data, size );
     }
 
     if( data != NULL ) {
@@ -555,7 +555,7 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        ok = WRSaveDataToFile( info->save_name, data, size );
+        ok = WRSaveResDataToFile( info->save_name, data, size );
     }
 
     if( data != NULL ) {
