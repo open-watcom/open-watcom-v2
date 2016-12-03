@@ -50,7 +50,7 @@ static bool ConvertFileMResToWRes( WResFileID infile )
     bool            error;
 
     tempfile = ResOpenNewFile( TMP_FILENAME );
-    if( tempfile == -1 ) {
+    if( tempfile == WRES_NIL_HANDLE ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
         return( true );
@@ -74,7 +74,7 @@ static bool ConvertFileWResToMRes( WResFileID infile )
     bool            error;
 
     tempfile = ResOpenNewFile( TMP_FILENAME );
-    if( tempfile == -1 ) {
+    if( tempfile == WRES_NIL_HANDLE ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
         return( true );
@@ -126,7 +126,7 @@ int ConvertFiles( void )
     int             fileerror;      /* error while deleting or renaming */
 
     infile = ResOpenFileRO( CmdLineParms.InFileName );
-    if( infile == -1 ) {
+    if( infile == WRES_NIL_HANDLE ) {
         perror( "Error (input file): " );
         return( 1 );
     }
