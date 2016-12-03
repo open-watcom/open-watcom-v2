@@ -38,6 +38,10 @@
 #include "wrrdwnt.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
+#include "rcrtns.h"
+
+#include "clibext.h"
+
 
 /* forward declarations */
 bool WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_entry );
@@ -86,13 +90,13 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     WResFileID  file_handle;
     bool        ok;
 
-    ok = ((file_handle = ResOpenFileRO( info->file_name )) != -1);
+    ok = ((file_handle = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
 
     if( ok ) {
         ok = WRLoadWResDirFromWinNTEXE( file_handle, &info->dir );
     }
 
-    if( file_handle != -1 ) {
+    if( file_handle != WRES_NIL_HANDLE ) {
         ResCloseFile( file_handle );
     }
 
@@ -107,10 +111,10 @@ long int WRReadWinNTExeHeader( WResFileID file_handle, exe_pe_header *header )
 
     old_pos = -1;
 
-    ok = (file_handle != -1 && header != NULL);
+    ok = (file_handle != WRES_NIL_HANDLE && header != NULL);
 
     if( ok ) {
-        ok = ((old_pos = ResSeek( file_handle, 0x18, SEEK_SET )) != -1);
+        ok = ((old_pos = RCSEEK( file_handle, 0x18, SEEK_SET )) != -1);
     }
 
     /* check the reloc offset */
@@ -120,7 +124,7 @@ long int WRReadWinNTExeHeader( WResFileID file_handle, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, PE_OFFSET, SEEK_SET ) != -1);
+        ok = (RCSEEK( file_handle, PE_OFFSET, SEEK_SET ) != -1);
     }
 
     /* check header offset */
@@ -130,15 +134,15 @@ long int WRReadWinNTExeHeader( WResFileID file_handle, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, offset, SEEK_SET ) != -1);
+        ok = (RCSEEK( file_handle, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (read( file_handle, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ));
+        ok = (RCREAD( file_handle, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ));
         if( ok && IS_PE64( *header ) ) {
-            ok = (ResSeek( file_handle, offset, SEEK_SET ) != -1);
+            ok = (RCSEEK( file_handle, offset, SEEK_SET ) != -1);
             if( ok ) {
-                ok = (read( file_handle, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ));
+                ok = (RCREAD( file_handle, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ));
             }
         }
     }
@@ -149,7 +153,7 @@ long int WRReadWinNTExeHeader( WResFileID file_handle, exe_pe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (ResSeek( file_handle, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RCSEEK( file_handle, old_pos, SEEK_SET ) != -1 && ok);
     }
 
     if( !ok ) {
@@ -246,7 +250,7 @@ bool WRLoadWResDirFromWinNTEXE( WResFileID file_handle, WResDir *dir )
     bool                ok;
     unsigned_32         resource_rva;
 
-    ok = (file_handle != -1);
+    ok = (file_handle != WRES_NIL_HANDLE);
 
     if( ok ) {
         ok = ((*dir = WResInitDir()) != NULL);
@@ -527,11 +531,11 @@ bool WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
     *rd_entry = NULL;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
-    ok = (offset == 0 || ResSeek( file_handle, offset, SEEK_SET ) != -1);
+    ok = (offset == 0 || RCSEEK( file_handle, offset, SEEK_SET ) != -1);
 
     /* read the resource directory header */
     if( ok ) {
-        ok = (read( file_handle, rd_hdr, sizeof( resource_dir_header ) ) ==
+        ok = (RCREAD( file_handle, rd_hdr, sizeof( resource_dir_header ) ) ==
               sizeof( resource_dir_header ) );
     }
 
@@ -543,7 +547,7 @@ bool WRReadResourceHeader( WResFileID file_handle, uint_32 offset,
     }
 
     if( ok ) {
-        ok = (read( file_handle, *rd_entry, rde_size ) == rde_size);
+        ok = (RCREAD( file_handle, *rd_entry, rde_size ) == rde_size);
     }
 
     if( !ok && *rd_entry != NULL ) {
@@ -568,7 +572,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
     unistr = NULL;
 
     /* seek to the location of the Unicode string */
-    ok = ((old_pos = ResSeek( file_handle, offset, SEEK_SET )) != -1);
+    ok = ((old_pos = RCSEEK( file_handle, offset, SEEK_SET )) != -1);
 
     /* read the Unicode string */
     if( ok ) {
@@ -581,7 +585,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
     if( ok ) {
         unistr[len] = 0;
         unistr[len + 1] = 0;
-        ok = (read( file_handle, unistr, len ) == len);
+        ok = (RCREAD( file_handle, unistr, len ) == len);
     }
 
     if( ok ) {
@@ -593,7 +597,7 @@ WResID *WRGetUniCodeWResID( WResFileID file_handle, uint_32 rva )
 
 #if 0
     if( old_pos != -1 ) {
-        ok = (ResSeek( file_handle, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RCSEEK( file_handle, old_pos, SEEK_SET ) != -1 && ok);
     }
 #endif
 

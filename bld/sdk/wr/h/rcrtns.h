@@ -38,8 +38,8 @@
 
 #define RCOPEN          open
 #define RCCLOSE         close
-#define RCWRITE         write
-#define RCREAD          read
+#define RCWRITE         posix_write
+#define RCREAD          posix_read
 #define RCSEEK          lseek
 #define RCTELL          tell
 #define RCALLOC         MemAlloc

@@ -43,6 +43,8 @@
 #include "wrinfoi.h"
 #include "wresall.h"
 #include "wrmemi.h"
+#include "rcrtns.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -75,7 +77,7 @@ static void displayDupMsg( WResID *typeName, WResID *resName )
 
 static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
                                   WResDir new_dir, WResFileID src,
-                                  WResFileID dest, bool is32bit )
+                                  WResFileID dst, bool is32bit )
 {
     WResLangType    lt;
     WResLangNode    *lnode;
@@ -83,12 +85,12 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     bool            dup;
 
     if( is32bit ) {
-        if( ResWritePadDWord( dest ) ) {
+        if( ResWritePadDWord( dst ) ) {
             return( false );
         }
     }
 
-    offset = tell( dest );
+    offset = RCTELL( dst );
 
     lnode = rnode->Head;
 
@@ -105,12 +107,12 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
         }
 
         if( lnode->data != NULL ) {
-            if( !WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dest ) ) {
+            if( !WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst ) ) {
                 return( false );
             }
         } else {
             if( !WRCopyResFromFileToFile( src, lnode->Info.Offset,
-                                          lnode->Info.Length, dest ) ) {
+                                          lnode->Info.Length, dst ) ) {
                 return( false );
             }
         }
@@ -162,7 +164,7 @@ static ResNameOrOrdinal *WRCreateMRESResName( WResResNode *rnode, WResLangNode *
 }
 
 static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
-                                  WResFileID src, WResFileID dest )
+                                  WResFileID src, WResFileID dst )
 {
     WResLangNode        *lnode;
     MResResourceHeader  mheader;
@@ -178,14 +180,14 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
         mheader.Name = WRCreateMRESResName( rnode, lnode );
         ok = (mheader.Type != NULL && mheader.Name != NULL);
         if( ok ) {
-            ok = !MResWriteResourceHeader( &mheader, dest, FALSE );
+            ok = !MResWriteResourceHeader( &mheader, dst, FALSE );
         }
         if( ok ) {
             if( lnode->data != NULL ) {
-                ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dest );
+                ok = WRCopyResFromDataToFile( lnode->data, lnode->Info.Length, dst );
             } else {
                 ok = WRCopyResFromFileToFile( src, lnode->Info.Offset,
-                                              lnode->Info.Length, dest );
+                                              lnode->Info.Length, dst );
             }
         }
         if( mheader.Type != NULL ) {
@@ -203,7 +205,7 @@ static bool WRWriteResourceToMRES( WResTypeNode *tnode, WResResNode *rnode,
     return( ok );
 }
 
-static bool WRWriteResourcesToMRES( WRInfo *info, WResFileID src, WResFileID dest )
+static bool WRWriteResourcesToMRES( WRInfo *info, WResFileID src, WResFileID dst )
 {
     WResDir             old_dir;
     WResTypeNode        *type_node;
@@ -220,7 +222,7 @@ static bool WRWriteResourcesToMRES( WRInfo *info, WResFileID src, WResFileID des
     while( type_node != NULL ) {
         res_node = type_node->Head;
         while( res_node != NULL ) {
-            if( !WRWriteResourceToMRES( type_node, res_node, src, dest ) ) {
+            if( !WRWriteResourceToMRES( type_node, res_node, src, dst ) ) {
                 return( false );
             }
             if( res_node == type_node->Tail ) {
@@ -238,7 +240,7 @@ static bool WRWriteResourcesToMRES( WRInfo *info, WResFileID src, WResFileID des
 }
 
 static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
-                                   WResFileID src, WResFileID dest, bool is32bit )
+                                   WResFileID src, WResFileID dst, bool is32bit )
 {
     WResDir         old_dir;
     WResTypeNode    *type_node;
@@ -256,7 +258,7 @@ static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
         res_node = type_node->Head;
         while( res_node != NULL ) {
             if( !WRWriteResourceToWRES( type_node, res_node, new_dir,
-                                        src, dest, is32bit ) ) {
+                                        src, dst, is32bit ) ) {
                 return( false );
             }
             if( res_node == type_node->Tail ) {
@@ -273,7 +275,7 @@ static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
     return( true );
 }
 
-static bool WRSaveResourceToWRES( WRInfo *info, WResFileID src, WResFileID dest )
+static bool WRSaveResourceToWRES( WRInfo *info, WResFileID src, WResFileID dst )
 {
     WResDir     new_dir;
     WRFileType  save_type;
@@ -297,11 +299,11 @@ static bool WRSaveResourceToWRES( WRInfo *info, WResFileID src, WResFileID dest 
     }
 
     if( ok ) {
-        ok = WRWriteResourcesToWRES( info, new_dir, src, dest, is32bit );
+        ok = WRWriteResourcesToWRES( info, new_dir, src, dst, is32bit );
     }
 
     if( ok ) {
-        ok = !WResWriteDir( dest, new_dir );
+        ok = !WResWriteDir( dst, new_dir );
     }
 
     if( new_dir != NULL ) {
@@ -311,22 +313,22 @@ static bool WRSaveResourceToWRES( WRInfo *info, WResFileID src, WResFileID dest 
     return( ok );
 }
 
-static bool WRSaveResourceToMRES( WRInfo *info, WResFileID src, WResFileID dest )
+static bool WRSaveResourceToMRES( WRInfo *info, WResFileID src, WResFileID dst )
 {
-    return( WRWriteResourcesToMRES( info, src, dest ) );
+    return( WRWriteResourcesToMRES( info, src, dst ) );
 }
 
 static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name, const char *file_name )
 {
     WResFileID  src;
-    WResFileID  dest;
+    WResFileID  dst;
     bool        is_wres;
     bool        ok;
     bool        use_rename;
     WRFileType  save_type;
 
-    src = -1;
-    dest = -1;
+    src = WRES_NIL_HANDLE;
+    dst = WRES_NIL_HANDLE;
 
     ok = true;
 
@@ -355,37 +357,37 @@ static bool saveResourceToRES( WRInfo *info, bool backup, const char *save_name,
 
     if( ok ) {
         if( file_name != NULL ) {
-            ok = ((src = ResOpenFileRO( info->tmp_file )) != -1);
+            ok = ((src = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE);
         }
     }
 
     is_wres = (save_type == WR_WIN16W_RES || save_type == WR_WINNTW_RES);
 
     if( ok ) {
-        ok = ((dest = ResOpenNewFile( save_name )) != -1);
+        ok = ((dst = ResOpenNewFile( save_name )) != WRES_NIL_HANDLE);
         if( ok && is_wres ) {
-            ok = !WResFileInit( dest );
+            ok = !WResFileInit( dst );
         }
     }
 
     if( ok ) {
         if( is_wres ) {
-            ok = WRSaveResourceToWRES( info, src, dest );
+            ok = WRSaveResourceToWRES( info, src, dst );
         } else {
-            ok = WRSaveResourceToMRES( info, src, dest );
+            ok = WRSaveResourceToMRES( info, src, dst );
         }
     }
 
-    if( src != -1 ) {
+    if( src != WRES_NIL_HANDLE ) {
         ResCloseFile( src );
     }
 
-    if( dest != -1 ) {
-        ResCloseFile( dest );
+    if( dst != WRES_NIL_HANDLE ) {
+        ResCloseFile( dst );
     }
 
     if( !ok ) {
-        if( dest != -1 ) {
+        if( dst != WRES_NIL_HANDLE ) {
             WRDeleteFile( save_name );
         }
     }
@@ -425,7 +427,7 @@ bool WRSaveResourceToRES( WRInfo *info, bool backup )
     return( saveResourceToRES( info, backup, info->save_name, info->file_name ) );
 }
 
-bool WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WResFileID dest )
+bool WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WResFileID dst )
 {
     uint_32     size;
     uint_8      *buf;
@@ -434,19 +436,19 @@ bool WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WR
     size = 0;
     buf = NULL;
 
-    ok = (src != -1 && dest != -1);
+    ok = (src != WRES_NIL_HANDLE && dst != WRES_NIL_HANDLE);
 
     ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
 
-    ok = (ok && lseek( src, offset, SEEK_SET ) != -1);
+    ok = (ok && RCSEEK( src, offset, SEEK_SET ) != -1);
 
     while( ok && length - size > CHUNK_SIZE ) {
         ok = ok && WRReadResData( src, (BYTE *)buf, CHUNK_SIZE );
-        ok = ok && WRWriteResData( dest, (BYTE *)buf, CHUNK_SIZE );
+        ok = ok && WRWriteResData( dst, (BYTE *)buf, CHUNK_SIZE );
         size += CHUNK_SIZE;
     }
     ok = ok && WRReadResData( src, (BYTE *)buf, length - size );
-    ok = ok && WRWriteResData( dest, (BYTE *)buf, length - size );
+    ok = ok && WRWriteResData( dst, (BYTE *)buf, length - size );
 
     if( buf != NULL ) {
         MemFree( buf );
@@ -455,7 +457,7 @@ bool WRCopyResFromFileToFile( WResFileID src, uint_32 offset, uint_32 length, WR
     return( ok );
 }
 
-bool WRCopyResFromDataToFile( void *ResData, uint_32 len, WResFileID dest )
+bool WRCopyResFromDataToFile( void *ResData, uint_32 len, WResFileID dst )
 {
-    return( WRWriteResData( dest, (BYTE *)ResData, len ) );
+    return( WRWriteResData( dst, (BYTE *)ResData, len ) );
 }

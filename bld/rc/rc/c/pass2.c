@@ -43,6 +43,8 @@
 #include "exelxobj.h"
 #include "exereslx.h"
 
+#include "clibext.h"
+
 
 /*
  * copyStubFile - copy from the begining of the file to the start of

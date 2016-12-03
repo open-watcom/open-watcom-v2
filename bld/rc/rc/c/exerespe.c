@@ -43,6 +43,8 @@
 #include "exeutil.h"
 #include "exerespe.h"
 
+#include "clibext.h"
+
 
 #define RESOURCE_OBJECT_NAME ".rsrc"
 

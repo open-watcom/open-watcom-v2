@@ -54,7 +54,7 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
     bool        dup_discarded;
     bool        ok;
 
-    ok = ((file_handle = ResOpenFileRO( filename )) != -1);
+    ok = ((file_handle = ResOpenFileRO( filename )) != WRES_NIL_HANDLE);
 
     if( ok ) {
         *is_wres = WResIsWResFile( file_handle );
@@ -71,7 +71,7 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
         }
     }
 
-    if( file_handle != -1 ) {
+    if( file_handle != WRES_NIL_HANDLE ) {
         ResCloseFile( file_handle );
     }
 

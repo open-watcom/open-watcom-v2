@@ -73,7 +73,7 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
     WResFileID  fh;
     bool        ok;
 
-    fh = -1;
+    fh = WRES_NIL_HANDLE;
 
     ok = (file != NULL);
 
@@ -99,12 +99,12 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
         } else if( !stricmp( ext, ".res" ) ) {
             ftype = WRIdentifyRESFile( file );
         } else if( !stricmp( ext, ".exe" ) ) {
-            ok = ((fh = ResOpenFileRO( file )) != -1);
+            ok = ((fh = ResOpenFileRO( file )) != WRES_NIL_HANDLE);
             if( ok ) {
                 ftype = WRIdentifyEXEFile( fh, FALSE );
             }
         } else if( !stricmp( ext, ".dll" ) ) {
-            ok = ((fh = ResOpenFileRO( file )) != -1);
+            ok = ((fh = ResOpenFileRO( file )) != WRES_NIL_HANDLE);
             if ( ok ) {
                 ftype = WRIdentifyEXEFile( fh, TRUE );
             }
@@ -113,7 +113,7 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
         }
     }
 
-    if( fh != -1 ) {
+    if( fh != WRES_NIL_HANDLE ) {
         ResCloseFile( fh );
     }
 

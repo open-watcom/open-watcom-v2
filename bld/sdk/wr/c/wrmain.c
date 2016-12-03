@@ -57,6 +57,8 @@
 #include "rcrtns.h"
 #include "dllmain.h"
 
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */

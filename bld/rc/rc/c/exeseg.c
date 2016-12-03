@@ -37,6 +37,8 @@
 #include "exeutil.h"
 #include "exeseg.h"
 
+#include "clibext.h"
+
 
 static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {

@@ -39,6 +39,10 @@
 #include "wrrdw16.h"
 #include "wrmsg.h"
 #include "wrmemi.h"
+#include "rcrtns.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -95,13 +99,13 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     WResFileID  file_handle;
     bool        ok;
 
-    ok = ((file_handle = ResOpenFileRO( info->file_name )) != -1);
+    ok = ((file_handle = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
 
     if( ok ) {
         ok = WRLoadWResDirFromWin16EXE( file_handle, &info->dir );
     }
 
-    if( file_handle != -1 ) {
+    if( file_handle != WRES_NIL_HANDLE ) {
         ResCloseFile( file_handle );
     }
 
@@ -116,10 +120,10 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
 
     old_pos = -1;
 
-    ok = (file_handle != -1 && header != NULL);
+    ok = (file_handle != WRES_NIL_HANDLE && header != NULL);
 
     if( ok ) {
-        ok = ((old_pos = ResSeek( file_handle, 0x18, SEEK_SET )) != -1);
+        ok = ((old_pos = RCSEEK( file_handle, 0x18, SEEK_SET )) != -1);
     }
 
     /* check the reloc offset */
@@ -129,7 +133,7 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, OS2_NE_OFFSET, SEEK_SET ) != -1);
+        ok = (RCSEEK( file_handle, OS2_NE_OFFSET, SEEK_SET ) != -1);
     }
 
     /* check header offset */
@@ -139,11 +143,11 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, offset, SEEK_SET ) != -1);
+        ok = (RCSEEK( file_handle, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (read( file_handle, header, sizeof( os2_exe_header ) ) ==
+        ok = (RCREAD( file_handle, header, sizeof( os2_exe_header ) ) ==
               sizeof( os2_exe_header ));
     }
 
@@ -153,7 +157,7 @@ long int WRReadWin16ExeHeader( WResFileID file_handle, os2_exe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (ResSeek( file_handle, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RCSEEK( file_handle, old_pos, SEEK_SET ) != -1 && ok);
     }
 
     if( ok ) {
@@ -194,7 +198,7 @@ bool WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
     uint_32         num_leftover;
     bool            ok;
 
-    ok = (file_handle != -1);
+    ok = (file_handle != WRES_NIL_HANDLE);
 
     if( ok ) {
         ok = ((*dir = WResInitDir()) != NULL);
@@ -213,11 +217,11 @@ bool WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, offset, SEEK_SET ) != -1);
+        ok = (RCSEEK( file_handle, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (ResSeek( file_handle, win_header.resource_off, SEEK_CUR ) != -1);
+        ok = (RCSEEK( file_handle, win_header.resource_off, SEEK_CUR ) != -1);
     }
 
     if( ok ) {
@@ -388,7 +392,7 @@ int WRReadResourceNames( WResDir dir, WResFileID file_handle, uint_32 name_offse
             }
         } else {
             name = (char *)MemAlloc( name_len + 1 );
-            if( read( file_handle, name, name_len ) != name_len ) {
+            if( RCREAD( file_handle, name, name_len ) != name_len ) {
                 return( FALSE );
             }
             name[name_len] = 0;
@@ -532,7 +536,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID file_handle, uint_8 **name_tabl
             /* if there are two name tables we ignore all but the first */
             res_len = res_node->Head->Info.Length;
             res_offset = res_node->Head->Info.Offset;
-            if( ResSeek( file_handle, res_offset, SEEK_SET ) == -1 ) {
+            if( RCSEEK( file_handle, res_offset, SEEK_SET ) == -1 ) {
                 return( FALSE );
             }
         } else {
@@ -562,7 +566,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID file_handle, uint_8 **name_tabl
      * and must abort the reading of the name resource!!
      */
     if( num_leftover != 0 && leftover == NULL ) {
-        if( ResSeek( file_handle, num_leftover, SEEK_CUR ) == -1 ) {
+        if( RCSEEK( file_handle, num_leftover, SEEK_CUR ) == -1 ) {
             return( 0 );
         }
         num_read += num_leftover;
@@ -578,7 +582,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID file_handle, uint_8 **name_tabl
         memcpy( *name_table, leftover, num_leftover );
     }
 
-    if( read( file_handle, *name_table + num_leftover, len ) != len ) {
+    if( RCREAD( file_handle, *name_table + num_leftover, len ) != len ) {
         /* hmmmm... the read failed */
     }
 

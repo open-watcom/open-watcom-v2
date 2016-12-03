@@ -43,6 +43,10 @@
 #include "wrmsg.h"
 #include "wresall.h"
 #include "wrdatai.h"
+#include "rcrtns.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -73,11 +77,11 @@ bool WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
     size = 0;
     ok = (data != NULL && length != 0);
     while( ok && length - size > CHUNK_SIZE ) {
-        ok = (read( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
+        ok = (RCREAD( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
         size += CHUNK_SIZE;
     }
     if( ok && length - size != 0 ) {
-        ok = (read( handle, &data[size], length - size ) == length - size);
+        ok = (RCREAD( handle, &data[size], length - size ) == length - size);
     }
 
     return( ok );
@@ -91,11 +95,11 @@ bool WRWriteResData( WResFileID handle, BYTE *data, uint_32 length )
     size = 0;
     ok = (data != NULL && length != 0);
     while( ok && length - size > CHUNK_SIZE ) {
-        ok = (write( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
+        ok = (RCWRITE( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
         size += CHUNK_SIZE;
     }
     if( ok && length - size != 0 ) {
-        ok = (write( handle, &data[size], length - size ) == length - size);
+        ok = (RCWRITE( handle, &data[size], length - size ) == length - size);
     }
 
     return( ok );
@@ -159,7 +163,7 @@ void * WRAPI WRLoadResData( const char *file, uint_32 offset, uint_32 length )
     bool        ok;
 
     data = NULL;
-    handle = -1;
+    handle = WRES_NIL_HANDLE;
 
     ok = (file != NULL && length != 0);
 
@@ -168,18 +172,18 @@ void * WRAPI WRLoadResData( const char *file, uint_32 offset, uint_32 length )
     }
 
     if( ok ) {
-        ok = ((handle = ResOpenFileRO( file )) != -1);
+        ok = ((handle = ResOpenFileRO( file )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
-        ok = ((ResSeek( handle, offset, SEEK_SET )) != -1);
+        ok = ((RCSEEK( handle, offset, SEEK_SET )) != -1);
     }
 
     if( ok ) {
         ok = WRReadResData( handle, (BYTE *)data, length );
     }
 
-    if( handle != -1 ) {
+    if( handle != WRES_NIL_HANDLE ) {
         ResCloseFile( handle );
     }
 
@@ -198,20 +202,19 @@ bool WRAPI WRSaveResDataToFile( const char *file_name, BYTE *data, uint_32 lengt
     WResFileID  file;
     bool        ok;
 
-    file = -1;
+    file = WRES_NIL_HANDLE;
 
     ok = (file_name != NULL && data != NULL && length != 0);
 
     if( ok ) {
-        file = ResOpenNewFile( file_name );
-        ok = (file != -1);
+        ok = ( (file = ResOpenNewFile( file_name )) != WRES_NIL_HANDLE );
     }
 
     if( ok ) {
         ok = WRWriteResData( file, data, length );
     }
 
-    if( file != -1 ) {
+    if( file != WRES_NIL_HANDLE ) {
         ResCloseFile( file );
     }
 
