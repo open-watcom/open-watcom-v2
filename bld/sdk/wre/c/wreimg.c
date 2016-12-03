@@ -672,11 +672,9 @@ void WREEndLangImageSession( WResLangNode *lnode )
 {
     WREImageSession     *session;
 
-    session = WREFindLangImageSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangImageSession( lnode )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveImageEditSession( session );
-        session = WREFindLangImageSession( lnode );
     }
 }
 
@@ -684,11 +682,9 @@ void WREEndResImageSessions( WREResInfo *rinfo )
 {
     WREImageSession     *session;
 
-    session = WREFindResImageSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResImageSession( rinfo )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveImageEditSession( session );
-        session = WREFindResImageSession( rinfo );
     }
 }
 
@@ -818,7 +814,7 @@ void WREShowSession( WREImageSession *session, bool show )
 
 void WREPokeImageCmd( WREImageSession *session, char *cmd, bool retry )
 {
-    if( session != NULL && cmd ) {
+    if( session != NULL && cmd != NULL ) {
         WREPokeData( session->client, cmd, strlen( cmd ) + 1, retry );
     }
 }

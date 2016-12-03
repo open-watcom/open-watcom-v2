@@ -561,11 +561,9 @@ void WREEndLangDialogSession( WResLangNode *lnode )
 {
     WREDialogSession    *session;
 
-    session = WREFindLangDialogSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangDialogSession( lnode )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
-        session = WREFindLangDialogSession( lnode );
     }
 }
 
@@ -573,11 +571,9 @@ void WREEndResDialogSessions( WREResInfo *rinfo )
 {
     WREDialogSession    *session;
 
-    session = WREFindResDialogSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResDialogSession( rinfo )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
-        session = WREFindResDialogSession( rinfo );
     }
 }
 

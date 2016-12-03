@@ -294,6 +294,10 @@ bool WRLoadCursorFile( WRInfo *info )
         }
     }
 
+    if( data != NULL ) {
+        MemFree( data );
+    }
+
     if( tname != NULL ) {
         MemFree( tname );
     }
@@ -450,12 +454,6 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     uint_32             size;
     bool                use_rename;
     bool                ok;
-
-    data = NULL;
-    lang.lang = DEF_LANG;
-    lang.sublang = DEF_SUBLANG;
-
-    ok = (info != NULL && info->dir != NULL);
 
     data = NULL;
     lang.lang = DEF_LANG;

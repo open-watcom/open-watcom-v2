@@ -40,6 +40,10 @@
 #include "wdetfile.h"
 #include "wdewait.h"
 #include "wdeldres.h"
+#include "rcrtns.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -136,14 +140,14 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
     if( ok ) {
         dlg_info->MemoryFlags = lnode->Info.MemoryFlags;
-        ok = (lseek( file, lnode->Info.Offset, SEEK_SET ) != -1);
+        ok = (RCSEEK( file, lnode->Info.Offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
             dlg_info->dialog_header->is32bitEx = ResIsDialogEx( file );
-            lseek( file, lnode->Info.Offset, SEEK_SET );
+            RCSEEK( file, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
                 ok = !ResReadDialogExHeader32( &h32, &h32ex, file );
