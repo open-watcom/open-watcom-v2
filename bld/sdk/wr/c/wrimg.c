@@ -66,15 +66,15 @@ bool WRLoadBitmapFile( WRInfo *info )
     def_lang.sublang = DEF_LANG;
     def_lang.lang = DEF_SUBLANG;
 
-    ok = (info != NULL);
+    ok = ( info != NULL );
 
     if( ok ) {
-        ok = ((file_handle = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
+        ok = ( (file_handle = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
     }
 
     if( ok ) {
         file_length = filelength( file_handle );
-        ok = (file_length != 0 && file_length != -1);
+        ok = ( file_length != 0 && file_length != -1 );
     }
 
     if( ok ) {
@@ -85,11 +85,11 @@ bool WRLoadBitmapFile( WRInfo *info )
     if( ok ) {
         _splitpath( info->file_name, NULL, NULL, fn, NULL );
         name = WResIDFromStr( fn );
-        ok = (name != NULL);
+        ok = ( name != NULL );
     }
 
     if( ok ) {
-        ok = ((info->dir = WResInitDir()) != NULL);
+        ok = ( (info->dir = WResInitDir()) != NULL );
     }
 
     if( ok ) {
@@ -121,7 +121,6 @@ bool WRLoadIconFile( WRInfo *info )
     uint_32             pihsize;
     RESICONHEADER       *rih;
     uint_32             rihsize;
-    WResFileID          file;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -133,42 +132,37 @@ bool WRLoadIconFile( WRInfo *info )
     data = NULL;
     rih = NULL;
     dup = false;
-    file = WRES_NIL_HANDLE;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
     rname = NULL;
 
-    ok = (info != NULL && info->file_name != NULL);
+    ok = ( info != NULL && info->file_name != NULL );
 
     if( ok ) {
-        ok = ((file = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
-    }
-
-    if( ok ) {
-        ok = WRReadEntireFile( file, &data, &data_size );
+        ok = WRReadEntireFile( info->file_name, &data, &data_size );
     }
 
     if( ok ) {
         pih = (ICONHEADER *)data;
         pihsize = sizeof( ICONHEADER );
-        pihsize += sizeof( ICONDIRENTRY ) * (pih->idCount - 1);
+        pihsize += sizeof( ICONDIRENTRY ) * ( pih->idCount - 1 );
         ok = WRCreateIconResHeader( &rih, &rihsize, data, data_size );
     }
 
     if( ok ) {
-        ok = ((info->dir = WResInitDir()) != NULL);
+        ok = ( (info->dir = WResInitDir()) != NULL );
     }
 
     if( ok ) {
         tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_ICON );
-        ok = (tname != NULL);
+        ok = ( tname != NULL );
     }
 
     if( ok ) {
         _splitpath( info->file_name, NULL, NULL, fn, NULL );
         rname = WResIDFromStr( fn );
-        ok = (rname != NULL);
+        ok = ( rname != NULL );
     }
 
     if ( ok ) {
@@ -206,10 +200,6 @@ bool WRLoadIconFile( WRInfo *info )
         MemFree( rname );
     }
 
-    if( file != WRES_NIL_HANDLE ) {
-        ResCloseFile( file );
-    }
-
     return( ok );
 }
 
@@ -221,7 +211,6 @@ bool WRLoadCursorFile( WRInfo *info )
     uint_32             chsize;
     RESCURSORHEADER     *rch;
     uint_32             rchsize;
-    WResFileID          file;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -233,42 +222,37 @@ bool WRLoadCursorFile( WRInfo *info )
     data = NULL;
     rch = NULL;
     dup = false;
-    file = WRES_NIL_HANDLE;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     tname = NULL;
     rname = NULL;
 
-    ok = (info != NULL && info->file_name != NULL);
+    ok = ( info != NULL && info->file_name != NULL );
 
     if( ok ) {
-        ok = ((file = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
-    }
-
-    if( ok ) {
-        ok = WRReadEntireFile( file, &data, &data_size );
+        ok = WRReadEntireFile( info->file_name, &data, &data_size );
     }
 
     if( ok ) {
         ch = (CURSORHEADER *)data;
         chsize = sizeof( CURSORHEADER );
-        chsize += sizeof( CURSORDIRENTRY ) * (ch->cdCount - 1);
+        chsize += sizeof( CURSORDIRENTRY ) * ( ch->cdCount - 1 );
         ok = WRCreateCursorResHeader( &rch, &rchsize, data, data_size );
     }
 
     if( ok ) {
-        ok = ((info->dir = WResInitDir()) != NULL);
+        ok = ( (info->dir = WResInitDir()) != NULL );
     }
 
     if( ok ) {
         tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_CURSOR );
-        ok = (tname != NULL);
+        ok = ( tname != NULL );
     }
 
     if( ok ) {
         _splitpath( info->file_name, NULL, NULL, fn, NULL );
         rname = WResIDFromStr( fn );
-        ok = (rname != NULL);
+        ok = ( rname != NULL );
     }
 
     if ( ok ) {
@@ -306,10 +290,6 @@ bool WRLoadCursorFile( WRInfo *info )
         MemFree( rname );
     }
 
-    if( file != WRES_NIL_HANDLE ) {
-        ResCloseFile( file );
-    }
-
     return( ok );
 }
 
@@ -325,31 +305,30 @@ static bool WRSaveImageToFile( WRInfo *info, WResTypeNode *tnode, bool backup )
     dest = WRES_NIL_HANDLE;
     lnode = NULL;
 
-    ok = (info != NULL && tnode != NULL);
+    ok = ( info != NULL && tnode != NULL );
 
     if( ok ) {
         if( backup && WRFileExists( info->save_name ) ) {
-            use_rename = (info->file_name != NULL &&
-                          stricmp( info->file_name, info->save_name ));
+            use_rename = ( info->file_name != NULL && stricmp( info->file_name, info->save_name ) );
             ok = WRBackupFile( info->save_name, use_rename );
         }
     }
 
     if( ok ) {
         if( info->file_name != NULL ) {
-            ok = ((src = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE);
+            ok = ( (src = ResOpenFileRO( info->tmp_file )) != WRES_NIL_HANDLE );
         }
     }
 
     if( ok ) {
-        ok = ((dest = ResOpenNewFile( info->save_name )) != WRES_NIL_HANDLE);
+        ok = ( (dest = ResOpenNewFile( info->save_name )) != WRES_NIL_HANDLE );
     }
 
     if( ok ) {
         if( tnode->Head != NULL && tnode->Head->Head != NULL ) {
             lnode = tnode->Head->Head;
         }
-        ok = (lnode != NULL);
+        ok = ( lnode != NULL );
     }
 
     if( ok ) {
@@ -385,18 +364,18 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
     BYTE                *data;
     uint_32             dsize;
 
-    ok = (info != NULL && info->dir != NULL);
+    ok = ( info != NULL && info->dir != NULL );
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_BITMAP, NULL );
-        ok = (tnode != NULL);
+        ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOBMP );
         }
     }
 
     if( ok ) {
-        ok = (info->dir->NumTypes == 1 && info->dir->NumResources == 1);
+        ok = ( info->dir->NumTypes == 1 && info->dir->NumResources == 1 );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJMORETHANONE );
         }
@@ -407,15 +386,14 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
         if( tnode->Head != NULL && tnode->Head->Head != NULL ) {
             lnode = tnode->Head->Head;
         }
-        ok = (lnode != NULL);
+        ok = ( lnode != NULL );
     }
 
     if( ok ) {
         if( lnode->data == NULL ) {
-            lnode->data = WRLoadResData( info->file_name, lnode->Info.Offset,
-                                         lnode->Info.Length );
+            lnode->data = WRLoadResData( info->file_name, lnode->Info.Offset, lnode->Info.Length );
         }
-        ok = (lnode->data != NULL && lnode->Info.Length != 0);
+        ok = ( lnode->data != NULL && lnode->Info.Length != 0 );
     }
 
     if( ok ) {
@@ -459,19 +437,18 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    ok = (info != NULL && info->dir != NULL);
+    ok = ( info != NULL && info->dir != NULL );
 
     if( ok ) {
         if( backup && WRFileExists( info->save_name ) ) {
-            use_rename = (info->file_name != NULL &&
-                          stricmp( info->file_name, info->save_name ));
+            use_rename = ( info->file_name != NULL && stricmp( info->file_name, info->save_name ) );
             ok = WRBackupFile( info->save_name, use_rename );
         }
     }
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_CURSOR, NULL );
-        ok = (tnode != NULL);
+        ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOCUR );
         }
@@ -479,12 +456,12 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
 
     if( ok ) {
         rnode = tnode->Head;
-        ok = (rnode != NULL);
+        ok = ( rnode != NULL );
     }
 
     if( ok ) {
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = (lnode != NULL);
+        ok = ( lnode != NULL );
     }
 
     if( ok ) {
@@ -517,19 +494,18 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
 
-    ok = (info != NULL && info->dir != NULL);
+    ok = ( info != NULL && info->dir != NULL );
 
     if( ok ) {
         if( backup && WRFileExists( info->save_name ) ) {
-            use_rename = (info->file_name != NULL &&
-                          stricmp( info->file_name, info->save_name ));
+            use_rename = ( info->file_name != NULL && stricmp( info->file_name, info->save_name ) );
             ok = WRBackupFile( info->save_name, use_rename );
         }
     }
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_ICON, NULL );
-        ok = (tnode != NULL);
+        ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOICON );
         }
@@ -537,12 +513,12 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
 
     if( ok ) {
         rnode = tnode->Head;
-        ok = (rnode != NULL);
+        ok = ( rnode != NULL );
     }
 
     if( ok ) {
         lnode = WRFindLangNodeFromLangType( rnode, &lang );
-        ok = (lnode != NULL);
+        ok = ( lnode != NULL );
     }
 
     if( ok ) {
