@@ -349,7 +349,7 @@ void IEDDEEndConversation( void )
  */
 BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 {
-    if( hData == (HDDEDATA)NULL && mem != NULL && size != NULL ) {
+    if( hData == (HDDEDATA)NULL || mem == NULL || size == NULL ) {
         return( FALSE );
     }
 
