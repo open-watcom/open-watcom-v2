@@ -112,7 +112,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     bool                    ok;
 
     dlg_info = NULL;
-    file = -1;
+    file = WRES_NIL_HANDLE;
 
     ok = (res_info != NULL && lnode != NULL);
 
@@ -131,8 +131,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        file = ResOpenFileRO( file_name );
-        ok = (file != -1);
+        ok = ((file = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
@@ -259,9 +258,11 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
         dlg_info->dialog_header->FontWeight = 0;
         dlg_info->dialog_header->FontItalic = 0;
+        dlg_info->dialog_header->FontCharset = DEFAULT_CHARSET;
         dlg_info->dialog_header->HelpId = 0;
         dlg_info->dialog_header->FontWeightDefined = FALSE;
         dlg_info->dialog_header->FontItalicDefined = FALSE;
+        dlg_info->dialog_header->FontCharsetDefined = FALSE;
 
         /* now deal with the list of controls */
         nc = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
@@ -291,7 +292,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         }
     }
 
-    if( file != -1 ) {
+    if( file != WRES_NIL_HANDLE ) {
         ResCloseFile( file );
     }
 
