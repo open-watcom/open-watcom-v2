@@ -300,7 +300,7 @@ static ServerInfo **findServer( char *inst, DDETrackInfo *info )
     list = info->data;
     for( i = 0; i < info->cnt; i++ ) {
         if( list[i] != NULL ) {
-            if( !strcmp( inst, list[i]->instname ) ) {
+            if( strcmp( inst, list[i]->instname ) == 0 ) {
                 return( list + i );
             }
         }
@@ -766,8 +766,8 @@ static LinkInfo **findLinkInfo( DDETrackInfo *info, MONLINKSTRUCT *find )
             break;
         }
         if( cur->client == find->hConvClient && cur->server == find->hConvServer &&
-            !stricmp( service, cur->service ) && !stricmp( topic, cur->topic ) &&
-            !stricmp( item, cur->item ) ) {
+            stricmp( service, cur->service ) == 0 && stricmp( topic, cur->topic ) == 0 &&
+            stricmp( item, cur->item ) == 0 ) {
             return( (LinkInfo **)info->data + i );
         }
     }
@@ -871,7 +871,7 @@ static LinkInfo **findConvInfo( DDETrackInfo *info, MONCONVSTRUCT *find )
             break;
         }
         if( cur->client == find->hConvClient && cur->server == find->hConvServer &&
-            !stricmp( service, cur->service ) && !stricmp( topic, cur->topic ) ) {
+            stricmp( service, cur->service ) == 0 && stricmp( topic, cur->topic ) == 0 ) {
             return( (LinkInfo **)info->data + i );
         }
     }

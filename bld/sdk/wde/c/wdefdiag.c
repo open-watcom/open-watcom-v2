@@ -3373,7 +3373,7 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
          */
         if( !found && GETHDR_FONTNAME( obj->dialog_info ) &&
             (GETHDR_STYLE( obj->dialog_info ) & DS_SETFONT) ) {
-            if( !strcmp( font_name->name, GETHDR_FONTNAME( obj->dialog_info ) ) ) {
+            if( strcmp( font_name->name, GETHDR_FONTNAME( obj->dialog_info ) ) == 0 ) {
                 found = TRUE;
             }
             index++;

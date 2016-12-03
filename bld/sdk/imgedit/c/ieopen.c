@@ -383,7 +383,7 @@ BOOL ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
         }
     }
 #endif
-    
+
     node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );
@@ -588,14 +588,14 @@ static int getImageTypeFromFilename( char *fname )
     strcat( initialDir, path );
     initialDir[strlen( initialDir ) - 1] = '\0';
 
-    if( !stricmp( ext, ".bmp" ) ) {
+    if( stricmp( ext, ".bmp" ) == 0 ) {
         return( BITMAP_IMG );
-    } else if( !stricmp( ext, ".ico" ) ) {
+    } else if( stricmp( ext, ".ico" ) == 0 ) {
         return( ICON_IMG );
-    } else if( !stricmp( ext, ".cur" ) ) {
+    } else if( stricmp( ext, ".cur" ) == 0 ) {
         return( CURSOR_IMG );
-    } else if( !stricmp( ext, ".res" ) || !stricmp( ext, ".exe" ) ||
-               !stricmp( ext, ".dll" ) ) {
+    } else if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
+               stricmp( ext, ".dll" ) == 0 ) {
         return( RESOURCE_IMG );
     } else {
         return( UNDEF_IMG );
@@ -743,7 +743,7 @@ static bool readInResourceFile( char *fullname )
 static int reallyOpenImage( char *fname )
 {
     char                filename[_MAX_FNAME + _MAX_EXT];
-    
+
     switch( imgType ) {
     case BITMAP_IMG:
         if( !readInBitmapFile( fname ) ) {
@@ -806,7 +806,7 @@ int OpenImage( HANDLE hDrop )
 #ifdef __NT__
         int     nFiles = DragQueryFile( hDrop, 0xFFFFFFFF, NULL, 0 );
         int     i;
-        
+
         for( i = 0, rv = TRUE; rv && i < nFiles; i++ ) {
             DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
             imgType = getImageTypeFromFilename( fname );
@@ -814,7 +814,7 @@ int OpenImage( HANDLE hDrop )
         }
 #endif
     }
-    
+
     if( rv ) {
         SetupMenuAfterOpen();
     }

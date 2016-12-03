@@ -689,7 +689,7 @@ void WdeFindClassInCustLibControls( char *class, LIST **list, LIST *control_list
     if( control_list != NULL ) {
         for( clist = control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeCustControl *)ListElement( clist );
-            if( !stricmp( class, control->control_info.ms.szClass ) ) {
+            if( stricmp( class, control->control_info.ms.szClass ) == 0 ) {
                 ListAddElt( list, (void *)control );
             }
         }

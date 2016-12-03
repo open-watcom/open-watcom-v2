@@ -104,14 +104,6 @@ bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, uint_32 *size )
         fclose( fh );
     }
 
-    if( !ok ) {
-        if( *data != NULL ) {
-            MemFree( *data );
-            *data = NULL;
-        }
-        *size = 0;
-    }
-
     return( ok );
 }
 
@@ -140,6 +132,7 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
     /* open the resource file that contains the dialog info */
     src = fopen( src_name, "rb" );
     if( src == NULL ) {
+        LastError = errno;
         return( false );
     }
 

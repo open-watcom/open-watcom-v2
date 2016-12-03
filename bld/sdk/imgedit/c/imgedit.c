@@ -364,16 +364,16 @@ static void parseCmdLine( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( !stricmp( cmdline[i], DDE_OPT ) ) {
+        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], NEW_OPT ) ) {
+        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], NOTITLE_OPT ) ) {
+        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], FUSION_OPT ) ) {
+        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
             continue;
         }
         strcpy( fname, cmdline[i] );
@@ -390,19 +390,19 @@ static void parseArgs( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( !stricmp( cmdline[i], DDE_OPT ) ) {
+        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
             ImgedIsDDE = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], NEW_OPT ) ) {
+        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
             OpenNewFiles = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], NOTITLE_OPT ) ) {
+        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
             NoTitleScreen = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], FUSION_OPT ) ) {
+        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
             FusionCalled = TRUE;
             NoTitleScreen = TRUE;
             continue;

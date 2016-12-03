@@ -79,31 +79,31 @@ WRFileType WRAPI WRIdentifyFile( const char *file )
 
     if( ok ) {
         _splitpath( file, NULL, NULL, NULL, ext );
-        if( !stricmp( ext, ".bmp" ) ) {
+        if( stricmp( ext, ".bmp" ) == 0 ) {
             ftype = WRIdentifyWinBMPFile( file );
-        } else if( !stricmp( ext, ".cur" ) ) {
+        } else if( stricmp( ext, ".cur" ) == 0 ) {
             ftype = WRIdentifyWinICOFile( file );
-        } else if( !stricmp( ext, ".ico" ) ) {
+        } else if( stricmp( ext, ".ico" ) == 0 ) {
             ftype = WRIdentifyWinICOFile( file );
-        } else if( !stricmp( ext, ".dlg" ) ) {
+        } else if( stricmp( ext, ".dlg" ) == 0 ) {
             //ftype = WRIdentifyWinRCFile( file );
             ftype = WR_WIN_RC_DLG;
-        } else if( !stricmp( ext, ".rc" ) ) {
+        } else if( stricmp( ext, ".rc" ) == 0 ) {
             ftype = WRIdentifyWinRCFile( file );
-        } else if( !stricmp( ext, ".str" ) ) {
+        } else if( stricmp( ext, ".str" ) == 0 ) {
             ftype = WR_WIN_RC_STR;
-        } else if( !stricmp( ext, ".mnu" ) ) {
+        } else if( stricmp( ext, ".mnu" ) == 0 ) {
             ftype = WR_WIN_RC_MENU;
-        } else if( !stricmp( ext, ".acc" ) ) {
+        } else if( stricmp( ext, ".acc" ) == 0 ) {
             ftype = WR_WIN_RC_ACCEL;
-        } else if( !stricmp( ext, ".res" ) ) {
+        } else if( stricmp( ext, ".res" ) == 0 ) {
             ftype = WRIdentifyRESFile( file );
-        } else if( !stricmp( ext, ".exe" ) ) {
+        } else if( stricmp( ext, ".exe" ) == 0 ) {
             ok = ((fh = ResOpenFileRO( file )) != WRES_NIL_HANDLE);
             if( ok ) {
                 ftype = WRIdentifyEXEFile( fh, FALSE );
             }
-        } else if( !stricmp( ext, ".dll" ) ) {
+        } else if( stricmp( ext, ".dll" ) == 0 ) {
             ok = ((fh = ResOpenFileRO( file )) != WRES_NIL_HANDLE);
             if ( ok ) {
                 ftype = WRIdentifyEXEFile( fh, TRUE );

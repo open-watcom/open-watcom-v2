@@ -87,7 +87,7 @@ static int WdeFindFileFilterIndex( char *filter, char *last_filter )
             }
             index++;
             if( index % 2 == 0 ) {
-                if( !stricmp( last_filter, &filter[i + 1] ) ) {
+                if( stricmp( last_filter, &filter[i + 1] ) == 0 ) {
                     return( index / 2 );
                 }
             }

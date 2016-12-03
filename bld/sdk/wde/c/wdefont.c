@@ -240,7 +240,7 @@ WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, 
     /* let's make sure the font is not already in the list */
     for( olist = *list; olist != NULL; olist = ListNext( olist ) ) {
         font_element = ListElement( olist );
-        if( !strcmp( font_element->name, lpelf->elfLogFont.lfFaceName ) ) {
+        if( strcmp( font_element->name, lpelf->elfLogFont.lfFaceName ) == 0 ) {
             /* do not recursively add TRUE TYPE FONTS */
             if( !(fonttype & TRUETYPE_FONTTYPE) ) {
                 WdeAddFontFamilyMember( font_element, lpelf, lpntm, fonttype );

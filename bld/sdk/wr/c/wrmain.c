@@ -292,7 +292,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     /* if the save and file names are the same then use a tmp file */
-    if( name != NULL && !stricmp( name, info->save_name ) ) {
+    if( name != NULL && stricmp( name, info->save_name ) == 0 ) {
         tmp = info->save_name;
         _splitpath( info->save_name, NULL, NULL, NULL, ext );
         info->save_name = WRGetTempFileName( ext );

@@ -286,7 +286,7 @@ static void updateAlias( unsigned long id, char *newalias, char *oldalias, void 
     ReplaceInfo *info = _info;
 
     if( oldalias != NULL && newalias != NULL ) {
-        if( !strcmp( oldalias, newalias ) ) {
+        if( strcmp( oldalias, newalias ) == 0 ) {
             return;
         }
     }

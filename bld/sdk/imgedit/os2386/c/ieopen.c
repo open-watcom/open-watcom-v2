@@ -274,13 +274,13 @@ static BOOL getOpenFName( char *fname )
     strcat( initialDir, path );
     initialDir[ strlen(initialDir)-1 ] = '\0';
 
-    if ( !stricmp(ext, ".bmp") ) {
+    if ( stricmp( ext, ".bmp" ) == 0 ) {
         imgType = BITMAP_IMG;
         return( TRUE );
-    } else if ( !stricmp(ext, ".ico") ) {
+    } else if ( stricmp( ext, ".ico" ) == 0 ) {
         imgType = ICON_IMG;
         return( TRUE );
-    } else if ( !stricmp(ext, ".ptr") ) {
+    } else if ( stricmp( ext, ".ptr" ) == 0 ) {
         imgType = CURSOR_IMG;
         return( TRUE );
     } else {

@@ -156,9 +156,9 @@ static void peekArgs( char **argv, int argc )
     int  i;
 
     for( i = 1; i < argc; i++ ) {
-        if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
+        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
             //WRECreateNewFiles = TRUE;
-        } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
+        } else if( stricmp( argv[i], NO_IFACE_FLAG ) == 0 ) {
             WRENoInterface = true;
         }
     }
@@ -1025,9 +1025,9 @@ bool WREProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
+        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
             WRECreateNewFiles = TRUE;
-        } else if( !stricmp( argv[i], NO_IFACE_FLAG ) ) {
+        } else if( stricmp( argv[i], NO_IFACE_FLAG ) == 0 ) {
             WRENoInterface = true;
         } else {
             if( WRFileExists( argv[i] ) ) {

@@ -647,7 +647,7 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     len = GetClassName( hwnd, tmp, sizeof( tmp ) );
     tmp[len] = 0;
     for( i = 0; i < ClassStylesSize; i++ ) {
-        if( !stricmp( tmp, ClassStyles[i].class_name ) ) {
+        if( stricmp( tmp, ClassStyles[i].class_name ) == 0 ) {
             for( j = 0; j < *ClassStyles[i].style_array_size; j++ ) {
                 if( (style & ClassStyles[i].style_array[j].mask) ==
                     ClassStyles[i].style_array[j].flags ) {

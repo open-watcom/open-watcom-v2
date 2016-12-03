@@ -1091,8 +1091,8 @@ BOOL SaveFileFromNode( img_node *node, int how )
     checkForExt( rootnode );
 
     _splitpath( rootnode->fname, NULL, NULL, NULL, ext );
-    if( !stricmp( ext, ".res" ) || !stricmp( ext, ".exe" ) ||
-        !stricmp( ext, ".dll" ) ) {
+    if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
+        stricmp( ext, ".dll" ) == 0 ) {
         return( saveResourceFile( rootnode ) );
     }
 
@@ -1170,7 +1170,7 @@ static BOOL getSavePalName( char *fname )
     of.lpstrTitle = IESavePaletteTitle;
     of.lpstrInitialDir = initialDir;
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
-#if !defined( __NT__ ) 
+#if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
 #endif
