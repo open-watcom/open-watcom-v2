@@ -531,6 +531,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     WREImageSession     *session;
     BYTE                *data;
     uint_32             size;
+    bool                ok;
 
     if( curr == NULL ) {
         return( NULL );
@@ -546,18 +547,21 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     session->info.data = NULL;
     data = NULL;
     size = 0;
+    ok = true;
 
     switch( service ) {
     case CursorService:
         if( !new && !WRECreateCursorDataFromGroup( curr, &data, &size ) ) {
-            return( NULL );
+            ok = false;
+            break;
         }
         session->info.data_size = size;
         session->info.data = data;
         break;
     case IconService:
         if( !new && !WRECreateIconDataFromGroup( curr, &data, &size ) ) {
-            return( NULL );
+            ok = false;
+            break;
         }
         session->info.data_size = size;
         session->info.data = data;
@@ -570,6 +574,13 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
         break;
     case NoServicePending:
     default:
+        ok = false;
+        break;
+    }
+    if( !ok ) {
+        if( data != NULL ) {
+            WRMemFree( data );
+        }
         return( NULL );
     }
 
