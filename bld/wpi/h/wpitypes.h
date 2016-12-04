@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,15 +42,19 @@
 #include <setjmp.h>
 
 #if defined( __OS2_PM__ ) || defined( __OS2__ )
+#include "os21632.h"
 #include "pm1632.h"
+#else
+#include "wi163264.h"
 #endif
+
+#include "pushpck1.h"
 
 #define WPI_SIZEWINBMPFILEHDR           14
 #define WPI_SIZEWINBMPINFOHDR           40
 #define WPI_SIZEOS2BMPFILEHDR           78
 #define WPI_SIZEOS2BMPINFOHDR           64
 
-#pragma pack( 1 )
 /*************************/
 /* new types - both ways */
 /*************************/
@@ -777,6 +782,6 @@ typedef struct {
     #define WPI_LOGPIXELSY_FONT         LOGPIXELSY
 #endif  /* ! (defined( __OS2_PM__ ) || defined( __OS2__ )) */
 
-#pragma pack()
+#include "poppck.h"
 
 #endif

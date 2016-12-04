@@ -320,10 +320,10 @@ WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
     static HWND                 hframe;
     HMENU                       hmenu;
     WPI_RECT                    rcview;
-    IMGED_DIM                   left;
-    IMGED_DIM                   top;
-    IMGED_DIM                   right;
-    IMGED_DIM                   bottom;
+    WPI_RECTDIM                 left;
+    WPI_RECTDIM                 top;
+    WPI_RECTDIM                 right;
+    WPI_RECTDIM                 bottom;
 
     switch ( msg ) {
     case WM_CREATE:
@@ -472,10 +472,10 @@ void ResetViewWindow( HWND hwnd )
 {
     WPI_RECT    currentloc;
     WPI_RECT    newloc;
-    IMGED_DIM   left;
-    IMGED_DIM   top;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
     HWND        hframe;
     HWND        currentframe;
 
@@ -536,10 +536,10 @@ void RePositionViewWnd( img_node *node )
     WPI_RECT    location;
     int         h_adj;
     int         v_adj;
-    IMGED_DIM   left;
-    IMGED_DIM   top;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
     HWND        frame;
     
     frame = _wpi_getframe( node->viewhwnd );

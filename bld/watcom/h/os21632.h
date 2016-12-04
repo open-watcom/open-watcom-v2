@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -24,41 +25,38 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Macros to mask differences between 16-bit and 32-bit OS/2.
 *
 ****************************************************************************/
 
 
-#ifndef __OS2_PM__
+#ifndef OS21632_H_INCLUDED
+#define OS21632_H_INCLUDED
 
-    /*
-     * Definitions for Windows
-     */
-    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECC
-    #define SHIFT_UP                    IMGED_UP
-    #define SHIFT_DOWN                  IMGED_DOWN
+#ifdef _M_I86
 
-    #define _imged_getthebits( bits, pres, bmp, oldbmp ) \
-        (oldbmp = _wpi_selectbitmap( pres, bmp ))
-    #define _imged_getpixel( bits, pres, x, y )         _wpi_getpixel( pres, x, y )
-    #define _imged_setpixel( bits, pres, x, y, clr )    _wpi_setpixel( pres, x, y, clr )
-    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-        _wpi_getoldbitmap( pres, bmp )
+#define APIRET          USHORT
+#define OS_UINT         USHORT
+#define OS_PUINT        PUSHORT
+#define __FAR           __far
+
+/* values returned by DosQHandType() */
+
+#define HANDTYPE_FILE     0x0000
+#define HANDTYPE_DEVICE   0x0001
+#define HANDTYPE_PIPE     0x0002
+#define HANDTYPE_NETWORK  0x8000
+
+// The following are not defined in the os2 2.0 header files so
+// lets do it here
+#define NULLHANDLE      ((LHANDLE)0)
 
 #else
 
-    /*
-     * Definitions for PM
-     */
-    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECL
-    #define SHIFT_UP                    IMGED_DOWN
-    #define SHIFT_DOWN                  IMGED_UP
-
-    #define _imged_getthebits( bits, pres, bmp, oldbmp )    (bits = GetTheBits( bmp ))
-    #define _imged_getpixel( bits, pres, x, y )             MyGetPixel( bits, x, y )
-    #define _imged_setpixel( bits, pres, x, y, clr )        MySetPixel( bits, x, y, clr )
-    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-        FreeTheBits( bits, bmp, fflag )
+#define OS_UINT         ULONG
+#define OS_PUINT        PULONG
+#define __FAR
 
 #endif
+
+#endif /* OS21632_H_INCLUDED */

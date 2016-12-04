@@ -262,17 +262,17 @@ WPI_MRESULT CALLBACK ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 
     case WM_LBUTTONDOWN:
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
         selectColor( &pt, LMOUSEBUTTON );
         break;
 
     case WM_LBUTTONDBLCLK:
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
         editCurrentColor( &pt );
         break;
 
     case WM_RBUTTONDOWN:
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
         selectColor( &pt, RMOUSEBUTTON );
         break;
 
@@ -305,7 +305,7 @@ WPI_MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 
     case WM_LBUTTONDOWN:
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
         selectScreen( &pt, LMOUSEBUTTON );
         break;
 
@@ -314,7 +314,7 @@ WPI_MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
             break;
         }
 
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
 
         top = _wpi_cvth_y( screenColor.box.top, screenHeight );
         bottom = _wpi_cvth_y( screenColor.box.bottom, screenHeight );
@@ -331,7 +331,7 @@ WPI_MRESULT CALLBACK ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
         break;
 
     case WM_RBUTTONDOWN:
-        IMGED_MAKEPOINT( wparam, lparam, pt );
+        WPI_MAKEPOINT( wparam, lparam, pt );
         selectScreen( &pt, RMOUSEBUTTON );
         break;
 

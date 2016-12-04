@@ -280,7 +280,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
 #ifdef __OS2_PM__
         WinSetPointer( HWND_DESKTOP, hCursor[cursorIndex] );
 #endif
-        IMGED_MAKEPOINT( wparam, lparam, new_pt );
+        WPI_MAKEPOINT( wparam, lparam, new_pt );
 
         switch( toolType ) {
         case IMGED_SNAP:
@@ -373,8 +373,8 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             mousebutton = RMOUSEBUTTON;
         }
         fdraw_shape = TRUE;
-        IMGED_MAKEPOINT( wparam, lparam, start_pt );
-        IMGED_MAKEPOINT( wparam, lparam, new_pt );
+        WPI_MAKEPOINT( wparam, lparam, start_pt );
+        WPI_MAKEPOINT( wparam, lparam, new_pt );
 
         switch( toolType ) {
         case IMGED_SNAP:
@@ -393,7 +393,7 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
             break;
 
         case IMGED_LINE:
-            IMGED_MAKEPOINT( wparam, lparam, end_pt );
+            WPI_MAKEPOINT( wparam, lparam, end_pt );
             OutlineLine( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
 
@@ -401,12 +401,12 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
         case IMGED_RECTF:
         case IMGED_CIRCLEO:
         case IMGED_CIRCLEF:
-            IMGED_MAKEPOINT( wparam, lparam, end_pt );
+            WPI_MAKEPOINT( wparam, lparam, end_pt );
             OutlineRegion( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
 
         case IMGED_CLIP:
-            IMGED_MAKEPOINT( wparam, lparam, end_pt );
+            WPI_MAKEPOINT( wparam, lparam, end_pt );
             RedrawPrevClip( hwnd );
             OutlineClip( hwnd, &start_pt, &new_pt, &prev_pt, true );
             break;
@@ -432,8 +432,8 @@ WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg,
     case WM_LBUTTONUP:
     case WM_RBUTTONUP:
         pointsize = GetPointSize( hwnd );
-        IMGED_MAKEPOINT( wparam, lparam, end_pt );
-        IMGED_MAKEPOINT( wparam, lparam, new_pt );
+        WPI_MAKEPOINT( wparam, lparam, end_pt );
+        WPI_MAKEPOINT( wparam, lparam, new_pt );
         if( msg == WM_LBUTTONUP ) {
             mousebutton = LMOUSEBUTTON;
         } else {

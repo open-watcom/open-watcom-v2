@@ -80,8 +80,8 @@ static bool toolBarProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 l
     ctl_id              id;
     WPI_RECT            rctool;
     HWND                hframe;
-    IMGED_DIM           left;
-    IMGED_DIM           top;
+    WPI_RECTDIM         left;
+    WPI_RECTDIM         top;
 
     switch( msg ) {
     case WM_CREATE:
@@ -170,10 +170,10 @@ void InitTools( HWND hparent )
     }
 #endif
 
-    _wpi_setrectvalues( &toolbar_loc, (IMGED_DIM)ImgedConfigInfo.tool_xpos,
-                                      (IMGED_DIM)ImgedConfigInfo.tool_ypos,
-                                      (IMGED_DIM)(ImgedConfigInfo.tool_xpos + TBWidth),
-                                      (IMGED_DIM)(ImgedConfigInfo.tool_ypos + TBHeight) );
+    _wpi_setrectvalues( &toolbar_loc, (WPI_RECTDIM)ImgedConfigInfo.tool_xpos,
+                                      (WPI_RECTDIM)ImgedConfigInfo.tool_ypos,
+                                      (WPI_RECTDIM)(ImgedConfigInfo.tool_xpos + TBWidth),
+                                      (WPI_RECTDIM)(ImgedConfigInfo.tool_ypos + TBHeight) );
 
     for( i = 0; i < NUMBER_OF_TOOLS; i++ ) {
         bitmaps[i].hToolBmp = _wpi_loadbitmap( Instance, bitmaps[i].pszToolBmp );

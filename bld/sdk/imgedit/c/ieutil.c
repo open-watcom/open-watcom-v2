@@ -501,7 +501,8 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
 {
     WPI_RECT    windowrect;
     WPI_POINT   topleft;        // this ends up being bottom left for PM
-    WPI_RECTDIM left, top;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
 
     lparam = lparam;
 
@@ -552,7 +553,7 @@ void FindOrigin( WPI_POINT *new_origin )
     int             i, j;
     WPI_POINT       temp;
     WPI_RECT        proposed;
-    int             width;
+    WPI_RECTDIM     width;
     int             base;
 
     image_count = DoImagesExist();
