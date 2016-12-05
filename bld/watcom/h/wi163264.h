@@ -163,6 +163,12 @@
 #define BST_UNCHECKED   0
 #define BST_CHECKED     1
 
+#ifdef __WINDOWS_386__
+#define IS_INTRESOURCE( x ) ((((ULONG_PTR)(x)) >> 16) == 0xFFFF)
+#else
+#define IS_INTRESOURCE( x ) ((((ULONG_PTR)(x)) >> 16) == 0)
+#endif
+
 #endif
 
 #define MENU_CLOSED(wp,lp)                      ((GET_WM_MENUSELECT_FLAGS(wp,lp)==(WORD)-1)&&(GET_WM_MENUSELECT_HMENU(wp,lp)==(HMENU)NULL))
