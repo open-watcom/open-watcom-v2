@@ -220,6 +220,8 @@ static bool Terminate( void )
 
 #endif
 
+#ifndef __RDOS__
+
 static int FullGet( void *get, int len )
 {
     int     rec, got;
@@ -235,11 +237,41 @@ static int FullGet( void *get, int len )
     return( got );
 }
 
+#endif
+
 trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16         rec_len;
+#ifdef __RDOS__    
+    int                 size;
+#endif
 
+    _DBG_NET(("RemoteGet\r\n"));
     len = len;
+
+#ifdef __RDOS__
+
+    if( data_socket && !RdosIsTcpConnectionClosed( data_socket ) ) {
+        size = 0;
+        while( !RdosIsTcpConnectionClosed( data_socket ) && size == 0 )
+            size = RdosReadTcpConnection( data_socket, &rec_len, 2 );
+
+        if( size == 2 ) {
+            CONV_LE_16( rec_len );
+
+            if( rec_len ) {
+                size = RdosReadTcpConnection( data_socket, data, rec_len );
+
+                if( size == rec_len ) {
+                    _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
+                    return( rec_len );
+                }
+            }
+        }
+    }   
+    return( REQUEST_FAILED );
+
+#else
 
     _DBG_NET(("RemoteGet\r\n"));
 
@@ -253,6 +285,8 @@ trap_retval RemoteGet( void *data, trap_elen len )
         }
     }
     return( REQUEST_FAILED );
+
+#endif
 }
 
 trap_retval RemotePut( void *data, trap_elen len )
