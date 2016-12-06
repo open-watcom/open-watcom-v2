@@ -94,7 +94,6 @@ static bool CreatePreprocFile( void )
     FILE        *fh;
     bool        error;
     int         ch;
-    char        ch1;
 
     error = false;
     fh = fopen( CmdLineParms.OutResFileName, "wt" );
