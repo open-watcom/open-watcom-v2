@@ -623,7 +623,7 @@ bool MainEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             {
                 gui_menu_struct *menu;
                 int             num;
-                GUICreateMenuStructFromRes( GUI_MAKEINTRESOURCE( 100 ), &menu, &num );
+                GUICreateMenuStructFromRes( MAKEINTRESOURCE( 100 ), &menu, &num );
                 if( menu && num ) {
                     int     i;
                     for( i = 0; i < num; i++ ) {

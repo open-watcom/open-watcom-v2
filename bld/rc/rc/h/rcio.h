@@ -70,8 +70,6 @@ typedef struct LogicalFileInfo {
     bool        IsCOrHFile;
 } LogicalFileInfo;
 
-#define RC_EOF (-1)
-
 extern char *RcTmpFileName( void );
 extern bool RcPass1IoInit( void );
 extern void RcPass1IoShutdown( void );

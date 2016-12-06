@@ -40,8 +40,8 @@
 #include "loadstr.h"
 #include "wresrtns.h"
 #include "layer2.h"
+#include "wresdefn.h"
 
-#define WRES_IS_INTRESOURCE(x) ((((pointer_int)(x)) >> 16) == 0)
 
 extern WResDir    MainDir;
 
@@ -114,8 +114,8 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
     WResID              *resource_id;
     int                 rc;
 
-    if( WRES_IS_INTRESOURCE( idResource ) ) {
-        resource_id = WResIDFromNum( (unsigned short)(pointer_int)idResource );
+    if( IS_INTRESOURCE( idResource ) ) {
+        resource_id = WResIDFromNum( RESOURCE2INT( idResource ) );
     } else {
 #if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
         char    *str;
@@ -127,8 +127,8 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
         resource_id = WResIDFromStr( idResource );
 #endif
     }
-    if( WRES_IS_INTRESOURCE( idType ) ) {
-        resource_type = WResIDFromNum( (unsigned short)(pointer_int)idType );
+    if( IS_INTRESOURCE( idType ) ) {
+        resource_type = WResIDFromNum( RESOURCE2INT( idType ) );
     } else {
 #if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
         char    *str;

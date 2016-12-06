@@ -246,7 +246,7 @@ void ResDialogCreate( gui_window *parent )
             if( *ep != '\0' ) {
                 dlg_id = NULL;
             } else {
-                dlg_id = GUI_MAKEINTRESOURCE( id );
+                dlg_id = MAKEINTRESOURCE( id );
             }
             GUIMemFree( text );
         }

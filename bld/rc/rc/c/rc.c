@@ -91,29 +91,25 @@ void FiniGlobs( void )
 
 static bool CreatePreprocFile( void )
 {
-    WResFileID  handle;
+    FILE        *fh;
     bool        error;
     int         ch;
-    char        ch1;
 
     error = false;
-    handle = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
-    if( handle == WRES_NIL_HANDLE ) {
+    fh = fopen( CmdLineParms.OutResFileName, "wt" );
+    if( fh == NULL ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = true;
     } else {
-        ch = RcIoGetChar();
-        while( ch != RC_EOF ) {
-            ch1 = (char)ch;
-            if( RcWrite( handle, &ch1, 1 ) != 1 ) {
+        while( (ch = RcIoGetChar()) != EOF ) {
+            if( fputc( ch, fh ) == EOF ) {
                 RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
                 error = true;
             }
-            ch = RcIoGetChar();
         }
     }
-    if( handle != WRES_NIL_HANDLE )
-        RcClose( handle );
+    if( fh != NULL )
+        fclose( fh );
     return( error );
 }
 
