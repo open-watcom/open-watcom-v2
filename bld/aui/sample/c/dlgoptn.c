@@ -88,6 +88,6 @@ bool    DlgOptions( void )
     dlg_window_set      optset;
 
     optset.cancel = true;
-    ResDlgOpen( &OptSetEvent, &optset, GUI_MAKEINTRESOURCE( DLG_OPTIONS ) );
+    ResDlgOpen( &OptSetEvent, &optset, DLG_OPTIONS );
     return( !optset.cancel );
 }
