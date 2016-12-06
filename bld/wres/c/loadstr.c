@@ -112,7 +112,7 @@ int WResLoadString2( WResDir dir, PHANDLE_INFO hinfo, UINT idResource,
 /************************************************************************/
 {
     int                 retcode;
-    int                 block_num;
+    unsigned            block_num;
     WResID              string_type;
     WResID              block_id;
     WResDirWindow       wind;
