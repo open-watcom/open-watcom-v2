@@ -186,7 +186,7 @@ static  void    SetDlgStatus( dlg_brk *dlg, gui_window *gui )
     GUISetChecked( gui, CTL_BRK_BYTE,    mti.b.bits == BYTES2BITS( 1 ) );
     GUISetChecked( gui, CTL_BRK_WORD,    mti.b.bits == BYTES2BITS( 2 ) );
     GUISetChecked( gui, CTL_BRK_DWORD,   mti.b.bits == BYTES2BITS( 4 ) );
-    
+
     GUIEnableControl( gui, CTL_BRK_QWORD, Is8ByteBreakpointsSupported() );
     GUISetChecked( gui, CTL_BRK_QWORD,   mti.b.bits == BYTES2BITS( 8 ) );
 
@@ -354,7 +354,7 @@ bool DlgBreak( address addr )
     }
     dlg.tmpbp = *bp;
     CnvULongDec( bp->index, StrCopy( " ", StrCopy( LIT_DUI( DlgBreak ), TxtBuff ) ), TXT_LEN );
-    ResDlgOpen( &BrkEvent, &dlg, GUI_MAKEINTRESOURCE( DIALOG_BREAK ) );
+    ResDlgOpen( &BrkEvent, &dlg, DIALOG_BREAK );
     SetRecord( true );
     return( !dlg.cancel );
 }

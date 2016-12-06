@@ -49,7 +49,6 @@
                         parent_hwnd, menu, inst, param, hwnd, id, frame ) \
         *hwnd = CreateWindow( class, name, style, x, y, width, height, \
                 parent_hwnd, menu, inst, param );
-    #define _wpi_makeintresource( res ) MAKEINTRESOURCE( res )
 #else
     #define _wpi_createwindow_ex( exstyle, class, name, frame_style, create_flags, \
                     client_style, x, y, width, height, parent, menu, inst, \
@@ -75,7 +74,6 @@
             *frame_hwnd = WinCreateWindow( parent_hwnd, class, name, style, \
                                            x, y, width, height, parent_hwnd, \
                                            HWND_TOP, id, param, NULL );
-    #define _wpi_makeintresource( res ) ( res )
 #endif
 
 #ifndef __OS2_PM__

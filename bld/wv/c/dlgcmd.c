@@ -110,5 +110,5 @@ void    DlgCmd( void )
     dlg_command *dlg;
 
     dlg = WndMustAlloc( sizeof( dlg_command ) );
-    ResDlgOpen( &CmdEvent, dlg, GUI_MAKEINTRESOURCE( DIALOG_CMD ) );
+    ResDlgOpen( &CmdEvent, dlg, DIALOG_CMD );
 }

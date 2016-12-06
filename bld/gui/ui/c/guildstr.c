@@ -116,7 +116,7 @@ bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length 
     ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
+        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
                                  (LPSTR *)template, length ) == 0 );
     }
 
@@ -130,7 +130,7 @@ bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length )
     ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_MENU ), menu_id,
+        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id,
                                  (LPSTR *)template, length ) == 0 );
     }
 

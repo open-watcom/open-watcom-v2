@@ -64,7 +64,7 @@ OVL_EXTERN bool StkOrHistoryEvent( gui_window *gui, gui_event gui_ev, void *para
     return( false );
 }
 
-static bool DoStackOrHistory( res_name_or_id dlg_id )
+static bool DoStackOrHistory( int dlg_id )
 {
     gui_ctl_id  resp;
 
@@ -75,7 +75,7 @@ static bool DoStackOrHistory( res_name_or_id dlg_id )
         _SwitchOn( SW_EXECUTE_ABORTED );
         return( false );
     case CTL_STK_YES:
-        if( dlg_id == GUI_MAKEINTRESOURCE( DIALOG_STACK ) ) {
+        if( dlg_id == DIALOG_STACK ) {
             LastStackPos();
         } else {
             LastMachState();
@@ -94,7 +94,7 @@ bool DlgUpTheStack( void )
 bool DlgBackInTime( bool lost_mem_state )
 {
     if( lost_mem_state ) {
-        return( DoStackOrHistory( GUI_MAKEINTRESOURCE( DIALOG_HISTORY ) ) );
+        return( DoStackOrHistory( DIALOG_HISTORY ) );
     } else {
         return( WndDisplayMessage( LIT_DUI( WARN_Losing_Redo ), LIT_ENG( Empty ), GUI_YES_NO ) == GUI_RET_YES );
     }

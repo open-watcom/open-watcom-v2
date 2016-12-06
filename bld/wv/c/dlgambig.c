@@ -51,7 +51,7 @@ static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
     text=text;
     dlg.func = PickInit;
     dlg.chosen = -1;
-    ResDlgOpen( &GUIPickEvent, &dlg, GUI_MAKEINTRESOURCE( DIALOG_AMBIG ) );
+    ResDlgOpen( &GUIPickEvent, &dlg, DIALOG_AMBIG );
     return( dlg.chosen );
 }
 

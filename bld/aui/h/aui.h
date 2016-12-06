@@ -314,7 +314,7 @@ extern int              DlgPickWithRtn2( const char *title, const void *data_han
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
 extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
-extern void             ResDlgOpen( GUICALLBACK *, void *, res_name_or_id dlg_id );
+extern void             ResDlgOpen( GUICALLBACK *, void *, int dlg_id );
 extern int              DlgGetFileName( open_file_name *ofn );
 extern bool             DlgFileBrowse( char *title, char *filter, char *path, unsigned len, fn_flags flags );
 extern int              DlgSearch( a_window *wnd, void *history );
