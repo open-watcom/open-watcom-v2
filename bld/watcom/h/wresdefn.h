@@ -53,6 +53,12 @@
 
 #define RESOURCE2INT( x )       ((pointer_int)(x))
 
+#if defined( __WINDOWS_386__ )
+#define IS_INTRESOURCE( x ) ((RESOURCE2INT(x) >> 16) == 0xFFFF)
+#elif defined( __WINDOWS__ ) || defined( WINRESDEFN )
+#define IS_INTRESOURCE( x ) ((RESOURCE2INT(x) >> 16) == 0)
+#endif
+
 #if defined( WINRESDEFN )
 
 /*** predefined type numbers ***/
