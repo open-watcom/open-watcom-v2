@@ -6,7 +6,7 @@ REM NOTE: Do not use this batch file directly, but copy it and
 REM       modify it as necessary for your own use!!
 
 REM Change this to point your Open Watcom source tree
-set OWROOT=c:\ow
+set OWROOT=c:\ow\ow
 
 REM Set this entry to identify your toolchain used by build process
 REM supported values are WATCOM VISUALC INTEL
@@ -16,14 +16,11 @@ REM Build control related variables
 REM ###############################
 
 REM Set this variable to 0 to suppress documentation build
-set OWDOCBUILD=0
-
-REM Set this for debug build
-set OWDEBUGBUILD=1
+set OWDOCBUILD=1
 
 REM Set this variable to 1 to suppress tools GUI version build
 REM If it is used then only tools character mode version is build
-REM set OWGUINOBUILD=0
+REM set OWGUINOBUILD=1
 
 REM Set this variable to list of OW projects to suppress their build
 REM Example set OWNOBUILD=ide browser dlgprs
@@ -36,8 +33,8 @@ REM Change this to the PATH required by GhostScript for PDF creation on used hos
 REM set OWGHOSTSCRIPTPATH=%PATH%
 
 REM Change these variables to point Windows help compilers which you have installed
-set OWWIN95HC=hcrtf
-set OWHHC=hhc
+REM set OWWIN95HC=hcrtf
+REM set OWHHC=hhc
 
 if not '%OS%' == 'Windows_NT' goto common_setup
 REM build process requires WGML utility which is available only as DOS executable
@@ -47,7 +44,7 @@ REM It is necessary for all 64-bit Windows and Windows 7 32-bit
 REM Uncoment and set OWDOSBOX variable bellow to point to DOSBOX emulator executable
 REM path must not include any spaces
 
-set OWDOSBOX=c:\dosbox\dosbox
+REM set OWDOSBOX=dosbox
 
 :common_setup
 
