@@ -88,6 +88,8 @@ typedef struct RcFileEntry {
 
 HANDLE_INFO     hInstance;
 
+bool            RcIoNoBuffer = false;
+
 static WResFileID       openFileList[MAX_OPEN_FILES];
 static RcFileEntry      RcFileList[RC_MAX_FILES];
 
@@ -178,12 +180,14 @@ WResFileID RcOpen( const char * file_name, int access, ... )
     handle = open( file_name, access, perms );
     if( handle != WRES_NIL_HANDLE ) {
         RegisterOpenFile( handle );
-        for( i = 0; i < RC_MAX_FILES; i++ ) {
-            if( !RcFileList[i].HasRcBuffer ) {
-                RcFileList[i].HasRcBuffer = true;
-                RcFileList[i].FileHandle = handle;
-                RcFileList[i].Buffer = NewRcBuffer();
-                break;
+        if( !RcIoNoBuffer ) {
+            for( i = 0; i < RC_MAX_FILES; i++ ) {
+                if( !RcFileList[i].HasRcBuffer ) {
+                    RcFileList[i].HasRcBuffer = true;
+                    RcFileList[i].FileHandle = handle;
+                    RcFileList[i].Buffer = NewRcBuffer();
+                    break;
+                }
             }
         }
     }
@@ -467,31 +471,5 @@ void Layer0InitStatics( void )
     }
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         openFileList[i] = WRES_NIL_HANDLE;
-    }
-}
-
-bool RCOpenResFile( HANDLE_INFO *instance, const char *imagename )
-/****************************************************************/
-{
-    instance->handle = open( imagename, O_RDONLY | O_BINARY );
-    if( instance->handle != WRES_NIL_HANDLE ) {
-        RegisterOpenFile( instance->handle );
-        if( !FindResources( instance ) && !InitResources( instance ) ) {
-            return( false );
-        }
-        CloseResFile( instance );
-        UnRegisterOpenFile( instance->handle );
-        instance->handle = WRES_NIL_HANDLE;
-    }
-    return( true );
-}
-
-void RCCloseResFile( HANDLE_INFO *instance )
-/******************************************/
-{
-    if( instance->handle != WRES_NIL_HANDLE ) {
-        CloseResFile( instance );
-        UnRegisterOpenFile( instance->handle );
-        instance->handle = WRES_NIL_HANDLE;
     }
 }
