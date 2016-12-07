@@ -35,5 +35,56 @@
 
 #include "clibext.h"
 
+#if 0
+static WResFileID wres_open( const char *name, int omode )
+{
+    omode=omode;
+    return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+}
 
-WResSetRtns( open, close, posix_read, posix_write, lseek, tell, malloc, free );
+static int wres_close( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) );
+}
+
+static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+}
+
+static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+{
+    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+}
+
+static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+/* fool the resource compiler into thinking that the resource information
+ * starts at offset 0 */
+{
+    if( where == SEEK_SET ) {
+        return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( WRES_FID2PH( fid ), pos, where ) );
+    }
+}
+
+static WResFileOffset wres_tell( WResFileID fid )
+{
+    return( tell( WRES_FID2PH( fid ) ) );
+}
+
+WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, malloc, free );
+#else
+static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+/* fool the resource compiler into thinking that the resource information
+ * starts at offset 0 */
+{
+    if( where == SEEK_SET ) {
+        return( lseek( fid, pos + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( fid, pos, where ) );
+    }
+}
+
+WResSetRtns( open, close, posix_read, posix_write, wres_seek, tell, malloc, free );
+#endif

@@ -132,7 +132,7 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode,
     } else {
         error = ResWriteUint16( curritem->ItemFlags, handle );
         if( !error ) {
-            error = ResWriteUint16( curritem->ItemID, handle );
+            error = ResWriteUint16( (uint_16)curritem->ItemID, handle );
         }
         if( !error ) {
             error = ResWriteString( curritem->ItemText, use_unicode, handle );

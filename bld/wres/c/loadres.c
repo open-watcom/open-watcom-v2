@@ -115,7 +115,7 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
     int                 rc;
 
     if( IS_INTRESOURCE( idResource ) ) {
-        resource_id = WResIDFromNum( RESOURCE2INT( idResource ) );
+        resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
     } else {
 #if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
         char    *str;
@@ -128,7 +128,7 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
 #endif
     }
     if( IS_INTRESOURCE( idType ) ) {
-        resource_type = WResIDFromNum( RESOURCE2INT( idType ) );
+        resource_type = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
     } else {
 #if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
         char    *str;

@@ -57,7 +57,7 @@ static int DefaultConversion( int len, const char *str, char *buf )
     return( len * 2 );
 }
 
-int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
+int (*ConvToUnicode)(int, const char *, char *) = DefaultConversion;
 
 bool ResWriteUint8( uint_8 newint, WResFileID handle )
 /****************************************************/
@@ -96,7 +96,7 @@ bool ResWritePadDWord( WResFileID handle )
 /****************************************/
 {
     WResFileOffset  curr_pos;
-    size_t          padding;
+    WResFileSize    padding;
     bool            error;
     uint_32         zero = 0;
 
@@ -108,7 +108,7 @@ bool ResWritePadDWord( WResFileID handle )
     }
     padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
     if( padding != 0 ) {
-        if( WRESWRITE( handle, &zero, padding ) != padding ) {
+        if( (WResFileSize)WRESWRITE( handle, &zero, padding ) != padding ) {
             WRES_ERROR( WRS_WRITE_FAILED );
             return( true );
         }
