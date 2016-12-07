@@ -136,13 +136,13 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
 /********************************************************************/
 {
     entry->Head.flags = 0;
-    entry->Head.time_stamp = time( NULL );
+    entry->Head.time_stamp = (unsigned_32)time( NULL );
     entry->Head.major = 0;
     entry->Head.minor = 0;
     entry->Head.num_name_entries = 0;
     entry->Head.num_id_entries = 0;
     entry->NumUnused = num_entries;
-    entry->Children = RCALLOC( num_entries * sizeof(PEResEntry) );
+    entry->Children = RCALLOC( num_entries * sizeof( PEResEntry ) );
 }
 
 static void PEResDirAdd( PEResDirEntry * entry, WResID * name,

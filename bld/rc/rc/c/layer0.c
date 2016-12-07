@@ -375,8 +375,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
         case SEEK_SET:
             /* if we are seeking backwards any amount or forwards past the */
             /* end of the buffer */
-            if( amount < currpos ||
-                    amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
+            if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( handle, buff ) )
                     return( -1 );
                 if( lseek( handle, amount, SEEK_SET ) == -1 ) {
@@ -408,8 +407,7 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             /* FALL THROUGH */
         case SEEK_SET:
             /* if the new pos is outside the buffer */
-            if( amount < currpos + buff->Count - buff->BytesRead ||
-                    amount >= currpos + buff->Count ) {
+            if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( handle, buff ) )
                     return( -1 );
                 if( lseek( handle, amount, SEEK_SET ) == -1 ) {

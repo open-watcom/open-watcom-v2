@@ -378,7 +378,7 @@ static void AddIconResource( WResID * name, ResMemFlags flags,
     FullIconDir     dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
+    handle = RcIoOpenBinaryInput( filename );
     if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
@@ -628,7 +628,7 @@ static void AddCursorResource( WResID * name, ResMemFlags flags,
     FullCurDir      dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
+    handle = RcIoOpenBinaryInput( filename );
     if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
@@ -743,7 +743,7 @@ static void AddBitmapResource( WResID * name, ResMemFlags flags,
     RcStatus            ret;
     int                 err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
+    handle = RcIoOpenBinaryInput( filename );
     if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
@@ -949,7 +949,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
         return;
     }
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
+    handle = RcIoOpenBinaryInput( filename );
     if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 

@@ -287,7 +287,7 @@ extern bool RcPass1IoInit( void )
         }
     }
     RcIoTextInputInit();
-    error = RcIoPushInputFile( CmdLineParms.InFileName );
+    error = RcIoPushTextInputFile( CmdLineParms.InFileName );
     if( error )
         return( false );
 
@@ -479,7 +479,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->Handle = RCOPEN( filename, O_RDONLY|O_BINARY, PMODE_RW );
+    info->Handle = RCOPEN( filename, O_RDONLY | O_BINARY );
     if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
@@ -538,7 +538,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = RCOPEN( filename, O_RDWR|O_CREAT|O_TRUNC|O_BINARY, PMODE_RW );
+    info->Handle = RCOPEN( filename, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
     if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
@@ -716,8 +716,8 @@ extern void RcPass2IoShutdown( bool noerror )
 typedef struct PhysFileInfo {
     char            *Filename;
     bool            IsOpen;
-    WResFileID      Handle;
-    WResFileOffset  Offset;     /* offset in file to read from next time if this */
+    FILE            *Handle;
+    unsigned long   Offset;     /* offset in file to read from next time if this */
                                 /* is not the current file */
 } PhysFileInfo;
 
@@ -728,13 +728,14 @@ typedef struct FileStackEntry {
 
 typedef struct FileStack {
     unsigned char       *Buffer;
-    unsigned            BufferSize;
+    size_t              BufferSize;
     unsigned char       *NextChar;
     unsigned char       *EofChar;       /* DON'T dereference, see below */
     /* + 1 for the before first entry */
     FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
     FileStackEntry      *Current;
 } FileStack;
+
 /* EofChar points to the memory location after the last character currently */
 /* in the buffer. If the physical EOF has been reached it will point to */
 /* within Buffer, otherwise it will point AFTER Buffer. If NextChar == */
@@ -765,7 +766,7 @@ extern bool RcIoTextInputShutdown( void )
             return( false );
         } else {
             while( !IsEmptyFileStack( InStack ) ) {
-                RcIoPopInputFile();
+                RcIoPopTextInputFile();
             }
             // return( true );
         }
@@ -777,13 +778,13 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 /************************************************/
 {
     if( !phys->IsOpen ) {
-        phys->Handle = RcIoOpenInput( phys->Filename, O_RDONLY | O_TEXT );
-        if( phys->Handle == WRES_NIL_HANDLE ) {
+        phys->Handle = RcIoOpenTextInput( phys->Filename );
+        if( phys->Handle == NULL ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
         phys->IsOpen = true;
-        if( RCSEEK( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
+        if( fseek( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -807,12 +808,12 @@ static void SetPhysFileOffset( FileStack * stack )
 /************************************************/
 {
     PhysFileInfo    *phys;
-    unsigned        charsinbuff;
+    size_t          charsinbuff;
 
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
-        charsinbuff = stack->BufferSize - (unsigned)( stack->NextChar - stack->Buffer );
-        phys->Offset = RCTELL( phys->Handle ) - charsinbuff;
+        charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
+        phys->Offset = ftell( phys->Handle ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
@@ -820,7 +821,7 @@ static bool ReadBuffer( FileStack * stack )
 /*****************************************/
 {
     PhysFileInfo    *phys;
-    WResFileSize    numread;
+    size_t          numread;
     bool            error;
     int             inchar;
 
@@ -832,7 +833,7 @@ static bool ReadBuffer( FileStack * stack )
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = RCREAD( phys->Handle, stack->Buffer, stack->BufferSize );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->Handle );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -866,8 +867,8 @@ static void FreePhysicalFilename( void )
     phys->Filename = NULL;
 }
 
-extern bool RcIoPushInputFile( const char * filename )
-/****************************************************/
+bool RcIoPushTextInputFile( const char * filename )
+/*************************************************/
 {
     bool                error;
 
@@ -894,19 +895,19 @@ extern bool RcIoPushInputFile( const char * filename )
     }
 
     return( error );
-} /* RcIoPushInputFile */
+} /* RcIoPushTextInputFile */
 
 static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        RCCLOSE( phys->Handle );
+        fclose( phys->Handle );
         phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
 
-extern bool RcIoPopInputFile( void )
-/**********************************/
+bool RcIoPopTextInputFile( void )
+/*******************************/
 {
     PhysFileInfo *  phys;
 
@@ -921,7 +922,7 @@ extern bool RcIoPopInputFile( void )
         ReadBuffer( &(InStack) );
         return( false );
     }
-} /* RcIoPopInputFile */
+} /* RcIoPopTextInputFile */
 
 static int GetLogChar( FileStack * stack )
 /****************************************/
@@ -961,7 +962,7 @@ int RcIoGetChar( void )
         if( InStack.NextChar >= InStack.EofChar ) {
             /* this is a real EOF */
             /* unstack one file */
-            isempty = RcIoPopInputFile();
+            isempty = RcIoPopTextInputFile();
             if( isempty ) {
                 return( EOF );
             } else {
@@ -1055,41 +1056,58 @@ extern bool RcIoIsCOrHFile( void )
 } /* RcIoIsCOrHFile */
 
 /*
- * RcIoOpenInput
+ * RcIoOpenTextInput
  * NB when an error occurs this function MUST return without altering errno
  */
-WResFileID RcIoOpenInput( const char * filename, int flags, ... )
-/***************************************************************/
+FILE *RcIoOpenTextInput( const char * filename )
+/**********************************************/
 {
-    WResFileID          handle;
-    int                 perms;
-    va_list             args;
+    FILE                *fh;
     FileStackEntry      *currfile;
+    bool                no_handles_available;
 
-    if( flags & O_CREAT ) {
-        va_start( args, flags );
-        perms = va_arg( args, int );
-        va_end( args );
-    } else {
-        perms = 0;
-    }
-
-    handle = RCOPEN( filename, flags, perms );
-
-    if( handle == WRES_NIL_HANDLE && errno == EMFILE ) {
+    no_handles_available = ( (fh = fopen( filename, "rt" )) == NULL && errno == EMFILE );
+    if( no_handles_available ) {
         /* set currfile to be the first (not before first) entry */
         /* close open files except the current input file until able to open */
         /* don't close the current file because Offset isn't set */
-        for( currfile = InStack.Stack + 1; currfile < InStack.Current && handle == WRES_NIL_HANDLE && errno == EMFILE; ++currfile ) {
+        for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
-                handle = RCOPEN( filename, flags, perms );
+                no_handles_available = ( (fh = fopen( filename, "rt" )) == NULL && errno == EMFILE );
             }
        }
     }
+    return( fh );
+
+} /* RcIoOpenTextInput */
+
+/*
+ * RcIoOpenBinaryInput
+ * NB when an error occurs this function MUST return without altering errno
+ */
+WResFileID RcIoOpenBinaryInput( const char * filename )
+/*****************************************************/
+{
+    WResFileID          handle;
+    FileStackEntry      *currfile;
+    bool                no_handles_available;
+
+    no_handles_available = ( (handle = RCOPEN( filename, O_RDONLY | O_BINARY )) == WRES_NIL_HANDLE && errno == EMFILE );
+    if( no_handles_available ) {
+        /* set currfile to be the first (not before first) entry */
+        /* close open files except the current input file until able to open */
+        /* don't close the current file because Offset isn't set */
+        for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
+            if( currfile->Physical.IsOpen ) {
+                ClosePhysicalFile( &(currfile->Physical) );
+                no_handles_available = ( (handle = RCOPEN( filename, O_RDONLY | O_BINARY )) == WRES_NIL_HANDLE && errno == EMFILE );
+            }
+        }
+    }
     return( handle );
 
-} /* RcIoOpenInput */
+} /* RcIoOpenBinaryInput */
 
 extern void RcIoInitStatics( void )
 /*********************************/

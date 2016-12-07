@@ -40,53 +40,54 @@
 #include "sharedio.h"
 
 typedef struct FullFontDirEntry {
-    struct FullFontDirEntry *   Next;
-    struct FullFontDirEntry *   Prev;
-    FontDirEntry                Entry;
+    struct FullFontDirEntry *Next;
+    struct FullFontDirEntry *Prev;
+    FontDirEntry            Entry;
 } FullFontDirEntry;
 
 typedef struct FullFontDir {
-    FullFontDirEntry *      Head;
-    FullFontDirEntry *      Tail;
+    FullFontDirEntry        *Head;
+    FullFontDirEntry        *Tail;
     uint_16                 NumOfFonts;
 } FullFontDir;
 
 typedef struct RcResFileID {
-    char                *filename;
-    unsigned            IsWatcomRes     : 1;
-    unsigned            IsOpen          : 1;
-    FullStringTable     *StringTable;
-    FullStringTable     *ErrorTable;
-    uint_16             NextCurOrIcon;
-    WResDir             dir;                    /* don't write this if !IsWatcomRes */
-    WResFileID          handle;                 /* posix level I/O handle */
-    FullFontDir         *FontDir;
+    char                    *filename;
+    FullStringTable         *StringTable;
+    FullStringTable         *ErrorTable;
+    bool                    IsWatcomRes     : 1;
+    bool                    IsOpen          : 1;
+    uint_16                 NextCurOrIcon;
+    WResDir                 dir;                    /* don't write this if !IsWatcomRes */
+    WResFileID              handle;                 /* posix level I/O handle */
+    FullFontDir             *FontDir;
 } RcResFileID;
 
 /**** Text file input ****/
 typedef struct LogicalFileInfo {
-    char        *Filename;
-    int         LineNum;
-    bool        IsCOrHFile;
+    char                    *Filename;
+    int                     LineNum;
+    bool                    IsCOrHFile;
 } LogicalFileInfo;
 
-extern char *RcTmpFileName( void );
-extern bool RcPass1IoInit( void );
-extern void RcPass1IoShutdown( void );
-extern bool RcPass2IoInit( void );
-extern void RcPass2IoShutdown( bool noerror );
-extern void RcIoTextInputInit( void );
-extern bool RcIoTextInputShutdown( void );
-extern bool RcIoPushInputFile( const char *filename );
-extern bool RcIoPopInputFile( void );
-extern int RcIoGetChar( void );
-extern void RcIoOverrideIsCOrHFlag( void );
-extern void RcIoSetIsCOrHFlag( void );
+extern char         *RcTmpFileName( void );
+extern bool         RcPass1IoInit( void );
+extern void         RcPass1IoShutdown( void );
+extern bool         RcPass2IoInit( void );
+extern void         RcPass2IoShutdown( bool noerror );
+extern void         RcIoTextInputInit( void );
+extern bool         RcIoTextInputShutdown( void );
+extern bool         RcIoPushTextInputFile( const char *filename );
+extern bool         RcIoPopTextInputFile( void );
+extern int          RcIoGetChar( void );
+extern void         RcIoOverrideIsCOrHFlag( void );
+extern void         RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
-extern bool RcIoIsCOrHFile( void );
-extern void RcIoSetLogicalFileInfo( int linenum, const char *filename );
-extern WResFileID RcIoOpenInput( const char *filename, int flags, ... );
-extern int RcFindResource( const char *name, char *fullpath );
-extern const char *RcGetEnv( const char *name );
+extern bool         RcIoIsCOrHFile( void );
+extern void         RcIoSetLogicalFileInfo( int linenum, const char *filename );
+extern FILE         *RcIoOpenTextInput( const char *filename );
+extern WResFileID   RcIoOpenBinaryInput( const char *filename );
+extern int          RcFindResource( const char *name, char *fullpath );
+extern const char   *RcGetEnv( const char *name );
 
 #endif
