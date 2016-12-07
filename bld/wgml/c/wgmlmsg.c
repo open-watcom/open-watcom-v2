@@ -44,23 +44,6 @@ static unsigned MsgShift;               // 0 = english, 1000 for japanese
 
 
 /***************************************************************************/
-/*  Special seek routine, because resource file does not start at offset 0 */
-/*  of wgml.exe                                                            */
-/***************************************************************************/
-
-static long res_seeek( WResFileID handle, long position, int where )
-/******************************************************************/
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seeek, tell, mem_alloc, mem_free );
-
-/***************************************************************************/
 /*  initialize messages from resource file                                 */
 /***************************************************************************/
 

@@ -88,23 +88,6 @@ static  unsigned    MsgShift;
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/**************************************************************************************
- * fool the resource compiler into thinking that the resource information
- * starts at offset 0
- */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
-
 #endif
 
 bool MsgInit( void )

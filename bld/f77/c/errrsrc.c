@@ -47,20 +47,6 @@
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
-static  WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-// Fool the resource compiler into thinking that the resource information
-// starts at offset 0.
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-// Client routines setup for wres library
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
-
 static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.

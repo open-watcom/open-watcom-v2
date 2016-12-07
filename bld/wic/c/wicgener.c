@@ -72,19 +72,6 @@ const char *FingerMsg[] = {
 #define NIL_HANDLE      ((int)-1)
 static  HANDLE_INFO     hInstance = { 0 };
 
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
-
 void initWicResources( char * fname )
 {
     hInstance.status = 0;
