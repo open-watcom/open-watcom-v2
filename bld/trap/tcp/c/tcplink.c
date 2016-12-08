@@ -136,8 +136,6 @@
     #define IS_RET_OK(x)            (x!=0)
     #define trp_socket              int
     #define soclose( s )            RdosCloseTcpConnection( s )
-    #define recv(a,b,c,d)           RdosReadTcpConnection(a,b,c)
-    #define send(a,b,c,d)           RdosWriteTcpConnection(a,b,c)
 #elif defined( __NT__ ) || defined( __WINDOWS__ )
     #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET)
     #define IS_RET_OK(x)            (x!=SOCKET_ERROR)
@@ -170,6 +168,22 @@
 #ifdef __RDOS__
 
     #define SOCKET_BUFFER   0x7000
+
+static int recv( int handle, void *buf, int size, int timeout )
+{
+    int count = 0;
+    while( !RdosIsTcpConnectionClosed( handle ) && count == 0 ) {
+        count = RdosReadTcpConnection( handle, buf, size );
+    }
+    return( count );     
+}
+
+static int send( int handle, const void *buf, int size, int timeout )
+{
+    int count = RdosWriteTcpConnection( handle, buf, size);
+    RdosPushTcpConnection( handle );
+    return( count );
+}
 
 #else
 
@@ -292,9 +306,6 @@ trap_retval RemotePut( void *data, trap_elen len )
             if( len != 0 )
                 snd = send( data_socket, data, len, 0 );
             if( len == 0 || IS_RET_OK( snd ) ) {
-#ifdef __RDOS__
-                 RdosPushTcpConnection( data_socket );
-#endif
                 _DBG_NET(("RemotePut...OK\r\n"));
                 return( len );
             }
