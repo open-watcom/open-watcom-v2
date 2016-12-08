@@ -215,14 +215,18 @@ static bool Terminate( void )
 #endif
     soclose( data_socket );
     data_socket = INVALID_SOCKET;
-    return( true );    
+    return( true );
 }
 
 #endif
 
-#ifndef __RDOS__
+#ifdef __RDOS__
 
-static int FullGet( void *get, int len )
+#define recvData(buf,len)   recv(data_socket,buf,len,0)
+
+#else
+
+static int recvData( void *get, int len )
 {
     int     rec, got;
 
@@ -242,51 +246,35 @@ static int FullGet( void *get, int len )
 trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16         rec_len;
-#ifdef __RDOS__    
-    int                 size;
-#endif
 
-    _DBG_NET(("RemoteGet\r\n"));
     len = len;
-
-#ifdef __RDOS__
-
-    if( data_socket && !RdosIsTcpConnectionClosed( data_socket ) ) {
-        size = 0;
-        while( !RdosIsTcpConnectionClosed( data_socket ) && size == 0 )
-            size = RdosReadTcpConnection( data_socket, &rec_len, 2 );
-
-        if( size == 2 ) {
-            CONV_LE_16( rec_len );
-
-            if( rec_len ) {
-                size = RdosReadTcpConnection( data_socket, data, rec_len );
-
-                if( size == rec_len ) {
-                    _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
-                    return( rec_len );
-                }
-            }
-        }
-    }   
-    return( REQUEST_FAILED );
-
-#else
 
     _DBG_NET(("RemoteGet\r\n"));
 
     if( IS_VALID_SOCKET( data_socket ) ) {
-        if( FullGet( &rec_len, sizeof( rec_len ) ) == sizeof( rec_len ) ) {
+        int     size;
+
+        size = recvData( &rec_len, sizeof( rec_len ) );
+#ifdef __RDOS__
+        while( size == 0 ) {
+            if( !IS_VALID_SOCKET( data_socket ) )
+                return( REQUEST_FAILED );
+            size = recvData( &rec_len, sizeof( rec_len ) );
+        }
+#endif
+        if( size == sizeof( rec_len ) ) {
             CONV_LE_16( rec_len );
-            if( rec_len == 0 || FullGet( data, rec_len ) == rec_len ) {
+#ifdef __RDOS__
+            if( rec_len && recvData( data, rec_len ) == rec_len ) {
+#else
+            if( rec_len == 0 || recvData( data, rec_len ) == rec_len ) {
+#endif
                 _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
                 return( rec_len );
             }
         }
     }
     return( REQUEST_FAILED );
-
-#endif
 }
 
 trap_retval RemotePut( void *data, trap_elen len )
