@@ -181,7 +181,6 @@ static int recv( int handle, void *buf, int size, int timeout )
 static int send( int handle, const void *buf, int size, int timeout )
 {
     int count = RdosWriteTcpConnection( handle, buf, size);
-    RdosPushTcpConnection( handle );
     return( count );
 }
 
@@ -306,6 +305,9 @@ trap_retval RemotePut( void *data, trap_elen len )
             if( len != 0 )
                 snd = send( data_socket, data, len, 0 );
             if( len == 0 || IS_RET_OK( snd ) ) {
+#ifdef __RDOS__
+                RdosPushTcpConnection( data_socket );
+#endif
                 _DBG_NET(("RemotePut...OK\r\n"));
                 return( len );
             }
