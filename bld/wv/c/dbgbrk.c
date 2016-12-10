@@ -233,7 +233,6 @@ bool InsertBPs( bool force )
 static void RemoveOneBP( brkp *bp )
 {
     if( bp->status.b.in_place && SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
-        bp->status.b.in_place = false;
         RemoteRestoreBreak( bp->loc.addr, bp->item.ud );
     }
 }
