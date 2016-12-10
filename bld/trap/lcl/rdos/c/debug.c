@@ -361,7 +361,7 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakL
 {
     struct TDebugBreak  *b = BreakList;
     struct TDebugWatch  *w = WatchList;
-    opcode_type         brk_opcode = BRKPOINT;
+    opcode_type         brk_opcode;
     int                 bnum = 0;
 
     while( w ) {
@@ -376,6 +376,7 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *BreakL
         if ((b->Sel & 0x3) == 0x3) {
             RdosReadThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
             b->Instr = brk_opcode;
+            brk_opcode = BRKPOINT;
             RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
         } else {
             if (bnum < 4) {
@@ -405,8 +406,8 @@ static void DeactivateBreaks( struct TDebugThread *obj, struct TDebugBreak *Brea
 
         while( b ) {
             if ((b->Sel & 0x3) == 0x3) {
+                brk_opcode = b->Instr;
                 RdosWriteThreadMem( obj->ThreadID, b->Sel, b->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
-                b->Instr = brk_opcode;
             } else {
                 if (bnum < 4) {
                     RdosClearBreak( obj->ThreadID, bnum );
