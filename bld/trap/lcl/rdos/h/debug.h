@@ -44,6 +44,7 @@ struct TDebugBreak
     long Offset;
     char Instr;
     int UseHw;
+    int IsActive;
     struct TDebugBreak *Next;
 };
 
@@ -131,11 +132,11 @@ struct TDebugModule
     int FileHandle;
     int Handle;
     unsigned int ImageBase;
-	unsigned int ImageSize;
-	unsigned int ObjectRva;
-	unsigned short int CodeSel;
-	unsigned short int DataSel;
-	unsigned int DataSize;
+        unsigned int ImageSize;
+        unsigned int ObjectRva;
+        unsigned short int CodeSel;
+        unsigned short int DataSel;
+        unsigned int DataSize;
 
     int FNew;
 
@@ -158,7 +159,8 @@ struct TDebug
     struct TDebugThread *ThreadList;
     struct TDebugModule *ModuleList;
 
-    struct TDebugBreak *BreakList;
+    struct TDebugBreak *HwBreakList;
+    struct TDebugBreak *SwBreakList;
     struct TDebugWatch *WatchList;
 
     int UserSignal;
