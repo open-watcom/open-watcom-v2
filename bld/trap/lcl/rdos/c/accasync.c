@@ -263,3 +263,44 @@ trap_retval ReqAsync_stop( void )
 
     return( sizeof( *ret ) );
 }
+
+trap_retval ReqAsync_add_break( void )
+{
+    async_add_break_req *acc;
+    struct TDebug       *obj;
+    int                 sel;
+    int                 offset;
+    bool                hw;
+
+    acc = GetInPtr( 0 );
+    sel = acc->break_addr.segment;
+    offset = acc->break_addr.offset;
+
+    if( acc->local ) {
+        hw = true;
+    } else {
+        hw = ( (sel & 3) == 0 );
+    }
+
+    obj = GetCurrentDebug();
+
+    if( obj )
+        AddBreak( obj, sel, offset, hw );
+
+    return( 0 );
+}
+
+trap_retval ReqAsync_remove_break( void )
+{
+    async_remove_break_req *acc;
+    struct TDebug          *obj;
+
+    acc = GetInPtr( 0 );
+
+    obj = GetCurrentDebug();
+
+    if( obj )
+        ClearBreak( obj, acc->break_addr.segment, acc->break_addr.offset );
+
+    return( 0 );
+}

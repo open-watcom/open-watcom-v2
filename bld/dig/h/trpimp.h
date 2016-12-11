@@ -85,6 +85,8 @@ extern trap_retval ReqAsync_go(void);
 extern trap_retval ReqAsync_step(void);
 extern trap_retval ReqAsync_poll(void);
 extern trap_retval ReqAsync_stop(void);
+extern trap_retval ReqAsync_add_break(void);
+extern trap_retval ReqAsync_remove_break(void);
 #endif
 
 #ifdef WANT_FILE

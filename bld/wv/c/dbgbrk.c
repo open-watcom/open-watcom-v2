@@ -61,6 +61,7 @@
 #include "dbgprog.h"
 #include "dbgdll.h"
 #include "remcore.h"
+#include "remasync.h"
 #include "dbgmisc.h"
 #include "dipimp.h"
 #include "dipinter.h"
@@ -166,10 +167,10 @@ void InitBPs( void )
 
 
 /*
- * InsertOneBP -- insert one break point into memory
+ * InsertCoreBP -- insert one break point into memory using normal method
  */
 
-static bool InsertOneBP( brkp *bp, bool force )
+static bool InsertCoreBP( brkp *bp, bool force )
 {
     bool    at_ip;
 
@@ -186,6 +187,53 @@ static bool InsertOneBP( brkp *bp, bool force )
 }
 
 
+/*
+ * InsertAsyncBP -- insert one break point into memory using async method
+ */
+
+static bool InsertAsyncBP( brkp *bp, bool force, bool local )
+{
+    bool    at_ip;
+
+    at_ip = false;
+    if( bp->status.b.active ) {
+        if( !force && AddrComp( bp->loc.addr, GetRegIP() ) == 0 ) {
+            at_ip = true;
+        } else if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
+            bp->status.b.in_place = true;
+            bp->item.ud = AsyncAddBreak( bp->loc.addr, local );
+        }
+    }
+    return( at_ip );
+}
+
+
+/*
+ * InsertGlobalBP -- insert one global break point into memory
+ */
+
+static bool InsertGlobalBP( brkp *bp, bool force )
+{
+    if( HaveRemoteAsync() ) {
+        return( InsertAsyncBP( bp, force, false ) );
+    } else {
+        return( InsertCoreBP( bp, force ) );
+    }
+}
+
+
+/*
+ * InsertLocalBP -- insert one local break point into memory
+ */
+
+static bool InsertLocalBP( brkp *bp, bool force )
+{
+    if( HaveRemoteAsync() ) {
+        return( InsertAsyncBP( bp, force, true ) );
+    } else {
+        return( InsertCoreBP( bp, force ) );
+    }
+}
 
 /*
  * InsertBPs -- put break points into memory
@@ -207,19 +255,19 @@ bool InsertBPs( bool force )
             continue;
         if( ( DbgTmpBrk.status.b.active ) && ( AddrComp( DbgTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
             continue;
-        at_ip |= InsertOneBP( bp, force );
+        at_ip |= InsertGlobalBP( bp, force );
     }
     UserTmpBrk.status.b.hit = false;
     UserTmpBrk.status.b.in_place = false;
     DbgTmpBrk.status.b.hit = false;
     DbgTmpBrk.status.b.in_place = false;
     if( UserTmpBrk.status.b.active ) {
-        at_ip |= InsertOneBP( &UserTmpBrk, force );
+        at_ip |= InsertLocalBP( &UserTmpBrk, force );
     }
     if( DbgTmpBrk.status.b.active
      && ( !UserTmpBrk.status.b.active
        || ( AddrComp( UserTmpBrk.loc.addr, DbgTmpBrk.loc.addr ) != 0 ) ) ) {
-        at_ip |= InsertOneBP( &DbgTmpBrk, force );
+        at_ip |= InsertLocalBP( &DbgTmpBrk, force );
     }
     return( at_ip );
 }
@@ -227,15 +275,55 @@ bool InsertBPs( bool force )
 
 
 /*
- * RemoveOneBP -- remove one breakpoint from memory
+ * RemoveCoreBP -- remove one breakpoint from memory using normal method
  */
 
-static void RemoveOneBP( brkp *bp )
+static void RemoveCoreBP( brkp *bp )
 {
     if( bp->status.b.in_place && SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
         RemoteRestoreBreak( bp->loc.addr, bp->item.ud );
     }
 }
+
+/*
+ * RemoveAsyncBP -- remove one breakpoint from memory using async method
+ */
+
+static void RemoveAsyncBP( brkp *bp, bool local )
+{
+    if( bp->status.b.in_place && SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
+        AsyncRemoveBreak( bp->loc.addr, local );
+    }
+}
+
+
+/*
+ * RemoveGlobalBP -- remove one global breakpoint from memory
+ */
+
+static void RemoveGlobalBP( brkp *bp )
+{
+    if( HaveRemoteAsync() ) {
+        RemoveAsyncBP( bp, false );
+    } else {
+        RemoveCoreBP( bp );
+    }
+}
+
+
+/*
+ * RemoveLocalBP -- remove one local breakpoint from memory
+ */
+
+static void RemoveLocalBP( brkp *bp )
+{
+    if( HaveRemoteAsync() ) {
+        RemoveAsyncBP( bp, true );
+    } else {
+        RemoveCoreBP( bp );
+    }
+}
+
 
 static void RemoveOneWP( brkp *bp )
 {
@@ -259,16 +347,16 @@ void RemoveBPs( void )
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if( IS_BP_EXECUTE( bp->th ) ) {
-            RemoveOneBP( bp );
+            RemoveGlobalBP( bp );
         } else {
             RemoveOneWP( bp );
         }
     }
     if( UserTmpBrk.status.b.active ) {
-        RemoveOneBP( &UserTmpBrk );
+        RemoveLocalBP( &UserTmpBrk );
     }
     if( DbgTmpBrk.status.b.active ) {
-        RemoveOneBP( &DbgTmpBrk );
+        RemoveLocalBP( &DbgTmpBrk );
     }
 }
 

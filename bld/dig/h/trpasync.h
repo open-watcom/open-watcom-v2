@@ -44,6 +44,8 @@ enum {
     REQ_ASYNC_STEP,             /* 01 */
     REQ_ASYNC_POLL,             /* 02 */
     REQ_ASYNC_STOP,             /* 03 */
+    REQ_ASYNC_ADD_BREAK,        /* 04 */
+    REQ_ASYNC_REMOVE_BREAK,     /* 05 */
 };
 
 
@@ -74,6 +76,25 @@ typedef async_go_ret     async_poll_ret;
 
 typedef async_go_req     async_stop_req;
 typedef async_go_ret     async_stop_ret;
+
+/*=================== REQ_ASYNC_ADD_BREAK ==============*/
+
+typedef struct {
+    supp_prefix         supp;
+    access_req          req;
+    addr48_ptr          break_addr;
+    bool                local;
+} _WCUNALIGNED async_add_break_req;
+
+/*=================== REQ_ASYNC_REMOVE_BREAK ===========*/
+
+typedef struct {
+    supp_prefix         supp;
+    access_req          req;
+    addr48_ptr          break_addr;
+    bool                local;
+} _WCUNALIGNED async_remove_break_req;
+
 
 #include "poppck.h"
 
