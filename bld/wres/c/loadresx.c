@@ -24,33 +24,45 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load resources from file. 
 *
 ****************************************************************************/
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "layer0.h"
-#include "util.h"
+#include <limits.h>
+#include <stdlib.h>
+#include "wresall.h"
+#include "wresset2.h"
+#include "wresall.h"
 #include "reserr.h"
 #include "wresrtns.h"
+#include "wresdefn.h"
+#include "layer2.h"
 
-WResID *WResIDFromStr( const char *newstr )
-/*****************************************/
+
+extern WResDir    MainDir;
+
+static WResID *_WResIDFromStr( LPCSTR newstr )
+/********************************************/
 /* allocate an ID and fill it in */
 {
     WResID  *newid;
     size_t  strsize;
 
+#if defined( _M_I86 )
+    strsize = _fstrlen( newstr );
+#else
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in two bytes? */
-#if !defined( _M_I86 )
     if( strsize > 0xffff ) {
         WRES_ERROR( WRS_BAD_PARAMETER );
         return( NULL );
     }
 #endif
+
     /* allocate the new ID */
     // if strsize is non-zero then the memory allocated is larger
     // than required by 1 byte
@@ -60,7 +72,37 @@ WResID *WResIDFromStr( const char *newstr )
     } else {
         newid->IsName = true;
         newid->ID.Name.NumChars = strsize;
+#if defined( _M_I86 )
+        _fmemcpy( newid->ID.Name.Name, newstr, strsize );
+#else
         memcpy( newid->ID.Name.Name, newstr, strsize );
+#endif
     }
     return( newid );
-} /* WResIDFromStr */
+} /* _WResIDFromStr */
+
+int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
+                                    LPSTR *lpszBuffer, int *bufferSize )
+/*************************************************************************/
+{
+    WResID              *resource_type;
+    WResID              *resource_id;
+    int                 rc;
+
+    if( IS_INTRESOURCE( idResource ) ) {
+        resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
+    } else {
+        resource_id = _WResIDFromStr( idResource );
+    }
+    if( IS_INTRESOURCE( idType ) ) {
+        resource_type = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
+    } else {
+        resource_type = _WResIDFromStr( idType );
+    }
+    rc = WResLoadResource2( MainDir, hinfo, resource_type, resource_id, lpszBuffer, bufferSize );
+    if( resource_type != NULL )
+        WResIDFree( resource_type );
+    if( resource_id != NULL )
+        WResIDFree( resource_id );
+    return( rc );
+}

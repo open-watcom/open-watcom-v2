@@ -611,9 +611,9 @@ static ControlClass *Read32ControlClass( WResFileID handle )
         if( flags == 0xffff ) {
             error = ResReadUint16( &class, handle );
         } else {
-            class = flags & 0xFF;       /* first 16-bit UNICODE character */
+            class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
             restofstring = ResRead32String( handle, &stringlen );
-            stringlen++;    /* for the '\0' */
+            stringlen++;                /* for the '\0' */
             error = (restofstring == NULL);
         }
     }

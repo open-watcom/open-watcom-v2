@@ -144,7 +144,9 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
         error = ResWriteUint16( numchars, handle );
         numchars *= 2;
     } else {
-        numchars &= 0xFF;   /* in 16-bit the string can be no more than 256 characters */
+        /* in 16-bit resources the string can be no more than 255 characters */
+        if( numchars > 0xFF )
+            numchars = 0xFF;
         ptr = (char *)name->Name;
         error = ResWriteUint8( numchars, handle );
     }
@@ -328,7 +330,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                error = ResWriteUint16( -1, handle );
+                error = ResWriteUint16( (uint_16)-1, handle );
             } else {
                 error = ResWriteUint8( name->ord.fFlag, handle );
             }

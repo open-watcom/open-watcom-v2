@@ -44,6 +44,7 @@ wres_core_objs = &
 # Additional objects for the full wres library
 wres_more_objs = &
     loadres.obj &
+    loadresx.obj &
     rdlli.obj &
     resaccel.obj &
     resbitmp.obj &
