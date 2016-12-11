@@ -40,7 +40,8 @@
 
 #define CHECK_FILE      "___CHK.MEM"
 
-#define FILE_BLOCK_SIZE 0x8000
+#define FILE_BLOCK_SIZE         0x8000
+#define FILE_BLOCK_SIZE_PARA    (FILE_BLOCK_SIZE >> 4)
 
 static char             *fullName = NULL;
 static int              fileHandle = -1;
@@ -98,27 +99,27 @@ void XchkClose( where_parm where )
     fileHandle = -1;
 }
 
-bool XchkWrite( where_parm where, __segment buff, unsigned *size )
+bool XchkWrite( where_parm where, __segment blk, unsigned *blk_size )
 {
     tiny_ret_t      rc;
     unsigned        bytes;
 
-    if( *size >= 0x1000 ) {
-        *size = FILE_BLOCK_SIZE >> 4;
+    if( *blk_size > FILE_BLOCK_SIZE_PARA ) {
+        *blk_size = FILE_BLOCK_SIZE_PARA;
     }
-    bytes = *size << 4;
-    rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
+    bytes = *blk_size << 4;
+    rc = TinyFarWrite( fileHandle, MK_FP( blk, 0 ), bytes );
     return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
 }
 
-bool XchkRead( where_parm where, __segment *buff )
+bool XchkRead( where_parm where, __segment *blk )
 {
     tiny_ret_t      rc;
 
-    rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BLOCK_SIZE );
+    rc = TinyFarRead( fileHandle, MK_FP( *blk, 0 ), FILE_BLOCK_SIZE );
     if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BLOCK_SIZE ) {
         return( false );
     }
-    *buff += FILE_BLOCK_SIZE >> 4;
+    *blk += FILE_BLOCK_SIZE_PARA;
     return( true );
 }

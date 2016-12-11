@@ -51,9 +51,9 @@ typedef struct {
 } dos_mem_block;
 #include "poppck.h"
 
-static dos_mem_block saveMem;
-static __segment     savePtrMem;
-static __segment     savePtrChk;
+static dos_mem_block    saveMem;
+static __segment        savePtrMem;
+static __segment        savePtrChk;
 
 bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
 {
@@ -62,7 +62,7 @@ bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
     __segment       end;
     __segment       next;
     __segment       chk;
-    unsigned        size;
+    unsigned        blk_size;
     unsigned        psp;
 
     if( max == 0 )
@@ -81,13 +81,13 @@ bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
         }
     }
     end = NEXT_MCB( mem );
-    size = end - start;
-    if( size < 0x1000 )
+    blk_size = end - start;
+    if( blk_size < 0x1000 )
         return( false );
 
-    if( size > max )
-        size = max;
-    chk = end - size - 1;
+    if( blk_size > max )
+        blk_size = max;
+    chk = end - blk_size - 1;
     for( mem = start; ; mem = next ) {
         next = NEXT_MCB( mem );
         if( next > chk ) {
@@ -102,9 +102,9 @@ bool CheckPointMem( where_parm where, unsigned max, char *f_buff )
     if( !XchkOpen( where, f_buff ) ) {
         return( false );
     }
-    for( next = chk; next < end; next += size ) {
-        size = end - next;
-        if( !XchkWrite( where, next, &size ) ) {
+    for( next = chk; next < end; next += blk_size ) {
+        blk_size = end - next;
+        if( !XchkWrite( where, next, &blk_size ) ) {
             XcleanUp( where );
             return( false );
         }

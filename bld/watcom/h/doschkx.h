@@ -32,5 +32,5 @@
 extern void XcleanUp( where_parm where );
 extern bool XchkOpen( where_parm where, char *f_buff );
 extern void XchkClose( where_parm where );
-extern bool XchkWrite( where_parm where, __segment buff, unsigned *size );
-extern bool XchkRead( where_parm where, __segment *buff );
+extern bool XchkWrite( where_parm where, __segment blk, unsigned *blk_size );
+extern bool XchkRead( where_parm where, __segment *blk );

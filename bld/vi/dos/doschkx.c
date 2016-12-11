@@ -38,9 +38,12 @@
 #include "doschkx.h"
 
 
-#define FILE_BUFFER_SIZE    0x8000
+#define FILE_BLOCK_SIZE         0x8000
+#define FILE_BLOCK_SIZE_PARA    (FILE_BLOCK_SIZE >> 4)
+#define MEM_BLOCK_SIZE          0x2000
+#define MEM_BLOCK_SIZE_PARA     (MEM_BLOCK_SIZE >> 4)
 
-#define SPAWN_FILE_NAME    "SWXXXXXX"
+#define SPAWN_FILE_NAME     "SWXXXXXX"
 
 static char             *fullName = NULL;
 static int              fileHandle = -1;
@@ -49,7 +52,7 @@ static int              fileHandle = -1;
 
 static unsigned short   *xSize = NULL;
 static long             *xHandle = NULL;
-static unsigned short   currMem = 0;
+static unsigned short   curr_blk = 0;
 static int              chkSwapSize = 0;
 
 static void memGiveBack( void (*rtn)( long ) )
@@ -61,27 +64,27 @@ static void memGiveBack( void (*rtn)( long ) )
     }
 }
 
-static void memBlockWrite( void (*rtn)(long, void*, unsigned), __segment buff, unsigned *size )
+static void memBlockWrite( void (*rtn)(long, void __far *, unsigned), __segment blk, unsigned *blk_size )
 {
     unsigned    bytes;
 
-    if( *size >= 0x0200 ) {
-        *size = 0x0200;
+    if( *blk_size > MEM_BLOCK_SIZE_PARA ) {
+        *blk_size = MEM_BLOCK_SIZE_PARA;
     }
-    bytes = *size << 4;
-    rtn( xHandle[currMem], MK_FP( buff, 0 ), bytes );
-    xSize[currMem] = bytes;
-    currMem++;
+    bytes = *blk_size << 4;
+    rtn( xHandle[curr_blk], MK_FP( blk, 0 ), bytes );
+    xSize[curr_blk] = bytes;
+    curr_blk++;
 }
 
-static bool memBlockRead( void (*rtn)(long, void*, unsigned), __segment *buff )
+static bool memBlockRead( void (*rtn)(long, void __far *, unsigned), __segment *blk )
 {
-    rtn( xHandle[currMem], MK_FP( *buff, 0 ), xSize[currMem] );
-    *buff += 0x200;
-    if( xSize[currMem] < MAX_IO_BUFFER ) {
+    rtn( xHandle[curr_blk], MK_FP( *blk, 0 ), xSize[curr_blk] );
+    *blk += MEM_BLOCK_SIZE_PARA;
+    if( xSize[curr_blk] < MEM_BLOCK_SIZE ) {
         return( false );
     }
-    currMem++;
+    curr_blk++;
     return( true );
 }
 
@@ -141,12 +144,12 @@ bool XchkOpen( where_parm where, char *f_buff )
         return( fileHandle != -1 );
 #if defined( USE_EMS )
     case IN_EMS:
-        currMem = 0;
+        curr_blk = 0;
         break;
 #endif
 #if defined( USE_XMS )
     case IN_XMS:
-        currMem = 0;
+        curr_blk = 0;
         break;
 #endif
     }
@@ -163,52 +166,52 @@ void XchkClose( where_parm where )
     }
 }
 
-bool XchkWrite( where_parm where, __segment buff, unsigned *size )
+bool XchkWrite( where_parm where, __segment blk, unsigned *blk_size )
 {
     tiny_ret_t      rc;
     unsigned        bytes;
 
     switch( where ) {
     case ON_DISK:
-        if( *size >= 0x1000 ) {
-            *size = FILE_BUFFER_SIZE >> 4;
+        if( *blk_size > FILE_BLOCK_SIZE_PARA ) {
+            *blk_size = FILE_BLOCK_SIZE_PARA;
         }
-        bytes = *size << 4;
-        rc = TinyFarWrite( fileHandle, MK_FP( buff, 0 ), bytes );
+        bytes = *blk_size << 4;
+        rc = TinyFarWrite( fileHandle, MK_FP( blk, 0 ), bytes );
         return( TINY_OK( rc ) && TINY_INFO( rc ) == bytes );
 #if defined( USE_EMS )
     case IN_EMS:
-        memBlockWrite( EMSBlockWrite, buff, size );
+        memBlockWrite( EMSBlockWrite, blk, blk_size );
         break;
 #endif
 #if defined( USE_XMS )
     case IN_XMS:
-        memBlockWrite( XMSBlockWrite, buff, size );
+        memBlockWrite( XMSBlockWrite, blk, blk_size );
         break;
 #endif
     }
     return( true );
 }
 
-bool XchkRead( where_parm where, __segment *buff )
+bool XchkRead( where_parm where, __segment *blk )
 {
     tiny_ret_t      rc;
 
     switch( where ) {
     case ON_DISK:
-        rc = TinyFarRead( fileHandle, MK_FP( *buff, 0 ), FILE_BUFFER_SIZE );
-        if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BUFFER_SIZE ) {
+        rc = TinyFarRead( fileHandle, MK_FP( *blk, 0 ), FILE_BLOCK_SIZE );
+        if( TINY_ERROR( rc ) || TINY_INFO( rc ) != FILE_BLOCK_SIZE ) {
             return( false );
         }
-        *buff += FILE_BUFFER_SIZE >> 4;
+        *blk += FILE_BLOCK_SIZE_PARA;
         break;
 #if defined( USE_EMS )
     case IN_EMS:
-        return( memBlockRead( EMSBlockRead, buff ) );
+        return( memBlockRead( EMSBlockRead, blk ) );
 #endif
 #if defined( USE_XMS )
     case IN_XMS:
-        return( memBlockRead( XMSBlockRead, buff ) );
+        return( memBlockRead( XMSBlockRead, blk ) );
 #endif
     }
     return( true );
