@@ -77,7 +77,7 @@ EVENT UIAPI uieventsource( bool update )
             break;
 
         if( Callback && TimerPeriodMs ) {
-            proc = RdosWaitTimeout( WaitHandle, TimerPeriodMs );
+            proc = (void *)RdosWaitTimeout( WaitHandle, TimerPeriodMs );
             if( proc == 0) {
                 (*Callback)();
             } else {
@@ -87,7 +87,7 @@ EVENT UIAPI uieventsource( bool update )
                 }
             }
         } else {
-            proc = RdosWaitTimeout( WaitHandle, 25 );
+            proc = (void *)RdosWaitTimeout( WaitHandle, 25 );
             if( proc != 0) {
                 ev = (*proc)();
                 if( ev > EV_NO_EVENT ) {
@@ -108,7 +108,7 @@ EVENT UIAPI uieventsource( bool update )
                 }
             }
 
-            proc = RdosWaitTimeout( WaitHandle, 250 );
+            proc = (void *)RdosWaitTimeout( WaitHandle, 250 );
             if( proc != 0) {
                 ev = (*proc)();
                 if( ev > EV_NO_EVENT ) {

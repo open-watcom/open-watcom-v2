@@ -338,7 +338,7 @@ bool RemoteConnect( void )
   #ifdef __RDOS__
     void *obj;
 
-    obj = RdosWaitTimeout( wait_handle, 250 );
+    obj = (void *)RdosWaitTimeout( wait_handle, 250 );
     if( obj != NULL ) {
         data_socket = RdosGetTcpListen( listen_handle );
         if( IS_VALID_SOCKET( data_socket ) ) {
@@ -433,7 +433,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     wait_handle = RdosCreateWait( );
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
-    RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
+    RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)(&listen_handle) );
   #else
     if( *parms == '\0' )
         parms = "tcplink";

@@ -501,8 +501,6 @@ void RdosExtendDi();
 void RdosSaveEax();
 void RdosRestoreEax();
 
-void RdosCrashGate();
-
 int RdosIsValidOsGate(int gate);
 void RdosRegisterOsGate(int gate, __rdos_gate_callback *callb_proc, const char *name);
 void RdosRegisterBimodalUserGate(int gate, __rdos_gate_callback *callb_proc, const char *name);
@@ -537,11 +535,11 @@ void RdosCreateCallGateSelector(int sel, void __far (*dest)(), int count);
 void RdosCreateIntGateSelector(int intnum, int dpl, void __far (*dest)());
 void RdosCreateTrapGateSelector(int intnum, int dpl, void __far (*dest)());
 
-long RdosGetPhysicalPage(long linear);
-void RdosSetPhysicalPage(long linear, long page);
+long long RdosGetPageEntry(long linear);
+void RdosSetPageEntry(long linear, long long page);
 
-long RdosGetThreadPhysicalPage(int thread, long linear);
-void RdosSetThreadPhysicalPage(int thread, long linear, long page);
+long RdosGetThreadPageEntry(int thread, long linear);
+void RdosSetThreadPageEntry(int thread, long linear, long page);
 
 int RdosAllocateBigGlobalSelector(long size);
 int RdosAllocateSmallGlobalSelector(long size);
@@ -575,9 +573,11 @@ long RdosUsedBigGlobalMem();
 void *RdosAllocateFixedSystemMem(int sel, long size);
 void *RdosAllocateFixedProcessMem(int sel, long size);
 
-long RdosAllocatePhysical();
-long RdosAllocateMultiplePhysical(int pages);
-void RdosFreePhysical(long ads);
+long long RdosAllocatePhysical32();
+long long RdosAllocatePhysical64();
+long long RdosAllocateMultiplePhysical32(int pages);
+long long RdosAllocateMultiplePhysical64(int pages);
+void RdosFreePhysical(long long ads);
 
 void RdosRegisterSwapProc(__rdos_swap_callback *callb_proc);
 
@@ -597,6 +597,8 @@ void RdosStartCore(int core);
 void RdosSendNmi(int core);
 void RdosSendInt(int core, int int_num);
 void RdosEnterC3();
+void RdosInitFreq();
+void RdosUpdateFreq(int diff);
 
 void RdosClearSignal();
 void RdosSignal(int thread);
@@ -639,20 +641,20 @@ void RdosHookCreateProcess(__rdos_hook_callback *callb_proc);
 void RdosHookTerminateProcess(__rdos_hook_callback *callb_proc);
 void RdosHookCreateThread(__rdos_hook_callback *callb_proc);
 void RdosHookTerminateThread(__rdos_hook_callback *callb_proc);
+void RdosHookInitPci(__rdos_hook_callback *callb_proc);
 
 void RdosHookOpenApp(__rdos_hook_callback *callb_proc);
 void RdosHookCloseApp(__rdos_hook_callback *callb_proc);
 
 void RdosHookEnableFocus(__rdos_hook_callback *callb_proc);
-void RdosHookLostFocus(__rdos_hook_callback *callb_proc);
-void RdosHookGotFocus(__rdos_hook_callback *callb_proc);
 
 void RdosHookState(__rdos_hook_state_callback *callb_proc);
 
 void RdosSendEoi(int irq);
 int RdosIsIrqFree(int irq);
 
-void RdosRequestIrqHandler(int irq, int prio, __rdos_irq_callback *irq_proc, int ds_sel);
+void RdosRequestIrqHandler(int irq, int prio, __rdos_irq_callback *irq_proc);
+void RdosForceLevelIrq(int irq);
 
 void RdosSetupIrqDetect();
 int RdosPollIrqDetect();
@@ -669,8 +671,6 @@ void RdosUnlockProcEnv();
 
 int RdosGetFocusThread();
 char RdosGetThreadFocusKey(int thread);
-long RdosAllocateFocusLinear(int size);
-void RdosAllocateFixedFocusMem(int size, int local_sel, int focus_sel);
 
 void RdosRegisterNetClass(char class_id, int ads_size, void *broadcast_ads);
 int RdosRegisterNetProtocol(int ads_size, short int packet_type, void *my_ads, __rdos_net_prot_callback *packet_callb);
@@ -694,6 +694,8 @@ long RdosGetHostTimeout(int cache_sel);
 void RdosUpdateRoundTripTime(int cache_sel, long time);
 
 int RdosQueryUdp(long timeout_ms, short int dest_port, long ip, char *buf, int size, char **answer_buf);
+void RdosBroadcastDriverUdp(short int source, short int dest, int driver_sel, char *buf, int size);
+void RdosSendDriverUdp(short int source, short int dest, long ip, int driver_sel, void *driver_dest, char *buf, int size);
 
 void RdosHookInitDisc(struct TDiscSystemHeader *disc_table);
 int RdosInstallDisc(int disc_handle, int read_ahead, int *disc_nr);
@@ -811,6 +813,9 @@ void RdosSetAudioAdcRate(short int rate);
 void RdosOpenAudioOut(short int rate);
 void RdosCloseAudioOut();
 void RdosSendAudioOut(int left_sel, int right_sel, int samples);
+
+int RdosGetUnsignedHidOutput(int Sel, int Usage);
+int RdosGetSignedHidOutput(int Sel, int Usage);
 
 /* 32-bit compact memory model (device-drivers) */
 
@@ -984,9 +989,6 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     parm [edx eax] \
     value [eax];
 
-#pragma aux RdosCrashGate = \
-    OsGate_crash_gate;
-
 #pragma aux RdosAllocateGdt = \
     OsGate_allocate_gdt  \
     "movzx ebx,bx" \
@@ -1039,41 +1041,50 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 
 #pragma aux RdosCreateCallGateSelector = \
     "push ds" \
-    "mov ds,edx" \
+    "push eax" \
+    "mov eax,cs" \
+    "mov ds,eax" \
+    "pop eax" \
     OsGate_create_call_gate_sel32  \
     "pop ds" \
-    parm [ebx] [edx esi] [ecx];
+    parm [ebx] [esi] [ecx];
 
 #pragma aux RdosCreateIntGateSelector = \
     "push ds" \
-    "mov ds,edx" \
+    "push eax" \
+    "mov eax,cs" \
+    "mov ds,eax" \
+    "pop eax" \
     OsGate_setup_int_gate  \
     "pop ds" \
-    parm [eax] [ebx] [edx esi];
+    parm [eax] [ebx] [esi];
 
 #pragma aux RdosCreateTrapGateSelector = \
     "push ds" \
-    "mov ds,edx" \
+    "push eax" \
+    "mov eax,cs" \
+    "mov ds,eax" \
+    "pop eax" \
     OsGate_setup_trap_gate  \
     "pop ds" \
-    parm [eax] [ebx] [edx esi];
+    parm [eax] [ebx] [esi];
 
-#pragma aux RdosGetPhysicalPage = \
-    OsGate_get_physical_page  \
+#pragma aux RdosGetPageEntry = \
+    OsGate_get_page_entry  \
     parm [edx] \
-    value [eax];
+    value [ebx eax];
 
-#pragma aux RdosSetPhysicalPage = \
-    OsGate_set_physical_page  \
-    parm [edx] [eax];
+#pragma aux RdosSetPageEntry = \
+    OsGate_set_page_entry  \
+    parm [edx] [ebx eax];
 
-#pragma aux RdosGetThreadPhysicalPage = \
-    OsGate_get_thread_physical_page  \
+#pragma aux RdosGetThreadPageEntry = \
+    OsGate_get_thread_page_entry  \
     parm [ebx] [edx] \
     value [eax];
 
-#pragma aux RdosSetThreadPhysicalPage = \
-    OsGate_set_thread_physical_page  \
+#pragma aux RdosSetThreadPageEntry = \
+    OsGate_set_thread_page_entry  \
     parm [ebx] [edx] [eax];
 
 #pragma aux RdosAllocateBigGlobalSelector = \
@@ -1236,18 +1247,27 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     parm [ebx] [eax]  \
     value [dx eax];
 
-#pragma aux RdosAllocatePhysical = \
-    OsGate_allocate_physical  \
-    value [eax];
+#pragma aux RdosAllocatePhysical32 = \
+    OsGate_allocate_physical32  \
+    value [ebx eax];
 
-#pragma aux RdosAllocateMultiplePhysical = \
-    OsGate_allocate_physical  \
+#pragma aux RdosAllocatePhysical64 = \
+    OsGate_allocate_physical64  \
+    value [ebx eax];
+
+#pragma aux RdosAllocateMultiplePhysical32 = \
+    OsGate_allocate_physical32  \
     parm [ecx] \
-    value [eax];
+    value [ebx eax];
+
+#pragma aux RdosAllocateMultiplePhysical64 = \
+    OsGate_allocate_physical64  \
+    parm [ecx] \
+    value [ebx eax];
 
 #pragma aux RdosFreePhysical = \
-    OsGate_allocate_physical  \
-    parm [eax];
+    OsGate_free_physical  \
+    parm [ebx eax];
 
 #pragma aux RdosRegisterSwapProc = \
     OsGate_register_swap_proc  \
@@ -1274,6 +1294,13 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 
 #pragma aux RdosEnterC3 = \
     OsGate_enter_c3;
+
+#pragma aux RdosInitFreq = \
+    OsGate_init_freq;
+
+#pragma aux RdosUpdateFreq = \
+    OsGate_update_freq  \
+    parm [eax];
 
 #pragma aux RdosSendNmi = \
     "push fs" \
@@ -1438,6 +1465,10 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_hook_init_tasking \
     parm [es edi];
 
+#pragma aux RdosHookInitPci = \
+    OsGate_hook_init_pci \
+    parm [es edi];
+
 #pragma aux RdosHookCreateProcess = \
     OsGate_hook_create_process \
     parm [es edi];
@@ -1466,14 +1497,6 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_hook_enable_focus \
     parm [es edi];
 
-#pragma aux RdosHookGotFocus = \
-    OsGate_hook_got_focus \
-    parm [es edi];
-
-#pragma aux RdosHookLostFocus = \
-    OsGate_hook_lost_focus \
-    parm [es edi];
-
 #pragma aux RdosHookState = \
     OsGate_hook_state \
     parm [es edi];
@@ -1482,13 +1505,24 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_send_eoi \
     parm [eax];
 
+#pragma aux RdosForceLevelIrq = \
+    OsGate_force_level_irq \
+    parm [eax];
+
 #pragma aux RdosRequestIrqHandler = \
     "push ds" \
-    "mov ds,ebx" \
+    "push es" \
+    "push eax" \
+    "mov eax,16" \
+    OsGate_allocate_small_global_mem  \
+    "mov eax,es" \
+    "mov ds,eax" \
+    "pop eax" \
+    "pop es" \
     "mov ah,dl" \
     OsGate_request_irq_handler \
     "pop ds" \
-    parm [eax] [edx] [es edi] [ebx];
+    parm [eax] [edx] [es edi];
 
 #pragma aux RdosSetupIrqDetect = \
     OsGate_setup_irq_detect;
@@ -1553,7 +1587,13 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
 #pragma aux RdosDerefHandle = \
     "push ds" \
     OsGate_deref_handle \
+    "jnc ok" \
+    "xor edx,edx" \
+    "xor ebx,ebx" \
+    "jmp done" \
+    "ok: "\
     "mov dx,ds" \
+    "done: "\    
     "pop ds" \
     parm [ax] [ebx] \
     value [dx ebx];
@@ -1585,17 +1625,6 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_get_thread_focus_key \
     parm [ebx] \
     value [al];
-
-#pragma aux RdosAllocateFocusLinear = \
-    OsGate_allocate_focus_linear \
-    parm [eax] \
-    value [edx];
-
-#pragma aux RdosAllocateFixedFocusMem = \
-    "push es" \
-    OsGate_allocate_fixed_focus_mem \
-    "pop es" \
-    parm [eax] [ebx] [edx];
 
 #pragma aux RdosRegisterNetClass = \
     "push ds" \
@@ -1687,6 +1716,20 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_update_round_trip_time \
     "pop ds" \
     parm [ebx] [eax];
+
+#pragma aux RdosBroadcastDriverUdp = \
+    OsGate_broadcast_driver_udp \
+    parm [si] [bx] [fs] [es edi] [ecx];
+
+#pragma aux RdosSendDriverUdp = \
+    "push ds" \
+    "push eax" \
+    "mov eax,gs" \
+    "mov ds,eax" \
+    "pop eax" \
+    OsGate_send_driver_udp \
+    "pop ds" \
+    parm [ax] [bx] [edx] [fs] [gs esi] [es edi] [ecx];
 
 #pragma aux RdosQueryUdp = \
     OsGate_query_udp \
@@ -2036,13 +2079,6 @@ void RdosSendAudioOut(int left_sel, int right_sel, int samples);
     OsGate_init_usb_device \
     "pop ds" \
     parm [edx];
-
-#pragma aux RdosNotifyUsbAttach = \
-    "push ds" \
-    "mov ds,edx" \
-    OsGate_notify_usb_attach \
-    "pop ds" \
-    parm [edx] [al] [ah];
 
 #pragma aux RdosNotifyUsbDetach = \
     "push ds" \

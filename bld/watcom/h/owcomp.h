@@ -113,6 +113,24 @@
     parm [fs esi] [es edi] [ecx]  \
     value [eax];
 
+#pragma aux RdosAnsiToUtf16 = \
+    "push ds" \
+    "mov eax,fs" \
+    "mov ds,eax" \ 
+    CallGate_ansi_to_utf16  \
+    "pop ds" \
+    parm [fs esi] [es edi] [ecx]  \
+    value [eax];
+
+#pragma aux RdosUtf16ToAnsi = \
+    "push ds" \
+    "mov eax,fs" \
+    "mov ds,eax" \ 
+    CallGate_utf16_to_ansi  \
+    "pop ds" \
+    parm [fs esi] [es edi] [ecx]  \
+    value [eax];
+
 #pragma aux RdosOpenFont = \
     CallGate_open_font  \
     ValidateHandle \
@@ -736,6 +754,46 @@
     modify [ecx] \
     value [eax];
 
+#pragma aux RdosGetFaultThreadState = \
+    CallGate_get_fault_thread_state  \
+    CarryToBool \
+    parm [eax] [es edi] \
+    value [eax];
+
+#pragma aux RdosGetFaultThreadTss = \
+    CallGate_get_fault_thread_tss  \
+    CarryToBool \
+    parm [eax] [es edi] \
+    value [eax];
+
+#pragma aux RdosGetThreadState = \
+    CallGate_get_thread_state  \
+    CarryToBool \
+    parm [eax] [es edi] \
+    value [eax];
+
+#pragma aux RdosSetThreadAction = \
+    CallGate_set_thread_action  \
+    parm [es edi]
+
+#pragma aux RdosGetThreadActionState = \
+    CallGate_get_thread_action_state  \
+    CarryToBool \
+    parm [eax] [es edi] \
+    value [eax];
+
+#pragma aux RdosSuspendThread = \
+    CallGate_suspend_thread  \
+    CarryToBool \
+    parm [eax] \
+    value [eax];
+
+#pragma aux RdosSuspendAndSignalThread = \
+    CallGate_suspend_and_signal_thread  \
+    CarryToBool \
+    parm [eax] \
+    value [eax];
+
 #pragma aux RdosSoftReset = \
     CallGate_soft_reset;
 
@@ -755,6 +813,10 @@
 #pragma aux RdosHasGlobalTimer = \
     CallGate_has_global_timer \
     CarryToBool \    
+    value [eax];
+
+#pragma aux RdosGetActiveCores = \
+    CallGate_get_active_cores \
     value [eax];
 
 #pragma aux RdosGetCoreLoad = \
@@ -1341,9 +1403,6 @@
     CallGate_set_focus  \
     parm [al];
 
-#pragma aux RdosGetFocus = \
-    CallGate_get_focus  \
-
 #pragma aux RdosSetKeyMap = \
     CallGate_set_key_layout \
     CarryToBool \
@@ -1491,6 +1550,18 @@
     parm [fs esi] [es edi] \
     modify [ecx edx];
 
+#pragma aux RdosClearText = \
+    CallGate_clear_text;
+
+#pragma aux RdosGetTextSize = \
+    CallGate_get_text_size \
+    "movzx ecx,cx" \
+    "mov fs:[esi],ecx" \
+    "movzx edx,dx" \
+    "mov es:[edi],edx" \
+    parm [es edi] [fs esi] \
+    modify [ecx edx];
+
 #pragma aux RdosGetCursorPosition = \
     CallGate_get_cursor_position \
     "movzx ecx,cx" \
@@ -1575,15 +1646,15 @@
     modify [ebx ecx edx esi edi];
 
 #pragma aux RdosReadDisc = \
-    CallGate_read_disc  \
+    CallGate_read_long_disc  \
     CarryToBool \
-    parm [eax] [edx] [es edi] [ecx] \
+    parm [ebx] [edx eax] [es edi] [ecx] \
     value [eax];
 
 #pragma aux RdosWriteDisc = \
-    CallGate_write_disc  \
+    CallGate_write_long_disc  \
     CarryToBool \
-    parm [eax] [edx] [es edi] [ecx] \
+    parm [ebx] [edx eax] [es edi] [ecx] \
     value [eax];
 
 #pragma aux RdosGetRdfsInfo = \

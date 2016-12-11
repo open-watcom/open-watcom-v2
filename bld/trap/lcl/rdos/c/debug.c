@@ -798,9 +798,9 @@ void InitDebug( struct TDebug *obj, const char *Program, const char *Param, cons
 
     obj->UserWait = RdosCreateWait();
     obj->UserSignal = RdosCreateSignal();
-    RdosAddWaitForSignal( obj->UserWait, obj->UserSignal, obj );
+    RdosAddWaitForSignal( obj->UserWait, obj->UserSignal, (int)obj );
         
-    obj->FSection = RdosCreateSection();    
+    obj->FSection = RdosCreateSection( "Watcom.Debug" );    
 
     obj->ThreadList = 0;
     obj->ModuleList = 0;
@@ -1512,14 +1512,14 @@ void Trace( struct TDebug *obj )
 
 int AsyncGo( struct TDebug *obj, int ms )
 {
-    void *wait;
+    int wait;
     
     if( obj->CurrentThread ) {
         RdosResetSignal( obj->UserSignal );
         DoGo( obj );
 
         wait = RdosWaitTimeout( obj->UserWait, ms );
-        return( wait != NULL );
+        return( wait != 0 );
     }
     return( true );
 }
@@ -1527,7 +1527,7 @@ int AsyncGo( struct TDebug *obj, int ms )
 int AsyncTrace( struct TDebug *obj, int ms )
 {
     char    Instr[2] = {0, 0};
-    void    *wait;
+    int     wait;
 
     if( obj->CurrentThread ) {
         BreakSel = obj->CurrentThread->Cs;
@@ -1539,14 +1539,14 @@ int AsyncTrace( struct TDebug *obj, int ms )
         DoTrace( obj );
 
         wait = RdosWaitTimeout( obj->UserWait, ms );
-        return( wait != NULL );
+        return( wait != 0 );
     }
     return( true );
 }
 
 int AsyncPoll( struct TDebug *obj, int ms )
 {
-    void    *wait;
+    int     wait;
 
     wait = RdosWaitTimeout( obj->UserWait, ms );
     if (wait) {
@@ -1787,8 +1787,6 @@ static void DebugThread( void *Param )
 
     CurrModuleHandle = RdosGetModuleHandle();
     SelfKey = RdosGetModuleFocusKey( CurrModuleHandle );    
-    if( SelfKey != RdosGetFocus() )
-        SelfKey = 0;
         
     RdosWaitMilli( 250 );
 
@@ -1798,7 +1796,7 @@ static void DebugThread( void *Param )
 
     if( obj->FHandle ) {
         WaitHandle = RdosCreateWait();
-        RdosAddWaitForDebugEvent( WaitHandle, obj->FHandle, obj );
+        RdosAddWaitForDebugEvent( WaitHandle, obj->FHandle, (int)obj );
         
         while( obj->FInstalled ) {
             if( RdosWaitForever( WaitHandle ) ) {

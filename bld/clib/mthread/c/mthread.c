@@ -224,7 +224,7 @@ _WCRTLINK void __AccessSemaphore( semaphore_object *obj )
     #elif defined( __LINUX__ )
                 __posix_sem_init( &obj->semaphore, 0, 1 );
     #elif defined( __RDOS__ )
-                obj->semaphore = RdosCreateSection();
+                obj->semaphore = RdosCreateSection( "Watcom.Thread" );
     #elif defined( __RDOSDEV__ )
                 RdosInitKernelSection(&obj->semaphore);
     #else
@@ -855,7 +855,7 @@ void __InitMultipleThread( void )
         InitSemaphore.initialized = 1;
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
   #elif defined( __RDOS__ )
-        InitSemaphore.semaphore = RdosCreateSection();
+        InitSemaphore.semaphore = RdosCreateSection( "Watcom.Thread.Init" );
         InitSemaphore.initialized = 1;
         __AddThreadData( __FirstThreadData->thread_id, __FirstThreadData );
         __tls_set_value( __TlsIndex, __FirstThreadData );

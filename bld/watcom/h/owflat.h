@@ -26,7 +26,9 @@
 #define ValidateDisc 0x73 2 0xB0 0xFF 0xF 0xBE 0xC0
 
 #pragma aux RdosTestGate = \
-    CallGate_test_gate;
+    CallGate_test_gate \
+    parm [edi] \
+    value [eax];
 
 #pragma aux RdosLoad32 = \
     CallGate_load_device32  \
@@ -70,6 +72,16 @@
     parm [edx] \
     value [edx] \
     modify [eax];
+
+#pragma aux RdosGetMac = \
+    CallGate_get_mac_address  \
+    CarryToBool \
+    parm [edi] \
+    value [eax];
+
+#pragma aux RdosCreateUuid = \
+    CallGate_create_uuid  \
+    parm [edi];
 
 #pragma aux RdosGetAcpiStatus = \
     CallGate_get_acpi_status  \
@@ -247,6 +259,30 @@
     "TempDone: " \
     value [eax];
 
+#pragma aux RdosGetHidReportItem = \
+    CallGate_get_hid_report_item  \
+    CarryToBool \
+    parm [eax] [edx] [edi] \
+    value [eax];
+
+#pragma aux RdosGetHidReportInputData = \
+    CallGate_get_hid_report_input_data  \
+    CarryToBool \
+    parm [eax] [ebx] [edx] [edi] \
+    value [eax];
+
+#pragma aux RdosGetHidReportOutputData = \
+    CallGate_get_hid_report_output_data  \
+    CarryToBool \
+    parm [eax] [ebx] [edx] [edi] \
+    value [eax];
+
+#pragma aux RdosGetHidReportFeatureData = \
+    CallGate_get_hid_report_feature_data  \
+    CarryToBool \
+    parm [eax] [ebx] [edx] [edi] \
+    value [eax];
+
 #pragma aux RdosGetAudioDeviceCount = \
     "xor ecx,ecx" \
     CallGate_get_audio_device_count  \
@@ -398,6 +434,21 @@
     CallGate_set_video_mode  \
     modify [ax];
 
+#pragma aux RdosQueryVideoMode = \
+    "push edx" \
+    CallGate_query_video_mode \
+    "movzx ecx,cx" \
+    "mov [esi],ecx" \
+    "movzx edx,dx" \
+    "mov [edi],edx" \
+    "movzx eax,ax" \
+    "pop edx" \
+    "mov [edx],eax" \
+    CarryToBool \
+    parm [eax] [edx] [esi] [edi] \
+    value [eax] \
+    modify [eax ecx edx esi edi];
+
 #pragma aux RdosSetVideoMode = \
     "push ebp" \
     "push esi" \
@@ -462,6 +513,16 @@
 
 #pragma aux RdosUtf8ToAnsi = \
     CallGate_utf8_to_ansi  \
+    parm [esi] [edi] [ecx]  \
+    value [eax];
+
+#pragma aux RdosAnsiToUtf16 = \
+    CallGate_ansi_to_utf16  \
+    parm [esi] [edi] [ecx]  \
+    value [eax];
+
+#pragma aux RdosUtf16ToAnsi = \
+    CallGate_utf16_to_ansi  \
     parm [esi] [edi] [ecx]  \
     value [eax];
 
@@ -655,6 +716,10 @@
     CallGate_remote_debug  \
     parm [edx];
 
+#pragma aux RdosRemoteGui = \
+    CallGate_remote_gui  \
+    parm [edx];
+
 #pragma aux RdosDebugTrace = \
     CallGate_debug_trace;
 
@@ -692,9 +757,35 @@
     CallGate_clear_break  \
     parm [ebx] [eax];
 
+#pragma aux RdosHasPhysical64 = \
+    CallGate_has_physical64  \
+    CarryToBool \
+    value [eax];
+
+#pragma aux RdosUsesPae = \
+    CallGate_uses_pae  \
+    CarryToBool \
+    value [eax];
+
 #pragma aux RdosGetFreePhysical = \
     CallGate_get_free_physical  \
     value [edx eax];
+
+#pragma aux RdosGetPhysicalEntryType = \
+    CallGate_get_physical_entry_type  \
+    ValidateEax \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetPhysicalEntryBase = \
+    CallGate_get_physical_entry_base  \
+    parm [ebx] \
+    value [ebx eax];
+
+#pragma aux RdosGetPhysicalEntrySize = \
+    CallGate_get_physical_entry_size  \
+    parm [ebx] \
+    value [ebx eax];
 
 #pragma aux RdosGetFreeGdt = \
     CallGate_get_free_gdt  \
@@ -718,13 +809,50 @@
     value [eax];
 
 #pragma aux RdosGetMaxComPort = \
+    "clc" \
     CallGate_get_max_com_port  \
     "jc fail" \
-    "movzx eax,al"  \
+    "movzx eax,ax"  \
     "jmp done" \
     "fail:" \
     "xor eax,eax" \
     "done:" \        
+    value [eax];
+
+#pragma aux RdosIsComAvailable = \
+    CallGate_is_com_available  \
+    CarryToBool  \
+    parm [al] \
+    value [eax];
+
+#pragma aux RdosGetStdComPar = \
+    CallGate_get_std_com_par  \
+    "jc fail" \
+    "movzx eax,al" \
+    "mov [ebx],eax" \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "mov [edi],ecx" \
+    "mov eax,1" \
+    "jmp done" \
+    "fail:" \
+    "xor eax,eax" \
+    "done:" \
+    parm [al] [ebx] [esi] [edi] \
+    value [eax] \
+    modify [ecx edx];
+
+#pragma aux RdosGetUsbComPar = \
+    CallGate_get_usb_com_par  \
+    "jc fail" \
+    "movzx eax,ax" \
+    "mov [esi],eax" \
+    "mov eax,1" \
+    "jmp done" \
+    "fail:" \
+    "xor eax,eax" \
+    "done:" \
+    parm [al] [esi] \
     value [eax];
 
 #pragma aux RdosOpenCom = \
@@ -771,6 +899,28 @@
 #pragma aux RdosDisableAutoRts = \
     CallGate_disable_auto_rts  \
     parm [ebx];
+
+#pragma aux RdosGetCts = \
+    CallGate_get_cts  \
+    "jc CtsOff" \
+    "mov eax,1" \
+    "jmp CtsDone" \
+    "CtsOff:" \
+    "xor eax,eax" \
+    "CtsDone:" \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetDsr = \
+    CallGate_get_dsr  \
+    "jc DsrOff" \
+    "mov eax,1" \
+    "jmp DsrDone" \
+    "DsrOff:" \
+    "xor eax,eax" \
+    "DsrDone:" \
+    parm [ebx] \
+    value [eax];
 
 #pragma aux RdosSetDtr = \
     CallGate_set_dtr  \
@@ -923,6 +1073,49 @@
     CallGate_reset_printer  \
     parm [ebx];
 
+#pragma aux RdosGetLonModules = \
+    CallGate_get_lon_modules  \
+    "jc fail" \
+    "movzx eax,al"  \
+    "jmp done" \
+    "fail:" \
+    "xor eax,eax" \
+    "done:" \        
+    value [eax];
+
+#pragma aux RdosOpenLonModule = \
+    CallGate_open_lon_module  \
+    ValidateHandle  \
+    parm [al] [esi] [edi] \
+    value [ebx];
+
+#pragma aux RdosResetLonModule = \
+    CallGate_reset_lon_module  \
+    parm [al];
+
+#pragma aux RdosCloseLonModule = \
+    CallGate_close_lon_module  \
+    parm [ebx];
+
+#pragma aux RdosAddWaitForLonModule = \
+    CallGate_add_wait_for_lon_module  \
+    parm [ebx] [eax] [ecx];
+
+#pragma aux RdosSendLonModuleMsg = \
+    CallGate_send_lon_module_msg  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosHasLonModuleMsg = \
+    CallGate_has_lon_module_msg  \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosReceiveLonModuleMsg = \
+    CallGate_receive_lon_module_msg  \
+    parm [ebx] [edi] \
+    value [ecx];
+    
 #pragma aux RdosGetMaxCardDev = \
     CallGate_get_max_carddev  \
     "jc fail" \
@@ -983,11 +1176,77 @@
     parm [ebx] [edi] \
     value [eax];
 
+#pragma aux RdosGetCanModuleInfo = \
+    CallGate_get_can_module_info  \
+    CarryToBool \
+    "movzx ecx,cx" \
+    "mov [esi],ecx" \
+    "movzx edx,dx" \
+    "mov [edi],edx" \
+    parm [eax] [esi] [edi] \
+    value [eax] \
+    modify [ecx edx];
+
+#pragma aux RdosCheckCanSerialPort = \
+    CallGate_check_can_serial_port  \
+    "mov [esi],eax" \
+    "mov [edi],edx" \
+    CarryToBool \
+    parm [eax] [esi] [edi] \
+    value [eax] \
+    modify [edx];
+
+#pragma aux RdosGetCanModuleVersion = \
+    CallGate_get_can_module_version  \
+    "movzx ecx,ah" \
+    "mov [esi],ecx" \
+    "movzx ecx,al" \
+    "mov [edi],ecx" \
+    "movzx ecx,dl" \
+    "mov [ebx],ecx" \
+    CarryToBool \
+    parm [eax] [esi] [edi] [ebx] \
+    value [eax] \
+    modify [ecx edx];
+
+#pragma aux RdosGetCanLoaderVersion = \
+    CallGate_get_can_loader_version  \
+    "movzx ecx,ah" \
+    "mov [esi],ecx" \
+    "movzx ecx,al" \
+    "mov [edi],ecx" \
+    "movzx ecx,dl" \
+    "mov [ebx],ecx" \
+    CarryToBool \
+    parm [eax] [esi] [edi] [ebx] \
+    value [eax] \
+    modify [ecx edx];
+
+#pragma aux RdosGetCanSerialNumber = \
+    CallGate_get_can_serial_number  \
+    CarryToBool \
+    parm [eax] [edi]
+
+#pragma aux RdosProgramCanModule = \
+    CallGate_program_can_module  \
+    CarryToBool \
+    parm [eax] [edi] \
+    value [eax];
+
 #pragma aux RdosOpenFile = \
     CallGate_open_file  \
     ValidateHandle  \
     parm [edi] [cl] \
     value [ebx];
+
+#pragma aux RdosWaitForCanModuleProgramming = \
+    CallGate_wait_for_can_module_programming  \
+    "movzx edx,dx" \
+    "mov [esi],edx" \
+    "mov [edi],ecx" \
+    parm [eax] [esi] [edi] \
+    value [eax] \
+    modify [edx];
 
 #pragma aux RdosCreateFile = \
     CallGate_create_file  \
@@ -1169,12 +1428,38 @@
 
 // ReadDir here
 
+#pragma aux RdosReadLongDir = \
+    "push eax" \
+    CallGate_read_dir  \
+    "pop edi" \
+    "jc fail" \
+    "mov [esi],ecx" \
+    "movzx ebx,bx" \
+    "mov [edi],ebx" \
+    "jmp done" \
+    "fail:"\
+    "mov eax,-1" \
+    "mov edx,eax" \
+    "done:" \
+    parm [ebx] [edx] [ecx] [edi] [esi] [eax];
+
 #pragma aux RdosDefineFaultSave = \
     CallGate_define_fault_save  \
     parm [eax] [edx] [ecx];
 
 #pragma aux RdosClearFaultSave = \
     CallGate_clear_fault_save;
+
+#pragma aux RdosHasCrashInfo = \
+    CallGate_has_crash_info  \
+    CarryToBool \
+    value [eax];
+
+#pragma aux RdosGetCrashCoreInfo = \
+    CallGate_get_crash_core_info  \
+    CarryToBool \
+    parm [eax] [edi] \
+    value [eax];
 
 #pragma aux RdosGetImageHeader = \
     CallGate_get_image_header  \
@@ -1228,6 +1513,16 @@
     parm [eax] [edi] \
     value [eax];
 
+#pragma aux RdosSetThreadAction = \
+    CallGate_set_thread_action  \
+    parm [edi]
+
+#pragma aux RdosGetThreadActionState = \
+    CallGate_get_thread_action_state  \
+    CarryToBool \
+    parm [eax] [edi] \
+    value [eax];
+
 #pragma aux RdosSuspendThread = \
     CallGate_suspend_thread  \
     CarryToBool \
@@ -1239,6 +1534,14 @@
     CarryToBool \
     parm [eax] \
     value [eax];
+
+#pragma aux RdosMoveToCore = \
+    CallGate_move_to_core  \
+    parm [eax];
+
+#pragma aux RdosMoveThreadToCore = \
+    CallGate_move_thread_to_core  \
+    parm [eax ebx];
 
 #pragma aux RdosHasHardReset = \
     CallGate_has_hard_reset \
@@ -1264,6 +1567,10 @@
 #pragma aux RdosHasGlobalTimer = \
     CallGate_has_global_timer \
     CarryToBool \    
+    value [eax];
+
+#pragma aux RdosGetActiveCores = \
+    CallGate_get_active_cores \
     value [eax];
 
 #pragma aux RdosGetCoreLoad = \
@@ -1389,6 +1696,10 @@
     "mov [edi],eax" \
     parm [esi] [edi] \
     modify [eax edx];
+
+#pragma aux RdosGetLongTime = \
+    CallGate_get_time  \
+    value [edx eax];
 
 #pragma aux RdosSetTime = \
     CallGate_get_system_time  \
@@ -1601,8 +1912,12 @@
     value [eax];
 
 #pragma aux RdosCreateSection = \
+    CallGate_create_named_user_section  \
+    "jnc Validate" \
     CallGate_create_user_section  \
+    "Validate:" \    
     ValidateHandle  \
+    parm [edi] \
     value [ebx];
 
 #pragma aux RdosDeleteSection = \
@@ -1745,9 +2060,14 @@
     CallGate_send_udp  \
     parm [edx] [esi] [ebx] [edi] [ecx];
 
+#pragma aux RdosBroadcastUdp = \
+    CallGate_broadcast_udp  \
+    parm [esi] [ebx] [edi] [ecx];
+
 #pragma aux RdosBroadcastQueryUdp = \
     "push eax" \
     CallGate_broadcast_query_udp  \
+    ValidateEdx \
     "pop esi" \
     "mov [esi],eax" \
     "mov eax,edx" \
@@ -1805,6 +2125,49 @@
 
 #pragma aux RdosAddWaitForTcpListen = \
     CallGate_add_wait_for_tcp_listen  \
+    parm [ebx] [eax] [ecx];
+
+#pragma aux RdosCreateUdpListen = \
+    CallGate_create_udp_listen  \
+    ValidateHandle \
+    parm [esi] [eax] \
+    value [ebx];
+
+#pragma aux RdosGetUdpListenSize = \
+    CallGate_get_udp_listen_size  \
+    ValidateEax \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetUdpListenIp = \
+    CallGate_get_udp_listen_ip  \
+    ValidateEax \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetUdpListenPort = \
+    CallGate_get_udp_listen_port  \
+    "movzx eax,ax" \
+    ValidateEax \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetUdpListenData = \
+    CallGate_get_udp_listen_data  \
+    ValidateEax \
+    parm [ebx] [edi] [ecx] \
+    value [eax];
+
+#pragma aux RdosClearUdpListen = \
+    CallGate_clear_udp_listen  \
+    parm [ebx];
+
+#pragma aux RdosCloseUdpListen = \
+    CallGate_close_udp_listen  \
+    parm [ebx];
+
+#pragma aux RdosAddWaitForUdpListen = \
+    CallGate_add_wait_for_udp_listen  \
     parm [ebx] [eax] [ecx];
 
 #pragma aux RdosOpenTcpConnection = \
@@ -1928,9 +2291,6 @@
 #pragma aux RdosSetFocus = \
     CallGate_set_focus  \
     parm [al];
-
-#pragma aux RdosGetFocus = \
-    CallGate_get_focus  \
 
 #pragma aux RdosSetKeyMap = \
     CallGate_set_key_layout \
@@ -2073,6 +2433,18 @@
     parm [esi] [edi] \
     modify [ecx edx];
 
+#pragma aux RdosClearText = \
+    CallGate_clear_text;
+
+#pragma aux RdosGetTextSize = \
+    CallGate_get_text_size \
+    "movzx ecx,cx" \
+    "mov [esi],ecx" \
+    "movzx edx,dx" \
+    "mov [edi],edx" \
+    parm [edi] [esi] \
+    modify [ecx edx];
+
 #pragma aux RdosGetCursorPosition = \
     CallGate_get_cursor_position \
     "movzx ecx,cx" \
@@ -2136,12 +2508,28 @@
     "push esi" \
     "push edx" \
     "push ecx" \
+    "push eax" \
     CallGate_get_disc_info  \
+    "jnc UseNew"\
+    "UseOld:"\
+    "pop eax" \
+    CallGate_get_old_disc_info  \
+    "pop ebx"\
+    "movzx ecx,cx"\
+    "mov [ebx],ecx"\
+    "pop ebx"\
+    "mov [ebx],edx"\
+    "mov dword ptr [ebx+4],0"\
+    "jmp Common"\
+    "UseNew:"\
+    "pop ebx" \
     "pop ebx" \
     "movzx ecx,cx" \
     "mov [ebx],ecx" \
     "pop ebx" \
-    "mov [ebx],edx" \
+    "mov [ebx],eax" \
+    "mov [ebx+4],edx" \
+    "Common:"\
     "pop ebx" \
     "movzx esi,si" \
     "mov [ebx],esi" \
@@ -2153,16 +2541,30 @@
     value [eax] \
     modify [ebx ecx edx esi edi];
 
-#pragma aux RdosReadDisc = \
-    CallGate_read_disc  \
+#pragma aux RdosGetDiscVendorInfo = \
+    CallGate_get_disc_vendor_info  \
+    "jnc Ok" \
+    "xor al,al" \
+    "mov [edi],al" \
+    "Ok:" \
+    parm [eax] [edi] [ecx];
+
+#pragma aux RdosIsDiscIdle = \
+    CallGate_is_disc_idle  \
     CarryToBool \
-    parm [eax] [edx] [edi] [ecx] \
+    parm [eax]  \
+    value [eax];
+
+#pragma aux RdosReadDisc = \
+    CallGate_read_long_disc  \
+    CarryToBool \
+    parm [ebx] [edx eax] [edi] [ecx] \
     value [eax];
 
 #pragma aux RdosWriteDisc = \
-    CallGate_write_disc  \
+    CallGate_write_long_disc  \
     CarryToBool \
-    parm [eax] [edx] [edi] [ecx] \
+    parm [ebx] [edx eax] [edi] [ecx] \
     value [eax];
 
 #pragma aux RdosGetRdfsInfo = \
@@ -2249,6 +2651,16 @@
     parm [ebx] [ax] [edi] [ecx] \
     value [ax];
 
+#pragma aux RdosCalcCrc32 = \
+    CallGate_calc_crc32  \
+    parm [eax] [edi] [ecx] \
+    value [eax];
+    
+#pragma aux RdosGetCurrentDllHandle = \
+    CallGate_get_current_dll  \
+    ValidateHandle \
+    value [ebx];
+
 #pragma aux RdosGetModuleHandle = \
     "mov eax,fs:[0x24]" \
     value [eax];
@@ -2286,6 +2698,12 @@
 
 // ReadResource here
 // ReadBinaryResource here
+
+#pragma aux RdosDuplModuleFileHandle = \
+    CallGate_dupl_module_file_handle  \
+    ValidateHandle \
+    parm [ebx] \
+    value [ebx];
 
 #pragma aux RdosGetModuleProc = \
     CallGate_get_module_proc  \
@@ -2565,6 +2983,20 @@
 #pragma aux RdosStopNetCapture = \
     CallGate_stop_net_capture;
 
+#pragma aux RdosStartCanCapture = \
+    CallGate_start_can_capture \
+    parm [ebx];
+
+#pragma aux RdosStopCanCapture = \
+    CallGate_stop_can_capture;
+
+#pragma aux RdosStartLonCapture = \
+    CallGate_start_lon_capture \
+    parm [ebx];
+
+#pragma aux RdosStopLonCapture = \
+    CallGate_stop_lon_capture;
+
 #pragma aux RdosGetUsbDevice = \
     CallGate_get_usb_device \
     ValidateEax \
@@ -2576,6 +3008,13 @@
     ValidateEax \
     parm [ebx] [eax] [edx] [edi] [ecx] \
     value [eax];
+
+#pragma aux RdosGetUsbInterface = \
+    CallGate_get_usb_interface \
+    "movzx ecx,cl" \
+    ValidateEdx \
+    parm [ebx] [eax] [edx] \
+    value [ecx];
 
 #pragma aux RdosOpenUsbPipe = \
     CallGate_open_usb_pipe \
@@ -2902,3 +3341,70 @@
     CallGate_has_touch \
     CarryToBool \
     value [eax];
+
+#pragma aux RdosCreateBigNum = \
+    CallGate_create_bignum  \
+    ValidateHandle \
+    value [ebx];
+
+#pragma aux RdosDeleteBigNum = \
+    CallGate_delete_bignum  \
+    parm [ebx];
+
+#pragma aux RdosLoadBigNum64 = \
+    CallGate_load_bignum64  \
+    parm [ebx] [edx eax];
+
+#pragma aux RdosAddBigNum = \
+    CallGate_add_bignum  \
+    parm [ebx] [eax] \
+    value [ebx];
+
+#pragma aux RdosSubBigNum = \
+    CallGate_sub_bignum  \
+    parm [ebx] [eax] \
+    value [ebx];
+
+#pragma aux RdosMulBigNum = \
+    CallGate_mul_bignum  \
+    parm [ebx] [eax] \
+    value [ebx];
+
+#pragma aux RdosDivBigNum = \
+    CallGate_div_bignum  \
+    parm [ebx] [eax] \
+    value [ebx];
+
+#pragma aux RdosModBigNum = \
+    CallGate_mod_bignum  \
+    parm [ebx] [eax] \
+    value [ebx];
+
+#pragma aux RdosPowModBigNum = \
+    CallGate_pow_mod_bignum  \
+    parm [ebx] [eax] [edx] \
+    value [ebx];
+
+#pragma aux RdosGetBigNumSize10 = \
+    CallGate_get_bignum_size10  \
+    parm [ebx] \
+    value [ecx];
+
+#pragma aux RdosGetBigNumString10 = \
+    CallGate_get_bignum_str10  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosGetBigNumSize16 = \
+    CallGate_get_bignum_size16  \
+    parm [ebx] \
+    value [ecx];
+
+#pragma aux RdosGetBigNumString16 = \
+    CallGate_get_bignum_str16  \
+    parm [ebx] [edi] [ecx];
+
+#pragma aux RdosCreateRandomBigNum = \
+    CallGate_create_random_bignum  \
+    ValidateHandle \
+    parm [ecx] \
+    value [ebx];
