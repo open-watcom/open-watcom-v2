@@ -30,6 +30,9 @@ common_dir=../../common
 ###############
 
 extra_cpp_flags =
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
 !ifeq drwatcom_95 1
 extra_cpp_flags += -DCHICAGO
 !endif
