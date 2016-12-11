@@ -42,10 +42,9 @@
 
 
 ems_struct              EMSCtrl;
-static unsigned long    *emsPtrs;
 
-static int  emsRead( long, void __far *, int );
-static int  emsWrite( long, void __far *, int );
+static unsigned long    *emsPtrs;
+static char             emsStr[] = "EMMXXXX0";
 
 int EMSBlockTest( unsigned short blocks )
 {
@@ -58,18 +57,6 @@ int EMSBlockTest( unsigned short blocks )
     return( ERR_NO_ERR );
 
 } /* EMSBlockTest */
-
-void EMSBlockRead( long addr, void __far *buff, unsigned len )
-{
-    emsRead( addr, buff, len );
-
-} /* EMSBlockRead */
-
-void EMSBlockWrite( long addr, void __far *buff, unsigned len )
-{
-    emsWrite( addr, buff, len );
-
-} /* EMSBlockWrite */
 
 int EMSGetBlock( long *addr )
 {
@@ -92,44 +79,6 @@ int EMSGetBlock( long *addr )
     return( ERR_NO_ERR );
 
 } /* EMSGetBlock */
-
-/*
- * SwapToEMSMemory - move an fcb to extended memory from memory
- */
-int SwapToEMSMemory( fcb *fb )
-{
-    int         i, len;
-    long        found;
-
-    i = EMSGetBlock( &found );
-    if( i ) {
-        return( i );
-    }
-    len = MakeWriteBlock( fb );
-    emsWrite( found, WriteBuffer, len );
-
-    /*
-     * finish up
-     */
-    fb->xmemaddr = found;
-    fb->in_ems_memory = true;
-    return( ERR_NO_ERR );
-
-} /* SwapToEMSMemory */
-
-/*
- * SwapToMemoryFromEMSMemory - bring data back from extended memory
- */
-int SwapToMemoryFromEMSMemory( fcb *fb )
-{
-    int len;
-
-    len = FcbSize( fb );
-    emsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackEMSBlock( fb->xmemaddr );
-    return( RestoreToNormalMemory( fb, len ) );
-
-} /* SwapToMemoryFromEMSMemory */
 
 /*
  * eMSAlloc - allocate some expanded memory
@@ -171,8 +120,6 @@ static long eMSAlloc( U_INT size )
     return( h.external );
 
 } /* eMSAlloc */
-
-static char emsStr[] = "EMMXXXX0";
 
 /*
  * EMSInit - init for EMS memory usage
@@ -398,5 +345,55 @@ void EMSBlockInit( int i )
     EditVars.MaxEMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* EMSBlockInit */
+
+void EMSBlockRead( long addr, void __far *buff, unsigned len )
+{
+    emsRead( addr, buff, len );
+
+} /* EMSBlockRead */
+
+void EMSBlockWrite( long addr, void __far *buff, unsigned len )
+{
+    emsWrite( addr, buff, len );
+
+} /* EMSBlockWrite */
+
+/*
+ * SwapToEMSMemory - move an fcb to extended memory from memory
+ */
+int SwapToEMSMemory( fcb *fb )
+{
+    int         i, len;
+    long        found;
+
+    i = EMSGetBlock( &found );
+    if( i ) {
+        return( i );
+    }
+    len = MakeWriteBlock( fb );
+    emsWrite( found, WriteBuffer, len );
+
+    /*
+     * finish up
+     */
+    fb->xmemaddr = found;
+    fb->in_ems_memory = true;
+    return( ERR_NO_ERR );
+
+} /* SwapToEMSMemory */
+
+/*
+ * SwapFromEMSMemory - bring data back from extended memory
+ */
+int SwapFromEMSMemory( fcb *fb )
+{
+    int len;
+
+    len = FcbSize( fb );
+    emsRead( fb->xmemaddr, ReadBuffer, len );
+    GiveBackEMSBlock( fb->xmemaddr );
+    return( RestoreToNormalMemory( fb, len ) );
+
+} /* SwapFromEMSMemory */
 
 #endif

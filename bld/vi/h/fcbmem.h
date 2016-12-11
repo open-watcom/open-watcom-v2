@@ -35,43 +35,49 @@ bool    GetNewBlock( long *, unsigned char *, int );
 int     MakeWriteBlock( fcb * );
 
 /* fcbdisk.c */
-vi_rc   SwapToMemoryFromDisk( fcb * );
+vi_rc   SwapFromDisk( fcb * );
 vi_rc   SwapToDisk( fcb * );
 void    GiveBackSwapBlock( long );
 void    SwapFileClose( void );
 void    SwapBlockInit( int );
 
-/* fcbems.c */
-int     EMSBlockTest( unsigned short );
-void    EMSBlockRead( long, void *, unsigned );
-void    EMSBlockWrite( long , void *, unsigned );
-int     EMSGetBlock( long * );
-int     SwapToEMSMemory( fcb * );
-int     SwapToMemoryFromEMSMemory( fcb * );
-void    EMSInit( void );
-void    EMSFini( void );
-void    GiveBackEMSBlock( long );
-void    EMSBlockInit( int );
-
 /* fcbswap.c */
 void    SwapFcb( fcb * );
 vi_rc   RestoreToNormalMemory( fcb *, int );
 
+#if defined( USE_EMS )
+/* fcbems.c */
+int     EMSBlockTest( unsigned short );
+void    EMSBlockRead( long, void __far *, unsigned );
+void    EMSBlockWrite( long , void __far *, unsigned );
+int     EMSGetBlock( long * );
+int     SwapToEMSMemory( fcb * );
+int     SwapFromEMSMemory( fcb * );
+void    EMSInit( void );
+void    EMSFini( void );
+void    GiveBackEMSBlock( long );
+void    EMSBlockInit( int );
+#endif
+
+#if defined( USE_XTD )
 /* fcbxmem.c */
 int     SwapToExtendedMemory( fcb * );
-int     SwapToMemoryFromExtendedMemory( fcb * );
+int     SwapFromExtendedMemory( fcb * );
 void    XMemInit( void );
 void    XMemFini( void );
 void    GiveBackXMemBlock( long );
+#endif
 
+#if defined( USE_XMS )
 /* fcbxms.c */
 int     XMSBlockTest( unsigned short );
-void    XMSBlockRead( long, void *, unsigned );
-void    XMSBlockWrite( long , void *, unsigned );
+void    XMSBlockRead( long, void __far *, unsigned );
+void    XMSBlockWrite( long , void __far *, unsigned );
 int     XMSGetBlock( long * );
 int     SwapToXMSMemory( fcb * );
-int     SwapToMemoryFromXMSMemory( fcb * );
+int     SwapFromXMSMemory( fcb * );
 void    XMSInit( void );
 void    XMSFini( void );
 void    GiveBackXMSBlock( long );
 void    XMSBlockInit( int );
+#endif

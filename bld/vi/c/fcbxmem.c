@@ -89,9 +89,9 @@ int SwapToExtendedMemory( fcb *fb )
 } /* SwapToExtendedMemory */
 
 /*
- * SwapToMemoryFromExtendedMemory - bring data back from extended memory
+ * SwapFromExtendedMemory - bring data back from extended memory
  */
-int SwapToMemoryFromExtendedMemory( fcb *fb )
+int SwapFromExtendedMemory( fcb *fb )
 {
     int len;
 
@@ -101,7 +101,7 @@ int SwapToMemoryFromExtendedMemory( fcb *fb )
 
     return( RestoreToNormalMemory( fb, len ) );
 
-} /* SwapToMemoryFromExtendedMemory */
+} /* SwapFromExtendedMemory */
 
 /*
  * XMemInit - initialize extended memory

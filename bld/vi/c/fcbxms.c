@@ -39,10 +39,9 @@
 #include "fcbmem.h"
 
 xms_struct              XMSCtrl;
-static unsigned long    *xmsPtrs;
 
-static int  xmsRead( long, void __far *, int );
-static int  xmsWrite( long, void __far *, int );
+static unsigned long    *xmsPtrs;
+static void             *xmsControl;
 
 int XMSBlockTest( unsigned short blocks )
 {
@@ -55,18 +54,6 @@ int XMSBlockTest( unsigned short blocks )
     return( ERR_NO_ERR );
 
 } /* XMSBlockTest */
-
-void XMSBlockRead( long addr, void __far *buff, unsigned len )
-{
-    xmsRead( addr, buff, len );
-
-} /* XMSBlockRead */
-
-void XMSBlockWrite( long addr, void __far *buff, unsigned len )
-{
-    xmsWrite( addr, buff, len );
-
-} /* XMSBlockWrite */
 
 int XMSGetBlock( long *addr )
 {
@@ -89,46 +76,6 @@ int XMSGetBlock( long *addr )
     return( ERR_NO_ERR );
 
 } /* XMSGetBlock */
-
-/*
- * SwapToXMSMemory - move an fcb to extended memory from memory
- */
-int SwapToXMSMemory( fcb *fb )
-{
-    int         i, len;
-    long        found = 0;
-
-    i = XMSGetBlock( &found );
-    if( i ) {
-        return( i );
-    }
-    len = MakeWriteBlock( fb );
-    xmsWrite( found, WriteBuffer, len );
-
-    /*
-     * finish up
-     */
-    fb->xmemaddr = found;
-    fb->in_xms_memory = true;
-    return( ERR_NO_ERR );
-
-} /* SwapToXMSMemory */
-
-/*
- * SwapToMemoryFromXMSMemory - bring data back from extended memory
- */
-int SwapToMemoryFromXMSMemory( fcb *fb )
-{
-    int len;
-
-    len = FcbSize( fb );
-    xmsRead( fb->xmemaddr, ReadBuffer, len );
-    GiveBackXMSBlock( fb->xmemaddr );
-    return( RestoreToNormalMemory( fb, len ) );
-
-} /* SwapToMemoryFromXMSMemory */
-
-static void *xmsControl;
 
 /*
  * xmsAlloc - allocate some xms memory
@@ -399,5 +346,55 @@ void XMSBlockInit( int i )
     MaxXMSBlocks /= (MAX_IO_BUFFER / 1024);
 
 } /* XMSBlockInit */
+
+void XMSBlockRead( long addr, void __far *buff, unsigned len )
+{
+    xmsRead( addr, buff, len );
+
+} /* XMSBlockRead */
+
+void XMSBlockWrite( long addr, void __far *buff, unsigned len )
+{
+    xmsWrite( addr, buff, len );
+
+} /* XMSBlockWrite */
+
+/*
+ * SwapToXMSMemory - move an fcb to extended memory from memory
+ */
+int SwapToXMSMemory( fcb *fb )
+{
+    int         i, len;
+    long        found = 0;
+
+    i = XMSGetBlock( &found );
+    if( i ) {
+        return( i );
+    }
+    len = MakeWriteBlock( fb );
+    xmsWrite( found, WriteBuffer, len );
+
+    /*
+     * finish up
+     */
+    fb->xmemaddr = found;
+    fb->in_xms_memory = true;
+    return( ERR_NO_ERR );
+
+} /* SwapToXMSMemory */
+
+/*
+ * SwapFromXMSMemory - bring data back from extended memory
+ */
+int SwapFromXMSMemory( fcb *fb )
+{
+    int len;
+
+    len = FcbSize( fb );
+    xmsRead( fb->xmemaddr, ReadBuffer, len );
+    GiveBackXMSBlock( fb->xmemaddr );
+    return( RestoreToNormalMemory( fb, len ) );
+
+} /* SwapFromXMSMemory */
 
 #endif

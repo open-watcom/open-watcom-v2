@@ -47,18 +47,18 @@ void FetchFcb( fcb *fb )
         }
         rc = ERR_NO_ERR;
         if( fb->swapped ) {
-            rc = SwapToMemoryFromDisk( fb );
+            rc = SwapFromDisk( fb );
 #if defined( USE_XTD )
         } else if( fb->in_extended_memory ) {
-            rc = SwapToMemoryFromExtendedMemory( fb );
+            rc = SwapFromExtendedMemory( fb );
 #endif
 #if defined( USE_EMS )
         } else if( fb->in_ems_memory ) {
-            rc = SwapToMemoryFromEMSMemory( fb );
+            rc = SwapFromEMSMemory( fb );
 #endif
 #if defined( USE_XMS )
         } else if( fb->in_xms_memory ) {
-            rc = SwapToMemoryFromXMSMemory( fb );
+            rc = SwapFromXMSMemory( fb );
 #endif
         }
     }

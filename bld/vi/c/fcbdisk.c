@@ -80,9 +80,9 @@ vi_rc SwapToDisk( fcb *fb )
 } /* SwapToDisk */
 
 /*
- * SwapToMemoryFromDisk - swap an fcb to memory from disk
+ * SwapFromDisk - swap an fcb to memory from disk
  */
-vi_rc SwapToMemoryFromDisk( fcb *fb )
+vi_rc SwapFromDisk( fcb *fb )
 {
     int     len, expect;
     vi_rc   rc;
@@ -110,7 +110,7 @@ vi_rc SwapToMemoryFromDisk( fcb *fb )
 
     return( RestoreToNormalMemory( fb, len ) );
 
-} /* SwapToMemoryFromDisk */
+} /* SwapFromDisk */
 
 /*
  * swapFileOpen - do just that

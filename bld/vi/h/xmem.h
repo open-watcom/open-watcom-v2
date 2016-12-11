@@ -202,12 +202,12 @@ typedef struct {
     unsigned short              src_handle;
     union {
         unsigned long           extended;
-        void                    *real;
+        void                    __far *real;
     } src_offset;
     unsigned short              dest_handle;
     union {
         unsigned long           extended;
-        void                    *real;
+        void                    __far *real;
     } dest_offset;
 } xms_move_descriptor;
 #include "poppck.h"
