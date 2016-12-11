@@ -1657,6 +1657,17 @@ static  bool    HaveHitBP( brkp *bp )
 }
 
 
+static  bool    HaveHitTmpBP( brkp *bp )
+{
+    if( !bp->status.b.active )
+        return( false );
+    if( AddrComp( bp->loc.addr, GetRegIP() ) != 0 )
+        return( false );
+    return( true );
+}
+
+
+
 OVL_EXTERN      void    TestExpression( void *_bp )
 {
     brkp        *bp = _bp;
@@ -1739,10 +1750,10 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
 
                         if( ( UserTmpBrk.status.b.active ) || ( DbgTmpBrk.status.b.active ) ) {
 
-                            if( HaveHitBP( &UserTmpBrk ) ) {
+                            if( HaveHitTmpBP( &UserTmpBrk ) ) {
                                 drop_hit = true;
                             }
-                            if( HaveHitBP( &DbgTmpBrk ) ) {
+                            if( HaveHitTmpBP( &DbgTmpBrk ) ) {
                                 drop_hit = true;
                             }
                             if( ! ( conditions & ( COND_BREAK | COND_WATCH | COND_TRACE | COND_USER | COND_EXCEPTION | COND_STOP ) ) ) {
@@ -1806,11 +1817,11 @@ unsigned CheckBPs( unsigned conditions, unsigned run_conditions )
         /* we might have changed a register in eval'ing conditions */
         WriteDbgRegs();
     }
-    if( HaveHitBP( &UserTmpBrk ) ) {
+    if( HaveHitTmpBP( &UserTmpBrk ) ) {
         bphit = true;
         UserTmpBrk.status.b.hit = true;
     }
-    if( HaveHitBP( &DbgTmpBrk ) ) {
+    if( HaveHitTmpBP( &DbgTmpBrk ) ) {
         bphit = true;
         DbgTmpBrk.status.b.hit = true;
     }
