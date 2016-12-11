@@ -1454,7 +1454,7 @@ static void DoGo( struct TDebug *obj )
 
     while (thread) {
         if (thread != obj->CurrentThread)
-            ActivateBreaks( 0, obj->HwBreakList, obj->WatchList );
+            ActivateBreaks( thread, 0, obj->WatchList );
 
         thread = thread->Next;
     }
