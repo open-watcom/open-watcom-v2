@@ -16,11 +16,15 @@ set PROJDIR=<CWD>
 [ BLOCK <1> rel cprel ]
 #========================
     <CCCMD> dos386/wprof.exe     <OWRELROOT>/binw/
+    <CCCMD> dos386/wprof.sym     <OWRELROOT>/binw/
     <CCCMD> wini86/wprof.exe     <OWRELROOT>/binw/wprofw.exe
+    <CCCMD> wini86/wprof.sym     <OWRELROOT>/binw/wprofw.sym
     <CCCMD> os2386pm/wprof.exe   <OWRELROOT>/binp/
     <CCCMD> os2386/wprof.exe     <OWRELROOT>/binp/wprofc.exe
     <CCCMD> nt386/wprof.exe      <OWRELROOT>/binnt/
+    <CCCMD> nt386/wprof.sym      <OWRELROOT>/binnt/
     <CCCMD> nt386c/wprof.exe     <OWRELROOT>/binnt/wprofc.exe
+    <CCCMD> nt386c/wprof.sym     <OWRELROOT>/binnt/wprofc.sym
     <CCCMD> ntaxp/wprof.exe      <OWRELROOT>/axpnt/
     <CCCMD> linux386/wprof.exe   <OWRELROOT>/binl/wprof
     <CCCMD> linux386/wprof.sym   <OWRELROOT>/binl/
