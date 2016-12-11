@@ -355,7 +355,8 @@ static walk_result CheckOneHandle( mad_type_handle th, void *d )
     mad_type_info       mti;
 
     MADTypeInfo( th, &mti );
-    if( mti.b.bits != fd->bits ) return( WR_CONTINUE );
+    if( mti.b.bits != fd->bits )
+        return( WR_CONTINUE );
     fd->th = th;
     return( WR_STOP );
 }

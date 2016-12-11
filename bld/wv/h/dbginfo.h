@@ -67,12 +67,12 @@ typedef struct location_context {
     type_handle         *th;
     sym_handle          *sh;
     unsigned            use;
-    bool                have_frame              : 1;
-    bool                have_stack              : 1;
-    bool                have_object             : 1;
-    bool                maybe_have_frame        : 1;
-    bool                maybe_have_object       : 1;
-    bool                up_stack_level          : 1;
+    bool                have_frame          : 1;
+    bool                have_stack          : 1;
+    bool                have_object         : 1;
+    bool                maybe_have_frame    : 1;
+    bool                maybe_have_object   : 1;
+    bool                up_stack_level      : 1;
 } location_context;
 
 typedef struct sym_list {

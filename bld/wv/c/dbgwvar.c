@@ -60,17 +60,17 @@
 #include "dlgnewws.h"
 
 
-extern void             WndVarNewWindow( char * );
+extern void         WndVarNewWindow( char * );
 
-extern stack_entry      *ExprSP;
+extern stack_entry  *ExprSP;
 
 typedef struct {
-    var_info            i;
-    gui_ord             last_width;     // how wide were we last resize?
-    gui_ord             name_end;       // the length of the longest name
-    var_type            vtype;          // type of window : locals, expression, etc
-    bool                initialized : 1;        // is it just opened
-    bool                show_whole_expr : 1;// show foo->bar versus just .bar
+    var_info        i;
+    gui_ord         last_width;             // how wide were we last resize?
+    gui_ord         name_end;               // the length of the longest name
+    var_type        vtype;                  // type of window : locals, expression, etc
+    bool            initialized     : 1;    // is it just opened
+    bool            show_whole_expr : 1;    // show foo->bar versus just .bar
 } var_window;
 
 #define scroll( s ) s->wnd_data[0]

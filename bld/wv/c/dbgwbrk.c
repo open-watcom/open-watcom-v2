@@ -100,8 +100,8 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             WndMenuEnableAll( wnd );
             WndMenuEnable( wnd, MENU_BREAK_ENABLE, !bp->status.b.active );
             WndMenuEnable( wnd, MENU_BREAK_DISABLE, bp->status.b.active );
-            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_EXECUTE( bp->th ) );
-            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_EXECUTE( bp->th ) );
+            WndMenuEnable( wnd, MENU_BREAK_SOURCE, bp != NULL && IS_BP_CODE( bp->th ) );
+            WndMenuEnable( wnd, MENU_BREAK_ASSEMBLY, bp != NULL && IS_BP_CODE( bp->th ) );
         } else {
             WndMenuGrayAll( wnd );
         }
@@ -272,7 +272,7 @@ static void     BrkRefresh( a_window *wnd )
     } else if( UpdateFlags & UP_MEM_CHANGE ) {
         row = 0;
         for( bp = BrkList; bp != NULL; bp = bp->next ) {
-            if( !IS_BP_EXECUTE( bp->th ) ) {
+            if( !IS_BP_CODE( bp->th ) ) {
                 WndPieceDirty( wnd, row, PIECE_SOURCE );
             }
             ++row;
