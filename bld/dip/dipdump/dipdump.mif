@@ -21,6 +21,10 @@ dig_os = $(dig_os_$(host_os)_$(host_cpu))
 
 !include $(dig_dir)/dipcli.mif
 
+!ifdef %USE_FILENAME_VERSION
+extra_cpp_flags = -DUSE_FILENAME_VERSION=$(bld_ver)
+!endif
+
 inc_dirs = -I"../h" -I"$(dig_dir)/h"
 
 .c: ../c;$(dig_srcs);$(mad_srcs)
