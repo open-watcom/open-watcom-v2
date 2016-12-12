@@ -231,19 +231,19 @@ bool InsertBPs( bool force )
     bool    at_ip;
 
     at_ip = false;
-    for( bp = BrkList; bp != NULL; bp = bp->next ) {
-        bp->status.b.cmds_pushed = false;
-        if( !IS_BP_EXECUTE( bp->th ) )
-            continue;
-        if( !HaveRemoteAsync() ) {
+    if( !HaveRemoteAsync() ) {
+        for( bp = BrkList; bp != NULL; bp = bp->next ) {
+            bp->status.b.cmds_pushed = false;
+            if( !IS_BP_EXECUTE( bp->th ) )
+                continue;
             bp->status.b.in_place = false;
             bp->status.b.hit = false;
+            if( ( UserTmpBrk.status.b.active ) && ( AddrComp( UserTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
+                continue;
+            if( ( DbgTmpBrk.status.b.active ) && ( AddrComp( DbgTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
+                continue;
+            at_ip |= InsertCoreBP( bp, force );
         }
-        if( ( UserTmpBrk.status.b.active ) && ( AddrComp( UserTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
-            continue;
-        if( ( DbgTmpBrk.status.b.active ) && ( AddrComp( DbgTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
-            continue;
-        at_ip |= InsertCoreBP( bp, force );
     }
     UserTmpBrk.status.b.hit = false;
     UserTmpBrk.status.b.in_place = false;
@@ -321,7 +321,9 @@ void RemoveBPs( void )
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if( IS_BP_EXECUTE( bp->th ) ) {
-            RemoveCoreBP( bp );
+            if( !HaveRemoteAsync() ) {
+                RemoveCoreBP( bp );
+            }
         } else {
             RemoveOneWP( bp );
         }
