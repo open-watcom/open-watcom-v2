@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Load resources from file. 
+* Description:  Find resource and seek to begining. 
 *
 ****************************************************************************/
 
@@ -41,15 +41,48 @@
 #include "wresrtns.h"
 #include "wresdefn.h"
 #include "layer2.h"
-#include "wresset2.h"
 #include "seekres.h"
 
 
 extern WResDir    MainDir;
 
-int WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource,
-                                    lpstr *lpszBuffer, size_t *bufferSize )
-/*************************************************************************/
+bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, WResID *resource_id )
+/***************************************************************************************************/
+{
+    WResDirWindow       wind;
+    WResLangInfo        *res;
+    WResLangType        lang;
+
+    if( ( resource_type != NULL ) && ( resource_id != NULL ) ) {
+        lang.lang = DEF_LANG;
+        lang.sublang = DEF_SUBLANG;
+    
+        wind = WResFindResource( resource_type, resource_id, dir, &lang );
+    
+        if( !WResIsEmptyWindow( wind ) ) {
+            res = WResGetLangInfo( wind );
+            if( WRESSEEK( hinfo->handle, res->Offset, SEEK_SET ) != -1 ) {
+                return( true );
+            }
+        }
+    }
+    return( false );
+}
+
+bool WResSeekResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource )
+/***********************************************************************/
+{
+    WResID              resource_type;
+    WResID              resource_id;
+
+    WResInitIDFromNum( idResource, &resource_id );
+    WResInitIDFromNum( idType, &resource_type );
+
+    return( WResSeekResource2( MainDir, hinfo, &resource_type, &resource_id ) );
+}
+
+bool WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource )
+/****************************************************************************/
 {
     WResID              *resource_type;
     WResID              *resource_id;
@@ -65,7 +98,7 @@ int WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource,
     } else {
         resource_type = WResIDFromStrF( idType );
     }
-    rc = WResLoadResource2( MainDir, hinfo, resource_type, resource_id, lpszBuffer, bufferSize );
+    rc = WResSeekResource2( MainDir, hinfo, resource_type, resource_id );
     if( resource_type != NULL )
         WResIDFree( resource_type );
     if( resource_id != NULL )

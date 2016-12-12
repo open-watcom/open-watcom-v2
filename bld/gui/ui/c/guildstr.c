@@ -43,6 +43,10 @@
 #include "wresdefn.h"
 #include "wressetr.h"
 #include "wresset2.h"
+#include "filefmt.h"
+#include "resdiag.h"
+#include "resmenu.h"
+#include "seekres.h"
 #include "guildstr.h"
 
 #include "clibext.h"
@@ -99,7 +103,7 @@ bool GUILoadStrFini( void )
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
     if( hInstance.status && buffer != NULL && buffer_length != 0 ) {
-        if( WResLoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) > 0 ) {
+        if( WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {
             return( true );
         } else {
             buffer[0] = '\0';
@@ -109,28 +113,48 @@ bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
     return( false );
 }
 
-bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, size_t *length )
+bool GUISeekDialogTemplate( res_name_or_id dlg_id )
 {
     bool                ok;
 
-    ok = ( hInstance.status && template != NULL && length != NULL );
+    ok = ( hInstance.status != 0 );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id, (LPSTR *)template, length ) == 0 );
+        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id );
     }
 
     return( ok );
 }
 
-bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, size_t *length )
+bool GUISeekMenuTemplate( res_name_or_id menu_id )
 {
     bool                ok;
 
-    ok = ( hInstance.status && template != NULL && length != NULL );
+    ok = ( hInstance.status != 0 );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id, (LPSTR *)template, length ) == 0 );
+        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id );
     }
 
     return( ok );
+}
+
+bool GUIResReadDialogBoxHeader( DialogBoxHeader *hdr )
+{
+    return( ResReadDialogBoxHeader( hdr, hInstance.handle ) );
+}
+
+bool GUIResReadDialogBoxControl( DialogBoxControl *ctl )
+{
+    return( ResReadDialogBoxControl( ctl, hInstance.handle ) );
+}
+
+bool GUIResReadMenuHeader( MenuHeader *hdr )
+{
+    return( ResReadMenuHeader( hdr, hInstance.handle ) );
+}
+
+bool GUIResReadMenuItem( MenuItem *new )
+{
+    return( ResReadMenuItem( new, hInstance.handle ) );
 }

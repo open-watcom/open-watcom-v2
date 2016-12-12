@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,57 +24,53 @@
 *
 *  ========================================================================
 *
-* Description:  Message resource access routines.
+* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
+*               DESCRIBE IT HERE!
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#if defined( __WATCOMC__ )
-    #include <process.h>
-#endif
-#include "wio.h"
-#include "wressetr.h"
+#include <string.h>
+#include "layer0.h"
+#include "util.h"
+#include "reserr.h"
+#include "wresrtns.h"
 #include "wresset2.h"
-#include "wreslang.h"
-#include "msg.h"
-
-#include "clibext.h"
+#include "seekres.h"
 
 
-#define NO_RES_MESSAGE "Error: could not open message resource file\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
-
-static HANDLE_INFO      hInstance = {0};
-static unsigned         MsgShift;
-
-bool MsgInit( void )
+WResID *WResIDFromStrF( lpcstr newstr )
+/*************************************/
+/* allocate an ID and fill it in */
 {
-    char            name[_MAX_PATH];
+    WResID  *newid;
+    size_t  strsize;
 
-    hInstance.status = 0;
-    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
-            return( true );
-        }
+#if defined( _M_I86 )
+    strsize = _fstrlen( newstr );
+#else
+    strsize = strlen( newstr );
+    /* check the size of the string:  can it fit in two bytes? */
+    if( strsize > 0xffff ) {
+        WRES_ERROR( WRS_BAD_PARAMETER );
+        return( NULL );
     }
-    CloseResFile( &hInstance );
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    return( false );
-}
+#endif
 
-bool MsgGet( int resourceid, char *buffer )
-{
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
-        buffer[0] = '\0';
-        return( false );
+    /* allocate the new ID */
+    // if strsize is non-zero then the memory allocated is larger
+    // than required by 1 byte
+    newid = WRESALLOC( sizeof( WResID ) + strsize );
+    if( newid == NULL ) {
+        WRES_ERROR( WRS_MALLOC_FAILED );
+    } else {
+        newid->IsName = true;
+        newid->ID.Name.NumChars = strsize;
+#if defined( _M_I86 )
+        _fmemcpy( newid->ID.Name.Name, newstr, strsize );
+#else
+        memcpy( newid->ID.Name.Name, newstr, strsize );
+#endif
     }
-    return( true );
-}
-
-void MsgFini( void )
-{
-    CloseResFile( &hInstance );
-}
+    return( newid );
+} /* WResIDFromStrF */

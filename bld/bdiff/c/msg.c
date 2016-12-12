@@ -57,7 +57,7 @@ WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, bdiff_malloc,
 
 bool GetMsg( char *buffer, int resourceid )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

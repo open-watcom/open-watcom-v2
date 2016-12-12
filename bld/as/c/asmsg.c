@@ -115,7 +115,7 @@ bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
 #ifdef _STANDALONE_
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

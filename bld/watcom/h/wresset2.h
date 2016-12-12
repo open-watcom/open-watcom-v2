@@ -53,8 +53,14 @@ typedef struct handle_info {
 
 #ifndef WIN_GUI
 typedef unsigned int    UINT;
-typedef char            _WCI86FAR *LPSTR;
-typedef const char      _WCI86FAR *LPCSTR;
+#endif
+
+#ifdef _M_I86
+typedef char            __far *lpstr;
+typedef const char      __far *lpcstr;
+#else
+typedef char            *lpstr;
+typedef const char      *lpcstr;
 #endif
 
 #if defined( __cplusplus )
@@ -68,9 +74,9 @@ extern bool             FindResources( PHANDLE_INFO hinfo );
 extern bool             FindResourcesX( PHANDLE_INFO hinfo, bool res_file );
 extern bool             InitResources( PHANDLE_INFO hinfo );
 extern bool             FiniResources( PHANDLE_INFO hinfo );
-extern int              WResLoadString( PHANDLE_INFO hinfo, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
-extern int              WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, LPSTR *lpszBuffer, size_t *bufferSize );
-extern int              WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, size_t *bufferSize );
+extern int              WResLoadString( PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax );
+extern int              WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, lpstr *lpszBuffer, size_t *bufferSize );
+extern int              WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource, lpstr *lpszBuffer, size_t *bufferSize );
 
 #if defined( __cplusplus )
 }

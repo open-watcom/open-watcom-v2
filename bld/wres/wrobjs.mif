@@ -18,6 +18,7 @@ wres_core_objs = &
     ropenfro.obj &
     rrdstr.obj &
     rrnamoor.obj &
+    seekres.obj &
     varstr.obj &
     wraddres.obj &
     wrerror.obj &
@@ -31,6 +32,7 @@ wres_core_objs = &
     wridfnoo.obj &
     wridfrnu.obj &
     wridfrst.obj &
+    wridfrsf.obj &
     wridnacm.obj &
     wriidfn.obj &
     wrinitdi.obj &

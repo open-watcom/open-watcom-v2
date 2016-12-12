@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,57 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Message resource access routines.
+* Description:  Find resource and seek to begining. 
 *
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include <stdio.h>
-#if defined( __WATCOMC__ )
-    #include <process.h>
-#endif
-#include "wio.h"
-#include "wressetr.h"
-#include "wresset2.h"
-#include "wreslang.h"
-#include "msg.h"
-
-#include "clibext.h"
-
-
-#define NO_RES_MESSAGE "Error: could not open message resource file\r\n"
-#define NO_RES_SIZE (sizeof(NO_RES_MESSAGE)-1)
-
-static HANDLE_INFO      hInstance = {0};
-static unsigned         MsgShift;
-
-bool MsgInit( void )
-{
-    char            name[_MAX_PATH];
-
-    hInstance.status = 0;
-    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( MsgGet( WDIS_LITERAL_BASE, name ) ) {
-            return( true );
-        }
-    }
-    CloseResFile( &hInstance );
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    return( false );
-}
-
-bool MsgGet( int resourceid, char *buffer )
-{
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
-        buffer[0] = '\0';
-        return( false );
-    }
-    return( true );
-}
-
-void MsgFini( void )
-{
-    CloseResFile( &hInstance );
-}
+extern WResID   *WResIDFromStrF( lpcstr );
+extern bool     WResSeekResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource );
+extern bool     WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource );

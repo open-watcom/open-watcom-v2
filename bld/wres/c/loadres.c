@@ -55,7 +55,7 @@ static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer 
 }
 
 int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
-                       WResID *resource_id, LPSTR *lpszBuffer, size_t *bufferSize )
+                       WResID *resource_id, lpstr *lpszBuffer, size_t *bufferSize )
 /*********************************************************************************/
 {
     int                 retcode;
@@ -96,7 +96,7 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
 }
 
 int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
-                                        LPSTR *lpszBuffer, size_t *bufferSize )
+                                        lpstr *lpszBuffer, size_t *bufferSize )
 /*****************************************************************************/
 {
     WResID              resource_type;

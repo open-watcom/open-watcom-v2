@@ -76,7 +76,7 @@ static bool MsgReadErrArray( void )
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
 #if !defined(__WINDOWS__)
-        if( WResLoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+        if( WResLoadString( &hInstance, i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
 #else
         if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
 #endif
