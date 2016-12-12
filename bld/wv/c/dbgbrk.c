@@ -188,10 +188,10 @@ static bool InsertCoreBP( brkp *bp, bool force )
 
 
 /*
- * InsertAsyncBP -- insert one break point into memory using async method
+ * InsertLocalAsyncBP -- insert one break point into memory using async method
  */
 
-static bool InsertAsyncBP( brkp *bp, bool force, bool local )
+static bool InsertLocalAsyncBP( brkp *bp, bool force )
 {
     bool    at_ip;
 
@@ -201,24 +201,10 @@ static bool InsertAsyncBP( brkp *bp, bool force, bool local )
             at_ip = true;
         } else if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
             bp->status.b.in_place = true;
-            bp->item.ud = AsyncAddBreak( bp->loc.addr, local );
+            AsyncAddBreak( bp->loc.addr, true );
         }
     }
     return( at_ip );
-}
-
-
-/*
- * InsertGlobalBP -- insert one global break point into memory
- */
-
-static bool InsertGlobalBP( brkp *bp, bool force )
-{
-    if( HaveRemoteAsync() ) {
-        return( InsertAsyncBP( bp, force, false ) );
-    } else {
-        return( InsertCoreBP( bp, force ) );
-    }
 }
 
 
@@ -229,7 +215,7 @@ static bool InsertGlobalBP( brkp *bp, bool force )
 static bool InsertLocalBP( brkp *bp, bool force )
 {
     if( HaveRemoteAsync() ) {
-        return( InsertAsyncBP( bp, force, true ) );
+        return( InsertLocalAsyncBP( bp, force ) );
     } else {
         return( InsertCoreBP( bp, force ) );
     }
@@ -249,13 +235,15 @@ bool InsertBPs( bool force )
         bp->status.b.cmds_pushed = false;
         if( !IS_BP_EXECUTE( bp->th ) )
             continue;
-        bp->status.b.in_place = false;
-        bp->status.b.hit = false;
+        if( !HaveRemoteAsync() ) {
+            bp->status.b.in_place = false;
+            bp->status.b.hit = false;
+        }
         if( ( UserTmpBrk.status.b.active ) && ( AddrComp( UserTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
             continue;
         if( ( DbgTmpBrk.status.b.active ) && ( AddrComp( DbgTmpBrk.loc.addr, bp->loc.addr ) == 0 ) )
             continue;
-        at_ip |= InsertGlobalBP( bp, force );
+        at_ip |= InsertCoreBP( bp, force );
     }
     UserTmpBrk.status.b.hit = false;
     UserTmpBrk.status.b.in_place = false;
@@ -286,27 +274,13 @@ static void RemoveCoreBP( brkp *bp )
 }
 
 /*
- * RemoveAsyncBP -- remove one breakpoint from memory using async method
+ * RemoveAsyncBP -- remove one local breakpoint from memory using async method
  */
 
-static void RemoveAsyncBP( brkp *bp, bool local )
+static void RemoveLocalAsyncBP( brkp *bp )
 {
     if( bp->status.b.in_place && SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
-        AsyncRemoveBreak( bp->loc.addr, local );
-    }
-}
-
-
-/*
- * RemoveGlobalBP -- remove one global breakpoint from memory
- */
-
-static void RemoveGlobalBP( brkp *bp )
-{
-    if( HaveRemoteAsync() ) {
-        RemoveAsyncBP( bp, false );
-    } else {
-        RemoveCoreBP( bp );
+        AsyncRemoveBreak( bp->loc.addr, true );
     }
 }
 
@@ -318,7 +292,7 @@ static void RemoveGlobalBP( brkp *bp )
 static void RemoveLocalBP( brkp *bp )
 {
     if( HaveRemoteAsync() ) {
-        RemoveAsyncBP( bp, true );
+        RemoveLocalAsyncBP( bp );
     } else {
         RemoveCoreBP( bp );
     }
@@ -347,7 +321,7 @@ void RemoveBPs( void )
 
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         if( IS_BP_EXECUTE( bp->th ) ) {
-            RemoveGlobalBP( bp );
+            RemoveCoreBP( bp );
         } else {
             RemoveOneWP( bp );
         }
@@ -360,6 +334,27 @@ void RemoveBPs( void )
     }
 }
 
+
+/*
+ * UpdateGlobalBP -- update one global break point
+ */
+
+static void UpdateGlobalBP( brkp *bp )
+{
+    if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
+        if( bp->status.b.active ) {
+            if( !bp->status.b.in_place ) {    
+                bp->status.b.in_place = true;
+                AsyncAddBreak( bp->loc.addr, false );
+            }
+        } else {
+            if( bp->status.b.in_place ) {    
+                bp->status.b.in_place = false;
+                AsyncRemoveBreak( bp->loc.addr, false );
+            }
+        }
+    }
+}
 
 void GetBPAddr( brkp *bp, char *buff )
 {
@@ -652,6 +647,9 @@ static void DoActPoint( brkp *bp, bool act )
     if( !act && !IS_BP_EXECUTE( bp->th ) ) {
         GetWPVal( bp );
     }
+    if( HaveRemoteAsync() && IS_BP_EXECUTE( bp->th ) ) {
+        UpdateGlobalBP( bp );
+    }
 }
 
 void ActPoint( brkp *bp, bool act )
@@ -691,6 +689,9 @@ void RemovePoint( brkp *bp )
 
     for( owner = &BrkList; (bpi = *owner) != NULL; owner = &(*owner)->next ) {
         if( bpi == bp ) {
+            if( HaveRemoteAsync() && IS_BP_EXECUTE( bp->th ) ) {
+                UpdateGlobalBP( bp );
+            }
             RecordBreakEvent( bp, B_CLEAR );
             FreeCmdList( bp->cmds );
             _Free( bp->condition );
@@ -1233,6 +1234,9 @@ static brkp *AddPoint( address loc, mad_type_handle th, bool unmapped )
         ;
     bp->next = NULL;
     *owner = bp;
+    if( HaveRemoteAsync() && IS_BP_EXECUTE( bp->th ) ) {
+        UpdateGlobalBP( bp );
+    }
     DbgUpdate( UP_BREAK_CHANGE );
     return( bp );
 }
