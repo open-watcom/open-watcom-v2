@@ -2,8 +2,7 @@
 host_cpu = 386
 host_os  = win
 
-type = win
-os   = w386
+sys_windowed = 1
 sys  = win386
 
 !include ../master.mif

@@ -1,4 +1,3 @@
-type = ui
 os = dos
 build_target = dos
 sys=pharlap

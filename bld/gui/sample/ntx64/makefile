@@ -2,8 +2,6 @@
 host_os  = nt
 host_cpu = x64
 
-type = ui
-os   = nt
 sys  = nt
 
 !include ../master.mif

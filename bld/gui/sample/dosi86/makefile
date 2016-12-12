@@ -2,8 +2,6 @@
 host_cpu = i86
 host_os  = dos
 
-type = ui
-os   = dos
 sys  = dos
 
 !include ../master.mif

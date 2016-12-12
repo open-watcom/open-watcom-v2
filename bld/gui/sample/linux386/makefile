@@ -2,8 +2,6 @@
 host_cpu = 386
 host_os  = linux
 
-type = ui
-os   = linux
 sys  = linux
 
 !include ../master.mif

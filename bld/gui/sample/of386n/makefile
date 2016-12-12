@@ -1,4 +1,3 @@
-type=ui
 os=nlm
 build_target=nlm
 sys=nlm
