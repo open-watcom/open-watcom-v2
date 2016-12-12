@@ -82,7 +82,7 @@ static WResID *_WResIDFromStr( LPCSTR newstr )
 } /* _WResIDFromStr */
 
 int WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource,
-                                    LPSTR *lpszBuffer, int *bufferSize )
+                                    LPSTR *lpszBuffer, size_t *bufferSize )
 /*************************************************************************/
 {
     WResID              *resource_type;

@@ -69,7 +69,7 @@ bool init_msgs( void )
 /*  get a msg text string                                                  */
 /***************************************************************************/
 
-bool get_msg( msg_ids resid, char *buff, size_t buff_len )
+bool get_msg( msg_ids resid, char *buff, int buff_len )
 {
     if( hInstance.status == 0 || WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';

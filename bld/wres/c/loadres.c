@@ -55,8 +55,8 @@ static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer 
 }
 
 int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
-                       WResID *resource_id, LPSTR *lpszBuffer, int *bufferSize )
-/******************************************************************************/
+                       WResID *resource_id, LPSTR *lpszBuffer, size_t *bufferSize )
+/*********************************************************************************/
 {
     int                 retcode;
     WResDirWindow       wind;
@@ -77,16 +77,18 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
         retcode = -1;
     } else {
         res = WResGetLangInfo( wind );
+#ifdef _M_I86
         // lets make sure we dont perturb malloc into apoplectic fits
-        if( res->Length >= INT_MAX ) {
+        if( res->Length > (size_t)(-1LL) ) {
             return( -1 );
         }
+#endif
         res_buffer  = WRESALLOC( res->Length );
         *lpszBuffer = res_buffer;
         if( *lpszBuffer == NULL ) {
             return( -1 );
         }
-        *bufferSize = (int)res->Length;
+        *bufferSize = (size_t)res->Length;
         retcode = GetResource( res, hinfo, res_buffer );
     }
 
@@ -94,8 +96,8 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
 }
 
 int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
-                                        LPSTR *lpszBuffer, int *bufferSize )
-/**************************************************************************/
+                                        LPSTR *lpszBuffer, size_t *bufferSize )
+/*****************************************************************************/
 {
     WResID              resource_type;
     WResID              resource_id;

@@ -73,15 +73,15 @@ static void WFreeMenuEntries( GUIRMenuEntry *entry )
     }
 }
 
-static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
+static int WMakeMenuItem( uint_8 **data, size_t *size, MenuItem **new )
 {
     char                *text;
     char                *itext;
-    int                 msize;
-    int                 tlen;
+    size_t              msize;
+    size_t              tlen;
     MenuFlags           normal_flags;
 
-    if( !data || !*data || !size || !*size || !new ) {
+    if( data == NULL || *data == 0 || size == NULL || *size == 0 || new == NULL ) {
         return( false );
     }
 
@@ -102,7 +102,7 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
     } else {
         uint_16 id;
         // Data may not be aligned -- need memcpy on UNIX platforms
-        memcpy( &id, *data+msize, sizeof( uint_16 ) );
+        memcpy( &id, *data + msize, sizeof( uint_16 ) );
         if( !(normal_flags & ~MENU_ENDMENU ) && !id ) {
             (*new)->Item.Normal.ItemFlags |= MENU_SEPARATOR;
         }
@@ -137,11 +137,11 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
     return( true );
 }
 
-static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
+static int WAllocMenuEntry( uint_8 **data, size_t *size, GUIRMenuEntry **entry )
 {
     int         ok;
 
-    ok = ( data && *data && size && *size && entry );
+    ok = ( data != NULL && *data && size != NULL && *size && entry != NULL );
 
     if( ok ) {
         *entry = (GUIRMenuEntry *)GUIMemAlloc( sizeof(GUIRMenuEntry) );
@@ -163,21 +163,21 @@ static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
     return( ok );
 }
 
-static int WMakeMenuEntry( uint_8 **data, int *size,
+static int WMakeMenuEntry( uint_8 **data, size_t *size,
                            GUIRMenuEntry *parent, GUIRMenuEntry **entry )
 {
     GUIRMenuEntry       **current;
     GUIRMenuEntry       *prev;
     int                 ok;
 
-    if( !entry || !data || !size ) {
+    if( entry == NULL || data == NULL || size == NULL ) {
         return( false );
     }
 
     *entry = NULL;
     ok = true;
 
-    if( !*data || !*size ) {
+    if( *data == 0 || *size == 0 ) {
         return( true );
     }
 
@@ -190,8 +190,7 @@ static int WMakeMenuEntry( uint_8 **data, int *size,
             (*current)->parent = parent;
             (*current)->prev = prev;
             if( (*current)->item->IsPopup ) {
-                ok = WMakeMenuEntry( data, size, *current,
-                                     &((*current)->child) );
+                ok = WMakeMenuEntry( data, size, *current, &((*current)->child) );
             }
             if( (*current)->item->Item.Normal.ItemFlags & MENU_ENDMENU ) {
                 break;
@@ -211,18 +210,18 @@ static int WMakeMenuEntry( uint_8 **data, int *size,
     return( ok );
 }
 
-static GUIRMenuEntry *WMakeMenuFromData( uint_8 *data, int size )
+static GUIRMenuEntry *WMakeMenuFromData( uint_8 *data, size_t size )
 {
     GUIRMenuEntry       *first;
     int                 ok;
 
     first = NULL;
 
-    ok = ( data && size );
+    ok = ( data != NULL && size );
 
     if( ok ) {
-        data += 2*sizeof(uint_16);
-        size -= 2*sizeof(uint_16);
+        data += 2 * sizeof( uint_16 );
+        size -= 2 * sizeof( uint_16 );
         ok = WMakeMenuEntry( &data, &size, NULL, &first );
     }
 
@@ -356,7 +355,7 @@ bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu,
 {
     GUIRMenuEntry       *rmenu;
     uint_8              *data;
-    int                 size;
+    size_t              size;
     bool                ok;
 
     data = NULL;

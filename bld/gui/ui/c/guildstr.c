@@ -109,29 +109,27 @@ bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
     return( false );
 }
 
-bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length )
+bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, size_t *length )
 {
     bool                ok;
 
     ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
-                                 (LPSTR *)template, length ) == 0 );
+        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id, (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );
 }
 
-bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length )
+bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, size_t *length )
 {
     bool                ok;
 
     ok = ( hInstance.status && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id,
-                                 (LPSTR *)template, length ) == 0 );
+        ok = ( WResLoadResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id, (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );

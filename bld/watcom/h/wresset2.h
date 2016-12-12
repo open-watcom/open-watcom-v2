@@ -69,8 +69,8 @@ extern bool             FindResourcesX( PHANDLE_INFO hinfo, bool res_file );
 extern bool             InitResources( PHANDLE_INFO hinfo );
 extern bool             FiniResources( PHANDLE_INFO hinfo );
 extern int              WResLoadString( PHANDLE_INFO hinfo, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
-extern int              WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
-extern int              WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, int *bufferSize );
+extern int              WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, LPSTR *lpszBuffer, size_t *bufferSize );
+extern int              WResLoadResourceX( PHANDLE_INFO hinfo, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, size_t *bufferSize );
 
 #if defined( __cplusplus )
 }

@@ -33,7 +33,7 @@
 #ifndef _GUILDSTR_H_
 #define _GUILDSTR_H_
 
-bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length );
-bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length );
+bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, size_t *length );
+bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, size_t *length );
 
 #endif

@@ -273,7 +273,7 @@ static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
 }
 
 static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls,
-                          uint_8 *data, int size )
+                          uint_8 *data, size_t size )
 {
     bool        ok;
     uint_8      *d;
@@ -584,7 +584,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     gui_create_info     *dlg_info;
     gui_control_info    *controls_info;
     uint_8              *data;
-    int                 size;
+    size_t              size;
     int                 index;
     int                 last_was_radio;
     bool                ok;
