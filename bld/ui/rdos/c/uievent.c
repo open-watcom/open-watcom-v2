@@ -252,7 +252,7 @@ int UIAPI initmouse( int install )
             WaitHandle = RdosCreateWait();
 
         RdosAddWaitForMouse( WaitHandle, (int)(&MouseEventProc) );
-        RdosSetMouseWindow( 0, 0, 8 * 80 - 1, 8 * 25 - 1 );
+        RdosSetMouseWindow( 0, 0, 8 * UIData->width - 1, 8 * UIData->height - 1 );
         RdosSetMouseMickey( 8, 8 );
     }
 
