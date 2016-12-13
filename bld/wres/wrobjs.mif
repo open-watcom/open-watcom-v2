@@ -50,10 +50,12 @@ wres_more_objs = &
     rdlli.obj &
     resaccel.obj &
     resbitmp.obj &
-    resdiag.obj &
+    resrdiag.obj &
+    reswdiag.obj &
     resfont.obj &
     resiccu.obj &
-    resmenu.obj &
+    resrmenu.obj &
+    reswmenu.obj &
     resnamor.obj &
     resraw.obj &
     resstr.obj &

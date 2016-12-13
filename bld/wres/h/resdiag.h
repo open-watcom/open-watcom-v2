@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -139,23 +140,27 @@ typedef struct DialogBoxExControl32 {
 #define CLASS_SCROLLBAR 0x84
 #define CLASS_COMBOBOX  0x85
 
+/* reswdiag.c */
+
 extern bool ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID handle );
 extern bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle );
 extern bool ResWriteDialogBoxControl( DialogBoxControl *, WResFileID handle );
 extern bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle );
+extern bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID handle );
+extern bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle );
 extern ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *);
 extern ControlClass *ResNumToControlClass( uint_16 classnum );
-extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
-extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
-extern bool ResIsDialogEx( WResFileID handle );
+
+/* resrdiag.c */
+
 extern bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle );
 extern bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle );
 extern bool ResReadDialogExHeader32( DialogBoxHeader32 *, DialogExHeader32 *, WResFileID handle );
 extern bool ResReadDialogBoxControl( DialogBoxControl *, WResFileID handle );
 extern bool ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID handle );
 extern bool ResReadDialogExControl32( DialogBoxExControl32 *, WResFileID handle );
-
-extern bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID handle );
-extern bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle );
+extern bool ResIsDialogEx( WResFileID handle );
+extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
+extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
 
 #endif
