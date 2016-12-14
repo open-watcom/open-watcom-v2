@@ -1018,7 +1018,7 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
 {
     struct TDebugBreak *b;
     struct TDebugThread *Thread;
-    int ok;
+    int len;
     long diff;
  
     Thread = obj->CurrentThread;
@@ -1026,11 +1026,11 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
         Thread = obj->ThreadList;
 
     if( Thread )
-        ok = RdosReadThreadMem( Thread->ThreadID, Sel, Offset, Buf, Size );
+        len = RdosReadThreadMem( Thread->ThreadID, Sel, Offset, Buf, Size );
     else
-        ok = false;
+        len = 0;
 
-    if( ok && obj->SwBreakList ) {
+    if( len && obj->SwBreakList ) {
         RdosEnterSection( obj->FSection );
 
         b = obj->SwBreakList;
@@ -1039,14 +1039,14 @@ int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
             if( b->Sel == Sel && b->IsActive ) {
                 diff = b->Offset - Offset;
 
-                if( diff >= 0 && diff < Size )
+                if( diff >= 0 && diff < len )
                     Buf[diff] = b->Instr;
             }
             b = b->Next;
         }
         RdosLeaveSection( obj->FSection );
     }    
-    return( ok );
+    return( len );
 }
 
 int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
@@ -1081,7 +1081,7 @@ int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size )
         return( RdosWriteThreadMem( Thread->ThreadID, Sel, Offset, Buf, Size ) );
     }
     
-    return false;
+    return( 0 );
 }
 
 static void Deactivate( struct TDebug *obj, struct TDebugThread *Thread )
