@@ -104,7 +104,7 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
     if( add_quotes ) {
         if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
             len = strlen( head->MenuName->name );
-            newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
+            newname = WRESALLOC( len + 3 );
             newname[0] = '"';
             strcpy( newname + 1, head->MenuName->name );
             newname[len + 1] = '"';
@@ -383,7 +383,7 @@ ControlClass *ResNumToControlClass( uint_16 classnum )
         if( class == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            class->Class = (uint_8)classnum;
+            *(class->ClassName + 0) = (char)classnum;
             *(class->ClassName + 1) = '\0';
         }
     }

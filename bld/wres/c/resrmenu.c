@@ -64,7 +64,7 @@ bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
 
     error = false;
     numread = 0;
-    size = header->HeaderSize * sizeof( uint_8 );
+    size = header->HeaderSize;
     if( buf != NULL ) {
         numread = WRESREAD( handle, buf, size );
         if( numread != size ) {
