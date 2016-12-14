@@ -43,15 +43,16 @@
 bool ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
 /***************************************************************/
 {
-    WResFileSSize   numread;
+    bool            error;
+    uint_16         val16;
 
-    numread = WRESREAD( handle, currhead, sizeof( MenuHeader ) );
-    if( numread != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
-        return( true );
-    } else {
-        return( false );
+    error = ResReadUint16( &val16, handle );
+    currhead->Version = val16;
+    if( !error ) {
+        error = ResReadUint16( &val16, handle );
+        currhead->HeaderSize = val16;
     }
+    return( error );
 }
 
 bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )

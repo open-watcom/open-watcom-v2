@@ -52,16 +52,15 @@ typedef uint_16             MenuFlags;
 
 #define MENUEX_VERSION_SIG  0x0001
 
-#include "pushpck1.h"
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */
     uint_16         HeaderSize;     /* currently 0 */
 } MenuHeader;
 
 typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */
-    MenuFlags          ItemFlags;
-    char              *ItemText;
-} _WCUNALIGNED MenuItemPopup;
+    MenuFlags       ItemFlags;
+    char            *ItemText;
+} MenuItemPopup;
 
 typedef struct MenuExItemPopup {
     uint_32         ItemId;
@@ -71,10 +70,10 @@ typedef struct MenuExItemPopup {
 } MenuExItemPopup;
 
 typedef struct MenuItemNormal {     /* if !(ItemFlags & MENU_POPUP) */
-    MenuFlags           ItemFlags;
-    uint_32             ItemID;    /* Note! This was changed from uint_16!! */
-    char               *ItemText;
-} _WCUNALIGNED MenuItemNormal;
+    MenuFlags       ItemFlags;
+    uint_32         ItemID;         /* Note! This was changed from uint_16!! */
+    char            *ItemText;
+} MenuItemNormal;
 
 typedef struct MenuExItemNormal {
     uint_32         ItemType;
@@ -87,16 +86,16 @@ typedef struct MenuItem {
         MenuItemNormal  Normal;
         MenuItemPopup   Popup;
     } Item;
-} _WCUNALIGNED MenuItem;
+} MenuItem;
 
 typedef struct MenuExItemNormalData {
-    MenuItemNormal              Normal;
-    MenuExItemNormal            ExData;
+    MenuItemNormal      Normal;
+    MenuExItemNormal    ExData;
 } MenuExItemNormalData;
 
 typedef struct MenuExItemPopupData {
-    MenuItemPopup               Popup;
-    MenuExItemPopup             ExData;
+    MenuItemPopup       Popup;
+    MenuExItemPopup     ExData;
 } MenuExItemPopupData;
 
 typedef struct MenuExItem {
@@ -106,7 +105,6 @@ typedef struct MenuExItem {
         MenuExItemPopupData     ExPopup;
     } Item;
 } MenuExItem;
-#include "poppck.h"
 
 /* reswmenu.c */
 

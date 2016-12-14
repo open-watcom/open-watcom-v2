@@ -43,19 +43,19 @@
 bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
 /****************************************************************/
 {
-    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
+    bool    error;
+
+    error = ResWriteUint16( currhead->Version, handle );
+    if( !error ) {
+        error = ResWriteUint16( currhead->HeaderSize, handle );
     }
+    return( error );
 }
 
 bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *headerdata )
 /**************************************************************************************/
 {
-    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
+    if( ResWriteMenuHeader( currhead, handle ) ) {
         return( true );
     } else {
         if( headerdata != NULL ) {
