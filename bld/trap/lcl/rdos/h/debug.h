@@ -101,6 +101,7 @@ struct TDebugThread
     short int MathDataSel;
     real_math St[8];
 
+    struct TDebugBreak *FTempBreak;
     struct TDebugThread *Next;
 
     int FDebug;
