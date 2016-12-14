@@ -115,8 +115,8 @@ struct TDebugThread
 
 int IsDebug( struct TDebugThread *obj );
 
-int ReadMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Size );
-int WriteMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Size );
+int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
+int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
 void WriteRegs( struct TDebugThread *obj );
 
 int WasTrace( struct TDebugThread *obj );
