@@ -56,9 +56,6 @@ void AsyncNotify( void )
         if( !( dlg.cond & COND_RUNNING ) ) {
             GUICloseDialog( AsyncWnd );
             AsyncWnd = 0;
-#ifdef __RDOS__
-            uirefresh();
-#endif
         }
     }
 }
