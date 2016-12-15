@@ -254,6 +254,7 @@ int UIAPI initmouse( int install )
         RdosAddWaitForMouse( WaitHandle, (int)(&MouseEventProc) );
         RdosSetMouseWindow( 0, 0, 8 * UIData->width - 1, 8 * UIData->height - 1 );
         RdosSetMouseMickey( 8, 8 );
+        RdosShowMouse();
     }
 
     MouseOn = false;

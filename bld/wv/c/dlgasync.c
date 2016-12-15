@@ -39,6 +39,9 @@
 #include "remasync.h"
 #include "guitypes.h"
 
+#ifdef __RDOS__
+extern void uisendescape( void );
+#endif
 
 typedef struct dlg_async {
     unsigned cond;
@@ -52,8 +55,12 @@ void AsyncNotify( void )
    if( AsyncWnd ) {
         dlg.cond = PollAsync();
         if( !( dlg.cond & COND_RUNNING ) ) {
+#ifdef __RDOS__
+            uisendescape();
+#else
             GUICloseDialog( AsyncWnd );
             AsyncWnd = 0;
+#endif            
         }
     }
 }
@@ -67,6 +74,10 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
         dlg.cond = 0;
         GUISetFocus( gui, CTL_ASYNC_STOP );
         AsyncWnd = gui;
+        return( true );
+    case GUI_DIALOG_ESCAPE:
+        AsyncWnd = 0;
+        dlg.cond = StopAsync();
         return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );

@@ -41,6 +41,7 @@ extern int      WaitHandle;
 
 static uitimer_callback *Callback = NULL;
 static int              TimerPeriodMs = 0;
+static bool             HasEscape = false;
 
 void UIAPI uitimer( uitimer_callback *proc, int ms )
 {
@@ -72,7 +73,13 @@ EVENT UIAPI uieventsource( bool update )
 
     start = uiclock();
     for( ; ; ) {
-        ev = forcedevent();
+        if( HasEscape ) {
+            HasEscape = false;
+            ev = EV_ESCAPE;
+        }
+        else
+            ev = forcedevent();
+
         if( ev > EV_NO_EVENT )
             break;
 
@@ -125,4 +132,9 @@ EVENT UIAPI uieventsource( bool update )
 EVENT UIAPI uiget( void )
 {
     return( uieventsource( true ) );
+}
+
+void uisendescape( void )
+{
+    HasEscape = true;
 }
