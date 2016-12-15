@@ -116,20 +116,17 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
 bool ResIsDialogEx( WResFileID handle )
 /*************************************/
 {
-    WResFileSSize   numread;
-    uint_16         signa[2];
+    uint_16         sign0;
+    uint_16         sign1;
 
     /* read in the signature part of the header and check it */
-    numread = WRESREAD( handle, signa, sizeof( signa ) );
-    if( numread != sizeof( signa ) ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-    } else {
-        if( signa[0] == 0x0001 && signa[1] == 0xFFFF ) {
-            return( true );
+    if( !ResReadUint16( &sign0, handle ) ) {
+        if( !ResReadUint16( &sign1, handle ) ) {
+            return( sign0 == 0x0001 && sign1 == 0xFFFF );
         }
-        }
-    return( false );
     }
+    return( false );
+}
 
 static bool ResReadDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle )
 {
