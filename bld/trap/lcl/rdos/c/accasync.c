@@ -39,7 +39,7 @@
 trap_retval ReqAsync_go( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -53,16 +53,17 @@ trap_retval ReqAsync_go( void )
         ok = AsyncGo( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
+
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
@@ -109,7 +110,7 @@ trap_retval ReqAsync_go( void )
 trap_retval ReqAsync_step( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -123,17 +124,17 @@ trap_retval ReqAsync_step( void )
         ok = AsyncTrace( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
 
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
@@ -180,7 +181,7 @@ trap_retval ReqAsync_step( void )
 trap_retval ReqAsync_poll( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -193,17 +194,17 @@ trap_retval ReqAsync_poll( void )
         ok = AsyncPoll( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
 
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
