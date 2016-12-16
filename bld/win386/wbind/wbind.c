@@ -38,7 +38,6 @@
 #endif
 #include <sys/types.h>
 #include "bool.h"
-#include "wio.h"
 #include "watcom.h"
 #include "banner.h"
 #include "exedos.h"
@@ -101,21 +100,21 @@ static void normalizeFName( char *dst, size_t maxlen, const char *src )
     *dst = '\0';
 }
 
-static void updateNHStuff( int handle, const char *modname, const char *desc )
+static void updateNHStuff( FILE *fp, const char *modname, const char *desc )
 {
     dos_exe_header      dh;
     os2_exe_header      nh;
     long                off;
     size_t              len;
 
-    lseek( handle, 0, SEEK_SET );
-    posix_read( handle, &dh, sizeof( dh ) );
+    fseek( fp, 0, SEEK_SET );
+    fread( &dh, 1, sizeof( dh ), fp );
     off = ( dh.file_size - 1 ) * 512L + dh.mod_size;
-    lseek( handle, off, SEEK_SET );
-    posix_read( handle, &nh, sizeof( nh ) );
+    fseek( fp, off, SEEK_SET );
+    fread( &nh, 1, sizeof( nh ), fp );
     off += nh.resident_off + 1L;
-    lseek( handle, off, SEEK_SET );
-    posix_write( handle, modname, 8 );
+    fseek( fp, off, SEEK_SET );
+    fwrite( modname, 1, 8, fp );
 
     if( desc == NULL ) {
         desc = modname;
@@ -127,8 +126,8 @@ static void updateNHStuff( int handle, const char *modname, const char *desc )
         }
     }
     off = nh.nonres_off + 1L;
-    lseek( handle, off, SEEK_SET );
-    posix_write( handle, desc, len );
+    fseek( fp, off, SEEK_SET );
+    fwrite( desc, 1, len, fp );
 }
 
 
@@ -211,32 +210,28 @@ static void errPrintf( char *str, ... )
 
 } /* errPrintf */
 
-static long CopyFile( int in, int out, const char *infile, const char *outfile )
+static long CopyFile( FILE *in, FILE *out, const char *infile, const char *outfile )
 {
     size_t      size;
     size_t      len;
-    size_t      bufsize;
     long        totalsize;
     void        *buff;
 
     buff = myAlloc( IO_BUFF );
-    bufsize = IO_BUFF;
     totalsize = 0L;
     for( ;; ) {
-        size = posix_read( in, buff, bufsize );
-        if( size == 0 ) {
-            break;
+        size = fread( buff, 1, IO_BUFF, in );
+        if( size != IO_BUFF ) {
+            if( ferror( in ) ) {
+                doError( "Error reading file \"%s\"", infile );
+            }
         }
-
-        if( size == -1 ) {
-            doError( "Error reading file \"%s\"", infile );
-        }
-        len = posix_write( out, buff, size );
+        len = fwrite( buff, 1, size, out );
         if( len != size ) {
             doError( "Error writing file \"%s\"", outfile );
         }
         totalsize += (long)len;
-        if( size != bufsize ) {
+        if( size != IO_BUFF ) {
             break;
         }
     }
@@ -247,6 +242,7 @@ static long CopyFile( int in, int out, const char *infile, const char *outfile )
 static void FindExtender( char *extname, char *winext )
 {
     char        *watcom;
+    FILE        *fp;
 
     _searchenv( extname, "PATH", winext );
     if( winext[0] == '\0' ) {
@@ -259,7 +255,9 @@ static void FindExtender( char *extname, char *winext )
             strcat( winext, "\\binw\\" );
 #endif
             strcat( winext, extname );
-            if( access( winext, R_OK ) == -1 ) {
+            if( (fp = fopen( winext, "r" )) != NULL ) {
+                fclose( fp );
+            } else {
                 winext[0] = '\0';               // indicate file not found
             }
         }
@@ -271,7 +269,9 @@ static void FindExtender( char *extname, char *winext )
 
 int main( int argc, char *argv[] )
 {
-    int             in, out, i, rcparm = 0, pcnt;
+    FILE            *in;
+    FILE            *out;
+    int             i, rcparm = 0, pcnt;
     bool            Rflag = false;
     bool            nflag = false;
     bool            uflag = false;
@@ -375,25 +375,25 @@ int main( int argc, char *argv[] )
         if( ext[0] == 0 ) {
             path = exe;
         }
-        in = open( path, O_RDONLY | O_BINARY );
-        if( in < 0 ) {
+        in = fopen( path, "rb" );
+        if( in == NULL ) {
             doError( "Could not open %s", path );
         }
-        out = open( rex, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, PMODE_RWX );
-        if( out < 0 ) {
+        out = fopen( rex, "wb" );
+        if( out == NULL ) {
             doError( "Could not open %s", rex );
         }
-        lseek( in, NH_MAGIC_REX, SEEK_SET );
-        posix_read( in, &exelen, sizeof( exelen ) );
-        lseek( in, exelen, SEEK_SET );
-        posix_read( in, &re, sizeof( re ) );
+        fseek( in, NH_MAGIC_REX, SEEK_SET );
+        fread( &exelen, 1, sizeof( exelen ), in );
+        fseek( in, exelen, SEEK_SET );
+        fread( &re, 1, sizeof( re ), in );
         if( re.signature != ('M' & ('Q' << 8)) ) {
             doError( "Not a bound Open Watcom 32-bit Windows application" );
         }
-        lseek( in, exelen, SEEK_SET );
+        fseek( in, exelen, SEEK_SET );
         CopyFile( in, out, path, rex );
-        close( in );
-        close( out );
+        fclose( in );
+        fclose( out );
         myPrintf( ".rex file %s created", rex );
         exit( 0 );
     }
@@ -416,12 +416,12 @@ int main( int argc, char *argv[] )
     /*
      * open files
      */
-    in = open( winext, O_RDONLY | O_BINARY );
-    if( in < 0 )  {
+    in = fopen( winext, "rb" );
+    if( in == NULL )  {
         doError( "Could not open %s", winext );
     }
-    out = open( exe, O_CREAT | O_TRUNC|O_WRONLY | O_BINARY, PMODE_RWX );
-    if( out < 0 )  {
+    out = fopen( exe, "wb" );
+    if( out == NULL )  {
         doError( "Could not open %s", exe );
     }
 
@@ -429,8 +429,8 @@ int main( int argc, char *argv[] )
      * copy extender over
      */
     CopyFile( in, out, winext, exe );
-    close( in );
-    close( out );
+    fclose( in );
+    fclose( out );
 
     /*
      * run the resource compiler
@@ -482,33 +482,33 @@ int main( int argc, char *argv[] )
     /*
      * copy the rex file onto the end
      */
-    in = open( rex, O_RDONLY | O_BINARY );
+    in = fopen( rex, "rb" );
     if( in < 0 )  {
         doError( "Could not open %s", rex );
     }
-    out = open( exe, O_RDWR | O_BINARY );
-    if( out < 0 )  {
+    out = fopen( exe, "wb+" );
+    if( out == NULL )  {
         doError( "Could not open %s", exe );
     }
-    lseek( out, 0, SEEK_END );
-    exelen = tell( out );
+    fseek( out, 0, SEEK_END );
+    exelen = ftell( out );
 
     totalsize = CopyFile( in, out, rex, exe );
-    close( in );
+    fclose( in );
 
     /*
      * noodle the file: change name, and then
      * write the file size into the old exe header (for
      * use by the loader)
      */
-    lseek( out, NH_MAGIC_REX, SEEK_SET );
-    posix_write( out, &exelen, sizeof( exelen ) );
+    fseek( out, NH_MAGIC_REX, SEEK_SET );
+    fwrite( &exelen, 1, sizeof( exelen ), out );
     len = strlen( fname );
     if( len < 8 ) {
         memset( &fname[len], ' ', 8 - len );
     }
     updateNHStuff( out, fname, desc );
-    close( out );
+    fclose( out );
     if( dllflag ) {
         remove( dll );
         rename( exe, dll );
