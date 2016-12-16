@@ -156,7 +156,6 @@ struct TDebug
     int FSection;
 
     struct TDebugThread *CurrentThread;
-    struct TDebugThread *NewThread;
     struct TDebugThread *ThreadList;
     struct TDebugModule *ModuleList;
 
