@@ -1757,6 +1757,7 @@ static void SignalDebugData( struct TDebug *obj )
 
         case EVENT_CREATE_THREAD:
             RdosGetDebugEventData( obj->FHandle, &cte );
+            obj->FThreadChanged = true;
             HandleCreateThread( obj, &cte );
             break;
 
