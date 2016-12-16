@@ -33,10 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "wio.h"
 #include "loader.h"
-
-#include "clibext.h"
 
 
 #define BUFSIZE         4096
@@ -268,7 +265,7 @@ static size_t HashBlock( size_t len )
 }
 
 /* Write each pair table and data block to output */
-static size_t filewrite( int newfile, size_t inp_size )
+static size_t filewrite( FILE *new_fp, size_t inp_size )
 {
     int         i;
     int         len;
@@ -323,7 +320,7 @@ static size_t filewrite( int newfile, size_t inp_size )
     W32PutBuf( buffer, inp_size );
     out_size = out_buffer_ptr - out_buffer;
     if( out_size > 0 ) {
-        if( posix_write( newfile, out_buffer, out_size ) != out_size ) {
+        if( fwrite( out_buffer, 1, out_size, new_fp ) != out_size ) {
             printf( "Error writing file\n" );
             return( -1 );
         }
@@ -437,7 +434,7 @@ static size_t CompressBlock( size_t inp_size )
     return( inp_size );
 }
 
-static uint_32 WriteRelocs( int newfile, const char *buf, uint_32 inp_size, int compress )
+static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, int compress )
 {
     size_t      len;
     size_t      size;
@@ -453,14 +450,14 @@ static uint_32 WriteRelocs( int newfile, const char *buf, uint_32 inp_size, int 
         if( compress ) {
             size = HashBlock( len );
             size = CompressBlock( size );
-            size = filewrite( newfile, size );
+            size = filewrite( new_fp, size );
             if( size == -1 ) {
                 printf( "Error writing output file\n" );
                 return( -1 );
             }
             out_size += size;
         } else {
-            if( posix_write( newfile, buf, len ) != len ) {
+            if( fwrite( buf, 1, len, new_fp ) != len ) {
                 printf( "Error writing output file\n" );
                 return( -1 );
             }
@@ -471,7 +468,7 @@ static uint_32 WriteRelocs( int newfile, const char *buf, uint_32 inp_size, int 
     return( out_size );
 }
 
-static uint_32 WriteCode( int handle, int newfile, uint_32 inp_size, int compress )
+static uint_32 WriteCode( FILE *fp, FILE *new_fp, uint_32 inp_size, int compress )
 {
     size_t      len;
     size_t      size;
@@ -482,7 +479,7 @@ static uint_32 WriteCode( int handle, int newfile, uint_32 inp_size, int compres
     while( inp_size > 0 ) {
         if( len > inp_size )
             len = inp_size;
-        if( posix_read( handle, buffer, len ) != len ) {
+        if( fread( buffer, 1, len, fp ) != len ) {
             printf( "Error reading REX file\n" );
             return( -1 );
         }
@@ -490,14 +487,14 @@ static uint_32 WriteCode( int handle, int newfile, uint_32 inp_size, int compres
             /* Compress each data block until end of file */
             size = HashBlock( len );
             size = CompressBlock( size );
-            size = filewrite( newfile, size );
+            size = filewrite( new_fp, size );
             if( size == -1 ) {
                 printf( "Error writing output file\n" );
                 return( -1 );
             }
             out_size += size;
         } else {
-            if( posix_write( newfile, buffer, len ) != len ) {
+            if( fwrite( buffer, 1, len, new_fp ) != len ) {
                 printf( "Error writing output file\n" );
                 return( -1 );
             }
@@ -510,9 +507,9 @@ static uint_32 WriteCode( int handle, int newfile, uint_32 inp_size, int compres
 
 int main( int argc, char *argv[] )
 {
-    int                 handle;
-    int                 loader_handle;
-    int                 newfile;
+    FILE                *fp;
+    FILE                *loader_fp;
+    FILE                *new_fp;
     char                *file;
     uint_32             size;
     uint_32             codesize;
@@ -548,8 +545,8 @@ int main( int argc, char *argv[] )
 #endif
     ++argc;
     normalizeFName( file, strlen( file ) + 1, file );
-    handle = open( file, O_RDONLY | O_BINARY );
-    if( handle == -1 ) {
+    fp = fopen( file, O_RDONLY | O_BINARY );
+    if( fp == NULL ) {
         printf( "Error opening file '%s'\n", file );
         return( 1 );
     }
@@ -558,7 +555,7 @@ int main( int argc, char *argv[] )
     /*
      * validate header signature
      */
-    posix_read( handle, &exehdr, sizeof( rex_exe ) );
+    fread( &exehdr, 1, sizeof( rex_exe ), fp );
     if( !(exehdr.hdr.sig[0] == 'M' && exehdr.hdr.sig[1] == 'Q') ) {
         printf( "Invalid EXE\n" );
         return( 1 );
@@ -614,7 +611,7 @@ int main( int argc, char *argv[] )
     }
     //printf( "relocation size = %lu", relsize );
     //printf( " => %lu relocation entries\n", relsize / sizeof( uint_32 ) );
-    lseek( handle, exelen + (uint_32)exehdr.hdr.first_reloc, SEEK_SET );
+    fseek( fp, exelen + (uint_32)exehdr.hdr.first_reloc, SEEK_SET );
     relocs = NULL;
     if( relsize != 0 ) {
         relocs = (uint_32 *)malloc( relsize );
@@ -622,7 +619,7 @@ int main( int argc, char *argv[] )
             printf( "Out of memory\n" );
             return( -1 );
         }
-        if( posix_read( handle, relocs, relsize ) != relsize ) {
+        if( fread( relocs, 1, relsize, fp ) != relsize ) {
             printf( "Error reading relocation information\n" );
             return( 1 );
         }
@@ -642,9 +639,8 @@ int main( int argc, char *argv[] )
 
     file = argv[argc++];
     normalizeFName( file, strlen( file ) + 1, file );
-    newfile = open( file, O_WRONLY | O_BINARY | O_CREAT | O_TRUNC,
-                        S_IREAD | S_IWRITE | S_IEXEC );
-    if( newfile == -1 ) {
+    new_fp = fopen( file, "wb" );
+    if( new_fp == NULL ) {
         printf( "Error opening file '%s'\n", file );
         return( 1 );
     }
@@ -654,24 +650,26 @@ int main( int argc, char *argv[] )
     } else {
         normalizeFName( file, strlen( file ) + 1, file );
     }
-    loader_handle = open( file, O_RDONLY | O_BINARY );
-    if( loader_handle == -1 ) {
+    loader_fp = fopen( file, "rb" );
+    if( loader_fp == NULL ) {
         printf( "Error opening file '%s'\n", file );
         return( 1 );
     }
-    loadersize_read = filelength( loader_handle );
+    fseek( loader_fp, 0, SEEK_END );
+    loadersize_read = ftell( loader_fp );
+    fseek( loader_fp, 0, SEEK_SET );
     loadersize = _RoundUp( loadersize_read, 512L );
     loader_code = calloc( loadersize, 1 );
     if( loader_code == NULL ) {
         printf( "Out of memory\n" );
         return( -1 );
     }
-    if( posix_read( loader_handle, loader_code, loadersize_read ) != loadersize_read ) {
-        close( loader_handle );
+    if( fread( loader_code, 1, loadersize_read, loader_fp ) != loadersize_read ) {
+        fclose( loader_fp );
         printf( "Error reading '%s'\n", file );
         return( 1 );
     }
-    close( loader_handle );
+    fclose( loader_fp );
     size = _RoundUp( size, 512L );        /* round up to multiple of 512 */
 
     /* patch header in the loader */
@@ -691,13 +689,13 @@ int main( int argc, char *argv[] )
     } else {
         SET_OSI_SIGN( w32_header );
     }
-    if( (size_t)posix_write( newfile, loader_code, loadersize ) != loadersize ) {
+    if( fwrite( loader_code, 1, loadersize, new_fp ) != loadersize ) {
         printf( "Error writing output file\n" );
-        close( newfile );
-        close( handle );
+        fclose( new_fp );
+        fclose( fp );
         return( 1 );
     }
-    lseek( handle, exelen + file_header_size, SEEK_SET );
+    fseek( fp, exelen + file_header_size, SEEK_SET );
     if( compress ) {
         out_buffer = malloc( 2 * 4096 );
         if( out_buffer == NULL ) {
@@ -705,29 +703,29 @@ int main( int argc, char *argv[] )
             return( -1 );
         }
     }
-    out_size = WriteCode( handle, newfile, codesize, compress );
-    close( handle );
+    out_size = WriteCode( fp, new_fp, codesize, compress );
+    fclose( fp );
     if( out_size == -1 ) {
         return( 1 );
     }
     if( compress ) {
         w32_header->size_of_W32_file = out_size ;
     }
-    out_size = WriteRelocs( newfile, RelocBuffer, relocsize, compress );
+    out_size = WriteRelocs( new_fp, RelocBuffer, relocsize, compress );
     if( out_size == -1 ) {
         return( 1 );
     }
     if( compress ) {
         w32_header->size_of_W32_file += out_size ;
-        lseek( newfile, dos_header->size_of_DOS_header_in_paras * 16, SEEK_SET );
-        if( (size_t)posix_write( newfile, w32_header, sizeof( *w32_header ) ) != sizeof( *w32_header ) ) {
-            close( newfile );
+        fseek( new_fp, dos_header->size_of_DOS_header_in_paras * 16, SEEK_SET );
+        if( fwrite( w32_header, 1, sizeof( *w32_header ), new_fp ) != sizeof( *w32_header ) ) {
+            fclose( new_fp );
             printf( "Error writing output file\n" );
             return( 1 );
         }
         free( out_buffer );
     }
-    close( newfile );
+    fclose( new_fp );
     if( relsize != 0 ) {
         free( relocs );
     }
