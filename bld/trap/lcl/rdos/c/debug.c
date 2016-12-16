@@ -798,7 +798,6 @@ void InitDebug( struct TDebug *obj, const char *Program, const char *Param, cons
     obj->WatchList = 0;
 
     obj->FThreadChanged = false;
-    obj->FModuleChanged = false;
     obj->FHandle = 0;
 
     obj->FMemoryModel = DEBUG_MEMORY_MODEL_FLAT;
@@ -976,12 +975,22 @@ void ClearThreadChange( struct TDebug *obj )
 
 int HasModuleChange( struct TDebug *obj )
 {
-    return obj->FModuleChanged;
-}
+    struct TDebugModule *m;
+    int change = false;
 
-void ClearModuleChange( struct TDebug *obj )
-{
-    obj->FModuleChanged = false;
+    RdosEnterSection( obj->FSection );
+
+    m = obj->ModuleList;
+    while( m ) {
+        if( m->FNew )
+            change = true;
+
+        m = m->Next;            
+    }
+
+    RdosLeaveSection( obj->FSection );
+
+    return( change );
 }
 
 int HasConfigChange( struct TDebug *obj )
@@ -1253,7 +1262,6 @@ static void UpdateModules( struct TDebug *obj )
             InitKernelDebugModule( m, obj->CurrentThread->Cs );
             if (m->Handle) {
                 InsertModule( obj, m );
-                obj->FModuleChanged = true;
             }
             else
                 free( m );
@@ -1659,7 +1667,6 @@ static void HandleTerminateProcess( struct TDebug *obj, int exitcode )
     obj->CurrentThread = 0;
     obj->NewThread = 0;
     obj->FThreadChanged = true;
-    obj->FModuleChanged = true;
 
     RdosLeaveSection( obj->FSection );
 }
@@ -1786,13 +1793,11 @@ static void SignalDebugData( struct TDebug *obj )
         case EVENT_LOAD_DLL:
             RdosGetDebugEventData( obj->FHandle, &lde );
             HandleLoadDll( obj, &lde );
-            obj->FModuleChanged = true;
             break;
 
         case EVENT_FREE_DLL:
             RdosGetDebugEventData( obj->FHandle, &handle );
             HandleFreeDll( obj, handle );
-            obj->FModuleChanged = true;
             break;
 
         case EVENT_KERNEL:

@@ -255,7 +255,6 @@ trap_retval ReqRunThread_poll( void )
         }
 
         if( HasModuleChange( obj ) ) {
-            ClearModuleChange( obj );
             ret->conditions |= COND_LIBRARIES;
         }
     }

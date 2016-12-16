@@ -67,7 +67,6 @@ trap_retval ReqAsync_go( void )
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 
@@ -139,7 +138,6 @@ trap_retval ReqAsync_step( void )
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 
@@ -210,7 +208,6 @@ trap_retval ReqAsync_poll( void )
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 

@@ -169,7 +169,6 @@ struct TDebug
 
     int FInstalled;
     int FThreadChanged;
-    int FModuleChanged;
 
     int FWaitLoad;
 
@@ -224,7 +223,6 @@ int HasThreadChange( struct TDebug *obj );
 void ClearThreadChange( struct TDebug *obj );
 
 int HasModuleChange( struct TDebug *obj );
-void ClearModuleChange( struct TDebug *obj );
 
 int HasConfigChange( struct TDebug *obj );
 void ClearConfigChange( struct TDebug *obj );
