@@ -54,32 +54,15 @@ objs +=             &
     dopatch.obj
 !endif
 
-!ifeq host_os win
-objs += &
-!ifeq host_cpu 386
-    setupio.obj     &
-!else
-    setupiod.obj    &
-!endif
-    winutil.obj     &
-    winddeml.obj
-!else ifeq host_os nt
-objs += &
-    setupio.obj     &
-    winutil.obj     &
-    winddeml.obj
-!else ifeq host_os os2
-objs += &
-    setupio.obj     &
-    winutil.obj     &
-    os2util.obj
-!else ifeq host_os linux
-objs += &
-    setupio.obj
-!else
-objs += &
-    setupio.obj
-!endif
+#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386
+#=====================================================================
+!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386
+!inject setupiod.obj                                 i_wini86
+!inject os2util.obj                      i_os2
+!inject winutil.obj                 i_nt i_os2 i_win
+!inject winddeml.obj                i_nt       i_win
+
+objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu))
 
 !ifeq sys_windowed 1
 
