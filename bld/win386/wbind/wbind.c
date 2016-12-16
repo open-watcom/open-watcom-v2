@@ -483,7 +483,7 @@ int main( int argc, char *argv[] )
      * copy the rex file onto the end
      */
     in = fopen( rex, "rb" );
-    if( in < 0 )  {
+    if( in == NULL )  {
         doError( "Could not open %s", rex );
     }
     out = fopen( exe, "wb+" );
