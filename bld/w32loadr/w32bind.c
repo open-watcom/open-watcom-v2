@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "loader.h"
 
 
@@ -62,9 +63,6 @@ static char             *RelocBuffer;
 
 static char             *out_buffer = NULL;
 static char             *out_buffer_ptr;
-
-/* Function prototypes */
-static int lookup( unsigned char, unsigned char );
 
 static void normalizeFName( char *dst, size_t maxlen, const char *src )
 /***********************************************************************
@@ -120,37 +118,37 @@ static int CmpReloc( const void *p, const void *q )
     return( 1 );
 }
 
-static uint_32 RelocSize( uint_32 *relocs, unsigned n )
+static uint_32 RelocSize( uint_32 *relocs, size_t n )
 {
     uint_32     size;
     uint_32     page;
-    unsigned    i;
+    size_t      i;
 
     i = 0;
     size = 0;
     while( i < n ) {
-        size += 2 * sizeof(unsigned short);
+        size += 2 * sizeof( uint_16 );
         page = relocs[i] & 0x7FFF0000;
         while( i < n ) {
             if( (relocs[i] & 0x7FFF0000) != page )
                 break;
             i++;
-            size += sizeof(unsigned short);
+            size += sizeof( uint_16 );
         }
     }
-    size += sizeof(unsigned short);
+    size += sizeof( uint_16 );
     return( size );
 }
 
-static int CreateRelocs( uint_32 *relocs, char *buf, unsigned n )
+static int CreateRelocs( uint_32 *relocs, char *buf, size_t n )
 {
     uint_32         page;
-    unsigned        i;
-    unsigned        j;
-    unsigned        k;
-    unsigned short  *newrelocs;
+    size_t          i;
+    size_t          j;
+    size_t          k;
+    uint_16         *newrelocs;
 
-    newrelocs = (unsigned short *)buf;
+    newrelocs = (uint_16 *)buf;
     i = 0;
     k = 0;
     while( i < n ) {
@@ -162,12 +160,12 @@ static int CreateRelocs( uint_32 *relocs, char *buf, unsigned n )
             j++;
         }
         //printf( "Page: %4.4x  Count: %u\n", page >> 16, j - i );
-        newrelocs[k++] = j - i;
-        newrelocs[k++] = page >> 16;
-        newrelocs[k++] = (unsigned short)relocs[i];
+        newrelocs[k++] = (uint_16)( j - i );
+        newrelocs[k++] = (uint_16)( page >> 16 );
+        newrelocs[k++] = (uint_16)relocs[i];
         i++;
         for( ; i < j; i++, k++ ) {
-            newrelocs[k] = (unsigned short)(relocs[i] - relocs[i - 1]);
+            newrelocs[k] = (uint_16)( relocs[i] - relocs[i - 1] );
         }
         i = j;
     }
@@ -434,7 +432,7 @@ static size_t CompressBlock( size_t inp_size )
     return( inp_size );
 }
 
-static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, int compress )
+static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, bool compress )
 {
     size_t      len;
     size_t      size;
@@ -468,7 +466,7 @@ static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, int
     return( out_size );
 }
 
-static uint_32 WriteCode( FILE *fp, FILE *new_fp, uint_32 inp_size, int compress )
+static uint_32 WriteCode( FILE *fp, FILE *new_fp, uint_32 inp_size, bool compress )
 {
     size_t      len;
     size_t      size;
@@ -522,7 +520,7 @@ int main( int argc, char *argv[] )
     dos_hdr             *dos_header;
     w32_hdr             *w32_header;
     struct padded_hdr   exehdr;
-    char                compress;
+    bool                compress;
     size_t              loadersize_read;
     size_t              loadersize;
     uint_32             out_size;
@@ -534,11 +532,11 @@ int main( int argc, char *argv[] )
         return( 1 );
     }
     argc = 1;
-    compress = 0;
+    compress = false;
     file = argv[argc];
 #if 0
     if( strcmp( file, "-c" ) == 0 ) {
-        compress = 1;
+        compress = true;
         ++argc;
         file = argv[argc];
     }
@@ -572,9 +570,9 @@ int main( int argc, char *argv[] )
     /*
      * get file size
      */
-    size = (long)exehdr.hdr.file_size2 * 512L;
+    size = (uint_32)exehdr.hdr.file_size2 * 512L;
     if( exehdr.hdr.file_size1 > 0 ) {
-        size += (long)exehdr.hdr.file_size1 - 512L;
+        size += (uint_32)exehdr.hdr.file_size1 - 512L;
     }
 
     /*
