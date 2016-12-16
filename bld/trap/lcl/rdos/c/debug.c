@@ -732,6 +732,7 @@ static void InitDllDebugModule( struct TDebugModule *obj, struct TLoadDllEvent *
 static void InitKernelDebugModule( struct TDebugModule *obj, int Cs )
 {
     obj->FileHandle = 0;
+    obj->ModuleName = malloc( 257 );
 
     if (RdosGetDeviceInfo(Cs, obj->ModuleName, &obj->ImageSize, &obj->DataSel, &obj->DataSize)) 
     {
