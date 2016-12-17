@@ -24,30 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  Process all pending events.
+* Description:  GUI library UI event lists data declarations.
 *
 ****************************************************************************/
 
 
-#include "guiwind.h"
-#include "guixloop.h"
-#include "guiuiev.h"
-#include "guievent.h"
-
-
-void GUIDrainEvents( void )
-{
-    EVENT   ev;
-
-    UIData->busy_wait = true;
-    uipushlist( GUIAllEvents );
-    for( ;; ) {
-        ev = uivgetevent( NULL );
-        if( ev == EV_SINK ) break;
-        ev = GUIUIProcessEvent( ev );
-        if( ev == EV_NO_EVENT ) break;
-        GUIProcessEvent( ev );
-    }
-    uipoplist();
-    UIData->busy_wait = false;
-}
+extern EVENT GUIAllEvents[];
+extern EVENT GUIUserEvents[];
+extern EVENT GUIControlEvents[];
