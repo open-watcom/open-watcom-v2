@@ -40,6 +40,6 @@
 #include "layer0.h"
 
 
-WResSetRtns( open, close, read, write, lseek, tell, malloc, free );
+WResSetRtns( open, close, posix_read, posix_write, lseek, tell, malloc, free );
 
 #endif

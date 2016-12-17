@@ -165,11 +165,11 @@ bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead
 {
     bool            error;
 
-    /* Write out the miscellaneous two WORDs 01 00 FF FF */
+    /* Write out the miscellaneous two WORDs 0x0001, 0xFFFF */
 
-    error = ResWriteUint16( 1, handle );
+    error = ResWriteUint16( 0x0001, handle );
     if( !error ) {
-        error = ResWriteUint16( (uint_16)-1, handle );
+        error = ResWriteUint16( 0xFFFF, handle );
     }
     if( !error ) {
         error = ResWriteUint32( exhead->HelpId, handle );

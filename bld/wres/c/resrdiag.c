@@ -196,17 +196,8 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
     uint_16         tmp16;
     uint_32         tmp32;
 
-    /* Read in the miscellaneous two WORDs 01 00 FF FF */
-    error = ResReadUint16( &tmp16, handle );
-    if( !error ) {
-        error = ( tmp16 != 1 );
-        if( !error ) {
-            error = ResReadUint16( &tmp16, handle );
-    if( !error ) {
-                error = tmp16 != (uint_16)-1;
-            }
-        }
-    }
+    /* Read in the miscellaneous two WORDs 0x0001, 0xFFFF */
+    error = !ResIsDialogEx( handle );
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         exhead->HelpId = tmp32;
