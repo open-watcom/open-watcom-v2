@@ -118,9 +118,9 @@ static int CmpReloc( const void *p, const void *q )
     return( 1 );
 }
 
-static uint_32 RelocSize( uint_32 *relocs, size_t n )
+static size_t RelocSize( uint_32 *relocs, size_t n )
 {
-    uint_32     size;
+    size_t      size;
     uint_32     page;
     size_t      i;
 
@@ -197,14 +197,14 @@ static unsigned char count[HASHSIZE];          /* Pair count */
 /* high_count contains indices into count[] where count[i] >= THRESHOLD */
 static int     high_count[HASHSIZE];
 static int     high_index;             /* next index into high_count to fill in */
-static int     old_size;
-static int     chars_used;
+static size_t  old_size;
+static size_t  chars_used;
 //static int     BlockSize;
 
 /* Return index of character pair in hash table */
 /* Deleted nodes have count of 1 for hashing */
 
-static int lookup( unsigned char a, unsigned char b )
+static int lookup( int a, int b )
 {
     int         index;
 
@@ -217,33 +217,33 @@ static int lookup( unsigned char a, unsigned char b )
     }
 
     /* Store pair in table */
-    left[index] = a;
-    right[index] = b;
+    left[index] = (unsigned char)a;
+    right[index] = (unsigned char)b;
     return( index );
 }
 
 static size_t HashBlock( size_t len )
 {
-    int         c;
-    int         index;
-    int         used = 0;
-    size_t      size;
+    int             c;
+    int             index;
+    size_t          used;
+    size_t          size;
 
     /* Reset hash table and pair table */
     for( c = 0; c < HASHSIZE; c++ ) {
         count[c] = 0;
     }
     for( c = 0; c < 256; c++ ) {
-        leftcode[c] = c;
+        leftcode[c] = (unsigned char)c;
         rightcode[c] = 0;
     }
+    used = 0;
     high_index = 0;
-
     for( size = 0; size < len; size++ ) {
         c = buffer[size];
         if( size > 0 ) {
             index = lookup( buffer[size - 1], c );
-            if( count[index] == (THRESHOLD - 1) ) {
+            if( count[index] == ( THRESHOLD - 1 ) ) {
                 high_count[high_index++] = index;
             }
             if( count[index] < 255 ) {
@@ -252,7 +252,7 @@ static size_t HashBlock( size_t len )
         }
 
         /* Use rightcode to flag data chars found */
-        if( ! rightcode[c] ) {
+        if( rightcode[c] == 0 ) {
             rightcode[c] = 1;
             used++;
         }
@@ -265,17 +265,18 @@ static size_t HashBlock( size_t len )
 /* Write each pair table and data block to output */
 static size_t filewrite( FILE *new_fp, size_t inp_size )
 {
-    int         i;
-    int         len;
-    int         unused = 0;
-    int         missed;
-    int         c = 0;
-    size_t      out_size;
+    int             i;
+    int             len;
+    int             unused;
+    int             missed;
+    int             c;
+    size_t          out_size;
 
     out_buffer_ptr = out_buffer;
+    unused = 0;
 
     /* For each character 0..255 */
-    while( c < 256 ) {
+    for( c = 0; c < 256; ) {
 
         /* If not a pair code, count run of literals */
         if( c == leftcode[c] ) {
@@ -320,7 +321,7 @@ static size_t filewrite( FILE *new_fp, size_t inp_size )
     if( out_size > 0 ) {
         if( fwrite( out_buffer, 1, out_size, new_fp ) != out_size ) {
             printf( "Error writing file\n" );
-            return( -1 );
+            return( (size_t)-1 );
         }
     }
     missed = 0;
@@ -338,7 +339,7 @@ static size_t filewrite( FILE *new_fp, size_t inp_size )
 static void inc_count( int index )
 {
     if( count[index] < 255 ) {
-        if( count[index] == (THRESHOLD - 1) ) {
+        if( count[index] == ( THRESHOLD - 1 ) ) {
             if( high_index < HASHSIZE ) {
                 high_count[high_index++] = index;
             }
@@ -353,14 +354,17 @@ static size_t CompressBlock( size_t inp_size )
     unsigned char   rightch;
     unsigned char   best;
     int             code;
-    int             oldsize;
-    int             index, r, w, best_index;
+    size_t          oldsize;
+    size_t          r;
+    size_t          w;
+    int             index;
+    int             best_index;
 
     code = 256;
-    for(;;) {
+    for( ;; ) {
         /* Get next unsed char for pair code */
         for( code--; code >= 0; code-- ) {
-            if( code == leftcode[code] && !rightcode[code] ) {
+            if( code == leftcode[code] && rightcode[code] == 0 ) {
                 break;
             }
         }
@@ -399,7 +403,7 @@ static size_t CompressBlock( size_t inp_size )
         rightch = right[best_index];
         oldsize = inp_size - 1;
         for( w = 0, r = 0; r < oldsize; r++ ) {
-            if( buffer[r] == leftch  &&  buffer[r + 1] == rightch ) {
+            if( buffer[r] == leftch && buffer[r + 1] == rightch ) {
                 if( r > 0 ) {
                     index = lookup( buffer[w - 1], leftch );
                     if( count[index] > 1 )
@@ -412,7 +416,7 @@ static size_t CompressBlock( size_t inp_size )
                         --count[index];
                     inc_count( lookup( code, buffer[r + 2] ) );
                 }
-                buffer[w++] = code;
+                buffer[w++] = (unsigned char)code;
                 r++;
                 inp_size--;
             } else {
@@ -432,7 +436,7 @@ static size_t CompressBlock( size_t inp_size )
     return( inp_size );
 }
 
-static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, bool compress )
+static uint_32 WriteRelocs( FILE *new_fp, const char *buf, size_t inp_size, bool compress )
 {
     size_t      len;
     size_t      size;
@@ -449,17 +453,17 @@ static uint_32 WriteRelocs( FILE *new_fp, const char *buf, uint_32 inp_size, boo
             size = HashBlock( len );
             size = CompressBlock( size );
             size = filewrite( new_fp, size );
-            if( size == -1 ) {
+            if( size == (size_t)-1 ) {
                 printf( "Error writing output file\n" );
-                return( -1 );
+                return( (uint_32)-1 );
             }
-            out_size += size;
+            out_size += (uint_32)size;
         } else {
             if( fwrite( buf, 1, len, new_fp ) != len ) {
                 printf( "Error writing output file\n" );
-                return( -1 );
+                return( (uint_32)-1 );
             }
-            out_size += len;
+            out_size += (uint_32)len;
         }
         inp_size -= len;
     }
@@ -479,26 +483,26 @@ static uint_32 WriteCode( FILE *fp, FILE *new_fp, uint_32 inp_size, bool compres
             len = inp_size;
         if( fread( buffer, 1, len, fp ) != len ) {
             printf( "Error reading REX file\n" );
-            return( -1 );
+            return( (uint_32)-1 );
         }
         if( compress ) {
             /* Compress each data block until end of file */
             size = HashBlock( len );
             size = CompressBlock( size );
             size = filewrite( new_fp, size );
-            if( size == -1 ) {
+            if( size == (size_t)-1 ) {
                 printf( "Error writing output file\n" );
-                return( -1 );
+                return( (uint_32)-1 );
             }
-            out_size += size;
+            out_size += (uint_32)size;
         } else {
             if( fwrite( buffer, 1, len, new_fp ) != len ) {
                 printf( "Error writing output file\n" );
-                return( -1 );
+                return( (uint_32)-1 );
             }
-            out_size += len;
+            out_size += (uint_32)len;
         }
-        inp_size -= len;
+        inp_size -= (uint_32)len;
     }
     return( out_size );
 }
@@ -509,11 +513,11 @@ int main( int argc, char *argv[] )
     FILE                *loader_fp;
     FILE                *new_fp;
     char                *file;
-    uint_32             size;
+    uint_32             filesize;
     uint_32             codesize;
-    uint_32             relocsize;
+    size_t              relocsize;
     uint_32             minmem,maxmem;
-    uint_32             relsize,exelen;
+    size_t              relsize;
     uint_32             *relocs;
     uint_32             file_header_size;
     char                *loader_code;
@@ -543,13 +547,12 @@ int main( int argc, char *argv[] )
 #endif
     ++argc;
     normalizeFName( file, strlen( file ) + 1, file );
-    fp = fopen( file, O_RDONLY | O_BINARY );
+    fp = fopen( file, "rb" );
     if( fp == NULL ) {
         printf( "Error opening file '%s'\n", file );
         return( 1 );
     }
 
-    exelen = 0;
     /*
      * validate header signature
      */
@@ -570,9 +573,9 @@ int main( int argc, char *argv[] )
     /*
      * get file size
      */
-    size = (uint_32)exehdr.hdr.file_size2 * 512L;
+    filesize = (uint_32)exehdr.hdr.file_size2 * 512L;
     if( exehdr.hdr.file_size1 > 0 ) {
-        size += (uint_32)exehdr.hdr.file_size1 - 512L;
+        filesize += (uint_32)exehdr.hdr.file_size1 - 512L;
     }
 
     /*
@@ -580,38 +583,38 @@ int main( int argc, char *argv[] )
      * to get total area
      */
     minmem = (uint_32)exehdr.hdr.min_data * 4096L;
-    if( exehdr.hdr.max_data == (unsigned short)-1 ) {
+    if( exehdr.hdr.max_data == (uint_16)-1 ) {
         maxmem = 4096L;
     } else {
         maxmem = (uint_32)exehdr.hdr.max_data * 4096L;
     }
-    minmem = Align4K( minmem + size );
-    maxmem = Align4K( maxmem + size );
+    minmem = Align4K( minmem + filesize );
+    maxmem = Align4K( maxmem + filesize );
     if( minmem > maxmem ) {
         maxmem = minmem;
     }
     //printf( "minmem = %lu, maxmem = %lu\n", minmem, maxmem );
     //printf( "size = %lu, file_header_size = %lu\n", size, file_header_size );
-    codesize = size - file_header_size;
+    codesize = filesize - file_header_size;
     //printf( "code+data size = %lu\n", codesize );
 
     /*
      * get and apply relocation table
      */
-    relsize = sizeof( uint_32 ) * (uint_32)exehdr.hdr.reloc_cnt;
+    relsize = sizeof( uint_32 ) * (size_t)exehdr.hdr.reloc_cnt;
     {
         uint_32 realsize;
         uint_16 kcnt;
 
         realsize = file_header_size - (uint_32)exehdr.hdr.first_reloc;
-        kcnt = realsize / ( 0x10000L * sizeof( uint_32 ) );
+        kcnt = (uint_16)( realsize / ( 0x10000L * sizeof( uint_32 ) ) );
         relsize += kcnt * ( 0x10000L * sizeof( uint_32 ) );
     }
     //printf( "relocation size = %lu", relsize );
     //printf( " => %lu relocation entries\n", relsize / sizeof( uint_32 ) );
-    fseek( fp, exelen + (uint_32)exehdr.hdr.first_reloc, SEEK_SET );
+    fseek( fp, exehdr.hdr.first_reloc, SEEK_SET );
     relocs = NULL;
-    if( relsize != 0 ) {
+    if( relsize > 0 ) {
         relocs = (uint_32 *)malloc( relsize );
         if( relocs == NULL ) {
             printf( "Out of memory\n" );
@@ -656,7 +659,7 @@ int main( int argc, char *argv[] )
     fseek( loader_fp, 0, SEEK_END );
     loadersize_read = ftell( loader_fp );
     fseek( loader_fp, 0, SEEK_SET );
-    loadersize = _RoundUp( loadersize_read, 512L );
+    loadersize = _RoundUp( loadersize_read, 512L ); /* round up to multiple of 512 */
     loader_code = calloc( loadersize, 1 );
     if( loader_code == NULL ) {
         printf( "Out of memory\n" );
@@ -668,14 +671,13 @@ int main( int argc, char *argv[] )
         return( 1 );
     }
     fclose( loader_fp );
-    size = _RoundUp( size, 512L );        /* round up to multiple of 512 */
 
     /* patch header in the loader */
     dos_header = (dos_hdr *)loader_code;
     w32_header = (w32_hdr *)( loader_code + dos_header->size_of_DOS_header_in_paras * 16 );
 
-    w32_header->start_of_W32_file = size;
-    w32_header->size_of_W32_file = codesize + relocsize;
+    w32_header->start_of_W32_file = (uint_32)loadersize;
+    w32_header->size_of_W32_file = codesize + (uint_32)relocsize;
     w32_header->offset_to_relocs = codesize;
     if( maxmem < w32_header->size_of_W32_file )
         maxmem = w32_header->size_of_W32_file;
@@ -693,7 +695,7 @@ int main( int argc, char *argv[] )
         fclose( fp );
         return( 1 );
     }
-    fseek( fp, exelen + file_header_size, SEEK_SET );
+    fseek( fp, file_header_size, SEEK_SET );
     if( compress ) {
         out_buffer = malloc( 2 * 4096 );
         if( out_buffer == NULL ) {
