@@ -103,9 +103,6 @@ static void DebugThread( void *Param );
 
 static struct TDebug    *DebugArr[MAX_DEBUG_THREADS];
 static int              ThreadArr[MAX_DEBUG_THREADS]; 
-static int              HasBreak = false;
-static int              BreakSel;
-static long             BreakOffset;
 static char             SelfKey = 0;
 static char             DebugKey = 0;
 
@@ -208,7 +205,7 @@ static void InitDebugThread( struct TDebugThread *obj )
     obj->FHasBreak = false;
     obj->FHasTrace = false;
     obj->FHasException = false;
-    obj->FTempBreak = 0;
+    obj->FHasTempBp = 0;
 }
 
 static void InitProcessDebugThread( struct TDebugThread *obj, struct TCreateProcessEvent *event )
@@ -303,11 +300,11 @@ static void SetupGo( struct TDebugThread *obj, struct TDebugBreak *b )
     RdosGetThreadTss( obj->ThreadID, &tss );
 
     if( b ) {
-        obj->FTempBreak = b;
-        RdosSetCodeBreak(obj->ThreadID, 0, b->Sel, b->Offset);
+        obj->FHasTempBp = true;
         tss.eflags |= 0x10000;
         update = true;
-    }
+    } else
+        obj->FHasTempBp = false;
     
     if( ( tss.eflags & TRACE_BIT ) != 0 ) {
         tss.eflags &= ~TRACE_BIT;
@@ -318,6 +315,9 @@ static void SetupGo( struct TDebugThread *obj, struct TDebugBreak *b )
         RdosSetThreadTss( obj->ThreadID, &tss );
     }
 
+    if( b ) {
+        RdosSetCodeBreak(obj->ThreadID, 0, b->Sel, b->Offset);
+    }
 }
 
 static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
@@ -331,11 +331,11 @@ static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
     RdosGetThreadTss( obj->ThreadID, &tss );
 
     if( b ) {
-        obj->FTempBreak = b;
-        RdosSetCodeBreak(obj->ThreadID, 0, b->Sel, b->Offset);
+        obj->FHasTempBp = true;
         tss.eflags |= 0x10000;
         update = true;
-    }
+    } else
+        obj->FHasTempBp = false;
 
     if( ( tss.eflags & TRACE_BIT ) == 0 ) {
         tss.eflags |= TRACE_BIT;
@@ -345,6 +345,10 @@ static void SetupTrace( struct TDebugThread *obj, struct TDebugBreak *b )
     if( update ) {
         RdosSetThreadTss( obj->ThreadID, &tss );
     }
+
+    if( b ) {
+        RdosSetCodeBreak(obj->ThreadID, 0, b->Sel, b->Offset);
+    }
 }
 
 static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBreakList, struct TDebugWatch *WatchList )
@@ -353,10 +357,9 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBrea
     struct TDebugWatch  *w = WatchList;
     int                 bnum;
 
-    if( obj->FTempBreak ) {
-        RdosSetCodeBreak( obj->ThreadID, 0, obj->FTempBreak->Sel, obj->FTempBreak->Offset );
+    if( obj->FHasTempBp )
         bnum = 1;
-    } else
+    else
         bnum = 0;
 
     while( b ) {
@@ -376,32 +379,16 @@ static void ActivateBreaks( struct TDebugThread *obj, struct TDebugBreak *HwBrea
     }
 }
 
-static struct TDebugBreak *DeactivateBreaks( struct TDebugThread *obj )
-{
-    struct TDebugBreak  *b;
-    int                 bnum;
-
-    for( bnum = 0; bnum < 4; bnum++ ) {
-        RdosClearBreak( obj->ThreadID, bnum );
-    }
-
-    b = obj->FTempBreak;
-    obj->FTempBreak = 0;
-    return( b );
-}
-
-static struct TDebugBreak *ClearTempBreak( struct TDebugThread *obj )
-{
-    struct TDebugBreak  *b = obj->FTempBreak;
-    obj->FTempBreak = 0;
-    return( b );
-}
-
 static void SetException( struct TDebugThread *obj, struct TExceptionEvent *event )
 {
     Tss         tss;
     int         i;
     opcode_type brk_opcode = 0;
+    int         bnum;
+
+    for( bnum = 0; bnum < 4; bnum++ ) {
+        RdosClearBreak( obj->ThreadID, bnum );
+    }
 
     obj->FHasBreak = false;
     obj->FHasTrace = false;
@@ -557,6 +544,11 @@ static void SetKernelException( struct TDebugThread *obj, struct TKernelExceptio
 {
     Tss tss;
     int i;
+    int         bnum;
+
+    for( bnum = 0; bnum < 4; bnum++ ) {
+        RdosClearBreak( obj->ThreadID, bnum );
+    }
 
     obj->FHasBreak = false;
     obj->FHasTrace = false;
@@ -809,10 +801,6 @@ void InitDebug( struct TDebug *obj, const char *Program, const char *Param, cons
 
     obj->FMemoryModel = DEBUG_MEMORY_MODEL_FLAT;
     obj->FConfigChange = false;
-    
-    obj->FAsyncBreak = false;
-    obj->FAsyncSel = 0;
-    obj->FAsyncOffset = 0;
 
     obj->FWaitLoad = true;
 
@@ -1391,7 +1379,7 @@ void ClearBreak( struct TDebug *obj, int Sel, long Offset )
                 
                 if( delbr->Offset == Offset && delbr->Sel == Sel ) {
                     b->Next = delbr->Next;
-                    RemoveGlobalBreak( obj, b );
+                    RemoveGlobalBreak( obj, delbr );
                     free( delbr );
                 }
                 else
@@ -1488,9 +1476,9 @@ static struct TDebugBreak *PrepareToRun( struct TDebug *obj )
     return( bp );
 }
 
-static void DoTrace( struct TDebug *obj )
+static struct TDebugBreak *DoTrace( struct TDebug *obj )
 {
-    struct TDebugBreak *bp;
+    struct TDebugBreak *bp = 0;
 
     if ( ( obj->CurrentThread->Cs & 0x3 ) == 0x3 ) {
         bp = PrepareToRun( obj );
@@ -1501,11 +1489,12 @@ static void DoTrace( struct TDebug *obj )
             RdosDebugNext();
         RdosDebugTrace();
     }
+    return( bp );
 }
 
-static void DoGo( struct TDebug *obj )
+static struct TDebugBreak *DoGo( struct TDebug *obj )
 {
-    struct TDebugBreak *bp;
+    struct TDebugBreak *bp = 0;
 
     if ( ( obj->CurrentThread->Cs & 0x3 ) == 0x3 ) {
         bp = PrepareToRun( obj );
@@ -1518,6 +1507,7 @@ static void DoGo( struct TDebug *obj )
         ActivateBreaks( obj->CurrentThread, obj->HwBreakList, obj->WatchList );
         RdosDebugRun();
     }
+    return( bp );
 }
 
 void SetUserScreen()
@@ -1564,8 +1554,10 @@ static int PickNewThread( struct TDebug *obj )
         Thread = Thread->Next;
     }
 
-    if( Thread )
+    if( Thread ) {
         obj->CurrentThread = Thread;
+        obj->FThreadChanged = true;
+    }
         
     RdosLeaveSection( obj->FSection );
 
@@ -1575,31 +1567,35 @@ static int PickNewThread( struct TDebug *obj )
         return false;
 }
 
-static void FixupAfterTimeout( struct TDebug *obj )
+static void FixupAfterTimeout( struct TDebug *obj, struct TDebugBreak *bp )
 {
-    struct TDebugBreak *Bp;
-    opcode_type         brk_opcode = BRKPOINT;
+    opcode_type          brk_opcode = BRKPOINT;
+    struct TDebugThread *thread;
 
-    if( obj->CurrentThread ) {
-        Bp = ClearTempBreak( obj->CurrentThread );
-        if( Bp ) {
-            if( !Bp->IsActive )
-                RdosWriteThreadMem( obj->CurrentThread->ThreadID, Bp->Sel, Bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
-            Bp->IsActive = true;
-        }
+    thread = obj->CurrentThread;
+    if( thread == 0 ) {
+        thread = obj->ThreadList;
+    }
+
+    if( thread && bp ) {
+        if( !bp->IsActive )
+            RdosWriteThreadMem( obj->CurrentThread->ThreadID, bp->Sel, bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
+        bp->IsActive = true;
     }
 }
 
 int AsyncGo( struct TDebug *obj, int ms )
 {
-    int wait;
+    int                  wait;
+    struct TDebugBreak  *bp;
     
     if( obj->CurrentThread ) {
         RdosResetSignal( obj->UserSignal );
-        DoGo( obj );
 
+        bp = DoGo( obj );
         wait = RdosWaitTimeout( obj->UserWait, ms );
-        FixupAfterTimeout( obj );
+        FixupAfterTimeout( obj, bp );
+
         if( wait != 0 )
             return( true );
         else
@@ -1610,17 +1606,16 @@ int AsyncGo( struct TDebug *obj, int ms )
 
 int AsyncTrace( struct TDebug *obj, int ms )
 {
-    int     wait;
+    int                  wait;
+    struct TDebugBreak  *bp;
 
     if( obj->CurrentThread ) {
-        BreakSel = obj->CurrentThread->Cs;
-        BreakOffset = obj->CurrentThread->Eip;
-
         RdosResetSignal( obj->UserSignal );
-        DoTrace( obj );
 
+        bp = DoTrace( obj );
         wait = RdosWaitTimeout( obj->UserWait, ms );
-        FixupAfterTimeout( obj );
+        FixupAfterTimeout( obj, bp );
+        
         if( wait != 0 )
             return( true );
         else
@@ -1635,10 +1630,6 @@ int AsyncPoll( struct TDebug *obj, int ms )
 
     wait = RdosWaitTimeout( obj->UserWait, ms );
     if (wait) {
-        if( HasBreak ) {
-            ClearBreak( obj, BreakSel, BreakOffset );
-            HasBreak = false;
-        }
         return( true );
     } else {
         return( PickNewThread( obj ) );
@@ -1647,10 +1638,6 @@ int AsyncPoll( struct TDebug *obj, int ms )
 
 void ExitAsync( struct TDebug *obj )
 {
-    if ( obj->FAsyncBreak ) {
-        ClearBreak( obj, obj->FAsyncSel, obj->FAsyncOffset );
-        obj->FAsyncBreak = false;
-    }
 }
 
 static void HandleCreateProcess( struct TDebug *obj, struct TCreateProcessEvent *event )
@@ -1772,9 +1759,6 @@ static void SignalDebugData( struct TDebug *obj )
     struct TKernelExceptionEvent kev;
     int ExitCode;
     int handle;
-    struct TDebugThread *Thread;
-    struct TDebugBreak *Bp;
-    opcode_type         brk_opcode = BRKPOINT;
 
     RdosWaitMilli( 5 );
 
@@ -1834,23 +1818,6 @@ static void SignalDebugData( struct TDebug *obj )
     {
         case EVENT_EXCEPTION:
         case EVENT_KERNEL:
-            Thread = obj->ThreadList;
-            while( Thread ) {
-                if( Thread->ThreadID == ThreadId )
-                    break;
-                Thread = Thread->Next;
-            }
-            
-            if( Thread ) {
-                Bp = DeactivateBreaks( Thread);
-                if( Bp ) {
-                    if( !Bp->IsActive ) {
-                        RdosWriteThreadMem( Thread->ThreadID, Bp->Sel, Bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
-                    }
-                    Bp->IsActive = true;
-                }
-            }
-
             UpdateModules( obj );
             RdosSetSignal( obj->UserSignal );
             break;

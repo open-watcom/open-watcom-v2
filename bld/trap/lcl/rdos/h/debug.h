@@ -101,9 +101,9 @@ struct TDebugThread
     short int MathDataSel;
     real_math St[8];
 
-    struct TDebugBreak *FTempBreak;
     struct TDebugThread *Next;
 
+    int FHasTempBp;
     int FDebug;
     int FHasBreak;
     int FHasTrace;
@@ -173,11 +173,6 @@ struct TDebug
 
     int FConfigChange;
     int FMemoryModel;
-    
-    int FAsyncBreak;
-    int FAsyncSel;
-    long FAsyncOffset;
-
 };
 
 // TDebug methods
