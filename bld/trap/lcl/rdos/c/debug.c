@@ -1579,7 +1579,7 @@ static void FixupAfterTimeout( struct TDebug *obj, struct TDebugBreak *bp )
 
     if( thread && bp ) {
         if( !bp->IsActive )
-            RdosWriteThreadMem( obj->CurrentThread->ThreadID, bp->Sel, bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
+            RdosWriteThreadMem( thread->ThreadID, bp->Sel, bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
         bp->IsActive = true;
     }
 }
