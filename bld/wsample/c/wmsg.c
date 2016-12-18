@@ -60,7 +60,7 @@
 char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #if !defined(__WINDOWS__)
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #endif
 
 #if defined(__WINDOWS__)

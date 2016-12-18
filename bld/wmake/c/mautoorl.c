@@ -87,7 +87,7 @@ static void bufferInit( void )
 }
 
 static void *orlRead( orl_file_id fid, size_t bytes )
-/*****************************************************/
+/***************************************************/
 {
     size_t  n;
     size_t  old_pos;

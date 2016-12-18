@@ -48,8 +48,6 @@
 #include "clibext.h"
 
 
-#define NIL_HANDLE      ((int)-1)
-
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
@@ -70,7 +68,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
 

@@ -104,7 +104,8 @@ void MsgSubStr( int resourceid, char *buff, char *p )
     dest = buff;
     for(;;) {
         ch = *src++;
-        if( ch == '\0' ) break;
+        if( ch == '\0' )
+            break;
         if( ch != '%' ) {
             *dest++ = ch;
         } else {

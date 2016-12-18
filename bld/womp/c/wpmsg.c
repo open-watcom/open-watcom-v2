@@ -37,7 +37,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
-
 #include "watcom.h"
 #include "wpmsg.h"
 #include "wressetr.h"
