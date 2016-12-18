@@ -421,7 +421,7 @@ static char *ReadInTrap( dig_ldhandle ldfh )
         rm_dos_read.ss = RMData.segm.rm;
         rm_dos_read.sp = offsetof( rm_data, stack ) + STACK_SIZE;
         rm_dos_read.edx = offset;
-        rm_dos_read.ebx = ldfh;
+        rm_dos_read.ebx = DIGLD_FID2PH( ldfh );
         rm_dos_read.ds = TrapMem.segm.rm;
         rm_dos_read.ecx = imagesize - offset;
         rm_dos_read.eax = 0x3f00;
