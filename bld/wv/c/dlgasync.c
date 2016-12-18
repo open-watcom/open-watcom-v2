@@ -39,9 +39,6 @@
 #include "remasync.h"
 #include "guitypes.h"
 
-#ifdef __RDOS__
-extern void uisendescape( void );
-#endif
 
 typedef struct dlg_async {
     unsigned cond;
