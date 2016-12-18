@@ -462,7 +462,7 @@ static void openFiles( void )
         }
         objFileBuf = MemAlloc( objFileLen );
         objFilePos = 0;
-        if( read( objhdl, objFileBuf, objFileLen ) == -1 ) {
+        if( posix_read( objhdl, objFileBuf, objFileLen ) == -1 ) {
             openError( ObjFileName );
         }
         close( objhdl );
