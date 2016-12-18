@@ -38,6 +38,9 @@
 #include "trapbrk.h"
 #include "remasync.h"
 #include "guitypes.h"
+#ifdef __RDOS__
+#include "stdui.h"
+#endif
 
 
 typedef struct dlg_async {
