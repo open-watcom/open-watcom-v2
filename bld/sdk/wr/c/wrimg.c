@@ -42,6 +42,8 @@
 #include "wrimg.h"
 #include "wrmsg.h"
 #include "wrsvres.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -78,7 +80,7 @@ bool WRLoadBitmapFile( WRInfo *info )
     }
 
     if( ok ) {
-        type = WResIDFromNum( (long)(pointer_int)RT_BITMAP );
+        type = WResIDFromNum( RESOURCE2INT( RT_BITMAP ) );
         ok = (type != NULL);
     }
 
@@ -155,7 +157,7 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_ICON );
+        tname = WResIDFromNum( RESOURCE2INT( RT_GROUP_ICON ) );
         ok = ( tname != NULL );
     }
 
@@ -245,7 +247,7 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)(pointer_int)RT_GROUP_CURSOR );
+        tname = WResIDFromNum( RESOURCE2INT( RT_GROUP_CURSOR ) );
         ok = ( tname != NULL );
     }
 
@@ -367,7 +369,7 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
     ok = ( info != NULL && info->dir != NULL );
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_BITMAP, NULL );
+        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
         ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOBMP );
@@ -447,7 +449,7 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_CURSOR, NULL );
+        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
         ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOCUR );
@@ -504,7 +506,7 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     }
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_GROUP_ICON, NULL );
+        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
         ok = ( tnode != NULL );
         if( !ok ) {
             WRDisplayErrorMsg( WR_PRJNOICON );

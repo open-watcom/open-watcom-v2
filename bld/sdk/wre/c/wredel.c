@@ -59,6 +59,8 @@
 #include "wreimage.h"
 #include "wreimg.h"
 #include "jdlg.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -107,7 +109,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     name = NULL;
     lnode = NULL;
 
-    if( curr->info->current_type == (uint_16)(pointer_int)RT_STRING ) {
+    if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
         return( WREDeleteStringResources( curr, FALSE ) );
     }
 
@@ -206,7 +208,7 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
     if( ok ) {
         tnode = curr->type;
         if( tnode == NULL ) {
-            tnode = WRFindTypeNode( curr->info->info->dir, (uint_16)(pointer_int)RT_STRING, NULL );
+            tnode = WRFindTypeNode( curr->info->info->dir, RESOURCE2INT( RT_STRING ), NULL );
         }
         if( tnode != NULL ) {
             curr->info->modified = true;

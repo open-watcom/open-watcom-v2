@@ -40,6 +40,7 @@
 #include "wricon.h"
 #include "wrselft.h"
 #include "iemem.h"
+#include "wresdefn.h"
 
 
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
@@ -854,12 +855,14 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
 static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
     char                fn[_MAX_FNAME];
-    WResID              *tname = NULL;
-    WResID              *rname = NULL;
+    WResID              *tname;
+    WResID              *rname;
     WResLangType        lang;
     bool                dup;
     bool                ok;
 
+    tname = NULL;
+    rname = NULL;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     ok = (node != NULL && node->wrinfo != NULL);
@@ -927,13 +930,13 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         switch( node->imgtype ) {
         case BITMAP_IMG:
-            type = (uint_16)(pointer_int)RT_BITMAP;
+            type = RESOURCE2INT( RT_BITMAP );
             break;
         case ICON_IMG:
-            type = (uint_16)(pointer_int)RT_GROUP_ICON;
+            type = RESOURCE2INT( RT_GROUP_ICON );
             break;
         case CURSOR_IMG:
-            type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
+            type = RESOURCE2INT( RT_GROUP_CURSOR );
             break;
         default:
             ok = false;
@@ -984,7 +987,7 @@ static bool saveResourceFile( img_node *node )
 
     // get rid of the old image resources for icons or cursors
     if( ok ) {
-        if( type != (uint_16)(pointer_int)RT_BITMAP ) {
+        if( type != RESOURCE2INT( RT_BITMAP ) ) {
             ok = WRDeleteGroupImages( node->wrinfo, node->lnode, type );
         }
     }
@@ -1045,7 +1048,7 @@ static bool saveResourceFile( img_node *node )
         PrintHintTextByID( WIE_IMAGESAVEDTO, node->fname );
     }
 
-    if( type != (uint_16)(pointer_int)RT_BITMAP ) {
+    if( type != RESOURCE2INT( RT_BITMAP ) ) {
         if( data != NULL ) {
             MemFree( data );
         }

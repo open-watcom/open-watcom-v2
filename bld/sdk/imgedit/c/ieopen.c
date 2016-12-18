@@ -41,6 +41,8 @@
 #include "wricon.h"
 #include "wrselimg.h"
 #include "iemem.h"
+#include "wresdefn.h"
+
 
 #ifdef __WATCOMC__
 #ifdef __NT__
@@ -695,7 +697,7 @@ static bool readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
             imgType = BITMAP_IMG;
             data = WRCopyResData( info, sii->lnode );
             dsize = sii->lnode->Info.Length;
@@ -703,10 +705,10 @@ static bool readInResourceFile( char *fullname )
             if( ok ) {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             imgType = CURSOR_IMG;
             ok = WRCreateCursorData( info, sii->lnode, &data, &dsize );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             imgType = ICON_IMG;
             ok = WRCreateIconData( info, sii->lnode, &data, &dsize );
         } else {
@@ -716,11 +718,11 @@ static bool readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = ReadBitmapFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = ReadCursorFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = ReadIconFromData( data, fullname, info, sii->lnode );
         }
     }

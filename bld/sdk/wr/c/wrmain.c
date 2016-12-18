@@ -56,6 +56,7 @@
 #include "jdlg.h"
 #include "rcrtns.h"
 #include "dllmain.h"
+#include "wresdefn.h"
 
 #include "clibext.h"
 
@@ -498,9 +499,9 @@ bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoDat
 
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
+        if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WREDoSaveImageAs( info, idata, true );
-        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WREDoSaveImageAs( info, idata, false );
         } else {
             ok = WREDoSaveObjectAs( info, idata );
@@ -552,9 +553,9 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
     // loop thru all of the data
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
+        if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WREDoSaveImageInto( info, idata, dup, true );
-        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WREDoSaveImageInto( info, idata, dup, false );
         } else {
             ok = WREDoSaveObjectInto( info, idata, dup );
@@ -884,7 +885,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     type = WResIDToNum( idata->type );
 
-    strings = (type == (long)(pointer_int)RT_STRING);
+    strings = (type == RESOURCE2INT( RT_STRING ));
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {
@@ -925,7 +926,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         }
     }
 
-    if( type == (long)(pointer_int)RT_GROUP_ICON || type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+    if( type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
         if( !WRDeleteGroupImages( info, lnode, type ) ) {
             return( FALSE );
         }

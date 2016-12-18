@@ -56,6 +56,8 @@
 #include "wre_rc.h"
 #include "wreimage.h"
 #include "wreimg.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -137,15 +139,15 @@ WResID *WRECreateImageTitle( uint_16 type )
     uint_32     num;
     WResID      *name;
 
-    if( type == (uint_16)(pointer_int)RT_BITMAP ) {
+    if( type == RESOURCE2INT( RT_BITMAP ) ) {
         WRENumBitmapTitles++;
         num = WRENumBitmapTitles;
         text = AllocRCString( WRE_DEFBITMAPNAME );
-    } else if( type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+    } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
         WRENumCursorTitles++;
         num = WRENumCursorTitles;
         text = AllocRCString( WRE_DEFCURSORNAME );
-    } else if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+    } else if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
         WRENumIconTitles++;
         num = WRENumIconTitles;
         text = AllocRCString( WRE_DEFICONNAME );
@@ -371,7 +373,7 @@ bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     }
     memcpy( *data, session->info.data, tsize );
 
-    if( session->type == (uint_16)(pointer_int)RT_BITMAP ) {
+    if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
         if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
             if( *data != NULL ) {
                 WRMemFree( *data );
@@ -458,7 +460,7 @@ static bool WRESetCursorSessionResData( WREImageSession *session, void *data, ui
         curr.res = session->rnode;
         curr.lang = session->lnode;
         if( !session->new ) {
-            ok = WREDeleteGroupImages( &curr, (uint_16)(pointer_int)RT_GROUP_CURSOR );
+            ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_CURSOR ) );
         }
     }
 
@@ -483,7 +485,7 @@ static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint
         curr.res = session->rnode;
         curr.lang = session->lnode;
         if( !session->new ) {
-            ok = WREDeleteGroupImages( &curr, (uint_16)(pointer_int)RT_GROUP_ICON );
+            ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_ICON ) );
         }
     }
 
@@ -514,11 +516,11 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        if( session->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = WRESetBitmapSessionResData( session, data, size );
-        } else if( session->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WRESetCursorSessionResData( session, data, size );
-        } else if( session->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WRESetIconSessionResData( session, data, size );
         }
     }
@@ -627,11 +629,11 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( curr->info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
             service = BitmapService;
-        } else if( curr->info->current_type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             service = CursorService;
-        } else if( curr->info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             service = IconService;
         } else {
             ok = false;

@@ -41,6 +41,7 @@
 #include "wdewait.h"
 #include "wdeldres.h"
 #include "rcrtns.h"
+#include "wresdefn.h"
 
 #include "clibext.h"
 
@@ -75,8 +76,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
     }
 
     if( ok ) {
-        res_info->dlg_entry = WdeFindTypeNode( res_info->info->dir, (uint_16)(pointer_int)RT_DIALOG,
-                                               "DIALOG" );
+        res_info->dlg_entry = WdeFindTypeNode( res_info->info->dir, RESOURCE2INT( RT_DIALOG ), "DIALOG" );
     }
 
     if( !ok ) {

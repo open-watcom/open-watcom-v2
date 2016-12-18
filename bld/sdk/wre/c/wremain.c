@@ -78,6 +78,7 @@
 #include "jdlg.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
+#include "wresdefn.h"
 #include "clibint.h"
 
 #include "clibext.h"
@@ -205,11 +206,11 @@ static void startEditors( void )
         ret = FALSE;
         type = 0;
         if( ftype == WR_WIN_RC_STR ) {
-            type = (uint_16)(pointer_int)RT_STRING;
+            type = RESOURCE2INT( RT_STRING );
         } else if( ftype == WR_WIN_RC_MENU ) {
-            type = (uint_16)(pointer_int)RT_MENU;
+            type = RESOURCE2INT( RT_MENU );
         } else if( ftype == WR_WIN_RC_ACCEL ) {
-            type = (uint_16)(pointer_int)RT_ACCELERATOR;
+            type = RESOURCE2INT( RT_ACCELERATOR );
         }
         if( type != 0 && WREFindTypeNode( res_info->info->dir, type, NULL ) ) {
             ret = WRESetResNamesFromType( res_info, type, FALSE, NULL, 0 );
@@ -724,15 +725,15 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_NEW_CURSOR:
-            WRENewImageResource( CursorService, (uint_16)(pointer_int)RT_GROUP_CURSOR );
+            WRENewImageResource( CursorService, RESOURCE2INT( RT_GROUP_CURSOR ) );
             break;
 
         case IDM_NEW_BITMAP:
-            WRENewImageResource( BitmapService, (uint_16)(pointer_int)RT_BITMAP );
+            WRENewImageResource( BitmapService, RESOURCE2INT( RT_BITMAP ) );
             break;
 
         case IDM_NEW_ICON:
-            WRENewImageResource( IconService, (uint_16)(pointer_int)RT_GROUP_ICON );
+            WRENewImageResource( IconService, RESOURCE2INT( RT_GROUP_ICON ) );
             break;
 
         case IDM_NEW_DIALOG:
@@ -762,7 +763,7 @@ LRESULT CALLBACK WREMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         case IDM_RES_SAVEAS:
         case IDM_RES_SAVE_INTO:
             if( res_info != NULL ) {
-                if( res_info->current_type == (uint_16)(pointer_int)RT_STRING ) {
+                if( res_info->current_type == RESOURCE2INT( RT_STRING ) ) {
                     SaveMultObjects( wp == IDM_RES_SAVE_INTO );
                 } else {
                     SaveObject( wp == IDM_RES_SAVE_INTO );
@@ -897,25 +898,24 @@ bool WREHandleResEdit( void )
 
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
-        ok = (curr.info != NULL && curr.type != NULL &&
-              curr.info->current_type == (uint_16)(pointer_int)RT_STRING);
+        ok = (curr.info != NULL && curr.type != NULL && curr.info->current_type == RESOURCE2INT( RT_STRING ));
     }
 
     if( ok ) {
         ok = false;
-        if( curr.info->current_type == (uint_16)(pointer_int)RT_ACCELERATOR ) {
+        if( curr.info->current_type == RESOURCE2INT( RT_ACCELERATOR ) ) {
             ok = WREEditAccelResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_MENU ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_MENU ) ) {
             ok = WREEditMenuResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_STRING ) ) {
             ok = WREEditStringResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_DIALOG ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_DIALOG ) ) {
             ok = WREEditDialogResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WREEditImageResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WREEditImageResource( &curr );
-        } else if( curr.info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
+        } else if( curr.info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = WREEditImageResource( &curr );
         }
     }
