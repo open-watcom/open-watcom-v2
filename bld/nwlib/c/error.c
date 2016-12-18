@@ -60,6 +60,9 @@ void FiniMsg( void ) {}
 #include "clibint.h"
 #endif
 
+#include "clibext.h"
+
+
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
