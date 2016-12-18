@@ -37,7 +37,6 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
-#include <fcntl.h>
 #include "wressetr.h"
 #include "wresset2.h"
 
@@ -73,17 +72,6 @@ static unsigned         msgShift;
 
 static HANDLE_INFO      hInstance = {0};
 
-static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
-//************************************************************************************
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
 bool AsMsgInit( void )
@@ -100,7 +88,7 @@ bool AsMsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;

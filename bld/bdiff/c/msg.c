@@ -35,25 +35,11 @@
 #include "wreslang.h"
 #include "msg.h"
 
-#include "clibext.h"
 
 #define NO_RES_MESSAGE "Error: could not open message resource file."
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, bdiff_malloc, bdiff_free );
 
 bool GetMsg( char *buffer, int resourceid )
 {

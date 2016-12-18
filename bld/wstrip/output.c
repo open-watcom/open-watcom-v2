@@ -80,21 +80,6 @@ bool Msg_Fini( void )
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
 
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-
-/* declare struct WResRoutines WResRtns {...} */
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
-
 static bool Msg_Get( int resourceid, char *buffer )
 {
     if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
@@ -103,7 +88,6 @@ static bool Msg_Get( int resourceid, char *buffer )
     }
     return( true );
 }
-
 
 bool Msg_Init( void )
 {

@@ -33,9 +33,6 @@
 #ifdef __WATCOMC__
 #include <process.h>
 #endif
-#include "wio.h"
-
-#include "clibext.h"
 
 
 #if defined( INCL_MSGTEXT )
@@ -65,19 +62,6 @@ void FiniMsg( void ) {}
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, MemAllocGlobal, MemFreeGlobal );
 
 void InitMsg( void )
 {

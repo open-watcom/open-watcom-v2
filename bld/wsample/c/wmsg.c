@@ -93,19 +93,6 @@ static bool MsgReadErrArray( void )
 }
 
 #if !defined(__WINDOWS__)
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
-
 bool MsgInit( void )
 {
     char        buffer[_MAX_PATH];
@@ -135,7 +122,7 @@ bool MsgInit( void )
         }
     }
     CloseResFile( &hInstance );
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
 #endif

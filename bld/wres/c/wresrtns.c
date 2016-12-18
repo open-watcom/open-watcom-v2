@@ -35,6 +35,7 @@
 
 #include "clibext.h"
 
+
 #if 0
 static WResFileID wres_open( const char *name, int omode )
 {
