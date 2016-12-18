@@ -191,8 +191,9 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
             return( RS_WRITE_ERROR );
 
         ret = CopyExeData( old->Handle, new->Handle, old_map->data_size );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             return( ret );
+        }
     }
     return( RS_OK );
 }
@@ -203,7 +204,7 @@ static RcStatus copyOneObject( ExeFileInfo *old, object_record *old_obj,
  * if an error occurs this function MUST return without altering errno
  */
 static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
-/*****************************************************************/
+/**********************************************************************/
 /* Copies parts of header and loader/fixup sections that won't be changing */
 {
     RcStatus            ret;
@@ -262,8 +263,9 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
 
         length = old_head->entry_off - old_head->resname_off;
         ret = CopyExeData( old->Handle, new->Handle, length );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             return( ret );
+        }
     } else {
         new_head->resname_off = 0;
         length = 0;
@@ -282,8 +284,9 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
             return( RS_READ_ERROR );
 
         ret = CopyExeData( old->Handle, new->Handle, length );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             return( ret );
+        }
     } else {
         new_head->entry_off = 0;
         length = 0;
@@ -347,8 +350,9 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
             return( RS_READ_ERROR );
 
         ret = CopyExeData( old->Handle, new->Handle, length );
-        if( ret != RS_OK )
+        if( ret != RS_OK ) {
             return( ret );
+        }
     } else {
         new_head->fixup_size   = 0;
         new_head->fixup_cksum  = 0;
