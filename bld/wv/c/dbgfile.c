@@ -817,23 +817,23 @@ dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *e
     }
     if( fh == -1 ) {
         strcpy( buff, buffer );
-        return( DIG_NIL_LDHANDLE );
+        return( DIGLD_NIL_HANDLE );
     }
-    return( fh );
+    return( DIGLD_PH2FID( fh ) );
 }
 
 int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( ldfh, buff, len ) != len );
+    return( read( DIGLD_FID2PH( ldfh ), buff, len ) != len );
 }
 
 int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( ldfh, offs, where ) == -1L );
+    return( lseek( DIGLD_FID2PH( ldfh ), offs, where ) == -1L );
 }
 
 int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( ldfh ) );
+    return( close( DIGLD_FID2PH( ldfh ) ) != 0 );
 }
 #endif

@@ -226,23 +226,23 @@ dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *e
         fh = open( RWBuff, O_RDONLY );
     }
     if( fh == -1 )
-        return( DIG_NIL_LDHANDLE );
-    return( fh );
+        return( DIGLD_NIL_HANDLE );
+    return( DIGLD_PH2FID( fh ) );
 }
 
 int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( ldfh, buff, len ) != len );
+    return( read( DIGLD_FID2PH( ldfh ), buff, len ) != len );
 }
 
 int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( ldfh, offs, where ) == -1L );
+    return( lseek( DIGLD_FID2PH( ldfh ), offs, where ) == -1L );
 }
 
 int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( ldfh ) );
+    return( close( DIGLD_FID2PH( ldfh ) ) != 0 );
 }
 
 void *DIGCLIENTRY( Alloc )( size_t amount )

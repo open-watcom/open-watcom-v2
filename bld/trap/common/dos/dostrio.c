@@ -136,29 +136,24 @@ dig_ldhandle DIGLoader( Open )( const char *name, unsigned name_len, const char 
     }
     rc = TinyOpen( src, TIO_READ );
     if( TINY_ERROR( rc ) )
-        return( DIG_NIL_LDHANDLE );
-    return( TINY_INFO( rc ) );
+        return( DIGLD_NIL_HANDLE );
+    return( DIGLD_PH2FID( TINY_INFO( rc ) ) );
 }
 
 int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
     tiny_ret_t  rc;
 
-    rc = TinyFarRead( ldfh, buff, len );
+    rc = TinyFarRead( DIGLD_FID2PH( ldfh ), buff, len );
     return( TINY_ERROR( rc ) || TINY_INFO( rc ) != len );
 }
 
 int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( TINY_ERROR( TinySeek( ldfh, offs, where ) ) );
+    return( TINY_ERROR( TinySeek( DIGLD_FID2PH( ldfh ), offs, where ) ) );
 }
 
 int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    tiny_ret_t  rc;
-
-    rc = TinyClose( ldfh );
-    if( TINY_ERROR( rc ) )
-        return( -1 );
-    return( 0 );
+    return( TINY_ERROR( TinyClose( DIGLD_FID2PH( ldfh ) ) ) );
 }

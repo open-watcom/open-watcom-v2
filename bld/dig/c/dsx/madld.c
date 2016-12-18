@@ -54,7 +54,7 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     mad_status          status;
 
     ldfh = DIGLoader( Open )( path, strlen( path ), "mad", NULL, 0 );
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( ldfh == DIGLD_NIL_HANDLE ) {
         return( MS_ERR | MS_FOPEN_FAILED );
     }
     mad = ReadInImp( ldfh );

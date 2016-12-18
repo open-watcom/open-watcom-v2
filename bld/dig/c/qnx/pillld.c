@@ -51,7 +51,7 @@ int PILLSysLoad( const char *path, const pill_client_routines *cli,
     msg->source = NULL;
     msg->id = LM_SYSTEM_ERROR;
     ldfh = DIGLoader( Open )( path, strlen( path ), "pil", NULL, 0 );
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( ldfh == DIGLD_NIL_HANDLE ) {
         msg->data.code = errno;
         return( 0 );
     }

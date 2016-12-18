@@ -106,7 +106,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
   #else
     ldfh = DIGLoader( Open )( parms, ptr - parms, "trp", trap_name, sizeof( trap_name ) );
   #endif
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( ldfh == DIGLD_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }

@@ -58,7 +58,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     char                dip_name[_MAX_PATH];
 
     ldfh = DIGLoader( Open )( path, strlen( path ), "dip", dip_name, sizeof( dip_name ) );
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( ldfh == DIGLD_NIL_HANDLE ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
     dip = ReadInImp( ldfh );

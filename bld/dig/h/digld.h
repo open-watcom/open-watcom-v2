@@ -29,10 +29,20 @@
 ****************************************************************************/
 
 
+#if defined( _WIN64 )
+#define DIGLD_FID2PH(dfh)   (((int)(unsigned __int64)(dfh)) - 1)
+#define DIGLD_PH2FID(ph)    ((dig_ldhandle)(unsigned __int64)(ph + 1))
+#else
+#define DIGLD_FID2PH(dfh)   (((int)(unsigned long)(dfh)) - 1)
+#define DIGLD_PH2FID(ph)    ((dig_ldhandle)(unsigned long)(ph + 1))
+#endif
+#define DIGLD_FID2FH(dfh)   ((FILE *)(dfh))
+#define DIGLD_FH2FID(fh)    ((dig_ldhandle)(fh))
+
 #define DIGLoader(n)        DIGLoader ## n
 
-typedef int                 dig_ldhandle;
-#define DIG_NIL_LDHANDLE    ((dig_ldhandle)-1)
+typedef void                *dig_ldhandle;
+#define DIGLD_NIL_HANDLE    ((dig_ldhandle)NULL)
 
 extern dig_ldhandle     DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size );
 extern int              DIGLoader( Close )( dig_ldhandle ldfh );
