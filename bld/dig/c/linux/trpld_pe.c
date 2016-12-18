@@ -110,7 +110,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
-    TrapFile = PE_loadLibraryHandle( ldfh, trap_name );
+    TrapFile = PE_loadLibraryHandle( -1, trap_name );
     DIGLoader( Close )( ldfh );
     if( TrapFile == NULL ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_name );

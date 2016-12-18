@@ -226,6 +226,12 @@ dig_ldhandle DIGLoader( Open )( const char *name, unsigned name_len, const char 
     fh = -1;
     if( has_path ) {
         fh = open( trpfile, O_RDONLY );
+        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
+            if( max_result-- < 2 ) {
+                *dst = '\0';
+                break;
+            }
+        }
     } else if( FindFilePath( trpfile, result ) ) {
         fh = open( result, O_RDONLY );
     }

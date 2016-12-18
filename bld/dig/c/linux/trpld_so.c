@@ -104,7 +104,7 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    ldfh = DIGLoader( Open )( buff, p - trap_name, "so", trap_name, sizeof( trap_name ) );
+    ldfh = DIGLoader( Open )( trap_name, p - trap_name, "so", trap_name, sizeof( trap_name ) );
   #else
     ldfh = DIGLoader( Open )( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
   #endif
