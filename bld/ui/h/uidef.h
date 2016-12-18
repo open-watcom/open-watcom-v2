@@ -147,7 +147,6 @@ void            intern          physupdate( SAREA * );
 #if defined( __UNIX__ )
 void            intern          forbid_refresh( void );
 void            intern          permit_refresh( void );
-void            intern          newcursor( void );
 #else
     #define                     forbid_refresh()
     #define                     permit_refresh()
@@ -161,6 +160,17 @@ void            intern          vertretrace( void );
 EVENT           intern          getanyevent( void );
 void            intern          waitforevent( void );
 void            intern          initeventlists( void );
+
+/*
+ * below are OS specific internal shared functions
+ */
+
+#if defined( __UNIX__ )
+void            intern          newcursor( void );
+#endif
+#if defined( __NETWARE__ )
+bool            intern          kbdisblocked( void );
+#endif
 
 #ifdef __cplusplus
 }

@@ -134,7 +134,7 @@ EVENT UIAPI uiget( void )
     return( uieventsource( true ) );
 }
 
-void uisendescape( void )
+void UIAPI uisendescape( void )
 {
     HasEscape = true;
 }
