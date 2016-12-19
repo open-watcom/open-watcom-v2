@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include "wio.h"
 #include "watcom.h"
 #include "wres.h"
 
