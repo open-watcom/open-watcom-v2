@@ -37,6 +37,7 @@
 #include <sys/time.h>
 #include "trpimp.h"
 #include "servio.h"
+#include "digcli.h"
 #include "digld.h"
 
 

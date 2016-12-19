@@ -41,6 +41,7 @@
     #include <process.h>
 #endif
 #include "trptypes.h"
+#include "digcli.h"
 #include "digld.h"
 #include "servio.h"
 
