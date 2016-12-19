@@ -51,8 +51,7 @@ static bool LoadMsg( unsigned int msg, char *buffer, int buff_size )
 // Load a message into the specified buffer.  This function is called
 // by WLINK when linked with 16-bit version of WATFOR-77.
 {
-    return( hInstance.status
-            && WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 );
+    return( hInstance.status && ( WResLoadString( &hInstance, msg + MsgShift, buffer, buff_size ) > 0 ) );
 }
 
 
