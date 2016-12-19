@@ -274,8 +274,8 @@ bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
     }
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle, uint_16 len )
-/********************************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle, size_t len )
+/*******************************************************************************************/
 {
     char            *buf = NULL;
     bool            ret;
@@ -289,7 +289,7 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle,
         len = (ConvToUnicode)( len, string, buf );
         string = buf;
     }
-    if( WRESWRITE( handle, string, len ) != len ) {
+    if( (size_t)WRESWRITE( handle, string, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         ret = true;
     } else {
