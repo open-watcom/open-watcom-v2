@@ -88,13 +88,13 @@ dig_fhandle DIGCLIENTRY( Open )( const char *path, dig_open mode )
     ret = OpenFile( path, &tmp, flags );
     if( ret == HFILE_ERROR )
         return( DIG_NIL_HANDLE );
-    return( H2DFH( ret ) );
+    return( DIG_H2FID( ret ) );
 }
 
 /*
  * DIGCliSeek
  */
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_seek dipmode )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long offset, dig_seek dipmode )
 {
     int         mode;
 
@@ -109,17 +109,17 @@ unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long offset, dig_se
         mode = FILE_END;
         break;
     }
-    return( SetFilePointer( DFH2H( dfh ), offset, 0, mode ) );
+    return( SetFilePointer( DIG_FID2H( fid ), offset, 0, mode ) );
 }
 
 /*
  * DIGCliRead
  */
-size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
+size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *buf, size_t size )
 {
     DWORD       bytesread;
 
-    if( !ReadFile( DFH2H( dfh ), buf, size, &bytesread, NULL ) )
+    if( !ReadFile( DIG_FID2H( fid ), buf, size, &bytesread, NULL ) )
         return( DIG_RW_ERROR );
     return( bytesread );
 }
@@ -127,11 +127,11 @@ size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *buf, size_t size )
 /*
  * DIGCliWrite
  */
-size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
+size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *buf, size_t size )
 {
     DWORD       byteswritten;
 
-    if( !WriteFile( DFH2H( dfh ), buf, size, &byteswritten, NULL ) )
+    if( !WriteFile( DIG_FID2H( fid ), buf, size, &byteswritten, NULL ) )
         return( DIG_RW_ERROR );
     return( byteswritten );
 }
@@ -139,9 +139,9 @@ size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *buf, size_t size )
 /*
  * DIGCliClose
  */
-void DIGCLIENTRY( Close )( dig_fhandle dfh )
+void DIGCLIENTRY( Close )( dig_fhandle fid )
 {
-    CloseHandle( DFH2H( dfh ) );
+    CloseHandle( DIG_FID2H( fid ) );
 }
 
 /*

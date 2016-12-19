@@ -98,27 +98,27 @@ dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )
     fh = FileOpen( name, DIG2WVOpenMode( mode ) );
     if( fh == NIL_HANDLE )
         return( DIG_NIL_HANDLE );
-    return( FH2DFH( fh ) );
+    return( DIG_PH2FID( fh ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
 {
-    return( SeekStream( DFH2FH( dfh ), p, k ) );
+    return( SeekStream( DIG_FID2PH( fid ), p, k ) );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void *b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle fid, void *b , size_t s )
 {
-    return( ReadStream( DFH2FH( dfh ), b, s ) );
+    return( ReadStream( DIG_FID2PH( fid ), b, s ) );
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void *b, size_t s )
+size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void *b, size_t s )
 {
-    return( WriteStream( DFH2FH( dfh ), b, s ) );
+    return( WriteStream( DIG_FID2PH( fid ), b, s ) );
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle dfh )
+void DIGCLIENTRY( Close )( dig_fhandle fid )
 {
-    FileClose( DFH2FH( dfh ) );
+    FileClose( DIG_FID2PH( fid ) );
 }
 
 void DIGCLIENTRY( Remove )( char const *name, dig_open mode )

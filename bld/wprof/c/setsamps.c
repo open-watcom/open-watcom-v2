@@ -625,7 +625,7 @@ STATIC void loadImageInfo( image_info * curr_image )
            the right value. Assume it's OK.
         */
     } else {
-        if( fstat( DFH2PH( obj_dfh ), &file_status ) == 0 ) {
+        if( fstat( DIG_FID2PH( obj_dfh ), &file_status ) == 0 ) {
             /* QNX creation dates and time stamps tend to be 1 */
             /* unit different, so do not test for equality */
             if( file_status.st_mtime - curr_image->time_stamp > 1 ) {

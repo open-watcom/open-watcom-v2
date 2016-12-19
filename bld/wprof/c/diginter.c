@@ -78,7 +78,7 @@ void DIGCLIENTRY( Free )( void * p )
 dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
 /*****************************************************************/
 {
-    int             fh;
+    int             fd;
     int             access;
 
     access = O_BINARY;
@@ -102,42 +102,42 @@ dig_fhandle DIGCLIENTRY( Open )( const char * name, dig_open mode )
     if( mode & DIG_APPEND ) {
         access |= O_APPEND;
     }
-    fh = open( name, access );
-    if( fh == -1 )
+    fd = open( name, access );
+    if( fd == -1 )
         return( DIG_NIL_HANDLE );
-    return( PH2DFH( fh ) );
+    return( DIG_PH2FID( fd ) );
 }
 
-unsigned long DIGCLIENTRY( Seek )( dig_fhandle dfh, unsigned long p, dig_seek k )
+unsigned long DIGCLIENTRY( Seek )( dig_fhandle fid, unsigned long p, dig_seek k )
 /*******************************************************************************/
 {
-    return( lseek( DFH2PH( dfh ), p, k ) );
+    return( lseek( DIG_FID2PH( fid ), p, k ) );
 }
 
-size_t DIGCLIENTRY( Read )( dig_fhandle dfh, void * b , size_t s )
+size_t DIGCLIENTRY( Read )( dig_fhandle fid, void * b , size_t s )
 /****************************************************************/
 {
 #if defined( __QNX__ )
-    return( BigRead( DFH2PH( dfh ), b, s ) );
+    return( BigRead( DIG_FID2PH( fid ), b, s ) );
 #else
-    return( read( DFH2PH( dfh ), b, s ) );
+    return( read( DIG_FID2PH( fid ), b, s ) );
 #endif
 }
 
-size_t DIGCLIENTRY( Write )( dig_fhandle dfh, const void * b, size_t s )
+size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void * b, size_t s )
 /**********************************************************************/
 {
 #if defined( __QNX__ )
-    return( BigWrite( DFH2PH( dfh ), b, s ) );
+    return( BigWrite( DIG_FID2PH( fid ), b, s ) );
 #else
-    return( write( DFH2PH( dfh ), b, s ) );
+    return( write( DIG_FID2PH( fid ), b, s ) );
 #endif
 }
 
-void DIGCLIENTRY( Close )( dig_fhandle dfh )
+void DIGCLIENTRY( Close )( dig_fhandle fid )
 /******************************************/
 {
-    close( DFH2PH( dfh ) );
+    close( DIG_FID2PH( fid ) );
 }
 
 void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
