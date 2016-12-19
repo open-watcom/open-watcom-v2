@@ -103,7 +103,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
     memset( ii->directory, 0, block_count * sizeof( void * ) );
 
     /* skip to the first entry */
-    if( DCSeek( ii->sym_file, offent, DIG_ORG ) != offent) {
+    if( DCSeek( ii->sym_fid, offent, DIG_ORG ) != offent) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
 
@@ -120,7 +120,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
             return( DS_ERR | DS_NO_MEM );
         }
         if( ii->format_lvl >= HLL_LVL_NB04 ) {
-            if( DCRead( ii->sym_file, ii->directory[i], block_size ) != block_size ) {
+            if( DCRead( ii->sym_fid, ii->directory[i], block_size ) != block_size ) {
                 return( DS_ERR | DS_FREAD_FAILED );
             }
         } else {
@@ -130,7 +130,7 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
 
             for( j = 0; j < num; j++, ent++ ) {
                 cv3_dir_entry cv3ent;
-                if( DCRead( ii->sym_file, &cv3ent, sizeof( cv3ent ) ) != sizeof( cv3ent ) ) {
+                if( DCRead( ii->sym_fid, &cv3ent, sizeof( cv3ent ) ) != sizeof( cv3ent ) ) {
                     return( DS_ERR | DS_FREAD_FAILED );
                 }
                 ent->subsection = cv3ent.subsection;
@@ -168,7 +168,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
     unsigned long       off_dirent, off_trailer;
 
     /* read the header. */
-    rc = DCReadAt( ii->sym_file, &hdr, sizeof( hdr ), off );
+    rc = DCReadAt( ii->sym_fid, &hdr, sizeof( hdr ), off );
     if( rc & DS_ERR) {
         return rc;
     }
@@ -183,7 +183,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
     if( !memcmp( hdr.sig, HLL_NB04, HLL_SIG_SIZE ) ) {
         hll_dirinfo     dir_hdr;
 
-        rc = DCReadAt( ii->sym_file, &dir_hdr, sizeof( dir_hdr ), off_dirent );
+        rc = DCReadAt( ii->sym_fid, &dir_hdr, sizeof( dir_hdr ), off_dirent );
         if( rc & DS_ERR) {
             return rc;
         }
@@ -198,7 +198,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
         /* Old CV3 directory. */
         cv3_dirinfo     dir_hdr;
 
-        rc = DCReadAt( ii->sym_file, &dir_hdr, sizeof( dir_hdr ), off_dirent );
+        rc = DCReadAt( ii->sym_fid, &dir_hdr, sizeof( dir_hdr ), off_dirent );
         if( rc & DS_ERR) {
             return rc;
         }
@@ -208,7 +208,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
     }
 
     /* is the trailer following the directory? It usually is with wlink. */
-    rc = DCReadAt( ii->sym_file, &hdr, sizeof( hdr ), off_trailer );
+    rc = DCReadAt( ii->sym_fid, &hdr, sizeof( hdr ), off_trailer );
     if( rc & DS_ERR) {
         return rc;
     }
@@ -220,7 +220,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
         long        cur;
         unsigned    overlap = 0;
 
-        cur = DCSeek( ii->sym_file, 0, DIG_END );
+        cur = DCSeek( ii->sym_fid, 0, DIG_END );
         if( cur > size + off && size + off > size ) {
             cur = off + size;
         }
@@ -241,7 +241,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
             if( to_read < sizeof( hdr) ) {
                 return DS_FAIL;
             }
-            rc = DCReadAt( ii->sym_file, buf, to_read, cur );
+            rc = DCReadAt( ii->sym_fid, buf, to_read, cur );
             if( rc & DS_ERR ) {
                 return rc;
             }
@@ -313,7 +313,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
     }                   buf;
 
     /* read the header */
-    rc = DCReadAt( ii->sym_file, &buf.pe, sizeof( buf.pe ), nh_off );
+    rc = DCReadAt( ii->sym_fid, &buf.pe, sizeof( buf.pe ), nh_off );
     if( rc & DS_ERR ) {
         return( rc );
     }
@@ -341,7 +341,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
            + buf.pe.nt_hdr_size;
 
     for ( i = 0; i < ii->seg_count; i++, sh_off += sizeof( buf.sh ) ) {
-        rc = DCReadAt( ii->sym_file, &buf.sh, sizeof( buf.sh ), sh_off );
+        rc = DCReadAt( ii->sym_fid, &buf.sh, sizeof( buf.sh ), sh_off );
         if ( rc & DS_ERR ) {
             return( rc );
         }
@@ -366,7 +366,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
              * directory and put the debug info there instead.
              * So, before scanning we'll have to check for any HLL sign.
              */
-            rc = DCReadAt( ii->sym_file, &buf.dbg_dir, sizeof( buf.dbg_dir ), debug_off );
+            rc = DCReadAt( ii->sym_fid, &buf.dbg_dir, sizeof( buf.dbg_dir ), debug_off );
             if( rc & DS_ERR ) {
                 return( rc );
             }
@@ -390,7 +390,7 @@ static dip_status FindHLLInPEImage( imp_image_handle *ii, unsigned long nh_off )
                     if( left <= 0) {
                         break;
                     }
-                    if ( DCRead( ii->sym_file, &buf.dbg_dir, sizeof( buf.dbg_dir ) ) != sizeof( buf.dbg_dir ) ) {
+                    if ( DCRead( ii->sym_fid, &buf.dbg_dir, sizeof( buf.dbg_dir ) ) != sizeof( buf.dbg_dir ) ) {
                         break;
                     }
                 }
@@ -417,7 +417,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *ii, unsigned long nh_off )
     dip_status          rc;
 
     /* read the header */
-    rc = DCReadAt( ii->sym_file, &buf.flat, sizeof( buf.flat ), nh_off );
+    rc = DCReadAt( ii->sym_fid, &buf.flat, sizeof( buf.flat ), nh_off );
     if( rc & DS_ERR ) {
         return( rc );
     }
@@ -431,8 +431,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *ii, unsigned long nh_off )
             /*
              * Get segment info from the object table.
              */
-            if ( DCSeek( ii->sym_file, buf.flat.objtab_off + nh_off, DIG_ORG )
-              != buf.flat.objtab_off + nh_off ) {
+            if ( DCSeek( ii->sym_fid, buf.flat.objtab_off + nh_off, DIG_ORG ) != buf.flat.objtab_off + nh_off ) {
                 return( DS_ERR | DS_FSEEK_FAILED );
             }
 
@@ -443,7 +442,7 @@ static dip_status FindHLLInLXImage( imp_image_handle *ii, unsigned long nh_off )
             }
 
             for( i = 0; i < ii->seg_count; i++ ) {
-                if( DCRead( ii->sym_file, &buf.obj, sizeof( buf.obj ) ) != sizeof( buf.obj )) {
+                if( DCRead( ii->sym_fid, &buf.obj, sizeof( buf.obj ) ) != sizeof( buf.obj )) {
                     return( DS_ERR | DS_FREAD_FAILED );
                 }
                 ii->segments[i].is_executable = !!( buf.obj.flags & OBJ_EXECUTABLE );
@@ -478,7 +477,7 @@ static dip_status TryFindInImage( imp_image_handle *ii )
     dip_status          rc;
 
     /* Read the image header. */
-    rc = DCReadAt( ii->sym_file, &buf.sig, sizeof( buf.sig ), 0 );
+    rc = DCReadAt( ii->sym_fid, &buf.sig, sizeof( buf.sig ), 0 );
     if( rc & DS_ERR ) {
         return( rc );
     }
@@ -486,11 +485,11 @@ static dip_status TryFindInImage( imp_image_handle *ii )
     if( buf.sig_16 == DOS_SIGNATURE ) {
         have_mz_header = TRUE;
         /* read the new exe header */
-        rc = DCReadAt( ii->sym_file, &nh_off, sizeof( nh_off ), NH_OFFSET );
+        rc = DCReadAt( ii->sym_fid, &nh_off, sizeof( nh_off ), NH_OFFSET );
         if( rc & DS_ERR ) {
             return( rc );
         }
-        rc = DCReadAt( ii->sym_file, &buf.sig, sizeof( buf.sig ), nh_off );
+        rc = DCReadAt( ii->sym_fid, &buf.sig, sizeof( buf.sig ), nh_off );
         if( rc & DS_ERR ) {
             return( rc );
         }
@@ -546,11 +545,11 @@ static dip_status TryFindTrailer( imp_image_handle *ii )
     hll_trailer         sig;
     unsigned long       pos;
 
-    pos = DCSeek( ii->sym_file, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
+    pos = DCSeek( ii->sym_fid, DIG_SEEK_POSBACK( sizeof( sig ) ), DIG_END );
     if( pos == DIG_SEEK_ERROR ) {
         return( DS_ERR | DS_FSEEK_FAILED );
     }
-    if( DCRead( ii->sym_file, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
+    if( DCRead( ii->sym_fid, &sig, sizeof( sig ) ) != sizeof( sig ) ) {
         return( DS_ERR | DS_FREAD_FAILED );
     }
     if( !IsHllSignature( &sig ) ) {
@@ -595,7 +594,7 @@ static walk_result FindCompUnit( imp_image_handle *ii,
 /*
  * Load debug info if it's in the HLL/CV format.
  */
-dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
 
 {
     dip_status      rc;
@@ -603,7 +602,7 @@ dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
     /* Init the module handle. */
     memset( ii, 0, sizeof( *ii ) );
     ii->mad = MAD_X86;                  /* No known non-x86 support */
-    ii->sym_file = dfh;
+    ii->sym_fid = fid;
     ii->is_32bit = 1;
     ii->format_lvl = HLL_LVL_NB04;
     ii->next_image = ImageList;
@@ -701,5 +700,5 @@ void hllMapLogical( imp_image_handle *ii, address *a )
 void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 {
     Cleanup( ii );
-    DCClose( ii->sym_file );
+    DCClose( ii->sym_fid );
 }

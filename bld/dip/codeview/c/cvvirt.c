@@ -209,12 +209,12 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
         len = num_pages * VM_PAGE_SIZE;
         block->len = len;
         pg_start += ii->bias;
-        if( DCSeek( ii->sym_file, pg_start, DIG_ORG ) != pg_start ) {
+        if( DCSeek( ii->sym_fid, pg_start, DIG_ORG ) != pg_start ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( NULL );
         }
         /* last block might be a short read */
-        if( DCRead( ii->sym_file, pg->block->data, len ) == DIG_RW_ERROR ) {
+        if( DCRead( ii->sym_fid, pg->block->data, len ) == DIG_RW_ERROR ) {
             DCStatus( DS_ERR|DS_FREAD_FAILED );
             return( NULL );
         }

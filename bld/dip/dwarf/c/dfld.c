@@ -91,7 +91,7 @@ static void ByteSwapShdr( Elf32_Shdr *elf_sec, bool byteswap )
 }
 
 
-static dip_status GetSectInfo( dig_fhandle dfh, unsigned long *sizes, unsigned long *bases, bool *byteswap )
+static dip_status GetSectInfo( dig_fhandle fid, unsigned long *sizes, unsigned long *bases, bool *byteswap )
 /**********************************************************************************************************/
 // Fill in the starting offset & length of the dwarf sections
 {
@@ -105,26 +105,26 @@ static dip_status GetSectInfo( dig_fhandle dfh, unsigned long *sizes, unsigned l
     uint                sect;
 
     // Find TIS header seek to elf header
-    start = DCSeek( dfh, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_END );
+    start = DCSeek( fid, DIG_SEEK_POSBACK( sizeof( dbg_head ) ), DIG_END );
     for( ;; ) {
-        if( DCRead( dfh, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
+        if( DCRead( fid, &dbg_head, sizeof( dbg_head ) ) != sizeof( dbg_head ) ) {
             return( DS_FAIL );
         }
         if( dbg_head.signature != TIS_TRAILER_SIGNATURE ) {
             /* Seek to start of file and hope it's in ELF format */
             start = 0;
-            DCSeek( dfh, 0, DIG_ORG );
+            DCSeek( fid, 0, DIG_ORG );
             break;
         }
         start += sizeof( dbg_head );
         start -= dbg_head.size;
-        DCSeek( dfh, start, DIG_ORG );
+        DCSeek( fid, start, DIG_ORG );
         if( dbg_head.vendor == TIS_TRAILER_VENDOR_TIS && dbg_head.type == TIS_TRAILER_TYPE_TIS_DWARF ) {
             break;
         }
     }
     // read elf header find dwarf info
-    if( DCRead( dfh, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) ) {
+    if( DCRead( fid, &elf_head, sizeof( elf_head ) ) != sizeof( elf_head ) ) {
         return( DS_FAIL );
     }
     if( memcmp( elf_head.e_ident, ELF_SIGNATURE, ELF_SIGNATURE_LEN ) != 0 ) {
@@ -167,15 +167,15 @@ static dip_status GetSectInfo( dig_fhandle dfh, unsigned long *sizes, unsigned l
     memset( bases, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
     memset( sizes, 0, DR_DEBUG_NUM_SECTS * sizeof( unsigned long ) );
     offset = elf_head.e_shoff + elf_head.e_shstrndx * elf_head.e_shentsize + start;
-    DCSeek( dfh, offset, DIG_ORG );
-    DCRead( dfh, &elf_sec, sizeof( Elf32_Shdr ) );
+    DCSeek( fid, offset, DIG_ORG );
+    DCRead( fid, &elf_sec, sizeof( Elf32_Shdr ) );
     ByteSwapShdr( &elf_sec, *byteswap );
     string_table = DCAlloc( elf_sec.sh_size );
-    DCSeek( dfh, elf_sec.sh_offset + start, DIG_ORG );
-    DCRead( dfh, string_table, elf_sec.sh_size );
+    DCSeek( fid, elf_sec.sh_offset + start, DIG_ORG );
+    DCRead( fid, string_table, elf_sec.sh_size );
     for( i = 0; i < elf_head.e_shnum; i++ ) {
-        DCSeek( dfh, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_ORG );
-        DCRead( dfh, &elf_sec, sizeof( Elf32_Shdr ) );
+        DCSeek( fid, elf_head.e_shoff + i * elf_head.e_shentsize + start, DIG_ORG );
+        DCRead( fid, &elf_sec, sizeof( Elf32_Shdr ) );
         ByteSwapShdr( &elf_sec, *byteswap );
         sect = Lookup_section_name( &string_table[elf_sec.sh_name] );
         if ( sect < DR_DEBUG_NUM_SECTS ){
@@ -202,7 +202,7 @@ static void DWRRead( void *_f, dr_section sect, void *buff, size_t size )
 
     sect = sect;
 //    base = f->dwarf->sect_offsets[sect];
-    DCRead( f->sym_file, buff, size );
+    DCRead( f->sym_fid, buff, size );
 }
 
 
@@ -213,7 +213,7 @@ static void DWRSeek( void *_f, dr_section sect, long offs )
     long        base;
 
     base = f->dwarf->sect_offsets[sect];
-    DCSeek( f->sym_file, offs + base, DIG_ORG );
+    DCSeek( f->sym_fid, offs + base, DIG_ORG );
 }
 
 
@@ -280,7 +280,7 @@ static dip_status InitDwarf( imp_image_handle *ii )
         DCStatus( ret );
         goto error_exit;
     }
-    ret = GetSectInfo( ii->sym_file, sect_sizes, dwarf->sect_offsets, &ii->is_byteswapped );
+    ret = GetSectInfo( ii->sym_fid, sect_sizes, dwarf->sect_offsets, &ii->is_byteswapped );
     if( ret != DS_OK ) goto error_exit;
     dwarf->handle = DRDbgInitNFT( ii, sect_sizes, ii->is_byteswapped );
     if( dwarf->handle == NULL ) {
@@ -372,16 +372,16 @@ static void LoadGlbHash( imp_image_handle *ii )
 }
 
 
-dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
-/******************************************************************************/
+dip_status DIPIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
+/*************************************************************************/
 {
     dip_status          ret;
 
-    if( dfh == DIG_NIL_HANDLE ) {
+    if( fid == DIG_NIL_HANDLE ) {
         DCStatus( DS_ERR | DS_FOPEN_FAILED );
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    ii->sym_file = dfh;
+    ii->sym_fid = fid;
     ret = InitDwarf( ii );
     if( ret == DS_OK ) {
         ret = InitModMap( ii );
@@ -474,7 +474,7 @@ void DIPIMPENTRY( UnloadInfo )( imp_image_handle *ii )
 /*******************************************************/
 {
     FiniDwarf( ii );
-    DCClose( ii->sym_file );
+    DCClose( ii->sym_fid );
 
     FiniAddrInfo( ii->addr_map );
     FiniImpCueInfo( ii );

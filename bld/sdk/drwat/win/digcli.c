@@ -67,11 +67,9 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
         MemFree( filename );
     }
     _searchenv( realname, "PATH", path );
-    if( *path == '\0' ) {
+    if( *path == '\0' )
         return( DIG_NIL_HANDLE );
-    } else {
-        return( DIGCli( Open )( path, DIG_READ ) );
-    }
+    return( DIGCli( Open )( path, DIG_READ ) );
 }
 #endif
 

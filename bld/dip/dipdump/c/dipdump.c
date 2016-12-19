@@ -949,13 +949,13 @@ static void TermDIP( void )
 static int DumpFile( const char *file, char **dips )
 {
     int             rc = 1;
-    dig_fhandle     dfh;
+    dig_fhandle     fid;
 
     /*
      * Open the file
      */
-    dfh = DIGCli( Open )( file, DIG_READ );
-    if( dfh == DIG_NIL_HANDLE ) {
+    fid = DIGCli( Open )( file, DIG_READ );
+    if( fid == DIG_NIL_HANDLE ) {
         return( ErrorMsg( "Failed to open '%s'\n", file ) );
     }
 
@@ -970,8 +970,8 @@ static int DumpFile( const char *file, char **dips )
             mod_handle  mh = 0;
 
             for( prty = DIPPriority( 0 ); prty != 0; prty = DIPPriority( prty ) ) {
-                DIGCli( Seek )( dfh, 0, DIG_ORG );
-                mh = DIPLoadInfo( dfh, 0, prty );
+                DIGCli( Seek )( fid, 0, DIG_ORG );
+                mh = DIPLoadInfo( fid, 0, prty );
                 if( mh != NO_MOD ) {
                     break;
                 }
@@ -996,7 +996,7 @@ static int DumpFile( const char *file, char **dips )
         }
         TermDIP();
     }
-    DIGCli( Close )( dfh );
+    DIGCli( Close )( fid );
     return( rc );
 }
 

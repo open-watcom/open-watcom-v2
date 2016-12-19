@@ -297,7 +297,7 @@ ssize_t BigWrite( int fh, const void *buffer, size_t size )
     while( size > 0 ) {
         if( amount > size )
             amount = (unsigned)size;
-        write_len = write( DFH2PH( dfh ), buffer, amount );
+        write_len = write( DFH2PH( fid ), buffer, amount );
         if( write_len == (unsigned)-1 ) {
             return( -1 );
         }
