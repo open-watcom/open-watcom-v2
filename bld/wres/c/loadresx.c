@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <stdlib.h>
 #include "wresall.h"
 #include "wresset2.h"
 #include "wresall.h"
@@ -44,8 +43,6 @@
 #include "wresset2.h"
 #include "seekres.h"
 
-
-extern WResDir    MainDir;
 
 int WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource,
                                     lpstr *lpszBuffer, size_t *bufferSize )

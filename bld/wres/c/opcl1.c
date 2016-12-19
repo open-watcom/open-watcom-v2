@@ -33,9 +33,8 @@
 #include "bool.h"
 #include "watcom.h"
 #include "filefmt.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wres.h"
+#include "wresset2.h"
 #include "opcl.h"
 
 
@@ -46,9 +45,8 @@ bool OpenResFileX( PHANDLE_INFO instance, const char *filename, bool res_file )
 {
     instance->status = 0;
     instance->handle = ResOpenFileRO( filename );
-    if( instance->handle == WRES_NIL_HANDLE ) {
+    if( instance->handle == WRES_NIL_HANDLE )
         return( false );
-    }
     instance->status++;
     if( FindResourcesX( instance, res_file ) )
         return( false );
@@ -56,6 +54,7 @@ bool OpenResFileX( PHANDLE_INFO instance, const char *filename, bool res_file )
     if( InitResources( instance ) )
         return( false );
     instance->status++;
+    res_handle = instance->handle;
     return( true );
 }
 
@@ -84,6 +83,7 @@ bool CloseResFile( PHANDLE_INFO instance )
         rc = !ResCloseFile( instance->handle );
         instance->handle = WRES_NIL_HANDLE;
         instance->status = 0;
+        res_handle = WRES_NIL_HANDLE;
         /* fall throught */
     case 0:
         return( rc );

@@ -44,8 +44,6 @@
 #include "seekres.h"
 
 
-extern WResDir    MainDir;
-
 bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, WResID *resource_id )
 /***************************************************************************************************/
 {

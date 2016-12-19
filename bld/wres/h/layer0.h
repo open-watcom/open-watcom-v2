@@ -36,9 +36,9 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <sys/types.h>
-#include "wressetr.h"
 #include "bool.h"
 #include "watcom.h"
+#include "wressetr.h"
 
 extern struct WResRoutines WResRtns;
 

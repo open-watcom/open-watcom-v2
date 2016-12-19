@@ -33,7 +33,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <stdlib.h>
 #include "wresall.h"
 #include "walloca.h"
 #include "wresset2.h"
@@ -42,8 +41,6 @@
 #include "layer2.h"
 #include "wresdefn.h"
 
-
-extern WResDir    MainDir;
 
 static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer )
 /***********************************************************************************/

@@ -93,6 +93,11 @@ typedef struct WResDirHead  *WResDir;
 #define WResIsFirstResOfType( wind )    ((wind).CurrRes == (wind).CurrType->Head && WResIsFirstLangOfRes( wind ))
 #define WResIsFirstLangOfRes( wind )    ((wind).CurrLang == (wind).CurrRes->Head)
 
+/* internal global data prototypes */
+
+extern WResFileID       res_handle;
+extern WResDir          MainDir;
+
 /* function prototypes for WRes directory manipulation */
 
 extern WResDir          WResInitDir( void );

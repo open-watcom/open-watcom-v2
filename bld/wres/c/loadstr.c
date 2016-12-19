@@ -41,6 +41,7 @@
 #include "wresrtns.h"
 #include "layer2.h"
 
+
 #define GET_STR_BUF_LEN 128
 
 WResDir    MainDir;
