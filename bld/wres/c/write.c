@@ -50,8 +50,8 @@ static int DefaultConversion( int len, const char *str, char *buf )
 
     if( buf != NULL ) {
         for( i = 0; i < len; i++ ) {
-            buf[2 * i] = str[i];
-            buf[2 * i + 1] = 0;
+            *buf++ = *str++;
+            *buf++ = 0;
         }
     }
     return( len * 2 );
