@@ -1241,7 +1241,7 @@ static void UpdateModules( struct TDebug *obj )
     }
 }
 
-void AddGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
+static void AddGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
 {
     opcode_type         brk_opcode;
 
@@ -1256,7 +1256,7 @@ void AddGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
     }
 }
 
-void RemoveGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
+static void RemoveGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
 {
     opcode_type         brk_opcode;
 
@@ -1269,7 +1269,7 @@ void RemoveGlobalBreak(struct TDebug *obj, struct TDebugBreak *b)
     }
 }
 
-struct TDebugBreak *GetSwBreak( struct TDebug *obj, int Sel, long Offset )
+static struct TDebugBreak *GetSwBreak( struct TDebug *obj, int Sel, long Offset )
 {
     struct TDebugBreak *b;
     int ok = false;
