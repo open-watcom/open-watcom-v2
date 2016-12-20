@@ -6,9 +6,9 @@
 #include "clibext.h"
 
 
-WResFileID res_handle = WRES_NIL_HANDLE;
+WResFileID res_fid = WRES_NIL_HANDLE;
 
-int IsLoadResFile( WResFileID handle )
+int IsLoadResFile( WResFileID fid )
 {
-    return( handle == res_handle );
+    return( fid == res_fid );
 }

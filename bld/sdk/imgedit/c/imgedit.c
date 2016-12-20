@@ -74,9 +74,6 @@ BOOL OpenNewFiles = FALSE;
 BOOL FusionCalled = FALSE;
 BOOL NoTitleScreen = FALSE;
 
-/* set the WRES library to use compatible functions */
-WResSetRtns( open, close, posix_read, posix_write, lseek, tell, MemAlloc, MemFree );
-
 /*
  * imgEditInit - initialization
  */

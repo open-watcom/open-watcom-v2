@@ -95,7 +95,7 @@ typedef struct WResDirHead  *WResDir;
 
 /* internal global data prototypes */
 
-extern WResFileID       res_handle;
+extern WResFileID       res_fid;
 extern WResDir          MainDir;
 
 /* function prototypes for WRes directory manipulation */

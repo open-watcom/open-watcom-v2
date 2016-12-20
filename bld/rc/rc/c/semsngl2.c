@@ -309,7 +309,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
         return;
     }
 
-    handle = RcIoOpenBinaryInput( filename );
+    handle = RcIoOpenInput( filename, false );
     if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 

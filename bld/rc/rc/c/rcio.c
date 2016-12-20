@@ -479,7 +479,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->Handle = RCOPEN( filename, O_RDONLY | O_BINARY );
+    info->Handle = ResOpenFileRO( filename );
     if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
@@ -538,7 +538,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = RCOPEN( filename, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, PMODE_RW );
+    info->Handle = ResOpenNewFile( filename );
     if( info->Handle == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
@@ -716,7 +716,7 @@ extern void RcPass2IoShutdown( bool noerror )
 typedef struct PhysFileInfo {
     char            *Filename;
     bool            IsOpen;
-    FILE            *Handle;
+    WResFileID      fid;
     unsigned long   Offset;     /* offset in file to read from next time if this */
                                 /* is not the current file */
 } PhysFileInfo;
@@ -778,13 +778,13 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 /************************************************/
 {
     if( !phys->IsOpen ) {
-        phys->Handle = RcIoOpenTextInput( phys->Filename );
-        if( phys->Handle == NULL ) {
+        phys->fid = RcIoOpenInput( phys->Filename, true );
+        if( phys->fid == WRES_NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
         phys->IsOpen = true;
-        if( fseek( phys->Handle, phys->Offset, SEEK_SET ) == -1 ) {
+        if( fseek( WRES_FID2FH( phys->fid ), phys->Offset, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_FILE, phys->Filename, strerror( errno ) );
             return( true );
         }
@@ -813,7 +813,7 @@ static void SetPhysFileOffset( FileStack * stack )
     if( !IsEmptyFileStack( *stack ) ) {
         phys = &(stack->Current->Physical);
         charsinbuff = stack->BufferSize - ( stack->NextChar - stack->Buffer );
-        phys->Offset = ftell( phys->Handle ) - charsinbuff;
+        phys->Offset = ftell( WRES_FID2FH( phys->fid ) ) - charsinbuff;
     }
 } /* SetPhysFileOffset */
 
@@ -833,7 +833,7 @@ static bool ReadBuffer( FileStack * stack )
         }
     }
     if( CmdLineParms.NoPreprocess ) {
-        numread = fread( stack->Buffer, 1, stack->BufferSize, phys->Handle );
+        numread = fread( stack->Buffer, 1, stack->BufferSize, WRES_FID2FH( phys->fid ) );
     } else {
         for( numread = 0; numread < stack->BufferSize; numread++ ) {
             inchar = PP_Char();
@@ -901,7 +901,7 @@ static void ClosePhysicalFile( PhysFileInfo * phys )
 /**************************************************/
 {
     if( phys->IsOpen ) {
-        fclose( phys->Handle );
+        fclose( WRES_FID2FH( phys->fid ) );
         phys->IsOpen = false;
     }
 } /* ClosePhysicalFile */
@@ -1056,17 +1056,22 @@ extern bool RcIoIsCOrHFile( void )
 } /* RcIoIsCOrHFile */
 
 /*
- * RcIoOpenTextInput
+ * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-FILE *RcIoOpenTextInput( const char * filename )
-/**********************************************/
+WResFileID RcIoOpenInput( const char * filename, bool text_mode )
+/***************************************************************/
 {
-    FILE                *fh;
+    WResFileID          fid;
     FileStackEntry      *currfile;
     bool                no_handles_available;
 
-    no_handles_available = ( (fh = fopen( filename, "rt" )) == NULL && errno == EMFILE );
+    if( text_mode ) {
+        fid = WRES_FH2FID( fopen( filename, "rt" ) );
+    } else {
+        fid = ResOpenFileRO( filename );
+    }
+    no_handles_available = ( fid == WRES_NIL_HANDLE && errno == EMFILE );
     if( no_handles_available ) {
         /* set currfile to be the first (not before first) entry */
         /* close open files except the current input file until able to open */
@@ -1074,40 +1079,18 @@ FILE *RcIoOpenTextInput( const char * filename )
         for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
             if( currfile->Physical.IsOpen ) {
                 ClosePhysicalFile( &(currfile->Physical) );
-                no_handles_available = ( (fh = fopen( filename, "rt" )) == NULL && errno == EMFILE );
+                if( text_mode ) {
+                    fid = WRES_FH2FID( fopen( filename, "rt" ) );
+                } else {
+                    fid = ResOpenFileRO( filename );
+                }
+                no_handles_available = ( fid == WRES_NIL_HANDLE && errno == EMFILE );
             }
        }
     }
-    return( fh );
+    return( fid );
 
-} /* RcIoOpenTextInput */
-
-/*
- * RcIoOpenBinaryInput
- * NB when an error occurs this function MUST return without altering errno
- */
-WResFileID RcIoOpenBinaryInput( const char * filename )
-/*****************************************************/
-{
-    WResFileID          handle;
-    FileStackEntry      *currfile;
-    bool                no_handles_available;
-
-    no_handles_available = ( (handle = RCOPEN( filename, O_RDONLY | O_BINARY )) == WRES_NIL_HANDLE && errno == EMFILE );
-    if( no_handles_available ) {
-        /* set currfile to be the first (not before first) entry */
-        /* close open files except the current input file until able to open */
-        /* don't close the current file because Offset isn't set */
-        for( currfile = InStack.Stack + 1; currfile < InStack.Current && no_handles_available; ++currfile ) {
-            if( currfile->Physical.IsOpen ) {
-                ClosePhysicalFile( &(currfile->Physical) );
-                no_handles_available = ( (handle = RCOPEN( filename, O_RDONLY | O_BINARY )) == WRES_NIL_HANDLE && errno == EMFILE );
-            }
-        }
-    }
-    return( handle );
-
-} /* RcIoOpenBinaryInput */
+} /* RcIoOpenInput */
 
 extern void RcIoInitStatics( void )
 /*********************************/

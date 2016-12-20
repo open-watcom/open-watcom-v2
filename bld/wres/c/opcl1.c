@@ -38,36 +38,37 @@
 #include "opcl.h"
 
 
-bool OpenResFileX( PHANDLE_INFO instance, const char *filename, bool res_file )
-/******************************************************************************/
+bool OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file )
+/**************************************************************************/
 /* return true if file is open and resources are found and initialized */
 /* return false otherwise */
 {
-    instance->status = 0;
-    instance->handle = ResOpenFileRO( filename );
-    if( instance->handle == WRES_NIL_HANDLE )
+    hinfo->status = 0;
+    res_fid = WRES_NIL_HANDLE;
+    hinfo->fid = ResOpenFileRO( filename );
+    if( hinfo->fid == WRES_NIL_HANDLE )
         return( false );
-    instance->status++;
-    if( FindResourcesX( instance, res_file ) )
+    hinfo->status++;
+    if( FindResourcesX( hinfo, res_file ) )
         return( false );
-    instance->status++;
-    if( InitResources( instance ) )
+    hinfo->status++;
+    if( InitResources( hinfo ) )
         return( false );
-    instance->status++;
-    res_handle = instance->handle;
+    hinfo->status++;
+    res_fid = hinfo->fid;
     return( true );
 }
 
-bool OpenResFile( PHANDLE_INFO instance, const char *filename )
-/**************************************************************/
+bool OpenResFile( PHANDLE_INFO hinfo, const char *filename )
+/**********************************************************/
 /* return true if file is open and resources are found and initialized */
 /* return false otherwise */
 {
-    return( OpenResFileX( instance, filename, false ) );
+    return( OpenResFileX( hinfo, filename, false ) );
 }
 
-bool CloseResFile( PHANDLE_INFO instance )
-/*****************************************/
+bool CloseResFile( PHANDLE_INFO hinfo )
+/*************************************/
 /* return true if file is succesfully closed
  * and return false otherwise
  */
@@ -75,15 +76,15 @@ bool CloseResFile( PHANDLE_INFO instance )
     bool    rc;
 
     rc = true;
-    switch( instance->status ) {
+    switch( hinfo->status ) {
     default:
-        FiniResources( instance );
+        FiniResources( hinfo );
         /* fall throught */
     case 1:
-        rc = !ResCloseFile( instance->handle );
-        instance->handle = WRES_NIL_HANDLE;
-        instance->status = 0;
-        res_handle = WRES_NIL_HANDLE;
+        rc = !ResCloseFile( hinfo->fid );
+        hinfo->fid = WRES_NIL_HANDLE;
+        hinfo->status = 0;
+        res_fid = WRES_NIL_HANDLE;
         /* fall throught */
     case 0:
         return( rc );

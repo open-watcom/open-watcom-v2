@@ -85,8 +85,7 @@ extern void         RcIoSetIsCOrHFlag( void );
 extern const LogicalFileInfo *RcIoGetLogicalFileInfo( void );
 extern bool         RcIoIsCOrHFile( void );
 extern void         RcIoSetLogicalFileInfo( int linenum, const char *filename );
-extern FILE         *RcIoOpenTextInput( const char *filename );
-extern WResFileID   RcIoOpenBinaryInput( const char *filename );
+extern WResFileID   RcIoOpenInput( const char *filename, bool text_mode );
 extern int          RcFindResource( const char *name, char *fullpath );
 extern const char   *RcGetEnv( const char *name );
 

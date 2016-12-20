@@ -133,7 +133,7 @@ ResLocation SemCopyRawFile( const char *filename )
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
-    handle = RcIoOpenBinaryInput( full_filename );
+    handle = RcIoOpenInput( full_filename, false );
     if( handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         goto HANDLE_ERROR;

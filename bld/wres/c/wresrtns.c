@@ -32,15 +32,31 @@
 #include <stdlib.h>
 #include "wio.h"
 #include "wressetr.h"
+#include "reserr.h"
 
 #include "clibext.h"
 
 
-#if 0
-static WResFileID wres_open( const char *name, int omode )
+static WResFileID wres_open( const char *name, wres_open_mode omode )
 {
+    int     fd;
+
     omode=omode;
-    return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+#if defined( __WATCOMC__ ) && defined( __QNX__ )
+    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
+    fd = open( name, O_RDONLY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    } else {
+        setmode( fd, O_BINARY );
+    }
+#else
+    fd = open( name, O_RDONLY | O_BINARY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    }
+#endif
+    return( WRES_PH2FID( fd ) );
 }
 
 static int wres_close( WResFileID fid )
@@ -59,10 +75,9 @@ static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize s
 }
 
 static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
 {
     if( where == SEEK_SET ) {
+        /* fool the wres library into thinking that the resource information starts at offset 0 */
         return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) - WResFileShift );
     } else {
         return( lseek( WRES_FID2PH( fid ), pos, where ) );
@@ -75,17 +90,3 @@ static WResFileOffset wres_tell( WResFileID fid )
 }
 
 WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, malloc, free );
-#else
-static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( fid, pos + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( fid, pos, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, wres_seek, tell, malloc, free );
-#endif

@@ -765,19 +765,19 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
+WResFileSSize  RcWrite( WResFileID fid, const void *buf, WResFileSize len )
 {
-    hdl = hdl;
+    fid = fid;
     WriteLoad( buf, len );
     return( len );
 }
 
-WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
+WResFileOffset RcSeek( WResFileID fid, WResFileOffset off, int pos )
 {
     DbgAssert( pos != SEEK_END );
     DbgAssert( !(pos == SEEK_CUR && off < 0) );
 
-    if( hdl == Root->outfile->handle ) {
+    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
         if( pos == SEEK_CUR ) {
             unsigned long   old_pos;
             unsigned long   new_pos;
@@ -795,23 +795,23 @@ WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
             return( off );
         }
     } else {
-        return( QLSeek( hdl, off, pos, "resource file" ) );
+        return( QLSeek( WRES_FID2PH( fid ), off, pos, "resource file" ) );
     }
 }
 
-WResFileOffset RcTell( WResFileID hdl )
+WResFileOffset RcTell( WResFileID fid )
 {
-    DbgAssert( hdl == Root->outfile->handle );
+//    DbgAssert( fid == Root->outfile->handle );
 
-    hdl = hdl;
+    fid = fid;
     return( PosLoad() );
 }
 
-bool RcPadFile( int handle, size_t pad )
+bool RcPadFile( WResFileID fid, size_t pad )
 {
-    DbgAssert( handle == Root->outfile->handle );
+    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
 
-    handle = handle;
+    fid = fid;
     PadLoad( pad );
     return( false );
 }
@@ -821,16 +821,16 @@ void CheckDebugOffset( ExeFileInfo *info )
     info = info;
 }
 
-RcStatus CopyExeData( int inhandle, int outhandle, unsigned_32 length )
-/*********************************************************************/
+RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
+/*******************************************************************************/
 {
-    outhandle = outhandle;
+    out_fid = out_fid;
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
-        QRead( inhandle, TokBuff, MAX_HEADROOM, "resource file" );
+        QRead( WRES_FID2PH( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );
     }
     if( length > 0 ) {
-        QRead( inhandle, TokBuff, length, "resource file" );
+        QRead( WRES_FID2PH( in_fid ), TokBuff, length, "resource file" );
         WriteLoad( TokBuff, length );
     }
     return( RS_OK );
@@ -867,7 +867,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.Handle = Root->outfile->handle;
+    einfo.Handle = WRES_PH2FID( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;

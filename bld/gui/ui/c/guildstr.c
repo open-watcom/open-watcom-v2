@@ -128,20 +128,20 @@ bool GUISeekMenuTemplate( res_name_or_id menu_id )
 
 bool GUIResReadDialogBoxHeader( DialogBoxHeader *hdr )
 {
-    return( ResReadDialogBoxHeader( hdr, hInstance.handle ) );
+    return( ResReadDialogBoxHeader( hdr, hInstance.fid ) );
 }
 
 bool GUIResReadDialogBoxControl( DialogBoxControl *ctl )
 {
-    return( ResReadDialogBoxControl( ctl, hInstance.handle ) );
+    return( ResReadDialogBoxControl( ctl, hInstance.fid ) );
 }
 
 bool GUIResReadMenuHeader( MenuHeader *hdr )
 {
-    return( ResReadMenuHeader( hdr, hInstance.handle ) );
+    return( ResReadMenuHeader( hdr, hInstance.fid ) );
 }
 
 bool GUIResReadMenuItem( MenuItem *new )
 {
-    return( ResReadMenuItem( new, hInstance.handle ) );
+    return( ResReadMenuItem( new, hInstance.fid ) );
 }

@@ -160,20 +160,20 @@ WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
     os2_exe_header  os2_hdr;
     exe_pe_header   pe_hdr;
     WRFileType      ftype;
-    WResFileID      fh;
+    WResFileID      fid;
 
     ftype = WR_INVALID_FILE;
 
-    fh = ResOpenFileRO( fname );
-    if ( fh != WRES_NIL_HANDLE ) {
-        if( WRReadWin16ExeHeader( fh, &os2_hdr ) != 0 ) {
+    fid = ResOpenFileRO( fname );
+    if ( fid != WRES_NIL_HANDLE ) {
+        if( WRReadWin16ExeHeader( fid, &os2_hdr ) != 0 ) {
             if( is_dll ) {
                 ftype = WR_WIN16_DLL;
             } else {
                 ftype = WR_WIN16_EXE;
             }
         } else {
-            if( WRReadWinNTExeHeader( fh, &pe_hdr ) != 0 ) {
+            if( WRReadWinNTExeHeader( fid, &pe_hdr ) != 0 ) {
                 if( is_dll ) {
                     ftype = WR_WINNT_DLL;
                 } else {
@@ -181,7 +181,7 @@ WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
                 }
             }
         }
-        ResCloseFile( fh );
+        ResCloseFile( fid );
     }
 
     return( ftype );

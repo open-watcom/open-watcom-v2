@@ -42,11 +42,11 @@
 WResFileID ResOpenNewFile( const char *filename )
 /***********************************************/
 {
-    WResFileID  newhandle;
+    WResFileID  fid;
 
-    newhandle = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
-    if( newhandle == WRES_NIL_HANDLE ) {
+    fid = WRESOPEN( filename, WRES_OPEN_NEW );
+    if( fid == WRES_NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
-    return( newhandle );
+    return( fid );
 }

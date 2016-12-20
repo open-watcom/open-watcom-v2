@@ -69,35 +69,35 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRReadResData( WResFileID handle, BYTE *data, size_t length )
+bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
 {
     bool        ok;
 
     ok = ( data != NULL && length > 0 );
     while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCREAD( handle, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        ok = ( RCREAD( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
         data += CHUNK_SIZE;
         length -= CHUNK_SIZE;
     }
     if( ok && length > 0 ) {
-        ok = ( RCREAD( handle, data, length ) == length );
+        ok = ( RCREAD( fid, data, length ) == length );
     }
 
     return( ok );
 }
 
-bool WRWriteResData( WResFileID handle, BYTE *data, size_t length )
+bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
 {
     bool        ok;
 
     ok = ( data != NULL && length > 0 );
     while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCWRITE( handle, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        ok = ( RCWRITE( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
         data += CHUNK_SIZE;
         length -= CHUNK_SIZE;
     }
     if( ok && length > 0 ) {
-        ok = ( RCWRITE( handle, data, length ) == length );
+        ok = ( RCWRITE( fid, data, length ) == length );
     }
 
     return( ok );

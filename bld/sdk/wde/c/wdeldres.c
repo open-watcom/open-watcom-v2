@@ -104,7 +104,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     DialogBoxExControl32    c32ex;
 
     WdeDialogBoxInfo        *dlg_info;
-    WResFileID              file;
+    WResFileID              fid;
     WdeDialogBoxControl     *control;
     LIST                    *prev_control;
 #if 0
@@ -116,7 +116,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     bool                    ok;
 
     dlg_info = NULL;
-    file = WRES_NIL_HANDLE;
+    fid = WRES_NIL_HANDLE;
 
     ok = (res_info != NULL && lnode != NULL);
 
@@ -135,27 +135,27 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        ok = ((file = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE);
+        ok = ((fid = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE);
     }
 
     if( ok ) {
         dlg_info->MemoryFlags = lnode->Info.MemoryFlags;
-        ok = (RCSEEK( file, lnode->Info.Offset, SEEK_SET ) != -1);
+        ok = (ResSeek( fid, lnode->Info.Offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
-            dlg_info->dialog_header->is32bitEx = ResIsDialogEx( file );
-            RCSEEK( file, lnode->Info.Offset, SEEK_SET );
+            dlg_info->dialog_header->is32bitEx = ResIsDialogEx( fid );
+            ResSeek( fid, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogExHeader32( &h32, &h32ex, file );
+                ok = !ResReadDialogExHeader32( &h32, &h32ex, fid );
             } else {
-                ok = !ResReadDialogBoxHeader32( &h32, file );
+                ok = !ResReadDialogBoxHeader32( &h32, fid );
             }
         } else {
-            ok = !ResReadDialogBoxHeader( &h16, file );
+            ok = !ResReadDialogBoxHeader( &h16, fid );
         }
     }
 
@@ -203,7 +203,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                  *       whether this an extended dialog or not
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
-                    if( ResReadDialogExControl32( &c32ex, file ) ) {
+                    if( ResReadDialogExControl32( &c32ex, fid ) ) {
                         ok = false;
                         break;
                     }
@@ -216,7 +216,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                     control->Text = c32ex.Text;
                     control->ExtraBytes = c32ex.ExtraBytes;
                 } else {
-                    if( ResReadDialogBoxControl32( &c32, file ) ) {
+                    if( ResReadDialogBoxControl32( &c32, fid ) ) {
                         ok = false;
                         break;
                     }
@@ -229,7 +229,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                     control->ExtraBytes = c32.ExtraBytes;
                 }
             } else {
-                if( ResReadDialogBoxControl( &c16, file ) ) {
+                if( ResReadDialogBoxControl( &c16, fid ) ) {
                     ok = false;
                     break;
                 }
@@ -296,8 +296,8 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         }
     }
 
-    if( file != WRES_NIL_HANDLE ) {
-        ResCloseFile( file );
+    if( fid != WRES_NIL_HANDLE ) {
+        ResCloseFile( fid );
     }
 
     return( dlg_info );

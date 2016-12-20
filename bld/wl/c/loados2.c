@@ -323,21 +323,21 @@ static void WriteResTable( ResTable *restab )
     WriteLoad( restab->Str.StringBlock, restab->Str.StringBlockSize );
 }
 
-static void CopyResData( int resHandle, size_t len )
-/**************************************************/
+static void CopyResData( WResFileID res_fid, size_t len )
+/*******************************************************/
 {
     char buff[512];
 
     for( ; len > sizeof( buff ); len -= sizeof( buff ) ) {
-        QRead( resHandle, buff, sizeof( buff ), FmtData.resource );
+        QRead( WRES_FID2PH( res_fid ), buff, sizeof( buff ), FmtData.resource );
         WriteLoad( buff, sizeof( buff ) );
     }
-    QRead( resHandle, buff, len, FmtData.resource );
+    QRead( WRES_FID2PH( res_fid ), buff, len, FmtData.resource );
     WriteLoad( buff, len );
 }
 
-static void WriteOS2Resources( int resHandle, WResDir inRes, ResTable *outRes )
-/*****************************************************************************/
+static void WriteOS2Resources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
+/**********************************************************************************/
 {
     int                 shift_count = FmtData.u.os2.segment_shift;
     int                 align = 1 << shift_count;
@@ -363,8 +363,8 @@ static void WriteOS2Resources( int resHandle, WResDir inRes, ResTable *outRes )
         addExeResRecord( outRes, exe_type, &(res->ResName),
                         lang->MemoryFlags, outRes_off,
                         (lang->Length + align - 1) >> shift_count );
-        QSeek( resHandle, lang->Offset, FmtData.resource );
-        CopyResData( resHandle, lang->Length );
+        QSeek( WRES_FID2PH( res_fid ), lang->Offset, FmtData.resource );
+        CopyResData( res_fid, lang->Length );
         NullAlign( align );
         outRes_off += (lang->Length + align - 1) >> shift_count;
 
@@ -748,22 +748,22 @@ void PhoneyStack( void )
     FmtData.u.os2.flags |= PHONEY_STACK_FLAG;
 }
 
-static int InitNEResources( WResDir *inRes, ResTable *outRes )
-/************************************************************/
+static WResFileID InitNEResources( WResDir *inRes, ResTable *outRes )
+/*******************************************************************/
 {
     WResDir     dir;
-    int         resHandle;
+    WResFileID  res_fid;
     bool        dup_discarded;
     bool        error;
 
     dir = NULL;
-    resHandle = -1;
+    res_fid = WRES_NIL_HANDLE;
     if( FmtData.resource != NULL ) {
-        resHandle = QOpenR( FmtData.resource );
-        if( resHandle != -1 ) {
+        res_fid = WRES_PH2FID( QOpenR( FmtData.resource ) );
+        if( res_fid != WRES_NIL_HANDLE ) {
             dir = WResInitDir();
             if( dir != NULL ) {
-                error = WResReadDir( resHandle, dir, &dup_discarded );
+                error = WResReadDir( res_fid, dir, &dup_discarded );
                 if( error ) {
                     LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
                     WResFreeDir( dir );
@@ -783,11 +783,11 @@ static int InitNEResources( WResDir *inRes, ResTable *outRes )
         }
     }
     *inRes = dir;
-    return( resHandle );
+    return( res_fid );
 }
 
-static void FiniNEResources( int resHandle, WResDir inRes, ResTable *outRes )
-/***************************************************************************/
+static void FiniNEResources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
+/********************************************************************************/
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {
@@ -800,8 +800,8 @@ static void FiniNEResources( int resHandle, WResDir inRes, ResTable *outRes )
         }
         WResFreeDir( inRes );
     }
-    if( resHandle != -1 ) {
-        QClose( resHandle, FmtData.resource );
+    if( res_fid != WRES_NIL_HANDLE ) {
+        QClose( WRES_FID2PH( res_fid ), FmtData.resource );
     }
 }
 
@@ -844,7 +844,7 @@ void FiniOS2LoadFile( void )
     unsigned long       imageguess;     // estimated length of the image
     unsigned            pad_len;
     WResDir             inRes;          // Directory of resources to read
-    int                 resHandle;      // Handle for resources file
+    WResFileID          res_fid;        // Handle for resources file
     ResTable            outRes;         // Resources to go out
 
     stub_len = Write_Stub_File( STUB_ALIGN );
@@ -877,7 +877,7 @@ void FiniOS2LoadFile( void )
         exe_head.segments++;
     }
     temp += exe_head.segments * sizeof( segment_record );
-    resHandle = InitNEResources( &inRes, &outRes );
+    res_fid = InitNEResources( &inRes, &outRes );
     exe_head.resource_off = temp;
     if( inRes != NULL ) {
         exe_head.resource = outRes.Dir.NumResources;
@@ -920,7 +920,7 @@ void FiniOS2LoadFile( void )
     exe_head.gangstart = NullAlign( 1 << FmtData.u.os2.segment_shift ) >>
                          FmtData.u.os2.segment_shift;
     WriteOS2Data( stub_len, &exe_head );
-    WriteOS2Resources( resHandle, inRes, &outRes );
+    WriteOS2Resources( res_fid, inRes, &outRes );
     exe_head.gangstart = 0;
     exe_head.ganglength = 0;
     if( inRes != NULL ) {
@@ -929,7 +929,7 @@ void FiniOS2LoadFile( void )
         FreeResTable( &outRes );
     }
     SeekEndLoad( 0 );
-    FiniNEResources( resHandle, inRes, &outRes );
+    FiniNEResources( res_fid, inRes, &outRes );
     DBIWrite();
     exe_head.signature = OS2_SIGNATURE_WORD;
     exe_head.version = 0x0105;          /* version 5.1 */

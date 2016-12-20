@@ -61,18 +61,6 @@ static  unsigned        MsgShift;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
 
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/*************************************************************************************/
-{
-    if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, RCALLOC, RCFREE );
-
 bool InitMsg( void )
 {
     char        msg_buff[RESOURCE_MAX_SIZE];

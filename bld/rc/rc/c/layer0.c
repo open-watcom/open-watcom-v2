@@ -82,8 +82,8 @@ typedef struct RcBuffer {
 
 typedef struct RcFileEntry {
     bool        HasRcBuffer;
-    WResFileID  FileHandle;      // If WRES_NIL_HANDLE, entry is unused
-    RcBuffer    *Buffer;         // If NULL, entry is a normal file (not used yet)
+    WResFileID  fid;            // If WRES_NIL_HANDLE, entry is unused
+    RcBuffer    *Buffer;        // If NULL, entry is a normal file (not used yet)
 } RcFileEntry;
 
 HANDLE_INFO     hInstance;
@@ -93,8 +93,8 @@ bool            RcIoNoBuffer = false;
 static WResFileID       openFileList[MAX_OPEN_FILES];
 static RcFileEntry      RcFileList[RC_MAX_FILES];
 
-static RcBuffer * NewRcBuffer( void )
-/***********************************/
+static RcBuffer *NewRcBuffer( void )
+/**********************************/
 {
     RcBuffer *  new_buff;
 
@@ -108,26 +108,26 @@ static RcBuffer * NewRcBuffer( void )
     return( new_buff );
 } /* NewRcBuffer */
 
-static void RegisterOpenFile( WResFileID handle )
-/*********************************************/
+static void RegisterOpenFile( WResFileID fid )
+/********************************************/
 {
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         if( openFileList[i] == WRES_NIL_HANDLE ) {
-            openFileList[i] = handle;
+            openFileList[i] = fid;
             break;
         }
     }
 }
 
-static void UnRegisterOpenFile( WResFileID handle )
-/***********************************************/
+static void UnRegisterOpenFile( WResFileID fid )
+/**********************************************/
 {
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
-        if( openFileList[i] == handle ) {
+        if( openFileList[i] == fid ) {
             openFileList[i] = WRES_NIL_HANDLE;
             break;
         }
@@ -137,13 +137,13 @@ static void UnRegisterOpenFile( WResFileID handle )
 /* Find index in RcFileList table of given filehandle.
 *  Return: RC_MAX_FILES if not found, else index
 */
-static int RcFindIndex( WResFileID handle )
-/*****************************************/
+static int RcFindIndex( WResFileID fid )
+/**************************************/
 {
     int     i;
 
     for( i = 0; i < RC_MAX_FILES; i++ ) {
-        if( RcFileList[i].FileHandle == handle && RcFileList[i].HasRcBuffer ) {
+        if( RcFileList[i].fid == fid && RcFileList[i].HasRcBuffer ) {
             break;
         }
     }
@@ -161,48 +161,49 @@ void CloseAllFiles( void ) {
     }
 }
 
-WResFileID RcOpen( const char * file_name, int access, ... )
-/**********************************************************/
+WResFileID RcOpen( const char * file_name, wres_open_mode omode )
+/***************************************************************/
 {
-    int         perms;
-    va_list     args;
-    WResFileID  handle;
+    WResFileID  fid;
     int         i;
 
-    if( access & O_CREAT ) {
-        va_start( args, access );
-        perms = va_arg( args, int );
-        va_end( args );
-    } else {
-        perms = 0;
+    switch( omode ) {
+    default:
+    case WRES_OPEN_RO:
+        fid = WRES_PH2FID( open( file_name, O_BINARY | O_RDONLY ) );
+        break;
+    case WRES_OPEN_RW:
+        fid = WRES_PH2FID( open( file_name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) );
+        break;
+    case WRES_OPEN_NEW:
+        fid = WRES_PH2FID( open( file_name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) );
+        break;
     }
-
-    handle = open( file_name, access, perms );
-    if( handle != WRES_NIL_HANDLE ) {
-        RegisterOpenFile( handle );
+    if( fid != WRES_NIL_HANDLE ) {
+        RegisterOpenFile( fid );
         if( !RcIoNoBuffer ) {
             for( i = 0; i < RC_MAX_FILES; i++ ) {
                 if( !RcFileList[i].HasRcBuffer ) {
                     RcFileList[i].HasRcBuffer = true;
-                    RcFileList[i].FileHandle = handle;
+                    RcFileList[i].fid = fid;
                     RcFileList[i].Buffer = NewRcBuffer();
                     break;
                 }
             }
         }
     }
-    return( handle );
+    return( fid );
 
 } /* RcOpen */
 
-static bool FlushRcBuffer( WResFileID handle, RcBuffer *buff )
-/************************************************************/
+static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
+/*********************************************************/
 {
     bool    error;
 
     error = false;
     if( buff->IsDirty ) {
-        error = ( (size_t)posix_write( handle, buff->Buffer, buff->Count ) != buff->Count );
+        error = ( (size_t)posix_write( WRES_FID2PH( fid ), buff->Buffer, buff->Count ) != buff->Count );
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
 
@@ -214,48 +215,48 @@ static bool FlushRcBuffer( WResFileID handle, RcBuffer *buff )
 
 } /* FlushRcBuffer */
 
-int RcClose( WResFileID handle )
-/******************************/
+int RcClose( WResFileID fid )
+/***************************/
 {
     RcBuffer    *buff;
     int         i;
 
-    i = RcFindIndex( handle );
+    i = RcFindIndex( fid );
     if( i < RC_MAX_FILES ) {
         buff = RcFileList[i].Buffer;
         if( buff->IsDirty ) {
-            if( FlushRcBuffer( handle, buff ) ) {
+            if( FlushRcBuffer( fid, buff ) ) {
                 return( -1 );
             }
         }
         RcMemFree( buff );
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].FileHandle = WRES_NIL_HANDLE;
+        RcFileList[i].fid = WRES_NIL_HANDLE;
         RcFileList[i].Buffer = NULL;
     }
-    UnRegisterOpenFile( handle );
-    return( close( handle ) );
+    UnRegisterOpenFile( fid );
+    return( close( WRES_FID2PH( fid ) ) );
 
 } /* RcClose */
 
-WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize size )
-/*********************************************************************************/
+WResFileSSize RcWrite( WResFileID fid, const void *out_buff, WResFileSize size )
+/******************************************************************************/
 {
     RcBuffer    *buff;
     size_t      copy_bytes;
     size_t      total_wrote;
     int         i;
 
-    i = RcFindIndex( handle );
+    i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( posix_write( handle, out_buff, size ) );
+        return( posix_write( WRES_FID2PH( fid ), out_buff, size ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     /* this is in case we have just read from the file */
     if( !buff->IsDirty ) {
-        if( FlushRcBuffer( handle, buff ) ) {
+        if( FlushRcBuffer( fid, buff ) ) {
             return( -1 );
         }
     }
@@ -275,7 +276,7 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
         total_wrote += copy_bytes;
 
         if( buff->Count == RC_BUFFER_SIZE ) {
-            if( FlushRcBuffer( handle, buff ) ) {
+            if( FlushRcBuffer( fid, buff ) ) {
                 return( -1 );
             }
         }
@@ -284,10 +285,10 @@ WResFileSSize RcWrite( WResFileID handle, const void *out_buff, WResFileSize siz
     return( total_wrote );
 } /* RcWrite */
 
-static WResFileSSize FillRcBuffer( WResFileID handle, RcBuffer * buff )
-/*********************************************************************/
+static WResFileSSize FillRcBuffer( WResFileID fid, RcBuffer * buff )
+/******************************************************************/
 {
-    buff->Count = posix_read( handle, buff->Buffer, RC_BUFFER_SIZE );
+    buff->Count = posix_read( WRES_FID2PH( fid ), buff->Buffer, RC_BUFFER_SIZE );
     if( buff->Count == -1 ) {
         buff->Count = 0;
         buff->BytesRead = 0;
@@ -299,8 +300,8 @@ static WResFileSSize FillRcBuffer( WResFileID handle, RcBuffer * buff )
     return( buff->Count );
 } /* FillRcBuffer */
 
-WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
-/**************************************************************************/
+WResFileSSize RcRead( WResFileID fid, void * in_buff, WResFileSize size )
+/***********************************************************************/
 {
     RcBuffer        *buff;
     size_t          copy_bytes;
@@ -308,15 +309,18 @@ WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
     int             i;
     WResFileSSize   bytes_added;        /* return value of FillRcBuffer */
 
-    i = RcFindIndex( handle );
+    if( IsLoadResFile( fid ) ) {
+        return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
+    }
+    i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( posix_read( handle, in_buff, size ) );
+        return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        if( FlushRcBuffer( handle, buff ) ) {
+        if( FlushRcBuffer( fid, buff ) ) {
             return( -1 );
         }
     }
@@ -324,7 +328,7 @@ WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
     total_read = 0;
     while( size > 0 ) {
         if( buff->Count == 0 ) {
-            bytes_added = FillRcBuffer( handle, buff );
+            bytes_added = FillRcBuffer( fid, buff );
             if( bytes_added == -1 ) {
                 return( bytes_added );
             } else if( bytes_added == 0 ) {
@@ -346,8 +350,8 @@ WResFileSSize RcRead( WResFileID handle, void * in_buff, WResFileSize size )
     return( total_read );
 } /* RcRead */
 
-WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
-/**************************************************************************/
+WResFileOffset RcSeek( WResFileID fid, WResFileOffset amount, int where )
+/***********************************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
@@ -357,18 +361,21 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
     int             diff;
     int             i;
 
-    i = RcFindIndex( handle );
-    if( i >= RC_MAX_FILES ) {
-        if( handle == hInstance.handle && where == SEEK_SET ) {
-            return( lseek( handle, amount + WResFileShift, where ) - WResFileShift );
+    if( IsLoadResFile( fid ) ) {
+        if( where == SEEK_SET ) {
+            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) - WResFileShift );
         } else {
-            return( lseek( handle, amount, where ) );
+            return( lseek( WRES_FID2PH( fid ), amount, where ) );
         }
+    }
+    i = RcFindIndex( fid );
+    if( i >= RC_MAX_FILES ) {
+        return( lseek( WRES_FID2PH( fid ), amount, where ) );
     }
 
     buff = RcFileList[i].Buffer;
 
-    currpos = RcTell( handle );
+    currpos = RcTell( fid );
 
     if( buff->IsDirty ) {
         switch( where ) {
@@ -380,9 +387,9 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             /* if we are seeking backwards any amount or forwards past the */
             /* end of the buffer */
             if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
-                if( FlushRcBuffer( handle, buff ) )
+                if( FlushRcBuffer( fid, buff ) )
                     return( -1 );
-                if( lseek( handle, amount, SEEK_SET ) == -1 ) {
+                if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
                     return( -1 );
                 }
             } else {
@@ -394,9 +401,9 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             }
             break;
         case SEEK_END:
-            if( FlushRcBuffer( handle, buff ) )
+            if( FlushRcBuffer( fid, buff ) )
                 return( -1 );
-            if( lseek( handle, amount, where ) == -1 )
+            if( lseek( WRES_FID2PH( fid ), amount, where ) == -1 )
                 return( -1 );
             break;
         default:
@@ -412,9 +419,9 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
         case SEEK_SET:
             /* if the new pos is outside the buffer */
             if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
-                if( FlushRcBuffer( handle, buff ) )
+                if( FlushRcBuffer( fid, buff ) )
                     return( -1 );
-                if( lseek( handle, amount, SEEK_SET ) == -1 ) {
+                if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
                     return( -1 );
                 }
             } else {
@@ -426,9 +433,9 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
             }
             break;
         case SEEK_END:
-            if( FlushRcBuffer( handle, buff ) )
+            if( FlushRcBuffer( fid, buff ) )
                 return( -1 );
-            if( lseek( handle, amount, SEEK_END ) == -1 )
+            if( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 )
                 return( -1 );
             break;
         default:
@@ -440,23 +447,26 @@ WResFileOffset RcSeek( WResFileID handle, WResFileOffset amount, int where )
     return( currpos );
 } /* RcSeek */
 
-WResFileOffset RcTell( WResFileID handle )
-/****************************************/
+WResFileOffset RcTell( WResFileID fid )
+/*************************************/
 {
     RcBuffer *  buff;
     int         i;
 
-    i = RcFindIndex( handle );
+    if( IsLoadResFile( fid ) ) {
+        return( tell( WRES_FID2PH( fid ) ) );
+    }
+    i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( tell( handle ) );
+        return( tell( WRES_FID2PH( fid ) ) );
     }
 
     buff = RcFileList[i].Buffer;
 
     if( buff->IsDirty ) {
-        return( tell( handle ) + (WResFileOffset)buff->Count );
+        return( tell( WRES_FID2PH( fid ) ) + (WResFileOffset)buff->Count );
     } else {
-        return( tell( handle ) - (WResFileOffset)buff->Count );
+        return( tell( WRES_FID2PH( fid ) ) - (WResFileOffset)buff->Count );
     }
 } /* RcTell */
 
@@ -467,7 +477,7 @@ void Layer0InitStatics( void )
 
     for( i = 0; i < RC_MAX_FILES; i++ ) {
         RcFileList[i].HasRcBuffer = false;
-        RcFileList[i].FileHandle = WRES_NIL_HANDLE;
+        RcFileList[i].fid = WRES_NIL_HANDLE;
     }
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         openFileList[i] = WRES_NIL_HANDLE;

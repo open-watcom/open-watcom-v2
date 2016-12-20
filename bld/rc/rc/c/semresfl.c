@@ -77,7 +77,7 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    handle = RcIoOpenBinaryInput( full_filename );
+    handle = RcIoOpenInput( full_filename, false );
     if( handle == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;

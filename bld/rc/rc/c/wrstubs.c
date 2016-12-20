@@ -69,7 +69,7 @@ RcStatus InitOS2ResTable( int *err_code )
     return( RS_READ_ERROR );
 }
 
-RcStatus WriteOS2ResTable( int handle, OS2ResTable *restab, int *err_code )
+RcStatus WriteOS2ResTable( WResFileID handle, OS2ResTable *restab, int *err_code )
 {
     return( RS_READ_ERROR );
 }

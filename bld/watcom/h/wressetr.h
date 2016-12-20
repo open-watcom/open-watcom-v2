@@ -38,17 +38,17 @@
 /* function */
 
 #if defined( _WIN64 )
-#define WResFileSSize   __int64
-#define WResFileSize    unsigned __int64
-#define WResFileOffset  long
+#define WResFileSSize       __int64
+#define WResFileSize        unsigned __int64
+#define WResFileOffset      long
 #elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
-#define WResFileSSize   ssize_t
-#define WResFileSize    size_t
-#define WResFileOffset  off_t
+#define WResFileSSize       ssize_t
+#define WResFileSize        size_t
+#define WResFileOffset      off_t
 #else
-#define WResFileSSize   int
-#define WResFileSize    unsigned
-#define WResFileOffset  long
+#define WResFileSSize       int
+#define WResFileSize        unsigned
+#define WResFileOffset      long
 #endif
 
 #if defined( _WIN64 )
@@ -58,17 +58,22 @@
 #define WRES_FID2PH(fid)    (((int)(unsigned long)(fid)) - 1)
 #define WRES_PH2FID(ph)     ((WResFileID)(unsigned long)((ph) + 1))
 #endif
+#define WRES_FID2FH(fid)    ((FILE *)(fid))
+#define WRES_FH2FID(fh)     ((WResFileID)(fh))
 
-#define WRES_FID2FH(fid)    (fid)
-#define WRES_FH2FID(fh)     (fh)
+#define WRES_NIL_HANDLE     NULL
 
-#define WRES_NIL_HANDLE     ((WResFileID)-1)
+typedef void                *WResFileID;
 
-typedef int                 WResFileID;
+typedef enum {
+    WRES_OPEN_RO,
+    WRES_OPEN_RW,
+    WRES_OPEN_NEW,
+} wres_open_mode;
 
 typedef struct WResRoutines {                                               /* defaults */
     /* I/O routines */
-    WResFileID      (*cli_open)(const char *, int, ...);                    /* open */
+    WResFileID      (*cli_open)(const char *, wres_open_mode);              /* open */
     int             (*cli_close)(WResFileID);                               /* close */
     WResFileSSize   (*cli_read)(WResFileID, void *, WResFileSize);          /* read */
     WResFileSSize   (*cli_write)(WResFileID, const void *, WResFileSize);   /* write */
