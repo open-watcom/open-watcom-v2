@@ -44,7 +44,6 @@ bool OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file )
 /* return false otherwise */
 {
     hinfo->status = 0;
-    res_fid = WRES_NIL_HANDLE;
     hinfo->fid = ResOpenFileRO( filename );
     if( hinfo->fid == WRES_NIL_HANDLE )
         return( false );
@@ -55,7 +54,6 @@ bool OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file )
     if( InitResources( hinfo ) )
         return( false );
     hinfo->status++;
-    res_fid = hinfo->fid;
     return( true );
 }
 
@@ -84,7 +82,6 @@ bool CloseResFile( PHANDLE_INFO hinfo )
         rc = !ResCloseFile( hinfo->fid );
         hinfo->fid = WRES_NIL_HANDLE;
         hinfo->status = 0;
-        res_fid = WRES_NIL_HANDLE;
         /* fall throught */
     case 0:
         return( rc );

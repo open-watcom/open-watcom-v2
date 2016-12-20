@@ -90,6 +90,4 @@ typedef struct WResRoutines {                                               /* d
 /* This is a global variable exported by function FindResources */
 extern WResFileOffset   WResFileShift;
 
-extern int              IsLoadResFile( WResFileID handle );
-
 #endif

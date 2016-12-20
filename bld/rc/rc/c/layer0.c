@@ -309,7 +309,7 @@ WResFileSSize RcRead( WResFileID fid, void * in_buff, WResFileSize size )
     int             i;
     WResFileSSize   bytes_added;        /* return value of FillRcBuffer */
 
-    if( IsLoadResFile( fid ) ) {
+    if( hInstance.fid == fid ) {
         return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
     }
     i = RcFindIndex( fid );
@@ -361,7 +361,7 @@ WResFileOffset RcSeek( WResFileID fid, WResFileOffset amount, int where )
     int             diff;
     int             i;
 
-    if( IsLoadResFile( fid ) ) {
+    if( hInstance.fid == fid ) {
         if( where == SEEK_SET ) {
             return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) - WResFileShift );
         } else {
@@ -453,7 +453,7 @@ WResFileOffset RcTell( WResFileID fid )
     RcBuffer *  buff;
     int         i;
 
-    if( IsLoadResFile( fid ) ) {
+    if( hInstance.fid == fid ) {
         return( tell( WRES_FID2PH( fid ) ) );
     }
     i = RcFindIndex( fid );
