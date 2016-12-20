@@ -249,7 +249,7 @@ bool WRLoadWResDirFromWin16EXE( WResFileID file_handle, WResDir *dir )
             (*dir)->NumResources += type_node->Info.NumResources;
             type_node = WRReadWResTypeNodeFromExe ( file_handle, align_shift );
         }
-        name_offset = tell( file_handle ) - offset - win_header.resource_off;
+        name_offset = RCTELL( file_handle ) - offset - win_header.resource_off;
         ok = WRReadResourceNames( *dir, file_handle, name_offset );
     }
 
@@ -342,7 +342,7 @@ WResResNode *WRReadWResResNodeFromExe( WResFileID file, uint_16 align )
         return( NULL );
     }
 
-    if( read( file, &name_info, sizeof( WRNameInfo ) ) != sizeof( WRNameInfo ) ) {
+    if( RCREAD( file, &name_info, sizeof( WRNameInfo ) ) != sizeof( WRNameInfo ) ) {
         return( NULL );
     }
 

@@ -206,7 +206,7 @@ int WRReadNTObjectTable( WResFileID file, exe_pe_header *hdr, pe_object **ot )
     }
     *ot = (pe_object *)MemAlloc( size );
     if( *ot != NULL ) {
-        if( read( file, *ot, size ) != size ) {
+        if( RCREAD( file, *ot, size ) != size ) {
             MemFree( *ot );
             *ot = NULL;
         }
@@ -621,8 +621,7 @@ bool WRReadResourceEntry( WResFileID file, uint_32 offset, resource_entry *res_e
 
     /* read the resource entry */
     if( ok ) {
-        ok = (read( file, res_entry, sizeof( resource_entry ) ) ==
-              sizeof( resource_entry ));
+        ok = (RCREAD( file, res_entry, sizeof( resource_entry ) ) == sizeof( resource_entry ));
     }
 
     return( ok );
