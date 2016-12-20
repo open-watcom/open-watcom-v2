@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Find resource and seek to begining. 
+* Description:  Find resource and seek to begining.
 *
 ****************************************************************************/
 
@@ -54,9 +54,9 @@ bool WResSeekResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type, 
     if( ( resource_type != NULL ) && ( resource_id != NULL ) ) {
         lang.lang = DEF_LANG;
         lang.sublang = DEF_SUBLANG;
-    
+
         wind = WResFindResource( resource_type, resource_id, dir, &lang );
-    
+
         if( !WResIsEmptyWindow( wind ) ) {
             res = WResGetLangInfo( wind );
             if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) != -1 ) {
