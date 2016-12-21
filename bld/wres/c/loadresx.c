@@ -24,19 +24,48 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Load resources from file. 
 *
 ****************************************************************************/
 
 
-#ifndef UINLM_H_INCLUDED
-#define UINLM_H_INCLUDED
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include "wresall.h"
+#include "wresset2.h"
+#include "wresall.h"
+#include "reserr.h"
+#include "wresrtns.h"
+#include "wresdefn.h"
+#include "layer2.h"
+#include "wresset2.h"
+#include "seekres.h"
 
-extern char     * UIAPI uigetscreenname( void );
-extern void     UIAPI uiwakethread( void );
-extern void     UIAPI uiforceinfloop( void );
 
-extern bool     kbdisblocked( void );
+int WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource,
+                                    lpstr *lpszBuffer, size_t *bufferSize )
+/*************************************************************************/
+{
+    WResID              *resource_type;
+    WResID              *resource_id;
+    int                 rc;
 
-#endif
+    if( IS_INTRESOURCE( idResource ) ) {
+        resource_id = WResIDFromNum( (uint_16)RESOURCE2INT( idResource ) );
+    } else {
+        resource_id = WResIDFromStrF( idResource );
+    }
+    if( IS_INTRESOURCE( idType ) ) {
+        resource_type = WResIDFromNum( (uint_16)RESOURCE2INT( idType ) );
+    } else {
+        resource_type = WResIDFromStrF( idType );
+    }
+    rc = WResLoadResource2( MainDir, hinfo, resource_type, resource_id, lpszBuffer, bufferSize );
+    if( resource_type != NULL )
+        WResIDFree( resource_type );
+    if( resource_id != NULL )
+        WResIDFree( resource_id );
+    return( rc );
+}

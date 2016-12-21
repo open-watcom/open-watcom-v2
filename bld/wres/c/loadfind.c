@@ -57,8 +57,12 @@ typedef struct dbgheader {
 
 WResFileOffset    WResFileShift = 0;
 
-bool FindResources( PHANDLE_INFO hInstance )
-/* look for the resource information in a debugger record at the end of file */
+bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
+/*************************************************************
+ * set position of resource info in the file (WResFileShift)
+ * it is 0 if it is external resource file (GUI project)
+ * or look for the resource information in a debugger record at the end of file
+ */
 {
     WResFileOffset  currpos;
     WResFileOffset  offset;
@@ -66,32 +70,39 @@ bool FindResources( PHANDLE_INFO hInstance )
     bool            notfound;
     char            buffer[sizeof( PATCH_LEVEL )];
 
-    notfound = true;
+    notfound = !res_file;
     WResFileShift = 0;
-    offset = sizeof( dbgheader );
-    if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
-        if( WRESREAD( hInstance->handle, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
-            if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
-                offset += sizeof( PATCH_LEVEL );
+    if( notfound ) {
+        offset = sizeof( dbgheader );
+        if( WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
+            if( WRESREAD( hinfo->fid, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
+                if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
+                    offset += sizeof( PATCH_LEVEL );
+                }
+            }
+        }
+        WRESSEEK( hinfo->fid, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->fid );
+        for( ;; ) {
+            WRESREAD( hinfo->fid, &header, sizeof( dbgheader ) );
+            if( header.signature == WAT_RES_SIG ) {
+                notfound = false;
+                WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
+                break;
+            } else if( header.signature == VALID_SIGNATURE ||
+                       header.signature == FOX_SIGNATURE1 ||
+                       header.signature == FOX_SIGNATURE2 ) {
+                currpos -= header.debug_size;
+                WRESSEEK( hinfo->fid, currpos, SEEK_SET );
+            } else {        /* did not find the resource information */
+                break;
             }
         }
     }
-    WRESSEEK( hInstance->handle, -offset, SEEK_END );
-    currpos = WRESTELL( hInstance->handle );
-    for( ;; ) {
-        WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
-        if( header.signature == WAT_RES_SIG ) {
-            notfound = false;
-            WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
-            break;
-        } else if( header.signature == VALID_SIGNATURE ||
-                   header.signature == FOX_SIGNATURE1 ||
-                   header.signature == FOX_SIGNATURE2 ) {
-            currpos -= header.debug_size;
-            WRESSEEK( hInstance->handle, currpos, SEEK_SET );
-        } else {        /* did not find the resource information */
-            break;
-        }
-    }
     return( notfound );
+}
+
+bool FindResources( PHANDLE_INFO hinfo )
+{
+    return( FindResourcesX( hinfo, false ) );
 }

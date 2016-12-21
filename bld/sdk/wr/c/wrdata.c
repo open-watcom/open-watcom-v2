@@ -43,6 +43,10 @@
 #include "wrmsg.h"
 #include "wresall.h"
 #include "wrdatai.h"
+#include "rcrtns.h"
+
+#include "clibext.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -65,37 +69,35 @@
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRReadResData( WResFileID handle, BYTE *data, uint_32 length )
+bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
 {
-    uint_32     size;
     bool        ok;
 
-    size = 0;
-    ok = (data != NULL && length != 0);
-    while( ok && length - size > CHUNK_SIZE ) {
-        ok = (read( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
-        size += CHUNK_SIZE;
+    ok = ( data != NULL && length > 0 );
+    while( ok && length > CHUNK_SIZE ) {
+        ok = ( RCREAD( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        data += CHUNK_SIZE;
+        length -= CHUNK_SIZE;
     }
-    if( ok && length - size != 0 ) {
-        ok = (read( handle, &data[size], length - size ) == length - size);
+    if( ok && length > 0 ) {
+        ok = ( RCREAD( fid, data, length ) == length );
     }
 
     return( ok );
 }
 
-bool WRWriteResData( WResFileID handle, BYTE *data, uint_32 length )
+bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
 {
-    uint_32     size;
     bool        ok;
 
-    size = 0;
-    ok = (data != NULL && length != 0);
-    while( ok && length - size > CHUNK_SIZE ) {
-        ok = (write( handle, &data[size], CHUNK_SIZE ) == CHUNK_SIZE);
-        size += CHUNK_SIZE;
+    ok = ( data != NULL && length > 0 );
+    while( ok && length > CHUNK_SIZE ) {
+        ok = ( RCWRITE( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        data += CHUNK_SIZE;
+        length -= CHUNK_SIZE;
     }
-    if( ok && length - size != 0 ) {
-        ok = (write( handle, &data[size], length - size ) == length - size);
+    if( ok && length > 0 ) {
+        ok = ( RCWRITE( fid, data, length ) == length );
     }
 
     return( ok );
@@ -124,14 +126,14 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 
     rdata = NULL;
 
-    ok = (info != NULL && lnode != NULL);
+    ok = ( info != NULL && lnode != NULL );
 
     if( ok && lnode->data != NULL ) {
         return( WRCopyExistingData( lnode ) );
     }
 
     if( ok ) {
-        ok = (lnode->Info.Length < UINT_MAX);
+        ok = ( lnode->Info.Length < UINT_MAX );
         if( !ok ) {
             WRDisplayErrorMsg( WR_RESTOOLARGE );
         }
@@ -139,7 +141,7 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
 
     if( ok ) {
         rdata = WRLoadResData( info->tmp_file, lnode->Info.Offset, lnode->Info.Length );
-        ok = (rdata != NULL);
+        ok = ( rdata != NULL );
     }
 
     if( !ok ) {
@@ -149,38 +151,45 @@ void * WRAPI WRCopyResData( WRInfo *info, WResLangNode *lnode )
         }
     }
 
-    return( rdata );
+    return( rdata );;
 }
 
-void * WRAPI WRLoadResData( const char *file, uint_32 offset, uint_32 length )
+void * WRAPI WRLoadResData( const char *fname, uint_32 offset, size_t length )
 {
-    void        *data;
-    WResFileID  handle;
+    char        *data;
+    FILE        *fh;
     bool        ok;
+    char        *buf;
 
     data = NULL;
-    handle = -1;
+    fh = NULL;
 
-    ok = (file != NULL && length != 0);
+    ok = ( fname != NULL && length > 0 );
 
     if( ok ) {
-        ok = ((data = MemAlloc( length )) != NULL);
+        ok = ( (data = MemAlloc( length )) != NULL );
     }
 
     if( ok ) {
-        ok = ((handle = ResOpenFileRO( file )) != -1);
+        ok = ( (fh = fopen( fname, "rb" )) != NULL );
     }
 
     if( ok ) {
-        ok = ((ResSeek( handle, offset, SEEK_SET )) != -1);
+        ok = ( (fseek( fh, offset, SEEK_SET )) == 0 );
     }
 
-    if( ok ) {
-        ok = WRReadResData( handle, (BYTE *)data, length );
+    buf = data;
+    while( ok && length > CHUNK_SIZE ) {
+        ok = ( fread( buf, 1, CHUNK_SIZE, fh ) == CHUNK_SIZE );
+        buf += CHUNK_SIZE;
+        length -= CHUNK_SIZE;
+    }
+    if( ok && length > 0 ) {
+        ok = ( fread( buf, 1, length, fh ) == length );
     }
 
-    if( handle != -1 ) {
-        ResCloseFile( handle );
+    if( fh != NULL ) {
+        fclose( fh );
     }
 
     if( !ok ) {
@@ -193,27 +202,29 @@ void * WRAPI WRLoadResData( const char *file, uint_32 offset, uint_32 length )
     return( data );
 }
 
-bool WRAPI WRSaveDataToFile( const char *file_name, BYTE *data, uint_32 length )
+bool WRAPI WRSaveResDataToFile( const char *fname, BYTE *data, size_t length )
 {
-    WResFileID  file;
+    FILE        *fh;
     bool        ok;
 
-    file = -1;
-
-    ok = (file_name != NULL && data != NULL && length != 0);
-
-    if( ok ) {
-        file = open( file_name, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY,
-                     S_IWRITE | S_IREAD );
-        ok = (file != -1);
-    }
+    fh = NULL;
+    ok = ( fname != NULL && data != NULL && length != 0 );
 
     if( ok ) {
-        ok = WRWriteResData( file, data, length );
+        ok = ( (fh = fopen( fname, "wb" )) != NULL );
     }
 
-    if( file != -1 ) {
-        ResCloseFile( file );
+    while( ok && length > CHUNK_SIZE ) {
+        ok = ( fwrite( data, 1, CHUNK_SIZE, fh ) == CHUNK_SIZE );
+        data += CHUNK_SIZE;
+        length -= CHUNK_SIZE;
+    }
+    if( ok && length > 0 ) {
+        ok = ( fwrite( data, 1, length, fh ) == length );
+    }
+
+    if( fh != NULL ) {
+        fclose( fh );
     }
 
     return( ok );

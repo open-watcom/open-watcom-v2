@@ -80,7 +80,7 @@ static char *machType[] = {
 };
 
 static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
-/****************************************************/
+/***********************************************************/
 {
     orl_symbol_type                     type;
     char                                *name;
@@ -195,7 +195,7 @@ static char *relocTypes[] = {
 };
 
 static orl_return PrintRelocInfo( orl_reloc *reloc )
-/*******************************************/
+/**************************************************/
 {
     printf( " tag=%8.8x ", reloc->offset );
     if( reloc->type < sizeof( relocTypes ) / sizeof( *relocTypes ) ) {
@@ -213,7 +213,7 @@ static orl_return PrintRelocInfo( orl_reloc *reloc )
 }
 
 static orl_return PrintSecInfo( orl_sec_handle o_shnd )
-/**********************************************/
+/*****************************************************/
 {
     char                        *buf;
     int                         loop;
@@ -422,7 +422,7 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
 }
 
 static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
-/****************************************************/
+/***********************************************************/
 {
     if( dump.symbols ) {
         printf( "\nSymbol table\n" );
@@ -432,14 +432,14 @@ static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
     return( ORL_OKAY );
 }
 
-static void * objRead( void *hdl, size_t len )
-/********************************************/
+static void *objRead( orl_file_id fid, size_t len )
+/*************************************************/
 {
     buff_list   ptr;
 
     ptr = TRMemAlloc( sizeof( *buffList ) + len - 1 );
     ptr->next = buffList;
-    if( read( (int)hdl, ptr->buff, len ) != len ) {
+    if( read( ORL_FID2PH( fid ), ptr->buff, len ) != len ) {
         TRMemFree( ptr );
         return( NULL );
     }
@@ -447,18 +447,18 @@ static void * objRead( void *hdl, size_t len )
     return( ptr->buff );
 }
 
-static long objSeek( void *hdl, long pos, int where )
-/***************************************************/
+static long objSeek( orl_file_id fid, long pos, int where )
+/*********************************************************/
 {
-    return( lseek( (int)hdl, pos, where ) );
+    return( lseek( ORL_FID2PH( fid ), pos, where ) );
 }
 
 static void freeBuffList( void )
-/***********************/
+/******************************/
 {
     buff_list   next;
 
-    while( buffList ) {
+    while( buffList != NULL ) {
         next = buffList->next;
         TRMemFree( buffList );
         buffList = next;
@@ -541,7 +541,7 @@ int main( int argc, char *argv[] )
         printf( "Got NULL orl_handle.\n" );
         return( 2 );
     }
-    type = ORLFileIdentify( o_hnd, (void *)file );
+    type = ORLFileIdentify( o_hnd, ORL_PH2FID( file ) );
     if( type == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( 1 );
@@ -561,7 +561,7 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_fhnd = ORLFileInit( o_hnd, (void *)file, type );
+    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( file ), type );
     if( o_fhnd == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( 2 );

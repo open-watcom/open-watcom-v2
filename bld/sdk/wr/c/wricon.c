@@ -35,6 +35,8 @@
 
 #include "watcom.h"
 #include "wrglbl.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -293,7 +295,7 @@ bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, 
     }
 
     if( ok ) {
-        tname = WResIDFromNum( (uint_16)(pointer_int)RT_CURSOR );
+        tname = WResIDFromNum( RESOURCE2INT( RT_CURSOR ) );
         ok = (tname != NULL);
     }
 
@@ -351,7 +353,7 @@ bool WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int 
 
     if( ok ) {
         memcpy( icon, data + id->dwImageOffset, id->dwBytesInRes );
-        tname = WResIDFromNum( (uint_16)(pointer_int)RT_ICON );
+        tname = WResIDFromNum( RESOURCE2INT( RT_ICON ) );
         ok = (tname != NULL);
     }
 
@@ -396,7 +398,7 @@ bool WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode,
     bool                ok;
 
     ok = (info != NULL && lnode != NULL &&
-          (type == (uint_16)(pointer_int)RT_ICON || type == (uint_16)(pointer_int)RT_CURSOR));
+          (type == RESOURCE2INT( RT_ICON ) || type == RESOURCE2INT( RT_CURSOR )));
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, type, NULL );
@@ -546,7 +548,7 @@ bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
         for( i = 0; ok && i < rch->cwCount; i++ ) {
             ord = (uint_16)rch->cdEntries[i].wNameOrdinal;
             lt = lnode->Info.lang;
-            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)(pointer_int)RT_CURSOR, ord, &lt );
+            ok = WRFindImageId( info, NULL, NULL, &ilnode, RESOURCE2INT( RT_CURSOR ), ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WRAddCursorImageToData( info, ilnode, data, size, &hotspot );
@@ -613,7 +615,7 @@ bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode,
         for( i = 0; ok && i < rih->cwCount; i++ ) {
             ord = (uint_16)rih->idEntries[i].wNameOrdinal;
             lt = lnode->Info.lang;
-            ok = WRFindImageId( info, NULL, NULL, &ilnode, (uint_16)(pointer_int)RT_ICON, ord, &lt );
+            ok = WRFindImageId( info, NULL, NULL, &ilnode, RESOURCE2INT( RT_ICON ), ord, &lt );
             if( ok ) {
                 osize = *size;
                 ok = WRAddIconImageToData( info, ilnode, data, size );
@@ -669,9 +671,8 @@ uint_16 WRAPI WRFindUnusedImageId( WRInfo *info, uint_16 start )
                 break;
             }
         }
-        if( !WRFindImageId( info, NULL, NULL, &lnode, (uint_16)(pointer_int)RT_ICON, start, NULL ) ) {
-            if( !WRFindImageId( info, NULL, NULL, &lnode,
-                                (uint_16)(pointer_int)RT_CURSOR, start, NULL ) ) {
+        if( !WRFindImageId( info, NULL, NULL, &lnode, RESOURCE2INT( RT_ICON ), start, NULL ) ) {
+            if( !WRFindImageId( info, NULL, NULL, &lnode, RESOURCE2INT( RT_CURSOR ), start, NULL ) ) {
                 found = TRUE;
                 break;
             }
@@ -777,8 +778,7 @@ bool WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type 
     uint_16             ord;
     bool                ok;
 
-    ok = (info != NULL && lnode != NULL &&
-          (type == (uint_16)(pointer_int)RT_GROUP_ICON || type == (uint_16)(pointer_int)RT_GROUP_CURSOR));
+    ok = (info != NULL && lnode != NULL && (type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR )));
 
     if( ok ) {
         data = WRCopyResData( info, lnode );
@@ -786,13 +786,12 @@ bool WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type 
     }
 
     if( ok ) {
-        if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ih = (RESICONHEADER *)data;
             for( i = 0; ok && i < ih->cwCount; i++ ) {
                 ord = (uint_16)ih->idEntries[i].wNameOrdinal;
                 lt = lnode->Info.lang;
-                if( WRFindImageId( info, &itnode, &irnode, &ilnode,
-                                   (uint_16)(pointer_int)RT_ICON, ord, &lt ) ) {
+                if( WRFindImageId( info, &itnode, &irnode, &ilnode, RESOURCE2INT( RT_ICON ), ord, &lt ) ) {
                     if( ilnode->data != NULL ) {
                         MemFree( ilnode->data );
                         ilnode->data = NULL;
@@ -805,8 +804,7 @@ bool WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type 
             for( i = 0; ok && i < ch->cwCount; i++ ) {
                 ord = (uint_16)ch->cdEntries[i].wNameOrdinal;
                 lt = lnode->Info.lang;
-                if( WRFindImageId( info, &itnode, &irnode, &ilnode,
-                                   (uint_16)(pointer_int)RT_CURSOR, ord, &lt ) ) {
+                if( WRFindImageId( info, &itnode, &irnode, &ilnode, RESOURCE2INT( RT_CURSOR ), ord, &lt ) ) {
                     if( ilnode->data != NULL ) {
                         MemFree( ilnode->data );
                         ilnode->data = NULL;

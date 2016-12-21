@@ -193,8 +193,7 @@ void BasicInitSym( symbol *sym )
     sym->hash = NULL;
     sym->link = NULL;
     sym->publink = NULL;
-    sym->addr.off = 0;
-    sym->addr.seg = UNDEFINED;
+    SET_ADDR_UNDEFINED( sym->addr );
     sym->mod = NULL;
     sym->p.seg = NULL;
     sym->info = SYM_REGULAR | SYM_IN_CURRENT;

@@ -40,7 +40,6 @@
 #include <sys/types.h>
 #include "wio.h"
 #include "trmem.h"
-#include "mposix.h"
 #endif
 
 #include "clibext.h"

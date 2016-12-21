@@ -199,10 +199,10 @@ void IEInvalidateNode( img_node *node )
 void CheckBounds( HWND hwnd, WPI_POINT *pt )
 {
     WPI_RECT    client;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   top;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM top;
+    WPI_RECTDIM bottom;
 
     GetClientRect( hwnd, &client );
     _wpi_getrectvalues( client, &left, &top, &right, &bottom );
@@ -234,10 +234,10 @@ static void showGrid( HWND hwnd, WPI_PRES mempres )
     img_node    *node;
     short       width;
     short       height;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   top;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM top;
+    WPI_RECTDIM bottom;
     WPI_PRES    pres;
     WPI_POINT   startpt;
     WPI_POINT   endpt;
@@ -685,8 +685,8 @@ void DisplayRegion( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mouse
     BOOL        is_rect;
     wie_clrtype type;
     img_node    *node;
-    int         tmps;
-    int         tmpe;
+    WPI_RECTDIM tmps;
+    WPI_RECTDIM tmpe;
 
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
@@ -774,20 +774,20 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
 {
     WPI_RECT    newpos;
     WPI_RECT    oldpos;
-    short       temp;
+    WPI_RECTDIM temp;
     WPI_PRES    pres;
-    IMGED_DIM   left;
-    IMGED_DIM   top;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
 
     CheckBounds( hwnd, start_pt );
     CheckBounds( hwnd, end_pt );
     CheckBounds( hwnd, prev_pt );
-    left = (IMGED_DIM)MAKELOGPTX( start_pt->x );
-    top = (IMGED_DIM)MAKELOGPTY( start_pt->y );
-    right = (IMGED_DIM)MAKELOGPTX( end_pt->x );
-    bottom = (IMGED_DIM)MAKELOGPTY( end_pt->y );
+    left = (WPI_RECTDIM)MAKELOGPTX( start_pt->x );
+    top = (WPI_RECTDIM)MAKELOGPTY( start_pt->y );
+    right = (WPI_RECTDIM)MAKELOGPTX( end_pt->x );
+    bottom = (WPI_RECTDIM)MAKELOGPTY( end_pt->y );
 
     if( left > right ) {
         temp = right;
@@ -805,10 +805,10 @@ void OutlineClip( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt,
     }
     _wpi_setrectvalues( &newpos, left, top, right, bottom );
 
-    left = (IMGED_DIM)MAKELOGPTX( start_pt->x );
-    top = (IMGED_DIM)MAKELOGPTY( start_pt->y );
-    right = (IMGED_DIM)MAKELOGPTX( prev_pt->x );
-    bottom = (IMGED_DIM)MAKELOGPTY( prev_pt->y );
+    left = (WPI_RECTDIM)MAKELOGPTX( start_pt->x );
+    top = (WPI_RECTDIM)MAKELOGPTY( start_pt->y );
+    right = (WPI_RECTDIM)MAKELOGPTX( prev_pt->x );
+    bottom = (WPI_RECTDIM)MAKELOGPTY( prev_pt->y );
 
     if( left > right ) {
         temp = right;

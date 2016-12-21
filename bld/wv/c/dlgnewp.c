@@ -99,7 +99,7 @@ static void DoDlgNewProg( dlg_new_prog  *pdlg )
     pdlg->prog = prog;
     pdlg->args = args;
     pdlg->cancel = true;
-    ResDlgOpen( &ProgEvent, pdlg, GUI_MAKEINTRESOURCE( DIALOG_NEW_PROG ) );
+    ResDlgOpen( &ProgEvent, pdlg, DIALOG_NEW_PROG );
 }
 
 void    DlgNewProg( void )

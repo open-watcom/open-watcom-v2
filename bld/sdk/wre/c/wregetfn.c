@@ -86,7 +86,7 @@ static int WREFindFileFilterIndex( char *filter )
                 }
                 index++;
                 if( index % 2 == 0 ) {
-                    if( !stricmp( LastFileFilter, &filter[i + 1] ) ) {
+                    if( stricmp( LastFileFilter, &filter[i + 1] ) == 0 ) {
                         return( index / 2 );
                     }
                 }

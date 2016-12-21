@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,11 +43,12 @@
 /* typedef's */
 /*************/
 
-#include "wpitypes.h"
 #include <math.h>
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+#include "wpitypes.h"
+
 
 extern void _wpi_free( void * ptr );
 extern void * _wpi_malloc( size_t size );

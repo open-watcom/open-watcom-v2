@@ -63,7 +63,7 @@ WResID *WResReadWResID( WResFileID handle )
     } else {
         memcpy( newidptr, &newid, sizeof( WResID ) );
         if( extrabytes != 0 ) {
-            numread = WRESREAD( handle, &(newidptr->ID.Name.Name[1]), extrabytes );
+            numread = WRESREAD( handle, newidptr->ID.Name.Name + 1, extrabytes );
             if( numread != extrabytes ) {
                 WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newidptr );

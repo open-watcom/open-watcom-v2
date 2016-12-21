@@ -37,7 +37,7 @@
 #include <string.h>
 #include <process.h>
 #include "uidef.h"
-#include "uinlm.h"
+
 
 static MONITOR ui_data = {
     25,

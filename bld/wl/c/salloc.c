@@ -62,7 +62,7 @@ void NormalizeAddr( void )
         if( new_seg > 0xFFFF ) {
             LnkMsg( ERR+MSG_APP_TOO_BIG_FOR_DOS, NULL );
         }
-        CurrLoc.seg = new_seg;
+        CurrLoc.seg = (segment)new_seg;
         CurrLoc.off &= FmtData.SegMask;
     }
 }
@@ -182,7 +182,7 @@ void NewSegment( seg_leader *seg )
         ChkLocated( &seg->seg_addr, ( (seg->segflags & SEG_FIXED) != 0 ) );
         AddSize( seg->size );
     } else if( FmtData.type & MK_REAL_MODE ) {
-        if( group->isautogrp && Ring2First(group->leaders) != seg ) {
+        if( group->isautogrp && Ring2First( group->leaders ) != seg ) {
             auto_group = true; /* auto-group segment, but not first one */
         } else {
             auto_group = false;

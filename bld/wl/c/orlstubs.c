@@ -43,17 +43,17 @@ orl_return ORLFini( orl_handle hdl )
     return( ORL_OKAY );
 }
 
-orl_file_format ORLFileIdentify( orl_handle hdl, void *data )
+orl_file_format ORLFileIdentify( orl_handle hdl, orl_file_id fid )
 {
-    hdl = hdl;
+    fid = fid;
     data = data;
     return( ORL_UNRECOGNIZED_FORMAT );
 }
 
-orl_file_handle ORLFileInit( orl_handle a, void *b, orl_file_format c )
+orl_file_handle ORLFileInit( orl_handle a, orl_file_id fid, orl_file_format c )
 {
     a = a;
-    b = b;
+    fid = fid;
     c = c;
     return( NULL );
 }

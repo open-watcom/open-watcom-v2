@@ -56,6 +56,10 @@
 #include "jdlg.h"
 #include "rcrtns.h"
 #include "dllmain.h"
+#include "wresdefn.h"
+#include "reserr.h"
+
+#include "clibext.h"
 
 
 /****************************************************************************/
@@ -88,8 +92,60 @@ static HINSTANCE        WRInstance = NULL;
 static int              ref_count = 0;
 
 
+WResFileID wres_open( const char *name, wres_open_mode omode )
+{
+    int     fd;
+
+    omode=omode;
+#if defined( __WATCOMC__ ) && defined( __QNX__ )
+    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
+    fd = open( name, O_RDONLY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    } else {
+        setmode( fd, O_BINARY );
+    }
+#else
+    fd = open( name, O_RDONLY | O_BINARY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    }
+#endif
+    return( WRES_PH2FID( fd ) );
+}
+
+int wres_close( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) );
+}
+
+WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+}
+
+WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+{
+    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+}
+
+WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+{
+    if( where == SEEK_SET ) {
+        /* fool the wres library into thinking that the resource information starts at offset 0 */
+        return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( WRES_FID2PH( fid ), pos, where ) );
+    }
+}
+
+WResFileOffset wres_tell( WResFileID fid )
+{
+    return( tell( WRES_FID2PH( fid ) ) );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns(RCOPEN,RCCLOSE,RCREAD,RCWRITE,RCSEEK,RCTELL,RCALLOC,RCFREE);
+WResSetRtns(wres_open,wres_close,wres_read,wres_write,wres_seek,wres_tell,RCALLOC,RCFREE);
 
 #ifdef __NT__
 
@@ -290,7 +346,7 @@ bool WRAPI WRSaveResource( WRInfo *info, bool backup )
     }
 
     /* if the save and file names are the same then use a tmp file */
-    if( name != NULL && !stricmp( name, info->save_name ) ) {
+    if( name != NULL && stricmp( name, info->save_name ) == 0 ) {
         tmp = info->save_name;
         _splitpath( info->save_name, NULL, NULL, NULL, ext );
         info->save_name = WRGetTempFileName( ext );
@@ -496,9 +552,9 @@ bool WRAPI WRSaveObjectAs( const char *file, WRFileType file_type, WRSaveIntoDat
 
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
+        if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WREDoSaveImageAs( info, idata, true );
-        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WREDoSaveImageAs( info, idata, false );
         } else {
             ok = WREDoSaveObjectAs( info, idata );
@@ -550,9 +606,9 @@ bool WRAPI WRSaveObjectInto( const char *file, WRSaveIntoData *idata, bool *dup 
     // loop thru all of the data
     while( ok && idata != NULL ) {
         type = WResIDToNum( idata->type );
-        if( type == (long)(pointer_int)RT_GROUP_ICON ) {
+        if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WREDoSaveImageInto( info, idata, dup, true );
-        } else if( type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WREDoSaveImageInto( info, idata, dup, false );
         } else {
             ok = WREDoSaveObjectInto( info, idata, dup );
@@ -882,7 +938,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     type = WResIDToNum( idata->type );
 
-    strings = (type == (long)(pointer_int)RT_STRING);
+    strings = (type == RESOURCE2INT( RT_STRING ));
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {
@@ -923,7 +979,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
         }
     }
 
-    if( type == (long)(pointer_int)RT_GROUP_ICON || type == (long)(pointer_int)RT_GROUP_CURSOR ) {
+    if( type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
         if( !WRDeleteGroupImages( info, lnode, type ) ) {
             return( FALSE );
         }

@@ -162,7 +162,7 @@ f_handle ExeOpen( const char *name )
 */
 #define MAX_OS_TRANSFER (0x8000 - 512)
 
-static ssize_t posix_read( int file, void *buffer, size_t len )
+static ssize_t posread( int file, void *buffer, size_t len )
 {
     ssize_t     total;
     int         h;
@@ -184,7 +184,7 @@ static ssize_t posix_read( int file, void *buffer, size_t len )
     }
 }
 
-static ssize_t posix_write( int file, const void *buffer, size_t len )
+static ssize_t poswrite( int file, const void *buffer, size_t len )
 {
     ssize_t     total;
     int         h;
@@ -206,8 +206,8 @@ static ssize_t posix_write( int file, const void *buffer, size_t len )
     }
 }
 #else
-#define posix_read( f, b, l )  read( f, b, l )
-#define posix_write( f, b, l ) write( f, b, l )
+#define posread( f, b, l )      posix_read( f, b, l )
+#define poswrite( f, b, l )     posix_write( f, b, l )
 #endif
 
 
@@ -217,7 +217,7 @@ size_t QRead( f_handle file, void *buffer, size_t len, const char *name )
     size_t  h;
 
     CheckBreak();
-    h = posix_read( file, buffer, len );
+    h = posread( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     }
@@ -233,7 +233,7 @@ size_t QWrite( f_handle file, const void *buffer, size_t len, const char *name )
     if( len == 0 )
         return( 0 );
     CheckBreak();
-    h = posix_write( file, buffer, len );
+    h = poswrite( file, buffer, len );
     if( h == -1 ) {
         LnkMsg( ERR+MSG_IO_PROBLEM, "12", name, strerror( errno ) );
     } else if( h != len ) {

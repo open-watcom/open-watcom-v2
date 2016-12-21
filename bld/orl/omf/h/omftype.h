@@ -181,7 +181,7 @@ struct omf_thred_fixup_struct {
 struct omf_file_handle_struct {
     omf_handle          omf_hnd;
     omf_file_handle     next;
-    void                *file;
+    orl_file_id         file;
     unsigned char       *parsebuf;
     unsigned short      parselen;
     long                status;

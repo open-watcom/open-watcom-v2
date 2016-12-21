@@ -65,8 +65,8 @@ SemOffset SemStartResource( void )
         save_name = CurrResFile.filename;
         /* open a temporary file and trade handles with the RES file */
         MSFormatTmpFile = RcTmpFileName();
-        CurrResFile.handle = MResOpenNewFile( MSFormatTmpFile );
-        if( CurrResFile.handle == NIL_HANDLE ) {
+        CurrResFile.handle = ResOpenNewFile( MSFormatTmpFile );
+        if( CurrResFile.handle == WRES_NIL_HANDLE ) {
             CurrResFile.handle = save_handle;
             ResCloseFile( save_handle );
             remove( save_name );
@@ -148,7 +148,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         RCFREE( ms_head.Type );
         RCFREE( ms_head.Name );
         tmp_handle = ResOpenFileRO( MSFormatTmpFile );
-        if( tmp_handle == NIL_HANDLE ) {
+        if( tmp_handle == WRES_NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = true;
             return;
@@ -252,6 +252,6 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
 void SemanticInitStatics( void )
 /******************************/
 {
-    save_handle = NIL_HANDLE;
+    save_handle = WRES_NIL_HANDLE;
     MSFormatTmpFile = NULL;
 }

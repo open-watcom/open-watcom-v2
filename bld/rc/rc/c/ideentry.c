@@ -280,58 +280,60 @@ static int RCMainLine( const char *opts, int argc, char **argv )
     int         i;
     int         rc;
 
+    rc = 1;
     curBufPos = formatBuffer;
     RcMemInit();
-    InitGlobs();
-    rc = setjmp( jmpbuf_RCFatalError );
-    if( rc == 0 ) {
-        InitRcMsgs();
-        if( opts != NULL ) {
-            str = opts;
-            argc = ParseEnvVar( str, NULL, NULL );
-            argv = RcMemMalloc( ( argc + 4 ) * sizeof( char * ) );
-            cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
-            ParseEnvVar( str, argv, cmdbuf );
-            pass1 = false;
-            for( i = 0; i < argc; i++ ) {
-                if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
-                    pass1 = true;
-                    break;
-                }
-            }
-            if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
-                if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
-                    infile[0] = '\"';
-                    strcat( infile, "\"" );
-                    argv[argc++] = infile;
-                }
-                if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
-                    if( pass1 ) {
-                        strcpy( outfile, "-fo=\"" );
-                    } else {
-                        strcpy( outfile, "-fe=\"" );
-                    }
-                    strcat( outfile, "\"" );
-                    argv[argc++] = outfile;
-                }
-            }
-            argv[argc] = NULL;        // last element of the array must be NULL
-        }
-        if( !ScanParams( argc, argv ) ) {
-            rc = 1;
-        }
-        print_banner_usage();
+    if( InitRcMsgs() ) {
+        InitGlobs();
+        rc = setjmp( jmpbuf_RCFatalError );
         if( rc == 0 ) {
-            rc = RCSpawn( RCmain );
+            if( opts != NULL ) {
+                str = opts;
+                argc = ParseEnvVar( str, NULL, NULL );
+                argv = RcMemMalloc( ( argc + 4 ) * sizeof( char * ) );
+                cmdbuf = RcMemMalloc( strlen( str ) + argc + 1 );
+                ParseEnvVar( str, argv, cmdbuf );
+                pass1 = false;
+                for( i = 0; i < argc; i++ ) {
+                    if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
+                        pass1 = true;
+                        break;
+                    }
+                }
+                if( initInfo != NULL && initInfo->ver > 1 && initInfo->cmd_line_has_files ) {
+                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)( infile + 1 ) ) ) {
+                        infile[0] = '\"';
+                        strcat( infile, "\"" );
+                        argv[argc++] = infile;
+                    }
+                    if( !IdeCbs->GetInfo( IdeHdl, IDE_GET_TARGET_FILE, 0, (IDEGetInfoLParam)( outfile + 5 ) ) ) {
+                        if( pass1 ) {
+                            strcpy( outfile, "-fo=\"" );
+                        } else {
+                            strcpy( outfile, "-fe=\"" );
+                        }
+                        strcat( outfile, "\"" );
+                        argv[argc++] = outfile;
+                    }
+                }
+                argv[argc] = NULL;        // last element of the array must be NULL
+            }
+            if( !ScanParams( argc, argv ) ) {
+                rc = 1;
+            }
+            print_banner_usage();
+            if( rc == 0 ) {
+                rc = RCSpawn( RCmain );
+            }
+            if( opts != NULL ) {
+                RcMemFree( argv );
+                RcMemFree( cmdbuf );
+            }
         }
-        if( opts != NULL ) {
-            RcMemFree( argv );
-            RcMemFree( cmdbuf );
-        }
-        FiniRcMsgs();
+        FiniGlobs();
     }
-    FiniGlobs();
     flushPrintf();
+    FiniRcMsgs();
     RcMemShutdown();
     return( rc );
 }

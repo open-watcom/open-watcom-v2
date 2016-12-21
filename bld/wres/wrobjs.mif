@@ -7,6 +7,7 @@ wres_core_objs = &
     loadfind.obj &
     loadstr.obj &
     mrrdrh.obj &
+    opcl1.obj &
     ralliae.obj &
     rclosef.obj &
     rduint16.obj &
@@ -17,6 +18,7 @@ wres_core_objs = &
     ropenfro.obj &
     rrdstr.obj &
     rrnamoor.obj &
+    seekres.obj &
     varstr.obj &
     wraddres.obj &
     wrerror.obj &
@@ -30,6 +32,7 @@ wres_core_objs = &
     wridfnoo.obj &
     wridfrnu.obj &
     wridfrst.obj &
+    wridfrsf.obj &
     wridnacm.obj &
     wriidfn.obj &
     wrinitdi.obj &
@@ -43,14 +46,16 @@ wres_core_objs = &
 # Additional objects for the full wres library
 wres_more_objs = &
     loadres.obj &
-    mropnewf.obj &
+    loadresx.obj &
     rdlli.obj &
     resaccel.obj &
     resbitmp.obj &
-    resdiag.obj &
+    resrdiag.obj &
+    reswdiag.obj &
     resfont.obj &
     resiccu.obj &
-    resmenu.obj &
+    resrmenu.obj &
+    reswmenu.obj &
     resnamor.obj &
     resraw.obj &
     resstr.obj &
@@ -60,6 +65,7 @@ wres_more_objs = &
     rillia.obj &
     rillib.obj &
     ropenfrw.obj &
+    ropenewf.obj &
     rrlli.obj &
     wrauto.obj &
     wrchkwrf.obj &
@@ -84,7 +90,6 @@ wres_more_objs = &
     write.obj &
     wrmergdi.obj &
     wrnextrs.obj &
-    wropnewf.obj &
     wrrfwrid.obj &
     wrrwrid.obj &
     wrwritdi.obj

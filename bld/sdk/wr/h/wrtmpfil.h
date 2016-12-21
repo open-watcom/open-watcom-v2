@@ -40,7 +40,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WRDLLENTRY extern bool     WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size );
+WRDLLENTRY extern bool     WRAPI WRReadEntireFile( const char *fname, BYTE **data, uint_32 *size );
 WRDLLENTRY extern int      WRAPI WRDeleteFile( const char * );
 WRDLLENTRY extern int      WRAPI WRFileExists( const char * );
 WRDLLENTRY extern int      WRAPI WRRenameFile( const char *, const char * );

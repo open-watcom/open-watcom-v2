@@ -31,24 +31,24 @@
 
 
 typedef struct {
-        void *  (*getstart)( void );
-        void    (*setstart)( void * );
-        bool    (*isend)( void );
-        char *  (*getname)( void );
+    void    *(*getstart)( void );
+    void    (*setstart)( void * );
+    bool    (*isend)( void );
+    char    *(*getname)( void );
 } vflistrtns;
 
 typedef struct cdat_piece {
     struct cdat_piece   *next;
     unsigned_8          *data;
     offset              length;
-    unsigned            free_data : 1;
+    bool                free_data : 1;
 } comdat_piece;
 
 typedef struct cdat_info {
-    struct cdat_info *  next;
-    segdata *           sdata;
-    symbol *            sym;
-    comdat_piece *      pieces;
+    struct cdat_info    *next;
+    segdata             *sdata;
+    symbol              *sym;
+    comdat_piece        *pieces;
     sym_info            flags;
 } comdat_info;
 
@@ -61,14 +61,14 @@ extern void             Set16BitMode( void );
 extern void             AllocateSegment( segnode *, char *clname );
 extern void             AddSegment( segdata *, class_entry * );
 extern class_entry      *DuplicateClass( class_entry *old );
-extern class_entry *    FindClass( section *, const char *, bool, bool );
-extern seg_leader *     InitLeader( const char * );
+extern class_entry      *FindClass( section *, const char *, bool, bool );
+extern seg_leader       *InitLeader( const char * );
 extern void             FreeLeader( void * );
 extern void             AddToGroup( group_entry *, seg_leader * );
 extern void             SetAddPubSym( symbol *, sym_info, mod_entry *, offset, unsigned_16 );
 extern void             DefineSymbol( symbol *, segnode *, offset, unsigned_16);
 extern void             AllocCommunal( symbol *, offset );
-extern symbol *         MakeCommunalSym( symbol *, offset, bool, bool );
+extern symbol           *MakeCommunalSym( symbol *, offset, bool, bool );
 extern void             SetComdatSym( symbol *, segdata * );
 extern void             StoreInfoData( comdat_info *info );
 extern void             InfoCDatAltDef( comdat_info * );
@@ -78,8 +78,8 @@ extern void             DefineVFReference( void *, symbol *, bool );
 extern void             DefineReference( symbol * );
 extern void             CheckComdatSym( symbol *, sym_info );
 extern void             DefineComdat( segdata *, symbol *, offset, sym_info, unsigned_8 * );
-extern group_entry *    GetGroup( const char * );
-extern group_entry *    SearchGroups( const char * );
+extern group_entry      *GetGroup( const char * );
+extern group_entry      *SearchGroups( const char * );
 extern bool             SeenDLLRecord( void );
 extern void             HandleImport( const length_name *, const length_name *, const length_name *, ordinal_t );
 extern void             HandleExport( const length_name *, const length_name *, unsigned, ordinal_t );

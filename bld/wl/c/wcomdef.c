@@ -183,7 +183,7 @@ static bool isCOMDEF32( void )
         // none of these are generated for Dwarf debug info so
         // we should not get confused when we are 16-bit
         if( seg->isuninit || seg->iscdat || seg->iscode ) {
-            return( seg->is32bit != 0 );
+            return( seg->is32bit );
         }
     }
     return( (ObjFormat & FMT_32BIT_REC) != 0 );
@@ -485,10 +485,10 @@ void ProcComdat( void )
         sdata->length = piece->length;
         sdata->combine = COMBINE_ADD;
         sdata->iscdat = true;
-        sdata->isabs = seg == NULL;
+        sdata->isabs = ( seg == NULL );
         sdata->align = align;
         sdata->u.leader = seg->entry->u.leader;
-        sdata->iscode = (seg->info & SEG_CODE) != 0;
+        sdata->iscode = ( (seg->info & SEG_CODE) != 0 );
         if( ObjFormat & FMT_32BIT_REC ) {
             sdata->is32bit = true;
         }
@@ -515,7 +515,7 @@ void ProcComdat( void )
                 Ring2Append( &CurrMod->segs, sdata );
 #if 0
             } else {    /* add it to a linker defined segment */
-                sdata->iscode = alloc & 1;
+                sdata->iscode = ( (alloc & 1) != 0 );
                 sdata->alloc = --alloc;
                 AddToLinkerComdat( sym );
 #endif

@@ -39,7 +39,7 @@
 trap_retval ReqAsync_go( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -53,21 +53,21 @@ trap_retval ReqAsync_go( void )
         ok = AsyncGo( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
+
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 
@@ -110,7 +110,7 @@ trap_retval ReqAsync_go( void )
 trap_retval ReqAsync_step( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -124,22 +124,21 @@ trap_retval ReqAsync_step( void )
         ok = AsyncTrace( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
 
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 
@@ -182,7 +181,7 @@ trap_retval ReqAsync_step( void )
 trap_retval ReqAsync_poll( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     async_go_ret            *ret;
     int                     ok;
 
@@ -195,22 +194,21 @@ trap_retval ReqAsync_poll( void )
         ok = AsyncPoll( obj, 250 );
 
         if( ok ) {
+            thread = GetCurrentThread( obj );
+            if( thread ) {
+                SetCurrentThread( obj, thread->ThreadID );
+                SetCurrentDebug( obj );
+            }
 
             if( IsTerminated( obj ) )
                 ret->conditions |= COND_TERMINATE;
 
             if( HasThreadChange( obj ) ) {
                 ret->conditions |= COND_THREAD;
-                thread = GetNewThread( obj );
-                if( thread ) {
-                    SetCurrentThread( obj, thread->ThreadID );
-                    SetCurrentDebug( obj );
-                }
                 ClearThreadChange( obj );
             }
 
             if( HasModuleChange( obj ) ) {
-                ClearModuleChange( obj );
                 ret->conditions |= COND_LIBRARIES;
             }
 
@@ -262,4 +260,45 @@ trap_retval ReqAsync_stop( void )
     ret->stack_pointer.segment = 0;
 
     return( sizeof( *ret ) );
+}
+
+trap_retval ReqAsync_add_break( void )
+{
+    async_add_break_req *acc;
+    struct TDebug       *obj;
+    int                 sel;
+    int                 offset;
+    bool                hw;
+
+    acc = GetInPtr( 0 );
+    sel = acc->break_addr.segment;
+    offset = acc->break_addr.offset;
+
+    if( acc->local ) {
+        hw = true;
+    } else {
+        hw = ( (sel & 3) == 0 );
+    }
+
+    obj = GetCurrentDebug();
+
+    if( obj )
+        AddBreak( obj, sel, offset, hw );
+
+    return( 0 );
+}
+
+trap_retval ReqAsync_remove_break( void )
+{
+    async_remove_break_req *acc;
+    struct TDebug          *obj;
+
+    acc = GetInPtr( 0 );
+
+    obj = GetCurrentDebug();
+
+    if( obj )
+        ClearBreak( obj, acc->break_addr.segment, acc->break_addr.offset );
+
+    return( 0 );
 }

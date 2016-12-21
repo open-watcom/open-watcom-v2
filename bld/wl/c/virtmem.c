@@ -333,7 +333,7 @@ bool SwapOutVirt( void )
     void            *mem;
     seg_table       *seg_entry;
     huge_table      *huge_entry;
-    unsigned        size;
+    size_t          size;
 
     while( NextSwap != NULL ) {
         seg_entry = NextSwap;
@@ -461,17 +461,17 @@ static void AllocHugeNode( huge_table *node )
 }
 
 static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
-               bool (*rtn)( void *, spilladdr, unsigned, unsigned, bool))
+               bool (*rtn)( void *, spilladdr, size_t, size_t, bool))
 /*****************************************************************************/
 /* go through the virtual memory nodes, reading or writing data */
 {
     virt_mem_size   end_off;
-    unsigned        off;
+    size_t          off;
     seg_table       *node;
     huge_table      *bignode;
     spilladdr       *page;
-    unsigned        currlen;
-    unsigned        amt;
+    size_t          currlen;
+    size_t          amt;
     unsigned        subpage;
     virt_struct     stg;
     bool            retval;
@@ -528,8 +528,8 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
     return retval;
 }
 
-static bool LoadInfo( void *info, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/****************************************************************************************/
+static bool LoadInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
+/***********************************************************************************/
 /* copy data to info from the memory or spillfile referenced by node & off */
 {
     if( len == 0 )
@@ -549,8 +549,8 @@ void ReadInfo( virt_mem stg, void *buf, virt_mem_size len )
     ScanNodes( stg, buf, len, LoadInfo );
 }
 
-static bool SaveInfo( void *info, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/***************************************************************************************/
+static bool SaveInfo( void *info, spilladdr loc, size_t off, size_t len, bool inmem )
+/***********************************************************************************/
 /* copy data at info to the memory or spillfile referenced by node & off */
 {
     if( len == 0 )
@@ -564,11 +564,11 @@ static bool SaveInfo( void *info, spilladdr loc, unsigned off, unsigned len, boo
     return true;
 }
 
-void PutInfo( virt_mem stg, void * info, virt_mem_size len )
-/************************************************************/
+void PutInfo( virt_mem stg, const void *info, virt_mem_size len )
+/***************************************************************/
 /* copy data at info to the memory or spillfile referenced by stg */
 {
-    ScanNodes( stg, info, len, SaveInfo );
+    ScanNodes( stg, (void *)info, len, SaveInfo );
 }
 
 void CopyInfo( virt_mem a, virt_mem b, size_t len )
@@ -582,8 +582,8 @@ void CopyInfo( virt_mem a, virt_mem b, size_t len )
     _LnkFree( buf );
 }
 
-static bool CompareBlock( void * info, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/********************************************************************************************/
+static bool CompareBlock( void * info, spilladdr loc, size_t off, size_t len, bool inmem )
+/****************************************************************************************/
 /* compare data at info to the memory or spillfile referenced by node & off */
 {
     void *      buf;
@@ -599,17 +599,17 @@ static bool CompareBlock( void * info, spilladdr loc, unsigned off, unsigned len
     return memcmp( buf, info, len ) == 0;
 }
 
-bool CompareInfo( virt_mem stg, void *info, virt_mem_size len )
-/***************************************************************/
+bool CompareInfo( virt_mem stg, const void *info, virt_mem_size len )
+/*******************************************************************/
 {
-    return ScanNodes( stg, info, len, CompareBlock );
+    return ScanNodes( stg, (void *)info, len, CompareBlock );
 }
 
-static bool OutInfo( void *dummy, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/****************************************************************************************/
+static bool OutInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
+/***********************************************************************************/
 /* copy data in memory or spillfile referenced by node & off to LoadFile */
 {
-    unsigned    amt;
+    size_t  amt;
 
     dummy = dummy;   /* to avoid a warning: will be optimized away. */
     if( len == 0 )
@@ -637,8 +637,8 @@ void WriteInfoLoad( virt_mem stg, virt_mem_size len )
     ScanNodes( stg, NULL, len, OutInfo );
 }
 
-static bool NullInfo( void *dummy, spilladdr loc, unsigned off, unsigned len, bool inmem )
-/****************************************************************************************/
+static bool NullInfo( void *dummy, spilladdr loc, size_t off, size_t len, bool inmem )
+/************************************************************************************/
 // write nulls to the location referenced by node and off.
 {
     dummy = dummy;   /* to avoid a warning: will be optimized away. */

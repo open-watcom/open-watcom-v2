@@ -31,7 +31,7 @@
 
 
 #include "uidef.h"
-#include "uinlm.h"
+
 
 char * UIAPI uigetscreenname( void )
 /***********************************/

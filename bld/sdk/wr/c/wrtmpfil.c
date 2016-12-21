@@ -53,8 +53,6 @@
 /****************************************************************************/
 /* static functions                                                         */
 /****************************************************************************/
-static bool  WRCopyBinFile( int, int );
-
 static int  LastError = 0;
 
 int WRAPI WRGetLastError( void )
@@ -62,15 +60,25 @@ int WRAPI WRGetLastError( void )
     return( LastError );
 }
 
-bool WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
+bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, uint_32 *size )
 {
     long int    s;
     bool        ok;
+    FILE        *fh;
 
-    ok = (file != -1 && data != NULL && size != NULL);
+    fh = NULL;
+    ok = ( fname != NULL && data != NULL && size != NULL );
 
     if( ok ) {
-        s = filelength( file );
+        ok = ( (fh = fopen( fname, "rb" )) != NULL );
+    }
+
+    if( ok ) {
+        ok = ( fseek( fh, 0, SEEK_END ) == 0 );
+    }
+
+    if( ok ) {
+        s = ftell( fh );
         ok = (s != -1 && s < INT_MAX);
     }
 
@@ -81,19 +89,19 @@ bool WRAPI WRReadEntireFile( WResFileID file, BYTE **data, uint_32 *size )
     }
 
     if( ok ) {
-        ok = (lseek( file, 0, SEEK_SET ) != -1);
-    }
-
-    if( ok ) {
-        ok = (read( file, *data, *size ) == *size);
-    }
-
-    if( !ok ) {
-        if( *data != NULL ) {
-            MemFree( *data );
-            *data = NULL;
+        rewind( fh );
+        s = fread( *data, 1, s, fh );
+        if( *size != s ) {
+            if( feof( fh ) ) {
+                *size = s;
+            } else {
+                ok = false;
+            }
         }
-        *size = 0;
+    }
+
+    if( fh != NULL ) {
+        fclose( fh );
     }
 
     return( ok );
@@ -110,6 +118,59 @@ int WRAPI WRDeleteFile( const char *name )
 int WRAPI WRFileExists( const char *name )
 {
     return( name != NULL && access( name, R_OK ) == 0 );
+}
+
+bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
+{
+    bool        ok;
+    FILE        *dst;
+    FILE        *src;
+    char        *buf;
+    size_t      len;
+    int         save_errno;
+
+    /* open the resource file that contains the dialog info */
+    src = fopen( src_name, "rb" );
+    if( src == NULL ) {
+        LastError = errno;
+        return( false );
+    }
+
+    dst = fopen( dst_name, "wb" );
+    if( dst == NULL ) {
+        LastError = errno;
+        fclose( src );
+        return( false );
+    }
+
+    ok = ( (buf = MemAlloc( WR_COPY_BUFFER_SIZE )) != NULL );
+    if( ok ) {
+        do {
+            len = fread( buf, 1, WR_COPY_BUFFER_SIZE, src );
+            if( len != WR_COPY_BUFFER_SIZE ) {
+                save_errno = errno;
+                if( !feof( src ) ) {
+                    ok = false;
+                    LastError = save_errno;
+                }
+            }
+            if( ok && fwrite( buf, 1, len, dst ) != len ) {
+                ok = false;
+                LastError = errno;
+            }
+        } while ( ok && len == WR_COPY_BUFFER_SIZE );
+        MemFree( buf );
+    }
+
+    ok = ( fclose( src ) == 0 && ok );
+    ok = ( fclose( dst ) == 0 && ok );
+
+    if( !ok ) {
+        LastError = errno;
+        WRDeleteFile( dst_name );
+    }
+
+    return( ok );
 }
 
 int WRAPI WRRenameFile( const char *new, const char *old )
@@ -243,90 +304,4 @@ char * WRAPI WRGetTempFileName( const char *ext )
     }
 
     return( buf );
-}
-
-bool WRAPI WRCopyFile( const char *dest, const char *src )
-{
-    bool       ret;
-    int        dest_handle;
-    int        src_handle;
-
-    /* open the resource file that contains the dialog info */
-    src_handle = open( src, O_RDONLY | O_BINARY );
-    if( src_handle == -1 ) {
-        return( FALSE );
-    }
-
-    dest_handle = open( dest, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, S_IWRITE | S_IREAD );
-    if( dest_handle == -1 ) {
-        LastError = errno;
-        return( FALSE );
-    }
-
-    lseek( src_handle, 0, SEEK_SET );
-    lseek( dest_handle, 0, SEEK_SET );
-
-    ret = WRCopyBinFile( dest_handle, src_handle );
-
-    ret = (close( src_handle ) != -1 && ret);
-    ret = (close( dest_handle ) != -1 && ret);
-
-    if( !ret ) {
-        LastError = errno;
-        WRDeleteFile( dest );
-    }
-
-    return( ret );
-}
-
-bool WRCopyBinFile( int dest, int src )
-{
-    char        *buf;
-    uint_32     file_size;
-    uint_32     num_to_copy;
-    long int    src_pos;
-    long int    dest_pos;
-    bool        ok;
-
-    buf = (char *)MemAlloc( WR_COPY_BUFFER_SIZE );
-    if( buf == NULL ) {
-        return( false );
-    }
-
-    src_pos = lseek( src,  0, SEEK_SET );
-    dest_pos = lseek( dest, 0, SEEK_SET );
-
-    ok = ((file_size = filelength( src )) != -1L);
-
-    do {
-        if( file_size < WR_COPY_BUFFER_SIZE ) {
-            num_to_copy = file_size;
-        } else {
-            num_to_copy = WR_COPY_BUFFER_SIZE;
-        }
-
-        if( ok && num_to_copy != 0 ) {
-            if( read( src, buf, num_to_copy ) != (int)num_to_copy ) {
-                ok = false;
-            }
-
-            if( ok && write( dest, buf, num_to_copy ) != (int)num_to_copy ) {
-                ok = false;
-            }
-        }
-        if( !ok ) {
-            LastError = errno;
-        }
-
-        file_size -= num_to_copy;
-    } while ( ok && file_size != 0 );
-
-    if( ok ) {
-        lseek( src, src_pos, SEEK_SET );
-        lseek( dest, dest_pos, SEEK_SET );
-    }
-
-    MemFree( buf );
-
-    return( ok );
 }

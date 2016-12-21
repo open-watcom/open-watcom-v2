@@ -417,7 +417,7 @@ static void ProcExportKeyword( void )
     ObjBuff += intname.len;
     ordinal = 0;
     if( flags & EXPDEF_ORDINAL ) {
-        ordinal = GET_U16_UN(ObjBuff);
+        ordinal = GET_U16_UN( ObjBuff );
     }
     HandleExport( &expname, &intname, flags, ordinal );
 }
@@ -447,7 +447,7 @@ static void ProcImportKeyword( void )
             HandleImport( &intname, &modname, &extname, NOT_IMP_BY_ORDINAL );
         }
     } else {
-        HandleImport(&intname, &modname, &extname, GET_U16_UN(ObjBuff) );
+        HandleImport(&intname, &modname, &extname, GET_U16_UN( ObjBuff ) );
     }
 }
 
@@ -708,7 +708,7 @@ static void ProcSegDef( void )
             }
         }
     }
-    sdata->iscode = IsCodeClass( clname->name, strlen(clname->name) );
+    sdata->iscode = IsCodeClass( clname->name, strlen( clname->name ) );
     snode = AllocNode( SegNodes );
     snode->entry = sdata;
     AllocateSegment( snode, clname->name );
@@ -1014,7 +1014,7 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
 /***************************************************************************/
 /* Process logically iterated data blocks. */
 {
-    byte            len_u8;
+    size_t          len;
     byte            *anchor;
     unsigned_16     count;
     unsigned_16     inner;
@@ -1026,13 +1026,13 @@ static byte *ProcIDBlock( virt_mem *dest, byte *buffer, unsigned_32 iterate )
     _TargU16toHost( _GetU16UN( buffer ), count );
     buffer += sizeof( unsigned_16 );
     if( count == 0 ) {
-        len_u8 = *buffer;
+        len = *buffer;
         ++buffer;
         do {
-            PutInfo( *dest, buffer, len_u8 );
-            *dest += len_u8;
+            PutInfo( *dest, buffer, len );
+            *dest += len;
         } while( --iterate != 0 );
-        buffer += len_u8;
+        buffer += len;
     } else {
         anchor = buffer;
         if( ObjFormat & FMT_MS_386 ) {

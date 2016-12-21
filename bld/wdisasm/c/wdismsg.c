@@ -45,55 +45,36 @@
 #include "wreslang.h"
 #include "disasm.h"
 
+#include "clibext.h"
 
-#define NIL_HANDLE      ((int)-1)
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
 
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
 #define EXE_EXT         ".exe"
 
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
-
 bool MsgInit( void )
 {
     char        name[_MAX_PATH];
 
-    hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( MsgGet( MSG_USE_BASE, name ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( MsgGet( MSG_USE_BASE, name ) ) {
+            return( true );
         }
-        MsgFini();
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
+    CloseResFile( &hInstance );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
 
 bool MsgGet( int resourceid, char *buffer )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = NULLCHAR;
         return( false );
     }
@@ -147,10 +128,7 @@ and add a waitforkey() function.
 
 void MsgFini( void )
 {
-    if( hInstance.handle != NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 }
 
 void MsgSubStr( char *strptr, char *para, char specifier )

@@ -35,6 +35,9 @@
 #include "dmpcurgr.h"
 #include "rcrtns.h"
 
+#include "clibext.h"
+
+
 extern void PrintIconCurDirHeader( IconCurDirHeader * head )
 /**********************************************************/
 {

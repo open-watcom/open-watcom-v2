@@ -111,7 +111,7 @@ int WaitByte( unsigned ticks )
 {
     if( !hWait ) {
         hWait = RdosCreateWait();
-        RdosAddWaitForCom( hWait, hSerial, &hSerial);
+        RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
     if ( RdosWaitTimeout( hWait, 500 + 55 * ticks ) != 0 ) 
@@ -124,7 +124,7 @@ int GetByte( void )
 {
     if( !hWait ) {
         hWait = RdosCreateWait();
-        RdosAddWaitForCom( hWait, hSerial, &hSerial);
+        RdosAddWaitForCom( hWait, hSerial, (int)(&hSerial));
     }
 
     if ( RdosWaitTimeout( hWait, 50 ) != 0 ) 

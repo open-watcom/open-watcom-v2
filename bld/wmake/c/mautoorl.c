@@ -39,13 +39,9 @@
 #include "mautodep.h"
 #include "orl.h"
 #include "autodep.h"
-#include "mposix.h"
 
 #include "clibext.h"
 
-
-#define FH2PH( fh )     ((int)(pointer_int)(void *)(fh))
-#define PH2FH( ph )     ((void *)(pointer_int)(int)(ph))
 
 typedef struct orl_info {
     int                 handle;
@@ -65,15 +61,15 @@ static size_t           orlFileSize;
 static const char       *dependSectionName = ".depend";
 
 
-static unsigned long fileSize( int file_descriptor )
+static unsigned long fileSize( int ph )
 {
     unsigned long   old;
     unsigned long   size;
 
-    old = tell( file_descriptor );
-    lseek( file_descriptor, 0, SEEK_END );
-    size = tell( file_descriptor );
-    lseek( file_descriptor, old, SEEK_SET );
+    old = tell( ph );
+    lseek( ph, 0, SEEK_END );
+    size = tell( ph );
+    lseek( ph, old, SEEK_SET );
     if( size == 0 ) {
         // MallocSafe returns NULL for size == 0
         ++size;
@@ -90,17 +86,17 @@ static void bufferInit( void )
     orlBuffer = NULL;
 }
 
-static void *orlRead( void *file_handle, size_t bytes )
-/*****************************************************/
+static void *orlRead( orl_file_id fid, size_t bytes )
+/***************************************************/
 {
     size_t  n;
     size_t  old_pos;
 
     if( orlBuffer == NULL ) {
-        orlFileSize = (size_t)fileSize( FH2PH( file_handle ) );
+        orlFileSize = (size_t)fileSize( ORL_FID2PH( fid ) );
         orlBuffer = MallocSafe( orlFileSize );
         // just suck it right in :)
-        n = posix_read( FH2PH( file_handle ), orlBuffer, orlFileSize );
+        n = posix_read( ORL_FID2PH( fid ), orlBuffer, orlFileSize );
         if( n != orlFileSize ) {
             return( NULL );
         }
@@ -113,10 +109,10 @@ static void *orlRead( void *file_handle, size_t bytes )
     return( NULL );
 }
 
-static long orlSeek( void *file_handle, long offset, int mode )
+static long orlSeek( orl_file_id fid, long offset, int mode )
 /*************************************************************/
 {
-    (void)file_handle; // Unused
+    (void)fid; // Unused
     switch( mode ) {
     case SEEK_SET:
         orlFilePosition = offset;
@@ -174,18 +170,18 @@ static handle AutoORLFileInit( const char *name )
 {
     orl_file_format type;
     orl_file_handle file;
-    int             file_handle;
+    int             ph;
     UINT8           *buffer;
 
     bufferInit();
-    file_handle = open( name, O_RDONLY | O_BINARY );
-    if( file_handle != -1 ) {
-        orlInfo.handle = file_handle;
-        type = ORLFileIdentify( orlHandle, PH2FH( file_handle ) );
+    ph = open( name, O_RDONLY | O_BINARY );
+    if( ph != -1 ) {
+        orlInfo.handle = ph;
+        type = ORLFileIdentify( orlHandle, ORL_PH2FID( ph ) );
         switch( type ) {
         case ORL_COFF:
         case ORL_ELF:
-            file = ORLFileInit( orlHandle, PH2FH( file_handle ), type );
+            file = ORLFileInit( orlHandle, ORL_PH2FID( ph ), type );
             if( file != NULL ) {
                 orlInfo.file = file;
                 buffer = orlGetDependsInfo( file );
@@ -203,7 +199,7 @@ static handle AutoORLFileInit( const char *name )
             FreeSafe( orlBuffer );
             orlBuffer = NULL;
         }
-        close( file_handle );
+        close( ph );
     }
     return( NULL );
 }

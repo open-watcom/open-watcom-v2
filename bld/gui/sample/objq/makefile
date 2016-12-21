@@ -1,5 +1,4 @@
 os = qnx
-type = ui
 build_target = qnx
 sys=qnx
 compiler = comp286

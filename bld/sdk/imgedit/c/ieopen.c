@@ -41,6 +41,8 @@
 #include "wricon.h"
 #include "wrselimg.h"
 #include "iemem.h"
+#include "wresdefn.h"
+
 
 #ifdef __WATCOMC__
 #ifdef __NT__
@@ -383,7 +385,7 @@ BOOL ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
         }
     }
 #endif
-    
+
     node = MemAlloc( sizeof( img_node ) * num_of_images );
 
     hdc = GetDC( NULL );
@@ -558,13 +560,15 @@ BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug).
-#if defined( __NT__ )
+#ifndef _WIN64
+  #if defined( __NT__ )
         // Only do it if NOT new shell.
         if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
-#endif
+  #endif
             IECtl3dSubclassDlgAll( hwnd );
-#if defined( __NT__ )
+  #if defined( __NT__ )
         }
+  #endif
 #endif
         return( TRUE );
     }
@@ -586,14 +590,14 @@ static int getImageTypeFromFilename( char *fname )
     strcat( initialDir, path );
     initialDir[strlen( initialDir ) - 1] = '\0';
 
-    if( !stricmp( ext, ".bmp" ) ) {
+    if( stricmp( ext, ".bmp" ) == 0 ) {
         return( BITMAP_IMG );
-    } else if( !stricmp( ext, ".ico" ) ) {
+    } else if( stricmp( ext, ".ico" ) == 0 ) {
         return( ICON_IMG );
-    } else if( !stricmp( ext, ".cur" ) ) {
+    } else if( stricmp( ext, ".cur" ) == 0 ) {
         return( CURSOR_IMG );
-    } else if( !stricmp( ext, ".res" ) || !stricmp( ext, ".exe" ) ||
-               !stricmp( ext, ".dll" ) ) {
+    } else if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
+               stricmp( ext, ".dll" ) == 0 ) {
         return( RESOURCE_IMG );
     } else {
         return( UNDEF_IMG );
@@ -612,22 +616,26 @@ static BOOL getOpenFName( char *fname )
     char                szFileTitle[_MAX_PATH];
     int                 rc;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
-#endif    
+  #endif
+#endif
     fname[0] = '\0';
     memset( &of, 0, of_size );
-    
+
     of.lStructSize = of_size;
     of.hwndOwner = HMainWindow;
     of.lpstrFilter = (LPSTR)IEImageFilter;
@@ -689,7 +697,7 @@ static bool readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
             imgType = BITMAP_IMG;
             data = WRCopyResData( info, sii->lnode );
             dsize = sii->lnode->Info.Length;
@@ -697,10 +705,10 @@ static bool readInResourceFile( char *fullname )
             if( ok ) {
                 ok = WRAddBitmapFileHeader( &data, &dsize );
             }
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             imgType = CURSOR_IMG;
             ok = WRCreateCursorData( info, sii->lnode, &data, &dsize );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             imgType = ICON_IMG;
             ok = WRCreateIconData( info, sii->lnode, &data, &dsize );
         } else {
@@ -710,11 +718,11 @@ static bool readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        if( sii->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( sii->type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = ReadBitmapFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = ReadCursorFromData( data, fullname, info, sii->lnode );
-        } else if( sii->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( sii->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = ReadIconFromData( data, fullname, info, sii->lnode );
         }
     }
@@ -737,7 +745,7 @@ static bool readInResourceFile( char *fullname )
 static int reallyOpenImage( char *fname )
 {
     char                filename[_MAX_FNAME + _MAX_EXT];
-    
+
     switch( imgType ) {
     case BITMAP_IMG:
         if( !readInBitmapFile( fname ) ) {
@@ -800,7 +808,7 @@ int OpenImage( HANDLE hDrop )
 #ifdef __NT__
         int     nFiles = DragQueryFile( hDrop, 0xFFFFFFFF, NULL, 0 );
         int     i;
-        
+
         for( i = 0, rv = TRUE; rv && i < nFiles; i++ ) {
             DragQueryFile( hDrop, i, fname, _MAX_PATH - 1 );
             imgType = getImageTypeFromFilename( fname );
@@ -808,7 +816,7 @@ int OpenImage( HANDLE hDrop )
         }
 #endif
     }
-    
+
     if( rv ) {
         SetupMenuAfterOpen();
     }
@@ -826,19 +834,23 @@ static BOOL getOpenPalName( char *fname )
     char                szFileTitle[_MAX_PATH];
     int                 rc;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
-#endif    
+  #endif
+#endif
 
     fname[0] = 0;
     memset( &of, 0, of_size );

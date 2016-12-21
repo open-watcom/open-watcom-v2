@@ -50,14 +50,14 @@
 
 static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres )
 {
-    WResFileID  file_handle;
+    WResFileID  fid;
     bool        dup_discarded;
     bool        ok;
 
-    ok = ((file_handle = ResOpenFileRO( filename )) != -1);
+    ok = ((fid = ResOpenFileRO( filename )) != WRES_NIL_HANDLE);
 
     if( ok ) {
-        *is_wres = WResIsWResFile( file_handle );
+        *is_wres = WResIsWResFile( fid );
     }
 
     if( ok ) {
@@ -65,14 +65,14 @@ static bool loadResDirFromRES( WRInfo *info, const char *filename, bool *is_wres
     }
 
     if( ok ) {
-        ok = !WResReadDir( file_handle, info->dir, &dup_discarded );
+        ok = !WResReadDir( fid, info->dir, &dup_discarded );
         if( ok && dup_discarded ) {
             WRDisplayErrorMsg( WR_DUPRESDISCARD );
         }
     }
 
-    if( file_handle != -1 ) {
-        ResCloseFile( file_handle );
+    if( fid != WRES_NIL_HANDLE ) {
+        ResCloseFile( fid );
     }
 
     return( ok );

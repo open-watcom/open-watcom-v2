@@ -42,14 +42,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 #define RESOURCE_MAX_SIZE       128
 
 #if defined( INCL_MSGTEXT )
@@ -87,67 +79,36 @@ bool Msg_Fini( void )
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-
-/* declare struct WResRoutines WResRtns {...} */
-WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, malloc, free );
 
 static bool Msg_Get( int resourceid, char *buffer )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
     return( true );
 }
 
-
 bool Msg_Init( void )
 {
     char        name[_MAX_PATH];
 
-    hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( Msg_Get( MSG_USAGE_FIRST, name ) ) {
+            return( true );
         }
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
     }
+    CloseResFile( &hInstance );
     posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
     return( false );
 }
 
 
 bool Msg_Fini( void )
 {
-    bool    retcode = true;
-
-    if( !res_failure ) {
-        if( CloseResFile( &hInstance ) ) {
-            res_failure = true;
-            retcode = false;
-        }
-        hInstance.handle = NIL_HANDLE;
-    }
-    return( retcode );
+    return( CloseResFile( &hInstance ) );
 }
 
 #endif

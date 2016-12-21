@@ -84,12 +84,12 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
 // linker specific phar lap data
 
 struct fmt_dos_data {
-    unsigned    distribute      : 1;
-    unsigned    noindirect      : 1;
-    unsigned    dynamic         : 1;
-    unsigned    ovl_short       : 1;
-    unsigned    pad_sections    : 1;
-    unsigned    full_mz_hdr     : 1;
+    bool        distribute      : 1;
+    bool        noindirect      : 1;
+    bool        dynamic         : 1;
+    bool        ovl_short       : 1;
+    bool        pad_sections    : 1;
+    bool        full_mz_hdr     : 1;
 };
 
 struct fmt_phar_data {
@@ -115,13 +115,13 @@ struct fmt_os2_data {
     unsigned_32         heapsize;
     unsigned            segment_shift;
     unsigned            flags;            // in LOADOS2.H
-    unsigned            chk_seg_relocs : 1;
-    unsigned            toggle_relocs  : 1;
-    unsigned            gen_int_relocs : 1;
-    unsigned            gen_rel_relocs : 1;
-    unsigned            is_private_dll : 1;
-    unsigned            no_stub        : 1;
-    unsigned            mixed1632      : 1;
+    bool                chk_seg_relocs : 1;
+    bool                toggle_relocs  : 1;
+    bool                gen_int_relocs : 1;
+    bool                gen_rel_relocs : 1;
+    bool                is_private_dll : 1;
+    bool                no_stub        : 1;
+    bool                mixed1632      : 1;
 };
 
 // linker specific PE data
@@ -139,13 +139,13 @@ struct fmt_pe_data {
     unsigned_8          linkmajor;  /*  link major version  */
     unsigned_8          linkminor;  /*  link minor version  */
     unsigned_16         signature;
-    unsigned            sub_specd : 1;
-    unsigned            no_stdcall : 1;
-    unsigned            osv_specd : 1;      /* OS version specified? */
-    unsigned            lnk_specd : 1;      /* Link version specified */
-    unsigned            checksumfile : 1;   /* Create checksum for file? */
-    unsigned            largeaddressaware : 1;
-    unsigned            nolargeaddressaware : 1;
+    bool                sub_specd           : 1;
+    bool                no_stdcall          : 1;
+    bool                osv_specd           : 1;    /* OS version specified? */
+    bool                lnk_specd           : 1;    /* Link version specified */
+    bool                checksumfile        : 1;    /* Create checksum for file? */
+    bool                largeaddressaware   : 1;
+    bool                nolargeaddressaware : 1;
 };
 
 // structures used in processing DOS/16M load files.
@@ -201,9 +201,9 @@ struct fmt_qnx_data {
     unsigned_32             heapsize;
     unsigned                flags;
     unsigned                priv_level;
-    unsigned                gen_seg_relocs : 1;
-    unsigned                gen_linear_relocs : 1;
-    unsigned                seen_mismatch : 1;
+    bool                    gen_seg_relocs      : 1;
+    bool                    gen_linear_relocs   : 1;
+    bool                    seen_mismatch       : 1;
 };
 
 // linker specific ELF data
@@ -214,7 +214,7 @@ struct fmt_elf_data {
     unsigned_32         extrasects;
     unsigned_8          abitype;        // EI_OSABI contents
     unsigned_8          abiversion;     // EI_ABIVERSION contents
-    unsigned            exportallsyms : 1;
+    bool                exportallsyms : 1;
 };
 
 // linker specific RDOS device driver data
@@ -228,7 +228,7 @@ struct fmt_rdos_data {
     char            mboot;
 };
 
-#define NO_BASE_SPEC    ((offset)-1UL)
+#define NO_BASE_SPEC    ((offset)-1L)
 
 struct fmt_data {
     union   fmt_spec_data {
@@ -261,15 +261,15 @@ struct fmt_data {
     unsigned        HexSegShift;// shift to convert Intel Hex record segments to address
     unsigned_32     output_offset;
     char            FillChar;
-    unsigned        dll          : 1;
-    unsigned        ver_specified: 1;
-    unsigned        make_implib  : 1;
-    unsigned        make_impfile : 1;
-    unsigned        res_name_only: 1;
-    unsigned        toc_initialized: 1;
-    unsigned        output_raw   : 1;
-    unsigned        output_hex   : 1;
-    unsigned        output_hshift : 1; // Hexout uses HexSegShift (else uses SegShift)
-    unsigned        output_start  : 1; // If Hexout should provide a start record
-    unsigned        raw_hex_output : 1;
+    bool            dll             : 1;
+    bool            ver_specified   : 1;
+    bool            make_implib     : 1;
+    bool            make_impfile    : 1;
+    bool            res_name_only   : 1;
+    bool            toc_initialized : 1;
+    bool            output_raw      : 1;
+    bool            output_hex      : 1;
+    bool            output_hshift   : 1;    // Hexout uses HexSegShift (else uses SegShift)
+    bool            output_start    : 1;    // If Hexout should provide a start record
+    bool            raw_hex_output  : 1;
 };

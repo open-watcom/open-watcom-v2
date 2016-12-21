@@ -136,12 +136,12 @@ char *FindFile( char *fullname, char *name, char *path_list )
 }
 
 #if defined( __UNIX__ ) || defined( __DOS__ )
-dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
-/************************************************************************************************************/
+dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *result, size_t max_result )
+/******************************************************************************************************************/
 {
     char        realname[ _MAX_PATH2 ];
     char        *filename;
-    int         fh;
+    int         fd;
 
     max_result = max_result;
     memcpy( realname, name, name_len );
@@ -154,27 +154,27 @@ dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *e
     if( filename == NULL ) {
         filename = FindFile( result, realname, DipExePathList );
     }
-    fh = -1;
+    fd = -1;
     if( filename != NULL )
-        fh = open( filename, O_RDONLY );
-    if( fh == -1 )
-        return( DIG_NIL_LDHANDLE );
-    return( fh );
+        fd = open( filename, O_RDONLY );
+    if( fd == -1 )
+        return( DIG_NIL_HANDLE );
+    return( DIG_PH2FID( fd ) );
 }
 
-int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
+int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
 {
-    return( read( ldfh, buff, len ) != len );
+    return( read( DIG_FID2PH( fid ), buff, len ) != len );
 }
 
-int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
 {
-    return( lseek( ldfh, offs, where ) == -1L );
+    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
 }
 
-int DIGLoader( Close )( dig_ldhandle ldfh )
+int DIGLoader( Close )( dig_fhandle fid )
 {
-    return( close( ldfh ) );
+    return( close( DIG_FID2PH( fid ) ) != 0 );
 }
 #endif
 
@@ -297,7 +297,7 @@ ssize_t BigWrite( int fh, const void *buffer, size_t size )
     while( size > 0 ) {
         if( amount > size )
             amount = (unsigned)size;
-        write_len = write( DFH2PH( dfh ), buffer, amount );
+        write_len = write( DFH2PH( fid ), buffer, amount );
         if( write_len == (unsigned)-1 ) {
             return( -1 );
         }

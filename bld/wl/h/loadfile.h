@@ -29,27 +29,26 @@
 ****************************************************************************/
 
 
-
-enum {
+typedef enum {
     START_UNDEFED,
     START_IS_SYM,
     START_IS_SDATA
-};
+} start_type;
 
 typedef struct {
     union {
-        symbol *        sym;
-        segdata *       sdata;
+        symbol          *sym;
+        segdata         *sdata;
     } targ;
     offset              off;
-    mod_entry *         mod;
+    mod_entry           *mod;
     targ_addr           addr;
-    unsigned            type : 2;
-    unsigned            user_specd : 1;
-    unsigned            from_inc : 1;
+    start_type          type;
+    bool                user_specd  : 1;
+    bool                from_inc    : 1;
 } startinfo;
 
-extern seg_leader *     StackSegPtr;
+extern seg_leader       *StackSegPtr;
 extern startinfo        StartInfo;
 
 extern void             InitLoadFile( void );
@@ -68,7 +67,7 @@ extern void             OrderGroups( bool (*)(targ_addr *, targ_addr *) );
 extern bool             WriteDOSGroup( group_entry * );
 extern unsigned_32      MemorySize( void );
 extern unsigned_32      AppendToLoadFile( const char * );
-extern void             AddImpLibEntry( const char *, const char *, unsigned ordinal );
+extern void             AddImpLibEntry( const char *, const char *, ordinal_t ordinal );
 extern void             BuildImpLib( void );
 extern void             SetStartSym( const char * );
 extern offset           CalcGroupSize( group_entry * );
@@ -81,8 +80,12 @@ extern void             CloseBuffFile( outfilelist * );
 extern void             SetOriginLoad( unsigned long );
 extern void             WriteLoad3( void *, const char *, size_t );
 extern void             WriteLoad( const void *, size_t );
-extern void             PadLoad( unsigned long );
-extern void             PadBuffFile( outfilelist *, unsigned long );
+extern void             WriteLoadU8( unsigned_8 data );
+extern void             WriteLoadU16( unsigned_16 data );
+extern void             WriteLoadU32( unsigned_32 data );
+extern size_t           WriteLoadU8Name( const char *data, size_t len, bool ucase );
+extern void             PadLoad( size_t );
+extern void             PadBuffFile( outfilelist *, size_t );
 extern void             SeekLoad( unsigned long );
 extern void             SeekEndLoad( unsigned long );
 extern unsigned long    PosLoad( void );

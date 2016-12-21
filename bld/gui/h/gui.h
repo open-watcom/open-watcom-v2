@@ -45,12 +45,6 @@ typedef const char __far    *res_name_or_id;
 typedef const char          *res_name_or_id;
 #endif
 
-#if defined( _WIN64 )
-#define GUI_MAKEINTRESOURCE(x)  ((res_name_or_id)(unsigned __int64)(x))
-#else
-#define GUI_MAKEINTRESOURCE(x)  ((res_name_or_id)(unsigned long)(x))
-#endif
-
 #define GUI_LAST_INTERNAL_MSG 255
 
 #define GUI_LAST_MENU_ID 10000

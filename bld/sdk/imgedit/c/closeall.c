@@ -181,8 +181,7 @@ void CloseAllImages( void )
         return;
     }
 
-    current = head;
-    while( current != NULL ) {
+    for( current = head; current != NULL; current = current->next ) {
         if( !current->issaved ) {
             p1 = WPI_MAKEP1( current->hwnd, 0 );
             parent = _wpi_getparent( current->hwnd );
@@ -197,7 +196,6 @@ void CloseAllImages( void )
                 return;
             }
         }
-        current = current->next;
     }
 
     DeleteActiveImage();
@@ -263,12 +261,10 @@ void SaveAllImages( void )
         return;
     }
 
-    current = head;
-    while( current != NULL ) {
+    for( current = head; current != NULL; current = current->next ) {
         if( !current->issaved ) {
             SaveFileFromNode( current, SB_SAVE );
         }
-        current = current->next;
     }
 
 } /* SaveAllImages */

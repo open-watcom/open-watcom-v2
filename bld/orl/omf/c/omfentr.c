@@ -74,7 +74,7 @@ orl_return OMFENTRY OmfFini( omf_handle oh )
 }
 
 
-orl_return OMFENTRY OmfFileInit( omf_handle oh, void *file, omf_file_handle *pofh )
+orl_return OMFENTRY OmfFileInit( omf_handle oh, orl_file_id file, omf_file_handle *pofh )
 {
     omf_file_handle     ofh;
     orl_return          err;

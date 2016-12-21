@@ -73,7 +73,7 @@ struct elf_file_handle_struct {
     elf_file_handle     next;
     elf_sec_handle      *elf_sec_hnd;
     elf_sec_handle      *orig_sec_hnd;
-    void                *file;
+    orl_file_id         file;
     unsigned char       *contents_buffer1;
     unsigned char       *contents_buffer2;
     uint16_t            shentsize;

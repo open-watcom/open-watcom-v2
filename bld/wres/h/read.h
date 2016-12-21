@@ -35,6 +35,9 @@
 
 #include "mresfmt.h"
 
+
+#define UNI2ASCII(x)    ((char)((x) & 0xFF))
+
 typedef enum ResTypeInfo {
     RT_WATCOM,
     RT_WIN16,

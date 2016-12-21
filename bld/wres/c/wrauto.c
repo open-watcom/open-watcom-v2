@@ -49,7 +49,7 @@ DepInfo *WResGetAutoDep( const char *fname )
 
     ret = NULL;
     handle = ResOpenFileRO( fname );
-    if( handle != NIL_HANDLE ) {
+    if( handle != WRES_NIL_HANDLE ) {
         if( WResIsWResFile( handle ) && (dir = WResInitDir()) != NULL ) {
             if( !WResReadDir( handle, dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );
@@ -60,7 +60,7 @@ DepInfo *WResGetAutoDep( const char *fname )
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
                         info = WResGetLangInfo( window );
-                        if( ResSeek( handle, info->Offset, SEEK_SET ) == -1 ) {
+                        if( WRESSEEK( handle, info->Offset, SEEK_SET ) == -1 ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
                         } else {
                             ret = WRESALLOC( info->Length );

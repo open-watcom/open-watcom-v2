@@ -48,7 +48,7 @@ static MemPtr   *memPtr;
 extern void TRPrintLine( void *handle, const char *buff, size_t len )
 /*******************************************************************/
 {
-    write( *(int *)handle, buff, len );
+    posix_write( *(int *)handle, buff, len );
 }
 #endif
 

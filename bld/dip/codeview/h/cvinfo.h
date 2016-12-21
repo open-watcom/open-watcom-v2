@@ -84,7 +84,7 @@ struct imp_image_handle {
     imp_image_handle            *next_image;
     struct virt_page            ***virt;
     unsigned                    vm_dir_num;
-    dig_fhandle                 sym_file;
+    dig_fhandle                 sym_fid;
     unsigned long               bias;
     cv_directory_entry          **directory;
     unsigned                    dir_count;

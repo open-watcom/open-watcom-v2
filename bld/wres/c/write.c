@@ -50,14 +50,14 @@ static int DefaultConversion( int len, const char *str, char *buf )
 
     if( buf != NULL ) {
         for( i = 0; i < len; i++ ) {
-            buf[2 * i] = str[i];
-            buf[2 * i + 1] = 0;
+            *buf++ = *str++;
+            *buf++ = 0;
         }
     }
     return( len * 2 );
 }
 
-int (*ConvToUnicode)( int, const char *, char *) = DefaultConversion;
+int (*ConvToUnicode)(int, const char *, char *) = DefaultConversion;
 
 bool ResWriteUint8( uint_8 newint, WResFileID handle )
 /****************************************************/
@@ -96,7 +96,7 @@ bool ResWritePadDWord( WResFileID handle )
 /****************************************/
 {
     WResFileOffset  curr_pos;
-    size_t          padding;
+    WResFileSize    padding;
     bool            error;
     uint_32         zero = 0;
 
@@ -108,7 +108,7 @@ bool ResWritePadDWord( WResFileID handle )
     }
     padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
     if( padding != 0 ) {
-        if( WRESWRITE( handle, &zero, padding ) != padding ) {
+        if( (WResFileSize)WRESWRITE( handle, &zero, padding ) != padding ) {
             WRES_ERROR( WRS_WRITE_FAILED );
             return( true );
         }
@@ -144,7 +144,9 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
         error = ResWriteUint16( numchars, handle );
         numchars *= 2;
     } else {
-        numchars &= 0xFF;   /* in 16-bit the string can be no more than 256 characters */
+        /* in 16-bit resources the string can be no more than 255 characters */
+        if( numchars > 0xFF )
+            numchars = 0xFF;
         ptr = (char *)name->Name;
         error = ResWriteUint8( numchars, handle );
     }
@@ -272,8 +274,8 @@ bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID handle )
     }
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle, uint_16 len )
-/********************************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle, size_t len )
+/*******************************************************************************************/
 {
     char            *buf = NULL;
     bool            ret;
@@ -287,7 +289,7 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID handle,
         len = (ConvToUnicode)( len, string, buf );
         string = buf;
     }
-    if( WRESWRITE( handle, string, len ) != len ) {
+    if( (size_t)WRESWRITE( handle, string, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         ret = true;
     } else {
@@ -328,7 +330,7 @@ bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID
     } else {
         if( name->ord.fFlag == 0xff ) {
             if( use_unicode ) {
-                error = ResWriteUint16( -1, handle );
+                error = ResWriteUint16( (uint_16)-1, handle );
             } else {
                 error = ResWriteUint8( name->ord.fFlag, handle );
             }

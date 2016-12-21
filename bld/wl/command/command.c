@@ -39,7 +39,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "impexp.h"     // For entry_export, etc.
-#include "fileio.h"     // For NIL_HANDLE, etc.
+#include "fileio.h"     // For NIL_FHANDLE, etc.
 
 extern void             LnkMemInit( void );
 extern void             LnkMemFini( void );
@@ -106,12 +106,12 @@ extern void FreeSegFlags( seg_flags * curr )
     }
 }
 
-bool            IsCodeClass( char *a, unsigned b ) {
+bool IsCodeClass( char *a, size_t b ) {
 
     return( TRUE );
 }
 
-symbol *        LenFindISymbol( char *a, int b ) {
+symbol *LenFindISymbol( char *a, int b ) {
 
     return( NULL );
 }
@@ -294,7 +294,8 @@ static void ProcessInfo( void )
     Root = NewSection();
     SetUpCommands();
     file = FindPath( INIT_FILE_NAME );
-    if( file == NIL_HANDLE ) return;   /* NO WLINK.LNK */
+    if( file == NIL_FHANDLE )
+        return;   /* NO WLINK.LNK */
     _ChkAlloc( fname, sizeof( INIT_FILE_NAME ) );
     memcpy( fname, INIT_FILE_NAME, sizeof( INIT_FILE_NAME ) );
     SetCommandFile( file, fname );

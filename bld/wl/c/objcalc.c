@@ -78,22 +78,22 @@ typedef struct  {
     offset      grp_addr;
     offset      end_addr;
     group_entry *currgrp;
-    group_entry *lastgrp;  // used only for copy classes
-    bool        first_time;
+    group_entry *lastgrp;       // used only for copy classes
+    bool        first_time  : 1;
 } grpaddrinfo;
 
 
 typedef struct {
     symbol      **symarray;
-    unsigned    num;
     section     *sect;
-    unsigned    first : 1;
+    size_t      num;
+    bool        first   : 1;
 } pubdefinfo;
 
 
 static struct {
-    char *name;
-    char idx;
+    char        *name;
+    ffix_type   idx;
 } FloatNames[] = {
     { "FIWRQQ", FFIX_WR_SYMBOL },
     { "FIDRQQ", FFIX_DR_SYMBOL },
@@ -141,8 +141,8 @@ static void InsertPrevRing( seg_leader **list, seg_leader *curr, seg_leader *pre
 
 #define CODECL_SIZE ( sizeof( CodeClassName ) - 1 )
 
-bool IsCodeClass( const char *name, unsigned namelen )
-/*****************************************************/
+bool IsCodeClass( const char *name, size_t namelen )
+/**************************************************/
 {
     return( ( namelen >= CODECL_SIZE )
         && ( memicmp( name + namelen - CODECL_SIZE, CodeClassName, CODECL_SIZE ) == 0 ) );
@@ -150,8 +150,8 @@ bool IsCodeClass( const char *name, unsigned namelen )
 
 #define CONSTCL_SIZE ( sizeof( ConstClassName ) - 1 )
 
-bool IsConstClass( const char *name, unsigned namelen )
-/******************************************************/
+bool IsConstClass( const char *name, size_t namelen )
+/***************************************************/
 {
     return( ( namelen >= CONSTCL_SIZE )
         && ( memicmp( name + namelen - CONSTCL_SIZE, ConstClassName, CONSTCL_SIZE ) == 0 ) );
@@ -159,8 +159,8 @@ bool IsConstClass( const char *name, unsigned namelen )
 
 #define STACKCL_SIZE ( sizeof( StackClassName ) - 1 )
 
-bool IsStackClass( const char *name, unsigned namelen )
-/*****************************************************/
+bool IsStackClass( const char *name, size_t namelen )
+/***************************************************/
 {
     return( ( namelen >= STACKCL_SIZE )
         && ( stricmp( name, StackClassName ) == 0 ) );
@@ -282,7 +282,7 @@ static void ReallocFileSegs( void )
     seg_num = 1;
     for( currgrp = Groups; currgrp != NULL; currgrp = currgrp->next_group ){
         /*
-         * segment number is also set for zero length group to be 
+         * segment number is also set for zero length group to be
          * segments in map file sorted properly even if they are not emited
          * into load file
          */
@@ -543,12 +543,13 @@ static void FindFloatSyms( void )
     int         index;
     symbol      *sym;
 
-    ClearFloatBits();
-    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) );
-            index++ ) {
+    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
+        SET_SYM_FFIX( sym, FFIX_NOT_A_FLOAT );
+    }
+    for( index = 0; index < ( sizeof( FloatNames ) / sizeof( FloatNames[0] ) ); index++ ) {
         sym = FindISymbol( FloatNames[index].name );
         if( sym != NULL ) {
-            SET_FFIX_VALUE( sym, FloatNames[index].idx );
+            SET_SYM_FFIX( sym, FloatNames[index].idx );
         }
     }
 }
@@ -637,8 +638,8 @@ void StartMapSort( void )
     NumMapSyms = 0;
 }
 
-static void WriteSymArray( symbol **symarray, unsigned num )
-/***********************************************************/
+static void WriteSymArray( symbol **symarray, size_t num )
+/********************************************************/
 {
     if( MapFlags & MAP_ALPHA ) {
         qsort( symarray, num, sizeof( symbol * ), SymAlphaCompare );
@@ -681,7 +682,7 @@ void FinishMapSort( void )
         if( !ok ) {
             LnkMsg( WRN+MSG_CANT_SORT_SYMBOLS, NULL );
         } else {
-            WriteSymArray( symarray, (unsigned) NumMapSyms );
+            WriteSymArray( symarray, NumMapSyms );
             _LnkFree( symarray );
         }
     }
@@ -695,8 +696,6 @@ static bool DefPubSym( void *_pub, void *_info )
     pubdefinfo  *info = _info;
     segdata     *seg;
     seg_leader  *leader;
-    offset      off;
-    unsigned_16 frame;
     offset      temp;
 
     if( pub->info & (SYM_DEAD | SYM_IS_ALTDEF) )
@@ -711,15 +710,12 @@ static bool DefPubSym( void *_pub, void *_info )
         /* address in symbol table is actually signed_32 offset
            from segdata zero */
         if( seg->isabs || IS_DBG_INFO( leader ) ) {
-            XDefSymAddr( pub, pub->addr.off + seg->a.delta
-                             + leader->seg_addr.off, leader->seg_addr.seg );
+            SET_SYM_ADDR( pub, pub->addr.off + seg->a.delta + leader->seg_addr.off, leader->seg_addr.seg );
         } else {
             temp = pub->addr.off;
             temp += seg->a.delta;
             temp += SEG_GROUP_DELTA( leader );
-            frame = leader->group->grp_addr.seg;
-            off = temp + leader->group->grp_addr.off;
-            XDefSymAddr( pub, off, frame );
+            SET_SYM_ADDR( pub, temp + leader->group->grp_addr.off, leader->group->grp_addr.seg );
             DBIGenGlobal( pub, info->sect );
         }
     }
@@ -954,13 +950,13 @@ void SetSegFlags( seg_flags *flag_list )
             FillTypeFlags( flag_list->flags, flag_list->type );
         }
     }
-    // process all class def'ns second.    
+    // process all class def'ns second.
     for( flag_list = start; flag_list != NULL; flag_list = flag_list->next ) {
         if( flag_list->type == SEGFLAG_CLASS ) {
             FillClassFlags( flag_list->name, flag_list->flags );
         }
     }
-    // now process individual segments   
+    // now process individual segments
     for( flag_list = start; flag_list != NULL; flag_list = next_one ) {
         if( flag_list->type == SEGFLAG_SEGMENT ) {
             leader = FindSegment( Root, flag_list->name );
@@ -1142,7 +1138,7 @@ static void SortClasses( section *sec )
         for( MatchClass = sec->orderlist; MatchClass != NULL; MatchClass = MatchClass->NextClass ) {
             if( stricmp( currcl->name, MatchClass->Name ) == 0 ) { // search order list for name match
                 NewRing = &(MatchClass->Ring);   // if found save ptr to instance
-                if( MatchClass->FixedAddr) {     // and copy any flags or address from it
+                if( MatchClass->FixedAddr ) {    // and copy any flags or address from it
                     currcl->flags |= CLASS_FIXED;
                     currcl->BaseAddr = MatchClass->Base;
                     FmtData.base = 0;  // Otherwise PE will use default and blow up
@@ -1174,7 +1170,7 @@ static void SortClasses( section *sec )
 
                 for( ;; ) {
                     if( stricmp( currseg->segname, MatchSeg->Name ) == 0 ) {
-                        if( MatchSeg->FixedAddr) {     // and copy any flags or address from it
+                        if( MatchSeg->FixedAddr ) {    // and copy any flags or address from it
                             currseg->segflags |= SEG_FIXED;
                             currseg->seg_addr = MatchSeg->Base;
                         }

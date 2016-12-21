@@ -1,4 +1,4 @@
-proj_name = setup
+proj_name = setupgui
 
 setupgui_autodepends = .AUTODEPEND
 
@@ -54,32 +54,15 @@ objs +=             &
     dopatch.obj
 !endif
 
-!ifeq host_os win
-objs += &
-!ifeq host_cpu 386
-    setupio.obj     &
-!else
-    setupiod.obj    &
-!endif
-    winutil.obj     &
-    winddeml.obj
-!else ifeq host_os nt
-objs += &
-    setupio.obj     &
-    winutil.obj     &
-    winddeml.obj
-!else ifeq host_os os2
-objs += &
-    setupio.obj     &
-    winutil.obj     &
-    os2util.obj
-!else ifeq host_os linux
-objs += &
-    setupio.obj
-!else
-objs += &
-    setupio.obj
-!endif
+#                     i_dos i_linux i_nt i_os2 i_win i_wini86 i_win386
+#=====================================================================
+!inject setupio.obj   i_dos i_linux i_nt i_os2                i_win386
+!inject setupiod.obj                                 i_wini86
+!inject os2util.obj                      i_os2
+!inject winutil.obj                 i_nt i_os2 i_win
+!inject winddeml.obj                i_nt       i_win
+
+objs += $(i_$(host_os)) $(i_$(host_os)$(host_cpu))
 
 !ifeq sys_windowed 1
 
@@ -201,11 +184,9 @@ version_res_exe_nt_x64 = exever.res
 
 !ifeq sys_windowed 1
 all : csetup.exe f77setup.exe .SYMBOLIC
-
-virgin.exe : $(gendeps) $(__MAKEFILES__)
-!else
-setup.exe : $(gendeps) $(__MAKEFILES__)
 !endif
+
+setup.exe : $(gendeps) $(__MAKEFILES__)
     @%make echo_link
 !ifndef __WATCOM_TOOLS__
     $(cl) $(clflags) $(objs) $(libs) $(ldflags)
@@ -219,7 +200,7 @@ setup.exe : $(gendeps) $(__MAKEFILES__)
     @%make bind_res_wresui
 !endif
 
-setup.lnk : ../setup.mif $(__MAKEFILES__)
+setup.lnk : $(__MAKEFILES__)
     $(noecho)%create setup.lnk
     @%append setup.lnk $(lflags)
     @%append setup.lnk option verbose
@@ -284,17 +265,17 @@ setup.res : setup.rc $(dep_res1) ../res/generic.bmp $(__MAKEFILES__)
 dosstub.exe : dosstub.c $(__MAKEFILES__)
     $(cl_i86) -zq -bcl=dos -os -d0 $(inc_dirs_lang_osi) $[@
 
-csetup.exe : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
-f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
-jcsetup.exe : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
-jfsetup.exe : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) virgin.exe $(__MAKEFILES__)
+csetup.exe : csetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+f77setup.exe : f77setup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+jcsetup.exe : jcsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
+jfsetup.exe : jfsetup.res $(version_res_exe_$(host_os)_$(host_cpu)) setup.exe $(__MAKEFILES__)
 
 .res.exe :
-    cp virgin.sym $^&.sym
+    cp setup.sym $^&.sym
 !ifdef win386
-    cp virgin.exe $^&.rex
+    cp setup.exe $^&.rex
     @%make bind_win386_add_res
 !else
-    cp virgin.exe $^@
+    cp setup.exe $^@
     @%make bind_res_add_version_exe
 !endif

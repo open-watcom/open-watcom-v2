@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,41 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Find resource and seek to begining. 
 *
 ****************************************************************************/
 
 
-#ifndef __OS2_PM__
-
-    /*
-     * Definitions for Windows
-     */
-    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECC
-    #define SHIFT_UP                    IMGED_UP
-    #define SHIFT_DOWN                  IMGED_DOWN
-
-    #define _imged_getthebits( bits, pres, bmp, oldbmp ) \
-        (oldbmp = _wpi_selectbitmap( pres, bmp ))
-    #define _imged_getpixel( bits, pres, x, y )         _wpi_getpixel( pres, x, y )
-    #define _imged_setpixel( bits, pres, x, y, clr )    _wpi_setpixel( pres, x, y, clr )
-    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-        _wpi_getoldbitmap( pres, bmp )
-
-#else
-
-    /*
-     * Definitions for PM
-     */
-    #define ROTATE_COUNTERCLOCKWISE     IMGED_ROTATECL
-    #define SHIFT_UP                    IMGED_DOWN
-    #define SHIFT_DOWN                  IMGED_UP
-
-    #define _imged_getthebits( bits, pres, bmp, oldbmp )    (bits = GetTheBits( bmp ))
-    #define _imged_getpixel( bits, pres, x, y )             MyGetPixel( bits, x, y )
-    #define _imged_setpixel( bits, pres, x, y, clr )        MySetPixel( bits, x, y, clr )
-    #define _imged_freethebits( bits, pres, bmp, fflag, oldbmp ) \
-        FreeTheBits( bits, bmp, fflag )
-
-#endif
+extern WResID   *WResIDFromStrF( lpcstr );
+extern bool     WResSeekResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource );
+extern bool     WResSeekResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource );

@@ -127,7 +127,7 @@ typedef struct section_info {
 typedef struct imp_image_handle {
     struct section_info         *sect;
     unsigned                    num_sects;
-    dig_fhandle                 sym_file;
+    dig_fhandle                 sym_fid;
     unsigned                    num_segs;
     char                        *lang;
     addr_seg                    *map_segs;

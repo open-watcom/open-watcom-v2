@@ -58,7 +58,7 @@
 
 #define DB_TABLE_VER            1
 
-#pragma pack(1)
+#include "pushpck1.h"
 typedef struct {
     uint_32     sig[2];
     uint_16     ver;
@@ -67,7 +67,7 @@ typedef struct {
     uint_16     num_entries;    /* the number of valid characters in the
                                  * code page */
     uint_16     reserved[4];
-}DBTableHeader;
+} DBTableHeader;
 
 /* Each DBIndexEntry represents a contiguous range of characters in the
  * code page */
@@ -77,11 +77,11 @@ typedef struct {
     uint_16     base;           /* the offset into the entries array
                                  * of the translation of the first
                                  * character in the range */
-}DBIndexEntry;
-#pragma pack()
+} DBIndexEntry;
+#include "poppck.h"
 
 extern int          DBStringToUnicode( int len, const char *str, char *buf );
-extern RcStatus     OpenTable( char *fname, char *path );
+extern RcStatus     LoadCharTable( const char *fname, char *path );
 extern void         DbtableInitStatics( void );
 extern const char   *GetLeadBytes( void );
-extern void         FiniTable( void );
+extern void         FreeCharTable( void );

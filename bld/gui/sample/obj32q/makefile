@@ -1,4 +1,3 @@
-type = ui
 os = qnx
 build_target = qnx
 sys=qnx386

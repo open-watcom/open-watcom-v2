@@ -120,7 +120,7 @@ static entry_export *ProcWlibDLLImportEntry( void )
         }
     }
     exp = AllocExport( symname.name, symname.len );
-    exp->isanonymous = (CmdFlags & CF_ANON_EXPORT) != 0;
+    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
     if( internal.name != NULL ) {
         exp->sym = SymOp( ST_CREATE | ST_REFERENCE, internal.name, internal.len );
     } else {
@@ -154,7 +154,7 @@ static bool GetWlibImports( void )
             Token.this += 2;
             Token.len -= 2;
             if( Token.this[0] == '\'' ) {
-                Token.thumb = REJECT;
+                Token.thumb = true;
                 if( !GetToken( SEP_QUOTE, TOK_NORMAL ) ) {
                     LnkMsg( LOC+LINE+ERR+MSG_BAD_WLIB_IMPORT, NULL );
                     RestoreCmdLine();   /* get rid of this file */
@@ -222,7 +222,7 @@ static bool getexport( void )
     unsigned_32     val32;
 
     exp = AllocExport( Token.this, Token.len );
-    exp->isanonymous = (CmdFlags & CF_ANON_EXPORT) != 0;
+    exp->isanonymous = ( (CmdFlags & CF_ANON_EXPORT) != 0 );
     if( GetToken( SEP_PERIOD, TOK_INCLUDE_DOT ) ) {
         if( getatol( &val32 ) != ST_IS_ORDINAL ) {
             LnkMsg( LOC+LINE+ERR + MSG_EXPORT_ORD_INVALID, NULL );
@@ -259,7 +259,7 @@ static bool getexport( void )
                 exp->iopl_words = val16;
             }
         } else {
-            Token.thumb = REJECT;    // reprocess the token.
+            Token.thumb = true;     // reprocess the token.
         }
     }
     AddToExportList( exp );
@@ -388,7 +388,7 @@ bool ProcCommitHeap( void )
 static bool AddCommit( void )
 /***************************/
 {
-    Token.thumb = REJECT;
+    Token.thumb = true;
     return( ProcOne( CommitKeywords, SEP_NO, false ) );
 }
 
@@ -713,7 +713,7 @@ static bool getsegflags( void )
 {
     os2_seg_flags   *entry;
 
-    Token.thumb = REJECT;
+    Token.thumb = true;
     _ChkAlloc( entry, sizeof( os2_seg_flags ) );
     entry->specified = 0;
     entry->flags = FmtData.def_seg_flags;    // default value.
@@ -1243,7 +1243,7 @@ bool     ProcLinkVersion( void )
         return( false );    /* error has occurred */
     }
 
-    FmtData.u.pe.lnk_specd = 1;
+    FmtData.u.pe.lnk_specd = true;
     FmtData.u.pe.linkmajor = (result & major_valid) ? vb.major : 0;
     FmtData.u.pe.linkminor = (result & minor_valid) ? vb.minor : 0;
 
@@ -1260,7 +1260,7 @@ bool     ProcOsVersion( void )
         return( false );    /* error has occurred */
     }
 
-    FmtData.u.pe.osv_specd = 1;
+    FmtData.u.pe.osv_specd = true;
     FmtData.u.pe.osmajor = (result & major_valid) ? vb.major : 0;
     FmtData.u.pe.osminor = (result & minor_valid) ? vb.minor : 0;
 
@@ -1269,21 +1269,21 @@ bool     ProcOsVersion( void )
 
 bool     ProcChecksum( void )
 {
-    FmtData.u.pe.checksumfile = 1;
+    FmtData.u.pe.checksumfile = true;
     return( true );
 }
 
 bool ProcLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.pe.largeaddressaware = 1;
-    FmtData.u.pe.nolargeaddressaware = 0;
+    FmtData.u.pe.largeaddressaware = true;
+    FmtData.u.pe.nolargeaddressaware = false;
     return( true );
 }
 bool ProcNoLargeAddressAware( void )
 /********************************/
 {
-    FmtData.u.pe.nolargeaddressaware = 1;
-    FmtData.u.pe.largeaddressaware = 0;
+    FmtData.u.pe.nolargeaddressaware = true;
+    FmtData.u.pe.largeaddressaware = false;
     return( true );
 }

@@ -31,18 +31,18 @@
 
 
 typedef struct entry_export {
-    struct entry_export *   next;
-    char *                  name;
+    struct entry_export     *next;
+    char                    *name;
     ordinal_t               ordinal;
     unsigned_16             iopl_words;
-    unsigned_16             isresident : 1;
-    unsigned_16             isexported : 1;
-    unsigned_16             ismovable  : 1;
-    unsigned_16             isanonymous : 1;
-    unsigned_16             isfree : 1;
-    unsigned_16             isprivate : 1;
-    symbol *                sym;
-    char *                  impname;
+    bool                    isresident  : 1;
+    bool                    isexported  : 1;
+    bool                    ismovable   : 1;
+    bool                    isanonymous : 1;
+    bool                    isfree      : 1;
+    bool                    isprivate   : 1;
+    symbol                  *sym;
+    char                    *impname;
     targ_addr               addr;
 } entry_export;
 
@@ -51,11 +51,11 @@ extern void             FreeExportList( void );
 extern void             AddToExportList( entry_export * );
 extern void             MSExportKeyword( const length_name *, const length_name *, unsigned, ordinal_t );
 extern void             MSImportKeyword( symbol *, const length_name *, const length_name *, ordinal_t );
-extern dll_sym_info *   AllocDLLInfo( void );
+extern dll_sym_info     *AllocDLLInfo( void );
 extern void             FreeImport( dll_sym_info * );
-extern entry_export *   AllocExport( const char *, size_t );
+extern entry_export     *AllocExport( const char *, size_t );
 extern void             AssignOrdinals( void );
-extern char *           ImpModuleName( dll_sym_info * );
+extern char             *ImpModuleName( dll_sym_info * );
 extern bool             IsSymElfImported( symbol * );
 extern bool             IsSymElfExported( symbol * );
 extern bool             IsSymElfImpExp( symbol * );

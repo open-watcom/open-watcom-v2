@@ -56,10 +56,10 @@ void FlipImage( WORD whichway )
     WPI_PRES    flippres;
     HDC         flipdc;
     HCURSOR     prevcursor;
-    IMGED_DIM   bottom;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   top;
+    WPI_RECTDIM bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM top;
 
     node = GetCurrentNode();
     if( node == NULL ) {
@@ -70,7 +70,7 @@ void FlipImage( WORD whichway )
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
 
     if( !DoesRectExist( &dims ) ) {
-        _wpi_setwrectvalues( &dims, 0, 0, (IMGED_DIM)node->width, (IMGED_DIM)node->height );
+        _wpi_setwrectvalues( &dims, 0, 0, node->width, node->height );
     }
     width = (short)_wpi_getwidthrect( dims );
     height = (short)_wpi_getheightrect( dims );
@@ -175,10 +175,10 @@ static void clipIntoArea( img_node *node, WPI_RECT *rect,
     short       start_y;
     short       new_width;
     short       new_height;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   top;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM top;
+    WPI_RECTDIM bottom;
 
     width = (short)_wpi_getwidthrect( *rect );
     height = (short)_wpi_getheightrect( *rect );
@@ -275,10 +275,10 @@ static void stretchIntoArea( img_node *node, WPI_RECT *rect,
     HBITMAP     oldandrot;
     short       width;
     short       height;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
-    IMGED_DIM   top;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
+    WPI_RECTDIM top;
 
     width = (short)_wpi_getwidthrect( *rect );
     height = (short)_wpi_getheightrect( *rect );
@@ -348,10 +348,10 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     short       width;
     short       height;
     WPI_RECT    new_rect = { 0 };
-    IMGED_DIM   left;
-    IMGED_DIM   top;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
 
     width = (short)_wpi_getwidthrect( *rect );
     height = (short)_wpi_getheightrect( *rect );
@@ -404,8 +404,7 @@ static void simpleRotate( img_node *node, WPI_RECT *rect, HBITMAP rotxorbmp,
     RecordImage( node->hwnd );
     if( DoKeepRect() ) {
         if( rectexists ) {
-            _wpi_setwrectvalues( &new_rect, topleft.x, topleft.y,
-                                 topleft.x+height, topleft.y + width );
+            _wpi_setwrectvalues( &new_rect, topleft.x, topleft.y, topleft.x + height, topleft.y + width );
             SetDeviceClipRect( &new_rect );
         }
     } else {
@@ -449,10 +448,10 @@ static void rotateTheImage( img_node *node, int whichway, WPI_RECT *rect,
     long        prev_amt;
     long        total_amt;
     long        temp;
-    IMGED_DIM   left;
-    IMGED_DIM   top;
-    IMGED_DIM   right;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM top;
+    WPI_RECTDIM right;
+    WPI_RECTDIM bottom;
     int         x;
     int         y;
     COLORREF    color;
@@ -606,8 +605,7 @@ void RotateImage( WORD whichway )
         new_height = (short)_wpi_getwidthrect( rotate_rect );
     } else {
         rectexists = FALSE;
-        _wpi_setwrectvalues( &rotate_rect, 0, 0,
-                             (IMGED_DIM)node->width, (IMGED_DIM)node->height );
+        _wpi_setwrectvalues( &rotate_rect, 0, 0, node->width, node->height );
         new_width = node->height;
         new_height = node->width;
     }
@@ -663,10 +661,10 @@ void ClearImage( void )
     HBITMAP             oldand;
     img_node            *node;
     WPI_RECT            clear_area;
-    IMGED_DIM           left;
-    IMGED_DIM           top;
-    IMGED_DIM           right;
-    IMGED_DIM           bottom;
+    WPI_RECTDIM         left;
+    WPI_RECTDIM         top;
+    WPI_RECTDIM         right;
+    WPI_RECTDIM         bottom;
     int                 width;
     int                 height;
 
@@ -734,10 +732,10 @@ void ShiftImage( WORD shiftdirection )
     short       rgn_height;
     img_node    *node;
     WPI_RECT    rect;
-    IMGED_DIM   left;
-    IMGED_DIM   right;
-    IMGED_DIM   top;
-    IMGED_DIM   bottom;
+    WPI_RECTDIM left;
+    WPI_RECTDIM right;
+    WPI_RECTDIM top;
+    WPI_RECTDIM bottom;
     DWORD       message;
 
     node = GetCurrentNode();

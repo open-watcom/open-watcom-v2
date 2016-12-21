@@ -35,30 +35,15 @@
 #include "wreslang.h"
 #include "msg.h"
 
-#include "clibext.h"
 
 #define NO_RES_MESSAGE "Error: could not open message resource file."
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, read, write, res_seek, tell, bdiff_malloc, bdiff_free );
 
 bool GetMsg( char *buffer, int resourceid )
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -70,19 +55,15 @@ bool MsgInit( void )
     char        name[_MAX_PATH];
     char        msgbuf[MAX_RESOURCE_SIZE];
 
-    hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( GetMsg( msgbuf, MSG_USAGE_FIRST ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( GetMsg( msgbuf, MSG_USAGE_FIRST ) ) {
+            return( true );
         }
-        MsgFini();
     }
+    CloseResFile( &hInstance );
     printf( "%s\n", NO_RES_MESSAGE );
-    res_failure = true;
     return( false );
 }
 
@@ -127,10 +108,7 @@ void Message( int format, ... )
 
 void MsgFini( void )
 {
-    if( hInstance.handle != NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 }
 
 static void Err( int format, va_list args )

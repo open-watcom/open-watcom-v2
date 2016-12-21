@@ -44,6 +44,7 @@ struct TDebugBreak
     long Offset;
     char Instr;
     int UseHw;
+    int IsActive;
     struct TDebugBreak *Next;
 };
 
@@ -102,6 +103,7 @@ struct TDebugThread
 
     struct TDebugThread *Next;
 
+    int FHasTempBp;
     int FDebug;
     int FHasBreak;
     int FHasTrace;
@@ -113,8 +115,8 @@ struct TDebugThread
 
 int IsDebug( struct TDebugThread *obj );
 
-int ReadMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Size );
-int WriteMem( struct TDebugThread *obj, int Sel, long Offset, char *Buf, int Size );
+int ReadMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
+int WriteMem( struct TDebug *obj, int Sel, long Offset, char *Buf, int Size );
 void WriteRegs( struct TDebugThread *obj );
 
 int WasTrace( struct TDebugThread *obj );
@@ -131,11 +133,11 @@ struct TDebugModule
     int FileHandle;
     int Handle;
     unsigned int ImageBase;
-	unsigned int ImageSize;
-	unsigned int ObjectRva;
-	unsigned short int CodeSel;
-	unsigned short int DataSel;
-	unsigned int DataSize;
+        unsigned int ImageSize;
+        unsigned int ObjectRva;
+        unsigned short int CodeSel;
+        unsigned short int DataSel;
+        unsigned int DataSize;
 
     int FNew;
 
@@ -154,11 +156,11 @@ struct TDebug
     int FSection;
 
     struct TDebugThread *CurrentThread;
-    struct TDebugThread *NewThread;
     struct TDebugThread *ThreadList;
     struct TDebugModule *ModuleList;
 
-    struct TDebugBreak *BreakList;
+    struct TDebugBreak *HwBreakList;
+    struct TDebugBreak *SwBreakList;
     struct TDebugWatch *WatchList;
 
     int UserSignal;
@@ -166,17 +168,11 @@ struct TDebug
 
     int FInstalled;
     int FThreadChanged;
-    int FModuleChanged;
 
     int FWaitLoad;
 
     int FConfigChange;
     int FMemoryModel;
-    
-    int FAsyncBreak;
-    int FAsyncSel;
-    long FAsyncOffset;
-
 };
 
 // TDebug methods
@@ -221,7 +217,6 @@ int HasThreadChange( struct TDebug *obj );
 void ClearThreadChange( struct TDebug *obj );
 
 int HasModuleChange( struct TDebug *obj );
-void ClearModuleChange( struct TDebug *obj );
 
 int HasConfigChange( struct TDebug *obj );
 void ClearConfigChange( struct TDebug *obj );

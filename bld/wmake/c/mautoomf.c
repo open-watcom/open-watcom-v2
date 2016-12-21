@@ -38,7 +38,6 @@
 #include "mautodep.h"
 #include "autodept.h"
 #include "pcobj.h"
-#include "mposix.h"
 
 #include "clibext.h"
 

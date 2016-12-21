@@ -55,6 +55,8 @@
 #include "wredde.h"
 #include "wre_rc.h"
 #include "wredlg.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -169,10 +171,10 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( curr->info->current_type == (uint_16)(pointer_int)RT_DIALOG ) {
+        if( curr->info->current_type == RESOURCE2INT( RT_DIALOG ) ) {
             tname = &curr->type->Info.TypeName;
         } else {
-            tname = WResIDFromNum( (uint_16)(pointer_int)RT_DIALOG );
+            tname = WResIDFromNum( RESOURCE2INT( RT_DIALOG ) );
             tname_alloc = true;
         }
         lang.lang = DEF_LANG;
@@ -188,7 +190,7 @@ bool WREAddDialogToDir( WRECurrentResInfo *curr )
             ok = (rname != NULL);
             if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, (uint_16)(pointer_int)RT_DIALOG, tname_alloc );
+                                     &lang, &dup, RESOURCE2INT( RT_DIALOG ), tname_alloc );
                 if( !ok && dup ) {
                     ok = true;
                 }
@@ -414,7 +416,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
 
     if( ok ) {
         session->rinfo->modified = true;
-        WRESetResNamesFromType( session->rinfo, (uint_16)(pointer_int)RT_DIALOG, TRUE, name, 0 );
+        WRESetResNamesFromType( session->rinfo, RESOURCE2INT( RT_DIALOG ), TRUE, name, 0 );
     }
 
     if( data != NULL ) {
@@ -561,11 +563,9 @@ void WREEndLangDialogSession( WResLangNode *lnode )
 {
     WREDialogSession    *session;
 
-    session = WREFindLangDialogSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangDialogSession( lnode )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
-        session = WREFindLangDialogSession( lnode );
     }
 }
 
@@ -573,11 +573,9 @@ void WREEndResDialogSessions( WREResInfo *rinfo )
 {
     WREDialogSession    *session;
 
-    session = WREFindResDialogSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResDialogSession( rinfo )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveDialogEditSession( session );
-        session = WREFindResDialogSession( rinfo );
     }
 }
 

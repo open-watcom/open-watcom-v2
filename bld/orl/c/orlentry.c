@@ -94,8 +94,8 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
     return( ORL_OKAY );
 }
 
-orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
-/****************************************************************/
+orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
+/*********************************************************************/
 {
     unsigned char *     magic;
     uint_16             machine_type;
@@ -209,7 +209,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, void * file )
     return( ORL_UNRECOGNIZED_FORMAT );
 }
 
-orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, void *file, orl_file_format type )
+orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_file_format type )
 {
     orl_file_handle    orl_file_hnd;
 

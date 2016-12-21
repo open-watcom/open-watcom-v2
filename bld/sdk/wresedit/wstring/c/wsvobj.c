@@ -47,6 +47,8 @@
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "wstr2rc.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -187,7 +189,7 @@ bool WSaveObjectAs( bool get_name, WStringEditInfo *einfo, WRSaveIntoData *idata
         memset( &idata2, 0, sizeof( idata2 ) );
         if( einfo->info->symbol_file != NULL ) {
             idata2.next = NULL;
-            idata2.type = WResIDFromNum( (long)(pointer_int)RT_RCDATA );
+            idata2.type = WResIDFromNum( RESOURCE2INT( RT_RCDATA ) );
             idata2.name = WResIDFromStr( "DLGINCLUDE" );
             idata2.data = einfo->info->symbol_file;
             idata2.lang = lang;
@@ -336,7 +338,7 @@ WRSaveIntoData *WMakeSaveData( WStringTable *tbl )
     WResID              *tname;
     WResLangType        *lang;
 
-    tname = WResIDFromNum( (long)(pointer_int)RT_STRING );
+    tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
     if( tname == NULL ) {
         return( NULL );
     }

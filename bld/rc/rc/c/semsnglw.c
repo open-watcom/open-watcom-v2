@@ -378,8 +378,8 @@ static void AddIconResource( WResID * name, ResMemFlags flags,
     FullIconDir     dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if( handle == NIL_HANDLE)
+    handle = RcIoOpenInput( filename, false );
+    if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
@@ -628,8 +628,8 @@ static void AddCursorResource( WResID * name, ResMemFlags flags,
     FullCurDir      dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if( handle == NIL_HANDLE)
+    handle = RcIoOpenInput( filename, false );
+    if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
@@ -743,8 +743,8 @@ static void AddBitmapResource( WResID * name, ResMemFlags flags,
     RcStatus            ret;
     int                 err_code;
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if( handle == NIL_HANDLE)
+    handle = RcIoOpenInput( filename, false );
+    if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     ret = readBitmapFileHeader( handle, &head, &err_code );
@@ -949,8 +949,8 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
         return;
     }
 
-    handle = RcIoOpenInput( filename, O_RDONLY | O_BINARY );
-    if( handle == NIL_HANDLE)
+    handle = RcIoOpenInput( filename, false );
+    if( handle == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     ret = readFontInfo( handle, &info, &err_code );

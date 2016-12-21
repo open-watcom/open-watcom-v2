@@ -31,17 +31,19 @@
 
 
 /* definitions used throughout fcenable */
-#include "watcom.h"
 #include "bool.h"
+#include "watcom.h"
 
 #define MAX_OBJECT_REC_SIZE 4096
 
 typedef unsigned char   byte;
 typedef unsigned short  ushort;
 
+typedef unsigned short  omf_index;
+
 // these are the results returned from ReadRec.
 
-enum {
+typedef enum {
     ERROR = -1,
     OK = 0,
     ENDFILE,
@@ -49,21 +51,21 @@ enum {
     LIBRARY,
     OBJECT,
     ENDLIBRARY
-};
+} rec_status;
 
 typedef struct name_list    NAME_LIST;
 typedef struct exclude_list EXCLUDE_LIST;
 
 typedef struct name_list {
-    NAME_LIST * next;
-    unsigned    lnameidx;       // index of lname record which equals name
+    NAME_LIST   *next;
+    omf_index   lnameidx;       // index of lname record which equals name
     char        name[1];
 } name_list;
 
 typedef struct exclude_list {
     EXCLUDE_LIST *  next;
-    unsigned        lnameidx;   // index of segment lname record
-    unsigned        segidx;     // index of segment
+    omf_index       lnameidx;   // index of segment lname record
+    omf_index       segidx;     // index of segment
     unsigned long   start_off;  // starting offset
     unsigned long   end_off;    // ending offset;
     char            name[1];
@@ -77,32 +79,32 @@ extern name_list    *SegList;
 extern exclude_list *ExcludeList;
 
 // fcenable.c
-extern int      CopyFile( const char *, const char * );
-extern void     put( const char * );
-extern void     putlen( const char *, size_t );
-extern void     LinkList( void **, void * );
-extern void     FreeList( void * );
-extern void     Warning( const char * );
-extern void     Error( const char * );
-extern void     IOError( const char * );
-extern size_t   QRead( int, void *, size_t );
-extern size_t   QWrite( int, const void *, size_t );
-extern long     QSeek( int, long, int );
+extern int          CopyFile( const char *, const char * );
+extern void         put( const char * );
+extern void         putlen( const char *, size_t );
+extern void         LinkList( void **, void * );
+extern void         FreeList( void * );
+extern void         Warning( const char * );
+extern void         Error( const char * );
+extern void         IOError( const char * );
+extern size_t       QRead( int, void *, size_t );
+extern size_t       QWrite( int, const void *, size_t );
+extern long         QSeek( int, long, int );
 
 // mem.c
-extern void     MemInit( void );
-extern void     MemFini( void );
-extern void     *MemAlloc( size_t );
-extern void     MemFree( void * );
+extern void         MemInit( void );
+extern void         MemFini( void );
+extern void         *MemAlloc( size_t );
+extern void         MemFree( void * );
 
 // records.c
-extern void     *InitRecStuff( void );
-extern void     FileCleanup( void );
-extern void     CleanRecStuff( void );
-extern void     FinalCleanup( void );
-extern void     ProcessRec( void );
-extern unsigned GetIndex( const byte ** );
-extern int      ReadRec( void );
-extern void     BuildRecord( const void *, size_t );
-extern void     FlushBuffer( void );
-extern void     IndexRecord( unsigned );
+extern void         *InitRecStuff( void );
+extern void         FileCleanup( void );
+extern void         CleanRecStuff( void );
+extern void         FinalCleanup( void );
+extern void         ProcessRec( void );
+extern omf_index    GetIndex( const byte ** );
+extern rec_status   ReadRec( void );
+extern void         BuildRecord( const void *, size_t );
+extern void         FlushBuffer( void );
+extern void         IndexRecord( omf_index );

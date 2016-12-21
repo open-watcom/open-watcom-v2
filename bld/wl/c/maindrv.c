@@ -37,12 +37,13 @@
 
 #include "clibext.h"
 
+
 #ifndef DLL_NAME
   #error DLL_NAME must be given with -d switch when DLL Driver
 #else
-  #define quoted( name ) # name
-  #define _str(x) quoted(x)
-  #define DLL_NAME_STR _str(DLL_NAME)
+  #define quoted_str( name ) # name
+  #define _str(x)            quoted_str(x)
+  #define DLL_NAME_STR       _str(DLL_NAME)
 #endif
 
 int main( int argc, char **argv )

@@ -95,6 +95,10 @@ Linux 32-bit specifics
 
  - PATH      - must point to binl directory
 
+Linux 64-bit specifics
+
+ - PATH      - must point to binl64 and binl directory, in that order
+
 These environment variables can be either set up in your startup files (which
 is the most convenient method if Open Watcom is the only compiler you use)
 or you can use simple batch files to set these variables (useful if you
@@ -182,6 +186,17 @@ Linux 32-bit shell script:
 ---------------------------------------------------------------------------
 export WATCOM=/usr/bin/watcom
 export PATH=$WATCOM/binl:$PATH
+export EDPATH=$WATCOM/eddat
+:segment C
+export INCLUDE=$WATCOM/lh
+:endsegment
+#export LIB=
+---------------------------------------------------------------------------
+
+Linux 64-bit shell script:
+---------------------------------------------------------------------------
+export WATCOM=/usr/bin/watcom
+export PATH=$WATCOM/binl64:$WATCOM/binl:$PATH
 export EDPATH=$WATCOM/eddat
 :segment C
 export INCLUDE=$WATCOM/lh

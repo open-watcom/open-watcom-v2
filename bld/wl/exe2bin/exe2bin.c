@@ -38,6 +38,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
+#include "bool.h"
 #include "watcom.h"             // unsigned_16, ..., endian-macros, ...
 #include "exedos.h"             // dos_exe_header, ...
 #include "banner.h"             // Watcom banner
@@ -72,12 +73,12 @@ typedef struct arguments {
     FILE            *ifile;
     FILE            *ofile;
     struct {
-        unsigned        be_ext   : 1;       // option 'x'
-        unsigned        be_quiet : 1;       // option 'q'
-        unsigned        disp_h   : 1;       // option 'h'
-        unsigned        disp_r   : 1;       // option 'r'
-        unsigned        have_l   : 1;       // option 'l'
-        unsigned_16     lseg;               // arg to 'l'
+        bool        be_ext      : 1;    // option 'x'
+        bool        be_quiet    : 1;    // option 'q'
+        bool        disp_h      : 1;    // option 'h'
+        bool        disp_r      : 1;    // option 'r'
+        bool        have_l      : 1;    // option 'l'
+        unsigned_16 lseg;               // arg to 'l'
     }               opt;
     char            iname[_MAX_PATH];
     char            oname[_MAX_PATH];
@@ -97,7 +98,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
     unsigned_8      *bptr;              // ptr into buffer to (part of) reloc
     unsigned_16     carry;              // carry from lo-part; 0x0100 or 0x0000
     unsigned_16     cur_reloc;          // idx of current reloc to deal with
-    unsigned_16     num_read;           // bytes to read; in (0, BUF_SIZE]
+    size_t          num_read;           // bytes to read; in (0, BUF_SIZE]
     unsigned_32     tot_read;           // total bytes read so far
 
     if( fseek( istream, num_skip, SEEK_SET ) ) {
@@ -112,10 +113,11 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
     cur_reloc = 0;
     carry     = 0;
 
+    num_read = BUF_SIZE;
     for( ; bin_size > 0; bin_size -= num_read ) {
-        num_read  = (bin_size > BUF_SIZE) ? BUF_SIZE : bin_size;
-
-        if( !fread( buffer, num_read, 1, istream ) ) {
+        if( num_read > bin_size )
+            num_read  = bin_size;
+        if( fread( buffer, num_read, 1, istream ) == 0 ) {
             free( buffer );
             return( ERR_READ );
         }
@@ -162,7 +164,7 @@ static int copy_bindata( FILE *istream, FILE *ostream, unsigned_32 bin_size,
             }
         }
 
-        if( !fwrite( buffer, num_read, 1, ostream ) ) {
+        if( fwrite( buffer, num_read, 1, ostream ) == 0 ) {
             free( buffer );
             return( ERR_WRITE );
         }
@@ -228,7 +230,7 @@ static dos_exe_header *get_header( FILE *stream )
 
     header = malloc( sizeof( dos_exe_header ) );
     if( header ) {
-        if( !fread( header, sizeof( dos_exe_header ), 1, stream ) ) {
+        if( fread( header, sizeof( dos_exe_header ), 1, stream ) == 0 ) {
             free( header );
             header = NULL;
         } else {
@@ -267,7 +269,7 @@ static reloc_table *get_reltab( FILE *stream, dos_exe_header *header )
             reltab = NULL;
         } else {
             for( i = 0; i < rel_num; i++ ) {
-                if( !fread( &rel_off, sizeof( reloc_offset ), 1, stream ) ) {
+                if( fread( &rel_off, sizeof( reloc_offset ), 1, stream ) == 0 ) {
                     free( reltab );
                     reltab = NULL;
                     break;

@@ -36,20 +36,19 @@
 #include "wio.h"
 #include "trmemcvr.h"
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
+extern WResFileID     wres_open( const char *name, wres_open_mode omode );
+extern int            wres_close( WResFileID fid );
+extern WResFileSSize  wres_read( WResFileID fid, void *buf, WResFileSize size );
+extern WResFileSSize  wres_write( WResFileID fid, const void *buf, WResFileSize size );
+extern WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where );
+extern WResFileOffset wres_tell( WResFileID fid );
 
-#define RCOPEN          open
-#define RCCLOSE         close
-#define RCWRITE         posix_write
-#define RCREAD          posix_read
-#define RCSEEK          lseek
-#define RCTELL          tell
+#define RCOPEN          wres_open
+#define RCCLOSE         wres_close
+#define RCWRITE         wres_write
+#define RCREAD          wres_read
+#define RCSEEK          wres_seek
+#define RCTELL          wres_tell
 #define RCALLOC         TRMemAlloc
 #define RCFREE          TRMemFree
 #define RCREALLOC       TRMemRealloc

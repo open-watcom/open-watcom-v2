@@ -39,14 +39,14 @@
  * GUISetIcon --
  */
 
-bool GUISetIcon( gui_window * wnd, gui_resource *res )
+bool GUISetIcon( gui_window *wnd, gui_resource *res )
 {
     WPI_HICON icon;
 
     icon = (WPI_HICON)0;
 
     if( res != NULL ) {
-        icon = _wpi_loadicon( GUIResHInst, _wpi_makeintresource(res->res) );
+        icon = _wpi_loadicon( GUIResHInst, MAKEINTRESOURCE(res->res) );
     } else {
         icon = _wpi_loadicon( GUIResHInst, LIT( ApplIcon ) );
         if( icon == NULL ) {

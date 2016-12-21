@@ -32,7 +32,7 @@
 
 #if !defined( __cplusplus )
   #if !defined( __bool_true_false_are_defined )
-    #if defined( __WATCOMC__ ) || __STDC_VERSION__ >= 199901L && defined( __UNIX__ ) || _MSC_VER >= 1900
+    #if defined( __WATCOMC__ ) || __STDC_VERSION__ >= 199901L && defined( __UNIX__ )
         #include <stdbool.h>
     #else
         #define bool        unsigned char

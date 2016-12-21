@@ -31,12 +31,12 @@
 
 
 #ifndef _EXEOS2_H
-
-#include "pushpck1.h"
+#define _EXEOS2_H
 
 /* OS/2 EXE file header and various tables */
 /* ======================================= */
 
+#include "pushpck1.h"
 typedef struct os2_exe_header {
     unsigned_16         signature;      /* signature to mark valid EXE file */
     unsigned_16         version;        /* version of linker                */
@@ -240,6 +240,7 @@ typedef struct resource_record {
     unsigned_16         name;
     unsigned_32         reserved;
 } resource_record;
+#include "poppck.h"
 
 /* resource flags are any combination of SEG_MOVABLE, SEG_PURE, SEG_PRELOAD, */
 /* and SEG_DISCARD */
@@ -260,7 +261,4 @@ typedef struct resource_record {
 #define REL_IMPORTED_NAME       0x0002
 #define REL_ADDITIVE            0x0004
 
-#include "poppck.h"
-
-#define _EXEOS2_H
 #endif

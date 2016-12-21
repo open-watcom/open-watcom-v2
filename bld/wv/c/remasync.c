@@ -34,6 +34,7 @@
 #include "dbgerr.h"
 #include "dbgio.h"
 #include "dbgmem.h"
+#include "dbgovl.h"
 #include "dui.h"
 #include "trpasync.h"
 #include "trapaccs.h"
@@ -195,4 +196,45 @@ unsigned StopAsync( void )
         }
     }
     return( ret.conditions );
+}
+
+bool AsyncAddBreak( address addr, bool local )
+{
+    async_add_break_req       acc;
+
+    if( SuppAsyncId == 0 ) return( false );
+
+    AddrFix( &addr );
+    acc.break_addr = addr.mach;
+    CONV_LE_32( acc.break_addr.offset );
+    CONV_LE_16( acc.break_addr.segment );
+    acc.local = local;
+
+    acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
+    acc.supp.id = SuppAsyncId;
+
+    acc.req = REQ_ASYNC_ADD_BREAK;
+
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
+    return( true );
+}
+
+void AsyncRemoveBreak( address addr, bool local )
+{
+    async_remove_break_req     acc;
+
+    if( SuppAsyncId == 0 ) return;
+
+    AddrFix( &addr );
+    acc.break_addr = addr.mach;
+    CONV_LE_32( acc.break_addr.offset );
+    CONV_LE_16( acc.break_addr.segment );
+    acc.local = local;
+
+    acc.supp.core_req = REQ_PERFORM_SUPPLEMENTARY_SERVICE;
+    acc.supp.id = SuppAsyncId;
+
+    acc.req = REQ_ASYNC_REMOVE_BREAK;
+
+    OnAnotherThreadSimpAccess( sizeof( acc ), &acc, 0, NULL );
 }

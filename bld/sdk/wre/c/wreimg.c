@@ -56,6 +56,8 @@
 #include "wre_rc.h"
 #include "wreimage.h"
 #include "wreimg.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -137,15 +139,15 @@ WResID *WRECreateImageTitle( uint_16 type )
     uint_32     num;
     WResID      *name;
 
-    if( type == (uint_16)(pointer_int)RT_BITMAP ) {
+    if( type == RESOURCE2INT( RT_BITMAP ) ) {
         WRENumBitmapTitles++;
         num = WRENumBitmapTitles;
         text = AllocRCString( WRE_DEFBITMAPNAME );
-    } else if( type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+    } else if( type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
         WRENumCursorTitles++;
         num = WRENumCursorTitles;
         text = AllocRCString( WRE_DEFCURSORNAME );
-    } else if( type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+    } else if( type == RESOURCE2INT( RT_GROUP_ICON ) ) {
         WRENumIconTitles++;
         num = WRENumIconTitles;
         text = AllocRCString( WRE_DEFICONNAME );
@@ -371,7 +373,7 @@ bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
     }
     memcpy( *data, session->info.data, tsize );
 
-    if( session->type == (uint_16)(pointer_int)RT_BITMAP ) {
+    if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
         if( !WREAddBitmapFileHeader( (BYTE **)data, size ) ) {
             if( *data != NULL ) {
                 WRMemFree( *data );
@@ -458,7 +460,7 @@ static bool WRESetCursorSessionResData( WREImageSession *session, void *data, ui
         curr.res = session->rnode;
         curr.lang = session->lnode;
         if( !session->new ) {
-            ok = WREDeleteGroupImages( &curr, (uint_16)(pointer_int)RT_GROUP_CURSOR );
+            ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_CURSOR ) );
         }
     }
 
@@ -483,7 +485,7 @@ static bool WRESetIconSessionResData( WREImageSession *session, void *data, uint
         curr.res = session->rnode;
         curr.lang = session->lnode;
         if( !session->new ) {
-            ok = WREDeleteGroupImages( &curr, (uint_16)(pointer_int)RT_GROUP_ICON );
+            ok = WREDeleteGroupImages( &curr, RESOURCE2INT( RT_GROUP_ICON ) );
         }
     }
 
@@ -514,11 +516,11 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     }
 
     if( ok ) {
-        if( session->type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( session->type == RESOURCE2INT( RT_BITMAP ) ) {
             ok = WRESetBitmapSessionResData( session, data, size );
-        } else if( session->type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( session->type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             ok = WRESetCursorSessionResData( session, data, size );
-        } else if( session->type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( session->type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             ok = WRESetIconSessionResData( session, data, size );
         }
     }
@@ -531,6 +533,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     WREImageSession     *session;
     BYTE                *data;
     uint_32             size;
+    bool                ok;
 
     if( curr == NULL ) {
         return( NULL );
@@ -546,18 +549,21 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
     session->info.data = NULL;
     data = NULL;
     size = 0;
+    ok = true;
 
     switch( service ) {
     case CursorService:
         if( !new && !WRECreateCursorDataFromGroup( curr, &data, &size ) ) {
-            return( NULL );
+            ok = false;
+            break;
         }
         session->info.data_size = size;
         session->info.data = data;
         break;
     case IconService:
         if( !new && !WRECreateIconDataFromGroup( curr, &data, &size ) ) {
-            return( NULL );
+            ok = false;
+            break;
         }
         session->info.data_size = size;
         session->info.data = data;
@@ -570,6 +576,13 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
         break;
     case NoServicePending:
     default:
+        ok = false;
+        break;
+    }
+    if( !ok ) {
+        if( data != NULL ) {
+            WRMemFree( data );
+        }
         return( NULL );
     }
 
@@ -616,11 +629,11 @@ bool WREEditImageResource( WRECurrentResInfo *curr )
     }
 
     if( ok ) {
-        if( curr->info->current_type == (uint_16)(pointer_int)RT_BITMAP ) {
+        if( curr->info->current_type == RESOURCE2INT( RT_BITMAP ) ) {
             service = BitmapService;
-        } else if( curr->info->current_type == (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
+        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_CURSOR ) ) {
             service = CursorService;
-        } else if( curr->info->current_type == (uint_16)(pointer_int)RT_GROUP_ICON ) {
+        } else if( curr->info->current_type == RESOURCE2INT( RT_GROUP_ICON ) ) {
             service = IconService;
         } else {
             ok = false;
@@ -672,11 +685,9 @@ void WREEndLangImageSession( WResLangNode *lnode )
 {
     WREImageSession     *session;
 
-    session = WREFindLangImageSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangImageSession( lnode )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveImageEditSession( session );
-        session = WREFindLangImageSession( lnode );
     }
 }
 
@@ -684,11 +695,9 @@ void WREEndResImageSessions( WREResInfo *rinfo )
 {
     WREImageSession     *session;
 
-    session = WREFindResImageSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResImageSession( rinfo )) != NULL ) {
         WREDisconnectSession( session );
         WRERemoveImageEditSession( session );
-        session = WREFindResImageSession( rinfo );
     }
 }
 
@@ -818,7 +827,7 @@ void WREShowSession( WREImageSession *session, bool show )
 
 void WREPokeImageCmd( WREImageSession *session, char *cmd, bool retry )
 {
-    if( session != NULL && cmd ) {
+    if( session != NULL && cmd != NULL ) {
         WREPokeData( session->client, cmd, strlen( cmd ) + 1, retry );
     }
 }

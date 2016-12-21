@@ -64,7 +64,6 @@ static const char *txtmsgs[] = {
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
-static  bool            res_failure = true;
 
 #endif
 
@@ -157,41 +156,20 @@ void MsgPrintf1( int resourceid, const char *token )
     printf( msgbuf, token );
 }
 
-#if !defined( USE_TEXT_MSGS )
-
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
-
-#endif
-
 bool MsgInit( void )
 {
 #if !defined( USE_TEXT_MSGS )
     char        name[_MAX_PATH];
 
-    hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( MsgGet( MSG_USAGE_BASE, name ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( MsgGet( MSG_USAGE_BASE, name ) ) {
+            return( true );
         }
-        MsgFini();
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
+    CloseResFile( &hInstance );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 #else
     return( true );
@@ -201,10 +179,7 @@ bool MsgInit( void )
 void MsgFini( void )
 {
 #if !defined( USE_TEXT_MSGS )
-    if( hInstance.handle != NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 #endif
 }
 
@@ -233,7 +208,7 @@ bool MsgGet( int id, char *buffer )
     strncpy( buffer, txtmsgs[index], MAX_MESSAGE_SIZE - 1 );
     buffer[MAX_MESSAGE_SIZE - 1] = '\0';
 #else
-    if( res_failure || WResLoadString( &hInstance, id + MsgShift, (LPSTR)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, id + MsgShift, (lpstr)buffer, MAX_MESSAGE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }

@@ -61,6 +61,8 @@
 #define DIG_SEEK_ERROR      ((unsigned long)-1L)
 #define DIG_RW_ERROR        ((size_t)-1)
 
+#define DIG_NIL_HANDLE      NULL
+
 typedef unsigned_8 search_result; enum {
     SR_NONE,
     SR_EXACT,
@@ -412,7 +414,6 @@ typedef unsigned_16     dig_elen;
 typedef unsigned        dig_info_type;
 
 typedef void            *dig_fhandle;
-#define DIG_NIL_HANDLE  NULL
 
 typedef unsigned_16     dig_size_bits;
 

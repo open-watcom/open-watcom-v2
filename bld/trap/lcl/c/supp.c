@@ -137,6 +137,8 @@ static service_func * const AsyncRequests[] = {
     ReqAsync_step,
     ReqAsync_poll,
     ReqAsync_stop,
+    ReqAsync_add_break,
+    ReqAsync_remove_break,
 };
 #endif
 

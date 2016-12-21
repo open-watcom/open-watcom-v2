@@ -65,7 +65,7 @@ bool InitParsing( void )
     CmdFile->oldhow = COMMANDLINE;
     CmdFile->where = MIDST;
     CmdFile->name = NULL;
-    CmdFile->file = NIL_HANDLE;
+    CmdFile->file = NIL_FHANDLE;
     getcmd( CmdFile->buffer );
     CmdFile->current = CmdFile->buffer;
     EatWhite();
@@ -79,7 +79,7 @@ void FreeParserMem( void )
 
     while( (curr = CmdFile) != NULL ) {
         CmdFile = CmdFile->next;
-        if( curr->file != NIL_HANDLE ) {
+        if( curr->file != NIL_FHANDLE ) {
             QClose( curr->file, curr->name );
         }
         MemFree( curr->buffer );
@@ -182,7 +182,7 @@ void StartNewFile( char *fname )
 
     newfile = MemAlloc( sizeof( cmdfilelist ) );
     newfile->name = fname;
-    newfile->file = NIL_HANDLE;
+    newfile->file = NIL_FHANDLE;
     newfile->buffer = NULL;
     newfile->next = CmdFile;
     CmdFile = newfile;

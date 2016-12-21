@@ -304,9 +304,9 @@ static void WVIMPENTRY( Cancel )( void )
 {
 }
 
-static dip_status WVIMPENTRY( LoadInfo )( dig_fhandle dfh, imp_image_handle *ii )
+static dip_status WVIMPENTRY( LoadInfo )( dig_fhandle fid, imp_image_handle *ii )
 {
-    dfh = dfh;
+    fid = fid;
     ii = ii;
     return( DS_FAIL );
 }

@@ -47,26 +47,11 @@
 #include "clibext.h"
 
 
-static  HANDLE_INFO     hInstance = { 0 };
-static  unsigned        MsgShift;
-static  bool            res_failure = true;
-
 #define NO_RES_MESSAGE "Error: could not open message resource file.\r\n"
 #define NO_RES_SIZE (sizeof( NO_RES_MESSAGE ) - 1)
 
-
-static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, read, write, resSeek, tell, malloc, free );
+static  HANDLE_INFO     hInstance = { 0 };
+static  unsigned        MsgShift;
 
 bool MsgInit( void )
 /******************/
@@ -74,26 +59,22 @@ bool MsgInit( void )
     char        name[_MAX_PATH];
     char        dummy[MAX_RESOURCE_SIZE];
 
-    hInstance.handle = NIL_HANDLE;
-    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
-        res_failure = false;
-        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-            if( MsgGet( MSG_USAGE_BASE, dummy ) ) {
-                return( true );
-            }
+    hInstance.status = 0;
+    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
+        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+        if( MsgGet( MSG_USAGE_BASE, dummy ) ) {
+            return( true );
         }
-        MsgFini();
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
-    res_failure = true;
+    CloseResFile( &hInstance );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
 
 bool MsgGet( int resourceid, char *buffer )
 /*****************************************/
 {
-    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -123,7 +104,8 @@ void MsgSubStr( int resourceid, char *buff, char *p )
     dest = buff;
     for(;;) {
         ch = *src++;
-        if( ch == '\0' ) break;
+        if( ch == '\0' )
+            break;
         if( ch != '%' ) {
             *dest++ = ch;
         } else {
@@ -152,8 +134,5 @@ void MsgSubStr( int resourceid, char *buff, char *p )
 void MsgFini( void )
 /******************/
 {
-    if( hInstance.handle != NIL_HANDLE ) {
-        CloseResFile( &hInstance );
-        hInstance.handle = NIL_HANDLE;
-    }
+    CloseResFile( &hInstance );
 }

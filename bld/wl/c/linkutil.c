@@ -64,8 +64,8 @@ typedef struct {
     class_walk_fn   *cbfn;
 } class_walk_data;
 
-void WriteNulls( f_handle file, unsigned_32 len, const char *name )
-/*****************************************************************/
+void WriteNulls( f_handle file, size_t len, const char *name )
+/************************************************************/
 /* copy nulls for uninitialized data */
 {
     static unsigned NullArray[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -290,8 +290,8 @@ name_list *AddNameTable( const char *name, size_t len, bool is_mod, name_list **
     return( imp );
 }
 
-unsigned_16 binary_log( unsigned_16 value )
-/************************************************/
+unsigned_16 blog_16( unsigned_16 value )
+/**************************************/
 // This calculates the binary log of value, truncating decimals.
 {
     unsigned_16 log;
