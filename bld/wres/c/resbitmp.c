@@ -35,10 +35,10 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID handle )
-/************************************************************************/
+bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID fid )
+/*********************************************************************/
 {
-    if( WRESWRITE( handle, head, sizeof( BitmapInfoHeader ) ) != sizeof( BitmapInfoHeader ) ) {
+    if( WRESWRITE( fid, head, sizeof( BitmapInfoHeader ) ) != sizeof( BitmapInfoHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED )
         return( true );
     }

@@ -108,22 +108,22 @@ typedef struct MenuExItem {
 
 /* reswmenu.c */
 
-extern bool     ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle );
-extern bool     ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, WResFileID handle );
-extern bool     ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WResFileID handle );
-extern bool     ResWriteMenuItem( const MenuItem *curritem, bool use_unicode, WResFileID handle );
-extern bool     ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *data );
-extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata, bool use_unicode, WResFileID handle );
-extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, WResFileID handle );
+extern bool     ResWriteMenuHeader( MenuHeader *currhead, WResFileID fid );
+extern bool     ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, WResFileID fid );
+extern bool     ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WResFileID fid );
+extern bool     ResWriteMenuItem( const MenuItem *curritem, bool use_unicode, WResFileID fid );
+extern bool     ResWriteMenuExHeader( MenuHeader *currhead, WResFileID fid, uint_8 *data );
+extern bool     ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata, bool use_unicode, WResFileID fid );
+extern bool     ResWriteMenuExItemNormal( const MenuItemNormal *, const MenuExItemNormal *, bool use_unicode, WResFileID fid );
 
 /* resrmenu.c */
 
-extern bool     ResReadMenuHeader( MenuHeader *currhead, WResFileID handle );
-extern bool     ResReadMenuItem( MenuItem *curritem, WResFileID handle );
-extern bool     ResReadMenuItem32( MenuItem *curritem, WResFileID handle );
-extern bool     ResReadMenuExItem( MenuExItem *curritem, WResFileID handle );
-extern bool     ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf );
-extern bool     ResIsMenuEx( WResFileID handle );
+extern bool     ResReadMenuHeader( MenuHeader *currhead, WResFileID fid );
+extern bool     ResReadMenuItem( MenuItem *curritem, WResFileID fid );
+extern bool     ResReadMenuItem32( MenuItem *curritem, WResFileID fid );
+extern bool     ResReadMenuExItem( MenuExItem *curritem, WResFileID fid );
+extern bool     ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf );
+extern bool     ResIsMenuEx( WResFileID fid );
 extern bool     ResIsHeaderMenuEx( MenuHeader *hdr );
 extern MenuItem *ResNewMenuItem( void );
 extern void     ResFreeMenuItem( MenuItem *olditem );

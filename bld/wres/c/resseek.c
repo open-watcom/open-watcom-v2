@@ -36,13 +36,13 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResFileOffset ResSeek( WResFileID handle, WResFileOffset offset, int origin )
-/****************************************************************************/
+WResFileOffset ResSeek( WResFileID fid, WResFileOffset offset, int origin )
+/*************************************************************************/
 /* cover function for seek */
 {
     WResFileOffset  posn;
 
-    posn = WRESSEEK( handle, offset, origin );
+    posn = WRESSEEK( fid, offset, origin );
     if( posn == -1 ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     }

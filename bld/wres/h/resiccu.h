@@ -71,12 +71,12 @@ typedef struct CurHotspot {
 } CurHotspot;
 #include "poppck.h"
 
-extern bool ResWriteIconCurDirHeader( const IconCurDirHeader *, WResFileID handle );
-extern bool ResWriteIconDirEntry( const IconDirEntry *, WResFileID handle );
-extern bool ResWriteCurHotspot( const CurHotspot * hotspot, WResFileID handle );
-extern bool ResWriteCurDirEntry( const CurDirEntry * entry, WResFileID handle );
-extern bool ResReadIconCurDirHeader( IconCurDirHeader *, WResFileID handle );
-extern bool ResReadIconDirEntry( IconDirEntry * entry, WResFileID handle );
-extern bool ResReadCurDirEntry( CurDirEntry * entry, WResFileID handle );
+extern bool ResWriteIconCurDirHeader( const IconCurDirHeader *, WResFileID fid );
+extern bool ResWriteIconDirEntry( const IconDirEntry *, WResFileID fid );
+extern bool ResWriteCurHotspot( const CurHotspot * hotspot, WResFileID fid );
+extern bool ResWriteCurDirEntry( const CurDirEntry * entry, WResFileID fid );
+extern bool ResReadIconCurDirHeader( IconCurDirHeader *, WResFileID fid );
+extern bool ResReadIconDirEntry( IconDirEntry * entry, WResFileID fid );
+extern bool ResReadCurDirEntry( CurDirEntry * entry, WResFileID fid );
 
 #endif

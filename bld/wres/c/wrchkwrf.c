@@ -38,17 +38,17 @@ bool WResCheckWResFile( const char *filename )
 /********************************************/
 {
     bool        iswresfile;
-    WResFileID  handle;
+    WResFileID  fid;
 
-    handle = ResOpenFileRO( filename );
+    fid = ResOpenFileRO( filename );
 
-    if( handle == WRES_NIL_HANDLE ) {
+    if( fid == WRES_NIL_HANDLE ) {
         return( false );        /* assume it's not a WRES file */
     }
 
-    iswresfile = WResIsWResFile( handle );
+    iswresfile = WResIsWResFile( fid );
 
-    ResCloseFile( handle );
+    ResCloseFile( fid );
 
     return( iswresfile );
 }

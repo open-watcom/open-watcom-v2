@@ -34,8 +34,8 @@
 #include "read.h"
 #include "reserr.h"
 
-WResIDName *WResReadWResIDName( WResFileID handle )
-/*************************************************/
+WResIDName *WResReadWResIDName( WResFileID fid )
+/**********************************************/
 {
     WResIDName      newname;
     WResIDName      *newptr;
@@ -43,7 +43,7 @@ WResIDName *WResReadWResIDName( WResFileID handle )
     bool            error;
 
     /* read the size of the name in */
-    error = ResReadUint8( &(newname.NumChars), handle );
+    error = ResReadUint8( &(newname.NumChars), fid );
 
     /* alloc the space for the new record */
     if( error ) {
@@ -58,9 +58,9 @@ WResIDName *WResReadWResIDName( WResFileID handle )
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newptr->NumChars = newname.NumChars;
-        numread = WRESREAD( handle, newptr->Name, newptr->NumChars );
+        numread = WRESREAD( fid, newptr->Name, newptr->NumChars );
         if( numread != newptr->NumChars ) {
-            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+            WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( newptr );
             newptr = NULL;
         }

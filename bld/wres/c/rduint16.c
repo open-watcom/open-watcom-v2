@@ -35,16 +35,16 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResReadUint16( uint_16 *newint, WResFileID handle )
-/******************************************************/
+bool ResReadUint16( uint_16 *newint, WResFileID fid )
+/***************************************************/
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, newint, sizeof( uint_16 ) );
+    numread = WRESREAD( fid, newint, sizeof( uint_16 ) );
     if( numread == sizeof( uint_16 ) ) {
         return( false );
     } else {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( true );
 }
