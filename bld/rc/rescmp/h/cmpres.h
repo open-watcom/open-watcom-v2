@@ -35,7 +35,6 @@
 
 #include "wresall.h"
 
-int CompareResources( WResFileID handle1, WResDir dir1,
-                        WResFileID handle2, WResDir dir2 );
+int CompareResources( WResFileID fid1, WResDir dir1, WResFileID fid2, WResDir dir2 );
 
 #endif

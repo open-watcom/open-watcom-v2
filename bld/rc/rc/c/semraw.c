@@ -52,7 +52,7 @@ void SemWriteRawDataItem( RawDataItem item )
         if( item.WriteNull ) {
             ++len;
         }
-        if( ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.handle, len ) ) {
+        if( ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, len ) ) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         }
@@ -73,9 +73,9 @@ void SemWriteRawDataItem( RawDataItem item )
         }
         if( !ErrorHasOccured ) {
             if( !item.LongItem ) {
-                error = ResWriteUint16( item.Item.Num, CurrResFile.handle );
+                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
             } else {
-                error = ResWriteUint32( item.Item.Num, CurrResFile.handle );
+                error = ResWriteUint32( item.Item.Num, CurrResFile.fid );
             }
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
@@ -85,23 +85,23 @@ void SemWriteRawDataItem( RawDataItem item )
     }
 }
 
-RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
+RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
                          void *buff, unsigned buffsize, int *err_code )
-/****************************************************************/
+/*********************************************************************/
 {
     WResFileSSize   numread;
 
-    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    while( (numread = RCREAD( handle, buff, buffsize )) != 0 ) {
-        if( RCIOERR( handle, numread ) ) {
+    while( (numread = RCREAD( fid, buff, buffsize )) != 0 ) {
+        if( RCIOERR( fid, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        if( RCWRITE( CurrResFile.handle, buff, numread ) != numread ) {
+        if( RCWRITE( CurrResFile.fid, buff, numread ) != numread ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -115,7 +115,7 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
 ResLocation SemCopyRawFile( const char *filename )
 /************************************************/
 {
-    WResFileID      handle;
+    WResFileID      fid;
     RcStatus        ret;
     char            *buffer;
     char            full_filename[_MAX_PATH];
@@ -133,31 +133,31 @@ ResLocation SemCopyRawFile( const char *filename )
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
-    handle = RcIoOpenInput( full_filename, false );
-    if( handle == WRES_NIL_HANDLE ) {
+    fid = RcIoOpenInput( full_filename, false );
+    if( fid == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
 
     loc.start = SemStartResource();
 
-    pos = RCTELL( handle );
+    pos = RCTELL( fid );
     if( pos == -1 ) {
         RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
-        RCCLOSE( handle );
+        RCCLOSE( fid );
         goto HANDLE_ERROR;
     } else {
-        ret = SemCopyDataUntilEOF( pos, handle, buffer, BUFFER_SIZE, &err_code );
+        ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
         if( ret != RS_OK ) {
             ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
-            RCCLOSE( handle );
+            RCCLOSE( fid );
             goto HANDLE_ERROR;
         }
     }
 
     loc.len = SemEndResource( loc.start );
 
-    RCCLOSE( handle );
+    RCCLOSE( fid );
 
     RCFREE( buffer );
 
@@ -232,7 +232,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     if( call_startend ) {
         if( CmdLineParms.MSResFormat
           && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-            ResWritePadDWord( CurrResFile.handle );
+            ResWritePadDWord( CurrResFile.fid );
         }
         resLoc.len = SemEndResource( resLoc.start );
     }

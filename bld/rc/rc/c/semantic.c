@@ -58,16 +58,16 @@ SemOffset SemStartResource( void )
         RcFatalError( ERR_STOP_REQUESTED );
     }
     if( CurrResFile.IsWatcomRes ) {
-        return( ResTell( CurrResFile.handle ) );
+        return( ResTell( CurrResFile.fid ) );
     } else {
         /* save current values */
-        save_handle = CurrResFile.handle;
+        save_handle = CurrResFile.fid;
         save_name = CurrResFile.filename;
         /* open a temporary file and trade handles with the RES file */
         MSFormatTmpFile = RcTmpFileName();
-        CurrResFile.handle = ResOpenNewFile( MSFormatTmpFile );
-        if( CurrResFile.handle == WRES_NIL_HANDLE ) {
-            CurrResFile.handle = save_handle;
+        CurrResFile.fid = ResOpenNewFile( MSFormatTmpFile );
+        if( CurrResFile.fid == WRES_NIL_HANDLE ) {
+            CurrResFile.fid = save_handle;
             ResCloseFile( save_handle );
             remove( save_name );
             RcFatalError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
@@ -76,7 +76,7 @@ SemOffset SemStartResource( void )
             CurrResFile.filename = MSFormatTmpFile;
         }
         /* The start position should be 0 but to be safe call ResTell */
-        return( ResTell( CurrResFile.handle ) );
+        return( ResTell( CurrResFile.fid ) );
     }
 }
 
@@ -86,18 +86,18 @@ SemLength SemEndResource( SemOffset start )
     SemLength   len;
 
     if( CurrResFile.IsWatcomRes ) {
-        return( ResTell( CurrResFile.handle ) - start );
+        return( ResTell( CurrResFile.fid ) - start );
     } else {
         /* Close the temperary file, reset the RES file handle and return */
         /* the length of the resource */
-        len = ResTell( CurrResFile.handle ) - start;
+        len = ResTell( CurrResFile.fid ) - start;
 
-        if( ResCloseFile( CurrResFile.handle ) ) {
+        if( ResCloseFile( CurrResFile.fid ) ) {
             RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
             ErrorHasOccured = true;
         }
         /* restore previous values */
-        CurrResFile.handle = save_handle;
+        CurrResFile.fid = save_handle;
         CurrResFile.filename = save_name;
         return( len );
     }
@@ -135,9 +135,9 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     /* OS/2 resource header happens to be identical to Win16 */
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN16 ||
         CmdLineParms.TargetOS == RC_TARGET_OS_OS2 ) {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, false );
+        error = MResWriteResourceHeader( &ms_head, CurrResFile.fid, false );
     } else {
-        error = MResWriteResourceHeader( &ms_head, CurrResFile.handle, true );
+        error = MResWriteResourceHeader( &ms_head, CurrResFile.fid, true );
     }
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
@@ -172,7 +172,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
                 ErrorHasOccured = true;
                 return;
             } else {
-                error = ResWriteUint8( cur_byte, CurrResFile.handle );
+                error = ResWriteUint8( cur_byte, CurrResFile.fid );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                     ResCloseFile( tmp_handle );

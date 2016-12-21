@@ -73,10 +73,10 @@ struct DLGTITEM {
 #include "rccore.h"
 
 
-static bool ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID handle )
-/*******************************************************************************/
+static bool ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID fid )
+/****************************************************************************/
 {
-    if( RCWRITE( handle, tmpldata, size ) != size ) {
+    if( RCWRITE( fid, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -698,7 +698,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     // Write the resource to file
     loc.start = SemStartResource();
 
-    error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.handle );
+    error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fid );
     if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;
@@ -792,7 +792,7 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     int         err_code;
 
     loc.start = SemStartResource();
-    error = ResWriteString( filename, false, CurrResFile.handle );
+    error = ResWriteString( filename, false, CurrResFile.fid );
     if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;

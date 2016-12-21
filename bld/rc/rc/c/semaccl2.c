@@ -38,10 +38,10 @@
 #include "rccore.h"
 
 
-static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID handle )
-/****************************************************************************/
+static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID fid )
+/********************************************************************************/
 {
-    if( RCWRITE( handle, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
+    if( RCWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }
@@ -195,19 +195,19 @@ static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
 }
 
 static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
-                                   WResFileID handle, uint_32 codepage )
-/**********************************************************************/
+                                   WResFileID fid, uint_32 codepage )
+/*******************************************************************/
 {
     FullAccelEntryOS2   *currentry;
     bool                error;
 
-    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), handle );
+    error = ResWriteUint16( SemOS2CountAccelTableEntries( acctable ), fid );
     if( !error ) {
-        error = ResWriteUint16( codepage, handle );
+        error = ResWriteUint16( codepage, fid );
     }
     currentry = acctable->head;
     while( currentry != NULL && !error ) {
-        ResOS2WriteAccelEntry( &currentry->entry, handle );
+        ResOS2WriteAccelEntry( &currentry->entry, fid );
         currentry = currentry->next;
     }
     return( error );
@@ -223,7 +223,7 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
-        error = writeAccelTableEntries( acctable, CurrResFile.handle, codepage );
+        error = writeAccelTableEntries( acctable, CurrResFile.fid, codepage );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;

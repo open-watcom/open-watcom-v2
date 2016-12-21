@@ -39,8 +39,8 @@
 #include "clibext.h"
 
 
-bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
-/******************************************************************/
+bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
+/***************************************************************/
 {
     WResFileOffset      prevpos;
     unsigned            len;
@@ -49,7 +49,7 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
     unsigned            stringlen;
     char                *stringbuff;
 
-    prevpos = RCSEEK( handle, offset, SEEK_SET );
+    prevpos = RCSEEK( fid, offset, SEEK_SET );
     if( prevpos == -1 )
         return( true );
     len = DMP_STR_BUF_LEN;
@@ -71,7 +71,7 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
                 len = length;
                 length = 0;
             }
-            numread = RCREAD( handle, stringbuff, len );
+            numread = RCREAD( fid, stringbuff, len );
             cursor = 0;
         }
         if( stringlen == 0 ) {
@@ -98,7 +98,7 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID handle )
 
     RCFREE( stringbuff );
 
-    RCSEEK( handle, prevpos, SEEK_SET );
+    RCSEEK( fid, prevpos, SEEK_SET );
 
     return( false );
 }

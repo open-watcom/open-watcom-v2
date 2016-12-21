@@ -44,7 +44,7 @@
 
 /*** Forward References ***/
 static uint_16 CalcNestSize( FullVerBlockNest * nest );
-static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle, int *err_code );
+static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *err_code );
 static void FreeVerBlockNest( FullVerBlockNest * nest );
 
 FullVerValueList * SemWINNewVerValueList( VerValueItem item )
@@ -100,17 +100,15 @@ static void FreeValList( FullVerValueList * list )
     RCFREE( list );
 }
 
-static bool semWriteVerValueList( FullVerValueList * list, bool use_unicode,
-                                     WResFileID handle, int *err_code )
-/***************************************************************************/
+static bool semWriteVerValueList( FullVerValueList *list, bool use_unicode, WResFileID fid, int *err_code )
+/*********************************************************************************************************/
 {
     bool    error;
     int     curr_val;
 
     error = false;
     for( curr_val = 0; !error && curr_val < list->NumItems; curr_val++ ) {
-        error = ResWriteVerValueItem( list->Item + curr_val, use_unicode,
-                                                handle );
+        error = ResWriteVerValueItem( list->Item + curr_val, use_unicode, fid );
     }
     *err_code = LastWresErr();
     return( error );
@@ -202,8 +200,8 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     return( block->Head.Size );
 }
 
-static bool SemWriteVerBlock( FullVerBlock * block, WResFileID handle, int *err_code )
-/************************************************************************************/
+static bool SemWriteVerBlock( FullVerBlock * block, WResFileID fid, int *err_code )
+/*********************************************************************************/
 {
     bool        error;
     uint_8      os;
@@ -213,17 +211,17 @@ static bool SemWriteVerBlock( FullVerBlock * block, WResFileID handle, int *err_
     } else {
         os = WRES_OS_WIN16;
     }
-    error = ResWriteVerBlockHeader( &block->Head, block->UseUnicode, os, handle );
+    error = ResWriteVerBlockHeader( &block->Head, block->UseUnicode, os, fid );
     *err_code = LastWresErr();
     if( !error && block->Value != NULL ) {
-        error = semWriteVerValueList( block->Value, block->UseUnicode, handle, err_code );
+        error = semWriteVerValueList( block->Value, block->UseUnicode, fid, err_code );
         if( !error ) {
-            error = ResWritePadDWord( handle );
+            error = ResWritePadDWord( fid );
             *err_code = LastWresErr();
         }
     }
     if( !error && block->Nest != NULL ) {
-        error = SemWriteVerBlockNest( block->Nest, handle, err_code );
+        error = SemWriteVerBlockNest( block->Nest, fid, err_code );
     }
 
     return( error );
@@ -309,15 +307,15 @@ static void FreeVerBlockNest( FullVerBlockNest * nest )
     RCFREE( nest );
 }
 
-static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID handle, int *err_code )
-/******************************************************************************************/
+static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *err_code )
+/***************************************************************************************/
 {
     bool            error;
     FullVerBlock    *block;
 
     error = false;
     for( block = nest->Head; block != NULL && !error; block = block->Next ) {
-        error = SemWriteVerBlock( block, handle, err_code );
+        error = SemWriteVerBlock( block, fid, err_code );
     }
 
     return( error );
@@ -400,7 +398,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
                     + root.ValSize + padding + CalcNestSize( nest );
     /* pad the start of the resource so that padding within the resource */
     /* is easier */
-    error = ResWritePadDWord( CurrResFile.handle );
+    error = ResWritePadDWord( CurrResFile.fid );
     if( error ) {
         err_code = LastWresErr();
         goto OutputWriteError;
@@ -409,25 +407,24 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
-        error = ResWriteVerBlockHeader( &root, use_unicode, os,
-                                        CurrResFile.handle);
+        error = ResWriteVerBlockHeader( &root, use_unicode, os, CurrResFile.fid);
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
-        error = ResWriteVerFixedInfo( info, CurrResFile.handle );
+        error = ResWriteVerFixedInfo( info, CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
-        if( ResSeek( CurrResFile.handle, padding, SEEK_CUR ) == -1 )  {
+        if( ResSeek( CurrResFile.fid, padding, SEEK_CUR ) == -1 )  {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
 
-        error = SemWriteVerBlockNest( nest, CurrResFile.handle, &err_code );
+        error = SemWriteVerBlockNest( nest, CurrResFile.fid, &err_code );
         if( error)
             goto OutputWriteError;
 

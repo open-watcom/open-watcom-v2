@@ -113,9 +113,9 @@ void SemWINWriteAccelEntry( FullAccelEntry entry )
 
     if( !ErrorHasOccured ) {
         if( entry.Win32 ) {
-            error = ResWriteAccelEntry32( &entry.u.entry32, CurrResFile.handle );
+            error = ResWriteAccelEntry32( &entry.u.entry32, CurrResFile.fid );
         } else {
-            error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.handle );
+            error = ResWriteAccelEntry( &entry.u.entry, CurrResFile.fid );
         }
         if( error ) {
             RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

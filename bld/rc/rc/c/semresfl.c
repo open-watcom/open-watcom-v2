@@ -44,7 +44,7 @@
 
 #define BUFFER_SIZE     1024
 
-static bool copyAResource( WResFileID handle, WResDirWindow *wind,
+static bool copyAResource( WResFileID fid, WResDirWindow *wind,
                             char *buffer, const char *filename )
 /****************************************************************/
 {
@@ -59,7 +59,7 @@ static bool copyAResource( WResFileID handle, WResDirWindow *wind,
     resinfo = WResGetResInfo( *wind );
     typeinfo = WResGetTypeInfo( *wind );
     loc.start = SemStartResource();
-    /* rc = */ CopyData( langinfo->Offset, langinfo->Length, handle, buffer, BUFFER_SIZE, &err_code );
+    /* rc = */ CopyData( langinfo->Offset, langinfo->Length, fid, buffer, BUFFER_SIZE, &err_code );
     loc.len = SemEndResource( loc.start );
     SemAddResource2( &resinfo->ResName, &typeinfo->TypeName, langinfo->MemoryFlags, loc, filename );
     return( false );
@@ -68,7 +68,7 @@ static bool copyAResource( WResFileID handle, WResDirWindow *wind,
 static bool copyResourcesFromRes( const char *full_filename )
 /***********************************************************/
 {
-    WResFileID          handle;
+    WResFileID          fid;
     WResDir             dir;
     bool                dup_discarded;
     WResDirWindow       wind;
@@ -77,13 +77,13 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    handle = RcIoOpenInput( full_filename, false );
-    if( handle == WRES_NIL_HANDLE ) {
+    fid = RcIoOpenInput( full_filename, false );
+    if( fid == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
 
-    error = WResReadDir( handle, dir, &dup_discarded );
+    error = WResReadDir( fid, dir, &dup_discarded );
     if( error ) {
         switch( LastWresStatus() ) {
         case WRS_BAD_SIG:
@@ -106,19 +106,19 @@ static bool copyResourcesFromRes( const char *full_filename )
     buffer = RCALLOC( BUFFER_SIZE );
     wind = WResFirstResource( dir );
     while( !WResIsEmptyWindow( wind ) ) {
-        copyAResource( handle, &wind, buffer, full_filename );
+        copyAResource( fid, &wind, buffer, full_filename );
         wind = WResNextResource( wind, dir );
     }
     RCFREE( buffer );
     WResFreeDir( dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return( false );
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
     WResFreeDir( dir );
-    if( handle != WRES_NIL_HANDLE )
-        RCCLOSE( handle );
+    if( fid != WRES_NIL_HANDLE )
+        RCCLOSE( fid );
     return( true );
 }
 

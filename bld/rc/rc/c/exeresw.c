@@ -192,8 +192,8 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 } /* addExeResRecord */
 
 static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
-            WResLangInfo *lang, WResResInfo *res, WResFileID reshandle,
-            WResFileID outhandle, int shift_count, int *err_code )
+            WResLangInfo *lang, WResResInfo *res, WResFileID res_fid,
+            WResFileID out_fid, int shift_count, int *err_code )
 /**********************************************************************/
 {
     RcStatus            ret;
@@ -203,14 +203,14 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
     align_amount = 0;   // shut up gcc
-    out_offset = RCTELL( outhandle );
+    out_offset = RCTELL( out_fid );
     if( out_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RCSEEK( outhandle, align_amount, SEEK_CUR ) == -1 ) {
+        if( RCSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -218,18 +218,18 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( ret == RS_OK ) {
-        if( RCSEEK( reshandle, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RCSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
     }
     if( ret == RS_OK ) {
-        ret = CopyExeData( reshandle, outhandle, lang->Length );
+        ret = CopyExeData( res_fid, out_fid, lang->Length );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RCTELL( outhandle ), shift_count );
-        ret = PadExeData( outhandle, align_amount );
+        align_amount = AlignAmount( RCTELL( out_fid ), shift_count );
+        ret = PadExeData( out_fid, align_amount );
         *err_code = errno;
     }
 
@@ -256,15 +256,15 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
     FullTypeRecord      *exe_type;
     WResResInfo         *res;
     WResLangInfo        *lang;
-    WResFileID          tmphandle;
-    WResFileID          reshandle;
+    WResFileID          tmp_fid;
+    WResFileID          res_fid;
     RcStatus            ret;
     int                 err_code;
 
     dir = Pass2Info.ResFile->Dir;
     restab = &(Pass2Info.TmpFile.u.NEInfo.Res);
-    tmphandle = Pass2Info.TmpFile.Handle;
-    reshandle = Pass2Info.ResFile->Handle;
+    tmp_fid = Pass2Info.TmpFile.fid;
+    res_fid = Pass2Info.ResFile->fid;
     ret = RS_OK;
     err_code = 0;
 
@@ -283,8 +283,8 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
         /* otherwise                                     --> do nothing */
 
         if( ARE_BITS_EQUAL( sect2mask, sect2bits, lang->MemoryFlags ) == sect2 ) {
-            ret = copyOneResource( restab, exe_type, lang, res, reshandle,
-                                    tmphandle, restab->Dir.ResShiftCount,
+            ret = copyOneResource( restab, exe_type, lang, res, res_fid,
+                                    tmp_fid, restab->Dir.ResShiftCount,
                                     &err_code );
         }
 
@@ -315,10 +315,10 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
  * writeTypeRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeTypeRecord( WResFileID handle, resource_type_record *res )
-/*****************************************************************************/
+static RcStatus writeTypeRecord( WResFileID fid, resource_type_record *res )
+/**************************************************************************/
 {
-    if( RCWRITE( handle, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
+    if( RCWRITE( fid, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -330,10 +330,10 @@ static RcStatus writeTypeRecord( WResFileID handle, resource_type_record *res )
  * writeResRecord-
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeResRecord( WResFileID handle, resource_record *type )
-/************************************************************************/
+static RcStatus writeResRecord( WResFileID fid, resource_record *type )
+/*********************************************************************/
 {
-    if( RCWRITE( handle, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
+    if( RCWRITE( fid, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -367,11 +367,11 @@ static void freeResTable( ResTable *restab )
  * writeStringBlock
  * NB when an error occurs this function must return without altering errno
  */
-static RcStatus writeStringBlock( WResFileID handle, StringsBlock *str )
-/**********************************************************************/
+static RcStatus writeStringBlock( WResFileID fid, StringsBlock *str )
+/*******************************************************************/
 {
     if( str->StringBlockSize > 0 ) {
-        if( RCWRITE( handle, str->StringBlock, str->StringBlockSize ) != str->StringBlockSize ) {
+        if( RCWRITE( fid, str->StringBlock, str->StringBlockSize ) != str->StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -382,8 +382,8 @@ static RcStatus writeStringBlock( WResFileID handle, StringsBlock *str )
  * WriteWINResTable
  * NB when an error occurs this function must return without altering errno
  */
-extern RcStatus WriteWINResTable( WResFileID handle, ResTable *restab, int *err_code )
-/************************************************************************************/
+extern RcStatus WriteWINResTable( WResFileID fid, ResTable *restab, int *err_code )
+/*********************************************************************************/
 {
     FullTypeRecord              *exe_type;
     FullResourceRecord          *exe_res;
@@ -391,29 +391,29 @@ extern RcStatus WriteWINResTable( WResFileID handle, ResTable *restab, int *err_
     uint_16                     zero;
 
     ret = RS_OK;
-    if( RCWRITE( handle, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+    if( RCWRITE( fid, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         ret = RS_WRITE_ERROR;
     }
 
     for( exe_type = restab->Dir.Head; exe_type != NULL && ret == RS_OK;
             exe_type = exe_type->Next ) {
-        ret = writeTypeRecord( handle, &(exe_type->Info) );
+        ret = writeTypeRecord( fid, &(exe_type->Info) );
 
         for( exe_res = exe_type->Head; exe_res != NULL && ret == RS_OK;
                 exe_res = exe_res->Next ) {
-            ret = writeResRecord( handle, &(exe_res->Info) );
+            ret = writeResRecord( fid, &(exe_res->Info) );
         }
     }
 
     if( ret == RS_OK ) {
         zero = 0;
-        if( RCWRITE( handle, &zero, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RCWRITE( fid, &zero, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             ret = RS_WRITE_ERROR;
         }
     }
 
     if( ret == RS_OK ) {
-        ret = writeStringBlock( handle, &(restab->Str) );
+        ret = writeStringBlock( fid, &(restab->Str) );
     }
     *err_code = errno;
     freeResTable( restab );

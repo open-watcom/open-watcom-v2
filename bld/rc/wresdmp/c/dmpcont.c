@@ -42,8 +42,8 @@
 #include "wresdefn.h"
 
 bool DumpContents( WResTypeInfo *type, WResResInfo *res,
-                    WResLangInfo *lang, WResFileID handle, uint_16 os )
-/*********************************************************************/
+                    WResLangInfo *lang, WResFileID fid, uint_16 os )
+/******************************************************************/
 {
     bool    error;
 
@@ -58,27 +58,27 @@ bool DumpContents( WResTypeInfo *type, WResResInfo *res,
         switch (type->TypeName.ID.Num) {
         case RESOURCE2INT( RT_MENU ):
             if( os == WRES_OS_WIN16 ) {
-                error = DumpMenu( lang->Offset, lang->Length, handle );
+                error = DumpMenu( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
             }
             break;
         case RESOURCE2INT( RT_DIALOG ):
             if( os == WRES_OS_WIN16 ) {
-                error = DumpDialog( lang->Offset, lang->Length, handle );
+                error = DumpDialog( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
             }
             break;
         case RESOURCE2INT( RT_GROUP_ICON ):
-            error = DumpIconGroup( lang->Offset, lang->Length, handle );
+            error = DumpIconGroup( lang->Offset, lang->Length, fid );
             break;
         case RESOURCE2INT( RT_GROUP_CURSOR ):
-            error = DumpCursorGroup( lang->Offset, lang->Length, handle );
+            error = DumpCursorGroup( lang->Offset, lang->Length, fid );
             break;
         case RESOURCE2INT( RT_STRING ):
             if( os == WRES_OS_WIN16 ) {
-                error = DumpString( lang->Offset, lang->Length, handle );
+                error = DumpString( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
             }

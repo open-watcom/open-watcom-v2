@@ -156,8 +156,8 @@ static char * MemFlagsOffList[16] = {
     NULL
 };
 
-static bool DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
-/***************************************************************************/
+static bool DumpResource( WResDirWindow wind, WResFileID fid, uint_16 os )
+/************************************************************************/
 {
     bool            error;
     char            resname[15];
@@ -189,7 +189,7 @@ static bool DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
     PrintUint16Flags( lang->MemoryFlags, MemFlagsOnList, MemFlagsOffList, 53 );
 
     if( CmdLineParms.DumpContents ) {
-        error = DumpContents( type, res, lang, handle, os );
+        error = DumpContents( type, res, lang, fid, os );
         if( error ) {
             return( true );
         }
@@ -199,8 +199,8 @@ static bool DumpResource( WResDirWindow wind, WResFileID handle, uint_16 os )
 }
 
 
-static int DumpDir( WResDir dir, WResFileID handle )
-/**************************************************/
+static int DumpDir( WResDir dir, WResFileID fid )
+/***********************************************/
 {
     int             retcode;
     bool            error;
@@ -215,13 +215,13 @@ static int DumpDir( WResDir dir, WResFileID handle )
         os = WResGetTargetOS( dir );
         wind = WResFirstResource( dir );
         while( !WResIsLastResource( wind, dir ) ) {
-            error = DumpResource( wind, handle, os );
+            error = DumpResource( wind, fid, os );
             if( error ) {
                 retcode = 2;
             }
             wind = WResNextResource( wind, dir );
         }
-        error = DumpResource( wind, handle, os );
+        error = DumpResource( wind, fid, os );
         if( error ) {
             retcode = 2;
         }
@@ -235,15 +235,15 @@ extern int DumpFile( void )
 {
     int             error;
     int             retcode;
-    WResFileID      handle;
+    WResFileID      fid;
     WResDir         dir;
 
-    handle = ResOpenFileRO( CmdLineParms.FileName );
-    if (handle == WRES_NIL_HANDLE) {
+    fid = ResOpenFileRO( CmdLineParms.FileName );
+    if( fid == WRES_NIL_HANDLE ) {
         return( 2 );
     }
 
-    if (WResIsWResFile( handle )) {
+    if( WResIsWResFile( fid ) ) {
         puts( "WATCOM format .RES file" );
     } else {
         puts( "MS format .RES file" );
@@ -254,7 +254,7 @@ extern int DumpFile( void )
         FatalError( "Out of memory" );
     }
 
-    error = WResReadDir( handle, dir, NULL );
+    error = WResReadDir( fid, dir, NULL );
     if (error) {
         puts( "Unable to read directory" );
         retcode = 2;
@@ -266,12 +266,12 @@ extern int DumpFile( void )
         }
         puts( "Type                  Name             Language     Flags" );
         puts( "====                  ====             ========     =====" );
-        retcode = DumpDir( dir, handle );
+        retcode = DumpDir( dir, fid );
     }
 
     WResFreeDir( dir );
 
-    ResCloseFile( handle );
+    ResCloseFile( fid );
 
     return( retcode );
 }

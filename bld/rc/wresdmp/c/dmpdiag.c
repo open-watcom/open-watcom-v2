@@ -110,8 +110,8 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
     PrintResNameOrOrd( control->Text );
 }
 
-bool DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
-/******************************************************************/
+bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
+/***************************************************************/
 {
     bool                error;
     WResFileOffset      prevpos;
@@ -121,11 +121,11 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
 
     length = length;
     head.NumOfItems = 0;
-    prevpos = RCSEEK( handle, offset, SEEK_SET );
+    prevpos = RCSEEK( fid, offset, SEEK_SET );
     error = ( prevpos == -1 );
 
     if( !error ) {
-        error = ResReadDialogBoxHeader( &head, handle );
+        error = ResReadDialogBoxHeader( &head, fid );
     }
     if( !error ) {
         PrintDialogBoxHeader( &head );
@@ -134,7 +134,7 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
     puts( "Controls:" );
 
     for( itemnum = 0; itemnum < head.NumOfItems && !error; itemnum++ ) {
-        error = ResReadDialogBoxControl( &control, handle );
+        error = ResReadDialogBoxControl( &control, fid );
         if( !error ) {
             printf( "   %3d. ", itemnum + 1 );
             PrintDialogBoxControl( &control );
@@ -149,7 +149,7 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID handle )
 
     ResFreeDialogBoxHeaderPtrs( &head );
 
-    RCSEEK( handle, prevpos, SEEK_SET );
+    RCSEEK( fid, prevpos, SEEK_SET );
 
     return( error );
 }

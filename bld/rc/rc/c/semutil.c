@@ -59,13 +59,13 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
 /*
  * CopyData -
  */
-RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID handle,
+RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
                 void *buff, unsigned buffsize, int *err_code )
 /***************************************************************************/
 {
     WResFileSSize   numread;
 
-    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -73,13 +73,13 @@ RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID handle,
     while( length > 0 ) {
         if( buffsize > length )
             buffsize = (unsigned)length;
-        numread = RCREAD( handle, buff, buffsize );
+        numread = RCREAD( fid, buff, buffsize );
         if( (WResFileSize)numread != buffsize ) {
             *err_code = errno;
-            return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
         length -= buffsize;
-        if( (WResFileSize)RCWRITE( CurrResFile.handle, buff, buffsize ) != buffsize ) {
+        if( (WResFileSize)RCWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }

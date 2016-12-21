@@ -35,19 +35,19 @@
 #include "global.h"
 #include "cmpres.h"
 
-static int CompareHeaders( WResFileID handle1, WResFileID handle2 )
-/*****************************************************************/
+static int CompareHeaders( WResFileID fid1, WResFileID fid2 )
+/***********************************************************/
 {
     int             error;
     int             retcode;
     WResHeader      header1;
     WResHeader      header2;
 
-    error = WResReadHeaderRecord( &header1, handle1 );
+    error = WResReadHeaderRecord( &header1, fid1 );
     if( error ) {
         return( -1 );
     }
-    error = WResReadHeaderRecord( &header2, handle2 );
+    error = WResReadHeaderRecord( &header2, fid2 );
     if( error ) {
         return( -1 );
     }
@@ -71,8 +71,8 @@ static int CompareHeaders( WResFileID handle1, WResFileID handle2 )
     return( retcode );
 }
 
-int CompareContents( WResFileID handle1, WResFileID handle2 )
-/***********************************************************/
+int CompareContents( WResFileID fid1, WResFileID fid2 )
+/*****************************************************/
 {
     int             retcode;        /* -1: error  0: same  1: different */
     int             oldretcode;
@@ -81,7 +81,7 @@ int CompareContents( WResFileID handle1, WResFileID handle2 )
     WResDir         dir1;
     WResDir         dir2;
 
-    retcode = CompareHeaders( handle1, handle2 );
+    retcode = CompareHeaders( fid1, fid2 );
     if( (retcode == -1) || (retcode == 1 && !CmdLineParms.CheckAll) ) {
         return( retcode );
     }
@@ -98,20 +98,20 @@ int CompareContents( WResFileID handle1, WResFileID handle2 )
         return( -1 );
     }
 
-    error = WResReadDir( handle1, dir1, &dup_discarded );
+    error = WResReadDir( fid1, dir1, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
-    error = WResReadDir( handle2, dir2, &dup_discarded );
+    error = WResReadDir( fid2, dir2, &dup_discarded );
     if( error || dup_discarded ) {
         WResFreeDir( dir1 );
         WResFreeDir( dir2 );
         return( -1 );
     }
 
-    retcode = CompareResources( handle1, dir1, handle2, dir2 );
+    retcode = CompareResources( fid1, dir1, fid2, dir2 );
 
     WResFreeDir( dir1 );
     WResFreeDir( dir2 );
