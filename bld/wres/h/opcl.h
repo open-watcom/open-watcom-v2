@@ -33,9 +33,11 @@
 #ifndef WRESOPEN_INCLUDED
 #define WRESOPEN_INCLUDED
 
-extern WResFileID   ResOpenNewFile( const char *filename );
+extern WResFileID   WResOpenNewFile( const char *filename );
+extern WResFileID   MResOpenNewFile( const char *filename );
 extern WResFileID   ResOpenFileRO( const char *filename );
 extern WResFileID   ResOpenFileRW( const char *filename );
+extern bool         WResFileInit( WResFileID );
 extern bool         ResCloseFile( WResFileID );
 extern bool         WResCheckWResFile( const char *filename );
 

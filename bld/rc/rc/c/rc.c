@@ -49,7 +49,7 @@
 #include "rccore.h"
 
 
-extern HANDLE_INFO  hInstance;
+extern HANDLE_INFO  Instance;
 
 WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
 
@@ -61,7 +61,7 @@ void InitGlobs( void )
     memset( &Pass2Info, 0, sizeof( RcPass2Info ) );
     ErrorHasOccured = false;
     memset( CharSetLen, 0, sizeof( CharSetLen ) );
-    memset( &hInstance, 0, sizeof( HANDLE_INFO ) );
+    memset( &Instance, 0, sizeof( HANDLE_INFO ) );
     TmpCtlInitStatics();
     Layer0InitStatics();
     SemanticInitStatics();
@@ -85,31 +85,35 @@ void InitGlobs( void )
 void FiniGlobs( void )
 /********************/
 {
-    FreeCharTable();
+    FiniTable();
     ScanParamShutdown();
 }
 
 static bool CreatePreprocFile( void )
 {
-    FILE        *fh;
+    WResFileID  handle;
     bool        error;
     int         ch;
+    char        ch1;
 
     error = false;
-    fh = fopen( CmdLineParms.OutResFileName, "wt" );
-    if( fh == NULL ) {
+    handle = RcOpen( CmdLineParms.OutResFileName, O_WRONLY | O_TEXT | O_CREAT | O_TRUNC, PMODE_RW );
+    if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
         error = true;
     } else {
-        while( (ch = RcIoGetChar()) != EOF ) {
-            if( fputc( ch, fh ) == EOF ) {
+        ch = RcIoGetChar();
+        while( ch != RC_EOF ) {
+            ch1 = (char)ch;
+            if( RcWrite( handle, &ch1, 1 ) != 1 ) {
                 RcError( ERR_WRITTING_FILE, CmdLineParms.OutResFileName, strerror( errno ) );
                 error = true;
             }
+            ch = RcIoGetChar();
         }
     }
-    if( fh != NULL )
-        fclose( fh );
+    if( handle != NIL_HANDLE )
+        RcClose( handle );
     return( error );
 }
 
@@ -179,7 +183,7 @@ void RCmain( void )
     bool    noerror = true;
 
 #if defined( __WATCOMC__ )
-#if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL
+#if ( !defined( BOOTSTRAP ) || !defined( __LINUX__ ) )   // temporary fix for bug in OW 1.9 CRTL 
 #if !defined( __OSI__ ) /* _grow_handles doesn't work yet */
     _grow_handles( 100 );
 #endif

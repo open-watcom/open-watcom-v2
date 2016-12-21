@@ -300,7 +300,7 @@ static ServerInfo **findServer( char *inst, DDETrackInfo *info )
     list = info->data;
     for( i = 0; i < info->cnt; i++ ) {
         if( list[i] != NULL ) {
-            if( strcmp( inst, list[i]->instname ) == 0 ) {
+            if( !strcmp( inst, list[i]->instname ) ) {
                 return( list + i );
             }
         }
@@ -368,7 +368,6 @@ static StringInfo *addStringInfo( MONHSZSTRUCT *info, DDETrackInfo *listinfo )
     ret->cnt = 1;
     ret->str = NULL;
 #ifdef __NT__
-  #ifndef _WIN64
     /* In NT 3.1, ret->str is a Unicode string. Otherwise it is ASCII. */
     ver = GetVersion();
     if( (ver & 0xFF) == 3 && (ver & 0xFF00) <= 0x0A00 ) {
@@ -381,7 +380,6 @@ static StringInfo *addStringInfo( MONHSZSTRUCT *info, DDETrackInfo *listinfo )
         ret->str = MemAlloc( len + 1 );
         wsprintf( ret->str, "%ls", info->str );
     }
-  #endif
 #endif
     if( ret->str == NULL ) {
         ret->str = MemAlloc( strlen( info->str ) + 1 );
@@ -766,8 +764,8 @@ static LinkInfo **findLinkInfo( DDETrackInfo *info, MONLINKSTRUCT *find )
             break;
         }
         if( cur->client == find->hConvClient && cur->server == find->hConvServer &&
-            stricmp( service, cur->service ) == 0 && stricmp( topic, cur->topic ) == 0 &&
-            stricmp( item, cur->item ) == 0 ) {
+            !stricmp( service, cur->service ) && !stricmp( topic, cur->topic ) &&
+            !stricmp( item, cur->item ) ) {
             return( (LinkInfo **)info->data + i );
         }
     }
@@ -871,7 +869,7 @@ static LinkInfo **findConvInfo( DDETrackInfo *info, MONCONVSTRUCT *find )
             break;
         }
         if( cur->client == find->hConvClient && cur->server == find->hConvServer &&
-            stricmp( service, cur->service ) == 0 && stricmp( topic, cur->topic ) == 0 ) {
+            !stricmp( service, cur->service ) && !stricmp( topic, cur->topic ) ) {
             return( (LinkInfo **)info->data + i );
         }
     }

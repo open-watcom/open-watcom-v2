@@ -38,10 +38,28 @@
 
 #include "clibext.h"
 
-HANDLE_INFO hInstance;
+HANDLE_INFO Instance;
 
 static unsigned MsgShift;               // 0 = english, 1000 for japanese
+static bool     res_failure = true;
 
+
+/***************************************************************************/
+/*  Special seek routine, because resource file does not start at offset 0 */
+/*  of wgml.exe                                                            */
+/***************************************************************************/
+
+static long res_seeek( WResFileID handle, long position, int where )
+/******************************************************************/
+{
+    if( where == SEEK_SET ) {
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( handle, position, where ) );
+    }
+}
+
+WResSetRtns( open, close, read, write, res_seeek, tell, mem_alloc, mem_free );
 
 /***************************************************************************/
 /*  initialize messages from resource file                                 */
@@ -51,15 +69,19 @@ bool init_msgs( void )
 {
     char        fname[_MAX_PATH];
 
-    hInstance.status = 0;
-    if( _cmdname( fname ) != NULL && OpenResFile( &hInstance, fname ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
-            return( true );
+    Instance.handle = NIL_HANDLE;
+    if( _cmdname( fname ) != NULL && !OpenResFile( &Instance, fname ) ) {
+        res_failure = false;
+        if( !FindResources( &Instance ) && !InitResources( &Instance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( get_msg( ERR_DUMMY, fname, sizeof( fname ) ) ) {
+                return( true );
+            }
         }
+        fini_msgs();
     }
-    CloseResFile( &hInstance );
     out_msg( "Resources not found\n" );
+    res_failure = true;
     g_suicide();
     return( false );
 }
@@ -69,9 +91,9 @@ bool init_msgs( void )
 /*  get a msg text string                                                  */
 /***************************************************************************/
 
-bool get_msg( msg_ids resid, char *buff, int buff_len )
+bool get_msg( msg_ids resid, char *buff, size_t buff_len )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resid + MsgShift, buff, buff_len ) <= 0 ) {
+    if( res_failure || WResLoadString( &Instance, resid + MsgShift, buff, buff_len ) <= 0 ) {
         buff[0] = '\0';
         return( false );
     }
@@ -84,5 +106,8 @@ bool get_msg( msg_ids resid, char *buff, int buff_len )
 
 void fini_msgs( void )
 {
-    CloseResFile( &hInstance );
+    if( Instance.handle != NIL_HANDLE ) {
+        CloseResFile( &Instance );
+        Instance.handle = NIL_HANDLE;
+    }
 }

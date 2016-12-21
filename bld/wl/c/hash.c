@@ -37,9 +37,6 @@
 #include "bool.h"
 #include "debug.h"
 
-
-#define HASH_MULT   101
-
 /* ----------------------------------------------------------------------- */
 pHTable CreateHTable( int size, pHashFunc hashFunc, pHashElemCmp compareFunc,
     pAllocFunc allocFunc, pFreeFunc freeFunc )
@@ -154,9 +151,9 @@ int WalkHTableElem( pHTable table, void *elem, void (*action)( void * ) )
 /* ----------------------------------------------------------------------- */
 void WalkHTableCookie( pHTable table, void (*action)( void *, void *), void *cookie )
 {
-    unsigned    i;
-    pHTElem     *tblPtr = table->tbl;
-    pHTElem     tblElem;
+    int i;
+    pHTElem *tblPtr = table->tbl;
+    pHTElem tblElem;
 
     if( action == NULL ) {
         return;
@@ -172,9 +169,9 @@ void WalkHTableCookie( pHTable table, void (*action)( void *, void *), void *coo
 void WalkHTable( pHTable table, void (*action)( void * ) )
 {
     /* For speed, do not use WalkHTableCookie */
-    unsigned    i;
-    pHTElem     *tblPtr = table->tbl;
-    pHTElem     tblElem;
+    int i;
+    pHTElem *tblPtr = table->tbl;
+    pHTElem tblElem;
 
     if( action == NULL ) {
         return;
@@ -190,10 +187,10 @@ void WalkHTable( pHTable table, void (*action)( void * ) )
 /* ----------------------------------------------------------------------- */
 void RehashHTable( pHTable table )
 {
-    unsigned    i;
-    pHTElem     *tbl;
-    pHTElem     elem, *pelem;
-    unsigned    hash;
+    int i;
+    pHTElem *tbl;
+    pHTElem elem, *pelem;
+    unsigned hash;
 
     tbl = table->tbl;
     for( i = 0; i < table->size; i++ ) {
@@ -216,10 +213,10 @@ void RehashHTable( pHTable table )
 /* ----------------------------------------------------------------------- */
 void ZapHTable( pHTable table, void (*zapElemAction)( void * ) )
 {
-    unsigned    i;
-    pHTElem     *tblPtr;
-    pHTElem     tblElem, temp;
-    pFreeFunc   free;
+    int i;
+    pHTElem *tblPtr;
+    pHTElem tblElem, temp;
+    pFreeFunc free;
 
     if( table == NULL ) {
         return;
@@ -257,12 +254,13 @@ long GetHTableNumOfElems(pHTable table)
 /* ----------------------------------------------------------------------- */
 unsigned StringHashFunc( char *s, unsigned size )
 {
-    unsigned long   key = 0;
-    unsigned        i;
+    enum { b = 101 };
+    unsigned long key = 0;
+    int i;
 
     for( i = 0; s[i] != 0; i++ ) {
         key += s[i];
-        key *= HASH_MULT;
+        key *= b;
     }
 
     key = key & (size - 1);
@@ -273,13 +271,14 @@ unsigned StringHashFunc( char *s, unsigned size )
 /* ----------------------------------------------------------------------- */
 unsigned StringiHashFunc( void *_s, unsigned size )
 {
-    char            *s = _s;
-    unsigned long   key = 0;
-    unsigned        i;
+    char *s = _s;
+    enum { b = 101 };
+    unsigned long key = 0;
+    int i;
 
     for( i = 0; s[i] != 0; i++ ) {
         key += toupper( s[i] );
-        key *= HASH_MULT;
+        key *= b;
     }
 
     key = key & (size - 1);
@@ -290,12 +289,13 @@ unsigned StringiHashFunc( void *_s, unsigned size )
 /* ----------------------------------------------------------------------- */
 unsigned DataHashFunc( void *data, unsigned n, unsigned size )
 {
-    unsigned long   key = 0;
-    unsigned        i;
+    enum { b = 101 };
+    unsigned long key = 0;
+    int i;
 
     for( i = 0; i < n; i++ ) {
         key += ((char*)data)[i];
-        key *= HASH_MULT;
+        key *= b;
     }
 
     key = key & (size - 1);
@@ -312,10 +312,9 @@ unsigned PtrHashFunc( void *p, unsigned size )
 /* ----------------------------------------------------------------------- */
 void CollectHTableDistribution( pHTable table, unsigned *stat )
 {
-    unsigned    i;
-    unsigned    n;
-    pHTElem     *tblPtr = table->tbl;
-    pHTElem     tblElem;
+    int i, n;
+    pHTElem *tblPtr = table->tbl;
+    pHTElem tblElem;
 
     for( i = 0; i < table->size; i++ ) {
         n = 0;

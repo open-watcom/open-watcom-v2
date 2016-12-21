@@ -106,10 +106,7 @@ WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 mp1, WP
 {
     HMENU               sysmenu;
     WPI_RECT            rcpal;
-    WPI_RECTDIM         left;
-    WPI_RECTDIM         right;
-    WPI_RECTDIM         top;
-    WPI_RECTDIM         bottom;
+    IMGED_DIM           left, right, top, bottom;
     static HMENU        menu;
     static HWND         hframe;
 

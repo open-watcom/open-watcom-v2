@@ -124,8 +124,8 @@ long            PageLen;
 static OBJECT_REC   *Rec1;
 static bool         Easy32;
 static bool         MakeUnsafe;
-static omf_index    NameIndex;
-static omf_index    SegIndex;
+static unsigned     NameIndex;
+static unsigned     SegIndex;
 static byte         SubTotal = 0;
 static byte         *OutputBuffer;
 static size_t       InBuffer = 0;
@@ -242,8 +242,8 @@ static void proclnames( void )
     WriteRecord();
 }
 
-static bool MatchIndex( name_list *list, omf_index index )
-/********************************************************/
+static bool MatchIndex( name_list *list, unsigned index )
+/*******************************************************/
 {
     for( ; list != NULL; list = list->next ) {
         if( list->lnameidx == index ) {
@@ -267,8 +267,8 @@ static void procsegdef( bool is386 )
 /**********************************/
 {
     byte            acbp;
-    omf_index       segidx;
-    omf_index       classidx;
+    unsigned        segidx;
+    unsigned        classidx;
     const byte      *dataloc;
     byte            onebyte;
     unsigned long   fourbytes;
@@ -314,7 +314,7 @@ static void procsegdef( bool is386 )
 static void ProcDataRec( bool is386 )
 /***********************************/
 {
-    omf_index       segidx;
+    unsigned        segidx;
     const byte      *dataloc;
     exclude_list    *exclude;
     unsigned long   offset;
@@ -384,11 +384,11 @@ void ProcessRec( void )
     }
 }
 
-omf_index GetIndex( const byte **rec )
-/************************************/
+unsigned GetIndex( const byte **rec )
+/***********************************/
 {
     const byte  *ptr;
-    omf_index   index;
+    ushort      index;
 
     ptr = *rec;
     index = *ptr;
@@ -403,8 +403,8 @@ omf_index GetIndex( const byte **rec )
     return( index );
 }
 
-rec_status ReadRec( void )
-/************************/
+int ReadRec( void )
+/*****************/
 {
     size_t  len;
     size_t  to_read;
@@ -487,8 +487,8 @@ void FlushBuffer( void )
     }
 }
 
-void IndexRecord( omf_index index )
-/*********************************/
+void IndexRecord( unsigned index )
+/********************************/
 // note this assumes the intel byte ordering
 {
     byte        onebyte;
@@ -500,7 +500,7 @@ void IndexRecord( omf_index index )
         AddToSubTotal( &twobytes, 2 );
         BuildRecord( &twobytes, 2 );
     } else {
-        onebyte = (byte)index;
+        onebyte = index;
         AddToSubTotal( &onebyte, 1 );
         BuildRecord( &onebyte, 1 );
     }

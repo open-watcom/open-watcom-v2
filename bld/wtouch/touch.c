@@ -116,13 +116,13 @@ static void writeStr( char *p )
     size_t len;
 
     len = strlen( p );
-    posix_write( STDOUT_FILENO, p, len );
+    write( STDOUT_FILENO, p, len );
 }
 
 static void newLine( void )
 /*************************/
 {
-    posix_write( STDOUT_FILENO, "\r\n", 2 );
+    write( STDOUT_FILENO, "\r\n", 2 );
 }
 
 static void writeMsg( int msgnum, char *p )

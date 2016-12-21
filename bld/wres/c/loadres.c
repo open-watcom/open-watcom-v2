@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Load resources from file.
+* Description:  Load resources from file. 
 *
 ****************************************************************************/
 
@@ -33,27 +33,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <stdlib.h>
 #include "wresall.h"
 #include "walloca.h"
 #include "wresset2.h"
 #include "loadstr.h"
 #include "wresrtns.h"
 #include "layer2.h"
-#include "wresdefn.h"
 
+#define WRES_IS_INTRESOURCE(x) ((((pointer_int)(x)) >> 16) == 0)
 
-static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer )
+extern WResDir    MainDir;
+
+static int GetResource( WResLangInfo *res, PHANDLE_INFO hInstance, char *res_buffer )
 /***********************************************************************************/
 {
-    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hInstance->handle, res->Offset, SEEK_SET ) == -1 )
         return( -1 );
-    WRESREAD( hinfo->fid, res_buffer, res->Length );
+    WRESREAD( hInstance->handle, res_buffer, res->Length );
     return( 0 );
 }
 
-int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
-                       WResID *resource_id, lpstr *lpszBuffer, size_t *bufferSize )
-/*********************************************************************************/
+int WResLoadResource2( WResDir dir, PHANDLE_INFO hInstance, WResID *resource_type,
+                       WResID *resource_id, LPSTR *lpszBuffer, int *bufferSize )
+/******************************************************************************/
 {
     int                 retcode;
     WResDirWindow       wind;
@@ -74,27 +77,25 @@ int WResLoadResource2( WResDir dir, PHANDLE_INFO hinfo, WResID *resource_type,
         retcode = -1;
     } else {
         res = WResGetLangInfo( wind );
-#ifdef _M_I86
         // lets make sure we dont perturb malloc into apoplectic fits
-        if( res->Length > (size_t)(-1LL) ) {
+        if( res->Length >= INT_MAX ) {
             return( -1 );
         }
-#endif
         res_buffer  = WRESALLOC( res->Length );
         *lpszBuffer = res_buffer;
         if( *lpszBuffer == NULL ) {
             return( -1 );
         }
-        *bufferSize = (size_t)res->Length;
-        retcode = GetResource( res, hinfo, res_buffer );
+        *bufferSize = (int)res->Length;
+        retcode = GetResource( res, hInstance, res_buffer );
     }
 
     return( retcode );
 }
 
-int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
-                                        lpstr *lpszBuffer, size_t *bufferSize )
-/*****************************************************************************/
+int WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource,
+                                        LPSTR *lpszBuffer, int *bufferSize )
+/**************************************************************************/
 {
     WResID              resource_type;
     WResID              resource_id;
@@ -102,5 +103,45 @@ int WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource,
     WResInitIDFromNum( idResource, &resource_id );
     WResInitIDFromNum( idType, &resource_type );
 
-    return( WResLoadResource2( MainDir, hinfo, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
+    return( WResLoadResource2( MainDir, hInstance, &resource_type, &resource_id, lpszBuffer, bufferSize ) );
+}
+
+int WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource,
+                                    LPSTR *lpszBuffer, int *bufferSize )
+/*************************************************************************/
+{
+    WResID              *resource_type;
+    WResID              *resource_id;
+    int                 rc;
+
+    if( WRES_IS_INTRESOURCE( idResource ) ) {
+        resource_id = WResIDFromNum( (unsigned short)(pointer_int)idResource );
+    } else {
+#if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+        char    *str;
+        str = WRESALLOC( _fstrlen( idResource ) + 1 );
+        _fstrcpy( str, idResource );
+        resource_id = WResIDFromStr( str );
+        WRESFREE( str );
+#else
+        resource_id = WResIDFromStr( idResource );
+#endif
+    }
+    if( WRES_IS_INTRESOURCE( idType ) ) {
+        resource_type = WResIDFromNum( (unsigned short)(pointer_int)idType );
+    } else {
+#if defined( _M_I86 ) && ( defined( __SMALL__ ) || defined( __MEDIUM__ ) )
+        char    *str;
+        str = WRESALLOC( _fstrlen( idType ) + 1 );
+        _fstrcpy( str, idType );
+        resource_type = WResIDFromStr( str );
+        WRESFREE( str );
+#else
+        resource_type = WResIDFromStr( idType );
+#endif
+    }
+    rc = WResLoadResource2( MainDir, hInstance, resource_type, resource_id, lpszBuffer, bufferSize );
+    WResIDFree( resource_type );
+    WResIDFree( resource_id );
+    return( rc );
 }

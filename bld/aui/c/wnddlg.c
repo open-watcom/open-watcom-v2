@@ -32,12 +32,8 @@
 #include "auipvt.h"
 #include "guidlg.h"
 #include "wnddlg.h"
-#include "watcom.h"
-#include "wresdefn.h"
-
 
 #define MAX_DLG_NESTS   5
-
 static gui_window       *Parents[MAX_DLG_NESTS];
 static GUICALLBACK      *Routines[MAX_DLG_NESTS];
 static int              Nested = -1;
@@ -101,10 +97,10 @@ static gui_create_info ResDialog = {
     NULL                                // Menu Resource
 };
 
-void ResDlgOpen( GUICALLBACK *rtn, void *extra, int dlg_id )
+void ResDlgOpen( GUICALLBACK *rtn, void *extra, res_name_or_id dlg_id )
 {
     ResDialog.parent = DlgGetParent();
     Routines[Nested + 1] = rtn;
     ResDialog.extra = extra;
-    GUICreateResDialog( &ResDialog, MAKEINTRESOURCE( dlg_id ) );
+    GUICreateResDialog( &ResDialog, dlg_id );
 }

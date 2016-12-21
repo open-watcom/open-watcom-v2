@@ -53,13 +53,33 @@
 
 #include "clibext.h"
 
-
 #define NO_RES_MESSAGE "could not open message resource file"
 
 static  HANDLE_INFO     hInstance = { 0 };
 static  unsigned        MsgShift;
+static  bool            res_failure = true;
 
 static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args );
+
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
+/*************************************************************************************/
+{
+    if( ( where == SEEK_SET ) && ( handle == hInstance.handle ) ) {
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( handle, position, where ) );
+    }
+}
+
+#ifdef _WIN64
+#define posix_read      __w64_read
+#define posix_write     __w64_write
+#else
+#define posix_read      read
+#define posix_write     write
+#endif
+
+WResSetRtns( open, close, posix_read, posix_write, res_seek, tell, RCALLOC, RCFREE );
 
 bool InitMsg( void )
 {
@@ -70,6 +90,7 @@ bool InitMsg( void )
     char        *imageName;
 #endif
 
+    hInstance.handle = NIL_HANDLE;
 #if defined( IDE_PGM )
     _cmdname( imageName );
 #elif !defined( __WATCOMC__ )
@@ -78,21 +99,25 @@ bool InitMsg( void )
     imageName = _LpDllName;;
 #endif
     BannerPrinted = false;
-    hInstance.status = 0;
-    if( OpenResFile( &hInstance, imageName ) ) {
-        MsgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
-            return( true );
+    if( !OpenResFile( &hInstance, imageName ) ) {
+        res_failure = false;
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            MsgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( Msg_Get( MSG_GENERAL_HELP_0, msg_buff ) ) {
+                return( true );
+            }
         }
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
     }
-    CloseResFile( &hInstance );
     WriteStdOutInfo( NO_RES_MESSAGE, ERR, NULL );
+    res_failure = true;
     return( false );
 }
 
 bool Msg_Get( int resourceid, char *buffer )
 {
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + MsgShift, (lpstr)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + MsgShift, (LPSTR)buffer, RESOURCE_MAX_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -155,10 +180,10 @@ static void Msg_Add_Arg( MSG_ARG *arginfo, char typech, va_list *args )
         break;
     case 'x':
     case 'd':
-        arginfo->int_16 = (signed_16)va_arg( *args, unsigned int );
+        arginfo->int_16 = va_arg( *args, unsigned int );
         break;
     case 'l':
-        arginfo->int_32 = (signed_32)va_arg( *args, unsigned long );
+        arginfo->int_32 = va_arg( *args, unsigned long );
         break;
     case 'A':
     case 'a':
@@ -183,5 +208,13 @@ void Msg_Write_Map( int resourceid, ... )
 
 bool FiniMsg( void )
 {
-    return( CloseResFile( &hInstance ) );
+    bool    retcode = true;
+
+    if( !res_failure ) {
+        if( CloseResFile( &hInstance ) ) {
+            res_failure = true;
+            retcode = false;
+        }
+    }
+    return( retcode );
 }

@@ -43,11 +43,20 @@ WResFileID ResOpenFileRO( const char *filename )
 /**********************************************/
 /* use this function to open Microsoft .RES files also */
 {
-    WResFileID  fid;
+    WResFileID  ret;
 
-    fid = WRESOPEN( filename, WRES_OPEN_RO );
-    if( fid == WRES_NIL_HANDLE ) {
+#if defined( __WATCOMC__ ) && defined( __QNX__ )
+    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
+    ret = WRESOPEN( filename, O_RDONLY, PMODE_RW );
+    if( ret == NIL_HANDLE ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
-    return( fid );
+    setmode( ret, O_BINARY );
+#else
+    ret = WRESOPEN( filename, O_RDONLY | O_BINARY, PMODE_RW );
+    if( ret == NIL_HANDLE ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    }
+#endif
+    return( ret );
 }

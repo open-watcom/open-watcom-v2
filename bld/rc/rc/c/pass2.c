@@ -43,8 +43,6 @@
 #include "exelxobj.h"
 #include "exereslx.h"
 
-#include "clibext.h"
-
 
 /*
  * copyStubFile - copy from the begining of the file to the start of
@@ -131,12 +129,12 @@ static int computeShiftCount( void )
     filelen += ComputeSegmentSize( Pass2Info.OldFile.Handle,
                     &(tmp->Seg), old->WinHead.align );
     if( ! CmdLineParms.NoResFile ) {
-        filelen += ComputeWINResourceSize( Pass2Info.ResFile->Dir );
+        filelen += ComputeWINResourceSize( Pass2Info.ResFiles->Dir );
     }
 
     num_segs = old->WinHead.segments;
     if( ! CmdLineParms.NoResFile ) {
-        num_segs += WResGetNumResources( Pass2Info.ResFile->Dir );
+        num_segs += WResGetNumResources( Pass2Info.ResFiles->Dir );
     }
 
     shift_count = FindShiftCount( filelen, num_segs );

@@ -86,7 +86,7 @@ void SemWriteRawDataItem( RawDataItem item )
 }
 
 RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID handle,
-                         void *buff, unsigned buffsize, int *err_code )
+                         void *buff, int buffsize, int *err_code )
 /****************************************************************/
 {
     WResFileSSize   numread;
@@ -133,8 +133,8 @@ ResLocation SemCopyRawFile( const char *filename )
     if( AddDependency( full_filename ) )
         goto HANDLE_ERROR;
 
-    handle = RcIoOpenInput( full_filename, false );
-    if( handle == WRES_NIL_HANDLE ) {
+    handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
+    if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }

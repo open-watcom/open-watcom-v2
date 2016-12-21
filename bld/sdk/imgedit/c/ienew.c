@@ -310,11 +310,11 @@ int NewImage( int img_type, char *filename )
     // then guess based on the file extesion.
     if( filename != NULL && img_type == UNDEF_IMG ) {
         _splitpath( filename, NULL, NULL, NULL, ext );
-        if( stricmp( ext, ".bmp" ) == 0 ) {
+        if( !stricmp( ext, ".bmp" ) ) {
             img_type = BITMAP_IMG;
-        } else if( stricmp( ext, ".ico" ) == 0 ) {
+        } else if( !stricmp( ext, ".ico" ) ) {
             img_type = ICON_IMG;
-        } else if( stricmp( ext, ".cur" ) == 0 ) {
+        } else if( !stricmp( ext, ".cur" ) ) {
             img_type = CURSOR_IMG;
         }
     }

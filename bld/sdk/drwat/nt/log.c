@@ -205,17 +205,14 @@ static void logSysInfo( bool wasfault )
     bufsize = sizeof( name );
     GetUserName( name, &bufsize );
     logPrintf( STR_USER_NAME, name );
-#ifndef _WIN64
+
     ver = GetVersion();
-  #ifdef CHICAGO          // TEMPORARY FIX UNTIL WE CAN CHECK FOR WIN 95
+#ifdef CHICAGO          // TEMPORARY FIX UNTIL WE CAN CHECK FOR WIN 95
     logPrintf( STR_OPERATING_SYSTEM, "Windows 95" );
-  #else
-    logPrintf( STR_OPERATING_SYSTEM, IsNT( ver ) ? "Windows NT":"Win32s" );
-  #endif
-    logPrintf( STR_OS_VERSION, (int)GetMajVer( ver ), (int)GetMinVer( ver ) );
 #else
-    logPrintf( STR_OPERATING_SYSTEM, "Windows NT 64-bit" );
+    logPrintf( STR_OPERATING_SYSTEM, IsNT( ver ) ? "Windows NT":"Win32s" );
 #endif
+    logPrintf( STR_OS_VERSION, (int)GetMajVer( ver ), (int)GetMinVer( ver ) );
     GetSystemInfo( &sysinfo );
 
     str = SrchMsg( sysinfo.dwProcessorType, ProcessorNames, NULL );

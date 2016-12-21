@@ -35,9 +35,6 @@
 #include "wio.h"
 #include "print.h"
 
-#include "clibext.h"
-
-
 static int CurrentDest;
 
 void ChangePrintDest( int dest )
@@ -47,5 +44,5 @@ void ChangePrintDest( int dest )
 
 void Print( const char *string )
 {
-    posix_write( CurrentDest, string, strlen( string ) );
+    write( CurrentDest, string, (unsigned)strlen( string ) );
 }

@@ -24,14 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  OS/2 Linear Executable (LE/LX) and
+* Description:  OS/2 Linear Executable (LE/LX) and 
 *               Windows VxD (LE) format structures.
 *
 ****************************************************************************/
 
 
 #ifndef _EXEFLAT_H
-#define _EXEFLAT_H
 
 #include "pushpck1.h"
 
@@ -292,8 +291,6 @@ typedef struct flat_res_table {
     unsigned_32    offset;
 } flat_res_table;
 
-#include "poppck.h"
-
 /* fixup record flags */
 
 #define OSF_SOURCE_LIST     0x20
@@ -307,5 +304,8 @@ typedef struct flat_res_table {
 #define OSF_OBJ_ORD         0x40
 #define OSF_ORD_FLAG        0x80
 
+#include "poppck.h"
+
+#define _EXEFLAT_H
 #endif
 

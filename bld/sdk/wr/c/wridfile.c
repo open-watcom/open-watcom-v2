@@ -51,7 +51,7 @@
 /* static function prototypes                                               */
 /****************************************************************************/
 static WRFileType WRIdentifyRESFile( const char * );
-static WRFileType WRIdentifyEXEFile( const char *, bool );
+static WRFileType WRIdentifyEXEFile( int, int );
 static WRFileType WRIdentifyWinBMPFile( const char * );
 static WRFileType WRIdentifyWinICOFile( const char * );
 static WRFileType IDIconOrCursor( FILE * );
@@ -66,41 +66,55 @@ bool WRAPI WRIs32Bit( WRFileType ftype )
     return( false );
 }
 
-WRFileType WRAPI WRIdentifyFile( const char *fname )
+WRFileType WRAPI WRIdentifyFile( const char *file )
 {
     WRFileType  ftype;
     char        ext[_MAX_EXT];
+    WResFileID  fh;
     bool        ok;
 
-    ok = ( fname != NULL );
+    fh = -1;
+
+    ok = (file != NULL);
+
     if( ok ) {
-        _splitpath( fname, NULL, NULL, NULL, ext );
-        if( stricmp( ext, ".bmp" ) == 0 ) {
-            ftype = WRIdentifyWinBMPFile( fname );
-        } else if( stricmp( ext, ".cur" ) == 0 ) {
-            ftype = WRIdentifyWinICOFile( fname );
-        } else if( stricmp( ext, ".ico" ) == 0 ) {
-            ftype = WRIdentifyWinICOFile( fname );
-        } else if( stricmp( ext, ".dlg" ) == 0 ) {
-            //ftype = WRIdentifyWinRCFile( fname );
+        _splitpath( file, NULL, NULL, NULL, ext );
+        if( !stricmp( ext, ".bmp" ) ) {
+            ftype = WRIdentifyWinBMPFile( file );
+        } else if( !stricmp( ext, ".cur" ) ) {
+            ftype = WRIdentifyWinICOFile( file );
+        } else if( !stricmp( ext, ".ico" ) ) {
+            ftype = WRIdentifyWinICOFile( file );
+        } else if( !stricmp( ext, ".dlg" ) ) {
+            //ftype = WRIdentifyWinRCFile( file );
             ftype = WR_WIN_RC_DLG;
-        } else if( stricmp( ext, ".rc" ) == 0 ) {
-            ftype = WRIdentifyWinRCFile( fname );
-        } else if( stricmp( ext, ".str" ) == 0 ) {
+        } else if( !stricmp( ext, ".rc" ) ) {
+            ftype = WRIdentifyWinRCFile( file );
+        } else if( !stricmp( ext, ".str" ) ) {
             ftype = WR_WIN_RC_STR;
-        } else if( stricmp( ext, ".mnu" ) == 0 ) {
+        } else if( !stricmp( ext, ".mnu" ) ) {
             ftype = WR_WIN_RC_MENU;
-        } else if( stricmp( ext, ".acc" ) == 0 ) {
+        } else if( !stricmp( ext, ".acc" ) ) {
             ftype = WR_WIN_RC_ACCEL;
-        } else if( stricmp( ext, ".res" ) == 0 ) {
-            ftype = WRIdentifyRESFile( fname );
-        } else if( stricmp( ext, ".exe" ) == 0 ) {
-            ftype = WRIdentifyEXEFile( fname, false );
-        } else if( stricmp( ext, ".dll" ) == 0 ) {
-            ftype = WRIdentifyEXEFile( fname, true );
+        } else if( !stricmp( ext, ".res" ) ) {
+            ftype = WRIdentifyRESFile( file );
+        } else if( !stricmp( ext, ".exe" ) ) {
+            ok = ((fh = ResOpenFileRO( file )) != -1);
+            if( ok ) {
+                ftype = WRIdentifyEXEFile( fh, FALSE );
+            }
+        } else if( !stricmp( ext, ".dll" ) ) {
+            ok = ((fh = ResOpenFileRO( file )) != -1);
+            if ( ok ) {
+                ftype = WRIdentifyEXEFile( fh, TRUE );
+            }
         } else {
             ok = false;
         }
+    }
+
+    if( fh != -1 ) {
+        ResCloseFile( fh );
     }
 
     if( ok ) {
@@ -155,33 +169,28 @@ WRFileType WRIdentifyRESFile( const char *file )
     }
 }
 
-WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
+WRFileType WRIdentifyEXEFile( int fh, int is_dll )
 {
     os2_exe_header  os2_hdr;
     exe_pe_header   pe_hdr;
     WRFileType      ftype;
-    WResFileID      fid;
 
     ftype = WR_INVALID_FILE;
 
-    fid = ResOpenFileRO( fname );
-    if ( fid != WRES_NIL_HANDLE ) {
-        if( WRReadWin16ExeHeader( fid, &os2_hdr ) != 0 ) {
-            if( is_dll ) {
-                ftype = WR_WIN16_DLL;
-            } else {
-                ftype = WR_WIN16_EXE;
-            }
+    if( WRReadWin16ExeHeader( fh, &os2_hdr ) != 0 ) {
+        if( is_dll ) {
+            ftype = WR_WIN16_DLL;
         } else {
-            if( WRReadWinNTExeHeader( fid, &pe_hdr ) != 0 ) {
-                if( is_dll ) {
-                    ftype = WR_WINNT_DLL;
-                } else {
-                    ftype = WR_WINNT_EXE;
-                }
+            ftype = WR_WIN16_EXE;
+        }
+    } else {
+        if( WRReadWinNTExeHeader( fh, &pe_hdr ) != 0 ) {
+            if( is_dll ) {
+                ftype = WR_WINNT_DLL;
+            } else {
+                ftype = WR_WINNT_EXE;
             }
         }
-        ResCloseFile( fid );
     }
 
     return( ftype );

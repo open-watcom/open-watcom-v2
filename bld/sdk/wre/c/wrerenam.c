@@ -49,8 +49,6 @@
 #include "wrdll.h"
 #include "wresall.h"
 #include "jdlg.h"
-#include "wresdefn.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -88,7 +86,7 @@ bool WRERenameResource( void )
     ok = WREGetCurrentResource( &curr );
 
     if( ok ) {
-        if( curr.info->current_type == RESOURCE2INT( RT_STRING ) ) {
+        if( curr.info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             WREDisplayErrorMsg( WRE_NORENAMESTRINGS );
             ok = false;
         }

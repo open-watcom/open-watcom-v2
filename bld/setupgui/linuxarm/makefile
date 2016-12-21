@@ -3,4 +3,4 @@
 host_os  = linux
 host_cpu = arm
 
-!include ../master.mif
+!include ../setup.mif

@@ -47,8 +47,6 @@
 #include "wde_rc.h"
 #include "jdlg.h"
 #include "wrdll.h"
-#include "wresdefn.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -691,7 +689,7 @@ void WdeFindClassInCustLibControls( char *class, LIST **list, LIST *control_list
     if( control_list != NULL ) {
         for( clist = control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeCustControl *)ListElement( clist );
-            if( stricmp( class, control->control_info.ms.szClass ) == 0 ) {
+            if( !stricmp( class, control->control_info.ms.szClass ) ) {
                 ListAddElt( list, (void *)control );
             }
         }
@@ -754,87 +752,76 @@ BOOL WdeQueryAssumeMS( void )
 
 WINEXPORT HGLOBAL CALLBACK WdeCustLOADRES( LPCSTR type_name, LPCSTR res_name )
 {
-    HGLOBAL     res;
-    HRSRC       hres;
-    HINSTANCE   inst;
-    uint_32     res_int;
-    char        out[160];
-    bool        strange;
-    bool        unknown;
-    bool        unhandled;
+    HGLOBAL   res;
+    HRSRC     hres;
+    HINSTANCE inst;
+    BOOL      strange;
+    uint_32   res_int;
+    char      out[160];
 
     sprintf( out, "Request to load type:%lu res:%lu",
-             (unsigned long)type_name, (unsigned long)res_name );
+             (uint_32)type_name, (uint_32)res_name );
     WdeWriteTrail( out );
 
     inst = WdeGetAppInstance();
 
-    strange = false;
-    unknown = false;
-    unhandled = false;
+    strange = FALSE;
 
     hres = (HRSRC)NULL;
     res  = (HGLOBAL)NULL;
 
-    if( IS_INTRESOURCE( type_name ) ) {
-        switch( RESOURCE2INT( type_name ) ) {
-        case RESOURCE2INT( RT_CURSOR ):
-            strange = true;
-            res = (HRSRC)LoadCursor( inst, res_name );
-            break;
-    
-        case RESOURCE2INT( RT_BITMAP ):
-            if( !IS_INTRESOURCE( res_name ) || !WdeIsBorBtnIDSupported( RESOURCE2INT( res_name ) % 1000 ) ) {
-                res_int = (uint_32)res_name;
-                res_name = MAKEINTRESOURCE( res_int - (res_int % 1000) + WDE_PREVIEW_ID );
-            }
-            hres = FindResource( inst, res_name, type_name );
-            if( hres != NULL ) {
-                res = LoadResource( inst, hres );
-            }
-            break;
-    
-        case RESOURCE2INT( RT_ICON ):
-            strange = true;
-            res = (HRSRC)LoadIcon( inst, res_name );
-            break;
-    
-        case RESOURCE2INT( RT_MENU ):
-            strange = true;
-            res = (HRSRC)LoadMenu( inst, res_name );
-            break;
-    
-        case RESOURCE2INT( RT_ACCELERATOR ):
-            strange = true;
-            res = (HRSRC)LoadAccelerators( inst, res_name );
-            break;
-    
-        case RESOURCE2INT( RT_STRING ):
-        case RESOURCE2INT( RT_DIALOG ):
-        case RESOURCE2INT( RT_FONTDIR ):
-        case RESOURCE2INT( RT_FONT ):
-        case RESOURCE2INT( RT_RCDATA ):
-        case RESOURCE2INT( RT_GROUP_CURSOR ):
-        case RESOURCE2INT( RT_GROUP_ICON ):
-            unhandled = true;
-            break;
-    
-        default:
-            unknown = true;
-            break;
+    switch( (uint_32)type_name ) {
+    case RT_CURSOR:
+        strange = TRUE;
+        res = (HRSRC)LoadCursor( inst, res_name );
+        break;
+
+    case RT_BITMAP:
+        res_int = (uint_32)res_name;
+        if( (res_int >> 16) != 0 || !WdeIsBorBtnIDSupported( (uint_16)res_int % 1000 ) ) {
+            res_name = MAKEINTRESOURCE( res_int - (res_int % 1000) + WDE_PREVIEW_ID );
         }
-    } else {
-        unknown = true;
+        hres = FindResource( inst, res_name, type_name );
+        if( hres != NULL ) {
+            res = LoadResource( inst, hres );
+        }
+        break;
+
+    case RT_ICON:
+        strange = TRUE;
+        res = (HRSRC)LoadIcon( inst, res_name );
+        break;
+
+    case RT_MENU:
+        strange = TRUE;
+        res = (HRSRC)LoadMenu( inst, res_name );
+        break;
+
+    case RT_ACCELERATOR:
+        strange = TRUE;
+        res = (HRSRC)LoadAccelerators( inst, res_name );
+        break;
+
+    case RT_STRING:
+    case RT_DIALOG:
+    case RT_FONTDIR:
+    case RT_FONT:
+    case RT_RCDATA:
+    case RT_GROUP_CURSOR:
+    case RT_GROUP_ICON:
+        WdeWriteTrail( "WdeCustLOADRES: Unhandled LOADRES request!" );
+        break;
+
+    default:
+        WdeWriteTrail( "WdeCustLOADRES: Unknown LOADRES request!" );
+        break;
     }
 
     if( strange ) {
         WdeWriteTrail( "WdeCustLOADRES: Strange LOADRES request!" );
         return( NULL );
-    } else if( unknown ) {
-        WdeWriteTrail( "WdeCustLOADRES: Unknown LOADRES request!" );
-    } else if( unhandled ) {
-        WdeWriteTrail( "WdeCustLOADRES: Unhandled LOADRES request!" );
     }
+
     if( res == NULL ) {
         WdeWriteTrail( "WdeCustLOADRES: res == NULL!" );
     }
@@ -956,7 +943,8 @@ bool WdeSetCurrentControl( HWND win, int which )
 
     index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
 
-    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA,
+                                                        index, 0 );
 
     if( current == NULL ) {
         WdeWriteTrail( "WdeSetCurrentControl: CB_GETITEMDATA failed!" );
@@ -1039,7 +1027,8 @@ bool WdePreviewSelected( HWND win )
 
     index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCURSEL, 0, 0L );
 
-    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA, index, 0 );
+    current = (WdeCurrCustControl *)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETITEMDATA,
+                                                        index, 0 );
 
     if( current == NULL ) {
         WdeWriteTrail( "WdePreviewSelected: CB_GETITEMDATA failed!" );

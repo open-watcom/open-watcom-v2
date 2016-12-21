@@ -52,6 +52,6 @@ extern void CheckDebugOffset( ExeFileInfo * info );
 extern RcStatus SeekRead( WResFileID handle, long newpos, void *buff, unsigned size );
 extern ExeType FindNEPELXHeader( WResFileID handle, unsigned_32 *nh_offset );
 extern unsigned_32 OffsetFromRVA( ExeFileInfo *info, pe_va rva );
-extern bool RcPadFile( WResFileID handle, size_t pad );
+extern bool RcPadFile( WResFileID handle, long pad );
 
 #endif

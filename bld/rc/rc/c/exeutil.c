@@ -35,8 +35,6 @@
 #include "rccore.h"
 #include "exeutil.h"
 
-#include "clibext.h"
-
 
 /*
  * CopyExeData
@@ -221,7 +219,7 @@ RcStatus SeekRead( WResFileID handle, long newpos, void *buff, unsigned size )
 {
     WResFileSSize   numread;
 
-    if( RCSEEK( handle, newpos, SEEK_SET ) == -1 )
+    if( RCSEEK( handle, newpos, SEEK_SET ) == -1 ) 
         return( RS_READ_ERROR );
     numread = RCREAD( handle, buff, size );
     if( numread != size ) {

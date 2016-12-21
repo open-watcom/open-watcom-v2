@@ -31,8 +31,9 @@
 
 
 #include "layer0.h"
-#include "wres.h"
+#include "filefmt.h"
 #include "write.h"
+#include "opcl.h"
 #include "reserr.h"
 #include "wresrtns.h"
 

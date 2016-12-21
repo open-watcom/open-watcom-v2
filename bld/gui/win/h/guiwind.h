@@ -50,6 +50,7 @@
 #endif
 
 #include "commonui.h"
+#include "wpitypes.h"
 #include "wpi.h"
 #include "guiwpi.h"
 #include "guitypes.h"

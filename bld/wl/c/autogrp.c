@@ -255,7 +255,8 @@ static void PackSegs( seg_leader *seg, unsigned num_segs )
 static void InitGroup( group_entry *group )
 /*****************************************/
 {
-    SET_ADDR_UNDEFINED( group->grp_addr );
+    group->grp_addr.seg = UNDEFINED;
+    group->grp_addr.off = 0;
     group->totalsize = 0;
     group->size = 0;
     group->segflags = DEFAULT_GRP_FLAGS;
@@ -287,7 +288,7 @@ group_entry *AllocGroup( const char *name, group_entry ** grp_list )
     if( stricmp( name, DataGrpName ) == 0 ) {
         DataGroup = group;
     } else if( name == AutoGrpName ) {
-        group->isautogrp = true;
+        group->isautogrp = 1;
     }
     return( group );
 }
@@ -322,7 +323,7 @@ static void SortGroupList( void )
         return;
 
     // first, set all of the links in the group list to NULL
-    while( (group = Groups) != NULL ) {
+    for( group = Groups; group != NULL; group = Groups ) {
         Groups = Groups->next_group;  // Take group out of original ring
         group->next_group = NULL;
         group->leaders = NULL;

@@ -44,8 +44,7 @@
 #endif
 
 typedef struct handle_info {
-    WResFileID  fid;
-    int         status;
+    WResFileID  handle;
 #ifdef WIN_GUI
     HINSTANCE   inst;
 #endif
@@ -53,30 +52,21 @@ typedef struct handle_info {
 
 #ifndef WIN_GUI
 typedef unsigned int    UINT;
-#endif
-
-#ifdef _M_I86
-typedef char            __far *lpstr;
-typedef const char      __far *lpcstr;
-#else
-typedef char            *lpstr;
-typedef const char      *lpcstr;
+typedef char            _WCI86FAR *LPSTR;
+typedef const char      _WCI86FAR *LPCSTR;
 #endif
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-extern bool             OpenResFile( PHANDLE_INFO hinfo, const char *filename );
-extern bool             OpenResFileX( PHANDLE_INFO hinfo, const char *filename, bool res_file );
-extern bool             CloseResFile( PHANDLE_INFO hinfo );
-extern bool             FindResources( PHANDLE_INFO hinfo );
-extern bool             FindResourcesX( PHANDLE_INFO hinfo, bool res_file );
-extern bool             InitResources( PHANDLE_INFO hinfo );
-extern bool             FiniResources( PHANDLE_INFO hinfo );
-extern int              WResLoadString( PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax );
-extern int              WResLoadResource( PHANDLE_INFO hinfo, UINT idType, UINT idResource, lpstr *lpszBuffer, size_t *bufferSize );
-extern int              WResLoadResourceX( PHANDLE_INFO hinfo, lpcstr idType, lpcstr idResource, lpstr *lpszBuffer, size_t *bufferSize );
+extern bool             OpenResFile( PHANDLE_INFO hInstance, const char *filename );
+extern bool             CloseResFile( PHANDLE_INFO hInstance );
+extern bool             FindResources( PHANDLE_INFO hInstance );
+extern bool             InitResources( PHANDLE_INFO hInstance );
+extern int              WResLoadString( PHANDLE_INFO hInstance, UINT idResource, LPSTR lpszBuffer, int nBufferMax );
+extern int              WResLoadResource( PHANDLE_INFO hInstance, UINT idType, UINT idResource, LPSTR *lpszBuffer, int *bufferSize );
+extern int              WResLoadResourceX( PHANDLE_INFO hInstance, LPCSTR idType, LPCSTR idResource, LPSTR *lpszBuffer, int *bufferSize );
 
 #if defined( __cplusplus )
 }

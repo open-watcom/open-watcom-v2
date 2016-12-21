@@ -359,7 +359,7 @@ static WdeResDlgItem *WdeGetDlgItem( void )
 
     ditem = NULL;
     rinfo = WdeGetCurrentRes();
-    if( rinfo != NULL && rinfo->dlg_item_list != NULL ) {
+    if( rinfo != NULL && rinfo->dlg_item_list ) {
         ditem = (WdeResDlgItem *)ListElement( rinfo->dlg_item_list );
     }
 
@@ -481,7 +481,7 @@ bool WdeStartDDEEditSession( void )
             data = WdeHData2Mem( hData );
             size = (int)DdeGetData( hData, NULL, 0, 0 );
             DdeFreeDataHandle( hData );
-            if( data != NULL ) {
+            if( data ) {
                 ditem->dialog_info = WdeMem2DBI( (uint_8 *)data, size,
                                                  ditem->is32bit );
                 ok = (ditem->dialog_info != NULL);
@@ -498,7 +498,7 @@ bool WdeStartDDEEditSession( void )
     }
 
     if( ok ) {
-        if( ditem->dialog_info != NULL ) {
+        if( ditem->dialog_info ) {
             ok = WdeOpenDialogFromResInfo( rinfo, ditem );
             if( ok ) {
                 WdeAddResDlgItemToResInfo( rinfo, ditem );
@@ -506,7 +506,7 @@ bool WdeStartDDEEditSession( void )
             }
         } else {
             object = WdeCreateNewDialog( ditem->dialog_name, ditem->is32bit );
-            if( ditem != NULL ) {
+            if( ditem ) {
                 WdeFreeResDlgItem( &ditem, TRUE );
             }
             ditem = NULL;
@@ -552,19 +552,19 @@ void WdeHandlePokedData( HDDEDATA hdata )
 
     main = WdeGetMainWindowHandle();
 
-    if( stricmp( cmd, "show" ) == 0 ) {
+    if( !stricmp( cmd, "show" ) ) {
         ShowWindow( main, SW_RESTORE );
         ShowWindow( main, SW_SHOWNA );
-    } else if( stricmp( cmd, "hide" ) == 0 ) {
+    } else if( !stricmp( cmd, "hide" ) ) {
         ShowWindow( main, SW_SHOWMINNOACTIVE );
         ShowWindow( main, SW_HIDE );
-    } else if( stricmp( cmd, "endsession" ) == 0 ) {
+    } else if( !stricmp( cmd, "endsession" ) ) {
         if( GotEndSession == FALSE ) {
             GotEndSession = TRUE;
             rinfo = WdeGetCurrentRes();
             WdeDestroyResourceWindow( rinfo );
         }
-    } else if( stricmp( cmd, "bringtofront" ) == 0 ) {
+    } else if( !stricmp( cmd, "bringtofront" ) ) {
         if( IsIconic( main ) ) {
             ShowWindow( main, SW_RESTORE );
         }

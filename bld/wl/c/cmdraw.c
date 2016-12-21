@@ -60,7 +60,7 @@ extern bool ProcRawBIN( void )
 /*************************/
 {
     Extension = E_BIN;
-    FmtData.raw_hex_output = false;
+    FmtData.raw_hex_output = 0;
     return( true );
 }
 
@@ -68,6 +68,6 @@ extern bool ProcRawHEX( void )
 /*************************/
 {
     Extension = E_HEX;
-    FmtData.raw_hex_output = true;
+    FmtData.raw_hex_output = 1;
     return( true );
 }

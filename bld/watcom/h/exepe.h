@@ -30,9 +30,6 @@
 
 
 #ifndef _EXEPE_H
-#define _EXEPE_H
-
-#include "pushpck1.h"
 
 /* type of a [relative] virtual address */
 typedef unsigned_32     pe_va;
@@ -434,7 +431,6 @@ typedef struct {
     unsigned_32     rsvd;           /* must be 0 */
 } resource_entry;
 
-#include "poppck.h"
-
+#define _EXEPE_H
 #endif
 

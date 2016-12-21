@@ -31,3 +31,4 @@
 
 extern gui_window *DlgGetParent( void );
 extern void DlgOpen( const char *title, int rows, int cols, gui_control_info *ctl, int num_controls, GUICALLBACK *rtn, void *extra );
+extern void ResDlgOpen( GUICALLBACK *rtn, void *extra, res_name_or_id dlg_id );

@@ -42,7 +42,7 @@ bool WResCheckWResFile( const char *filename )
 
     handle = ResOpenFileRO( filename );
 
-    if( handle == WRES_NIL_HANDLE ) {
+    if( handle == NIL_HANDLE ) {
         return( false );        /* assume it's not a WRES file */
     }
 

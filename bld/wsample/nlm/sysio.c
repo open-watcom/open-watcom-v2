@@ -38,7 +38,6 @@
 #include "smpstuff.h"
 #include "sysio.h"
 
-
 extern void *AllocTag;
 extern void *Alloc( int, void* );
 extern void Free( void* );

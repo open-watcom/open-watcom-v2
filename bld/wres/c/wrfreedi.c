@@ -34,14 +34,16 @@
 #include "wres.h"
 #include "wresrtns.h"
 
-void __FreeLangList( WResResNode *curres )
-{
-    WResLangNode        *currnode;
-    WResLangNode        *nextnode;
+void __FreeLangList( WResResNode *curres ) {
 
-    for( currnode = curres->Head; currnode != NULL; currnode = nextnode ) {
-        nextnode = currnode->Next;
-        WRESFREE( currnode );
+    WResLangNode        *oldnode;
+    WResLangNode        *currnode;
+
+    currnode = curres->Head;
+    while( currnode != NULL ) {
+        oldnode = currnode;
+        currnode = currnode->Next;
+        WRESFREE( oldnode );
     }
     curres->Head = NULL;
     curres->Tail = NULL;
@@ -49,13 +51,15 @@ void __FreeLangList( WResResNode *curres )
 
 void __FreeResList( WResTypeNode *currtype )
 {
+    WResResNode         *oldnode;
     WResResNode         *currnode;
-    WResResNode         *nextnode;
 
-    for( currnode = currtype->Head; currnode != NULL; currnode = nextnode ) {
-        nextnode = currnode->Next;
-        __FreeLangList( currnode );
-        WRESFREE( currnode );
+    currnode = currtype->Head;
+    while( currnode != NULL ) {
+        oldnode = currnode;
+        currnode = currnode->Next;
+        __FreeLangList( oldnode );
+        WRESFREE( oldnode );
     }
 
     currtype->Head = NULL;
@@ -64,13 +68,15 @@ void __FreeResList( WResTypeNode *currtype )
 
 void __FreeTypeList( WResDirHead *currdir )
 {
+    WResTypeNode        *oldtype;
     WResTypeNode        *currtype;
-    WResTypeNode        *nexttype;
 
-    for( currtype = currdir->Head; currtype != NULL; currtype = nexttype ) {
-        nexttype = currtype->Next;
-        __FreeResList( currtype );
-        WRESFREE( currtype );
+    currtype = currdir->Head;
+    while( currtype != NULL ) {
+        oldtype = currtype;
+        currtype = currtype->Next;
+        __FreeResList( oldtype );
+        WRESFREE( oldtype );
     }
 
     currdir->Head = NULL;
@@ -82,6 +88,7 @@ void WResFreeDir( WResDir currdir )
 {
     if( currdir != NULL ) {
         __FreeTypeList( currdir );
+
         WRESFREE( currdir );
     }
 }

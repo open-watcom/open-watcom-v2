@@ -136,6 +136,8 @@
     #define IS_RET_OK(x)            (x!=0)
     #define trp_socket              int
     #define soclose( s )            RdosCloseTcpConnection( s )
+    #define recv(a,b,c,d)           RdosReadTcpConnection(a,b,c)
+    #define send(a,b,c,d)           RdosWriteTcpConnection(a,b,c)
 #elif defined( __NT__ ) || defined( __WINDOWS__ )
     #define IS_VALID_SOCKET(x)      (x!=INVALID_SOCKET)
     #define IS_RET_OK(x)            (x!=SOCKET_ERROR)
@@ -168,21 +170,6 @@
 #ifdef __RDOS__
 
     #define SOCKET_BUFFER   0x7000
-
-static int recv( int handle, void *buf, int size, int timeout )
-{
-    int count = 0;
-    while( !RdosIsTcpConnectionClosed( handle ) && count == 0 ) {
-        count = RdosReadTcpConnection( handle, buf, size );
-    }
-    return( count );     
-}
-
-static int send( int handle, const void *buf, int size, int timeout )
-{
-    int count = RdosWriteTcpConnection( handle, buf, size);
-    return( count );
-}
 
 #else
 
@@ -228,18 +215,12 @@ static bool Terminate( void )
 #endif
     soclose( data_socket );
     data_socket = INVALID_SOCKET;
-    return( true );
+    return( true );    
 }
 
 #endif
 
-#ifdef __RDOS__
-
-#define recvData(buf,len)   recv(data_socket,buf,len,0)
-
-#else
-
-static int recvData( void *get, int len )
+static int FullGet( void *get, int len )
 {
     int     rec, got;
 
@@ -254,8 +235,6 @@ static int recvData( void *get, int len )
     return( got );
 }
 
-#endif
-
 trap_retval RemoteGet( void *data, trap_elen len )
 {
     unsigned_16         rec_len;
@@ -265,23 +244,9 @@ trap_retval RemoteGet( void *data, trap_elen len )
     _DBG_NET(("RemoteGet\r\n"));
 
     if( IS_VALID_SOCKET( data_socket ) ) {
-        int     size;
-
-        size = recvData( &rec_len, sizeof( rec_len ) );
-#ifdef __RDOS__
-        while( size == 0 ) {
-            if( !IS_VALID_SOCKET( data_socket ) )
-                return( REQUEST_FAILED );
-            size = recvData( &rec_len, sizeof( rec_len ) );
-        }
-#endif
-        if( size == sizeof( rec_len ) ) {
+        if( FullGet( &rec_len, sizeof( rec_len ) ) == sizeof( rec_len ) ) {
             CONV_LE_16( rec_len );
-#ifdef __RDOS__
-            if( rec_len && recvData( data, rec_len ) == rec_len ) {
-#else
-            if( rec_len == 0 || recvData( data, rec_len ) == rec_len ) {
-#endif
+            if( rec_len == 0 || FullGet( data, rec_len ) == rec_len ) {
                 _DBG_NET(("Got a packet - size=%d\r\n", rec_len));
                 return( rec_len );
             }
@@ -306,7 +271,7 @@ trap_retval RemotePut( void *data, trap_elen len )
                 snd = send( data_socket, data, len, 0 );
             if( len == 0 || IS_RET_OK( snd ) ) {
 #ifdef __RDOS__
-                RdosPushTcpConnection( data_socket );
+                 RdosPushTcpConnection( data_socket );
 #endif
                 _DBG_NET(("RemotePut...OK\r\n"));
                 return( len );
@@ -338,7 +303,7 @@ bool RemoteConnect( void )
   #ifdef __RDOS__
     void *obj;
 
-    obj = (void *)RdosWaitTimeout( wait_handle, 250 );
+    obj = RdosWaitTimeout( wait_handle, 250 );
     if( obj != NULL ) {
         data_socket = RdosGetTcpListen( listen_handle );
         if( IS_VALID_SOCKET( data_socket ) ) {
@@ -433,7 +398,7 @@ const char *RemoteLink( const char *parms, bool server )
 
     wait_handle = RdosCreateWait( );
     listen_handle = RdosCreateTcpListen( port, 1, SOCKET_BUFFER );
-    RdosAddWaitForTcpListen( wait_handle, listen_handle, (int)(&listen_handle) );
+    RdosAddWaitForTcpListen( wait_handle, listen_handle, &listen_handle );
   #else
     if( *parms == '\0' )
         parms = "tcplink";

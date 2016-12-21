@@ -31,6 +31,7 @@
 
 
 #include "guiwind.h"
+#include "guicontr.h"
 #include "guixdlg.h"
 #include "guixedit.h"
 #include "guihotsp.h"
@@ -38,10 +39,9 @@
 #include "guiscale.h"
 #include "guixutil.h"
 #include "guicolor.h"
-#include "guicontr.h"
-#include "guievent.h"
 #include <string.h>
 
+extern EVENT GUIUserEvents[];
 
 /*
  * GUIAddControl -- add the given control to the parent window
@@ -237,9 +237,9 @@ EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
         colours_set = GUISetDialColours();
         uipushlist( NULL );
         uipushlist( GUIUserEvents );
-        uipushlist( GUIControlEvents );
+        GUIPushControlEvents();
         ev = uiprocessdialogevent( ev, ui_dlg_info );
-        uipoplist( /* GUIControlEvents */ );
+        GUIPopControlEvents();
         uipoplist( /* GUIUserEvents */ );
         uipoplist( /* NULL */ );
         if( colours_set ) {

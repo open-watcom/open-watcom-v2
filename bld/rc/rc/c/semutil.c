@@ -35,8 +35,6 @@
 #include "semutil.h"
 #include "rccore.h"
 
-#include "clibext.h"
-
 
 void ReportCopyError( RcStatus status, int read_msg, const char *filename, int err_code )
 {

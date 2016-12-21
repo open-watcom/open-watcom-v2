@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern WResFileID       RcOpen( const char *, wres_open_mode );
+extern WResFileID       RcOpen( const char *, int, ... );
 extern int              RcClose( WResFileID );
 extern WResFileSSize    RcWrite( WResFileID, const void *, WResFileSize );
 extern WResFileSSize    RcRead( WResFileID, void *, WResFileSize );

@@ -61,21 +61,20 @@
 #define NON_SECT_INFO 0x8000
 
 typedef struct {
-    unsigned_32         offset;
-    unsigned_16         num;
-    unsigned_16         size;
+    unsigned_32 offset;
+    unsigned_16 num;
+    unsigned_16 size;
 } demanddata;
 
 typedef struct odbimodinfo {
-    unsigned_32         linelinksize;
-    demanddata          types;
-    demanddata          locals;
-    demanddata          lines;
-    unsigned_32         modnum;
-    unsigned            dbisourceoffset;
+    unsigned_32 linelinksize;
+    demanddata  types;
+    demanddata  locals;
+    demanddata  lines;
+    unsigned_32 modnum;
+    unsigned    dbisourceoffset;
 } odbimodinfo;
 
-#if 0
 typedef struct seginfo     {
     struct seginfo      *next;
     unsigned_32         dbioff;
@@ -87,16 +86,15 @@ typedef struct seginfo     {
     byte                full : 1;
     byte                finished : 1;
 } seginfo;
-#endif
 
-typedef struct snamelist {              // source name list
+typedef struct snamelist {        // source name list
     struct snamelist    *next;
-    size_t              len;            // length of the name
-    char                name[1];        // stored WITH a nullchar
+    byte                len;        // length of the name
+    char                name[1];       // stored WITH a nullchar
 } snamelist;
 
 static unsigned_32  DBISize;
-static dbgheader    Master;             // rest depend on .obj files.
+static dbgheader    Master;            // rest depend on .obj files.
 
 static snamelist    *DBISourceLang;     // list of source languages
 
@@ -120,7 +118,7 @@ static snamelist *LangAlloc( size_t len, const char *buff )
 }
 
 void ODBIInit( section *sect )
-/****************************/
+/***********************************/
 {
     DBISize = sizeof( dbgheader );
     Master.signature = DBG_SIGNATURE;
@@ -138,7 +136,7 @@ void ODBIInit( section *sect )
 }
 
 void ODBIInitModule( mod_entry *mod )
-/***********************************/
+/******************************************/
 {
     if( CurrSect->dbg_info == NULL )
         return;
@@ -146,8 +144,8 @@ void ODBIInitModule( mod_entry *mod )
     memset( mod->d.o, 0, sizeof( odbimodinfo ) );
 }
 
-static void DumpInfo( debug_info *dinfo, const void *data, size_t len )
-/*********************************************************************/
+static void DumpInfo( debug_info *dinfo, void *data, unsigned len )
+/*****************************************************************/
 {
     PutInfo( dinfo->dump_addr, data, len );
     dinfo->dump_addr += len;
@@ -193,7 +191,7 @@ void ODBIP1Source( byte major, byte minor, const char *name, size_t len )
 }
 
 static void DoAddLocal( dbi_section *dbi, offset length )
-/*******************************************************/
+/********************************************************/
 {
     if( ( dbi->size == 0 ) || ( dbi->size + length > DEMAND_INFO_SPLIT ) ) {
         dbi->curr.u.vm_offs += sizeof( unsigned_32 );
@@ -206,7 +204,7 @@ static void DoAddLocal( dbi_section *dbi, offset length )
 }
 
 void ODBIAddLocal( seg_leader *seg, offset length )
-/*************************************************/
+/*********************************************************/
 {
     debug_info          *dinfo;
 
@@ -223,7 +221,7 @@ void ODBIAddLocal( seg_leader *seg, offset length )
 }
 
 void ODBIP1ModuleScanned( void )
-/******************************/
+/*************************************/
 {
     debug_info          *dinfo;
 
@@ -258,7 +256,7 @@ static void DoGenLocal( dbi_section *dsect, dbi_section *dlink, demanddata *dmod
 }
 
 void ODBIGenLocal( segdata *sdata )
-/*********************************/
+/****************************************/
 {
     debug_info          *dinfo;
     odbimodinfo         *minfo;
@@ -293,7 +291,7 @@ static void ODBIAddLines( lineinfo *info )
 }
 
 void ODBIP1ModuleFinished( mod_entry *obj )
-/*****************************************/
+/************************************************/
 {
     debug_info          *dinfo;
 
@@ -312,7 +310,7 @@ void ODBIP1ModuleFinished( mod_entry *obj )
 }
 
 void ODBIDefClass( class_entry *cl, unsigned_32 size )
-/****************************************************/
+/***********************************************************/
 {
     debug_info *dinfo;
 
@@ -335,21 +333,21 @@ static int ODBISymIsForGlobalDebugging( symbol *sym, mod_entry *currMod )
 }
 
 void ODBIAddGlobal( symbol *sym )
-/*******************************/
+/**************************************/
 {
     debug_info      *dinfo;
-    size_t          len;
+    unsigned        add;
 
     dinfo = CurrSect->dbg_info;
     if( dinfo == NULL )
         return;
     if( ODBISymIsForGlobalDebugging( sym, CurrMod ) ) {
-        len = strlen( sym->name );
-        if( len > 255 ) {
+        add = strlen( sym->name );
+        if( add > 255 ) {
             LnkMsg( WRN+MSG_SYMBOL_NAME_TOO_LONG, "s", sym->name );
-            len = 255;
+            add = 255;
         }
-        dinfo->global.curr.u.vm_offs += sizeof( gblinfo ) + len;
+        dinfo->global.curr.u.vm_offs += add + sizeof( gblinfo );
     }
 }
 
@@ -376,7 +374,7 @@ static void AllocDBIClasses( class_entry *class )
 }
 
 void ODBIAddrSectStart( section *sect )
-/*************************************/
+/********************************************/
 {
     debug_info      *dptr;
 
@@ -434,29 +432,34 @@ void ODBIAddrSectStart( section *sect )
     AllocDBIClasses( sect->classlist );
 }
 
-static void DoName( const char *cname, char *intelname, size_t len )
-/******************************************************************/
+static void DoName( const char *cname, char *intelname, unsigned_8 len_u8 )
+/*************************************************************************/
 {
-    intelname[0] = (char)len;
-    memcpy( intelname + 1, cname, len );
+    intelname[0] = len_u8;
+    memcpy( intelname + 1, cname, len_u8 );
 }
 
 void ODBIGenGlobal( symbol *sym, section *sect )
-/**********************************************/
+/******************************************************/
 {
     size_t      len;
+    unsigned_8  len_u8;
     gblinfo     *data;
+    char        *name;
     debug_info  *dptr;
 
     dptr = sect->dbg_info;
     if( dptr == NULL )
         return;
     if( ODBISymIsForGlobalDebugging( sym, CurrMod ) ) {
-        len = strlen( sym->name );
-        if( len > 255 ) {
-            len = 255;
+        name = sym->name;
+        len = strlen( name );
+        len_u8 = 255;
+        if( len < 255 ) {
+            len_u8 = len;
         }
-        data = (gblinfo *)alloca( sizeof( gblinfo ) + len );
+        len = sizeof( gblinfo ) + len_u8;
+        data = (gblinfo *)alloca( len );
         _HostU32toTarg( sym->addr.off, data->off );
         _HostU16toTarg( sym->addr.seg, data->seg );
         _HostU16toTarg( dptr->modnum, data->mod_idx );
@@ -471,8 +474,7 @@ void ODBIGenGlobal( symbol *sym, section *sect )
                 data->flags |= DBG_GBL_DATA;
             }
         }
-        DoName( sym->name, data->name, len );
-        len += sizeof( gblinfo );
+        DoName( name, data->name, len_u8 );
         DumpInfo( dptr, data, len );
         dptr->global.size += len;
     }
@@ -491,7 +493,7 @@ void ODBIAddModule( mod_entry *obj, section *sect )
 }
 
 static void ODBIGenAddrInit( segdata *sdata, void *_dinfo )
-/*********************************************************/
+/********************************************************/
 {
     segheader   seghdr;
     seg_leader  *seg;
@@ -546,7 +548,7 @@ static void ODBIGenAddrInfo( seg_leader *seg )
 }
 
 static void WriteBogusAddrInfo( debug_info *dptr )
-/************************************************/
+/*************************************************/
 {
     addrinfo    info;
     segheader   header;
@@ -619,19 +621,19 @@ static bool CheckFirst( void *_seg, void *_firstseg )
 void ODBIGenLines( lineinfo *info )
 /*********************************/
 {
-    size_t              linelen;
+    unsigned            linelen;
     ln_off_pair _WCUNALIGNED *pair;
     ln_off_386          tmp_ln;
     unsigned_32         temp;
-    size_t              lineqty;
+    unsigned            lineqty;
     debug_info          *dinfo;
     lineseg             lseg;
     segdata             *firstseg;
     unsigned_32         prevoff;
     offset              adjust;
     bool                needsort;
-    size_t              size;
-    size_t              item_size;
+    unsigned            size;
+    unsigned            item_size;
     segdata             *seg;
     int                 (*CmpLn)( const void *a, const void *b );
 
@@ -719,7 +721,7 @@ static void ODBIAddAddrAdd( segdata *sdata, offset delta, offset size,
 }
 
 void ODBIAddAddrInfo( seg_leader *seg )
-/*************************************/
+/********************************************/
 {
     debug_info *dptr;
 
@@ -737,7 +739,7 @@ void ODBIAddAddrInfo( seg_leader *seg )
 }
 
 void ODBIFini( section *sect )
-/****************************/
+/***********************************/
 // write out the final links in the link tables.
 {
     debug_info          *dptr;
@@ -761,33 +763,37 @@ void ODBIGenModule( void )
 {
     odbimodinfo         *rec;
     modinfo             *info;
+    unsigned_8          len_u8;
     size_t              len;
+    char                *name;
     debug_info          *dptr;
 
     dptr = CurrSect->dbg_info;
     if( ( dptr == NULL ) || (CurrMod->modinfo & DBI_ALL) == 0 )
         return;
     rec = CurrMod->d.o;
-    len = strlen( CurrMod->name );
-    if( len > 255 )
-        len = 255;
-    info = (modinfo *)alloca( sizeof( modinfo ) + len );
+    name = CurrMod->name;
+    len = strlen( name );
+    len_u8 = 255;
+    if( len < 255 )
+        len_u8 = len;
+    len = sizeof( modinfo ) + len_u8;
+    info = (modinfo *)alloca( len );
     _HostU16toTarg( rec->types.num, info->types.len );
     _HostU32toTarg( rec->types.offset, info->types.off );
     _HostU16toTarg( rec->locals.num, info->locals.len );
     _HostU32toTarg( rec->locals.offset, info->locals.off );
     _HostU16toTarg( rec->lines.num, info->lines.len );
     _HostU32toTarg( rec->lines.offset, info->lines.off );
-    DoName( CurrMod->name, info->name, len );
+    DoName( name, info->name, len_u8 );
     info->language = rec->dbisourceoffset;
-    len += sizeof( modinfo );
     PutInfo( dptr->mod.curr.u.vm_ptr, (char *)info, len );
     dptr->mod.curr.u.vm_ptr += len;
     dptr->modnum++;
 }
 
 void ODBISectCleanup( section *sect )
-/***********************************/
+/******************************************/
 {
     sect = sect;
     _PermFree( sect->dbg_info );
@@ -796,19 +802,19 @@ void ODBISectCleanup( section *sect )
 static void DBIWriteInfo( virt_mem stg, unsigned long len )
 /*********************************************************/
 {
-    if( len > 0 ) {
-        DBISize += len;
-        WriteInfoLoad( stg, len );
-    }
+    if( len == 0 )
+        return;
+    DBISize += len;
+    WriteInfoLoad( stg, len );
 }
 
 static void DBIWriteLocal( const void *buff, size_t len )
 /*******************************************************/
 {
-    if( len > 0 ) {
-        DBISize += len;
-        WriteLoad( buff, len );
-    }
+    if( len == 0 )
+        return;
+    DBISize += len;
+    WriteLoad( buff, len );
 }
 
 static unsigned_16 WriteSegValues( void )
@@ -875,7 +881,7 @@ static void WriteDBISecs( section *sec )
 }
 
 void ODBIWrite( void )
-/********************/
+/***************************/
 /* copy debugging info from extra memory to loadfile */
 {
     snamelist   *node;

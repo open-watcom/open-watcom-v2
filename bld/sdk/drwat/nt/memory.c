@@ -62,7 +62,7 @@ static void fillImageInfo( HWND hwnd, DWORD procid ) {
 
     id = (int)SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0L );
     SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
-    if( strcmp( imagename, TOTAL_MEM_STR ) == 0 ) {
+    if( !strcmp( imagename, TOTAL_MEM_STR ) ) {
         ok = GetMemInfo( procid, &procinfo );
         info = &procinfo.image;
     } else {

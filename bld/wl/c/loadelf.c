@@ -86,6 +86,15 @@ static ElfSymTable *    ElfSymTab;
 
 #define INJECT_DEBUG ( SymFileName == NULL && (LinkFlags & DWARF_DBI_FLAG) )
 
+static void AddSecIdxName( ElfHdr *hdr, int idx, const char *name )
+/*****************************************************************/
+{
+    if( idx == 0 )
+        return;
+    AddSecName( hdr, hdr->sh+idx, name );
+}
+
+
 static void InitSections( ElfHdr *hdr)
 /************************************/
 {
@@ -125,7 +134,7 @@ static void InitSections( ElfHdr *hdr)
     hdr->sh_size = sizeof(Elf32_Shdr) * hdr->eh.e_shnum;
     _ChkAlloc( hdr->sh, hdr->sh_size );
     memset( hdr->sh, 0, hdr->sh_size );
-    hdr->sh[hdr->i.symtab].sh_name = AddSecName( hdr, ".symtab" );
+    AddSecIdxName(hdr, hdr->i.symtab, ".symtab");
 }
 
 static void SetHeaders( ElfHdr *hdr )
@@ -191,10 +200,11 @@ unsigned GetElfHeaderSize( void )
     return ROUND_UP( size, 0x100 );
 }
 
-size_t AddSecName( ElfHdr *hdr, const char *name )
-/************************************************/
+void AddSecName( ElfHdr *hdr, Elf32_Shdr *sh, const char *name )
+/***************************************************************/
 {
-    return( AddStringStringTableOffs( &hdr->secstrtab, name ) );
+    sh->sh_name = GetStringTableSize( &hdr->secstrtab );
+    AddStringStringTable( &hdr->secstrtab, name );
 }
 
 
@@ -203,8 +213,9 @@ static void WriteSHStrings( ElfHdr *hdr, int str_idx, stringtable *strtab )
 {
     Elf32_Shdr *sh;
 
-    sh = hdr->sh + str_idx;
-    sh->sh_name = AddSecName( hdr, ".shstrtab" );
+    sh = hdr->sh+str_idx;
+    AddSecName(hdr, sh, ".shstrtab");
+
     sh->sh_offset = hdr->curr_off;
     sh->sh_type = SHT_STRTAB;
     sh->sh_size = GetStringTableSize( strtab );
@@ -283,16 +294,16 @@ static void WriteELFGroups( ElfHdr *hdr )
         SetGroupHeaders( group, off, ph, sh );
         WriteGroupLoad( group );
         off = OffsetAlign( off + group->size, FmtData.objalign );
-        sh->sh_name = AddSecName( hdr, GroupSecName( group ) );
+        AddSecName( hdr, sh, GroupSecName(group) );
         sh++;
         if( group == DataGroup && FmtData.dgroupsplitseg != NULL ) {
-            sh->sh_name = AddSecName( hdr, ".bss" );
+            AddSecName( hdr, sh, ".bss" );
             linear = ph->p_vaddr + ROUND_UP( ph->p_filesz, FmtData.objalign );
             InitBSSSect( sh, off, CalcSplitSize(), linear );
             linear = ROUND_UP( linear + sh->sh_size, FmtData.objalign);
             sh++;
             if( StackSegPtr != NULL ) {
-                sh->sh_name = AddSecName( hdr, ".stack" );
+                AddSecName( hdr, sh, ".stack" );
                 InitBSSSect( sh, off, StackSize, linear );
                 sh++;
             }
@@ -302,10 +313,10 @@ static void WriteELFGroups( ElfHdr *hdr )
     hdr->curr_off = off;
 }
 
-#define RELA_NAME_SIZE sizeof( RelASecName )
+#define RELA_NAME_SIZE sizeof(RelASecName)
 
-static size_t AddRelocSectName( ElfHdr *hdr, const char *secname )
-/****************************************************************/
+static void SetRelocSectName( ElfHdr *hdr, Elf32_Shdr *sh, const char *secname )
+/******************************************************************************/
 {
     size_t      len;
     char        *name;
@@ -314,7 +325,7 @@ static size_t AddRelocSectName( ElfHdr *hdr, const char *secname )
     name = alloca( RELA_NAME_SIZE + len );
     memcpy( name, RelASecName, RELA_NAME_SIZE - 1 );
     memcpy( name + RELA_NAME_SIZE - 1, secname, len + 1 );
-    return( AddSecName( hdr, name ) );
+    AddSecName( hdr, sh, name );
 }
 
 
@@ -325,6 +336,7 @@ static void WriteRelocsSections( ElfHdr *hdr )
     int         currgrp;
     Elf32_Shdr  *sh;
     void        *relocs;
+    char        *secname;
 
     currgrp = hdr->i.grpbase;
     sh = hdr->sh + hdr->i.relbase;
@@ -340,7 +352,8 @@ static void WriteRelocsSections( ElfHdr *hdr )
             sh->sh_info = currgrp;
             sh->sh_addralign = 4;
             sh->sh_size = RelocSize( relocs );
-            sh->sh_name = AddRelocSectName( hdr, GroupSecName( group ) );
+            secname = GroupSecName( group );
+            SetRelocSectName( hdr, sh, secname );
             DumpRelocList( relocs );
             hdr->curr_off += sh->sh_size;
             sh++;
@@ -365,10 +378,12 @@ void FiniELFLoadFile( void )
     WriteELFGroups( &hdr ); // Write out all groups
     WriteRelocsSections( &hdr );        // Relocations
     if( INJECT_DEBUG ) {                // Debug info
-        hdr.curr_off = DwarfWriteElf( hdr.curr_off, &hdr.secstrtab, hdr.sh + hdr.i.dbgbegin );
+        hdr.curr_off = DwarfWriteElf( hdr.curr_off, &hdr.secstrtab,
+                                hdr.sh+hdr.i.dbgbegin );
     }
     if( ElfSymTab != NULL ) {           // Symbol tables
-        WriteElfSymTable( ElfSymTab, &hdr, hdr.i.symhash, hdr.i.symtab, hdr.i.symstr);
+        WriteElfSymTable( ElfSymTab, &hdr, hdr.i.symhash, hdr.i.symtab,
+                          hdr.i.symstr);
         ZapElfSymTable( ElfSymTab );
     }
     if( hdr.i.symstr != 0 ) {           // String sections

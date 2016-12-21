@@ -46,7 +46,7 @@ bool WIsEdit( HWND hwnd )
     isedit = FALSE;
     ret = GetClassName( hwnd, classname, sizeof( classname ) );
     if( ret ) {
-        if( stricmp( classname, "edit" ) == 0 ) {
+        if( !stricmp( classname, "edit" ) ) {
             isedit = TRUE;
         }
     }

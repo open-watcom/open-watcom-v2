@@ -230,17 +230,17 @@ GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily,
     if( class[0] & 0x80 ) {
         cclass.class[0] = class[0];
     } else {
-        if( stricmp( class, "combobox" ) == 0 ) {
+        if( !stricmp( class, "combobox" ) ) {
             cclass.class[0] = 0x85;
-        } else if( stricmp( class, "scrollbar" ) == 0 ) {
+        } else if( !stricmp( class, "scrollbar" ) ) {
             cclass.class[0] = 0x84;
-        } else if( stricmp( class, "listbox" ) == 0 ) {
+        } else if( !stricmp( class, "listbox" ) ) {
             cclass.class[0] = 0x83;
-        } else if( stricmp( class, "static" ) == 0 ) {
+        } else if( !stricmp( class, "static" ) ) {
             cclass.class[0] = 0x82;
-        } else if( stricmp( class, "edit" ) == 0 ) {
+        } else if( !stricmp( class, "edit" ) ) {
             cclass.class[0] = 0x81;
-        } else if( stricmp( class, "button" ) == 0 ) {
+        } else if( !stricmp( class, "button" ) ) {
             cclass.class[0] = 0x80;
         }
 

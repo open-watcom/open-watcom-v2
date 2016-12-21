@@ -2,6 +2,8 @@
 host_cpu = 386
 host_os  = nov
 
+type = ui
+os   = nlm
 sys  = nlm
 
 !include ../master.mif

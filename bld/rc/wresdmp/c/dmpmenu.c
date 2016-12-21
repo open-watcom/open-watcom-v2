@@ -38,9 +38,6 @@
 #include "dmpmenu.h"
 #include "rcrtns.h"
 
-#include "clibext.h"
-
-
 static char * MenuOnFlags[16] = {
     "GRAYED",       /* 0x0001 */
     "INACTIVE",     /* 0x0002 */

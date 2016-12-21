@@ -285,7 +285,6 @@ static unsigned DoRun( bool step )
         conditions = MakeAsyncRun( step );
         if( conditions & COND_RUNNING ) {
             conditions = DUIDlgAsyncRun();
-            ReadDbgRegs();
         }
     } else {
         conditions = MakeProgRun( step );

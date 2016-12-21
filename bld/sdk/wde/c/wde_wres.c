@@ -393,7 +393,7 @@ uint_8 WdeGetClassFromClassName( char *class_name )
     int i;
 
     for( i = 0; WdeControlClasses[i].class != 0x00; i++ ) {
-        if( stricmp( WdeControlClasses[i].class_name, class_name ) == 0 ) {
+        if( !stricmp( WdeControlClasses[i].class_name, class_name ) ) {
             return ( WdeControlClasses[i].class );
         }
     }
@@ -406,7 +406,7 @@ OBJ_ID WdeGetCommonControlClassFromClassName( char *class_name )
     int i;
 
     for( i = 0; WdeCommonControlClasses[i].class != 0x00; i++ ) {
-        if( stricmp( WdeCommonControlClasses[i].class_name, class_name ) == 0 ) {
+        if( !stricmp( WdeCommonControlClasses[i].class_name, class_name ) ) {
             return( WdeCommonControlClasses[i].class );
         }
     }

@@ -71,10 +71,10 @@ static void copyImageToClipboard( short width, short height, img_node *node )
     HBITMAP     oldbitmap;
     HBITMAP     oldclipbitmap;
     HBITMAP     viewbitmap;
-    WPI_RECTDIM left;
-    WPI_RECTDIM top;
-    WPI_RECTDIM right;
-    WPI_RECTDIM bottom;
+    IMGED_DIM   left;
+    IMGED_DIM   top;
+    IMGED_DIM   right;
+    IMGED_DIM   bottom;
     int         clip_width, clip_height;
 
     CleanupClipboard();
@@ -151,10 +151,10 @@ void RedrawPrevClip( HWND hwnd )
     HPEN        whitepen;
     HPEN        oldpen;
     WPI_PRES    pres;
-    WPI_RECTDIM left;
-    WPI_RECTDIM top;
-    WPI_RECTDIM right;
-    WPI_RECTDIM bottom;
+    IMGED_DIM   left;
+    IMGED_DIM   top;
+    IMGED_DIM   right;
+    IMGED_DIM   bottom;
     img_node    *node;
 
     if( !fEnableCutCopy || !_wpi_iswindow( Instance, hwnd ) || clipRect.hwnd != hwnd ) {
@@ -196,12 +196,12 @@ void RedrawPrevClip( HWND hwnd )
  */
 void SetClipRect( HWND hwnd, WPI_POINT *startpt, WPI_POINT *endpt, WPI_POINT pointsize )
 {
-    WPI_RECTDIM left;
-    WPI_RECTDIM top;
-    WPI_RECTDIM right;
-    WPI_RECTDIM bottom;
-    WPI_RECTDIM tmps;
-    WPI_RECTDIM tmpe;
+    IMGED_DIM   left;
+    IMGED_DIM   top;
+    IMGED_DIM   right;
+    IMGED_DIM   bottom;
+    IMGED_DIM   tmps;
+    IMGED_DIM   tmpe;
 
     CheckBounds( hwnd, startpt );
     CheckBounds( hwnd, endpt );
@@ -264,7 +264,8 @@ void IECopyImage( void )
     }
 
     if( !fEnableCutCopy ) {
-        _wpi_setwrectvalues( &clipRect.rect, 0, 0, node->width, node->height );
+        _wpi_setwrectvalues( &clipRect.rect, 0, 0, (IMGED_DIM)node->width,
+                                                   (IMGED_DIM)node->height );
         width = node->width;
         height = node->height;
     } else {
@@ -367,14 +368,14 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
     img_node    *node;
     int         fstretchbmp;
     int         bm_width, bm_height;
-    WPI_RECTDIM left;
-    WPI_RECTDIM right;
-    WPI_RECTDIM top;
-    WPI_RECTDIM bottom;
-    WPI_RECTDIM client_l;
-    WPI_RECTDIM client_r;
-    WPI_RECTDIM client_t;
-    WPI_RECTDIM client_b;
+    IMGED_DIM   left;
+    IMGED_DIM   right;
+    IMGED_DIM   top;
+    IMGED_DIM   bottom;
+    IMGED_DIM   client_l;
+    IMGED_DIM   client_r;
+    IMGED_DIM   client_t;
+    IMGED_DIM   client_b;
 #ifdef __OS2_PM__
     int         src_y, dest_y;
 #endif
@@ -582,10 +583,10 @@ void CutImage( void )
     short       width;
     short       height;
     img_node    *node;
-    WPI_RECTDIM left;
-    WPI_RECTDIM right;
-    WPI_RECTDIM top;
-    WPI_RECTDIM bottom;
+    IMGED_DIM   left;
+    IMGED_DIM   right;
+    IMGED_DIM   top;
+    IMGED_DIM   bottom;
 
     node = GetCurrentNode();
 
@@ -594,7 +595,8 @@ void CutImage( void )
     }
 
     if( !fEnableCutCopy ) {
-        _wpi_setwrectvalues( &clipRect.rect, 0, 0, node->width, node->height );
+        _wpi_setwrectvalues( &clipRect.rect, 0, 0, (IMGED_DIM)node->width,
+                                                   (IMGED_DIM)node->height );
         width = node->width;
         height = node->height;
     } else {

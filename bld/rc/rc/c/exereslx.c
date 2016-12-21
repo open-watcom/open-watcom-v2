@@ -362,7 +362,7 @@ bool RcBuildLXResourceObjects( void )
         ret = false;
     } else {
         res_objects = exeinfo->u.LXInfo.Objects;
-        ret = BuildLXResourceObjects( exeinfo, Pass2Info.ResFile,
+        ret = BuildLXResourceObjects( exeinfo, Pass2Info.ResFiles,
                                         res_objects, 0, 0, //rva, offset,
                                         !Pass2Info.AllResFilesOpen );
     }
@@ -383,7 +383,7 @@ RcStatus RcWriteLXResourceObjects( void )
         // Nothing to do
         ret = RS_OK;
     } else {
-        ret = WriteLXResourceObjects( exeinfo, Pass2Info.ResFile );
+        ret = WriteLXResourceObjects( exeinfo, Pass2Info.ResFiles );
     }
     return( ret );
 }

@@ -148,12 +148,9 @@ size_t FmtStr( char *buff, size_t len, const char *fmt, ... )
 /***********************************************************/
 {
     va_list args;
-    size_t  size;
 
     va_start( args, fmt );
-    size = DoFmtStr( buff, len, fmt, &args );
-    va_end( args );
-    return( size );
+    return( DoFmtStr( buff, len, fmt, &args ) );
 }
 
 size_t DoFmtStr( char *buff, size_t len, const char *src, va_list *args )
@@ -396,11 +393,11 @@ unsigned CalcMsgNum( unsigned num )
 static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
 /********************************************************************/
 {
-    size_t      msgprefixlen;
+    size_t      prefixlen;
     unsigned    class;
     char        rc_buff[RESOURCE_MAX_SIZE];
 
-    msgprefixlen = 0;
+    prefixlen = 0;
     *buff = '\0';
     class = num & CLASS_MSK;
     if( class >= (WRN & CLASS_MSK) ) {
@@ -409,19 +406,19 @@ static size_t GetMsgPrefix( char *buff, size_t max_len, unsigned num )
         } else {
             Msg_Get( MSG_ERROR, rc_buff );
         }
-        msgprefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
+        prefixlen = FmtStr( buff, max_len, rc_buff, CalcMsgNum( num ) );
     }
-    return( msgprefixlen );
+    return( prefixlen );
 }
 
 static void MessageFini( unsigned num, char *buff, size_t len )
 /*************************************************************/
 {
-    size_t      msgprefixlen;
+    size_t      prefixlen;
     unsigned    class;
-    char        msgprefix[ MAX_MSG_SIZE ];
+    char        prefix[ MAX_MSG_SIZE ];
 
-    msgprefixlen = 0;
+    prefixlen = 0;
     class = num & CLASS_MSK;
     if( class >= (ERR & CLASS_MSK) ) {
         LinkState |= LINK_ERROR;
@@ -435,8 +432,8 @@ static void MessageFini( unsigned num, char *buff, size_t len )
         }
     }
     if( (num & OUT_MAP) && (MapFile != NIL_FHANDLE) ) {
-        msgprefixlen = GetMsgPrefix( msgprefix, MAX_MSG_SIZE, num );
-        BufWrite( msgprefix, msgprefixlen );
+        prefixlen = GetMsgPrefix( prefix, MAX_MSG_SIZE, num );
+        BufWrite( prefix, prefixlen );
         BufWrite( buff, len );
         WriteMapNL( 1 );
     }
@@ -536,8 +533,8 @@ void LnkMsg(
         LocRec = 0;
     }
 
-    Msg_Get( num & NUM_MSK, rc_buff );
     va_start( args, types );
+    Msg_Get( num & NUM_MSK, rc_buff );
     Msg_Put_Args( rc_buff, &MsgArgInfo, types, &args );
     va_end( args );
     len += FmtStr( buff + len, MAX_MSG_SIZE - len, rc_buff );
@@ -567,7 +564,6 @@ void RcWarning( unsigned num, ... )
 
     va_start( args, num );
     HandleRcMsg( num, &args );
-    va_end( args );
 }
 
 void RcError( unsigned num, ... )
@@ -577,7 +573,6 @@ void RcError( unsigned num, ... )
 
     va_start( args, num );
     HandleRcMsg( num, &args );
-    va_end( args );
 }
 
 void WLPrtBanner( void )

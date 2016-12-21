@@ -40,11 +40,6 @@
 #include "wdetfile.h"
 #include "wdewait.h"
 #include "wdeldres.h"
-#include "rcrtns.h"
-#include "wresdefn.h"
-
-#include "clibext.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -76,7 +71,8 @@ WdeResInfo *WdeLoadResource( const char *file_name )
     }
 
     if( ok ) {
-        res_info->dlg_entry = WdeFindTypeNode( res_info->info->dir, RESOURCE2INT( RT_DIALOG ), "DIALOG" );
+        res_info->dlg_entry = WdeFindTypeNode( res_info->info->dir, (uint_16)(pointer_int)RT_DIALOG,
+                                               "DIALOG" );
     }
 
     if( !ok ) {
@@ -104,7 +100,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     DialogBoxExControl32    c32ex;
 
     WdeDialogBoxInfo        *dlg_info;
-    WResFileID              fid;
+    WResFileID              file;
     WdeDialogBoxControl     *control;
     LIST                    *prev_control;
 #if 0
@@ -116,7 +112,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     bool                    ok;
 
     dlg_info = NULL;
-    fid = WRES_NIL_HANDLE;
+    file = -1;
 
     ok = (res_info != NULL && lnode != NULL);
 
@@ -135,27 +131,28 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        ok = ((fid = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE);
+        file = ResOpenFileRO( file_name );
+        ok = (file != -1);
     }
 
     if( ok ) {
         dlg_info->MemoryFlags = lnode->Info.MemoryFlags;
-        ok = (ResSeek( fid, lnode->Info.Offset, SEEK_SET ) != -1);
+        ok = (lseek( file, lnode->Info.Offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
-            dlg_info->dialog_header->is32bitEx = ResIsDialogEx( fid );
-            ResSeek( fid, lnode->Info.Offset, SEEK_SET );
+            dlg_info->dialog_header->is32bitEx = ResIsDialogEx( file );
+            lseek( file, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogExHeader32( &h32, &h32ex, fid );
+                ok = !ResReadDialogExHeader32( &h32, &h32ex, file );
             } else {
-                ok = !ResReadDialogBoxHeader32( &h32, fid );
+                ok = !ResReadDialogBoxHeader32( &h32, file );
             }
         } else {
-            ok = !ResReadDialogBoxHeader( &h16, fid );
+            ok = !ResReadDialogBoxHeader( &h16, file );
         }
     }
 
@@ -203,7 +200,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                  *       whether this an extended dialog or not
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
-                    if( ResReadDialogExControl32( &c32ex, fid ) ) {
+                    if( ResReadDialogExControl32( &c32ex, file ) ) {
                         ok = false;
                         break;
                     }
@@ -216,7 +213,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                     control->Text = c32ex.Text;
                     control->ExtraBytes = c32ex.ExtraBytes;
                 } else {
-                    if( ResReadDialogBoxControl32( &c32, fid ) ) {
+                    if( ResReadDialogBoxControl32( &c32, file ) ) {
                         ok = false;
                         break;
                     }
@@ -229,7 +226,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                     control->ExtraBytes = c32.ExtraBytes;
                 }
             } else {
-                if( ResReadDialogBoxControl( &c16, fid ) ) {
+                if( ResReadDialogBoxControl( &c16, file ) ) {
                     ok = false;
                     break;
                 }
@@ -262,11 +259,9 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
         dlg_info->dialog_header->FontWeight = 0;
         dlg_info->dialog_header->FontItalic = 0;
-        dlg_info->dialog_header->FontCharset = DEFAULT_CHARSET;
         dlg_info->dialog_header->HelpId = 0;
         dlg_info->dialog_header->FontWeightDefined = FALSE;
         dlg_info->dialog_header->FontItalicDefined = FALSE;
-        dlg_info->dialog_header->FontCharsetDefined = FALSE;
 
         /* now deal with the list of controls */
         nc = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
@@ -296,8 +291,8 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
         }
     }
 
-    if( fid != WRES_NIL_HANDLE ) {
-        ResCloseFile( fid );
+    if( file != -1 ) {
+        ResCloseFile( file );
     }
 
     return( dlg_info );

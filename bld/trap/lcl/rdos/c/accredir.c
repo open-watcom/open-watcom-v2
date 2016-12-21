@@ -35,7 +35,11 @@
 
 trap_retval ReqRedirect_stdin( void )
 {
-    return( 0 );
+    redirect_stdin_ret  *ret;
+
+    ret = GetOutPtr( 0 );
+    ret->err = 1;
+    return( sizeof( *ret ) );
 }
 
 trap_retval ReqRedirect_stdout( void )

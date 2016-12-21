@@ -1,4 +1,4 @@
-sys_windowed = 1
+type = win
 os = w386
 build_target = windows
 sys = win386

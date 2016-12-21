@@ -48,8 +48,6 @@
 #include "addsym.h"
 #include "jdlg.h"
 #include "winexprt.h"
-#include "wresdefn.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -201,7 +199,7 @@ bool WRAPI WRDeleteDLGInclude( WResDir dir )
     ok = (dir != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        tnode = WRFindTypeNode( dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
         ok = (tnode != NULL);
     }
 
@@ -247,7 +245,7 @@ bool WRAPI WRCreateDLGInclude( WResDir *dir, const char *include )
 
     if( ok ) {
         WRDeleteDLGInclude( *dir );
-        type = WResIDFromNum( RESOURCE2INT( RT_RCDATA ) );
+        type = WResIDFromNum( (uint_16)(pointer_int)RT_RCDATA );
         ok = (type != NULL);
     }
 

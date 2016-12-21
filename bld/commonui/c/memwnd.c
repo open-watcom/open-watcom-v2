@@ -52,12 +52,13 @@
 #include "savelbox.h"
 #include "memwnd.h"
 #include "deasm.h"
-#include "ldstr.h"
-#include "uistr.gh"
-#include "wprocmap.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
+#include "wpi.h"
+#include "ldstr.h"
+#include "uistr.gh"
+#include "wprocmap.h"
 
 
 /* Window callback functions prototypes */

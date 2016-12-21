@@ -37,6 +37,7 @@
 #ifdef __WATCOMC__
     #include <process.h>
 #endif
+#include <fcntl.h>
 #include "wressetr.h"
 #include "wresset2.h"
 
@@ -51,7 +52,7 @@ static char *asMessages[] = {
     #define pick( id, e_msg, j_msg )    e_msg,
     #include "as.msg"
     #undef pick
-#if 0
+#if 0 
 //#if defined( JAPANESE )
     #define pick( id, e_msg, j_msg )    j_msg,
     #include "as.msg"
@@ -71,7 +72,19 @@ static unsigned         msgShift;
 #define NO_RES_SIZE     (sizeof(NO_RES_MESSAGE)-1)
 
 static HANDLE_INFO      hInstance = {0};
+static bool             res_failure = true;
 
+static WResFileOffset resSeek( WResFileID handle, WResFileOffset position, int where )
+//************************************************************************************
+{
+    if( where == SEEK_SET ) {
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( handle, position, where ) );
+    }
+}
+
+WResSetRtns( open, close, read, write, resSeek, tell, MemAlloc, MemFree );
 #endif
 
 bool AsMsgInit( void )
@@ -80,15 +93,19 @@ bool AsMsgInit( void )
 #ifdef _STANDALONE_
     char        name[_MAX_PATH];
 
-    hInstance.status = 0;
-    if( _cmdname( name ) != NULL && OpenResFile( &hInstance, name ) ) {
-        msgShift = _WResLanguage() * MSG_LANG_SPACING;
-        if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
-            return( true );
+    hInstance.handle = NIL_HANDLE;
+    if( _cmdname( name ) != NULL && !OpenResFile( &hInstance, name ) ) {
+        res_failure = false;
+        if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
+            msgShift = _WResLanguage() * MSG_LANG_SPACING;
+            if( AsMsgGet( USAGE_1, AsResBuffer ) ) {
+                return( true );
+            }
         }
+        AsMsgFini();
     }
-    CloseResFile( &hInstance );
-    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    res_failure = true;
     return( false );
 #else
     msgShift = _WResLanguage() * TXT_MSG_LANG_SPACING;
@@ -103,7 +120,7 @@ bool AsMsgGet( int resourceid, char *buffer )
 //*******************************************
 {
 #ifdef _STANDALONE_
-    if( hInstance.status == 0 || WResLoadString( &hInstance, resourceid + msgShift, (lpstr)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
+    if( res_failure || WResLoadString( &hInstance, resourceid + msgShift, (LPSTR)buffer, MAX_RESOURCE_SIZE ) <= 0 ) {
         buffer[0] = '\0';
         return( false );
     }
@@ -117,6 +134,9 @@ void AsMsgFini( void ) {
 //**********************
 
 #ifdef _STANDALONE_
-    CloseResFile( &hInstance );
+    if( hInstance.handle != NIL_HANDLE ) {
+        CloseResFile( &hInstance );
+        hInstance.handle = NIL_HANDLE;
+    }
 #endif
 }

@@ -50,8 +50,6 @@
 #include "wdecurr.h"
 #include "wdesym.h"
 #include "preproc.h"
-#include "wresdefn.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -232,7 +230,7 @@ bool WdeCreateDLGInclude( WdeResInfo *rinfo, char *include )
 
     if( ok ) {
         WdeDeleteDLGInclude( rinfo );
-        type = WResIDFromNum( RESOURCE2INT( RT_RCDATA ) );
+        type = WResIDFromNum( (uint_16)(pointer_int)RT_RCDATA );
         ok = (type != NULL);
     }
 
@@ -286,7 +284,7 @@ bool WdeDeleteDLGInclude( WdeResInfo *rinfo )
     ok = (rinfo != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        tnode = WRFindTypeNode( rinfo->info->dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
         ok = (tnode != NULL);
     }
 
@@ -322,7 +320,7 @@ static char *WdeFindDLGInclude( WdeResInfo *rinfo )
     ok = (rinfo != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( rinfo->info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
+        tnode = WRFindTypeNode( rinfo->info->dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
         ok = (tnode != NULL);
     }
 

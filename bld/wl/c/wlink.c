@@ -260,7 +260,7 @@ static void DoLink( char *cmdline )
 #ifdef _RDOS
     if( FmtData.type & MK_RDOS )
         GetRdosSegs();
-#endif
+#endif    
     CheckErr();
     InitLoadFile();
     ObjPass2();
@@ -354,7 +354,8 @@ static void ResetMisc( void )
     ObjLibFiles = NULL;
     LibModules = NULL;
     Groups = NULL;
-    SET_ADDR_UNDEFINED( CurrLoc );
+    CurrLoc.seg = UNDEFINED;
+    CurrLoc.off = 0;
     OvlClasses = NULL;
     OvlVectors = NULL;
     VecNum = 0;

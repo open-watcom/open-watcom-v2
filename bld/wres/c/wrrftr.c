@@ -63,7 +63,8 @@ bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID handle )
         newtype->TypeName.IsName = info.TypeName.IsName;
         if( newtype->TypeName.IsName ) {
             newtype->TypeName.ID.Name.Name[0] = info.TypeName.ID.Name.Name[0];
-            newtype->TypeName.ID.Name.NumChars = info.TypeName.ID.Name.NumChars;
+            newtype->TypeName.ID.Name.NumChars
+                                        = info.TypeName.ID.Name.NumChars;
         } else {
             newtype->TypeName.ID.Num = info.TypeName.ID.Num;
         }

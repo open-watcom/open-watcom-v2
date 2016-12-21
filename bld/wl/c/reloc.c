@@ -45,7 +45,7 @@
 
 typedef struct reloc_info {
     struct reloc_info   *next;
-    size_t              sizeleft;
+    unsigned            sizeleft;
     spilladdr           loc;
 } reloc_info;
 
@@ -129,12 +129,12 @@ static void *PERelocInit( offset size )
     return( OS2PagedRelocInit( size, sizeof( reloc_info * ) ) );
 }
 
-static void DoWriteReloc( void *lst, const void *reloc, size_t size )
-/*******************************************************************/
+static void DoWriteReloc( void *lst, const void *reloc, unsigned size )
+/*********************************************************************/
 {
     reloc_info      **list = lst;
     reloc_info      *info;
-    size_t          offset;
+    unsigned        offset;
 
     info = *(reloc_info **)list;
     if( info == NULL ) {
@@ -156,8 +156,9 @@ static void DoWriteReloc( void *lst, const void *reloc, size_t size )
     info->sizeleft -= size;
 }
 
-void WriteReloc( group_entry *group, offset off, void *reloc, size_t size )
-/*************************************************************************/
+void WriteReloc( group_entry *group, offset off, void *reloc,
+                        unsigned size )
+/******************************************************************/
 /* write the given relocation to virtual memory */
 {
     os2_reloc_header ** pagelist;
@@ -378,11 +379,11 @@ bool DumpRelocList( reloc_info *list )
     return( false );            /* so traverse works */
 }
 
-unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t size, void *ctx ), void *ctx )
-/*********************************************************************************************************/
+unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, unsigned_32 size, void *ctx ), void *ctx )
+/**************************************************************************************************************/
 /* walk the given reloc information list and call user fn for each reloc */
 {
-    size_t              size;
+    unsigned_32         size;
     unsigned_32         total;
     reloc_info          *list;
     bool                quit = false;
@@ -402,7 +403,7 @@ unsigned_32 WalkRelocList( reloc_info **head, bool (*fn)( void *data, size_t siz
             }
         }
         list = list->next;
-        total += (unsigned_32)size;
+        total += size;
     }
     *head = list;
     return( total );

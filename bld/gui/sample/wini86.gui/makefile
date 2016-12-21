@@ -2,7 +2,8 @@
 host_cpu = i86
 host_os  = win
 
-sys_windowed = 1
+type = win
+os   = win
 sys  = windows
 
 !include ../master.mif

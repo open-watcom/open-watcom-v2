@@ -230,7 +230,7 @@ extern bool SrchEvent( gui_window * gui, gui_event event, void * param )
             GUICloseDialog( gui );
             break;
         case CTL_SRCH_EDIT_RX:
-            ResDlgOpen( &RXEvent, NULL, DIALOG_RX );
+            ResDlgOpen( &RXEvent, NULL, GUI_MAKEINTRESOURCE( DIALOG_RX ) );
             break;
         case CTL_SRCH_PREV:
             dlg->direction = -1;
@@ -263,7 +263,7 @@ static int DoDlgSearch( a_window *wnd, void *history, bool want_prev )
     dlg->case_ignore = SrchIgnoreCase;
     dlg->use_rx = SrchRX;
     dlg->history = history;
-    ResDlgOpen( &SrchEvent, dlg, want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL );
+    ResDlgOpen( &SrchEvent, dlg, GUI_MAKEINTRESOURCE( want_prev ? DIALOG_SEARCH : DIALOG_SEARCH_ALL ) );
     direction = dlg->direction;
     SrchRX = dlg->use_rx;
     SrchIgnoreCase = dlg->case_ignore;

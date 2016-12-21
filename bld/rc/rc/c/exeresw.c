@@ -51,7 +51,7 @@ extern void InitWINResTable( void )
 
     res = &(Pass2Info.TmpFile.u.NEInfo.Res.Dir);
     str = &(Pass2Info.TmpFile.u.NEInfo.Res.Str);
-    dir = Pass2Info.ResFile->Dir;
+    dir = Pass2Info.ResFiles->Dir;
 
     if( CmdLineParms.NoResFile ) {
         res->NumTypes = 0;
@@ -261,10 +261,10 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
     RcStatus            ret;
     int                 err_code;
 
-    dir = Pass2Info.ResFile->Dir;
+    dir = Pass2Info.ResFiles->Dir;
     restab = &(Pass2Info.TmpFile.u.NEInfo.Res);
     tmphandle = Pass2Info.TmpFile.Handle;
-    reshandle = Pass2Info.ResFile->Handle;
+    reshandle = Pass2Info.ResFiles->Handle;
     ret = RS_OK;
     err_code = 0;
 

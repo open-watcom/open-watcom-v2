@@ -189,7 +189,7 @@ static bool WRIsCorrectNode( WResID *node, uint_16 id, const char *name )
     } else if( name != NULL ) {
         type_name = WResIDToStr( node );
         if( type_name != NULL ) {
-            if( stricmp( type_name, name ) == 0 ) {
+            if( !stricmp( type_name, name ) ) {
                 ret = true;
             }
             MemFree( type_name );

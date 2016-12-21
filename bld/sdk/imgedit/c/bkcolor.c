@@ -153,7 +153,7 @@ WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, 
 #endif
 
         case WM_LBUTTONDOWN:
-            WPI_MAKEPOINT( wparam, lparam, pt );
+            IMGED_MAKEPOINT( wparam, lparam, pt );
             selectColor( &pt, hwnd );
             break;
 

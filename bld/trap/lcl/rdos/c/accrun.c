@@ -63,6 +63,7 @@ trap_retval ReqProg_go( void )
         }
 
         if( HasModuleChange( obj ) ) {
+            ClearModuleChange( obj );
             ret->conditions |= COND_LIBRARIES;
         }
 
@@ -117,6 +118,7 @@ trap_retval ReqProg_step( void )
         }
 
         if( HasModuleChange( obj ) ) {
+            ClearModuleChange( obj );
             ret->conditions |= COND_LIBRARIES;
         }
 

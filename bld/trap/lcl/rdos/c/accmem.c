@@ -40,13 +40,17 @@ trap_retval ReqRead_mem( void )
     void                *data;
     read_mem_req        *acc;
     struct TDebug       *obj;
+    struct TDebugThread *thread = 0;
 
     acc = GetInPtr( 0 );
     data = ( void * ) GetOutPtr( 0 );
 
     obj = GetCurrentDebug();
-    if (obj)
-        return( ReadMem(    obj, 
+        if (obj)
+        thread = obj->CurrentThread;
+
+    if( thread )
+        return( ReadMem(    thread, 
                             acc->mem_addr.segment, 
                             acc->mem_addr.offset, 
                             data,
@@ -62,6 +66,7 @@ trap_retval ReqWrite_mem( void )
     write_mem_req       *acc;
     write_mem_ret       *ret;
     struct TDebug       *obj;
+    struct TDebugThread *thread = 0;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -71,8 +76,11 @@ trap_retval ReqWrite_mem( void )
     ret->len = 0;
 
     obj = GetCurrentDebug();
-    if (obj)
-        ret->len = WriteMem(obj, 
+        if (obj)
+        thread = obj->CurrentThread;
+
+    if( thread )
+        ret->len = WriteMem(thread, 
                             acc->mem_addr.segment, 
                             acc->mem_addr.offset, 
                             data,
@@ -91,6 +99,7 @@ trap_retval ReqChecksum_mem( void )
     checksum_mem_req    *acc;
     checksum_mem_ret    *ret;
     struct TDebug       *obj;
+    struct TDebugThread *thread = 0;
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
@@ -99,11 +108,14 @@ trap_retval ReqChecksum_mem( void )
     sum = 0;
 
     obj = GetCurrentDebug();
-    if( obj ) {
+    if( obj )
+        thread = obj->CurrentThread;
+
+    if( thread ) {
         offset = acc->in_addr.offset;
         segment = acc->in_addr.segment;
         while( length != 0 ) {
-            ReadMem( obj, segment, offset, (char *)&value, sizeof( value ) );
+            ReadMem( thread, segment, offset, (char *)&value, sizeof( value ) );
             sum += value & 0xff;
             offset++;
             length--;

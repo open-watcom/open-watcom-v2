@@ -55,7 +55,8 @@ extern "C" {
     #include <dos.h>
     #include <objautod.h>
     #include "rcdefs.h"
-    #include "autodep.h"
+    #include <autodep.h>
+//  #include <wressetr.h>
     #include <direct.h>
 };
 

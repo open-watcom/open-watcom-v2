@@ -38,13 +38,14 @@
 /* data structure used to keep track of all the edges in the call graph */
 
 typedef struct edgelist {
-    struct edgelist *next;
+    struct edgelist *   next;
     union {
-        segdata     *seg;
-        symbol      *sym;
+        segdata *       seg;
+        symbol *        sym;
     } u;
-    bool            issym       : 1;    // true if contains a symbol
-    bool            reverse_dir : 1;    // true if edge points in the opposite direction
+    unsigned            issym : 1;      // true if contains a symbol
+    unsigned            reverse_dir : 1;// true if edge points in the opposite
+                                        // direction
 } edgelist;
 
 static edgelist * FreedEdges;
@@ -104,7 +105,7 @@ static void PruneNonSymEdges( symbol * sym )
 
     list = sym->p.edges;
     sym->p.edges = NULL;
-    for( ; list != NULL; list = next ) {
+    for( ;list != NULL; list = next ) {
         next = list->next;
         if( list->issym ) {
             list->next = sym->p.edges;
@@ -129,7 +130,7 @@ void RefSeg( segdata * seg )
     seg->isrefd = true;
     seg->visited = true;
     for( edge = seg->a.refs; edge != NULL; edge = next ) {
-        DbgAssert( !edge->issym );
+        DbgAssert( edge->issym == 0 );
         next = edge->next;
         RefSeg( edge->u.seg );
         FreeEdge( edge );
@@ -245,7 +246,7 @@ void DefStripSym( symbol * sym, segdata * seg )
     for( list = sym->p.edges; list != NULL; list = next ) {
         next = list->next;
         if( list->issym ) {
-            DbgAssert(!list->reverse_dir); // for now this cannot happen
+            DbgAssert(list->reverse_dir == 0); // for now this cannot happen
             AddEdge( seg, list->u.sym );
             FreeEdge( list );
         } else {
@@ -264,7 +265,7 @@ void DefStripSym( symbol * sym, segdata * seg )
                     RefSeg( trg );
                     FreeEdge( list );   /* no edge needed to ref'd seg. */
                 } else {
-                    list->reverse_dir = false;
+                    list->reverse_dir = 0;
                     list->u.seg = trg;  // make it point to this target.
                     list->next = src->a.refs;   // & add it to the ref list
                     src->a.refs = list;
@@ -291,7 +292,7 @@ void DefStripImpSym( symbol * sym )
 
     for( list = sym->p.edges; list != NULL; list = next ) {
         next = list->next;
-        if( !list->reverse_dir ) {
+        if( list->reverse_dir == 0 ) {
             if( list->issym ) {
                 list->u.sym->info |= SYM_DCE_REF;
             } else {

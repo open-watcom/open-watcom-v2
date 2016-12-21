@@ -147,9 +147,9 @@ static size_t WdeDialogBoxHeaderToMem( WdeDialogBoxHeader *head, uint_8 *data )
     if( ok ) {
         start = data;
         if( head->is32bitEx ) {
-            /* copy the miscellaneous two WORDs 0x0001, 0xFFFF */
-            U16ToMem( data, 0x0001 );
-            U16ToMem( data, 0xFFFF );
+            /* copy the miscellaneous two WORDs 01 00 FF FF */
+            U16ToMem( data, 1 );
+            U16ToMem( data, (uint_16)-1 );
             U32ToMem( data, GETHDR_HELPID( head ) );
             U32ToMem( data, GETHDR_EXSTYLE( head ) );
             U32ToMem( data, GETHDR_STYLE( head ) );
@@ -356,8 +356,7 @@ WdeDialogBoxInfo *WdeMem2DBI( const uint_8 *data, size_t size, bool is32bit )
     const uint_8        *start;
     bool                ok;
     bool                is32bitEx = false;
-    uint_16             sign0;
-    uint_16             sign1;
+    uint_16             signa[2];
 
     dbi = NULL;
     start = NULL;
@@ -374,11 +373,9 @@ WdeDialogBoxInfo *WdeMem2DBI( const uint_8 *data, size_t size, bool is32bit )
         start = data;
 
         /* check if the dialog is extended by testing for the signature */
-        U16FromMem( data, sign0 );
-        U16FromMem( data, sign1 );
-        is32bitEx = (sign0 == 0x0001 && sign1 == 0xFFFF);
+        memcpy( signa, data, sizeof( signa ) );
+        is32bitEx = (signa[0] == 0x0001 && signa[1] == 0xFFFF);
 
-        data = start;
         dbi->control_list = NULL;
         dbi->MemoryFlags = 0;
         dbi->dialog_header = WdeMem2DialogBoxHeader( &data, is32bit, is32bitEx );
@@ -443,7 +440,7 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( const uint_8 **pdata, bool is32bit, 
         dbh->is32bit = is32bit;
         dbh->is32bitEx = is32bitEx;
         if( is32bitEx ) {
-            /* skip the miscellaneous two WORDs 0x0001, 0xFFFF */
+            /* skip the miscellaneous two WORDs 01 00 FF FF */
             data += 2 * sizeof( uint_16 );
             U32FromMem( data, GETHDR_HELPID( dbh ) );
             U32FromMem( data, GETHDR_EXSTYLE( dbh ) );

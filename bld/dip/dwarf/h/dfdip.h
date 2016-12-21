@@ -149,7 +149,7 @@ typedef struct { // value of an AddrMod
 
 struct imp_image_handle {
     imp_image_handle    *next;
-    dig_fhandle         sym_fid;
+    dig_fhandle         sym_file;
     dwarf_info          *dwarf;
     im_idx              mod_count;
     mod_info            *mod_map;

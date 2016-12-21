@@ -179,7 +179,7 @@ static offset CalcIDataSize( void )
     if( 0 == iatsize ) {
         return( 0 );
     }
-    IData.ilt_off = ( NumMods + 1 ) * sizeof( pe_import_directory );
+    IData.ilt_off = (NumMods + 1) * sizeof( pe_import_directory );
     IData.eof_ilt_off = IData.ilt_off + iatsize;
     IData.iat_off = IData.eof_ilt_off + TocSize;
     IData.mod_name_off = IData.iat_off + iatsize;
@@ -202,7 +202,7 @@ static offset CalcIDataSize( void )
 }
 
 void ResetLoadPE( void )
-/**********************/
+/*****************************/
 {
     PEImpList = NULL;
     XFerSegData = NULL;
@@ -218,10 +218,11 @@ static offset CalcIATAbsOffset( void )
 }
 
 static void CalcImpOff( dll_sym_info *dll, offset *off )
-/******************************************************/
+/********************************************************/
 {
     if( dll != NULL) { // if not end of mod marker
-        SET_SYM_ADDR( dll->iatsym, *off, 0 );
+        dll->iatsym->addr.off = *off;
+        dll->iatsym->addr.seg = 0;
     }
     *off += sizeof( pe_va );
 }
@@ -254,7 +255,7 @@ static int GetTransferGlueSize( int lnk_state )
 }
 
 static void *GetTransferGlueCode( int lnk_state )
-/***********************************************/
+/************************************************/
 {
     switch( lnk_state & HAVE_MACHTYPE_MASK ) {
     case HAVE_ALPHA_CODE:   return( &AlphaJump );
@@ -266,7 +267,7 @@ static void *GetTransferGlueCode( int lnk_state )
 }
 
 offset FindIATSymAbsOff( symbol *sym )
-/************************************/
+/********************************************/
 {
     dll_sym_info        *dll;
 
@@ -276,7 +277,7 @@ offset FindIATSymAbsOff( symbol *sym )
 }
 
 offset FindSymPosInTocv( symbol *sym )
-/************************************/
+/***********************************************/
 {
     return( FindIATSymAbsOff( sym ) - IDataGroup->linear - FmtData.base - TocShift - IData.eof_ilt_off );
 }
@@ -580,10 +581,15 @@ static void WriteImportInfo( void )
     }
 }
 
-static int namecmp_exp( const void *pn1, const void *pn2 )
-/********************************************************/
+static int namecmp( const void *pn1, const void *pn2 )
+/****************************************************/
 {
-    return( strcmp( (*(entry_export **)pn1)->name, (*(entry_export **)pn2)->name ) );
+    entry_export        *n1;
+    entry_export        *n2;
+
+    n1 = *(entry_export **)pn1;
+    n2 = *(entry_export **)pn2;
+    return( strcmp( n1->name, n2->name ) );
 }
 
 
@@ -596,11 +602,12 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     size_t              namelen;
     entry_export        **sort;
     entry_export        *exp;
-    size_t              i;
+    unsigned            i;
+    unsigned_16         ordinal;
     pe_va               eat;
     ordinal_t           next_ord;
     ordinal_t           high_ord = 0;
-    size_t              num_entries;
+    unsigned            num_entries;
 
     strncpy( object->name, ".edata", PE_OBJ_NAME_LEN );
     object->physical_offset = NullAlign( file_align );
@@ -650,22 +657,23 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
         sort[i++] = exp;
         eat = exp->addr.off;
         if( next_ord < exp->ordinal ) {
-            PadLoad( ( exp->ordinal - next_ord ) * sizeof( pe_va ) );
+            PadLoad( (exp->ordinal - next_ord) * sizeof( pe_va ) );
         }
         next_ord = exp->ordinal + 1;
-        WriteLoadU32( eat );
+        WriteLoad( &eat, sizeof( eat ) );
     }
-    qsort( sort, num_entries, sizeof( entry_export * ), &namecmp_exp );
+    qsort( sort, num_entries, sizeof( entry_export * ), &namecmp );
     /* write out the export name ptr table */
     eat = dir.ordinal_table_rva + num_entries * sizeof( unsigned_16 );
     for( i = 0; i < num_entries; ++i ) {
         exp = sort[i];
-        WriteLoadU32( eat );
+        WriteLoad( &eat, sizeof( eat ) );
         eat += strlen( exp->name ) + 1;
     }
     /* write out the export ordinal table */
     for( i = 0; i < num_entries; ++i ) {
-        WriteLoadU16( sort[i]->ordinal - dir.ordinal_base );
+        ordinal = sort[i]->ordinal - dir.ordinal_base;
+        WriteLoad( &ordinal, sizeof( ordinal ) );
     }
     /* write out the export name table */
     for( i = 0; i < num_entries; ++i ) {
@@ -698,8 +706,8 @@ static unsigned_32 WriteRelocList( void **reloclist, unsigned_32 size,
                 padme = true;
             }
             pagesize += 2 * sizeof( unsigned_32 );
-            WriteLoadU32( pagerva );
-            WriteLoadU32( pagesize );
+            WriteLoad( &pagerva, sizeof( unsigned_32 ) );
+            WriteLoad( &pagesize, sizeof( unsigned_32 ) );
             DumpRelocList( *reloclist );
             if( padme ) {
                 PadLoad( sizeof( pe_reloc_item ) );
@@ -765,53 +773,47 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-WResFileSSize  RcWrite( WResFileID fid, const void *buf, WResFileSize len )
+WResFileSSize  RcWrite( WResFileID hdl, const void *buf, WResFileSize len )
 {
-    fid = fid;
-    WriteLoad( buf, len );
+    hdl = hdl;
+    WriteLoad( (void *) buf, len );
     return( len );
 }
 
-WResFileOffset RcSeek( WResFileID fid, WResFileOffset off, int pos )
+WResFileOffset RcSeek( WResFileID hdl, WResFileOffset off, int pos )
 {
     DbgAssert( pos != SEEK_END );
     DbgAssert( !(pos == SEEK_CUR && off < 0) );
 
-    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
+    if( hdl == Root->outfile->handle ) {
         if( pos == SEEK_CUR ) {
             unsigned long   old_pos;
-            unsigned long   new_pos;
 
             old_pos = PosLoad();
-            new_pos = old_pos + off;
-            if( new_pos > old_pos ) {
-                PadLoad( (size_t)off );
-            } else {
-                SeekLoad( new_pos );
-            }
-            return( new_pos );
+            PadLoad( off );
+            return( old_pos + off );
         } else {
             SeekLoad( off );
             return( off );
         }
     } else {
-        return( QLSeek( WRES_FID2PH( fid ), off, pos, "resource file" ) );
+        return( QLSeek( hdl, off, pos, "resource file" ) );
     }
 }
 
-WResFileOffset RcTell( WResFileID fid )
+WResFileOffset RcTell( WResFileID hdl )
 {
-//    DbgAssert( fid == Root->outfile->handle );
+    DbgAssert( hdl == Root->outfile->handle );
 
-    fid = fid;
+    hdl = hdl;
     return( PosLoad() );
 }
 
-bool RcPadFile( WResFileID fid, size_t pad )
+bool RcPadFile( int handle, long pad )
 {
-    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
+    DbgAssert( handle == Root->outfile->handle );
 
-    fid = fid;
+    handle = handle;
     PadLoad( pad );
     return( false );
 }
@@ -821,16 +823,16 @@ void CheckDebugOffset( ExeFileInfo *info )
     info = info;
 }
 
-RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
-/*******************************************************************************/
+RcStatus CopyExeData( int inhandle, int outhandle, uint_32 length )
+/*****************************************************************/
 {
-    out_fid = out_fid;
+    outhandle = outhandle;
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
-        QRead( WRES_FID2PH( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
+        QRead( inhandle, TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );
     }
     if( length > 0 ) {
-        QRead( WRES_FID2PH( in_fid ), TokBuff, length, "resource file" );
+        QRead( inhandle, TokBuff, length, "resource file" );
         WriteLoad( TokBuff, length );
     }
     return( RS_OK );
@@ -867,7 +869,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.Handle = WRES_PH2FID( Root->outfile->handle );
+    einfo.Handle = Root->outfile->handle;
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
@@ -1095,7 +1097,7 @@ void FiniPELoadFile( void )
         }
         PE64( h ).cpu_type = PE_CPU_AMD64;
         PE64( h ).num_objects = num_objects;
-        PE64( h ).time_stamp = (unsigned_32)time( NULL );
+        PE64( h ).time_stamp = time( NULL );
         PE64( h ).nt_hdr_size = head_size - offsetof( pe_header64, flags ) - sizeof( PE64( h ).flags );
         PE64( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE | PE_FLG_LARGE_ADDRESS_AWARE;
         if( FmtData.u.pe.nolargeaddressaware ) {
@@ -1251,10 +1253,10 @@ void FiniPELoadFile( void )
             PE32( h ).cpu_type = PE_CPU_POWERPC;
         }
         PE32( h ).num_objects = num_objects;
-        PE32( h ).time_stamp = (unsigned_32)time( NULL );
+        PE32( h ).time_stamp = time( NULL );
         PE32( h ).nt_hdr_size = head_size - offsetof( pe_header, flags ) - sizeof( PE32( h ).flags );
         PE32( h ).flags = PE_FLG_REVERSE_BYTE_LO | PE_FLG_32BIT_MACHINE;
-        if( FmtData.u.pe.largeaddressaware ) {
+        if( FmtData.u.pe.largeaddressaware == 1 ) {
             PE32( h ).flags |= PE_FLG_LARGE_ADDRESS_AWARE;
         }
         if( (LinkState & MAKE_RELOCS) == 0 ) {
@@ -1711,13 +1713,15 @@ void AllocPETransferTable( void )
     // now calc addresses for imported local symbols
     for( loc_imp = PELocalImpList; loc_imp != NULL; loc_imp = loc_imp->next ) {
         off -= sizeof( pe_va );
-        SET_SYM_ADDR( loc_imp->iatsym, off, seg );
+        loc_imp->iatsym->addr.off = off;
+        loc_imp->iatsym->addr.seg = seg;
     }
     if( IDataGroup != NULL ) {
         glue_size = GetTransferGlueSize( LinkState );
         WALK_IMPORT_SYMBOLS( sym ) {
             off -= glue_size;
-            SET_SYM_ADDR( sym, off, seg );
+            sym->addr.seg = seg;
+            sym->addr.off = off;
             save = sym->p.seg;
             sym->p.seg = piece;
             DBIGenGlobal( sym, Root );
@@ -1747,7 +1751,7 @@ void AddPEImportLocalSym( symbol *locsym, symbol *iatsym )
 bool ImportPELocalSym( symbol *iatsym )
 /*************************************/
 {
-    const char      *name;
+    char            *name;
     symbol          *locsym;
 
     name = iatsym->name;

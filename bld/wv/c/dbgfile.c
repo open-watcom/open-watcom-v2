@@ -52,7 +52,6 @@
 #include "dbgsrc.h"
 #include "remfile.h"
 #include "dbgerr.h"
-#include "digcli.h"
 
 #include "clibext.h"
 
@@ -767,7 +766,7 @@ static int MakeNameWithPathOpen( const char *path, const char *name, size_t nlen
     return( open( res, O_RDONLY ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
+dig_ldhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ext, char *buff, size_t buff_size )
 {
     char            buffer[TXT_LEN];
     char            *p;
@@ -775,7 +774,7 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     bool            have_path;
     char            c;
     char            dummy[TXT_LEN];
-    int             fd;
+    int             fh;
     char_ring       *curr;
 
     if( buff == NULL ) {
@@ -802,39 +801,39 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     *p = NULLCHAR;
     if( have_path ) {
         StrCopy( buffer, buff );
-        fd = open( buffer, O_RDONLY );
+        fh = open( buffer, O_RDONLY );
     } else {
         // check open file in current directory or in full path
-        fd = MakeNameWithPathOpen( NULL, name, name_len, buff, buff_size );
-        if( fd == -1 ) {
+        fh = MakeNameWithPathOpen( NULL, name, name_len, buff, buff_size );
+        if( fh == -1 ) {
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                fd = MakeNameWithPathOpen( curr->name, name, name_len, buff, buff_size );
-                if( fd != -1 ) {
+                fh = MakeNameWithPathOpen( curr->name, name, name_len, buff, buff_size );
+                if( fh != -1 ) {
                     break;
                 }
             }
         }
     }
-    if( fd == -1 ) {
+    if( fh == -1 ) {
         strcpy( buff, buffer );
-        return( DIG_NIL_HANDLE );
+        return( DIG_NIL_LDHANDLE );
     }
-    return( DIG_PH2FID( fd ) );
+    return( fh );
 }
 
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( read( ldfh, buff, len ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( lseek( ldfh, offs, where ) == -1L );
 }
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( close( ldfh ) );
 }
 #endif

@@ -483,41 +483,35 @@ PE_MODULE * PE_loadLibraryHandle(
     u_long      size;
 
     /* Attempt to open the file on disk */
-    if( fd == -1 ) {
-        f = fopen( szDLLName, "rb" );
-    } else {
-        f = fdopen( fd, "rb" );
-    }
-    if( f == NULL) {
+    if ((f = fdopen(fd,"rb")) == NULL) {
         result = PE_fileNotFound;
-        return( NULL );
-    }
-    hMod = PE_loadLibraryExt( f, 0, &size );
-    fclose( f );
+        return NULL;
+        }
+    hMod = PE_loadLibraryExt(f,0,&size);
+    fclose(f);
 
     /* Notify the Watcom Debugger of module load and let it load symbolic info */
 #ifdef WATCOM_DEBUG_SYMBOLS
-    if( hMod != NULL ) {
+    if (hMod) {
         u_long   size;
         char    *modname;
 
         /* Store the file name in the hMod structure; this must be the real
          * file name where the debugger will try to load symbolic info from
          */
-        size = strlen( szDLLName ) + 1;
-        modname = malloc( size );
-        if( modname != NULL ) {
-            if( szDLLName[1] == ':' ) {
-                strcpy( modname, szDLLName + 2 );
-            } else {
-                strcpy( modname, szDLLName );
-            }
+        size = strlen(szDLLName) + 1;
+        modname = malloc(size);
+        if (modname) {
+            if (szDLLName[1] == ':')
+                strcpy(modname, szDLLName+2);
+            else
+                strcpy(modname, szDLLName);
             hMod->modname = modname;
-            NotifyWDLoad( hMod->modname, (u_long)hMod->pbase );
+            NotifyWDLoad(hMod->modname, (u_long)hMod->pbase);
+            }
         }
-    }
 #endif
-    return( hMod );
+    return hMod;
 }
 
 /****************************************************************************

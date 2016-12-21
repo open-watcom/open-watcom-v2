@@ -60,9 +60,6 @@
 #include "clibext.h"
 
 
-#define ORL_FID2FL( fid )   ((file_list *)(fid))
-#define ORL_FL2FID( fl )    ((orl_file_id)(fl))
-
 typedef struct readcache READCACHE;
 
 typedef struct readcache {
@@ -81,14 +78,14 @@ static char             *ImpExternalName;
 static char             *ImpModName;
 static char             *FirstCodeSymName;
 static char             *FirstDataSymName;
-static ordinal_t        ImpOrdinal;
+static unsigned_32      ImpOrdinal;
 
 static readcache   *ReadCacheList;
 
-static void *ORLRead( orl_file_id fid, size_t len )
-/*************************************************/
+static void *ORLRead( void *_list, size_t len )
+/**********************************************/
 {
-    file_list   *list = ORL_FID2FL( fid );
+    file_list   *list = _list;
     void        *result;
     readcache   *cache;
 
@@ -101,10 +98,10 @@ static void *ORLRead( orl_file_id fid, size_t len )
     return( result );
 }
 
-static long ORLSeek( orl_file_id fid, long pos, int where )
-/*********************************************************/
+static long ORLSeek( void *_list, long pos, int where )
+/*****************************************************/
 {
-    file_list *list = ORL_FID2FL( fid );
+    file_list *list = _list;
 
     if( where == SEEK_SET ) {
         ORLPos = pos;
@@ -117,7 +114,7 @@ static long ORLSeek( orl_file_id fid, long pos, int where )
 }
 
 void InitObjORL( void )
-/*********************/
+/****************************/
 {
     ORLSetFuncs( orl_cli_funcs, ORLRead, ORLSeek, ChkLAlloc, LFree );
 
@@ -156,7 +153,7 @@ bool IsORL( file_list *list, unsigned long loc )
 
     isOK = true;
     ORLFileSeek( list, loc, SEEK_SET );
-    type = ORLFileIdentify( ORLHandle, ORL_FL2FID( list ) );
+    type = ORLFileIdentify( ORLHandle, list );
     if( type == ORL_ELF ) {
         ObjFormat |= FMT_ELF;
     } else if( type == ORL_COFF ) {
@@ -183,7 +180,7 @@ static orl_file_handle InitFile( void )
     } else {
         type = ORL_COFF;
     }
-    return( ORLFileInit( ORLHandle, ORL_FL2FID( CurrMod->f.source ), type ) );
+    return( ORLFileInit( ORLHandle, CurrMod->f.source, type ) );
 }
 
 static void ClearCachedData( file_list *list )
@@ -464,7 +461,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     snode = AllocNodeIdx( SegNodes, segidx );
     snode->entry = sdata;
     snode->handle = sec;
-    sdata->iscdat = ( (flags & ORL_SEC_FLAG_COMDAT) != 0 );
+    sdata->iscdat = (flags & ORL_SEC_FLAG_COMDAT) != 0;
     len = sizeof( CoffIDataSegName ) - 1;
     if( strnicmp( CoffIDataSegName, name, len ) == 0 ) {
         SeenDLLRecord();
@@ -941,12 +938,12 @@ unsigned long ORLPass1( void )
     if( filehdl == NULL ) {
         LnkMsg( FTL+MSG_BAD_OBJECT, "s", CurrMod->f.source->file->name );
         CurrMod->f.source->file->flags |= INSTAT_IOERR;
-        return( (unsigned long)-1 );
+        return( -1 );
     }
     if( CheckFlags( filehdl ) ) {
         if( (LinkState & HAVE_PPC_CODE) && !FmtData.toc_initialized ) {
             InitToc();
-            FmtData.toc_initialized = true;
+            FmtData.toc_initialized = 1;
         }
         if( LinkFlags & DWARF_DBI_FLAG ) {
             CurrMod->modinfo |= MOD_FLATTEN_DBI;

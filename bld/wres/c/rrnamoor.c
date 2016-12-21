@@ -40,10 +40,10 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle )
 /*********************************************************/
 {
     ResNameOrOrdinal    newname;
-    ResNameOrOrdinal    *newptr;
+    ResNameOrOrdinal *  newptr;
     bool                error;
     size_t              stringlen;
-    char                *restofstr;
+    char *              restofstr;
     uint_8              tmp8;
     uint_16             tmp16;
 
@@ -73,9 +73,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle )
     } else {
         newptr = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
         error = (newptr == NULL);
-        if( error ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        }
+        if( error ) WRES_ERROR( WRS_MALLOC_FAILED );
     }
 
     /* copy the new new Name or Ordinal into the correct place */
@@ -85,7 +83,7 @@ ResNameOrOrdinal *ResReadNameOrOrdinal( WResFileID handle )
             newptr->ord.wOrdinalID = newname.ord.wOrdinalID;
         } else {
             if( newptr->name[0] != '\0' ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
+                memcpy( &(newptr->name[1]), restofstr, stringlen );
                 WRESFREE( restofstr );
             }
         }
@@ -99,10 +97,10 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID handle )
 {
     uint_16             flags;
     uint_16             ord;
-    ResNameOrOrdinal    *newptr;
+    ResNameOrOrdinal *  newptr;
     bool                error;
     size_t              stringlen;
-    char                *restofstr;
+    char *              restofstr;
 
     restofstr = NULL;
     ord = 0;
@@ -128,20 +126,18 @@ ResNameOrOrdinal *ResRead32NameOrOrdinal( WResFileID handle )
     } else {
         newptr = WRESALLOC( sizeof( ResNameOrOrdinal ) + stringlen );
         error = (newptr == NULL);
-        if( error ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        }
+        if( error ) WRES_ERROR( WRS_MALLOC_FAILED );
     }
 
-    /* copy the new Name or Ordinal into the correct place */
+    /* copy the new new Name or Ordinal into the correct place */
     if( !error ) {
         if( flags == 0xffff ) {
             newptr->ord.fFlag = 0xff;
             newptr->ord.wOrdinalID = ord;
         } else {
-            newptr->name[0] = UNI2ASCII( flags );
+            newptr->name[0] = (char)(flags & 0x00ff);
             if( flags != 0x0000 ) {
-                memcpy( newptr->name + 1, restofstr, stringlen );
+                memcpy( &(newptr->name[1]), restofstr, stringlen );
                 WRESFREE( restofstr );
             }
         }

@@ -139,8 +139,8 @@ static unsigned_32 Write16MData( unsigned hdr_size )
     return( PosLoad() );
 }
 
-static bool RelocWalkFn( void *data, size_t size, void *ctx )
-/***********************************************************/
+static bool RelocWalkFn( void *data, unsigned_32 size, void *ctx )
+/****************************************************************/
 {
     context     *info = ctx;
 
@@ -155,11 +155,11 @@ static void write_sel_reloc( unsigned_16 sel, reloc_addr *block_start, reloc_add
     unsigned_16     block_cnt;
 
     if( sel != 0 ) {
-        WriteLoadU16( sel );
+        WriteLoad( &sel, sizeof( sel ) );
         block_cnt = block_end - block_start;
-        WriteLoadU16( block_cnt );
+        WriteLoad( &block_cnt, sizeof( block_cnt ) );
         for( ; block_start < block_end; ++block_start ) {
-            WriteLoadU16( block_start->off );
+            WriteLoad( &block_start->off, sizeof( block_start->off ) );
         }
     }
 }
@@ -180,7 +180,7 @@ static unsigned GetRelocBlock( reloc_addr **reloc_data )
 /******************************************************************/
 {
     RELOC_INFO      *relocs;
-    size_t          num_relocs;
+    unsigned        num_relocs;
     context         info;
 
     *reloc_data = NULL;
@@ -221,7 +221,7 @@ static unsigned_32 Write16MRelocs( reloc_addr *reloc_data )
 {
     unsigned        num_relocs;
     unsigned_32     pos;
-    unsigned        i;
+    int             i;
     unsigned_16     sel;
     unsigned        block_start;
 
@@ -230,11 +230,11 @@ static unsigned_32 Write16MRelocs( reloc_addr *reloc_data )
     if( reloc_fmt == 1 ) {
         // RSI-1 reloc format
         for( i = 0; i < num_relocs; ++ i ) {
-            WriteLoadU16( reloc_data[i].seg );
+            WriteLoad( &reloc_data[i].seg, sizeof( reloc_data[i].seg ) );
         }
         NullAlign( 0x10 );
         for( i = 0; i < num_relocs; ++ i ) {
-            WriteLoadU16( reloc_data[i].off );
+            WriteLoad( &reloc_data[i].off, sizeof( reloc_data[i].off ) );
         }
     } else if( reloc_fmt == 2 ) {
         // RSI-2 reloc format
@@ -258,14 +258,15 @@ static unsigned_32 WriteStubProg( void )
     unsigned_32 size;
     f_handle    fhandle;
 
-    size = 0;
-    if( FmtData.u.d16m.stub != NULL ) {
+    if( FmtData.u.d16m.stub == NULL ) {
+        size = 0;
+    } else {
         fhandle = FindPath( FmtData.u.d16m.stub );
         if( fhandle == NIL_FHANDLE ) {
             LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.d16m.stub );
+            size = 0;
         } else {
             size = CopyToLoad( fhandle, FmtData.u.d16m.stub );
-            QClose( fhandle, FmtData.u.d16m.stub );
         }
     }
     SetOriginLoad( size );

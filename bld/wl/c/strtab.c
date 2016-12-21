@@ -93,15 +93,12 @@ void ReserveStringTable( stringtable *strtab, size_t len )
     }
 }
 
-static char *AddToStringTable( stringtable *strtab, const void *data, size_t len, bool addnullchar, size_t *offs )
-/****************************************************************************************************************/
+static char *AddToStringTable( stringtable *strtab, const void *data, size_t len, bool addnullchar )
+/**************************************************************************************************/
 {
     stringblock *blk;
     size_t      diff;
     char *      dest;
-    size_t      start;
-
-#define START_UNDEF ((size_t)-1)
 
     if( addnullchar )
         ++len;
@@ -109,15 +106,7 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
         LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", data );
         len = STR_BLOCK_SIZE;
     }
-    start = START_UNDEF;
     for( blk = RingLast( strtab->data ); blk->size + len > STR_BLOCK_SIZE; blk = AllocNewBlock( strtab ) ) {
-        if( start == START_UNDEF ) {
-            if( strtab->currbase & 1 ) {
-                start = (strtab->currbase & ~1) + STR_BLOCK_SIZE;
-            } else {
-                start = strtab->currbase + blk->size;
-            }
-        }
         diff = STR_BLOCK_SIZE - blk->size;
         if( diff != 0 ) {
             if( strtab->currbase & 1 ) {        // then don't split
@@ -131,11 +120,6 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
         blk->size = STR_BLOCK_SIZE;
         strtab->currbase += STR_BLOCK_SIZE;
     }
-    if( offs != NULL ) {
-        if( start == START_UNDEF )
-            start = (strtab->currbase & ~1) + blk->size;
-        *offs = start;
-    }
     dest = blk->data + blk->size;
     blk->size += len;
     if( addnullchar )
@@ -147,34 +131,25 @@ static char *AddToStringTable( stringtable *strtab, const void *data, size_t len
 void AddCharStringTable( stringtable *strtab, char data )
 /*******************************************************/
 {
-    AddToStringTable( strtab, &data, sizeof( char ), false, NULL );
+    AddToStringTable( strtab, &data, sizeof( char ), false );
 }
 
 char *AddStringStringTable( stringtable *strtab, const char *data )
 /*****************************************************************/
 {
-    return( AddToStringTable( strtab, data, strlen( data ) + 1, false, NULL ) );
-}
-
-size_t AddStringStringTableOffs( stringtable *strtab, const char *data )
-/**********************************************************************/
-{
-    size_t  offs;
-
-    AddToStringTable( strtab, data, strlen( data ) + 1, false, &offs );
-    return( offs );
+    return( AddToStringTable( strtab, data, strlen( data ) + 1, false ) );
 }
 
 char *AddBufferStringTable( stringtable *strtab, const void *data, size_t len )
 /*****************************************************************************/
 {
-    return( AddToStringTable( strtab, data, len, false, NULL ) );
+    return( AddToStringTable( strtab, data, len, false ) );
 }
 
 char *AddSymbolStringTable( stringtable *strtab, const char *data, size_t len )
 /*****************************************************************************/
 {
-    return( AddToStringTable( strtab, data, len, true, NULL ) );
+    return( AddToStringTable( strtab, data, len, true ) );
 }
 
 void ZeroStringTable( stringtable *strtab, size_t len )

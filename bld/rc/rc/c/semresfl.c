@@ -77,8 +77,8 @@ static bool copyResourcesFromRes( const char *full_filename )
 
     buffer = NULL;
     dir = WResInitDir();
-    handle = RcIoOpenInput( full_filename, false );
-    if( handle == WRES_NIL_HANDLE ) {
+    handle = RcIoOpenInput( full_filename, O_RDONLY | O_BINARY );
+    if( handle == NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, full_filename, strerror( errno ) );
         goto HANDLE_ERROR;
     }
@@ -117,7 +117,7 @@ static bool copyResourcesFromRes( const char *full_filename )
 HANDLE_ERROR:
     ErrorHasOccured = true;
     WResFreeDir( dir );
-    if( handle != WRES_NIL_HANDLE )
+    if( handle != NIL_HANDLE )
         RCCLOSE( handle );
     return( true );
 }

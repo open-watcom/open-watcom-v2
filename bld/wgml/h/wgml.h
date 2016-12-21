@@ -442,7 +442,7 @@ extern void     ob_graphic( graphic_element * in_el );
 /* wgmlmsg.c                            */
 extern  bool    init_msgs( void );
 extern  void    fini_msgs( void );
-extern  bool    get_msg( msg_ids resourceid, char *buffer, int buflen );
+extern  bool    get_msg( msg_ids resourceid, char *buffer, size_t buflen );
 //extern  void Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *arg_info, char *types, ... );
 //extern  void Msg_Put_Args( char message[], MSG_ARG_LIST *arg_info, char *types, va_list *args );
 

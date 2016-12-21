@@ -88,7 +88,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         resfile->Dir = WResInitDir();
         resfile->name = resnames->name;
         resfile->Handle = ResOpenFileRO( resfile->name );
-        if( resfile->Handle == WRES_NIL_HANDLE ) {
+        if( resfile->Handle == NIL_HANDLE ) {
             RcError( ERR_CANT_OPEN_FILE, resfile->name, LastWresErrStr() );
             resfile->IsOpen = false;
             goto HANDLE_ERROR;
@@ -113,7 +113,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         if( rescnt >= MAX_OPEN_RESFILES ) {
             resfile->IsOpen = false;
             ResCloseFile( resfile->Handle );
-            resfile->Handle = WRES_NIL_HANDLE;
+            resfile->Handle = NIL_HANDLE;
             *allopen = false;
         }
 

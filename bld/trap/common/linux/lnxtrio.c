@@ -41,7 +41,6 @@
     #include <process.h>
 #endif
 #include "trptypes.h"
-#include "digcli.h"
 #include "digld.h"
 #include "servio.h"
 
@@ -188,14 +187,14 @@ static unsigned FindFilePath( const char *name, char *result )
     return( TryOnePath( "/opt/watcom/wd", &tmp, name, result ) );
 }
 
-dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
+dig_ldhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *ext, char *result, unsigned max_result )
 {
     bool                has_ext;
     bool                has_path;
     const char          *src;
     char                *dst;
     char                trpfile[256];
-    int                 fd;
+    int                 fh;
     char                c;
 
     max_result = max_result;
@@ -224,36 +223,30 @@ dig_fhandle DIGLoader( Open )( const char *name, unsigned name_len, const char *
         dst += name_len;
     }
     *dst = '\0';
-    fd = -1;
+    fh = -1;
     if( has_path ) {
-        fd = open( trpfile, O_RDONLY );
-        for( src = trpfile, dst = result; (*dst = *src++) != '\0'; ++dst ) {
-            if( max_result-- < 2 ) {
-                *dst = '\0';
-                break;
-            }
-        }
+        fh = open( trpfile, O_RDONLY );
     } else if( FindFilePath( trpfile, result ) ) {
-        fd = open( result, O_RDONLY );
+        fh = open( result, O_RDONLY );
     }
-    if( fd == -1 )
-        return( DIG_NIL_HANDLE );
-    return( DIG_PH2FID( fd ) );
+    if( fh == -1 )
+        return( DIG_NIL_LDHANDLE );
+    return( fh );
 }
 
 #if 0
-int DIGLoader( Read )( dig_fhandle fid, void *buff, unsigned len )
+int DIGLoader( Read )( dig_ldhandle ldfh, void *buff, unsigned len )
 {
-    return( read( DIG_FID2PH( fid ), buff, len ) != len );
+    return( read( ldfh, buff, len ) != len );
 }
 
-int DIGLoader( Seek )( dig_fhandle fid, unsigned long offs, dig_seek where )
+int DIGLoader( Seek )( dig_ldhandle ldfh, unsigned long offs, dig_seek where )
 {
-    return( lseek( DIG_FID2PH( fid ), offs, where ) == -1L );
+    return( lseek( ldfh, offs, where ) == -1L );
 }
 #endif
 
-int DIGLoader( Close )( dig_fhandle fid )
+int DIGLoader( Close )( dig_ldhandle ldfh )
 {
-    return( close( DIG_FID2PH( fid ) ) != 0 );
+    return( close( ldfh ) );
 }

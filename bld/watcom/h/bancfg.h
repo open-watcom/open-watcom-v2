@@ -31,5 +31,5 @@
 
 #define _BANVER     1300
 #define _BETAVER    1
-
-#define CURR_YEAR   "2016"
+#define _BANEXTRA   __DATE__ " " __TIME__ STR_BITNESS
+#define _BANEXSHORT __DATE__

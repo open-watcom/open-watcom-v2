@@ -239,7 +239,7 @@ extern int DumpFile( void )
     WResDir         dir;
 
     handle = ResOpenFileRO( CmdLineParms.FileName );
-    if (handle == WRES_NIL_HANDLE) {
+    if (handle == -1) {
         return( 2 );
     }
 

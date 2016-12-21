@@ -33,21 +33,6 @@
 #ifndef DIGCLI_H_INCLUDED
 #define DIGCLI_H_INCLUDED
 
-/*
- * dig_fhandle can be pointer to file structure or handle number
- * therefore 0/NULL is reserved for errors
- * if handle number is used then handle must be 1 based
- */
-#if defined( _WIN64 )
-#define DIG_FID2PH(fid) (((int)(unsigned __int64)(fid)) - 1)
-#define DIG_PH2FID(ph)  ((void *)(unsigned __int64)(ph + 1))
-#else
-#define DIG_FID2PH(fid) (((int)(unsigned long)(fid)) - 1)
-#define DIG_PH2FID(ph)  ((void *)(unsigned long)(ph + 1))
-#endif
-#define DIG_FID2FH(fid) ((FILE *)(fid))
-#define DIG_FH2FID(fh)  ((void *)(fh))
-
 #define DIGCli(n)       DIGCli ## n
 #define _DIGCli(n)      _DIGCli ## n n
 

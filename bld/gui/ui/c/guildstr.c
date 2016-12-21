@@ -43,10 +43,6 @@
 #include "wresdefn.h"
 #include "wressetr.h"
 #include "wresset2.h"
-#include "filefmt.h"
-#include "resdiag.h"
-#include "resmenu.h"
-#include "seekres.h"
 #include "guildstr.h"
 
 #include "clibext.h"
@@ -62,35 +58,64 @@
 #define NO_RES_MESSAGE_SUFFIX ")." _newline
 
 static  HANDLE_INFO     hInstance = { 0 };
+static  bool            GUIMsgInitFlag = false;
+
+static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
+/* fool the resource compiler into thinking that the resource information
+ * starts at offset 0 */
+{
+    if( where == SEEK_SET ) {
+        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
+    } else {
+        return( lseek( handle, position, where ) );
+    }
+}
+
+WResSetRtns( open, close, read, write, res_seek, tell, GUIMemAlloc, GUIMemFree );
 
 bool GUIIsLoadStrInitialized( void )
 {
-    return( hInstance.status != 0 );
+    return( GUIMsgInitFlag );
 }
 
 bool GUILoadStrInit( const char *fname )
 {
-    hInstance.status = 0;
-    if( OpenResFileX( &hInstance, fname, GUIGetExtName() != NULL ) ) {
+    hInstance.handle = NIL_HANDLE;
+    if( !OpenResFile( &hInstance, fname ) ) {
         // if we are using an external resource file then we don't have to search
-        return( true );
+        WResFileShift = 0;
+        if( GUIGetExtName() != NULL || !FindResources( &hInstance ) ) {
+            if( !InitResources( &hInstance ) ) {
+                GUIMsgInitFlag = true;
+                return( true );
+            }
+        }
+        CloseResFile( &hInstance );
     }
-    CloseResFile( &hInstance );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
-    posix_write( fileno( stdout ), fname,                 strlen( fname ) );
-    posix_write( fileno( stdout ), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    write( fileno(stdout), NO_RES_MESSAGE_PREFIX, sizeof( NO_RES_MESSAGE_PREFIX ) - 1 );
+    write( fileno(stdout), fname,                 strlen( fname ) );
+    write( fileno(stdout), NO_RES_MESSAGE_SUFFIX, sizeof( NO_RES_MESSAGE_SUFFIX ) - 1 );
+    GUIMsgInitFlag = false;
     return( false );
 }
 
 bool GUILoadStrFini( void )
 {
-    return( CloseResFile( &hInstance ) );
+    if( GUIMsgInitFlag ) {
+        if( !CloseResFile( &hInstance ) ) {
+            GUIMsgInitFlag = false;
+        } else {
+            return( false );
+        }
+    }
+
+    return( true );
 }
 
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
-    if( hInstance.status && buffer != NULL && buffer_length != 0 ) {
-        if( WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {
+    if( GUIMsgInitFlag && buffer != NULL && buffer_length != 0 ) {
+        if( WResLoadString( &hInstance, id, (LPSTR)buffer, buffer_length ) > 0 ) {
             return( true );
         } else {
             buffer[0] = '\0';
@@ -100,48 +125,30 @@ bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
     return( false );
 }
 
-bool GUISeekDialogTemplate( res_name_or_id dlg_id )
+bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length )
 {
     bool                ok;
 
-    ok = ( hInstance.status != 0 );
+    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_DIALOG ), dlg_id );
+        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_DIALOG ), dlg_id,
+                                 (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );
 }
 
-bool GUISeekMenuTemplate( res_name_or_id menu_id )
+bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length )
 {
     bool                ok;
 
-    ok = ( hInstance.status != 0 );
+    ok = ( GUIMsgInitFlag && template != NULL && length != NULL );
 
     if( ok ) {
-        ok = WResSeekResourceX( &hInstance, MAKEINTRESOURCE( RT_MENU ), menu_id );
+        ok = ( WResLoadResourceX( &hInstance, GUI_MAKEINTRESOURCE( RT_MENU ), menu_id,
+                                 (LPSTR *)template, length ) == 0 );
     }
 
     return( ok );
-}
-
-bool GUIResReadDialogBoxHeader( DialogBoxHeader *hdr )
-{
-    return( ResReadDialogBoxHeader( hdr, hInstance.fid ) );
-}
-
-bool GUIResReadDialogBoxControl( DialogBoxControl *ctl )
-{
-    return( ResReadDialogBoxControl( ctl, hInstance.fid ) );
-}
-
-bool GUIResReadMenuHeader( MenuHeader *hdr )
-{
-    return( ResReadMenuHeader( hdr, hInstance.fid ) );
-}
-
-bool GUIResReadMenuItem( MenuItem *new )
-{
-    return( ResReadMenuItem( new, hInstance.fid ) );
 }

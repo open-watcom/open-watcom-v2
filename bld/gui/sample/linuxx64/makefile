@@ -2,6 +2,8 @@
 host_cpu = x64
 host_os  = linux
 
+type = ui
+os   = linux
 sys  = linux
 
 !include ../master.mif

@@ -56,8 +56,6 @@
 #include "wre_wres.h"
 #include "wre_rc.h"
 #include "wrestr.h"
-#include "wresdefn.h"
-
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -131,17 +129,17 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
 
     // check for an existing string tables
     if( ok ) {
-        if( WREFindTypeNode( curr->info->info->dir, RESOURCE2INT( RT_STRING ), NULL ) ) {
+        if( WREFindTypeNode( curr->info->info->dir, (uint_16)(pointer_int)RT_STRING, NULL ) ) {
             WREDisplayErrorMsg( WRE_STRINGTABLEEXISTS );
             return( false );
         }
     }
 
     if( ok ) {
-        if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
+        if( curr->info->current_type == (uint_16)(pointer_int)RT_STRING ) {
             tname = &curr->type->Info.TypeName;
         } else {
-            tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
+            tname = WResIDFromNum( (uint_16)(pointer_int)RT_STRING );
             tname_alloc = true;
         }
         lang.lang = DEF_LANG;
@@ -157,7 +155,7 @@ bool WREAddStringToDir( WRECurrentResInfo *curr )
             ok = (rname != NULL);
             if( ok ) {
                 ok = WRENewResource( curr, tname, rname, DEF_MEMFLAGS, 0, 0,
-                                     &lang, &dup, RESOURCE2INT( RT_STRING ), tname_alloc );
+                                     &lang, &dup, (uint_16)(pointer_int)RT_STRING, tname_alloc );
                 if( !ok && dup ) {
                     ok = true;
                 }
@@ -331,7 +329,7 @@ bool WREGetStringSessionData( WREStringSession *session, bool close )
     }
 
     if( ok ) {
-        tnode = WREFindTypeNode( session->rinfo->info->dir, RESOURCE2INT( RT_STRING ), NULL );
+        tnode = WREFindTypeNode( session->rinfo->info->dir, (uint_16)(pointer_int)RT_STRING, NULL );
     }
 
     if( ok && tnode != NULL && session->info->modified ) {
@@ -343,7 +341,7 @@ bool WREGetStringSessionData( WREStringSession *session, bool close )
         tnode = WREUseStringNodes( session->rinfo->info->dir, session->info->tables );
         type = 0;
         if( tnode != NULL ) {
-            type = RESOURCE2INT( RT_STRING );
+            type = (uint_16)(pointer_int)RT_STRING;
         }
         session->rinfo->current_type = 0;
         ok = WREInitResourceWindow( session->rinfo, type );
@@ -535,7 +533,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
     bool                ok;
 
     tnode = NULL;
-    tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
+    tname = WResIDFromNum( (long)(pointer_int)RT_STRING );
     ok = (tname != NULL);
 
     while( ok && node != NULL ) {
@@ -554,7 +552,7 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
     }
 
     if( ok ) {
-        tnode = WREFindTypeNode( dir, RESOURCE2INT( RT_STRING ), NULL );
+        tnode = WREFindTypeNode( dir, (uint_16)(pointer_int)RT_STRING, NULL );
     }
 
     return( tnode );

@@ -2,6 +2,8 @@
 host_cpu = 386
 host_os  = dos
 
+type = ui
+os   = dos
 sys  = dos4g
 
 !include ../master.mif

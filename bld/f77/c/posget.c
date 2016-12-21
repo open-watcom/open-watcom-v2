@@ -36,29 +36,28 @@
 #include "posseek.h"
 #include "poserr.h"
 #include "posflush.h"
+
 #include <stdlib.h>
 #include <string.h>
 #if defined( __WINDOWS__ )
 #include <conio.h>
 #endif
 
-#include "clibext.h"
 
-
-size_t readbytes( b_file *io, char *buff, size_t len )
-//====================================================
+uint    readbytes( b_file *io, char *buff, uint len )
+//===================================================
 {
-    size_t      bytes_read;
-    size_t      total;
-    size_t      amt;
+    int         bytes_read;
+    uint        total;
+    int         amt;
 
     total = 0;
     amt = MAX_SYSIO_SIZE;
-    while( len > 0 ) {
-        if( amt > len )
+    while( len != 0 ) {
+        if( len < amt )
             amt = len;
-        bytes_read = posix_read( io->handle, buff, amt );
-        if( bytes_read == READ_ERROR ) {
+        bytes_read = read( io->handle, buff, amt );
+        if( bytes_read < 0 ) {
             FSetSysErr( io );
             return( READ_ERROR );
         } else if( bytes_read == 0 ) {
@@ -67,7 +66,7 @@ size_t readbytes( b_file *io, char *buff, size_t len )
             FSetEof( io );
             return( READ_ERROR );
         }
-        io->phys_offset += (unsigned long)bytes_read;
+        io->phys_offset += bytes_read;
         total += bytes_read;
         buff += bytes_read;
         len -= bytes_read;
@@ -82,13 +81,11 @@ size_t readbytes( b_file *io, char *buff, size_t len )
 static  int     FillBuffer( b_file *io )
 //======================================
 {
-    size_t      bytes_read;
+    uint        bytes_read;
 
-    if( FlushBuffer( io ) < 0 )
-        return( -1 );
+    if( FlushBuffer( io ) < 0 ) return( -1 );
     bytes_read = readbytes( io, io->buffer, io->buff_size );
-    if( bytes_read == READ_ERROR )
-        return( -1 );
+    if( bytes_read == READ_ERROR ) return( -1 );
     io->attrs |= READ_AHEAD;
     io->high_water = 0;
     io->read_len = bytes_read;
@@ -96,13 +93,13 @@ static  int     FillBuffer( b_file *io )
 }
 
 
-size_t SysRead( b_file *io, char *b, size_t len )
-//===============================================
+uint    SysRead( b_file *io, char *b, uint len )
+//==============================================
 {
-    size_t      bytes_read;
-    size_t      amt;
-    size_t      offs_in_b;
-    size_t      max_valid;
+    uint        bytes_read;
+    uint        amt;
+    uint        offs_in_b;
+    uint        max_valid;
 
     if( io->attrs & BUFFERED ) {
         // determine the maximum valid position in the buffer
@@ -117,10 +114,10 @@ size_t SysRead( b_file *io, char *b, size_t len )
             max_valid = io->read_len;
         }
         amt = max_valid - io->b_curs;
-        if( amt > len ) {
+        if( len < amt ) {
             amt = len;
         }
-        memcpy( b, &io->buffer[io->b_curs], amt );
+        memcpy( b, &io->buffer[ io->b_curs ], amt );
         offs_in_b = amt;
         io->b_curs += amt;
         len -= amt;
@@ -162,12 +159,12 @@ size_t SysRead( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetTextRec( b_file *io, char *b, size_t len )
+static  uint    GetTextRec( b_file *io, char *b, uint len )
 //=========================================================
 // Get a record from a TEXT file.
 {
     char        ch;
-    size_t      read;
+    uint        read;
     char        rs[2];
 
     if( io->attrs & SEEK ) { // direct access
@@ -196,7 +193,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
         char            *stop;
         bool            seen_cr;
         bool            trunc;
-        size_t          max_valid;
+        uint            max_valid;
 
         // determine maximum valid position in the buffer
         max_valid = io->read_len;
@@ -208,7 +205,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
         read = 0;
         seen_cr = false;
         trunc = false;
-        for( ;; ) {
+        for( ; ; ) {
             if( ptr >= stop ) {
                 io->b_curs = ptr - io->buffer;
                 if( FillBuffer( io ) < 0 ) {
@@ -237,7 +234,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
                 if( ch == CR ) {
                     seen_cr = true;
                 } else if( read < len ) {
-                    b[read] = ch;
+                    b[ read ] = ch;
                     ++read;
                 } else {
                     trunc = true;
@@ -248,7 +245,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
                 --ptr;  // give back the char
                 seen_cr = false;
                 if( read < len ) {
-                    b[read] = CR;
+                    b[ read ] = CR;
                     ++read;
                 } else {
                     trunc = true;
@@ -265,7 +262,7 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
         len = readbytes( io, b, len );
         if( len == READ_ERROR )
             return( 0 );
-        for( ;; ) {
+        for( ; ; ) {
             if( read == len )
                 break;
 #if defined( __UNIX__ ) || defined( __NETWARE__ )
@@ -293,11 +290,10 @@ static size_t GetTextRec( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetVariableRec( b_file *io, char *b, size_t len )
+static  uint    GetVariableRec( b_file *io, char *b, uint len )
 //=============================================================
 // Get a record from a file with "variable" records.
 {
-    size_t      tag_len;
     unsigned_32 tag;
     unsigned_32 save_tag;
 
@@ -305,21 +301,19 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
         return( 0 );
     }
     save_tag = tag;
-    tag_len = tag & 0x7fffffff;
-    if( tag_len > len ) {
+    tag &= 0x7fffffff;
+    if( tag > len ) {
         FSetTrunc( io );
-        if( SysRead( io, b, len ) == READ_ERROR )
-            return( 0 );
-        if( SysSeek( io, (long)tag_len - (long)len, SEEK_CUR ) < 0 ) {
+        if( SysRead( io, b, len ) == READ_ERROR ) return( 0 );
+        if( SysSeek( io, tag - len, SEEK_CUR ) < 0 ) {
             FSetSysErr( io );
             return( 0 );
         }
     } else {
-        if( SysRead( io, b, tag_len ) == READ_ERROR )
-            return( 0 );
-        len = tag_len;
+        if( SysRead( io, b, tag ) == READ_ERROR ) return( 0 );
+        len = tag;
     }
-    if( SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) ) == READ_ERROR )
+    if( SysRead( io, (char *)(&tag), sizeof(unsigned_32) ) == READ_ERROR )
         return( 0 );
     if( tag != save_tag ) {
         FSetErr( IO_BAD_RECORD, io );
@@ -329,26 +323,23 @@ static size_t GetVariableRec( b_file *io, char *b, size_t len )
 }
 
 
-static size_t GetFixedRec( b_file *io, char *b, size_t len )
+static  uint    GetFixedRec( b_file *io, char *b, uint len )
 //==========================================================
 // Get a record from a file with "fixed" records.
 {
     len = SysRead( io, b, len );
-    if( len == READ_ERROR )
-        return( 0 );
+    if( len == READ_ERROR ) return( 0 );
     return( len );
 }
 
 
-size_t FGetRec( b_file *io, char *b, size_t len )
-//===============================================
+uint    FGetRec( b_file *io, char *b, uint len )
+//==============================================
 // Get a record from a file.
 {
     IOOk( io );
-    if( io->attrs & REC_TEXT )
-        return( GetTextRec( io, b, len ) );
-    if( io->attrs & REC_VARIABLE )
-        return( GetVariableRec( io, b, len ) );
+    if( io->attrs & REC_TEXT ) return( GetTextRec( io, b, len ) );
+    if( io->attrs & REC_VARIABLE ) return( GetVariableRec( io, b, len ) );
     return( GetFixedRec( io, b, len ) );
 }
 
@@ -372,11 +363,11 @@ char    GetStdChar( void )
     if( ch == CR )
         return( LF );
 #else
-    if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 )
+    if( read( STDIN_FILENO, &ch, 1 ) < 0 )
         return( NULLCHAR );
 #if ! defined( __UNIX__ )
     if( ch == CR ) {
-        if( posix_read( STDIN_FILENO, &ch, 1 ) < 0 ) {
+        if( read( STDIN_FILENO, &ch, 1 ) < 0 ) {
             return( NULLCHAR );
         }
     }
@@ -392,12 +383,11 @@ int     FCheckLogical( b_file *io )
 //=================================
 {
     unsigned_32 tag;
-    size_t      rc;
+    int         rc;
 
     rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
     if( rc == READ_ERROR ) {
-        if( io->stat != IO_EOF )
-            return( -1 );
+        if( io->stat != IO_EOF ) return( -1 );
         // if an EOF occurs we've skipped the record
         IOOk( io );
         return( 0 );
@@ -406,8 +396,7 @@ int     FCheckLogical( b_file *io )
     if( tag & 0x80000000 ) {
         rc = 1;
     }
-    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 )
-        return( -1 );
+    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 ) return( -1 );
     return( rc );
 }
 
@@ -417,33 +406,28 @@ int     FSkipLogical( b_file *io )
 {
     unsigned_32 tag;
     unsigned_32 save_tag;
-    size_t      rc;
+    int         rc;
 
     for(;;) {
         rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
         if( rc == READ_ERROR ) {
-            if( io->stat != IO_EOF )
-                return( -1 );
+            if( io->stat != IO_EOF ) return( -1 );
             // if an EOF occurs we've skipped the record
             IOOk( io );
             return( 0 );
         }
-        if( (tag & 0x80000000) == 0 )
-            break;
+        if( (tag & 0x80000000) == 0 ) break;
         save_tag = tag;
         tag &= 0x7fffffff;
-        if( SysSeek( io, tag, SEEK_CUR ) < 0 )
-            return( -1 );
+        if( SysSeek( io, tag, SEEK_CUR ) < 0 ) return( -1 );
         rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
-        if( rc == READ_ERROR )
-            return( -1 );
+        if( rc == READ_ERROR ) return( -1 );
         if( tag != save_tag ) {
             FSetErr( IO_BAD_RECORD, io );
             return( -1 );
         }
     }
-    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 )
-        return( -1 );
+    if( SysSeek( io, -(long)sizeof( unsigned_32 ), SEEK_CUR ) < 0 ) return( -1 );
     return( 0 );
 }
 
@@ -458,11 +442,10 @@ signed_32       FGetVarRecLen( b_file *io )
     unsigned_32 size = 0;
 
     pos = FGetFilePos( io );
-    for( ;; ) {
+    for(;;) {
         rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
         if( rc == READ_ERROR ) {
-            if( io->stat != IO_EOF )
-                return( -1 );
+            if( io->stat != IO_EOF ) return( -1 );
             // if an EOF occurs we've skipped the record
             IOOk( io );
             break;
@@ -481,11 +464,9 @@ signed_32       FGetVarRecLen( b_file *io )
             }
         }
         size += tag;
-        if( SysSeek( io, tag, SEEK_CUR ) < 0 )
-            return( -1 );
+        if( SysSeek( io, tag, SEEK_CUR ) < 0 ) return( -1 );
         rc = SysRead( io, (char *)(&tag), sizeof( unsigned_32 ) );
-        if( rc == READ_ERROR )
-            return( -1 );
+        if( rc == READ_ERROR ) return( -1 );
         if( tag != save_tag ) {
             FSetErr( IO_BAD_RECORD, io );
             return( -1 );

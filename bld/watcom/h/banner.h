@@ -32,27 +32,23 @@
 
 #include "bancfg.h"
 
-#define DOBANSTR( p )       #p
-#define BANSTR( p )         DOBANSTR( p )
+#define DOBANSTR( p )   #p
+#define BANSTR( p )     DOBANSTR( p )
 
 #ifndef _BETASTR_
-#define _BETASTR_           "beta"
+#define _BETASTR_       "beta"
 #endif
 
 #ifdef _BETAVER
-#define _BETA_              " " _BETASTR_
+#define _BETA_          " " _BETASTR_ " " _BANEXTRA
 #else
-#define _BETA_
+#define _BETA_          " " _BANEXSHORT
 #endif
 
-#ifdef _BETAVER
-#define _BANEXTRA           __DATE__ " " __TIME__ STR_BITNESS
-#else
-#define _BANEXTRA           __DATE__
-#endif
+#define CURR_YEAR           "2016"
 
 #define banner1p1(p)        p
-#define banner1p2(v)        "Version " v " " _BANEXTRA
+#define banner1p2(v)        "Version " v
 #define banner1(p,v)        banner1p1(p) " " banner1p2(v)
 #define banner1w(p,v)       "Open Watcom " banner1p1(p) " " banner1p2(v)
 

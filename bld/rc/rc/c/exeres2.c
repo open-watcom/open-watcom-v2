@@ -127,7 +127,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
     WResDir             dir;
 
     res = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
-    dir = Pass2Info.ResFile->Dir;
+    dir = Pass2Info.ResFiles->Dir;
 
     if( CmdLineParms.NoResFile ) {
         res->resources    = NULL;
@@ -251,7 +251,7 @@ RcStatus CopyOS2Resources( void )
 
     restab    = &(Pass2Info.TmpFile.u.NEInfo.OS2Res);
     tmphandle = Pass2Info.TmpFile.Handle;
-    reshandle = Pass2Info.ResFile->Handle;
+    reshandle = Pass2Info.ResFiles->Handle;
     tmpseg    = Pass2Info.TmpFile.u.NEInfo.Seg.Segments;
     currseg   = Pass2Info.OldFile.u.NEInfo.Seg.NumSegs
                 - Pass2Info.OldFile.u.NEInfo.Seg.NumOS2ResSegs;

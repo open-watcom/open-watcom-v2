@@ -42,12 +42,22 @@
 #include "guixutil.h"
 #include "guistr.h"
 #include "guikey.h"
-#include "guievent.h"
 #include <stdio.h>
 #include <string.h>
 
 
-EVENT GUIControlEvents[] = {
+extern EVENT GUIUserEvents[];
+
+static a_radio_group * RadioGroup = NULL;
+static bool Group = false;
+
+static EVENT DlgEvents[] = {
+    EV_NO_EVENT,
+    EV_ESCAPE,
+    EV_NO_EVENT,
+};
+
+static EVENT ControlEvents[] = {
     EV_NO_EVENT,
     EV_LIST_BOX_CHANGED,
     EV_LIST_BOX_DCLICK,
@@ -56,15 +66,6 @@ EVENT GUIControlEvents[] = {
     EV_CURSOR_UP,
     EV_CURSOR_DOWN,
     EV_NO_EVENT
-};
-
-static a_radio_group * RadioGroup = NULL;
-static bool Group = false;
-
-static EVENT GUIDlgEvents[] = {
-    EV_NO_EVENT,
-    EV_ESCAPE,
-    EV_NO_EVENT,
 };
 
 static a_field_type ui_types[GUI_NUM_CONTROL_CLASSES] = {
@@ -210,6 +211,16 @@ VFIELD *GUIGetField( gui_window *wnd, gui_ctl_id id )
 }
 
 /************************** end of dialog box functions *********************/
+
+void GUIPushControlEvents( void )
+{
+    uipushlist( ControlEvents );
+}
+
+void GUIPopControlEvents( void )
+{
+    uipoplist( /* ControlEvents */ );
+}
 
 static bool ResetFieldSize( dialog_node *dlg_node, int new_num )
 {
@@ -862,8 +873,8 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     GUIEVENTWND( wnd, GUI_INIT_DIALOG, NULL );
     uipushlist( NULL );
     uipushlist( GUIUserEvents );
-    uipushlist( GUIControlEvents );
-    uipushlist( GUIDlgEvents );
+    GUIPushControlEvents();
+    uipushlist( DlgEvents );
     while( ( GetDialog( ui_dlg_info ) != NULL ) ) {
         ev = uidialog( ui_dlg_info );
         switch( ev ) {
@@ -913,8 +924,8 @@ void GUICloseDialog( gui_window *wnd )
 //        name = dlg_node->name;
 //        colours_set = dlg_node->colours_set;
 //    }
-    uipoplist( /* GUIDlgEvents */ );
-    uipoplist( /* GUIControlEvents */ );
+    GUIPopControlEvents();
+    uipoplist( /* DlgEvents */ );
     uipoplist( /* GUIUserEvents */ );
     uipoplist( /* NULL */ );
     GUIDestroyDialog( wnd );

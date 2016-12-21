@@ -66,6 +66,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "mposix.h"
 
 #include "clibext.h"
 

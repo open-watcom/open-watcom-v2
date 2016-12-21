@@ -189,7 +189,8 @@ static RcStatus copyOneObject( WResFileID old_handle, pe_object * old_obj,
      * if this an uninitialized object (one for which there is not
      * data in the file) then don't copy it
      */
-    if( (old_obj->flags & PE_OBJ_UNINIT_DATA) && ( old_obj->physical_offset == 0 ) ) {
+    if( ( old_obj->flags & PE_OBJ_UNINIT_DATA ) &&
+        ( old_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
     if( RCSEEK( old_handle, old_obj->physical_offset, SEEK_SET ) == -1 )

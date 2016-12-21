@@ -41,7 +41,6 @@ extern int      WaitHandle;
 
 static uitimer_callback *Callback = NULL;
 static int              TimerPeriodMs = 0;
-static bool             HasEscape = false;
 
 void UIAPI uitimer( uitimer_callback *proc, int ms )
 {
@@ -73,18 +72,12 @@ EVENT UIAPI uieventsource( bool update )
 
     start = uiclock();
     for( ; ; ) {
-        if( HasEscape ) {
-            HasEscape = false;
-            ev = EV_ESCAPE;
-        }
-        else
-            ev = forcedevent();
-
+        ev = forcedevent();
         if( ev > EV_NO_EVENT )
             break;
 
         if( Callback && TimerPeriodMs ) {
-            proc = (void *)RdosWaitTimeout( WaitHandle, TimerPeriodMs );
+            proc = RdosWaitTimeout( WaitHandle, TimerPeriodMs );
             if( proc == 0) {
                 (*Callback)();
             } else {
@@ -94,7 +87,7 @@ EVENT UIAPI uieventsource( bool update )
                 }
             }
         } else {
-            proc = (void *)RdosWaitTimeout( WaitHandle, 25 );
+            proc = RdosWaitTimeout( WaitHandle, 25 );
             if( proc != 0) {
                 ev = (*proc)();
                 if( ev > EV_NO_EVENT ) {
@@ -115,7 +108,7 @@ EVENT UIAPI uieventsource( bool update )
                 }
             }
 
-            proc = (void *)RdosWaitTimeout( WaitHandle, 250 );
+            proc = RdosWaitTimeout( WaitHandle, 250 );
             if( proc != 0) {
                 ev = (*proc)();
                 if( ev > EV_NO_EVENT ) {
@@ -132,9 +125,4 @@ EVENT UIAPI uieventsource( bool update )
 EVENT UIAPI uiget( void )
 {
     return( uieventsource( true ) );
-}
-
-void UIAPI uisendescape( void )
-{
-    HasEscape = true;
 }

@@ -96,11 +96,18 @@ void PrintMsg( const char *fmt, ... )
 
     va_start( args, fmt );
     len = 0;
-    while( (c = *fmt++) != '\0' ) {
+    for( ;; ) {
+        c = *fmt++;
+        if( c == '\0' )
+            break;
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
-                for( p = va_arg( args, char * ); (c = *fmt++) != '\0'; ) {
+                p = va_arg( args, char * );
+                for( ;; ) {
+                    c = *p++;
+                    if( c == '\0' )
+                        break;
                     putchar(c);
                 }
             } else if( c == 'd' ) {
@@ -114,7 +121,6 @@ void PrintMsg( const char *fmt, ... )
             putchar(c);
         }
     }
-    va_end( args );
 }
 
 void  Fputnl( const char *text, FILE *fp )
