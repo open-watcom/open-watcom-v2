@@ -801,7 +801,7 @@ WResFileOffset RcSeek( WResFileID fid, WResFileOffset off, int pos )
 
 WResFileOffset RcTell( WResFileID fid )
 {
-//    DbgAssert( fid == Root->outfile->handle );
+//    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
 
     fid = fid;
     return( PosLoad() );
@@ -867,7 +867,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.Handle = WRES_PH2FID( Root->outfile->handle );
+    einfo.fid = WRES_PH2FID( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
