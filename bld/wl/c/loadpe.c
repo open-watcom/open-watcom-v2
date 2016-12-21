@@ -765,6 +765,21 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
+WResFileID  RcOpen( const char *name, wres_open_mode omode )
+{
+    return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+}
+
+int  RcClose( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) );
+}
+
+WResFileSSize  RcRead( WResFileID fid, void *buf, WResFileSize len )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, len ) );
+}
+
 WResFileSSize  RcWrite( WResFileID fid, const void *buf, WResFileSize len )
 {
     fid = fid;

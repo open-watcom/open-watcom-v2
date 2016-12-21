@@ -38,10 +38,10 @@
 #include "wressetr.h"
 #include "iortns.h"
 
-#define RCOPEN        open
-#define RCCLOSE       close
+#define RCOPEN        RcOpen
+#define RCCLOSE       RcClose
 #define RCWRITE       RcWrite
-#define RCREAD        posix_read
+#define RCREAD        RcRead
 #define RCSEEK        RcSeek
 #define RCTELL        RcTell
 #define RCALLOC       ChkLAlloc
