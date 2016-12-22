@@ -308,6 +308,7 @@ static void print_field( VSCREEN *vs, VFIELD *field, bool current )
     }
     if( str != NULL ) {
         uivtextput( vs, area->row, area->col, attr, str, area->width );
+        uirefresh();
     } else if( use_hottext ) {
         if( current ) {
             hotattr = attr;
