@@ -61,7 +61,7 @@ static ResNameOrOrdinal * ConvertIDToNameOrOrd( WResID * inid )
     return( newname );
 }
 
-static bool ConvertOneWResource( WResFileID infile, WResFileID outfile,
+static bool ConvertOneWResource( WResFileID in_fid, WResFileID out_fid,
                             WResDirWindow wind )
 /********************************************************************/
 {
@@ -80,10 +80,10 @@ static bool ConvertOneWResource( WResFileID infile, WResFileID outfile,
     outhead.Size = langinfo->Length;
 
     //FIXME! The last argument should be true for Win32 resources
-    error = MResWriteResourceHeader( &outhead, outfile, false );
+    error = MResWriteResourceHeader( &outhead, out_fid, false );
     if (!error) {
-        RCSEEK( infile, langinfo->Offset, SEEK_SET );
-        error = BinaryCopy( infile, outfile, outhead.Size );
+        RCSEEK( in_fid, langinfo->Offset, SEEK_SET );
+        error = BinaryCopy( in_fid, out_fid, outhead.Size );
     }
 
     TRMemFree( outhead.Type );
@@ -92,8 +92,8 @@ static bool ConvertOneWResource( WResFileID infile, WResFileID outfile,
     return( error );
 } /* ConvertOneWResource */
 
-static bool ConvertWResources( WResFileID infile, WResDir indir,
-                    WResFileID outfile )
+static bool ConvertWResources( WResFileID in_fid, WResDir indir,
+                    WResFileID out_fid )
 /*************************************************************/
 {
     WResDirWindow       wind;
@@ -106,20 +106,20 @@ static bool ConvertWResources( WResFileID infile, WResDir indir,
         error = false;
         wind = WResFirstResource( indir );
         while( !WResIsLastResource( wind, indir ) && !error ) {
-            error = ConvertOneWResource( infile, outfile, wind );
+            error = ConvertOneWResource( in_fid, out_fid, wind );
             wind = WResNextResource( wind, indir );
         }
         if( !error ) {
             /* convert the last resource */
-            error = ConvertOneWResource( infile, outfile, wind );
+            error = ConvertOneWResource( in_fid, out_fid, wind );
         }
     }
 
     return( error );
 } /* ConvertWResource */
 
-bool ConvertWResToMRes( WResFileID infile, WResFileID outfile )
-/************************************************************/
+bool ConvertWResToMRes( WResFileID in_fid, WResFileID out_fid )
+/*************************************************************/
 {
     WResDir             indir;
     bool                error;
@@ -129,10 +129,10 @@ bool ConvertWResToMRes( WResFileID infile, WResFileID outfile )
         return( true );
     }
 
-    error = WResReadDir( infile, indir, NULL );
+    error = WResReadDir( in_fid, indir, NULL );
 
     if( !error ) {
-        error = ConvertWResources( infile, indir, outfile );
+        error = ConvertWResources( in_fid, indir, out_fid );
     }
 
     WResFreeDir( indir );

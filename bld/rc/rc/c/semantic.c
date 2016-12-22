@@ -43,7 +43,7 @@
 /* used in the work around for MS format RES files */
 static char         *MSFormatTmpFile = NULL;
 
-static WResFileID   save_handle;        /* holding place for the RES file handle */
+static WResFileID   save_fid;           /* holding place for the RES file handle */
 static char         *save_name;
 
 /* Modified from WINNT.H */
@@ -61,14 +61,14 @@ SemOffset SemStartResource( void )
         return( ResTell( CurrResFile.fid ) );
     } else {
         /* save current values */
-        save_handle = CurrResFile.fid;
+        save_fid = CurrResFile.fid;
         save_name = CurrResFile.filename;
         /* open a temporary file and trade handles with the RES file */
         MSFormatTmpFile = RcTmpFileName();
         CurrResFile.fid = ResOpenNewFile( MSFormatTmpFile );
         if( CurrResFile.fid == WRES_NIL_HANDLE ) {
-            CurrResFile.fid = save_handle;
-            ResCloseFile( save_handle );
+            CurrResFile.fid = save_fid;
+            ResCloseFile( save_fid );
             remove( save_name );
             RcFatalError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
         } else {
@@ -97,7 +97,7 @@ SemLength SemEndResource( SemOffset start )
             ErrorHasOccured = true;
         }
         /* restore previous values */
-        CurrResFile.fid = save_handle;
+        CurrResFile.fid = save_fid;
         CurrResFile.filename = save_name;
         return( len );
     }
@@ -120,7 +120,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     long                cur_byte_num;
     uint_8              cur_byte;
     bool                error;
-    WResFileID          tmp_handle;
+    WResFileID          tmp_fid;
 
     /* fill in and output a MS format resource header */
     ms_head.Type = WResIDToNameOrOrd( type );
@@ -147,17 +147,17 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     } else {
         RCFREE( ms_head.Type );
         RCFREE( ms_head.Name );
-        tmp_handle = ResOpenFileRO( MSFormatTmpFile );
-        if( tmp_handle == WRES_NIL_HANDLE ) {
+        tmp_fid = ResOpenFileRO( MSFormatTmpFile );
+        if( tmp_fid == WRES_NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = true;
             return;
         }
 
         /* copy the data from the temperary file to the RES file */
-        if( ResSeek( tmp_handle, loc.start, SEEK_SET ) == -1 ) {
+        if( ResSeek( tmp_fid, loc.start, SEEK_SET ) == -1 ) {
             RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
-            ResCloseFile( tmp_handle );
+            ResCloseFile( tmp_fid );
             ErrorHasOccured = true;
             return;
         }
@@ -165,23 +165,23 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         /* this is very inefficient but hopefully the buffering in layer0.c */
         /* will make it tolerable */
         for( cur_byte_num = 0; cur_byte_num < loc.len; cur_byte_num++ ) {
-            error = ResReadUint8( &cur_byte, tmp_handle );
+            error = ResReadUint8( &cur_byte, tmp_fid );
             if( error ) {
                 RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
-                ResCloseFile( tmp_handle );
+                ResCloseFile( tmp_fid );
                 ErrorHasOccured = true;
                 return;
             } else {
                 error = ResWriteUint8( cur_byte, CurrResFile.fid );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                    ResCloseFile( tmp_handle );
+                    ResCloseFile( tmp_fid );
                     ErrorHasOccured = true;
                     return;
                 }
             }
         }
-        if( ResCloseFile( tmp_handle ) ) {
+        if( ResCloseFile( tmp_fid ) ) {
             RcError( ERR_WRITTING_RES_FILE, MSFormatTmpFile, LastWresErrStr() );
             ErrorHasOccured = true;
         }
@@ -252,6 +252,6 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
 void SemanticInitStatics( void )
 /******************************/
 {
-    save_handle = WRES_NIL_HANDLE;
+    save_fid = WRES_NIL_HANDLE;
     MSFormatTmpFile = NULL;
 }

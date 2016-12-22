@@ -39,18 +39,18 @@
 
 static char     Buffer[ BUFFER_SIZE ];
 
-bool BinaryCopy( WResFileID inhandle, WResFileID outhandle, unsigned long length )
-/********************************************************************************/
+bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
+/****************************************************************************/
 {
     int     nummoved;
 
     /* read the parts that fill the buffer */
     while( length >= BUFFER_SIZE ) {
-        nummoved = RCREAD( inhandle, Buffer, BUFFER_SIZE );
+        nummoved = RCREAD( in_fid, Buffer, BUFFER_SIZE );
         if( nummoved != BUFFER_SIZE ) {
             return( true );
         }
-        nummoved = RCWRITE( outhandle, Buffer, BUFFER_SIZE );
+        nummoved = RCWRITE( out_fid, Buffer, BUFFER_SIZE );
         if( nummoved != BUFFER_SIZE ) {
             return( true );
         }
@@ -59,11 +59,11 @@ bool BinaryCopy( WResFileID inhandle, WResFileID outhandle, unsigned long length
     }
 
     if( length > 0 ) {
-        nummoved = RCREAD( inhandle, Buffer, length );
+        nummoved = RCREAD( in_fid, Buffer, length );
         if( nummoved != (int)length ) {
             return( true );
         }
-        nummoved = RCWRITE( outhandle, Buffer, length );
+        nummoved = RCWRITE( out_fid, Buffer, length );
         if( nummoved != (int)length ) {
             return( true );
         }

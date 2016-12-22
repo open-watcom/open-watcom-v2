@@ -50,7 +50,7 @@ static WResID * ConvertNameOrOrdToID( ResNameOrOrdinal * name )
     }
 }
 
-static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir outdir )
+static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir outdir )
 /************************************************************************************/
 {
     MResResourceHeader *    mheader;
@@ -61,7 +61,7 @@ static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir ou
     uint_32                 offset;
     bool                    duplicate;
 
-    mheader = MResReadResourceHeader( infile );
+    mheader = MResReadResourceHeader( in_fid );
     /* assume that any error reading here means end of file */
     lastheader = ( mheader == NULL );
     error = false;
@@ -69,7 +69,7 @@ static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir ou
     while( !lastheader && !error ) {
         name = ConvertNameOrOrdToID( mheader->Name );
         type = ConvertNameOrOrdToID( mheader->Type );
-        offset = RCTELL( outfile );
+        offset = RCTELL( out_fid );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
@@ -82,17 +82,17 @@ static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir ou
                 puts( "Error: duplicate entry" );
                 error = false;
             } else {
-                error = BinaryCopy( infile, outfile, mheader->Size );
+                error = BinaryCopy( in_fid, out_fid, mheader->Size );
             }
         } else {
-            RCSEEK( infile, mheader->Size, SEEK_CUR );
+            RCSEEK( in_fid, mheader->Size, SEEK_CUR );
         }
 
         WResIDFree( name );
         WResIDFree( type );
         MResFreeResourceHeader( mheader );
 
-        mheader = MResReadResourceHeader( infile );
+        mheader = MResReadResourceHeader( in_fid );
         /* assume that any error reading here means end of file */
         lastheader = ( mheader == NULL );
     }
@@ -100,7 +100,7 @@ static bool ConvertMResources( WResFileID infile, WResFileID outfile, WResDir ou
     return( error );
 } /* ConvertMResources */
 
-bool ConvertMResToWRes( WResFileID infile, WResFileID outfile )
+bool ConvertMResToWRes( WResFileID in_fid, WResFileID out_fid )
 /*************************************************************/
 {
     WResDir                 outdir;
@@ -111,10 +111,10 @@ bool ConvertMResToWRes( WResFileID infile, WResFileID outfile )
         return( true );
     }
 
-    error = ConvertMResources( infile, outfile, outdir );
+    error = ConvertMResources( in_fid, out_fid, outdir );
 
     if( !error ) {
-        error = WResWriteDir( outfile, outdir );
+        error = WResWriteDir( out_fid, outdir );
     }
 
     WResFreeDir( outdir );

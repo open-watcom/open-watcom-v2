@@ -43,49 +43,49 @@
 
 #define TMP_FILENAME "__TMP__.RES"
 
-static bool ConvertFileMResToWRes( WResFileID infile )
+static bool ConvertFileMResToWRes( WResFileID in_fid )
 /****************************************************/
 {
-    WResFileID      tempfile;
+    WResFileID      tmp_fid;
     bool            error;
 
-    tempfile = ResOpenNewFile( TMP_FILENAME );
-    if( tempfile == WRES_NIL_HANDLE ) {
+    tmp_fid = ResOpenNewFile( TMP_FILENAME );
+    if( tmp_fid == WRES_NIL_HANDLE ) {
         perror( "Error (temp file): " );
         ResCloseFile( infile );
         return( true );
     }
-    WResFileInit( tempfile );
+    WResFileInit( tmp_fid );
     /* put a message out if quiet option not selected */
     if (!CmdLineParms.Quiet) {
         puts( "Converting Microsoft .RES to Open Watcom .RES" );
     }
-    error = ConvertMResToWRes( infile, tempfile );
+    error = ConvertMResToWRes( in_fid, tmp_fid );
 
-    ResCloseFile( tempfile );
+    ResCloseFile( tmp_fid );
 
     return( error );
 } /* ConvertFileMResToWRes */
 
-static bool ConvertFileWResToMRes( WResFileID infile )
-/***************************************************/
+static bool ConvertFileWResToMRes( WResFileID in_fid )
+/****************************************************/
 {
-    WResFileID      tempfile;
+    WResFileID      tmp_fid;
     bool            error;
 
-    tempfile = ResOpenNewFile( TMP_FILENAME );
-    if( tempfile == WRES_NIL_HANDLE ) {
+    tmp_fid = ResOpenNewFile( TMP_FILENAME );
+    if( tmp_fid == WRES_NIL_HANDLE ) {
         perror( "Error (temp file): " );
-        ResCloseFile( infile );
+        ResCloseFile( in_fid );
         return( true );
     }
     /* put a message out if quiet option not selected */
     if( !CmdLineParms.Quiet ) {
         puts( "Converting Open Watcom .RES to Microsoft .RES" );
     }
-    error = ConvertWResToMRes( infile, tempfile );
+    error = ConvertWResToMRes( in_fid, tmp_fid );
 
-    ResCloseFile( tempfile );
+    ResCloseFile( tmp_fid );
     return( error );
 } /* ConvertFileWResToMRes */
 
@@ -121,25 +121,25 @@ static bool ChangeTmpToOutFile( void )
 int ConvertFiles( void )
 /**********************/
 {
-    WResFileID      infile;
+    WResFileID      in_fid;
     bool            error;
     int             fileerror;      /* error while deleting or renaming */
 
-    infile = ResOpenFileRO( CmdLineParms.InFileName );
-    if( infile == WRES_NIL_HANDLE ) {
+    in_fid = ResOpenFileRO( CmdLineParms.InFileName );
+    if( in_fid == WRES_NIL_HANDLE ) {
         perror( "Error (input file): " );
         return( 1 );
     }
 
-    if( WResIsWResFile( infile ) ) {
+    if( WResIsWResFile( in_fid ) ) {
         /* the input file is in Open Watcom format so convert to MS format */
-        error = ConvertFileWResToMRes( infile );
+        error = ConvertFileWResToMRes( in_fid );
     } else {
         /* the input file is in MS format so convert to Open Watcom format */
-        error = ConvertFileMResToWRes( infile );
+        error = ConvertFileMResToWRes( in_fid );
     }
 
-    ResCloseFile( infile );
+    ResCloseFile( in_fid );
 
     if( error ) {
         puts("Error writing to output file");
