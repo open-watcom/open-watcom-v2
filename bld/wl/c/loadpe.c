@@ -765,14 +765,26 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-WResFileID  RcOpen( const char *name, wres_open_mode omode )
+WResFileID RcOpen( const char * name, wres_open_mode omode )
+/**********************************************************/
 {
-    return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+    switch( omode ) {
+    default:
+    case WRES_OPEN_RO:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+    case WRES_OPEN_RW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
+    case WRES_OPEN_NEW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
+    }
+
 }
 
-int  RcClose( WResFileID fid )
+int RcClose( WResFileID fid )
+/***************************/
 {
     return( close( WRES_FID2PH( fid ) ) );
+
 }
 
 WResFileSSize  RcRead( WResFileID fid, void *buf, WResFileSize len )
