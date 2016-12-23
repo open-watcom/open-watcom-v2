@@ -50,6 +50,7 @@
 #include "wreslang.h"
 #include "rcrtns.h"
 #include "wresset2.h"
+#include "wressetr.h"
 
 #include "clibext.h"
 
@@ -185,3 +186,85 @@ bool FiniMsg( void )
 {
     return( CloseResFile( &hInstance ) );
 }
+
+WResFileID  res_open( const char *name, wres_open_mode omode )
+{
+    switch( omode ) {
+    default:
+    case WRES_OPEN_RO:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+        break;
+    case WRES_OPEN_RW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
+        break;
+    case WRES_OPEN_NEW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
+        break;
+    }
+}
+
+int  res_close( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) );
+}
+
+WResFileSSize  res_read( WResFileID fid, void *buf, WResFileSize len )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, len ) );
+}
+
+WResFileSSize  res_write( WResFileID fid, const void *buf, WResFileSize len )
+{
+    fid = fid;
+    WriteLoad( buf, len );
+    return( len );
+}
+
+WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
+{
+    if( fid == hInstance.fid ) {
+        if( where == SEEK_SET ) {
+            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) - WResFileShift );
+        } else {
+            return( lseek( WRES_FID2PH( fid ), amount, where ) );
+        }
+    }
+
+    DbgAssert( where != SEEK_END );
+    DbgAssert( !(where == SEEK_CUR && amount < 0) );
+
+    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
+        if( where == SEEK_CUR ) {
+            unsigned long   old_pos;
+            unsigned long   new_pos;
+
+            old_pos = PosLoad();
+            new_pos = old_pos + amount;
+            if( new_pos > old_pos ) {
+                PadLoad( (size_t)amount );
+            } else {
+                SeekLoad( new_pos );
+            }
+            return( new_pos );
+        } else {
+            SeekLoad( amount );
+            return( amount );
+        }
+    } else {
+        return( QLSeek( WRES_FID2PH( fid ), amount, where, "resource file" ) );
+    }
+}
+
+WResFileOffset res_tell( WResFileID fid )
+{
+    if( fid == hInstance.fid ) {
+        return( tell( WRES_FID2PH( fid ) ) );
+    }
+
+    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
+
+    fid = fid;
+    return( PosLoad() );
+}
+
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,ChkLAlloc,LFree);

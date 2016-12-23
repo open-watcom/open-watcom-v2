@@ -765,75 +765,6 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-WResFileID RcOpen( const char * name, wres_open_mode omode )
-/**********************************************************/
-{
-    switch( omode ) {
-    default:
-    case WRES_OPEN_RO:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
-    case WRES_OPEN_RW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
-    case WRES_OPEN_NEW:
-        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
-    }
-
-}
-
-int RcClose( WResFileID fid )
-/***************************/
-{
-    return( close( WRES_FID2PH( fid ) ) );
-
-}
-
-WResFileSSize  RcRead( WResFileID fid, void *buf, WResFileSize len )
-{
-    return( posix_read( WRES_FID2PH( fid ), buf, len ) );
-}
-
-WResFileSSize  RcWrite( WResFileID fid, const void *buf, WResFileSize len )
-{
-    fid = fid;
-    WriteLoad( buf, len );
-    return( len );
-}
-
-WResFileOffset RcSeek( WResFileID fid, WResFileOffset off, int pos )
-{
-    DbgAssert( pos != SEEK_END );
-    DbgAssert( !(pos == SEEK_CUR && off < 0) );
-
-    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
-        if( pos == SEEK_CUR ) {
-            unsigned long   old_pos;
-            unsigned long   new_pos;
-
-            old_pos = PosLoad();
-            new_pos = old_pos + off;
-            if( new_pos > old_pos ) {
-                PadLoad( (size_t)off );
-            } else {
-                SeekLoad( new_pos );
-            }
-            return( new_pos );
-        } else {
-            SeekLoad( off );
-            return( off );
-        }
-    } else {
-        return( QLSeek( WRES_FID2PH( fid ), off, pos, "resource file" ) );
-    }
-}
-
-WResFileOffset RcTell( WResFileID fid )
-{
-//    DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
-
-    fid = fid;
-    return( PosLoad() );
-}
-
 bool RcPadFile( WResFileID fid, size_t pad )
 {
     DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
@@ -849,7 +780,7 @@ void CheckDebugOffset( ExeFileInfo *info )
 }
 
 RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
-/*******************************************************************************/
+/****************************************************************************/
 {
     out_fid = out_fid;
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
@@ -1247,7 +1178,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &h, tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1396,7 +1327,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &h, tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );
