@@ -178,54 +178,52 @@ HANDLE_ERROR:
  * ReadBitmapInfoHeader-
  * NB when an error occurs this func must return without altering errno
  */
-static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID handle )
-/********************************************************************************/
+static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID fid )
+/*****************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, head, sizeof(BitmapInfoHeader) );
+    numread = RCREAD( fid, head, sizeof(BitmapInfoHeader) );
     if( numread == sizeof( BitmapInfoHeader ) )
         return( RS_OK );
-    return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+    return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
 }
 
-static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head,
-                                    WResFileID handle, int *err_code )
-/********************************************************************/
+static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head, WResFileID fid, int *err_code )
+/***********************************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, head, sizeof(IconCurDirHeader) );
+    numread = RCREAD( fid, head, sizeof(IconCurDirHeader) );
     if( numread != sizeof( IconCurDirHeader ) ) {
         *err_code = errno;
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 } /* readIcoCurFileDirHeader */
 
-static RcStatus readIcoFileDirEntry( IcoFileDirEntry * entry,
-                                WResFileID handle, int *err_code )
-/****************************************************************/
+static RcStatus readIcoFileDirEntry( IcoFileDirEntry * entry, WResFileID fid, int *err_code )
+/*******************************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, entry, sizeof(IcoFileDirEntry) );
+    numread = RCREAD( fid, entry, sizeof(IcoFileDirEntry) );
     if( numread != sizeof(IcoFileDirEntry ) ) {
         *err_code = errno;
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 } /* readIcoFileDirEntry */
 
-static RcStatus readIcoFileDir( WResFileID handle, FullIconDir *dir, int *err_code )
-/**********************************************************************************/
+static RcStatus readIcoFileDir( WResFileID fid, FullIconDir *dir, int *err_code )
+/*******************************************************************************/
 /* this funtion returns one of the above enum constants */
 {
     RcStatus            ret;
     int                 currentry;
     FullIconDirEntry *  entry;
 
-    ret = readIcoCurFileDirHeader( &(dir->Header), handle, err_code );
+    ret = readIcoCurFileDirHeader( &(dir->Header), fid, err_code );
     /* type 1 is a icon file */
     if( ret == RS_OK && dir->Header.Type != 1 ) {
         return( RS_INVALID_RESOURCE );
@@ -237,7 +235,7 @@ static RcStatus readIcoFileDir( WResFileID handle, FullIconDir *dir, int *err_co
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsIcoFileEntry = true;
-        ret = readIcoFileDirEntry( &(entry->Entry.Ico), handle, err_code );
+        ret = readIcoFileDirEntry( &(entry->Entry.Ico), fid, err_code );
         if( ret != RS_OK ) {
             RCFREE( entry );
         } else {
@@ -248,7 +246,7 @@ static RcStatus readIcoFileDir( WResFileID handle, FullIconDir *dir, int *err_co
 } /* readIcoFileDir */
 
 
-static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID handle,
+static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID fid,
                 void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
 /**************************************************************************/
@@ -258,29 +256,29 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID handle,
     WResFileOffset      curpos;
 
     ret = RS_OK;
-    if( RCSEEK( handle, entry->Offset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( fid, entry->Offset, SEEK_SET ) == -1 ) {
         ret = RS_READ_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        ret = ReadBitmapInfoHeader( dibhead, handle );
+        ret = ReadBitmapInfoHeader( dibhead, fid );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        if( ResWriteBitmapInfoHeader( dibhead, CurrResFile.handle ) ) {
+        if( ResWriteBitmapInfoHeader( dibhead, CurrResFile.fid ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = LastWresErr();
         }
     }
     if( ret == RS_OK ) {
-        curpos = RCTELL( handle );
+        curpos = RCTELL( fid );
         if( curpos == -1 ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
             ret = CopyData( curpos,
                               entry->Info.Length - sizeof(BitmapInfoHeader),
-                              handle, buffer, buffer_size, err_code );
+                              fid, buffer, buffer_size, err_code );
         }
     }
 
@@ -289,9 +287,8 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID handle,
 
 #define BUFFER_SIZE     1024
 
-static RcStatus copyIcons( FullIconDir * dir, WResFileID handle,
-                            ResMemFlags flags, int *err_code )
-/**************************************************************/
+static RcStatus copyIcons( FullIconDir * dir, WResFileID fid, ResMemFlags flags, int *err_code )
+/**********************************************************************************************/
 {
     RcStatus            ret;
     char *              buffer;
@@ -307,7 +304,7 @@ static RcStatus copyIcons( FullIconDir * dir, WResFileID handle,
         loc.start = SemStartResource();
 
         /* NOTE: the dibhead structure is filled in as a result of this call */
-        ret = copyOneIcon( &(entry->Entry.Ico), handle, buffer, BUFFER_SIZE, &(dibhead), err_code );
+        ret = copyOneIcon( &(entry->Entry.Ico), fid, buffer, BUFFER_SIZE, &(dibhead), err_code );
         if( ret != RS_OK )
             break;
 
@@ -352,10 +349,10 @@ static bool writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
     ResLocation         loc;
 
     loc.start = SemStartResource();
-    error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.handle );
+    error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fid );
 
     for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
-        error = ResWriteIconDirEntry( &(entry->Entry.Res), CurrResFile.handle );
+        error = ResWriteIconDirEntry( &(entry->Entry.Res), CurrResFile.fid );
     }
 
     if( !error ) {
@@ -372,24 +369,24 @@ static void AddIconResource( WResID * name, ResMemFlags flags,
                   ResMemFlags group_flags, const char * filename )
 /****************************************************************/
 {
-    WResFileID      handle;
+    WResFileID      fid;
     RcStatus        ret;
     bool            error;
     FullIconDir     dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, false );
-    if( handle == WRES_NIL_HANDLE)
+    fid = RcIoOpenInput( filename, false );
+    if( fid == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
     dir.Tail = NULL;
 
-    ret = readIcoFileDir( handle, &dir, &err_code );
+    ret = readIcoFileDir( fid, &dir, &err_code );
     if( ret != RS_OK )
         goto READ_DIR_ERROR;
 
-    ret = copyIcons( &dir, handle, flags, &err_code );
+    ret = copyIcons( &dir, fid, flags, &err_code );
     if( ret != RS_OK )
         goto COPY_ICONS_ERROR;
 
@@ -398,7 +395,7 @@ static void AddIconResource( WResID * name, ResMemFlags flags,
         goto WRITE_DIR_ERROR;
 
     FreeIconDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
 
     return;
 
@@ -418,14 +415,14 @@ READ_DIR_ERROR:
     ErrorHasOccured = true;
     RCFREE( name );
     FreeIconDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 WRITE_DIR_ERROR:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
     FreeIconDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 COPY_ICONS_ERROR:
@@ -433,7 +430,7 @@ COPY_ICONS_ERROR:
     ErrorHasOccured = true;
     RCFREE( name );
     FreeIconDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 } /* AddIconResource */
 
@@ -446,10 +443,10 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
     ResLocation         loc;
 
     loc.start = SemStartResource();
-    error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.handle );
+    error = ResWriteIconCurDirHeader( &(dir->Header), CurrResFile.fid );
 
     for( entry = dir->Head; !error && entry != NULL; entry = entry->Next ) {
-        error = ResWriteCurDirEntry( &(entry->Entry.Res), CurrResFile.handle );
+        error = ResWriteCurDirEntry( &(entry->Entry.Res), CurrResFile.fid );
     }
 
     if( !error ) {
@@ -462,7 +459,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
     return( error );
 }
 
-static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID handle,
+static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID fid,
                 void *buffer, unsigned buffer_size, BitmapInfoHeader *dibhead,
                 int *err_code )
 /*****************************************************************************/
@@ -472,30 +469,30 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID handle,
     WResFileOffset  curpos;
 
     ret = RS_OK;
-    if( RCSEEK( handle, entry->Offset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( fid, entry->Offset, SEEK_SET ) == -1 ) {
         ret = RS_READ_ERROR;
         *err_code = errno;
     }
 
     if( ret == RS_OK ) {
-        ret = ReadBitmapInfoHeader( dibhead, handle );
+        ret = ReadBitmapInfoHeader( dibhead, fid );
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        if( ResWriteBitmapInfoHeader( dibhead, CurrResFile.handle ) ) {
+        if( ResWriteBitmapInfoHeader( dibhead, CurrResFile.fid ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = LastWresErr();
         }
     }
     if( ret == RS_OK ) {
-        curpos = RCTELL( handle );
+        curpos = RCTELL( fid );
         if( curpos == -1 ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
             ret = CopyData( curpos,
                               entry->Length - sizeof(BitmapInfoHeader),
-                              handle, buffer, buffer_size, err_code );
+                              fid, buffer, buffer_size, err_code );
         }
     }
 
@@ -503,9 +500,8 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID handle,
 }
 
 
-static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
-                             ResMemFlags flags, int *err_code )
-/***********************************************************************/
+static RcStatus copyCursors( FullCurDir * dir, WResFileID fid, ResMemFlags flags, int *err_code )
+/***********************************************************************************************/
 /* This function uses the same size of buffers to copy info as for icons */
 {
     RcStatus            ret = RS_OK; // should this be RS_PARAM_ERROR ??
@@ -524,14 +520,14 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
 
         hotspot.X = entry->Entry.Cur.XHotspot;
         hotspot.Y = entry->Entry.Cur.YHotspot;
-        if( ResWriteCurHotspot( &hotspot, CurrResFile.handle ) ) {
+        if( ResWriteCurHotspot( &hotspot, CurrResFile.fid ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = LastWresErr();
             break;
         }
 
         /* NOTE: the dibhead structure is filled in as a result of this call */
-        ret = copyOneCursor( &(entry->Entry.Cur), handle, buffer,
+        ret = copyOneCursor( &(entry->Entry.Cur), fid, buffer,
                         BUFFER_SIZE, &(dibhead), err_code );
         if( ret != RS_OK )
             break;
@@ -558,29 +554,28 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID handle,
     return( ret );
 } /* copyCursors */
 
-static RcStatus readCurFileDirEntry( CurFileDirEntry * entry, WResFileID handle,
-                                        int *err_code )
-/******************************************************************************/
+static RcStatus readCurFileDirEntry( CurFileDirEntry * entry, WResFileID fid, int *err_code )
+/*******************************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, entry, sizeof(CurFileDirEntry) );
+    numread = RCREAD( fid, entry, sizeof(CurFileDirEntry) );
     if( numread != sizeof(CurFileDirEntry ) ) {
         *err_code = errno;
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 } /* readCurFileDirEntry */
 
-static RcStatus readCurFileDir( WResFileID handle, FullCurDir *dir, int *err_code )
-/*********************************************************************************/
+static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
+/******************************************************************************/
 /* this funtion returns one of the above enum constants */
 {
     RcStatus            ret;
     int                 currentry;
     FullCurDirEntry *   entry;
 
-    ret = readIcoCurFileDirHeader( &(dir->Header), handle, err_code );
+    ret = readIcoCurFileDirHeader( &(dir->Header), fid, err_code );
     /* type 2 is a cursor file */
     if( ret == RS_OK && dir->Header.Type != 2 ) {
         return( RS_INVALID_RESOURCE );
@@ -592,7 +587,7 @@ static RcStatus readCurFileDir( WResFileID handle, FullCurDir *dir, int *err_cod
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsCurFileEntry = true;
-        ret = readCurFileDirEntry( &(entry->Entry.Cur), handle, err_code );
+        ret = readCurFileDirEntry( &(entry->Entry.Cur), fid, err_code );
         if( ret != RS_OK ) {
             RCFREE( entry );
         } else {
@@ -622,24 +617,24 @@ static void AddCursorResource( WResID * name, ResMemFlags flags,
                       ResMemFlags group_flags, const char * filename )
 /********************************************************************/
 {
-    WResFileID      handle;
+    WResFileID      fid;
     RcStatus        ret;
     bool            error;
     FullCurDir      dir;
     int             err_code;
 
-    handle = RcIoOpenInput( filename, false );
-    if( handle == WRES_NIL_HANDLE)
+    fid = RcIoOpenInput( filename, false );
+    if( fid == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
     dir.Head = NULL;
     dir.Tail = NULL;
 
-    ret = readCurFileDir( handle, &dir, &err_code );
+    ret = readCurFileDir( fid, &dir, &err_code );
     if( ret != RS_OK)
         goto READ_DIR_ERROR;
 
-    ret = copyCursors( &dir, handle, flags, &err_code );
+    ret = copyCursors( &dir, fid, flags, &err_code );
     if( ret != RS_OK )
         goto COPY_CURSORS_ERROR;
 
@@ -648,7 +643,7 @@ static void AddCursorResource( WResID * name, ResMemFlags flags,
         goto WRITE_DIR_ERROR;
 
     FreeCurDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
 
     return;
 
@@ -668,14 +663,14 @@ READ_DIR_ERROR:
     ErrorHasOccured = true;
     RCFREE( name );
     FreeCurDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 WRITE_DIR_ERROR:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
     FreeCurDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 COPY_CURSORS_ERROR:
@@ -683,27 +678,26 @@ COPY_CURSORS_ERROR:
     ErrorHasOccured = true;
     RCFREE( name );
     FreeCurDir( &dir );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 } /* AddCursorResource */
 
-static RcStatus readBitmapFileHeader( WResFileID handle, BitmapFileHeader *head,
-                                        int *err_code )
-/******************************************************************************/
+static RcStatus readBitmapFileHeader( WResFileID fid, BitmapFileHeader *head, int *err_code )
+/*******************************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, head, sizeof(BitmapFileHeader) );
+    numread = RCREAD( fid, head, sizeof(BitmapFileHeader) );
     if( numread != sizeof( BitmapFileHeader ) ) {
         *err_code = errno;
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
 #define BITMAP_BUFFER_SIZE  0x1000
 
-static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID handle,
+static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID fid,
                             WResID *name, ResMemFlags flags, int *err_code )
 /**************************************************************************/
 {
@@ -716,13 +710,13 @@ static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID handle,
 
     loc.start = SemStartResource();
 
-    pos = RCTELL( handle );
+    pos = RCTELL( fid );
     if( pos == -1 ) {
         ret = RS_READ_ERROR;
         *err_code = errno;
     } else {
         ret = CopyData( pos, head->Size - sizeof(BitmapFileHeader),
-                          handle, buffer, BITMAP_BUFFER_SIZE, err_code );
+                          fid, buffer, BITMAP_BUFFER_SIZE, err_code );
     }
 
     loc.len = SemEndResource( loc.start );
@@ -739,26 +733,26 @@ static void AddBitmapResource( WResID * name, ResMemFlags flags,
 /**************************************************************/
 {
     BitmapFileHeader    head;
-    WResFileID          handle;
+    WResFileID          fid;
     RcStatus            ret;
     int                 err_code;
 
-    handle = RcIoOpenInput( filename, false );
-    if( handle == WRES_NIL_HANDLE)
+    fid = RcIoOpenInput( filename, false );
+    if( fid == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
-    ret = readBitmapFileHeader( handle, &head, &err_code );
+    ret = readBitmapFileHeader( fid, &head, &err_code );
     if( ret != RS_OK )
         goto READ_HEADER_ERROR;
 
     if( head.Type != BITMAP_MAGIC )
         goto NOT_BITMAP_ERROR;
 
-    ret = copyBitmap( &head, handle, name, flags, &err_code );
+    ret = copyBitmap( &head, fid, name, flags, &err_code );
     if( ret != RS_OK )
         goto COPY_BITMAP_ERROR;
 
-    RCCLOSE( handle );
+    RCCLOSE( fid );
 
     return;
 
@@ -773,39 +767,39 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
     RCFREE( name );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 NOT_BITMAP_ERROR:
     RcError( ERR_NOT_BITMAP_FILE, filename );
     ErrorHasOccured = true;
     RCFREE( name );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 COPY_BITMAP_ERROR:
     ReportCopyError( ret, ERR_READING_BITMAP, filename, err_code );
     ErrorHasOccured = true;
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 }
 
-static RcStatus readFontInfo( WResFileID handle, FontInfo *info, int *err_code )
-/******************************************************************************/
+static RcStatus readFontInfo( WResFileID fid, FontInfo *info, int *err_code )
+/***************************************************************************/
 {
     WResFileSSize   numread;
 
-    numread = RCREAD( handle, info, sizeof(FontInfo) );
+    numread = RCREAD( fid, info, sizeof(FontInfo) );
     if( numread != sizeof(FontInfo) ) {
         *err_code = errno;
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 }
 
 #define FONT_BUFFER_SIZE  0x1000
 
-static RcStatus copyFont( FontInfo *info, WResFileID handle, WResID *name,
+static RcStatus copyFont( FontInfo *info, WResFileID fid, WResID *name,
                                 ResMemFlags flags, int *err_code )
 /**************************************************************************/
 {
@@ -818,17 +812,16 @@ static RcStatus copyFont( FontInfo *info, WResFileID handle, WResID *name,
 
     loc.start = SemStartResource();
 
-    if( ResWriteFontInfo( info, CurrResFile.handle ) ) {
+    if( ResWriteFontInfo( info, CurrResFile.fid ) ) {
         ret = RS_WRITE_ERROR;
         *err_code = LastWresErr();
     } else {
-        pos = RCTELL( handle );
+        pos = RCTELL( fid );
         if( pos == -1 ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = SemCopyDataUntilEOF( pos, handle, buffer,
-                                         FONT_BUFFER_SIZE, err_code );
+            ret = SemCopyDataUntilEOF( pos, fid, buffer, FONT_BUFFER_SIZE, err_code );
         }
     }
 
@@ -846,17 +839,17 @@ typedef struct {
     int         err_code;
 }ReadStrErrInfo;
 
-static void * readString( WResFileID handle, long offset, ReadStrErrInfo *err )
-/*****************************************************************************/
+static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
+/**************************************************************************/
 {
     char    *retstr;
 
-    if( RCSEEK( handle, offset, SEEK_SET ) == -1 ) {
+    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
         err->status = RS_READ_ERROR;
         err->err_code = errno;
         return( NULL );
     } else {
-        retstr = ResReadString( handle, NULL );
+        retstr = ResReadString( fid, NULL );
         if( retstr == NULL ) {
             if( LastWresStatus() == WRS_READ_INCOMPLETE ) {
                 err->status = RS_READ_INCMPLT;
@@ -939,7 +932,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     FontInfo            info;
     char *              devicename;
     char *              facename;
-    WResFileID          handle;
+    WResFileID          fid;
     RcStatus            ret;
     int                 err_code;
     ReadStrErrInfo      readstr_err;
@@ -949,26 +942,26 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
         return;
     }
 
-    handle = RcIoOpenInput( filename, false );
-    if( handle == WRES_NIL_HANDLE)
+    fid = RcIoOpenInput( filename, false );
+    if( fid == WRES_NIL_HANDLE)
         goto FILE_OPEN_ERROR;
 
-    ret = readFontInfo( handle, &info, &err_code );
+    ret = readFontInfo( fid, &info, &err_code );
     if( ret != RS_OK)
         goto READ_HEADER_ERROR;
 
-    ret = copyFont( &info, handle, name, flags, &err_code );
+    ret = copyFont( &info, fid, name, flags, &err_code );
     if( ret != RS_OK )
         goto COPY_FONT_ERROR;
 
-    devicename = readString( handle, info.dfDevice, &readstr_err );
+    devicename = readString( fid, info.dfDevice, &readstr_err );
     if( devicename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
         goto READ_HEADER_ERROR;
     }
 
-    facename = readString( handle, info.dfFace, &readstr_err );
+    facename = readString( fid, info.dfFace, &readstr_err );
     if( facename == NULL ) {
         ret = readstr_err.status;
         err_code = readstr_err.err_code;
@@ -981,7 +974,7 @@ static void AddFontResources( WResID * name, ResMemFlags flags,
     RCFREE( devicename );
     RCFREE( facename );
 
-    RCCLOSE( handle );
+    RCCLOSE( fid );
 
     return;
 
@@ -996,13 +989,13 @@ READ_HEADER_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
     RCFREE( name );
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 
 COPY_FONT_ERROR:
     ReportCopyError( ret, ERR_READING_FONT, filename, err_code );
     ErrorHasOccured = true;
-    RCCLOSE( handle );
+    RCCLOSE( fid );
     return;
 }
 
@@ -1040,13 +1033,13 @@ void SemWINWriteFontDir( void )
 
     loc.start = SemStartResource();
 
-    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.handle );
+    error = ResWriteUint16( CurrResFile.FontDir->NumOfFonts, CurrResFile.fid );
     if( error )
         goto OUTPUT_WRITE_ERROR;
 
     for( currentry = CurrResFile.FontDir->Head; currentry != NULL;
                 currentry = currentry->Next ) {
-        error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.handle );
+        error = ResWriteFontDirEntry( &(currentry->Entry), CurrResFile.fid );
         if( error ) {
             goto OUTPUT_WRITE_ERROR;
         }

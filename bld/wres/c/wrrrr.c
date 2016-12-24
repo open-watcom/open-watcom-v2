@@ -35,8 +35,8 @@
 #include "read.h"
 #include "reserr.h"
 
-WResResInfo *WResReadResRecord( WResFileID handle )
-/*************************************************/
+WResResInfo *WResReadResRecord( WResFileID fid )
+/**********************************************/
 /* reads in the fields of a res info record from the current position in */
 /* the file identified by fp */
 {
@@ -46,7 +46,7 @@ WResResInfo *WResReadResRecord( WResFileID handle )
     int             numcharsleft;
     bool            error;
 
-    error = WResReadFixedResRecord( &newres, handle );
+    error = WResReadFixedResRecord( &newres, fid );
     if( error ) {
         return( NULL );
     }
@@ -62,9 +62,9 @@ WResResInfo *WResReadResRecord( WResFileID handle )
     } else {
         memcpy( newptr, &newres, sizeof( WResResInfo ) );
         if( numcharsleft != 0 ) {
-            numread = WRESREAD( handle, newptr->ResName.ID.Name.Name + 1, numcharsleft );
+            numread = WRESREAD( fid, newptr->ResName.ID.Name.Name + 1, numcharsleft );
             if( numread != numcharsleft ) {
-                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );
                 newptr = NULL;
             }

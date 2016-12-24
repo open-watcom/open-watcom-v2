@@ -64,9 +64,9 @@ static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
     return( wind2 );
 }
 
-static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
-                                WResFileID handle2, WResDirWindow wind2 )
-/*************************************************************************/
+static int CompareOneResource( WResFileID fid1, WResDirWindow wind1,
+                                WResFileID fid2, WResDirWindow wind2 )
+/********************************************************************/
 {
     int             retcode;
     int             oldretcode;
@@ -101,7 +101,7 @@ static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
         }
         oldretcode = 1;
     } else {
-        retcode = BinaryCompare( handle1, lang1->Offset, handle2,
+        retcode = BinaryCompare( fid1, lang1->Offset, fid2,
                         lang2->Offset, lang1->Length );
         switch (retcode) {
         case 1:
@@ -122,9 +122,9 @@ static int CompareOneResource( WResFileID handle1, WResDirWindow wind1,
     return( oldretcode );
 }
 
-int CompareResources( WResFileID handle1, WResDir dir1,
-                        WResFileID handle2, WResDir dir2 )
-/********************************************************/
+int CompareResources( WResFileID fid1, WResDir dir1,
+                        WResFileID fid2, WResDir dir2 )
+/*****************************************************/
 {
     int             retcode;
     int             oldretcode;
@@ -147,7 +147,7 @@ int CompareResources( WResFileID handle1, WResDir dir1,
 
             if ( !WResIsEmptyWindow( wind2 ) ) {
                 /* compare the contents of the actual resource */
-                retcode = CompareOneResource( handle1, wind1, handle2, wind2 );
+                retcode = CompareOneResource( fid1, wind1, fid2, wind2 );
                 switch (retcode) {
                 case -1:
                     return( -1 );

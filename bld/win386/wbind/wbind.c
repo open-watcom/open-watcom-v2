@@ -486,7 +486,7 @@ int main( int argc, char *argv[] )
     if( in == NULL )  {
         doError( "Could not open %s", rex );
     }
-    out = fopen( exe, "wb+" );
+    out = fopen( exe, "rb+" );
     if( out == NULL )  {
         doError( "Could not open %s", exe );
     }

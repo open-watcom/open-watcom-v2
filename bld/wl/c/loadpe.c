@@ -765,48 +765,6 @@ static unsigned_32 WriteDescription( pe_object *object, unsigned_32 file_align )
     return( desc_len );
 }
 
-WResFileSSize  RcWrite( WResFileID fid, const void *buf, WResFileSize len )
-{
-    fid = fid;
-    WriteLoad( buf, len );
-    return( len );
-}
-
-WResFileOffset RcSeek( WResFileID fid, WResFileOffset off, int pos )
-{
-    DbgAssert( pos != SEEK_END );
-    DbgAssert( !(pos == SEEK_CUR && off < 0) );
-
-    if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
-        if( pos == SEEK_CUR ) {
-            unsigned long   old_pos;
-            unsigned long   new_pos;
-
-            old_pos = PosLoad();
-            new_pos = old_pos + off;
-            if( new_pos > old_pos ) {
-                PadLoad( (size_t)off );
-            } else {
-                SeekLoad( new_pos );
-            }
-            return( new_pos );
-        } else {
-            SeekLoad( off );
-            return( off );
-        }
-    } else {
-        return( QLSeek( WRES_FID2PH( fid ), off, pos, "resource file" ) );
-    }
-}
-
-WResFileOffset RcTell( WResFileID fid )
-{
-//    DbgAssert( fid == Root->outfile->handle );
-
-    fid = fid;
-    return( PosLoad() );
-}
-
 bool RcPadFile( WResFileID fid, size_t pad )
 {
     DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
@@ -822,7 +780,7 @@ void CheckDebugOffset( ExeFileInfo *info )
 }
 
 RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
-/*******************************************************************************/
+/****************************************************************************/
 {
     out_fid = out_fid;
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
@@ -867,7 +825,7 @@ static unsigned_32 WritePEResources( exe_pe_header *h, pe_object *object, unsign
     if( !status )               // we had a problem opening
         return( 0 );
     einfo.IsOpen = true;
-    einfo.Handle = WRES_PH2FID( Root->outfile->handle );
+    einfo.fid = WRES_PH2FID( Root->outfile->handle );
     einfo.name = Root->outfile->fname;
     einfo.u.PEInfo.WinHead = h;
     einfo.Type = EXE_TYPE_PE;
@@ -1220,7 +1178,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &h, tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );
@@ -1369,7 +1327,7 @@ void FiniPELoadFile( void )
             image_size += ROUND_UP( size, FmtData.objalign );
             ++tbl_obj;
         }
-        if( FmtData.resource || FmtData.u.pe.resources != NULL ) {
+        if( FmtData.resource != NULL || FmtData.u.pe.resources != NULL ) {
             tbl_obj->rva = image_size;
             size = WritePEResources( &h, tbl_obj, file_align );
             image_size += ROUND_UP( size, FmtData.objalign );

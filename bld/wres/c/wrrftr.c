@@ -35,29 +35,29 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID handle )
-/**********************************************************************/
+bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID fid )
+/*******************************************************************/
 /* read the fixed part of a Type info record */
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, newtype, sizeof( WResTypeInfo ) );
+    numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) );
     if( numread == sizeof( WResTypeInfo ) ) {
         return( false );
     } else {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( true );
 } /* WResReadFixedTypeRecord */
 
-bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID handle )
-/**************************************************************************/
+bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
+/***********************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
     WResFileSSize       numread;
     WResTypeInfo1or2    info;
 
-    numread = WRESREAD( handle, &info, sizeof( WResTypeInfo1or2 ) );
+    numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) );
     if( numread == sizeof( WResTypeInfo1or2 ) ) {
         newtype->NumResources = info.NumResources;
         newtype->TypeName.IsName = info.TypeName.IsName;
@@ -69,7 +69,7 @@ bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID handle )
         }
         return( false );
     } else {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( true );
 } /* WResReadFixedTypeRecord */

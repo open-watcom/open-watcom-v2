@@ -45,57 +45,57 @@
 #include "clibext.h"
 
 
-static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
-/***************************************************************************/
+static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
+/************************************************************************/
 {
     bool    error;
 
-    error = ResWriteUint16( size->x, handle );
+    error = ResWriteUint16( size->x, fid );
     if( !error ) {
-        error = ResWriteUint16( size->y, handle );
+        error = ResWriteUint16( size->y, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( size->width, handle );
+        error = ResWriteUint16( size->width, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( size->height, handle );
+        error = ResWriteUint16( size->height, fid );
     }
     return( error );
 }
 
-bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
-/**********************************************************************/
+bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID fid )
+/*******************************************************************/
 {
     bool            error;
 
-    error = ResWriteUint32( head->Style, handle );
+    error = ResWriteUint32( head->Style, fid );
     if( !error ) {
-        error = ResWriteUint8( head->NumOfItems, handle );
+        error = ResWriteUint8( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
+        error = ResWriteDialogSizeInfo( &(head->Size), fid );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->MenuName, false, handle );
+        error = ResWriteNameOrOrdinal( head->MenuName, false, fid );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, false, handle );
+        error = ResWriteNameOrOrdinal( head->ClassName, false, fid );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, false, handle );
+        error = ResWriteString( head->Caption, false, fid );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
+        error = ResWriteUint16( head->PointSize, fid );
         if( !error ) {
-            error = ResWriteString( head->FontName, false, handle );
+            error = ResWriteString( head->FontName, false, fid );
         }
     }
     return( error );
 }
 
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes )
-/*****************************************************************************************************/
+static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID fid, bool add_quotes )
+/**************************************************************************************************/
 {
     bool    error;
     size_t  len;
@@ -114,140 +114,139 @@ static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID ha
         }
     }
 
-    error = ResWriteNameOrOrdinal( head->MenuName, true, handle );
+    error = ResWriteNameOrOrdinal( head->MenuName, true, fid );
     if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, handle );
+        error = ResWriteNameOrOrdinal( head->ClassName, true, fid );
     }
     if( !error ) {
-        error = ResWriteString( head->Caption, true, handle );
+        error = ResWriteString( head->Caption, true, fid );
     }
 
     return( error );
 }
 
-bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
-/**************************************************************************/
+bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid )
+/***********************************************************************/
 {
     bool            error;
 
-    error = ResWriteUint32( head->Style, handle );
+    error = ResWriteUint32( head->Style, fid );
     if( !error ) {
-        error = ResWriteUint32( head->ExtendedStyle, handle );
+        error = ResWriteUint32( head->ExtendedStyle, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( head->NumOfItems, handle );
+        error = ResWriteUint16( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
+        error = ResWriteDialogSizeInfo( &(head->Size), fid );
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, false );
+        error = ResWriteDialogHeaderCommon32( head, fid, false );
     }
     /* if the font was set output the font name and point size */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
+        error = ResWriteUint16( head->PointSize, fid );
         if( !error ) {
-            error = ResWriteString( head->FontName, true, handle );
+            error = ResWriteString( head->FontName, true, fid );
         }
     }
 
     if( !error ) {
         /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
+        error = ResWritePadDWord( fid );
     }
     return( error );
 }
 
 
-bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
-                                                              WResFileID handle )
-/*******************************************************************************/
+bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID fid )
+/************************************************************************************************/
 {
     bool            error;
 
     /* Write out the miscellaneous two WORDs 0x0001, 0xFFFF */
 
-    error = ResWriteUint16( 0x0001, handle );
+    error = ResWriteUint16( 0x0001, fid );
     if( !error ) {
-        error = ResWriteUint16( 0xFFFF, handle );
+        error = ResWriteUint16( 0xFFFF, fid );
     }
     if( !error ) {
-        error = ResWriteUint32( exhead->HelpId, handle );
+        error = ResWriteUint32( exhead->HelpId, fid );
     }
     if( !error ) {
-        error = ResWriteUint32( head->ExtendedStyle, handle );
+        error = ResWriteUint32( head->ExtendedStyle, fid );
     }
     if( !error ) {
-        error = ResWriteUint32( head->Style, handle );
+        error = ResWriteUint32( head->Style, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( head->NumOfItems, handle );
+        error = ResWriteUint16( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
+        error = ResWriteDialogSizeInfo( &(head->Size), fid );
     }
     if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, true );
+        error = ResWriteDialogHeaderCommon32( head, fid, true );
     }
     /* If the font was set, write the font information */
     if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
+        error = ResWriteUint16( head->PointSize, fid );
         if( !error ) {
-            error = ResWriteUint16( exhead->FontWeight, handle );
+            error = ResWriteUint16( exhead->FontWeight, fid );
         }
         if( !error ) {
-            error = ResWriteUint8( exhead->FontItalic, handle );
+            error = ResWriteUint8( exhead->FontItalic, fid );
         }
         if( !error ) {
-            error = ResWriteUint8( exhead->FontCharset, handle );
+            error = ResWriteUint8( exhead->FontCharset, fid );
         }
         if( !error ) {
-            error = ResWriteString( head->FontName, true, handle );
+            error = ResWriteString( head->FontName, true, fid );
         }
     }
 
     if( !error ) {
         /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
+        error = ResWritePadDWord( fid );
     }
     return( error );
 }
 
-bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
-/***************************************************************************/
+bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID fid )
+/************************************************************************/
 {
     bool            error;
 
-    error = ResWriteDialogSizeInfo( &(control->Size), handle );
+    error = ResWriteDialogSizeInfo( &(control->Size), fid );
     if( !error ) {
-        error = ResWriteUint16( control->ID, handle );
+        error = ResWriteUint16( control->ID, fid );
     }
     if( !error ) {
-        error = ResWriteUint32( control->Style, handle );
+        error = ResWriteUint32( control->Style, fid );
     }
 
     /* if the ClassID is one of the predefined ones write it out as a byte */
     /* otherwise it is a string */
     if( !error ) {
         if( control->ClassID->Class & 0x80 ) {
-            error = ResWriteUint8( control->ClassID->Class, handle );
+            error = ResWriteUint8( control->ClassID->Class, fid );
         } else {
-            error = ResWriteString( control->ClassID->ClassName, false, handle);
+            error = ResWriteString( control->ClassID->ClassName, false, fid);
         }
     }
 
     if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, false, handle );
+        error = ResWriteNameOrOrdinal( control->Text, false, fid );
     }
     if( !error ) {
-        error = ResWriteUint8( control->ExtraBytes, handle );
+        error = ResWriteUint8( control->ExtraBytes, fid );
     }
 
     return( error );
 }
 
 static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text,
-                                                  uint_16 extra_bytes, WResFileID handle )
+                                                  uint_16 extra_bytes, WResFileID fid )
 /****************************************************************************************/
 {
     bool      error;
@@ -257,75 +256,75 @@ static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdi
     if( class_id->Class & 0x80 ) {
         /*the class number is prefixed by 0xFFFF to distinguish it
          * from a string */
-        error = ResWriteUint16( (uint_16)-1, handle );
+        error = ResWriteUint16( (uint_16)-1, fid );
         if( !error ) {
-            error = ResWriteUint16( class_id->Class, handle );
+            error = ResWriteUint16( class_id->Class, fid );
         }
     } else {
-        error = ResWriteString( class_id->ClassName, true, handle );
+        error = ResWriteString( class_id->ClassName, true, fid );
     }
     if( !error ) {
-        error = ResWriteNameOrOrdinal( text, true, handle );
+        error = ResWriteNameOrOrdinal( text, true, fid );
     }
 
     if( !error ) {
-        error = ResWriteUint16( extra_bytes, handle );
+        error = ResWriteUint16( extra_bytes, fid );
     }
 
     return( error );
 }
 
-bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
-/*******************************************************************************/
+bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid )
+/****************************************************************************/
 {
     bool            error;
 
-    error = ResWriteUint32( control->Style, handle );
+    error = ResWriteUint32( control->Style, fid );
     if( !error ) {
-        error = ResWriteUint32( control->ExtendedStyle, handle );
+        error = ResWriteUint32( control->ExtendedStyle, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), handle );
+        error = ResWriteDialogSizeInfo( &(control->Size), fid );
     }
     if( !error ) {
-        error = ResWriteUint16( control->ID, handle );
+        error = ResWriteUint16( control->ID, fid );
     }
     if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
+        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, fid );
     }
 
     if( !error ) {
         /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
+        error = ResWritePadDWord( fid );
     }
     return( error );
 }
 
-bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
-/********************************************************************************/
+bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID fid )
+/*****************************************************************************/
 {
     bool            error;
 
-    error = ResWriteUint32( control->HelpId, handle );
+    error = ResWriteUint32( control->HelpId, fid );
     if( !error ) {
-        error = ResWriteUint32( control->ExtendedStyle, handle );
+        error = ResWriteUint32( control->ExtendedStyle, fid );
     }
     if( !error ) {
-        error = ResWriteUint32( control->Style, handle );
+        error = ResWriteUint32( control->Style, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), handle );
+        error = ResWriteDialogSizeInfo( &(control->Size), fid );
     }
     if( !error ) {
-        error = ResWriteUint32( control->ID, handle );
+        error = ResWriteUint32( control->ID, fid );
     }
     if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
+        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, fid );
     }
 
     if( !error ) {
         /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
+        error = ResWritePadDWord( fid );
     }
     return( error );
 }

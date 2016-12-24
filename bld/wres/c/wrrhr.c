@@ -35,22 +35,22 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResReadHeaderRecord( WResHeader *header, WResFileID handle )
-/****************************************************************/
+bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
+/*************************************************************/
 {
     bool            error;
     WResFileSSize   numread;
 
-    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
-        numread = WRESREAD( handle, header, sizeof( WResHeader ) );
+        numread = WRESREAD( fid, header, sizeof( WResHeader ) );
         if( numread != sizeof( WResHeader ) ) {
-            WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+            WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             error = true;
         } else {
-            error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+            error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
             if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );
             }
@@ -59,14 +59,14 @@ bool WResReadHeaderRecord( WResHeader *header, WResFileID handle )
     return( error );
 }
 
-bool WResReadExtHeader( WResExtHeader *head, WResFileID handle )
-/**************************************************************/
+bool WResReadExtHeader( WResExtHeader *head, WResFileID fid )
+/***********************************************************/
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, head, sizeof( WResExtHeader ) );
+    numread = WRESREAD( fid, head, sizeof( WResExtHeader ) );
     if( numread != sizeof( WResExtHeader ) ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
     } else {
         return( false );

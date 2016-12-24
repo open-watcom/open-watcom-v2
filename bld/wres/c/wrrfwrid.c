@@ -35,17 +35,17 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool WResReadFixedWResID( WResID *name, WResFileID handle )
-/*********************************************************/
+bool WResReadFixedWResID( WResID *name, WResFileID fid )
+/******************************************************/
 /* reads the fixed part of a WResID */
 {
     WResFileSSize   numread;
 
-    numread = WRESREAD( handle, name, sizeof( WResID ) );
+    numread = WRESREAD( fid, name, sizeof( WResID ) );
     if( numread == sizeof( WResID ) ) {
         return( false );
     } else {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
     }
     return( true );
 } /* WResReadFixedWResID */

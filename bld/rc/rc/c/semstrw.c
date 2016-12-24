@@ -273,10 +273,10 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
             loc.start = SemStartResource();
 
             error = ResWriteStringTableBlock( &(currblock->Block),
-                            currblock->UseUnicode, CurrResFile.handle );
+                            currblock->UseUnicode, CurrResFile.fid );
             if( !error && CmdLineParms.MSResFormat &&
                           CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-                error = ResWritePadDWord( CurrResFile.handle );
+                error = ResWritePadDWord( CurrResFile.fid );
             }
             if( error ) {
                 RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );

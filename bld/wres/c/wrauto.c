@@ -37,7 +37,7 @@
 
 DepInfo *WResGetAutoDep( const char *fname )
 {
-    WResFileID      handle;
+    WResFileID      fid;
     WResDir         dir;
     bool            dup_discarded;
     WResID          *name;
@@ -48,10 +48,10 @@ DepInfo *WResGetAutoDep( const char *fname )
     WResFileSSize   numread;
 
     ret = NULL;
-    handle = ResOpenFileRO( fname );
-    if( handle != WRES_NIL_HANDLE ) {
-        if( WResIsWResFile( handle ) && (dir = WResInitDir()) != NULL ) {
-            if( !WResReadDir( handle, dir, &dup_discarded ) ) {
+    fid = ResOpenFileRO( fname );
+    if( fid != WRES_NIL_HANDLE ) {
+        if( WResIsWResFile( fid ) && (dir = WResInitDir()) != NULL ) {
+            if( !WResReadDir( fid, dir, &dup_discarded ) ) {
                 name = WResIDFromStr( DEP_LIST_NAME );
                 type = WResIDFromNum( DEP_LIST_TYPE );
                 if( name != NULL && type != NULL ) {
@@ -60,16 +60,16 @@ DepInfo *WResGetAutoDep( const char *fname )
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
                         info = WResGetLangInfo( window );
-                        if( WRESSEEK( handle, info->Offset, SEEK_SET ) == -1 ) {
+                        if( WRESSEEK( fid, info->Offset, SEEK_SET ) == -1 ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
                         } else {
                             ret = WRESALLOC( info->Length );
                             if( ret == NULL ) {
                                 WRES_ERROR( WRS_MALLOC_FAILED );
                             } else {
-                                numread = WRESREAD( handle, ret, info->Length );
+                                numread = WRESREAD( fid, ret, info->Length );
                                 if( numread != (WResFileSSize)info->Length ) {
-                                    WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                                    WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                                     ret = NULL;
                                 }
                             }
@@ -85,7 +85,7 @@ DepInfo *WResGetAutoDep( const char *fname )
             }
             WResFreeDir( dir );
         }
-        ResCloseFile( handle );
+        ResCloseFile( fid );
     }
     return( ret );
 }

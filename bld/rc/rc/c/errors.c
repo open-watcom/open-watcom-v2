@@ -194,7 +194,7 @@ extern void RcFatalError( unsigned int errornum, ... )
     va_end( arglist );
 
     if( IsTmpFile( CurrResFile.filename ) ) {
-        ResCloseFile( CurrResFile.handle );
+        ResCloseFile( CurrResFile.fid );
         remove( CurrResFile.filename );
         UnregisterTmpFile( CurrResFile.filename );
         RCFREE( CurrResFile.filename );

@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResID *WResReadWResID( WResFileID handle )
-/*****************************************/
+WResID *WResReadWResID( WResFileID fid )
+/**************************************/
 {
     WResID          newid;
     WResID          *newidptr;
@@ -46,7 +46,7 @@ WResID *WResReadWResID( WResFileID handle )
     bool            error;
 
     /* read in the fixed part of the record */
-    error = WResReadFixedWResID( &newid, handle );
+    error = WResReadFixedWResID( &newid, fid );
     if( error ) {
         return( NULL );
     }
@@ -63,9 +63,9 @@ WResID *WResReadWResID( WResFileID handle )
     } else {
         memcpy( newidptr, &newid, sizeof( WResID ) );
         if( extrabytes != 0 ) {
-            numread = WRESREAD( handle, newidptr->ID.Name.Name + 1, extrabytes );
+            numread = WRESREAD( fid, newidptr->ID.Name.Name + 1, extrabytes );
             if( numread != extrabytes ) {
-                WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+                WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newidptr );
                 newidptr = NULL;
             }

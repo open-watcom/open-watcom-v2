@@ -59,7 +59,7 @@ typedef struct RcResFileID {
     bool                    IsOpen          : 1;
     uint_16                 NextCurOrIcon;
     WResDir                 dir;                    /* don't write this if !IsWatcomRes */
-    WResFileID              handle;                 /* posix level I/O handle */
+    WResFileID              fid;                    /* posix level I/O handle */
     FullFontDir             *FontDir;
 } RcResFileID;
 

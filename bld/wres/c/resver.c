@@ -40,25 +40,24 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode,
-                                        uint_8 os, WResFileID handle )
-/***************************************************************************/
+bool ResWriteVerBlockHeader( VerBlockHeader * head, bool use_unicode, uint_8 os, WResFileID fid )
+/***********************************************************************************************/
 /* Writes the header, correcting it for 32 bit alligning */
 {
     bool        error;
 
-    error = ResWriteUint16( head->Size, handle );
+    error = ResWriteUint16( head->Size, fid );
     if( !error ) {
-        error = ResWriteUint16( head->ValSize, handle );
+        error = ResWriteUint16( head->ValSize, fid );
     }
     if( !error && os == WRES_OS_WIN32 ) {
-        error = ResWriteUint16( head->Type, handle );
+        error = ResWriteUint16( head->Type, fid );
     }
     if( !error ) {
-        error = ResWriteString( head->Key, use_unicode, handle );
+        error = ResWriteString( head->Key, use_unicode, fid );
     }
     if( !error ) {
-        error = ResWritePadDWord( handle );
+        error = ResWritePadDWord( fid );
     }
 
     return( error );
@@ -85,19 +84,19 @@ size_t ResSizeVerBlockHeader( VerBlockHeader *head, bool use_unicode, uint_8 os 
     return( fixed_size + key_size + padding );
 }
 
-bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID handle )
-/**********************************************************************************/
+bool ResWriteVerValueItem( VerValueItem *item, bool use_unicode, WResFileID fid )
+/*******************************************************************************/
 {
     bool            error;
 
     error = false;
     if( item->IsNum ) {
-        error = ResWriteUint16( item->Value.Num, handle );
+        error = ResWriteUint16( item->Value.Num, fid );
     } else {
         if( item->strlen == VER_CALC_SIZE ) {
-            error = ResWriteString( item->Value.String, use_unicode, handle );
+            error = ResWriteString( item->Value.String, use_unicode, fid );
         } else {
-            error = ResWriteStringLen( item->Value.String, use_unicode, handle, item->strlen );
+            error = ResWriteStringLen( item->Value.String, use_unicode, fid, item->strlen );
         }
     }
     return( error );
@@ -123,13 +122,13 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
     return( size );
 }
 
-bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID handle )
-/*****************************************************************/
+bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID fid )
+/**************************************************************/
 {
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = (uint_32)time( NULL );
-    if( WRESWRITE( handle, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
+    if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {

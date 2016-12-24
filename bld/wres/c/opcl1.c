@@ -33,8 +33,9 @@
 #include "bool.h"
 #include "watcom.h"
 #include "filefmt.h"
-#include "wres.h"
+#include "wressetr.h"
 #include "wresset2.h"
+#include "wres.h"
 #include "opcl.h"
 
 

@@ -109,8 +109,8 @@ static bool Pass1InitRes( void )
     }
 
     /* open the temporary file */
-    CurrResFile.handle = ResOpenNewFile( CurrResFile.filename );
-    if( CurrResFile.handle == WRES_NIL_HANDLE ) {
+    CurrResFile.fid = ResOpenNewFile( CurrResFile.filename );
+    if( CurrResFile.fid == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, CurrResFile.filename, LastWresErrStr() );
         CurrResFile.IsOpen = false;
         return( true );
@@ -128,7 +128,7 @@ static bool Pass1InitRes( void )
         }
     } else {
         CurrResFile.IsWatcomRes = true;
-        WResFileInit( CurrResFile.handle );
+        WResFileInit( CurrResFile.fid );
     }
     RegisterTmpFile( CurrResFile.filename );
 
@@ -393,17 +393,17 @@ static void Pass1ResFileShutdown( void )
             WriteWINTables();
         }
         if( ErrorHasOccured ) {
-            ResCloseFile( CurrResFile.handle );
+            ResCloseFile( CurrResFile.fid );
             CurrResFile.IsOpen = false;
             RemoveCurrResFile();
         } else {
             if( CurrResFile.IsWatcomRes ) {
-                error = WResWriteDir( CurrResFile.handle, CurrResFile.dir );
+                error = WResWriteDir( CurrResFile.fid, CurrResFile.dir );
                 if( error ) {
                     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
                 }
             }
-            if( ResCloseFile( CurrResFile.handle ) ) {
+            if( ResCloseFile( CurrResFile.fid ) ) {
                 RcError( ERR_CLOSING_TMP, CurrResFile.filename, LastWresErrStr() );
                 remove( CurrResFile.filename );
                 UnregisterTmpFile( CurrResFile.filename );
@@ -449,7 +449,7 @@ static bool OpenResFileInfo( ExeType type )
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->IsOpen = false;
-        Pass2Info.ResFile->Handle = WRES_NIL_HANDLE;
+        Pass2Info.ResFile->fid = WRES_NIL_HANDLE;
         Pass2Info.ResFile->Dir = NULL;
         return( true );
     }
@@ -479,18 +479,18 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
     RcStatus        status;
     exe_pe_header   *pehdr;
 
-    info->Handle = ResOpenFileRO( filename );
-    if( info->Handle == WRES_NIL_HANDLE ) {
+    info->fid = ResOpenFileRO( filename );
+    if( info->fid == WRES_NIL_HANDLE ) {
         RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
         return( false );
     }
     info->IsOpen = true;
-    info->Type = FindNEPELXHeader( info->Handle, &info->WinHeadOffset );
+    info->Type = FindNEPELXHeader( info->fid, &info->WinHeadOffset );
     info->name = filename;
     switch( info->Type ) {
     case EXE_TYPE_NE_WIN:
     case EXE_TYPE_NE_OS2:
-        status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
+        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.NEInfo.WinHead, sizeof( os2_exe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -501,13 +501,13 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
     case EXE_TYPE_PE:
         pehdr = &info->u.PEInfo.WinHeadData;
         info->u.PEInfo.WinHead = pehdr;
-        status = SeekRead( info->Handle, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
+        status = SeekRead( info->fid, info->WinHeadOffset, &PE32( *pehdr ), sizeof( pe_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
         }
         if( IS_PE64( *pehdr ) ) {
-            status = SeekRead( info->Handle, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
+            status = SeekRead( info->fid, info->WinHeadOffset, &PE64( *pehdr ), sizeof( pe_header64 ) );
             if( status != RS_OK ) {
                 RcError( ERR_NOT_VALID_EXE, filename );
                 return( false );
@@ -518,7 +518,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
         }
         break;
     case EXE_TYPE_LX:
-        status = SeekRead( info->Handle, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
+        status = SeekRead( info->fid, info->WinHeadOffset, &info->u.LXInfo.OS2Head, sizeof( os2_flat_header ) );
         if( status != RS_OK ) {
             RcError( ERR_NOT_VALID_EXE, filename );
             return( false );
@@ -532,14 +532,14 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
         break;
     }
 
-    return( RCSEEK( info->Handle, 0, SEEK_SET ) != -1 );
+    return( RCSEEK( info->fid, 0, SEEK_SET ) != -1 );
 } /* openExeFileInfoRO */
 
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
 /******************************************************************/
 {
-    info->Handle = ResOpenNewFile( filename );
-    if( info->Handle == WRES_NIL_HANDLE ) {
+    info->fid = ResOpenNewFile( filename );
+    if( info->fid == WRES_NIL_HANDLE ) {
         RcError( ERR_OPENING_TMP, filename, strerror( errno ) );
         return( false );
     }
@@ -602,7 +602,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 //    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
-        RCCLOSE( old->Handle );
+        RCCLOSE( old->fid );
         old->IsOpen = false;
     }
     switch( old->Type ) {
@@ -621,7 +621,7 @@ extern void ClosePass2FilesAndFreeMem( void )
     }
 
     if( tmp->IsOpen ) {
-        RCCLOSE( tmp->Handle );
+        RCCLOSE( tmp->fid );
         tmp->IsOpen = false;
     }
     switch( tmp->Type ) {

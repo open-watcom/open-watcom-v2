@@ -603,7 +603,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
                 control.ClassID = ctrl->u.ctrl32.ClassID;
                 control.Text = ctrl->u.ctrl32.Text;
                 control.ExtraBytes = ctrl->u.ctrl32.ExtraBytes;
-                error = ResWriteDialogBoxControl32( &control, CurrResFile.handle );
+                error = ResWriteDialogBoxControl32( &control, CurrResFile.fid );
             } else if( tokentype == Y_DIALOG_EX ) {
                 controlex.HelpId = ctrl->u.ctrl32.HelpId;
                 controlex.ExtendedStyle = ctrl->u.ctrl32.ExtendedStyle;
@@ -613,13 +613,13 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
                 controlex.ClassID = ctrl->u.ctrl32.ClassID;
                 controlex.Text = ctrl->u.ctrl32.Text;
                 controlex.ExtraBytes = ctrl->u.ctrl32.ExtraBytes;
-                error = ResWriteDialogExControl32( &controlex, CurrResFile.handle);
+                error = ResWriteDialogExControl32( &controlex, CurrResFile.fid);
                 if( ctrl->dataListHead != NULL ) {
                     SemFlushDataElemList( ctrl->dataListHead, false );
                 }
             }
         } else {
-            error = ResWriteDialogBoxControl( &(ctrl->u.ctrl), CurrResFile.handle );
+            error = ResWriteDialogBoxControl( &(ctrl->u.ctrl), CurrResFile.fid );
         }
     }
     *err_code = LastWresErr();
@@ -713,7 +713,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         head->u.Head32.Head.Size = size;
         /* pad the start of the resource so that padding within the resource */
         /* is easier */
-        error = ResWritePadDWord( CurrResFile.handle );
+        error = ResWritePadDWord( CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
@@ -736,12 +736,12 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 
         if( head->Win32 ) {
             if( tokentype == Y_DIALOG ) {
-                error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.handle );
+                error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.fid );
             } else if( tokentype == Y_DIALOG_EX ) {
-                error = ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.handle );
+                error = ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fid );
             }
         } else {
-            error = ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.handle );
+            error = ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.fid );
         }
         if( error ) {
             err_code = LastWresErr();

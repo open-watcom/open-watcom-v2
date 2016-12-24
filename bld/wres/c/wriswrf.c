@@ -35,22 +35,22 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-ResTypeInfo WResFindResType( WResFileID handle )
-/**********************************************/
+ResTypeInfo WResFindResType( WResFileID fid )
+/*******************************************/
 {
     ResTypeInfo     type;
     uint_32         magic[2];
     bool            error;
 
-    error = ( WRESSEEK( handle, 0, SEEK_SET ) == -1 );
+    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
-        error = ResReadUint32( magic, handle );
+        error = ResReadUint32( magic, fid );
         if( !error ) {
-            error = ResReadUint32( magic + 1, handle );
+            error = ResReadUint32( magic + 1, fid );
         }
-        if( WRESSEEK( handle, 0, SEEK_SET ) == -1 ) {
+        if( WRESSEEK( fid, 0, SEEK_SET ) == -1 ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
@@ -68,10 +68,10 @@ ResTypeInfo WResFindResType( WResFileID handle )
     return( type );
 }
 
-bool WResIsWResFile( WResFileID handle )
-/*************************************/
+bool WResIsWResFile( WResFileID fid )
+/***********************************/
 /* Checks the start of the file identified by fp for the Magic number then */
 /* resets the postion in the file. Returns true is this is a WRes file */
 {
-   return( WResFindResType( handle ) == RT_WATCOM );
+   return( WResFindResType( fid ) == RT_WATCOM );
 } /* WResIsWResFile */
