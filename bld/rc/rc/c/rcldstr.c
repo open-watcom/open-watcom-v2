@@ -37,7 +37,6 @@
 #include "rcerrors.h"
 #include "rcldstr.h"
 #include "wresset2.h"
-#include "iortns.h"
 #include "clibint.h"
 
 #include "clibext.h"

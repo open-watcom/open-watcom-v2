@@ -32,8 +32,9 @@
 
 #include <stddef.h>
 #include "wresall.h"
-#include "bincpy.h"
+#include "wressetr.h"
 #include "rcrtns.h"
+#include "bincpy.h"
 
 #define BUFFER_SIZE  1024
 

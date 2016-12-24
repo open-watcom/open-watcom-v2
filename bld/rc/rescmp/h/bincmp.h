@@ -35,7 +35,7 @@
 
 #include "watcom.h"
 
-int BinaryCompare( int handle1, uint_32 offset1, int handle2, uint_32 offset2,
+int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 offset2,
                      uint_32 length );
 
 #endif

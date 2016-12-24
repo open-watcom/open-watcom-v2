@@ -34,6 +34,7 @@
 #include "rccore.h"
 #include "semsingl.h"
 #include "exelxobj.h"
+#include "iortns.h"
 
 
 void SemOS2WriteFontDir( void )
@@ -77,4 +78,8 @@ RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_code )
 uint_32 ComputeOS2ResSegCount( WResDir dir )
 {
     return( 0 );
+}
+
+void CloseAllFiles( void )
+{
 }

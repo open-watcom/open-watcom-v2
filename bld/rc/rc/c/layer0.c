@@ -38,6 +38,7 @@
 #include "wresset2.h"
 #include "rclayer0.h"
 #include "rccore.h"
+#include "rcrtns.h"
 
 #include "clibext.h"
 
@@ -156,13 +157,13 @@ void CloseAllFiles( void ) {
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
         if( openFileList[i] != WRES_NIL_HANDLE ) {
-            RcClose( openFileList[i] );
+            res_close( openFileList[i] );
         }
     }
 }
 
-WResFileID RcOpen( const char * file_name, wres_open_mode omode )
-/***************************************************************/
+WResFileID res_open( const char * file_name, wres_open_mode omode )
+/*****************************************************************/
 {
     WResFileID  fid;
     int         i;
@@ -215,8 +216,8 @@ static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
 
 } /* FlushRcBuffer */
 
-int RcClose( WResFileID fid )
-/***************************/
+int res_close( WResFileID fid )
+/*****************************/
 {
     RcBuffer    *buff;
     int         i;
@@ -239,8 +240,8 @@ int RcClose( WResFileID fid )
 
 } /* RcClose */
 
-WResFileSSize RcWrite( WResFileID fid, const void *out_buff, WResFileSize size )
-/******************************************************************************/
+WResFileSSize res_write( WResFileID fid, const void *out_buff, WResFileSize size )
+/********************************************************************************/
 {
     RcBuffer    *buff;
     size_t      copy_bytes;
@@ -300,8 +301,8 @@ static WResFileSSize FillRcBuffer( WResFileID fid, RcBuffer * buff )
     return( buff->Count );
 } /* FillRcBuffer */
 
-WResFileSSize RcRead( WResFileID fid, void * in_buff, WResFileSize size )
-/***********************************************************************/
+WResFileSSize res_read( WResFileID fid, void * in_buff, WResFileSize size )
+/*************************************************************************/
 {
     RcBuffer        *buff;
     size_t          copy_bytes;
@@ -350,8 +351,8 @@ WResFileSSize RcRead( WResFileID fid, void * in_buff, WResFileSize size )
     return( total_read );
 } /* RcRead */
 
-WResFileOffset RcSeek( WResFileID fid, WResFileOffset amount, int where )
-/***********************************************************************/
+WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
+/*************************************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
@@ -375,7 +376,7 @@ WResFileOffset RcSeek( WResFileID fid, WResFileOffset amount, int where )
 
     buff = RcFileList[i].Buffer;
 
-    currpos = RcTell( fid );
+    currpos = res_tell( fid );
 
     if( buff->IsDirty ) {
         switch( where ) {
@@ -447,8 +448,8 @@ WResFileOffset RcSeek( WResFileID fid, WResFileOffset amount, int where )
     return( currpos );
 } /* RcSeek */
 
-WResFileOffset RcTell( WResFileID fid )
-/*************************************/
+WResFileOffset res_tell( WResFileID fid )
+/***************************************/
 {
     RcBuffer *  buff;
     int         i;

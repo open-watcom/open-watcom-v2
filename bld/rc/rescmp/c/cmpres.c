@@ -36,6 +36,8 @@
 #include "global.h"
 #include "bincmp.h"
 #include "rcrtns.h"
+#include "cmpres.h"
+
 
 static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
 /**********************************************************************/

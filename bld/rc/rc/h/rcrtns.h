@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  wres library client routine prototypes.
 *
 ****************************************************************************/
 
@@ -33,19 +32,26 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "iortns.h"
 #include "rcmem.h"
 
-#define RCOPEN              RcOpen
-#define RCCLOSE             RcClose
-#define RCWRITE             RcWrite
-#define RCREAD              RcRead
-#define RCSEEK              RcSeek
-#define RCTELL              RcTell
-#define RCALLOC             RcMemMalloc
-#define RCFREE              RcMemFree
-#define RCREALLOC           RcMemRealloc
+#define RCOPEN          res_open
+#define RCCLOSE         res_close
+#define RCWRITE         res_write
+#define RCREAD          res_read
+#define RCSEEK          res_seek
+#define RCTELL          res_tell
 
-#define RCIOERR(fh,rc)      (rc == -1)
+#define RCALLOC         RcMemMalloc
+#define RCFREE          RcMemFree
+#define RCREALLOC       RcMemRealloc
+
+#define RCIOERR(fh,rc)  (rc == -1)
+
+extern WResFileID       res_open( const char *, wres_open_mode );
+extern int              res_close( WResFileID );
+extern WResFileSSize    res_write( WResFileID, const void *, WResFileSize );
+extern WResFileSSize    res_read( WResFileID, void *, WResFileSize );
+extern WResFileOffset   res_seek( WResFileID, WResFileOffset, int );
+extern WResFileOffset   res_tell( WResFileID );
 
 #endif
