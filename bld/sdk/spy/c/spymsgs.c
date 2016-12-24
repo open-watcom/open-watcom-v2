@@ -45,7 +45,7 @@ message *GetMessageDataFromID( int msgid, char *class_name )
     int j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
-        if( i == 0 || !stricmp( class_name, ClassMessages[i].class_name ) ) {
+        if( i == 0 || stricmp( class_name, ClassMessages[i].class_name ) == 0 ) {
             for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
                 if( msgid == ClassMessages[i].message_array[j].id ) {
                     return( &ClassMessages[i].message_array[j] );

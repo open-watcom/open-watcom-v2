@@ -37,6 +37,9 @@
 #include "resmenu.h"
 #include "resmenu.h"
 #include "guiutil.h"
+#include "filefmt.h"
+#include "resdiag.h"
+#include "resmenu.h"
 #include "guildstr.h"
 #include "guirmenu.h"
 
@@ -51,8 +54,8 @@ typedef struct GUIRMenuEntry {
 
 static void WFreeMenuEntry( GUIRMenuEntry *entry )
 {
-    if( entry ) {
-        if( entry->item ) {
+    if( entry != NULL ) {
+        if( entry->item != NULL ) {
             ResFreeMenuItem( entry->item );
         }
         GUIMemFree( entry );
@@ -61,27 +64,20 @@ static void WFreeMenuEntry( GUIRMenuEntry *entry )
 
 static void WFreeMenuEntries( GUIRMenuEntry *entry )
 {
-    GUIRMenuEntry *e;
+    GUIRMenuEntry *next;
 
-    while( entry ) {
-        e = entry;
-        entry = entry->next;
-        if( e->child ) {
-            WFreeMenuEntries ( e->child );
+    for( ; entry != NULL; entry = next ) {
+        next = entry->next;
+        if( entry->child != NULL ) {
+            WFreeMenuEntries ( entry->child );
         }
-        WFreeMenuEntry( e );
+        WFreeMenuEntry( entry );
     }
 }
 
-static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
+static bool WMakeMenuItem( MenuItem **new )
 {
-    char                *text;
-    char                *itext;
-    int                 msize;
-    int                 tlen;
-    MenuFlags           normal_flags;
-
-    if( !data || !*data || !size || !*size || !new ) {
+    if( new == NULL ) {
         return( false );
     }
 
@@ -90,71 +86,27 @@ static int WMakeMenuItem( uint_8 **data, int *size, MenuItem **new )
         return( false );
     }
 
-    // Data may not be aligned -- need memcpy on UNIX platforms
-    memcpy( &normal_flags, &((MenuItemNormal *)*data)->ItemFlags, sizeof( normal_flags ) );
-
-    (*new)->Item.Normal.ItemFlags = normal_flags;
-    (*new)->IsPopup = ( ( normal_flags & MENU_POPUP ) != 0 );
-    msize = sizeof( MenuFlags );
-    if( (*new)->IsPopup ) {
-        text = (char *)(*data);
-        text += msize;
-    } else {
-        uint_16 id;
-        // Data may not be aligned -- need memcpy on UNIX platforms
-        memcpy( &id, *data+msize, sizeof( uint_16 ) );
-        if( !(normal_flags & ~MENU_ENDMENU ) && !id ) {
-            (*new)->Item.Normal.ItemFlags |= MENU_SEPARATOR;
-        }
-        (*new)->Item.Normal.ItemID = id;
-        msize += sizeof( uint_16 );
-        text = (char *)(*data);
-        text += msize;
-    }
-    tlen = strlen( text ) + 1;
-    itext = (char *)GUIMemAlloc( tlen );
-    if( !itext ) {
-        *size = 0;
-        return( false );
-    }
-    memcpy( itext, text, tlen );
-    if( (*new)->IsPopup ) {
-        (*new)->Item.Popup.ItemText = itext;
-    } else {
-        (*new)->Item.Normal.ItemText = itext;
-    }
-    text += tlen;
-    msize += tlen;
-
-    *data = (uint_8 *)text;
-    if( *size >= msize ) {
-        *size = *size - msize;
-    } else {
-        *size = 0;
-        return( false );
-    }
-
-    return( true );
+    return( !GUIResReadMenuItem( *new ) );
 }
 
-static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
+static bool WAllocMenuEntry( GUIRMenuEntry **entry )
 {
-    int         ok;
+    bool    ok;
 
-    ok = ( data && *data && size && *size && entry );
+    ok = ( entry != NULL );
 
     if( ok ) {
-        *entry = (GUIRMenuEntry *)GUIMemAlloc( sizeof(GUIRMenuEntry) );
+        *entry = (GUIRMenuEntry *)GUIMemAlloc( sizeof( GUIRMenuEntry ) );
         ok = ( *entry != NULL );
     }
 
     if( ok ) {
-        memset( *entry, 0, sizeof(GUIRMenuEntry) );
-        ok = WMakeMenuItem( data, size, &(*entry)->item );
+        memset( *entry, 0, sizeof( GUIRMenuEntry ) );
+        ok = WMakeMenuItem( &(*entry)->item );
     }
 
     if( !ok ) {
-        if( *entry ) {
+        if( *entry != NULL ) {
             WFreeMenuEntry( *entry );
             *entry = NULL;
         }
@@ -163,35 +115,29 @@ static int WAllocMenuEntry( uint_8 **data, int *size, GUIRMenuEntry **entry )
     return( ok );
 }
 
-static int WMakeMenuEntry( uint_8 **data, int *size,
-                           GUIRMenuEntry *parent, GUIRMenuEntry **entry )
+static bool WMakeMenuEntry( GUIRMenuEntry *parent, GUIRMenuEntry **entry )
 {
     GUIRMenuEntry       **current;
     GUIRMenuEntry       *prev;
-    int                 ok;
+    bool                ok;
 
-    if( !entry || !data || !size ) {
+    if( entry == NULL ) {
         return( false );
     }
 
     *entry = NULL;
     ok = true;
 
-    if( !*data || !*size ) {
-        return( true );
-    }
-
     current = entry;
     prev = NULL;
 
-    while( ok && ( *size > 0 ) ) {
-        ok = WAllocMenuEntry( data, size, current );
+    while( ok ) {
+        ok = WAllocMenuEntry( current );
         if( ok ) {
             (*current)->parent = parent;
             (*current)->prev = prev;
             if( (*current)->item->IsPopup ) {
-                ok = WMakeMenuEntry( data, size, *current,
-                                     &((*current)->child) );
+                ok = WMakeMenuEntry( *current, &((*current)->child) );
             }
             if( (*current)->item->Item.Normal.ItemFlags & MENU_ENDMENU ) {
                 break;
@@ -211,23 +157,22 @@ static int WMakeMenuEntry( uint_8 **data, int *size,
     return( ok );
 }
 
-static GUIRMenuEntry *WMakeMenuFromData( uint_8 *data, int size )
+static GUIRMenuEntry *WMakeMenuFromRes( void )
 {
     GUIRMenuEntry       *first;
-    int                 ok;
+    bool                ok;
+    MenuHeader          menuh;
 
     first = NULL;
 
-    ok = ( data && size );
+    ok = !GUIResReadMenuHeader( &menuh );
 
     if( ok ) {
-        data += 2*sizeof(uint_16);
-        size -= 2*sizeof(uint_16);
-        ok = WMakeMenuEntry( &data, &size, NULL, &first );
+        ok = WMakeMenuEntry( NULL, &first );
     }
 
     if( !ok ) {
-        if( first ) {
+        if( first != NULL ) {
             WFreeMenuEntries( first );
             first = NULL;
         }
@@ -241,12 +186,9 @@ static int WCountMenuChildren( GUIRMenuEntry *entry )
     int         count;
 
     count = 0;
-
-    while( entry ) {
+    for( ; entry != NULL; entry = entry->next ) {
         count++;
-        entry = entry->next;
     }
-
     return( count );
 }
 
@@ -254,12 +196,12 @@ void GUIFreeGUIMenuStruct( gui_menu_struct *entry, int num )
 {
     int                 i;
 
-    if( entry ) {
-        for( i=0; i<num; i++ ) {
-            if( entry[i].num_child_menus ) {
+    if( entry != NULL ) {
+        for( i = 0; i < num; i++ ) {
+            if( entry[i].num_child_menus != NULL ) {
                 GUIFreeGUIMenuStruct( entry[i].child, entry[i].num_child_menus );
             }
-            if( entry[i].label ) {
+            if( entry[i].label != NULL ) {
                 GUIMemFree( (void *)entry[i].label );
             }
         }
@@ -293,7 +235,7 @@ static bool SetGUIMenuStruct( GUIRMenuEntry *rentry, gui_menu_struct *menu )
     int                 num_submenus;
     bool                ok;
 
-    ok = ( rentry && menu );
+    ok = ( rentry != NULL && menu != NULL );
 
     if( ok ) {
         if( rentry->item->IsPopup ) {
@@ -335,15 +277,13 @@ static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
 
     if( ok ) {
         memset( menu, 0, num_entries * sizeof( gui_menu_struct ) );
-        for( i = 0, rentry = rmenu;
-             ok && i < num_entries && rentry;
-             i++, rentry = rentry->next ) {
-            ok =  SetGUIMenuStruct( rentry, &menu[i] );
+        for( i = 0, rentry = rmenu; ok && i < num_entries && rentry; i++, rentry = rentry->next ) {
+            ok =  SetGUIMenuStruct( rentry, menu + i );
         }
     }
 
     if( !ok ) {
-        if( menu ) {
+        if( menu != NULL ) {
             GUIMemFree( menu );
             menu = NULL;
         }
@@ -355,22 +295,18 @@ static gui_menu_struct *MakeGUIMenuStruct( GUIRMenuEntry *rmenu )
 bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu, int *num )
 {
     GUIRMenuEntry       *rmenu;
-    uint_8              *data;
-    int                 size;
     bool                ok;
 
-    data = NULL;
-    size = 0;
     rmenu = NULL;
 
-    ok = ( menu && num );
+    ok = ( menu != NULL && num != NULL );
 
     if( ok ) {
-        ok = GUILoadMenuTemplate( menu_id, (char **)&data, &size );
+        ok = GUISeekMenuTemplate( menu_id );
     }
 
     if( ok ) {
-        rmenu = WMakeMenuFromData( data, size );
+        rmenu = WMakeMenuFromRes();
     }
 
     if( ok ) {
@@ -380,20 +316,14 @@ bool GUICreateMenuStructFromRes( res_name_or_id menu_id, gui_menu_struct **menu,
     }
 
     if( !ok ) {
-        if( *menu ) {
+        if( *menu != NULL ) {
             GUIFreeGUIMenuStruct( *menu, *num );
             *menu = NULL;
         }
     }
 
-    if( rmenu ) {
+    if( rmenu != NULL ) {
         WFreeMenuEntries( rmenu );
     }
-
-    if( data ) {
-        GUIMemFree( data );
-    }
-
     return( ok );
 }
-

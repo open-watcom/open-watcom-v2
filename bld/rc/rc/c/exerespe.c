@@ -43,6 +43,8 @@
 #include "exeutil.h"
 #include "exerespe.h"
 
+#include "clibext.h"
+
 
 #define RESOURCE_OBJECT_NAME ".rsrc"
 
@@ -134,13 +136,13 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
 /********************************************************************/
 {
     entry->Head.flags = 0;
-    entry->Head.time_stamp = time( NULL );
+    entry->Head.time_stamp = (unsigned_32)time( NULL );
     entry->Head.major = 0;
     entry->Head.minor = 0;
     entry->Head.num_name_entries = 0;
     entry->Head.num_id_entries = 0;
     entry->NumUnused = num_entries;
-    entry->Children = RCALLOC( num_entries * sizeof(PEResEntry) );
+    entry->Children = RCALLOC( num_entries * sizeof( PEResEntry ) );
 }
 
 static void PEResDirAdd( PEResDirEntry * entry, WResID * name,
@@ -478,9 +480,9 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
                 return( ret );
             }
             diff = ALIGN_VALUE( res_info->Length, sizeof(uint_32) );
-            if( diff != res_info->Length ) {
+            if( diff > res_info->Length ) {
                 /* add the padding */
-                if( RcPadFile( copy_info->to_handle, diff - res_info->Length ) ) {
+                if( RcPadFile( copy_info->to_handle, (size_t)( diff - res_info->Length ) ) ) {
                     return( RS_WRITE_ERROR );
                 }
             }
@@ -528,7 +530,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                 tmpopened = false;
             } else {
                 resfiles->Handle = ResOpenFileRO( resfiles->name );
-                if( resfiles->Handle == NIL_HANDLE ) {
+                if( resfiles->Handle == WRES_NIL_HANDLE ) {
                     ret = RS_OPEN_ERROR;
                     *errres = resfiles;
                     break;
@@ -539,7 +541,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
             ret = traverseTree( &tmp->u.PEInfo.Res, &copy_info, copyDataEntry );
             if( tmpopened ) {
                 ResCloseFile( resfiles->Handle );
-                resfiles->Handle = NIL_HANDLE;
+                resfiles->Handle = WRES_NIL_HANDLE;
                 resfiles->IsOpen = false;
             }
             if( ret != RS_OK ) {
@@ -692,8 +694,8 @@ static void FreePEResDir( PEResDir * dir )
 }
 
 #ifndef INSIDE_WLINK
-extern bool RcPadFile( WResFileID handle, long pad )
-/**************************************************/
+extern bool RcPadFile( WResFileID handle, size_t pad )
+/****************************************************/
 {
     char        zero = 0;
 
@@ -723,7 +725,7 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
         return( true );
     pad = dir->ResOffset + size - pos;
     if( pad > 0 ) {
-        RcPadFile( tmp->Handle, pad );
+        RcPadFile( tmp->Handle, (size_t)pad );
     }
     CheckDebugOffset( tmp );
     return( false );
@@ -932,7 +934,7 @@ bool RcBuildPEResourceObject( void )
         }
         rva = GetNextObjRVA( &exe->u.PEInfo );
         offset = GetNextObjPhysOffset( &exe->u.PEInfo );
-        error = BuildPEResourceObject( exe, Pass2Info.ResFiles, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
+        error = BuildPEResourceObject( exe, Pass2Info.ResFile, res_obj, rva, offset, !Pass2Info.AllResFilesOpen );
 // use of CmdLineParms.WritableRes has been commented out in param.c
 // removed here too as it wasn't initialised anymore (Ernest ter Kuile 31 aug 2003)
 //        if( CmdLineParms.WritableRes ) {

@@ -4,10 +4,10 @@
 LNK=sample.lnk
 source_dir = $(gui_dir)\sample\c
 name = sample
-!ifeq type win
-rcopt += -i=$(gui_dir)\$(type)
+!ifeq sys_windowed 1
+rcopt += -i=$(gui_dir)\win
 !else
-rcopt += -i=$(gui_dir)\$(type);$(gui_dir)\win
+rcopt += -i=$(gui_dir)\ui;$(gui_dir)\win
 !endif
 
 .before

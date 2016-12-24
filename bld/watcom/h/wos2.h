@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,31 +36,6 @@
 #define INCL_BASE
 #define INCL_DOSEXCEPTIONS
 #include <os2.h>
-
-#ifdef _M_I86
-
-#define APIRET          USHORT
-#define OS_UINT         USHORT
-#define OS_PUINT        PUSHORT
-#define __FAR           __far
-
-/* values returned by DosQHandType() */
-
-#define HANDTYPE_FILE     0x0000
-#define HANDTYPE_DEVICE   0x0001
-#define HANDTYPE_PIPE     0x0002
-#define HANDTYPE_NETWORK  0x8000
-
-// The following are not defined in the os2 2.0 header files so
-// lets do it here
-#define NULLHANDLE      (LHANDLE)0
-
-#else
-
-#define OS_UINT         ULONG
-#define OS_PUINT        PULONG
-#define __FAR
+#include "os21632.h"
 
 #endif
-
-#endif /* WOS2_H_INCLUDED */

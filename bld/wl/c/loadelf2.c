@@ -195,7 +195,6 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
 /***********************************************************************/
 {
     int         i;
-    Elf32_Word  off;
     size_t      len;
     Elf32_Sym   elfsym;
     Elf32_Shdr  *hashSH;
@@ -213,13 +212,9 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     memset( &elfsym, 0, sizeof( elfsym ) );
     elfsym.st_shndx = SHN_UNDEF;
     WriteLoad( &elfsym, sizeof( elfsym ) );
-    off = GetStringTableSize( tab->strtab );
     for( i = 1; i < tab->numElems; i++ ) {
         sym = tab->table[i];
-        len = strlen( sym->name ) + 1;
-        AddBufferStringTable( tab->strtab, sym->name, len );
-        elfsym.st_name = off;
-        off += len;
+        elfsym.st_name = AddStringStringTableOffs( tab->strtab, sym->name );
         if( tableSH->sh_info == 0 && (sym->info & SYM_STATIC) == 0 ) {
             tableSH->sh_info = i;
         }
@@ -236,8 +231,8 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     len = ( 1 + 1 + tab->numBuckets + tab->numElems ) * sizeof( unsigned_32 );
     hashSH->sh_offset = hdr->curr_off;
     hashSH->sh_size = len;
-    WriteLoad( &tab->numBuckets, sizeof( unsigned_32 ) );
-    WriteLoad( &tab->numElems, sizeof( unsigned_32 ) );
+    WriteLoadU32( tab->numBuckets );
+    WriteLoadU32( tab->numElems );
     WriteLoad( tab->buckets, tab->numBuckets * sizeof( unsigned_32 ) );
     WriteLoad( tab->chains, tab->numElems * sizeof( unsigned_32 ) );
     hdr->curr_off += len;
@@ -247,7 +242,7 @@ void WriteElfSymTable( ElfSymTable *tab, ElfHdr *hdr, int hashidx,
     hashSH->sh_link = symtabidx;
     tableSH->sh_type = SHT_SYMTAB;
     tableSH->sh_link = strtabidx;
-    AddSecName(hdr, hashSH, ".hash");
+    hashSH->sh_name = AddSecName( hdr, ".hash" );
 }
 
 void ZapElfSymTable( ElfSymTable *tab )

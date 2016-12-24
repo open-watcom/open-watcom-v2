@@ -156,7 +156,7 @@ BOOL GetDGroupItem( char *owner, heap_list *hl ) {
         if( hl->info.ge.wType == GT_DGROUP ) {
             if( hl->info.ge.hOwner != NULL ) {
                 if( MyModuleFindHandle( &me, hl->info.ge.hOwner ) ) {
-                    if( !strcmp( me.szModule, owner ) ){
+                    if( strcmp( me.szModule, owner ) == 0 ) {
                         strcpy( hl->szModule , owner );
                         hl->szModule[MAX_MODULE_NAME]=0;
                         return( TRUE );

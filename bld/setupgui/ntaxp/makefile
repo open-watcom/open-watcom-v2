@@ -4,4 +4,4 @@ host_os  = nt
 host_cpu = axp
 sys_windowed = 1
 
-!include ../setup.mif
+!include ../master.mif

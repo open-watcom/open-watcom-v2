@@ -98,7 +98,8 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
     long total_units;
     int disc;
     long start_sector;
-    long total_sectors;
+    long drive_total_sectors;
+    long long total_sectors;
     int sector_size;
     int bios_sectors_per_cyl;
     int bios_heads;
@@ -112,7 +113,7 @@ _WCRTLINK unsigned _getdiskfree( unsigned dnum, struct diskfree_t *df )
         stat = RdosGetDriveDiscParam(  dnum,
                                        &disc,
                                        &start_sector,
-                                       &total_sectors );
+                                       &drive_total_sectors );
     }
 
     if( stat ) {

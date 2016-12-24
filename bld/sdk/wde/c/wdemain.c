@@ -82,27 +82,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
-static void *_MemAlloc( size_t size )
-{
-    return( WRMemAlloc( size ) );
-}
-
-static void _MemFree( void *p )
-{
-    WRMemFree( p );
-}
-
-/* set the WRES library to use compatible functions */
-WResSetRtns( open, close, posix_read, posix_write, lseek, tell, _MemAlloc, _MemFree );
-
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -1297,7 +1276,7 @@ bool WdeIsDDEArgs( char **argv, int argc )
     int i;
 
     for( i = 1; i < argc; i++ ) {
-        if( !stricmp( argv[i], DDE_OPT ) ) {
+        if( stricmp( argv[i], DDE_OPT ) == 0 ) {
             return( TRUE );
         }
     }
@@ -1313,7 +1292,7 @@ bool WdeProcessArgs( char **argv, int argc )
     ok = true;
 
     for( i = 1; i < argc; i++ ) {
-        if( !stricmp( argv[i], CREATE_NEW_FLAG ) ) {
+        if( stricmp( argv[i], CREATE_NEW_FLAG ) == 0 ) {
             WdeCreateNewFiles = TRUE;
         } else if( stricmp( argv[i], DDE_OPT ) ) {
             if( WRFileExists( argv[i] ) ) {

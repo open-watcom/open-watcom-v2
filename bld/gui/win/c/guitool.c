@@ -269,8 +269,7 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
         return( false );
     }
     for( i = 0; i < num_toolbar_items; i++ ) {
-        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst,
-                                _wpi_makeintresource( toolinfo[i].bitmap ) );
+        tbar->bitmaps[i] = _wpi_loadbitmap( GUIResHInst, MAKEINTRESOURCE( toolinfo[i].bitmap ) );
         if( height == 0 ) {
             _wpi_getbitmapdim( tbar->bitmaps[i], &bm_w, &bm_h );
             if( bm_h > fixed_height ) {

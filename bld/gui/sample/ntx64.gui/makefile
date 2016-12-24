@@ -2,8 +2,7 @@
 host_os  = nt
 host_cpu = x64
 
-type = win
-os   = nt
+sys_windowed = 1
 sys  = nt_win
 
 !include ../master.mif

@@ -66,25 +66,25 @@
 /****************************************************************************/
 
 WRETypeName WRETypeNames[] = {
-    { (uint_16)(pointer_int)RT_GROUP_CURSOR, WRE_CURSORGROUPNAME,    FALSE },
-    { (uint_16)(pointer_int)RT_GROUP_ICON,   WRE_ICONGROUPNAME,      FALSE },
-    { (uint_16)(pointer_int)RT_BITMAP,       WRE_BITMAPNAME,         FALSE },
-    { (uint_16)(pointer_int)RT_MENU,         WRE_MENUNAME,           FALSE },
-    { (uint_16)(pointer_int)RT_DIALOG,       WRE_DIALOGNAME,         FALSE },
-    { (uint_16)(pointer_int)RT_STRING,       WRE_STRINGNAME,         FALSE },
-    { (uint_16)(pointer_int)RT_FONT,         WRE_FONTNAME,           FALSE },
-    { (uint_16)(pointer_int)RT_ACCELERATOR,  WRE_ACCELNAME,          FALSE },
-    { (uint_16)(pointer_int)RT_RCDATA,       WRE_USERDATANAME,       FALSE },
-    { (uint_16)(pointer_int)RT_FONTDIR,      WRE_FONTDIRNAME,        FALSE },
-    { (uint_16)(pointer_int)RT_CURSOR,       WRE_CURSORNAME,         TRUE  },
-    { (uint_16)(pointer_int)RT_ICON,         WRE_ICONNAME,           TRUE  },
-    { (uint_16)(pointer_int)RT_FONTDIR,      WRE_FONTDIRNAME,        FALSE },
-    { (uint_16)(pointer_int)RT_MESSAGETABLE, WRE_MESSAGETABLENAME,   FALSE },
-    { (uint_16)(pointer_int)RT_VERSION,      WRE_VERSIONNAME,        FALSE },
-    { (uint_16)(pointer_int)RT_DLGINCLUDE,   WRE_DLGINCLUDENAME,     FALSE },
-    { (uint_16)(pointer_int)RT_HTML,         WRE_HTMLNAME,           FALSE },
-    { (uint_16)(pointer_int)RT_MANIFEST,     WRE_MANIFESTNAME,       FALSE },
-    { 0,                                     0,                      FALSE }
+    { RESOURCE2INT( RT_GROUP_CURSOR ), WRE_CURSORGROUPNAME,    FALSE },
+    { RESOURCE2INT( RT_GROUP_ICON ),   WRE_ICONGROUPNAME,      FALSE },
+    { RESOURCE2INT( RT_BITMAP ),       WRE_BITMAPNAME,         FALSE },
+    { RESOURCE2INT( RT_MENU ),         WRE_MENUNAME,           FALSE },
+    { RESOURCE2INT( RT_DIALOG ),       WRE_DIALOGNAME,         FALSE },
+    { RESOURCE2INT( RT_STRING ),       WRE_STRINGNAME,         FALSE },
+    { RESOURCE2INT( RT_FONT ),         WRE_FONTNAME,           FALSE },
+    { RESOURCE2INT( RT_ACCELERATOR ),  WRE_ACCELNAME,          FALSE },
+    { RESOURCE2INT( RT_RCDATA ),       WRE_USERDATANAME,       FALSE },
+    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        FALSE },
+    { RESOURCE2INT( RT_CURSOR ),       WRE_CURSORNAME,         TRUE  },
+    { RESOURCE2INT( RT_ICON ),         WRE_ICONNAME,           TRUE  },
+    { RESOURCE2INT( RT_FONTDIR ),      WRE_FONTDIRNAME,        FALSE },
+    { RESOURCE2INT( RT_MESSAGETABLE ), WRE_MESSAGETABLENAME,   FALSE },
+    { RESOURCE2INT( RT_VERSION ),      WRE_VERSIONNAME,        FALSE },
+    { RESOURCE2INT( RT_DLGINCLUDE ),   WRE_DLGINCLUDENAME,     FALSE },
+    { RESOURCE2INT( RT_HTML ),         WRE_HTMLNAME,           FALSE },
+    { RESOURCE2INT( RT_MANIFEST ),     WRE_MANIFESTNAME,       FALSE },
+    { 0,                               0,                      FALSE }
 };
 
 static bool WRESetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )

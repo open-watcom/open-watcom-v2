@@ -200,7 +200,7 @@ static DWORD findIndex( char *str ) {
 
     for( i=0; i < indexSize; i++ ) {
         if( titleIndex[i] != NULL ) {
-            if( !stricmp( titleIndex[i], str ) ) {
+            if( stricmp( titleIndex[i], str ) == 0 ) {
                 return( i );
             }
         }
@@ -765,7 +765,7 @@ BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo ) {
 
         if( inst->ParentObjectInstance == index ) {
             wsprintf( buf, "%ls", (char *)inst + inst->NameOffset );
-            if( !strcmp( buf, imagename ) ) {
+            if( strcmp( buf, imagename ) == 0 ) {
                 counter = findCounter( imageObject, N_NO_ACCESS );
                 if( counter == NULL ) goto GETIMAGEMEM_ERROR;
                 imageinfo->noaccess = getCounterDWORD( inst, counter );

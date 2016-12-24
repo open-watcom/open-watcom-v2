@@ -34,21 +34,21 @@
 extern "C" {
 #endif
 
+#include "wressetr.h"
+
 #define         DEP_LIST_TYPE   0x79
 #define         DEP_LIST_NAME   "EBWF_XFMMTUPPE"
 
 #include "pushpck1.h"
-
 typedef struct {
     uint_32     time;           /* file's time taken from stat */
     uint_16     len;            /* sizeof the name array */
     char        name[1];        /* dynamic array */
 } _WCUNALIGNED DepInfo;
-
 #include "poppck.h"
 
-DepInfo *WResGetAutoDep( const char *fname );
-void WResFreeAutoDep( DepInfo *ptr );
+extern DepInfo  *WResGetAutoDep( const char *fname );
+extern void     WResFreeAutoDep( DepInfo *ptr );
 
 #ifdef __cplusplus
 }

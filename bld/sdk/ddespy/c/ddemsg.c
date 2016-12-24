@@ -286,7 +286,7 @@ static void updateAlias( unsigned long id, char *newalias, char *oldalias, void 
     ReplaceInfo *info = _info;
 
     if( oldalias != NULL && newalias != NULL ) {
-        if( !strcmp( oldalias, newalias ) ) {
+        if( strcmp( oldalias, newalias ) == 0 ) {
             return;
         }
     }
@@ -680,6 +680,7 @@ static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
     str = info->str;
     str_alloced = false;
 #ifdef __NT__
+  #ifndef _WIN64
     ver = GetVersion();
 
     /* In NT 3.1 the string is Unicode.  Otherwise it is ASCII. */
@@ -688,6 +689,7 @@ static bool processHSZStruct( char *buf, MONHSZSTRUCT *info )
         str_alloced = true;
         wsprintf( str, "%ls", info->str );
     }
+  #endif
 #endif
     RCsprintf( buf, fmtid, info->dwTime, task, HSZ_FMT_LEN, info->hsz, str );
     if( str_alloced ) {

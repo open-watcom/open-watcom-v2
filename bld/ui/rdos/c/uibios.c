@@ -62,6 +62,7 @@ bool intern initbios( void )
     }
 
     UIData->colour = M_VGA;
+    RdosGetTextSize(&UIData->height, &UIData->width);
 
     UIData->screen.origin = malloc( UIData->width * UIData->height * sizeof( PIXEL ) );
 

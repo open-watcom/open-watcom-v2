@@ -44,6 +44,9 @@
 #include "memory.h"
 #include "orl.h"                /* from riscdev project */
 
+#include "clibext.h"
+
+
 #define HASH_TABLE_SIZE         2111
 #define MAX_SYMBOL_LEN          512
 
@@ -174,15 +177,15 @@ static unsigned hash_symbol_name( const void *symbol )
 /*
  * Used by ORL.
  */
-static void *obj_read( void *hdl, size_t len )
-/********************************************/
+static void *obj_read( orl_file_id fid, size_t len )
+/**************************************************/
 {
     ListElem *          newelem;
 
     newelem = AllocMem( sizeof( ListElem ) + len - 1 );
     newelem->next = bufflist;
     bufflist = newelem;
-    if( (unsigned)read( (int)(pointer_int)hdl, newelem->buff, (unsigned)len ) != (unsigned)len ) {
+    if( posix_read( ORL_FID2PH( fid ), newelem->buff, len ) != len ) {
         FreeMem( newelem );
         return( NULL );
     }
@@ -193,10 +196,10 @@ static void *obj_read( void *hdl, size_t len )
 /*
  * Used by ORL.
  */
-static long obj_seek( void *hdl, long pos, int where )
-/****************************************************/
+static long obj_seek( orl_file_id fid, long pos, int where )
+/**********************************************************/
 {
-    return( lseek( (int)(pointer_int)hdl, pos, where ) );
+    return( lseek( ORL_FID2PH( fid ), pos, where ) );
 }
 
 
@@ -257,12 +260,12 @@ static int handle_obj_file( const char *filename, orl_handle o_hnd )
     if( fileh == -1 ) {
         return( 0 );
     }
-    o_format = ORLFileIdentify( o_hnd, (void *)(pointer_int)fileh );
+    o_format = ORLFileIdentify( o_hnd, ORL_PH2FID( fileh ) );
     if( o_format == ORL_UNRECOGNIZED_FORMAT ) {
         close( fileh );
         return( 0 );
     }
-    o_fhnd = ORLFileInit( o_hnd, (void *)(pointer_int)fileh, o_format );
+    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( fileh ), o_format );
     if( o_fhnd == NULL ) {
         close( fileh );
         return( 0 );

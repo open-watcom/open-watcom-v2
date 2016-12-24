@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 
-#include <wwindows.h>
+#include <windows.h>
 #include "wpi.h"
 
 void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight )

@@ -73,7 +73,7 @@ void ResetObjPass1( void )
 }
 
 void P1Start( void )
-/*************************/
+/******************/
 {
     LastCodeSeg = NULL;
 }
@@ -129,7 +129,7 @@ static bool StoreCDatData( void *_piece, void *_loc )
 }
 
 void StoreInfoData( comdat_info *info )
-/********************************************/
+/*************************************/
 {
     virt_mem    temp;
 
@@ -196,7 +196,7 @@ static bool CheckAltSym( void *_sym, void *_info )
 }
 
 void InfoCDatAltDef( comdat_info *info )
-/*********************************************/
+/**************************************/
 {
     symbol      *mainsym;
 
@@ -279,7 +279,7 @@ static void DoIncSymbol( void *_sym )
 }
 
 unsigned long IncPass1( void )
-/***********************************/
+/****************************/
 {
     segdata         *seglist;
     segdata         *seg;
@@ -312,7 +312,7 @@ unsigned long IncPass1( void )
 }
 
 static class_entry *FindNamedClass( char *name )
-/***********************************************/
+/**********************************************/
 // NYI:  this doesn't take into account 16 & 32 bit classes with the same name.
 {
     class_entry   *class;
@@ -361,7 +361,7 @@ static bool DefIncGroup( void *_def, void *_grouptab )
 }
 
 void DoIncGroupDefs( void )
-/********************************/
+/*************************/
 {
     unsigned        numgroups;
     group_entry     **grouptab;
@@ -375,7 +375,7 @@ void DoIncGroupDefs( void )
 }
 
 void Set64BitMode( void )
-/******************************/
+/***********************/
 // make sure that the executable format is a 64-bit format.
 {
     LinkState |= FMT_SEEN_64_BIT;
@@ -389,7 +389,7 @@ void Set64BitMode( void )
 }
 
 void Set32BitMode( void )
-/******************************/
+/***********************/
 // make sure that the executable format is a 32-bit format.
 {
     LinkState |= FMT_SEEN_32_BIT;
@@ -403,7 +403,7 @@ void Set32BitMode( void )
 }
 
 void Set16BitMode( void )
-/******************************/
+/***********************/
 {
     if( !HintFormat( MK_ALLOW_16 ) ) {
         if( (ObjFormat & FMT_TOLD_XXBIT) == 0 ) {
@@ -415,7 +415,7 @@ void Set16BitMode( void )
 }
 
 void AllocateSegment( segnode *newseg, char *clname )
-/**********************************************************/
+/***************************************************/
 // allocate a new segment (or new piece of a segment)
 {
     DoAllocateSegment( newseg->entry, clname );
@@ -446,7 +446,7 @@ static void DoAllocateSegment( segdata *sdata, char *clname )
             sect = NonSect;
         }
     }
-    class = FindClass( sect, clname, ( sdata->is32bit != 0 ), ( sdata->iscode != 0 ) );
+    class = FindClass( sect, clname, sdata->is32bit, sdata->iscode );
     AddSegment( sdata, class );
     if( isovlclass ) {
         sdata->u.leader->info |= SEG_OVERLAYED;
@@ -467,7 +467,7 @@ static void CheckQNXSegMismatch( stateflag mask )
 }
 
 void AddSegment( segdata *sd, class_entry *class )
-/*******************************************************/
+/************************************************/
 /* Add a segment to the segment list for an object file */
 {
     unsigned_16     info;
@@ -550,7 +550,9 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     size_t          namelen;
     class_status    cls_is32bit;
 
-    cls_is32bit = ( is32bit ) ? CLASS_32BIT : 0;
+    cls_is32bit = 0;
+    if( is32bit )
+        cls_is32bit = CLASS_32BIT;
     lastclass = sect->classlist;
     for( currclass = sect->classlist; currclass != NULL; currclass = currclass->next_class ) {
         if( stricmp( currclass->name, name ) == 0 && (currclass->flags & CLASS_32BIT) == cls_is32bit ) {
@@ -560,10 +562,10 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
     }
     namelen = strlen( name );
     currclass = CarveAlloc( CarveClass );
+    currclass->flags = 0;
     currclass->name = AddBufferStringTable( &PermStrings, name, namelen + 1 );
     currclass->segs = NULL;
     currclass->section = sect;
-    currclass->flags = is32bit;
     currclass->next_class = NULL;
     if( lastclass == NULL ) {
         sect->classlist = currclass;
@@ -571,6 +573,9 @@ class_entry *FindClass( section *sect, const char *name, bool is32bit, bool isco
         lastclass->next_class = currclass;
     }
     DBIColClass( currclass );
+    if( is32bit ) {
+        currclass->flags |= CLASS_32BIT;
+    }
     if( iscode ) {
         currclass->flags |= CLASS_CODE;
     }
@@ -659,8 +664,7 @@ seg_leader *InitLeader( const char *segname )
     seg->class = NULL;
     seg->size = 0;
     seg->num = 0;
-    seg->seg_addr.off = 0;
-    seg->seg_addr.seg = UNDEFINED;
+    SET_ADDR_UNDEFINED( seg->seg_addr );
     seg->group = NULL;
     seg->info = 0;
     seg->segname = AddStringStringTable( &PermStrings, segname );
@@ -670,7 +674,7 @@ seg_leader *InitLeader( const char *segname )
 }
 
 void FreeLeader( void *seg )
-/*********************************/
+/**************************/
 {
     RingWalk( ((seg_leader *)seg)->pieces, FreeSegData );
     CarveFree( CarveLeader, seg );
@@ -700,7 +704,7 @@ static bool CmpLeaderPtr( void *a, void *b )
 }
 
 void AddToGroup( group_entry *group, seg_leader *seg )
-/***********************************************************/
+/****************************************************/
 {
     if( Ring2Lookup( group->leaders, CmpLeaderPtr, seg ) )
         return;
@@ -730,19 +734,17 @@ void AddToGroup( group_entry *group, seg_leader *seg )
     Ring2Append( &group->leaders, seg );
 }
 
-void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off,
-                         unsigned_16 frame )
-/*************************************************************************/
+void SetAddPubSym(symbol *sym, sym_info type, mod_entry *mod, offset off, unsigned_16 frame )
+/*******************************************************************************************/
 {
     sym->mod = mod;
     SET_SYM_TYPE( sym, type );
-    XDefSymAddr( sym, off, frame );
+    SET_SYM_ADDR( sym, off, frame );
     Ring2Append( &mod->publist, sym );
 }
 
-void DefineSymbol( symbol *sym, segnode *seg, offset off,
-                          unsigned_16 frame )
-/**************************************************************/
+void DefineSymbol( symbol *sym, segnode *seg, offset off, unsigned_16 frame )
+/***************************************************************************/
 // do the object file independent public symbol definition.
 {
     size_t          name_len;
@@ -753,7 +755,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
         frame = 0;
     }
     name_len = strlen( sym->name );
-    if( sym->addr.seg != UNDEFINED && !IS_SYM_COMMUNAL( sym ) ) {
+    if( !IS_ADDR_UNDEFINED( sym->addr ) && !IS_SYM_COMMUNAL( sym ) ) {
         if( seg != NULL && sym->p.seg != NULL ) {
             frame_ok = (sym->p.seg->u.leader == seg->entry->u.leader);
             if( sym->p.seg->u.leader->combine != COMBINE_COMMON ) {
@@ -785,7 +787,7 @@ void DefineSymbol( symbol *sym, segnode *seg, offset off,
         }
 
         ClearSymUnion( sym );
-        SetAddPubSym(sym, sym_type, CurrMod, off, frame);
+        SetAddPubSym( sym, sym_type, CurrMod, off, frame );
         sym->info &= ~SYM_DISTRIB;
         if( seg != NULL ) {
             if( LinkFlags & STRIP_CODE ) {
@@ -880,7 +882,7 @@ static void FarAllocCommunal( symbol *sym, unsigned size )
 }
 
 void AllocCommunal( symbol *sym, offset size )
-/***************************************************/
+/********************************************/
 {
     if( LinkFlags & STRIP_CODE ) {
         CleanStripInfo( sym );
@@ -892,9 +894,8 @@ void AllocCommunal( symbol *sym, offset size )
     }
 }
 
-symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
-                                 bool is32bit )
-/*********************************************************************/
+symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar, bool is32bit )
+/***************************************************************************/
 {
     sym_info    symtype;
     symbol      *altsym;
@@ -933,7 +934,7 @@ symbol *MakeCommunalSym( symbol *sym, offset size, bool isfar,
 }
 
 void CheckComdatSym( symbol *sym, sym_info flags )
-/*******************************************************/
+/************************************************/
 // check a comdat redefinition to see if it is OK
 // NYI: SYM_CDAT_SEL_SIZE, SYM_CDAT_SEL_EXACT, & SYM_CDAT_SEL_ASSOC not yet
 // handled properly.  no prob. under coff, but OMF makes it very hard...
@@ -954,7 +955,7 @@ void CheckComdatSym( symbol *sym, sym_info flags )
 }
 
 void SetComdatSym( symbol *sym, segdata *sdata )
-/*****************************************************/
+/**********************************************/
 {
     if( LinkFlags & STRIP_CODE ) {
         if( sdata->iscode ) {
@@ -971,7 +972,7 @@ void SetComdatSym( symbol *sym, segdata *sdata )
 
 void DefineComdat( segdata *sdata, symbol *sym, offset value,
                           sym_info select, unsigned_8 *data )
-/******************************************************************/
+/***********************************************************/
 {
     if( IS_SYM_REGULAR( sym ) && (sym->info & SYM_DEFINED) ) {
         AddCDatAltDef( sdata, sym, data, select );
@@ -992,15 +993,16 @@ void DefineComdat( segdata *sdata, symbol *sym, offset value,
         sym->addr.off += value;
         sdata->u1.vm_ptr = AllocStg( sdata->length );
 
-        if(NULL == data)
+        if( NULL == data ) {
             PutInfoNulls( sdata->u1.vm_ptr, sdata->length );
-        else
+        } else {
             PutInfo( sdata->u1.vm_ptr, data, sdata->length );
+        }
     }
 }
 
 void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
-/*******************************************************************/
+/************************************************************/
 /* handle the lazy and weak extdef comments */
 {
     symbol      *defaultsym;
@@ -1032,7 +1034,7 @@ void DefineLazyExtdef( symbol *sym, symbol *def, bool isweak )
 
 static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
                             vflistrtns *rtns )
-/****************************************************************************/
+/************************************************************************/
 /* get the conditional symbols list from the vftable record, adding edges
  * to the dead code graph if necessary */
 {
@@ -1040,7 +1042,7 @@ static symbol **GetVFList( symbol *defsym, symbol *mainsym, bool generate,
     symbol      **symlist;
     symbol      *condsym;
     void        *bufstart;
-    char        *name;
+    const char  *name;
     unsigned    count;
 
     liststart = NULL;
@@ -1106,7 +1108,7 @@ static void DefineVirtualFunction( symbol *sym, symbol *defsym, bool ispure,
 
 void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
                                  vflistrtns *rtns )
-/**********************************************************************/
+/**************************************************************/
 // process the watcom virtual function table information extension
 {
     symbol      **symlist;
@@ -1155,7 +1157,7 @@ void DefineVFTableRecord( symbol *sym, symbol *def, bool ispure,
 }
 
 void DefineVFReference( void *src, symbol *targ, bool issym )
-/*******************************************************************/
+/***********************************************************/
 {
     if( issym ) {
         AddSymEdge( src, targ );
@@ -1167,7 +1169,7 @@ void DefineVFReference( void *src, symbol *targ, bool issym )
 }
 
 void DefineReference( symbol *sym )
-/*****************************************/
+/*********************************/
 // we have an object file reference for sym
 {
     if( FmtData.type & MK_OVERLAYS ) {
@@ -1193,8 +1195,9 @@ group_entry *GetGroup( const char *name )
     return( grp );
 }
 
+
 group_entry *SearchGroups( const char *name )
-/*********************************************/
+/*******************************************/
 /* Find group of specified name. */
 {
     group_entry     *currgrp;
@@ -1278,7 +1281,7 @@ void HandleExport( const length_name *expname, const length_name *intname,
 }
 
 bool CheckVFList( symbol *sym )
-/*************************************/
+/*****************************/
 /* see if any of the conditional symbols for this symbol are defined */
 {
     symbol      **symlist;

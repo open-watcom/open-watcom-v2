@@ -48,16 +48,16 @@ typedef struct a_file {                 // file with no buffered i/o
 #endif
 
 typedef struct b_file {                 // file with buffered i/o
-    f_attrs     attrs;                  // file attributes
-    /* unsigned_16 attrs;                  // file attributes */
-    int         handle;                 // DOS handle
-    int         stat;                   // error status
-    long int    phys_offset;            // physical offset in file
-    uint        read_len;               // amount read from buffer
-    uint        b_curs;                 // position in buffer
-    uint        high_water;             // highest byte written to in buffer
-    uint        buff_size;              // size of buffer
-    char        buffer[MIN_BUFFER];     // read buffer (must be last field since
+    f_attrs         attrs;                  // file attributes
+    /* unsigned_16     attrs;                  // file attributes */
+    int             handle;                 // DOS handle
+    int             stat;                   // error status
+    unsigned long   phys_offset;            // physical offset in file
+    size_t          read_len;               // amount read from buffer
+    size_t          b_curs;                 // position in buffer
+    size_t          high_water;             // highest byte written to in buffer
+    size_t          buff_size;              // size of buffer
+    char            buffer[MIN_BUFFER];     // read buffer (must be last field since
 } b_file;                               // bigger buffer may be allocated)
 
 #define REC_TEXT                0x0001  // text records (terminated with CR/LF)
@@ -98,6 +98,6 @@ typedef struct b_file {                 // file with buffered i/o
 
 #define CTRL_Z  0x1a                    // Ctrl/Z character (EOF marker)
 
-#define READ_ERROR      ((uint)-1)      // read error indicator
+#define READ_ERROR      ((size_t)-1)    // read error indicator
 
 #endif

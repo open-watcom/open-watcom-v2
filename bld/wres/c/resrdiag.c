@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,28 +45,10 @@
 #include "clibext.h"
 
 
-static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
-/***************************************************************************/
-{
-    bool    error;
-
-    error = ResWriteUint16( size->x, handle );
-    if( !error ) {
-        error = ResWriteUint16( size->y, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint16( size->width, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint16( size->height, handle );
-    }
-    return( error );
-}
-
 static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
 /********************************************************************************/
 {
-    bool        error;
+    bool    error;
     uint_16     tmp16;
 
     error = ResReadUint16( &tmp16, handle );
@@ -81,156 +64,6 @@ static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID handle )
     if( !error ) {
         error = ResReadUint16( &tmp16, handle );
         size->height = tmp16;
-    }
-    return( error );
-}
-
-bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
-/**********************************************************************/
-{
-    bool            error;
-
-    error = ResWriteUint32( head->Style, handle );
-    if( !error ) {
-        error = ResWriteUint8( head->NumOfItems, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
-    }
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( head->MenuName, false, handle );
-    }
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, false, handle );
-    }
-    if( !error ) {
-        error = ResWriteString( head->Caption, false, handle );
-    }
-    /* if the font was set output the font name and point size */
-    if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
-        if( !error ) {
-            error = ResWriteString( head->FontName, false, handle );
-        }
-    }
-    return( error );
-}
-
-static bool ResWriteDialogHeaderCommon32( DialogBoxHeader32 *head, WResFileID handle, bool add_quotes )
-/*****************************************************************************************************/
-{
-    bool    error;
-    size_t  len;
-    char    *newname;
-
-    if( add_quotes ) {
-        if( head->MenuName != NULL && head->MenuName->name[0] != '\0' ) {
-            len = strlen( head->MenuName->name );
-            newname = WRESALLOC( ( len + 3 ) * sizeof( char ) );
-            newname[0] = '"';
-            strcpy( newname + 1, head->MenuName->name );
-            newname[len + 1] = '"';
-            newname[len + 2] = '\0';
-            head->MenuName = ResStrToNameOrOrd( newname );
-            WRESFREE( newname );
-        }
-    }
-
-    error = ResWriteNameOrOrdinal( head->MenuName, true, handle );
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( head->ClassName, true, handle );
-    }
-    if( !error ) {
-        error = ResWriteString( head->Caption, true, handle );
-    }
-
-    return( error );
-}
-
-bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
-/**************************************************************************/
-{
-    bool            error;
-
-    error = ResWriteUint32( head->Style, handle );
-    if( !error ) {
-        error = ResWriteUint32( head->ExtendedStyle, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint16( head->NumOfItems, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, false );
-    }
-    /* if the font was set output the font name and point size */
-    if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
-        if( !error ) {
-            error = ResWriteString( head->FontName, true, handle );
-        }
-    }
-
-    if( !error ) {
-        /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
-    }
-    return( error );
-}
-
-
-bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
-                                                              WResFileID handle )
-/*******************************************************************************/
-{
-    bool            error;
-
-    /* Write out the miscellaneous two WORDs 01 00 FF FF */
-
-    error = ResWriteUint16( 1, handle );
-    if( !error ) {
-        error = ResWriteUint16( (uint_16)-1, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( exhead->HelpId, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( head->ExtendedStyle, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( head->Style, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint16( head->NumOfItems, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogHeaderCommon32( head, handle, true );
-    }
-    /* If the font was set, write the font information */
-    if( !error && (head->Style & DS_SETFONT) ) {
-        error = ResWriteUint16( head->PointSize, handle );
-        if( !error ) {
-            error = ResWriteUint16( exhead->FontWeight, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint8( exhead->FontItalic, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint8( exhead->FontCharset, handle );
-        }
-        if( !error ) {
-            error = ResWriteString( head->FontName, true, handle );
-        }
-    }
-
-    if( !error ) {
-        /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
     }
     return( error );
 }
@@ -283,16 +116,13 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID handle )
 bool ResIsDialogEx( WResFileID handle )
 /*************************************/
 {
-    WResFileSSize   numread;
-    uint_16         signa[2];
+    uint_16         sign0;
+    uint_16         sign1;
 
     /* read in the signature part of the header and check it */
-    numread = WRESREAD( handle, signa, sizeof( signa ) );
-    if( numread != sizeof( signa ) ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-    } else {
-        if( signa[0] == 0x0001 && signa[1] == 0xFFFF ) {
-            return( true );
+    if( !ResReadUint16( &sign0, handle ) ) {
+        if( !ResReadUint16( &sign1, handle ) ) {
+            return( sign0 == 0x0001 && sign1 == 0xFFFF );
         }
     }
     return( false );
@@ -359,24 +189,15 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID handle )
 }
 
 bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
-                                                             WResFileID handle )
+                                                              WResFileID handle )
 /******************************************************************************/
 {
     bool            error;
     uint_16         tmp16;
     uint_32         tmp32;
 
-    /* Read in the miscellaneous two WORDs 01 00 FF FF */
-    error = ResReadUint16( &tmp16, handle );
-    if( !error ) {
-        error = ( tmp16 != 1 );
-        if( !error ) {
-            error = ResReadUint16( &tmp16, handle );
-            if( !error ) {
-                error = tmp16 != (uint_16)-1;
-            }
-        }
-    }
+    /* Read in the miscellaneous two WORDs 0x0001, 0xFFFF */
+    error = !ResIsDialogEx( handle );
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         exhead->HelpId = tmp32;
@@ -426,123 +247,6 @@ bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead,
     return( error );
 }
 
-bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID handle )
-/***************************************************************************/
-{
-    bool            error;
-
-    error = ResWriteDialogSizeInfo( &(control->Size), handle );
-    if( !error ) {
-        error = ResWriteUint16( control->ID, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( control->Style, handle );
-    }
-
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
-    if( !error ) {
-        if( control->ClassID->Class & 0x80 ) {
-            error = ResWriteUint8( control->ClassID->Class, handle );
-        } else {
-            error = ResWriteString( control->ClassID->ClassName, false, handle);
-        }
-    }
-
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( control->Text, false, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint8( control->ExtraBytes, handle );
-    }
-
-    return( error );
-}
-
-static bool ResWriteDialogControlCommon32( ControlClass *class_id, ResNameOrOrdinal *text,
-                                                  uint_16 extra_bytes, WResFileID handle )
-/****************************************************************************************/
-{
-    bool      error;
-
-    /* if the ClassID is one of the predefined ones write it out as a byte */
-    /* otherwise it is a string */
-    if( class_id->Class & 0x80 ) {
-        /*the class number is prefixed by 0xFFFF to distinguish it
-         * from a string */
-        error = ResWriteUint16( (uint_16)-1, handle );
-        if( !error ) {
-            error = ResWriteUint16( class_id->Class, handle );
-        }
-    } else {
-        error = ResWriteString( class_id->ClassName, true, handle );
-    }
-    if( !error ) {
-        error = ResWriteNameOrOrdinal( text, true, handle );
-    }
-
-    if( !error ) {
-        error = ResWriteUint16( extra_bytes, handle );
-    }
-
-    return( error );
-}
-
-bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID handle )
-/*******************************************************************************/
-{
-    bool            error;
-
-    error = ResWriteUint32( control->Style, handle );
-    if( !error ) {
-        error = ResWriteUint32( control->ExtendedStyle, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), handle );
-    }
-    if( !error ) {
-        error = ResWriteUint16( control->ID, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
-    }
-
-    if( !error ) {
-        /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
-    }
-    return( error );
-}
-
-bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID handle )
-/********************************************************************************/
-{
-    bool            error;
-
-    error = ResWriteUint32( control->HelpId, handle );
-    if( !error ) {
-        error = ResWriteUint32( control->ExtendedStyle, handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( control->Style, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), handle );
-    }
-    if( !error ) {
-        error = ResWriteUint32( control->ID, handle );
-    }
-    if( !error ) {
-        error = ResWriteDialogControlCommon32( control->ClassID, control->Text, control->ExtraBytes, handle );
-    }
-
-    if( !error ) {
-        /* padding full record to dword boundary if necessary */
-        error = ResWritePadDWord( handle );
-    }
-    return( error );
-}
-
 static ControlClass *ReadControlClass( WResFileID handle )
 /********************************************************/
 {
@@ -562,13 +266,13 @@ static ControlClass *ReadControlClass( WResFileID handle )
             restofstring = ResReadString( handle, &stringlen );
             stringlen++;    /* for the '\0' */
             error = (restofstring == NULL);
-        }
+    }
     }
 
     /* allocate memory for the new class */
     if( error ) {
         newclass = NULL;
-    } else {
+        } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
             error = true;
@@ -597,7 +301,7 @@ static ControlClass *Read32ControlClass( WResFileID handle )
     ControlClass *  newclass;
     uint_16         flags;
     uint_16         class;
-    bool            error;
+    bool      error;
     size_t          stringlen;
     char *          restofstring;
 
@@ -607,16 +311,16 @@ static ControlClass *Read32ControlClass( WResFileID handle )
 
     /* read in the first word */
     error = ResReadUint16( &flags, handle );
-    if( !error ) {
+        if( !error ) {
         if( flags == 0xffff ) {
             error = ResReadUint16( &class, handle );
         } else {
-            class = flags & 0xFF;       /* first 16-bit UNICODE character */
+            class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
             restofstring = ResRead32String( handle, &stringlen );
-            stringlen++;    /* for the '\0' */
+            stringlen++;                /* for the '\0' */
             error = (restofstring == NULL);
         }
-    }
+        }
 
     /* allocate memory for the new class */
     if( error ) {
@@ -747,76 +451,16 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID handle 
     if( !error ) {
         error = ResReadUint32( &tmp32, handle );
         control->ID = tmp32;
-    }
+            }
     if( !error ) {
         error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), handle );
-    }
+        }
 
     if( !error ) {
         /* seek to dword boundary if necessary */
         error = ResReadPadDWord( handle );
     }
     return( error );
-}
-
-ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *name )
-/**********************************************************************/
-{
-    size_t          stringlen;
-    ControlClass    *class;
-
-    if( name->ord.fFlag == 0xff ) {
-        class = ResNumToControlClass( name->ord.wOrdinalID );
-    } else {
-        if( stricmp( name->name, "button" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_BUTTON );
-        } else if( stricmp( name->name, "edit" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_EDIT );
-        } else if( stricmp( name->name, "static" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_STATIC );
-        } else if( stricmp( name->name, "listbox" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_LISTBOX );
-        } else if( stricmp( name->name, "scrollbar" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_SCROLLBAR );
-        } else if( stricmp( name->name, "combobox" ) == 0 ) {
-            class = ResNumToControlClass( CLASS_COMBOBOX );
-        } else {
-            /* space for the '\0' is reserve in the ControlClass structure */
-            stringlen = strlen( name->name );
-            class = WRESALLOC( sizeof( ControlClass ) + stringlen );
-            if( class == NULL ) {
-                WRES_ERROR( WRS_MALLOC_FAILED );
-            } else {
-                /* +1 to copy the '\0' */
-                memcpy( class->ClassName, name->name, stringlen + 1 );
-            }
-        }
-    }
-    return( class );
-}
-
-ControlClass *ResNumToControlClass( uint_16 classnum )
-/****************************************************/
-{
-    ControlClass *  class;
-
-    if( classnum & 0x80 ) {
-        class = WRESALLOC( sizeof( ControlClass ) );
-        if( class == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
-            class->Class = (uint_8)classnum;
-        }
-    } else {
-        class = WRESALLOC( sizeof( ControlClass ) + 1 );
-        if( class == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
-            class->Class = (uint_8)classnum;
-            *(class->ClassName + 1) = '\0';
-        }
-    }
-    return( class );
 }
 
 void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader * head )

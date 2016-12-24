@@ -49,13 +49,13 @@ typedef struct {
 
 static DBCharInfo       charInfo;
 
-static RcStatus readDBHeader( WResFileID handle )
+static RcStatus readDBHeader( FILE *fh )
 {
-    WResFileSSize       numread;
+    size_t      numread;
 
-    numread = RCREAD( handle, &charInfo.header, sizeof( DBTableHeader ) );
+    numread = fread( &charInfo.header, 1, sizeof( DBTableHeader ), fh );
     if( numread != sizeof( DBTableHeader ) ) {
-        return( RCIOERR( handle, numread  ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
     if( charInfo.header.sig[0] != DB_TABLE_SIG_1 ||
         charInfo.header.sig[1] != DB_TABLE_SIG_2 ) {
@@ -67,68 +67,68 @@ static RcStatus readDBHeader( WResFileID handle )
     return( RS_OK );
 }
 
-static RcStatus readDBRanges( WResFileID handle )
+static RcStatus readDBRanges( FILE *fh )
 {
-    WResFileSSize       numread;
+    size_t      numread;
 
-    numread = RCREAD( handle, &charInfo.begchars, 256 );
+    numread = fread( &charInfo.begchars, 1, 256, fh );
     if( numread != 256 ) {
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
     return( RS_OK );
 }
 
-static RcStatus readDBIndex( WResFileID handle )
+static RcStatus readDBIndex( FILE *fh )
 {
-    WResFileSSize       numread;
-    int                 size;
+    size_t      numread;
+    size_t      size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
     charInfo.index = RCALLOC( size );
-    numread = RCREAD( handle, charInfo.index, size );
+    numread = fread( charInfo.index, 1, size, fh );
     if( numread != size ) {
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
     return( RS_OK );
 }
 
-static RcStatus readDBTable( WResFileID handle )
+static RcStatus readDBTable( FILE *fh )
 {
-    WResFileSSize       numread;
-    int                 size;
+    size_t      numread;
+    size_t      size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
     charInfo.entries = RCALLOC( size );
-    numread = RCREAD( handle, charInfo.entries, size );
+    numread = fread( charInfo.entries, 1, size, fh );
     if( numread != size ) {
-        return( RCIOERR( handle, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
     }
     return( RS_OK );
 }
 
-RcStatus OpenTable( char *fname, char *path )
+RcStatus LoadCharTable( const char *fname, char *path )
 {
-    WResFileID  handle;
+    FILE        *fh;
     RcStatus    ret;
 
     ret = RS_OK;
     _searchenv( fname, "PATH", path );
     if( path[0] == '\0' )
         return( RS_FILE_NOT_FOUND );
-    handle = RCOPEN( path, O_RDONLY | O_BINARY, PMODE_RW );
-    if( handle == NIL_HANDLE ) {
+    fh = fopen( path, "rb" );
+    if( fh == NULL ) {
         ret = RS_OPEN_ERROR;
     }
     if( ret == RS_OK )
-        ret = readDBHeader( handle );
+        ret = readDBHeader( fh );
     if( ret == RS_OK )
-        ret = readDBRanges( handle );
+        ret = readDBRanges( fh );
     if( ret == RS_OK )
-        ret = readDBIndex( handle );
+        ret = readDBIndex( fh );
     if( ret == RS_OK )
-        ret = readDBTable( handle );
+        ret = readDBTable( fh );
     if( ret != RS_OPEN_ERROR )
-        RCCLOSE( handle );
+        fclose( fh );
     if( ret == RS_OK ) {
         ConvToUnicode = DBStringToUnicode;
     }
@@ -140,7 +140,7 @@ static uint_16 lookUpDBChar( uint_16 ch ) {
     int         i;
     int         index;
 
-    for( i=0; i < charInfo.header.num_indices; i++ ) {
+    for( i = 0; i < charInfo.header.num_indices; i++ ) {
         if( ch >= charInfo.index[i].min && ch <= charInfo.index[i].max ) {
             index = charInfo.index[i].base + ch - charInfo.index[i].min;
             return( charInfo.entries[index] );
@@ -181,8 +181,9 @@ int DBStringToUnicode( int len, const char *str, char *buf ) {
     return( ret );
 }
 
-void FiniTable( void ) {
-/***********************/
+void FreeCharTable( void )
+/************************/
+{
     if( charInfo.index != NULL ) {
         RCFREE( charInfo.index );
         charInfo.index = NULL;
@@ -198,4 +199,3 @@ extern void DbtableInitStatics( void )
 {
     memset( &charInfo, 0, sizeof( DBCharInfo ) );
 }
-

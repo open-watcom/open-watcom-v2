@@ -114,7 +114,7 @@ int main( int argc, char **argv )
     head_off = lseek( fd, -(long)SIZE_HEADER, SEEK_END );
     if( head_off == -1 )
         return( 1 );
-    read( fd, &head, SIZE_HEADER );
+    posix_read( fd, &head, SIZE_HEADER );
     if( head.signature != SAMP_SIGNATURE ) {
         SWAP_16( head.signature );
         if( head.signature == SAMP_SIGNATURE ) {
@@ -129,7 +129,7 @@ int main( int argc, char **argv )
     for( ;; ) {
         /* read the prefix of record */
         wanted = sizeof( data->pref );
-        if( read( fd, &data->pref, wanted ) != wanted )
+        if( posix_read( fd, &data->pref, wanted ) != wanted )
             break;
         COND_SWAP_32( data->pref.tick );
         COND_SWAP_16( data->pref.length );
@@ -137,7 +137,7 @@ int main( int argc, char **argv )
 
         /* read the rest of the record */
         wanted = data->pref.length - sizeof( data->pref );
-        if( read( fd, &data->d, wanted ) != wanted )
+        if( posix_read( fd, &data->d, wanted ) != wanted )
             break;
 
         /* dump common record data */

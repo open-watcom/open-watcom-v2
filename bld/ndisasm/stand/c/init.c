@@ -462,7 +462,7 @@ static void openFiles( void )
         }
         objFileBuf = MemAlloc( objFileLen );
         objFilePos = 0;
-        if( read( objhdl, objFileBuf, objFileLen ) == -1 ) {
+        if( posix_read( objhdl, objFileBuf, objFileLen ) == -1 ) {
             openError( ObjFileName );
         }
         close( objhdl );
@@ -471,12 +471,12 @@ static void openFiles( void )
     }
 }
 
-static void * objRead( void *hdl, size_t len )
+static void *objRead( orl_file_id fid, size_t len )
 /********************************************/
 {
     void *      retval;
 
-    hdl = hdl;
+    (void)fid;
     if( (unsigned long)( objFilePos + len ) > objFileLen )
         return NULL;
     retval = objFileBuf + objFilePos;
@@ -484,10 +484,10 @@ static void * objRead( void *hdl, size_t len )
     return retval;
 }
 
-static long objSeek( void *hdl, long pos, int where )
-/***************************************************/
+static long objSeek( orl_file_id fid, long pos, int where )
+/*********************************************************/
 {
-    hdl = hdl;
+    (void)fid;
     if( where == SEEK_SET ) {
         objFilePos = pos;
     } else if( where == SEEK_CUR ) {
@@ -584,8 +584,8 @@ orl_machine_type GetMachineType( void )
 #define ENDIANNESS_TEST     ORL_FILE_FLAG_LITTLE_ENDIAN
 #else
 #define ENDIANNESS_TEST     ORL_FILE_FLAG_BIG_ENDIAN
-#endif 
- 
+#endif
+
 unsigned_16 FileU16toHostU16(unsigned_16 value)
 {
     orl_file_flags  flags = ORLFileGetFlags( ObjFileHnd );
@@ -606,7 +606,7 @@ unsigned_64 FileU64toHostU64(unsigned_64 value)
 {
     orl_file_flags  flags = ORLFileGetFlags( ObjFileHnd );
     if( flags & ENDIANNESS_TEST ){
-        unsigned_64 new_value;        
+        unsigned_64 new_value;
         new_value.u._64[0] = SWAPNC_64( value.u._64[0] );
         return new_value;
     }

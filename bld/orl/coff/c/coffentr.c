@@ -63,7 +63,7 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
     return( ORL_OKAY );
 }
 
-orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, void *file, coff_file_handle *pcfh )
+orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_file_handle *pcfh )
 {
     coff_file_handle    coff_file_hnd;
     orl_return          error;

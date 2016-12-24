@@ -791,8 +791,8 @@ static int UTF8StringToUnicode( int len, const char *str, char *buf )
             unicode = (unsigned char)*str++;
             i += getcharUTF8( &str, &unicode );
             if( ret < outlen ) {
-                *buf++ = unicode;
-                *buf++ = unicode >> 8;
+                *buf++ = (char)unicode;
+                *buf++ = (char)( unicode >> 8 );
                 ret++;
             }
         }
@@ -809,7 +809,7 @@ static void getCodePage( void ) {
     if( CmdLineParms.MBCharSupport == MB_UTF8 ) {
         ConvToUnicode = UTF8StringToUnicode;
     } else if( CmdLineParms.CodePageFile != NULL ) {
-        ret = OpenTable( CmdLineParms.CodePageFile, path );
+        ret = LoadCharTable( CmdLineParms.CodePageFile, path );
         switch( ret ) {
         case RS_FILE_NOT_FOUND:
             RcFatalError( ERR_CANT_FIND_CHAR_FILE, CmdLineParms.CodePageFile );

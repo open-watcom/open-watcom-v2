@@ -31,6 +31,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "walloca.h"
 #include "linkstd.h"
 #if !defined( __UNIX__ ) || defined(__WATCOMC__)
@@ -82,15 +83,15 @@ typedef struct {
     size_t      bufsize;
     char        *dllname;
     size_t      dlllen;
-    bool        didone : 1;
+    bool        didone  : 1;
 } implibinfo;
 
 typedef struct  {
     unsigned_32 grp_start;
     unsigned_32 seg_start;
-    group_entry *lastgrp;  // used only for copy classes
-    bool        repos : 1;
-    bool        copy  : 1;
+    group_entry *lastgrp;       // used only for copy classes
+    bool        repos   : 1;
+    bool        copy    : 1;
 } grpwriteinfo;
 
 typedef void *writebuffer_fn(void *, const void *, size_t);
@@ -309,7 +310,7 @@ void GetStkAddr( void )
                 PhoneyStack();
             } else {
 #endif
-                if( (FmtData.type & (MK_COM|MK_PE|MK_QNX|MK_ELF|MK_RDOS)) == 0 ) {
+                if( (FmtData.type & (MK_COM | MK_PE | MK_QNX | MK_ELF | MK_RDOS)) == 0 ) {
                     LnkMsg( WRN+MSG_STACK_NOT_FOUND, NULL );
                     StackAddr.seg = 0;
                     StackAddr.off = 0;
@@ -347,8 +348,7 @@ static void DefABSSSym( const char *name )
         if( FmtData.type & MK_OVERLAYS ) {
             sym->u.d.ovlstate |= OVL_NO_VECTOR | OVL_FORCE;
         }
-        sym->addr.seg = UNDEFINED;
-        sym->addr.off = 0;
+        SET_ADDR_UNDEFINED( sym->addr );
     }
  }
 
@@ -367,8 +367,8 @@ static bool CompSymPtr( void *sym, void *chk )
     return( chk == sym );
 }
 
-static void CheckBSSInStart( symbol *sym, char *name )
-/****************************************************/
+static void CheckBSSInStart( symbol *sym, const char *name )
+/**********************************************************/
 /* It's OK to define _edata if:
         1) the DOSSEG flag is not set
                 or
@@ -386,18 +386,18 @@ static void CheckBSSInStart( symbol *sym, char *name )
     }
 }
 
-static void DefBSSStartSize( char *name, class_entry *class )
-/***********************************************************/
+static void DefBSSStartSize( const char *name, class_entry *class )
+/*****************************************************************/
 /* set the value of an start symbol, and see if it has been defined */
 {
     symbol      *sym;
-    seg_leader *seg;
+    seg_leader  *seg;
 
     sym = FindISymbol( name );
-    if( sym->addr.seg == UNDEFINED ) {
+    if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
-        seg = (seg_leader *) RingFirst( class->segs );
-        sym->p.seg = (segdata *) RingFirst( seg->pieces );
+        seg = (seg_leader *)RingFirst( class->segs );
+        sym->p.seg = (segdata *)RingFirst( seg->pieces );
         sym->addr = seg->seg_addr;
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
@@ -405,22 +405,21 @@ static void DefBSSStartSize( char *name, class_entry *class )
     }
 }
 
-static void DefBSSEndSize( char *name, class_entry *class )
-/*********************************************************/
+static void DefBSSEndSize( const char *name, class_entry *class )
+/***************************************************************/
 /* set the value of an end symbol, and see if it has been defined */
 {
     symbol      *sym;
-    seg_leader *seg;
+    seg_leader  *seg;
 
     sym = FindISymbol( name );
-    if( sym->addr.seg == UNDEFINED ) {
+    if( IS_ADDR_UNDEFINED( sym->addr ) ) {
         /* if the symbol was defined internally */
         /* find last segment in BSS class */
-        seg = (seg_leader *) RingLast( class->segs );
+        seg = (seg_leader *)RingLast( class->segs );
         /* set end of BSS class */
-        sym->p.seg = (segdata *) RingLast( seg->pieces );
-        sym->addr.seg = seg->seg_addr.seg;
-        sym->addr.off = seg->seg_addr.off + seg->size;
+        sym->p.seg = (segdata *)RingLast( seg->pieces );
+        SET_SYM_ADDR( sym, seg->seg_addr.off + seg->size, seg->seg_addr.seg );
         ConvertToFrame( &sym->addr, seg->group->grp_addr.seg, ( (seg->info & USE_32) == 0 ) );
     } else if( LinkState & DOSSEG_FLAG ) {
         CheckBSSInStart( sym, name );
@@ -501,7 +500,7 @@ void SetStartSym( const char *name )
     if( StartInfo.type != START_UNDEFED ) {
         if( StartInfo.type == START_IS_SYM ) {
             namelen = strlen( name );
-            if( namelen != strlen(StartInfo.targ.sym->name) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
+            if( namelen != strlen( StartInfo.targ.sym->name ) || CmpRtn( StartInfo.targ.sym->name, name, namelen ) != 0 ) {
                 LnkMsg( LOC+MILD_ERR+MSG_MULT_START_ADDRS_BY, "12", StartInfo.targ.sym->name, name );
             }
         } else {
@@ -553,8 +552,7 @@ void GetStartAddr( void )
               - StartInfo.targ.sdata->u.leader->group->grp_addr.seg;
             if( (deltaseg > 0) && (deltaseg <= StartInfo.targ.sdata->u.leader->seg_addr.seg) ) {
                 StartInfo.addr.seg -= deltaseg;
-                StartInfo.addr.off += 16 * deltaseg
-                     - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
+                StartInfo.addr.off += 16 * deltaseg - StartInfo.targ.sdata->u.leader->group->grp_addr.off;
             }
         }
         break;
@@ -632,8 +630,7 @@ void OrderGroups( bool (*lessthan)(targ_addr *, targ_addr *) )
     while( firstgroup != NULL ) {
         low_addr = &firstgroup->grp_addr;
         low_group = NULL;
-        for( group = firstgroup; group->next_group != NULL;
-                                 group = group->next_group ) {
+        for( group = firstgroup; group->next_group != NULL; group = group->next_group ) {
             grp_addr =  &group->next_group->grp_addr;
             if( lessthan( grp_addr, low_addr ) ) {
                 low_addr = grp_addr;
@@ -720,11 +717,11 @@ unsigned_32 AppendToLoadFile( const char *name )
     f_handle        handle;
     unsigned_32     wrote;
 
+    wrote = 0;
     if( name != NULL ) {
         handle = QOpenR( name );
         wrote = CopyToLoad( handle, name );
-    } else {
-        wrote = 0;
+        QClose( handle, name );
     }
     return( wrote );
 }
@@ -751,8 +748,8 @@ static void ExecWlib( void )
     size_t      namelen;
     size_t      impnamelen;
 
-    namelen = strlen(ImpLib.fname);
-    impnamelen = strlen(FmtData.implibname);
+    namelen = strlen( ImpLib.fname );
+    impnamelen = strlen( FmtData.implibname );
 /*
  * in the following: +19 for options, +2 for spaces, +1 for @, +4 for quotes
  *                  and +1 for nullchar
@@ -788,7 +785,7 @@ static void ExecWlib( void )
     int         retval;
     char        *libtype;
 
-    namelen = strlen(ImpLib.fname) + 1;
+    namelen = strlen( ImpLib.fname ) + 1;
     _ChkAlloc( atfname, namelen + 1 );  // +1 for the @
     *atfname = '@';
     memcpy( atfname + 1, ImpLib.fname, namelen );
@@ -819,8 +816,7 @@ static void FlushImpBuffer( void )
 void BuildImpLib( void )
 /*****************************/
 {
-    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE
-                                || !FmtData.make_implib )
+    if( (LinkState & LINK_ERROR) || ImpLib.handle == NIL_FHANDLE || !FmtData.make_implib )
         return;
     if( ImpLib.bufsize > 0 ) {
         FlushImpBuffer();
@@ -858,8 +854,8 @@ static void BufImpWrite( const char *buffer, size_t len )
     }
 }
 
-void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal )
-/*******************************************************************************/
+void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal )
+/********************************************************************************/
 {
     size_t      intlen;
     size_t      otherlen;
@@ -871,7 +867,7 @@ void AddImpLibEntry( const char *intname, const char *extname, unsigned ordinal 
     ImpLib.didone = true;
     intlen = strlen( intname );
     if( ordinal == NOT_IMP_BY_ORDINAL ) {
-        otherlen = strlen(extname);
+        otherlen = strlen( extname );
     } else {
         otherlen = 10;          // max length of a 32-bit int.
     }
@@ -925,7 +921,6 @@ unsigned_32 CopyToLoad( f_handle handle, const char *name )
         WriteLoad( TokBuff, amt_read );
         wrote += amt_read;
     }
-    QClose( handle, name );
     return( wrote );
 }
 
@@ -933,8 +928,8 @@ unsigned long NullAlign( unsigned align )
 /***************************************/
 /* align loadfile -- assumed power of two alignment */
 {
-    unsigned long       off;
-    unsigned long       pad;
+    unsigned long   off;
+    size_t          pad;
 
     off = PosLoad();
     pad = ROUND_UP( off, align ) - off;
@@ -946,7 +941,7 @@ unsigned long OffsetAlign( unsigned long off, unsigned long align )
 /*****************************************************************/
 /* align loadfile -- assumed power of two alignment */
 {
-    unsigned long       pad;
+    size_t          pad;
 
     pad = ROUND_UP( off, align ) - off;
     PadLoad( pad );
@@ -1095,8 +1090,8 @@ static void *SetToFillChar( void *dest, const void *dummy, size_t size )
 
 #define BUFF_BLOCK_SIZE (16*1024)
 
-static void WriteBuffer( const char *data, unsigned long len, outfilelist *outfile, writebuffer_fn *rtn )
-/*******************************************************************************************************/
+static void WriteBuffer( const char *data, size_t len, outfilelist *outfile, writebuffer_fn *rtn )
+/************************************************************************************************/
 {
     size_t   modpos;
     size_t   adjust;
@@ -1136,8 +1131,8 @@ static void SeekBuffer( unsigned long len, outfilelist *outfile, writebuffer_fn 
     }
 }
 
-void PadBuffFile( outfilelist *outfile, unsigned long size )
-/**********************************************************/
+void PadBuffFile( outfilelist *outfile, size_t size )
+/***************************************************/
 /* pad out load file with zeros */
 {
     if( size == 0 )
@@ -1149,8 +1144,8 @@ void PadBuffFile( outfilelist *outfile, unsigned long size )
     }
 }
 
-void PadLoad( unsigned long size )
-/***************************************/
+void PadLoad( size_t size )
+/*************************/
 /* pad out load file with zeros */
 {
     PadBuffFile( CurrSect->outfile, size );
@@ -1168,6 +1163,43 @@ void WriteLoad( const void *buff, size_t size )
     } else {
         QWrite( outfile->handle, buff, size, outfile->fname );
     }
+}
+
+void WriteLoadU8( unsigned_8 data )
+/*********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+void WriteLoadU16( unsigned_16 data )
+/***********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+void WriteLoadU32( unsigned_32 data )
+/***********************************/
+{
+    WriteLoad( &data, sizeof( data ) );
+}
+
+size_t WriteLoadU8Name( const char *data, size_t len, bool ucase )
+/****************************************************************/
+{
+    char            buff[255];
+    size_t          i;
+
+    if( len > 255 )
+        len = 255;
+    WriteLoadU8( len );
+    if( ucase ) {
+        for( i = 0; i < len; ++i ) {
+            buff[i] = toupper( data[i] );
+        }
+        data = buff;
+    }
+    WriteLoad( data, len );
+    return( len + 1 );
 }
 
 static void FlushBuffFile( outfilelist *outfile )

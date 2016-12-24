@@ -71,6 +71,9 @@
 #include "aboutdlg.h"
 #include "ldstr.h"
 
+#include "clibext.h"
+
+
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
@@ -127,19 +130,6 @@ UINT            WItemClipbdFormat = 0;
 
 extern int  appWidth;
 extern int  appHeight;
-
-static void *_MemAlloc( size_t size )
-{
-    return( WRMemAlloc( size ) );
-}
-
-static void _MemFree( void *p )
-{
-    WRMemFree( p );
-}
-
-/* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, _MemAlloc, _MemFree );
 
 #ifdef __NT__
 

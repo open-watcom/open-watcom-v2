@@ -38,14 +38,6 @@
 #include "clibext.h"
 
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 // file io routines
 
 static void IOError( char *msgstart, const char *name )
@@ -67,7 +59,7 @@ f_handle QOpenR( const char *name )
         return( h );
     }
     IOError( "can't open ", name );
-    return( NIL_HANDLE );
+    return( NIL_FHANDLE );
 }
 
 size_t QRead( f_handle file, void *buffer, size_t len, const char *name )

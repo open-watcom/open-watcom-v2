@@ -292,7 +292,7 @@ static void InitHandle( void )
     const char *inherit;
     const char *ptr;
 
-    handle_section = RdosCreateSection();    
+    handle_section = RdosCreateSection( "Watcom.Handle" );    
     handle_count = 5;
     handle_ptr = ( rdos_handle_type ** )lib_malloc( handle_count * sizeof( rdos_handle_type * ) );
 

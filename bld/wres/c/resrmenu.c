@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2016-2016 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,167 +40,19 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID handle )
-/****************************************************************/
-{
-    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
-}
-
-bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID handle, uint_8 *headerdata )
-/**************************************************************************************/
-{
-    if( WRESWRITE( handle, currhead, sizeof( MenuHeader ) ) != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        if( headerdata != NULL ) {
-            if( WRESWRITE( handle, headerdata, currhead->HeaderSize ) != currhead->HeaderSize ) {
-                WRES_ERROR( WRS_WRITE_FAILED );
-                return( true );
-            }
-        }
-        return( false );
-    }
-}
-
-bool ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WResFileID handle )
-/**********************************************************************************************/
-{
-    bool        error;
-
-    if( curritem->ItemFlags & MENU_POPUP ) {
-        error = ResWriteUint16( curritem->ItemFlags, handle );
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, handle );
-        }
-    } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    }
-
-    return( error );
-}
-
-bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata,
-                             bool use_unicode, WResFileID handle )
-/*****************************************************************************/
-{
-    bool        error;
-
-    if( curritem->ItemFlags & MENUEX_POPUP ) {
-        error = ResWriteUint32( exdata->ItemType, handle );
-        if( !error ) {
-            error = ResWriteUint32( exdata->ItemState, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint32( exdata->ItemId, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint16( curritem->ItemFlags, handle );
-        }
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, handle );
-        }
-        if( !error ) {
-            error = ResWritePadDWord( handle );
-        }
-        if( !error ) {
-            error = ResWriteUint32( exdata->HelpId, handle );
-        }
-    } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    }
-
-    return( error );
-
-}
-
-bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode,
-                                                    WResFileID handle )
-/******************************************************************************/
-{
-    bool        error;
-
-    if( curritem->ItemFlags & MENU_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    } else {
-        error = ResWriteUint16( curritem->ItemFlags, handle );
-        if( !error ) {
-            error = ResWriteUint16( curritem->ItemID, handle );
-        }
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, handle );
-        }
-    }
-
-    return( error );
-}
-
-bool ResWriteMenuExItemNormal( const MenuItemNormal *curritem, const MenuExItemNormal *exdata,
-                              bool use_unicode, WResFileID handle )
-/*******************************************************************************************/
-{
-    bool        error;
-
-    if( curritem->ItemFlags & MENUEX_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    } else {
-        error = ResWriteUint32( exdata->ItemType, handle );
-        if( !error ) {
-            error = ResWriteUint32( exdata->ItemState, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint32( curritem->ItemID, handle );
-        }
-        if( !error ) {
-            error = ResWriteUint16( curritem->ItemFlags, handle );
-        }
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, handle );
-        }
-        if( !error ) {
-            error = ResWritePadDWord( handle );
-        }
-    }
-
-    return( error );
-}
-
-bool ResWriteMenuItem( const MenuItem *curritem, bool use_unicode,
-                                             WResFileID handle )
-/******************************************************************/
-{
-    bool    error;
-
-    if( curritem->IsPopup ) {
-        error = ResWriteMenuItemPopup( &(curritem->Item.Popup), use_unicode, handle );
-    } else {
-        error = ResWriteMenuItemNormal( &(curritem->Item.Normal), use_unicode, handle );
-    }
-
-    return( error );
-}
-
 bool ResReadMenuHeader( MenuHeader *currhead, WResFileID handle )
 /***************************************************************/
 {
-    WResFileSSize   numread;
+    bool            error;
+    uint_16         val16;
 
-    numread = WRESREAD( handle, currhead, sizeof( MenuHeader ) );
-    if( numread != sizeof( MenuHeader ) ) {
-        WRES_ERROR( WRESIOERR( handle, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
-        return( true );
-    } else {
-        return( false );
+    error = ResReadUint16( &val16, handle );
+    currhead->Version = val16;
+    if( !error ) {
+        error = ResReadUint16( &val16, handle );
+        currhead->HeaderSize = val16;
     }
+    return( error );
 }
 
 bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
@@ -211,7 +64,7 @@ bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID handle, char *buf )
 
     error = false;
     numread = 0;
-    size = header->HeaderSize * sizeof( uint_8 );
+    size = header->HeaderSize;
     if( buf != NULL ) {
         numread = WRESREAD( handle, buf, size );
         if( numread != size ) {

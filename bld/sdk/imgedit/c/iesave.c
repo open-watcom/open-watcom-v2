@@ -40,6 +40,7 @@
 #include "wricon.h"
 #include "wrselft.h"
 #include "iemem.h"
+#include "wresdefn.h"
 
 
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
@@ -224,13 +225,15 @@ BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     case WM_INITDIALOG:
         // We must call this to subclass the directory listbox even
         // if the app calls Ctl3dAutoSubclass (commdlg bug).
-#if defined( __NT__ )
+#ifndef _WIN64
+  #if defined( __NT__ )
         // Only do it if NOT new shell.
         if( LOBYTE( LOWORD( GetVersion() ) ) < 4 ) {
-#endif
+  #endif
            IECtl3dSubclassDlgAll( hwnd );
-#if defined( __NT__ )
+  #if defined( __NT__ )
         }
+  #endif
 #endif
         return( TRUE );
     }
@@ -249,18 +252,22 @@ static BOOL getSaveFName( char *fname, int imgtype )
     char                path[_MAX_PATH];
     BOOL                ret_val;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
+  #endif
 #endif
 
     fname[0] = '\0';
@@ -848,12 +855,14 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
 static bool createNewImageLNODE( img_node *node, uint_16 type )
 {
     char                fn[_MAX_FNAME];
-    WResID              *tname = NULL;
-    WResID              *rname = NULL;
+    WResID              *tname;
+    WResID              *rname;
     WResLangType        lang;
     bool                dup;
     bool                ok;
 
+    tname = NULL;
+    rname = NULL;
     lang.lang = DEF_LANG;
     lang.sublang = DEF_SUBLANG;
     ok = (node != NULL && node->wrinfo != NULL);
@@ -921,13 +930,13 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         switch( node->imgtype ) {
         case BITMAP_IMG:
-            type = (uint_16)(pointer_int)RT_BITMAP;
+            type = RESOURCE2INT( RT_BITMAP );
             break;
         case ICON_IMG:
-            type = (uint_16)(pointer_int)RT_GROUP_ICON;
+            type = RESOURCE2INT( RT_GROUP_ICON );
             break;
         case CURSOR_IMG:
-            type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
+            type = RESOURCE2INT( RT_GROUP_CURSOR );
             break;
         default:
             ok = false;
@@ -978,7 +987,7 @@ static bool saveResourceFile( img_node *node )
 
     // get rid of the old image resources for icons or cursors
     if( ok ) {
-        if( type != (uint_16)(pointer_int)RT_BITMAP ) {
+        if( type != RESOURCE2INT( RT_BITMAP ) ) {
             ok = WRDeleteGroupImages( node->wrinfo, node->lnode, type );
         }
     }
@@ -1039,7 +1048,7 @@ static bool saveResourceFile( img_node *node )
         PrintHintTextByID( WIE_IMAGESAVEDTO, node->fname );
     }
 
-    if( type != (uint_16)(pointer_int)RT_BITMAP ) {
+    if( type != RESOURCE2INT( RT_BITMAP ) ) {
         if( data != NULL ) {
             MemFree( data );
         }
@@ -1085,8 +1094,8 @@ BOOL SaveFileFromNode( img_node *node, int how )
     checkForExt( rootnode );
 
     _splitpath( rootnode->fname, NULL, NULL, NULL, ext );
-    if( !stricmp( ext, ".res" ) || !stricmp( ext, ".exe" ) ||
-        !stricmp( ext, ".dll" ) ) {
+    if( stricmp( ext, ".res" ) == 0 || stricmp( ext, ".exe" ) == 0 ||
+        stricmp( ext, ".dll" ) == 0 ) {
         return( saveResourceFile( rootnode ) );
     }
 
@@ -1133,18 +1142,22 @@ static BOOL getSavePalName( char *fname )
     char                szFileTitle[_MAX_PATH];
     int                 rc;
     long                of_size;
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     OSVERSIONINFO       os_info;
+  #endif
 #endif
 
     of_size = sizeof( OPENFILENAME );
-#if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
+#ifndef _WIN64
+  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
     os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
     GetVersionEx( &os_info );
     if( os_info.dwMajorVersion < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
+  #endif
 #endif
 
     fname[0] = '\0';
@@ -1160,7 +1173,7 @@ static BOOL getSavePalName( char *fname )
     of.lpstrTitle = IESavePaletteTitle;
     of.lpstrInitialDir = initialDir;
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
-#if !defined( __NT__ ) 
+#if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
 #endif

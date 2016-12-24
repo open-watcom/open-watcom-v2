@@ -71,7 +71,7 @@ static void GetNextChar( void )
 {
     for( ;; ) {
         LookAhead = _next;
-        if( LookAhead != RC_EOF ) {
+        if( LookAhead != EOF ) {
             _next = RcIoGetChar();
             if( LookAhead == '\\' && _next == '\n' ) {
                 _next = RcIoGetChar();
@@ -158,7 +158,7 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
         unsigned        i;
 
         i = 0;
-        while( LookAhead != '\n' && LookAhead != RC_EOF ) {
+        while( LookAhead != '\n' && LookAhead != EOF ) {
             buf[i] = LookAhead;
             i ++;
             GetNextChar();
@@ -222,8 +222,8 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
                 newstring = VarStringStart();
                 VarStringAddChar( newstring, LookAhead );
                 do_transition( S_DOS_FILENAME );
-            case RC_EOF:
-                DEBUGPUTS("RC_EOF")
+            case EOF:
+                DEBUGPUTS("EOF")
                 return( 0 );                /* yacc wants 0 on EOF */
             case '#':           do_transition( S_POUND_SIGN );
             case '(':           do_transition( S_LPAREN );
@@ -270,7 +270,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
         return( Y_SCAN_ERROR );
 
     state( S_COMMENT ):
-        if( LookAhead == '\n' || LookAhead == RC_EOF ) {
+        if( LookAhead == '\n' || LookAhead == EOF ) {
             do_transition( S_START );
         } else {
             do_transition( S_COMMENT );

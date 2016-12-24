@@ -38,8 +38,10 @@
 #include "guixloop.h"
 #include "guixutil.h"
 #include "guifloat.h"
+#include "guievent.h"
 #include <ctype.h>
 #include <string.h>
+
 
 typedef enum {
     MENU_NONE,
@@ -47,11 +49,10 @@ typedef enum {
     MENU_SYS
 } MenuStatus;
 
-static  MenuStatus      MenuState       = MENU_NONE;
-static  gui_window      *MenuWnd        = NULL;
-        MENUITEM        *GUIPopupMenu   = NULL;
+MENUITEM            *GUIPopupMenu   = NULL;
 
-extern EVENT GUIUserEvents[];
+static MenuStatus   MenuState       = MENU_NONE;
+static gui_window   *MenuWnd        = NULL;
 
 /*
  * MapLocation --

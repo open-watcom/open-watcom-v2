@@ -36,8 +36,8 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-WResID * WResIDFromStr( const char * newstr )
-/*******************************************/
+WResID *WResIDFromStr( const char *newstr )
+/*****************************************/
 /* allocate an ID and fill it in */
 {
     WResID  *newid;
@@ -45,12 +45,16 @@ WResID * WResIDFromStr( const char * newstr )
 
     strsize = strlen( newstr );
     /* check the size of the string:  can it fit in two bytes? */
-#if defined( _M_I86 )
+#if !defined( _M_I86 )
+    if( strsize > 0xffff ) {
+        WRES_ERROR( WRS_BAD_PARAMETER );
+        return( NULL );
+    }
+#endif
     /* allocate the new ID */
     // if strsize is non-zero then the memory allocated is larger
     // than required by 1 byte
     newid = WRESALLOC( sizeof( WResID ) + strsize );
-
     if( newid == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
@@ -58,24 +62,5 @@ WResID * WResIDFromStr( const char * newstr )
         newid->ID.Name.NumChars = strsize;
         memcpy( newid->ID.Name.Name, newstr, strsize );
     }
-#else
-    if( strsize <= 0xffff ) {
-        /* allocate the new ID */
-        // if strsize is non-zero then the memory allocated is larger
-        // than required by 1 byte
-        newid = WRESALLOC( sizeof( WResID ) + strsize );
-
-        if( newid == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-        } else {
-            newid->IsName = true;
-            newid->ID.Name.NumChars = strsize;
-            memcpy( newid->ID.Name.Name, newstr, strsize );
-        }
-    } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        newid = NULL;
-    }
-#endif
     return( newid );
 } /* WResIDFromStr */

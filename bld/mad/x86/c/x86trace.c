@@ -70,35 +70,52 @@ static void BreakRet( mad_trace_data *td, mad_disasm_data *dd, const mad_registe
     }           off;
 
     sp = GetRegSP( mr );
-    if( dd->characteristics & X86AC_BIG ) {
-        MCReadMem( sp, sizeof( off.off48 ), &off.off48 );
-        sp.mach.offset += sizeof( off.off48 );
-        td->brk.mach.offset = off.off48;
-    } else {
+    switch( dd->ins.type ) {
+    case DI_X86_iret:
         MCReadMem( sp, sizeof( off.off32 ), &off.off32 );
         sp.mach.offset += sizeof( off.off32 );
         td->brk.mach.offset = off.off32;
-    }
-    switch( td->prev_ins_type ) {
-    case DI_X86_call:
-    case DI_X86_call2:
-    case DI_X86_ret:
-    case DI_X86_ret2:
-        td->brk.mach.segment = mr->x86.cpu.cs;
+        MCReadMem( sp, sizeof( td->brk.mach.segment ), &td->brk.mach.segment );
+        sp.mach.offset += sizeof( td->brk.mach.segment );
         break;
-    case DI_X86_call3:
-    case DI_X86_call4:
-    case DI_X86_int:
-    case DI_X86_into:
-    case DI_X86_iret:
     case DI_X86_iretd:
-    case DI_X86_retf:
-    case DI_X86_retf2:
+        MCReadMem( sp, sizeof( off.off48 ), &off.off48 );
+        sp.mach.offset += sizeof( off.off48 );
+        td->brk.mach.offset = off.off48;
         MCReadMem( sp, sizeof( td->brk.mach.segment ), &td->brk.mach.segment );
         sp.mach.offset += sizeof( td->brk.mach.segment );
         break;
     default:
-        break;
+        if( dd->characteristics & X86AC_BIG ) {
+            MCReadMem( sp, sizeof( off.off48 ), &off.off48 );
+            sp.mach.offset += sizeof( off.off48 );
+            td->brk.mach.offset = off.off48;
+        } else {
+            MCReadMem( sp, sizeof( off.off32 ), &off.off32 );
+            sp.mach.offset += sizeof( off.off32 );
+            td->brk.mach.offset = off.off32;
+        }
+        switch( td->prev_ins_type ) {
+        case DI_X86_call:
+        case DI_X86_call2:
+        case DI_X86_ret:
+        case DI_X86_ret2:
+            td->brk.mach.segment = mr->x86.cpu.cs;
+            break;
+        case DI_X86_call3:
+        case DI_X86_call4:
+        case DI_X86_int:
+        case DI_X86_into:
+        case DI_X86_iret:
+        case DI_X86_iretd:
+        case DI_X86_retf:
+        case DI_X86_retf2:
+            MCReadMem( sp, sizeof( td->brk.mach.segment ), &td->brk.mach.segment );
+            sp.mach.offset += sizeof( td->brk.mach.segment );
+            break;
+        default:
+            break;
+        }
     }
     MCAddrSection( &td->brk );
 }

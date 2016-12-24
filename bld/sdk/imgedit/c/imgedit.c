@@ -37,10 +37,21 @@
 #include "iedde.h"
 #include "clibint.h"
 
+#include "clibext.h"
+
+
 #ifdef __WATCOMC__
 #ifdef __NT__
     #pragma library( "shell32.lib" )
 #endif
+#endif
+
+#ifdef _WIN64
+#define posix_read  __w64_read
+#define posix_write __w64_write
+#else
+#define posix_read  read
+#define posix_write write
 #endif
 
 #define DDE_OPT     "-DDE"
@@ -62,9 +73,6 @@ static HBRUSH   hBkBrush;
 BOOL OpenNewFiles = FALSE;
 BOOL FusionCalled = FALSE;
 BOOL NoTitleScreen = FALSE;
-
-/* set the WRES library to use compatible functions */
-WResSetRtns( open, close, read, write, lseek, tell, MemAlloc, MemFree );
 
 /*
  * imgEditInit - initialization
@@ -353,16 +361,16 @@ static void parseCmdLine( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( !stricmp( cmdline[i], DDE_OPT ) ) {
+        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], NEW_OPT ) ) {
+        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], NOTITLE_OPT ) ) {
+        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
             continue;
         }
-        if( !stricmp( cmdline[i], FUSION_OPT ) ) {
+        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
             continue;
         }
         strcpy( fname, cmdline[i] );
@@ -379,19 +387,19 @@ static void parseArgs( int count, char **cmdline )
     int         i;
 
     for( i = 1; i < count; i++ ) {
-        if( !stricmp( cmdline[i], DDE_OPT ) ) {
+        if( stricmp( cmdline[i], DDE_OPT ) == 0 ) {
             ImgedIsDDE = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], NEW_OPT ) ) {
+        if( stricmp( cmdline[i], NEW_OPT ) == 0 ) {
             OpenNewFiles = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], NOTITLE_OPT ) ) {
+        if( stricmp( cmdline[i], NOTITLE_OPT ) == 0 ) {
             NoTitleScreen = TRUE;
             continue;
         }
-        if( !stricmp( cmdline[i], FUSION_OPT ) ) {
+        if( stricmp( cmdline[i], FUSION_OPT ) == 0 ) {
             FusionCalled = TRUE;
             NoTitleScreen = TRUE;
             continue;

@@ -118,7 +118,7 @@ void BinOutput( void )
                 if( diff < 0 ) {
                     LnkMsg( ERR + MSG_FIXED_LOC_BEFORE_CUR_LOC, "a", &(group->grp_addr));
                 } else if( diff > 0 ) {
-                    PadLoad( diff );
+                    PadLoad( (size_t)diff );
                 }
                 WriteGroupLoad( group );
             }

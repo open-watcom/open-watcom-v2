@@ -93,7 +93,7 @@ void InitNodes( void )
 static void BurnNodeArray( nodearray *list )
 /******************************************/
 {
-    int index;
+    unsigned    index;
 
     for( index = 0; index <= list->arraymax; index++ ) {
         _LnkFree( list->array[index] );

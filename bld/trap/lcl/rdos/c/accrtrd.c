@@ -231,7 +231,7 @@ trap_retval ReqRunThread_get_runtime( void )
 trap_retval ReqRunThread_poll( void )
 {
     struct TDebug           *obj;
-    struct TDebugThread     *thread = 0;
+    struct TDebugThread     *thread;
     run_thread_poll_ret     *ret;
 
     ret = GetOutPtr( 0 );
@@ -240,22 +240,21 @@ trap_retval ReqRunThread_poll( void )
     obj = GetCurrentDebug();
 
     if (obj) {
+        thread = GetCurrentThread( obj );
+        if( thread ) {
+            SetCurrentThread( obj, thread->ThreadID );
+            SetCurrentDebug( obj );
+        }
 
         if( IsTerminated( obj ) )
             ret->conditions |= COND_TERMINATE;
 
         if( HasThreadChange( obj ) ) {
             ret->conditions |= COND_THREAD;
-            thread = GetNewThread( obj );
-            if( thread ) {
-                SetCurrentThread( obj, thread->ThreadID );
-                SetCurrentDebug( obj );
-            }
             ClearThreadChange( obj );
         }
 
         if( HasModuleChange( obj ) ) {
-            ClearModuleChange( obj );
             ret->conditions |= COND_LIBRARIES;
         }
     }

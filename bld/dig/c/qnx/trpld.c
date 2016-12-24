@@ -78,7 +78,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_ldhandle        ldfh;
+    dig_fhandle         fid;
     const char          *ptr;
     trap_load_func      *ld_func;
     const trap_requests *trap_funcs;
@@ -96,19 +96,19 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    ldfh = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
+    fid = DIGLoader( Open )( filename, p - filename, "trp", NULL, 0 );
 #else
     for( ptr = parms; *ptr != '\0' && *ptr != TRAP_PARM_SEPARATOR; ++ptr ) {
         ;
     }
-    ldfh = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
+    fid = DIGLoader( Open )( parms, ptr - parms, "trp", NULL, 0 );
 #endif
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( fid == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
-    TrapCode = ReadInImp( ldfh );
-    DIGLoader( Close )( ldfh );
+    TrapCode = ReadInImp( fid );
+    DIGLoader( Close )( fid );
     sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
     if( TrapCode != NULL ) {
 #ifdef __WATCOMC__

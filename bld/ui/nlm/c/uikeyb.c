@@ -41,8 +41,7 @@
 #include "uishift.h"
 
 /* From conio.h since conio.h conflicts with procdef.h */
-extern int __GetScreenID(
-         int __screenHandle );
+extern int __GetScreenID( int __screenHandle );
 
 extern int ScreenHandle;        // from uibios.c
 

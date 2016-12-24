@@ -180,7 +180,11 @@ void CreateSpyBox( HWND parent )
             SendMessage( SpyListBox, LVM_INSERTCOLUMN, i, (LPARAM)&lvc );
             FreeRCString( lvc.pszText );
         }
+  #ifdef _WIN64
+    } else
+  #else
     } else if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #endif
         SpyListBox = CreateWindowEx(
             WS_EX_CLIENTEDGE,       /* Window extended style */
             "LISTBOX",              /* Window class name */
@@ -195,8 +199,11 @@ void CreateSpyBox( HWND parent )
             (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
             Instance,               /* Program instance handle */
             NULL );                 /* Create parameters */
+  #ifndef _WIN64
     } else
+  #endif
 #endif
+  #ifndef _WIN64
         SpyListBox = CreateWindow(
             "LISTBOX",              /* Window class name */
             "Messages",             /* Window caption */
@@ -210,6 +217,7 @@ void CreateSpyBox( HWND parent )
             (HANDLE)(pointer_int)SPY_LIST_BOX,   /* Window menu handle */
             Instance,               /* Program instance handle */
             NULL );                 /* Create parameters */
+  #endif
 
     ShowWindow( SpyListBox, SW_NORMAL );
     UpdateWindow( SpyListBox );

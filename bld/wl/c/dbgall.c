@@ -63,14 +63,14 @@ char            *SymFileName;
 group_entry     *DBIGroups;
 
 void ResetDBI( void )
-/**************************/
+/*******************/
 {
     SymFileName = NULL;
     DBIGroups = NULL;
 }
 
 void DBIInit( void )
-/*************************/
+/******************/
 // called just after command file parsing
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -83,7 +83,7 @@ void DBIInit( void )
 }
 
 void DBISectInit( section *sect )
-/**************************************/
+/*******************************/
 // called when a section created in command file parsing
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -92,7 +92,7 @@ void DBISectInit( section *sect )
 }
 
 void DBIInitModule( mod_entry *obj )
-/*****************************************/
+/**********************************/
 // called before pass 1 is done on the module
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -105,7 +105,7 @@ void DBIInitModule( mod_entry *obj )
 }
 
 void DBIP1Source( byte *buff, byte *endbuff )
-/**************************************************/
+/*******************************************/
 {
     byte        major;
     byte        minor;
@@ -122,11 +122,10 @@ void DBIP1Source( byte *buff, byte *endbuff )
     }
 }
 
-section *DBIGetSect( char *clname )
-/*****************************************/
+section *DBIGetSect( const char *clname )
+/***************************************/
 {
-    if( ( stricmp( clname, _MSTypeClass ) == 0 )
-        || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
+    if( ( stricmp( clname, _MSTypeClass ) == 0 ) || ( stricmp( clname, _MSLocalClass ) == 0 ) ) {
         return( CurrSect );
     } else if( stricmp( clname, _DwarfClass ) == 0 ) {
         return( Root );
@@ -135,7 +134,7 @@ section *DBIGetSect( char *clname )
 }
 
 void DBIColClass( class_entry *class )
-/*******************************************/
+/************************************/
 {
     if( stricmp( class->name, _DwarfClass ) == 0 ) {
         class->flags |= CLASS_DWARF;
@@ -147,7 +146,7 @@ void DBIColClass( class_entry *class )
 }
 
 unsigned_16 DBIColSeg( class_entry *class )
-/************************************************/
+/*****************************************/
 {
     switch( class->flags & CLASS_DEBUG_INFO ) {
     case CLASS_DWARF:
@@ -164,7 +163,7 @@ unsigned_16 DBIColSeg( class_entry *class )
 }
 
 void DBIP1ModuleScanned( void )
-/************************************/
+/*****************************/
 // called in pass 1 when finished looking at a module
 // if some segdefs have been delayed due to distributing libraries, this
 // will be called twice (once when regular pass 1 is done, once when all
@@ -195,7 +194,7 @@ static bool MSSkip( void )
 }
 
 bool DBISkip( seg_leader *seg )
-/*************************************/
+/*****************************/
 // returns true we should skip processing this segment because we are
 // ignoring debugging information
 {
@@ -212,7 +211,7 @@ bool DBISkip( seg_leader *seg )
 }
 
 bool DBINoReloc( seg_leader *seg )
-/****************************************/
+/********************************/
 // called to see if we should handle a relocation specially.
 {
     return( IS_DBG_INFO( seg ) );
@@ -227,7 +226,7 @@ static void AddNovGlobals( mod_entry *mod )
 }
 
 void DBIPreAddrCalc( void )
-/********************************/
+/*************************/
 {
     void (*modptr)( mod_entry * );
     void (*segptr)( seg_leader * );
@@ -270,7 +269,7 @@ void DBIAddrInfoScan( seg_leader *seg,
     if( (seg->class->flags & (CLASS_STACK | CLASS_IDATA)) && ( FmtData.dll || (FmtData.type & MK_PE) ) )
         return;
     prev = RingStep( seg->pieces, NULL );
-    for( ; ; ) {
+    for( ;; ) {
         if( prev == NULL )
             return;
         if( !prev->isdead )
@@ -295,12 +294,12 @@ void DBIAddrInfoScan( seg_leader *seg,
 }
 
 void DBIComment( void )
-/****************************/
+/*********************/
 {
 }
 
 void DBIAddModule( mod_entry *obj, section *sect )
-/*******************************************************/
+/************************************************/
 // called just before publics have been assigned addresses between p1 & p2
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -335,7 +334,7 @@ static void DBIGenLines( mod_entry *mod )
 }
 
 void DBIGenModule( void )
-/******************************/
+/***********************/
 // called at the end of pass2 for a module
 {
     if( MOD_NOT_DEBUGGABLE( CurrMod ) )
@@ -354,7 +353,7 @@ void DBIGenModule( void )
 }
 
 void DBIDefClass( class_entry *cl, unsigned_32 size )
-/**********************************************************/
+/***************************************************/
 // called during address calculation
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -367,7 +366,7 @@ void DBIDefClass( class_entry *cl, unsigned_32 size )
 }
 
 void DBIAddLocal( seg_leader *seg, offset length )
-/********************************************************/
+/************************************************/
 // called during pass 1 final segment processing.
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -378,7 +377,7 @@ void DBIAddLocal( seg_leader *seg, offset length )
 }
 
 void DBIModGlobal( void *_sym )
-/************************************/
+/*****************************/
 {
     symbol *sym = _sym;
 
@@ -393,7 +392,7 @@ void DBIModGlobal( void *_sym )
 }
 
 void DBIAddGlobal( symbol *sym )
-/*************************************/
+/******************************/
 // called during pass 1 symbol definition
 {
     if( LinkFlags & OLD_DBI_FLAG ) {
@@ -406,7 +405,7 @@ void DBIAddGlobal( symbol *sym )
 }
 
 void DBIGenGlobal( symbol *sym, section *sect )
-/*****************************************************/
+/*********************************************/
 // called during symbol address calculation (between pass 1 & pass 2)
 // also called by loadpe between passes
 {

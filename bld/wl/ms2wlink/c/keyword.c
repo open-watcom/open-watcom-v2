@@ -679,7 +679,7 @@ static void ProcShared( void )
 static void ProcNonShared( void )
 /*******************************/
 {
-    AddToBuffer( "nonshared", 11 );
+    AddToBuffer( "nonshared", 9 );
 }
 
 static void ProcDescription( void )

@@ -66,19 +66,19 @@ typedef uint_8                          coff_comdat_selection;
 typedef uint_32                         coff_quantity;
 
 typedef struct coff_handle_struct       coff_handle_struct;
-typedef coff_handle_struct *            coff_handle;
+typedef coff_handle_struct              *coff_handle;
 
 typedef struct coff_file_handle_struct  coff_file_handle_struct;
-typedef coff_file_handle_struct *       coff_file_handle;
+typedef coff_file_handle_struct         *coff_file_handle;
 
 typedef struct coff_sec_handle_struct   coff_sec_handle_struct;
-typedef coff_sec_handle_struct *        coff_sec_handle;
+typedef coff_sec_handle_struct          *coff_sec_handle;
 
 typedef struct coff_symbol_handle_struct coff_symbol_handle_struct;
-typedef coff_symbol_handle_struct *     coff_symbol_handle;
+typedef coff_symbol_handle_struct       *coff_symbol_handle;
 
 struct coff_handle_struct {
-    orl_funcs *         funcs;
+    orl_funcs           *funcs;
     coff_file_handle    first_file_hnd;
 };
 
@@ -87,7 +87,7 @@ struct coff_file_handle_struct {
     coff_file_handle    next;
     coff_sec_handle     *coff_sec_hnd;
     coff_sec_handle     *orig_sec_hnd;
-    void                *file;
+    orl_file_id         file;
     coff_quantity       initial_size;
     coff_file_header    *f_hdr_buffer;
     char                *s_hdr_table_buffer;
@@ -115,7 +115,7 @@ struct coff_normal_assoc_struct {
 struct coff_reloc_assoc_struct {
     coff_sec_handle     orig_sec;
     unsigned            num_relocs;
-    orl_reloc *         relocs;
+    orl_reloc           *relocs;
 };
 
 struct coff_sec_handle_struct {
@@ -145,7 +145,7 @@ struct coff_symbol_handle_struct {
     orl_symbol_binding  binding;
     orl_symbol_type     type;
     coff_symbol ORLUNALIGNED *symbol;
-    char *              name;
+    char                *name;
     unsigned            name_alloced : 1;
     unsigned            has_bf : 1;
 };
@@ -180,13 +180,13 @@ typedef enum {
 
 struct coff_aux_symbol_struct {
     coff_aux_symbol_type                                type;
-    struct coff_aux_symbol_struct *                     next;
+    struct coff_aux_symbol_struct                       *next;
     union {
-        struct coff_aux_symbol_func_def_struct *        func_def;
-        struct coff_aux_symbol_bfef_struct *            bfef;
-        struct coff_aux_symbol_weak_extern_struct *     weak_extern;
-        struct coff_aux_symbol_file_struct *            file;
-        struct coff_aux_symbol_sec_def_struct *         sec_def;
+        struct coff_aux_symbol_func_def_struct          *func_def;
+        struct coff_aux_symbol_bfef_struct              *bfef;
+        struct coff_aux_symbol_weak_extern_struct       *weak_extern;
+        struct coff_aux_symbol_file_struct              *file;
+        struct coff_aux_symbol_sec_def_struct           *sec_def;
     };
 };
 

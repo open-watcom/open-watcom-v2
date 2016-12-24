@@ -749,6 +749,10 @@ extern      void            uitimer( uitimer_callback *proc, int ms );
 extern      void            uistartevent( void );
 extern      void            uidoneevent( void );
 
+/*
+ * below are OS specific API functions
+ */
+
 #if defined( __DOS__ )
 
 extern      LP_VOID         dos_uivideobuffer( LP_VOID vbuff );
@@ -760,6 +764,16 @@ extern      void            win_uisetcolor( int clr );
 
 #pragma aux win_uihookrtn far parm [ax] [cx] modify exact [];
 extern      void __far __loadds win_uihookrtn( unsigned event, unsigned info );
+
+#elif defined( __RDOS__ )
+
+extern      void            uisendescape( void );
+
+#elif defined( __NETWARE__ )
+
+extern      char            *uigetscreenname( void );
+extern      void            uiwakethread( void );
+extern      void            uiforceinfloop( void );
 
 #endif
 

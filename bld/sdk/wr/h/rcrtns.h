@@ -36,12 +36,19 @@
 #include "wio.h"
 #include "wrmemi.h"
 
-#define RCOPEN          open
-#define RCCLOSE         close
-#define RCWRITE         write
-#define RCREAD          read
-#define RCSEEK          lseek
-#define RCTELL          tell
+extern WResFileID     wres_open( const char *name, wres_open_mode omode );
+extern int            wres_close( WResFileID fid );
+extern WResFileSSize  wres_read( WResFileID fid, void *buf, WResFileSize size );
+extern WResFileSSize  wres_write( WResFileID fid, const void *buf, WResFileSize size );
+extern WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where );
+extern WResFileOffset wres_tell( WResFileID fid );
+
+#define RCOPEN          wres_open
+#define RCCLOSE         wres_close
+#define RCWRITE         wres_write
+#define RCREAD          wres_read
+#define RCSEEK          wres_seek
+#define RCTELL          wres_tell
 #define RCALLOC         MemAlloc
 #define RCFREE          MemFree
 #define RCREALLOC       MemRealloc

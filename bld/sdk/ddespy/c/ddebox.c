@@ -44,7 +44,9 @@
 void CreateListBox( HWND parent, ListBoxInfo *info )
 {
 #if defined( __NT__ )
+  #ifndef _WIN64
     if( LOBYTE( LOWORD( GetVersion() ) ) >= 4 ) {
+  #endif
         info->box = CreateWindowEx(
             WS_EX_CLIENTEDGE,
             "LISTBOX",                      /* Window class name */
@@ -60,8 +62,11 @@ void CreateListBox( HWND parent, ListBoxInfo *info )
             NULL,                           /* Window menu handle */
             Instance,                       /* Program instance handle */
             NULL );                         /* Create parameters */
+  #ifndef _WIN64
     } else {
+  #endif
 #endif
+  #ifndef _WIN64
         info->box = CreateWindow(
             "LISTBOX",                      /* Window class name */
             "Messages",                     /* Window caption */
@@ -77,8 +82,11 @@ void CreateListBox( HWND parent, ListBoxInfo *info )
             NULL,                           /* Window menu handle */
             Instance,                       /* Program instance handle */
             NULL );                         /* Create parameters */
+  #endif
 #if defined( __NT__ )
+  #ifndef _WIN64
     }
+  #endif
 #endif
     ShowWindow( info->box, SW_NORMAL );
     UpdateWindow( info->box );

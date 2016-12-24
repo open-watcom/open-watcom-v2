@@ -45,6 +45,8 @@
 #include "wdesvdlg.h"
 #include "wde_wres.h"
 #include "wdesvres.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -194,7 +196,7 @@ bool WdeInfoToData( WdeResInfo *info )
                     info->info->dir = WResInitDir();
                 }
                 if( dnode == NULL ) {
-                    dnode = WdeAddTypeToDir( info->info->dir, (uint_16)(pointer_int)RT_DIALOG );
+                    dnode = WdeAddTypeToDir( info->info->dir, RESOURCE2INT( RT_DIALOG ) );
                     info->dlg_entry = dnode;
                 }
                 if( info->info->dir != NULL && dnode != NULL ) {

@@ -53,14 +53,6 @@
 #define NOFILE -1
 #define STDOUT_HANDLE 1
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 typedef enum {
     EX_NONE,
     EX_GOT_SEG,
@@ -423,9 +415,9 @@ static void DoReplace( void )
 static void ProcFile( const char *fname )
 /***************************************/
 {
-    int         ftype;
+    rec_status  ftype;
     char        *name;
-    int         status;
+    rec_status  status;
     size_t      namelen;
     char        *bak;
 

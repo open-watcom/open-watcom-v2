@@ -60,7 +60,7 @@
 char    FAR_PTR         *MsgArray[ERR_LAST_MESSAGE - ERR_FIRST_MESSAGE + 1];
 
 #if !defined(__WINDOWS__)
-static  HANDLE_INFO     hInstance = { 0 };
+static HANDLE_INFO      hInstance = { 0 };
 #endif
 
 #if defined(__WINDOWS__)
@@ -76,7 +76,7 @@ static bool MsgReadErrArray( void )
     msg_shift = _WResLanguage() * MSG_LANG_SPACING;
     for( i = ERR_FIRST_MESSAGE; i <= ERR_LAST_MESSAGE; i++ ) {
 #if !defined(__WINDOWS__)
-        if( WResLoadString( &hInstance, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
+        if( WResLoadString( &hInstance, i + msg_shift, (lpstr)buffer, sizeof( buffer ) ) <= 0 ) {
 #else
         if( LoadString( inst, i + msg_shift, (LPSTR)buffer, sizeof( buffer ) ) <= 0 ) {
 #endif
@@ -93,19 +93,6 @@ static bool MsgReadErrArray( void )
 }
 
 #if !defined(__WINDOWS__)
-static WResFileOffset res_seek( WResFileID handle, WResFileOffset position, int where )
-/* fool the resource compiler into thinking that the resource information
- * starts at offset 0 */
-{
-    if( where == SEEK_SET ) {
-        return( lseek( handle, position + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( handle, position, where ) );
-    }
-}
-
-WResSetRtns( open, close, read, write, res_seek, tell, malloc, free );
-
 bool MsgInit( void )
 {
     char        buffer[_MAX_PATH];
@@ -113,29 +100,29 @@ bool MsgInit( void )
     char        *fname;
     char        fullpath[_MAX_PATH];
 #endif
+    bool        rc;
 
-    hInstance.handle = NIL_HANDLE;
+    hInstance.status = 0;
     if( _cmdname( buffer ) != NULL ) {
+        rc = OpenResFile( &hInstance, buffer );
 #if defined(_PLS)
-        if( OpenResFile( &hInstance, buffer ) ) {
+        if( !rc ) {
             _splitpath2( buffer, fullpath, NULL, NULL, &fname, NULL );
             _makepath( buffer, NULL, NULL, fname, ".exp" );
             _searchenv( buffer, "PATH", fullpath );
             if( fullpath[0] != '\0' ) {
-                OpenResFile( &hInstance, fullpath );
+                rc = OpenResFile( &hInstance, fullpath );
             }
         }
 #endif
-        if( hInstance.handle != NIL_HANDLE || !OpenResFile( &hInstance, buffer ) ) {
-            if( !FindResources( &hInstance ) && !InitResources( &hInstance ) ) {
-                MsgReadErrArray();
-                CloseResFile( &hInstance );
-                return( true );
-            }
+        if( rc ) {
+            MsgReadErrArray();
             CloseResFile( &hInstance );
+            return( true );
         }
     }
-    write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
+    CloseResFile( &hInstance );
+    posix_write( STDOUT_FILENO, NO_RES_MESSAGE, NO_RES_SIZE );
     return( false );
 }
 #endif

@@ -59,6 +59,8 @@
 #include "wreimage.h"
 #include "wreimg.h"
 #include "jdlg.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -98,7 +100,7 @@ bool WREDeleteCurrResource( bool force )
 bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 {
     char                *name;
-    int                 type;
+    int                 type_int;
     bool                ok;
     LRESULT             index;
     HWND                res_lbox;
@@ -107,19 +109,18 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     name = NULL;
     lnode = NULL;
 
-    if( curr->info->current_type == (uint_16)(pointer_int)RT_STRING ) {
+    if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
         return( WREDeleteStringResources( curr, FALSE ) );
     }
 
     ok = (curr->info != NULL && curr->res != NULL && curr->lang != NULL);
 
+    type_int = 0;
     if( ok )  {
-        if( curr->type->Info.TypeName.IsName ) {
-            type = 0;
-        } else {
-            type = curr->type->Info.TypeName.ID.Num;
+        if( !curr->type->Info.TypeName.IsName ) {
+            type_int = curr->type->Info.TypeName.ID.Num;
         }
-        name = WREGetResName( curr->res, type );
+        name = WREGetResName( curr->res, type_int );
         ok = (name != NULL);
     }
 
@@ -130,24 +131,24 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
     // nuke any edit sessions on this resource
     if( ok ) {
         lnode = curr->lang;
-        switch( type ) {
-        case RT_MENU:
+        switch( type_int ) {
+        case RESOURCE2INT( RT_MENU ):
             WREEndLangMenuSession( lnode );
             break;
-        case RT_STRING:
+        case RESOURCE2INT( RT_STRING ):
             WREEndResStringSessions( curr->info );
             break;
-        case RT_ACCELERATOR:
+        case RESOURCE2INT( RT_ACCELERATOR ):
             WREEndLangAccelSession( lnode );
             break;
-        case RT_DIALOG:
+        case RESOURCE2INT( RT_DIALOG ):
             WREEndLangDialogSession( lnode );
             break;
-        case RT_GROUP_CURSOR:
-        case RT_GROUP_ICON:
-            ok = WREDeleteGroupImages( curr, (uint_16)type );
+        case RESOURCE2INT( RT_GROUP_CURSOR ):
+        case RESOURCE2INT( RT_GROUP_ICON ):
+            ok = WREDeleteGroupImages( curr, (uint_16)type_int );
             /* fall through */
-        case RT_BITMAP:
+        case RESOURCE2INT( RT_BITMAP ):
             if( ok ) {
                 WREEndLangImageSession( lnode );
             }
@@ -206,7 +207,7 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
     if( ok ) {
         tnode = curr->type;
         if( tnode == NULL ) {
-            tnode = WRFindTypeNode( curr->info->info->dir, (uint_16)(pointer_int)RT_STRING, NULL );
+            tnode = WRFindTypeNode( curr->info->info->dir, RESOURCE2INT( RT_STRING ), NULL );
         }
         if( tnode != NULL ) {
             curr->info->modified = true;

@@ -39,7 +39,7 @@
 bool ResWrite( void *buffer, WResFileSize len, WResFileID handle )
 /****************************************************************/
 {
-    if( WRESWRITE( handle, buffer, len ) != len ) {
+    if( (WResFileSize)WRESWRITE( handle, buffer, len ) != len ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }

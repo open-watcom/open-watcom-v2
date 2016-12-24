@@ -36,10 +36,11 @@
 #include "dbgtoggl.h"
 #include "dlgasync.h"
 #include "trapbrk.h"
+#include "remasync.h"
+#include "guitypes.h"
 #ifdef __RDOS__
 #include "stdui.h"
 #endif
-#include "remasync.h"
 
 
 typedef struct dlg_async {
@@ -54,11 +55,12 @@ void AsyncNotify( void )
    if( AsyncWnd ) {
         dlg.cond = PollAsync();
         if( !( dlg.cond & COND_RUNNING ) ) {
+#ifdef __RDOS__
+            uisendescape();
+#else
             GUICloseDialog( AsyncWnd );
             AsyncWnd = 0;
-#ifdef __RDOS__
-            uirefresh();
-#endif
+#endif            
         }
     }
 }
@@ -72,6 +74,10 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
         dlg.cond = 0;
         GUISetFocus( gui, CTL_ASYNC_STOP );
         AsyncWnd = gui;
+        return( true );
+    case GUI_DIALOG_ESCAPE:
+        AsyncWnd = 0;
+        dlg.cond = StopAsync();
         return( true );
     case GUI_CONTROL_CLICKED :
         GUI_GETID( param, id );
@@ -93,6 +99,6 @@ OVL_EXTERN bool AsyncEvent( gui_window *gui, gui_event gui_ev, void *param )
 
 extern unsigned DlgAsyncRun( void )
 {
-    ResDlgOpen( &AsyncEvent, 0, GUI_MAKEINTRESOURCE( DIALOG_ASYNC_RUN ) );
-    return( dlg.cond ); 
+    ResDlgOpen( &AsyncEvent, 0, DIALOG_ASYNC_RUN );
+    return( dlg.cond );
 }

@@ -35,7 +35,7 @@
 #include <process.h>
 #include "uidef.h"
 #include "uiforce.h"
-#include "uinlm.h"
+
 
 // be very careful about setting this true
 static bool EnterForever = false;

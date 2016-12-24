@@ -170,7 +170,7 @@ typedef struct file_list {
     enum file_status    status;
     lib_priority        priority;       /* for libraries */
     unsigned            ovlref   : 16;  /* for fixed libraries */
-    unsigned                     :  0;
+    unsigned                     : 0;
 } file_list;
 
 typedef struct trace_info {
@@ -327,10 +327,10 @@ typedef struct group_entry {
         unsigned        miscflags;      // OS/2
         segment         dos_segment;    // DOS/16M: DOS segment value
     } u;
+    bool                isfree      : 1;
+    bool                isautogrp   : 1;
+    bool                isdup       : 1;
     unsigned            num;
-    unsigned            isfree : 1;
-    unsigned            isautogrp : 1;
-    unsigned            isdup : 1;
 } group_entry;
 
 // this is a bit in the segflags field. This is also defined in exeos2.h
@@ -459,27 +459,25 @@ typedef struct segdata {
     unsigned_16     frame;          // the frame of an absolute segment.
     unsigned        align      : 5;
     unsigned        select     : 3; // comdat: selection type
-
     unsigned        combine    : 2; // how to combine segment with others
     unsigned        alloc      : 2; // comdat: where to allocate segment.
-    unsigned        is32bit    : 1; // true if segment is 32 bits
-    unsigned        iscode     : 1; // true if a code segment.
-    unsigned        isabs      : 1; // true if this is an absolute segment.
-    unsigned        iscdat     : 1; // true if this is a comdat
 
-    unsigned        isuninit   : 1; // true if seg is uninitialized
-    unsigned        isidata    : 1; // true if segment is .idata (ORL only)
-    unsigned        ispdata    : 1; // true if segment is .pdata
-    unsigned        isreldata  : 1; // true if segment is .reldata
-    unsigned        visited    : 1; // dce: true if visited in graph search.
-    unsigned        isrefd     : 1; // dce: true if this module is referenced.
-    unsigned        isdead     : 1; // dce: true if segdata or segdef killed.
-    unsigned        isdefd     : 1; // segdata has been defined
-
-    unsigned        isfree     : 1; // segdata is free (used in carver stuff)
-    unsigned        isprepd    : 1; // has been prepped for inc linking
-    unsigned        canfarcall : 1; // OK to do far call optimization here
-    unsigned        hascdatsym : 1; // true if comdat and has a symbol defd
+    bool            is32bit    : 1; // true if segment is 32 bits
+    bool            iscode     : 1; // true if a code segment.
+    bool            isabs      : 1; // true if this is an absolute segment.
+    bool            iscdat     : 1; // true if this is a comdat
+    bool            isuninit   : 1; // true if seg is uninitialized
+    bool            isidata    : 1; // true if segment is .idata (ORL only)
+    bool            ispdata    : 1; // true if segment is .pdata
+    bool            isreldata  : 1; // true if segment is .reldata
+    bool            visited    : 1; // dce: true if visited in graph search.
+    bool            isrefd     : 1; // dce: true if this module is referenced.
+    bool            isdead     : 1; // dce: true if segdata or segdef killed.
+    bool            isdefd     : 1; // segdata has been defined
+    bool            isfree     : 1; // segdata is free (used in carver stuff)
+    bool            isprepd    : 1; // has been prepped for inc linking
+    bool            canfarcall : 1; // OK to do far call optimization here
+    bool            hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
 typedef struct node {
@@ -487,7 +485,7 @@ typedef struct node {
     void                *entry;
 } node;
 
-#define NOT_IMP_BY_ORDINAL (-1)
+#define NOT_IMP_BY_ORDINAL ((ordinal_t)-1)
 
 typedef signed_32       ordinal_t;
 
@@ -501,8 +499,8 @@ typedef struct dll_sym_info {
         char            *entname;
         ordinal_t       ordinal;
     } u;
-    unsigned            isordinal : 1;
-    unsigned            isfree : 1;
+    bool                isordinal   : 1;
+    bool                isfree      : 1;
     symbol              *iatsym;        // NT: symbol for address in iat
 } dll_sym_info;
 
@@ -564,16 +562,16 @@ typedef struct order_class {
     char                *SrcName;
     targ_addr           Base;
     ORDER_SEGMENT       *SegList;
-    unsigned            FixedAddr :  1;
-    unsigned            NoEmit    :  1;
-    unsigned            Copy      :  1;
+    bool                FixedAddr   : 1;
+    bool                NoEmit      : 1;
+    bool                Copy        : 1;
 } order_class;
 
 typedef struct order_segment {
     ORDER_SEGMENT       *NextSeg;
     char                *Name;
     targ_addr           Base;
-    unsigned            FixedAddr :  1;
-    unsigned            NoEmit    :  1;
+    bool                FixedAddr   : 1;
+    bool                NoEmit      : 1;
 } order_segment;
 

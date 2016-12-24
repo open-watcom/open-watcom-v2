@@ -36,6 +36,9 @@
 #include "wresdefn.h"
 #include "rcrtns.h"
 
+#include "clibext.h"
+
+
 static void PrintDialogBoxHeader( DialogBoxHeader * head )
 /********************************************************/
 {

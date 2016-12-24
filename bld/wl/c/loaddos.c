@@ -169,7 +169,7 @@ static bool WriteSegData( void *_sdata, void *_start )
     segdata         *sdata = _sdata;
     soffset         *start = _start;
     soffset         newpos;
-    soffset         pad;
+    size_t          pad;
 
     if( !sdata->isuninit && !sdata->isdead ) {
         newpos = *start + sdata->a.delta;
@@ -324,5 +324,5 @@ void FiniDOSLoadFile( void )
     _HostU16toTarg( mz_hdr_size, exe_head.reloc_offset );
     _HostU16toTarg( 0, exe_head.overlay_num );
     WriteLoad( &exe_head, sizeof( dos_exe_header ) );
-    WriteLoad( &OvlTabOffset, sizeof( unsigned_32 ) );
+    WriteLoadU32( OvlTabOffset );
 }

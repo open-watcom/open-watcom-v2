@@ -39,7 +39,7 @@
 omf_handle              OMFENTRY OmfInit( orl_funcs * );
 orl_return              OMFENTRY OmfFini( omf_handle );
 
-orl_return              OMFENTRY OmfFileInit( omf_handle, void *, omf_file_handle * );
+orl_return              OMFENTRY OmfFileInit( omf_handle, orl_file_id, omf_file_handle * );
 orl_return              OMFENTRY OmfFileFini( omf_file_handle );
 orl_return              OMFENTRY OmfFileScan( omf_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        OMFENTRY OmfFileGetMachineType( omf_file_handle );

@@ -131,22 +131,22 @@ typedef enum {
 #define DIRECTORY_BLOCK_ENTRIES         256
 
 struct imp_image_handle {
-    imp_image_handle   *next_image; /* Pointer to the next HLL/CV image. */
-    unsigned long       bias;       /* The the offset of the NBxx signature. */
-    unsigned long       size;       /* the size of the debug info. */
-    dig_fhandle         sym_file;   /* The file handle. */
-    struct virt_page ***virt;       /* ? */
-    unsigned            vm_dir_num; /* ? */
-    hll_dir_entry     **directory;  /* The subsection directory, 2 levels. */
-    unsigned            dir_count;  /* Number of entries in the directory. */
-    virt_mem            types_base; /* HLLPack types, NULL if per-module. */
-    mad_handle          mad;        /* MAD_X86 */
-    hllinfo_seg        *segments;   /* Segment mappings and attribs. */
-    unsigned            seg_count;  /* Number of segments. */
-    hllinfo_level       format_lvl; /* The format level. */
-    unsigned            is_32bit : 1; /* 32-bit (set) or 16-bit (clear) image. */
-    void               *sorted_linnum_blocks[HLLINFO_NUM_SORTED];
-                                    /* Linnum blocks which have been sorted. */
+    imp_image_handle    *next_image;    /* Pointer to the next HLL/CV image. */
+    unsigned long       bias;           /* The the offset of the NBxx signature. */
+    unsigned long       size;           /* the size of the debug info. */
+    dig_fhandle         sym_fid;        /* The file handle. */
+    struct virt_page    ***virt;        /* ? */
+    unsigned            vm_dir_num;     /* ? */
+    hll_dir_entry       **directory;    /* The subsection directory, 2 levels. */
+    unsigned            dir_count;      /* Number of entries in the directory. */
+    virt_mem            types_base;     /* HLLPack types, NULL if per-module. */
+    mad_handle          mad;            /* MAD_X86 */
+    hllinfo_seg         *segments;      /* Segment mappings and attribs. */
+    unsigned            seg_count;      /* Number of segments. */
+    hllinfo_level       format_lvl;     /* The format level. */
+    unsigned            is_32bit : 1;   /* 32-bit (set) or 16-bit (clear) image. */
+    void                *sorted_linnum_blocks[HLLINFO_NUM_SORTED];
+                                        /* Linnum blocks which have been sorted. */
 };
 
 typedef struct {

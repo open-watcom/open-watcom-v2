@@ -4,4 +4,4 @@ host_os  = os2
 host_cpu = 386
 sys_windowed = 1
 
-!include ../setup.mif
+!include ../master.mif

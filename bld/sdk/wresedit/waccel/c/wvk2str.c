@@ -219,13 +219,13 @@ uint_16 WGetVKeyFromStr( char *str )
     key = 0;
 
     for( i = 0; WVKeys[i].str != NULL; i++ ) {
-        if( !stricmp( WVKeys[i].str, str ) ) {
+        if( stricmp( WVKeys[i].str, str ) == 0 ) {
             key = WVKeys[i].id;
         }
     }
 
     if( key == 0 ) {
-        if( strlen( str ) == 4 && !strnicmp( str, "VK_", 3  ) ) {
+        if( strlen( str ) == 4 && strnicmp( str, "VK_", 3 ) == 0 ) {
             if( isalnum( str[3] ) ) {
                 key = toupper( str[3] );
             }

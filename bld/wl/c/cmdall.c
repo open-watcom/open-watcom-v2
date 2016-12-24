@@ -99,7 +99,7 @@ bool ProcFormat( void )
 static bool AddOption( void )
 /***************************/
 {
-    Token.thumb = REJECT;
+    Token.thumb = true;
     if( !ProcOne( MainOptions, SEP_NO, false ) )
         return( false );
     return( true );
@@ -795,7 +795,7 @@ bool ProcOpResource( void )
 /********************************/
 {
     if( GetToken( SEP_EQUALS, TOK_INCLUDE_DOT | TOK_IS_FILENAME ) ) {
-        FmtData.res_name_only = 1;
+        FmtData.res_name_only = true;
         FmtData.resource = tostring();
     } else if( GetToken( SEP_NO, TOK_INCLUDE_DOT ) ) {
         FmtData.resource = tostring();
@@ -1016,7 +1016,7 @@ bool ProcSystem( void )
             return( false );
         }
     } else {
-        Token.thumb = OK;
+        Token.thumb = false;
     }
     sysname = tostring();
     sys = FindSystemBlock( sysname );
@@ -1059,7 +1059,7 @@ static void GetCommandBlock( sysblock **hdr, char *name, parse_entry *endtab )
     InitStringTable( &strtab, false );
     AddBufferStringTable( &strtab, &strtab, offsetof( sysblock, commands ) );
     while( !ProcOne( endtab, SEP_SPACE, false ) ) {
-        Token.thumb = OK;
+        Token.thumb = false;
         AddBufferStringTable( &strtab, Token.this, Token.len );
         AddCharStringTable( &strtab, ' ' );
         RestoreParser();
@@ -1089,7 +1089,7 @@ bool ProcSysBegin( void )
     if( sys != NULL ) {
         LnkMsg( LOC+LINE+WRN+MSG_SYSTEM_ALREADY_DEFINED, "s", sysname );
         while( !ProcOne( SysEndOptions, SEP_SPACE, false ) ) {
-            Token.thumb = OK;
+            Token.thumb = false;
             RestoreParser();
         }
     } else {
@@ -1175,8 +1175,8 @@ bool ProcVersion( void )
     }
     FmtData.major = value;
     FmtData.ver_specified = true;
-    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /*if we don't get a minor number*/
-       return( true );                      /* that's OK */
+    if( !GetToken( SEP_PERIOD, TOK_NORMAL ) ) {  /* if we don't get a minor number */
+        return( true );                          /* that's OK */
     }
     retval = getatol( &value );
     if( retval != ST_IS_ORDINAL || value >= 100 ) {
@@ -1227,7 +1227,7 @@ bool ProcImpFile( void )
 static bool AddRunTime( void )
 /****************************/
 {
-    Token.thumb = REJECT;       // reparse last token.
+    Token.thumb = true;         // reparse last token.
     return( ProcOne( RunOptions, SEP_NO, false ) );
 }
 
@@ -1340,7 +1340,7 @@ bool ProcOutputOfs( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL << FmtData.SegShift || HintFormat( ~(MK_DOS | MK_SEGMENTED)))) {
+    if( retval == ST_IS_ORDINAL && (value <= ( 0xFFFFUL << FmtData.SegShift ) || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
         FmtData.output_offset = value;
         return( true );
     } else {
@@ -1564,7 +1564,7 @@ bool ProcOrdSegOfsAdr( void )
         return( false );
     }
     retval = getatol( &value );
-    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED)))) {
+    if( retval == ST_IS_ORDINAL && (value <= 0xFFFFL || HintFormat( ~(MK_DOS | MK_SEGMENTED) )) ) {
         CurrOSeg->Base.off = value;
         CurrOSeg->FixedAddr = true;
         return( true );
@@ -1578,7 +1578,7 @@ bool ProcOrdSegOfsAdr( void )
 bool ProcOrdSegNoEmit( void )
 /*********************************/
 {
-   CurrOSeg->NoEmit = true;
-   return( true );
+    CurrOSeg->NoEmit = true;
+    return( true );
 }
 

@@ -48,7 +48,7 @@ static int  GUIMemOpened = 0;
 static void GUIMemPrintLine( void *handle, const char *buff, size_t len )
 /***********************************************************************/
 {
-    write( *(int *)handle, buff, len );
+    posix_write( *(int *)handle, buff, len );
 }
 
 #endif

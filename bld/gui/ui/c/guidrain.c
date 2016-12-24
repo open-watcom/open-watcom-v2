@@ -32,9 +32,8 @@
 #include "guiwind.h"
 #include "guixloop.h"
 #include "guiuiev.h"
+#include "guievent.h"
 
-
-extern EVENT GUIAllEvents[];
 
 void GUIDrainEvents( void )
 {

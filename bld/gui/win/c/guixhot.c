@@ -70,7 +70,7 @@ bool GUIXInitHotSpots( int num_hot_spots, gui_resource *hot )
         } else {
 #endif
             GUIHotSpots[i].bitmap = _wpi_loadbitmap( GUIResHInst,
-                                        _wpi_makeintresource( hot[i].res ) );
+                                        MAKEINTRESOURCE( hot[i].res ) );
 #ifdef __NT__
         }
 #endif

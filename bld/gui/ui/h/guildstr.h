@@ -33,7 +33,11 @@
 #ifndef _GUILDSTR_H_
 #define _GUILDSTR_H_
 
-bool GUILoadDialogTemplate( res_name_or_id dlg_id, char **template, int *length );
-bool GUILoadMenuTemplate( res_name_or_id menu_id, char **template, int *length );
+extern bool GUISeekDialogTemplate( res_name_or_id dlg_id );
+extern bool GUISeekMenuTemplate( res_name_or_id menu_id );
+extern bool GUIResReadDialogBoxHeader( DialogBoxHeader *hdr );
+extern bool GUIResReadDialogBoxControl( DialogBoxControl *ctl );
+extern bool GUIResReadMenuHeader( MenuHeader *hdr );
+extern bool GUIResReadMenuItem( MenuItem *new );
 
 #endif

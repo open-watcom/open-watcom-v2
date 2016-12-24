@@ -48,9 +48,16 @@
 #include "guixhook.h"
 #include "guigadgt.h"
 #include "guixinit.h"
+#include "guievent.h"
 #include <stdlib.h>
 #include <stdio.h>
 
+
+EVENT GUIUserEvents[] = {
+    GUI_FIRST_USER_EVENT, LAST_EVENT,
+    EV_NO_EVENT,
+    EV_NO_EVENT
+};
 
 /* statics */
 static  ORD             OldCol          = -1;      /* old column of mouse */
@@ -67,12 +74,6 @@ static enum {
     MOUSE_MIN_START,            /* mouse press to start minimize           */
     MOUSE_RESTORE_START         /* mouse press to start restore            */
 } MouseState;
-
-EVENT GUIUserEvents[] = {
-    GUI_FIRST_USER_EVENT, LAST_EVENT,
-    EV_NO_EVENT,
-    EV_NO_EVENT
-};
 
 static EVENT GUIInternalEvents[] = {
     EV_SYS_MENU_FIRST, EV_SYS_MENU_LAST,

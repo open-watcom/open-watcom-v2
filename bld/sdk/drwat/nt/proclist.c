@@ -188,9 +188,9 @@ static void freeModuleNode( ModuleNode *node )
         if( node->objects != NULL ) {
             MemFree( node->objects );
         }
-        if( node->dfh != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( node->dfh );
-            node->dfh = DIG_NIL_HANDLE;
+        if( node->fid != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( node->fid );
+            node->fid = DIG_NIL_HANDLE;
         }
         MemFree( node );
     }
@@ -219,7 +219,7 @@ ModuleNode *GetNextModule( ModuleNode *modinfo )
 /*
  * AddModule
  */
-void AddModule( DWORD procid, dig_fhandle dfh, DWORD base, char *name )
+void AddModule( DWORD procid, dig_fhandle fid, DWORD base, char *name )
 {
     ProcNode    *process;
     ModuleNode  *new;
@@ -240,13 +240,13 @@ void AddModule( DWORD procid, dig_fhandle dfh, DWORD base, char *name )
         (*cur) = new;
         new->syminfo = NULL;
         new->base = base;
-        new->dfh = dfh;
+        new->fid = fid;
         new->name = name;
         new->procnode = process;
-        if( !GetModuleSize( dfh, &new->size ) ) {
+        if( !GetModuleSize( fid, &new->size ) ) {
             new->size = -1;
         }
-        new->objects = GetModuleObjects( dfh, &new->num_objects );
+        new->objects = GetModuleObjects( fid, &new->num_objects );
     }
 }
 

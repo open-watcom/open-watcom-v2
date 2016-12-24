@@ -30,9 +30,9 @@
 
 
 #ifndef _EXEPHAR_H
+#define _EXEPHAR_H
 
 #include "pushpck1.h"
-
 typedef struct simple_header {
     unsigned_16     signature;
     unsigned_16     mod_size;       // file size mod 512
@@ -112,6 +112,7 @@ typedef struct {
     unsigned_32 base;
     unsigned_32 extra;
 } seg_info_table;
+#include "poppck.h"
 
 #define SIMPLE_SIGNATURE    0x504D      // 'MP'
 #define EXTENDED_SIGNATURE  0x3350      // 'P3'
@@ -121,8 +122,5 @@ typedef struct {
 #define PHAR_FORMAT_FLAT        1
 #define PHAR_FORMAT_SEGMENTED   2
 
-#include "poppck.h"
-
-#define _EXEPHAR_H
 #endif
 

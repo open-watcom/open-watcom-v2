@@ -41,6 +41,8 @@
 #include "selimage.h"
 #include "jdlg.h"
 #include "winexprt.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -150,21 +152,21 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
 
     lbox_set = false;
 
-    tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_BITMAP, NULL );
+    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_BITMAP ), NULL );
     if( tnode != NULL ) {
         CheckDlgButton( hdlg, IDM_SELIMGBMP, BST_CHECKED );
-        info->type = (uint_16)(pointer_int)RT_BITMAP;
+        info->type = RESOURCE2INT( RT_BITMAP );
         WRSetEntries( hdlg, info );
         lbox_set = true;
     } else {
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGBMP ), FALSE );
     }
 
-    tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_GROUP_CURSOR, NULL );
+    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_GROUP_CURSOR ), NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGCUR, BST_CHECKED );
-            info->type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
+            info->type = RESOURCE2INT( RT_GROUP_CURSOR );
             WRSetEntries( hdlg, info );
             lbox_set = true;
         }
@@ -172,11 +174,11 @@ static bool WRSetWinInfo( HWND hdlg, WRSelectImageInfo *info )
         EnableWindow( GetDlgItem( hdlg, IDM_SELIMGCUR ), FALSE );
     }
 
-    tnode = WRFindTypeNode( info->info->dir, (uint_16)(pointer_int)RT_GROUP_ICON, NULL );
+    tnode = WRFindTypeNode( info->info->dir, RESOURCE2INT( RT_GROUP_ICON ), NULL );
     if( tnode != NULL ) {
         if( !lbox_set ) {
             CheckDlgButton( hdlg, IDM_SELIMGICO, BST_CHECKED );
-            info->type = (uint_16)(pointer_int)RT_GROUP_ICON;
+            info->type = RESOURCE2INT( RT_GROUP_ICON );
             WRSetEntries( hdlg, info );
             lbox_set = true;
         }
@@ -275,8 +277,8 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != (uint_16)(pointer_int)RT_BITMAP ) {
-                info->type = (uint_16)(pointer_int)RT_BITMAP;
+            if( info->type != RESOURCE2INT( RT_BITMAP ) ) {
+                info->type = RESOURCE2INT( RT_BITMAP );
                 WRSetEntries( hDlg, info );
             }
             break;
@@ -285,8 +287,8 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != (uint_16)(pointer_int)RT_GROUP_CURSOR ) {
-                info->type = (uint_16)(pointer_int)RT_GROUP_CURSOR;
+            if( info->type != RESOURCE2INT( RT_GROUP_CURSOR ) ) {
+                info->type = RESOURCE2INT( RT_GROUP_CURSOR );
                 WRSetEntries( hDlg, info );
             }
             break;
@@ -295,8 +297,8 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != BN_CLICKED ) {
                 break;
             }
-            if( info->type != (uint_16)(pointer_int)RT_GROUP_ICON ) {
-                info->type = (uint_16)(pointer_int)RT_GROUP_ICON;
+            if( info->type != RESOURCE2INT( RT_GROUP_ICON ) ) {
+                info->type = RESOURCE2INT( RT_GROUP_ICON );
                 WRSetEntries( hDlg, info );
             }
             break;

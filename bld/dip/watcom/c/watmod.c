@@ -131,7 +131,7 @@ static dip_status AllocLinkTable( section_info *inf, dword num_links, dword firs
         }
         lnk_tbl[i++] = lnk;
         if( !inf->ctl->v2 ) {
-            if( DCRead( inf->ctl->sym_file, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
+            if( DCRead( inf->ctl->sym_fid, lnk, num * sizeof( dword ) ) != num * sizeof( dword ) ) {
                 DCStatus( DS_ERR|DS_FREAD_FAILED );
                 return( DS_ERR|DS_FREAD_FAILED );
             }
@@ -247,7 +247,7 @@ dip_status AdjustMods( section_info *inf, unsigned long adjust )
     }
     if( !inf->ctl->v2 ) {
         off = first_link + adjust;
-        if( DCSeek( inf->ctl->sym_file, off, DIG_ORG) != off ) {
+        if( DCSeek( inf->ctl->sym_fid, off, DIG_ORG) != off ) {
             DCStatus( DS_ERR|DS_FSEEK_FAILED );
             return( DS_ERR|DS_FSEEK_FAILED );
         }

@@ -1,4 +1,4 @@
-type = win
+sys_windowed = 1
 os = ntaxp
 build_target = nt
 rc = wrc

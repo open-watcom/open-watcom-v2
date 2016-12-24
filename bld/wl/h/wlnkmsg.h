@@ -51,6 +51,8 @@ typedef struct msg_arg_list {
 
 #include <stdarg.h>
 
+extern int      WLinkItself;
+
 extern bool     InitMsg( void );
 extern void     ResetMsg( void );
 extern bool     Msg_Get( int resourceid, char *buffer );
@@ -58,5 +60,3 @@ extern void     Msg_Do_Put_Args( char rc_buff[], MSG_ARG_LIST *, const char *, .
 extern void     Msg_Put_Args( char rc_buff[], MSG_ARG_LIST *, const char *, va_list *);
 extern void     Msg_Write_Map( int resourceid, ... );
 extern bool     FiniMsg( void );
-
-extern int      WLinkItself;

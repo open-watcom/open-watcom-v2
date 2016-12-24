@@ -35,15 +35,14 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-bool ResCloseFile( WResFileID handle )
-/************************************/
+bool ResCloseFile( WResFileID fid )
+/*********************************/
 {
-    int         ret;
+    bool        ret;
 
-    ret = WRESCLOSE( handle );
-    if( ret == -1 ) {
+    ret = ( WRESCLOSE( fid ) != 0 );
+    if( ret ) {
         WRES_ERROR( WRS_CLOSE_FAILED );
-        return( true );
     }
-    return( false );
+    return( ret );
 }

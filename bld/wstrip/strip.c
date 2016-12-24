@@ -61,14 +61,6 @@
 #define WRESMAGIC0      0xC3D4C1D7
 #define WRESMAGIC1      0xC3D2CDCF
 
-#ifdef _WIN64
-#define posix_read      __w64_read
-#define posix_write     __w64_write
-#else
-#define posix_read      read
-#define posix_write     write
-#endif
-
 #define SEEK_POSBACK(p) (-(long)(p))
 
 #include "pushpck1.h"

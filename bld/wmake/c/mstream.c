@@ -40,7 +40,6 @@
 #include "msuffix.h"
 #include "mmemory.h"
 #include "mpreproc.h"
-#include "mposix.h"
 
 #include "clibext.h"
 

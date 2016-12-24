@@ -43,6 +43,7 @@
 #include "exedos.h"
 #include "ismod32.h"
 
+
 /*
  * accessSegment - access a segment to cause the windows loader to bring it in
  */

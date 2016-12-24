@@ -206,7 +206,7 @@ static unsigned long DumpFlatEntryTable( void )
     entry_export        *start;
     entry_export        *place;
     entry_export        *prev;
-    unsigned            prevord;
+    ordinal_t           prevord;
     unsigned long       size;
     unsigned            gap;
     unsigned            entries;
@@ -269,17 +269,18 @@ static unsigned long DumpFlatEntryTable( void )
 
                     bundle_fwd.e32_flags = 0;
                     bundle_fwd.modord    = dll->m.modnum->num;
-                    if (dll->isordinal) {
+                    if( dll->isordinal ) {
                         bundle_fwd.e32_flags |= 1;
-                        bundle_fwd.value     = dll->u.ordinal;
+                        bundle_fwd.value = dll->u.ordinal;
                     } else {
-                        bundle_fwd.value     = dll->u.entry->num;
+                        bundle_fwd.value = dll->u.entry->num;
                     }
                     WriteLoad( &bundle_fwd, sizeof( flat_bundle_entryfwd ) );
                 } else {
                     // 32-bit entry
                     bundle_item.e32_flags = (start->iopl_words << IOPL_WORD_SHIFT);
-                    if( start->isexported ) bundle_item.e32_flags |= ENTRY_EXPORTED;
+                    if( start->isexported )
+                        bundle_item.e32_flags |= ENTRY_EXPORTED;
                     bundle_item.e32_offset = start->addr.off;
                     WriteLoad( &bundle_item, sizeof( flat_bundle_entry32 ) );
                 }
@@ -302,7 +303,7 @@ static unsigned_32 WriteRelocSize( void *** reloclist, unsigned_32 size,
         rptr = NULL;
     }
     for( ; limit > 0; --limit ) {
-        WriteLoad( &size, sizeof( unsigned_32 ) );
+        WriteLoadU32( size );
         if( rptr != NULL ) {
             /* first one for external fixups */
             size += RelocSize( *rptr++ );
@@ -343,7 +344,7 @@ static unsigned_32 WriteFixupTables( os2_flat_header *header, unsigned long loc)
             size = WriteRelocSize( reloclist, size, lowidx );
         }
     }
-    WriteLoad( &size, sizeof( unsigned_32 ) );
+    WriteLoadU32( size );
     ++numentries;
     /* now that the page table is dumped, do the fixups. */
     header->fixrec_off = loc + numentries * sizeof( unsigned_32 );
@@ -360,7 +361,7 @@ static unsigned WriteDataPages( unsigned long loc )
 {
     group_entry *group;
     unsigned    last_page;
-    unsigned    size;
+    size_t      size;
 
     last_page = 0;
     for( group = Groups; group != NULL; group = group->next_group) {
@@ -369,8 +370,7 @@ static unsigned WriteDataPages( unsigned long loc )
                 if( FmtData.type & (MK_OS2_LE|MK_WIN_VXD) ) {
                     size = OSF_DEF_PAGE_SIZE - last_page;
                 } else {
-                    size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift)
-                             - last_page;
+                    size = ROUND_SHIFT(last_page, FmtData.u.os2.segment_shift) - last_page;
                 }
                 PadLoad( size );
                 loc += size;
@@ -383,8 +383,7 @@ static unsigned WriteDataPages( unsigned long loc )
     if( last_page == 0 ) {
         last_page = OSF_DEF_PAGE_SIZE;
     } else if( (FmtData.type & (MK_OS2_LE|MK_WIN_VXD)) == 0 ) {
-        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift )
-                             - last_page );
+        PadLoad( ROUND_SHIFT( last_page, FmtData.u.os2.segment_shift ) - last_page );
     }
     return( last_page );
 }

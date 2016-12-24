@@ -38,7 +38,7 @@ typedef struct RcPass2Info {
     char            *TmpFileName;
     ExeFileInfo     TmpFile;
     ExeFileInfo     OldFile;
-    ResFileInfo     *ResFiles;
+    ResFileInfo     *ResFile;
     bool            AllResFilesOpen;
     void            *IoBuffer;
 } RcPass2Info;

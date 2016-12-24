@@ -50,6 +50,8 @@
 #include "rcstr.gh"
 #include "preproc.h"
 #include "wresym.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -116,7 +118,7 @@ static char *WREFindDLGInclude( WRInfo *info )
     ok = (info != NULL);
 
     if( ok ) {
-        tnode = WRFindTypeNode( info->dir, (uint_16)(pointer_int)RT_RCDATA, NULL );
+        tnode = WRFindTypeNode( info->dir, RESOURCE2INT( RT_RCDATA ), NULL );
         ok = (tnode != NULL);
     }
 

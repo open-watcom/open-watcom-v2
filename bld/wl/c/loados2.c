@@ -83,10 +83,10 @@ typedef struct FullTypeRecord {
 } FullTypeRecord;
 
 typedef struct ExeResDir {
-    uint_16             ResShiftCount;
-    uint_16             NumTypes;
-    uint_16             NumResources;
-    uint_16             TableSize;
+    unsigned_16         ResShiftCount;
+    unsigned_16         NumTypes;
+    unsigned_16         NumResources;
+    unsigned_16         TableSize;
     FullTypeRecord      *Head;
     FullTypeRecord      *Tail;
 } ExeResDir;
@@ -97,7 +97,7 @@ typedef struct ResTable {
 } ResTable;
 
 
-static  uint_8          DosStub[] = {
+static unsigned_8       DosStub[] = {
     0x4D, 0x5A, 0x80, 0x00, 0x01, 0x00, 0x00, 0x00,
     0x04, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
     0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -121,7 +121,7 @@ static unsigned long WriteOS2Relocs( group_entry *group )
     relocnum = relocsize / sizeof( os2_reloc_item );
     if( relocnum == 0 )
         return( 0 );
-    WriteLoad( &relocnum, 2 );
+    WriteLoadU16( relocnum );
     DumpRelocList( group->g.grp_relocs );
     return( relocsize );
 }
@@ -195,11 +195,11 @@ static void AddLLItemAtEnd( void *head, void *tail, void *item )
     }
 }
 
-static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
-/******************************************************************/
+static unsigned_16 findResOrTypeName( ResTable *restab, WResID *name )
+/********************************************************************/
 {
-    uint_16     name_id;
-    int_32      str_offset;
+    unsigned_16 name_id;
+    signed_32   str_offset;
 
     if( name->IsName ) {
         str_offset = StringBlockFind( &restab->Str, &name->ID.Name );
@@ -237,8 +237,8 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 }
 
 static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
-                            WResID *name, uint_16 mem_flags,
-                            uint_16 exe_offset, uint_16 exe_length )
+                            WResID *name, unsigned_16 mem_flags,
+                      unsigned_16 exe_offset, unsigned_16 exe_length )
 /********************************************************************/
 {
     FullResourceRecord          *exe_res;
@@ -311,46 +311,45 @@ static void WriteResTable( ResTable *restab )
 {
     FullTypeRecord      *exe_type;
     FullResourceRecord  *exe_res;
-    uint_16             zero;
 
-    WriteLoad( &FmtData.u.os2.segment_shift, sizeof( uint_16 ) );
+    WriteLoadU16( FmtData.u.os2.segment_shift );
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
         WriteLoad( &(exe_type->Info), sizeof( resource_type_record ) );
         for( exe_res = exe_type->Head; exe_res != NULL; exe_res = exe_res->Next ) {
             WriteLoad( &(exe_res->Info), sizeof( resource_record ) );
         }
     }
-    zero = 0;
-    WriteLoad( &zero, sizeof( uint_16 ) );
+    WriteLoadU16( 0 );
     WriteLoad( restab->Str.StringBlock, restab->Str.StringBlockSize );
 }
 
-static void CopyResData( int resHandle, size_t len )
-/**************************************************/
+static void CopyResData( WResFileID res_fid, size_t len )
+/*******************************************************/
 {
     char buff[512];
 
     for( ; len > sizeof( buff ); len -= sizeof( buff ) ) {
-        QRead( resHandle, buff, sizeof( buff ), FmtData.resource );
+        QRead( WRES_FID2PH( res_fid ), buff, sizeof( buff ), FmtData.resource );
         WriteLoad( buff, sizeof( buff ) );
     }
-    QRead( resHandle, buff, len, FmtData.resource );
+    QRead( WRES_FID2PH( res_fid ), buff, len, FmtData.resource );
     WriteLoad( buff, len );
 }
 
-static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
-/*****************************************************************************/
+static void WriteOS2Resources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
+/**********************************************************************************/
 {
-    int shift_count = FmtData.u.os2.segment_shift;
-    int align = 1 << shift_count;
-    int outRes_off;
+    int                 shift_count = FmtData.u.os2.segment_shift;
+    int                 align = 1 << shift_count;
+    int                 outRes_off;
     WResDirWindow       wind;
     FullTypeRecord      *exe_type;
     WResResInfo         *res;
     WResLangInfo        *lang;
 
-    if( inRes == NULL ) return;
-    outRes_off = NullAlign(align) >> shift_count;
+    if( inRes == NULL )
+        return;
+    outRes_off = NullAlign( align ) >> shift_count;
     /* walk through the WRes directory */
     exe_type = NULL;
     wind = WResFirstResource( inRes );
@@ -364,8 +363,8 @@ static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
         addExeResRecord( outRes, exe_type, &(res->ResName),
                         lang->MemoryFlags, outRes_off,
                         (lang->Length + align - 1) >> shift_count );
-        QSeek( reshandle, lang->Offset, FmtData.resource );
-        CopyResData( reshandle, lang->Length );
+        QSeek( WRES_FID2PH( res_fid ), lang->Offset, FmtData.resource );
+        CopyResData( res_fid, lang->Length );
         NullAlign( align );
         outRes_off += (lang->Length + align - 1) >> shift_count;
 
@@ -375,29 +374,20 @@ static void WriteOS2Resources( int reshandle, WResDir inRes, ResTable *outRes )
 }
 
 
-static unsigned long WriteTabList( name_list *val, unsigned long *count, bool upper )
-/***********************************************************************************/
+static unsigned long WriteTabList( name_list *val, unsigned long *pcount, bool upper )
+/************************************************************************************/
 {
     name_list           *node;
     unsigned long       off;
-    unsigned long       i;
-    size_t              j;
+    unsigned long       count;
 
-    i = 0;
+    count = 0;
     off = 0;
     for( node = val; node != NULL; node = node->next ) {
-        ++i;
-        WriteLoad( &(node->len), sizeof( unsigned char ) );  // NOTE:little endian
-        if( upper ) {
-            j = node->len;
-            while( j-- > 0 ) {
-                node->name[j] = toupper( node->name[j] );
-            }
-        }
-        WriteLoad( node->name, node->len );
-        off += node->len + 1;
+        off += WriteLoadU8Name( node->name, node->len, upper );
+        ++count;
     }
-    *count = i;
+    *pcount = count;
     return( off );
 }
 
@@ -445,11 +435,30 @@ static unsigned long ModRefTable( void )
     }
     nodenum = 0;
     for( node = FmtData.u.os2.mod_ref_list; node != NULL; node = node->next ) {
-        WriteLoad( &off, sizeof( unsigned_16 ) );
+        WriteLoadU16( off );
         off += node->len + 1;
         nodenum++;
     }
     return( nodenum );
+}
+
+static size_t create_exp_extname( entry_export *exp, char *ext_name, bool ucase )
+{
+    size_t  len;
+    size_t  i;
+
+    len = strlen( exp->name );
+    if( len > 255 )
+        len = 255;
+    if( ucase ) {
+        for( i = 0; i < len; ++i ) {
+            ext_name[i] = toupper( exp->name[i] );
+        }
+    } else {
+        memcpy( ext_name, exp->name, len );
+    }
+    ext_name[len] = '\0';
+    return( len );
 }
 
 unsigned long ResNonResNameTable( bool dores )
@@ -457,7 +466,6 @@ unsigned long ResNonResNameTable( bool dores )
 /* NOTE: this routine assumes INTEL byte ordering (in the use of namelen) */
 {
     entry_export    *exp;
-    unsigned char   len_u8;
     unsigned long   size;
     const char      *name;
     size_t          len;
@@ -481,13 +489,9 @@ unsigned long ResNonResNameTable( bool dores )
         len = strlen( name );
     }
     if( dores || len > 0 ) {
-        len_u8 = 255;
-        if( len < 255 )
-            len_u8 = (unsigned char)len;
-        WriteLoad( &len_u8, 1 );
-        WriteLoad( name, len_u8 );
-        PadLoad( 2 );
-        size += len_u8 + 1 + 2;
+        size += WriteLoadU8Name( name, len, false );
+        WriteLoadU16( 0 );
+        size += 2;
     }
     if( dores && FmtData.u.os2.res_module_name != NULL ) {
         _LnkFree( FmtData.u.os2.res_module_name );
@@ -503,20 +507,15 @@ unsigned long ResNonResNameTable( bool dores )
         if( exp->isanonymous )
             continue;
         if( (dores && exp->isresident) || (!dores && !exp->isresident) ) {
-            if( (LinkFlags & CASE_FLAG) == 0 ) {
-                strupr( exp->name );
-            }
-            len = strlen( exp->name );
-            len_u8 = 255;
-            if( len < 255 )
-                len_u8 = (unsigned char)len;
-            WriteLoad( &len_u8, 1 );
-            WriteLoad( exp->name, len_u8 );
-            WriteLoad( &(exp->ordinal), 2 );
-            size += len_u8 + 3;
+            char    ext_name[255 + 1];
+
+            len = create_exp_extname( exp, ext_name, (LinkFlags & CASE_FLAG) == 0 );
+            size += WriteLoadU8Name( ext_name, len, false );
+            WriteLoadU16( exp->ordinal );
+            size += 2;
             if( !exp->isprivate ) {
                 if( exp->impname != NULL ) {
-                    AddImpLibEntry( exp->impname, exp->name, NOT_IMP_BY_ORDINAL );
+                    AddImpLibEntry( exp->impname, ext_name, NOT_IMP_BY_ORDINAL );
                 } else {
                     AddImpLibEntry( exp->sym->name, NULL, exp->ordinal );
                 }
@@ -545,7 +544,7 @@ static unsigned long DumpEntryTable( void )
     entry_export    *start;
     entry_export    *place;
     entry_export    *prev;
-    unsigned_16     prevord;
+    ordinal_t       prevord;
     unsigned long   size;
     unsigned        gap;
     unsigned        entries;
@@ -567,11 +566,11 @@ static unsigned long DumpEntryTable( void )
                 prefix.type = 0x00;   // Null bundles.
                 for( ; gap > 0xFF; gap -= 0xFF ) {
                     WriteLoad( &prefix, sizeof( bundle_prefix ) );
-                    size += 2;
+                    size += sizeof( bundle_prefix );
                 }
                 prefix.number = (unsigned_8)gap;
                 WriteLoad( &prefix, sizeof( bundle_prefix ) );
-                size += 2;
+                size += sizeof( bundle_prefix );
             }
             // now get a bundle of ordinals.
             entries = 1;
@@ -605,7 +604,7 @@ static unsigned long DumpEntryTable( void )
             prevord = prev->ordinal;
             prefix.number = (unsigned_8)entries;
             WriteLoad( &prefix, sizeof( bundle_prefix ) );
-            size += 2;
+            size += sizeof( bundle_prefix );
             for( ; entries > 0; --entries ) {
                 bundle_item.f.info = (start->iopl_words << IOPL_WORD_SHIFT);
                 if( start->isexported ) {
@@ -749,39 +748,46 @@ void PhoneyStack( void )
     FmtData.u.os2.flags |= PHONEY_STACK_FLAG;
 }
 
-static WResDir InitNEResources(int *resHandle, ResTable *outRes)
-/**************************************************************/
+static WResFileID InitNEResources( WResDir *inRes, ResTable *outRes )
+/*******************************************************************/
 {
-    WResDir     inRes;
+    WResDir     dir;
+    WResFileID  res_fid;
     bool        dup_discarded;
     bool        error;
 
-    if( FmtData.resource ) {
-        *resHandle = QOpenR( FmtData.resource );
-        inRes = WResInitDir();
-        error = WResReadDir( *resHandle, inRes, &dup_discarded );
-        if( error ) {
-            LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
-            inRes = NULL;
+    dir = NULL;
+    res_fid = WRES_NIL_HANDLE;
+    if( FmtData.resource != NULL ) {
+        res_fid = WRES_PH2FID( QOpenR( FmtData.resource ) );
+        if( res_fid != WRES_NIL_HANDLE ) {
+            dir = WResInitDir();
+            if( dir != NULL ) {
+                error = WResReadDir( res_fid, dir, &dup_discarded );
+                if( error ) {
+                    LnkMsg( WRN+MSG_PROBLEM_IN_RESOURCE, NULL );
+                    WResFreeDir( dir );
+                    dir = NULL;
+                } else {
+                    outRes->Dir.NumTypes = WResGetNumTypes( dir );
+                    outRes->Dir.NumResources = WResGetNumResources( dir );
+                    outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
+                                        outRes->Dir.NumResources * sizeof( resource_record ) +
+                                        2 * sizeof( unsigned_16 );
+                    /* the 2 * unsigned_16 are the resource shift count and the type 0 record */
+                    outRes->Dir.Head = NULL;
+                    outRes->Dir.Tail = NULL;
+                    StringBlockBuild( &outRes->Str, dir, false );
+                }
+            }
         }
-
-        outRes->Dir.NumTypes = WResGetNumTypes( inRes );
-        outRes->Dir.NumResources = WResGetNumResources( inRes );
-        outRes->Dir.TableSize = outRes->Dir.NumTypes * sizeof( resource_type_record ) +
-                            outRes->Dir.NumResources * sizeof( resource_record ) +
-                            2 * sizeof( uint_16 );
-        /* the 2 uint_16 are the resource shift count and the type 0 record */
-        outRes->Dir.Head = NULL;
-        outRes->Dir.Tail = NULL;
-        StringBlockBuild( &outRes->Str, inRes, false );
-    } else {
-        inRes = NULL;
     }
-    return( inRes );
+    *inRes = dir;
+    return( res_fid );
 }
 
-static void FiniNEResources( int resHandle, WResDir inRes, ResTable *outRes )
-/***************************************************************************/
+static void FiniNEResources( WResFileID res_fid, WResDir inRes, ResTable *outRes )
+/********************************************************************************/
 {
     if( inRes != NULL ) {
         if( outRes->Str.StringBlock != NULL ) {
@@ -793,15 +799,17 @@ static void FiniNEResources( int resHandle, WResDir inRes, ResTable *outRes )
             outRes->Str.StringList = NULL;
         }
         WResFreeDir( inRes );
-        QClose( resHandle, FmtData.resource );
+    }
+    if( res_fid != WRES_NIL_HANDLE ) {
+        QClose( WRES_FID2PH( res_fid ), FmtData.resource );
     }
 }
 
 
-static uint_32 ComputeResourceSize( WResDir dir )
-/***********************************************/
+static unsigned_32 ComputeResourceSize( WResDir dir )
+/***************************************************/
 {
-    uint_32         length;
+    unsigned_32     length;
     WResDirWindow   wind;
     WResLangInfo    *res;
 
@@ -836,7 +844,7 @@ void FiniOS2LoadFile( void )
     unsigned long       imageguess;     // estimated length of the image
     unsigned            pad_len;
     WResDir             inRes;          // Directory of resources to read
-    int                 resHandle = 0;  // Handle for resources file
+    WResFileID          res_fid;        // Handle for resources file
     ResTable            outRes;         // Resources to go out
 
     stub_len = Write_Stub_File( STUB_ALIGN );
@@ -863,14 +871,15 @@ void FiniOS2LoadFile( void )
         dgroup_size = DataGroup->totalsize;
     }
     for( group = Groups; group != NULL; group = group->next_group ) {
-        if( group->totalsize == 0 ) continue;   // DANGER DANGER DANGER <--!!!
+        if( group->totalsize == 0 )
+            continue;   // DANGER DANGER DANGER <--!!!
         imageguess += group->size;
         exe_head.segments++;
     }
     temp += exe_head.segments * sizeof( segment_record );
-    inRes = InitNEResources(&resHandle, &outRes);
+    res_fid = InitNEResources( &inRes, &outRes );
     exe_head.resource_off = temp;
-    if( inRes ) {
+    if( inRes != NULL ) {
         exe_head.resource = outRes.Dir.NumResources;
         temp += outRes.Dir.TableSize;
         temp += outRes.Str.StringBlockSize;
@@ -900,10 +909,10 @@ void FiniOS2LoadFile( void )
     if( FmtData.u.os2.segment_shift == 0 ) {
         imageguess += temp + (unsigned long)Root->relocs * sizeof( os2_reloc_item )
                      + stub_len + exe_head.segments * 3;
-        pad_len = binary_log( (imageguess >> 16) << 1 );
+        pad_len = blog_16( (imageguess >> 16) << 1 );
         imageguess += ((1 << pad_len) - 1) * exe_head.segments;
         imageguess += ComputeResourceSize( inRes ); // inRes may be 0
-        FmtData.u.os2.segment_shift = binary_log( (imageguess >> 16) << 1 );
+        FmtData.u.os2.segment_shift = blog_16( (imageguess >> 16) << 1 );
         if( FmtData.u.os2.segment_shift == 0 ) {
             FmtData.u.os2.segment_shift = 1;     // since microsoft thinks 0 == 9
         }
@@ -911,16 +920,16 @@ void FiniOS2LoadFile( void )
     exe_head.gangstart = NullAlign( 1 << FmtData.u.os2.segment_shift ) >>
                          FmtData.u.os2.segment_shift;
     WriteOS2Data( stub_len, &exe_head );
-    WriteOS2Resources( resHandle, inRes, &outRes );
+    WriteOS2Resources( res_fid, inRes, &outRes );
     exe_head.gangstart = 0;
     exe_head.ganglength = 0;
-    if( inRes ) {
+    if( inRes != NULL ) {
         SeekLoad( exe_head.resource_off + stub_len );
         WriteResTable( &outRes );
         FreeResTable( &outRes );
     }
     SeekEndLoad( 0 );
-    FiniNEResources( resHandle, inRes, &outRes );
+    FiniNEResources( res_fid, inRes, &outRes );
     DBIWrite();
     exe_head.signature = OS2_SIGNATURE_WORD;
     exe_head.version = 0x0105;          /* version 5.1 */
@@ -971,7 +980,7 @@ void FiniOS2LoadFile( void )
     } else {
         exe_head.SP = 0;
         //exe_head.SP = StackAddr.off;
-        if( StackAddr.seg != UNDEFINED ) {
+        if( !IS_ADDR_UNDEFINED( StackAddr ) ) {
             exe_head.stacknum = StackAddr.seg;
         } else {
             exe_head.stacknum = 0;
@@ -1082,7 +1091,9 @@ unsigned_32 GetStubSize( void )
     stub_len = sizeof( DosStub ) + DoExeName();
     if( FmtData.u.os2.stub_file_name != NULL && stricmp( FmtData.u.os2.stub_file_name, Root->outfile->fname ) != 0 ) {
         the_file = FindPath( FmtData.u.os2.stub_file_name );
-        if( the_file != NIL_FHANDLE ) {
+        if( the_file == NIL_FHANDLE ) {
+            LnkMsg( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.u.os2.stub_file_name );
+        } else {
             QRead( the_file, &dosheader, sizeof( dos_exe_header ), FmtData.u.os2.stub_file_name );
             if( dosheader.signature == DOS_SIGNATURE ) {
                 if( dosheader.mod_size == 0 ) {
@@ -1113,7 +1124,7 @@ static unsigned_32 WriteDefStub( unsigned_32 stub_align )
 
     msgsize = DoExeName();
     fullsize = ROUND_UP( msgsize + sizeof( DosStub ), stub_align );
-    stubend = (unsigned_32 *)(DosStub + 0x3c);
+    stubend = (unsigned_32 *)( DosStub + NH_OFFSET );
     *stubend = fullsize;
     WriteLoad( DosStub, sizeof( DosStub ) );
     WriteLoad( TokBuff, msgsize );
@@ -1163,17 +1174,17 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             read_len += (dosheader.file_size - 1) * 512ul - code_start;
             // make sure reloc_size is a multiple of 16.
             reloc_size = MAKE_PARA( dosheader.num_relocs * 4ul );
-            dosheader.hdr_size = 4 + reloc_size/16;
+            dosheader.hdr_size = 4 + reloc_size / 16;
             stub_len = read_len + dosheader.hdr_size * 16ul;
             dosheader.file_size = ( stub_len + 511 ) >> 9;  // round up.
             dosheader.mod_size = stub_len % 512;
             WriteLoad( &dosheader, sizeof( dos_exe_header ) );
-            PadLoad( 0x3c - sizeof( dos_exe_header ) );
+            PadLoad( NH_OFFSET - sizeof( dos_exe_header ) );
             stub_len = ROUND_UP( stub_len, stub_align );
-            WriteLoad( &stub_len, sizeof( unsigned_32 ) );
+            WriteLoadU32( stub_len );
             for( num_relocs = dosheader.num_relocs; num_relocs > 0; num_relocs-- ) {
                 QRead( the_file, &the_reloc, sizeof( unsigned_32 ), FmtData.u.os2.stub_file_name );
-                WriteLoad( &the_reloc, sizeof( unsigned_32 ) );
+                WriteLoadU32( the_reloc );
                 reloc_size -= sizeof( unsigned_32 );
             }
             if( reloc_size != 0 ) {    // need padding

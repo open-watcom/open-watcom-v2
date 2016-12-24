@@ -121,24 +121,24 @@ virt_mem_size SpillAlloc( virt_mem_size amt )
     return( stg + 1 );  /* add 1 to prevent a NULL handle */
 }
 
-void SpillNull( virt_mem_size base, unsigned off, size_t size )
-/*************************************************************/
+void SpillNull( virt_mem_size base, size_t off, size_t size )
+/***********************************************************/
 {
-    QSeek( TempFile, base + off - 1, TFileName );
+    QSeek( TempFile, base + (unsigned long)off - 1, TFileName );
     WriteNulls( TempFile, size, TFileName );
 }
 
-void SpillWrite( virt_mem_size base, unsigned off, const void *mem, size_t size )
-/*******************************************************************************/
+void SpillWrite( virt_mem_size base, size_t off, const void *mem, size_t size )
+/*****************************************************************************/
 {
-    QSeek( TempFile, base + off - 1, TFileName );
+    QSeek( TempFile, base + (unsigned long)off - 1, TFileName );
     QWrite( TempFile, mem, size, TFileName );
 }
 
-void SpillRead( virt_mem_size base, unsigned off, void *mem, size_t size )
-/************************************************************************/
+void SpillRead( virt_mem_size base, size_t off, void *mem, size_t size )
+/**********************************************************************/
 {
-    QSeek( TempFile, base + off - 1, TFileName );
+    QSeek( TempFile, base + (unsigned long)off - 1, TFileName );
     QRead( TempFile, mem, size, TFileName );
 }
 

@@ -33,5 +33,5 @@ extern void         WPDipInit( void );
 extern process_info *WPDipProc( void );
 extern void         WPDipDestroyProc( process_info *dip_proc );
 extern void         WPDipSetProc( process_info *dip_proc );
-extern mod_handle   WPDipLoadInfo( dig_fhandle dfh, const char *f_name, void *image, unsigned image_size, unsigned dip_start, unsigned dip_end );
+extern mod_handle   WPDipLoadInfo( dig_fhandle fid, const char *f_name, void *image, unsigned image_size, unsigned dip_start, unsigned dip_end );
 extern void         WPDipFini( void );

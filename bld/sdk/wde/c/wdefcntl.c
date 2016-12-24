@@ -381,9 +381,9 @@ BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
     style = GETCTL_STYLE( obj->control_info );
 
     ID = GETCTL_ID( obj->control_info );
-    if( !stricmp( obj->window_class, "combobox" ) ) {
+    if( stricmp( obj->window_class, "combobox" ) == 0 ) {
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
-    } else if( !stricmp( obj->window_class, "wde_borbtn" ) ) {
+    } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
             ID = WDE_PREVIEW_ID;
         }
@@ -432,9 +432,9 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
     style = GETCTL_STYLE( obj->control_info );
 
     ID = GETCTL_ID( obj->control_info );
-    if( !stricmp( obj->window_class, "combobox" ) ) {
+    if( stricmp( obj->window_class, "combobox" ) == 0 ) {
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
-    } else if( !stricmp( obj->window_class, "wde_borbtn" ) ) {
+    } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
             ID = WDE_PREVIEW_ID;
         }
@@ -796,7 +796,7 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     ID = GETCTL_ID( obj->control_info );
-    if( !stricmp( obj->window_class, "wde_borbtn" ) ) {
+    if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
             ID = WDE_PREVIEW_ID;
         }

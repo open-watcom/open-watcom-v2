@@ -211,7 +211,7 @@ void WPDipSetProc( process_info *dip_proc )
 
 
 
-mod_handle WPDipLoadInfo( dig_fhandle dfh, const char *f_name, void *image,
+mod_handle WPDipLoadInfo( dig_fhandle fid, const char *f_name, void *image,
                    unsigned image_size, unsigned dip_start, unsigned dip_end )
 /****************************************************************************/
 {
@@ -225,7 +225,7 @@ mod_handle WPDipLoadInfo( dig_fhandle dfh, const char *f_name, void *image,
         if( prio == 0 || prio > dip_end )
             break;
         DIPStatus = DS_OK;
-        dip_module = DIPLoadInfo( dfh, image_size, prio );
+        dip_module = DIPLoadInfo( fid, image_size, prio );
         if( dip_module != NO_MOD ) {
             *(void **)DIPImageExtra( dip_module ) = image;
             DIPMapInfo( dip_module, image );

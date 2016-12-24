@@ -156,7 +156,7 @@ bool WriteDependencyRes( void )
                 RcError( ERR_READING_FILE, cur->info.name, strerror( errno ) );
                 ErrorHasOccured = true;
             }
-            cur->info.time = file_info.st_mtime;
+            cur->info.time = (uint_32)file_info.st_mtime;
             writeOneNode( &cur->info );
         }
         writeDepListEOF();

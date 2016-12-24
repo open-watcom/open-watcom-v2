@@ -24,31 +24,11 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  GUI library UI event lists data declarations.
 *
 ****************************************************************************/
 
-#include "wio.h"
-#include "layer0.h"
-#include "opcl.h"
-#include "reserr.h"
-#include "wresrtns.h"
 
-#include "clibext.h"
-
-
-WResFileID WResOpenNewFile( const char *filename )
-/************************************************/
-{
-    WResFileID  newhandle;
-
-    newhandle = WRESOPEN( filename, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, PMODE_RW );
-    if( newhandle == NIL_HANDLE ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    } else {
-        WResFileInit( newhandle );
-    }
-
-    return( newhandle );
-}
+extern EVENT GUIAllEvents[];
+extern EVENT GUIUserEvents[];
+extern EVENT GUIControlEvents[];

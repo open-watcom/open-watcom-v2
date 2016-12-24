@@ -582,18 +582,18 @@ STATIC void loadImageInfo( image_info * curr_image )
 /**************************************************/
 {
     int             name_len;
-    dig_fhandle     obj_dfh;
-    dig_fhandle     sym_dfh;
+    dig_fhandle     obj_fid;
+    dig_fhandle     sym_fid;
     struct stat     file_status;
 
-    sym_dfh = DIG_NIL_HANDLE;
-    obj_dfh = DIG_NIL_HANDLE;
+    sym_fid = DIG_NIL_HANDLE;
+    obj_fid = DIG_NIL_HANDLE;
     curr_image->dip_handle = NO_MOD;
     if( curr_image->sym_deleted ) {
     } else if( curr_image->sym_name != NULL ) {
-        sym_dfh = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_dfh != DIG_NIL_HANDLE ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_dfh, curr_image->sym_name, curr_image,
+        sym_fid = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+        if( sym_fid != DIG_NIL_HANDLE ) {
+            curr_image->dip_handle = WPDipLoadInfo( sym_fid, curr_image->sym_name, curr_image,
                                        sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
     } else {
@@ -603,9 +603,9 @@ STATIC void loadImageInfo( image_info * curr_image )
         name_len = strlen( FNameBuff ) + 1;
         curr_image->sym_name = ProfAlloc( name_len );
         memcpy( curr_image->sym_name, FNameBuff, name_len );
-        sym_dfh = DIGCli( Open )( curr_image->sym_name, DIG_READ );
-        if( sym_dfh != DIG_NIL_HANDLE ) {
-            curr_image->dip_handle = WPDipLoadInfo( sym_dfh, curr_image->sym_name, curr_image,
+        sym_fid = DIGCli( Open )( curr_image->sym_name, DIG_READ );
+        if( sym_fid != DIG_NIL_HANDLE ) {
+            curr_image->dip_handle = WPDipLoadInfo( sym_fid, curr_image->sym_name, curr_image,
                                       sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
         }
         if( curr_image->dip_handle == NO_MOD ) {
@@ -613,8 +613,8 @@ STATIC void loadImageInfo( image_info * curr_image )
             curr_image->sym_name = NULL;
         }
     }
-    obj_dfh = DIGCli( Open )( curr_image->name, DIG_READ );
-    if( obj_dfh == DIG_NIL_HANDLE ) {
+    obj_fid = DIGCli( Open )( curr_image->name, DIG_READ );
+    if( obj_fid == DIG_NIL_HANDLE ) {
         curr_image->exe_not_found = true;
         if( curr_image->main_load ) {
             ErrorMsg( LIT( Exe_Not_Found ), curr_image->name );
@@ -625,7 +625,7 @@ STATIC void loadImageInfo( image_info * curr_image )
            the right value. Assume it's OK.
         */
     } else {
-        if( fstat( DFH2PH( obj_dfh ), &file_status ) == 0 ) {
+        if( fstat( DIG_FID2PH( obj_fid ), &file_status ) == 0 ) {
             /* QNX creation dates and time stamps tend to be 1 */
             /* unit different, so do not test for equality */
             if( file_status.st_mtime - curr_image->time_stamp > 1 ) {
@@ -636,16 +636,16 @@ STATIC void loadImageInfo( image_info * curr_image )
             }
         }
     }
-    if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted && obj_dfh != DIG_NIL_HANDLE ) {
-        curr_image->dip_handle = WPDipLoadInfo( obj_dfh, curr_image->name, curr_image,
+    if( curr_image->dip_handle == NO_MOD && !curr_image->sym_deleted && obj_fid != DIG_NIL_HANDLE ) {
+        curr_image->dip_handle = WPDipLoadInfo( obj_fid, curr_image->name, curr_image,
                                    sizeof( image_info ), DIP_PRIOR_MIN, DIP_PRIOR_MAX );
     }
     if( curr_image->dip_handle == NO_MOD ) {
-        if( sym_dfh != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( sym_dfh );
+        if( sym_fid != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( sym_fid );
         }
-        if( obj_dfh != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( obj_dfh );
+        if( obj_fid != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( obj_fid );
         }
     }
     initModuleInfo( curr_image );

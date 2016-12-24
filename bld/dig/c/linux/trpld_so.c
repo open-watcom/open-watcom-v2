@@ -80,7 +80,7 @@ void KillTrap( void )
 
 char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
 {
-    dig_ldhandle        ldfh;
+    dig_fhandle         fid;
     const char          *ptr;
     trap_load_func      *ld_func;
     char                trap_name[_MAX_PATH];
@@ -104,16 +104,16 @@ char *LoadTrap( const char *parms, char *buff, trap_version *trap_ver )
     *p++ = ( USE_FILENAME_VERSION / 10 ) + '0';
     *p++ = ( USE_FILENAME_VERSION % 10 ) + '0';
     *p = '\0';
-    ldfh = DIGLoader( Open )( buff, p - trap_name, "so", trap_name, sizeof( trap_name ) );
+    fid = DIGLoader( Open )( trap_name, p - trap_name, "so", trap_name, sizeof( trap_name ) );
   #else
-    ldfh = DIGLoader( Open )( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
+    fid = DIGLoader( Open )( parms, ptr - parms, "so", trap_name, sizeof( trap_name ) );
   #endif
-    if( ldfh == DIG_NIL_LDHANDLE ) {
+    if( fid == DIG_NIL_HANDLE ) {
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, parms );
         return( buff );
     }
     TrapFile = dlopen( trap_name, RTLD_NOW );
-    DIGLoader( Close )( ldfh );
+    DIGLoader( Close )( fid );
     if( TrapFile == NULL ) {
         puts( dlerror() );
         sprintf( buff, TC_ERR_CANT_LOAD_TRAP, trap_name );

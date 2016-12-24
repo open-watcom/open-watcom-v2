@@ -71,7 +71,7 @@ char *ResRead32String( WResFileID handle, size_t *strlen )
     newstring = VarStringStart();
     error = ResReadUint16( &nextchar, handle );
     while( !error && nextchar != 0x0000 ) {
-        VarStringAddChar( newstring, (char)nextchar );
+        VarStringAddChar( newstring, UNI2ASCII( nextchar ) );
         error = ResReadUint16( &nextchar, handle );
     }
 

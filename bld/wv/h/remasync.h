@@ -34,3 +34,5 @@ extern bool     HaveRemoteAsync( void );
 extern unsigned MakeAsyncRun( bool single );
 extern unsigned PollAsync( void );
 extern unsigned StopAsync( void );
+extern bool     AsyncAddBreak( address addr, bool local );
+extern void     AsyncRemoveBreak( address addr, bool local );

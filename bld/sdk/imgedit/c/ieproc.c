@@ -259,7 +259,8 @@ WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg,
 #ifndef __OS2_PM__
     about_info          ai;
 #endif
-    WPI_RECTDIM         left, top;
+    WPI_RECTDIM         left;
+    WPI_RECTDIM         top;
 
     if( !window_destroyed ) {
         enableMainItems( hmenu );

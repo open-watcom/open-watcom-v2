@@ -87,7 +87,7 @@ typedef struct {
 WResFileOffset          WResFileShift = 0;
 
 /* look for the resource information in a debugger record at the end of file */
-bool FindResources( PHANDLE_INFO hInstance )
+bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
 {
     WResFileOffset  currpos;
     WResFileOffset  offset;
@@ -96,39 +96,46 @@ bool FindResources( PHANDLE_INFO hInstance )
     zip_cdfh        cdfh;
     bool            notfound;
 
-    notfound = true;
+    notfound = !res_file;
     WResFileShift = 0;
-    offset = sizeof( dbgheader );
-
-    /* Look for a PKZIP header and skip archive if present */
-    if( WRESSEEK( hInstance->handle, -(WResFileOffset)sizeof( eocd ), SEEK_END ) != -1 ) {
-        if( WRESREAD( hInstance->handle, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
-            if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                if( WRESSEEK( hInstance->handle, eocd.cd_offset, SEEK_SET ) != -1 ) {
-                    if( WRESREAD( hInstance->handle, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
-                        if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
-                            offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
+    if( notfound ) {
+        offset = sizeof( dbgheader );
+    
+        /* Look for a PKZIP header and skip archive if present */
+        if( WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) != -1 ) {
+            if( WRESREAD( hinfo->fid, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
+                if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
+                    if( WRESSEEK( hinfo->fid, eocd.cd_offset, SEEK_SET ) != -1 ) {
+                        if( WRESREAD( hinfo->fid, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
+                            if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
+                                offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    currpos = WRESSEEK( hInstance->handle, -offset, SEEK_END );
-    for( ;; ) {
-        WRESREAD( hInstance->handle, &header, sizeof( dbgheader ) );
-        if( header.signature == WAT_RES_SIG ) {
-            notfound = false;
-            WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
-            break;
-        } else if( header.signature == VALID_SIGNATURE ||
-                   header.signature == FOX_SIGNATURE1 ||
-                   header.signature == FOX_SIGNATURE2 ) {
-            currpos -= header.debug_size;
-            WRESSEEK( hInstance->handle, currpos, SEEK_SET );
-        } else {        /* did not find the resource information */
-            break;
+        currpos = WRESSEEK( hinfo->fid, -offset, SEEK_END );
+        for( ;; ) {
+            WRESREAD( hinfo->fid, &header, sizeof( dbgheader ) );
+            if( header.signature == WAT_RES_SIG ) {
+                notfound = false;
+                WResFileShift = currpos - header.debug_size + sizeof( dbgheader );
+                break;
+            } else if( header.signature == VALID_SIGNATURE ||
+                       header.signature == FOX_SIGNATURE1 ||
+                       header.signature == FOX_SIGNATURE2 ) {
+                currpos -= header.debug_size;
+                WRESSEEK( hinfo->fid, currpos, SEEK_SET );
+            } else {        /* did not find the resource information */
+                break;
+            }
         }
     }
     return( notfound );
+}
+
+bool FindResources( PHANDLE_INFO hinfo )
+{
+    return( FindResourcesX( hinfo, false ) );
 }

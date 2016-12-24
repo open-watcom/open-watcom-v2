@@ -33,7 +33,7 @@
 
 typedef int         f_handle;
 
-#define NIL_HANDLE      ((f_handle)-1)
+#define NIL_FHANDLE     ((f_handle)-1)
 #define STDIN_HANDLE    STDIN_FILENO
 #define STDOUT_HANDLE   STDOUT_FILENO
 #define STDERR_HANDLE   STDERR_FILENO

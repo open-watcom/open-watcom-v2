@@ -66,6 +66,8 @@
 #define usergate_free_app_mem 0x0000003A
 #define usergate_get_psp_sel 0x0000003B
 
+#define usergate_invalid_user 0x0000003C
+
 #define usergate_get_debug_thread 0x0000003D
 #define usergate_debug_trace 0x0000003E
 #define usergate_debug_pace 0x0000003F
@@ -112,11 +114,11 @@
 #define usergate_ip_to_name 0x00000066
 #define usergate_ping 0x00000067
 
-#define usergate_get_disc_info 0x00000068
+#define usergate_get_old_disc_info 0x00000068
 #define usergate_format_drive 0x00000069
 #define usergate_get_rdfs_info 0x0000006A
-#define usergate_read_disc 0x0000006B
-#define usergate_write_disc 0x0000006C
+#define usergate_read_short_disc 0x0000006B
+#define usergate_write_short_disc 0x0000006C
 #define usergate_get_drive_info 0x0000006D
 
 #define usergate_set_cur_drive 0x0000006E
@@ -350,8 +352,6 @@
 #define usergate_allocate_fixed_drive 0x00000133
 #define usergate_allocate_dynamic_drive 0x00000134
 
-#define usergate_get_focus 0x00000135
-
 #define usergate_add_wait_for_tcp_listen 0x00000136
 #define usergate_create_tcp_listen 0x00000137
 #define usergate_get_tcp_listen 0x00000138
@@ -431,7 +431,6 @@
 #define usergate_play_fm_note 0x0000016F
 
 #define usergate_get_thread_linear 0x00000170
-#define usergate_get_current_module 0x00000171
 
 #define usergate_get_module_focus_key 0x00000172
 
@@ -660,6 +659,129 @@
 
 #define usergate_create_long_thread 0x0000020D
 
+#define usergate_broadcast_udp 0x0000020E
+
+#define usergate_add_wait_for_udp_listen 0x0000020F
+#define usergate_create_udp_listen 0x00000210
+#define usergate_get_udp_listen_size 0x00000211
+#define usergate_get_udp_listen_ip 0x00000212
+#define usergate_get_udp_listen_port 0x00000213
+#define usergate_get_udp_listen_data 0x00000214
+#define usergate_clear_udp_listen 0x00000215
+#define usergate_close_udp_listen 0x00000216
+
+#define usergate_get_current_dll 0x00000217
+#define usergate_dupl_module_file_handle 0x00000218
+
+#define usergate_get_hid_report_item 0x00000219
+#define usergate_get_hid_report_input_data 0x0000021A
+#define usergate_get_hid_report_output_data 0x0000021B
+#define usergate_get_hid_report_feature_data 0x0000021C
+
+#define usergate_get_physical_entry_type 0x0000021D
+#define usergate_get_physical_entry_base 0x0000021E
+#define usergate_get_physical_entry_size 0x0000021F
+
+#define usergate_has_physical64 0x00000220
+#define usergate_uses_pae 0x00000221
+
+#define usergate_get_can_module_info 0x00000222
+#define usergate_check_can_serial_port 0x00000223
+
+#define usergate_get_mac_address 0x00000224
+#define usergate_create_uuid 0x00000225
+
+#define usergate_get_disc_info 0x00000226
+
+#define usergate_get_can_module_version 0x00000227
+#define usergate_program_can_module 0x00000228
+
+#define usergate_read_long_disc 0x00000229
+#define usergate_write_long_disc 0x0000022A
+
+#define usergate_create_named_user_section 0x0000022B
+#define usergate_acquire_named_futex 0x0000022C
+
+#define usergate_is_usb_pipe_stalled 0x0000022D
+#define usergate_clear_usb_pipe_stalled 0x0000022E
+
+#define usergate_get_lon_modules 0x0000022F
+#define usergate_open_lon_module 0x00000230
+#define usergate_close_lon_module 0x00000231
+#define usergate_add_wait_for_lon_module 0x00000232
+#define usergate_send_lon_module_msg 0x00000233
+#define usergate_has_lon_module_msg 0x00000234
+#define usergate_receive_lon_module_msg 0x00000235
+
+#define usergate_calc_crc32 0x00000236
+
+#define usergate_ansi_to_utf16 0x00000237
+#define usergate_utf16_to_ansi 0x00000238
+
+#define usergate_get_usb_interface 0x00000239
+#define usergate_set_usb_interface 0x0000023A
+
+#define usergate_remote_gui 0x0000023B
+
+#define usergate_is_com_available 0x0000023C
+
+#define usergate_get_can_loader_version 0x0000023D
+#define usergate_get_can_serial_number 0x0000023E
+#define usergate_wait_for_can_module_programming 0x0000023F
+
+#define usergate_reset_lon_module 0x00000240
+
+#define usergate_get_cts 0x00000241
+#define usergate_get_dsr 0x00000242
+
+#define usergate_is_disc_idle 0x00000243
+
+#define usergate_get_disc_vendor_info 0x00000244
+
+#define usergate_query_video_mode 0x00000245
+
+#define usergate_start_can_capture 0x00000246
+#define usergate_stop_can_capture 0x00000247
+
+#define usergate_start_lon_capture 0x00000248
+#define usergate_stop_lon_capture 0x00000249
+
+#define usergate_move_to_core 0x0000024A
+#define usergate_move_thread_to_core 0x0000024B
+
+#define usergate_get_active_cores 0x0000024C
+
+#define usergate_has_crash_info 0x0000024D
+#define usergate_get_crash_core_info 0x0000024E
+
+#define usergate_get_std_com_par 0x0000024F
+#define usergate_get_usb_com_par 0x00000250
+
+#define usergate_create_bignum 0x00000251
+#define usergate_delete_bignum 0x00000252
+#define usergate_load_bignum64 0x00000253
+#define usergate_add_bignum 0x00000254
+#define usergate_mul_bignum 0x00000255
+#define usergate_div_bignum 0x00000256
+
+#define usergate_get_thread_action_state 0x00000257
+#define usergate_set_thread_action 0x00000258
+
+#define usergate_get_bignum_size10 0x00000259
+#define usergate_get_bignum_str10 0x0000025A
+
+#define usergate_get_bignum_size16 0x0000025B
+#define usergate_get_bignum_str16 0x0000025C
+
+#define usergate_create_random_bignum 0x0000025D
+
+#define usergate_pow_mod_bignum 0x0000025E
+#define usergate_mod_bignum 0x0000025F
+#define usergate_sub_bignum 0x00000260
+
+#define usergate_clear_text 0x00000261
+#define usergate_get_text_size 0x00000262
+
 
 
 #ifdef __FLAT__
@@ -731,6 +853,8 @@
 #define CallGate_free_app_mem 0x67 0x9a 58 0 0 0 3 0
 #define CallGate_get_psp_sel 0x67 0x9a 59 0 0 0 3 0
 
+#define CallGate_invalid_user 0x67 0x9a 60 0 0 0 3 0
+
 #define CallGate_get_debug_thread 0x67 0x9a 61 0 0 0 3 0
 #define CallGate_debug_trace 0x67 0x9a 62 0 0 0 3 0
 #define CallGate_debug_pace 0x67 0x9a 63 0 0 0 3 0
@@ -777,11 +901,11 @@
 #define CallGate_ip_to_name 0x67 0x9a 102 0 0 0 3 0
 #define CallGate_ping 0x67 0x9a 103 0 0 0 3 0
 
-#define CallGate_get_disc_info 0x67 0x9a 104 0 0 0 3 0
+#define CallGate_get_old_disc_info 0x67 0x9a 104 0 0 0 3 0
 #define CallGate_format_drive 0x67 0x9a 105 0 0 0 3 0
 #define CallGate_get_rdfs_info 0x67 0x9a 106 0 0 0 3 0
-#define CallGate_read_disc 0x67 0x9a 107 0 0 0 3 0
-#define CallGate_write_disc 0x67 0x9a 108 0 0 0 3 0
+#define CallGate_read_short_disc 0x67 0x9a 107 0 0 0 3 0
+#define CallGate_write_short_disc 0x67 0x9a 108 0 0 0 3 0
 #define CallGate_get_drive_info 0x67 0x9a 109 0 0 0 3 0
 
 #define CallGate_set_cur_drive 0x67 0x9a 110 0 0 0 3 0
@@ -1015,8 +1139,6 @@
 #define CallGate_allocate_fixed_drive 0x67 0x9a 51 1 0 0 3 0
 #define CallGate_allocate_dynamic_drive 0x67 0x9a 52 1 0 0 3 0
 
-#define CallGate_get_focus 0x67 0x9a 53 1 0 0 3 0
-
 #define CallGate_add_wait_for_tcp_listen 0x67 0x9a 54 1 0 0 3 0
 #define CallGate_create_tcp_listen 0x67 0x9a 55 1 0 0 3 0
 #define CallGate_get_tcp_listen 0x67 0x9a 56 1 0 0 3 0
@@ -1096,7 +1218,6 @@
 #define CallGate_play_fm_note 0x67 0x9a 111 1 0 0 3 0
 
 #define CallGate_get_thread_linear 0x67 0x9a 112 1 0 0 3 0
-#define CallGate_get_current_module 0x67 0x9a 113 1 0 0 3 0
 
 #define CallGate_get_module_focus_key 0x67 0x9a 114 1 0 0 3 0
 
@@ -1325,6 +1446,129 @@
 
 #define CallGate_create_long_thread 0x67 0x9a 13 2 0 0 3 0
 
+#define CallGate_broadcast_udp 0x67 0x9a 14 2 0 0 3 0
+
+#define CallGate_add_wait_for_udp_listen 0x67 0x9a 15 2 0 0 3 0
+#define CallGate_create_udp_listen 0x67 0x9a 16 2 0 0 3 0
+#define CallGate_get_udp_listen_size 0x67 0x9a 17 2 0 0 3 0
+#define CallGate_get_udp_listen_ip 0x67 0x9a 18 2 0 0 3 0
+#define CallGate_get_udp_listen_port 0x67 0x9a 19 2 0 0 3 0
+#define CallGate_get_udp_listen_data 0x67 0x9a 20 2 0 0 3 0
+#define CallGate_clear_udp_listen 0x67 0x9a 21 2 0 0 3 0
+#define CallGate_close_udp_listen 0x67 0x9a 22 2 0 0 3 0
+
+#define CallGate_get_current_dll 0x67 0x9a 23 2 0 0 3 0
+#define CallGate_dupl_module_file_handle 0x67 0x9a 24 2 0 0 3 0
+
+#define CallGate_get_hid_report_item 0x67 0x9a 25 2 0 0 3 0
+#define CallGate_get_hid_report_input_data 0x67 0x9a 26 2 0 0 3 0
+#define CallGate_get_hid_report_output_data 0x67 0x9a 27 2 0 0 3 0
+#define CallGate_get_hid_report_feature_data 0x67 0x9a 28 2 0 0 3 0
+
+#define CallGate_get_physical_entry_type 0x67 0x9a 29 2 0 0 3 0
+#define CallGate_get_physical_entry_base 0x67 0x9a 30 2 0 0 3 0
+#define CallGate_get_physical_entry_size 0x67 0x9a 31 2 0 0 3 0
+
+#define CallGate_has_physical64 0x67 0x9a 32 2 0 0 3 0
+#define CallGate_uses_pae 0x67 0x9a 33 2 0 0 3 0
+
+#define CallGate_get_can_module_info 0x67 0x9a 34 2 0 0 3 0
+#define CallGate_check_can_serial_port 0x67 0x9a 35 2 0 0 3 0
+
+#define CallGate_get_mac_address 0x67 0x9a 36 2 0 0 3 0
+#define CallGate_create_uuid 0x67 0x9a 37 2 0 0 3 0
+
+#define CallGate_get_disc_info 0x67 0x9a 38 2 0 0 3 0
+
+#define CallGate_get_can_module_version 0x67 0x9a 39 2 0 0 3 0
+#define CallGate_program_can_module 0x67 0x9a 40 2 0 0 3 0
+
+#define CallGate_read_long_disc 0x67 0x9a 41 2 0 0 3 0
+#define CallGate_write_long_disc 0x67 0x9a 42 2 0 0 3 0
+
+#define CallGate_create_named_user_section 0x67 0x9a 43 2 0 0 3 0
+#define CallGate_acquire_named_futex 0x67 0x9a 44 2 0 0 3 0
+
+#define CallGate_is_usb_pipe_stalled 0x67 0x9a 45 2 0 0 3 0
+#define CallGate_clear_usb_pipe_stalled 0x67 0x9a 46 2 0 0 3 0
+
+#define CallGate_get_lon_modules 0x67 0x9a 47 2 0 0 3 0
+#define CallGate_open_lon_module 0x67 0x9a 48 2 0 0 3 0
+#define CallGate_close_lon_module 0x67 0x9a 49 2 0 0 3 0
+#define CallGate_add_wait_for_lon_module 0x67 0x9a 50 2 0 0 3 0
+#define CallGate_send_lon_module_msg 0x67 0x9a 51 2 0 0 3 0
+#define CallGate_has_lon_module_msg 0x67 0x9a 52 2 0 0 3 0
+#define CallGate_receive_lon_module_msg 0x67 0x9a 53 2 0 0 3 0
+
+#define CallGate_calc_crc32 0x67 0x9a 54 2 0 0 3 0
+
+#define CallGate_ansi_to_utf16 0x67 0x9a 55 2 0 0 3 0
+#define CallGate_utf16_to_ansi 0x67 0x9a 56 2 0 0 3 0
+
+#define CallGate_get_usb_interface 0x67 0x9a 57 2 0 0 3 0
+#define CallGate_set_usb_interface 0x67 0x9a 58 2 0 0 3 0
+
+#define CallGate_remote_gui 0x67 0x9a 59 2 0 0 3 0
+
+#define CallGate_is_com_available 0x67 0x9a 60 2 0 0 3 0
+
+#define CallGate_get_can_loader_version 0x67 0x9a 61 2 0 0 3 0
+#define CallGate_get_can_serial_number 0x67 0x9a 62 2 0 0 3 0
+#define CallGate_wait_for_can_module_programming 0x67 0x9a 63 2 0 0 3 0
+
+#define CallGate_reset_lon_module 0x67 0x9a 64 2 0 0 3 0
+
+#define CallGate_get_cts 0x67 0x9a 65 2 0 0 3 0
+#define CallGate_get_dsr 0x67 0x9a 66 2 0 0 3 0
+
+#define CallGate_is_disc_idle 0x67 0x9a 67 2 0 0 3 0
+
+#define CallGate_get_disc_vendor_info 0x67 0x9a 68 2 0 0 3 0
+
+#define CallGate_query_video_mode 0x67 0x9a 69 2 0 0 3 0
+
+#define CallGate_start_can_capture 0x67 0x9a 70 2 0 0 3 0
+#define CallGate_stop_can_capture 0x67 0x9a 71 2 0 0 3 0
+
+#define CallGate_start_lon_capture 0x67 0x9a 72 2 0 0 3 0
+#define CallGate_stop_lon_capture 0x67 0x9a 73 2 0 0 3 0
+
+#define CallGate_move_to_core 0x67 0x9a 74 2 0 0 3 0
+#define CallGate_move_thread_to_core 0x67 0x9a 75 2 0 0 3 0
+
+#define CallGate_get_active_cores 0x67 0x9a 76 2 0 0 3 0
+
+#define CallGate_has_crash_info 0x67 0x9a 77 2 0 0 3 0
+#define CallGate_get_crash_core_info 0x67 0x9a 78 2 0 0 3 0
+
+#define CallGate_get_std_com_par 0x67 0x9a 79 2 0 0 3 0
+#define CallGate_get_usb_com_par 0x67 0x9a 80 2 0 0 3 0
+
+#define CallGate_create_bignum 0x67 0x9a 81 2 0 0 3 0
+#define CallGate_delete_bignum 0x67 0x9a 82 2 0 0 3 0
+#define CallGate_load_bignum64 0x67 0x9a 83 2 0 0 3 0
+#define CallGate_add_bignum 0x67 0x9a 84 2 0 0 3 0
+#define CallGate_mul_bignum 0x67 0x9a 85 2 0 0 3 0
+#define CallGate_div_bignum 0x67 0x9a 86 2 0 0 3 0
+
+#define CallGate_get_thread_action_state 0x67 0x9a 87 2 0 0 3 0
+#define CallGate_set_thread_action 0x67 0x9a 88 2 0 0 3 0
+
+#define CallGate_get_bignum_size10 0x67 0x9a 89 2 0 0 3 0
+#define CallGate_get_bignum_str10 0x67 0x9a 90 2 0 0 3 0
+
+#define CallGate_get_bignum_size16 0x67 0x9a 91 2 0 0 3 0
+#define CallGate_get_bignum_str16 0x67 0x9a 92 2 0 0 3 0
+
+#define CallGate_create_random_bignum 0x67 0x9a 93 2 0 0 3 0
+
+#define CallGate_pow_mod_bignum 0x67 0x9a 94 2 0 0 3 0
+#define CallGate_mod_bignum 0x67 0x9a 95 2 0 0 3 0
+#define CallGate_sub_bignum 0x67 0x9a 96 2 0 0 3 0
+
+#define CallGate_clear_text 0x67 0x9a 97 2 0 0 3 0
+#define CallGate_get_text_size 0x67 0x9a 98 2 0 0 3 0
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -1394,6 +1638,8 @@
 #define CallGate_free_app_mem 0x3e 0x67 0x9a 58 0 0 0 3 0
 #define CallGate_get_psp_sel 0x3e 0x67 0x9a 59 0 0 0 3 0
 
+#define CallGate_invalid_user 0x3e 0x67 0x9a 60 0 0 0 3 0
+
 #define CallGate_get_debug_thread 0x3e 0x67 0x9a 61 0 0 0 3 0
 #define CallGate_debug_trace 0x3e 0x67 0x9a 62 0 0 0 3 0
 #define CallGate_debug_pace 0x3e 0x67 0x9a 63 0 0 0 3 0
@@ -1440,11 +1686,11 @@
 #define CallGate_ip_to_name 0x3e 0x67 0x9a 102 0 0 0 3 0
 #define CallGate_ping 0x3e 0x67 0x9a 103 0 0 0 3 0
 
-#define CallGate_get_disc_info 0x3e 0x67 0x9a 104 0 0 0 3 0
+#define CallGate_get_old_disc_info 0x3e 0x67 0x9a 104 0 0 0 3 0
 #define CallGate_format_drive 0x3e 0x67 0x9a 105 0 0 0 3 0
 #define CallGate_get_rdfs_info 0x3e 0x67 0x9a 106 0 0 0 3 0
-#define CallGate_read_disc 0x3e 0x67 0x9a 107 0 0 0 3 0
-#define CallGate_write_disc 0x3e 0x67 0x9a 108 0 0 0 3 0
+#define CallGate_read_short_disc 0x3e 0x67 0x9a 107 0 0 0 3 0
+#define CallGate_write_short_disc 0x3e 0x67 0x9a 108 0 0 0 3 0
 #define CallGate_get_drive_info 0x3e 0x67 0x9a 109 0 0 0 3 0
 
 #define CallGate_set_cur_drive 0x3e 0x67 0x9a 110 0 0 0 3 0
@@ -1678,8 +1924,6 @@
 #define CallGate_allocate_fixed_drive 0x3e 0x67 0x9a 51 1 0 0 3 0
 #define CallGate_allocate_dynamic_drive 0x3e 0x67 0x9a 52 1 0 0 3 0
 
-#define CallGate_get_focus 0x3e 0x67 0x9a 53 1 0 0 3 0
-
 #define CallGate_add_wait_for_tcp_listen 0x3e 0x67 0x9a 54 1 0 0 3 0
 #define CallGate_create_tcp_listen 0x3e 0x67 0x9a 55 1 0 0 3 0
 #define CallGate_get_tcp_listen 0x3e 0x67 0x9a 56 1 0 0 3 0
@@ -1759,7 +2003,6 @@
 #define CallGate_play_fm_note 0x3e 0x67 0x9a 111 1 0 0 3 0
 
 #define CallGate_get_thread_linear 0x3e 0x67 0x9a 112 1 0 0 3 0
-#define CallGate_get_current_module 0x3e 0x67 0x9a 113 1 0 0 3 0
 
 #define CallGate_get_module_focus_key 0x3e 0x67 0x9a 114 1 0 0 3 0
 
@@ -1987,5 +2230,128 @@
 #define CallGate_create_alpha_bitmap 0x3e 0x67 0x9a 12 2 0 0 3 0
 
 #define CallGate_create_long_thread 0x3e 0x67 0x9a 13 2 0 0 3 0
+
+#define CallGate_broadcast_udp 0x3e 0x67 0x9a 14 2 0 0 3 0
+
+#define CallGate_add_wait_for_udp_listen 0x3e 0x67 0x9a 15 2 0 0 3 0
+#define CallGate_create_udp_listen 0x3e 0x67 0x9a 16 2 0 0 3 0
+#define CallGate_get_udp_listen_size 0x3e 0x67 0x9a 17 2 0 0 3 0
+#define CallGate_get_udp_listen_ip 0x3e 0x67 0x9a 18 2 0 0 3 0
+#define CallGate_get_udp_listen_port 0x3e 0x67 0x9a 19 2 0 0 3 0
+#define CallGate_get_udp_listen_data 0x3e 0x67 0x9a 20 2 0 0 3 0
+#define CallGate_clear_udp_listen 0x3e 0x67 0x9a 21 2 0 0 3 0
+#define CallGate_close_udp_listen 0x3e 0x67 0x9a 22 2 0 0 3 0
+
+#define CallGate_get_current_dll 0x3e 0x67 0x9a 23 2 0 0 3 0
+#define CallGate_dupl_module_file_handle 0x3e 0x67 0x9a 24 2 0 0 3 0
+
+#define CallGate_get_hid_report_item 0x3e 0x67 0x9a 25 2 0 0 3 0
+#define CallGate_get_hid_report_input_data 0x3e 0x67 0x9a 26 2 0 0 3 0
+#define CallGate_get_hid_report_output_data 0x3e 0x67 0x9a 27 2 0 0 3 0
+#define CallGate_get_hid_report_feature_data 0x3e 0x67 0x9a 28 2 0 0 3 0
+
+#define CallGate_get_physical_entry_type 0x3e 0x67 0x9a 29 2 0 0 3 0
+#define CallGate_get_physical_entry_base 0x3e 0x67 0x9a 30 2 0 0 3 0
+#define CallGate_get_physical_entry_size 0x3e 0x67 0x9a 31 2 0 0 3 0
+
+#define CallGate_has_physical64 0x3e 0x67 0x9a 32 2 0 0 3 0
+#define CallGate_uses_pae 0x3e 0x67 0x9a 33 2 0 0 3 0
+
+#define CallGate_get_can_module_info 0x3e 0x67 0x9a 34 2 0 0 3 0
+#define CallGate_check_can_serial_port 0x3e 0x67 0x9a 35 2 0 0 3 0
+
+#define CallGate_get_mac_address 0x3e 0x67 0x9a 36 2 0 0 3 0
+#define CallGate_create_uuid 0x3e 0x67 0x9a 37 2 0 0 3 0
+
+#define CallGate_get_disc_info 0x3e 0x67 0x9a 38 2 0 0 3 0
+
+#define CallGate_get_can_module_version 0x3e 0x67 0x9a 39 2 0 0 3 0
+#define CallGate_program_can_module 0x3e 0x67 0x9a 40 2 0 0 3 0
+
+#define CallGate_read_long_disc 0x3e 0x67 0x9a 41 2 0 0 3 0
+#define CallGate_write_long_disc 0x3e 0x67 0x9a 42 2 0 0 3 0
+
+#define CallGate_create_named_user_section 0x3e 0x67 0x9a 43 2 0 0 3 0
+#define CallGate_acquire_named_futex 0x3e 0x67 0x9a 44 2 0 0 3 0
+
+#define CallGate_is_usb_pipe_stalled 0x3e 0x67 0x9a 45 2 0 0 3 0
+#define CallGate_clear_usb_pipe_stalled 0x3e 0x67 0x9a 46 2 0 0 3 0
+
+#define CallGate_get_lon_modules 0x3e 0x67 0x9a 47 2 0 0 3 0
+#define CallGate_open_lon_module 0x3e 0x67 0x9a 48 2 0 0 3 0
+#define CallGate_close_lon_module 0x3e 0x67 0x9a 49 2 0 0 3 0
+#define CallGate_add_wait_for_lon_module 0x3e 0x67 0x9a 50 2 0 0 3 0
+#define CallGate_send_lon_module_msg 0x3e 0x67 0x9a 51 2 0 0 3 0
+#define CallGate_has_lon_module_msg 0x3e 0x67 0x9a 52 2 0 0 3 0
+#define CallGate_receive_lon_module_msg 0x3e 0x67 0x9a 53 2 0 0 3 0
+
+#define CallGate_calc_crc32 0x3e 0x67 0x9a 54 2 0 0 3 0
+
+#define CallGate_ansi_to_utf16 0x3e 0x67 0x9a 55 2 0 0 3 0
+#define CallGate_utf16_to_ansi 0x3e 0x67 0x9a 56 2 0 0 3 0
+
+#define CallGate_get_usb_interface 0x3e 0x67 0x9a 57 2 0 0 3 0
+#define CallGate_set_usb_interface 0x3e 0x67 0x9a 58 2 0 0 3 0
+
+#define CallGate_remote_gui 0x3e 0x67 0x9a 59 2 0 0 3 0
+
+#define CallGate_is_com_available 0x3e 0x67 0x9a 60 2 0 0 3 0
+
+#define CallGate_get_can_loader_version 0x3e 0x67 0x9a 61 2 0 0 3 0
+#define CallGate_get_can_serial_number 0x3e 0x67 0x9a 62 2 0 0 3 0
+#define CallGate_wait_for_can_module_programming 0x3e 0x67 0x9a 63 2 0 0 3 0
+
+#define CallGate_reset_lon_module 0x3e 0x67 0x9a 64 2 0 0 3 0
+
+#define CallGate_get_cts 0x3e 0x67 0x9a 65 2 0 0 3 0
+#define CallGate_get_dsr 0x3e 0x67 0x9a 66 2 0 0 3 0
+
+#define CallGate_is_disc_idle 0x3e 0x67 0x9a 67 2 0 0 3 0
+
+#define CallGate_get_disc_vendor_info 0x3e 0x67 0x9a 68 2 0 0 3 0
+
+#define CallGate_query_video_mode 0x3e 0x67 0x9a 69 2 0 0 3 0
+
+#define CallGate_start_can_capture 0x3e 0x67 0x9a 70 2 0 0 3 0
+#define CallGate_stop_can_capture 0x3e 0x67 0x9a 71 2 0 0 3 0
+
+#define CallGate_start_lon_capture 0x3e 0x67 0x9a 72 2 0 0 3 0
+#define CallGate_stop_lon_capture 0x3e 0x67 0x9a 73 2 0 0 3 0
+
+#define CallGate_move_to_core 0x3e 0x67 0x9a 74 2 0 0 3 0
+#define CallGate_move_thread_to_core 0x3e 0x67 0x9a 75 2 0 0 3 0
+
+#define CallGate_get_active_cores 0x3e 0x67 0x9a 76 2 0 0 3 0
+
+#define CallGate_has_crash_info 0x3e 0x67 0x9a 77 2 0 0 3 0
+#define CallGate_get_crash_core_info 0x3e 0x67 0x9a 78 2 0 0 3 0
+
+#define CallGate_get_std_com_par 0x3e 0x67 0x9a 79 2 0 0 3 0
+#define CallGate_get_usb_com_par 0x3e 0x67 0x9a 80 2 0 0 3 0
+
+#define CallGate_create_bignum 0x3e 0x67 0x9a 81 2 0 0 3 0
+#define CallGate_delete_bignum 0x3e 0x67 0x9a 82 2 0 0 3 0
+#define CallGate_load_bignum64 0x3e 0x67 0x9a 83 2 0 0 3 0
+#define CallGate_add_bignum 0x3e 0x67 0x9a 84 2 0 0 3 0
+#define CallGate_mul_bignum 0x3e 0x67 0x9a 85 2 0 0 3 0
+#define CallGate_div_bignum 0x3e 0x67 0x9a 86 2 0 0 3 0
+
+#define CallGate_get_thread_action_state 0x3e 0x67 0x9a 87 2 0 0 3 0
+#define CallGate_set_thread_action 0x3e 0x67 0x9a 88 2 0 0 3 0
+
+#define CallGate_get_bignum_size10 0x3e 0x67 0x9a 89 2 0 0 3 0
+#define CallGate_get_bignum_str10 0x3e 0x67 0x9a 90 2 0 0 3 0
+
+#define CallGate_get_bignum_size16 0x3e 0x67 0x9a 91 2 0 0 3 0
+#define CallGate_get_bignum_str16 0x3e 0x67 0x9a 92 2 0 0 3 0
+
+#define CallGate_create_random_bignum 0x3e 0x67 0x9a 93 2 0 0 3 0
+
+#define CallGate_pow_mod_bignum 0x3e 0x67 0x9a 94 2 0 0 3 0
+#define CallGate_mod_bignum 0x3e 0x67 0x9a 95 2 0 0 3 0
+#define CallGate_sub_bignum 0x3e 0x67 0x9a 96 2 0 0 3 0
+
+#define CallGate_clear_text 0x3e 0x67 0x9a 97 2 0 0 3 0
+#define CallGate_get_text_size 0x3e 0x67 0x9a 98 2 0 0 3 0
 
 #endif

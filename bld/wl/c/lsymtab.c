@@ -849,30 +849,25 @@ symbol *FindISymbol( const char *name )
     return( SymOp( ST_FIND | ST_REFERENCE, name, strlen( name ) ) );
 }
 
-symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *prefix, size_t prefixLen )
+symbol *SymOpNWPfx( sym_flags op, const char *name, size_t length, const char *prefix, size_t prefixlen )
 /*******************************************************************************************************/
 {
-    symbol  *retsym = SymOp( op, name, length );
+    symbol  *retsym;
 
-    if( NULL == retsym )
+    if( NULL == (retsym = SymOp( op, name, length )) )
         return( NULL );
 
-    if( ( NULL != prefix ) && ( 0 != prefixLen ) || ( NULL != CmdFile->symprefix ) ) {
-        char    *pfxname = alloca( 255 + 1 );   /* max len of PString - used to be prefixLen+1 */
-
-        if( NULL == pfxname ) {
+    if( ( NULL != prefix ) && ( 0 != prefixlen ) || ( NULL != CmdFile->symprefix ) ) {
+        if( prefix == NULL ) {
+            prefix = CmdFile->symprefix;
+            prefixlen = strlen( prefix );
+        }
+        if( prefixlen > 254 ) {
             LnkMsg( ERR+MSG_SYMBOL_NAME_TOO_LONG, "s", prefix );
             return( NULL );
         }
 
-        if( prefix != NULL ) {
-            memcpy( pfxname, prefix, prefixLen );
-            pfxname[prefixLen] = '\0';
-        } else {
-            strcpy( pfxname, CmdFile->symprefix );
-        }
-
-        if( NULL == (retsym->prefix = AddStringStringTable( &PrefixStrings, pfxname )) ) {
+        if( NULL == (retsym->prefix = AddSymbolStringTable( &PrefixStrings, prefix, prefixlen )) ) {
             LnkMsg( ERR+MSG_INTERNAL, "s", "no memory for prefix symbol");
             return( NULL );
         }
@@ -967,7 +962,7 @@ static unsigned StaticHashFn( const char *name, size_t len )
     unsigned    value;
     unsigned    modval;
 
-    modval = CurrMod->modtime;
+    modval = (unsigned)CurrMod->modtime;
     value = ScatterTable[ modval & 0xff ];
     modval >>= 8;
     value = value ^ ScatterTable[ modval & 0xff ];
@@ -1124,25 +1119,6 @@ void ReportUndefined( void )
     }
 }
 
-void ClearFloatBits( void )
-/********************************/
-/* set all symbols to be not floating point */
-{
-    symbol *    sym;
-
-    for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        SET_FFIX_VALUE( sym, FFIX_NOT_A_FLOAT );
-    }
-}
-
-void XDefSymAddr( symbol *sym, offset off, unsigned_16 frame )
-/*******************************************************************/
-/* set symbol adddress in symbol table */
-{
-    sym->addr.seg = frame;
-    sym->addr.off = off;
-}
-
 static void WriteSym( symbol * sym, char star )
 /*********************************************/
 {
@@ -1158,12 +1134,12 @@ static void WriteSym( symbol * sym, char star )
 }
 
 void XReportSymAddr( symbol *sym )
-/***************************************/
+/********************************/
 {
     char                star;
 
     if( sym->info & SYM_REFERENCED ) {
-        if( IS_SYM_IMPORTED(sym) || ((FmtData.type & MK_ELF) && IsSymElfImported(sym)) ) {
+        if( IS_SYM_IMPORTED( sym ) || ((FmtData.type & MK_ELF) && IsSymElfImported( sym )) ) {
             star = 'i';
         } else {
             star = ' ';
@@ -1178,20 +1154,18 @@ void XReportSymAddr( symbol *sym )
 }
 
 void XWriteImports( void )
-/*******************************/
+/************************/
 {
     symbol *    sym;
 
     for( sym = HeadSym; sym != NULL; sym = sym->link ) {
-        if( IS_SYM_IMPORTED(sym) && sym->p.import != NULL ) {
-            if( (FmtData.type & MK_NOVELL) == 0
-                   || sym->p.import != DUMMY_IMPORT_PTR  )
-            {
-                if(sym->prefix && (strlen(sym->prefix) > 0))
-                    WriteFormat( 0, "%s@%s", sym->prefix, sym->name);
-                else
+        if( IS_SYM_IMPORTED( sym ) && sym->p.import != NULL ) {
+            if( (FmtData.type & MK_NOVELL) == 0 || sym->p.import != DUMMY_IMPORT_PTR ) {
+                if( sym->prefix != NULL && ( strlen( sym->prefix ) > 0 ) ) {
+                    WriteFormat( 0, "%s@%s", sym->prefix, sym->name );
+                } else {
                     WriteFormat( 0, "%s", sym->name );
-
+                }
 #ifdef _OS2
                 if( FmtData.type & (MK_OS2|MK_PE|MK_WIN_VXD) ) {
                     WriteFormat( 36, "%s", ImpModuleName( sym->p.import ) );
@@ -1203,8 +1177,8 @@ void XWriteImports( void )
     }
 }
 
-symbol * AddAltDef( symbol *sym, sym_info sym_type )
-/*********************************************************/
+symbol *AddAltDef( symbol *sym, sym_info sym_type )
+/*************************************************/
 {
     symbol *    altsym;
 
@@ -1221,8 +1195,8 @@ symbol * AddAltDef( symbol *sym, sym_info sym_type )
     return altsym;
 }
 
-symbol * HashReplace( symbol *sym )
-/****************************************/
+symbol *HashReplace( symbol *sym )
+/********************************/
 {
     symbol *    newsym;
 
@@ -1299,8 +1273,7 @@ static void UndefSymbol( symbol *sym )
 /************************************/
 {
     ClearSymUnion( sym );
-    sym->addr.seg = UNDEFINED;
-    sym->addr.off = 0;
+    SET_ADDR_UNDEFINED( sym->addr );
     if( (sym->info & SYM_EXPORTED) == 0 && sym->e.def != NULL ) {
         sym->info = SYM_LAZY_REF | SYM_REFERENCED;
     } else {
@@ -1504,49 +1477,50 @@ group_entry *SymbolGroup( symbol *sym )
 
 #define IS_WHITESPACE(ptr) (*(ptr) == ' ' || *(ptr) =='\t' || *(ptr) == '\r')
 
-bool SetCurrentPrefix( const char * pszPrefix, unsigned nLen )
+bool SetCurrentPrefix( const char *str, size_t len )
 {
-    const char *    pStart = pszPrefix;
-    char *          pFix;
-    unsigned        nIntLen = nLen;
-    char            *newbuff = NULL;
+    const char  *s;
+    char        *p;
 
     /*
     //  Always delete
     */
-    if( CmdFile->symprefix ) {
+    if( CmdFile->symprefix != NULL ) {
         _LnkFree( CmdFile->symprefix );
         CmdFile->symprefix = NULL;
     }
 
-    if( (NULL == pStart) || (nLen == 0) ) {
-        return true;
+    if( ( NULL == str ) || ( len == 0 ) ) {
+        return( true );
     }
+    /* it suppose string format as "(.....)" */
+    str++;  /* skip opening parentheses */
+    len--;  /* and record that */
 
-    pStart++;   /* skip opening parentheses */
-    nIntLen--;  /* and record that */
-
-    for( ; *pStart != '\0'; --nIntLen, ++pStart ) {
-        if( !IS_WHITESPACE( pStart ) ) {
+    for( ; len > 0; --len, ++str ) {
+        if( !IS_WHITESPACE( str ) ) {
             break;
         }
     }
+    if( len == 0 )
+        return( false );
 
-    if( ('\0' == *pStart) || (0 == nLen) )
-        return false;
+    --len;  /* skip closing parentheses */
+    if( len == 0 )
+        return( false );
+
+    for( s = str + len - 1; len > 0; --len, --s ) {
+        if( !IS_WHITESPACE( s ) ) {
+            break;
+        }
+    }
+    if( len == 0 )
+        return( false );
 
     /* convert to C string */
-    _LnkAlloc( newbuff, nIntLen + 1 );
-    memcpy( newbuff, pStart, nIntLen - 1 );
-    newbuff[nIntLen - 1] = '\0';
-    CmdFile->symprefix = newbuff;
-
-    for( pFix = newbuff; *pFix != '\0'; ++pFix ) {
-        if( IS_WHITESPACE( pFix ) ) {
-            *pFix = '\0';
-            break;
-        }
-    }
-
-    return( 0 != strlen( newbuff ) );
+    _LnkAlloc( p, len + 1 );
+    memcpy( p, str, len );
+    p[len] = '\0';
+    CmdFile->symprefix = p;
+    return( true );
 }

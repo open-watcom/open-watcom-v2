@@ -67,6 +67,8 @@
 #include "wrdll.h"
 #include "jdlg.h"
 #include "wreres.h"
+#include "wresdefn.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -426,15 +428,15 @@ bool PleaseOpenFile( UINT msg )
     if( msg == ACCEL_PLEASE_OPENME ) {
         filter = WREAccelFilter;
         title = AllocRCString( WRE_OPENACCEL );
-        type = (uint_16)(pointer_int)RT_ACCELERATOR;
+        type = RESOURCE2INT( RT_ACCELERATOR );
     } else if( msg == MENU_PLEASE_OPENME ) {
         filter = WREMenuFilter;
         title = AllocRCString( WRE_OPENMENU );
-        type = (uint_16)(pointer_int)RT_MENU;
+        type = RESOURCE2INT( RT_MENU );
     } else if( msg == STRING_PLEASE_OPENME ) {
         filter = WREStringFilter;
         title = AllocRCString( WRE_OPENSTRING );
-        type = (uint_16)(pointer_int)RT_STRING;
+        type = RESOURCE2INT( RT_STRING );
     }
 
     ok = (filter != NULL && title != NULL);

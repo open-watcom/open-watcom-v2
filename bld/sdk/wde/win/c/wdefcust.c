@@ -405,7 +405,7 @@ LIST *WdeFindClassInList( char *class )
 
     for( clist = WdeCustClassList; clist != NULL; clist = ListNext( clist ) ) {
         node = (WdeCustClassNode *)ListElement( clist );
-        if( !stricmp( node->class, class ) ) {
+        if( stricmp( node->class, class ) == 0 ) {
             break;
         }
     }

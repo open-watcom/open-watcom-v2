@@ -48,7 +48,7 @@
 #define DEBUGOUT( x )
 static process_info     *curProcess;
 static mod_handle       curModHdl;
-static dig_fhandle      curFileHdl;
+static dig_fhandle      cur_fid;
 static BOOL             dipIsLoaded;
 
 
@@ -124,15 +124,15 @@ BOOL LoadDbgInfo( void )
     DEBUGOUT( "Enter LoadDbgInfo" );
     err = TRUE;
     curProcess = DIPCreateProcess();
-    curFileHdl = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
-    if( curFileHdl != DIG_NIL_HANDLE ) {
+    cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
+    if( cur_fid != DIG_NIL_HANDLE ) {
         DEBUGOUT( "File open OK" );
         priority = 0;
         for( ;; ) {
             priority = DIPPriority( priority );
             if( priority == 0 )
                 break;
-            curModHdl = DIPLoadInfo( curFileHdl, 0, priority );
+            curModHdl = DIPLoadInfo( cur_fid, 0, priority );
             if( curModHdl != NO_MOD ) {
                 break;
             }
@@ -147,9 +147,9 @@ BOOL LoadDbgInfo( void )
     }
     if( err ) {
         DEBUGOUT( "LoadDbgInfo Failed" );
-        if( curFileHdl != DIG_NIL_HANDLE ) {
-            DIGCli( Close )( curFileHdl );
-            curFileHdl = DIG_NIL_HANDLE;
+        if( cur_fid != DIG_NIL_HANDLE ) {
+            DIGCli( Close )( cur_fid );
+            cur_fid = DIG_NIL_HANDLE;
         }
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
@@ -245,9 +245,9 @@ void SymFileClose( void )
     if( curProcess != NULL ) {
         DIPDestroyProcess( curProcess );
     }
-    if( curFileHdl != DIG_NIL_HANDLE ) {
-        DIGCli( Close )( curFileHdl );
-        curFileHdl = DIG_NIL_HANDLE;
+    if( cur_fid != DIG_NIL_HANDLE ) {
+        DIGCli( Close )( cur_fid );
+        cur_fid = DIG_NIL_HANDLE;
     }
     curProcess = NULL;
     curModHdl = NO_MOD;

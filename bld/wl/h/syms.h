@@ -104,8 +104,8 @@ typedef enum {
     SYM_IS_FREE         = 0x10000000, // only used during permdata writing.
 
     SYM_CLEAR_ON_P2     = 0xE00000A0, // bits to clear before pass 2 starts.
-    SYM_CLEAR_ON_INC    = 0x010404F0,
-    SYM_CLEAR_ON_ALT    = 0x00980010,
+    SYM_CLEAR_ON_INC    = 0x010404F0, //
+    SYM_CLEAR_ON_ALT    = 0x00980010, //
 
 // the top three bits are used for the floating point fixup type during pass 2
 // SYM_DCE_REF, SYM_VF_REFS_DONE and SYM_VF_MARKED are only needed during
@@ -120,9 +120,24 @@ typedef enum {
     SYM_VF_REFS_DONE    = 0x80000000  // ALL: vf refs added to call graph
 } sym_info;
 
+// values used to keep track of the special floating point symbols.
+typedef enum {
+    FFIX_NOT_A_FLOAT = 0,
+    FFIX_WR_SYMBOL,
+    FFIX_DR_SYMBOL,
+    FFIX_ES_OVERRIDE,
+    FFIX_CS_OVERRIDE,
+    FFIX_SS_OVERRIDE,
+    FFIX_DS_OVERRIDE,
+    FFIX_IGNORE,          // an overlapping fixup symbol.
+} ffix_type;
+
 // some handy macros for checking and setting symbol type bits
 
-#define SYM_TYPE_MASK      0xF
+#define SYM_TYPE_MASK       0xF
+
+#define FFIX_SHIFT          29
+#define FFIX_MASK           (7L << FFIX_SHIFT)
 
 #define IS_SYM_COMMUNAL(sym) (((sym)->info & SYM_TYPE_MASK) <= SYM_COMDAT)
 #define IS_SYM_NICOMDEF(sym) (((sym)->info & SYM_TYPE_MASK) <= SYM_COMMUNAL_32)
@@ -136,9 +151,16 @@ typedef enum {
 #define IS_SYM_LAZY_REF(sym) (((sym)->info & SYM_TYPE_MASK) == SYM_LAZY_REF)
 #define IS_SYM_A_REF(sym)    (((sym)->info & SYM_TYPE_MASK) >= SYM_LAZY_REF)
 #define IS_SYM_WEAK_REF(sym) (((sym)->info & SYM_TYPE_MASK) >= SYM_WEAK_REF)
-#define IS_SYM_LINK_WEAK(sym)(((sym)->info & SYM_TYPE_MASK) ==SYM_LINK_WEAK_REF)
+#define IS_SYM_LINK_WEAK(sym)(((sym)->info & SYM_TYPE_MASK) == SYM_LINK_WEAK_REF)
 #define IS_SYM_COMM32(sym)   (((sym)->info & SYM_TYPE_MASK) == SYM_COMMUNAL_32)
-#define SET_SYM_TYPE(sym,type) ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
+
+#define SET_SYM_TYPE(sym,type)  ((sym)->info = ((sym)->info & ~SYM_TYPE_MASK)|(type))
+#define SET_SYM_FFIX(sym,value) ((sym)->info = ((sym)->info & ~FFIX_MASK)|((value) << FFIX_SHIFT))
+
+#define GET_SYM_FFIX(sym)       (((sym)->info >> FFIX_SHIFT) & 7)
+
+#define SET_SYM_ADDR(sym,o,s)   (sym)->addr.seg=s;(sym)->addr.off=o
+
 /* note that OVL_VECTOR && OVL_FORCE can be thought of as a two-bit field.
  * OVL_NO_VECTOR == 0 && OVL_FORCE == 0 means undecided.
  * OVL_NO_VECTOR == 1 && OVL_FORCE == 0 means tenatively no vector generated.
@@ -155,24 +177,6 @@ enum overlay_info {
     OVL_MAKE_VECTOR     = OVL_FORCE,
     OVL_VEC_MASK        = (OVL_NO_VECTOR | OVL_FORCE)
 };
-
-// values used to keep track of the special floating point symbols.
-enum {
-    FFIX_NOT_A_FLOAT = 0,
-    FFIX_WR_SYMBOL,
-    FFIX_DR_SYMBOL,
-    FFIX_ES_OVERRIDE,
-    FFIX_CS_OVERRIDE,
-    FFIX_SS_OVERRIDE,
-    FFIX_DS_OVERRIDE,
-    FFIX_IGNORE,          // an overlapping fixup symbol.
-    FFIX_MASK = 0xe0000000
-};
-
-#define FFIX_SHIFT 29
-#define GET_FFIX_VALUE(sym)       ((sym)->info >> FFIX_SHIFT)
-#define SET_FFIX_VALUE(sym,value) ((sym)->info = ((sym)->info & ~FFIX_MASK)\
-                                                | ((value) << FFIX_SHIFT))
 
 typedef struct {
     unsigned_16 modnum;         // DOS: idx of module which defines this sym
@@ -240,9 +244,7 @@ extern symbol           *SymOpNWPfx( sym_flags, const char *, size_t, const char
 extern symbol           *SymOp( sym_flags, const char *, size_t );
 extern void             ReportMultiple( symbol *, const char *, size_t );
 extern void             ReportUndefined( void );
-extern void             ClearFloatBits( void );
 extern void             WriteCommunals( void );
-extern void             XDefSymAddr( symbol *, offset, unsigned_16 );
 extern void             XReportSymAddr( symbol * );
 extern void             XWriteImports( void );
 extern symbol           *AddAltDef( symbol *, sym_info );

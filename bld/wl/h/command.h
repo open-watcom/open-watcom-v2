@@ -62,11 +62,6 @@ typedef enum {
 }                       sep_type;
 
 typedef enum {
-    OK,
-    REJECT
-}                       status;
-
-typedef enum {
     ST_IS_ORDINAL,
     ST_NOT_ORDINAL,
     ST_INVALID_ORDINAL
@@ -77,13 +72,13 @@ typedef struct tok {
     size_t      len;
     char        *next;
     char        *this;
+    place       where;
+    method      how;
+    bool        thumb       : 1;
+    bool        locked      : 1;
+    bool        quoted      : 1;    /* set true if token parsed as a quoted string*/
+    bool        skipToNext  : 1;    /* set true if we need to skip to next token without a separator */
     unsigned_16 line;
-    unsigned_16 where : 2;
-    unsigned_16 how : 3;
-    unsigned_16 thumb : 1;
-    unsigned_16 locked : 1;
-    unsigned_16 quoted : 1;     /* set true if token parsed as a quoted string*/
-    unsigned_16 skipToNext : 1; /* set true if we need to skip to next token without a separator */
 } tok;
 
 typedef enum commandflag {
@@ -201,7 +196,7 @@ extern cmdfilelist *CmdFile;
 extern bool             ProcArgList( bool (*)( void ), tokcontrol );
 extern bool             ProcArgListEx( bool (*)( void ), tokcontrol ,cmdfilelist * );
 extern bool             ProcOne( parse_entry *, sep_type, bool );
-extern bool             MatchOne( parse_entry *, sep_type, char *, unsigned );
+extern bool             MatchOne( parse_entry *, sep_type, const char *, size_t );
 extern ord_state        getatoi( unsigned_16 * );
 extern ord_state        getatol( unsigned_32 * );
 extern bool             HaveEquals( tokcontrol );

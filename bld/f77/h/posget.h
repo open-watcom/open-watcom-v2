@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
-extern uint         readbytes( b_file *io, char *buff, uint len );
-extern uint         SysRead( b_file *io, char *b, uint len );
-extern uint         FGetRec( b_file *io, char *b, uint len );
+extern size_t       readbytes( b_file *io, char *buff, size_t len );
+extern size_t       SysRead( b_file *io, char *b, size_t len );
+extern size_t       FGetRec( b_file *io, char *b, size_t len );
 extern char         GetStdChar( void );
 #if defined( __RT__ )
 extern int          FCheckLogical( b_file *io );

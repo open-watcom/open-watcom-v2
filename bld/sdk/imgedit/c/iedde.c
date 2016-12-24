@@ -98,7 +98,7 @@ extern HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-extern BOOL     IEHData2Mem( HDDEDATA, void *, uint_32 * );
+extern BOOL     IEHData2Mem( HDDEDATA, void **, uint_32 * );
 extern BOOL     IEStartDDEEditSession( void );
 extern HDDEDATA IECreateResData( img_node *node );
 
@@ -347,11 +347,9 @@ void IEDDEEndConversation( void )
 /*
  * IEHData2Mem
  */
-BOOL IEHData2Mem( HDDEDATA hData, void *_mem, uint_32 *size )
+BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 {
-    void    **mem = _mem;
-
-    if( hData == (HDDEDATA)NULL && mem != NULL && size != NULL ) {
+    if( hData == (HDDEDATA)NULL || mem == NULL || size == NULL ) {
         return( FALSE );
     }
 
@@ -487,6 +485,8 @@ BOOL IEStartDDEEditSession( void )
     uint_32             size;
     BOOL                ok;
 
+    data = NULL;
+    filename = NULL;
     ok = (EditFormat != DDENone);
 
     if( ok ) {
@@ -497,7 +497,7 @@ BOOL IEStartDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = IEHData2Mem( hData, &filename, &size );
+        ok = IEHData2Mem( hData, (void **)&filename, &size );
         DdeFreeDataHandle( hData );
     }
 
@@ -511,8 +511,6 @@ BOOL IEStartDDEEditSession( void )
         if( hData != (HDDEDATA)NULL ) {
             ok = IEHData2Mem( hData, &data, &size );
             DdeFreeDataHandle( hData );
-        } else {
-            data = NULL;
         }
     }
 
@@ -569,22 +567,23 @@ static void IEHandlePokedData( HDDEDATA hdata )
         return;
     }
 
+    cmd = NULL;
     if( !IEHData2Mem( hdata, &cmd, &size ) || cmd == NULL ) {
         return;
     }
 
-    if( !stricmp( cmd, "show" ) ) {
+    if( stricmp( cmd, "show" ) == 0 ) {
         ShowWindow( HMainWindow, SW_RESTORE );
         ShowWindow( HMainWindow, SW_SHOWNA );
-    } else if( !stricmp( cmd, "hide" ) ) {
+    } else if( stricmp( cmd, "hide" ) == 0 ) {
         ShowWindow( HMainWindow, SW_SHOWMINNOACTIVE );
         ShowWindow( HMainWindow, SW_HIDE );
-    } else if( !stricmp( cmd, "endsession" ) ) {
+    } else if( stricmp( cmd, "endsession" ) == 0 ) {
         if( GotEndSession == FALSE ) {
             GotEndSession = TRUE;
             CloseAllImages();
         }
-    } else if( !stricmp( cmd, "bringtofront" ) ) {
+    } else if( stricmp( cmd, "bringtofront" ) == 0 ) {
         if( IsIconic( HMainWindow ) ) {
             ShowWindow( HMainWindow, SW_RESTORE );
         }

@@ -33,7 +33,7 @@
 #ifndef WRESRTNS_INLCUDED
 #define WRESRTNS_INLCUDED
 
-#define WRESOPEN(n,m,a)     WResRtns.cli_open(n,m,a)
+#define WRESOPEN(n,m)       WResRtns.cli_open(n,m)
 #define WRESCLOSE(fh)       WResRtns.cli_close(fh)
 #define WRESWRITE(fh,b,s)   WResRtns.cli_write(fh,b,s)
 #define WRESREAD(fh,b,s)    WResRtns.cli_read(fh,b,s)

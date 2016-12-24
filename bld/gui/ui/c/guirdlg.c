@@ -36,10 +36,12 @@
 #include "watcom.h"
 #include "guiutil.h"
 #include "guixscal.h"
-#include "guildstr.h"
 #include "wressetr.h"
+#include "filefmt.h"
 #include "resdiag.h"
+#include "resmenu.h"
 #include "wresdefn.h"
+#include "guildstr.h"
 #include "guirdlg.h"
 
 #include "clibext.h"
@@ -108,185 +110,21 @@ static char *ResNameOrOrdinalToStr( ResNameOrOrdinal *name, int base )
     return( cp );
 }
 
-static ControlClass *Data2ControlClass( uint_8 **data )
-{
-    ControlClass        *new;
-    uint_8              *data8;
-    int                 stringlen;
-    int                 len;
-
-    if( data == NULL || *data == '\0' ) {
-        return( NULL );
-    }
-
-    stringlen = 0;
-    len = sizeof(ControlClass);
-    data8 = (uint_8 *)*data;
-    if( ( *data8 & 0x80 ) == 0 ) {
-        stringlen = strlen( (char *)(*data) ) + 1;
-        len = stringlen;
-    }
-
-    new = (ControlClass *)GUIMemAlloc( len );
-    if( new == NULL ) {
-        return( NULL );
-    }
-
-    if( stringlen == 0 ) {
-        new->Class = data8[0];
-    } else {
-        memcpy( new, *data, len );
-    }
-
-    (*data) += len;
-
-    return( new );
-}
-
-static ResNameOrOrdinal *Data2NameOrOrdinal( uint_8 **data )
-{
-    ResNameOrOrdinal    *new;
-    uint_8              *data8;
-    int                 stringlen;
-    int                 len;
-
-    if( data == NULL || *data == '\0' ) {
-        return( NULL );
-    }
-
-    data8 = (uint_8 *)(*data);
-
-    stringlen = 0;
-    len = sizeof(ResNameOrOrdinal);
-    if( *data8 != 0xff ) {
-        stringlen = strlen( (char *)data8 ) + 1;
-        if( len < stringlen ) {
-            len = stringlen;
-        }
-    }
-
-    new = (ResNameOrOrdinal *)GUIMemAlloc( len );
-    if( new == NULL ) {
-        return( NULL );
-    }
-
-    if( *data8 == 0xff ) {
-        memcpy( new, data8, sizeof(ResNameOrOrdinal) );
-        *data += len;
-    } else {
-        memcpy( &new->name[0], data8, stringlen );
-        *data += stringlen;
-    }
-
-    return( new );
-}
-
-static bool Template2DlgCntl( uint_8 **data, DialogBoxControl *dbc )
+static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
 {
     bool        ok;
-
-    ok = ( data != NULL && *data != '\0' && dbc != NULL );
-
-    if( ok ) {
-        memcpy( dbc, *data, offsetof( DialogBoxControl, ClassID ) );
-        *data += offsetof( DialogBoxControl, ClassID );
-        dbc->ClassID = Data2ControlClass( data );
-        ok = ( dbc->ClassID != NULL );
-    }
-
-    if( ok ) {
-        dbc->Text = Data2NameOrOrdinal( data );
-        ok = ( dbc->Text != NULL );
-    }
-
-    if( ok ) {
-        dbc->ExtraBytes = (uint_8)((*data)[0]);
-        *data += sizeof(uint_8);
-    }
-
-    if( !ok ) {
-        GUIFreeDialogBoxControlPtrs( dbc );
-    }
-
-    return( ok );
-}
-
-static DialogBoxHeader *Template2DlgHdr( uint_8 **data )
-{
-    DialogBoxHeader     *hdr;
-    bool                ok;
-
-    hdr = NULL;
-
-    ok = ( data != NULL && *data != '\0' );
-
-    if( ok ) {
-        hdr = (DialogBoxHeader *)GUIMemAlloc( sizeof(DialogBoxHeader) );
-        ok = ( hdr != NULL );
-    }
-
-    if( ok ) {
-        memcpy( hdr, *data, offsetof( DialogBoxHeader, MenuName ) );
-        *data += offsetof( DialogBoxHeader, MenuName );
-        hdr->MenuName = Data2NameOrOrdinal( data );
-        ok = ( hdr->MenuName != NULL );
-    }
-
-    if( ok ) {
-        hdr->ClassName = Data2NameOrOrdinal( data );
-        ok = ( hdr->ClassName != NULL );
-    }
-
-    if( ok ) {
-        /* Have to do this with a temp because &hdr->Caption is unaligned */
-        hdr->Caption = GUIStrDup( (char *)*data, &ok );
-        ok = ok && ( hdr->Caption != NULL );
-        if( ok ) {
-            *data += strlen( hdr->Caption ) + 1;
-        }
-    }
-
-    if( ok ) {
-        hdr->PointSize = 0;
-        hdr->FontName = NULL;
-        if( hdr->Style & DS_SETFONT ) {
-            // data may not be aligned -- need memcpy for UNIX platforms
-            memcpy( &hdr->PointSize, *data, sizeof( hdr->PointSize ) );
-            *data += sizeof(uint_16);
-            /* Have to do this with a temp because &hdr->FontName is unaligned */
-            hdr->FontName = GUIStrDup( (char *)*data, &ok );
-            ok = ok && ( hdr->FontName != NULL );
-            if( ok ) {
-                *data += strlen( hdr->FontName ) + 1;
-            }
-        }
-    }
-
-    if( !ok ) {
-        if( hdr != NULL ) {
-            GUIFreeDialogBoxHeader( hdr );
-            hdr = NULL;
-        }
-    }
-
-    return( hdr );
-}
-
-static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls,
-                          uint_8 *data, int size )
-{
-    bool        ok;
-    uint_8      *d;
     int         index;
 
-    ok = ( hdr != NULL && cntls != NULL && data != NULL && size );
+    ok = ( hdr != NULL && cntls != NULL );
 
     if( ok ) {
-        d = data;
-        *hdr = NULL;
         *cntls = NULL;
-        *hdr = Template2DlgHdr( &data );
+        *hdr = (DialogBoxHeader *)GUIMemAlloc( sizeof(DialogBoxHeader) );
         ok = ( *hdr != NULL );
+    }
+
+    if( ok ) {
+        ok = !GUIResReadDialogBoxHeader( *hdr );
     }
 
     if( ok ) {
@@ -296,12 +134,8 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls,
 
     if( ok ) {
         for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-            ok = Template2DlgCntl( &data, &((*cntls)[index]) );
+            ok = !GUIResReadDialogBoxControl( *cntls + index );
         }
-    }
-
-    if( ok ) {
-        ok = ( size >= ( data - d ) );
     }
 
     if( !ok ) {
@@ -311,7 +145,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls,
         }
         if( *cntls != NULL ) {
             for( index = 0; ok && index < (*hdr)->NumOfItems; index++ ) {
-                GUIFreeDialogBoxControlPtrs( cntls[index] );
+                GUIFreeDialogBoxControlPtrs( *cntls + index );
             }
             GUIMemFree( *cntls );
             *cntls = NULL;
@@ -583,27 +417,23 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     DialogBoxControl    *cntls;
     gui_create_info     *dlg_info;
     gui_control_info    *controls_info;
-    uint_8              *data;
-    int                 size;
     int                 index;
     int                 last_was_radio;
     bool                ok;
 
     hdr = NULL;
     cntls = NULL;
-    data = NULL;
     dlg_info = NULL;
     controls_info = NULL;
-    size = 0;
 
     ok = ( cb != NULL );
 
     if( ok ) {
-        ok = GUILoadDialogTemplate( dlg_id, (char **)&data, &size );
+        ok = GUISeekDialogTemplate( dlg_id );
     }
 
     if( ok ) {
-        ok = Template2Dlg( &hdr, &cntls, data, size );
+        ok = Template2Dlg( &hdr, &cntls );
     }
 
     if( ok ) {
@@ -665,11 +495,6 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     if( hdr != NULL ) {
         GUIFreeDialogBoxHeader( hdr );
     }
-
-    if( data != NULL ) {
-        GUIMemFree( data );
-    }
-
     return( ok );
 }
 
