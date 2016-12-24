@@ -45,7 +45,7 @@ objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
     global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-    errors.obj tmpctl.obj autodep.obj &
+    rcerrors.obj tmpctl.obj autodep.obj &
     dbtable.obj sharedio.obj rcspawn.obj
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg

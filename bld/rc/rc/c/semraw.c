@@ -32,7 +32,7 @@
 #include <limits.h>
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"
 #include "rcrtns.h"

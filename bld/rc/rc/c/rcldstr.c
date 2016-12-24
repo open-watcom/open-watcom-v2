@@ -34,7 +34,7 @@
 #endif
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcldstr.h"
 #include "wresset2.h"
 #include "iortns.h"

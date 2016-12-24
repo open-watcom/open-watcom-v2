@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "errors.h"
+#include "rcerrors.h"
 #include "layer0.h"
 #include "rcrtns.h"
 #include "preproc.h"

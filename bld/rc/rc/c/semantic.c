@@ -32,7 +32,7 @@
 
 #include <stdio.h>      /* remove call for MS format stuff */
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "tmpctl.h"
 #include "rcrtns.h"

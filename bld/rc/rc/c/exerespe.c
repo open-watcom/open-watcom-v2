@@ -35,7 +35,7 @@
 #include "global.h"
 #include "rcstrblk.h"
 #include "rcstr.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "wrmergdi.h"
 #include "rcrtns.h"
 #include "rccore.h"

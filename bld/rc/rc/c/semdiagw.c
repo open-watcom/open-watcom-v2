@@ -72,7 +72,7 @@ struct ControlData {
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "wresdefn.h"

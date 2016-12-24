@@ -30,7 +30,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "os2res.h"
 #include "rcrtns.h"
 #include "rccore.h"

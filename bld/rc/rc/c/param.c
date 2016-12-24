@@ -31,7 +31,7 @@
 #include "wio.h"
 #include "global.h"
 #include "preproc.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcmem.h"
 #include "swchar.h"
 #include "dbtable.h"

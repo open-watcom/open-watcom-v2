@@ -34,7 +34,7 @@
 #include "wio.h"
 #include "global.h"
 #include "rcstrblk.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "os2res.h"
 #include "wrmergdi.h"
 #include "rcrtns.h"

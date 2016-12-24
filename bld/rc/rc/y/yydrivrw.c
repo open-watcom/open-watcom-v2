@@ -35,7 +35,7 @@
 #include "semantic.h"
 #include "semantcw.h"
 #include "rcmem.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "errprt.h"
 #include "wresdefn.h"
 #include "rccore.h"

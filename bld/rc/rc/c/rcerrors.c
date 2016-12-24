@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "reserr.h"
 #include "tmpctl.h"
 #include "errprt.h"

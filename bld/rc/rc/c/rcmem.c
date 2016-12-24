@@ -34,7 +34,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "rctypes.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcmem.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"

@@ -42,7 +42,7 @@
 #include "rcmem.h"
 #include "rcspawn.h"
 #include "rcldstr.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"

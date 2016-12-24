@@ -31,7 +31,7 @@
 
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "tmpctl.h"
 #include "autodep.h"
 #include "semantic.h"

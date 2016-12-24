@@ -33,7 +33,7 @@
 #include "wio.h"
 #include "global.h"
 #include "semantic.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "reserr.h"
 #include "depend.h"
 #include "rcrtns.h"

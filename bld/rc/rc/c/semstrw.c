@@ -32,7 +32,7 @@
 
 #include "watcom.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "rcrtns.h"

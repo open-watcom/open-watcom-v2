@@ -53,7 +53,7 @@ common_objs = &
     $(_subdir_)$(os2_yacc_file).obj &
     $(_subdir_)keywordw.obj &
     $(_subdir_)keyword2.obj &
-    $(_subdir_)errors.obj &
+    $(_subdir_)rcerrors.obj &
     $(_subdir_)exeobj.obj &
     $(_subdir_)exeresw.obj &
     $(_subdir_)exeres2.obj &

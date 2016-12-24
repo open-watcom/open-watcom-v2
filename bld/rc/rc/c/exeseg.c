@@ -31,7 +31,7 @@
 
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcrtns.h"
 #include "rccore.h"
 #include "exeutil.h"

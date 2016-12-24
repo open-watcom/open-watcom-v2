@@ -34,7 +34,7 @@
 #include <stddef.h>
 #include <string.h>
 #include "rcalloc0.h"
-#include "errors.h"
+#include "rcerrors.h"
 #ifdef RCMEM_DEBUG
 #include "errprt.h"
 #endif

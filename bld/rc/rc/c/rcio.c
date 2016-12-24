@@ -38,7 +38,7 @@
 #endif
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "preproc.h"
 #include "reserr.h"
 #include "tmpctl.h"
