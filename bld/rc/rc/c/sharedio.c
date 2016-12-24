@@ -168,7 +168,7 @@ HANDLE_ERROR:
 }
 
 void CloseResFiles( ResFileInfo *resfiles )
-/*******************************************/
+/*****************************************/
 {
     ResFileInfo         *res;
 
@@ -179,13 +179,16 @@ void CloseResFiles( ResFileInfo *resfiles )
     }
 }
 
-void WresRecordError( WResStatus status ) {
+void WresRecordError( WResStatus status )
+/***************************************/
+{
     errFromWres.used = true;
     errFromWres.status = status;
     errFromWres.errnum = errno;
 }
 
 char *LastWresErrStr( void )
+/**************************/
 {
     if( errFromWres.used ) {
         switch( errFromWres.status ) {
@@ -200,6 +203,7 @@ char *LastWresErrStr( void )
 }
 
 int LastWresErr( void )
+/*********************/
 {
     if( errFromWres.used ) {
         return( errFromWres.errnum );
@@ -208,6 +212,7 @@ int LastWresErr( void )
 }
 
 int LastWresStatus( void )
+/************************/
 {
     if( errFromWres.used ) {
         return( errFromWres.status );
@@ -215,8 +220,8 @@ int LastWresStatus( void )
     return( 0 );
 }
 
-extern void SharedIOInitStatics( void )
-/*************************************/
+void SharedIOInitStatics( void )
+/******************************/
 {
     memset( &errFromWres, 0, sizeof( ErrFrame ) );
 }
