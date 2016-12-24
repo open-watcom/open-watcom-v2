@@ -37,7 +37,7 @@
 #include "clibext.h"
 
 
-static WResFileID wres_open( const char *name, wres_open_mode omode )
+static WResFileID res_open( const char *name, wres_open_mode omode )
 {
     int     fd;
 
@@ -59,22 +59,22 @@ static WResFileID wres_open( const char *name, wres_open_mode omode )
     return( WRES_PH2FID( fd ) );
 }
 
-static int wres_close( WResFileID fid )
+static int res_close( WResFileID fid )
 {
     return( close( WRES_FID2PH( fid ) ) );
 }
 
-static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+static WResFileSSize res_read( WResFileID fid, void *buf, WResFileSize size )
 {
     return( posix_read( WRES_FID2PH( fid ), buf, size ) );
 }
 
-static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+static WResFileSSize res_write( WResFileID fid, const void *buf, WResFileSize size )
 {
     return( posix_write( WRES_FID2PH( fid ), buf, size ) );
 }
 
-static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+static WResFileOffset res_seek( WResFileID fid, WResFileOffset pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
@@ -84,9 +84,9 @@ static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
     }
 }
 
-static WResFileOffset wres_tell( WResFileID fid )
+static WResFileOffset res_tell( WResFileID fid )
 {
     return( tell( WRES_FID2PH( fid ) ) );
 }
 
-WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, malloc, free );
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, malloc, free );

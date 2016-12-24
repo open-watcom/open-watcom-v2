@@ -34,14 +34,14 @@
 #define WRESRTNS_INLCUDED
 
 #define WRESOPEN(n,m)       WResRtns.cli_open(n,m)
-#define WRESCLOSE(fh)       WResRtns.cli_close(fh)
-#define WRESWRITE(fh,b,s)   WResRtns.cli_write(fh,b,s)
-#define WRESREAD(fh,b,s)    WResRtns.cli_read(fh,b,s)
-#define WRESSEEK(fh,o,d)    WResRtns.cli_seek(fh,o,d)
-#define WRESTELL(fh)        WResRtns.cli_tell(fh)
+#define WRESCLOSE(fid)      WResRtns.cli_close(fid)
+#define WRESWRITE(fid,b,s)  WResRtns.cli_write(fid,b,s)
+#define WRESREAD(fid,b,s)   WResRtns.cli_read(fid,b,s)
+#define WRESSEEK(fid,o,d)   WResRtns.cli_seek(fid,o,d)
+#define WRESTELL(fid)       WResRtns.cli_tell(fid)
 #define WRESALLOC           WResRtns.cli_alloc
 #define WRESFREE            WResRtns.cli_free
 
-#define WRESIOERR(fh,rc)    (rc == -1)
+#define WRESIOERR(fid,rc)   (rc == -1)
 
 #endif
